@@ -2,125 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEEA19DE68
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 09:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9E19DE6A
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 09:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbfH0HIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 03:08:12 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51886 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbfH0HIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 03:08:12 -0400
-Received: by mail-wm1-f67.google.com with SMTP id k1so1863207wmi.1
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 00:08:10 -0700 (PDT)
+        id S1728673AbfH0HIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 03:08:18 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:50679 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbfH0HIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 03:08:17 -0400
+Received: by mail-pf1-f201.google.com with SMTP id b21so14026482pfb.17
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 00:08:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=K3dR+kYzCpf0LHtg4W8b5/TM1dkZeAuxaiVCsNYOztk=;
-        b=QHsI6nONWW5YauGAV+hWB1lnaRgZ2SWxi2vZTigWFhLSzzKpXcGbQ4GD0SxDDdWLHP
-         H/oYs3rFaWN7s4HebmnHocxQVXFprTiXhO7rZ9SgFL/+zcH1zJi8yjKjDoGALAwe3Sip
-         ygY+yHrInETEqZu4aeEAhPbhmA4nJ984rSvHlbANWoaU/gpu8VditIFIaU9A2cGZkVU5
-         xL1ZNvUxe2RFZogU/igc/N1oZdGA3QEWJWR5iGoQG/GwJezvhZyHL4N+3dsUGWgJ19VP
-         lnXROpsRkGFc/7ZNABNtjkiTtJwG3Riu69wVg3npmbpPT/JNbimjEdICKF07LMrzm3tB
-         44pQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ZDL6qMUlP3bP/+guwloCvQFaqxEcnmptAKY8PZbvYMg=;
+        b=s8jbhp9GQmrF911vHYozD95BwG/hVa3UG/OWTTQyS2+y61vXp4481Y8siAqvTkanFg
+         ced1W1zXgByzf/xBe2jy2AOMM6R+ITdLr/eeqTFtTbqIE13tkSsYzfn5zt9TTPqn2sHC
+         +6yRkf0SQZuEG4UeYF0fEcri3oA8vV9S2azA019GAK/cqm7FHCCFN4tphyby6cORKG8p
+         3m0aax3sdwucJtMsNLS1siYa4J8v5/MH3Bsb5Z2FuFUmer8Ee9CnxGtPZrgSdu/b7lGo
+         CIvq/7Aj4H+Vd6eRnvkM5EqDY2c/hoFbD6brDnI/Cx4lDpGoXDCxZWIs1LALfXAFZ5fn
+         0Axg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=K3dR+kYzCpf0LHtg4W8b5/TM1dkZeAuxaiVCsNYOztk=;
-        b=dkzzc3ByGq0tipnW21yNylkdGdwv+sjE7/4ThvfbRQx+njHZfP2n8Yoq6gTbxfWAeS
-         css36d0jITFn90Z34cMI9sBc09pB/FTdyk6qhJBDqlQSFBvnfFFJ0ABxPvSXhHxFFeuE
-         WsuIDR/Ro6o8ILKsGT29Yw+pS/pIZS799aJS8HAdvaq05LDXqcuydZ47Ulf9S+ylv1bu
-         FMSQk1EfLMwOtOV1sWxATHxvWPMC9lxRPYK5YfIYsjSRXFbnSK5aLXnTFlDkfPtgloIL
-         0e5gvmL1WQCChODQCScVjsTzYYu4GghwkMeS0a+Sz123rkOSSujA4TSDgET3r1lIMupD
-         8jRQ==
-X-Gm-Message-State: APjAAAW9GEW117yLVudXl8sk3mH8BVg3+easz3sUw1Nf8JxQnfXsQckw
-        cri/UOYohZv/PnwoMXkVrWmw0g==
-X-Google-Smtp-Source: APXvYqxILz5eiErst14wmAry2j2Vsp7zECFg8Xr6i5m9i38ktZpGODDnfQHG1rirtAuxqrCXyS2eHg==
-X-Received: by 2002:a1c:eb0c:: with SMTP id j12mr25320622wmh.132.1566889690179;
-        Tue, 27 Aug 2019 00:08:10 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id f7sm17969307wrf.8.2019.08.27.00.08.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2019 00:08:09 -0700 (PDT)
-Date:   Tue, 27 Aug 2019 09:08:08 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Miller <davem@davemloft.net>
-Cc:     jakub.kicinski@netronome.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
-        sthemmin@microsoft.com, dcbw@redhat.com, mkubecek@suse.cz,
-        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
- delete alternative ifnames
-Message-ID: <20190827070808.GA2250@nanopsycho>
-References: <20190826095548.4d4843fe@cakuba.netronome.com>
- <5d79fba4-f82e-97a7-7846-fd1de089a95b@gmail.com>
- <20190826151552.4f1a2ad9@cakuba.netronome.com>
- <20190826.151819.804077961408964282.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190826.151819.804077961408964282.davem@davemloft.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ZDL6qMUlP3bP/+guwloCvQFaqxEcnmptAKY8PZbvYMg=;
+        b=HVymWsaykpTKIbhDcBFaoINuP/FL5X+0UEeMIPG8v2BQ21bLWkj9iNjs/1Pl3r/7QS
+         tDpqDtfuqAkFLnmesEmtLv29raL8fp3pbDYcNne9FXg1wXoRLz8jXdSSUKQV2ls6Xxye
+         aJ4two7dU9nL/dORBnYFx2isZaO/RrRghdjLhDJyFJhPFlWyKbE4q7eFISqswaI+T6UO
+         m37kNPvt6MojMHwbgABk4BROJO5C1xJzCoe7VNjtnB6LIyN52N8v6Ux5t9zvYdHlUU6P
+         BZsrROZP/nFwhb2W8GWK14go2ZKvGW2bL97F4lHn+Kil6tsHU+t3rZKQIQdJ3MvCrn4H
+         12hA==
+X-Gm-Message-State: APjAAAVK50Fbq98Kc3+6FRYsMxfx5/JtlywAeKHKE/qpLLIMfr7gzJDu
+        pBcFERsrpQdqYwCHw/9G6xh7lxr9Yleutw==
+X-Google-Smtp-Source: APXvYqyZAr8DxUOVoUHFk4OFePQyp3LseBFVnkakrmkOgT0PYY3Hoko0OkBnnnKLl8xpBApb12/uh70xhjYSMw==
+X-Received: by 2002:a63:755e:: with SMTP id f30mr20102809pgn.246.1566889696157;
+ Tue, 27 Aug 2019 00:08:16 -0700 (PDT)
+Date:   Tue, 27 Aug 2019 00:08:12 -0700
+Message-Id: <20190827070812.150106-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+Subject: [PATCH net-next] ipv6: shrink struct ipv6_mc_socklist
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 27, 2019 at 12:18:19AM CEST, davem@davemloft.net wrote:
->From: Jakub Kicinski <jakub.kicinski@netronome.com>
->Date: Mon, 26 Aug 2019 15:15:52 -0700
->
->> Weren't there multiple problems with the size of the RTM_NEWLINK
->> notification already? Adding multiple sizeable strings to it won't
->> help there either :S
->
->Indeed.
->
->We even had situations where we had to make the information provided
->in a newlink dump opt-in when we added VF info because the buffers
->glibc was using at the time were too small and this broke so much
->stuff.
->
->I honestly think that the size of link dumps are out of hand as-is.
+Remove two holes on 64bit arches, to bring the size
+to one cache line exactly.
 
-Okay, so if I understand correctly, on top of separate commands for
-add/del of alternative names, you suggest also get/dump to be separate
-command and don't fill this up in existing newling/getlink command.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/if_inet6.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So we'll have:
-CMD to add:
-	RTM_NEWALTIFNAME = 108
-#define RTM_NEWALTIFNAME       RTM_NEWALTIFNAME
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 50037913c9b191cb3793e3f072104c10c4257ff2..a01981d7108f96075b6939f4a78f14e7afe93a4e 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -89,9 +89,9 @@ struct ip6_sf_socklist {
+ struct ipv6_mc_socklist {
+ 	struct in6_addr		addr;
+ 	int			ifindex;
++	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
+ 	struct ipv6_mc_socklist __rcu *next;
+ 	rwlock_t		sflock;
+-	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
+ 	struct ip6_sf_socklist	*sflist;
+ 	struct rcu_head		rcu;
+ };
+-- 
+2.23.0.187.g17f5b7556c-goog
 
-Example msg (user->kernel):
-     IFLA_IFNAME eth0
-     IFLA_ALT_IFNAME_MOD somereallyreallylongname
-
-Example msg (user->kernel):
-     IFLA_ALT_IFNAME somereallyreallylongname
-     IFLA_ALT_IFNAME_MOD someotherreallyreallylongname
-
-
-CMD to delete:
-	RTM_DELALTIFNAME,
-#define RTM_DELALTIFNAME       RTM_DELALTIFNAME
-
-Example msg (user->kernel):
-     IFLA_IFNAME eth0
-     IFLA_ALT_IFNAME_MOD somereallyreallylongname
-
-	
-CMD to get/dump:
-        RTM_GETALTIFNAME,
-#define RTM_GETALTIFNAME       RTM_GETALTIFNAME
-
-Example msg (kernel->user):
-     hdr (with ifindex)
-     IFLA_ALT_IFNAME_LIST (nest)
-        IFLA_ALT_IFNAME somereallyreallylongname
-        IFLA_ALT_IFNAME someotherreallyreallylongname
-
-Correct?	
