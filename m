@@ -2,135 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A91A09F015
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B9D9F051
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729962AbfH0QYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:24:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41836 "EHLO mx1.redhat.com"
+        id S1729570AbfH0QhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:37:22 -0400
+Received: from mga11.intel.com ([192.55.52.93]:10269 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726522AbfH0QYh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:24:37 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 320803082126;
-        Tue, 27 Aug 2019 16:24:36 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A2295DC18;
-        Tue, 27 Aug 2019 16:24:35 +0000 (UTC)
-Date:   Tue, 27 Aug 2019 10:24:35 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Cornelia Huck <cohuck@redhat.com>, Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-Message-ID: <20190827102435.7bd30ef3@x1.home>
-In-Reply-To: <AM0PR05MB486671BB1CD562D070F0C0F2D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190826204119.54386-3-parav@mellanox.com>
-        <20190827122928.752e763b.cohuck@redhat.com>
-        <AM0PR05MB486621458EC71973378CD5A0D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827132946.0b92d259.cohuck@redhat.com>
-        <20190827092855.29702347@x1.home>
-        <AM0PR05MB486671BB1CD562D070F0C0F2D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Red Hat
+        id S1726539AbfH0QhW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 12:37:22 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:37:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,437,1559545200"; 
+   d="scan'208";a="187959999"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Aug 2019 09:37:19 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DDDCDBD; Tue, 27 Aug 2019 19:37:17 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        ocfs2-devel@oss.oracle.com, Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Colin Ian King <colin.king@canonical.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider use
+Date:   Tue, 27 Aug 2019 19:37:17 +0300
+Message-Id: <20190827163717.44101-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.23.0.rc1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Tue, 27 Aug 2019 16:24:36 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 16:13:27 +0000
-Parav Pandit <parav@mellanox.com> wrote:
+There are users already and will be more of BITS_TO_BYTES() macro.
+Move it to bitops.h for wider use.
 
-> > -----Original Message-----
-> > From: Alex Williamson <alex.williamson@redhat.com>
-> > Sent: Tuesday, August 27, 2019 8:59 PM
-> > To: Cornelia Huck <cohuck@redhat.com>
-> > Cc: Parav Pandit <parav@mellanox.com>; Jiri Pirko <jiri@mellanox.com>;
-> > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > Subject: Re: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-> > 
-> > On Tue, 27 Aug 2019 13:29:46 +0200
-> > Cornelia Huck <cohuck@redhat.com> wrote:
-> >   
-> > > On Tue, 27 Aug 2019 11:08:59 +0000
-> > > Parav Pandit <parav@mellanox.com> wrote:
-> > >  
-> > > > > -----Original Message-----
-> > > > > From: Cornelia Huck <cohuck@redhat.com>
-> > > > > Sent: Tuesday, August 27, 2019 3:59 PM
-> > > > > To: Parav Pandit <parav@mellanox.com>
-> > > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > > Subject: Re: [PATCH 2/4] mdev: Make mdev alias unique among all
-> > > > > mdevs
-> > > > >
-> > > > > On Mon, 26 Aug 2019 15:41:17 -0500 Parav Pandit
-> > > > > <parav@mellanox.com> wrote:
-> > > > >  
-> > > > > > Mdev alias should be unique among all the mdevs, so that when
-> > > > > > such alias is used by the mdev users to derive other objects,
-> > > > > > there is no collision in a given system.
-> > > > > >
-> > > > > > Signed-off-by: Parav Pandit <parav@mellanox.com>
-> > > > > > ---
-> > > > > >  drivers/vfio/mdev/mdev_core.c | 5 +++++
-> > > > > >  1 file changed, 5 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/vfio/mdev/mdev_core.c
-> > > > > > b/drivers/vfio/mdev/mdev_core.c index e825ff38b037..6eb37f0c6369
-> > > > > > 100644
-> > > > > > --- a/drivers/vfio/mdev/mdev_core.c
-> > > > > > +++ b/drivers/vfio/mdev/mdev_core.c
-> > > > > > @@ -375,6 +375,11 @@ int mdev_device_create(struct kobject *kobj,  
-> > struct  
-> > > > > device *dev,  
-> > > > > >  			ret = -EEXIST;
-> > > > > >  			goto mdev_fail;
-> > > > > >  		}
-> > > > > > +		if (tmp->alias && strcmp(tmp->alias, alias) == 0) {  
-> > > > >
-> > > > > Any way we can relay to the caller that the uuid was fine, but
-> > > > > that we had a hash collision? Duplicate uuids are much more obvious than  
-> > a collision here.  
-> > > > >  
-> > > > How do you want to relay this rare event?
-> > > > Netlink interface has way to return the error message back, but sysfs is  
-> > limited due to its error code based interface.  
-> > >
-> > > I don't know, that's why I asked :)
-> > >
-> > > The problem is that "uuid already used" and "hash collision" are
-> > > indistinguishable. While "use a different uuid" will probably work in
-> > > both cases, "increase alias length" might be a good alternative in
-> > > some cases.
-> > >
-> > > But if there is no good way to relay the problem, we can live with it.  
-> > 
-> > It's a rare event, maybe just dev_dbg(dev, "Hash collision creating alias \"%s\"
-> > for mdev device %pUl\n",...
-> >   
-> Ok.
-> dev_dbg_once() to avoid message flood.
+In the case of ocfs2 the replacement is identical.
 
-I'd suggest a rate-limit rather than a once.  The fact that the kernel
-may have experienced a collision at some time in the past does not help
-someone debug why they can't create a device now.  The only way we're
-going to get a flood is if a user sufficiently privileged to create
-mdev devices stumbles onto a collision and continues to repeat the same
-operation.  That falls into shoot-yourself-in-the-foot behavior imo.
-Thanks,
+As for bnx2x, there are two places where floor version is used.
+In the first case to calculate the amount of structures that can fit
+one memory page. In this case obviously the ceiling variant is correct and
+original code might have a potential bug, if amount of bits % 8 is not 0.
+In the second case the macro is used to calculate bytes transmitted in one
+microsecond. This will work for all speeds which is multiply of 1Gbps without
+any change, for the rest new code will give ceiling value, for instance 100Mbps
+will give 13 bytes, while old code gives 12 bytes and the arithmetically
+correct one is 12.5 bytes. Further the value is used to setup timer threshold
+which in any case has its own margins due to certain resolution. I don't see
+here an issue with slightly shifting thresholds for low speed connections, the
+card is supposed to utilize highest available rate, which is usually 10Gbps.
 
-Alex
+Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+- described bnx2x cases in the commit message
+- appended Rb (for ocfs2)
+
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h | 1 -
+ fs/ocfs2/dlm/dlmcommon.h                         | 4 ----
+ include/linux/bitops.h                           | 1 +
+ 3 files changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
+index 066765fbef06..0a59a09ef82f 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
+@@ -296,7 +296,6 @@ static inline void bnx2x_dcb_config_qm(struct bnx2x *bp, enum cos_mode mode,
+  *    possible, the driver should only write the valid vnics into the internal
+  *    ram according to the appropriate port mode.
+  */
+-#define BITS_TO_BYTES(x) ((x)/8)
+ 
+ /* CMNG constants, as derived from system spec calculations */
+ 
+diff --git a/fs/ocfs2/dlm/dlmcommon.h b/fs/ocfs2/dlm/dlmcommon.h
+index aaf24548b02a..0463dce65bb2 100644
+--- a/fs/ocfs2/dlm/dlmcommon.h
++++ b/fs/ocfs2/dlm/dlmcommon.h
+@@ -688,10 +688,6 @@ struct dlm_begin_reco
+ 	__be32 pad2;
+ };
+ 
+-
+-#define BITS_PER_BYTE 8
+-#define BITS_TO_BYTES(bits) (((bits)+BITS_PER_BYTE-1)/BITS_PER_BYTE)
+-
+ struct dlm_query_join_request
+ {
+ 	u8 node_idx;
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index cf074bce3eb3..79d80f5ddf7b 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -5,6 +5,7 @@
+ #include <linux/bits.h>
+ 
+ #define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
++#define BITS_TO_BYTES(nr)	DIV_ROUND_UP(nr, BITS_PER_BYTE)
+ #define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
+ 
+ extern unsigned int __sw_hweight8(unsigned int w);
+-- 
+2.23.0.rc1
+
