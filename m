@@ -2,240 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAF4B9E644
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0ACA9E659
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729208AbfH0LA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 07:00:26 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:51768 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729140AbfH0LA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 07:00:26 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190827110024euoutp01d823862a92166efe6e2b5bc3d8dac37c~_wot3bNxC1939819398euoutp017
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 11:00:24 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190827110024euoutp01d823862a92166efe6e2b5bc3d8dac37c~_wot3bNxC1939819398euoutp017
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1566903624;
-        bh=mZQrfwhPHo3NNvmZXOp7eUyIiEKfr48SNN3n8hLi20s=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=MQPOPzoSwiqo8epcJfJTgayzaHOXnIo0fCbECFw4KGJVq9GPEebyFCjjxC6ZEZbqK
-         WlhTu0ZXhvD6ZJarbW+LzEJtnjeGldElpaa+GzhqVxC8Lq3Wy+JOJsojVy6vbCMP78
-         rhKMQ0ylxPwBl+Tyh6BdC7nQavGGEAfWdtpFL8hQ=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190827110023eucas1p13a98e6aba2d9c5192b0baebb6ad6a07c~_wos0ywpT0632306323eucas1p1o;
-        Tue, 27 Aug 2019 11:00:23 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 9B.5A.04469.74D056D5; Tue, 27
-        Aug 2019 12:00:23 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20190827110022eucas1p299082bbbb45e872d01614b987645e9f8~_wor0LpWZ1514215142eucas1p2b;
-        Tue, 27 Aug 2019 11:00:22 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20190827110022eusmtrp2831ff897664c6d9c12353d5c2db9f88e~_worl2gWH0382403824eusmtrp2u;
-        Tue, 27 Aug 2019 11:00:22 +0000 (GMT)
-X-AuditID: cbfec7f2-569ff70000001175-4b-5d650d47abeb
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 1E.7A.04166.64D056D5; Tue, 27
-        Aug 2019 12:00:22 +0100 (BST)
-Received: from [106.109.129.180] (unknown [106.109.129.180]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20190827110020eusmtip1dc26f30686fd5fdc55497109932c965a~_woqb88Ke0349703497eusmtip1P;
-        Tue, 27 Aug 2019 11:00:20 +0000 (GMT)
-Subject: Re: [PATCH net v3] ixgbe: fix double clean of tx descriptors with
- xdp
-To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Eelco Chaudron <echaudro@redhat.com>,
-        William Tu <u9012063@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-From:   Ilya Maximets <i.maximets@samsung.com>
-Message-ID: <3d93da21-0198-2fff-fbbf-3c02c5155f25@samsung.com>
-Date:   Tue, 27 Aug 2019 14:00:16 +0300
+        id S1729374AbfH0LCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 07:02:32 -0400
+Received: from smark.slackware.pl ([88.198.48.135]:50404 "EHLO
+        smark.slackware.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbfH0LCc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 07:02:32 -0400
+Received: from bek.lan.toxcorp.com (unknown [213.156.230.59])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: shasta@toxcorp.com)
+        by smark.slackware.pl (Postfix) with ESMTPSA id 6C8CF2062C;
+        Tue, 27 Aug 2019 13:02:29 +0200 (CEST)
+To:     e1000-devel@lists.sourceforge.net
+Cc:     shasta@toxcorp.com, mhemsley@open-systems.com,
+        netdev@vger.kernel.org
+From:   Jakub Jankowski <shasta@toxcorp.com>
+Subject: SFP+ EEPROM readouts fail on X722 (ethtool -m: Invalid argument)
+Message-ID: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
+Date:   Tue, 27 Aug 2019 13:03:04 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190826154042.00004bfc@gmail.com>
-Content-Language: en-GB
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrHKsWRmVeSWpSXmKPExsWy7djP87ruvKmxBpuXsVn8n3ubxeLLz9vs
-        Fn/aNjBafD5ynM1i8cJvzBZzzrewWNy58pPN4kr7T3aL/7d+s1oce9HCZnFi831Gi8u75rBZ
-        zD8/md1ixaET7BbHFohZXL/E4yDgsWXlTSaPnbPusnss3vOSyaPrxiVmj02rOtk8TjaXekzv
-        fsjs8X7fVTaPvi2rGD0+b5IL4IrisklJzcksSy3St0vgyvj69AFzwVLlil8Hz7E2MO6V6WLk
-        5JAQMJE4+fcfC4gtJLCCUeLzucAuRi4g+wujRNuLbnYI5zOjxP1bu1lgOnofToRKLGeU6D/8
-        jQ3C+Qjk3N3OCFIlLBAgca3nJ1iHiIClxJ+VX8E6mAVWskicmwDSwcnBJqAjcWr1EbAGXgE7
-        if6115hBbBYBVYnrkyezg9iiAhESnx4cZoWoEZQ4OfMJ2FBOAQOJpRf+gsWZBcQlmr6shLLl
-        Jba/ncMMskxCYCqHxImvG6HudpFomnCLEcIWlnh1fAs7hC0j8X/nfCYIu17ifstLRojmDkaJ
-        6Yf+QSXsJba8PgfUwAG0QVNi/S59iLCjxM325UwgYQkBPokbbwUhbuCTmLRtOjNEmFeio00I
-        olpF4vfB5cwQtpTEzXef2ScwKs1C8tksJN/MQvLNLIS9CxhZVjGKp5YW56anFhvmpZbrFSfm
-        Fpfmpesl5+duYgSmwtP/jn/awfj1UtIhRgEORiUeXokzybFCrIllxZW5hxglOJiVRHhz9BNj
-        hXhTEiurUovy44tKc1KLDzFKc7AoifNWMzyIFhJITyxJzU5NLUgtgskycXBKNTAarTvwWlWo
-        wuYVh2juKWPV3/WG5z+e4j7Ac+KPuMrc5/4xMy/6NGlHfv+5yqM9K//K13SfkMm7K6f/eRR2
-        r7JyzzV5RfsArWfOkhtagvepri9Nnr91zi2LaN2ZmpHaplNvcvGbuWllufb3vVwk4fhw89dD
-        E73Eymwi7T7xeTBf1OleIpoWfECJpTgj0VCLuag4EQDfNKXlgQMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpileLIzCtJLcpLzFFi42I5/e/4XV033tRYg/MLWSz+z73NYvHl5212
-        iz9tGxgtPh85zmaxeOE3Zos551tYLO5c+clmcaX9J7vF/1u/WS2OvWhhszix+T6jxeVdc9gs
-        5p+fzG6x4tAJdotjC8Qsrl/icRDw2LLyJpPHzll32T0W73nJ5NF14xKzx6ZVnWweJ5tLPaZ3
-        P2T2eL/vKptH35ZVjB6fN8kFcEXp2RTll5akKmTkF5fYKkUbWhjpGVpa6BmZWOoZGpvHWhmZ
-        Kunb2aSk5mSWpRbp2yXoZXx9+oC5YKlyxa+D51gbGPfKdDFyckgImEj0PpzI3sXIxSEksJRR
-        4tfhC2wQCSmJH78usELYwhJ/rnWxQRS9Z5Q4/Rikg5NDWMBP4tfjEywgtoiApcSflV/BJjEL
-        rGaRuLj7BhNEx1ZGiad3l4J1sAnoSJxafYQRxOYVsJPoX3uNGcRmEVCVuD55MliNqECExOEd
-        s6BqBCVOznwCtoFTwEBi6YW/YCcxC6hL/Jl3iRnCFpdo+rISKi4vsf3tHOYJjEKzkLTPQtIy
-        C0nLLCQtCxhZVjGKpJYW56bnFhvqFSfmFpfmpesl5+duYgTG/7ZjPzfvYLy0MfgQowAHoxIP
-        r8SZ5Fgh1sSy4srcQ4wSHMxKIrw5+omxQrwpiZVVqUX58UWlOanFhxhNgZ6byCwlmpwPTE15
-        JfGGpobmFpaG5sbmxmYWSuK8HQIHY4QE0hNLUrNTUwtSi2D6mDg4pRoYNbkusP92mzu1/uuv
-        7I2Z34wZWv1zLopM3/DyhDHjTM24Ez43JDSE/wt2CX3bbWOVe5djpWn6Rpkq9fZdvRYRctX8
-        DayzK3Zc+2rr+q2l8DGX0nWBAIEbmy85lM40kt90RLSb9RDXwv983EanUwu1ni8u/Fm1Lsnz
-        79Fc4ZOyQavv38rcWfBeiaU4I9FQi7moOBEAQYoIwxUDAAA=
-X-CMS-MailID: 20190827110022eucas1p299082bbbb45e872d01614b987645e9f8
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190822171243eucas1p12213f2239d6c36be515dade41ed7470b
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20190822171243eucas1p12213f2239d6c36be515dade41ed7470b
-References: <CGME20190822171243eucas1p12213f2239d6c36be515dade41ed7470b@eucas1p1.samsung.com>
-        <20190822171237.20798-1-i.maximets@samsung.com>
-        <20190826154042.00004bfc@gmail.com>
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.08.2019 16:40, Maciej Fijalkowski wrote:
-> On Thu, 22 Aug 2019 20:12:37 +0300
-> Ilya Maximets <i.maximets@samsung.com> wrote:
-> 
->> Tx code doesn't clear the descriptors' status after cleaning.
->> So, if the budget is larger than number of used elems in a ring, some
->> descriptors will be accounted twice and xsk_umem_complete_tx will move
->> prod_tail far beyond the prod_head breaking the completion queue ring.
->>
->> Fix that by limiting the number of descriptors to clean by the number
->> of used descriptors in the tx ring.
->>
->> 'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
->> 'ixgbe_xsk_clean_tx_ring()' since we're allowed to directly use
->> 'next_to_clean' and 'next_to_use' indexes.
->>
->> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
->> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
->> ---
->>
->> Version 3:
->>   * Reverted some refactoring made for v2.
->>   * Eliminated 'budget' for tx clean.
->>   * prefetch returned.
->>
->> Version 2:
->>   * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
->>     'ixgbe_xsk_clean_tx_ring()'.
->>
->>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 29 ++++++++------------
->>  1 file changed, 11 insertions(+), 18 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
->> index 6b609553329f..a3b6d8c89127 100644
->> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
->> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
->> @@ -633,19 +633,17 @@ static void ixgbe_clean_xdp_tx_buffer(struct ixgbe_ring *tx_ring,
->>  bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->>  			    struct ixgbe_ring *tx_ring, int napi_budget)
-> 
-> While you're at it, can you please as well remove the 'napi_budget' argument?
-> It wasn't used at all even before your patch.
+Hi,
 
-As you mentioned, this is not related to current patch and this patch doesn't
-touch these particular lines of code.  So, I think it's better to make a
-separate patch for this if you think it's needed.
+We can't get SFP+ EEPROM readouts for X722 to work at all:
 
-> 
-> I'm jumping late in, but I was really wondering and hesitated with taking
-> part in discussion since the v1 of this patch - can you elaborate why simply
-> clearing the DD bit wasn't sufficient?
+# ethtool -m eth10
+Cannot get module EEPROM information: Invalid argument
+# dmesg | tail -n 1
+[  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
+# lspci | grep 3d:00.3
+3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
 
-Clearing the DD bit will end up driver and hardware writing to close memory
-locations at the same time leading to cache trashing and poor performance.
 
-Anyway additional write is unnecessary, because we know exactly which descriptors
-we need to check.
+We're running 4.19.65 kernel at the moment, testing using the newest out-of-tree Intel module
 
-Best regards, Ilya Maximets.
+# modinfo -F version i40e
+2.9.21
 
-> 
-> Maciej
-> 
->>  {
->> +	u16 ntc = tx_ring->next_to_clean, ntu = tx_ring->next_to_use;
->>  	unsigned int total_packets = 0, total_bytes = 0;
->> -	u32 i = tx_ring->next_to_clean, xsk_frames = 0;
->> -	unsigned int budget = q_vector->tx.work_limit;
->>  	struct xdp_umem *umem = tx_ring->xsk_umem;
->>  	union ixgbe_adv_tx_desc *tx_desc;
->>  	struct ixgbe_tx_buffer *tx_bi;
->> -	bool xmit_done;
->> +	u32 xsk_frames = 0;
->>  
->> -	tx_bi = &tx_ring->tx_buffer_info[i];
->> -	tx_desc = IXGBE_TX_DESC(tx_ring, i);
->> -	i -= tx_ring->count;
->> +	tx_bi = &tx_ring->tx_buffer_info[ntc];
->> +	tx_desc = IXGBE_TX_DESC(tx_ring, ntc);
->>  
->> -	do {
->> +	while (ntc != ntu) {
->>  		if (!(tx_desc->wb.status & cpu_to_le32(IXGBE_TXD_STAT_DD)))
->>  			break;
->>  
->> @@ -661,22 +659,18 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->>  
->>  		tx_bi++;
->>  		tx_desc++;
->> -		i++;
->> -		if (unlikely(!i)) {
->> -			i -= tx_ring->count;
->> +		ntc++;
->> +		if (unlikely(ntc == tx_ring->count)) {
->> +			ntc = 0;
->>  			tx_bi = tx_ring->tx_buffer_info;
->>  			tx_desc = IXGBE_TX_DESC(tx_ring, 0);
->>  		}
->>  
->>  		/* issue prefetch for next Tx descriptor */
->>  		prefetch(tx_desc);
->> +	}
->>  
->> -		/* update budget accounting */
->> -		budget--;
->> -	} while (likely(budget));
->> -
->> -	i += tx_ring->count;
->> -	tx_ring->next_to_clean = i;
->> +	tx_ring->next_to_clean = ntc;
->>  
->>  	u64_stats_update_begin(&tx_ring->syncp);
->>  	tx_ring->stats.bytes += total_bytes;
->> @@ -688,8 +682,7 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->>  	if (xsk_frames)
->>  		xsk_umem_complete_tx(umem, xsk_frames);
->>  
->> -	xmit_done = ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
->> -	return budget > 0 && xmit_done;
->> +	return ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
->>  }
->>  
->>  int ixgbe_xsk_async_xmit(struct net_device *dev, u32 qid)
-> 
-> 
-> 
+We also tried:
+- 4.19.65 with in-tree i40e (2.3.2-k)
+- stock Arch Linux (kernel 5.2.5, driver 2.8.20-k)
+and the results are the same, as shown above.
+
+# ethtool -i eth10
+driver: i40e
+version: 2.9.21
+firmware-version: 3.31 0x80000d31 1.1767.0
+expansion-rom-version:
+bus-info: 0000:3d:00.3
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: yes
+supports-register-dump: yes
+supports-priv-flags: yes
+# dmidecode -s baseboard-manufacturer
+Intel Corporation
+# dmidecode -s baseboard-product-name
+S2600WFT
+# dmidecode -s baseboard-version
+H48104-853
+
+# lspci -vvv
+(...)
+3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
+	DeviceName: Intel PCH Integrated 10 Gigabit Ethernet Controller
+	Subsystem: Intel Corporation Ethernet Connection X722 for 10GbE SFP+
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Latency: 0, Cache Line Size: 32 bytes
+	Interrupt: pin A routed to IRQ 112
+	NUMA node: 0
+	Region 0: Memory at ab000000 (64-bit, prefetchable) [size=16M]
+	Region 3: Memory at b0000000 (64-bit, prefetchable) [size=32K]
+	Expansion ROM at <ignored> [disabled]
+	Capabilities: [40] Power Management version 3
+		Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA PME(D0+,D1-,D2-,D3hot+,D3cold+)
+		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=1 PME-
+	Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
+		Address: 0000000000000000  Data: 0000
+		Masking: 00000000  Pending: 00000000
+	Capabilities: [70] MSI-X: Enable+ Count=129 Masked-
+		Vector table: BAR=3 offset=00000000
+		PBA: BAR=3 offset=00001000
+	Capabilities: [a0] Express (v2) Endpoint, MSI 00
+		DevCap:	MaxPayload 512 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
+			ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
+		DevCtl:	CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
+			RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop- FLReset-
+			MaxPayload 256 bytes, MaxReadReq 512 bytes
+		DevSta:	CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
+		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <64ns, L1 <1us
+			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
+		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk+
+			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
+			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+		DevCap2: Completion Timeout: Range AB, TimeoutDis+, LTR-, OBFF Not Supported
+			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
+			 AtomicOpsCtl: ReqEn-
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete-, EqualizationPhase1-
+			 EqualizationPhase2-, EqualizationPhase3-, LinkEqualizationRequest-
+	Capabilities: [e0] Vital Product Data
+		Product Name: Example VPD
+		Read-only fields:
+			[V0] Vendor specific:
+			[RV] Reserved: checksum good, 0 byte(s) reserved
+		End
+	Capabilities: [100 v2] Advanced Error Reporting
+		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq+ ACSViol-
+		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+		AERCap:	First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
+			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+		HeaderLog: 00000000 00000000 00000000 00000000
+	Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
+		ARICap:	MFVC- ACS-, Next Function: 0
+		ARICtl:	MFVC- ACS-, Function Group: 0
+	Capabilities: [160 v1] Single Root I/O Virtualization (SR-IOV)
+		IOVCap:	Migration-, Interrupt Message Number: 000
+		IOVCtl:	Enable- Migration- Interrupt- MSE- ARIHierarchy-
+		IOVSta:	Migration-
+		Initial VFs: 32, Total VFs: 32, Number of VFs: 0, Function Dependency Link: 03
+		VF offset: 109, stride: 1, Device ID: 37cd
+		Supported Page Size: 00000553, System Page Size: 00000001
+		Region 0: Memory at 00000000af000000 (64-bit, prefetchable)
+		Region 3: Memory at 00000000b0020000 (64-bit, prefetchable)
+		VF Migration: offset: 00000000, BIR: 0
+	Capabilities: [1a0 v1] Transaction Processing Hints
+		Device specific mode supported
+		No steering table available
+	Capabilities: [1b0 v1] Access Control Services
+		ACSCap:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
+		ACSCtl:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
+	Kernel driver in use: i40e
+	Kernel modules: i40e
+
+
+Same kernel+i40e, same SFP+ module - but on Intel X710, works like a treat:
+
+# lspci | grep X7
+81:00.0 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
+81:00.1 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
+# ethtool -m eth8
+	Identifier                                : 0x03 (SFP)
+	Extended identifier                       : 0x04 (GBIC/SFP defined by 2-wire interface ID)
+	Connector                                 : 0x07 (LC)
+	Transceiver codes                         : 0x10 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00
+	Transceiver type                          : 10G Ethernet: 10G Base-SR
+	Transceiver type                          : Ethernet: 1000BASE-SX
+	Encoding                                  : 0x06 (64B/66B)
+	BR, Nominal                               : 10300MBd
+         (...)
+# ethtool -i eth8
+driver: i40e
+version: 2.9.21
+firmware-version: 6.01 0x800035cf 1.1876.0
+expansion-rom-version:
+bus-info: 0000:81:00.0
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: yes
+supports-register-dump: yes
+supports-priv-flags: yes
+#
+
+
+Is this a known problem?
+
+
+Best regards,
+  Jakub
+
