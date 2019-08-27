@@ -2,109 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0139F2A0
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107A49F2AF
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:51:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730505AbfH0SuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 14:50:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36318 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729903AbfH0SuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 14:50:08 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 27 Aug 2019 21:50:06 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7RIo687027377;
-        Tue, 27 Aug 2019 21:50:06 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, dcaratti@redhat.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net] net: sched: act_sample: fix psample group handling on overwrite
-Date:   Tue, 27 Aug 2019 21:49:38 +0300
-Message-Id: <20190827184938.1824-1-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
+        id S1730883AbfH0SvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 14:51:17 -0400
+Received: from correo.us.es ([193.147.175.20]:37804 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730423AbfH0SvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 14:51:16 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id A73ED27F8C7
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9A62DDA840
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 8F97BD1911; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 718E9DA801;
+        Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 42DA14265A5A;
+        Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
+Date:   Tue, 27 Aug 2019 20:51:11 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Leonardo Bras <leonardo@linux.ibm.com>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
+ IPv6 is disabled on boot
+Message-ID: <20190827185111.cgutfqkqwsufe2nl@salvia>
+References: <20190821141505.2394-1-leonardo@linux.ibm.com>
+ <20190827103541.vzwqwg4jlbuzajxu@salvia>
+ <77c43754ff72e9a2e8048ccd032351cf0186080a.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77c43754ff72e9a2e8048ccd032351cf0186080a.camel@linux.ibm.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Action sample doesn't properly handle psample_group pointer in overwrite
-case. Following issues need to be fixed:
+On Tue, Aug 27, 2019 at 02:34:14PM -0300, Leonardo Bras wrote:
+> On Tue, 2019-08-27 at 12:35 +0200, Pablo Neira Ayuso wrote:
+[...]
+> > NFT_BREAK instead to stop evaluating this rule, this results in a
+> > mismatch, so you let the user decide what to do with packets that do
+> > not match your policy.
+>
+> Ok, I will replace for v3.
 
-- In tcf_sample_init() function RCU_INIT_POINTER() is used to set
-  s->psample_group, even though we neither setting the pointer to NULL, nor
-  preventing concurrent readers from accessing the pointer in some way.
-  Use rcu_swap_protected() instead to safely reset the pointer.
+Thanks.
 
-- Old value of s->psample_group is not released or deallocated in any way,
-  which results resource leak. Use psample_group_put() on non-NULL value
-  obtained with rcu_swap_protected().
+> > The drop case at the bottom of the fib eval function never actually
+> > never happens.
+>
+> Which one do you mean?
 
-- The function psample_group_put() that released reference to struct
-  psample_group pointed by rcu-pointer s->psample_group doesn't respect rcu
-  grace period when deallocating it. Extend struct psample_group with rcu
-  head and use kfree_rcu when freeing it.
-
-Fixes: 5c5670fae430 ("net/sched: Introduce sample tc action")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- include/net/psample.h  | 1 +
- net/psample/psample.c  | 2 +-
- net/sched/act_sample.c | 6 +++++-
- 3 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 37a4df2325b2..6b578ce69cd8 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -11,6 +11,7 @@ struct psample_group {
- 	u32 group_num;
- 	u32 refcount;
- 	u32 seq;
-+	struct rcu_head rcu;
- };
- 
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 841f198ea1a8..66e4b61a350d 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -154,7 +154,7 @@ static void psample_group_destroy(struct psample_group *group)
- {
- 	psample_group_notify(group, PSAMPLE_CMD_DEL_GROUP);
- 	list_del(&group->list);
--	kfree(group);
-+	kfree_rcu(group, rcu);
- }
- 
- static struct psample_group *
-diff --git a/net/sched/act_sample.c b/net/sched/act_sample.c
-index 595308d60133..b75377d8c596 100644
---- a/net/sched/act_sample.c
-+++ b/net/sched/act_sample.c
-@@ -102,13 +102,17 @@ static int tcf_sample_init(struct net *net, struct nlattr *nla,
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
- 	s->rate = rate;
- 	s->psample_group_num = psample_group_num;
--	RCU_INIT_POINTER(s->psample_group, psample_group);
-+	rcu_swap_protected(s->psample_group, psample_group,
-+			   lockdep_is_held(&s->tcf_lock));
- 
- 	if (tb[TCA_SAMPLE_TRUNC_SIZE]) {
- 		s->truncate = true;
- 		s->trunc_size = nla_get_u32(tb[TCA_SAMPLE_TRUNC_SIZE]);
- 	}
- 	spin_unlock_bh(&s->tcf_lock);
-+
-+	if (psample_group)
-+		psample_group_put(psample_group);
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
- 
--- 
-2.21.0
-
+Line 31 of net/netfilter/nft_fib_inet.c.
