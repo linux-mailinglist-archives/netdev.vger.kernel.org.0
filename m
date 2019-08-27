@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C87739E568
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:10:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323039E576
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:11:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbfH0KKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 06:10:38 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:15476 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729058AbfH0KKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 06:10:37 -0400
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 1yAi4Ua9NRqqYG9pUWXNBJ8g0UQT9uyfb8aoPHVM5JfTpSepP0yUhhi9A04kfVoewLMtPbjlQB
- V2lpUvqk7DsA3Qf3Bnbj8BXtqKI63nijDtD8iDNmxzxTAAzC9macH5h51O1282qjCc26/31tmB
- 5nGqJ3HhqX5I7CBFdet9cDi/K7w2ZS33eV6I8DIHrf/hPGvNip7gPja9gdfYEkWOAyvCRQ1BKf
- 6VvwQWmdQr2/O+Cea4MlVFVWm7esQlbcGPe8RwBDYKAEqmjjccbgPV0ETWu5Rax3/edS3Oja1I
- h/8=
-X-IronPort-AV: E=Sophos;i="5.64,436,1559545200"; 
-   d="scan'208";a="46737569"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Aug 2019 03:10:36 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 27 Aug 2019 03:10:35 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 27 Aug 2019 03:10:35 -0700
-Date:   Tue, 27 Aug 2019 12:10:34 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <davem@davemloft.net>, <UNGLinuxDriver@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <allan.nielsen@microchip.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH v2 0/3] Add NETIF_F_HW_BR_CAP feature
-Message-ID: <20190827101033.g2cb6j2j4kuyzh2a@soft-dev3.microsemi.net>
-References: <1566807075-775-1-git-send-email-horatiu.vultur@microchip.com>
- <20190826123811.GA13411@lunn.ch>
+        id S1728726AbfH0KLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 06:11:55 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:45253 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbfH0KLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 06:11:54 -0400
+Received: by mail-lj1-f194.google.com with SMTP id l1so17880750lji.12
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 03:11:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HHICw+Tp2z+xL6EJfWAAScDc/8f+gt/WdqhnzOncqsk=;
+        b=lJKauEJ8TdPH4oNX2BHuqYH+Y88ysm9qXCA5bkKEILpU6wf6QbbKN++Jo503tfKVLd
+         2bJ1WoMlB5LM4G1MCknb1WHzzwv1WoUkSw3fWhNFRG5poLq/3EdWqqgtDeaogoBJk6DY
+         oH7kJfudJTNUHFPyRCEjzoEHyfvFC9xhvMFBO80MYx3ENwnRXiSEUS9U5Ncy/2/g6mqT
+         h3Ok7TGggPdfdAsUPvqDCbx4S4mcvIftFqgi43wPaUXNXJSeraAijafTNno74VD/CRQv
+         qElz2+7Bc16lEzlnu1eD2z6x0z6pzPZVn25UsFyAchyPi/56Io7WEyxFunYOXPETPeHa
+         +Vgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HHICw+Tp2z+xL6EJfWAAScDc/8f+gt/WdqhnzOncqsk=;
+        b=YPj4swif8yKlfaVCGb6EF9stnt1PPQcWZyxZIaIBw8g7UiFZiigrbf20HCAx09z3RC
+         zFySCw69ulwWpyO/qZNQYowJL7ebd1xZbJprykNRW6lb67Zp8K39pKzqapwmjjltygaP
+         SRfCrXkjsHICDlQTa2q7LCVTdfcPnR7oRoZGJMItUzS+FA4WKVHR/ubIhI/KuiDa0qfi
+         WUE1EjC+WQjznqUugi+5orS5y02R6Zh8zj0jV1/x7Hht7HM+RDRN9xwNJlT+VV5IoS23
+         SI3DF76WaFNqTXy+0Z70Sw3NrkA53NpGVUHyI60Gs5l0Zas8BVcEjDJhuLaAIaR0Yf6/
+         ESyQ==
+X-Gm-Message-State: APjAAAX8ICuCXVbJHhtjQzIsQ4geS2z1/CEJJPhJrDOaVqRKc3Z0PNtD
+        6LzDBYkkhP47ilYlpDClKTVNNw==
+X-Google-Smtp-Source: APXvYqzgl4LL9US1KUnPvvsevaIh9HEZAWTAJ4Ig3yFPd/L/wElSIvaqkxCMhFJnVBiq0OMXmu4nXg==
+X-Received: by 2002:a2e:b4d4:: with SMTP id r20mr13418894ljm.5.1566900713180;
+        Tue, 27 Aug 2019 03:11:53 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:4203:8afc:9cff:f8de:164f:94d3? ([2a00:1fa0:4203:8afc:9cff:f8de:164f:94d3])
+        by smtp.gmail.com with ESMTPSA id c10sm2161987lfp.65.2019.08.27.03.11.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 03:11:52 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next] net: phy: force phy suspend when calling
+ phy_stop
+To:     Jian Shen <shenjian15@huawei.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, forest.zhouchang@huawei.com,
+        linuxarm@huawei.com
+References: <1566874020-14334-1-git-send-email-shenjian15@huawei.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <cc52cde5-b114-3bf8-4c4b-fe81c04080ee@cogentembedded.com>
+Date:   Tue, 27 Aug 2019 13:11:45 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190826123811.GA13411@lunn.ch>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <1566874020-14334-1-git-send-email-shenjian15@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 08/26/2019 14:38, Andrew Lunn wrote:
-> External E-Mail
-> 
-> 
-> On Mon, Aug 26, 2019 at 10:11:12AM +0200, Horatiu Vultur wrote:
-> > When a network port is added to a bridge then the port is added in
-> > promisc mode. Some HW that has bridge capabilities(can learn, forward,
-> > flood etc the frames) they are disabling promisc mode in the network
-> > driver when the port is added to the SW bridge.
-> > 
-> > This patch adds the feature NETIF_F_HW_BR_CAP so that the network ports
-> > that have this feature will not be set in promisc mode when they are
-> > added to a SW bridge.
-> > 
-> > In this way the HW that has bridge capabilities don't need to send all the
-> > traffic to the CPU and can also implement the promisc mode and toggle it
-> > using the command 'ip link set dev swp promisc on'
-> 
-> Hi Horatiu
+On 27.08.2019 5:47, Jian Shen wrote:
 
-Hi Andrew,
-> 
-> I'm still not convinced this is needed. The model is, the hardware is
-> there to accelerate what Linux can do in software. Any peculiarities
-> of the accelerator should be hidden in the driver.  If the accelerator
-> can do its job without needing promisc mode, do that in the driver.
-Thanks for the model description. I will keep in my mind for the next
-patches that I will do.
-> 
-> So you are trying to differentiate between promisc mode because the
-> interface is a member of a bridge, and promisc mode because some
-> application, like pcap, has asked for promisc mode.
-> 
-> dev->promiscuity is a counter. So what you can do it look at its
-> value, and how the interface is being used. If the interface is not a
-> member of a bridge, and the count > 0, enable promisc mode in the
-> accelerator. If the interface is a member of a bridge, and the count >
-> 1, enable promisc mode in the accelerator.
-That sounds like a great idea. I was expecting to add this logic in the
-set_rx_mode function of the driver. But unfortunetly, I got the calls to
-this function before the dev->promiscuity is updated or not to get the
-call at all. For example in case the port is member of a bridge and I try
-to enable the promisc mode.
+> Some ethernet drivers may call phy_start() and phy_stop() from
+> ndo_open and ndo_close() respectively.
 
-> 
->    Andrew
-> 
-> 
+    ndo_open() for consistency.
 
--- 
-/Horatiu
+> When network cable is unconnected, and operate like below:
+> step 1: ifconfig ethX up -> ndo_open -> phy_start ->start
+> autoneg, and phy is no link.
+> step 2: ifconfig ethX down -> ndo_close -> phy_stop -> just stop
+> phy state machine.
+> step 3: plugin the network cable, and autoneg complete, then
+> LED for link status will be on.
+> step 4: ethtool ethX --> see the result of "Link detected" is no.
+> 
+> This patch forces phy suspend even phydev->link is off.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+[...]
+
+MBR, Sergei
+
