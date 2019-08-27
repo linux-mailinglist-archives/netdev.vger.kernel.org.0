@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A834F9F2F0
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 398979F2F5
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730622AbfH0TIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 15:08:00 -0400
-Received: from smtprelay0152.hostedemail.com ([216.40.44.152]:36939 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730379AbfH0TIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:08:00 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 06D84440B;
-        Tue, 27 Aug 2019 19:07:59 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3870:3871:3872:3873:3874:4250:4321:5007:7514:7903:10004:10400:10450:10455:10848:11232:11658:11914:12043:12295:12297:12555:12740:12760:12895:13069:13141:13230:13311:13357:13439:14181:14659:14721:14819:19904:19999:21080:21451:21611:21627:30054:30055:30056:30070:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
-X-HE-Tag: knot38_7fb82438d284f
-X-Filterd-Recvd-Size: 2809
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 27 Aug 2019 19:07:57 +0000 (UTC)
-Message-ID: <b1ea77866e8736fa691cf4658a87ca2c1bf642d6.camel@perches.com>
-Subject: Re: [PATCH] net: intel: Cleanup e1000 - add space between }}
-From:   Joe Perches <joe@perches.com>
-To:     jeffrey.t.kirsher@intel.com, Forrest Fleming <ffleming@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 27 Aug 2019 12:07:56 -0700
-In-Reply-To: <c40b4043424055fc4dae97771bb46c8ab15c6230.camel@intel.com>
-References: <20190823191421.3318-1-ffleming@gmail.com>
-         <c2279a78904b581924894b712403299903eacbfc.camel@intel.com>
-         <877726fc009ee5ffde50e589d332db90c9695f06.camel@perches.com>
-         <c40b4043424055fc4dae97771bb46c8ab15c6230.camel@intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.32.1-2 
+        id S1730839AbfH0TJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 15:09:37 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43605 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730262AbfH0TJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:09:37 -0400
+Received: by mail-qt1-f195.google.com with SMTP id b11so120186qtp.10
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 12:09:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbBhE5drx8qeLPrR3IPO+iWqiJ6vMaqKMAzhYc1KZG4=;
+        b=kUPeTVHLNhGb50E3Ljp2D1T6Zmn33IJvY8e5eZ2uQD/jNF7gGTig8XtF2TAfWknSpA
+         Dk/+BmhbASX+Ubfecq5ZSEV/hvAH/ep4cK0VtrgHPYS4gi//Lzj3CPIansufhoDXYJoP
+         7DuxMnrHJ25Jm1lVa72el+wXwFG33IrzMxr0nsHe5Z3Kv3TP5eOpES75n2glYqxUktCa
+         Yi9YK+ecishDZfq46z/pTvujm/d7sjuzIxhlFCnqk/eKe9PBLafbDm7ioYd1FAIvg1X2
+         b83cG1Eb14dV5ZP22OVcK51kThXd5pBMYZHq+i9L5stSpr/QhCpXZnJ+Uic8SIzokwdd
+         MJAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbBhE5drx8qeLPrR3IPO+iWqiJ6vMaqKMAzhYc1KZG4=;
+        b=EpcypIVAHIGaDJwm9nLUaW2JUjiD8txOCenS8bXAVMur8QNJAQtn/stZKAAP41hU6G
+         pU+fbdn2EGKXR/pPsTDHxTNh4dO202dkJGgCIaqCBwUzsOVrioGUsOa490NwFXcgMH1d
+         Zx+4CrIgWtqrmHfkm1HbGaN/ngnH2kRnhxvtR/rCgpFRLudTAQuquxitS/7dnNmdqG/S
+         GdMplmdNLpp/VcP0Wg12PKMd4OlTuO758l0YciwF5UIZs0EbyfqpxfvIa9VsZQaPt51x
+         Qn3ZHEpolItnC2OEVkB2QeNK9eZyvnGlxeGROSqkOLR9V0ODsP74VXYKPcATNzt0xnv9
+         pUeQ==
+X-Gm-Message-State: APjAAAWz1boaT9sRwH7riPn5ndYMxW86p+nTCku/HHsVOCalebz8aL5F
+        AmF2/rhkXW6nb/HeEJLwPZWgebHQ
+X-Google-Smtp-Source: APXvYqzUW2Tg5ARcctWIRKXFY0ZaIdKuEGXxxQOqf34A/vvDQvEUU2iJk4qbw50E9P8SSf+kLF7EIA==
+X-Received: by 2002:ac8:2b47:: with SMTP id 7mr436308qtv.116.1566932975702;
+        Tue, 27 Aug 2019 12:09:35 -0700 (PDT)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:89db:8f93:8219:1619])
+        by smtp.gmail.com with ESMTPSA id g14sm140005qkm.42.2019.08.27.12.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Aug 2019 12:09:34 -0700 (PDT)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com,
+        jakub.kicinski@netronome.com, Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] tcp: inherit timestamp on mtu probe
+Date:   Tue, 27 Aug 2019 15:09:33 -0400
+Message-Id: <20190827190933.227725-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-08-27 at 12:02 -0700, Jeff Kirsher wrote:
-> On Mon, 2019-08-26 at 20:41 -0700, Joe Perches wrote:
-> > On Mon, 2019-08-26 at 01:03 -0700, Jeff Kirsher wrote:
-> > > On Fri, 2019-08-23 at 19:14 +0000, Forrest Fleming wrote:
-> > > > suggested by checkpatch
-> > > > 
-> > > > Signed-off-by: Forrest Fleming <ffleming@gmail.com>
-> > > > ---
-> > > >  .../net/ethernet/intel/e1000/e1000_param.c    | 28 +++++++++--
-> > > > --------
-> > > >  1 file changed, 14 insertions(+), 14 deletions(-)
-> > > 
-> > > While I do not see an issue with this change, I wonder how
-> > > important it is
-> > > to make such a change.  Especially since most of the hardware
-> > > supported by
-> > > this driver is not available for testing.  In addition, this is one
-> > > suggested change by checkpatch.pl that I personally do not agree
-> > > with.
-> > 
-> > I think checkpatch should allow consecutive }}.
-> 
-> Agreed, have you already submitted a formal patch Joe with the
-> suggested change below?
+From: Willem de Bruijn <willemb@google.com>
 
-No.
+TCP associates tx timestamp requests with a byte in the bytestream.
+If merging skbs in tcp_mtu_probe, migrate the tstamp request.
 
->   If so, I will ACK it.
+Similar to MSG_EOR, do not allow moving a timestamp from any segment
+in the probe but the last. This to avoid merging multiple timestamps.
 
-Of course you can add an Acked-by:
+Tested with the packetdrill script at
+https://github.com/wdebruij/packetdrill/commits/mtu_probe-1
 
-> > Maybe:
-> > ---
-> > diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> > index 287fe73688f0..ac5e0f06e1af 100755
-> > --- a/scripts/checkpatch.pl
-> > +++ b/scripts/checkpatch.pl
-> > @@ -4687,7 +4687,7 @@ sub process {
-> >  
-> >  # closing brace should have a space following it when it has
-> > anything
-> >  # on the line
-> > -		if ($line =~ /}(?!(?:,|;|\)))\S/) {
-> > +		if ($line =~ /}(?!(?:,|;|\)|\}))\S/) {
-> >  			if (ERROR("SPACING",
-> >  				  "space required after that close
-> > brace '}'\n" . $herecurr) &&
-> >  			    $fix) {
-> > 
-> > 
+Link: http://patchwork.ozlabs.org/patch/1143278/#2232897
+Fixes: 4ed2d765dfac ("net-timestamp: TCP timestamping")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ net/ipv4/tcp_output.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 5c46bc4c7e8d..42abc9bd687a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2053,7 +2053,7 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
+ 		if (len <= skb->len)
+ 			break;
+ 
+-		if (unlikely(TCP_SKB_CB(skb)->eor))
++		if (unlikely(TCP_SKB_CB(skb)->eor) || tcp_has_tx_tstamp(skb))
+ 			return false;
+ 
+ 		len -= skb->len;
+@@ -2170,6 +2170,7 @@ static int tcp_mtu_probe(struct sock *sk)
+ 			 * we need to propagate it to the new skb.
+ 			 */
+ 			TCP_SKB_CB(nskb)->eor = TCP_SKB_CB(skb)->eor;
++			tcp_skb_collapse_tstamp(nskb, skb);
+ 			tcp_unlink_write_queue(skb, sk);
+ 			sk_wmem_free_skb(sk, skb);
+ 		} else {
+-- 
+2.23.0.187.g17f5b7556c-goog
 
