@@ -2,66 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18C9D9F6E2
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4DCE9F6E5
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726077AbfH0X1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 19:27:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35994 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725997AbfH0X1S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 19:27:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=N8xeuJbKEW2IcMDIXKqx8vJN56eyQQyLNAntSh+6OPQ=; b=4MC7bEWgeKwZ/eh1rAmmKugUni
-        CI0FcqCQKDnvmKUCj0UbAUtIpNAMXcpJ7v3dwEjmzhdlR8fNv6A4wK79MhtPQkK2dE4m1jrzteKKg
-        ssWHuSczjy29WhecyD+nLp2YJzq5czoz73gJrU+BOL2dgFqdkCvAQKg5G6dzX6aOwPbk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i2krp-0007LM-Pz; Wed, 28 Aug 2019 01:27:13 +0200
-Date:   Wed, 28 Aug 2019 01:27:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chun-Hao Lin <hau@realtek.com>
-Subject: Re: [PATCH net-next 1/4] r8169: prepare for adding RTL8125 support
-Message-ID: <20190827232713.GE26248@lunn.ch>
-References: <55099fc6-1e29-4023-337c-98fc04189e5e@gmail.com>
- <66ac2b09-ea87-a4ba-f6f3-1885e9587298@gmail.com>
+        id S1726181AbfH0X3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 19:29:32 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43554 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfH0X3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 19:29:32 -0400
+Received: by mail-pf1-f193.google.com with SMTP id v12so376004pfn.10
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 16:29:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=XLcLbsGuTgDqzQ91SZlPjdWS3T8ZXKpC3T5ZSC/M6f8=;
+        b=C6O5id02PbpF/6M5zVO8z6XsLvOjzi5VdUo26Nmz/XOV0njADHJlRDire9Ak39TfMY
+         dDOF8vgXVbExHGKVshHOV+bZ5LZEEWDVbFDB6VgbnNzpqQ86YlbCD/upGlrz74Jsd0pb
+         6oYW84L8KL5fPc59NPdrmjvy4xk1KHSSpB3TVNpYDO926JQKqQRDqBRdURc1D8/KWh7G
+         nujd8xr6+T7b+K2lr1XE4ULpEybcP9xcDNhF72adPbzl413UKMjqjDfXQHFf85DWTNLl
+         pcXCOTeaW0Oeo17e671jeyZwHOCb0fWZAMbuAYvSnKom+Gox6qKzmBiCW+tnw8dO6ZHs
+         35+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=XLcLbsGuTgDqzQ91SZlPjdWS3T8ZXKpC3T5ZSC/M6f8=;
+        b=TBYHfAYBogcPwizRfWnuyYAhYFz2f2wENAZm6JQig1XN3VHUt2Y0SxmXBG3b3wEgk5
+         yFKH3aZvkbfH+AGr8iC+O1hnYvycLRwu70FCZZGv+2Olt0YOns/lmhqP3ECBG3+lWNuj
+         ZLJtKloGU7aa6B7p/KMgxoCbGTRlWoAAiMVNKA+CElc9UN+Ml7mcFJmIGLPnZOhVttZf
+         Y3uKfvwKO3PtpalKKqTTqR29OKjxgNWa2mrPHFn2T9K1uftL+lLAm1qaRfoZAfw5dE6/
+         oOWG9iP6NX/mR904a8SMeB+Hf49hkSy8/SATCaEkpdqDRoN1FGiAMZilAxVu5YQm9mml
+         G3rQ==
+X-Gm-Message-State: APjAAAW8a3m4qXxwb2TFwBGfV/b4Ov24eQQ25lZX0IW0o0uMKAKv5zix
+        EYkHI0cf9lowLJ4u/bU+hRGpGg==
+X-Google-Smtp-Source: APXvYqzWMLpZzw6PonI/4e1JKRwnMIze7qnHQIg3doBW4q+LloOo6hUP4UixZ6lGXxAUIgjJ8JnJXw==
+X-Received: by 2002:a63:5107:: with SMTP id f7mr896044pgb.4.1566948571861;
+        Tue, 27 Aug 2019 16:29:31 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id w2sm268499pjr.27.2019.08.27.16.29.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 16:29:31 -0700 (PDT)
+Subject: Re: [PATCH v5 net-next 04/18] ionic: Add basic lif support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190826213339.56909-1-snelson@pensando.io>
+ <20190826213339.56909-5-snelson@pensando.io>
+ <20190826214238.07a0eee9@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <35b8435a-0217-ad98-0896-e7aa2a5d2e89@pensando.io>
+Date:   Tue, 27 Aug 2019 16:29:29 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66ac2b09-ea87-a4ba-f6f3-1885e9587298@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190826214238.07a0eee9@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 08:41:00PM +0200, Heiner Kallweit wrote:
-> This patch prepares the driver for adding RTL8125 support:
-> - change type of interrupt mask to u32
-> - restrict rtl_is_8168evl_up to RTL8168 chip versions
-> - factor out reading MAC address from registers
-> - re-add function rtl_get_events
-> - move disabling interrupt coalescing to RTL8169/RTL8168 init
-> - read different register for PCI commit
-> - don't use bit LastFrag in tx descriptor after send, RTL8125 clears it
+On 8/26/19 9:42 PM, Jakub Kicinski wrote:
+> On Mon, 26 Aug 2019 14:33:25 -0700, Shannon Nelson wrote:
+>> +static inline bool ionic_is_pf(struct ionic *ionic)
+>> +{
+>> +	return ionic->pdev &&
+>> +	       ionic->pdev->device == PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF;
+>> +}
+>> +
+>> +static inline bool ionic_is_vf(struct ionic *ionic)
+>> +{
+>> +	return ionic->pdev &&
+>> +	       ionic->pdev->device == PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF;
+>> +}
+>> +
+>> +static inline bool ionic_is_25g(struct ionic *ionic)
+>> +{
+>> +	return ionic_is_pf(ionic) &&
+>> +	       ionic->pdev->subsystem_device == IONIC_SUBDEV_ID_NAPLES_25;
+>> +}
+>> +
+>> +static inline bool ionic_is_100g(struct ionic *ionic)
+>> +{
+>> +	return ionic_is_pf(ionic) &&
+>> +	       (ionic->pdev->subsystem_device == IONIC_SUBDEV_ID_NAPLES_100_4 ||
+>> +		ionic->pdev->subsystem_device == IONIC_SUBDEV_ID_NAPLES_100_8);
+>> +}
+> Again, a bunch of unused stuff.
 
-Hi Heiner
+More "near future" support code that didn't get stripped.  I'll pull it 
+out for now.
 
-That is a lot of changes in one patch. Although there is no planned
-functional change, r8169 has a habit of breaking. Having lots of small
-changes would help tracking down which change caused a breakage, via a
-git bisect.
+sln
 
-So you might want to consider splitting this up into a number of small
-patches.
-
-	Andrew
