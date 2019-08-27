@@ -2,161 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF79C9F0BE
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783419F0FA
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727057AbfH0Qu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:50:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60266 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727893AbfH0Qu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:50:57 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5281E3082B1F;
-        Tue, 27 Aug 2019 16:50:56 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A50DA10016EA;
-        Tue, 27 Aug 2019 16:50:54 +0000 (UTC)
-Date:   Tue, 27 Aug 2019 10:50:54 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Parav Pandit <parav@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
-Message-ID: <20190827105054.3702adda@x1.home>
-In-Reply-To: <20190827153510.0bd10437.cohuck@redhat.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190826204119.54386-2-parav@mellanox.com>
-        <20190827122428.37442fe1.cohuck@redhat.com>
-        <AM0PR05MB4866B68C9E60E42359BE1F4DD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827132404.483a74ad.cohuck@redhat.com>
-        <AM0PR05MB4866CC932630ADD9BDA51371D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827134114.01ddd049.cohuck@redhat.com>
-        <AM0PR05MB4866792BEAAB1958BB5A9C4AD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827153510.0bd10437.cohuck@redhat.com>
-Organization: Red Hat
+        id S1730241AbfH0Q7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:59:03 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:40489 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfH0Q7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 12:59:03 -0400
+Received: by mail-io1-f65.google.com with SMTP id t6so47965658ios.7
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 09:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AU23rJrpWxaQe0Lvlg67p/mVHxJweGfUbsKOXuMYuSQ=;
+        b=fb47w54vPBVaku9NPHHIZeCOACdDEiWUYeq7BRK91GzCmGIAMSXIACefMihAHUUk14
+         SHZtuAwPCmbju/gNyM4LCobqwh/R9WxEqV1kWNjKnznaPRFFr3ckf8eq46DUe5hWqoFs
+         2lcwkaG0HO0RvjWsCimEYaLE1iiwb1Auksg4CJmTQ+Sdp4/LfiN5as0vzR4IQVjspyRo
+         +sFLZJsmZuMzvv9HqX7E7P6+hKsOIF+XqAKCuWB9HjcuTf1bceJUVINeOQmbtQZH0xR6
+         9tnFnQyNqEtc+9KmN55qGlvgxppxYZ2oc68zGwOfJ/SGtyc/O8NxS8NUXtM6aSytfLvJ
+         p3yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AU23rJrpWxaQe0Lvlg67p/mVHxJweGfUbsKOXuMYuSQ=;
+        b=CRzPgDYkwMe8fYE66HDdpjkLYOwzCSQe912g8xtSXOYpPpMs9X3ZGKCBj8RhS6lIOK
+         wUArre70XvMfGOdCZC3D7NbY3euHWDkqjy1Ne5n0PInQIPRgnGx7Q+0+vIx29fZ9ZPHN
+         FvLAW/cRW0oxpd9Q+yljTz59uAPs6WOxE44zE4vM+dEprmGPy/eSdOy7AYgfT/N4cwUG
+         AwkO7jK2MlfznKH9MkSLil3hipsyADCVCw4/DIGm1apE9be/B0g0e+AMisGNx6Is/Llu
+         zMYdsfS9Vf5slo450c21YjhV/NKnkQCS6EpDHujuRIbOPxe+ibvCd7sdTcCCeLcaOyp+
+         HU3g==
+X-Gm-Message-State: APjAAAV+u4SxAOhdmjI6fG6+AmvdZ0bVQG0scq5Mz7wFtjhdqoFGXTFn
+        X7XBPf32y01Z/jvYAg2u9A4UyVrmBzBwYLXRA/wFgNewx3Y=
+X-Google-Smtp-Source: APXvYqz4tRSHm+3pXQ6J77t0h9FXrqqjuMjlwdXUwu0DX+Mq8HyYCcCzvcF0ZKf4Uig2s+aaDQHlXjEEFj/0fI0nGdQ=
+X-Received: by 2002:a5e:9818:: with SMTP id s24mr34454775ioj.0.1566925142388;
+ Tue, 27 Aug 2019 09:59:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 27 Aug 2019 16:50:56 +0000 (UTC)
+References: <20190827141938.23483-1-gautamramk@gmail.com> <316fdac3-5fa9-35d5-ad74-94072f19c5fc@gmail.com>
+In-Reply-To: <316fdac3-5fa9-35d5-ad74-94072f19c5fc@gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Tue, 27 Aug 2019 09:58:50 -0700
+Message-ID: <CAA93jw6PJXsG++0c+mE8REUb0cD4PU2Xck-J9fD1miuKfxS6BQ@mail.gmail.com>
+Subject: Re: [net-next] net: sched: pie: enable timestamp based delay calculation
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Gautam Ramakrishnan <gautamramk@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 15:35:10 +0200
-Cornelia Huck <cohuck@redhat.com> wrote:
+On Tue, Aug 27, 2019 at 8:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote=
+:
+>
+>
+>
+> On 8/27/19 4:19 PM, Gautam Ramakrishnan wrote:
+> > RFC 8033 suggests an alternative approach to calculate the queue
+> > delay in PIE by using per packet timestamps. This patch enables the
+> > PIE implementation to do this.
+> >
+> > The calculation of queue delay is as follows:
+> >       qdelay =3D now - packet_enqueue_time
+> >
+> > To enable the use of timestamps:
+> >       modprobe sch_pie use_timestamps=3D1
+>
+>
+> No module parameter is accepted these days.
+>
+> Please add a new attribute instead,
+> so that pie can be used in both mode on the same host.
 
-> On Tue, 27 Aug 2019 11:57:07 +0000
-> Parav Pandit <parav@mellanox.com> wrote:
-> 
-> > > -----Original Message-----
-> > > From: Cornelia Huck <cohuck@redhat.com>
-> > > Sent: Tuesday, August 27, 2019 5:11 PM
-> > > To: Parav Pandit <parav@mellanox.com>
-> > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
-> > > 
-> > > On Tue, 27 Aug 2019 11:33:54 +0000
-> > > Parav Pandit <parav@mellanox.com> wrote:
-> > >     
-> > > > > -----Original Message-----
-> > > > > From: Cornelia Huck <cohuck@redhat.com>
-> > > > > Sent: Tuesday, August 27, 2019 4:54 PM
-> > > > > To: Parav Pandit <parav@mellanox.com>
-> > > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > > Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
-> > > > >
-> > > > > On Tue, 27 Aug 2019 11:12:23 +0000
-> > > > > Parav Pandit <parav@mellanox.com> wrote:
-> > > > >    
-> > > > > > > -----Original Message-----
-> > > > > > > From: Cornelia Huck <cohuck@redhat.com>
-> > > > > > > Sent: Tuesday, August 27, 2019 3:54 PM
-> > > > > > > To: Parav Pandit <parav@mellanox.com>
-> > > > > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > > > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > > > > Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
-> > > > > > >    
-> > >     
-> > > > > > > What about:
-> > > > > > >
-> > > > > > > * @get_alias_length: optional callback to specify length of the
-> > > > > > > alias to    
-> > > > > create    
-> > > > > > > *                    Returns unsigned integer: length of the alias to be created,
-> > > > > > > *                                              0 to not create an alias
-> > > > > > >    
-> > > > > > Ack.
-> > > > > >    
-> > > > > > > I also think it might be beneficial to add a device parameter
-> > > > > > > here now (rather than later); that seems to be something that makes    
-> > > sense.    
-> > > > > > >    
-> > > > > > Without showing the use, it shouldn't be added.    
-> > > > >
-> > > > > It just feels like an omission: Why should the vendor driver only be
-> > > > > able to return one value here, without knowing which device it is for?
-> > > > > If a driver supports different devices, it may have different
-> > > > > requirements for them.
-> > > > >    
-> > > > Sure. Lets first have this requirement to add it.
-> > > > I am against adding this length field itself without an actual vendor use case,    
-> > > which is adding some complexity in code today.    
-> > > > But it was ok to have length field instead of bool.
-> > > >
-> > > > Lets not further add "no-requirement futuristic knobs" which hasn't shown its    
-> > > need yet.    
-> > > > When a vendor driver needs it, there is nothing prevents such addition.    
-> > > 
-> > > Frankly, I do not see how it adds complexity; the other callbacks have device
-> > > arguments already,    
-> > Other ioctls such as create, remove, mmap, likely need to access the parent.
-> > Hence it make sense to have parent pointer in there.
-> > 
-> > I am not against complexity, I am just saying, at present there is no use-case. Let have use case and we add it.
-> >   
-> > > and the vendor driver is free to ignore it if it does not have
-> > > a use for it. I'd rather add the argument before a possible future user tries
-> > > weird hacks to allow multiple values, but I'll leave the decision to the
-> > > maintainers.    
-> > Why would a possible future user tries a weird hack?
-> > If user needs to access parent device, that driver maintainer should ask for it.  
-> 
-> I've seen the situation often enough that folks tried to do hacks
-> instead of enhancing the interface.
-> 
-> Again, let's get a maintainer opinion.
+I note that I think (but lack independent data) this improvement to
+the rate estimator in pie should improve its usability and accuracy
+in low rate or hw mq situations, and with some benchmarking to
+show the cpu impact (at high and low rates) of this improvement as
+well as the network
+impact, the old way should probably be dropped and new way adopted without
+needing a new variable to control it.
 
-Sure, make someone else have an opinion ;)  I don't have a strong one.
-The argument against a dev arg, as I see it, is that it's unused
-currently, so why should we try to predict a future use case.  The
-argument for, is that we're defining an API between the core and vendor
-driver, where our job in defining that API could certainly be seen as
-anticipating future use cases so as not to unnecessarily churn the
-API.  So do we lean towards a more stable API or do we lean towards
-minimalism?
+A commit showing the before/after cpu and network impact with a whole
+bunch of flent benchmarks would be great.
 
-when called form mdev_register_device(), the arg we'd add seems obvious
-because we really have nothing more to work with than the parent
-device.  But this is only a sanity test and the value there seems
-questionable anyway.  If we look to the real use case in
-mdev_device_create() then clearly dev stands out as a likely useful
-arg, but is the type or kobj also useful?  Would we forfeit the sanity
-test to include those?  I don't have a lot of confidence in being able
-to predict that, so without an obvious set of args, I'm fine with the
-minimalist approach provided.  Thanks,
+(I'd also love to know if pie can be run with a lower target - like 5ms -
+ with this mod in place)
 
-Alex
+>
+> For a typical example of attribute addition, please take
+> a look at commit 48872c11b77271ef9b070bdc50afe6655c4eb9aa
+> ("net_sched: sch_fq: add dctcp-like marking")
+
+utilizing ce_threshold in this way is actually independent of whether or
+not you are using dctcp-style or rfc3168 style ecn marking.
+
+It's "I'm self congesting... Dooo something! Anything, to reduce the load!"
+
+
+
+
+--=20
+
+Dave T=C3=A4ht
+CTO, TekLibre, LLC
+http://www.teklibre.com
+Tel: 1-831-205-9740
