@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 597499F05D
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB959F06A
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:39:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730356AbfH0Qij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:38:39 -0400
-Received: from mga17.intel.com ([192.55.52.151]:7283 "EHLO mga17.intel.com"
+        id S1730479AbfH0QjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:39:01 -0400
+Received: from mga17.intel.com ([192.55.52.151]:7294 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727219AbfH0Qig (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:38:36 -0400
+        id S1730248AbfH0Qif (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 12:38:35 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:38:33 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:38:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,437,1559545200"; 
-   d="scan'208";a="331876327"
+   d="scan'208";a="331876330"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga004.jf.intel.com with ESMTP; 27 Aug 2019 09:38:33 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Usha Ketineni <usha.k.ketineni@intel.com>, netdev@vger.kernel.org,
+Cc:     Victor Raj <victor.raj@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/15] ice: Fix ethtool port and PFC stats for 4x25G cards
-Date:   Tue, 27 Aug 2019 09:38:18 -0700
-Message-Id: <20190827163832.8362-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 02/15] ice: added sibling head to parse nodes
+Date:   Tue, 27 Aug 2019 09:38:19 -0700
+Message-Id: <20190827163832.8362-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
 References: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
@@ -39,243 +40,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Usha Ketineni <usha.k.ketineni@intel.com>
+From: Victor Raj <victor.raj@intel.com>
 
-This patch fixes the issue where port and PFC statistics counters are
-incrementing at the wrong port with 4x25G cards.
-Read the GLPRT port registers using lport parameter instead of pf_id to
-update the statistics otherwise the pf_ids are flipped for ports 2 and 3
-when read from the HW register PF_FUNC_RID and this is expected as per
-hardware specification.
+There was a bug in the previous code which never traverses all the
+children to get the first node of the requested layer. Add a sibling
+head pointer to point the first node of each layer per TC. This helps
+traverse easier and quicker and also removes the recursion.
 
-Signed-off-by: Usha Ketineni <usha.k.ketineni@intel.com>
+Signed-off-by: Victor Raj <victor.raj@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 13 ++--
- drivers/net/ethernet/intel/ice/ice_main.c    | 76 ++++++++++----------
- 2 files changed, 45 insertions(+), 44 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_sched.c | 57 ++++++++--------------
+ drivers/net/ethernet/intel/ice/ice_type.h  |  2 +
+ 2 files changed, 23 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 734cef8eed9e..d9578919aad8 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -500,30 +500,31 @@ void ice_update_dcb_stats(struct ice_pf *pf)
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 2a232504379d..79d64f9ed609 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -260,33 +260,17 @@ ice_sched_remove_elems(struct ice_hw *hw, struct ice_sched_node *parent,
+ 
+ /**
+  * ice_sched_get_first_node - get the first node of the given layer
+- * @hw: pointer to the HW struct
++ * @pi: port information structure
+  * @parent: pointer the base node of the subtree
+  * @layer: layer number
+  *
+  * This function retrieves the first node of the given layer from the subtree
+  */
+ static struct ice_sched_node *
+-ice_sched_get_first_node(struct ice_hw *hw, struct ice_sched_node *parent,
+-			 u8 layer)
++ice_sched_get_first_node(struct ice_port_info *pi,
++			 struct ice_sched_node *parent, u8 layer)
  {
- 	struct ice_hw_port_stats *prev_ps, *cur_ps;
- 	struct ice_hw *hw = &pf->hw;
--	u8 pf_id = hw->pf_id;
-+	u8 port;
- 	int i;
+-	u8 i;
+-
+-	if (layer < hw->sw_entry_point_layer)
+-		return NULL;
+-	for (i = 0; i < parent->num_children; i++) {
+-		struct ice_sched_node *node = parent->children[i];
+-
+-		if (node) {
+-			if (node->tx_sched_layer == layer)
+-				return node;
+-			/* this recursion is intentional, and wouldn't
+-			 * go more than 9 calls
+-			 */
+-			return ice_sched_get_first_node(hw, node, layer);
+-		}
+-	}
+-	return NULL;
++	return pi->sib_head[parent->tc_num][layer];
+ }
  
-+	port = hw->port_info->lport;
- 	prev_ps = &pf->stats_prev;
- 	cur_ps = &pf->stats;
+ /**
+@@ -342,7 +326,7 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ 	parent = node->parent;
+ 	/* root has no parent */
+ 	if (parent) {
+-		struct ice_sched_node *p, *tc_node;
++		struct ice_sched_node *p;
  
- 	for (i = 0; i < 8; i++) {
--		ice_stat_update32(hw, GLPRT_PXOFFRXC(pf_id, i),
-+		ice_stat_update32(hw, GLPRT_PXOFFRXC(port, i),
- 				  pf->stat_prev_loaded,
- 				  &prev_ps->priority_xoff_rx[i],
- 				  &cur_ps->priority_xoff_rx[i]);
--		ice_stat_update32(hw, GLPRT_PXONRXC(pf_id, i),
-+		ice_stat_update32(hw, GLPRT_PXONRXC(port, i),
- 				  pf->stat_prev_loaded,
- 				  &prev_ps->priority_xon_rx[i],
- 				  &cur_ps->priority_xon_rx[i]);
--		ice_stat_update32(hw, GLPRT_PXONTXC(pf_id, i),
-+		ice_stat_update32(hw, GLPRT_PXONTXC(port, i),
- 				  pf->stat_prev_loaded,
- 				  &prev_ps->priority_xon_tx[i],
- 				  &cur_ps->priority_xon_tx[i]);
--		ice_stat_update32(hw, GLPRT_PXOFFTXC(pf_id, i),
-+		ice_stat_update32(hw, GLPRT_PXOFFTXC(port, i),
- 				  pf->stat_prev_loaded,
- 				  &prev_ps->priority_xoff_tx[i],
- 				  &cur_ps->priority_xoff_tx[i]);
--		ice_stat_update32(hw, GLPRT_RXON2OFFCNT(pf_id, i),
-+		ice_stat_update32(hw, GLPRT_RXON2OFFCNT(port, i),
- 				  pf->stat_prev_loaded,
- 				  &prev_ps->priority_xon_2_xoff[i],
- 				  &cur_ps->priority_xon_2_xoff[i]);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index f3923dec32b7..76a647cc2dbd 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3262,25 +3262,25 @@ void ice_update_pf_stats(struct ice_pf *pf)
- {
- 	struct ice_hw_port_stats *prev_ps, *cur_ps;
- 	struct ice_hw *hw = &pf->hw;
--	u8 pf_id;
-+	u8 port;
+ 		/* update the parent */
+ 		for (i = 0; i < parent->num_children; i++)
+@@ -354,16 +338,7 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ 				break;
+ 			}
  
-+	port = hw->port_info->lport;
- 	prev_ps = &pf->stats_prev;
- 	cur_ps = &pf->stats;
--	pf_id = hw->pf_id;
+-		/* search for previous sibling that points to this node and
+-		 * remove the reference
+-		 */
+-		tc_node = ice_sched_get_tc_node(pi, node->tc_num);
+-		if (!tc_node) {
+-			ice_debug(hw, ICE_DBG_SCHED,
+-				  "Invalid TC number %d\n", node->tc_num);
+-			goto err_exit;
+-		}
+-		p = ice_sched_get_first_node(hw, tc_node, node->tx_sched_layer);
++		p = ice_sched_get_first_node(pi, node, node->tx_sched_layer);
+ 		while (p) {
+ 			if (p->sibling == node) {
+ 				p->sibling = node->sibling;
+@@ -371,8 +346,13 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ 			}
+ 			p = p->sibling;
+ 		}
++
++		/* update the sibling head if head is getting removed */
++		if (pi->sib_head[node->tc_num][node->tx_sched_layer] == node)
++			pi->sib_head[node->tc_num][node->tx_sched_layer] =
++				node->sibling;
+ 	}
+-err_exit:
++
+ 	/* leaf nodes have no children */
+ 	if (node->children)
+ 		devm_kfree(ice_hw_to_dev(hw), node->children);
+@@ -743,13 +723,17 @@ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
  
--	ice_stat_update40(hw, GLPRT_GORCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_GORCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.rx_bytes,
- 			  &cur_ps->eth.rx_bytes);
+ 		/* add it to previous node sibling pointer */
+ 		/* Note: siblings are not linked across branches */
+-		prev = ice_sched_get_first_node(hw, tc_node, layer);
++		prev = ice_sched_get_first_node(pi, tc_node, layer);
+ 		if (prev && prev != new_node) {
+ 			while (prev->sibling)
+ 				prev = prev->sibling;
+ 			prev->sibling = new_node;
+ 		}
  
--	ice_stat_update40(hw, GLPRT_UPRCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_UPRCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.rx_unicast,
- 			  &cur_ps->eth.rx_unicast);
++		/* initialize the sibling head */
++		if (!pi->sib_head[tc_node->tc_num][layer])
++			pi->sib_head[tc_node->tc_num][layer] = new_node;
++
+ 		if (i == 0)
+ 			*first_node_teid = teid;
+ 	}
+@@ -1160,7 +1144,7 @@ ice_sched_get_free_qparent(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
+ 		goto lan_q_exit;
  
--	ice_stat_update40(hw, GLPRT_MPRCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_MPRCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.rx_multicast,
- 			  &cur_ps->eth.rx_multicast);
+ 	/* get the first queue group node from VSI sub-tree */
+-	qgrp_node = ice_sched_get_first_node(pi->hw, vsi_node, qgrp_layer);
++	qgrp_node = ice_sched_get_first_node(pi, vsi_node, qgrp_layer);
+ 	while (qgrp_node) {
+ 		/* make sure the qgroup node is part of the VSI subtree */
+ 		if (ice_sched_find_node_in_subtree(pi->hw, vsi_node, qgrp_node))
+@@ -1191,7 +1175,7 @@ ice_sched_get_vsi_node(struct ice_hw *hw, struct ice_sched_node *tc_node,
+ 	u8 vsi_layer;
  
--	ice_stat_update40(hw, GLPRT_BPRCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_BPRCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.rx_broadcast,
- 			  &cur_ps->eth.rx_broadcast);
+ 	vsi_layer = ice_sched_get_vsi_layer(hw);
+-	node = ice_sched_get_first_node(hw, tc_node, vsi_layer);
++	node = ice_sched_get_first_node(hw->port_info, tc_node, vsi_layer);
  
-@@ -3288,109 +3288,109 @@ void ice_update_pf_stats(struct ice_pf *pf)
- 			  &prev_ps->eth.rx_discards,
- 			  &cur_ps->eth.rx_discards);
- 
--	ice_stat_update40(hw, GLPRT_GOTCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_GOTCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.tx_bytes,
- 			  &cur_ps->eth.tx_bytes);
- 
--	ice_stat_update40(hw, GLPRT_UPTCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_UPTCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.tx_unicast,
- 			  &cur_ps->eth.tx_unicast);
- 
--	ice_stat_update40(hw, GLPRT_MPTCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_MPTCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.tx_multicast,
- 			  &cur_ps->eth.tx_multicast);
- 
--	ice_stat_update40(hw, GLPRT_BPTCL(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_BPTCL(port), pf->stat_prev_loaded,
- 			  &prev_ps->eth.tx_broadcast,
- 			  &cur_ps->eth.tx_broadcast);
- 
--	ice_stat_update32(hw, GLPRT_TDOLD(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_TDOLD(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_dropped_link_down,
- 			  &cur_ps->tx_dropped_link_down);
- 
--	ice_stat_update40(hw, GLPRT_PRC64L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC64L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_64, &cur_ps->rx_size_64);
- 
--	ice_stat_update40(hw, GLPRT_PRC127L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC127L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_127, &cur_ps->rx_size_127);
- 
--	ice_stat_update40(hw, GLPRT_PRC255L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC255L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_255, &cur_ps->rx_size_255);
- 
--	ice_stat_update40(hw, GLPRT_PRC511L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC511L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_511, &cur_ps->rx_size_511);
- 
--	ice_stat_update40(hw, GLPRT_PRC1023L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC1023L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_1023, &cur_ps->rx_size_1023);
- 
--	ice_stat_update40(hw, GLPRT_PRC1522L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC1522L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_1522, &cur_ps->rx_size_1522);
- 
--	ice_stat_update40(hw, GLPRT_PRC9522L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PRC9522L(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_size_big, &cur_ps->rx_size_big);
- 
--	ice_stat_update40(hw, GLPRT_PTC64L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC64L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_64, &cur_ps->tx_size_64);
- 
--	ice_stat_update40(hw, GLPRT_PTC127L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC127L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_127, &cur_ps->tx_size_127);
- 
--	ice_stat_update40(hw, GLPRT_PTC255L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC255L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_255, &cur_ps->tx_size_255);
- 
--	ice_stat_update40(hw, GLPRT_PTC511L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC511L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_511, &cur_ps->tx_size_511);
- 
--	ice_stat_update40(hw, GLPRT_PTC1023L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC1023L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_1023, &cur_ps->tx_size_1023);
- 
--	ice_stat_update40(hw, GLPRT_PTC1522L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC1522L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_1522, &cur_ps->tx_size_1522);
- 
--	ice_stat_update40(hw, GLPRT_PTC9522L(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update40(hw, GLPRT_PTC9522L(port), pf->stat_prev_loaded,
- 			  &prev_ps->tx_size_big, &cur_ps->tx_size_big);
- 
--	ice_stat_update32(hw, GLPRT_LXONRXC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_LXONRXC(port), pf->stat_prev_loaded,
- 			  &prev_ps->link_xon_rx, &cur_ps->link_xon_rx);
- 
--	ice_stat_update32(hw, GLPRT_LXOFFRXC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_LXOFFRXC(port), pf->stat_prev_loaded,
- 			  &prev_ps->link_xoff_rx, &cur_ps->link_xoff_rx);
- 
--	ice_stat_update32(hw, GLPRT_LXONTXC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_LXONTXC(port), pf->stat_prev_loaded,
- 			  &prev_ps->link_xon_tx, &cur_ps->link_xon_tx);
- 
--	ice_stat_update32(hw, GLPRT_LXOFFTXC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_LXOFFTXC(port), pf->stat_prev_loaded,
- 			  &prev_ps->link_xoff_tx, &cur_ps->link_xoff_tx);
- 
- 	ice_update_dcb_stats(pf);
- 
--	ice_stat_update32(hw, GLPRT_CRCERRS(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_CRCERRS(port), pf->stat_prev_loaded,
- 			  &prev_ps->crc_errors, &cur_ps->crc_errors);
- 
--	ice_stat_update32(hw, GLPRT_ILLERRC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_ILLERRC(port), pf->stat_prev_loaded,
- 			  &prev_ps->illegal_bytes, &cur_ps->illegal_bytes);
- 
--	ice_stat_update32(hw, GLPRT_MLFC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_MLFC(port), pf->stat_prev_loaded,
- 			  &prev_ps->mac_local_faults,
- 			  &cur_ps->mac_local_faults);
- 
--	ice_stat_update32(hw, GLPRT_MRFC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_MRFC(port), pf->stat_prev_loaded,
- 			  &prev_ps->mac_remote_faults,
- 			  &cur_ps->mac_remote_faults);
- 
--	ice_stat_update32(hw, GLPRT_RLEC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_RLEC(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_len_errors, &cur_ps->rx_len_errors);
- 
--	ice_stat_update32(hw, GLPRT_RUC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_RUC(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_undersize, &cur_ps->rx_undersize);
- 
--	ice_stat_update32(hw, GLPRT_RFC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_RFC(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_fragments, &cur_ps->rx_fragments);
- 
--	ice_stat_update32(hw, GLPRT_ROC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_ROC(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_oversize, &cur_ps->rx_oversize);
- 
--	ice_stat_update32(hw, GLPRT_RJC(pf_id), pf->stat_prev_loaded,
-+	ice_stat_update32(hw, GLPRT_RJC(port), pf->stat_prev_loaded,
- 			  &prev_ps->rx_jabber, &cur_ps->rx_jabber);
- 
- 	pf->stat_prev_loaded = true;
+ 	/* Check whether it already exists */
+ 	while (node) {
+@@ -1316,7 +1300,8 @@ ice_sched_calc_vsi_support_nodes(struct ice_hw *hw,
+ 			/* If intermediate nodes are reached max children
+ 			 * then add a new one.
+ 			 */
+-			node = ice_sched_get_first_node(hw, tc_node, (u8)i);
++			node = ice_sched_get_first_node(hw->port_info, tc_node,
++							(u8)i);
+ 			/* scan all the siblings */
+ 			while (node) {
+ 				if (node->num_children < hw->max_children[i])
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 24bbef8bbe69..d76e0cb7ef46 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -347,6 +347,8 @@ struct ice_port_info {
+ 	struct ice_mac_info mac;
+ 	struct ice_phy_info phy;
+ 	struct mutex sched_lock;	/* protect access to TXSched tree */
++	struct ice_sched_node *
++		sib_head[ICE_MAX_TRAFFIC_CLASS][ICE_AQC_TOPO_MAX_LEVEL_NUM];
+ 	struct ice_dcbx_cfg local_dcbx_cfg;	/* Oper/Local Cfg */
+ 	/* DCBX info */
+ 	struct ice_dcbx_cfg remote_dcbx_cfg;	/* Peer Cfg */
 -- 
 2.21.0
 
