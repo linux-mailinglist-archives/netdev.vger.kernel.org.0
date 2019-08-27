@@ -2,182 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F509F48C
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 22:53:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ABB9F491
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 22:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730237AbfH0UxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 16:53:13 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39576 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbfH0UxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 16:53:12 -0400
-Received: by mail-io1-f67.google.com with SMTP id l7so1362624ioj.6;
-        Tue, 27 Aug 2019 13:53:11 -0700 (PDT)
+        id S1730450AbfH0UyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 16:54:01 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:39864 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726735AbfH0UyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 16:54:01 -0400
+Received: by mail-yw1-f67.google.com with SMTP id n11so44512ywn.6
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 13:54:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yFtdPdKB+5OFD7TerpRjOkHMWVZwIcvQtFqZgo3qk1c=;
-        b=ElsjQ0VW7GupsjBGpqG2M5I3UVqv2fH20DwZEAQEOY28BIn9eYZAVw5ak/JGuUs3Jy
-         0U8Pjcb5kO5FNwjxDzVWWVK8FFgwdwxQetvQMU5NQsB/fATvzU92dlK3/lEm6y7kSnPQ
-         tlYtCVC7InScVlubrPNRh4Jc5Eb9dFZo7UjnSI/XcBzHgBfi8L1Wcb9nTIpjYxPeXCyM
-         QqetSsbilh7JlEYn23tr8F9Lui7GuikjexgLaZO3Bl7MRb7vGSz0XWYiDzrZO4w+jLIw
-         HDF9SSAdbN7jYLfZiFJZwsdWZJgGpGv+MA4bdFzDouYo+YYIFyIZOI92MVb9MZlzkZFb
-         ztWg==
+         :cc;
+        bh=/jkk8uiXMCVp/OI+9yr+k1frQla42xhDW/B5r3l7RBo=;
+        b=qJ5euXHujqlonC4GKXQP+dJkfdeqIWFibdyaUK9qOb+GJY3XMOug8KOX0mRADdhTOH
+         nAMxXdLrI7GtdTzhVwgs4C0y4u2tSF6RTlD45Lq1OrjzJmI7wGqiw+WaL5SPMdPPfsWm
+         XWdATswmqRLR5s+RSwpCPLdr79beoesiEDKkedxZ9ef7NCq6zgvW35UvV0jeEKMY1CFs
+         2tb0HHq4JT7VzENB/X6VmxFykmI6VtxAxX8jzIRAiVSjaY61Mcm6vo2hIPzoKiWT3wDZ
+         kame08e7Z/g5/7YlTVHfAxztPVqVOOs2KYenzGfY4YX0VhIY6vrhjmBt/SuoyPoeiGMY
+         9NAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yFtdPdKB+5OFD7TerpRjOkHMWVZwIcvQtFqZgo3qk1c=;
-        b=mW4XVraCA8JtUSvpiCo1T6hp17yg8EVqZfskUZIeBqUZAOYDQ04juOWAZebJz1MKjS
-         vXvJkOYqU7b8+pWu7SCUeILzt9QD1/Ig5n1n3RiZLQ5B1KHBzrONLuOHouyVDaevMplI
-         nmsGBnBNbSPpNp17TCy5BQ1GE7MXieuuhOqa8O1/HACpYXgdXaHIOKrTq0Owg53NuIw4
-         UU9Gy+HgJ0U0yykDVHuOC0oSUWwvDh7nuJXGEQGDooqbSJN7twmtow7JXwb9ZbfPiKLH
-         N7azqdVlPX8QTREncLZV7eHn7pBnWCAqi4zQBAIPfm9MRvRPCW0OG/2a88NUg+JslWYH
-         so4g==
-X-Gm-Message-State: APjAAAXqHbqi+C6KwUhzomjj4Z+Apv81NLJ1pwbkgWipmgT8J/mz6XJY
-        SEQSESFsPt06UxnaPWQWpDxLTBvkZr5gqczjlJ4WpLrk
-X-Google-Smtp-Source: APXvYqyneXeZEY6hV98mUCrnG6Ny31Of0WUmkslziPbLPuCTD2ot08eK8DoEMOKhtIGW4NcC8GdQGkRyjaRoWyxVMSE=
-X-Received: by 2002:a5d:9dd8:: with SMTP id 24mr194777ioo.249.1566939191364;
- Tue, 27 Aug 2019 13:53:11 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=/jkk8uiXMCVp/OI+9yr+k1frQla42xhDW/B5r3l7RBo=;
+        b=VtHA+E5OVsNXvw6hF+35/JWG2sv0+gvRZY/PSdeCf3XsdgUIi7wOJbPxMW4VIQq6wY
+         8qO4FDAi/M3ocF0Z8xFkDuiQWWRU4908L1ciCtBVENoU7XXjqbEslsdpX6LrVOUOqFFt
+         XjFaNOtRff2c5ORhYUmFA4Uz8MqRxOhz8aD1sA7rf0OXFxnERHsfF3FstxUcvL0zlmih
+         jPoqQI/WYFzYHwd5h3kSOZS3W57QxDS9pml5jVh/0ufL215ayRhNfH4CYWjbueusLk0g
+         F2ui/epgfEZk4i+IknapZJWK4R3gzARpULjRNvkO6zLaQvVbQXZuDf7AgCYQWu5Adq+E
+         rfrA==
+X-Gm-Message-State: APjAAAWsly+iPwlhMgb2A31cWAg7yE447bK0vHn9sB3O9eurwKQcuN2H
+        XxiQd0RkUuOoBelznAv2ooLqRsAc
+X-Google-Smtp-Source: APXvYqxglSV9yCs+mWPXxDiaV6hmnQNu+CceOaq+w3x0dpTMG14CDuu4hnZTrzcU7kxfxAlhnHzYEA==
+X-Received: by 2002:a81:5644:: with SMTP id k65mr625676ywb.278.1566939239774;
+        Tue, 27 Aug 2019 13:53:59 -0700 (PDT)
+Received: from mail-yw1-f43.google.com (mail-yw1-f43.google.com. [209.85.161.43])
+        by smtp.gmail.com with ESMTPSA id d9sm148722ywd.55.2019.08.27.13.53.58
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Aug 2019 13:53:59 -0700 (PDT)
+Received: by mail-yw1-f43.google.com with SMTP id n11so44482ywn.6
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 13:53:58 -0700 (PDT)
+X-Received: by 2002:a0d:c945:: with SMTP id l66mr615227ywd.291.1566939238383;
+ Tue, 27 Aug 2019 13:53:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
- <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
- <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
- <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
- <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
- <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
- <CAA5aLPjO9rucCLJnmQiPBxw2pJ=6okf3C88rH9GWnh3p0R+Rmw@mail.gmail.com>
- <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com> <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
-In-Reply-To: <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Tue, 27 Aug 2019 13:53:02 -0700
-Message-ID: <CAA93jw6TWUmqsvBDT4tFPgwjGxAmm_S5bUibj16nwp1F=AwyRA@mail.gmail.com>
-Subject: Re: Unable to create htb tc classes more than 64K
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Akshat Kakkar <akshat.1984@gmail.com>,
-        Anton Danilov <littlesmilingcloud@gmail.com>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+References: <20190827190933.227725-1-willemdebruijn.kernel@gmail.com> <CANn89iKwaar9fmgfoDTKebfRGHjR2K3gLeeJCr-bvturzgj3zQ@mail.gmail.com>
+In-Reply-To: <CANn89iKwaar9fmgfoDTKebfRGHjR2K3gLeeJCr-bvturzgj3zQ@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 27 Aug 2019 16:53:22 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfK=xSMJvVNJB7DKdqwG_FAi2gLjbCvkXVqF99n71rRdg@mail.gmail.com>
+Message-ID: <CA+FuTSfK=xSMJvVNJB7DKdqwG_FAi2gLjbCvkXVqF99n71rRdg@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: inherit timestamp on mtu probe
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 25, 2019 at 11:47 PM Eric Dumazet <eric.dumazet@gmail.com> wrot=
-e:
+On Tue, Aug 27, 2019 at 4:07 PM Eric Dumazet <edumazet@google.com> wrote:
 >
+> On Tue, Aug 27, 2019 at 9:09 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > TCP associates tx timestamp requests with a byte in the bytestream.
+> > If merging skbs in tcp_mtu_probe, migrate the tstamp request.
+> >
+> > Similar to MSG_EOR, do not allow moving a timestamp from any segment
+> > in the probe but the last. This to avoid merging multiple timestamps.
+> >
+> > Tested with the packetdrill script at
+> > https://github.com/wdebruij/packetdrill/commits/mtu_probe-1
+> >
+> > Link: http://patchwork.ozlabs.org/patch/1143278/#2232897
+> > Fixes: 4ed2d765dfac ("net-timestamp: TCP timestamping")
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >  net/ipv4/tcp_output.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> > index 5c46bc4c7e8d..42abc9bd687a 100644
+> > --- a/net/ipv4/tcp_output.c
+> > +++ b/net/ipv4/tcp_output.c
+> > @@ -2053,7 +2053,7 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
+> >                 if (len <= skb->len)
+> >                         break;
+> >
+> > -               if (unlikely(TCP_SKB_CB(skb)->eor))
+> > +               if (unlikely(TCP_SKB_CB(skb)->eor) || tcp_has_tx_tstamp(skb))
+> >                         return false;
+> >
+> >                 len -= skb->len;
+> > @@ -2170,6 +2170,7 @@ static int tcp_mtu_probe(struct sock *sk)
+> >                          * we need to propagate it to the new skb.
+> >                          */
+> >                         TCP_SKB_CB(nskb)->eor = TCP_SKB_CB(skb)->eor;
+> > +                       tcp_skb_collapse_tstamp(nskb, skb);
 >
+> nit: maybe rename tcp_skb_collapse_tstamp() to tcp_skb_tstamp_copy()
+> or something ?
 >
-> On 8/25/19 7:52 PM, Cong Wang wrote:
-> > On Wed, Aug 21, 2019 at 11:00 PM Akshat Kakkar <akshat.1984@gmail.com> =
-wrote:
-> >>
-> >> On Thu, Aug 22, 2019 at 3:37 AM Cong Wang <xiyou.wangcong@gmail.com> w=
-rote:
-> >>>> I am using ipset +  iptables to classify and not filters. Besides, i=
-f
-> >>>> tc is allowing me to define qdisc -> classes -> qdsic -> classes
-> >>>> (1,2,3 ...) sort of structure (ie like the one shown in ascii tree)
-> >>>> then how can those lowest child classes be actually used or consumed=
-?
-> >>>
-> >>> Just install tc filters on the lower level too.
-> >>
-> >> If I understand correctly, you are saying,
-> >> instead of :
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000001 fw flowid 1:10
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000002 fw flowid 1:20
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000003 fw flowid 2:10
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000004 fw flowid 2:20
-> >>
-> >>
-> >> I should do this: (i.e. changing parent to just immediate qdisc)
-> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000001
-> >> fw flowid 1:10
-> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000002
-> >> fw flowid 1:20
-> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000003
-> >> fw flowid 2:10
-> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000004
-> >> fw flowid 2:20
-> >
-> >
-> > Yes, this is what I meant.
-> >
-> >
-> >>
-> >> I tried this previously. But there is not change in the result.
-> >> Behaviour is exactly same, i.e. I am still getting 100Mbps and not
-> >> 100kbps or 300kbps
-> >>
-> >> Besides, as I mentioned previously I am using ipset + skbprio and not
-> >> filters stuff. Filters I used just to test.
-> >>
-> >> ipset  -N foo hash:ip,mark skbinfo
-> >>
-> >> ipset -A foo 10.10.10.10, 0x0x00000001 skbprio 1:10
-> >> ipset -A foo 10.10.10.20, 0x0x00000002 skbprio 1:20
-> >> ipset -A foo 10.10.10.30, 0x0x00000003 skbprio 2:10
-> >> ipset -A foo 10.10.10.40, 0x0x00000004 skbprio 2:20
-> >>
-> >> iptables -A POSTROUTING -j SET --map-set foo dst,dst --map-prio
-> >
-> > Hmm..
-> >
-> > I am not familiar with ipset, but it seems to save the skbprio into
-> > skb->priority, so it doesn't need TC filter to classify it again.
-> >
-> > I guess your packets might go to the direct queue of HTB, which
-> > bypasses the token bucket. Can you dump the stats and check?
->
-> With more than 64K 'classes' I suggest to use a single FQ qdisc [1], and
-> an eBPF program using EDT model (Earliest Departure Time)
+> Its name came from the fact that it was only used from
+> tcp_collapse_retrans(), but it will no
+> longer be the case after your fix.
 
-Although this is very cool, I think in this case the OP is being
-a router, not server?
+Sure, that's more descriptive.
 
-> The BPF program would perform the classification, then find a data struct=
-ure
-> based on the 'class', and then update/maintain class virtual times and sk=
-b->tstamp
->
-> TBF =3D bpf_map_lookup_elem(&map, &classid);
->
-> uint64_t now =3D bpf_ktime_get_ns();
-> uint64_t time_to_send =3D max(TBF->time_to_send, now);
->
-> time_to_send +=3D (u64)qdisc_pkt_len(skb) * NSEC_PER_SEC / TBF->rate;
-> if (time_to_send > TBF->max_horizon) {
->     return TC_ACT_SHOT;
-> }
-> TBF->time_to_send =3D time_to_send;
-> skb->tstamp =3D max(time_to_send, skb->tstamp);
-> if (time_to_send - now > TBF->ecn_horizon)
->     bpf_skb_ecn_set_ce(skb);
-> return TC_ACT_OK;
->
-> tools/testing/selftests/bpf/progs/test_tc_edt.c shows something similar.
->
->
-> [1]  MQ + FQ if the device is multi-queues.
->
->    Note that this setup scales very well on SMP, since we no longer are f=
-orced
->  to use a single HTB hierarchy (protected by a single spinlock)
->
-
-
---=20
-
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-205-9740
+One caveat, the function is exposed in a header, so it's a
+bit more churn. If you don't mind that, I'll send the v2.
