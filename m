@@ -2,183 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE6E9E73F
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 14:00:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C0719E759
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 14:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729266AbfH0MAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 08:00:40 -0400
-Received: from mail-eopbgr00062.outbound.protection.outlook.com ([40.107.0.62]:42801
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728807AbfH0MAk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 08:00:40 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=haRprdXiQVAn0X2zlhGgQqqFH7YocA7rEGei3qbI3olIwJEj74so0KbAbZ5m4bbGHr1is0/kZwN3Vpkep7YRzWuZOZAK1aKSa/Pkm1/wr0fUMlN7W/rdXvfU4XWnDkZg+gc17IjosGQ1Vtbak2qI3bjI/5iP8XzTmArhV/+TlLapC7IKzF82tgw9F0wUaaFTud0KlINoksWI6HNQ6wyLMbqNRgFTOU9Oh7DidCAzzwHmw3SbI4W8jKd/18xhy5bVzByrE4B8WV8hDrGnZra0lF0mtSaNpTNV8/W3oVHW6qs4EyO+Sd0At1aL866OQuWA16y4OWukPdnbyVzm7OIZHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kj/u6NagFVY2FxCshVAZbyh5dZkpAoB26+lNMa19BRc=;
- b=QW7a6rQ5GfKunraPwVvGWBz6jk55K7PBi7kcwPO9fDF8MVNxZK7ZEttvnsh8CsaKnCEOloMGETe4l4HT8NEforavfjGnJoUMOjI88hehLXUXTbBpRFQsiOuevWAvkG4iGDQrC/s3WTW0zCpYLY5ruuGSZ7emUTjDnIiFm1HOPBFLTwdPCMLwDx8CtagNte+GvRUYH2Qf3xD4qMd/ALSIF3LP47Fl9gvkQfORU/5Xw/3yeKVYvKzXXYKTsUIbowVsoJYXX9fN+kCE0agIvp8IWybkL23/7vyOU1PxSh8SAhC34RZ/JscO0rVa61UkOALrxLXpegMT9NA43heEEzRXGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kj/u6NagFVY2FxCshVAZbyh5dZkpAoB26+lNMa19BRc=;
- b=aAC2v3/IG5WBscgBH+XQKZ5uT3WlHQ26kjvxSP1i+zMBr9+2YtwzvdNKQba1svVWNiQpc/32BmfdY4TbaF/NoO6aOKe2B4SiAQW808QkO3SfOYr3DwYoleFKZoDrGhRfswDutOcLM0/b0lf3OHxygip4lq2nTk9L31dfaxr2sAU=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6723.eurprd05.prod.outlook.com (10.186.173.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.21; Tue, 27 Aug 2019 12:00:34 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.020; Tue, 27 Aug 2019
- 12:00:34 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 3/4] mdev: Expose mdev alias in sysfs tree
-Thread-Topic: [PATCH 3/4] mdev: Expose mdev alias in sysfs tree
-Thread-Index: AQHVXE6v3Mg2zMVvBUG6schRq+9Lx6cO0OsAgAADYqCAAAnfAIAABFHggAABh4CAAAC7kA==
-Date:   Tue, 27 Aug 2019 12:00:34 +0000
-Message-ID: <AM0PR05MB4866E222E33DBD4C40A7EA9CD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190826204119.54386-4-parav@mellanox.com>
-        <20190827124706.7e726794.cohuck@redhat.com>
-        <AM0PR05MB4866BDA002F2C6566492244ED1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827133432.156f7db3.cohuck@redhat.com>
-        <AM0PR05MB4866FD2DB357C5EB4A7A75ADD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190827135527.7c9d3940.cohuck@redhat.com>
-In-Reply-To: <20190827135527.7c9d3940.cohuck@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.18.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5612809c-fc47-42cc-c16e-08d72ae62acb
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6723;
-x-ms-traffictypediagnostic: AM0PR05MB6723:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6723310ECBEF63CDB72B72D3D1A00@AM0PR05MB6723.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0142F22657
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(199004)(13464003)(189003)(71190400001)(71200400001)(66946007)(66446008)(66476007)(64756008)(66556008)(52536014)(2906002)(5660300002)(54906003)(256004)(76116006)(14454004)(305945005)(33656002)(66066001)(74316002)(7736002)(478600001)(26005)(53936002)(9686003)(446003)(486006)(11346002)(476003)(86362001)(6436002)(81166006)(4326008)(55016002)(99286004)(8936002)(7696005)(6116002)(76176011)(102836004)(55236004)(6506007)(229853002)(53546011)(25786009)(9456002)(6246003)(8676002)(316002)(6916009)(186003)(3846002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6723;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 1rZmT1YRi8z1aZ23bsP83EGRXLj8ezbl5/kDYP8kpQsSI0Cab3s/XMyVFhZHFXo/bmnD1Z8k8SJKZGS7KYvcHqaYOQKPLkngM5Xw64FcAud2be81cmoKamPrO/y4XEgUc7RyvENpYOCI/iGEobxayGiEF1KWr9v6m8uhTfheXsSKkiHfD5qot46RQ3qhtvsPkOf09zNhb/TokL8YaTmI+GM6E219h4yAJ8JifoYslJLQadOjjjZwt6fJuE8PXxNGxQQAJwT+YeDrjjGnXoV+MSgBbs8gM9+oIsz0ecKE54YGndbjKfKLIu4KzFEuIF8wcnu78fqfEDZb8EJ34m1iPkfsbwNj+glxBBYd1RcwmCyDNJe0ls7P6oox5a9Tr5vs9hZ8xqZx6ZhEgyuJ0Jca6QhLZ2xNLNsULIw8lRTyDZs=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726735AbfH0MIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 08:08:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38078 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725850AbfH0MIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 08:08:17 -0400
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CF36217F5
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 12:08:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566907696;
+        bh=ZXrh/71UPVJ3Yf3x2mVq5mE78nzCTmY0D/aUQjt98r0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=T1gS1wWMho+CTgt8KUiCYbJ6pz/2jK4TTqHvVFEi9Hy8mVVHnQpMnoE9aRlKBfY0i
+         +YJuHFvBiNl/SqEOdzZ1+s0pRqZMwQpMNQ1nAQyE2vNsl3SpyTQ3b44v64G/1KkJ1U
+         1OlJzF6oUO0sOh6NvRHjfTXEZFYyHkhlQKLByf1M=
+Received: by mail-qt1-f176.google.com with SMTP id k13so20935666qtm.12
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 05:08:16 -0700 (PDT)
+X-Gm-Message-State: APjAAAU1Orug89Xxb/Hb4DdLbseSI4jJiELrrwCQ04Rn68hLp9nvzbdS
+        Q0cMkWq4X5aGD6ON3MH7qFlgr5Z54dy93N46uww=
+X-Google-Smtp-Source: APXvYqwk8g8kFkOg4s/Rtlig+3e+GeUm/9a3Cdu9YmKJJ5cX6CatAWhcmJNK4k3q13pet/xlZmc+shh6XcEWO1vztik=
+X-Received: by 2002:ad4:434e:: with SMTP id q14mr18935634qvs.225.1566907695500;
+ Tue, 27 Aug 2019 05:08:15 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5612809c-fc47-42cc-c16e-08d72ae62acb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 12:00:34.4256
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jja7uYs026N8z9mkKdZwoxLCsOgyEr7WCviC5i8Dbogu+++vx0edG47TBwOHTlj+6U/X5FQVU45XHp7KJtTSsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6723
+References: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
+In-Reply-To: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
+From:   Josh Boyer <jwboyer@kernel.org>
+Date:   Tue, 27 Aug 2019 08:08:04 -0400
+X-Gmail-Original-Message-ID: <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
+Message-ID: <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
+Subject: Re: [PATCH] rtl_nic: add firmware rtl8125a-3
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Linux Firmware <linux-firmware@kernel.org>,
+        Chun-Hao Lin <hau@realtek.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Aug 26, 2019 at 6:23 PM Heiner Kallweit <hkallweit1@gmail.com> wrot=
+e:
+>
+> This adds firmware rtl8125a-3 for Realtek's 2.5Gbps chip RTL8125.
+>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+> Firmware file was provided by Realtek and they asked me to submit it.
 
+Can we get a Signed-off-by from someone at Realtek then?
 
-> -----Original Message-----
-> From: Cornelia Huck <cohuck@redhat.com>
-> Sent: Tuesday, August 27, 2019 5:25 PM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> kernel@vger.kernel.org; netdev@vger.kernel.org
-> Subject: Re: [PATCH 3/4] mdev: Expose mdev alias in sysfs tree
->=20
-> On Tue, 27 Aug 2019 11:52:21 +0000
-> Parav Pandit <parav@mellanox.com> wrote:
->=20
-> > > -----Original Message-----
-> > > From: Cornelia Huck <cohuck@redhat.com>
-> > > Sent: Tuesday, August 27, 2019 5:05 PM
-> > > To: Parav Pandit <parav@mellanox.com>
-> > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > Subject: Re: [PATCH 3/4] mdev: Expose mdev alias in sysfs tree
-> > >
-> > > On Tue, 27 Aug 2019 11:07:37 +0000
-> > > Parav Pandit <parav@mellanox.com> wrote:
-> > >
-> > > > > -----Original Message-----
-> > > > > From: Cornelia Huck <cohuck@redhat.com>
-> > > > > Sent: Tuesday, August 27, 2019 4:17 PM
-> > > > > To: Parav Pandit <parav@mellanox.com>
-> > > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > > Subject: Re: [PATCH 3/4] mdev: Expose mdev alias in sysfs tree
-> > > > >
-> > > > > On Mon, 26 Aug 2019 15:41:18 -0500 Parav Pandit
-> > > > > <parav@mellanox.com> wrote:
-> > >
-> > > > > > +static ssize_t alias_show(struct device *device,
-> > > > > > +			  struct device_attribute *attr, char *buf) {
-> > > > > > +	struct mdev_device *dev =3D mdev_from_dev(device);
-> > > > > > +
-> > > > > > +	if (!dev->alias)
-> > > > > > +		return -EOPNOTSUPP;
-> > > > >
-> > > > > I'm wondering how to make this consumable by userspace in the
-> > > > > easiest
-> > > way.
-> > > > > - As you do now (userspace gets an error when trying to read)?
-> > > > > - Returning an empty value (nothing to see here, move along)?
-> > > > No. This is confusing, to return empty value, because it says that
-> > > > there is an
-> > > alias but it is some weird empty string.
-> > > > If there is alias, it shows exactly what it is.
-> > > > If no alias it returns an error code =3D unsupported -> inline with
-> > > > other widely
-> > > used subsystem.
-> > > >
-> > > > > - Or not creating the attribute at all? That would match what use=
-rspace
-> > > > >   sees on older kernels, so it needs to be able to deal with
-> > > > > that
-> > > > New sysfs files can appear. Tool cannot say that I was not
-> > > > expecting this file
-> > > here.
-> > > > User space is supposed to work with the file they are off interest.
-> > > > Mdev interface has option to specify vendor specific files, though
-> > > > in usual
-> > > manner it's not recommended.
-> > > > So there is no old user space, new kernel issue here.
-> > >
-> > > I'm not talking about old userspace/new kernel, but new userspace/old
-> kernel.
-> > > Code that wants to consume this attribute needs to be able to cope
-> > > with its absence anyway.
-> > >
-> > Old kernel doesn't have alias file.
-> > If some tool tries to read this file it will fail to open non existing =
-file; open()
-> system call is already taking care of it.
->=20
-> Yes, that was exactly my argument?
-I misunderstood probably.
-I re-read all 3 options you posted.
-I do not see any issue in reporting error code similar to other widely used=
- netdev subsystem, hence propose what is posted in the patch.
+josh
 
+> The related extension to r8169 driver will be submitted in the next days.
+> ---
+>  WHENCE                |   3 +++
+>  rtl_nic/rtl8125a-3.fw | Bin 0 -> 3456 bytes
+>  2 files changed, 3 insertions(+)
+>  create mode 100644 rtl_nic/rtl8125a-3.fw
+>
+> diff --git a/WHENCE b/WHENCE
+> index fb12924..dbec18a 100644
+> --- a/WHENCE
+> +++ b/WHENCE
+> @@ -2906,6 +2906,9 @@ Version: 0.0.2
+>  File: rtl_nic/rtl8107e-2.fw
+>  Version: 0.0.2
+>
+> +File: rtl_nic/rtl8125a-3.fw
+> +Version: 0.0.1
+> +
+>  Licence:
+>   * Copyright =C2=A9 2011-2013, Realtek Semiconductor Corporation
+>   *
+> diff --git a/rtl_nic/rtl8125a-3.fw b/rtl_nic/rtl8125a-3.fw
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..fac635263f92e8d9734456b75=
+932b2088edd5ef9
+> GIT binary patch
+> literal 3456
+> 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
+6
+> DeEY6F
+>
+> literal 0
+> HcmV?d00001
+>
+> --
+> 2.23.0
+>
