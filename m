@@ -2,147 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2289F1FB
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:01:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D3389F206
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728584AbfH0SB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 14:01:57 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43931 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727683AbfH0SB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 14:01:56 -0400
-Received: by mail-pl1-f193.google.com with SMTP id 4so12136230pld.10
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 11:01:56 -0700 (PDT)
+        id S1730392AbfH0SEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 14:04:11 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:55125 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfH0SEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 14:04:11 -0400
+Received: by mail-wm1-f68.google.com with SMTP id t6so36429wmj.4;
+        Tue, 27 Aug 2019 11:04:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cJMJeKPgC75iwMFiSSf1fcZFhifdUxyd5AN7WKIvkYs=;
-        b=T9Xq5rHkhyBI6gMPpZIzyiDG0tST+gj521ti53yJvFDm6irjIQLri9OZDB7lA3ePpi
-         5fVNLy7H/PlVRPkeDWnrrlSzWNQANWC+rXtrakklFKdnrLkhY/IGR2SlcDqohPU2Ozmp
-         kW9MBArp492gI/AMnXFD/bk3PdkNIHGMaYUZY=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eeXEbfNVRk3oAI90JXSVwlfA1/Luk09oyGiJ2cBc090=;
+        b=l566AOedLj0sB7R/r792xeSKSmRuOoMdg8f4HcHV4zqE7Gg4OKGl3l2zYNO2TUnQCS
+         xmf1PvlYP1YUT8spw0jt3HYVNRPl1DGjaDgCGaWamEdecsqMFilYE8HIViJ1muZzANSy
+         P56mTbNqBdM4AIphIL8jFa+L+FXI5l9HCeZ2XmAH0dHxW8oL/AgJ+y/DZlZRefBbRUjK
+         JI82IZWyA5KLN2orqEZ3dh///GFWAYiBqHxcZ9vEQNqMAajI5Rq5kcEvBgHwAdrNtGyr
+         AEnyjui9UyAkgr4EsIMw/IIPRZEQgYp3wenSQ9YhwsnCTEGlNneRXXvAx1YstOS20FM3
+         SegQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cJMJeKPgC75iwMFiSSf1fcZFhifdUxyd5AN7WKIvkYs=;
-        b=YJkQPqNTcOrAFZHF8GKd9Kl/8RlOS60CDYvuqZpf92dcb+OUeqF68mRBb1hrqwQz/r
-         KoMx6T8q+xaQBeGqA+67wran5UEt46eC34F8hydOX/a2se8hc9tv+F4tWAq7SiH/LhXn
-         3opfoexUDVsRx7XyGtJtH6+lQKGEIYlUh6DbVskTaRXpOPGnlaCrlm8zFLRJizH2qHtV
-         d/swFhSUVm2l1uh72OehU0GmJsIxj2zb/s6dtAMtF8A6vgwamSDRnziHvl+pazGWcGUC
-         Q7rbc+rH5Z/oe4radneWKVUR0Te5EiT9hE1qI7NwCOh/UCtIH/fRNziaHUmgR2WUfpws
-         yAKw==
-X-Gm-Message-State: APjAAAXLwQEAt5uBzfId8wkPVIwcO7j4i40P+QQvOI1UZ2kPglPcJMTI
-        ly0QZ6XqSbHXEA/0YsfFnuudTw==
-X-Google-Smtp-Source: APXvYqxEM9lKFuUO2yYl4zaZsWbB5GwqhM672VFmXKoR5gz3IHFjIP84QSlHk+wVc4plfxxxRMWflQ==
-X-Received: by 2002:a17:902:e406:: with SMTP id ci6mr120643plb.207.1566928916123;
-        Tue, 27 Aug 2019 11:01:56 -0700 (PDT)
-Received: from pmalani2.mtv.corp.google.com ([2620:15c:202:201:172e:4646:c089:ce59])
-        by smtp.gmail.com with ESMTPSA id y188sm16346534pfb.115.2019.08.27.11.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2019 11:01:55 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     hayeswang@realtek.com, davem@davemloft.net
-Cc:     grundler@chromium.org, netdev@vger.kernel.org,
-        nic_swsd@realtek.com, Prashant Malani <pmalani@chromium.org>
-Subject: [PATCH] r8152: Add rx_buf_sz field to struct r8152
-Date:   Tue, 27 Aug 2019 11:01:46 -0700
-Message-Id: <20190827180146.253431-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+        bh=eeXEbfNVRk3oAI90JXSVwlfA1/Luk09oyGiJ2cBc090=;
+        b=ZN4xEVjB80+neuY4X/M9T88Y/KZSmlDw4pKLw76Xi1wCKkrUDrjzRJrvWPR9BO4gfv
+         Kj38F2dpxguHoVk/v1bKANpl0ELyMbYtv9R1/BIkclQex3A7ndAmQ+gtl7asnceuWaie
+         uxKlM39yXojs1wbH1mO9RbHmrP/55yxeFtMGOFCCYjrST98JYIoYZAlQUnf9NG2iq3l8
+         qXZq+SrwD35ruZAQjBGH/Izq4Xt9Ge5gbdCbUjoJ31Wen5k4HRuSB2vCHK6XPqaxyyrI
+         zZX0p1A+bWSKH35og8WrieiBkfAnLe91ShfC41nUux887ATCUekT65h/1DLMfbJEp6ma
+         PoGQ==
+X-Gm-Message-State: APjAAAU1oKUlB23LzUeS7FxaIA//f0aiCOjjjpk+Chxrape6PW4kWSW5
+        b/HPk9ZHP+S+imLH48EsSII=
+X-Google-Smtp-Source: APXvYqy/OaFb4S1R0xj6XUxUdfkuBIgwYGte/KsTRxDbfjz/vjDAgNOk4eIBQjude9QoVCn6hCdKQw==
+X-Received: by 2002:a1c:a481:: with SMTP id n123mr164017wme.123.1566929048457;
+        Tue, 27 Aug 2019 11:04:08 -0700 (PDT)
+Received: from [192.168.8.147] (212.160.185.81.rev.sfr.net. [81.185.160.212])
+        by smtp.gmail.com with ESMTPSA id a203sm140208wme.11.2019.08.27.11.04.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Aug 2019 11:04:08 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v3 7/7] selftests/bpf: support
+ BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Song Liu <songliubraving@fb.com>
+References: <20190725225231.195090-1-sdf@google.com>
+ <20190725225231.195090-8-sdf@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c1cec8df-e3c5-8d34-c3b3-44eae4f10e9b@gmail.com>
+Date:   Tue, 27 Aug 2019 20:04:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190725225231.195090-8-sdf@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tp->rx_buf_sz is set according to the specific version of HW being used.
 
-agg_buf_sz was originally added to support LSO (Large Send Offload) and
-then seems to have been co-opted for LRO (Large Receive Offload). But RX
-large buffer size can be larger than TX large buffer size with newer HW.
-Using larger buffers can result in fewer "large RX packets" processed
-by the rest of the networking stack to reduce RX CPU utilization.
 
-This patch is copied from the r8152 driver (v2.12.0) published by
-Realtek (www.realtek.com).
+On 7/26/19 12:52 AM, Stanislav Fomichev wrote:
+> Exit as soon as we found that packet is encapped when
+> BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP is passed.
+> Add appropriate selftest cases.
+> 
+> v2:
+> * Subtract sizeof(struct iphdr) from .iph_inner.tot_len (Willem de Bruijn)
+> 
+> Acked-by: Petar Penkov <ppenkov@google.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Petar Penkov <ppenkov@google.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  .../selftests/bpf/prog_tests/flow_dissector.c | 64 +++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/bpf_flow.c  |  8 +++
+>  2 files changed, 72 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> index ef83f145a6f1..700d73d2f22a 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
+> @@ -41,6 +41,13 @@ struct ipv4_pkt {
+>  	struct tcphdr tcp;
+>  } __packed;
+>  
+> +struct ipip_pkt {
+> +	struct ethhdr eth;
+> +	struct iphdr iph;
+> +	struct iphdr iph_inner;
+> +	struct tcphdr tcp;
+> +} __packed;
+> +
+>  struct svlan_ipv4_pkt {
+>  	struct ethhdr eth;
+>  	__u16 vlan_tci;
+> @@ -82,6 +89,7 @@ struct test {
+>  	union {
+>  		struct ipv4_pkt ipv4;
+>  		struct svlan_ipv4_pkt svlan_ipv4;
+> +		struct ipip_pkt ipip;
+>  		struct ipv6_pkt ipv6;
+>  		struct ipv6_frag_pkt ipv6_frag;
+>  		struct dvlan_ipv6_pkt dvlan_ipv6;
+> @@ -303,6 +311,62 @@ struct test tests[] = {
+>  		},
+>  		.flags = BPF_FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL,
+>  	},
+> +	{
+> +		.name = "ipip-encap",
+> +		.pkt.ipip = {
+> +			.eth.h_proto = __bpf_constant_htons(ETH_P_IP),
+> +			.iph.ihl = 5,
+> +			.iph.protocol = IPPROTO_IPIP,
+> +			.iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
+> +			.iph_inner.ihl = 5,
+> +			.iph_inner.protocol = IPPROTO_TCP,
+> +			.iph_inner.tot_len =
+> +				__bpf_constant_htons(MAGIC_BYTES) -
+> +				sizeof(struct iphdr),
+> +			.tcp.doff = 5,
+> +			.tcp.source = 80,
+> +			.tcp.dest = 8080,
+> +		},
+> +		.keys = {
+> +			.nhoff = 0,
+> +			.nhoff = ETH_HLEN,
 
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
-Reviewed-by: Grant Grundler <grundler@chromium.org>
----
- drivers/net/usb/r8152.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+clang emits a warning because nhoff is defined twice.
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 0cc03a9ff545..d221e59a5392 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -750,6 +750,7 @@ struct r8152 {
- 	u32 tx_qlen;
- 	u32 coalesce;
- 	u16 ocp_base;
-+	u32 rx_buf_sz;
- 	u16 speed;
- 	u8 *intr_buff;
- 	u8 version;
-@@ -1516,13 +1517,13 @@ static int alloc_all_mem(struct r8152 *tp)
- 	skb_queue_head_init(&tp->rx_queue);
- 
- 	for (i = 0; i < RTL8152_MAX_RX; i++) {
--		buf = kmalloc_node(agg_buf_sz, GFP_KERNEL, node);
-+		buf = kmalloc_node(tp->rx_buf_sz, GFP_KERNEL, node);
- 		if (!buf)
- 			goto err1;
- 
- 		if (buf != rx_agg_align(buf)) {
- 			kfree(buf);
--			buf = kmalloc_node(agg_buf_sz + RX_ALIGN, GFP_KERNEL,
-+			buf = kmalloc_node(tp->rx_buf_sz + RX_ALIGN, GFP_KERNEL,
- 					   node);
- 			if (!buf)
- 				goto err1;
-@@ -2113,7 +2114,7 @@ int r8152_submit_rx(struct r8152 *tp, struct rx_agg *agg, gfp_t mem_flags)
- 		return 0;
- 
- 	usb_fill_bulk_urb(agg->urb, tp->udev, usb_rcvbulkpipe(tp->udev, 1),
--			  agg->head, agg_buf_sz,
-+			  agg->head, tp->rx_buf_sz,
- 			  (usb_complete_t)read_bulk_callback, agg);
- 
- 	ret = usb_submit_urb(agg->urb, mem_flags);
-@@ -2447,7 +2448,7 @@ static void r8153_set_rx_early_timeout(struct r8152 *tp)
- 
- static void r8153_set_rx_early_size(struct r8152 *tp)
- {
--	u32 ocp_data = agg_buf_sz - rx_reserved_size(tp->netdev->mtu);
-+	u32 ocp_data = tp->rx_buf_sz - rx_reserved_size(tp->netdev->mtu);
- 
- 	switch (tp->version) {
- 	case RTL_VER_03:
-@@ -5115,6 +5116,7 @@ static int rtl_ops_init(struct r8152 *tp)
- 		ops->in_nway		= rtl8152_in_nway;
- 		ops->hw_phy_cfg		= r8152b_hw_phy_cfg;
- 		ops->autosuspend_en	= rtl_runtime_suspend_enable;
-+		tp->rx_buf_sz		= 16 * 1024;
- 		break;
- 
- 	case RTL_VER_03:
-@@ -5132,6 +5134,7 @@ static int rtl_ops_init(struct r8152 *tp)
- 		ops->in_nway		= rtl8153_in_nway;
- 		ops->hw_phy_cfg		= r8153_hw_phy_cfg;
- 		ops->autosuspend_en	= rtl8153_runtime_enable;
-+		tp->rx_buf_sz		= 32 * 1024;
- 		break;
- 
- 	case RTL_VER_08:
-@@ -5147,6 +5150,7 @@ static int rtl_ops_init(struct r8152 *tp)
- 		ops->in_nway		= rtl8153_in_nway;
- 		ops->hw_phy_cfg		= r8153b_hw_phy_cfg;
- 		ops->autosuspend_en	= rtl8153b_runtime_enable;
-+		tp->rx_buf_sz		= 32 * 1024;
- 		break;
- 
- 	default:
--- 
-2.23.0.187.g17f5b7556c-goog
-
+> +			.thoff = ETH_HLEN + sizeof(struct iphdr) +
+> +				sizeof(struct iphdr),
+> +			.addr_proto = ETH_P_IP,
+> +			.ip_proto = IPPROTO_TCP,
+> +			.n_proto = __bpf_constant_htons(ETH_P_IP),
+> +			.is_encap = true,
+> +			.sport = 80,
+> +			.dport = 8080,
+> +		},
+> +	},
+> +	{
+> +		.name = "ipip-no-encap",
+> +		.pkt.ipip = {
+> +			.eth.h_proto = __bpf_constant_htons(ETH_P_IP),
+> +			.iph.ihl = 5,
+> +			.iph.protocol = IPPROTO_IPIP,
+> +			.iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
+> +			.iph_inner.ihl = 5,
+> +			.iph_inner.protocol = IPPROTO_TCP,
+> +			.iph_inner.tot_len =
+> +				__bpf_constant_htons(MAGIC_BYTES) -
+> +				sizeof(struct iphdr),
+> +			.tcp.doff = 5,
+> +			.tcp.source = 80,
+> +			.tcp.dest = 8080,
+> +		},
+> +		.keys = {
+> +			.flags = BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP,
+> +			.nhoff = ETH_HLEN,
+> +			.thoff = ETH_HLEN + sizeof(struct iphdr),
+> +			.addr_proto = ETH_P_IP,
+> +			.ip_proto = IPPROTO_IPIP,
+> +			.n_proto = __bpf_constant_htons(ETH_P_IP),
+> +			.is_encap = true,
+> +		},
+> +		.flags = BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP,
+> +	},
+>  };
+>  
+>  static int create_tap(const char *ifname)
+> diff --git a/tools/testing/selftests/bpf/progs/bpf_flow.c b/tools/testing/selftests/bpf/progs/bpf_flow.c
+> index 7fbfa22f33df..08bd8b9d58d0 100644
+> --- a/tools/testing/selftests/bpf/progs/bpf_flow.c
+> +++ b/tools/testing/selftests/bpf/progs/bpf_flow.c
+> @@ -167,9 +167,15 @@ static __always_inline int parse_ip_proto(struct __sk_buff *skb, __u8 proto)
+>  		return export_flow_keys(keys, BPF_OK);
+>  	case IPPROTO_IPIP:
+>  		keys->is_encap = true;
+> +		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
+> +			return export_flow_keys(keys, BPF_OK);
+> +
+>  		return parse_eth_proto(skb, bpf_htons(ETH_P_IP));
+>  	case IPPROTO_IPV6:
+>  		keys->is_encap = true;
+> +		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
+> +			return export_flow_keys(keys, BPF_OK);
+> +
+>  		return parse_eth_proto(skb, bpf_htons(ETH_P_IPV6));
+>  	case IPPROTO_GRE:
+>  		gre = bpf_flow_dissect_get_header(skb, sizeof(*gre), &_gre);
+> @@ -189,6 +195,8 @@ static __always_inline int parse_ip_proto(struct __sk_buff *skb, __u8 proto)
+>  			keys->thoff += 4; /* Step over sequence number */
+>  
+>  		keys->is_encap = true;
+> +		if (keys->flags & BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP)
+> +			return export_flow_keys(keys, BPF_OK);
+>  
+>  		if (gre->proto == bpf_htons(ETH_P_TEB)) {
+>  			eth = bpf_flow_dissect_get_header(skb, sizeof(*eth),
+> 
