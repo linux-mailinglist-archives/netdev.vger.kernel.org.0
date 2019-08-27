@@ -2,405 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D71F9DC6C
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 06:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FF629DC6A
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 06:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbfH0EYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 00:24:23 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:40929 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725879AbfH0EYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 00:24:22 -0400
-Received: by mail-pl1-f196.google.com with SMTP id h3so11102073pls.7
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 21:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=zyvXu3+jxFk7Z0I//UBhVjtcAwxD0R4P3e9RFQt4bkE=;
-        b=HIBNewISFGZOpE2mk0rvkkN0Z3WSfrcukzpheXVAhmcBHhSWQGBAYzAOQysqfHJWp1
-         AXAQaX1dJXrCGCf2DCv/bAOfErgffI0FTc8PkeQ4MJk1pLti7KcRZdXBGjsvU3u3yV+Q
-         LwEW2mVJqrK1ULACLtjATkvpL3m6wvYzWQ8158nlYJwhfMcRAL4leLlnY0NW2SpTLKpt
-         TgXlDLaZ+eZYk/7Jomi6K3BJQNjMXy8RMFhnql9MrVPdReEtpa0mvaB4HzbZpB6Jyv+7
-         +MbTx0vLM848m6JzkF7nvNBaBKJx++0fV1oS/xHIf9XdKdrREP6h6JiCzOGEuoJVakLZ
-         qqug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zyvXu3+jxFk7Z0I//UBhVjtcAwxD0R4P3e9RFQt4bkE=;
-        b=pUnbcX1RFOEFNxMxysFayzMkHqWlDfu60GRGxYLboWdwl1d8C3rWTvBNC/iM7MG0jP
-         8WzeQ/A/m1NtCGKXBDjfei1kMxl7y4BuWtclK/lP1dI6h+GZi4u2CLA1+XIPAlpviR94
-         l9OFhc15aI1HjMZN/jkahDET59kSVSJsa2XAkUG3/vsDBJHHQG35r9WWBZD5H1HtBbvq
-         yd2c400iCUQkGiQOApOF/dig/qgvG/aRzLY1jRiVb0wW32b81ngrrdLimFQCByhKjniy
-         +MSliQtDpsWwVx2NDf7HW0Dw4+LMiwHUI3+pFCh51tXcOeWwN6xKOSfJcRgaRmICz6Hi
-         bFQg==
-X-Gm-Message-State: APjAAAU2nSfWffB/K4Wt4cC8Sll3gFo52sc4dpmrWO+sVsoyI+uH36Z0
-        r41cksQEmy/g8lkF/rOU/R8V2A==
-X-Google-Smtp-Source: APXvYqwRy2QXMazvmDoWnQ6tU735uo8hVJPNatBb7jSiytO8n05kCqrFhWhmFChKjeakrJtWSVadfQ==
-X-Received: by 2002:a17:902:26b:: with SMTP id 98mr22534197plc.61.1566879861845;
-        Mon, 26 Aug 2019 21:24:21 -0700 (PDT)
-Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id b3sm16870497pfp.65.2019.08.26.21.24.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2019 21:24:21 -0700 (PDT)
-Date:   Mon, 26 Aug 2019 21:24:04 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v5 net-next 02/18] ionic: Add hardware init and device
- commands
-Message-ID: <20190826212404.77348857@cakuba.netronome.com>
-In-Reply-To: <20190826213339.56909-3-snelson@pensando.io>
-References: <20190826213339.56909-1-snelson@pensando.io>
-        <20190826213339.56909-3-snelson@pensando.io>
-Organization: Netronome Systems, Ltd.
+        id S1726181AbfH0EYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 00:24:22 -0400
+Received: from mail-eopbgr130055.outbound.protection.outlook.com ([40.107.13.55]:24134
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725766AbfH0EYW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 00:24:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jM2PpZEr8h/+1Iztac2wzwycOJUFyRP/NAHgGuEE5ZI9jT1fFq6mBFnneu/rJi2aY0EvNJlKwcaYVKAztBcPz51pQx1bEHeZ8aQIaT4gW7jTKhriaH35RZZDHT3owoE8z5NixiopswH39g/Qhb0zgWfL3AeQJMekHMl38o1xSC+o/D22+kVf1JRYAaWjPFQTjmt4k/tdBmlW7wktVKQ0ms7oKO+U8gdP5FFIdMJOp5EBJCWbGUDI71zUwQYCNMho4VEr8bKdgyfCqDb1IGoQHq7qECVj3dox5PXkvQYSYPRIyj4mbUog9kIjMPgtXjn395BcMkC64zaHH8YFwTIdNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uOaSjvHP+LHU0gXmwtF1Z1ejwvGH8+BxuOUWMu/BS1g=;
+ b=DKpOXtiZZ8Uy2CG5sG83rycleBJHpue7yUceznvsCIVZYpjKVdMqic02C3k/9KOq3U937pR+Fhd2Ai4iO5PYf0h6ecgGhNVmrV+kNgVGfiset/TVY1d8rCsgsJO3xvA24XoZ1qusq3SEN4TYBcld6Z30+yormPHoOYgJjsCua1SB/s62mH0TXyK/1RqCTbTCeq/o8iZrMwKNLDeLegBcYZvbJNW6JwbpgZyVoNfYx22fa31y1CcZuvKG4VmZXEpdejHac5pI5MBUaHgpNCPSZkcl7q8qpemddi4Kc+UJnotmcOipWTQkzP+Oti9bz8sQ3Nxt6cnvgquIxYs8Y71uEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uOaSjvHP+LHU0gXmwtF1Z1ejwvGH8+BxuOUWMu/BS1g=;
+ b=DQOJ83epAbIPg+pE8/9MXaHAJq80oveKKDH/aMJlGL1J730m6apBHQasCRnQ97h7mxreP3nZFOmzvksESQk3ZNPKXO6TC6d7g/utuCMCMDXT/EMpX7Z68YLqF5WDItvHXhU2E2Jv97p3FLE0JmwG5O115p++l4iLllqY/HMu7CU=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB4532.eurprd05.prod.outlook.com (52.133.55.143) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.21; Tue, 27 Aug 2019 04:24:16 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.020; Tue, 27 Aug 2019
+ 04:24:16 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+Thread-Topic: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+Thread-Index: AQHVXE6sjQlIhIUUgkClKEYpCVnoRKcOOXEAgAAlFCA=
+Date:   Tue, 27 Aug 2019 04:24:16 +0000
+Message-ID: <AM0PR05MB4866CC8FD2A1C52C9B2CD483D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190826204119.54386-2-parav@mellanox.com> <20190826194456.6edef7d1@x1.home>
+In-Reply-To: <20190826194456.6edef7d1@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [106.51.18.188]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 61849c4e-209c-49ed-2d06-08d72aa66c34
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4532;
+x-ms-traffictypediagnostic: AM0PR05MB4532:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB4532344EC08F547A297923E2D1A00@AM0PR05MB4532.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0142F22657
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(136003)(39860400002)(376002)(366004)(199004)(13464003)(189003)(25786009)(476003)(26005)(102836004)(446003)(76176011)(2906002)(6246003)(486006)(66476007)(7736002)(316002)(256004)(478600001)(53546011)(53936002)(6916009)(4326008)(99286004)(14454004)(11346002)(229853002)(74316002)(14444005)(305945005)(55236004)(54906003)(52536014)(66446008)(66556008)(66946007)(76116006)(6116002)(71200400001)(55016002)(66066001)(6436002)(6506007)(71190400001)(9456002)(8676002)(5660300002)(81166006)(81156014)(86362001)(186003)(9686003)(7696005)(3846002)(8936002)(33656002)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4532;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 0j/Xg0ZjzkT2mHwqaO1at2BmbExG/KgBEH7+ss0KiglMMegSqfON3jWhw5rJDlvsaD/oI4ihPi2e9TqIQchXDM7WqX8aDmJDgN7Z/3INOjN0wXRql2m6trW5VdwtlpYNu6yZWXll8cCiJwdBvFB++2Dpa3VitfD37AVLRMIKYQ0DiorjFNuphGgckN24kQ1fylZxJApadaqbOdDoH3LSp4UIqEeljN+VedOG+6nKHW32szuTIzLtwbVAiqjbaBN3lt4Mi7zfVrLSigVAoKptcDX5wo/xFIryCkJLsBq7Vh34VkKgWM9rQ7Wm1/5rY9CdQauSOndGLqXYbyzAWYo6PnJ/PCf3HJeSXiMBLQ+a51BwvgmTMTAbg412qbgZY2mW2gFtu+fB8XmG7V1V38KznXPXrBwQapo4+KoZmB1EotE=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61849c4e-209c-49ed-2d06-08d72aa66c34
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 04:24:16.3251
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2+KK0k4RU1rbWZoR8F8PFTPltxc89389ou81DaKcR6H1shlPlRSVrCf5ZZ+IGA0RGqvtjfEFbEjUWw3tcKLeBQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4532
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Aug 2019 14:33:23 -0700, Shannon Nelson wrote:
-> The ionic device has a small set of PCI registers, including a
-> device control and data space, and a large set of message
-> commands.
-> 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-> index f174e8f7bce1..a23d58519c63 100644
-> --- a/drivers/net/ethernet/pensando/ionic/Makefile
-> +++ b/drivers/net/ethernet/pensando/ionic/Makefile
-> @@ -3,4 +3,5 @@
->  
->  obj-$(CONFIG_IONIC) := ionic.o
->  
-> -ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o
-> +ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
-> +	   ionic_debugfs.o
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-> index d40077161214..1f3c4a916849 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-> @@ -4,6 +4,10 @@
->  #ifndef _IONIC_H_
->  #define _IONIC_H_
->  
-> +#include "ionic_if.h"
-> +#include "ionic_dev.h"
-> +#include "ionic_devlink.h"
-> +
->  #define IONIC_DRV_NAME		"ionic"
->  #define IONIC_DRV_DESCRIPTION	"Pensando Ethernet NIC Driver"
->  #define IONIC_DRV_VERSION	"0.15.0-k"
-> @@ -17,10 +21,27 @@
->  #define IONIC_SUBDEV_ID_NAPLES_100_4	0x4001
->  #define IONIC_SUBDEV_ID_NAPLES_100_8	0x4002
->  
-> +#define devcmd_timeout  10
 
-nit: upper case?
+> -----Original Message-----
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Tuesday, August 27, 2019 7:15 AM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
+> cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
+> kernel@vger.kernel.org; netdev@vger.kernel.org
+> Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+>=20
+> On Mon, 26 Aug 2019 15:41:16 -0500
+> Parav Pandit <parav@mellanox.com> wrote:
+>=20
+> > Whenever a parent requests to generate mdev alias, generate a mdev
+> > alias.
+> > It is an optional attribute that parent can request to generate for
+> > each of its child mdev.
+> > mdev alias is generated using sha1 from the mdev name.
+> >
+> > Signed-off-by: Parav Pandit <parav@mellanox.com>
+> > ---
+> >  drivers/vfio/mdev/mdev_core.c    | 98
+> +++++++++++++++++++++++++++++++-
+> >  drivers/vfio/mdev/mdev_private.h |  5 +-
+> >  drivers/vfio/mdev/mdev_sysfs.c   | 13 +++--
+> >  include/linux/mdev.h             |  4 ++
+> >  4 files changed, 111 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/drivers/vfio/mdev/mdev_core.c
+> > b/drivers/vfio/mdev/mdev_core.c index b558d4cfd082..e825ff38b037
+> > 100644
+> > --- a/drivers/vfio/mdev/mdev_core.c
+> > +++ b/drivers/vfio/mdev/mdev_core.c
+> > @@ -10,9 +10,11 @@
+> >  #include <linux/module.h>
+> >  #include <linux/device.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/mm.h>
+> >  #include <linux/uuid.h>
+> >  #include <linux/sysfs.h>
+> >  #include <linux/mdev.h>
+> > +#include <crypto/hash.h>
+> >
+> >  #include "mdev_private.h"
+> >
+> > @@ -27,6 +29,8 @@ static struct class_compat *mdev_bus_compat_class;
+> > static LIST_HEAD(mdev_list);  static DEFINE_MUTEX(mdev_list_lock);
+> >
+> > +static struct crypto_shash *alias_hash;
+> > +
+> >  struct device *mdev_parent_dev(struct mdev_device *mdev)  {
+> >  	return mdev->parent->dev;
+> > @@ -164,6 +168,18 @@ int mdev_register_device(struct device *dev, const
+> struct mdev_parent_ops *ops)
+> >  		goto add_dev_err;
+> >  	}
+> >
+> > +	if (ops->get_alias_length) {
+> > +		unsigned int digest_size;
+> > +		unsigned int aligned_len;
+> > +
+> > +		aligned_len =3D roundup(ops->get_alias_length(), 2);
+> > +		digest_size =3D crypto_shash_digestsize(alias_hash);
+> > +		if (aligned_len / 2 > digest_size) {
+> > +			ret =3D -EINVAL;
+> > +			goto add_dev_err;
+> > +		}
+> > +	}
+>=20
+> This looks like a sanity check, it could be done outside of the
+> parent_list_lock, even before we get a parent device reference.
+>
+Yes.
+=20
+> I think we're using a callback for get_alias_length() rather than a fixed=
+ field
+> to support the mtty module option added in patch 4, right?
+Right.
+I will move the check outside.
 
->  struct ionic {
->  	struct pci_dev *pdev;
->  	struct device *dev;
->  	struct devlink *dl;
-> +	struct devlink_port dl_port;
+> Its utility is rather limited with no args.  I could imagine that if a pa=
+rent
+> wanted to generate an alias that could be incorporated into a string with=
+ the
+> parent device name that it would be useful to call this with the parent
+> device as an arg.  I guess we can save that until a user comes along thou=
+gh.
+>
+Right. We save until user arrives.
+I suggest you review the extra complexity I added here for vendor driven al=
+ias length, which I think we should do when an actual user comes along.
 
-devlink_port is not used in this patch
+ > There doesn't seem to be anything serializing use of alias_hash.
+>=20
+Each sha1 calculation is happening on the new descriptor allocated and init=
+ialized using crypto_shash_init().
+So it appears to me that each hash calculation can occur in parallel on the=
+ individual desc.
 
-> +	struct ionic_dev idev;
-> +	struct mutex dev_cmd_lock;	/* lock for dev_cmd operations */
-> +	struct dentry *dentry;
-> +	struct ionic_dev_bar bars[IONIC_BARS_MAX];
-> +	unsigned int num_bars;
-> +	struct ionic_identity ident;
->  };
+> > +
+> >  	parent =3D kzalloc(sizeof(*parent), GFP_KERNEL);
+> >  	if (!parent) {
+> >  		ret =3D -ENOMEM;
+> > @@ -259,6 +275,7 @@ static void mdev_device_free(struct mdev_device
+> *mdev)
+> >  	mutex_unlock(&mdev_list_lock);
+> >
+> >  	dev_dbg(&mdev->dev, "MDEV: destroying\n");
+> > +	kvfree(mdev->alias);
+> >  	kfree(mdev);
+> >  }
+> >
+> > @@ -269,18 +286,86 @@ static void mdev_device_release(struct device
+> *dev)
+> >  	mdev_device_free(mdev);
+> >  }
+> >
+> > -int mdev_device_create(struct kobject *kobj,
+> > -		       struct device *dev, const guid_t *uuid)
+> > +static const char *
+> > +generate_alias(const char *uuid, unsigned int max_alias_len) {
+> > +	struct shash_desc *hash_desc;
+> > +	unsigned int digest_size;
+> > +	unsigned char *digest;
+> > +	unsigned int alias_len;
+> > +	char *alias;
+> > +	int ret =3D 0;
+> > +
+> > +	/* Align to multiple of 2 as bin2hex will generate
+> > +	 * even number of bytes.
+> > +	 */
+>=20
+> Comment style for non-networking code please.
+Ack.
 
-> +	err = ionic_init(ionic);
-> +	if (err) {
-> +		dev_err(dev, "Cannot init device: %d, aborting\n", err);
-> +		goto err_out_teardown;
-> +	}
-> +
-> +	err = ionic_devlink_register(ionic);
-> +	if (err)
-> +		dev_err(dev, "Cannot register devlink: %d\n", err);
->  
->  	return 0;
-> +
-> +err_out_teardown:
-> +	ionic_dev_teardown(ionic);
-> +err_out_unmap_bars:
-> +	ionic_unmap_bars(ionic);
-> +	pci_release_regions(pdev);
-> +err_out_pci_clear_master:
-> +	pci_clear_master(pdev);
-> +err_out_pci_disable_device:
-> +	pci_disable_device(pdev);
-> +err_out_debugfs_del_dev:
-> +	ionic_debugfs_del_dev(ionic);
-> +err_out_clear_drvdata:
-> +	mutex_destroy(&ionic->dev_cmd_lock);
-> +	ionic_devlink_free(ionic);
-> +
-> +	return err;
->  }
->  
->  static void ionic_remove(struct pci_dev *pdev)
->  {
->  	struct ionic *ionic = pci_get_drvdata(pdev);
->  
-> +	if (!ionic)
+>=20
+> > +	alias_len =3D roundup(max_alias_len, 2);
+> > +	alias =3D kvzalloc(alias_len + 1, GFP_KERNEL);
+>=20
+> The size we're generating here should be small enough to just use kzalloc=
+(),
+Ack.
 
-How can this be NULL? Usually if this is NULL that means probe()
-failed but 'err' was not set properly. Perhaps WARN_ON() here?
+> probably below too.
+>=20
+Descriptor size is 96 bytes long. kvzalloc is more optimal.
 
-> +		return;
-> +
-> +	ionic_devlink_unregister(ionic);
-> +	ionic_reset(ionic);
-> +	ionic_dev_teardown(ionic);
-> +	ionic_unmap_bars(ionic);
-> +	pci_release_regions(pdev);
-> +	pci_clear_master(pdev);
-> +	pci_disable_device(pdev);
-> +	ionic_debugfs_del_dev(ionic);
-> +	mutex_destroy(&ionic->dev_cmd_lock);
->  	ionic_devlink_free(ionic);
->  }
->  
+> > +	if (!alias)
+> > +		return NULL;
+> > +
+> > +	/* Allocate and init descriptor */
+> > +	hash_desc =3D kvzalloc(sizeof(*hash_desc) +
+> > +			     crypto_shash_descsize(alias_hash),
+> > +			     GFP_KERNEL);
+> > +	if (!hash_desc)
+> > +		goto desc_err;
+> > +
+> > +	hash_desc->tfm =3D alias_hash;
+> > +
+> > +	digest_size =3D crypto_shash_digestsize(alias_hash);
+> > +
+> > +	digest =3D kvzalloc(digest_size, GFP_KERNEL);
+> > +	if (!digest) {
+> > +		ret =3D -ENOMEM;
+> > +		goto digest_err;
+> > +	}
+> > +	crypto_shash_init(hash_desc);
+> > +	crypto_shash_update(hash_desc, uuid, UUID_STRING_LEN);
+> > +	crypto_shash_final(hash_desc, digest);
+> > +	bin2hex(&alias[0], digest,
+>=20
+> &alias[0], ie. alias
+Ack.
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-> new file mode 100644
-> index 000000000000..30a5206bba4e
-> --- /dev/null
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-> @@ -0,0 +1,143 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-> +
-> +#ifndef _IONIC_DEV_H_
-> +#define _IONIC_DEV_H_
-> +
-> +#include <linux/mutex.h>
-> +#include <linux/workqueue.h>
-> +
-> +#include "ionic_if.h"
-> +#include "ionic_regs.h"
-> +
-> +struct ionic_dev_bar {
-> +	void __iomem *vaddr;
-> +	phys_addr_t bus_addr;
-> +	unsigned long len;
-> +	int res_index;
-> +};
-> +
-> +static inline void ionic_struct_size_checks(void)
-> +{
-> +	/* Registers */
-> +	BUILD_BUG_ON(sizeof(struct ionic_intr) != 32);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_doorbell) != 8);
-> +	BUILD_BUG_ON(sizeof(struct ionic_intr_status) != 8);
-> +
-> +	BUILD_BUG_ON(sizeof(union ionic_dev_regs) != 4096);
-> +	BUILD_BUG_ON(sizeof(union ionic_dev_info_regs) != 2048);
-> +	BUILD_BUG_ON(sizeof(union ionic_dev_cmd_regs) != 2048);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_stats) != 1024);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_admin_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_admin_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_nop_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_nop_comp) != 16);
-> +
-> +	/* Device commands */
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_identify_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_identify_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_init_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_init_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_reset_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_reset_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_getattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_getattr_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_setattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_dev_setattr_comp) != 16);
-> +
-> +	/* Port commands */
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_identify_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_identify_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_init_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_init_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_reset_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_reset_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_getattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_getattr_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_setattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_port_setattr_comp) != 16);
-> +
-> +	/* LIF commands */
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_init_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_init_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_reset_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(ionic_lif_reset_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_getattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_getattr_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_setattr_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_lif_setattr_comp) != 16);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_q_init_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_q_init_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_q_control_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(ionic_q_control_comp) != 16);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_rx_mode_set_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(ionic_rx_mode_set_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rx_filter_add_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rx_filter_add_comp) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rx_filter_del_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(ionic_rx_filter_del_comp) != 16);
-> +
-> +	/* RDMA commands */
-> +	BUILD_BUG_ON(sizeof(struct ionic_rdma_reset_cmd) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rdma_queue_cmd) != 64);
-> +
-> +	/* Events */
-> +	BUILD_BUG_ON(sizeof(struct ionic_notifyq_cmd) != 4);
-> +	BUILD_BUG_ON(sizeof(union ionic_notifyq_comp) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_notifyq_event) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_link_change_event) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_reset_event) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_heartbeat_event) != 64);
-> +	BUILD_BUG_ON(sizeof(struct ionic_log_event) != 64);
-> +
-> +	/* I/O */
-> +	BUILD_BUG_ON(sizeof(struct ionic_txq_desc) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_txq_sg_desc) != 128);
-> +	BUILD_BUG_ON(sizeof(struct ionic_txq_comp) != 16);
-> +
-> +	BUILD_BUG_ON(sizeof(struct ionic_rxq_desc) != 16);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rxq_sg_desc) != 128);
-> +	BUILD_BUG_ON(sizeof(struct ionic_rxq_comp) != 16);
-
-static_assert() for all of those? That way you don't need this fake
-function.
-
-> +}
-> +
-> +struct ionic_devinfo {
-> +	u8 asic_type;
-> +	u8 asic_rev;
-> +	char fw_version[IONIC_DEVINFO_FWVERS_BUFLEN + 1];
-> +	char serial_num[IONIC_DEVINFO_SERIAL_BUFLEN + 1];
-> +};
-> +
-> +struct ionic_dev {
-> +	union ionic_dev_info_regs __iomem *dev_info_regs;
-> +	union ionic_dev_cmd_regs __iomem *dev_cmd_regs;
-> +
-> +	u64 __iomem *db_pages;
-> +	dma_addr_t phy_db_pages;
-> +
-> +	struct ionic_intr __iomem *intr_ctrl;
-> +	u64 __iomem *intr_status;
-> +
-> +	struct ionic_devinfo dev_info;
-> +};
-> +
-> +struct ionic;
-> +
-> +void ionic_init_devinfo(struct ionic *ionic);
-> +int ionic_dev_setup(struct ionic *ionic);
-> +void ionic_dev_teardown(struct ionic *ionic);
-> +
-> +void ionic_dev_cmd_go(struct ionic_dev *idev, union ionic_dev_cmd *cmd);
-> +u8 ionic_dev_cmd_status(struct ionic_dev *idev);
-> +bool ionic_dev_cmd_done(struct ionic_dev *idev);
-> +void ionic_dev_cmd_comp(struct ionic_dev *idev, union ionic_dev_cmd_comp *comp);
-> +
-> +void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver);
-> +void ionic_dev_cmd_init(struct ionic_dev *idev);
-> +void ionic_dev_cmd_reset(struct ionic_dev *idev);
-> +
-> +#endif /* _IONIC_DEV_H_ */
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> index e24ef6971cd5..1ca1e33cca04 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-> @@ -11,8 +11,28 @@
->  static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
->  			     struct netlink_ext_ack *extack)
->  {
-> +	struct ionic *ionic = devlink_priv(dl);
-> +	struct ionic_dev *idev = &ionic->idev;
-> +	char buf[16];
-> +
->  	devlink_info_driver_name_put(req, IONIC_DRV_NAME);
->  
-> +	devlink_info_version_running_put(req,
-> +					 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
-> +					 idev->dev_info.fw_version);
-
-Are you sure this is not the FW that controls the data path?
-
-> +	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_type);
-> +	devlink_info_version_fixed_put(req,
-> +				       DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
-> +				       buf);
-
-Board ID is not ASIC. This is for identifying a board version with all
-its components which surround the main ASIC.
-
-> +	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_rev);
-> +	devlink_info_version_fixed_put(req,
-> +				       DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,
-> +				       buf);
-
-ditto
-
-> +	devlink_info_serial_number_put(req, idev->dev_info.serial_num);
-> +
->  	return 0;
->  }
->  
-> @@ -41,3 +61,22 @@ void ionic_devlink_free(struct ionic *ionic)
->  {
->  	devlink_free(ionic->dl);
->  }
-> +
-> +int ionic_devlink_register(struct ionic *ionic)
-> +{
-> +	int err;
-> +
-> +	err = devlink_register(ionic->dl, ionic->dev);
-> +	if (err)
-> +		dev_warn(ionic->dev, "devlink_register failed: %d\n", err);
-> +
-> +	return err;
-> +}
-> +
-> +void ionic_devlink_unregister(struct ionic *ionic)
-> +{
-> +	if (!ionic || !ionic->dl)
-> +		return;
-
-Impossiblu
-
-> +	devlink_unregister(ionic->dl);
-> +}
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-> index 1df50874260a..0690172fc57a 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-> @@ -8,5 +8,7 @@
->  
->  struct ionic *ionic_devlink_alloc(struct device *dev);
->  void ionic_devlink_free(struct ionic *ionic);
-> +int ionic_devlink_register(struct ionic *ionic);
-> +void ionic_devlink_unregister(struct ionic *ionic);
->  
->  #endif /* _IONIC_DEVLINK_H_ */
+>=20
+> > +		min_t(unsigned int, digest_size, alias_len / 2));
+> > +	/* When alias length is odd, zero out and additional last byte
+> > +	 * that bin2hex has copied.
+> > +	 */
+> > +	if (max_alias_len % 2)
+> > +		alias[max_alias_len] =3D 0;
+>=20
+> Doesn't this give us a null terminated string for odd numbers but not eve=
+n
+> numbers?  Probably best to define that we always provide a null terminate=
+d
+> string then we could do this unconditionally.
+>=20
+> > +
+> > +	kvfree(digest);
+> > +	kvfree(hash_desc);
+> > +	return alias;
+> > +
+> > +digest_err:
+> > +	kvfree(hash_desc);
+> > +desc_err:
+> > +	kvfree(alias);
+> > +	return NULL;
+> > +}
+> > +
+> > +int mdev_device_create(struct kobject *kobj, struct device *dev,
+> > +		       const char *uuid_str, const guid_t *uuid)
+> >  {
+> >  	int ret;
+> >  	struct mdev_device *mdev, *tmp;
+> >  	struct mdev_parent *parent;
+> >  	struct mdev_type *type =3D to_mdev_type(kobj);
+> > +	unsigned int alias_len =3D 0;
+> > +	const char *alias =3D NULL;
+> >
+> >  	parent =3D mdev_get_parent(type->parent);
+> >  	if (!parent)
+> >  		return -EINVAL;
+> >
+> > +	if (parent->ops->get_alias_length)
+> > +		alias_len =3D parent->ops->get_alias_length();
+> > +	if (alias_len) {
+>=20
+> Why isn't this nested into the branch above?
+>
+I will nest it. No specific reason to not nest it.
+=20
+> > +		alias =3D generate_alias(uuid_str, alias_len);
+> > +		if (!alias) {
+> > +			ret =3D -ENOMEM;
+>=20
+> Could use an ERR_PTR and propagate an errno.
+>=20
+generate_alias() only returns one error type ENOMEM.
+When we add more error types, ERR_PTR is useful.
+=20
+> > +			goto alias_fail;
+> > +		}
+> > +	}
+> > +
+> >  	mutex_lock(&mdev_list_lock);
+> >
+> >  	/* Check for duplicate */
+> > @@ -300,6 +385,8 @@ int mdev_device_create(struct kobject *kobj,
+> >  	}
+> >
+> >  	guid_copy(&mdev->uuid, uuid);
+> > +	mdev->alias =3D alias;
+> > +	alias =3D NULL;
+>=20
+> A comment justifying this null'ing might help prevent it getting culled a=
+s
+> some point.  It appears arbitrary at first look.  Thanks,
+>
+Ack. I will add it.
+=20
+> Alex
