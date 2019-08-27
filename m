@@ -2,250 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2865A9F1EC
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 19:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2289F1FB
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:01:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729570AbfH0R4a convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 27 Aug 2019 13:56:30 -0400
-Received: from mga17.intel.com ([192.55.52.151]:14421 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727683AbfH0R4a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 13:56:30 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 10:56:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,438,1559545200"; 
-   d="scan'208";a="185366003"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by orsmga006.jf.intel.com with ESMTP; 27 Aug 2019 10:56:28 -0700
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 27 Aug 2019 10:56:28 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.103]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.22]) with mapi id 14.03.0439.000;
- Tue, 27 Aug 2019 10:56:28 -0700
-From:   "Fujinaka, Todd" <todd.fujinaka@intel.com>
-To:     Jakub Jankowski <shasta@toxcorp.com>,
-        "e1000-devel@lists.sourceforge.net" 
-        <e1000-devel@lists.sourceforge.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mhemsley@open-systems.com" <mhemsley@open-systems.com>
-Subject: RE: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-Thread-Topic: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-Thread-Index: AQHVXP5PwhwpGcHr20eCrPRU65J/y6cPRwGQ
-Date:   Tue, 27 Aug 2019 17:56:28 +0000
-Message-ID: <9B4A1B1917080E46B64F07F2989DADD69B013DB0@ORSMSX115.amr.corp.intel.com>
-References: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
-In-Reply-To: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYmY1NTA0NDgtNzZmZC00ZTZlLWI4N2EtZTQyMGEyYjdjNTJmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicHNsNXdUc3QzVG0wNmRCVHNnQkFOK0hOSW5MdXpjN0lGbTZMSGt0QXdEUGhnNjJXcXJ1NGVMQXJSNjR6dUhZNyJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1728584AbfH0SB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 14:01:57 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43931 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727683AbfH0SB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 14:01:56 -0400
+Received: by mail-pl1-f193.google.com with SMTP id 4so12136230pld.10
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 11:01:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cJMJeKPgC75iwMFiSSf1fcZFhifdUxyd5AN7WKIvkYs=;
+        b=T9Xq5rHkhyBI6gMPpZIzyiDG0tST+gj521ti53yJvFDm6irjIQLri9OZDB7lA3ePpi
+         5fVNLy7H/PlVRPkeDWnrrlSzWNQANWC+rXtrakklFKdnrLkhY/IGR2SlcDqohPU2Ozmp
+         kW9MBArp492gI/AMnXFD/bk3PdkNIHGMaYUZY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cJMJeKPgC75iwMFiSSf1fcZFhifdUxyd5AN7WKIvkYs=;
+        b=YJkQPqNTcOrAFZHF8GKd9Kl/8RlOS60CDYvuqZpf92dcb+OUeqF68mRBb1hrqwQz/r
+         KoMx6T8q+xaQBeGqA+67wran5UEt46eC34F8hydOX/a2se8hc9tv+F4tWAq7SiH/LhXn
+         3opfoexUDVsRx7XyGtJtH6+lQKGEIYlUh6DbVskTaRXpOPGnlaCrlm8zFLRJizH2qHtV
+         d/swFhSUVm2l1uh72OehU0GmJsIxj2zb/s6dtAMtF8A6vgwamSDRnziHvl+pazGWcGUC
+         Q7rbc+rH5Z/oe4radneWKVUR0Te5EiT9hE1qI7NwCOh/UCtIH/fRNziaHUmgR2WUfpws
+         yAKw==
+X-Gm-Message-State: APjAAAXLwQEAt5uBzfId8wkPVIwcO7j4i40P+QQvOI1UZ2kPglPcJMTI
+        ly0QZ6XqSbHXEA/0YsfFnuudTw==
+X-Google-Smtp-Source: APXvYqxEM9lKFuUO2yYl4zaZsWbB5GwqhM672VFmXKoR5gz3IHFjIP84QSlHk+wVc4plfxxxRMWflQ==
+X-Received: by 2002:a17:902:e406:: with SMTP id ci6mr120643plb.207.1566928916123;
+        Tue, 27 Aug 2019 11:01:56 -0700 (PDT)
+Received: from pmalani2.mtv.corp.google.com ([2620:15c:202:201:172e:4646:c089:ce59])
+        by smtp.gmail.com with ESMTPSA id y188sm16346534pfb.115.2019.08.27.11.01.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Aug 2019 11:01:55 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     hayeswang@realtek.com, davem@davemloft.net
+Cc:     grundler@chromium.org, netdev@vger.kernel.org,
+        nic_swsd@realtek.com, Prashant Malani <pmalani@chromium.org>
+Subject: [PATCH] r8152: Add rx_buf_sz field to struct r8152
+Date:   Tue, 27 Aug 2019 11:01:46 -0700
+Message-Id: <20190827180146.253431-1-pmalani@chromium.org>
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hints should be:
-# ethtool -m eth10
-Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
+tp->rx_buf_sz is set according to the specific version of HW being used.
 
-# ethtool -i eth10
-driver: i40e
-version: 2.9.21
-firmware-version: 3.31 0x80000d31 1.1767.0
+agg_buf_sz was originally added to support LSO (Large Send Offload) and
+then seems to have been co-opted for LRO (Large Receive Offload). But RX
+large buffer size can be larger than TX large buffer size with newer HW.
+Using larger buffers can result in fewer "large RX packets" processed
+by the rest of the networking stack to reduce RX CPU utilization.
 
-And the working case:
-# ethtool -i eth8
-driver: i40e
-version: 2.9.21
-firmware-version: 6.01 0x800035cf 1.1876.0
+This patch is copied from the r8152 driver (v2.12.0) published by
+Realtek (www.realtek.com).
 
-If you don't see it, 6.01 > 3.31.
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Reviewed-by: Grant Grundler <grundler@chromium.org>
+---
+ drivers/net/usb/r8152.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-The NVM update tool should be available on downloadcenter.intel.com
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 0cc03a9ff545..d221e59a5392 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -750,6 +750,7 @@ struct r8152 {
+ 	u32 tx_qlen;
+ 	u32 coalesce;
+ 	u16 ocp_base;
++	u32 rx_buf_sz;
+ 	u16 speed;
+ 	u8 *intr_buff;
+ 	u8 version;
+@@ -1516,13 +1517,13 @@ static int alloc_all_mem(struct r8152 *tp)
+ 	skb_queue_head_init(&tp->rx_queue);
+ 
+ 	for (i = 0; i < RTL8152_MAX_RX; i++) {
+-		buf = kmalloc_node(agg_buf_sz, GFP_KERNEL, node);
++		buf = kmalloc_node(tp->rx_buf_sz, GFP_KERNEL, node);
+ 		if (!buf)
+ 			goto err1;
+ 
+ 		if (buf != rx_agg_align(buf)) {
+ 			kfree(buf);
+-			buf = kmalloc_node(agg_buf_sz + RX_ALIGN, GFP_KERNEL,
++			buf = kmalloc_node(tp->rx_buf_sz + RX_ALIGN, GFP_KERNEL,
+ 					   node);
+ 			if (!buf)
+ 				goto err1;
+@@ -2113,7 +2114,7 @@ int r8152_submit_rx(struct r8152 *tp, struct rx_agg *agg, gfp_t mem_flags)
+ 		return 0;
+ 
+ 	usb_fill_bulk_urb(agg->urb, tp->udev, usb_rcvbulkpipe(tp->udev, 1),
+-			  agg->head, agg_buf_sz,
++			  agg->head, tp->rx_buf_sz,
+ 			  (usb_complete_t)read_bulk_callback, agg);
+ 
+ 	ret = usb_submit_urb(agg->urb, mem_flags);
+@@ -2447,7 +2448,7 @@ static void r8153_set_rx_early_timeout(struct r8152 *tp)
+ 
+ static void r8153_set_rx_early_size(struct r8152 *tp)
+ {
+-	u32 ocp_data = agg_buf_sz - rx_reserved_size(tp->netdev->mtu);
++	u32 ocp_data = tp->rx_buf_sz - rx_reserved_size(tp->netdev->mtu);
+ 
+ 	switch (tp->version) {
+ 	case RTL_VER_03:
+@@ -5115,6 +5116,7 @@ static int rtl_ops_init(struct r8152 *tp)
+ 		ops->in_nway		= rtl8152_in_nway;
+ 		ops->hw_phy_cfg		= r8152b_hw_phy_cfg;
+ 		ops->autosuspend_en	= rtl_runtime_suspend_enable;
++		tp->rx_buf_sz		= 16 * 1024;
+ 		break;
+ 
+ 	case RTL_VER_03:
+@@ -5132,6 +5134,7 @@ static int rtl_ops_init(struct r8152 *tp)
+ 		ops->in_nway		= rtl8153_in_nway;
+ 		ops->hw_phy_cfg		= r8153_hw_phy_cfg;
+ 		ops->autosuspend_en	= rtl8153_runtime_enable;
++		tp->rx_buf_sz		= 32 * 1024;
+ 		break;
+ 
+ 	case RTL_VER_08:
+@@ -5147,6 +5150,7 @@ static int rtl_ops_init(struct r8152 *tp)
+ 		ops->in_nway		= rtl8153_in_nway;
+ 		ops->hw_phy_cfg		= r8153b_hw_phy_cfg;
+ 		ops->autosuspend_en	= rtl8153b_runtime_enable;
++		tp->rx_buf_sz		= 32 * 1024;
+ 		break;
+ 
+ 	default:
+-- 
+2.23.0.187.g17f5b7556c-goog
 
-Todd Fujinaka
-Software Application Engineer
-Datacenter Engineering Group
-Intel Corporation
-todd.fujinaka@intel.com
-
-
------Original Message-----
-From: Jakub Jankowski [mailto:shasta@toxcorp.com] 
-Sent: Tuesday, August 27, 2019 4:03 AM
-To: e1000-devel@lists.sourceforge.net
-Cc: netdev@vger.kernel.org; shasta@toxcorp.com; mhemsley@open-systems.com
-Subject: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m: Invalid argument)
-
-Hi,
-
-We can't get SFP+ EEPROM readouts for X722 to work at all:
-
-# ethtool -m eth10
-Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
-# lspci | grep 3d:00.3
-3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
-
-
-We're running 4.19.65 kernel at the moment, testing using the newest out-of-tree Intel module
-
-# modinfo -F version i40e
-2.9.21
-
-We also tried:
-- 4.19.65 with in-tree i40e (2.3.2-k)
-- stock Arch Linux (kernel 5.2.5, driver 2.8.20-k) and the results are the same, as shown above.
-
-# ethtool -i eth10
-driver: i40e
-version: 2.9.21
-firmware-version: 3.31 0x80000d31 1.1767.0
-expansion-rom-version:
-bus-info: 0000:3d:00.3
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: yes
-# dmidecode -s baseboard-manufacturer
-Intel Corporation
-# dmidecode -s baseboard-product-name
-S2600WFT
-# dmidecode -s baseboard-version
-H48104-853
-
-# lspci -vvv
-(...)
-3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
-	DeviceName: Intel PCH Integrated 10 Gigabit Ethernet Controller
-	Subsystem: Intel Corporation Ethernet Connection X722 for 10GbE SFP+
-	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
-	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-	Latency: 0, Cache Line Size: 32 bytes
-	Interrupt: pin A routed to IRQ 112
-	NUMA node: 0
-	Region 0: Memory at ab000000 (64-bit, prefetchable) [size=16M]
-	Region 3: Memory at b0000000 (64-bit, prefetchable) [size=32K]
-	Expansion ROM at <ignored> [disabled]
-	Capabilities: [40] Power Management version 3
-		Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA PME(D0+,D1-,D2-,D3hot+,D3cold+)
-		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=1 PME-
-	Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
-		Address: 0000000000000000  Data: 0000
-		Masking: 00000000  Pending: 00000000
-	Capabilities: [70] MSI-X: Enable+ Count=129 Masked-
-		Vector table: BAR=3 offset=00000000
-		PBA: BAR=3 offset=00001000
-	Capabilities: [a0] Express (v2) Endpoint, MSI 00
-		DevCap:	MaxPayload 512 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
-			ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
-		DevCtl:	CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
-			RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop- FLReset-
-			MaxPayload 256 bytes, MaxReadReq 512 bytes
-		DevSta:	CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
-		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <64ns, L1 <1us
-			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
-		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk+
-			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
-			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
-		DevCap2: Completion Timeout: Range AB, TimeoutDis+, LTR-, OBFF Not Supported
-			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
-		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
-			 AtomicOpsCtl: ReqEn-
-		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete-, EqualizationPhase1-
-			 EqualizationPhase2-, EqualizationPhase3-, LinkEqualizationRequest-
-	Capabilities: [e0] Vital Product Data
-		Product Name: Example VPD
-		Read-only fields:
-			[V0] Vendor specific:
-			[RV] Reserved: checksum good, 0 byte(s) reserved
-		End
-	Capabilities: [100 v2] Advanced Error Reporting
-		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq+ ACSViol-
-		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
-		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-		AERCap:	First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
-			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
-		HeaderLog: 00000000 00000000 00000000 00000000
-	Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
-		ARICap:	MFVC- ACS-, Next Function: 0
-		ARICtl:	MFVC- ACS-, Function Group: 0
-	Capabilities: [160 v1] Single Root I/O Virtualization (SR-IOV)
-		IOVCap:	Migration-, Interrupt Message Number: 000
-		IOVCtl:	Enable- Migration- Interrupt- MSE- ARIHierarchy-
-		IOVSta:	Migration-
-		Initial VFs: 32, Total VFs: 32, Number of VFs: 0, Function Dependency Link: 03
-		VF offset: 109, stride: 1, Device ID: 37cd
-		Supported Page Size: 00000553, System Page Size: 00000001
-		Region 0: Memory at 00000000af000000 (64-bit, prefetchable)
-		Region 3: Memory at 00000000b0020000 (64-bit, prefetchable)
-		VF Migration: offset: 00000000, BIR: 0
-	Capabilities: [1a0 v1] Transaction Processing Hints
-		Device specific mode supported
-		No steering table available
-	Capabilities: [1b0 v1] Access Control Services
-		ACSCap:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-		ACSCtl:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-	Kernel driver in use: i40e
-	Kernel modules: i40e
-
-
-Same kernel+i40e, same SFP+ module - but on Intel X710, works like a treat:
-
-# lspci | grep X7
-81:00.0 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
-81:00.1 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01) # ethtool -m eth8
-	Identifier                                : 0x03 (SFP)
-	Extended identifier                       : 0x04 (GBIC/SFP defined by 2-wire interface ID)
-	Connector                                 : 0x07 (LC)
-	Transceiver codes                         : 0x10 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00
-	Transceiver type                          : 10G Ethernet: 10G Base-SR
-	Transceiver type                          : Ethernet: 1000BASE-SX
-	Encoding                                  : 0x06 (64B/66B)
-	BR, Nominal                               : 10300MBd
-         (...)
-# ethtool -i eth8
-driver: i40e
-version: 2.9.21
-firmware-version: 6.01 0x800035cf 1.1876.0
-expansion-rom-version:
-bus-info: 0000:81:00.0
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: yes
-#
-
-
-Is this a known problem?
-
-
-Best regards,
-  Jakub
-
-
-
-_______________________________________________
-E1000-devel mailing list
-E1000-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/e1000-devel
-To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
