@@ -2,82 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 107A49F2AF
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D413C9F2B0
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 20:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730883AbfH0SvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 14:51:17 -0400
-Received: from correo.us.es ([193.147.175.20]:37804 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730423AbfH0SvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 14:51:16 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A73ED27F8C7
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9A62DDA840
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 8F97BD1911; Tue, 27 Aug 2019 20:51:12 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 718E9DA801;
-        Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 42DA14265A5A;
-        Tue, 27 Aug 2019 20:51:10 +0200 (CEST)
-Date:   Tue, 27 Aug 2019 20:51:11 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Leonardo Bras <leonardo@linux.ibm.com>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
-Message-ID: <20190827185111.cgutfqkqwsufe2nl@salvia>
-References: <20190821141505.2394-1-leonardo@linux.ibm.com>
- <20190827103541.vzwqwg4jlbuzajxu@salvia>
- <77c43754ff72e9a2e8048ccd032351cf0186080a.camel@linux.ibm.com>
+        id S1730904AbfH0SwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 14:52:07 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35271 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730475AbfH0SwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 14:52:06 -0400
+Received: by mail-pl1-f194.google.com with SMTP id gn20so2524plb.2
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 11:52:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=9f7OW9psaHYpoha3rwueLFeklcUR/fkrCK2sl4WYQXA=;
+        b=eDCnRrIghGC4NtC2plzVBRwqYIQL32b4SlJLNmiGl8LMwP4GVwVfhSDspV4Xrvy6cM
+         N6ASCoZJVFub+0OA+iEaj835IRvL2tNbG1bbuC96RGJ8UTjsY4pnftu0QmkYMnRYk9hj
+         Lk0r8qlCv6F2A7INkkwEJchU/nWmP63Gpv59aF0ft7KWpO67CczvAdKGFtpbIRTrh+1A
+         v9vrJLcEFtSGB2Z3yCPFKtR4j1EQGPBxtC2SD4IpYbE4B0cuZMienG9CF83oKp2onUeH
+         R7oOYyKUaE8+l33n5HPAketRW8ne7mqaR7Iu0gvFHLi1fpiB5ZtrXEh9QsXFukc1EkU8
+         M8KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=9f7OW9psaHYpoha3rwueLFeklcUR/fkrCK2sl4WYQXA=;
+        b=A/I91u1qWowydlLLqdK19yMnRWoZOA4xzdrbBxIUyMX8h7RDQZ7/y6YTn+088jbM0Q
+         40b9ym9l06zPR6YRO3s8dW73OatE0sr6KfD0Mtl1c4t+A1UBJOdi4E31weEkSLcoGd+K
+         b0AuJlPddaIj6cC8yJkDf/Jc9dacsvyyPFIcW0ZDnGvfa2j+ivTPEja4S+4Skv1DR3FE
+         Hv+P9DrFQ0eYTxyY5sVJ8yhrs/cywTw/nsf69mmGcYHStloqWuAxm4p9MqfCgyECa/YM
+         6gnz5b7b6xyVhRRNygKwItcAMs7uPI9CWiNvh7viImpi8sI/93ImFMaaD5HHX+WMEF7X
+         bN7w==
+X-Gm-Message-State: APjAAAW05K4Y32Nv5kZbGhYrwmWcJ6sDZAcDn6ooEyHy82wO8H2li3vg
+        VF4ZMO/wOkStLn8aR4MLNVyy+wprGrw=
+X-Google-Smtp-Source: APXvYqy6rzduh30eMgmau/csYoL0/D8c/nFN7glcJfNflCmNxl97EJSGkRix9IpgJf7Tl3aJo585cA==
+X-Received: by 2002:a17:902:6b4c:: with SMTP id g12mr356836plt.118.1566931926121;
+        Tue, 27 Aug 2019 11:52:06 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id w20sm28152pfn.72.2019.08.27.11.52.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 11:52:05 -0700 (PDT)
+Subject: Re: [PATCH v5 net-next 14/18] ionic: Add Tx and Rx handling
+To:     Yunsheng Lin <linyunsheng@huawei.com>, netdev@vger.kernel.org,
+        davem@davemloft.net
+References: <20190826213339.56909-1-snelson@pensando.io>
+ <20190826213339.56909-15-snelson@pensando.io>
+ <664bbe2c-0e28-6e4a-a44e-c498259be842@huawei.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <c34c828d-c511-079f-ffcc-bf6c6bb9a5d7@pensando.io>
+Date:   Tue, 27 Aug 2019 11:52:03 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <77c43754ff72e9a2e8048ccd032351cf0186080a.camel@linux.ibm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <664bbe2c-0e28-6e4a-a44e-c498259be842@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 02:34:14PM -0300, Leonardo Bras wrote:
-> On Tue, 2019-08-27 at 12:35 +0200, Pablo Neira Ayuso wrote:
+On 8/26/19 7:32 PM, Yunsheng Lin wrote:
+> On 2019/8/27 5:33, Shannon Nelson wrote:
+>> Add both the Tx and Rx queue setup and handling.  The related
+>> stats display comes later.  Instead of using the generic napi
+>> routines used by the slow-path commands, the Tx and Rx paths
+>> are simplified and inlined in one file in order to get better
+>> compiler optimizations.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> ---
 [...]
-> > NFT_BREAK instead to stop evaluating this rule, this results in a
-> > mismatch, so you let the user decide what to do with packets that do
-> > not match your policy.
+>> +static int ionic_txrx_init(struct ionic_lif *lif)
+>> +{
+>> +	unsigned int i;
+>> +	int err;
+>> +
+>> +	for (i = 0; i < lif->nxqs; i++) {
+>> +		err = ionic_lif_txq_init(lif, lif->txqcqs[i].qcq);
+>> +		if (err)
+>> +			goto err_out;
+>> +
+>> +		err = ionic_lif_rxq_init(lif, lif->rxqcqs[i].qcq);
+>> +		if (err) {
+>> +			ionic_lif_qcq_deinit(lif, lif->txqcqs[i-1].qcq);
+>> +			goto err_out;
+>> +		}
+>> +	}
+>> +
+>> +	ionic_set_rx_mode(lif->netdev);
+>> +
+>> +	return 0;
+>> +
+>> +err_out:
+>> +	for (i--; i > 0; i--) {
+>> +		ionic_lif_qcq_deinit(lif, lif->txqcqs[i-1].qcq);
+>> +		ionic_lif_qcq_deinit(lif, lif->rxqcqs[i-1].qcq);
+>> +	}
+> The "i--" has been done in for initialization, and
+> ionic_lif_qcq_deinit is called with lif->rxqcqs[i-1], which may
+> cause the last lif->txqcqs or lif->rxqcqs not initialized problem.
 >
-> Ok, I will replace for v3.
+> It may be more common to do the below:
+> while (i--) {
+> 	ionic_lif_qcq_deinit(lif, lif->txqcqs[i].qcq);
+> 	ionic_lif_qcq_deinit(lif, lif->rxqcqs[i].qcq);
+> }
 
-Thanks.
+Sure.
 
-> > The drop case at the bottom of the fib eval function never actually
-> > never happens.
+>> +
+>> +	return err;
+>> +}
+>> +
+>> +static int ionic_txrx_enable(struct ionic_lif *lif)
+>> +{
+>> +	int i, err;
+>> +
+>> +	for (i = 0; i < lif->nxqs; i++) {
+>> +		err = ionic_qcq_enable(lif->txqcqs[i].qcq);
+>> +		if (err)
+>> +			goto err_out;
+>> +
+>> +		ionic_rx_fill(&lif->rxqcqs[i].qcq->q);
+>> +		err = ionic_qcq_enable(lif->rxqcqs[i].qcq);
+>> +		if (err) {
+>> +			ionic_qcq_disable(lif->txqcqs[i].qcq);
+>> +			goto err_out;
+>> +		}
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err_out:
+>> +	for (i--; i >= 0 ; i--) {
+>> +		ionic_qcq_disable(lif->rxqcqs[i].qcq);
+>> +		ionic_qcq_disable(lif->txqcqs[i].qcq);
+>> +	}
+> It may be better to use the above pattern too.
+
+Okay
+
+
+>> +static dma_addr_t ionic_tx_map_single(struct ionic_queue *q, void *data, size_t len)
+>> +{
+>> +	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+>> +	struct device *dev = q->lif->ionic->dev;
+>> +	dma_addr_t dma_addr;
+>> +
+>> +	dma_addr = dma_map_single(dev, data, len, DMA_TO_DEVICE);
+>> +	if (dma_mapping_error(dev, dma_addr)) {
+>> +		net_warn_ratelimited("%s: DMA single map failed on %s!\n",
+>> +				     q->lif->netdev->name, q->name);
+>> +		stats->dma_map_err++;
+>> +		return 0;
+> zero may be a valid dma address, maybe check the dma_mapping_error in
+> ionic_tx_tso instead.
+
+Hmmm, hadn't thought of 0 as a valid address...
+I'll need to make a similar adjustment to ionic_tx_map_frag() uses.
+
 >
-> Which one do you mean?
+>
+> +
+> +static void ionic_tx_tcp_inner_pseudo_csum(struct sk_buff *skb)
+> +{
+> +	skb_cow_head(skb, 0);
+> May need to check for return error of skb_cow_head.
 
-Line 31 of net/netfilter/nft_fib_inet.c.
+Sure, and in both places.
+
+Thanks,
+sln
+
+
