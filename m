@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E939EBB0
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 16:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 339549EBB7
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 16:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729471AbfH0O6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 10:58:17 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38984 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728612AbfH0O6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 10:58:16 -0400
-Received: by mail-pg1-f195.google.com with SMTP id u17so12828483pgi.6
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 07:58:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=E0qCpQfY1FVyhXwa2Y8auM4RmfQ56/MuTUJRW4vnxNw=;
-        b=DZ86Rsk24Zpx6xkZwf17oZMozqYGqVr49proiwVFp458MqXs5wBclkx3TzkZCOkbnE
-         mlLzvE8f8mmCduYtpG7HPPnBi4KhZcjBlbZHLu9B6kjD3dXP3+gCSb5EJna5c0Q67P/V
-         Tsb6kFlodixcRpT83x12WS2bPU6cQUBtcuYHx3qbSB79oPbROEqhjpuH6QevUEdq5Ex9
-         cJNThpV0RjSd3Q+EyX7j3T9czz+ISbB9qCH7lJFd81MsEOB7nZlQq8BV5aoG9luceVwJ
-         3yFSdMt3mN6EMSq84+cF1XPDlF44sF240Wo1/R2mCeTpYnsE1mVra1EasivLNdIj4kOZ
-         GDBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=E0qCpQfY1FVyhXwa2Y8auM4RmfQ56/MuTUJRW4vnxNw=;
-        b=Q4X/Q4/Sb4WG15SGPXL1trELbuvpXTfBFkv4AWWJzbJKvin62vv/qJ3Qu9F99bNmUH
-         4HCe7vxNeDZktWrQDq5y5J+zMLIMbeYI2nrM/gbBy+jK9MtykCpp9EkeSFVbx/bt5Alv
-         io34f5Gt0R7l6fzwbLdNpb8xP4Ya8NvjjqaKQekub81WeyOorrU8Gq6AexH0Za/TDc7k
-         nhalq836vPfm083eT4x8NCGm7wC1SRxF7u/rfLg7sLNgdQUkT5pt9z+h9ULCtnZnDTAi
-         40VYZj6u3bFFm+sCIS6eUcNQ6nai9Nn7chRonB4R6qARt9tLJcvL5XZFFi1kh5UBTKFG
-         MrIA==
-X-Gm-Message-State: APjAAAX8fJRM4IvN9yHY3JbvV+drIAGTorWN/QcYqGVdu851Bj9yO4v9
-        6bpL8T1IX7eJHkLnQTYUqOy305Dv
-X-Google-Smtp-Source: APXvYqztfI1HV++rXcqXt5qQEpBT8+C7C8+zbRC2UK+bybJef5dlhSTp4v62eeVmwM6hKuGn3bl1qA==
-X-Received: by 2002:a62:33c3:: with SMTP id z186mr27504918pfz.212.1566917895194;
-        Tue, 27 Aug 2019 07:58:15 -0700 (PDT)
-Received: from gizo.domain (97-115-90-227.ptld.qwest.net. [97.115.90.227])
-        by smtp.gmail.com with ESMTPSA id k64sm17502626pge.65.2019.08.27.07.58.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Aug 2019 07:58:14 -0700 (PDT)
-From:   Greg Rose <gvrose8192@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org
-Cc:     joe@wand.net.nz, Justin Pettit <jpettit@ovn.org>
-Subject: [PATCH V3 net 2/2] openvswitch: Clear the L4 portion of the key for "later" fragments.
-Date:   Tue, 27 Aug 2019 07:58:10 -0700
-Message-Id: <1566917890-22304-2-git-send-email-gvrose8192@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1566917890-22304-1-git-send-email-gvrose8192@gmail.com>
-References: <1566917890-22304-1-git-send-email-gvrose8192@gmail.com>
+        id S1730095AbfH0O6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 10:58:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57596 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728670AbfH0O6t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 10:58:49 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id DCAAE7BDB6;
+        Tue, 27 Aug 2019 14:58:48 +0000 (UTC)
+Received: from treble (ovpn-121-55.rdu2.redhat.com [10.10.121.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CE16F5D70D;
+        Tue, 27 Aug 2019 14:58:41 +0000 (UTC)
+Date:   Tue, 27 Aug 2019 09:58:39 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     He Zhe <zhe.he@windriver.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, ndesaulniers@google.com,
+        miguel.ojeda.sandonis@gmail.com, luc.vanoostenryck@gmail.com,
+        schwidefsky@de.ibm.com, gregkh@linuxfoundation.org, mst@redhat.com,
+        gor@linux.ibm.com, andreyknvl@google.com,
+        liuxiaozhou@bytedance.com, yamada.masahiro@socionext.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: kernel/bpf/core.o: warning: objtool: ___bpf_prog_run.cold()+0x7:
+ call without frame pointer save/setup
+Message-ID: <20190827145839.dsm6at6hp7rwwrjo@treble>
+References: <cf0273fb-c272-72be-50f9-b25bb7c7f183@windriver.com>
+ <20190826151808.upis57cckcpf2new@treble>
+ <2c416fe7-f6be-440b-b476-9fede1ea123c@windriver.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2c416fe7-f6be-440b-b476-9fede1ea123c@windriver.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Tue, 27 Aug 2019 14:58:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Justin Pettit <jpettit@ovn.org>
+On Tue, Aug 27, 2019 at 10:43:27AM +0800, He Zhe wrote:
+> 
+> 
+> On 8/26/19 11:18 PM, Josh Poimboeuf wrote:
+> > On Mon, Aug 26, 2019 at 10:42:53PM +0800, He Zhe wrote:
+> >> Hi All,
+> >>
+> >> Since 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()"),
+> >> We have got the following warning,
+> >> kernel/bpf/core.o: warning: objtool: ___bpf_prog_run.cold()+0x7: call without frame pointer save/setup
+> >>
+> >> If reverting the above commit, we will get the following warning,
+> >> kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x8b9: sibling call from callable instruction with modified stack frame
+> >> if CONFIG_RETPOLINE=n, and no warning if CONFIG_RETPOLINE=y
+> > Can you please share the following:
+> >
+> > - core.o file
+> 
+> Attached.
+> 
+> >
+> > The following would also be helpful for me to try to recreate it:
+> >
+> > - config file
+> > - compiler version
+> > - kernel version
+> 
+> I pasted them in the other reply.
 
-Only the first fragment in a datagram contains the L4 headers.  When the
-Open vSwitch module parses a packet, it always sets the IP protocol
-field in the key, but can only set the L4 fields on the first fragment.
-The original behavior would not clear the L4 portion of the key, so
-garbage values would be sent in the key for "later" fragments.  This
-patch clears the L4 fields in that circumstance to prevent sending those
-garbage values as part of the upcall.
+Thanks.  I was able to recreate.  I reduced it to:
 
-Signed-off-by: Justin Pettit <jpettit@ovn.org>
----
- net/openvswitch/flow.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+void a(b);
+__attribute__((optimize(""))) c(void) { a(); }
 
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index 005f762..9d81d2c 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -560,6 +560,7 @@ static int key_extract_l3l4(struct sk_buff *skb, struct sw_flow_key *key)
- 		offset = nh->frag_off & htons(IP_OFFSET);
- 		if (offset) {
- 			key->ip.frag = OVS_FRAG_TYPE_LATER;
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
- 		}
- 		if (nh->frag_off & htons(IP_MF) ||
-@@ -677,8 +678,10 @@ static int key_extract_l3l4(struct sk_buff *skb, struct sw_flow_key *key)
- 			return error;
- 		}
- 
--		if (key->ip.frag == OVS_FRAG_TYPE_LATER)
-+		if (key->ip.frag == OVS_FRAG_TYPE_LATER) {
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
-+		}
- 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
- 			key->ip.frag = OVS_FRAG_TYPE_FIRST;
- 
+Apparently '__attribute__((optimize()))' is overwriting GCC cmdline
+flags, including -fno-omit-frame-pointer.  I had assumed it would append
+instead of replace.
+
+I'm guessing this is a GCC "feature" instead of a bug.  I'll need to
+follow up.
+
 -- 
-1.8.3.1
-
+Josh
