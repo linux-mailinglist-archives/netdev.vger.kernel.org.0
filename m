@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B51C9E5E6
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FED9E5E8
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729469AbfH0Kll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 06:41:41 -0400
+        id S1729490AbfH0Klp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 06:41:45 -0400
 Received: from mga17.intel.com ([192.55.52.151]:38490 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbfH0Kll (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 06:41:41 -0400
+        id S1725793AbfH0Klo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 06:41:44 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 03:41:41 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 03:41:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,436,1559545200"; 
-   d="scan'208";a="174509621"
+   d="scan'208";a="174509632"
 Received: from silpixa00399838.ir.intel.com (HELO silpixa00399838.ger.corp.intel.com) ([10.237.223.140])
-  by orsmga008.jf.intel.com with ESMTP; 27 Aug 2019 03:41:37 -0700
+  by orsmga008.jf.intel.com with ESMTP; 27 Aug 2019 03:41:41 -0700
 From:   Kevin Laatz <kevin.laatz@intel.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         bjorn.topel@intel.com, magnus.karlsson@intel.com,
@@ -27,10 +27,11 @@ To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         saeedm@mellanox.com, maximmi@mellanox.com,
         stephen@networkplumber.org
 Cc:     bruce.richardson@intel.com, ciara.loftus@intel.com,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v6 07/12] net/mlx5e: Allow XSK frames smaller than a page
-Date:   Tue, 27 Aug 2019 02:25:26 +0000
-Message-Id: <20190827022531.15060-8-kevin.laatz@intel.com>
+        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Kevin Laatz <kevin.laatz@intel.com>
+Subject: [PATCH bpf-next v6 08/12] libbpf: add flags to umem config
+Date:   Tue, 27 Aug 2019 02:25:27 +0000
+Message-Id: <20190827022531.15060-9-kevin.laatz@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190827022531.15060-1-kevin.laatz@intel.com>
 References: <20190822014427.49800-1-kevin.laatz@intel.com>
@@ -40,137 +41,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+This patch adds a 'flags' field to the umem_config and umem_reg structs.
+This will allow for more options to be added for configuring umems.
 
-Relax the requirements to the XSK frame size to allow it to be smaller
-than a page and even not a power of two. The current implementation can
-work in this mode, both with Striding RQ and without it.
+The first use for the flags field is to add a flag for unaligned chunks
+mode. These flags can either be user-provided or filled with a default.
 
-The code that checks `mtu + headroom <= XSK frame size` is modified
-accordingly. Any frame size between 2048 and PAGE_SIZE is accepted.
+Since we change the size of the xsk_umem_config struct, we need to version
+the ABI. This patch includes the ABI versioning for xsk_umem__create. The
+Makefile was also updated to handle multiple function versions in
+check-abi.
 
-Functions that worked with pages only now work with XSK frames, even if
-their size is different from PAGE_SIZE.
+Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 
-With XSK queues, regardless of the frame size, Striding RQ uses the
-stride size of PAGE_SIZE, and UMR MTTs are posted using starting
-addresses of frames, but PAGE_SIZE as page size. MTU guarantees that no
-packet data will overlap with other frames. UMR MTT size is made equal
-to the stride size of the RQ, because UMEM frames may come in random
-order, and we need to handle them one by one. PAGE_SIZE is just a power
-of two that is bigger than any allowed XSK frame size, and also it
-doesn't require making additional changes to the code.
-
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   | 23 +++++++++++++++----
- .../ethernet/mellanox/mlx5/core/en/params.h   |  2 ++
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  2 +-
- .../mellanox/mlx5/core/en/xsk/setup.c         | 15 ++++++++----
- 4 files changed, 32 insertions(+), 10 deletions(-)
+v2:
+  - Removed the headroom check from this patch. It has moved to the
+    previous patch.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 79301d116667..eb2e1f2138e4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -25,18 +25,33 @@ u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
- 	return headroom;
+v4:
+  - Modified chunk flag define.
+
+v5:
+  - Added ABI versioning for xsk_umem__create().
+  - Updated Makefile to handle multiple function versions.
+  - Removed bitfields from xdp_umem_reg
+  - Fix conflicts after 'bpf-af-xdp-wakeup' was merged
+---
+ tools/include/uapi/linux/if_xdp.h |  9 +++++++++
+ tools/lib/bpf/Makefile            |  5 ++++-
+ tools/lib/bpf/libbpf.map          |  1 +
+ tools/lib/bpf/xsk.c               | 33 ++++++++++++++++++++++++++++---
+ tools/lib/bpf/xsk.h               | 27 +++++++++++++++++++++++++
+ 5 files changed, 71 insertions(+), 4 deletions(-)
+
+diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+index 62b80d57b72a..be328c59389d 100644
+--- a/tools/include/uapi/linux/if_xdp.h
++++ b/tools/include/uapi/linux/if_xdp.h
+@@ -26,6 +26,9 @@
+  */
+ #define XDP_USE_NEED_WAKEUP (1 << 3)
+ 
++/* Flags for xsk_umem_config flags */
++#define XDP_UMEM_UNALIGNED_CHUNK_FLAG (1 << 0)
++
+ struct sockaddr_xdp {
+ 	__u16 sxdp_family;
+ 	__u16 sxdp_flags;
+@@ -66,6 +69,7 @@ struct xdp_umem_reg {
+ 	__u64 len; /* Length of packet data area */
+ 	__u32 chunk_size;
+ 	__u32 headroom;
++	__u32 flags;
+ };
+ 
+ struct xdp_statistics {
+@@ -87,6 +91,11 @@ struct xdp_options {
+ #define XDP_UMEM_PGOFF_FILL_RING	0x100000000ULL
+ #define XDP_UMEM_PGOFF_COMPLETION_RING	0x180000000ULL
+ 
++/* Masks for unaligned chunks mode */
++#define XSK_UNALIGNED_BUF_OFFSET_SHIFT 48
++#define XSK_UNALIGNED_BUF_ADDR_MASK \
++	((1ULL << XSK_UNALIGNED_BUF_OFFSET_SHIFT) - 1)
++
+ /* Rx/Tx descriptor */
+ struct xdp_desc {
+ 	__u64 addr;
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 613acb93b144..c6f94cffe06e 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -134,7 +134,9 @@ LIB_FILE	:= $(addprefix $(OUTPUT),$(LIB_FILE))
+ PC_FILE		:= $(addprefix $(OUTPUT),$(PC_FILE))
+ 
+ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN) | \
+-			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {s++} END{print s}')
++			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
++			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}' | \
++			   sort -u | wc -l)
+ VERSIONED_SYM_COUNT = $(shell readelf -s --wide $(OUTPUT)libbpf.so | \
+ 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+ 
+@@ -201,6 +203,7 @@ check_abi: $(OUTPUT)libbpf.so
+ 		     "Please make sure all LIBBPF_API symbols are"	 \
+ 		     "versioned in $(VERSION_SCRIPT)." >&2;		 \
+ 		readelf -s --wide $(OUTPUT)libbpf-in.o |		 \
++		    cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' |	 \
+ 		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}'|   \
+ 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+ 		readelf -s --wide $(OUTPUT)libbpf.so |			 \
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 664ce8e7a60e..d04c7cb623ed 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -183,6 +183,7 @@ LIBBPF_0.0.4 {
+ 		perf_buffer__new;
+ 		perf_buffer__new_raw;
+ 		perf_buffer__poll;
++		xsk_umem__create;
+ } LIBBPF_0.0.3;
+ 
+ LIBBPF_0.0.5 {
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 12ad78510147..842c4fd55859 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -99,6 +99,7 @@ static void xsk_set_umem_config(struct xsk_umem_config *cfg,
+ 		cfg->comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+ 		cfg->frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
+ 		cfg->frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
++		cfg->flags = XSK_UMEM__DEFAULT_FLAGS;
+ 		return;
+ 	}
+ 
+@@ -106,6 +107,7 @@ static void xsk_set_umem_config(struct xsk_umem_config *cfg,
+ 	cfg->comp_size = usr_cfg->comp_size;
+ 	cfg->frame_size = usr_cfg->frame_size;
+ 	cfg->frame_headroom = usr_cfg->frame_headroom;
++	cfg->flags = usr_cfg->flags;
  }
  
--u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
--				struct mlx5e_xsk_param *xsk)
-+u32 mlx5e_rx_get_min_frag_sz(struct mlx5e_params *params,
-+			     struct mlx5e_xsk_param *xsk)
+ static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
+@@ -132,9 +134,10 @@ static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
+ 	return 0;
+ }
+ 
+-int xsk_umem__create(struct xsk_umem **umem_ptr, void *umem_area, __u64 size,
+-		     struct xsk_ring_prod *fill, struct xsk_ring_cons *comp,
+-		     const struct xsk_umem_config *usr_config)
++int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
++			    __u64 size, struct xsk_ring_prod *fill,
++			    struct xsk_ring_cons *comp,
++			    const struct xsk_umem_config *usr_config)
  {
- 	u32 hw_mtu = MLX5E_SW2HW_MTU(params, params->sw_mtu);
- 	u16 linear_rq_headroom = mlx5e_get_linear_rq_headroom(params, xsk);
--	u32 frag_sz = linear_rq_headroom + hw_mtu;
+ 	struct xdp_mmap_offsets off;
+ 	struct xdp_umem_reg mr;
+@@ -165,6 +168,7 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, void *umem_area, __u64 size,
+ 	mr.len = size;
+ 	mr.chunk_size = umem->config.frame_size;
+ 	mr.headroom = umem->config.frame_headroom;
++	mr.flags = umem->config.flags;
+ 
+ 	err = setsockopt(umem->fd, SOL_XDP, XDP_UMEM_REG, &mr, sizeof(mr));
+ 	if (err) {
+@@ -238,6 +242,29 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, void *umem_area, __u64 size,
+ 	return err;
+ }
+ 
++struct xsk_umem_config_v1 {
++	__u32 fill_size;
++	__u32 comp_size;
++	__u32 frame_size;
++	__u32 frame_headroom;
++};
 +
-+	return linear_rq_headroom + hw_mtu;
++int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
++			    __u64 size, struct xsk_ring_prod *fill,
++			    struct xsk_ring_cons *comp,
++			    const struct xsk_umem_config *usr_config)
++{
++	struct xsk_umem_config config;
++
++	memcpy(&config, usr_config, sizeof(struct xsk_umem_config_v1));
++	config.flags = 0;
++
++	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
++					&config);
++}
++asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
++asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
++
+ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ {
+ 	static const int log_buf_size = 16 * 1024;
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index aa1d6122b7db..584f6820a639 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -168,6 +168,21 @@ static inline void *xsk_umem__get_data(void *umem_area, __u64 addr)
+ 	return &((char *)umem_area)[addr];
+ }
+ 
++static inline __u64 xsk_umem__extract_addr(__u64 addr)
++{
++	return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
 +}
 +
-+u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
-+				struct mlx5e_xsk_param *xsk)
++static inline __u64 xsk_umem__extract_offset(__u64 addr)
 +{
-+	u32 frag_sz = mlx5e_rx_get_min_frag_sz(params, xsk);
- 
- 	/* AF_XDP doesn't build SKBs in place. */
- 	if (!xsk)
- 		frag_sz = MLX5_SKB_FRAG_SZ(frag_sz);
- 
--	/* XDP in mlx5e doesn't support multiple packets per page. */
-+	/* XDP in mlx5e doesn't support multiple packets per page. AF_XDP is a
-+	 * special case. It can run with frames smaller than a page, as it
-+	 * doesn't allocate pages dynamically. However, here we pretend that
-+	 * fragments are page-sized: it allows to treat XSK frames like pages
-+	 * by redirecting alloc and free operations to XSK rings and by using
-+	 * the fact there are no multiple packets per "page" (which is a frame).
-+	 * The latter is important, because frames may come in a random order,
-+	 * and we will have trouble assemblying a real page of multiple frames.
-+	 */
- 	if (mlx5e_rx_is_xdp(params, xsk))
- 		frag_sz = max_t(u32, frag_sz, PAGE_SIZE);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index 3a615d663d84..989d8f429438 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -76,6 +76,8 @@ static inline bool mlx5e_qid_validate(const struct mlx5e_profile *profile,
- 
- u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
- 				 struct mlx5e_xsk_param *xsk);
-+u32 mlx5e_rx_get_min_frag_sz(struct mlx5e_params *params,
-+			     struct mlx5e_xsk_param *xsk);
- u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
- 				struct mlx5e_xsk_param *xsk);
- u8 mlx5e_mpwqe_log_pkts_per_wqe(struct mlx5e_params *params,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index 7c49a66d28c9..475b6bd5d29b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -105,7 +105,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 
- 	/* head_offset is not used in this function, because di->xsk.data and
- 	 * di->addr point directly to the necessary place. Furthermore, in the
--	 * current implementation, one page = one packet = one frame, so
-+	 * current implementation, UMR pages are mapped to XSK frames, so
- 	 * head_offset should always be 0.
- 	 */
- 	WARN_ON_ONCE(head_offset);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index f701e4f3c076..d549f770cb4f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -4,18 +4,23 @@
- #include "setup.h"
- #include "en/params.h"
- 
-+/* It matches XDP_UMEM_MIN_CHUNK_SIZE, but as this constant is private and may
-+ * change unexpectedly, and mlx5e has a minimum valid stride size for striding
-+ * RQ, keep this check in the driver.
-+ */
-+#define MLX5E_MIN_XSK_CHUNK_SIZE 2048
++	return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
++}
 +
- bool mlx5e_validate_xsk_param(struct mlx5e_params *params,
- 			      struct mlx5e_xsk_param *xsk,
- 			      struct mlx5_core_dev *mdev)
- {
--	/* AF_XDP doesn't support frames larger than PAGE_SIZE, and the current
--	 * mlx5e XDP implementation doesn't support multiple packets per page.
--	 */
--	if (xsk->chunk_size != PAGE_SIZE)
-+	/* AF_XDP doesn't support frames larger than PAGE_SIZE. */
-+	if (xsk->chunk_size > PAGE_SIZE ||
-+			xsk->chunk_size < MLX5E_MIN_XSK_CHUNK_SIZE)
- 		return false;
++static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
++{
++	return xsk_umem__extract_addr(addr) + xsk_umem__extract_offset(addr);
++}
++
+ LIBBPF_API int xsk_umem__fd(const struct xsk_umem *umem);
+ LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
  
- 	/* Current MTU and XSK headroom don't allow packets to fit the frames. */
--	if (mlx5e_rx_get_linear_frag_sz(params, xsk) > xsk->chunk_size)
-+	if (mlx5e_rx_get_min_frag_sz(params, xsk) > xsk->chunk_size)
- 		return false;
+@@ -176,12 +191,14 @@ LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
+ #define XSK_UMEM__DEFAULT_FRAME_SHIFT    12 /* 4096 bytes */
+ #define XSK_UMEM__DEFAULT_FRAME_SIZE     (1 << XSK_UMEM__DEFAULT_FRAME_SHIFT)
+ #define XSK_UMEM__DEFAULT_FRAME_HEADROOM 0
++#define XSK_UMEM__DEFAULT_FLAGS 0
  
- 	/* frag_sz is different for regular and XSK RQs, so ensure that linear
+ struct xsk_umem_config {
+ 	__u32 fill_size;
+ 	__u32 comp_size;
+ 	__u32 frame_size;
+ 	__u32 frame_headroom;
++	__u32 flags;
+ };
+ 
+ /* Flags for the libbpf_flags field. */
+@@ -201,6 +218,16 @@ LIBBPF_API int xsk_umem__create(struct xsk_umem **umem,
+ 				struct xsk_ring_prod *fill,
+ 				struct xsk_ring_cons *comp,
+ 				const struct xsk_umem_config *config);
++LIBBPF_API int xsk_umem__create_v0_0_2(struct xsk_umem **umem,
++				       void *umem_area, __u64 size,
++				       struct xsk_ring_prod *fill,
++				       struct xsk_ring_cons *comp,
++				       const struct xsk_umem_config *config);
++LIBBPF_API int xsk_umem__create_v0_0_4(struct xsk_umem **umem,
++				       void *umem_area, __u64 size,
++				       struct xsk_ring_prod *fill,
++				       struct xsk_ring_cons *comp,
++				       const struct xsk_umem_config *config);
+ LIBBPF_API int xsk_socket__create(struct xsk_socket **xsk,
+ 				  const char *ifname, __u32 queue_id,
+ 				  struct xsk_umem *umem,
 -- 
 2.17.1
 
