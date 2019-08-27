@@ -2,178 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 764FC9F6CE
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C9D9F6E2
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbfH0XVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 19:21:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44534 "EHLO mail.kernel.org"
+        id S1726077AbfH0X1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 19:27:19 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35994 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726095AbfH0XVs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 19:21:48 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 17BC7206E0;
-        Tue, 27 Aug 2019 23:21:46 +0000 (UTC)
-Date:   Tue, 27 Aug 2019 19:21:44 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <20190827192144.3b38b25a@gandalf.local.home>
-In-Reply-To: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-References: <20190827205213.456318-1-ast@kernel.org>
-        <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1725997AbfH0X1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 19:27:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=N8xeuJbKEW2IcMDIXKqx8vJN56eyQQyLNAntSh+6OPQ=; b=4MC7bEWgeKwZ/eh1rAmmKugUni
+        CI0FcqCQKDnvmKUCj0UbAUtIpNAMXcpJ7v3dwEjmzhdlR8fNv6A4wK79MhtPQkK2dE4m1jrzteKKg
+        ssWHuSczjy29WhecyD+nLp2YJzq5czoz73gJrU+BOL2dgFqdkCvAQKg5G6dzX6aOwPbk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2krp-0007LM-Pz; Wed, 28 Aug 2019 01:27:13 +0200
+Date:   Wed, 28 Aug 2019 01:27:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chun-Hao Lin <hau@realtek.com>
+Subject: Re: [PATCH net-next 1/4] r8169: prepare for adding RTL8125 support
+Message-ID: <20190827232713.GE26248@lunn.ch>
+References: <55099fc6-1e29-4023-337c-98fc04189e5e@gmail.com>
+ <66ac2b09-ea87-a4ba-f6f3-1885e9587298@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <66ac2b09-ea87-a4ba-f6f3-1885e9587298@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 16:01:08 -0700
-Andy Lutomirski <luto@kernel.org> wrote:
+On Tue, Aug 27, 2019 at 08:41:00PM +0200, Heiner Kallweit wrote:
+> This patch prepares the driver for adding RTL8125 support:
+> - change type of interrupt mask to u32
+> - restrict rtl_is_8168evl_up to RTL8168 chip versions
+> - factor out reading MAC address from registers
+> - re-add function rtl_get_events
+> - move disabling interrupt coalescing to RTL8169/RTL8168 init
+> - read different register for PCI commit
+> - don't use bit LastFrag in tx descriptor after send, RTL8125 clears it
 
-> [adding some security and tracing folks to cc]
-> 
-> On Tue, Aug 27, 2019 at 1:52 PM Alexei Starovoitov <ast@kernel.org> wrote:
-> >
-> > Introduce CAP_BPF that allows loading all types of BPF programs,
-> > create most map types, load BTF, iterate programs and maps.
-> > CAP_BPF alone is not enough to attach or run programs.
-> >
-> > Networking:
-> >
-> > CAP_BPF and CAP_NET_ADMIN are necessary to:
-> > - attach to cgroup-bpf hooks like INET_INGRESS, INET_SOCK_CREATE, INET4_CONNECT
-> > - run networking bpf programs (like xdp, skb, flow_dissector)
-> >
-> > Tracing:
-> >
-> > CAP_BPF and perf_paranoid_tracepoint_raw() (which is kernel.perf_event_paranoid == -1)
-> > are necessary to:
-> > - attach bpf program to raw tracepoint
-> > - use bpf_trace_printk() in all program types (not only tracing programs)
-> > - create bpf stackmap
-> >
-> > To attach bpf to perf_events perf_event_open() needs to succeed as usual.
-> >
-> > CAP_BPF controls BPF side.
-> > CAP_NET_ADMIN controls intersection where BPF calls into networking.
-> > perf_paranoid_tracepoint_raw controls intersection where BPF calls into tracing.
-> >
-> > In the future CAP_TRACING could be introduced to control
-> > creation of kprobe/uprobe and attaching bpf to perf_events.
-> > In such case bpf_probe_read() thin wrapper would be controlled by CAP_BPF.
-> > Whereas probe_read() would be controlled by CAP_TRACING.
-> > CAP_TRACING would also control generic kprobe+probe_read.
-> > CAP_BPF and CAP_TRACING would be necessary for tracing bpf programs
-> > that want to use bpf_probe_read.
+Hi Heiner
 
-No mention of the tracefs (/sys/kernel/tracing) file?
-  
-> 
-> First, some high-level review:
-> 
-> Can you write up some clear documentation aimed at administrators that
-> says what CAP_BPF does?  For example, is it expected that CAP_BPF by
-> itself permits reading all kernel memory?  Why might one grant it?
-> 
-> Can you give at least one fully described use case where CAP_BPF
-> solves a real-world problem that is not solved by existing mechanisms?
+That is a lot of changes in one patch. Although there is no planned
+functional change, r8169 has a habit of breaking. Having lots of small
+changes would help tracking down which change caused a breakage, via a
+git bisect.
 
-At least for CAP_TRACING (if it were to allow read/write access
-to /sys/kernel/tracing), that would be very useful. It would be useful
-to those that basically own their machines, and want to trace their
-applications all the way into the kernel without having to run as full
-root.
+So you might want to consider splitting this up into a number of small
+patches.
 
-
-> 
-> Changing the capability that some existing operation requires could
-> break existing programs.  The old capability may need to be accepted
-> as well.
-> 
-> I'm inclined to suggest that CAP_TRACING be figured out or rejected
-> before something like this gets applied.
-> 
-> 
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> > I would prefer to introduce CAP_TRACING soon, since it
-> > will make tracing and networking permission model symmetrical.
-> >  
-> 
-> Here's my proposal for CAP_TRACING, documentation-style:
-> 
-> --- begin ---
-> 
-> CAP_TRACING enables a task to use various kernel features to trace
-> running user programs and the kernel itself.  CAP_TRACING also enables
-> a task to bypass some speculation attack countermeasures.  A task in
-> the init user namespace with CAP_TRACING will be able to tell exactly
-> what kernel code is executed and when, and will be able to read kernel
-> registers and kernel memory.  It will, similarly, be able to read the
-> state of other user tasks.
-> 
-> Specifically, CAP_TRACING allows the following operations.  It may
-> allow more operations in the future:
-> 
->  - Full use of perf_event_open(), similarly to the effect of
-> kernel.perf_event_paranoid == -1.
-> 
->  - Loading and attaching tracing BPF programs, including use of BPF
-> raw tracepoints.
-> 
->  - Use of BPF stack maps.
-> 
->  - Use of bpf_probe_read() and bpf_trace_printk().
-> 
->  - Use of unsafe pointer-to-integer conversions in BPF.
-> 
->  - Bypassing of BPF's speculation attack hardening measures and
-> constant blinding.  (Note: other mechanisms might also allow this.)
-> 
-> CAP_TRACING does not override normal permissions on sysfs or debugfs.
-> This means that, unless a new interface for programming kprobes and
-> such is added, it does not directly allow use of kprobes.
-
-kprobes can be created in the tracefs filesystem (which is separate from
-debugfs, tracefs just gets automatically mounted
-in /sys/kernel/debug/tracing when debugfs is mounted) from the
-kprobe_events file. /sys/kernel/tracing is just the tracefs
-directory without debugfs, and was created specifically to allow
-tracing to be access without opening up the can of worms in debugfs.
-
-Should we allow CAP_TRACING access to /proc/kallsyms? as it is helpful
-to convert perf and trace-cmd's function pointers into names. Once you
-allow tracing of the kernel, hiding /proc/kallsyms is pretty useless.
-
--- Steve
-
-> 
-> If CAP_TRACING, by itself, enables a task to crash or otherwise
-> corrupt the kernel or other tasks, this will be considered a kernel
-> bug.
-> 
-> CAP_TRACING in a non-init user namespace may, in the future, allow
-> tracing of other tasks in that user namespace or its descendants.  It
-> will not enable kernel tracing or tracing of tasks outside the user
-> namespace in question.
-> 
-> --- end ---
-> 
+	Andrew
