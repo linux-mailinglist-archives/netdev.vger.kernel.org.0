@@ -2,133 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B725B9E620
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD5949E639
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728870AbfH0KvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 06:51:10 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54908 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbfH0KvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 06:51:10 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B75075D66B;
-        Tue, 27 Aug 2019 10:51:09 +0000 (UTC)
-Received: from localhost (ovpn-112-31.ams2.redhat.com [10.36.112.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 927635D9CC;
-        Tue, 27 Aug 2019 10:51:06 +0000 (UTC)
-Date:   Tue, 27 Aug 2019 12:51:02 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Li Shuang <shuali@redhat.com>
-Subject: Re: [PATCH net v2] net/sched: pfifo_fast: fix wrong dereference
- when qdisc is reset
-Message-ID: <20190827125102.315ecd08@redhat.com>
-In-Reply-To: <783231162b9d32faaf5df34ad8ad437b0031bd31.1566901438.git.dcaratti@redhat.com>
-References: <783231162b9d32faaf5df34ad8ad437b0031bd31.1566901438.git.dcaratti@redhat.com>
-Organization: Red Hat
+        id S1726190AbfH0K56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 06:57:58 -0400
+Received: from mail-wm1-f49.google.com ([209.85.128.49]:53782 "EHLO
+        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbfH0K56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 06:57:58 -0400
+Received: by mail-wm1-f49.google.com with SMTP id 10so2593028wmp.3
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 03:57:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WsMgWTmNV52F7I2YHnH5D4EeIks1Rn+8SOfW/bGaJoo=;
+        b=L4lZy11oIuBAW4dpJeMH/CBKj/uuKrGqpo7g4357/oqvB3jNyYgHOn7AuVkmPS6GkE
+         4uOjIRPQu93ROhcDIqZoz7P9xgxC1vNO8hPUc1EsTwoaQPCC9q8JpvYDxGhvs7tm6SLL
+         orXnbK2HakhegnOACMUSC5Tx/f36plZn0hySTUiNZmV89nW8qVRc82z0ucID2QGPVKbJ
+         hquR4xFKZQx+Xqi7ewbj16ePdBRNs2BZUDKs70ppmENVA6aepVaYlEAy2+TSld2ev7n3
+         EUs1BSIfMbFNhY0QAPKWsyIBZQpJoDzltS5jIoNJvqXoae4N2wUz4EnK3ZnmSPKvbLZk
+         KP2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WsMgWTmNV52F7I2YHnH5D4EeIks1Rn+8SOfW/bGaJoo=;
+        b=OzraKkcRYmhibB1UoiowlHQ7BYQe7/Y8tE4sPEpmjJJ1L+So84X5nQG5BdW+BwUGY1
+         eHZ3GWlXRvA5Ghji5fpOZZUyVQS9KvuEhZW/enCtmK6SWGf92ZqAjcpWsAERvo10YeSo
+         gDyNCWMpO9YqJ3/i24sqNzn/ZLl8QWbC25tPqd0zSIUx6DjoLloyaUSZqvLgaMu88Gb+
+         d2wMcZzwDsjeiY3V0GM5yHMVGoBGUynZC3UPmUw8j1Yu1e/k8gkPYzPP+WlvIY2KOPoI
+         KCyomg4dYHM9b11t6HZL2gFEDQMAm325pHQLJZC5LO4WsNfLZXS0OnnMpkB/le9pGPQk
+         V3Tg==
+X-Gm-Message-State: APjAAAV1qGHplHoUilwQvG0WUlPCxRIDYj2zsmPF10CDIejBfqGWnSfz
+        C1bAoI2At1ccN9XrbeVNseg=
+X-Google-Smtp-Source: APXvYqySwYUAtUXxRVJ5XuN5hD6mYuVC59FDtYUupx9WiZdPdetGFXbB+GkTuqe58DyR1Ccj1nkDjw==
+X-Received: by 2002:a1c:cb0b:: with SMTP id b11mr28328519wmg.95.1566903476565;
+        Tue, 27 Aug 2019 03:57:56 -0700 (PDT)
+Received: from pixies (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
+        by smtp.gmail.com with ESMTPSA id b26sm2014696wmj.14.2019.08.27.03.57.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 27 Aug 2019 03:57:55 -0700 (PDT)
+Date:   Tue, 27 Aug 2019 13:57:54 +0300
+From:   Shmulik Ladkani <shmulik.ladkani@gmail.com>
+To:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, shmulik@metanetworks.com
+Subject: [REGRESSION] netfilter: conntrack: Unable to change conntrack
+ accounting of a net namespace via 'nf_conntrack_acct' sysfs
+Message-ID: <20190827135754.7d460ef8@pixies>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Tue, 27 Aug 2019 10:51:09 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 12:29:09 +0200
-Davide Caratti <dcaratti@redhat.com> wrote:
+Hi,
 
-> Now that 'TCQ_F_CPUSTATS' bit can be cleared, depending on the value of
-> 'TCQ_F_NOLOCK' bit in the parent qdisc, we need to be sure that per-cpu
-> counters are present when 'reset()' is called for pfifo_fast qdiscs.
-> Otherwise, the following script:
-> 
->  # tc q a dev lo handle 1: root htb default 100
->  # tc c a dev lo parent 1: classid 1:100 htb \
->  > rate 95Mbit ceil 100Mbit burst 64k  
->  [...]
->  # tc f a dev lo parent 1: protocol arp basic classid 1:100
->  [...]
->  # tc q a dev lo parent 1:100 handle 100: pfifo_fast
->  [...]
->  # tc q d dev lo root
-> 
-> can generate the following splat:
-> 
->  Unable to handle kernel paging request at virtual address dfff2c01bd148000
->  Mem abort info:
->    ESR = 0x96000004
->    Exception class = DABT (current EL), IL = 32 bits
->    SET = 0, FnV = 0
->    EA = 0, S1PTW = 0
->  Data abort info:
->    ISV = 0, ISS = 0x00000004
->    CM = 0, WnR = 0
->  [dfff2c01bd148000] address between user and kernel address ranges
->  Internal error: Oops: 96000004 [#1] SMP
->  [...]
->  pstate: 80000005 (Nzcv daif -PAN -UAO)
->  pc : pfifo_fast_reset+0x280/0x4d8
->  lr : pfifo_fast_reset+0x21c/0x4d8
->  sp : ffff800d09676fa0
->  x29: ffff800d09676fa0 x28: ffff200012ee22e4
->  x27: dfff200000000000 x26: 0000000000000000
->  x25: ffff800ca0799958 x24: ffff1001940f332b
->  x23: 0000000000000007 x22: ffff200012ee1ab8
->  x21: 0000600de8a40000 x20: 0000000000000000
->  x19: ffff800ca0799900 x18: 0000000000000000
->  x17: 0000000000000002 x16: 0000000000000000
->  x15: 0000000000000000 x14: 0000000000000000
->  x13: 0000000000000000 x12: ffff1001b922e6e2
->  x11: 1ffff001b922e6e1 x10: 0000000000000000
->  x9 : 1ffff001b922e6e1 x8 : dfff200000000000
->  x7 : 0000000000000000 x6 : 0000000000000000
->  x5 : 1fffe400025dc45c x4 : 1fffe400025dc357
->  x3 : 00000c01bd148000 x2 : 0000600de8a40000
->  x1 : 0000000000000007 x0 : 0000600de8a40004
->  Call trace:
->   pfifo_fast_reset+0x280/0x4d8
->   qdisc_reset+0x6c/0x370
->   htb_reset+0x150/0x3b8 [sch_htb]
->   qdisc_reset+0x6c/0x370
->   dev_deactivate_queue.constprop.5+0xe0/0x1a8
->   dev_deactivate_many+0xd8/0x908
->   dev_deactivate+0xe4/0x190
->   qdisc_graft+0x88c/0xbd0
->   tc_get_qdisc+0x418/0x8a8
->   rtnetlink_rcv_msg+0x3a8/0xa78
->   netlink_rcv_skb+0x18c/0x328
->   rtnetlink_rcv+0x28/0x38
->   netlink_unicast+0x3c4/0x538
->   netlink_sendmsg+0x538/0x9a0
->   sock_sendmsg+0xac/0xf8
->   ___sys_sendmsg+0x53c/0x658
->   __sys_sendmsg+0xc8/0x140
->   __arm64_sys_sendmsg+0x74/0xa8
->   el0_svc_handler+0x164/0x468
->   el0_svc+0x10/0x14
->  Code: 910012a0 92400801 d343fc03 11000c21 (38fb6863)
-> 
-> Fix this by testing the value of 'TCQ_F_CPUSTATS' bit in 'qdisc->flags',
-> before dereferencing 'qdisc->cpu_qstats'.
-> 
-> Changes since v1:
->  - coding style improvements, thanks to Stefano Brivio
-> 
-> Fixes: 8a53e616de29 ("net: sched: when clearing NOLOCK, clear TCQ_F_CPUSTATS, too")
-> CC: Paolo Abeni <pabeni@redhat.com>
-> Reported-by: Li Shuang <shuali@redhat.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Prior d912dec12428 ("netfilter: conntrack: merge acct and helper sysctl table with main one")
+one was able to enable extended accounting within a (non-init)
+net-namespace by setting: 'net.netfilter.nf_conntrack_acct=1'
 
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+However since d912dec12428, doing so results in changing init_net's
+sysctl_acct field, instead of the relevant net's sysctl_acct.
 
--- 
-Stefano
+Seen in original code, PRE d912dec12428, which creates a reference to
+each net's _OWN_ ct.sysctl_acct within a separate acct_sysctl_table,
+snip:
+
+-static int nf_conntrack_acct_init_sysctl(struct net *net)
+-{
+-	struct ctl_table *table;
+-
+-	table = kmemdup(acct_sysctl_table, sizeof(acct_sysctl_table),
+-			GFP_KERNEL);
+-	if (!table)
+-		goto out;
+-
+-	table[0].data = &net->ct.sysctl_acct;
+-
+
+(where 'nf_conntrack_acct_init_sysctl()' was originally called by
+'nf_conntrack_acct_pernet_init()').
+
+However POST d912dec12428, the per-net netfilter sysctl table simply
+inherits from global 'nf_ct_sysctl_table[]', which has 
+
++		.data		= &init_net.ct.sysctl_acct,
+
+effectivly making any 'net.netfilter.nf_conntrack_acct' sysctl change
+affect the 'init_net' and not relevant net namespace.
+
+Also, looks like "nf_conntrack_helper", "nf_conntrack_events",
+"nf_conntrack_timestamp" where also harmed in a similar way, see:
+
+  d912dec12428 ("netfilter: conntrack: merge acct and helper sysctl table with main one")
+  cb2833ed0044 ("netfilter: conntrack: merge ecache and timestamp sysctl tables with main one")
+
+Florian, would it be possible for you to revert these on -net ?
+
+Many thanks,
+Shmulik
