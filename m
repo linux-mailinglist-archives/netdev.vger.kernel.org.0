@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D4F9EFDF
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:13:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CC639EFC9
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbfH0QNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:13:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34982 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726539AbfH0QNY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:13:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=EUdcOXqzDMg/BPMZ+mHA3Lf8aib/qAEj7QKintG8i1o=; b=zoV9sB08UoCM+TTqsh2QC+T5y+
-        lZz1Ib+zNYLNZRXVPOm2DbrZuZSMep/zbGNMPAsR7DBWL3PjE0xYRuVSiCMWWrT9paWu+58hqLWYK
-        BeT4BvV4LrCDclJaiVCpjNqloDVf7Yaooj0FbOSeQq/jYcfdbQfLo98KAgBObxacyNmk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i2dig-0004bz-PJ; Tue, 27 Aug 2019 17:49:18 +0200
-Date:   Tue, 27 Aug 2019 17:49:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Voon, Weifeng" <weifeng.voon@intel.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Subject: Re: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
- cover PHY that only talks C45
-Message-ID: <20190827154918.GO2168@lunn.ch>
-References: <1566870769-9967-1-git-send-email-weifeng.voon@intel.com>
- <e9ece5ad-a669-6d6b-d050-c633cad15476@gmail.com>
- <20190826185418.GG2168@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC814758ED8@PGSMSX103.gar.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC814758ED8@PGSMSX103.gar.corp.intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1729058AbfH0QKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:10:17 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:9486 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726420AbfH0QKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 12:10:17 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7RG2qnd023510;
+        Tue, 27 Aug 2019 12:10:10 -0400
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2un5cy061u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Aug 2019 12:10:09 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7RG7A4f015037;
+        Tue, 27 Aug 2019 16:10:09 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma03wdc.us.ibm.com with ESMTP id 2ujvv6gma4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Aug 2019 16:10:09 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7RGA8Bq13697292
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 27 Aug 2019 16:10:08 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B634112062;
+        Tue, 27 Aug 2019 16:10:08 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5383E112063;
+        Tue, 27 Aug 2019 16:10:08 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 27 Aug 2019 16:10:08 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net] ibmvnic: Do not process reset during or after device removal
+Date:   Tue, 27 Aug 2019 11:10:04 -0500
+Message-Id: <1566922204-8770-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-27_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908270160
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 03:23:34PM +0000, Voon, Weifeng wrote:
-> > > > Make mdiobus_scan() to try harder to look for any PHY that only
-> > talks C45.
-> > > If you are not using Device Tree or ACPI, and you are letting the MDIO
-> > > bus be scanned, it sounds like there should be a way for you to
-> > > provide a hint as to which addresses should be scanned (that's
-> > > mii_bus::phy_mask) and possibly enhance that with a mask of possible
-> > > C45 devices?
-> > 
-> > Yes, i don't like this unconditional c45 scanning. A lot of MDIO bus
-> > drivers don't look for the MII_ADDR_C45. They are going to do a C22
-> > transfer, and maybe not mask out the MII_ADDR_C45 from reg, causing an
-> > invalid register write. Bad things can then happen.
-> > 
-> > With DT and ACPI, we have an explicit indication that C45 should be used,
-> > so we know on this platform C45 is safe to use. We need something
-> > similar when not using DT or ACPI.
-> > 
-> > 	  Andrew
-> 
-> Florian and Andrew,
-> The mdio c22 is using the start-of-frame ST=01 while mdio c45 is using ST=00
-> as identifier. So mdio c22 device will not response to mdio c45 protocol.
-> As in IEEE 802.1ae-2002 Annex 45A.3 mention that:
-> " Even though the Clause 45 MDIO frames using the ST=00 frame code
-> will also be driven on to the Clause 22 MII Management interface,
-> the Clause 22 PHYs will ignore the frames. "
-> 
-> Hence, I am not seeing any concern that the c45 scanning will mess up with 
-> c22 devices.
+Currently, the ibmvnic driver will not schedule device resets
+if the device is being removed, but does not check the device
+state before the reset is actually processed. This leads to a race
+where a reset is scheduled with a valid device state but is
+processed after the driver has been removed, resulting in an oops.
 
-Hi Voon
+Fix this by checking the device state before processing a queued
+reset event.
 
-Take for example mdio-hisi-femac.c 
+Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-static int hisi_femac_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
-{
-        struct hisi_femac_mdio_data *data = bus->priv;
-        int ret;
-
-        ret = hisi_femac_mdio_wait_ready(data);
-        if (ret)
-                return ret;
-
-        writel((mii_id << BIT_PHY_ADDR_OFFSET) | regnum,
-               data->membase + MDIO_RWCTRL);
-
-
-There is no check here for MII_ADDR_C45. So it will perform a C22
-transfer. And regnum will still have MII_ADDR_C45 in it, so the
-writel() is going to set bit 30, since #define MII_ADDR_C45
-(1<<30). What happens on this hardware under these conditions?
-
-You cannot unconditionally ask an MDIO driver to do a C45
-transfer. Some drivers are going to do bad things.
-
-	  Andrew
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index cebd20f..fa4bb94 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1983,6 +1983,10 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 
+ 	rwi = get_next_rwi(adapter);
+ 	while (rwi) {
++		if (adapter->state == VNIC_REMOVING ||
++		    adapter->state == VNIC_REMOVED)
++			goto out;
++
+ 		if (adapter->force_reset_recovery) {
+ 			adapter->force_reset_recovery = false;
+ 			rc = do_hard_reset(adapter, rwi, reset_state);
+@@ -2007,7 +2011,7 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		netdev_dbg(adapter->netdev, "Reset failed\n");
+ 		free_all_rwi(adapter);
+ 	}
+-
++out:
+ 	adapter->resetting = false;
+ 	if (we_lock_rtnl)
+ 		rtnl_unlock();
+-- 
+1.8.3.1
 
