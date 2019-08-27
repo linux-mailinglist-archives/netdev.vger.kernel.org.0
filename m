@@ -2,193 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19DFC9F1C5
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 19:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B13179F1D8
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 19:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728834AbfH0RjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 13:39:24 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38000 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727306AbfH0RjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 13:39:23 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e11so13075145pga.5
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 10:39:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=SgLU2lS4IyQNmp0DPMkC+VzvEYvp2OfAzVkdN5Edpvc=;
-        b=g/8eEdqRb3n3zfc6ptlnGmap71VtVOlk+CTfcRSSOasYGx57+EqRnHsiWP38O7SHW6
-         RuUhU08JJtHCIaOnZ8lrRYYnXoJaT2dZyCdAOgCxVSbiFf92CPIWwTVQxBllF//GYjGc
-         MuPea7l4o0THpRHLEqdxMrChJWVb51GV+pk0Bkh0FaBjPxW53aPHWFdVQbpnLJKB+zBJ
-         hsrDScgAvC3cImeUTOVf9PUAyiWmlS06cAk8r3ifiv0GahGyIJkHooriPbM2HusUBT+f
-         4UmUMGi4Ly++jcK04wsLhz6oGBcsPEn7wURVPkwneReWavtaprxmH1y3OrZfT14UorEV
-         glGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=SgLU2lS4IyQNmp0DPMkC+VzvEYvp2OfAzVkdN5Edpvc=;
-        b=CXRgAvXTV/WdLMGLuIbXOze934skWI3Lhjwm9TrdeKybNk0yKi//BGXGGKsBnwYbFD
-         u3yOonRGBu4nZDZISlAmO7A8m865rJakUyNDFghsom3samNetGpkESTAyc0Etfi+hkEx
-         +cO2QvviYI/2HEZyXeHE+ERGcctbJ0QaZ4d9CAUQ70SBPmfp+U+B4/PVAMAB6n/IUfhY
-         VLZCFNJ0yaDCEQ2jNcMoMjheAn4WOExKCR/bXhiUO34NXPabZzsWa/UGUfDVc3PcIp6w
-         KbPaUDr7A1jdQYeHNQyyIi+qPnhkpyg9vPlSgOXFrdQCXm4OXds/xWZ1qv8zAA42TmOo
-         5Fnw==
-X-Gm-Message-State: APjAAAVo6ji+VMbA3JXEK64/appcEIjJqFRR6xNaI6ezh51CCvozZ2b2
-        I+a0yP2QtUGRCxunjAJlp7HM1g==
-X-Google-Smtp-Source: APXvYqzqTWGRooxwlO50s1QiB9mgPw1qDB9yYQl+v49squv1sI2jSUi+YqN8og+2RsmBC5pCHD/wTg==
-X-Received: by 2002:aa7:8193:: with SMTP id g19mr26884963pfi.16.1566927562922;
-        Tue, 27 Aug 2019 10:39:22 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id k64sm14126pge.65.2019.08.27.10.39.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Aug 2019 10:39:22 -0700 (PDT)
-Subject: Re: [PATCH v5 net-next 02/18] ionic: Add hardware init and device
- commands
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190826213339.56909-1-snelson@pensando.io>
- <20190826213339.56909-3-snelson@pensando.io> <20190827022628.GD13411@lunn.ch>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ab2d6525-e1e1-ef87-7150-dabfaee5b6ff@pensando.io>
-Date:   Tue, 27 Aug 2019 10:39:20 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        id S1730302AbfH0Rs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 13:48:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42486 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727401AbfH0Rs4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 13:48:56 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5F8BD308FB82;
+        Tue, 27 Aug 2019 17:48:56 +0000 (UTC)
+Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B407719D7A;
+        Tue, 27 Aug 2019 17:48:55 +0000 (UTC)
+Date:   Tue, 27 Aug 2019 11:48:52 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 0/4] Introduce variable length mdev alias
+Message-ID: <20190827114852.499dd8cf@x1.home>
+In-Reply-To: <AM0PR05MB4866A24FF3D283F0F3CB3CDAD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <AM0PR05MB4866A24FF3D283F0F3CB3CDAD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <20190827022628.GD13411@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 27 Aug 2019 17:48:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/19 7:26 PM, Andrew Lunn wrote:
-> On Mon, Aug 26, 2019 at 02:33:23PM -0700, Shannon Nelson wrote:
->> +void ionic_debugfs_add_dev(struct ionic *ionic)
->> +{
->> +	struct dentry *dentry;
->> +
->> +	dentry = debugfs_create_dir(ionic_bus_info(ionic), ionic_dir);
->> +	if (IS_ERR_OR_NULL(dentry))
->> +		return;
->> +
->> +	ionic->dentry = dentry;
->> +}
-> Hi Shannon
->
-> There was recently a big patchset from GregKH which removed all error
-> checking from drivers calling debugfs calls. I'm pretty sure you don't
-> need this check here.
+On Tue, 27 Aug 2019 13:11:17 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
-With this check I end up either with a valid dentry value or NULL in 
-ionic->dentry.  Without this check I possibly get an error value in 
-ionic->dentry, which can get used later as the parent dentry to try to 
-make a new debugfs node.  Some quick tracing looks like this error value 
-will get dereferenced in a call to inode_lock(), which would likely 
-cause us some heartburn.
+> Hi Alex, Cornelia,
+> 
+> > -----Original Message-----
+> > From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org> On Behalf
+> > Of Parav Pandit
+> > Sent: Tuesday, August 27, 2019 2:11 AM
+> > To: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > kwankhede@nvidia.com; cohuck@redhat.com; davem@davemloft.net
+> > Cc: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > netdev@vger.kernel.org; Parav Pandit <parav@mellanox.com>
+> > Subject: [PATCH 0/4] Introduce variable length mdev alias
+> > 
+> > To have consistent naming for the netdevice of a mdev and to have consistent
+> > naming of the devlink port [1] of a mdev, which is formed using
+> > phys_port_name of the devlink port, current UUID is not usable because UUID
+> > is too long.
+> > 
+> > UUID in string format is 36-characters long and in binary 128-bit.
+> > Both formats are not able to fit within 15 characters limit of netdev name.
+> > 
+> > It is desired to have mdev device naming consistent using UUID.
+> > So that widely used user space framework such as ovs [2] can make use of
+> > mdev representor in similar way as PCIe SR-IOV VF and PF representors.
+> > 
+> > Hence,
+> > (a) mdev alias is created which is derived using sha1 from the mdev name.
+> > (b) Vendor driver describes how long an alias should be for the child mdev
+> > created for a given parent.
+> > (c) Mdev aliases are unique at system level.
+> > (d) alias is created optionally whenever parent requested.
+> > This ensures that non networking mdev parents can function without alias
+> > creation overhead.
+> > 
+> > This design is discussed at [3].
+> > 
+> > An example systemd/udev extension will have,
+> > 
+> > 1. netdev name created using mdev alias available in sysfs.
+> > 
+> > mdev UUID=83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
+> > mdev 12 character alias=cd5b146a80a5
+> > 
+> > netdev name of this mdev = enmcd5b146a80a5 Here en = Ethernet link m =
+> > mediated device
+> > 
+> > 2. devlink port phys_port_name created using mdev alias.
+> > devlink phys_port_name=pcd5b146a80a5
+> > 
+> > This patchset enables mdev core to maintain unique alias for a mdev.
+> > 
+> > Patch-1 Introduces mdev alias using sha1.
+> > Patch-2 Ensures that mdev alias is unique in a system.
+> > Patch-3 Exposes mdev alias in a sysfs hirerchy.
+> > Patch-4 Extends mtty driver to optionally provide alias generation.
+> > This also enables to test UUID based sha1 collision and trigger error handling
+> > for duplicate sha1 results.
+> > 
+> > In future when networking driver wants to use mdev alias, mdev_alias() API will
+> > be added to derive devlink port name.
+> >   
+> Now that majority of above patches looks in shape and I addressed all comments,
+> In next v1 post, I was considering to include mdev_alias() and have
+> example use in mtty driver.
+> 
+> This way, subsequent series of mlx5_core who intents to use
+> mdev_alias() API makes it easy to review and merge through Dave M,
+> netdev tree. Is that ok with you?
 
-I'd prefer to keep this check and leave ionic->dentry as NULL.
+What would be the timing for the mlx5_core use case?  Can we coordinate
+within the same development cycle?  I wouldn't want someone to come
+clean up the sample driver and remove the API ;)  Thanks,
 
-I've removed several of the other error checks and messages that were in 
-this code, but left a few of the IS_ERR_OR_NULL checks to be sure we 
-don't try dereferencing similar bogus values.
-
->
->> +#ifdef CONFIG_DEBUG_FS
->> +
->> +void ionic_debugfs_create(void);
->> +void ionic_debugfs_destroy(void);
->> +void ionic_debugfs_add_dev(struct ionic *ionic);
->> +void ionic_debugfs_del_dev(struct ionic *ionic);
->> +void ionic_debugfs_add_ident(struct ionic *ionic);
->> +#else
->> +static inline void ionic_debugfs_create(void) { }
->> +static inline void ionic_debugfs_destroy(void) { }
->> +static inline void ionic_debugfs_add_dev(struct ionic *ionic) { }
->> +static inline void ionic_debugfs_del_dev(struct ionic *ionic) { }
->> +static inline void ionic_debugfs_add_ident(struct ionic *ionic) { }
->> +#endif
-> Is this really needed? I would expect there to be stubs for all the
-> debugfs calls if it is disabled.
-
-If CONFIG_DEBUG_FS is not enabled, I would prefer this driver's debugfs 
-code to also be left out rather than be compiled in and left useless.
-
->
->> +/**
->> + * union drv_identity - driver identity information
->> + * @os_type:          OS type (see enum os_type)
->> + * @os_dist:          OS distribution, numeric format
->> + * @os_dist_str:      OS distribution, string format
->> + * @kernel_ver:       Kernel version, numeric format
->> + * @kernel_ver_str:   Kernel version, string format
->> + * @driver_ver_str:   Driver version, string format
->> + */
->> +union ionic_drv_identity {
->> +	struct {
->> +		__le32 os_type;
->> +		__le32 os_dist;
->> +		char   os_dist_str[128];
->> +		__le32 kernel_ver;
->> +		char   kernel_ver_str[32];
->> +		char   driver_ver_str[32];
->> +	};
->> +	__le32 words[512];
->> +};
->> +int ionic_identify(struct ionic *ionic)
->> +{
->> +	struct ionic_identity *ident = &ionic->ident;
->> +	struct ionic_dev *idev = &ionic->idev;
->> +	size_t sz;
->> +	int err;
->> +
->> +	memset(ident, 0, sizeof(*ident));
->> +
->> +	ident->drv.os_type = cpu_to_le32(IONIC_OS_TYPE_LINUX);
->> +	ident->drv.os_dist = 0;
->> +	strncpy(ident->drv.os_dist_str, utsname()->release,
->> +		sizeof(ident->drv.os_dist_str) - 1);
->> +	ident->drv.kernel_ver = cpu_to_le32(LINUX_VERSION_CODE);
->> +	strncpy(ident->drv.kernel_ver_str, utsname()->version,
->> +		sizeof(ident->drv.kernel_ver_str) - 1);
->> +	strncpy(ident->drv.driver_ver_str, IONIC_DRV_VERSION,
->> +		sizeof(ident->drv.driver_ver_str) - 1);
->> +
->> +	mutex_lock(&ionic->dev_cmd_lock);
->> +
-> I don't know about others, but from a privacy prospective, i'm not so
-> happy about this. This is a smart NIC. It could be reporting back to
-> Mothership pensando with this information?
-
-I suppose the phrase "you can trust us" wouldn't help much here, would 
-it... :-)
-
->
-> I would be happier if there was a privacy statement, right here,
-> saying what this information is used for, and an agreement it is not
-> used for anything else. If that gets violated, you can then only blame
-> yourself when we ripe this out and hard code it to static values.
-
-That makes perfect sense.
-
-I can add a full description here of how the information will be used, 
-which should help most folks, but I'm sure there will still be some that 
-don't want this info released.
-
-What I'd like to propose here is that I do the hardcoded strings myself 
-for now, and I work up a way for the users to enable the feature as 
-desired, with a reasonable comment here in the code and in the 
-Documentation/.../ionic.rst file.  This might end up as an ethtool 
-priv-flag that defaults to off and can set a NIC value that is 
-remembered for later.
-
-Does that sound reasonable?
-
-Cheers,
-sln
-
-
+Alex
