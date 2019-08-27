@@ -2,93 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 168669DA85
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 02:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62A89DA8F
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 02:20:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727361AbfH0ARM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 20:17:12 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:35968 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727064AbfH0ARL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 20:17:11 -0400
-Received: by mail-io1-f67.google.com with SMTP id o9so41957630iom.3
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 17:17:11 -0700 (PDT)
+        id S1727563AbfH0AT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 20:19:56 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42478 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbfH0ATz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 20:19:55 -0400
+Received: by mail-pg1-f193.google.com with SMTP id p3so11560969pgb.9
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 17:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=s85OzTJReu+oIW3VJnIwJ9EFty74gLRnV0FZ66qHfIQ=;
-        b=T2gqTyKXKViBWlIoQfM0kVPpz5LLofsBm2lH37bVKteeIVYOWIxNH9QfKxwhrpuZNZ
-         18V+QMHArWisBAGToUxR/Tj0E302WT7jX7WLFjc82BivFOLWwXQQ3KDXVBDl5tFcXHO+
-         t8YS+bgVceSeuODL1TCMZNpzgqjeS0zKRVvNOdl7GiYLVX3CKm04zidW33OeXzo2t4bX
-         WjE+xaefd91bQQpgILdLLrQneT3KIW7Zm4dyMqCuMjfGjbDkN1Mv9S58KN8DwbnhWtHT
-         gs7QRybrPCNor8FufRTHMOLizTYyaqD5JI8736JaMCrcMvoDWdvh9WTWo2go8t/zI1sr
-         4hPQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hEEzzkdeRsczZgOxP6fZZQbk+BsAjtf5i89GMJdNvlE=;
+        b=rlLf2ah1lkpxv0U4sCKox8teYypFOsXhPw8Tiz+SNCVDdyx4vxv9LfOgcNYsNS+y83
+         Yg8HzPGc8JUgeBKk3Y2PX+C6aGW6qoUtel5U5CIfMXnlcd+S/IBtU0XpZ+qJ/JOjxarD
+         j/OE/JjfpvfD8gTDgShCI4D93Zslm+cAAMdMy5AuO8bY0ovqd1N4Eeqw/ZZsB+cV9KZk
+         E95+VcgDt12U1PKk6YwfKBE5UyiBXuEZffnmHhZNAIc1BMj+PhulPKqKi9XAS5AhiLce
+         gMt9DGZc8pfbPA6NP32hvvW4qr5XdG4+KzQDbnE6bP2somHVDqq+XLFb24EFtCnMTeMn
+         gJaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=s85OzTJReu+oIW3VJnIwJ9EFty74gLRnV0FZ66qHfIQ=;
-        b=OTmn8lr/MHancNaJAIR6j+yyUbvZkMY+5/yoD/o2CZpX/VdMRmlQZAGm+u1NwRhmEU
-         GzlQsel6c0NwSPwk3bVqbXzbZqlQ55RdKMtK+bm8m6DfLgl4OVtosGRb/2RAaJc/206v
-         BbPqzGbnRLPjUp37R8VKo/m0M7zaKkRfXAJPJqBvFuOP60v2XFT0cQwoQF5I80kK+QRe
-         tWuXjWHn6vWdgwM1ExETiAF7mcqb0j4/jnGOvuqGfyPB/5px0ghyq2qqhczvkqo/0XTf
-         9g9Hijp4IYQ/TQlfFU9sgJL0j2GwFSOITUq5SnrSmYSJ0o3v9Dv6XXlEYQqUhHkXMoho
-         eGbg==
-X-Gm-Message-State: APjAAAULoLVYCrb4UZ4mfGyzc3Iu7SngN8hlgXfiSlnBp64ki0DW9yEk
-        gyQA5YV27TEP7ioeUk2uckn5lLiA
-X-Google-Smtp-Source: APXvYqyDIYDQ6SZt9Bx1PdzMEtXSvDv742tLDfQlpg9yuDR5I1fAbnK+N3TJ7B0tb6ZdTzCI/4tJOA==
-X-Received: by 2002:a5e:c00e:: with SMTP id u14mr3591781iol.196.1566865030994;
-        Mon, 26 Aug 2019 17:17:10 -0700 (PDT)
-Received: from [172.16.99.109] (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
-        by smtp.googlemail.com with ESMTPSA id z9sm18723192ior.79.2019.08.26.17.17.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 17:17:09 -0700 (PDT)
-Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
- delete alternative ifnames
-To:     David Miller <davem@davemloft.net>
-Cc:     jakub.kicinski@netronome.com, jiri@resnulli.us,
-        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
-        sthemmin@microsoft.com, dcbw@redhat.com, mkubecek@suse.cz,
-        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com
-References: <20190826151552.4f1a2ad9@cakuba.netronome.com>
- <20190826.151819.804077961408964282.davem@davemloft.net>
- <ddd05712-e8c7-3c08-11c7-9840f5b64226@gmail.com>
- <20190826.152525.144590581669280532.davem@davemloft.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <beb8ec07-f28e-4378-e8dd-fa6fe290377b@gmail.com>
-Date:   Mon, 26 Aug 2019 18:17:08 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hEEzzkdeRsczZgOxP6fZZQbk+BsAjtf5i89GMJdNvlE=;
+        b=dxefhKkE17uMu/7I3ifY6/fAs9T+nw2iCKnmrec/8IO7iz+ZNSjAZbniHjxVEQROOi
+         +++rGEegrSVEXMZSNfPqdENztM4vZwDODdkgGJHplfXrZiqo3u3zLf/IggPL48MDRr0a
+         SMXoNW/xr61Cnd7e/yOB01gmxE6h5hwkF2E/3ETTh1bLaRwb4heTv2VgYeiP183MpEqd
+         2OfqvuIpFR+7au7vnlseD9kvtZIIVltYXgiINQNIXw2bFWtvNCGRCdPDhyRcbDwPaN01
+         34Qq8w9+vGg/Qr6QtpO5asmls/TG4Z4P+0FW4S2739N+RtzDXcP0bXi4/bSfnkLA3QiV
+         LJLA==
+X-Gm-Message-State: APjAAAVOAAmxieMEKLKeVrVjuL1Mo5fpB02gbvV4vLHiuM+1mQda8T49
+        0Q6oMOyFq58bk7BqIJ+1RVvdZRX64DpUv7b5PDG/+A==
+X-Google-Smtp-Source: APXvYqxHnCdlzUczP/jzH7EyDlrfTM8SgWVtE5IiAWt81GfWcFP3LsN64bL6ZIOrHbsimWRUCdvbNDymaO/b10v3kbg=
+X-Received: by 2002:aa7:8085:: with SMTP id v5mr21870548pff.165.1566865194432;
+ Mon, 26 Aug 2019 17:19:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190826.152525.144590581669280532.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190812215052.71840-1-ndesaulniers@google.com>
+ <20190812215052.71840-8-ndesaulniers@google.com> <20190815093848.tremcmaftzspuzzj@pburton-laptop>
+In-Reply-To: <20190815093848.tremcmaftzspuzzj@pburton-laptop>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 26 Aug 2019 17:19:43 -0700
+Message-ID: <CAKwvOdm4PgZten24afX5yiccYPjperVaW24bDms4ocf6ROdPjg@mail.gmail.com>
+Subject: Re: [PATCH 08/16] mips: prefer __section from compiler_attributes.h
+To:     Paul Burton <paul.burton@mips.com>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sedat.dilek@gmail.com" <sedat.dilek@gmail.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "miguel.ojeda.sandonis@gmail.com" <miguel.ojeda.sandonis@gmail.com>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/19 4:25 PM, David Miller wrote:
-> From: David Ahern <dsahern@gmail.com>
-> Date: Mon, 26 Aug 2019 16:24:38 -0600
-> 
->> On 8/26/19 4:18 PM, David Miller wrote:
->>> I honestly think that the size of link dumps are out of hand as-is.
->>
->> so you are suggesting new alternate names should not appear in kernel
->> generated RTM_NEWLINK messages - be it a link dump or a notification on
->> a change?
-> 
-> I counter with the question of how much crap can we keep sticking in there
-> before we have to do something else to provide that information?
-> 
+On Thu, Aug 15, 2019 at 2:38 AM Paul Burton <paul.burton@mips.com> wrote:
+>
+> Hi Nick,
+>
+> On Mon, Aug 12, 2019 at 02:50:41PM -0700, Nick Desaulniers wrote:
+> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+>
+> It would be good to add a commit message, even if it's just a line
+> repeating the subject & preferably describing the motivation.
+>
+> > ---
+> >  arch/mips/include/asm/cache.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/arch/mips/include/asm/cache.h b/arch/mips/include/asm/cache.h
+> > index 8b14c2706aa5..af2d943580ee 100644
+> > --- a/arch/mips/include/asm/cache.h
+> > +++ b/arch/mips/include/asm/cache.h
+> > @@ -14,6 +14,6 @@
+> >  #define L1_CACHE_SHIFT               CONFIG_MIPS_L1_CACHE_SHIFT
+> >  #define L1_CACHE_BYTES               (1 << L1_CACHE_SHIFT)
+> >
+> > -#define __read_mostly __attribute__((__section__(".data..read_mostly")))
+> > +#define __read_mostly __section(.data..read_mostly)
+> >
+> >  #endif /* _ASM_CACHE_H */
+> > --
+> > 2.23.0.rc1.153.gdeed80330f-goog
+>
+> I'm not copied on the rest of the series so I'm not sure what your
+> expectations are about where this should be applied. Let me know if
+> you'd prefer this to go through mips-next, otherwise:
+>
+>     Acked-by: Paul Burton <paul.burton@mips.com>
 
-Something a bit stand alone would be a better choice - like all of the
-VF stuff, stats, per-device type configuration. Yes, that ship has
-sailed, but as I recall that is where the overhead is.
-
-An attribute as basic as a name is the wrong place for that split.
+Thanks Paul, going to send this up via Miguel's tree, if you don't
+mind.  Updating my series now.  (Will probably avoid running
+get_maintainer.pl on every patch...too hard to cc everyone on the
+whole series).
+-- 
+Thanks,
+~Nick Desaulniers
