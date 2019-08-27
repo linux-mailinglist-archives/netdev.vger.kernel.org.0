@@ -2,39 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B9D9F051
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E419F057
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:38:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729570AbfH0QhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:37:22 -0400
-Received: from mga11.intel.com ([192.55.52.93]:10269 "EHLO mga11.intel.com"
+        id S1730079AbfH0Qie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:38:34 -0400
+Received: from mga17.intel.com ([192.55.52.151]:7283 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726539AbfH0QhW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:37:22 -0400
+        id S1726539AbfH0Qie (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 12:38:34 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:37:22 -0700
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:38:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,437,1559545200"; 
-   d="scan'208";a="187959999"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Aug 2019 09:37:19 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DDDCDBD; Tue, 27 Aug 2019 19:37:17 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        ocfs2-devel@oss.oracle.com, Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Colin Ian King <colin.king@canonical.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider use
-Date:   Tue, 27 Aug 2019 19:37:17 +0300
-Message-Id: <20190827163717.44101-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.23.0.rc1
+   d="scan'208";a="331876326"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga004.jf.intel.com with ESMTP; 27 Aug 2019 09:38:33 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2019-08-26
+Date:   Tue, 27 Aug 2019 09:38:17 -0700
+Message-Id: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -42,74 +35,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are users already and will be more of BITS_TO_BYTES() macro.
-Move it to bitops.h for wider use.
+This series contains updates to ice driver only.
 
-In the case of ocfs2 the replacement is identical.
+Usha fixes the statistics reported on 4 port NICs which were reporting
+the incorrect statistics due to using the incorrect port identifier.
 
-As for bnx2x, there are two places where floor version is used.
-In the first case to calculate the amount of structures that can fit
-one memory page. In this case obviously the ceiling variant is correct and
-original code might have a potential bug, if amount of bits % 8 is not 0.
-In the second case the macro is used to calculate bytes transmitted in one
-microsecond. This will work for all speeds which is multiply of 1Gbps without
-any change, for the rest new code will give ceiling value, for instance 100Mbps
-will give 13 bytes, while old code gives 12 bytes and the arithmetically
-correct one is 12.5 bytes. Further the value is used to setup timer threshold
-which in any case has its own margins due to certain resolution. I don't see
-here an issue with slightly shifting thresholds for low speed connections, the
-card is supposed to utilize highest available rate, which is usually 10Gbps.
+Victor fixes an issue when trying to traverse to the first node of a
+requested layer by adding a sibling head pointer for each layer per
+traffic class.
 
-Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-- described bnx2x cases in the commit message
-- appended Rb (for ocfs2)
+Anirudh cleans up the locking and logic for enabling and disabling
+VSI's to make it more consistent.  Updates the driver to do dynamic
+allocation of queue management bitmaps and arrays, rather than
+statically allocating them which consumes more memory than required.
+Refactor the logic in ice_ena_msix_range() for clarity and add
+additional checks for when requested resources exceed what is available.
 
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h | 1 -
- fs/ocfs2/dlm/dlmcommon.h                         | 4 ----
- include/linux/bitops.h                           | 1 +
- 3 files changed, 1 insertion(+), 5 deletions(-)
+Jesse updates the debugging print statements to make it more useful when
+dealing with link and PHY related issues.
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-index 066765fbef06..0a59a09ef82f 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-@@ -296,7 +296,6 @@ static inline void bnx2x_dcb_config_qm(struct bnx2x *bp, enum cos_mode mode,
-  *    possible, the driver should only write the valid vnics into the internal
-  *    ram according to the appropriate port mode.
-  */
--#define BITS_TO_BYTES(x) ((x)/8)
- 
- /* CMNG constants, as derived from system spec calculations */
- 
-diff --git a/fs/ocfs2/dlm/dlmcommon.h b/fs/ocfs2/dlm/dlmcommon.h
-index aaf24548b02a..0463dce65bb2 100644
---- a/fs/ocfs2/dlm/dlmcommon.h
-+++ b/fs/ocfs2/dlm/dlmcommon.h
-@@ -688,10 +688,6 @@ struct dlm_begin_reco
- 	__be32 pad2;
- };
- 
--
--#define BITS_PER_BYTE 8
--#define BITS_TO_BYTES(bits) (((bits)+BITS_PER_BYTE-1)/BITS_PER_BYTE)
--
- struct dlm_query_join_request
- {
- 	u8 node_idx;
-diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-index cf074bce3eb3..79d80f5ddf7b 100644
---- a/include/linux/bitops.h
-+++ b/include/linux/bitops.h
-@@ -5,6 +5,7 @@
- #include <linux/bits.h>
- 
- #define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
-+#define BITS_TO_BYTES(nr)	DIV_ROUND_UP(nr, BITS_PER_BYTE)
- #define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
- 
- extern unsigned int __sw_hweight8(unsigned int w);
+Krzysztof adds a local variable to the VSI rebuild path to improve
+readability.
+
+Akeem limits the reporting of MDD events from VFs so that the kernel
+log is not clogged up with MDD events which are duplicate or potentially
+false positives.  Fixed a reset issue that would result in the system
+getting into a state that could only be resolved by a reboot by
+testing if the VF is in a disabled state during a reset.
+
+Michal adds a check to avoid trying to access memory that has not be
+allocated by checking the number of queue pairs.
+
+Jake fixes a static analysis warning due to a cast of a u8 to unsigned
+long, so just update ice_is_tc_ena() to take a unsigned long so that a
+cast is not necessary.
+
+Colin Ian King fixes a potential infinite loop where a u8 is being
+compared to an int.
+
+Maciej refactors the queue handling functions that work on queue arrays
+so that the logic can be done for a single queue.
+
+Paul adds support for VFs to enable and disable single queues.
+
+Henry fixed the order of operations in ice_remove() which was trying to
+use adminq operations that were already disabled.
+
+The following are changes since commit d00ee466a07eb9182ad3caf6140c7ebb527b4c64:
+  nfp: add AMDA0058 boards to firmware list
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Akeem G Abodunrin (2):
+  ice: Don't clog kernel debug log with VF MDD events errors
+  ice: Fix VF configuration issues due to reset
+
+Anirudh Venkataramanan (3):
+  ice: Sanitize ice_ena_vsi and ice_dis_vsi
+  ice: Alloc queue management bitmaps and arrays dynamically
+  ice: Rework ice_ena_msix_range
+
+Colin Ian King (1):
+  ice: fix potential infinite loop
+
+Henry Tieman (1):
+  ice: fix adminq calls during remove
+
+Jacob Keller (1):
+  ice: fix ice_is_tc_ena
+
+Jesse Brandeburg (1):
+  ice: shorten local and add debug prints
+
+Krzysztof Kazimierczak (1):
+  ice: Introduce a local variable for a VSI in the rebuild path
+
+Maciej Fijalkowski (1):
+  ice: add support for enabling/disabling single queues
+
+Michal Swiatkowski (1):
+  ice: add validation in OP_CONFIG_VSI_QUEUES VF message
+
+Paul Greenwalt (1):
+  ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap
+
+Usha Ketineni (1):
+  ice: Fix ethtool port and PFC stats for 4x25G cards
+
+Victor Raj (1):
+  ice: added sibling head to parse nodes
+
+ drivers/net/ethernet/intel/ice/ice.h          |  12 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  63 ++-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  13 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 398 +++++++++++-------
+ drivers/net/ethernet/intel/ice/ice_lib.h      |  28 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 205 +++++----
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  57 +--
+ drivers/net/ethernet/intel/ice/ice_type.h     |   6 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 279 ++++++++----
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  14 +-
+ 10 files changed, 688 insertions(+), 387 deletions(-)
+
 -- 
-2.23.0.rc1
+2.21.0
 
