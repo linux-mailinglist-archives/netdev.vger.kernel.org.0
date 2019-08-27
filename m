@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B55AC9E692
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9205F9E69C
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728702AbfH0LMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 07:12:34 -0400
-Received: from mail-eopbgr60041.outbound.protection.outlook.com ([40.107.6.41]:16709
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1727910AbfH0LQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 07:16:26 -0400
+Received: from mail-eopbgr150053.outbound.protection.outlook.com ([40.107.15.53]:36312
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725793AbfH0LMd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 07:12:33 -0400
+        id S1725860AbfH0LQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 07:16:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NWnj+2W2sqyWoZxGh3cpOaYYqHyZJciy4ZBywBTkm8QQkoH5JnhWx3ba/jcP4hbFzU32TG2mf23CDEen5tdx9j8ptewha0Mkns4xdyWHwKTCB0Y09EJPRItepLCTQ7IJxr3rFVnbMMMl+jkhlyyLWuvc+WO4+ijSyMvOO6B970kFO2X3oOIY/d1rFd5oTIgukBx5UlcYO4LkmMkDpan/xpY9xm9nLOX38TYCvmmJTl/tRrcKcDS9S4fjyVNrxsiVWkXXPufYdoQvNhxSa0cq6X+uugVYxQ4H4Pc6LKD1BSIHGyNp1h8dMCV8t+vlkn/10/BFvUglwmc8PsTojo11cQ==
+ b=HRBmNRqwkYASsxzzosx/pZ/baDSqDIbwWSANL3TqUnisPlAGiZS7GHGBtdSegPA3V4qSjg7GvmUmhn6iyU+R8Z0dWZROt6rPNTMP61Cfz16/SQXXGDTbRHja0WbT61vxoaodi0o5iDhw3j5BtiQIitSCi54ClGTiiEEaZddp/JxnpeJKhTO/7KfcHwjLa5Wf6g/+OSNy1ddE0VxRjNNr73+wlEKB/cZdVqOS243AnPJMYEKNd7FFteMnuNITIK2+T5wN1/n64Ix2O5Wr6qrx8Za1E+yq8Hp7pQVOxPq8iUe6W+xIRbGaiGvhJEnvZvmxyCfw38zJzJBZc+V7qdiaYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M2rSwjzY/WF+8jdRKCDHTRRcOoZQDEZLdt6wW0Lr18Q=;
- b=VcwfnEQ+bPKylTeVE6JlUCdJ6CmAjPmWOPgqrJXizTcIb2NHbC8QEyJb1xGc0ZA07rjmh0+bmXQhtje7Q5MtEY1qFV6cfslAzM01zVd/QvFr36ogRVoPSy45CRNl00qAx0aWePZa9LZj54O+O3H6wWiH61yHreBFdHHjmjj4QA2xMRtjp/IArn3+q1elyzBkIs8RgaUV2Jh0ny2D7eiZWTdW+4mYMkYNKIDH6aW4xips/YouCyAq259ERsvICySDZyA528yY2qw+JTYKKZeev1L9vRa+jBkZ5oppawoWfmZu7ZYVC54/9CCGWL/MhRHjh/E4du25lUQ9hQbrKnRzlg==
+ bh=msXxQjljoYnswd+1XdnZ+ev8v2tQcLbPdXFu9EZwS7o=;
+ b=Kv4tyyJ+5cTkgy17TytVFfHPJQ0uA8WvSDEp2z8CxWDKh+IgttQ9yqoUPGX1Ma4j/C3VGzm5+OadQA6tHlL1PtKp+P6ywQQZAKj3dYl2sTypDN5ab3LK5YBCZQBdB4vnE6WJr+2EPGIC7IPDu86FZHTsvHB5Gvn77Dh2+Aoriu3w/sua8OfijzW46Lc77tWF+MTKU++k3JgE9u/8E3d+oFWf5Fik1l7eMe5xdD0BmrdmeR0SN97XhDvjoSUkRmVoLUzonCveUwXRAPwJfdJ3Mrkyemsj7ZEACEl+w4yCZCwot2IzMePsC3v7YCthXLCSsw9D0EkhDqCUqXx2QChGfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M2rSwjzY/WF+8jdRKCDHTRRcOoZQDEZLdt6wW0Lr18Q=;
- b=rVWzDhLAKsosHB2bdB9HVui+ljYwebO8qINzXpU4aSfbAQPdAGKDRby8zFq2ACQZyNcbA5rklCDB8Mjd0vLy8FSgVTTPOsDUmUx1kzpsH3jX1qMJXamRBxGk0mwJ4Y5++gHtm2y7OErckAabRiQpHcLor0R3ls31JNLcV2h7mPw=
+ bh=msXxQjljoYnswd+1XdnZ+ev8v2tQcLbPdXFu9EZwS7o=;
+ b=NlvrRfhLHlwjI6UgM2pBP/YCIHz26YxYCaS1EJ47ydiP87e7Y9YemfVjqGdhnUg/wwWSk4CIkOkqjFGnKoHtpctl1pzrAsxr8MG5WT7sU+J56eCIsq0QqOU8/0nbUXHHtXRd4owQ0VCsQrXT33L2xlOpxUppWoxcxFqDeJLSKkg=
 Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4500.eurprd05.prod.outlook.com (52.134.124.153) with Microsoft SMTP
+ AM0PR05MB6084.eurprd05.prod.outlook.com (20.178.203.92) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.21; Tue, 27 Aug 2019 11:12:23 +0000
+ 15.20.2199.21; Tue, 27 Aug 2019 11:16:21 +0000
 Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
  ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
  ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.020; Tue, 27 Aug 2019
- 11:12:23 +0000
+ 11:16:21 +0000
 From:   Parav Pandit <parav@mellanox.com>
 To:     Cornelia Huck <cohuck@redhat.com>
 CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
@@ -46,9 +46,9 @@ CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Subject: RE: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
 Thread-Topic: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
-Thread-Index: AQHVXE6sjQlIhIUUgkClKEYpCVnoRKcOypkAgAAMheA=
-Date:   Tue, 27 Aug 2019 11:12:23 +0000
-Message-ID: <AM0PR05MB4866B68C9E60E42359BE1F4DD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Thread-Index: AQHVXE6sjQlIhIUUgkClKEYpCVnoRKcOypkAgAAONqA=
+Date:   Tue, 27 Aug 2019 11:16:21 +0000
+Message-ID: <AM0PR05MB48668D8E4B414D015ED4C826D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
 References: <20190826204119.54386-1-parav@mellanox.com>
         <20190826204119.54386-2-parav@mellanox.com>
  <20190827122428.37442fe1.cohuck@redhat.com>
@@ -61,31 +61,31 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=parav@mellanox.com; 
 x-originating-ip: [106.51.18.188]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 10b1fbd8-b46f-482b-b20e-08d72adf6fe6
+x-ms-office365-filtering-correlation-id: 119c719d-67fe-45fd-edd8-08d72adffd65
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4500;
-x-ms-traffictypediagnostic: AM0PR05MB4500:
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6084;
+x-ms-traffictypediagnostic: AM0PR05MB6084:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4500D1A85B0BAEC382840330D1A00@AM0PR05MB4500.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <AM0PR05MB60848A8988F5AD6D5BD2CA48D1A00@AM0PR05MB6084.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2399;
 x-forefront-prvs: 0142F22657
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(199004)(13464003)(189003)(446003)(11346002)(476003)(102836004)(76176011)(6116002)(7696005)(86362001)(53546011)(6506007)(55236004)(9686003)(8936002)(305945005)(9456002)(3846002)(316002)(25786009)(81156014)(74316002)(4326008)(54906003)(6246003)(229853002)(55016002)(99286004)(8676002)(7736002)(81166006)(33656002)(186003)(71190400001)(71200400001)(5660300002)(256004)(14444005)(478600001)(14454004)(53936002)(26005)(6436002)(6916009)(66946007)(76116006)(66446008)(64756008)(66556008)(66476007)(2906002)(486006)(66066001)(52536014);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4500;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(346002)(376002)(136003)(366004)(199004)(189003)(13464003)(6116002)(71200400001)(71190400001)(8936002)(9456002)(6246003)(81156014)(81166006)(25786009)(26005)(14454004)(86362001)(256004)(305945005)(74316002)(7736002)(8676002)(478600001)(4326008)(99286004)(186003)(102836004)(7696005)(55236004)(53546011)(6506007)(76176011)(54906003)(316002)(229853002)(53936002)(9686003)(55016002)(6436002)(33656002)(2906002)(446003)(486006)(11346002)(476003)(6916009)(66476007)(66946007)(3846002)(5660300002)(52536014)(66446008)(64756008)(76116006)(66066001)(66556008)(4744005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6084;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: nWep01gU5RPeTvIwA6DzOjUOxCDMIJEEKYPoQ7dEyvHUkmydTlmrmEOACIb52ekbtyzLfXx2YUH3tjC1f4iRfGtwuJFKE9ySXLdymbVslE+AF0SQNlw3Mym5u346riAO6AcF6bYZMKL9IDaX81P1Slj/46kayVTBxf03N8XBsmPbwM9zAgrRrNaS/H+flvXDJAeUAtdQesH1iVsbhoZjMhhhTC88bZd3ntGurqCh+gwKKVNdvudqUpCtpnB+cnk69UDSh7waCrwkMArPiAyZ8LULZTCiJBmSMx5INwpcdpDa1sDmqXEHL9TE/UKuUw0z5J+rIfFzGI6NIE/dBQcNySMd+cXsMCyymaYmINmfysbgVt/sIGii1BMUSCJzu5CZujkE1vhwdSdmHac2AFcLJrthResxNTbLB/YGmIueN5c=
+x-microsoft-antispam-message-info: jW0/2D2wetcs77MNu47e3uay3WUnkZcquy7+s7aB4KpmacT70RFNpCSerZR7eiMVvlxhMgs1NYkbUBSOt+4Zta3Vfl2GlIsLm/PO0imDjWCu/N/8az4SiN6hDAxIOXBDo5Sue2vEgcBU1SVsB28jVAZZASkZidl9+Ao2kGq1kL+QOcPlO4oTglOtXdRnbI2nL4E7ePkifUxPYyVivCgMtSKU+9vbckoFTJcGsAB+7cVk/MeehTDrBFqo23XBC2vIQpBuyfcqc6ekvz1/tXL6JqDB7nopjfxj/G6aTdXBM0CYWfsQCqF61S+0OvlGUeExmL6TSDIDxM0JCZNdXBrE+1gz9RRoM3hRLYqEzrnUqEDeU2qjg9Kbkqva48AZI9m6flOU6/BmIMBFRnqJ/NterGW/SMbyTRMeaHRIDMSdaO8=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10b1fbd8-b46f-482b-b20e-08d72adf6fe6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 11:12:23.8308
+X-MS-Exchange-CrossTenant-Network-Message-Id: 119c719d-67fe-45fd-edd8-08d72adffd65
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 11:16:21.2224
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7NggeKzpBQ6Pk7SlnT3P7co1BaUhN/aO1yuwL5uaPdv1+y0Xink7UwkVRtYodMnIvViwRyPKSKmOcdjEZyrcDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4500
+X-MS-Exchange-CrossTenant-userprincipalname: JOnRB+6Al0ZmpTqlQkL5vbhhLDK6LtycQMj5J7PCLIwNQFxu5dE/9FR4lP8/unSc9CT9YWBZZGQoIqumQ6SQnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6084
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -104,57 +104,17 @@ X-Mailing-List: netdev@vger.kernel.org
 >=20
 > On Mon, 26 Aug 2019 15:41:16 -0500
 > Parav Pandit <parav@mellanox.com> wrote:
->=20
-> > Whenever a parent requests to generate mdev alias, generate a mdev
-> > alias.
-> > It is an optional attribute that parent can request to generate for
-> > each of its child mdev.
-> > mdev alias is generated using sha1 from the mdev name.
->=20
-> Maybe add some motivation here as well?
->=20
-> "Some vendor drivers want an identifier for an mdev device that is shorte=
-r than
-> the uuid, due to length restrictions in the consumers of that identifier.
->=20
-> Add a callback that allows a vendor driver to request an alias of a speci=
-fied
-> length to be generated (via sha1) for an mdev device. If generated, that =
-alias is
-> checked for collisions."
->=20
-I did described the motivation in the cover letter with example and this de=
-sign discussion thread.
-I will include above summary in v1.
-=20
-> What about:
->=20
-> * @get_alias_length: optional callback to specify length of the alias to =
-create
-> *                    Returns unsigned integer: length of the alias to be =
-created,
-> *                                              0 to not create an alias
->=20
-Ack.
-
-> I also think it might be beneficial to add a device parameter here now (r=
-ather
-> than later); that seems to be something that makes sense.
->=20
-Without showing the use, it shouldn't be added.
-
-> >   * Parent device that support mediated device should be registered wit=
-h
-> mdev
-> >   * module with mdev_parent_ops structure.
-> >   **/
-> > @@ -92,6 +95,7 @@ struct mdev_parent_ops {
-> >  	long	(*ioctl)(struct mdev_device *mdev, unsigned int cmd,
-> >  			 unsigned long arg);
-> >  	int	(*mmap)(struct mdev_device *mdev, struct vm_area_struct
-> *vma);
-> > +	unsigned int (*get_alias_length)(void);
-> >  };
 > >
-> >  /* interface for exporting mdev supported type attributes */
-
+> >  static int __init mdev_init(void)
+> >  {
+> > +	alias_hash =3D crypto_alloc_shash("sha1", 0, 0);
+> > +	if (!alias_hash)
+> > +		return -ENOMEM;
+> > +
+> >  	return mdev_bus_register();
+>=20
+> Don't you need to call crypto_free_shash() if mdev_bus_register() fails?
+>=20
+Missed to answer this in previous reply.
+Yes, took care of it in v1.
+Mark Bloch also pointed it to me.
