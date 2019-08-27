@@ -2,56 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 398979F2F5
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83569F30C
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:17:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730839AbfH0TJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 15:09:37 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43605 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730262AbfH0TJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:09:37 -0400
-Received: by mail-qt1-f195.google.com with SMTP id b11so120186qtp.10
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 12:09:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IbBhE5drx8qeLPrR3IPO+iWqiJ6vMaqKMAzhYc1KZG4=;
-        b=kUPeTVHLNhGb50E3Ljp2D1T6Zmn33IJvY8e5eZ2uQD/jNF7gGTig8XtF2TAfWknSpA
-         Dk/+BmhbASX+Ubfecq5ZSEV/hvAH/ep4cK0VtrgHPYS4gi//Lzj3CPIansufhoDXYJoP
-         7DuxMnrHJ25Jm1lVa72el+wXwFG33IrzMxr0nsHe5Z3Kv3TP5eOpES75n2glYqxUktCa
-         Yi9YK+ecishDZfq46z/pTvujm/d7sjuzIxhlFCnqk/eKe9PBLafbDm7ioYd1FAIvg1X2
-         b83cG1Eb14dV5ZP22OVcK51kThXd5pBMYZHq+i9L5stSpr/QhCpXZnJ+Uic8SIzokwdd
-         MJAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IbBhE5drx8qeLPrR3IPO+iWqiJ6vMaqKMAzhYc1KZG4=;
-        b=EpcypIVAHIGaDJwm9nLUaW2JUjiD8txOCenS8bXAVMur8QNJAQtn/stZKAAP41hU6G
-         pU+fbdn2EGKXR/pPsTDHxTNh4dO202dkJGgCIaqCBwUzsOVrioGUsOa490NwFXcgMH1d
-         Zx+4CrIgWtqrmHfkm1HbGaN/ngnH2kRnhxvtR/rCgpFRLudTAQuquxitS/7dnNmdqG/S
-         GdMplmdNLpp/VcP0Wg12PKMd4OlTuO758l0YciwF5UIZs0EbyfqpxfvIa9VsZQaPt51x
-         Qn3ZHEpolItnC2OEVkB2QeNK9eZyvnGlxeGROSqkOLR9V0ODsP74VXYKPcATNzt0xnv9
-         pUeQ==
-X-Gm-Message-State: APjAAAWz1boaT9sRwH7riPn5ndYMxW86p+nTCku/HHsVOCalebz8aL5F
-        AmF2/rhkXW6nb/HeEJLwPZWgebHQ
-X-Google-Smtp-Source: APXvYqzUW2Tg5ARcctWIRKXFY0ZaIdKuEGXxxQOqf34A/vvDQvEUU2iJk4qbw50E9P8SSf+kLF7EIA==
-X-Received: by 2002:ac8:2b47:: with SMTP id 7mr436308qtv.116.1566932975702;
-        Tue, 27 Aug 2019 12:09:35 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:89db:8f93:8219:1619])
-        by smtp.gmail.com with ESMTPSA id g14sm140005qkm.42.2019.08.27.12.09.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2019 12:09:34 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        jakub.kicinski@netronome.com, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] tcp: inherit timestamp on mtu probe
-Date:   Tue, 27 Aug 2019 15:09:33 -0400
-Message-Id: <20190827190933.227725-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+        id S1730809AbfH0TRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 15:17:03 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38839 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726871AbfH0TRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:17:02 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 27 Aug 2019 22:16:59 +0300
+Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7RJGuGq026842;
+        Tue, 27 Aug 2019 22:16:57 +0300
+From:   Parav Pandit <parav@mellanox.com>
+To:     alex.williamson@redhat.com, jiri@mellanox.com,
+        kwankhede@nvidia.com, cohuck@redhat.com, davem@davemloft.net
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>
+Subject: [PATCH v1 0/5] Introduce variable length mdev alias
+Date:   Tue, 27 Aug 2019 14:16:49 -0500
+Message-Id: <20190827191654.41161-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190826204119.54386-1-parav@mellanox.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,45 +34,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+To have consistent naming for the netdevice of a mdev and to have
+consistent naming of the devlink port [1] of a mdev, which is formed using
+phys_port_name of the devlink port, current UUID is not usable because
+UUID is too long.
 
-TCP associates tx timestamp requests with a byte in the bytestream.
-If merging skbs in tcp_mtu_probe, migrate the tstamp request.
+UUID in string format is 36-characters long and in binary 128-bit.
+Both formats are not able to fit within 15 characters limit of netdev
+name.
 
-Similar to MSG_EOR, do not allow moving a timestamp from any segment
-in the probe but the last. This to avoid merging multiple timestamps.
+It is desired to have mdev device naming consistent using UUID.
+So that widely used user space framework such as ovs [2] can make use
+of mdev representor in similar way as PCIe SR-IOV VF and PF representors.
 
-Tested with the packetdrill script at
-https://github.com/wdebruij/packetdrill/commits/mtu_probe-1
+Hence,
+(a) mdev alias is created which is derived using sha1 from the mdev name.
+(b) Vendor driver describes how long an alias should be for the child mdev
+created for a given parent.
+(c) Mdev aliases are unique at system level.
+(d) alias is created optionally whenever parent requested.
+This ensures that non networking mdev parents can function without alias
+creation overhead.
 
-Link: http://patchwork.ozlabs.org/patch/1143278/#2232897
-Fixes: 4ed2d765dfac ("net-timestamp: TCP timestamping")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+This design is discussed at [3].
+
+An example systemd/udev extension will have,
+
+1. netdev name created using mdev alias available in sysfs.
+
+mdev UUID=83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
+mdev 12 character alias=cd5b146a80a5
+
+netdev name of this mdev = enmcd5b146a80a5
+Here en = Ethernet link
+m = mediated device
+
+2. devlink port phys_port_name created using mdev alias.
+devlink phys_port_name=pcd5b146a80a5
+
+This patchset enables mdev core to maintain unique alias for a mdev.
+
+Patch-1 Introduces mdev alias using sha1.
+Patch-2 Ensures that mdev alias is unique in a system.
+Patch-3 Exposes mdev alias in a sysfs hirerchy.
+Patch-4 Extends mtty driver to optionally provide alias generation.
+This also enables to test UUID based sha1 collision and trigger
+error handling for duplicate sha1 results.
+
+In future when networking driver wants to use mdev alias, mdev_alias()
+API will be added to derive devlink port name.
+
+[1] http://man7.org/linux/man-pages/man8/devlink-port.8.html
+[2] https://docs.openstack.org/os-vif/latest/user/plugins/ovs.html
+[3] https://patchwork.kernel.org/cover/11084231/
+
 ---
- net/ipv4/tcp_output.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changelog:
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 5c46bc4c7e8d..42abc9bd687a 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2053,7 +2053,7 @@ static bool tcp_can_coalesce_send_queue_head(struct sock *sk, int len)
- 		if (len <= skb->len)
- 			break;
- 
--		if (unlikely(TCP_SKB_CB(skb)->eor))
-+		if (unlikely(TCP_SKB_CB(skb)->eor) || tcp_has_tx_tstamp(skb))
- 			return false;
- 
- 		len -= skb->len;
-@@ -2170,6 +2170,7 @@ static int tcp_mtu_probe(struct sock *sk)
- 			 * we need to propagate it to the new skb.
- 			 */
- 			TCP_SKB_CB(nskb)->eor = TCP_SKB_CB(skb)->eor;
-+			tcp_skb_collapse_tstamp(nskb, skb);
- 			tcp_unlink_write_queue(skb, sk);
- 			sk_wmem_free_skb(sk, skb);
- 		} else {
+v0->v1:
+ - Addressed comments from Alex Williamson, Cornelia Hunk and Mark Bloch
+ - Moved alias length check outside of the parent lock
+ - Moved alias and digest allocation from kvzalloc to kzalloc
+ - &alias[0] changed to alias
+ - alias_length check is nested under get_alias_length callback check
+ - Changed comments to start with an empty line
+ - Added comment where alias memory ownership is handed over to mdev device
+ - Fixed cleaunup of hash if mdev_bus_register() fails
+ - Updated documentation for new sysfs alias file
+ - Improved commit logs to make description more clear
+ - Fixed inclusiong of alias for NULL check
+ - Added ratelimited debug print for sha1 hash collision error
+
+Parav Pandit (5):
+  mdev: Introduce sha1 based mdev alias
+  mdev: Make mdev alias unique among all mdevs
+  mdev: Expose mdev alias in sysfs tree
+  mdev: Update sysfs documentation
+  mtty: Optionally support mtty alias
+
+ .../driver-api/vfio-mediated-device.rst       |   5 +
+ drivers/vfio/mdev/mdev_core.c                 | 117 +++++++++++++++++-
+ drivers/vfio/mdev/mdev_private.h              |   5 +-
+ drivers/vfio/mdev/mdev_sysfs.c                |  26 +++-
+ include/linux/mdev.h                          |   4 +
+ samples/vfio-mdev/mtty.c                      |  10 ++
+ 6 files changed, 157 insertions(+), 10 deletions(-)
+
 -- 
-2.23.0.187.g17f5b7556c-goog
+2.19.2
 
