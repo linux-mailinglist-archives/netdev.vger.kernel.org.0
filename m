@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA9039F36C
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:46:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9569F37A
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731098AbfH0TqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 15:46:10 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:44914 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbfH0TqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:46:09 -0400
-Received: by mail-yb1-f195.google.com with SMTP id y21so8642419ybi.11;
-        Tue, 27 Aug 2019 12:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ppLYsZdjt673IaBzcGr4uH4V5vcM6gItlNCPO5sXczk=;
-        b=I1J66cFngq3ayhRq0+WjJAomdFG7DBpXuVNGVyKtkxzdHYPghuO94RfHfFosLvs2SG
-         FDJYM5DrSd5vvMs3qcWz1WQlVVZ13ULgIATR1ZCRa2gtR8ASTnNH2iBG/uBDiibi1hb5
-         q97PnvciLHLoze1S1ApUZij+p0awCBzIa6YFTI/rOothia6UIuNJCB9Wn1rByMMoPERE
-         cj/PTxqksFPj7T3SprpdUKkRnmr5KkA7GkS2ciPXf/lRW9gxn+cAe6tOj5Bok8EjGlOh
-         BcMuh9YACwXMEa5DIz8NklzRlzfTbtXCXMGsqogXvapVh8wUfn++p9b0Xll+EWs/HamX
-         SbWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ppLYsZdjt673IaBzcGr4uH4V5vcM6gItlNCPO5sXczk=;
-        b=WWlyKBe8NBVQbwEvfwo8a2IkflW9aq0BhGtNtWr/gicF3CoKBHcEES+cDM/1jUBzJV
-         uX+fojvFW59Dagqq/AYSXBUb6itN1Tn6YxdDVMAp/5N7AVPaG5ldJ3Bk2T0tcksP5UZm
-         NZP0WBbSFK01L02olj7xAEnxXxRpFQw3tPycfdRHCzXGbIARCpUxnLG2mMw5Ko5U4XBD
-         OTX+a+r2YHQZlwRuy6NWs4mkG74seArN0TujhI386KVJAnLdjHwHbOzd7MWvj6eRqtqD
-         3enZmKVgzNZpyrPR6QDAMsBmuCQYJv+wMhcRUWkh+DiBtQWVR3i7nywwzC+Jl9x7yUtZ
-         9wPQ==
-X-Gm-Message-State: APjAAAWl1o3El8x/3F9v+Zu0t8x5djZP8D1IFIdzyHWl+9rjRwjRz6Qr
-        no+RkOqk2nrET4U2qrpafOcFB1oGj2zz/PVEOMI=
-X-Google-Smtp-Source: APXvYqzN7dajJDt4d1T6SoH60PikHcbv5rjZmZxyihsHrtvpfXGeSOhI3K9P7puetKwSNA2GtQkx795IzOp2eAG2eWE=
-X-Received: by 2002:a25:ccd7:: with SMTP id l206mr360298ybf.165.1566935169170;
- Tue, 27 Aug 2019 12:46:09 -0700 (PDT)
+        id S1730972AbfH0TuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 15:50:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35454 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729626AbfH0TuU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 15:50:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=g5YcAJTDw7ZOoH+1PHowGqAutoR9GsZhyJRGntJLWSY=; b=w5HbRPmhQdyFsdc0ynsXtsj16A
+        R2WK503XTfnU5QZoiTYoW+WtyMHRz0JK1bZHscw4RMTBhYr783WjVQDWPa8WoLap7zwu1O8e3rCGh
+        RM7B7eMeipZy6fNa03cBDAKKNaifP8H3VxNlxdyUVTWvJRMSnvZGFw1R3/kDdK7z4ISU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2hTt-0005tN-OF; Tue, 27 Aug 2019 21:50:17 +0200
+Date:   Tue, 27 Aug 2019 21:50:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v5 net-next 02/18] ionic: Add hardware init and device
+ commands
+Message-ID: <20190827195017.GR2168@lunn.ch>
+References: <20190826213339.56909-1-snelson@pensando.io>
+ <20190826213339.56909-3-snelson@pensando.io>
+ <20190827022628.GD13411@lunn.ch>
+ <ab2d6525-e1e1-ef87-7150-dabfaee5b6ff@pensando.io>
 MIME-Version: 1.0
-References: <20190823191421.3318-1-ffleming@gmail.com> <c2279a78904b581924894b712403299903eacbfc.camel@intel.com>
- <877726fc009ee5ffde50e589d332db90c9695f06.camel@perches.com>
- <c40b4043424055fc4dae97771bb46c8ab15c6230.camel@intel.com> <b1ea77866e8736fa691cf4658a87ca2c1bf642d6.camel@perches.com>
-In-Reply-To: <b1ea77866e8736fa691cf4658a87ca2c1bf642d6.camel@perches.com>
-From:   Forrest Fleming <ffleming@gmail.com>
-Date:   Tue, 27 Aug 2019 12:45:58 -0700
-Message-ID: <CAE7kSDuHi3e_b0qyvXqocSVaNJrj3X7PPiawBWa68ZyrLSAZyA@mail.gmail.com>
-Subject: Re: [PATCH] net: intel: Cleanup e1000 - add space between }}
-To:     Joe Perches <joe@perches.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ab2d6525-e1e1-ef87-7150-dabfaee5b6ff@pensando.io>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 12:07 PM Joe Perches <joe@perches.com> wrote:
->
-> On Tue, 2019-08-27 at 12:02 -0700, Jeff Kirsher wrote:
-> > On Mon, 2019-08-26 at 20:41 -0700, Joe Perches wrote:
-> > > On Mon, 2019-08-26 at 01:03 -0700, Jeff Kirsher wrote:
-> > > > On Fri, 2019-08-23 at 19:14 +0000, Forrest Fleming wrote:
-> > > > > suggested by checkpatch
-> > > > >
-> > > > > Signed-off-by: Forrest Fleming <ffleming@gmail.com>
-> > > > > ---
-> > > > >  .../net/ethernet/intel/e1000/e1000_param.c    | 28 +++++++++--
-> > > > > --------
-> > > > >  1 file changed, 14 insertions(+), 14 deletions(-)
-> > > >
-> > > > While I do not see an issue with this change, I wonder how
-> > > > important it is
-> > > > to make such a change.  Especially since most of the hardware
-> > > > supported by
-> > > > this driver is not available for testing.  In addition, this is one
-> > > > suggested change by checkpatch.pl that I personally do not agree
-> > > > with.
-> > >
-> > > I think checkpatch should allow consecutive }}.
+On Tue, Aug 27, 2019 at 10:39:20AM -0700, Shannon Nelson wrote:
+> On 8/26/19 7:26 PM, Andrew Lunn wrote:
+> >On Mon, Aug 26, 2019 at 02:33:23PM -0700, Shannon Nelson wrote:
+> >>+void ionic_debugfs_add_dev(struct ionic *ionic)
+> >>+{
+> >>+	struct dentry *dentry;
+> >>+
+> >>+	dentry = debugfs_create_dir(ionic_bus_info(ionic), ionic_dir);
+> >>+	if (IS_ERR_OR_NULL(dentry))
+> >>+		return;
+> >>+
+> >>+	ionic->dentry = dentry;
+> >>+}
+> >Hi Shannon
 > >
-> > Agreed, have you already submitted a formal patch Joe with the
-> > suggested change below?
->
-> No.
->
-> >   If so, I will ACK it.
->
-> Of course you can add an Acked-by:
->
+> >There was recently a big patchset from GregKH which removed all error
+> >checking from drivers calling debugfs calls. I'm pretty sure you don't
+> >need this check here.
+> 
+> With this check I end up either with a valid dentry value or NULL in
+> ionic->dentry.  Without this check I possibly get an error value in
+> ionic->dentry, which can get used later as the parent dentry to try to make
+> a new debugfs node.
 
-Totally fair - I don't have strong feelings regarding the particular rule. I do
-feel strongly that we should avoid violating our rules as encoded by checkpatch,
-but I'm perfectly happy for the change to take the form of modifying checkpatch
-to allow a perfectly sensible (and readable) construct.
+Hi Shannon
 
-I'm happy to withdraw this patch from consideration; I couldn't find anything
-about there being a formal procedure for so doing, so please let me know if
-there's anything more I need to do (or point me to the relevant docs).
+What you should find is that every debugfs function will have
+something like:
 
-Thanks to everyone!
+	if (IS_ERR(dentry))
+	   return dentry;
+or
+	if (IS_ERR(parent))
+	   return parent;
+
+If you know of a API which is missing such protection, i'm sure GregKH
+would like to know. Especially since he just ripped all such
+protection in driver out. Meaning he just broken some drivers if such
+IS_ERR() calls are missing in the debugfs core.
+
+> >I would be happier if there was a privacy statement, right here,
+> >saying what this information is used for, and an agreement it is not
+> >used for anything else. If that gets violated, you can then only blame
+> >yourself when we ripe this out and hard code it to static values.
+> 
+> That makes perfect sense.
+> 
+> I can add a full description here of how the information will be used, which
+> should help most folks, but I'm sure there will still be some that don't
+> want this info released.
+> 
+> What I'd like to propose here is that I do the hardcoded strings myself for
+> now, and I work up a way for the users to enable the feature as desired,
+> with a reasonable comment here in the code and in the
+> Documentation/.../ionic.rst file.  This might end up as an ethtool priv-flag
+> that defaults to off and can set a NIC value that is remembered for later.
+> 
+> Does that sound reasonable?
+
+Yes, that sounds reasonable.
+
+Thanks
+	Andrew
