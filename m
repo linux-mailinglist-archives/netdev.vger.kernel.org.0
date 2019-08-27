@@ -2,68 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEEFE9DBE3
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 05:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF019DBF7
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 05:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbfH0DJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 23:09:36 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52196 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728025AbfH0DJg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 23:09:36 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6F790A9139607350119D;
-        Tue, 27 Aug 2019 11:09:33 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Tue, 27 Aug 2019 11:09:23 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <saeedm@mellanox.com>, <leon@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH -next] net: mlx5: Kconfig: Fix MLX5_CORE_EN dependencies
-Date:   Tue, 27 Aug 2019 11:12:51 +0800
-Message-ID: <20190827031251.98881-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1728865AbfH0DVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 23:21:16 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:52042 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728345AbfH0DVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 23:21:16 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7R3JIv1077319;
+        Tue, 27 Aug 2019 03:21:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=YZCjMPDRKYYQ7LTbr1bN8lMFoNPERVT75eXzBSTmWm0=;
+ b=KKC29qYaKj8BYEEgUdmAOCtAyz97O9TZe/NrApSKgZC7cer3l7GQw0aXsmJ1rZ6zPuUr
+ sTnLS//XSZXWrUrUYTiWC/g0S1ZmwYNwLz7V0rRpkRD9dIC0UI+c/P6HtS3l+klBXgZv
+ jrNnzeMNyQAq4e/IsKfetzLahPOW1MF7zHIIo9Lpc9naaPs7rx9xOuszf0qSDVhsAhZ7
+ FJ5lTsvPgxYbkyeQG6zRXsSxvYrZTRX9VavHTFq/MP2k0L0UDaTFLkpcqnfbqV6Y7J+S
+ aOBXE3VfEclYFm/7rYEeTMPrMMvkfVNjYB//RIrjnRIUPRp2AJYWlb7ufwPl6sHKYoC1 bQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 2umveh00ks-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 27 Aug 2019 03:21:08 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7R3IWuB173969;
+        Tue, 27 Aug 2019 03:19:07 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2umj1ty0nf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 27 Aug 2019 03:19:07 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7R3J6GO177126;
+        Tue, 27 Aug 2019 03:19:07 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 2umj1ty0na-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 27 Aug 2019 03:19:06 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7R3J66c027148;
+        Tue, 27 Aug 2019 03:19:06 GMT
+Received: from [10.159.211.29] (/10.159.211.29)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 26 Aug 2019 20:19:05 -0700
+Subject: Re: [PATCH net-next] net/rds: Fix info leak in rds6_inc_info_copy()
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
+        rds-devel@oss.oracle.com
+References: <1566443904-12671-1-git-send-email-ka-cheong.poon@oracle.com>
+ <20190824.142047.32032287178584562.davem@davemloft.net>
+From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <7bed2cb9-0e26-f64e-5c4e-6e656f143c78@oracle.com>
+Date:   Tue, 27 Aug 2019 11:18:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20190824.142047.32032287178584562.davem@davemloft.net>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9361 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908270035
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When MLX5_CORE_EN=y and PCI_HYPERV_INTERFACE is not set, below errors are found:
-drivers/net/ethernet/mellanox/mlx5/core/en_main.o: In function `mlx5e_nic_enable':
-en_main.c:(.text+0xb649): undefined reference to `mlx5e_hv_vhca_stats_create'
-drivers/net/ethernet/mellanox/mlx5/core/en_main.o: In function `mlx5e_nic_disable':
-en_main.c:(.text+0xb8c4): undefined reference to `mlx5e_hv_vhca_stats_destroy'
+On 8/25/19 5:20 AM, David Miller wrote:
+> From: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+> Date: Wed, 21 Aug 2019 20:18:24 -0700
+> 
+>> The rds6_inc_info_copy() function has a couple struct members which
+>> are leaking stack information.  The ->tos field should hold actual
+>> information and the ->flags field needs to be zeroed out.
+>>
+>> Fixes: 3eb450367d08 ("rds: add type of service(tos) infrastructure")
+>> Fixes: b7ff8b1036f0 ("rds: Extend RDS API for IPv6 support")
+>> Reported-by: 黄ID蝴蝶 <butterflyhuangxx@gmail.com>
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+> 
+> Why would an info leak bug fix, present in current kernels, be targetted
+> at 'net-next' instead of 'net'?
+> 
+> Please retarget this at 'net' properly, thank you.
 
-This because CONFIG_PCI_HYPERV_INTERFACE is newly introduced by 'commit 348dd93e40c1
-("PCI: hv: Add a Hyper-V PCI interface driver for software backchannel interface"),
-Fix this by making MLX5_CORE_EN imply PCI_HYPERV_INTERFACE.
 
-Fixes: cef35af34d6d ("net/mlx5e: Add mlx5e HV VHCA stats agent")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Retarget patch sent.  Thanks.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index 37fef8c..a6a70ce 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -35,6 +35,7 @@ config MLX5_CORE_EN
- 	depends on IPV6=y || IPV6=n || MLX5_CORE=m
- 	select PAGE_POOL
- 	select DIMLIB
-+	imply PCI_HYPERV_INTERFACE
- 	default n
- 	---help---
- 	  Ethernet support in Mellanox Technologies ConnectX-4 NIC.
+
 -- 
-2.7.4
+K. Poon
+ka-cheong.poon@oracle.com
+
 
