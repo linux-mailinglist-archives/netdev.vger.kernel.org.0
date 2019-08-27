@@ -2,190 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 487259F3D1
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 22:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE0A9F3D9
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 22:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731186AbfH0UMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 16:12:18 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36100 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730839AbfH0UMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 16:12:17 -0400
-Received: by mail-qt1-f193.google.com with SMTP id z4so367936qtc.3
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 13:12:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BkZIfmKZ7qzT0/Q98A2MpbsT7hkDc5a1un54X3X6iBY=;
-        b=nJhYBdc8MTQ/bmYv05s4tR+VuVWiEu3RS+H58f9PqTo+QX/BCcCnXTUecm64r1sTgE
-         7NAxgLbhS+OvQ6AdVC+Sift3RvjjeBRIbDZL+KcRN1Olpt3FUGdRyhk6mRHnmLIVP3PP
-         v4/uDVMWFU28cAV5IMArPgkc1lat1SiTW8IVf72eoMmZ0Kx+D/5MN5XYK3EL4uv97qdL
-         XPOw019DIJahaVadM8hKoJdm1XXayH6zxzT3eOZVgaPcvzoPXggHpTw7BcbA88M+CseC
-         Atv2jO85PRB7PhcpLSMatOELhVseZ7Iq+Q0iu0xSZ12SRzfA77tPs0OgyLWe2uT+KuuM
-         d6dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BkZIfmKZ7qzT0/Q98A2MpbsT7hkDc5a1un54X3X6iBY=;
-        b=QkD6ZmB5FVT5VI6c2HE0Tf2qy6del+cG/2e4wH1CzxEnsqZdRBGnyro0tkiVpJyM85
-         bGKuA32BM8ai0G8jGz4wcEeEnM1Ij+7dP1gZ8JUCuWa2bJRDYCUb75DVBmXbhoD0YXde
-         vyDsGqPeRV/hqDVDAlVfHXENVJ34jYe2FzuFpVw76vuKIKSur0p6CIP35wUpsapQKdZq
-         BYmNux0W0lVEGS7FxrLsCx3GekYtfjaRnSVpV3X+fV2H+7IPTkkpgM47xooUtZCFE2rM
-         0pa2o7QytmzTJPlRo2QYrKaJK+dWSCOdSnN+0C4gUcnQtKz2xOR1EhqFbaIAM2US0bhe
-         J3DA==
-X-Gm-Message-State: APjAAAWP2GVI4zAE/pPhFAGuLau+tQnRlKv3VIvl88bWSP259kJXW7N5
-        X149XgJfvwgYkvqAhOwEDyf92g==
-X-Google-Smtp-Source: APXvYqwqlWIGIWvpy5/f8fYmogPINRbnGzcIQ8VA4zmB7qImfGYvICCMRTDbbZMdWyXzI8jgs8DZ9Q==
-X-Received: by 2002:ac8:7959:: with SMTP id r25mr700399qtt.208.1566936736033;
-        Tue, 27 Aug 2019 13:12:16 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id p32sm56327qtb.67.2019.08.27.13.12.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Aug 2019 13:12:15 -0700 (PDT)
-Message-ID: <1566936733.5576.16.camel@lca.pw>
-Subject: Re: [PATCH] net/mlx5: fix a -Wstringop-truncation warning
-From:   Qian Cai <cai@lca.pw>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1731263AbfH0UOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 16:14:50 -0400
+Received: from mail-eopbgr50063.outbound.protection.outlook.com ([40.107.5.63]:7628
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726871AbfH0UOu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 16:14:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nN96/cFYF3uKSLDXeCsZBYkDaS8M+IeZ2epWi4KStdU3nKrXEAD2t11sQfw+LscuT1GPocrJE2AeK26PTdGs02CFgu0AY28g4KCe0nKzPHFiuZOItrEPodZJ5+pi8+q6O9sSM/xBPse4W2vHqMDhrGjftD1mlEaPHJnckI3zIqFGXzY4YDufvuUOpFvp1QAET6WwpyY0ZHjb/exRXwrhundcw4ugEz2UwJol+0msBtNAlm/PsAdQdg9U3OdKXzUw3hhr5Q/+2kLttIm32ZeeuUewhjZ78gnNwJJ42muAFm6fow1tAk3XjCobHZKN0Tbw5JZagucdJGr6nqsL7ZNzCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gAs/2mUpXc3whqps2scs0H1qqUKhOGvBX0E+gjUjvOE=;
+ b=BUUdvIsjn0RLvJGhE8k4IKtzniSUGIgAW+VdVxsFKeTJ2sF+kVLPCsSyUIbxq6x1mIlu4Is9egirpKe6tCgrW+lvha9maQpRyGLAtCPEq0aGXE3GYgeE+Ff/wNPYXqX4It1BN+2aUjF6pobFDCCLPSZrRZUdOXGThvL28zNll01U00j3K65gpJYZqYE6Z08mVSWZhUsG4PXSKOWzirYCk7GQx22iMQZGvh1vM5jWAot3Y6OsP1PjIqNiph6sUvpkgN56GUiqYEwq7Yms3EgrEONCvk0IRdEfV3/PReD7VMwQaxfNZ8jA5AwM9RLjFrHpAPfO+nd5GjpsJ526ISgwcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gAs/2mUpXc3whqps2scs0H1qqUKhOGvBX0E+gjUjvOE=;
+ b=AyRqnr379rgfzA30QHqNMev2MCiKGv5ZN8fShQlyp8zm3GHCIMR3UECnlYuTScIY6dtql3wuIt82/0N8n78s42iL2fdzcrOZwsmMvaPQQsCKg6qwZYTfT1qSOuXIXz7TZyaeXGpywmAG8grgeBTvONuZXqf3YlK2uZV65wpFnNI=
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
+ VI1PR0501MB2398.eurprd05.prod.outlook.com (10.168.136.137) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.19; Tue, 27 Aug 2019 20:14:43 +0000
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27%6]) with mapi id 15.20.2199.021; Tue, 27 Aug 2019
+ 20:14:43 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "maowenan@huawei.com" <maowenan@huawei.com>,
         "leon@kernel.org" <leon@kernel.org>
-Date:   Tue, 27 Aug 2019 16:12:13 -0400
-In-Reply-To: <21994e7e141ee5453c6814de025e083eeb651127.camel@mellanox.com>
-References: <1566590183-9898-1-git-send-email-cai@lca.pw>
-         <21994e7e141ee5453c6814de025e083eeb651127.camel@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] net: mlx5: Kconfig: Fix MLX5_CORE_EN dependencies
+Thread-Topic: [PATCH -next] net: mlx5: Kconfig: Fix MLX5_CORE_EN dependencies
+Thread-Index: AQHVXITcCNibTH++QEWLgS4IcRgEMqcPbxSA
+Date:   Tue, 27 Aug 2019 20:14:43 +0000
+Message-ID: <715dbd69f4e06afa26aa0a500d37a4dd0638befb.camel@mellanox.com>
+References: <20190827031251.98881-1-maowenan@huawei.com>
+In-Reply-To: <20190827031251.98881-1-maowenan@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0071553f-4e2e-4083-6dbf-08d72b2b32ef
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2398;
+x-ms-traffictypediagnostic: VI1PR0501MB2398:
+x-microsoft-antispam-prvs: <VI1PR0501MB23984E3F3A62000F5E6DEF60BEA00@VI1PR0501MB2398.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:117;
+x-forefront-prvs: 0142F22657
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(39860400002)(346002)(136003)(396003)(189003)(199004)(478600001)(4326008)(58126008)(76116006)(91956017)(8936002)(256004)(186003)(76176011)(2501003)(476003)(102836004)(6486002)(66066001)(305945005)(6512007)(446003)(6246003)(2201001)(2906002)(6436002)(8676002)(66556008)(110136005)(26005)(66446008)(6116002)(64756008)(66476007)(66946007)(316002)(7736002)(54906003)(81156014)(25786009)(81166006)(71190400001)(86362001)(71200400001)(486006)(3846002)(118296001)(6506007)(14454004)(5660300002)(2616005)(99286004)(11346002)(229853002)(36756003)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2398;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: QoXLeG3Dl3Di5AfmfF96sibM0vqq6N0+P9nM/SA4eHbKpmAHsnKQzQjqisrHK5PWrmiZakfQp8Ydv8AyKJFNMEucpqSJnGdafetGx3w1Y9EengC3/54r+HR/Lo7AnpQcVuaft8RbUaDf0yD07A37BazYVAgFlCKSZo4d5w8ovnyD2RMWglF9UhdYZzEuHoGEhAlpgPDOJ2wq5c48yYgZ8rlTtPgj7k71CqlcWo32aMhGxXlK/nMyO8d/NjBhh1n6KZAPt3x5zX9QYqZjgcs+tndOwbFb8yh7o8ZMQ56ztd1djVLqNVSK7zw4DS3Mm7N1gBI3pfsQLGTc1Ca8FIN19ZAE04qReUYPTpT1oxWXaokxeF3yOVSm8dqBbwcj1wYvJSkVBCWo3zuRSBxsVimfqVxtAHp4WjkIdYLfdgTi4e0=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B898B99C561CA1428B3B353BF6964A90@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0071553f-4e2e-4083-6dbf-08d72b2b32ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 20:14:43.3055
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /Lm9+pODrUKe8/BcUMAd9dMAP724A2TV+xjP3jzj76EyJfcxwlwdHQs8ygiXV1s8LoA/ndZFDioQBWnbHcYQyA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2398
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-08-26 at 21:11 +0000, Saeed Mahameed wrote:
-> On Fri, 2019-08-23 at 15:56 -0400, Qian Cai wrote:
-> > In file included from ./arch/powerpc/include/asm/paca.h:15,
-> >                  from ./arch/powerpc/include/asm/current.h:13,
-> >                  from ./include/linux/thread_info.h:21,
-> >                  from ./include/asm-generic/preempt.h:5,
-> >                  from
-> > ./arch/powerpc/include/generated/asm/preempt.h:1,
-> >                  from ./include/linux/preempt.h:78,
-> >                  from ./include/linux/spinlock.h:51,
-> >                  from ./include/linux/wait.h:9,
-> >                  from ./include/linux/completion.h:12,
-> >                  from ./include/linux/mlx5/driver.h:37,
-> >                  from
-> > drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h:6,
-> >                  from
-> > drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c:33:
-> > In function 'strncpy',
-> >     inlined from 'mlx5_fw_tracer_save_trace' at
-> > drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c:549:2,
-> >     inlined from 'mlx5_tracer_print_trace' at
-> > drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c:574:2:
-> > ./include/linux/string.h:305:9: warning: '__builtin_strncpy' output
-> > may
-> > be truncated copying 256 bytes from a string of length 511
-> > [-Wstringop-truncation]
-> >   return __builtin_strncpy(p, q, size);
-> >          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > 
-> > Fix it by using the new strscpy_pad() since the commit 458a3bf82df4
-> > ("lib/string: Add strscpy_pad() function") which will always
-> > NUL-terminate the string, and avoid possibly leak data through the
-> > ring
-> > buffer where non-admin account might enable these events through
-> > perf.
-> > 
-> > Fixes: fd1483fe1f9f ("net/mlx5: Add support for FW reporter dump")
-> > Signed-off-by: Qian Cai <cai@lca.pw>
-> 
-> 
-> Hi Qian and thanks for your patch,
-> 
-> We already have a patch that handles this issue, please check it out:
-> https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/commit/?h=net-
-> next-mlx5
-> 
-
-That commit will make "struct mlx5_fw_tracer" too large and trigger a warning in
-__alloc_pages_nodemask(),
-
-        /*
-         * There are several places where we assume that the order value is sane
-         * so bail out early if the request is out of bound.
-         */
-        if (unlikely(order >= MAX_ORDER)) {
-                WARN_ON_ONCE(!(gfp_mask & __GFP_NOWARN));
-                return NULL;
-        }
-
-[   98.339576][  T914] WARNING: CPU: 0 PID: 914 at mm/page_alloc.c:4705
-__alloc_pages_nodemask+0x441/0x1bb0
-[   98.349174][  T914] Modules linked in: smartpqi(+) scsi_transport_sas tg3
-mlx5_core(+) libphy firmware_class dm_mirror dm_region_hash dm_log dm_mod
-efivarfs
-[   98.363495][  T914] CPU: 0 PID: 914 Comm: kworker/0:2 Not tainted 5.3.0-rc6-
-next-20190827+ #14
-[   98.372243][  T914] Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385
-Gen10, BIOS A40 07/10/2019
-[   98.381627][  T914] Workqueue: events work_for_cpu_fn
-[   98.386720][  T914] RIP: 0010:__alloc_pages_nodemask+0x441/0x1bb0
-[   98.392917][  T914] Code: 17 00 00 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d
-c3 89 85 3c fe ff ff bb 01 00 00 00 e9 96 fd ff ff 81 e7 00 20 00 00 75 02 <0f>
-0b 48 c7 85 50 fe ff ff 00 00 00 00 eb 82 31 d2 be 36 12 00 00
-[   98.412740][  T914] RSP: 0018:ffff88853418f948 EFLAGS: 00010246
-[   98.418704][  T914] RAX: 0000000000000000 RBX: ffffffff9571a860 RCX:
-1ffff110a6831f3e
-[   98.426652][  T914] RDX: 0000000000000000 RSI: 000000000000000b RDI:
-0000000000000000
-[   98.434661][  T914] RBP: ffff88853418fb58 R08: ffffed1108808465 R09:
-ffffed1108808465
-[   98.442613][  T914] R10: ffffed1108808464 R11: ffff888844042323 R12:
-0000000000000000
-[   98.450548][  T914] R13: 000000000000000b R14: 0000000000000000 R15:
-0000000000000001
-[   98.458434][  T914] FS:  0000000000000000(0000) GS:ffff888844000000(0000)
-knlGS:0000000000000000
-[   98.467350][  T914] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   98.473911][  T914] CR2: 0000555c64680148 CR3: 0000000550412000 CR4:
-00000000003406b0
-[   98.481838][  T914] Call Trace:
-[   98.485011][  T914]  ? find_next_bit+0x2c/0xa0
-[   98.489490][  T914]  ? __kasan_check_write+0x14/0x20
-[   98.494506][  T914]  ? graph_lock+0xb8/0x120
-[   98.498811][  T914]  ? __free_zapped_classes+0x740/0x740
-[   98.504239][  T914]  ? gfp_pfmemalloc_allowed+0xc0/0xc0
-[   98.509504][  T914]  ? __kasan_check_read+0x11/0x20
-[   98.514443][  T914]  ? register_lock_class+0x5ef/0x960
-[   98.519624][  T914]  ? rcu_read_lock_sched_held+0xac/0xe0
-[   98.525152][  T914]  ? rcu_read_lock_any_held.part.5+0x20/0x20
-[   98.531130][  T914]  ? find_next_bit+0x2c/0xa0
-[   98.535610][  T914]  alloc_pages_current+0x9c/0x110
-[   98.540638][  T914]  kmalloc_order+0x22/0x70
-[   98.544943][  T914]  kmalloc_order_trace+0x23/0x100
-[   98.550072][  T914]  mlx5_fw_tracer_create+0x51/0x870 [mlx5_core]
-[   98.556213][  T914]  ? __mutex_init+0x94/0xa0
-[   98.560744][  T914]  ? mlx5_init_rl_table+0x144/0x210 [mlx5_core]
-[   98.566929][  T914]  mlx5_load_one+0x199/0x980 [mlx5_core]
-[   98.572637][  T914]  init_one+0x494/0x760 [mlx5_core]
-[   98.577771][  T914]  ? mlx5_pci_resume+0xd0/0xd0 [mlx5_core]
-[   98.583574][  T914]  local_pci_probe+0x7a/0xc0
-[   98.588054][  T914]  ? pci_dma_configure+0xa0/0xa0
-[   98.592938][  T914]  work_for_cpu_fn+0x2e/0x50
-[   98.597416][  T914]  process_one_work+0x53b/0xa70
-[   98.602220][  T914]  ? pwq_dec_nr_in_flight+0x170/0x170
-[   98.607485][  T914]  ? move_linked_works+0x113/0x150
-[   98.612497][  T914]  worker_thread+0x363/0x5b0
-[   98.616976][  T914]  kthread+0x1df/0x200
-[   98.620932][  T914]  ? process_one_work+0xa70/0xa70
-[   98.625847][  T914]  ? kthread_park+0xd0/0xd0
-[   98.630240][  T914]  ret_from_fork+0x22/0x40
+T24gVHVlLCAyMDE5LTA4LTI3IGF0IDExOjEyICswODAwLCBNYW8gV2VuYW4gd3JvdGU6DQo+IFdo
+ZW4gTUxYNV9DT1JFX0VOPXkgYW5kIFBDSV9IWVBFUlZfSU5URVJGQUNFIGlzIG5vdCBzZXQsIGJl
+bG93IGVycm9ycw0KPiBhcmUgZm91bmQ6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94
+L21seDUvY29yZS9lbl9tYWluLm86IEluIGZ1bmN0aW9uDQo+IGBtbHg1ZV9uaWNfZW5hYmxlJzoN
+Cj4gZW5fbWFpbi5jOigudGV4dCsweGI2NDkpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvDQo+IGBt
+bHg1ZV9odl92aGNhX3N0YXRzX2NyZWF0ZScNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFu
+b3gvbWx4NS9jb3JlL2VuX21haW4ubzogSW4gZnVuY3Rpb24NCj4gYG1seDVlX25pY19kaXNhYmxl
+JzoNCj4gZW5fbWFpbi5jOigudGV4dCsweGI4YzQpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvDQo+
+IGBtbHg1ZV9odl92aGNhX3N0YXRzX2Rlc3Ryb3knDQo+IA0KPiBUaGlzIGJlY2F1c2UgQ09ORklH
+X1BDSV9IWVBFUlZfSU5URVJGQUNFIGlzIG5ld2x5IGludHJvZHVjZWQgYnkNCj4gJ2NvbW1pdCAz
+NDhkZDkzZTQwYzENCj4gKCJQQ0k6IGh2OiBBZGQgYSBIeXBlci1WIFBDSSBpbnRlcmZhY2UgZHJp
+dmVyIGZvciBzb2Z0d2FyZQ0KPiBiYWNrY2hhbm5lbCBpbnRlcmZhY2UiKSwNCj4gRml4IHRoaXMg
+YnkgbWFraW5nIE1MWDVfQ09SRV9FTiBpbXBseSBQQ0lfSFlQRVJWX0lOVEVSRkFDRS4NCj4gDQoN
+CmxldCdzIG5vdCBpbXBseSBhbnl0aGluZy4uIA0KbWx4NWVfaHZfdmhjYV8qIHNob3VsZCBhbHJl
+YWR5IGhhdmUgc3R1YnMgIGluIA0KbWx4NS9jb3JlL2VuL2h2X3ZoY2Ffc3RhdC5oIHdoZW4gUENJ
+X0hZUEVSVl9JTlRFUkZBQ0UgaXMgb2ZmL3VuZGVmICENCg0KSSBKdXN0IHRyaWVkOg0KDQokIC4v
+c2NyaXB0cy9jb25maWcgLXMgUENJX0hZUEVSVl9JTlRFUkZBQ0UNCiQgLi9zY3JpcHRzL2NvbmZp
+ZyAtcyBNTFg1X0NPUkUNCiQgLi9zY3JpcHRzL2NvbmZpZyAtcyBNTFg1X0NPUkVfRU4NCnVuZGVm
+DQp5DQp5DQoNCiQgbWFrZQ0KDQpBbmQgYnVpbGQgcGFzc2VkIGp1c3QgZmluZS4NCg0KDQo=
