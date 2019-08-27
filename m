@@ -2,149 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 660C49DE5E
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 09:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEEA19DE68
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 09:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfH0HE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 03:04:57 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35960 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725811AbfH0HE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 03:04:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 34E85B12E;
-        Tue, 27 Aug 2019 07:04:55 +0000 (UTC)
-Subject: Re: [Xen-devel] Question on xen-netfront code to fix a potential ring
- buffer corruption
-To:     Dongli Zhang <dongli.zhang@oracle.com>,
-        xen-devel@lists.xenproject.org
-Cc:     Joe Jin <joe.jin@oracle.com>, netdev@vger.kernel.org
-References: <c45b306e-c67b-49f5-8fe8-3913557a8774@default>
- <130ea0ab-4364-2b77-dc8d-b869e06d1768@suse.com>
- <9284025e-1066-387e-a52f-c46d4c66d2d3@oracle.com>
-From:   Juergen Gross <jgross@suse.com>
-Message-ID: <b870640f-b658-4d45-4e22-8f187b7b9f27@suse.com>
-Date:   Tue, 27 Aug 2019 09:04:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728416AbfH0HIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 03:08:12 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51886 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbfH0HIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 03:08:12 -0400
+Received: by mail-wm1-f67.google.com with SMTP id k1so1863207wmi.1
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 00:08:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=K3dR+kYzCpf0LHtg4W8b5/TM1dkZeAuxaiVCsNYOztk=;
+        b=QHsI6nONWW5YauGAV+hWB1lnaRgZ2SWxi2vZTigWFhLSzzKpXcGbQ4GD0SxDDdWLHP
+         H/oYs3rFaWN7s4HebmnHocxQVXFprTiXhO7rZ9SgFL/+zcH1zJi8yjKjDoGALAwe3Sip
+         ygY+yHrInETEqZu4aeEAhPbhmA4nJ984rSvHlbANWoaU/gpu8VditIFIaU9A2cGZkVU5
+         xL1ZNvUxe2RFZogU/igc/N1oZdGA3QEWJWR5iGoQG/GwJezvhZyHL4N+3dsUGWgJ19VP
+         lnXROpsRkGFc/7ZNABNtjkiTtJwG3Riu69wVg3npmbpPT/JNbimjEdICKF07LMrzm3tB
+         44pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=K3dR+kYzCpf0LHtg4W8b5/TM1dkZeAuxaiVCsNYOztk=;
+        b=dkzzc3ByGq0tipnW21yNylkdGdwv+sjE7/4ThvfbRQx+njHZfP2n8Yoq6gTbxfWAeS
+         css36d0jITFn90Z34cMI9sBc09pB/FTdyk6qhJBDqlQSFBvnfFFJ0ABxPvSXhHxFFeuE
+         WsuIDR/Ro6o8ILKsGT29Yw+pS/pIZS799aJS8HAdvaq05LDXqcuydZ47Ulf9S+ylv1bu
+         FMSQk1EfLMwOtOV1sWxATHxvWPMC9lxRPYK5YfIYsjSRXFbnSK5aLXnTFlDkfPtgloIL
+         0e5gvmL1WQCChODQCScVjsTzYYu4GghwkMeS0a+Sz123rkOSSujA4TSDgET3r1lIMupD
+         8jRQ==
+X-Gm-Message-State: APjAAAW9GEW117yLVudXl8sk3mH8BVg3+easz3sUw1Nf8JxQnfXsQckw
+        cri/UOYohZv/PnwoMXkVrWmw0g==
+X-Google-Smtp-Source: APXvYqxILz5eiErst14wmAry2j2Vsp7zECFg8Xr6i5m9i38ktZpGODDnfQHG1rirtAuxqrCXyS2eHg==
+X-Received: by 2002:a1c:eb0c:: with SMTP id j12mr25320622wmh.132.1566889690179;
+        Tue, 27 Aug 2019 00:08:10 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id f7sm17969307wrf.8.2019.08.27.00.08.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Aug 2019 00:08:09 -0700 (PDT)
+Date:   Tue, 27 Aug 2019 09:08:08 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Miller <davem@davemloft.net>
+Cc:     jakub.kicinski@netronome.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
+        sthemmin@microsoft.com, dcbw@redhat.com, mkubecek@suse.cz,
+        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+Message-ID: <20190827070808.GA2250@nanopsycho>
+References: <20190826095548.4d4843fe@cakuba.netronome.com>
+ <5d79fba4-f82e-97a7-7846-fd1de089a95b@gmail.com>
+ <20190826151552.4f1a2ad9@cakuba.netronome.com>
+ <20190826.151819.804077961408964282.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <9284025e-1066-387e-a52f-c46d4c66d2d3@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190826.151819.804077961408964282.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.08.19 08:43, Dongli Zhang wrote:
-> Hi Juergen,
-> 
-> On 8/27/19 2:13 PM, Juergen Gross wrote:
->> On 18.08.19 10:31, Dongli Zhang wrote:
->>> Hi,
->>>
->>> Would you please help confirm why the condition at line 908 is ">="?
->>>
->>> In my opinion, we would only hit "skb_shinfo(skb)->nr_frag == MAX_SKB_FRAGS" at
->>> line 908.
->>>
->>> 890 static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
->>> 891                                   struct sk_buff *skb,
->>> 892                                   struct sk_buff_head *list)
->>> 893 {
->>> 894         RING_IDX cons = queue->rx.rsp_cons;
->>> 895         struct sk_buff *nskb;
->>> 896
->>> 897         while ((nskb = __skb_dequeue(list))) {
->>> 898                 struct xen_netif_rx_response *rx =
->>> 899                         RING_GET_RESPONSE(&queue->rx, ++cons);
->>> 900                 skb_frag_t *nfrag = &skb_shinfo(nskb)->frags[0];
->>> 901
->>> 902                 if (skb_shinfo(skb)->nr_frags == MAX_SKB_FRAGS) {
->>> 903                         unsigned int pull_to = NETFRONT_SKB_CB(skb)->pull_to;
->>> 904
->>> 905                         BUG_ON(pull_to < skb_headlen(skb));
->>> 906                         __pskb_pull_tail(skb, pull_to - skb_headlen(skb));
->>> 907                 }
->>> 908                 if (unlikely(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS)) {
->>> 909                         queue->rx.rsp_cons = ++cons;
->>> 910                         kfree_skb(nskb);
->>> 911                         return ~0U;
->>> 912                 }
->>> 913
->>> 914                 skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
->>> 915                                 skb_frag_page(nfrag),
->>> 916                                 rx->offset, rx->status, PAGE_SIZE);
->>> 917
->>> 918                 skb_shinfo(nskb)->nr_frags = 0;
->>> 919                 kfree_skb(nskb);
->>> 920         }
->>> 921
->>> 922         return cons;
->>> 923 }
->>>
->>>
->>> The reason that I ask about this is because I am considering below patch to
->>> avoid a potential xen-netfront ring buffer corruption.
->>>
->>> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
->>> index 8d33970..48a2162 100644
->>> --- a/drivers/net/xen-netfront.c
->>> +++ b/drivers/net/xen-netfront.c
->>> @@ -906,7 +906,7 @@ static RING_IDX xennet_fill_frags(struct netfront_queue
->>> *queue,
->>>                           __pskb_pull_tail(skb, pull_to - skb_headlen(skb));
->>>                   }
->>>                   if (unlikely(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS)) {
->>> -                       queue->rx.rsp_cons = ++cons;
->>> +                       queue->rx.rsp_cons = cons + skb_queue_len(list) + 1;
->>>                           kfree_skb(nskb);
->>>                           return ~0U;
->>>                   }
->>>
->>>
->>> If there is skb left in list when we return ~0U, queue->rx.rsp_cons may be set
->>> incorrectly.
->>
->> Sa basically you want to consume the responses for all outstanding skbs
->> in the list?
->>
-> 
-> I think there would be bug if there is skb left in the list.
-> 
-> This is what is implanted in xennet_poll() when there is error of processing
-> extra info like below. As at line 1034, if there is error, all outstanding skb
-> are consumed.
-> 
->   985 static int xennet_poll(struct napi_struct *napi, int budget)
-> ... ...
-> 1028                 if (extras[XEN_NETIF_EXTRA_TYPE_GSO - 1].type) {
-> 1029                         struct xen_netif_extra_info *gso;
-> 1030                         gso = &extras[XEN_NETIF_EXTRA_TYPE_GSO - 1];
-> 1031
-> 1032                         if (unlikely(xennet_set_skb_gso(skb, gso))) {
-> 1033                                 __skb_queue_head(&tmpq, skb);
-> 1034                                 queue->rx.rsp_cons += skb_queue_len(&tmpq);
-> 1035                                 goto err;
-> 1036                         }
-> 1037                 }
-> 
-> The reason we need to consume all outstanding skb is because
-> xennet_get_responses() would reset both queue->rx_skbs[i] and
-> queue->grant_rx_ref[i] to NULL before enqueue all outstanding skb to the list
-> (e.g., &tmpq), by xennet_get_rx_skb() and xennet_get_rx_ref().
-> 
-> If we do not consume all of them, we would hit NULL in queue->rx_skbs[i] in next
-> iteration of while loop in xennet_poll().
-> 
-> That is, if we do not consume all outstanding skb, the queue->rx.rsp_cons may
-> refer to a response whose queue->rx_skbs[i] and queue->grant_rx_ref[i] are
-> already reset to NULL.
+Tue, Aug 27, 2019 at 12:18:19AM CEST, davem@davemloft.net wrote:
+>From: Jakub Kicinski <jakub.kicinski@netronome.com>
+>Date: Mon, 26 Aug 2019 15:15:52 -0700
+>
+>> Weren't there multiple problems with the size of the RTM_NEWLINK
+>> notification already? Adding multiple sizeable strings to it won't
+>> help there either :S
+>
+>Indeed.
+>
+>We even had situations where we had to make the information provided
+>in a newlink dump opt-in when we added VF info because the buffers
+>glibc was using at the time were too small and this broke so much
+>stuff.
+>
+>I honestly think that the size of link dumps are out of hand as-is.
 
-Thanks for confirming. I just wanted to make sure I understand your
-patch correctly. :-)
+Okay, so if I understand correctly, on top of separate commands for
+add/del of alternative names, you suggest also get/dump to be separate
+command and don't fill this up in existing newling/getlink command.
+
+So we'll have:
+CMD to add:
+	RTM_NEWALTIFNAME = 108
+#define RTM_NEWALTIFNAME       RTM_NEWALTIFNAME
+
+Example msg (user->kernel):
+     IFLA_IFNAME eth0
+     IFLA_ALT_IFNAME_MOD somereallyreallylongname
+
+Example msg (user->kernel):
+     IFLA_ALT_IFNAME somereallyreallylongname
+     IFLA_ALT_IFNAME_MOD someotherreallyreallylongname
 
 
-Juergen
+CMD to delete:
+	RTM_DELALTIFNAME,
+#define RTM_DELALTIFNAME       RTM_DELALTIFNAME
+
+Example msg (user->kernel):
+     IFLA_IFNAME eth0
+     IFLA_ALT_IFNAME_MOD somereallyreallylongname
+
+	
+CMD to get/dump:
+        RTM_GETALTIFNAME,
+#define RTM_GETALTIFNAME       RTM_GETALTIFNAME
+
+Example msg (kernel->user):
+     hdr (with ifindex)
+     IFLA_ALT_IFNAME_LIST (nest)
+        IFLA_ALT_IFNAME somereallyreallylongname
+        IFLA_ALT_IFNAME someotherreallyreallylongname
+
+Correct?	
