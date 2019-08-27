@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B3D99EF6E
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 17:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84D4F9EFDF
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbfH0Pvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 11:51:43 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37869 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbfH0Pvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 11:51:42 -0400
-Received: by mail-qt1-f193.google.com with SMTP id y26so21803768qto.4
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 08:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zyOqqZfVXaCdrCD6D2ADnklikXRFi8MLAZgK4YpK3lU=;
-        b=K/bbIrpgxbhTbNLLQ8Mbof1XU5jsCZUBILQwYFjwIw1Jm+QwosYS+qs1o/fHLIT86V
-         7ng6HsAiMP5hq7rEGv6g0xDYI/afW50y2v0IjNTBAO9tk12JAGWnsBX9AfqiurTEDXVt
-         hModd6XprgX65JEkeKN9FhmlxSIql7qa+Y3ekPNXdto6jIkuLfFcH/biv7KJg2zj/Sr+
-         SP1AL7QvQPkZZUxUqcCbhI9Z+F+u/BnTWMrWlx/XZFDbJ0s4I/bDbp3BC0K3gbxL3JRu
-         RLy8/4rEr01lrJM5sfQHSf6mQ+PiNq8JayhMo1Alt1yMixuHE2WjUz0nxxQcea5ulJHT
-         klKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zyOqqZfVXaCdrCD6D2ADnklikXRFi8MLAZgK4YpK3lU=;
-        b=F31DVA52KLu4k/u8lZtJuT1xt6Vo1LqkbfazTISygYSJwNTmVHJrld2Mmf5MTqf0KN
-         k+j9juyE7MRcquxBGxl3Wy/EaKyjLiwovDGpsYBIGm7VIalkmu3Wjk9uLszjBAHfRGiL
-         WQQ/ARC+5p1cLjV60W3WFtRlk3BWByVK0JfYQbnNQBB6vY9LIYP1o1dFDNsIMDsbJJr8
-         CgDhrfpF+HG9tAlfGHOrTUAvfmXzFa0eRpNIFInPShry3ufQa8KMpdE4Ub9N7jmuQ+Rw
-         Ih2h/Jdm0HweHhfmwMejLClxCVxlE5dAg6i9A3tGOkZrBXnCK1G7j9byu2K2CWndzoqh
-         PR2g==
-X-Gm-Message-State: APjAAAWb6afpG6URRM6RU8H/T+6s/rpz0cMTp2UM1YlTCcIXEv+R5wWX
-        UZ5vm0qpmCHY8+Rr08xpgw9G1g==
-X-Google-Smtp-Source: APXvYqxC5++4GwpcvpfYV8bMDOpFXrgbxlYFkTLHLhOEWerw6Sv4yfHLnjFTy4ys4vDT4qhURjcK+Q==
-X-Received: by 2002:aed:27d1:: with SMTP id m17mr23681669qtg.111.1566921101686;
-        Tue, 27 Aug 2019 08:51:41 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-216-168.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.216.168])
-        by smtp.gmail.com with ESMTPSA id w24sm9840661qtb.35.2019.08.27.08.51.41
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 27 Aug 2019 08:51:41 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1i2dky-0003wu-NZ; Tue, 27 Aug 2019 12:51:40 -0300
-Date:   Tue, 27 Aug 2019 12:51:40 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v3 0/3] ODP support for mlx5 DC QPs
-Message-ID: <20190827155140.GA15153@ziepe.ca>
-References: <20190819120815.21225-1-leon@kernel.org>
+        id S1728007AbfH0QNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:13:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34982 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726539AbfH0QNY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 12:13:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EUdcOXqzDMg/BPMZ+mHA3Lf8aib/qAEj7QKintG8i1o=; b=zoV9sB08UoCM+TTqsh2QC+T5y+
+        lZz1Ib+zNYLNZRXVPOm2DbrZuZSMep/zbGNMPAsR7DBWL3PjE0xYRuVSiCMWWrT9paWu+58hqLWYK
+        BeT4BvV4LrCDclJaiVCpjNqloDVf7Yaooj0FbOSeQq/jYcfdbQfLo98KAgBObxacyNmk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2dig-0004bz-PJ; Tue, 27 Aug 2019 17:49:18 +0200
+Date:   Tue, 27 Aug 2019 17:49:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Voon, Weifeng" <weifeng.voon@intel.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Subject: Re: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
+ cover PHY that only talks C45
+Message-ID: <20190827154918.GO2168@lunn.ch>
+References: <1566870769-9967-1-git-send-email-weifeng.voon@intel.com>
+ <e9ece5ad-a669-6d6b-d050-c633cad15476@gmail.com>
+ <20190826185418.GG2168@lunn.ch>
+ <D6759987A7968C4889FDA6FA91D5CBC814758ED8@PGSMSX103.gar.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190819120815.21225-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC814758ED8@PGSMSX103.gar.corp.intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 19, 2019 at 03:08:12PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
+On Tue, Aug 27, 2019 at 03:23:34PM +0000, Voon, Weifeng wrote:
+> > > > Make mdiobus_scan() to try harder to look for any PHY that only
+> > talks C45.
+> > > If you are not using Device Tree or ACPI, and you are letting the MDIO
+> > > bus be scanned, it sounds like there should be a way for you to
+> > > provide a hint as to which addresses should be scanned (that's
+> > > mii_bus::phy_mask) and possibly enhance that with a mask of possible
+> > > C45 devices?
+> > 
+> > Yes, i don't like this unconditional c45 scanning. A lot of MDIO bus
+> > drivers don't look for the MII_ADDR_C45. They are going to do a C22
+> > transfer, and maybe not mask out the MII_ADDR_C45 from reg, causing an
+> > invalid register write. Bad things can then happen.
+> > 
+> > With DT and ACPI, we have an explicit indication that C45 should be used,
+> > so we know on this platform C45 is safe to use. We need something
+> > similar when not using DT or ACPI.
+> > 
+> > 	  Andrew
 > 
-> Changelog
->  v3:
->  * Rewrote patches to expose through DEVX without need to change mlx5-abi.h at all.
->  v2: https://lore.kernel.org/linux-rdma/20190806074807.9111-1-leon@kernel.org
->  * Fixed reserved_* field wrong name (Saeed M.)
->  * Split first patch to two patches, one for mlx5-next and one for  rdma-next. (Saeed M.)
->  v1: https://lore.kernel.org/linux-rdma/20190804100048.32671-1-leon@kernel.org
->  * Fixed alignment to u64 in mlx5-abi.h (Gal P.)
->  v0: https://lore.kernel.org/linux-rdma/20190801122139.25224-1-leon@kernel.org
+> Florian and Andrew,
+> The mdio c22 is using the start-of-frame ST=01 while mdio c45 is using ST=00
+> as identifier. So mdio c22 device will not response to mdio c45 protocol.
+> As in IEEE 802.1ae-2002 Annex 45A.3 mention that:
+> " Even though the Clause 45 MDIO frames using the ST=00 frame code
+> will also be driven on to the Clause 22 MII Management interface,
+> the Clause 22 PHYs will ignore the frames. "
 > 
-> >From Michael,
-> 
-> The series adds support for on-demand paging for DC transport.
-> 
-> As DC is mlx-only transport, the capabilities are exposed
-> to the user using DEVX objects and later on through mlx5dv_query_device.
-> 
-> Thanks
-> 
-> Michael Guralnik (3):
->   net/mlx5: Set ODP capabilities for DC transport to max
->   IB/mlx5: Remove check of FW capabilities in ODP page fault handling
->   IB/mlx5: Add page fault handler for DC initiator WQE
+> Hence, I am not seeing any concern that the c45 scanning will mess up with 
+> c22 devices.
 
-This seems fine, can you put the commit on the shared branch?
+Hi Voon
 
-Thanks,
-Jason
+Take for example mdio-hisi-femac.c 
+
+static int hisi_femac_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+{
+        struct hisi_femac_mdio_data *data = bus->priv;
+        int ret;
+
+        ret = hisi_femac_mdio_wait_ready(data);
+        if (ret)
+                return ret;
+
+        writel((mii_id << BIT_PHY_ADDR_OFFSET) | regnum,
+               data->membase + MDIO_RWCTRL);
+
+
+There is no check here for MII_ADDR_C45. So it will perform a C22
+transfer. And regnum will still have MII_ADDR_C45 in it, so the
+writel() is going to set bit 30, since #define MII_ADDR_C45
+(1<<30). What happens on this hardware under these conditions?
+
+You cannot unconditionally ask an MDIO driver to do a C45
+transfer. Some drivers are going to do bad things.
+
+	  Andrew
+
