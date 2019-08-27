@@ -2,74 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 828009E5A1
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 024399E5AA
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 12:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728892AbfH0KZ7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 27 Aug 2019 06:25:59 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1918 "EHLO mga09.intel.com"
+        id S1728819AbfH0K3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 06:29:19 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35257 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726071AbfH0KZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 06:25:58 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 03:25:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,436,1559545200"; 
-   d="scan'208";a="171151201"
-Received: from kmsmsx157.gar.corp.intel.com ([172.21.138.134])
-  by orsmga007.jf.intel.com with ESMTP; 27 Aug 2019 03:25:55 -0700
-Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.25]) by
- kmsmsx157.gar.corp.intel.com ([169.254.5.162]) with mapi id 14.03.0439.000;
- Tue, 27 Aug 2019 18:25:54 +0800
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Subject: RE: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
- cover PHY that only talks C45
-Thread-Topic: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
- cover PHY that only talks C45
-Thread-Index: AQHVXDc1t4vgWavJu0GuD73CQMEeB6cNa/mAgAFexdA=
-Date:   Tue, 27 Aug 2019 10:25:54 +0000
-Message-ID: <D6759987A7968C4889FDA6FA91D5CBC814758D9E@PGSMSX103.gar.corp.intel.com>
-References: <1566870769-9967-1-git-send-email-weifeng.voon@intel.com>
- <20190826.142853.2135315525185656171.davem@davemloft.net>
-In-Reply-To: <20190826.142853.2135315525185656171.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.205]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726392AbfH0K3T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 06:29:19 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0E1883082E09;
+        Tue, 27 Aug 2019 10:29:19 +0000 (UTC)
+Received: from wlan-180-156.mxp.redhat.com (wlan-180-156.mxp.redhat.com [10.32.180.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B13D96060D;
+        Tue, 27 Aug 2019 10:29:16 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Li Shuang <shuali@redhat.com>
+Subject: [PATCH net v2] net/sched: pfifo_fast: fix wrong dereference when qdisc is reset
+Date:   Tue, 27 Aug 2019 12:29:09 +0200
+Message-Id: <783231162b9d32faaf5df34ad8ad437b0031bd31.1566901438.git.dcaratti@redhat.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 27 Aug 2019 10:29:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> There is something wrong with the clock on the computer you are posting
-> these patches from, the date in these postings are in the future by
-> several hours.
-> 
-> This messes up the ordering of changes in patchwork and makes my life
-> miserable to a certain degree, so please fix this.
-> 
-> Thank you.
+Now that 'TCQ_F_CPUSTATS' bit can be cleared, depending on the value of
+'TCQ_F_NOLOCK' bit in the parent qdisc, we need to be sure that per-cpu
+counters are present when 'reset()' is called for pfifo_fast qdiscs.
+Otherwise, the following script:
 
-Sorry about that as my machine's date somehow went out of
-sync with the server time. I have already fixed that.
+ # tc q a dev lo handle 1: root htb default 100
+ # tc c a dev lo parent 1: classid 1:100 htb \
+ > rate 95Mbit ceil 100Mbit burst 64k
+ [...]
+ # tc f a dev lo parent 1: protocol arp basic classid 1:100
+ [...]
+ # tc q a dev lo parent 1:100 handle 100: pfifo_fast
+ [...]
+ # tc q d dev lo root
 
-Thanks,
-Weifeng
+can generate the following splat:
+
+ Unable to handle kernel paging request at virtual address dfff2c01bd148000
+ Mem abort info:
+   ESR = 0x96000004
+   Exception class = DABT (current EL), IL = 32 bits
+   SET = 0, FnV = 0
+   EA = 0, S1PTW = 0
+ Data abort info:
+   ISV = 0, ISS = 0x00000004
+   CM = 0, WnR = 0
+ [dfff2c01bd148000] address between user and kernel address ranges
+ Internal error: Oops: 96000004 [#1] SMP
+ [...]
+ pstate: 80000005 (Nzcv daif -PAN -UAO)
+ pc : pfifo_fast_reset+0x280/0x4d8
+ lr : pfifo_fast_reset+0x21c/0x4d8
+ sp : ffff800d09676fa0
+ x29: ffff800d09676fa0 x28: ffff200012ee22e4
+ x27: dfff200000000000 x26: 0000000000000000
+ x25: ffff800ca0799958 x24: ffff1001940f332b
+ x23: 0000000000000007 x22: ffff200012ee1ab8
+ x21: 0000600de8a40000 x20: 0000000000000000
+ x19: ffff800ca0799900 x18: 0000000000000000
+ x17: 0000000000000002 x16: 0000000000000000
+ x15: 0000000000000000 x14: 0000000000000000
+ x13: 0000000000000000 x12: ffff1001b922e6e2
+ x11: 1ffff001b922e6e1 x10: 0000000000000000
+ x9 : 1ffff001b922e6e1 x8 : dfff200000000000
+ x7 : 0000000000000000 x6 : 0000000000000000
+ x5 : 1fffe400025dc45c x4 : 1fffe400025dc357
+ x3 : 00000c01bd148000 x2 : 0000600de8a40000
+ x1 : 0000000000000007 x0 : 0000600de8a40004
+ Call trace:
+  pfifo_fast_reset+0x280/0x4d8
+  qdisc_reset+0x6c/0x370
+  htb_reset+0x150/0x3b8 [sch_htb]
+  qdisc_reset+0x6c/0x370
+  dev_deactivate_queue.constprop.5+0xe0/0x1a8
+  dev_deactivate_many+0xd8/0x908
+  dev_deactivate+0xe4/0x190
+  qdisc_graft+0x88c/0xbd0
+  tc_get_qdisc+0x418/0x8a8
+  rtnetlink_rcv_msg+0x3a8/0xa78
+  netlink_rcv_skb+0x18c/0x328
+  rtnetlink_rcv+0x28/0x38
+  netlink_unicast+0x3c4/0x538
+  netlink_sendmsg+0x538/0x9a0
+  sock_sendmsg+0xac/0xf8
+  ___sys_sendmsg+0x53c/0x658
+  __sys_sendmsg+0xc8/0x140
+  __arm64_sys_sendmsg+0x74/0xa8
+  el0_svc_handler+0x164/0x468
+  el0_svc+0x10/0x14
+ Code: 910012a0 92400801 d343fc03 11000c21 (38fb6863)
+
+Fix this by testing the value of 'TCQ_F_CPUSTATS' bit in 'qdisc->flags',
+before dereferencing 'qdisc->cpu_qstats'.
+
+Changes since v1:
+ - coding style improvements, thanks to Stefano Brivio
+
+Fixes: 8a53e616de29 ("net: sched: when clearing NOLOCK, clear TCQ_F_CPUSTATS, too")
+CC: Paolo Abeni <pabeni@redhat.com>
+Reported-by: Li Shuang <shuali@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/sched/sch_generic.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 11c03cf4aa74..099797e5409d 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -688,11 +688,14 @@ static void pfifo_fast_reset(struct Qdisc *qdisc)
+ 			kfree_skb(skb);
+ 	}
+ 
+-	for_each_possible_cpu(i) {
+-		struct gnet_stats_queue *q = per_cpu_ptr(qdisc->cpu_qstats, i);
++	if (qdisc_is_percpu_stats(qdisc)) {
++		for_each_possible_cpu(i) {
++			struct gnet_stats_queue *q;
+ 
+-		q->backlog = 0;
+-		q->qlen = 0;
++			q = per_cpu_ptr(qdisc->cpu_qstats, i);
++			q->backlog = 0;
++			q->qlen = 0;
++		}
+ 	}
+ }
+ 
+-- 
+2.20.1
+
