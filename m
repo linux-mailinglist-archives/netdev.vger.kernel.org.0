@@ -2,211 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E7D9F683
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C38D9F685
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:04:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbfH0XBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 19:01:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38464 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726025AbfH0XBX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 19:01:23 -0400
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2AE6E233FF
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 23:01:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566946881;
-        bh=HsIuj/1hGmTe3FacQdmSLl1zZrHFZWUqwnDRSSeK2IA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Q5nLHkdOUH5steymeMPAAMH8/xu44BLHsIO/HnwC6668ZtaBksi+6Vh9pvfrtB+VL
-         deHeNiY7kVZHbTH6YWN36XN2rxlu1CQ28awK1SMMd59PNPDlUEtoWMXPg0tDn++wfo
-         2NS9LYQ1AJfAKzBlxyJHRqYQDsHi2C/MNYPo/u6E=
-Received: by mail-wm1-f44.google.com with SMTP id t6so704542wmj.4
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 16:01:21 -0700 (PDT)
-X-Gm-Message-State: APjAAAU2zyilddDtVzVU3hjJi8DWa9wxA2uYlTwgbsov+YmYWAcApnne
-        P86LtRchD/3O3NtiucSgisxFVSQimMK/NN/qx6kKww==
-X-Google-Smtp-Source: APXvYqwxX6aj+Ymx+62b9ZPWXCfphCCr0vC4ulvY7qH4JEvBOfx6MvOXOniW6CIRGuQYazWncVtTqLvs8HJBAWLUrm8=
-X-Received: by 2002:a7b:c4d2:: with SMTP id g18mr810307wmk.79.1566946879494;
- Tue, 27 Aug 2019 16:01:19 -0700 (PDT)
+        id S1726111AbfH0XEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 19:04:14 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17758 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726034AbfH0XEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 19:04:14 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7RN3gNZ025650;
+        Tue, 27 Aug 2019 16:03:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=sOQiakwD5O/8CTN/jDEGo+NOkL+GH/bdrseSZ+6qAyE=;
+ b=rg97HA2m7qdTXvGPI+I2EZwFh2ahKUm1iGeNua1n83sbcjdggSYolgeMleWIFsxv9oGJ
+ ywmfwLPJ8ac3RHusWjp9GaQDRzgy6a2ArFCtMa71G2VYmZwNKXi1ZWwC1xep1pFd+f4Q
+ +GPQ9+BhshM/3/i1pVEhizOQQJw+aFOwSb4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2umk31q2um-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 27 Aug 2019 16:03:57 -0700
+Received: from ash-exopmbx101.TheFacebook.com (2620:10d:c0a8:82::b) by
+ ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 27 Aug 2019 16:03:55 -0700
+Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
+ ash-exopmbx101.TheFacebook.com (2620:10d:c0a8:82::b) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 27 Aug 2019 16:03:55 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 27 Aug 2019 16:03:55 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gi1GcL9oJiH7OvTqvM7AtAa7HxpZzHKbTgHHmUu32aXIhZjkkBw+hpaj3o6CAk+PMffHE+ohoS7Z9bbmWCFnxQgJow1UqKGtZ5b4+KPESBjBLqWI5LDhyr3o4i68E4h4iZ7YifllxNlxYDxhSunjbSG7z3iwGBJGnzXGWvK1oVhOyfnUazmpqfMlAv1jTyH3YosEZ+TrZ6HzkXno2mC1UCl3XJo+lE7zUnacZmy0VQWw8gOrerdL61IxeznsZmk+6W/s/5gH+HmJUZL+DqE5SB9Fgc2pzepDK/JUyqrnGq/DifD1k1DI11L+xYhVVtpYclv5nLu6o4zOgCB24HrecA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sOQiakwD5O/8CTN/jDEGo+NOkL+GH/bdrseSZ+6qAyE=;
+ b=lHrSGxyQeE52oiE9Y9IpKMVrXHkAZR/8OTO0C2s58Mmh0WmYb6LJBWdt3bcbQO4kZBw22Lunys4zQ8MNCPYjgFuRACZhjWYYI1H9cBgSFFaITotZEHOPG+EmHU2uYQ67Ddv8boNnuj4uQLwE03y2fpzsz5JIca90wHoFmQL8OlkRqBnavqs6A0wTIynsgKwWmmaGjCuJEr+YsejpRU1ea+ZhEheP4q1KEO3O7cmraMnxC4UO2SEtHtYVw6R8IESEvd4zPcRpYJg50hsS20kBCy9SudEKECgyX+zYkBzyvm+gg1hC+xpBzXTIOVy3u+LnYUsVkpbAcfQ25nB1UWUxGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sOQiakwD5O/8CTN/jDEGo+NOkL+GH/bdrseSZ+6qAyE=;
+ b=OYb7g0Vpbo/PiMB90XmO2HU8VY6tTR2m2nYdyKDFtVW17Q0IvEDH8e7oxv3aJW0O+0gsixzSz2o37SyqTp/i2LaUUfgBD+qIsoc4/hUebH2VbiugnJxh349kzbofI2fhO8oKcqCLSVIqKSdCSEuICkvxkA4u5eWbnDqn8KHDFC4=
+Received: from CH2PR15MB3686.namprd15.prod.outlook.com (10.255.155.143) by
+ CH2PR15MB3638.namprd15.prod.outlook.com (52.132.229.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.21; Tue, 27 Aug 2019 23:03:53 +0000
+Received: from CH2PR15MB3686.namprd15.prod.outlook.com
+ ([fe80::9d88:b74a:48ea:cf6c]) by CH2PR15MB3686.namprd15.prod.outlook.com
+ ([fe80::9d88:b74a:48ea:cf6c%5]) with mapi id 15.20.2199.021; Tue, 27 Aug 2019
+ 23:03:53 +0000
+From:   Ben Wei <benwei@fb.com>
+To:     David Miller <davem@davemloft.net>,
+        "sam@mendozajonas.com" <sam@mendozajonas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
+CC:     Ben Wei <benwei@fb.com>
+Subject: [PATCH net-next] net/ncsi: add response handlers for PLDM over NC-SI
+Thread-Topic: [PATCH net-next] net/ncsi: add response handlers for PLDM over
+ NC-SI
+Thread-Index: AdVdK7Dkb5gbkg6XQAi/YA23MivgTg==
+Date:   Tue, 27 Aug 2019 23:03:53 +0000
+Message-ID: <CH2PR15MB3686302D8210855E5AB643B1A3A00@CH2PR15MB3686.namprd15.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2620:10d:c090:200::2:d0d3]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 96f89eb8-052d-45e2-03b1-08d72b42d4bd
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR15MB3638;
+x-ms-traffictypediagnostic: CH2PR15MB3638:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR15MB36383B6707B8F3F609EA6D01A3A00@CH2PR15MB3638.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2958;
+x-forefront-prvs: 0142F22657
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(366004)(39860400002)(376002)(136003)(199004)(189003)(7696005)(186003)(305945005)(2501003)(74316002)(476003)(46003)(14444005)(110136005)(256004)(81166006)(2906002)(81156014)(99286004)(25786009)(8676002)(8936002)(9686003)(102836004)(6506007)(33656002)(55016002)(4326008)(7736002)(53936002)(6436002)(486006)(52536014)(478600001)(71190400001)(71200400001)(6116002)(86362001)(66476007)(66446008)(64756008)(66556008)(76116006)(66946007)(316002)(14454004)(2201001)(5660300002);DIR:OUT;SFP:1102;SCL:1;SRVR:CH2PR15MB3638;H:CH2PR15MB3686.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: n/dJPv0EKSJPbTJlaalUnxDJOrNwro/273DwE+EBrZS9Vlt5U1oKPLpPXUYS+tws9sKY5QVUpbS1AK7M7dbMCC3ni1JI137XTUHnPtcf8Nlrwnk922+zh5GWZu2uLJI+bBx/+W6x6rk+XJPdsKPPywmkciLRv2TTiC5qhJpXhx3SBp4tKImkNWPiLyvrwjm7+6ePP0DPzsjES9U/pgcOLXOGFklfrjYWXpVxoU4T4Z2SbHjrANgO8tFRLql5O7No9HX3Inp8QqQQF8WTdVJZcMEo4JkqELTAOUOgWrBoriym2hJigKAWdQZppm3Cqq5UA8pPgTwrGNsHW6txbizMz2LuocVr1WO93gczTZ7AOsah2sfUPJXydgGr5zU6VnxSugFkqzOYn0yq594/Bb7yuSZO1U7p74koUQ744g2ZhNE=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190827205213.456318-1-ast@kernel.org>
-In-Reply-To: <20190827205213.456318-1-ast@kernel.org>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Tue, 27 Aug 2019 16:01:08 -0700
-X-Gmail-Original-Message-ID: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-Message-ID: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96f89eb8-052d-45e2-03b1-08d72b42d4bd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 23:03:53.1488
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tpQPPlwmv+TjSQ8wZVGWE+2AbkzltPTQ29bkpXKXsUuySmlIyQIhmkth3RnSewHg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3638
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-08-27_04:2019-08-27,2019-08-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ mlxscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0 bulkscore=0
+ clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=759 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1908270219
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[adding some security and tracing folks to cc]
+This patch adds handlers for PLDM over NC-SI command response.
 
-On Tue, Aug 27, 2019 at 1:52 PM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> Introduce CAP_BPF that allows loading all types of BPF programs,
-> create most map types, load BTF, iterate programs and maps.
-> CAP_BPF alone is not enough to attach or run programs.
->
-> Networking:
->
-> CAP_BPF and CAP_NET_ADMIN are necessary to:
-> - attach to cgroup-bpf hooks like INET_INGRESS, INET_SOCK_CREATE, INET4_CONNECT
-> - run networking bpf programs (like xdp, skb, flow_dissector)
->
-> Tracing:
->
-> CAP_BPF and perf_paranoid_tracepoint_raw() (which is kernel.perf_event_paranoid == -1)
-> are necessary to:
-> - attach bpf program to raw tracepoint
-> - use bpf_trace_printk() in all program types (not only tracing programs)
-> - create bpf stackmap
->
-> To attach bpf to perf_events perf_event_open() needs to succeed as usual.
->
-> CAP_BPF controls BPF side.
-> CAP_NET_ADMIN controls intersection where BPF calls into networking.
-> perf_paranoid_tracepoint_raw controls intersection where BPF calls into tracing.
->
-> In the future CAP_TRACING could be introduced to control
-> creation of kprobe/uprobe and attaching bpf to perf_events.
-> In such case bpf_probe_read() thin wrapper would be controlled by CAP_BPF.
-> Whereas probe_read() would be controlled by CAP_TRACING.
-> CAP_TRACING would also control generic kprobe+probe_read.
-> CAP_BPF and CAP_TRACING would be necessary for tracing bpf programs
-> that want to use bpf_probe_read.
+This enables NC-SI driver recognizes the packet type so the responses don't=
+ get dropped as unknown packet type.
 
-First, some high-level review:
+PLDM over NC-SI are not handled in kernel driver for now, but can be passed=
+ back to user space via Netlink for further handling.
 
-Can you write up some clear documentation aimed at administrators that
-says what CAP_BPF does?  For example, is it expected that CAP_BPF by
-itself permits reading all kernel memory?  Why might one grant it?
+Signed-off-by: Ben Wei <benwei@fb.com>
+---
+ net/ncsi/ncsi-pkt.h |  5 +++++
+ net/ncsi/ncsi-rsp.c | 11 +++++++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
-Can you give at least one fully described use case where CAP_BPF
-solves a real-world problem that is not solved by existing mechanisms?
+diff --git a/net/ncsi/ncsi-pkt.h b/net/ncsi/ncsi-pkt.h index a8e9def593f2..=
+80938b338fee 100644
+--- a/net/ncsi/ncsi-pkt.h
++++ b/net/ncsi/ncsi-pkt.h
+@@ -387,6 +387,9 @@ struct ncsi_aen_hncdsc_pkt {
+ #define NCSI_PKT_CMD_OEM	0x50 /* OEM                              */
+ #define NCSI_PKT_CMD_PLDM	0x51 /* PLDM request over NCSI over RBT  */
+ #define NCSI_PKT_CMD_GPUUID	0x52 /* Get package UUID                 */
++#define NCSI_PKT_CMD_QPNPR	0x56 /* Query Pending NC PLDM request */
++#define NCSI_PKT_CMD_SNPR	0x57 /* Send NC PLDM Reply  */
++
+=20
+ /* NCSI packet responses */
+ #define NCSI_PKT_RSP_CIS	(NCSI_PKT_CMD_CIS    + 0x80)
+@@ -419,6 +422,8 @@ struct ncsi_aen_hncdsc_pkt {
+ #define NCSI_PKT_RSP_OEM	(NCSI_PKT_CMD_OEM    + 0x80)
+ #define NCSI_PKT_RSP_PLDM	(NCSI_PKT_CMD_PLDM   + 0x80)
+ #define NCSI_PKT_RSP_GPUUID	(NCSI_PKT_CMD_GPUUID + 0x80)
++#define NCSI_PKT_RSP_QPNPR	(NCSI_PKT_CMD_QPNPR   + 0x80)
++#define NCSI_PKT_RSP_SNPR	(NCSI_PKT_CMD_SNPR   + 0x80)
+=20
+ /* NCSI response code/reason */
+ #define NCSI_PKT_RSP_C_COMPLETED	0x0000 /* Command Completed        */
+diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c index 5254004f2b42..=
+524974af0db6 100644
+--- a/net/ncsi/ncsi-rsp.c
++++ b/net/ncsi/ncsi-rsp.c
+@@ -1035,6 +1035,11 @@ static int ncsi_rsp_handler_gpuuid(struct ncsi_reque=
+st *nr)
+ 	return 0;
+ }
+=20
++static int ncsi_rsp_handler_pldm(struct ncsi_request *nr) {
++	return 0;
++}
++
+ static int ncsi_rsp_handler_netlink(struct ncsi_request *nr)  {
+ 	struct ncsi_dev_priv *ndp =3D nr->ndp;
+@@ -1088,8 +1093,10 @@ static struct ncsi_rsp_handler {
+ 	{ NCSI_PKT_RSP_GNPTS,  48, ncsi_rsp_handler_gnpts   },
+ 	{ NCSI_PKT_RSP_GPS,     8, ncsi_rsp_handler_gps     },
+ 	{ NCSI_PKT_RSP_OEM,    -1, ncsi_rsp_handler_oem     },
+-	{ NCSI_PKT_RSP_PLDM,    0, NULL                     },
+-	{ NCSI_PKT_RSP_GPUUID, 20, ncsi_rsp_handler_gpuuid  }
++	{ NCSI_PKT_RSP_PLDM,   -1, ncsi_rsp_handler_pldm    },
++	{ NCSI_PKT_RSP_GPUUID, 20, ncsi_rsp_handler_gpuuid  },
++	{ NCSI_PKT_RSP_QPNPR,  -1, ncsi_rsp_handler_pldm    },
++	{ NCSI_PKT_RSP_SNPR,   -1, ncsi_rsp_handler_pldm    }
+ };
+=20
+ int ncsi_rcv_rsp(struct sk_buff *skb, struct net_device *dev,
+--
+2.17.1
 
-Changing the capability that some existing operation requires could
-break existing programs.  The old capability may need to be accepted
-as well.
-
-I'm inclined to suggest that CAP_TRACING be figured out or rejected
-before something like this gets applied.
-
-
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
-> I would prefer to introduce CAP_TRACING soon, since it
-> will make tracing and networking permission model symmetrical.
->
-
-Here's my proposal for CAP_TRACING, documentation-style:
-
---- begin ---
-
-CAP_TRACING enables a task to use various kernel features to trace
-running user programs and the kernel itself.  CAP_TRACING also enables
-a task to bypass some speculation attack countermeasures.  A task in
-the init user namespace with CAP_TRACING will be able to tell exactly
-what kernel code is executed and when, and will be able to read kernel
-registers and kernel memory.  It will, similarly, be able to read the
-state of other user tasks.
-
-Specifically, CAP_TRACING allows the following operations.  It may
-allow more operations in the future:
-
- - Full use of perf_event_open(), similarly to the effect of
-kernel.perf_event_paranoid == -1.
-
- - Loading and attaching tracing BPF programs, including use of BPF
-raw tracepoints.
-
- - Use of BPF stack maps.
-
- - Use of bpf_probe_read() and bpf_trace_printk().
-
- - Use of unsafe pointer-to-integer conversions in BPF.
-
- - Bypassing of BPF's speculation attack hardening measures and
-constant blinding.  (Note: other mechanisms might also allow this.)
-
-CAP_TRACING does not override normal permissions on sysfs or debugfs.
-This means that, unless a new interface for programming kprobes and
-such is added, it does not directly allow use of kprobes.
-
-If CAP_TRACING, by itself, enables a task to crash or otherwise
-corrupt the kernel or other tasks, this will be considered a kernel
-bug.
-
-CAP_TRACING in a non-init user namespace may, in the future, allow
-tracing of other tasks in that user namespace or its descendants.  It
-will not enable kernel tracing or tracing of tasks outside the user
-namespace in question.
-
---- end ---
-
-Does this sound good?  The idea here is that CAP_TRACING should be
-very useful even without CAP_BPF, which allows CAP_BPF to be less
-powerful.
-
-> +bool cap_bpf_tracing(void)
-> +{
-> +       return capable(CAP_SYS_ADMIN) ||
-> +              (capable(CAP_BPF) && !perf_paranoid_tracepoint_raw());
-> +}
-
-If auditing is on, this will audit the wrong thing.  James, I think a
-helper like:
-
-bool ns_either_cap(struct user_ns *ns, int preferred_cap, int other_cap);
-
-would help.  ns_either_cap returns true if either cap is held (i.e.
-effective, as usual).  On success, it audits preferred_cap if held and
-other_cap otherwise.  On failure, it audits preferred_cap.  Does this
-sound right?
-
-Also, for reference, perf_paranoid_tracepoint_raw() is this:
-
-static inline bool perf_paranoid_tracepoint_raw(void)
-{
-        return sysctl_perf_event_paranoid > -1;
-}
-
-so the overall effect of cap_bpf_tracing() is rather odd, and it seems
-to control a few things that don't obvious all have similar security
-effects.
-
-
-> @@ -2080,7 +2083,10 @@ static int bpf_prog_test_run(const union bpf_attr *attr,
->         struct bpf_prog *prog;
->         int ret = -ENOTSUPP;
->
-> -       if (!capable(CAP_SYS_ADMIN))
-> +       if (!capable(CAP_NET_ADMIN) || !capable(CAP_BPF))
-> +               /* test_run callback is available for networking progs only.
-> +                * Add cap_bpf_tracing() above when tracing progs become runable.
-> +                */
-
-I think test_run should probably be CAP_SYS_ADMIN forever.  test_run
-is the only way that one can run a bpf program and call helper
-functions via the program if one doesn't have permission to attach the
-program.  Also, if there's a way to run a speculation attack via a bpf
-program, test_run will make it much easier to do in a controlled
-environment.  Finally, when debugging bpf programs, developers can use
-their own computers or a VM.
