@@ -2,32 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E419F057
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 597499F05D
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 18:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730079AbfH0Qie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 12:38:34 -0400
+        id S1730356AbfH0Qij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 12:38:39 -0400
 Received: from mga17.intel.com ([192.55.52.151]:7283 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726539AbfH0Qie (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 12:38:34 -0400
+        id S1727219AbfH0Qig (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 12:38:36 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 09:38:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,437,1559545200"; 
-   d="scan'208";a="331876326"
+   d="scan'208";a="331876327"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga004.jf.intel.com with ESMTP; 27 Aug 2019 09:38:33 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2019-08-26
-Date:   Tue, 27 Aug 2019 09:38:17 -0700
-Message-Id: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
+Cc:     Usha Ketineni <usha.k.ketineni@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 01/15] ice: Fix ethtool port and PFC stats for 4x25G cards
+Date:   Tue, 27 Aug 2019 09:38:18 -0700
+Message-Id: <20190827163832.8362-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
+References: <20190827163832.8362-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,108 +39,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to ice driver only.
+From: Usha Ketineni <usha.k.ketineni@intel.com>
 
-Usha fixes the statistics reported on 4 port NICs which were reporting
-the incorrect statistics due to using the incorrect port identifier.
+This patch fixes the issue where port and PFC statistics counters are
+incrementing at the wrong port with 4x25G cards.
+Read the GLPRT port registers using lport parameter instead of pf_id to
+update the statistics otherwise the pf_ids are flipped for ports 2 and 3
+when read from the HW register PF_FUNC_RID and this is expected as per
+hardware specification.
 
-Victor fixes an issue when trying to traverse to the first node of a
-requested layer by adding a sibling head pointer for each layer per
-traffic class.
+Signed-off-by: Usha Ketineni <usha.k.ketineni@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 13 ++--
+ drivers/net/ethernet/intel/ice/ice_main.c    | 76 ++++++++++----------
+ 2 files changed, 45 insertions(+), 44 deletions(-)
 
-Anirudh cleans up the locking and logic for enabling and disabling
-VSI's to make it more consistent.  Updates the driver to do dynamic
-allocation of queue management bitmaps and arrays, rather than
-statically allocating them which consumes more memory than required.
-Refactor the logic in ice_ena_msix_range() for clarity and add
-additional checks for when requested resources exceed what is available.
-
-Jesse updates the debugging print statements to make it more useful when
-dealing with link and PHY related issues.
-
-Krzysztof adds a local variable to the VSI rebuild path to improve
-readability.
-
-Akeem limits the reporting of MDD events from VFs so that the kernel
-log is not clogged up with MDD events which are duplicate or potentially
-false positives.  Fixed a reset issue that would result in the system
-getting into a state that could only be resolved by a reboot by
-testing if the VF is in a disabled state during a reset.
-
-Michal adds a check to avoid trying to access memory that has not be
-allocated by checking the number of queue pairs.
-
-Jake fixes a static analysis warning due to a cast of a u8 to unsigned
-long, so just update ice_is_tc_ena() to take a unsigned long so that a
-cast is not necessary.
-
-Colin Ian King fixes a potential infinite loop where a u8 is being
-compared to an int.
-
-Maciej refactors the queue handling functions that work on queue arrays
-so that the logic can be done for a single queue.
-
-Paul adds support for VFs to enable and disable single queues.
-
-Henry fixed the order of operations in ice_remove() which was trying to
-use adminq operations that were already disabled.
-
-The following are changes since commit d00ee466a07eb9182ad3caf6140c7ebb527b4c64:
-  nfp: add AMDA0058 boards to firmware list
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
-
-Akeem G Abodunrin (2):
-  ice: Don't clog kernel debug log with VF MDD events errors
-  ice: Fix VF configuration issues due to reset
-
-Anirudh Venkataramanan (3):
-  ice: Sanitize ice_ena_vsi and ice_dis_vsi
-  ice: Alloc queue management bitmaps and arrays dynamically
-  ice: Rework ice_ena_msix_range
-
-Colin Ian King (1):
-  ice: fix potential infinite loop
-
-Henry Tieman (1):
-  ice: fix adminq calls during remove
-
-Jacob Keller (1):
-  ice: fix ice_is_tc_ena
-
-Jesse Brandeburg (1):
-  ice: shorten local and add debug prints
-
-Krzysztof Kazimierczak (1):
-  ice: Introduce a local variable for a VSI in the rebuild path
-
-Maciej Fijalkowski (1):
-  ice: add support for enabling/disabling single queues
-
-Michal Swiatkowski (1):
-  ice: add validation in OP_CONFIG_VSI_QUEUES VF message
-
-Paul Greenwalt (1):
-  ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap
-
-Usha Ketineni (1):
-  ice: Fix ethtool port and PFC stats for 4x25G cards
-
-Victor Raj (1):
-  ice: added sibling head to parse nodes
-
- drivers/net/ethernet/intel/ice/ice.h          |  12 +-
- drivers/net/ethernet/intel/ice/ice_common.c   |  63 ++-
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  13 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      | 398 +++++++++++-------
- drivers/net/ethernet/intel/ice/ice_lib.h      |  28 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 205 +++++----
- drivers/net/ethernet/intel/ice/ice_sched.c    |  57 +--
- drivers/net/ethernet/intel/ice/ice_type.h     |   6 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 279 ++++++++----
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  14 +-
- 10 files changed, 688 insertions(+), 387 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+index 734cef8eed9e..d9578919aad8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+@@ -500,30 +500,31 @@ void ice_update_dcb_stats(struct ice_pf *pf)
+ {
+ 	struct ice_hw_port_stats *prev_ps, *cur_ps;
+ 	struct ice_hw *hw = &pf->hw;
+-	u8 pf_id = hw->pf_id;
++	u8 port;
+ 	int i;
+ 
++	port = hw->port_info->lport;
+ 	prev_ps = &pf->stats_prev;
+ 	cur_ps = &pf->stats;
+ 
+ 	for (i = 0; i < 8; i++) {
+-		ice_stat_update32(hw, GLPRT_PXOFFRXC(pf_id, i),
++		ice_stat_update32(hw, GLPRT_PXOFFRXC(port, i),
+ 				  pf->stat_prev_loaded,
+ 				  &prev_ps->priority_xoff_rx[i],
+ 				  &cur_ps->priority_xoff_rx[i]);
+-		ice_stat_update32(hw, GLPRT_PXONRXC(pf_id, i),
++		ice_stat_update32(hw, GLPRT_PXONRXC(port, i),
+ 				  pf->stat_prev_loaded,
+ 				  &prev_ps->priority_xon_rx[i],
+ 				  &cur_ps->priority_xon_rx[i]);
+-		ice_stat_update32(hw, GLPRT_PXONTXC(pf_id, i),
++		ice_stat_update32(hw, GLPRT_PXONTXC(port, i),
+ 				  pf->stat_prev_loaded,
+ 				  &prev_ps->priority_xon_tx[i],
+ 				  &cur_ps->priority_xon_tx[i]);
+-		ice_stat_update32(hw, GLPRT_PXOFFTXC(pf_id, i),
++		ice_stat_update32(hw, GLPRT_PXOFFTXC(port, i),
+ 				  pf->stat_prev_loaded,
+ 				  &prev_ps->priority_xoff_tx[i],
+ 				  &cur_ps->priority_xoff_tx[i]);
+-		ice_stat_update32(hw, GLPRT_RXON2OFFCNT(pf_id, i),
++		ice_stat_update32(hw, GLPRT_RXON2OFFCNT(port, i),
+ 				  pf->stat_prev_loaded,
+ 				  &prev_ps->priority_xon_2_xoff[i],
+ 				  &cur_ps->priority_xon_2_xoff[i]);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index f3923dec32b7..76a647cc2dbd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3262,25 +3262,25 @@ void ice_update_pf_stats(struct ice_pf *pf)
+ {
+ 	struct ice_hw_port_stats *prev_ps, *cur_ps;
+ 	struct ice_hw *hw = &pf->hw;
+-	u8 pf_id;
++	u8 port;
+ 
++	port = hw->port_info->lport;
+ 	prev_ps = &pf->stats_prev;
+ 	cur_ps = &pf->stats;
+-	pf_id = hw->pf_id;
+ 
+-	ice_stat_update40(hw, GLPRT_GORCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_GORCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.rx_bytes,
+ 			  &cur_ps->eth.rx_bytes);
+ 
+-	ice_stat_update40(hw, GLPRT_UPRCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_UPRCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.rx_unicast,
+ 			  &cur_ps->eth.rx_unicast);
+ 
+-	ice_stat_update40(hw, GLPRT_MPRCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_MPRCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.rx_multicast,
+ 			  &cur_ps->eth.rx_multicast);
+ 
+-	ice_stat_update40(hw, GLPRT_BPRCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_BPRCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.rx_broadcast,
+ 			  &cur_ps->eth.rx_broadcast);
+ 
+@@ -3288,109 +3288,109 @@ void ice_update_pf_stats(struct ice_pf *pf)
+ 			  &prev_ps->eth.rx_discards,
+ 			  &cur_ps->eth.rx_discards);
+ 
+-	ice_stat_update40(hw, GLPRT_GOTCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_GOTCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.tx_bytes,
+ 			  &cur_ps->eth.tx_bytes);
+ 
+-	ice_stat_update40(hw, GLPRT_UPTCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_UPTCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.tx_unicast,
+ 			  &cur_ps->eth.tx_unicast);
+ 
+-	ice_stat_update40(hw, GLPRT_MPTCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_MPTCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.tx_multicast,
+ 			  &cur_ps->eth.tx_multicast);
+ 
+-	ice_stat_update40(hw, GLPRT_BPTCL(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_BPTCL(port), pf->stat_prev_loaded,
+ 			  &prev_ps->eth.tx_broadcast,
+ 			  &cur_ps->eth.tx_broadcast);
+ 
+-	ice_stat_update32(hw, GLPRT_TDOLD(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_TDOLD(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_dropped_link_down,
+ 			  &cur_ps->tx_dropped_link_down);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC64L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC64L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_64, &cur_ps->rx_size_64);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC127L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC127L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_127, &cur_ps->rx_size_127);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC255L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC255L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_255, &cur_ps->rx_size_255);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC511L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC511L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_511, &cur_ps->rx_size_511);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC1023L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC1023L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_1023, &cur_ps->rx_size_1023);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC1522L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC1522L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_1522, &cur_ps->rx_size_1522);
+ 
+-	ice_stat_update40(hw, GLPRT_PRC9522L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PRC9522L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_size_big, &cur_ps->rx_size_big);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC64L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC64L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_64, &cur_ps->tx_size_64);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC127L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC127L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_127, &cur_ps->tx_size_127);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC255L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC255L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_255, &cur_ps->tx_size_255);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC511L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC511L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_511, &cur_ps->tx_size_511);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC1023L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC1023L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_1023, &cur_ps->tx_size_1023);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC1522L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC1522L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_1522, &cur_ps->tx_size_1522);
+ 
+-	ice_stat_update40(hw, GLPRT_PTC9522L(pf_id), pf->stat_prev_loaded,
++	ice_stat_update40(hw, GLPRT_PTC9522L(port), pf->stat_prev_loaded,
+ 			  &prev_ps->tx_size_big, &cur_ps->tx_size_big);
+ 
+-	ice_stat_update32(hw, GLPRT_LXONRXC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_LXONRXC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->link_xon_rx, &cur_ps->link_xon_rx);
+ 
+-	ice_stat_update32(hw, GLPRT_LXOFFRXC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_LXOFFRXC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->link_xoff_rx, &cur_ps->link_xoff_rx);
+ 
+-	ice_stat_update32(hw, GLPRT_LXONTXC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_LXONTXC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->link_xon_tx, &cur_ps->link_xon_tx);
+ 
+-	ice_stat_update32(hw, GLPRT_LXOFFTXC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_LXOFFTXC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->link_xoff_tx, &cur_ps->link_xoff_tx);
+ 
+ 	ice_update_dcb_stats(pf);
+ 
+-	ice_stat_update32(hw, GLPRT_CRCERRS(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_CRCERRS(port), pf->stat_prev_loaded,
+ 			  &prev_ps->crc_errors, &cur_ps->crc_errors);
+ 
+-	ice_stat_update32(hw, GLPRT_ILLERRC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_ILLERRC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->illegal_bytes, &cur_ps->illegal_bytes);
+ 
+-	ice_stat_update32(hw, GLPRT_MLFC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_MLFC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->mac_local_faults,
+ 			  &cur_ps->mac_local_faults);
+ 
+-	ice_stat_update32(hw, GLPRT_MRFC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_MRFC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->mac_remote_faults,
+ 			  &cur_ps->mac_remote_faults);
+ 
+-	ice_stat_update32(hw, GLPRT_RLEC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_RLEC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_len_errors, &cur_ps->rx_len_errors);
+ 
+-	ice_stat_update32(hw, GLPRT_RUC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_RUC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_undersize, &cur_ps->rx_undersize);
+ 
+-	ice_stat_update32(hw, GLPRT_RFC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_RFC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_fragments, &cur_ps->rx_fragments);
+ 
+-	ice_stat_update32(hw, GLPRT_ROC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_ROC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_oversize, &cur_ps->rx_oversize);
+ 
+-	ice_stat_update32(hw, GLPRT_RJC(pf_id), pf->stat_prev_loaded,
++	ice_stat_update32(hw, GLPRT_RJC(port), pf->stat_prev_loaded,
+ 			  &prev_ps->rx_jabber, &cur_ps->rx_jabber);
+ 
+ 	pf->stat_prev_loaded = true;
 -- 
 2.21.0
 
