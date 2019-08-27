@@ -2,148 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A6A9DAB8
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 02:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5539DAB5
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 02:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbfH0Aeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 20:34:36 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42656 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727986AbfH0Aeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 20:34:36 -0400
-Received: by mail-pf1-f193.google.com with SMTP id i30so12889386pfk.9
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 17:34:35 -0700 (PDT)
+        id S1727933AbfH0Aec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 20:34:32 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36069 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbfH0Aec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 20:34:32 -0400
+Received: by mail-pf1-f194.google.com with SMTP id w2so12909826pfi.3;
+        Mon, 26 Aug 2019 17:34:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3Vs+TQr7hHy2v8MzMkCOjJVcnNTmLTAgeFS/JpBulfo=;
-        b=TbRrANRIH92j2fSmCx5BdSbQOzmBU/XbqoZ7xd1Ww6AaUEz68WzvbdIanurUAl4uCi
-         TY5ohivdtzQn+XaVmJg6fPUKxrj24BAg74pSnwI7DkAuOrdvMiXXCrTy2hSlOyRnUj+6
-         wtSltIyQcEmY1aect58Y183r1a351O76l3nNE=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9Z9ZpdNHcBGyUVSvsMnO5/9hIN2hnnSkhV9BOJaFPCQ=;
+        b=PJ60iU40NfJKr8gs35JCe0XjpiGTGNudc+PExMPUiDVWeAwXl9KwUn2F5iupt07l6e
+         6NY8UjNvchEfy+bj+Ts72dOCY2Zccqkln4veoX40SWcoKW2w2hNrboaxdlK8AfPklQ6m
+         5siULEiiuporwVXgjWNZhq6pRbe44+fSqOVxE6by/X8a3siwgQCtN1E3jhkp5oAu6tuC
+         V84GFwf14MtvFoypMlm9mGbcZUBbuyZeua9Om3FRGvnH55DxfqsJWq4lIC9SQQSQGtXG
+         hgg2w11cYw4/K2D8aumRA/bjhWVodUNV067qvyqItmH7t2kP1AzBGFceWY00MzMjuWaq
+         BGDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3Vs+TQr7hHy2v8MzMkCOjJVcnNTmLTAgeFS/JpBulfo=;
-        b=nuypLgwD6WLfZQS7zaFmRmbz9V6EtBV9PwtoXru/Piv210/5X3qG5F6ykOQNgTRdsu
-         ++Fn1B+kLPsu0nbmyTbqrZ+8Y6KxkGyU1rmWDwCXp/Rh6znm/dTbvnOjmf1PnVg6GgSF
-         PB2wwQr6CKGmRltn6bYnQYosouBHSXrwGTVHIs+lvwZmAVawW92a88U3XfMbGUbQmdFA
-         FafuZCb1+hOqjPrfaUB16sPMDnMNh91Vl90JL75ZBAh167DcgA2qJdBjHSfnRX/qxNpk
-         z/oF8IEKRmy8FObRI8Si1605SwO7IOYVpdr++hx1pnchYKWk9jw8D8287r3w5PACSLIx
-         MKDQ==
-X-Gm-Message-State: APjAAAVP3ObqHVtZTCxhCCpn6ryH2Slt/oEbzDhRB9WjxnfMNDlsGuC7
-        P8Ad7AIeR4yRdfpKGQykJORTKw==
-X-Google-Smtp-Source: APXvYqyXHySgZZYqvzNM28Yd+pRvNdNbnVHxIZpOA4FgrKCaNtwMUDuAlL2eCKLsx6jrUwC8C3dTJQ==
-X-Received: by 2002:a05:6a00:8e:: with SMTP id c14mr22563388pfj.241.1566866074901;
-        Mon, 26 Aug 2019 17:34:34 -0700 (PDT)
-Received: from drinkcat2.tpe.corp.google.com ([2401:fa00:1:b:d8b7:33af:adcb:b648])
-        by smtp.gmail.com with ESMTPSA id a23sm9081429pfc.71.2019.08.26.17.34.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2019 17:34:34 -0700 (PDT)
-From:   Nicolas Boichat <drinkcat@chromium.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wgong@codeaurora.org, Niklas Cassel <niklas.cassel@linaro.org>,
-        Alagu Sankar <alagusankar@silex-india.com>,
-        briannorris@chromium.org, tientzu@chromium.org
-Subject: [PATCH,RFC] ath10k: Fix skb->len (properly) in ath10k_sdio_mbox_rx_packet
-Date:   Tue, 27 Aug 2019 08:33:26 +0800
-Message-Id: <20190827003326.147452-1-drinkcat@chromium.org>
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9Z9ZpdNHcBGyUVSvsMnO5/9hIN2hnnSkhV9BOJaFPCQ=;
+        b=K347t0wIGumTrGab+AkssVYOzaLmlMNqRHULJCQIEnD5I0VXO8Rb4TXB0ITL6QJQ4U
+         1hv4UGrwyC7w0954DqQG4qnruqNvwKEd4+dW4kCVyLuVHfvB9egbf4hCvNapg9Xzs7lN
+         mx+FVCyRU2xPDoTkFp8Lr2UnsGSnWrqJZJ3YXZ4wklG2BTefxE5HB6cP5+3k97vIAy6N
+         J2pNMwnUxhhkUND0CQBp2Z19l88c3gxsiP0JvYiIvHfiH6iITGF+eP+aH5RKd/fWMKFb
+         ichxGFxdoCa0PkaG9PVR5M4Plsly6lhFWsNbvYkrViiHoedtx0buJh/SzfhUSV8zU7hv
+         PlQw==
+X-Gm-Message-State: APjAAAWu3WnDSLwFeCHoz/y49/8BjAvNuDA2D13umMfsXesPRYManVLW
+        JRr8Xwc4LhPkuogdCOslj/Y=
+X-Google-Smtp-Source: APXvYqzITkJGpoAKvnwcdaKEmtym/xYMkPKi8ZpnB+aH1GlqnecKePOiHOi47Yn9rLQR7DI2x8z80A==
+X-Received: by 2002:aa7:8808:: with SMTP id c8mr22395501pfo.67.1566866071542;
+        Mon, 26 Aug 2019 17:34:31 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::f983])
+        by smtp.gmail.com with ESMTPSA id q13sm21310334pfl.124.2019.08.26.17.34.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Aug 2019 17:34:30 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 17:34:29 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Chenbo Feng <chenbofeng.kernel@gmail.com>
+Subject: Re: RFC: very rough draft of a bpf permission model
+Message-ID: <20190827003427.hcvrobr23uhqwmq5@ast-mbp>
+References: <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
+ <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
+ <CALCETrWU4xJh4UBg0BboCwdGrgj+dUShsH5ETpiRgEpXJTEfQA@mail.gmail.com>
+ <20190822232620.p5tql4rrlzlk35z7@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrUhXrZaJy8omX_DsH0rAY98YEqR64VuisQSz2Rru8Dqpg@mail.gmail.com>
+ <20190826223558.6torq6keplniif6w@ast-mbp>
+ <CALCETrUARqcn8EmjcgMc8KP=4O5nZDMh=tcruEYvUgSzMKJUBw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALCETrUARqcn8EmjcgMc8KP=4O5nZDMh=tcruEYvUgSzMKJUBw@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(not a formal patch, take this as a bug report for now, I can clean
-up depending on the feedback I get here)
+On Mon, Aug 26, 2019 at 05:05:58PM -0700, Andy Lutomirski wrote:
+> >>
+> >> The BPF verifier and interpreter, taken in isolation, may be extremely
+> >> safe, but attaching BPF programs to various hooks can easily take down
+> >> the system, deliberately or by accident.  A handler, especially if it
+> >> can access user memory or otherwise fault, will explode if attached to
+> >> an inappropriate kprobe, hw_breakpoint, or function entry trace event.
+> >
+> > absolutely not true.
+> 
+> This is not a constructive way to have a conversation.  When you get
+> an email that contains a statement you disagree with, perhaps you
+> could try to give some argument as to why you disagree rather than
+> just saying "absolutely not true".  Especially when you are talking to
+> one of the maintainers of the affected system who has a
+> not-yet-finished branch that addresses some of the bugs that you claim
+> absolutely don't exist.  If it's really truly necessary, I can go and
+> write an example that will crash an x86 kernel, but I feel like it
+> would be a waste of everyone's time.
 
-There's at least 3 issues here, and the patch fixes 2/3 only, I'm not sure
-how/if 1 should be handled.
- 1. ath10k_sdio_mbox_rx_alloc allocating skb of a incorrect size (too
-    small)
- 2. ath10k_sdio_mbox_rx_packet calling skb_put with that incorrect size.
- 3. ath10k_sdio_mbox_rx_process_packet attempts to fixup the size, but
-    does not use proper skb_put commands to do so, so we end up with
-    a mismatch between skb->head + skb->tail and skb->data + skb->len.
+Please do write an example and prove your earlier sensational statement
+that "can _easily_ take down the system" by attaching bpf to kprobe.
 
-Let's start with 3, this is quite serious as this and causes corruptions
-in the TCP stack, as the stack tries to coalesce packets, and relies on
-skb->tail being correct (that is, skb_tail_pointer must point to the
-first byte _after_ the data): one must never manipulate skb->len
-directly.
+Most of the functions where kprobes are not allowed are already
+marked by 'nokprobe'. All of them marked? Probably not.
+There could be places where kprobe will blow the system, but
+1. it's not easy to do. unlike your claim
+2. that issue has nothing to do with bpf safety guarantees.
 
-Instead, we need to use skb_put to allocate more space (which updates
-skb->len and skb->tail). But it seems odd to do that in
-ath10k_sdio_mbox_rx_process_packet, so I move the code to
-ath10k_sdio_mbox_rx_packet (point 2 above).
+> How confident are you that the BPF program that calls bpf_probe_read()
+> on an MMIO address has well-defined semantics?  How confident are you
+> that the system will still work if such a program runs?
 
-However, there is still something strange (point 1 above), why is
-ath10k_sdio_mbox_rx_alloc allocating packets of the incorrect
-(too small?) size? What happens if the packet is bigger than alloc_len?
-Does this lead to corruption/lost data?
+bpf_probe_read is a wrapper of probe_read. Nothing more.
+I'm confident that probe_read maintainers are doing good job.
 
-Fixes: 8530b4e7b22bc3b ("ath10k: sdio: set skb len for all rx packets")
-Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
-
----
-
-One simple way to test this is this scriplet, that sends a lot of
-small packets over SSH:
-(for i in `seq 1 300`; do echo $i; sleep 0.1; done) | ssh $IP cat
-
-In my testing it rarely ever reach 300 without failure.
-
- drivers/net/wireless/ath/ath10k/sdio.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index 8ed4fbd8d6c3888..a9f5002863ee7bb 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -381,16 +381,14 @@ static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
- 	struct ath10k_htc_hdr *htc_hdr = (struct ath10k_htc_hdr *)skb->data;
- 	bool trailer_present = htc_hdr->flags & ATH10K_HTC_FLAG_TRAILER_PRESENT;
- 	enum ath10k_htc_ep_id eid;
--	u16 payload_len;
- 	u8 *trailer;
- 	int ret;
- 
--	payload_len = le16_to_cpu(htc_hdr->len);
--	skb->len = payload_len + sizeof(struct ath10k_htc_hdr);
-+	/* TODO: Remove this? */
-+	WARN_ON(skb->len != le16_to_cpu(htc_hdr->len) + sizeof(*htc_hdr));
- 
- 	if (trailer_present) {
--		trailer = skb->data + sizeof(*htc_hdr) +
--			  payload_len - htc_hdr->trailer_len;
-+		trailer = skb->data + skb->len - htc_hdr->trailer_len;
- 
- 		eid = pipe_id_to_eid(htc_hdr->eid);
- 
-@@ -637,8 +635,16 @@ static int ath10k_sdio_mbox_rx_packet(struct ath10k *ar,
- 	ret = ath10k_sdio_readsb(ar, ar_sdio->mbox_info.htc_addr,
- 				 skb->data, pkt->alloc_len);
- 	pkt->status = ret;
--	if (!ret)
-+	if (!ret) {
-+		/* Update actual length. */
-+		/* FIXME: This looks quite wrong, why is pkt->act_len not
-+		 * correct in the first place?
-+		 */
-+		struct ath10k_htc_hdr *htc_hdr =
-+			(struct ath10k_htc_hdr *)skb->data;
-+		pkt->act_len = le16_to_cpu(htc_hdr->len) + sizeof(*htc_hdr);
- 		skb_put(skb, pkt->act_len);
-+	}
- 
- 	return ret;
- }
--- 
-2.23.0.187.g17f5b7556c-goog
+All of the bpf tracing is relying on existing kernel mechanisms
+like kprobe, uprobe, perf, probe_read, etc.
+bpf verifier cannot make them safer.
+If reading mmio via bpf_probe_read will trigger undesired
+hw behavior there is nothing bpf verifier can do about it.
 
