@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E60699ECA0
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 17:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 321919EF07
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 17:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729996AbfH0P24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 11:28:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47112 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726333AbfH0P24 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 11:28:56 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0AC04C050E12;
-        Tue, 27 Aug 2019 15:28:56 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 728F15D9C3;
-        Tue, 27 Aug 2019 15:28:55 +0000 (UTC)
-Date:   Tue, 27 Aug 2019 09:28:55 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Parav Pandit <parav@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-Message-ID: <20190827092855.29702347@x1.home>
-In-Reply-To: <20190827132946.0b92d259.cohuck@redhat.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190826204119.54386-3-parav@mellanox.com>
-        <20190827122928.752e763b.cohuck@redhat.com>
-        <AM0PR05MB486621458EC71973378CD5A0D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190827132946.0b92d259.cohuck@redhat.com>
-Organization: Red Hat
+        id S1728612AbfH0Pez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 11:34:55 -0400
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:36669 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726170AbfH0Pez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 11:34:55 -0400
+Received: by mail-wr1-f50.google.com with SMTP id y19so1425350wrd.3
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 08:34:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6oBwq+K9qTcQtYp/Hz8osR6pxTP/rPLVJLy9wif4hkA=;
+        b=Wo3+UQ5pOR9T4ZdqK/14+kliTxvR/vQwJB0eC1QHGlhzATKTGPACNfC8Khn/fB5CNe
+         +3axoRRG+4L11ECdXgrFoEi4vfaFpbHQgGJtI3MmO7O5G3DVvWIjyMT9yLGFt1dkkvwR
+         apaCGWTweN6izlB6nmSS1VHhYkfR4AKQ20qwSsOu0g0XvU7i4cnUhgkSksvdiVRhskGV
+         LjVt1ADiqfemJB3sLFoFEw3K2o1ZqmODOiI50XeBQp4I3vDZ5Lk6uCSbdT+/tW8AnuK2
+         Q+5wm7ZO51/juP9ybWeYCUJsFmTIV43aDa4V78ZNXkqezAen1gG9Krkgh2AJl6g2ZKyf
+         VKuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6oBwq+K9qTcQtYp/Hz8osR6pxTP/rPLVJLy9wif4hkA=;
+        b=rGHSIutBUIq9VGIpn3vTjTV0kTr04Ex2HQdOOVsam/wWvZ5ri2I63Ng5mP+Sayui4w
+         K66pKqxyrQA3WZMm9VtS0wLZ98tYNZ1byNSevxueIUXs+NHdNtUWAUndZE9/+mYN6lO/
+         hVDBHgJ6cCZeFmazxPw/td9Fuh1lWqrD+keheCrob3f8bGA9WFlJ1SpvscoBOb2qbV66
+         mYc41ESYbf1l1oihPfAK3vAodKr4x06239NfJfM3hfVo+CtgYJ4mEE28+J/smcvNTu8l
+         hynePH/UISO4a7tV4Cs2iH9pyy8Uf6RgHoMclIUlY6uxfaRv+VFgkD0l5RXWNc/lQ0IF
+         JEoQ==
+X-Gm-Message-State: APjAAAXKGJyxoMFkygTuAe7Wkmv5IdPSKlGe3lQlj4oF4hDmhx9WsbQZ
+        Aiw/576ARFYbTI8wBfQUGMA=
+X-Google-Smtp-Source: APXvYqw3kw6EfPClPyejwj9ptqK8iLXiuLV9JVlq8C+lm8lPUHURO8juRjVmmlV8SUWwptumqhPH5w==
+X-Received: by 2002:adf:e708:: with SMTP id c8mr8387613wrm.25.1566920093385;
+        Tue, 27 Aug 2019 08:34:53 -0700 (PDT)
+Received: from [192.168.8.147] (212.160.185.81.rev.sfr.net. [81.185.160.212])
+        by smtp.gmail.com with ESMTPSA id f192sm3202067wmg.30.2019.08.27.08.34.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Aug 2019 08:34:52 -0700 (PDT)
+Subject: Re: [net-next] net: sched: pie: enable timestamp based delay
+ calculation
+To:     Gautam Ramakrishnan <gautamramk@gmail.com>, netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, davem@davemloft.net, xiyou.wangcong@gmail.com,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Dave Taht <dave.taht@gmail.com>
+References: <20190827141938.23483-1-gautamramk@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <316fdac3-5fa9-35d5-ad74-94072f19c5fc@gmail.com>
+Date:   Tue, 27 Aug 2019 17:34:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190827141938.23483-1-gautamramk@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 27 Aug 2019 15:28:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 13:29:46 +0200
-Cornelia Huck <cohuck@redhat.com> wrote:
 
-> On Tue, 27 Aug 2019 11:08:59 +0000
-> Parav Pandit <parav@mellanox.com> wrote:
-> 
-> > > -----Original Message-----
-> > > From: Cornelia Huck <cohuck@redhat.com>
-> > > Sent: Tuesday, August 27, 2019 3:59 PM
-> > > To: Parav Pandit <parav@mellanox.com>
-> > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > Subject: Re: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-> > > 
-> > > On Mon, 26 Aug 2019 15:41:17 -0500
-> > > Parav Pandit <parav@mellanox.com> wrote:
-> > >     
-> > > > Mdev alias should be unique among all the mdevs, so that when such
-> > > > alias is used by the mdev users to derive other objects, there is no
-> > > > collision in a given system.
-> > > >
-> > > > Signed-off-by: Parav Pandit <parav@mellanox.com>
-> > > > ---
-> > > >  drivers/vfio/mdev/mdev_core.c | 5 +++++
-> > > >  1 file changed, 5 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vfio/mdev/mdev_core.c
-> > > > b/drivers/vfio/mdev/mdev_core.c index e825ff38b037..6eb37f0c6369
-> > > > 100644
-> > > > --- a/drivers/vfio/mdev/mdev_core.c
-> > > > +++ b/drivers/vfio/mdev/mdev_core.c
-> > > > @@ -375,6 +375,11 @@ int mdev_device_create(struct kobject *kobj, struct    
-> > > device *dev,    
-> > > >  			ret = -EEXIST;
-> > > >  			goto mdev_fail;
-> > > >  		}
-> > > > +		if (tmp->alias && strcmp(tmp->alias, alias) == 0) {    
-> > > 
-> > > Any way we can relay to the caller that the uuid was fine, but that we had a
-> > > hash collision? Duplicate uuids are much more obvious than a collision here.
-> > >     
-> > How do you want to relay this rare event?
-> > Netlink interface has way to return the error message back, but sysfs is limited due to its error code based interface.  
-> 
-> I don't know, that's why I asked :)
-> 
-> The problem is that "uuid already used" and "hash collision" are
-> indistinguishable. While "use a different uuid" will probably work in
-> both cases, "increase alias length" might be a good alternative in some
-> cases.
-> 
-> But if there is no good way to relay the problem, we can live with it.
 
-It's a rare event, maybe just dev_dbg(dev, "Hash collision creating alias \"%s\" for mdev device %pUl\n",...
-
-Thanks,
-Alex
-
-> > > > +			mutex_unlock(&mdev_list_lock);
-> > > > +			ret = -EEXIST;
-> > > > +			goto mdev_fail;
-> > > > +		}
-> > > >  	}
-> > > >
-> > > >  	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);    
-> >   
+On 8/27/19 4:19 PM, Gautam Ramakrishnan wrote:
+> RFC 8033 suggests an alternative approach to calculate the queue
+> delay in PIE by using per packet timestamps. This patch enables the
+> PIE implementation to do this.
 > 
+> The calculation of queue delay is as follows:
+> 	qdelay = now - packet_enqueue_time
+> 
+> To enable the use of timestamps:
+> 	modprobe sch_pie use_timestamps=1
 
+
+No module parameter is accepted these days.
+
+Please add a new attribute instead,
+so that pie can be used in both mode on the same host.
+
+For a typical example of attribute addition, please take
+a look at commit 48872c11b77271ef9b070bdc50afe6655c4eb9aa
+("net_sched: sch_fq: add dctcp-like marking")
