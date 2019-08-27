@@ -2,72 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 292DF9E6E4
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E3F9E6ED
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 13:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727926AbfH0Lg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 07:36:59 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:43118 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725912AbfH0Lg7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 07:36:59 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id BA7916EE540715C841CF;
-        Tue, 27 Aug 2019 19:36:57 +0800 (CST)
-Received: from [127.0.0.1] (10.65.91.35) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Tue, 27 Aug 2019
- 19:36:50 +0800
-Subject: Re: [RFC PATCH net-next] net: phy: force phy suspend when calling
- phy_stop
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <forest.zhouchang@huawei.com>,
-        <linuxarm@huawei.com>
-References: <1566874020-14334-1-git-send-email-shenjian15@huawei.com>
- <cc52cde5-b114-3bf8-4c4b-fe81c04080ee@cogentembedded.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <02aea077-a7b9-0427-5ea4-4914091d7b77@huawei.com>
-Date:   Tue, 27 Aug 2019 19:36:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1726972AbfH0LlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 07:41:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:65064 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725912AbfH0LlV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 07:41:21 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id AB59461D25;
+        Tue, 27 Aug 2019 11:41:20 +0000 (UTC)
+Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D2EEB600D1;
+        Tue, 27 Aug 2019 11:41:16 +0000 (UTC)
+Date:   Tue, 27 Aug 2019 13:41:14 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+Message-ID: <20190827134114.01ddd049.cohuck@redhat.com>
+In-Reply-To: <AM0PR05MB4866CC932630ADD9BDA51371D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190826204119.54386-2-parav@mellanox.com>
+        <20190827122428.37442fe1.cohuck@redhat.com>
+        <AM0PR05MB4866B68C9E60E42359BE1F4DD1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190827132404.483a74ad.cohuck@redhat.com>
+        <AM0PR05MB4866CC932630ADD9BDA51371D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-In-Reply-To: <cc52cde5-b114-3bf8-4c4b-fe81c04080ee@cogentembedded.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.65.91.35]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Tue, 27 Aug 2019 11:41:20 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 27 Aug 2019 11:33:54 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
+> > -----Original Message-----
+> > From: Cornelia Huck <cohuck@redhat.com>
+> > Sent: Tuesday, August 27, 2019 4:54 PM
+> > To: Parav Pandit <parav@mellanox.com>
+> > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; netdev@vger.kernel.org
+> > Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+> > 
+> > On Tue, 27 Aug 2019 11:12:23 +0000
+> > Parav Pandit <parav@mellanox.com> wrote:
+> >   
+> > > > -----Original Message-----
+> > > > From: Cornelia Huck <cohuck@redhat.com>
+> > > > Sent: Tuesday, August 27, 2019 3:54 PM
+> > > > To: Parav Pandit <parav@mellanox.com>
+> > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
+> > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
+> > > > Subject: Re: [PATCH 1/4] mdev: Introduce sha1 based mdev alias
+> > > >
 
-在 2019/8/27 18:11, Sergei Shtylyov 写道:
-> On 27.08.2019 5:47, Jian Shen wrote:
+> > > > What about:
+> > > >
+> > > > * @get_alias_length: optional callback to specify length of the alias to  
+> > create  
+> > > > *                    Returns unsigned integer: length of the alias to be created,
+> > > > *                                              0 to not create an alias
+> > > >  
+> > > Ack.
+> > >  
+> > > > I also think it might be beneficial to add a device parameter here
+> > > > now (rather than later); that seems to be something that makes sense.
+> > > >  
+> > > Without showing the use, it shouldn't be added.  
+> > 
+> > It just feels like an omission: Why should the vendor driver only be able to
+> > return one value here, without knowing which device it is for?
+> > If a driver supports different devices, it may have different requirements for
+> > them.
+> >   
+> Sure. Lets first have this requirement to add it.
+> I am against adding this length field itself without an actual vendor use case, which is adding some complexity in code today.
+> But it was ok to have length field instead of bool.
 > 
->> Some ethernet drivers may call phy_start() and phy_stop() from
->> ndo_open and ndo_close() respectively.
-> 
->    ndo_open() for consistency.
-> 
->> When network cable is unconnected, and operate like below:
->> step 1: ifconfig ethX up -> ndo_open -> phy_start ->start
->> autoneg, and phy is no link.
->> step 2: ifconfig ethX down -> ndo_close -> phy_stop -> just stop
->> phy state machine.
->> step 3: plugin the network cable, and autoneg complete, then
->> LED for link status will be on.
->> step 4: ethtool ethX --> see the result of "Link detected" is no.
->>
->> This patch forces phy suspend even phydev->link is off.
->>
->> Signed-off-by: Jian Shen <shenjian15@huawei.com>
-> [...]
-> 
-> MBR, Sergei
-> 
-> 
-Thanks, will fix it.
+> Lets not further add "no-requirement futuristic knobs" which hasn't shown its need yet.
+> When a vendor driver needs it, there is nothing prevents such addition.
 
+Frankly, I do not see how it adds complexity; the other callbacks have
+device arguments already, and the vendor driver is free to ignore it if
+it does not have a use for it. I'd rather add the argument before a
+possible future user tries weird hacks to allow multiple values, but
+I'll leave the decision to the maintainers.
