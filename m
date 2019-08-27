@@ -2,124 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B129DC9C
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 06:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECD79DCAB
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 06:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729159AbfH0E3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 00:29:21 -0400
-Received: from mail-eopbgr130042.outbound.protection.outlook.com ([40.107.13.42]:54244
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725795AbfH0E3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 00:29:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bhvo4N4tOZc6PyQMfO6YylClKiRbhA7MJP4HEYUaegB8uLBETVgmr8fzoNtT4IleFs9hckoAx2imPStANanvsmNUoCEUHqX41YKJTFS5fnd6aTEUeC59IpHozRpkpwP2hRg10+N3/JFrvYKlXRTk3tAdI9L0IkhSLPRvwAIg0ZV8pjhN8Sdcgu7funtDw1+BGIwMc7UZNF7k4PVE7+Urr6oPYDuqEnyExQA2+e/uDoKLjPH6WoKaV89yfEidvI+rfBAIvoNdsHBV7rgOS5T/RqSnGrKcm0/pWUoZLYALO6SYiuD9TPK//n2LJgArrl683hUE8drR3LnEBNLPiMnMhg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MS84kg56Twko/45NYKHmSkzwKtzS4sLY3QbrRYvyEcE=;
- b=N86aSJ7cpzEa/c1jGXPcSYuLz+xlhoJNrZZG3GjXscXpGSJuSqEtUwqq+2PvxKR/MxnzyRS/1xzHcndyElWpY4yVJgtAifpQFKsEK3ggFEuP+26hF+akUYDsG+J5tn5NPqCs0O72rhoO279wXZGo6cFs3E8elXjzcry+KbgJDb8tWy/cpmIfsTR07/jkDfe8dI2igXmN8RwZDmKxtie4KiW1MOjc7Jvd4GhL/TTjmFE13HXUq317JSrniOX6ThiVg5do9eXuO9/fySlA/UzgmoeXflPP9t/xDZ53CFRfQSAzdPz9gDZTsxIA1V8AH1nIgyRl54hEkL0BFXFTj+xjMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MS84kg56Twko/45NYKHmSkzwKtzS4sLY3QbrRYvyEcE=;
- b=amo0MmimZqbr37cGbG8Giy5WXvZ14vQ15KCnni+Px0VU1/X/q+Q6pvw1CIQoMPYJMG3jNnp83Yif2Mj8Iqy9PlJHgH13JcUTzuI/b5XaSIjQAhzFL7Qhus/XHM0BfkAuaFpN/vr5AYPYEAs49wEc7BbjeNVQCvUljM3HKR6fB1s=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4532.eurprd05.prod.outlook.com (52.133.55.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.21; Tue, 27 Aug 2019 04:28:37 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.020; Tue, 27 Aug 2019
- 04:28:37 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Mark Bloch <markb@mellanox.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-Thread-Topic: [PATCH 2/4] mdev: Make mdev alias unique among all mdevs
-Thread-Index: AQHVXE627FcLaFBgXUa8jSc95m92WKcOC/2AgABaVPA=
-Date:   Tue, 27 Aug 2019 04:28:37 +0000
-Message-ID: <AM0PR05MB4866BB4736D265EF28280014D1A00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
- <20190826204119.54386-3-parav@mellanox.com>
- <6601940a-4832-08d2-e0f6-f9ac24758cdc@mellanox.com>
-In-Reply-To: <6601940a-4832-08d2-e0f6-f9ac24758cdc@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.18.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2c05664b-8617-4563-af45-08d72aa707ce
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4532;
-x-ms-traffictypediagnostic: AM0PR05MB4532:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB45321B351CD98EF782C8811DD1A00@AM0PR05MB4532.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0142F22657
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(39860400002)(136003)(346002)(396003)(199004)(189003)(13464003)(6506007)(71190400001)(71200400001)(6436002)(66066001)(55016002)(86362001)(81156014)(81166006)(9686003)(186003)(8676002)(9456002)(5660300002)(66556008)(66946007)(6116002)(76116006)(66446008)(8936002)(33656002)(3846002)(64756008)(7696005)(2501003)(2906002)(76176011)(66476007)(486006)(6246003)(2201001)(26005)(476003)(25786009)(110136005)(446003)(102836004)(14454004)(229853002)(11346002)(99286004)(4326008)(305945005)(52536014)(55236004)(54906003)(74316002)(14444005)(256004)(7736002)(316002)(478600001)(53546011)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4532;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 5dctfSBB0qt0of8FCBZV+v/D8qfgcEHYFV7aCBcnv3PUAA3JDtGjMlQDNai5XA3mfb+KX1E1ujPOpUjpvBrUFCiZ92xSTt9tJS/Mtj/nNuPDEDIfTn8/jrhQ37j+Rn+JHeFxLjeYt4uaivn+WqvxRCCIXfle2Woxge20bpNSguffrficbJzn/0fycyQT6uU1/wfH/q+U1DiYV1dmhkGBgWj6X1fVCDVBqANnTmfRRkpuk6LEZxw8zkd59e9CPWL9OligZQ97V4uyiieqaECqDfv4PBYhfcAC6hVn6syqozVhWgjIhkWm26iGv85X3tecVLVCFuD/ZVdY8Zope+YmOIMEffFfk0NwMppOjMGpYj4KsECWL5pfRiPZmuLXYlVmev5ouibqH4/LHY8zQzHYGo6JOsqpbum/mjTuFv+d4jY=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726025AbfH0Egt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 00:36:49 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43446 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725879AbfH0Egt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 00:36:49 -0400
+Received: by mail-pf1-f195.google.com with SMTP id v12so13251244pfn.10
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 21:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=cMdTTBTk78bUmoE2jHHhOIbCDhgFlUny4s73id0o04w=;
+        b=TMZcvHh5ox+Fk84Pdv5WJsw8Rt9sx+/Z7j8EZCAC+bzi+xfnSmrtr/3kQFJ8nocvYf
+         94zFkGgTb/r2tcnqZ3nGLybZE+UwqcQkRci50BV51NWPAUGY9MTAtaNVLiSVEOEVQACg
+         z9U9TP9dmJCFB1BBXiwW10e+QnY/uE4yxHAZ4IIU0roCLMaHD3X6JSdP8aN+MgT6ibLd
+         3jpBBhoapxPxqaWhKvZ77Vw+28P5Bft2R377Jm96x5VDElRnMWu4DK+yelpD9gomLJdD
+         zJI7BQVqTZYCR7YX/93hSWNJ7Eout0sPxifLNPkr9cO0HbH5Fv9vcIPxxkCFIpE5w9eX
+         zHkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=cMdTTBTk78bUmoE2jHHhOIbCDhgFlUny4s73id0o04w=;
+        b=fQF/6xb561qc+yASH3Zr8t8hv9oNrNIkn2mbie0GvnW1L0rs81GMmbNIqdr8DIOmJQ
+         qssOsZKjLPMrBj17EcN8gkLB2Ge3G4TCKZc42ftPUW9QaPbCxwaxboRBe9Qbd+6H2lZP
+         rQTr/JW0b8gDmy62WoPAWM2r+I0ZPH+yP9mZ8E2R4nNh1z9BH3KNiKPNroTEE06e3Dv2
+         gh9PIuenCSM0xbGkj780FyaYH7KG8soeuuBmdsDzkfiB8V7JV4+XgfFZ27/XLpVY1lNo
+         5eFQSPZAwXlaH1yD36rR2v1lrRpZHJor2Kxi2U2vPzb+MXCmsWyEJwu6++Z3TBCf9foE
+         R1+g==
+X-Gm-Message-State: APjAAAXPENYcH8jpeQISTwnaPW/2SE2S5ROoQJ9GWKeNajvf53NpxtA8
+        AFyAgB8kpkj2nEyqZ94Ig8TeaZOg6fw=
+X-Google-Smtp-Source: APXvYqzTSw+vugwoKFc6HvwPwdnWS/mJ4c5WPgoENDObV7I6uKMVoIu7mTheTpMS5jGgOF3eGiv3ZA==
+X-Received: by 2002:a17:90a:36ad:: with SMTP id t42mr23067826pjb.21.1566880607864;
+        Mon, 26 Aug 2019 21:36:47 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id v189sm13967062pfv.176.2019.08.26.21.36.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2019 21:36:47 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 21:36:31 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v5 net-next 03/18] ionic: Add port management commands
+Message-ID: <20190826213631.37b8f56d@cakuba.netronome.com>
+In-Reply-To: <20190826213339.56909-4-snelson@pensando.io>
+References: <20190826213339.56909-1-snelson@pensando.io>
+        <20190826213339.56909-4-snelson@pensando.io>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c05664b-8617-4563-af45-08d72aa707ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 04:28:37.3696
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1fcKZbygwuwMZQ60KYzFwNigiaCXKuvQAQHbPxub7mcGCjMeUpb6V9U/Ezyqgp6mbGGF/rVmF/4hn1sEh3Fzig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4532
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyaywNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBNYXJrIEJs
-b2NoIDxtYXJrYkBtZWxsYW5veC5jb20+DQo+IFNlbnQ6IFR1ZXNkYXksIEF1Z3VzdCAyNywgMjAx
-OSA0OjMyIEFNDQo+IFRvOiBQYXJhdiBQYW5kaXQgPHBhcmF2QG1lbGxhbm94LmNvbT47IGFsZXgu
-d2lsbGlhbXNvbkByZWRoYXQuY29tOyBKaXJpDQo+IFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT47
-IGt3YW5raGVkZUBudmlkaWEuY29tOyBjb2h1Y2tAcmVkaGF0LmNvbTsNCj4gZGF2ZW1AZGF2ZW1s
-b2Z0Lm5ldA0KPiBDYzoga3ZtQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZzsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENI
-IDIvNF0gbWRldjogTWFrZSBtZGV2IGFsaWFzIHVuaXF1ZSBhbW9uZyBhbGwgbWRldnMNCj4gDQo+
-IA0KPiANCj4gT24gOC8yNi8xOSAxOjQxIFBNLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+ID4gTWRl
-diBhbGlhcyBzaG91bGQgYmUgdW5pcXVlIGFtb25nIGFsbCB0aGUgbWRldnMsIHNvIHRoYXQgd2hl
-biBzdWNoDQo+ID4gYWxpYXMgaXMgdXNlZCBieSB0aGUgbWRldiB1c2VycyB0byBkZXJpdmUgb3Ro
-ZXIgb2JqZWN0cywgdGhlcmUgaXMgbm8NCj4gPiBjb2xsaXNpb24gaW4gYSBnaXZlbiBzeXN0ZW0u
-DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2QG1lbGxhbm94LmNv
-bT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy92ZmlvL21kZXYvbWRldl9jb3JlLmMgfCA1ICsrKysr
-DQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3ZmaW8vbWRldi9tZGV2X2NvcmUuYw0KPiA+IGIvZHJpdmVycy92ZmlvL21k
-ZXYvbWRldl9jb3JlLmMgaW5kZXggZTgyNWZmMzhiMDM3Li42ZWIzN2YwYzYzNjkNCj4gPiAxMDA2
-NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3ZmaW8vbWRldi9tZGV2X2NvcmUuYw0KPiA+ICsrKyBiL2Ry
-aXZlcnMvdmZpby9tZGV2L21kZXZfY29yZS5jDQo+ID4gQEAgLTM3NSw2ICszNzUsMTEgQEAgaW50
-IG1kZXZfZGV2aWNlX2NyZWF0ZShzdHJ1Y3Qga29iamVjdCAqa29iaiwNCj4gc3RydWN0IGRldmlj
-ZSAqZGV2LA0KPiA+ICAJCQlyZXQgPSAtRUVYSVNUOw0KPiA+ICAJCQlnb3RvIG1kZXZfZmFpbDsN
-Cj4gPiAgCQl9DQo+ID4gKwkJaWYgKHRtcC0+YWxpYXMgJiYgc3RyY21wKHRtcC0+YWxpYXMsIGFs
-aWFzKSA9PSAwKSB7DQo+IA0KPiBhbGlhcyBjYW4gYmUgTlVMTCBoZXJlIG5vPw0KPiANCklmIGFs
-aWFzIGlzIE5VTEwsIHRtcC0+YWxpYXMgd291bGQgYWxzbyBiZSBudWxsIGJlY2F1c2UgZm9yIGdp
-dmVuIHBhcmVudCBlaXRoZXIgd2UgaGF2ZSBhbGlhcyBvciB3ZSBkb27igJl0Lg0KU28gaXRzIG5v
-dCBwb3NzaWJsZSB0byBoYXZlIHRtcC0+YWxpYXMgYXMgbnVsbCBhbmQgYWxpYXMgYXMgbm9uIG51
-bGwuDQpCdXQgaXQgbWF5IGJlIGdvb2QvZGVmZW5zaXZlIHRvIGFkZCBjaGVjayBmb3IgYm90aC4N
-Cg0KPiA+ICsJCQltdXRleF91bmxvY2soJm1kZXZfbGlzdF9sb2NrKTsNCj4gPiArCQkJcmV0ID0g
-LUVFWElTVDsNCj4gPiArCQkJZ290byBtZGV2X2ZhaWw7DQo+ID4gKwkJfQ0KPiA+ICAJfQ0KPiA+
-DQo+ID4gIAltZGV2ID0ga3phbGxvYyhzaXplb2YoKm1kZXYpLCBHRlBfS0VSTkVMKTsNCj4gPg0K
-PiANCj4gTWFyaw0K
+On Mon, 26 Aug 2019 14:33:24 -0700, Shannon Nelson wrote:
+> The port management commands apply to the physical port
+> associated with the PCI device, which might be shared among
+> several logical interfaces.
+> 
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+> ---
+>  drivers/net/ethernet/pensando/ionic/ionic.h   |   4 +
+>  .../ethernet/pensando/ionic/ionic_bus_pci.c   |  16 +++
+>  .../net/ethernet/pensando/ionic/ionic_dev.c   | 116 ++++++++++++++++++
+>  .../net/ethernet/pensando/ionic/ionic_dev.h   |  15 +++
+>  .../net/ethernet/pensando/ionic/ionic_main.c  |  86 +++++++++++++
+>  5 files changed, 237 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+> index 1f3c4a916849..db2ad14899d3 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+> @@ -44,4 +44,8 @@ int ionic_identify(struct ionic *ionic);
+>  int ionic_init(struct ionic *ionic);
+>  int ionic_reset(struct ionic *ionic);
+>  
+> +int ionic_port_identify(struct ionic *ionic);
+> +int ionic_port_init(struct ionic *ionic);
+> +int ionic_port_reset(struct ionic *ionic);
+> +
+>  #endif /* _IONIC_H_ */
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> index 286b4b450a73..804dd43e92a6 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> @@ -138,12 +138,27 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		goto err_out_teardown;
+>  	}
+>  
+> +	/* Configure the ports */
+> +	err = ionic_port_identify(ionic);
+> +	if (err) {
+> +		dev_err(dev, "Cannot identify port: %d, aborting\n", err);
+> +		goto err_out_reset;
+> +	}
+> +
+> +	err = ionic_port_init(ionic);
+> +	if (err) {
+> +		dev_err(dev, "Cannot init port: %d, aborting\n", err);
+> +		goto err_out_reset;
+> +	}
+> +
+>  	err = ionic_devlink_register(ionic);
+>  	if (err)
+>  		dev_err(dev, "Cannot register devlink: %d\n", err);
+>  
+>  	return 0;
+>  
+> +err_out_reset:
+> +	ionic_reset(ionic);
+>  err_out_teardown:
+>  	ionic_dev_teardown(ionic);
+>  err_out_unmap_bars:
+> @@ -170,6 +185,7 @@ static void ionic_remove(struct pci_dev *pdev)
+>  		return;
+>  
+>  	ionic_devlink_unregister(ionic);
+> +	ionic_port_reset(ionic);
+>  	ionic_reset(ionic);
+>  	ionic_dev_teardown(ionic);
+>  	ionic_unmap_bars(ionic);
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+> index 0bf1bd6bd7b1..cddd41a43550 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+> @@ -134,3 +134,119 @@ void ionic_dev_cmd_reset(struct ionic_dev *idev)
+>  
+>  	ionic_dev_cmd_go(idev, &cmd);
+>  }
+> +
+> +/* Port commands */
+> +void ionic_dev_cmd_port_identify(struct ionic_dev *idev)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_init.opcode = IONIC_CMD_PORT_IDENTIFY,
+> +		.port_init.index = 0,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_init(struct ionic_dev *idev)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_init.opcode = IONIC_CMD_PORT_INIT,
+> +		.port_init.index = 0,
+> +		.port_init.info_pa = cpu_to_le64(idev->port_info_pa),
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_reset(struct ionic_dev *idev)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_reset.opcode = IONIC_CMD_PORT_RESET,
+> +		.port_reset.index = 0,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_state(struct ionic_dev *idev, u8 state)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_STATE,
+> +		.port_setattr.state = state,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_speed(struct ionic_dev *idev, u32 speed)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_SPEED,
+> +		.port_setattr.speed = cpu_to_le32(speed),
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_mtu(struct ionic_dev *idev, u32 mtu)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_MTU,
+> +		.port_setattr.mtu = cpu_to_le32(mtu),
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_AUTONEG,
+> +		.port_setattr.an_enable = an_enable,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_FEC,
+> +		.port_setattr.fec_type = fec_type,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_PAUSE,
+> +		.port_setattr.pause_type = pause_type,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> +
+> +void ionic_dev_cmd_port_loopback(struct ionic_dev *idev, u8 loopback_mode)
+> +{
+> +	union ionic_dev_cmd cmd = {
+> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
+> +		.port_setattr.index = 0,
+> +		.port_setattr.attr = IONIC_PORT_ATTR_LOOPBACK,
+> +		.port_setattr.loopback_mode = loopback_mode,
+> +	};
+> +
+> +	ionic_dev_cmd_go(idev, &cmd);
+> +}
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+> index 30a5206bba4e..5b83f21af18a 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+> @@ -122,6 +122,10 @@ struct ionic_dev {
+>  	struct ionic_intr __iomem *intr_ctrl;
+>  	u64 __iomem *intr_status;
+>  
+> +	u32 port_info_sz;
+> +	struct ionic_port_info *port_info;
+> +	dma_addr_t port_info_pa;
+> +
+>  	struct ionic_devinfo dev_info;
+>  };
+>  
+> @@ -140,4 +144,15 @@ void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver);
+>  void ionic_dev_cmd_init(struct ionic_dev *idev);
+>  void ionic_dev_cmd_reset(struct ionic_dev *idev);
+>  
+> +void ionic_dev_cmd_port_identify(struct ionic_dev *idev);
+> +void ionic_dev_cmd_port_init(struct ionic_dev *idev);
+> +void ionic_dev_cmd_port_reset(struct ionic_dev *idev);
+> +void ionic_dev_cmd_port_state(struct ionic_dev *idev, u8 state);
+> +void ionic_dev_cmd_port_speed(struct ionic_dev *idev, u32 speed);
+> +void ionic_dev_cmd_port_mtu(struct ionic_dev *idev, u32 mtu);
+> +void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable);
+> +void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type);
+> +void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type);
+> +void ionic_dev_cmd_port_loopback(struct ionic_dev *idev, u8 loopback_mode);
+
+I don't think you call most of these functions in this patch.
+
+>  #endif /* _IONIC_DEV_H_ */
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> index f52eb6c50358..47928f184230 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> @@ -309,6 +309,92 @@ int ionic_reset(struct ionic *ionic)
+>  	return err;
+>  }
+>  
+> +int ionic_port_identify(struct ionic *ionic)
+> +{
+> +	struct ionic_identity *ident = &ionic->ident;
+> +	struct ionic_dev *idev = &ionic->idev;
+> +	size_t sz;
+> +	int err;
+> +
+> +	mutex_lock(&ionic->dev_cmd_lock);
+> +
+> +	ionic_dev_cmd_port_identify(idev);
+> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+> +	if (!err) {
+> +		sz = min(sizeof(ident->port), sizeof(idev->dev_cmd_regs->data));
+> +		memcpy_fromio(&ident->port, &idev->dev_cmd_regs->data, sz);
+> +	}
+> +
+> +	mutex_unlock(&ionic->dev_cmd_lock);
+> +
+> +	return err;
+> +}
+> +
+> +int ionic_port_init(struct ionic *ionic)
+> +{
+> +	struct ionic_identity *ident = &ionic->ident;
+> +	struct ionic_dev *idev = &ionic->idev;
+> +	size_t sz;
+> +	int err;
+> +
+> +	if (idev->port_info)
+> +		return 0;
+> +
+> +	idev->port_info_sz = ALIGN(sizeof(*idev->port_info), PAGE_SIZE);
+> +	idev->port_info = dma_alloc_coherent(ionic->dev, idev->port_info_sz,
+> +					     &idev->port_info_pa,
+> +					     GFP_KERNEL);
+> +	if (!idev->port_info) {
+> +		dev_err(ionic->dev, "Failed to allocate port info, aborting\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	sz = min(sizeof(ident->port.config), sizeof(idev->dev_cmd_regs->data));
+> +
+> +	mutex_lock(&ionic->dev_cmd_lock);
+> +
+> +	memcpy_toio(&idev->dev_cmd_regs->data, &ident->port.config, sz);
+> +	ionic_dev_cmd_port_init(idev);
+> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+> +
+> +	ionic_dev_cmd_port_state(&ionic->idev, IONIC_PORT_ADMIN_STATE_UP);
+> +	(void)ionic_dev_cmd_wait(ionic, devcmd_timeout);
+> +
+> +	mutex_unlock(&ionic->dev_cmd_lock);
+> +	if (err) {
+> +		dev_err(ionic->dev, "Failed to init port\n");
+
+The lifetime of port_info seems a little strange. Why is it left in
+place even if the command failed? Doesn't this leak memory?
+
+> +		return err;
+> +	}
+> +
+> +	return 0;
+
+return err; work for both paths
+
+> +}
+> +
+> +int ionic_port_reset(struct ionic *ionic)
+> +{
+> +	struct ionic_dev *idev = &ionic->idev;
+> +	int err;
+> +
+> +	if (!idev->port_info)
+> +		return 0;
+> +
+> +	mutex_lock(&ionic->dev_cmd_lock);
+> +	ionic_dev_cmd_port_reset(idev);
+> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+> +	mutex_unlock(&ionic->dev_cmd_lock);
+> +	if (err) {
+> +		dev_err(ionic->dev, "Failed to reset port\n");
+> +		return err;
+
+Again, memory leak if command fails? (nothing frees port_info)
+
+> +	}
+> +
+> +	dma_free_coherent(ionic->dev, idev->port_info_sz,
+> +			  idev->port_info, idev->port_info_pa);
+> +
+> +	idev->port_info = NULL;
+> +	idev->port_info_pa = 0;
+> +
+> +	return err;
+
+Well, with current code err can only be 0 at this point.
+
+> +}
+> +
+>  static int __init ionic_init_module(void)
+>  {
+>  	pr_info("%s %s, ver %s\n",
+
