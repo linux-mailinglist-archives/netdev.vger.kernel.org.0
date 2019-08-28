@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99769A079D
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D051DA07C5
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbfH1Qms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 12:42:48 -0400
-Received: from mga12.intel.com ([192.55.52.136]:11776 "EHLO mga12.intel.com"
+        id S1726618AbfH1Qpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 12:45:55 -0400
+Received: from mga14.intel.com ([192.55.52.115]:18621 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbfH1Qms (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 12:42:48 -0400
+        id S1726513AbfH1Qpy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 12:45:54 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 09:42:48 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 09:45:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="381340756"
+   d="scan'208";a="381342017"
 Received: from unknown (HELO ellie) ([10.24.12.211])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Aug 2019 09:42:47 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 28 Aug 2019 09:45:54 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     Vladimir Oltean <olteanv@gmail.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         vedang.patel@intel.com, leandro.maciel.dorileo@intel.com
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net 2/3] taprio: Set default link speed to 10 Mbps in taprio_set_picos_per_byte
-In-Reply-To: <20190828144829.32570-3-olteanv@gmail.com>
-References: <20190828144829.32570-1-olteanv@gmail.com> <20190828144829.32570-3-olteanv@gmail.com>
-Date:   Wed, 28 Aug 2019 09:42:47 -0700
-Message-ID: <875zmhqm0o.fsf@intel.com>
+Subject: Re: [PATCH net 3/3] net/sched: cbs: Set default link speed to 10 Mbps in cbs_set_port_rate
+In-Reply-To: <20190828144829.32570-4-olteanv@gmail.com>
+References: <20190828144829.32570-1-olteanv@gmail.com> <20190828144829.32570-4-olteanv@gmail.com>
+Date:   Wed, 28 Aug 2019 09:45:53 -0700
+Message-ID: <87zhjtp7b2.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -39,71 +39,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Vladimir Oltean <olteanv@gmail.com> writes:
 
-> The taprio budget needs to be adapted at runtime according to interface
-> link speed. But that handling is problematic.
->
-> For one thing, installing a qdisc on an interface that doesn't have
-> carrier is not illegal. But taprio prints the following stack trace:
->
-> [   31.851373] ------------[ cut here ]------------
-> [   31.856024] WARNING: CPU: 1 PID: 207 at net/sched/sch_taprio.c:481 taprio_dequeue+0x1a8/0x2d4
-> [   31.864566] taprio: dequeue() called with unknown picos per byte.
-> [   31.864570] Modules linked in:
-> [   31.873701] CPU: 1 PID: 207 Comm: tc Not tainted 5.3.0-rc5-01199-g8838fe023cd6 #1689
-> [   31.881398] Hardware name: Freescale LS1021A
-> [   31.885661] [<c03133a4>] (unwind_backtrace) from [<c030d8cc>] (show_stack+0x10/0x14)
-> [   31.893368] [<c030d8cc>] (show_stack) from [<c10ac958>] (dump_stack+0xb4/0xc8)
-> [   31.900555] [<c10ac958>] (dump_stack) from [<c0349d04>] (__warn+0xe0/0xf8)
-> [   31.907395] [<c0349d04>] (__warn) from [<c0349d64>] (warn_slowpath_fmt+0x48/0x6c)
-> [   31.914841] [<c0349d64>] (warn_slowpath_fmt) from [<c0f38db4>] (taprio_dequeue+0x1a8/0x2d4)
-> [   31.923150] [<c0f38db4>] (taprio_dequeue) from [<c0f227b0>] (__qdisc_run+0x90/0x61c)
-> [   31.930856] [<c0f227b0>] (__qdisc_run) from [<c0ec82ac>] (net_tx_action+0x12c/0x2bc)
-> [   31.938560] [<c0ec82ac>] (net_tx_action) from [<c0302298>] (__do_softirq+0x130/0x3c8)
-> [   31.946350] [<c0302298>] (__do_softirq) from [<c03502a0>] (irq_exit+0xbc/0xd8)
-> [   31.953536] [<c03502a0>] (irq_exit) from [<c03a4808>] (__handle_domain_irq+0x60/0xb4)
-> [   31.961328] [<c03a4808>] (__handle_domain_irq) from [<c0754478>] (gic_handle_irq+0x58/0x9c)
-> [   31.969638] [<c0754478>] (gic_handle_irq) from [<c0301a8c>] (__irq_svc+0x6c/0x90)
-> [   31.977076] Exception stack(0xe8167b20 to 0xe8167b68)
-> [   31.982100] 7b20: e9d4bd80 00000cc0 000000cf 00000000 e9d4bd80 c1f38958 00000cc0 c1f38960
-> [   31.990234] 7b40: 00000001 000000cf 00000004 e9dc0800 00000000 e8167b70 c0f478ec c0f46d94
-> [   31.998363] 7b60: 60070013 ffffffff
-> [   32.001833] [<c0301a8c>] (__irq_svc) from [<c0f46d94>] (netlink_trim+0x18/0xd8)
-> [   32.009104] [<c0f46d94>] (netlink_trim) from [<c0f478ec>] (netlink_broadcast_filtered+0x34/0x414)
-> [   32.017930] [<c0f478ec>] (netlink_broadcast_filtered) from [<c0f47cec>] (netlink_broadcast+0x20/0x28)
-> [   32.027102] [<c0f47cec>] (netlink_broadcast) from [<c0eea378>] (rtnetlink_send+0x34/0x88)
-> [   32.035238] [<c0eea378>] (rtnetlink_send) from [<c0f25890>] (notify_and_destroy+0x2c/0x44)
-> [   32.043461] [<c0f25890>] (notify_and_destroy) from [<c0f25e08>] (qdisc_graft+0x398/0x470)
-> [   32.051595] [<c0f25e08>] (qdisc_graft) from [<c0f27a00>] (tc_modify_qdisc+0x3a4/0x724)
-> [   32.059470] [<c0f27a00>] (tc_modify_qdisc) from [<c0ee4c84>] (rtnetlink_rcv_msg+0x260/0x2ec)
-> [   32.067864] [<c0ee4c84>] (rtnetlink_rcv_msg) from [<c0f4a988>] (netlink_rcv_skb+0xb8/0x110)
-> [   32.076172] [<c0f4a988>] (netlink_rcv_skb) from [<c0f4a170>] (netlink_unicast+0x1b4/0x22c)
-> [   32.084392] [<c0f4a170>] (netlink_unicast) from [<c0f4a5e4>] (netlink_sendmsg+0x33c/0x380)
-> [   32.092614] [<c0f4a5e4>] (netlink_sendmsg) from [<c0ea9f40>] (sock_sendmsg+0x14/0x24)
-> [   32.100403] [<c0ea9f40>] (sock_sendmsg) from [<c0eaa780>] (___sys_sendmsg+0x214/0x228)
-> [   32.108279] [<c0eaa780>] (___sys_sendmsg) from [<c0eabad0>] (__sys_sendmsg+0x50/0x8c)
-> [   32.116068] [<c0eabad0>] (__sys_sendmsg) from [<c0301000>] (ret_fast_syscall+0x0/0x54)
-> [   32.123938] Exception stack(0xe8167fa8 to 0xe8167ff0)
-> [   32.128960] 7fa0:                   b6fa68c8 000000f8 00000003 bea142d0 00000000 00000000
-> [   32.137093] 7fc0: b6fa68c8 000000f8 0052154c 00000128 5d6468a2 00000000 00000028 00558c9c
-> [   32.145224] 7fe0: 00000070 bea14278 00530d64 b6e17e64
-> [   32.150659] ---[ end trace 2139c9827c3e5177 ]---
->
-> This happens because the qdisc ->dequeue callback gets called. Which
-> again is not illegal, the qdisc will dequeue even when the interface is
-> up but doesn't have carrier (and hence SPEED_UNKNOWN), and the frames
-> will be dropped further down the stack in dev_direct_xmit().
->
-> And, at the end of the day, for what? For calculating the initial budget
-> of an interface which is non-operational at the moment and where frames
-> will get dropped anyway.
->
-> So if we can't figure out the link speed, default to SPEED_10 and move
-> along. We can also remove the runtime check now.
+> The discussion to be made is absolutely the same as in the case of
+> previous patch ("taprio: Set default link speed to 10 Mbps in
+> taprio_set_picos_per_byte"). Nothing is lost when setting a default.
 >
 > Cc: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
-> Fixes: 7b9eba7ba0c1 ("net/sched: taprio: fix picos_per_byte miscalculation")
+> Fixes: e0a7683d30e9 ("net/sched: cbs: fix port_rate miscalculation")
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 > ---
 
+Hm, taking another look at cbs it has a similar problem than the problem
+your patch 1/3 solves for taprio, I will propose a patch in a few
+moments.
+
+For this one:
+
 Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
+
+Cheers,
+--
+Vinicius
