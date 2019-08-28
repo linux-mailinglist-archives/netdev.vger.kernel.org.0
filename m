@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F608A04DD
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A913A04EB
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfH1OZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 10:25:39 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5232 "EHLO huawei.com"
+        id S1727415AbfH1O0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 10:26:36 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5234 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726341AbfH1OZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 10:25:39 -0400
+        id S1726691AbfH1OZk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 10:25:40 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 20AAF72F76A31012F689;
+        by Forcepoint Email with ESMTP id 1825CCC0AA225B890167;
         Wed, 28 Aug 2019 22:25:36 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 02/12] net: hns3: use macro instead of magic number
-Date:   Wed, 28 Aug 2019 22:23:06 +0800
-Message-ID: <1567002196-63242-3-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 03/12] net: hns3: modify base parameter of kstrtouint in hclge_dbg_dump_tm_map
+Date:   Wed, 28 Aug 2019 22:23:07 +0800
+Message-ID: <1567002196-63242-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1567002196-63242-1-git-send-email-tanhuazhong@huawei.com>
 References: <1567002196-63242-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,54 +37,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch uses macro to replace some magic number.
+This patch replaces kstrtouint()'s patameter base with 0 in the
+hclge_dbg_dump_tm_mac(), which makes it more flexible. Also
+uses a macro to replace string "dump tm map", since it has been
+used multiple times.
 
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 6 ++++--
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h | 3 ++-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index a56f388..3b4cd23 100644
+index 3b4cd23..0639250 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -774,7 +774,8 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
- 	rx_priv_wl = (struct hclge_rx_priv_wl_buf *)desc[1].data;
- 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
- 		dev_info(&hdev->pdev->dev,
--			 "rx_priv_wl_tc_%d: high: 0x%x, low: 0x%x\n", i + 4,
-+			 "rx_priv_wl_tc_%d: high: 0x%x, low: 0x%x\n",
-+			 i + HCLGE_TC_NUM_ONE_DESC,
- 			 rx_priv_wl->tc_wl[i].high, rx_priv_wl->tc_wl[i].low);
+@@ -564,7 +564,7 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev *hdev,
+ 	int pri_id, ret;
+ 	u32 i;
  
- 	cmd = HCLGE_OPC_RX_COM_THRD_ALLOC;
-@@ -796,7 +797,8 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
- 	rx_com_thrd = (struct hclge_rx_com_thrd *)desc[1].data;
- 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
- 		dev_info(&hdev->pdev->dev,
--			 "rx_com_thrd_tc_%d: high: 0x%x, low: 0x%x\n", i + 4,
-+			 "rx_com_thrd_tc_%d: high: 0x%x, low: 0x%x\n",
-+			 i + HCLGE_TC_NUM_ONE_DESC,
- 			 rx_com_thrd->com_thrd[i].high,
- 			 rx_com_thrd->com_thrd[i].low);
- 	return;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-index 80e5cc2..38b7932 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
-@@ -72,9 +72,10 @@ struct hclge_dbg_reg_common_msg {
- 	enum hclge_opcode_type cmd;
- };
+-	ret = kstrtouint(&cmd_buf[12], 10, &queue_id);
++	ret = kstrtouint(cmd_buf, 0, &queue_id);
+ 	queue_id = (ret != 0) ? 0 : queue_id;
  
-+#define	HCLGE_DBG_MAX_DFX_MSG_LEN	60
- struct hclge_dbg_dfx_message {
- 	int flag;
--	char message[60];
-+	char message[HCLGE_DBG_MAX_DFX_MSG_LEN];
- };
+ 	cmd = HCLGE_OPC_TM_NQ_TO_QS_LINK;
+@@ -1099,6 +1099,7 @@ static void hclge_dbg_dump_mac_tnl_status(struct hclge_dev *hdev)
+ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ {
+ #define DUMP_REG	"dump reg"
++#define DUMP_TM_MAP	"dump tm map"
  
- #define HCLGE_DBG_MAC_REG_TYPE_LEN	32
+ 	struct hclge_vport *vport = hclge_get_vport(handle);
+ 	struct hclge_dev *hdev = vport->back;
+@@ -1107,8 +1108,8 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ 		hclge_dbg_fd_tcam(hdev);
+ 	} else if (strncmp(cmd_buf, "dump tc", 7) == 0) {
+ 		hclge_dbg_dump_tc(hdev);
+-	} else if (strncmp(cmd_buf, "dump tm map", 11) == 0) {
+-		hclge_dbg_dump_tm_map(hdev, cmd_buf);
++	} else if (strncmp(cmd_buf, DUMP_TM_MAP, strlen(DUMP_TM_MAP)) == 0) {
++		hclge_dbg_dump_tm_map(hdev, &cmd_buf[sizeof(DUMP_TM_MAP)]);
+ 	} else if (strncmp(cmd_buf, "dump tm", 7) == 0) {
+ 		hclge_dbg_dump_tm(hdev);
+ 	} else if (strncmp(cmd_buf, "dump qos pause cfg", 18) == 0) {
 -- 
 2.7.4
 
