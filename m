@@ -2,333 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E89669F792
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 02:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C4F9F795
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 02:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726178AbfH1Axv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 20:53:51 -0400
-Received: from mga09.intel.com ([134.134.136.24]:45594 "EHLO mga09.intel.com"
+        id S1726127AbfH1Az4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 20:55:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726092AbfH1Axv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 20:53:51 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 17:53:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,439,1559545200"; 
-   d="scan'208";a="171379488"
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by orsmga007.jf.intel.com with ESMTP; 27 Aug 2019 17:53:34 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.103]) by
- ORSMSX102.amr.corp.intel.com ([169.254.3.129]) with mapi id 14.03.0439.000;
- Tue, 27 Aug 2019 17:53:34 -0700
-From:   "Fujinaka, Todd" <todd.fujinaka@intel.com>
-To:     Jakub Jankowski <shasta@toxcorp.com>,
-        "e1000-devel@lists.sourceforge.net" 
-        <e1000-devel@lists.sourceforge.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mhemsley@open-systems.com" <mhemsley@open-systems.com>
-Subject: RE: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-Thread-Topic: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-Thread-Index: AQHVXP5PwhwpGcHr20eCrPRU65J/y6cPRwGQgADK8wD//6jAsA==
-Date:   Wed, 28 Aug 2019 00:53:34 +0000
-Message-ID: <9B4A1B1917080E46B64F07F2989DADD69B01402F@ORSMSX115.amr.corp.intel.com>
-References: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
- <9B4A1B1917080E46B64F07F2989DADD69B013DB0@ORSMSX115.amr.corp.intel.com>
- <34ba28aa-44a5-8a6c-c8c4-b92a16f952ad@toxcorp.com>
-In-Reply-To: <34ba28aa-44a5-8a6c-c8c4-b92a16f952ad@toxcorp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNDA3YTg4OGYtZDg3MC00ZjE0LThlMmEtNjk2ZTkyOGU4YmY3IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicThoakY4ZU82ellYZWc5Wlc2Q1EyeWhUakwyR3hzSSthcXA3UzMxcHBBRUtSbkJNTTdaSjY0ejBESUJuOWdyaiJ9
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726152AbfH1Azz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 20:55:55 -0400
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAB5123403
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 00:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566953754;
+        bh=ETl9UTqtFq5ucJEuRyuhovV2EjatmLdjv8DhhGnTaI8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WhXXiyRdTC7RrNGpcf5yrEs38uSVnMXkmXD7i5n44BShcZ5Ye6st+ddnm9P7Goc3l
+         6EY2LusJ+LeLVq/2nl3tZKgSdJjlgzGFjwJufbYTShHHjmSqblhfa+LCm2r40wStAa
+         LZHzc58zUe3mBh3uepPnqlbjZWW6mE5jXVxsvP28=
+Received: by mail-wr1-f45.google.com with SMTP id y8so618637wrn.10
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 17:55:53 -0700 (PDT)
+X-Gm-Message-State: APjAAAVsopYdehcLMS//gs9PcuI+la7PWanL9xAaFFceIpsCDSaUr2e/
+        QZF+yqbypxVJdVKLoUqvsNYUrIWl2cvULtfo0+aiCg==
+X-Google-Smtp-Source: APXvYqz7r0mDuQDT80ezJPr/NGdVzagC8FvPkF15lLorc35oafp3cHwMFggCmvg21V2H5HVj+nxef3EIV+US8w+aylI=
+X-Received: by 2002:adf:f18c:: with SMTP id h12mr794799wro.47.1566953752242;
+ Tue, 27 Aug 2019 17:55:52 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190827205213.456318-1-ast@kernel.org> <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+ <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Tue, 27 Aug 2019 17:55:41 -0700
+X-Gmail-Original-Message-ID: <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
+Message-ID: <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-U29ycnkgYWJvdXQgdGhlIHRvcCBwb3N0aW5nLCBidXQgaWYgSSBkb24ndCBkbyBpdCB0aGlzIHdh
-eSBJIGNhbid0IHJlYWQgYW55dGhpbmcgaW4gT3V0bG9vayAobm90IG15IHByZWZlcnJlZCBNVUEp
-Lg0KDQpJIHRoaW5rIEkgbWF5IGhhdmUgYmVlbiB3cm9uZyBhYm91dCB0aGluZ3MuIEknbSBub3Qg
-YXMgZmFtaWxpYXIgd2l0aCB0aGUgeDcyMiwgYW5kIHRoZSBOVk0gdmVyc2lvbnMgYXJlIGNvbXBs
-ZXRlbHkgZGlmZmVyZW50IHRoYW4gdGhlIHg3MTAgYW5kIEkgd2FzIGNvbmZ1c2VkLg0KDQpFdmVu
-IHdvcnNlLCBJJ20gbm90IHN1cmUgaWYgdGhlIHg3MjIgaXMgYWJsZSB0byByZWFkIHRoZSBkYXRh
-IGZyb20gdGhlIFNGUC9TRlArIEVFUFJPTS4gSSByZW1lbWJlcmVkIHRoYXQgd2FzIGEgZmVhdHVy
-ZSB3ZSByZXF1ZXN0ZWQgaW50ZXJuYWxseSBidXQgSSBkb24ndCByZW1lbWJlciB3aGF0IHRoZSBw
-cm9ncmVzcyB3YXMuDQoNCkknbSBhc2tpbmcgYXJvdW5kIHRvIHNlZSBpZiBJIGNhbiBnZXQgY2xh
-cmlmaWNhdGlvbi4gSSBoYXZlbid0IGhlYXJkIGFueXRoaW5nIHlldC4NCg0KVG9kZCBGdWppbmFr
-YQ0KU29mdHdhcmUgQXBwbGljYXRpb24gRW5naW5lZXINCkRhdGFjZW50ZXIgRW5naW5lZXJpbmcg
-R3JvdXANCkludGVsIENvcnBvcmF0aW9uDQp0b2RkLmZ1amluYWthQGludGVsLmNvbQ0KDQoNCi0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKYWt1YiBKYW5rb3dza2kgW21haWx0bzpz
-aGFzdGFAdG94Y29ycC5jb21dIA0KU2VudDogVHVlc2RheSwgQXVndXN0IDI3LCAyMDE5IDQ6MDEg
-UE0NClRvOiBGdWppbmFrYSwgVG9kZCA8dG9kZC5mdWppbmFrYUBpbnRlbC5jb20+OyBlMTAwMC1k
-ZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNCkNjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBt
-aGVtc2xleUBvcGVuLXN5c3RlbXMuY29tDQpTdWJqZWN0OiBSZTogW0UxMDAwLWRldmVsXSBTRlAr
-IEVFUFJPTSByZWFkb3V0cyBmYWlsIG9uIFg3MjIgKGV0aHRvb2wgLW06IEludmFsaWQgYXJndW1l
-bnQpDQoNCkhpLA0KDQpPbiA4LzI3LzE5IDc6NTYgUE0sIEZ1amluYWthLCBUb2RkIHdyb3RlOg0K
-PiBUaGUgaGludHMgc2hvdWxkIGJlOg0KPiAjIGV0aHRvb2wgLW0gZXRoMTANCj4gQ2Fubm90IGdl
-dCBtb2R1bGUgRUVQUk9NIGluZm9ybWF0aW9uOiBJbnZhbGlkIGFyZ3VtZW50ICMgZG1lc2cgfCB0
-YWlsIC1uIDEgWyAgNDQ1Ljk3MTk3NF0gaTQwZSAwMDAwOjNkOjAwLjMgZXRoMTA6IE1vZHVsZSBF
-RVBST00gbWVtb3J5IHJlYWQgbm90IHN1cHBvcnRlZC4gUGxlYXNlIHVwZGF0ZSB0aGUgTlZNIGlt
-YWdlLg0KPg0KPiAjIGV0aHRvb2wgLWkgZXRoMTANCj4gZHJpdmVyOiBpNDBlDQo+IHZlcnNpb246
-IDIuOS4yMQ0KPiBmaXJtd2FyZS12ZXJzaW9uOiAzLjMxIDB4ODAwMDBkMzEgMS4xNzY3LjANCj4N
-Cj4gQW5kIHRoZSB3b3JraW5nIGNhc2U6DQo+ICMgZXRodG9vbCAtaSBldGg4DQo+IGRyaXZlcjog
-aTQwZQ0KPiB2ZXJzaW9uOiAyLjkuMjENCj4gZmlybXdhcmUtdmVyc2lvbjogNi4wMSAweDgwMDAz
-NWNmIDEuMTg3Ni4wDQo+DQo+IElmIHlvdSBkb24ndCBzZWUgaXQsIDYuMDEgPiAzLjMxLg0KVGhl
-IHJlYXNvbiB3aHkgZmlybXdhcmUgYmV0d2VlbiB0aGUgdHdvIGlzICh0aGF0IG11Y2gpIGRpZmZl
-cmVudCBpcyBiZWNhdXNlIHRoZSBub24td29ya2luZyBjYXNlIGlzIGZyb20gWDcyMiBOSUMsIHdo
-aWxlIHRoZSB3b3JraW5nIG9uZSBpcyBmcm9tIFg3MTAuDQoNCj4gVGhlIE5WTSB1cGRhdGUgdG9v
-bCBzaG91bGQgYmUgYXZhaWxhYmxlIG9uIGRvd25sb2FkY2VudGVyLmludGVsLmNvbQ0KDQpUaGFu
-a3MgZm9yIHRoZSBwb2ludGVyIHRvIE5WTSB1cGRhdGVyLiBJJ2QgbGlrZSB0byBvZmZlciBzb21l
-IGFkZGl0aW9uYWwgY29tbWVudHMgYWJvdXQgbXkgZXhwZXJpZW5jZSB3aXRoIHRoZSBuZXdlc3Qg
-b25lICh2NC4wMCk6DQoNCmEpIHJ1bm5pbmcgLi9udm11cGRhdGU2NGUgKGZyb20gWDcyMl9OVk1V
-cGRhdGVfTGludXhfeDY0IHN1YmRpcikgZXJyb3JzIG91dCB3aXRob3V0IHJlYWxseSBzYXlpbmcg
-d2hhdCdzIHdyb25nOg0KDQogwqAgIyAuL252bXVwZGF0ZTY0ZQ0KDQogwqAgSW50ZWwoUikgRXRo
-ZXJuZXQgTlZNIFVwZGF0ZSBUb29sDQogwqAgTlZNVXBkYXRlIHZlcnNpb24gMS4zMC4yLjExDQog
-wqAgQ29weXJpZ2h0IChDKSAyMDEzIC0gMjAxNyBJbnRlbCBDb3Jwb3JhdGlvbi4NCg0KDQogwqAg
-V0FSTklORzogVG8gYXZvaWQgZGFtYWdlIHRvIHlvdXIgZGV2aWNlLCBkbyBub3Qgc3RvcCB0aGUg
-dXBkYXRlIG9yIHJlYm9vdCBvciBwb3dlciBvZmYgdGhlIHN5c3RlbSBkdXJpbmcgdGhpcyB1cGRh
-dGUuDQogwqAgSW52ZW50b3J5IGluIHByb2dyZXNzLiBQbGVhc2Ugd2FpdCBbKy4uLi4uLi4uLl0N
-CiDCoCBUb29sIGV4ZWN1dGlvbiBjb21wbGV0ZWQgd2l0aCB0aGUgZm9sbG93aW5nIHN0YXR1czog
-VGhlIGNvbmZpZ3VyYXRpb24gZmlsZSBjb3VsZCBub3QgYmUgb3BlbmVkL3JlYWQsIG9yIGEgc3lu
-dGF4IGVycm9yIHdhcyBkaXNjb3ZlcmVkIGluIHRoZSBmaWxlDQogwqAgUHJlc3MgYW55IGtleSB0
-byBleGl0Lg0KDQphZnRlciBlbmFibGluZyBsb2dnaW5nICgtbCBvdXQubG9nKSBhIGJpdCBtb3Jl
-IGlzIHJldmVhbGVkOg0KDQogwqAgIyB0YWlsIC1uIDIgb3V0LmxvZw0KIMKgIEVycm9yOsKgwqAg
-Q29uZmlnIGZpbGUgbGluZSAyOiBOb3Qgc3VwcG9ydGVkIGNvbmZpZyBmaWxlIHZlcnNpb24uDQog
-wqAgRXJyb3I6wqDCoCBNaXNzaW5nIENPTkZJRyBWRVJTSU9OIHBhcmFtZXRlciBpbiBjb25maWd1
-cmF0aW9uIGZpbGUuDQoNCmJ1dCB0aGF0J3Mgbm90IGVudGlyZWx5IHRydWUsIENPTkZJRyBWRVJT
-SU9OIGlzIHNldCBpbiB0aGUgZGVmYXVsdCBjb25maWd1cmF0aW9uIGZpbGU6DQoNCiDCoCAjIGhl
-YWQgLW4gMiBudm11cGRhdGUuY2ZnDQogwqAgQ1VSUkVOVCBGQU1JTFk6IDEuMC4wDQogwqAgQ09O
-RklHIFZFUlNJT046IDEuMTQuMA0KDQpzbyB3aHkgaXNuJ3QgdGhpcyB1bmRlcnN0b29kPw0KTWFu
-dWFsbHkgZWRpdGluZyBudm11cGRhdGUuY2ZnIGFuZCBzZXR0aW5nIENPTkZJRyBWRVJTSU9OOiAx
-LjExLjAgc2VlbXMgdG8gbWFrZSB0aGlzIHBhcnRpY3VsYXIgcHJvYmxlbSBnbyBhd2F5Lg0KDQpi
-KSBSZS1kb2luZyB0aGlzIHdpdGggZG93bmdyYWRlZCBjb25maWcgdmVyc2lvbiBleHBvc2VzIGFu
-b3RoZXIgcHJvYmxlbToNCg0KIMKgIENvbmZpZyBmaWxlIHJlYWQuDQogwqAgRXJyb3I6wqDCoCBD
-YW4ndCBvcGVuIE5WTSBtYXAgZmlsZSBbSW1tZWRpYXRlX29mZnNldF8yLnR4dF0NCg0KYW5kIGlu
-ZGVlZCwgdGhlcmUgaXMgbm8gSW1tZWRpYXRlX29mZnNldF8yLnR4dCBpbiBOVk1VcGRhdGVQYWNr
-YWdlX1dGVF9XRlEmV0YwX3Y0LjAwL1g3MjJfTlZNVXBkYXRlX0xpbnV4X3g2NC8NClRoZXJlIGlz
-IG9uZSwgaG93ZXZlciwgaW4NCk5WTVVwZGF0ZVBhY2thZ2VfV0ZUX1dGUSZXRjBfdjQuMDAvWDcy
-Ml9OVk1VcGRhdGVfRUZJeDY0LyBzdWJkaXIuIA0KQ29weWluZyBpdCBvdmVyIHRvIHRoZSBfTGlu
-dXhfeDY0IHJlc29sdmVzIHRoaXMgcGFydGljdWxhciBwcm9ibGVtDQoNCmMpIFJlLWRvaW5nIHRo
-aXMgd2l0aCBJbW1lZGlhdGVfb2Zmc2V0XzIudHh0IGluIHBsYWNlIGV4cG9zZXMgdGhpcmQgcHJv
-YmxlbToNCg0KIMKgIEVycm9yOsKgwqAgQ2FuJ3Qgb3BlbiBOVk0gaW1hZ2UgZmlsZQ0KW0xCR19C
-Ml9Xb2xmX1Bhc3NfV0ZUX1g1NTdfUDAxX1BIWV9BdXRvX0RldGVjdF9QMjNfTkNTSV92My4zMV84
-MDAwMTZEQi5iaW5dDQoNCmFuZCBvbmNlIGFnYWluIC0gc2FtZSBzdG9yeS4gSXQgZXhpc3RzIGlu
-IE5WTVVwZGF0ZVBhY2thZ2VfV0ZUX1dGUSZXRjBfdjQuMDAvWDcyMl9OVk1VcGRhdGVfRUZJeDY0
-LyBidXQgbm90IE5WTVVwZGF0ZVBhY2thZ2VfV0ZUX1dGUSZXRjBfdjQuMDAvWDcyMl9OVk1VcGRh
-dGVfTGludXhfeDY0LyAtIGhhZCB0byBjb3B5IGl0IG92ZXIuDQoNCg0KT25jZSBJIG1hbmFnZWQg
-dG8gZ2V0IGFsbCB0aGVzZSBvdXQgb2YgdGhlIHdheSwgdGhlIHRvb2wgZmluYWxseSByYW46DQoN
-CiDCoCBOdW0gRGVzY3JpcHRpb27CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgVmVyLiBEZXZJZCBTOkIgU3RhdHVzDQogwqAgPT09ID09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gPT09PT0gPT09PT0gPT09PT09
-ID09PT09PT09PT09PT09PQ0KIMKgIDAxKSBJbnRlbChSKSBFdGhlcm5ldCBTZXJ2ZXIgQWRhcHRl
-ciBJMzUwLVQ0wqAgMS45OcKgIDE1MjEgMDA6MDI0IFVwZGF0ZSBub3QgYXZhaWxhYmxlDQogwqAg
-MDIpIEludGVsKFIpIEV0aGVybmV0IENvbm5lY3Rpb24gWDcyMiBmb3LCoMKgwqDCoCAzLjQ5wqAg
-MzdEMiAwMDowNjEgVXBkYXRlDQogwqDCoMKgwqDCoCAxMEdCQVNFLVQgYXZhaWxhYmxlDQogwqAg
-MDMpIEludGVsKFIpIEV0aGVybmV0IFNlcnZlciBBZGFwdGVyIEkzNTAtVDTCoCAxLjk5wqAgMTUy
-MSAwMDoxNzUgVXBkYXRlIG5vdCBhdmFpbGFibGUNCg0KDQpUaGUgaW5pdGlhbCBzdGFydGluZyBw
-b2ludCB3YXM6DQoNCjApIGZpcm13YXJlLXZlcnNpb246IDMuMzEgMHg4MDAwMGQzMSAxLjE3Njcu
-MA0KDQpBZnRlciBmaXJzdCB1cGRhdGUrcmVib290LCB0aGlzIHdhcyBidW1wZWQgdG86DQoNCjEp
-IGZpcm13YXJlLXZlcnNpb246IDMuMWQgMHg4MDAwMTZkYiAxLjE3NjcuMMKgwqDCoCAoYnV0IGV0
-aHRvb2wgLW0gZXRoWCBzdGlsbCBkb2Vzbid0IHdvcmspDQoNClNvIEkgcmFuIHRoZSB0b29sIHRo
-ZSBzZWNvbmQgdGltZSwgaXQgc2FpZCAnVXBkYXRlIGF2YWlsYWJsZScgYWdhaW4sIGJ1dCB0aGlz
-IHRpbWU6DQoNCiDCoCBOdW0gRGVzY3JpcHRpb27CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgVmVyLiBEZXZJZCBTOkIgU3RhdHVzDQog
-wqAgPT09ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gPT09PT0gPT09
-PT0gPT09PT09ID09PT09PT09PT09PT09PQ0KIMKgIDAxKSBJbnRlbChSKSBFdGhlcm5ldCBTZXJ2
-ZXIgQWRhcHRlciBJMzUwLVQ0wqAgMS45OcKgIDE1MjEgMDA6MDI0IFVwZGF0ZSBub3QgYXZhaWxh
-YmxlDQogwqAgMDIpIEludGVsKFIpIEV0aGVybmV0IENvbm5lY3Rpb24gWDcyMiBmb3LCoMKgwqDC
-oCAzLjI5wqAgMzdEMiAwMDowNjEgVXBkYXRlDQogwqDCoMKgwqDCoCAxMEdCQVNFLVQgYXZhaWxh
-YmxlDQogwqAgMDMpIEludGVsKFIpIEV0aGVybmV0IFNlcnZlciBBZGFwdGVyIEkzNTAtVDTCoCAx
-Ljk5wqAgMTUyMSAwMDoxNzUgVXBkYXRlIG5vdCBhdmFpbGFibGUNCg0KIMKgIE9wdGlvbnM6IEFk
-YXB0ZXIgSW5kZXggTGlzdCAoY29tbWEtc2VwYXJhdGVkKSwgW0FdbGwsIGVbWF1pdA0KIMKgIEVu
-dGVyIHNlbGVjdGlvbjowMg0KIMKgIFdvdWxkIHlvdSBsaWtlIHRvIGJhY2sgdXAgdGhlIE5WTSBp
-bWFnZXM/IFtZXWVzL1tOXW86IFkNCiDCoCBVcGRhdGUgaW4gcHJvZ3Jlc3MuIFRoaXMgb3BlcmF0
-aW9uIG1heSB0YWtlIHNldmVyYWwgbWludXRlcy4NCiDCoCBbKioqKioqKisuLl0NCiDCoCBUb29s
-IGV4ZWN1dGlvbiBjb21wbGV0ZWQgd2l0aCB0aGUgZm9sbG93aW5nIHN0YXR1czogPC0tLS0tLS0t
-LS0gd2h5IGlzIHRoZXJlIG5vIHN0YXR1cyBwcmludGVkPw0KIMKgIFByZXNzIGFueSBrZXkgdG8g
-ZXhpdC4NCg0KDQpDaGVja2luZyBvdXRwdXQgbG9nOg0KDQogwqAgIyBjYXQgb3V0My5sb2cNCiDC
-oCBJbnRlbChSKSBFdGhlcm5ldCBOVk0gVXBkYXRlIFRvb2wNCiDCoCBOVk1VcGRhdGUgdmVyc2lv
-biAxLjMwLjIuMTENCiDCoCBDb3B5cmlnaHQgKEMpIDIwMTMgLSAyMDE3IEludGVsIENvcnBvcmF0
-aW9uLg0KDQogwqAgLi9udm11cGRhdGU2NGUgLWMgbnZtdXBkYXRlLmNmZyAtbCBvdXQzLmxvZw0K
-DQogwqAgQ29uZmlnIGZpbGUgcmVhZC4NCiDCoCBJbnZlbnRvcnkNCiDCoCBbMDA6MDYxOjAwOjAw
-XTogSW50ZWwoUikgRXRoZXJuZXQgQ29ubmVjdGlvbiBYNzIyIGZvciAxMEdCQVNFLVQNCiDCoCDC
-oMKgwqAgRmxhc2ggaW52ZW50b3J5IHN0YXJ0ZWQNCiDCoCDCoMKgwqAgU2hhZG93IFJBTSBpbnZl
-bnRvcnkgc3RhcnRlZA0KIMKgIEFsdGVybmF0ZSBNQUMgYWRkcmVzcyBpcyBub3Qgc2V0DQogwqAg
-wqDCoMKgIFNoYWRvdyBSQU0gaW52ZW50b3J5IGZpbmlzaGVkDQogwqAgwqDCoMKgIEZsYXNoIGlu
-dmVudG9yeSBmaW5pc2hlZA0KIMKgIMKgwqDCoCBPUk9NIGludmVudG9yeSBzdGFydGVkDQogwqAg
-wqDCoMKgIE9ST00gaW52ZW50b3J5IGZpbmlzaGVkDQogwqAgwqDCoMKgIFBIWSBOVk0gaW52ZW50
-b3J5IHN0YXJ0ZWQNCiDCoCDCoMKgwqAgUEhZIE5WTSBpbnZlbnRvcnkgZmluaXNoZWQNCiDCoCBb
-MDA6MDYxOjAwOjAxXTogSW50ZWwoUikgRXRoZXJuZXQgQ29ubmVjdGlvbiBYNzIyIGZvciAxMEdC
-QVNFLVQNCiDCoCDCoMKgwqAgRGV2aWNlIGFscmVhZHkgaW52ZW50b3JpZWQuDQogwqAgWzAwOjA2
-MTowMDowMl06IEludGVsKFIpIEV0aGVybmV0IENvbm5lY3Rpb24gWDcyMiBmb3IgMTBHYkUgU0ZQ
-Kw0KIMKgIMKgwqDCoCBEZXZpY2UgYWxyZWFkeSBpbnZlbnRvcmllZC4NCiDCoCDCoMKgwqAgUEhZ
-IE5WTSBpbnZlbnRvcnkgc3RhcnRlZA0KIMKgIMKgwqDCoCBQSFkgTlZNIGludmVudG9yeSBmaW5p
-c2hlZA0KIMKgIFswMDowNjE6MDA6MDNdOiBJbnRlbChSKSBFdGhlcm5ldCBDb25uZWN0aW9uIFg3
-MjIgZm9yIDEwR2JFIFNGUCsNCiDCoCDCoMKgwqAgRGV2aWNlIGFscmVhZHkgaW52ZW50b3JpZWQu
-DQogwqAgVXBkYXRlDQogwqAgWzAwOjA2MTowMDowMF06IEludGVsKFIpIEV0aGVybmV0IENvbm5l
-Y3Rpb24gWDcyMiBmb3IgMTBHQkFTRS1UDQogwqAgwqDCoMKgIENyZWF0aW5nIGJhY2t1cCBpbWFn
-ZXMgaW4gZGlyZWN0b3J5OiBBNEJGMDE2NDg4NEENCiDCoCDCoMKgwqAgQmFja3VwIGltYWdlcyBj
-cmVhdGVkLg0KIMKgIMKgwqDCoCBGbGFzaCB1cGRhdGUgc3RhcnRlZA0KIMKgIMKgwqDCoCBOVk0g
-aW1hZ2UgdmVyaWZpY2F0aW9uIHN0YXJ0ZWQNCiDCoCDCoMKgwqAgU2hhZG93IFJBTSBpbWFnZSB2
-ZXJpZmljYXRpb24gc3RhcnRlZA0KDQogwqAgSW1hZ2UgZGlmZmVyZW5jZXMgZm91bmQgYXQgb2Zm
-c2V0IDB4M0FFIFtEZXZpY2U9MHhGLCBCdWZmZXI9MHgwXSAtIA0KdXBkYXRlIHJlcXVpcmVkLg0K
-IMKgIEVycm9yOsKgwqAgRmxhc2ggdXBkYXRlIGZhaWxlZA0KIMKgIFswMDowNjE6MDA6MDJdOiBJ
-bnRlbChSKSBFdGhlcm5ldCBDb25uZWN0aW9uIFg3MjIgZm9yIDEwR2JFIFNGUCsNCiDCoCAjDQoN
-Ckhvd2V2ZXIsIGV0aHRvb2wgLWkgc3VnZ2VzdHMgdGhhdCBmaXJtd2FyZSB3YXMgdXBkYXRlZCB0
-bzoNCg0KMikgZmlybXdhcmUtdmVyc2lvbjogNC4wMCAweDgwMDAxNTc3IDEuMTU4MC4wwqDCoMKg
-IDwtLS0tLS0tIHNvIGl0IGRpZCANCl9zb21ldGhpbmdfIGFmdGVyIGFsbD8NCg0KQXQgdGhpcyBw
-b2ludCwgZXZlcnkgc3Vic2VxdWVudCBhdHRlbXB0IHRvIHJ1biB0aGUgTlZNIHVwZGF0ZXIgeWll
-bGRzIA0KdGhlIHNhbWUgcmVzdWx0czogYW4gdXBkYXRlIGlzIGF2YWlsYWJsZSwgYnV0IGF0dGVt
-cHRpbmcgdG8gYXBwbHkgaXQgDQpmYWlscyB3aXRoIHRoZSBzYW1lIG1lc3NhZ2UgaW4gbG9nLg0K
-DQpBbmQgbXkgaW5pdGlhbCBpc3N1ZSBzdGlsbCBwZXJzaXN0cyAtIGV0aHRvb2wgLW0gPGlmYWNl
-PiBzdGlsbCByZXR1cm5zIA0KImludmFsaWQgYXJndW1lbnQiIHdpdGggIk1vZHVsZSBFRVBST00g
-bWVtb3J5IHJlYWQgbm90IHN1cHBvcnRlZC4gUGxlYXNlIA0KdXBkYXRlIHRoZSBOVk0gaW1hZ2Ui
-IGxvZ2dlZCBpbiBkbWVzZy4NCg0KSG93IGNhbiBJIHJlc29sdmUgdGhpcz8NCg0KQ2hlZXJzLA0K
-IMKgSmFrdWIuDQoNCj4NCj4gVG9kZCBGdWppbmFrYQ0KPiBTb2Z0d2FyZSBBcHBsaWNhdGlvbiBF
-bmdpbmVlcg0KPiBEYXRhY2VudGVyIEVuZ2luZWVyaW5nIEdyb3VwDQo+IEludGVsIENvcnBvcmF0
-aW9uDQo+IHRvZGQuZnVqaW5ha2FAaW50ZWwuY29tDQo+DQo+DQo+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQo+IEZyb206IEpha3ViIEphbmtvd3NraSBbbWFpbHRvOnNoYXN0YUB0b3hjb3Jw
-LmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI3LCAyMDE5IDQ6MDMgQU0NCj4gVG86IGUx
-MDAwLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBDYzogbmV0ZGV2QHZnZXIua2VybmVs
-Lm9yZzsgc2hhc3RhQHRveGNvcnAuY29tOyBtaGVtc2xleUBvcGVuLXN5c3RlbXMuY29tDQo+IFN1
-YmplY3Q6IFtFMTAwMC1kZXZlbF0gU0ZQKyBFRVBST00gcmVhZG91dHMgZmFpbCBvbiBYNzIyIChl
-dGh0b29sIC1tOiBJbnZhbGlkIGFyZ3VtZW50KQ0KPg0KPiBIaSwNCj4NCj4gV2UgY2FuJ3QgZ2V0
-IFNGUCsgRUVQUk9NIHJlYWRvdXRzIGZvciBYNzIyIHRvIHdvcmsgYXQgYWxsOg0KPg0KPiAjIGV0
-aHRvb2wgLW0gZXRoMTANCj4gQ2Fubm90IGdldCBtb2R1bGUgRUVQUk9NIGluZm9ybWF0aW9uOiBJ
-bnZhbGlkIGFyZ3VtZW50ICMgZG1lc2cgfCB0YWlsIC1uIDEgWyAgNDQ1Ljk3MTk3NF0gaTQwZSAw
-MDAwOjNkOjAwLjMgZXRoMTA6IE1vZHVsZSBFRVBST00gbWVtb3J5IHJlYWQgbm90IHN1cHBvcnRl
-ZC4gUGxlYXNlIHVwZGF0ZSB0aGUgTlZNIGltYWdlLg0KPiAjIGxzcGNpIHwgZ3JlcCAzZDowMC4z
-DQo+IDNkOjAwLjMgRXRoZXJuZXQgY29udHJvbGxlcjogSW50ZWwgQ29ycG9yYXRpb24gRXRoZXJu
-ZXQgQ29ubmVjdGlvbiBYNzIyIGZvciAxMEdiRSBTRlArIChyZXYgMDkpDQo+DQo+DQo+IFdlJ3Jl
-IHJ1bm5pbmcgNC4xOS42NSBrZXJuZWwgYXQgdGhlIG1vbWVudCwgdGVzdGluZyB1c2luZyB0aGUg
-bmV3ZXN0IG91dC1vZi10cmVlIEludGVsIG1vZHVsZQ0KPg0KPiAjIG1vZGluZm8gLUYgdmVyc2lv
-biBpNDBlDQo+IDIuOS4yMQ0KPg0KPiBXZSBhbHNvIHRyaWVkOg0KPiAtIDQuMTkuNjUgd2l0aCBp
-bi10cmVlIGk0MGUgKDIuMy4yLWspDQo+IC0gc3RvY2sgQXJjaCBMaW51eCAoa2VybmVsIDUuMi41
-LCBkcml2ZXIgMi44LjIwLWspIGFuZCB0aGUgcmVzdWx0cyBhcmUgdGhlIHNhbWUsIGFzIHNob3du
-IGFib3ZlLg0KPg0KPiAjIGV0aHRvb2wgLWkgZXRoMTANCj4gZHJpdmVyOiBpNDBlDQo+IHZlcnNp
-b246IDIuOS4yMQ0KPiBmaXJtd2FyZS12ZXJzaW9uOiAzLjMxIDB4ODAwMDBkMzEgMS4xNzY3LjAN
-Cj4gZXhwYW5zaW9uLXJvbS12ZXJzaW9uOg0KPiBidXMtaW5mbzogMDAwMDozZDowMC4zDQo+IHN1
-cHBvcnRzLXN0YXRpc3RpY3M6IHllcw0KPiBzdXBwb3J0cy10ZXN0OiB5ZXMNCj4gc3VwcG9ydHMt
-ZWVwcm9tLWFjY2VzczogeWVzDQo+IHN1cHBvcnRzLXJlZ2lzdGVyLWR1bXA6IHllcw0KPiBzdXBw
-b3J0cy1wcml2LWZsYWdzOiB5ZXMNCj4gIyBkbWlkZWNvZGUgLXMgYmFzZWJvYXJkLW1hbnVmYWN0
-dXJlcg0KPiBJbnRlbCBDb3Jwb3JhdGlvbg0KPiAjIGRtaWRlY29kZSAtcyBiYXNlYm9hcmQtcHJv
-ZHVjdC1uYW1lDQo+IFMyNjAwV0ZUDQo+ICMgZG1pZGVjb2RlIC1zIGJhc2Vib2FyZC12ZXJzaW9u
-DQo+IEg0ODEwNC04NTMNCj4NCj4gIyBsc3BjaSAtdnZ2DQo+ICguLi4pDQo+IDNkOjAwLjMgRXRo
-ZXJuZXQgY29udHJvbGxlcjogSW50ZWwgQ29ycG9yYXRpb24gRXRoZXJuZXQgQ29ubmVjdGlvbiBY
-NzIyIGZvciAxMEdiRSBTRlArIChyZXYgMDkpDQo+IAlEZXZpY2VOYW1lOiBJbnRlbCBQQ0ggSW50
-ZWdyYXRlZCAxMCBHaWdhYml0IEV0aGVybmV0IENvbnRyb2xsZXINCj4gCVN1YnN5c3RlbTogSW50
-ZWwgQ29ycG9yYXRpb24gRXRoZXJuZXQgQ29ubmVjdGlvbiBYNzIyIGZvciAxMEdiRSBTRlArDQo+
-IAlDb250cm9sOiBJL08tIE1lbSsgQnVzTWFzdGVyKyBTcGVjQ3ljbGUtIE1lbVdJTlYtIFZHQVNu
-b29wLSBQYXJFcnIrIFN0ZXBwaW5nLSBTRVJSKyBGYXN0QjJCLSBEaXNJTlR4Kw0KPiAJU3RhdHVz
-OiBDYXArIDY2TUh6LSBVREYtIEZhc3RCMkItIFBhckVyci0gREVWU0VMPWZhc3QgPlRBYm9ydC0g
-PFRBYm9ydC0gPE1BYm9ydC0gPlNFUlItIDxQRVJSLSBJTlR4LQ0KPiAJTGF0ZW5jeTogMCwgQ2Fj
-aGUgTGluZSBTaXplOiAzMiBieXRlcw0KPiAJSW50ZXJydXB0OiBwaW4gQSByb3V0ZWQgdG8gSVJR
-IDExMg0KPiAJTlVNQSBub2RlOiAwDQo+IAlSZWdpb24gMDogTWVtb3J5IGF0IGFiMDAwMDAwICg2
-NC1iaXQsIHByZWZldGNoYWJsZSkgW3NpemU9MTZNXQ0KPiAJUmVnaW9uIDM6IE1lbW9yeSBhdCBi
-MDAwMDAwMCAoNjQtYml0LCBwcmVmZXRjaGFibGUpIFtzaXplPTMyS10NCj4gCUV4cGFuc2lvbiBS
-T00gYXQgPGlnbm9yZWQ+IFtkaXNhYmxlZF0NCj4gCUNhcGFiaWxpdGllczogWzQwXSBQb3dlciBN
-YW5hZ2VtZW50IHZlcnNpb24gMw0KPiAJCUZsYWdzOiBQTUVDbGstIERTSSsgRDEtIEQyLSBBdXhD
-dXJyZW50PTBtQSBQTUUoRDArLEQxLSxEMi0sRDNob3QrLEQzY29sZCspDQo+IAkJU3RhdHVzOiBE
-MCBOb1NvZnRSc3QrIFBNRS1FbmFibGUtIERTZWw9MCBEU2NhbGU9MSBQTUUtDQo+IAlDYXBhYmls
-aXRpZXM6IFs1MF0gTVNJOiBFbmFibGUtIENvdW50PTEvMSBNYXNrYWJsZSsgNjRiaXQrDQo+IAkJ
-QWRkcmVzczogMDAwMDAwMDAwMDAwMDAwMCAgRGF0YTogMDAwMA0KPiAJCU1hc2tpbmc6IDAwMDAw
-MDAwICBQZW5kaW5nOiAwMDAwMDAwMA0KPiAJQ2FwYWJpbGl0aWVzOiBbNzBdIE1TSS1YOiBFbmFi
-bGUrIENvdW50PTEyOSBNYXNrZWQtDQo+IAkJVmVjdG9yIHRhYmxlOiBCQVI9MyBvZmZzZXQ9MDAw
-MDAwMDANCj4gCQlQQkE6IEJBUj0zIG9mZnNldD0wMDAwMTAwMA0KPiAJQ2FwYWJpbGl0aWVzOiBb
-YTBdIEV4cHJlc3MgKHYyKSBFbmRwb2ludCwgTVNJIDAwDQo+IAkJRGV2Q2FwOglNYXhQYXlsb2Fk
-IDUxMiBieXRlcywgUGhhbnRGdW5jIDAsIExhdGVuY3kgTDBzIDw1MTJucywgTDEgPDY0dXMNCj4g
-CQkJRXh0VGFnKyBBdHRuQnRuLSBBdHRuSW5kLSBQd3JJbmQtIFJCRSsgRkxSZXNldCsgU2xvdFBv
-d2VyTGltaXQgMC4wMDBXDQo+IAkJRGV2Q3RsOglDb3JyRXJyKyBOb25GYXRhbEVycisgRmF0YWxF
-cnIrIFVuc3VwUmVxKw0KPiAJCQlSbHhkT3JkKyBFeHRUYWcrIFBoYW50RnVuYy0gQXV4UHdyLSBO
-b1Nub29wLSBGTFJlc2V0LQ0KPiAJCQlNYXhQYXlsb2FkIDI1NiBieXRlcywgTWF4UmVhZFJlcSA1
-MTIgYnl0ZXMNCj4gCQlEZXZTdGE6CUNvcnJFcnIrIE5vbkZhdGFsRXJyLSBGYXRhbEVyci0gVW5z
-dXBSZXErIEF1eFB3cisgVHJhbnNQZW5kLQ0KPiAJCUxua0NhcDoJUG9ydCAjMCwgU3BlZWQgMi41
-R1QvcywgV2lkdGggeDEsIEFTUE0gTDBzIEwxLCBFeGl0IExhdGVuY3kgTDBzIDw2NG5zLCBMMSA8
-MXVzDQo+IAkJCUNsb2NrUE0tIFN1cnByaXNlLSBMTEFjdFJlcC0gQndOb3QtIEFTUE1PcHRDb21w
-Kw0KPiAJCUxua0N0bDoJQVNQTSBEaXNhYmxlZDsgUkNCIDY0IGJ5dGVzIERpc2FibGVkLSBDb21t
-Q2xrKw0KPiAJCQlFeHRTeW5jaC0gQ2xvY2tQTS0gQXV0V2lkRGlzLSBCV0ludC0gQXV0QldJbnQt
-DQo+IAkJTG5rU3RhOglTcGVlZCAyLjVHVC9zIChvayksIFdpZHRoIHgxIChvaykNCj4gCQkJVHJF
-cnItIFRyYWluLSBTbG90Q2xrKyBETEFjdGl2ZS0gQldNZ210LSBBQldNZ210LQ0KPiAJCURldkNh
-cDI6IENvbXBsZXRpb24gVGltZW91dDogUmFuZ2UgQUIsIFRpbWVvdXREaXMrLCBMVFItLCBPQkZG
-IE5vdCBTdXBwb3J0ZWQNCj4gCQkJIEF0b21pY09wc0NhcDogMzJiaXQtIDY0Yml0LSAxMjhiaXRD
-QVMtDQo+IAkJRGV2Q3RsMjogQ29tcGxldGlvbiBUaW1lb3V0OiA1MHVzIHRvIDUwbXMsIFRpbWVv
-dXREaXMtLCBMVFItLCBPQkZGIERpc2FibGVkDQo+IAkJCSBBdG9taWNPcHNDdGw6IFJlcUVuLQ0K
-PiAJCUxua1N0YTI6IEN1cnJlbnQgRGUtZW1waGFzaXMgTGV2ZWw6IC02ZEIsIEVxdWFsaXphdGlv
-bkNvbXBsZXRlLSwgRXF1YWxpemF0aW9uUGhhc2UxLQ0KPiAJCQkgRXF1YWxpemF0aW9uUGhhc2Uy
-LSwgRXF1YWxpemF0aW9uUGhhc2UzLSwgTGlua0VxdWFsaXphdGlvblJlcXVlc3QtDQo+IAlDYXBh
-YmlsaXRpZXM6IFtlMF0gVml0YWwgUHJvZHVjdCBEYXRhDQo+IAkJUHJvZHVjdCBOYW1lOiBFeGFt
-cGxlIFZQRA0KPiAJCVJlYWQtb25seSBmaWVsZHM6DQo+IAkJCVtWMF0gVmVuZG9yIHNwZWNpZmlj
-Og0KPiAJCQlbUlZdIFJlc2VydmVkOiBjaGVja3N1bSBnb29kLCAwIGJ5dGUocykgcmVzZXJ2ZWQN
-Cj4gCQlFbmQNCj4gCUNhcGFiaWxpdGllczogWzEwMCB2Ml0gQWR2YW5jZWQgRXJyb3IgUmVwb3J0
-aW5nDQo+IAkJVUVTdGE6CURMUC0gU0RFUy0gVExQLSBGQ1AtIENtcGx0VE8tIENtcGx0QWJydC0g
-VW54Q21wbHQtIFJ4T0YtIE1hbGZUTFAtIEVDUkMtIFVuc3VwUmVxLSBBQ1NWaW9sLQ0KPiAJCVVF
-TXNrOglETFAtIFNERVMtIFRMUC0gRkNQLSBDbXBsdFRPLSBDbXBsdEFicnQtIFVueENtcGx0LSBS
-eE9GLSBNYWxmVExQLSBFQ1JDLSBVbnN1cFJlcSsgQUNTVmlvbC0NCj4gCQlVRVN2cnQ6CURMUCsg
-U0RFUy0gVExQLSBGQ1ArIENtcGx0VE8tIENtcGx0QWJydC0gVW54Q21wbHQtIFJ4T0YrIE1hbGZU
-TFArIEVDUkMtIFVuc3VwUmVxLSBBQ1NWaW9sLQ0KPiAJCUNFU3RhOglSeEVyci0gQmFkVExQLSBC
-YWRETExQLSBSb2xsb3Zlci0gVGltZW91dC0gQWR2Tm9uRmF0YWxFcnIrDQo+IAkJQ0VNc2s6CVJ4
-RXJyLSBCYWRUTFAtIEJhZERMTFAtIFJvbGxvdmVyLSBUaW1lb3V0LSBBZHZOb25GYXRhbEVycisN
-Cj4gCQlBRVJDYXA6CUZpcnN0IEVycm9yIFBvaW50ZXI6IDAwLCBFQ1JDR2VuQ2FwKyBFQ1JDR2Vu
-RW4tIEVDUkNDaGtDYXArIEVDUkNDaGtFbi0NCj4gCQkJTXVsdEhkclJlY0NhcC0gTXVsdEhkclJl
-Y0VuLSBUTFBQZnhQcmVzLSBIZHJMb2dDYXAtDQo+IAkJSGVhZGVyTG9nOiAwMDAwMDAwMCAwMDAw
-MDAwMCAwMDAwMDAwMCAwMDAwMDAwMA0KPiAJQ2FwYWJpbGl0aWVzOiBbMTUwIHYxXSBBbHRlcm5h
-dGl2ZSBSb3V0aW5nLUlEIEludGVycHJldGF0aW9uIChBUkkpDQo+IAkJQVJJQ2FwOglNRlZDLSBB
-Q1MtLCBOZXh0IEZ1bmN0aW9uOiAwDQo+IAkJQVJJQ3RsOglNRlZDLSBBQ1MtLCBGdW5jdGlvbiBH
-cm91cDogMA0KPiAJQ2FwYWJpbGl0aWVzOiBbMTYwIHYxXSBTaW5nbGUgUm9vdCBJL08gVmlydHVh
-bGl6YXRpb24gKFNSLUlPVikNCj4gCQlJT1ZDYXA6CU1pZ3JhdGlvbi0sIEludGVycnVwdCBNZXNz
-YWdlIE51bWJlcjogMDAwDQo+IAkJSU9WQ3RsOglFbmFibGUtIE1pZ3JhdGlvbi0gSW50ZXJydXB0
-LSBNU0UtIEFSSUhpZXJhcmNoeS0NCj4gCQlJT1ZTdGE6CU1pZ3JhdGlvbi0NCj4gCQlJbml0aWFs
-IFZGczogMzIsIFRvdGFsIFZGczogMzIsIE51bWJlciBvZiBWRnM6IDAsIEZ1bmN0aW9uIERlcGVu
-ZGVuY3kgTGluazogMDMNCj4gCQlWRiBvZmZzZXQ6IDEwOSwgc3RyaWRlOiAxLCBEZXZpY2UgSUQ6
-IDM3Y2QNCj4gCQlTdXBwb3J0ZWQgUGFnZSBTaXplOiAwMDAwMDU1MywgU3lzdGVtIFBhZ2UgU2l6
-ZTogMDAwMDAwMDENCj4gCQlSZWdpb24gMDogTWVtb3J5IGF0IDAwMDAwMDAwYWYwMDAwMDAgKDY0
-LWJpdCwgcHJlZmV0Y2hhYmxlKQ0KPiAJCVJlZ2lvbiAzOiBNZW1vcnkgYXQgMDAwMDAwMDBiMDAy
-MDAwMCAoNjQtYml0LCBwcmVmZXRjaGFibGUpDQo+IAkJVkYgTWlncmF0aW9uOiBvZmZzZXQ6IDAw
-MDAwMDAwLCBCSVI6IDANCj4gCUNhcGFiaWxpdGllczogWzFhMCB2MV0gVHJhbnNhY3Rpb24gUHJv
-Y2Vzc2luZyBIaW50cw0KPiAJCURldmljZSBzcGVjaWZpYyBtb2RlIHN1cHBvcnRlZA0KPiAJCU5v
-IHN0ZWVyaW5nIHRhYmxlIGF2YWlsYWJsZQ0KPiAJQ2FwYWJpbGl0aWVzOiBbMWIwIHYxXSBBY2Nl
-c3MgQ29udHJvbCBTZXJ2aWNlcw0KPiAJCUFDU0NhcDoJU3JjVmFsaWQtIFRyYW5zQmxrLSBSZXFS
-ZWRpci0gQ21wbHRSZWRpci0gVXBzdHJlYW1Gd2QtIEVncmVzc0N0cmwtIERpcmVjdFRyYW5zLQ0K
-PiAJCUFDU0N0bDoJU3JjVmFsaWQtIFRyYW5zQmxrLSBSZXFSZWRpci0gQ21wbHRSZWRpci0gVXBz
-dHJlYW1Gd2QtIEVncmVzc0N0cmwtIERpcmVjdFRyYW5zLQ0KPiAJS2VybmVsIGRyaXZlciBpbiB1
-c2U6IGk0MGUNCj4gCUtlcm5lbCBtb2R1bGVzOiBpNDBlDQo+DQo+DQo+IFNhbWUga2VybmVsK2k0
-MGUsIHNhbWUgU0ZQKyBtb2R1bGUgLSBidXQgb24gSW50ZWwgWDcxMCwgd29ya3MgbGlrZSBhIHRy
-ZWF0Og0KPg0KPiAjIGxzcGNpIHwgZ3JlcCBYNw0KPiA4MTowMC4wIEV0aGVybmV0IGNvbnRyb2xs
-ZXI6IEludGVsIENvcnBvcmF0aW9uIEV0aGVybmV0IENvbnRyb2xsZXIgWDcxMCBmb3IgMTBHYkUg
-U0ZQKyAocmV2IDAxKQ0KPiA4MTowMC4xIEV0aGVybmV0IGNvbnRyb2xsZXI6IEludGVsIENvcnBv
-cmF0aW9uIEV0aGVybmV0IENvbnRyb2xsZXIgWDcxMCBmb3IgMTBHYkUgU0ZQKyAocmV2IDAxKSAj
-IGV0aHRvb2wgLW0gZXRoOA0KPiAJSWRlbnRpZmllciAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgOiAweDAzIChTRlApDQo+IAlFeHRlbmRlZCBpZGVudGlmaWVyICAgICAgICAgICAgICAg
-ICAgICAgICA6IDB4MDQgKEdCSUMvU0ZQIGRlZmluZWQgYnkgMi13aXJlIGludGVyZmFjZSBJRCkN
-Cj4gCUNvbm5lY3RvciAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDogMHgwNyAoTEMp
-DQo+IAlUcmFuc2NlaXZlciBjb2RlcyAgICAgICAgICAgICAgICAgICAgICAgICA6IDB4MTAgMHgw
-MCAweDAwIDB4MDEgMHgwMCAweDAwIDB4MDAgMHgwMCAweDAwDQo+IAlUcmFuc2NlaXZlciB0eXBl
-ICAgICAgICAgICAgICAgICAgICAgICAgICA6IDEwRyBFdGhlcm5ldDogMTBHIEJhc2UtU1INCj4g
-CVRyYW5zY2VpdmVyIHR5cGUgICAgICAgICAgICAgICAgICAgICAgICAgIDogRXRoZXJuZXQ6IDEw
-MDBCQVNFLVNYDQo+IAlFbmNvZGluZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA6
-IDB4MDYgKDY0Qi82NkIpDQo+IAlCUiwgTm9taW5hbCAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICA6IDEwMzAwTUJkDQo+ICAgICAgICAgICAoLi4uKQ0KPiAjIGV0aHRvb2wgLWkgZXRoOA0K
-PiBkcml2ZXI6IGk0MGUNCj4gdmVyc2lvbjogMi45LjIxDQo+IGZpcm13YXJlLXZlcnNpb246IDYu
-MDEgMHg4MDAwMzVjZiAxLjE4NzYuMA0KPiBleHBhbnNpb24tcm9tLXZlcnNpb246DQo+IGJ1cy1p
-bmZvOiAwMDAwOjgxOjAwLjANCj4gc3VwcG9ydHMtc3RhdGlzdGljczogeWVzDQo+IHN1cHBvcnRz
-LXRlc3Q6IHllcw0KPiBzdXBwb3J0cy1lZXByb20tYWNjZXNzOiB5ZXMNCj4gc3VwcG9ydHMtcmVn
-aXN0ZXItZHVtcDogeWVzDQo+IHN1cHBvcnRzLXByaXYtZmxhZ3M6IHllcw0KPiAjDQo+DQo+DQo+
-IElzIHRoaXMgYSBrbm93biBwcm9ibGVtPw0KPg0KPg0KPiBCZXN0IHJlZ2FyZHMsDQo+ICAgIEph
-a3ViDQo+DQo+DQo+DQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fDQo+IEUxMDAwLWRldmVsIG1haWxpbmcgbGlzdA0KPiBFMTAwMC1kZXZlbEBsaXN0cy5z
-b3VyY2Vmb3JnZS5uZXQNCj4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlz
-dGluZm8vZTEwMDAtZGV2ZWwNCj4gVG8gbGVhcm4gbW9yZSBhYm91dCBJbnRlbCYjMTc0OyBFdGhl
-cm5ldCwgdmlzaXQgaHR0cDovL2NvbW11bml0aWVzLmludGVsLmNvbS9jb21tdW5pdHkvd2lyZWQN
-Cg0K
+On Tue, Aug 27, 2019 at 5:34 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Aug 27, 2019 at 04:01:08PM -0700, Andy Lutomirski wrote:
+> > [adding some security and tracing folks to cc]
+> >
+> > On Tue, Aug 27, 2019 at 1:52 PM Alexei Starovoitov <ast@kernel.org> wrote:
+> > >
+> > > Introduce CAP_BPF that allows loading all types of BPF programs,
+> > > create most map types, load BTF, iterate programs and maps.
+> > > CAP_BPF alone is not enough to attach or run programs.
+> > >
+> > > Networking:
+> > >
+> > > CAP_BPF and CAP_NET_ADMIN are necessary to:
+> > > - attach to cgroup-bpf hooks like INET_INGRESS, INET_SOCK_CREATE, INET4_CONNECT
+> > > - run networking bpf programs (like xdp, skb, flow_dissector)
+> > >
+> > > Tracing:
+> > >
+> > > CAP_BPF and perf_paranoid_tracepoint_raw() (which is kernel.perf_event_paranoid == -1)
+> > > are necessary to:
+> > > - attach bpf program to raw tracepoint
+> > > - use bpf_trace_printk() in all program types (not only tracing programs)
+> > > - create bpf stackmap
+> > >
+> > > To attach bpf to perf_events perf_event_open() needs to succeed as usual.
+> > >
+> > > CAP_BPF controls BPF side.
+> > > CAP_NET_ADMIN controls intersection where BPF calls into networking.
+> > > perf_paranoid_tracepoint_raw controls intersection where BPF calls into tracing.
+> > >
+> > > In the future CAP_TRACING could be introduced to control
+> > > creation of kprobe/uprobe and attaching bpf to perf_events.
+> > > In such case bpf_probe_read() thin wrapper would be controlled by CAP_BPF.
+> > > Whereas probe_read() would be controlled by CAP_TRACING.
+> > > CAP_TRACING would also control generic kprobe+probe_read.
+> > > CAP_BPF and CAP_TRACING would be necessary for tracing bpf programs
+> > > that want to use bpf_probe_read.
+> >
+> > First, some high-level review:
+> >
+> > Can you write up some clear documentation aimed at administrators that
+> > says what CAP_BPF does?  For example, is it expected that CAP_BPF by
+> > itself permits reading all kernel memory?
+>
+> hmm. the answer is in the sentence you quoted right above.
+
+I was hoping for something in Documentation/admin-guide, not in a
+changelog that's hard to find.
+
+>
+> > Can you give at least one fully described use case where CAP_BPF
+> > solves a real-world problem that is not solved by existing mechanisms?
+>
+> bpftrace binary would be installed with CAP_BPF and CAP_TRACING.
+> bcc tools would be installed with CAP_BPF and CAP_TRACING.
+> perf binary would be installed with CAP_TRACING only.
+> XDP networking daemon would be installed with CAP_BPF and CAP_NET_ADMIN.
+> None of them would need full root.
+
+As in just setting these bits in fscaps?  What does this achieve
+beyond just installing them setuid-root or with CAP_SYS_ADMIN and
+judicious use of capset internally?  For that matter, what prevents
+unauthorized users from tracing the system if you do this?  This just
+lets anyone trace the system, which seems like a mistake.
+
+Can you clarify your example or give another one?
+
+>
+> > Changing the capability that some existing operation requires could
+> > break existing programs.  The old capability may need to be accepted
+> > as well.
+>
+> As far as I can see there is no ABI breakage. Please point out
+> which line of the patch may break it.
+
+As a more or less arbitrary selection:
+
+ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
+ {
+        if (!bpf_prog_kallsyms_candidate(fp) ||
+-           !capable(CAP_SYS_ADMIN))
++           !capable(CAP_BPF))
+                return;
+
+Before your patch, a task with CAP_SYS_ADMIN could do this.  Now it
+can't.  Per the usual Linux definition of "ABI break", this is an ABI
+break if and only if someone actually did this in a context where they
+have CAP_SYS_ADMIN but not all capabilities.  How confident are you
+that no one does things like this?
+ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
+ {
+        if (!bpf_prog_kallsyms_candidate(fp) ||
+-           !capable(CAP_SYS_ADMIN))
++           !capable(CAP_BPF))
+                return;
+
+> > > ---
+> > > I would prefer to introduce CAP_TRACING soon, since it
+> > > will make tracing and networking permission model symmetrical.
+> > >
+> >
+> > Here's my proposal for CAP_TRACING, documentation-style:
+> >
+> > --- begin ---
+> >
+> > CAP_TRACING enables a task to use various kernel features to trace
+> > running user programs and the kernel itself.  CAP_TRACING also enables
+> > a task to bypass some speculation attack countermeasures.  A task in
+> > the init user namespace with CAP_TRACING will be able to tell exactly
+> > what kernel code is executed and when, and will be able to read kernel
+> > registers and kernel memory.  It will, similarly, be able to read the
+> > state of other user tasks.
+> >
+> > Specifically, CAP_TRACING allows the following operations.  It may
+> > allow more operations in the future:
+> >
+> >  - Full use of perf_event_open(), similarly to the effect of
+> > kernel.perf_event_paranoid == -1.
+>
+> +1
+>
+> >  - Loading and attaching tracing BPF programs, including use of BPF
+> > raw tracepoints.
+>
+> -1
+>
+> >  - Use of BPF stack maps.
+>
+> -1
+>
+> >  - Use of bpf_probe_read() and bpf_trace_printk().
+>
+> -1
+>
+> >  - Use of unsafe pointer-to-integer conversions in BPF.
+>
+> -1
+>
+> >  - Bypassing of BPF's speculation attack hardening measures and
+> > constant blinding.  (Note: other mechanisms might also allow this.)
+>
+> -1
+> All of the above are allowed by CAP_BPF.
+> They are not allowed by CAP_TRACING.
+
+Why?  I don't mean to discount your -1, and you may well have a
+compelling reason.  If so, I'll change my proposal.
+
+From the previous discussion, you want to make progress toward solving
+a lot of problems with CAP_BPF.  One of them was making BPF
+firewalling more generally useful. By making CAP_BPF grant the ability
+to read kernel memory, you will make administrators much more nervous
+to grant CAP_BPF.  Similarly, and correct me if I'm wrong, most of
+these capabilities are primarily or only useful for tracing, so I
+don't see why users without CAP_TRACING should get them.
+bpf_trace_printk(), in particular, even has "trace" in its name :)
+
+Also, if a task has CAP_TRACING, it's expected to be able to trace the
+system -- that's the whole point.  Why shouldn't it be able to use BPF
+to trace the system better?
+
+>
+> > CAP_TRACING does not override normal permissions on sysfs or debugfs.
+> > This means that, unless a new interface for programming kprobes and
+> > such is added, it does not directly allow use of kprobes.
+>
+> kprobes can be created via perf_event_open already.
+> So above statement contradicts your first statement.
+
+Hmm.  The way of using perf with kprobes that I'm familiar with is:
+
+# perf probe --add func_name
+
+And this uses "/sys/kernel/debug/tracing//kprobe_events" (with the
+double slash!).  Is there indeed another way to do this?
+
+Anyway, I didn't mean to exclude any existing perf_event_open()
+mechanism -- what I meant was that, without some extension to my
+proposal, /sys/kernel/debug/tracing wouldn't magically become
+accessible due to CAP_TRACING.
+
+>
+> > If CAP_TRACING, by itself, enables a task to crash or otherwise
+> > corrupt the kernel or other tasks, this will be considered a kernel
+> > bug.
+>
+> +1
+>
+> > CAP_TRACING in a non-init user namespace may, in the future, allow
+> > tracing of other tasks in that user namespace or its descendants.  It
+> > will not enable kernel tracing or tracing of tasks outside the user
+> > namespace in question.
+>
+> I would avoid describing user ns for now.
+> There is enough confusion without it.
+>
+> > --- end ---
+> >
+> > Does this sound good?  The idea here is that CAP_TRACING should be
+> > very useful even without CAP_BPF, which allows CAP_BPF to be less
+> > powerful.
+>
+> As proposed CAP_BPF does not allow tracing or networking on its own.
+> CAP_BPF only controls BPF side.
+>
+> For example:
+> BPF_CALL_3(bpf_probe_read, void *, dst, u32, size, const void *, unsafe_ptr)
+> {
+>         int ret;
+>
+>         ret = probe_kernel_read(dst, unsafe_ptr, size);
+>         if (unlikely(ret < 0))
+>                 memset(dst, 0, size);
+>
+>         return ret;
+> }
+>
+> All of BPF (including prototype of bpf_probe_read) is controlled by CAP_BPF.
+> But the kernel primitives its using (probe_kernel_read) is controlled by CAP_TRACING.
+> Hence a task needs _both_ CAP_BPF and CAP_TRACING to attach and run bpf program
+> that uses bpf_probe_read.
+>
+> Similar with all other kernel code that BPF helpers may call directly or indirectly.
+> If there is a way for bpf program to call into piece of code controlled by CAP_TRACING
+> such helper would need CAP_BPF and CAP_TRACING.
+> If bpf helper calls into something that may mangle networking packet
+> such helper would need both CAP_BPF and CAP_NET_ADMIN to execute.
+
+Why do you want to require CAP_BPF to call into functions like
+bpf_probe_read()?  I understand why you want to limit access to bpf,
+but I think that CAP_TRACING should be sufficient to allow the tracing
+parts of BPF.  After all, a lot of your concerns, especially the ones
+involving speculation, don't really apply to users with CAP_TRACING --
+users with CAP_TRACING can read kernel memory with or without bpf.
+
+>
+> > > @@ -2080,7 +2083,10 @@ static int bpf_prog_test_run(const union bpf_attr *attr,
+> > >         struct bpf_prog *prog;
+> > >         int ret = -ENOTSUPP;
+> > >
+> > > -       if (!capable(CAP_SYS_ADMIN))
+> > > +       if (!capable(CAP_NET_ADMIN) || !capable(CAP_BPF))
+> > > +               /* test_run callback is available for networking progs only.
+> > > +                * Add cap_bpf_tracing() above when tracing progs become runable.
+> > > +                */
+> >
+> > I think test_run should probably be CAP_SYS_ADMIN forever.  test_run
+> > is the only way that one can run a bpf program and call helper
+> > functions via the program if one doesn't have permission to attach the
+> > program.
+>
+> Since CAP_BPF + CAP_NET_ADMIN allow attach. It means that a task
+> with these two permissions will have programs running anyway.
+> (traffic will flow through netdev, socket events will happen, etc)
+> Hence no reason to disallow running program via test_run.
+>
+
+test_run allows fully controlled inputs, in a context where a program
+can trivially flush caches, mistrain branch predictors, etc first.  It
+seems to me that, if a JITted bpf program contains an exploitable
+speculation gadget (MDS, Spectre v1, RSB, or anything else), it will
+be *much* easier to exploit it using test_run than using normal
+network traffic.  Similarly, normal network traffic will have network
+headers that are valid enough to have caused the BPF program to be
+invoked in the first place.  test_run can inject arbitrary garbage.
