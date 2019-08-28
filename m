@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DA81A0E6C
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD152A0E6D
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727014AbfH1Xqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 19:46:31 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35656 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726825AbfH1Xqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:46:31 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n4so559715pgv.2;
-        Wed, 28 Aug 2019 16:46:31 -0700 (PDT)
+        id S1726982AbfH1XrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 19:47:15 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40875 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbfH1XrO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:47:14 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w16so777526pfn.7
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 16:47:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5d0g3Dl6DhW5niS/Sr8rnftZb+SLlZRLZP+NnA4xrN0=;
-        b=bJo6Is24JDWPaRjfEQ+Nws9DB6QjJyldcwWZv7W+vR8r+ODrdUDl+JiFp8dS8WcjNV
-         jtN/0Fqm+2HcPUCzZ91XncpezkpdrluzGpHUnJtqzazUuwAegbapPNdXufMFbnHuunB+
-         LC5TQUtWHqe+7csMgcFOk2r0wbB9NVs5RaA/ima+8uKA+dTPqOZziVAkKS9Phm0Tapc2
-         dwdcG4SafNH+SSDZpyI+KgrVv/dni0dP0JsUzs/y+Ry/xBRquW1XsB7QLReD0auOLL0P
-         H+6ByAFoXdgWShPrC4knSqsgYA6lTD6wVYHW4JdPwwUdQqKwZVNEuNgf2aPuc9Kl5QDx
-         AdIg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=vu0+3yHfkDTrUpmZyQTt4ECZH8qi0e3c0manwe13wiY=;
+        b=PkHEy0HwW2BalcfylGt8dY7/RfDxUjBxxcUaOg2Qgo6o6zdk6ZMNhk8NK1DZMIrG9y
+         bv8NmWuNOJyLE9Mq7G/iENYmMFur8xaUNAjcIjQSWo0VLAJBTxE1hXLMZUTdxC3307gf
+         EXjBbRFNfl7VuPPUT/n2T/PwfIROYEf8ydeA/d+sxFlXBxWXR0JLBNUL7UcXh+9+3Twc
+         PfEVhxsRxH9fqO8nzJeMo1vWkAcnjTmCKCFCer8iGIunHC2DUc6EyXeTam/w7876PoS+
+         vtd2d2zPoHmr8HRcMyDgpaejDaSGuPkT14nsugevTVct1Cor3zV9bdWSGlYjBngjZBdO
+         yUFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5d0g3Dl6DhW5niS/Sr8rnftZb+SLlZRLZP+NnA4xrN0=;
-        b=jWyo3wBu0l1NAH84NO1rB+q/uy2TWK/TLI4QPOqqy67pbl2LQs0HC/WSX9A0O7MDgU
-         u7EuQ+KWae/JR0UTYJ2WJxv1ofoGRxywew0Tj6SkHoIPp7AH/2wyjXEjo3mFOYCHWNdw
-         ouBzQXGmGLOYXMdajPiM41G+B2OrhK04XSCqfOdxkamX3/c34QF4VEgmutb12cwEybt7
-         smrMthO9iBAZmIqPn2jbhHH+AKocLhgVVLKHaUY0moxzfOJDZJvI0VBK7fph2rZDAMzJ
-         T9LPmcvtxmmPZjucIDE8UPPhquuB7ckC1OAgDfrZutXu7J03IJ+hnhQT6qCq3evJMarw
-         SO5Q==
-X-Gm-Message-State: APjAAAVlwPkoWAHyrKfG4MSskA4A6B3KeTEiqwlwyhqMrDvw9cpVfxrq
-        YBeh+4+4UVwse3J0RoN1BMA=
-X-Google-Smtp-Source: APXvYqx0JxqrskzUfC3ETWuy5cywCktad3INkEP1oK24ozKVwAkQVgjxPlFe0OPEjDbsAtgWpnCAeQ==
-X-Received: by 2002:a63:161c:: with SMTP id w28mr3524886pgl.442.1567035990759;
-        Wed, 28 Aug 2019 16:46:30 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::5983])
-        by smtp.gmail.com with ESMTPSA id d11sm536066pfh.59.2019.08.28.16.46.29
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=vu0+3yHfkDTrUpmZyQTt4ECZH8qi0e3c0manwe13wiY=;
+        b=UqGDqd3/qWuFC0bHIZcoUXIRGlzj/ngGtNgj5zkWJWTeCWHoECSpD90k+uCjOd0Jy/
+         rP3fG5vDyddu2jjngJcLAqFauRV2WrZB2thBfbHn5H8BVGq4Ma61uj0pIo0bXAUXh3PF
+         0s9r4vMTyrvkL1CZgUCc5EObCLB6hbvhMsrGv/zCptMYoa3BEGCgU4TcculFEQd/YOs4
+         ynrRqhFDq+oJSl4Z0NxHsnYQjkIpBH1nuMS6kZ54o06m918+HmekYApwXySDIf5Wj3py
+         LakbEgG4n8dJOO17ILj6kurJ8KLULHJAOZxZneBC3F7F1o4gHzRI21KJEc8e7SwetCg8
+         Y7Kg==
+X-Gm-Message-State: APjAAAU2Ykl9bcX+iU5q23k7R182dKButXxExljsGQM8T1lY94VQxHro
+        nU3F82sYScGOZKfXZRO0Gjw=
+X-Google-Smtp-Source: APXvYqwwuMjDHxQXzEF119YgZ9fFFu2ZMsFqi4fmbZMbmWv1AhRaoFshMJkwFMVQq0q0fBeDL8oOiQ==
+X-Received: by 2002:a63:b60b:: with SMTP id j11mr5523653pgf.283.1567036033893;
+        Wed, 28 Aug 2019 16:47:13 -0700 (PDT)
+Received: from [192.168.0.16] (97-115-90-227.ptld.qwest.net. [97.115.90.227])
+        by smtp.gmail.com with ESMTPSA id j11sm504690pfa.113.2019.08.28.16.47.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Aug 2019 16:46:29 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 16:46:28 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Julia Kartseva <hex@fb.com>, ast@kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>, rdna@fb.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: auto-split of commit. Was: [PATCH bpf-next 04/10] tools/bpf: add
- libbpf_prog_type_(from|to)_str helpers
-Message-ID: <20190828234626.ltfy3qr2nne4uumy@ast-mbp.dhcp.thefacebook.com>
-References: <cover.1567024943.git.hex@fb.com>
- <467620c966825173dbd65b37a3f9bd7dd4fb8184.1567024943.git.hex@fb.com>
- <20190828163422.3d167c4b@cakuba.netronome.com>
+        Wed, 28 Aug 2019 16:47:13 -0700 (PDT)
+Subject: Re: [PATCH V3 net 1/2] openvswitch: Properly set L4 keys on "later"
+ IP fragments
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org, joe@wand.net.nz
+References: <1566917890-22304-1-git-send-email-gvrose8192@gmail.com>
+ <20190828.145409.412910250799244993.davem@davemloft.net>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <79ebb0ba-2b7d-edd0-0cd7-0940441f9db4@gmail.com>
+Date:   Wed, 28 Aug 2019 16:47:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190828163422.3d167c4b@cakuba.netronome.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20190828.145409.412910250799244993.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 04:34:22PM -0700, Jakub Kicinski wrote:
-> 
-> Greg, Thomas, libbpf is extracted from the kernel sources and
-> maintained in a clone repo on GitHub for ease of packaging.
-> 
-> IIUC Alexei's concern is that since we are moving the commits from
-> the kernel repo to the GitHub one we have to preserve the commits
-> exactly as they are, otherwise SOB lines lose their power.
-> 
-> Can you provide some guidance on whether that's a valid concern, 
-> or whether it's perfectly fine to apply a partial patch?
+On 8/28/2019 2:54 PM, David Miller wrote:
+> From: Greg Rose <gvrose8192@gmail.com>
+> Date: Tue, 27 Aug 2019 07:58:09 -0700
+>
+>> When IP fragments are reassembled before being sent to conntrack, the
+>> key from the last fragment is used.  Unless there are reordering
+>> issues, the last fragment received will not contain the L4 ports, so the
+>> key for the reassembled datagram won't contain them.  This patch updates
+>> the key once we have a reassembled datagram.
+>>
+>> The handle_fragments() function works on L3 headers so we pull the L3/L4
+>> flow key update code from key_extract into a new function
+>> 'key_extract_l3l4'.  Then we add a another new function
+>> ovs_flow_key_update_l3l4() and export it so that it is accessible by
+>> handle_fragments() for conntrack packet reassembly.
+>>
+>> Co-authored by: Justin Pettit <jpettit@ovn.org>
+>> Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+> Applied with Co-authored-by fixed.
+Thanks for fixing that up Dave.
 
-Right. That's exactly the concern.
-
-Greg, Thomas,
-could you please put your legal hat on and clarify the following.
-Say some developer does a patch that modifies
-include/uapi/linux/bpf.h
-..some other kernel code...and
-tools/include/uapi/linux/bpf.h
-
-That tools/include/uapi/linux/bpf.h is used by perf and by libbpf.
-We have automatic mirror of tools/libbpf into github/libbpf/
-so that external projects and can do git submodule of it,
-can build packages out of it, etc.
-
-The question is whether it's ok to split tools/* part out of
-original commit, keep Author and SOB, create new commit out of it,
-and automatically push that auto-generated commit into github mirror.
-
-So far we've requested all developers to split their patches manually.
-So that tools/* update is an individual commit that mirror can
-simply git cherry-pick.
-
+- Greg
