@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0883FA04D1
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0CA6A04EA
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:27:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfH1O0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 10:26:03 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:50134 "EHLO huawei.com"
+        id S1727352AbfH1O0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 10:26:35 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:50132 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726857AbfH1OZo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726861AbfH1OZo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 28 Aug 2019 10:25:44 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 2A0C48B96A2FB2AA8AF1;
+        by Forcepoint Email with ESMTP id 24F303983C9A7CD764BC;
         Wed, 28 Aug 2019 22:25:41 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Weihang Li <liweihang@hisilicon.com>,
+        <linuxarm@huawei.com>, Yufeng Mo <moyufeng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 09/12] net: hns3: implement .process_hw_error for hns3 client
-Date:   Wed, 28 Aug 2019 22:23:13 +0800
-Message-ID: <1567002196-63242-10-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 10/12] net: hns3: add phy selftest function
+Date:   Wed, 28 Aug 2019 22:23:14 +0800
+Message-ID: <1567002196-63242-11-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1567002196-63242-1-git-send-email-tanhuazhong@huawei.com>
 References: <1567002196-63242-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,211 +38,259 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Weihang Li <liweihang@hisilicon.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-When hardware or IMP get specified error it may need the client
-to take some special operations.
+Currently, the loopback test supports only mac selftest and serdes
+selftest. This patch adds phy selftest.
 
-This patch implements the hns3 client's process_hw_errorx.
-
-Signed-off-by: Weihang Li <liweihang@hisilicon.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-Reviewed-by: Peng Li <lipeng321@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  9 +++++-
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 24 ++++++++++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  5 ++++
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |  4 ++-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h |  1 +
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 33 ++++++++++++++++++++++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  4 +++
- 7 files changed, 78 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   7 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 150 ++++++++++++++++++---
+ 2 files changed, 138 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 3e21533..c4b7bf8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -146,6 +146,12 @@ enum hnae3_reset_notify_type {
- 	HNAE3_RESTORE_CLIENT,
- };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 0332d6f..e219bb1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -59,7 +59,7 @@ static const struct hns3_stats hns3_rxq_stats[] = {
  
-+enum hnae3_hw_error_type {
-+	HNAE3_PPU_POISON_ERROR,
-+	HNAE3_CMDQ_ECC_ERROR,
-+	HNAE3_IMP_RD_POISON_ERROR,
-+};
+ #define HNS3_TQP_STATS_COUNT (HNS3_TXQ_STATS_COUNT + HNS3_RXQ_STATS_COUNT)
+ 
+-#define HNS3_SELF_TEST_TYPE_NUM         3
++#define HNS3_SELF_TEST_TYPE_NUM         4
+ #define HNS3_NIC_LB_TEST_PKT_NUM	1
+ #define HNS3_NIC_LB_TEST_RING_ID	0
+ #define HNS3_NIC_LB_TEST_PACKET_SIZE	128
+@@ -89,6 +89,7 @@ static int hns3_lp_setup(struct net_device *ndev, enum hnae3_loop loop, bool en)
+ 	case HNAE3_LOOP_SERIAL_SERDES:
+ 	case HNAE3_LOOP_PARALLEL_SERDES:
+ 	case HNAE3_LOOP_APP:
++	case HNAE3_LOOP_PHY:
+ 		ret = h->ae_algo->ops->set_loopback(h, loop, en);
+ 		break;
+ 	default:
+@@ -330,6 +331,10 @@ static void hns3_self_test(struct net_device *ndev,
+ 	st_param[HNAE3_LOOP_PARALLEL_SERDES][1] =
+ 			h->flags & HNAE3_SUPPORT_SERDES_PARALLEL_LOOPBACK;
+ 
++	st_param[HNAE3_LOOP_PHY][0] = HNAE3_LOOP_PHY;
++	st_param[HNAE3_LOOP_PHY][1] =
++			h->flags & HNAE3_SUPPORT_PHY_LOOPBACK;
 +
- enum hnae3_reset_type {
- 	HNAE3_VF_RESET,
- 	HNAE3_VF_FUNC_RESET,
-@@ -210,7 +216,8 @@ struct hnae3_client_ops {
- 	int (*setup_tc)(struct hnae3_handle *handle, u8 tc);
- 	int (*reset_notify)(struct hnae3_handle *handle,
- 			    enum hnae3_reset_notify_type type);
--	enum hnae3_reset_type (*process_hw_error)(struct hnae3_handle *handle);
-+	void (*process_hw_error)(struct hnae3_handle *handle,
-+				 enum hnae3_hw_error_type);
- };
+ 	if (if_running)
+ 		ndev->netdev_ops->ndo_stop(ndev);
  
- #define HNAE3_CLIENT_NAME_LENGTH 16
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index a11d514..9f3f8e3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4470,12 +4470,36 @@ int hns3_set_channels(struct net_device *netdev,
- 	return hns3_reset_notify(h, HNAE3_UP_CLIENT);
- }
- 
-+static const struct hns3_hw_error_info hns3_hw_err[] = {
-+	{ .type = HNAE3_PPU_POISON_ERROR,
-+	  .msg = "PPU poison" },
-+	{ .type = HNAE3_CMDQ_ECC_ERROR,
-+	  .msg = "IMP CMDQ error" },
-+	{ .type = HNAE3_IMP_RD_POISON_ERROR,
-+	  .msg = "IMP RD poison" },
-+};
-+
-+static void hns3_process_hw_error(struct hnae3_handle *handle,
-+				  enum hnae3_hw_error_type type)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(hns3_hw_err); i++) {
-+		if (hns3_hw_err[i].type == type) {
-+			dev_err(&handle->pdev->dev, "Detected %s!\n",
-+				hns3_hw_err[i].msg);
-+			break;
-+		}
-+	}
-+}
-+
- static const struct hnae3_client_ops client_ops = {
- 	.init_instance = hns3_client_init,
- 	.uninit_instance = hns3_client_uninit,
- 	.link_status_change = hns3_link_status_change,
- 	.setup_tc = hns3_client_setup_tc,
- 	.reset_notify = hns3_reset_notify,
-+	.process_hw_error = hns3_process_hw_error,
- };
- 
- /* hns3_init_module - Driver registration routine
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index e37e64e..2110fa3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -552,6 +552,11 @@ union l4_hdr_info {
- 	unsigned char *hdr;
- };
- 
-+struct hns3_hw_error_info {
-+	enum hnae3_hw_error_type type;
-+	const char *msg;
-+};
-+
- static inline int ring_space(struct hns3_enet_ring *ring)
- {
- 	/* This smp_load_acquire() pairs with smp_store_release() in
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index d986c36..58c6231 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -1325,10 +1325,12 @@ static int hclge_handle_pf_ras_error(struct hclge_dev *hdev,
- 	/* log PPU(RCB) errors */
- 	desc_data = (__le32 *)&desc[3];
- 	status = le32_to_cpu(*desc_data) & HCLGE_PPU_PF_INT_RAS_MASK;
--	if (status)
-+	if (status) {
- 		hclge_log_error(dev, "PPU_PF_ABNORMAL_INT_ST0",
- 				&hclge_ppu_pf_abnormal_int[0], status,
- 				&ae_dev->hw_err_reset_req);
-+		hclge_report_hw_error(hdev, HNAE3_PPU_POISON_ERROR);
-+	}
- 
- 	/* clear all PF RAS errors */
- 	hclge_cmd_reuse_desc(&desc[0], false);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-index 7ea8bb2..876fd81a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.h
-@@ -5,6 +5,7 @@
- #define __HCLGE_ERR_H
- 
- #include "hclge_main.h"
-+#include "hnae3.h"
- 
- #define HCLGE_MPF_RAS_INT_MIN_BD_NUM	10
- #define HCLGE_PF_RAS_INT_MIN_BD_NUM	4
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index f43c298..9ef1f468 100644
+index 9ef1f468..428f7c0 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3265,6 +3265,38 @@ static int hclge_func_reset_sync_vf(struct hclge_dev *hdev)
- 	return -ETIME;
+@@ -53,6 +53,8 @@
+ #define HCLGE_DFX_TQP_BD_OFFSET         11
+ #define HCLGE_DFX_SSU_2_BD_OFFSET       12
+ 
++#define HCLGE_LINK_STATUS_MS	10
++
+ static int hclge_set_mac_mtu(struct hclge_dev *hdev, int new_mps);
+ static int hclge_init_vlan_config(struct hclge_dev *hdev);
+ static void hclge_sync_vlan_filter(struct hclge_dev *hdev);
+@@ -742,6 +744,12 @@ static int hclge_get_sset_count(struct hnae3_handle *handle, int stringset)
+ 		count += 2;
+ 		handle->flags |= HNAE3_SUPPORT_SERDES_SERIAL_LOOPBACK;
+ 		handle->flags |= HNAE3_SUPPORT_SERDES_PARALLEL_LOOPBACK;
++
++		if (hdev->hw.mac.phydev) {
++			count += 1;
++			handle->flags |= HNAE3_SUPPORT_PHY_LOOPBACK;
++		}
++
+ 	} else if (stringset == ETH_SS_STATS) {
+ 		count = ARRAY_SIZE(g_mac_stats_string) +
+ 			hclge_tqps_get_sset_count(handle, stringset);
+@@ -6204,6 +6212,65 @@ static void hclge_cfg_mac_mode(struct hclge_dev *hdev, bool enable)
+ 			"mac enable fail, ret =%d.\n", ret);
  }
  
-+void hclge_report_hw_error(struct hclge_dev *hdev,
-+			   enum hnae3_hw_error_type type)
++static void hclge_phy_link_status_wait(struct hclge_dev *hdev,
++				       int link_ret)
 +{
-+	struct hnae3_client *client = hdev->nic_client;
-+	u16 i;
++#define HCLGE_PHY_LINK_STATUS_NUM  200
 +
-+	if (!client || !client->ops->process_hw_error ||
-+	    !test_bit(HCLGE_STATE_NIC_REGISTERED, &hdev->state))
-+		return;
++	struct phy_device *phydev = hdev->hw.mac.phydev;
++	int i = 0;
++	int ret;
 +
-+	for (i = 0; i < hdev->num_vmdq_vport + 1; i++)
-+		client->ops->process_hw_error(&hdev->vport[i].nic, type);
++	do {
++		ret = phy_read_status(phydev);
++		if (ret) {
++			dev_err(&hdev->pdev->dev,
++				"phy update link status fail, ret = %d\n", ret);
++			return;
++		}
++
++		if (phydev->link == link_ret)
++			break;
++
++		msleep(HCLGE_LINK_STATUS_MS);
++	} while (++i < HCLGE_PHY_LINK_STATUS_NUM);
 +}
 +
-+static void hclge_handle_imp_error(struct hclge_dev *hdev)
++static int hclge_mac_link_status_wait(struct hclge_dev *hdev, int link_ret)
 +{
-+	u32 reg_val;
++#define HCLGE_MAC_LINK_STATUS_NUM  100
 +
-+	reg_val = hclge_read_dev(&hdev->hw, HCLGE_PF_OTHER_INT_REG);
-+	if (reg_val & BIT(HCLGE_VECTOR0_IMP_RD_POISON_B)) {
-+		hclge_report_hw_error(hdev, HNAE3_IMP_RD_POISON_ERROR);
-+		reg_val &= ~BIT(HCLGE_VECTOR0_IMP_RD_POISON_B);
-+		hclge_write_dev(&hdev->hw, HCLGE_PF_OTHER_INT_REG, reg_val);
-+	}
++	int i = 0;
++	int ret;
 +
-+	if (reg_val & BIT(HCLGE_VECTOR0_IMP_CMDQ_ERR_B)) {
-+		hclge_report_hw_error(hdev, HNAE3_CMDQ_ECC_ERROR);
-+		reg_val &= ~BIT(HCLGE_VECTOR0_IMP_CMDQ_ERR_B);
-+		hclge_write_dev(&hdev->hw, HCLGE_PF_OTHER_INT_REG, reg_val);
-+	}
++	do {
++		ret = hclge_get_mac_link_status(hdev);
++		if (ret < 0)
++			return ret;
++		else if (ret == link_ret)
++			return 0;
++
++		msleep(HCLGE_LINK_STATUS_MS);
++	} while (++i < HCLGE_MAC_LINK_STATUS_NUM);
++	return -EBUSY;
 +}
 +
- int hclge_func_reset_cmd(struct hclge_dev *hdev, int func_id)
++static int hclge_mac_phy_link_status_wait(struct hclge_dev *hdev, bool en,
++					  bool is_phy)
++{
++#define HCLGE_LINK_STATUS_DOWN 0
++#define HCLGE_LINK_STATUS_UP   1
++
++	int link_ret;
++
++	link_ret = en ? HCLGE_LINK_STATUS_UP : HCLGE_LINK_STATUS_DOWN;
++
++	if (is_phy)
++		hclge_phy_link_status_wait(hdev, link_ret);
++
++	return hclge_mac_link_status_wait(hdev, link_ret);
++}
++
+ static int hclge_set_app_loopback(struct hclge_dev *hdev, bool en)
  {
+ 	struct hclge_config_mac_mode_cmd *req;
+@@ -6246,14 +6313,8 @@ static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
+ #define HCLGE_SERDES_RETRY_MS	10
+ #define HCLGE_SERDES_RETRY_NUM	100
+ 
+-#define HCLGE_MAC_LINK_STATUS_MS   10
+-#define HCLGE_MAC_LINK_STATUS_NUM  100
+-#define HCLGE_MAC_LINK_STATUS_DOWN 0
+-#define HCLGE_MAC_LINK_STATUS_UP   1
+-
+ 	struct hclge_serdes_lb_cmd *req;
  	struct hclge_desc desc;
-@@ -3471,6 +3503,7 @@ static int hclge_reset_prepare_wait(struct hclge_dev *hdev)
- 		hdev->rst_stats.flr_rst_cnt++;
+-	int mac_link_ret = 0;
+ 	int ret, i = 0;
+ 	u8 loop_mode_b;
+ 
+@@ -6276,10 +6337,8 @@ static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
+ 	if (en) {
+ 		req->enable = loop_mode_b;
+ 		req->mask = loop_mode_b;
+-		mac_link_ret = HCLGE_MAC_LINK_STATUS_UP;
+ 	} else {
+ 		req->mask = loop_mode_b;
+-		mac_link_ret = HCLGE_MAC_LINK_STATUS_DOWN;
+ 	}
+ 
+ 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+@@ -6312,18 +6371,70 @@ static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
+ 
+ 	hclge_cfg_mac_mode(hdev, en);
+ 
+-	i = 0;
+-	do {
+-		/* serdes Internal loopback, independent of the network cable.*/
+-		msleep(HCLGE_MAC_LINK_STATUS_MS);
+-		ret = hclge_get_mac_link_status(hdev);
+-		if (ret == mac_link_ret)
+-			return 0;
+-	} while (++i < HCLGE_MAC_LINK_STATUS_NUM);
++	ret = hclge_mac_phy_link_status_wait(hdev, en, FALSE);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"serdes loopback config mac mode timeout\n");
++
++	return ret;
++}
+ 
+-	dev_err(&hdev->pdev->dev, "config mac mode timeout\n");
++static int hclge_enable_phy_loopback(struct hclge_dev *hdev,
++				     struct phy_device *phydev)
++{
++	int ret;
+ 
+-	return -EBUSY;
++	if (!phydev->suspended) {
++		ret = phy_suspend(phydev);
++		if (ret)
++			return ret;
++	}
++
++	ret = phy_resume(phydev);
++	if (ret)
++		return ret;
++
++	return phy_loopback(phydev, true);
++}
++
++static int hclge_disable_phy_loopback(struct hclge_dev *hdev,
++				      struct phy_device *phydev)
++{
++	int ret;
++
++	ret = phy_loopback(phydev, false);
++	if (ret)
++		return ret;
++
++	return phy_suspend(phydev);
++}
++
++static int hclge_set_phy_loopback(struct hclge_dev *hdev, bool en)
++{
++	struct phy_device *phydev = hdev->hw.mac.phydev;
++	int ret;
++
++	if (!phydev)
++		return -ENOTSUPP;
++
++	if (en)
++		ret = hclge_enable_phy_loopback(hdev, phydev);
++	else
++		ret = hclge_disable_phy_loopback(hdev, phydev);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"set phy loopback fail, ret = %d\n", ret);
++		return ret;
++	}
++
++	hclge_cfg_mac_mode(hdev, en);
++
++	ret = hclge_mac_phy_link_status_wait(hdev, en, TRUE);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"phy loopback config mac mode timeout\n");
++
++	return ret;
+ }
+ 
+ static int hclge_tqp_enable(struct hclge_dev *hdev, unsigned int tqp_id,
+@@ -6363,6 +6474,9 @@ static int hclge_set_loopback(struct hnae3_handle *handle,
+ 	case HNAE3_LOOP_PARALLEL_SERDES:
+ 		ret = hclge_set_serdes_loopback(hdev, en, loop_mode);
  		break;
- 	case HNAE3_IMP_RESET:
-+		hclge_handle_imp_error(hdev);
- 		reg_val = hclge_read_dev(&hdev->hw, HCLGE_PF_OTHER_INT_REG);
- 		hclge_write_dev(&hdev->hw, HCLGE_PF_OTHER_INT_REG,
- 				BIT(HCLGE_VECTOR0_IMP_RESET_INT_B) | reg_val);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 00c07f8..a3bc382 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -178,6 +178,8 @@ enum HLCGE_PORT_TYPE {
- #define HCLGE_VECTOR0_RX_CMDQ_INT_B	1
- 
- #define HCLGE_VECTOR0_IMP_RESET_INT_B	1
-+#define HCLGE_VECTOR0_IMP_CMDQ_ERR_B	4U
-+#define HCLGE_VECTOR0_IMP_RD_POISON_B	5U
- 
- #define HCLGE_MAC_DEFAULT_FRAME \
- 	(ETH_HLEN + ETH_FCS_LEN + 2 * VLAN_HLEN + ETH_DATA_LEN)
-@@ -986,4 +988,6 @@ int hclge_push_vf_port_base_vlan_info(struct hclge_vport *vport, u8 vfid,
- void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time);
- int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev,
- 				struct hclge_desc *desc);
-+void hclge_report_hw_error(struct hclge_dev *hdev,
-+			   enum hnae3_hw_error_type type);
- #endif
++	case HNAE3_LOOP_PHY:
++		ret = hclge_set_phy_loopback(hdev, en);
++		break;
+ 	default:
+ 		ret = -ENOTSUPP;
+ 		dev_err(&hdev->pdev->dev,
 -- 
 2.7.4
 
