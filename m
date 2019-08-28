@@ -2,101 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B74A0928
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 20:01:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E869A0939
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 20:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbfH1SBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 14:01:13 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33124 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfH1SBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 14:01:12 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n190so153930pgn.0
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 11:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=BFJvddMVdRzlLg4JaQXTPKjXHEos9ALpLQhTxwQRgB0=;
-        b=ASkY1rUlh5uPsHc6yy1UDllwaGq7eHHaqrx9mHH1JQk+Juc6hS4cevD9XTNCDZesbH
-         Mmo9mFrqYcCia1Ti/2PSg9CY+Q8KpxUS8DMx9XHSfqZZ6kXEF39+pefIA2AvUzXJi4+i
-         2z/Sepk/beKs+aXtnAYFGTpIHKCQHRn848/5Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=BFJvddMVdRzlLg4JaQXTPKjXHEos9ALpLQhTxwQRgB0=;
-        b=Qy5LPcaGT+g6GqvNLI12s1O46LvOQv89n4PXeZ2tFMN1/AIksx5OXHVFmn9NvzuH/s
-         mz97fW+dgXGY4CPxkkeD3qxZ3UAhQ3V3vlAsC45xORprlI2VZM+zsnEiw/oupleREKkC
-         yjq4dRS5qa4yCWEuXicQrX2O5n2lFRyRKCxC1Chwv320hiH5OD2rmEegyWILK7cIpfG7
-         MZ+y8EYSGIWmLahi5W3jS2hcDGjd4O+S2VSK1+C32hiNvsHoO86K1xraiGWFMeLgxt5z
-         cRT7gqb/GG8QWK4P4XjfkKIyPXclKEVedoJZsMEri2N9PPaTtVmX9wBbNV4HHkrkQpEy
-         fFCg==
-X-Gm-Message-State: APjAAAXhNhEaaoXNgMooRCGfYk89zGyF08EewGNGN6M7Slas7TYiKNd1
-        BWD3htJ9Y/Pu9qeElxL5s5Vb8g==
-X-Google-Smtp-Source: APXvYqxl9ldGbN+Y6p7HIDBEFutfmUjTW+7dVVdP5QoMG/5a9Fx5qHPh4AtBUYcTgv24Hatkm1LSYw==
-X-Received: by 2002:a17:90a:6581:: with SMTP id k1mr5476919pjj.47.1567015272079;
-        Wed, 28 Aug 2019 11:01:12 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z4sm3347892pfg.166.2019.08.28.11.01.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 11:01:11 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 11:01:10 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Anup Patel <Anup.Patel@wdc.com>,
-        Vincent Chen <vincentc@andestech.com>,
-        Alan Kao <alankao@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, me@carlosedp.com
-Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-Message-ID: <201908281100.D78277FD@keescook>
-References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
- <201908251451.73C6812E8@keescook>
- <419CB0D1-E51C-49D5-9745-7771C863462F@amacapital.net>
+        id S1726605AbfH1SHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 14:07:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38480 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726400AbfH1SHA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 14:07:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ZFvGMza15ngZrDEMw/qc9GUTeA/63ZnQGGVV9mb6/TU=; b=at4nmbDEh46aU3q3P9/CB2+YsF
+        3HHB6SMsVAaQ8sbF/sKmg7KyQLVkr8BRFDknUQKwwYHDKle465IBrVj7Klv7H8rdT0FBccqq9ogey
+        sRpdwlWsc4Pqh7X+CjViHhH3fox8xsDHB/3d6wQhDhsdh3eMywtSQpqDR0+cxc+uzrcA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i32LH-000512-Ra; Wed, 28 Aug 2019 20:06:47 +0200
+Date:   Wed, 28 Aug 2019 20:06:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     davem@davemloft.net, linux@armlinux.org.uk,
+        mcoquelin.stm32@gmail.com, joabreu@synopsys.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, weifeng.voon@intel.com
+Subject: Re: [RFC net-next v2 3/5] net: phy: add private data to mdio_device
+Message-ID: <20190828180647.GA17864@lunn.ch>
+References: <20190828174722.6726-1-boon.leong.ong@intel.com>
+ <20190828174722.6726-4-boon.leong.ong@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <419CB0D1-E51C-49D5-9745-7771C863462F@amacapital.net>
+In-Reply-To: <20190828174722.6726-4-boon.leong.ong@intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 10:52:05AM -0700, Andy Lutomirski wrote:
-> 
-> 
-> > On Aug 25, 2019, at 2:59 PM, Kees Cook <keescook@chromium.org> wrote:
-> > 
-> >> On Thu, Aug 22, 2019 at 01:55:22PM -0700, David Abdurachmanov wrote:
-> >> This patch was extensively tested on Fedora/RISCV (applied by default on
-> >> top of 5.2-rc7 kernel for <2 months). The patch was also tested with 5.3-rc
-> >> on QEMU and SiFive Unleashed board.
-> > 
-> > Oops, I see the mention of QEMU here. Where's the best place to find
-> > instructions on creating a qemu riscv image/environment?
-> 
-> I don’t suppose one of you riscv folks would like to contribute riscv support to virtme?  virtme-run —arch=riscv would be quite nice, and the total patch should be just a couple lines.  Unfortunately, it helps a lot to understand the subtleties of booting the architecture to write those couple lines :)
+On Thu, Aug 29, 2019 at 01:47:20AM +0800, Ong Boon Leong wrote:
+> PHY converter device is represented as mdio_device and requires private
+> data. So, we add pointer for private data to mdio_device struct.
 
-As it turns out, this is where I'm stuck. All the instructions I can
-find are about booting a kernel off a disk image. :(
+Hi Ong
 
--- 
-Kees Cook
+This was discussed recently with regard to the xilinx_gmii2rgmii.c
+driver. You can use the usual dev_get_drvdata() to get private data
+associated to the device. I did suggest adding wrappers, so you can
+pass a phydev, or and mdiodev.
+
+     Andrew
+
