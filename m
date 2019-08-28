@@ -2,53 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 105FD9F774
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 02:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07F89F77F
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 02:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfH1AiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 20:38:17 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40972 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbfH1AiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 20:38:17 -0400
-Received: by mail-pg1-f195.google.com with SMTP id x15so388126pgg.8;
-        Tue, 27 Aug 2019 17:38:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1ba+Tj/p7u7dF9gT2DPoxWMYhBdJGqnWmgBcPXbvr14=;
-        b=EuAImDaNHOYpRgdhagSiKgYNhmNmXJdCTP3fLpXHBHQpp343ylLK/oKJ6MdMz3Ejcr
-         yfXQ4rN/V5FZDhY9h+mAHTD9VOE4m0HVZ1ZvMaJp29fvUjpTklgybEEi9GWPxb6uP3ub
-         eu85+ArD//4dsaUJODceY+yb5i9Wq3OmwSy8N/HAi5EY7Wa+NNik/bTXrdvJ4fL2VYK9
-         mI5W8RF95b7kHsYfzW8yfM15Y5neScXt2ZBJxLiVuoGDUO/7DoaaDs3KkadzFZ4Fqg3K
-         8k/8hUo+TBpswgl9zP2k4JbxPlKmsSmK0etIR3buToz2k7TZUow2Bc8Oj3iAuT+PsNGP
-         NaOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1ba+Tj/p7u7dF9gT2DPoxWMYhBdJGqnWmgBcPXbvr14=;
-        b=BDG/CgaBB26KOUCRS1J7aYoAMt2aF/W0UWyn0myAOcEb2N0FQ6+DKXe9qntsKZxelV
-         TNsksShXAvdsMYqT5CHG3p3eHvwunf31Q7pzBpKn/uvhYSbv93Pwg04/cYWIB3OYxTkX
-         E7yxPnCRKzJs/N3HB7TPZKERb+e7ezOeDV0+FIp29hBjd0e7Pw8qMdyfXxNdDzx17Get
-         hhJ5PAr5EZ36zP+bN2pwY49lJZCFB9Vm+bEi58IYJx6qscDzhy8Navh5ARdrlVc3qzzO
-         Fs+QLDvOemj9TOPApRBTLMBrllDmgxUjYnJ4qHiqnDZDkyCvh06C38ujUv4vbECM4GoX
-         WTtg==
-X-Gm-Message-State: APjAAAV4CFuD2d9q0gWw1lIhJVsdUtdEbxTJv8G5V1ugpOku6KwnVVpQ
-        W7pjC/5Sa9VauFlI/0ifIyM=
-X-Google-Smtp-Source: APXvYqwK1bmDF8lgmWn4bYWNqNrM7VBHCr6ZUjQu4F1qkVwqvCdXVJbrGBgKWYztG7XYLV5L+XaJzw==
-X-Received: by 2002:a63:e14d:: with SMTP id h13mr1050987pgk.431.1566952696173;
-        Tue, 27 Aug 2019 17:38:16 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:d1e9])
-        by smtp.gmail.com with ESMTPSA id a4sm509004pfi.55.2019.08.27.17.38.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Aug 2019 17:38:15 -0700 (PDT)
-Date:   Tue, 27 Aug 2019 17:38:14 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726206AbfH1Aoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 20:44:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725992AbfH1Aog (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 20:44:36 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B41A7208CB;
+        Wed, 28 Aug 2019 00:44:34 +0000 (UTC)
+Date:   Tue, 27 Aug 2019 20:44:33 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         LSM List <linux-security-module@vger.kernel.org>,
         James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
@@ -60,40 +31,79 @@ Cc:     Andy Lutomirski <luto@kernel.org>,
         bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
         Linux API <linux-api@vger.kernel.org>
 Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <20190828003813.fkar6udy5vq4loe5@ast-mbp.dhcp.thefacebook.com>
+Message-ID: <20190827204433.3af91faf@gandalf.local.home>
+In-Reply-To: <CALCETrUOHRMkBRJi_s30CjZdOLDGtdMOEgqfgPf+q0x+Fw7LtQ@mail.gmail.com>
 References: <20190827205213.456318-1-ast@kernel.org>
- <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
- <20190827192144.3b38b25a@gandalf.local.home>
+        <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+        <20190827192144.3b38b25a@gandalf.local.home>
+        <CALCETrUOHRMkBRJi_s30CjZdOLDGtdMOEgqfgPf+q0x+Fw7LtQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190827192144.3b38b25a@gandalf.local.home>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 07:21:44PM -0400, Steven Rostedt wrote:
+On Tue, 27 Aug 2019 16:34:47 -0700
+Andy Lutomirski <luto@kernel.org> wrote:
+
+> > > CAP_TRACING does not override normal permissions on sysfs or debugfs.
+> > > This means that, unless a new interface for programming kprobes and
+> > > such is added, it does not directly allow use of kprobes.  
+> >
+> > kprobes can be created in the tracefs filesystem (which is separate from
+> > debugfs, tracefs just gets automatically mounted
+> > in /sys/kernel/debug/tracing when debugfs is mounted) from the
+> > kprobe_events file. /sys/kernel/tracing is just the tracefs
+> > directory without debugfs, and was created specifically to allow
+> > tracing to be access without opening up the can of worms in debugfs.  
 > 
-> At least for CAP_TRACING (if it were to allow read/write access
-> to /sys/kernel/tracing), that would be very useful. It would be useful
-> to those that basically own their machines, and want to trace their
-> applications all the way into the kernel without having to run as full
-> root.
+> I think that, in principle, CAP_TRACING should allow this, but I'm not
+> sure how to achieve that.  I suppose we could set up
+> inode_operations.permission on tracefs, but what exactly would it do?
+> Would it be just like generic_permission() except that it would look
+> at CAP_TRACING instead of CAP_DAC_OVERRIDE?  That is, you can use
+> tracefs if you have CAP_TRACING *or* acl access?  Or would it be:
+> 
+> int tracing_permission(struct inode *inode, int mask)
+> {
+>   if (!capable(CAP_TRACING))
+>     return -EPERM;
+> 
+>   return generic_permission(inode, mask);
+> }
 
-+1
+Perhaps we should make a group for it?
 
-The proposal is to have CAP_TRACING to control perf and ftrace.
-perf and trace-cmd binaries could be installed with CAP_TRACING and that's
-all they need to do full tracing.
+> 
+> Which would mean that you need ACL *and* CAP_TRACING, so
+> administrators would change the mode to 777.  That's a bit scary.
+> 
+> And this still doesn't let people even *find* tracefs, since it's
+> hidden in debugfs.
+> 
+> So maybe make CAP_TRACING override ACLs but also add /sys/fs/tracing
+> and mount tracefs there, too, so that regular users can at least find
+> the mountpoint.
 
-I can craft a patch for perf_event_open side and demo CAP_TRACING.
-Once that cap bit is ready you can use it on ftrace side?
+I think you missed what I said. It's not hidden in /sys/kernel/debug.
+If you enable tracefs, you have /sys/kernel/tracing created, and is
+completely separate from debugfs. I only have it *also* automatically
+mounted to /sys/kernel/debug/tracing for backward compatibility
+reasons, as older versions of trace-cmd will only mount debugfs (as
+root), and expect to find it there.
 
-> Should we allow CAP_TRACING access to /proc/kallsyms? as it is helpful
-> to convert perf and trace-cmd's function pointers into names. Once you
-> allow tracing of the kernel, hiding /proc/kallsyms is pretty useless.
+ mount -t tracefs nodev /sys/kernel/tracing
 
-yep.
+-- Steve
+
+> 
+> >
+> > Should we allow CAP_TRACING access to /proc/kallsyms? as it is helpful
+> > to convert perf and trace-cmd's function pointers into names. Once you
+> > allow tracing of the kernel, hiding /proc/kallsyms is pretty useless.  
+> 
+> I think we should.
 
