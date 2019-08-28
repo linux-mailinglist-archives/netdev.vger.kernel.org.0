@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 674AD9F7EF
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 03:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 714349F807
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 03:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbfH1BiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 21:38:10 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40266 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726272AbfH1BiK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 21:38:10 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D21ACD0C64A2A664E798;
-        Wed, 28 Aug 2019 09:38:07 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 28 Aug 2019 09:37:58 +0800
-From:   Jian Shen <shenjian15@huawei.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <sergei.shtylyov@cogentembedded.com>
-CC:     <netdev@vger.kernel.org>, <forest.zhouchang@huawei.com>,
-        <linuxarm@huawei.com>
-Subject: [PATCH net-next] net: phy: force phy suspend when calling phy_stop
-Date:   Wed, 28 Aug 2019 09:34:47 +0800
-Message-ID: <1566956087-37096-1-git-send-email-shenjian15@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S1726444AbfH1BwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 21:52:09 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:58298 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726127AbfH1BwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 21:52:09 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7S1q5gY022588, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7S1q5gY022588
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 28 Aug 2019 09:52:06 +0800
+Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
+ (172.21.6.18) with Microsoft SMTP Server id 14.3.468.0; Wed, 28 Aug 2019
+ 09:52:04 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <netdev@vger.kernel.org>
+CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net v3 0/2] r8152: fix side effect
+Date:   Wed, 28 Aug 2019 09:51:40 +0800
+Message-ID: <1394712342-15778-320-Taiwan-albertk@realtek.com>
+X-Mailer: Microsoft Office Outlook 11
+In-Reply-To: <1394712342-15778-314-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-314-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.138]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some ethernet drivers may call phy_start() and phy_stop() from
-ndo_open() and ndo_close() respectively.
+v3:
+Update the commit message for patch #1.
 
-When network cable is unconnected, and operate like below:
-step 1: ifconfig ethX up -> ndo_open -> phy_start ->start
-autoneg, and phy is no link.
-step 2: ifconfig ethX down -> ndo_close -> phy_stop -> just stop
-phy state machine.
+v2:
+Replace patch #2 with "r8152: remove calling netif_napi_del".
 
-This patch forces phy suspend even phydev->link is off.
+v1:
+The commit 0ee1f4734967 ("r8152: napi hangup fix after disconnect")
+add a check to avoid using napi_disable after netif_napi_del. However,
+the commit ffa9fec30ca0 ("r8152: set RTL8152_UNPLUG only for real
+disconnection") let the check useless.
 
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
----
- drivers/net/phy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Therefore, I revert commit 0ee1f4734967 ("r8152: napi hangup fix
+after disconnect") first, and add another patch to fix it.
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index f3adea9..0acd5b4 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -911,8 +911,8 @@ void phy_state_machine(struct work_struct *work)
- 		if (phydev->link) {
- 			phydev->link = 0;
- 			phy_link_down(phydev, true);
--			do_suspend = true;
- 		}
-+		do_suspend = true;
- 		break;
- 	}
- 
+Hayes Wang (2):
+  Revert "r8152: napi hangup fix after disconnect"
+  r8152: remove calling netif_napi_del
+
+ drivers/net/usb/r8152.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
 -- 
-2.8.1
+2.21.0
 
