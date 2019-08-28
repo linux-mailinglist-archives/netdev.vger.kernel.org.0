@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4983BA0253
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 14:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F935A031E
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 15:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbfH1M5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 08:57:47 -0400
-Received: from mail-pf1-f170.google.com ([209.85.210.170]:44883 "EHLO
-        mail-pf1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726341AbfH1M5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 08:57:46 -0400
-Received: by mail-pf1-f170.google.com with SMTP id c81so1668200pfc.11;
-        Wed, 28 Aug 2019 05:57:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DOX928M42E78kp/YSIbAI/Nv6Ph0nAcuo13mkFHY0MU=;
-        b=RYBknpDeoyfQ9ZcUL07mKLD0eQTIvPt3BPHuJW2YqcJUSmH8hzjJgyGvitqMIzOEzY
-         2zBP9rK8j46PJuKWOXdCbJ4M6+q7ql2KZRkH0EIoaYYlhNJlkDHu/JqQHtdLIet1qWHA
-         JOEtM5P08jc05VZ1UUfRbvfy+qak0M6RwfDC4oOChg+bk7uferGyJMftSkrGzNKcvFO2
-         fhcUlo76GLPW6ksIFvlHMDstbmPPmb8okSE+EDet2x8LlGJNb5ZeYDiCV34t4wh0wkS4
-         s7KVu0YfQCv9JfpXUND3Bt+xUtIvHRXcBSVE9/K9aNPkKIxvdazE1bnzz4ndqfkprQNi
-         1S4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DOX928M42E78kp/YSIbAI/Nv6Ph0nAcuo13mkFHY0MU=;
-        b=gxq4373UxqcPq9Mww7dx2+N5NN2Q3oZx4iLyQ+UCaEGg/TCjG0Gt5yY3zXlVoPgXgO
-         jMMbXnGgW6uWMLa8OE8dp5cHJuHDUwhHBqo7YwZcktmPOapLNH7pjPl16HTIfqk5qRsP
-         Vh8/8Vdc4B3fk32L7qzOeCWFV6ZhHG764qWjPnJKD1MNvga+aZ61dszunlnhC2gky+3r
-         Di2W9pGK15bc0wcVgSCneR9hMZi7M7qg/+NgQCdvrSnZIC/G/6kZTXUmWH59RwFq8tch
-         wFAkWsUBBw8lBa7Ab32ujhwEtxd5mtZsKwLX5nHXYnoE038+HYKiEy1pTjBlv2Dd0OKa
-         zzdQ==
-X-Gm-Message-State: APjAAAUulr5TSHrVM8D5aAMJqh3RZRB5cWbJi2v4TFfRaOzcv5dEy4oQ
-        ZSZBLCaYlVtBE61bsl13ew6D0Gvv
-X-Google-Smtp-Source: APXvYqxfiuV173gFNc1NaXDpHZXTqeYeYZgQhxafHP23pgKRh9h5lg6iG2P6cqY75YFohV/TV0HXUA==
-X-Received: by 2002:a62:1941:: with SMTP id 62mr4525112pfz.188.1566997066099;
-        Wed, 28 Aug 2019 05:57:46 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id 11sm2099371pgo.43.2019.08.28.05.57.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 05:57:45 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 05:57:43 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     Joe Perches <joe@perches.com>,
-        Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
-Message-ID: <20190828125743.GA1534@localhost>
-References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
- <20190817155927.GA1540@localhost>
- <a146c1356b4272c481e5cc63666c6e58b8442407.camel@perches.com>
- <20190818201150.GA1316@localhost>
- <83075553a61ede1de9cbf77b90a5acdeab5aacbf.camel@perches.com>
- <20190819154320.GB2883@localhost>
- <0f1487356ae2e9ff185ede2359381630007538c7.camel@perches.com>
- <87k1axwvei.fsf@gmail.com>
+        id S1726474AbfH1NY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 09:24:57 -0400
+Received: from first.geanix.com ([116.203.34.67]:47176 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726437AbfH1NY5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 09:24:57 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 90BC62CB;
+        Wed, 28 Aug 2019 13:24:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1566998655; bh=e8jYmdcNS1XgJtOxsbFWt1uQ18zM0d4s3YnFIR+L4PY=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To;
+        b=AD2EMH4W24+IgN8TUiToESJ0AlP3/OzbHcaCCaV8MXjeW8WYI/lBUrevX4rje2zCL
+         Y7m6H2hzboI4YywBD9JJr5PIIDU/poRJMn9WhWjl+wGBxhAFM7/OK/eToihxpG25ze
+         TKL1rLj1FB+qDQkSibchvZG/9FoUGQrN94TKZmKQKzDlFHAPrwYUiAUu1PHHfZs/Vt
+         p76LIziZo70N4o1XN8p4f4ZI/tQPjJqYKCs/7eJ1MjKBczOnqpNTfePE2t7I22bEVX
+         x/mwMC5Lt5I7der78mcdFFCC79eg/bCuFL3kF7F0taskYQrBbUKJnvXGHicbg4JhY/
+         qbw0Pf1AO1kEg==
+Subject: Re: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
+ wakeup
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>
+References: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
+ <20190816081749.19300-2-qiangqing.zhang@nxp.com>
+ <dd8f5269-8403-702b-b054-e031423ffc73@geanix.com>
+ <DB7PR04MB4618A1F984F2281C66959B06E6AB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <35190c5b-f8be-8784-5b4f-32a691a6cffe@geanix.com>
+Message-ID: <6a9bc081-334a-df91-3a23-b74a6cdd3633@geanix.com>
+Date:   Wed, 28 Aug 2019 15:24:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87k1axwvei.fsf@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <35190c5b-f8be-8784-5b4f-32a691a6cffe@geanix.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 11:23:33AM +0300, Felipe Balbi wrote:
-> Originally I had memset only on the three cases where they were
-> needed. Richard, which do you prefer? I don't mind changing it back.
 
-Go ahead and change it back.
 
-Thanks,
-Richard
+On 20/08/2019 13.55, Sean Nyekjaer wrote:
+> 
+> I have added some more debug, same test setup:
+> https://gist.github.com/sknsean/81208714de23aa3639d3e31dccb2f3e0
+> 
+> root@iwg26:~# systemctl suspend
+> 
+> ...
+> https://gist.github.com/sknsean/2a786f1543305056d4de03d387872403
+> 
+> /Sean
+
+Any luck reproducing this?
+
+/Sean
