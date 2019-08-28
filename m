@@ -2,115 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2719F8B8
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 05:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8659F8C5
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 05:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbfH1D1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 23:27:03 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44416 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbfH1D1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 23:27:03 -0400
-Received: by mail-pg1-f193.google.com with SMTP id i18so590390pgl.11
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 20:27:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=dp3fvaSUqn4zfaaVSdQwvyJ3m7aUeS30xK2FKHVLrNo=;
-        b=CBwKwnePPRBb6MdTDbLBrThdakBJ6ggsidIWKNLpxl/ihkKutq4Ow1F2Rw/1Rf9nz7
-         IWDu4T4O1Gbo5bMe9nHt+2XWlbiQZYUvfKUWRd0VlPI1JY5z0eiWmq8mzEKv9Y5XcIKE
-         H8IFViViXeVa7WMypLwzmmnTnh5pp1ot34eaGvFKV7l2IkmZNC5qcS5o+VoU2Gi1oPfu
-         CbrQ0Hm3FJlbps0kTTc+ygEmos0QPcJXW4tbnEue294Un0GAviUCTDRPGP3xYI5QcH2X
-         hemKwPhBiK2XhkSkMr92Wd2z5O+5t956EZ0AqkGxALhFOYbKm/vYAe46cGpxDwbHgIlI
-         8F7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dp3fvaSUqn4zfaaVSdQwvyJ3m7aUeS30xK2FKHVLrNo=;
-        b=I6j+kgsfg0K8g8v8Phy2ziG7O3OFrE5CriOSfxYkBeGqqAkmDGgWkY6zJgihdXGeyl
-         g/wU518Z9SP8fIliSSUsZS7b6+6JTP3Ry2QCC9MI7+iSbZ4ZxAKGXN1HPqb6txjDIQRp
-         zHhHrBrkojnpLY5BuLSCXI+loKxY8jpVQnII96GOlRhxlGxb6uCIlrmXCOG5rRVDaYoU
-         8qhBQvRxsjrOg9jBqNTs8kE44VipCogkP/ZO6AHXrCmDnnemzl+PBOpQxwS84b4cVNVw
-         36BeunkHkQ9ZVGHb3HIxN1XcWE5jtNwMLsXlFNWyWibNym5r03CnEc1jTzWMJb6U7Oqx
-         5ehQ==
-X-Gm-Message-State: APjAAAXJ3088qirNZH9vP5IVT2KH2aQNZegOxrEhomyeenH2S/9G43lk
-        birkt2XClXvSUXYAjnUicCrP7aT+h9s=
-X-Google-Smtp-Source: APXvYqw/Vn46mishmlTtdPcm14rxpJCv5gO0UWJKgff//y9qNrz0CQB9UHfcpAo2z6LKtMyo2VsmAQ==
-X-Received: by 2002:a63:ec03:: with SMTP id j3mr1605797pgh.325.1566962822221;
-        Tue, 27 Aug 2019 20:27:02 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id w2sm605466pjr.27.2019.08.27.20.27.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Aug 2019 20:27:01 -0700 (PDT)
-Subject: Re: [PATCH v5 net-next 02/18] ionic: Add hardware init and device
- commands
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190826213339.56909-1-snelson@pensando.io>
- <20190826213339.56909-3-snelson@pensando.io>
- <20190826212404.77348857@cakuba.netronome.com>
- <a2ed5049-14c6-749c-9a9b-f826d9a88cb0@pensando.io>
- <20190827201646.2befe6c3@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <93a16cf5-b8a2-8915-4190-b81607058eb2@pensando.io>
-Date:   Tue, 27 Aug 2019 20:26:59 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190827201646.2befe6c3@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S1726252AbfH1Dat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 23:30:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42278 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726206AbfH1Dat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 23:30:49 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E43AB217F5;
+        Wed, 28 Aug 2019 03:30:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566963048;
+        bh=QwBtkl1IG8fVTvlSF50wiwwTEzxi3t44fFqpGmTznss=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PlKZdbng3HaPSeMSMuTn/q7fDeuMCIcNgcagEmqFg8UkACtVF7d4RGuTbMtljfY5j
+         dMrw4idt7ZYU1EK1yn31eKwtzhqQWClquZcg6cV0PxHSKsqnoKhMlCuOp3FTi95Otl
+         Je+5JUJ8rCcOqDxsNvpYC0bIyg5Yi9Rvpq43rss8=
+Date:   Wed, 28 Aug 2019 12:30:41 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+Message-Id: <20190828123041.c0c90c15865897461ee819a2@kernel.org>
+In-Reply-To: <20190827192144.3b38b25a@gandalf.local.home>
+References: <20190827205213.456318-1-ast@kernel.org>
+        <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+        <20190827192144.3b38b25a@gandalf.local.home>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/27/19 8:16 PM, Jakub Kicinski wrote:
-> On Tue, 27 Aug 2019 14:22:55 -0700, Shannon Nelson wrote:
->>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->>>> index e24ef6971cd5..1ca1e33cca04 100644
->>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->>>> @@ -11,8 +11,28 @@
->>>>    static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
->>>>    			     struct netlink_ext_ack *extack)
->>>>    {
->>>> +	struct ionic *ionic = devlink_priv(dl);
->>>> +	struct ionic_dev *idev = &ionic->idev;
->>>> +	char buf[16];
->>>> +
->>>>    	devlink_info_driver_name_put(req, IONIC_DRV_NAME);
->>>>    
->>>> +	devlink_info_version_running_put(req,
->>>> +					 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
->>>> +					 idev->dev_info.fw_version);
->>> Are you sure this is not the FW that controls the data path?
->> There is only one FW rev to report, and this covers mgmt and data.
-> Can you add a key for that? Cause this one clearly says management..
-
-Perhaps something like this?
-
-/* Overall FW version */
-#define DEVLINK_INFO_VERSION_GENERIC_FW    "fw"
+On Tue, 27 Aug 2019 19:21:44 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
 
->> Since I don't have any board info available at this point, shall I use
->> my own "asic.id" and "asic.rev" strings, or in this patch shall I add
->> something like this to devlink.h and use them here:
->>
->> /* Part number, identifier of asic design */
->> #define DEVLINK_INFO_VERSION_GENERIC_ASIC_ID    "asic.id"
->> /* Revision of asic design */
->> #define DEVLINK_INFO_VERSION_GENERIC_ASIC_REV    "asic.rev"
-> Yes, please add these to the generic items and document appropriately.
+> > Here's my proposal for CAP_TRACING, documentation-style:
+> > 
+> > --- begin ---
+> > 
+> > CAP_TRACING enables a task to use various kernel features to trace
+> > running user programs and the kernel itself.  CAP_TRACING also enables
+> > a task to bypass some speculation attack countermeasures.  A task in
+> > the init user namespace with CAP_TRACING will be able to tell exactly
+> > what kernel code is executed and when, and will be able to read kernel
+> > registers and kernel memory.  It will, similarly, be able to read the
+> > state of other user tasks.
+> > 
+> > Specifically, CAP_TRACING allows the following operations.  It may
+> > allow more operations in the future:
+> > 
+> >  - Full use of perf_event_open(), similarly to the effect of
+> > kernel.perf_event_paranoid == -1.
+> > 
+> >  - Loading and attaching tracing BPF programs, including use of BPF
+> > raw tracepoints.
+> > 
+> >  - Use of BPF stack maps.
+> > 
+> >  - Use of bpf_probe_read() and bpf_trace_printk().
+> > 
+> >  - Use of unsafe pointer-to-integer conversions in BPF.
+> > 
+> >  - Bypassing of BPF's speculation attack hardening measures and
+> > constant blinding.  (Note: other mechanisms might also allow this.)
+> > 
+> > CAP_TRACING does not override normal permissions on sysfs or debugfs.
+> > This means that, unless a new interface for programming kprobes and
+> > such is added, it does not directly allow use of kprobes.
+> 
+> kprobes can be created in the tracefs filesystem (which is separate from
+> debugfs, tracefs just gets automatically mounted
+> in /sys/kernel/debug/tracing when debugfs is mounted) from the
+> kprobe_events file. /sys/kernel/tracing is just the tracefs
+> directory without debugfs, and was created specifically to allow
+> tracing to be access without opening up the can of worms in debugfs.
 
-Sure.  Is there any place besides 
-Documentation/networking/devlink-info-versions.rst?
+I like the CAP_TRACING for tracefs. Can we make the tracefs itself
+check the CAP_TRACING and call file_ops? or each tracefs file-ops
+handlers must check it?
 
-sln
+> Should we allow CAP_TRACING access to /proc/kallsyms? as it is helpful
+> to convert perf and trace-cmd's function pointers into names. Once you
+> allow tracing of the kernel, hiding /proc/kallsyms is pretty useless.
 
+Also, there is a blacklist of kprobes under debugfs. If CAP_TRACING
+introduced and it allows to access kallsyms, I would like to move the
+blacklist under tracefs, or make an alias of blacklist entry on tracefs.
 
+Thank you,
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
