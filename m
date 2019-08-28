@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF7B9FA0D
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 07:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BDA9FA17
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 07:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726273AbfH1F4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 01:56:13 -0400
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:47020 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbfH1F4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 01:56:13 -0400
-Received: by mail-wr1-f42.google.com with SMTP id z1so1092661wru.13
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 22:56:11 -0700 (PDT)
+        id S1726196AbfH1F5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 01:57:13 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:33559 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbfH1F5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 01:57:13 -0400
+Received: by mail-ed1-f68.google.com with SMTP id s15so1628694edx.0
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 22:57:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nNKvTIfy3+Twkv0Xla2GgAu4Wlf2AW39OKM9KJwTd+E=;
-        b=s2g25bgau4c2orc6lVzFvRN9pxrsaYsocYR2SAMXk/RelYAI7YbU/c8uRbR46KW7hA
-         Wr+Gwt3buhtyAy7VLCmoLmpfT54pzsmJjOsQEAhgnoQdykiuOg8Sjfbqo6qB3SVycRzm
-         G2oeTzS4gZd06tToq1C30mq296I/sGhnIQs0iiqlPnue0IrM5ngn7MHC4LNQmFhugqAk
-         NeKDb1/p1+2HOs2wdYJTPQgkkjm2/p/Aa4WaiRSSSVCsSlkoSIDge0F3k2V035jA4CEx
-         /wWYDe41+6mSOlnvOrS59ZhUSXdNdsk8zz8YOIV3sOjnXqjieHhuNi0otPTy8pQqElyi
-         x1Ug==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OrxhOu1nWxI0faPCB+H7oArBSAeGruB3cm87QNbaLCY=;
+        b=Z5t4YhKDMk431eMolzSpuzwoIQGSlFsI8PbeD1+GJ8twXhTZPoTT8AQ93K3m4iW/es
+         7QIlerw4Mr9Zt1wmWfR9CkiDH+zg4PdjahRwaJgSUPXgsBxqUuYrZ5Egpcfocbawa3UV
+         VrSwvRLcZBkWsaSZDQUTqso18NvUBDwzaejKTpUs6203OFRR8vSQ8xm25E2htj11GYbL
+         SiCg7fFhii5QF4NLjjJ15SnTpKA6LNkzS1Jd4dNNj/Dd0xGdklSRM0kcd+qTlQft4vfW
+         f0Lc2SfJELwN9I7w/+Y859CK05WHStiLZbrdUcCOTuq2miatbGpaEJoZtySq65RUOO/4
+         NYQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nNKvTIfy3+Twkv0Xla2GgAu4Wlf2AW39OKM9KJwTd+E=;
-        b=kyytUuwWe176TXBbysDx0qJnMmhE0utKWEMjXe72wOMpbrhnuwL+HQ87ccPOUfnf5h
-         CNXcCHNQM4i5VZ+qUgD25PpHFq/BSzti7pSYtWH8uLyZ3ybUJpB3M27FC0pKr2EV12UM
-         X9zGz82ymGzTKeHwiXqkVljttu5gCtzLomGNJUnE9yilKxilIjMiyRBnJOSrSifpR5pP
-         yqrnWuGjZU0leTPN1HP73d+jgjMifQlOP0tVhe7fWV+bGaMyDWTULPEiSNvPQCTU7mYm
-         RR9w2dYIkVaTUKEIHb2yaDrG6Z1aLan5uGpAgauh/psbqmqr/6AWUkfRPCiFjpdZdK+f
-         iYfw==
-X-Gm-Message-State: APjAAAXbK585qDgrRyYhDrs8663x+AfMjqpN46TPNXZkeiA+ZQ9MkwFP
-        yyJ9AmzvRiqOb9FWgeYfEyv+i6/f2qo=
-X-Google-Smtp-Source: APXvYqycdjex5EOj/rjXGLDbfmZrYWk+f3hMylBtZSrtmy111qebdif9pm/nWrSzireJ+IwEpBd18A==
-X-Received: by 2002:a5d:42c1:: with SMTP id t1mr2181980wrr.344.1566971770837;
-        Tue, 27 Aug 2019 22:56:10 -0700 (PDT)
-Received: from pixies ([5.102.239.190])
-        by smtp.gmail.com with ESMTPSA id j9sm1693532wrx.66.2019.08.27.22.56.09
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 27 Aug 2019 22:56:10 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 08:56:08 +0300
-From:   Shmulik Ladkani <shmulik.ladkani@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        shmulik@metanetworks.com, eyal@metanetworks.com
-Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
-Message-ID: <20190828085608.12053dac@pixies>
-In-Reply-To: <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
-References: <20190826170724.25ff616f@pixies>
-        <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
-        <20190827144218.5b098eac@pixies>
-        <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OrxhOu1nWxI0faPCB+H7oArBSAeGruB3cm87QNbaLCY=;
+        b=m8Xjce5Sa7cTXoy7HOrkJlOIz6NFWnUHMSoXUgAEs0Y2C3/s58ddRkp1smGHZHThEm
+         Sm4fIbQLQ1cJTKrHKGcSj+pHBe2pCTaofJ+LFiut38GMajD5k7u6OxlXFq4ArNpvLmB1
+         U+4rt01NUiAHxfa8swLYbc/9sEb1dvzF7DEBcsnez51/9yZ17/TeIPhoSr3poblU4Rro
+         MYAwhtMuFVSWj0uiTbrrfP8E+vlL0qa3/b6XLRErSN1e+hogi4OWpBySxX7u8P+y2S/Z
+         2Nq5DZHMvf24hd0FjZT6x2zvoyYHrsNuPSZXOR2YThtyZN/XoGZbVHlFbw7mClJvkfXy
+         WRQA==
+X-Gm-Message-State: APjAAAUAOfuVTIxZ80eQxi+rGrpfY11b9YwSwP2UZJKoQVvya6maiiXW
+        hafZcXPxfZbuFEVy/9PDbgmqgQ==
+X-Google-Smtp-Source: APXvYqw9mJRH2NjBcy5PDDAgxsvYbaA5ldLlD8LgIVZpribJyonJlHrEdMGC66zOFRY5U/w9TxJbZA==
+X-Received: by 2002:a17:906:f211:: with SMTP id gt17mr1569816ejb.263.1566971831872;
+        Tue, 27 Aug 2019 22:57:11 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z2sm222202ejn.18.2019.08.27.22.57.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 22:57:10 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/2] nfp: flower: fix bugs in merge tunnel encap code
+Date:   Tue, 27 Aug 2019 22:56:28 -0700
+Message-Id: <20190828055630.17331-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Aug 2019 14:10:35 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+John says:
 
-> Given first point above wrt hitting rarely, it would be good to first get a
-> better understanding for writing a reproducer. Back then Yonghong added one
-> to the BPF kernel test suite [0], so it would be desirable to extend it for
-> the case you're hitting. Given NAT64 use-case is needed and used by multiple
-> parties, we should try to (fully) fix it generically.
+There are few bugs in the merge encap code that have come to light with
+recent driver changes. Effectively, flow bind callbacks were being
+registered twice when using internal ports (new 'busy' code triggers
+this). There was also an issue with neighbour notifier messages being
+ignored for internal ports.
 
-Thanks Daniel for the advice.
+John Hurley (2):
+  nfp: flower: prevent ingress block binds on internal ports
+  nfp: flower: handle neighbour events on internal ports
 
-I'm working on a reproducer that resembles the input skb which triggers
-this BUG_ON.
+ drivers/net/ethernet/netronome/nfp/flower/offload.c     | 7 ++++---
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+-- 
+2.21.0
+
