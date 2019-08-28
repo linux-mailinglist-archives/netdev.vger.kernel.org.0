@@ -2,372 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D89B49FAC5
+	by mail.lfdr.de (Postfix) with ESMTP id 290FA9FAC4
 	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 08:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbfH1Goi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 02:44:38 -0400
-Received: from mga03.intel.com ([134.134.136.65]:35208 "EHLO mga03.intel.com"
+        id S1726657AbfH1Goh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 02:44:37 -0400
+Received: from mga03.intel.com ([134.134.136.65]:35206 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726418AbfH1GoN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 02:44:13 -0400
+        id S1726422AbfH1GoO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 02:44:14 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Aug 2019 23:44:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,440,1559545200"; 
-   d="scan'208";a="171443790"
+   d="scan'208";a="171443794"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga007.jf.intel.com with ESMTP; 27 Aug 2019 23:44:11 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 04/15] igc: Remove useless forward declaration
-Date:   Tue, 27 Aug 2019 23:43:56 -0700
-Message-Id: <20190828064407.30168-5-jeffrey.t.kirsher@intel.com>
+        Aaron Brown <aaron.f.brown@intel.com>
+Subject: [net-next 05/15] Documentation: iavf: Update the Intel LAN driver doc for iavf
+Date:   Tue, 27 Aug 2019 23:43:57 -0700
+Message-Id: <20190828064407.30168-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190828064407.30168-1-jeffrey.t.kirsher@intel.com>
 References: <20190828064407.30168-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+Update the LAN driver documentation to include the latest feature
+implementation and driver capabilities.
 
-Move igc_phy_setup_autoneg, igc_wait_autoneg and igc_set_fc_watermarks
-up to avoid forward declaration.
-It is not necessary to forward declare these static methods.
-
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_mac.c |  73 +++++----
- drivers/net/ethernet/intel/igc/igc_phy.c | 192 +++++++++++------------
- 2 files changed, 129 insertions(+), 136 deletions(-)
+ .../networking/device_drivers/intel/iavf.rst  | 115 +++++++++++++-----
+ 1 file changed, 82 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
-index ba4646737288..5eeb4c8caf4a 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.c
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.c
-@@ -7,9 +7,6 @@
- #include "igc_mac.h"
- #include "igc_hw.h"
+diff --git a/Documentation/networking/device_drivers/intel/iavf.rst b/Documentation/networking/device_drivers/intel/iavf.rst
+index 2d0c3baa1752..cfc08842e32c 100644
+--- a/Documentation/networking/device_drivers/intel/iavf.rst
++++ b/Documentation/networking/device_drivers/intel/iavf.rst
+@@ -10,11 +10,15 @@ Copyright(c) 2013-2018 Intel Corporation.
+ Contents
+ ========
  
--/* forward declaration */
--static s32 igc_set_fc_watermarks(struct igc_hw *hw);
--
- /**
-  * igc_disable_pcie_master - Disables PCI-express master access
-  * @hw: pointer to the HW structure
-@@ -74,6 +71,41 @@ void igc_init_rx_addrs(struct igc_hw *hw, u16 rar_count)
- 		hw->mac.ops.rar_set(hw, mac_addr, i);
- }
++- Overview
+ - Identifying Your Adapter
+ - Additional Configurations
+ - Known Issues/Troubleshooting
+ - Support
  
-+/**
-+ * igc_set_fc_watermarks - Set flow control high/low watermarks
-+ * @hw: pointer to the HW structure
-+ *
-+ * Sets the flow control high/low threshold (watermark) registers.  If
-+ * flow control XON frame transmission is enabled, then set XON frame
-+ * transmission as well.
-+ */
-+static s32 igc_set_fc_watermarks(struct igc_hw *hw)
-+{
-+	u32 fcrtl = 0, fcrth = 0;
++Overview
++========
 +
-+	/* Set the flow control receive threshold registers.  Normally,
-+	 * these registers will be set to a default threshold that may be
-+	 * adjusted later by the driver's runtime code.  However, if the
-+	 * ability to transmit pause frames is not enabled, then these
-+	 * registers will be set to 0.
-+	 */
-+	if (hw->fc.current_mode & igc_fc_tx_pause) {
-+		/* We need to set up the Receive Threshold high and low water
-+		 * marks as well as (optionally) enabling the transmission of
-+		 * XON frames.
-+		 */
-+		fcrtl = hw->fc.low_water;
-+		if (hw->fc.send_xon)
-+			fcrtl |= IGC_FCRTL_XONE;
-+
-+		fcrth = hw->fc.high_water;
-+	}
-+	wr32(IGC_FCRTL, fcrtl);
-+	wr32(IGC_FCRTH, fcrth);
-+
-+	return 0;
-+}
-+
- /**
-  * igc_setup_link - Setup flow control and link settings
-  * @hw: pointer to the HW structure
-@@ -194,41 +226,6 @@ s32 igc_force_mac_fc(struct igc_hw *hw)
- 	return ret_val;
- }
+ This file describes the iavf Linux* Base Driver. This driver was formerly
+ called i40evf.
  
--/**
-- * igc_set_fc_watermarks - Set flow control high/low watermarks
-- * @hw: pointer to the HW structure
-- *
-- * Sets the flow control high/low threshold (watermark) registers.  If
-- * flow control XON frame transmission is enabled, then set XON frame
-- * transmission as well.
-- */
--static s32 igc_set_fc_watermarks(struct igc_hw *hw)
--{
--	u32 fcrtl = 0, fcrth = 0;
--
--	/* Set the flow control receive threshold registers.  Normally,
--	 * these registers will be set to a default threshold that may be
--	 * adjusted later by the driver's runtime code.  However, if the
--	 * ability to transmit pause frames is not enabled, then these
--	 * registers will be set to 0.
--	 */
--	if (hw->fc.current_mode & igc_fc_tx_pause) {
--		/* We need to set up the Receive Threshold high and low water
--		 * marks as well as (optionally) enabling the transmission of
--		 * XON frames.
--		 */
--		fcrtl = hw->fc.low_water;
--		if (hw->fc.send_xon)
--			fcrtl |= IGC_FCRTL_XONE;
--
--		fcrth = hw->fc.high_water;
--	}
--	wr32(IGC_FCRTL, fcrtl);
--	wr32(IGC_FCRTH, fcrth);
--
--	return 0;
--}
--
- /**
-  * igc_clear_hw_cntrs_base - Clear base hardware counters
-  * @hw: pointer to the HW structure
-diff --git a/drivers/net/ethernet/intel/igc/igc_phy.c b/drivers/net/ethernet/intel/igc/igc_phy.c
-index 4c8f96a9a148..f4b05af0dd2f 100644
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -3,10 +3,6 @@
+@@ -27,6 +31,7 @@ The guest OS loading the iavf driver must support MSI-X interrupts.
  
- #include "igc_phy.h"
+ Identifying Your Adapter
+ ========================
++
+ The driver in this kernel is compatible with devices based on the following:
+  * Intel(R) XL710 X710 Virtual Function
+  * Intel(R) X722 Virtual Function
+@@ -50,9 +55,10 @@ Link messages will not be displayed to the console if the distribution is
+ restricting system messages. In order to see network driver link messages on
+ your console, set dmesg to eight by entering the following::
  
--/* forward declaration */
--static s32 igc_phy_setup_autoneg(struct igc_hw *hw);
--static s32 igc_wait_autoneg(struct igc_hw *hw);
--
- /**
-  * igc_check_reset_block - Check if PHY reset is blocked
-  * @hw: pointer to the HW structure
-@@ -207,100 +203,6 @@ s32 igc_phy_hw_reset(struct igc_hw *hw)
- 	return ret_val;
- }
+-  dmesg -n 8
++    # dmesg -n 8
  
--/**
-- * igc_copper_link_autoneg - Setup/Enable autoneg for copper link
-- * @hw: pointer to the HW structure
-- *
-- * Performs initial bounds checking on autoneg advertisement parameter, then
-- * configure to advertise the full capability.  Setup the PHY to autoneg
-- * and restart the negotiation process between the link partner.  If
-- * autoneg_wait_to_complete, then wait for autoneg to complete before exiting.
-- */
--static s32 igc_copper_link_autoneg(struct igc_hw *hw)
--{
--	struct igc_phy_info *phy = &hw->phy;
--	u16 phy_ctrl;
--	s32 ret_val;
--
--	/* Perform some bounds checking on the autoneg advertisement
--	 * parameter.
--	 */
--	phy->autoneg_advertised &= phy->autoneg_mask;
--
--	/* If autoneg_advertised is zero, we assume it was not defaulted
--	 * by the calling code so we set to advertise full capability.
--	 */
--	if (phy->autoneg_advertised == 0)
--		phy->autoneg_advertised = phy->autoneg_mask;
--
--	hw_dbg("Reconfiguring auto-neg advertisement params\n");
--	ret_val = igc_phy_setup_autoneg(hw);
--	if (ret_val) {
--		hw_dbg("Error Setting up Auto-Negotiation\n");
--		goto out;
--	}
--	hw_dbg("Restarting Auto-Neg\n");
--
--	/* Restart auto-negotiation by setting the Auto Neg Enable bit and
--	 * the Auto Neg Restart bit in the PHY control register.
--	 */
--	ret_val = phy->ops.read_reg(hw, PHY_CONTROL, &phy_ctrl);
--	if (ret_val)
--		goto out;
--
--	phy_ctrl |= (MII_CR_AUTO_NEG_EN | MII_CR_RESTART_AUTO_NEG);
--	ret_val = phy->ops.write_reg(hw, PHY_CONTROL, phy_ctrl);
--	if (ret_val)
--		goto out;
--
--	/* Does the user want to wait for Auto-Neg to complete here, or
--	 * check at a later time (for example, callback routine).
--	 */
--	if (phy->autoneg_wait_to_complete) {
--		ret_val = igc_wait_autoneg(hw);
--		if (ret_val) {
--			hw_dbg("Error while waiting for autoneg to complete\n");
--			goto out;
--		}
--	}
--
--	hw->mac.get_link_status = true;
--
--out:
--	return ret_val;
--}
--
--/**
-- * igc_wait_autoneg - Wait for auto-neg completion
-- * @hw: pointer to the HW structure
-- *
-- * Waits for auto-negotiation to complete or for the auto-negotiation time
-- * limit to expire, which ever happens first.
-- */
--static s32 igc_wait_autoneg(struct igc_hw *hw)
--{
--	u16 i, phy_status;
--	s32 ret_val = 0;
--
--	/* Break after autoneg completes or PHY_AUTO_NEG_LIMIT expires. */
--	for (i = PHY_AUTO_NEG_LIMIT; i > 0; i--) {
--		ret_val = hw->phy.ops.read_reg(hw, PHY_STATUS, &phy_status);
--		if (ret_val)
--			break;
--		ret_val = hw->phy.ops.read_reg(hw, PHY_STATUS, &phy_status);
--		if (ret_val)
--			break;
--		if (phy_status & MII_SR_AUTONEG_COMPLETE)
--			break;
--		msleep(100);
--	}
--
--	/* PHY_AUTO_NEG_TIME expiration doesn't guarantee auto-negotiation
--	 * has completed.
--	 */
--	return ret_val;
--}
--
- /**
-  * igc_phy_setup_autoneg - Configure PHY for auto-negotiation
-  * @hw: pointer to the HW structure
-@@ -485,6 +387,100 @@ static s32 igc_phy_setup_autoneg(struct igc_hw *hw)
- 	return ret_val;
- }
+-NOTE: This setting is not saved across reboots.
++NOTE:
++  This setting is not saved across reboots.
  
-+/**
-+ * igc_wait_autoneg - Wait for auto-neg completion
-+ * @hw: pointer to the HW structure
-+ *
-+ * Waits for auto-negotiation to complete or for the auto-negotiation time
-+ * limit to expire, which ever happens first.
-+ */
-+static s32 igc_wait_autoneg(struct igc_hw *hw)
-+{
-+	u16 i, phy_status;
-+	s32 ret_val = 0;
+ ethtool
+ -------
+@@ -72,11 +78,11 @@ then requests from that VF to set VLAN tag stripping will be ignored.
+ To enable/disable VLAN tag stripping for a VF, issue the following command
+ from inside the VM in which you are running the VF::
+ 
+-  ethtool -K <if_name> rxvlan on/off
++    # ethtool -K <if_name> rxvlan on/off
+ 
+ or alternatively::
+ 
+-  ethtool --offload <if_name> rxvlan on/off
++    # ethtool --offload <if_name> rxvlan on/off
+ 
+ Adaptive Virtual Function
+ -------------------------
+@@ -91,21 +97,21 @@ additional features depending on what features are available in the PF with
+ which the AVF is associated. The following are base mode features:
+ 
+ - 4 Queue Pairs (QP) and associated Configuration Status Registers (CSRs)
+-  for Tx/Rx.
+-- i40e descriptors and ring format.
+-- Descriptor write-back completion.
+-- 1 control queue, with i40e descriptors, CSRs and ring format.
+-- 5 MSI-X interrupt vectors and corresponding i40e CSRs.
+-- 1 Interrupt Throttle Rate (ITR) index.
+-- 1 Virtual Station Interface (VSI) per VF.
++  for Tx/Rx
++- i40e descriptors and ring format
++- Descriptor write-back completion
++- 1 control queue, with i40e descriptors, CSRs and ring format
++- 5 MSI-X interrupt vectors and corresponding i40e CSRs
++- 1 Interrupt Throttle Rate (ITR) index
++- 1 Virtual Station Interface (VSI) per VF
+ - 1 Traffic Class (TC), TC0
+ - Receive Side Scaling (RSS) with 64 entry indirection table and key,
+-  configured through the PF.
+-- 1 unicast MAC address reserved per VF.
+-- 16 MAC address filters for each VF.
+-- Stateless offloads - non-tunneled checksums.
+-- AVF device ID.
+-- HW mailbox is used for VF to PF communications (including on Windows).
++  configured through the PF
++- 1 unicast MAC address reserved per VF
++- 16 MAC address filters for each VF
++- Stateless offloads - non-tunneled checksums
++- AVF device ID
++- HW mailbox is used for VF to PF communications (including on Windows)
+ 
+ IEEE 802.1ad (QinQ) Support
+ ---------------------------
+@@ -117,8 +123,8 @@ VLAN ID, among other uses.
+ 
+ The following are examples of how to configure 802.1ad (QinQ)::
+ 
+-  ip link add link eth0 eth0.24 type vlan proto 802.1ad id 24
+-  ip link add link eth0.24 eth0.24.371 type vlan proto 802.1Q id 371
++    # ip link add link eth0 eth0.24 type vlan proto 802.1ad id 24
++    # ip link add link eth0.24 eth0.24.371 type vlan proto 802.1Q id 371
+ 
+ Where "24" and "371" are example VLAN IDs.
+ 
+@@ -133,6 +139,19 @@ specific application. This can reduce latency for the specified application,
+ and allow Tx traffic to be rate limited per application. Follow the steps below
+ to set ADq.
+ 
++Requirements:
 +
-+	/* Break after autoneg completes or PHY_AUTO_NEG_LIMIT expires. */
-+	for (i = PHY_AUTO_NEG_LIMIT; i > 0; i--) {
-+		ret_val = hw->phy.ops.read_reg(hw, PHY_STATUS, &phy_status);
-+		if (ret_val)
-+			break;
-+		ret_val = hw->phy.ops.read_reg(hw, PHY_STATUS, &phy_status);
-+		if (ret_val)
-+			break;
-+		if (phy_status & MII_SR_AUTONEG_COMPLETE)
-+			break;
-+		msleep(100);
-+	}
++- The sch_mqprio, act_mirred and cls_flower modules must be loaded
++- The latest version of iproute2
++- If another driver (for example, DPDK) has set cloud filters, you cannot
++  enable ADQ
++- Depending on the underlying PF device, ADQ cannot be enabled when the
++  following features are enabled:
 +
-+	/* PHY_AUTO_NEG_TIME expiration doesn't guarantee auto-negotiation
-+	 * has completed.
-+	 */
-+	return ret_val;
-+}
++  + Data Center Bridging (DCB)
++  + Multiple Functions per Port (MFP)
++  + Sideband Filters
 +
-+/**
-+ * igc_copper_link_autoneg - Setup/Enable autoneg for copper link
-+ * @hw: pointer to the HW structure
-+ *
-+ * Performs initial bounds checking on autoneg advertisement parameter, then
-+ * configure to advertise the full capability.  Setup the PHY to autoneg
-+ * and restart the negotiation process between the link partner.  If
-+ * autoneg_wait_to_complete, then wait for autoneg to complete before exiting.
-+ */
-+static s32 igc_copper_link_autoneg(struct igc_hw *hw)
-+{
-+	struct igc_phy_info *phy = &hw->phy;
-+	u16 phy_ctrl;
-+	s32 ret_val;
+ 1. Create traffic classes (TCs). Maximum of 8 TCs can be created per interface.
+ The shaper bw_rlimit parameter is optional.
+ 
+@@ -141,9 +160,9 @@ to 1Gbit for tc0 and 3Gbit for tc1.
+ 
+ ::
+ 
+-  # tc qdisc add dev <interface> root mqprio num_tc 2 map 0 0 0 0 1 1 1 1
+-  queues 16@0 16@16 hw 1 mode channel shaper bw_rlimit min_rate 1Gbit 2Gbit
+-  max_rate 1Gbit 3Gbit
++    tc qdisc add dev <interface> root mqprio num_tc 2 map 0 0 0 0 1 1 1 1
++    queues 16@0 16@16 hw 1 mode channel shaper bw_rlimit min_rate 1Gbit 2Gbit
++    max_rate 1Gbit 3Gbit
+ 
+ map: priority mapping for up to 16 priorities to tcs (e.g. map 0 0 0 0 1 1 1 1
+ sets priorities 0-3 to use tc0 and 4-7 to use tc1)
+@@ -162,6 +181,10 @@ Totals must be equal or less than port speed.
+ For example: min_rate 1Gbit 3Gbit: Verify bandwidth limit using network
+ monitoring tools such as ifstat or sar –n DEV [interval] [number of samples]
+ 
++NOTE:
++  Setting up channels via ethtool (ethtool -L) is not supported when the
++  TCs are configured using mqprio.
 +
-+	/* Perform some bounds checking on the autoneg advertisement
-+	 * parameter.
-+	 */
-+	phy->autoneg_advertised &= phy->autoneg_mask;
+ 2. Enable HW TC offload on interface::
+ 
+     # ethtool -K <interface> hw-tc-offload on
+@@ -171,16 +194,16 @@ monitoring tools such as ifstat or sar –n DEV [interval] [number of samples]
+     # tc qdisc add dev <interface> ingress
+ 
+ NOTES:
+- - Run all tc commands from the iproute2 <pathtoiproute2>/tc/ directory.
+- - ADq is not compatible with cloud filters.
++ - Run all tc commands from the iproute2 <pathtoiproute2>/tc/ directory
++ - ADq is not compatible with cloud filters
+  - Setting up channels via ethtool (ethtool -L) is not supported when the TCs
+-   are configured using mqprio.
++   are configured using mqprio
+  - You must have iproute2 latest version
+- - NVM version 6.01 or later is required.
++ - NVM version 6.01 or later is required
+  - ADq cannot be enabled when any the following features are enabled: Data
+-   Center Bridging (DCB), Multiple Functions per Port (MFP), or Sideband Filters.
++   Center Bridging (DCB), Multiple Functions per Port (MFP), or Sideband Filters
+  - If another driver (for example, DPDK) has set cloud filters, you cannot
+-   enable ADq.
++   enable ADq
+  - Tunnel filters are not supported in ADq. If encapsulated packets do arrive
+    in non-tunnel mode, filtering will be done on the inner headers.  For example,
+    for VXLAN traffic in non-tunnel mode, PCTYPE is identified as a VXLAN
+@@ -198,6 +221,16 @@ NOTES:
+ Known Issues/Troubleshooting
+ ============================
+ 
++Bonding fails with VFs bound to an Intel(R) Ethernet Controller 700 series device
++---------------------------------------------------------------------------------
++If you bind Virtual Functions (VFs) to an Intel(R) Ethernet Controller 700
++series based device, the VF slaves may fail when they become the active slave.
++If the MAC address of the VF is set by the PF (Physical Function) of the
++device, when you add a slave, or change the active-backup slave, Linux bonding
++tries to sync the backup slave's MAC address to the same MAC address as the
++active slave. Linux bonding will fail at this point. This issue will not occur
++if the VF's MAC address is not set by the PF.
 +
-+	/* If autoneg_advertised is zero, we assume it was not defaulted
-+	 * by the calling code so we set to advertise full capability.
-+	 */
-+	if (phy->autoneg_advertised == 0)
-+		phy->autoneg_advertised = phy->autoneg_mask;
+ Traffic Is Not Being Passed Between VM and Client
+ -------------------------------------------------
+ You may not be able to pass traffic between a client system and a
+@@ -215,13 +248,28 @@ Do not unload a port's driver if a Virtual Function (VF) with an active Virtual
+ Machine (VM) is bound to it. Doing so will cause the port to appear to hang.
+ Once the VM shuts down, or otherwise releases the VF, the command will complete.
+ 
++Using four traffic classes fails
++--------------------------------
++Do not try to reserve more than three traffic classes in the iavf driver. Doing
++so will fail to set any traffic classes and will cause the driver to write
++errors to stdout. Use a maximum of three queues to avoid this issue.
 +
-+	hw_dbg("Reconfiguring auto-neg advertisement params\n");
-+	ret_val = igc_phy_setup_autoneg(hw);
-+	if (ret_val) {
-+		hw_dbg("Error Setting up Auto-Negotiation\n");
-+		goto out;
-+	}
-+	hw_dbg("Restarting Auto-Neg\n");
++Multiple log error messages on iavf driver removal
++--------------------------------------------------
++If you have several VFs and you remove the iavf driver, several instances of
++the following log errors are written to the log::
 +
-+	/* Restart auto-negotiation by setting the Auto Neg Enable bit and
-+	 * the Auto Neg Restart bit in the PHY control register.
-+	 */
-+	ret_val = phy->ops.read_reg(hw, PHY_CONTROL, &phy_ctrl);
-+	if (ret_val)
-+		goto out;
++    Unable to send opcode 2 to PF, err I40E_ERR_QUEUE_EMPTY, aq_err ok
++    Unable to send the message to VF 2 aq_err 12
++    ARQ Overflow Error detected
 +
-+	phy_ctrl |= (MII_CR_AUTO_NEG_EN | MII_CR_RESTART_AUTO_NEG);
-+	ret_val = phy->ops.write_reg(hw, PHY_CONTROL, phy_ctrl);
-+	if (ret_val)
-+		goto out;
-+
-+	/* Does the user want to wait for Auto-Neg to complete here, or
-+	 * check at a later time (for example, callback routine).
-+	 */
-+	if (phy->autoneg_wait_to_complete) {
-+		ret_val = igc_wait_autoneg(hw);
-+		if (ret_val) {
-+			hw_dbg("Error while waiting for autoneg to complete\n");
-+			goto out;
-+		}
-+	}
-+
-+	hw->mac.get_link_status = true;
-+
-+out:
-+	return ret_val;
-+}
-+
- /**
-  * igc_setup_copper_link - Configure copper link settings
-  * @hw: pointer to the HW structure
+ Virtual machine does not get link
+ ---------------------------------
+ If the virtual machine has more than one virtual port assigned to it, and those
+ virtual ports are bound to different physical ports, you may not get link on
+ all of the virtual ports. The following command may work around the issue::
+ 
+-  ethtool -r <PF>
++    # ethtool -r <PF>
+ 
+ Where <PF> is the PF interface in the host, for example: p5p1. You may need to
+ run the command more than once to get link on all virtual ports.
+@@ -251,12 +299,13 @@ traffic.
+ If you have multiple interfaces in a server, either turn on ARP filtering by
+ entering::
+ 
+-  echo 1 > /proc/sys/net/ipv4/conf/all/arp_filter
++    # echo 1 > /proc/sys/net/ipv4/conf/all/arp_filter
+ 
+-NOTE: This setting is not saved across reboots. The configuration change can be
+-made permanent by adding the following line to the file /etc/sysctl.conf::
++NOTE:
++  This setting is not saved across reboots. The configuration change can be
++  made permanent by adding the following line to the file /etc/sysctl.conf::
+ 
+-  net.ipv4.conf.all.arp_filter = 1
++    net.ipv4.conf.all.arp_filter = 1
+ 
+ Another alternative is to install the interfaces in separate broadcast domains
+ (either in different switches or in a switch partitioned to VLANs).
 -- 
 2.21.0
 
