@@ -2,55 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77184A01CA
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 14:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D87A024D
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 14:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726378AbfH1McE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 08:32:04 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:44432 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726300AbfH1McE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 08:32:04 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1i2x7K-0002Zv-3Y; Wed, 28 Aug 2019 14:32:02 +0200
-Date:   Wed, 28 Aug 2019 14:32:02 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Subject: Re: multipath tcp MIB counter placement - share with tcp or extra?
-Message-ID: <20190828123202.GI20113@breakpoint.cc>
-References: <20190828114321.GG20113@breakpoint.cc>
- <deb00e41-0188-0ca9-ccb3-b74b34a4cc5d@gmail.com>
+        id S1726421AbfH1M4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 08:56:33 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:41708 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726272AbfH1M4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 08:56:32 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7SCuUud013816, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7SCuUud013816
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 28 Aug 2019 20:56:30 +0800
+Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
+ (172.21.6.18) with Microsoft SMTP Server id 14.3.468.0; Wed, 28 Aug 2019
+ 20:56:28 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <netdev@vger.kernel.org>
+CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net v4 0/2] r8152: fix side effect
+Date:   Wed, 28 Aug 2019 20:56:11 +0800
+Message-ID: <1394712342-15778-323-Taiwan-albertk@realtek.com>
+X-Mailer: Microsoft Office Outlook 11
+In-Reply-To: <1394712342-15778-314-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-314-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <deb00e41-0188-0ca9-ccb3-b74b34a4cc5d@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.138]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > Let me know -- I can go with a separate MIB, its no problem, I just want
-> > to avoid going down the wrong path.
-> 
-> There are about 40 counters.
-> 
-> Space for that will be per netns : num_possible_cpus * 40 * 8  bytes
-> 
-> The cost of folding all the values will make nstat slower even if MPTCP is not used.
+v4:
+Add Fixes tag for both patch #1 and #2.
 
-Ok, so 'same proc file' would be fine but 'increase pcpu mem cost
-unconditionally' isn't.
+v3:
+Update the commit message for patch #1.
 
-> Maybe find a way to not having to fold the MPTCP percpu counters if MPTCP is not loaded ?
+v2:
+Replace patch #2 with "r8152: remove calling netif_napi_del".
 
-MPTCP is builtin (bool).
+v1:
+The commit 0ee1f4734967 ("r8152: napi hangup fix after disconnect")
+add a check to avoid using napi_disable after netif_napi_del. However,
+the commit ffa9fec30ca0 ("r8152: set RTL8152_UNPLUG only for real
+disconnection") let the check useless.
 
-However, we might be able to delay allocation until first mptcp socket
-is requested, I will see if this can be done somehow.
+Therefore, I revert commit 0ee1f4734967 ("r8152: napi hangup fix
+after disconnect") first, and add another patch to fix it.
 
-Thanks Eric!
+Hayes Wang (2):
+  Revert "r8152: napi hangup fix after disconnect"
+  r8152: remove calling netif_napi_del
+
+ drivers/net/usb/r8152.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+-- 
+2.21.0
+
