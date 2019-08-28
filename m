@@ -2,419 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 229F19FB4B
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 09:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A819FB75
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 09:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbfH1HSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 03:18:34 -0400
-Received: from smark.slackware.pl ([88.198.48.135]:52688 "EHLO
-        smark.slackware.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbfH1HSd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 03:18:33 -0400
-Received: from dirac.toxcorp.com (unknown [172.22.22.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: shasta@toxcorp.com)
-        by smark.slackware.pl (Postfix) with ESMTPSA id ADD95200A7;
-        Wed, 28 Aug 2019 09:18:30 +0200 (CEST)
-Subject: Re: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-To:     "Fujinaka, Todd" <todd.fujinaka@intel.com>,
-        "e1000-devel@lists.sourceforge.net" 
-        <e1000-devel@lists.sourceforge.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mhemsley@open-systems.com" <mhemsley@open-systems.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Lihong Yang <lihong.yang@intel.com>
-References: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
- <9B4A1B1917080E46B64F07F2989DADD69B013DB0@ORSMSX115.amr.corp.intel.com>
- <34ba28aa-44a5-8a6c-c8c4-b92a16f952ad@toxcorp.com>
- <9B4A1B1917080E46B64F07F2989DADD69B01402F@ORSMSX115.amr.corp.intel.com>
-From:   Jakub Jankowski <shasta@toxcorp.com>
-Message-ID: <1277a516-78ac-8bcd-64ac-d97a260451bc@toxcorp.com>
-Date:   Wed, 28 Aug 2019 09:18:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726272AbfH1HW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 03:22:56 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:38172 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726271AbfH1HWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 03:22:55 -0400
+Received: by mail-lf1-f68.google.com with SMTP id c12so1236126lfh.5
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 00:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=095Hu7dvtdB4T1s4IQFBQWtbFveYiA+Tv6pUB2rK3XQ=;
+        b=HyXgiB7XwN5k7cZkuQ+hY4O2lQB9dZsiDCE4w1dFEJYKlc+scKCt/fwOSz/ILb9bsN
+         UT5N4yxmfdzQVb7FFkXIQYzajv+qiXLcjN7STcJIemPwYWzcT2tKki/jomm2ts/CxI7e
+         MLXAmbI9zmwqAoOAndSjiaubfjZriCbE/ubSM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=095Hu7dvtdB4T1s4IQFBQWtbFveYiA+Tv6pUB2rK3XQ=;
+        b=YJDcsXHxxZUf7AwbvAakRUwYQMWVOxO7zTCFEuBDcIcvhkgBoZdMTkagXJ0BO9HwoR
+         25ww8cME83BO7/C6Al/hPxK+xO77CNjd6C7T1e4guKTcIcUxSnnNk8mRJtgMn0stsht3
+         ysDWQG6Yyt8XX7r3AHfRiTOs37tsifFP5N2MIuR+gL5z26Oh5YSy3NHwNfRZWdIx1bt7
+         rolLzXzQ+olTddzU815LWopKxoUH+u2VXok8QY84D23EFYakC9eAHRFiQuU2ZWgCmfzA
+         zAfiK1W0qCHc96nDPp39T8MAkKtiKzhRCYUknVMyJJfviGoFbPF+dAVsJSRmr0Z4RtOd
+         TjhQ==
+X-Gm-Message-State: APjAAAW4gJz+2FU3S04t7bWJczZsqEcFUkE4DjnUdUL5EwLxqb+Y9lWk
+        T43PZAif1orh8y7Rk6V4532uKg==
+X-Google-Smtp-Source: APXvYqz1FugCrzsZ/nST7XVxhdGCHTQSXdYNZn5OGkOa6u/e4XovZZNV8rrqLqnWN6Dhr6EIvXSKgA==
+X-Received: by 2002:ac2:484b:: with SMTP id 11mr1676709lfy.156.1566976972113;
+        Wed, 28 Aug 2019 00:22:52 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id s21sm418079ljm.28.2019.08.28.00.22.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Aug 2019 00:22:51 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: [RFCv2 bpf-next 00/12] Programming socket lookup with BPF
+Date:   Wed, 28 Aug 2019 09:22:38 +0200
+Message-Id: <20190828072250.29828-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <9B4A1B1917080E46B64F07F2989DADD69B01402F@ORSMSX115.amr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit suggests that it should be possible: 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c271dd6c391b535226cf1a81aaad9f33cb5899d3
-(It has been in upstream kernel since v4.12, so my test kernel does have 
-it, and so does the out-of-tree driver I'm testing with)
+This patch set adds a mechanism for programming mappings between the local
+addresses and listening/receiving sockets with BPF.
 
-On 8/28/19 2:53 AM, Fujinaka, Todd wrote:
-> Sorry about the top posting, but if I don't do it this way I can't read anything in Outlook (not my preferred MUA).
->
-> I think I may have been wrong about things. I'm not as familiar with the x722, and the NVM versions are completely different than the x710 and I was confused.
->
-> Even worse, I'm not sure if the x722 is able to read the data from the SFP/SFP+ EEPROM. I remembered that was a feature we requested internally but I don't remember what the progress was.
->
-> I'm asking around to see if I can get clarification. I haven't heard anything yet.
->
-> Todd Fujinaka
-> Software Application Engineer
-> Datacenter Engineering Group
-> Intel Corporation
-> todd.fujinaka@intel.com
->
->
-> -----Original Message-----
-> From: Jakub Jankowski [mailto:shasta@toxcorp.com]
-> Sent: Tuesday, August 27, 2019 4:01 PM
-> To: Fujinaka, Todd <todd.fujinaka@intel.com>; e1000-devel@lists.sourceforge.net
-> Cc: netdev@vger.kernel.org; mhemsley@open-systems.com
-> Subject: Re: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m: Invalid argument)
->
-> Hi,
->
-> On 8/27/19 7:56 PM, Fujinaka, Todd wrote:
->> The hints should be:
->> # ethtool -m eth10
->> Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
->>
->> # ethtool -i eth10
->> driver: i40e
->> version: 2.9.21
->> firmware-version: 3.31 0x80000d31 1.1767.0
->>
->> And the working case:
->> # ethtool -i eth8
->> driver: i40e
->> version: 2.9.21
->> firmware-version: 6.01 0x800035cf 1.1876.0
->>
->> If you don't see it, 6.01 > 3.31.
-> The reason why firmware between the two is (that much) different is because the non-working case is from X722 NIC, while the working one is from X710.
->
->> The NVM update tool should be available on downloadcenter.intel.com
-> Thanks for the pointer to NVM updater. I'd like to offer some additional comments about my experience with the newest one (v4.00):
->
-> a) running ./nvmupdate64e (from X722_NVMUpdate_Linux_x64 subdir) errors out without really saying what's wrong:
->
->     # ./nvmupdate64e
->
->     Intel(R) Ethernet NVM Update Tool
->     NVMUpdate version 1.30.2.11
->     Copyright (C) 2013 - 2017 Intel Corporation.
->
->
->     WARNING: To avoid damage to your device, do not stop the update or reboot or power off the system during this update.
->     Inventory in progress. Please wait [+.........]
->     Tool execution completed with the following status: The configuration file could not be opened/read, or a syntax error was discovered in the file
->     Press any key to exit.
->
-> after enabling logging (-l out.log) a bit more is revealed:
->
->     # tail -n 2 out.log
->     Error:   Config file line 2: Not supported config file version.
->     Error:   Missing CONFIG VERSION parameter in configuration file.
->
-> but that's not entirely true, CONFIG VERSION is set in the default configuration file:
->
->     # head -n 2 nvmupdate.cfg
->     CURRENT FAMILY: 1.0.0
->     CONFIG VERSION: 1.14.0
->
-> so why isn't this understood?
-> Manually editing nvmupdate.cfg and setting CONFIG VERSION: 1.11.0 seems to make this particular problem go away.
->
-> b) Re-doing this with downgraded config version exposes another problem:
->
->     Config file read.
->     Error:   Can't open NVM map file [Immediate_offset_2.txt]
->
-> and indeed, there is no Immediate_offset_2.txt in NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_Linux_x64/
-> There is one, however, in
-> NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_EFIx64/ subdir.
-> Copying it over to the _Linux_x64 resolves this particular problem
->
-> c) Re-doing this with Immediate_offset_2.txt in place exposes third problem:
->
->     Error:   Can't open NVM image file
-> [LBG_B2_Wolf_Pass_WFT_X557_P01_PHY_Auto_Detect_P23_NCSI_v3.31_800016DB.bin]
->
-> and once again - same story. It exists in NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_EFIx64/ but not NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_Linux_x64/ - had to copy it over.
->
->
-> Once I managed to get all these out of the way, the tool finally ran:
->
->     Num Description                               Ver. DevId S:B Status
->     === ======================================== ===== ===== ====== ===============
->     01) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:024 Update not available
->     02) Intel(R) Ethernet Connection X722 for     3.49  37D2 00:061 Update
->         10GBASE-T available
->     03) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:175 Update not available
->
->
-> The initial starting point was:
->
-> 0) firmware-version: 3.31 0x80000d31 1.1767.0
->
-> After first update+reboot, this was bumped to:
->
-> 1) firmware-version: 3.1d 0x800016db 1.1767.0    (but ethtool -m ethX still doesn't work)
->
-> So I ran the tool the second time, it said 'Update available' again, but this time:
->
->     Num Description                               Ver. DevId S:B Status
->     === ======================================== ===== ===== ====== ===============
->     01) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:024 Update not available
->     02) Intel(R) Ethernet Connection X722 for     3.29  37D2 00:061 Update
->         10GBASE-T available
->     03) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:175 Update not available
->
->     Options: Adapter Index List (comma-separated), [A]ll, e[X]it
->     Enter selection:02
->     Would you like to back up the NVM images? [Y]es/[N]o: Y
->     Update in progress. This operation may take several minutes.
->     [*******+..]
->     Tool execution completed with the following status: <---------- why is there no status printed?
->     Press any key to exit.
->
->
-> Checking output log:
->
->     # cat out3.log
->     Intel(R) Ethernet NVM Update Tool
->     NVMUpdate version 1.30.2.11
->     Copyright (C) 2013 - 2017 Intel Corporation.
->
->     ./nvmupdate64e -c nvmupdate.cfg -l out3.log
->
->     Config file read.
->     Inventory
->     [00:061:00:00]: Intel(R) Ethernet Connection X722 for 10GBASE-T
->         Flash inventory started
->         Shadow RAM inventory started
->     Alternate MAC address is not set
->         Shadow RAM inventory finished
->         Flash inventory finished
->         OROM inventory started
->         OROM inventory finished
->         PHY NVM inventory started
->         PHY NVM inventory finished
->     [00:061:00:01]: Intel(R) Ethernet Connection X722 for 10GBASE-T
->         Device already inventoried.
->     [00:061:00:02]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
->         Device already inventoried.
->         PHY NVM inventory started
->         PHY NVM inventory finished
->     [00:061:00:03]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
->         Device already inventoried.
->     Update
->     [00:061:00:00]: Intel(R) Ethernet Connection X722 for 10GBASE-T
->         Creating backup images in directory: A4BF0164884A
->         Backup images created.
->         Flash update started
->         NVM image verification started
->         Shadow RAM image verification started
->
->     Image differences found at offset 0x3AE [Device=0xF, Buffer=0x0] -
-> update required.
->     Error:   Flash update failed
->     [00:061:00:02]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
->     #
->
-> However, ethtool -i suggests that firmware was updated to:
->
-> 2) firmware-version: 4.00 0x80001577 1.1580.0    <------- so it did
-> _something_ after all?
->
-> At this point, every subsequent attempt to run the NVM updater yields
-> the same results: an update is available, but attempting to apply it
-> fails with the same message in log.
->
-> And my initial issue still persists - ethtool -m <iface> still returns
-> "invalid argument" with "Module EEPROM memory read not supported. Please
-> update the NVM image" logged in dmesg.
->
-> How can I resolve this?
->
-> Cheers,
->    Jakub.
->
->> Todd Fujinaka
->> Software Application Engineer
->> Datacenter Engineering Group
->> Intel Corporation
->> todd.fujinaka@intel.com
->>
->>
->> -----Original Message-----
->> From: Jakub Jankowski [mailto:shasta@toxcorp.com]
->> Sent: Tuesday, August 27, 2019 4:03 AM
->> To: e1000-devel@lists.sourceforge.net
->> Cc: netdev@vger.kernel.org; shasta@toxcorp.com; mhemsley@open-systems.com
->> Subject: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m: Invalid argument)
->>
->> Hi,
->>
->> We can't get SFP+ EEPROM readouts for X722 to work at all:
->>
->> # ethtool -m eth10
->> Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
->> # lspci | grep 3d:00.3
->> 3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
->>
->>
->> We're running 4.19.65 kernel at the moment, testing using the newest out-of-tree Intel module
->>
->> # modinfo -F version i40e
->> 2.9.21
->>
->> We also tried:
->> - 4.19.65 with in-tree i40e (2.3.2-k)
->> - stock Arch Linux (kernel 5.2.5, driver 2.8.20-k) and the results are the same, as shown above.
->>
->> # ethtool -i eth10
->> driver: i40e
->> version: 2.9.21
->> firmware-version: 3.31 0x80000d31 1.1767.0
->> expansion-rom-version:
->> bus-info: 0000:3d:00.3
->> supports-statistics: yes
->> supports-test: yes
->> supports-eeprom-access: yes
->> supports-register-dump: yes
->> supports-priv-flags: yes
->> # dmidecode -s baseboard-manufacturer
->> Intel Corporation
->> # dmidecode -s baseboard-product-name
->> S2600WFT
->> # dmidecode -s baseboard-version
->> H48104-853
->>
->> # lspci -vvv
->> (...)
->> 3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
->> 	DeviceName: Intel PCH Integrated 10 Gigabit Ethernet Controller
->> 	Subsystem: Intel Corporation Ethernet Connection X722 for 10GbE SFP+
->> 	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
->> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->> 	Latency: 0, Cache Line Size: 32 bytes
->> 	Interrupt: pin A routed to IRQ 112
->> 	NUMA node: 0
->> 	Region 0: Memory at ab000000 (64-bit, prefetchable) [size=16M]
->> 	Region 3: Memory at b0000000 (64-bit, prefetchable) [size=32K]
->> 	Expansion ROM at <ignored> [disabled]
->> 	Capabilities: [40] Power Management version 3
->> 		Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA PME(D0+,D1-,D2-,D3hot+,D3cold+)
->> 		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=1 PME-
->> 	Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
->> 		Address: 0000000000000000  Data: 0000
->> 		Masking: 00000000  Pending: 00000000
->> 	Capabilities: [70] MSI-X: Enable+ Count=129 Masked-
->> 		Vector table: BAR=3 offset=00000000
->> 		PBA: BAR=3 offset=00001000
->> 	Capabilities: [a0] Express (v2) Endpoint, MSI 00
->> 		DevCap:	MaxPayload 512 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
->> 			ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
->> 		DevCtl:	CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
->> 			RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop- FLReset-
->> 			MaxPayload 256 bytes, MaxReadReq 512 bytes
->> 		DevSta:	CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
->> 		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <64ns, L1 <1us
->> 			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
->> 		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk+
->> 			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
->> 		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
->> 			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
->> 		DevCap2: Completion Timeout: Range AB, TimeoutDis+, LTR-, OBFF Not Supported
->> 			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
->> 		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
->> 			 AtomicOpsCtl: ReqEn-
->> 		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete-, EqualizationPhase1-
->> 			 EqualizationPhase2-, EqualizationPhase3-, LinkEqualizationRequest-
->> 	Capabilities: [e0] Vital Product Data
->> 		Product Name: Example VPD
->> 		Read-only fields:
->> 			[V0] Vendor specific:
->> 			[RV] Reserved: checksum good, 0 byte(s) reserved
->> 		End
->> 	Capabilities: [100 v2] Advanced Error Reporting
->> 		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
->> 		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq+ ACSViol-
->> 		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
->> 		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
->> 		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
->> 		AERCap:	First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
->> 			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
->> 		HeaderLog: 00000000 00000000 00000000 00000000
->> 	Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
->> 		ARICap:	MFVC- ACS-, Next Function: 0
->> 		ARICtl:	MFVC- ACS-, Function Group: 0
->> 	Capabilities: [160 v1] Single Root I/O Virtualization (SR-IOV)
->> 		IOVCap:	Migration-, Interrupt Message Number: 000
->> 		IOVCtl:	Enable- Migration- Interrupt- MSE- ARIHierarchy-
->> 		IOVSta:	Migration-
->> 		Initial VFs: 32, Total VFs: 32, Number of VFs: 0, Function Dependency Link: 03
->> 		VF offset: 109, stride: 1, Device ID: 37cd
->> 		Supported Page Size: 00000553, System Page Size: 00000001
->> 		Region 0: Memory at 00000000af000000 (64-bit, prefetchable)
->> 		Region 3: Memory at 00000000b0020000 (64-bit, prefetchable)
->> 		VF Migration: offset: 00000000, BIR: 0
->> 	Capabilities: [1a0 v1] Transaction Processing Hints
->> 		Device specific mode supported
->> 		No steering table available
->> 	Capabilities: [1b0 v1] Access Control Services
->> 		ACSCap:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
->> 		ACSCtl:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
->> 	Kernel driver in use: i40e
->> 	Kernel modules: i40e
->>
->>
->> Same kernel+i40e, same SFP+ module - but on Intel X710, works like a treat:
->>
->> # lspci | grep X7
->> 81:00.0 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
->> 81:00.1 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01) # ethtool -m eth8
->> 	Identifier                                : 0x03 (SFP)
->> 	Extended identifier                       : 0x04 (GBIC/SFP defined by 2-wire interface ID)
->> 	Connector                                 : 0x07 (LC)
->> 	Transceiver codes                         : 0x10 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00
->> 	Transceiver type                          : 10G Ethernet: 10G Base-SR
->> 	Transceiver type                          : Ethernet: 1000BASE-SX
->> 	Encoding                                  : 0x06 (64B/66B)
->> 	BR, Nominal                               : 10300MBd
->>            (...)
->> # ethtool -i eth8
->> driver: i40e
->> version: 2.9.21
->> firmware-version: 6.01 0x800035cf 1.1876.0
->> expansion-rom-version:
->> bus-info: 0000:81:00.0
->> supports-statistics: yes
->> supports-test: yes
->> supports-eeprom-access: yes
->> supports-register-dump: yes
->> supports-priv-flags: yes
->> #
->>
->>
->> Is this a known problem?
->>
->>
->> Best regards,
->>     Jakub
->>
->>
->>
->> _______________________________________________
->> E1000-devel mailing list
->> E1000-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/e1000-devel
->> To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
+It introduces a new per-netns BPF program type, called inet_lookup, which
+runs during the socket lookup. The program is allowed to select a
+listening/receiving socket from a SOCKARRAY map that the packet will be
+delivered to.
 
+BPF inet_lookup intends to be an alternative for:
+
+* SO_BINDTOPREFIX [1] - a mechanism that provides a way to listen/receive
+  on all local addresses that belong to a network prefix. An alternative to
+  binding to INADDR_ANY that allows applications bound to disjoint network
+  prefixes to share a port. Not generic. Never got upstreamed.
+
+* TPROXY [2] - a powerful mechanism that allows steering packets destined
+  to non-local addresses to a local socket. It also works for local
+  addresses, which is a less restrictive case. Can be used to implement
+  what SO_BINDTOPREFIX does, and more - in particular, all ports can be
+  redirected to a single socket. Socket dispatch happens early in ingress
+  path (PREROUTING hook). Versatile but comes with complexities.
+
+Compared to the above, inet_lookup aims to be a programmatic way to map
+(address, port) pairs to a socket. It runs after a routing decision for
+local delivery was made, and hence is limited to local addresses only.
+
+Being part of the socket lookup, has a desired effect that redirection is
+visible to XDP programs which call bpf_sk_lookup helpers.
+
+When it comes to use cases, we have presented them in RFCv1 [3] cover
+letter and also at last Netconf [4]. To recap, they are:
+
+1) sharing a port between two services
+
+   Services are accepting connections on different (disjoint) IP ranges but
+   same port. Requests going to 192.0.2.0/24 tcp/80 are handled by NGINX,
+   while 198.51.100.0/24 tcp/80 IP range is handled by Apache server.
+   Applications are running as different users, in a flat single-netns
+   setup.
+
+2) receiving traffic on all ports
+
+   We have a proxy server that accepts connections to _any_ port [5].
+
+A simple demo program that implements (1) could look like
+
+#define NET1 (IP4(192,  0,   2, 0) >> 8)
+#define NET2 (IP4(198, 51, 100, 0) >> 8)
+
+#define MAX_SERVERS 2
+
+struct {
+	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
+	__uint(max_entries, MAX_SERVERS);
+	__type(key, __u32);
+	__type(value, __u64);
+} redir_map SEC(".maps");
+
+SEC("inet_lookup/demo_two_servers")
+int demo_two_http_servers(struct bpf_inet_lookup *ctx)
+{
+	__u32 index = 0;
+	__u64 flags = 0;
+
+        if (ctx->family != AF_INET)
+                return BPF_OK;
+	if (ctx->protocol != IPPROTO_TCP)
+		return BPF_OK;
+        if (ctx->local_port != 80)
+                return BPF_OK;
+
+        switch (bpf_ntohl(ctx->local_ip4) >> 8) {
+        case NET1:
+		index = 0;
+		break;
+        case NET2:
+		index = 1;
+		break;
+	default:
+		return BPF_OK;
+        }
+
+        return bpf_redirect_lookup(ctx, &redir_map, &index, flags);
+}
+
+Since RFCv1, we've changed the approach from rewriting the lookup key to
+map-based redirection. This has been suggested at Netconf, and is a
+recurring pattern in existing BPF program types.
+
+We're posting the 2nd version of RFC patch set to collect further feedback
+and set context for the presentation and discussions at the upcoming
+Network Summit at LPC '19 [6].
+
+Patches are also available on GitHub [7].
+
+Thanks,
+Jakub
+
+[1] https://www.spinics.net/lists/netdev/msg370789.html
+[2] https://www.kernel.org/doc/Documentation/networking/tproxy.txt
+[3] https://lore.kernel.org/netdev/20190618130050.8344-1-jakub@cloudflare.com/
+[4] http://vger.kernel.org/netconf2019_files/Programmable%20socket%20lookup.pdf
+[5] https://blog.cloudflare.com/how-we-built-spectrum/
+[6] https://linuxplumbersconf.org/event/4/contributions/487/
+[7] https://github.com/jsitnicki/linux/commits/bpf-inet-lookup
+
+Changes RFCv1 -> RFCv2:
+
+- Make socket lookup redirection map-based. BPF program now uses a
+  dedicated helper and a SOCKARRAY map to select the socket to redirect to.
+  A consequence of this change is that bpf_inet_lookup context is now
+  read-only.
+
+- Look for connected UDP sockets before allowing redirection from BPF.
+  This makes connected UDP socket work as expected in the presence of
+  inet_lookup prog.
+
+- Share the code for BPF_PROG_{ATTACH,DETACH,QUERY} with flow_dissector,
+  the only other per-netns BPF prog type.
+
+
+Jakub Sitnicki (12):
+  flow_dissector: Extract attach/detach/query helpers
+  bpf: Introduce inet_lookup program type for redirecting socket lookup
+  bpf: Add verifier tests for inet_lookup context access
+  inet: Store layer 4 protocol in inet_hashinfo
+  udp: Store layer 4 protocol in udp_table
+  inet: Run inet_lookup bpf program on socket lookup
+  inet6: Run inet_lookup bpf program on socket lookup
+  udp: Run inet_lookup bpf program on socket lookup
+  udp6: Run inet_lookup bpf program on socket lookup
+  bpf: Sync linux/bpf.h to tools/
+  libbpf: Add support for inet_lookup program type
+  bpf: Test redirecting listening/receiving socket lookup
+
+ include/linux/bpf.h                           |   8 +
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/filter.h                        |  18 +
+ include/net/inet6_hashtables.h                |  19 +
+ include/net/inet_hashtables.h                 |  36 +
+ include/net/net_namespace.h                   |   2 +
+ include/net/udp.h                             |  10 +-
+ include/uapi/linux/bpf.h                      |  58 +-
+ kernel/bpf/syscall.c                          |  10 +
+ kernel/bpf/verifier.c                         |   7 +-
+ net/core/filter.c                             | 304 ++++++++
+ net/core/flow_dissector.c                     |  65 +-
+ net/dccp/proto.c                              |   2 +-
+ net/ipv4/inet_hashtables.c                    |   5 +
+ net/ipv4/tcp_ipv4.c                           |   2 +-
+ net/ipv4/udp.c                                |  59 +-
+ net/ipv4/udp_impl.h                           |   2 +-
+ net/ipv4/udplite.c                            |   4 +-
+ net/ipv6/inet6_hashtables.c                   |   5 +
+ net/ipv6/udp.c                                |  54 +-
+ net/ipv6/udp_impl.h                           |   2 +-
+ net/ipv6/udplite.c                            |   2 +-
+ tools/include/uapi/linux/bpf.h                |  58 +-
+ tools/lib/bpf/libbpf.c                        |   4 +
+ tools/lib/bpf/libbpf.h                        |   2 +
+ tools/lib/bpf/libbpf.map                      |   2 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+ .../selftests/bpf/progs/inet_lookup_progs.c   |  78 ++
+ .../testing/selftests/bpf/test_inet_lookup.c  | 522 +++++++++++++
+ .../testing/selftests/bpf/test_inet_lookup.sh |  35 +
+ .../selftests/bpf/verifier/ctx_inet_lookup.c  | 696 ++++++++++++++++++
+ 34 files changed, 1974 insertions(+), 108 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/inet_lookup_progs.c
+ create mode 100644 tools/testing/selftests/bpf/test_inet_lookup.c
+ create mode 100755 tools/testing/selftests/bpf/test_inet_lookup.sh
+ create mode 100644 tools/testing/selftests/bpf/verifier/ctx_inet_lookup.c
 
 -- 
-Jakub Jankowski|shasta@toxcorp.com|http://toxcorp.com/
-GPG: FCBF F03D 9ADB B768 8B92 BB52 0341 9037 A875 942D
+2.20.1
 
