@@ -2,113 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B31BA0550
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E70CEA056E
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726795AbfH1OtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 10:49:02 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37515 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbfH1OtB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 10:49:01 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z11so103880wrt.4
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 07:49:00 -0700 (PDT)
+        id S1726457AbfH1O6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 10:58:15 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41559 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726326AbfH1O6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 10:58:15 -0400
+Received: by mail-wr1-f66.google.com with SMTP id j16so105206wrr.8
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 07:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ky+D1q4093yr5WCsgmP550ThJE/F/BRFthvGOyQFLRE=;
-        b=b03HwTigbpy+njWo20uGAUOXfi7hKvSLqifzd2dH7vK4hkfvh9z2hSbwedMJo1235R
-         pdVNrrIJotNcXeLzU8NOBstU+ukgFufl++m0HSqOPejpcfBguXM7+2CvgXConPzWtPEw
-         X35lOCDXY7DnmD1MPCIVyoLepgEPoKLA7AnwoonMVU8Bnm3CKcFjDsq1C4FRPJihg4Dg
-         WZnbx4cAUvQsn2DqwuJFblX6xkai9A6qjO89UtY8XzrLymCPXIsgwKZGfMRLHuN77qsS
-         ENgYb03uGVrLqAbfVTmfTrGQCQw9v+iGbcEdnpjIHfuVSJvVm0ejM5QbxldKBrEftF6O
-         jvsQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=lE5u4nJ66WBe1wnsF1M0KIbzlttZzu9045WhjeymvmY=;
+        b=BmGzNtbsF+2YrNghxeQyGwpjrk26X0LZzKBwDRLNa3AoxroOv/X71OyIL9lY9hK6lX
+         S+4RNlH11xslfu0CEFibxxvyWm/c9U6y+RKDPuY3SPcusrO7pUujk/cZdXVLo75dnZel
+         QQp7N58TEZqQhAsZTDDEIBi2k8GxGGjgxURe9U7TCvP58opg4xNzbOmnqDv245QhTwGX
+         U5kW5kw+ChvGuveWHS4CpiLjlgnjbhzuSA4bqmjwCb8UpqRX9t5nYIgquPrjzhPyzcOy
+         ZBMeGiPJxbheWZ1dOz0aSbVvBaSdNiF2K7+CHrN4D40iG/ndwNPmGws9Yen6hCWuZcTn
+         H4yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Ky+D1q4093yr5WCsgmP550ThJE/F/BRFthvGOyQFLRE=;
-        b=Kxi3Em+MROYRuhASiBxWqRpN6TeOuS0D8T3NbWZjCAkT0+uj/OH/3938RB+XpfRmqp
-         v80UxIy+Xa/Hp8ZuTFAi51Cg2MxIlDppUwaqBekUi5ZxhVpMx/UKZQeCcXCpu96g6yuT
-         MZXE0AM+ZOkERDXIul+YuuPbLe/LK6ecPIzUqiZt6rS0zQA4FjvBAFpexZntNdjO0Uxg
-         bRYWnqq7mlTNXYjt4QomulNYf3dRb9l19tsrS1Ww0p7Is+TvJ8garSUCOrGdQBpBQZvA
-         Dc/cW5sukFMkCVgNi6C5vqdZccF1wsVI1xJ0W1ZGzcUzzVZocA9o6wm16XDQ3Z6HQFj0
-         rklA==
-X-Gm-Message-State: APjAAAVVFXLJ8UV2s3Qkhb39P96HB+lD4SAU25tQ3px8ZHwovGw4XDRD
-        Oh1dq54btHo0jQ7svnjH9WA=
-X-Google-Smtp-Source: APXvYqw294d4YsPb/40b7oRtvJbiJ004RivzNEnEY1nslhBSArQBb9z+O6aIpVomMMQ4kfMsFuiPfQ==
-X-Received: by 2002:adf:e4c6:: with SMTP id v6mr4978917wrm.315.1567003739937;
-        Wed, 28 Aug 2019 07:48:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lE5u4nJ66WBe1wnsF1M0KIbzlttZzu9045WhjeymvmY=;
+        b=Xhn0vzLQfk9qI8738No9r6vA/VlNi3adDJBDbE2Ub8BNIK/vWBcJEppmtbB3ClFRi9
+         MD9p0RuSApp7o3JgTwH0JRgXQ2F6nYRCNTC//RRUoYYtq1cV83mGqfFlzlzowXrKiGg1
+         mtlltwP2eQmoSy1/oJjRtWJnIaqPVlhXtZj8aXgiUWcl/CTN70YHVCUH8r1yJg1a+zpx
+         k9vHkt6t1rOGT8N3hUWJfZqxoTQIvu7y2baIMW6S4YjLK6jRlW9w7AvAZrI4S0s97H/T
+         J79Uvo+s5wYi0/bo93U15LEmvIqaE+bDZavVrrodPl3WwOy6J6HtezCGg9mnWRkZ4R7I
+         beAg==
+X-Gm-Message-State: APjAAAUDYlXaJFk/6pYIoYmPaEi+4xfPe1OFwEA5iqyRspXjgVj5Wbvx
+        ZQA/vbL8hDDzJkkqJvWETkxYg3wfBEY=
+X-Google-Smtp-Source: APXvYqxHbkr2HKl8QHcVTGgQMQWGZESlrgnV6V8PpX/NMY0rWE7ATZUlxOpk8l980Z2U6SZIPLFCLg==
+X-Received: by 2002:adf:fa01:: with SMTP id m1mr5268787wrr.254.1567004293021;
+        Wed, 28 Aug 2019 07:58:13 -0700 (PDT)
 Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id n8sm2973323wro.89.2019.08.28.07.48.58
+        by smtp.gmail.com with ESMTPSA id o2sm3284190wmh.9.2019.08.28.07.58.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 07:48:59 -0700 (PDT)
+        Wed, 28 Aug 2019 07:58:12 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, vinicius.gomes@intel.com,
-        vedang.patel@intel.com, leandro.maciel.dorileo@intel.com
+To:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
+        asolokha@kb.kras.ru
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net 3/3] net/sched: cbs: Set default link speed to 10 Mbps in cbs_set_port_rate
-Date:   Wed, 28 Aug 2019 17:48:29 +0300
-Message-Id: <20190828144829.32570-4-olteanv@gmail.com>
+Subject: [RFC PATCH 0/1] Fix PHYLINK handling of ethtool ksettings with no PHY
+Date:   Wed, 28 Aug 2019 17:58:01 +0300
+Message-Id: <20190828145802.3609-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190828144829.32570-1-olteanv@gmail.com>
-References: <20190828144829.32570-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The discussion to be made is absolutely the same as in the case of
-previous patch ("taprio: Set default link speed to 10 Mbps in
-taprio_set_picos_per_byte"). Nothing is lost when setting a default.
+Logically speaking, this patch pertains to the "Fix issues in tc-taprio
+and tc-cbs" series at:
+https://patchwork.ozlabs.org/project/netdev/list/?series=127821&state=*
 
-Cc: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
-Fixes: e0a7683d30e9 ("net/sched: cbs: fix port_rate miscalculation")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- net/sched/sch_cbs.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+The reason why I did not submit this patch together with those is that I
+don't know whether the error condition can happen in current mainline
+Linux at the moment. I am running Arseny's RFC patch "gianfar: convert
+to phylink" and have found that __ethtool_get_link_ksettings returns a
+speed of 0 instead of SPEED_UNKNOWN when there is no PHY connected.
 
-diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-index 732e109c3055..810645b5c086 100644
---- a/net/sched/sch_cbs.c
-+++ b/net/sched/sch_cbs.c
-@@ -181,11 +181,6 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 	s64 credits;
- 	int len;
- 
--	if (atomic64_read(&q->port_rate) == -1) {
--		WARN_ONCE(1, "cbs: dequeue() called with unknown port rate.");
--		return NULL;
--	}
--
- 	if (q->credits < 0) {
- 		credits = timediff_to_credits(now - q->last, q->idleslope);
- 
-@@ -303,11 +298,19 @@ static int cbs_enable_offload(struct net_device *dev, struct cbs_sched_data *q,
- static void cbs_set_port_rate(struct net_device *dev, struct cbs_sched_data *q)
- {
- 	struct ethtool_link_ksettings ecmd;
-+	int speed = SPEED_10;
- 	int port_rate = -1;
-+	int err;
-+
-+	err = __ethtool_get_link_ksettings(dev, &ecmd);
-+	if (err < 0)
-+		goto skip;
-+
-+	if (ecmd.base.speed != SPEED_UNKNOWN)
-+		speed = ecmd.base.speed;
- 
--	if (!__ethtool_get_link_ksettings(dev, &ecmd) &&
--	    ecmd.base.speed != SPEED_UNKNOWN)
--		port_rate = ecmd.base.speed * 1000 * BYTES_PER_KBIT;
-+skip:
-+	port_rate = speed * 1000 * BYTES_PER_KBIT;
- 
- 	atomic64_set(&q->port_rate, port_rate);
- 	netdev_dbg(dev, "cbs: set %s's port_rate to: %lld, linkspeed: %d\n",
+Gianfar has carried this oddity over from its PHYLIB days, where it
+connects "late" to the PHY. I am not sure whether PHYLINK, gianfar, or
+both, need to be changed. Comments welcome.
+
+Vladimir Oltean (1):
+  phylink: Set speed to SPEED_UNKNOWN when there is no PHY connected
+
+ drivers/net/phy/phylink.c | 1 +
+ 1 file changed, 1 insertion(+)
+
 -- 
 2.17.1
 
