@@ -2,61 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D051DA07C5
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17546A07D0
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbfH1Qpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 12:45:55 -0400
-Received: from mga14.intel.com ([192.55.52.115]:18621 "EHLO mga14.intel.com"
+        id S1726506AbfH1QtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 12:49:02 -0400
+Received: from mail.nic.cz ([217.31.204.67]:33584 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726513AbfH1Qpy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 12:45:54 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 09:45:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="381342017"
-Received: from unknown (HELO ellie) ([10.24.12.211])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Aug 2019 09:45:54 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        vedang.patel@intel.com, leandro.maciel.dorileo@intel.com
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net 3/3] net/sched: cbs: Set default link speed to 10 Mbps in cbs_set_port_rate
-In-Reply-To: <20190828144829.32570-4-olteanv@gmail.com>
-References: <20190828144829.32570-1-olteanv@gmail.com> <20190828144829.32570-4-olteanv@gmail.com>
-Date:   Wed, 28 Aug 2019 09:45:53 -0700
-Message-ID: <87zhjtp7b2.fsf@intel.com>
+        id S1726428AbfH1QtC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 12:49:02 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTPSA id 11BB01407C6;
+        Wed, 28 Aug 2019 18:49:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1567010940; bh=zzLdoLIxA5rjqSLOB3C8SN8ZQc1NQ8pafoImHXefv0c=;
+        h=Date:From:To;
+        b=KsWO9Yqn9S5o6Y9c8FfDitlPr4dDKaNvCe20LPkTZhgSth+2Gm3tmAeVAGVqG+L93
+         dTmp+iH6ya5Fe404PJ3pgOCi0vqnDi4pDIXo9WhpNSbHyWz7OgNbygoH/yjmka36t1
+         NSZeBoMfAUBoVrrrIHaiDUwTrqHk3Q9aZZx8z38s=
+Date:   Wed, 28 Aug 2019 18:48:59 +0200
+From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
+        andrew@lunn.ch
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: get serdes lane after
+ lock
+Message-ID: <20190828184859.3712bed8@dellmb.labs.office.nic.cz>
+In-Reply-To: <20190828162611.10064-1-vivien.didelot@gmail.com>
+References: <20190828162611.10064-1-vivien.didelot@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+On Wed, 28 Aug 2019 12:26:11 -0400
+Vivien Didelot <vivien.didelot@gmail.com> wrote:
 
-> The discussion to be made is absolutely the same as in the case of
-> previous patch ("taprio: Set default link speed to 10 Mbps in
-> taprio_set_picos_per_byte"). Nothing is lost when setting a default.
->
-> Cc: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
-> Fixes: e0a7683d30e9 ("net/sched: cbs: fix port_rate miscalculation")
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> This is a follow-up patch for commit 17deaf5cb37a ("net: dsa:
+> mv88e6xxx: create serdes_get_lane chip operation").
+>=20
+> The .serdes_get_lane implementations access the CMODE of a port,
+> even though it is cached at the moment, it is safer to call them
+> after the mutex is locked, not before.
+>=20
+> At the same time, check for an eventual error and return IRQ_DONE,
+> instead of blindly ignoring it.
+>=20
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 > ---
+>  drivers/net/dsa/mv88e6xxx/serdes.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c
+> b/drivers/net/dsa/mv88e6xxx/serdes.c index 9424e401dbc7..38c0da2492c0
+> 100644 --- a/drivers/net/dsa/mv88e6xxx/serdes.c
+> +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+> @@ -646,10 +646,12 @@ static irqreturn_t
+> mv88e6390_serdes_thread_fn(int irq, void *dev_id) int err;
+>  	u8 lane;
+> =20
+> -	mv88e6xxx_serdes_get_lane(chip, port->port, &lane);
+> -
+>  	mv88e6xxx_reg_lock(chip);
+> =20
+> +	err =3D mv88e6xxx_serdes_get_lane(chip, port->port, &lane);
+> +	if (err)
+> +		goto out;
+> +
+>  	switch (cmode) {
+>  	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+>  	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
 
-Hm, taking another look at cbs it has a similar problem than the problem
-your patch 1/3 solves for taprio, I will propose a patch in a few
-moments.
-
-For this one:
-
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-
-
-Cheers,
---
-Vinicius
+Reviewed-by: Marek Beh=C3=BAn <marek.behun@nic.cz>
