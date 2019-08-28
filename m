@@ -2,61 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62641A08C3
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09CAA08DD
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbfH1RjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 13:39:07 -0400
-Received: from mga12.intel.com ([192.55.52.136]:17071 "EHLO mga12.intel.com"
+        id S1726787AbfH1Rra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 13:47:30 -0400
+Received: from mga12.intel.com ([192.55.52.136]:17717 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726515AbfH1RjH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 13:39:07 -0400
+        id S1726515AbfH1Rra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 13:47:30 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:38:59 -0700
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:47:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="381360027"
-Received: from ellie.jf.intel.com (HELO ellie) ([10.24.12.211])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Aug 2019 10:38:58 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>, vedang.patel@intel.com,
-        leandro.maciel.dorileo@intel.com, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net 1/3] taprio: Fix kernel panic in taprio_destroy
-In-Reply-To: <CA+h21hr7hZShmHfmF8XX3PpCKm_3FkYm=CzkBmyiYezWGR7kLw@mail.gmail.com>
-References: <20190828144829.32570-1-olteanv@gmail.com> <20190828144829.32570-2-olteanv@gmail.com> <87a7btqmk7.fsf@intel.com> <CA+h21hr7hZShmHfmF8XX3PpCKm_3FkYm=CzkBmyiYezWGR7kLw@mail.gmail.com>
-Date:   Wed, 28 Aug 2019 10:38:58 -0700
-Message-ID: <87sgplp4ul.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+   d="scan'208";a="192675221"
+Received: from glass.png.intel.com ([172.30.181.95])
+  by orsmga002.jf.intel.com with ESMTP; 28 Aug 2019 10:47:25 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     davem@davemloft.net, linux@armlinux.org.uk,
+        mcoquelin.stm32@gmail.com, joabreu@synopsys.com,
+        f.fainelli@gmail.com, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        weifeng.voon@intel.com
+Subject: [RFC net-next v2 0/5] PHY converter driver for DW xPCS IP
+Date:   Thu, 29 Aug 2019 01:47:17 +0800
+Message-Id: <20190828174722.6726-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <olteanv@gmail.com> writes:
-
->> Personally, I would do things differently, I am thinking: adding the
->> taprio instance earlier to the list in taprio_init(), and keeping
->> taprio_destroy() the way it is now. But take this more as a suggestion
->> :-)
->>
->
-> While I don't strongly oppose your proposal (keep the list removal
-> unconditional, but match it better in placement to the list addition),
-> I think it's rather fragile and I do see this bug recurring in the
-> future. Anyway if you want to keep it "simpler" I can respin it like
-> that.
->
-
-I am thinking that keeping things "simpler" has the advantage of making
-any bugs really loud and hopefully easier to catch.
+My apology for sending RFC v1 with incorrect email for
+peppe.cavallaro@st.com. Please use RFC v2 for discussion. Thanks.
 
 
-Cheers,
---
-Vinicius
+Following review comment from Florian and discussion in below thread:-
+
+https://patchwork.ozlabs.org/patch/1109777/
+
+This RFC is to solicit feedback on the implementation of PHY converter
+driver for DW xPCS and some changes in the mdiobus API to prepare for
+mdio device registration during driver open() instead of probe() phase
+for non-DT platform. The implementation in this Phy Converter has DT
+registration for future expansion, however, it is not tested in our
+current platform.
+
+The 1st three patches involve changes in existing mdiobus API:-
+1) Make mdiobus_create_device() function callable from Ethernet driver
+2) Introduce new API mdiobus_get_mdio_device()
+3) Add private data for struct mdio_device so that DW xPCS specific
+   private data can be established between the pairing Ethernet
+   controller for non-DT way.
+
+The reason for changes for mdiobus_create_device() &
+mdiobus_get_mdio_device() is to allow Eth driver to be able to create
+mdio device for PHY converter driver when Ethernet driver open() is
+called. Existing way for registering mdio device for non-DT appraoch
+is through mdiobus_register_board_info() and the mdio device creation
+happens inside Ethernet probe() whereby IRQ is not setup. The mdio
+device registration happens in mdiobus_register() -->
+mdiobus_setup_mdiodevfrom_board_info(), and it becomes an issue for
+Phy Converter such as dwxpcs that requires IRQ setup before, i.e.
+inside Ethernet controller open().
+
+The 4th patch is for PHY Converter driver for DW xPCS.
+Large portion of main logics of this code has been reviewed in the
+past in above review thread and all review inputs have been factored.
+
+First, the loading of PHY converter driver is through ACPI Device ID.
+The current implementation also has logics for DT style, but since
+we don't have such platform, we the DT implementation as place-holder
+for anyone that needs in future. The DT implementation follows the
+design of drivers/net/phy/xilinx_gmii2rgmii.c closely.
+
+What is extra is setup for DW xPCS IRQ request. In current EHL & TGL
+implementation, the IRQ is routed from MAC controller. For non-DT way,
+the IRQ line is tied to Ethernet driver (PCI enum), and we need a
+way to pass IRQ info from Ethernet driver to PHY converter driver
+during the creation of mdio device. Therefore, this is the reason
+for the 1st 3 patches. All the ISR does is to kick the workqueue to
+process the IRQ as we cannot call mdio_read() and mdio_write() inside
+ISR.
+
+The 5th (last) patch shows how the associated PHY converter mdio device
+is setup in Ethernet controller open() function and removed during
+stop(). The implementation is done in stmmac pci driver.
+
+With this implementation, now, we have dwxpcs implemented as PHY driver
+and the hook from stmmac driver for non-DT style is done through
+platform-specific data related to EHL & TGL when SGMII interface is
+selected. The PHY converter driver will still be beneficial for other
+platform that would need it and may use DT to enable the PHY converter
+driver and mdio device through DT definition.
+
+Please kindly review this RFC and provide any feedback/concern that
+the community may have. Appreciate your time here.
+
+Thanks
+Boon Leong
+
+Ong Boon Leong (5):
+  net: phy: make mdiobus_create_device() function callable from Eth
+    driver
+  net: phy: introduce mdiobus_get_mdio_device
+  net: phy: add private data to mdio_device
+  net: phy: introducing support for DWC xPCS logics for EHL & TGL
+  net: stmmac: add dwxpcs boardinfo for mdio_device registration
+
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  25 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  45 +-
+ drivers/net/phy/Kconfig                       |   9 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/dwxpcs.c                      | 417 ++++++++++++++++++
+ drivers/net/phy/mdio_bus.c                    |  11 +-
+ include/linux/dwxpcs.h                        |  16 +
+ include/linux/mdio.h                          |   3 +
+ include/linux/phy.h                           |   7 +
+ include/linux/stmmac.h                        |   3 +
+ 12 files changed, 537 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/phy/dwxpcs.c
+ create mode 100644 include/linux/dwxpcs.h
+
+-- 
+2.17.0
+
