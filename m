@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23278A042A
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A1BA041D
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 16:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbfH1ODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 10:03:32 -0400
-Received: from mx2.suse.de ([195.135.220.15]:39564 "EHLO mx1.suse.de"
+        id S1726837AbfH1ODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 10:03:33 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39566 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726593AbfH1ODa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726326AbfH1ODa (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 28 Aug 2019 10:03:30 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 77932B005;
+        by mx1.suse.de (Postfix) with ESMTP id 777EDACE3;
         Wed, 28 Aug 2019 14:03:29 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Ralf Baechle <ralf@linux-mips.org>,
@@ -22,44 +22,55 @@ To:     Ralf Baechle <ralf@linux-mips.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 00/15] ioc3-eth improvements
-Date:   Wed, 28 Aug 2019 16:02:59 +0200
-Message-Id: <20190828140315.17048-1-tbogendoerfer@suse.de>
+Subject: [PATCH net-next 01/15] MIPS: SGI-IP27: remove ioc3 ethernet init
+Date:   Wed, 28 Aug 2019 16:03:00 +0200
+Message-Id: <20190828140315.17048-2-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
+In-Reply-To: <20190828140315.17048-1-tbogendoerfer@suse.de>
+References: <20190828140315.17048-1-tbogendoerfer@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my patch series for splitting out the serial code from ioc3-eth
-by using a MFD device there was one big patch for ioc3-eth.c,
-which wasn't really usefull for reviews. This series contains the
-ioc3-eth changes splitted in smaller steps and few more cleanups.
-Only the conversion to MFD will be done later in a different series.
+Removed not needed disabling of ethernet interrupts in IP27 platform code.
 
-Thomas Bogendoerfer (15):
-  MIPS: SGI-IP27: remove ioc3 ethernet init
-  MIPS: SGI-IP27: restructure ioc3 register access
-  net: sgi: ioc3-eth: remove checkpatch errors/warning
-  net: sgi: ioc3-eth: use defines for constants dealing with desc rings
-  net: sgi: ioc3-eth: allocate space for desc rings only once
-  net: sgi: ioc3-eth: get rid of ioc3_clean_rx_ring()
-  net: sgi: ioc3-eth: separate tx and rx ring handling
-  net: sgi: ioc3-eth: introduce chip start function
-  net: sgi: ioc3-eth: split ring cleaning/freeing and allocation
-  net: sgi: ioc3-eth: refactor rx buffer allocation
-  net: sgi: ioc3-eth: use dma-direct for dma allocations
-  net: sgi: ioc3-eth: use csum_fold
-  net: sgi: ioc3-eth: Fix IPG settings
-  net: sgi: ioc3-eth: protect emcr in all cases
-  net: sgi: ioc3-eth: no need to stop queue set_multicast_list
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ arch/mips/sgi-ip27/ip27-init.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
- arch/mips/include/asm/sn/ioc3.h     |  357 +++++-------
- arch/mips/sgi-ip27/ip27-console.c   |    5 +-
- arch/mips/sgi-ip27/ip27-init.c      |   13 -
- drivers/net/ethernet/sgi/ioc3-eth.c | 1038 ++++++++++++++++++-----------------
- 4 files changed, 666 insertions(+), 747 deletions(-)
-
+diff --git a/arch/mips/sgi-ip27/ip27-init.c b/arch/mips/sgi-ip27/ip27-init.c
+index 066b33f50bcc..59d5375c9021 100644
+--- a/arch/mips/sgi-ip27/ip27-init.c
++++ b/arch/mips/sgi-ip27/ip27-init.c
+@@ -130,17 +130,6 @@ cnodeid_t get_compact_nodeid(void)
+ 	return NASID_TO_COMPACT_NODEID(get_nasid());
+ }
+ 
+-static inline void ioc3_eth_init(void)
+-{
+-	struct ioc3 *ioc3;
+-	nasid_t nid;
+-
+-	nid = get_nasid();
+-	ioc3 = (struct ioc3 *) KL_CONFIG_CH_CONS_INFO(nid)->memory_base;
+-
+-	ioc3->eier = 0;
+-}
+-
+ extern void ip27_reboot_setup(void);
+ 
+ void __init plat_mem_setup(void)
+@@ -182,8 +171,6 @@ void __init plat_mem_setup(void)
+ 		panic("Kernel compiled for N mode.");
+ #endif
+ 
+-	ioc3_eth_init();
+-
+ 	ioport_resource.start = 0;
+ 	ioport_resource.end = ~0UL;
+ 	set_io_port_base(IO_BASE);
 -- 
 2.13.7
 
