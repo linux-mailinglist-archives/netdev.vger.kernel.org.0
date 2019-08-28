@@ -2,63 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60247A0B15
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 22:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 190E3A0B36
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 22:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfH1UGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 16:06:25 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36142 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbfH1UGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 16:06:25 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 819861534DC58;
-        Wed, 28 Aug 2019 13:06:24 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 13:06:24 -0700 (PDT)
-Message-Id: <20190828.130624.876004452510316906.davem@davemloft.net>
-To:     andrew@lunn.ch
-Cc:     ruxandra.radulescu@nxp.com, netdev@vger.kernel.org,
-        ioana.ciornei@nxp.com
-Subject: Re: [PATCH net-next v2 3/3] dpaa2-eth: Add pause frame support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190828115250.GA32178@lunn.ch>
-References: <20190827232132.GD26248@lunn.ch>
-        <AM0PR04MB499496AC09FD7BE58AE7B9C394A30@AM0PR04MB4994.eurprd04.prod.outlook.com>
-        <20190828115250.GA32178@lunn.ch>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 28 Aug 2019 13:06:24 -0700 (PDT)
+        id S1726894AbfH1UVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 16:21:17 -0400
+Received: from gateway23.websitewelcome.com ([192.185.50.120]:49618 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726583AbfH1UVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 16:21:13 -0400
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 8D48C80C2
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 15:21:12 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 34RLivszS2PzO34RMitiMo; Wed, 28 Aug 2019 15:21:12 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0KlKtoMMdaSnIE0WBzv6BhEcDym6e8VWs0NWf0HUHbg=; b=vxvra40vSdMu5ik/ySD8sWqhKq
+        rP0yAf+7hhM8msx/83BKnyZGaOg8cLOaSjoiBJFoO+3mMkUwz+13eooev2b+oSKOetYTGV6spS6NF
+        Lb9g8UJLalconxJCmd+QPReGB33RTUkxS8Nw7XmoGVK7ZXJ37GPdv+a0RNgyzE4Jw2rd5RvO1mzud
+        UvCbZ4zJpt0cJSUQxaQn5iPCXMUllALTGXrCuXADbtPUV7FbXsb2f/7IDsL617Wc4Ff83h0W82CAY
+        /yCsRG6OVgrhL4x/J45ZObcCJJ/fxCTHogVVhefrWByDBvegGqAFsD/mQJcpzf9NNilwsk26eHwJj
+        a8K3Qa6Q==;
+Received: from [189.152.216.116] (port=48342 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1i34RK-001jwb-JM; Wed, 28 Aug 2019 15:21:10 -0500
+Date:   Wed, 28 Aug 2019 15:21:08 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] net: spider_net: Use struct_size() helper
+Message-ID: <20190828202108.GA9494@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.152.216.116
+X-Source-L: No
+X-Exim-ID: 1i34RK-001jwb-JM
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.152.216.116]:48342
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 3
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Wed, 28 Aug 2019 13:52:50 +0200
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
->> Clearing the ASYM_PAUSE flag only means we tell the firmware we want
->> both Rx and Tx pause to be enabled in the beginning. User can still set
->> an asymmetric config (i.e. only Rx pause or only Tx pause to be enabled)
->> if needed.
->> 
->> The truth table is like this:
->> 
->> PAUSE | ASYM_PAUSE | Rx pause | Tx pause
->> ----------------------------------------
->>   0   |     0      | disabled | disabled
->>   0   |     1      | disabled | enabled
->>   1   |     0      | enabled  | enabled
->>   1   |     1      | enabled  | disabled
-> 
-> Hi Ioana
-> 
-> Ah, that is not intuitive. Please add a comment, and maybe this table
-> to the commit message.
+struct spider_net_card {
+	...
+        struct spider_net_descr darray[0];
+};
 
-Isn't this the same truth table as for the pause bits in the usual MII
-registers?
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
+
+So, replace the following form:
+
+sizeof(struct spider_net_card) + (tx_descriptors + rx_descriptors) * sizeof(struct spider_net_descr)
+
+with:
+
+struct_size(card, darray, tx_descriptors + rx_descriptors)
+
+Notice that, in this case, variable alloc_size is not necessary, hence it
+is removed.
+
+Building: allmodconfig powerpc.
+
+This code was detected with the help of Coccinelle.
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/ethernet/toshiba/spider_net.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
+index 0f346761a2b2..538e70810d3d 100644
+--- a/drivers/net/ethernet/toshiba/spider_net.c
++++ b/drivers/net/ethernet/toshiba/spider_net.c
+@@ -2311,11 +2311,9 @@ spider_net_alloc_card(void)
+ {
+ 	struct net_device *netdev;
+ 	struct spider_net_card *card;
+-	size_t alloc_size;
+ 
+-	alloc_size = sizeof(struct spider_net_card) +
+-	   (tx_descriptors + rx_descriptors) * sizeof(struct spider_net_descr);
+-	netdev = alloc_etherdev(alloc_size);
++	netdev = alloc_etherdev(struct_size(card, darray,
++					    tx_descriptors + rx_descriptors));
+ 	if (!netdev)
+ 		return NULL;
+ 
+-- 
+2.23.0
+
