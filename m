@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED86A0739
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE6FA0746
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 18:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbfH1QXs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Aug 2019 12:23:48 -0400
-Received: from mga06.intel.com ([134.134.136.31]:13199 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726415AbfH1QXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 12:23:48 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 09:23:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="197589807"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Aug 2019 09:23:47 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 28 Aug 2019 09:23:47 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 28 Aug 2019 09:23:46 -0700
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
- fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
- Wed, 28 Aug 2019 09:23:46 -0700
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH] i40e: check __I40E_VF_DISABLE bit in
- i40e_sync_filters_subtask
-Thread-Topic: [Intel-wired-lan] [PATCH] i40e: check __I40E_VF_DISABLE bit in
- i40e_sync_filters_subtask
-Thread-Index: AQHVWCtztYGpzMHi60KQXoxB9mZYiacQyX4w
-Date:   Wed, 28 Aug 2019 16:23:46 +0000
-Message-ID: <094c89e92baa4f5e96ffb766263ce07f@intel.com>
-References: <20190821140929.26985-1-sassmann@kpanic.de>
-In-Reply-To: <20190821140929.26985-1-sassmann@kpanic.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMWM2NGY2NjYtODQxZS00MTA5LWI1NGEtNzBiYWEwYzVlOWZjIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiNTZ6VTZjRnRITUdFZFFLUXNkTEJyOGpcL1Q0XC9UMkhQQklZYjgrZHJOV1wveU5STU90RThkQnd6Um5IemVtSjU1dCJ9
-dlp-reaction: no-action
-dlp-version: 11.0.400.15
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726475AbfH1Q04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 12:26:56 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43686 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfH1Q0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 12:26:55 -0400
+Received: by mail-qt1-f194.google.com with SMTP id b11so159474qtp.10
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 09:26:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CtFI//2AqAcPUJUnRaJGcvLDo21k6AiEytxHdOupuHI=;
+        b=uhS5HwL7rs/1EqWeJnwyWPBVmgk7xTZAvK1pFDkSYAJ4woJHbct27t1/8xpbupzDl/
+         XNw/Cyqy+rXu61K1GAKVudMhdJ576eWantG27yFpIscSpVzY4HsTsr8/uhc/dYgzt1Mp
+         Nvp5Psb/bxoBmxdwKJomWXHAlL3vQ0BqMpJzWXFJHJZ8RN95Lcw/6ugI02PrDre/qEi4
+         ZTKZOlmfbDn5UnI7qqbXMp6+P/GvsgudrevpoAFrowtaOoyExyQaWL+ebshMlaqqOvl1
+         y0zKVLeWKYcm2CkSrD1MvFgnA7EAIxABUZmbrFF4ymiPtvazKoVnVig6ctizzXiSs7mn
+         JKAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CtFI//2AqAcPUJUnRaJGcvLDo21k6AiEytxHdOupuHI=;
+        b=IuRIELr+IWkMPlKgKRjxRGAi/m/9YfMfRybJvBm6uUefKT4uHTPIlZAQ5raWqBa2V5
+         tb023eEKR5YfbfMNhQdt39b+yFfPPQDhblyZi/RhrfnttQma/Z4+/T8zT809ic8St3kP
+         RPzzIVeExkVMgwjA4RdnRQjuNwhxp46TzKde7lTdcWbBgo6WD+q1pUiWhFQwjVspUJ+I
+         vnGU0uNIi/PHeBd/JKtnqHDdCjOWD7rYeHcz56PmIj0Lxs1/3C9+VfSeP7Y/0aVCvNqS
+         J8vxyRMpElAD6WBKCekKkL6tNyoo0NzQdrznh9aedBh6YEtVqPmt8V+G0q4xZhr5EV8n
+         GV9A==
+X-Gm-Message-State: APjAAAXjPUikk83lHXW+1Hi5FTZApoTaNshwxrm6I8eNItO1Ph+5RfqW
+        51xIcOxl4CrvfcNhFEZbYWodql+x
+X-Google-Smtp-Source: APXvYqwLYwl08sh4LwZNGUcG+R0fBAx+/72aBEOtaFTwwbSqJL5T3Xky7KDYrLGJwoc/GDWQLUg58Q==
+X-Received: by 2002:ac8:6887:: with SMTP id m7mr4891002qtq.325.1567009614448;
+        Wed, 28 Aug 2019 09:26:54 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id q9sm1417974qtj.48.2019.08.28.09.26.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Aug 2019 09:26:53 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
+        f.fainelli@gmail.com, andrew@lunn.ch,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: get serdes lane after lock
+Date:   Wed, 28 Aug 2019 12:26:11 -0400
+Message-Id: <20190828162611.10064-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Stefan Assmann
-> Sent: Wednesday, August 21, 2019 7:09 AM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: netdev@vger.kernel.org; davem@davemloft.net; sassmann@kpanic.de
-> Subject: [Intel-wired-lan] [PATCH] i40e: check __I40E_VF_DISABLE bit in
-> i40e_sync_filters_subtask
-> 
-> While testing VF spawn/destroy the following panic occured.
-> 
-> BUG: unable to handle kernel NULL pointer dereference at
-> 0000000000000029 [...]
-> Workqueue: i40e i40e_service_task [i40e]
-> RIP: 0010:i40e_sync_vsi_filters+0x6fd/0xc60 [i40e] [...] Call Trace:
->  ? __switch_to_asm+0x35/0x70
->  ? __switch_to_asm+0x41/0x70
->  ? __switch_to_asm+0x35/0x70
->  ? _cond_resched+0x15/0x30
->  i40e_sync_filters_subtask+0x56/0x70 [i40e]
->  i40e_service_task+0x382/0x11b0 [i40e]
->  ? __switch_to_asm+0x41/0x70
->  ? __switch_to_asm+0x41/0x70
->  process_one_work+0x1a7/0x3b0
->  worker_thread+0x30/0x390
->  ? create_worker+0x1a0/0x1a0
->  kthread+0x112/0x130
->  ? kthread_bind+0x30/0x30
->  ret_from_fork+0x35/0x40
-> 
-> Investigation revealed a race where pf->vf[vsi->vf_id].trusted may get
-> accessed by the watchdog via i40e_sync_filters_subtask() although
-> i40e_free_vfs() already free'd pf->vf.
-> To avoid this the call to i40e_sync_vsi_filters() in
-> i40e_sync_filters_subtask() needs to be guarded by __I40E_VF_DISABLE,
-> which is also used by i40e_free_vfs().
-> 
-> Note: put the __I40E_VF_DISABLE check after the
-> __I40E_MACVLAN_SYNC_PENDING check as the latter is more likely to
-> trigger.
-> 
-> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++++
->  1 file changed, 5 insertions(+)
+This is a follow-up patch for commit 17deaf5cb37a ("net: dsa:
+mv88e6xxx: create serdes_get_lane chip operation").
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+The .serdes_get_lane implementations access the CMODE of a port,
+even though it is cached at the moment, it is safer to call them
+after the mutex is locked, not before.
 
+At the same time, check for an eventual error and return IRQ_DONE,
+instead of blindly ignoring it.
+
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 9424e401dbc7..38c0da2492c0 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -646,10 +646,12 @@ static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
+ 	int err;
+ 	u8 lane;
+ 
+-	mv88e6xxx_serdes_get_lane(chip, port->port, &lane);
+-
+ 	mv88e6xxx_reg_lock(chip);
+ 
++	err = mv88e6xxx_serdes_get_lane(chip, port->port, &lane);
++	if (err)
++		goto out;
++
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+ 	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+-- 
+2.23.0
 
