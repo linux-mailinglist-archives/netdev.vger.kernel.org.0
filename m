@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82236A06AD
+	by mail.lfdr.de (Postfix) with ESMTP id F0664A06AE
 	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 17:55:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbfH1PzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 11:55:06 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58765 "EHLO
+        id S1726775AbfH1PzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 11:55:07 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:59113 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726410AbfH1PzF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 11:55:05 -0400
+        by vger.kernel.org with ESMTP id S1726513AbfH1PzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 11:55:06 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6190E22189;
-        Wed, 28 Aug 2019 11:55:04 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 731F42211E;
+        Wed, 28 Aug 2019 11:55:05 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 28 Aug 2019 11:55:04 -0400
+  by compute3.internal (MEProxy); Wed, 28 Aug 2019 11:55:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=O4atCehQyJoX9ZhhG
-        jb3W1gVL75CqBUsldkQCVqgT1o=; b=CjlBvEhjqhOaeFAPazCOAxrL77AlhhOmL
-        lr1no4pMoWmNSVbiVxxak72l+DIpzfyQlfGf2qKAuQpoWChIzfuiKBEZKpNxWku2
-        WyStNQT+Mkg1WZGtoUGNhkY917XAHuMAPrVeC5ZzPVNOSqdOoBJ5+E0UDdwPDa+2
-        TH48IG6HLhcjeQYniwnDQAKrxczPncDlobI0BrOWtbZe9cDntgkVkIbLd3OABDNz
-        VXqhv6t6IzWmg4BOk13+jv08RN7uViErssN89Ai12XmFmnsrs0BFZetJ/hirdWpm
-        Q32S3axslu/QkJkmmpP7wtfH+lehhxcZrX0omDBBKeijLYPGCXoXg==
-X-ME-Sender: <xms:16NmXbFDY-X2hHg04nCygeTlXEWvOvlxiptJcHsqeIGMF9cRfXmY-w>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=IqLJQFGN1ml47RjwLCM6K+cmUOxR03Jn2Clbz75MdFE=; b=ZnelYxai
+        84uMKpQTKoJ1l2vgeLmbAW8fztVzBVupPRJA/AM2BUXfaDbF4jCzJAp+us5n00Ir
+        JKbKaD2mzfCubmOPXKSGzrmFxTM6O/pw9zf/9ccFDaS92qFdRaHpaDbDhomNojkT
+        x+Ul103lPz+6VYkYgwYSlQRyywKphXY12JEl8NpIX/24JmbMSM92n+aFcsSgY1zM
+        tlc6IYA1cuzKZoaRsJt5qJ0VD3UBbHDs6fCPpZynkhVCRfGqmoCUOKvyN7Azkdvr
+        UCYCdFnnN4TSvnjAFuYjXbJHRYw4dhdeQUbXLQ7rUUXGNV3NArrff2ktT8OoSpjp
+        h9dJ15UIIeRXxg==
+X-ME-Sender: <xms:2aNmXcRbNHHckB8mBsHum3Y9B_OPm_79A0qyjzSWxnEFbb7Q8594cg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeitddgleegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
-    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
-    iigvpedt
-X-ME-Proxy: <xmx:16NmXc65dczPK_TD4Yg5e35qIY7cn0XVOmju-5Qp94SsMDeL2TEoog>
-    <xmx:16NmXZAh3jcPH7QajCh-Nm2z_rIVXjZeszcn4_BfzbqzPPIC1C5Osw>
-    <xmx:16NmXVza7wNaESzezhaeyMysR3zW9qy2gCkdjxxR-J66_iJsB3GdkA>
-    <xmx:2KNmXdmZLSm7nq-bzU-E5GIA3uZ6XGbaW5gW3lnjvUU0b9J7moZTtA>
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:2aNmXc96Ssz7IdXu-iKnaD49xwhA_-QnAIUodeIDmcGoB8ZDF9q6nw>
+    <xmx:2aNmXV9gOhptDnIrk8w4jpnrCpxR6rb-N1TxgZ7P2vOeaBh5-25KvQ>
+    <xmx:2aNmXadmzFkJB_SGhs3UwRx1c3D6S6CZcmLrPdw5PSiHe8wBXEiA9Q>
+    <xmx:2aNmXXd5MgFw9uAluRhuJU2CRTUp8edx4btLiDJWFOQrgROpZD2FsA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DDEA1D6005B;
-        Wed, 28 Aug 2019 11:55:02 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 18042D60057;
+        Wed, 28 Aug 2019 11:55:03 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Amit Cohen <amitc@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 0/4] mlxsw: Various updates
-Date:   Wed, 28 Aug 2019 18:54:33 +0300
-Message-Id: <20190828155437.9852-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/4] mlxsw: Remove 56G speed support
+Date:   Wed, 28 Aug 2019 18:54:34 +0300
+Message-Id: <20190828155437.9852-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190828155437.9852-1-idosch@idosch.org>
+References: <20190828155437.9852-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,42 +60,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Amit Cohen <amitc@mellanox.com>
 
-Patch #1 from Amit removes 56G speed support. The reasons for this are
-detailed in the commit message.
+Commit 275e928f1911 ("mlxsw: spectrum: Prevent force of 56G") prevented
+the driver from setting a speed of 56G when auto-negotiation is off.
+This is the only speed supported by mlxsw that cannot be set when
+auto-negotiation is off, which makes it difficult to write generic
+tests.
 
-Patch #2 from Shalom ensures that the hardware does not auto negotiate
-the number of used lanes. For example, if a four lane port supports 100G
-over both two and four lanes, it will not advertise the two lane link
-mode.
+Further, the speed is not supported by newer ASICs such as Spectrum-2
+and to the best of our knowledge it is not used by current users.
 
-Patch #3 bumps the firmware version supported by the driver.
+Therefore, remove 56G support from mlxsw.
 
-Patch #4 from Petr adds ethtool counters to help debug the internal PTP
-implementation in mlxsw. I copied Richard on this patch in case he has
-comments.
+Signed-off-by: Amit Cohen <amitc@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  1 -
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 24 -------------------
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |  6 -----
+ 3 files changed, 31 deletions(-)
 
-Amit Cohen (1):
-  mlxsw: Remove 56G speed support
-
-Ido Schimmel (1):
-  mlxsw: Bump firmware version to 13.2000.1886
-
-Petr Machata (1):
-  mlxsw: spectrum_ptp: Add counters for GC events
-
-Shalom Toledo (1):
-  mlxsw: spectrum: Prevent auto negotiation on number of lanes
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |   1 -
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 140 ++++++++++++------
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  17 ++-
- .../ethernet/mellanox/mlxsw/spectrum_ptp.c    |  67 +++++++++
- .../ethernet/mellanox/mlxsw/spectrum_ptp.h    |  32 ++++
- .../net/ethernet/mellanox/mlxsw/switchx2.c    |   6 -
- 6 files changed, 210 insertions(+), 53 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index baa20cdd65df..5494cf93f34c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -4126,7 +4126,6 @@ MLXSW_ITEM32(reg, ptys, ext_eth_proto_cap, 0x08, 0, 32);
+ #define MLXSW_REG_PTYS_ETH_SPEED_20GBASE_KR2		BIT(5)
+ #define MLXSW_REG_PTYS_ETH_SPEED_40GBASE_CR4		BIT(6)
+ #define MLXSW_REG_PTYS_ETH_SPEED_40GBASE_KR4		BIT(7)
+-#define MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4		BIT(8)
+ #define MLXSW_REG_PTYS_ETH_SPEED_10GBASE_CR		BIT(12)
+ #define MLXSW_REG_PTYS_ETH_SPEED_10GBASE_SR		BIT(13)
+ #define MLXSW_REG_PTYS_ETH_SPEED_10GBASE_ER_LR		BIT(14)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 7de9833fc60b..4d1f8b9c46a7 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -2608,26 +2608,6 @@ static const struct mlxsw_sp1_port_link_mode mlxsw_sp1_port_link_mode[] = {
+ 		.mask_ethtool	= ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT,
+ 		.speed		= SPEED_50000,
+ 	},
+-	{
+-		.mask		= MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4,
+-		.mask_ethtool	= ETHTOOL_LINK_MODE_56000baseKR4_Full_BIT,
+-		.speed		= SPEED_56000,
+-	},
+-	{
+-		.mask		= MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4,
+-		.mask_ethtool	= ETHTOOL_LINK_MODE_56000baseCR4_Full_BIT,
+-		.speed		= SPEED_56000,
+-	},
+-	{
+-		.mask		= MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4,
+-		.mask_ethtool	= ETHTOOL_LINK_MODE_56000baseSR4_Full_BIT,
+-		.speed		= SPEED_56000,
+-	},
+-	{
+-		.mask		= MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4,
+-		.mask_ethtool	= ETHTOOL_LINK_MODE_56000baseLR4_Full_BIT,
+-		.speed		= SPEED_56000,
+-	},
+ 	{
+ 		.mask		= MLXSW_REG_PTYS_ETH_SPEED_100GBASE_CR4,
+ 		.mask_ethtool	= ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT,
+@@ -3301,10 +3281,6 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *dev,
+ 	ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, &eth_proto_cap, NULL, NULL);
+ 
+ 	autoneg = cmd->base.autoneg == AUTONEG_ENABLE;
+-	if (!autoneg && cmd->base.speed == SPEED_56000) {
+-		netdev_err(dev, "56G not supported with autoneg off\n");
+-		return -EINVAL;
+-	}
+ 	eth_proto_new = autoneg ?
+ 		ops->to_ptys_advert_link(mlxsw_sp, cmd) :
+ 		ops->to_ptys_speed(mlxsw_sp, cmd->base.speed);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index bdab96f5bc70..1c14c051ee52 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -636,12 +636,6 @@ static const struct mlxsw_sx_port_link_mode mlxsw_sx_port_link_mode[] = {
+ 				  MLXSW_REG_PTYS_ETH_SPEED_50GBASE_KR2,
+ 		.speed		= 50000,
+ 	},
+-	{
+-		.mask		= MLXSW_REG_PTYS_ETH_SPEED_56GBASE_R4,
+-		.supported	= SUPPORTED_56000baseKR4_Full,
+-		.advertised	= ADVERTISED_56000baseKR4_Full,
+-		.speed		= 56000,
+-	},
+ 	{
+ 		.mask		= MLXSW_REG_PTYS_ETH_SPEED_100GBASE_CR4 |
+ 				  MLXSW_REG_PTYS_ETH_SPEED_100GBASE_SR4 |
 -- 
 2.21.0
 
