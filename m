@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5367CA0E67
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC965A0E6A
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbfH1XoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 19:44:25 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35879 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726825AbfH1XoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:44:25 -0400
-Received: by mail-pf1-f195.google.com with SMTP id w2so787270pfi.3
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 16:44:24 -0700 (PDT)
+        id S1726985AbfH1XqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 19:46:08 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:37095 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726825AbfH1XqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:46:08 -0400
+Received: by mail-ed1-f68.google.com with SMTP id f22so1922791edt.4
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 16:46:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v+7Vi0K+7iSjD64GjXiDvUOi+ZQN8cBfyBO0kWUqTAo=;
-        b=lF/ZY7bIW43kPygO0eYojMdmyC7EdSWTlC9x4AJsKje+Nph5f5KWl56qJUptdakavf
-         3+VDYA9HoxjM2CxX7RveAOQ6cYpyLK7PcCGUnKa9xcsEa9/CsVN0BL9Hxe3VXpvggtia
-         fXrDMrD7JO7Zraw6pd2yZtpnDgWouvtCHOO9c=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=lwAYU7SB5jIDkttjpEhSjVB4Jmz8vCYzWhIimXVsskE=;
+        b=I/wd8vx0SScvlvog5F9Pn/BsE/GwpWt53yoYdao1SFQPtCikmUlDbq3UR5zmMMPv9b
+         /KNq9uU5pKH3u/gYO6YrqhyPwnfrj3Fg+3I6k6xK6SYsdyn8NiEZGDbK7IRK1qEfjYCT
+         3WRacdzKn50XjOQbnLXA/7s/YE8bUPWI5Zu+0/Jttj1Dy+nQ1oiOPEtNf0eCdrrYlwWF
+         5aID5/e8i+zGx6ojhYu8zQyIGy65euIpzHiCGgQTAqcOMrYl8G8GLnU09z6Uic9gSn6U
+         qLkhJ+ZyODiIH0MfElA2SlWri4MpcihCUpvvn/Q375XCQcXUeyhovbWdjhuGw06g3tNt
+         tOjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v+7Vi0K+7iSjD64GjXiDvUOi+ZQN8cBfyBO0kWUqTAo=;
-        b=tgL16Xw/vbjGDC9+E5AjlEczdEgKlRpvjdSZ6AyqtT6d01OIbRby3o8hHoFsvUIDXY
-         9kJX0R2z/y1Jvf4u2TYrwW/TatVToFaMeUEmR8GalhKTCsgHJ9StBvMabxM/wtvgGvCD
-         +34L/l7kKhkYLRvFJQWgLJyUvrYg35baiRoA4GCqroWygm8C01LlA352PJ43qbuIWhc4
-         Ro0yUWG63E+7X0gdXZrqgRCeUxbKFc3we2WKunspdhYzBzZFAD8uZeelE5d3ALAloyff
-         k5aHej1lowoDpbH78k4B7IYM33xu/mlQ46dq1TBDDCcVjN8G7loEKr48EC5bYoIqLoW6
-         c9RQ==
-X-Gm-Message-State: APjAAAX3++HLELwI11f56Po9kAmQPDoxVGCNLWg2/vZWEbzoWQtgXyEN
-        fGIWhy923dDxE9Tz5mkLnbr65Q==
-X-Google-Smtp-Source: APXvYqxxx4925TvYESBbl7jTNbgz0DAnFrfbfZvXEyhrWpWa33PYoRop2V/NoIg6VNwG32B8ZouAmQ==
-X-Received: by 2002:a63:3dcd:: with SMTP id k196mr5739639pga.45.1567035864264;
-        Wed, 28 Aug 2019 16:44:24 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t4sm586675pfq.153.2019.08.28.16.44.22
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=lwAYU7SB5jIDkttjpEhSjVB4Jmz8vCYzWhIimXVsskE=;
+        b=Zrgl7FXaXewbhUvtv7dQBEHOF3e364HG+nVGRtVGPl2Vjbzh3zXUsYXlTpX7dt9Amt
+         f6HpkuTXgB9DeqdEMseEflBRkkJY92Ij1ptkZ8POn5Uw4X6tAe5kRGlPxkHdJqk2na/u
+         Tyn6osM+O4lo/ew2XJw53LbA5eD99E6UiogPVpzTpLDFdc2PLEPn4tRLxSuAtWNw8hjJ
+         NGSS8gh15pWVD5HFg0hnJEcxOceVUpbMTmsZCPeuJSXlTBabjpMp3PhU802qxqUv7lWW
+         5FyByITJHIY5q3hKyu0OXvQwTPx1RXy7HqQh/yrrEbBfFAk7YgpMK2HZZjZuzUlSP6jV
+         0qaQ==
+X-Gm-Message-State: APjAAAVkN858fNNzqMOgoK4M/uHHW6yDo4GwvtWIGVF/rRh255gUgwF8
+        DYVFlEJyHK9V2NzYIrmOofmP9A==
+X-Google-Smtp-Source: APXvYqwu9IsQHtGiuAmjkCBqUGXyClEWy1PfqGWQYYamAYMzTPH0SCIXNdN5PLg4l9mLNC0qQud5fg==
+X-Received: by 2002:a17:906:bc2:: with SMTP id y2mr5634915ejg.148.1567035966614;
+        Wed, 28 Aug 2019 16:46:06 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id d20sm114436ejb.75.2019.08.28.16.46.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 16:44:23 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 16:44:21 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     David Abdurachmanov <david.abdurachmanov@gmail.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Anup Patel <Anup.Patel@wdc.com>,
-        Vincent Chen <vincentc@andestech.com>,
-        Alan Kao <alankao@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, me@carlosedp.com
-Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-Message-ID: <201908281643.1B89EB1E6@keescook>
-References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
- <201908251451.73C6812E8@keescook>
- <CAEn-LToB1atxDvehBanVaxg6sk8zDkMe_CbqeTVgKNzOvD9-Sw@mail.gmail.com>
+        Wed, 28 Aug 2019 16:46:06 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 16:45:44 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 0/4] mlxsw: Various updates
+Message-ID: <20190828164544.30938d4d@cakuba.netronome.com>
+In-Reply-To: <20190828155437.9852-1-idosch@idosch.org>
+References: <20190828155437.9852-1-idosch@idosch.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEn-LToB1atxDvehBanVaxg6sk8zDkMe_CbqeTVgKNzOvD9-Sw@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 02:37:34PM -0700, David Abdurachmanov wrote:
->     --disk path=$PWD/disk \
->     --boot kernel=$PWD/${FIRMWARE} \
+On Wed, 28 Aug 2019 18:54:33 +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Patch #1 from Amit removes 56G speed support. The reasons for this are
+> detailed in the commit message.
+> 
+> Patch #2 from Shalom ensures that the hardware does not auto negotiate
+> the number of used lanes. For example, if a four lane port supports 100G
+> over both two and four lanes, it will not advertise the two lane link
+> mode.
+> 
+> Patch #3 bumps the firmware version supported by the driver.
+> 
+> Patch #4 from Petr adds ethtool counters to help debug the internal PTP
+> implementation in mlxsw. I copied Richard on this patch in case he has
+> comments.
 
-This is where I tripped over things. How do I specify the kernel to boot
-from OUTSIDE the disk image?
-
--- 
-Kees Cook
+LGTM
