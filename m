@@ -2,117 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B5DA0C55
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 23:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90811A0C6D
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 23:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbfH1V0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 17:26:07 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40456 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726583AbfH1V0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 17:26:06 -0400
-Received: by mail-qt1-f194.google.com with SMTP id g4so1266250qtq.7
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 14:26:06 -0700 (PDT)
+        id S1726837AbfH1Vdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 17:33:45 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:45045 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbfH1Vdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 17:33:45 -0400
+Received: by mail-pl1-f195.google.com with SMTP id t14so540392plr.11;
+        Wed, 28 Aug 2019 14:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=23YNlEsDbObULfKEr/tFp6pmJb4nAmXiy8Gowl0MM1A=;
-        b=uXX9nWHWrgyV5xAXfOUjwqqhwWFPwlLx3vjcMxsz2RIZeuYdLtknGNcRrR2zWs2PBa
-         GeE1OizG35cSCq7tuqRh0rJq4dLWJK5/sGKnBeYqR+7j6xE7lS2LoAT/a54v4Yoh7CVj
-         o9BTRp5pBh3CenondQ0nVjxF7avHKahkqkG1bDFga0PV+P87lcI1v/I69MeqWQhWeqP/
-         XlhNdVS0LgjUO/ZN7oFR6p8BWtXva8iso2KoVdK6evCVNdBtGmcGjdoICW56F0m6FjfJ
-         3ZON+xaSVjaMBkuWzk7n0EISyyFW/Z+Bi0vnhrj9y2RQjZ+F/ryZ745bsFFGn3gUOseC
-         ysQA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=H/T62WymqibAzBybIU6SUVM2xwVqngTN7XIUBl9RNJY=;
+        b=DpZq1hI8hoSZMAIvIKWuAwAwDsAUnLgjeh2j+TjrB1SsTc7bDlHtwkcjGBHhMNrpSa
+         0ftLnVhblEm8eYwLkQBwBv3aUiVC8sQddcMvkVg23Z7KYL3jSZQQ2LioBdjh1Nq6bzAR
+         +iA510Cyusj+fk2PdO/X66G2VJ0wjvjPHRDEGFXP+KO+vQUVybYxqO2yL2jEbAH37ZTC
+         WOHrrDl2m6dA709A5HmVbzUYh8JIoO6UX0WV2ibeM74U0uWG4ruseiRfaAUZOjqdBOGv
+         LXP7E/Ewr1PsJEc1Y1HeAF28kYVODUsl5mN4S4be964aADo+LmtbPRjDcs0lqkE6AWa/
+         c99Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=23YNlEsDbObULfKEr/tFp6pmJb4nAmXiy8Gowl0MM1A=;
-        b=TORYxy+FoGdCzuim8Z5rY3CH+HZl7DYsCW6DMFfHjKMouSpADbizcnYp54QL9NAm/B
-         MO/KduuxFVVuAf+vPNwOLLQY+rNeZ4e9gyWvcmi+y9cPsZ5in/8OJ7Gr6gGdzbpiqgyr
-         TCGdKNgoWKsYUZIOi9AkZxHOK+l4LCivDPTAPWXgo4KAGkdz7h7/VZ+pCKQt37JcT4Yj
-         hA8tbbpGOXqve0pTg7jDsWkyZ4DNLYVMjhbt//73awOq+sn05HXMkVm10fL4tYUbzU9D
-         0xgvEmtBe3sjopr55VlLnVT0MSCDjaYiSAEqKsQ6EISNQ9e2EWyZXCoZlaa5g0Jm9iu2
-         NOaQ==
-X-Gm-Message-State: APjAAAUdtc1ir+DUf2JkXe3hwsdBgQQKVe/6MfDMhql7S65mu2xlW/se
-        kEc3m4d61JqgIcryllMcjLiYMdDurTw=
-X-Google-Smtp-Source: APXvYqyTcHyedWAXGbrpw2Djq4w6jM1KjA8nIMTBiqOWrLjeWHPH5XEmncBd2vKdjoMudZ+9Ik95RA==
-X-Received: by 2002:ac8:41d7:: with SMTP id o23mr6782604qtm.268.1567027565813;
-        Wed, 28 Aug 2019 14:26:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:fd80:d116:2abc:e3ba:ad78])
-        by smtp.googlemail.com with ESMTPSA id r15sm200507qtp.94.2019.08.28.14.26.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=H/T62WymqibAzBybIU6SUVM2xwVqngTN7XIUBl9RNJY=;
+        b=KLXjJSrEoTCxocFIpMDBHDLfHA6z5KIRGpUnfBHCn1UD0tZnw2b+5EkESLDJTI6YDO
+         YT5DygK0uXrLyfZnUJslBj0EaFIIFzvtPf+OGozBUx9viuASRQmFvU6rUclte4NP7tZN
+         qx45bNz4g7UVAi8FIaC3FuMGLHXQz2hUi80/9hL/VUB+kfN/MsnX08Eibiu0m5tTz0S6
+         FsmzKbWFAowVsaoLRJ8owWHF5f0TzHgIrmEjgl8P8ifodNdgiyeKBwiuvLkasaAFMC7K
+         FTW20CHmdtzcCvWZHNXEv2YHHjqv0x1eMm+czTctrGHdxrWookCRm/QyBcEvGM3gKoOo
+         GZrg==
+X-Gm-Message-State: APjAAAXzXmzPxG5ds9RkAPvuCHdI6LfXCprnblKcUi53cKLT/na1y1F6
+        NWYl0L0lBTzEjPGy3b0R1HE=
+X-Google-Smtp-Source: APXvYqxV8rh8RoFIsPi0EjsCE3QE6b/+zZAO0va1dz9OD5UGMEIr78PFAz9v9sUoSY1sncswXiSTeA==
+X-Received: by 2002:a17:902:302:: with SMTP id 2mr6423212pld.149.1567028024344;
+        Wed, 28 Aug 2019 14:33:44 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::5983])
+        by smtp.gmail.com with ESMTPSA id j18sm334330pfh.70.2019.08.28.14.33.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Aug 2019 14:26:04 -0700 (PDT)
-Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
- for fib entries
-To:     Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-References: <20190806191517.8713-1-dsahern@kernel.org>
- <20190828103718.GF2312@nanopsycho>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2c561928-1052-4c33-848d-ed7b81e920cf@gmail.com>
-Date:   Wed, 28 Aug 2019 15:26:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        Wed, 28 Aug 2019 14:33:43 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 14:33:41 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     rdna@fb.com, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 01/10] bpf: introduce __MAX_BPF_PROG_TYPE and
+ __MAX_BPF_MAP_TYPE enum values
+Message-ID: <20190828213339.5qie42ulkhyso7i5@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1567024943.git.hex@fb.com>
+ <43989d37be938b7d284028481e63df0a0471e29f.1567024943.git.hex@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20190828103718.GF2312@nanopsycho>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <43989d37be938b7d284028481e63df0a0471e29f.1567024943.git.hex@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/28/19 4:37 AM, Jiri Pirko wrote:
-> Tue, Aug 06, 2019 at 09:15:17PM CEST, dsahern@kernel.org wrote:
->> From: David Ahern <dsahern@gmail.com>
->>
->> Prior to the commit in the fixes tag, the resource controller in netdevsim
->> tracked fib entries and rules per network namespace. Restore that behavior.
+On Wed, Aug 28, 2019 at 02:03:04PM -0700, Julia Kartseva wrote:
+> Similar to __MAX_BPF_ATTACH_TYPE identifying the number of elements in
+> bpf_attach_type enum, add tailing enum values __MAX_BPF_PROG_TYPE
+> and __MAX_BPF_MAP_TYPE to simplify e.g. iteration over enums values in
+> the case when new values are added.
 > 
-> David, please help me understand. If the counters are per-device, not
-> per-netns, they are both the same. If we have device (devlink instance)
-> is in a netns and take only things happening in this netns into account,
-> it should count exactly the same amount of fib entries, doesn't it?
+> Signed-off-by: Julia Kartseva <hex@fb.com>
+> ---
+>  include/uapi/linux/bpf.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 5d2fb183ee2d..9b681bb82211 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -136,8 +136,11 @@ enum bpf_map_type {
+>  	BPF_MAP_TYPE_STACK,
+>  	BPF_MAP_TYPE_SK_STORAGE,
+>  	BPF_MAP_TYPE_DEVMAP_HASH,
+> +	__MAX_BPF_MAP_TYPE
+>  };
+>  
+> +#define MAX_BPF_MAP_TYPE __MAX_BPF_MAP_TYPE
+> +
+>  /* Note that tracing related programs such as
+>   * BPF_PROG_TYPE_{KPROBE,TRACEPOINT,PERF_EVENT,RAW_TRACEPOINT}
+>   * are not subject to a stable API since kernel internal data
+> @@ -173,8 +176,11 @@ enum bpf_prog_type {
+>  	BPF_PROG_TYPE_CGROUP_SYSCTL,
+>  	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
+>  	BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> +	__MAX_BPF_PROG_TYPE
+>  };
+>  
+> +#define MAX_BPF_PROG_TYPE __MAX_BPF_PROG_TYPE
+> +
 
-if you are only changing where the counters are stored - net_generic vs
-devlink private - then yes, they should be equivalent.
+This came up before and my position is still the same.
+I'm against this type of band-aid in uapi.
+'bpftool feature probe' can easily discover all supported
+prog and map types already.
 
-> 
-> I re-thinked the devlink netns patchset and currently I'm going in
-> slightly different direction. I'm having netns as an attribute of
-> devlink reload. So all the port netdevices and everything gets
-> re-instantiated into new netns. Works fine with mlxsw. There we also
-> re-register the fib notifier.
-> 
-> I think that this can work for your usecase in netdevsim too:
-> 1) devlink instance is registering a fib notifier to track all fib
->    entries in a namespace it belongs to. The counters are per-device -
->    counting fib entries in a namespace the device is in.
-> 2) another devlink instance can do the same tracking in the same
->    namespace. No problem, it's a separate counter, but the numbers are
->    the same. One can set different limits to different devlink
->    instances, but you can have only one. That is the bahaviour you have
->    now.
-> 3) on devlink reload, netdevsim re-instantiates ports and re-registers
->    fib notifier
-> 4) on devlink reload with netns change, all should be fine as the
->    re-registered fib nofitier replays the entries. The ports are
->    re-instatiated in new netns.
-> 
-> This way, we would get consistent behaviour between netdevsim and real
-> devices (mlxsw), correct devlink-netns implementation (you also
-> suggested to move ports to the namespace). Everyone should be happy.
-> 
-> What do you think?
-> 
-
-Right now, registering the fib notifier walks all namespaces. That is
-not a scalable solution. Are you changing that to replay only a given
-netns? Are you changing the notifiers to be per-namespace?
-
-Also, you are still allowing devlink instances to be created within a
-namespace?
