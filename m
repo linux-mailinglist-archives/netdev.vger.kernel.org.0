@@ -2,166 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E71A0BAE
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 22:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA2BA0BBB
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 22:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfH1Ukr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 16:40:47 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34766 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726583AbfH1Ukr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 16:40:47 -0400
-Received: by mail-qt1-f196.google.com with SMTP id a13so1175368qtj.1;
-        Wed, 28 Aug 2019 13:40:46 -0700 (PDT)
+        id S1727046AbfH1UnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 16:43:10 -0400
+Received: from mail-pf1-f169.google.com ([209.85.210.169]:43301 "EHLO
+        mail-pf1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726583AbfH1UnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 16:43:10 -0400
+Received: by mail-pf1-f169.google.com with SMTP id v12so515582pfn.10
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 13:43:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GNi9AI4rkllVI8t+VbMPhpZAgEp8bkUSpdZ2NbwyUOI=;
-        b=UCmf9cm6Nca9c9Ypx6/clrzj2/NILZp6xXUowSTAhpFJrNEF9PBbFWLPFCWK1TYMik
-         pQav/HXpyo0L643sOVhTUdl/4r1D7wmV/xVLqZqp7zV4gKC6lfV1a6WILfZpOiEk7iXi
-         lKcUxQCTunbJTLPHOAUFB9j+FRdw7teGPlvN4XlbQgnh+7aPfOHcDPvbmu6oaUIL+KLp
-         +CX8r0C0Vpk8YV13dcuP3DA6Ze7EBm68lVokyDU887NGTUGPLa98eskpK81j/j7yeN31
-         YSQ1B0eFY2HLzB2bq7+lDa8smEllPcPYXnWBu5VVfAWqZ9YF5wlcuBbO37IomGfDV/El
-         J04Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fmZmV3LEoKBavBhh1/wXQDTwcMfXci2KTIW/ghlrL/I=;
+        b=U8Uj7yHI7bbyHO9Z5Ujq5x1w/mTkmV/sSI56r/8VrolTRwhFDEyly+yvM7InbAkLH6
+         iwVfqaUGv9tD90kBuU9jf10GoK+qMPLp34hv7JmU3QS1/jJp8328IaB3K12UnZtT2hhy
+         uamYAh/eY/F1BuQ82i2DMjvXMakL6ZfBCOlS5WdP1ySsG3zMVK5/A1dhABiBDVvECYeT
+         fwn0Vt4PIYMEVXxLQKDVpXKWpfVgTHGiMvpoDJQ8m3srmqar4tWK6FtjvSAa+4E+92C3
+         kHmUW/XuEDtV7V6VsiWeWyYo2Lbsh4qC4T0hX+wb/a7/G4NaT0JiKsTz9KTy6m05TA7y
+         vhbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GNi9AI4rkllVI8t+VbMPhpZAgEp8bkUSpdZ2NbwyUOI=;
-        b=WnRJKUFtWMQvWpLEpDb2q3egkU0DX2o7rbb9HGeBFrJu8RyF18IgLTnfS2sBqvKHKI
-         r8I26cXUZ3ghwEBGQntxTY2asyxTaiGp8RO464b2unvrbV4oAnc03mgbIhwcleC2CyuP
-         vstSsJ3pgXw6G+oDbuj6qf0dQsWdhQ6nMiB87Ho8e3LeySs0rmWByMUVfswuY/AYwHSu
-         S06RCmQbaVMfIyEPtEL2n2J2QsspqTqjaOLeL92K0jzIfNq5EidQLcAvRq+JTCPVTwKP
-         U2D5zF2GAPuPhdnsvsCPM1htk0ftLf/ubjrYbCSp04oF1L5H41QoPA6nl7+eJKIR5vSY
-         21GQ==
-X-Gm-Message-State: APjAAAXGkTxiyaGgVijZJ1n2wa7c9x3kBjWUZqxQsgnA9uAgQyaNOTiS
-        XMTQ+5399M6zi2OT57RJ49IABv4YJL0A9QUBYTk=
-X-Google-Smtp-Source: APXvYqyFqxf3wKHvYomIWWojNaLz+vnkHs91+dVu+k1aJNZBvUI9+AnBydHhDJdr75UDyfDaBMmlyOq1/CA0w+Ce1fE=
-X-Received: by 2002:ac8:6688:: with SMTP id d8mr6183683qtp.141.1567024845948;
- Wed, 28 Aug 2019 13:40:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fmZmV3LEoKBavBhh1/wXQDTwcMfXci2KTIW/ghlrL/I=;
+        b=msHoYPIH/HHtmpxQwmhZ75mlLw2J4wqBDTz7b7msEB8MgC5MYLUu3WbJ7XY3GALl8T
+         jujM9jMsld9hP2wtJOkrCAl4DzvEDMVdEPMwHXINg1O64c+HOIa12cSCxJ/CaK1TxKDc
+         H5kg70X4SWut/S6rzg8KsDQ6N8M4crbznSMM6ACeRXiROzrfnTaDGUtd/i8eD4rhvw5D
+         154plCydCrhSNWNHXkZ+IyZjqpFJkAF1KQqOCp1HG8oUI7cKqGl+z/D/7l/hQUqXxVZW
+         pW35MlkYWYi0lzCKbl9RXYHcFvYlMzAE9hbp/Sosa/Vg4RaTQbdb8DktnreOkwkB9sVL
+         jo5Q==
+X-Gm-Message-State: APjAAAUixXyC1A1nB1k5M7hf2CNXWYiphgTyVoBfjPBd69FsbBoozFW0
+        fcxte5FsKl8YadnkUKJhfQ==
+X-Google-Smtp-Source: APXvYqzhj2Lf5y+ZSWAn/t8iAZNMYHGY1MFyyoxqwF1TPf0+offNtsK6ZtIiZ1mrUv/hmyvOUH7+jA==
+X-Received: by 2002:a63:20d:: with SMTP id 13mr5180068pgc.253.1567024988620;
+        Wed, 28 Aug 2019 13:43:08 -0700 (PDT)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id z14sm36320pjr.23.2019.08.28.13.43.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Aug 2019 13:43:08 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH 1/3] samples: pktgen: make variable consistent with option
+Date:   Thu, 29 Aug 2019 05:42:41 +0900
+Message-Id: <20190828204243.16666-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
- <87blwiqlc8.fsf@toke.dk> <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
- <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net> <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
- <87tva8m85t.fsf@toke.dk>
-In-Reply-To: <87tva8m85t.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 28 Aug 2019 13:40:35 -0700
-Message-ID: <CAEf4BzbzQwLn87G046ZbkLtTbY6WF6o8JkygcPLPGUSezgs9Tw@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 4:29 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> [ ... snip ...]
->
-> > E.g., today's API is essentially three steps:
-> >
-> > 1. open and parse ELF: collect relos, programs, map definitions
-> > 2. load: create maps from collected defs, do program/global data/CO-RE
-> > relocs, load and verify BPF programs
-> > 3. attach programs one by one.
-> >
-> > Between step 1 and 2 user has flexibility to create more maps, set up
-> > map-in-map, etc. Between 2 and 3 you can fill in global data, fill in
-> > tail call maps, etc. That's already pretty flexible. But we can tune
-> > and break apart those steps even further, if necessary.
->
-> Today, steps 1 and 2 can be collapsed into a single call to
-> bpf_prog_load_xattr(). As Jesper's mail explains, for XDP we don't
-> generally want to do all the fancy rewriting stuff, we just want a
-> simple way to load a program and get reusable pinning of maps.
+This commit changes variable names that can cause confusion.
 
-I agree. See my response to Jesper's message. Note also my view of
-bpf_prog_load_xattr() existence.
+For example, variable DST_MIN is quite confusing since the
+keyword 'udp_dst_min' and keyword 'dst_min' is used with pg_ctrl.
 
-> Preferably in a way that is compatible with the iproute2 loader.
->
-> So I really think we need two things:
->
-> (1) a flexible API that splits up all the various steps in a way that
->     allows programs to inject their own map definitions before
->     relocations and loading
->
-> (2) a simple convenience wrapper that loads an object file, does
->     something sensible with pinning and map-in-map definitions, and loads
->     everything into the kernel.
+On the following commit, 'dst_min' will be used to set destination IP,
+and the existing variable name DST_MIN should be changed.
 
-I agree. I think this wrapper is bpf_object__open + bpf_object__load
-(bpf_prog_load_xattr will do as well, if you don't need to do anything
-between open and load). I think pinning is simple to add in minimal
-form and is pretty non-controversial (there is some ambiguity as to
-how to handle merging of prog array maps, or maybe not just prog array
-maps, but that can be controlled later through extra flags/attributes,
-so I'd start with something sensible as a default behavior).
+Variable names are matched to the exact keyword used with pg_ctrl.
 
->
-> I'd go so far as to say that (2) should even support system-wide
-> configuration, similar to the /etc/iproute2/bpf_pinning file. E.g., an
-> /etc/libbpf/pinning.conf file that sets the default pinning directory,
-> and makes it possible to set up pin-value-to-subdir mappings like what
-> iproute2 does today.
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ .../pktgen_bench_xmit_mode_netif_receive.sh      |  8 ++++----
+ .../pktgen/pktgen_bench_xmit_mode_queue_xmit.sh  |  8 ++++----
+ samples/pktgen/pktgen_sample01_simple.sh         | 16 ++++++++--------
+ samples/pktgen/pktgen_sample02_multiqueue.sh     | 16 ++++++++--------
+ .../pktgen/pktgen_sample03_burst_single_flow.sh  |  8 ++++----
+ samples/pktgen/pktgen_sample04_many_flows.sh     |  8 ++++----
+ .../pktgen/pktgen_sample05_flow_per_thread.sh    |  8 ++++----
+ ...en_sample06_numa_awared_queue_irq_affinity.sh | 16 ++++++++--------
+ 8 files changed, 44 insertions(+), 44 deletions(-)
 
-This I'm a bit hesitant about. It feels like it's not library's job to
-read some system-wide configs modifying its behavior. We have all
-those _xattr methods, which allow to override sensible defaults, I'd
-try to go as far as possible with just that before doing
-libbpf-specific /etc configs.
+diff --git a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
+index e14b1a9144d9..9b74502c58f7 100755
+--- a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
++++ b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
+@@ -42,8 +42,8 @@ fi
+ [ -z "$BURST" ] && BURST=1024
+ [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # Base Config
+@@ -76,8 +76,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Inject packet into RX path of stack
+diff --git a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
+index 82c3e504e056..0f332555b40d 100755
+--- a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
++++ b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
+@@ -25,8 +25,8 @@ if [[ -n "$BURST" ]]; then
+ fi
+ [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # Base Config
+@@ -59,8 +59,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Inject packet into TX qdisc egress path of stack
+diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
+index d1702fdde8f3..063ec0998906 100755
+--- a/samples/pktgen/pktgen_sample01_simple.sh
++++ b/samples/pktgen/pktgen_sample01_simple.sh
+@@ -23,16 +23,16 @@ fi
+ [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
+ [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # Base Config
+ DELAY="0"        # Zero means max speed
+ 
+ # Flow variation random source port between min and max
+-UDP_MIN=9
+-UDP_MAX=109
++UDP_SRC_MIN=9
++UDP_SRC_MAX=109
+ 
+ # General cleanup everything since last run
+ # (especially important if other threads were configured by other scripts)
+@@ -66,14 +66,14 @@ pg_set $DEV "dst$IP6 $DEST_IP"
+ if [ -n "$DST_PORT" ]; then
+     # Single destination port or random port range
+     pg_set $DEV "flag UDPDST_RND"
+-    pg_set $DEV "udp_dst_min $DST_MIN"
+-    pg_set $DEV "udp_dst_max $DST_MAX"
++    pg_set $DEV "udp_dst_min $UDP_DST_MIN"
++    pg_set $DEV "udp_dst_max $UDP_DST_MAX"
+ fi
+ 
+ # Setup random UDP port src range
+ pg_set $DEV "flag UDPSRC_RND"
+-pg_set $DEV "udp_src_min $UDP_MIN"
+-pg_set $DEV "udp_src_max $UDP_MAX"
++pg_set $DEV "udp_src_min $UDP_SRC_MIN"
++pg_set $DEV "udp_src_max $UDP_SRC_MAX"
+ 
+ # start_run
+ echo "Running... ctrl^C to stop" >&2
+diff --git a/samples/pktgen/pktgen_sample02_multiqueue.sh b/samples/pktgen/pktgen_sample02_multiqueue.sh
+index 7f7a9a27548f..a4726fb50197 100755
+--- a/samples/pktgen/pktgen_sample02_multiqueue.sh
++++ b/samples/pktgen/pktgen_sample02_multiqueue.sh
+@@ -21,8 +21,8 @@ DELAY="0"        # Zero means max speed
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
+ 
+ # Flow variation random source port between min and max
+-UDP_MIN=9
+-UDP_MAX=109
++UDP_SRC_MIN=9
++UDP_SRC_MAX=109
+ 
+ # (example of setting default params in your script)
+ if [ -z "$DEST_IP" ]; then
+@@ -30,8 +30,8 @@ if [ -z "$DEST_IP" ]; then
+ fi
+ [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # General cleanup everything since last run
+@@ -67,14 +67,14 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Setup random UDP port src range
+     pg_set $dev "flag UDPSRC_RND"
+-    pg_set $dev "udp_src_min $UDP_MIN"
+-    pg_set $dev "udp_src_max $UDP_MAX"
++    pg_set $dev "udp_src_min $UDP_SRC_MIN"
++    pg_set $dev "udp_src_max $UDP_SRC_MAX"
+ done
+ 
+ # start_run
+diff --git a/samples/pktgen/pktgen_sample03_burst_single_flow.sh b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
+index b520637817ce..dfea91a09ccc 100755
+--- a/samples/pktgen/pktgen_sample03_burst_single_flow.sh
++++ b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
+@@ -34,8 +34,8 @@ fi
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0" # No need for clones when bursting
+ [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # Base Config
+@@ -67,8 +67,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Setup burst, for easy testing -b 0 disable bursting
+diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
+index 5b6e9d9cb5b5..7ea9b4a3acf6 100755
+--- a/samples/pktgen/pktgen_sample04_many_flows.sh
++++ b/samples/pktgen/pktgen_sample04_many_flows.sh
+@@ -18,8 +18,8 @@ source ${basedir}/parameters.sh
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
+ [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # NOTICE:  Script specific settings
+@@ -63,8 +63,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Randomize source IP-addresses
+diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+index 0c06e63fbe97..fbfafe029e11 100755
+--- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
++++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
+@@ -23,8 +23,8 @@ source ${basedir}/parameters.sh
+ [ -z "$BURST" ]     && BURST=32
+ [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # Base Config
+@@ -56,8 +56,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Setup source IP-addresses based on thread number
+diff --git a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
+index 97f0266c0356..755e662183f1 100755
+--- a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
++++ b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
+@@ -20,8 +20,8 @@ DELAY="0"        # Zero means max speed
+ [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
+ 
+ # Flow variation random source port between min and max
+-UDP_MIN=9
+-UDP_MAX=109
++UDP_SRC_MIN=9
++UDP_SRC_MAX=109
+ 
+ node=`get_iface_node $DEV`
+ irq_array=(`get_iface_irqs $DEV`)
+@@ -36,8 +36,8 @@ if [ -z "$DEST_IP" ]; then
+ fi
+ [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
+ if [ -n "$DST_PORT" ]; then
+-    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
+-    validate_ports $DST_MIN $DST_MAX
++    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
++    validate_ports $UDP_DST_MIN $UDP_DST_MAX
+ fi
+ 
+ # General cleanup everything since last run
+@@ -84,14 +84,14 @@ for ((i = 0; i < $THREADS; i++)); do
+     if [ -n "$DST_PORT" ]; then
+ 	# Single destination port or random port range
+ 	pg_set $dev "flag UDPDST_RND"
+-	pg_set $dev "udp_dst_min $DST_MIN"
+-	pg_set $dev "udp_dst_max $DST_MAX"
++	pg_set $dev "udp_dst_min $UDP_DST_MIN"
++	pg_set $dev "udp_dst_max $UDP_DST_MAX"
+     fi
+ 
+     # Setup random UDP port src range
+     pg_set $dev "flag UDPSRC_RND"
+-    pg_set $dev "udp_src_min $UDP_MIN"
+-    pg_set $dev "udp_src_max $UDP_MAX"
++    pg_set $dev "udp_src_min $UDP_SRC_MIN"
++    pg_set $dev "udp_src_max $UDP_SRC_MAX"
+ done
+ 
+ # start_run
+-- 
+2.20.1
 
->
-> Having (2) makes it more likely that all the different custom loaders
-> will be compatible with each other, while still allowing people to do
-> their own custom thing with (1). And of course, (2) could be implemented
-> in terms of (1) internally in libbpf.
->
-> In my ideal world, (2) would just use the definition format already in
-> iproute2 (this is basically what I implemented already), but if you guys
-> don't want to put this into libbpf, I can probably live with the default
-
-I want to avoid having legacy-at-the-time-it-was-added code in libbpf
-that we'd need to support for a long time, that solves only iproute2
-cases, which is why I'm pushing back. With BTF we can support same
-functionality in better form, which is what I want to prioritize and
-which will be beneficial to the whole BPF ecosystem.
-
-But I also want to make libbpf useful to iproute2 and other custom
-loaders that have to support existing formats, and thus my proposal to
-have libbpf provide granular enough APIs to augment default format in
-non-intrusive way. Should this be callback-based or not is secondary,
-though important to API design, concern.
-
-> format being BTF-based instead. Which would mean that iproute2 I would
-> end up with a flow like this:
->
-> - When given an elf file, try to run it through the "standard loader"
->   (2). If this works, great, proceed to program attach.
->
-> - If using (2) fails because it doesn't understand the map definition,
->   fall back to a compatibility loader that parses the legacy iproute2
->   map definition format and uses (1) to load that.
->
->
-> Does the above make sense? :)
-
-It does, yes. Also, with BTF enabled it should be easy to distinguish
-between those two (e.g., was bpf_elf_map type used? if yes, then it's
-a compatibility format) and not do extra work.
-
->
-> -Toke
