@@ -2,176 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1A5A08A9
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E042A08A6
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727173AbfH1Rgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 13:36:41 -0400
-Received: from mga01.intel.com ([192.55.52.88]:14208 "EHLO mga01.intel.com"
+        id S1727104AbfH1Rgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 13:36:35 -0400
+Received: from mga04.intel.com ([192.55.52.120]:16474 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726702AbfH1Rgk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 13:36:40 -0400
+        id S1727055AbfH1Rgd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 13:36:33 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:36:38 -0700
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:36:32 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="332243844"
-Received: from ellie.jf.intel.com (HELO localhost.localdomain) ([10.24.12.211])
-  by orsmga004.jf.intel.com with ESMTP; 28 Aug 2019 10:36:38 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, olteanv@gmail.com
-Subject: [PATCH net v1] net/sched: cbs: Fix not adding cbs instance to list
-Date:   Wed, 28 Aug 2019 10:36:15 -0700
-Message-Id: <20190828173615.4264-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.23.0
+   d="scan'208";a="188304621"
+Received: from kmsmsx157.gar.corp.intel.com ([172.21.138.134])
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Aug 2019 10:36:31 -0700
+Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.25]) by
+ kmsmsx157.gar.corp.intel.com ([169.254.5.162]) with mapi id 14.03.0439.000;
+ Thu, 29 Aug 2019 01:36:30 +0800
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>
+Subject: RE: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
+ cover PHY that only talks C45
+Thread-Topic: [PATCH v1 net-next] net: phy: mdio_bus: make mdiobus_scan also
+ cover PHY that only talks C45
+Thread-Index: AQHVXDc1t4vgWavJu0GuD73CQMEeB6cNOWeAgAAHYgCAAdKi8P//jAIAgAGQK4CAABXrAIAAiMHA
+Date:   Wed, 28 Aug 2019 17:36:29 +0000
+Message-ID: <D6759987A7968C4889FDA6FA91D5CBC814759789@PGSMSX103.gar.corp.intel.com>
+References: <1566870769-9967-1-git-send-email-weifeng.voon@intel.com>
+ <e9ece5ad-a669-6d6b-d050-c633cad15476@gmail.com>
+ <20190826185418.GG2168@lunn.ch>
+ <D6759987A7968C4889FDA6FA91D5CBC814758ED8@PGSMSX103.gar.corp.intel.com>
+ <20190827154918.GO2168@lunn.ch>
+ <AF233D1473C1364ABD51D28909A1B1B75C22CD3C@pgsmsx114.gar.corp.intel.com>
+ <ef6aa10e-d3eb-e154-0168-d7f012858a2c@gmail.com>
+In-Reply-To: <ef6aa10e-d3eb-e154-0168-d7f012858a2c@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.205]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When removing a cbs instance when offloading is enabled, the crash
-below can be observed. Also, the current code doesn't handle correctly
-the case when offload is disabled without removing the qdisc: if the
-link speed changes the credit calculations will be wrong.
-
-The solution for both issues is the same, add the cbs instance being
-created unconditionally to the global list, even if the link state
-notification isn't useful "right now".
-
-Crash log:
-
-[   59.838566] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[   59.838570] #PF: supervisor read access in kernel mode
-[   59.838571] #PF: error_code(0x0000) - not-present page
-[   59.838572] PGD 0 P4D 0
-[   59.838574] Oops: 0000 [#1] SMP PTI
-[   59.838576] CPU: 4 PID: 492 Comm: tc Not tainted 5.3.0-rc6+ #5
-[   59.838577] Hardware name: Gigabyte Technology Co., Ltd. Z390 AORUS ULTRA/Z390 AORUS ULTRA-CF, BIOS F7 03/14/2019
-[   59.838581] RIP: 0010:__list_del_entry_valid+0x29/0xa0
-[   59.838583] Code: 90 48 b8 00 01 00 00 00 00 ad de 55 48 8b 17 4c 8b 47 08 48 89 e5 48 39 c2 74 27 48 b8 22 01 00 00 00 00 ad de 49 39 c0 74 2d <49> 8b 30 48 39 fe 75 3d 48 8b 52 08 48 39 f2 75 4c b8 01 00 00 00
-[   59.838585] RSP: 0018:ffffbba040a47988 EFLAGS: 00010217
-[   59.838587] RAX: dead000000000122 RBX: ffff9f356410cc00 RCX: 0000000000000000
-[   59.838588] RDX: 0000000000000000 RSI: ffff9f356410cc64 RDI: ffff9f356410cde0
-[   59.838589] RBP: ffffbba040a47988 R08: 0000000000000000 R09: ffffbba040a47a34
-[   59.838591] R10: 0000000000000000 R11: ffffbba040a47aa0 R12: ffff9f3569aa0000
-[   59.838592] R13: ffff9f356410cd40 R14: 0000000000000000 R15: 0000000000000000
-[   59.838593] FS:  00007f88b2822f80(0000) GS:ffff9f356e100000(0000) knlGS:0000000000000000
-[   59.838595] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   59.838596] CR2: 0000000000000000 CR3: 00000004a0b0c004 CR4: 00000000003606e0
-[   59.838597] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   59.838598] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   59.838599] Call Trace:
-[   59.838603]  cbs_destroy+0x32/0xa0 [sch_cbs]
-[   59.838605]  qdisc_destroy+0x45/0x120
-[   59.838607]  qdisc_put+0x25/0x30
-[   59.838608]  qdisc_graft+0x2c1/0x450
-[   59.838610]  tc_get_qdisc+0x1c8/0x310
-[   59.838612]  ? prep_new_page+0x40/0xc0
-[   59.838614]  rtnetlink_rcv_msg+0x293/0x360
-[   59.838616]  ? kmem_cache_alloc_node_trace+0x177/0x290
-[   59.838617]  ? __kmalloc_node_track_caller+0x38/0x50
-[   59.838619]  ? rtnl_calcit.isra.0+0xf0/0xf0
-[   59.838621]  netlink_rcv_skb+0x48/0x110
-[   59.838623]  rtnetlink_rcv+0x10/0x20
-[   59.838624]  netlink_unicast+0x15b/0x1d0
-[   59.838625]  netlink_sendmsg+0x1fb/0x3a0
-[   59.838628]  sock_sendmsg+0x2f/0x40
-[   59.838629]  ___sys_sendmsg+0x295/0x2f0
-[   59.838631]  ? ___sys_recvmsg+0x151/0x1e0
-[   59.838633]  ? do_wp_page+0x7c/0x450
-[   59.838634]  __sys_sendmsg+0x48/0x80
-[   59.838636]  __x64_sys_sendmsg+0x1a/0x20
-[   59.838638]  do_syscall_64+0x53/0x1e0
-[   59.838640]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   59.838641] RIP: 0033:0x7f88b2aab69a
-[   59.838643] Code: 48 c7 c0 ff ff ff ff eb be 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 18 b8 2e 00 00 00 c5 fc 77 0f 05 <48> 3d 00 f0 ff ff 77 5e c3 0f 1f 44 00 00 48 83 ec 28 89 54 24 1c
-[   59.838645] RSP: 002b:00007fff79f253d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[   59.838647] RAX: ffffffffffffffda RBX: 000055bfdd1c19a0 RCX: 00007f88b2aab69a
-[   59.838648] RDX: 0000000000000000 RSI: 00007fff79f25448 RDI: 0000000000000003
-[   59.838649] RBP: 00007fff79f254b0 R08: 0000000000000001 R09: 000055bfddc268a0
-[   59.838650] R10: 0000000000000000 R11: 0000000000000246 R12: 000000005d66a666
-[   59.838652] R13: 0000000000000000 R14: 00007fff79f25550 R15: 00007fff79f25530
-[   59.838653] Modules linked in: sch_cbs sch_mqprio e1000e igb intel_pch_thermal thermal video backlight
-[   59.838657] CR2: 0000000000000000
-[   59.838658] ---[ end trace 08db7a13640831a0 ]---
-[   59.838660] RIP: 0010:__list_del_entry_valid+0x29/0xa0
-[   59.838662] Code: 90 48 b8 00 01 00 00 00 00 ad de 55 48 8b 17 4c 8b 47 08 48 89 e5 48 39 c2 74 27 48 b8 22 01 00 00 00 00 ad de 49 39 c0 74 2d <49> 8b 30 48 39 fe 75 3d 48 8b 52 08 48 39 f2 75 4c b8 01 00 00 00
-[   59.838664] RSP: 0018:ffffbba040a47988 EFLAGS: 00010217
-[   59.838665] RAX: dead000000000122 RBX: ffff9f356410cc00 RCX: 0000000000000000
-[   59.838666] RDX: 0000000000000000 RSI: ffff9f356410cc64 RDI: ffff9f356410cde0
-[   59.838667] RBP: ffffbba040a47988 R08: 0000000000000000 R09: ffffbba040a47a34
-[   59.838669] R10: 0000000000000000 R11: ffffbba040a47aa0 R12: ffff9f3569aa0000
-[   59.838670] R13: ffff9f356410cd40 R14: 0000000000000000 R15: 0000000000000000
-[   59.838671] FS:  00007f88b2822f80(0000) GS:ffff9f356e100000(0000) knlGS:0000000000000000
-[   59.838673] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   59.838674] CR2: 0000000000000000 CR3: 00000004a0b0c004 CR4: 00000000003606e0
-[   59.838675] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   59.838676] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-Fixes: e0a7683 ("net/sched: cbs: fix port_rate miscalculation")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- net/sched/sch_cbs.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
-
-diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-index 732e109..a167bda 100644
---- a/net/sched/sch_cbs.c
-+++ b/net/sched/sch_cbs.c
-@@ -401,6 +401,10 @@ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
- 	if (!q->qdisc)
- 		return -ENOMEM;
- 
-+	spin_lock(&cbs_list_lock);
-+	list_add(&q->cbs_list, &cbs_list);
-+	spin_unlock(&cbs_list_lock);
-+
- 	qdisc_hash_add(q->qdisc, false);
- 
- 	q->queue = sch->dev_queue - netdev_get_tx_queue(dev, 0);
-@@ -414,12 +418,6 @@ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
- 	if (err)
- 		return err;
- 
--	if (!q->offload) {
--		spin_lock(&cbs_list_lock);
--		list_add(&q->cbs_list, &cbs_list);
--		spin_unlock(&cbs_list_lock);
--	}
--
- 	return 0;
- }
- 
-@@ -428,15 +426,18 @@ static void cbs_destroy(struct Qdisc *sch)
- 	struct cbs_sched_data *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
- 
--	spin_lock(&cbs_list_lock);
--	list_del(&q->cbs_list);
--	spin_unlock(&cbs_list_lock);
-+	/* Nothing to do if we couldn't create the underlying qdisc */
-+	if (!q->qdisc)
-+		return;
- 
- 	qdisc_watchdog_cancel(&q->watchdog);
- 	cbs_disable_offload(dev, q);
- 
--	if (q->qdisc)
--		qdisc_put(q->qdisc);
-+	spin_lock(&cbs_list_lock);
-+	list_del(&q->cbs_list);
-+	spin_unlock(&cbs_list_lock);
-+
-+	qdisc_put(q->qdisc);
- }
- 
- static int cbs_dump(struct Qdisc *sch, struct sk_buff *skb)
--- 
-2.23.0
-
+PiBPbiA4LzI4LzE5IDg6NDEgQU0sIE9uZywgQm9vbiBMZW9uZyB3cm90ZToNCj4gPj4gT24gVHVl
+LCBBdWcgMjcsIDIwMTkgYXQgMDM6MjM6MzRQTSArMDAwMCwgVm9vbiwgV2VpZmVuZyB3cm90ZToN
+Cj4gPj4+Pj4+IE1ha2UgbWRpb2J1c19zY2FuKCkgdG8gdHJ5IGhhcmRlciB0byBsb29rIGZvciBh
+bnkgUEhZIHRoYXQgb25seQ0KPiA+Pj4+IHRhbGtzIEM0NS4NCj4gPj4+Pj4gSWYgeW91IGFyZSBu
+b3QgdXNpbmcgRGV2aWNlIFRyZWUgb3IgQUNQSSwgYW5kIHlvdSBhcmUgbGV0dGluZyB0aGUNCj4g
+Pj4+Pj4gTURJTyBidXMgYmUgc2Nhbm5lZCwgaXQgc291bmRzIGxpa2UgdGhlcmUgc2hvdWxkIGJl
+IGEgd2F5IGZvciB5b3UNCj4gPj4+Pj4gdG8gcHJvdmlkZSBhIGhpbnQgYXMgdG8gd2hpY2ggYWRk
+cmVzc2VzIHNob3VsZCBiZSBzY2FubmVkICh0aGF0J3MNCj4gPj4+Pj4gbWlpX2J1czo6cGh5X21h
+c2spIGFuZCBwb3NzaWJseSBlbmhhbmNlIHRoYXQgd2l0aCBhIG1hc2sgb2YNCj4gPj4+Pj4gcG9z
+c2libGUNCj4gPj4+Pj4gQzQ1IGRldmljZXM/DQo+ID4+Pj4NCj4gPj4+PiBZZXMsIGkgZG9uJ3Qg
+bGlrZSB0aGlzIHVuY29uZGl0aW9uYWwgYzQ1IHNjYW5uaW5nLiBBIGxvdCBvZiBNRElPDQo+ID4+
+Pj4gYnVzIGRyaXZlcnMgZG9uJ3QgbG9vayBmb3IgdGhlIE1JSV9BRERSX0M0NS4gVGhleSBhcmUg
+Z29pbmcgdG8gZG8gYQ0KPiA+Pj4+IEMyMiB0cmFuc2ZlciwgYW5kIG1heWJlIG5vdCBtYXNrIG91
+dCB0aGUgTUlJX0FERFJfQzQ1IGZyb20gcmVnLA0KPiA+Pj4+IGNhdXNpbmcgYW4gaW52YWxpZCBy
+ZWdpc3RlciB3cml0ZS4gQmFkIHRoaW5ncyBjYW4gdGhlbiBoYXBwZW4uDQo+ID4+Pj4NCj4gPj4+
+PiBXaXRoIERUIGFuZCBBQ1BJLCB3ZSBoYXZlIGFuIGV4cGxpY2l0IGluZGljYXRpb24gdGhhdCBD
+NDUgc2hvdWxkIGJlDQo+ID4+Pj4gdXNlZCwgc28gd2Uga25vdyBvbiB0aGlzIHBsYXRmb3JtIEM0
+NSBpcyBzYWZlIHRvIHVzZS4gV2UgbmVlZA0KPiA+Pj4+IHNvbWV0aGluZyBzaW1pbGFyIHdoZW4g
+bm90IHVzaW5nIERUIG9yIEFDUEkuDQo+ID4+Pj4NCj4gPj4+PiAJICBBbmRyZXcNCj4gPj4+DQo+
+ID4+PiBGbG9yaWFuIGFuZCBBbmRyZXcsDQo+ID4+PiBUaGUgbWRpbyBjMjIgaXMgdXNpbmcgdGhl
+IHN0YXJ0LW9mLWZyYW1lIFNUPTAxIHdoaWxlIG1kaW8gYzQ1IGlzDQo+ID4+PiB1c2luZyBTVD0w
+MCBhcyBpZGVudGlmaWVyLiBTbyBtZGlvIGMyMiBkZXZpY2Ugd2lsbCBub3QgcmVzcG9uc2UgdG8N
+Cj4gbWRpbyBjNDUgcHJvdG9jb2wuDQo+ID4+PiBBcyBpbiBJRUVFIDgwMi4xYWUtMjAwMiBBbm5l
+eCA0NUEuMyBtZW50aW9uIHRoYXQ6DQo+ID4+PiAiIEV2ZW4gdGhvdWdoIHRoZSBDbGF1c2UgNDUg
+TURJTyBmcmFtZXMgdXNpbmcgdGhlIFNUPTAwIGZyYW1lIGNvZGUNCj4gPj4+IHdpbGwgYWxzbyBi
+ZSBkcml2ZW4gb24gdG8gdGhlIENsYXVzZSAyMiBNSUkgTWFuYWdlbWVudCBpbnRlcmZhY2UsDQo+
+ID4+PiB0aGUgQ2xhdXNlIDIyIFBIWXMgd2lsbCBpZ25vcmUgdGhlIGZyYW1lcy4gIg0KPiA+Pj4N
+Cj4gPj4+IEhlbmNlLCBJIGFtIG5vdCBzZWVpbmcgYW55IGNvbmNlcm4gdGhhdCB0aGUgYzQ1IHNj
+YW5uaW5nIHdpbGwgbWVzcw0KPiA+Pj4gdXAgd2l0aA0KPiA+Pj4gYzIyIGRldmljZXMuDQo+ID4+
+DQo+ID4+IEhpIFZvb24NCj4gPj4NCj4gPj4gVGFrZSBmb3IgZXhhbXBsZSBtZGlvLWhpc2ktZmVt
+YWMuYw0KPiA+Pg0KPiA+PiBzdGF0aWMgaW50IGhpc2lfZmVtYWNfbWRpb19yZWFkKHN0cnVjdCBt
+aWlfYnVzICpidXMsIGludCBtaWlfaWQsIGludA0KPiA+PiByZWdudW0pIHsNCj4gPj4gICAgICAg
+IHN0cnVjdCBoaXNpX2ZlbWFjX21kaW9fZGF0YSAqZGF0YSA9IGJ1cy0+cHJpdjsNCj4gPj4gICAg
+ICAgIGludCByZXQ7DQo+ID4+DQo+ID4+ICAgICAgICByZXQgPSBoaXNpX2ZlbWFjX21kaW9fd2Fp
+dF9yZWFkeShkYXRhKTsNCj4gPj4gICAgICAgIGlmIChyZXQpDQo+ID4+ICAgICAgICAgICAgICAg
+IHJldHVybiByZXQ7DQo+ID4+DQo+ID4+ICAgICAgICB3cml0ZWwoKG1paV9pZCA8PCBCSVRfUEhZ
+X0FERFJfT0ZGU0VUKSB8IHJlZ251bSwNCj4gPj4gICAgICAgICAgICAgICBkYXRhLT5tZW1iYXNl
+ICsgTURJT19SV0NUUkwpOw0KPiA+Pg0KPiA+Pg0KPiA+PiBUaGVyZSBpcyBubyBjaGVjayBoZXJl
+IGZvciBNSUlfQUREUl9DNDUuIFNvIGl0IHdpbGwgcGVyZm9ybSBhIEMyMg0KPiA+PiB0cmFuc2Zl
+ci4gQW5kIHJlZ251bSB3aWxsIHN0aWxsIGhhdmUgTUlJX0FERFJfQzQ1IGluIGl0LCBzbyB0aGUN
+Cj4gPj4gd3JpdGVsKCkgaXMgZ29pbmcgdG8gc2V0IGJpdCAzMCwgc2luY2UgI2RlZmluZSBNSUlf
+QUREUl9DNDUgKDE8PDMwKS4NCj4gPj4gV2hhdCBoYXBwZW5zIG9uIHRoaXMgaGFyZHdhcmUgdW5k
+ZXIgdGhlc2UgY29uZGl0aW9ucz8NCj4gPj4NCj4gPj4gWW91IGNhbm5vdCB1bmNvbmRpdGlvbmFs
+bHkgYXNrIGFuIE1ESU8gZHJpdmVyIHRvIGRvIGEgQzQ1IHRyYW5zZmVyLg0KPiA+PiBTb21lIGRy
+aXZlcnMgYXJlIGdvaW5nIHRvIGRvIGJhZCB0aGluZ3MuDQo+ID4NCj4gPiBBbmRyZXcgJiBGbG9y
+aWFuLCB0aGFua3MgZm9yIHlvdXIgcmV2aWV3IG9uIHRoaXMgcGF0Y2ggYW5kIGluc2lnaHRzIG9u
+DQo+IGl0Lg0KPiA+IFdlIHdpbGwgbG9vayBpbnRvIHRoZSBpbXBsZW1lbnRhdGlvbiBhcyBzdWdn
+ZXN0ZWQgYXMgZm9sbG93Lg0KPiA+DQo+ID4gLSBmb3IgZWFjaCBiaXQgY2xlYXIgaW4gbWlpX2J1
+czo6cGh5X21hc2ssIHNjYW4gaXQgYXMgQzIyDQo+ID4gLSBmb3IgZWFjaCBiaXQgY2xlYXIgaW4g
+bWlpX2J1czo6cGh5X2M0NV9tYXNrLCBzY2FuIGl0IGFzIEM0NQ0KPiA+DQo+ID4gV2Ugd2lsbCB3
+b3JrIG9uIHRoaXMgYW5kIHJlc3VibWl0IHNvb25lc3QuDQo+IA0KPiBTb3VuZHMgZ29vZC4gSWYg
+eW91IGRvIG5vdCBuZWVkIHRvIHNjYW4gdGhlIE1ESU8gYnVzLCBhbm90aGVyIGFwcHJvYWNoDQo+
+IGlzIHRvIGNhbGwgZ2V0X3BoeV9kZXZpY2UoKSBieSBwYXNzaW5nIHRoZSBpc19jNDUgYm9vbGVh
+biB0byB0cnVlIGluDQo+IG9yZGVyIHRvIGNvbm5lY3QgZGlyZWN0bHkgdG8gYSBDNDUgZGV2aWNl
+IGZvciB3aGljaCB5b3UgYWxyZWFkeSBrbm93IHRoZQ0KPiBhZGRyZXNzLg0KPiANCj4gQXNzdW1p
+bmcgdGhpcyBpcyBkb25lIGZvciB0aGUgc3RtbWFjIFBDSSBjaGFuZ2VzIHRoYXQgeW91IGhhdmUg
+c3VibWl0dGVkLA0KPiBhbmQgdGhhdCB0aG9zZSBjYXJkcyBoYXZlIGEgZml4ZWQgc2V0IG9mIGFk
+ZHJlc3NlcyBmb3IgdGhlaXIgUEhZcywgbWF5YmUNCj4gc2Nhbm5pbmcgdGhlIGJ1cyBpcyBvdmVy
+a2lsbD8NCj4gLS0NCj4gRmxvcmlhbg0KDQpHb29kIHN1Z2dlc3Rpb24uIEFuZCB5ZXMsIHdlIGhh
+dmUgYSBmaXggcGh5IGFkZHJlc3MgdG9vLiBCdXQgdGhlIE1BQyBpcyBmcmVlIA0KdG8gcGFpciB3
+aXRoIGFueSBQSFkgd2hpY2ggbWlnaHQgc3VwcG9ydHMgb25seSBtZGlvIGMyMiBvciBvbmx5IG1k
+aW8gYzQ1LiANCldlIHdpbGwgY29uc2lkZXIgaXQgYW5kIHJlc3VibWl0IHNvb25lc3QuDQoNCg0K
+DQo=
