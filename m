@@ -2,253 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DCB5A088E
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:33:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC1A5A08A9
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:37:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbfH1Rdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 13:33:41 -0400
-Received: from mga02.intel.com ([134.134.136.20]:19308 "EHLO mga02.intel.com"
+        id S1727173AbfH1Rgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 13:36:41 -0400
+Received: from mga01.intel.com ([192.55.52.88]:14208 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726990AbfH1Rdl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 13:33:41 -0400
+        id S1726702AbfH1Rgk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 13:36:40 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:33:40 -0700
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Aug 2019 10:36:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,441,1559545200"; 
-   d="scan'208";a="182093730"
-Received: from glass.png.intel.com ([172.30.181.95])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Aug 2019 10:33:37 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     davem@davemloft.net, linux@armlinux.org.uk,
-        mcoquelin.stm32@gmail.com, joabreu@synopsys.com,
-        f.fainelli@gmail.com, andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peppe.cavallaro@st.comi, alexandre.torgue@st.com,
-        weifeng.voon@intel.com
-Subject: [RFC net-next v1 5/5] net: stmmac: add dwxpcs boardinfo for mdio_device registration
-Date:   Thu, 29 Aug 2019 01:33:21 +0800
-Message-Id: <20190828173321.25334-6-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.17.0
-In-Reply-To: <20190828173321.25334-1-boon.leong.ong@intel.com>
-References: <20190828173321.25334-1-boon.leong.ong@intel.com>
+   d="scan'208";a="332243844"
+Received: from ellie.jf.intel.com (HELO localhost.localdomain) ([10.24.12.211])
+  by orsmga004.jf.intel.com with ESMTP; 28 Aug 2019 10:36:38 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, olteanv@gmail.com
+Subject: [PATCH net v1] net/sched: cbs: Fix not adding cbs instance to list
+Date:   Wed, 28 Aug 2019 10:36:15 -0700
+Message-Id: <20190828173615.4264-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For EHL & TGL Ethernet PCS, the mdio bus address is the same across all
-TSN controller instances. External PHY is using default mdio bus address of
-0x0. As Ethernet DW PCS is only applicable for SGMII interface, we only
-register setup_intel_mgbe_phy_conv() for all TSN controller with SGMII
-interface only.
+When removing a cbs instance when offloading is enabled, the crash
+below can be observed. Also, the current code doesn't handle correctly
+the case when offload is disabled without removing the qdisc: if the
+link speed changes the credit calculations will be wrong.
 
-Also introduce callback for remove mdio_device for unloading driver.
+The solution for both issues is the same, add the cbs instance being
+created unconditionally to the global list, even if the link state
+notification isn't useful "right now".
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Crash log:
+
+[   59.838566] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   59.838570] #PF: supervisor read access in kernel mode
+[   59.838571] #PF: error_code(0x0000) - not-present page
+[   59.838572] PGD 0 P4D 0
+[   59.838574] Oops: 0000 [#1] SMP PTI
+[   59.838576] CPU: 4 PID: 492 Comm: tc Not tainted 5.3.0-rc6+ #5
+[   59.838577] Hardware name: Gigabyte Technology Co., Ltd. Z390 AORUS ULTRA/Z390 AORUS ULTRA-CF, BIOS F7 03/14/2019
+[   59.838581] RIP: 0010:__list_del_entry_valid+0x29/0xa0
+[   59.838583] Code: 90 48 b8 00 01 00 00 00 00 ad de 55 48 8b 17 4c 8b 47 08 48 89 e5 48 39 c2 74 27 48 b8 22 01 00 00 00 00 ad de 49 39 c0 74 2d <49> 8b 30 48 39 fe 75 3d 48 8b 52 08 48 39 f2 75 4c b8 01 00 00 00
+[   59.838585] RSP: 0018:ffffbba040a47988 EFLAGS: 00010217
+[   59.838587] RAX: dead000000000122 RBX: ffff9f356410cc00 RCX: 0000000000000000
+[   59.838588] RDX: 0000000000000000 RSI: ffff9f356410cc64 RDI: ffff9f356410cde0
+[   59.838589] RBP: ffffbba040a47988 R08: 0000000000000000 R09: ffffbba040a47a34
+[   59.838591] R10: 0000000000000000 R11: ffffbba040a47aa0 R12: ffff9f3569aa0000
+[   59.838592] R13: ffff9f356410cd40 R14: 0000000000000000 R15: 0000000000000000
+[   59.838593] FS:  00007f88b2822f80(0000) GS:ffff9f356e100000(0000) knlGS:0000000000000000
+[   59.838595] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   59.838596] CR2: 0000000000000000 CR3: 00000004a0b0c004 CR4: 00000000003606e0
+[   59.838597] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   59.838598] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   59.838599] Call Trace:
+[   59.838603]  cbs_destroy+0x32/0xa0 [sch_cbs]
+[   59.838605]  qdisc_destroy+0x45/0x120
+[   59.838607]  qdisc_put+0x25/0x30
+[   59.838608]  qdisc_graft+0x2c1/0x450
+[   59.838610]  tc_get_qdisc+0x1c8/0x310
+[   59.838612]  ? prep_new_page+0x40/0xc0
+[   59.838614]  rtnetlink_rcv_msg+0x293/0x360
+[   59.838616]  ? kmem_cache_alloc_node_trace+0x177/0x290
+[   59.838617]  ? __kmalloc_node_track_caller+0x38/0x50
+[   59.838619]  ? rtnl_calcit.isra.0+0xf0/0xf0
+[   59.838621]  netlink_rcv_skb+0x48/0x110
+[   59.838623]  rtnetlink_rcv+0x10/0x20
+[   59.838624]  netlink_unicast+0x15b/0x1d0
+[   59.838625]  netlink_sendmsg+0x1fb/0x3a0
+[   59.838628]  sock_sendmsg+0x2f/0x40
+[   59.838629]  ___sys_sendmsg+0x295/0x2f0
+[   59.838631]  ? ___sys_recvmsg+0x151/0x1e0
+[   59.838633]  ? do_wp_page+0x7c/0x450
+[   59.838634]  __sys_sendmsg+0x48/0x80
+[   59.838636]  __x64_sys_sendmsg+0x1a/0x20
+[   59.838638]  do_syscall_64+0x53/0x1e0
+[   59.838640]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   59.838641] RIP: 0033:0x7f88b2aab69a
+[   59.838643] Code: 48 c7 c0 ff ff ff ff eb be 0f 1f 80 00 00 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 18 b8 2e 00 00 00 c5 fc 77 0f 05 <48> 3d 00 f0 ff ff 77 5e c3 0f 1f 44 00 00 48 83 ec 28 89 54 24 1c
+[   59.838645] RSP: 002b:00007fff79f253d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[   59.838647] RAX: ffffffffffffffda RBX: 000055bfdd1c19a0 RCX: 00007f88b2aab69a
+[   59.838648] RDX: 0000000000000000 RSI: 00007fff79f25448 RDI: 0000000000000003
+[   59.838649] RBP: 00007fff79f254b0 R08: 0000000000000001 R09: 000055bfddc268a0
+[   59.838650] R10: 0000000000000000 R11: 0000000000000246 R12: 000000005d66a666
+[   59.838652] R13: 0000000000000000 R14: 00007fff79f25550 R15: 00007fff79f25530
+[   59.838653] Modules linked in: sch_cbs sch_mqprio e1000e igb intel_pch_thermal thermal video backlight
+[   59.838657] CR2: 0000000000000000
+[   59.838658] ---[ end trace 08db7a13640831a0 ]---
+[   59.838660] RIP: 0010:__list_del_entry_valid+0x29/0xa0
+[   59.838662] Code: 90 48 b8 00 01 00 00 00 00 ad de 55 48 8b 17 4c 8b 47 08 48 89 e5 48 39 c2 74 27 48 b8 22 01 00 00 00 00 ad de 49 39 c0 74 2d <49> 8b 30 48 39 fe 75 3d 48 8b 52 08 48 39 f2 75 4c b8 01 00 00 00
+[   59.838664] RSP: 0018:ffffbba040a47988 EFLAGS: 00010217
+[   59.838665] RAX: dead000000000122 RBX: ffff9f356410cc00 RCX: 0000000000000000
+[   59.838666] RDX: 0000000000000000 RSI: ffff9f356410cc64 RDI: ffff9f356410cde0
+[   59.838667] RBP: ffffbba040a47988 R08: 0000000000000000 R09: ffffbba040a47a34
+[   59.838669] R10: 0000000000000000 R11: ffffbba040a47aa0 R12: ffff9f3569aa0000
+[   59.838670] R13: ffff9f356410cd40 R14: 0000000000000000 R15: 0000000000000000
+[   59.838671] FS:  00007f88b2822f80(0000) GS:ffff9f356e100000(0000) knlGS:0000000000000000
+[   59.838673] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   59.838674] CR2: 0000000000000000 CR3: 00000004a0b0c004 CR4: 00000000003606e0
+[   59.838675] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   59.838676] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Fixes: e0a7683 ("net/sched: cbs: fix port_rate miscalculation")
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |  1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  2 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 25 +++++++++++
- .../net/ethernet/stmicro/stmmac/stmmac_pci.c  | 45 ++++++++++++++++++-
- include/linux/stmmac.h                        |  3 ++
- 5 files changed, 75 insertions(+), 1 deletion(-)
+ net/sched/sch_cbs.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 2325b40dff6e..db4332863611 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -200,6 +200,7 @@ endif
- config STMMAC_PCI
- 	tristate "STMMAC PCI bus support"
- 	depends on STMMAC_ETH && PCI
-+	select DWXPCS
- 	---help---
- 	  This selects the platform specific bus support for the stmmac driver.
- 	  This driver was tested on XLINX XC2V3000 FF1152AMT0221
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index dcb2e29a5717..d4e232223941 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -29,6 +29,7 @@ struct stmmac_resources {
- 	int wol_irq;
- 	int lpi_irq;
- 	int irq;
-+	int phy_conv_irq;
- };
+diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
+index 732e109..a167bda 100644
+--- a/net/sched/sch_cbs.c
++++ b/net/sched/sch_cbs.c
+@@ -401,6 +401,10 @@ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
+ 	if (!q->qdisc)
+ 		return -ENOMEM;
  
- struct stmmac_tx_info {
-@@ -203,6 +204,7 @@ struct stmmac_priv {
- 	void __iomem *mmcaddr;
- 	void __iomem *ptpaddr;
- 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
-+	int phy_conv_irq;
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *dbgfs_dir;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 06ccd216ae90..43e3d3799581 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2726,11 +2726,23 @@ static int stmmac_open(struct net_device *dev)
- 		}
- 	}
- 
-+	/* Start phy converter after MDIO bus IRQ handling is up */
-+	if (priv->plat->setup_phy_conv) {
-+		ret = priv->plat->setup_phy_conv(priv->mii, priv->phy_conv_irq);
-+		if (ret < 0) {
-+			netdev_err(priv->dev,
-+				   "%s: ERROR: setup phy conv (error: %d)\n",
-+				   __func__, ret);
-+			goto phy_conv_error;
-+		}
-+	}
++	spin_lock(&cbs_list_lock);
++	list_add(&q->cbs_list, &cbs_list);
++	spin_unlock(&cbs_list_lock);
 +
- 	stmmac_enable_all_queues(priv);
- 	stmmac_start_all_queues(priv);
+ 	qdisc_hash_add(q->qdisc, false);
  
- 	return 0;
+ 	q->queue = sch->dev_queue - netdev_get_tx_queue(dev, 0);
+@@ -414,12 +418,6 @@ static int cbs_init(struct Qdisc *sch, struct nlattr *opt,
+ 	if (err)
+ 		return err;
  
-+phy_conv_error:
- lpiirq_error:
- 	if (priv->wol_irq != dev->irq)
- 		free_irq(priv->wol_irq, dev);
-@@ -2760,6 +2772,7 @@ static int stmmac_release(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	u32 chan;
-+	int ret;
- 
- 	if (priv->eee_enabled)
- 		del_timer_sync(&priv->eee_ctrl_timer);
-@@ -2782,6 +2795,17 @@ static int stmmac_release(struct net_device *dev)
- 	if (priv->lpi_irq > 0)
- 		free_irq(priv->lpi_irq, dev);
- 
-+	/* Start phy converter after MDIO bus IRQ handling is up */
-+	if (priv->plat->remove_phy_conv) {
-+		ret = priv->plat->remove_phy_conv(priv->mii);
-+		if (ret < 0) {
-+			netdev_err(priv->dev,
-+				   "%s: ERROR: remove phy conv (error: %d)\n",
-+				   __func__, ret);
-+			return 0;
-+		}
-+	}
-+
- 	/* Stop TX/RX DMA and clear the descriptors */
- 	stmmac_stop_all_dma(priv);
- 
-@@ -4424,6 +4448,7 @@ int stmmac_dvr_probe(struct device *device,
- 	priv->dev->irq = res->irq;
- 	priv->wol_irq = res->wol_irq;
- 	priv->lpi_irq = res->lpi_irq;
-+	priv->phy_conv_irq = res->phy_conv_irq;
- 
- 	if (!IS_ERR_OR_NULL(res->mac))
- 		memcpy(priv->dev->dev_addr, res->mac, ETH_ALEN);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 20906287b6d4..c3dfb0e9b025 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -10,9 +10,10 @@
- *******************************************************************************/
- 
- #include <linux/clk-provider.h>
-+#include <linux/phy.h>
- #include <linux/pci.h>
- #include <linux/dmi.h>
+-	if (!q->offload) {
+-		spin_lock(&cbs_list_lock);
+-		list_add(&q->cbs_list, &cbs_list);
+-		spin_unlock(&cbs_list_lock);
+-	}
 -
-+#include <linux/dwxpcs.h>
- #include "stmmac.h"
- 
- /*
-@@ -109,6 +110,42 @@ static const struct stmmac_pci_info stmmac_pci_info = {
- 	.setup = stmmac_default_data,
- };
- 
-+static struct dwxpcs_platform_data intel_mgbe_pdata = {
-+	.mode = DWXPCS_MODE_SGMII_AN,
-+	.ext_phy_addr = 0x0,
-+};
-+
-+static struct mdio_board_info intel_mgbe_bdinfo = {
-+	.bus_id = "stmmac-1",
-+	.modalias = "dwxpcs",
-+	.mdio_addr = 0x16,
-+	.platform_data = &intel_mgbe_pdata,
-+};
-+
-+static int setup_intel_mgbe_phy_conv(struct mii_bus *bus, int irq)
-+{
-+	struct dwxpcs_platform_data *pdata = &intel_mgbe_pdata;
-+
-+	pdata->irq = irq;
-+
-+	return mdiobus_create_device(bus, &intel_mgbe_bdinfo);
-+}
-+
-+static int remove_intel_mgbe_phy_conv(struct mii_bus *bus)
-+{
-+	struct mdio_board_info *bdinfo = &intel_mgbe_bdinfo;
-+	struct mdio_device *mdiodev;
-+
-+	mdiodev = mdiobus_get_mdio_device(bus, bdinfo->mdio_addr);
-+
-+	if (!mdiodev)
-+		return -1;
-+
-+	mdio_device_remove(mdiodev);
-+
-+	return 0;
-+}
-+
- static int intel_mgbe_common_data(struct pci_dev *pdev,
- 				  struct plat_stmmacenet_data *plat)
- {
-@@ -197,6 +234,11 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	/* Set the maxmtu to a default of JUMBO_LEN */
- 	plat->maxmtu = JUMBO_LEN;
- 
-+	if (plat->interface == PHY_INTERFACE_MODE_SGMII) {
-+		plat->setup_phy_conv = setup_intel_mgbe_phy_conv;
-+		plat->remove_phy_conv = remove_intel_mgbe_phy_conv;
-+	}
-+
  	return 0;
  }
  
-@@ -441,6 +483,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 	res.addr = pcim_iomap_table(pdev)[i];
- 	res.wol_irq = pdev->irq;
- 	res.irq = pdev->irq;
-+	res.phy_conv_irq = res.irq;
+@@ -428,15 +426,18 @@ static void cbs_destroy(struct Qdisc *sch)
+ 	struct cbs_sched_data *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
  
- 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
+-	spin_lock(&cbs_list_lock);
+-	list_del(&q->cbs_list);
+-	spin_unlock(&cbs_list_lock);
++	/* Nothing to do if we couldn't create the underlying qdisc */
++	if (!q->qdisc)
++		return;
+ 
+ 	qdisc_watchdog_cancel(&q->watchdog);
+ 	cbs_disable_offload(dev, q);
+ 
+-	if (q->qdisc)
+-		qdisc_put(q->qdisc);
++	spin_lock(&cbs_list_lock);
++	list_del(&q->cbs_list);
++	spin_unlock(&cbs_list_lock);
++
++	qdisc_put(q->qdisc);
  }
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 7ad7ae35cf88..9ffd0e9c21b1 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -12,6 +12,7 @@
- #ifndef __STMMAC_PLATFORM_DATA
- #define __STMMAC_PLATFORM_DATA
  
-+#include <linux/phy.h>
- #include <linux/platform_device.h>
- 
- #define MTL_MAX_RX_QUEUES	8
-@@ -162,6 +163,8 @@ struct plat_stmmacenet_data {
- 	int (*init)(struct platform_device *pdev, void *priv);
- 	void (*exit)(struct platform_device *pdev, void *priv);
- 	struct mac_device_info *(*setup)(void *priv);
-+	int (*setup_phy_conv)(struct mii_bus *bus, int irq);
-+	int (*remove_phy_conv)(struct mii_bus *bus);
- 	void *bsp_priv;
- 	struct clk *stmmac_clk;
- 	struct clk *pclk;
+ static int cbs_dump(struct Qdisc *sch, struct sk_buff *skb)
 -- 
-2.17.0
+2.23.0
 
