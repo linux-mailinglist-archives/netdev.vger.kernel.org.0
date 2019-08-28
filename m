@@ -2,200 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE66A0E3E
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:34:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CBE8A0E44
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 01:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbfH1Xes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 19:34:48 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37862 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726935AbfH1Xes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:34:48 -0400
-Received: by mail-ed1-f66.google.com with SMTP id f22so1899507edt.4
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 16:34:46 -0700 (PDT)
+        id S1727092AbfH1Xif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 19:38:35 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45804 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726935AbfH1Xif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 19:38:35 -0400
+Received: by mail-pg1-f194.google.com with SMTP id o13so522126pgp.12;
+        Wed, 28 Aug 2019 16:38:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=eIeNg8O1Kr2JbFnOvJkYF804LUP44tbHFocoveh1tdI=;
-        b=tRXRjXpyp2r+Mxn7yBLQVOLFlnEbZmYxYSEi4nKZyWISqStlY7Y3ElEB0LGqrVDQ+A
-         rjJBvZFJUR8gJiFi2HFZyGtsJLIkRFVRpwpPu8Hz/KH/hfTA+34KUtQpOnEBeH2Ae+Yb
-         RFopfRjng/kUdOmRT/cUIamxnOxgRubKKnbwiJ/XzubL804LYdULub/gHifUW8tnMsE3
-         +gMyhtWe/BOV8j+kBavkCtlyH54NH0cVJessMBelTqc6xgfJdfNJ8r7Iq1DbSFQ1AcqI
-         AlOSOfwsMs0O6iRPqO77qHxEu1yPX0mEPh/aCaONoclkh5WrMjrffBuBNbMXlbJHYA9E
-         ALOw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=fQBcZOpUJiUHS2we/DrlhO+EYWoRvMOhrARVg7f4x9o=;
+        b=b5U1ivpNcAMKWLVJl1vmhIHUu1NPEDy3tBIOu/XpH1RZfhcZCoYqRhhP2gck9t81cx
+         SsZ3mOdsnbDW52nMhXv/NzSaaxBCRcwEEF2dVlORUSxdmGX9xwQGIR/hqUED8x8Ojc+W
+         Ptbj6qaUvav0ebEX1opg1lBIgcIKDRjMHUZ9Knu+QM/a+O4SPDO+L5Usvaxo1uL0UzTV
+         kUSCiIzFZiTPw/bGmHVvl/dKD6GWMYOYRjmcUmP/T2PcTkiBUiJc2C/Hqql5r8n4CWbx
+         miEJ5OoXCuWyX/o26dIDSX9ECf5eXcxZq0ZzsMXLZE6vRAurhd+28067sR+4P/IvlfSu
+         X5qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=eIeNg8O1Kr2JbFnOvJkYF804LUP44tbHFocoveh1tdI=;
-        b=JLRCrmxc0VXkfu4xhFXdxQQAljMyAo8Ej0FSfjYnLReGIqvsUepsxNlK3bnq7I6aVB
-         SeZS+dNzENcnjD4K0e9AZLZsKTjlWTpwDFR0OvhFeHBb30y268HI2fYWJMpVqodH/IeL
-         8rL2T1NTzPLo3G1gneEz6svr+IvfY07uIqOGhMbtBVe9wQrz5kxaUucW2FFxfXIFlpbv
-         FCVtMotytyqYENlQJx4qar25pwoxTvhOOnH9JmI2joBDWGw6yahKBtQkGHqXqHIWCPsq
-         biyDQ+507nfnNKtgGLR5CSwrasVuhG1RQGfLsd/EvnTjN6fC7p9qvjVdPWkpS44Bfqbo
-         eunQ==
-X-Gm-Message-State: APjAAAWW8wGnQzOYIdjs2rZhBU9yspMvan2C1ZUDuSu9hg8rgxLoSIGB
-        Nz+j+7zQH9U9wXhO0bdMNeUmVw==
-X-Google-Smtp-Source: APXvYqyBq8z57Box602KqPuUpmv/XnECTiTF60pV2XL8VHhi7RcDA0rxei2q+K96GJdHR8ggF/jUZA==
-X-Received: by 2002:a17:906:c744:: with SMTP id fk4mr5644892ejb.189.1567035285948;
-        Wed, 28 Aug 2019 16:34:45 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j12sm107695edt.66.2019.08.28.16.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 16:34:45 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 16:34:22 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Julia Kartseva <hex@fb.com>, <ast@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     <rdna@fb.com>, <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 04/10] tools/bpf: add
- libbpf_prog_type_(from|to)_str helpers
-Message-ID: <20190828163422.3d167c4b@cakuba.netronome.com>
-In-Reply-To: <467620c966825173dbd65b37a3f9bd7dd4fb8184.1567024943.git.hex@fb.com>
-References: <cover.1567024943.git.hex@fb.com>
-        <467620c966825173dbd65b37a3f9bd7dd4fb8184.1567024943.git.hex@fb.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=fQBcZOpUJiUHS2we/DrlhO+EYWoRvMOhrARVg7f4x9o=;
+        b=tKMP6PMYXkgaf+tfucy2IfWyEiVHJBNjSwoNnKtCxyYbWiurXJm5PHgHwDBoQ1Vb82
+         VreC5eB9FzGr01FMBMwNtpuwLj62Y0aBzvOusJ9qzGeEKOv7FBSqyN8fiTGQhHzK/FjK
+         sk4KBEoPvs5Ja/fxqWJxQ+XRmPFZPsY77vVO8sfUynaR8kwiu88P7R67iTfgG4r3sd6v
+         qpdllg+MxtiVd1VJymW7dq9VvXmEU1dv/6P948Hm267gOqEoi+LDU32LhlajMyNeLHGP
+         0zy964foqGNe9I4nT0RRhxliQU0mpNyfaCqthmnPDSo0e9AyCLqYgUfwvWuYWNW/Oy+V
+         SsJw==
+X-Gm-Message-State: APjAAAUvz4lFlgnwSnnv1SFgh1aIfSd/vFUgfdT2Fv8fNQ9UjkgnSBW/
+        f0gRpryEmPuQnLkVymPqgwI=
+X-Google-Smtp-Source: APXvYqzUFAZB5tZFhl5oiGI2xmpnGhUNujlyQhqy9Q3FE47Rx6N24d9tc+mAfcd6POZ+GfBCOIYsXQ==
+X-Received: by 2002:a63:6904:: with SMTP id e4mr1581105pgc.321.1567035513785;
+        Wed, 28 Aug 2019 16:38:33 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::5983])
+        by smtp.gmail.com with ESMTPSA id k8sm255572pgm.14.2019.08.28.16.38.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 28 Aug 2019 16:38:32 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 16:38:30 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+Message-ID: <20190828233828.p7xddyw3fjzfinm6@ast-mbp.dhcp.thefacebook.com>
+References: <20190827205213.456318-1-ast@kernel.org>
+ <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+ <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
+ <CALCETrVVQs1s27y8fB17JtQi-VzTq1YZPTPy3k=fKhQB1X-KKA@mail.gmail.com>
+ <20190828044903.nv3hvinkkolnnxtv@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrX-bn2SpVzTkPz+A=z_oWDs7PNeouzK7wRWMzyaBd4+7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALCETrX-bn2SpVzTkPz+A=z_oWDs7PNeouzK7wRWMzyaBd4+7g@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Aug 2019 14:03:07 -0700, Julia Kartseva wrote:
-> Standardize string representation of prog types by putting commonly used
-> names to libbpf.
-> The prog_type to string mapping is taken from bpftool:
-> tools/bpf/bpftool/main.h
+On Tue, Aug 27, 2019 at 11:20:19PM -0700, Andy Lutomirski wrote:
+> On Tue, Aug 27, 2019 at 9:49 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Aug 27, 2019 at 07:00:40PM -0700, Andy Lutomirski wrote:
+> > >
+> > > Let me put this a bit differently. Part of the point is that
+> > > CAP_TRACING should allow a user or program to trace without being able
+> > > to corrupt the system. CAP_BPF as you’ve proposed it *can* likely
+> > > crash the system.
+> >
+> > Really? I'm still waiting for your example where bpf+kprobe crashes the system...
+> >
 > 
-> Signed-off-by: Julia Kartseva <hex@fb.com>
+> That's not what I meant.  bpf+kprobe causing a crash is a bug.  I'm
+> referring to a totally different issue.  On my laptop:
+> 
+> $ sudo bpftool map
+> 48: hash  name foobar  flags 0x0
+>     key 8B  value 8B  max_entries 64  memlock 8192B
+> 181: lpm_trie  flags 0x1
+>     key 8B  value 8B  max_entries 1  memlock 4096B
+> 182: lpm_trie  flags 0x1
+>     key 20B  value 8B  max_entries 1  memlock 4096B
+> 183: lpm_trie  flags 0x1
+>     key 8B  value 8B  max_entries 1  memlock 4096B
+> 184: lpm_trie  flags 0x1
+>     key 20B  value 8B  max_entries 1  memlock 4096B
+> 185: lpm_trie  flags 0x1
+>     key 8B  value 8B  max_entries 1  memlock 4096B
+> 186: lpm_trie  flags 0x1
+>     key 20B  value 8B  max_entries 1  memlock 4096B
+> 187: lpm_trie  flags 0x1
+>     key 8B  value 8B  max_entries 1  memlock 4096B
+> 188: lpm_trie  flags 0x1
+>     key 20B  value 8B  max_entries 1  memlock 4096B
+> 
+> $ sudo bpftool map dump id 186
+> key:
+> 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+> 00 00 00 00
+> value:
+> 02 00 00 00 00 00 00 00
+> Found 1 element
+> 
+> $ sudo bpftool map delete id 186 key hex 00 00 00 00 00 00 00 00 00 00
+> 00 00 00 00 00 00 00 00 00 00
+> [this worked]
+> 
+> I don't know what my laptop was doing with map id 186 in particular,
+> but, whatever it was, I definitely broke it.  If a BPF firewall is in
+> use on something important enough, this could easily remove
+> connectivity from part or all of the system.  Right now, this needs
+> CAP_SYS_ADMIN.  With your patch, CAP_BPF is sufficient to do this, but
+> you *also* need CAP_BPF to trace the system using BPF.  Tracing with
+> BPF is 'safe' in the absence of bugs.  Modifying other peoples' maps
+> is not.
 
-This "libbpf patches have to be completely separate" just went to
-another level :/ Now we are splitting code moves into add and remove
-parts which are 5 patches apart? How are we supposed to review this?
+That lpm_trie is likely systemd implementing IP sandboxing.
+Not sure whether it's white or black list.
+Deleting an IP address from that map will either allow or disallow
+network traffic.
+Out of band operation on bpf map broke some bpf program. Sure.
+But calling it 'breaking the system' is quite a stretch.
+Calling it 'crashing the system' is plain wrong.
+Yet you're generalizing this bpf map read/write as
+"CAP_BPF as you’ve proposed it *can* likely crash the system."
+This is what I have a problem with.
 
+Anyway, changing gears...
+Yes. I did propose to make a task with CAP_BPF to be able to
+manipulate arbitrary maps in the system.
+You could have said that if CAP_BPF is given to 'bpftool'
+then any user will be able to mess with other maps because
+bpftool is likely chmod-ed 755.
+Absolutely correct!
+It's not a fault of the CAP_BPF scope.
+Just don't give that cap to bpftool or do different acl/chmod.
 
-Greg, Thomas, libbpf is extracted from the kernel sources and
-maintained in a clone repo on GitHub for ease of packaging.
+> If the answer is the latter, then maybe it would make sense to try to
+> implement some of the unprivileged bpf stuff and then to see whether
+> CAP_BPF is still needed.
 
-IIUC Alexei's concern is that since we are moving the commits from
-the kernel repo to the GitHub one we have to preserve the commits
-exactly as they are, otherwise SOB lines lose their power.
-
-Can you provide some guidance on whether that's a valid concern, 
-or whether it's perfectly fine to apply a partial patch?
-
-(HW vendors also back port tree-wide cleanups into their drivers,
- so if SOB lines are voided by git format-patch -- driver/path/
- that'd be quite an issue..)
-
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 72e6e5eb397f..946a4d41f223 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -296,6 +296,35 @@ struct bpf_object {
->  };
->  #define obj_elf_valid(o)	((o)->efile.elf)
->  
-> +static const char *const prog_type_strs[] = {
-> +	[BPF_PROG_TYPE_UNSPEC] = "unspec",
-> +	[BPF_PROG_TYPE_SOCKET_FILTER] = "socket_filter",
-> +	[BPF_PROG_TYPE_KPROBE] = "kprobe",
-> +	[BPF_PROG_TYPE_SCHED_CLS] = "sched_cls",
-> +	[BPF_PROG_TYPE_SCHED_ACT] = "sched_act",
-> +	[BPF_PROG_TYPE_TRACEPOINT] = "tracepoint",
-> +	[BPF_PROG_TYPE_XDP] = "xdp",
-> +	[BPF_PROG_TYPE_PERF_EVENT] = "perf_event",
-> +	[BPF_PROG_TYPE_CGROUP_SKB] = "cgroup_skb",
-> +	[BPF_PROG_TYPE_CGROUP_SOCK] = "cgroup_sock",
-> +	[BPF_PROG_TYPE_LWT_IN] = "lwt_in",
-> +	[BPF_PROG_TYPE_LWT_OUT] = "lwt_out",
-> +	[BPF_PROG_TYPE_LWT_XMIT] = "lwt_xmit",
-> +	[BPF_PROG_TYPE_SOCK_OPS] = "sock_ops",
-> +	[BPF_PROG_TYPE_SK_SKB] = "sk_skb",
-> +	[BPF_PROG_TYPE_CGROUP_DEVICE] = "cgroup_device",
-> +	[BPF_PROG_TYPE_SK_MSG] = "sk_msg",
-> +	[BPF_PROG_TYPE_RAW_TRACEPOINT] = "raw_tracepoint",
-> +	[BPF_PROG_TYPE_CGROUP_SOCK_ADDR] = "cgroup_sock_addr",
-> +	[BPF_PROG_TYPE_LWT_SEG6LOCAL] = "lwt_seg6local",
-> +	[BPF_PROG_TYPE_LIRC_MODE2] = "lirc_mode2",
-> +	[BPF_PROG_TYPE_SK_REUSEPORT] = "sk_reuseport",
-> +	[BPF_PROG_TYPE_FLOW_DISSECTOR] = "flow_dissector",
-> +	[BPF_PROG_TYPE_CGROUP_SYSCTL] = "cgroup_sysctl",
-> +	[BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE] = "raw_tracepoint_writable",
-> +	[BPF_PROG_TYPE_CGROUP_SOCKOPT] = "cgroup_sockopt",
-> +};
-> +
->  void bpf_program__unload(struct bpf_program *prog)
->  {
->  	int i;
-> @@ -4632,6 +4661,28 @@ int libbpf_attach_type_by_name(const char *name,
->  	return -EINVAL;
->  }
->  
-> +int libbpf_prog_type_from_str(const char *str, enum bpf_prog_type *type)
-> +{
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(prog_type_strs); i++)
-> +		if (prog_type_strs[i] && strcmp(prog_type_strs[i], str) == 0) {
-> +			*type = i;
-> +			return 0;
-> +		}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +int libbpf_prog_type_to_str(enum bpf_prog_type type, const char **str)
-> +{
-> +	if (type < BPF_PROG_TYPE_UNSPEC || type >= ARRAY_SIZE(prog_type_strs))
-> +		return -EINVAL;
-> +
-> +	*str = prog_type_strs[type];
-> +	return 0;
-> +}
-> +
->  static int
->  bpf_program__identify_section(struct bpf_program *prog,
->  			      enum bpf_prog_type *prog_type,
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index e8f70977d137..6846c488d8a2 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -122,12 +122,20 @@ LIBBPF_API int bpf_object__set_priv(struct bpf_object *obj, void *priv,
->  				    bpf_object_clear_priv_t clear_priv);
->  LIBBPF_API void *bpf_object__priv(const struct bpf_object *prog);
->  
-> +/* Program and expected attach types by section name */
->  LIBBPF_API int
->  libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
->  			 enum bpf_attach_type *expected_attach_type);
-> +/* Attach type by section name */
->  LIBBPF_API int libbpf_attach_type_by_name(const char *name,
->  					  enum bpf_attach_type *attach_type);
->  
-> +/* String representation of program type */
-> +LIBBPF_API int libbpf_prog_type_from_str(const char *str,
-> +					 enum bpf_prog_type *type);
-> +LIBBPF_API int libbpf_prog_type_to_str(enum bpf_prog_type type,
-> +				       const char **str);
-> +
->  /* Accessors of bpf_program */
->  struct bpf_program;
->  LIBBPF_API struct bpf_program *bpf_program__next(struct bpf_program *prog,
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 664ce8e7a60e..2ea7c99f1579 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -188,4 +188,6 @@ LIBBPF_0.0.4 {
->  LIBBPF_0.0.5 {
->  	global:
->  		bpf_btf_get_next_id;
-> +		libbpf_prog_type_from_str;
-> +		libbpf_prog_type_to_str;
->  } LIBBPF_0.0.4;
+<broken_record_mode=on> Nack to extensions to unprivileged bpf.
 
