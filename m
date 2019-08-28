@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C69799F819
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 04:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0845D9F81E
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 04:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbfH1CAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 22:00:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59590 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726285AbfH1CAz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 22:00:55 -0400
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 92B2E23406
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 02:00:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566957653;
-        bh=AP7WKXMKH8JAGUlgFkOqC5LEdoLGq2navL+/ozcyKKA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iRaaimshFuvzXzlPUgD9XckqINKOZ17QCJ5V164gp6IYXiuuvRXq7IsPh7Z6ymT6S
-         cHT8FqVb5xACaMkIFmuiF5HvaOqiF361Ak9DJh7w1776AFSDhlMijXKd8j08xBXBNI
-         akDtGBQsNMzUlh3cyuBInwV9XzvpTuJo9GGzwirg=
-Received: by mail-wm1-f44.google.com with SMTP id d16so1050798wme.2
-        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 19:00:53 -0700 (PDT)
-X-Gm-Message-State: APjAAAUUQYPNWfGZUQwj6n6b3RYWHvDcRSeSPzD+LBtKWjnfvFsdMKUj
-        7h5mq/4ms+tF2U60odSr8H+NeR7ySxEOXs3tTNpBBQ==
-X-Google-Smtp-Source: APXvYqyk9NE8dUGaMeQjdAeSfVuPRR4HyKn+obwNgjsa5cGe+ce+JC26pUDP8pHyW/dLbAv+UggkDAJu9kj8VuL8y+o=
-X-Received: by 2002:a05:600c:24cf:: with SMTP id 15mr1448267wmu.76.1566957651897;
- Tue, 27 Aug 2019 19:00:51 -0700 (PDT)
+        id S1726207AbfH1CE3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 27 Aug 2019 22:04:29 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:33371 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726127AbfH1CE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 22:04:28 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7S24L8N029188, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7S24L8N029188
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 28 Aug 2019 10:04:21 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Wed, 28 Aug 2019 10:04:20 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Prashant Malani <pmalani@chromium.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "grundler@chromium.org" <grundler@chromium.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH] r8152: Add rx_buf_sz field to struct r8152
+Thread-Topic: [PATCH] r8152: Add rx_buf_sz field to struct r8152
+Thread-Index: AQHVXQGFHGIN0Ioi6USY1WqcmS7SJKcPz1Pw
+Date:   Wed, 28 Aug 2019 02:04:20 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D8C55@RTITMBSVM03.realtek.com.tw>
+References: <20190827180146.253431-1-pmalani@chromium.org>
+In-Reply-To: <20190827180146.253431-1-pmalani@chromium.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20190827205213.456318-1-ast@kernel.org> <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
- <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com> <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
-In-Reply-To: <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Tue, 27 Aug 2019 19:00:40 -0700
-X-Gmail-Original-Message-ID: <CALCETrVVQs1s27y8fB17JtQi-VzTq1YZPTPy3k=fKhQB1X-KKA@mail.gmail.com>
-Message-ID: <CALCETrVVQs1s27y8fB17JtQi-VzTq1YZPTPy3k=fKhQB1X-KKA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Aug 27, 2019, at 5:55 PM, Andy Lutomirski <luto@kernel.org> wrote:
->
-> On Tue, Aug 27, 2019 at 5:34 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
+Prashant Malani [mailto:pmalani@chromium.org]
+> Sent: Wednesday, August 28, 2019 2:02 AM
+> To: Hayes Wang; davem@davemloft.net
+> Cc: grundler@chromium.org; netdev@vger.kernel.org; nic_swsd; Prashant
+> Malani
+> Subject: [PATCH] r8152: Add rx_buf_sz field to struct r8152
+> 
+> tp->rx_buf_sz is set according to the specific version of HW being used.
+> 
+> agg_buf_sz was originally added to support LSO (Large Send Offload) and
+> then seems to have been co-opted for LRO (Large Receive Offload). But RX
+> large buffer size can be larger than TX large buffer size with newer HW.
+> Using larger buffers can result in fewer "large RX packets" processed
+> by the rest of the networking stack to reduce RX CPU utilization.
+> 
+> This patch is copied from the r8152 driver (v2.12.0) published by
+> Realtek (www.realtek.com).
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> Reviewed-by: Grant Grundler <grundler@chromium.org>
+> ---
 
-> From the previous discussion, you want to make progress toward solving
-> a lot of problems with CAP_BPF.  One of them was making BPF
-> firewalling more generally useful. By making CAP_BPF grant the ability
-> to read kernel memory, you will make administrators much more nervous
-> to grant CAP_BPF.  Similarly, and correct me if I'm wrong, most of
-> these capabilities are primarily or only useful for tracing, so I
-> don't see why users without CAP_TRACING should get them.
-> bpf_trace_printk(), in particular, even has "trace" in its name :)
->
-> Also, if a task has CAP_TRACING, it's expected to be able to trace the
-> system -- that's the whole point.  Why shouldn't it be able to use BPF
-> to trace the system better?
+It seems as same as the commit ec5791c202ac ("r8152: separate the rx
+buffer size").
 
-Let me put this a bit differently. Part of the point is that
-CAP_TRACING should allow a user or program to trace without being able
-to corrupt the system. CAP_BPF as you=E2=80=99ve proposed it *can* likely
-crash the system.  For example, CAP_BPF allows bpf_map_get_fd_by_id()
-in your patch.  If the system uses a BPF firewall that stores some of
-its rules in maps, then bpf_map_get_fd_by_id() can be used to get a
-writable fd to the map, which can be used to change the map, thus
-preventing network access.  This means that no combination of
-CAP_TRACING and CAP_BPF ends up allowing tracing without granting the
-ability to reconfigure or otherwise corrupt the system.
+https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/
+commit/?id=ec5791c202aca90c1b3b99dff268a995cf2d6aa1
+
+Best Regards,
+Hayes
+
