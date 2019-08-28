@@ -2,174 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E40439FB24
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 09:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2309FB3A
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 09:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726297AbfH1HHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 03:07:15 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39367 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbfH1HHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 03:07:14 -0400
-Received: by mail-wm1-f68.google.com with SMTP id i63so1605481wmg.4
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 00:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=65uAwbp2uXnCk+GD6riGbMRt0XoH3Oc0QdM49ThBYTY=;
-        b=2Bwg3opV5ZqhmMKuphmrMxbpIs8gI5tpDAABhmKicMcySz2O0bB7x9ByKRkU0jBUrs
-         5f7cWB74mfViG1WimUXBBdgSj7T/FzT7FgwFQMJzgsuC26LEMMeMVEgWIbW9snNQTy9u
-         NU/vtM+apsFI/7TMMqZ6yX0CyYN1jvghZz5MON8BtoI7SZcDUCieT7u8Jw1Ic8/oqDxG
-         p+dAGaBwg/N91RHECtz5wleteOhHsmEB++tysMKhbFctyvekP9xw0RmyXaSAgi2RGGkx
-         n+vg7qcgSOjIFKlu0XWY4q8FPIZDZirZOoA0NaBtrjhQetJ/wSa5jCHlPz9wMjU1xVaN
-         g9AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=65uAwbp2uXnCk+GD6riGbMRt0XoH3Oc0QdM49ThBYTY=;
-        b=H3CT9UrMepcETP8+gjk2a19L0QG77X9hbfACX1+R3O0X44+lxE7jMLcQzFMudkOiRO
-         L6ymIxSFfP8jAQW/Y9C+q5iFvFJrORSaGrrlhE5e4tCQ7NEBEdHiREImcnPDn3gXwDSE
-         yrQq/y0HG2rOKTRI6+jXmVMMv77HcEc6EF3R55nYkl+H8BWQgmJ+wfla8BMhceeCFK3R
-         dMB3eLd60QcqLKRlVMH4o7atpVSod89AA9UlIjbxhi3gGj8U2gTDDd/w92fqB/ldBmGf
-         dvAVaPkA3k6IwzLpjr+ayv5lO+NesQ/fQpYKfv75sXbWNo5/pA9AwSR00a/DitA1MTCI
-         6Pcg==
-X-Gm-Message-State: APjAAAUzWenUpM1Xy+rMir0hAfuYYryqI5Yp0WDyhoMQrN46Im0wRSWp
-        jcKqDQN1/WeWPEkC8J8wiFDItA==
-X-Google-Smtp-Source: APXvYqyF0fCMFvLTB7N06Dhrnz4BBOmCG7zPJMKMdQLUP87tDieFiEWiEAPTNNqU4XCkpWPKy10/aQ==
-X-Received: by 2002:a05:600c:145:: with SMTP id w5mr2791786wmm.75.1566976032289;
-        Wed, 28 Aug 2019 00:07:12 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id l9sm1601962wmi.29.2019.08.28.00.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 00:07:11 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 09:07:11 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Ahern <dsahern@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>
-Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
- delete alternative ifnames
-Message-ID: <20190828070711.GE2312@nanopsycho>
-References: <20190826151552.4f1a2ad9@cakuba.netronome.com>
- <20190826.151819.804077961408964282.davem@davemloft.net>
- <20190827070808.GA2250@nanopsycho>
- <20190827.012242.418276717667374306.davem@davemloft.net>
- <20190827093525.GB2250@nanopsycho>
- <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
+        id S1726272AbfH1HMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 03:12:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40932 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726247AbfH1HMk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 03:12:40 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2BB218AC6E1;
+        Wed, 28 Aug 2019 07:12:40 +0000 (UTC)
+Received: from krava (unknown [10.43.17.33])
+        by smtp.corp.redhat.com (Postfix) with SMTP id DF9885D6A7;
+        Wed, 28 Aug 2019 07:12:37 +0000 (UTC)
+Date:   Wed, 28 Aug 2019 09:12:37 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: libbpf distro packaging
+Message-ID: <20190828071237.GA31023@krava>
+References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
+ <20190813122420.GB9349@krava>
+ <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
+ <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
+ <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
+ <20190821210906.GA31031@krava>
+ <20190823092253.GA20775@krava>
+ <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
+ <20190826064235.GA17554@krava>
+ <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.69]); Wed, 28 Aug 2019 07:12:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 27, 2019 at 05:14:49PM CEST, roopa@cumulusnetworks.com wrote:
->On Tue, Aug 27, 2019 at 2:35 AM Jiri Pirko <jiri@resnulli.us> wrote:
->>
->> Tue, Aug 27, 2019 at 10:22:42AM CEST, davem@davemloft.net wrote:
->> >From: Jiri Pirko <jiri@resnulli.us>
->> >Date: Tue, 27 Aug 2019 09:08:08 +0200
->> >
->> >> Okay, so if I understand correctly, on top of separate commands for
->> >> add/del of alternative names, you suggest also get/dump to be separate
->> >> command and don't fill this up in existing newling/getlink command.
->> >
->> >I'm not sure what to do yet.
->> >
->> >David has a point, because the only way these ifnames are useful is
->> >as ways to specify and choose net devices.  So based upon that I'm
->> >slightly learning towards not using separate commands.
->>
->> Well yeah, one can use it to handle existing commands instead of
->> IFLA_NAME.
->>
->> But why does it rule out separate commands? I think it is cleaner than
->> to put everything in poor setlink messages :/ The fact that we would
->> need to add "OP" to the setlink message just feels of. Other similar
->> needs may show up in the future and we may endup in ridiculous messages
->> like:
->>
->> SETLINK
->>   IFLA_NAME eth0
->>   IFLA_ATLNAME_LIST (nest)
->>       IFLA_ALTNAME_OP add
->>       IFLA_ALTNAME somereallylongname
->>       IFLA_ALTNAME_OP del
->>       IFLA_ALTNAME somereallyreallylongname
->>       IFLA_ALTNAME_OP add
->>       IFLA_ALTNAME someotherreallylongname
->>   IFLA_SOMETHING_ELSE_LIST (nest)
->>       IFLA_SOMETHING_ELSE_OP add
->>       ...
->>       IFLA_SOMETHING_ELSE_OP del
->>       ...
->>       IFLA_SOMETHING_ELSE_OP add
->>       ...
->>
->> I don't know what to think about it. Rollbacks are going to be pure hell :/
->
->I don't see a huge problem with the above. We need a way to solve this
->anyways for other list types in the future correct ?.
->The approach taken by this series will not scale if we have to add a
->new msg type and header for every such list attribute in the future.
+On Tue, Aug 27, 2019 at 10:30:24PM +0000, Julia Kartseva wrote:
+> On 8/25/19, 11:42 PM, "Jiri Olsa" <jolsa@redhat.com> wrote:
+> 
+> > On Fri, Aug 23, 2019 at 04:00:01PM +0000, Alexei Starovoitov wrote:
+> > > 
+> > > Technically we can bump it at any time.
+> > > The goal was to bump it only when new kernel is released
+> > > to capture a collection of new APIs in a given 0.0.X release.
+> > > So that libbpf versions are synchronized with kernel versions
+> > > in some what loose way.
+> > > In this case we can make an exception and bump it now.
+> >
+> > I see, I dont think it's worth of the exception now,
+> > the patch is simple or we'll start with 0.0.3
+> 
+> PR introducing 0.0.5 ABI was merged:
+> https://github.com/libbpf/libbpf/commit/476e158
+> Jiri, you'd like to avoid patching, you can start w/ 0.0.5.
+> Also if you're planning to use *.spec from libbpf as a source of truth,
+> It may be enhanced by syncing spec and ABI versions, similar to
+> https://github.com/libbpf/libbpf/commit/d60f568
 
-Do you have some other examples in mind? So far, this was not needed.
+cool, anyway I started with v0.0.3 ;-) I'll update
+to latest once we are merged in
 
+the spec/srpm is currently under Fedora review:
+  https://bugzilla.redhat.com/show_bug.cgi?id=1745478
 
->
->A good parallel here is bridge vlan which uses RTM_SETLINK and
->RTM_DELLINK for vlan add and deletes. But it does have an advantage of
->a separate
->msg space under AF_BRIDGE which makes it cleaner. Maybe something
->closer to that  can be made to work (possibly with a msg flag) ?.
+you can check it in here:
+  http://people.redhat.com/~jolsa/libbpf/v2/
 
-1) Not sure if AF_BRIDGE is the right example how to do things
-2) See br_vlan_info(). It is not an OP-PER-VLAN. You either add or
-delete all passed info, depending on the cmd (RTM_SETLINK/RTM_DETLINK).
+I think it's little different from what you have,
+but not in the essential parts
 
-
->
->Would be good to have a consistent way to update list attributes for
->future needs too.
-
-Okay. Do you suggest to have new set of commands to handle
-adding/deleting lists of items? altNames now, others (other nests) later?
-
-Something like:
-
-CMD SETLISTS
-     IFLA_NAME eth0
-     IFLA_ATLNAME_LIST (nest)
-       IFLA_ALTNAME somereallylongname
-       IFLA_ALTNAME somereallyreallylongname
-       IFLA_ALTNAME someotherreallylongname
-     IFLA_SOMETHING_ELSE_LIST (nest)
-       IFLA_SOMETHING_ELSE
-       IFLA_SOMETHING_ELSE
-       IFLA_SOMETHING_ELSE
-
-
-CMD DELLISTS
-     IFLA_NAME eth0
-     IFLA_ATLNAME_LIST (nest)
-       IFLA_ALTNAME somereallylongname
-       IFLA_ALTNAME somereallyreallylongname
-       IFLA_ALTNAME someotherreallylongname
-     IFLA_SOMETHING_ELSE_LIST (nest)
-       IFLA_SOMETHING_ELSE
-       IFLA_SOMETHING_ELSE
-       IFLA_SOMETHING_ELSE
-
-How does this sound?
+jirka
