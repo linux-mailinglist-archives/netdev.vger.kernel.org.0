@@ -2,367 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B19EA9FA95
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 08:35:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D19AB9FAAA
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 08:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726322AbfH1GfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 02:35:24 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:46572 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726301AbfH1GfX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 02:35:23 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 13AF85FA71;
-        Wed, 28 Aug 2019 08:35:21 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="DzxTpOqP";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id CD7891DA57A4;
-        Wed, 28 Aug 2019 08:35:20 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com CD7891DA57A4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1566974120;
-        bh=+9RZEnPgX2ksESdB/bF+PT8GofXKlxNi+RpGRFBtU3s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DzxTpOqPdYiJOzKQH0sss7LLUa5wQ/g8SA9H/IZ4XGuoxWyJ0StvBJTwm+7ZdheUP
-         fhb/yZcBl55A1yYRkQ7NBX1W/xknDwWRp/ZJqw7cRvFT09sFKeCC3f7ZAoYEIdX2mr
-         xCKQXfM03RpibxtE/zRuWzDfHg9wUP6bXoAQfz4ogp1YHlSNdx1/M6US9A+73NZzl2
-         Su50dLCGh2PJ39dHE+RAafG/4UNGHPNpvCP409FHIku4h39rjlpKhNi1kR4Gz+ErZp
-         QnrSHcEIjFmw8coQwoxLqEUdO/jILB8dYj6MiCWI2lK4pwJs1B6UOjtadzF+gGmhTn
-         EhU8Z+JBYunow==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Wed, 28 Aug 2019 06:35:20 +0000
-Date:   Wed, 28 Aug 2019 06:35:20 +0000
-Message-ID: <20190828063520.Horde.4_ak7mcmFhVJlxZWWy2wo3V@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>, linux-mips@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] dt-bindings: net: dsa: mt7530: Add
- support for port 5
-References: <20190821144547.15113-1-opensource@vdorst.com>
- <20190821144547.15113-3-opensource@vdorst.com>
- <20190827222251.GA30507@bogus>
-In-Reply-To: <20190827222251.GA30507@bogus>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1726591AbfH1GiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 02:38:08 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:44228 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726561AbfH1GiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 02:38:07 -0400
+Received: by mail-io1-f70.google.com with SMTP id f5so2434835ioo.11
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 23:38:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=yCd41CNyR60VpDYw3udqbf0xP5cuEnDdTZQAfL1rzYM=;
+        b=V7gIRKRt8CQC6W7hkBrDHR+04KWUTfmNob2oimGjffdTq+zbWo+Y0xAqvLd6FvDry6
+         T7E9Umc6HuX3DKFN1B+0y9pZKinjrSAXdTgmZsIitWJ0YdPdqOdpL7j12FPKu1/FrImC
+         sioM+JUlq34MZwSZf95+WS2iYXN0ff9DtyWr9VcVWMDU5/Fn/ZPYk5E7afgZSkp61kj6
+         KPt7mfrWTzKoEJTSEEZdJ51LafQRuHtMmx7WKhH5aoSqqyDFu2GZc3lO5U1Ahv/U1ASB
+         C08H6mdTJ0l44MHHKF9W8VxFaOP91WGInNbYtw+VVMKtwxas/TNyQardaj42tz+yvqNj
+         Qeqw==
+X-Gm-Message-State: APjAAAUZwSXB/QBIgiR0QUm4tAsGLoi7UQ/NtF2RkY9snE80A/x/H5Vi
+        gySxW2XXNOVZL1ZNs7UPCWqZcGBH5D/goWupoUjNyo26aLtj
+X-Google-Smtp-Source: APXvYqx8FgeCT4z0Sh6kWHCipmMG+aA+vKVax/R/fpauuxDh94FISFhSgUVyrIa/NW5nkUPhsUAUYglzhkZwgT5Ipg6q6PIOkqJH
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:9d89:: with SMTP id 9mr2471525ion.212.1566974286853;
+ Tue, 27 Aug 2019 23:38:06 -0700 (PDT)
+Date:   Tue, 27 Aug 2019 23:38:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bd9241059127a1eb@google.com>
+Subject: WARNING in smc_unhash_sk (3)
+From:   syzbot <syzbot+8488cc4cf1c9e09b8b86@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kgraul@linux.ibm.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        ubraun@linux.ibm.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+Hello,
 
-Quoting Rob Herring <robh@kernel.org>:
+syzbot found the following crash on:
 
-> On Wed, Aug 21, 2019 at 04:45:46PM +0200, René van Dorst wrote:
->> MT7530 port 5 has many modes/configurations.
->> Update the documentation how to use port 5.
->>
->> Signed-off-by: René van Dorst <opensource@vdorst.com>
->> Cc: devicetree@vger.kernel.org
->> Cc: Rob Herring <robh@kernel.org>
->
->> v1->v2:
->> * Adding extra note about RGMII2 and gpio use.
->> rfc->v1:
->> * No change
->
-> The changelog goes below the '---'
->
+HEAD commit:    a55aa89a Linux 5.3-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=112dd212600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=58485246ad14eafe
+dashboard link: https://syzkaller.appspot.com/bug?extid=8488cc4cf1c9e09b8b86
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15426ebc600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=116aca7a600000
 
-Thanks for the review,
-I shall fix that.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+8488cc4cf1c9e09b8b86@syzkaller.appspotmail.com
 
->> ---
->>  .../devicetree/bindings/net/dsa/mt7530.txt    | 218 ++++++++++++++++++
->>  1 file changed, 218 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/dsa/mt7530.txt  
->> b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
->> index 47aa205ee0bd..43993aae3f9c 100644
->> --- a/Documentation/devicetree/bindings/net/dsa/mt7530.txt
->> +++ b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
->> @@ -35,6 +35,42 @@ Required properties for the child nodes within  
->> ports container:
->>  - phy-mode: String, must be either "trgmii" or "rgmii" for port labeled
->>  	 "cpu".
->>
->> +Port 5 of the switch is muxed between:
->> +1. GMAC5: GMAC5 can interface with another external MAC or PHY.
->> +2. PHY of port 0 or port 4: PHY interfaces with an external MAC  
->> like 2nd GMAC
->> +   of the SOC. Used in many setups where port 0/4 becomes the WAN port.
->> +   Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only  
->> connected to
->> +	 GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
->> +	 connected to external component!
->> +
->> +Port 5 modes/configurations:
->> +1. Port 5 is disabled and isolated: An external phy can interface  
->> to the 2nd
->> +   GMAC of the SOC.
->> +   In the case of a build-in MT7530 switch, port 5 shares the  
->> RGMII bus with 2nd
->> +   GMAC and an optional external phy. Mind the GPIO/pinctl  
->> settings of the SOC!
->> +2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
->> +   It is a simple MAC to PHY interface, port 5 needs to be setup  
->> for xMII mode
->> +   and RGMII delay.
->> +3. Port 5 is muxed to GMAC5 and can interface to an external phy.
->> +   Port 5 becomes an extra switch port.
->> +   Only works on platform where external phy TX<->RX lines are swapped.
->> +   Like in the Ubiquiti ER-X-SFP.
->> +4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as  
->> 2nd CPU port.
->> +   Currently a 2nd CPU port is not supported by DSA code.
->> +
->> +Depending on how the external PHY is wired:
->> +1. normal: The PHY can only connect to 2nd GMAC but not to the switch
->> +2. swapped: RGMII TX, RX are swapped; external phy interface with  
->> the switch as
->> +   a ethernet port. But can't interface to the 2nd GMAC.
->> +
->> +Based on the DT the port 5 mode is configured.
->> +
->> +Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
->> +When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
->> +phy-mode must be set, see also example 2 below!
->> + * mt7621: phy-mode = "rgmii-txid";
->> + * mt7623: phy-mode = "rgmii";
->> +
->>  See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list  
->> of additional
->>  required, optional properties and how the integrated switch subnodes must
->>  be specified.
->> @@ -94,3 +130,185 @@ Example:
->>  			};
->>  		};
->>  	};
->> +
->> +Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
->> +
->> +&eth {
->> +	status = "okay";
->
-> Don't show status in examples.
-
-OK.
-
-> This should show the complete node.
->
-
-To be clear, I should take ethernet node from the mt7621.dtsi [0] or  
-mt7623.dtsi
-[1] and insert the example below?, right?
-
-Greats,
-
-René
-
-[0]:  
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/drivers/staging/mt7621-dts/mt7621.dtsi#n397
-[1]:  
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/arch/arm/boot/dts/mt7623.dtsi#n1023
-
->> +
->> +	gmac0: mac@0 {
->> +		compatible = "mediatek,eth-mac";
->> +		reg = <0>;
->> +		phy-mode = "rgmii";
->> +
->> +		fixed-link {
->> +			speed = <1000>;
->> +			full-duplex;
->> +			pause;
->> +		};
->> +	};
->> +
->> +	gmac1: mac@1 {
->> +		compatible = "mediatek,eth-mac";
->> +		reg = <1>;
->> +		phy-mode = "rgmii-txid";
->> +		phy-handle = <&phy4>;
->> +	};
->> +
->> +	mdio: mdio-bus {
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		/* Internal phy */
->> +		phy4: ethernet-phy@4 {
->> +			reg = <4>;
->> +		};
->> +
->> +		mt7530: switch@1f {
->> +			compatible = "mediatek,mt7621";
->> +			#address-cells = <1>;
->> +			#size-cells = <0>;
->> +			reg = <0x1f>;
->> +			pinctrl-names = "default";
->> +			mediatek,mcm;
->> +
->> +			resets = <&rstctrl 2>;
->> +			reset-names = "mcm";
->> +
->> +			ports {
->> +				#address-cells = <1>;
->> +				#size-cells = <0>;
->> +
->> +				port@0 {
->> +					reg = <0>;
->> +					label = "lan0";
->> +				};
->> +
->> +				port@1 {
->> +					reg = <1>;
->> +					label = "lan1";
->> +				};
->> +
->> +				port@2 {
->> +					reg = <2>;
->> +					label = "lan2";
->> +				};
->> +
->> +				port@3 {
->> +					reg = <3>;
->> +					label = "lan3";
->> +				};
->> +
->> +/* Commented out. Port 4 is handled by 2nd GMAC.
->> +				port@4 {
->> +					reg = <4>;
->> +					label = "lan4";
->> +				};
->> +*/
->> +
->> +				cpu_port0: port@6 {
->> +					reg = <6>;
->> +					label = "cpu";
->> +					ethernet = <&gmac0>;
->> +					phy-mode = "rgmii";
->> +
->> +					fixed-link {
->> +						speed = <1000>;
->> +						full-duplex;
->> +						pause;
->> +					};
->> +				};
->> +			};
->> +		};
->> +	};
->> +};
->> +
->> +Example 3: MT7621: Port 5 is connected to external PHY: Port 5 ->  
->> external PHY.
->> +
->> +&eth {
->> +	status = "okay";
->> +
->> +	gmac0: mac@0 {
->> +		compatible = "mediatek,eth-mac";
->> +		reg = <0>;
->> +		phy-mode = "rgmii";
->> +
->> +		fixed-link {
->> +			speed = <1000>;
->> +			full-duplex;
->> +			pause;
->> +		};
->> +	};
->> +
->> +	mdio: mdio-bus {
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		/* External phy */
->> +		ephy5: ethernet-phy@7 {
->> +			reg = <7>;
->> +		};
->> +
->> +		mt7530: switch@1f {
->> +			compatible = "mediatek,mt7621";
->> +			#address-cells = <1>;
->> +			#size-cells = <0>;
->> +			reg = <0x1f>;
->> +			pinctrl-names = "default";
->> +			mediatek,mcm;
->> +
->> +			resets = <&rstctrl 2>;
->> +			reset-names = "mcm";
->> +
->> +			ports {
->> +				#address-cells = <1>;
->> +				#size-cells = <0>;
->> +
->> +				port@0 {
->> +					reg = <0>;
->> +					label = "lan0";
->> +				};
->> +
->> +				port@1 {
->> +					reg = <1>;
->> +					label = "lan1";
->> +				};
->> +
->> +				port@2 {
->> +					reg = <2>;
->> +					label = "lan2";
->> +				};
->> +
->> +				port@3 {
->> +					reg = <3>;
->> +					label = "lan3";
->> +				};
->> +
->> +				port@4 {
->> +					reg = <4>;
->> +					label = "lan4";
->> +				};
->> +
->> +				port@5 {
->> +					reg = <5>;
->> +					label = "lan5";
->> +					phy-mode = "rgmii";
->> +					phy-handle = <&ephy5>;
->> +				};
->> +
->> +				cpu_port0: port@6 {
->> +					reg = <6>;
->> +					label = "cpu";
->> +					ethernet = <&gmac0>;
->> +					phy-mode = "rgmii";
->> +
->> +					fixed-link {
->> +						speed = <1000>;
->> +						full-duplex;
->> +						pause;
->> +					};
->> +				};
->> +			};
->> +		};
->> +	};
->> +};
->> --
->> 2.20.1
->>
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 9198 at ./include/net/sock.h:666 sk_del_node_init  
+include/net/sock.h:666 [inline]
+WARNING: CPU: 0 PID: 9198 at ./include/net/sock.h:666  
+smc_unhash_sk+0x21b/0x240 net/smc/af_smc.c:96
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9198 Comm: syz-executor057 Not tainted 5.3.0-rc6 #93
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  panic+0x25c/0x799 kernel/panic.c:219
+  __warn+0x22f/0x230 kernel/panic.c:576
+  report_bug+0x190/0x290 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  do_error_trap+0xd7/0x440 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:291
+  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
+RIP: 0010:sk_del_node_init include/net/sock.h:666 [inline]
+RIP: 0010:smc_unhash_sk+0x21b/0x240 net/smc/af_smc.c:96
+Code: 48 89 df e8 07 b1 39 00 48 83 c4 20 5b 41 5c 41 5d 41 5e 41 5f 5d c3  
+e8 03 d7 31 fa 48 c7 c7 f2 c3 3a 88 31 c0 e8 28 1d 1b fa <0f> 0b eb 85 44  
+89 f1 80 e1 07 80 c1 03 38 c1 0f 8c 5b ff ff ff 4c
+RSP: 0018:ffff888094177b68 EFLAGS: 00010246
+RAX: 0000000000000024 RBX: 0000000000000001 RCX: b964ece25f6b7c00
+RDX: 0000000000000000 RSI: 0000000000000201 RDI: 0000000000000000
+RBP: ffff888094177bb0 R08: ffffffff815cf7d4 R09: ffffed1015d46088
+R10: ffffed1015d46088 R11: 0000000000000000 R12: ffff888098ccb240
+R13: dffffc0000000000 R14: ffff888098ccb2c0 R15: ffff888098ccb268
+  __smc_release+0x1f8/0x3a0 net/smc/af_smc.c:146
+  smc_release+0x15b/0x2c0 net/smc/af_smc.c:185
+  __sock_release net/socket.c:590 [inline]
+  sock_close+0xe1/0x260 net/socket.c:1268
+  __fput+0x2e4/0x740 fs/file_table.c:280
+  ____fput+0x15/0x20 fs/file_table.c:313
+  task_work_run+0x17e/0x1b0 kernel/task_work.c:113
+  exit_task_work include/linux/task_work.h:22 [inline]
+  do_exit+0x5e8/0x21a0 kernel/exit.c:879
+  do_group_exit+0x15c/0x2b0 kernel/exit.c:983
+  __do_sys_exit_group+0x17/0x20 kernel/exit.c:994
+  __se_sys_exit_group+0x14/0x20 kernel/exit.c:992
+  __x64_sys_exit_group+0x3b/0x40 kernel/exit.c:992
+  do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x43ff28
+Code: 00 00 be 3c 00 00 00 eb 19 66 0f 1f 84 00 00 00 00 00 48 89 d7 89 f0  
+0f 05 48 3d 00 f0 ff ff 77 21 f4 48 89 d7 44 89 c0 0f 05 <48> 3d 00 f0 ff  
+ff 76 e0 f7 d8 64 41 89 01 eb d8 0f 1f 84 00 00 00
+RSP: 002b:00007ffefacce238 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ff28
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00000000004bf750 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 00000000200000c0 R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
