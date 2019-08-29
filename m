@@ -2,90 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3323A2231
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:26:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4291A223D
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbfH2R0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 13:26:22 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36892 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727173AbfH2R0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:26:21 -0400
-Received: by mail-ed1-f65.google.com with SMTP id f22so4916103edt.4
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 10:26:20 -0700 (PDT)
+        id S1727787AbfH2R2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 13:28:52 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41823 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727173AbfH2R2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:28:52 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 196so2514392pfz.8;
+        Thu, 29 Aug 2019 10:28:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Z1hBM6a12jbRaXAj1gbdtajsBiZ8JIeFnckIVn0uufQ=;
-        b=Wr7eLRBzruTapyxdyGwXFoXNW0p3BWFPkFw/DztOzWOeC9G57fazasY0H9F8bPuA37
-         Ts5kqQb7nSWlVBcp+35YI2i3S1p0YCKzQLUKFLsIqw+P886usS7AE8Sga+s8y+ncu+/Y
-         udARhxyL4CDkuowRDP5WPliVskuL7AfLteC4oPoesciSnyi7xLq/eIth6v/8Z4HOUJDu
-         ZC8kuiU//tV3paZRyZ3T6IAq5JJqG/AXXOROWolHmrEU6iZhEibTd6jX4NEMboZn6GLg
-         jmD+bfP66yirOwtE8hG9l5h+2nCOo9mbBV4lv1HdW51pY2cM1FqmWUcg4PXoPRHPGaGB
-         NgjA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=h3l+cnwgLiAnxdbo1DA0QAVgE8Ahk9WZSlg+KJsywhg=;
+        b=LzVRRjQVaNl26Q1HWhVNlp4y3i6RrjP4ioKujdqMcYLxuWJAyounwHpRRXYbS4a+3I
+         9MBKvFW5dU6A6f6dfiN0meLYZqHzy09lk0Vrrj8OlQLumZh7QeYy8yDmdRY5gh9Jq6TF
+         a3pmCnZ9idbMg9bvifOaRNB/3X+X+gy2+CJ4KD46cpM/cLYQvs33UQcEAkHqup33yWI5
+         J8OuzXHGFKDeZmj2H4FvytpzVwGJA5a/BliZf2y/pIhzRU5UpX6NsmPF+saALZ2ThLn7
+         GqkLp6Wvy8uhJ6zZERLaUGZdasJMqrYHVqYvkrwS/FJAQ30LmXrOYDDN4pAnBxaSnn0W
+         1kqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Z1hBM6a12jbRaXAj1gbdtajsBiZ8JIeFnckIVn0uufQ=;
-        b=V2udebexElEXvgd9RnCEuM9b7nAKGmLY0iAqzg7rCftndKgeDCcpSgV30aKsrG0LNc
-         Brx43kBKB2gCLjRMTSSjFctYM305ykIKugYK17tUGKDGG5foQGI0ym365boPqPkl+IQi
-         G6YdGg6M5xIMOAFD6PhPo0Fvug1WjudzeO8aB9LOy5MPoCa98ekHmSLo3lqW17SbeN3C
-         kOlYIgBB/+ypQGLLi0XEpZokiwY9sehlFmS6SBD8PTVtaOnc8TgX9axdhSV72rqGTol1
-         q5sCVvj16hVpEmG03MxATkGBCvsS7Dp6fzgCKx0N8A6r7TRn8sT5sPq9Ppm5QlzbJ+cS
-         rZyQ==
-X-Gm-Message-State: APjAAAUY/Z3rGwJS4FuMt7baBzmk2UCbdymGiYARH974cSxox/v0asyK
-        1WLasdt/ZC/W9TQr5O9jaNUdqw==
-X-Google-Smtp-Source: APXvYqyL6jX1KOmiBWT9jCF/AXYT3OfqegjzZmbilhO3X8HK1KqwBRDZPwT6Molcehm9IGGfJiLgJQ==
-X-Received: by 2002:a17:906:4e8f:: with SMTP id v15mr1119760eju.147.1567099580191;
-        Thu, 29 Aug 2019 10:26:20 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id k18sm385333ejq.45.2019.08.29.10.26.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=h3l+cnwgLiAnxdbo1DA0QAVgE8Ahk9WZSlg+KJsywhg=;
+        b=q5JzvQyL7W0ZlvKaS3+8FiNq8h4+9i7ZcU6T3ampeFT4NDiJXJZaCqX8PQS/FtjaP8
+         4BQZFtIGAKrVMul0m6XnU8pLtGdaz0l5amQjIeSFvUdiYHk3yE6CkGgWOc8KB7Eo1flq
+         9X8uUNxxBWVYv7TjK9r13Pp4zp6xsRVPo74aOpAxZTgQ02U9KdslELpFZjbmTj1Us2M0
+         kSciIe0YgkZNlXyZ221Es2IknzsOMQIv71G7M9IupbOziNPETGcO290FWmDLmm10WbHc
+         6IQgvepMuQx0Jn7UVmsbOkLiC1Juf7fej2xEdBfNCfZPHLngo8WHRMZ3GsrlcKfhacMm
+         duOQ==
+X-Gm-Message-State: APjAAAXNQw+hRWP/yqGIUApOstDzpkAIL89hHJO0y3N+9vs9ULQ0rUAS
+        N82YPSrr1yxh0lmscilMfEk=
+X-Google-Smtp-Source: APXvYqw7CbFzyCtt3jbkWG8reMnAoR7kVbwpZwqnxbz7M4tUSwU+i/XccvSM/taww6ip18AttI2NGA==
+X-Received: by 2002:a17:90a:c503:: with SMTP id k3mr11205835pjt.134.1567099731651;
+        Thu, 29 Aug 2019 10:28:51 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id 203sm3881871pfz.107.2019.08.29.10.28.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 10:26:19 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 10:25:54 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: Re: [PATCH bpf-next 0/3] tools: bpftool: improve bpftool build
- experience
-Message-ID: <20190829102554.2fdbc80b@cakuba.netronome.com>
-In-Reply-To: <20190829105645.12285-1-quentin.monnet@netronome.com>
-References: <20190829105645.12285-1-quentin.monnet@netronome.com>
-Organization: Netronome Systems, Ltd.
+        Thu, 29 Aug 2019 10:28:50 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 10:28:48 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
+Message-ID: <20190829172848.GC2166@localhost>
+References: <20190829095825.2108-1-felipe.balbi@linux.intel.com>
+ <20190829095825.2108-2-felipe.balbi@linux.intel.com>
+ <20190829172509.GB2166@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190829172509.GB2166@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 11:56:42 +0100, Quentin Monnet wrote:
-> Hi,
-> This set attempts to make it easier to build bpftool, in particular when
-> passing a specific output directory. This is a follow-up to the
-> conversation held last month by Lorenz, Ilya and Jakub [0].
-> 
-> The first patch is a minor fix to bpftool's Makefile, regarding the
-> retrieval of kernel version (which currently prints a non-relevant make
-> warning on some invocations).
-> 
-> Second patch improves the Makefile commands to support more "make"
-> invocations, or to fix building with custom output directory. On Jakub's
-> suggestion, a script is also added to BPF selftests in order to keep track
-> of the supported build variants.
-> 
-> At last, third patch is a sligthly modified version of Ilya's fix regarding
-> libbpf.a appearing twice on the linking command for bpftool.
-> 
-> [0] https://lore.kernel.org/bpf/CACAyw9-CWRHVH3TJ=Tke2x8YiLsH47sLCijdp=V+5M836R9aAA@mail.gmail.com/
 
-I think Ilya has a point, but otherwise looks good to me :)
+Adding davem onto CC...
 
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Thu, Aug 29, 2019 at 12:58:25PM +0300, Felipe Balbi wrote:
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index 98ec1395544e..a407e5f76e2d 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -177,9 +177,8 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			err = -EFAULT;
+>  			break;
+>  		}
+> -		if ((req.perout.flags || req.perout.rsv[0] || req.perout.rsv[1]
+> -				|| req.perout.rsv[2] || req.perout.rsv[3])
+> -			&& cmd == PTP_PEROUT_REQUEST2) {
+> +		if ((req.perout.rsv[0] || req.perout.rsv[1] || req.perout.rsv[2]
+> +			|| req.perout.rsv[3]) && cmd == PTP_PEROUT_REQUEST2) {
+
+Please check that the reserved bits of req.perout.flags, namely
+~PTP_PEROUT_ONE_SHOT, are clear.
+
+>  			err = -EINVAL;
+>  			break;
+>  		} else if (cmd == PTP_PEROUT_REQUEST) {
+> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+> index 039cd62ec706..95840e5f5c53 100644
+> --- a/include/uapi/linux/ptp_clock.h
+> +++ b/include/uapi/linux/ptp_clock.h
+> @@ -67,7 +67,9 @@ struct ptp_perout_request {
+>  	struct ptp_clock_time start;  /* Absolute start time. */
+>  	struct ptp_clock_time period; /* Desired period, zero means disable. */
+>  	unsigned int index;           /* Which channel to configure. */
+> -	unsigned int flags;           /* Reserved for future use. */
+> +
+> +#define PTP_PEROUT_ONE_SHOT BIT(0)
+> +	unsigned int flags;
+
+@davem  Any CodingStyle policy on #define within a struct?  (Some
+maintainers won't allow it.)
+
+>  	unsigned int rsv[4];          /* Reserved for future use. */
+>  };
+>  
+> -- 
+> 2.23.0
+> 
+
+Thanks,
+Richard
