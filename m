@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D6CCA217F
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7229A2180
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbfH2QyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 12:54:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36142 "EHLO mx1.redhat.com"
+        id S1727876AbfH2QyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 12:54:03 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54912 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726784AbfH2QyB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 12:54:01 -0400
+        id S1727483AbfH2QyD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 12:54:03 -0400
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 67173307D88D;
-        Thu, 29 Aug 2019 16:54:00 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id E3AA2308A9E2;
+        Thu, 29 Aug 2019 16:54:02 +0000 (UTC)
 Received: from new-host.redhat.com (ovpn-204-80.brq.redhat.com [10.40.204.80])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D8D160872;
-        Thu, 29 Aug 2019 16:53:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BE73860872;
+        Thu, 29 Aug 2019 16:54:00 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     borisp@mellanox.com, jakub.kicinski@netronome.com,
         Eric Dumazet <eric.dumazet@gmail.com>
@@ -26,190 +26,163 @@ Cc:     aviadye@mellanox.com, davejwatson@fb.com, davem@davemloft.net,
         john.fastabend@gmail.com,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         netdev@vger.kernel.org
-Subject: [PATCH net-next v2 1/3] net/tls: use RCU protection on icsk->icsk_ulp_data
-Date:   Thu, 29 Aug 2019 18:48:02 +0200
-Message-Id: <6af3cb8a1a88aee49554d0beb1dbf3b4ef4f1aeb.1567095873.git.dcaratti@redhat.com>
+Subject: [PATCH net-next v2 2/3] tcp: ulp: add functions to dump ulp-specific information
+Date:   Thu, 29 Aug 2019 18:48:03 +0200
+Message-Id: <ba511c4b1e110c36e280825f2b5ed21977b3c6c7.1567095873.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1567095873.git.dcaratti@redhat.com>
 References: <cover.1567095873.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 29 Aug 2019 16:54:00 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 29 Aug 2019 16:54:03 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
+currently, only getsockopt(TCP_ULP) can be invoked to know if a ULP is on
+top of a TCP socket. Extend idiag_get_aux() and idiag_get_aux_size(),
+introduced by commit b37e88407c1d ("inet_diag: allow protocols to provide
+additional data"), to report the ULP name and other information that can
+be made available by the ULP through optional functions.
 
-We need to make sure context does not get freed while diag
-code is interrogating it. Free struct tls_context with
-kfree_rcu().
+Users having CAP_NET_ADMIN privileges will then be able to retrieve this
+information through inet_diag_handler, if they specify INET_DIAG_INFO in
+the request.
 
-We add the __rcu annotation directly in icsk, and cast it
-away in the datapath accessor. Presumably all ULPs will
-do a similar thing.
-
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- include/net/inet_connection_sock.h |  2 +-
- include/net/tls.h                  |  9 +++++++--
- net/core/sock_map.c                |  2 +-
- net/tls/tls_device.c               |  2 +-
- net/tls/tls_main.c                 | 26 +++++++++++++++++++-------
- 5 files changed, 29 insertions(+), 12 deletions(-)
+ include/net/tcp.h              |  3 ++
+ include/uapi/linux/inet_diag.h |  8 ++++++
+ net/ipv4/tcp_diag.c            | 52 +++++++++++++++++++++++++++++++++-
+ 3 files changed, 62 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index c57d53e7e02c..895546058a20 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -97,7 +97,7 @@ struct inet_connection_sock {
- 	const struct tcp_congestion_ops *icsk_ca_ops;
- 	const struct inet_connection_sock_af_ops *icsk_af_ops;
- 	const struct tcp_ulp_ops  *icsk_ulp_ops;
--	void			  *icsk_ulp_data;
-+	void __rcu		  *icsk_ulp_data;
- 	void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
- 	struct hlist_node         icsk_listen_portaddr_node;
- 	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 41b2d41bb1b8..4997742475cd 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -41,6 +41,7 @@
- #include <linux/tcp.h>
- #include <linux/skmsg.h>
- #include <linux/netdevice.h>
-+#include <linux/rcupdate.h>
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 77fe87f7a992..c9a3f9688223 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2122,6 +2122,9 @@ struct tcp_ulp_ops {
+ 	void (*update)(struct sock *sk, struct proto *p);
+ 	/* cleanup ulp */
+ 	void (*release)(struct sock *sk);
++	/* diagnostic */
++	int (*get_info)(const struct sock *sk, struct sk_buff *skb);
++	size_t (*get_info_size)(const struct sock *sk);
  
- #include <net/tcp.h>
- #include <net/strparser.h>
-@@ -290,6 +291,7 @@ struct tls_context {
- 
- 	struct list_head list;
- 	refcount_t refcount;
-+	struct rcu_head rcu;
+ 	char		name[TCP_ULP_NAME_MAX];
+ 	struct module	*owner;
+diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+index e8baca85bac6..e2c6273274f3 100644
+--- a/include/uapi/linux/inet_diag.h
++++ b/include/uapi/linux/inet_diag.h
+@@ -153,11 +153,19 @@ enum {
+ 	INET_DIAG_BBRINFO,	/* request as INET_DIAG_VEGASINFO */
+ 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
+ 	INET_DIAG_MD5SIG,
++	INET_DIAG_ULP_INFO,
+ 	__INET_DIAG_MAX,
  };
  
- enum tls_offload_ctx_dir {
-@@ -348,7 +350,7 @@ struct tls_offload_context_rx {
- #define TLS_OFFLOAD_CONTEXT_SIZE_RX					\
- 	(sizeof(struct tls_offload_context_rx) + TLS_DRIVER_STATE_SIZE_RX)
+ #define INET_DIAG_MAX (__INET_DIAG_MAX - 1)
  
--void tls_ctx_free(struct tls_context *ctx);
-+void tls_ctx_free(struct sock *sk, struct tls_context *ctx);
- int wait_on_pending_writer(struct sock *sk, long *timeo);
- int tls_sk_query(struct sock *sk, int optname, char __user *optval,
- 		int __user *optlen);
-@@ -467,7 +469,10 @@ static inline struct tls_context *tls_get_ctx(const struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 
--	return icsk->icsk_ulp_data;
-+	/* Use RCU on icsk_ulp_data only for sock diag code,
-+	 * TLS data path doesn't need rcu_dereference().
-+	 */
-+	return (__force void *)icsk->icsk_ulp_data;
- }
- 
- static inline void tls_advance_record_sn(struct sock *sk,
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 1330a7442e5b..01998860afaa 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -345,7 +345,7 @@ static int sock_map_update_common(struct bpf_map *map, u32 idx,
- 		return -EINVAL;
- 	if (unlikely(idx >= map->max_entries))
- 		return -E2BIG;
--	if (unlikely(icsk->icsk_ulp_data))
-+	if (unlikely(rcu_access_pointer(icsk->icsk_ulp_data)))
- 		return -EINVAL;
- 
- 	link = sk_psock_init_link();
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index a470df7ffcf9..e188139f0464 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -61,7 +61,7 @@ static void tls_device_free_ctx(struct tls_context *ctx)
- 	if (ctx->rx_conf == TLS_HW)
- 		kfree(tls_offload_ctx_rx(ctx));
- 
--	tls_ctx_free(ctx);
-+	tls_ctx_free(NULL, ctx);
- }
- 
- static void tls_device_gc_task(struct work_struct *work)
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 43252a801c3f..f8f2d2c3d627 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -251,14 +251,26 @@ static void tls_write_space(struct sock *sk)
- 	ctx->sk_write_space(sk);
- }
- 
--void tls_ctx_free(struct tls_context *ctx)
-+/**
-+ * tls_ctx_free() - free TLS ULP context
-+ * @sk:  socket to with @ctx is attached
-+ * @ctx: TLS context structure
-+ *
-+ * Free TLS context. If @sk is %NULL caller guarantees that the socket
-+ * to which @ctx was attached has no outstanding references.
-+ */
-+void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
- {
- 	if (!ctx)
- 		return;
- 
- 	memzero_explicit(&ctx->crypto_send, sizeof(ctx->crypto_send));
- 	memzero_explicit(&ctx->crypto_recv, sizeof(ctx->crypto_recv));
--	kfree(ctx);
++enum {
++	INET_ULP_INFO_UNSPEC,
++	INET_ULP_INFO_NAME,
++	__INET_ULP_INFO_MAX,
++};
++#define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
 +
-+	if (sk)
-+		kfree_rcu(ctx, rcu);
-+	else
-+		kfree(ctx);
+ /* INET_DIAG_MEM */
+ 
+ struct inet_diag_meminfo {
+diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
+index a3a386236d93..babc156deabb 100644
+--- a/net/ipv4/tcp_diag.c
++++ b/net/ipv4/tcp_diag.c
+@@ -81,13 +81,42 @@ static int tcp_diag_put_md5sig(struct sk_buff *skb,
+ }
+ #endif
+ 
++static int tcp_diag_put_ulp(struct sk_buff *skb, struct sock *sk,
++			    const struct tcp_ulp_ops *ulp_ops)
++{
++	struct nlattr *nest;
++	int err;
++
++	nest = nla_nest_start_noflag(skb, INET_DIAG_ULP_INFO);
++	if (!nest)
++		return -EMSGSIZE;
++
++	err = nla_put_string(skb, INET_ULP_INFO_NAME, ulp_ops->name);
++	if (err)
++		goto nla_failure;
++
++	if (ulp_ops->get_info)
++		err = ulp_ops->get_info(sk, skb);
++	if (err)
++		goto nla_failure;
++
++	nla_nest_end(skb, nest);
++	return 0;
++
++nla_failure:
++	nla_nest_cancel(skb, nest);
++	return err;
++}
++
+ static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
+ 			    struct sk_buff *skb)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
++	int err = 0;
++
+ #ifdef CONFIG_TCP_MD5SIG
+ 	if (net_admin) {
+ 		struct tcp_md5sig_info *md5sig;
+-		int err = 0;
+ 
+ 		rcu_read_lock();
+ 		md5sig = rcu_dereference(tcp_sk(sk)->md5sig_info);
+@@ -99,11 +128,21 @@ static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
+ 	}
+ #endif
+ 
++	if (net_admin) {
++		const struct tcp_ulp_ops *ulp_ops;
++
++		ulp_ops = icsk->icsk_ulp_ops;
++		if (ulp_ops)
++			err = tcp_diag_put_ulp(skb, sk, ulp_ops);
++		if (err)
++			return err;
++	}
+ 	return 0;
  }
  
- static void tls_sk_proto_cleanup(struct sock *sk,
-@@ -306,7 +318,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	size_t size = 0;
  
- 	write_lock_bh(&sk->sk_callback_lock);
- 	if (free_ctx)
--		icsk->icsk_ulp_data = NULL;
-+		rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
- 	sk->sk_prot = ctx->sk_proto;
- 	if (sk->sk_write_space == tls_write_space)
- 		sk->sk_write_space = ctx->sk_write_space;
-@@ -321,7 +333,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 	ctx->sk_proto_close(sk, timeout);
+ #ifdef CONFIG_TCP_MD5SIG
+@@ -124,6 +163,17 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
+ 	}
+ #endif
  
- 	if (free_ctx)
--		tls_ctx_free(ctx);
-+		tls_ctx_free(sk, ctx);
++	if (net_admin) {
++		const struct tcp_ulp_ops *ulp_ops;
++
++		ulp_ops = icsk->icsk_ulp_ops;
++		if (ulp_ops) {
++			size += nla_total_size(0) +
++				nla_total_size(TCP_ULP_NAME_MAX);
++			if (ulp_ops->get_info_size)
++				size += ulp_ops->get_info_size(sk);
++		}
++	}
+ 	return size;
  }
  
- static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
-@@ -610,7 +622,7 @@ static struct tls_context *create_ctx(struct sock *sk)
- 	if (!ctx)
- 		return NULL;
- 
--	icsk->icsk_ulp_data = ctx;
-+	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
- 	ctx->setsockopt = sk->sk_prot->setsockopt;
- 	ctx->getsockopt = sk->sk_prot->getsockopt;
- 	ctx->sk_proto_close = sk->sk_prot->close;
-@@ -651,8 +663,8 @@ static void tls_hw_sk_destruct(struct sock *sk)
- 
- 	ctx->sk_destruct(sk);
- 	/* Free ctx */
--	tls_ctx_free(ctx);
--	icsk->icsk_ulp_data = NULL;
-+	rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
-+	tls_ctx_free(sk, ctx);
- }
- 
- static int tls_hw_prot(struct sock *sk)
 -- 
 2.20.1
 
