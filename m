@@ -2,108 +2,500 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93310A28EA
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 23:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E1B8A28EE
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 23:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728445AbfH2V0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 17:26:40 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45852 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727792AbfH2V0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 17:26:39 -0400
-Received: by mail-pg1-f193.google.com with SMTP id o13so2254995pgp.12
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 14:26:39 -0700 (PDT)
+        id S1726944AbfH2V35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 17:29:57 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36341 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726245AbfH2V35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 17:29:57 -0400
+Received: by mail-qt1-f193.google.com with SMTP id z4so5436809qtc.3
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 14:29:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=GWW8DLxytIiCzhfA2BJxy+/D87jQXnHMbpMx/kGEXeU=;
-        b=SZGvIs6E9TskHAVTLovdtnJ3wivDhHJPTxAcX2m2/O1Wt5ZB7JkMLW3C/v0a5DlJxr
-         kjzCc0WgKXUVgNOgxXOQ7+n9XK0EqyIfi5o5jL95OK457mBy/xfRT7k+/qgv7XA0NeDb
-         y7kSQTHOux1UP/gcY1ok2//XPPs84aEiEh1sH34eRHiUcUxmdrxWoX9OlPh6xLAqUJ8+
-         9EengEykizGIUvi9nrVmOWE0jEoiC7Hb5vnkHtIX4Tc989bmaW53jkxPE7c7C5hSquY/
-         8uz2XnV9v7Rv7MZg+uWTtl6GYByJIbw4MFDqFTYOEJK5is/VxOuY3EEc38vbskFjl2I2
-         PDRw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iUxOBar/PS+hd/U67En0gd5ETK4Vi2A7Efcs9aChB1E=;
+        b=W3Dr3ZmZuVf2yyUmf8GdGQmSMV38dKmmKvqvW49b3pOq3c3HR+MfUaLw4W2rhl0NYA
+         30klDwqytwEkJZuKA2g1b1a5jKJDvJprP3dUw5NarUa5zwWavFaQqK+c/QZyT2cBu/CJ
+         PcA7FA2vqUJHIAlYsGUbRAmgzniYtGDFGrnczAKZz0WDO5a8XZxP7WcF1bENFqcgjsie
+         APeMBmyxXr6wEY1BN6RP02X6btApPAsCCt45xkVSHSvqN47rUa0U6DlEdnmb97enmwjg
+         9JvmDwESQqJAEwq2ksJ5GAsp+KyXIhhh8BmMYGlAFTsAU6Lqot+gArEC1ozSE9C+qdJP
+         3vSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=GWW8DLxytIiCzhfA2BJxy+/D87jQXnHMbpMx/kGEXeU=;
-        b=k060Shh/bjx3Zd+7n7xgm5vERn32Z+KuRpwTZYZQ2mjS44fAcjH03LFqO6QcUXqXH8
-         sc1bY07NYP4mTvN6/52/sO6OIamLQGAqpBwbnO13wklMfdO4EBZmkNtOUlN3uUfB25qX
-         W+vI0qjhwRA3/VOIoqzmrZ3O4YqSmM5m2t+tvRCGJG2YHsZgBw/YjJ3oUduC33eLgl6A
-         gdf/Q8XOM+vwUYO/DpNBjaNwDyCBeVMzWBsUWjVQktpg7kbBhhWKguh4xBJGk+rD5akL
-         DCzZcoLCEm+9Hg4Bo1KjZFrWqwwyfrFVIW8S5gfV1CvQUBz796m2m7FHWZzymiJ/YV3d
-         7jOA==
-X-Gm-Message-State: APjAAAVWUsb5L5HlPYl3kQPK3IOhIu/kyE4SV107us9y3ZdAIds7Lrfy
-        n6fihbYsBKF+t15a92dtxkyA0VBE/Ws=
-X-Google-Smtp-Source: APXvYqzgsuapLgy6KYdw7jRoVvKrtPqUVQIKBUbs4nUAFFRMYUPAiPFENsbmkHB/pRiOPNxRcrVZ9Q==
-X-Received: by 2002:a63:4a51:: with SMTP id j17mr10144639pgl.284.1567113998895;
-        Thu, 29 Aug 2019 14:26:38 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id v67sm6499918pfb.45.2019.08.29.14.26.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Aug 2019 14:26:38 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 02/15] MIPS: SGI-IP27: restructure ioc3
- register access
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20190829155014.9229-1-tbogendoerfer@suse.de>
- <20190829155014.9229-3-tbogendoerfer@suse.de>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <d9192f8c-a8a6-86aa-62eb-91826163bb43@pensando.io>
-Date:   Thu, 29 Aug 2019 14:26:35 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iUxOBar/PS+hd/U67En0gd5ETK4Vi2A7Efcs9aChB1E=;
+        b=QE7EnV46dWa0LhYrgvB+4UrRO2EKDC9SXU9zwSs5qNQ4DpFnUda3RoloLZWpODvPbP
+         4GctN/3p7F4WWyKMu7lxdFb7L5cGUsWDfBYnJll7g2wXBPhqPevVqGIPo20ldeu3QhQY
+         pAAIDKaj59lEb8BAQRdJQ1ntWkaagBplJnq7R/55b91xF3cCNoOmg73MOGZkoGAT20lR
+         aWHNgz640Ltds0vigCTNHDfQPS29qdOk2rWrBxbJ23hYMCPOjm/CxOI/wolT6ojqYKgy
+         uznDiW6U+MOmJ28xwDPrTS9B6AZNvjlPm8X4UpI7wv3Q7ikIuh6BkRGZKKo5L1F6peG6
+         wygQ==
+X-Gm-Message-State: APjAAAXpR248oWiORGwTSnYMSXDP9/PNmX3rp81d0sOAXKIutb7endXU
+        5S24s9DmhihWvFx3uykmO466b+NLztFkrIZrn1E=
+X-Google-Smtp-Source: APXvYqxTb+0bJvNPxo9KlTE+E12pZaizI+e0QUMr6c0oQ/K6cEt9WfDOJQDIvpixwRBSDQqtBUUXlDN9Kx/Ry4AyOIo=
+X-Received: by 2002:ac8:3021:: with SMTP id f30mr6245931qte.193.1567114195294;
+ Thu, 29 Aug 2019 14:29:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190829155014.9229-3-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20190828053629.28658-1-jakub.kicinski@netronome.com> <20190828053629.28658-3-jakub.kicinski@netronome.com>
+In-Reply-To: <20190828053629.28658-3-jakub.kicinski@netronome.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Thu, 29 Aug 2019 14:29:44 -0700
+Message-ID: <CAPhsuW5ExXPXYi5D2MND5JREh8EKNHUvSNoBEJ7L3-XK3GD9mA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] nfp: bpf: add simple map op cache
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com,
+        jaco.gericke@netronome.com,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/19 8:50 AM, Thomas Bogendoerfer wrote:
-> Break up the big ioc3 register struct into functional pieces to
-> make use in sub-function drivers more straightforward. And while
-> doing that get rid of all volatile access by using readX/writeX.
+On Tue, Aug 27, 2019 at 10:40 PM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
 >
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Each get_next and lookup call requires a round trip to the device.
+> However, the device is capable of giving us a few entries back,
+> instead of just one.
+>
+> In this patch we ask for a small yet reasonable number of entries
+> (4) on every get_next call, and on subsequent get_next/lookup calls
+> check this little cache for a hit. The cache is only kept for 250us,
+> and is invalidated on every operation which may modify the map
+> (e.g. delete or update call). Note that operations may be performed
+> simultaneously, so we have to keep track of operations in flight.
+>
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 > ---
+>  drivers/net/ethernet/netronome/nfp/bpf/cmsg.c | 179 +++++++++++++++++-
+>  drivers/net/ethernet/netronome/nfp/bpf/fw.h   |   1 +
+>  drivers/net/ethernet/netronome/nfp/bpf/main.c |  18 ++
+>  drivers/net/ethernet/netronome/nfp/bpf/main.h |  23 +++
+>  .../net/ethernet/netronome/nfp/bpf/offload.c  |   3 +
+>  5 files changed, 215 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/cmsg.c b/drivers/net/ethernet/netronome/nfp/bpf/cmsg.c
+> index fcf880c82f3f..0e2db6ea79e9 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/cmsg.c
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/cmsg.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/bug.h>
+>  #include <linux/jiffies.h>
+>  #include <linux/skbuff.h>
+> +#include <linux/timekeeping.h>
+>
+>  #include "../ccm.h"
+>  #include "../nfp_app.h"
+> @@ -175,29 +176,151 @@ nfp_bpf_ctrl_reply_val(struct nfp_app_bpf *bpf, struct cmsg_reply_map_op *reply,
+>         return &reply->data[bpf->cmsg_key_sz * (n + 1) + bpf->cmsg_val_sz * n];
+>  }
+>
+> +static bool nfp_bpf_ctrl_op_cache_invalidate(enum nfp_ccm_type op)
+> +{
+> +       return op == NFP_CCM_TYPE_BPF_MAP_UPDATE ||
+> +              op == NFP_CCM_TYPE_BPF_MAP_DELETE;
+> +}
+> +
+> +static bool nfp_bpf_ctrl_op_cache_capable(enum nfp_ccm_type op)
+> +{
+> +       return op == NFP_CCM_TYPE_BPF_MAP_LOOKUP ||
+> +              op == NFP_CCM_TYPE_BPF_MAP_GETNEXT;
+> +}
+> +
+> +static bool nfp_bpf_ctrl_op_cache_fill(enum nfp_ccm_type op)
+> +{
+> +       return op == NFP_CCM_TYPE_BPF_MAP_GETFIRST ||
+> +              op == NFP_CCM_TYPE_BPF_MAP_GETNEXT;
+> +}
+> +
+> +static unsigned int
+> +nfp_bpf_ctrl_op_cache_get(struct nfp_bpf_map *nfp_map, enum nfp_ccm_type op,
+> +                         const u8 *key, u8 *out_key, u8 *out_value,
+> +                         u32 *cache_gen)
+> +{
+> +       struct bpf_map *map = &nfp_map->offmap->map;
+> +       struct nfp_app_bpf *bpf = nfp_map->bpf;
+> +       unsigned int i, count, n_entries;
+> +       struct cmsg_reply_map_op *reply;
+> +
+> +       n_entries = nfp_bpf_ctrl_op_cache_fill(op) ? bpf->cmsg_cache_cnt : 1;
+> +
+> +       spin_lock(&nfp_map->cache_lock);
+> +       *cache_gen = nfp_map->cache_gen;
+> +       if (nfp_map->cache_blockers)
+> +               n_entries = 1;
+> +
+> +       if (nfp_bpf_ctrl_op_cache_invalidate(op))
+> +               goto exit_block;
+> +       if (!nfp_bpf_ctrl_op_cache_capable(op))
+> +               goto exit_unlock;
+> +
+> +       if (!nfp_map->cache)
+> +               goto exit_unlock;
+> +       if (nfp_map->cache_to < ktime_get_ns())
+> +               goto exit_invalidate;
+> +
+> +       reply = (void *)nfp_map->cache->data;
+> +       count = be32_to_cpu(reply->count);
 
-> diff --git a/arch/mips/sgi-ip27/ip27-console.c b/arch/mips/sgi-ip27/ip27-console.c
-> index 6bdb48d41276..5886bee89d06 100644
-> --- a/arch/mips/sgi-ip27/ip27-console.c
-> +++ b/arch/mips/sgi-ip27/ip27-console.c
-> @@ -35,6 +35,7 @@ void prom_putchar(char c)
->   {
->   	struct ioc3_uartregs *uart = console_uart();
->   
-> -	while ((uart->iu_lsr & 0x20) == 0);
-> -	uart->iu_thr = c;
-> +	while ((readb(&uart->iu_lsr) & 0x20) == 0)
-> +		;
-> +	writeb(c, &uart->iu_thr);
->   }
+Do we need to check whether count is too big (from firmware bug)?
 
-Is it ever possible to never see your bit get set?
-Instead of a tight forever spin, you might add a short delay and a retry 
-limit.
+> +
+> +       for (i = 0; i < count; i++) {
+> +               void *cached_key;
+> +
+> +               cached_key = nfp_bpf_ctrl_reply_key(bpf, reply, i);
+> +               if (memcmp(cached_key, key, map->key_size))
+> +                       continue;
+> +
+> +               if (op == NFP_CCM_TYPE_BPF_MAP_LOOKUP)
+> +                       memcpy(out_value, nfp_bpf_ctrl_reply_val(bpf, reply, i),
+> +                              map->value_size);
+> +               if (op == NFP_CCM_TYPE_BPF_MAP_GETNEXT) {
+> +                       if (i + 1 == count)
+> +                               break;
+> +
+> +                       memcpy(out_key,
+> +                              nfp_bpf_ctrl_reply_key(bpf, reply, i + 1),
+> +                              map->key_size);
+> +               }
+> +
+> +               n_entries = 0;
+> +               goto exit_unlock;
+> +       }
+> +       goto exit_unlock;
+> +
+> +exit_block:
+> +       nfp_map->cache_blockers++;
+> +exit_invalidate:
+> +       dev_consume_skb_any(nfp_map->cache);
+> +       nfp_map->cache = NULL;
+> +exit_unlock:
+> +       spin_unlock(&nfp_map->cache_lock);
+> +       return n_entries;
+> +}
+> +
+> +static void
+> +nfp_bpf_ctrl_op_cache_put(struct nfp_bpf_map *nfp_map, enum nfp_ccm_type op,
+> +                         struct sk_buff *skb, u32 cache_gen)
+> +{
+> +       bool blocker, filler;
+> +
+> +       blocker = nfp_bpf_ctrl_op_cache_invalidate(op);
+> +       filler = nfp_bpf_ctrl_op_cache_fill(op);
+> +       if (blocker || filler) {
+> +               u64 to = 0;
+> +
+> +               if (filler)
+> +                       to = ktime_get_ns() + NFP_BPF_MAP_CACHE_TIME_NS;
+> +
+> +               spin_lock(&nfp_map->cache_lock);
+> +               if (blocker) {
+> +                       nfp_map->cache_blockers--;
+> +                       nfp_map->cache_gen++;
+> +               }
+> +               if (filler && !nfp_map->cache_blockers &&
+> +                   nfp_map->cache_gen == cache_gen) {
+> +                       nfp_map->cache_to = to;
+> +                       swap(nfp_map->cache, skb);
+> +               }
+> +               spin_unlock(&nfp_map->cache_lock);
+> +       }
+> +
+> +       dev_consume_skb_any(skb);
+> +}
+> +
+>  static int
+>  nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
+>                       u8 *key, u8 *value, u64 flags, u8 *out_key, u8 *out_value)
+>  {
+>         struct nfp_bpf_map *nfp_map = offmap->dev_priv;
+> +       unsigned int n_entries, reply_entries, count;
+>         struct nfp_app_bpf *bpf = nfp_map->bpf;
+>         struct bpf_map *map = &offmap->map;
+>         struct cmsg_reply_map_op *reply;
+>         struct cmsg_req_map_op *req;
+>         struct sk_buff *skb;
+> +       u32 cache_gen;
+>         int err;
+>
+>         /* FW messages have no space for more than 32 bits of flags */
+>         if (flags >> 32)
+>                 return -EOPNOTSUPP;
+>
+> +       /* Handle op cache */
+> +       n_entries = nfp_bpf_ctrl_op_cache_get(nfp_map, op, key, out_key,
+> +                                             out_value, &cache_gen);
+> +       if (!n_entries)
+> +               return 0;
+> +
+>         skb = nfp_bpf_cmsg_map_req_alloc(bpf, 1);
+> -       if (!skb)
+> -               return -ENOMEM;
+> +       if (!skb) {
+> +               err = -ENOMEM;
+> +               goto err_cache_put;
+> +       }
+>
+>         req = (void *)skb->data;
+>         req->tid = cpu_to_be32(nfp_map->tid);
+> -       req->count = cpu_to_be32(1);
+> +       req->count = cpu_to_be32(n_entries);
+>         req->flags = cpu_to_be32(flags);
+>
+>         /* Copy inputs */
+> @@ -207,16 +330,38 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
+>                 memcpy(nfp_bpf_ctrl_req_val(bpf, req, 0), value,
+>                        map->value_size);
+>
+> -       skb = nfp_ccm_communicate(&bpf->ccm, skb, op,
+> -                                 nfp_bpf_cmsg_map_reply_size(bpf, 1));
+> -       if (IS_ERR(skb))
+> -               return PTR_ERR(skb);
+> +       skb = nfp_ccm_communicate(&bpf->ccm, skb, op, 0);
+> +       if (IS_ERR(skb)) {
+> +               err = PTR_ERR(skb);
+> +               goto err_cache_put;
+> +       }
+> +
+> +       if (skb->len < sizeof(*reply)) {
+> +               cmsg_warn(bpf, "cmsg drop - type 0x%02x too short %d!\n",
+> +                         op, skb->len);
+> +               err = -EIO;
+> +               goto err_free;
+> +       }
+>
+>         reply = (void *)skb->data;
+> +       count = be32_to_cpu(reply->count);
+>         err = nfp_bpf_ctrl_rc_to_errno(bpf, &reply->reply_hdr);
+> +       /* FW responds with message sized to hold the good entries,
+> +        * plus one extra entry if there was an error.
+> +        */
+> +       reply_entries = count + !!err;
+> +       if (n_entries > 1 && count)
+> +               err = 0;
+>         if (err)
+>                 goto err_free;
+>
+> +       if (skb->len != nfp_bpf_cmsg_map_reply_size(bpf, reply_entries)) {
+> +               cmsg_warn(bpf, "cmsg drop - type 0x%02x too short %d for %d entries!\n",
+> +                         op, skb->len, reply_entries);
+> +               err = -EIO;
+> +               goto err_free;
+> +       }
+> +
+>         /* Copy outputs */
+>         if (out_key)
+>                 memcpy(out_key, nfp_bpf_ctrl_reply_key(bpf, reply, 0),
+> @@ -225,11 +370,13 @@ nfp_bpf_ctrl_entry_op(struct bpf_offloaded_map *offmap, enum nfp_ccm_type op,
+>                 memcpy(out_value, nfp_bpf_ctrl_reply_val(bpf, reply, 0),
+>                        map->value_size);
+>
+> -       dev_consume_skb_any(skb);
+> +       nfp_bpf_ctrl_op_cache_put(nfp_map, op, skb, cache_gen);
+>
+>         return 0;
+>  err_free:
+>         dev_kfree_skb_any(skb);
+> +err_cache_put:
+> +       nfp_bpf_ctrl_op_cache_put(nfp_map, op, NULL, cache_gen);
+>         return err;
+>  }
+>
+> @@ -275,7 +422,21 @@ unsigned int nfp_bpf_ctrl_cmsg_min_mtu(struct nfp_app_bpf *bpf)
+>
+>  unsigned int nfp_bpf_ctrl_cmsg_mtu(struct nfp_app_bpf *bpf)
+>  {
+> -       return max(NFP_NET_DEFAULT_MTU, nfp_bpf_ctrl_cmsg_min_mtu(bpf));
+> +       return max3(NFP_NET_DEFAULT_MTU,
+> +                   nfp_bpf_cmsg_map_req_size(bpf, NFP_BPF_MAP_CACHE_CNT),
+> +                   nfp_bpf_cmsg_map_reply_size(bpf, NFP_BPF_MAP_CACHE_CNT));
+> +}
+> +
+> +unsigned int nfp_bpf_ctrl_cmsg_cache_cnt(struct nfp_app_bpf *bpf)
+> +{
+> +       unsigned int mtu, req_max, reply_max, entry_sz;
+> +
+> +       mtu = bpf->app->ctrl->dp.mtu;
+> +       entry_sz = bpf->cmsg_key_sz + bpf->cmsg_val_sz;
+> +       req_max = (mtu - sizeof(struct cmsg_req_map_op)) / entry_sz;
+> +       reply_max = (mtu - sizeof(struct cmsg_reply_map_op)) / entry_sz;
+> +
+> +       return min3(req_max, reply_max, NFP_BPF_MAP_CACHE_CNT);
+>  }
+>
+>  void nfp_bpf_ctrl_msg_rx(struct nfp_app *app, struct sk_buff *skb)
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/fw.h b/drivers/net/ethernet/netronome/nfp/bpf/fw.h
+> index 06c4286bd79e..a83a0ad5e27d 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/fw.h
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/fw.h
+> @@ -24,6 +24,7 @@ enum bpf_cap_tlv_type {
+>         NFP_BPF_CAP_TYPE_QUEUE_SELECT   = 5,
+>         NFP_BPF_CAP_TYPE_ADJUST_TAIL    = 6,
+>         NFP_BPF_CAP_TYPE_ABI_VERSION    = 7,
+> +       NFP_BPF_CAP_TYPE_CMSG_MULTI_ENT = 8,
+>  };
+>
+>  struct nfp_bpf_cap_tlv_func {
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.c b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> index 2b1773ed3de9..8f732771d3fa 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/main.c
+> @@ -299,6 +299,14 @@ nfp_bpf_parse_cap_adjust_tail(struct nfp_app_bpf *bpf, void __iomem *value,
+>         return 0;
+>  }
+>
+> +static int
+> +nfp_bpf_parse_cap_cmsg_multi_ent(struct nfp_app_bpf *bpf, void __iomem *value,
+> +                                u32 length)
+> +{
+> +       bpf->cmsg_multi_ent = true;
+> +       return 0;
+> +}
+> +
+>  static int
+>  nfp_bpf_parse_cap_abi_version(struct nfp_app_bpf *bpf, void __iomem *value,
+>                               u32 length)
+> @@ -375,6 +383,11 @@ static int nfp_bpf_parse_capabilities(struct nfp_app *app)
+>                                                           length))
+>                                 goto err_release_free;
+>                         break;
+> +               case NFP_BPF_CAP_TYPE_CMSG_MULTI_ENT:
+> +                       if (nfp_bpf_parse_cap_cmsg_multi_ent(app->priv, value,
+> +                                                            length))
 
-I see this in several other times in the following code as well.  It 
-might be interesting to see how many times through and perhaps how many 
-usecs are normally spent in these loops.
+Do we plan to extend nfp_bpf_parse_cap_cmsg_multi_ent() to return
+non-zero in the
+future?
 
-Not a binding request, just a thought...
-
-sln
-
-
+> +                               goto err_release_free;
+> +                       break;
+>                 default:
+>                         nfp_dbg(cpp, "unknown BPF capability: %d\n", type);
+>                         break;
+> @@ -426,6 +439,11 @@ static int nfp_bpf_start(struct nfp_app *app)
+>                 return -EINVAL;
+>         }
+>
+> +       if (bpf->cmsg_multi_ent)
+> +               bpf->cmsg_cache_cnt = nfp_bpf_ctrl_cmsg_cache_cnt(bpf);
+> +       else
+> +               bpf->cmsg_cache_cnt = 1;
+> +
+>         return 0;
+>  }
+>
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.h b/drivers/net/ethernet/netronome/nfp/bpf/main.h
+> index f4802036eb42..fac9c6f9e197 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/main.h
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/main.h
+> @@ -99,6 +99,7 @@ enum pkt_vec {
+>   * @maps_neutral:      hash table of offload-neutral maps (on pointer)
+>   *
+>   * @abi_version:       global BPF ABI version
+> + * @cmsg_cache_cnt:    number of entries to read for caching
+>   *
+>   * @adjust_head:       adjust head capability
+>   * @adjust_head.flags:         extra flags for adjust head
+> @@ -124,6 +125,7 @@ enum pkt_vec {
+>   * @pseudo_random:     FW initialized the pseudo-random machinery (CSRs)
+>   * @queue_select:      BPF can set the RX queue ID in packet vector
+>   * @adjust_tail:       BPF can simply trunc packet size for adjust tail
+> + * @cmsg_multi_ent:    FW can pack multiple map entries in a single cmsg
+>   */
+>  struct nfp_app_bpf {
+>         struct nfp_app *app;
+> @@ -134,6 +136,8 @@ struct nfp_app_bpf {
+>         unsigned int cmsg_key_sz;
+>         unsigned int cmsg_val_sz;
+>
+> +       unsigned int cmsg_cache_cnt;
+> +
+>         struct list_head map_list;
+>         unsigned int maps_in_use;
+>         unsigned int map_elems_in_use;
+> @@ -169,6 +173,7 @@ struct nfp_app_bpf {
+>         bool pseudo_random;
+>         bool queue_select;
+>         bool adjust_tail;
+> +       bool cmsg_multi_ent;
+>  };
+>
+>  enum nfp_bpf_map_use {
+> @@ -183,11 +188,21 @@ struct nfp_bpf_map_word {
+>         unsigned char non_zero_update   :1;
+>  };
+>
+> +#define NFP_BPF_MAP_CACHE_CNT          4U
+> +#define NFP_BPF_MAP_CACHE_TIME_NS      (250 * 1000)
+> +
+>  /**
+>   * struct nfp_bpf_map - private per-map data attached to BPF maps for offload
+>   * @offmap:    pointer to the offloaded BPF map
+>   * @bpf:       back pointer to bpf app private structure
+>   * @tid:       table id identifying map on datapath
+> + *
+> + * @cache_lock:        protects @cache_blockers, @cache_to, @cache
+> + * @cache_blockers:    number of ops in flight which block caching
+> + * @cache_gen: counter incremented by every blocker on exit
+> + * @cache_to:  time when cache will no longer be valid (ns)
+> + * @cache:     skb with cached response
+> + *
+>   * @l:         link on the nfp_app_bpf->map_list list
+>   * @use_map:   map of how the value is used (in 4B chunks)
+>   */
+> @@ -195,6 +210,13 @@ struct nfp_bpf_map {
+>         struct bpf_offloaded_map *offmap;
+>         struct nfp_app_bpf *bpf;
+>         u32 tid;
+> +
+> +       spinlock_t cache_lock;
+> +       u32 cache_blockers;
+> +       u32 cache_gen;
+> +       u64 cache_to;
+> +       struct sk_buff *cache;
+> +
+>         struct list_head l;
+>         struct nfp_bpf_map_word use_map[];
+>  };
+> @@ -566,6 +588,7 @@ void *nfp_bpf_relo_for_vnic(struct nfp_prog *nfp_prog, struct nfp_bpf_vnic *bv);
+>
+>  unsigned int nfp_bpf_ctrl_cmsg_min_mtu(struct nfp_app_bpf *bpf);
+>  unsigned int nfp_bpf_ctrl_cmsg_mtu(struct nfp_app_bpf *bpf);
+> +unsigned int nfp_bpf_ctrl_cmsg_cache_cnt(struct nfp_app_bpf *bpf);
+>  long long int
+>  nfp_bpf_ctrl_alloc_map(struct nfp_app_bpf *bpf, struct bpf_map *map);
+>  void
+> diff --git a/drivers/net/ethernet/netronome/nfp/bpf/offload.c b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
+> index 39c9fec222b4..88fab6a82acf 100644
+> --- a/drivers/net/ethernet/netronome/nfp/bpf/offload.c
+> +++ b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
+> @@ -385,6 +385,7 @@ nfp_bpf_map_alloc(struct nfp_app_bpf *bpf, struct bpf_offloaded_map *offmap)
+>         offmap->dev_priv = nfp_map;
+>         nfp_map->offmap = offmap;
+>         nfp_map->bpf = bpf;
+> +       spin_lock_init(&nfp_map->cache_lock);
+>
+>         res = nfp_bpf_ctrl_alloc_map(bpf, &offmap->map);
+>         if (res < 0) {
+> @@ -407,6 +408,8 @@ nfp_bpf_map_free(struct nfp_app_bpf *bpf, struct bpf_offloaded_map *offmap)
+>         struct nfp_bpf_map *nfp_map = offmap->dev_priv;
+>
+>         nfp_bpf_ctrl_free_map(bpf, nfp_map);
+> +       dev_consume_skb_any(nfp_map->cache);
+> +       WARN_ON_ONCE(nfp_map->cache_blockers);
+>         list_del_init(&nfp_map->l);
+>         bpf->map_elems_in_use -= offmap->map.max_entries;
+>         bpf->maps_in_use--;
+> --
+> 2.21.0
+>
