@@ -2,142 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D57A145C
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 11:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3430BA1463
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 11:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727182AbfH2JIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 05:08:02 -0400
-Received: from mail-eopbgr140051.outbound.protection.outlook.com ([40.107.14.51]:56334
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726009AbfH2JIB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 05:08:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D9sgV+9stda2W6RIcFsSeC/gTuEAabFsj0bfEf9dmnyCwvMGjJYr3fULv8BBKcp1uCvKi7pzpKlElvEbDONu+7ykaUTHKbdby1LpZiktaXdkHcw+XcBvXTNu3uiv9MJ/GVavKSVo87NPrmtmD7wdRYyWc+ert4KM3Mat7r9rail5fmQImJta1kbmSOAS5MhB8DFpAl5PWh4YlLF6iKv+DqX1XcpLlbqy4cQWd+UjoEWaJRgazRHSmgUwkBcZP+qYizJ6OflaQzA6zXCHbGF9KwCjdPpKCYEeaoCDGN17IJNd1aHnlQFwtT8lTUbjcucEu9j3xtKmmqA4D442TJkHXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i5amKbeP5DOH6+SuHnHv8b1JexsqDXH3S1o3I9FX9gs=;
- b=l1oWVWuVV7PoMxhs9pFe72Skl3N0o5jXqeE26xZdOs7oVMuln3eRMxwYqFTerV+gahPFS07W3KSn6cvDcq2EfOrhJdiaGdXBOtlClNgIhnU4S8FZoxrEIryGe39IM8ukZvXm1HnCSQj9T+fgOGYIHu/BWUuZTLl5mG0+RYZhI18jvOgiOBoGTQwuDV36CnALgiDKAuFdPPlpIGDEfrJb2OPhf6YbpJe6YQHUlB8vwHmcmNPigJC5QFQ8N87OaFzsx0UYk1NoM0nzfl4xcuH5CHkLo/SV8qdwYTOzB4fzEe7KrPrLJTDlKCVlJZz8A+5f6D27ikMY5tdM6r16XTlgzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i5amKbeP5DOH6+SuHnHv8b1JexsqDXH3S1o3I9FX9gs=;
- b=AeIE9JSdRucvddFgfslQMLh3ifwbgWmJ48Wv5mb7Ox1bBfL0c8ESbY2R4pNPTc64iHKAZvzchekjVefjV5Sl4l8gk2jI4WB3vF0sPQC13Vlz+jZA9fbUbBVwYnt2/c9WNPQbl3CMSOiwIdFjb9G2iTsMxTPFKXmFtMVC2Avs8Go=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB5937.eurprd05.prod.outlook.com (20.178.119.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.20; Thu, 29 Aug 2019 09:07:58 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
- 09:07:58 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v1 2/5] mdev: Make mdev alias unique among all mdevs
-Thread-Topic: [PATCH v1 2/5] mdev: Make mdev alias unique among all mdevs
-Thread-Index: AQHVXQwNAbFu0HBvBEOVNM9QLjIzW6cRF1AAgADBBiA=
-Date:   Thu, 29 Aug 2019 09:07:58 +0000
-Message-ID: <AM0PR05MB48660A0EC22AD9B1E2A6B629D1A20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190827191654.41161-1-parav@mellanox.com>
-        <20190827191654.41161-3-parav@mellanox.com> <20190828153652.7eb6d6d6@x1.home>
-In-Reply-To: <20190828153652.7eb6d6d6@x1.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.18.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8a08574c-ffb5-4c76-409f-08d72c6062f1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB5937;
-x-ms-traffictypediagnostic: AM0PR05MB5937:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB593786852A0F6DF1C0E640B8D1A20@AM0PR05MB5937.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0144B30E41
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(54534003)(13464003)(189003)(199004)(186003)(4326008)(81166006)(66476007)(66446008)(66556008)(316002)(64756008)(7736002)(5660300002)(256004)(11346002)(66946007)(33656002)(86362001)(446003)(9686003)(478600001)(3846002)(54906003)(14454004)(6916009)(476003)(52536014)(6246003)(66066001)(81156014)(6506007)(53546011)(6116002)(486006)(53936002)(229853002)(55016002)(2906002)(55236004)(9456002)(71190400001)(74316002)(25786009)(6436002)(76176011)(8676002)(99286004)(7696005)(71200400001)(305945005)(76116006)(8936002)(102836004)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5937;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: l7BLcTiGcXo2mGdsaRf9nIPVjNB5OiJi3L5551/IzwIMDfm6fSgsgk1da2RLLKtwUc040+zapmefTo2I2UWmfcJuAG56NtxupCdgAigLRv3D2/0J/dE7oRpsKTCUAVUcaZU4etMzz+jeDb5PmANrh+NUhZ2MbfvvpWtdo3mc4D+C6ToOArW2n1a6zcFwR3VrQW5UDtFCDoeLxzySW4RBoEjNh6H5PR9bR2GHr94jYBCmPw3rOcLwh5uYtDm3NhwsJQUq+ti3u9A22PEM81AtmWP+Jum1zLjwlQZEoqgKyDP18JBjPJScpVJFz8pl9NJxOEjpmZVsESkVNoBcGVjaUXL02XTxL8RE97opGmsXg2A4jvCFyQ7cihDQZbjQVsG94PNne9j6Y0olq/8/ANlCVA+BcdWbSZa0nFU2B2drlx0=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727065AbfH2JJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 05:09:20 -0400
+Received: from foss.arm.com ([217.140.110.172]:40998 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726283AbfH2JJU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 05:09:20 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E89628;
+        Thu, 29 Aug 2019 02:09:19 -0700 (PDT)
+Received: from [10.1.197.61] (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C799D3F246;
+        Thu, 29 Aug 2019 02:09:14 -0700 (PDT)
+Subject: Re: [RFC PATCH 2/3] reorganize ptp_kvm modules to make it
+ arch-independent.
+To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        richardcochran@gmail.com, Mark.Rutland@arm.com,
+        Will.Deacon@arm.com, suzuki.poulose@arm.com
+Cc:     linux-kernel@vger.kernel.org, Steve.Capper@arm.com,
+        Kaly.Xin@arm.com, justin.he@arm.com
+References: <20190829063952.18470-1-jianyong.wu@arm.com>
+ <20190829063952.18470-3-jianyong.wu@arm.com>
+From:   Marc Zyngier <maz@kernel.org>
+Organization: Approximate
+Message-ID: <4c6038f5-1da4-0b43-d8b7-541379321bf1@kernel.org>
+Date:   Thu, 29 Aug 2019 10:09:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a08574c-ffb5-4c76-409f-08d72c6062f1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 09:07:58.2786
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0UOwkMgbMUTAFTbCdKNxoOmNZ0r2gagrtztjFAY7wy6EayXmVlWmsYsDHqPmByWxgXn6ZOZd7RnbVo9IKVUBOg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5937
+In-Reply-To: <20190829063952.18470-3-jianyong.wu@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 29/08/2019 07:39, Jianyong Wu wrote:
+> Currently, ptp_kvm modules implementation is only for x86 which includs
+> large part of arch-specific code.  This patch move all of those code
+> into related arch directory.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  arch/x86/kvm/arch_ptp_kvm.c          | 92 ++++++++++++++++++++++++++++
+>  drivers/ptp/Makefile                 |  1 +
+>  drivers/ptp/{ptp_kvm.c => kvm_ptp.c} | 77 ++++++-----------------
+>  include/asm-generic/ptp_kvm.h        | 12 ++++
+>  4 files changed, 123 insertions(+), 59 deletions(-)
+>  create mode 100644 arch/x86/kvm/arch_ptp_kvm.c
+>  rename drivers/ptp/{ptp_kvm.c => kvm_ptp.c} (63%)
+>  create mode 100644 include/asm-generic/ptp_kvm.h
+> 
+> diff --git a/arch/x86/kvm/arch_ptp_kvm.c b/arch/x86/kvm/arch_ptp_kvm.c
+> new file mode 100644
+> index 000000000000..56ea84a86da2
+> --- /dev/null
+> +++ b/arch/x86/kvm/arch_ptp_kvm.c
+> @@ -0,0 +1,92 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + *  Virtual PTP 1588 clock for use with KVM guests
+> + *
+> + *  Copyright (C) 2019 ARM Ltd.
+> + *  All Rights Reserved
 
+No. This isn't ARM's code, not by a million mile. You've simply
+refactored existing code. Please keep the correct attribution (i.e. that
+of the original code).
 
-> -----Original Message-----
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Thursday, August 29, 2019 3:07 AM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
-> cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> kernel@vger.kernel.org; netdev@vger.kernel.org
-> Subject: Re: [PATCH v1 2/5] mdev: Make mdev alias unique among all mdevs
->=20
-> On Tue, 27 Aug 2019 14:16:51 -0500
-> Parav Pandit <parav@mellanox.com> wrote:
->=20
-> > Mdev alias should be unique among all the mdevs, so that when such
-> > alias is used by the mdev users to derive other objects, there is no
-> > collision in a given system.
-> >
-> > Signed-off-by: Parav Pandit <parav@mellanox.com>
-> >
-> > ---
-> > Changelog:
-> > v0->v1:
-> >  - Fixed inclusiong of alias for NULL check
-> >  - Added ratelimited debug print for sha1 hash collision error
-> > ---
-> >  drivers/vfio/mdev/mdev_core.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/vfio/mdev/mdev_core.c
-> > b/drivers/vfio/mdev/mdev_core.c index 62d29f57fe0c..4b9899e40665
-> > 100644
-> > --- a/drivers/vfio/mdev/mdev_core.c
-> > +++ b/drivers/vfio/mdev/mdev_core.c
-> > @@ -375,6 +375,13 @@ int mdev_device_create(struct kobject *kobj, struc=
-t
-> device *dev,
-> >  			ret =3D -EEXIST;
-> >  			goto mdev_fail;
-> >  		}
-> > +		if (tmp->alias && alias && strcmp(tmp->alias, alias) =3D=3D 0) {
->=20
-> Nit, test if the device we adding has an alias before the device we're te=
-sting
-> against.  The compiler can better optimize keeping alias hot.
-> Thanks,
->=20
-Ok. will do.
+> + */
+> +
+> +#include <asm/pvclock.h>
+> +#include <asm/kvmclock.h>
+> +#include <linux/module.h>
+> +#include <uapi/asm/kvm_para.h>
+> +#include <uapi/linux/kvm_para.h>
+> +#include <linux/ptp_clock_kernel.h>
+> +
+> +phys_addr_t clock_pair_gpa;
+> +struct kvm_clock_pairing clock_pair;
+> +struct pvclock_vsyscall_time_info *hv_clock;
+> +
+> +int kvm_arch_ptp_init(void)
+> +{
+> +	int ret;
+> +
+> +	if (!kvm_para_available())
+> +		return -ENODEV;
+> +
+> +	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
+> +	hv_clock = pvclock_get_pvti_cpu0_va();
+> +	if (!hv_clock)
+> +		return -ENODEV;
+> +
+> +	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
+> +			     KVM_CLOCK_PAIRING_WALLCLOCK);
+> +	if (ret == -KVM_ENOSYS || ret == -KVM_EOPNOTSUPP)
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+> +int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+> +{
+> +	long ret;
+> +
+> +	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
+> +			     clock_pair_gpa,
+> +			     KVM_CLOCK_PAIRING_WALLCLOCK);
+> +	if (ret != 0)
+> +		return -EOPNOTSUPP;
+> +
+> +	ts->tv_sec = clock_pair.sec;
+> +	ts->tv_nsec = clock_pair.nsec;
+> +
+> +	return 0;
+> +}
+> +
+> +int kvm_arch_ptp_get_clock_fn(long *cycle, struct timespec64 *tspec,
+> +			      struct clocksource **cs)
+> +{
+> +	unsigned long ret;
+> +	unsigned int version;
+> +	int cpu;
+> +	struct pvclock_vcpu_time_info *src;
+> +
+> +	cpu = smp_processor_id();
+> +	src = &hv_clock[cpu].pvti;
+> +
+> +	do {
+> +		/*
+> +		 * We are using a TSC value read in the hosts
+> +		 * kvm_hc_clock_pairing handling.
+> +		 * So any changes to tsc_to_system_mul
+> +		 * and tsc_shift or any other pvclock
+> +		 * data invalidate that measurement.
+> +		 */
+> +		version = pvclock_read_begin(src);
+> +
+> +		ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
+> +				     clock_pair_gpa,
+> +				     KVM_CLOCK_PAIRING_WALLCLOCK);
+> +		tspec->tv_sec = clock_pair.sec;
+> +		tspec->tv_nsec = clock_pair.nsec;
+> +		*cycle = __pvclock_read_cycles(src, clock_pair.tsc);
+> +	} while (pvclock_read_retry(src, version));
+> +
+> +	*cs = &kvm_clock;
+> +
+> +	return 0;
+> +}
+> +
+> +MODULE_AUTHOR("Marcelo Tosatti <mtosatti@redhat.com>");
+> +MODULE_DESCRIPTION("PTP clock using KVMCLOCK");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+> index 677d1d178a3e..5a8c6462fc0f 100644
+> --- a/drivers/ptp/Makefile
+> +++ b/drivers/ptp/Makefile
+> @@ -4,6 +4,7 @@
+>  #
+>  
+>  ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
+> +ptp_kvm-y				:= ../../arch/$(ARCH)/kvm/arch_ptp_kvm.o kvm_ptp.o
+>  obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
+>  obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
+>  obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
+> diff --git a/drivers/ptp/ptp_kvm.c b/drivers/ptp/kvm_ptp.c
+> similarity index 63%
+> rename from drivers/ptp/ptp_kvm.c
+> rename to drivers/ptp/kvm_ptp.c
+> index fc7d0b77e118..9d07cf872be7 100644
+> --- a/drivers/ptp/ptp_kvm.c
+> +++ b/drivers/ptp/kvm_ptp.c
+> @@ -8,12 +8,12 @@
+>  #include <linux/err.h>
+>  #include <linux/init.h>
+>  #include <linux/kernel.h>
+> +#include <linux/slab.h>
+>  #include <linux/module.h>
+>  #include <uapi/linux/kvm_para.h>
+>  #include <asm/kvm_para.h>
+> -#include <asm/pvclock.h>
+> -#include <asm/kvmclock.h>
+>  #include <uapi/asm/kvm_para.h>
+> +#include <asm-generic/ptp_kvm.h>
+>  
+>  #include <linux/ptp_clock_kernel.h>
+>  
+> @@ -24,56 +24,29 @@ struct kvm_ptp_clock {
+>  
+>  DEFINE_SPINLOCK(kvm_ptp_lock);
+>  
+> -static struct pvclock_vsyscall_time_info *hv_clock;
+> -
+> -static struct kvm_clock_pairing clock_pair;
+> -static phys_addr_t clock_pair_gpa;
+> -
+>  static int ptp_kvm_get_time_fn(ktime_t *device_time,
+>  			       struct system_counterval_t *system_counter,
+>  			       void *ctx)
+>  {
+> -	unsigned long ret;
+> +	unsigned long ret, cycle;
+>  	struct timespec64 tspec;
+> -	unsigned version;
+> -	int cpu;
+> -	struct pvclock_vcpu_time_info *src;
+> +	struct clocksource *cs;
+>  
+>  	spin_lock(&kvm_ptp_lock);
+>  
+>  	preempt_disable_notrace();
+> -	cpu = smp_processor_id();
+> -	src = &hv_clock[cpu].pvti;
+> -
+> -	do {
+> -		/*
+> -		 * We are using a TSC value read in the hosts
+> -		 * kvm_hc_clock_pairing handling.
+> -		 * So any changes to tsc_to_system_mul
+> -		 * and tsc_shift or any other pvclock
+> -		 * data invalidate that measurement.
+> -		 */
+> -		version = pvclock_read_begin(src);
+> -
+> -		ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
+> -				     clock_pair_gpa,
+> -				     KVM_CLOCK_PAIRING_WALLCLOCK);
+> -		if (ret != 0) {
+> -			pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
+> -			spin_unlock(&kvm_ptp_lock);
+> -			preempt_enable_notrace();
+> -			return -EOPNOTSUPP;
+> -		}
+> -
+> -		tspec.tv_sec = clock_pair.sec;
+> -		tspec.tv_nsec = clock_pair.nsec;
+> -		ret = __pvclock_read_cycles(src, clock_pair.tsc);
+> -	} while (pvclock_read_retry(src, version));
+> +	ret = kvm_arch_ptp_get_clock_fn(&cycle, &tspec, &cs);
+> +	if (ret != 0) {
+> +		pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
+> +		spin_unlock(&kvm_ptp_lock);
+> +		preempt_enable_notrace();
+> +		return -EOPNOTSUPP;
+> +	}
+>  
+>  	preempt_enable_notrace();
+>  
+> -	system_counter->cycles = ret;
+> -	system_counter->cs = &kvm_clock;
+> +	system_counter->cycles = cycle;
+> +	system_counter->cs = cs;
+>  
+>  	*device_time = timespec64_to_ktime(tspec);
+>  
+> @@ -116,17 +89,13 @@ static int ptp_kvm_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+>  
+>  	spin_lock(&kvm_ptp_lock);
+>  
+> -	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,
+> -			     clock_pair_gpa,
+> -			     KVM_CLOCK_PAIRING_WALLCLOCK);
+> +	ret = kvm_arch_ptp_get_clock(&tspec);
+>  	if (ret != 0) {
+>  		pr_err_ratelimited("clock offset hypercall ret %lu\n", ret);
+>  		spin_unlock(&kvm_ptp_lock);
+>  		return -EOPNOTSUPP;
+>  	}
+>  
+> -	tspec.tv_sec = clock_pair.sec;
+> -	tspec.tv_nsec = clock_pair.nsec;
+>  	spin_unlock(&kvm_ptp_lock);
+>  
+>  	memcpy(ts, &tspec, sizeof(struct timespec64));
+> @@ -166,21 +135,11 @@ static void __exit ptp_kvm_exit(void)
+>  
+>  static int __init ptp_kvm_init(void)
+>  {
+> -	long ret;
+> -
+> -	if (!kvm_para_available())
+> -		return -ENODEV;
+> -
+> -	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
+> -	hv_clock = pvclock_get_pvti_cpu0_va();
+> -
+> -	if (!hv_clock)
+> -		return -ENODEV;
+> +	int ret;
+>  
+> -	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
+> -			KVM_CLOCK_PAIRING_WALLCLOCK);
+> -	if (ret == -KVM_ENOSYS || ret == -KVM_EOPNOTSUPP)
+> -		return -ENODEV;
+> +	ret = kvm_arch_ptp_init();
+> +	if (IS_ERR(ret))
+> +		return ret;
+>  
+>  	kvm_ptp_clock.caps = ptp_kvm_caps;
+>  
+> diff --git a/include/asm-generic/ptp_kvm.h b/include/asm-generic/ptp_kvm.h
+> new file mode 100644
+> index 000000000000..128a9d7af161
+> --- /dev/null
+> +++ b/include/asm-generic/ptp_kvm.h
+> @@ -0,0 +1,12 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + *  Virtual PTP 1588 clock for use with KVM guests
+> + *
+> + *  Copyright (C) 2019 ARM Ltd.
+> + *  All Rights Reserved
 
-> Alex
+Same here.
+
+> + */
+> +
+> +static int kvm_arch_ptp_init(void);
+> +static int kvm_arch_ptp_get_clock(struct timespec64 *ts);
+> +static int kvm_arch_ptp_get_clock_fn(long *cycle,
+> +		struct timespec64 *tspec, void *cs);
+> 
+
+	M.
+-- 
+Jazz is not dead, it just smells funny...
