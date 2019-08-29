@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37049A172B
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99034A170F
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:53:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728242AbfH2Kur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:50:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58266 "EHLO mail.kernel.org"
+        id S1728592AbfH2KxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 06:53:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58434 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728216AbfH2Kuq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 06:50:46 -0400
+        id S1728332AbfH2Ku4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 06:50:56 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A927623405;
-        Thu, 29 Aug 2019 10:50:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30A2B23427;
+        Thu, 29 Aug 2019 10:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567075845;
-        bh=ONx14oMxgGVjejwC1H+cAhSrLULeYa5AfyZ3w2hjqZA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WyGH4v+mf7QdMMIM046pQ2TH5Ybho6KjBiDkCfBlN7IfP/2+L81/zLQV3fv6jmg72
-         4bg9GcF8wXcnojAH2yd/SckHzXMJkVcNb73fD8BbjV+5bgBTKEqFCVxLGJPAkmrE5S
-         nI1HbyiWNHayBEEgFDDB1FfQzCdb0Xdq14wXgjpY=
+        s=default; t=1567075855;
+        bh=itrWbVp+qN9Vqqyd+kbsmhxYfVC5+mSK+neoJ3ELT+M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1x0hHYhx34FdG7JK3ej0/SlbSpyVOTCCHLsY1JNDN+Io9fGuhT9/JjhYAFPItJVZi
+         jrNNjEh6VxAxhGDva+HsR/4XE2vrUc2zBmxHKdkmjUnqKIacnfQVK2Tk/fY2yblYJB
+         G1hWj+piW5hoy7fpvw5bm0khF3Ugn9aM8oRcJv3g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        Sunil Muthuswamy <sunilmut@microsoft.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH AUTOSEL 4.14 01/14] hv_sock: Fix hang when a connection is closed
-Date:   Thu, 29 Aug 2019 06:50:30 -0400
-Message-Id: <20190829105043.2508-1-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/14] mac80211: fix possible sta leak
+Date:   Thu, 29 Aug 2019 06:50:39 -0400
+Message-Id: <20190829105043.2508-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190829105043.2508-1-sashal@kernel.org>
+References: <20190829105043.2508-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,69 +43,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dexuan Cui <decui@microsoft.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 685703b497bacea8765bb409d6b73455b73c540e ]
+[ Upstream commit 5fd2f91ad483baffdbe798f8a08f1b41442d1e24 ]
 
-There is a race condition for an established connection that is being closed
-by the guest: the refcnt is 4 at the end of hvs_release() (Note: here the
-'remove_sock' is false):
+If TDLS station addition is rejected, the sta memory is leaked.
+Avoid this by moving the check before the allocation.
 
-1 for the initial value;
-1 for the sk being in the bound list;
-1 for the sk being in the connected list;
-1 for the delayed close_work.
-
-After hvs_release() finishes, __vsock_release() -> sock_put(sk) *may*
-decrease the refcnt to 3.
-
-Concurrently, hvs_close_connection() runs in another thread:
-  calls vsock_remove_sock() to decrease the refcnt by 2;
-  call sock_put() to decrease the refcnt to 0, and free the sk;
-  next, the "release_sock(sk)" may hang due to use-after-free.
-
-In the above, after hvs_release() finishes, if hvs_close_connection() runs
-faster than "__vsock_release() -> sock_put(sk)", then there is not any issue,
-because at the beginning of hvs_close_connection(), the refcnt is still 4.
-
-The issue can be resolved if an extra reference is taken when the
-connection is established.
-
-Fixes: a9eeb998c28d ("hv_sock: Add support for delayed close")
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Reviewed-by: Sunil Muthuswamy <sunilmut@microsoft.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Fixes: 7ed5285396c2 ("mac80211: don't initiate TDLS connection if station is not associated to AP")
+Link: https://lore.kernel.org/r/20190801073033.7892-1-johannes@sipsolutions.net
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/hyperv_transport.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/mac80211/cfg.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index 52ac3e49c7efd..ec72a5edaa1b8 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -320,6 +320,11 @@ static void hvs_close_connection(struct vmbus_channel *chan)
- 	lock_sock(sk);
- 	hvs_do_close_lock_held(vsock_sk(sk), true);
- 	release_sock(sk);
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 150dd2160cefb..8168c667d91d9 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -1459,6 +1459,11 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 	if (is_multicast_ether_addr(mac))
+ 		return -EINVAL;
+ 
++	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER) &&
++	    sdata->vif.type == NL80211_IFTYPE_STATION &&
++	    !sdata->u.mgd.associated)
++		return -EINVAL;
 +
-+	/* Release the refcnt for the channel that's opened in
-+	 * hvs_open_connection().
-+	 */
-+	sock_put(sk);
- }
+ 	sta = sta_info_alloc(sdata, mac, GFP_KERNEL);
+ 	if (!sta)
+ 		return -ENOMEM;
+@@ -1466,10 +1471,6 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
+ 	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER))
+ 		sta->sta.tdls = true;
  
- static void hvs_open_connection(struct vmbus_channel *chan)
-@@ -389,6 +394,9 @@ static void hvs_open_connection(struct vmbus_channel *chan)
- 	}
- 
- 	set_per_channel_state(chan, conn_from_host ? new : sk);
-+
-+	/* This reference will be dropped by hvs_close_connection(). */
-+	sock_hold(conn_from_host ? new : sk);
- 	vmbus_set_chn_rescind_callback(chan, hvs_close_connection);
- 
- 	/* Set the pending send size to max packet size to always get
+-	if (sta->sta.tdls && sdata->vif.type == NL80211_IFTYPE_STATION &&
+-	    !sdata->u.mgd.associated)
+-		return -EINVAL;
+-
+ 	err = sta_apply_parameters(local, sta, params);
+ 	if (err) {
+ 		sta_info_free(local, sta);
 -- 
 2.20.1
 
