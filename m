@@ -2,100 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8993CA1783
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF40BA1779
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbfH2K5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:57:07 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36872 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727873AbfH2K5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 06:57:05 -0400
-Received: by mail-wr1-f65.google.com with SMTP id z11so2955567wrt.4
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 03:57:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qo+jIlzTdRjj5XqbIhGgOupgZtD97wKDakusyLmwdK0=;
-        b=BBvuGNw5ClkOpjUSYE/0x2LneTUCMC0fLn/Dz48gLNnMTa7OKEIk4BSx29+yThPQX/
-         wIDBJ6W1ev1YXhGV9vMnnR1v539s3lDCapCAWuwXs8AM25c5hnF6C5AHYjuXlFrw0q4x
-         5C7w9c8tJXtj//ua6JogNjVz7QTnhpywiuXcsB/3aZ1nytygekH6FNlWsmrLuq+0Frtx
-         DE08G6zFzxubbuzdBkNxB1CyS3DDW/qoRDLuTMxMQQTmzUvM0Z8EX6cJiXNm1vkpf4iB
-         22t4t5eW1HOF3pZcRvi1AYN5Kx53NV5rJYBd7wlGc0t1TfOvgifGoKP8KLdQJMTfd6Va
-         lTrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=qo+jIlzTdRjj5XqbIhGgOupgZtD97wKDakusyLmwdK0=;
-        b=nsVXSNitBMoEbPkBlzaJFFXCs08wj+8FCA2R8nt/1+QBQP1DFw4g64ZnAYRhoFx6Dj
-         22NUvA0eghwO0cKYlQkOYrnbtFF57wPXLZXdcmtPIk/F9mOMfkv/EDcXRa74rcyQwRWa
-         nn6C9G5n6X4O8iVO1xOMc2ceOo70TaMhOZeuH6PgnBsF2Oe4eTXO+8oWfir5evuTNJCK
-         N5p5Om9e91CpGM+YIYDa3sNvvNIy7vFwMuXX4IhUWz/OS99h+XTskmdOPB+euZq3vtwy
-         N9TTQvURDbBPUcoEZiLqPsy4Bzjs+8RUL1q8ftSZd3hb6upuJFb6b+qqkdexWaqWqN8j
-         eq3g==
-X-Gm-Message-State: APjAAAUC2jXuAAuOL5GKihh9kmKqGQG4rJoL+7PZYJ0i9RbuhbA+t+c3
-        DSxPbGYIfFvyqSR35Mvg/rPj39HXrBE=
-X-Google-Smtp-Source: APXvYqzC42eL+icqpZ9RvKAbHLc2ziGgDSxjZd1mGXZt1UPmohmCRi9OvHzk01jPMNZosga5kefTog==
-X-Received: by 2002:a5d:658d:: with SMTP id q13mr3251729wru.78.1567076223889;
-        Thu, 29 Aug 2019 03:57:03 -0700 (PDT)
-Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id j18sm2091938wrr.20.2019.08.29.03.57.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 03:57:02 -0700 (PDT)
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH bpf-next 3/3] tools: bpftool: do not link twice against libbpf.a in Makefile
-Date:   Thu, 29 Aug 2019 11:56:45 +0100
-Message-Id: <20190829105645.12285-4-quentin.monnet@netronome.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190829105645.12285-1-quentin.monnet@netronome.com>
-References: <20190829105645.12285-1-quentin.monnet@netronome.com>
+        id S1727330AbfH2K45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 06:56:57 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:58891 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727123AbfH2K45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 06:56:57 -0400
+Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa2.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: kF1RWub9CXK6jgsNDuMyJeTx+jQyYj0BBM+qp3iaZc6Z3VJvJA8g6AyYGnKLzKWwj8fxBoby7V
+ l/x4S3KXk4xCn5JTHE6gStzK/nhksXncpn7mbQYJwfWgoqXREWpfi7YdWvTPVsuGARz0tCw9/z
+ UIOqbcrb0Ew9fZL5Uy3H32/cdv7aaWE4ItiWEmQoWYwOLcrOD4xc5dYnNnjeXC0gD44Cc3Xpbt
+ yOmbLiG3ZUlxgTmrN7I22ayxTRpcATfE1YL0duemHcwbB8DZUH7tHCaH8MRQcRijcYLOfvZEQZ
+ md0=
+X-IronPort-AV: E=Sophos;i="5.64,442,1559545200"; 
+   d="scan'208";a="46989148"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2019 03:56:56 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 29 Aug 2019 03:56:53 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 29 Aug 2019 03:56:56 -0700
+Date:   Thu, 29 Aug 2019 12:56:54 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>, <andrew@lunn.ch>,
+        <allan.nielsen@microchip.com>, <ivecera@redhat.com>,
+        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190829105650.btgvytgja63sx6wx@soft-dev3.microsemi.net>
+References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
+ <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
+ <20190829095100.GH2312@nanopsycho>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190829095100.GH2312@nanopsycho>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In bpftool's Makefile, $(LIBS) includes $(LIBBPF), therefore the library
-is used twice in the linking command. No need to have $(LIBBPF) (from
-$^) on that command, let's do with "$(OBJS) $(LIBS)" (but move $(LIBBPF)
-_before_ the -l flags in $(LIBS)).
+The 08/29/2019 11:51, Jiri Pirko wrote:
+> External E-Mail
+> 
+> 
+> Thu, Aug 29, 2019 at 11:22:28AM CEST, horatiu.vultur@microchip.com wrote:
+> >Add the SWITCHDEV_ATTR_ID_PORT_PROMISCUITY switchdev notification type,
+> >used to indicate whenever the dev promiscuity counter is changed.
+> >
+> >The notification doesn't use any switchdev_attr attribute because in the
+> >notifier callbacks is it possible to get the dev and read directly
+> >the promiscuity value.
+> >
+> >Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> >---
+> > include/net/switchdev.h | 1 +
+> > net/core/dev.c          | 9 +++++++++
+> > 2 files changed, 10 insertions(+)
+> >
+> >diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> >index aee86a1..14b1617 100644
+> >--- a/include/net/switchdev.h
+> >+++ b/include/net/switchdev.h
+> >@@ -40,6 +40,7 @@ enum switchdev_attr_id {
+> > 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING,
+> > 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
+> > 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
+> >+	SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
+> > };
+> > 
+> > struct switchdev_attr {
+> >diff --git a/net/core/dev.c b/net/core/dev.c
+> >index 49589ed..40c74f2 100644
+> >--- a/net/core/dev.c
+> >+++ b/net/core/dev.c
+> >@@ -142,6 +142,7 @@
+> > #include <linux/net_namespace.h>
+> > #include <linux/indirect_call_wrapper.h>
+> > #include <net/devlink.h>
+> >+#include <net/switchdev.h>
+> > 
+> > #include "net-sysfs.h"
+> > 
+> >@@ -7377,6 +7378,11 @@ static void dev_change_rx_flags(struct net_device *dev, int flags)
+> > static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
+> > {
+> > 	unsigned int old_flags = dev->flags;
+> >+	struct switchdev_attr attr = {
+> >+		.orig_dev = dev,
+> >+		.id = SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
+> >+		.flags = SWITCHDEV_F_DEFER,
+> 
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
----
- tools/bpf/bpftool/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi Jiri,
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index 3fc82ff9b52c..22b5a8f2c53d 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -55,7 +55,7 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS += $(EXTRA_LDFLAGS)
- endif
- 
--LIBS = -lelf -lz $(LIBBPF)
-+LIBS = $(LIBBPF) -lelf -lz
- 
- INSTALL ?= install
- RM ?= rm -f
-@@ -117,7 +117,7 @@ $(OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
- $(OUTPUT)feature.o: | zdep
- 
- $(OUTPUT)bpftool: $(OBJS) $(LIBBPF)
--	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-+	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
- 
- $(OUTPUT)%.o: %.c
- 	$(QUIET_CC)$(COMPILE.c) -MMD -o $@ $<
+> NACK
+> 
+> This is invalid usecase for switchdev infra. Switchdev is there for
+> bridge offload purposes only.
+> 
+> For promiscuity changes, the infrastructure is already present in the
+> code. See __dev_notify_flags(). it calls:
+> call_netdevice_notifiers_info(NETDEV_CHANGE, &change_info.info)
+> and you can actually see the changed flag in ".flags_changed".
+Yes, you are right. But in case the port is part of a bridge and then
+enable promisc mode by a user space application(tpcdump) then the drivers
+will not be notified. The reason is that the dev->flags will still be the
+same(because IFF_PROMISC was already set) and only promiscuity will be
+changed.
+
+One fix could be to call __dev_notify_flags() no matter when the
+promisc is enable or disabled.
+
+> 
+> You just have to register netdev notifier block in your driver. Grep
+> for: register_netdevice_notifier
+> 
+> 
+> >+	};
+> > 	kuid_t uid;
+> > 	kgid_t gid;
+> > 
+> >@@ -7419,6 +7425,9 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
+> > 	}
+> > 	if (notify)
+> > 		__dev_notify_flags(dev, old_flags, IFF_PROMISC);
+> >+
+> >+	switchdev_port_attr_set(dev, &attr);
+> >+
+> > 	return 0;
+> > }
+> > 
+> >-- 
+> >2.7.4
+> >
+> 
+
 -- 
-2.17.1
-
+/Horatiu
