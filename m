@@ -2,87 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF43CA255E
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F1CA2634
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730145AbfH2SaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:30:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41730 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730019AbfH2SaM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:30:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=SxqYvv49yqmIIqleMdsHFqKFHskcW+8pUjR7rwMTuP0=; b=oUA4l5+HGnWxmXp/tiI7FHZZEh
-        s1vQyf/zy8GyvMEe32SQXw/YV4dSxoMd3p7rknNMcTgQ/NZQCtn7jEEAvW0NHy+bRPFAfk5wLi0WL
-        dCFZLLDKmQSpccVrnR234OJdaFEGCLGRFtkL9q40/NC1BM8/CFIqk6IBIkCB4O30O2PA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i3PBF-0004wy-Lu; Thu, 29 Aug 2019 20:29:57 +0200
-Date:   Thu, 29 Aug 2019 20:29:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, allan.nielsen@microchip.com,
-        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
-Message-ID: <20190829182957.GA17530@lunn.ch>
-References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
- <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
- <20190829095100.GH2312@nanopsycho>
- <20190829132611.GC6998@lunn.ch>
- <20190829134901.GJ2312@nanopsycho>
- <20190829143732.GB17864@lunn.ch>
- <20190829175759.GA19471@splinter>
+        id S1728086AbfH2SkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:40:01 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:41977 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727935AbfH2SkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 14:40:01 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w5so5110572edl.8
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 11:39:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=NwKudhIxtj7Zray+wZNixIal8r/E1MBsJakZSiC7ZTc=;
+        b=v/NaBC5Xt8P+CLQ4BZkAsyYKMQXFOmakGD4Bga2JMs7xxedO5kn79mbMsulgFgtSWw
+         ezKGOEUHSoREk7zGi9W0OmZ37O1PMWJhKZd7/p5dPV7taV70BZMNVzYOQYC7i5XulYqt
+         0qQbs0bvT5QLUkC+vqzYY7KWGBPSBRrYUsBdw7ZlSjTtqsTAQ9qnfHvhtm+MgRbUq9sB
+         m+GdO3IsCk33bQK/n3ziFY86/JWTz6AtKUse9d5LnxTJaSD5VE2ADtp8tafKtFb/4PD8
+         i3dh5uNCwoI+vGb7nY8TxYf8dwW0FfCyRT7ZcwMTFSm8zz7ZRPmb2WbcVf7ediEQkmpC
+         PNyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=NwKudhIxtj7Zray+wZNixIal8r/E1MBsJakZSiC7ZTc=;
+        b=qeVU6Z7zEXBANb+eoi7+XZBYNooghHQEFWeqtqonz+dKUrAlmrEtFtx21sc4zkIM9s
+         qF3FdEkCTAyRqkSq6YJhD0itdiLnseXezMaC4LzCYA6tJI6V2qpjJKHIdzbQYefT9f86
+         lovBdgkBMEF35zN8CkBlqfMC87k6FgE2XHUyaEjlQZtnHBYU1Cs82My9/yKaMz8MC6+0
+         sZ62J9hYSB9RPQexombn32j577f/qbf08WuRlrnG++e4Y36KRIW5rFATPcrjikWOs1sO
+         qd0parf8XCFsy0zDqrkQe6QE66S+U2V4qHCjZzqN640Pk29LvxAuZ71gtlS/Q7zhCcoQ
+         Kmlg==
+X-Gm-Message-State: APjAAAUKPzKZk3X340Tj5bowK1Oh4AlWKmvpxbYhnN8zKPZczcmMZXt4
+        w1uNAnxzhIH8bK6ZOY01qMbxLw==
+X-Google-Smtp-Source: APXvYqyL5xnRLCKRu6cFiByK3nr4mrPT573BNbnKOgFvQNv6xlZvF+QAOVykOPyprcT8089s/fwBiQ==
+X-Received: by 2002:a17:906:938a:: with SMTP id l10mr9716391ejx.232.1567103998665;
+        Thu, 29 Aug 2019 11:39:58 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g20sm576484edp.92.2019.08.29.11.39.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 11:39:58 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 11:39:32 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@fb.com>
+Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Brian Vazquez <brianvv@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 00/13] bpf: adding map batch processing support
+Message-ID: <20190829113932.5c058194@cakuba.netronome.com>
+In-Reply-To: <20190829064502.2750303-1-yhs@fb.com>
+References: <20190829064502.2750303-1-yhs@fb.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190829175759.GA19471@splinter>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
+On Wed, 28 Aug 2019 23:45:02 -0700, Yonghong Song wrote:
+> Brian Vazquez has proposed BPF_MAP_DUMP command to look up more than one
+> map entries per syscall.
+>   https://lore.kernel.org/bpf/CABCgpaU3xxX6CMMxD+1knApivtc2jLBHysDXw-0E9bQEL0qC3A@mail.gmail.com/T/#t
 > 
-> What happens when you run tcpdump on a routed interface without putting
-> it in promiscuous mode ('-p')? If it is a pure software switch, then you
-> see all unicast packets addressed to your interface's MAC address. What
-> happens when the same is done on a hardware switch? With the proposed
-> solution you will not get the same result.
+> During discussion, we found more use cases can be supported in a similar
+> map operation batching framework. For example, batched map lookup and delete,
+> which can be really helpful for bcc.
+>   https://github.com/iovisor/bcc/blob/master/tools/tcptop.py#L233-L243
+>   https://github.com/iovisor/bcc/blob/master/tools/slabratetop.py#L129-L138
+>     
+> Also, in bcc, we have API to delete all entries in a map.
+>   https://github.com/iovisor/bcc/blob/master/src/cc/api/BPFTable.h#L257-L264
 > 
-> On a software switch, when you run tcpdump without '-p', do you incur
-> major packet loss? No. Will this happen when you punt several Tbps to
-> your CPU on the hardware switch? Yes.
+> For map update, batched operations also useful as sometimes applications need
+> to populate initial maps with more than one entry. For example, the below
+> example is from kernel/samples/bpf/xdp_redirect_cpu_user.c:
+>   https://github.com/torvalds/linux/blob/master/samples/bpf/xdp_redirect_cpu_user.c#L543-L550
+> 
+> This patch addresses all the above use cases. To make uapi stable, it also
+> covers other potential use cases. Four bpf syscall subcommands are introduced:
+>     BPF_MAP_LOOKUP_BATCH
+>     BPF_MAP_LOOKUP_AND_DELETE_BATCH
+>     BPF_MAP_UPDATE_BATCH
+>     BPF_MAP_DELETE_BATCH
+> 
+> In userspace, application can iterate through the whole map one batch
+> as a time, e.g., bpf_map_lookup_batch() in the below:
+>     p_key = NULL;
+>     p_next_key = &key;
+>     while (true) {
+>        err = bpf_map_lookup_batch(fd, p_key, &p_next_key, keys, values,
+>                                   &batch_size, elem_flags, flags);
+>        if (err) ...
+>        if (p_next_key) break; // done
+>        if (!p_key) p_key = p_next_key;
+>     }
+> Please look at individual patches for details of new syscall subcommands
+> and examples of user codes.
+> 
+> The testing is also done in a qemu VM environment:
+>       measure_lookup: max_entries 1000000, batch 10, time 342ms
+>       measure_lookup: max_entries 1000000, batch 1000, time 295ms
+>       measure_lookup: max_entries 1000000, batch 1000000, time 270ms
+>       measure_lookup: max_entries 1000000, no batching, time 1346ms
+>       measure_lookup_delete: max_entries 1000000, batch 10, time 433ms
+>       measure_lookup_delete: max_entries 1000000, batch 1000, time 363ms
+>       measure_lookup_delete: max_entries 1000000, batch 1000000, time 357ms
+>       measure_lookup_delete: max_entries 1000000, not batch, time 1894ms
+>       measure_delete: max_entries 1000000, batch, time 220ms
+>       measure_delete: max_entries 1000000, not batch, time 1289ms
+> For a 1M entry hash table, batch size of 10 can reduce cpu time
+> by 70%. Please see patch "tools/bpf: measure map batching perf"
+> for details of test codes.
 
-Hi Ido
+Hi Yonghong!
 
-Please think about the general case, not your hardware. A DSA switch
-generally has 1G ports. And the connection to the host is generally
-1G, maybe 2.5G. So if i put one interface into promisc mode, i will
-probably receive the majority of the traffic on that port, so long as
-there is not too much traffic from other ports towards the CPU.
+great to see this, we have been looking at implementing some way to
+speed up map walks as well.
 
-I also don't expect any major packet loss in the switch. It is still
-hardware switching, but also sending a copy to the CPU. That copy will
-have the offload_fwd_mark bit set, so the bridge will discard the
-frame. The switch egress queue towards the CPU might overflow, but
-that means tcpdump does not get to see all the frames, and some
-traffic which is actually heading to the CPU is lost. But that can
-happen anyway.
+The direction we were looking in, after previous discussions [1],
+however, was to provide a BPF program which can run the logic entirely
+within the kernel.
 
-We should also think about the different classes of users. Somebody
-using a TOR switch with a NOS is very different to a user of a SOHO
-switch in their WiFi access point. The first probably knows tc very
-well, the second has probably never heard of it, and just wants
-tcpdump to work like on their desktop.
+We have a rough PoC on the FW side (we can offload the program which
+walks the map, which is pretty neat), but the kernel verifier side
+hasn't really progressed. It will soon.
 
-	 Andrew
+The rough idea is that the user space provides two programs, "filter"
+and "dumper":
+
+	bpftool map exec id XYZ filter pinned /some/prog \
+				dumper pinned /some/other_prog
+
+Both programs get this context:
+
+struct map_op_ctx {
+	u64 key;
+	u64 value;
+}
+
+We need a per-map implementation of the exec side, but roughly maps
+would do:
+
+	LIST_HEAD(deleted);
+
+	for entry in map {
+		struct map_op_ctx {
+			.key	= entry->key,
+			.value	= entry->value,
+		};
+
+		act = BPF_PROG_RUN(filter, &map_op_ctx);
+		if (act & ~ACT_BITS)
+			return -EINVAL;
+
+		if (act & DELETE) {
+			map_unlink(entry);
+			list_add(entry, &deleted);
+		}
+		if (act & STOP)
+			break;
+	}
+
+	synchronize_rcu();
+
+	for entry in deleted {
+		struct map_op_ctx {
+			.key	= entry->key,
+			.value	= entry->value,
+		};
+		
+		BPF_PROG_RUN(dumper, &map_op_ctx);
+		map_free(entry);
+	}
+
+The filter program can't perform any map operations other than lookup,
+otherwise we won't be able to guarantee that we'll walk the entire map
+(if the filter program deletes some entries in a unfortunate order).
+
+If user space just wants a pure dump it can simply load a program which
+dumps the entries into a perf ring.
+
+I'm bringing this up because that mechanism should cover what is
+achieved with this patch set and much more. 
+
+In particular for networking workloads where old flows have to be
+pruned from the map periodically it's far more efficient to communicate
+to user space only the flows which timed out (the delete batching from
+this set won't help at all).
+
+With a 2M entry map and this patch set we still won't be able to prune
+once a second on one core.
+
+[1]
+https://lore.kernel.org/netdev/20190813130921.10704-4-quentin.monnet@netronome.com/
