@@ -2,162 +2,486 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD05A1AE0
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A1AEA1AEE
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbfH2NHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 09:07:42 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49055 "EHLO mx1.redhat.com"
+        id S1728072AbfH2NHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 09:07:53 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:12442 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727066AbfH2NHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 09:07:42 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        id S1727195AbfH2NHt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 09:07:49 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D6E0018012CA;
-        Thu, 29 Aug 2019 13:07:41 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 367BD300BEB0;
+        Thu, 29 Aug 2019 13:07:49 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D25B84116;
-        Thu, 29 Aug 2019 13:07:40 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DFF3A5C1D6;
+        Thu, 29 Aug 2019 13:07:47 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
  Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
  Kingdom.
  Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 1/7] rxrpc: Improve jumbo packet counting
+Subject: [PATCH net 2/7] rxrpc: Use info in skbuff instead of reparsing a
+ jumbo packet
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 29 Aug 2019 14:07:40 +0100
-Message-ID: <156708406010.26102.14441247200172165798.stgit@warthog.procyon.org.uk>
+Date:   Thu, 29 Aug 2019 14:07:47 +0100
+Message-ID: <156708406708.26102.13192564522523294223.stgit@warthog.procyon.org.uk>
 In-Reply-To: <156708405310.26102.7954021163316252673.stgit@warthog.procyon.org.uk>
 References: <156708405310.26102.7954021163316252673.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Thu, 29 Aug 2019 13:07:41 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 29 Aug 2019 13:07:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improve the information stored about jumbo packets so that we don't need to
-reparse them so much later.
+Use the information now cached in the skbuff private data to avoid the need
+to reparse a jumbo packet.  We can find all the subpackets by dead
+reckoning, so it's only necessary to note how many there are, whether the
+last one is flagged as LAST_PACKET and whether any have the REQUEST_ACK
+flag set.
 
+This is necessary as once recvmsg() can see the packet, it can start
+modifying it, such as doing in-place decryption.
+
+Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
 Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Jeffrey Altman <jaltman@auristor.com>
 ---
 
- net/rxrpc/ar-internal.h |   10 +++++++---
- net/rxrpc/input.c       |   23 ++++++++++++++---------
- net/rxrpc/protocol.h    |    9 +++++++++
- 3 files changed, 30 insertions(+), 12 deletions(-)
+ net/rxrpc/ar-internal.h |    3 -
+ net/rxrpc/input.c       |  231 +++++++++++++++++++++++------------------------
+ net/rxrpc/recvmsg.c     |   41 +++++---
+ 3 files changed, 139 insertions(+), 136 deletions(-)
 
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 145335611af6..87cff6c218b6 100644
+index 87cff6c218b6..20d7907a5bc6 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -185,11 +185,15 @@ struct rxrpc_host_header {
-  * - max 48 bytes (struct sk_buff::cb)
-  */
- struct rxrpc_skb_priv {
--	union {
--		u8		nr_jumbo;	/* Number of jumbo subpackets */
--	};
-+	u8		nr_subpackets;		/* Number of subpackets */
-+	u8		rx_flags;		/* Received packet flags */
-+#define RXRPC_SKB_INCL_LAST	0x01		/* - Includes last packet */
- 	union {
- 		int		remain;		/* amount of space remaining for next write */
-+
-+		/* List of requested ACKs on subpackets */
-+		unsigned long	rx_req_ack[(RXRPC_MAX_NR_JUMBO + BITS_PER_LONG - 1) /
-+					   BITS_PER_LONG];
- 	};
+@@ -617,8 +617,7 @@ struct rxrpc_call {
+ #define RXRPC_TX_ANNO_LAST	0x04
+ #define RXRPC_TX_ANNO_RESENT	0x08
  
- 	struct rxrpc_host_header hdr;		/* RxRPC packet header from this packet */
+-#define RXRPC_RX_ANNO_JUMBO	0x3f		/* Jumbo subpacket number + 1 if not zero */
+-#define RXRPC_RX_ANNO_JLAST	0x40		/* Set if last element of a jumbo packet */
++#define RXRPC_RX_ANNO_SUBPACKET	0x3f		/* Subpacket number in jumbogram */
+ #define RXRPC_RX_ANNO_VERIFIED	0x80		/* Set if verified and decrypted */
+ 	rxrpc_seq_t		tx_hard_ack;	/* Dead slot in buffer; the first transmitted but
+ 						 * not hard-ACK'd packet follows this.
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index dd47d465d1d3..ffcec5117954 100644
+index ffcec5117954..35b1a9368d80 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -347,7 +347,7 @@ static bool rxrpc_receiving_reply(struct rxrpc_call *call)
- }
- 
- /*
-- * Scan a jumbo packet to validate its structure and to work out how many
-+ * Scan a data packet to validate its structure and to work out how many
-  * subpackets it contains.
-  *
-  * A jumbo packet is a collection of consecutive packets glued together with
-@@ -358,16 +358,21 @@ static bool rxrpc_receiving_reply(struct rxrpc_call *call)
-  * the last are RXRPC_JUMBO_DATALEN in size.  The last subpacket may be of any
-  * size.
+@@ -405,10 +405,10 @@ static bool rxrpc_validate_data(struct sk_buff *skb)
+  * (that information is encoded in the ACK packet).
   */
--static bool rxrpc_validate_jumbo(struct sk_buff *skb)
-+static bool rxrpc_validate_data(struct sk_buff *skb)
+ static void rxrpc_input_dup_data(struct rxrpc_call *call, rxrpc_seq_t seq,
+-				 u8 annotation, bool *_jumbo_bad)
++				 bool is_jumbo, bool *_jumbo_bad)
+ {
+ 	/* Discard normal packets that are duplicates. */
+-	if (annotation == 0)
++	if (is_jumbo)
+ 		return;
+ 
+ 	/* Skip jumbo subpackets that are duplicates.  When we've had three or
+@@ -428,19 +428,17 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
  {
  	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+-	unsigned int offset = sizeof(struct rxrpc_wire_header);
+-	unsigned int ix;
++	unsigned int j;
+ 	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
+-	rxrpc_seq_t seq = sp->hdr.seq, hard_ack;
+-	bool immediate_ack = false, jumbo_bad = false, queued;
+-	u16 len;
+-	u8 ack = 0, flags, annotation = 0;
++	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
++	bool immediate_ack = false, jumbo_bad = false;
++	u8 ack = 0;
+ 
+ 	_enter("{%u,%u},{%u,%u}",
+-	       call->rx_hard_ack, call->rx_top, skb->len, seq);
++	       call->rx_hard_ack, call->rx_top, skb->len, seq0);
+ 
+-	_proto("Rx DATA %%%u { #%u f=%02x }",
+-	       sp->hdr.serial, seq, sp->hdr.flags);
++	_proto("Rx DATA %%%u { #%u f=%02x n=%u }",
++	       sp->hdr.serial, seq0, sp->hdr.flags, sp->nr_subpackets);
+ 
+ 	state = READ_ONCE(call->state);
+ 	if (state >= RXRPC_CALL_COMPLETE)
+@@ -469,137 +467,136 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	    !rxrpc_receiving_reply(call))
+ 		goto unlock;
+ 
+-	call->ackr_prev_seq = seq;
+-
++	call->ackr_prev_seq = seq0;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
+-	if (after(seq, hard_ack + call->rx_winsize)) {
+-		ack = RXRPC_ACK_EXCEEDS_WINDOW;
+-		ack_serial = serial;
+-		goto ack;
+-	}
+ 
+-	flags = sp->hdr.flags;
+-	if (flags & RXRPC_JUMBO_PACKET) {
++	if (sp->nr_subpackets > 1) {
+ 		if (call->nr_jumbo_bad > 3) {
+ 			ack = RXRPC_ACK_NOSPACE;
+ 			ack_serial = serial;
+ 			goto ack;
+ 		}
+-		annotation = 1;
+ 	}
+ 
+-next_subpacket:
+-	queued = false;
+-	ix = seq & RXRPC_RXTX_BUFF_MASK;
+-	len = skb->len;
+-	if (flags & RXRPC_JUMBO_PACKET)
+-		len = RXRPC_JUMBO_DATALEN;
+-
+-	if (flags & RXRPC_LAST_PACKET) {
+-		if (test_bit(RXRPC_CALL_RX_LAST, &call->flags) &&
+-		    seq != call->rx_top) {
+-			rxrpc_proto_abort("LSN", call, seq);
+-			goto unlock;
+-		}
+-	} else {
+-		if (test_bit(RXRPC_CALL_RX_LAST, &call->flags) &&
+-		    after_eq(seq, call->rx_top)) {
+-			rxrpc_proto_abort("LSA", call, seq);
+-			goto unlock;
++	for (j = 0; j < sp->nr_subpackets; j++) {
++		rxrpc_serial_t serial = sp->hdr.serial + j;
++		rxrpc_seq_t seq = seq0 + j;
++		unsigned int ix = seq & RXRPC_RXTX_BUFF_MASK;
++		bool terminal = (j == sp->nr_subpackets - 1);
++		bool last = terminal && (sp->rx_flags & RXRPC_SKB_INCL_LAST);
++		u8 flags, annotation = j;
++
++		_proto("Rx DATA+%u %%%u { #%x t=%u l=%u }",
++		     j, serial, seq, terminal, last);
++
++		if (last) {
++			if (test_bit(RXRPC_CALL_RX_LAST, &call->flags) &&
++			    seq != call->rx_top) {
++				rxrpc_proto_abort("LSN", call, seq);
++				goto unlock;
++			}
++		} else {
++			if (test_bit(RXRPC_CALL_RX_LAST, &call->flags) &&
++			    after_eq(seq, call->rx_top)) {
++				rxrpc_proto_abort("LSA", call, seq);
++				goto unlock;
++			}
+ 		}
+-	}
+-
+-	trace_rxrpc_rx_data(call->debug_id, seq, serial, flags, annotation);
+-	if (before_eq(seq, hard_ack)) {
+-		ack = RXRPC_ACK_DUPLICATE;
+-		ack_serial = serial;
+-		goto skip;
+-	}
+ 
+-	if (flags & RXRPC_REQUEST_ACK && !ack) {
+-		ack = RXRPC_ACK_REQUESTED;
+-		ack_serial = serial;
+-	}
++		flags = 0;
++		if (last)
++			flags |= RXRPC_LAST_PACKET;
++		if (!terminal)
++			flags |= RXRPC_JUMBO_PACKET;
++		if (test_bit(j, sp->rx_req_ack))
++			flags |= RXRPC_REQUEST_ACK;
++		trace_rxrpc_rx_data(call->debug_id, seq, serial, flags, annotation);
+ 
+-	if (call->rxtx_buffer[ix]) {
+-		rxrpc_input_dup_data(call, seq, annotation, &jumbo_bad);
+-		if (ack != RXRPC_ACK_DUPLICATE) {
++		if (before_eq(seq, hard_ack)) {
+ 			ack = RXRPC_ACK_DUPLICATE;
+ 			ack_serial = serial;
++			continue;
+ 		}
+-		immediate_ack = true;
+-		goto skip;
+-	}
+-
+-	/* Queue the packet.  We use a couple of memory barriers here as need
+-	 * to make sure that rx_top is perceived to be set after the buffer
+-	 * pointer and that the buffer pointer is set after the annotation and
+-	 * the skb data.
+-	 *
+-	 * Barriers against rxrpc_recvmsg_data() and rxrpc_rotate_rx_window()
+-	 * and also rxrpc_fill_out_ack().
+-	 */
+-	rxrpc_get_skb(skb, rxrpc_skb_rx_got);
+-	call->rxtx_annotations[ix] = annotation;
+-	smp_wmb();
+-	call->rxtx_buffer[ix] = skb;
+-	if (after(seq, call->rx_top)) {
+-		smp_store_release(&call->rx_top, seq);
+-	} else if (before(seq, call->rx_top)) {
+-		/* Send an immediate ACK if we fill in a hole */
+-		if (!ack) {
+-			ack = RXRPC_ACK_DELAY;
+-			ack_serial = serial;
+-		}
+-		immediate_ack = true;
+-	}
+-	if (flags & RXRPC_LAST_PACKET) {
+-		set_bit(RXRPC_CALL_RX_LAST, &call->flags);
+-		trace_rxrpc_receive(call, rxrpc_receive_queue_last, serial, seq);
+-	} else {
+-		trace_rxrpc_receive(call, rxrpc_receive_queue, serial, seq);
+-	}
+-	queued = true;
+ 
+-	if (after_eq(seq, call->rx_expect_next)) {
+-		if (after(seq, call->rx_expect_next)) {
+-			_net("OOS %u > %u", seq, call->rx_expect_next);
+-			ack = RXRPC_ACK_OUT_OF_SEQUENCE;
+-			ack_serial = serial;
++		if (call->rxtx_buffer[ix]) {
++			rxrpc_input_dup_data(call, seq, sp->nr_subpackets > 1,
++					     &jumbo_bad);
++			if (ack != RXRPC_ACK_DUPLICATE) {
++				ack = RXRPC_ACK_DUPLICATE;
++				ack_serial = serial;
++			}
++			immediate_ack = true;
++			continue;
+ 		}
+-		call->rx_expect_next = seq + 1;
+-	}
+ 
+-skip:
+-	offset += len;
+-	if (flags & RXRPC_JUMBO_PACKET) {
+-		if (skb_copy_bits(skb, offset, &flags, 1) < 0) {
+-			rxrpc_proto_abort("XJF", call, seq);
+-			goto unlock;
+-		}
+-		offset += sizeof(struct rxrpc_jumbo_header);
+-		seq++;
+-		serial++;
+-		annotation++;
+-		if (flags & RXRPC_JUMBO_PACKET)
+-			annotation |= RXRPC_RX_ANNO_JLAST;
+ 		if (after(seq, hard_ack + call->rx_winsize)) {
+ 			ack = RXRPC_ACK_EXCEEDS_WINDOW;
+ 			ack_serial = serial;
+-			if (!jumbo_bad) {
+-				call->nr_jumbo_bad++;
+-				jumbo_bad = true;
++			if (flags & RXRPC_JUMBO_PACKET) {
++				if (!jumbo_bad) {
++					call->nr_jumbo_bad++;
++					jumbo_bad = true;
++				}
+ 			}
++
+ 			goto ack;
+ 		}
+ 
+-		_proto("Rx DATA Jumbo %%%u", serial);
+-		goto next_subpacket;
+-	}
++		if (flags & RXRPC_REQUEST_ACK && !ack) {
++			ack = RXRPC_ACK_REQUESTED;
++			ack_serial = serial;
++		}
++
++		/* Queue the packet.  We use a couple of memory barriers here as need
++		 * to make sure that rx_top is perceived to be set after the buffer
++		 * pointer and that the buffer pointer is set after the annotation and
++		 * the skb data.
++		 *
++		 * Barriers against rxrpc_recvmsg_data() and rxrpc_rotate_rx_window()
++		 * and also rxrpc_fill_out_ack().
++		 */
++		rxrpc_get_skb(skb, rxrpc_skb_rx_got);
++		call->rxtx_annotations[ix] = annotation;
++		smp_wmb();
++		call->rxtx_buffer[ix] = skb;
++		if (after(seq, call->rx_top)) {
++			smp_store_release(&call->rx_top, seq);
++		} else if (before(seq, call->rx_top)) {
++			/* Send an immediate ACK if we fill in a hole */
++			if (!ack) {
++				ack = RXRPC_ACK_DELAY;
++				ack_serial = serial;
++			}
++			immediate_ack = true;
++		}
++
++		if (terminal) {
++			/* From this point on, we're not allowed to touch the
++			 * packet any longer as its ref now belongs to the Rx
++			 * ring.
++			 */
++			skb = NULL;
++		}
+ 
+-	if (queued && flags & RXRPC_LAST_PACKET && !ack) {
+-		ack = RXRPC_ACK_DELAY;
+-		ack_serial = serial;
++		if (last) {
++			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
++			if (!ack) {
++				ack = RXRPC_ACK_DELAY;
++				ack_serial = serial;
++			}
++			trace_rxrpc_receive(call, rxrpc_receive_queue_last, serial, seq);
++		} else {
++			trace_rxrpc_receive(call, rxrpc_receive_queue, serial, seq);
++		}
++
++		if (after_eq(seq, call->rx_expect_next)) {
++			if (after(seq, call->rx_expect_next)) {
++				_net("OOS %u > %u", seq, call->rx_expect_next);
++				ack = RXRPC_ACK_OUT_OF_SEQUENCE;
++				ack_serial = serial;
++			}
++			call->rx_expect_next = seq + 1;
++		}
+ 	}
+ 
+ ack:
+@@ -612,7 +609,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 				  false, true,
+ 				  rxrpc_propose_ack_input_data);
+ 
+-	if (sp->hdr.seq == READ_ONCE(call->rx_hard_ack) + 1) {
++	if (seq0 == READ_ONCE(call->rx_hard_ack) + 1) {
+ 		trace_rxrpc_notify_socket(call->debug_id, serial);
+ 		rxrpc_notify_socket(call);
+ 	}
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 9a7e1bc9791d..e49eacfaf4d6 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -177,7 +177,8 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 	struct sk_buff *skb;
+ 	rxrpc_serial_t serial;
+ 	rxrpc_seq_t hard_ack, top;
+-	u8 flags;
++	bool last = false;
++	u8 subpacket;
+ 	int ix;
+ 
+ 	_enter("%d", call->debug_id);
+@@ -191,10 +192,13 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 	skb = call->rxtx_buffer[ix];
+ 	rxrpc_see_skb(skb, rxrpc_skb_rx_rotated);
+ 	sp = rxrpc_skb(skb);
+-	flags = sp->hdr.flags;
+-	serial = sp->hdr.serial;
+-	if (call->rxtx_annotations[ix] & RXRPC_RX_ANNO_JUMBO)
+-		serial += (call->rxtx_annotations[ix] & RXRPC_RX_ANNO_JUMBO) - 1;
++
++	subpacket = call->rxtx_annotations[ix] & RXRPC_RX_ANNO_SUBPACKET;
++	serial = sp->hdr.serial + subpacket;
++
++	if (subpacket == sp->nr_subpackets - 1 &&
++	    sp->rx_flags & RXRPC_SKB_INCL_LAST)
++		last = true;
+ 
+ 	call->rxtx_buffer[ix] = NULL;
+ 	call->rxtx_annotations[ix] = 0;
+@@ -203,9 +207,8 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 
+ 	rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
+ 
+-	_debug("%u,%u,%02x", hard_ack, top, flags);
+ 	trace_rxrpc_receive(call, rxrpc_receive_rotate, serial, hard_ack);
+-	if (flags & RXRPC_LAST_PACKET) {
++	if (last) {
+ 		rxrpc_end_rx_phase(call, serial);
+ 	} else {
+ 		/* Check to see if there's an ACK that needs sending. */
+@@ -233,18 +236,19 @@ static int rxrpc_verify_packet(struct rxrpc_call *call, struct sk_buff *skb,
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	rxrpc_seq_t seq = sp->hdr.seq;
+ 	u16 cksum = sp->hdr.cksum;
++	u8 subpacket = annotation & RXRPC_RX_ANNO_SUBPACKET;
+ 
+ 	_enter("");
+ 
+ 	/* For all but the head jumbo subpacket, the security checksum is in a
+ 	 * jumbo header immediately prior to the data.
+ 	 */
+-	if ((annotation & RXRPC_RX_ANNO_JUMBO) > 1) {
++	if (subpacket > 0) {
+ 		__be16 tmp;
+ 		if (skb_copy_bits(skb, offset - 2, &tmp, 2) < 0)
+ 			BUG();
+ 		cksum = ntohs(tmp);
+-		seq += (annotation & RXRPC_RX_ANNO_JUMBO) - 1;
++		seq += subpacket;
+ 	}
+ 
+ 	return call->conn->security->verify_packet(call, skb, offset, len,
+@@ -265,19 +269,18 @@ static int rxrpc_locate_data(struct rxrpc_call *call, struct sk_buff *skb,
+ 			     u8 *_annotation,
+ 			     unsigned int *_offset, unsigned int *_len)
+ {
++	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
  	unsigned int offset = sizeof(struct rxrpc_wire_header);
- 	unsigned int len = skb->len;
--	int nr_jumbo = 1;
- 	u8 flags = sp->hdr.flags;
+ 	unsigned int len;
+ 	int ret;
+ 	u8 annotation = *_annotation;
++	u8 subpacket = annotation & RXRPC_RX_ANNO_SUBPACKET;
  
--	do {
--		nr_jumbo++;
-+	for (;;) {
-+		if (flags & RXRPC_REQUEST_ACK)
-+			__set_bit(sp->nr_subpackets, sp->rx_req_ack);
-+		sp->nr_subpackets++;
-+
-+		if (!(flags & RXRPC_JUMBO_PACKET))
-+			break;
-+
- 		if (len - offset < RXRPC_JUMBO_SUBPKTLEN)
- 			goto protocol_error;
- 		if (flags & RXRPC_LAST_PACKET)
-@@ -376,9 +381,10 @@ static bool rxrpc_validate_jumbo(struct sk_buff *skb)
- 		if (skb_copy_bits(skb, offset, &flags, 1) < 0)
- 			goto protocol_error;
- 		offset += sizeof(struct rxrpc_jumbo_header);
--	} while (flags & RXRPC_JUMBO_PACKET);
-+	}
+ 	/* Locate the subpacket */
++	offset += subpacket * RXRPC_JUMBO_SUBPKTLEN;
+ 	len = skb->len - offset;
+-	if ((annotation & RXRPC_RX_ANNO_JUMBO) > 0) {
+-		offset += (((annotation & RXRPC_RX_ANNO_JUMBO) - 1) *
+-			   RXRPC_JUMBO_SUBPKTLEN);
+-		len = (annotation & RXRPC_RX_ANNO_JLAST) ?
+-			skb->len - offset : RXRPC_JUMBO_SUBPKTLEN;
+-	}
++	if (subpacket < sp->nr_subpackets - 1)
++		len = RXRPC_JUMBO_DATALEN;
  
--	sp->nr_jumbo = nr_jumbo;
-+	if (flags & RXRPC_LAST_PACKET)
-+		sp->rx_flags |= RXRPC_SKB_INCL_LAST;
- 	return true;
+ 	if (!(annotation & RXRPC_RX_ANNO_VERIFIED)) {
+ 		ret = rxrpc_verify_packet(call, skb, annotation, offset, len);
+@@ -303,6 +306,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
+ {
+ 	struct rxrpc_skb_priv *sp;
+ 	struct sk_buff *skb;
++	rxrpc_serial_t serial;
+ 	rxrpc_seq_t hard_ack, top, seq;
+ 	size_t remain;
+ 	bool last;
+@@ -339,9 +343,12 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
+ 		rxrpc_see_skb(skb, rxrpc_skb_rx_seen);
+ 		sp = rxrpc_skb(skb);
  
- protocol_error:
-@@ -1237,8 +1243,7 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
- 		if (sp->hdr.callNumber == 0 ||
- 		    sp->hdr.seq == 0)
- 			goto bad_message;
--		if (sp->hdr.flags & RXRPC_JUMBO_PACKET &&
--		    !rxrpc_validate_jumbo(skb))
-+		if (!rxrpc_validate_data(skb))
- 			goto bad_message;
- 		break;
+-		if (!(flags & MSG_PEEK))
++		if (!(flags & MSG_PEEK)) {
++			serial = sp->hdr.serial;
++			serial += call->rxtx_annotations[ix] & RXRPC_RX_ANNO_SUBPACKET;
+ 			trace_rxrpc_receive(call, rxrpc_receive_front,
+-					    sp->hdr.serial, seq);
++					    serial, seq);
++		}
  
-diff --git a/net/rxrpc/protocol.h b/net/rxrpc/protocol.h
-index 99ce322d7caa..49bb972539aa 100644
---- a/net/rxrpc/protocol.h
-+++ b/net/rxrpc/protocol.h
-@@ -89,6 +89,15 @@ struct rxrpc_jumbo_header {
- #define RXRPC_JUMBO_DATALEN	1412	/* non-terminal jumbo packet data length */
- #define RXRPC_JUMBO_SUBPKTLEN	(RXRPC_JUMBO_DATALEN + sizeof(struct rxrpc_jumbo_header))
- 
-+/*
-+ * The maximum number of subpackets that can possibly fit in a UDP packet is:
-+ *
-+ *	((max_IP - IP_hdr - UDP_hdr) / RXRPC_JUMBO_SUBPKTLEN) + 1
-+ *	= ((65535 - 28 - 28) / 1416) + 1
-+ *	= 46 non-terminal packets and 1 terminal packet.
-+ */
-+#define RXRPC_MAX_NR_JUMBO	47
-+
- /*****************************************************************************/
- /*
-  * on-the-wire Rx ACK packet data payload
+ 		if (msg)
+ 			sock_recv_timestamp(msg, sock->sk, skb);
 
