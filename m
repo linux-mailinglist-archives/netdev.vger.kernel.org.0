@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E29A25DA
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:33:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68740A25DE
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728543AbfH2SNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:13:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55484 "EHLO mail.kernel.org"
+        id S1728607AbfH2SNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:13:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55594 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728503AbfH2SNr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:13:47 -0400
+        id S1728571AbfH2SNv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:13:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D2D082339E;
-        Thu, 29 Aug 2019 18:13:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EB1F2189D;
+        Thu, 29 Aug 2019 18:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102426;
-        bh=/APi8MhdMaI1X9POkFVoeegdl5V7Rfg/wP5JWu/pxf4=;
+        s=default; t=1567102431;
+        bh=0iVUGstZBn+OwfLZQ5q8c/fwqNEgVLv+IjmNObfZN5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEf62xWtvGCcmfYsfNa0m7sONMphArwetnyjj65+bjWY66RQERfqzLV+CrjEUWdB+
-         WmgpOYFMrOtQEjR3V5un8yMoX+yBzlTIJnjMR5WB67lMI8kCPbF3IfrySN6Q2o55h/
-         MQWm772AM5EC2frpRd3SY+zQRh/wWIXRIfuNKX04=
+        b=Kg5/ZzHOxpO9h3MSv/PqkI8mUIZrSWKR2SE1QOYthG1eHlEiZMSqoY6oXLVfPpgC9
+         h8cvLCIANZg0W9qAMtTLAmXJFzBzlaUdjU/dTk7CYQYvf01pY8eMOn1zbr2fLoTChH
+         GRKrODpVlFm2JhlnyLolqq6Q7Ozw+uxgrICtVoQU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.2 17/76] net: tc35815: Explicitly check NET_IP_ALIGN is not zero in tc35815_rx
-Date:   Thu, 29 Aug 2019 14:12:12 -0400
-Message-Id: <20190829181311.7562-17-sashal@kernel.org>
+Cc:     Fabian Henneke <fabian.henneke@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 20/76] Bluetooth: hidp: Let hidp_send_message return number of queued bytes
+Date:   Thu, 29 Aug 2019 14:12:15 -0400
+Message-Id: <20190829181311.7562-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181311.7562-1-sashal@kernel.org>
 References: <20190829181311.7562-1-sashal@kernel.org>
@@ -44,54 +44,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+From: Fabian Henneke <fabian.henneke@gmail.com>
 
-[ Upstream commit 125b7e0949d4e72b15c2b1a1590f8cece985a918 ]
+[ Upstream commit 48d9cc9d85dde37c87abb7ac9bbec6598ba44b56 ]
 
-clang warns:
+Let hidp_send_message return the number of successfully queued bytes
+instead of an unconditional 0.
 
-drivers/net/ethernet/toshiba/tc35815.c:1507:30: warning: use of logical
-'&&' with constant operand [-Wconstant-logical-operand]
-                        if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
-                                                  ^  ~~~~~~~~~~~~
-drivers/net/ethernet/toshiba/tc35815.c:1507:30: note: use '&' for a
-bitwise operation
-                        if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
-                                                  ^~
-                                                  &
-drivers/net/ethernet/toshiba/tc35815.c:1507:30: note: remove constant to
-silence this warning
-                        if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
-                                                 ~^~~~~~~~~~~~~~~
-1 warning generated.
+With the return value fixed to 0, other drivers relying on hidp, such as
+hidraw, can not return meaningful values from their respective
+implementations of write(). In particular, with the current behavior, a
+hidraw device's write() will have different return values depending on
+whether the device is connected via USB or Bluetooth, which makes it
+harder to abstract away the transport layer.
 
-Explicitly check that NET_IP_ALIGN is not zero, which matches how this
-is checked in other parts of the tree. Because NET_IP_ALIGN is a build
-time constant, this check will be constant folded away during
-optimization.
-
-Fixes: 82a9928db560 ("tc35815: Enable StripCRC feature")
-Link: https://github.com/ClangBuiltLinux/linux/issues/608
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Fabian Henneke <fabian.henneke@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/toshiba/tc35815.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hidp/core.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/toshiba/tc35815.c b/drivers/net/ethernet/toshiba/tc35815.c
-index c50a9772f4aff..3b5a26b05295f 100644
---- a/drivers/net/ethernet/toshiba/tc35815.c
-+++ b/drivers/net/ethernet/toshiba/tc35815.c
-@@ -1504,7 +1504,7 @@ tc35815_rx(struct net_device *dev, int limit)
- 			pci_unmap_single(lp->pci_dev,
- 					 lp->rx_skbs[cur_bd].skb_dma,
- 					 RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
--			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
-+			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN != 0)
- 				memmove(skb->data, skb->data - NET_IP_ALIGN,
- 					pkt_len);
- 			data = skb_put(skb, pkt_len);
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 5abd423b55fa9..8d889969ae7ed 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -101,6 +101,7 @@ static int hidp_send_message(struct hidp_session *session, struct socket *sock,
+ {
+ 	struct sk_buff *skb;
+ 	struct sock *sk = sock->sk;
++	int ret;
+ 
+ 	BT_DBG("session %p data %p size %d", session, data, size);
+ 
+@@ -114,13 +115,17 @@ static int hidp_send_message(struct hidp_session *session, struct socket *sock,
+ 	}
+ 
+ 	skb_put_u8(skb, hdr);
+-	if (data && size > 0)
++	if (data && size > 0) {
+ 		skb_put_data(skb, data, size);
++		ret = size;
++	} else {
++		ret = 0;
++	}
+ 
+ 	skb_queue_tail(transmit, skb);
+ 	wake_up_interruptible(sk_sleep(sk));
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int hidp_send_ctrl_message(struct hidp_session *session,
 -- 
 2.20.1
 
