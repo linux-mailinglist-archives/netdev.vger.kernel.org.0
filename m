@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1AFA11F9
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E66A1204
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbfH2GpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 02:45:21 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63904 "EHLO
+        id S1727810AbfH2GpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 02:45:24 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59950 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727715AbfH2GpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:18 -0400
+        by vger.kernel.org with ESMTP id S1727555AbfH2GpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:19 -0400
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T6hJEF008268
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:18 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T6hJVZ008276
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:19 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=jetQnO8HAxQ7GZMZuHqQ3sKTGoOOmJlPX84fFhZEPEI=;
- b=K+Dm6RtJNoW8UP7136qPnsJEimFpcZ4G9Oph96c99I+FuGYBfz+rRm0FwEXOP0tdKcjv
- kWJ/E063n4vSBoL4y+HxcqcYdC8HwmNwzNTY2W81yI28PCCJWIRKd3DwJ+4opl0yvXdp
- 3eFzq5xO0uF5+hMvXKbnX1y3NixaSU1qhFA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2une016qup-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:18 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 28 Aug 2019 23:45:16 -0700
+ content-type; s=facebook; bh=22f0U+Utr+GEn3oQF9cxkOlMTI7YWZ6RTdF+3ucMdtU=;
+ b=nHY54FzOeJAZ2scx0dp8ikIu7qyvzcCB2HR2Frjy6L3iuyXncEiYntAPyydek6zxagfJ
+ 6ZRlcmCXzEF9sgLgfyr5H+Vl+2m/Vi+tyw3GSdGVR3bdjFZabIpxwJ+lzN311aQTzw91
+ bBFVV7wwEgnxqLRCnY5TWnE7yjFigrn9xsg= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2une016qut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:19 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 28 Aug 2019 23:45:18 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 20EE33702BA3; Wed, 28 Aug 2019 23:45:15 -0700 (PDT)
+        id 523C03702BA3; Wed, 28 Aug 2019 23:45:16 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         Yonghong Song <yhs@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 11/13] tools/bpf: add test for bpf_map_delete_batch()
-Date:   Wed, 28 Aug 2019 23:45:15 -0700
-Message-ID: <20190829064515.2751440-1-yhs@fb.com>
+Subject: [PATCH bpf-next 12/13] tools/bpf: add a multithreaded test for map batch operations
+Date:   Wed, 28 Aug 2019 23:45:16 -0700
+Message-ID: <20190829064516.2751550-1-yhs@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190829064502.2750303-1-yhs@fb.com>
 References: <20190829064502.2750303-1-yhs@fb.com>
@@ -61,48 +61,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test bpf_map_delete_batch() functionality.
-  $ ./test_maps
-  ...
-  test_map_delete_batch:PASS
-  ...
----
- .../bpf/map_tests/map_delete_batch.c          | 139 ++++++++++++++++++
- 1 file changed, 139 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/map_tests/map_delete_batch.c
+A multithreaded test is added. Three threads repeatedly did:
+  - batch update
+  - batch lookup_and_delete
+  - batch delete
 
-diff --git a/tools/testing/selftests/bpf/map_tests/map_delete_batch.c b/tools/testing/selftests/bpf/map_tests/map_delete_batch.c
+It is totally possible each batch element operation in kernel
+may find that the key, retrieved from bpf_map_get_next_key(),
+may fail lookup and/or delete as some other threads in parallel
+operates on the same map.
+
+The default mode for new batch APIs is to ignore -ENOENT errors
+in case of lookup and delete and move to the next element.
+The test would otherwise fail if the kernel reacts as -ENOENT
+as a real error and propogates it back to user space.
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ .../selftests/bpf/map_tests/map_batch_mt.c    | 126 ++++++++++++++++++
+ 1 file changed, 126 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_batch_mt.c
+
+diff --git a/tools/testing/selftests/bpf/map_tests/map_batch_mt.c b/tools/testing/selftests/bpf/map_tests/map_batch_mt.c
 new file mode 100644
-index 000000000000..459495a6d9fc
+index 000000000000..a0e2591d0079
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/map_delete_batch.c
-@@ -0,0 +1,139 @@
++++ b/tools/testing/selftests/bpf/map_tests/map_batch_mt.c
+@@ -0,0 +1,126 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook  */
-+#include <stdio.h>
 +#include <errno.h>
++#include <stdio.h>
 +#include <string.h>
++#include <unistd.h>
++#include <pthread.h>
 +
 +#include <bpf/bpf.h>
 +#include <bpf/libbpf.h>
 +
 +#include <test_maps.h>
 +
-+static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
-+			     int *values)
++/* Create three threads. Each thread will iteratively do:
++ *   . update constantly
++ *   . lookup and delete constantly
++ *   . delete constantly
++ * So this will make lookup and delete operations
++ * may fail as the elements may be deleted by another
++ * thread.
++ *
++ * By default, we should not see a problem as
++ * -ENOENT for bpf_map_delete_elem() and bpf_map_lookup_elem()
++ * will be ignored. But with flag, BPF_F_ENFORCE_ENOENT
++ * we may see errors.
++ */
++
++static int map_fd;
++static const __u32 max_entries = 10;
++static volatile bool stop = false;
++
++static void do_batch_update()
 +{
-+	int i, err;
++	int i, err, keys[max_entries], values[max_entries];
++	__u32 count;
 +
 +	for (i = 0; i < max_entries; i++) {
 +		keys[i] = i + 1;
 +		values[i] = i + 2;
 +	}
 +
-+	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, 0, 0);
-+	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
++	while (!stop) {
++		count = max_entries;
++		err = bpf_map_update_batch(map_fd, keys, values, &count, 0, 0);
++		CHECK(err, "bpf_map_update_batch()", "error:%s\n",
++		      strerror(errno));
++	}
 +}
 +
-+void test_map_delete_batch(void)
++static void do_batch_delete()
++{
++	__u32 count;
++	int err;
++
++	while (!stop) {
++		count = 0;
++		err = bpf_map_delete_batch(map_fd, NULL, NULL, NULL, &count,
++					   0, 0);
++		CHECK(err, "bpf_map_delete_batch()", "error:%s\n",
++		      strerror(errno));
++	}
++}
++
++static void do_batch_lookup_and_delete()
++{
++	int err, key, keys[max_entries], values[max_entries];
++	__u32 count;
++	void *p_key;
++
++	while (!stop) {
++		p_key = &key;
++		count = max_entries;
++		err = bpf_map_lookup_and_delete_batch(map_fd, NULL, &p_key,
++						      keys, values, &count,
++						      0, 0);
++		CHECK(err, "bpf_map_lookup_and_delete_batch()", "error:%s\n",
++		      strerror(errno));
++	}
++}
++
++static void *do_work(void *arg)
++{
++	int work_index = (int)(long)arg;
++
++	if (work_index == 0)
++		do_batch_update();
++	else if (work_index == 1)
++		do_batch_delete();
++	else
++		do_batch_lookup_and_delete();
++
++	return NULL;
++}
++
++void test_map_batch_mt(void)
 +{
 +	struct bpf_create_map_attr xattr = {
 +		.name = "hash_map",
@@ -110,109 +189,28 @@ index 000000000000..459495a6d9fc
 +		.key_size = sizeof(int),
 +		.value_size = sizeof(int),
 +	};
-+	int map_fd, *keys, *values, *visited, key;
-+	const __u32 max_entries = 10;
-+	void *p_skey, *p_next_skey;
-+	__u32 count, total;
-+	int err, i, step;
++	const int nr_threads = 3;
++	pthread_t threads[nr_threads];
++	int i, err;
 +
 +	xattr.max_entries = max_entries;
 +	map_fd = bpf_create_map_xattr(&xattr);
 +	CHECK(map_fd == -1,
 +	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
 +
-+	keys = malloc(max_entries * sizeof(int));
-+	values = malloc(max_entries * sizeof(int));
-+	visited = malloc(max_entries * sizeof(int));
-+	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n", strerror(errno));
-+
-+	/* test 1: delete an empty hash table, success */
-+	for (i = 0; i < 2; i++) {
-+		if (i == 0) {
-+			count = 0;
-+			p_next_skey = NULL;
-+		} else {
-+			count = max_entries;
-+			p_next_skey = &key;
-+		}
-+		err = bpf_map_delete_batch(map_fd, NULL, &p_next_skey, keys,
-+					   &count, 0, 0);
-+		CHECK(err, "empty map", "error: %s\n", strerror(errno));
-+		CHECK(p_next_skey || count, "empty map",
-+		      "i = %d, p_next_skey = %p, count = %u\n", i, p_next_skey,
-+		      count);
++	for (i = 0; i < nr_threads; i++) {
++		err = pthread_create(&threads[i], NULL, do_work,
++				     (void *)(long)i);
++		CHECK(err, "pthread_create", "error: %s\n", strerror(errno));
 +	}
 +
-+	/* test 2: delete with count = 0, success */
-+	for (i = 0; i < 2; i++) {
-+		/* populate elements to the map */
-+		map_batch_update(map_fd, max_entries, keys, values);
++	sleep(1);
++	stop = true;
 +
-+		count = 0;
-+		if (i == 0) {
-+			/* all elements in the map */
-+			p_skey = NULL;
-+		} else {
-+			/* all elements starting from p_skey */
-+			p_skey = &key;
-+			err = bpf_map_get_next_key(map_fd, NULL, p_skey);
-+			CHECK(err, "bpf_map_get_next_key()", "error: %s\n",
-+			      strerror(errno));
-+		}
-+		err = bpf_map_delete_batch(map_fd, p_skey, NULL, NULL,
-+				    &count, 0, 0);
-+		CHECK(err, "count = 0", "error: %s\n", strerror(errno));
-+		/* all elements should be gone. */
-+		err = bpf_map_get_next_key(map_fd, NULL, &key);
-+		CHECK(!err, "bpf_map_get_next_key()", "unexpected success\n");
-+	}
++	for (i = 0; i < nr_threads; i++)
++		pthread_join(threads[i], NULL);
 +
-+	/* test 3: delete in a loop with various steps. */
-+	for (step = 1; step < max_entries; step++) {
-+		map_batch_update(map_fd, max_entries, keys, values);
-+		memset(keys, 0, max_entries * sizeof(*keys));
-+		memset(values, 0, max_entries * sizeof(*values));
-+		p_skey = NULL;
-+		p_next_skey = &key;
-+		total = 0;
-+		i = 0;
-+		/* iteratively delete elements with 'step' elements each */
-+		count = step;
-+		while (true) {
-+			err = bpf_map_delete_batch(map_fd, p_skey, &p_next_skey,
-+					      keys + i * step, &count, 0, 0);
-+			CHECK(err, "delete with steps", "error: %s\n",
-+			      strerror(errno));
-+
-+			total += count;
-+			if (!p_next_skey)
-+				break;
-+
-+			CHECK(count != step, "delete with steps",
-+			      "i = %d, count = %u, step = %d\n",
-+			      i, count, step);
-+
-+			if (!p_skey)
-+				p_skey = p_next_skey;
-+			i++;
-+		}
-+
-+		CHECK(total != max_entries, "delete with steps",
-+		      "total = %u, max_entries = %u\n", total, max_entries);
-+
-+		err = bpf_map_get_next_key(map_fd, NULL, &key);
-+		CHECK(!err, "bpf_map_get_next_key()", "error: %s\n",
-+		      strerror(errno));
-+	}
-+
-+	/* test 4: delete with keys in keys[]. */
-+	map_batch_update(map_fd, max_entries, keys, values);
-+	memset(values, 0, max_entries * sizeof(*values));
-+	count = max_entries;
-+	err = bpf_map_delete_batch(map_fd, NULL, NULL, keys, &count, 0, 0);
-+	CHECK(err, "delete key in keys[]", "error: %s\n", strerror(errno));
-+	err = bpf_map_get_next_key(map_fd, NULL, &key);
-+	CHECK(!err, "bpf_map_get_next_key()", "error: %s\n", strerror(errno));
++	close(map_fd);
 +
 +	printf("%s:PASS\n", __func__);
 +}
