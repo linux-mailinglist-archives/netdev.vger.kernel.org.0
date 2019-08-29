@@ -2,168 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF40BA1779
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED3EA1819
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 13:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727330AbfH2K45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:56:57 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:58891 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbfH2K45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 06:56:57 -0400
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: kF1RWub9CXK6jgsNDuMyJeTx+jQyYj0BBM+qp3iaZc6Z3VJvJA8g6AyYGnKLzKWwj8fxBoby7V
- l/x4S3KXk4xCn5JTHE6gStzK/nhksXncpn7mbQYJwfWgoqXREWpfi7YdWvTPVsuGARz0tCw9/z
- UIOqbcrb0Ew9fZL5Uy3H32/cdv7aaWE4ItiWEmQoWYwOLcrOD4xc5dYnNnjeXC0gD44Cc3Xpbt
- yOmbLiG3ZUlxgTmrN7I22ayxTRpcATfE1YL0duemHcwbB8DZUH7tHCaH8MRQcRijcYLOfvZEQZ
- md0=
-X-IronPort-AV: E=Sophos;i="5.64,442,1559545200"; 
-   d="scan'208";a="46989148"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2019 03:56:56 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 29 Aug 2019 03:56:53 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Thu, 29 Aug 2019 03:56:56 -0700
-Date:   Thu, 29 Aug 2019 12:56:54 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
-        <davem@davemloft.net>, <andrew@lunn.ch>,
-        <allan.nielsen@microchip.com>, <ivecera@redhat.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
-Message-ID: <20190829105650.btgvytgja63sx6wx@soft-dev3.microsemi.net>
-References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
- <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
- <20190829095100.GH2312@nanopsycho>
+        id S1728129AbfH2LTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 07:19:17 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43720 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728094AbfH2LTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 07:19:15 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 29 Aug 2019 14:19:11 +0300
+Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7TBJ8v1020002;
+        Thu, 29 Aug 2019 14:19:09 +0300
+From:   Parav Pandit <parav@mellanox.com>
+To:     alex.williamson@redhat.com, jiri@mellanox.com,
+        kwankhede@nvidia.com, cohuck@redhat.com, davem@davemloft.net
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>
+Subject: [PATCH v2 0/6] Introduce variable length mdev alias
+Date:   Thu, 29 Aug 2019 06:18:58 -0500
+Message-Id: <20190829111904.16042-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190826204119.54386-1-parav@mellanox.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190829095100.GH2312@nanopsycho>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 08/29/2019 11:51, Jiri Pirko wrote:
-> External E-Mail
-> 
-> 
-> Thu, Aug 29, 2019 at 11:22:28AM CEST, horatiu.vultur@microchip.com wrote:
-> >Add the SWITCHDEV_ATTR_ID_PORT_PROMISCUITY switchdev notification type,
-> >used to indicate whenever the dev promiscuity counter is changed.
-> >
-> >The notification doesn't use any switchdev_attr attribute because in the
-> >notifier callbacks is it possible to get the dev and read directly
-> >the promiscuity value.
-> >
-> >Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> >---
-> > include/net/switchdev.h | 1 +
-> > net/core/dev.c          | 9 +++++++++
-> > 2 files changed, 10 insertions(+)
-> >
-> >diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> >index aee86a1..14b1617 100644
-> >--- a/include/net/switchdev.h
-> >+++ b/include/net/switchdev.h
-> >@@ -40,6 +40,7 @@ enum switchdev_attr_id {
-> > 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING,
-> > 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
-> > 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
-> >+	SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
-> > };
-> > 
-> > struct switchdev_attr {
-> >diff --git a/net/core/dev.c b/net/core/dev.c
-> >index 49589ed..40c74f2 100644
-> >--- a/net/core/dev.c
-> >+++ b/net/core/dev.c
-> >@@ -142,6 +142,7 @@
-> > #include <linux/net_namespace.h>
-> > #include <linux/indirect_call_wrapper.h>
-> > #include <net/devlink.h>
-> >+#include <net/switchdev.h>
-> > 
-> > #include "net-sysfs.h"
-> > 
-> >@@ -7377,6 +7378,11 @@ static void dev_change_rx_flags(struct net_device *dev, int flags)
-> > static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
-> > {
-> > 	unsigned int old_flags = dev->flags;
-> >+	struct switchdev_attr attr = {
-> >+		.orig_dev = dev,
-> >+		.id = SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
-> >+		.flags = SWITCHDEV_F_DEFER,
-> 
+To have consistent naming for the netdevice of a mdev and to have
+consistent naming of the devlink port [1] of a mdev, which is formed using
+phys_port_name of the devlink port, current UUID is not usable because
+UUID is too long.
 
-Hi Jiri,
+UUID in string format is 36-characters long and in binary 128-bit.
+Both formats are not able to fit within 15 characters limit of netdev
+name.
 
-> NACK
-> 
-> This is invalid usecase for switchdev infra. Switchdev is there for
-> bridge offload purposes only.
-> 
-> For promiscuity changes, the infrastructure is already present in the
-> code. See __dev_notify_flags(). it calls:
-> call_netdevice_notifiers_info(NETDEV_CHANGE, &change_info.info)
-> and you can actually see the changed flag in ".flags_changed".
-Yes, you are right. But in case the port is part of a bridge and then
-enable promisc mode by a user space application(tpcdump) then the drivers
-will not be notified. The reason is that the dev->flags will still be the
-same(because IFF_PROMISC was already set) and only promiscuity will be
-changed.
+It is desired to have mdev device naming consistent using UUID.
+So that widely used user space framework such as ovs [2] can make use
+of mdev representor in similar way as PCIe SR-IOV VF and PF representors.
 
-One fix could be to call __dev_notify_flags() no matter when the
-promisc is enable or disabled.
+Hence,
+(a) mdev alias is created which is derived using sha1 from the mdev name.
+(b) Vendor driver describes how long an alias should be for the child mdev
+created for a given parent.
+(c) Mdev aliases are unique at system level.
+(d) alias is created optionally whenever parent requested.
+This ensures that non networking mdev parents can function without alias
+creation overhead.
 
-> 
-> You just have to register netdev notifier block in your driver. Grep
-> for: register_netdevice_notifier
-> 
-> 
-> >+	};
-> > 	kuid_t uid;
-> > 	kgid_t gid;
-> > 
-> >@@ -7419,6 +7425,9 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
-> > 	}
-> > 	if (notify)
-> > 		__dev_notify_flags(dev, old_flags, IFF_PROMISC);
-> >+
-> >+	switchdev_port_attr_set(dev, &attr);
-> >+
-> > 	return 0;
-> > }
-> > 
-> >-- 
-> >2.7.4
-> >
-> 
+This design is discussed at [3].
+
+An example systemd/udev extension will have,
+
+1. netdev name created using mdev alias available in sysfs.
+
+mdev UUID=83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
+mdev 12 character alias=cd5b146a80a5
+
+netdev name of this mdev = enmcd5b146a80a5
+Here en = Ethernet link
+m = mediated device
+
+2. devlink port phys_port_name created using mdev alias.
+devlink phys_port_name=pcd5b146a80a5
+
+This patchset enables mdev core to maintain unique alias for a mdev.
+
+Patch-1 Introduces mdev alias using sha1.
+Patch-2 Ensures that mdev alias is unique in a system.
+Patch-3 Exposes mdev alias in a sysfs hirerchy.
+Patch-4 Introduces mdev_alias() API.
+Patch-5 Updated sysfs documentation
+Patch-6 Extends mtty driver to optionally provide alias generation.
+This also enables to test UUID based sha1 collision and trigger
+error handling for duplicate sha1 results.
+
+[1] http://man7.org/linux/man-pages/man8/devlink-port.8.html
+[2] https://docs.openstack.org/os-vif/latest/user/plugins/ovs.html
+[3] https://patchwork.kernel.org/cover/11084231/
+
+---
+Changelog:
+v1->v2:
+ - Corrected a typo from 'and' to 'an'
+ - Addressed comments from Alex Williamson
+ - Kept mdev_device naturally aligned
+ - Added error checking for crypt_*() calls
+ - Moved alias NULL check at beginning
+ - Added mdev_alias() API
+ - Updated mtty driver to show example mdev_alias() usage
+ - Changed return type of generate_alias() from int to char*
+v0->v1:
+ - Addressed comments from Alex Williamson, Cornelia Hunk and Mark Bloch
+ - Moved alias length check outside of the parent lock
+ - Moved alias and digest allocation from kvzalloc to kzalloc
+ - &alias[0] changed to alias
+ - alias_length check is nested under get_alias_length callback check
+ - Changed comments to start with an empty line
+ - Added comment where alias memory ownership is handed over to mdev device
+ - Fixed cleaunup of hash if mdev_bus_register() fails
+ - Updated documentation for new sysfs alias file
+ - Improved commit logs to make description more clear
+ - Fixed inclusiong of alias for NULL check
+ - Added ratelimited debug print for sha1 hash collision error
+
+Parav Pandit (6):
+  mdev: Introduce sha1 based mdev alias
+  mdev: Make mdev alias unique among all mdevs
+  mdev: Expose mdev alias in sysfs tree
+  mdev: Introduce an API mdev_alias
+  mdev: Update sysfs documentation
+  mtty: Optionally support mtty alias
+
+ .../driver-api/vfio-mediated-device.rst       |   5 +
+ drivers/vfio/mdev/mdev_core.c                 | 142 +++++++++++++++++-
+ drivers/vfio/mdev/mdev_private.h              |   5 +-
+ drivers/vfio/mdev/mdev_sysfs.c                |  26 +++-
+ include/linux/mdev.h                          |   5 +
+ samples/vfio-mdev/mtty.c                      |  13 ++
+ 6 files changed, 186 insertions(+), 10 deletions(-)
 
 -- 
-/Horatiu
+2.19.2
+
