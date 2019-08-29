@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E66A1204
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F998A11FA
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727810AbfH2GpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 02:45:24 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59950 "EHLO
+        id S1727788AbfH2GpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 02:45:23 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8320 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727555AbfH2GpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:19 -0400
+        by vger.kernel.org with ESMTP id S1727756AbfH2GpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:21 -0400
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T6hJVZ008276
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T6hX2h008802
         for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:19 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=22f0U+Utr+GEn3oQF9cxkOlMTI7YWZ6RTdF+3ucMdtU=;
- b=nHY54FzOeJAZ2scx0dp8ikIu7qyvzcCB2HR2Frjy6L3iuyXncEiYntAPyydek6zxagfJ
- 6ZRlcmCXzEF9sgLgfyr5H+Vl+2m/Vi+tyw3GSdGVR3bdjFZabIpxwJ+lzN311aQTzw91
- bBFVV7wwEgnxqLRCnY5TWnE7yjFigrn9xsg= 
+ content-type; s=facebook; bh=QcD+xzehrsGWynwjx8GMuhPjifB/orlX39UiHZHPblc=;
+ b=bCqN6u6Jboo+awFWwKm0OomG/zWoqDgVsRUXTItXMF68/mC4ZyaIde7Xc+3QMJJvsQt3
+ wfsq9pV4iriN9OsYBROhWLulDKJr2/ct9sPofAeozN3JNsfyyppSnaiEVsTxu39TIQoL
+ ZCFmQbMG0R0oNWg6m7OagcQRgCNON+vkgEA= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2une016qut-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2une016quu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
         for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:19 -0700
 Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
  Wed, 28 Aug 2019 23:45:18 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 523C03702BA3; Wed, 28 Aug 2019 23:45:16 -0700 (PDT)
+        id 855403702BA3; Wed, 28 Aug 2019 23:45:17 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         Yonghong Song <yhs@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 12/13] tools/bpf: add a multithreaded test for map batch operations
-Date:   Wed, 28 Aug 2019 23:45:16 -0700
-Message-ID: <20190829064516.2751550-1-yhs@fb.com>
+Subject: [PATCH bpf-next 13/13] tools/bpf: measure map batching perf
+Date:   Wed, 28 Aug 2019 23:45:17 -0700
+Message-ID: <20190829064517.2751629-1-yhs@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190829064502.2750303-1-yhs@fb.com>
 References: <20190829064502.2750303-1-yhs@fb.com>
@@ -61,127 +61,267 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A multithreaded test is added. Three threads repeatedly did:
-  - batch update
-  - batch lookup_and_delete
-  - batch delete
+The test program run result:
+  $ ./test_maps
+  ...
+  measure_lookup: max_entries 1000000, batch 10, time 342
+  measure_lookup: max_entries 1000000, batch 1000, time 295
+  measure_lookup: max_entries 1000000, batch 1000000, time 270
+  measure_lookup: max_entries 1000000, no batching, time 1346
+  measure_lookup_delete: max_entries 1000000, batch 10, time 433
+  measure_lookup_delete: max_entries 1000000, batch 1000, time 363
+  measure_lookup_delete: max_entries 1000000, batch 1000000, time 357
+  measure_lookup_delete: max_entries 1000000, not batch, time 1894
+  measure_delete: max_entries 1000000, batch, time 220
+  measure_delete: max_entries 1000000, not batch, time 1289
+  test_map_batch_perf:PASS
+  ...
 
-It is totally possible each batch element operation in kernel
-may find that the key, retrieved from bpf_map_get_next_key(),
-may fail lookup and/or delete as some other threads in parallel
-operates on the same map.
+  The test is running on a qemu VM environment. The time
+  unit is millisecond. A simple hash table with 1M elements
+  is created.
 
-The default mode for new batch APIs is to ignore -ENOENT errors
-in case of lookup and delete and move to the next element.
-The test would otherwise fail if the kernel reacts as -ENOENT
-as a real error and propogates it back to user space.
+  For lookup and lookup_and_deletion, since buffer allocation
+  is needed to hold the lookup results, three different
+  batch sizes (10, 1000, and 1M) are tried. The performance
+  without batching is also measured. A batch size of 10
+  can already improves performance dramatically, more than 70%,
+  and increasing batch size may continue to improve performance,
+  but with diminishing returns.
+
+  For delete, the batch API provides a mechanism to delete all elements
+  in the map, which is used here. The deletion of the whole map
+  improves performance by 80% compared to non-batch mechanism.
 
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- .../selftests/bpf/map_tests/map_batch_mt.c    | 126 ++++++++++++++++++
- 1 file changed, 126 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/map_tests/map_batch_mt.c
+ .../selftests/bpf/map_tests/map_batch_perf.c  | 242 ++++++++++++++++++
+ 1 file changed, 242 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_batch_perf.c
 
-diff --git a/tools/testing/selftests/bpf/map_tests/map_batch_mt.c b/tools/testing/selftests/bpf/map_tests/map_batch_mt.c
+diff --git a/tools/testing/selftests/bpf/map_tests/map_batch_perf.c b/tools/testing/selftests/bpf/map_tests/map_batch_perf.c
 new file mode 100644
-index 000000000000..a0e2591d0079
+index 000000000000..42d95651e1ac
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/map_batch_mt.c
-@@ -0,0 +1,126 @@
++++ b/tools/testing/selftests/bpf/map_tests/map_batch_perf.c
+@@ -0,0 +1,242 @@
 +// SPDX-License-Identifier: GPL-2.0
-+#include <errno.h>
++/* Copyright (c) 2019 Facebook  */
 +#include <stdio.h>
++#include <errno.h>
 +#include <string.h>
-+#include <unistd.h>
-+#include <pthread.h>
++#include <sys/time.h>
 +
 +#include <bpf/bpf.h>
 +#include <bpf/libbpf.h>
 +
 +#include <test_maps.h>
 +
-+/* Create three threads. Each thread will iteratively do:
-+ *   . update constantly
-+ *   . lookup and delete constantly
-+ *   . delete constantly
-+ * So this will make lookup and delete operations
-+ * may fail as the elements may be deleted by another
-+ * thread.
-+ *
-+ * By default, we should not see a problem as
-+ * -ENOENT for bpf_map_delete_elem() and bpf_map_lookup_elem()
-+ * will be ignored. But with flag, BPF_F_ENFORCE_ENOENT
-+ * we may see errors.
++/* Test map batch performance.
++ * Test three common scenarios:
++ *    - batched lookup
++ *    - batched lookup and delete
++ *    - batched deletion
 + */
-+
-+static int map_fd;
-+static const __u32 max_entries = 10;
-+static volatile bool stop = false;
-+
-+static void do_batch_update()
++static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
++			     int *values)
 +{
-+	int i, err, keys[max_entries], values[max_entries];
-+	__u32 count;
++	int i, err;
 +
 +	for (i = 0; i < max_entries; i++) {
 +		keys[i] = i + 1;
 +		values[i] = i + 2;
 +	}
 +
-+	while (!stop) {
-+		count = max_entries;
-+		err = bpf_map_update_batch(map_fd, keys, values, &count, 0, 0);
-+		CHECK(err, "bpf_map_update_batch()", "error:%s\n",
-+		      strerror(errno));
-+	}
++	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, 0, 0);
++	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
 +}
 +
-+static void do_batch_delete()
++static unsigned long util_gettime(void)
 +{
++	struct timeval tv;
++
++	gettimeofday(&tv, NULL);
++	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
++}
++
++static void measure_lookup(int map_fd, __u32 max_entries, int *keys,
++			   int *values)
++{
++	__u32 batches[3] = {10, 1000};
++	int err, key, value, option;
++	unsigned long start, end;
++	void *p_key, *p_next_key;
++	__u32 count, total;
++
++	map_batch_update(map_fd, max_entries, keys, values);
++
++	/* batched */
++	batches[2] = max_entries;
++	for (option = 0; option < 3; option++) {
++		p_key = NULL;
++		p_next_key = &key;
++		count = batches[option];
++		start = util_gettime();
++		total = 0;
++
++		while (true) {
++			err = bpf_map_lookup_batch(map_fd, p_key, &p_next_key,
++						   keys, values, &count, 0, 0);
++			CHECK(err, "bpf_map_lookup_batch()", "error: %s\n",
++			      strerror(errno));
++
++			total += count;
++			if (!p_next_key)
++				break;
++
++			if (!p_key)
++				p_key = p_next_key;
++		}
++
++		end = util_gettime();
++		CHECK(total != max_entries,
++		      "checking total", "total %u, max_entries %u\n",
++		      total, max_entries);
++		printf("%s: max_entries %u, batch %u, time %ld\n", __func__,
++		       max_entries, batches[option], end - start);
++	}
++
++	/* not batched */
++	start = util_gettime();
++	p_key = NULL;
++	p_next_key = &key;
++	while (!bpf_map_get_next_key(map_fd, p_key, p_next_key)) {
++		err = bpf_map_lookup_elem(map_fd, p_next_key, &value);
++		CHECK(err, "bpf_map_lookup_elem()", "error: %s\n",
++		      strerror(errno));
++		p_key = p_next_key;
++	}
++	end = util_gettime();
++	printf("%s: max_entries %u, no batching, time %ld\n", __func__,
++	       max_entries, end - start);
++}
++
++static void measure_lookup_delete(int map_fd, __u32 max_entries, int *keys,
++				  int *values)
++{
++	int err, key, next_key, value, option;
++	__u32 batches[3] = {10, 1000};
++	unsigned long start, end;
++	void *p_key, *p_next_key;
++	__u32 count, total;
++
++	/* batched */
++	batches[2] = max_entries;
++	for (option = 0; option < 3; option++) {
++		map_batch_update(map_fd, max_entries, keys, values);
++		p_key = NULL;
++		p_next_key = &key;
++		count = batches[option];
++		start = util_gettime();
++		total = 0;
++
++		while (true) {
++			err = bpf_map_lookup_and_delete_batch(map_fd, p_key,
++				&p_next_key, keys, values, &count, 0, 0);
++			CHECK(err, "bpf_map_lookup_and_delete_batch()",
++			      "error: %s\n", strerror(errno));
++
++			total += count;
++			if (!p_next_key)
++				break;
++
++			if (!p_key)
++				p_key = p_next_key;
++		}
++
++		end = util_gettime();
++		CHECK(total != max_entries,
++		      "checking total", "total %u, max_entries %u\n",
++		      total, max_entries);
++		printf("%s: max_entries %u, batch %u, time %ld\n", __func__,
++		       max_entries, batches[option], end - start);
++	}
++
++	/* not batched */
++	map_batch_update(map_fd, max_entries, keys, values);
++	start = util_gettime();
++	p_key = NULL;
++	p_next_key = &key;
++	err = bpf_map_get_next_key(map_fd, p_key, p_next_key);
++	CHECK(err, "bpf_map_get_next_key()", "error: %s\n", strerror(errno));
++	err = bpf_map_lookup_elem(map_fd, p_next_key, &value);
++	CHECK(err, "bpf_map_lookup_elem()", "error: %s\n", strerror(errno));
++
++	p_key = p_next_key;
++	p_next_key = &next_key;
++	while (!bpf_map_get_next_key(map_fd, p_key, p_next_key)) {
++		err = bpf_map_delete_elem(map_fd, p_key);
++		CHECK(err, "bpf_map_delete_elem()", "error: %s\n",
++		      strerror(errno));
++
++		err = bpf_map_lookup_elem(map_fd, p_next_key, &value);
++		CHECK(err, "bpf_map_lookup_elem()", "error: %s\n",
++		      strerror(errno));
++
++		p_key = p_next_key;
++		p_next_key = (p_next_key == &key) ? &next_key : &key;
++	}
++	err = bpf_map_delete_elem(map_fd, p_key);
++	CHECK(err, "bpf_map_delete_elem()", "error: %s\n",
++	      strerror(errno));
++	end = util_gettime();
++	printf("%s: max_entries %u, not batch, time %ld\n", __func__,
++	       max_entries, end - start);
++}
++
++static void measure_delete(int map_fd, __u32 max_entries, int *keys,
++			   int *values)
++{
++	unsigned long start, end;
++	void *p_key, *p_next_key;
++	int err, key, next_key;
 +	__u32 count;
-+	int err;
 +
-+	while (!stop) {
-+		count = 0;
-+		err = bpf_map_delete_batch(map_fd, NULL, NULL, NULL, &count,
-+					   0, 0);
-+		CHECK(err, "bpf_map_delete_batch()", "error:%s\n",
++	/* batched */
++	map_batch_update(map_fd, max_entries, keys, values);
++	count = 0;
++	p_next_key = &key;
++	start = util_gettime();
++	err = bpf_map_delete_batch(map_fd, NULL, NULL, NULL, &count, 0, 0);
++	end = util_gettime();
++	CHECK(err, "bpf_map_delete_batch()", "error: %s\n", strerror(errno));
++	CHECK(count != max_entries, "bpf_map_delete_batch()",
++	      "count = %u, max_entries = %u\n", count, max_entries);
++
++	printf("%s: max_entries %u, batch, time %ld\n", __func__,
++	       max_entries, end - start);
++
++	map_batch_update(map_fd, max_entries, keys, values);
++	p_key = NULL;
++	p_next_key = &key;
++	start = util_gettime();
++	err = bpf_map_get_next_key(map_fd, p_key, p_next_key);
++	CHECK(err, "bpf_map_get_next_key()", "error: %s\n", strerror(errno));
++
++	p_key = p_next_key;
++	p_next_key = &next_key;
++	while (!bpf_map_get_next_key(map_fd, p_key, p_next_key)) {
++		err = bpf_map_delete_elem(map_fd, p_key);
++		CHECK(err, "bpf_map_delete_elem()", "error: %s\n",
 +		      strerror(errno));
++		p_key = p_next_key;
++		p_next_key = (p_next_key == &key) ? &next_key : &key;
 +	}
++	err = bpf_map_delete_elem(map_fd, p_key);
++	CHECK(err, "bpf_map_delete_elem()", "error: %s\n",
++	      strerror(errno));
++	end = util_gettime();
++	printf("%s: max_entries %u, not batch, time %ld\n", __func__,
++	       max_entries, end - start);
 +}
 +
-+static void do_batch_lookup_and_delete()
-+{
-+	int err, key, keys[max_entries], values[max_entries];
-+	__u32 count;
-+	void *p_key;
-+
-+	while (!stop) {
-+		p_key = &key;
-+		count = max_entries;
-+		err = bpf_map_lookup_and_delete_batch(map_fd, NULL, &p_key,
-+						      keys, values, &count,
-+						      0, 0);
-+		CHECK(err, "bpf_map_lookup_and_delete_batch()", "error:%s\n",
-+		      strerror(errno));
-+	}
-+}
-+
-+static void *do_work(void *arg)
-+{
-+	int work_index = (int)(long)arg;
-+
-+	if (work_index == 0)
-+		do_batch_update();
-+	else if (work_index == 1)
-+		do_batch_delete();
-+	else
-+		do_batch_lookup_and_delete();
-+
-+	return NULL;
-+}
-+
-+void test_map_batch_mt(void)
++void test_map_batch_perf(void)
 +{
 +	struct bpf_create_map_attr xattr = {
 +		.name = "hash_map",
@@ -189,28 +329,21 @@ index 000000000000..a0e2591d0079
 +		.key_size = sizeof(int),
 +		.value_size = sizeof(int),
 +	};
-+	const int nr_threads = 3;
-+	pthread_t threads[nr_threads];
-+	int i, err;
++	const __u32 max_entries = 1000000;  // 1M entries for the hash table
++	int map_fd, *keys, *values;
 +
 +	xattr.max_entries = max_entries;
 +	map_fd = bpf_create_map_xattr(&xattr);
 +	CHECK(map_fd == -1,
 +	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
 +
-+	for (i = 0; i < nr_threads; i++) {
-+		err = pthread_create(&threads[i], NULL, do_work,
-+				     (void *)(long)i);
-+		CHECK(err, "pthread_create", "error: %s\n", strerror(errno));
-+	}
++	keys = malloc(max_entries * sizeof(int));
++	values = malloc(max_entries * sizeof(int));
++	CHECK(!keys || !values, "malloc()", "error:%s\n", strerror(errno));
 +
-+	sleep(1);
-+	stop = true;
-+
-+	for (i = 0; i < nr_threads; i++)
-+		pthread_join(threads[i], NULL);
-+
-+	close(map_fd);
++	measure_lookup(map_fd, max_entries, keys, values);
++	measure_lookup_delete(map_fd, max_entries, keys, values);
++	measure_delete(map_fd, max_entries, keys, values);
 +
 +	printf("%s:PASS\n", __func__);
 +}
