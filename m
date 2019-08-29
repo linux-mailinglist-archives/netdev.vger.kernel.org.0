@@ -2,108 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D81A2247
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 701C3A2266
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbfH2Rai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 13:30:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43788 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727234AbfH2Rai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:30:38 -0400
-Received: by mail-pf1-f195.google.com with SMTP id v12so2509883pfn.10;
-        Thu, 29 Aug 2019 10:30:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=un1bFDlVA1xxG291pbzDwXapqSnpB4luDmDrkVoHMBI=;
-        b=e1bEaSMDBpYhg4Ra1gBcJhL0YV/RB0jjoszzE7WHZRUMHxtHWOu5xgCRL6MeQJwkEg
-         319CADkKWNguSGkwmYGgTfqNXRIhdKoMUS1EGhTdN8VxHtFAUQBbduO/oONVpLL7yIYB
-         P2xUNVztt6zuzf7iRYCJJfAmP6TaKoV6tYF06KR02meMrRuHhLE4zir6S4DTS9cdkG7+
-         QpCC7vSQo5Pcir/8RFadh/NtfGpGHukIHq5vHzVpndPIOxs6CCqrhO8RdxIyEgKxwMzh
-         ox8n5SHJ23GVzWl+4jp9Ke0jui413HCTF6okTgJMvDQMJpNeyzZoEN5xCVkv1N9Zdp2x
-         MaeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=un1bFDlVA1xxG291pbzDwXapqSnpB4luDmDrkVoHMBI=;
-        b=Do/13BFKxKqpEoFgxN11OVHlDvz7UCxbphqDkGGP62Vl5lVFeobkAWQwO4ddQHSKtz
-         xfn1J25h7KYZ+ijBpgN+2D74uovzegqXY1IcGe0aNdhr0I0viAYa9d7npAZ6xWtj1aPk
-         8iON5R4qFwl3L0s1p23j0q3k88G1pPg/ApOC28omf3voIJEj6chzj7YMSX+4Ultgfl/i
-         BUpmfbJXVTKetNT+g9g+uiiUq6BFG8PI5iFpQQqJZV1B/BF2bb8RdywL7MA7N3HoOxfk
-         1YDxqxZJlWOX4H0PyfB8JSJG3aKhXFgFeBJqqzoC0fcC3aczJeUZ5aqJL29OzsxDu956
-         KMqA==
-X-Gm-Message-State: APjAAAUN7PKwtW4N/VTGaqCq0bg+5KaAu3zt/1iDydZGy2iW1rLKSrXd
-        Wxv1ssbpSSwvCCRn47K+9I0=
-X-Google-Smtp-Source: APXvYqy2UMefZgrFy/grLz7NDxbkDJBg7f7+4SiZpCZAydqDUsPqwT3RO+JdOEZP2kk7zSLaqM7ySw==
-X-Received: by 2002:a62:6489:: with SMTP id y131mr12658663pfb.124.1567099837685;
-        Thu, 29 Aug 2019 10:30:37 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:1347])
-        by smtp.gmail.com with ESMTPSA id v8sm3088086pjb.6.2019.08.29.10.30.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Aug 2019 10:30:36 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 10:30:35 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, luto@amacapital.net,
-        davem@davemloft.net, peterz@infradead.org, rostedt@goodmis.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH v2 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20190829173034.up5g74onaekp53zd@ast-mbp.dhcp.thefacebook.com>
-References: <20190829051253.1927291-1-ast@kernel.org>
- <20190829051253.1927291-2-ast@kernel.org>
- <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
-User-Agent: NeoMutt/20180223
+        id S1727922AbfH2Rgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 13:36:35 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:61578 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727437AbfH2Rgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:36:35 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7THXtuB003259;
+        Thu, 29 Aug 2019 13:36:29 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2upgfd74qa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 29 Aug 2019 13:36:28 -0400
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7THZaVl007325;
+        Thu, 29 Aug 2019 13:36:28 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2upgfd74pu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 29 Aug 2019 13:36:28 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7THUwAE013821;
+        Thu, 29 Aug 2019 17:36:27 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma04dal.us.ibm.com with ESMTP id 2ujvv75gjt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 29 Aug 2019 17:36:27 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7THaQTM31981944
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 29 Aug 2019 17:36:26 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B482FAE062;
+        Thu, 29 Aug 2019 17:36:26 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1FC97AE060;
+        Thu, 29 Aug 2019 17:36:26 +0000 (GMT)
+Received: from [9.53.179.215] (unknown [9.53.179.215])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 29 Aug 2019 17:36:26 +0000 (GMT)
+Subject: Re: [v1] net_sched: act_police: add 2 new attributes to support
+ police 64bit rate and peakrate
+From:   "David Z. Dai" <zdai@linux.vnet.ibm.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zdai@us.ibm.com
+In-Reply-To: <7a8a5024-bbff-7443-71b3-9e3976af269f@gmail.com>
+References: <1567032687-973-1-git-send-email-zdai@linux.vnet.ibm.com>
+         <7a8a5024-bbff-7443-71b3-9e3976af269f@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 29 Aug 2019 12:36:25 -0500
+Message-ID: <1567100185.20025.3.camel@oc5348122405>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.32.3 (2.32.3-36.el6) 
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-29_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908290186
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 05:32:27PM +0200, Daniel Borkmann wrote:
-> On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
-> > Implement permissions as stated in uapi/linux/capability.h
-> > 
-> > Note that CAP_SYS_ADMIN is replaced with CAP_BPF.
-> > All existing applications that use BPF do not drop all caps
-> > and keep only CAP_SYS_ADMIN before doing bpf() syscall.
-> > Hence it's highly unlikely that existing code will break.
-> > If there will be reports of breakage then CAP_SYS_ADMIN
-> > would be allowed as well with "it's usage is deprecated" message
-> > similar to commit ee24aebffb75 ("cap_syslog: accept CAP_SYS_ADMIN for now")
-> > 
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> [...]
-> > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> > index 22066a62c8c9..f459315625ac 100644
-> > --- a/kernel/bpf/hashtab.c
-> > +++ b/kernel/bpf/hashtab.c
-> > @@ -244,9 +244,9 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-> >   	BUILD_BUG_ON(offsetof(struct htab_elem, fnode.next) !=
-> >   		     offsetof(struct htab_elem, hash_node.pprev));
-> > -	if (lru && !capable(CAP_SYS_ADMIN))
-> > +	if (lru && !capable(CAP_BPF))
-> >   		/* LRU implementation is much complicated than other
-> > -		 * maps.  Hence, limit to CAP_SYS_ADMIN for now.
-> > +		 * maps.  Hence, limit to CAP_BPF.
-> >   		 */
-> >   		return -EPERM;
-> I don't think this works, this is pretty much going to break use cases where
-> orchestration daemons are deployed as containers that are explicitly granted
-> specified cap set and right now this is CAP_SYS_ADMIN and not CAP_BPF for bpf().
-> The former needs to be a superset of the latter in order for this to work and
-> not break compatibility between kernel upgrades.
+On Thu, 2019-08-29 at 10:32 +0200, Eric Dumazet wrote:
 > 
-> - https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
-> - https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
+> On 8/29/19 12:51 AM, David Dai wrote:
+> > For high speed adapter like Mellanox CX-5 card, it can reach upto
+> > 100 Gbits per second bandwidth. Currently htb already supports 64bit rate
+> > in tc utility. However police action rate and peakrate are still limited
+> > to 32bit value (upto 32 Gbits per second). Add 2 new attributes
+> > TCA_POLICE_RATE64 and TCA_POLICE_RATE64 in kernel for 64bit support
+> > so that tc utility can use them for 64bit rate and peakrate value to
+> > break the 32bit limit, and still keep the backward binary compatibility.
+> > 
+> > Tested-by: David Dai <zdai@linux.vnet.ibm.com>
+> > Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
+> > ---
+> >  include/uapi/linux/pkt_cls.h |    2 ++
+> >  net/sched/act_police.c       |   27 +++++++++++++++++++++++----
+> >  2 files changed, 25 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+> > index b057aee..eb4ea4d 100644
+> > --- a/include/uapi/linux/pkt_cls.h
+> > +++ b/include/uapi/linux/pkt_cls.h
+> > @@ -159,6 +159,8 @@ enum {
+> >  	TCA_POLICE_AVRATE,
+> >  	TCA_POLICE_RESULT,
+> >  	TCA_POLICE_TM,
+> > +	TCA_POLICE_RATE64,
+> > +	TCA_POLICE_PEAKRATE64,
+> >  	TCA_POLICE_PAD,
+> >  	__TCA_POLICE_MAX
+> >  #define TCA_POLICE_RESULT TCA_POLICE_RESULT
+> 
+> Never insert new attributes, as this breaks compatibility with old binaries (including
+> old kernels)
+Thanks for reviewing it!
+My change is only contained within the police part. I am trying to
+follow the same way htb and tbf support their 64 bit rate.
 
-These are the links that showing that k8 can delegates caps.
-Are you saying that you know of folks who specifically
-delegate cap_sys_admin and cap_net_admin _only_ to a container to run bpf in there?
+I tested the old tc binary with the newly patched kernel. It works fine.
+
+I agree the newly compiled tc binary that has these 2 new attributes can
+cause backward compatibility issue when running on the old kernel.
+
+If can't insert new attribute, is there any
+comment/suggestion/alternative on how to support 64bit police rate and
+still keep the backward compatibility?
+
+> Keep TCA_POLICE_PAD value the same, thanks.
+
 
