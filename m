@@ -2,335 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A9BA11E4
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D8DA120B
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727715AbfH2GkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 02:40:16 -0400
-Received: from foss.arm.com ([217.140.110.172]:39614 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727595AbfH2GkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 02:40:16 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4688D360;
-        Wed, 28 Aug 2019 23:40:15 -0700 (PDT)
-Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E96193F246;
-        Wed, 28 Aug 2019 23:42:33 -0700 (PDT)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com,
-        Will.Deacon@arm.com, suzuki.poulose@arm.com
-Cc:     linux-kernel@vger.kernel.org, Steve.Capper@arm.com,
-        Kaly.Xin@arm.com, justin.he@arm.com, jianyong.wu@arm.com
-Subject: [RFC PATCH 3/3] Enable ptp_kvm for arm64
-Date:   Thu, 29 Aug 2019 02:39:52 -0400
-Message-Id: <20190829063952.18470-4-jianyong.wu@arm.com>
+        id S1727860AbfH2Gpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 02:45:34 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63226 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726889AbfH2GpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:12 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x7T6gYqZ025076
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=NT7SZrw3Qy+6M0D0VAHxgNYPUvtSj8aHb73BTo4D7nk=;
+ b=WY+AbgpwkAmNEChFcTVDjVhSlMmegaCwMCrljsSMs8Sie8oosQZLKQQqxYVGyxrO5BYA
+ fwhT9iAnC9UV9eZzpCtjjWwEyZL5uyNzRExWeRcdd0ZLb8r+IszTH+KZkru3Pdc4bpt7
+ PtowletVaAqYEdhc8tiOw1/U0Ap3M9E6SK4= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2unuwqbhyk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:10 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 28 Aug 2019 23:45:09 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id C453C3702BA3; Wed, 28 Aug 2019 23:45:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 00/13] bpf: adding map batch processing support
+Date:   Wed, 28 Aug 2019 23:45:02 -0700
+Message-ID: <20190829064502.2750303-1-yhs@fb.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190829063952.18470-1-jianyong.wu@arm.com>
-References: <20190829063952.18470-1-jianyong.wu@arm.com>
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-08-29_04:2019-08-28,2019-08-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 phishscore=0 mlxlogscore=826 impostorscore=0
+ adultscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0 bulkscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1908290072
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently in arm64 virtualization environment, there is no mechanism to
-keep time sync between guest and host. Time in guest will drift compared
-with host after boot up as they may both use third party time sources
-to correct their time respectively. The time deviation will be in order
-of milliseconds but some scenarios ask for higher time precision, like
-in cloud envirenment, we want all the VMs running in the host aquire the
-same level accuracy from host clock.
+Brian Vazquez has proposed BPF_MAP_DUMP command to look up more than one
+map entries per syscall.
+  https://lore.kernel.org/bpf/CABCgpaU3xxX6CMMxD+1knApivtc2jLBHysDXw-0E9bQEL0qC3A@mail.gmail.com/T/#t
 
-Use of kvm ptp clock, which choose the host clock source clock as a
-reference clock to sync time clock between guest and host has been adopted
-by x86 which makes the time sync order from milliseconds to nanoseconds.
+During discussion, we found more use cases can be supported in a similar
+map operation batching framework. For example, batched map lookup and delete,
+which can be really helpful for bcc.
+  https://github.com/iovisor/bcc/blob/master/tools/tcptop.py#L233-L243
+  https://github.com/iovisor/bcc/blob/master/tools/slabratetop.py#L129-L138
+    
+Also, in bcc, we have API to delete all entries in a map.
+  https://github.com/iovisor/bcc/blob/master/src/cc/api/BPFTable.h#L257-L264
 
-This patch enable kvm ptp on arm64 and we get the similar clock drift as
-found with x86 with kvm ptp.
+For map update, batched operations also useful as sometimes applications need
+to populate initial maps with more than one entry. For example, the below
+example is from kernel/samples/bpf/xdp_redirect_cpu_user.c:
+  https://github.com/torvalds/linux/blob/master/samples/bpf/xdp_redirect_cpu_user.c#L543-L550
 
-Test result comparison between with kvm ptp and without it in arm64 are
-as follows. This test derived from the result of command 'chronyc
-sources'. we should take more cure of the last sample column which shows
-the offset between the local clock and the source at the last measurement.
+This patch addresses all the above use cases. To make uapi stable, it also
+covers other potential use cases. Four bpf syscall subcommands are introduced:
+    BPF_MAP_LOOKUP_BATCH
+    BPF_MAP_LOOKUP_AND_DELETE_BATCH
+    BPF_MAP_UPDATE_BATCH
+    BPF_MAP_DELETE_BATCH
 
-no kvm ptp in guest:
-MS Name/IP address   Stratum Poll Reach LastRx Last sample
-========================================================================
-^* dns1.synet.edu.cn      2   6   377    13  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    21  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    29  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    37  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    45  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    53  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    61  +1040us[+1581us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377     4   -130us[ +796us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    12   -130us[ +796us] +/-   21ms
-^* dns1.synet.edu.cn      2   6   377    20   -130us[ +796us] +/-   21ms
+In userspace, application can iterate through the whole map one batch
+as a time, e.g., bpf_map_lookup_batch() in the below:
+    p_key = NULL;
+    p_next_key = &key;
+    while (true) {
+       err = bpf_map_lookup_batch(fd, p_key, &p_next_key, keys, values,
+                                  &batch_size, elem_flags, flags);
+       if (err) ...
+       if (p_next_key) break; // done
+       if (!p_key) p_key = p_next_key;
+    }
+Please look at individual patches for details of new syscall subcommands
+and examples of user codes.
 
-in host:
-MS Name/IP address   Stratum Poll Reach LastRx Last sample
-========================================================================
-^* 120.25.115.20          2   7   377    72   -470us[ -603us] +/-   18ms
-^* 120.25.115.20          2   7   377    92   -470us[ -603us] +/-   18ms
-^* 120.25.115.20          2   7   377   112   -470us[ -603us] +/-   18ms
-^* 120.25.115.20          2   7   377     2   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377    22   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377    43   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377    63   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377    83   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377   103   +872ns[-6808ns] +/-   17ms
-^* 120.25.115.20          2   7   377   123   +872ns[-6808ns] +/-   17ms
+The testing is also done in a qemu VM environment:
+      measure_lookup: max_entries 1000000, batch 10, time 342ms
+      measure_lookup: max_entries 1000000, batch 1000, time 295ms
+      measure_lookup: max_entries 1000000, batch 1000000, time 270ms
+      measure_lookup: max_entries 1000000, no batching, time 1346ms
+      measure_lookup_delete: max_entries 1000000, batch 10, time 433ms
+      measure_lookup_delete: max_entries 1000000, batch 1000, time 363ms
+      measure_lookup_delete: max_entries 1000000, batch 1000000, time 357ms
+      measure_lookup_delete: max_entries 1000000, not batch, time 1894ms
+      measure_delete: max_entries 1000000, batch, time 220ms
+      measure_delete: max_entries 1000000, not batch, time 1289ms
+For a 1M entry hash table, batch size of 10 can reduce cpu time
+by 70%. Please see patch "tools/bpf: measure map batching perf"
+for details of test codes.
 
-The dns1.synet.edu.cn is the network reference clock for guest and
-120.25.115.20 is the network reference clock for host. we can't get the
-clock error between guest and host directly, but a roughly estimated value
-will be in order of hundreds of us to ms.
+Brian Vazquez (1):
+  bpf: add bpf_map_value_size and bp_map_copy_value helper functions
 
-with kvm ptp in guest:
-chrony has been disabled in host to remove the disturb by network clock.
+Yonghong Song (12):
+  bpf: refactor map_update_elem()
+  bpf: refactor map_delete_elem()
+  bpf: refactor map_get_next_key()
+  bpf: adding map batch processing support
+  tools/bpf: sync uapi header bpf.h
+  tools/bpf: implement libbpf API functions for map batch operations
+  tools/bpf: add test for bpf_map_update_batch()
+  tools/bpf: add test for bpf_map_lookup_batch()
+  tools/bpf: add test for bpf_map_lookup_and_delete_batch()
+  tools/bpf: add test for bpf_map_delete_batch()
+  tools/bpf: add a multithreaded test for map batch operations
+  tools/bpf: measure map batching perf
 
-MS Name/IP address         Stratum Poll Reach LastRx Last sample
-========================================================================
-* PHC0                    0   3   377     8     -7ns[   +1ns] +/-    3ns
-* PHC0                    0   3   377     8     +1ns[  +16ns] +/-    3ns
-* PHC0                    0   3   377     6     -4ns[   -0ns] +/-    6ns
-* PHC0                    0   3   377     6     -8ns[  -12ns] +/-    5ns
-* PHC0                    0   3   377     5     +2ns[   +4ns] +/-    4ns
-* PHC0                    0   3   377    13     +2ns[   +4ns] +/-    4ns
-* PHC0                    0   3   377    12     -4ns[   -6ns] +/-    4ns
-* PHC0                    0   3   377    11     -8ns[  -11ns] +/-    6ns
-* PHC0                    0   3   377    10    -14ns[  -20ns] +/-    4ns
-* PHC0                    0   3   377     8     +4ns[   +5ns] +/-    4ns
+ include/uapi/linux/bpf.h                      |  27 +
+ kernel/bpf/syscall.c                          | 752 ++++++++++++++----
+ tools/include/uapi/linux/bpf.h                |  27 +
+ tools/lib/bpf/bpf.c                           |  67 ++
+ tools/lib/bpf/bpf.h                           |  17 +
+ tools/lib/bpf/libbpf.map                      |   4 +
+ .../selftests/bpf/map_tests/map_batch_mt.c    | 126 +++
+ .../selftests/bpf/map_tests/map_batch_perf.c  | 242 ++++++
+ .../bpf/map_tests/map_delete_batch.c          | 139 ++++
+ .../map_tests/map_lookup_and_delete_batch.c   | 164 ++++
+ .../bpf/map_tests/map_lookup_batch.c          | 166 ++++
+ .../bpf/map_tests/map_update_batch.c          | 115 +++
+ 12 files changed, 1707 insertions(+), 139 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_batch_mt.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_batch_perf.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_delete_batch.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_batch.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_update_batch.c
 
-The PHC0 is the ptp clock which choose the host clock as its source
-clock. So we can be sure to say that the clock error between host and guest
-is in order of ns.
-
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
----
- arch/arm64/include/asm/arch_timer.h  |  3 ++
- arch/arm64/kvm/arch_ptp_kvm.c        | 76 ++++++++++++++++++++++++++++
- drivers/clocksource/arm_arch_timer.c |  6 ++-
- drivers/ptp/Kconfig                  |  2 +-
- include/linux/arm-smccc.h            | 14 +++++
- virt/kvm/arm/psci.c                  | 17 +++++++
- 6 files changed, 115 insertions(+), 3 deletions(-)
- create mode 100644 arch/arm64/kvm/arch_ptp_kvm.c
-
-diff --git a/arch/arm64/include/asm/arch_timer.h b/arch/arm64/include/asm/arch_timer.h
-index 6756178c27db..880576a814b6 100644
---- a/arch/arm64/include/asm/arch_timer.h
-+++ b/arch/arm64/include/asm/arch_timer.h
-@@ -229,4 +229,7 @@ static inline int arch_timer_arch_init(void)
- 	return 0;
- }
- 
-+extern struct clocksource clocksource_counter;
-+extern u64 arch_counter_read(struct clocksource *cs);
-+
- #endif
-diff --git a/arch/arm64/kvm/arch_ptp_kvm.c b/arch/arm64/kvm/arch_ptp_kvm.c
-new file mode 100644
-index 000000000000..6b2165ebce62
---- /dev/null
-+++ b/arch/arm64/kvm/arch_ptp_kvm.c
-@@ -0,0 +1,76 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ *  Virtual PTP 1588 clock for use with KVM guests
-+ *  Copyright (C) 2019 ARM Ltd.
-+ *  All Rights Reserved
-+ */
-+
-+#include <asm/hypervisor.h>
-+#include <linux/module.h>
-+#include <linux/psci.h>
-+#include <linux/arm-smccc.h>
-+#include <linux/timecounter.h>
-+#include <linux/sched/clock.h>
-+#include <asm/arch_timer.h>
-+
-+/*
-+ * as trap call cause delay, this function will return the delay in nanosecond
-+ */
-+static u64 arm_smccc_1_1_invoke_delay(u32 id, struct arm_smccc_res *res)
-+{
-+	u64 ns, t1, t2;
-+
-+	t1 = sched_clock();
-+	arm_smccc_1_1_invoke(id, res);
-+	t2 = sched_clock();
-+	t2 -= t1;
-+	ns = t2;
-+	return ns;
-+}
-+
-+int kvm_arch_ptp_init(void)
-+{
-+	return 0;
-+}
-+
-+int kvm_arch_ptp_get_clock(struct timespec64 *ts)
-+{
-+	u64 ns;
-+	struct arm_smccc_res hvc_res;
-+
-+	if (!kvm_arm_hyp_service_available(
-+			ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID)) {
-+		return -EOPNOTSUPP;
-+	}
-+	ns = arm_smccc_1_1_invoke_delay(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
-+					&hvc_res);
-+	ts->tv_sec = hvc_res.a0;
-+	ts->tv_nsec = hvc_res.a1;
-+	timespec64_add_ns(ts, ns);
-+	return 0;
-+}
-+
-+int kvm_arch_ptp_get_clock_fn(long *cycle, struct timespec64 *ts,
-+			      struct clocksource **cs)
-+{
-+	u64 ns;
-+	struct arm_smccc_res hvc_res;
-+
-+	if (!kvm_arm_hyp_service_available(
-+			ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID)) {
-+		return -EOPNOTSUPP;
-+	}
-+	ns = arm_smccc_1_1_invoke_delay(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
-+					&hvc_res);
-+	ts->tv_sec = hvc_res.a0;
-+	ts->tv_nsec = hvc_res.a1;
-+	timespec64_add_ns(ts, ns);
-+	*cycle = hvc_res.a2;
-+	*cs = &clocksource_counter;
-+
-+	return 0;
-+}
-+
-+MODULE_AUTHOR("Marcelo Tosatti <mtosatti@redhat.com>");
-+MODULE_DESCRIPTION("PTP clock using KVMCLOCK");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
-index 07e57a49d1e8..021e3f69364c 100644
---- a/drivers/clocksource/arm_arch_timer.c
-+++ b/drivers/clocksource/arm_arch_timer.c
-@@ -175,23 +175,25 @@ static notrace u64 arch_counter_get_cntvct(void)
- u64 (*arch_timer_read_counter)(void) = arch_counter_get_cntvct;
- EXPORT_SYMBOL_GPL(arch_timer_read_counter);
- 
--static u64 arch_counter_read(struct clocksource *cs)
-+u64 arch_counter_read(struct clocksource *cs)
- {
- 	return arch_timer_read_counter();
- }
-+EXPORT_SYMBOL(arch_counter_read);
- 
- static u64 arch_counter_read_cc(const struct cyclecounter *cc)
- {
- 	return arch_timer_read_counter();
- }
- 
--static struct clocksource clocksource_counter = {
-+struct clocksource clocksource_counter = {
- 	.name	= "arch_sys_counter",
- 	.rating	= 400,
- 	.read	= arch_counter_read,
- 	.mask	= CLOCKSOURCE_MASK(56),
- 	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
- };
-+EXPORT_SYMBOL(clocksource_counter);
- 
- static struct cyclecounter cyclecounter __ro_after_init = {
- 	.read	= arch_counter_read_cc,
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 9b8fee5178e8..e032fafdafa7 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -110,7 +110,7 @@ config PTP_1588_CLOCK_PCH
- config PTP_1588_CLOCK_KVM
- 	tristate "KVM virtual PTP clock"
- 	depends on PTP_1588_CLOCK
--	depends on KVM_GUEST && X86
-+	depends on KVM_GUEST && X86 || ARM64
- 	default y
- 	help
- 	  This driver adds support for using kvm infrastructure as a PTP
-diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-index a6e4d3e3d10a..2a222a1a8594 100644
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -94,6 +94,7 @@
- 
- /* KVM "vendor specific" services */
- #define ARM_SMCCC_KVM_FUNC_FEATURES		0
-+#define ARM_SMCCC_KVM_PTP			1
- #define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
- #define ARM_SMCCC_KVM_NUM_FUNCS			128
- 
-@@ -102,6 +103,16 @@
- 			   ARM_SMCCC_SMC_32,				\
- 			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
- 			   ARM_SMCCC_KVM_FUNC_FEATURES)
-+/*
-+ * This ID used for virtual ptp kvm clock and it will pass second value
-+ * and nanosecond value of host real time and system counter by vcpu
-+ * register to guest.
-+ */
-+#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID				\
-+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-+			   ARM_SMCCC_SMC_32,				\
-+			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-+			   ARM_SMCCC_KVM_PTP)
- 
- #ifndef __ASSEMBLY__
- 
-@@ -373,5 +384,8 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
- 		method;							\
- 	})
- 
-+#include <linux/psci.h>
-+#include <linux/clocksource.h>
-+
- #endif /*__ASSEMBLY__*/
- #endif /*__LINUX_ARM_SMCCC_H*/
-diff --git a/virt/kvm/arm/psci.c b/virt/kvm/arm/psci.c
-index 0debf49bf259..7fffdb25d32c 100644
---- a/virt/kvm/arm/psci.c
-+++ b/virt/kvm/arm/psci.c
-@@ -392,6 +392,8 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
- 	u32 func_id = smccc_get_function(vcpu);
- 	u32 val[4] = {};
- 	u32 option;
-+	struct timespec *ts;
-+	u64 cnt;
- 
- 	val[0] = SMCCC_RET_NOT_SUPPORTED;
- 
-@@ -431,6 +433,21 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
- 	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
- 		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
- 		break;
-+	/*
-+	 * This will used for virtual ptp kvm clock. three
-+	 * values will be passed back.
-+	 * reg0 stores seconds of host real time;
-+	 * reg1 stores nanoseconds of host real time;
-+	 * reg2 stotes system counter cycle value.
-+	 */
-+	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
-+		getnstimeofday(ts);
-+		cnt = arch_timer_read_counter();
-+		val[0] = ts->tv_sec;
-+		val[1] = ts->tv_nsec;
-+		val[2] = cnt;
-+		val[3] = 0;
-+		break;
- 	default:
- 		return kvm_psci_call(vcpu);
- 	}
 -- 
 2.17.1
 
