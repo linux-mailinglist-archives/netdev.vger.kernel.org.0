@@ -2,84 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA1FA2135
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10122A217E
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbfH2QoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 12:44:12 -0400
-Received: from mail-ed1-f49.google.com ([209.85.208.49]:41677 "EHLO
-        mail-ed1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbfH2QoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 12:44:12 -0400
-Received: by mail-ed1-f49.google.com with SMTP id w5so4747782edl.8
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 09:44:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=J0mIptJpgCrji3rnOXUkwAg2sK122VXt0E9fIlxztOM=;
-        b=CjUWiJmEnPc7cpwJ/wsprTOwzmCKVjptR7CYO147EQ8lCVLk9PNsUUNihGjDi0yAiU
-         AdhSK4kl0aEt2i34anAuJ5CHeotYjHF8tIYEm3pizhouRuUK1YrIQE9k7itxJ0YcnexA
-         2xxmCkBC+zU1PddIE30q0E+GQLwS5xXelvTGwgwTgCRHUc1mpEfEbNdN9FaevS84+w0A
-         KKda+pmQs9qgR1c9qFKdc00Mlryh7p5phtUGHaZ50O+d2E8lL9LWq8PdysrjSDlD/08l
-         rDCf6VUX8OHUCdYLvFfNVFqqKJyeiQ3PwuqXv0ooKBfDDDwygOUbgOX0gZqeldc+118y
-         0m1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=J0mIptJpgCrji3rnOXUkwAg2sK122VXt0E9fIlxztOM=;
-        b=XO6Uo+n5BeJ7D8aiyPMQOjqQ/JDhgtjwXMGLIQlqqdQ6DpWOTj3Dl7ktMtQSJdmGAO
-         ufvylbMpuS48Yd3s2Hd3+o8i3PqF7Heglw1pTZpKhXeVqHnd1ipiwaY2f3qLNH6SejLS
-         cWiG0tyH1OTaNYTc2r3AaeunwY+WUIKRioV5ipIk30wUdbAg+9hi/59CtzB3McAQtS1J
-         6MWzjEhJZ/ouJbixBseD8H4dgA3q8DTdXnr6Br1HYOcmeM4Gtj+RtGslCgGVTnPdN/A0
-         glmCgXPRjygnhSapnjQTXT7oPeNMuBVhxGxxdXyDxmrTjxdmK1UmatdUfIq/FciyxKCg
-         j6lQ==
-X-Gm-Message-State: APjAAAUhXX9TcSDNUWVkVHzQ5pc6JqFwQfWXPqiCYGXvtHD5VHimTwv6
-        ndbxmCifo21+MQle4Epoj6unMg==
-X-Google-Smtp-Source: APXvYqw5Xs+f6YJcpXnaAvDOyRlabm5hOEmNVZx7gCr2PPOar2OUA5f1/a+08qrVc12CFDoVIZHybA==
-X-Received: by 2002:a50:884b:: with SMTP id c11mr10893613edc.138.1567097050284;
-        Thu, 29 Aug 2019 09:44:10 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id o11sm444273ejd.68.2019.08.29.09.44.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 09:44:09 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 09:43:43 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     john.fastabend@gmail.com,
-        syzbot <syzbot+7a6ee4d0078eac6bf782@syzkaller.appspotmail.com>,
-        aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: general protection fault in tls_sk_proto_close (2)
-Message-ID: <20190829094343.0248c61c@cakuba.netronome.com>
-In-Reply-To: <20190829035200.3340-1-hdanton@sina.com>
-References: <000000000000c3c461059127a1c4@google.com>
-        <20190829035200.3340-1-hdanton@sina.com>
-Organization: Netronome Systems, Ltd.
+        id S1727794AbfH2Qx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 12:53:58 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:57030 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727248AbfH2Qx6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 12:53:58 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B98ED7F74D;
+        Thu, 29 Aug 2019 16:53:57 +0000 (UTC)
+Received: from new-host.redhat.com (ovpn-204-80.brq.redhat.com [10.40.204.80])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CB8D60872;
+        Thu, 29 Aug 2019 16:53:55 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     borisp@mellanox.com, jakub.kicinski@netronome.com,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     aviadye@mellanox.com, davejwatson@fb.com, davem@davemloft.net,
+        john.fastabend@gmail.com,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/3] net: tls: add socket diag
+Date:   Thu, 29 Aug 2019 18:48:01 +0200
+Message-Id: <cover.1567095873.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Thu, 29 Aug 2019 16:53:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 11:52:00 +0800, Hillf Danton wrote:
-> Alternatively work is done if sock is closed again. Anyway ctx is reset
-> under sock's callback lock in write mode.
-> 
-> --- a/net/tls/tls_main.c
-> +++ b/net/tls/tls_main.c
-> @@ -295,6 +295,8 @@ static void tls_sk_proto_close(struct so
->  	long timeo = sock_sndtimeo(sk, 0);
->  	bool free_ctx;
->  
-> +	if (!ctx)
-> +		return;
->  	if (ctx->tx_conf == TLS_SW)
->  		tls_sw_cancel_work_tx(ctx);
+The current kernel does not provide any diagnostic tool, except
+getsockopt(TCP_ULP), to know more about TCP sockets that have an upper
+layer protocol (ULP) on top of them. This series extends the set of
+information exported by INET_DIAG_INFO, to include data that are
+specific to the ULP (and that might be meaningful for debug/testing
+purposes).
 
-That's no bueno, the real socket's close will never get called.
+patch 1/3 ensures that the control plane reads/updates ULP specific data
+using RCU.
+
+patch 2/3 extends INET_DIAG_INFO and allows knowing the ULP name for
+each TCP socket that has done setsockopt(TCP_ULP) successfully.
+
+patch 3/3 extends kTLS to let programs like 'ss' know the protocol
+version and the cipher in use.
+
+Changes since v1:
+- don't worry about grace period when accessing ulp_ops, thanks to
+  Jakub Kicinski and Eric Dumazet
+- use rcu_dereference() to access ULP data in tls get_info(), and 
+  test against NULL value, thanks to Jakub Kicinski
+- move RCU protected section inside tls get_info(), thanks to Jakub
+  Kicinski
+
+Changes since RFC:
+- some coding style fixes, thanks to Jakub Kicinski
+- add X_UNSPEC as lowest value of uAPI enums, thanks to Jakub Kicinski
+- fix assignment of struct nlattr *start, thanks to Jakub Kicinski
+- let tls dump RXCONF and TXCONF, suggested by Jakub Kicinski
+- don't dump anything if TLS version or cipher are 0 (but still return a
+  constant size in get_aux_size()), thanks to Boris Pismenny
+- constify first argument of get_info() and get_size()
+- use RCU to access access ulp_ops, like it's done for ca_ops
+- add patch 1/3, from Jakub Kicinski
+
+
+Davide Caratti (2):
+  tcp: ulp: add functions to dump ulp-specific information
+  net: tls: export protocol version, cipher, tx_conf/rx_conf to socket
+    diag
+
+Jakub Kicinski (1):
+  net/tls: use RCU protection on icsk->icsk_ulp_data
+
+ include/net/inet_connection_sock.h |  2 +-
+ include/net/tcp.h                  |  3 +
+ include/net/tls.h                  | 28 +++++++++-
+ include/uapi/linux/inet_diag.h     |  9 +++
+ include/uapi/linux/tls.h           | 15 +++++
+ net/core/sock_map.c                |  2 +-
+ net/ipv4/tcp_diag.c                | 52 ++++++++++++++++-
+ net/tls/tls_device.c               |  2 +-
+ net/tls/tls_main.c                 | 90 +++++++++++++++++++++++++++---
+ 9 files changed, 190 insertions(+), 13 deletions(-)
+
+-- 
+2.20.1
+
