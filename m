@@ -2,136 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73205A22E4
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 320D6A22E7
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbfH2R6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 13:58:09 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35993 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727525AbfH2R6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:58:09 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 1B81C2BAE;
-        Thu, 29 Aug 2019 13:58:08 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 29 Aug 2019 13:58:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=kDDkxG
-        owHlH6KIqyJNRgu3bEQq+Z/NDS52i1KXVzXBI=; b=hdc6S/a+ShbnTuDAB/k1ra
-        np1rNCfDPdje0nUXlJhUfue82KH/j54Aeu5/cE/aX6PyEwJ75V+2X8bAEiK9N3/p
-        YYTq1LQ3d9be3zS6JKebudyVWLw51GJ11G8MOaWGyFddkQwsPpRpVfNoFxFHbg5v
-        cEIA+Nfj0A729Ul4qxKSOGKMkDg4bvkpyySZhL3Txx36MG1x3rl8KrbDn6G2UB2m
-        KP0CHX98Ly1P+Acsx7WVsAyC3ZDuW4xiWDVCRqk0fkbbc7vrUyUzJ3zqoUuv8TPl
-        ihNLcMqDEbt/BiTZ0Rwz0BexFW0zE1nrdHi+PX+56gLGCp3Apk5eGvrpcD1Pchrg
-        ==
-X-ME-Sender: <xms:LxJoXYnQYsoVMd1_7s6t-tsIrJyyYbGFzgb0nV8OVOImMiORp4KiqQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeivddgudduhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepud
-    dtledrieejrdeiuddrvddvgeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:LxJoXSF-9bmPJoSa21HBtmR3y4smJX5g0Em74rIZ_3h5zob97UG08w>
-    <xmx:LxJoXYYoRo4phBgt0TLhBENIrCjyBkgiwgB06SawDBtrA_5_P6cfpA>
-    <xmx:LxJoXZLq9RZnU4hfqqjjCsQ3cZlcryzdi-iV0aClkeGG-B7n_cLvUA>
-    <xmx:MBJoXf2DaHVDULsj32i03t-x9JsBvc6Li9vjHq6HQXRW-5A-BkWA-w>
-Received: from localhost (bzq-109-67-61-224.red.bezeqint.net [109.67.61.224])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8A83E80065;
-        Thu, 29 Aug 2019 13:58:06 -0400 (EDT)
-Date:   Thu, 29 Aug 2019 20:57:59 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, allan.nielsen@microchip.com,
-        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
-Message-ID: <20190829175759.GA19471@splinter>
-References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
- <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
- <20190829095100.GH2312@nanopsycho>
- <20190829132611.GC6998@lunn.ch>
- <20190829134901.GJ2312@nanopsycho>
- <20190829143732.GB17864@lunn.ch>
+        id S1727802AbfH2R7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 13:59:01 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51376 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727525AbfH2R7B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 13:59:01 -0400
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C56272F30C1
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 17:59:00 +0000 (UTC)
+Received: by mail-ed1-f69.google.com with SMTP id w15so2617956edv.17
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 10:59:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=vXyDcpJzTd5p/KMVvOob/xE2M48IW9jsvqrOA8CmTz0=;
+        b=LMFyDFYyQRvyrM2v4AJj58IFFD79ql6DCg0Tf0geajAFbqPkIhJTC1YqKpp04PSoqN
+         FB+zZTQkb9WXMubbijc+HXNCoQB83+iyb0zuyF35FhoVnBtScnkXiLW+lkwf2mSAm1r0
+         +yKIyGQSybjddBjyBQ7YMIO69VP3BSFqIa4SbryuBjJ+hMwUgJ78SCLSa4NrCjoqNKVz
+         BuBYgxPg32sqN0ny/ZEcH+mL8sr615yAYQO18Ty/ZzvtEAEjc0Dg3hk8lTXawh0pUX2o
+         qiAyAuEdCb/5P/p+/3940G0UvTx+IPCgmF0AYI/ccHLzSSr+y0rjgK/JgwJHpcNd2u9V
+         1/YQ==
+X-Gm-Message-State: APjAAAWsCRA1IkSX/EOQE8iv7bhXflL/txIsmfpXsC4VWEWLBks9GkEf
+        WXLotDIkaGzCO46yw+t91xsyn5dt0yLcHhc6VI4aU5Bliui7OTWkjgHH9nHlec3zRZRjGVZfexf
+        WjWLfD/GPW155nG5o
+X-Received: by 2002:a17:906:a2cd:: with SMTP id by13mr9362198ejb.182.1567101539495;
+        Thu, 29 Aug 2019 10:58:59 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyPz4t6r4A7CUfYi5mhv6MVRoXML2uPaai3OXbXjjP76nMbNjhhJGFBX9NOilRFWF4msKGbwg==
+X-Received: by 2002:a17:906:a2cd:: with SMTP id by13mr9362185ejb.182.1567101539293;
+        Thu, 29 Aug 2019 10:58:59 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id i18sm469032ejy.74.2019.08.29.10.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 10:58:58 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D9138181C2E; Thu, 29 Aug 2019 19:58:57 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "David Z. Dai" <zdai@linux.vnet.ibm.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zdai@us.ibm.com
+Subject: Re: [v1] net_sched: act_police: add 2 new attributes to support police 64bit rate and peakrate
+In-Reply-To: <1567100185.20025.3.camel@oc5348122405>
+References: <1567032687-973-1-git-send-email-zdai@linux.vnet.ibm.com> <7a8a5024-bbff-7443-71b3-9e3976af269f@gmail.com> <1567100185.20025.3.camel@oc5348122405>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 29 Aug 2019 19:58:57 +0200
+Message-ID: <87lfvbhmzi.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190829143732.GB17864@lunn.ch>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 04:37:32PM +0200, Andrew Lunn wrote:
-> > Wait, I believe there has been some misundestanding. Promisc mode is NOT
-> > about getting packets to the cpu. It's about setting hw filters in a way
-> > that no rx packet is dropped.
-> > 
-> > If you want to get packets from the hw forwarding dataplane to cpu, you
-> > should not use promisc mode for that. That would be incorrect.
-> 
-> Hi Jiri
-> 
-> I'm not sure a wireshark/tcpdump/pcap user would agree with you. They
-> want to see packets on an interface, so they use these tools. The fact
-> that the interface is a switch interface should not matter. The
-> switchdev model is that we try to hide away the interface happens to
-> be on a switch, you can just use it as normal. So why should promisc
-> mode not work as normal?
+"David Z. Dai" <zdai@linux.vnet.ibm.com> writes:
 
-Hi Andrew,
+> On Thu, 2019-08-29 at 10:32 +0200, Eric Dumazet wrote:
+>> 
+>> On 8/29/19 12:51 AM, David Dai wrote:
+>> > For high speed adapter like Mellanox CX-5 card, it can reach upto
+>> > 100 Gbits per second bandwidth. Currently htb already supports 64bit rate
+>> > in tc utility. However police action rate and peakrate are still limited
+>> > to 32bit value (upto 32 Gbits per second). Add 2 new attributes
+>> > TCA_POLICE_RATE64 and TCA_POLICE_RATE64 in kernel for 64bit support
+>> > so that tc utility can use them for 64bit rate and peakrate value to
+>> > break the 32bit limit, and still keep the backward binary compatibility.
+>> > 
+>> > Tested-by: David Dai <zdai@linux.vnet.ibm.com>
+>> > Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
+>> > ---
+>> >  include/uapi/linux/pkt_cls.h |    2 ++
+>> >  net/sched/act_police.c       |   27 +++++++++++++++++++++++----
+>> >  2 files changed, 25 insertions(+), 4 deletions(-)
+>> > 
+>> > diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+>> > index b057aee..eb4ea4d 100644
+>> > --- a/include/uapi/linux/pkt_cls.h
+>> > +++ b/include/uapi/linux/pkt_cls.h
+>> > @@ -159,6 +159,8 @@ enum {
+>> >  	TCA_POLICE_AVRATE,
+>> >  	TCA_POLICE_RESULT,
+>> >  	TCA_POLICE_TM,
+>> > +	TCA_POLICE_RATE64,
+>> > +	TCA_POLICE_PEAKRATE64,
+>> >  	TCA_POLICE_PAD,
+>> >  	__TCA_POLICE_MAX
+>> >  #define TCA_POLICE_RESULT TCA_POLICE_RESULT
+>> 
+>> Never insert new attributes, as this breaks compatibility with old binaries (including
+>> old kernels)
+> Thanks for reviewing it!
+> My change is only contained within the police part. I am trying to
+> follow the same way htb and tbf support their 64 bit rate.
+>
+> I tested the old tc binary with the newly patched kernel. It works fine.
+>
+> I agree the newly compiled tc binary that has these 2 new attributes can
+> cause backward compatibility issue when running on the old kernel.
+>
+> If can't insert new attribute, is there any
+> comment/suggestion/alternative on how to support 64bit police rate and
+> still keep the backward compatibility?
 
-What happens when you run tcpdump on a routed interface without putting
-it in promiscuous mode ('-p')? If it is a pure software switch, then you
-see all unicast packets addressed to your interface's MAC address. What
-happens when the same is done on a hardware switch? With the proposed
-solution you will not get the same result.
+Just put the new attributes *after* PAD instead of before :)
 
-On a software switch, when you run tcpdump without '-p', do you incur
-major packet loss? No. Will this happen when you punt several Tbps to
-your CPU on the hardware switch? Yes.
-
-Extending the definition of promiscuous mode to mean punt all traffic to
-the CPU is wrong, IMO. You will not be able to capture all the packets
-anyway. If you have both elephant and mice flows, then it is very likely
-you will not be able to see any packets from the mice flows. The way
-this kind of monitoring is usually done is by either sampling packets
-(see tc-sample) or mirroring it to capable server. Both options are
-available in Linux today.
-
-> > If you want to get packets from the hw forwarding dataplane to cpu, you
-> > should use tc trap action. It is there exactly for this purpose.
-> 
-> Do you really think a wireshark/tcpdump/pcap user should need to use
-> tc trap for the special case the interface is a switch port? Doesn't that
-> break the switchdev model?
-
-I do not object to the overall goal, but I believe to implementation is
-wrong. Instead, it would be much better to extend tshark/tcpdump and
-with another flag that will instruct libpcap to install a rule that will
-trap all traffic to the CPU. You can do that on either ingress or egress
-using matchall and trap action.
-
-If you want to do it without specifying a special flag (I think it's
-very dangerous due to the potential packet loss), you can add a flag to
-the interface that will indicate to libpcap that installing a tc filter
-with trap action is required.
-
-> tc trap is more about fine grained selection of packets.
-
-Depends on the filter you associate with the action. If it's matchall,
-then it's not fine grained at all :)
-
-> Also, it seems like trapped packets are not forwarded, which is not
-> what you would expect from wireshark/tcpdump/pcap.
-
-How do you mean? Not forwarded by the HW? Right. But the trapped packets
-are forwarded by the kernel. We can also add another action that means
-both trap and forward. In mlxsw terminology it's called mirror.
+-Toke
