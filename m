@@ -2,106 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E44D5A223E
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D81A2247
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728024AbfH2R26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 13:28:58 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35805 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726661AbfH2R25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:28:57 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n4so1955663pgv.2;
-        Thu, 29 Aug 2019 10:28:56 -0700 (PDT)
+        id S1727899AbfH2Rai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 13:30:38 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43788 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727234AbfH2Rai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:30:38 -0400
+Received: by mail-pf1-f195.google.com with SMTP id v12so2509883pfn.10;
+        Thu, 29 Aug 2019 10:30:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=k1jwJKoeIGFgWWFuE7oepnY67hWNv/EdFW+k150ngZA=;
-        b=MwMxRQPaosFEQjOX5hk/E9slBAtBVAPt2pDyWgB9fF9YdFgBxkIJ2J5RO/nvEiTHso
-         HTEeCaRXRgOvABNivvSIfrthBbkyDcxEP0hoc7NcAebLKFJgjXDso2Adyb9i9mxKa3Hf
-         sXbEbrr7WXIgQWGKUH8qS5RmpdQIIA5YKGDXRBW4e1IroAhQGUrbJWGgFhozeT35SXX8
-         LDlQmZbtYOpKYKQ/l7GDbhN55xu+XOxn1gPjgVERg3mcPu/X0Ab1oLvO7Biv9+Do+LkG
-         EHSp8ulrdSoXA9USAUsqMlHJx9TG4pt9CFobvtx6Hnm6Rux4i17JAub/AjEy8XIYjaJ/
-         eyjw==
+        bh=un1bFDlVA1xxG291pbzDwXapqSnpB4luDmDrkVoHMBI=;
+        b=e1bEaSMDBpYhg4Ra1gBcJhL0YV/RB0jjoszzE7WHZRUMHxtHWOu5xgCRL6MeQJwkEg
+         319CADkKWNguSGkwmYGgTfqNXRIhdKoMUS1EGhTdN8VxHtFAUQBbduO/oONVpLL7yIYB
+         P2xUNVztt6zuzf7iRYCJJfAmP6TaKoV6tYF06KR02meMrRuHhLE4zir6S4DTS9cdkG7+
+         QpCC7vSQo5Pcir/8RFadh/NtfGpGHukIHq5vHzVpndPIOxs6CCqrhO8RdxIyEgKxwMzh
+         ox8n5SHJ23GVzWl+4jp9Ke0jui413HCTF6okTgJMvDQMJpNeyzZoEN5xCVkv1N9Zdp2x
+         MaeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=k1jwJKoeIGFgWWFuE7oepnY67hWNv/EdFW+k150ngZA=;
-        b=riyF55U/Xw5rlg6nQmzsgScqUM8RB621U90OvPmcdSISzkXARiRoZF/RiYMA/FqkaU
-         0K5eqKjMkQTE98qY+t76vXj4wtYGm7YvkKha+j32uMvR6Vykno81mP6UB8ZUYSgwQw6Y
-         d6AKtq+e34Pd1yuWChYECKVxeBR8OH+j+dqmFd1CIGLLYwVwFOOop6W0c2iEbMNXN0Zz
-         Cb4apQjf00UvfNri3LoCV+6nX4VOuqPHTG7Y4DYydz5Dc3nLuuCpQkwxPXa0rcH7+ITn
-         P/CIarQKBogr9MdM+H28+wyZ5vYMUcEAz070mtAmuaC4BQ0FAiKwK1gvTuQZ3pAB81+z
-         0U1A==
-X-Gm-Message-State: APjAAAUdyN27JfyrRqrcYp11EE3pPtweL0ZXmrg6vvlNpdpMLDbUr2Bv
-        ZmYDslCmzWY+4S4U7/+yXzs=
-X-Google-Smtp-Source: APXvYqzq9kL2VP5CW2b9d6LTlMaWg4ehJUVObEWWx9R+TxZ8w9beOFzaeKjpnDMYBDv6t11X7ZWzhw==
-X-Received: by 2002:a63:1b66:: with SMTP id b38mr9433057pgm.54.1567099736134;
-        Thu, 29 Aug 2019 10:28:56 -0700 (PDT)
+        bh=un1bFDlVA1xxG291pbzDwXapqSnpB4luDmDrkVoHMBI=;
+        b=Do/13BFKxKqpEoFgxN11OVHlDvz7UCxbphqDkGGP62Vl5lVFeobkAWQwO4ddQHSKtz
+         xfn1J25h7KYZ+ijBpgN+2D74uovzegqXY1IcGe0aNdhr0I0viAYa9d7npAZ6xWtj1aPk
+         8iON5R4qFwl3L0s1p23j0q3k88G1pPg/ApOC28omf3voIJEj6chzj7YMSX+4Ultgfl/i
+         BUpmfbJXVTKetNT+g9g+uiiUq6BFG8PI5iFpQQqJZV1B/BF2bb8RdywL7MA7N3HoOxfk
+         1YDxqxZJlWOX4H0PyfB8JSJG3aKhXFgFeBJqqzoC0fcC3aczJeUZ5aqJL29OzsxDu956
+         KMqA==
+X-Gm-Message-State: APjAAAUN7PKwtW4N/VTGaqCq0bg+5KaAu3zt/1iDydZGy2iW1rLKSrXd
+        Wxv1ssbpSSwvCCRn47K+9I0=
+X-Google-Smtp-Source: APXvYqy2UMefZgrFy/grLz7NDxbkDJBg7f7+4SiZpCZAydqDUsPqwT3RO+JdOEZP2kk7zSLaqM7ySw==
+X-Received: by 2002:a62:6489:: with SMTP id y131mr12658663pfb.124.1567099837685;
+        Thu, 29 Aug 2019 10:30:37 -0700 (PDT)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:1347])
-        by smtp.gmail.com with ESMTPSA id a16sm4705481pfo.33.2019.08.29.10.28.54
+        by smtp.gmail.com with ESMTPSA id v8sm3088086pjb.6.2019.08.29.10.30.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Aug 2019 10:28:55 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 10:28:54 -0700
+        Thu, 29 Aug 2019 10:30:36 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 10:30:35 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, luto@amacapital.net,
+        davem@davemloft.net, peterz@infradead.org, rostedt@goodmis.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        linux-api@vger.kernel.org
 Subject: Re: [PATCH v2 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20190829172852.xhxtd6ruwdnhvvdt@ast-mbp.dhcp.thefacebook.com>
+Message-ID: <20190829173034.up5g74onaekp53zd@ast-mbp.dhcp.thefacebook.com>
 References: <20190829051253.1927291-1-ast@kernel.org>
  <20190829051253.1927291-2-ast@kernel.org>
- <B28631A9-BB92-404A-BD58-7A737BCF10C9@fb.com>
+ <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <B28631A9-BB92-404A-BD58-7A737BCF10C9@fb.com>
+In-Reply-To: <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 06:04:42AM +0000, Song Liu wrote:
-> 
-> 
-> > On Aug 28, 2019, at 10:12 PM, Alexei Starovoitov <ast@kernel.org> wrote:
+On Thu, Aug 29, 2019 at 05:32:27PM +0200, Daniel Borkmann wrote:
+> On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
+> > Implement permissions as stated in uapi/linux/capability.h
 > > 
-> 
+> > Note that CAP_SYS_ADMIN is replaced with CAP_BPF.
+> > All existing applications that use BPF do not drop all caps
+> > and keep only CAP_SYS_ADMIN before doing bpf() syscall.
+> > Hence it's highly unlikely that existing code will break.
+> > If there will be reports of breakage then CAP_SYS_ADMIN
+> > would be allowed as well with "it's usage is deprecated" message
+> > similar to commit ee24aebffb75 ("cap_syslog: accept CAP_SYS_ADMIN for now")
+> > 
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 > [...]
+> > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> > index 22066a62c8c9..f459315625ac 100644
+> > --- a/kernel/bpf/hashtab.c
+> > +++ b/kernel/bpf/hashtab.c
+> > @@ -244,9 +244,9 @@ static int htab_map_alloc_check(union bpf_attr *attr)
+> >   	BUILD_BUG_ON(offsetof(struct htab_elem, fnode.next) !=
+> >   		     offsetof(struct htab_elem, hash_node.pprev));
+> > -	if (lru && !capable(CAP_SYS_ADMIN))
+> > +	if (lru && !capable(CAP_BPF))
+> >   		/* LRU implementation is much complicated than other
+> > -		 * maps.  Hence, limit to CAP_SYS_ADMIN for now.
+> > +		 * maps.  Hence, limit to CAP_BPF.
+> >   		 */
+> >   		return -EPERM;
+> I don't think this works, this is pretty much going to break use cases where
+> orchestration daemons are deployed as containers that are explicitly granted
+> specified cap set and right now this is CAP_SYS_ADMIN and not CAP_BPF for bpf().
+> The former needs to be a superset of the latter in order for this to work and
+> not break compatibility between kernel upgrades.
 > 
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> > index 44e2d640b088..91a7f25512ca 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -805,10 +805,20 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
-> > 	}
-> > }
-> > 
-> > +struct libcap {
-> > +	struct __user_cap_header_struct hdr;
-> > +	struct __user_cap_data_struct data[2];
-> > +};
-> > +
-> 
-> I am confused by struct libcap. Why do we need it? 
+> - https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+> - https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 
-because libcap is not compatible with new kernel.
-It needs to be recompiled with new capability.h
-Otherwise it limits max to CAP_AUDIT_READ
-Any value higher it will error during cap_get_flag.
-And will silently ignore it during cap_set_flag.
-Not a great library decision.
-
-Thankfully this struct above is exactly the kernel api.
-One doesn't really need libcap. It's imo easier to do without it.
+These are the links that showing that k8 can delegates caps.
+Are you saying that you know of folks who specifically
+delegate cap_sys_admin and cap_net_admin _only_ to a container to run bpf in there?
 
