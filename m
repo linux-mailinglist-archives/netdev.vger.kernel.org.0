@@ -2,134 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B534A2B0C
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A23A2B14
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfH2XkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 19:40:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:25296 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725917AbfH2XkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:40:15 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7TNaoo6007922;
-        Thu, 29 Aug 2019 16:39:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=W1OdtY7sJdpX8qV/4Wh54kHmMMllgaPFREY3QnKN3dQ=;
- b=EejqNlvlyATvOPH8j4idFZLs2Ogh2xu/UTgZwj5YpspETRItlhTp3G42a+2JgnlZWgUi
- p+RZVUSQAxEYZi205UNP7ZfciHwu9YF/p6zo3o4Bh8+c1+H2GmC8NZE5x6+pCpJyAe5i
- s3h0503vzu2KW50lq4PqLnpL4amfHjY+F2Q= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2upqya04mj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 29 Aug 2019 16:39:54 -0700
-Received: from prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 29 Aug 2019 16:39:53 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 29 Aug 2019 16:39:52 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 29 Aug 2019 16:39:52 -0700
+        id S1727065AbfH2Xmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 19:42:33 -0400
+Received: from mail-eopbgr150089.outbound.protection.outlook.com ([40.107.15.89]:7907
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725826AbfH2Xmc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 19:42:32 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mxS7BaoqWZm3L9g9sFfTm+N9u7aIf4TE3cNF8h8VKMx+kV/yabsxGuyTTb1x73lCAMBeTESisZ7jwKxzrftFzN4jOWDXAafUuKykD/WdlAIu0xZfeXT80WGCfqW14riKntlaa5rY2Anv9RsbCcJGSodXXij+JTPJGeWyCKsx17+in/n4XgeGO2SZnjGYbIyeAXI5t7v568DFpN0JtkNYw0KopX7G/TpShQF8F7X3jWrvXT8RInKKHNFL5h1DcuMKS2W34eGlfQfpbMWx/KsrjILLswIpRBgYApeviECyuh8vhKWlqWrkGoA31FCrl17IaKls25iXxi0gOAoMCKJTgg==
+ b=eBYLpIVxBHPzyg7WjrfeH4n1xXtd4kOARjayxOeh7y81mT8qZ2xQvQd3WLZGLo71jw12a9Jr0SedHxwy4VmgLHYksY7LDbRhCvHWlIuavC8q0C2U5jEmPFMyRfWsKJRqmjgNQLEM+rITQBBP1aAlEyd9ZsE8k9IinoJ5VAduvnKPSTHocxX1OD8ujpAm4cqIqhTer0bSKL6VmognyuuVmmsgHgz7hUrQ4T4jy8i2rL4sPk83rwwYqhBTqqQIsaf3W15C6G86tue0iaW8MBaWKdmEHUF1zrrfetUtx+rALxgt7h1ZBnNR23rpjEGyxbzksWqHWoem5QogBns+yZjvmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W1OdtY7sJdpX8qV/4Wh54kHmMMllgaPFREY3QnKN3dQ=;
- b=ZloeGygliq1QtXYTev3/P/alIKc1/UPZmxDJpBiVokyEQfjn8vCsugHwsid3mS/MOqPMWXWGariSfvU5by2L+XLPkwquHsTQ63uEkDptDlUz8drD4s5I0T6QOznHHnN0kjf1EAmDuOdqf2lqJpmfcAJEQR6jlFm4kZPaPfS76CGN6RsR+ujqhZxAi/DmOTcf4EyhM17hk2ZZfW1vi721aS2saExAlCJXG81y4XOxVmyIhFklCjEIHEvQb9DgwIZz4h+BV0f1rK8Bkz05C1X1/SQ2/oCMaV8nsxb3kq+t3ThvnpInRCa4kuSXETSTN9YwEyDoTvg6CgN+QRATjUHeZg==
+ bh=YLSH0Bw29VnSwNOr7/K66wJuGRDxjr3joqnFbamSS/0=;
+ b=VNWwPUtdFJLH6tdRQQXYUuxZz46QvK34xZ2pYRyKJN3vW6J/ba4acK7h3eks/1/2dSnivbZEad16onsvfZUF7+ivnXuS4a0BeYOJRtfNnbrABUnuuVFLELIgSnqoZGDJPamPaPVFP7E9hZROSAxcpFO7tRuR7rnoOAUpyxbf4FaUSZLE13Cdl5XTGzomoF9rcjO2ZuM30xM/v6RDI0UubEtrLoY6P6vaZzHBbWJMvevKCx2DlGzwtuPIg+/oGD+3vCVxyL3G9SB3TBkcMg8Tvr1/vk+8JEmhZkPC8iFdKN4qIWSrqLfz1IG2UGdA/KipvVyvBgCVU2NfGfsYsDKOCw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W1OdtY7sJdpX8qV/4Wh54kHmMMllgaPFREY3QnKN3dQ=;
- b=OQN1/Q/x843djo3+Jc+v9ndk0jBhUzc41z2JMdWMpbCvJu9k+Bi/ags6S3o7PwAiQS2HRXHHH/uEKJjbOBuZ3tkkTt0IK+FEEC6oMAmBUWzHfKAchkXtVB4gLcJN6+3GJ+HUcbNQO1SwoSulyeZP1A/WY7oipf/sxZpbf3QUnhI=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1213.namprd15.prod.outlook.com (10.175.7.141) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.20; Thu, 29 Aug 2019 23:39:51 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5%3]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
- 23:39:51 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Yonghong Song <yhs@fb.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 04/13] bpf: refactor map_get_next_key()
-Thread-Topic: [PATCH bpf-next 04/13] bpf: refactor map_get_next_key()
-Thread-Index: AQHVXjVUOProZ/ylqEmaGuTN0JGos6cSya4A
-Date:   Thu, 29 Aug 2019 23:39:51 +0000
-Message-ID: <1A9FD1E2-E4AC-46AA-87C8-CEE8C96EA539@fb.com>
-References: <20190829064502.2750303-1-yhs@fb.com>
- <20190829064506.2750717-1-yhs@fb.com>
-In-Reply-To: <20190829064506.2750717-1-yhs@fb.com>
+ bh=YLSH0Bw29VnSwNOr7/K66wJuGRDxjr3joqnFbamSS/0=;
+ b=QnYlafVCbMzYcJbMFRe7kqZEwHXGH+NYmabp79msIlybkmz+nybAnMLZhUfnLni+ZelI7uWEe1xTWXpyLvhz1cpW+dfhZkVeoRAmtP4o6ABnLJXVB5qq97FIe3zn+U1HSPqz/tHjrW5sHuQAbLroWYPz9DCr92EYfpSgYkblnlI=
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
+ VI1PR0501MB2333.eurprd05.prod.outlook.com (10.169.135.147) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.21; Thu, 29 Aug 2019 23:42:28 +0000
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27%6]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
+ 23:42:28 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: [PATCH mlx5-next 0/5] Mellanox, mlx5 next updates 2019-09-29
+Thread-Topic: [PATCH mlx5-next 0/5] Mellanox, mlx5 next updates 2019-09-29
+Thread-Index: AQHVXsNqTpgpI39FF0GNuR1TlVUVtA==
+Date:   Thu, 29 Aug 2019 23:42:27 +0000
+Message-ID: <20190829234151.9958-1-saeedm@mellanox.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::1:3161]
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BY5PR04CA0018.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::28) To VI1PR0501MB2765.eurprd05.prod.outlook.com
+ (2603:10a6:800:9a::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 05ea8ba3-ad26-4df7-06bc-08d72cda2fdc
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1213;
-x-ms-traffictypediagnostic: MWHPR15MB1213:
+x-ms-office365-filtering-correlation-id: b7d06c3a-e5d3-4e70-9335-08d72cda8cf1
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2333;
+x-ms-traffictypediagnostic: VI1PR0501MB2333:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1213CF3EEC204A5E4F3887ACB3A20@MWHPR15MB1213.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
+x-microsoft-antispam-prvs: <VI1PR0501MB2333C910469EC41E9BB33AD4BEA20@VI1PR0501MB2333.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-forefront-prvs: 0144B30E41
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(346002)(376002)(366004)(136003)(199004)(189003)(81166006)(99286004)(14454004)(7736002)(54906003)(486006)(305945005)(33656002)(14444005)(8676002)(558084003)(8936002)(37006003)(316002)(50226002)(6116002)(81156014)(478600001)(36756003)(229853002)(46003)(76176011)(71190400001)(71200400001)(4326008)(66476007)(66946007)(66446008)(64756008)(66556008)(76116006)(256004)(6246003)(2906002)(86362001)(6862004)(476003)(6512007)(6506007)(53936002)(446003)(6436002)(2616005)(6486002)(11346002)(5660300002)(57306001)(102836004)(53546011)(25786009)(6636002)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1213;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(396003)(136003)(39860400002)(376002)(199004)(189003)(53754006)(476003)(486006)(450100002)(4326008)(478600001)(2906002)(81156014)(6636002)(110136005)(71200400001)(36756003)(54906003)(71190400001)(305945005)(8676002)(81166006)(7736002)(14444005)(8936002)(5660300002)(50226002)(256004)(2616005)(64756008)(66446008)(186003)(15650500001)(66946007)(14454004)(6116002)(3846002)(316002)(1076003)(6512007)(6486002)(53936002)(6506007)(102836004)(6436002)(386003)(25786009)(99286004)(52116002)(86362001)(26005)(66066001)(66556008)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2333;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 24UaIWLDFI2cF1zyj5j8j0QvylzzzmngMc6+8RqxNvI1sKooVsB4PA8YNRA5H7m1L9PJau3vdMpzgUeJoRGO2dEJm6cMl7OUvf8LuEjr8+zQHTe27RKb2UbCWcDThMIeDuV2zCXfAzQdkO95q5HRKtoKo6Lo29OGWj+MSp1/a+u73j3eLheqJwPiowJd682r3orMFzpjAHNn1AnUp/FHvA6NdRlu6PdWioFUbGrMaNVX/lbLSKkh+n1csAzl2hdI3tjIcBzIHaJIWQHj7FRX+Uc2J9TOEAppyPs8MonRUf2rFW7LrFa1vBor0V4wOXJmTOHZwyqscKhHS0uaHqo8QQGPwITUfr+/+pbS86yshWdKTVB1+F3MDEkgWTgc4+TUebmkHbrsQdKN394gQ+5l2zKzbE3yHqwanFoSKvGmrLY=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0484F71E3B2F124F8405EBE19BAF7A13@namprd15.prod.outlook.com>
+x-microsoft-antispam-message-info: mN+/Si0zkf2XvL38Fd+Qg1nmN6qqXUffLb038m9gZviO3fiCKFswzoaWyYZevI7Dd2+GEKUKyAtn4SvnosJa+x69so5FheGWdWgu/VI2D+JHPoIKdio2Is7B3EVAlQ+d/mdW97PbznekzfAXvKI2CjkBXQ6UK1Odvbbit0uJOv5whvKT4dkjPgNM5lAaXa4K49mp7oiwCgLC6ChXOUnc9e/jrR0iZdjuFH16Mu50xK1KV9Z7ojtgYSVcOzoRmL6I+QGCjaNV68bBj9wpjvY9i93umlblLZJnCGCVK6khzo5W+dsJyOCQkObKsQz2klnxdrnTP9+fIHox1NNjX9HTJyapYxyCLfr5suu/8COG+M0JWpN2NB9DiBEz7CFU6eDOMskWM3E/EMaTvFrVQQqNmkw5agPa/50Nw4/4JKGLYKk=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05ea8ba3-ad26-4df7-06bc-08d72cda2fdc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 23:39:51.2326
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7d06c3a-e5d3-4e70-9335-08d72cda8cf1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 23:42:28.0666
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QlPQfoiSWdcOx2XvrOOApWl6v0OoaZbDIaeLD2g1MKuLsftEQfrOfizvfW5Ff7QKyhrPPgsH4eSTesstGPIqKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1213
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-08-29_09:2019-08-29,2019-08-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=482
- malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 bulkscore=0 mlxscore=0 impostorscore=0
- adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1908290236
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: 15mkhmViNeZTAXndXq2I7XsNP7qARBId6AdQ5wJ84QZ2P4B9wROSsYcwQx52MJ4ol/gIqGzeBdVeD0nlbxyb8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2333
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi All,
 
+This series includes misc updates for mlx5-next shared branch required
+for upcoming software steering feature.
 
-> On Aug 28, 2019, at 11:45 PM, Yonghong Song <yhs@fb.com> wrote:
->=20
-> Refactor function map_get_next_key() with a new helper
-> bpf_map_get_next_key(), which will be used later
-> for batched map lookup/lookup_and_delete/delete operations.
->=20
-> Signed-off-by: Yonghong Song <yhs@fb.com>
+1) Alex adds HW bits and definitions required for SW steering
+2) Ariel moves device memory management to mlx5_core (From mlx5_ib)
+3) Maor, Cleanups and fixups for eswitch mode and RoCE
+4) Mar, Set only stag for match untagged packets
 
-Acked-by: Song Liu <songliubraving@fb.com>
+In case of no objection this series will be applied to mlx5-next branch
+and sent later as pull request to both rdma-next and net-next branches.
+
+Thanks,
+Saeed.
+
+---
+
+Alex Vesker (1):
+  net/mlx5: Add HW bits and definitions required for SW steering
+
+Ariel Levkovich (1):
+  net/mlx5: Move device memory management to mlx5_core
+
+Maor Gottlieb (2):
+  net/mlx5: Avoid disabling RoCE when uninitialized
+  net/mlx5: Add stub for mlx5_eswitch_mode
+
+Mark Bloch (1):
+  net/mlx5: Set only stag for match untagged packets
+
+ drivers/infiniband/hw/mlx5/cmd.c              | 130 ----------
+ drivers/infiniband/hw/mlx5/cmd.h              |   4 -
+ drivers/infiniband/hw/mlx5/main.c             | 102 +++-----
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   2 -
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   5 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/dm.c  | 223 +++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   5 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   3 +
+ .../net/ethernet/mellanox/mlx5/core/rdma.c    |   8 +-
+ include/linux/mlx5/device.h                   |   7 +
+ include/linux/mlx5/driver.h                   |  14 ++
+ include/linux/mlx5/eswitch.h                  |   8 +-
+ include/linux/mlx5/mlx5_ifc.h                 | 235 +++++++++++++++---
+ 14 files changed, 497 insertions(+), 251 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+
+--=20
+2.21.0
 
