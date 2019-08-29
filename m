@@ -2,91 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7319A2888
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 22:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 884A6A289E
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 23:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728279AbfH2U6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 16:58:37 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:53624 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726935AbfH2U6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 16:58:37 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1i3RV2-0007J3-97; Thu, 29 Aug 2019 22:58:32 +0200
-Date:   Thu, 29 Aug 2019 22:58:32 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Leonardo Bras <leonardo@linux.ibm.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S1728230AbfH2VGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 17:06:06 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:44689 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727857AbfH2VGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 17:06:04 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a21so5530136edt.11
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 14:06:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=mjeDM1ef59jHGyITUEWKWasfOEJ0lhbfqjEvHa/i+Bc=;
+        b=C/MonQxuUjA5OS8d5fmb1X7dzmJV0jA/mpbw81KMoaWWx12Ur45uzcUPiyItofO4v9
+         ZMj31l1mLBk4UYgZWQMPClJjRLmg984pRbGnjiQ2wWDCUkxvF1I+1fH5h/d1GcxHtHf8
+         ZKyevKI9p7RRxOkpxiOTHK345zHfkJgCWRVJQBRjgmZJZcKw2vovVBq5A9qJ0BqQUL79
+         Snd5sFvGZgbt9oslfbZhqPuHOncfZMRCcoaP7tqTK6fqT2C3aC+u+W3lVp2ZZbyg6i3n
+         4mCLRie4ILXwTkCGQ3pbUklEBecKmO/y5dmAQRUWaE/4l2A5XdbA2N5jxEeRaAtVz39f
+         hKCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=mjeDM1ef59jHGyITUEWKWasfOEJ0lhbfqjEvHa/i+Bc=;
+        b=sUGGq6ND4uE5HqYIFtmQOWNuhjz1dkLS2EraZjE1utJReoy4gQ/gphGEIscY//4BIF
+         tWzT2i27IA7gkKmk+CY9fM8qbvrkgf3+D7yclvHWMDDYVHuFVnKFQWsVmNY6AhGTfAjw
+         x3TUH8R+Rg4PfRtrx2qmg7p1daQUSVKD75JcXiOZChYtVgEkRtKyjki7Orn6UKIWlyEi
+         J1lXniPTpGzHPO67VzjHoTf6B4836+FBHbh/6AlvpLZjcKLqMw9dTuWk4hIXzyvgsV1L
+         RkGG5ohzsmGb9tdXXK0w00ugreEATubzPR4ZU8GZ8DT77uDP41tAJ0/1LCDOBDuQbDn/
+         Jnfg==
+X-Gm-Message-State: APjAAAUzj3l9mAgPRtLsKgAtw6UKTYrfXnYNyP4N0R7F/5ve6sBktEZg
+        t2xH5qp/tIaNyXb30cWS84YF5Q==
+X-Google-Smtp-Source: APXvYqxkf3fLJCOCftLxVNmTyA/z4TI2hfVEFN6q2d+atf4OWedLQfzK96Qaw5gyDlRRT9vKcpKKUQ==
+X-Received: by 2002:a05:6402:1344:: with SMTP id y4mr11932199edw.124.1567112762386;
+        Thu, 29 Aug 2019 14:06:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id f6sm640076edv.30.2019.08.29.14.05.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 14:06:02 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 14:05:37 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
-Message-ID: <20190829205832.GM20113@breakpoint.cc>
-References: <20190821141505.2394-1-leonardo@linux.ibm.com>
- <db0f02c5b1a995fde174f036540a3d11008cf116.camel@linux.ibm.com>
- <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 05/15] net: sgi: ioc3-eth: allocate space
+ for desc rings only once
+Message-ID: <20190829140537.68abfc9f@cakuba.netronome.com>
+In-Reply-To: <20190829155014.9229-6-tbogendoerfer@suse.de>
+References: <20190829155014.9229-1-tbogendoerfer@suse.de>
+        <20190829155014.9229-6-tbogendoerfer@suse.de>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Leonardo Bras <leonardo@linux.ibm.com> wrote:
-> On Thu, 2019-08-29 at 17:04 -0300, Leonardo Bras wrote:
-> > > Thats a good point -- Leonardo, is the
-> > > "net.bridge.bridge-nf-call-ip6tables" sysctl on?
-> > 
-> > Running
-> > # sudo sysctl -a
-> > I can see:
-> > net.bridge.bridge-nf-call-ip6tables = 1
+On Thu, 29 Aug 2019 17:50:03 +0200, Thomas Bogendoerfer wrote:
+> Memory for descriptor rings are allocated/freed, when interface is
+> brought up/down. Since the size of the rings is not changeable by
+> hardware, we now allocate rings now during probe and free it, when
+> device is removed.
 > 
-> Also, doing
-> # echo 0 >  /proc/sys/net/bridge/bridge-nf-call-ip6tables 
-> And then trying to boot the guest will not crash the host.
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>  drivers/net/ethernet/sgi/ioc3-eth.c | 103 ++++++++++++++++++------------------
+>  1 file changed, 51 insertions(+), 52 deletions(-)
 > 
-> Which would make sense, since host iptables is not dealing with guest
-> IPv6 packets.
+> diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
+> index ba18a53fbbe6..d9d94a55ac34 100644
+> --- a/drivers/net/ethernet/sgi/ioc3-eth.c
+> +++ b/drivers/net/ethernet/sgi/ioc3-eth.c
+> @@ -803,25 +803,17 @@ static void ioc3_free_rings(struct ioc3_private *ip)
+>  	struct sk_buff *skb;
+>  	int rx_entry, n_entry;
+>  
+> -	if (ip->txr) {
+> -		ioc3_clean_tx_ring(ip);
+> -		free_pages((unsigned long)ip->txr, 2);
+> -		ip->txr = NULL;
+> -	}
+> +	ioc3_clean_tx_ring(ip);
+>  
+> -	if (ip->rxr) {
+> -		n_entry = ip->rx_ci;
+> -		rx_entry = ip->rx_pi;
+> +	n_entry = ip->rx_ci;
+> +	rx_entry = ip->rx_pi;
+>  
+> -		while (n_entry != rx_entry) {
+> -			skb = ip->rx_skbs[n_entry];
+> -			if (skb)
+> -				dev_kfree_skb_any(skb);
+> +	while (n_entry != rx_entry) {
+> +		skb = ip->rx_skbs[n_entry];
+> +		if (skb)
+> +			dev_kfree_skb_any(skb);
 
-Yes.
+I think dev_kfree_skb_any() accepts NULL
 
-> So, the real cause of this bug is the bridge making host ip6tables deal
-> with guest IPv6 packets ? 
-> If so, would it be ok if write a patch testing ipv6_mod_enabled()
-> before passing guest ipv6 packets to host ip6tables? 
+>  
+> -			n_entry = (n_entry + 1) & RX_RING_MASK;
+> -		}
+> -		free_page((unsigned long)ip->rxr);
+> -		ip->rxr = NULL;
+> +		n_entry = (n_entry + 1) & RX_RING_MASK;
+>  	}
+>  }
+>  
+> @@ -829,49 +821,34 @@ static void ioc3_alloc_rings(struct net_device *dev)
+>  {
+>  	struct ioc3_private *ip = netdev_priv(dev);
+>  	struct ioc3_erxbuf *rxb;
+> -	unsigned long *rxr;
+>  	int i;
+>  
+> -	if (!ip->rxr) {
+> -		/* Allocate and initialize rx ring.  4kb = 512 entries  */
+> -		ip->rxr = (unsigned long *)get_zeroed_page(GFP_ATOMIC);
+> -		rxr = ip->rxr;
+> -		if (!rxr)
+> -			pr_err("%s: get_zeroed_page() failed!\n", __func__);
+> -
+> -		/* Now the rx buffers.  The RX ring may be larger but
+> -		 * we only allocate 16 buffers for now.  Need to tune
+> -		 * this for performance and memory later.
+> -		 */
+> -		for (i = 0; i < RX_BUFFS; i++) {
+> -			struct sk_buff *skb;
+> +	/* Now the rx buffers.  The RX ring may be larger but
+> +	 * we only allocate 16 buffers for now.  Need to tune
+> +	 * this for performance and memory later.
+> +	 */
+> +	for (i = 0; i < RX_BUFFS; i++) {
+> +		struct sk_buff *skb;
+>  
+> -			skb = ioc3_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
+> -			if (!skb) {
+> -				show_free_areas(0, NULL);
+> -				continue;
+> -			}
+> +		skb = ioc3_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
+> +		if (!skb) {
+> +			show_free_areas(0, NULL);
+> +			continue;
+> +		}
+>  
+> -			ip->rx_skbs[i] = skb;
+> +		ip->rx_skbs[i] = skb;
+>  
+> -			/* Because we reserve afterwards. */
+> -			skb_put(skb, (1664 + RX_OFFSET));
+> -			rxb = (struct ioc3_erxbuf *)skb->data;
+> -			rxr[i] = cpu_to_be64(ioc3_map(rxb, 1));
+> -			skb_reserve(skb, RX_OFFSET);
+> -		}
+> -		ip->rx_ci = 0;
+> -		ip->rx_pi = RX_BUFFS;
+> +		/* Because we reserve afterwards. */
+> +		skb_put(skb, (1664 + RX_OFFSET));
+> +		rxb = (struct ioc3_erxbuf *)skb->data;
+> +		ip->rxr[i] = cpu_to_be64(ioc3_map(rxb, 1));
+> +		skb_reserve(skb, RX_OFFSET);
+>  	}
+> +	ip->rx_ci = 0;
+> +	ip->rx_pi = RX_BUFFS;
+>  
+> -	if (!ip->txr) {
+> -		/* Allocate and initialize tx rings.  16kb = 128 bufs.  */
+> -		ip->txr = (struct ioc3_etxd *)__get_free_pages(GFP_KERNEL, 2);
+> -		if (!ip->txr)
+> -			pr_err("%s: __get_free_pages() failed!\n", __func__);
+> -		ip->tx_pi = 0;
+> -		ip->tx_ci = 0;
+> -	}
+> +	ip->tx_pi = 0;
+> +	ip->tx_ci = 0;
+>  }
+>  
+>  static void ioc3_init_rings(struct net_device *dev)
+> @@ -1239,6 +1216,23 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	timer_setup(&ip->ioc3_timer, ioc3_timer, 0);
+>  
+>  	ioc3_stop(ip);
+> +
+> +	/* Allocate and rx ring.  4kb = 512 entries  */
+> +	ip->rxr = (unsigned long *)get_zeroed_page(GFP_ATOMIC);
+> +	if (!ip->rxr) {
+> +		pr_err("ioc3-eth: rx ring allocation failed\n");
+> +		err = -ENOMEM;
+> +		goto out_stop;
+> +	}
+> +
+> +	/* Allocate tx rings.  16kb = 128 bufs.  */
+> +	ip->txr = (struct ioc3_etxd *)__get_free_pages(GFP_KERNEL, 2);
+> +	if (!ip->txr) {
+> +		pr_err("ioc3-eth: tx ring allocation failed\n");
+> +		err = -ENOMEM;
+> +		goto out_stop;
+> +	}
 
-I'm not sure.  This switch is very old, it was added 10 years ago
-in v2.6.31-rc1.
-
-Even if we disable call-ip6tables in br_netfilter we will at least
-in addition need a patch for nft_fib_netdev.c.
-
-From a "avoid calls to ipv6 stack when its disabled" standpoint,
-the safest fix is to disable call-ip6tables functionality if ipv6
-module is off *and* fix nft_fib_netdev.c to BREAK in ipv6 is off case.
-
-I started to place a list of suspicous modules here, but that got out
-of hand quickly.
-
-So, given I don't want to plaster ipv6_mod_enabled() everywhere, I
-would suggest this course of action:
-
-1. add a patch to BREAK in nft_fib_netdev.c for !ipv6_mod_enabled()
-2. change net/bridge/br_netfilter_hooks.c, br_nf_pre_routing() to
-   make sure ipv6_mod_enabled() is true before doing the ipv6 stack
-   "emulation".
-
-Makes sense?
-
-Thanks,
-Florian
+Please just use kcalloc()/kmalloc_array() here, and make sure the flags
+are set to GFP_KERNEL whenever possible. Here and in ioc3_alloc_rings()
+it looks like GFP_ATOMIC is unnecessary.
