@@ -2,77 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1841DA1BC3
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:46:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5575A1BC9
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727315AbfH2NqB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Aug 2019 09:46:01 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:58982 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727073AbfH2NqB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 09:46:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-80-WlFcJJsvMeS7xKcmA-zUBA-1; Thu, 29 Aug 2019 14:45:58 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 29 Aug 2019 14:45:57 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 29 Aug 2019 14:45:57 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Li,Rongqing'" <lirongqing@baidu.com>,
-        Ido Schimmel <idosch@idosch.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "idosch@mellanox.com" <idosch@mellanox.com>
-Subject: RE: [PATCH][net-next] net: drop_monitor: change the stats variable to
- u64 in net_dm_stats_put
-Thread-Topic: [PATCH][net-next] net: drop_monitor: change the stats variable
- to u64 in net_dm_stats_put
-Thread-Index: AQHVWLIGAgIc40Kg3Eiuhdh+WrtPcKcHAAcAgAAI4YCACyV8oA==
-Date:   Thu, 29 Aug 2019 13:45:57 +0000
-Message-ID: <65dd5d8c5e7c48e0ba484711c8676ab7@AcuMS.aculab.com>
-References: <1566454953-29321-1-git-send-email-lirongqing@baidu.com>
- <20190822115946.GA25090@splinter>
- <84063fe4df95437d81beb0d18f4043a5@baidu.com>
-In-Reply-To: <84063fe4df95437d81beb0d18f4043a5@baidu.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727387AbfH2NtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 09:49:04 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53595 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727359AbfH2NtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 09:49:04 -0400
+Received: by mail-wm1-f67.google.com with SMTP id 10so3791784wmp.3
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 06:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HsA5AiZYcLjGaOwF7llG2D8YWXDZ7fAurDyqgUx22cQ=;
+        b=Smiubh10AZvy1V5/a3s9ngk74AY/Gn/dplsTUfPlBGrWfI2iXfguDSeowO4ocsHvk1
+         Iz+4/Mi4Xw3NAVZOltljgx6/2szcMQU35rLITwq+mgDElGosjMdWZyCDI4EgM6ccSCNl
+         h5fVC2owNRY4l4bPEpamPDVdadJ0VgkVCIsbTlRhX4xdpmw0YobpQiZDPL0YmieOrN1D
+         Oi1pyQLxw/E4EBp6rwFro1h8IKA/hEemLSIV0p/mxQALFuCVJ/cu48RD/p9zHZvsCwcp
+         +sPWyM/cK29se/O5RDe3bbIfVoawGXs+KdKYbiSL4EO6b3DcjLCilTYi8sS1NLLBkHk4
+         zVgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HsA5AiZYcLjGaOwF7llG2D8YWXDZ7fAurDyqgUx22cQ=;
+        b=MivroHBBNQkjc6AGFGkM4J/IsX4EakSpisb6Z78JnQiF0BUU+4YCrffeetIMgZPU/A
+         kjuZd4ljB8r28x5POvlcYDwi6rSVI550ItoyjgMIPm+D36jmbhechR1LeBKt4WIN64bY
+         F5ZABttv3JtsVtMqkYnGJxQaLzfXaf0YOo46DWsTe3lPZoLz+ysvdSL2uvnetLJIsPYn
+         AaOjJnFfFbGdn2iyRXXCK/zY0wqwv/CRi7np3/It+9ixDqiKUNA21fpiUquinaqgqT5S
+         k6W25BswIx7m0TA6DR9QoLp0HIuO4/EHV/VGg7WTn63PcjAp+RXOdGBM1BOdOQ0GWyoP
+         8l3Q==
+X-Gm-Message-State: APjAAAX0v+f6ZMNh50xBnlWwNQqeGnrmrVNpLo9UtKLgdjkaNI1Mvczv
+        ZFXYDJwl3MFgeBjUPgrPXFcZRQ==
+X-Google-Smtp-Source: APXvYqyMdHJOwSyphJQegodWp0CqprlA/IWiOz3w8db3EETvDyHh6uUV9K/25pu/R3AqXMHpRimViA==
+X-Received: by 2002:a1c:f604:: with SMTP id w4mr11797299wmc.169.1567086541944;
+        Thu, 29 Aug 2019 06:49:01 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id x10sm3671157wrn.39.2019.08.29.06.49.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 06:49:01 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 15:49:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, allan.nielsen@microchip.com,
+        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190829134901.GJ2312@nanopsycho>
+References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
+ <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
+ <20190829095100.GH2312@nanopsycho>
+ <20190829132611.GC6998@lunn.ch>
 MIME-Version: 1.0
-X-MC-Unique: WlFcJJsvMeS7xKcmA-zUBA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190829132611.GC6998@lunn.ch>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li,Rongqing
-> Sent: 22 August 2019 13:32
-> > On Thu, Aug 22, 2019 at 02:22:33PM +0800, Li RongQing wrote:
-> > > only the element drop of struct net_dm_stats is used, so simplify it
-> > > to u64
-> >
-> > Thanks for the patch, but I don't really see the value here. The struct allows for
-> > easy extensions in the future. What do you gain from this change? We merely
-> > read stats and report them to user space, so I guess it's not about
-> > performance either.
-> >
-> 
-> I think u64 can reduce to call memset and dereference stats.drop
+Thu, Aug 29, 2019 at 03:26:11PM CEST, andrew@lunn.ch wrote:
+>> NACK
+>> 
+>> This is invalid usecase for switchdev infra. Switchdev is there for
+>> bridge offload purposes only.
+>
+>Hi Jiri
+>
+>I would argue this is for bridge offload. In another email, you say
+>promisc is promisc. Does that mean the Mellonox hardware forwards
+>every frame ingressing a port to the CPU by default as soon as it is
+>enslaved to a bridge and promisc mode turned on? Or course not. At the
+>moment, every switchdev driver wrongly implement promisc mode.
+>
+>This patchset is about correctly implementing promisc mode, so that
+>applications can use it as expected. And that means configuring the
+>hardware bridge to also forward a copy of frames to the CPU.
 
-The compiler should inline the memset().
+Wait, I believe there has been some misundestanding. Promisc mode is NOT
+about getting packets to the cpu. It's about setting hw filters in a way
+that no rx packet is dropped. For normal nics it means that all packets
+get to the cpu, but that is just because it is the only direction they
+can make.
 
-Also you should have called it 'dropped' not 'stats'.
+If you want to get packets from the hw forwarding dataplane to cpu, you
+should not use promisc mode for that. That would be incorrect.
 
-	David
+If you want to get packets from the hw forwarding dataplane to cpu, you
+should use tc trap action. It is there exactly for this purpose.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Promisc is for setting rx filters.
 
+
+>
+>I see trap as a different use case. tcpdump/pcap is not going to use
+>traps.
+>
+>	Andrew
