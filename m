@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AC2A2A86
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D16A2A8C
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:10:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbfH2XGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 19:06:35 -0400
-Received: from mail-ed1-f45.google.com ([209.85.208.45]:40310 "EHLO
-        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727826AbfH2XGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:06:35 -0400
-Received: by mail-ed1-f45.google.com with SMTP id h8so5855077edv.7
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 16:06:34 -0700 (PDT)
+        id S1728129AbfH2XKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 19:10:54 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35747 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727826AbfH2XKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:10:54 -0400
+Received: by mail-ed1-f68.google.com with SMTP id t50so5886982edd.2
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 16:10:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=FtL/6UIvNooJf6BcUuT3J05y4WGBC+SYQNLYYW+z1lE=;
-        b=sjTXafcnmhgo+I9Fon7EyOQ7lwKuSTbjSRgFlBOrUd8ZSDX2R2B4kCZfW0tc0mbdNu
-         5sX6iZawTbEVKL7IyolNXa+eysKrMlEImtfA1R56MchRVlBPMxMzsoAudsJrdNu/fENF
-         /9EQ3IPuCfZVGE6UhlevscRAX/Y5flTnWvq6Ffd5AuaPCGAiY8tspDzRj9DZ7Bl7xHQd
-         CLuSY0xd0MkgE4/Cn8vqkcwSaIvigYvA+UP2/Os0qNEmC70prMag+vpKlCjcU6kINJ9U
-         2+7pLYhSyvHQhATe4J6r9sHa+Y25/deD8LBCraw8AMxGuWEIaSxMMEDzOct9FFbwMgoy
-         Sn5g==
+        bh=fKFCHIiJ49PeNFC8i1ZZA0wWwBiNJFUuoSJTtBwuYEM=;
+        b=x1LJvSLNCCdabeAr0sKHbxfDG1+Wtnb/Ug1EA6MKo/qzN1Kx/LklvmX1Hx56Njzxvq
+         PfY+Z4usi8l6NYygyPh67CB/Ts69C1UdfXECriMhZQekId/WFep5J0+0e/kJtN+JHkBO
+         hck8IYxW/eN/47LifpAtyTqR0G8CuuC0ZOBMnC/Zm1iMsUg63fA+VLVS1yUTyoki3Y2L
+         iPuupr4yicSE7dVu9x+AzxhtJuy33FjInvxK4hQt1YQiEbzF1IvndOSik6c1q2IMDnJV
+         yJzTL8EhQrIUVZ+8D+c0/Snn90aGKQs1JO025uqOFy6xw5Yb+z8HPNJrnfv39Y8+LaCQ
+         AQmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=FtL/6UIvNooJf6BcUuT3J05y4WGBC+SYQNLYYW+z1lE=;
-        b=KLH4gsYcKwmGB31OPpt9lGH+lDmybphVJBXG7pPx6wiFXHHylqB1G/wb4Q9gSx5Hp8
-         M4A/L4AeBUGtJt23RJk2GSC2mghBC2fG4AHkJ3h+wMT6bRDJotGReoKSu3imBi0AmGET
-         yG2YNMHjMbT0otd4EbdCNFgiDTOliNTeWwrmw7WDgDTHk2Ruc1PVNf0KmaLnV6cBNJkI
-         LEwNgdGub0/AQ92HbRDwUAFSFKISIfFXYL5/qJ5XmC469fdA1916+Y7JGR6iyymszSAh
-         ZWJtzAfA9MuAB9WWOuQi1SzABI0TM+NVv5M23jYKB2l5MjSjmxKHhm+vQ98y8XxKUg+I
-         Twaw==
-X-Gm-Message-State: APjAAAUNG4UgUSC2FAsewtRHOzYyFYTqFSwMlcGqaKJuvwxUDi56XCsE
-        dWQmm/OOn3nbnmr1PcgDGciitg==
-X-Google-Smtp-Source: APXvYqyPpRjouyppeDoNcHXxs0RAbCRYtelqZ9B7XL+Yp4/blGkr8Rzqi/A7RLIJLvQL3MmiBdG1/A==
-X-Received: by 2002:a50:9f27:: with SMTP id b36mr12600080edf.64.1567119993666;
-        Thu, 29 Aug 2019 16:06:33 -0700 (PDT)
+        bh=fKFCHIiJ49PeNFC8i1ZZA0wWwBiNJFUuoSJTtBwuYEM=;
+        b=lonVMv0tY0x/J7qtzSHTH2mnMbA6fy1eBUKnZ2rTXsbL/qj2lCEc7gR1UWyKkKRmJf
+         84qLLzDS/Wo0MCC0Sv8r03mXhjxvoYrXpx+OIwcmvrp7jva7yiSNXY2JWfux7bAOrcws
+         r+NOTR5sc6vP3E1z/vZeP1LAIf4zgSvlT4G7QvgOQavotHL8q/+OC9aLcKB/Ph58pZvM
+         t0OsX0tvxyLqqFCgsdZ12VHo+GysEmSJMrzAUwwXW/HN345oMlB8xdIGQVIYdPkZEDxs
+         dx0oL7Ni3MmXkbfRoXPIMxq6AQVtCqmjMkwrBuheKrgtRkx643WgnheHsjKIlBaEmxUn
+         YssQ==
+X-Gm-Message-State: APjAAAW/RW42h6+mC/UVTdk/dlifcC3xfNEd44X2Nu2O4Us+90ywlnOf
+        Y91dy7aNq+G+XnQyyMLhYUZ/vg==
+X-Google-Smtp-Source: APXvYqw/ecsyzLuu36xhPfaeNd7xt0gP7UmaW/2YWeDl8UzAVYzHGq50nXS4Ls1bqh6JTN30lTZZVQ==
+X-Received: by 2002:a50:c38f:: with SMTP id h15mr12504027edf.256.1567120252350;
+        Thu, 29 Aug 2019 16:10:52 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m6sm550064eja.53.2019.08.29.16.06.32
+        by smtp.gmail.com with ESMTPSA id r27sm694868edc.17.2019.08.29.16.10.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 16:06:33 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 16:06:10 -0700
+        Thu, 29 Aug 2019 16:10:52 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 16:10:29 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Shannon Nelson <snelson@pensando.io>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v6 net-next 12/19] ionic: Add Rx filter and rx_mode ndo
- support
-Message-ID: <20190829160610.60563ca0@cakuba.netronome.com>
-In-Reply-To: <20190829182720.68419-13-snelson@pensando.io>
+Subject: Re: [PATCH v6 net-next 14/19] ionic: Add initial ethtool support
+Message-ID: <20190829161029.0676d6f7@cakuba.netronome.com>
+In-Reply-To: <20190829182720.68419-15-snelson@pensando.io>
 References: <20190829182720.68419-1-snelson@pensando.io>
-        <20190829182720.68419-13-snelson@pensando.io>
+        <20190829182720.68419-15-snelson@pensando.io>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,34 +62,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 11:27:13 -0700, Shannon Nelson wrote:
-> @@ -588,8 +866,26 @@ static int ionic_set_features(struct net_device *netdev,
->  
->  static int ionic_set_mac_address(struct net_device *netdev, void *sa)
->  {
-> -	netdev_info(netdev, "%s: stubbed\n", __func__);
-> -	return 0;
-> +	struct sockaddr *addr = sa;
-> +	u8 *mac;
+On Thu, 29 Aug 2019 11:27:15 -0700, Shannon Nelson wrote:
+> +static int ionic_get_module_eeprom(struct net_device *netdev,
+> +				   struct ethtool_eeprom *ee,
+> +				   u8 *data)
+> +{
+> +	struct ionic_lif *lif = netdev_priv(netdev);
+> +	struct ionic_dev *idev = &lif->ionic->idev;
+> +	struct ionic_xcvr_status *xcvr;
+> +	char tbuf[sizeof(xcvr->sprom)];
+> +	int count = 10;
+> +	u32 len;
 > +
-> +	mac = (u8 *)addr->sa_data;
-> +	if (ether_addr_equal(netdev->dev_addr, mac))
-> +		return 0;
+> +	/* The NIC keeps the module prom up-to-date in the DMA space
+> +	 * so we can simply copy the module bytes into the data buffer.
+> +	 */
+> +	xcvr = &idev->port_info->status.xcvr;
+> +	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
 > +
-> +	if (!is_valid_ether_addr(mac))
-> +		return -EADDRNOTAVAIL;
+> +	do {
+> +		memcpy(data, xcvr->sprom, len);
+> +		memcpy(tbuf, xcvr->sprom, len);
 > +
-> +	if (!is_zero_ether_addr(netdev->dev_addr)) {
-> +		netdev_info(netdev, "deleting mac addr %pM\n",
-> +			    netdev->dev_addr);
-> +		ionic_addr_del(netdev, netdev->dev_addr);
-> +	}
+> +		/* Let's make sure we got a consistent copy */
+> +		if (!memcmp(data, tbuf, len))
+> +			break;
 > +
-> +	memcpy(netdev->dev_addr, mac, netdev->addr_len);
-> +	netdev_info(netdev, "updating mac addr %pM\n", mac);
-> +
-> +	return ionic_addr_add(netdev, mac);
->  }
+> +	} while (--count);
 
-Please use the eth_prepare_mac_addr_change() and
-eth_commit_mac_addr_change() helpers.
+Should this return an error if the image was never consistent?
+
+> +
+> +	return 0;
+> +}
