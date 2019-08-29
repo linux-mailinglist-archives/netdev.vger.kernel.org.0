@@ -2,155 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2069DA1F3F
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 17:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8698BA1F42
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 17:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbfH2PcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 11:32:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:37514 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbfH2PcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 11:32:08 -0400
-Received: by mail-io1-f71.google.com with SMTP id m7so4448231ioc.4
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 08:32:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=9jMd6mNwFLX+PQpzzKyalqJyB2DZCmy9IGLW1UJr3iU=;
-        b=kgrxCKS9C2AvihDiVfqIOsAD3edGedS2ZITTD/581PXhRb6vJq/BqTHu10hR9Ge2eR
-         qnBngHmMyxwGj7fVuSO1EhosF0FV94CWvSY5Nhz9SVEyO9r5Fnk7Rb4AIi/gRk6dkdXw
-         TwgNl7nxH7gG9BxWB2BlUBHv/jY58w0ZhjcODgyVw8rJm8293rLAkp8Yt+hEim28/LbP
-         owtUZ3FVXS2+DkmsXf5z/+jqoZ+Cz/RV45NZcMvT+3bBgtNFfu7LUp9d82e6hmH5guu3
-         it7FXsDTBV9EL9vuLhN8Tawpz3W3P7MQUp2rKgFSfwIsl2VsAErUXPt71UiX7mqCMU12
-         NG+Q==
-X-Gm-Message-State: APjAAAV98rkaUTUVF0pD7BAI0/Bv9/lWcnQTW9WbTh7T8PAy3EoudILp
-        xk/540txHcf784moAhY6Q1JYzmi6lTZAzraw9Y+jUlV1T6ig
-X-Google-Smtp-Source: APXvYqwRkvhHX4DsRrb2aW6LnXU//89K++W00MWSrkTYJbPK6vsIHenfAXL3fk+j1Bgmi2Tdw9zqdjK1NZeoTAKKbiFLfzuodlEM
+        id S1727626AbfH2Pcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 11:32:47 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58502 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbfH2Pcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 11:32:47 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i3MPU-0007r1-Jo; Thu, 29 Aug 2019 17:32:28 +0200
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i3MPU-0006H0-Dd; Thu, 29 Aug 2019 17:32:28 +0200
+Subject: Re: [PATCH v2 bpf-next 2/3] bpf: implement CAP_BPF
+To:     Alexei Starovoitov <ast@kernel.org>, luto@amacapital.net
+Cc:     davem@davemloft.net, peterz@infradead.org, rostedt@goodmis.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        linux-api@vger.kernel.org
+References: <20190829051253.1927291-1-ast@kernel.org>
+ <20190829051253.1927291-2-ast@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
+Date:   Thu, 29 Aug 2019 17:32:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Received: by 2002:a5d:97cf:: with SMTP id k15mr856067ios.151.1567092727431;
- Thu, 29 Aug 2019 08:32:07 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 08:32:07 -0700
-In-Reply-To: <000000000000edc1d5058f5dfa5f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000594c700591433550@google.com>
-Subject: Re: memory leak in ppp_write
-From:   syzbot <syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, kafai@fb.com, linux-kernel@vger.kernel.org,
-        linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
-        paulus@samba.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190829051253.1927291-2-ast@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25556/Thu Aug 29 10:25:39 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
+> Implement permissions as stated in uapi/linux/capability.h
+> 
+> Note that CAP_SYS_ADMIN is replaced with CAP_BPF.
+> All existing applications that use BPF do not drop all caps
+> and keep only CAP_SYS_ADMIN before doing bpf() syscall.
+> Hence it's highly unlikely that existing code will break.
+> If there will be reports of breakage then CAP_SYS_ADMIN
+> would be allowed as well with "it's usage is deprecated" message
+> similar to commit ee24aebffb75 ("cap_syslog: accept CAP_SYS_ADMIN for now")
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+[...]
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index 22066a62c8c9..f459315625ac 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -244,9 +244,9 @@ static int htab_map_alloc_check(union bpf_attr *attr)
+>   	BUILD_BUG_ON(offsetof(struct htab_elem, fnode.next) !=
+>   		     offsetof(struct htab_elem, hash_node.pprev));
+>   
+> -	if (lru && !capable(CAP_SYS_ADMIN))
+> +	if (lru && !capable(CAP_BPF))
+>   		/* LRU implementation is much complicated than other
+> -		 * maps.  Hence, limit to CAP_SYS_ADMIN for now.
+> +		 * maps.  Hence, limit to CAP_BPF.
+>   		 */
+>   		return -EPERM;
+>   
+I don't think this works, this is pretty much going to break use cases where
+orchestration daemons are deployed as containers that are explicitly granted
+specified cap set and right now this is CAP_SYS_ADMIN and not CAP_BPF for bpf().
+The former needs to be a superset of the latter in order for this to work and
+not break compatibility between kernel upgrades.
 
-HEAD commit:    6525771f Merge tag 'arc-5.3-rc7' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16dc12a2600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e6131eafb9408877
-dashboard link: https://syzkaller.appspot.com/bug?extid=d9c8bf24e56416d7ce2c
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=116942de600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1179c582600000
+- https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+- https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail.com
-
-executing program
-executing program
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88812a17bc00 (size 224):
-   comm "syz-executor673", pid 6952, jiffies 4294942888 (age 13.040s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000d110fff9>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000d110fff9>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000d110fff9>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000d110fff9>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<000000002d616113>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<000000000167fc45>] ppp_write+0x48/0x120  
-drivers/net/ppp/ppp_generic.c:502
-     [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
-     [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
-     [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
-     [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
-     [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
-     [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
-     [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-     [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff888121203900 (size 224):
-   comm "syz-executor673", pid 6965, jiffies 4294943430 (age 7.620s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000d110fff9>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000d110fff9>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000d110fff9>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000d110fff9>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<000000002d616113>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<000000000167fc45>] ppp_write+0x48/0x120  
-drivers/net/ppp/ppp_generic.c:502
-     [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
-     [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
-     [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
-     [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
-     [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
-     [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
-     [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-     [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88811d0cf800 (size 512):
-   comm "syz-executor673", pid 6965, jiffies 4294943430 (age 7.620s)
-   hex dump (first 32 bytes):
-     06 00 00 00 05 00 00 00 40 00 00 00 00 00 00 00  ........@.......
-     40 00 40 00 00 00 00 00 40 00 40 00 00 00 00 00  @.@.....@.@.....
-   backtrace:
-     [<00000000b9629d4c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000b9629d4c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000b9629d4c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000b9629d4c>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000a9b92035>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000a9b92035>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000fad050db>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<00000000a1025904>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<000000000167fc45>] ppp_write+0x48/0x120  
-drivers/net/ppp/ppp_generic.c:502
-     [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
-     [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
-     [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
-     [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
-     [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
-     [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
-     [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-     [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
+Thanks,
+Daniel
