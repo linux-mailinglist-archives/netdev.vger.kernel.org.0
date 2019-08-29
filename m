@@ -2,239 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88972A2AEE
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83764A2B01
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727041AbfH2Xdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 19:33:45 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44657 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbfH2Xdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:33:45 -0400
-Received: by mail-ed1-f68.google.com with SMTP id a21so5871230edt.11
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 16:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=xgPezxOShIBHuXUdkTwHJYHNzmYiQ1B0vkMUpjxZepA=;
-        b=eGfrsqkEQAEIaOrHCpg+9bs7itdcaEVXHjWIWpAynr57C78JSW24Ta11lfyYe0U8/0
-         Qs1qyGdtpbUKKi4U+l3HKYlspD5fpecl9lx4GvV0DtQ0fcH4iJIjTr6aXFVbBOQcUWBS
-         Jiic7yreTplzQJaz/WlZe2JtoFDVM2uUivZx6t7GGaGsXlvVftyoqh0XTyGfuU6eMGs/
-         r/I+Fmu3Tvz2mznYnA9RQuWaCF0//1PBxkR7mboVDEAPmeIj+5xP2IaqWGhg6LC9aAqA
-         wilKt5hJDkul5L3cjvLrgw6s4LCcmwRyFsh9cF2aT9edZuAqmw+ItOeazL0mTIk73Y3r
-         QDiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=xgPezxOShIBHuXUdkTwHJYHNzmYiQ1B0vkMUpjxZepA=;
-        b=CFuBmntsk4AImSZeUaZOPTY18U5Xg3liSF6P9mx/Fgwt2nk6mHIBRtH8zK7vbQHFzN
-         gQ5BK30CTcA7c6gFqB2K0zgp3wVr9YL7RxeMF1lY1inq/KZqxqAJfYiRnaUdGGyTF4Ua
-         HgucrOcXNC1CuzJXvk27vitbp+v4ALG2DulfOt78xeCZ6nbJTjg9rcVpDzBrOnIuyTzM
-         C7XCAUwXQWiSmJ1BQB3aoU0cxpZmPlavnd1dxL/AXrxLvvqiHSkFxuTH84TtmJsAr4Ki
-         82pjOiFbCxhEMtGB6kVI0TAqISsw+8EMT7L050aJHAKdpltbl2D0R2DXt9IPolZZRYkv
-         Fe9A==
-X-Gm-Message-State: APjAAAX3px+0qin434YbYE8P3yh7E/CWk/QA6RA+5bJuHGaxM42sCWHz
-        jRVt6tWj7Br94n2xbWy60uLRA9/Ug0Y=
-X-Google-Smtp-Source: APXvYqwAmtvjP7o4wqos+ei4FhNipD8wQPidQUl6rOKW1VBMYUjQlAzGLDe3PUqpsLDqbxYNMMfJnQ==
-X-Received: by 2002:aa7:d397:: with SMTP id x23mr12413407edq.11.1567121623387;
-        Thu, 29 Aug 2019 16:33:43 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id f24sm688794edt.82.2019.08.29.16.33.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 16:33:43 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 16:33:19 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v6 net-next 15/19] ionic: Add Tx and Rx handling
-Message-ID: <20190829163319.0f4e8707@cakuba.netronome.com>
-In-Reply-To: <20190829182720.68419-16-snelson@pensando.io>
-References: <20190829182720.68419-1-snelson@pensando.io>
-        <20190829182720.68419-16-snelson@pensando.io>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1727464AbfH2Xhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 19:37:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54988 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725844AbfH2Xhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:37:50 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7TNamFk007859;
+        Thu, 29 Aug 2019 16:37:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=yWYMl81FHh1P21JibVbLoblnVoWc71kwKQHUOuBkI7U=;
+ b=qdWaR83tZnqPEa6lSJ42Q5zhj4fA0ZtKmgcUciCqcXOiTx20SVsxH/v8+FOYvKBZOz+r
+ DbHTa8grXMeo0CIIpuaKvbhsxlPpD/m6IzJRsjpvi/1GNb+u99vq3wlBUiiLSp22PW4Z
+ yl3onBJrqdRMMq0tyGVxVeakTrRSVLZc4Zg= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2upqya04cy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 29 Aug 2019 16:37:28 -0700
+Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 29 Aug 2019 16:37:27 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 29 Aug 2019 16:37:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MYHma7/ljYc74Q6D0oaxz1RI1fuLry6I4i7BfT7f7WIIrVHULvwohW5Rd9b5sZOEdyptFHG/g/oLEo1SAxk3i8eMjWaRHLNwukleHSvzM3yot/GPtIksRbtetwxCDva+BTmheT3mL/Jq5wBnXk6yQktyeoOI9UVvjhajNzfuBMEvkiAvvSuxAUd6cB5NeBhkuuazLBefPmUgHzx+yQtf6oHfvhlu4Sz2tnzhNkm/w4Sgfb+Fzw0c+d/wms16LJCAnk6lHIl0JZ7F26ozcNhWVTdb1Gw9FXfc36MV8/fpHoIaLD+kCFED0hsjWrKHG3Hzf48ZkNMnNqdCxipaQKz/9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yWYMl81FHh1P21JibVbLoblnVoWc71kwKQHUOuBkI7U=;
+ b=GCdrFvvcEks77jNT4QSrdoLsG5sd5evlnitHknDxU3JE2IgoNY7rIJN8TjMuZBEK7Wuco2HLohU933uSOidXbm/j7qs6Pj7aDbSL/5SsgbAkgm+SWRt0ANwrqh7VatXHpEjsrxlfp4erL6QaIJoGaFmnk+1LcewjOr1N6qr02weQDfMtc0aT64fD8kGilMdZGTk2XfwnQFJxEQ/MWbnp1cngFP0n6E72bSEGZzEPLFT9hjOZLKVgalCatMfhulWdgFlTM/Fpdd5dNvvcep7jGvb+egbC5ErVSpxk0nEJNoYpESaKFNDVFMBdh8xvJew7WlcLZfqd8zbv8TzBZ1zP2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yWYMl81FHh1P21JibVbLoblnVoWc71kwKQHUOuBkI7U=;
+ b=Cy2oclzTi8oq1RuEZv67kYBVEyLYyinRRLQ7ZkrazhmS8eU7VZgKVXRkqMi7Ma/GxRJRUIDyBmk2CgE9/nSYe+KE9Lc9M82dZRp5bo3omtKRDhpJinINWHLX/IrilWckSo2zeAM/xJQHZXE5vyAnktb5kzL2Yd51IAbRo2MOwmU=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1213.namprd15.prod.outlook.com (10.175.7.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.20; Thu, 29 Aug 2019 23:37:25 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::45ee:bc50:acfa:60a5]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::45ee:bc50:acfa:60a5%3]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
+ 23:37:25 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Yonghong Song <yhs@fb.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@fb.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 02/13] bpf: refactor map_update_elem()
+Thread-Topic: [PATCH bpf-next 02/13] bpf: refactor map_update_elem()
+Thread-Index: AQHVXjVmgAruU9LJZESuvh4uY0KbPqcSyQGA
+Date:   Thu, 29 Aug 2019 23:37:25 +0000
+Message-ID: <146453E4-083F-4ABC-B55E-F6F260EAD333@fb.com>
+References: <20190829064502.2750303-1-yhs@fb.com>
+ <20190829064504.2750444-1-yhs@fb.com>
+In-Reply-To: <20190829064504.2750444-1-yhs@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3445.104.11)
+x-originating-ip: [2620:10d:c090:200::1:3161]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3423b0c5-d9fc-4798-94be-08d72cd9d904
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1213;
+x-ms-traffictypediagnostic: MWHPR15MB1213:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB1213106D1C9A665363359025B3A20@MWHPR15MB1213.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-forefront-prvs: 0144B30E41
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(346002)(376002)(366004)(136003)(199004)(189003)(81166006)(99286004)(14454004)(7736002)(54906003)(486006)(305945005)(33656002)(14444005)(8676002)(8936002)(37006003)(316002)(50226002)(6116002)(81156014)(478600001)(36756003)(229853002)(46003)(76176011)(71190400001)(71200400001)(4326008)(66476007)(66946007)(66446008)(64756008)(66556008)(76116006)(256004)(6246003)(2906002)(86362001)(6862004)(476003)(6512007)(6506007)(4744005)(53936002)(446003)(6436002)(2616005)(6486002)(11346002)(5660300002)(57306001)(102836004)(53546011)(25786009)(6636002)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1213;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: OpNehS+ofd24QBb72Z4IZ42v9nTE8GrMzrqN1opYbc4WobxAD1p7jFfpWO8RX5LhZu+iQyRnrN8KJYwdSPK3y1/CVoaD6VLKL1HE1ZbJlt3/p13poaIw62k4K4J5uLDq7uf8TNJ4QvAUa8R3Nls/PvYeC7knmmjO/0/s1vrOPw2zJ471HfzBzw1VcFcqMV3AsGqR+7EcuVjHnfnL1TXBoNhlGr1t+BTMTA9T0YXwoTuT1Y2j72i6sSonFvexBRof7Q4aGnBjbOdcgXr8GqG6Rqkr/bPC5fByfrPoOCMqqykw4xcRZhWvw//bWs6fSJ4CiVCqAaKHzi66i2jxfXnQ7AriJObNp8WP7dmQMP0ukd+WrEctqLRvbypwPNtA0jNWsSSLNi2iHBWKvcz5Aq0ELSpUKzkdEw5vS0pxUuZ6pcU=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6108C377C6DCD24BA076A62D6B9739BC@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3423b0c5-d9fc-4798-94be-08d72cd9d904
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 23:37:25.4666
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ygb44KMlC4CvmVfh8Kb4jv3eeJafQSKYK6JXsiV3xENFpXHYzChi4YM5/rNYOnIpyy6CR+5A6UK4J/vnQ4eFOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1213
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-08-29_09:2019-08-29,2019-08-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=589
+ malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 bulkscore=0 mlxscore=0 impostorscore=0
+ adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1908290236
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 11:27:16 -0700, Shannon Nelson wrote:
-> +static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
-> +{
-> +	struct ionic_tx_stats *stats =3D q_to_tx_stats(q);
-> +	struct ionic_desc_info *abort =3D q->head;
-> +	struct device *dev =3D q->lif->ionic->dev;
-> +	struct ionic_desc_info *rewind =3D abort;
-> +	struct ionic_txq_sg_elem *elem;
-> +	struct ionic_txq_desc *desc;
-> +	unsigned int frag_left =3D 0;
-> +	unsigned int offset =3D 0;
-> +	unsigned int len_left;
-> +	dma_addr_t desc_addr;
-> +	unsigned int hdrlen;
-> +	unsigned int nfrags;
-> +	unsigned int seglen;
-> +	u64 total_bytes =3D 0;
-> +	u64 total_pkts =3D 0;
-> +	unsigned int left;
-> +	unsigned int len;
-> +	unsigned int mss;
-> +	skb_frag_t *frag;
-> +	bool start, done;
-> +	bool outer_csum;
-> +	bool has_vlan;
-> +	u16 desc_len;
-> +	u8 desc_nsge;
-> +	u16 vlan_tci;
-> +	bool encap;
-> +	int err;
-> +
-> +	mss =3D skb_shinfo(skb)->gso_size;
-> +	nfrags =3D skb_shinfo(skb)->nr_frags;
-> +	len_left =3D skb->len - skb_headlen(skb);
-> +	outer_csum =3D (skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM) ||
-> +		     (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM);
-> +	has_vlan =3D !!skb_vlan_tag_present(skb);
-> +	vlan_tci =3D skb_vlan_tag_get(skb);
-> +	encap =3D skb->encapsulation;
-> +
-> +	/* Preload inner-most TCP csum field with IP pseudo hdr
-> +	 * calculated with IP length set to zero.  HW will later
-> +	 * add in length to each TCP segment resulting from the TSO.
-> +	 */
-> +
-> +	if (encap)
-> +		err =3D ionic_tx_tcp_inner_pseudo_csum(skb);
-> +	else
-> +		err =3D ionic_tx_tcp_pseudo_csum(skb);
-> +	if (err)
-> +		return err;
-> +
-> +	if (encap)
-> +		hdrlen =3D skb_inner_transport_header(skb) - skb->data +
-> +			 inner_tcp_hdrlen(skb);
-> +	else
-> +		hdrlen =3D skb_transport_offset(skb) + tcp_hdrlen(skb);
-> +
-> +	seglen =3D hdrlen + mss;
-> +	left =3D skb_headlen(skb);
-> +
-> +	desc =3D ionic_tx_tso_next(q, &elem);
-> +	start =3D true;
-> +
-> +	/* Chop skb->data up into desc segments */
-> +
-> +	while (left > 0) {
-> +		len =3D min(seglen, left);
-> +		frag_left =3D seglen - len;
-> +		desc_addr =3D ionic_tx_map_single(q, skb->data + offset, len);
-> +		if (dma_mapping_error(dev, desc_addr))
-> +			goto err_out_abort;
-> +		desc_len =3D len;
-> +		desc_nsge =3D 0;
-> +		left -=3D len;
-> +		offset +=3D len;
-> +		if (nfrags > 0 && frag_left > 0)
-> +			continue;
-> +		done =3D (nfrags =3D=3D 0 && left =3D=3D 0);
-> +		ionic_tx_tso_post(q, desc, skb,
-> +				  desc_addr, desc_nsge, desc_len,
-> +				  hdrlen, mss,
-> +				  outer_csum,
-> +				  vlan_tci, has_vlan,
-> +				  start, done);
-> +		total_pkts++;
-> +		total_bytes +=3D start ? len : len + hdrlen;
-> +		desc =3D ionic_tx_tso_next(q, &elem);
-> +		start =3D false;
-> +		seglen =3D mss;
-> +	}
-> +
-> +	/* Chop skb frags into desc segments */
-> +
-> +	for (frag =3D skb_shinfo(skb)->frags; len_left; frag++) {
-> +		offset =3D 0;
-> +		left =3D skb_frag_size(frag);
-> +		len_left -=3D left;
-> +		nfrags--;
-> +		stats->frags++;
-> +
-> +		while (left > 0) {
-> +			if (frag_left > 0) {
-> +				len =3D min(frag_left, left);
-> +				frag_left -=3D len;
-> +				elem->addr =3D
-> +				    cpu_to_le64(ionic_tx_map_frag(q, frag,
-> +								  offset, len));
-> +				if (dma_mapping_error(dev, elem->addr))
-> +					goto err_out_abort;
-> +				elem->len =3D cpu_to_le16(len);
-> +				elem++;
-> +				desc_nsge++;
-> +				left -=3D len;
-> +				offset +=3D len;
-> +				if (nfrags > 0 && frag_left > 0)
-> +					continue;
-> +				done =3D (nfrags =3D=3D 0 && left =3D=3D 0);
-> +				ionic_tx_tso_post(q, desc, skb, desc_addr,
-> +						  desc_nsge, desc_len,
-> +						  hdrlen, mss, outer_csum,
-> +						  vlan_tci, has_vlan,
-> +						  start, done);
-> +				total_pkts++;
-> +				total_bytes +=3D start ? len : len + hdrlen;
-> +				desc =3D ionic_tx_tso_next(q, &elem);
-> +				start =3D false;
-> +			} else {
-> +				len =3D min(mss, left);
-> +				frag_left =3D mss - len;
-> +				desc_addr =3D ionic_tx_map_frag(q, frag,
-> +							      offset, len);
-> +				if (dma_mapping_error(dev, desc_addr))
-> +					goto err_out_abort;
-> +				desc_len =3D len;
-> +				desc_nsge =3D 0;
-> +				left -=3D len;
-> +				offset +=3D len;
-> +				if (nfrags > 0 && frag_left > 0)
-> +					continue;
-> +				done =3D (nfrags =3D=3D 0 && left =3D=3D 0);
-> +				ionic_tx_tso_post(q, desc, skb, desc_addr,
-> +						  desc_nsge, desc_len,
-> +						  hdrlen, mss, outer_csum,
-> +						  vlan_tci, has_vlan,
-> +						  start, done);
-> +				total_pkts++;
-> +				total_bytes +=3D start ? len : len + hdrlen;
-> +				desc =3D ionic_tx_tso_next(q, &elem);
-> +				start =3D false;
-> +			}
-> +		}
-> +	}
-> +
-> +	stats->pkts +=3D total_pkts;
-> +	stats->bytes +=3D total_bytes;
-> +	stats->tso++;
-> +
-> +	return 0;
-> +
-> +err_out_abort:
-> +	while (rewind->desc !=3D q->head->desc) {
-> +		ionic_tx_clean(q, rewind, NULL, NULL);
-> +		rewind =3D rewind->next;
-> +	}
-> +	q->head =3D abort;
-> +
-> +	return -ENOMEM;
-> +}
 
-There's definitely a function for helping drivers which can't do full
-TSO slice up the packet, but I can't find it now =F0=9F=98=AB=F0=9F=98=AB
 
-Eric would definitely know.
+> On Aug 28, 2019, at 11:45 PM, Yonghong Song <yhs@fb.com> wrote:
+>=20
+> Refactor function map_update_elem() by creating a
+> helper function bpf_map_update_elem() which will be
+> used later by batched map update operation.
+>=20
+> Also reuse function bpf_map_value_size()
+> in map_update_elem().
+>=20
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-Did you have a look? Would it be useful here?
+Acked-by: Song Liu <songliubraving@fb.com>
+
