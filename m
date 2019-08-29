@@ -2,311 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22046A1A23
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 14:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7FFA1A55
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 14:44:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfH2MeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 08:34:14 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53510 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727012AbfH2MeO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 08:34:14 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0D9C0C0021D3;
-        Thu, 29 Aug 2019 12:34:13 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 97E36BA48;
-        Thu, 29 Aug 2019 12:34:11 +0000 (UTC)
-Date:   Thu, 29 Aug 2019 14:34:09 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH ipsec-next 7/7] xfrm: add espintcp (RFC 8229)
-Message-ID: <20190829123409.GA815@bistromath.localdomain>
-References: <cover.1566395202.git.sd@queasysnail.net>
- <029b59b8f74dbdbdf202fcf41a9a90b41b4821a2.1566395202.git.sd@queasysnail.net>
- <20190829070431.GA2879@gauss3.secunet.de>
+        id S1727046AbfH2MoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 08:44:17 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:58559 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfH2MoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 08:44:17 -0400
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: lY0CxR/McGUhBSICEiy7hnK36/2ng1LYaiSkC0NETV0WT7Xf7IaQRTOVLvtettWQYJgf7WjI4o
+ 1qHWfXBGfH+TYpzJPH1hBHcCAmDkOWPVqbCQpBDq9Pxjmoj5hJPymPZdJBlZIsGrbpVQ8EYTtY
+ G3crneKa07iG7uGAweln8dMlJsLlFokAtHBDwrr26SlVwk3nTRlVfbgYcxw7iyrBvt1J36mzkz
+ SCS7RaMJeEyNbwOJiM3ksdjpEkheF9fDHJ88OFFSG8j7BBbD1CorRh+tsIMshmBvZKL7wOqDu6
+ ioA=
+X-IronPort-AV: E=Sophos;i="5.64,443,1559545200"; 
+   d="scan'208";a="44161978"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2019 05:44:16 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 29 Aug 2019 05:44:14 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 29 Aug 2019 05:44:15 -0700
+Date:   Thu, 29 Aug 2019 14:44:14 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>, <andrew@lunn.ch>,
+        <allan.nielsen@microchip.com>, <ivecera@redhat.com>,
+        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190829124412.nrlpz5tzx3fkdoiw@soft-dev3.microsemi.net>
+References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
+ <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
+ <20190829095100.GH2312@nanopsycho>
+ <20190829105650.btgvytgja63sx6wx@soft-dev3.microsemi.net>
+ <20190829121811.GI2312@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20190829070431.GA2879@gauss3.secunet.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Thu, 29 Aug 2019 12:34:13 +0000 (UTC)
+In-Reply-To: <20190829121811.GI2312@nanopsycho>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-08-29, 09:04:31 +0200, Steffen Klassert wrote:
-> On Wed, Aug 21, 2019 at 11:46:25PM +0200, Sabrina Dubroca wrote:
-> > +static struct sock *esp_find_tcp_sk(struct xfrm_state *x)
-> > +{
-> > +	struct xfrm_encap_tmpl *encap = x->encap;
-> > +	struct esp_tcp_sk *esk;
-> > +	__be16 sport, dport;
-> > +	struct sock *nsk;
-> > +	struct sock *sk;
-> > +
-> > +	sk = rcu_dereference(x->encap_sk);
-> > +	if (sk && sk->sk_state == TCP_ESTABLISHED)
-> > +		return sk;
-> > +
-> > +	spin_lock_bh(&x->lock);
-> > +	sport = encap->encap_sport;
-> > +	dport = encap->encap_dport;
-> > +	nsk = rcu_dereference_protected(x->encap_sk,
-> > +					lockdep_is_held(&x->lock));
-> > +	if (sk && sk == nsk) {
-> > +		esk = kmalloc(sizeof(*esk), GFP_ATOMIC);
-> > +		if (!esk) {
-> > +			spin_unlock_bh(&x->lock);
-> > +			return ERR_PTR(-ENOMEM);
-> > +		}
-> > +		RCU_INIT_POINTER(x->encap_sk, NULL);
-> > +		esk->sk = sk;
-> > +		call_rcu(&esk->rcu, esp_free_tcp_sk);
+The 08/29/2019 14:18, Jiri Pirko wrote:
+> External E-Mail
 > 
-> I don't understand this, can you please explain what you are doing here?
-
-If we get to this block, the current encap_sk is not in ESTABLISHED
-state and cannot be used to send data. We want to get rid of it (reset
-x->encap_sk) and find a new usable socket. The weird kmalloc dance is
-just here so that we can do the sock_put after an RCU grace period,
-which I think is needed so that we don't destruct a socket that's
-still used by packets in flight.
-
-That's code I copied from Herbert's first submission, I may be missing
-some details here.
-
-> > +	}
-> > +	spin_unlock_bh(&x->lock);
-> > +
-> > +	sk = inet_lookup_established(xs_net(x), &tcp_hashinfo, x->id.daddr.a4,
-> > +				     dport, x->props.saddr.a4, sport, 0);
-> > +	if (!sk)
-> > +		return ERR_PTR(-ENOENT);
-> > +
-> > +	if (!tcp_is_ulp_esp(sk)) {
-> > +		sock_put(sk);
-> > +		return ERR_PTR(-EINVAL);
-> > +	}
-> > +
-> > +	spin_lock_bh(&x->lock);
-> > +	nsk = rcu_dereference_protected(x->encap_sk,
-> > +					lockdep_is_held(&x->lock));
-> > +	if (encap->encap_sport != sport ||
-> > +	    encap->encap_dport != dport) {
-> > +		sock_put(sk);
-> > +		sk = nsk ?: ERR_PTR(-EREMCHG);
-> > +	} else if (sk == nsk) {
-> > +		sock_put(sk);
-> > +	} else {
-> > +		rcu_assign_pointer(x->encap_sk, sk);
-> > +	}
-> > +	spin_unlock_bh(&x->lock);
-> > +
-> > +	return sk;
-> > +}
-> > +
-> > +static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
-> > +{
-> > +	struct sock *sk;
-> > +	int err;
-> > +
-> > +	rcu_read_lock();
-> > +
-> > +	sk = esp_find_tcp_sk(x);
-> > +	err = PTR_ERR(sk);
-> > +	if (IS_ERR(sk))
 > 
-> Maybe better 'if (err)'?
-
-That will work if I replace PTR_ERR with PTR_ERR_OR_ZERO.
-
-> > +		goto out;
-> > +
-> > +	bh_lock_sock(sk);
-> > +	if (sock_owned_by_user(sk)) {
-> > +		err = espintcp_queue_out(sk, skb);
-> > +		if (err < 0)
-> > +			goto unlock_sock;
+> Thu, Aug 29, 2019 at 12:56:54PM CEST, horatiu.vultur@microchip.com wrote:
+> >The 08/29/2019 11:51, Jiri Pirko wrote:
+> >> External E-Mail
+> >> 
+> >> 
+> >> Thu, Aug 29, 2019 at 11:22:28AM CEST, horatiu.vultur@microchip.com wrote:
+> >> >Add the SWITCHDEV_ATTR_ID_PORT_PROMISCUITY switchdev notification type,
+> >> >used to indicate whenever the dev promiscuity counter is changed.
+> >> >
+> >> >The notification doesn't use any switchdev_attr attribute because in the
+> >> >notifier callbacks is it possible to get the dev and read directly
+> >> >the promiscuity value.
+> >> >
+> >> >Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> >> >---
+> >> > include/net/switchdev.h | 1 +
+> >> > net/core/dev.c          | 9 +++++++++
+> >> > 2 files changed, 10 insertions(+)
+> >> >
+> >> >diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> >> >index aee86a1..14b1617 100644
+> >> >--- a/include/net/switchdev.h
+> >> >+++ b/include/net/switchdev.h
+> >> >@@ -40,6 +40,7 @@ enum switchdev_attr_id {
+> >> > 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING,
+> >> > 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
+> >> > 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
+> >> >+	SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
+> >> > };
+> >> > 
+> >> > struct switchdev_attr {
+> >> >diff --git a/net/core/dev.c b/net/core/dev.c
+> >> >index 49589ed..40c74f2 100644
+> >> >--- a/net/core/dev.c
+> >> >+++ b/net/core/dev.c
+> >> >@@ -142,6 +142,7 @@
+> >> > #include <linux/net_namespace.h>
+> >> > #include <linux/indirect_call_wrapper.h>
+> >> > #include <net/devlink.h>
+> >> >+#include <net/switchdev.h>
+> >> > 
+> >> > #include "net-sysfs.h"
+> >> > 
+> >> >@@ -7377,6 +7378,11 @@ static void dev_change_rx_flags(struct net_device *dev, int flags)
+> >> > static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
+> >> > {
+> >> > 	unsigned int old_flags = dev->flags;
+> >> >+	struct switchdev_attr attr = {
+> >> >+		.orig_dev = dev,
+> >> >+		.id = SWITCHDEV_ATTR_ID_PORT_PROMISCUITY,
+> >> >+		.flags = SWITCHDEV_F_DEFER,
+> >> 
+> >
+> >Hi Jiri,
+> >
+> >> NACK
+> >> 
+> >> This is invalid usecase for switchdev infra. Switchdev is there for
+> >> bridge offload purposes only.
+> >> 
+> >> For promiscuity changes, the infrastructure is already present in the
+> >> code. See __dev_notify_flags(). it calls:
+> >> call_netdevice_notifiers_info(NETDEV_CHANGE, &change_info.info)
+> >> and you can actually see the changed flag in ".flags_changed".
+> >Yes, you are right. But in case the port is part of a bridge and then
+> >enable promisc mode by a user space application(tpcdump) then the drivers
 > 
-> This goto is not needed.
-
-Will fix.
-
-> > +	} else {
-> > +		err = espintcp_push_skb(sk, skb);
-> > +	}
-> > +
-> > +unlock_sock:
-> > +	bh_unlock_sock(sk);
-> > +out:
-> > +	rcu_read_unlock();
-> > +	return err;
-> > +}
-> > +
-> > +static int esp_output_tcp_encap_cb(struct net *net, struct sock *sk,
-> > +				   struct sk_buff *skb)
-> > +{
-> > +	struct dst_entry *dst = skb_dst(skb);
-> > +	struct xfrm_state *x = dst->xfrm;
-> > +
-> > +	return esp_output_tcp_finish(x, skb);
-> > +}
-> > +
-> > +static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-> > +{
-> > +	int err;
-> > +
-> > +	local_bh_disable();
-> > +	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
-> > +	local_bh_enable();
-> > +
-> > +	/* EINPROGRESS just happens to do the right thing.  It
-> > +	 * actually means that the skb has been consumed and
-> > +	 * isn't coming back.
-> > +	 */
-> > +	return err ?: -EINPROGRESS;
-> > +}
-> > +#endif
-> > +
-> >  static void esp_output_done(struct crypto_async_request *base, int err)
-> >  {
-> >  	struct sk_buff *skb = base->data;
-> > @@ -147,7 +272,13 @@ static void esp_output_done(struct crypto_async_request *base, int err)
-> >  		secpath_reset(skb);
-> >  		xfrm_dev_resume(skb);
-> >  	} else {
-> > -		xfrm_output_resume(skb, err);
-> > +#ifdef CONFIG_XFRM_ESPINTCP
+> If the promisc is on, it is on. Why do you need to know who enabled it?
+When a port is added to a bridge, then the port gets in promisc mode.
+But in our case the HW has bridge capabilities so it is not required to
+set the port in promisc mode.
+But if someone else requires the port to be in promisc mode (tcpdump or
+any other application) then I would like to set the port in promisc
+mode.
+In previous emails Andrew came with the suggestion to look at
+dev->promiscuity and check if the port is a bridge port. Using this
+information I could see when to add the port in promisc mode. He also
+suggested to add a new switchdev call(maybe I missunderstood him, or I
+have done it at the wrong place) in case there are no callbacks in the
+driver to get this information.
 > 
-> Do we really need all these ifdef? I guess most of them could
-> be avoided with some code refactorization.
+> Or do you want to use this to ask driver to ask hw to trap packets to
+> kernel? If yes, I don't think it is correct. If you want to "steal" some
+> packets from the hw forwarding datapath, use TC action "trap".
+No, I just wanted to know when to update the HW to set the port in
+promisc mode.
 
-If we compile espintcp out, esp_output_tail_tcp will be dead code so
-it might as well not be compiled in either.
-
-The more trivial operations (like in esp_input_done2) could be
-compiled in anyway. That might be considered a bit inconsistent,
-because I need to keep the ifdef in esp_init_state (so that we land in
-the default case and error out when espintcp is disabled).
-
-Then I can provide variants of some functions (esp_output_tcp_encap,
-esp_output_tail_tcp) that always fail for !XFRM_ESPINTCP.
-
-> > +		if (!err &&
-> > +		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-> > +			esp_output_tail_tcp(x, skb);
-> > +		else
-> > +#endif
-> > +			xfrm_output_resume(skb, err);
-> >  	}
-> >  }
 > 
-> ...
 > 
-> > @@ -296,7 +460,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
-> >  	struct sk_buff *trailer;
-> >  	int tailen = esp->tailen;
-> >  
-> > -	/* this is non-NULL only with UDP Encapsulation */
-> > +	/* this is non-NULL only with TCP/UDP Encapsulation */
-> >  	if (x->encap) {
-> >  		int err = esp_output_encap(x, skb, esp);
-> >  
-> > @@ -491,6 +655,11 @@ int esp_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
-> >  	if (sg != dsg)
-> >  		esp_ssg_unref(x, tmp);
-> >  
-> > +#ifdef CONFIG_XFRM_ESPINTCP
-> > +	if (!err && x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-> > +		err = esp_output_tail_tcp(x, skb);
-> > +#endif
-> > +
-> >  error_free:
-> >  	kfree(tmp);
-> >  error:
-> > @@ -617,10 +786,16 @@ int esp_input_done2(struct sk_buff *skb, int err)
-> >  
-> >  	if (x->encap) {
-> >  		struct xfrm_encap_tmpl *encap = x->encap;
-> > +		struct tcphdr *th = (void *)(skb_network_header(skb) + ihl);
+> >will not be notified. The reason is that the dev->flags will still be the
+> >same(because IFF_PROMISC was already set) and only promiscuity will be
+> >changed.
+> >
+> >One fix could be to call __dev_notify_flags() no matter when the
+> >promisc is enable or disabled.
+> >
+> >> 
+> >> You just have to register netdev notifier block in your driver. Grep
+> >> for: register_netdevice_notifier
+> >> 
+> >> 
+> >> >+	};
+> >> > 	kuid_t uid;
+> >> > 	kgid_t gid;
+> >> > 
+> >> >@@ -7419,6 +7425,9 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
+> >> > 	}
+> >> > 	if (notify)
+> >> > 		__dev_notify_flags(dev, old_flags, IFF_PROMISC);
+> >> >+
+> >> >+	switchdev_port_attr_set(dev, &attr);
+> >> >+
+> >> > 	return 0;
+> >> > }
+> >> > 
+> >> >-- 
+> >> >2.7.4
+> >> >
+> >> 
+> >
+> >-- 
+> >/Horatiu
 > 
-> This gives a unused variable warning if CONFIG_XFRM_ESPINTCP
-> is not set.
-
-Oops, will fix. Or that will take care of itself if I just remove the ifdef below.
-
-> >  		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
-> >  		__be16 source;
-> >  
-> >  		switch (x->encap->encap_type) {
-> > +#ifdef CONFIG_XFRM_ESPINTCP
-
-(this one)
-
-> > +		case TCP_ENCAP_ESPINTCP:
-> > +			source = th->source;
-> > +			break;
-> > +#endif
-> >  		case UDP_ENCAP_ESPINUDP:
-> >  		case UDP_ENCAP_ESPINUDP_NON_IKE:
-> >  			source = uh->source;
-> > @@ -1017,6 +1192,14 @@ static int esp_init_state(struct xfrm_state *x)
-> >  		case UDP_ENCAP_ESPINUDP_NON_IKE:
-> >  			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
-> >  			break;
-> > +#ifdef CONFIG_XFRM_ESPINTCP
-> > +		case TCP_ENCAP_ESPINTCP:
-> > +			/* only the length field, TCP encap is done by
-> > +			 * the socket
-> > +			 */
-> > +			x->props.header_len += 2;
-> > +			break;
-> > +#endif
-> >  		}
-> >  	}
-> >  
-> > diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-> > index c967fc3c38c8..ccc012b3ea10 100644
-> > --- a/net/xfrm/Kconfig
-> > +++ b/net/xfrm/Kconfig
-> > @@ -71,6 +71,15 @@ config XFRM_IPCOMP
-> >  	select CRYPTO
-> >  	select CRYPTO_DEFLATE
-> >  
-> > +config XFRM_ESPINTCP
-> > +	bool "ESP in TCP encapsulation (RFC 8229)"
-> > +	depends on XFRM && INET_ESP
-> > +	select STREAM_PARSER
-> 
-> I'm getting these compile errors:
-> 
-> espintcp.o: In function `espintcp_close':
-> /home/klassert/git/linux-stk/net/xfrm/espintcp.c:469: undefined reference to `sk_msg_free'
-> net/xfrm/espintcp.o: In function `espintcp_sendmsg':
-> /home/klassert/git/linux-stk/net/xfrm/espintcp.c:302: undefined reference to `sk_msg_alloc'
-> /home/klassert/git/linux-stk/net/xfrm/espintcp.c:316: undefined reference to `sk_msg_memcopy_from_iter'
-> /home/klassert/git/linux-stk/net/xfrm/espintcp.c:341: undefined reference to `sk_msg_free'
-> /home/klassert/git/linux-stk/net/xfrm/espintcp.c:321: undefined reference to `sk_msg_memcopy_from_iter'
-> /home/klassert/git/linux-stk/Makefile:1067: recipe for target 'vmlinux' failed
-> make[1]: *** [vmlinux] Error 1
-> 
-> I guess you need to select NET_SOCK_MSG.
-
-Right, I'll go fix the Kconfig entry.
-
-> Btw. I've updated the ipsec-next tree, so patch 1 is not needed anymore.
-
-Cool, I'll drop it.
-
-> Everything else looks good!
-
-Thanks for the review.
 
 -- 
-Sabrina
+/Horatiu
