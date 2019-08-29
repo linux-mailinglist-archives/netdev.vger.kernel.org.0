@@ -2,113 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9E2A2404
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8139AA252A
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730122AbfH2SUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:20:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730268AbfH2SR4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:17:56 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FECB2339E;
-        Thu, 29 Aug 2019 18:17:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102675;
-        bh=WvX0U4icaaEEXMxXwS+pXS/PsVEOeUNZ91BSFI8Xez0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=liiaSk/qZPqhSEtXcaMwDc/aBvT0CogHszdDHF/qkDQLhlAdthCDa7x2CtmKx14fr
-         gJvZGwxB4LegtuKobu24JPLu+/Q3fzb0hb0zSV1n2RX2rBJPqNxtNQ+dVL/XoRn3+i
-         xw0QuFAuFeSC1V8pgsDTkvV3dr2M0B5+uonC9TJc=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tho Vu <tho.vu.wh@rvc.renesas.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/16] ravb: Fix use-after-free ravb_tstamp_skb
-Date:   Thu, 29 Aug 2019 14:17:29 -0400
-Message-Id: <20190829181736.9040-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190829181736.9040-1-sashal@kernel.org>
-References: <20190829181736.9040-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1729268AbfH2S1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:27:53 -0400
+Received: from mail-pl1-f170.google.com ([209.85.214.170]:45059 "EHLO
+        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727998AbfH2S1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 14:27:49 -0400
+Received: by mail-pl1-f170.google.com with SMTP id y8so1956410plr.12
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 11:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:subject:date:message-id;
+        bh=YuC2vJNQHNDscH1t/IJxIH5aXzY7r8rAs+/tb1QP95Y=;
+        b=qptAWJKW2zgpgNmheHakS++z1GbJPGZW6Kv5ZJouOF+A3T6zIN1N8a3QRiXblBf0ps
+         By7fQaSsmSgLcuR5C4w1Yg+5Kzzy//MWJapfgvZcmvWHNwKT/5m5GXA+WX6A5VWofZIH
+         IVwHKtOyxVxFuQDopMJvYUeOqBM5LD7EYKxnxmjHjDy7kmtcmvV9kwY1J6dhgcpPZ21r
+         LvFFbFUwMYgDFmmw0t6vBKWhpeoEj9/RsSftAoXLi6yAIx7fRJnBglNnMcnzTqOOp81q
+         n293PZHuivpwkTqG77owd4qFOeiIMOSuxr1rklUrDFDzY7oXGbts2WJ+UfHlhHFsnYzL
+         SplA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=YuC2vJNQHNDscH1t/IJxIH5aXzY7r8rAs+/tb1QP95Y=;
+        b=ZfEVpglGfTWyXq4YSDiYntjVfkl2reTwV4FlplnSHS+Jmo8z/ra2vvUltQwqlYOwKu
+         UK5/5bnK0Uc7oC1K0IMoRjeMhfO34JF3XOZYWYFwKZj4dQhgsm+noOgPnh3wbtYIH+zM
+         PhVnkKbjgJotQ70tQ0blXvR89GAc01J5wsLv3EIFYfpI0CkPQMHftTYwi26bSNENrsZz
+         aUu2yzsOFUJgEYz1MOjK3sfLsrhvPUZOPzQo6CU5Hib0d232pUmFsF5DQl5Tm8nveueX
+         l0LdZSHxl/RUrQ/5I3ELRqoJijk3fSKLYr80JkPFdjUk60ADSWfGf81aVQQI9b0vpYY2
+         /dTw==
+X-Gm-Message-State: APjAAAWDvk0HLcqNRxHD4oIJwWxnpCTuSmjHNuYO3hYYpZMMAqfnMV/w
+        IasGpM5S2GItb0W/sC9M5azZMMZpcG0=
+X-Google-Smtp-Source: APXvYqxgune5dikFXW9vXgAmu/MxdUgo4OC9c42OdVpZcuab7fhfxo8w1+SHtR/0LqdlIk08AH0iAQ==
+X-Received: by 2002:a17:902:e9:: with SMTP id a96mr11691011pla.169.1567103268941;
+        Thu, 29 Aug 2019 11:27:48 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id t70sm3082824pjb.2.2019.08.29.11.27.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Aug 2019 11:27:48 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     snelson@pensando.io, netdev@vger.kernel.org, davem@davemloft.net
+Subject: [PATCH v6 net-next 00/19] ionic: Add ionic driver
+Date:   Thu, 29 Aug 2019 11:27:01 -0700
+Message-Id: <20190829182720.68419-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tho Vu <tho.vu.wh@rvc.renesas.com>
+This is a patch series that adds the ionic driver, supporting the Pensando
+ethernet device.
 
-[ Upstream commit cfef46d692efd852a0da6803f920cc756eea2855 ]
+In this initial patchset we implement basic transmit and receive.  Later
+patchsets will add more advanced features.
 
-When a Tx timestamp is requested, a pointer to the skb is stored in the
-ravb_tstamp_skb struct. This was done without an skb_get. There exists
-the possibility that the skb could be freed by ravb_tx_free (when
-ravb_tx_free is called from ravb_start_xmit) before the timestamp was
-processed, leading to a use-after-free bug.
+Our thanks to Saeed Mahameed, David Miller, Andrew Lunn, Michal Kubecek,
+Jacub Kicinski, Jiri Pirko, Yunsheng Lin, and the ever present kbuild
+test robots for their comments and suggestions.
 
-Use skb_get when filling a ravb_tstamp_skb struct, and add appropriate
-frees/consumes when a ravb_tstamp_skb struct is freed.
+New in v6:
+ - added a new patch with devlink info tags for ASIC and general FW
+ - use the new devlink info tags in the driver
+ - fixed up TxRx cleanup on setup failure
+ - allow for possible 0 address from dma mapping of Tx buffers
+ - remove a few more unnecessary debugfs error checks
+ - use innocuous hardcoded strings in the identify message
+ - removed a couple of unused functions and definitions
+ - fix a leak in the error handling of port_info setup
+ - changed from BUILD_BUG_ON() to static_assert()
 
-Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-Signed-off-by: Tho Vu <tho.vu.wh@rvc.renesas.com>
-Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/renesas/ravb_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+New in v5:
+ - code reorganized for more sane layout, with a side benefit of getting
+   rid of a "defined but not used" complaint after patch 5
+ - added "ionic_" prefix to struct definitions and fixed up remaining
+   reverse christmas tree formatting (I think I got them all...)
+ - ndo_open and ndo_stop reworked for better error recovery
+ - interrupt coalescing enabled at driver start
+ - unnecessary log messaging removed from events
+ - double copy added in the module prom read to assure a clean copy
+ - added BQL counting
+ - fixed a TSO unmap issue found in testing
+ - generalize a bit-flag wait with timeout
+ - added devlink into earlier code and dropped patch 19
 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 480883a7a3e5e..545cb6262cffd 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -1,6 +1,6 @@
- /* Renesas Ethernet AVB device driver
-  *
-- * Copyright (C) 2014-2015 Renesas Electronics Corporation
-+ * Copyright (C) 2014-2019 Renesas Electronics Corporation
-  * Copyright (C) 2015 Renesas Solutions Corp.
-  * Copyright (C) 2015-2016 Cogent Embedded, Inc. <source@cogentembedded.com>
-  *
-@@ -512,7 +512,10 @@ static void ravb_get_tx_tstamp(struct net_device *ndev)
- 			kfree(ts_skb);
- 			if (tag == tfa_tag) {
- 				skb_tstamp_tx(skb, &shhwtstamps);
-+				dev_consume_skb_any(skb);
- 				break;
-+			} else {
-+				dev_kfree_skb_any(skb);
- 			}
- 		}
- 		ravb_modify(ndev, TCCR, TCCR_TFR, TCCR_TFR);
-@@ -1537,7 +1540,7 @@ static netdev_tx_t ravb_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 					 DMA_TO_DEVICE);
- 			goto unmap;
- 		}
--		ts_skb->skb = skb;
-+		ts_skb->skb = skb_get(skb);
- 		ts_skb->tag = priv->ts_skb_tag++;
- 		priv->ts_skb_tag &= 0x3ff;
- 		list_add_tail(&ts_skb->list, &priv->ts_skb_list);
-@@ -1665,6 +1668,7 @@ static int ravb_close(struct net_device *ndev)
- 	/* Clear the timestamp list */
- 	list_for_each_entry_safe(ts_skb, ts_skb2, &priv->ts_skb_list, list) {
- 		list_del(&ts_skb->list);
-+		kfree_skb(ts_skb->skb);
- 		kfree(ts_skb);
- 	}
- 
+New in v4:
+ - use devlink struct alloc for ionic device specific struct
+ - add support for devlink_port
+ - fixup devlink fixed vs running version usage
+ - use bitmap_copy() instead of memcpy() for link_ksettings
+ - don't bother to zero out the advertising bits before copying
+   in the support bits
+ - drop unknown xcvr types (will be expanded on later)
+ - flap the connection to force auto-negotiation
+ - use is_power_of_2() rather than open code
+ - simplify set/get_pauseparam use of pause->autoneg
+ - add a couple comments about NIC status data updated in DMA spaces
+
+New in v3:
+ - use le32_to_cpu() on queue_count[] values in debugfs
+ - dma_free_coherent() can handle NULL pointers
+ - remove unused SS_TEST from ethtool handlers
+ - one more case of stop the tx ring if there is no room
+ - remove a couple of stray // comments
+
+New in v2:
+ - removed debugfs error checking and cut down on debugfs use
+ - remove redundant bounds checking on incoming values for mtu and ethtool
+ - don't alloc rx_filter memory until the match type has been checked
+ - free the ionic struct on remove
+ - simplified link_up and netif_carrier_ok comparison
+ - put stats into ethtool -S, out of debugfs
+ - moved dev_cmd and dev_info dumping to ethtool -d, out of debugfs
+ - added devlink support
+ - used kernel's rss init routines rather than open code
+ - set the Kbuild dependant on 64BIT
+ - cut down on some unnecessary log messaging
+ - cleaned up ionic_get_link_ksettings
+ - cleaned up other little code bits here and there
+
+Shannon Nelson (19):
+  devlink: Add new info version tags for ASIC and FW
+  ionic: Add basic framework for IONIC Network device driver
+  ionic: Add hardware init and device commands
+  ionic: Add port management commands
+  ionic: Add basic lif support
+  ionic: Add interrupts and doorbells
+  ionic: Add basic adminq support
+  ionic: Add adminq action
+  ionic: Add notifyq support
+  ionic: Add the basic NDO callbacks for netdev support
+  ionic: Add management of rx filters
+  ionic: Add Rx filter and rx_mode ndo support
+  ionic: Add async link status check and basic stats
+  ionic: Add initial ethtool support
+  ionic: Add Tx and Rx handling
+  ionic: Add netdev-event handling
+  ionic: Add driver stats
+  ionic: Add RSS support
+  ionic: Add coalesce and other features
+
+ .../networking/device_drivers/index.rst       |    1 +
+ .../device_drivers/pensando/ionic.rst         |   43 +
+ .../networking/devlink-info-versions.rst      |   16 +
+ MAINTAINERS                                   |    8 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/pensando/Kconfig         |   32 +
+ drivers/net/ethernet/pensando/Makefile        |    6 +
+ drivers/net/ethernet/pensando/ionic/Makefile  |    8 +
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   73 +
+ .../net/ethernet/pensando/ionic/ionic_bus.h   |   16 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  292 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  248 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.h   |   34 +
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  500 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  299 ++
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   96 +
+ .../ethernet/pensando/ionic/ionic_devlink.h   |   14 +
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  776 ++++++
+ .../ethernet/pensando/ionic/ionic_ethtool.h   |    9 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 2482 +++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 2266 +++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  277 ++
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  561 ++++
+ .../net/ethernet/pensando/ionic/ionic_regs.h  |  136 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.c |  150 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.h |   35 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  334 +++
+ .../net/ethernet/pensando/ionic/ionic_stats.h |   53 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  912 ++++++
+ .../net/ethernet/pensando/ionic/ionic_txrx.h  |   15 +
+ include/net/devlink.h                         |    7 +
+ 32 files changed, 9701 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/pensando/ionic.rst
+ create mode 100644 drivers/net/ethernet/pensando/Kconfig
+ create mode 100644 drivers/net/ethernet/pensando/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_if.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_main.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_regs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.h
+
 -- 
-2.20.1
+2.17.1
 
