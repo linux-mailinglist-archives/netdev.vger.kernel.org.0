@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC57AA11FF
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4EA7A11F8
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727631AbfH2GpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 02:45:16 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52088 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727544AbfH2GpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:16 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x7T6ik7l031718
+        id S1727746AbfH2GpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 02:45:19 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56352 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727555AbfH2GpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:45:17 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T6iaN5009148
         for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:15 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=zySreUdnAkoKX4rB4C6BA1z5bPcefPQKIcLMnMdoBkQ=;
- b=fciFlu6yFQv1lLuvAuphNdgMcSdtZ4YtakojGMEVrw8Y+BH0fPLQXxCUbDPo1V5OiYIn
- prVujF6zzHaz1pvneVTJHXw+vmH7s5T5CclkIP6rAOvBk6RRqXFTRLc0+XOr5aR12+dh
- 2xofgM8vzPN2RemGS5nLIeA8uuXAQ2+P5wk= 
+ content-type; s=facebook; bh=5FRn1tN3HMxClhAAOGDldJosM8KHibJHPnZeVvXwXew=;
+ b=CdRV1NpvaM/B0Vr5ORkDtxEjiJxZzZBsrIpWokCa0j0IxcDpXzT3r7X8Op5SqSbamWlL
+ u+HQtUd45UzyWxGcXSuuliVyt2bzocImOYuZ9s+heg1iXs1a5+ZGbJcbuQid4ZZFobU8
+ Ro9DVJ7vSXwxa7penYofREIAXtFFn3E4lrI= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2up2dxsewu-4
+        by mx0a-00082601.pphosted.com with ESMTP id 2unum8bk7b-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:45:15 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 28 Aug 2019 23:45:13 -0700
+ 15.1.1713.5; Wed, 28 Aug 2019 23:45:14 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 75C573702BA3; Wed, 28 Aug 2019 23:45:11 -0700 (PDT)
+        id AA8A13702CAF; Wed, 28 Aug 2019 23:45:12 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         Yonghong Song <yhs@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 08/13] tools/bpf: add test for bpf_map_update_batch()
-Date:   Wed, 28 Aug 2019 23:45:11 -0700
-Message-ID: <20190829064511.2751174-1-yhs@fb.com>
+Subject: [PATCH bpf-next 09/13] tools/bpf: add test for bpf_map_lookup_batch()
+Date:   Wed, 28 Aug 2019 23:45:12 -0700
+Message-ID: <20190829064512.2751289-1-yhs@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190829064502.2750303-1-yhs@fb.com>
 References: <20190829064502.2750303-1-yhs@fb.com>
@@ -50,33 +50,35 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
  definitions=2019-08-29_04:2019-08-28,2019-08-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- mlxscore=0 bulkscore=0 priorityscore=1501 adultscore=0 spamscore=0
- phishscore=0 mlxlogscore=981 lowpriorityscore=0 clxscore=1015
- malwarescore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1906280000 definitions=main-1908290073
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ clxscore=1015 impostorscore=0 adultscore=0 mlxscore=0 suspectscore=8
+ bulkscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 mlxlogscore=999
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1908290073
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests for bpf_map_update_batch().
+Test bpf_map_lookup_batch() functionality.
   $ ./test_maps
   ...
-  test_map_update_batch:PASS
+  test_map_lookup_batch:PASS
   ...
----
- .../bpf/map_tests/map_update_batch.c          | 115 ++++++++++++++++++
- 1 file changed, 115 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/map_tests/map_update_batch.c
 
-diff --git a/tools/testing/selftests/bpf/map_tests/map_update_batch.c b/tools/testing/selftests/bpf/map_tests/map_update_batch.c
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ .../bpf/map_tests/map_lookup_batch.c          | 166 ++++++++++++++++++
+ 1 file changed, 166 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_batch.c
+
+diff --git a/tools/testing/selftests/bpf/map_tests/map_lookup_batch.c b/tools/testing/selftests/bpf/map_tests/map_lookup_batch.c
 new file mode 100644
-index 000000000000..67c1e11fc911
+index 000000000000..9c88e8adc556
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/map_update_batch.c
-@@ -0,0 +1,115 @@
++++ b/tools/testing/selftests/bpf/map_tests/map_lookup_batch.c
+@@ -0,0 +1,166 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2019 Facebook  */
 +#include <stdio.h>
@@ -88,7 +90,24 @@ index 000000000000..67c1e11fc911
 +
 +#include <test_maps.h>
 +
-+void test_map_update_batch(void)
++static void map_batch_verify(int *visited, __u32 max_entries,
++			     int *keys, int *values)
++{
++	int i;
++
++	memset(visited, 0, max_entries * sizeof(*visited));
++	for (i = 0; i < max_entries; i++) {
++		CHECK(keys[i] + 1 != values[i], "key/value checking",
++		      "error: i %d key %d value %d\n", i, keys[i], values[i]);
++		visited[i] = 1;
++	}
++	for (i = 0; i < max_entries; i++) {
++		CHECK(visited[i] != 1, "visited checking",
++		      "error: keys array at index %d missing\n", i);
++	}
++}
++
++void test_map_lookup_batch(void)
 +{
 +	struct bpf_create_map_attr xattr = {
 +		.name = "hash_map",
@@ -96,10 +115,11 @@ index 000000000000..67c1e11fc911
 +		.key_size = sizeof(int),
 +		.value_size = sizeof(int),
 +	};
-+	int map_fd, *keys, *values, key, value;
-+	const int max_entries = 10;
-+	__u32 count, max_count;
-+	int err, i;
++	int map_fd, *keys, *values, *visited, key;
++	const __u32 max_entries = 10;
++	void *p_skey, *p_next_skey;
++	__u32 count, total;
++	int err, i, step;
 +
 +	xattr.max_entries = max_entries;
 +	map_fd = bpf_create_map_xattr(&xattr);
@@ -108,87 +128,120 @@ index 000000000000..67c1e11fc911
 +
 +	keys = malloc(max_entries * sizeof(int));
 +	values = malloc(max_entries * sizeof(int));
-+	CHECK(!keys || !values, "malloc()", "error:%s\n", strerror(errno));
++	visited = malloc(max_entries * sizeof(int));
++	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n", strerror(errno));
 +
-+	/* do not fill in the whole hash table, so we could test
-+	 * update with new elements.
-+	 */
-+	max_count = max_entries - 2;
++	/* test 1: lookup an empty hash table, success */
++	count = max_entries;
++	p_next_skey = &key;
++	err = bpf_map_lookup_batch(map_fd, NULL, &p_next_skey, keys, values,
++				   &count, 0, 0);
++	CHECK(err, "empty map", "error: %s\n", strerror(errno));
++	CHECK(p_next_skey || count, "empty map",
++	      "p_next_skey = %p, count = %u\n", p_next_skey, count);
 +
-+	for (i = 0; i < max_count; i++) {
++	/* populate elements to the map */
++	for (i = 0; i < max_entries; i++) {
 +		keys[i] = i + 1;
 +		values[i] = i + 2;
 +	}
 +
-+	/* test 1: count == 0, expect success. */
-+	count = 0;
++	count = max_entries;
 +	err = bpf_map_update_batch(map_fd, keys, values, &count, 0, 0);
-+	CHECK(err, "count = 0", "error:%s\n", strerror(errno));
++	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
 +
-+	/* test 2: update initial map with BPF_NOEXIST, expect success. */
-+	count = max_count;
-+	err = bpf_map_update_batch(map_fd, keys, values,
-+				   &count, BPF_NOEXIST, 0);
-+	CHECK(err, "elem_flags = BPF_NOEXIST",
-+	      "error:%s\n", strerror(errno));
++	/* test 2: lookup with count = 0, success */
++	count = 0;
++	err = bpf_map_lookup_batch(map_fd, NULL, NULL, keys, values,
++				   &count, 0, 0);
++	CHECK(err, "count = 0", "error: %s\n", strerror(errno));
 +
-+	/* use bpf_map_get_next_key to ensure all keys/values are indeed
-+	 * covered.
++	/* test 3: lookup with count = max_entries, skey && !nskey, failure */
++	count = max_entries;
++	key = 1;
++	err = bpf_map_lookup_batch(map_fd, &key, NULL, keys, values,
++				   &count, 0, 0);
++	CHECK(!err, "skey && !nskey", "unexpected success\n");
++
++	/* test 4: lookup with count = max_entries, success */
++	memset(keys, 0, max_entries * sizeof(*keys));
++	memset(values, 0, max_entries * sizeof(*values));
++	count = max_entries;
++	p_next_skey = &key;
++	err = bpf_map_lookup_batch(map_fd, NULL, &p_next_skey, keys, values,
++				   &count, 0, 0);
++	CHECK(err, "count = max_entries", "error: %s\n", strerror(errno));
++	CHECK(count != max_entries || p_next_skey != NULL, "count = max_entries",
++	      "count = %u, max_entries = %u, p_next_skey = %p\n",
++	      count, max_entries, p_next_skey);
++
++
++	/* test 5: lookup with count = max_entries, it should return
++	 * success with count = max_entries.
 +	 */
-+	err = bpf_map_get_next_key(map_fd, NULL, &key);
-+	CHECK(err, "bpf_map_get_next_key()", "error: %s\n", strerror(errno));
-+	err = bpf_map_lookup_elem(map_fd, &key, &value);
-+	CHECK(err, "bpf_map_lookup_elem()", "error: %s\n", strerror(errno));
-+	CHECK(key + 1 != value, "key/value checking",
-+	      "error: key %d value %d\n", key, value);
-+	i = 1;
-+	while (!bpf_map_get_next_key(map_fd, &key, &key)) {
-+		err = bpf_map_lookup_elem(map_fd, &key, &value);
-+		CHECK(err, "bpf_map_lookup_elem()", "error: %s\n",
-+		      strerror(errno));
-+		CHECK(key + 1 != value,
-+		      "key/value checking", "error: key %d value %d\n",
-+		      key, value);
-+		i++;
++	memset(keys, 0, max_entries * sizeof(*keys));
++	memset(values, 0, max_entries * sizeof(*values));
++	count = max_entries;
++	p_next_skey = &key;
++	err = bpf_map_lookup_batch(map_fd, NULL, &p_next_skey, keys, values,
++				   &count, 0, 0);
++	CHECK(err, "count = max_entries", "error: %s\n", strerror(errno));
++	CHECK(count != max_entries || p_next_skey != NULL, "count = max_entries",
++	      "count = %u, max_entries = %u, p_next_skey = %p\n",
++	      count, max_entries, p_next_skey);
++
++	/* test 6: lookup with an invalid start key, failure */
++	count = max_entries;
++	key = max_entries + 10;
++	p_next_skey = &key;
++	err = bpf_map_lookup_batch(map_fd, &key, &p_next_skey, keys, values,
++				   &count, 0, 0);
++	CHECK(!err, "invalid start_key", "unexpected success\n");
++
++	/* test 7: lookup in a loop with various steps. */
++	for (step = 1; step < max_entries; step++) {
++		memset(keys, 0, max_entries * sizeof(*keys));
++		memset(values, 0, max_entries * sizeof(*values));
++		p_skey = NULL;
++		p_next_skey = &key;
++		total = 0;
++		i = 0;
++		/* iteratively lookup elements with 'step' elements each */
++		count = step;
++		while (true) {
++			err = bpf_map_lookup_batch(map_fd, p_skey, &p_next_skey,
++						   keys + i * step,
++						   values + i * step,
++						   &count, 0, 0);
++			CHECK(err, "lookup with steps", "error: %s\n",
++			      strerror(errno));
++
++			total += count;
++			if (!p_next_skey)
++				break;
++
++			CHECK(count != step, "lookup with steps",
++			      "i = %d, count = %u, step = %d\n",
++			      i, count, step);
++
++			if (!p_skey)
++				p_skey = p_next_skey;
++			i++;
++		}
++
++		CHECK(total != max_entries, "lookup with steps",
++		      "total = %u, max_entries = %u\n", total, max_entries);
++
++		map_batch_verify(visited, max_entries, keys, values);
 +	}
-+	CHECK(i != max_count, "checking number of entries",
-+	      "err: i %u max_count %u\n", i, max_count);
 +
-+	/* test 3: elem_flags = BPF_NOEXIST, already exists, expect failure */
-+	err = bpf_map_update_batch(map_fd, keys, values,
-+				   &count, BPF_NOEXIST, 0);
-+	/* failure to due to flag BPF_NOEXIST, count is set to 0 */
-+	CHECK(!err || count, "elem_flags = BPF_NOEXIST again",
-+	      "unexpected success\n");
-+
-+	/* test 4: elem_flags = 0, expect success */
-+	count = max_count;
-+	err = bpf_map_update_batch(map_fd, keys, values,
++	/* test 8: lookup with keys in keys[]. */
++	memset(values, 0, max_entries * sizeof(*values));
++	count = max_entries;
++	err = bpf_map_lookup_batch(map_fd, NULL, NULL, keys, values,
 +				   &count, 0, 0);
-+	CHECK(err, "elem_flags = 0", "error %s\n", strerror(errno));
-+
-+	/* test 5: keys = NULL, expect failure */
-+	count = max_count;
-+	err = bpf_map_update_batch(map_fd, NULL, values,
-+				   &count, 0, 0);
-+	CHECK(!err, "keys = NULL", "unexpected success\n");
-+
-+	/* test 6: values = NULL, expect failure */
-+	count = max_count;
-+	err = bpf_map_update_batch(map_fd, keys, NULL, &count, 0, 0);
-+	CHECK(!err, "values = NULL", "unexpected success\n");
-+
-+	/* test 7: modify the first key to be max_count + 10,
-+	 * elem_flags = BPF_NOEXIST,
-+	 * expect failure, the return count = 1.
-+	 */
-+	count = max_count;
-+	keys[0] = max_count + 10;
-+	err = bpf_map_update_batch(map_fd, keys, values,
-+				   &count, BPF_NOEXIST, 0);
-+	CHECK(!err, "keys[0] = max_count + 10", "unexpected success\n");
-+	CHECK(count != 1, "keys[0] = max_count + 10",
-+	      "error: %s, incorrect count %u\n", strerror(errno), count);
++	CHECK(err, "lookup key in keys[]", "error: %s\n", strerror(errno));
++	map_batch_verify(visited, max_entries, keys, values);
 +
 +	printf("%s:PASS\n", __func__);
 +}
