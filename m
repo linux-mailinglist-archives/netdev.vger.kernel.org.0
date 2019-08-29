@@ -2,90 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF837A16F5
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34BFDA177A
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728551AbfH2KwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:52:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728552AbfH2KvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 06:51:16 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C48B2341C;
-        Thu, 29 Aug 2019 10:51:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567075875;
-        bh=GzeRH4UgyVOHI0ey86YhHXT1lIRYzwFIUv1/hmjQmCg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+YXI7P0GVfHsBInUPcElNsOyvzqNlCPTSM18b62xSixH0NcyiAWiKcu0kzVsJ1CE
-         gUI9JaWjwVsi6GgkQ8b+Eg+jW4QS7kynhtNp4al8SZYO0ZSQxNVUmZtrta2TGOYz9U
-         x2qQZwdv1M8/3flSlEjWy/MHNPgINL8YqNc4j1Go=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 3/6] mac80211: fix possible sta leak
-Date:   Thu, 29 Aug 2019 06:51:07 -0400
-Message-Id: <20190829105110.2748-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190829105110.2748-1-sashal@kernel.org>
-References: <20190829105110.2748-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1727688AbfH2K5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 06:57:02 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51963 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727123AbfH2K5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 06:57:01 -0400
+Received: by mail-wm1-f65.google.com with SMTP id k1so3234062wmi.1
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 03:57:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=V48A0d02O6Zz1PNIZqcK4fmc9jSgKnu0iuclFkazHTM=;
+        b=szNMJLYMtcVYjo6S4+ThfKliFq245mqyL3fCf8Xq1tmQyNaTMIkGJ44SN4T3a9Ts28
+         30ym1t/4vNXyDDp43RyTj5Rkuxi447a7mgE8jhXLCPhhAOjI6+cWSNn5KuSk7scLU+lF
+         1FEp8w8e3a6qf7OY76rXtlAB2t+AAB9jc12faO8lHLdhV7uOMxTPyjvVefaN5HonJY+6
+         /4CHwjzXjfW9NUM/7NrQo7gnoPUl2ZKEEMQW92iCeZuP9xDxFB70VtOEcnE5QYnJ0NEI
+         MUWYPpUr+5YPyKPzq8JWH3EJQe1IrS1EeYK8l0dTBhT12w6BbyPdvK92DLuLAPYT1DRX
+         B3Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=V48A0d02O6Zz1PNIZqcK4fmc9jSgKnu0iuclFkazHTM=;
+        b=MDUoYASTb1mfVL3C0aMrnyf9JSXf7gtL0dgiSU6v4vUHPrAHGSTTYvrfrEZA8AdZSN
+         eUiDHBoWxjnteisUR/4S3qAWKFJzvN1o9uJtRgSp6z9Y8Ln0VUuGCdh6yG8TYzIPBOad
+         v1s2/ViNGvRBFk49k+pn+GcT7+7Zo3Sttr3oqgMn/cTEvG9INFe0kXp6TiSETuauzb9e
+         1nnaXTW4Y3zM2kpBo0GS8k5jb4Ii227bPbsddTMKu9XdgKhHY+wvU1dnJNPSYAuIbG1D
+         0Ph26q68kaeNK6teHHWB2SLwDSsYfH/tT4PdL76GhrYrPUY009u0LjiVqmXOi6caEJ0p
+         zwNQ==
+X-Gm-Message-State: APjAAAVzcMfAc7NLGLp90Hm+dAZb384Pd2aU+bisZiQkpoONbcrU5WYq
+        ByEWL7aKEdYyrRUvC5rrVtQZxw==
+X-Google-Smtp-Source: APXvYqww27sgIBuv7JIwIuZkS5SCLc+TbWa0N8DnpGZwDPmOJkiHy9A/sbxGzPquNpN8qb/JrcfSRw==
+X-Received: by 2002:a1c:7ed7:: with SMTP id z206mr4769098wmc.124.1567076220190;
+        Thu, 29 Aug 2019 03:57:00 -0700 (PDT)
+Received: from cbtest32.netronome.com ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id j18sm2091938wrr.20.2019.08.29.03.56.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 03:56:59 -0700 (PDT)
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH bpf-next 0/3] tools: bpftool: improve bpftool build experience
+Date:   Thu, 29 Aug 2019 11:56:42 +0100
+Message-Id: <20190829105645.12285-1-quentin.monnet@netronome.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+Hi,
+This set attempts to make it easier to build bpftool, in particular when
+passing a specific output directory. This is a follow-up to the
+conversation held last month by Lorenz, Ilya and Jakub [0].
 
-[ Upstream commit 5fd2f91ad483baffdbe798f8a08f1b41442d1e24 ]
+The first patch is a minor fix to bpftool's Makefile, regarding the
+retrieval of kernel version (which currently prints a non-relevant make
+warning on some invocations).
 
-If TDLS station addition is rejected, the sta memory is leaked.
-Avoid this by moving the check before the allocation.
+Second patch improves the Makefile commands to support more "make"
+invocations, or to fix building with custom output directory. On Jakub's
+suggestion, a script is also added to BPF selftests in order to keep track
+of the supported build variants.
 
-Cc: stable@vger.kernel.org
-Fixes: 7ed5285396c2 ("mac80211: don't initiate TDLS connection if station is not associated to AP")
-Link: https://lore.kernel.org/r/20190801073033.7892-1-johannes@sipsolutions.net
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/mac80211/cfg.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+At last, third patch is a sligthly modified version of Ilya's fix regarding
+libbpf.a appearing twice on the linking command for bpftool.
 
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 7349bf26ae7b3..1999a7eaa6920 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -1211,6 +1211,11 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
- 	if (is_multicast_ether_addr(mac))
- 		return -EINVAL;
- 
-+	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER) &&
-+	    sdata->vif.type == NL80211_IFTYPE_STATION &&
-+	    !sdata->u.mgd.associated)
-+		return -EINVAL;
-+
- 	sta = sta_info_alloc(sdata, mac, GFP_KERNEL);
- 	if (!sta)
- 		return -ENOMEM;
-@@ -1228,10 +1233,6 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
- 	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER))
- 		sta->sta.tdls = true;
- 
--	if (sta->sta.tdls && sdata->vif.type == NL80211_IFTYPE_STATION &&
--	    !sdata->u.mgd.associated)
--		return -EINVAL;
--
- 	err = sta_apply_parameters(local, sta, params);
- 	if (err) {
- 		sta_info_free(local, sta);
+[0] https://lore.kernel.org/bpf/CACAyw9-CWRHVH3TJ=Tke2x8YiLsH47sLCijdp=V+5M836R9aAA@mail.gmail.com/
+
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+
+Quentin Monnet (3):
+  tools: bpftool: ignore make built-in rules for getting kernel version
+  tools: bpftool: improve and check builds for different make
+    invocations
+  tools: bpftool: do not link twice against libbpf.a in Makefile
+
+ tools/bpf/bpftool/Makefile                    |  18 ++-
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../selftests/bpf/test_bpftool_build.sh       | 137 ++++++++++++++++++
+ 3 files changed, 149 insertions(+), 9 deletions(-)
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool_build.sh
+
 -- 
-2.20.1
+2.17.1
 
