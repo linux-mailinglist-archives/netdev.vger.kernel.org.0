@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4B1A241D
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 045D7A2413
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728628AbfH2SUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:20:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59988 "EHLO mail.kernel.org"
+        id S1730214AbfH2SRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:17:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60000 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730192AbfH2SRq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:17:46 -0400
+        id S1730200AbfH2SRr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:17:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 573F12189D;
-        Thu, 29 Aug 2019 18:17:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6236123405;
+        Thu, 29 Aug 2019 18:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102666;
-        bh=RLhCdPwpxOSNvXfN2xwUqJLR4K4EQHH731oqg9XXn7k=;
+        s=default; t=1567102667;
+        bh=rEgZYUr3q3alUaupMjNa3I2deZfpH2gUl29KjEUryys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PvFQrlUvY2d2dM3rOwjjEEieiOP2SfY35ZTBtlUu0kSrNCj+djUgKHgZTj5BnswWL
-         uvDHlGuBJjJe9MAYcgD22GMzm0XEoahyxmPW6cZ6wo/KWu93i7EjGktpZYXBLejm7y
-         Ikc63gHk+8Ld7jAQmKapv5hVeDHxy76hTW+TNFu8=
+        b=ow9BpQIzJ3Pwp3W0W3icqI5IXXPtgfsL1YNwOt0h7NCi+7oQ7+RGFfKCBTRIHeiKd
+         T8Ra0HxTa9r19g0brUxVMZJRaCTp8hJy8ECN+loUfKyssY+XcpzRw6PCHaMyTm2YHt
+         OL34Fyg3h07+61jLU2AzhO1/uLr3D7Hze/LDypDo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 06/16] cxgb4: fix a memory leak bug
-Date:   Thu, 29 Aug 2019 14:17:24 -0400
-Message-Id: <20190829181736.9040-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 07/16] net: myri10ge: fix memory leaks
+Date:   Thu, 29 Aug 2019 14:17:25 -0400
+Message-Id: <20190829181736.9040-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181736.9040-1-sashal@kernel.org>
 References: <20190829181736.9040-1-sashal@kernel.org>
@@ -45,35 +45,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit c554336efa9bbc28d6ec14efbee3c7d63c61a34f ]
+[ Upstream commit 20fb7c7a39b5c719e2e619673b5f5729ee7d2306 ]
 
-In blocked_fl_write(), 't' is not deallocated if bitmap_parse_user() fails,
-leading to a memory leak bug. To fix this issue, free t before returning
-the error.
+In myri10ge_probe(), myri10ge_alloc_slices() is invoked to allocate slices
+related structures. Later on, myri10ge_request_irq() is used to get an irq.
+However, if this process fails, the allocated slices related structures are
+not deallocated, leading to memory leaks. To fix this issue, revise the
+target label of the goto statement to 'abort_with_slices'.
 
 Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index 20455d082cb80..61c55621b9589 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -2781,8 +2781,10 @@ static ssize_t blocked_fl_write(struct file *filp, const char __user *ubuf,
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 6d1a956e3f779..02ec326cb1293 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -4113,7 +4113,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	 * setup (if available). */
+ 	status = myri10ge_request_irq(mgp);
+ 	if (status != 0)
+-		goto abort_with_firmware;
++		goto abort_with_slices;
+ 	myri10ge_free_irq(mgp);
  
- 	err = bitmap_parse_user(ubuf, count, t, adap->sge.egr_sz);
--	if (err)
-+	if (err) {
-+		kvfree(t);
- 		return err;
-+	}
- 
- 	bitmap_copy(adap->sge.blocked_fl, t, adap->sge.egr_sz);
- 	t4_free_mem(t);
+ 	/* Save configuration space to be restored if the
 -- 
 2.20.1
 
