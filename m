@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F25A25BE
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77A29A25B6
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbfH2SOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:14:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56172 "EHLO mail.kernel.org"
+        id S1728928AbfH2SOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:14:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728856AbfH2SOc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:14:32 -0400
+        id S1728017AbfH2SOg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:14:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 821E523428;
-        Thu, 29 Aug 2019 18:14:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CF2D82339E;
+        Thu, 29 Aug 2019 18:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102472;
-        bh=Ki7BrnVVae9IQ9BuydzsEIpn9xfYCx3NtewynpizYIY=;
+        s=default; t=1567102475;
+        bh=tHvS5YS1DOGqMguSYYPBSc/FLkd8zsZcv5hHnimAuus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLqWkWDFZv+IFFq+p8o7D/P9Ava42JCdq2IIax852LRttL/IkJF0DujpuWXgqBHhX
-         D9C3lMPqB0cblzrCcEm7Ls+KkqqzuSMKiJ4Z3chEiS/Vl0Fwc/5/Zr+0q4rXL5LZME
-         Oy4ewt9E3ctWEmPFs9B/aKova9LImzk7jHyoYjeI=
+        b=K0hTxa0YiKfnDK10Xz0YXCZqS9jfqFZHU5Aigzc9R+2G1ngBQuXqpHLduQSuDfiJe
+         /P7qjvrmZ7BVQwwnhna2Sh5jDU9s4z58PK91V4loDzdNbZHKQ93WiVM4KImBnUn6Y7
+         ftbD6L1HkWj6Z2RR3diWipBCsWLbvLT2wtCsJH48=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 36/76] net: myri10ge: fix memory leaks
-Date:   Thu, 29 Aug 2019 14:12:31 -0400
-Message-Id: <20190829181311.7562-36-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 39/76] lan78xx: Fix memory leaks
+Date:   Thu, 29 Aug 2019 14:12:34 -0400
+Message-Id: <20190829181311.7562-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181311.7562-1-sashal@kernel.org>
 References: <20190829181311.7562-1-sashal@kernel.org>
@@ -45,34 +46,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit 20fb7c7a39b5c719e2e619673b5f5729ee7d2306 ]
+[ Upstream commit b9cbf8a64865b50fd0f4a3915fa00ac7365cdf8f ]
 
-In myri10ge_probe(), myri10ge_alloc_slices() is invoked to allocate slices
-related structures. Later on, myri10ge_request_irq() is used to get an irq.
-However, if this process fails, the allocated slices related structures are
-not deallocated, leading to memory leaks. To fix this issue, revise the
-target label of the goto statement to 'abort_with_slices'.
+In lan78xx_probe(), a new urb is allocated through usb_alloc_urb() and
+saved to 'dev->urb_intr'. However, in the following execution, if an error
+occurs, 'dev->urb_intr' is not deallocated, leading to memory leaks. To fix
+this issue, invoke usb_free_urb() to free the allocated urb before
+returning from the function.
 
 Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/lan78xx.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-index d8b7fba96d58e..337b0cbfd153e 100644
---- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-+++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-@@ -3919,7 +3919,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 * setup (if available). */
- 	status = myri10ge_request_irq(mgp);
- 	if (status != 0)
--		goto abort_with_firmware;
-+		goto abort_with_slices;
- 	myri10ge_free_irq(mgp);
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 3d92ea6fcc02b..f033fee225a11 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -3792,7 +3792,7 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 	ret = register_netdev(netdev);
+ 	if (ret != 0) {
+ 		netif_err(dev, probe, netdev, "couldn't register the device\n");
+-		goto out3;
++		goto out4;
+ 	}
  
- 	/* Save configuration space to be restored if the
+ 	usb_set_intfdata(intf, dev);
+@@ -3807,12 +3807,14 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 
+ 	ret = lan78xx_phy_init(dev);
+ 	if (ret < 0)
+-		goto out4;
++		goto out5;
+ 
+ 	return 0;
+ 
+-out4:
++out5:
+ 	unregister_netdev(netdev);
++out4:
++	usb_free_urb(dev->urb_intr);
+ out3:
+ 	lan78xx_unbind(dev, intf);
+ out2:
 -- 
 2.20.1
 
