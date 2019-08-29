@@ -2,71 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71B90A12C7
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 09:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79F28A13D7
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 10:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727770AbfH2HpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 03:45:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:47884 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726739AbfH2HpS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 03:45:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id ECC97AF80;
-        Thu, 29 Aug 2019 07:45:16 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 39FEBE0CFC; Thu, 29 Aug 2019 09:45:16 +0200 (CEST)
-Date:   Thu, 29 Aug 2019 09:45:16 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Jeffrey Vander Stoep <jeffv@google.com>,
-        David Miller <davem@davemloft.net>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        selinux@vger.kernel.org
-Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
-Message-ID: <20190829074516.GM29594@unicorn.suse.cz>
-References: <20190821134547.96929-1-jeffv@google.com>
- <20190822.161913.326746900077543343.davem@davemloft.net>
- <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
- <CAHC9VhRmmEp_nFtOFy_YRa9NwZA4qPnjw7D3JQvqED-tO4Ha1g@mail.gmail.com>
+        id S1727437AbfH2Ich (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 04:32:37 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44990 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727400AbfH2Icg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 04:32:36 -0400
+Received: by mail-wr1-f65.google.com with SMTP id j11so2443902wrp.11;
+        Thu, 29 Aug 2019 01:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TLcjEAYdtAfZ2IRKdNGNYpywlsNLbG2mqtC2Fue66Yc=;
+        b=QJxXPKf/Cg9KTx27UkHrkQS6ltF9PXHtxV3So9AJZ3YdbRVZ7QhBAft6mEVczkhzYF
+         n3FHou9injbx8mXgBd6MwmQ1s9z5IrRQW9ymkowZ+1YaSfWjr2VOd5XBjNmfT5XVY63Y
+         /F2ezWgMx+8Pm7T7I83lhTUhjgZFGlBBP/VgY8Pp9hVkkE+LDqbZrGZBUiopAWynhbUM
+         aW0M+QsTkjiep24QWsIY4HJZsIvLdfz9oVvYwkaXovkv/BJuDAbIMfP7MD88Q+WMJ4nk
+         848vROF+kVBToD962VFAZJ9c3+IvvHy/wdECBasAP1fBcPQG7BuRVXbXYTJMhmCiPbNX
+         +HBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TLcjEAYdtAfZ2IRKdNGNYpywlsNLbG2mqtC2Fue66Yc=;
+        b=BAQ1yC0YcmyS3QJzf2sbNaND98XSkUk57IbiM9YOTpP5VclbXyo1ttjzJ0QguyyZtS
+         aMAqVlZ1JkBaPwbFWCQdiO+nGSsyCU+DXtBZsmPQhSgcRBTzJoNvbwK46PbiDu6Vuzjj
+         JN8ySmz5mavVjzeBz5GkCOdn+UeQBoKIFWWQFkKu+koIrqawwjt6x788yAF0qZWKI6ph
+         BiFHo+S/gcLxjrGHFozj0B2giqcpqRP7YcL3xprurj5dgRQ0gyUiWqGswD8r5ipvkDGm
+         UcMiZSTyn8+P7Pcmy8a0uBdAwn2p8jEMp2iBynUMjcNyX9mf15Mizy9F3qHrfdrPnnZi
+         xaug==
+X-Gm-Message-State: APjAAAVs0CE88axcvUf4EPY1L8tP6AE7X1VtJavxHOv7JYmviobRISKp
+        qu7p8F9UI+bne3ifHDF4dv+Yien2
+X-Google-Smtp-Source: APXvYqxvedUZQokkdwPwIOVPjaDcbedfAWkWLITg5V4Mob8IXBhl45k79LQCPRLYcJ/MhjRlvzp1Qg==
+X-Received: by 2002:adf:82d4:: with SMTP id 78mr9182142wrc.85.1567067554017;
+        Thu, 29 Aug 2019 01:32:34 -0700 (PDT)
+Received: from [192.168.8.147] (33.169.185.81.rev.sfr.net. [81.185.169.33])
+        by smtp.gmail.com with ESMTPSA id n14sm4882149wra.75.2019.08.29.01.32.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Aug 2019 01:32:33 -0700 (PDT)
+Subject: Re: [v1] net_sched: act_police: add 2 new attributes to support
+ police 64bit rate and peakrate
+To:     David Dai <zdai@linux.vnet.ibm.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     zdai@us.ibm.com
+References: <1567032687-973-1-git-send-email-zdai@linux.vnet.ibm.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7a8a5024-bbff-7443-71b3-9e3976af269f@gmail.com>
+Date:   Thu, 29 Aug 2019 10:32:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhRmmEp_nFtOFy_YRa9NwZA4qPnjw7D3JQvqED-tO4Ha1g@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1567032687-973-1-git-send-email-zdai@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 04:47:04PM -0400, Paul Moore wrote:
+
+
+On 8/29/19 12:51 AM, David Dai wrote:
+> For high speed adapter like Mellanox CX-5 card, it can reach upto
+> 100 Gbits per second bandwidth. Currently htb already supports 64bit rate
+> in tc utility. However police action rate and peakrate are still limited
+> to 32bit value (upto 32 Gbits per second). Add 2 new attributes
+> TCA_POLICE_RATE64 and TCA_POLICE_RATE64 in kernel for 64bit support
+> so that tc utility can use them for 64bit rate and peakrate value to
+> break the 32bit limit, and still keep the backward binary compatibility.
 > 
-> I'm also not a big fan of inserting the hook in rtnl_fill_ifinfo(); as
-> presented it is way too specific for a LSM hook for me to be happy.
-> However, I do agree that giving the LSMs some control over netlink
-> messages makes sense.  As others have pointed out, it's all a matter
-> of where to place the hook.
+> Tested-by: David Dai <zdai@linux.vnet.ibm.com>
+> Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
+> ---
+>  include/uapi/linux/pkt_cls.h |    2 ++
+>  net/sched/act_police.c       |   27 +++++++++++++++++++++++----
+>  2 files changed, 25 insertions(+), 4 deletions(-)
 > 
-> If we only care about netlink messages which leverage nlattrs I
-> suppose one option that I haven't seen mentioned would be to place a
-> hook in nla_put().  While it is a bit of an odd place for a hook, it
-> would allow the LSM easy access to the skb and attribute type to make
-> decisions, and all of the callers should already be checking the
-> return code (although we would need to verify this).  One notable
-> drawback (not the only one) is that the hook is going to get hit
-> multiple times for each message.
+> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+> index b057aee..eb4ea4d 100644
+> --- a/include/uapi/linux/pkt_cls.h
+> +++ b/include/uapi/linux/pkt_cls.h
+> @@ -159,6 +159,8 @@ enum {
+>  	TCA_POLICE_AVRATE,
+>  	TCA_POLICE_RESULT,
+>  	TCA_POLICE_TM,
+> +	TCA_POLICE_RATE64,
+> +	TCA_POLICE_PEAKRATE64,
+>  	TCA_POLICE_PAD,
+>  	__TCA_POLICE_MAX
+>  #define TCA_POLICE_RESULT TCA_POLICE_RESULT
 
-For most messages, "multiple times" would mean tens, for many even
-hundreds of calls. For each, you would have to check corresponding
-socket (and possibly also genetlink header) to see which netlink based
-protocol it is and often even parse existing part of the message to get
-the context (because the same numeric attribute type can mean something
-completely different if it appears in a nested attribute).
+Never insert new attributes, as this breaks compatibility with old binaries (including
+old kernels)
 
-Also, nla_put() (or rather __nla_put()) is not used for all attributes,
-one may also use nla_reserve() and then compose the attribute date in
-place.
-
-Michal Kubecek
+Keep TCA_POLICE_PAD value the same, thanks.
