@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7582A23D4
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:19:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82DDCA23D8
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730329AbfH2SSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:18:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60380 "EHLO mail.kernel.org"
+        id S1730346AbfH2SSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:18:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729543AbfH2SSI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:18:08 -0400
+        id S1730334AbfH2SSK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:18:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C3E192166E;
-        Thu, 29 Aug 2019 18:18:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1668920828;
+        Thu, 29 Aug 2019 18:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102687;
-        bh=4L+TXUYoB3dgZIU4fHI0aqRn5eB6IbrmF5Emxq6NFfg=;
+        s=default; t=1567102689;
+        bh=Ogyck2ZoGhJppzSaw6fv33s60/hJwU3KTj2pLWwGsJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rnl+FZ94yq9m/8bqaHT7uwbi6shbuui8VKVSlHbnTXf/KwsH80+bGaNAgx+rThzCW
-         mGKMNt0Q0jhPB8sH0nTN8Kg+/uQKWMNiTowgyN9Y+6trAhKJ4vRUCUP+R4Sfn536eg
-         k0W9SHY8u67ybP0y67Ta/Ul4f7/0UGGeybsrT9Q4=
+        b=RzBBLu3lXV+SaOtvYtfs7pE6bOYJ33Cp+W1oWe2cWcWDQYP6zeqIi3bkJ6BTuAl8S
+         i3bsegbKZFOfRLgMcLoUAfbYWsUQ/6WITAAy5CmItFkSvwu293chDWfKN6X3e3hZFu
+         S727CPewruqAKD8tOfcJ8qwD9iohFDquuAkSvclI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 04/15] ibmveth: Convert multicast list size for little-endian system
-Date:   Thu, 29 Aug 2019 14:17:51 -0400
-Message-Id: <20190829181802.9619-4-sashal@kernel.org>
+Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 06/15] cxgb4: fix a memory leak bug
+Date:   Thu, 29 Aug 2019 14:17:53 -0400
+Message-Id: <20190829181802.9619-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181802.9619-1-sashal@kernel.org>
 References: <20190829181802.9619-1-sashal@kernel.org>
@@ -45,59 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
+From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit 66cf4710b23ab2adda11155684a2c8826f4fe732 ]
+[ Upstream commit c554336efa9bbc28d6ec14efbee3c7d63c61a34f ]
 
-The ibm,mac-address-filters property defines the maximum number of
-addresses the hypervisor's multicast filter list can support. It is
-encoded as a big-endian integer in the OF device tree, but the virtual
-ethernet driver does not convert it for use by little-endian systems.
-As a result, the driver is not behaving as it should on affected systems
-when a large number of multicast addresses are assigned to the device.
+In blocked_fl_write(), 't' is not deallocated if bitmap_parse_user() fails,
+leading to a memory leak bug. To fix this issue, free t before returning
+the error.
 
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index 70b3253e7ed5e..b46fc37c1a947 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1555,7 +1555,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	struct net_device *netdev;
- 	struct ibmveth_adapter *adapter;
- 	unsigned char *mac_addr_p;
--	unsigned int *mcastFilterSize_p;
-+	__be32 *mcastFilterSize_p;
- 	long ret;
- 	unsigned long ret_attr;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index 4269944c5db53..129d6095749a4 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -2673,8 +2673,10 @@ static ssize_t blocked_fl_write(struct file *filp, const char __user *ubuf,
+ 		return -ENOMEM;
  
-@@ -1577,8 +1577,9 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 		return -EINVAL;
- 	}
+ 	err = bitmap_parse_user(ubuf, count, t, adap->sge.egr_sz);
+-	if (err)
++	if (err) {
++		kvfree(t);
+ 		return err;
++	}
  
--	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
--						VETH_MCAST_FILTER_SIZE, NULL);
-+	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
-+							VETH_MCAST_FILTER_SIZE,
-+							NULL);
- 	if (!mcastFilterSize_p) {
- 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
- 			"attribute\n");
-@@ -1595,7 +1596,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 
- 	adapter->vdev = dev;
- 	adapter->netdev = netdev;
--	adapter->mcastFilterSize = *mcastFilterSize_p;
-+	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
- 	adapter->pool_config = 0;
- 
- 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+ 	bitmap_copy(adap->sge.blocked_fl, t, adap->sge.egr_sz);
+ 	t4_free_mem(t);
 -- 
 2.20.1
 
