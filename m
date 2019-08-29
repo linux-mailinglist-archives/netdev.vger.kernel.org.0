@@ -2,126 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F2FA1ACE
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:06:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF9F5A1AD2
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbfH2NG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 09:06:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46032 "EHLO mx1.redhat.com"
+        id S1727959AbfH2NGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 09:06:35 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53512 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726990AbfH2NG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 09:06:28 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1727118AbfH2NGf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 09:06:35 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3E52430821B2;
-        Thu, 29 Aug 2019 13:06:28 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2B67A30842B0;
+        Thu, 29 Aug 2019 13:06:35 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 655FB60872;
-        Thu, 29 Aug 2019 13:06:27 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 43D891001938;
+        Thu, 29 Aug 2019 13:06:34 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
  Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
  Kingdom.
  Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 2/5] rxrpc: Abstract out rxtx ring cleanup
+Subject: [PATCH net 3/5] rxrpc: Add a private skb flag to indicate
+ transmission-phase skbs
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 29 Aug 2019 14:06:26 +0100
-Message-ID: <156708398665.25861.13094054687495909433.stgit@warthog.procyon.org.uk>
+Date:   Thu, 29 Aug 2019 14:06:33 +0100
+Message-ID: <156708399348.25861.7642868902963020846.stgit@warthog.procyon.org.uk>
 In-Reply-To: <156708397261.25861.2158085372781699276.stgit@warthog.procyon.org.uk>
 References: <156708397261.25861.2158085372781699276.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Thu, 29 Aug 2019 13:06:28 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Thu, 29 Aug 2019 13:06:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abstract out rxtx ring cleanup into its own function from its two callers.
-This makes it easier to apply the same changes to both.
+Add a flag in the private data on an skbuff to indicate that this is a
+transmission-phase buffer rather than a receive-phase buffer.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/call_object.c |   33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+ net/rxrpc/ar-internal.h |    1 +
+ net/rxrpc/sendmsg.c     |    3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 217b12be9e08..c9ab2da957fe 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -421,6 +421,21 @@ void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- 	trace_rxrpc_call(call, op, n, here, NULL);
- }
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 20d7907a5bc6..63d3a91ce5e9 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -188,6 +188,7 @@ struct rxrpc_skb_priv {
+ 	u8		nr_subpackets;		/* Number of subpackets */
+ 	u8		rx_flags;		/* Received packet flags */
+ #define RXRPC_SKB_INCL_LAST	0x01		/* - Includes last packet */
++#define RXRPC_SKB_TX_BUFFER	0x02		/* - Is transmit buffer */
+ 	union {
+ 		int		remain;		/* amount of space remaining for next write */
  
-+/*
-+ * Clean up the RxTx skb ring.
-+ */
-+static void rxrpc_cleanup_ring(struct rxrpc_call *call)
-+{
-+	int i;
-+
-+	for (i = 0; i < RXRPC_RXTX_BUFF_SIZE; i++) {
-+		rxrpc_free_skb(call->rxtx_buffer[i],
-+			       (call->tx_phase ? rxrpc_skb_tx_cleaned :
-+				rxrpc_skb_rx_cleaned));
-+		call->rxtx_buffer[i] = NULL;
-+	}
-+}
-+
- /*
-  * Detach a call from its owning socket.
-  */
-@@ -429,7 +444,6 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 	const void *here = __builtin_return_address(0);
- 	struct rxrpc_connection *conn = call->conn;
- 	bool put = false;
--	int i;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index bae14438f869..472dc3b7d91f 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -336,6 +336,8 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			if (!skb)
+ 				goto maybe_error;
  
- 	_enter("{%d,%d}", call->debug_id, atomic_read(&call->usage));
++			sp = rxrpc_skb(skb);
++			sp->rx_flags |= RXRPC_SKB_TX_BUFFER;
+ 			rxrpc_new_skb(skb, rxrpc_skb_tx_new);
  
-@@ -479,13 +493,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 	if (conn)
- 		rxrpc_disconnect_call(call);
+ 			_debug("ALLOC SEND %p", skb);
+@@ -346,7 +348,6 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			skb_reserve(skb, call->conn->security_size);
+ 			skb->len += call->conn->security_size;
  
--	for (i = 0; i < RXRPC_RXTX_BUFF_SIZE; i++) {
--		rxrpc_free_skb(call->rxtx_buffer[i],
--			       (call->tx_phase ? rxrpc_skb_tx_cleaned :
--				rxrpc_skb_rx_cleaned));
--		call->rxtx_buffer[i] = NULL;
--	}
--
-+	rxrpc_cleanup_ring(call);
- 	_leave("");
- }
- 
-@@ -568,8 +576,6 @@ static void rxrpc_rcu_destroy_call(struct rcu_head *rcu)
-  */
- void rxrpc_cleanup_call(struct rxrpc_call *call)
- {
--	int i;
--
- 	_net("DESTROY CALL %d", call->debug_id);
- 
- 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
-@@ -580,12 +586,7 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
- 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
- 	ASSERTCMP(call->conn, ==, NULL);
- 
--	/* Clean up the Rx/Tx buffer */
--	for (i = 0; i < RXRPC_RXTX_BUFF_SIZE; i++)
--		rxrpc_free_skb(call->rxtx_buffer[i],
--			       (call->tx_phase ? rxrpc_skb_tx_cleaned :
--				rxrpc_skb_rx_cleaned));
--
-+	rxrpc_cleanup_ring(call);
- 	rxrpc_free_skb(call->tx_pending, rxrpc_skb_tx_cleaned);
- 
- 	call_rcu(&call->rcu, rxrpc_rcu_destroy_call);
+-			sp = rxrpc_skb(skb);
+ 			sp->remain = chunk;
+ 			if (sp->remain > skb_tailroom(skb))
+ 				sp->remain = skb_tailroom(skb);
 
