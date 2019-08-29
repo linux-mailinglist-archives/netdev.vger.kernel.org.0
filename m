@@ -2,453 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF5DA2A76
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:01:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC96A2A7F
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 01:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728230AbfH2XBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 19:01:37 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:43988 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728186AbfH2XBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 19:01:36 -0400
-Received: by mail-lj1-f196.google.com with SMTP id h15so4613572ljg.10
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 16:01:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dWpG0YUJK4oh97pmATFFGm5Bx2chV77bCMHwj+U/rzs=;
-        b=VuTBOHveQY4ECCWJawPUkFir2Mkr3Pc5QEum8ohGsf0SMDR/muT3SPS6HpUQrmWNch
-         U7KuqDSjK/bIGZlmNfFtVfmRft1uSbjb58oL+f5sctrrLpWrNUMxLgqVnESt/GrMoK4g
-         N9xITWbTi0J83XcJXiptBg3vk5k3BwkNbE18x72x3w+BYnWWUXug1DtY03RxDTmrMR6h
-         KO6kfofFjTVtH5u1ksCcIu3CPpVaXHuRfMEppd89yswXqPjXtdGV/eaO06plv7/5G21s
-         V8yU7WbPa7/evucSbiXbCj9qT0HIvPgyU1ceOg4W4qXm6oET9fg5xoEz6207A0u+wbj6
-         d8SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dWpG0YUJK4oh97pmATFFGm5Bx2chV77bCMHwj+U/rzs=;
-        b=itgeu0xiOFoOUSvQCYwbuWpgoGaVBMnijsniyrIwCmN63W9tKmPUlGqOhbykyYYfa6
-         qYqh6GJ9vmAVWPtehpoSQkyI2j0DI69eo2hPM4f2hqxQai1mjJ7G8UPp+Vlvj3KIAiYE
-         V2p5uQiwu+MO+e4iyVR6B9XkpabUFuKYT/Umyxa2hl3ha+AIaREw82qZD/CPj4DxTSz5
-         XKwT4vn8joNFEIIxqt4V4FcO9foUYuXO/Ze8/5qxBFvEcgwagvck7ySt/togjsmlUaaz
-         bnpsqAJhoNMKNxIjoU8DyRchVYmG6lYP9IxgU9alG6L9RzJf5ghjWC3dtWgDZhYrvVpH
-         LZYg==
-X-Gm-Message-State: APjAAAXbMReCvDxGFfZHv/cOngtw3iN+nNLInzWvEEnEcnKh47XPEtsJ
-        XvyKr9pLmzRYnVBxMH3KaU1JAfNsVAEK7vfXeHTYjQ==
-X-Google-Smtp-Source: APXvYqxNpzicsUuQwo1oQCc+GPzNucP83JZz9Ef59f8nvkHELkz0gFCaDSokDUztXkMvX6PkYbWDLzZOxJnfQsdhHMg=
-X-Received: by 2002:a2e:8794:: with SMTP id n20mr5597064lji.116.1567119693426;
- Thu, 29 Aug 2019 16:01:33 -0700 (PDT)
+        id S1728143AbfH2XEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 19:04:20 -0400
+Received: from mail-eopbgr50058.outbound.protection.outlook.com ([40.107.5.58]:43662
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727826AbfH2XET (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 19:04:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=am3AgZQp/KIL9/+URjz4g0xPtFway7Cph03W5G1Bgey9qS8QJeeSB8c8cyF/yhiRzELj4qcXhuxplGXRDkLfH+Rg3UIp82Lawj1KCyYQLADrxd1qCIFyA7rR89YMhrQLAGomoBHfkMjm2odufsig6opnze8OgkpHCA8am0LqgDE4H5aAXBAH0Yr4fE7Acy1nfRK/iqoeCSFih03cVjJi3aMm6rVz6kqgt4okuBdGmW4EFSNPtd41PTe4mOB7FlMOWUZ1OjzTGvVggVRAT28E8Ok10IkQr1/AdeNMn23okoQaOPMCy4RewJ914N7TEIYpk3N+M1ez23qOhmxscvR5jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9zfCnDM25DzQrjFX2X1dAI/jxxnCiR2MaqzslfIg3k=;
+ b=SyVSSBs9C5cx+gRUSM+JWKuEaYgmh00T8v6G9L/8mG8ZnKos2biuwV1T5jwKGKbaN2aidTauaUYZbv5UkojnDhMDXA6R4ltpxyuUYt5aVSIlfrnvyLKdfEYOMzGYbtdr2dcWjWYENDuQc5W3wdrKFojDuacuOKjQFBkXszCYPm5hzl23LTyMKcRSi4LMUHbZvpIbq5tqKofwiUrz7tigQpz+xZJB+hgF6EYZP+CDGsQ4lLgiEkjE8AfVBQCoy+6rirdXdKSZkFWe+vCW2Yb8nfVTTjXXUJ73rnV3cskXrs8p/90JdsjPUs6RX81mO4kyn9pNJaffqp0AQahDjuvl0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9zfCnDM25DzQrjFX2X1dAI/jxxnCiR2MaqzslfIg3k=;
+ b=nQLFGuWxfZKuDT7OHRnhNrQB1OKruQXXJmT7znxtYZsMHbGByEtBFoZXjlm2a5vxucUM3MKw0oI0RHHC/fLsyoRlO+nvpwpX8oqyGh6R1eaoQEH6uf3kNIPLbnnR4gY61yKZRi0DCGc5/yD0CAsPVNT6EIA8hi/hjjd0kOOiai4=
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
+ VI1PR0501MB2544.eurprd05.prod.outlook.com (10.168.136.147) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.20; Thu, 29 Aug 2019 23:04:09 +0000
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::5cab:4f5c:d7ed:5e27%6]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
+ 23:04:09 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        haiyangz <haiyangz@microsoft.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: Re: linux-next: Tree for Aug 29 (mlx5)
+Thread-Topic: linux-next: Tree for Aug 29 (mlx5)
+Thread-Index: AQHVXqOWWrDg6HQUkEyJ2ZhpB0y05acSijuAgAAa0ICAAAHvgIAAF92A
+Date:   Thu, 29 Aug 2019 23:04:09 +0000
+Message-ID: <82c4fad3fc394693a596597df0d73cc5235f7025.camel@mellanox.com>
+References: <20190829210845.41a9e193@canb.auug.org.au>
+         <3cbf3e88-53b5-0eb3-9863-c4031b9aed9f@infradead.org>
+         <52bcddef-fcf2-8de5-d15a-9e7ee2d5b14d@infradead.org>
+         <c92d20e27268f515e0d4c8a28f92c0da041c2acc.camel@mellanox.com>
+         <DM6PR21MB13379A89D3A57DCFD6E0D419CAA20@DM6PR21MB1337.namprd21.prod.outlook.com>
+In-Reply-To: <DM6PR21MB13379A89D3A57DCFD6E0D419CAA20@DM6PR21MB1337.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a82be220-2cd3-40ce-3887-08d72cd53376
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2544;
+x-ms-traffictypediagnostic: VI1PR0501MB2544:
+x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0501MB2544E21C755C67914B2C032CBEA20@VI1PR0501MB2544.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0144B30E41
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(136003)(346002)(376002)(396003)(53754006)(189003)(199004)(52314003)(13464003)(305945005)(1511001)(71200400001)(7736002)(14454004)(71190400001)(2501003)(66066001)(99286004)(3846002)(6116002)(58126008)(6246003)(26005)(54906003)(107886003)(110136005)(53936002)(11346002)(446003)(316002)(118296001)(2906002)(256004)(6486002)(86362001)(6436002)(186003)(2201001)(6512007)(8936002)(8676002)(91956017)(76116006)(66946007)(5660300002)(81156014)(66476007)(229853002)(486006)(64756008)(66556008)(66446008)(76176011)(476003)(102836004)(2616005)(25786009)(81166006)(53546011)(36756003)(4326008)(6506007)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2544;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: qsQ4G9sSpwAJDl8WcawRnJfbCw7FLSAW3SNolLJrnYQmUg0eXaymzhiNyR67xNjIGyJlnW19XsKOHfwhASUYtsB4URP0UETQCqZwBkfwHbg+11M7JXWsbBZltccp5mtQ6gsPXwnO/cPA5fdLqeGlDqLwqnm+iJvgLbpRYCEvwrg9KSxPfiU7zmsHUwUDoRDd/qCa1Dz4QdGtJ8Gegy5hLgTLDBWag8SCEX7qGWkaiZrznfEjz9NhSCljxtRXX2h4rIFYONkARvmIvXwmY5VS/Mv2RA19ThakbBnkn8Run5Kx4H7jKjFSUWv0ZH+OyIEJ145kvCkPNkCnvv3OlwKVwHSDE4MQMOXme+9E4MqcmaY3IMh1G/qyfLIMxEbOGupxQQ1+JWDxFcoogXIgC/GTtCcVuzrLijnah9dnZqyPDr0=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <68B36D1ECD9E99498F794B51581C6AE9@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190829064502.2750303-1-yhs@fb.com> <20190829064507.2750795-1-yhs@fb.com>
-In-Reply-To: <20190829064507.2750795-1-yhs@fb.com>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Thu, 29 Aug 2019 16:01:22 -0700
-Message-ID: <CAMzD94RuPs8_BHNRDjk6NDkyi=hJ+pCKeLb3ihACLYaOWz8sAA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 05/13] bpf: adding map batch processing support
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a82be220-2cd3-40ce-3887-08d72cd53376
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 23:04:09.8056
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NArBkGyyRi5kUGrDpA/44mYwxlgB0p4JPRJkYUurZCgYNXEV77Y+TB0dN4aNOgvftmQ1WfbJt1GwQKA8Dcrkeg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2544
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yonghong!
-
-Thanks for sending this series of patches and starting the discussion.
-
-On Wed, Aug 28, 2019 at 11:45 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Brian Vazquez has proposed BPF_MAP_DUMP command to look up more than one
-> map entries per syscall.
->   https://lore.kernel.org/bpf/CABCgpaU3xxX6CMMxD+1knApivtc2jLBHysDXw-0E9bQEL0qC3A@mail.gmail.com/T/#t
->
-> During discussion, we found more use cases can be supported in a similar
-> map operation batching framework. For example, batched map lookup and delete,
-> which can be really helpful for bcc.
->   https://github.com/iovisor/bcc/blob/master/tools/tcptop.py#L233-L243
->   https://github.com/iovisor/bcc/blob/master/tools/slabratetop.py#L129-L138
->
-> Also, in bcc, we have API to delete all entries in a map.
->   https://github.com/iovisor/bcc/blob/master/src/cc/api/BPFTable.h#L257-L264
->
-> For map update, batched operations also useful as sometimes applications need
-> to populate initial maps with more than one entry. For example, the below
-> example is from kernel/samples/bpf/xdp_redirect_cpu_user.c:
->   https://github.com/torvalds/linux/blob/master/samples/bpf/xdp_redirect_cpu_user.c#L543-L550
->
-> This patch addresses all the above use cases. To make uapi stable, it also
-> covers other potential use cases. Four bpf syscall subcommands are introduced:
->         BPF_MAP_LOOKUP_BATCH
->         BPF_MAP_LOOKUP_AND_DELETE_BATCH
->         BPF_MAP_UPDATE_BATCH
->         BPF_MAP_DELETE_BATCH
->
-> The UAPI attribute structure looks like:
->         struct { /* struct used by BPF_MAP_*_BATCH commands */
->                 __aligned_u64   start_key;      /* input: storing start key,
->                                                  * if NULL, starting from the beginning.
->                                                  */
->                 __aligned_u64   next_start_key; /* output: storing next batch start_key,
->                                                  * if NULL, no next key.
->                                                  */
->                 __aligned_u64   keys;           /* input/output: key buffer */
->                 __aligned_u64   values;         /* input/output: value buffer */
->                 __u32           count;          /* input: # of keys/values in
->                                                  *   or fits in keys[]/values[].
->                                                  * output: how many successful
->                                                  *   lookup/lookup_and_delete
->                                                  *   /delete/update operations.
->                                                  */
->                 __u32           map_fd;
->                 __u64           elem_flags;     /* BPF_MAP_{UPDATE,LOOKUP}_ELEM flags */
->                 __u64           flags;          /* flags for batch operation */
->         } batch;
->
-> The 'start_key' and 'next_start_key' are used to BPF_MAP_LOOKUP_BATCH,
-> BPF_MAP_LOOKUP_AND_DELETE_BATCH and BPF_MAP_DELETE_BATCH
-> to start the operation on 'start_key' and also set the
-> next batch start key in 'next_start_key'.
->
-> If 'count' is greater than 0 and the return code is 0,
->   . the 'count' may be updated to be smaller if there is less
->     elements than 'count' for the operation. In such cases,
->     'next_start_key' will be set to NULL.
->   . the 'count' remains the same. 'next_start_key' could be NULL
->     or could point to next start_key for batch processing.
->
-> If 'count' is greater than 0 and the return code is an error
-> other than -EFAULT, the kernel will try to overwrite 'count'
-> to contain the number of successful element-level (lookup,
-> lookup_and_delete, update and delete) operations. The following
-> attributes can be checked:
->   . if 'count' value is modified, the new value will be
->     the number of successful element-level operations.
->   . if 'count' value is modified, the keys[]/values[] will
->     contain correct results for new 'count' number of
->     operations for lookup[_and_delete] and update.
->
-> The implementation in this patch mimics what user space
-> did, e.g., for lookup_and_delete,
->     while(bpf_get_next_key(map, keyp, next_keyp) == 0) {
->        bpf_map_delete_elem(map, keyp);
->        bpf_map_lookup_elem(map, next_keyp, &value, flags);
->        keyp, next_keyp = next_keyp, keyp;
->     }
-> The similar loop is implemented in the kernel, and
-> each operation, bpf_get_next_key(), bpf_map_delete_elem()
-> and bpf_map_lookup_elem(), uses existing kernel functions
-> each of which has its own rcu_read_lock region, bpf_prog_active
-> protection, etc.
-> Therefore, it is totally possible that after bpf_get_next_key(),
-> the bpf_map_delete_elem() or bpf_map_lookup_elem() may fail
-> as the key may be deleted concurrently by kernel or
-> other user space processes/threads.
-> By default, the current implementation permits the loop
-> to continue, just like typical user space handling. But
-> a flag, BPF_F_ENFORCE_ENOENT, can be specified, so kernel
-> will return an error if bpf_map_delete_elem() or
-> bpf_map_lookup_elem() failed.
->
-> The high-level algorithm for BPF_MAP_LOOKUP_BATCH and
-> BPF_MAP_LOOKUP_AND_DELETE_BATCH:
->         if (start_key == NULL and next_start_key == NULL) {
->                 lookup up to 'count' keys in keys[] and fill
->                 corresponding values[], and delete those
->                 keys if BPF_MAP_LOOKUP_AND_DELETE_BATCH.
->         } else if (start_key == NULL && next_start_key != NULL) {
->                 lookup up to 'count' keys from the beginning
->                 of the map and fill keys[]/values[], delete
->                 those keys if BPF_MAP_LOOKUP_AND_DELETE_BATCH.
->                 Set 'next_start_key' for next batch operation.
->         } else if (start_key != NULL && next_start_key != NULL) {
->                 lookup to 'count' keys from 'start_key', inclusive,
->                 and fill keys[]/values[], delete those keys if
->                 BPF_MAP_LOOKUP_AND_DELETE_BATCH.
->                 Set 'next_start_key' for next batch operation.
->         }
->
-> The high-level algorithm for BPF_MAP_UPDATE_BATCH:
->         if (count != 0) {
->                 do 'count' number of updates on keys[]/values[].
->         }
->
-> The high-level algorithm for BPF_MAP_DELETE_BATCH:
->         if (count == 0) {
->                 if (start_key == NULL) {
->                         delete all elements from map.
->                 } else {
->                         delete all elements from start_key to the end of map.
->                 }
->         } else {
->                 if (start_key == NULL and next_start_key == NULL) {
->                         delete 'count' number of keys in keys[].
->                 } else if (start_key == NULL and next_start_key != NULL) {
->                         delete 'count' number of keys from the
->                         beginning of the map and set 'next_start_key'
->                         properly.
->                 } else if (start_key != NULL and next_start_keeey != NULL) {
->                         delete 'count' number of keys from 'start_key',
->                         and set 'next_start_key' properly.
->                 }
->         }
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  include/uapi/linux/bpf.h |  27 +++
->  kernel/bpf/syscall.c     | 448 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 475 insertions(+)
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 5d2fb183ee2d..576688f13e8c 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -107,6 +107,10 @@ enum bpf_cmd {
->         BPF_MAP_LOOKUP_AND_DELETE_ELEM,
->         BPF_MAP_FREEZE,
->         BPF_BTF_GET_NEXT_ID,
-> +       BPF_MAP_LOOKUP_BATCH,
-> +       BPF_MAP_LOOKUP_AND_DELETE_BATCH,
-> +       BPF_MAP_UPDATE_BATCH,
-> +       BPF_MAP_DELETE_BATCH,
->  };
->
->  enum bpf_map_type {
-> @@ -347,6 +351,9 @@ enum bpf_attach_type {
->  /* flags for BPF_PROG_QUERY */
->  #define BPF_F_QUERY_EFFECTIVE  (1U << 0)
->
-> +/* flags for BPF_MAP_*_BATCH */
-> +#define BPF_F_ENFORCE_ENOENT   (1U << 0)
-> +
->  enum bpf_stack_build_id_status {
->         /* user space need an empty entry to identify end of a trace */
->         BPF_STACK_BUILD_ID_EMPTY = 0,
-> @@ -396,6 +403,26 @@ union bpf_attr {
->                 __u64           flags;
->         };
->
-> +       struct { /* struct used by BPF_MAP_*_BATCH commands */
-> +               __aligned_u64   start_key;      /* input: storing start key,
-> +                                                * if NULL, starting from the beginning.
-> +                                                */
-> +               __aligned_u64   next_start_key; /* output: storing next batch start_key,
-> +                                                * if NULL, no next key.
-> +                                                */
-> +               __aligned_u64   keys;           /* input/output: key buffer */
-> +               __aligned_u64   values;         /* input/output: value buffer */
-> +               __u32           count;          /* input: # of keys/values in
-> +                                                *   or fits in keys[]/values[].
-> +                                                * output: how many successful
-> +                                                *   lookup/lookup_and_delete
-> +                                                *   update/delete operations.
-> +                                                */
-> +               __u32           map_fd;
-> +               __u64           elem_flags;     /* BPF_MAP_*_ELEM flags */
-> +               __u64           flags;          /* flags for batch operation */
-> +       } batch;
-> +
->         struct { /* anonymous struct used by BPF_PROG_LOAD command */
->                 __u32           prog_type;      /* one of enum bpf_prog_type */
->                 __u32           insn_cnt;
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 06308f0206e5..8746b55405f9 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -33,6 +33,17 @@
->
->  #define BPF_OBJ_FLAG_MASK   (BPF_F_RDONLY | BPF_F_WRONLY)
->
-> +#define BPF_MAP_BATCH_SWAP_KEYS(key1, key2, buf1, buf2)        \
-> +       do {                                            \
-> +               if (key1 == (buf1)) {                   \
-> +                       key1 = buf2;                    \
-> +                       key2 = buf1;                    \
-> +               } else {                                \
-> +                       key1 = buf1;                    \
-> +                       key2 = buf2;                    \
-> +               }                                       \
-> +       } while (0)                                     \
-> +
->  DEFINE_PER_CPU(int, bpf_prog_active);
->  static DEFINE_IDR(prog_idr);
->  static DEFINE_SPINLOCK(prog_idr_lock);
-> @@ -1183,6 +1194,431 @@ static int map_lookup_and_delete_elem(union bpf_attr *attr)
->         return err;
->  }
->
-> +static void __map_batch_get_attrs(const union bpf_attr *attr,
-> +                                 void __user **skey, void __user **nskey,
-> +                                 void __user **keys, void __user **values,
-> +                                 u32 *max_count, u64 *elem_flags, u64 *flags)
-> +{
-> +       *skey = u64_to_user_ptr(attr->batch.start_key);
-> +       *nskey = u64_to_user_ptr(attr->batch.next_start_key);
-> +       *keys = u64_to_user_ptr(attr->batch.keys);
-> +       *values = u64_to_user_ptr(attr->batch.values);
-> +       *max_count = attr->batch.count;
-> +       *elem_flags = attr->batch.elem_flags;
-> +       *flags = attr->batch.flags;
-> +}
-> +
-> +static int
-> +__map_lookup_delete_batch_key_in_keys(struct bpf_map *map, void *key, void *value,
-> +                                     u32 max_count, u32 key_size, u32 value_size,
-> +                                     u64 elem_flags, void __user *keys,
-> +                                     void __user *values,
-> +                                     union bpf_attr __user *uattr,
-> +                                     bool ignore_enoent)
-> +{
-> +       u32 count, missed = 0;
-> +       int ret = 0, err;
-> +
-> +       for (count = 0; count < max_count; count++) {
-> +               if (copy_from_user(key, keys + count * key_size, key_size)) {
-> +                       ret = -EFAULT;
-> +                       break;
-> +               }
-> +
-> +               ret = bpf_map_copy_value(map, key, value, elem_flags);
-> +               if (ret) {
-> +                       if (ret != -ENOENT || !ignore_enoent)
-> +                               break;
-> +
-> +                       missed++;
-> +                       continue;
-> +               }
-> +
-> +
-> +               if (copy_to_user(values + count * value_size, value, value_size)) {
-> +                       ret = -EFAULT;
-> +                       break;
-> +               }
-> +
-> +               ret = bpf_map_delete_elem(map, key);
-> +               if (ret) {
-> +                       if (ret != -ENOENT || !ignore_enoent)
-> +                               break;
-> +
-> +                       missed++;
-> +               }
-> +       }
-> +
-> +       count -= missed;
-> +       if ((!ret && missed) || (ret && ret != -EFAULT)) {
-> +               err = put_user(count, &uattr->batch.count);
-> +               ret = err ? : ret;
-> +       }
-> +
-> +       return ret;
-> +}
-> +
-> +static int map_lookup_and_delete_batch(struct bpf_map *map,
-> +                                      const union bpf_attr *attr,
-> +                                      union bpf_attr __user *uattr,
-> +                                      bool do_delete)
-> +{
-> +       u32 max_count, count = 0, key_size, roundup_key_size, value_size;
-> +       bool ignore_enoent, nextkey_is_null, copied;
-> +       void *buf = NULL, *key, *value, *next_key;
-> +       void __user *skey, *nskey, *keys, *values;
-> +       u64 elem_flags, flags, zero = 0;
-> +       int err, ret = 0;
-> +
-> +       if (map->map_type == BPF_MAP_TYPE_QUEUE ||
-> +           map->map_type == BPF_MAP_TYPE_STACK)
-> +               return -ENOTSUPP;
-> +
-> +       __map_batch_get_attrs(attr, &skey, &nskey, &keys, &values, &max_count,
-> +                             &elem_flags, &flags);
-> +
-> +       if (elem_flags & ~BPF_F_LOCK || flags & ~BPF_F_ENFORCE_ENOENT)
-> +               return -EINVAL;
-> +
-> +       if (!max_count)
-> +               return 0;
-> +
-> +       /* The following max_count/skey/nskey combinations are supported:
-> +        * max_count != 0 && !skey && !nskey: loop/delete max_count elements in keys[]/values[].
-> +        * max_count != 0 && !skey && nskey: loop/delete max_count elements starting from map start.
-> +        * max_count != 0 && skey && nskey: loop/delete max_count elements starting from skey.
-> +        */
-> +       if (skey && !nskey)
-> +               return -EINVAL;
-> +
-> +       /* allocate space for two keys and one value. */
-> +       key_size = map->key_size;
-> +       roundup_key_size = round_up(map->key_size, 8);
-> +       value_size = bpf_map_value_size(map);
-> +       buf = kmalloc(roundup_key_size * 2 + value_size, GFP_USER | __GFP_NOWARN);
-> +       if (!buf)
-> +               return -ENOMEM;
-> +
-> +       key = buf;
-> +       next_key = buf + roundup_key_size;
-> +       value = buf + roundup_key_size * 2;
-> +       ignore_enoent = !(flags & BPF_F_ENFORCE_ENOENT);
-> +
-> +       if (!skey && !nskey) {
-> +               /* handle cases where keys in keys[] */
-> +               ret = __map_lookup_delete_batch_key_in_keys(map, key, value, max_count,
-> +                                                           key_size, value_size,
-> +                                                           elem_flags, keys, values,
-> +                                                           uattr, ignore_enoent);
-> +               goto out;
-> +       }
-> +
-> +       /* Get the first key. */
-> +       if (!skey) {
-> +               ret = bpf_map_get_next_key(map, NULL, key);
-> +               if (ret) {
-> +                       nextkey_is_null = true;
-> +                       goto after_loop;
-> +               }
-> +       } else if (copy_from_user(key, skey, key_size)) {
-> +               ret = -EFAULT;
-> +               goto out;
-> +       }
-> +
-> +       /* Copy the first key/value pair */
-> +       ret = bpf_map_copy_value(map, key, value, elem_flags);
-> +       if (ret) {
-> +               if (skey)
-> +                       goto out;
-> +
-> +               nextkey_is_null = true;
-> +               goto after_loop;
-> +       }
-> +
-> +       if (copy_to_user(keys, key, key_size) ||
-> +           copy_to_user(values, value, value_size)) {
-> +               ret = -EFAULT;
-> +               goto out;
-> +       }
-> +
-> +       /* We will always try to get next_key first
-> +        * and then delete the current key.
-> +        */
-> +       ret = bpf_map_get_next_key(map, key, next_key);
-
-One of the issues I see in this implementation is that is still
-relying on the existing functions and has the same consistency
-problems that my attempt had.
-
-The problem happens when you are trying to do batch lookup on a
-hashmap and when executing bpf_map_get_next_key(map, key, next_key)
-the key is removed, then that call will return the first key and you'd
-start iterating the map from the beginning again and retrieve
-duplicate information.
-
-Note that sometimes you can also start from the same bucket when the
-key is updated while dumping it because it can be inserted on the head
-of the bucket so you could potentially revisit elements that you had
-already visited.
-
-From previous discussion my understanding was that what we wanted was
-to pursue 'atomic' compounded operations first and after that, try to
-batch them. Although I don't think there's an easy way of batching and
-being consistent at the same time.
+T24gVGh1LCAyMDE5LTA4LTI5IGF0IDIxOjQ4ICswMDAwLCBIYWl5YW5nIFpoYW5nIHdyb3RlOg0K
+PiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gRnJvbTogU2FlZWQgTWFoYW1lZWQg
+PHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCAyOSwgMjAx
+OSAyOjMyIFBNDQo+ID4gVG86IHNmckBjYW5iLmF1dWcub3JnLmF1OyBFcmFuIEJlbiBFbGlzaGEg
+PGVyYW5iZUBtZWxsYW5veC5jb20+Ow0KPiA+IGxpbnV4LQ0KPiA+IG5leHRAdmdlci5rZXJuZWwu
+b3JnOyByZHVubGFwQGluZnJhZGVhZC5vcmc7IEhhaXlhbmcgWmhhbmcNCj4gPiA8aGFpeWFuZ3pA
+bWljcm9zb2Z0LmNvbT4NCj4gPiBDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbmV0
+ZGV2QHZnZXIua2VybmVsLm9yZzsgTGVvbg0KPiA+IFJvbWFub3Zza3kgPGxlb25yb0BtZWxsYW5v
+eC5jb20+DQo+ID4gU3ViamVjdDogUmU6IGxpbnV4LW5leHQ6IFRyZWUgZm9yIEF1ZyAyOSAobWx4
+NSkNCj4gPiANCj4gPiBPbiBUaHUsIDIwMTktMDgtMjkgYXQgMTI6NTUgLTA3MDAsIFJhbmR5IER1
+bmxhcCB3cm90ZToNCj4gPiA+IE9uIDgvMjkvMTkgMTI6NTQgUE0sIFJhbmR5IER1bmxhcCB3cm90
+ZToNCj4gPiA+ID4gT24gOC8yOS8xOSA0OjA4IEFNLCBTdGVwaGVuIFJvdGh3ZWxsIHdyb3RlOg0K
+PiA+ID4gPiA+IEhpIGFsbCwNCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBDaGFuZ2VzIHNpbmNlIDIw
+MTkwODI4Og0KPiA+ID4gPiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gb24geDg2XzY0Og0KPiA+ID4g
+PiB3aGVuIENPTkZJR19QQ0lfSFlQRVJWPW0NCj4gPiA+IA0KPiA+ID4gYW5kIENPTkZJR19QQ0lf
+SFlQRVJWX0lOVEVSRkFDRT1tDQo+ID4gPiANCj4gPiANCj4gPiBIYWl5YW5nIGFuZCBFcmFuLCBJ
+IHRoaW5rIENPTkZJR19QQ0lfSFlQRVJWX0lOVEVSRkFDRSB3YXMgbmV2ZXINCj4gPiBzdXBwb3Nl
+ZCB0byBiZSBhIG1vZHVsZSA/IGl0IHN1cHBvc2VkIHRvIHByb3ZpZGUgYW4gYWx3YXlzDQo+ID4g
+YXZhaWxhYmxlDQo+ID4gaW50ZXJmYWNlIHRvIGRyaXZlcnMgLi4NCj4gPiANCj4gPiBBbnl3YXks
+IG1heWJlIHdlIG5lZWQgdG8gaW1wbHkgQ09ORklHX1BDSV9IWVBFUlZfSU5URVJGQUNFIGluIG1s
+eDUuDQo+IA0KPiBUaGUgc3ltYm9saWMgZGVwZW5kZW5jeSBieSBkcml2ZXIgbWx4NWUsICBhdXRv
+bWF0aWNhbGx5IHRyaWdnZXJzDQo+IGxvYWRpbmcgb2YNCj4gcGNpX2h5cGVydl9pbnRlcmZhY2Ug
+bW9kdWxlLiBBbmQgdGhpcyBtb2R1bGUgY2FuIGJlIGxvYWRlZCBpbiBhbnkNCj4gcGxhdGZvcm1z
+Lg0KPiANCg0KVGhpcyBvbmx5IHdvcmtzIHdoZW4gYm90aCBhcmUgbW9kdWxlcy4gDQoNCg0KPiBD
+dXJyZW50bHksIG1seDVlIGRyaXZlciBoYXMgI2lmDQo+IElTX0VOQUJMRUQoQ09ORklHX1BDSV9I
+WVBFUlZfSU5URVJGQUNFKQ0KPiBhcm91bmQgdGhlIGNvZGUgdXNpbmcgdGhlIGludGVyZmFjZS4N
+Cj4gDQo+IEkgYWdyZWUgLS0NCj4gQWRkaW5nICJzZWxlY3QgUENJX0hZUEVSVl9JTlRFUkZBQ0Ui
+IGZvciBtbHg1ZSB3aWxsIGNsZWFuIHVwIHRoZXNlDQo+ICNpZidzLg0KPiANCg0KTm8sIG5vdCAi
+c2VsZWN0IiwgImltcGx5Ii4NCg0KaWYgb25lIHdhbnRzIFBDSV9IWVBFUlZfSU5URVJGQUNFIG9m
+ZiwgaW1wbHkgd2lsbCBrZWVwIGl0IG9mZiBmb3IgeW91Lg0KDQo+IFRoYW5rcywNCj4gLSBIYWl5
+YW5nDQo=
