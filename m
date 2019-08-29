@@ -2,142 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7EBAA101A
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 05:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB9CA1029
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 06:07:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727252AbfH2D6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 23:58:08 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:53122 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726079AbfH2D6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 23:58:07 -0400
-Received: by mail-io1-f71.google.com with SMTP id q5so2328111iof.19
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 20:58:07 -0700 (PDT)
+        id S1725855AbfH2EH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 00:07:28 -0400
+Received: from mail-pf1-f177.google.com ([209.85.210.177]:45472 "EHLO
+        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725821AbfH2EH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 00:07:28 -0400
+Received: by mail-pf1-f177.google.com with SMTP id w26so1125252pfq.12;
+        Wed, 28 Aug 2019 21:07:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=w0kt/ZUsbjTm2T8fFDi3JgxkmlUidJXSFufUbXNNKCE=;
+        b=qhzOR9cJ6L7DZn1HkdBMFCRqg/z+yoqvDqSweHrPdaz6+PZL2QPpWblX0pPUHjMZTQ
+         7zbIceM7lFnWxlqr+lWpgCbe2rr95iHOall7VH87dj235uRsoOwSJoe4rJJbxu8YlvSw
+         WjC7vA+pgTOfKsH9gIO1IieiiEP4xTJiq0Zts4hsbevNxP2dsN5xioHuUDJpzI3vRXJS
+         0qfKFjI6M2VS/85HEw1Gjcb2I9FSxvRQ5RC1iikYapMkGmjsg3j+THXf0kf3gLkY338M
+         +zaSyJ/mrt7+IWekig9GofhMHjfGa3uHIAWiwDt3w/5Y1u+thX+aJykyMf5KBUlMLVWR
+         dbVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=tadFVeIOZOH0yr8dBxtTfxDdH48rZZJcwvhVqN0Ob+0=;
-        b=aAu4IBYAULZnAOr3U2gEHXzz22QxiA/GHVG43eJr+QYftBdD3qe3g+oGXIpsGeDXnt
-         FvX3rc1XHYtVVbS7y4fjMw0MfsdV8ranainubJPwAi5BUWLWUGmbtgWN4MEYg5uca4tq
-         mBYIphsJRU8KJtOa2BVKWzrB1XtON7+jpOIIRcvrPDjPmOI7xXBOHMusmBIKQORtWdzL
-         P7z1eQV9SpkLuvSJyTLwrNz7z32Vb6/Eedz2QLeDmtiDGSaqsE08bINltGraH8y70d3g
-         zrBiNv8M8DpYBx47Ft4TAnrM9qACnbjnC1Rorr57Zl3MsBp5TKBJje5ha9tSvHnIroVv
-         lcoQ==
-X-Gm-Message-State: APjAAAUK0GLZLFF8WGi6udj2jjd0Q1wv6sWGny8Lx9X5F1xM7bSEhRIv
-        YLS9aKwP67IgnIpt9AusBEZQtMi+1sk4jF1OohHT7RhUbGf+
-X-Google-Smtp-Source: APXvYqwMqjrkCA5Nz6C2Kl02P75sJtglRiLadVdDvvfuuKk8pEhv2NYmmL67pWiPfKlP4Or+i1JX1rFE7KWTCJNFZgk3BFutjz7a
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=w0kt/ZUsbjTm2T8fFDi3JgxkmlUidJXSFufUbXNNKCE=;
+        b=QnoardO0SPx6fOb+hrEynIoVdT001907JeCN0ZDnV9i42Zl9vqdh9CG5W0P1nz9HNz
+         vgUFBzLsAlYH1bMAhUVK1K2jwRltcp2+nrkjTT5pShplNKAQN6bnZHBp2I9cWL0gGMI3
+         2txMs6NAvE7+/tXWvNkZuOgCLxapTLtegTNfwrfxbgLV2NVhX9LtA6J9xxvAVmn4nH75
+         SB9ACsgZKgzIzNgSLv93DaAjuvi7PsPEAm1FGAQIqeoqzM730ktMOZjUyGrot9F2ETRd
+         qVjwm9ah1ztXgEvfvzSLM79gYt6Uoej3Iu8+g6WuTcaRoO4obpznnyMXWUq7+Yqd19fU
+         cQ6g==
+X-Gm-Message-State: APjAAAXfUouDLhxDROmwOxxQJYwX/NlULbOHqv+WATTk3xTTnxRsutv1
+        n3t+sSzRlBlO4655JKIjnUE=
+X-Google-Smtp-Source: APXvYqyPHkJAYhQSNPZHuxydg9VayItwubA4Zdtoip62p7IyAUioHvt20v/oeofIyrsg/afivZqLcw==
+X-Received: by 2002:a63:10a:: with SMTP id 10mr6495671pgb.281.1567051646997;
+        Wed, 28 Aug 2019 21:07:26 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::1e41])
+        by smtp.gmail.com with ESMTPSA id a186sm679089pge.0.2019.08.28.21.07.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 28 Aug 2019 21:07:26 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 21:07:24 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andy Lutomirski <luto@amacapital.net>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+Message-ID: <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
+References: <20190827205213.456318-1-ast@kernel.org>
+ <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+ <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
+ <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
+ <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
+ <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c301:: with SMTP id a1mr2303953iok.1.1567051086634;
- Wed, 28 Aug 2019 20:58:06 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 20:58:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005d2a1e0591398391@google.com>
-Subject: BUG: corrupted list in p9_fd_cancelled (2)
-From:   syzbot <syzbot+1d26c4ed77bc6c5ed5e6@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, ericvh@gmail.com,
-        linux-kernel@vger.kernel.org, lucho@ionkov.net,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Aug 28, 2019 at 05:45:47PM -0700, Andy Lutomirski wrote:
+> > 
+> >> It seems like you are specifically trying to add a new switch to turn
+> >> as much of BPF as possible on and off.  Why?
+> > 
+> > Didn't I explain it several times already with multiple examples
+> > from systemd, daemons, bpftrace ?
+> > 
+> > Let's try again.
+> > Take your laptop with linux distro.
+> > You're the only user there. I'm assuming you're not sharing it with
+> > partner and kids. This is my definition of 'single user system'.
+> > You can sudo on it at any time, but obviously prefer to run as many
+> > apps as possible without cap_sys_admin.
+> > Now you found some awesome open source app on the web that monitors
+> > the health of the kernel and will pop a nice message on a screen if
+> > something is wrong. Currently this app needs root. You hesitate,
+> > but the apps is so useful and it has strong upstream code review process
+> > that you keep running it 24/7.
+> > This is open source app. New versions come. You upgrade.
+> > You have enough trust in that app that you keep running it as root.
+> > But there is always a chance that new version doing accidentaly
+> > something stupid as 'kill -9 -1'. It's an open source app at the end.
+> > 
+> > Now I come with this CAP* proposal to make this app safer.
+> > I'm not making your system more secure and not making this app
+> > more secure. I can only make your laptop safer for day to day work
+> > by limiting the operations this app can do.
+> > This particular app monitros the kernel via bpf and tracing.
+> > Hence you can give it CAP_TRACING and CAP_BPF and drop the rest.
+> 
+> This won’t make me much more comfortable, since CAP_BPF lets it do an ever-growing set of nasty things. I’d much rather one or both of two things happen:
+> 
+> 1. Give it CAP_TRACING only. It can leak my data, but it’s rather hard for it to crash my laptop, lose data, or cause other shenanigans.
+> 
+> 2. Improve it a bit do all the privileged ops are wrapped by capset().
+> 
+> Does this make sense?  I’m a security person on occasion. I find vulnerabilities and exploit them deliberately and I break things by accident on a regular basis. In my considered opinion, CAP_TRACING alone, even extended to cover part of BPF as I’ve described, is decently safe. Getting root with just CAP_TRACING will be decently challenging, especially if I don’t get to read things like sshd’s memory, and improvements to mitigate even that could be added.  I am quite confident that attacks starting with CAP_TRACING will have clear audit signatures if auditing is on.  I am also confident that CAP_BPF *will* allow DoS and likely privilege escalation, and this will only get more likely as BPF gets more widely used. And, if BPF-based auditing ever becomes a thing, writing to the audit daemon’s maps will be a great way to cover one’s tracks.
 
-syzbot found the following crash on:
+CAP_TRACING, as I'm proposing it, will allow full tracefs access.
+I think Steven and Massami prefer that as well.
+That includes kprobe with probe_kernel_read.
+That also means mini-DoS by installing kprobes everywhere or running too much ftrace.
 
-HEAD commit:    36146921 Merge tag 'hyperv-fixes-signed' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=169f691e600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6919752cc1b760b4
-dashboard link: https://syzkaller.appspot.com/bug?extid=1d26c4ed77bc6c5ed5e6
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14d03ba6600000
+CAP_TRACING will allow perf_event_open() too.
+Which also means mini-DoS with too many events.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1d26c4ed77bc6c5ed5e6@syzkaller.appspotmail.com
+CAP_TRACING with or without CAP_BPF is safe, but it's not secure.
+And that's what I need to make above 'open source kernel health app' to be safe.
 
-list_del corruption, ffff88808ecdbfb0->next is LIST_POISON1  
-(dead000000000100)
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 20174 Comm: syz-executor.1 Not tainted 5.3.0-rc5+ #125
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:__list_del_entry_valid.cold+0x23/0x4f lib/list_debug.c:45
-Code: e8 d5 06 1e fe 0f 0b 4c 89 f6 48 c7 c7 e0 26 c6 87 e8 c4 06 1e fe 0f  
-0b 4c 89 ea 4c 89 f6 48 c7 c7 20 26 c6 87 e8 b0 06 1e fe <0f> 0b 4c 89 e2  
-4c 89 f6 48 c7 c7 80 26 c6 87 e8 9c 06 1e fe 0f 0b
-RSP: 0018:ffff8880994076d8 EFLAGS: 00010286
-RAX: 000000000000004e RBX: 1ffff11013280ee9 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815c2526 RDI: ffffed1013280ecd
-RBP: ffff8880994076f0 R08: 000000000000004e R09: ffffed1015d060d1
-R10: ffffed1015d060d0 R11: ffff8880ae830687 R12: dead000000000122
-R13: dead000000000100 R14: ffff88808ecdbfb0 R15: ffff88808ecdbfb8
-FS:  00007fb2aca54700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffee6574f58 CR3: 00000000a8e6d000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  __list_del_entry include/linux/list.h:131 [inline]
-  list_del include/linux/list.h:139 [inline]
-  p9_fd_cancelled+0x3c/0x1c0 net/9p/trans_fd.c:710
-  p9_client_flush+0x1b7/0x1f0 net/9p/client.c:674
-  p9_client_rpc+0x112f/0x12a0 net/9p/client.c:781
-  p9_client_version net/9p/client.c:952 [inline]
-  p9_client_create+0xb7f/0x1430 net/9p/client.c:1052
-  v9fs_session_init+0x1e7/0x18c0 fs/9p/v9fs.c:406
-  v9fs_mount+0x7d/0x920 fs/9p/vfs_super.c:120
-  legacy_get_tree+0x108/0x220 fs/fs_context.c:661
-  vfs_get_tree+0x8e/0x390 fs/super.c:1413
-  do_new_mount fs/namespace.c:2791 [inline]
-  do_mount+0x13b3/0x1c30 fs/namespace.c:3111
-  ksys_mount+0xdb/0x150 fs/namespace.c:3320
-  __do_sys_mount fs/namespace.c:3334 [inline]
-  __se_sys_mount fs/namespace.c:3331 [inline]
-  __x64_sys_mount+0xbe/0x150 fs/namespace.c:3331
-  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459879
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fb2aca53c78 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 0000000000459879
-RDX: 00000000200002c0 RSI: 0000000020000040 RDI: 0000000000000000
-RBP: 000000000075bfc8 R08: 0000000020000400 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fb2aca546d4
-R13: 00000000004c5e2f R14: 00000000004da930 R15: 00000000ffffffff
-Modules linked in:
----[ end trace c76f5f29f0af3347 ]---
-RIP: 0010:__list_del_entry_valid.cold+0x23/0x4f lib/list_debug.c:45
-Code: e8 d5 06 1e fe 0f 0b 4c 89 f6 48 c7 c7 e0 26 c6 87 e8 c4 06 1e fe 0f  
-0b 4c 89 ea 4c 89 f6 48 c7 c7 20 26 c6 87 e8 b0 06 1e fe <0f> 0b 4c 89 e2  
-4c 89 f6 48 c7 c7 80 26 c6 87 e8 9c 06 1e fe 0f 0b
-RSP: 0018:ffff8880994076d8 EFLAGS: 00010286
-RAX: 000000000000004e RBX: 1ffff11013280ee9 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815c2526 RDI: ffffed1013280ecd
-RBP: ffff8880994076f0 R08: 000000000000004e R09: ffffed1015d060d1
-R10: ffffed1015d060d0 R11: ffff8880ae830687 R12: dead000000000122
-R13: dead000000000100 R14: ffff88808ecdbfb0 R15: ffff88808ecdbfb8
-FS:  00007fb2aca54700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffee6574f58 CR3: 00000000a8e6d000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+In real world we have tens of such apps and they use all of the things that
+I'm allowing via CAP_BPF + CAP_NET_ADMIN + CAP_TRACING.
+Some apps will need only two out of three.
+I don't see any further possibility to shrink the scope of the proposal.
 
+> I’m trying to convince you that bpf’s security model can be made better
+> than what you’re proposing. I’m genuinely not trying to get in your way.
+> I’m trying to help you improve bpf.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+If you really want to help please don't reject the real use cases
+just because they don't fit into your proposal.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+There is not a single feature in BPF land that we did because we simply
+wanted to. For every feature we drilled into use cases to make sure
+there is a real user behind it.
+Same thing with CAP_BPF. I'm defining it to include GET_FD_BY_ID because
+apps use it and they need to made safer.
+
+Anyway the v2 version of the patch with CAP_TRACING and CAP_BPF is on the way.
+Hopefully later tonight or tomorrow.
+
