@@ -2,260 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3422CA195D
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 13:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68890A19A1
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 14:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727320AbfH2Lu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 07:50:29 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:33857 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbfH2Lu3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 07:50:29 -0400
-Received: by mail-ed1-f66.google.com with SMTP id s49so3778842edb.1
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 04:50:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NIBZFTASbWij8fDrpn+uvXXeZQO1/Q8U2w2qwOs71UE=;
-        b=b82+Rf4JwpB3pqspzfDmXe+Wyv0mjVgUmcqyDcP8xnHG/lQe1WqLBaE4lu2ffJjl4R
-         GlOzU6oZbBvfoVQB+X1+pCulzLMmIKCcBKqWOi3q7Sxo/1KnFFO3FTmXF1TGElZxuH+0
-         i6wlleIRdm6RThmmMsaiLBbbF8jaqxZGgXsqiJQwTF5TMeOP372YfxmGJyuF1flArazK
-         VMIea3YpbKSs9DEyg5TqZu7Nwtc0s7LqS+cLB3txI1Wj8OVBg+WkqaWp4mmaS8QjgZYs
-         LzslQ0ntnyomg88OxSL+vK5A79CxNhX5s4qKYZzc9oth2bEaA9+MrDGqlWwEwOirDGi4
-         9R9Q==
+        id S1727189AbfH2MKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 08:10:09 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:48805 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727014AbfH2MKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 08:10:08 -0400
+Received: by mail-io1-f71.google.com with SMTP id 67so3725656iob.15
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 05:10:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NIBZFTASbWij8fDrpn+uvXXeZQO1/Q8U2w2qwOs71UE=;
-        b=f5UU8dgrdWpKCk+Zwss8ljZYNMx3Msm+cTcv79zrzg4gbJJNxI2n+k2AC71WMCZZ4g
-         vRVDWkYsdiAZwGRkV6CocOur7Q3c/MPjW+PTFcDNB3lazlLl1DabkK1axZg45kEflqxx
-         sHpQJLXO9hu/T158pcpfEqpIJXVMz6PAaWz2Hk7/OhuT8rrq0g333sNW4eetfiJTCLCK
-         GnLsAxqG7UrOZfZ/wFh4hSyLauBjRdrEj6SzKf8ceqJGF18Sj1dlXsVI82kOMUIRIp0d
-         3NZe6spbuKZj/9TiPSBwUYFyc6v4fmQ4BUhZ2g1H/WASb9LyaT3FnRwZONMJmLjykzVE
-         r29g==
-X-Gm-Message-State: APjAAAVy1MD3MVem/C5ihMnYH+h/Ufo894+VSC2SezLphCxLu/l+ram9
-        8fei+GCb1PDYa6z8JOKQSyE+/QUegnHfeFtqHZQ=
-X-Google-Smtp-Source: APXvYqyeegyvJG7sAUNKxB3chkvLU+fS1PuobG+cLoHWdxDTV0KIRAw7LS6XFcEVYo0lcq+gmqFBk5MIxEdBVBptzws=
-X-Received: by 2002:a50:9dc8:: with SMTP id l8mr9380077edk.108.1567079426691;
- Thu, 29 Aug 2019 04:50:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=P1PYtGhR+nPJP5/MoLNmKeczOItoTzGhqMoW1iD5Ejg=;
+        b=shjVrWB7f+EyeM+rIEBwc0ttBkpGUW8W/8JhthoCIXQZojAN0o3DusUF8SKO29YLU1
+         av2/YIjz01NCkSicCqvNrsg5nxKLnDgTq5yaI33A+6xmDfQK3Z55Drpu+zAH+TlktTqq
+         aPPnfMVL7+t7x9uiVlnyXCWEmu/p5bhEhphPKo+8K6A0YqCQcuiuMoZpRxQu56vSvrrt
+         XZhS76jk4QzA45RZNfUMqbOVeqN5Rcd6MCFjEF8SRUq/TH7vopFfOqoo8apymarXnL1J
+         Y/vnGHnkTGa7PrW41kkThEK88NJpYj/n2l8ltHSS9LR619fmprMqpRNVGiM71A0N3Asx
+         l73g==
+X-Gm-Message-State: APjAAAWVciPzG+UhqAkH353lL/sCKxzQnx79Yv8c5r6EzkJpaF1Cpj5w
+        JZ0wzRn+WnIo6PaPgPhhJnzZfZtYoP7DNzU2PdfJL4o28QLs
+X-Google-Smtp-Source: APXvYqwKU0LnZmIscAtx+UWMsJ2X0GkN2Gmiz6Fv5gvajQ/lXxMcFNyhnkq6T4Et/BCqZAl0Akxpp4e/5LYmXb+Ygua1x6iMp0Ju
 MIME-Version: 1.0
-References: <20190825184454.14678-1-olteanv@gmail.com> <20190825184454.14678-3-olteanv@gmail.com>
-In-Reply-To: <20190825184454.14678-3-olteanv@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 29 Aug 2019 14:50:14 +0300
-Message-ID: <CA+h21hq=VVw0p0OjGaPx2-c4FE1ge-STRVHYZ6P62c-+_xW0nw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 2/2] net: dsa: tag_8021q: Restore bridge VLANs
- when enabling vlan_filtering
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:81cc:: with SMTP id t12mr10935890iol.157.1567080608044;
+ Thu, 29 Aug 2019 05:10:08 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 05:10:08 -0700
+In-Reply-To: <000000000000e695c1058fb26925@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fa1d4a0591406266@google.com>
+Subject: Re: KASAN: use-after-free Read in rxrpc_send_keepalive
+From:   syzbot <syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vivien,
+syzbot has found a reproducer for the following crash on:
 
-On Sun, 25 Aug 2019 at 21:46, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> The bridge core assumes that enabling/disabling vlan_filtering will
-> translate into the simple toggling of a flag for switchdev drivers.
->
-> That is clearly not the case for sja1105, which alters the VLAN table
-> and the pvids in order to obtain port separation in standalone mode.
->
-> There are 2 parts to the issue.
->
-> First, tag_8021q changes the pvid to a unique per-port rx_vid for frame
-> identification. But we need to disable tag_8021q when vlan_filtering
-> kicks in, and at that point, the VLAN configured as pvid will have to be
-> removed from the filtering table of the ports. With an invalid pvid, the
-> ports will drop all traffic.  Since the bridge will not call any vlan
-> operation through switchdev after enabling vlan_filtering, we need to
-> ensure we're in a functional state ourselves. Hence read the pvid that
-> the bridge is aware of, and program that into our ports.
->
-> Secondly, tag_8021q uses the 1024-3071 range privately in
-> vlan_filtering=0 mode. Had the user installed one of these VLANs during
-> a previous vlan_filtering=1 session, then upon the next tag_8021q
-> cleanup for vlan_filtering to kick in again, VLANs in that range will
-> get deleted unconditionally, hence breaking user expectation. So when
-> deleting the VLANs, check if the bridge had knowledge about them, and if
-> it did, re-apply the settings. Wrap this logic inside a
-> dsa_8021q_vid_apply helper function to reduce code duplication.
->
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  net/dsa/tag_8021q.c | 91 +++++++++++++++++++++++++++++++++++----------
->  1 file changed, 71 insertions(+), 20 deletions(-)
->
-> diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-> index 67a1bc635a7b..81f943e365b9 100644
-> --- a/net/dsa/tag_8021q.c
-> +++ b/net/dsa/tag_8021q.c
-> @@ -93,6 +93,68 @@ int dsa_8021q_rx_source_port(u16 vid)
->  }
->  EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
->
-> +static int dsa_8021q_restore_pvid(struct dsa_switch *ds, int port)
-> +{
-> +       struct bridge_vlan_info vinfo;
-> +       struct net_device *slave;
-> +       u16 pvid;
-> +       int err;
-> +
-> +       if (!dsa_is_user_port(ds, port))
-> +               return 0;
-> +
-> +       slave = ds->ports[port].slave;
-> +
-> +       err = br_vlan_get_pvid(slave, &pvid);
-> +       if (err < 0) {
-> +               dev_err(ds->dev, "Couldn't determine bridge PVID\n");
-> +               return err;
-> +       }
-> +
-> +       err = br_vlan_get_info(slave, pvid, &vinfo);
-> +       if (err < 0) {
-> +               dev_err(ds->dev, "Couldn't determine PVID attributes\n");
-> +               return err;
-> +       }
-> +
-> +       return dsa_port_vid_add(&ds->ports[port], pvid, vinfo.flags);
+HEAD commit:    ed2393ca Add linux-next specific files for 20190827
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=156adb1e600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2ef5940a07ed45f4
+dashboard link: https://syzkaller.appspot.com/bug?extid=d850c266e3df14da1d31
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167ab582600000
 
-If the bridge had installed a dsa_8021q VLAN here, I need to use the
-dsa_slave_vid_add logic to restore it. The dsa_8021q flags on the CPU
-port are "ingress tagged", but that may not be the case for the bridge
-VLAN.
-Should I expose dsa_slave_vlan_add in dsa_priv.h, or should I just
-open-code another dsa_port_vid_add for dp->cpu_dp, duplicating a bit
-of code from dsa_slave_vlan_add?
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
 
-> +}
-> +
-> +/* If @enabled is true, installs @vid with @flags into the switch port's HW
-> + * filter.
-> + * If @enabled is false, deletes @vid (ignores @flags) from the port. Had the
-> + * user explicitly configured this @vid through the bridge core, then the @vid
-> + * is installed again, but this time with the flags from the bridge layer.
-> + */
-> +static int dsa_8021q_vid_apply(struct dsa_switch *ds, int port, u16 vid,
-> +                              u16 flags, bool enabled)
-> +{
-> +       struct dsa_port *dp = &ds->ports[port];
-> +       struct bridge_vlan_info vinfo;
-> +       int err;
-> +
-> +       if (enabled)
-> +               return dsa_port_vid_add(dp, vid, flags);
-> +
-> +       err = dsa_port_vid_del(dp, vid);
-> +       if (err < 0)
-> +               return err;
-> +
-> +       /* Nothing to restore from the bridge for a non-user port */
-> +       if (!dsa_is_user_port(ds, port))
-> +               return 0;
-> +
-> +       err = br_vlan_get_info(dp->slave, vid, &vinfo);
-> +       /* Couldn't determine bridge attributes for this vid,
-> +        * it means the bridge had not configured it.
-> +        */
-> +       if (err < 0)
-> +               return 0;
-> +
-> +       /* Restore the VID from the bridge */
-> +       return dsa_port_vid_add(dp, vid, vinfo.flags);
-> +}
-> +
->  /* RX VLAN tagging (left) and TX VLAN tagging (right) setup shown for a single
->   * front-panel switch port (here swp0).
->   *
-> @@ -148,8 +210,6 @@ EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
->  int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
->  {
->         int upstream = dsa_upstream_port(ds, port);
-> -       struct dsa_port *dp = &ds->ports[port];
-> -       struct dsa_port *upstream_dp = &ds->ports[upstream];
->         u16 rx_vid = dsa_8021q_rx_vid(ds, port);
->         u16 tx_vid = dsa_8021q_tx_vid(ds, port);
->         int i, err;
-> @@ -166,7 +226,6 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
->          * restrictions, so there are no concerns about leaking traffic.
->          */
->         for (i = 0; i < ds->num_ports; i++) {
-> -               struct dsa_port *other_dp = &ds->ports[i];
->                 u16 flags;
->
->                 if (i == upstream)
-> @@ -179,10 +238,7 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
->                         /* The RX VID is a regular VLAN on all others */
->                         flags = BRIDGE_VLAN_INFO_UNTAGGED;
->
-> -               if (enabled)
-> -                       err = dsa_port_vid_add(other_dp, rx_vid, flags);
-> -               else
-> -                       err = dsa_port_vid_del(other_dp, rx_vid);
-> +               err = dsa_8021q_vid_apply(ds, i, rx_vid, flags, enabled);
->                 if (err) {
->                         dev_err(ds->dev, "Failed to apply RX VID %d to port %d: %d\n",
->                                 rx_vid, port, err);
-> @@ -193,10 +249,7 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
->         /* CPU port needs to see this port's RX VID
->          * as tagged egress.
->          */
-> -       if (enabled)
-> -               err = dsa_port_vid_add(upstream_dp, rx_vid, 0);
-> -       else
-> -               err = dsa_port_vid_del(upstream_dp, rx_vid);
-> +       err = dsa_8021q_vid_apply(ds, upstream, rx_vid, 0, enabled);
->         if (err) {
->                 dev_err(ds->dev, "Failed to apply RX VID %d to port %d: %d\n",
->                         rx_vid, port, err);
-> @@ -204,26 +257,24 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
->         }
->
->         /* Finally apply the TX VID on this port and on the CPU port */
-> -       if (enabled)
-> -               err = dsa_port_vid_add(dp, tx_vid, BRIDGE_VLAN_INFO_UNTAGGED);
-> -       else
-> -               err = dsa_port_vid_del(dp, tx_vid);
-> +       err = dsa_8021q_vid_apply(ds, port, tx_vid, BRIDGE_VLAN_INFO_UNTAGGED,
-> +                                 enabled);
->         if (err) {
->                 dev_err(ds->dev, "Failed to apply TX VID %d on port %d: %d\n",
->                         tx_vid, port, err);
->                 return err;
->         }
-> -       if (enabled)
-> -               err = dsa_port_vid_add(upstream_dp, tx_vid, 0);
-> -       else
-> -               err = dsa_port_vid_del(upstream_dp, tx_vid);
-> +       err = dsa_8021q_vid_apply(ds, upstream, tx_vid, 0, enabled);
->         if (err) {
->                 dev_err(ds->dev, "Failed to apply TX VID %d on port %d: %d\n",
->                         tx_vid, upstream, err);
->                 return err;
->         }
->
-> -       return 0;
-> +       if (!enabled)
-> +               err = dsa_8021q_restore_pvid(ds, port);
-> +
-> +       return err;
->  }
->  EXPORT_SYMBOL_GPL(dsa_port_setup_8021q_tagging);
->
-> --
-> 2.17.1
->
+IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
+==================================================================
+BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940  
+net/rxrpc/output.c:634
+Read of size 8 at addr ffff888086b01218 by task kworker/0:1/12
 
-Thanks,
--Vladimir
+CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.3.0-rc6-next-20190827 #74
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: krxrpcd rxrpc_peer_keepalive_worker
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+  kasan_report+0x12/0x20 mm/kasan/common.c:634
+  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  rxrpc_send_keepalive+0x8a2/0x940 net/rxrpc/output.c:634
+  rxrpc_peer_keepalive_dispatch net/rxrpc/peer_event.c:369 [inline]
+  rxrpc_peer_keepalive_worker+0x7be/0xd02 net/rxrpc/peer_event.c:430
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Allocated by task 8741:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:510 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
+  __do_kmalloc mm/slab.c:3655 [inline]
+  __kmalloc+0x163/0x770 mm/slab.c:3664
+  kmalloc_array include/linux/slab.h:614 [inline]
+  kcalloc include/linux/slab.h:625 [inline]
+  alloc_pipe_info+0x199/0x420 fs/pipe.c:676
+  get_pipe_inode fs/pipe.c:738 [inline]
+  create_pipe_files+0x8e/0x730 fs/pipe.c:770
+  __do_pipe_flags+0x48/0x250 fs/pipe.c:807
+  do_pipe2+0x84/0x160 fs/pipe.c:855
+  __do_sys_pipe2 fs/pipe.c:873 [inline]
+  __se_sys_pipe2 fs/pipe.c:871 [inline]
+  __x64_sys_pipe2+0x54/0x80 fs/pipe.c:871
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 8741:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  kasan_set_free_info mm/kasan/common.c:332 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:471
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  free_pipe_info+0x243/0x300 fs/pipe.c:709
+  put_pipe_info+0xd0/0xf0 fs/pipe.c:582
+  pipe_release+0x1e6/0x280 fs/pipe.c:603
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:163
+  prepare_exit_to_usermode arch/x86/entry/common.c:194 [inline]
+  syscall_return_slowpath arch/x86/entry/common.c:274 [inline]
+  do_syscall_64+0x65f/0x760 arch/x86/entry/common.c:300
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff888086b01200
+  which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 24 bytes inside of
+  1024-byte region [ffff888086b01200, ffff888086b01600)
+The buggy address belongs to the page:
+page:ffffea00021ac000 refcount:1 mapcount:0 mapping:ffff8880aa400c40  
+index:0xffff888086b00480 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea00027b5588 ffffea00028e3808 ffff8880aa400c40
+raw: ffff888086b00480 ffff888086b00000 0000000100000003 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff888086b01100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff888086b01180: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ffff888086b01200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                             ^
+  ffff888086b01280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff888086b01300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
