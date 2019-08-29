@@ -2,68 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A718A1BA0
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1841DA1BC3
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727650AbfH2Njd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 09:39:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53002 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727421AbfH2Njc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 09:39:32 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9FC9E8980E7;
-        Thu, 29 Aug 2019 13:39:32 +0000 (UTC)
-Received: from ceranb (ovpn-204-112.brq.redhat.com [10.40.204.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F8415C258;
-        Thu, 29 Aug 2019 13:39:30 +0000 (UTC)
-Date:   Thu, 29 Aug 2019 15:39:29 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jiri Pirko <jiri@resnulli.us>, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        allan.nielsen@microchip.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to
- dev->promiscuity.
-Message-ID: <20190829153929.357e7391@ceranb>
-In-Reply-To: <20190829131543.GB6998@lunn.ch>
-References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
-        <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
-        <20190829095100.GH2312@nanopsycho>
-        <20190829105650.btgvytgja63sx6wx@soft-dev3.microsemi.net>
-        <20190829121811.GI2312@nanopsycho>
-        <20190829124412.nrlpz5tzx3fkdoiw@soft-dev3.microsemi.net>
-        <20190829145518.393fb99d@ceranb>
-        <20190829131543.GB6998@lunn.ch>
+        id S1727315AbfH2NqB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Aug 2019 09:46:01 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:58982 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727073AbfH2NqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 09:46:01 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-80-WlFcJJsvMeS7xKcmA-zUBA-1; Thu, 29 Aug 2019 14:45:58 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 29 Aug 2019 14:45:57 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 29 Aug 2019 14:45:57 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Li,Rongqing'" <lirongqing@baidu.com>,
+        Ido Schimmel <idosch@idosch.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "idosch@mellanox.com" <idosch@mellanox.com>
+Subject: RE: [PATCH][net-next] net: drop_monitor: change the stats variable to
+ u64 in net_dm_stats_put
+Thread-Topic: [PATCH][net-next] net: drop_monitor: change the stats variable
+ to u64 in net_dm_stats_put
+Thread-Index: AQHVWLIGAgIc40Kg3Eiuhdh+WrtPcKcHAAcAgAAI4YCACyV8oA==
+Date:   Thu, 29 Aug 2019 13:45:57 +0000
+Message-ID: <65dd5d8c5e7c48e0ba484711c8676ab7@AcuMS.aculab.com>
+References: <1566454953-29321-1-git-send-email-lirongqing@baidu.com>
+ <20190822115946.GA25090@splinter>
+ <84063fe4df95437d81beb0d18f4043a5@baidu.com>
+In-Reply-To: <84063fe4df95437d81beb0d18f4043a5@baidu.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.67]); Thu, 29 Aug 2019 13:39:32 +0000 (UTC)
+X-MC-Unique: WlFcJJsvMeS7xKcmA-zUBA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 15:15:43 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+From: Li,Rongqing
+> Sent: 22 August 2019 13:32
+> > On Thu, Aug 22, 2019 at 02:22:33PM +0800, Li RongQing wrote:
+> > > only the element drop of struct net_dm_stats is used, so simplify it
+> > > to u64
+> >
+> > Thanks for the patch, but I don't really see the value here. The struct allows for
+> > easy extensions in the future. What do you gain from this change? We merely
+> > read stats and report them to user space, so I guess it's not about
+> > performance either.
+> >
+> 
+> I think u64 can reduce to call memset and dereference stats.drop
 
-> The problem with this is, the driver only gets called when promisc
-> goes from 0 to !0. So, the port is added to the bridge. Promisc goes
-> 0->1, and the driver gets called. We can evaluate as you said above,
-> and leave the port filtering frames, not forwarding everything. When
-> tcpdump is started, the core does promisc 1->2, but does not call into
-> the driver. Also, currently sending a notification is not
-> unconditional.
+The compiler should inline the memset().
 
-Hi Andrew,
+Also you should have called it 'dropped' not 'stats'.
 
-got it. What about to change the existing notify call so NETDEV_CHANGE
-notification will be also sent when (old_promiscuity !=
-new_promiscuity)?
+	David
 
-Ivan
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
