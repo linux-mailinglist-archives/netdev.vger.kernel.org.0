@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D5AA1743
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37049A172B
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728807AbfH2KyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:54:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57938 "EHLO mail.kernel.org"
+        id S1728242AbfH2Kur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 06:50:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728122AbfH2Kug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 06:50:36 -0400
+        id S1728216AbfH2Kuq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 06:50:46 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BC8B923426;
-        Thu, 29 Aug 2019 10:50:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A927623405;
+        Thu, 29 Aug 2019 10:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567075835;
-        bh=8kno17t5G0+IQF9Amfj1SsO5zRRh4PZmqZoEBgEN3Kk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wA9IY1BT1HHoYYGelF785HIQ0hMnu1SgT169GKQsPrO3xEgG/mjihlKKpMbZ9hMa8
-         0UWPGNXk/Hw9dW3M104PfJBIMa8oIzaVwPMGjzuGO6xn6fPaznnb1gj0mCKOdtwuZY
-         pNCyb6pyCBwKc2Plpz0isJMk3YA0fL122TUKj1go=
+        s=default; t=1567075845;
+        bh=ONx14oMxgGVjejwC1H+cAhSrLULeYa5AfyZ3w2hjqZA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WyGH4v+mf7QdMMIM046pQ2TH5Ybho6KjBiDkCfBlN7IfP/2+L81/zLQV3fv6jmg72
+         4bg9GcF8wXcnojAH2yd/SckHzXMJkVcNb73fD8BbjV+5bgBTKEqFCVxLGJPAkmrE5S
+         nI1HbyiWNHayBEEgFDDB1FfQzCdb0Xdq14wXgjpY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>, Chen Yi <yiche@redhat.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 22/29] netfilter: ipset: Copy the right MAC address in bitmap:ip,mac and hash:ip,mac sets
-Date:   Thu, 29 Aug 2019 06:50:02 -0400
-Message-Id: <20190829105009.2265-22-sashal@kernel.org>
+Cc:     Dexuan Cui <decui@microsoft.com>,
+        Sunil Muthuswamy <sunilmut@microsoft.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH AUTOSEL 4.14 01/14] hv_sock: Fix hang when a connection is closed
+Date:   Thu, 29 Aug 2019 06:50:30 -0400
+Message-Id: <20190829105043.2508-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190829105009.2265-1-sashal@kernel.org>
-References: <20190829105009.2265-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,86 +43,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
+From: Dexuan Cui <decui@microsoft.com>
 
-[ Upstream commit 1b4a75108d5bc153daf965d334e77e8e94534f96 ]
+[ Upstream commit 685703b497bacea8765bb409d6b73455b73c540e ]
 
-In commit 8cc4ccf58379 ("ipset: Allow matching on destination MAC address
-for mac and ipmac sets"), ipset.git commit 1543514c46a7, I added to the
-KADT functions for sets matching on MAC addreses the copy of source or
-destination MAC address depending on the configured match.
+There is a race condition for an established connection that is being closed
+by the guest: the refcnt is 4 at the end of hvs_release() (Note: here the
+'remove_sock' is false):
 
-This was done correctly for hash:mac, but for hash:ip,mac and
-bitmap:ip,mac, copying and pasting the same code block presents an
-obvious problem: in these two set types, the MAC address is the second
-dimension, not the first one, and we are actually selecting the MAC
-address depending on whether the first dimension (IP address) specifies
-source or destination.
+1 for the initial value;
+1 for the sk being in the bound list;
+1 for the sk being in the connected list;
+1 for the delayed close_work.
 
-Fix this by checking for the IPSET_DIM_TWO_SRC flag in option flags.
+After hvs_release() finishes, __vsock_release() -> sock_put(sk) *may*
+decrease the refcnt to 3.
 
-This way, mixing source and destination matches for the two dimensions
-of ip,mac set types works as expected. With this setup:
+Concurrently, hvs_close_connection() runs in another thread:
+  calls vsock_remove_sock() to decrease the refcnt by 2;
+  call sock_put() to decrease the refcnt to 0, and free the sk;
+  next, the "release_sock(sk)" may hang due to use-after-free.
 
-  ip netns add A
-  ip link add veth1 type veth peer name veth2 netns A
-  ip addr add 192.0.2.1/24 dev veth1
-  ip -net A addr add 192.0.2.2/24 dev veth2
-  ip link set veth1 up
-  ip -net A link set veth2 up
+In the above, after hvs_release() finishes, if hvs_close_connection() runs
+faster than "__vsock_release() -> sock_put(sk)", then there is not any issue,
+because at the beginning of hvs_close_connection(), the refcnt is still 4.
 
-  dst=$(ip netns exec A cat /sys/class/net/veth2/address)
+The issue can be resolved if an extra reference is taken when the
+connection is established.
 
-  ip netns exec A ipset create test_bitmap bitmap:ip,mac range 192.0.0.0/16
-  ip netns exec A ipset add test_bitmap 192.0.2.1,${dst}
-  ip netns exec A iptables -A INPUT -m set ! --match-set test_bitmap src,dst -j DROP
-
-  ip netns exec A ipset create test_hash hash:ip,mac
-  ip netns exec A ipset add test_hash 192.0.2.1,${dst}
-  ip netns exec A iptables -A INPUT -m set ! --match-set test_hash src,dst -j DROP
-
-ipset correctly matches a test packet:
-
-  # ping -c1 192.0.2.2 >/dev/null
-  # echo $?
-  0
-
-Reported-by: Chen Yi <yiche@redhat.com>
-Fixes: 8cc4ccf58379 ("ipset: Allow matching on destination MAC address for mac and ipmac sets")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Fixes: a9eeb998c28d ("hv_sock: Add support for delayed close")
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Reviewed-by: Sunil Muthuswamy <sunilmut@microsoft.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_bitmap_ipmac.c | 2 +-
- net/netfilter/ipset/ip_set_hash_ipmac.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/vmw_vsock/hyperv_transport.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/netfilter/ipset/ip_set_bitmap_ipmac.c b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-index 13ade5782847b..4f01321e793ce 100644
---- a/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-@@ -230,7 +230,7 @@ bitmap_ipmac_kadt(struct ip_set *set, const struct sk_buff *skb,
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+index 52ac3e49c7efd..ec72a5edaa1b8 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -320,6 +320,11 @@ static void hvs_close_connection(struct vmbus_channel *chan)
+ 	lock_sock(sk);
+ 	hvs_do_close_lock_held(vsock_sk(sk), true);
+ 	release_sock(sk);
++
++	/* Release the refcnt for the channel that's opened in
++	 * hvs_open_connection().
++	 */
++	sock_put(sk);
+ }
  
- 	e.id = ip_to_id(map, ip);
+ static void hvs_open_connection(struct vmbus_channel *chan)
+@@ -389,6 +394,9 @@ static void hvs_open_connection(struct vmbus_channel *chan)
+ 	}
  
--	if (opt->flags & IPSET_DIM_ONE_SRC)
-+	if (opt->flags & IPSET_DIM_TWO_SRC)
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_source);
- 	else
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_dest);
-diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
-index 75c21c8b76514..16ec822e40447 100644
---- a/net/netfilter/ipset/ip_set_hash_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
-@@ -99,7 +99,7 @@ hash_ipmac4_kadt(struct ip_set *set, const struct sk_buff *skb,
- 	    (skb_mac_header(skb) + ETH_HLEN) > skb->data)
- 		return -EINVAL;
+ 	set_per_channel_state(chan, conn_from_host ? new : sk);
++
++	/* This reference will be dropped by hvs_close_connection(). */
++	sock_hold(conn_from_host ? new : sk);
+ 	vmbus_set_chn_rescind_callback(chan, hvs_close_connection);
  
--	if (opt->flags & IPSET_DIM_ONE_SRC)
-+	if (opt->flags & IPSET_DIM_TWO_SRC)
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_source);
- 	else
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_dest);
+ 	/* Set the pending send size to max packet size to always get
 -- 
 2.20.1
 
