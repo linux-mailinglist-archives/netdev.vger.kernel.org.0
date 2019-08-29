@@ -2,110 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F47A222B
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C738BA222F
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 19:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbfH2RZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 13:25:13 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33954 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727344AbfH2RZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:25:12 -0400
-Received: by mail-pf1-f195.google.com with SMTP id b24so2540125pfp.1;
-        Thu, 29 Aug 2019 10:25:12 -0700 (PDT)
+        id S1727662AbfH2RZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 13:25:43 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:44239 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727228AbfH2RZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 13:25:43 -0400
+Received: by mail-pl1-f195.google.com with SMTP id t14so1873260plr.11;
+        Thu, 29 Aug 2019 10:25:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9GuN3MgFC46kDB7x4VlkI6LkxeFzQtYyvkTJ6qGJU5s=;
-        b=bR8rtfcJAzcs66myVxnXNqz5PvXLdznyccocG6kepCtUDV74pdYC/KC1XA96ZKMuvo
-         pImi2IyTf3vMfXLmCqPgZb0L1foivbxkXTaMyIL9E76A3imZx/D8Oo2ckxbEGv/fHamd
-         g4zobDzE37wiB0poiMCRV+fe4pcfYCRIBBL7Li0i/Ix9P1aYVCMMcEm1cTMwNipEDDE7
-         qPLs8NgSL09es5LFR7gq+fRL2MFf9+eYlSsf++E8b+tlW3gajV5kfvS14Swbns6K4WAX
-         9FWwq1RlAfnycYdHMPyrbfm+SyISkjVN1btdrKXy41eT++l18pasheoZ3sXhT0Dg+alT
-         Rf9g==
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=O6/rw6fyYXK3X1buWGszqsqXgLe4Q/iuHvp4zHdAOQk=;
+        b=A1GOpaZPd8TQWHez555novaUxU0bh30thynzh5VF2NbIghtS1sSUxx5Led0aaTeRdJ
+         atbm9I1kXhX1GnYyckHUcmap9OFlpyA3tQg9x8L4lZLPsxDIBbUBnTgEc7ql8B4SRPgu
+         McXUuHeVT8jRnxd9PwAhJX98MxAIYmLHbp+BZMTmJtXmXDHxPx7NqIBWnfXqstEyMGRi
+         iCPWa5WZYuPBP8H3elxIwJBoPBEX8b1uSt+ka0HA/PaATo1NT7EMi7aWULErOpqWi2iA
+         CnWtBcbVyl1qavHRMJKxvJKc8FgLaTS1KOlInQgWLUcxOjIB3VR88IhO0WFJvn0Q/qP3
+         mjBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9GuN3MgFC46kDB7x4VlkI6LkxeFzQtYyvkTJ6qGJU5s=;
-        b=M4zbykPCjnyAflFj70LpHCyIUZh+4LtADXQfxMiudz8EAOLqidfdxtex/cQPGVyQmP
-         01AfaEcOWP685bo46tFfo1/Zb8iqC2kRk93xiiiTLEKcQzMCp26yt8kyjdjMg4KiQpxq
-         YaQ73G02ni2D/ytOYWhB0xkymNiGdxWyUX/Kj0rbdv3X668iroNWXsuJ2TpMbhUpKLX/
-         fUm2K8Z1Y9Bbtbce7G5fSBNuUkL7J5vhFfdnGMyrYROwCX09l04lPPLe+r22ZCYkdTM6
-         wAIbujUcB9B8/GAv8rijQpyjnPSvkKJGzGo49nSFfWUbpETPVFwtijiIrG4VXwQqiljV
-         8wNA==
-X-Gm-Message-State: APjAAAWvcmQWow1tb34MbiM4eqZ5VK28za6t2Db0SfLz9tmmKxVSYUfY
-        AQHbdjLYwWBLhCwpFCmEG7I/eyeL
-X-Google-Smtp-Source: APXvYqytIuaJjAcpCV6XJWyP+tjsFwGztMkxKOTfF52FRtPJufK7QAOEpeimbPLe1ZKDcL65liq+YQ==
-X-Received: by 2002:a62:764f:: with SMTP id r76mr12610577pfc.149.1567099511944;
-        Thu, 29 Aug 2019 10:25:11 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id a17sm3770384pfc.26.2019.08.29.10.25.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 10:25:11 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 10:25:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
-Message-ID: <20190829172509.GB2166@localhost>
-References: <20190829095825.2108-1-felipe.balbi@linux.intel.com>
- <20190829095825.2108-2-felipe.balbi@linux.intel.com>
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=O6/rw6fyYXK3X1buWGszqsqXgLe4Q/iuHvp4zHdAOQk=;
+        b=sAAp71MAJEWXnKHpkGEmTQLZ2vMkodQ56bsBmlxb1sDf+kUrnWyiggKrKpBss9CLpI
+         MUq8t2XyuULsBvbE9adMRHzSRRpGg1tEOsp+8aUk6aqCLVa6RbKyVNlNWVHqAMix4G4W
+         T0ep6pyNthJIWjVxfhViFK2tAf7tDVKoRdPB+m/KR0+7Wu6LJ/+jPZwStGtMf4v+gY4H
+         NGy9DVEB7POMK50Oo1lEznV7E/yPDQAUNWsFcGCukeln4UHxV4OdzVV7bAqtXvheezZm
+         +arSW/538261ktnkgEiP3boIi5JV52RtcM7iKalWNkLpr0pWcq4SgTueGIjFXUPjWlUh
+         syHg==
+X-Gm-Message-State: APjAAAVyUSGZRxPHZb9enG3KgGDKCFKCr+ziFwCEJdLi62b6568pa/ra
+        Kc01zeQ6Ai9oPhF71z5DpAI=
+X-Google-Smtp-Source: APXvYqyGtgleiIDvmQc3kbRiRgdrnVZpp1SLjMIECGNsc2qUk+re7BbM3WDh1f4GFE0ZDf/yyjbhlw==
+X-Received: by 2002:a17:902:b604:: with SMTP id b4mr10849149pls.94.1567099542333;
+        Thu, 29 Aug 2019 10:25:42 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:1347])
+        by smtp.gmail.com with ESMTPSA id k8sm2750558pgm.14.2019.08.29.10.25.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Aug 2019 10:25:41 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 10:25:40 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, luto@amacapital.net,
+        davem@davemloft.net, peterz@infradead.org, rostedt@goodmis.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        linux-api@vger.kernel.org
+Subject: Re: [PATCH v2 bpf-next 1/3] capability: introduce CAP_BPF and
+ CAP_TRACING
+Message-ID: <20190829172539.j4qnhokhdflvkfm2@ast-mbp.dhcp.thefacebook.com>
+References: <20190829051253.1927291-1-ast@kernel.org>
+ <a5ef2f94-acca-eb66-b48c-899494a9f8d0@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190829095825.2108-2-felipe.balbi@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a5ef2f94-acca-eb66-b48c-899494a9f8d0@6wind.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 12:58:25PM +0300, Felipe Balbi wrote:
-> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
-> index 98ec1395544e..a407e5f76e2d 100644
-> --- a/drivers/ptp/ptp_chardev.c
-> +++ b/drivers/ptp/ptp_chardev.c
-> @@ -177,9 +177,8 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
->  			err = -EFAULT;
->  			break;
->  		}
-> -		if ((req.perout.flags || req.perout.rsv[0] || req.perout.rsv[1]
-> -				|| req.perout.rsv[2] || req.perout.rsv[3])
-> -			&& cmd == PTP_PEROUT_REQUEST2) {
-> +		if ((req.perout.rsv[0] || req.perout.rsv[1] || req.perout.rsv[2]
-> +			|| req.perout.rsv[3]) && cmd == PTP_PEROUT_REQUEST2) {
-
-Please check that the reserved bits of req.perout.flags, namely
-~PTP_PEROUT_ONE_SHOT, are clear.
-
->  			err = -EINVAL;
->  			break;
->  		} else if (cmd == PTP_PEROUT_REQUEST) {
-> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-> index 039cd62ec706..95840e5f5c53 100644
-> --- a/include/uapi/linux/ptp_clock.h
-> +++ b/include/uapi/linux/ptp_clock.h
-> @@ -67,7 +67,9 @@ struct ptp_perout_request {
->  	struct ptp_clock_time start;  /* Absolute start time. */
->  	struct ptp_clock_time period; /* Desired period, zero means disable. */
->  	unsigned int index;           /* Which channel to configure. */
-> -	unsigned int flags;           /* Reserved for future use. */
-> +
-> +#define PTP_PEROUT_ONE_SHOT BIT(0)
-> +	unsigned int flags;
-
-@davem  Any CodingStyle policy on #define within a struct?  (Some
-maintainers won't allow it.)
-
->  	unsigned int rsv[4];          /* Reserved for future use. */
->  };
->  
-> -- 
-> 2.23.0
+On Thu, Aug 29, 2019 at 03:36:42PM +0200, Nicolas Dichtel wrote:
+> Le 29/08/2019 à 07:12, Alexei Starovoitov a écrit :
+> [snip]
+> > CAP_BPF and CAP_NET_ADMIN together allow the following:
+> > - Attach to cgroup-bpf hooks and query
+> > - skb, xdp, flow_dissector test_run command
+> > 
+> > CAP_NET_ADMIN allows:
+> > - Attach networking bpf programs to xdp, tc, lwt, flow dissector
+> I'm not sure to understand the difference between these last two points.
+> But, with the current kernel, CAP_NET_ADMIN is not enough to attach bpf prog
+> with tc and it's still not enough after your patch.
+> The following command is rejected:
+> $ tc filter add dev eth0 ingress matchall action bpf obj ./tc_test_kern.o sec test
 > 
+> Prog section 'test' rejected: Operation not permitted (1)!
+>  - Type:         4
+>  - Instructions: 22 (0 over limit)
+>  - License:      GPL
+> 
+> Verifier analysis:
+> 
+> Error fetching program/map!
+> bad action parsing
+> parse_action: bad value (5:bpf)!
+> Illegal "action"
 
-Thanks,
-Richard
+because tc/iproute2 is doing load and attach.
+Currently load needs cap_sys_admin and
+attach needs cap_net_admin.
+
