@@ -2,136 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 461DAA118A
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BF1A11C3
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 08:28:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727556AbfH2GHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 02:07:14 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59224 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727328AbfH2GHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:07:14 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7T638Px004626;
-        Wed, 28 Aug 2019 23:06:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=7T2foaqF6DKDpJZEI8X54WepIx3U3TdUdq5qGRXH56Y=;
- b=HbwKzsa9oBT66nNVC1Ax5qKUdI9uzT87JDf85hu1gLFClXEj2aHTCubrS2n8nvyUnAAP
- luJkWVhtJ7AWvksj/ZOUcCpKedJLp1vuka/PZbKGmQpoVY4uk3pszlBRCv28INxQShFZ
- mBTaMvwLMhcX+8fvienOQW6nW+K++7RLH8E= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2untb0kwrr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 28 Aug 2019 23:06:37 -0700
-Received: from prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 28 Aug 2019 23:06:36 -0700
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-mbx04.TheFacebook.com (2620:10d:c081:6::18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 28 Aug 2019 23:06:36 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 28 Aug 2019 23:06:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iUvD6ABrq/uWZb1uUfWrfxFW0fnwR1qV8NL2n5mWk/PtyLCqPUsyejV3/k7sSkcl5kiglHfY4K12v/RTbAw9GMGkoqFkzMOgryo4lirZ2jto0fqGvCPYbzpFqovDI2XVPyfe9nien2HoboloVe8r46bwHd0t9Tjxfe1L0J/geuVY3s5WiX9U6Yj9GCXdUnVe5bpOK5f6rTJVeoJk6hg+bMDoeo4fktewJlULmSyhqlaaRWhNVDM/A/nhorL0W326dJj8AYnBtaDdYenMWsV2CLwQ+kB69DPoVYouKXYi2scuUOdmj+KTplYtTQbJSHKpZe4OkLZk9iiXcd15Ym3ZWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7T2foaqF6DKDpJZEI8X54WepIx3U3TdUdq5qGRXH56Y=;
- b=ebFdkCVIUhTLp/UUo4mo/NwFEp9JZfOIbt5hAsCuTMOueqaLlC3ukEOlPHs7/n7J21T7XcE2LXULF1SI3LzqKjJ2/AbxGM1FKvxvHa45ln1ysL583ob5TDjRGoWqzyg0fntbzXqtznrQf/B+4Sc2y1+5Hfz5BvYbCVMLq/vj+7EjfEnoHoQCCcIVjXfKzmnssI2fAgiVYYhnu8ZRSG+yWq54hX/UgzuBJcts0rFVW6mk0Iexqu49E/lf+5mpXvdaLoIPfUvER2xKVefUQzoPmN+XqCy11aq/zRNCUbXD8WRZ9pKQP6diYAJD0ImMJK4j3JhRvXBWyejE8GHUpxGKMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7T2foaqF6DKDpJZEI8X54WepIx3U3TdUdq5qGRXH56Y=;
- b=CEj4UP6sx5QRFcqW00gY/vI6WPNNtlnlV/FJmiyEFzJmYoorCalxmQWaoIEihHdeLKyCKBEJKzgL9jz5mW6c7U0nK3ch3SIMGd6i2qwIDlc+s/iuh7zWJSc318U3HUrSQ9jU+jZk251MJ1Gh4URcC23Z2Mz4MtivA/ykLrTEwO4=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.20; Thu, 29 Aug 2019 06:06:21 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5%3]) with mapi id 15.20.2199.021; Thu, 29 Aug 2019
- 06:06:21 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     Andy Lutomirski <luto@amacapital.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 3/3] perf: implement CAP_TRACING
-Thread-Topic: [PATCH v2 bpf-next 3/3] perf: implement CAP_TRACING
-Thread-Index: AQHVXiiLdjGxgjWrC0Grj4RhiiTN5acRo28A
-Date:   Thu, 29 Aug 2019 06:06:21 +0000
-Message-ID: <BF2CED89-D33C-4363-85BB-F4EAD4A5DBDD@fb.com>
-References: <20190829051253.1927291-1-ast@kernel.org>
- <20190829051253.1927291-3-ast@kernel.org>
-In-Reply-To: <20190829051253.1927291-3-ast@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::6d75]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83110904-cd92-4347-2cb8-08d72c4703dc
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1790;
-x-ms-traffictypediagnostic: MWHPR15MB1790:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB179051CB37AA04CB6E602871B3A20@MWHPR15MB1790.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3044;
-x-forefront-prvs: 0144B30E41
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(366004)(136003)(376002)(346002)(199004)(189003)(99286004)(4326008)(50226002)(478600001)(6116002)(229853002)(25786009)(102836004)(46003)(305945005)(33656002)(81156014)(81166006)(316002)(8676002)(558084003)(76176011)(7736002)(14454004)(8936002)(54906003)(2616005)(66446008)(76116006)(53936002)(476003)(5660300002)(486006)(6436002)(186003)(36756003)(6512007)(2906002)(11346002)(446003)(71200400001)(71190400001)(6486002)(66946007)(57306001)(66556008)(64756008)(6246003)(86362001)(6506007)(256004)(53546011)(66476007)(6916009);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1790;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: vppdbtQlcIiDu8L9jtzv5Wlp8eOI2E0snTIAiOrUR3xefOMbT97xTR/l9TmfYkhp8W+1GA/6LPO1MS8GKXs33N5bOD+dBgJ5ujqkvhYPlduNgS3ncNlZ5t44AGcy0bMZFHTaPS66FRrSBks7fzer0BabeVnkh/yV7Lc2g1dHufGrUjGicbCS211eJB3iNFHiGnICs38vFPIY30rPCvUBPs8nFyNrwLmLBoqRxeauaB7mB3vWfi+ed3QMtBglh9BjLTTvQEGnuwao4lYxnJIq/ojSKO19KbI00+5FYA9geFltRwv6lNJy2kiTfyDJM91eDio+u7L86Bd+JlHWU3TjIiNgU1AvTR86233m7nAo2Aw7ZZZp9Byk955Df+MXE0WGydYJyUkRi3KqoLekKiqugbt5SbDyopxqqlnNy2EI/ak=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A7AAF2CEACC5C34BA909C5E7248576E5@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727330AbfH2G2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 02:28:55 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:35210 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbfH2G2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 02:28:54 -0400
+Received: by mail-wm1-f67.google.com with SMTP id l2so2496785wmg.0
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 23:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=via7k0F192tLxEBiPb+UrdXSiUb10YujMQHlauF+wMs=;
+        b=CmzCbFaJphav9idnEplRaN+LCDoq3QbGxsGREgWBS2TATGmjWI20KUOj9alKJzfVBn
+         K7cIYAokFw/w/wQX9+/B/XAgNtQFtQkpGDyXNfbdzgSbgaIvCSbM6hh/PgixU64zj1ka
+         dXByK0kILb1PrZruDQV7kxsLRxNv5iGAWMwl0ggpbUvbmpJEjEnFTGLYWMezsOGn91bD
+         jd3H45TQdqtCVvjva3RhmXx+u/3NglFhhuD4RkfIt0MIxRZny7PLq0nvp1jG0KhHzZ+1
+         49Nx0Pj+7SprVkkHuxG6Jfa6T7wct1/1gz/KLWoKUfThjDkyDcKEVBennyrjFbMRvnV7
+         yVOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=via7k0F192tLxEBiPb+UrdXSiUb10YujMQHlauF+wMs=;
+        b=lz+CIBkDsL4DoykKI7/J3TFaVve+5D6kryV9RR8Qk13sb7qjNtQg7tiXniq59DVsBR
+         p2og1rLNvUy3uJmwryNmnhQ6pc7LRh++o+NnPzjrM9dyYFVA1XS3UItQLJVY+FV1Xl7B
+         Vo1F0OAoQMCri6Cf6R+sSpmgZq7pwVwO07wNKPlUBvxth0LsllTMe7PMUNfxVbyUvgwz
+         N+1Ou2Kvb5NjZZtPlYu5GUVmsne7nOJNPUvEOWbaJyw6+ubVnBPjpGdRWv2rnBFW30u1
+         RUisq8T7dIkvSIdbU79Xf3lGPoXADxfo3rlAg0esjNeF40JNTmOOu5V/OVv22Y02l1pR
+         ZfLg==
+X-Gm-Message-State: APjAAAXJ3vam2iSgxHCg/A8rGzhx52Ox7ungIImHisny/CydJSO4C5Cj
+        kFq50h5T2EB/xSyjCWlOUaeA3g==
+X-Google-Smtp-Source: APXvYqy9r0nGfkLOaxfeAsSTYoEJyF+FBd3kQ3oz5b4df+7JOy5jYxzHmHLc4AHGeqLtWh+XjwCFUg==
+X-Received: by 2002:a1c:c706:: with SMTP id x6mr9489059wmf.104.1567060131292;
+        Wed, 28 Aug 2019 23:28:51 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id c1sm1274550wmc.40.2019.08.28.23.28.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Aug 2019 23:28:50 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 08:28:50 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
+ for fib entries
+Message-ID: <20190829062850.GG2312@nanopsycho>
+References: <20190806191517.8713-1-dsahern@kernel.org>
+ <20190828103718.GF2312@nanopsycho>
+ <2c561928-1052-4c33-848d-ed7b81e920cf@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83110904-cd92-4347-2cb8-08d72c4703dc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2019 06:06:21.3886
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ARwSJg65mt88iXBmWwlTtRzRzSt1hQ/HmdNZ1vcP96sPjkMgtkGME08tbBpa56gHf2dOEpv3PiB9PKfp/wyHrw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1790
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-08-29_04:2019-08-28,2019-08-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- priorityscore=1501 phishscore=0 bulkscore=0 lowpriorityscore=0
- mlxlogscore=833 suspectscore=0 spamscore=0 adultscore=0 mlxscore=0
- impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1906280000 definitions=main-1908290067
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2c561928-1052-4c33-848d-ed7b81e920cf@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wed, Aug 28, 2019 at 11:26:03PM CEST, dsahern@gmail.com wrote:
+>On 8/28/19 4:37 AM, Jiri Pirko wrote:
+>> Tue, Aug 06, 2019 at 09:15:17PM CEST, dsahern@kernel.org wrote:
+>>> From: David Ahern <dsahern@gmail.com>
+>>>
+>>> Prior to the commit in the fixes tag, the resource controller in netdevsim
+>>> tracked fib entries and rules per network namespace. Restore that behavior.
+>> 
+>> David, please help me understand. If the counters are per-device, not
+>> per-netns, they are both the same. If we have device (devlink instance)
+>> is in a netns and take only things happening in this netns into account,
+>> it should count exactly the same amount of fib entries, doesn't it?
+>
+>if you are only changing where the counters are stored - net_generic vs
+>devlink private - then yes, they should be equivalent.
+
+Okay.
+
+>
+>> 
+>> I re-thinked the devlink netns patchset and currently I'm going in
+>> slightly different direction. I'm having netns as an attribute of
+>> devlink reload. So all the port netdevices and everything gets
+>> re-instantiated into new netns. Works fine with mlxsw. There we also
+>> re-register the fib notifier.
+>> 
+>> I think that this can work for your usecase in netdevsim too:
+>> 1) devlink instance is registering a fib notifier to track all fib
+>>    entries in a namespace it belongs to. The counters are per-device -
+>>    counting fib entries in a namespace the device is in.
+>> 2) another devlink instance can do the same tracking in the same
+>>    namespace. No problem, it's a separate counter, but the numbers are
+>>    the same. One can set different limits to different devlink
+>>    instances, but you can have only one. That is the bahaviour you have
+>>    now.
+>> 3) on devlink reload, netdevsim re-instantiates ports and re-registers
+>>    fib notifier
+>> 4) on devlink reload with netns change, all should be fine as the
+>>    re-registered fib nofitier replays the entries. The ports are
+>>    re-instatiated in new netns.
+>> 
+>> This way, we would get consistent behaviour between netdevsim and real
+>> devices (mlxsw), correct devlink-netns implementation (you also
+>> suggested to move ports to the namespace). Everyone should be happy.
+>> 
+>> What do you think?
+>> 
+>
+>Right now, registering the fib notifier walks all namespaces. That is
+>not a scalable solution. Are you changing that to replay only a given
+>netns? Are you changing the notifiers to be per-namespace?
+
+Eventually, that seems like good idea. Currently I want to do
+if (net==nsim_dev->mynet)
+	done
+check at the beginning of the notifier.
 
 
-> On Aug 28, 2019, at 10:12 PM, Alexei Starovoitov <ast@kernel.org> wrote:
->=20
-> Implement permissions as stated in uapi/linux/capability.h
->=20
-> Similar to CAP_BPF it's highly unlikely that s/CAP_SYS_ADMIN/CAP_TRACING/
-> replacement will cause user breakage.
->=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+>
+>Also, you are still allowing devlink instances to be created within a
+>namespace?
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Yes, netdevsim is planned to be created directly in namespace.
