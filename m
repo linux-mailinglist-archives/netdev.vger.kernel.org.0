@@ -2,75 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1803A0FA8
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 04:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26665A0FE1
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 05:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbfH2Cqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 22:46:38 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:47134 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725844AbfH2Cqi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Aug 2019 22:46:38 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id A4CA27D1209F358E03DB;
-        Thu, 29 Aug 2019 10:46:36 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Thu, 29 Aug 2019
- 10:46:27 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <thomas.lendacky@amd.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] amd-xgbe: Fix error path in xgbe_mod_init()
-Date:   Thu, 29 Aug 2019 10:46:00 +0800
-Message-ID: <20190829024600.16052-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726825AbfH2DRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 23:17:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37208 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726081AbfH2DRj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Aug 2019 23:17:39 -0400
+Received: from wens.tw (mirror2.csie.ntu.edu.tw [140.112.30.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E9DB22CF8;
+        Thu, 29 Aug 2019 03:17:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1567048658;
+        bh=u98FcVu0HBkillng09TqWFlGgpgWVWpnghz9szhnReI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HAD4xrCfip0e9CQw3xO5Qsd40IdOaU7J/AldbwBXqtbzk8rjpl8hI756VTkNodh/u
+         TBVn9ukdcGLCetH0FJeWue86+GoA3/LG0UkyCNfplVPqTMn8dzCqF1PTy5FJwAL/4s
+         TIBsO4qGmnx83Y6eLXMQ9gHQfu+oUhFvlJ2Qz6jQ=
+Received: by wens.tw (Postfix, from userid 1000)
+        id BA06A5FCC3; Thu, 29 Aug 2019 11:17:32 +0800 (CST)
+From:   Chen-Yu Tsai <wens@kernel.org>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     Chen-Yu Tsai <wens@csie.org>, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH netdev] net: stmmac: dwmac-rk: Don't fail if phy regulator is absent
+Date:   Thu, 29 Aug 2019 11:17:24 +0800
+Message-Id: <20190829031724.20865-1-wens@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In xgbe_mod_init(), we should do cleanup if some error occurs
+From: Chen-Yu Tsai <wens@csie.org>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: efbaa828330a ("amd-xgbe: Add support to handle device renaming")
-Fixes: 47f164deab22 ("amd-xgbe: Add PCI device support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+The devicetree binding lists the phy phy as optional. As such, the
+driver should not bail out if it can't find a regulator. Instead it
+should just skip the remaining regulator related code and continue
+on normally.
+
+Skip the remainder of phy_power_on() if a regulator supply isn't
+available. This also gets rid of the bogus return code.
+
+Fixes: 2e12f536635f ("net: stmmac: dwmac-rk: Use standard devicetree property for phy regulator")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-main.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-main.c b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-index b41f236..7ce9c69 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-@@ -469,13 +469,19 @@ static int __init xgbe_mod_init(void)
+On a separate note, maybe we should add this file to the Rockchip
+entry in MAINTAINERS?
+
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 4644b2aeeba1..e2e469c37a4d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -1194,10 +1194,8 @@ static int phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
+ 	int ret;
+ 	struct device *dev = &bsp_priv->pdev->dev;
  
- 	ret = xgbe_platform_init();
- 	if (ret)
--		return ret;
-+		goto err_platform_init;
+-	if (!ldo) {
+-		dev_err(dev, "no regulator found\n");
+-		return -1;
+-	}
++	if (!ldo)
++		return 0;
  
- 	ret = xgbe_pci_init();
- 	if (ret)
--		return ret;
-+		goto err_pci_init;
- 
- 	return 0;
-+
-+err_pci_init:
-+	xgbe_platform_exit();
-+err_platform_init:
-+	unregister_netdevice_notifier(&xgbe_netdev_notifier);
-+	return ret;
- }
- 
- static void __exit xgbe_mod_exit(void)
+ 	if (enable) {
+ 		ret = regulator_enable(ldo);
 -- 
-1.8.3.1
-
+2.20.1
 
