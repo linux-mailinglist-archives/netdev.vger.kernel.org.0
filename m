@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C084AA24A3
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE5BA2491
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729783AbfH2SYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:24:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58468 "EHLO mail.kernel.org"
+        id S1728852AbfH2SQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:16:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58532 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729746AbfH2SQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:16:26 -0400
+        id S1729773AbfH2SQa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:16:30 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2357B2189D;
-        Thu, 29 Aug 2019 18:16:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4D842189D;
+        Thu, 29 Aug 2019 18:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102585;
-        bh=wqUIqAOQdZDZwLQhc3zJBFZ+4LlvNbuhEy1DRGKsDUY=;
+        s=default; t=1567102589;
+        bh=TPIsYNFrhRAKArqEnmVrYQkgraGfnomGN2VZYg+i0rI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cO46U0SVioCJUqlIVdNO0qoNuIQ9xV82RfYLGxzWZt6TPM2rhWLOarb1dg8Poeo1h
-         LpFkKAbFrho5HTk00buaITMEMLqR/9xAzvGgmiDcYaUFzhJzuU9u2cDSJiRpRJygUZ
-         0kyBrnWgiF+UwUpjit7fKcXAj44xGDg49xdtK+Rs=
+        b=XqcPQMjIDFVlDOiulfCgpmpMHf0weTo+O85ZIShjOsyaDVrn/bwrx8cykIyDyKT53
+         21HemNgbJkxJyO9GoLvsIoqpLBMYz3W7kjDrfTnTs3ZpM36/IFmlVfw60fzyBOntAC
+         /uec7Mfr+In/mm+cPtHxfxPuK9T3ZkRSzAE54lDg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+Cc:     Tho Vu <tho.vu.wh@rvc.renesas.com>,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
+        Simon Horman <horms+renesas@verge.net.au>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 26/45] net: cavium: fix driver name
-Date:   Thu, 29 Aug 2019 14:15:26 -0400
-Message-Id: <20190829181547.8280-26-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 28/45] ravb: Fix use-after-free ravb_tstamp_skb
+Date:   Thu, 29 Aug 2019 14:15:28 -0400
+Message-Id: <20190829181547.8280-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181547.8280-1-sashal@kernel.org>
 References: <20190829181547.8280-1-sashal@kernel.org>
@@ -43,37 +46,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
+From: Tho Vu <tho.vu.wh@rvc.renesas.com>
 
-[ Upstream commit 3434341004a380f4e47c3a03d4320d43982162a0 ]
+[ Upstream commit cfef46d692efd852a0da6803f920cc756eea2855 ]
 
-The driver name gets exposed in sysfs under /sys/bus/pci/drivers
-so it should look like other devices. Change it to be common
-format (instead of "Cavium PTP").
+When a Tx timestamp is requested, a pointer to the skb is stored in the
+ravb_tstamp_skb struct. This was done without an skb_get. There exists
+the possibility that the skb could be freed by ravb_tx_free (when
+ravb_tx_free is called from ravb_start_xmit) before the timestamp was
+processed, leading to a use-after-free bug.
 
-This is a trivial fix that was observed by accident because
-Debian kernels were building this driver into kernel (bug).
+Use skb_get when filling a ravb_tstamp_skb struct, and add appropriate
+frees/consumes when a ravb_tstamp_skb struct is freed.
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+Signed-off-by: Tho Vu <tho.vu.wh@rvc.renesas.com>
+Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cavium/common/cavium_ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/common/cavium_ptp.c b/drivers/net/ethernet/cavium/common/cavium_ptp.c
-index 6aeb1045c302a..1ab40c97403ba 100644
---- a/drivers/net/ethernet/cavium/common/cavium_ptp.c
-+++ b/drivers/net/ethernet/cavium/common/cavium_ptp.c
-@@ -10,7 +10,7 @@
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 5f092bbd05148..5462d2e8a1b71 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Renesas Ethernet AVB device driver
+  *
+- * Copyright (C) 2014-2015 Renesas Electronics Corporation
++ * Copyright (C) 2014-2019 Renesas Electronics Corporation
+  * Copyright (C) 2015 Renesas Solutions Corp.
+  * Copyright (C) 2015-2016 Cogent Embedded, Inc. <source@cogentembedded.com>
+  *
+@@ -514,7 +514,10 @@ static void ravb_get_tx_tstamp(struct net_device *ndev)
+ 			kfree(ts_skb);
+ 			if (tag == tfa_tag) {
+ 				skb_tstamp_tx(skb, &shhwtstamps);
++				dev_consume_skb_any(skb);
+ 				break;
++			} else {
++				dev_kfree_skb_any(skb);
+ 			}
+ 		}
+ 		ravb_modify(ndev, TCCR, TCCR_TFR, TCCR_TFR);
+@@ -1556,7 +1559,7 @@ static netdev_tx_t ravb_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 					 DMA_TO_DEVICE);
+ 			goto unmap;
+ 		}
+-		ts_skb->skb = skb;
++		ts_skb->skb = skb_get(skb);
+ 		ts_skb->tag = priv->ts_skb_tag++;
+ 		priv->ts_skb_tag &= 0x3ff;
+ 		list_add_tail(&ts_skb->list, &priv->ts_skb_list);
+@@ -1685,6 +1688,7 @@ static int ravb_close(struct net_device *ndev)
+ 	/* Clear the timestamp list */
+ 	list_for_each_entry_safe(ts_skb, ts_skb2, &priv->ts_skb_list, list) {
+ 		list_del(&ts_skb->list);
++		kfree_skb(ts_skb->skb);
+ 		kfree(ts_skb);
+ 	}
  
- #include "cavium_ptp.h"
- 
--#define DRV_NAME	"Cavium PTP Driver"
-+#define DRV_NAME "cavium_ptp"
- 
- #define PCI_DEVICE_ID_CAVIUM_PTP	0xA00C
- #define PCI_DEVICE_ID_CAVIUM_RST	0xA00E
 -- 
 2.20.1
 
