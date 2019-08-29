@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3E9A283A
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 22:42:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7319A2888
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 22:58:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbfH2UmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 16:42:06 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44757 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbfH2UmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 16:42:06 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 44so5219101qtg.11
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 13:42:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w0WV+mVGw5U2S0E5NXEe8DjTfwOHjNS1mq+UGD8f7yo=;
-        b=pu6TMhET1vLeeTDUPRNhhmItYfJ439J46lc8/43MZ8ENvMBx2sqN/LPkks7AMQZIPn
-         e+MoeqInMbXv6MVErVEfX2kTXyrXsaKn/L19dBDT4TGdhLq+KaLs3RvxgqDN3ZoPRMCc
-         q20Mj8nd5Ko29rGoUYZVIi70Ocnff98rn5li2dags1hdOj5Kqe2APr9IwF6mnteFUwGk
-         qX7ec5GLFRe1KuD8oNiHE1bOvOXFZhmxY5N3p3cJ3sVs1Ruu1FyuTpMaUAAavLmDGGW+
-         C4s92sUUqT6/jACaFEMP0zmsdOwklf6IFgW/LdeWo6vGE6TuhyK1M6CuyJ3zTIic/cT8
-         fiOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w0WV+mVGw5U2S0E5NXEe8DjTfwOHjNS1mq+UGD8f7yo=;
-        b=n2tMycUnbVj1W/UY4EL41rDKfJvJtoxvrfqVpoxvgTJHsRQcIrXxciWR+11S/JcI0a
-         5Pk+W7/WByrbOBVdLJ6B45UZfl8cSGXxkZQvpK/jCbjxXkq7YCC4Q/eEgw9El9NXEuWf
-         W2RSCTJjiCZco/JluDTDccpjtKFMmzpJCUpbbQIe5mhDnQtJxPOfRqNJKQzCP8c7CN+y
-         6Ikc0LPVRxrMUfvLZHQ1SVXQpwzDfDlWH4ODOFDsBK2KcRewGNaMI++S6G2TiZUDyVHw
-         Z7Jt/7oufkHder0Cuh+ZkVLHk4TPLLe0mdm9MHLL9m+GZEc0dP+GNNzAUUns09N0+2bk
-         y/1g==
-X-Gm-Message-State: APjAAAUbQmllWOazMVDLdYHHIUcaMvMKrwct13iv+Y8A7bhTk+XPL0Nj
-        uM/YD/o256bjTOzxZNkWivgeUJ4Frc3QBqK6Nxw=
-X-Google-Smtp-Source: APXvYqzNJcLf/SaVKefpS4yp1PhOeQmfL8BmtCGNsf51lN/vzqeIlWNzDn2Aisn/tbiMjEICp69QjqzWQQKgfiRmFDk=
-X-Received: by 2002:ac8:3021:: with SMTP id f30mr6000448qte.193.1567111325334;
- Thu, 29 Aug 2019 13:42:05 -0700 (PDT)
+        id S1728279AbfH2U6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 16:58:37 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:53624 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726935AbfH2U6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 16:58:37 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1i3RV2-0007J3-97; Thu, 29 Aug 2019 22:58:32 +0200
+Date:   Thu, 29 Aug 2019 22:58:32 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Leonardo Bras <leonardo@linux.ibm.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
+ IPv6 is disabled on boot
+Message-ID: <20190829205832.GM20113@breakpoint.cc>
+References: <20190821141505.2394-1-leonardo@linux.ibm.com>
+ <db0f02c5b1a995fde174f036540a3d11008cf116.camel@linux.ibm.com>
+ <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
 MIME-Version: 1.0
-References: <20190826162517.8082-1-danieltimlee@gmail.com>
-In-Reply-To: <20190826162517.8082-1-danieltimlee@gmail.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 29 Aug 2019 13:41:54 -0700
-Message-ID: <CAPhsuW6dnbwtCxf5AO6gJe07qu4ewvO1NQ+ZiQVBR8jUVfQ9uQ@mail.gmail.com>
-Subject: Re: [bpf-next, v2] samples: bpf: add max_pckt_size option at xdp_adjust_tail
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 26, 2019 at 9:52 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
-> to 600. To make this size flexible, a new map 'pcktsz' is added.
->
-> By updating new packet size to this map from the userland,
-> xdp_adjust_tail_kern.o will use this value as a new max_pckt_size.
->
-> If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
-> will be 600 as a default.
+Leonardo Bras <leonardo@linux.ibm.com> wrote:
+> On Thu, 2019-08-29 at 17:04 -0300, Leonardo Bras wrote:
+> > > Thats a good point -- Leonardo, is the
+> > > "net.bridge.bridge-nf-call-ip6tables" sysctl on?
+> > 
+> > Running
+> > # sudo sysctl -a
+> > I can see:
+> > net.bridge.bridge-nf-call-ip6tables = 1
+> 
+> Also, doing
+> # echo 0 >  /proc/sys/net/bridge/bridge-nf-call-ip6tables 
+> And then trying to boot the guest will not crash the host.
+> 
+> Which would make sense, since host iptables is not dealing with guest
+> IPv6 packets.
 
-Please also cc bpf@vger.kernel.org for bpf patches.
+Yes.
 
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> So, the real cause of this bug is the bridge making host ip6tables deal
+> with guest IPv6 packets ? 
+> If so, would it be ok if write a patch testing ipv6_mod_enabled()
+> before passing guest ipv6 packets to host ip6tables? 
 
-Acked-by: Song Liu <songliubraving@fb.com>
+I'm not sure.  This switch is very old, it was added 10 years ago
+in v2.6.31-rc1.
 
-With a nit below.
+Even if we disable call-ip6tables in br_netfilter we will at least
+in addition need a patch for nft_fib_netdev.c.
 
-[...]
+From a "avoid calls to ipv6 stack when its disabled" standpoint,
+the safest fix is to disable call-ip6tables functionality if ipv6
+module is off *and* fix nft_fib_netdev.c to BREAK in ipv6 is off case.
 
-> diff --git a/samples/bpf/xdp_adjust_tail_user.c b/samples/bpf/xdp_adjust_tail_user.c
-> index a3596b617c4c..29ade7caf841 100644
-> --- a/samples/bpf/xdp_adjust_tail_user.c
-> +++ b/samples/bpf/xdp_adjust_tail_user.c
-> @@ -72,6 +72,7 @@ static void usage(const char *cmd)
->         printf("Usage: %s [...]\n", cmd);
->         printf("    -i <ifname|ifindex> Interface\n");
->         printf("    -T <stop-after-X-seconds> Default: 0 (forever)\n");
-> +       printf("    -P <MAX_PCKT_SIZE> Default: 600\n");
+I started to place a list of suspicous modules here, but that got out
+of hand quickly.
 
-nit: printf("    -P <MAX_PCKT_SIZE> Default: %u\n", MAX_PCKT_SIZE);
+So, given I don't want to plaster ipv6_mod_enabled() everywhere, I
+would suggest this course of action:
+
+1. add a patch to BREAK in nft_fib_netdev.c for !ipv6_mod_enabled()
+2. change net/bridge/br_netfilter_hooks.c, br_nf_pre_routing() to
+   make sure ipv6_mod_enabled() is true before doing the ipv6 stack
+   "emulation".
+
+Makes sense?
+
+Thanks,
+Florian
