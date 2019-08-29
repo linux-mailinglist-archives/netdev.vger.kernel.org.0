@@ -2,155 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB9CA1029
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 06:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670E5A107C
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 06:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725855AbfH2EH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 00:07:28 -0400
-Received: from mail-pf1-f177.google.com ([209.85.210.177]:45472 "EHLO
-        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbfH2EH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 00:07:28 -0400
-Received: by mail-pf1-f177.google.com with SMTP id w26so1125252pfq.12;
-        Wed, 28 Aug 2019 21:07:27 -0700 (PDT)
+        id S1725847AbfH2Egz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 00:36:55 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:44059 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbfH2Egz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 00:36:55 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a21so2454598edt.11
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 21:36:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=w0kt/ZUsbjTm2T8fFDi3JgxkmlUidJXSFufUbXNNKCE=;
-        b=qhzOR9cJ6L7DZn1HkdBMFCRqg/z+yoqvDqSweHrPdaz6+PZL2QPpWblX0pPUHjMZTQ
-         7zbIceM7lFnWxlqr+lWpgCbe2rr95iHOall7VH87dj235uRsoOwSJoe4rJJbxu8YlvSw
-         WjC7vA+pgTOfKsH9gIO1IieiiEP4xTJiq0Zts4hsbevNxP2dsN5xioHuUDJpzI3vRXJS
-         0qfKFjI6M2VS/85HEw1Gjcb2I9FSxvRQ5RC1iikYapMkGmjsg3j+THXf0kf3gLkY338M
-         +zaSyJ/mrt7+IWekig9GofhMHjfGa3uHIAWiwDt3w/5Y1u+thX+aJykyMf5KBUlMLVWR
-         dbVQ==
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nltdpsPgKqXzZYmw6gGHhYlO21jQhRjP2llA8Qq+77M=;
+        b=XeBv0pCgwVYTwqLp8xXeVM8sG21mOug7wv8vWOk1Pny/Vv444WWqna3jqeOalF6f9G
+         NSl0UVWOx9kINr715H1I9k+2i8uryngrUtX+IfESWGbSjKeryDYWrPbZIWATInJ0nGfn
+         tyjBALOSEDyIyOuyGiSghKW2LlHj52fo7/LZc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=w0kt/ZUsbjTm2T8fFDi3JgxkmlUidJXSFufUbXNNKCE=;
-        b=QnoardO0SPx6fOb+hrEynIoVdT001907JeCN0ZDnV9i42Zl9vqdh9CG5W0P1nz9HNz
-         vgUFBzLsAlYH1bMAhUVK1K2jwRltcp2+nrkjTT5pShplNKAQN6bnZHBp2I9cWL0gGMI3
-         2txMs6NAvE7+/tXWvNkZuOgCLxapTLtegTNfwrfxbgLV2NVhX9LtA6J9xxvAVmn4nH75
-         SB9ACsgZKgzIzNgSLv93DaAjuvi7PsPEAm1FGAQIqeoqzM730ktMOZjUyGrot9F2ETRd
-         qVjwm9ah1ztXgEvfvzSLM79gYt6Uoej3Iu8+g6WuTcaRoO4obpznnyMXWUq7+Yqd19fU
-         cQ6g==
-X-Gm-Message-State: APjAAAXfUouDLhxDROmwOxxQJYwX/NlULbOHqv+WATTk3xTTnxRsutv1
-        n3t+sSzRlBlO4655JKIjnUE=
-X-Google-Smtp-Source: APXvYqyPHkJAYhQSNPZHuxydg9VayItwubA4Zdtoip62p7IyAUioHvt20v/oeofIyrsg/afivZqLcw==
-X-Received: by 2002:a63:10a:: with SMTP id 10mr6495671pgb.281.1567051646997;
-        Wed, 28 Aug 2019 21:07:26 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::1e41])
-        by smtp.gmail.com with ESMTPSA id a186sm679089pge.0.2019.08.28.21.07.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Aug 2019 21:07:26 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 21:07:24 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
-References: <20190827205213.456318-1-ast@kernel.org>
- <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
- <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
- <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
- <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
- <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
- <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
- <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nltdpsPgKqXzZYmw6gGHhYlO21jQhRjP2llA8Qq+77M=;
+        b=ucmX4ODz5LfFCRnrj7jBV0hiavvkNWh8Xwe9tuD/2dvAfAKwzPIU5ZwFQW6EHUNmec
+         HWXseZLqC5WTZ3dZ9G3tL4fLnSlvAx4RYk2rCGn8E3E827DFNdO36+aeCEO7fA4uvlAk
+         5QGwauocGYGLZRVRiGsct1M6KBwRYt7exTC/BDssar3C1Tv3cl24x2ljFyQXOshdC3c+
+         AR/+m0vrobQEOh3jdYBqZkjjD3nYO+PN/xTZjPqpX/aXzEI3jBKt8Tr02I9fKZQoxC+C
+         1dKspt06R71KE/VbMdMofVzaOWv10RksjP9aHmn0vQ7yzl28hD5CGKF8F8ZUuxJcV6hU
+         N/EQ==
+X-Gm-Message-State: APjAAAUXn/NxdmM5GKFsqKdd6ntdtO8xGMyESwil7TJP9DsT86YUBTE0
+        YU8dm/mdwdHvAi8eEjbYZGcoWgFw4dyOoE4mebW5fg==
+X-Google-Smtp-Source: APXvYqw/D6AX7BCYTZK8Krg1dFpkH8xMYkzZUOng2kQQan1Ee/7/ElnbKTzdsJ3EGPItbdNo9SWTJA5n0L/e0HQFIE8=
+X-Received: by 2002:a50:f7c6:: with SMTP id i6mr7559930edn.281.1567053412937;
+ Wed, 28 Aug 2019 21:36:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
-User-Agent: NeoMutt/20180223
+References: <20190826151552.4f1a2ad9@cakuba.netronome.com> <20190826.151819.804077961408964282.davem@davemloft.net>
+ <20190827070808.GA2250@nanopsycho> <20190827.012242.418276717667374306.davem@davemloft.net>
+ <20190827093525.GB2250@nanopsycho> <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
+ <20190828070711.GE2312@nanopsycho>
+In-Reply-To: <20190828070711.GE2312@nanopsycho>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Wed, 28 Aug 2019 21:36:41 -0700
+Message-ID: <CAJieiUiipZY3A+04Po=WnvgkonfXZxFX2es=1Q5dq1Km869Obw@mail.gmail.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 05:45:47PM -0700, Andy Lutomirski wrote:
-> > 
-> >> It seems like you are specifically trying to add a new switch to turn
-> >> as much of BPF as possible on and off.  Why?
-> > 
-> > Didn't I explain it several times already with multiple examples
-> > from systemd, daemons, bpftrace ?
-> > 
-> > Let's try again.
-> > Take your laptop with linux distro.
-> > You're the only user there. I'm assuming you're not sharing it with
-> > partner and kids. This is my definition of 'single user system'.
-> > You can sudo on it at any time, but obviously prefer to run as many
-> > apps as possible without cap_sys_admin.
-> > Now you found some awesome open source app on the web that monitors
-> > the health of the kernel and will pop a nice message on a screen if
-> > something is wrong. Currently this app needs root. You hesitate,
-> > but the apps is so useful and it has strong upstream code review process
-> > that you keep running it 24/7.
-> > This is open source app. New versions come. You upgrade.
-> > You have enough trust in that app that you keep running it as root.
-> > But there is always a chance that new version doing accidentaly
-> > something stupid as 'kill -9 -1'. It's an open source app at the end.
-> > 
-> > Now I come with this CAP* proposal to make this app safer.
-> > I'm not making your system more secure and not making this app
-> > more secure. I can only make your laptop safer for day to day work
-> > by limiting the operations this app can do.
-> > This particular app monitros the kernel via bpf and tracing.
-> > Hence you can give it CAP_TRACING and CAP_BPF and drop the rest.
-> 
-> This won’t make me much more comfortable, since CAP_BPF lets it do an ever-growing set of nasty things. I’d much rather one or both of two things happen:
-> 
-> 1. Give it CAP_TRACING only. It can leak my data, but it’s rather hard for it to crash my laptop, lose data, or cause other shenanigans.
-> 
-> 2. Improve it a bit do all the privileged ops are wrapped by capset().
-> 
-> Does this make sense?  I’m a security person on occasion. I find vulnerabilities and exploit them deliberately and I break things by accident on a regular basis. In my considered opinion, CAP_TRACING alone, even extended to cover part of BPF as I’ve described, is decently safe. Getting root with just CAP_TRACING will be decently challenging, especially if I don’t get to read things like sshd’s memory, and improvements to mitigate even that could be added.  I am quite confident that attacks starting with CAP_TRACING will have clear audit signatures if auditing is on.  I am also confident that CAP_BPF *will* allow DoS and likely privilege escalation, and this will only get more likely as BPF gets more widely used. And, if BPF-based auditing ever becomes a thing, writing to the audit daemon’s maps will be a great way to cover one’s tracks.
+On Wed, Aug 28, 2019 at 12:07 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Tue, Aug 27, 2019 at 05:14:49PM CEST, roopa@cumulusnetworks.com wrote:
+> >On Tue, Aug 27, 2019 at 2:35 AM Jiri Pirko <jiri@resnulli.us> wrote:
+> >>
+> >> Tue, Aug 27, 2019 at 10:22:42AM CEST, davem@davemloft.net wrote:
+> >> >From: Jiri Pirko <jiri@resnulli.us>
+> >> >Date: Tue, 27 Aug 2019 09:08:08 +0200
+> >> >
+> >> >> Okay, so if I understand correctly, on top of separate commands for
+> >> >> add/del of alternative names, you suggest also get/dump to be separate
+> >> >> command and don't fill this up in existing newling/getlink command.
+> >> >
+> >> >I'm not sure what to do yet.
+> >> >
+> >> >David has a point, because the only way these ifnames are useful is
+> >> >as ways to specify and choose net devices.  So based upon that I'm
+> >> >slightly learning towards not using separate commands.
+> >>
+> >> Well yeah, one can use it to handle existing commands instead of
+> >> IFLA_NAME.
+> >>
+> >> But why does it rule out separate commands? I think it is cleaner than
+> >> to put everything in poor setlink messages :/ The fact that we would
+> >> need to add "OP" to the setlink message just feels of. Other similar
+> >> needs may show up in the future and we may endup in ridiculous messages
+> >> like:
+> >>
+> >> SETLINK
+> >>   IFLA_NAME eth0
+> >>   IFLA_ATLNAME_LIST (nest)
+> >>       IFLA_ALTNAME_OP add
+> >>       IFLA_ALTNAME somereallylongname
+> >>       IFLA_ALTNAME_OP del
+> >>       IFLA_ALTNAME somereallyreallylongname
+> >>       IFLA_ALTNAME_OP add
+> >>       IFLA_ALTNAME someotherreallylongname
+> >>   IFLA_SOMETHING_ELSE_LIST (nest)
+> >>       IFLA_SOMETHING_ELSE_OP add
+> >>       ...
+> >>       IFLA_SOMETHING_ELSE_OP del
+> >>       ...
+> >>       IFLA_SOMETHING_ELSE_OP add
+> >>       ...
+> >>
+> >> I don't know what to think about it. Rollbacks are going to be pure hell :/
+> >
+> >I don't see a huge problem with the above. We need a way to solve this
+> >anyways for other list types in the future correct ?.
+> >The approach taken by this series will not scale if we have to add a
+> >new msg type and header for every such list attribute in the future.
+>
+> Do you have some other examples in mind? So far, this was not needed.
 
-CAP_TRACING, as I'm proposing it, will allow full tracefs access.
-I think Steven and Massami prefer that as well.
-That includes kprobe with probe_kernel_read.
-That also means mini-DoS by installing kprobes everywhere or running too much ftrace.
+yes, so far it was not needed.
+No other future possible examples in mind...but I wont be surprised if
+we see such cases in the future.
+Having a consistent API to extend a list attribute will help.
 
-CAP_TRACING will allow perf_event_open() too.
-Which also means mini-DoS with too many events.
+>
+>
+> >
+> >A good parallel here is bridge vlan which uses RTM_SETLINK and
+> >RTM_DELLINK for vlan add and deletes. But it does have an advantage of
+> >a separate
+> >msg space under AF_BRIDGE which makes it cleaner. Maybe something
+> >closer to that  can be made to work (possibly with a msg flag) ?.
+>
+> 1) Not sure if AF_BRIDGE is the right example how to do things
+> 2) See br_vlan_info(). It is not an OP-PER-VLAN. You either add or
+> delete all passed info, depending on the cmd (RTM_SETLINK/RTM_DETLINK).
 
-CAP_TRACING with or without CAP_BPF is safe, but it's not secure.
-And that's what I need to make above 'open source kernel health app' to be safe.
+yes,  correct. I mentioned that because I was wondering if we can
+think along the same lines for this API.
+eg
+(a) RTM_NEWLINK always replaces the list attribute
+(b) RTM_SETLINK with NLM_F_APPEND always appends to the list attribute
+(c) RTM_DELLINK with NLM_F_APPEND updates the list attribute
 
-In real world we have tens of such apps and they use all of the things that
-I'm allowing via CAP_BPF + CAP_NET_ADMIN + CAP_TRACING.
-Some apps will need only two out of three.
-I don't see any further possibility to shrink the scope of the proposal.
+(It could be NLM_F_UPDATE if NLM_F_APPEND sounds weird in the del
+case. I have not looked at the full dellink path if it will work
+neatly..its been a busy day )
 
-> I’m trying to convince you that bpf’s security model can be made better
-> than what you’re proposing. I’m genuinely not trying to get in your way.
-> I’m trying to help you improve bpf.
 
-If you really want to help please don't reject the real use cases
-just because they don't fit into your proposal.
+>
+>
+> >
+> >Would be good to have a consistent way to update list attributes for
+> >future needs too.
+>
+> Okay. Do you suggest to have new set of commands to handle
+> adding/deleting lists of items? altNames now, others (other nests) later?
+>
+> Something like:
+>
+> CMD SETLISTS
+>      IFLA_NAME eth0
+>      IFLA_ATLNAME_LIST (nest)
+>        IFLA_ALTNAME somereallylongname
+>        IFLA_ALTNAME somereallyreallylongname
+>        IFLA_ALTNAME someotherreallylongname
+>      IFLA_SOMETHING_ELSE_LIST (nest)
+>        IFLA_SOMETHING_ELSE
+>        IFLA_SOMETHING_ELSE
+>        IFLA_SOMETHING_ELSE
+>
+>
+> CMD DELLISTS
+>      IFLA_NAME eth0
+>      IFLA_ATLNAME_LIST (nest)
+>        IFLA_ALTNAME somereallylongname
+>        IFLA_ALTNAME somereallyreallylongname
+>        IFLA_ALTNAME someotherreallylongname
+>      IFLA_SOMETHING_ELSE_LIST (nest)
+>        IFLA_SOMETHING_ELSE
+>        IFLA_SOMETHING_ELSE
+>        IFLA_SOMETHING_ELSE
+>
+> How does this sound?
 
-There is not a single feature in BPF land that we did because we simply
-wanted to. For every feature we drilled into use cases to make sure
-there is a real user behind it.
-Same thing with CAP_BPF. I'm defining it to include GET_FD_BY_ID because
-apps use it and they need to made safer.
-
-Anyway the v2 version of the patch with CAP_TRACING and CAP_BPF is on the way.
-Hopefully later tonight or tomorrow.
-
+This seems fine but it does introduce a new type. If we can avoid a
+new msg type with a flag that would be nice (like the NLM_F_APPEND eg
+above).
+The reason for that is to see if we can use it else where too (eg some
+random future list attribute in the route subsystem. If a flag works
+then we don't have to add a RTM_NEWROUTE variant of CMD SETLISTS and
+CMD DELLISTS)
