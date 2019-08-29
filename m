@@ -2,110 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D538A20E2
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A40A20EB
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:31:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbfH2Q21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 12:28:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40592 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727118AbfH2Q20 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 12:28:26 -0400
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 570932339E
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 16:28:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567096105;
-        bh=0isBkftQj9Gg9hHTU78TmmFxYE1h8gyYcnugZeuoeWU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wukAxiPZfDy3ZtcloWmqW3DP3qsMj7ePmtvvo298RNDdeLbjk+yDLMngxgGPkpG7c
-         vjPBXqrWXSXrTSTm2apasNoSbqYSII8sJNLJ+d/TLdh6+maBvkzuBbiBfhlrys+I+/
-         kLnPGK0ahX1LZHTZVcWXA4go+SOrk1UNPGmTEQi0=
-Received: by mail-wm1-f51.google.com with SMTP id y135so2445288wmc.1
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 09:28:25 -0700 (PDT)
-X-Gm-Message-State: APjAAAUE54dSRNL2hsp2yrMqOqe2gvoVI0kMBzwVL/uWzGj6P3vKvnHp
-        drFLXU/lSCzn2mRMwuZrU9Ktxr5OqGYOIl/luZuhMA==
-X-Google-Smtp-Source: APXvYqw4AFPdrT5RzNU6kJNbmC7DZNh9sfduGZL2/yjx0+ctJaAvdCV/NlCBgqiaCkyDGXTO5nK7NXnSodHqigUTJa8=
-X-Received: by 2002:a05:600c:22d7:: with SMTP id 23mr13191080wmg.0.1567096103873;
- Thu, 29 Aug 2019 09:28:23 -0700 (PDT)
+        id S1727410AbfH2Qbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 12:31:46 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:43471 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727046AbfH2Qbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 12:31:46 -0400
+Received: by mail-wr1-f68.google.com with SMTP id y8so4072487wrn.10;
+        Thu, 29 Aug 2019 09:31:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jqnYRSvKeOuSAixyDcusNx1M9DoZEp8erc5mVI5qWgE=;
+        b=NBoWW2mhp51kNEP89n9VLK6HuCjPukG9v6gCPWmFDa0JLB2s6ZZV+D2N0S0vh9Xtx1
+         LgX3CuZ1VrmNNo1977am3s5BpdP6KO8S3mtDjOZtxLo+PZFs8pAT0FaGle7YXikiZSIM
+         YFzJECKKDh+V/pAzemsR/cgft2Qijab8ECQ7pxHKPSEfV2WaSn0fwrjkw2KzB1KJ06d+
+         ycY+BmG2T6tmJ/psfSuFK3u72FPAp7ri+UzVU6YdPJiddtAPlkKS/p063uN7Qn4Qk77C
+         wPGStOcWZ3G0gqtnpoqMW5nUMhhoUJVChAAUX8N2wY07QEcORkWnZZdczNNX12RsovJZ
+         jGvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jqnYRSvKeOuSAixyDcusNx1M9DoZEp8erc5mVI5qWgE=;
+        b=EdREqwGJ3JmrTMGdAch9lTfbJDBwaNeyDrKsXE05TO14b17ARMr0q1TqHSMSRB2PeV
+         K4C2weDzjF6Xiu0YFplk0QNOJQ5+NTG4mHxO0+294HUDCDDVKp8rk0fHNHAoNJXnJp5Y
+         grnN6BM5tyPzAriFUyeQ6jwJ0hclubybk02aSEyR5WMgXvTcd33vInyn39w4w52zldpR
+         GCe7d3Tx4sHKVqBQfHDlxnWFAe9LoFIU3U+XmtpMHn+tu0cQTLZbE25f0iA1Fvo/v/MO
+         FEW9IHUdXwGY4KWrDuf3O0GXVV3WbkEQTDvrQqN+mCz56iwAcI0pHVCH5Jedb7+CnG9d
+         RxqQ==
+X-Gm-Message-State: APjAAAWDg+dkmITdCM9cWNaXAphePbBVbDyGQC34xB6HQkpVlMQC+mBI
+        GT5xu6Ghvj9efHmqqVPG5WrTdZRE
+X-Google-Smtp-Source: APXvYqy0OlmPcJKtuOcWVyz0aHf1x9iWwllcFS6mSV06J1X33SGzK8vEubBEhl/Bt6ruxSbLeqHwUw==
+X-Received: by 2002:a5d:4bc1:: with SMTP id l1mr13182866wrt.259.1567096303963;
+        Thu, 29 Aug 2019 09:31:43 -0700 (PDT)
+Received: from [192.168.8.147] (33.169.185.81.rev.sfr.net. [81.185.169.33])
+        by smtp.gmail.com with ESMTPSA id l62sm4911638wml.13.2019.08.29.09.31.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Aug 2019 09:31:43 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8152: fix accessing skb after napi_gro_receive
+To:     Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org
+Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org
+References: <1394712342-15778-299-albertk@realtek.com>
+ <1394712342-15778-302-Taiwan-albertk@realtek.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b39bc8a1-54c7-42d4-00ed-d48aa1bac734@gmail.com>
+Date:   Thu, 29 Aug 2019 18:31:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190829051253.1927291-1-ast@kernel.org> <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
-In-Reply-To: <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Thu, 29 Aug 2019 09:28:12 -0700
-X-Gmail-Original-Message-ID: <CALCETrWFeAXjZEiTZJjansqCLLO3OK=Vf+qeRh48akMjf34Ctw@mail.gmail.com>
-Message-ID: <CALCETrWFeAXjZEiTZJjansqCLLO3OK=Vf+qeRh48akMjf34Ctw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] capability: introduce CAP_BPF and CAP_TRACING
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1394712342-15778-302-Taiwan-albertk@realtek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Aug 29, 2019, at 8:47 AM, Daniel Borkmann <daniel@iogearbox.net> wrote=
-:
->
->> On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
->> [...]
->>  +/*
->> + * CAP_BPF allows the following BPF operations:
->> + * - Loading all types of BPF programs
->> + * - Creating all types of BPF maps except:
->> + *    - stackmap that needs CAP_TRACING
->> + *    - devmap that needs CAP_NET_ADMIN
->> + *    - cpumap that needs CAP_SYS_ADMIN
->> + * - Advanced verifier features
->> + *   - Indirect variable access
->> + *   - Bounded loops
->> + *   - BPF to BPF function calls
->> + *   - Scalar precision tracking
->> + *   - Larger complexity limits
->> + *   - Dead code elimination
->> + *   - And potentially other features
->> + * - Use of pointer-to-integer conversions in BPF programs
->> + * - Bypassing of speculation attack hardening measures
->> + * - Loading BPF Type Format (BTF) data
->> + * - Iterate system wide loaded programs, maps, BTF objects
->> + * - Retrieve xlated and JITed code of BPF programs
->> + * - Access maps and programs via id
->> + * - Use bpf_spin_lock() helper
->
-> This is still very wide. Consider following example: app has CAP_BPF +
-> CAP_NET_ADMIN. Why can't we in this case *only* allow loading networking
-> related [plus generic] maps and programs? If it doesn't have CAP_TRACING,
-> what would be a reason to allow loading it? Same vice versa. There are
-> some misc program types like the infraread stuff, but they could continue
-> to live under [CAP_BPF +] CAP_SYS_ADMIN as fallback. I think categorizing
-> a specific list of prog and map types might be more clear than disallowin=
-g
-> some helpers like below (e.g. why choice of bpf_probe_read() but not
-> bpf_probe_write_user() etc).
 
-Wow, I didn=E2=80=99t notice that bpf_probe_write_user() existed. That shou=
-ld
-need something like CAP_PTRACE or CAP_SYS_ADMIN.
 
-I'm starting to think that something like this:
+On 8/19/19 5:15 AM, Hayes Wang wrote:
+> Fix accessing skb after napi_gro_receive which is caused by
+> commit 47922fcde536 ("r8152: support skb_add_rx_frag").
+> 
+> Fixes: 47922fcde536 ("r8152: support skb_add_rx_frag")
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+> ---
 
-https://lore.kernel.org/bpf/968f3551247a43e1104b198f2e58fb0595d425e7.156504=
-0372.git.luto@kernel.org/
+It is customary to add a tag to credit the reporter...
 
-should maybe be finished before CAP_BPF happens at all.  It really
-looks like the bpf operations that need privilege need to get fully
-catalogued and dealt with rather than just coming up with a new
-capability that covers a huge swath.
+Something like :
 
-(bpf_probe_write_user() is also terminally broken on architectures
-like s390x, but that's not really relevant right now.  I'm a bit
-surprised it works on x86 with SMAP, though.)
+Reported-by: ....
+
+Thanks.
