@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90574A0E9A
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 02:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9DEA0EA2
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 02:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfH2AT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 20:19:26 -0400
-Received: from mail-ed1-f44.google.com ([209.85.208.44]:37661 "EHLO
-        mail-ed1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbfH2AT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 20:19:26 -0400
-Received: by mail-ed1-f44.google.com with SMTP id f22so1993053edt.4
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 17:19:25 -0700 (PDT)
+        id S1726384AbfH2AaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 20:30:00 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:41461 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725873AbfH2A37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 20:29:59 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w5so1978959edl.8
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 17:29:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=FReuv9xFMVyvTNZfWrNQAOSzgNlbJG2Wu8muxrtJB5s=;
-        b=MTHp9BVd8Hlh5eMYeb5tusA1fszZvok2TPfm9whZyojE+0HEctZCne9g38mMzy2cvW
-         1DuhcDnWbXAQ/nJUyyQb+q77MPp+cbKQuPE4bWcYwCE5w2BLxoymWolkUq5E96eRD++7
-         s9n9+CSNUTU7nhlALXmqARusbmIP+BNu0Sdg+WZm1Tk90soai1J+3d6fZv+k5hrtHyjd
-         ugXc+z+TAP8+EkGjDSQL+nOejvAMtHCxPP6ieawjWD7pRkm1EABklQRAN0PWWCLlEF/O
-         Jk8n3M7MAr8odNEyXNMEjk97exvx+xU70PEqjfNYsyN6n3+6GZNSvVCdQAmilx8QPbBm
-         OOug==
+        bh=ABqqYv/EJP79rddAp3kaLn+kdqDhIPG0VmK8KQ/CWko=;
+        b=NkGuqix2BUGQi0p44g6C6u3I6X6lMJTFG1zGDZvKJOBkTVGGlTelT0rTC1rt5U1Kih
+         6uBO1kMYn7XyXfqoqdZLiwB82hFnEfPHOiSNIs1ve2T0pEJwpNC+2UIQfu70+U50FZia
+         9v0w79wSKED1VzkIB2BkYjEM6K8j7w7YE2d6KhBBgQZP+3oaYH/zubvi+9zXmQlwKWaI
+         7pqxTaWH6SDN+8v0oB7dQwtHnwsm+jD/Fp5TlzS6ohJycsOygpOsOvIZfBoHxJEiZDUr
+         pR7IgIn5CTcXShXQK+VkydMsqhqGOCz/eJ1sYo0chf8F0cl69hLRbBYSEyYZtLqyClvy
+         F0pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=FReuv9xFMVyvTNZfWrNQAOSzgNlbJG2Wu8muxrtJB5s=;
-        b=WDZqXRrH7SU+c30CdKTZXmgjObiIttZbt8/t+iH0xw5WHIPxS3N5yvaAefmqNJINVV
-         oDWuwFWEY9f8uUJCF/4SZAnL2piEFCKgJlCoqb2XB1gTI/fkpeFg0GpyiAPcUgQ7uwJ7
-         /t5S1yeWjyvB7x/AZr82ZRwd26/vvmenk2zSuWHZaso+RWN8AA1fIYB+VfWmvIZ/SDJg
-         Al1A8ZpkZZCWMf+ScJzNmY5rbBzMBnbJd2oXqM7W+HNosmR+zqQZsIkpOikN3BcIyVXk
-         eamdELwK51OFQ5p9/iNnwttB8SOber/poLevIFUz2eehfsP887eOUrU4MNo/NqeMR2oE
-         yY/Q==
-X-Gm-Message-State: APjAAAXFqFyUE0GGRhFZwvPFmXiY47vNjaOVhMIdeSvOfMAjutBe7UDl
-        ZQkgq/qcz5pJ+8tK40d6ug9QUQ==
-X-Google-Smtp-Source: APXvYqzO1/s6/joXl2BcoKM7Xnz/sEt4pskNOn2AhVI2yobBPmRt2GyQv7mpgP18WWYGLkGJ3cRMvw==
-X-Received: by 2002:a17:906:2ac3:: with SMTP id m3mr5753894eje.212.1567037964516;
-        Wed, 28 Aug 2019 17:19:24 -0700 (PDT)
+        bh=ABqqYv/EJP79rddAp3kaLn+kdqDhIPG0VmK8KQ/CWko=;
+        b=eW7JPCxHMmEXE5iHiDH9n1oqbVLlzqB70wcVT2wewunKhuVGuIbpr6Zg6uuB3Mmc8C
+         uyCMNrcSXRJV4HW/SA1hS4mre72abnZv2vb/kdoKrVC9ZrEqAXXHKSzgo8t1KVZYb3cu
+         LEa4Hxw0I6MrIiAVl5ZeoNoigP+Xi8lL9VAJyC8OFmYiPPIedeNlyj2ZRWK5nMimsOaL
+         OpMzIDlTk3JooRRBz9OkrZN+WvcBGjYL2oJlHvtaI2ji6UmCqwaQzggCxc3glEPmdYKg
+         O9VEboPDlNlotDBwEEej4Fvbr1/4VDNEz7kMo7AtV9DIILMpbCZrd8WXgKiYCZEggsgY
+         SdxA==
+X-Gm-Message-State: APjAAAW2v/hIWMa43/NWfTvtvzLXIVmQXFRVwWFmOYxRLxbVv2NoLf9m
+        7YYGBks2L/sTxuq58E4PHDSI2Q==
+X-Google-Smtp-Source: APXvYqz/mLlvZgSx6ApWhudr8RXP/HK39miTKk+n1hE/evZerYM619Sq9w6sz9FcNk74+m+jJ3fr/Q==
+X-Received: by 2002:a17:907:207a:: with SMTP id qp26mr5718366ejb.12.1567038598027;
+        Wed, 28 Aug 2019 17:29:58 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id fk15sm124951ejb.42.2019.08.28.17.19.23
+        by smtp.gmail.com with ESMTPSA id s8sm126520edq.79.2019.08.28.17.29.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 17:19:24 -0700 (PDT)
-Date:   Wed, 28 Aug 2019 17:19:03 -0700
+        Wed, 28 Aug 2019 17:29:57 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 17:29:34 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [pull request][net-next v2 0/8] Mellanox, mlx5 updates
- 2019-08-22
-Message-ID: <20190828171903.03cb0452@cakuba.netronome.com>
-In-Reply-To: <20190828185720.2300-1-saeedm@mellanox.com>
-References: <20190828185720.2300-1-saeedm@mellanox.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chun-Hao Lin <hau@realtek.com>
+Subject: Re: [PATCH net-next v2 6/9] r8169: don't use bit LastFrag in tx
+ descriptor after send
+Message-ID: <20190828172934.57a2a169@cakuba.netronome.com>
+In-Reply-To: <5b4c94bf-4571-7b36-1d83-c169980a6867@gmail.com>
+References: <8181244b-24ac-73e2-bac7-d01f644ebb3f@gmail.com>
+        <5b4c94bf-4571-7b36-1d83-c169980a6867@gmail.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,19 +66,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Aug 2019 18:57:39 +0000, Saeed Mahameed wrote:
-> This series provides some misc updates to mlx5 driver.
-> For more information please see tag log below.
+On Wed, 28 Aug 2019 22:27:30 +0200, Heiner Kallweit wrote:
+> On RTL8125 this bit is always cleared after send. Therefore check for
+> tx_skb->skb being set what is functionally equivalent.
 > 
-> Please pull and let me know if there is any problem.
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Please note that the series starts with a merge of mlx5-next branch,
-> to resolve and avoid dependency with rdma tree.
-> 
-> v2: 
->  - Change statistics counter name to dev_internal_queue_oob as
->    suggested by Jakub.
->  - Fixed an issue with IP-in-IP TSO patch, found by regression testing.
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 652bacf62..4489cd9f2 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -5713,7 +5713,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+>  
+>  		rtl8169_unmap_tx_skb(tp_to_dev(tp), tx_skb,
+>  				     tp->TxDescArray + entry);
+> -		if (status & LastFrag) {
+> +		if (tx_skb->skb) {
+>  			pkts_compl++;
+>  			bytes_compl += tx_skb->skb->len;
+>  			napi_consume_skb(tx_skb->skb, budget);
 
+Hmm.. the dma_rmb() looks a little sus. Honestly I'm unclear on what it
+was doing in the first place. READ_ONCE() should've been sufficient..
 
-Thanks! LGTM now
+And it's not obviously clear what does the smp_rmb() at the start of
+the function pair with.
+
+But I don't think you're making anything worse here :)
