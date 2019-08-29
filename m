@@ -2,64 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7DFA0ECD
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 03:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E646A0EDF
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 03:25:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbfH2BI0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Aug 2019 21:08:26 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:41192 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726079AbfH2BI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 21:08:26 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7T18IoE016184, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7T18IoE016184
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 29 Aug 2019 09:08:19 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
- 14.03.0468.000; Thu, 29 Aug 2019 09:08:17 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v4 0/2] r8152: fix side effect
-Thread-Topic: [PATCH net v4 0/2] r8152: fix side effect
-Thread-Index: AQHVXaACVYgMyul7K0KKECR6PdUP2KcQrDCAgACk2oA=
-Date:   Thu, 29 Aug 2019 01:08:16 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D9DBB@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-314-Taiwan-albertk@realtek.com>
-        <1394712342-15778-323-Taiwan-albertk@realtek.com>
- <20190828.161735.1528060932193718727.davem@davemloft.net>
-In-Reply-To: <20190828.161735.1528060932193718727.davem@davemloft.net>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1726384AbfH2BYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 21:24:19 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39920 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726079AbfH2BYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 21:24:19 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::642])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 62689153CBC26;
+        Wed, 28 Aug 2019 18:24:18 -0700 (PDT)
+Date:   Wed, 28 Aug 2019 18:24:17 -0700 (PDT)
+Message-Id: <20190828.182417.1721891151436459386.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/4] mlxsw: Various updates
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190828155437.9852-1-idosch@idosch.org>
+References: <20190828155437.9852-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 28 Aug 2019 18:24:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller [mailto:davem@davemloft.net]
-> Sent: Thursday, August 29, 2019 7:18 AM
-[...]
-> > v4:
-> > Add Fixes tag for both patch #1 and #2.
+From: Ido Schimmel <idosch@idosch.org>
+Date: Wed, 28 Aug 2019 18:54:33 +0300
+
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> I applied v3, sorry.
+> Patch #1 from Amit removes 56G speed support. The reasons for this are
+> detailed in the commit message.
 > 
-> I think it is OK as I will backport things to v5.2 -stable anyways.
+> Patch #2 from Shalom ensures that the hardware does not auto negotiate
+> the number of used lanes. For example, if a four lane port supports 100G
+> over both two and four lanes, it will not advertise the two lane link
+> mode.
+> 
+> Patch #3 bumps the firmware version supported by the driver.
+> 
+> Patch #4 from Petr adds ethtool counters to help debug the internal PTP
+> implementation in mlxsw. I copied Richard on this patch in case he has
+> comments.
 
-Thanks.
-
-Best Regards,
-Hayes
-
-
+Series applied.
