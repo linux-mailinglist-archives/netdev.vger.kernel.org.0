@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 701DCA16B1
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:50:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5278A173A
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 12:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728076AbfH2Kud (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 06:50:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57806 "EHLO mail.kernel.org"
+        id S1728145AbfH2Kuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 06:50:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728036AbfH2Kub (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 06:50:31 -0400
+        id S1728100AbfH2Kuf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 06:50:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 040D523426;
-        Thu, 29 Aug 2019 10:50:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5CE2E2341B;
+        Thu, 29 Aug 2019 10:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567075830;
-        bh=jrGBXnZGVyzQTvUTydLj6Dz7Vl/A26rZftB3HB8JYw4=;
+        s=default; t=1567075834;
+        bh=16fTqFdG9M6Y56zMIAUmBN+BNC2ON1gMz7VKsrMtRFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=otfxtDQ9TAMJAQzB+xDBvrhphscT3LH/RurRcQsup+8GenYqhPZ7MoqLPzJTuo1Yi
-         X+Pr9YpQsscRg/SlU/YK45r8ZqJ2bvGYqxaF/yT/sEXVIiws2oL67JoXgII9+fFII+
-         82AtNbFsifB+DeKssw3/lFU/HL32AQQOl5wBh+jg=
+        b=JZasuvFj07H2Ibug+zXTjiSK56l0voJTwT3mQasMiq5MSF/B0KPAc3QgRBThCiXEd
+         aorFFL//OUT/hy5ecfEgCyX3ZFQVVXCbdn9Eo2X8BJMr/bPbjCe3LdR4oDEoQx4iIM
+         cm232DrWVY3pdUis8B6lLZy2ODPLxaBT1FehNdgY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Stefano Brivio <sbrivio@redhat.com>, Chen Yi <yiche@redhat.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 18/29] mac80211: fix possible sta leak
-Date:   Thu, 29 Aug 2019 06:49:58 -0400
-Message-Id: <20190829105009.2265-18-sashal@kernel.org>
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 21/29] netfilter: ipset: Actually allow destination MAC address for hash:ip,mac sets too
+Date:   Thu, 29 Aug 2019 06:50:01 -0400
+Message-Id: <20190829105009.2265-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829105009.2265-1-sashal@kernel.org>
 References: <20190829105009.2265-1-sashal@kernel.org>
@@ -43,49 +45,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Stefano Brivio <sbrivio@redhat.com>
 
-[ Upstream commit 5fd2f91ad483baffdbe798f8a08f1b41442d1e24 ]
+[ Upstream commit b89d15480d0cacacae1a0fe0b3da01b529f2914f ]
 
-If TDLS station addition is rejected, the sta memory is leaked.
-Avoid this by moving the check before the allocation.
+In commit 8cc4ccf58379 ("ipset: Allow matching on destination MAC address
+for mac and ipmac sets"), ipset.git commit 1543514c46a7, I removed the
+KADT check that prevents matching on destination MAC addresses for
+hash:mac sets, but forgot to remove the same check for hash:ip,mac set.
 
-Cc: stable@vger.kernel.org
-Fixes: 7ed5285396c2 ("mac80211: don't initiate TDLS connection if station is not associated to AP")
-Link: https://lore.kernel.org/r/20190801073033.7892-1-johannes@sipsolutions.net
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Drop this check: functionality is now commented in man pages and there's
+no reason to restrict to source MAC address matching anymore.
+
+Reported-by: Chen Yi <yiche@redhat.com>
+Fixes: 8cc4ccf58379 ("ipset: Allow matching on destination MAC address for mac and ipmac sets")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/cfg.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/netfilter/ipset/ip_set_hash_ipmac.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 40c5102234679..a48e83b19cfa7 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -1471,6 +1471,11 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
- 	if (is_multicast_ether_addr(mac))
- 		return -EINVAL;
+diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
+index fd87de3ed55b3..75c21c8b76514 100644
+--- a/net/netfilter/ipset/ip_set_hash_ipmac.c
++++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
+@@ -95,10 +95,6 @@ hash_ipmac4_kadt(struct ip_set *set, const struct sk_buff *skb,
+ 	struct hash_ipmac4_elem e = { .ip = 0, { .foo[0] = 0, .foo[1] = 0 } };
+ 	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
  
-+	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER) &&
-+	    sdata->vif.type == NL80211_IFTYPE_STATION &&
-+	    !sdata->u.mgd.associated)
-+		return -EINVAL;
-+
- 	sta = sta_info_alloc(sdata, mac, GFP_KERNEL);
- 	if (!sta)
- 		return -ENOMEM;
-@@ -1478,10 +1483,6 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
- 	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER))
- 		sta->sta.tdls = true;
- 
--	if (sta->sta.tdls && sdata->vif.type == NL80211_IFTYPE_STATION &&
--	    !sdata->u.mgd.associated)
--		return -EINVAL;
+-	 /* MAC can be src only */
+-	if (!(opt->flags & IPSET_DIM_TWO_SRC))
+-		return 0;
 -
- 	err = sta_apply_parameters(local, sta, params);
- 	if (err) {
- 		sta_info_free(local, sta);
+ 	if (skb_mac_header(skb) < skb->head ||
+ 	    (skb_mac_header(skb) + ETH_HLEN) > skb->data)
+ 		return -EINVAL;
 -- 
 2.20.1
 
