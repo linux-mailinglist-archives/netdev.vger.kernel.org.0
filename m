@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2A0A238B
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC00A238D
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729732AbfH2SQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:16:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58368 "EHLO mail.kernel.org"
+        id S1729769AbfH2SQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:16:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729713AbfH2SQT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:16:19 -0400
+        id S1729753AbfH2SQ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:16:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB04B2189D;
-        Thu, 29 Aug 2019 18:16:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B91F2339E;
+        Thu, 29 Aug 2019 18:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102579;
-        bh=xCREaTygv8b8nm+QPF3XKV3E36VYjZhtrpivCPCooeI=;
+        s=default; t=1567102586;
+        bh=em3tqHdWgAqd9Ik7eTSlUEpP6WoxfX3uzGf4z8ov/qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FeAQt5NtmK6JobQP/261HOo0eZP7cec5ZwOGYdmux90H1RqLWhRfbBMl/AYZLR12o
-         vrcgdbTCtFJ7Fjddrg+sLv0w+bHGNV05OxyVpAnWlzYdSB+CoWbRXST3fElUQ486C3
-         DMuWzyfQIDCu2CJRDBKLRjEY/4DRJSf2F/+gRSP0=
+        b=hvngjxqvGG9+qe/QrLqnLpKQFcS4FF6Dc2ay/4stHKY+OiUIeklGSLaXOriRroZh0
+         9s3NjNRsCkKQFexSFRZOAVDrGB5KfvgEfBQctjR210xPDx3usmMWwvpeqQ5ZkQOLrh
+         t19x+Xb7Uc3MCDhupCHQTaAPODnDiruyHNgsSvUY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 23/45] cx82310_eth: fix a memory leak bug
-Date:   Thu, 29 Aug 2019 14:15:23 -0400
-Message-Id: <20190829181547.8280-23-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 27/45] wimax/i2400m: fix a memory leak bug
+Date:   Thu, 29 Aug 2019 14:15:27 -0400
+Message-Id: <20190829181547.8280-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181547.8280-1-sashal@kernel.org>
 References: <20190829181547.8280-1-sashal@kernel.org>
@@ -46,36 +45,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit 1eca92eef18719027d394bf1a2d276f43e7cf886 ]
+[ Upstream commit 44ef3a03252844a8753479b0cea7f29e4a804bdc ]
 
-In cx82310_bind(), 'dev->partial_data' is allocated through kmalloc().
-Then, the execution waits for the firmware to become ready. If the firmware
-is not ready in time, the execution is terminated. However, the allocated
-'dev->partial_data' is not deallocated on this path, leading to a memory
-leak bug. To fix this issue, free 'dev->partial_data' before returning the
-error.
+In i2400m_barker_db_init(), 'options_orig' is allocated through kstrdup()
+to hold the original command line options. Then, the options are parsed.
+However, if an error occurs during the parsing process, 'options_orig' is
+not deallocated, leading to a memory leak bug. To fix this issue, free
+'options_orig' before returning the error.
 
 Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cx82310_eth.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wimax/i2400m/fw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/cx82310_eth.c b/drivers/net/usb/cx82310_eth.c
-index 947bea81d9241..dfbdea22fbad9 100644
---- a/drivers/net/usb/cx82310_eth.c
-+++ b/drivers/net/usb/cx82310_eth.c
-@@ -175,7 +175,8 @@ static int cx82310_bind(struct usbnet *dev, struct usb_interface *intf)
+diff --git a/drivers/net/wimax/i2400m/fw.c b/drivers/net/wimax/i2400m/fw.c
+index e9fc168bb7345..489cba9b284d1 100644
+--- a/drivers/net/wimax/i2400m/fw.c
++++ b/drivers/net/wimax/i2400m/fw.c
+@@ -351,13 +351,15 @@ int i2400m_barker_db_init(const char *_options)
+ 			}
+ 			result = i2400m_barker_db_add(barker);
+ 			if (result < 0)
+-				goto error_add;
++				goto error_parse_add;
+ 		}
+ 		kfree(options_orig);
  	}
- 	if (!timeout) {
- 		dev_err(&udev->dev, "firmware not ready in time\n");
--		return -ETIMEDOUT;
-+		ret = -ETIMEDOUT;
-+		goto err;
- 	}
+ 	return 0;
  
- 	/* enable ethernet mode (?) */
++error_parse_add:
+ error_parse:
++	kfree(options_orig);
+ error_add:
+ 	kfree(i2400m_barker_db);
+ 	return result;
 -- 
 2.20.1
 
