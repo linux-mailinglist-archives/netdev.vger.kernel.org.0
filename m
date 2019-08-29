@@ -2,118 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9682A1AC9
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E99AA1ACD
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 15:06:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbfH2NGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 09:06:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40304 "EHLO mx1.redhat.com"
+        id S1727891AbfH2NGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 09:06:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45976 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726739AbfH2NGO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 09:06:14 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        id S1726990AbfH2NGV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 09:06:21 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 766D4308FB9A;
-        Thu, 29 Aug 2019 13:06:14 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6500E308219E;
+        Thu, 29 Aug 2019 13:06:21 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9083419C4F;
-        Thu, 29 Aug 2019 13:06:13 +0000 (UTC)
-Subject: [PATCH net 0/5] rxrpc: Fix use of skb_cow_data()
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 80C555C1D6;
+        Thu, 29 Aug 2019 13:06:20 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 1/5] rxrpc: Pass the input handler's data skb reference
+ to the Rx ring
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 29 Aug 2019 14:06:12 +0100
-Message-ID: <156708397261.25861.2158085372781699276.stgit@warthog.procyon.org.uk>
+Date:   Thu, 29 Aug 2019 14:06:19 +0100
+Message-ID: <156708397971.25861.1471138213727662062.stgit@warthog.procyon.org.uk>
+In-Reply-To: <156708397261.25861.2158085372781699276.stgit@warthog.procyon.org.uk>
+References: <156708397261.25861.2158085372781699276.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 29 Aug 2019 13:06:14 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Thu, 29 Aug 2019 13:06:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Pass the reference held on a DATA skb in the rxrpc input handler into the
+Rx ring rather than getting an additional ref for this and then dropping
+the original ref at the end.
 
-Here's a series of patches that replaces the use of skb_cow_data() in rxrpc
-with skb_unshare() early on in the input process.  The problem that is
-being seen is that skb_cow_data() indirectly requires that the maximum
-usage count on an sk_buff be 1, and it may generate an assertion failure in
-pskb_expand_head() if not.
-
-This can occur because rxrpc_input_data() may be still holding a ref when
-it has just attached the sk_buff to the rx ring and given that attachment
-its own ref.  If recvmsg happens fast enough, skb_cow_data() can see the
-ref still held by the softirq handler.
-
-Further, a packet may contain multiple subpackets, each of which gets its
-own attachment to the ring and its own ref - also making skb_cow_data() go
-bang.
-
-Fix this by:
-
- (1) The DATA packet is currently parsed for subpackets twice by the input
-     routines.  Parse it just once instead and make notes in the sk_buff
-     private data.
-
- (2) Use the notes from (1) when attaching the packet to the ring multiple
-     times.  Once the packet is attached to the ring, recvmsg can see it
-     and start modifying it, so the softirq handler is not permitted to
-     look inside it from that point.
-
- (3) Pass the ref from the input code to the ring rather than getting an
-     extra ref.  rxrpc_input_data() uses a ref on the second refcount to
-     prevent the packet from evaporating under it.
-
- (4) Call skb_unshare() on secured DATA packets in rxrpc_input_packet()
-     before we take call->input_lock.  Other sorts of packets don't get
-     modified and so can be left.
-
-     A trace is emitted if skb_unshare() eats the skb.  Note that
-     skb_share() for our accounting in this regard as we can't see the
-     parameters in the packet to log in a trace line if it releases it.
-
- (5) Remove the calls to skb_cow_data().  These are then no longer
-     necessary.
-
-There are also patches to improve the rxrpc_skb tracepoint to make sure
-that Tx-derived buffers are identified separately from Rx-derived buffers
-in the trace.
-
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-fixes-20190827
-
-and can also be found on the following branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
-
-David
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-David Howells (5):
-      rxrpc: Pass the input handler's data skb reference to the Rx ring
-      rxrpc: Abstract out rxtx ring cleanup
-      rxrpc: Add a private skb flag to indicate transmission-phase skbs
-      rxrpc: Use the tx-phase skb flag to simplify tracing
-      rxrpc: Use skb_unshare() rather than skb_cow_data()
 
+ net/rxrpc/input.c |   20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
- include/trace/events/rxrpc.h |   59 ++++++++++++++++++++----------------------
- net/rxrpc/ar-internal.h      |    3 ++
- net/rxrpc/call_event.c       |    8 +++---
- net/rxrpc/call_object.c      |   33 +++++++++++------------
- net/rxrpc/conn_event.c       |    6 ++--
- net/rxrpc/input.c            |   52 ++++++++++++++++++++++++++++---------
- net/rxrpc/local_event.c      |    4 +--
- net/rxrpc/output.c           |    6 ++--
- net/rxrpc/peer_event.c       |   10 ++++---
- net/rxrpc/recvmsg.c          |    6 ++--
- net/rxrpc/rxkad.c            |   32 ++++++-----------------
- net/rxrpc/sendmsg.c          |   13 +++++----
- net/rxrpc/skbuff.c           |   40 ++++++++++++++++++++--------
- 13 files changed, 151 insertions(+), 121 deletions(-)
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 35b1a9368d80..140cede77655 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -422,7 +422,8 @@ static void rxrpc_input_dup_data(struct rxrpc_call *call, rxrpc_seq_t seq,
+ }
+ 
+ /*
+- * Process a DATA packet, adding the packet to the Rx ring.
++ * Process a DATA packet, adding the packet to the Rx ring.  The caller's
++ * packet ref must be passed on or discarded.
+  */
+ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ {
+@@ -441,8 +442,10 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 	       sp->hdr.serial, seq0, sp->hdr.flags, sp->nr_subpackets);
+ 
+ 	state = READ_ONCE(call->state);
+-	if (state >= RXRPC_CALL_COMPLETE)
++	if (state >= RXRPC_CALL_COMPLETE) {
++		rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
+ 		return;
++	}
+ 
+ 	if (call->state == RXRPC_CALL_SERVER_RECV_REQUEST) {
+ 		unsigned long timo = READ_ONCE(call->next_req_timo);
+@@ -555,7 +558,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 		 * Barriers against rxrpc_recvmsg_data() and rxrpc_rotate_rx_window()
+ 		 * and also rxrpc_fill_out_ack().
+ 		 */
+-		rxrpc_get_skb(skb, rxrpc_skb_rx_got);
++		if (!terminal)
++			rxrpc_get_skb(skb, rxrpc_skb_rx_got);
+ 		call->rxtx_annotations[ix] = annotation;
+ 		smp_wmb();
+ 		call->rxtx_buffer[ix] = skb;
+@@ -616,6 +620,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 
+ unlock:
+ 	spin_unlock(&call->input_lock);
++	rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
+ 	_leave(" [queued]");
+ }
+ 
+@@ -1024,7 +1029,7 @@ static void rxrpc_input_call_packet(struct rxrpc_call *call,
+ 	switch (sp->hdr.type) {
+ 	case RXRPC_PACKET_TYPE_DATA:
+ 		rxrpc_input_data(call, skb);
+-		break;
++		goto no_free;
+ 
+ 	case RXRPC_PACKET_TYPE_ACK:
+ 		rxrpc_input_ack(call, skb);
+@@ -1051,6 +1056,8 @@ static void rxrpc_input_call_packet(struct rxrpc_call *call,
+ 		break;
+ 	}
+ 
++	rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
++no_free:
+ 	_leave("");
+ }
+ 
+@@ -1375,8 +1382,11 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 		mutex_unlock(&call->user_mutex);
+ 	}
+ 
++	/* Process a call packet; this either discards or passes on the ref
++	 * elsewhere.
++	 */
+ 	rxrpc_input_call_packet(call, skb);
+-	goto discard;
++	goto out;
+ 
+ discard:
+ 	rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
 
