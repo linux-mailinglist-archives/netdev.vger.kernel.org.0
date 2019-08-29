@@ -2,212 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98442A2181
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32759A2150
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 18:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727978AbfH2QyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 12:54:06 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:51112 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727483AbfH2QyF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 12:54:05 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6958989AC7;
-        Thu, 29 Aug 2019 16:54:05 +0000 (UTC)
-Received: from new-host.redhat.com (ovpn-204-80.brq.redhat.com [10.40.204.80])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4490860872;
-        Thu, 29 Aug 2019 16:54:03 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     borisp@mellanox.com, jakub.kicinski@netronome.com,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     aviadye@mellanox.com, davejwatson@fb.com, davem@davemloft.net,
-        john.fastabend@gmail.com,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: tls: export protocol version, cipher, tx_conf/rx_conf to socket diag
-Date:   Thu, 29 Aug 2019 18:48:04 +0200
-Message-Id: <22da29aa0d0c683afeba7549cabc64c5e073d308.1567095873.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1567095873.git.dcaratti@redhat.com>
-References: <cover.1567095873.git.dcaratti@redhat.com>
+        id S1727706AbfH2Quy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 12:50:54 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:38855 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726973AbfH2Qux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 12:50:53 -0400
+Received: by mail-wm1-f67.google.com with SMTP id o184so4553699wme.3;
+        Thu, 29 Aug 2019 09:50:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EAPNXwtNcvomkAv43HK7BcSQSi3ID9bH+hr63tWVdSI=;
+        b=B5HGm8Y0d+BC3TOmZ23uuf+WqGqYOV7ombVlzG70cKlsV5JRtEvvNhzfPX4mECWFhx
+         u5j/9cXAx5IqdKYxp7N//EOr02YdCxMO9TImOTBYGSfNXGWuDvoj6pJX11SgB//Tt5im
+         yYal4ni8RQu92gT5EGlqUSz2C0ZgmGFTTf+a6stQq6hqSBqIOsB4/FaV7WQu1kPe6C3X
+         +xLocX36sKRkLLs3x2PB2D+myD7iamK/wRKiMKBKp2+VCm7/qCDUbUDyTARThORMu67E
+         QuOMPvFXZtlfAMMmQxgNFbLz16ewEqahiYYT8vzew1IHcjJ1Y165M5UTbENb5n3dJ24k
+         kxqA==
+X-Gm-Message-State: APjAAAX+kGHw6qYwNcIPCIAbgM17lyiHVPh/qD8mC15U8cFFX3Ij61QJ
+        D4+f5ZSeYUoFEP3fmz575wgwXYvwuHo=
+X-Google-Smtp-Source: APXvYqyG8Uv9qqAEzfuwRYVShx38vJV1pUSPq3W7ZBAlPx5+N1oEiU4zijmswr1WDwZJj2S7mhEW8w==
+X-Received: by 2002:a1c:f704:: with SMTP id v4mr361727wmh.90.1567097450438;
+        Thu, 29 Aug 2019 09:50:50 -0700 (PDT)
+Received: from green.intra.ispras.ru (bran.ispras.ru. [83.149.199.196])
+        by smtp.googlemail.com with ESMTPSA id o14sm8340770wrg.64.2019.08.29.09.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 09:50:49 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Denis Efremov <efremov@linux.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        Juergen Gross <jgross@suse.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Sean Paul <sean@poorly.run>, linux-arm-msm@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net, linux-rdma@vger.kernel.org,
+        linux-wimax@intel.com, linux-xfs@vger.kernel.org,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Whitcroft <apw@canonical.com>
+Subject: [PATCH v3 01/11] checkpatch: check for nested (un)?likely() calls
+Date:   Thu, 29 Aug 2019 19:50:15 +0300
+Message-Id: <20190829165025.15750-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Thu, 29 Aug 2019 16:54:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an application configures kernel TLS on top of a TCP socket, it's
-now possible for inet_diag_handler() to collect information regarding the
-protocol version, the cipher type and TX / RX configuration, in case
-INET_DIAG_INFO is requested.
+IS_ERR(), IS_ERR_OR_NULL(), IS_ERR_VALUE() and WARN*() already contain
+unlikely() optimization internally. Thus, there is no point in calling
+these functions and defines under likely()/unlikely().
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+This check is based on the coccinelle rule developed by Enrico Weigelt
+https://lore.kernel.org/lkml/1559767582-11081-1-git-send-email-info@metux.net/
+
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Cc: Joe Perches <joe@perches.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Whitcroft <apw@canonical.com>
 ---
- include/net/tls.h              | 19 ++++++++++
- include/uapi/linux/inet_diag.h |  1 +
- include/uapi/linux/tls.h       | 15 ++++++++
- net/tls/tls_main.c             | 64 ++++++++++++++++++++++++++++++++++
- 4 files changed, 99 insertions(+)
+ scripts/checkpatch.pl | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 4997742475cd..990f1d9182a3 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -431,6 +431,25 @@ static inline bool is_tx_ready(struct tls_sw_context_tx *ctx)
- 	return READ_ONCE(rec->tx_ready);
- }
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 93a7edfe0f05..56969ce06df4 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -6480,6 +6480,12 @@ sub process {
+ 			     "Using $1 should generally have parentheses around the comparison\n" . $herecurr);
+ 		}
  
-+static inline u16 tls_user_config(struct tls_context *ctx, bool tx)
-+{
-+	u16 config = tx ? ctx->tx_conf : ctx->rx_conf;
++# nested likely/unlikely calls
++		if ($line =~ /\b(?:(?:un)?likely)\s*\(\s*!?\s*(IS_ERR(?:_OR_NULL|_VALUE)?|WARN)/) {
++			WARN("LIKELY_MISUSE",
++			     "nested (un)?likely() calls, $1 already uses unlikely() internally\n" . $herecurr);
++		}
 +
-+	switch (config) {
-+	case TLS_BASE:
-+		return TLS_CONF_BASE;
-+	case TLS_SW:
-+		return TLS_CONF_SW;
-+#ifdef CONFIG_TLS_DEVICE
-+	case TLS_HW:
-+		return TLS_CONF_HW;
-+#endif
-+	case TLS_HW_RECORD:
-+		return TLS_CONF_HW_RECORD;
-+	}
-+	return 0;
-+}
-+
- struct sk_buff *
- tls_validate_xmit_skb(struct sock *sk, struct net_device *dev,
- 		      struct sk_buff *skb);
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index e2c6273274f3..a1ff345b3f33 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -162,6 +162,7 @@ enum {
- enum {
- 	INET_ULP_INFO_UNSPEC,
- 	INET_ULP_INFO_NAME,
-+	INET_ULP_INFO_TLS,
- 	__INET_ULP_INFO_MAX,
- };
- #define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
-diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
-index 5b9c26753e46..bcd2869ed472 100644
---- a/include/uapi/linux/tls.h
-+++ b/include/uapi/linux/tls.h
-@@ -109,4 +109,19 @@ struct tls12_crypto_info_aes_ccm_128 {
- 	unsigned char rec_seq[TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE];
- };
- 
-+enum {
-+	TLS_INFO_UNSPEC,
-+	TLS_INFO_VERSION,
-+	TLS_INFO_CIPHER,
-+	TLS_INFO_TXCONF,
-+	TLS_INFO_RXCONF,
-+	__TLS_INFO_MAX,
-+};
-+#define TLS_INFO_MAX (__TLS_INFO_MAX - 1)
-+
-+#define TLS_CONF_BASE 1
-+#define TLS_CONF_SW 2
-+#define TLS_CONF_HW 3
-+#define TLS_CONF_HW_RECORD 4
-+
- #endif /* _UAPI_LINUX_TLS_H */
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index f8f2d2c3d627..3351a2ace369 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -39,6 +39,7 @@
- #include <linux/netdevice.h>
- #include <linux/sched/signal.h>
- #include <linux/inetdevice.h>
-+#include <linux/inet_diag.h>
- 
- #include <net/tls.h>
- 
-@@ -835,6 +836,67 @@ static void tls_update(struct sock *sk, struct proto *p)
- 	}
- }
- 
-+static int tls_get_info(const struct sock *sk, struct sk_buff *skb)
-+{
-+	struct tls_context *ctx;
-+	u16 version, cipher_type;
-+	struct nlattr *start;
-+	int err;
-+
-+	start = nla_nest_start_noflag(skb, INET_ULP_INFO_TLS);
-+	if (!start)
-+		return -EMSGSIZE;
-+
-+	rcu_read_lock();
-+	ctx = rcu_dereference(inet_csk(sk)->icsk_ulp_data);
-+	if (!ctx) {
-+		err = 0;
-+		goto nla_failure;
-+	}
-+	version = ctx->prot_info.version;
-+	if (version) {
-+		err = nla_put_u16(skb, TLS_INFO_VERSION, version);
-+		if (err)
-+			goto nla_failure;
-+	}
-+	cipher_type = ctx->prot_info.cipher_type;
-+	if (cipher_type) {
-+		err = nla_put_u16(skb, TLS_INFO_CIPHER, cipher_type);
-+		if (err)
-+			goto nla_failure;
-+	}
-+	err = nla_put_u16(skb, TLS_INFO_TXCONF, tls_user_config(ctx, true));
-+	if (err)
-+		goto nla_failure;
-+
-+	err = nla_put_u16(skb, TLS_INFO_RXCONF, tls_user_config(ctx, false));
-+	if (err)
-+		goto nla_failure;
-+
-+	rcu_read_unlock();
-+	nla_nest_end(skb, start);
-+	return 0;
-+
-+nla_failure:
-+	rcu_read_unlock();
-+	nla_nest_cancel(skb, start);
-+	return err;
-+}
-+
-+static size_t tls_get_info_size(const struct sock *sk)
-+{
-+	size_t size = 0;
-+
-+	size += nla_total_size(0) +		/* INET_ULP_INFO_TLS */
-+		nla_total_size(sizeof(u16)) +	/* TLS_INFO_VERSION */
-+		nla_total_size(sizeof(u16)) +	/* TLS_INFO_CIPHER */
-+		nla_total_size(sizeof(u16)) +	/* TLS_INFO_RXCONF */
-+		nla_total_size(sizeof(u16)) +	/* TLS_INFO_TXCONF */
-+		0;
-+
-+	return size;
-+}
-+
- void tls_register_device(struct tls_device *device)
- {
- 	spin_lock_bh(&device_spinlock);
-@@ -856,6 +918,8 @@ static struct tcp_ulp_ops tcp_tls_ulp_ops __read_mostly = {
- 	.owner			= THIS_MODULE,
- 	.init			= tls_init,
- 	.update			= tls_update,
-+	.get_info		= tls_get_info,
-+	.get_info_size		= tls_get_info_size,
- };
- 
- static int __init tls_register(void)
+ # whine mightly about in_atomic
+ 		if ($line =~ /\bin_atomic\s*\(/) {
+ 			if ($realfile =~ m@^drivers/@) {
 -- 
-2.20.1
+2.21.0
 
