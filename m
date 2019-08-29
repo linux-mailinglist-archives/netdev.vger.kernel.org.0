@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D74A25FE
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6355FA2601
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728239AbfH2SNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:13:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55182 "EHLO mail.kernel.org"
+        id S1728328AbfH2SNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:13:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728153AbfH2SN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:13:29 -0400
+        id S1728303AbfH2SNf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:13:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1911722CF5;
-        Thu, 29 Aug 2019 18:13:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BB135233FF;
+        Thu, 29 Aug 2019 18:13:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102407;
-        bh=hmKdjn+vbAP1QfonYOqWbHhhmRBh/rVxCGF7ivjgQXU=;
+        s=default; t=1567102414;
+        bh=HLY5Zfs3P3knoYqKm1BqmPQwJ3CmGXEce1/gN1ZH0bI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=udi51MTLn//10gZdglmnCsdcmj9SaIVd/d0CxssUhzYet64czPvZ2Nr3X/n/2XPXq
-         SOD4lR3nacLkehi1lbdN5s1L3pkKlBnEq6eJP7sM7cQbjtatkPh0O2UURSDEXGoMWQ
-         F1zw6NtbN8uCpCI0S/G4nivNh/z9G/somtRKZaBg=
+        b=s4NYKwECKMQv+4D1o6nWxvutBHo9crRhS5NOl2Fk7nhhdi6PAXbjIFa04/XNRUyrT
+         r/fcjzr5cMFoOp11G9tP5PvvQHGcT3l89GZgIHTqY8ohncql2vHmDNDIRr/ovL3l0x
+         BvT2Urq4xKGBFtD6upWHzU+8Z25q8GY9aeooGZjo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aya Levin <ayal@mellanox.com>, Tariq Toukan <tariqt@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 05/76] net/mlx5e: Fix error flow of CQE recovery on tx reporter
-Date:   Thu, 29 Aug 2019 14:12:00 -0400
-Message-Id: <20190829181311.7562-5-sashal@kernel.org>
+Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 09/76] net: tundra: tsi108: use spin_lock_irqsave instead of spin_lock_irq in IRQ context
+Date:   Thu, 29 Aug 2019 14:12:04 -0400
+Message-Id: <20190829181311.7562-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181311.7562-1-sashal@kernel.org>
 References: <20190829181311.7562-1-sashal@kernel.org>
@@ -44,81 +43,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+From: Fuqian Huang <huangfq.daxian@gmail.com>
 
-[ Upstream commit 276d197e70bcc47153592f4384675b51c7d83aba ]
+[ Upstream commit 8c25d0887a8bd0e1ca2074ac0c6dff173787a83b ]
 
-CQE recovery function begins with test and set of recovery bit. Add an
-error flow which ensures clearing of this bit when leaving the recovery
-function, to allow further recoveries to take place. This allows removal
-of clearing recovery bit on sq activate.
+As spin_unlock_irq will enable interrupts.
+Function tsi108_stat_carry is called from interrupt handler tsi108_irq.
+Interrupts are enabled in interrupt handler.
+Use spin_lock_irqsave/spin_unlock_irqrestore instead of spin_(un)lock_irq
+in IRQ context to avoid this.
 
-Fixes: de8650a82071 ("net/mlx5e: Add tx reporter support")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 12 ++++++++----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c    |  1 -
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/tundra/tsi108_eth.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index c1caf14bc3346..c7f86453c6384 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -80,17 +80,17 @@ static int mlx5e_tx_reporter_err_cqe_recover(struct mlx5e_txqsq *sq)
- 	if (err) {
- 		netdev_err(dev, "Failed to query SQ 0x%x state. err = %d\n",
- 			   sq->sqn, err);
--		return err;
-+		goto out;
- 	}
+diff --git a/drivers/net/ethernet/tundra/tsi108_eth.c b/drivers/net/ethernet/tundra/tsi108_eth.c
+index 78a7de3fb622f..c62f474b6d08e 100644
+--- a/drivers/net/ethernet/tundra/tsi108_eth.c
++++ b/drivers/net/ethernet/tundra/tsi108_eth.c
+@@ -371,9 +371,10 @@ tsi108_stat_carry_one(int carry, int carry_bit, int carry_shift,
+ static void tsi108_stat_carry(struct net_device *dev)
+ {
+ 	struct tsi108_prv_data *data = netdev_priv(dev);
++	unsigned long flags;
+ 	u32 carry1, carry2;
  
- 	if (state != MLX5_SQC_STATE_ERR)
--		return 0;
-+		goto out;
+-	spin_lock_irq(&data->misclock);
++	spin_lock_irqsave(&data->misclock, flags);
  
- 	mlx5e_tx_disable_queue(sq->txq);
+ 	carry1 = TSI_READ(TSI108_STAT_CARRY1);
+ 	carry2 = TSI_READ(TSI108_STAT_CARRY2);
+@@ -441,7 +442,7 @@ static void tsi108_stat_carry(struct net_device *dev)
+ 			      TSI108_STAT_TXPAUSEDROP_CARRY,
+ 			      &data->tx_pause_drop);
  
- 	err = mlx5e_wait_for_sq_flush(sq);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	/* At this point, no new packets will arrive from the stack as TXQ is
- 	 * marked with QUEUE_STATE_DRV_XOFF. In addition, NAPI cleared all
-@@ -99,13 +99,17 @@ static int mlx5e_tx_reporter_err_cqe_recover(struct mlx5e_txqsq *sq)
- 
- 	err = mlx5e_sq_to_ready(sq, state);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	mlx5e_reset_txqsq_cc_pc(sq);
- 	sq->stats->recover++;
-+	clear_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state);
- 	mlx5e_activate_txqsq(sq);
- 
- 	return 0;
-+out:
-+	clear_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state);
-+	return err;
+-	spin_unlock_irq(&data->misclock);
++	spin_unlock_irqrestore(&data->misclock, flags);
  }
  
- static int mlx5_tx_health_report(struct devlink_health_reporter *tx_reporter,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 882d26b8095da..bbdfdaf06391a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1279,7 +1279,6 @@ static int mlx5e_open_txqsq(struct mlx5e_channel *c,
- void mlx5e_activate_txqsq(struct mlx5e_txqsq *sq)
- {
- 	sq->txq = netdev_get_tx_queue(sq->channel->netdev, sq->txq_ix);
--	clear_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state);
- 	set_bit(MLX5E_SQ_STATE_ENABLED, &sq->state);
- 	netdev_tx_reset_queue(sq->txq);
- 	netif_tx_start_queue(sq->txq);
+ /* Read a stat counter atomically with respect to carries.
 -- 
 2.20.1
 
