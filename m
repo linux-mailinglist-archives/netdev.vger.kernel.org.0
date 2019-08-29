@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8DABA23BE
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D19A23BF
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:18:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730182AbfH2SRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:17:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59936 "EHLO mail.kernel.org"
+        id S1730260AbfH2SRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:17:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60086 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730164AbfH2SRo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:17:44 -0400
+        id S1730244AbfH2SRx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:17:53 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D50922339E;
-        Thu, 29 Aug 2019 18:17:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E3A4423405;
+        Thu, 29 Aug 2019 18:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102663;
-        bh=gVurG7BIl7P94A8jKlwa4onRdMssNry3RH32zz0KsOU=;
+        s=default; t=1567102672;
+        bh=8s7uHJyYdr3pWYZ1sw1kll+haNg/5Bq+5TloACJDxac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgnO7mN3d9Cx3RLLpu3uMmnJG6n2lHXQOuwwkyicvR5AuxmWdbvHB9ahGiz8dkF3i
-         kfu/vjwXrISCOo6UGmYSOXGQ4wNTMwtYXIZdRNfaBKCmuWMSsYPyX+IQ/jpBDnIQfi
-         0eETscgv0bsuaxvsPLSF6d42L76rLnDTh4hZuHsc=
+        b=DCNJX3cmtTyJI/9saJPntRuz6jmgBB9f2ihp4ODcRbsgJD+uNqK8J6XAsjs1ddF7d
+         6qAeRdwCVvI6MX48w5qiKGQEP7tcTFJ+EdAVTCo+o7BZAx/28CgbWzt3Q9qkWmPa3N
+         g/yxSqj3ud4LTNoSVAZcl23SjXO6H73l8qY3VUTk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.9 04/16] ibmveth: Convert multicast list size for little-endian system
-Date:   Thu, 29 Aug 2019 14:17:22 -0400
-Message-Id: <20190829181736.9040-4-sashal@kernel.org>
+Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 09/16] net: kalmia: fix memory leaks
+Date:   Thu, 29 Aug 2019 14:17:27 -0400
+Message-Id: <20190829181736.9040-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181736.9040-1-sashal@kernel.org>
 References: <20190829181736.9040-1-sashal@kernel.org>
@@ -45,59 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
+From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit 66cf4710b23ab2adda11155684a2c8826f4fe732 ]
+[ Upstream commit f1472cb09f11ddb41d4be84f0650835cb65a9073 ]
 
-The ibm,mac-address-filters property defines the maximum number of
-addresses the hypervisor's multicast filter list can support. It is
-encoded as a big-endian integer in the OF device tree, but the virtual
-ethernet driver does not convert it for use by little-endian systems.
-As a result, the driver is not behaving as it should on affected systems
-when a large number of multicast addresses are assigned to the device.
+In kalmia_init_and_get_ethernet_addr(), 'usb_buf' is allocated through
+kmalloc(). In the following execution, if the 'status' returned by
+kalmia_send_init_packet() is not 0, 'usb_buf' is not deallocated, leading
+to memory leaks. To fix this issue, add the 'out' label to free 'usb_buf'.
 
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/usb/kalmia.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index 955f658f3b65f..de9897c8e9331 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1557,7 +1557,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	struct net_device *netdev;
- 	struct ibmveth_adapter *adapter;
- 	unsigned char *mac_addr_p;
--	unsigned int *mcastFilterSize_p;
-+	__be32 *mcastFilterSize_p;
- 	long ret;
- 	unsigned long ret_attr;
+diff --git a/drivers/net/usb/kalmia.c b/drivers/net/usb/kalmia.c
+index 3e37724d30ae7..0c4f4190c58ee 100644
+--- a/drivers/net/usb/kalmia.c
++++ b/drivers/net/usb/kalmia.c
+@@ -117,16 +117,16 @@ kalmia_init_and_get_ethernet_addr(struct usbnet *dev, u8 *ethernet_addr)
+ 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_1)
+ 		/ sizeof(init_msg_1[0]), usb_buf, 24);
+ 	if (status != 0)
+-		return status;
++		goto out;
  
-@@ -1579,8 +1579,9 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 		return -EINVAL;
- 	}
+ 	memcpy(usb_buf, init_msg_2, 12);
+ 	status = kalmia_send_init_packet(dev, usb_buf, sizeof(init_msg_2)
+ 		/ sizeof(init_msg_2[0]), usb_buf, 28);
+ 	if (status != 0)
+-		return status;
++		goto out;
  
--	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
--						VETH_MCAST_FILTER_SIZE, NULL);
-+	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
-+							VETH_MCAST_FILTER_SIZE,
-+							NULL);
- 	if (!mcastFilterSize_p) {
- 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
- 			"attribute\n");
-@@ -1597,7 +1598,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 
- 	adapter->vdev = dev;
- 	adapter->netdev = netdev;
--	adapter->mcastFilterSize = *mcastFilterSize_p;
-+	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
- 	adapter->pool_config = 0;
- 
- 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+ 	memcpy(ethernet_addr, usb_buf + 10, ETH_ALEN);
+-
++out:
+ 	kfree(usb_buf);
+ 	return status;
+ }
 -- 
 2.20.1
 
