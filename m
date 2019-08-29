@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79217A25E5
-	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA11A25CB
+	for <lists+netdev@lfdr.de>; Thu, 29 Aug 2019 20:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728651AbfH2SN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 14:13:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55656 "EHLO mail.kernel.org"
+        id S1728677AbfH2SN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 14:13:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728628AbfH2SN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 14:13:56 -0400
+        id S1728646AbfH2SN5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 14:13:57 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE8DD2341B;
-        Thu, 29 Aug 2019 18:13:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DD78223426;
+        Thu, 29 Aug 2019 18:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567102435;
-        bh=3dCUh5B5V/+pwIdVufiDbzWGJ3Fse06EB+uMp16XkV4=;
+        s=default; t=1567102436;
+        bh=S/uUICgvSilsGtYuYVeoMlz2yDoqpI2JswWuw36fMiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1CGOWP7r6ENB7eKqAawcPPKhvOLvfxBWM+XB+vM5Gj9WOKK+Q5uT2zGPc0by9Pa2
-         TKP3Tkpg13ZbwoFXnhvS1GMFESnjpGjmf7A6imf/caDCb9XdpgHymyWwIL7yodlTzW
-         jMDYILpA1vyNdTQ4beR1zF2PUx4SfAWrv5GS1F10=
+        b=QNIEK5jCHnPc2kiXXSaoETxgnmNt9gMqhUtQNgi+Go1EBKZkOnUyYeByiiytqtFOM
+         p2PfbMwEtx5tFF98LD4iFy69U9qMmHzOXj4sq2JYGSEPBHDVJ2zQVPlE20cvf31Fs0
+         fxAdq6vhezm1eVIXzWuhtS+SK7BpM37/MVyiZvE8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+Cc:     David Howells <dhowells@redhat.com>,
+        syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 24/76] netfilter: nft_flow_offload: skip tcp rst and fin packets
-Date:   Thu, 29 Aug 2019 14:12:19 -0400
-Message-Id: <20190829181311.7562-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 25/76] rxrpc: Fix local endpoint replacement
+Date:   Thu, 29 Aug 2019 14:12:20 -0400
+Message-Id: <20190829181311.7562-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190829181311.7562-1-sashal@kernel.org>
 References: <20190829181311.7562-1-sashal@kernel.org>
@@ -44,61 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit dfe42be15fde16232340b8b2a57c359f51cc10d9 ]
+[ Upstream commit b00df840fb4004b7087940ac5f68801562d0d2de ]
 
-TCP rst and fin packets do not qualify to place a flow into the
-flowtable. Most likely there will be no more packets after connection
-closure. Without this patch, this flow entry expires and connection
-tracking picks up the entry in ESTABLISHED state using the fixup
-timeout, which makes this look inconsistent to the user for a connection
-that is actually already closed.
+When a local endpoint (struct rxrpc_local) ceases to be in use by any
+AF_RXRPC sockets, it starts the process of being destroyed, but this
+doesn't cause it to be removed from the namespace endpoint list immediately
+as tearing it down isn't trivial and can't be done in softirq context, so
+it gets deferred.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+If a new socket comes along that wants to bind to the same endpoint, a new
+rxrpc_local object will be allocated and rxrpc_lookup_local() will use
+list_replace() to substitute the new one for the old.
+
+Then, when the dying object gets to rxrpc_local_destroyer(), it is removed
+unconditionally from whatever list it is on by calling list_del_init().
+
+However, list_replace() doesn't reset the pointers in the replaced
+list_head and so the list_del_init() will likely corrupt the local
+endpoints list.
+
+Fix this by using list_replace_init() instead.
+
+Fixes: 730c5fd42c1e ("rxrpc: Fix local endpoint refcounting")
+Reported-by: syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_flow_offload.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/rxrpc/local_object.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index aa5f571d43619..060a4ed46d5e6 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -72,11 +72,11 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- {
- 	struct nft_flow_offload *priv = nft_expr_priv(expr);
- 	struct nf_flowtable *flowtable = &priv->flowtable->data;
-+	struct tcphdr _tcph, *tcph = NULL;
- 	enum ip_conntrack_info ctinfo;
- 	struct nf_flow_route route;
- 	struct flow_offload *flow;
- 	enum ip_conntrack_dir dir;
--	bool is_tcp = false;
- 	struct nf_conn *ct;
- 	int ret;
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 9798159ee65fa..918bffca3ddb6 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -283,7 +283,7 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
+ 		goto sock_error;
  
-@@ -89,7 +89,10 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 
- 	switch (ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.dst.protonum) {
- 	case IPPROTO_TCP:
--		is_tcp = true;
-+		tcph = skb_header_pointer(pkt->skb, pkt->xt.thoff,
-+					  sizeof(_tcph), &_tcph);
-+		if (unlikely(!tcph || tcph->fin || tcph->rst))
-+			goto out;
- 		break;
- 	case IPPROTO_UDP:
- 		break;
-@@ -115,7 +118,7 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 	if (!flow)
- 		goto err_flow_alloc;
- 
--	if (is_tcp) {
-+	if (tcph) {
- 		ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
- 		ct->proto.tcp.seen[1].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
- 	}
+ 	if (cursor != &rxnet->local_endpoints)
+-		list_replace(cursor, &local->link);
++		list_replace_init(cursor, &local->link);
+ 	else
+ 		list_add_tail(&local->link, cursor);
+ 	age = "new";
 -- 
 2.20.1
 
