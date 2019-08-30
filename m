@@ -2,99 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED461A3F9F
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E48A3FA0
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbfH3VZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 17:25:08 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44597 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728067AbfH3VZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 17:25:08 -0400
-Received: by mail-wr1-f68.google.com with SMTP id b6so5486441wrv.11
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 14:25:06 -0700 (PDT)
+        id S1728180AbfH3VZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 17:25:15 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41935 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728067AbfH3VZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 17:25:15 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 196so5413025pfz.8
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 14:25:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iOisKAycy46LXkC0Lo6AUjhfu5v+2EY9zADM7z2jLEA=;
-        b=bB9mkqr+gTmbk6wS8FicSzRU0Ku53orp5SOg8l4i2ffrR0y3/j7bMNww/3YjqvOGtv
-         WHP2fQtTUREEjzeIwMUzDqAy83s8PzxaXv0E50GCcJ50vuEjiQmXdCJyeP795/Ywhvwp
-         YfS38AHtE3SuIYXos5x9TYXoeicC0dPb06XRiFBZXV/Od2aiJ2FXNBiJpM8+fuAj7flR
-         zFjZ+lskK1YQbqSE0eIdwNpSFMtLF83DUmJbLvIJi5kdb7uj8gCkbTwlB6YDVITEinbw
-         3eJzUAbliUHU3RliWedvt6YfoFtxAzvMbrz+X9MH4aIDzjXy05VCnJ72sMdP4gvyXlW9
-         ehhw==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=hdQCiTme66/xdQBTZtFSjXdNRXhqmRrXcEPPg9oOOhw=;
+        b=nIERKyw7AQPJP58wodPd8bE2GM9fQBLOSAQ6J5myCetbAlIxisGKV50SDZTN3zKnRB
+         gX0IgNypp+C2sV0wv5trtetdGtTupfxR3j6nlg305zNoLK2V1cZsS6pFzIPpvF53++gN
+         GewESd6PckTCEI7T28z0d9IbVUKRdY0ftTY9iKwStv5pq7HhXNF1OwWlzTAILUfBxBxM
+         pRDak1US6aNPUP/3QnR3AQpoMc3Bm7/jgY+3KmAtQS9BYc5ufrMUfqJqNDQGRdSijuZG
+         OY0hwMYz/xzFkG13/rBoobtnJlepuojczsf6vpRbGpxhjrPg3tWGg9Uvs2+OegI5vST7
+         7TQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=iOisKAycy46LXkC0Lo6AUjhfu5v+2EY9zADM7z2jLEA=;
-        b=kR+G/U4yLfq33wC7YMr01cRHfWrVprstem8TAftKENLCH2tah9j0QUl0mkZgCQVPUH
-         gtnMkw7LCu9uZ/owdvCo9Q7g6edsqptCkknDmkkQ6OqgE0IeU7tqrYmTz6wO834JY50R
-         1H9Qs+/H4IKcdx4umJMB3KV137LfwioRBjqs7HWEbf5A105DuhuSylTb5Rb9Ixumh1jQ
-         1Qpbs+IobZZ0M/ApxyIhKGF4jC52Fd3rCmxyGEyPTP3wvAVv88bkO6qxn3EAfQm9hYvN
-         nLANux+L/zfoA+tv70+1K4HJ6RrcYbGrbCPfljR8LOZL0BDrLLV+mj9fUnI/8ymLTxuU
-         u/tg==
-X-Gm-Message-State: APjAAAUhkRmQnoYGJGENpKf9UWbI0UgHFSgBNSBBYYXN5F8YNjAToRYX
-        bV+uWO4J4PUvlPzegmMtJT7kYA==
-X-Google-Smtp-Source: APXvYqzqZ5tQ64Lo/MNaxTDfo2VVpk0tqYWKIu4YwS7fnZOpjMKPpKOlkObDY+A0Rq+Y/kzD8LWviw==
-X-Received: by 2002:a05:6000:1002:: with SMTP id a2mr9044933wrx.28.1567200306038;
-        Fri, 30 Aug 2019 14:25:06 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:dd14:ded7:6a4e:962e? ([2a01:e35:8b63:dc30:dd14:ded7:6a4e:962e])
-        by smtp.gmail.com with ESMTPSA id e9sm8621918wmd.25.2019.08.30.14.25.04
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=hdQCiTme66/xdQBTZtFSjXdNRXhqmRrXcEPPg9oOOhw=;
+        b=hy15OnMRBwzIdLMRM+sGbjv4lvzthRwf0BUbhlt1LcWOGh86/1f9ysGcPqu7XmGdbl
+         BiyIjNL5a6TsZDJ8U95ebI8rynV96KNQIAs/TlvefCgSyxGz6lmG5aHlxbamY7gV8b+Z
+         tbLW3Rcv2vZQiFNjXJ4kXZFIMQzR2/4O71iN6c23+RrxtvOqucGXzic3HnDmh5avsEbp
+         J1Wleyym0d4xc/wpHSdJy3uUb/NTK2O5crv0KktYLYjwGIbmbPX5Us+mR8Zk+58zx589
+         ZZERCmpnkM7Qu8/XZUTHCUKFHMTBtODCyyAfa61N8FHjqBU4QgAterYJbYgEYzvxVtCe
+         PTsg==
+X-Gm-Message-State: APjAAAXPYs0EpFUf7gQl17KpoReS1zlJW2PQTyVeqiHvSN4jGkH67EXa
+        rIqfb+D5c6ikarPU+kTpwzxB5Q==
+X-Google-Smtp-Source: APXvYqwSgmZ/tT6dn8lnK5sNe5ukkvCUhPafhpqmLKcbIWp6sulLoNc+5bUwXw0wUccM85w6079pDg==
+X-Received: by 2002:aa7:9ab8:: with SMTP id x24mr20023978pfi.98.1567200314836;
+        Fri, 30 Aug 2019 14:25:14 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id d2sm7596348pjg.19.2019.08.30.14.25.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 14:25:05 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net] tc-testing: don't hardcode 'ip' in nsPlugin.py
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Lucas Bates <lucasb@mojatatu.com>, netdev@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-References: <8ade839e21c5231d2d6b8690b39587f802642306.1567180765.git.dcaratti@redhat.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <a333eec9-6a6d-ba84-1ce3-73dfaf13364a@6wind.com>
-Date:   Fri, 30 Aug 2019 23:25:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 30 Aug 2019 14:25:14 -0700 (PDT)
+Subject: Re: [PATCH v6 net-next 14/19] ionic: Add initial ethtool support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190829182720.68419-1-snelson@pensando.io>
+ <20190829182720.68419-15-snelson@pensando.io>
+ <20190829161029.0676d6f7@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <4c140c92-38b7-7c81-2a82-d23df8d16252@pensando.io>
+Date:   Fri, 30 Aug 2019 14:25:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <8ade839e21c5231d2d6b8690b39587f802642306.1567180765.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190829161029.0676d6f7@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 30/08/2019 à 18:51, Davide Caratti a écrit :
-> the following tdc test fails on Fedora:
-> 
->  # ./tdc.py -e 2638
->   -- ns/SubPlugin.__init__
->  Test 2638: Add matchall and try to get it
->  -----> prepare stage *** Could not execute: "$TC qdisc add dev $DEV1 clsact"
->  -----> prepare stage *** Error message: "/bin/sh: ip: command not found"
->  returncode 127; expected [0]
->  -----> prepare stage *** Aborting test run.
-> 
-> Let nsPlugin.py use the 'IP' variable introduced with commit 92c1a19e2fb9
-> ("tc-tests: added path to ip command in tdc"), so that the path to 'ip' is
-> correctly resolved to the value we have in tdc_config.py.
-> 
->  # ./tdc.py -e 2638
->   -- ns/SubPlugin.__init__
->  Test 2638: Add matchall and try to get it
->  All test results:
->  1..1
->  ok 1 2638 - Add matchall and try to get it
-> 
-> Fixes: 489ce2f42514 ("tc-testing: Restore original behaviour for namespaces in tdc")
-> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+On 8/29/19 4:10 PM, Jakub Kicinski wrote:
+> On Thu, 29 Aug 2019 11:27:15 -0700, Shannon Nelson wrote:
+>> +static int ionic_get_module_eeprom(struct net_device *netdev,
+>> +				   struct ethtool_eeprom *ee,
+>> +				   u8 *data)
+>> +{
+>> +	struct ionic_lif *lif = netdev_priv(netdev);
+>> +	struct ionic_dev *idev = &lif->ionic->idev;
+>> +	struct ionic_xcvr_status *xcvr;
+>> +	char tbuf[sizeof(xcvr->sprom)];
+>> +	int count = 10;
+>> +	u32 len;
+>> +
+>> +	/* The NIC keeps the module prom up-to-date in the DMA space
+>> +	 * so we can simply copy the module bytes into the data buffer.
+>> +	 */
+>> +	xcvr = &idev->port_info->status.xcvr;
+>> +	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
+>> +
+>> +	do {
+>> +		memcpy(data, xcvr->sprom, len);
+>> +		memcpy(tbuf, xcvr->sprom, len);
+>> +
+>> +		/* Let's make sure we got a consistent copy */
+>> +		if (!memcmp(data, tbuf, len))
+>> +			break;
+>> +
+>> +	} while (--count);
+> Should this return an error if the image was never consistent?
+
+Sure, how about -EBUSY?
+
+sln
+
+
