@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A7AA33E3
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC4B5A33CA
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:26:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728548AbfH3J0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 05:26:40 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41806 "EHLO mx1.suse.de"
+        id S1728308AbfH3J0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 05:26:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41778 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728213AbfH3JZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 05:25:58 -0400
+        id S1728236AbfH3JZ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 05:25:59 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 66F3CAFBB;
+        by mx1.suse.de (Postfix) with ESMTP id BB163B0B6;
         Fri, 30 Aug 2019 09:25:57 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Ralf Baechle <ralf@linux-mips.org>,
@@ -22,9 +22,9 @@ To:     Ralf Baechle <ralf@linux-mips.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 12/15] net: sgi: ioc3-eth: use csum_fold
-Date:   Fri, 30 Aug 2019 11:25:35 +0200
-Message-Id: <20190830092539.24550-13-tbogendoerfer@suse.de>
+Subject: [PATCH v3 net-next 13/15] net: sgi: ioc3-eth: Fix IPG settings
+Date:   Fri, 30 Aug 2019 11:25:36 +0200
+Message-Id: <20190830092539.24550-14-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
 In-Reply-To: <20190830092539.24550-1-tbogendoerfer@suse.de>
 References: <20190830092539.24550-1-tbogendoerfer@suse.de>
@@ -33,35 +33,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-replace open coded checksum folding by csum_fold.
+The half/full duplex settings for inter packet gap counters/timer were
+reversed.
 
 Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 ---
- drivers/net/ethernet/sgi/ioc3-eth.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/net/ethernet/sgi/ioc3-eth.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
-index ed8f997a3cec..05f4b598114c 100644
+index 05f4b598114c..971986433d4c 100644
 --- a/drivers/net/ethernet/sgi/ioc3-eth.c
 +++ b/drivers/net/ethernet/sgi/ioc3-eth.c
-@@ -1391,16 +1391,12 @@ static netdev_tx_t ioc3_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		/* Sum up dest addr, src addr and protocol  */
- 		ehsum = eh[0] + eh[1] + eh[2] + eh[3] + eh[4] + eh[5] + eh[6];
+@@ -79,8 +79,8 @@
+ #define RX_OFFSET		(sizeof(struct ioc3_erxbuf) + NET_IP_ALIGN)
+ #define RX_BUF_SIZE		(13 * IOC3_DMA_XFER_LEN)
  
--		/* Fold ehsum.  can't use csum_fold which negates also ...  */
--		ehsum = (ehsum & 0xffff) + (ehsum >> 16);
--		ehsum = (ehsum & 0xffff) + (ehsum >> 16);
--
- 		/* Skip IP header; it's sum is always zero and was
- 		 * already filled in by ip_output.c
- 		 */
- 		csum = csum_tcpudp_nofold(ih->saddr, ih->daddr,
- 					  ih->tot_len - (ih->ihl << 2),
--					  proto, 0xffff ^ ehsum);
-+					  proto, csum_fold(ehsum));
+-#define ETCSR_FD   ((17 << ETCSR_IPGR2_SHIFT) | (11 << ETCSR_IPGR1_SHIFT) | 21)
+-#define ETCSR_HD   ((21 << ETCSR_IPGR2_SHIFT) | (21 << ETCSR_IPGR1_SHIFT) | 21)
++#define ETCSR_FD   ((21 << ETCSR_IPGR2_SHIFT) | (21 << ETCSR_IPGR1_SHIFT) | 21)
++#define ETCSR_HD   ((17 << ETCSR_IPGR2_SHIFT) | (11 << ETCSR_IPGR1_SHIFT) | 21)
  
- 		csum = (csum & 0xffff) + (csum >> 16);	/* Fold again */
- 		csum = (csum & 0xffff) + (csum >> 16);
+ /* Private per NIC data of the driver.  */
+ struct ioc3_private {
 -- 
 2.13.7
 
