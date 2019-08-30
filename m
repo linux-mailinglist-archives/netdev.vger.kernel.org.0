@@ -2,124 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE35A303B
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 08:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCF1EA3045
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 08:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbfH3Gr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 02:47:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40418 "EHLO mail.kernel.org"
+        id S1726978AbfH3Gyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 02:54:50 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40042 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726090AbfH3Gr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 02:47:26 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726005AbfH3Gyu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 02:54:50 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3FCDC21874;
-        Fri, 30 Aug 2019 06:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567147644;
-        bh=qSGGYGCGVt2PHacicqqinm4SAFSEKVqpRxF/TIkMHvM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wir2MbvI07k8QRs40r8/NIAkLWFVKpG5WifG1Qz8gLVBc7bzvB3ubrArb2nKxEOuZ
-         VV4tJX/tUHnBV1ZRmDQk2/z0dZVBsClDFV3J6hKXzl5kwCJOvumWZLYVntWIdwg9HY
-         gZ0pwfXoFjN3K9uNJdAIjsinQd7D30vkdc6sVyGs=
-Date:   Fri, 30 Aug 2019 08:47:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Julia Kartseva <hex@fb.com>, ast@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>, rdna@fb.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: auto-split of commit. Was: [PATCH bpf-next 04/10] tools/bpf: add
- libbpf_prog_type_(from|to)_str helpers
-Message-ID: <20190830064722.GJ15257@kroah.com>
-References: <cover.1567024943.git.hex@fb.com>
- <467620c966825173dbd65b37a3f9bd7dd4fb8184.1567024943.git.hex@fb.com>
- <20190828163422.3d167c4b@cakuba.netronome.com>
- <20190828234626.ltfy3qr2nne4uumy@ast-mbp.dhcp.thefacebook.com>
- <20190829065151.GB30423@kroah.com>
- <20190829171655.fww5qxtfusehcpds@ast-mbp.dhcp.thefacebook.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id B9E2820ABB;
+        Fri, 30 Aug 2019 06:54:49 +0000 (UTC)
+Received: from ceranb (ovpn-204-112.brq.redhat.com [10.40.204.112])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 099B65C1D6;
+        Fri, 30 Aug 2019 06:54:46 +0000 (UTC)
+Date:   Fri, 30 Aug 2019 08:54:45 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Miller <davem@davemloft.net>, idosch@idosch.org,
+        andrew@lunn.ch, horatiu.vultur@microchip.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        allan.nielsen@microchip.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to
+ dev->promiscuity.
+Message-ID: <20190830085445.1c28dc02@ceranb>
+In-Reply-To: <20190830063624.GN2312@nanopsycho>
+References: <20190829193613.GA23259@splinter>
+        <20190829.151201.940681219080864052.davem@davemloft.net>
+        <20190830053940.GL2312@nanopsycho>
+        <20190829.230233.287975311556641534.davem@davemloft.net>
+        <20190830063624.GN2312@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190829171655.fww5qxtfusehcpds@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Fri, 30 Aug 2019 06:54:50 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 10:16:56AM -0700, Alexei Starovoitov wrote:
-> On Thu, Aug 29, 2019 at 08:51:51AM +0200, Greg Kroah-Hartman wrote:
-> > On Wed, Aug 28, 2019 at 04:46:28PM -0700, Alexei Starovoitov wrote:
-> > > On Wed, Aug 28, 2019 at 04:34:22PM -0700, Jakub Kicinski wrote:
-> > > > 
-> > > > Greg, Thomas, libbpf is extracted from the kernel sources and
-> > > > maintained in a clone repo on GitHub for ease of packaging.
-> > > > 
-> > > > IIUC Alexei's concern is that since we are moving the commits from
-> > > > the kernel repo to the GitHub one we have to preserve the commits
-> > > > exactly as they are, otherwise SOB lines lose their power.
-> > > > 
-> > > > Can you provide some guidance on whether that's a valid concern, 
-> > > > or whether it's perfectly fine to apply a partial patch?
-> > > 
-> > > Right. That's exactly the concern.
-> > > 
-> > > Greg, Thomas,
-> > > could you please put your legal hat on and clarify the following.
-> > > Say some developer does a patch that modifies
-> > > include/uapi/linux/bpf.h
-> > > ..some other kernel code...and
-> > > tools/include/uapi/linux/bpf.h
-> > > 
-> > > That tools/include/uapi/linux/bpf.h is used by perf and by libbpf.
-> > > We have automatic mirror of tools/libbpf into github/libbpf/
-> > > so that external projects and can do git submodule of it,
-> > > can build packages out of it, etc.
-> > > 
-> > > The question is whether it's ok to split tools/* part out of
-> > > original commit, keep Author and SOB, create new commit out of it,
-> > > and automatically push that auto-generated commit into github mirror.
-> > 
-> > Note, I am not a laywer, and am not _your_ lawyer either, only _your_
-> > lawyer can answer questions as to what is best for you.
-> > 
-> > That being said, from a "are you keeping the correct authorship info",
-> > yes, it sounds like you are doing the correct thing here.
-> > 
-> > Look at what I do for stable kernels, I take the original commit and add
-> > it to "another tree" keeping the original author and s-o-b chain intact,
-> > and adding a "this is the original git commit id" type message to the
-> > changelog text so that people can link it back to the original.
+On Fri, 30 Aug 2019 08:36:24 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
+
+> Fri, Aug 30, 2019 at 08:02:33AM CEST, davem@davemloft.net wrote:
+> >From: Jiri Pirko <jiri@resnulli.us>
+> >Date: Fri, 30 Aug 2019 07:39:40 +0200
+> >  
+> >> Because the "promisc mode" would gain another meaning. Now how the
+> >> driver should guess which meaning the user ment when he setted it?
+> >> filter or trap?
+> >> 
+> >> That is very confusing. If the flag is the way to do this, let's
+> >> introduce another flag, like IFF_TRAPPING indicating that user
+> >> wants exactly this.  
+> >
+> >I don't understand how the meaning of promiscuous mode for a
+> >networking device has suddenly become ambiguous, when did this start
+> >happening?  
 > 
-> I think you're describing 'git cherry-pick -x'.
+> The promiscuity is a way to setup the rx filter. So promics == rx
+> filter off. For normal nics, where there is no hw fwd datapath,
+> this coincidentally means all received packets go to cpu.
+> But if there is hw fwd datapath, rx filter is still off, all rxed
+> packets are processed. But that does not mean they should be trapped
+> to cpu.
 
-Well, my scripts don't use git, but yes, it's much the same thing :)
++1
+Promisc is Rx filtering option and should not imply that offloaded
+traffic is trapped to CPU.
 
-> The question was about taking pieces of the original commit. Not the whole commit.
-> Author field obviously stays, but SOB is questionable.
+> Simple example:
+> I need to see slowpath packets, for example arps/stp/bgp/... that
+> are going to cpu, I do:
+> tcpdump -i swp1
+> 
+> I don't want to get all the traffic running over hw running this cmd.
+> This is a valid usecase.
+> 
+> To cope with hw fwd datapath devices, I believe that tcpdump has to
+> have notion of that. Something like:
+> 
+> tcpdump -i swp1 --hw-trapping-mode
+> 
+> The logic can be inverse:
+> tcpdump -i swp1
+> tcpdump -i swp1 --no-hw-trapping-mode
+> 
+> However, that would provide inconsistent behaviour between existing
+> and patched tcpdump/kernel.
+> 
+> All I'm trying to say, there are 2 flags
+> needed (if we don't use tc trap).
 
-sob matters to the file the commit is touching, and if it is identical
-to the original file (including same license), then it should be fine.
-
-> If author meant to change X and Y and Z. Silently taking only Z chunk of the diff
-> doesn't quite seem right.
-
-It can be confusing, I agree.
-
-> If we document that such commit split happens in Documentation/bpf/bpf_devel_QA.rst
-> do you think it will be enough to properly inform developers?
-> The main concern is the surprise factor when people start seeing their commits
-> in the mirror, but not their full commits.
-
-Personally, I wouldn't care, but maybe you should just enforce the fact
-that the original patch should ONLY touch Z, and not X and Y in the same
-patch, to make this a lot more obvious.
-
-Patches should only be doing "one logical thing" in the first place, but
-maybe you also need to touch other things when doing a change that you
-can't do this, I really do not know, sorry.
-
-greg k-h
