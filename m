@@ -2,87 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D819A36FF
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FDACA371B
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbfH3Mnw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Aug 2019 08:43:52 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:39723 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727417AbfH3Mnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 08:43:52 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC580.dip0.t-ipconnect.de [79.239.197.128])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 17EFACECDE;
-        Fri, 30 Aug 2019 14:52:35 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20190830092104.odipmbflounqpffo@flea>
-Date:   Fri, 30 Aug 2019 14:43:48 +0200
-Cc:     megous@megous.com, Chen-Yu Tsai <wens@csie.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <D02B89FB-F8C0-40AD-A99A-6C1B4FEB72A0@holtmann.org>
-References: <20190823103139.17687-1-megous@megous.com>
- <5524D5E9-FA82-4244-A91F-78CF1C3FB3FB@holtmann.org>
- <20190830092104.odipmbflounqpffo@flea>
-To:     Maxime Ripard <mripard@kernel.org>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1728157AbfH3Mti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 08:49:38 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47574 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727170AbfH3Mti (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 08:49:38 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B562869EE1;
+        Fri, 30 Aug 2019 12:49:37 +0000 (UTC)
+Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C8C76092D;
+        Fri, 30 Aug 2019 12:49:29 +0000 (UTC)
+Date:   Fri, 30 Aug 2019 14:49:27 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     alex.williamson@redhat.com, jiri@mellanox.com,
+        kwankhede@nvidia.com, davem@davemloft.net, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 5/6] mdev: Update sysfs documentation
+Message-ID: <20190830144927.7961193e.cohuck@redhat.com>
+In-Reply-To: <20190829111904.16042-6-parav@mellanox.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190829111904.16042-1-parav@mellanox.com>
+        <20190829111904.16042-6-parav@mellanox.com>
+Organization: Red Hat GmbH
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Fri, 30 Aug 2019 12:49:37 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxime,
+On Thu, 29 Aug 2019 06:19:03 -0500
+Parav Pandit <parav@mellanox.com> wrote:
 
->>> (Resend to add missing lists, sorry for the noise.)
->>> 
->>> This series implements bluetooth support for Xunlong Orange Pi 3 board.
->>> 
->>> The board uses AP6256 WiFi/BT 5.0 chip.
->>> 
->>> Summary of changes:
->>> 
->>> - add more delay to let initialize the chip
->>> - let the kernel detect firmware file path
->>> - add new compatible and update dt-bindings
->>> - update Orange Pi 3 / H6 DTS
->>> 
->>> Please take a look.
->>> 
->>> thank you and regards,
->>> Ondrej Jirman
->>> 
->>> Ondrej Jirman (5):
->>> dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
->>> bluetooth: bcm: Add support for loading firmware for BCM4345C5
->>> bluetooth: hci_bcm: Give more time to come out of reset
->>> arm64: dts: allwinner: h6: Add pin configs for uart1
->>> arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
->>> 
->>> .../bindings/net/broadcom-bluetooth.txt       |  1 +
->>> .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
->>> arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
->>> drivers/bluetooth/btbcm.c                     |  3 +++
->>> drivers/bluetooth/hci_bcm.c                   |  3 ++-
->>> 5 files changed, 35 insertions(+), 1 deletion(-)
->> 
->> all 5 patches have been applied to bluetooth-next tree.
+> Updated documentation for optional read only sysfs attribute.
+
+I'd probably merge this into the patch introducing the attribute.
+
 > 
-> The DTS patches (last 2) should go through the arm-soc tree, can you
-> drop them?
+> Signed-off-by: Parav Pandit <parav@mellanox.com>
+> ---
+>  Documentation/driver-api/vfio-mediated-device.rst | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
+> index 25eb7d5b834b..0ab03d3f5629 100644
+> --- a/Documentation/driver-api/vfio-mediated-device.rst
+> +++ b/Documentation/driver-api/vfio-mediated-device.rst
+> @@ -270,6 +270,7 @@ Directories and Files Under the sysfs for Each mdev Device
+>           |--- remove
+>           |--- mdev_type {link to its type}
+>           |--- vendor-specific-attributes [optional]
+> +         |--- alias [optional]
 
-why is that? We have included DTS changes for Bluetooth devices directly all the time. What is different with this hardware?
+"optional" implies "not always present" to me, not "might return a read
+error if not available". Don't know if there's a better way to tag
+this? Or make it really optional? :)
 
-Regards
+>  
+>  * remove (write only)
+>  
+> @@ -281,6 +282,10 @@ Example::
+>  
+>  	# echo 1 > /sys/bus/mdev/devices/$mdev_UUID/remove
+>  
+> +* alias (read only)
+> +Whenever a parent requested to generate an alias, each mdev is assigned a unique
+> +alias by the mdev core. This file shows the alias of the mdev device.
 
-Marcel
+It's not really the parent, but the vendor driver requesting this,
+right? Also, "each mdev" is a bit ambiguous, as this is only true for
+the subset of mdevs created via that driver. Lastly, if we stick with
+the "returns an error if not implemented" approach, that should also be
+mentioned here.
+
+> +
+>  Mediated device Hot plug
+>  ------------------------
+>  
 
