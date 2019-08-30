@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0BCCA30F0
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7314A30F3
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbfH3H0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 03:26:41 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41114 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726452AbfH3H0k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 03:26:40 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728107AbfH3H1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 03:27:40 -0400
+Received: from packetmixer.de ([79.140.42.25]:52134 "EHLO
+        mail.mail.packetmixer.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbfH3H1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:27:40 -0400
+Received: from kero.packetmixer.de (p200300C5970B8500250C6283C70837BA.dip0.t-ipconnect.de [IPv6:2003:c5:970b:8500:250c:6283:c708:37ba])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6335E7BDA0;
-        Fri, 30 Aug 2019 07:26:40 +0000 (UTC)
-Received: from ceranb (ovpn-204-112.brq.redhat.com [10.40.204.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 366435D9CA;
-        Fri, 30 Aug 2019 07:26:37 +0000 (UTC)
-Date:   Fri, 30 Aug 2019 09:26:37 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, allan.nielsen@microchip.com,
-        f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to
- dev->promiscuity.
-Message-ID: <20190830092637.7f83d162@ceranb>
-In-Reply-To: <20190830061327.GM2312@nanopsycho>
-References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
-        <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
-        <20190829095100.GH2312@nanopsycho>
-        <20190829132611.GC6998@lunn.ch>
-        <20190829134901.GJ2312@nanopsycho>
-        <20190829143732.GB17864@lunn.ch>
-        <20190830061327.GM2312@nanopsycho>
+        by mail.mail.packetmixer.de (Postfix) with ESMTPSA id 79AC16206F;
+        Fri, 30 Aug 2019 09:27:38 +0200 (CEST)
+From:   Simon Wunderlich <sw@simonwunderlich.de>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 0/1] pull request for net-next: batman-adv 2019-08-30
+Date:   Fri, 30 Aug 2019 09:27:35 +0200
+Message-Id: <20190830072736.18535-1-sw@simonwunderlich.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Fri, 30 Aug 2019 07:26:40 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Aug 2019 08:13:27 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+Hi David,
 
-> Thu, Aug 29, 2019 at 04:37:32PM CEST, andrew@lunn.ch wrote:
-> >> Wait, I believe there has been some misundestanding. Promisc mode
-> >> is NOT about getting packets to the cpu. It's about setting hw
-> >> filters in a way that no rx packet is dropped.
-> >> 
-> >> If you want to get packets from the hw forwarding dataplane to
-> >> cpu, you should not use promisc mode for that. That would be
-> >> incorrect.  
-> >
-> >Hi Jiri
-> >
-> >I'm not sure a wireshark/tcpdump/pcap user would agree with you. They
-> >want to see packets on an interface, so they use these tools. The
-> >fact that the interface is a switch interface should not matter. The
-> >switchdev model is that we try to hide away the interface happens to
-> >be on a switch, you can just use it as normal. So why should promisc
-> >mode not work as normal?  
-> 
-> It does, disables the rx filter. Why do you think it means the same
-> thing as "trap all to cpu"? Hw datapath was never considered by
-> wireshark.
-> 
-> In fact, I have usecase where I need to see only slow-path traffic by
-> wireshark, not all packets going through hw. So apparently, there is a
-> need of another wireshark option and perhaps another flag
-> IFF_HW_TRAPPING?.
+here is a small maintenance pull request of batman-adv to go into net-next.
 
-Agree with Jiri but understand both perspectives. We can treat
-IFF_PROMISC as:
+Please pull or let me know of any problem!
 
-1) "I want to _SEE_ all Rx traffic on specified interface"
-that means for switchdev driver that it has to trap all traffic to CPU
-implicitly. And in this case we need another flag that will say "I
-don't want to see offloaded traffic".
+Thank you,
+      Simon
 
-2) "I want to ensure that nothing is dropped on specified interface" so
-IFF_PROMISC is treated as filtering option only. To see offloaded
-traffic you need to setup TC rule with trap action or another flag like
-IFF_TRAPPING.
+The following changes since commit 9cb9a17813bf0de1f8ad6deb9538296d5148b5a8:
 
-IMO IFF_PROMISC should be considered to be a filtering option and
-should not imply trapping of offloaded traffic.
+  batman-adv: BATMAN_V: aggregate OGMv2 packets (2019-08-04 22:22:00 +0200)
 
-Thanks,
-Ivan 
+are available in the Git repository at:
+
+  git://git.open-mesh.org/linux-merge.git tags/batadv-next-for-davem-20190830
+
+for you to fetch changes up to 2a813f1392205654aea28098f3bcc3e6e2478fa5:
+
+  batman-adv: Add Sven to MAINTAINERS file (2019-08-17 13:11:50 +0200)
+
+----------------------------------------------------------------
+This maintenance patchset includes the following patches:
+
+ - Add Sven to the MAINTAINERS file, by Simon Wunderlich
+
+----------------------------------------------------------------
+Simon Wunderlich (1):
+      batman-adv: Add Sven to MAINTAINERS file
+
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
