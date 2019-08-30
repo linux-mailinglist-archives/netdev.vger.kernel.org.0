@@ -2,138 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27ACCA2C29
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 03:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0EEA2C37
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 03:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbfH3BMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 21:12:20 -0400
-Received: from gateway22.websitewelcome.com ([192.185.46.234]:47559 "EHLO
-        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727938AbfH3BMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 21:12:14 -0400
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 1CB75726F
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 20:12:13 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 3VSXiYKZu90on3VSXiK8Ue; Thu, 29 Aug 2019 20:12:13 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VTOOgjyJtQhQpU+6Umy1FeKBLztwuppbHPl7xEc0pLg=; b=kSF6EZJBtijHZHJOxCRXSqFXMQ
-        rw1497KhcwcHpz/079SGvB1oLDCkEWwfNw4L9x7W6L+8DkSgu54hxeTFO0gWuIltTWIK+/gQvRYxw
-        KbEC1OBXv0ccuOtSQzOgS7ufNpjPsvnEA9X4iGgobxL9MK5wh1bMFlGxO7nO3MAJZsTvSc5HTk74x
-        xfZSnPdvwVJ6gOwKkxgtYkVLq0yxHKX9+ycjySZb5kh7lCiOPEJZ/1CRhOk/06rYeG6RMhauloED9
-        cLt6uvCwTfT5Zyl1sz2/zpTp79ir/tvYykMYI2VQWoM15gZsjPnFXtRXQQYA7kDrSHYStDJhDAr6c
-        aGTrHCjQ==;
-Received: from [189.152.216.116] (port=50230 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1i3VSV-000hFw-WB; Thu, 29 Aug 2019 20:12:12 -0500
-Date:   Thu, 29 Aug 2019 20:12:11 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] Bluetooth: mgmt: Use struct_size() helper
-Message-ID: <20190830011211.GA26531@embeddedor>
+        id S1727392AbfH3BV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 21:21:56 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:32788 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727348AbfH3BV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 21:21:56 -0400
+Received: by mail-pl1-f193.google.com with SMTP id go14so2494453plb.0
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 18:21:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=YXCp75rK0Qyzg6kzVVR4V73a9w8Z/QXHdXxxNx64vEo=;
+        b=rvc3lRopbzeZHypKdYN1M+T0Pcuy6a4PFH4SvHLbHhj/7rJTGYEJBPz7vRwBi1/8Pg
+         Zfyrafh26MEWhPnUsAHjij5jr1SjReJU//avswQF6KvRozjnK1raZ3AkzjT1SpISs0Ov
+         9Nf+Xs5wDE4brTzzKeWX5DkgJDrsbX3X4xuTe6RquovaWoic/xeCMAqSD1c33RgnLnom
+         L/Wm7PZHVLZ+9vcFhnmCbeYIrmk27pcfLgs0vqM0kaUgZSE44hpTZm1HugedHuSZRKgX
+         8H51GnTGS/1EutzivPW4vmHja51uEevvO1wkez6K64po7NZaNk+ShepqaBjEO3HeJLww
+         IVAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=YXCp75rK0Qyzg6kzVVR4V73a9w8Z/QXHdXxxNx64vEo=;
+        b=IZync40yjDbcNXpoPHnfYKJLz6Apa+C+bNkorqn7tz4Ynv9iEi4kx2/FIxsBsppJY6
+         0BGD4ixzlxVmpKiuU+/PJT8WJ31rhwOYcwekGaS1N4e7iJQDLbwV7WCMXNW8M0FpCAIq
+         yBmx/xBhevyonkKC1P0P1IkMJ68pkus6MiFgwMyi/wts4mFGarbaIrS9YCDV5AwYErxK
+         P895ZpKzPxhxSkGDW4Ay/vmWmM0xVN/eyBTMCB+VLVrFGgJysD+eJG3tzHziyk31DDhf
+         GqDXLLMk9+mop6cRS5LZSAINKsFqWyulMdPiFpxxJKTY1yReT5EBfKx5vVdEyHQ66zBd
+         jTmA==
+X-Gm-Message-State: APjAAAXN39cSxIZuzpmS2kUFOmvOcNkwP3dDuL/6gYm6EBdR+HLq4n2k
+        wQ+nzuSxw1XTV9CJgFA9b/J8/w==
+X-Google-Smtp-Source: APXvYqwaOa+AYRU5A+BPF8iRPkKBVnlS6pkonbmG/CKHwB+mDQdKTwDnK3V0NbgdR59hqLA9RKq1Wg==
+X-Received: by 2002:a17:902:e493:: with SMTP id cj19mr12871862plb.292.1567128116053;
+        Thu, 29 Aug 2019 18:21:56 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id y16sm4704826pfc.36.2019.08.29.18.21.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 18:21:55 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 18:21:32 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, vinicius.gomes@intel.com,
+        vedang.patel@intel.com, richardcochran@gmail.com,
+        weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH v2 net-next 00/15] tc-taprio offload for SJA1105 DSA
+Message-ID: <20190829182132.43001706@cakuba.netronome.com>
+In-Reply-To: <20190830004635.24863-1-olteanv@gmail.com>
+References: <20190830004635.24863-1-olteanv@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.152.216.116
-X-Source-L: No
-X-Exim-ID: 1i3VSV-000hFw-WB
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.152.216.116]:50230
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One of the more common cases of allocation size calculations is finding
-the size of a structure that has a zero-sized array at the end, along
-with memory for some number of elements for that array. For example:
+On Fri, 30 Aug 2019 03:46:20 +0300, Vladimir Oltean wrote:
+> - Configuring the switch over SPI cannot apparently be done from this
+>   ndo_setup_tc callback because it runs in atomic context. I also have
+>   some downstream patches to offload tc clsact matchall with mirred
+>   action, but in that case it looks like the atomic context restriction
+>   does not apply.
 
-struct mgmt_rp_get_connections {
-	...
-        struct mgmt_addr_info addr[0];
-} __packed;
-
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes.
-
-So, replace the following form:
-
-sizeof(*rp) + (i * sizeof(struct mgmt_addr_info));
-
-with:
-
-struct_size(rp, addr, i)
-
-Also, notice that, in this case, variable rp_len is not necessary,
-hence it is removed.
-
-This code was detected with the help of Coccinelle.
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- net/bluetooth/mgmt.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 150114e33b20..acb7c6d5643f 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -2588,7 +2588,6 @@ static int get_connections(struct sock *sk, struct hci_dev *hdev, void *data,
- {
- 	struct mgmt_rp_get_connections *rp;
- 	struct hci_conn *c;
--	size_t rp_len;
- 	int err;
- 	u16 i;
- 
-@@ -2608,8 +2607,7 @@ static int get_connections(struct sock *sk, struct hci_dev *hdev, void *data,
- 			i++;
- 	}
- 
--	rp_len = sizeof(*rp) + (i * sizeof(struct mgmt_addr_info));
--	rp = kmalloc(rp_len, GFP_KERNEL);
-+	rp = kmalloc(struct_size(rp, addr, i), GFP_KERNEL);
- 	if (!rp) {
- 		err = -ENOMEM;
- 		goto unlock;
-@@ -2629,10 +2627,8 @@ static int get_connections(struct sock *sk, struct hci_dev *hdev, void *data,
- 	rp->conn_count = cpu_to_le16(i);
- 
- 	/* Recalculate length in case of filtered SCO connections, etc */
--	rp_len = sizeof(*rp) + (i * sizeof(struct mgmt_addr_info));
--
- 	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_CONNECTIONS, 0, rp,
--				rp_len);
-+				struct_size(rp, addr, i));
- 
- 	kfree(rp);
- 
--- 
-2.23.0
-
+This sounds really surprising ndo_setup_tc should always be allowed to
+sleep. Can the taprio limitation be lifted somehow?
