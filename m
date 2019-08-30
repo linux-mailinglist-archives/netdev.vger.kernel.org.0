@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF67A2BD3
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04E36A2BCB
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:51:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728098AbfH3Av3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 20:51:29 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:43631 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727639AbfH3Auu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 20:50:50 -0400
-Received: by mail-lj1-f193.google.com with SMTP id h15so4785690ljg.10
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 17:50:48 -0700 (PDT)
+        id S1727126AbfH3Auw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 20:50:52 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39195 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727487AbfH3Auv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 20:50:51 -0400
+Received: by mail-lj1-f194.google.com with SMTP id x4so4816013ljj.6
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 17:50:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XM+El1wyypVfaXfQc7FxTfECR5DYv9zUGiXmgC/VC5g=;
-        b=OmaVkDBxJbEbiNuH6B/lkHNi7X3Ced5VCYrN4v0FOemALIxV7B1RR9GTxi+wIA+o7S
-         SBNyfehZvn7LwSQMr71oX1EDAOy9VvdgFs/9kHugoMQYd2qS/DSS2mvw8yXRcG/xHDV5
-         0mJnXZcKmURGOdcozYB23tdigAAVVt6MHRP2J5RqtdSKEIJwvommRUF3YZCu8WcJ+ZRQ
-         9xYKzJ+pyiAczzLTKz6YMx84NzIkCgZakeJ1s58kckrg9aSB/Vdpg5FlpqJZCT257v3w
-         UK5VqvNfJ4lXH3Sy/1qHZ5bEXEsMC6tIogRp0+fgccQf0ld0ru8mbbg+8L8dATJfDqle
-         zUkA==
+        bh=jGmbuQhjfybpgV20Mr6h/vZA852gJhY9ROLsc2sx8l8=;
+        b=pWeUz6Fu6QfaqIpkcQ5NkN8S1IH2Rw5H5SVVq3jN6Pe8GO4Z0AVQ8kjAJ1nWq/suUY
+         iy5IGz6OJY/dKJgiOzw4G0pKMu1jIKXgSEsnZrYt8T+GOll/c7PoRUL0YOgbZSy9nloJ
+         xQxd5OltyxyzW8UXtE9De6EMr0kC0GBlbZxjYBn+ldgJ4QDJW8JzaEcfhzz1wiSK9Dz5
+         oXvnGjkb0/kodZDij7wbzY6bjZCsk+fZ1wdt4Hs8Okzlc+qRp1IHk7T8NLEWCvIR0xTc
+         MloaK1lal5Wj6DiZQlLT3eOYVu3I68zMpgnlI+8rf0f0TnmBXaCq/zCKadOxwP6syzE7
+         hEMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=XM+El1wyypVfaXfQc7FxTfECR5DYv9zUGiXmgC/VC5g=;
-        b=JIVFoBSBURh3O7fRCJXts75J5+ovSoFxkptnh7OtrhZk8fHpyOUSUj+dBIrb91lPiV
-         4Wh0k0i81e9leAA/p1mAB9Qkfq1xkR/7lvJSChcKMRfplptHQFgH1r5d5wMKnHoouJui
-         TYTOhLYhb2ZlscLDwPutQLA3cvARqW0h8ivAslR8ab0n5hqm/tAkiAPek07P4gXU6JBU
-         O3iwjOGC/WUxr00233iWFPHbqHHaeFYV6STY5RuPKWnt4HKY+U30lOkye7kU6fLC9NaT
-         7Oc/EqIRfMsyNoKWMK8Hjgo0PrnKD6WS101d5Imd1T1vhwpGd7XFDnbheqSd5TC/v/+j
-         9Q1w==
-X-Gm-Message-State: APjAAAXh73NALWOXC8pp9wUfIKJaqXMk/fTLwpQ3CL0KyCPmfttqRq09
-        XJrX7VTvfA/qU0mzobBbm41gfQ==
-X-Google-Smtp-Source: APXvYqzmBCVvXKFOXoBDuj58+fjrCfnA51PDqBxjQDtiM9x+Qz3HalHYI72Y8f2Nsv+B0cm1QW0ySg==
-X-Received: by 2002:a2e:85d4:: with SMTP id h20mr7058874ljj.134.1567126248121;
-        Thu, 29 Aug 2019 17:50:48 -0700 (PDT)
+        bh=jGmbuQhjfybpgV20Mr6h/vZA852gJhY9ROLsc2sx8l8=;
+        b=YznbkmBVBRZH8/9xgD50/E+QCH41oUv8s0OmyxT2UMILH0ycHKVzD283iqaaMMep5I
+         AB/r+DtW2eg0VXHouzIv4H4Th40lhRHa+WAU9Qey7PRnLVNuWuAR4qSeGu5L7xYnH2jW
+         W1KBtULAICT0Gr/XiXUaPcKK0SFoACUgSr6+6rKRQ2K7gwEukg14QI6lB5NH2G7bufW7
+         8ni/faMCPwzoLlq3o8BHQcPq5viD/lEUPYjCGZe/CTTRBAVEaDFHlAAoUMHiO8SfR/HX
+         7Ktk68ivllNx4bWkHie2dglUeBU/qKzDs54vSSnXPWbSb5wFUxjlME1OBniAstByjv0h
+         ZBtg==
+X-Gm-Message-State: APjAAAVeSJ9lZBnC464/7xKoe96KfS1i4ia0H6q4ciCfHUKsmzZsOOas
+        9B687deRnDzhpaxUr/e86IjlEQ==
+X-Google-Smtp-Source: APXvYqzI74aR/DPSKUQJi5BEbDzth7mLHwQxtSOpKT4d/woWDnrSZxBkUNITdgyD5sT4M1zqAQ6tfw==
+X-Received: by 2002:a2e:b004:: with SMTP id y4mr6683248ljk.124.1567126249466;
+        Thu, 29 Aug 2019 17:50:49 -0700 (PDT)
 Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id f19sm628149lfk.43.2019.08.29.17.50.46
+        by smtp.gmail.com with ESMTPSA id f19sm628149lfk.43.2019.08.29.17.50.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 17:50:47 -0700 (PDT)
+        Thu, 29 Aug 2019 17:50:48 -0700 (PDT)
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     linux@armlinux.org.uk, ast@kernel.org, daniel@iogearbox.net,
         yhs@fb.com, davem@davemloft.net, jakub.kicinski@netronome.com,
@@ -51,9 +51,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         clang-built-linux@googlegroups.com,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH RFC bpf-next 05/10] samples: bpf: Makefile: use vars from KBUILD_CFLAGS to handle linux headers
-Date:   Fri, 30 Aug 2019 03:50:32 +0300
-Message-Id: <20190830005037.24004-6-ivan.khoronzhuk@linaro.org>
+Subject: [PATCH RFC bpf-next 06/10] samples: bpf: makefile: fix HDR_PROBE
+Date:   Fri, 30 Aug 2019 03:50:33 +0300
+Message-Id: <20190830005037.24004-7-ivan.khoronzhuk@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190830005037.24004-1-ivan.khoronzhuk@linaro.org>
 References: <20190830005037.24004-1-ivan.khoronzhuk@linaro.org>
@@ -62,34 +62,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel headers are reused from samples bpf, and autoconf.h is not
-enough to reflect complete configuration for clang. One of such
-configurations is __LINUX_ARM_ARCH__ min version used as instruction
-set selector. In another case an error like "SMP is not
-supported" for arm and others errors are issued and final object is
-not correct.
+echo should be replace on echo -e to handle \n correctly, but instead,
+replace it on printf as some systems can't handle echo -e.
+
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- samples/bpf/Makefile | 7 +++++++
- 1 file changed, 7 insertions(+)
+ samples/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index cdd742c05200..9232efa2b1b3 100644
+index 9232efa2b1b3..043f9cc14cdd 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -186,6 +186,13 @@ HOSTLDLIBS_map_perf_test	+= -lrt
- HOSTLDLIBS_test_overhead	+= -lrt
- HOSTLDLIBS_xdpsock		+= -pthread
+@@ -208,7 +208,7 @@ endif
  
-+# Strip all expet -D options needed to handle linux headers
-+# for arm it's __LINUX_ARM_ARCH__ and potentially others fork vars
-+D_OPTIONS = $(shell echo "$(KBUILD_CFLAGS) " | sed 's/[[:blank:]]/\n/g' | \
-+	sed '/^-D/!d' | tr '\n' ' ')
-+
-+CLANG_EXTRA_CFLAGS += $(D_OPTIONS)
-+
- # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
- #  make samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
- LLC ?= llc
+ # Don't evaluate probes and warnings if we need to run make recursively
+ ifneq ($(src),)
+-HDR_PROBE := $(shell echo "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
++HDR_PROBE := $(shell printf "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
+ 	$(HOSTCC) $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
+ 	echo okay)
+ 
 -- 
 2.17.1
 
