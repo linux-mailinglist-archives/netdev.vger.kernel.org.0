@@ -2,147 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3818EA3E5A
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:25:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08671A3E65
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbfH3TZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:25:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52246 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727883AbfH3TZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:25:15 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7UJNj4x022431;
-        Fri, 30 Aug 2019 12:24:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=TqshAb1/YXv1lSSayk6NreG/7ncKHRKsSAveSK43NIk=;
- b=eDolhatuIvaBTQ+kHG8vfB3oazm36fR2kNUFqWCFssX2hosX33c51fLmpWTFJ6hm/nKy
- GVkOOEtLS21hs1j692DJQBWaDbNHUXfRg1HgIFI+Nk8JdHzv5vk21ll8dW4MpPIDjZMt
- urB2AplskRaA9SC+QpQhe9i8ORraEW0JbFs= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2upqya4ptx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 30 Aug 2019 12:24:53 -0700
-Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
- ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 30 Aug 2019 12:24:52 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 30 Aug 2019 12:24:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A9Ows3PxeoFSPJP0P4g2V2zgER9u6FqtgXHOCF0cI/la8VU1q23rxsLGn4GXdKEJ6ZInL5QVIhnQGnAqvYl9sp1kc54xtZb23axp9TOv8EgbqXQo7AOONaiUCOCUEKqvigaS1XuUVLZd3Ll/jmPSw3c9VtcdGNk2YPFxlzrRIqgoVk7fpigZZO2IxuzN7ZcXN4EaKo3BBYFewFPQrbOdR9CX06NIdcfuW5OzWJUBubq7g9FzLAIu1IFMIZK6mZ48kdhCjO0q6HN6ayJjICJTjUkwE5oGSJdDK48aTbZ0aOfQgi+2U3xZQoRYJfaDPOHkJq9GK8WzEU3TUlSGJvjU0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TqshAb1/YXv1lSSayk6NreG/7ncKHRKsSAveSK43NIk=;
- b=Olk3cmsl6P0Ku+UxAUKvWKwviaJOs6qG4imQ/WYQ99MTUtODsnmoDS5ria042RCr6Co8jv6o1n+GxJEIdYbS9w4l7Q83Ce25DuSXvYBe7LoK/7cTpStSO47Bm2XFxxyfZKbyfR/SmkozsQi20Lrqy3klz41Di6T04NwkKlnxTERikQZKubbFnNpJz7mja3BiEt9U5MU/Hsuf7umFiscc921Q2YRjjn5gv8jKXcnvrIBqWa2QYX8bKIT5koUEQ7rLOz+lYuOztXjUnaHqFHm+foo608J21x3Ry0Ht6xQAXM/jTL4AOU93tmnTFxbn0WBBSpsAfM7ISHD2hJtc22jMag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TqshAb1/YXv1lSSayk6NreG/7ncKHRKsSAveSK43NIk=;
- b=BWLbdPLtBu/DVdsTf3h7A7UQeVMG7CNHaGNatpE7kprQi+6rCN9FniAY1LgwrJNLu2mPp5JmlfzwOs+sih5ztoJyHPa0Mnl5G7EOK7+UWmZlhJe5d68tCe53CFQa4JtT6/fUra/QLcTUuvkB5fLLqeDtJMDmj0Bx06vEsFBoleI=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1919.namprd15.prod.outlook.com (10.174.100.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.20; Fri, 30 Aug 2019 19:24:51 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::45ee:bc50:acfa:60a5%3]) with mapi id 15.20.2199.021; Fri, 30 Aug 2019
- 19:24:51 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Anton Protopopov <a.s.protopopov@gmail.com>
-CC:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] tools: libbpf: update extended attributes
- version of bpf_object__open()
-Thread-Topic: [PATCH bpf-next] tools: libbpf: update extended attributes
- version of bpf_object__open()
-Thread-Index: AQHVUvz4yT9fypjbn0OKIVyRaBIXqqcSo2gAgAF++ACAAAjVAA==
-Date:   Fri, 30 Aug 2019 19:24:50 +0000
-Message-ID: <9EC54605-1911-48B0-B33A-02EC46DEF3DD@fb.com>
-References: <20190815000330.12044-1-a.s.protopopov@gmail.com>
- <796E4DA8-4844-4708-866E-A8AE9477E94E@fb.com>
- <CAGn_itwS=bLf8NGVNbByNx8FmR_JtPWnuEnKO23ig8xnK_GYOw@mail.gmail.com>
-In-Reply-To: <CAGn_itwS=bLf8NGVNbByNx8FmR_JtPWnuEnKO23ig8xnK_GYOw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:180::34a2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 85da3c98-b0c9-4380-95ad-08d72d7fba98
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1919;
-x-ms-traffictypediagnostic: MWHPR15MB1919:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1919A4858D019041341A3894B3BD0@MWHPR15MB1919.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:660;
-x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(366004)(376002)(396003)(136003)(189003)(199004)(256004)(5660300002)(305945005)(36756003)(71190400001)(71200400001)(86362001)(33656002)(76176011)(6246003)(8936002)(53546011)(316002)(229853002)(66446008)(66946007)(54906003)(66476007)(4326008)(64756008)(66556008)(6486002)(76116006)(99286004)(8676002)(81156014)(81166006)(25786009)(102836004)(7736002)(50226002)(186003)(6116002)(57306001)(476003)(478600001)(6506007)(2906002)(11346002)(53936002)(6436002)(6512007)(14454004)(46003)(446003)(486006)(6916009)(2616005)(101420200001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1919;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: z7KgPIs5Mc4iquZ+8PmBr6GTEn3HbiIOU3k1yom2vVjb5JkB/xOc+PMDa4NiYZz7lLShukBe24E4RZd5aYVvYP5uN4I5nvp+iwZlzYf9WzwgQjXHRk/cUkbaq2e1MbgrHwJ/L6X6UW/EsfgM5RBLtnDp22FJo+EQIuvh1hQxbjAHAiMrtXd1W15Kv40SlaelPzlkXatehFYtOzzSP2amYoU6Bqy1AS3AReUfCKUYcnQbqAEExA55e8xLg6w6r2jqW8VqYQXNIRaOkJi6whprxgRidpZqAEJ/c0641Wp22gPtk+HzmCtoP2bfcGGNiQOIcN5THJUvy8DoD9vns/o9F2NGmnTYWizHEGeCbC70at2VAvb8CNzqCy+f0mDY8A6v+cXh4/8H0uq+mObFkIPjNkInAibuDS/fNO4my7LC7yU=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <82D5DFBBBD85824188CE056BB017D66A@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728186AbfH3T2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:28:09 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33421 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728026AbfH3T2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:28:08 -0400
+Received: by mail-io1-f71.google.com with SMTP id 5so9746018ion.0
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:28:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FsZT3YOiyb+RSdO03B9uEqR9QzRRsgEZdKe73XL3LGE=;
+        b=NFCgijyZ4/LrFYurKq9iapgi+vpmUgyeXtuSxdmESbSfO7CvUKA9bNxi0md3DwERhX
+         MHcVZoqiXsBB7tMlIWqanb0/ov38wghYbzrKDGxHMCnCQxo4pJUp5OBLBDKZ/rIdOD2I
+         7ekaLu1q7WUd6mt2yxnx1gWIpUlIrh0x1MaCR0Qrx/EwJz0hL8vnbuDWoGehEcugKsgM
+         nan+s7Dc3tBW206MIPNtTD7Vr7q2iFLSI9zWRmFPHoMgZIschyiGE6CrvHKnoQJU3tSC
+         nVMwKLwF8S2bCIxxJM6wQ3/RBNn/s5u9tYt4fH+TnCZXTDCDiVZhhg3qb0w/rn3SFaEe
+         kVbg==
+X-Gm-Message-State: APjAAAWpx8JDhJhKOFddZtrNnPME7KkN0HhkCdQ01IUmRxvp/f8Mn+0J
+        cSPSANXI2Y8oEAL0mdFaTn6dZb+clJp7KBCKCv/h6HhDcuKG
+X-Google-Smtp-Source: APXvYqyIC295ngKPQvaPHvVRjgln7ZY90xzgn2aZ5O1dn/DrG9wZm3Vq2gAOhal8qpX/PfOpzXdW2QpihYYiAcBNzXYuuaem2zH0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85da3c98-b0c9-4380-95ad-08d72d7fba98
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 19:24:50.8653
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Je5OxqKHF8pVINvwJEJwj3+M7axEIpRHvQNNwoVUKZr91kYYaKWUqYaOeZ1yceAsXkUvYmhN08jqObJd5xWU+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1919
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-08-30_07:2019-08-29,2019-08-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 bulkscore=0 mlxscore=0 impostorscore=0
- adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1908300182
-X-FB-Internal: deliver
+X-Received: by 2002:a6b:ba85:: with SMTP id k127mr904273iof.101.1567193287992;
+ Fri, 30 Aug 2019 12:28:07 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 12:28:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000039af4d05915a9f56@google.com>
+Subject: INFO: task hung in p9_fd_close
+From:   syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, ericvh@gmail.com,
+        linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gQXVnIDMwLCAyMDE5LCBhdCAxMTo1MyBBTSwgQW50b24gUHJvdG9wb3BvdiA8YS5z
-LnByb3RvcG9wb3ZAZ21haWwuY29tPiB3cm90ZToNCj4gDQo+INGH0YIsIDI5INCw0LLQsy4gMjAx
-OSDQsy4g0LIgMTY6MDIsIFNvbmcgTGl1IDxzb25nbGl1YnJhdmluZ0BmYi5jb20+Og0KPj4gDQo+
-PiANCj4+IA0KPj4+IE9uIEF1ZyAxNCwgMjAxOSwgYXQgNTowMyBQTSwgQW50b24gUHJvdG9wb3Bv
-diA8YS5zLnByb3RvcG9wb3ZAZ21haWwuY29tPiB3cm90ZToNCj4+PiANCj4+IA0KPj4gWy4uLl0N
-Cj4+IA0KPj4+IA0KPj4+IA0KPj4+IGludCBicGZfb2JqZWN0X191bmxvYWQoc3RydWN0IGJwZl9v
-YmplY3QgKm9iaikNCj4+PiBkaWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi9saWJicGYuaCBiL3Rv
-b2xzL2xpYi9icGYvbGliYnBmLmgNCj4+PiBpbmRleCBlOGY3MDk3N2QxMzcuLjYzNGYyNzg1Nzhk
-ZCAxMDA2NDQNCj4+PiAtLS0gYS90b29scy9saWIvYnBmL2xpYmJwZi5oDQo+Pj4gKysrIGIvdG9v
-bHMvbGliL2JwZi9saWJicGYuaA0KPj4+IEBAIC02Myw4ICs2MywxMyBAQCBMSUJCUEZfQVBJIGxp
-YmJwZl9wcmludF9mbl90IGxpYmJwZl9zZXRfcHJpbnQobGliYnBmX3ByaW50X2ZuX3QgZm4pOw0K
-Pj4+IHN0cnVjdCBicGZfb2JqZWN0Ow0KPj4+IA0KPj4+IHN0cnVjdCBicGZfb2JqZWN0X29wZW5f
-YXR0ciB7DQo+Pj4gLSAgICAgY29uc3QgY2hhciAqZmlsZTsNCj4+PiArICAgICB1bmlvbiB7DQo+
-Pj4gKyAgICAgICAgICAgICBjb25zdCBjaGFyICpmaWxlOw0KPj4+ICsgICAgICAgICAgICAgY29u
-c3QgY2hhciAqb2JqX25hbWU7DQo+Pj4gKyAgICAgfTsNCj4+PiAgICAgIGVudW0gYnBmX3Byb2df
-dHlwZSBwcm9nX3R5cGU7DQo+Pj4gKyAgICAgdm9pZCAqb2JqX2J1ZjsNCj4+PiArICAgICBzaXpl
-X3Qgb2JqX2J1Zl9zejsNCj4+PiB9Ow0KPj4gDQo+PiBJIHRoaW5rIHRoaXMgd291bGQgYnJlYWsg
-ZHluYW1pY2FsbHkgbGlua2VkIGxpYmJwZi4gTm8/DQo+IA0KPiBBaCwgeWVzLCBzdXJlLiBXaGF0
-IGlzIHRoZSByaWdodCB3YXkgdG8gbWFrZSBjaGFuZ2VzIHdoaWNoIGJyZWFrIEFCSSBpbiBsaWJi
-cGY/DQoNCkkgZG9uJ3QgaGF2ZSBhIGdvb2QgaWRlYSBoZXJlIG9uIHRoZSB0b3Agb2YgbXkgaGVh
-ZC4NCg0KTWF5YmUgd2UgbmVlZCBhIG5ldyBzdHJ1Y3QgYW5kL29yIGZ1bmN0aW9uIGZvciB0aGlz
-LiANCiANCj4gDQo+IEJUVywgZG9lcyB0aGUgY29tbWl0IGRkYzdjMzA0MjYxNCAoImxpYmJwZjog
-aW1wbGVtZW50IEJQRiBDTy1SRSBvZmZzZXQNCj4gcmVsb2NhdGlvbiBhbGdvcml0aG0iKSB3aGlj
-aCBhZGRzIGEgbmV3IGZpZWxkIHRvIHRoZSBzdHJ1Y3QNCj4gYnBmX29iamVjdF9sb2FkX2F0dHIg
-YWxzbyBicmVhayBBQkk/DQoNCkkgdGhpbmsgdGhpcyBjaGFuZ2Ugd2FzIGluIHRoZSBzYW1lIHJl
-bGVhc2UsIHNvIGl0IGlzIE9LLiANCg0KVGhhbmtzLA0KU29uZw==
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    6525771f Merge tag 'arc-5.3-rc7' of git://git.kernel.org/p..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1118a71e600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=58485246ad14eafe
+dashboard link: https://syzkaller.appspot.com/bug?extid=8b41a1365f1106fd0f33
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1125ee12600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com
+
+INFO: task syz-executor.1:13699 blocked for more than 143 seconds.
+       Not tainted 5.3.0-rc6+ #94
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor.1  D28888 13699   9148 0x00004004
+Call Trace:
+  context_switch kernel/sched/core.c:3254 [inline]
+  __schedule+0x877/0xc50 kernel/sched/core.c:3880
+  schedule+0x131/0x1e0 kernel/sched/core.c:3947
+  schedule_timeout+0x46/0x240 kernel/time/timer.c:1783
+  do_wait_for_common+0x2e7/0x4d0 kernel/sched/completion.c:83
+  __wait_for_common kernel/sched/completion.c:104 [inline]
+  wait_for_common kernel/sched/completion.c:115 [inline]
+  wait_for_completion+0x47/0x60 kernel/sched/completion.c:136
+  __flush_work+0xd4/0x150 kernel/workqueue.c:3040
+  __cancel_work_timer+0x420/0x570 kernel/workqueue.c:3127
+  cancel_work_sync+0x17/0x20 kernel/workqueue.c:3163
+  p9_conn_destroy net/9p/trans_fd.c:868 [inline]
+  p9_fd_close+0x297/0x3c0 net/9p/trans_fd.c:898
+  p9_client_create+0x974/0xee0 net/9p/client.c:1068
+  v9fs_session_init+0x192/0x18e0 fs/9p/v9fs.c:406
+  v9fs_mount+0x82/0x810 fs/9p/vfs_super.c:120
+  legacy_get_tree+0xf9/0x1a0 fs/fs_context.c:661
+  vfs_get_tree+0x8f/0x380 fs/super.c:1413
+  do_new_mount fs/namespace.c:2791 [inline]
+  do_mount+0x169d/0x2490 fs/namespace.c:3111
+  ksys_mount+0xcc/0x100 fs/namespace.c:3320
+  __do_sys_mount fs/namespace.c:3334 [inline]
+  __se_sys_mount fs/namespace.c:3331 [inline]
+  __x64_sys_mount+0xbf/0xd0 fs/namespace.c:3331
+  do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459879
+Code: 8b 44 24 18 48 8b 4c 24 30 48 83 c1 08 48 89 0c 24 48 89 44 24 08 48  
+c7 44 24 10 10 00 00 00 e8 0d da fa ff 48 8b 44 24 18 48 <89> 44 24 40 48  
+8b 6c 24 20 48 83 c4 28 c3 e8 14 b9 ff ff eb 82 cc
+RSP: 002b:00007f6b4dda7c78 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 0000000000459879
+RDX: 0000000020000140 RSI: 0000000020000000 RDI: 0000000000000000
+RBP: 000000000075c118 R08: 0000000020000480 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f6b4dda86d4
+R13: 00000000004c5e2f R14: 00000000004da930 R15: 00000000ffffffff
+INFO: lockdep is turned off.
+NMI backtrace for cpu 0
+CPU: 0 PID: 1057 Comm: khungtaskd Not tainted 5.3.0-rc6+ #94
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  nmi_cpu_backtrace+0xaf/0x1a0 lib/nmi_backtrace.c:101
+  nmi_trigger_cpumask_backtrace+0x174/0x290 lib/nmi_backtrace.c:62
+  arch_trigger_cpumask_backtrace+0x10/0x20 arch/x86/kernel/apic/hw_nmi.c:38
+  trigger_all_cpu_backtrace+0x17/0x20 include/linux/nmi.h:146
+  check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
+  watchdog+0xbb9/0xbd0 kernel/hung_task.c:289
+  kthread+0x332/0x350 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1 skipped: idling at native_safe_halt+0xe/0x10  
+arch/x86/include/asm/irqflags.h:60
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
