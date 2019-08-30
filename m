@@ -2,144 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B1BA3E1A
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:02:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A278A3E1F
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727991AbfH3TCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:02:33 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:44302 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727304AbfH3TCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:02:32 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t14so3744220plr.11
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:02:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=jKoXpiSFhxP7KRugDbkM6XNycfLd1suUVTeXkEdWi2Y=;
-        b=sTbRNTbfQjX3SPkwTZ1FE+KTEEfH9ZpfoCsowjGS+CtuINCuD7TJqwD1pykQGVszPa
-         cEhgq31Qk4VShiRoEN68j7TtfKIzqzIX55et8MBelHnOJwJA9Rjb6YSAA5GE/0uEwcbq
-         rh2qC/QWIm58SBuZEbgZ5WgkpNcHn9VytEcy86wg8FL1Z+BpU7rVbSi1VgAcgHE1ujQN
-         JApvhnz5PNIXw77yyOuh7XkuRCAbxcZ+EG7ZSx6y9JvWzP0VA2bcje/3Dlwahui4Llio
-         GL4PRYugC2MRWCi4vnSbEQc0v0vp57pfpRr1T0FD0SrwK+TTPI5nIvZFNE9dv7zFqjcQ
-         4k8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=jKoXpiSFhxP7KRugDbkM6XNycfLd1suUVTeXkEdWi2Y=;
-        b=LyVsdWAez1UCdk9T67lJUObeHmcRsQWa7B/MJkeG6d7Jr7yi2A2FejJpKGt/SIbwOZ
-         jcfX3i49u5UcW6tVWFYsKUUBiyPsqFB1kp4V6EIJ4jAsSWRa4mNBRkbjpO17fSmNX99I
-         loBg5qyxy7FMES7flwPgvCR8ASnGoZJDk4QKjQ3JafaooDkvxC+cwA/YSW3Qs/ikrD0C
-         IIWaODYTuOSpXj1ep+1JoYyvE6gKPQ1rRqYQndwUDt3n0tzlBdGsR3yUSEW7S4UERgXS
-         xbDGYNqGAWU/rNHK1gMtUCPQ6s6d5tuvcym4Q/xw4gXhLFIRFlbiK8JGWM/BYv8OA1AE
-         G2ew==
-X-Gm-Message-State: APjAAAVm33mSI/3sZqYXatuocqidO63UcZypK3bOdkMJ7SUNPjvtGLZX
-        Q8F5JrV/ewW0SG9WN77J+w/fYg==
-X-Google-Smtp-Source: APXvYqwuzEgENf7Ff4XTV/tq4aPNyFEkz1utNEztEMbLGS5WzV6baVTjIlZmPFuJ5oGvStdVqnK18Q==
-X-Received: by 2002:a17:902:2d03:: with SMTP id o3mr15799532plb.311.1567191752050;
-        Fri, 30 Aug 2019 12:02:32 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id ce7sm5568118pjb.16.2019.08.30.12.02.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 12:02:31 -0700 (PDT)
-Subject: Re: [PATCH v6 net-next 02/19] ionic: Add basic framework for IONIC
- Network device driver
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190829182720.68419-1-snelson@pensando.io>
- <20190829182720.68419-3-snelson@pensando.io>
- <20190829153825.396efbf5@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <4e24ca02-48f1-9509-9b6f-1b3e59c04f99@pensando.io>
-Date:   Fri, 30 Aug 2019 12:02:29 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190829153825.396efbf5@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        id S1727979AbfH3TG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:06:28 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:13086 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727891AbfH3TG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:06:28 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7UIqHkd073023;
+        Fri, 30 Aug 2019 15:06:24 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uq77fcngv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 15:06:24 -0400
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7UIqItb073513;
+        Fri, 30 Aug 2019 15:06:24 -0400
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uq77fcngb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 15:06:24 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7UJ5QXg027763;
+        Fri, 30 Aug 2019 19:06:22 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma02dal.us.ibm.com with ESMTP id 2un65khbm8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 19:06:22 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7UJ6G8p53281270
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Aug 2019 19:06:16 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 87F8AAE05F;
+        Fri, 30 Aug 2019 19:06:16 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E4C61AE060;
+        Fri, 30 Aug 2019 19:06:15 +0000 (GMT)
+Received: from oc5348122405.ibm.com.austin.ibm.com (unknown [9.53.179.215])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 30 Aug 2019 19:06:15 +0000 (GMT)
+From:   David Dai <zdai@linux.vnet.ibm.com>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     zdai@us.ibm.com, zdai@linux.vnet.ibm.com
+Subject: [v2] net_sched: act_police: add 2 new attributes to support police 64bit rate and peakrate
+Date:   Fri, 30 Aug 2019 14:06:14 -0500
+Message-Id: <1567191974-11578-1-git-send-email-zdai@linux.vnet.ibm.com>
+X-Mailer: git-send-email 1.7.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-30_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908300179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/19 3:38 PM, Jakub Kicinski wrote:
-> On Thu, 29 Aug 2019 11:27:03 -0700, Shannon Nelson wrote:
->> This patch adds a basic driver framework for the Pensando IONIC
->> network device.  There is no functionality right now other than
->> the ability to load and unload.
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->> new file mode 100644
->> index 000000000000..6892409cd64b
->> --- /dev/null
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
->> @@ -0,0 +1,44 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->> +
->> +#include <linux/module.h>
->> +#include <linux/netdevice.h>
->> +
->> +#include "ionic.h"
->> +#include "ionic_bus.h"
->> +#include "ionic_devlink.h"
->> +
->> +static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
->> +			     struct netlink_ext_ack *extack)
->> +{
->> +	devlink_info_driver_name_put(req, IONIC_DRV_NAME);
-> This may fail, should the error not be propagated?
+For high speed adapter like Mellanox CX-5 card, it can reach upto
+100 Gbits per second bandwidth. Currently htb already supports 64bit rate
+in tc utility. However police action rate and peakrate are still limited
+to 32bit value (upto 32 Gbits per second). Add 2 new attributes
+TCA_POLICE_RATE64 and TCA_POLICE_RATE64 in kernel for 64bit support
+so that tc utility can use them for 64bit rate and peakrate value to
+break the 32bit limit, and still keep the backward binary compatibility.
 
-Will fix
+Tested-by: David Dai <zdai@linux.vnet.ibm.com>
+Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
+---
+Changelog:
+v1->v2:
+ - Move 2 attributes TCA_POLICE_RATE64 TCA_POLICE_PEAKRATE64 after
+   TCA_POLICE_PAD in pkt_cls.h header.
+---
+ include/uapi/linux/pkt_cls.h |    2 ++
+ net/sched/act_police.c       |   27 +++++++++++++++++++++++----
+ 2 files changed, 25 insertions(+), 4 deletions(-)
 
->
->> +	return 0;
->> +}
->> +
->> +static const struct devlink_ops ionic_dl_ops = {
->> +	.info_get	= ionic_dl_info_get,
->> +};
->> +
->> +struct ionic *ionic_devlink_alloc(struct device *dev)
->> +{
->> +	struct ionic *ionic;
->> +	struct devlink *dl;
->> +
->> +	dl = devlink_alloc(&ionic_dl_ops, sizeof(struct ionic));
->> +	if (!dl) {
->> +		dev_warn(dev, "devlink_alloc failed");
-> missing new line at the end of warning, but the warning is unnecessary,
-> if memory allocation fails kernel will generate a big OOM splat, anyway
-
-yep
-
->
->> +		return NULL;
->> +	}
->> +
->> +	ionic = devlink_priv(dl);
->> +
->> +	return ionic;
-> return devlink_priv(dl);
-
-yep
-
-Thanks,
-sln
-
->
->> +}
->> +
->> +void ionic_devlink_free(struct ionic *ionic)
->> +{
->> +	struct devlink *dl = priv_to_devlink(ionic);
->> +
->> +	devlink_free(dl);
->> +}
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index b057aee..a6aa466 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -160,6 +160,8 @@ enum {
+ 	TCA_POLICE_RESULT,
+ 	TCA_POLICE_TM,
+ 	TCA_POLICE_PAD,
++	TCA_POLICE_RATE64,
++	TCA_POLICE_PEAKRATE64,
+ 	__TCA_POLICE_MAX
+ #define TCA_POLICE_RESULT TCA_POLICE_RESULT
+ };
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 49cec3e..425f2a3 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -40,6 +40,8 @@ static int tcf_police_walker(struct net *net, struct sk_buff *skb,
+ 	[TCA_POLICE_PEAKRATE]	= { .len = TC_RTAB_SIZE },
+ 	[TCA_POLICE_AVRATE]	= { .type = NLA_U32 },
+ 	[TCA_POLICE_RESULT]	= { .type = NLA_U32 },
++	[TCA_POLICE_RATE64]     = { .type = NLA_U64 },
++	[TCA_POLICE_PEAKRATE64] = { .type = NLA_U64 },
+ };
+ 
+ static int tcf_police_init(struct net *net, struct nlattr *nla,
+@@ -58,6 +60,7 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
+ 	struct tcf_police_params *new;
+ 	bool exists = false;
+ 	u32 index;
++	u64 rate64, prate64;
+ 
+ 	if (nla == NULL)
+ 		return -EINVAL;
+@@ -155,14 +158,18 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
+ 	}
+ 	if (R_tab) {
+ 		new->rate_present = true;
+-		psched_ratecfg_precompute(&new->rate, &R_tab->rate, 0);
++		rate64 = tb[TCA_POLICE_RATE64] ?
++			 nla_get_u64(tb[TCA_POLICE_RATE64]) : 0;
++		psched_ratecfg_precompute(&new->rate, &R_tab->rate, rate64);
+ 		qdisc_put_rtab(R_tab);
+ 	} else {
+ 		new->rate_present = false;
+ 	}
+ 	if (P_tab) {
+ 		new->peak_present = true;
+-		psched_ratecfg_precompute(&new->peak, &P_tab->rate, 0);
++		prate64 = tb[TCA_POLICE_PEAKRATE64] ?
++			  nla_get_u64(tb[TCA_POLICE_PEAKRATE64]) : 0;
++		psched_ratecfg_precompute(&new->peak, &P_tab->rate, prate64);
+ 		qdisc_put_rtab(P_tab);
+ 	} else {
+ 		new->peak_present = false;
+@@ -313,10 +320,22 @@ static int tcf_police_dump(struct sk_buff *skb, struct tc_action *a,
+ 				      lockdep_is_held(&police->tcf_lock));
+ 	opt.mtu = p->tcfp_mtu;
+ 	opt.burst = PSCHED_NS2TICKS(p->tcfp_burst);
+-	if (p->rate_present)
++	if (p->rate_present) {
+ 		psched_ratecfg_getrate(&opt.rate, &p->rate);
+-	if (p->peak_present)
++		if ((police->params->rate.rate_bytes_ps >= (1ULL << 32)) &&
++		    nla_put_u64_64bit(skb, TCA_POLICE_RATE64,
++				      police->params->rate.rate_bytes_ps,
++				      __TCA_POLICE_MAX))
++			goto nla_put_failure;
++	}
++	if (p->peak_present) {
+ 		psched_ratecfg_getrate(&opt.peakrate, &p->peak);
++		if ((police->params->peak.rate_bytes_ps >= (1ULL << 32)) &&
++		    nla_put_u64_64bit(skb, TCA_POLICE_PEAKRATE64,
++				      police->params->peak.rate_bytes_ps,
++				      __TCA_POLICE_MAX))
++			goto nla_put_failure;
++	}
+ 	if (nla_put(skb, TCA_POLICE_TBF, sizeof(opt), &opt))
+ 		goto nla_put_failure;
+ 	if (p->tcfp_result &&
+-- 
+1.7.1
 
