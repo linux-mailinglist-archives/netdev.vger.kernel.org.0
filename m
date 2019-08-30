@@ -2,262 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E394A3325
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406C6A3327
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727236AbfH3IyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 04:54:07 -0400
-Received: from resqmta-ch2-11v.sys.comcast.net ([69.252.207.43]:39056 "EHLO
-        resqmta-ch2-11v.sys.comcast.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726492AbfH3IyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:54:07 -0400
-Received: from resomta-ch2-15v.sys.comcast.net ([69.252.207.111])
-        by resqmta-ch2-11v.sys.comcast.net with ESMTP
-        id 3cfViYttEwUr53cfViOtjJ; Fri, 30 Aug 2019 08:54:05 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comcast.net;
-        s=20190202a; t=1567155245;
-        bh=0ZZQYHqNK41bV15iUWbThB1HnN5CtL9q456nkVw1an0=;
-        h=Received:Received:From:To:Subject:Date:Message-ID:MIME-Version:
-         Content-Type;
-        b=BzPUVt3KetHMGMvvAjpkugaYJWHdWLJgjwVXVwwLhRv6OO2scZ4EIH/qVXiEMOKmR
-         GMSA/iL3V5DFJ0MxGobzj/5tcPinimJ5W0ggK7cbUIOQ/QyJ/m5Z0O8Am3OhlhzfSN
-         5M42iMmSQw5qy7bt9WNb5Zn7BbO1BvoteA/CL9PuCMsgBqvWi5qjHwpFLJtS151DNj
-         hdkY3pOVaIB3igcg45C5ASTjgKbvUzTADCyWOQSFjqJmgI6Oj3OSSs+FmsRZM7w4La
-         lxuB8OV/k5JKiFSTW2y2tPxzHbz0dqRjtCJoHx15VR2q3gZ5pxP0AWECcTp6o0Xebr
-         GiktFCZ/G1INA==
-Received: from DireWolf ([108.49.206.201])
-        by resomta-ch2-15v.sys.comcast.net with ESMTPSA
-        id 3cf5iyI0YhmCt3cf6inloO; Fri, 30 Aug 2019 08:54:03 +0000
-X-Xfinity-VAAS: gggruggvucftvghtrhhoucdtuddrgeduvddrudeigedgtdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuvehomhgtrghsthdqtfgvshhipdfqfgfvpdfpqffurfetoffkrfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvfhgjufffkfggtgfgofhtsehtqhhgtddvtdejnecuhfhrohhmpedfufhtvghvvgcukggrsggvlhgvfdcuoeiirggsvghlvgestghomhgtrghsthdrnhgvtheqnecuffhomhgrihhnpehivghtfhdrohhrghenucfkphepuddtkedrgeelrddvtdeirddvtddunecurfgrrhgrmhephhgvlhhopeffihhrvgghohhlfhdpihhnvghtpedutdekrdegledrvddtiedrvddtuddpmhgrihhlfhhrohhmpeiirggsvghlvgestghomhgtrghsthdrnhgvthdprhgtphhtthhopegurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprhgtphhtthhopehmrghrkhdrkhgvrghtohhnsehrrgihthhhvghonhdrtghomhdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehonhdvkhduiehnmhesghhmrghilhdrtghomhdprhgtphhtthhopehsrghifhhirdhkhhgrnhesshhtrhhikhhrrdhinhdprhgtphhtthhopehshhhumhestggrnhhnughrvgifrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhesnhgvthifohhrkhhplhhumhgsvghrrdhorhhgpdhrtghpthhtohepvhhlrgguihhmihhrudduieesghhmrghilhdrtghomhd
-X-Xfinity-VMeta: sc=-100;st=legit
-From:   "Steve Zabele" <zabele@comcast.net>
-To:     "'Steve Zabele'" <zabele@comcast.net>,
-        "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
-Cc:     "'Network Development'" <netdev@vger.kernel.org>,
-        <shum@canndrew.org>, <vladimir116@gmail.com>,
-        <saifi.khan@strikr.in>, "'Daniel Borkmann'" <daniel@iogearbox.net>,
-        <on2k16nm@gmail.com>,
-        "'Stephen Hemminger'" <stephen@networkplumber.org>,
-        <mark.keaton@raytheon.com>
-References: <010601d53bdc$79c86dc0$6d594940$@net> <20190716070246.0745ee6f@hermes.lan> <01db01d559e5$64d71de0$2e8559a0$@net> <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com> 
-In-Reply-To: 
-Subject: RE: Is bug 200755 in anyone's queue??
-Date:   Fri, 30 Aug 2019 04:53:41 -0400
-Message-ID: <001001d55f10$7a6c96f0$6f45c4d0$@net>
+        id S1727420AbfH3Iyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 04:54:43 -0400
+Received: from mail-wm1-f46.google.com ([209.85.128.46]:36816 "EHLO
+        mail-wm1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726492AbfH3Iyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:54:43 -0400
+Received: by mail-wm1-f46.google.com with SMTP id p13so6618751wmh.1
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 01:54:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xdqhILanMzzjo9Xz2xJHy7IoXrm9N7Ymo3atJx4WQJE=;
+        b=I7OBv1XyEmX11igOgVcT2i4a+7xvNxZZqGLqsQbiEi+7ecyPItbN31QNhs6ABDdGHP
+         aUzLjsO/6nvUMKbpebwbqDhJm20qWF6F5GfU5xmkFiWJLeZX0xzwB/tPveT/WAdo7fda
+         Cba5ltwNy3BfV6GHE9emG4nlEB3h3Y8ALKi1VtXjO/EjIoFlqthDmDt91/md7s8EiHNU
+         Nkm5SiwQ+VhAsTX5ncXciw/cB+iIKqgXBbo2iFczk20kkxKmHFb/9DQZOucvOLDSLXel
+         RWNC4RZieyCmSy5x1z8n7vPCiaXRSmHF4ML+y3SdskLxGWwcrGuCKTB9PuZn55PqP/zC
+         OSsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xdqhILanMzzjo9Xz2xJHy7IoXrm9N7Ymo3atJx4WQJE=;
+        b=GY7tI0Hj+zlMnMABcUygQyLq4Yvj1khqbiT588+qcuRYa6ZsEtmsPEGBQA2mCFAJns
+         hn2Rdv2Om7Oo/XF2vLe8hdunypZjxeEwKoAJOTyZ/clWKPdQqz1qMCSQ/g+kCeLr3CeA
+         2ztjFBL6KwB1rqxYqcMWNn+KtVEy37sr+6VdwKWAwhl+4L17DB9s1TBj8hs24yn8xjA7
+         X9Lk7Hfd8xhZUhvG2okYc3NmAvWJTtDueX+89G5riM27eNNSKkliYysrdIQ+NxpB+Bve
+         u0jNaiBsuc7mjYP1OTrdY8wyppr2DSRzTPUdsyB4QZAtHPa/pGH5k2JzuZSL5h4RXgGN
+         F1PQ==
+X-Gm-Message-State: APjAAAUGNm0EWVH45BCM3rKcQSF2GLeNv7v7V/X3mXrV/JgGgEmIUUOw
+        OMJO/uicWqB/O1gHnbAL79VWrWe3
+X-Google-Smtp-Source: APXvYqzCZ164kXhwz02K3/hnLW+07c9aFWCtts3+sMl+fhRPv2Byx7l/IXuR3vvVAj/f+9QLW8LAVA==
+X-Received: by 2002:a1c:a481:: with SMTP id n123mr15801886wme.123.1567155280949;
+        Fri, 30 Aug 2019 01:54:40 -0700 (PDT)
+Received: from [192.168.8.147] (31.169.185.81.rev.sfr.net. [81.185.169.31])
+        by smtp.gmail.com with ESMTPSA id d16sm6254297wrj.47.2019.08.30.01.54.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Aug 2019 01:54:40 -0700 (PDT)
+Subject: Re: Is bug 200755 in anyone's queue??
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Steve Zabele <zabele@comcast.net>
+Cc:     Network Development <netdev@vger.kernel.org>, shum@canndrew.org,
+        vladimir116@gmail.com, saifi.khan@datasynergy.org,
+        saifi.khan@strikr.in, Daniel Borkmann <daniel@iogearbox.net>,
+        on2k16nm@gmail.com, Stephen Hemminger <stephen@networkplumber.org>
+References: <010601d53bdc$79c86dc0$6d594940$@net>
+ <20190716070246.0745ee6f@hermes.lan> <01db01d559e5$64d71de0$2e8559a0$@net>
+ <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8f4bda24-5bd4-3f12-4c98-5e1097dde84a@gmail.com>
+Date:   Fri, 30 Aug 2019 10:54:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Office Outlook 12.0
-Thread-Index: AdVen8s+yDx4SZXJTWeKQUT7IpkgqQAaiC1QAAGOMvA=
-Content-Language: en-us
+In-Reply-To: <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resending since the last send bounced with this error
-
-The following recipient(s) cannot be reached:
-
-      'saifi.khan@datasynergy.org' on 8/30/2019 4:49 AM
-            550 5.1.1 <saifi.khan@datasynergy.org> recipient invalid =
-domain
-
-Sorry for the spam.
-
-Steve
 
 
------Original Message-----
-From: Steve Zabele [mailto:zabele@comcast.net]=20
-Sent: Friday, August 30, 2019 4:49 AM
-To: 'Willem de Bruijn'
-Cc: 'Network Development'; 'shum@canndrew.org'; 'vladimir116@gmail.com'; =
-'saifi.khan@datasynergy.org'; 'saifi.khan@strikr.in'; 'Daniel Borkmann'; =
-'on2k16nm@gmail.com'; 'Stephen Hemminger'; 'mark.keaton@raytheon.com'
-Subject: RE: Is bug 200755 in anyone's queue??
+On 8/29/19 9:26 PM, Willem de Bruijn wrote:
 
-Hi Willem!
+> SO_REUSEPORT was not intended to be used in this way. Opening
+> multiple connected sockets with the same local port.
+> 
+> But since the interface allowed connect after joining a group, and
+> that is being used, I guess that point is moot. Still, I'm a bit
+> surprised that it ever worked as described.
+> 
+> Also note that the default distribution algorithm is not round robin
+> assignment, but hash based. So multiple consecutive datagrams arriving
+> at the same socket is not unexpected.
+> 
+> I suspect that this quick hack might "work". It seemed to on the
+> supplied .c file:
+> 
+>                   score = compute_score(sk, net, saddr, sport,
+>                                         daddr, hnum, dif, sdif);
+>                   if (score > badness) {
+>   -                       if (sk->sk_reuseport) {
+>   +                       if (sk->sk_reuseport && !sk->sk_state !=
+> TCP_ESTABLISHED) {
+> 
+> But a more robust approach, that also works on existing kernels, is to
+> swap the default distribution algorithm with a custom BPF based one (
+> SO_ATTACH_REUSEPORT_EBPF).
+> 
 
-**Thank you** for the reply and the code segment, very much appreciated.
+Yes, I suspect that reuseport could still be used by to load-balance incoming packets
+targetting the same 4-tuple.
 
-Can we expect that this will make its way into a near-term official =
-release of the kernel? Our customers are really not up to patching and =
-rebuilding kernels, plus it "taints" the kernel from a security =
-perspective, and whenever there is a new release of the kernel (you come =
-in one morning and your kernel has been magically upgraded for you =
-because you forgot to disable auto updates) you need to rebuild and hope =
-that the previous patch is still good for the new code, etc, etc.
-
-Getting this onto the main branch as part of the official release cycle =
-will be greatly appreciated!
-
-Note that using an ebpf approach can't solve this problem (we know =
-because we tried for quite a while to make it work, no luck). The key =
-issue is that at the point when the ebpf filter gets the packet buffer =
-reference it is pointing to the start of the UDP portion of the packet, =
-and hence is not able to access the IP source address which is earlier =
-in the buffer. Plus every time a new socket is opened or closed, a new =
-epbf has to be created and inserted -- and there is really no good way =
-to figure out which index is (now) associated with which file =
-descriptor..=20
-
-So thank you and the group for your attention to this.
-
-With respect to your comment
-
->SO_REUSEPORT was not intended to be used in this way. Opening
->multiple connected sockets with the same local port.
-
-I'd like to offer that there are a number of reliable transport =
-protocols (alternatives to TCP) that use UDP. NORM (IETF RFC 5470) and =
-Google's new QUIC protocol =
-(https://www.ietf.org/blog/whats-happening-quic) are good examples.
-
-Now consider that users of these protocols will want to create servers =
-using these protocols -- a webserver is a good example. In fact Google =
-has one running on QUIC, and many Chrome users don't even know they are =
-using QUIC when they access Google webservers.
-
-With a client-server model, clients contact the server at a well known =
-server address and port. Upon first contact from a new client, the =
-server opens another socket with the same local address and port and =
-"connects" to the clients address and ephemeral port so that only =
-traffic for the given five tuple arrives on the new file descriptor -- =
-this allows the server application to keep concurrent sessions with =
-different clients cleanly separated, even though all sessions use the =
-same local server port. In fact, reusing the same port for different =
-sessions is really important from a firewalling perspective,
-
-This is pretty much what our application does, i.e., it uses different =
-sockets/file descriptors to keep sessions straight.
-
-And if it's worth anything, we have been using this mechanism with UDP =
-for a *very* long time, the change in behavior appears to have happened =
-with the 4.5 kernel.
-
-So **thank you**!!
-
-Steve
-
------Original Message-----
-From: Willem de Bruijn [mailto:willemdebruijn.kernel@gmail.com]=20
-Sent: Thursday, August 29, 2019 3:27 PM
-To: Steve Zabele
-Cc: Network Development; shum@canndrew.org; vladimir116@gmail.com; =
-saifi.khan@datasynergy.org; saifi.khan@strikr.in; Daniel Borkmann; =
-on2k16nm@gmail.com; Stephen Hemminger
-Subject: Re: Is bug 200755 in anyone's queue??
-
-On Fri, Aug 23, 2019 at 3:11 PM Steve Zabele <zabele@comcast.net> wrote:
->
-> Hi folks,
->
-> Is there a way to find out where the SO_REUSEPORT bug reported a year =
-ago in
-> August (and apparently has been a bug with kernels later than 4.4) is =
-being
-> addressed?
->
-> The bug characteristics, simple standalone test code demonstrating the =
-bug,
-> and an assessment of the likely location/cause of the bug within the =
-kernel
-> are all described here
->
-> https://bugzilla.kernel.org/show_bug.cgi?id=3D200755
->
-> I'm really hoping this gets fixed so we can move forward on updating =
-our
-> kernels/Ubuntu release from our aging 4.4/16.04 release
->
-> Thanks!
->
-> Steve
->
->
->
-> -----Original Message-----
-> From: Stephen Hemminger [mailto:stephen@networkplumber.org]
-> Sent: Tuesday, July 16, 2019 10:03 AM
-> To: Steve Zabele
-> Cc: shum@canndrew.org; vladimir116@gmail.com; =
-saifi.khan@DataSynergy.org;
-> saifi.khan@strikr.in; daniel@iogearbox.net; on2k16nm@gmail.com
-> Subject: Re: Is bug 200755 in anyone's queue??
->
-> On Tue, 16 Jul 2019 09:43:24 -0400
-> "Steve Zabele" <zabele@comcast.net> wrote:
->
->
-> > I came across bug report 200755 trying to figure out why some code I =
-had
-> > provided to customers a while ago no longer works with the current =
-Linux
-> > kernel. See
-> >
-> > https://bugzilla.kernel.org/show_bug.cgi?id=3D200755
-> >
-> > I've verified that, as reported, 'connect' no longer works for UDP.
-> > Moreover, it appears it has been broken since the 4.5 kernel has =
-been
-> > released.
-> >
-> >
-> >
-> > It does also appear that the intended new feature of doing round =
-robin
-> > assignments to different UDP sockets opened with SO_REUSEPORT also =
-does
-> not
-> > work as described.
-> >
-> >
-> >
-> > Since the original bug report was made nearly a year ago for the =
-4.14
-> kernel
-> > (and the bug is also still present in the 4.15 kernel) I'm curious =
-if
-> anyone
-> > is on the hook to get this fixed any time soon.
-> >
-> >
-> >
-> > I'd rather not have to do my own demultiplexing using a single =
-socket in
-> > user space to work around what is clearly a (maybe not so recently
-> > introduced) kernel bug if at all possible. My code had worked just =
-fine on
-> > 3.X kernels, and appears to work okay up through 4.4.
-> >
->
-> Kernel developers do not use bugzilla, I forward bug reports
-> to netdev@vger.kernel.org (after filtering).
-
-SO_REUSEPORT was not intended to be used in this way. Opening
-multiple connected sockets with the same local port.
-
-But since the interface allowed connect after joining a group, and
-that is being used, I guess that point is moot. Still, I'm a bit
-surprised that it ever worked as described.
-
-Also note that the default distribution algorithm is not round robin
-assignment, but hash based. So multiple consecutive datagrams arriving
-at the same socket is not unexpected.
-
-I suspect that this quick hack might "work". It seemed to on the
-supplied .c file:
-
-                  score =3D compute_score(sk, net, saddr, sport,
-                                        daddr, hnum, dif, sdif);
-                  if (score > badness) {
-  -                       if (sk->sk_reuseport) {
-  +                       if (sk->sk_reuseport && !sk->sk_state !=3D
-TCP_ESTABLISHED) {
-
-But a more robust approach, that also works on existing kernels, is to
-swap the default distribution algorithm with a custom BPF based one (
-SO_ATTACH_REUSEPORT_EBPF).
+So all sockets would have the same score, and we would select the first socket in
+the list (if not applying reuseport hashing)
 
