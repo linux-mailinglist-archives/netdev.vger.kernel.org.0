@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38BF5A3558
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 13:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C53A35DC
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 13:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbfH3LA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 07:00:58 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46607 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727883AbfH3LA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 07:00:57 -0400
-Received: by mail-wr1-f65.google.com with SMTP id h7so5192474wrt.13
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 04:00:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EIr8AwOPiNckdVBY6i7n8z6ctI1h3TpypkoOttv24nk=;
-        b=oSAv+pXhnO/OYle9E3G8UH8llVneQ8uAsk1pihGWX5uwFjBzjBvufEYuUW3XNJ+FwR
-         1uMAbLiY0F0IQqWGFq0xXf0KzPnHnE5sSLjUr8vYZcWSzcLFRtM9GLhWt3gH83w7Vmdn
-         JLne9RTU5uS4fIdoyxr/MeN8hdYAiwqewYTBbaelPwdf4jS2ab4OD+cp9aOtn7ge4tfi
-         ff54s2BQt/r5mlQS3I0fuBOl2jnxS/gjZbPuTiD36z9+MmaNlnXkxcYPtMMfYLP+8McT
-         x/8aYFRbCTpejazxRia4jk756TuqqvI3+eQ4/bdS5cRQRKDKOM1u37kLN4OLAnxumEOH
-         BNMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=EIr8AwOPiNckdVBY6i7n8z6ctI1h3TpypkoOttv24nk=;
-        b=HSXD1pDNj1yUpWfPZvBOAKyQo0mtjRgLDoEitXU6MkWbqAuV66GRX3u73jpgqeXnmV
-         u9u1HCkAKxyoSyHamxYmLjGeGjHb9vXdAnhniqpX7vtaOtFVpsMzeb2UaQYgJ3ST0AwX
-         kSPkmocY37e8Lg0rJKU1jNocWsM7tujLoJShXup5qNd6PMhdfE1cq0C9DC68J75Q37GB
-         /ryHlgzapbyhMpwQVczeYC6bp1IZh2RBj6/rj1q/bemXXiOv6UzKhnBA/xV74jTAQwaR
-         F7WsYhCXRBMbNqwD8UlHIBOLK+5gFCLuy1Ot/+fYQRsYD16pd019mEB6G1YRE5f7Bxd0
-         iHzA==
-X-Gm-Message-State: APjAAAXxA37fLkQqzH299J8L+Lpw2jUsRWGMJHvs51GQCruQ8eMuZRR5
-        bPxw7gaCqfw6JeCskh3Iaj3Cvw==
-X-Google-Smtp-Source: APXvYqyePid31/mbtw+pMW7sS/tQSrLG35ES5azqMPRTxsFSVhfSNMx5hJEJYbWfW+gUlX4Ug80n1A==
-X-Received: by 2002:adf:dc03:: with SMTP id t3mr17323673wri.80.1567162855349;
-        Fri, 30 Aug 2019 04:00:55 -0700 (PDT)
-Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id t198sm7848083wmt.39.2019.08.30.04.00.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Aug 2019 04:00:54 -0700 (PDT)
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH bpf-next v2 4/4] tools: bpftool: do not link twice against libbpf.a in Makefile
-Date:   Fri, 30 Aug 2019 12:00:40 +0100
-Message-Id: <20190830110040.31257-5-quentin.monnet@netronome.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190830110040.31257-1-quentin.monnet@netronome.com>
-References: <20190830110040.31257-1-quentin.monnet@netronome.com>
+        id S1727751AbfH3Lku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 07:40:50 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:45346 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727522AbfH3Lku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 07:40:50 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7UBde2S126881;
+        Fri, 30 Aug 2019 11:40:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=yqSrN+6+KMMDfg+PxkrIofOpt0tSVPRo31ol9j6PTLc=;
+ b=IMMKm4hoKJY1YUo0HLPWD4k5YmeYTlJGioCScqyvimEvPfY+uIzilJceMiTxDItxj2zT
+ v+XxePSgMNHkjbwwSNfihYH9GDDyyh79fdwI7Q0hYb+OXa3jF+6R5Mm3QYXGCXYdyTlN
+ MSScxoPnI8NXvnIioXzHb7ZsPovc9xc5YZe5Wfhq3K5v1UAmV6tyVei90E92VLEzygjE
+ 5HEttDUnMxPucJf+zRUh8Vhx4XR6o/x/7U9xoGuZ2jYAIUqP0sEj2wcVIlLdiUzlp5NC
+ aMk75/bOcfxKnVLrDuWZ97RPj0lLsYvM0eM9hGfdO4MPnj0E9w2Aa0DXy55+1SaIrr9N rw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2uq346r05y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Aug 2019 11:40:41 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7UBdOMH091066;
+        Fri, 30 Aug 2019 11:40:40 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2uphav2vbm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Aug 2019 11:40:40 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7UBed7X017667;
+        Fri, 30 Aug 2019 11:40:39 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 30 Aug 2019 04:40:38 -0700
+Date:   Fri, 30 Aug 2019 14:40:29 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        linux-wimax@intel.com, "David S . Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][V2] wimax/i2400m: remove debug containing bogus
+ calculation of index
+Message-ID: <20190830114029.GM23584@kadam>
+References: <20190830090711.15300-1-colin.king@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190830090711.15300-1-colin.king@canonical.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9364 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908300127
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9364 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908300127
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In bpftool's Makefile, $(LIBS) includes $(LIBBPF), therefore the library
-is used twice in the linking command. No need to have $(LIBBPF) (from
-$^) on that command, let's do with "$(OBJS) $(LIBS)" (but move $(LIBBPF)
-_before_ the -l flags in $(LIBS)).
+On Fri, Aug 30, 2019 at 10:07:11AM +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The subtraction of the two pointers is automatically scaled by the
+> size of the size of the object the pointers point to, so the division
+> by sizeof(*i2400m->barker) is incorrect.  This has been broken since
+> day one of the driver and is only debug, so remove the debug completely.
+> 
+> Also move && in condition to clean up a checkpatch warning.
+> 
+> Addresses-Coverity: ("Extra sizeof expression")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- tools/bpf/bpftool/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index b0c5a369f54a..39bc6f0f4f0b 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -55,7 +55,7 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS += $(EXTRA_LDFLAGS)
- endif
- 
--LIBS = -lelf -lz $(LIBBPF)
-+LIBS = $(LIBBPF) -lelf -lz
- 
- INSTALL ?= install
- RM ?= rm -f
-@@ -117,7 +117,7 @@ $(OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
- $(OUTPUT)feature.o: | zdep
- 
- $(OUTPUT)bpftool: $(OBJS) $(LIBBPF)
--	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-+	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
- 
- $(OUTPUT)%.o: %.c
- 	$(QUIET_CC)$(COMPILE.c) -MMD -o $@ $<
--- 
-2.17.1
+regards,
+dan carpenter
 
