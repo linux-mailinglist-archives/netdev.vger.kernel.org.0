@@ -2,108 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9FCA37A8
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 15:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0089A37BD
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 15:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbfH3NUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 09:20:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32950 "EHLO mail.kernel.org"
+        id S1727791AbfH3N2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 09:28:05 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38180 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727135AbfH3NUi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 09:20:38 -0400
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727754AbfH3N2E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 09:28:04 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9E0A72186A;
-        Fri, 30 Aug 2019 13:20:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567171237;
-        bh=SK7MIU26ekdFufN9wFcNBBpMKeHmFfdUbjP+h2nZYvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kwwbxERsPTczwEsIdSPds2TKEG8g1kxDybF1PiA0Z0k+fDM25ivomVokZGGEPDksp
-         V5RitlF0EmcbfhMrs9eRJRJvkJNLgEqIMUh1urS042x+/5RNzhWrXyLQOLdO8LwvzU
-         U8zyEwOecd8CSGBUqh2E+L94YyODq2KLxmWw6Pco=
-Date:   Fri, 30 Aug 2019 15:20:34 +0200
-From:   Maxime Ripard <mripard@kernel.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     megous@megous.com, Chen-Yu Tsai <wens@csie.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org
-Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
-Message-ID: <20190830132034.u65arlv7umh64lx6@flea>
-References: <20190823103139.17687-1-megous@megous.com>
- <5524D5E9-FA82-4244-A91F-78CF1C3FB3FB@holtmann.org>
- <20190830092104.odipmbflounqpffo@flea>
- <D02B89FB-F8C0-40AD-A99A-6C1B4FEB72A0@holtmann.org>
+        by mx1.redhat.com (Postfix) with ESMTPS id 07648307D84D;
+        Fri, 30 Aug 2019 13:28:04 +0000 (UTC)
+Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3028E608C1;
+        Fri, 30 Aug 2019 13:27:59 +0000 (UTC)
+Date:   Fri, 30 Aug 2019 15:27:58 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH 2/3] samples: pktgen: add helper functions for IP(v4/v6)
+ CIDR parsing
+Message-ID: <20190830152758.41b38c24@carbon>
+In-Reply-To: <20190828204243.16666-2-danieltimlee@gmail.com>
+References: <20190828204243.16666-1-danieltimlee@gmail.com>
+        <20190828204243.16666-2-danieltimlee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <D02B89FB-F8C0-40AD-A99A-6C1B4FEB72A0@holtmann.org>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 30 Aug 2019 13:28:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 02:43:48PM +0200, Marcel Holtmann wrote:
-> >>> (Resend to add missing lists, sorry for the noise.)
-> >>>
-> >>> This series implements bluetooth support for Xunlong Orange Pi 3 board.
-> >>>
-> >>> The board uses AP6256 WiFi/BT 5.0 chip.
-> >>>
-> >>> Summary of changes:
-> >>>
-> >>> - add more delay to let initialize the chip
-> >>> - let the kernel detect firmware file path
-> >>> - add new compatible and update dt-bindings
-> >>> - update Orange Pi 3 / H6 DTS
-> >>>
-> >>> Please take a look.
-> >>>
-> >>> thank you and regards,
-> >>> Ondrej Jirman
-> >>>
-> >>> Ondrej Jirman (5):
-> >>> dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
-> >>> bluetooth: bcm: Add support for loading firmware for BCM4345C5
-> >>> bluetooth: hci_bcm: Give more time to come out of reset
-> >>> arm64: dts: allwinner: h6: Add pin configs for uart1
-> >>> arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
-> >>>
-> >>> .../bindings/net/broadcom-bluetooth.txt       |  1 +
-> >>> .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
-> >>> arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
-> >>> drivers/bluetooth/btbcm.c                     |  3 +++
-> >>> drivers/bluetooth/hci_bcm.c                   |  3 ++-
-> >>> 5 files changed, 35 insertions(+), 1 deletion(-)
-> >>
-> >> all 5 patches have been applied to bluetooth-next tree.
-> >
-> > The DTS patches (last 2) should go through the arm-soc tree, can you
-> > drop them?
->
-> why is that? We have included DTS changes for Bluetooth devices
-> directly all the time. What is different with this hardware?
+On Thu, 29 Aug 2019 05:42:42 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-I guess some maintainers are more relaxed with it than we are then,
-but for the why, well, it's the usual reasons, the most immediate one
-being that it reduces to a minimum the conflicts between trees.
+> This commit adds CIDR parsing and IP validate helper function to parse
+> single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
+> 
+> Helpers will be used in prior to set target address in samples/pktgen.
+> 
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> ---
+>  samples/pktgen/functions.sh | 134 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 134 insertions(+)
+> 
+> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+> index 4af4046d71be..eb1c52e25018 100644
+> --- a/samples/pktgen/functions.sh
+> +++ b/samples/pktgen/functions.sh
+> @@ -163,6 +163,140 @@ function get_node_cpus()
+>  	echo $node_cpu_list
+>  }
+>  
+> +# Extend shrunken IPv6 address.
+> +# fe80::42:bcff:fe84:e10a => fe80:0:0:0:42:bcff:fe84:e10a
+> +function extend_addr6()
+> +{
+> +    local addr=$1
+> +    local sep=:
+> +    local sep2=::
+> +    local sep_cnt=$(tr -cd $sep <<< $1 | wc -c)
+> +    local shrink
+> +
+> +    # separator count : should be between 2, 7.
+> +    if [[ $sep_cnt -lt 2 || $sep_cnt -gt 7 ]]; then
+> +        err 5 "Invalid IP6 address sep: $1"
+> +    fi
+> +
+> +    # if shrink '::' occurs multiple, it's malformed.
+> +    shrink=( $(egrep -o "$sep{2,}" <<< $addr) )
+> +    if [[ ${#shrink[@]} -ne 0 ]]; then
+> +        if [[ ${#shrink[@]} -gt 1 || ( ${shrink[0]} != $sep2 ) ]]; then
+> +            err 5 "Invalid IP$IP6 address shr: $1"
+> +        fi
+> +    fi
+> +
+> +    # add 0 at begin & end, and extend addr by adding :0
+> +    [[ ${addr:0:1} == $sep ]] && addr=0${addr}
+> +    [[ ${addr: -1} == $sep ]] && addr=${addr}0
+> +    echo "${addr/$sep2/$(printf ':0%.s' $(seq $[8-sep_cnt])):}"
+> +}
+> +
+> +
+> +# Given a single IP(v4/v6) address, whether it is valid.
+> +function validate_addr()
+> +{
+> +    # check function is called with (funcname)6
+> +    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
+> +    local len=$[ IP6 ? 8 : 4 ]
+> +    local max=$[ 2**(len*2)-1 ]
+> +    local addr
+> +    local sep
+> +
+> +    # set separator for each IP(v4/v6)
+> +    [[ $IP6 ]] && sep=: || sep=.
+> +    IFS=$sep read -a addr <<< $1
+> +
+> +    # array length
+> +    if [[ ${#addr[@]} != $len ]]; then
+> +        err 5 "Invalid IP$IP6 address: $1"
+> +    fi
+> +
+> +    # check each digit between 0, $max
+> +    for digit in "${addr[@]}"; do
+> +        [[ $IP6 ]] && digit=$[ 16#$digit ]
+> +        if [[ $digit -lt 0 || $digit -gt $max ]]; then
+> +            err 5 "Invalid IP$IP6 address: $1"
+> +        fi
+> +    done
+> +
+> +    return 0
+> +}
+> +
+> +function validate_addr6() { validate_addr $@ ; }
+> +
+> +# Given a single IP(v4/v6) or CIDR, return minimum and maximum IP addr.
+> +function parse_addr()
 
-The other being that it's not really usual to merge patches supposed
-to be handled by another maintainer without (at least) his
-consent. I'm pretty sure you would have asked the same request if I
-would have merged the bluetooth patches through my tree without
-notice.
+I must say that I'm impressed by your bash-shell skills, BUT below
+function does look too complicated for doing this... I were expecting
+that you would use the regular & (AND) operation to do the prefix
+masking.
 
-Maxime
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+> +{
+> +    # check function is called with (funcname)6
+> +    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
+> +    local bitlen=$[ IP6 ? 128 : 32 ]
+> +
+> +    local addr=$1
+> +    local net
+> +    local prefix
+> +    local min_ip
+> +    local max_ip
+> +
+> +    IFS='/' read net prefix <<< $addr
+> +    [[ $IP6 ]] && net=$(extend_addr6 $net)
+> +    validate_addr$IP6 $net
+> +
+> +    if [[ $prefix -gt $bitlen ]]; then
+> +        err 5 "Invalid prefix: $prefix"
+> +    elif [[ -z $prefix ]]; then
+> +        min_ip=$net
+> +        max_ip=$net
+> +    else
+> +        # defining array for converting Decimal 2 Binary
+> +        # 00000000 00000001 00000010 00000011 00000100 ...
+> +        local d2b='{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}'
+> +        [[ $IP6 ]] && d2b+=$d2b
+> +        eval local D2B=($d2b)
+> +
+> +        local shift=$[ bitlen-prefix ]
+> +        local ip_bit
+> +        local ip
+> +        local sep
+> +
+> +        # set separator for each IP(v4/v6)
+> +        [[ $IP6 ]] && sep=: || sep=.
+> +        IFS=$sep read -ra ip <<< $net
+> +
+> +        # build full size bit
+> +        for digit in "${ip[@]}"; do
+> +            [[ $IP6 ]] && digit=$[ 16#$digit ]
+> +            ip_bit+=${D2B[$digit]}
+> +        done
+> +
+> +        # fill 0 or 1 by $shift
+> +        base_bit=${ip_bit::$prefix}
+> +        min_bit="$base_bit$(printf '0%.s' $(seq $shift))"
+> +        max_bit="$base_bit$(printf '1%.s' $(seq $shift))"
+> +
+> +        bit2addr() {
+> +            local step=$[ IP6 ? 16 : 8 ]
+> +            local max=$[ bitlen-step ]
+> +            local result
+> +            local fmt
+> +            [[ $IP6 ]] && fmt='%X' || fmt='%d'
+> +
+> +            for i in $(seq 0 $step $max); do
+> +                result+=$(printf $fmt $[ 2#${1:$i:$step} ])
+> +                [[ $i != $max ]] && result+=$sep
+> +            done
+> +            echo $result
+> +        }
+> +
+> +        min_ip=$(bit2addr $min_bit)
+> +        max_ip=$(bit2addr $max_bit)
+> +    fi
+> +
+> +    echo $min_ip $max_ip
+> +}
+> +
+> +function parse_addr6() { parse_addr $@ ; }
+> +
+>  # Given a single or range of port(s), return minimum and maximum port number.
+>  function parse_ports()
+>  {
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
