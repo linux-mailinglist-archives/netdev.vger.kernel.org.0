@@ -2,91 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C53A35DC
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 13:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B102BA35E5
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 13:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727751AbfH3Lku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 07:40:50 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:45346 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727522AbfH3Lku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 07:40:50 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7UBde2S126881;
-        Fri, 30 Aug 2019 11:40:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=yqSrN+6+KMMDfg+PxkrIofOpt0tSVPRo31ol9j6PTLc=;
- b=IMMKm4hoKJY1YUo0HLPWD4k5YmeYTlJGioCScqyvimEvPfY+uIzilJceMiTxDItxj2zT
- v+XxePSgMNHkjbwwSNfihYH9GDDyyh79fdwI7Q0hYb+OXa3jF+6R5Mm3QYXGCXYdyTlN
- MSScxoPnI8NXvnIioXzHb7ZsPovc9xc5YZe5Wfhq3K5v1UAmV6tyVei90E92VLEzygjE
- 5HEttDUnMxPucJf+zRUh8Vhx4XR6o/x/7U9xoGuZ2jYAIUqP0sEj2wcVIlLdiUzlp5NC
- aMk75/bOcfxKnVLrDuWZ97RPj0lLsYvM0eM9hGfdO4MPnj0E9w2Aa0DXy55+1SaIrr9N rw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2uq346r05y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Aug 2019 11:40:41 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7UBdOMH091066;
-        Fri, 30 Aug 2019 11:40:40 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2uphav2vbm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Aug 2019 11:40:40 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7UBed7X017667;
-        Fri, 30 Aug 2019 11:40:39 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 30 Aug 2019 04:40:38 -0700
-Date:   Fri, 30 Aug 2019 14:40:29 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        linux-wimax@intel.com, "David S . Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][V2] wimax/i2400m: remove debug containing bogus
- calculation of index
-Message-ID: <20190830114029.GM23584@kadam>
-References: <20190830090711.15300-1-colin.king@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190830090711.15300-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9364 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1908300127
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9364 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908300127
+        id S1728007AbfH3Lm5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Aug 2019 07:42:57 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22248 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727417AbfH3Lm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 07:42:56 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7UBgldd049034
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 07:42:55 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uq2qjh2d1-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 07:42:55 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Fri, 30 Aug 2019 12:42:53 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 30 Aug 2019 12:42:49 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7UBgm6P51707962
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 30 Aug 2019 11:42:48 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BFA1611C04C;
+        Fri, 30 Aug 2019 11:42:48 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D87011C04A;
+        Fri, 30 Aug 2019 11:42:48 +0000 (GMT)
+Received: from dyn-9-152-96-21.boeblingen.de.ibm.com (unknown [9.152.96.21])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 30 Aug 2019 11:42:48 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: [PATCH bpf-next v2 0/4] tools: bpftool: improve bpftool build
+ experience
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <20190830110040.31257-1-quentin.monnet@netronome.com>
+Date:   Fri, 30 Aug 2019 13:42:48 +0200
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Content-Transfer-Encoding: 8BIT
+References: <20190830110040.31257-1-quentin.monnet@netronome.com>
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+X-Mailer: Apple Mail (2.3445.9.1)
+X-TM-AS-GCONF: 00
+x-cbid: 19083011-4275-0000-0000-0000035F0D94
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19083011-4276-0000-0000-000038714794
+Message-Id: <A222439F-07F7-4256-B00D-72F1E4C2906D@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-30_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908300128
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 10:07:11AM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+> Am 30.08.2019 um 13:00 schrieb Quentin Monnet <quentin.monnet@netronome.com>:
 > 
-> The subtraction of the two pointers is automatically scaled by the
-> size of the size of the object the pointers point to, so the division
-> by sizeof(*i2400m->barker) is incorrect.  This has been broken since
-> day one of the driver and is only debug, so remove the debug completely.
+> Hi,
+> This set attempts to make it easier to build bpftool, in particular when
+> passing a specific output directory. This is a follow-up to the
+> conversation held last month by Lorenz, Ilya and Jakub [0].
 > 
-> Also move && in condition to clean up a checkpatch warning.
+> The first patch is a minor fix to bpftool's Makefile, regarding the
+> retrieval of kernel version (which currently prints a non-relevant make
+> warning on some invocations).
 > 
-> Addresses-Coverity: ("Extra sizeof expression")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Second patch improves the Makefile commands to support more "make"
+> invocations, or to fix building with custom output directory. On Jakub's
+> suggestion, a script is also added to BPF selftests in order to keep track
+> of the supported build variants.
+> 
+> Building bpftool with "make tools/bpf" from the top of the repository
+> generates files in "libbpf/" and "feature/" directories under tools/bpf/
+> and tools/bpf/bpftool/. The third patch ensures such directories are taken
+> care of on "make clean", and add them to the relevant .gitignore files.
+> 
+> At last, fourth patch is a sligthly modified version of Ilya's fix
+> regarding libbpf.a appearing twice on the linking command for bpftool.
+> 
+> [0] https://lore.kernel.org/bpf/CACAyw9-CWRHVH3TJ=Tke2x8YiLsH47sLCijdp=V+5M836R9aAA@mail.gmail.com/
+> 
+> v2:
+> - Return error from check script if one of the make invocations returns
+>  non-zero (even if binary is successfully produced).
+> - Run "make clean" from bpf/ and not only bpf/bpftool/ in that same script,
+>  when relevant.
+> - Add a patch to clean up generated "feature/" and "libbpf/" directories.
+> 
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+> 
+> Quentin Monnet (4):
+>  tools: bpftool: ignore make built-in rules for getting kernel version
+>  tools: bpftool: improve and check builds for different make
+>    invocations
+>  tools: bpf: account for generated feature/ and libbpf/ directories
+>  tools: bpftool: do not link twice against libbpf.a in Makefile
+> 
+> tools/bpf/.gitignore                          |   1 +
+> tools/bpf/Makefile                            |   5 +-
+> tools/bpf/bpftool/.gitignore                  |   2 +
+> tools/bpf/bpftool/Makefile                    |  28 ++--
+> tools/testing/selftests/bpf/Makefile          |   3 +-
+> .../selftests/bpf/test_bpftool_build.sh       | 143 ++++++++++++++++++
+> 6 files changed, 167 insertions(+), 15 deletions(-)
+> create mode 100755 tools/testing/selftests/bpf/test_bpftool_build.sh
+> 
+> -- 
+> 2.17.1
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Tested-by: Ilya Leoshkevich <iii@linux.ibm.com>
 
-regards,
-dan carpenter
-
+for the whole series.
