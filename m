@@ -2,80 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51753A31A2
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5169A31B2
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728455AbfH3HxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 03:53:20 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:45343 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727417AbfH3HxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:53:20 -0400
-Received: from [172.20.10.2] (tmo-106-216.customers.d1-online.com [80.187.106.216])
-        by mail.holtmann.org (Postfix) with ESMTPSA id B6BBBCECD9;
-        Fri, 30 Aug 2019 10:02:03 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20190823103139.17687-1-megous@megous.com>
-Date:   Fri, 30 Aug 2019 09:53:16 +0200
-Cc:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <5524D5E9-FA82-4244-A91F-78CF1C3FB3FB@holtmann.org>
-References: <20190823103139.17687-1-megous@megous.com>
-To:     megous@megous.com
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1727792AbfH3H6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 03:58:02 -0400
+Received: from mga17.intel.com ([192.55.52.151]:57377 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbfH3H6C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 03:58:02 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Aug 2019 00:58:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,446,1559545200"; 
+   d="asc'?scan'208";a="381931845"
+Received: from pipin.fi.intel.com (HELO pipin) ([10.237.72.175])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Aug 2019 00:57:59 -0700
+From:   Felipe Balbi <felipe.balbi@linux.intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] PTP: introduce new versions of IOCTLs
+In-Reply-To: <20190829172113.GA2166@localhost>
+References: <20190829095825.2108-1-felipe.balbi@linux.intel.com> <20190829172113.GA2166@localhost>
+Date:   Fri, 30 Aug 2019 10:57:55 +0300
+Message-ID: <87tv9zulto.fsf@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ondrej,
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> (Resend to add missing lists, sorry for the noise.)
-> 
-> This series implements bluetooth support for Xunlong Orange Pi 3 board.
-> 
-> The board uses AP6256 WiFi/BT 5.0 chip.
-> 
-> Summary of changes:
-> 
-> - add more delay to let initialize the chip
-> - let the kernel detect firmware file path
-> - add new compatible and update dt-bindings
-> - update Orange Pi 3 / H6 DTS
-> 
-> Please take a look.
-> 
-> thank you and regards,
->  Ondrej Jirman
-> 
-> Ondrej Jirman (5):
->  dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
->  bluetooth: bcm: Add support for loading firmware for BCM4345C5
->  bluetooth: hci_bcm: Give more time to come out of reset
->  arm64: dts: allwinner: h6: Add pin configs for uart1
->  arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
-> 
-> .../bindings/net/broadcom-bluetooth.txt       |  1 +
-> .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
-> arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
-> drivers/bluetooth/btbcm.c                     |  3 +++
-> drivers/bluetooth/hci_bcm.c                   |  3 ++-
-> 5 files changed, 35 insertions(+), 1 deletion(-)
 
-all 5 patches have been applied to bluetooth-next tree.
+Hi,
 
-Regards
+Richard Cochran <richardcochran@gmail.com> writes:
+>> @@ -139,11 +141,24 @@ long ptp_ioctl(struct posix_clock *pc, unsigned in=
+t cmd, unsigned long arg)
+>>  		break;
+>>=20=20
+>>  	case PTP_EXTTS_REQUEST:
+>> +	case PTP_EXTTS_REQUEST2:
+>> +		memset(&req, 0, sizeof(req));
+>> +
+>>  		if (copy_from_user(&req.extts, (void __user *)arg,
+>>  				   sizeof(req.extts))) {
+>>  			err =3D -EFAULT;
+>>  			break;
+>>  		}
+>> +		if ((req.extts.flags || req.extts.rsv[0] || req.extts.rsv[1])
+>> +			&& cmd =3D=3D PTP_EXTTS_REQUEST2) {
+>> +			err =3D -EINVAL;
+>> +			break;
+>> +		} else if (cmd =3D=3D PTP_EXTTS_REQUEST) {
+>> +			req.extts.flags =3D 0;
+>
+> This still isn't quite right.  Sorry that was my fault.
+>
+> The req.extts.flags can be (PTP_ENABLE_FEATURE | PTP_RISING_EDGE |
+> PTP_FALLING_EDGE), and ENABLE is used immediately below in this case.
+>
+> Please #define those bits into a valid mask, and then:
+>
+> - for PTP_EXTTS_REQUEST2 check that ~mask is zero, and
+> - for PTP_EXTTS_REQUEST clear the ~mask bits for the drivers.=20
+>
+> Thanks again for cleaning this up!
 
-Marcel
+good point. This will actually reduce the size of the patch 2.
 
+=2D-=20
+balbi
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl1o1wMACgkQzL64meEa
+mQbDew/8DWmKxzYX8IhPyw6YmM+i3b0kv5RlGKOYOqGtkO8iVjIB2jSPFt+754dx
+lYonGzZjiRrZ31OQNscDHRfOJ89S6oC4WvGraOZiSEBh29qFg/SJ+BglUqaJDFW5
+v38sir9P/70aiCv8C7SWPC+dzlQ4xkVvzLwXSZidDUXmxun/2G1fxZhkQDWtXROq
+fgprli6RBgeYN4HkpmdSSxbC5AwQJmuz/yEGRX5R1pGZaL0zhQERTVd3+eM8bbRQ
+IJDqeQyZmRO9HkgnK9uvoqRpVc4F7nJ3CKd46Kfn5N8aa3saJXC1HW2LAlJJykB4
+3ZwYEApO+fw/j04O+AYYX+3NZ/qXGymKmaiUJUbPd2zmIeM4gOqfpZRtKX86A3aU
+U6I7KKfaBbee7gbkC64NnFSRaIBZJWQLPEMqrQpYTmDgsJTT5Atu9Oe1U+xqyn9p
+fWBowyY6B9IexxmGWjSlfdbEbZNNA7FxMs4XH4GwSlZWaBhG2slAacu3S2y1HPnq
+Bat2diD7gWrkRwfcbYnrvp/8DDXqZJ/xp6JB1dNta0AAnVflW043/0ai7DE395JZ
+jAZoOkUuHr8YNcKSs3rk/fMaXNY9oiX/1+Rus1Pdrf/LvWh4WfwD+KYotS+jxZsw
+Zby4phO8t9E4fEbzzcRRFjj2gMdPBO3QtKCDyxZS8RGmoPztzrA=
+=FFVY
+-----END PGP SIGNATURE-----
+--=-=-=--
