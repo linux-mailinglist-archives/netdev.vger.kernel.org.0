@@ -2,109 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFD8A3FC7
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9347FA3FCD
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728247AbfH3Vnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 17:43:39 -0400
-Received: from mail-eopbgr20064.outbound.protection.outlook.com ([40.107.2.64]:31559
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728079AbfH3Vnj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 17:43:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ve9wBmZeY0y89Z49JFRwcIiqIhqvOvHENLFka/ykd/5F8hE/OoHyedRQ9OTWvuQOjss9dmTxLgRMYKMfbFUJfU+Oca+NLiz4KsKdcvq5bMGf1JVzmwGhVRidCxsPicFCKnmjghxenLw/arSQjbvPAQ+fmxVyfSo04/Tszc5GnvaS9/CDxW/wsq5ECcHSmKfRni35gX6HAwpTy8iDb5lG8G2ZFPhKdDtKlAjpdSd8OTHo7CZFEAiLW9nzUXo92Tl4t6cjoWqNNyT/1RhPmCxudMxawMHSa5dcvWAyOfB72B/MYalvXLDvzxZ4jqOW/GXEfE9JeiOHcxNcAS6bRha+wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VSEsD5C0xT1UCKbxVlBzi7i8s3cEmVVtXg3dOehKOws=;
- b=k/7muPa8KNX75n9vSiR/+OlvOJ7hTuKKtKv9TMTr5YWfJe96GVqRIQlbG0exZRWb9tKPoZN9Zm+NSFGSGXoinfdjJlvZuMonAgTwi8qAqtdMLk6U1fKKlaY80TSCJtpwtok7w2+qr2E5vurzxnOwZp1U/4xaBYcKcZ3jNqJ9wVEX+/r8XvZGgpgnP7sFTq08pV70suokc7rzbjvVzAO3U96HP61UkCnMv/FIdlIlJZsRGpcMEX276jMf+v3GHkJDvBETeYSUIvtdx6mHVcZaTocsLFG01vSHjgC9e9PQwGTXHZE+ow9d7ChPY/UB9SnyNwPQ2edIZ5b/GyGdwRJ1fA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VSEsD5C0xT1UCKbxVlBzi7i8s3cEmVVtXg3dOehKOws=;
- b=HHg/iutjFor41F8xHxxPCazlGq/Bdot2OGzKS83XUEy3SZ39E8WtaDDNlprKbNO5mNourENRpgBqAft7hHcFbWpROFXTHcnr+Jj0y0EFJKKFjNfxGx3ChlUOyLNLE1xh+maPcQTNYBzHHnj5GX1/+gtjPxnyP8KHmLpL3mkJAA8=
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2322.eurprd05.prod.outlook.com (10.165.82.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.21; Fri, 30 Aug 2019 21:43:34 +0000
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.020; Fri, 30 Aug 2019
- 21:43:34 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "maowenan@huawei.com" <maowenan@huawei.com>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] net: mlx5: Kconfig: Fix MLX5_CORE_EN dependencies
-Thread-Topic: [PATCH -next] net: mlx5: Kconfig: Fix MLX5_CORE_EN dependencies
-Thread-Index: AQHVXITcCNibTH++QEWLgS4IcRgEMqcUPuUA
-Date:   Fri, 30 Aug 2019 21:43:34 +0000
-Message-ID: <ef0ab9738f6afa81c709f56cffe4bcad13bec654.camel@mellanox.com>
-References: <20190827031251.98881-1-maowenan@huawei.com>
-In-Reply-To: <20190827031251.98881-1-maowenan@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f60d379a-bbff-4052-d67c-08d72d931bc4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2322;
-x-ms-traffictypediagnostic: AM4PR0501MB2322:
-x-microsoft-antispam-prvs: <AM4PR0501MB23222E9C357FBA42C2C56DA1BEBD0@AM4PR0501MB2322.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:765;
-x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(39850400004)(136003)(346002)(189003)(199004)(91956017)(66946007)(76116006)(6506007)(229853002)(478600001)(102836004)(7736002)(2501003)(3846002)(5660300002)(4744005)(14454004)(6116002)(316002)(36756003)(256004)(8936002)(4326008)(305945005)(6436002)(53936002)(81156014)(6246003)(2906002)(99286004)(58126008)(71190400001)(71200400001)(6512007)(110136005)(26005)(66476007)(476003)(6486002)(66066001)(446003)(486006)(64756008)(66556008)(11346002)(81166006)(25786009)(186003)(2616005)(66446008)(2201001)(118296001)(54906003)(86362001)(76176011)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2322;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: fOz+0qMSq0dz0GBGW24BUxfjFi7TQBUMoCp2H1H8Q+XkqtsSCN5zMYwHSekCcSGtxsU6TA6FGUrn2volZnl0MyJ4ASVfXiNd0McXMANei6jvOGqBWcG7iE4KdlqJ+luWhwv2ymUjmZkS0S1TMXrH8wT/2GnIXHn8Wai76cglrRvkj5hgWvr9sHBt3J2UHFpG32oFYTANXuWKbZe1GIWwJmIpJa3cX00c/sTjcwnMOmX2G5ThX2PRMVEUwG/NifhBxjmgD8/EID6dQmpOAtul7Ik+33vbER3CGHK4jSUxtAjnS+qIXDP6LkMybMTVkqJ/LMJuB4XA+z/mcRZ10Ms72F1XioYWFdgRxTJNnD4HBQkYxGRRO4nbncN5uW1vMpzRWcz3CSYINM7LF7B6zCTRA2Yg394xFq2fqxC4wr7ZzX4=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4C49BF789E69254DAFCD77FA47F5257D@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728350AbfH3Vo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 17:44:28 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37836 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728324AbfH3Vo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 17:44:27 -0400
+Received: by mail-pl1-f193.google.com with SMTP id bj8so3941407plb.4
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 14:44:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=giW74FqPVQw39MCuJlqnNavIVVkrnnPUjz7uKsnAFBE=;
+        b=V7KMsgfTD6HjIIRshuX9MFa2+uIHfQLdoaoR1Zd/vzxy1HgquDnvEOrUt6TLb/8XJF
+         n25/rcTdICRw8VoIyf58cC8MFUDwJEnx9mDUYU41G50U4mNY487sKG4kxp0yVw2ae81H
+         S8rX1jmYEnNgES0uhwTehUjUNSIPBjMlclN2+E9YNca7BtSXRpMs7SO0W+qf9msHVOBF
+         IRkSYdy/W74d9DiRHrtT9PDL8T19/9FAvihIHtXWVs6/+VK1qopcGa7ynq08R4lnIMGo
+         UD3eMSUB1Y8wNz2buvYMvcJDrmaCaKIpVi8rlWk2L4d3clEiwJD/ZIzdAdARuIxkJi2l
+         fk2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=giW74FqPVQw39MCuJlqnNavIVVkrnnPUjz7uKsnAFBE=;
+        b=ecsvv8vxkq/KVmSe4Nvvym/PaUP4LaqJpMRJ1XdGC2E/Jivr1QP5IJ/eN3pAFFeqIC
+         cTsVtYYEYaEEQENqj2pBUi1CPoN9ZXjYWGjndmJ0D/PMQpw2bbLpqm79/ut9oOPkqWkf
+         YxA+N2hDEjXwlGpQDIJEoD9P0DTZqHr2A4eOuXqiKbhaN8u2Idg0d6f7Hvd5OtvAUtla
+         VmPa0Sow5Sc8eRvavKr/KjuifSQeKBZjOD09AUOMyy4tRueYbiE0q55C9p924VX9472a
+         Y/UGNsRrMCkZQg5x7QHcHi+/nEdS1UPwF92lyqJBxz49KAJYn9ngMgr6j03ezFdKeZpX
+         aowg==
+X-Gm-Message-State: APjAAAUFizoOojXYyUyqBfqU6luSvfzFb1SxyMudLaBOXRNSg8DTkHyP
+        QIXCZLA+MsvX9685haTqhQ+ggg==
+X-Google-Smtp-Source: APXvYqxH218g8TrSknWgNeFw1g5I4r1mi6hy7zn+ISxYPNISR9j0hmWlFAE7jeKFreGFMWH4t16i5A==
+X-Received: by 2002:a17:902:8301:: with SMTP id bd1mr16433966plb.120.1567201467005;
+        Fri, 30 Aug 2019 14:44:27 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id k64sm6010144pgk.74.2019.08.30.14.44.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 30 Aug 2019 14:44:26 -0700 (PDT)
+Subject: Re: [PATCH v6 net-next 15/19] ionic: Add Tx and Rx handling
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190829182720.68419-1-snelson@pensando.io>
+ <20190829182720.68419-16-snelson@pensando.io>
+ <20190829163319.0f4e8707@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <31ea9c22-15e0-86db-a92d-76cee56fc738@pensando.io>
+Date:   Fri, 30 Aug 2019 14:44:24 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f60d379a-bbff-4052-d67c-08d72d931bc4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 21:43:34.4512
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hTEVswJTAcPsn6Jq6HbEL7G5LjS87p+qS2JW02k32qrPKD97rSxqYsWe17qP9j1k8/lX8m9K+S3CZIUKe7/nrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2322
+In-Reply-To: <20190829163319.0f4e8707@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA4LTI3IGF0IDExOjEyICswODAwLCBNYW8gV2VuYW4gd3JvdGU6DQo+IFdo
-ZW4gTUxYNV9DT1JFX0VOPXkgYW5kIFBDSV9IWVBFUlZfSU5URVJGQUNFIGlzIG5vdCBzZXQsIGJl
-bG93IGVycm9ycw0KDQpUaGUgaXNzdWUgaGFwcGVucyB3aGVuIFBDSV9IWVBFUlZfSU5URVJGQUNF
-IGlzIGEgbW9kdWxlIGFuZCBtbHg1X2NvcmUNCmlzIGJ1aWx0LWluLg0KDQo+IGFyZSBmb3VuZDoN
-Cj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX21haW4ubzogSW4g
-ZnVuY3Rpb24NCj4gYG1seDVlX25pY19lbmFibGUnOg0KPiBlbl9tYWluLmM6KC50ZXh0KzB4YjY0
-OSk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8NCj4gYG1seDVlX2h2X3ZoY2Ffc3RhdHNfY3JlYXRl
-Jw0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5vOiBJ
-biBmdW5jdGlvbg0KPiBgbWx4NWVfbmljX2Rpc2FibGUnOg0KPiBlbl9tYWluLmM6KC50ZXh0KzB4
-YjhjNCk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8NCj4gYG1seDVlX2h2X3ZoY2Ffc3RhdHNfZGVz
-dHJveScNCj4gDQo+IFRoaXMgYmVjYXVzZSBDT05GSUdfUENJX0hZUEVSVl9JTlRFUkZBQ0UgaXMg
-bmV3bHkgaW50cm9kdWNlZCBieQ0KPiAnY29tbWl0IDM0OGRkOTNlNDBjMQ0KPiAoIlBDSTogaHY6
-IEFkZCBhIEh5cGVyLVYgUENJIGludGVyZmFjZSBkcml2ZXIgZm9yIHNvZnR3YXJlDQo+IGJhY2tj
-aGFubmVsIGludGVyZmFjZSIpLA0KPiBGaXggdGhpcyBieSBtYWtpbmcgTUxYNV9DT1JFX0VOIGlt
-cGx5IFBDSV9IWVBFUlZfSU5URVJGQUNFLg0KPiANCg0KdGhlIGltcGx5IHNob3VsZCBiZSBpbiBN
-TFg1X0NPUkUgbm90IE1MWDVfQ09SRV9FTiBzaW5jZSB0aGUNCmltcGxlbWVudGF0aW9uIGFsc28g
-aW52b2x2ZXMgTUxYNV9DT1JFLiANCg0KSSB3aWxsIHByZXBhcmUgYSBwYXRjaCB3aXRoIHRoZXNl
-IGZpeHVwcy4NCg0KVGhhbmtzLA0KU2FlZWQuDQoNCg==
+On 8/29/19 4:33 PM, Jakub Kicinski wrote:
+> On Thu, 29 Aug 2019 11:27:16 -0700, Shannon Nelson wrote:
+>> +static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
+>> +{
+>> +	struct ionic_tx_stats *stats = q_to_tx_stats(q);
+>> +	struct ionic_desc_info *abort = q->head;
+>> +	struct device *dev = q->lif->ionic->dev;
+>> +	struct ionic_desc_info *rewind = abort;
+>> +	struct ionic_txq_sg_elem *elem;
+>> +	struct ionic_txq_desc *desc;
+>> +	unsigned int frag_left = 0;
+>> +	unsigned int offset = 0;
+>> +	unsigned int len_left;
+>> +	dma_addr_t desc_addr;
+>> +	unsigned int hdrlen;
+>> +	unsigned int nfrags;
+>> +	unsigned int seglen;
+>> +	u64 total_bytes = 0;
+>> +	u64 total_pkts = 0;
+>> +	unsigned int left;
+>> +	unsigned int len;
+>> +	unsigned int mss;
+>> +	skb_frag_t *frag;
+>> +	bool start, done;
+>> +	bool outer_csum;
+>> +	bool has_vlan;
+>> +	u16 desc_len;
+>> +	u8 desc_nsge;
+>> +	u16 vlan_tci;
+>> +	bool encap;
+>> +	int err;
+>> +
+>> +	mss = skb_shinfo(skb)->gso_size;
+>> +	nfrags = skb_shinfo(skb)->nr_frags;
+>> +	len_left = skb->len - skb_headlen(skb);
+>> +	outer_csum = (skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM) ||
+>> +		     (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM);
+>> +	has_vlan = !!skb_vlan_tag_present(skb);
+>> +	vlan_tci = skb_vlan_tag_get(skb);
+>> +	encap = skb->encapsulation;
+>> +
+>> +	/* Preload inner-most TCP csum field with IP pseudo hdr
+>> +	 * calculated with IP length set to zero.  HW will later
+>> +	 * add in length to each TCP segment resulting from the TSO.
+>> +	 */
+>> +
+>> +	if (encap)
+>> +		err = ionic_tx_tcp_inner_pseudo_csum(skb);
+>> +	else
+>> +		err = ionic_tx_tcp_pseudo_csum(skb);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	if (encap)
+>> +		hdrlen = skb_inner_transport_header(skb) - skb->data +
+>> +			 inner_tcp_hdrlen(skb);
+>> +	else
+>> +		hdrlen = skb_transport_offset(skb) + tcp_hdrlen(skb);
+>> +
+>> +	seglen = hdrlen + mss;
+>> +	left = skb_headlen(skb);
+>> +
+>> +	desc = ionic_tx_tso_next(q, &elem);
+>> +	start = true;
+>> +
+>> +	/* Chop skb->data up into desc segments */
+>> +
+>> +	while (left > 0) {
+>> +		len = min(seglen, left);
+>> +		frag_left = seglen - len;
+>> +		desc_addr = ionic_tx_map_single(q, skb->data + offset, len);
+>> +		if (dma_mapping_error(dev, desc_addr))
+>> +			goto err_out_abort;
+>> +		desc_len = len;
+>> +		desc_nsge = 0;
+>> +		left -= len;
+>> +		offset += len;
+>> +		if (nfrags > 0 && frag_left > 0)
+>> +			continue;
+>> +		done = (nfrags == 0 && left == 0);
+>> +		ionic_tx_tso_post(q, desc, skb,
+>> +				  desc_addr, desc_nsge, desc_len,
+>> +				  hdrlen, mss,
+>> +				  outer_csum,
+>> +				  vlan_tci, has_vlan,
+>> +				  start, done);
+>> +		total_pkts++;
+>> +		total_bytes += start ? len : len + hdrlen;
+>> +		desc = ionic_tx_tso_next(q, &elem);
+>> +		start = false;
+>> +		seglen = mss;
+>> +	}
+>> +
+>> +	/* Chop skb frags into desc segments */
+>> +
+>> +	for (frag = skb_shinfo(skb)->frags; len_left; frag++) {
+>> +		offset = 0;
+>> +		left = skb_frag_size(frag);
+>> +		len_left -= left;
+>> +		nfrags--;
+>> +		stats->frags++;
+>> +
+>> +		while (left > 0) {
+>> +			if (frag_left > 0) {
+>> +				len = min(frag_left, left);
+>> +				frag_left -= len;
+>> +				elem->addr =
+>> +				    cpu_to_le64(ionic_tx_map_frag(q, frag,
+>> +								  offset, len));
+>> +				if (dma_mapping_error(dev, elem->addr))
+>> +					goto err_out_abort;
+>> +				elem->len = cpu_to_le16(len);
+>> +				elem++;
+>> +				desc_nsge++;
+>> +				left -= len;
+>> +				offset += len;
+>> +				if (nfrags > 0 && frag_left > 0)
+>> +					continue;
+>> +				done = (nfrags == 0 && left == 0);
+>> +				ionic_tx_tso_post(q, desc, skb, desc_addr,
+>> +						  desc_nsge, desc_len,
+>> +						  hdrlen, mss, outer_csum,
+>> +						  vlan_tci, has_vlan,
+>> +						  start, done);
+>> +				total_pkts++;
+>> +				total_bytes += start ? len : len + hdrlen;
+>> +				desc = ionic_tx_tso_next(q, &elem);
+>> +				start = false;
+>> +			} else {
+>> +				len = min(mss, left);
+>> +				frag_left = mss - len;
+>> +				desc_addr = ionic_tx_map_frag(q, frag,
+>> +							      offset, len);
+>> +				if (dma_mapping_error(dev, desc_addr))
+>> +					goto err_out_abort;
+>> +				desc_len = len;
+>> +				desc_nsge = 0;
+>> +				left -= len;
+>> +				offset += len;
+>> +				if (nfrags > 0 && frag_left > 0)
+>> +					continue;
+>> +				done = (nfrags == 0 && left == 0);
+>> +				ionic_tx_tso_post(q, desc, skb, desc_addr,
+>> +						  desc_nsge, desc_len,
+>> +						  hdrlen, mss, outer_csum,
+>> +						  vlan_tci, has_vlan,
+>> +						  start, done);
+>> +				total_pkts++;
+>> +				total_bytes += start ? len : len + hdrlen;
+>> +				desc = ionic_tx_tso_next(q, &elem);
+>> +				start = false;
+>> +			}
+>> +		}
+>> +	}
+>> +
+>> +	stats->pkts += total_pkts;
+>> +	stats->bytes += total_bytes;
+>> +	stats->tso++;
+>> +
+>> +	return 0;
+>> +
+>> +err_out_abort:
+>> +	while (rewind->desc != q->head->desc) {
+>> +		ionic_tx_clean(q, rewind, NULL, NULL);
+>> +		rewind = rewind->next;
+>> +	}
+>> +	q->head = abort;
+>> +
+>> +	return -ENOMEM;
+>> +}
+> There's definitely a function for helping drivers which can't do full
+> TSO slice up the packet, but I can't find it now 😫😫
+>
+> Eric would definitely know.
+>
+> Did you have a look? Would it be useful here?
+
+Yes, obviously this could use some work for clarity and supportability, 
+and I think for performance as well.  But since it works, I've been 
+concentrating on getting other parts of the driver working before coming 
+back to this.  If there are some tools that can help clean this up, I 
+would be interested to see them.
+
+sln
+
+
+
