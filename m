@@ -2,101 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD58A3E69
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61250A3E72
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbfH3TbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:31:11 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34830 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727304AbfH3TbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:31:10 -0400
-Received: by mail-pl1-f195.google.com with SMTP id gn20so3795783plb.2
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:31:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=9iDeFp92B5W2itGLMZ4kKqQyRTjN8gH5SIsyUVnfaZw=;
-        b=mVU41iVidkxmOSBxWMzkFvgjamp6lJAdgvtdIiEpOpiu/L7cgAdzRfmyJXosvWE5f3
-         3Y2zOhqCa0g5ImS/6BOBrOwhS8r0xcTTkvVwpIDWMIHReLFvucO6T2OZdQsgmpD/2SWZ
-         Q1/RkBGG5a+Xrzyyz0McyozescS6z58gyEvzP0+879r4wkNKANPE91rg7rZWE/fhd7WI
-         DYwOeiOGNBFMMIy4TDYCVm4se/dZZR13+rlEwoIHwCltL6P0ZpO7erZYbn2dhkIvFnl4
-         9rIYB552cGUFMgQtHpGTEq/LnXekarOHHNkx/5jtmfLIaeniJLHKNqzOThCvqRe5prf9
-         NPSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=9iDeFp92B5W2itGLMZ4kKqQyRTjN8gH5SIsyUVnfaZw=;
-        b=mQ70pfMNXkcqc2WR4N+WdpT8Cn3j0a7Ko+c0AOkaBYlTEOPBhAjTjJcRrjSgkbM9sF
-         9KN9nTh7LiJ0rU5hSNzen+0YAn/25cpQLHGwO+UApTXAiYolxi4wonn7hgDvR3JlOXcJ
-         w3bKAJmbjHvww3t3xFBXPd3NjFK+Z8qAiUjxMxCGkG/f/btD+yA+MOWt9YatYAsMa4Vq
-         sUCyvo9XgA19/ulzgJw+rS0mYU+ChPgZbvaeBr6DN9KeN/RU1Xe/Pdm+DtfiH6H6AoEU
-         YpeXwSVQ49/gSvSLaBsX5OB39kCGK3GddeUKgI+Nob2NvK7IXCIxYyJPuzfhOR1YeGFO
-         6RbQ==
-X-Gm-Message-State: APjAAAUKOTHG3oVwdYByCF+83bVcl8PhhNhe11/r4EOLJpq17bDF0fb3
-        IWLMSRipS1ugg1T4zTR9nOjysA==
-X-Google-Smtp-Source: APXvYqwUfEWQIw690SoaAb2rCMX+my66Uy+QZEzACLpwpy1q4vL+RJ1whOhqyyqTzV7k7yD/oOydXA==
-X-Received: by 2002:a17:902:b08a:: with SMTP id p10mr10490201plr.261.1567193469670;
-        Fri, 30 Aug 2019 12:31:09 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id k5sm5887320pgo.45.2019.08.30.12.31.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 12:31:08 -0700 (PDT)
-Subject: Re: [PATCH v6 net-next 07/19] ionic: Add basic adminq support
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190829182720.68419-1-snelson@pensando.io>
- <20190829182720.68419-8-snelson@pensando.io>
- <20190829155251.3b2d86c7@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <bad39320-8e67-e280-5e35-612cbdc49b6f@pensando.io>
-Date:   Fri, 30 Aug 2019 12:31:07 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190829155251.3b2d86c7@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S1728216AbfH3Tcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:32:36 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40514 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728180AbfH3Tcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:32:35 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 79143154F93C5;
+        Fri, 30 Aug 2019 12:32:34 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 12:32:31 -0700 (PDT)
+Message-Id: <20190830.123231.792067088434189707.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     inaky.perez-gonzalez@intel.com, linux-wimax@intel.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][V2] wimax/i2400m: remove debug containing bogus
+ calculation of index
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190830090711.15300-1-colin.king@canonical.com>
+References: <20190830090711.15300-1-colin.king@canonical.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 30 Aug 2019 12:32:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/19 3:52 PM, Jakub Kicinski wrote:
-> On Thu, 29 Aug 2019 11:27:08 -0700, Shannon Nelson wrote:
->> +static void ionic_lif_qcq_deinit(struct ionic_lif *lif, struct ionic_qcq *qcq)
->> +{
->> +	struct ionic_dev *idev = &lif->ionic->idev;
->> +	struct device *dev = lif->ionic->dev;
->> +
->> +	if (!qcq)
->> +		return;
->> +
->> +	ionic_debugfs_del_qcq(qcq);
->> +
->> +	if (!(qcq->flags & IONIC_QCQ_F_INITED))
->> +		return;
->> +
->> +	if (qcq->flags & IONIC_QCQ_F_INTR) {
->> +		ionic_intr_mask(idev->intr_ctrl, qcq->intr.index,
->> +				IONIC_INTR_MASK_SET);
->> +		synchronize_irq(qcq->intr.vector);
->> +		devm_free_irq(dev, qcq->intr.vector, &qcq->napi);
-> Doesn't free_irq() basically imply synchronize_irq()?
+From: Colin King <colin.king@canonical.com>
+Date: Fri, 30 Aug 2019 10:07:11 +0100
 
-The synchronize_irq() waits for any threaded handlers to finish, while 
-free_irq() only waits for HW handling.  This helps makes sure we don't 
-have anything still running before we remove resources.
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The subtraction of the two pointers is automatically scaled by the
+> size of the size of the object the pointers point to, so the division
+> by sizeof(*i2400m->barker) is incorrect.  This has been broken since
+> day one of the driver and is only debug, so remove the debug completely.
+> 
+> Also move && in condition to clean up a checkpatch warning.
+> 
+> Addresses-Coverity: ("Extra sizeof expression")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+> 
+> V2: completely remove debug, clean up checkpatch warning, change subject line
 
-sln
-
->
->> +		netif_napi_del(&qcq->napi);
->> +	}
->> +
->> +	qcq->flags &= ~IONIC_QCQ_F_INITED;
-
+Applied to net-next, thanks Colin.
