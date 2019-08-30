@@ -2,102 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0416A3920
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:23:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6BE9A3953
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:35:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbfH3OXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 10:23:30 -0400
-Received: from mail-io1-f44.google.com ([209.85.166.44]:45948 "EHLO
-        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727751AbfH3OX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 10:23:29 -0400
-Received: by mail-io1-f44.google.com with SMTP id t3so14232616ioj.12;
-        Fri, 30 Aug 2019 07:23:29 -0700 (PDT)
+        id S1727888AbfH3Ofg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 10:35:36 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:45715 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727781AbfH3Off (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 10:35:35 -0400
+Received: by mail-ed1-f67.google.com with SMTP id x19so8185709eda.12
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 07:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bAKN2+5gOLPMPuf7BlJbUSjK0cWgyfFP2uN2z8ewCJg=;
-        b=dGeJ+U42tAGk9rSl2hMfBIfQAJpAlT/1/zDEnfF05khwqumThOytKi8gtwnEtRZbN9
-         LixkjUHYfb/WITvZ01c21aFhxGgvRafaohxZlh9Y3ZX6JuYlTsa32WkGdW5DtyKMyZ4h
-         9WqxA4H+3+tSLWstQpXbrWWwzljRFSo6hH2S3QQzTuDTioSbAo/ljkOExntlHY5n+VtO
-         GhWE27ZLeMduZS0yLIiThQNDilngVjYxPI60gupwzrc2Aedl9o5dVxq4aZV8uxoFdvgc
-         u7V/acNyPMIDx+4BVh9Ezws3DUmQSIBKr7938W8S4Y/Yq6xmlpYFouV2U2WFsfFUHKam
-         1tgA==
+        bh=xv+PifgPAxeC79F5Eco6ULXkrtIk3oWfd7tGCmKW700=;
+        b=TBgZ1H6jO/vUXRKSvS3S2kelYpNc+WWploXOGiuwr8B/IYCttZRHdPT14LZIFzmiHC
+         0WW8IrEXGHF8o6Q1Ff01uCAOSy82THMp++i21IibhvwP5M4DrtiSTVhODpx2a2ViUkCW
+         YpiBQygoQLmZm+dBpcOVgT1RnRio5Q6Hiwlw0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bAKN2+5gOLPMPuf7BlJbUSjK0cWgyfFP2uN2z8ewCJg=;
-        b=iWvuf8iJpulQrnPz29hied7+iC/FcbXVqPy58gx6xE5mEDZCXWwhkhdxJM8IXZ90cq
-         kMeJhQZFqh/PYF6SgtNOQnJkYoor/59/Y51/P9YoaarLcKw/37hOgiwDHo/sZM+SwS5B
-         NtTPLlzLcvcDHd8pEhwg17lqFzXHNsCZF4ScDDvhTPhIVd9Q1V+6JoVNortxgG1V1SgL
-         HAwPX9io9DkFwUkcoNwbU45Lf3fUyYpebFDa8jh6WIAYyLydWKBi6KGekjTXUO+bMPET
-         +GbYs7lbk5iRiKk4QqLYFYX4Mjf4o/kWEp5ZxTXtjqS1iKKoOR9vuwFNHVcn06pzwrER
-         UsFw==
-X-Gm-Message-State: APjAAAWiPguvsjhPUjUYucs71Keba95vizh1ZO9w5JgxTPzrnBGXC6ya
-        3KRhfhFUGs87DD4p/dLiiMVj8M1gkPQ3MCSmD5o=
-X-Google-Smtp-Source: APXvYqwpFvalYsCne/ND6Uu8f0n9Qhicy+mp0atcatB2VB0PQJvW2LXDJmPSYERIVaKNF1rr6SuUVYo83e7pGmfkkU0=
-X-Received: by 2002:a5d:8444:: with SMTP id w4mr13537606ior.51.1567175008927;
- Fri, 30 Aug 2019 07:23:28 -0700 (PDT)
+        bh=xv+PifgPAxeC79F5Eco6ULXkrtIk3oWfd7tGCmKW700=;
+        b=hEowpjXfkUExbMHabcTG5nTHnyQ9hwhX9zb4fKyUBaODj8psIZNyAUsVGoymq7kGvH
+         eAhpwJeoBRqwSy+R6M3X4HKFrj0u5n15t8vYlYbV34jOpiiJraSSG7jBorbCjcoj0QDx
+         GywqJCgzdPZv5A3zjQW3BU0Sr74XG5eoJrNqYqTkMF7K9MLrPJDkTA4FSJnjxKhwXbOd
+         d3OSz5N6e7mKN2nfRB9zry7BaFKGnbLq05YyhL2KbrWSGTpiV1D+sBUzV+soWu2XU/yT
+         t6hquuI/Pa6ae1yL9euPK00011doielTgVRO7G+5gbWUrlevJ914PlVJdEMgrZ8OyFRA
+         ZNcQ==
+X-Gm-Message-State: APjAAAXCXuoqnEXev5XxIRUMAyPujHNI744ANpEhdOHkTRA4GkzjAozm
+        BGBoeEyygfA/04+FSKCr0kIVrG2QzyCDAV3JL9ewT5/A
+X-Google-Smtp-Source: APXvYqzQ237Ha9djj6kuXhydZjObG3cSVGN39EyY0BrW0Raa51Upz23VbRsRCLLreFiXDPWWaI5ShSgyVvVc6ka0jkQ=
+X-Received: by 2002:a50:ee08:: with SMTP id g8mr15970645eds.291.1567175733912;
+ Fri, 30 Aug 2019 07:35:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <3a4ff829-7302-7201-81c2-a557fe35afc8@canonical.com>
-In-Reply-To: <3a4ff829-7302-7201-81c2-a557fe35afc8@canonical.com>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Fri, 30 Aug 2019 16:26:33 +0200
-Message-ID: <CAOi1vP9x1SS9YGFgHuZcpga5fTYac-y3vazsAKr9N8WJB7-hpA@mail.gmail.com>
-Subject: Re: bug report: libceph: follow redirect replies from osds
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190826151552.4f1a2ad9@cakuba.netronome.com> <20190826.151819.804077961408964282.davem@davemloft.net>
+ <20190827070808.GA2250@nanopsycho> <20190827.012242.418276717667374306.davem@davemloft.net>
+ <20190827093525.GB2250@nanopsycho> <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
+ <20190828070711.GE2312@nanopsycho> <CAJieiUiipZY3A+04Po=WnvgkonfXZxFX2es=1Q5dq1Km869Obw@mail.gmail.com>
+ <20190829052620.GK29594@unicorn.suse.cz>
+In-Reply-To: <20190829052620.GK29594@unicorn.suse.cz>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Fri, 30 Aug 2019 07:35:23 -0700
+Message-ID: <CAJieiUgGY4amm_z1VGgBF-3WZceah+R5OVLEi=O2RS8RGpC9dg@mail.gmail.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 4:05 PM Colin Ian King <colin.king@canonical.com> wrote:
+On Wed, Aug 28, 2019 at 10:26 PM Michal Kubecek <mkubecek@suse.cz> wrote:
 >
-> Hi,
+> On Wed, Aug 28, 2019 at 09:36:41PM -0700, Roopa Prabhu wrote:
+> >
+> > yes,  correct. I mentioned that because I was wondering if we can
+> > think along the same lines for this API.
+> > eg
+> > (a) RTM_NEWLINK always replaces the list attribute
+> > (b) RTM_SETLINK with NLM_F_APPEND always appends to the list attribute
+> > (c) RTM_DELLINK with NLM_F_APPEND updates the list attribute
+> >
+> > (It could be NLM_F_UPDATE if NLM_F_APPEND sounds weird in the del
+> > case. I have not looked at the full dellink path if it will work
+> > neatly..its been a busy day )
 >
-> Static analysis with Coverity has picked up an issue with commit:
->
-> commit 205ee1187a671c3b067d7f1e974903b44036f270
-> Author: Ilya Dryomov <ilya.dryomov@inktank.com>
-> Date:   Mon Jan 27 17:40:20 2014 +0200
->
->     libceph: follow redirect replies from osds
->
-> Specifically in function ceph_redirect_decode in net/ceph/osd_client.c:
->
-> 3485
-> 3486        len = ceph_decode_32(p);
->
-> CID 17904: Unused value (UNUSED_VALUE)
->
-> 3487        *p += len; /* skip osd_instructions */
-> 3488
-> 3489        /* skip the rest */
-> 3490        *p = struct_end;
->
-> The double write to *p looks wrong, I suspect the *p += len; should be
-> just incrementing pointer p as in: p += len.  Am I correct to assume
-> this is the correct fix?
+> AFAICS rtnl_dellink() calls nlmsg_parse_deprecated() so that even
+> current code would ignore any future attribute in RTM_DELLINK message
+> (any kernel before the strict validation was introduced definitely will)
+> and it does not seem to check NLM_F_APPEND or NLM_F_UPDATE either. So
+> unless I missed something, such message would result in deleting the
+> network device (if possible) with any kernel not implementing the
+> feature.
 
-Hi Colin,
+ok, ack. yes today it does. I was hinting if that can be changed to
+support list update with a flag like the RTM_DELLINK AF_BRIDGE does
+for vlan list del.
 
-No, the double write to *p is correct.  It skips over len bytes and
-then skips to the end of the redirect reply.  There is no bug here but
-we could drop
-
-  len = ceph_decode_32(p);
-  *p += len; /* skip osd_instructions */
-
-and skip to the end directly to make Coverity happier.
-
-Thanks,
-
-                Ilya
+so to summarize, i think we have discussed the following options to
+update a netlink list attribute so far:
+(a) encode an optional attribute/flag in the list attribute in
+RTM_SETLINK to indicate if it is a add or del
+(b) Use a flag in RTM_SETLINK and RTM_DELINK to indicate add/del
+(close to bridge vlan add/del)
+(c) introduce a separate generic msg type to add/del to a list
+attribute (IIUC this does need a separate msg type per subsystem or
+netlink API)
