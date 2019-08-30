@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 685B1A2DBA
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 05:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D33A2DB9
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 05:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728217AbfH3D4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 23:56:13 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:34696 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728023AbfH3Dzn (ORCPT
+        id S1728213AbfH3D4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 23:56:12 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42320 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728032AbfH3Dzn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 23:55:43 -0400
-Received: by mail-pl1-f193.google.com with SMTP id d3so2696477plr.1
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 20:55:42 -0700 (PDT)
+Received: by mail-pl1-f194.google.com with SMTP id y1so2664985plp.9
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 20:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Q/O4db9+8emUXEviywcxeUw0AdfoqL58y6PWsWFmtr8=;
-        b=e/TWDq5MvoCs9M7X4JW8vUtuc/qvF01+D7HS2k9F2+znOThuGcqAqzw4thxYi7Hlhx
-         ZYhbpWeVnUM2QhPmjuEfy9Uf9I8wwRXJD8nUjizuLJQ3tw+/oeh7sHPzVWLFdl3BsTRE
-         uwEXLE1JcZ5VTL3AsaX0iOt05aA7PGtuGE3Jk=
+        bh=iuT0rfy4BFAsLrC/+FNGEp/Bx7WO2MTazuq5lVIC6/c=;
+        b=fUupHFkgDuwSRGNrbOwMuDv1C+VST+gTxZKUumuqM+/fHdH7G2ImUq0o1/k6LrVx21
+         KlTCHABSfsEoB/8/F521kqWk2SWcsy2ce9EiRvc2+wrE1qpxXVaperBE9++cBvUPBB3x
+         XyaNZW1ACnHmYlrvXZaRooNZOn2iyVg4e/KmY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Q/O4db9+8emUXEviywcxeUw0AdfoqL58y6PWsWFmtr8=;
-        b=n45jfOonSH3vFL2wYEofXfM4wRLTFUKnXXkOx3N05i/orwHYDAdQGeGNSmliAlIAhc
-         4ezL+p+24tuGAbT3sF1nlFKuE1fhXXwQxz1fhrLVQeOls1YR7IXW5NuQzKPfI9j2TuHX
-         +mBPq86o0JonCKI1tpi5c7R9/ai9KfAsomEHGaHSWh8E6XpVGVkzbor5pEkenQFLzLWN
-         dekqnVczO/ElMQamPdUxorxRq3VmpnUZdE1q27P4NC+lS1uUzHhGQpNWg3v5ia3ScqWC
-         jrlbm82kWyC7zCss97yAjJrlPC809ZQmU+DojqMRW9pQt/8bmN1dOyrZbOv51X/GkeMO
-         lHpA==
-X-Gm-Message-State: APjAAAXypPigj8d+F0/H4ePv++gzxLhbN2aBh07Vm+iMAX8j3KWQK1Jj
-        QRPUO8/GbA1YwwbKLIuT5vreKw==
-X-Google-Smtp-Source: APXvYqwvsQuI1grhCfHqTvLl0lm3UV26s3yyDYXyCYLxV1vDMnJU2e2m1SH2YS9CxudHfhXq27HLGA==
-X-Received: by 2002:a17:902:a606:: with SMTP id u6mr13469015plq.224.1567137342445;
-        Thu, 29 Aug 2019 20:55:42 -0700 (PDT)
+        bh=iuT0rfy4BFAsLrC/+FNGEp/Bx7WO2MTazuq5lVIC6/c=;
+        b=BG2pyH/Xpt3ghbY16dmV41vEVGrBDvG/aWmFcH4bNMonEDWs1eO5a9+0qTqVGxOGAM
+         wzB5Ul9BRpPwITD+KW4ibKojHN/cM1cjGITwSTUiN4taKISKhR2q23245tZbEaKp3iFP
+         ipD0zhrRXeMLLA0jZLivJzc+pNAzuMQ77ldCMSMJPds+f1PaFRfGDECrRzA2pwwjVccV
+         CgxdgzKtcKIdmx50bY9JMN80Gwh/+LuQi2AmuzgBnfPc0ZlkGWRz5Hd0/qJni7QeiMzt
+         fpuan1p4qBk+cfVLNsc3a75V6R49gVyBRG1g7M36IqPUrG4x9nectJv3ZDB8qFHljJy5
+         GefA==
+X-Gm-Message-State: APjAAAU6wU0uNS75GFE3BoKc6DBUgfqRLDl5F8xXeC2JRObY3MsMrE2H
+        z63kTpVjmgCporOgUOnzDoDAZA==
+X-Google-Smtp-Source: APXvYqxW4Z0TSp5QCdFyF0DGW7NV/ehXvfyvADRfh7SMm4aTRXasxO/Gs/caufW640EhOXbOHy6bOw==
+X-Received: by 2002:a17:902:bc4c:: with SMTP id t12mr13231277plz.90.1567137343210;
+        Thu, 29 Aug 2019 20:55:43 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l3sm3658877pjq.24.2019.08.29.20.55.41
+        by smtp.gmail.com with ESMTPSA id l3sm3658877pjq.24.2019.08.29.20.55.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Thu, 29 Aug 2019 20:55:42 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
         ray.jui@broadcom.com
-Subject: [PATCH net-next v2 11/22] bnxt_en: Pre-map the firmware health monitoring registers.
-Date:   Thu, 29 Aug 2019 23:54:54 -0400
-Message-Id: <1567137305-5853-12-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 12/22] bnxt_en: Enable health monitoring.
+Date:   Thu, 29 Aug 2019 23:54:55 -0400
+Message-Id: <1567137305-5853-13-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1567137305-5853-1-git-send-email-michael.chan@broadcom.com>
 References: <1567137305-5853-1-git-send-email-michael.chan@broadcom.com>
@@ -55,86 +55,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pre-map the GRC registers for periodic firmware health monitoring.
+Handle the async event from the firmware that enables firmware health
+monitoring.  Store initial health metrics.
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 29 +++++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  6 ++++++
- 2 files changed, 35 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 66 ++++++++++++++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  9 +++++
+ 2 files changed, 73 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 825a7f9..8ec41d6 100644
+index 8ec41d6..27fc047 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6950,6 +6950,33 @@ static int bnxt_hwrm_cfa_adv_flow_mgnt_qcaps(struct bnxt *bp)
- 	return rc;
+@@ -254,6 +254,7 @@ static const u16 bnxt_async_events_arr[] = {
+ 	ASYNC_EVENT_CMPL_EVENT_ID_PORT_CONN_NOT_ALLOWED,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_VF_CFG_CHANGE,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_LINK_SPEED_CFG_CHANGE,
++	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY,
+ };
+ 
+ static struct workqueue_struct *bnxt_pf_wq;
+@@ -1896,6 +1897,33 @@ static int bnxt_force_rx_discard(struct bnxt *bp,
+ 	return bnxt_rx_pkt(bp, cpr, raw_cons, event);
  }
  
-+static int bnxt_map_fw_health_regs(struct bnxt *bp)
++u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx)
 +{
 +	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	u32 reg_base = 0xffffffff;
-+	int i;
++	u32 reg = fw_health->regs[reg_idx];
++	u32 reg_type, reg_off, val = 0;
 +
-+	/* Only pre-map the monitoring GRC registers using window 3 */
-+	for (i = 0; i < 4; i++) {
-+		u32 reg = fw_health->regs[i];
-+
-+		if (BNXT_FW_HEALTH_REG_TYPE(reg) != BNXT_FW_HEALTH_REG_TYPE_GRC)
-+			continue;
-+		if (reg_base == 0xffffffff)
-+			reg_base = reg & BNXT_GRC_BASE_MASK;
-+		if ((reg & BNXT_GRC_BASE_MASK) != reg_base)
-+			return -ERANGE;
-+		fw_health->mapped_regs[i] = BNXT_FW_HEALTH_WIN_BASE +
-+					    (reg & BNXT_GRC_OFFSET_MASK);
++	reg_type = BNXT_FW_HEALTH_REG_TYPE(reg);
++	reg_off = BNXT_FW_HEALTH_REG_OFF(reg);
++	switch (reg_type) {
++	case BNXT_FW_HEALTH_REG_TYPE_CFG:
++		pci_read_config_dword(bp->pdev, reg_off, &val);
++		break;
++	case BNXT_FW_HEALTH_REG_TYPE_GRC:
++		reg_off = fw_health->mapped_regs[reg_idx];
++		/* fall through */
++	case BNXT_FW_HEALTH_REG_TYPE_BAR0:
++		val = readl(bp->bar0 + reg_off);
++		break;
++	case BNXT_FW_HEALTH_REG_TYPE_BAR1:
++		val = readl(bp->bar1 + reg_off);
++		break;
 +	}
-+	if (reg_base == 0xffffffff)
-+		return 0;
-+
-+	writel(reg_base, bp->bar0 + BNXT_GRCPF_REG_WINDOW_BASE_OUT +
-+			 BNXT_FW_HEALTH_WIN_MAP_OFF);
-+	return 0;
++	if (reg_idx == BNXT_FW_RESET_INPROG_REG)
++		val &= fw_health->fw_reset_inprog_reg_mask;
++	return val;
 +}
 +
- static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
- {
- 	struct hwrm_error_recovery_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
-@@ -7013,6 +7040,8 @@ static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
+ #define BNXT_GET_EVENT_PORT(data)	\
+ 	((data) &			\
+ 	 ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_EVENT_DATA1_PORT_ID_MASK)
+@@ -1951,6 +1979,35 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 			goto async_event_process_exit;
+ 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
+ 		break;
++	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY: {
++		struct bnxt_fw_health *fw_health = bp->fw_health;
++		u32 data1 = le32_to_cpu(cmpl->event_data1);
++
++		if (!fw_health)
++			goto async_event_process_exit;
++
++		fw_health->enabled = EVENT_DATA1_RECOVERY_ENABLED(data1);
++		fw_health->master = EVENT_DATA1_RECOVERY_MASTER_FUNC(data1);
++		if (!fw_health->enabled)
++			break;
++
++		if (netif_msg_drv(bp))
++			netdev_info(bp->dev, "Error recovery info: error recovery[%d], master[%d], reset count[0x%x], health status: 0x%x\n",
++				    fw_health->enabled, fw_health->master,
++				    bnxt_fw_health_readl(bp,
++							 BNXT_FW_RESET_CNT_REG),
++				    bnxt_fw_health_readl(bp,
++							 BNXT_FW_HEALTH_REG));
++		fw_health->tmr_multiplier =
++			DIV_ROUND_UP(fw_health->polling_dsecs * HZ,
++				     bp->current_interval * 10);
++		fw_health->tmr_counter = fw_health->tmr_multiplier;
++		fw_health->last_fw_heartbeat =
++			bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
++		fw_health->last_fw_reset_cnt =
++			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
++		goto async_event_process_exit;
++	}
+ 	default:
+ 		goto async_event_process_exit;
  	}
- err_recovery_out:
- 	mutex_unlock(&bp->hwrm_cmd_lock);
-+	if (!rc)
-+		rc = bnxt_map_fw_health_regs(bp);
- 	if (rc)
- 		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
- 	return rc;
+@@ -4310,9 +4367,14 @@ int bnxt_hwrm_func_rgtr_async_events(struct bnxt *bp, unsigned long *bmap,
+ 		cpu_to_le32(FUNC_DRV_RGTR_REQ_ENABLES_ASYNC_EVENT_FWD);
+ 
+ 	memset(async_events_bmap, 0, sizeof(async_events_bmap));
+-	for (i = 0; i < ARRAY_SIZE(bnxt_async_events_arr); i++)
+-		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
++	for (i = 0; i < ARRAY_SIZE(bnxt_async_events_arr); i++) {
++		u16 event_id = bnxt_async_events_arr[i];
+ 
++		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY &&
++		    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
++			continue;
++		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
++	}
+ 	if (bmap && bmap_size) {
+ 		for (i = 0; i < bmap_size; i++) {
+ 			if (test_bit(i, bmap))
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index ce535e5..78fd585 100644
+index 78fd585..eb55519 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1217,6 +1217,9 @@ struct bnxt_test_info {
- #define BNXT_GRCPF_REG_KONG_COMM		0xA00
- #define BNXT_GRCPF_REG_KONG_COMM_TRIGGER	0xB00
+@@ -472,6 +472,14 @@ struct rx_tpa_end_cmp_ext {
+ 	((le32_to_cpu((rx_tpa_end_ext)->rx_tpa_end_cmp_dup_acks) &	\
+ 	 RX_TPA_END_CMP_AGG_BUFS_P5) >> RX_TPA_END_CMP_AGG_BUFS_SHIFT_P5)
  
-+#define BNXT_GRC_BASE_MASK			0xfffff000
-+#define BNXT_GRC_OFFSET_MASK			0x00000ffc
++#define EVENT_DATA1_RECOVERY_MASTER_FUNC(data1)				\
++	!!((data1) &							\
++	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_MASTER_FUNC)
 +
- struct bnxt_tc_flow_stats {
- 	u64		packets;
- 	u64		bytes;
-@@ -1368,6 +1371,9 @@ struct bnxt_fw_health {
- #define BNXT_FW_HEALTH_REG_TYPE(reg)	((reg) & BNXT_FW_HEALTH_REG_TYPE_MASK)
- #define BNXT_FW_HEALTH_REG_OFF(reg)	((reg) & ~BNXT_FW_HEALTH_REG_TYPE_MASK)
- 
-+#define BNXT_FW_HEALTH_WIN_BASE		0x3000
-+#define BNXT_FW_HEALTH_WIN_MAP_OFF	8
++#define EVENT_DATA1_RECOVERY_ENABLED(data1)				\
++	!!((data1) &							\
++	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_RECOVERY_ENABLED)
 +
- struct bnxt {
- 	void __iomem		*bar0;
- 	void __iomem		*bar1;
+ struct nqe_cn {
+ 	__le16	type;
+ 	#define NQ_CN_TYPE_MASK           0x3fUL
+@@ -1914,6 +1922,7 @@ extern const u16 bnxt_lhint_arr[];
+ int bnxt_alloc_rx_data(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 		       u16 prod, gfp_t gfp);
+ void bnxt_reuse_rx_data(struct bnxt_rx_ring_info *rxr, u16 cons, void *data);
++u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx);
+ void bnxt_set_tpa_flags(struct bnxt *bp);
+ void bnxt_set_ring_params(struct bnxt *);
+ int bnxt_set_rx_skb_mode(struct bnxt *bp, bool page_mode);
 -- 
 2.5.1
 
