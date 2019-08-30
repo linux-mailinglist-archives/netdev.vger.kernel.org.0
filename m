@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 192C1A2D89
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 05:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDCC8A2D8D
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 05:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbfH3Dp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 23:45:28 -0400
-Received: from mail-eopbgr780100.outbound.protection.outlook.com ([40.107.78.100]:62487
+        id S1727969AbfH3Dpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 23:45:40 -0400
+Received: from mail-eopbgr780137.outbound.protection.outlook.com ([40.107.78.137]:57344
         "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727066AbfH3Dp2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 23:45:28 -0400
+        id S1727066AbfH3Dpj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Aug 2019 23:45:39 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bxbpZL48W1USE4w5uGHqiv+b+37YmStLYp6tryY0lK9iIGXNbmR7JFuA/MOnlcg1B9WTqMsDrdZuccDfroF4vXWJxLRj1cEFmokZOOTQ+2GP/Ab8xVUppeN7wDFSHKCX0vxVFr43CtLCqx3BEK9wZO0txRiXMrABP77DoA85ow7oA0fV0xB5kRGlKUUZEW8ulzoSQ4KshRgvmqmpz18FTmWbdYzCJ8aXYcotGgu6XTiYNloqEnuzhfDCrtQEo5xe6MAM1f7Zf6QVPN6kwRg1ALvWbN1mgsewD5ZYha5OLyDzrU0jXlBVdEugM+vWN1QvH414Ul+4EtxY2vgOJU2dMQ==
+ b=aFL37l3+8E0gNAnm+kevhxjXpGKXG1y6Me4Lu9D9yUjJ2zFmnwxMDx4TeyAWCAppG+ZjJ6jx97cI63SdOqW5vN0Eb/aDHBkKI44ZHfCoIfmpg/ST1odQqjsAc7k+12Z8Nz8tshLLN1pYodzFtaqXkjxMfGMx+JkQd3vAHOMSTQjBUzYkSYEmNnOlOMUqnJ3oLjQe7CeZgrsWwVd0Z9WfylHEKrv88WLZzOvM7BjnayI91nM+4v7QIDiDDxS+27DjwvNJC5RaS5B4ouiMDildjse+RgqBjAhZaOGgq/GKml0v8+wOXd0/KpfelkHjEIhGhqOz2wI2Ev29U643jF0mPw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j7WQMHD1jaGESLBl+6sw+OsohcgwEeI0r+TjnP4YdFY=;
- b=ajFCBspdtp/U3fKx1vgxGXCuK7BcLw/dg/hu10uRdS/91QE5vuWwhqvyUs1lgl4VdzjZ+kM/CbCmYpPkhh1G3qW5aQfkP1BowXtr77Cc7eTx8haOK9/SkFl/C2fMCgBd/Nv6NMi9wqZJeZpWvXuNw58Y1qvjW/7vUZ+dLfasn+3xX+I+nGip/oq6WftmPU46rmaHSepz+gJnxkqDBC3i/DkvrIAE/4BSLGHTOg26Db5UsXH192IEIbh7sx/hEQYGFURgc0bn3BrovzGZJ8Yqo+c/hbfL/TgfLB6iOEq+YkSHTjp/HeESkv8nlYYhTGshdmv0Zm7Xe0GKsto6O+rgNQ==
+ bh=XLXZJoFvAsuji7Xt+B38YnSUmRLxb+E15GK8aClGxK8=;
+ b=A8CWphiomoPs1Ipgg055/+Ki9epHm7HG2YA4e977e9+G8z/H4E28oRl4v9wz4A8HaYEpQQxREav7YHziHTZfM+hrigG9EGEwxrA5ngV2EIsOTaWRwtFzy8cAZp1upLvr9J4zK98Tq4j+o6yjmbUW/VqJVD2Kpw+/JvWQilPuzZHY6APrO4VnbuWVvgQFGUjlMlGFoUD4pSzZwddVW36V6N0tLUnOvoCNl8ytp5H1nn9ZdL+94WFRpy5auzX9Hu4yYOAQWcBvxTX/XfuXIsUSbt7h9hIX51iIrkiBdtR+SLPwOrP9gUEzC8ES008DOfdfvswFV9ycYc6wUv4M9sQ9uQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j7WQMHD1jaGESLBl+6sw+OsohcgwEeI0r+TjnP4YdFY=;
- b=PEJPLe7oP+c0BZnapOho9Ab0i0GHDaZTWTd8llH+HXhO4v95B0y/2YFs30wlb1jQCHCX1DRBe676Up2wVdIoD+to5i8AQGTEsy/qJZQ6ryL3mRNgQWOTgOgWspyV97/wpZXbKNFo2kHUBIXnYIq/o5qIjhE310L4as0cm/mb+co=
+ bh=XLXZJoFvAsuji7Xt+B38YnSUmRLxb+E15GK8aClGxK8=;
+ b=eOMoA+0oNJQJ8w/jflcxt6Ib12YSCYRnniLre2QNgvlHzDHb/sKdwgHn8XtxmZqi+ujkL4w7tck+Rs75TlVM5Iyskdlsa06sxc21En2ddKgCpER1WwvkZJVVzas3d8jy7JT6IpAYY37WKJN+tUdrKzjtodFQu9q+6Ry/TAAGzy4=
 Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
  DM6PR21MB1307.namprd21.prod.outlook.com (20.179.52.96) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.1; Fri, 30 Aug 2019 03:45:24 +0000
+ 15.20.2241.1; Fri, 30 Aug 2019 03:45:38 +0000
 Received: from DM6PR21MB1242.namprd21.prod.outlook.com
  ([fe80::d44f:19d0:c437:5785]) by DM6PR21MB1242.namprd21.prod.outlook.com
  ([fe80::d44f:19d0:c437:5785%5]) with mapi id 15.20.2241.000; Fri, 30 Aug 2019
- 03:45:24 +0000
+ 03:45:38 +0000
 From:   Haiyang Zhang <haiyangz@microsoft.com>
 To:     "sashal@kernel.org" <sashal@kernel.org>,
         "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
@@ -44,14 +44,14 @@ CC:     Haiyang Zhang <haiyangz@microsoft.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
         "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next, 1/2] hv_netvsc: Allow scatter-gather feature to be
- tunable
-Thread-Topic: [PATCH net-next, 1/2] hv_netvsc: Allow scatter-gather feature to
- be tunable
-Thread-Index: AQHVXuVaXXbsNF1InkabwiSwiKRb8w==
-Date:   Fri, 30 Aug 2019 03:45:24 +0000
-Message-ID: <1567136656-49288-2-git-send-email-haiyangz@microsoft.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+Subject: [PATCH net-next, 2/2] hv_netvsc: Sync offloading features to VF NIC
+Thread-Topic: [PATCH net-next, 2/2] hv_netvsc: Sync offloading features to VF
+ NIC
+Thread-Index: AQHVXuVjcLTsBjXUAk6+Rk/JN7f/sw==
+Date:   Fri, 30 Aug 2019 03:45:38 +0000
+Message-ID: <1567136656-49288-3-git-send-email-haiyangz@microsoft.com>
 References: <1567136656-49288-1-git-send-email-haiyangz@microsoft.com>
 In-Reply-To: <1567136656-49288-1-git-send-email-haiyangz@microsoft.com>
 Accept-Language: en-US
@@ -67,95 +67,106 @@ x-ms-exchange-messagesentrepresentingtype: 2
 x-mailer: git-send-email 1.8.3.1
 x-originating-ip: [13.77.154.182]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8a544caa-a7d2-4b2a-7d99-08d72cfc7d0a
+x-ms-office365-filtering-correlation-id: 399048f8-76ba-40ef-8d7a-08d72cfc85a1
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DM6PR21MB1307;
 x-ms-traffictypediagnostic: DM6PR21MB1307:|DM6PR21MB1307:|DM6PR21MB1307:
 x-ms-exchange-transport-forked: True
 x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR21MB1307BAFC28D480149813ECB2ACBD0@DM6PR21MB1307.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-microsoft-antispam-prvs: <DM6PR21MB130754E034E56DA8FB1D246AACBD0@DM6PR21MB1307.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:747;
 x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(39860400002)(396003)(366004)(376002)(136003)(189003)(199004)(81156014)(8676002)(99286004)(50226002)(7846003)(66446008)(476003)(71200400001)(4326008)(66476007)(102836004)(3846002)(14454004)(8936002)(2906002)(81166006)(256004)(478600001)(10090500001)(76176011)(22452003)(6436002)(26005)(52116002)(316002)(6486002)(2616005)(25786009)(11346002)(66946007)(446003)(64756008)(6116002)(66556008)(2201001)(10290500003)(2501003)(5660300002)(36756003)(7736002)(53936002)(54906003)(6506007)(110136005)(386003)(4720700003)(305945005)(71190400001)(6392003)(6512007)(486006)(186003)(66066001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1307;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(39860400002)(396003)(366004)(376002)(136003)(189003)(199004)(81156014)(8676002)(99286004)(50226002)(7846003)(66446008)(476003)(71200400001)(4326008)(66476007)(102836004)(3846002)(14454004)(8936002)(2906002)(14444005)(81166006)(256004)(478600001)(10090500001)(76176011)(22452003)(6436002)(26005)(52116002)(316002)(6486002)(2616005)(25786009)(11346002)(66946007)(446003)(64756008)(6116002)(66556008)(2201001)(10290500003)(2501003)(5660300002)(36756003)(7736002)(53936002)(54906003)(6506007)(110136005)(386003)(4720700003)(305945005)(71190400001)(6392003)(6512007)(486006)(186003)(66066001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1307;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: microsoft.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 8eUqTv+vb/JD3u31Ov7zEAq/r4y4cTtK1pnfDbu6YUZqv0CJWiyfCRTdzQi31L36Q7v6H6Dp95SU+XtOmfPu/o40cxjDoE5rcaWGGKmIom68hHcHuCeSuNlxVwIDJ2LamJEuNZY4vHFn6PHWjaN1edSkg+YKc3/OR9vJ+7vL/I14abrD6s87jqVTxO9bb8cOsWsem0pvXoP6RX5NgCZT+UXm2tOWtgBPJp9FN5p5CxK3jbtunyRnS4ICdYlqbAgqRK8DtSROKegGZdOotBXq9733fc8mN26fnMmkn/lChlW7M92iwRuEcsBNXRUhgDesNk/HdpKypRYrJeH/d7iqhBxHI1kZOmYTw7H7yyGNjravi4nb60s9qBo9TgsJSsKP2TaDKzZp+a8bC69z6EY8C5O/G4F0PKaOv27/hHl44DE=
+x-microsoft-antispam-message-info: uVwjhBBLPxSDcA1wnBZGBiyzjDT7RVy530VreZXCGlTF4QTgHl/29sbqqHlbN0W0Z1+pR1535IQ9VFI47zZSX0kMkwJralIvVEB9foDwDtvlzZ1UIxDFYSAupKueNitIJQcr5h1h4Uf5VBNn5govALDR8pNWUJeZDjpgCh7EM/b5+qzXskdtmmnwSu0tAsXpHn0st6cHISr2cBuJ7SHUZcplKEEdrHJ7uxpj5whDktG9EKv3hgKZj+H28+31hjNgCffGnwBwdyBwYXHpSyeUWXHPomUEYFHzuCYbhXEzLxcj+pLyyah/zUffgueSgMZ1StHytQKifooR9PMk+zlxEePAx54r9I+xETlFStYEgZTk+a1GNA47rf+4eabCjbaR6q3tY4JfK/UuU41oEfMick86PzQq/FW1wCGF6Ms+YEE=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a544caa-a7d2-4b2a-7d99-08d72cfc7d0a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 03:45:24.1642
+X-MS-Exchange-CrossTenant-Network-Message-Id: 399048f8-76ba-40ef-8d7a-08d72cfc85a1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 03:45:38.3111
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 768/HreQvO2QsrjeR4gE66018nxSoJH039/i5bvH7jZ5nyVngVwRTyFIMchwGgJq9A3B7Z1sFURkTPAEsddSiQ==
+X-MS-Exchange-CrossTenant-userprincipalname: tKHXX42brYj6042MorfJvkxUm+zsW7i70EsWjxcPVL9mDFJJb9lCKr7bvjvn0j+GHQFRrMa9iR07w6FKJOTVpQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1307
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a previous patch, the NETIF_F_SG was missing after the code changes.
-That caused the SG feature to be "fixed". This patch includes it into
-hw_features, so it is tunable again.
+VF NIC may go down then come up during host servicing events. This
+causes the VF NIC offloading feature settings to roll back to the
+defaults. This patch can synchronize features from synthetic NIC to
+the VF NIC during ndo_set_features (ethtool -K),
+and netvsc_register_vf when VF comes back after host events.
 
-Fixes: 	23312a3be999 ("netvsc: negotiate checksum and segmentation paramete=
-rs")
 Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Mark Bloch <markb@mellanox.com>
 ---
- drivers/net/hyperv/hyperv_net.h   | 2 +-
- drivers/net/hyperv/netvsc_drv.c   | 4 ++--
- drivers/net/hyperv/rndis_filter.c | 1 +
- 3 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/hyperv/netvsc_drv.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_ne=
-t.h
-index ecc9af0..670ef68 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -822,7 +822,7 @@ struct nvsp_message {
-=20
- #define NETVSC_SUPPORTED_HW_FEATURES (NETIF_F_RXCSUM | NETIF_F_IP_CSUM | \
- 				      NETIF_F_TSO | NETIF_F_IPV6_CSUM | \
--				      NETIF_F_TSO6 | NETIF_F_LRO)
-+				      NETIF_F_TSO6 | NETIF_F_LRO | NETIF_F_SG)
-=20
- #define VRSS_SEND_TAB_SIZE 16  /* must be power of 2 */
- #define VRSS_CHANNEL_MAX 64
 diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_dr=
 v.c
-index 0a6cd2f..1f1192e 100644
+index 1f1192e..39dddcd 100644
 --- a/drivers/net/hyperv/netvsc_drv.c
 +++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2313,8 +2313,8 @@ static int netvsc_probe(struct hv_device *dev,
+@@ -1785,13 +1785,15 @@ static int netvsc_set_features(struct net_device *n=
+dev,
+ 	netdev_features_t change =3D features ^ ndev->features;
+ 	struct net_device_context *ndevctx =3D netdev_priv(ndev);
+ 	struct netvsc_device *nvdev =3D rtnl_dereference(ndevctx->nvdev);
++	struct net_device *vf_netdev =3D rtnl_dereference(ndevctx->vf_netdev);
+ 	struct ndis_offload_params offloads;
++	int ret =3D 0;
 =20
- 	/* hw_features computed in rndis_netdev_set_hwcaps() */
- 	net->features =3D net->hw_features |
--		NETIF_F_HIGHDMA | NETIF_F_SG |
--		NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
-+		NETIF_F_HIGHDMA | NETIF_F_HW_VLAN_CTAG_TX |
-+		NETIF_F_HW_VLAN_CTAG_RX;
- 	net->vlan_features =3D net->features;
+ 	if (!nvdev || nvdev->destroy)
+ 		return -ENODEV;
 =20
- 	netdev_lockdep_set_classes(net);
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_f=
-ilter.c
-index 317dbe9..abaf815 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -1207,6 +1207,7 @@ static int rndis_netdev_set_hwcaps(struct rndis_devic=
-e *rndis_device,
+ 	if (!(change & NETIF_F_LRO))
+-		return 0;
++		goto syncvf;
 =20
- 	/* Compute tx offload settings based on hw capabilities */
- 	net->hw_features |=3D NETIF_F_RXCSUM;
-+	net->hw_features |=3D NETIF_F_SG;
+ 	memset(&offloads, 0, sizeof(struct ndis_offload_params));
 =20
- 	if ((hwcaps.csum.ip4_txcsum & NDIS_TXCSUM_ALL_TCP4) =3D=3D NDIS_TXCSUM_AL=
-L_TCP4) {
- 		/* Can checksum TCP */
+@@ -1803,7 +1805,19 @@ static int netvsc_set_features(struct net_device *nd=
+ev,
+ 		offloads.rsc_ip_v6 =3D NDIS_OFFLOAD_PARAMETERS_RSC_DISABLED;
+ 	}
+=20
+-	return rndis_filter_set_offload_params(ndev, nvdev, &offloads);
++	ret =3D rndis_filter_set_offload_params(ndev, nvdev, &offloads);
++
++	if (ret)
++		features ^=3D NETIF_F_LRO;
++
++syncvf:
++	if (!vf_netdev)
++		return ret;
++
++	vf_netdev->wanted_features =3D features;
++	netdev_update_features(vf_netdev);
++
++	return ret;
+ }
+=20
+ static u32 netvsc_get_msglevel(struct net_device *ndev)
+@@ -2181,6 +2195,10 @@ static int netvsc_register_vf(struct net_device *vf_=
+netdev)
+=20
+ 	dev_hold(vf_netdev);
+ 	rcu_assign_pointer(net_device_ctx->vf_netdev, vf_netdev);
++
++	vf_netdev->wanted_features =3D ndev->features;
++	netdev_update_features(vf_netdev);
++
+ 	return NOTIFY_OK;
+ }
+=20
 --=20
 1.8.3.1
 
