@@ -2,145 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F11A2E05
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 06:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41306A2E14
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 06:19:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbfH3EQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 00:16:55 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33773 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbfH3EQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 00:16:55 -0400
-Received: by mail-lj1-f195.google.com with SMTP id z17so5179342ljz.0;
-        Thu, 29 Aug 2019 21:16:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iCLpdRArKeEL95JPVvIj5SaZBs9XGj7yces6tTfOStA=;
-        b=NGcsYzMjskd+7OhewWqjmPfjfb9vMfaXR2uRHfS9k8f4X5oAfxYur3wU1mGw6z9Adb
-         s2vSwPdI5MgQ4eo0KXdbdByfhixSLkllBJGWIlIgnMKt/IOTvkIeaEuR6O589lzfmryA
-         6DZK5zWsARS5a4cbhaMVO1vNF8zJA+nFUYwp2FocHW1HXNjbxt1aBqC73lDqN3iU2f2l
-         ODHuasUQ55rzy4x9fiz0RvJv5FS27UAqM3MvRHxTek4Mg8HyqGD6Owic2fzaFJ8SNuhf
-         eF5ngM9Cksnm6F0m+XrxQVECHdjmoyWi/boaFCBQQ7F09g+OKrJHWXcHf6DdE01r/QEj
-         VB5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iCLpdRArKeEL95JPVvIj5SaZBs9XGj7yces6tTfOStA=;
-        b=E7zwOCPAzSWUSb+IQDyQ7chPC/rhm/DNFR1h95z4qMNHlhfYrdMfjwBKlwt2fonFto
-         g5c5YDYsgLydq3C4pXX3tLfmUendbfdSVQ8mJCjGcKO5f/q6/lg+P0KPv247cA7zvDnV
-         dpyfTW6pLPiYLbL9E8O4s/nlJjT08GGtFEUXZgkama3kb45FvXJMarrI5hU/VWD85slT
-         aiR96an0e3ggYOzIAMRZ4SXrkCHinbbhRn+AJZgZqgF0D4F8kZDFKugSlCSphikmVi16
-         l/2HxSdFnbz765rx2SfC4Rg2Wj57/WJjcABziS0e8nEHi21uxm9EVxyj8GlMCYfr7al/
-         Ex+A==
-X-Gm-Message-State: APjAAAVnockiYd+271qgOPHwoy67wrcECitZJWx70mWBYUfcn3ljk2Ai
-        KpQyuxYfppQHq+Xkb0nhDhi9bqhbQ5Kf6zrHZPI=
-X-Google-Smtp-Source: APXvYqwckFt3LnsIIi6bT/vpq147Uo7WytBr14tQ2z3LKla/6nJ/Z4g9Ap40xGdfMuNke05PcWsONH/yRHIgQeADweg=
-X-Received: by 2002:a05:651c:1ba:: with SMTP id c26mr7511169ljn.11.1567138612764;
- Thu, 29 Aug 2019 21:16:52 -0700 (PDT)
+        id S1727133AbfH3ETQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 00:19:16 -0400
+Received: from ozlabs.org ([203.11.71.1]:39567 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725854AbfH3ETQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 00:19:16 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46KR7h2fpxz9sN6;
+        Fri, 30 Aug 2019 14:19:11 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1567138752;
+        bh=Y28Rt2oHTcK3rAJXH2EwjpFaRwubHNhkaQ77jcR6V2M=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TCO8AFFb3Js4ZpiaaRix1u3cV4IboctQreVNI5hQlP4K8/o+1ajakWCJVFdbHC8BF
+         yWx3qY/bNEi4OzgOdK19jy6SF4InWSXZQ1zYiBEV7XUfDicb3vGhCJSUogKmJXKzoe
+         uWVQg9YSKWFKPeAoz8dXGghpOVklfcvzLj5jIjk1q3NmYT6XmhmIP/ng+BHxIHTdT+
+         1rPTY+J3yYnPGH+C3LU1rW9gmLvIjaf8A0yH5fMpxYKrxNKG/fpoMOJzdzCnKz2Uci
+         Lxq6WHkc/wTTac8LEBaNVUqmFWdAzn3tmwlHxzJOw+ox7kONMHYUKvPcN/O2qVWWAX
+         Zlueh1hrGxhqQ==
+Date:   Fri, 30 Aug 2019 14:19:09 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20190830141909.5f15665b@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20190829051253.1927291-1-ast@kernel.org> <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
-In-Reply-To: <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 29 Aug 2019 21:16:39 -0700
-Message-ID: <CAADnVQLiD_2dTWXgaC773Uo+4LPz=vFEysXUnUcsJ9FKBk5Q7g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] capability: introduce CAP_BPF and CAP_TRACING
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/wwgfcYaOG4hTzMAi=gguok2";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 8:47 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
-> [...]
-> >
-> > +/*
-> > + * CAP_BPF allows the following BPF operations:
-> > + * - Loading all types of BPF programs
-> > + * - Creating all types of BPF maps except:
-> > + *    - stackmap that needs CAP_TRACING
-> > + *    - devmap that needs CAP_NET_ADMIN
-> > + *    - cpumap that needs CAP_SYS_ADMIN
-> > + * - Advanced verifier features
-> > + *   - Indirect variable access
-> > + *   - Bounded loops
-> > + *   - BPF to BPF function calls
-> > + *   - Scalar precision tracking
-> > + *   - Larger complexity limits
-> > + *   - Dead code elimination
-> > + *   - And potentially other features
-> > + * - Use of pointer-to-integer conversions in BPF programs
-> > + * - Bypassing of speculation attack hardening measures
-> > + * - Loading BPF Type Format (BTF) data
-> > + * - Iterate system wide loaded programs, maps, BTF objects
-> > + * - Retrieve xlated and JITed code of BPF programs
-> > + * - Access maps and programs via id
-> > + * - Use bpf_spin_lock() helper
->
-> This is still very wide.
+--Sig_/wwgfcYaOG4hTzMAi=gguok2
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-'still very wide' ? you make it sound like it's a bad thing.
-Covering all of bpf with single CAP_BPF is #1 goal of this set.
+Hi all,
 
-> Consider following example: app has CAP_BPF +> CAP_NET_ADMIN. Why can't we in this case *only* allow loading networking
-> related [plus generic] maps and programs? If it doesn't have CAP_TRACING,
-> what would be a reason to allow loading it? Same vice versa. There are
-> some misc program types like the infraread stuff, but they could continue
-> to live under [CAP_BPF +] CAP_SYS_ADMIN as fallback. I think categorizing
-> a specific list of prog and map types might be more clear than disallowing
-> some helpers like below (e.g. why choice of bpf_probe_read() but not
-> bpf_probe_write_user() etc).
+Today's linux-next merge of the net-next tree got a conflict in:
 
-It kinda makes sense:
-cap_bpf+cap_net_admin allows networking progs.
-cap_bpf+cap_tracing allows tracing progs.
-But what to do with cg_sysctl, cg_device, lirc ?
-They are clearly neither.
-Invent yet another cap_foo for them?
-or let them under cap_bpf alone?
-If cap_bpf alone is enough then why bother with bpf+net_admin for networking?
-It's not making anything cleaner. Only confuses users.
+  drivers/net/usb/r8152.c
 
-Also bpf_trace_printk() is using ftrace and can print arbitrary memory.
-In that sense it's no different than bpf_probe_read.
-Both should be under CAP_TRACING.
-But bpf_trace_printk() is available to all progs.
-Even to socket filters under cap_sys_admin today.
-With this patch set I'm allowing bpf_trace_printk() under CAP_TRACING.
-Same goes to bpf_probe_read.
+between commits:
 
-High level description:
-cap_bpf alone allows loading of all progs except when
-later cap_net_admin or cap_tracing will _not_ be able to
-filter out the helper at attach time that shouldn't be there.
+  49d4b14113ca ("Revert "r8152: napi hangup fix after disconnect"")
+  973dc6cfc0e2 ("r8152: remove calling netif_napi_del")
 
-Example of how this patch set works:
-- to load and attach networking progs
-both cap_bpf and cap_net_admin are necessary.
-- to load and attach tracing progs
-both cap_bpf and cap_tracing are necessary.
+from the net tree and commit:
 
-when networking prog is using bpf_trace_printk
-then cap_tracing is needed too.
-And it's checked at load time.
-If we do what you're proposing:
-"lets allow load of all networking with bpf+net_admin"
-then this won't work for bpf_trace_printk.
-Per helper function capability check is still needed.
-And since it's needed I see no reason to limit
-networking progs to bpf+net_admin at load time.
-Load time is still cap_bpf only.
-And helpers will be filtered out at attach by net_admin.
+  d2187f8e4454 ("r8152: divide the tx and rx bottom functions")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/usb/r8152.c
+index 04137ac373b0,c6fa0c17c13d..000000000000
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@@ -4021,7 -4214,9 +4214,8 @@@ static int rtl8152_close(struct net_dev
+  #ifdef CONFIG_PM_SLEEP
+  	unregister_pm_notifier(&tp->pm_notifier);
+  #endif
++ 	tasklet_disable(&tp->tx_tl);
+ -	if (!test_bit(RTL8152_UNPLUG, &tp->flags))
+ -		napi_disable(&tp->napi);
+ +	napi_disable(&tp->napi);
+  	clear_bit(WORK_ENABLE, &tp->flags);
+  	usb_kill_urb(tp->intr_urb);
+  	cancel_delayed_work_sync(&tp->schedule);
+@@@ -5352,6 -5604,8 +5603,7 @@@ static int rtl8152_probe(struct usb_int
+  	return 0;
+ =20
+  out1:
+ -	netif_napi_del(&tp->napi);
++ 	tasklet_kill(&tp->tx_tl);
+  	usb_set_intfdata(intf, NULL);
+  out:
+  	free_netdev(netdev);
+@@@ -5366,7 -5620,9 +5618,8 @@@ static void rtl8152_disconnect(struct u
+  	if (tp) {
+  		rtl_set_unplug(tp);
+ =20
+ -		netif_napi_del(&tp->napi);
+  		unregister_netdev(tp->netdev);
++ 		tasklet_kill(&tp->tx_tl);
+  		cancel_delayed_work_sync(&tp->hw_phy_work);
+  		tp->rtl_ops.unload(tp);
+  		free_netdev(tp->netdev);
+
+--Sig_/wwgfcYaOG4hTzMAi=gguok2
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1oo70ACgkQAVBC80lX
+0GxS1wf+KE4PnrM0gqqjDBWhlcyXJPXnXkH95eZHgh675yq5rKVb8tNabUDa3RC4
+kb24uCR7pb5jyzmciS5HOlKNiOvYhxlCcfwuBuDpAaD+FQwIkFOj2fbP45/+dSl9
+M5vDzlXx9x7GBKgxumEBL8XuxMWk3EhVT5UcD/Kl9qTTYXrJbXSTz3/Dr5HODRFq
+mBzaerKJhS4UkD7fWEOyR6QzUKOGMKgG2Nqobcccd3Bh4j/8r86MXMvrK0N8zcJ1
+PW6zNA7vidxMU5A97v/arZgAF6L0KI1ERCusb/aZlkIfBT1cEf0TL7Cc55zovPnb
+nsCHbQ1rvOfuTecdRL1H+17lw+De4Q==
+=RD4p
+-----END PGP SIGNATURE-----
+
+--Sig_/wwgfcYaOG4hTzMAi=gguok2--
