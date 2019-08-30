@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83B26A3A94
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6445A3A9D
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728424AbfH3PlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 11:41:24 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34045 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728415AbfH3PlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:41:23 -0400
-Received: by mail-pf1-f194.google.com with SMTP id b24so4912071pfp.1;
-        Fri, 30 Aug 2019 08:41:23 -0700 (PDT)
+        id S1728178AbfH3PmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 11:42:11 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45264 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727751AbfH3PmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:42:11 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w26so4864513pfq.12;
+        Fri, 30 Aug 2019 08:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=D8WYuwJPEmbhKXQGImoSc/umRvPMZq3miEtQVpPDIyE=;
-        b=GLT3KSbOdxNdWEJziOivaaRl9ftjEIOPYOD44fLe1aCmSkZ6nWkisCmIHxoSlt29Ku
-         5M0eD7pyoHUDgSoNDxCjFKgH7XNkqn4056s8pBbWz//nmri3+x93Pt9jjQonUeGt43RR
-         y3HXgOTLbQZX48fFF5ZWoBKv0a4aXe7tWlZfkBH8KLMSUpUu4wN1Oe+eYsJHJXQ5faXt
-         0orVVe26LBuXYDQSS5SbMasmVp4t3HEyaPz3Ojpdh23P0VLYMo6lshczmd/fElIVmLlb
-         esccWSy5iFrKIdkRwNmlmIV9bRGjcDWYyxE9t8k0t6D8Ycz9tyunRhdFtmqf0UE0bNbY
-         K87Q==
+        bh=nz/4S1faYNn5ga9nu2L9rgyJ6VH4Vo5eCb4dHh7ASd0=;
+        b=feCZi9AysGNFNdmbrv3UlPoWlxPyrVVaIWXPbelUWUy+OLm90AQm03AiptBFbPco57
+         raLwJ1wC6nmlhdFUa0wi5EkQ2OSBLB3kAuSzAXZ4VY+iyCUOSVZmk6zF81near5WToaM
+         Mfe7qBO9qIUo39cnGOVh+IV2fJXet9VUEtPyBMxbk5YlkLA1TL0160j4VAdF5+L1WBWW
+         QVD3DYK1qg4ZD7vY7CVgwkBDwyXvM0AqHq+/pbpP1nTxMcAjs1AKnx85BZ++0lqKowxE
+         0wqf5erbSMHClxag/A7+9PWwYAfGWIXEJ3My+xNL8+471mlip0pgttp4R643Bi1Y16sI
+         VB0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=D8WYuwJPEmbhKXQGImoSc/umRvPMZq3miEtQVpPDIyE=;
-        b=p8zXh3vYDIbxXEN75MSjwh3hR49RMOmbU5X1Vkj0qsvyWiWDsulI3KbPku5hm9ue0t
-         k1fhjXro09INjaKMugl6AbsjzsRSVC7ZiDKNVxUxQcCLgpHD/0LHfEZNwkJtV8wgw2hu
-         yX+TrIa2NysZHyzrJrsGxFUyEyFdWNyjzPJw1vlN1gcyZ8wQ2pepjowLIhN2B4Sq4tJ7
-         OFLgXO1gLQydknQLf+CRuDWO8mQYcKZEYt07JX1GLsR+iUzj6GoSqJxcAaTps7xKjcsI
-         t7Vg3+A/VlpPM93rSOUDRcr5Or0prDk8tfgo4i4Is+LRLtDFXSFEFz88KxB5ksH7EzHT
-         59iw==
-X-Gm-Message-State: APjAAAXdO5CHw+/6UxTNqRzQShBGA0GF6DcA+HVLaMWVDMNwVAR4yEfK
-        UBHL3Kz8vMJoOVtaIEK990k=
-X-Google-Smtp-Source: APXvYqyAHjdLR4jjf4CFBr/fLQGF4SuwhhatOJggl7ZYFDFH/GYHzRC0hg8JaY/uu7v35x+aaGkCsw==
-X-Received: by 2002:a63:5f95:: with SMTP id t143mr13449469pgb.304.1567179683260;
-        Fri, 30 Aug 2019 08:41:23 -0700 (PDT)
+        bh=nz/4S1faYNn5ga9nu2L9rgyJ6VH4Vo5eCb4dHh7ASd0=;
+        b=tSAO1FRN+Z/+SKtVhY+Mfetje9YM9SzJytEMDqmY7NXYlhZpGpkLNwmmB+H6qzFd3C
+         xGCWT6zH8pPAZlv5TzJlZYmriSA45GihNUMrwj/EhMqcJG+aREijrZPCznC/k/jBtFvY
+         vZWBrSsaxiRJey6tX3Zi0NCJmA+HToK9azRLOLCdZrEVbcAiyE6ovHt0JEJaJ6fQ6WsO
+         MqWKnvS3xY/gsFEcDSKWEwmsKhZVnLDC87eJtFx0FOL2RtjVugWT1x6e0nUSzHY6stsf
+         I8SnmA1t0WpgDKui9sGY8jiEYgRzDyBHofHljSIaraZSuPbkWbHAkzVRlW55/iWXt+Qi
+         GguA==
+X-Gm-Message-State: APjAAAW0D9pP6i3yw9Lh+EcvLnd256rcxOzjMd9jfV6oMu43BbPSEj4r
+        XfCwzFmRuMWmmKh0QKB2o2s=
+X-Google-Smtp-Source: APXvYqwrMFL8ZtVqMHspZc6WTRMYl7zk0ebMROhOMmI7eKfMdRPNn6Lb3rQGyzLuzKgmk+uSyAakxw==
+X-Received: by 2002:a65:644b:: with SMTP id s11mr3197425pgv.305.1567179730421;
+        Fri, 30 Aug 2019 08:42:10 -0700 (PDT)
 Received: from [172.26.108.102] ([2620:10d:c090:180::7594])
-        by smtp.gmail.com with ESMTPSA id q4sm6807211pff.183.2019.08.30.08.41.22
+        by smtp.gmail.com with ESMTPSA id z63sm6368612pfb.163.2019.08.30.08.42.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 08:41:22 -0700 (PDT)
+        Fri, 30 Aug 2019 08:42:09 -0700 (PDT)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
 To:     "Kevin Laatz" <kevin.laatz@intel.com>
 Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -52,15 +52,15 @@ Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         maximmi@mellanox.com, stephen@networkplumber.org,
         bruce.richardson@intel.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH bpf-next v6 03/12] xsk: add support to allow unaligned
- chunk placement
-Date:   Fri, 30 Aug 2019 08:41:21 -0700
+Subject: Re: [PATCH bpf-next v6 04/12] i40e: modify driver for handling
+ offsets
+Date:   Fri, 30 Aug 2019 08:42:08 -0700
 X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <071FC949-1F73-40EB-AE2E-FBFEE4F956B3@gmail.com>
-In-Reply-To: <20190827022531.15060-4-kevin.laatz@intel.com>
+Message-ID: <34527E59-0A29-4904-B794-9592C5E818C1@gmail.com>
+In-Reply-To: <20190827022531.15060-5-kevin.laatz@intel.com>
 References: <20190822014427.49800-1-kevin.laatz@intel.com>
  <20190827022531.15060-1-kevin.laatz@intel.com>
- <20190827022531.15060-4-kevin.laatz@intel.com>
+ <20190827022531.15060-5-kevin.laatz@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -72,19 +72,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 26 Aug 2019, at 19:25, Kevin Laatz wrote:
 
-> Currently, addresses are chunk size aligned. This means, we are very
-> restricted in terms of where we can place chunk within the umem. For
-> example, if we have a chunk size of 2k, then our chunks can only be placed
-> at 0,2k,4k,6k,8k... and so on (ie. every 2k starting from 0).
+> With the addition of the unaligned chunks option, we need to make sure we
+> handle the offsets accordingly based on the mode we are currently running
+> in. This patch modifies the driver to appropriately mask the address for
+> each case.
 >
-> This patch introduces the ability to use unaligned chunks. With these
-> changes, we are no longer bound to having to place chunks at a 2k (or
-> whatever your chunk size is) interval. Since we are no longer dealing with
-> aligned chunks, they can now cross page boundaries. Checks for page
-> contiguity have been added in order to keep track of which pages are
-> followed by a physically contiguous page.
->
-> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
-> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 > Signed-off-by: Bruce Richardson <bruce.richardson@intel.com>
+> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
 Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
