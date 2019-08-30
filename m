@@ -2,99 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD41A4082
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 00:24:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B641AA4088
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 00:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728246AbfH3WYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 18:24:15 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37850 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728111AbfH3WYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 18:24:15 -0400
-Received: by mail-qt1-f196.google.com with SMTP id y26so9380367qto.4
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 15:24:14 -0700 (PDT)
+        id S1728376AbfH3WYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 18:24:46 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:32961 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728164AbfH3WYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 18:24:46 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q10so427823pfl.0
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 15:24:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sRSCPPMhFu8xhsdJKFrECoHzmi9ztCIrphC9/2HwVZ8=;
-        b=PaWubyRySgNSW1QGogjxgIThLnLRZWiDrEKltmDO2wpOQgsUTtWFKQOk7KEn+Yake1
-         +o1/2Dl3q/b9wiNdWI1acKCXrldsWOOf8abuZR6vDQBHrji2ucdBLW7lJMX/+c/hYRWu
-         9PZlwO0nfV9JraexmIhmmbwcaUHvYPG1AQ7p0=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=8nJNIw1rQ/begFXvmg+y4YkAC0VdHZtvjD7Fjrjf2zM=;
+        b=m9nPha85yg0s2kRzSI49gnOj/QZY6lZTlIElqe/GMV7N8JWFLlkK78aPaNj3By+Z7o
+         XvMY1Fj8IRC2v8FYPJuzGqgaH9APSes2UCpGHZGO43KivWn1qcKMT/eDf9r28fhcG/AU
+         GubSvXvwW/wqWb+pu1gTJhkFl1Hr+T01L0H98lDeXS61yPQiXNxcdNqGSZPBoOgH+f/K
+         2yFUF9PYFlPEklGKoQ9don0EKrA3DPTwoqzdJ/fms8CEyRCIPG713W//6T7cF3XOAGX4
+         xaFHX8kDJe1ALdrAw0y8zgJwoS68L3Mui5mw0JVN11ECtQVv4DOfUf9JCjDRt7tIge84
+         7OsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sRSCPPMhFu8xhsdJKFrECoHzmi9ztCIrphC9/2HwVZ8=;
-        b=Ai4NDHe8XvrLEjNanDHBI8BBqExPB9lMwRyj0tXW0WK6kBTvU1qv2QW3Ye2411mgiZ
-         iCLhhnyThmEmRe35LayZP2nWqR19LKEyXr8hNPCTQ483F25x1zmH2J/MyAncgrFY08M8
-         h2e9wRsEfGBWtaG+7pZaDNrZ/3urstYKOnA/nH9YIQChQEAahCyjNuvH64D2ROjcB9n9
-         KM4ofll8ALKcmeNZd+1jFNwivxjgI2+JwcO2oxMWALbpabk3nqkJ3q5KagaqP7SxgewK
-         Ce8vtAmXH0gSOO4IeO9gB6OgjtodlF1FhlQYgvG10Ew0uccNBxts33uOSbc2bHFbiX6L
-         2UAg==
-X-Gm-Message-State: APjAAAWkvJzVeDyxfnOgSmyJN5QzTHqwOXGRdhdUrxjE36E2iKs+Y9l7
-        4OUTZII6cqeB+eRwtlEGbn+OPV0Yt8fq+XeyVqki8w==
-X-Google-Smtp-Source: APXvYqx83DuP9I+k/vUWZMwYRPLMlCjGy7ftGAnRh18XXQReOlRgyynbcetBE0UKHJEd2G5klNhZDrG2VdHRuyMNMoI=
-X-Received: by 2002:ac8:6688:: with SMTP id d8mr17187086qtp.141.1567203854154;
- Fri, 30 Aug 2019 15:24:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=8nJNIw1rQ/begFXvmg+y4YkAC0VdHZtvjD7Fjrjf2zM=;
+        b=IKo6l+p3xV3Gfu2XyRQP6lGawfjXkDq5CVIgseXD2DOMTaWRK96u96t2gVQUYg7jyx
+         HMlWt3/HHCM3cNbTodiBmB3pjDrFYCQHmKBB2NRNhDZy4F/mc23TN0/2qdOLO9/AvCQ8
+         A8LhCGURcFxvargsdpK4kdRcv+TQdarreoeGkHchFhlrKIgO+GFTbDIedcujBXLHDY9Q
+         nwVunCopE/ZwCG7EilWB5T6aLvOMyEnt+wq90b/Zsu4MGFVAKOnSNvrfajV7XNjn9l+v
+         5Uwu3NlWvE/TvBMmVDtc7m0wWkQXLA+h2UbFqtXocMRH7d9mGUImZaniooLw98RuLKYQ
+         y2eQ==
+X-Gm-Message-State: APjAAAWf+Rxb9C2m//6jgg19/fAm4Ih4fM3FMQs+HimVOsY+OsvkkyEa
+        pBK4SWk/lbPryIYnHGWJcdE5hD1Sfy4=
+X-Google-Smtp-Source: APXvYqzpBmwtuc6zdtnbEnKiDHmqpydUEi1Y+rXB5mN19fjKmuwocPTJHox7sFKVPPynKKlLEL/JQQ==
+X-Received: by 2002:a63:40a:: with SMTP id 10mr15007103pge.317.1567203885655;
+        Fri, 30 Aug 2019 15:24:45 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g23sm7806360pfo.2.2019.08.30.15.24.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2019 15:24:45 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 15:24:22 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v6 net-next 16/19] ionic: Add netdev-event handling
+Message-ID: <20190830152422.7787e71d@cakuba.netronome.com>
+In-Reply-To: <336eacda-27ae-d513-7888-429e34e29b76@pensando.io>
+References: <20190829182720.68419-1-snelson@pensando.io>
+        <20190829182720.68419-17-snelson@pensando.io>
+        <20190829163738.64e7fe42@cakuba.netronome.com>
+        <336eacda-27ae-d513-7888-429e34e29b76@pensando.io>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <CACeCKacOcg01NuCWgf2RRer3bdmW-CH7d90Y+iD2wQh5Ka6Mew@mail.gmail.com>
-In-Reply-To: <CACeCKacOcg01NuCWgf2RRer3bdmW-CH7d90Y+iD2wQh5Ka6Mew@mail.gmail.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Fri, 30 Aug 2019 15:24:02 -0700
-Message-ID: <CACeCKacjCkS5UmzS9irm0JjGmk98uBBBsTLSzrXoDUJ60Be9Vw@mail.gmail.com>
-Subject: Re: Proposal: r8152 firmware patching framework
-To:     Hayes Wang <hayeswang@realtek.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bambi.yeh@realtek.com, amber.chen@realtek.com, ryankao@realtek.com,
-        jackc@realtek.com, albertk@realtek.com, marcochen@google.com
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        Grant Grundler <grundler@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Adding a few more Realtek folks)
+On Fri, 30 Aug 2019 14:36:23 -0700, Shannon Nelson wrote:
+> On 8/29/19 4:37 PM, Jakub Kicinski wrote:
+> > On Thu, 29 Aug 2019 11:27:17 -0700, Shannon Nelson wrote:  
+> >> When the netdev gets a new name from userland, pass that name
+> >> down to the NIC for internal tracking.
+> >>
+> >> Signed-off-by: Shannon Nelson <snelson@pensando.io>  
+> > There is a precedent in ACPI for telling the FW what OS is running but
+> > how is the interface name useful for the firmware I can't really tell.  
+> It is so we can correlate the host's interface name with the internal 
+> port data for internal logging.
 
-Friendly ping. Any thoughts / feedback, Realtek folks (and others) ?
+Okay.. honestly brings back too many bad memories of arguing with
+engineers who spent their lives building middle boxes..
 
-On Thu, Aug 29, 2019 at 11:40 AM Prashant Malani <pmalani@chromium.org> wrote:
->
-> Hi,
->
-> The r8152 driver source code distributed by Realtek (on
-> www.realtek.com) contains firmware patches. This involves binary
-> byte-arrays being written byte/word-wise to the hardware memory
-> Example: grundler@chromium.org (cc-ed) has an experimental patch which
-> includes the firmware patching code which was distributed with the
-> Realtek source :
-> https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/1417953
->
-> It would be nice to have a way to incorporate these firmware fixes
-> into the upstream code. Since having indecipherable byte-arrays is not
-> possible upstream, I propose the following:
-> - We use the assistance of Realtek to come up with a format which the
-> firmware patch files can follow (this can be documented in the
-> comments).
->        - A real simple format could look like this:
->                +
-> <section1><size_in_bytes><address1><data1><address2><data2>...<addressN><dataN><section2>...
->                 + The driver would be able to understand how to parse
-> each section (e.g is each data entry a byte or a word?)
->
-> - We use request_firmware() to load the firmware, parse it and write
-> the data to the relevant registers.
->
-> I'm unfamiliar with what the preferred method of firmware patching is,
-> so I hope the maintainers can help suggest the best path forward.
->
-> As an aside: It would be great if Realtek could publish a list of
-> fixes that the firmware patches implement (I think a list on the
-> driver download page on the Realtek website would be an excellent
-> starting point).
->
-> Thanks and Best regards,
->
-> -Prashant
+I just hope this won't spread.
