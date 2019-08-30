@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46694A33F7
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EFEA33F4
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbfH3JZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 05:25:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41694 "EHLO mx1.suse.de"
+        id S1728057AbfH3JZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 05:25:54 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41692 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726480AbfH3JZx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726461AbfH3JZx (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 30 Aug 2019 05:25:53 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B8A66AD85;
+        by mx1.suse.de (Postfix) with ESMTP id B90A1AE1B;
         Fri, 30 Aug 2019 09:25:51 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Ralf Baechle <ralf@linux-mips.org>,
@@ -22,55 +22,56 @@ To:     Ralf Baechle <ralf@linux-mips.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 00/15] ioc3-eth improvements
-Date:   Fri, 30 Aug 2019 11:25:23 +0200
-Message-Id: <20190830092539.24550-1-tbogendoerfer@suse.de>
+Subject: [PATCH v3 net-next 01/15] MIPS: SGI-IP27: remove ioc3 ethernet init
+Date:   Fri, 30 Aug 2019 11:25:24 +0200
+Message-Id: <20190830092539.24550-2-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
+In-Reply-To: <20190830092539.24550-1-tbogendoerfer@suse.de>
+References: <20190830092539.24550-1-tbogendoerfer@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my patch series for splitting out the serial code from ioc3-eth
-by using a MFD device there was one big patch for ioc3-eth.c,
-which wasn't really usefull for reviews. This series contains the
-ioc3-eth changes splitted in smaller steps and few more cleanups.
-Only the conversion to MFD will be done later in a different series.
+Removed not needed disabling of ethernet interrupts in IP27 platform code.
 
-Changes in v3:
-- no need to check skb == NULL before passing it to dev_kfree_skb_any
-- free memory allocated with get_page(s) with free_page(s)
-- allocate rx ring with just GFP_KERNEL
-- add required alignment for rings in comments
+Acked-by: Paul Burton <paul.burton@mips.com>
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ arch/mips/sgi-ip27/ip27-init.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-Changes in v2:
-- use net_err_ratelimited for printing various ioc3 errors
-- added missing clearing of rx buf valid flags into ioc3_alloc_rings
-- use __func__ for printing out of memory messages
-
-Thomas Bogendoerfer (15):
-  MIPS: SGI-IP27: remove ioc3 ethernet init
-  MIPS: SGI-IP27: restructure ioc3 register access
-  net: sgi: ioc3-eth: remove checkpatch errors/warning
-  net: sgi: ioc3-eth: use defines for constants dealing with desc rings
-  net: sgi: ioc3-eth: allocate space for desc rings only once
-  net: sgi: ioc3-eth: get rid of ioc3_clean_rx_ring()
-  net: sgi: ioc3-eth: separate tx and rx ring handling
-  net: sgi: ioc3-eth: introduce chip start function
-  net: sgi: ioc3-eth: split ring cleaning/freeing and allocation
-  net: sgi: ioc3-eth: refactor rx buffer allocation
-  net: sgi: ioc3-eth: use dma-direct for dma allocations
-  net: sgi: ioc3-eth: use csum_fold
-  net: sgi: ioc3-eth: Fix IPG settings
-  net: sgi: ioc3-eth: protect emcr in all cases
-  net: sgi: ioc3-eth: no need to stop queue set_multicast_list
-
- arch/mips/include/asm/sn/ioc3.h     |  357 +++++-------
- arch/mips/sgi-ip27/ip27-console.c   |    5 +-
- arch/mips/sgi-ip27/ip27-init.c      |   13 -
- drivers/net/ethernet/sgi/ioc3-eth.c | 1038 +++++++++++++++++------------------
- 4 files changed, 665 insertions(+), 748 deletions(-)
-
+diff --git a/arch/mips/sgi-ip27/ip27-init.c b/arch/mips/sgi-ip27/ip27-init.c
+index 066b33f50bcc..59d5375c9021 100644
+--- a/arch/mips/sgi-ip27/ip27-init.c
++++ b/arch/mips/sgi-ip27/ip27-init.c
+@@ -130,17 +130,6 @@ cnodeid_t get_compact_nodeid(void)
+ 	return NASID_TO_COMPACT_NODEID(get_nasid());
+ }
+ 
+-static inline void ioc3_eth_init(void)
+-{
+-	struct ioc3 *ioc3;
+-	nasid_t nid;
+-
+-	nid = get_nasid();
+-	ioc3 = (struct ioc3 *) KL_CONFIG_CH_CONS_INFO(nid)->memory_base;
+-
+-	ioc3->eier = 0;
+-}
+-
+ extern void ip27_reboot_setup(void);
+ 
+ void __init plat_mem_setup(void)
+@@ -182,8 +171,6 @@ void __init plat_mem_setup(void)
+ 		panic("Kernel compiled for N mode.");
+ #endif
+ 
+-	ioc3_eth_init();
+-
+ 	ioport_resource.start = 0;
+ 	ioport_resource.end = ~0UL;
+ 	set_io_port_base(IO_BASE);
 -- 
 2.13.7
 
