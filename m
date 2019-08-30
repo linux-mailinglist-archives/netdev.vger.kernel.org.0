@@ -2,343 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CE57A3E48
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D23A3E4F
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbfH3TSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:18:34 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40135 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727888AbfH3TSe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:18:34 -0400
-Received: by mail-pg1-f194.google.com with SMTP id w10so3997857pgj.7
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:18:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=dBHIS9lDOaPDJPn3yzTPrCwalw3hsDnKaWJ1UqhoWu8=;
-        b=vkXilRjxD3LXolI8XYwnSWptPkWuyDKNao80m5+sd8OreFCS8StvBYJXL+/mKkbcu9
-         DwWDWdJvBW7Gawuu8rc+r0sYWagBozNwM9y47Ym2qMz1lJog36uBAmhVnMRWoN5LUAOE
-         2fWsP5fasaaVPA8F56uqP8n0ECATcDAzCTYyq9pQH+EG97AGq5BTbJKusUYKtkRkmLIP
-         4+w3/ANSEh0g7UTrnpEGwveM3j41FBb5u9RFPfnLSdvwEu9UFSS6aXSKptk9B7jYVs9q
-         nDsxhlBIpfJwp0sz7t26CbyucNZIq1g294JB3FUTSFbfF3A8FlfnsYL2qA+24k4LIYEF
-         Pz8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dBHIS9lDOaPDJPn3yzTPrCwalw3hsDnKaWJ1UqhoWu8=;
-        b=Evn/8WgpRuSirFOD0rGbLIEJm2lzqCQEBCF0qgh71jqlg7dSTiJ8joxEPx3q/XW1tD
-         A6iCxSkqLHzgZ661xY9JZo72SSuRDQyNjmQdiQtwoySdBHml+QHDYHbVfDaAZ2yBp3g6
-         Nr0lm+ZrENnpJafcIQELEQkpHoXF3uwcvus3ocnNBzk7H1cq5RE0zZR9AgG+FH1TI7hn
-         cGm0tQkJuTj/R6Hu/dB09pezpWGaqS2fw/p+p9ucbzBExYgKtoTZ7WME24YLPEslsHoy
-         RKeEi41WcrK/Y/QPjzxvKaXR09c5hPCOgVntVclvj90IvdBI5zaVPwKtt39b3jUZ3nML
-         sJkQ==
-X-Gm-Message-State: APjAAAXbNYBx0fq86I71xTSdGZ9uhoKyphbzLbtBIDxPAPMuh3Sk1Wly
-        /lSQ0LRY6asqg9HvA2CwXKtGjQ==
-X-Google-Smtp-Source: APXvYqw3obCqmSQhhnSO9d8KsfGHcUGSV3NKWx0fNmrrsmQyOMxkxzOudR4ZIJ7HorcBp1cKkf4LJQ==
-X-Received: by 2002:aa7:934f:: with SMTP id 15mr19671931pfn.22.1567192713607;
-        Fri, 30 Aug 2019 12:18:33 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id q2sm4595963pfg.144.2019.08.30.12.18.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 12:18:33 -0700 (PDT)
-Subject: Re: [PATCH v6 net-next 04/19] ionic: Add port management commands
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190829182720.68419-1-snelson@pensando.io>
- <20190829182720.68419-5-snelson@pensando.io>
- <20190829154613.4e2b479a@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <def6e99b-7224-abfc-88c7-f2c1932e12c2@pensando.io>
-Date:   Fri, 30 Aug 2019 12:18:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        id S1728026AbfH3TUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:20:19 -0400
+Received: from gateway36.websitewelcome.com ([192.185.198.13]:24057 "EHLO
+        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727888AbfH3TUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:20:19 -0400
+X-Greylist: delayed 1375 seconds by postgrey-1.27 at vger.kernel.org; Fri, 30 Aug 2019 15:20:18 EDT
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway36.websitewelcome.com (Postfix) with ESMTP id 6F0C3400C5672
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 13:23:22 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 3m5Kinduw2qH73m5Kik43Y; Fri, 30 Aug 2019 13:57:22 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cPkR+sjQETckei88bj4J3c37q+XYl3hWNTjp7VyXbZ0=; b=oABKnLPqx/CkQNLn7fGJAdolHe
+        EIcYU6kFVYE/porHtSK1snbeKvFjYfqU/ek5Gqkqsw++Ge8fOHMrzxmqyMU8xQjDApdRB3dKOfYUz
+        I3TFUcU8m5vQAmF9cPvzATIXC8K1PaFhkJn3UrDuMn3UNGZG2c6AKxEBt4i2hfyON9FR9O0cfEh50
+        CR4fqc5WVuurWn5GkYQjiRMqotoF2VbnLjcVRHxk7MFLsi70DakRzWtATYPcXE3boldfPxBr0ZgCv
+        f67/hFI/y7MNIo6a3e18pk9gSCviRUM0S3Ma1M5BUAt/aB/0WO3sAh7fIID/vT3iIlQBxcPecAxKH
+        qyWpbZRA==;
+Received: from [189.152.216.116] (port=39024 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1i3m5J-002Gwo-7r; Fri, 30 Aug 2019 13:57:21 -0500
+Date:   Fri, 30 Aug 2019 13:57:16 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] zd1211rw: zd_usb: Use struct_size() helper
+Message-ID: <20190830185716.GA10044@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <20190829154613.4e2b479a@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.152.216.116
+X-Source-L: No
+X-Exim-ID: 1i3m5J-002Gwo-7r
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.152.216.116]:39024
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 15
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/19 3:46 PM, Jakub Kicinski wrote:
-> On Thu, 29 Aug 2019 11:27:05 -0700, Shannon Nelson wrote:
->> The port management commands apply to the physical port
->> associated with the PCI device, which might be shared among
->> several logical interfaces.
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
->>   drivers/net/ethernet/pensando/ionic/ionic.h   |  4 +
->>   .../ethernet/pensando/ionic/ionic_bus_pci.c   | 16 ++++
->>   .../net/ethernet/pensando/ionic/ionic_dev.c   | 92 +++++++++++++++++++
->>   .../net/ethernet/pensando/ionic/ionic_dev.h   | 13 +++
->>   .../net/ethernet/pensando/ionic/ionic_main.c  | 86 +++++++++++++++++
->>   5 files changed, 211 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
->> index 89ad9c590736..4960effd2bcc 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic.h
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
->> @@ -42,4 +42,8 @@ int ionic_identify(struct ionic *ionic);
->>   int ionic_init(struct ionic *ionic);
->>   int ionic_reset(struct ionic *ionic);
->>   
->> +int ionic_port_identify(struct ionic *ionic);
->> +int ionic_port_init(struct ionic *ionic);
->> +int ionic_port_reset(struct ionic *ionic);
->> +
->>   #endif /* _IONIC_H_ */
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->> index 286b4b450a73..804dd43e92a6 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->> @@ -138,12 +138,27 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>   		goto err_out_teardown;
->>   	}
->>   
->> +	/* Configure the ports */
->> +	err = ionic_port_identify(ionic);
->> +	if (err) {
->> +		dev_err(dev, "Cannot identify port: %d, aborting\n", err);
->> +		goto err_out_reset;
->> +	}
->> +
->> +	err = ionic_port_init(ionic);
->> +	if (err) {
->> +		dev_err(dev, "Cannot init port: %d, aborting\n", err);
->> +		goto err_out_reset;
->> +	}
->> +
->>   	err = ionic_devlink_register(ionic);
->>   	if (err)
->>   		dev_err(dev, "Cannot register devlink: %d\n", err);
->>   
->>   	return 0;
->>   
->> +err_out_reset:
->> +	ionic_reset(ionic);
->>   err_out_teardown:
->>   	ionic_dev_teardown(ionic);
->>   err_out_unmap_bars:
->> @@ -170,6 +185,7 @@ static void ionic_remove(struct pci_dev *pdev)
->>   		return;
->>   
->>   	ionic_devlink_unregister(ionic);
->> +	ionic_port_reset(ionic);
->>   	ionic_reset(ionic);
->>   	ionic_dev_teardown(ionic);
->>   	ionic_unmap_bars(ionic);
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->> index 0bf1bd6bd7b1..3137776e9191 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->> @@ -134,3 +134,95 @@ void ionic_dev_cmd_reset(struct ionic_dev *idev)
->>   
->>   	ionic_dev_cmd_go(idev, &cmd);
->>   }
->> +
->> +/* Port commands */
->> +void ionic_dev_cmd_port_identify(struct ionic_dev *idev)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_init.opcode = IONIC_CMD_PORT_IDENTIFY,
->> +		.port_init.index = 0,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_init(struct ionic_dev *idev)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_init.opcode = IONIC_CMD_PORT_INIT,
->> +		.port_init.index = 0,
->> +		.port_init.info_pa = cpu_to_le64(idev->port_info_pa),
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_reset(struct ionic_dev *idev)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_reset.opcode = IONIC_CMD_PORT_RESET,
->> +		.port_reset.index = 0,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_state(struct ionic_dev *idev, u8 state)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
->> +		.port_setattr.index = 0,
->> +		.port_setattr.attr = IONIC_PORT_ATTR_STATE,
->> +		.port_setattr.state = state,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_speed(struct ionic_dev *idev, u32 speed)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
->> +		.port_setattr.index = 0,
->> +		.port_setattr.attr = IONIC_PORT_ATTR_SPEED,
->> +		.port_setattr.speed = cpu_to_le32(speed),
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
->> +		.port_setattr.index = 0,
->> +		.port_setattr.attr = IONIC_PORT_ATTR_AUTONEG,
->> +		.port_setattr.an_enable = an_enable,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
->> +		.port_setattr.index = 0,
->> +		.port_setattr.attr = IONIC_PORT_ATTR_FEC,
->> +		.port_setattr.fec_type = fec_type,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
->> +
->> +void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type)
->> +{
->> +	union ionic_dev_cmd cmd = {
->> +		.port_setattr.opcode = IONIC_CMD_PORT_SETATTR,
->> +		.port_setattr.index = 0,
->> +		.port_setattr.attr = IONIC_PORT_ATTR_PAUSE,
->> +		.port_setattr.pause_type = pause_type,
->> +	};
->> +
->> +	ionic_dev_cmd_go(idev, &cmd);
->> +}
-> Hm. So you haven't moved those?
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
-They make for a nice consistent bundle of service routines that get used 
-in a later patch in this patchset, and helps keep that other patch a 
-little leaner and perhaps easier to review.
+struct usb_int_regs {
+	...
+        struct reg_data regs[0];
+} __packed;
 
->
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
->> index 7050545a83aa..81b6910aabc1 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
->> @@ -117,6 +117,10 @@ struct ionic_dev {
->>   	struct ionic_intr __iomem *intr_ctrl;
->>   	u64 __iomem *intr_status;
->>   
->> +	u32 port_info_sz;
->> +	struct ionic_port_info *port_info;
->> +	dma_addr_t port_info_pa;
->> +
->>   	struct ionic_devinfo dev_info;
->>   };
->>   
->> @@ -135,4 +139,13 @@ void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver);
->>   void ionic_dev_cmd_init(struct ionic_dev *idev);
->>   void ionic_dev_cmd_reset(struct ionic_dev *idev);
->>   
->> +void ionic_dev_cmd_port_identify(struct ionic_dev *idev);
->> +void ionic_dev_cmd_port_init(struct ionic_dev *idev);
->> +void ionic_dev_cmd_port_reset(struct ionic_dev *idev);
->> +void ionic_dev_cmd_port_state(struct ionic_dev *idev, u8 state);
->> +void ionic_dev_cmd_port_speed(struct ionic_dev *idev, u32 speed);
->> +void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable);
->> +void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type);
->> +void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type);
->> +
->>   #endif /* _IONIC_DEV_H_ */
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> index 5c311b9241ee..96de2789587d 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> @@ -317,6 +317,92 @@ int ionic_reset(struct ionic *ionic)
->>   	return err;
->>   }
->>   
->> +int ionic_port_identify(struct ionic *ionic)
->> +{
->> +	struct ionic_identity *ident = &ionic->ident;
->> +	struct ionic_dev *idev = &ionic->idev;
->> +	size_t sz;
->> +	int err;
->> +
->> +	mutex_lock(&ionic->dev_cmd_lock);
->> +
->> +	ionic_dev_cmd_port_identify(idev);
->> +	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
->> +	if (!err) {
->> +		sz = min(sizeof(ident->port), sizeof(idev->dev_cmd_regs->data));
->> +		memcpy_fromio(&ident->port, &idev->dev_cmd_regs->data, sz);
->> +	}
->> +
->> +	mutex_unlock(&ionic->dev_cmd_lock);
->> +
->> +	return err;
->> +}
->> +
->> +int ionic_port_init(struct ionic *ionic)
->> +{
->> +	struct ionic_identity *ident = &ionic->ident;
->> +	struct ionic_dev *idev = &ionic->idev;
->> +	size_t sz;
->> +	int err;
->> +
->> +	if (idev->port_info)
->> +		return 0;
->> +
->> +	idev->port_info_sz = ALIGN(sizeof(*idev->port_info), PAGE_SIZE);
->> +	idev->port_info = dma_alloc_coherent(ionic->dev, idev->port_info_sz,
->> +					     &idev->port_info_pa,
->> +					     GFP_KERNEL);
->> +	if (!idev->port_info) {
->> +		dev_err(ionic->dev, "Failed to allocate port info, aborting\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	sz = min(sizeof(ident->port.config), sizeof(idev->dev_cmd_regs->data));
->> +
->> +	mutex_lock(&ionic->dev_cmd_lock);
->> +
->> +	memcpy_toio(&idev->dev_cmd_regs->data, &ident->port.config, sz);
->> +	ionic_dev_cmd_port_init(idev);
->> +	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
->> +
->> +	ionic_dev_cmd_port_state(&ionic->idev, IONIC_PORT_ADMIN_STATE_UP);
->> +	(void)ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
->> +
->> +	mutex_unlock(&ionic->dev_cmd_lock);
->> +	if (err) {
->> +		dev_err(ionic->dev, "Failed to init port\n");
->> +		dma_free_coherent(ionic->dev, idev->port_info_sz,
->> +				  idev->port_info, idev->port_info_pa);
-> idev->port_info = NULL;
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
 
-Yep
+So, replace the following function:
 
-Thanks,
-sln
+static int usb_int_regs_length(unsigned int count)
+{
+       return sizeof(struct usb_int_regs) + count * sizeof(struct reg_data);
+}
 
+with:
+
+struct_size(regs, regs, count)
+
+This code was detected with the help of Coccinelle.
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/wireless/zydas/zd1211rw/zd_usb.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+index 1965cd0fafc4..4e44ea8c652d 100644
+--- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
++++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+@@ -1597,11 +1597,6 @@ static int zd_ep_regs_out_msg(struct usb_device *udev, void *data, int len,
+ 	}
+ }
+ 
+-static int usb_int_regs_length(unsigned int count)
+-{
+-	return sizeof(struct usb_int_regs) + count * sizeof(struct reg_data);
+-}
+-
+ static void prepare_read_regs_int(struct zd_usb *usb,
+ 				  struct usb_req_read_regs *req,
+ 				  unsigned int count)
+@@ -1636,10 +1631,10 @@ static bool check_read_regs(struct zd_usb *usb, struct usb_req_read_regs *req,
+ 	/* The created block size seems to be larger than expected.
+ 	 * However results appear to be correct.
+ 	 */
+-	if (rr->length < usb_int_regs_length(count)) {
++	if (rr->length < struct_size(regs, regs, count)) {
+ 		dev_dbg_f(zd_usb_dev(usb),
+-			 "error: actual length %d less than expected %d\n",
+-			 rr->length, usb_int_regs_length(count));
++			 "error: actual length %d less than expected %ld\n",
++			 rr->length, struct_size(regs, regs, count));
+ 		return false;
+ 	}
+ 
+-- 
+2.23.0
 
