@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F101A34D8
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 12:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 033A4A34EC
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 12:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbfH3KUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 06:20:47 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:38716 "EHLO inva021.nxp.com"
+        id S1727899AbfH3KZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 06:25:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42794 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727420AbfH3KUq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 06:20:46 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1D0E0200409;
-        Fri, 30 Aug 2019 12:20:45 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 10916200408;
-        Fri, 30 Aug 2019 12:20:45 +0200 (CEST)
-Received: from fsr-ub1664-019.ea.freescale.net (fsr-ub1664-019.ea.freescale.net [10.171.71.230])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id CCCCC205C7;
-        Fri, 30 Aug 2019 12:20:44 +0200 (CEST)
-From:   Ioana Radulescu <ruxandra.radulescu@nxp.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     ioana.ciornei@nxp.com
-Subject: [PATCH net-next 3/3] dpaa2-eth: Poll Tx pending frames counter on if down
-Date:   Fri, 30 Aug 2019 13:20:43 +0300
-Message-Id: <1567160443-31297-4-git-send-email-ruxandra.radulescu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1567160443-31297-1-git-send-email-ruxandra.radulescu@nxp.com>
-References: <1567160443-31297-1-git-send-email-ruxandra.radulescu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725780AbfH3KZ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 06:25:57 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8E0D3308AA11;
+        Fri, 30 Aug 2019 10:25:56 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BF2A819C77;
+        Fri, 30 Aug 2019 10:25:54 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     borisp@mellanox.com, jakub.kicinski@netronome.com,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     aviadye@mellanox.com, davejwatson@fb.com, davem@davemloft.net,
+        john.fastabend@gmail.com,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v3 0/3] net: tls: add socket diag
+Date:   Fri, 30 Aug 2019 12:25:46 +0200
+Message-Id: <cover.1567158431.git.dcaratti@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 30 Aug 2019 10:25:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Starting with firmware version MC10.18.0, a new counter for in flight
-Tx frames is offered. Use it when bringing down the interface to
-determine when all pending Tx frames have been processed by hardware
-instead of sleeping a fixed amount of time.
+The current kernel does not provide any diagnostic tool, except
+getsockopt(TCP_ULP), to know more about TCP sockets that have an upper
+layer protocol (ULP) on top of them. This series extends the set of
+information exported by INET_DIAG_INFO, to include data that are
+specific to the ULP (and that might be meaningful for debug/testing
+purposes).
 
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 31 +++++++++++++++++++++---
- 1 file changed, 28 insertions(+), 3 deletions(-)
+patch 1/3 ensures that the control plane reads/updates ULP specific data
+using RCU.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 5402867..162d7d8 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1348,7 +1348,7 @@ static u32 ingress_fq_count(struct dpaa2_eth_priv *priv)
- 	return total;
- }
- 
--static void wait_for_fq_empty(struct dpaa2_eth_priv *priv)
-+static void wait_for_ingress_fq_empty(struct dpaa2_eth_priv *priv)
- {
- 	int retries = 10;
- 	u32 pending;
-@@ -1360,6 +1360,31 @@ static void wait_for_fq_empty(struct dpaa2_eth_priv *priv)
- 	} while (pending && --retries);
- }
- 
-+#define DPNI_TX_PENDING_VER_MAJOR	7
-+#define DPNI_TX_PENDING_VER_MINOR	13
-+static void wait_for_egress_fq_empty(struct dpaa2_eth_priv *priv)
-+{
-+	union dpni_statistics stats;
-+	int retries = 10;
-+	int err;
-+
-+	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_TX_PENDING_VER_MAJOR,
-+				   DPNI_TX_PENDING_VER_MINOR) < 0)
-+		goto out;
-+
-+	do {
-+		err = dpni_get_statistics(priv->mc_io, 0, priv->mc_token, 6,
-+					  &stats);
-+		if (err)
-+			goto out;
-+		if (stats.page_6.tx_pending_frames == 0)
-+			return;
-+	} while (--retries);
-+
-+out:
-+	msleep(500);
-+}
-+
- static int dpaa2_eth_stop(struct net_device *net_dev)
- {
- 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-@@ -1379,7 +1404,7 @@ static int dpaa2_eth_stop(struct net_device *net_dev)
- 	 * on WRIOP. After it finishes, wait until all remaining frames on Rx
- 	 * and Tx conf queues are consumed on NAPI poll.
- 	 */
--	msleep(500);
-+	wait_for_egress_fq_empty(priv);
- 
- 	do {
- 		dpni_disable(priv->mc_io, 0, priv->mc_token);
-@@ -1395,7 +1420,7 @@ static int dpaa2_eth_stop(struct net_device *net_dev)
- 		 */
- 	}
- 
--	wait_for_fq_empty(priv);
-+	wait_for_ingress_fq_empty(priv);
- 	disable_ch_napi(priv);
- 
- 	/* Empty the buffer pool */
+patch 2/3 extends INET_DIAG_INFO and allows knowing the ULP name for
+each TCP socket that has done setsockopt(TCP_ULP) successfully.
+
+patch 3/3 extends kTLS to let programs like 'ss' know the protocol
+version and the cipher in use.
+
+Changes since v2:
+- remove unneeded #ifdef and fix reverse christmas tree in
+  tls_get_info(), thanks to Jakub Kicinski 
+
+Changes since v1:
+- don't worry about grace period when accessing ulp_ops, thanks to
+  Jakub Kicinski and Eric Dumazet
+- use rcu_dereference() to access ULP data in tls get_info(), and 
+  test against NULL value, thanks to Jakub Kicinski
+- move RCU protected section inside tls get_info(), thanks to Jakub
+  Kicinski
+
+Changes since RFC:
+- some coding style fixes, thanks to Jakub Kicinski
+- add X_UNSPEC as lowest value of uAPI enums, thanks to Jakub Kicinski
+- fix assignment of struct nlattr *start, thanks to Jakub Kicinski
+- let tls dump RXCONF and TXCONF, suggested by Jakub Kicinski
+- don't dump anything if TLS version or cipher are 0 (but still return a
+  constant size in get_aux_size()), thanks to Boris Pismenny
+- constify first argument of get_info() and get_size()
+- use RCU to access access ulp_ops, like it's done for ca_ops
+- add patch 1/3, from Jakub Kicinski
+
+Davide Caratti (2):
+  tcp: ulp: add functions to dump ulp-specific information
+  net: tls: export protocol version, cipher, tx_conf/rx_conf to socket
+    diag
+
+Jakub Kicinski (1):
+  net/tls: use RCU protection on icsk->icsk_ulp_data
+
+ include/net/inet_connection_sock.h |  2 +-
+ include/net/tcp.h                  |  3 +
+ include/net/tls.h                  | 26 ++++++++-
+ include/uapi/linux/inet_diag.h     |  9 +++
+ include/uapi/linux/tls.h           | 15 +++++
+ net/core/sock_map.c                |  2 +-
+ net/ipv4/tcp_diag.c                | 52 ++++++++++++++++-
+ net/tls/tls_device.c               |  2 +-
+ net/tls/tls_main.c                 | 90 +++++++++++++++++++++++++++---
+ 9 files changed, 188 insertions(+), 13 deletions(-)
+
 -- 
-2.7.4
+2.20.1
 
