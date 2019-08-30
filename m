@@ -2,106 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 508D6A335B
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:07:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBFCA3366
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbfH3JHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 05:07:17 -0400
-Received: from correo.us.es ([193.147.175.20]:50466 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726461AbfH3JHR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 05:07:17 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 921CBDA725
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 11:07:11 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 83024FF2E8
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 11:07:11 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7863BDA72F; Fri, 30 Aug 2019 11:07:11 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 46DFADA72F;
-        Fri, 30 Aug 2019 11:07:09 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 30 Aug 2019 11:07:09 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 241F64265A5A;
-        Fri, 30 Aug 2019 11:07:09 +0200 (CEST)
-Date:   Fri, 30 Aug 2019 11:07:10 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@resnulli.us
-Subject: Re: [PATCH 0/4 net-next] flow_offload: update mangle action
- representation
-Message-ID: <20190830090710.g7q2chf3qulfs5e4@salvia>
-References: <20190830005336.23604-1-pablo@netfilter.org>
- <20190829185448.0b502af8@cakuba.netronome.com>
+        id S1727800AbfH3JJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 05:09:17 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47291 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726653AbfH3JJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 05:09:16 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1i3csC-0003NG-1k; Fri, 30 Aug 2019 09:07:12 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        linux-wimax@intel.com, "David S . Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][V2] wimax/i2400m: remove debug containing bogus calculation of index
+Date:   Fri, 30 Aug 2019 10:07:11 +0100
+Message-Id: <20190830090711.15300-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190829185448.0b502af8@cakuba.netronome.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 06:54:48PM -0700, Jakub Kicinski wrote:
-> On Fri, 30 Aug 2019 02:53:32 +0200, Pablo Neira Ayuso wrote:
-> > * Offsets do not need to be on the 32-bits boundaries anymore. This
-> >   patchset adds front-end code to adjust the offset and length coming
-> >   from the tc pedit representation, so drivers get an exact header field
-> >   offset and length.
-> 
-> But drivers use offsetof(start of field) to match headers, and I don't
-> see you changing that. So how does this work then?
+From: Colin Ian King <colin.king@canonical.com>
 
-Drivers can only use offsetof() for fields that are on the 32-bits
-boundary.
+The subtraction of the two pointers is automatically scaled by the
+size of the size of the object the pointers point to, so the division
+by sizeof(*i2400m->barker) is incorrect.  This has been broken since
+day one of the driver and is only debug, so remove the debug completely.
 
-Before this patchset, if you want to mangle the destination port, then
-the driver needs to refer to the source port offset and the length is
-4 bytes, so the mask is telling what needs to be mangled.
+Also move && in condition to clean up a checkpatch warning.
 
-After this patchset, the offset is set to the destination port, the
-length is set to 2-bytes, and the mask is telling what bytes of the
-destination port field you specifically want to update.
+Addresses-Coverity: ("Extra sizeof expression")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
 
-It's just 100 LOC of preprocessing that is simplifying driver
-codebase.
+V2: completely remove debug, clean up checkpatch warning, change subject line
 
-> Say - I want to change the second byte of an IPv4 address.
+---
+ drivers/net/wimax/i2400m/fw.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Then, the front-end sets the offset to IPv4 address header field, and
-the mask tells what to update.
+diff --git a/drivers/net/wimax/i2400m/fw.c b/drivers/net/wimax/i2400m/fw.c
+index 489cba9b284d..6c9a41bff2e0 100644
+--- a/drivers/net/wimax/i2400m/fw.c
++++ b/drivers/net/wimax/i2400m/fw.c
+@@ -397,14 +397,9 @@ int i2400m_is_boot_barker(struct i2400m *i2400m,
+ 
+ 	/* Short circuit if we have already discovered the barker
+ 	 * associated with the device. */
+-	if (i2400m->barker
+-	    && !memcmp(buf, i2400m->barker, sizeof(i2400m->barker->data))) {
+-		unsigned index = (i2400m->barker - i2400m_barker_db)
+-			/ sizeof(*i2400m->barker);
+-		d_printf(2, dev, "boot barker cache-confirmed #%u/%08x\n",
+-			 index, le32_to_cpu(i2400m->barker->data[0]));
++	if (i2400m->barker &&
++	    !memcmp(buf, i2400m->barker, sizeof(i2400m->barker->data)))
+ 		return 0;
+-	}
+ 
+ 	for (i = 0; i < i2400m_barker_db_used; i++) {
+ 		barker = &i2400m_barker_db[i];
+-- 
+2.20.1
 
-> > * The front-end coalesces consecutive pedit actions into one single
-> >   word, so drivers can mangle IPv6 and ethernet address fields in one
-> >   single go.
-> 
-> You still only coalesce up to 16 bytes, no?
-
-You only have to rise FLOW_ACTION_MANGLE_MAXLEN coming in this patch
-if you need more. I don't know of any packet field larger than 16
-bytes. If there is a use-case for this, it should be easy to rise that
-definition.
-
-> As I said previously drivers will continue to implement mangle action
-> merge code if that's the case. It'd be nice if core did the coalescing,
-> and mark down first and last action, in case there is a setup cost for
-> rewrite group.
-
-In this patchset, the core front-end is doing the coalescing.
