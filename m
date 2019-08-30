@@ -2,214 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0089A37BD
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 15:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF23AA38B9
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:03:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbfH3N2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 09:28:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38180 "EHLO mx1.redhat.com"
+        id S1727938AbfH3OCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 10:02:31 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:19836 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727754AbfH3N2E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 09:28:04 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1727135AbfH3OCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 10:02:30 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 07648307D84D;
-        Fri, 30 Aug 2019 13:28:04 +0000 (UTC)
-Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3028E608C1;
-        Fri, 30 Aug 2019 13:27:59 +0000 (UTC)
-Date:   Fri, 30 Aug 2019 15:27:58 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH 2/3] samples: pktgen: add helper functions for IP(v4/v6)
- CIDR parsing
-Message-ID: <20190830152758.41b38c24@carbon>
-In-Reply-To: <20190828204243.16666-2-danieltimlee@gmail.com>
-References: <20190828204243.16666-1-danieltimlee@gmail.com>
-        <20190828204243.16666-2-danieltimlee@gmail.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 62C7FC075BD2;
+        Fri, 30 Aug 2019 14:02:30 +0000 (UTC)
+Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 35E8D3DE1;
+        Fri, 30 Aug 2019 14:02:26 +0000 (UTC)
+Date:   Fri, 30 Aug 2019 16:02:23 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+Message-ID: <20190830160223.332fd81f.cohuck@redhat.com>
+In-Reply-To: <AM0PR05MB486621283F935B673455DA63D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190829111904.16042-1-parav@mellanox.com>
+        <20190829111904.16042-2-parav@mellanox.com>
+        <20190830111720.04aa54e9.cohuck@redhat.com>
+        <AM0PR05MB48660877881F7A2D757A9C82D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190830143927.163d13a7.cohuck@redhat.com>
+        <AM0PR05MB486621283F935B673455DA63D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 30 Aug 2019 13:28:04 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Fri, 30 Aug 2019 14:02:30 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 05:42:42 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+On Fri, 30 Aug 2019 12:58:04 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
-> This commit adds CIDR parsing and IP validate helper function to parse
-> single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
-> 
-> Helpers will be used in prior to set target address in samples/pktgen.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/pktgen/functions.sh | 134 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 134 insertions(+)
-> 
-> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-> index 4af4046d71be..eb1c52e25018 100644
-> --- a/samples/pktgen/functions.sh
-> +++ b/samples/pktgen/functions.sh
-> @@ -163,6 +163,140 @@ function get_node_cpus()
->  	echo $node_cpu_list
->  }
->  
-> +# Extend shrunken IPv6 address.
-> +# fe80::42:bcff:fe84:e10a => fe80:0:0:0:42:bcff:fe84:e10a
-> +function extend_addr6()
-> +{
-> +    local addr=$1
-> +    local sep=:
-> +    local sep2=::
-> +    local sep_cnt=$(tr -cd $sep <<< $1 | wc -c)
-> +    local shrink
-> +
-> +    # separator count : should be between 2, 7.
-> +    if [[ $sep_cnt -lt 2 || $sep_cnt -gt 7 ]]; then
-> +        err 5 "Invalid IP6 address sep: $1"
-> +    fi
-> +
-> +    # if shrink '::' occurs multiple, it's malformed.
-> +    shrink=( $(egrep -o "$sep{2,}" <<< $addr) )
-> +    if [[ ${#shrink[@]} -ne 0 ]]; then
-> +        if [[ ${#shrink[@]} -gt 1 || ( ${shrink[0]} != $sep2 ) ]]; then
-> +            err 5 "Invalid IP$IP6 address shr: $1"
-> +        fi
-> +    fi
-> +
-> +    # add 0 at begin & end, and extend addr by adding :0
-> +    [[ ${addr:0:1} == $sep ]] && addr=0${addr}
-> +    [[ ${addr: -1} == $sep ]] && addr=${addr}0
-> +    echo "${addr/$sep2/$(printf ':0%.s' $(seq $[8-sep_cnt])):}"
-> +}
-> +
-> +
-> +# Given a single IP(v4/v6) address, whether it is valid.
-> +function validate_addr()
-> +{
-> +    # check function is called with (funcname)6
-> +    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
-> +    local len=$[ IP6 ? 8 : 4 ]
-> +    local max=$[ 2**(len*2)-1 ]
-> +    local addr
-> +    local sep
-> +
-> +    # set separator for each IP(v4/v6)
-> +    [[ $IP6 ]] && sep=: || sep=.
-> +    IFS=$sep read -a addr <<< $1
-> +
-> +    # array length
-> +    if [[ ${#addr[@]} != $len ]]; then
-> +        err 5 "Invalid IP$IP6 address: $1"
-> +    fi
-> +
-> +    # check each digit between 0, $max
-> +    for digit in "${addr[@]}"; do
-> +        [[ $IP6 ]] && digit=$[ 16#$digit ]
-> +        if [[ $digit -lt 0 || $digit -gt $max ]]; then
-> +            err 5 "Invalid IP$IP6 address: $1"
-> +        fi
-> +    done
-> +
-> +    return 0
-> +}
-> +
-> +function validate_addr6() { validate_addr $@ ; }
-> +
-> +# Given a single IP(v4/v6) or CIDR, return minimum and maximum IP addr.
-> +function parse_addr()
+> > -----Original Message-----
+> > From: Cornelia Huck <cohuck@redhat.com>
+> > Sent: Friday, August 30, 2019 6:09 PM
+> > To: Parav Pandit <parav@mellanox.com>
+> > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; netdev@vger.kernel.org
+> > Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+> > 
+> > On Fri, 30 Aug 2019 12:33:22 +0000
+> > Parav Pandit <parav@mellanox.com> wrote:
+> >   
+> > > > -----Original Message-----
+> > > > From: Cornelia Huck <cohuck@redhat.com>
+> > > > Sent: Friday, August 30, 2019 2:47 PM
+> > > > To: Parav Pandit <parav@mellanox.com>
+> > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
+> > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
+> > > > Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+> > > >
+> > > > On Thu, 29 Aug 2019 06:18:59 -0500
+> > > > Parav Pandit <parav@mellanox.com> wrote:
+> > > >  
+> > > > > Some vendor drivers want an identifier for an mdev device that is
+> > > > > shorter than the UUID, due to length restrictions in the consumers
+> > > > > of that identifier.
+> > > > >
+> > > > > Add a callback that allows a vendor driver to request an alias of
+> > > > > a specified length to be generated for an mdev device. If
+> > > > > generated, that alias is checked for collisions.
+> > > > >
+> > > > > It is an optional attribute.
+> > > > > mdev alias is generated using sha1 from the mdev name.
+> > > > >
+> > > > > Signed-off-by: Parav Pandit <parav@mellanox.com>
+> > > > >
+> > > > > ---
+> > > > > Changelog:
+> > > > > v1->v2:
+> > > > >  - Kept mdev_device naturally aligned
+> > > > >  - Added error checking for crypt_*() calls
+> > > > >  - Corrected a typo from 'and' to 'an'
+> > > > >  - Changed return type of generate_alias() from int to char*
+> > > > > v0->v1:
+> > > > >  - Moved alias length check outside of the parent lock
+> > > > >  - Moved alias and digest allocation from kvzalloc to kzalloc
+> > > > >  - &alias[0] changed to alias
+> > > > >  - alias_length check is nested under get_alias_length callback
+> > > > > check
+> > > > >  - Changed comments to start with an empty line
+> > > > >  - Fixed cleaunup of hash if mdev_bus_register() fails
+> > > > >  - Added comment where alias memory ownership is handed over to
+> > > > > mdev device
+> > > > >  - Updated commit log to indicate motivation for this feature
+> > > > > ---
+> > > > >  drivers/vfio/mdev/mdev_core.c    | 123  
+> > > > ++++++++++++++++++++++++++++++-  
+> > > > >  drivers/vfio/mdev/mdev_private.h |   5 +-
+> > > > >  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
+> > > > >  include/linux/mdev.h             |   4 +
+> > > > >  4 files changed, 135 insertions(+), 10 deletions(-)  
+> >   
+> > > > ...and detached from the local variable here. Who is freeing it? The
+> > > > comment states that it is done by the mdev, but I don't see it?
+> > > >  
+> > > mdev_device_free() frees it.  
+> > 
+> > Ah yes, I overlooked the kfree().
+> >   
+> > > once its assigned to mdev, mdev is the owner of it.
+> > >  
+> > > > This detour via the local variable looks weird to me. Can you either
+> > > > create the alias directly in the mdev (would need to happen later in
+> > > > the function, but I'm not sure why you generate the alias before
+> > > > checking for duplicates anyway), or do an explicit copy?  
+> > > Alias duplicate check is done after generating it, because duplicate alias are  
+> > not allowed.  
+> > > The probability of collision is rare.
+> > > So it is speculatively generated without hold the lock, because there is no  
+> > need to hold the lock.  
+> > > It is compared along with guid while mutex lock is held in single loop.
+> > > And if it is duplicate, there is no need to allocate mdev.
+> > >
+> > > It will be sub optimal to run through the mdev list 2nd time after mdev  
+> > creation and after generating alias for duplicate check.
+> > 
+> > Ok, but what about copying it? I find this "set local variable to NULL after
+> > ownership is transferred" pattern a bit unintuitive. Copying it to the mdev (and
+> > then unconditionally freeing it) looks more obvious to me.  
+> Its not unconditionally freed. 
 
-I must say that I'm impressed by your bash-shell skills, BUT below
-function does look too complicated for doing this... I were expecting
-that you would use the regular & (AND) operation to do the prefix
-masking.
+That's not what I have been saying :(
 
+> Its freed in the error unwinding path.
+> I think its ok along with the comment that describes this error path area.
 
-> +{
-> +    # check function is called with (funcname)6
-> +    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
-> +    local bitlen=$[ IP6 ? 128 : 32 ]
-> +
-> +    local addr=$1
-> +    local net
-> +    local prefix
-> +    local min_ip
-> +    local max_ip
-> +
-> +    IFS='/' read net prefix <<< $addr
-> +    [[ $IP6 ]] && net=$(extend_addr6 $net)
-> +    validate_addr$IP6 $net
-> +
-> +    if [[ $prefix -gt $bitlen ]]; then
-> +        err 5 "Invalid prefix: $prefix"
-> +    elif [[ -z $prefix ]]; then
-> +        min_ip=$net
-> +        max_ip=$net
-> +    else
-> +        # defining array for converting Decimal 2 Binary
-> +        # 00000000 00000001 00000010 00000011 00000100 ...
-> +        local d2b='{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}'
-> +        [[ $IP6 ]] && d2b+=$d2b
-> +        eval local D2B=($d2b)
-> +
-> +        local shift=$[ bitlen-prefix ]
-> +        local ip_bit
-> +        local ip
-> +        local sep
-> +
-> +        # set separator for each IP(v4/v6)
-> +        [[ $IP6 ]] && sep=: || sep=.
-> +        IFS=$sep read -ra ip <<< $net
-> +
-> +        # build full size bit
-> +        for digit in "${ip[@]}"; do
-> +            [[ $IP6 ]] && digit=$[ 16#$digit ]
-> +            ip_bit+=${D2B[$digit]}
-> +        done
-> +
-> +        # fill 0 or 1 by $shift
-> +        base_bit=${ip_bit::$prefix}
-> +        min_bit="$base_bit$(printf '0%.s' $(seq $shift))"
-> +        max_bit="$base_bit$(printf '1%.s' $(seq $shift))"
-> +
-> +        bit2addr() {
-> +            local step=$[ IP6 ? 16 : 8 ]
-> +            local max=$[ bitlen-step ]
-> +            local result
-> +            local fmt
-> +            [[ $IP6 ]] && fmt='%X' || fmt='%d'
-> +
-> +            for i in $(seq 0 $step $max); do
-> +                result+=$(printf $fmt $[ 2#${1:$i:$step} ])
-> +                [[ $i != $max ]] && result+=$sep
-> +            done
-> +            echo $result
-> +        }
-> +
-> +        min_ip=$(bit2addr $min_bit)
-> +        max_ip=$(bit2addr $max_bit)
-> +    fi
-> +
-> +    echo $min_ip $max_ip
-> +}
-> +
-> +function parse_addr6() { parse_addr $@ ; }
-> +
->  # Given a single or range of port(s), return minimum and maximum port number.
->  function parse_ports()
->  {
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+It is not wrong, but I'm not sure I like it.
