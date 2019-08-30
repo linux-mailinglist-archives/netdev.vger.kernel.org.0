@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8003A3CD1
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 19:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04370A3CE2
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 19:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbfH3RQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 13:16:07 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:57086 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727434AbfH3RQG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 13:16:06 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id E7DA95FC82;
-        Fri, 30 Aug 2019 19:16:03 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="cFkj3+8T";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id A430A1DAE219;
-        Fri, 30 Aug 2019 19:16:03 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com A430A1DAE219
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1567185363;
-        bh=YVARbI/Cl7CtDXBi2526daUB1XB9B3qC3CMJs1E2HFI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cFkj3+8TkpuqANEkNHa+uM0tE7IqSIIh6pTsz9WJfUHR9IHR0Q3MaX5EHTFEcxnUx
-         +NqjMjiHyulWG+mllj2rvznkNpMhJmqQA/Qn/ZmZJTxejrz0D+1+YtrN/HWSpMRBMo
-         4UVUk+pQ53S6Hp1mrCEGMalp4UtuqJzdz8xFIZWd7AmehujnofaddiE6bkkawI3WBr
-         dhz2/perY2Qk9y6hjGmVhJbcgTnt8VyT89VH5KvjtCWKLY1/9FKQH4oJrUxVvW6LER
-         vCxgKonf/CcEe8xV0K28cQ1jEAPNoBXBtd5g2M5VJ2Ye+r0mTDa9d3mygtjwrVb+cv
-         qB8RjBjqheYCg==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Fri, 30 Aug 2019 17:16:03 +0000
-Date:   Fri, 30 Aug 2019 17:16:03 +0000
-Message-ID: <20190830171603.Horde.UeVVg_YU-C4f8bcYmFJ_1Gv@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>, linux-mips@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] dt-bindings: net: dsa: mt7530: Add
- support for port 5
-References: <20190821144547.15113-1-opensource@vdorst.com>
- <20190821144547.15113-3-opensource@vdorst.com>
- <20190827222251.GA30507@bogus>
- <20190828063520.Horde.4_ak7mcmFhVJlxZWWy2wo3V@www.vdorst.com>
-In-Reply-To: <20190828063520.Horde.4_ak7mcmFhVJlxZWWy2wo3V@www.vdorst.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1728146AbfH3RUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 13:20:19 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39148 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727791AbfH3RUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 13:20:18 -0400
+Received: by mail-qt1-f193.google.com with SMTP id n7so8389387qtb.6
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 10:20:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=HqYjUFkMHJRt0423B9PPCGjkyABvf/YxS1nZLH4SrgA=;
+        b=A6jxGLKugYwM0p5LoXi2Iw1E7kXz3ztc7X0ngCBvIQrEXNCycNAn41q8zxzZHEXvz/
+         1nrSxap7Ft2HS38DwMtkfCSrBDwZVEJWKIPxLD/vdPADay84S9MmO9kIvmCuprrSfAEs
+         ZfZFbIFoHgtnc/0iaJQYrECmvQnCEDoqNevXbVAjDzG/sznnyVmqxq92b0Rx1Z/aeYyJ
+         E89TXTuVaqKEWk8x92C/3r8d82o/POvKF+n5IGuWTpmJPHE9IdsWcg3WPKE3780uLQBP
+         ThUt5w91QlkGlc8YttXIHZ+k0k8XM4KafcDgxqic1in7ZAz0QZJ+KGxj05+yUpDKmWet
+         GW0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=HqYjUFkMHJRt0423B9PPCGjkyABvf/YxS1nZLH4SrgA=;
+        b=slDTcsf8JtthM5PKx0CCSSwOt703haoM+65BskIAPAvY1En16gfOWd/Yq8cEFkXCt/
+         J1EcpVJu7jJvXJXOCSxI0gkz2nVcdHiZJCf6KwzPmpM/yrwhUJlrlSSiSyXqKdUJpzCr
+         n9K1T56OCxCek9AhwvM1VLd42OIA2bWYlDsXWUrYotb5GujWTLvtRTMAiRolD7uos9K3
+         KOn62X/DZnhOHlR0GbY6AV+IoMghY+jamYn3itPnafVxPXvZp7qRzfXL7yOWfkEagbJs
+         wjSKb5Wayrrdh2SamCOFVt3ppOxQHImawh4CHI5PyftisrDI86MghCiYSzcBVDipqR9K
+         cqvQ==
+X-Gm-Message-State: APjAAAVd3JDmz7hi6N1XPg7l7VjFQa8+cnQhbiUCEu65vC3qD/D7BF54
+        Tc+ub0ZP183ShQDtEbnZ900=
+X-Google-Smtp-Source: APXvYqy6M8dIRVT/NMUg/VsdrEiNQpYY2LSsovY1ZiwuxXKCEDQNVUi4DPwWlHAcUjUN8hxAFwRxxQ==
+X-Received: by 2002:ac8:65d4:: with SMTP id t20mr16672784qto.249.1567185617863;
+        Fri, 30 Aug 2019 10:20:17 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id b192sm2566736qkg.39.2019.08.30.10.20.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2019 10:20:16 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 13:20:15 -0400
+Message-ID: <20190830132015.GC19349@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, andrew@lunn.ch, idosch@idosch.org,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v3 net-next 2/2] net: dsa: tag_8021q: Restore bridge VLANs
+ when enabling vlan_filtering
+In-Reply-To: <20190830005325.26526-3-olteanv@gmail.com>
+References: <20190830005325.26526-1-olteanv@gmail.com>
+ <20190830005325.26526-3-olteanv@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,234 +67,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+Hi Vladimir,
 
-<snip>
+On Fri, 30 Aug 2019 03:53:25 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> The bridge core assumes that enabling/disabling vlan_filtering will
+> translate into the simple toggling of a flag for switchdev drivers.
+> 
+> That is clearly not the case for sja1105, which alters the VLAN table
+> and the pvids in order to obtain port separation in standalone mode.
+> 
+> There are 2 parts to the issue.
+> 
+> First, tag_8021q changes the pvid to a unique per-port rx_vid for frame
+> identification. But we need to disable tag_8021q when vlan_filtering
+> kicks in, and at that point, the VLAN configured as pvid will have to be
+> removed from the filtering table of the ports. With an invalid pvid, the
+> ports will drop all traffic.  Since the bridge will not call any vlan
+> operation through switchdev after enabling vlan_filtering, we need to
+> ensure we're in a functional state ourselves. Hence read the pvid that
+> the bridge is aware of, and program that into our ports.
+> 
+> Secondly, tag_8021q uses the 1024-3071 range privately in
+> vlan_filtering=0 mode. Had the user installed one of these VLANs during
+> a previous vlan_filtering=1 session, then upon the next tag_8021q
+> cleanup for vlan_filtering to kick in again, VLANs in that range will
+> get deleted unconditionally, hence breaking user expectation. So when
+> deleting the VLANs, check if the bridge had knowledge about them, and if
+> it did, re-apply the settings. Wrap this logic inside a
+> dsa_8021q_vid_apply helper function to reduce code duplication.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
->>> See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list  
->>> of additional
->>> required, optional properties and how the integrated switch subnodes must
->>> be specified.
->>> @@ -94,3 +130,185 @@ Example:
->>> 			};
->>> 		};
->>> 	};
->>> +
->>> +Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
->>> +
->>> +&eth {
->>> +	status = "okay";
->>
->> Don't show status in examples.
->
-> OK.
->
->> This should show the complete node.
->>
->
+I have no complaint with this series:
 
-I asked this question below in my previous email.
-May be you missed it, I hope that you have time soon to answer this so that I
-can send a new version.
-
-> To be clear, I should take ethernet node from the mt7621.dtsi [0] or  
-> mt7623.dtsi [1] and insert the example below?, right?
-
-Greats,
-
-René
-
->
-> Greats,
->
-> René
->
-> [0]:  
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/drivers/staging/mt7621-dts/mt7621.dtsi#n397
-> [1]:  
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/arch/arm/boot/dts/mt7623.dtsi#n1023
->
->>> +
->>> +	gmac0: mac@0 {
->>> +		compatible = "mediatek,eth-mac";
->>> +		reg = <0>;
->>> +		phy-mode = "rgmii";
->>> +
->>> +		fixed-link {
->>> +			speed = <1000>;
->>> +			full-duplex;
->>> +			pause;
->>> +		};
->>> +	};
->>> +
->>> +	gmac1: mac@1 {
->>> +		compatible = "mediatek,eth-mac";
->>> +		reg = <1>;
->>> +		phy-mode = "rgmii-txid";
->>> +		phy-handle = <&phy4>;
->>> +	};
->>> +
->>> +	mdio: mdio-bus {
->>> +		#address-cells = <1>;
->>> +		#size-cells = <0>;
->>> +
->>> +		/* Internal phy */
->>> +		phy4: ethernet-phy@4 {
->>> +			reg = <4>;
->>> +		};
->>> +
->>> +		mt7530: switch@1f {
->>> +			compatible = "mediatek,mt7621";
->>> +			#address-cells = <1>;
->>> +			#size-cells = <0>;
->>> +			reg = <0x1f>;
->>> +			pinctrl-names = "default";
->>> +			mediatek,mcm;
->>> +
->>> +			resets = <&rstctrl 2>;
->>> +			reset-names = "mcm";
->>> +
->>> +			ports {
->>> +				#address-cells = <1>;
->>> +				#size-cells = <0>;
->>> +
->>> +				port@0 {
->>> +					reg = <0>;
->>> +					label = "lan0";
->>> +				};
->>> +
->>> +				port@1 {
->>> +					reg = <1>;
->>> +					label = "lan1";
->>> +				};
->>> +
->>> +				port@2 {
->>> +					reg = <2>;
->>> +					label = "lan2";
->>> +				};
->>> +
->>> +				port@3 {
->>> +					reg = <3>;
->>> +					label = "lan3";
->>> +				};
->>> +
->>> +/* Commented out. Port 4 is handled by 2nd GMAC.
->>> +				port@4 {
->>> +					reg = <4>;
->>> +					label = "lan4";
->>> +				};
->>> +*/
->>> +
->>> +				cpu_port0: port@6 {
->>> +					reg = <6>;
->>> +					label = "cpu";
->>> +					ethernet = <&gmac0>;
->>> +					phy-mode = "rgmii";
->>> +
->>> +					fixed-link {
->>> +						speed = <1000>;
->>> +						full-duplex;
->>> +						pause;
->>> +					};
->>> +				};
->>> +			};
->>> +		};
->>> +	};
->>> +};
->>> +
->>> +Example 3: MT7621: Port 5 is connected to external PHY: Port 5 ->  
->>> external PHY.
->>> +
->>> +&eth {
->>> +	status = "okay";
->>> +
->>> +	gmac0: mac@0 {
->>> +		compatible = "mediatek,eth-mac";
->>> +		reg = <0>;
->>> +		phy-mode = "rgmii";
->>> +
->>> +		fixed-link {
->>> +			speed = <1000>;
->>> +			full-duplex;
->>> +			pause;
->>> +		};
->>> +	};
->>> +
->>> +	mdio: mdio-bus {
->>> +		#address-cells = <1>;
->>> +		#size-cells = <0>;
->>> +
->>> +		/* External phy */
->>> +		ephy5: ethernet-phy@7 {
->>> +			reg = <7>;
->>> +		};
->>> +
->>> +		mt7530: switch@1f {
->>> +			compatible = "mediatek,mt7621";
->>> +			#address-cells = <1>;
->>> +			#size-cells = <0>;
->>> +			reg = <0x1f>;
->>> +			pinctrl-names = "default";
->>> +			mediatek,mcm;
->>> +
->>> +			resets = <&rstctrl 2>;
->>> +			reset-names = "mcm";
->>> +
->>> +			ports {
->>> +				#address-cells = <1>;
->>> +				#size-cells = <0>;
->>> +
->>> +				port@0 {
->>> +					reg = <0>;
->>> +					label = "lan0";
->>> +				};
->>> +
->>> +				port@1 {
->>> +					reg = <1>;
->>> +					label = "lan1";
->>> +				};
->>> +
->>> +				port@2 {
->>> +					reg = <2>;
->>> +					label = "lan2";
->>> +				};
->>> +
->>> +				port@3 {
->>> +					reg = <3>;
->>> +					label = "lan3";
->>> +				};
->>> +
->>> +				port@4 {
->>> +					reg = <4>;
->>> +					label = "lan4";
->>> +				};
->>> +
->>> +				port@5 {
->>> +					reg = <5>;
->>> +					label = "lan5";
->>> +					phy-mode = "rgmii";
->>> +					phy-handle = <&ephy5>;
->>> +				};
->>> +
->>> +				cpu_port0: port@6 {
->>> +					reg = <6>;
->>> +					label = "cpu";
->>> +					ethernet = <&gmac0>;
->>> +					phy-mode = "rgmii";
->>> +
->>> +					fixed-link {
->>> +						speed = <1000>;
->>> +						full-duplex;
->>> +						pause;
->>> +					};
->>> +				};
->>> +			};
->>> +		};
->>> +	};
->>> +};
->>> --
->>> 2.20.1
->>>
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
 
 
+Thanks for sending smaller pieces like this one btw,
 
+	Vivien
