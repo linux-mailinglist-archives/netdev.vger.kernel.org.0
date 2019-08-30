@@ -2,137 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A50A3CB1
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 18:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA520A3CC2
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 19:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728240AbfH3QzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 12:55:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52678 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727930AbfH3QzX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 12:55:23 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2145D308FEC1;
-        Fri, 30 Aug 2019 16:55:23 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 34D426012E;
-        Fri, 30 Aug 2019 16:55:21 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Lucas Bates <lucasb@mojatatu.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        netdev@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net] tc-testing: don't hardcode 'ip' in nsPlugin.py
-Date:   Fri, 30 Aug 2019 18:51:47 +0200
-Message-Id: <8ade839e21c5231d2d6b8690b39587f802642306.1567180765.git.dcaratti@redhat.com>
+        id S1727959AbfH3RDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 13:03:47 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:55999 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbfH3RDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 13:03:46 -0400
+Received: by mail-wm1-f65.google.com with SMTP id g207so4112083wmg.5
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 10:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uNYvdSv5xn2X+PnrOCqaUktbCVp4LrcwmYlRU/h6rmA=;
+        b=fGtuRVTuBbu6pfe+WM58j73yXrx1gb/c7T/ADN9l5IKaTKYRsc6VdLbIY2l1xPwhrK
+         mW3vh1+6wOr2EHbcpwd3hOajy6S1O1HAuMbEYn6S9PgnaDpflTR4fj00BZE0uaUfvxb7
+         cWRq7hzeh8lVb/vN9cDIfQBl/g7yf94UcJtH0DWMPLSf1S1FBXnmDGXasU4ipJRUrSO3
+         qYiEUQBXwt1gyvxB/2SKRtC4u0u8GlwOrdSpXBANFSTWKSmzJI7E8aoz181X8qJE5BFU
+         2tQ6SU7miZKt1jvzPeK0HGqVgjGhPpDiWDt2rG9d4BqY+xkOhn20bU1ZKK6YsTdnVa/i
+         gNkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uNYvdSv5xn2X+PnrOCqaUktbCVp4LrcwmYlRU/h6rmA=;
+        b=nxRjucO2wSMKxA2VCce1QAqOsPS1vdsGdJE+vObzGrm7RcTf1nI8Y9wuUGBX+s6L5o
+         pkwdQ1om0o5o6htMZ1cUzhOwfE+Iahnc31gOHEF6PNZLxOmRoDV5ndIO6mu/J8mkhsmy
+         7gKmP7c44IyJosvEPWPfTZkf29TQiLgiJUcphYe+uU1J/LciURQ5PQLoV92syi9MYGok
+         aCuOthUE9++YWigQqPmq13sSRKhJmnGsFyrF09CH80zvZE0DqE9ml1GPFGZQ7k6XeGix
+         zEYtgx9dJravEzUU3WoBoQU4BM8lLgB3ks7vSqmBH6WtWwNSDZF9SfpJM0jO9IyjYvj7
+         LVYw==
+X-Gm-Message-State: APjAAAWjDy90gIPW2EhUp3nPe7IQsZM0lfZk/4IPcX4x9aQg5qqfqUks
+        AuslBAPkdf57hwpjucFC5mpijQ==
+X-Google-Smtp-Source: APXvYqx/nNolezHfi/dYwR/KOEjUFdXYh3Ozr3xt20Qa9/jcQosoxRw5m7lwJo6/HkTYEbgoORwgXA==
+X-Received: by 2002:a1c:a558:: with SMTP id o85mr13196253wme.30.1567184624252;
+        Fri, 30 Aug 2019 10:03:44 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id l2sm3616813wme.36.2019.08.30.10.03.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2019 10:03:43 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 19:03:42 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+Message-ID: <20190830170342.GR2312@nanopsycho>
+References: <20190826151552.4f1a2ad9@cakuba.netronome.com>
+ <20190826.151819.804077961408964282.davem@davemloft.net>
+ <20190827070808.GA2250@nanopsycho>
+ <20190827.012242.418276717667374306.davem@davemloft.net>
+ <20190827093525.GB2250@nanopsycho>
+ <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
+ <20190828070711.GE2312@nanopsycho>
+ <CAJieiUiipZY3A+04Po=WnvgkonfXZxFX2es=1Q5dq1Km869Obw@mail.gmail.com>
+ <20190829052620.GK29594@unicorn.suse.cz>
+ <CAJieiUgGY4amm_z1VGgBF-3WZceah+R5OVLEi=O2RS8RGpC9dg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 30 Aug 2019 16:55:23 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJieiUgGY4amm_z1VGgBF-3WZceah+R5OVLEi=O2RS8RGpC9dg@mail.gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the following tdc test fails on Fedora:
+Fri, Aug 30, 2019 at 04:35:23PM CEST, roopa@cumulusnetworks.com wrote:
+>On Wed, Aug 28, 2019 at 10:26 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+>>
+>> On Wed, Aug 28, 2019 at 09:36:41PM -0700, Roopa Prabhu wrote:
+>> >
+>> > yes,  correct. I mentioned that because I was wondering if we can
+>> > think along the same lines for this API.
+>> > eg
+>> > (a) RTM_NEWLINK always replaces the list attribute
+>> > (b) RTM_SETLINK with NLM_F_APPEND always appends to the list attribute
+>> > (c) RTM_DELLINK with NLM_F_APPEND updates the list attribute
+>> >
+>> > (It could be NLM_F_UPDATE if NLM_F_APPEND sounds weird in the del
+>> > case. I have not looked at the full dellink path if it will work
+>> > neatly..its been a busy day )
+>>
+>> AFAICS rtnl_dellink() calls nlmsg_parse_deprecated() so that even
+>> current code would ignore any future attribute in RTM_DELLINK message
+>> (any kernel before the strict validation was introduced definitely will)
+>> and it does not seem to check NLM_F_APPEND or NLM_F_UPDATE either. So
+>> unless I missed something, such message would result in deleting the
+>> network device (if possible) with any kernel not implementing the
+>> feature.
+>
+>ok, ack. yes today it does. I was hinting if that can be changed to
+>support list update with a flag like the RTM_DELLINK AF_BRIDGE does
+>for vlan list del.
+>
+>so to summarize, i think we have discussed the following options to
+>update a netlink list attribute so far:
+>(a) encode an optional attribute/flag in the list attribute in
+>RTM_SETLINK to indicate if it is a add or del
+>(b) Use a flag in RTM_SETLINK and RTM_DELINK to indicate add/del
+>(close to bridge vlan add/del)
 
- # ./tdc.py -e 2638
-  -- ns/SubPlugin.__init__
- Test 2638: Add matchall and try to get it
- -----> prepare stage *** Could not execute: "$TC qdisc add dev $DEV1 clsact"
- -----> prepare stage *** Error message: "/bin/sh: ip: command not found"
- returncode 127; expected [0]
- -----> prepare stage *** Aborting test run.
+Nope, bridge vlan add/del is done according to the cmd, not any flag.
 
-Let nsPlugin.py use the 'IP' variable introduced with commit 92c1a19e2fb9
-("tc-tests: added path to ip command in tdc"), so that the path to 'ip' is
-correctly resolved to the value we have in tdc_config.py.
 
- # ./tdc.py -e 2638
-  -- ns/SubPlugin.__init__
- Test 2638: Add matchall and try to get it
- All test results:
- 1..1
- ok 1 2638 - Add matchall and try to get it
-
-Fixes: 489ce2f42514 ("tc-testing: Restore original behaviour for namespaces in tdc")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- .../tc-testing/plugin-lib/nsPlugin.py         | 22 +++++++++----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-index affa7f2d9670..9539cffa9e5e 100644
---- a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-+++ b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-@@ -64,7 +64,7 @@ class SubPlugin(TdcPlugin):
-             cmdlist.insert(0, self.args.NAMES['NS'])
-             cmdlist.insert(0, 'exec')
-             cmdlist.insert(0, 'netns')
--            cmdlist.insert(0, 'ip')
-+            cmdlist.insert(0, self.args.NAMES['IP'])
-         else:
-             pass
- 
-@@ -78,16 +78,16 @@ class SubPlugin(TdcPlugin):
-         return command
- 
-     def _ports_create(self):
--        cmd = 'ip link add $DEV0 type veth peer name $DEV1'
-+        cmd = '$IP link add $DEV0 type veth peer name $DEV1'
-         self._exec_cmd('pre', cmd)
--        cmd = 'ip link set $DEV0 up'
-+        cmd = '$IP link set $DEV0 up'
-         self._exec_cmd('pre', cmd)
-         if not self.args.namespace:
--            cmd = 'ip link set $DEV1 up'
-+            cmd = '$IP link set $DEV1 up'
-             self._exec_cmd('pre', cmd)
- 
-     def _ports_destroy(self):
--        cmd = 'ip link del $DEV0'
-+        cmd = '$IP link del $DEV0'
-         self._exec_cmd('post', cmd)
- 
-     def _ns_create(self):
-@@ -97,16 +97,16 @@ class SubPlugin(TdcPlugin):
-         '''
-         self._ports_create()
-         if self.args.namespace:
--            cmd = 'ip netns add {}'.format(self.args.NAMES['NS'])
-+            cmd = '$IP netns add {}'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
--            cmd = 'ip link set $DEV1 netns {}'.format(self.args.NAMES['NS'])
-+            cmd = '$IP link set $DEV1 netns {}'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
--            cmd = 'ip -n {} link set $DEV1 up'.format(self.args.NAMES['NS'])
-+            cmd = '$IP -n {} link set $DEV1 up'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
-             if self.args.device:
--                cmd = 'ip link set $DEV2 netns {}'.format(self.args.NAMES['NS'])
-+                cmd = '$IP link set $DEV2 netns {}'.format(self.args.NAMES['NS'])
-                 self._exec_cmd('pre', cmd)
--                cmd = 'ip -n {} link set $DEV2 up'.format(self.args.NAMES['NS'])
-+                cmd = '$IP -n {} link set $DEV2 up'.format(self.args.NAMES['NS'])
-                 self._exec_cmd('pre', cmd)
- 
-     def _ns_destroy(self):
-@@ -115,7 +115,7 @@ class SubPlugin(TdcPlugin):
-         devices as well)
-         '''
-         if self.args.namespace:
--            cmd = 'ip netns delete {}'.format(self.args.NAMES['NS'])
-+            cmd = '$IP netns delete {}'.format(self.args.NAMES['NS'])
-             self._exec_cmd('post', cmd)
- 
-     def _exec_cmd(self, stage, command):
--- 
-2.20.1
-
+>(c) introduce a separate generic msg type to add/del to a list
+>attribute (IIUC this does need a separate msg type per subsystem or
+>netlink API)
