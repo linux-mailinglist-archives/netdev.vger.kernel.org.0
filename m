@@ -2,171 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DFEFA3E61
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD58A3E69
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728257AbfH3T2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:28:17 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:35587 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728042AbfH3T2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:28:09 -0400
-Received: by mail-io1-f69.google.com with SMTP id 18so9749250iof.2
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:28:08 -0700 (PDT)
+        id S1727979AbfH3TbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:31:11 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34830 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727304AbfH3TbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:31:10 -0400
+Received: by mail-pl1-f195.google.com with SMTP id gn20so3795783plb.2
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:31:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=9iDeFp92B5W2itGLMZ4kKqQyRTjN8gH5SIsyUVnfaZw=;
+        b=mVU41iVidkxmOSBxWMzkFvgjamp6lJAdgvtdIiEpOpiu/L7cgAdzRfmyJXosvWE5f3
+         3Y2zOhqCa0g5ImS/6BOBrOwhS8r0xcTTkvVwpIDWMIHReLFvucO6T2OZdQsgmpD/2SWZ
+         Q1/RkBGG5a+Xrzyyz0McyozescS6z58gyEvzP0+879r4wkNKANPE91rg7rZWE/fhd7WI
+         DYwOeiOGNBFMMIy4TDYCVm4se/dZZR13+rlEwoIHwCltL6P0ZpO7erZYbn2dhkIvFnl4
+         9rIYB552cGUFMgQtHpGTEq/LnXekarOHHNkx/5jtmfLIaeniJLHKNqzOThCvqRe5prf9
+         NPSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=eYi+Zn08d1CsnsLxKTjynm4R7M42OiHyCSdhNao9910=;
-        b=UMnnv+5CNDv0W6C7StmJNKJfIQ6cFlJCgSgWGRiPkj7MrJ3du9xA36z/1N9DaiYY+1
-         /B1P/kGEzbXcFpQq4Zoi2pn1L+GLke3tDcvUbeEgzGLOsxeC4tuiSSXRyQYwuGjSWOWx
-         VG9T2seY6UgAsnH+096603iDeVqHuVfGCqQqNCO3cNnf0mWQiPmO43tvEaH9n0uZOw6p
-         J+1t8lqoTxyKaF66nqPUG66KOBw7DxALfrvnzsQEHp81jzYcbofAm0yI8emBEvEFaNQz
-         RO7uI9LHyK/xkoy/SCfpt4CaWZmu7uI7ApeBEbYfrKcrB5faDILgrW6ApdsmNoVGmHlI
-         GcrQ==
-X-Gm-Message-State: APjAAAUr/EbRxF/e9w5LfJ5Tt0yXcLYdtJ39g+m4ggtc0K+kcYl8hkn5
-        MrlartIKsYjPhl6uPaxY3pZl6PRj3k/X/W6jpaK1m/V+5EDe
-X-Google-Smtp-Source: APXvYqwcSUpc2JyCSA4KFngTbJSiU8mhBPJymAyd6LtJtJzcrOQL1rOX56eS3iYa/EY7oekw7YbnkpH0LJNHXIXomlJFtnc5l8VX
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=9iDeFp92B5W2itGLMZ4kKqQyRTjN8gH5SIsyUVnfaZw=;
+        b=mQ70pfMNXkcqc2WR4N+WdpT8Cn3j0a7Ko+c0AOkaBYlTEOPBhAjTjJcRrjSgkbM9sF
+         9KN9nTh7LiJ0rU5hSNzen+0YAn/25cpQLHGwO+UApTXAiYolxi4wonn7hgDvR3JlOXcJ
+         w3bKAJmbjHvww3t3xFBXPd3NjFK+Z8qAiUjxMxCGkG/f/btD+yA+MOWt9YatYAsMa4Vq
+         sUCyvo9XgA19/ulzgJw+rS0mYU+ChPgZbvaeBr6DN9KeN/RU1Xe/Pdm+DtfiH6H6AoEU
+         YpeXwSVQ49/gSvSLaBsX5OB39kCGK3GddeUKgI+Nob2NvK7IXCIxYyJPuzfhOR1YeGFO
+         6RbQ==
+X-Gm-Message-State: APjAAAUKOTHG3oVwdYByCF+83bVcl8PhhNhe11/r4EOLJpq17bDF0fb3
+        IWLMSRipS1ugg1T4zTR9nOjysA==
+X-Google-Smtp-Source: APXvYqwUfEWQIw690SoaAb2rCMX+my66Uy+QZEzACLpwpy1q4vL+RJ1whOhqyyqTzV7k7yD/oOydXA==
+X-Received: by 2002:a17:902:b08a:: with SMTP id p10mr10490201plr.261.1567193469670;
+        Fri, 30 Aug 2019 12:31:09 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id k5sm5887320pgo.45.2019.08.30.12.31.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 30 Aug 2019 12:31:08 -0700 (PDT)
+Subject: Re: [PATCH v6 net-next 07/19] ionic: Add basic adminq support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190829182720.68419-1-snelson@pensando.io>
+ <20190829182720.68419-8-snelson@pensando.io>
+ <20190829155251.3b2d86c7@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <bad39320-8e67-e280-5e35-612cbdc49b6f@pensando.io>
+Date:   Fri, 30 Aug 2019 12:31:07 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:4a08:: with SMTP id w8mr8266964iob.246.1567193288238;
- Fri, 30 Aug 2019 12:28:08 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 12:28:08 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003d789d05915a9fa3@google.com>
-Subject: memory leak in nr_rx_frame (2)
-From:   syzbot <syzbot+0145ea560de205bc09f0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190829155251.3b2d86c7@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 8/29/19 3:52 PM, Jakub Kicinski wrote:
+> On Thu, 29 Aug 2019 11:27:08 -0700, Shannon Nelson wrote:
+>> +static void ionic_lif_qcq_deinit(struct ionic_lif *lif, struct ionic_qcq *qcq)
+>> +{
+>> +	struct ionic_dev *idev = &lif->ionic->idev;
+>> +	struct device *dev = lif->ionic->dev;
+>> +
+>> +	if (!qcq)
+>> +		return;
+>> +
+>> +	ionic_debugfs_del_qcq(qcq);
+>> +
+>> +	if (!(qcq->flags & IONIC_QCQ_F_INITED))
+>> +		return;
+>> +
+>> +	if (qcq->flags & IONIC_QCQ_F_INTR) {
+>> +		ionic_intr_mask(idev->intr_ctrl, qcq->intr.index,
+>> +				IONIC_INTR_MASK_SET);
+>> +		synchronize_irq(qcq->intr.vector);
+>> +		devm_free_irq(dev, qcq->intr.vector, &qcq->napi);
+> Doesn't free_irq() basically imply synchronize_irq()?
 
-syzbot found the following crash on:
+The synchronize_irq() waits for any threaded handlers to finish, while 
+free_irq() only waits for HW handling.  This helps makes sure we don't 
+have anything still running before we remove resources.
 
-HEAD commit:    6525771f Merge tag 'arc-5.3-rc7' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10200912600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e6131eafb9408877
-dashboard link: https://syzkaller.appspot.com/bug?extid=0145ea560de205bc09f0
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b51f9c600000
+sln
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0145ea560de205bc09f0@syzkaller.appspotmail.com
+>
+>> +		netif_napi_del(&qcq->napi);
+>> +	}
+>> +
+>> +	qcq->flags &= ~IONIC_QCQ_F_INITED;
 
-2019/08/29 23:31:49 executed programs: 8
-2019/08/29 23:31:56 executed programs: 15
-2019/08/29 23:32:02 executed programs: 24
-BUG: memory leak
-unreferenced object 0xffff888123355800 (size 2048):
-   comm "softirq", pid 0, jiffies 4295062008 (age 25.620s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     06 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-   backtrace:
-     [<00000000bbb1ff80>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000bbb1ff80>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000bbb1ff80>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000bbb1ff80>] __do_kmalloc mm/slab.c:3653 [inline]
-     [<00000000bbb1ff80>] __kmalloc+0x169/0x300 mm/slab.c:3664
-     [<000000003948180d>] kmalloc include/linux/slab.h:557 [inline]
-     [<000000003948180d>] sk_prot_alloc+0x112/0x170 net/core/sock.c:1603
-     [<00000000ad5c33ee>] sk_alloc+0x35/0x2f0 net/core/sock.c:1657
-     [<000000004e2b1f5c>] nr_make_new net/netrom/af_netrom.c:476 [inline]
-     [<000000004e2b1f5c>] nr_rx_frame+0x339/0x8ee net/netrom/af_netrom.c:959
-     [<00000000df4c3d82>] nr_loopback_timer+0x4e/0xd0  
-net/netrom/nr_loopback.c:59
-     [<00000000e886ef23>] call_timer_fn+0x45/0x1e0 kernel/time/timer.c:1322
-     [<00000000cc0c55bd>] expire_timers kernel/time/timer.c:1366 [inline]
-     [<00000000cc0c55bd>] __run_timers kernel/time/timer.c:1685 [inline]
-     [<00000000cc0c55bd>] __run_timers kernel/time/timer.c:1653 [inline]
-     [<00000000cc0c55bd>] run_timer_softirq+0x256/0x740  
-kernel/time/timer.c:1698
-     [<000000008a8ac853>] __do_softirq+0x115/0x33f kernel/softirq.c:292
-     [<00000000c33f7c40>] invoke_softirq kernel/softirq.c:373 [inline]
-     [<00000000c33f7c40>] irq_exit+0xbb/0xe0 kernel/softirq.c:413
-     [<00000000dc851865>] exiting_irq arch/x86/include/asm/apic.h:537  
-[inline]
-     [<00000000dc851865>] smp_apic_timer_interrupt+0x96/0x190  
-arch/x86/kernel/apic/apic.c:1133
-     [<000000006a57c22f>] apic_timer_interrupt+0xf/0x20  
-arch/x86/entry/entry_64.S:830
-     [<00000000ec52384e>] arch_local_irq_restore  
-arch/x86/include/asm/paravirt.h:768 [inline]
-     [<00000000ec52384e>] console_unlock.part.0+0x5f0/0x6d0  
-kernel/printk/printk.c:2471
-     [<0000000013f07031>] console_unlock kernel/printk/printk.c:2364 [inline]
-     [<0000000013f07031>] vprintk_emit+0x251/0x360  
-kernel/printk/printk.c:1986
-     [<00000000704abaae>] vprintk_default+0x28/0x30  
-kernel/printk/printk.c:2013
-     [<000000008aa8a0ba>] vprintk_func+0x59/0xfa  
-kernel/printk/printk_safe.c:386
-     [<000000004d884645>] printk+0x60/0x7d kernel/printk/printk.c:2046
-
-BUG: memory leak
-unreferenced object 0xffff88810e8bd820 (size 32):
-   comm "softirq", pid 0, jiffies 4295062008 (age 25.620s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     03 00 00 00 03 00 00 00 0f 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<0000000092f05cd5>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<0000000092f05cd5>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<0000000092f05cd5>] slab_alloc mm/slab.c:3319 [inline]
-     [<0000000092f05cd5>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000f2b13853>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000f2b13853>] kzalloc include/linux/slab.h:748 [inline]
-     [<00000000f2b13853>] selinux_sk_alloc_security+0x48/0xb0  
-security/selinux/hooks.c:5073
-     [<000000002301f7f8>] security_sk_alloc+0x49/0x70  
-security/security.c:2029
-     [<000000009fb5708b>] sk_prot_alloc+0x12d/0x170 net/core/sock.c:1606
-     [<00000000ad5c33ee>] sk_alloc+0x35/0x2f0 net/core/sock.c:1657
-     [<000000004e2b1f5c>] nr_make_new net/netrom/af_netrom.c:476 [inline]
-     [<000000004e2b1f5c>] nr_rx_frame+0x339/0x8ee net/netrom/af_netrom.c:959
-     [<00000000df4c3d82>] nr_loopback_timer+0x4e/0xd0  
-net/netrom/nr_loopback.c:59
-     [<00000000e886ef23>] call_timer_fn+0x45/0x1e0 kernel/time/timer.c:1322
-     [<00000000cc0c55bd>] expire_timers kernel/time/timer.c:1366 [inline]
-     [<00000000cc0c55bd>] __run_timers kernel/time/timer.c:1685 [inline]
-     [<00000000cc0c55bd>] __run_timers kernel/time/timer.c:1653 [inline]
-     [<00000000cc0c55bd>] run_timer_softirq+0x256/0x740  
-kernel/time/timer.c:1698
-     [<000000008a8ac853>] __do_softirq+0x115/0x33f kernel/softirq.c:292
-     [<00000000c33f7c40>] invoke_softirq kernel/softirq.c:373 [inline]
-     [<00000000c33f7c40>] irq_exit+0xbb/0xe0 kernel/softirq.c:413
-     [<00000000dc851865>] exiting_irq arch/x86/include/asm/apic.h:537  
-[inline]
-     [<00000000dc851865>] smp_apic_timer_interrupt+0x96/0x190  
-arch/x86/kernel/apic/apic.c:1133
-     [<000000006a57c22f>] apic_timer_interrupt+0xf/0x20  
-arch/x86/entry/entry_64.S:830
-     [<00000000ec52384e>] arch_local_irq_restore  
-arch/x86/include/asm/paravirt.h:768 [inline]
-     [<00000000ec52384e>] console_unlock.part.0+0x5f0/0x6d0  
-kernel/printk/printk.c:2471
-     [<0000000013f07031>] console_unlock kernel/printk/printk.c:2364 [inline]
-     [<0000000013f07031>] vprintk_emit+0x251/0x360  
-kernel/printk/printk.c:1986
-     [<00000000704abaae>] vprintk_default+0x28/0x30  
-kernel/printk/printk.c:2013
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
