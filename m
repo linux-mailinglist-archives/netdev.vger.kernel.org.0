@@ -2,139 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B979A3FE0
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3BEA3FE3
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 23:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728161AbfH3Vqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 17:46:45 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9190 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728053AbfH3Vqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 17:46:44 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7ULkXSC026210;
-        Fri, 30 Aug 2019 14:46:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
- date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=UX2IPoburKePrP/3CLUcNqSNVNV0TyoSz192aq88egQ=;
- b=LrO2e/umvU3SDJQntX6s5+V5AmMtLE6KTifxNGTjd44mUsNYeLTy/3l3PmZvrMYkfRMF
- sRVhRi2wtWah2Se4BR5UP5Vl38KlvlpRtmYViZ/tUMsROFfOdgszGDwMar74xFtRNdav
- LR93wTzOzPZXbj1fN1YmhVorLbmmAPYZy6Y= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uq0s6bcev-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 30 Aug 2019 14:46:34 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 30 Aug 2019 14:46:07 -0700
-Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 30 Aug 2019 14:46:07 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 30 Aug 2019 14:46:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mci+vKFivBd6j/+i5gBbbLijLfltWLAQce6OJmsRPMAC00HFp8h0m9rlQVQtr2O7ENtw0/4hLFgMt/sIdczfO/1EN+A0SXZCiOrdL9UaGG8SNr+tvqA09cSlKrI3z7z74sraSwUK6Dz3pioWPTrbjnSm86zwxJY6qFiJnmUg5yz8Gk9mWUYELOfo7ZTaCyIYUMsbo7JQN1uKwHa/VsZMs5Xo8rkIkkeovYT2azywlUxFKO36sm92VEpOf7g7rflb5DgBRHgUg+VIXpy5UZruuE42wpf7ydgA10MQi2zgObkYl7UQrl4FRo4z7ohRfRRbs6zgT6l8NEU70LyDXYUtug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UX2IPoburKePrP/3CLUcNqSNVNV0TyoSz192aq88egQ=;
- b=B4WwB2T1ydQQO4QRsGvQlifuqtO32QS8hPTz9Ukc1e2Ul/pcMKEDUzq6zuHVuyFYp8w3TY0Vq1BKgC8yxDNCn4E95Bzv1AnLKgdnThiaGmntRrrFCs5mv/kUrB5QegipyBvPNUQS4BDqk0Hgk/fM8l16Gn7SWvTLYa2QBbK4I9uh4g9w9pWRvAmalHdTtOc0/EMoaVN5JuzZdd40jCMrJUKhKOPW6qpXvRImgxZwO5qJtRXxClsP9QyZB+ILUMr579v7t/XX+JHhbPSdjPt1faWiMnlsfva6uWs7Y9x5gLLbFuShQRjhhni0AkIWGgdU3nV0peJ99nA9zIK6Q6jhlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UX2IPoburKePrP/3CLUcNqSNVNV0TyoSz192aq88egQ=;
- b=ZAFey0U5S/OmyyU0dq78wcMBXoTqL2H+eeKe53Bq14VMJN1BWg97REAXeaIIkhs1KIrelRV4qg5znvHPQRqBHQoktnGM1CYjvu/OCWC3xepRsI51sM/ki51bFGXX5oKfaTZHTMvLs7K3YNOhLVknUbRpW3n1SJO5mVFdGk/g61c=
-Received: from CH2PR15MB3686.namprd15.prod.outlook.com (10.255.155.143) by
- CH2PR15MB3607.namprd15.prod.outlook.com (52.132.228.205) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Fri, 30 Aug 2019 21:46:05 +0000
-Received: from CH2PR15MB3686.namprd15.prod.outlook.com
- ([fe80::9d88:b74a:48ea:cf6c]) by CH2PR15MB3686.namprd15.prod.outlook.com
- ([fe80::9d88:b74a:48ea:cf6c%5]) with mapi id 15.20.2199.021; Fri, 30 Aug 2019
- 21:46:05 +0000
-From:   Ben Wei <benwei@fb.com>
-To:     Terry Duncan <terry.s.duncan@linux.intel.com>,
-        "sam@mendozajonas.com" <sam@mendozajonas.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "Justin.Lee1@Dell.com" <Justin.Lee1@Dell.com>
-Subject: RE: [PATCH] ncsi-netlink: support sending NC-SI commands over Netlink
- interface
-Thread-Topic: [PATCH] ncsi-netlink: support sending NC-SI commands over
- Netlink interface
-Thread-Index: AdVZRhK7FBH7PA61Tj6DiPuS9P29HgGM2h4AAACIDLA=
-Date:   Fri, 30 Aug 2019 21:46:05 +0000
-Message-ID: <CH2PR15MB3686CCC22840AD848796D6CAA3BD0@CH2PR15MB3686.namprd15.prod.outlook.com>
-References: <CH2PR15MB36860EECD2EA6D63BEA70110A3A40@CH2PR15MB3686.namprd15.prod.outlook.com>
- <0da11d73-b3ab-53f6-f695-30857a743a7b@linux.intel.com>
-In-Reply-To: <0da11d73-b3ab-53f6-f695-30857a743a7b@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2620:10d:c090:200::2:6945]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 407d7b55-9fee-4b89-ed3b-08d72d9375d6
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR15MB3607;
-x-ms-traffictypediagnostic: CH2PR15MB3607:
-x-microsoft-antispam-prvs: <CH2PR15MB3607938569BE56D9BD259310A3BD0@CH2PR15MB3607.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(136003)(396003)(346002)(376002)(199004)(189003)(256004)(478600001)(7736002)(52536014)(4744005)(74316002)(2201001)(305945005)(7696005)(102836004)(53546011)(86362001)(6506007)(316002)(76176011)(229853002)(5660300002)(110136005)(81166006)(8676002)(81156014)(8936002)(2906002)(6246003)(6436002)(55016002)(9686003)(53936002)(25786009)(99286004)(46003)(66446008)(14454004)(71190400001)(33656002)(446003)(486006)(186003)(64756008)(11346002)(476003)(66946007)(66556008)(66476007)(71200400001)(76116006)(6116002)(14444005)(2501003);DIR:OUT;SFP:1102;SCL:1;SRVR:CH2PR15MB3607;H:CH2PR15MB3686.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: SW/N1FCuBLowG9Z7edXpVUOhxfLpkHnX7+KhwxilCdrlmQXIuF6cyczfc13pzEZyj6dnFy0iGN56AfPuBKVTEof9p3BSCl+HTcTEyu32PRQmmlvtdlw0UAXQ69F+iTBqJlpHi2pDifP5C+ECb4PJb+Cc7I6RALEMeU6KWQFPHP/jHUsEjTr02wFJJ8DDgzY09oEvQqQKMRvkdkW/bi4OzA3ZsD79Y2sQhBDwuHw+hdJG2nBcBA7eMbitkLetuJvo9dW78s7adxHN94azNO9v7BMIx6ZFwSARFq5rLYj/GzUmMfnfzXEjtLT+D/PuzaAly4dpu1Ao9HQQLXW4rub3buu38dcD1gEyv6ZyIx4c4PdYBeIaD6wneQwA9hrcHA9tFKH/Z0IGU1c0kbgP0C+op6sy7C+uq4c1jIC3/VArBN4=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728257AbfH3Vqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 17:46:54 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40547 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728241AbfH3Vqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 17:46:54 -0400
+Received: by mail-lj1-f196.google.com with SMTP id e27so7732003ljb.7
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 14:46:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h/IKEwtiMoZTtijwK84EjX+6xulxKmEOQTSwaaf+y48=;
+        b=aoFTsFCWzMtsMdDPZj1Iv+ZXjcGyzvvosDEXplOewRaj+VHWw2zUfXIYkswbA6TzJG
+         NWskcFkqaH33yD+gnvU6OO/RnyTek1/Exi1PL2s5XvzcF0WOzloSQDks895e3GD+I6Ru
+         yfoGDqbh7NXYFS8NxLwN3aMItjNI4N4qw9p1GJVb527MIY+fAYqZihttFdD1lM1jTR/G
+         XPyyDWKMXjWmZUab9jO0ywCx8EOyDfknhtAwoChxtu9Fkiw8rx0o98r68ncPLR1iFFGR
+         pw7g9f+S0bTZTxxjffvpwIIAVsRK0jXWsL+MZHB+HRZFdOyfLgBxSb9Hefqrf9jS3bxq
+         tfrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h/IKEwtiMoZTtijwK84EjX+6xulxKmEOQTSwaaf+y48=;
+        b=pHI3uemBjAklvkq3TUOwbzfRQzxZUJxbiEPblpqk4KqVUdVOzvieH11Yx9EUNU0l9V
+         yyxe4nzS7jBxsGon0lPkv24S7EnVIkfqF4p1NZYvqW9w3XZ64c5t82fA4ztRQw77cBNL
+         O8V4DbB3liCVZm/LYWvWEr/3BvjTm/k6zTxX/9Jos19Tyli8vMGaqNVIRUlAtEHA3nMH
+         RHOxhys/ea4rsHn3x/O9a9OudimJanUyIdmVqSrembarZ2Tv1rCVd3KF0BiIb3eKY/6B
+         j0zE+VJsFee9q5e6osGASqveGwIAOSlSamMhEXgg3cLIRJ67iS2WQI+Pj8/xq2rqDYYl
+         sa9w==
+X-Gm-Message-State: APjAAAXbmkq3vyQxDbZGkFQWjtOmu+rAN8vVeXyU7xHpQfR5A8c/F1+F
+        weQojJfDlPCOT1beN9Jwyb+eo2/1IexecfSBxdHO
+X-Google-Smtp-Source: APXvYqxirrtwxKydgvqj+iXwb2e01CWP4pG1x5kPYkURSbjtWQcwHoS1PGYLKIwllBMJ+BeSHOXr3+1+9uKQ3teRW3k=
+X-Received: by 2002:a05:651c:1111:: with SMTP id d17mr9377947ljo.87.1567201611994;
+ Fri, 30 Aug 2019 14:46:51 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 407d7b55-9fee-4b89-ed3b-08d72d9375d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 21:46:05.4347
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZLziPJA7vYK4AYhXNZ4OhaIn9Rxb12j91XLp/GmqOLf/HSjSXWtYpR3Wh7vqZG2W
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3607
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-08-30_09:2019-08-29,2019-08-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
- lowpriorityscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
- clxscore=1015 mlxlogscore=999 spamscore=0 impostorscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1908300208
-X-FB-Internal: deliver
+References: <20190821134547.96929-1-jeffv@google.com> <20190822.161913.326746900077543343.davem@davemloft.net>
+ <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
+ <CAHC9VhRmmEp_nFtOFy_YRa9NwZA4qPnjw7D3JQvqED-tO4Ha1g@mail.gmail.com> <20190829074516.GM29594@unicorn.suse.cz>
+In-Reply-To: <20190829074516.GM29594@unicorn.suse.cz>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 30 Aug 2019 17:46:40 -0400
+Message-ID: <CAHC9VhSDZd9EZuKB0WcHW1P8va=vFdpG_Gnnx9ZELdqVtZ=Wgg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Jeffrey Vander Stoep <jeffv@google.com>,
+        David Miller <davem@davemloft.net>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiA4LzIyLzE5IDU6MDIgUE0sIEJlbiBXZWkgd3JvdGU6DQo+ID4gVGhpcyBwYXRjaCBleHRl
-bmRzIG5jc2ktbmV0bGluayBjb21tYW5kIGxpbmUgdXRpbGl0eSB0byBzZW5kIE5DLVNJIGNvbW1h
-bmQgdG8ga2VybmVsIGRyaXZlcg0KPiA+IHZpYSBOQ1NJX0NNRF9TRU5EX0NNRCBjb21tYW5kLg0K
-PiA+IA0KPiA+IE5ldyBjb21tYW5kIGxpbmUgb3B0aW9uIC1vIChvcGNvZGUpIGlzIHVzZWQgdG8g
-c3BlY2lmeSBOQy1TSSBjb21tYW5kIGFuZCBvcHRpb25hbCBwYXlsb2FkLg0KPiA+IA0KPg0KPiBU
-aGFuayB5b3UgZm9yIHBvc3RpbmcgdGhpcyBCZW4uDQo+IFNvbWV0aGluZyBsb29rcyBvZmYgb24g
-dGhpcyBuZXh0IGxpbmUgYnV0IGl0IGxvb2tzIGZpbmUgaW4geW91ciBwdWxsIA0KPiByZXF1ZXN0
-IGluIHRoZSBnaXRodWIuY29tL3NhbW1qL25jc2ktbmV0bGluayByZXBvLg0KPg0KPiA+ICtzdGF0
-aWMgaW50IHNlbmRfY2Ioc3RydWN0IG5sX21zZyAqbXNnLCB2b2lkICphcmcpIHsgI2RlZmluZQ0K
-PiA+ICtFVEhFUk5FVF9IRUFERVJfU0laRSAxNg0KPiA+ICsNCg0KWWVzIEkgdGhpbmsgbXkgZW1h
-aWwgY2xpZW50IHdhcyBub3QgY29uZmlndXJlZCBjb3JyZWN0bHkgZm9yIHBsYWluIHRleHQgc28g
-aXQncyByZW1vdmluZyBjZXJ0YWluIGxpbmUgYnJlYWtzLg0KSG9wZWZ1bGx5IEkgaGF2ZSB0aGlz
-IGZpZ3VyZWQgb3V0IG5vdyBzbyBteSBmdXR1cmUgcGF0Y2hlcyB3b24ndCBoYXZlIHRoaXMgaXNz
-dWUuDQoNCj4NCj4gRG8geW91IGhhdmUgcGxhbnMgdG8gdXBzdHJlYW0geW91ciB5b2N0byByZWNp
-cGUgZm9yIHRoaXMgcmVwbz8NCg0KWWVzIEkgc3VyZSBjYW4gdXBzdHJlYW0gdGhlIHJlY2lwZSBm
-aWxlLiBJIGhhZCB0byBtYWtlIGxvY2FsIGNoYW5nZXMgdG8gYnVpbGQgbmNzaS1uZXRsaW5rIGZv
-ciBteSBCTUMgcGxhdGZvcm0uDQpJcyB0aGVyZSBhIGdyb3VwIEkgbWF5IHN1Ym1pdCBteSByZWNp
-cGUgdG8/IA0KDQpUaGFua3MsDQotQmVuDQo=
+On Thu, Aug 29, 2019 at 3:45 AM Michal Kubecek <mkubecek@suse.cz> wrote:
+> On Tue, Aug 27, 2019 at 04:47:04PM -0400, Paul Moore wrote:
+> >
+> > I'm also not a big fan of inserting the hook in rtnl_fill_ifinfo(); as
+> > presented it is way too specific for a LSM hook for me to be happy.
+> > However, I do agree that giving the LSMs some control over netlink
+> > messages makes sense.  As others have pointed out, it's all a matter
+> > of where to place the hook.
+> >
+> > If we only care about netlink messages which leverage nlattrs I
+> > suppose one option that I haven't seen mentioned would be to place a
+> > hook in nla_put().  While it is a bit of an odd place for a hook, it
+> > would allow the LSM easy access to the skb and attribute type to make
+> > decisions, and all of the callers should already be checking the
+> > return code (although we would need to verify this).  One notable
+> > drawback (not the only one) is that the hook is going to get hit
+> > multiple times for each message.
+>
+> For most messages, "multiple times" would mean tens, for many even
+> hundreds of calls. For each, you would have to check corresponding
+> socket (and possibly also genetlink header) to see which netlink based
+> protocol it is and often even parse existing part of the message to get
+> the context (because the same numeric attribute type can mean something
+> completely different if it appears in a nested attribute).
+>
+> Also, nla_put() (or rather __nla_put()) is not used for all attributes,
+> one may also use nla_reserve() and then compose the attribute date in
+> place.
+
+I never said it was a great idea, just an idea ;)
+
+Honestly I'm just trying to spur some discussion on this so we can
+hopefully arrive at a solution which allows a LSM to control kernel
+generated netlink messages that we can all accept.
+
+-- 
+paul moore
+www.paul-moore.com
