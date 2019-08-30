@@ -2,62 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3264DA3112
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCB8A3156
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728256AbfH3Hc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 03:32:27 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59796 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727958AbfH3Hc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:32:27 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::642])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5B9951544FE29;
-        Fri, 30 Aug 2019 00:32:26 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 00:32:25 -0700 (PDT)
-Message-Id: <20190830.003225.292019185488425085.davem@davemloft.net>
-To:     jiri@resnulli.us
-Cc:     idosch@idosch.org, andrew@lunn.ch, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        allan.nielsen@microchip.com, ivecera@redhat.com,
-        f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to
- dev->promiscuity.
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190830072133.GP2312@nanopsycho>
-References: <20190830063624.GN2312@nanopsycho>
-        <20190830.001223.669650763835949848.davem@davemloft.net>
-        <20190830072133.GP2312@nanopsycho>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 30 Aug 2019 00:32:26 -0700 (PDT)
+        id S1727525AbfH3HmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 03:42:21 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:21328 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726655AbfH3HmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:42:20 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7U7dltv026578;
+        Fri, 30 Aug 2019 00:42:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=end73pYrocBw6MGspIkHUHGnEK28lKThufnWiPDImyg=;
+ b=bBbgRz22UomgeGOjJbV3yHF50GLYon79ChR+3HduDXwb99GTOCER6pfpztvHU2btWYz9
+ 5ob7IH37u1Sd6HKiYwFdk2Yh37PThToFFYYf+GA4iE1SozSaZXPw6vlgBe4cZyiacSJ4
+ vV0jwDsaR2s0vbdM2TeXeh54yOQ/wg1pIyfUGmOvsQnqI85qSBSP60wwYU0eoepafMdG
+ RvZUuPCjJSarEB1aKbdgf2RrkD5rcg8sqW2druwQITgGAwogNUQsaJINUkqyHJvfHZXd
+ d8Y65sKDj3XIFbnPfsuVqgCpHwwE1HsMsV8U6T1di+kVJ6IN2DNDuEN2m6irzUNH+ZMM Gg== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2upmepjc1f-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 00:42:19 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 30 Aug
+ 2019 00:42:17 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Fri, 30 Aug 2019 00:42:17 -0700
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 11B2D3F7048;
+        Fri, 30 Aug 2019 00:42:17 -0700 (PDT)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x7U7gGtx008876;
+        Fri, 30 Aug 2019 00:42:16 -0700
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x7U7gGF5008875;
+        Fri, 30 Aug 2019 00:42:16 -0700
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
+        <aelior@marvell.com>
+Subject: [PATCH net-next 0/4] qed*: Enhancements.
+Date:   Fri, 30 Aug 2019 00:42:02 -0700
+Message-ID: <20190830074206.8836-1-skalluru@marvell.com>
+X-Mailer: git-send-email 2.12.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-08-30_03:2019-08-29,2019-08-30 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@resnulli.us>
-Date: Fri, 30 Aug 2019 09:21:33 +0200
+The patch series adds couple of enhancements to qed/qede drivers.
+  - Support for dumping the config id attributes via ethtool -w/W.
+  - Support for dumping the GRC data of required memory regions using
+    ethtool -w/W interfaces.
 
-> Fri, Aug 30, 2019 at 09:12:23AM CEST, davem@davemloft.net wrote:
->>From: Jiri Pirko <jiri@resnulli.us>
->>Date: Fri, 30 Aug 2019 08:36:24 +0200
->>
->>> The promiscuity is a way to setup the rx filter. So promics == rx filter
->>> off. For normal nics, where there is no hw fwd datapath,
->>> this coincidentally means all received packets go to cpu.
->>
->>You cannot convince me that the HW datapath isn't a "rx filter" too, sorry.
-> 
-> If you look at it that way, then we have 2: rx_filter and hw_rx_filter.
-> The point is, those 2 are not one item, that is the point I'm trying to
-> make :/
+Patch (1) adds driver APIs for reading the config id attributes.
+Patch (2) adds ethtool support for dumping the config id attributes.
+Patch (3) adds support for configuring the GRC dump config flags.
+Patch (4) adds ethtool support for dumping the grc dump.
 
-And you can turn both of them off when I ask for promiscuous mode, that's
-a detail of the device not a semantic issue.
+Please consider applying it to net-next.
+
+Sudarsana Reddy Kalluru (4):
+  qed: Add APIs for reading config id attributes.
+  qede: Add support for reading the config id attributes.
+  qed: Add APIs for configuring grc dump config flags.
+  qede: Add support for dumping the grc data.
+
+ drivers/net/ethernet/qlogic/qed/qed_debug.c     |  82 +++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h       |  15 ++++
+ drivers/net/ethernet/qlogic/qed/qed_main.c      |  48 ++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c       |  29 ++++++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.h       |  15 ++++
+ drivers/net/ethernet/qlogic/qede/qede.h         |  15 ++++
+ drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 114 ++++++++++++++++++++++++
+ include/linux/qed/qed_if.h                      |  20 +++++
+ 8 files changed, 338 insertions(+)
+
+-- 
+1.8.3.1
+
