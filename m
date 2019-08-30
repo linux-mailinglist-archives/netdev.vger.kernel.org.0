@@ -2,41 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1395A40EF
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 01:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7542A40FD
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 01:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728271AbfH3XUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 19:20:54 -0400
-Received: from www62.your-server.de ([213.133.104.62]:58384 "EHLO
+        id S1728398AbfH3XXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 19:23:17 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58788 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728208AbfH3XUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 19:20:53 -0400
+        with ESMTP id S1728122AbfH3XXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 19:23:17 -0400
 Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1i3qCI-00049A-KX; Sat, 31 Aug 2019 01:20:50 +0200
+        id 1i3qEd-0004H0-5Y; Sat, 31 Aug 2019 01:23:15 +0200
 Received: from [178.197.249.19] (helo=pc-63.home)
         by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89)
         (envelope-from <daniel@iogearbox.net>)
-        id 1i3qCI-0007Op-E9; Sat, 31 Aug 2019 01:20:50 +0200
-Subject: Re: [PATCH bpf-next v2 0/4] tools: bpftool: improve bpftool build
- experience
-To:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Lorenz Bauer <lmb@cloudflare.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-References: <20190830110040.31257-1-quentin.monnet@netronome.com>
+        id 1i3qEc-000KTa-Um; Sat, 31 Aug 2019 01:23:15 +0200
+Subject: Re: [PATCH bpf-next 0/2] nfp: bpf: add simple map op cache
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        alexei.starovoitov@gmail.com
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        jaco.gericke@netronome.com
+References: <20190828053629.28658-1-jakub.kicinski@netronome.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <238303e7-3d73-cf29-eb04-4a77a5a504fe@iogearbox.net>
-Date:   Sat, 31 Aug 2019 01:20:49 +0200
+Message-ID: <054e3384-c36a-5338-2de2-4dd92ba9e9fc@iogearbox.net>
+Date:   Sat, 31 Aug 2019 01:23:14 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190830110040.31257-1-quentin.monnet@netronome.com>
+In-Reply-To: <20190828053629.28658-1-jakub.kicinski@netronome.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -47,57 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/30/19 1:00 PM, Quentin Monnet wrote:
-> Hi,
-> This set attempts to make it easier to build bpftool, in particular when
-> passing a specific output directory. This is a follow-up to the
-> conversation held last month by Lorenz, Ilya and Jakub [0].
+On 8/28/19 7:36 AM, Jakub Kicinski wrote:
+> Hi!
 > 
-> The first patch is a minor fix to bpftool's Makefile, regarding the
-> retrieval of kernel version (which currently prints a non-relevant make
-> warning on some invocations).
+> This set adds a small batching and cache mechanism to the driver.
+> Map dumps require two operations per element - get next, and
+> lookup. Each of those needs a round trip to the device, and on
+> a loaded system scheduling out and in of the dumping process.
+> This set makes the driver request a number of entries at the same
+> time, and if no operation which would modify the map happens
+> from the host side those entries are used to serve lookup
+> requests for up to 250us, at which point they are considered
+> stale.
 > 
-> Second patch improves the Makefile commands to support more "make"
-> invocations, or to fix building with custom output directory. On Jakub's
-> suggestion, a script is also added to BPF selftests in order to keep track
-> of the supported build variants.
+> This set has been measured to provide almost 4x dumping speed
+> improvement, Jaco says:
 > 
-> Building bpftool with "make tools/bpf" from the top of the repository
-> generates files in "libbpf/" and "feature/" directories under tools/bpf/
-> and tools/bpf/bpftool/. The third patch ensures such directories are taken
-> care of on "make clean", and add them to the relevant .gitignore files.
+> OLD dump times
+>      500 000 elements: 26.1s
+>        1 000 000 elements: 54.5s
 > 
-> At last, fourth patch is a sligthly modified version of Ilya's fix
-> regarding libbpf.a appearing twice on the linking command for bpftool.
+> NEW dump times
+>      500 000 elements: 7.6s
+>        1 000 000 elements: 16.5s
 > 
-> [0] https://lore.kernel.org/bpf/CACAyw9-CWRHVH3TJ=Tke2x8YiLsH47sLCijdp=V+5M836R9aAA@mail.gmail.com/
+> Jakub Kicinski (2):
+>    nfp: bpf: rework MTU checking
+>    nfp: bpf: add simple map op cache
 > 
-> v2:
-> - Return error from check script if one of the make invocations returns
->    non-zero (even if binary is successfully produced).
-> - Run "make clean" from bpf/ and not only bpf/bpftool/ in that same script,
->    when relevant.
-> - Add a patch to clean up generated "feature/" and "libbpf/" directories.
-> 
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> 
-> Quentin Monnet (4):
->    tools: bpftool: ignore make built-in rules for getting kernel version
->    tools: bpftool: improve and check builds for different make
->      invocations
->    tools: bpf: account for generated feature/ and libbpf/ directories
->    tools: bpftool: do not link twice against libbpf.a in Makefile
-> 
->   tools/bpf/.gitignore                          |   1 +
->   tools/bpf/Makefile                            |   5 +-
->   tools/bpf/bpftool/.gitignore                  |   2 +
->   tools/bpf/bpftool/Makefile                    |  28 ++--
->   tools/testing/selftests/bpf/Makefile          |   3 +-
->   .../selftests/bpf/test_bpftool_build.sh       | 143 ++++++++++++++++++
->   6 files changed, 167 insertions(+), 15 deletions(-)
->   create mode 100755 tools/testing/selftests/bpf/test_bpftool_build.sh
-> 
+>   drivers/net/ethernet/netronome/nfp/bpf/cmsg.c | 187 ++++++++++++++++--
+>   drivers/net/ethernet/netronome/nfp/bpf/fw.h   |   1 +
+>   drivers/net/ethernet/netronome/nfp/bpf/main.c |  33 ++++
+>   drivers/net/ethernet/netronome/nfp/bpf/main.h |  24 +++
+>   .../net/ethernet/netronome/nfp/bpf/offload.c  |   3 +
+>   drivers/net/ethernet/netronome/nfp/nfp_net.h  |   2 +-
+>   .../ethernet/netronome/nfp/nfp_net_common.c   |   9 +-
+>   7 files changed, 239 insertions(+), 20 deletions(-)
 
 Applied, thanks!
