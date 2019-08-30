@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62054A3157
+	by mail.lfdr.de (Postfix) with ESMTP id CB4F3A3158
 	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:43:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728213AbfH3Hm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 03:42:26 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:51650 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726655AbfH3Hm0 (ORCPT
+        id S1728585AbfH3Hm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 03:42:27 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55058 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727681AbfH3Hm0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:42:26 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7U7eq2w021429;
-        Fri, 30 Aug 2019 00:42:23 -0700
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7U7dltx026578;
+        Fri, 30 Aug 2019 00:42:25 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=hOl8voFw5xOjxFWpRL8Y4wJyhMahMYrIzHEsfHIvUuo=;
- b=EN527LBXdaNlFyulhbsgUpLwnMOrjtxrguneJQuPor52z/tH0ONMegTm7mXTTsEtpDyI
- 3DqWM9Oey8+APHII84+3ECmRNop6/OISbRB6AeJxqQw1byHx/fWdQJgIdIOQPW5f7DaX
- i/Q5+v65mdyAO4FDzFRy5HAH+n6KZx8P5lHSxHGru13FxeBtk+3fK5XXEY/Iv1W2t/qe
- LF5UPYVKZtiixxDqlf6tbdX8cOsGioPPN5ExCNOmw2eNPLSFzUFaGwsz16myA2riHp+E
- y3JZ+r1HZs/3szrU4Osz4ykEfuCSq13IAriB4PN7R+mnbSePq768SqbqvOp2Wuz4Rp76 Dw== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2uk4rkypr4-1
+ content-type; s=pfpt0818; bh=fYCX6gTwJlDfqkcoRyf49ghtKXpAkog9HvcfqWFMLwc=;
+ b=HpPe/jJsKdqDvFCGiAJ+mQgMiUeIIzLyeKG+OkEEWxLHtJVl40v/w9MbvWJxkjrFL+UL
+ zkcr8uS5EHMiNdCft5jGeA8R0W7U8lbvzTF/pLvROjpKRy0s0R0YRX5fAM9Er//vnBBR
+ 77h1W8y00iTgEJsr8GzTWTZ5BuHoLyEhULKoEwqTCT9dtrPR22PjMTl7txsQz6kgBZHx
+ ywvGZfgsbUB72hbi8KrVcYkT5MDLjYt1vOSK2h6gzWuvgJM7kP00KhbE+c2SP7Ujm/Ts
+ D4F3ShYX7s31nb6shQDYABWfw9t1qIlD3c66xFByPvk52NZwKzGTQF6Y/Bbu1GB3KDeU Zg== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2upmepjc1u-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 30 Aug 2019 00:42:23 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 30 Aug
- 2019 00:42:20 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Fri, 30 Aug 2019 00:42:20 -0700
+        Fri, 30 Aug 2019 00:42:25 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 30 Aug
+ 2019 00:42:23 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Fri, 30 Aug 2019 00:42:23 -0700
 Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 333993F7043;
-        Fri, 30 Aug 2019 00:42:20 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 65B283F7043;
+        Fri, 30 Aug 2019 00:42:23 -0700 (PDT)
 Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x7U7gJbI008880;
-        Fri, 30 Aug 2019 00:42:19 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x7U7gNcb008884;
+        Fri, 30 Aug 2019 00:42:23 -0700
 Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x7U7gJIq008879;
-        Fri, 30 Aug 2019 00:42:19 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x7U7gN7C008883;
+        Fri, 30 Aug 2019 00:42:23 -0700
 From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
         <aelior@marvell.com>
-Subject: [PATCH net-next 1/4] qed: Add APIs for reading config id attributes.
-Date:   Fri, 30 Aug 2019 00:42:03 -0700
-Message-ID: <20190830074206.8836-2-skalluru@marvell.com>
+Subject: [PATCH net-next 2/4] qede: Add support for reading the config id attributes.
+Date:   Fri, 30 Aug 2019 00:42:04 -0700
+Message-ID: <20190830074206.8836-3-skalluru@marvell.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20190830074206.8836-1-skalluru@marvell.com>
 References: <20190830074206.8836-1-skalluru@marvell.com>
@@ -60,158 +60,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch adds driver support for reading the config id attributes from NVM
-flash partition.
+Add driver support for dumping the config id attributes via ethtool dump
+interfaces.
 
 Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_main.c | 27 +++++++++++++++++++++++++++
- drivers/net/ethernet/qlogic/qed/qed_mcp.c  | 29 +++++++++++++++++++++++++++++
- drivers/net/ethernet/qlogic/qed/qed_mcp.h  | 15 +++++++++++++++
- include/linux/qed/qed_if.h                 | 11 +++++++++++
- 4 files changed, 82 insertions(+)
+ drivers/net/ethernet/qlogic/qede/qede.h         | 14 ++++
+ drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 89 +++++++++++++++++++++++++
+ 2 files changed, 103 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 7891f8c..c9a7571 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -69,6 +69,8 @@
- #define QED_RDMA_SRQS                   QED_ROCE_QPS
- #define QED_NVM_CFG_SET_FLAGS		0xE
- #define QED_NVM_CFG_SET_PF_FLAGS	0x1E
-+#define QED_NVM_CFG_GET_FLAGS		0xA
-+#define QED_NVM_CFG_GET_PF_FLAGS	0x1A
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index 0e931c0..8f2adde 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -177,6 +177,19 @@ enum qede_flags_bit {
+ 	QEDE_FLAGS_TX_TIMESTAMPING_EN
+ };
  
- static char version[] =
- 	"QLogic FastLinQ 4xxxx Core Module qed " DRV_MODULE_VERSION "\n";
-@@ -2298,6 +2300,30 @@ static int qed_nvm_flash_cfg_write(struct qed_dev *cdev, const u8 **data)
++#define QEDE_DUMP_MAX_ARGS 4
++enum qede_dump_cmd {
++	QEDE_DUMP_CMD_NONE = 0,
++	QEDE_DUMP_CMD_NVM_CFG,
++	QEDE_DUMP_CMD_MAX
++};
++
++struct qede_dump_info {
++	enum qede_dump_cmd cmd;
++	u8 num_args;
++	u32 args[QEDE_DUMP_MAX_ARGS];
++};
++
+ struct qede_dev {
+ 	struct qed_dev			*cdev;
+ 	struct net_device		*ndev;
+@@ -262,6 +275,7 @@ struct qede_dev {
+ 	struct qede_rdma_dev		rdma_info;
+ 
+ 	struct bpf_prog *xdp_prog;
++	struct qede_dump_info		dump_info;
+ };
+ 
+ enum QEDE_STATE {
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+index abcee47..2359293 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+@@ -48,6 +48,9 @@
+ 	 {QEDE_RQSTAT_OFFSET(stat_name), QEDE_RQSTAT_STRING(stat_name)}
+ 
+ #define QEDE_SELFTEST_POLL_COUNT 100
++#define QEDE_DUMP_VERSION	0x1
++#define QEDE_DUMP_NVM_BUF_LEN	32
++#define QEDE_DUMP_NVM_ARG_COUNT	2
+ 
+ static const struct {
+ 	u64 offset;
+@@ -1973,6 +1976,89 @@ static int qede_get_module_eeprom(struct net_device *dev,
  	return rc;
  }
  
-+static int qed_nvm_flash_cfg_read(struct qed_dev *cdev, u8 **data,
-+				  u32 cmd, u32 entity_id)
++static int qede_set_dump(struct net_device *dev, struct ethtool_dump *val)
 +{
-+	struct qed_hwfn *hwfn = QED_LEADING_HWFN(cdev);
-+	struct qed_ptt *ptt;
-+	u32 flags, len;
++	struct qede_dev *edev = netdev_priv(dev);
 +	int rc = 0;
 +
-+	ptt = qed_ptt_acquire(hwfn);
-+	if (!ptt)
-+		return -EAGAIN;
-+
-+	DP_VERBOSE(cdev, NETIF_MSG_DRV,
-+		   "Read config cmd = %d entity id %d\n", cmd, entity_id);
-+	flags = entity_id ? QED_NVM_CFG_GET_PF_FLAGS : QED_NVM_CFG_GET_FLAGS;
-+	rc = qed_mcp_nvm_get_cfg(hwfn, ptt, cmd, entity_id, flags, *data, &len);
-+	if (rc)
-+		DP_ERR(cdev, "Error %d reading %d\n", rc, cmd);
-+
-+	qed_ptt_release(hwfn, ptt);
-+
-+	return rc;
-+}
-+
- static int qed_nvm_flash(struct qed_dev *cdev, const char *name)
- {
- 	const struct firmware *image;
-@@ -2610,6 +2636,7 @@ static u8 qed_get_affin_hwfn_idx(struct qed_dev *cdev)
- 	.db_recovery_del = &qed_db_recovery_del,
- 	.read_module_eeprom = &qed_read_module_eeprom,
- 	.get_affin_hwfn_idx = &qed_get_affin_hwfn_idx,
-+	.read_nvm_cfg = &qed_nvm_flash_cfg_read,
- };
- 
- void qed_get_protocol_stats(struct qed_dev *cdev,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-index 89462c4..36ddb89 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-@@ -3751,6 +3751,35 @@ int qed_mcp_get_ppfid_bitmap(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 	return 0;
- }
- 
-+int qed_mcp_nvm_get_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
-+			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
-+			u32 *p_len)
-+{
-+	u32 mb_param = 0, resp, param;
-+	int rc;
-+
-+	QED_MFW_SET_FIELD(mb_param, DRV_MB_PARAM_NVM_CFG_OPTION_ID, option_id);
-+	if (flags & QED_NVM_CFG_OPTION_INIT)
-+		QED_MFW_SET_FIELD(mb_param,
-+				  DRV_MB_PARAM_NVM_CFG_OPTION_INIT, 1);
-+	if (flags & QED_NVM_CFG_OPTION_FREE)
-+		QED_MFW_SET_FIELD(mb_param,
-+				  DRV_MB_PARAM_NVM_CFG_OPTION_FREE, 1);
-+	if (flags & QED_NVM_CFG_OPTION_ENTITY_SEL) {
-+		QED_MFW_SET_FIELD(mb_param,
-+				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_SEL, 1);
-+		QED_MFW_SET_FIELD(mb_param,
-+				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID,
-+				  entity_id);
++	if (edev->dump_info.cmd == QEDE_DUMP_CMD_NONE) {
++		if (val->flag > QEDE_DUMP_CMD_MAX) {
++			DP_ERR(edev, "Invalid command %d\n", val->flag);
++			return -EINVAL;
++		}
++		edev->dump_info.cmd = val->flag;
++		edev->dump_info.num_args = 0;
++		return 0;
 +	}
 +
-+	rc = qed_mcp_nvm_rd_cmd(p_hwfn, p_ptt,
-+				DRV_MSG_CODE_GET_NVM_CFG_OPTION,
-+				mb_param, &resp, &param, p_len, (u32 *)p_buf);
++	if (edev->dump_info.num_args == QEDE_DUMP_MAX_ARGS) {
++		DP_ERR(edev, "Arg count = %d\n", edev->dump_info.num_args);
++		return -EINVAL;
++	}
++
++	switch (edev->dump_info.cmd) {
++	case QEDE_DUMP_CMD_NVM_CFG:
++		edev->dump_info.args[edev->dump_info.num_args] = val->flag;
++		edev->dump_info.num_args++;
++		break;
++	default:
++		break;
++	}
 +
 +	return rc;
 +}
 +
- int qed_mcp_nvm_set_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
- 			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
- 			u32 len)
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.h b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-index 83649a8..9c4c276 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-@@ -1209,6 +1209,21 @@ void qed_mcp_resc_lock_default_init(struct qed_resc_lock_params *p_lock,
- int qed_mcp_get_ppfid_bitmap(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);
- 
- /**
-+ * @brief Get NVM config attribute value.
-+ *
-+ * @param p_hwfn
-+ * @param p_ptt
-+ * @param option_id
-+ * @param entity_id
-+ * @param flags
-+ * @param p_buf
-+ * @param p_len
-+ */
-+int qed_mcp_nvm_get_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
-+			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
-+			u32 *p_len);
++static int qede_get_dump_flag(struct net_device *dev,
++			      struct ethtool_dump *dump)
++{
++	struct qede_dev *edev = netdev_priv(dev);
 +
-+/**
-  * @brief Set NVM config attribute value.
-  *
-  * @param p_hwfn
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index e366399..06fd958 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -1132,6 +1132,17 @@ struct qed_common_ops {
-  * @param cdev
-  */
- 	u8 (*get_affin_hwfn_idx)(struct qed_dev *cdev);
++	dump->version = QEDE_DUMP_VERSION;
++	switch (edev->dump_info.cmd) {
++	case QEDE_DUMP_CMD_NVM_CFG:
++		dump->flag = QEDE_DUMP_CMD_NVM_CFG;
++		dump->len = QEDE_DUMP_NVM_BUF_LEN;
++		break;
++	default:
++		break;
++	}
 +
-+/**
-+ * @brief read_nvm_cfg - Read NVM config attribute value.
-+ * @param cdev
-+ * @param buf - buffer
-+ * @param cmd - NVM CFG command id
-+ * @param entity_id - Entity id
-+ *
-+ */
-+	int (*read_nvm_cfg)(struct qed_dev *cdev, u8 **buf, u32 cmd,
-+			    u32 entity_id);
++	DP_VERBOSE(edev, QED_MSG_DEBUG,
++		   "dump->version = 0x%x dump->flag = %d dump->len = %d\n",
++		   dump->version, dump->flag, dump->len);
++	return 0;
++}
++
++static int qede_get_dump_data(struct net_device *dev,
++			      struct ethtool_dump *dump, void *buf)
++{
++	struct qede_dev *edev = netdev_priv(dev);
++	int rc;
++
++	switch (edev->dump_info.cmd) {
++	case QEDE_DUMP_CMD_NVM_CFG:
++		if (edev->dump_info.num_args != QEDE_DUMP_NVM_ARG_COUNT) {
++			DP_ERR(edev, "Arg count = %d required = %d\n",
++			       edev->dump_info.num_args,
++			       QEDE_DUMP_NVM_ARG_COUNT);
++			return -EINVAL;
++		}
++		rc =  edev->ops->common->read_nvm_cfg(edev->cdev, (u8 **)&buf,
++						      edev->dump_info.args[0],
++						      edev->dump_info.args[1]);
++		break;
++	default:
++		DP_ERR(edev, "Invalid cmd = %d\n", edev->dump_info.cmd);
++		rc = -EINVAL;
++		break;
++	}
++
++	edev->dump_info.cmd = QEDE_DUMP_CMD_NONE;
++	edev->dump_info.num_args = 0;
++
++	return rc;
++}
++
+ static const struct ethtool_ops qede_ethtool_ops = {
+ 	.get_link_ksettings = qede_get_link_ksettings,
+ 	.set_link_ksettings = qede_set_link_ksettings,
+@@ -2014,6 +2100,9 @@ static int qede_get_module_eeprom(struct net_device *dev,
+ 	.get_tunable = qede_get_tunable,
+ 	.set_tunable = qede_set_tunable,
+ 	.flash_device = qede_flash_device,
++	.get_dump_flag = qede_get_dump_flag,
++	.get_dump_data = qede_get_dump_data,
++	.set_dump = qede_set_dump,
  };
  
- #define MASK_FIELD(_name, _value) \
+ static const struct ethtool_ops qede_vf_ethtool_ops = {
 -- 
 1.8.3.1
 
