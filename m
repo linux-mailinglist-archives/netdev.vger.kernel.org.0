@@ -2,113 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32681A2ED8
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 07:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E864A2F10
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 07:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbfH3FXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 01:23:37 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:58806 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726015AbfH3FXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 01:23:37 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C3CDB61B23; Fri, 30 Aug 2019 05:23:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567142616;
-        bh=wU9LXwwrtw6Y4MVGV8bKagIYuC69Nr8gtbRGHP9Xxdc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PqDJH57KabhIo8olx0gJWDRR1PfxGVuTau+v8sHE27aHqp0xGRNYtXV9Ox4vMaES7
-         Eu7wVk2Ge1MOG0TmwZptRdBHievFGm1Vb90bEfjrX7UzNyyYZLhLgoGBTmMWnUU3WX
-         rsfTxW7ul6wFI8hga5NggULVLDInWD77PxNbh1g0=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab@codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 39FD861D46;
-        Fri, 30 Aug 2019 05:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567142615;
-        bh=wU9LXwwrtw6Y4MVGV8bKagIYuC69Nr8gtbRGHP9Xxdc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=n7bbfyrlMI6XCkgwiKMjxl6KkdjzziI9lBuhZmDXTc6nx/vrz1o6d18aPvamkrXoi
-         WxA+dF/7elKFb5HXp/JgGoiOSNfKZnvCCXS4iyJ1U9KhP2PKvyVFRwv+jF9nWCJRiE
-         9H+x5lyeElVXzowSeDAkvOnV59f0yaJ4+vjzeHVE=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 39FD861D46
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=subashab@codeaurora.org
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     eric.dumazet@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: [PATCH net] dev: Delay the free of the percpu refcount
-Date:   Thu, 29 Aug 2019 23:23:16 -0600
-Message-Id: <1567142596-25923-1-git-send-email-subashab@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
+        id S1727958AbfH3Fjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 01:39:43 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39740 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726716AbfH3Fjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 01:39:43 -0400
+Received: by mail-wm1-f65.google.com with SMTP id n2so4638162wmk.4
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 22:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1wp+VbzCUI59xGci2FOifBql4duIgf397Nuhms2TWPw=;
+        b=JXoo/8gXstErUb06GTBgBKo3rcv4zI2kdi/h0lc8RbMOAMNzDfThaJr4PFXLmrX3sK
+         AkLbNdedylvq0GU3OcPOFuBY9Wc+pm8HHZBFhb8huSmSkEVZUXN44qggDKok0BAQMufK
+         DsSYjhw23UyGTcrn6D1+ZJ3O+n2N2kYiQaFTvw12epR+aEfrQSA5BvDbIzSa0ahl0AwC
+         XvlwOtwkxHnx4hGmJyzwFN70cRgEOyoF0rMi36AqUpDjOsI2kz2/lcWeiYS772N+jXGx
+         I8dAgQ7/X5g3iBSq/ydYAwL+Z61l8jGIS4iv+1wduc3mxo012PmSiGYEEu+HnupJ00/U
+         ta6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1wp+VbzCUI59xGci2FOifBql4duIgf397Nuhms2TWPw=;
+        b=Ui/AFvkoRBmlZAFcNr655wNUBmaelzln0gpWOVF+39TPdCbr8BRvjoDRJ9c5XjraL9
+         1vmjmFt11Fs5bi3Ax96vVdidAwLaKM/HfjwIvGMDovobff8/MPMU4VBsryEW3YHlr3Vf
+         Vq3q5ZQdJ+b+9YQy4CpMG47YakKgSlY+A3adet03Aoj08r1BSkqRrE4L9EhyoZ0gJ9OY
+         iE/v7hRZ9fGhdZ199aoyMXMfF+qN20Hv0bHMpKnDecIBCas7PssgIm9UXTP+prVHG859
+         9JWTVXH4yJthwzIYnaKdwgzVoHC7G+MPQbrh067CVe2pD3nR0zar8YLn3nY5pX9LI8Qm
+         gO6g==
+X-Gm-Message-State: APjAAAXwoPYakHopnpbb71lqrNx1utGhXqZlJhz0Qgm2PIGnH0tViuWx
+        KeSCd636YVYvA0aMcS5Epy9Jjg==
+X-Google-Smtp-Source: APXvYqxFCvnEHwY5tbZHKnNs7cuHJXoQI8Z4jPbpqM6vDshHknFkniltgX66RuHTLBF+5UPAyk9+qA==
+X-Received: by 2002:a1c:ca0c:: with SMTP id a12mr15418773wmg.71.1567143581424;
+        Thu, 29 Aug 2019 22:39:41 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id r16sm8358227wrc.81.2019.08.29.22.39.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 22:39:40 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 07:39:40 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Miller <davem@davemloft.net>
+Cc:     idosch@idosch.org, andrew@lunn.ch, horatiu.vultur@microchip.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        allan.nielsen@microchip.com, ivecera@redhat.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190830053940.GL2312@nanopsycho>
+References: <20190829175759.GA19471@splinter>
+ <20190829182957.GA17530@lunn.ch>
+ <20190829193613.GA23259@splinter>
+ <20190829.151201.940681219080864052.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190829.151201.940681219080864052.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running stress-ng on an ARM64 kernel, the following oops
-was observedi -
+Fri, Aug 30, 2019 at 12:12:01AM CEST, davem@davemloft.net wrote:
+>From: Ido Schimmel <idosch@idosch.org>
+>Date: Thu, 29 Aug 2019 22:36:13 +0300
+>
+>> I fully agree that we should make it easy for users to capture offloaded
+>> traffic, which is why I suggested patching libpcap. Add a flag to
+>> capable netdevs that tells libpcap that in order to capture all the
+>> traffic from this interface it needs to add a tc filter with a trap
+>> action. That way zero familiarity with tc is required from users.
+>
+>Why not just make setting promisc mode on the device do this rather than
+>require all of this tc indirection nonsense?
 
-44837.761523:   <6> Unable to handle kernel paging request at
-                     virtual address 0000004a88287000
-44837.761651:   <2> pc : in_dev_finish_destroy+0x4c/0xc8
-44837.761654:   <2> lr : in_dev_finish_destroy+0x2c/0xc8
-44837.762393:   <2> Call trace:
-44837.762398:   <2>  in_dev_finish_destroy+0x4c/0xc8
-44837.762404:   <2>  in_dev_rcu_put+0x24/0x30
-44837.762412:   <2>  rcu_nocb_kthread+0x43c/0x468
-44837.762418:   <2>  kthread+0x118/0x128
-44837.762424:   <2>  ret_from_fork+0x10/0x1c
+Because the "promisc mode" would gain another meaning. Now how the
+driver should guess which meaning the user ment when he setted it?
+filter or trap?
 
-Prior to this, it appeared as if some of the inet6_dev allocations
-were failing. From the memory dump, the last operation performed
-was dev_put(), however the pcpu_refcnt was NULL while the
-reg_state = NETREG_RELEASED. Effectively, the refcount memory was
-freed in free_netdev() before the last reference was dropped.
+That is very confusing. If the flag is the way to do this, let's
+introduce another flag, like IFF_TRAPPING indicating that user wants
+exactly this.
 
-Fix this by freeing the memory after all references are dropped and
-before the dev memory itself is freed.
 
-Fixes: 29b4433d991c ("net: percpu net_device refcount")
-Cc: Sean Tranchetti <stranche@codeaurora.org>
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
----
- net/core/dev.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 49589ed..bce40d8 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9128,6 +9128,9 @@ void netdev_freemem(struct net_device *dev)
- {
- 	char *addr = (char *)dev - dev->padded;
- 
-+	free_percpu(dev->pcpu_refcnt);
-+	dev->pcpu_refcnt = NULL;
-+
- 	kvfree(addr);
- }
- 
-@@ -9272,9 +9275,6 @@ void free_netdev(struct net_device *dev)
- 	list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
- 		netif_napi_del(p);
- 
--	free_percpu(dev->pcpu_refcnt);
--	dev->pcpu_refcnt = NULL;
--
- 	/*  Compatibility with error handling in drivers */
- 	if (dev->reg_state == NETREG_UNINITIALIZED) {
- 		netdev_freemem(dev);
--- 
-1.9.1
-
+>
+>That's the whole point of this conversation I thought?
