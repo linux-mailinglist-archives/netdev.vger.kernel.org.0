@@ -2,154 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82130A3385
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5B9A3388
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 11:17:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbfH3JQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 05:16:22 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38058 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726969AbfH3JQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 05:16:22 -0400
-Received: by mail-wm1-f67.google.com with SMTP id o184so6665918wme.3
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 02:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OmOxyirVK5rhjoOTnMBnhiR2RwlcT8CA1ShL6vnmzuc=;
-        b=OUFIxNBTzTtYNJLL+LVtYBSOykMMh9gf8rh7nyWvJxhIQGcT3iVTmtYhMYo6jN5/x8
-         K2JLWywcx980clBZK8tEbv8wHiiTPObQeSrJyZ7K7wF2nKCsl4FG+Z4GHfnPO40Sebmr
-         SvfSNjUeVVn2CvgZ/JmUDGNFs/Tmb8Gxra6J8Iy7KTSmFZFXLrGblmL42jnYgpUcaCh5
-         sVbLKEs6bfq9Wqj3CW66fkf878qvN6Ef8h9Nb+xCaX+9OanaZkJcod//iJ1QvGG/HJBO
-         PCxhp5Wa7WR3mmT44eem8Aw97qN8zkq8oNIA1BGZ0/vaWeAGKo6U1SrBhdCzUtNonuOD
-         eBlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OmOxyirVK5rhjoOTnMBnhiR2RwlcT8CA1ShL6vnmzuc=;
-        b=qigAJeMDv2SuC4DXbPM65qosICOBULR/wH5DeKznXb5+pfgnTiyGiJAO1x6HkXIQPF
-         AnQOp64sCcmNu4lq4HT0JOaZVJmCZPuJDApohZxOv3hPfwJUZEGhdstvXXFtzciWQfWu
-         xUrVCvt6gPO8rM8UOe2qdAd9vnqFkrEhETmsv/S3eZ76ptaXxIrHiy0v23HfTo2zX1h7
-         Bwt7Vw6WVqSsJh/2JBO0ZqBNa+ZE+DvVbiimNnkGfdp4FWSse9sVaXA7ryZI9UHx+Fu2
-         7FNux+1Xbl8Gu2lEoxI9ruZnRnE6MqnFB3Cph0Zho8ZQm3KL5YW13Ljgd7KXY8+x6Fxa
-         j0RQ==
-X-Gm-Message-State: APjAAAXPkts2e4kMBhERY5JgEcFvJMbOsQfi9mcb3sIapH1st6wXKnKr
-        vXPYMJeMAe9IvXQZDFBImqbeCHAP
-X-Google-Smtp-Source: APXvYqwKXIbmTUSXfrXOoKwAKq/2GvESFuX0FS8GL7g5laulx7DP2kIvDw3oaqUVsp4MX1/iyJFlhQ==
-X-Received: by 2002:a7b:cb03:: with SMTP id u3mr17399401wmj.58.1567156579939;
-        Fri, 30 Aug 2019 02:16:19 -0700 (PDT)
-Received: from [192.168.8.147] (31.169.185.81.rev.sfr.net. [81.185.169.31])
-        by smtp.gmail.com with ESMTPSA id b136sm9840226wme.18.2019.08.30.02.16.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Aug 2019 02:16:19 -0700 (PDT)
-Subject: Re: [PATCH net] dev: Delay the free of the percpu refcount
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        eric.dumazet@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Sean Tranchetti <stranche@codeaurora.org>
-References: <1567142596-25923-1-git-send-email-subashab@codeaurora.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <959f4b3e-387d-a148-3281-aed26a6a7aa5@gmail.com>
-Date:   Fri, 30 Aug 2019 11:16:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727707AbfH3JR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 05:17:29 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45400 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725780AbfH3JR3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 05:17:29 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1CB3D30860A5;
+        Fri, 30 Aug 2019 09:17:29 +0000 (UTC)
+Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 05C475C1D6;
+        Fri, 30 Aug 2019 09:17:22 +0000 (UTC)
+Date:   Fri, 30 Aug 2019 11:17:20 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     alex.williamson@redhat.com, jiri@mellanox.com,
+        kwankhede@nvidia.com, davem@davemloft.net, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+Message-ID: <20190830111720.04aa54e9.cohuck@redhat.com>
+In-Reply-To: <20190829111904.16042-2-parav@mellanox.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190829111904.16042-1-parav@mellanox.com>
+        <20190829111904.16042-2-parav@mellanox.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-In-Reply-To: <1567142596-25923-1-git-send-email-subashab@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 30 Aug 2019 09:17:29 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 29 Aug 2019 06:18:59 -0500
+Parav Pandit <parav@mellanox.com> wrote:
 
-
-On 8/30/19 7:23 AM, Subash Abhinov Kasiviswanathan wrote:
-> While running stress-ng on an ARM64 kernel, the following oops
-> was observedi -
+> Some vendor drivers want an identifier for an mdev device that is
+> shorter than the UUID, due to length restrictions in the consumers of
+> that identifier.
 > 
-> 44837.761523:   <6> Unable to handle kernel paging request at
->                      virtual address 0000004a88287000
-> 44837.761651:   <2> pc : in_dev_finish_destroy+0x4c/0xc8
-> 44837.761654:   <2> lr : in_dev_finish_destroy+0x2c/0xc8
-> 44837.762393:   <2> Call trace:
-> 44837.762398:   <2>  in_dev_finish_destroy+0x4c/0xc8
-> 44837.762404:   <2>  in_dev_rcu_put+0x24/0x30
-> 44837.762412:   <2>  rcu_nocb_kthread+0x43c/0x468
-> 44837.762418:   <2>  kthread+0x118/0x128
-> 44837.762424:   <2>  ret_from_fork+0x10/0x1c
+> Add a callback that allows a vendor driver to request an alias of a
+> specified length to be generated for an mdev device. If generated,
+> that alias is checked for collisions.
 > 
-> Prior to this, it appeared as if some of the inet6_dev allocations
-> were failing. From the memory dump, the last operation performed
-> was dev_put(), however the pcpu_refcnt was NULL while the
-> reg_state = NETREG_RELEASED. Effectively, the refcount memory was
-> freed in free_netdev() before the last reference was dropped.
+> It is an optional attribute.
+> mdev alias is generated using sha1 from the mdev name.
 > 
-> Fix this by freeing the memory after all references are dropped and
-> before the dev memory itself is freed.
+> Signed-off-by: Parav Pandit <parav@mellanox.com>
 > 
-> Fixes: 29b4433d991c ("net: percpu net_device refcount")
-> Cc: Sean Tranchetti <stranche@codeaurora.org>
-> Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 > ---
->  net/core/dev.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Changelog:
+> v1->v2:
+>  - Kept mdev_device naturally aligned
+>  - Added error checking for crypt_*() calls
+>  - Corrected a typo from 'and' to 'an'
+>  - Changed return type of generate_alias() from int to char*
+> v0->v1:
+>  - Moved alias length check outside of the parent lock
+>  - Moved alias and digest allocation from kvzalloc to kzalloc
+>  - &alias[0] changed to alias
+>  - alias_length check is nested under get_alias_length callback check
+>  - Changed comments to start with an empty line
+>  - Fixed cleaunup of hash if mdev_bus_register() fails
+>  - Added comment where alias memory ownership is handed over to mdev device
+>  - Updated commit log to indicate motivation for this feature
+> ---
+>  drivers/vfio/mdev/mdev_core.c    | 123 ++++++++++++++++++++++++++++++-
+>  drivers/vfio/mdev/mdev_private.h |   5 +-
+>  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
+>  include/linux/mdev.h             |   4 +
+>  4 files changed, 135 insertions(+), 10 deletions(-)
 > 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 49589ed..bce40d8 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9128,6 +9128,9 @@ void netdev_freemem(struct net_device *dev)
->  {
->  	char *addr = (char *)dev - dev->padded;
->  
-> +	free_percpu(dev->pcpu_refcnt);
-> +	dev->pcpu_refcnt = NULL;
+
+(...)
+
+> +static const char *
+> +generate_alias(const char *uuid, unsigned int max_alias_len)
+> +{
+> +	struct shash_desc *hash_desc;
+> +	unsigned int digest_size;
+> +	unsigned char *digest;
+> +	unsigned int alias_len;
+> +	char *alias;
+> +	int ret;
 > +
->  	kvfree(addr);
+> +	/*
+> +	 * Align to multiple of 2 as bin2hex will generate
+> +	 * even number of bytes.
+> +	 */
+> +	alias_len = roundup(max_alias_len, 2);
+> +	alias = kzalloc(alias_len + 1, GFP_KERNEL);
+
+This function allocates alias...
+
+> +	if (!alias)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	/* Allocate and init descriptor */
+> +	hash_desc = kvzalloc(sizeof(*hash_desc) +
+> +			     crypto_shash_descsize(alias_hash),
+> +			     GFP_KERNEL);
+> +	if (!hash_desc) {
+> +		ret = -ENOMEM;
+> +		goto desc_err;
+> +	}
+> +
+> +	hash_desc->tfm = alias_hash;
+> +
+> +	digest_size = crypto_shash_digestsize(alias_hash);
+> +
+> +	digest = kzalloc(digest_size, GFP_KERNEL);
+> +	if (!digest) {
+> +		ret = -ENOMEM;
+> +		goto digest_err;
+> +	}
+> +	ret = crypto_shash_init(hash_desc);
+> +	if (ret)
+> +		goto hash_err;
+> +
+> +	ret = crypto_shash_update(hash_desc, uuid, UUID_STRING_LEN);
+> +	if (ret)
+> +		goto hash_err;
+> +
+> +	ret = crypto_shash_final(hash_desc, digest);
+> +	if (ret)
+> +		goto hash_err;
+> +
+> +	bin2hex(alias, digest, min_t(unsigned int, digest_size, alias_len / 2));
+> +	/*
+> +	 * When alias length is odd, zero out an additional last byte
+> +	 * that bin2hex has copied.
+> +	 */
+> +	if (max_alias_len % 2)
+> +		alias[max_alias_len] = 0;
+> +
+> +	kfree(digest);
+> +	kvfree(hash_desc);
+> +	return alias;
+
+...and returns it here on success...
+
+> +
+> +hash_err:
+> +	kfree(digest);
+> +digest_err:
+> +	kvfree(hash_desc);
+> +desc_err:
+> +	kfree(alias);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +int mdev_device_create(struct kobject *kobj, struct device *dev,
+> +		       const char *uuid_str, const guid_t *uuid)
+>  {
+>  	int ret;
+>  	struct mdev_device *mdev, *tmp;
+>  	struct mdev_parent *parent;
+>  	struct mdev_type *type = to_mdev_type(kobj);
+> +	const char *alias = NULL;
+>  
+>  	parent = mdev_get_parent(type->parent);
+>  	if (!parent)
+>  		return -EINVAL;
+>  
+> +	if (parent->ops->get_alias_length) {
+> +		unsigned int alias_len;
+> +
+> +		alias_len = parent->ops->get_alias_length();
+> +		if (alias_len) {
+> +			alias = generate_alias(uuid_str, alias_len);
+
+...to be saved into a local variable here...
+
+> +			if (IS_ERR(alias)) {
+> +				ret = PTR_ERR(alias);
+> +				goto alias_fail;
+> +			}
+> +		}
+> +	}
+>  	mutex_lock(&mdev_list_lock);
+>  
+>  	/* Check for duplicate */
+> @@ -300,6 +398,12 @@ int mdev_device_create(struct kobject *kobj,
+>  	}
+>  
+>  	guid_copy(&mdev->uuid, uuid);
+> +	mdev->alias = alias;
+
+...and reassigned to the mdev member here...
+
+> +	/*
+> +	 * At this point alias memory is owned by the mdev.
+> +	 * Mark it NULL, so that only mdev can free it.
+> +	 */
+> +	alias = NULL;
+
+...and detached from the local variable here. Who is freeing it? The
+comment states that it is done by the mdev, but I don't see it?
+
+This detour via the local variable looks weird to me. Can you either
+create the alias directly in the mdev (would need to happen later in
+the function, but I'm not sure why you generate the alias before
+checking for duplicates anyway), or do an explicit copy?
+
+>  	list_add(&mdev->next, &mdev_list);
+>  	mutex_unlock(&mdev_list_lock);
+>  
+> @@ -346,6 +450,8 @@ int mdev_device_create(struct kobject *kobj,
+>  	up_read(&parent->unreg_sem);
+>  	put_device(&mdev->dev);
+>  mdev_fail:
+> +	kfree(alias);
+> +alias_fail:
+>  	mdev_put_parent(parent);
+>  	return ret;
 >  }
->  
-> @@ -9272,9 +9275,6 @@ void free_netdev(struct net_device *dev)
->  	list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
->  		netif_napi_del(p);
->  
-> -	free_percpu(dev->pcpu_refcnt);
-> -	dev->pcpu_refcnt = NULL;
-> -
->  	/*  Compatibility with error handling in drivers */
->  	if (dev->reg_state == NETREG_UNINITIALIZED) {
->  		netdev_freemem(dev);
-> 
 
-This looks bogus.
-
-Whatever layer tries to access dev refcnt after free_netdev() has been called is buggy.
-
-I would rather trap early and fix the root cause.
-
-Untested patch :
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b5d28dadf964..8080f1305417 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3723,6 +3723,7 @@ void netdev_run_todo(void);
-  */
- static inline void dev_put(struct net_device *dev)
- {
-+       BUG_ON(!dev->pcpu_refcnt);
-        this_cpu_dec(*dev->pcpu_refcnt);
- }
- 
-@@ -3734,6 +3735,7 @@ static inline void dev_put(struct net_device *dev)
-  */
- static inline void dev_hold(struct net_device *dev)
- {
-+       BUG_ON(!dev->pcpu_refcnt);
-        this_cpu_inc(*dev->pcpu_refcnt);
- }
- 
-
+(...)
