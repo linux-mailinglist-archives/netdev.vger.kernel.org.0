@@ -2,128 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DE2A32B4
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:35:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 295F8A331E
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727741AbfH3Iew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 04:34:52 -0400
-Received: from ozlabs.org ([203.11.71.1]:60069 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727043AbfH3Iew (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 04:34:52 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46KXpb5KJPz9sML;
-        Fri, 30 Aug 2019 18:34:47 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1567154089;
-        bh=9OJ8AufYKE/UYQvEH07V3RR2Rg0rrMtuziIYoRJkZRY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=jTGtFZaae6vOUJlJTlW3fE0MeJlXfebAsIB3NRVa5uclMZX5B5Pzkd23/Wg7EjAQ2
-         A810/uiJUAJNJPYn+MxdLU4gun4B5NMcnND3vNPx3YzRT3GTcqAmZWWX+S+sOGOqqD
-         kHUDPkJcyK8VVt2uG2XCLXffE88IhQknEqB+ZxJnTKbwRdbztwkoyN0pocHXnqRLQI
-         EFhLTutebx+UlngX1FGnCUCBSeM7Ib1sKjHsCJF8hcGHPItiEVhC+jNOTY1fmJudJz
-         VggozfMorXdIoWq1PrL/sELIuvix5aj6JVw6EEA/IBa7jq4yrtVW2vI47HoLx9j1MX
-         mKXBku1GyIuUw==
-Date:   Fri, 30 Aug 2019 18:34:45 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Greg KH <greg@kroah.com>, David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Benjamin Poirier <bpoirier@suse.com>,
-        Valdis =?UTF-8?B?S2zEk3RuaWVrcw==?= <valdis.kletnieks@vt.edu>,
-        Sasha Levin <alexander.levin@microsoft.com>
-Subject: linux-next: manual merge of the staging tree with the net-next and
- usb trees
-Message-ID: <20190830183445.7ee30c35@canb.auug.org.au>
+        id S1726978AbfH3Is7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 04:48:59 -0400
+Received: from resqmta-ch2-04v.sys.comcast.net ([69.252.207.36]:54524 "EHLO
+        resqmta-ch2-04v.sys.comcast.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725780AbfH3Is6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:48:58 -0400
+Received: from resomta-ch2-09v.sys.comcast.net ([69.252.207.105])
+        by resqmta-ch2-04v.sys.comcast.net with ESMTP
+        id 3caXimwTlbgbq3caXiEQEP; Fri, 30 Aug 2019 08:48:57 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comcast.net;
+        s=20190202a; t=1567154937;
+        bh=JrWJpfwHo/SmXQ8qoHOff7lIJvvG7n3bpiw5LABtK0c=;
+        h=Received:Received:From:To:Subject:Date:Message-ID:MIME-Version:
+         Content-Type;
+        b=OWMGEKJISN65YQKrEFie8Bmol2YJjn+6CHxvZdvv8wq3tFK8U8pRDNpt+8UFVdsEW
+         JU7PR0KpAm2sT03dN1NNz4gxKKt3L6QnoHZPnCQ4IsbWFuqhEp7Mqp39wa9nht2V7U
+         +njCccrGeUdQ1OLoRszQn0mLuDK0L85NyGmtcnS2nADlezgUHQssv4m3ZDMLRJauxJ
+         3Lda9gQKa8KVfPLF9ziWsMs2jeNbAeZPxTmyoeIc+CGExgA4e3SQs/7+UCPVqDAWC6
+         1d+g8pFEF2s/Yd4eJm+4aUFnrOGryNjD/k8SdBWLDOGworgJAtWIlkOlIq0gYe4e72
+         MCy5V292TUTnw==
+Received: from DireWolf ([108.49.206.201])
+        by resomta-ch2-09v.sys.comcast.net with ESMTPSA
+        id 3ca8iTrGpsv0O3caAiONaN; Fri, 30 Aug 2019 08:48:54 +0000
+X-Xfinity-VAAS: gggruggvucftvghtrhhoucdtuddrgeduvddrudeigedgtdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuvehomhgtrghsthdqtfgvshhipdfqfgfvpdfpqffurfetoffkrfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvfhgjufffkfggtgfgofhtsehtqhhgtddvtdejnecuhfhrohhmpedfufhtvghvvgcukggrsggvlhgvfdcuoeiirggsvghlvgestghomhgtrghsthdrnhgvtheqnecuffhomhgrihhnpehivghtfhdrohhrghenucfkphepuddtkedrgeelrddvtdeirddvtddunecurfgrrhgrmhephhgvlhhopeffihhrvgghohhlfhdpihhnvghtpedutdekrdegledrvddtiedrvddtuddpmhgrihhlfhhrohhmpeiirggsvghlvgestghomhgtrghsthdrnhgvthdprhgtphhtthhopegurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprhgtphhtthhopehmrghrkhdrkhgvrghtohhnsehrrgihthhhvghonhdrtghomhdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehonhdvkhduiehnmhesghhmrghilhdrtghomhdprhgtphhtthhopehsrghifhhirdhkhhgrnhesshhtrhhikhhrrdhinhdprhgtphhtthhopehshhhumhestggrnhhnughrvgifrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhesnhgvthifohhrkhhplhhumhgsvghrrdhorhhgpdhrtghpthhtohepvhhlrgguihhmihhrudduieesghhmrghilhdrtghomhd
+X-Xfinity-VMeta: sc=-100;st=legit
+From:   "Steve Zabele" <zabele@comcast.net>
+To:     "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
+Cc:     "'Network Development'" <netdev@vger.kernel.org>,
+        <shum@canndrew.org>, <vladimir116@gmail.com>,
+        <saifi.khan@datasynergy.org>, <saifi.khan@strikr.in>,
+        "'Daniel Borkmann'" <daniel@iogearbox.net>, <on2k16nm@gmail.com>,
+        "'Stephen Hemminger'" <stephen@networkplumber.org>,
+        <mark.keaton@raytheon.com>
+References: <010601d53bdc$79c86dc0$6d594940$@net> <20190716070246.0745ee6f@hermes.lan> <01db01d559e5$64d71de0$2e8559a0$@net> <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
+Subject: RE: Is bug 200755 in anyone's queue??
+Date:   Fri, 30 Aug 2019 04:48:35 -0400
+Message-ID: <000f01d55f0f$c2a921f0$47fb65d0$@net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/7Rz0+Y84nhStRS26SvAVNmn";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Office Outlook 12.0
+Thread-Index: AdVen8s+yDx4SZXJTWeKQUT7IpkgqQAaiC1Q
+Content-Language: en-us
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/7Rz0+Y84nhStRS26SvAVNmn
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Willem!
 
-Hi all,
+**Thank you** for the reply and the code segment, very much appreciated.
 
-Today's linux-next merge of the staging tree got conflicts in:
+Can we expect that this will make its way into a near-term official =
+release of the kernel? Our customers are really not up to patching and =
+rebuilding kernels, plus it "taints" the kernel from a security =
+perspective, and whenever there is a new release of the kernel (you come =
+in one morning and your kernel has been magically upgraded for you =
+because you forgot to disable auto updates) you need to rebuild and hope =
+that the previous patch is still good for the new code, etc, etc.
 
-  drivers/staging/Kconfig
-  drivers/staging/Makefile
+Getting this onto the main branch as part of the official release cycle =
+will be greatly appreciated!
 
-between commits:
+Note that using an ebpf approach can't solve this problem (we know =
+because we tried for quite a while to make it work, no luck). The key =
+issue is that at the point when the ebpf filter gets the packet buffer =
+reference it is pointing to the start of the UDP portion of the packet, =
+and hence is not able to access the IP source address which is earlier =
+in the buffer. Plus every time a new socket is opened or closed, a new =
+epbf has to be created and inserted -- and there is really no good way =
+to figure out which index is (now) associated with which file =
+descriptor..=20
 
-  955315b0dc8c ("qlge: Move drivers/net/ethernet/qlogic/qlge/ to drivers/st=
-aging/qlge/")
-  71ed79b0e4be ("USB: Move wusbcore and UWB to staging as it is obsolete")
+So thank you and the group for your attention to this.
 
-from the net-next and usb trees and commit:
+With respect to your comment
 
-  c48c9f7ff32b ("staging: exfat: add exfat filesystem code to staging")
+>SO_REUSEPORT was not intended to be used in this way. Opening
+>multiple connected sockets with the same local port.
 
-from the staging tree.
+I'd like to offer that there are a number of reliable transport =
+protocols (alternatives to TCP) that use UDP. NORM (IETF RFC 5470) and =
+Google's new QUIC protocol =
+(https://www.ietf.org/blog/whats-happening-quic) are good examples.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+Now consider that users of these protocols will want to create servers =
+using these protocols -- a webserver is a good example. In fact Google =
+has one running on QUIC, and many Chrome users don't even know they are =
+using QUIC when they access Google webservers.
 
---=20
-Cheers,
-Stephen Rothwell
+With a client-server model, clients contact the server at a well known =
+server address and port. Upon first contact from a new client, the =
+server opens another socket with the same local address and port and =
+"connects" to the clients address and ephemeral port so that only =
+traffic for the given five tuple arrives on the new file descriptor -- =
+this allows the server application to keep concurrent sessions with =
+different clients cleanly separated, even though all sessions use the =
+same local server port. In fact, reusing the same port for different =
+sessions is really important from a firewalling perspective,
 
-diff --cc drivers/staging/Kconfig
-index fc1420f2a949,fbdc33874780..000000000000
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@@ -120,9 -118,6 +118,11 @@@ source "drivers/staging/kpc2000/Kconfig
- =20
-  source "drivers/staging/isdn/Kconfig"
- =20
- +source "drivers/staging/qlge/Kconfig"
- +
- +source "drivers/staging/wusbcore/Kconfig"
- +source "drivers/staging/uwb/Kconfig"
- +
-+ source "drivers/staging/exfat/Kconfig"
-+=20
-  endif # STAGING
-diff --cc drivers/staging/Makefile
-index b08ab677e49b,ca13f87b1e1b..000000000000
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@@ -49,7 -49,4 +49,7 @@@ obj-$(CONFIG_XIL_AXIS_FIFO)	+=3D axis-fif
-  obj-$(CONFIG_FIELDBUS_DEV)     +=3D fieldbus/
-  obj-$(CONFIG_KPC2000)		+=3D kpc2000/
-  obj-$(CONFIG_ISDN_CAPI)		+=3D isdn/
- +obj-$(CONFIG_QLGE)		+=3D qlge/
- +obj-$(CONFIG_UWB)		+=3D uwb/
- +obj-$(CONFIG_USB_WUSB)		+=3D wusbcore/
-+ obj-$(CONFIG_EXFAT_FS)		+=3D exfat/
+This is pretty much what our application does, i.e., it uses different =
+sockets/file descriptors to keep sessions straight.
 
---Sig_/7Rz0+Y84nhStRS26SvAVNmn
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+And if it's worth anything, we have been using this mechanism with UDP =
+for a *very* long time, the change in behavior appears to have happened =
+with the 4.5 kernel.
 
------BEGIN PGP SIGNATURE-----
+So **thank you**!!
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1o36UACgkQAVBC80lX
-0GzgUggAlvhyLRTs12ZYfRL8uP2FsACfLiGBGKs7py8Acj/onxEI84OuCspxe8VH
-TlsRWV2Sf9JeFOsDv2tLGphZKM5rdXLSgxJIm5yVKpbMJmptOcVGyHaUbTzHg9X7
-oD2TpyMkFr1neO4nV+NAp9vKMyPe89IfLJz2ZSw5IrfyQ4ysW4//sAaieTdcC8Jy
-OGuUYlxRWs+D3Kwz3pGKGlD9WoTMtuX55AWBYDu1DLM23F/FPtGtJyfB7WSzrqZ4
-iVYDyG0dEuhvZyy7afPbuAI7O6kPeITddrt0uQwEOyO4FZg4n/C7UabtLLoYxETw
-Pb5HvjE5R4yHfe1OwSIx5lVJlrfO+A==
-=yPvP
------END PGP SIGNATURE-----
+Steve
 
---Sig_/7Rz0+Y84nhStRS26SvAVNmn--
+-----Original Message-----
+From: Willem de Bruijn [mailto:willemdebruijn.kernel@gmail.com]=20
+Sent: Thursday, August 29, 2019 3:27 PM
+To: Steve Zabele
+Cc: Network Development; shum@canndrew.org; vladimir116@gmail.com; =
+saifi.khan@datasynergy.org; saifi.khan@strikr.in; Daniel Borkmann; =
+on2k16nm@gmail.com; Stephen Hemminger
+Subject: Re: Is bug 200755 in anyone's queue??
+
+On Fri, Aug 23, 2019 at 3:11 PM Steve Zabele <zabele@comcast.net> wrote:
+>
+> Hi folks,
+>
+> Is there a way to find out where the SO_REUSEPORT bug reported a year =
+ago in
+> August (and apparently has been a bug with kernels later than 4.4) is =
+being
+> addressed?
+>
+> The bug characteristics, simple standalone test code demonstrating the =
+bug,
+> and an assessment of the likely location/cause of the bug within the =
+kernel
+> are all described here
+>
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D200755
+>
+> I'm really hoping this gets fixed so we can move forward on updating =
+our
+> kernels/Ubuntu release from our aging 4.4/16.04 release
+>
+> Thanks!
+>
+> Steve
+>
+>
+>
+> -----Original Message-----
+> From: Stephen Hemminger [mailto:stephen@networkplumber.org]
+> Sent: Tuesday, July 16, 2019 10:03 AM
+> To: Steve Zabele
+> Cc: shum@canndrew.org; vladimir116@gmail.com; =
+saifi.khan@DataSynergy.org;
+> saifi.khan@strikr.in; daniel@iogearbox.net; on2k16nm@gmail.com
+> Subject: Re: Is bug 200755 in anyone's queue??
+>
+> On Tue, 16 Jul 2019 09:43:24 -0400
+> "Steve Zabele" <zabele@comcast.net> wrote:
+>
+>
+> > I came across bug report 200755 trying to figure out why some code I =
+had
+> > provided to customers a while ago no longer works with the current =
+Linux
+> > kernel. See
+> >
+> > https://bugzilla.kernel.org/show_bug.cgi?id=3D200755
+> >
+> > I've verified that, as reported, 'connect' no longer works for UDP.
+> > Moreover, it appears it has been broken since the 4.5 kernel has =
+been
+> > released.
+> >
+> >
+> >
+> > It does also appear that the intended new feature of doing round =
+robin
+> > assignments to different UDP sockets opened with SO_REUSEPORT also =
+does
+> not
+> > work as described.
+> >
+> >
+> >
+> > Since the original bug report was made nearly a year ago for the =
+4.14
+> kernel
+> > (and the bug is also still present in the 4.15 kernel) I'm curious =
+if
+> anyone
+> > is on the hook to get this fixed any time soon.
+> >
+> >
+> >
+> > I'd rather not have to do my own demultiplexing using a single =
+socket in
+> > user space to work around what is clearly a (maybe not so recently
+> > introduced) kernel bug if at all possible. My code had worked just =
+fine on
+> > 3.X kernels, and appears to work okay up through 4.4.
+> >
+>
+> Kernel developers do not use bugzilla, I forward bug reports
+> to netdev@vger.kernel.org (after filtering).
+
+SO_REUSEPORT was not intended to be used in this way. Opening
+multiple connected sockets with the same local port.
+
+But since the interface allowed connect after joining a group, and
+that is being used, I guess that point is moot. Still, I'm a bit
+surprised that it ever worked as described.
+
+Also note that the default distribution algorithm is not round robin
+assignment, but hash based. So multiple consecutive datagrams arriving
+at the same socket is not unexpected.
+
+I suspect that this quick hack might "work". It seemed to on the
+supplied .c file:
+
+                  score =3D compute_score(sk, net, saddr, sport,
+                                        daddr, hnum, dif, sdif);
+                  if (score > badness) {
+  -                       if (sk->sk_reuseport) {
+  +                       if (sk->sk_reuseport && !sk->sk_state !=3D
+TCP_ESTABLISHED) {
+
+But a more robust approach, that also works on existing kernels, is to
+swap the default distribution algorithm with a custom BPF based one (
+SO_ATTACH_REUSEPORT_EBPF).
+
