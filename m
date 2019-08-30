@@ -2,106 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEE60A39B1
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1DDA3A10
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727904AbfH3O7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 10:59:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39098 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727751AbfH3O7i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 10:59:38 -0400
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 70C352341B;
-        Fri, 30 Aug 2019 14:59:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567177177;
-        bh=yuEg/AYA1c6NUhWecZUlheoiYTGMOlPXr3slJwLMjBE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=u1JFAqN/QGD4Fr1TrQB0MS943k5rWA952cBRxVbOh9N0fjLhRovc2G1XoK6mDEGXl
-         zQRqexm0Nzp2k5V9m7YyupViYZnXtEYln5bMhI0CMIUjUrnDUCChwEioFkGkCjYBXv
-         Br+Hx3PpKg8ee/48k5R/YO9a0jdkk06ep3gGNN0A=
-Subject: Re: [PATCH] seccomp: fix compilation errors in seccomp-bpf kselftest
-To:     Alakesh Haloi <alakesh.haloi@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shuah <shuah@kernel.org>
-References: <20190822215823.GA11292@ip-172-31-44-144.us-west-2.compute.internal>
- <30e993fe-de76-9831-7ecc-61fcbcd51ae0@kernel.org>
-From:   shuah <shuah@kernel.org>
-Message-ID: <b19f12c1-9d22-f366-ebb8-2ac0759bfebf@kernel.org>
-Date:   Fri, 30 Aug 2019 08:59:35 -0600
+        id S1727896AbfH3PMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 11:12:02 -0400
+Received: from mail-wr1-f45.google.com ([209.85.221.45]:36478 "EHLO
+        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727135AbfH3PMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:12:01 -0400
+Received: by mail-wr1-f45.google.com with SMTP id y19so7355335wrd.3;
+        Fri, 30 Aug 2019 08:12:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=76/UUed01Y3Y8i/aDowNMkQyy3LjmrVlq62x46O+5HI=;
+        b=B0Mtxovh7YJ1xZ64U7SiGekZ9o7RHn1C7kzg4weTyPz+1pkpuPjKUVgY8eY5lVYl9K
+         1S2+Z8UC8ZqTjtRFrfs9dnjTkEHQ/jZ13wgyzCCDCd7LBw+leUHYVLUPX5nTew6aZedz
+         VwQWtr3NeciSNUMC69YBebngNsOpYL2Ha3bz8IYfAB91TUQyd/E5LC20BK8ghQZ82IGO
+         x5HdFpGbpa+yvnKS5TBBj1ed6fr++5lxlFQ7N+0nnkILxUuQL4soAXP0u2WhLJHsuLi3
+         C7Fv/QuxM3LVzCFX/s3ankIJGLWRkQZo/APO6QBQezDPGzVoCdm1yO+t9ZlkOkxzAo0o
+         +M2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=76/UUed01Y3Y8i/aDowNMkQyy3LjmrVlq62x46O+5HI=;
+        b=Rw53OwmwE+GNKDpPIDqx1rrQIOgBzt01qh7RF4LMHj6gzxWbipFZCNcd1EWUDbhmLx
+         pp56RtkR39V4NXp6KcESrmsAhyCxTfrHjw8l3hdeEccsZ8jOra5WiydEMAWjh3c6EQAG
+         oSFgk2NyLlogQBI4/qMlADFtGbatQsEC4CLdWW80JRuw/rso1mIIDqDpRjpljhsmVB9S
+         6KlVrr2+HuMaxyMQj4t9QRcBPKSnZoZbZhevyn5ykDTVQZRGjA43k2Xl7l1u8dJFU6Yl
+         sUU0iSV+pStkj6PEFCmKzPnxa8OsCQq7r38FE9jlwb06yI7x9Nux+QMSfBdgshsy3aY3
+         zhMw==
+X-Gm-Message-State: APjAAAVIvahWxmDlOVb5IISZAEx5GXxO/b0dfxV2b6iz2+wqzzq/fP3P
+        0GSRhtCfh8YrVtzy+dcyPEdsZ60I
+X-Google-Smtp-Source: APXvYqzKBXu6wZXLHUG8+KW0xkXVfuQI1179U3Ts3qO5WmEIh6+JXMocNScNDvnxocLwtNECOiHZ4A==
+X-Received: by 2002:adf:e846:: with SMTP id d6mr19068750wrn.263.1567177919401;
+        Fri, 30 Aug 2019 08:11:59 -0700 (PDT)
+Received: from [192.168.8.147] (95.168.185.81.rev.sfr.net. [81.185.168.95])
+        by smtp.gmail.com with ESMTPSA id d69sm5515728wmd.4.2019.08.30.08.11.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Aug 2019 08:11:58 -0700 (PDT)
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+To:     Qian Cai <cai@lca.pw>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+Date:   Fri, 30 Aug 2019 17:11:57 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <30e993fe-de76-9831-7ecc-61fcbcd51ae0@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <1567177025-11016-1-git-send-email-cai@lca.pw>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/30/19 8:09 AM, shuah wrote:
-> On 8/22/19 3:58 PM, Alakesh Haloi wrote:
->> Without this patch we see following error while building and kselftest
->> for secccomp_bpf fails.
->>
->> seccomp_bpf.c:1787:20: error: ‘PTRACE_EVENTMSG_SYSCALL_ENTRY’ 
->> undeclared (first use in this function);
->> seccomp_bpf.c:1788:6: error: ‘PTRACE_EVENTMSG_SYSCALL_EXIT’ undeclared 
->> (first use in this function);
->>
->> Signed-off-by: Alakesh Haloi <alakesh.haloi@gmail.com>
->> ---
->>   tools/testing/selftests/seccomp/seccomp_bpf.c | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c 
->> b/tools/testing/selftests/seccomp/seccomp_bpf.c
->> index 6ef7f16c4cf5..2e619760fc3e 100644
->> --- a/tools/testing/selftests/seccomp/seccomp_bpf.c
->> +++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
->> @@ -1353,6 +1353,14 @@ TEST_F(precedence, log_is_fifth_in_any_order)
->>   #define PTRACE_EVENT_SECCOMP 7
->>   #endif
->> +#ifndef PTRACE_EVENTMSG_SYSCALL_ENTRY
->> +#define PTRACE_EVENTMSG_SYSCALL_ENTRY 1
->> +#endif
->> +
->> +#ifndef PTRACE_EVENTMSG_SYSCALL_EXIT
->> +#define PTRACE_EVENTMSG_SYSCALL_EXIT 2
->> +#endif
->> +
->>   #define IS_SECCOMP_EVENT(status) ((status >> 16) == 
->> PTRACE_EVENT_SECCOMP)
->>   bool tracer_running;
->>   void tracer_stop(int sig)
->>
+
+
+On 8/30/19 4:57 PM, Qian Cai wrote:
+> When running heavy memory pressure workloads, the system is throwing
+> endless warnings below due to the allocation could fail from
+> __build_skb(), and the volume of this call could be huge which may
+> generate a lot of serial console output and cosumes all CPUs as
+> warn_alloc() could be expensive by calling dump_stack() and then
+> show_mem().
 > 
-> Hi Kees,
-> 
-> Okay to apply this one for 5.4-rc1. Or is this going through bpf tree?
-> If it is going through bpf tree:
-> 
-> Acked-by: Shuah Khan <skhan@linuxfoundation.org>
-> 
-> thanks,
-> -- Shuah
+> Fix it by silencing the warning in this call site. Also, it seems
+> unnecessary to even print a warning at all if the allocation failed in
+> __build_skb(), as it may just retransmit the packet and retry.
 > 
 
-I saw your mail about Tycho's solution to be your preferred. Ignore this
-message. I am applying Tycho's patch.
+Same patches are showing up there and there from time to time.
 
-thanks,
--- Shuah
+Why is this particular spot interesting, against all others not adding __GFP_NOWARN ?
+
+Are we going to have hundred of patches adding __GFP_NOWARN at various points,
+or should we get something generic to not flood the syslog in case of memory pressure ?
+
