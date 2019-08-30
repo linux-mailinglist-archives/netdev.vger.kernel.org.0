@@ -2,353 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C86A2DB3
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 05:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F11A2E05
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 06:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728164AbfH3Dz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 23:55:58 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35318 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728149AbfH3Dzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 23:55:54 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 205so1206857pfw.2
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 20:55:54 -0700 (PDT)
+        id S1726144AbfH3EQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 00:16:55 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33773 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbfH3EQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 00:16:55 -0400
+Received: by mail-lj1-f195.google.com with SMTP id z17so5179342ljz.0;
+        Thu, 29 Aug 2019 21:16:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JI+MDIFGJevmmlRnNz3V980ISJWQvPg6cfCEu/LF6Qk=;
-        b=U/AieImTjE2CdlYtyD0msfbwtdG7GkPgqJHv/nmnuHOrnpvfWzkFjZo3zlCu+T+K4g
-         vwx/kFFkjr26AXQAEiHf8x1JZV23VxIJCEkiHKgNKe6QzuJb+fLgCqJdqR4lsJXlguKl
-         KgPOH/ugqh0ejPxIZExoVn3KfWNSKEwOo565Y=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iCLpdRArKeEL95JPVvIj5SaZBs9XGj7yces6tTfOStA=;
+        b=NGcsYzMjskd+7OhewWqjmPfjfb9vMfaXR2uRHfS9k8f4X5oAfxYur3wU1mGw6z9Adb
+         s2vSwPdI5MgQ4eo0KXdbdByfhixSLkllBJGWIlIgnMKt/IOTvkIeaEuR6O589lzfmryA
+         6DZK5zWsARS5a4cbhaMVO1vNF8zJA+nFUYwp2FocHW1HXNjbxt1aBqC73lDqN3iU2f2l
+         ODHuasUQ55rzy4x9fiz0RvJv5FS27UAqM3MvRHxTek4Mg8HyqGD6Owic2fzaFJ8SNuhf
+         eF5ngM9Cksnm6F0m+XrxQVECHdjmoyWi/boaFCBQQ7F09g+OKrJHWXcHf6DdE01r/QEj
+         VB5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=JI+MDIFGJevmmlRnNz3V980ISJWQvPg6cfCEu/LF6Qk=;
-        b=Sj7HhsAE/YL8b60ChTBZKoxR/w6mlTqZC/oj2h3Ok4gqMrrc0d6CzkR8LScEliYnqg
-         CD+XigZQSrQrB2mFStJeYUP2mV36raWFtWgoCYAGlOP/o1sbW6YqBD9c3MLAsTsFjklS
-         yWfr0DGe8mdwGyyCZmdM+1ZslBWxoeRV2i75czbBXZx+xTzwDHjMntRBM1u+Bq6CVUeX
-         6au7/xT7rB43nrtmRx8XeQFj15VD+RcVplpbjIu9OkC9s9MW3NS31jQlCvYaRYFTfa3X
-         suYz0OBr2SBYzVYRC2Mem7XIq1TmYsL214nGY99buGGVHDnPnKuY7Y8AhVdcMVAxcHH7
-         ftOQ==
-X-Gm-Message-State: APjAAAUpuPzPmeolzWkGocHc+RYCJrdRCZxSN2JHlA+TsuZBPnR8gENg
-        eIPO7fdidd8+zSMWXHi9lInUPA==
-X-Google-Smtp-Source: APXvYqxlD3Ifbay7FID+3g6wu+RqJbKeK02DLCOO2nc8NIKSzWBuc+etGR/r+aPttNVkqO432N0uUg==
-X-Received: by 2002:a65:4786:: with SMTP id e6mr11041095pgs.448.1567137353547;
-        Thu, 29 Aug 2019 20:55:53 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l3sm3658877pjq.24.2019.08.29.20.55.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Aug 2019 20:55:53 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
-        ray.jui@broadcom.com, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next v2 22/22] bnxt_en: Add FW fatal devlink_health_reporter.
-Date:   Thu, 29 Aug 2019 23:55:05 -0400
-Message-Id: <1567137305-5853-23-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1567137305-5853-1-git-send-email-michael.chan@broadcom.com>
-References: <1567137305-5853-1-git-send-email-michael.chan@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iCLpdRArKeEL95JPVvIj5SaZBs9XGj7yces6tTfOStA=;
+        b=E7zwOCPAzSWUSb+IQDyQ7chPC/rhm/DNFR1h95z4qMNHlhfYrdMfjwBKlwt2fonFto
+         g5c5YDYsgLydq3C4pXX3tLfmUendbfdSVQ8mJCjGcKO5f/q6/lg+P0KPv247cA7zvDnV
+         dpyfTW6pLPiYLbL9E8O4s/nlJjT08GGtFEUXZgkama3kb45FvXJMarrI5hU/VWD85slT
+         aiR96an0e3ggYOzIAMRZ4SXrkCHinbbhRn+AJZgZqgF0D4F8kZDFKugSlCSphikmVi16
+         l/2HxSdFnbz765rx2SfC4Rg2Wj57/WJjcABziS0e8nEHi21uxm9EVxyj8GlMCYfr7al/
+         Ex+A==
+X-Gm-Message-State: APjAAAVnockiYd+271qgOPHwoy67wrcECitZJWx70mWBYUfcn3ljk2Ai
+        KpQyuxYfppQHq+Xkb0nhDhi9bqhbQ5Kf6zrHZPI=
+X-Google-Smtp-Source: APXvYqwckFt3LnsIIi6bT/vpq147Uo7WytBr14tQ2z3LKla/6nJ/Z4g9Ap40xGdfMuNke05PcWsONH/yRHIgQeADweg=
+X-Received: by 2002:a05:651c:1ba:: with SMTP id c26mr7511169ljn.11.1567138612764;
+ Thu, 29 Aug 2019 21:16:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190829051253.1927291-1-ast@kernel.org> <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
+In-Reply-To: <536636ad-0baf-31e9-85fe-2591b65068df@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 29 Aug 2019 21:16:39 -0700
+Message-ID: <CAADnVQLiD_2dTWXgaC773Uo+4LPz=vFEysXUnUcsJ9FKBk5Q7g@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] capability: introduce CAP_BPF and CAP_TRACING
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+On Thu, Aug 29, 2019 at 8:47 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 8/29/19 7:12 AM, Alexei Starovoitov wrote:
+> [...]
+> >
+> > +/*
+> > + * CAP_BPF allows the following BPF operations:
+> > + * - Loading all types of BPF programs
+> > + * - Creating all types of BPF maps except:
+> > + *    - stackmap that needs CAP_TRACING
+> > + *    - devmap that needs CAP_NET_ADMIN
+> > + *    - cpumap that needs CAP_SYS_ADMIN
+> > + * - Advanced verifier features
+> > + *   - Indirect variable access
+> > + *   - Bounded loops
+> > + *   - BPF to BPF function calls
+> > + *   - Scalar precision tracking
+> > + *   - Larger complexity limits
+> > + *   - Dead code elimination
+> > + *   - And potentially other features
+> > + * - Use of pointer-to-integer conversions in BPF programs
+> > + * - Bypassing of speculation attack hardening measures
+> > + * - Loading BPF Type Format (BTF) data
+> > + * - Iterate system wide loaded programs, maps, BTF objects
+> > + * - Retrieve xlated and JITed code of BPF programs
+> > + * - Access maps and programs via id
+> > + * - Use bpf_spin_lock() helper
+>
+> This is still very wide.
 
-Health show command example and output:
+'still very wide' ? you make it sound like it's a bad thing.
+Covering all of bpf with single CAP_BPF is #1 goal of this set.
 
-$ devlink health show pci/0000:af:00.0 reporter fw_fatal
+> Consider following example: app has CAP_BPF +> CAP_NET_ADMIN. Why can't we in this case *only* allow loading networking
+> related [plus generic] maps and programs? If it doesn't have CAP_TRACING,
+> what would be a reason to allow loading it? Same vice versa. There are
+> some misc program types like the infraread stuff, but they could continue
+> to live under [CAP_BPF +] CAP_SYS_ADMIN as fallback. I think categorizing
+> a specific list of prog and map types might be more clear than disallowing
+> some helpers like below (e.g. why choice of bpf_probe_read() but not
+> bpf_probe_write_user() etc).
 
-pci/0000:af:00.0:
-  name fw_fatal
-    state healthy error 1 recover 1 grace_period 0 auto_recover true
+It kinda makes sense:
+cap_bpf+cap_net_admin allows networking progs.
+cap_bpf+cap_tracing allows tracing progs.
+But what to do with cg_sysctl, cg_device, lirc ?
+They are clearly neither.
+Invent yet another cap_foo for them?
+or let them under cap_bpf alone?
+If cap_bpf alone is enough then why bother with bpf+net_admin for networking?
+It's not making anything cleaner. Only confuses users.
 
-Fatal events from firmware or missing periodic heartbeats will
-be reported and recovery will be handled.
+Also bpf_trace_printk() is using ftrace and can print arbitrary memory.
+In that sense it's no different than bpf_probe_read.
+Both should be under CAP_TRACING.
+But bpf_trace_printk() is available to all progs.
+Even to socket filters under cap_sys_admin today.
+With this patch set I'm allowing bpf_trace_printk() under CAP_TRACING.
+Same goes to bpf_probe_read.
 
-We also turn on the support flags when we register with the firmware to
-enable this health and recovery feature in the firmware.
+High level description:
+cap_bpf alone allows loading of all progs except when
+later cap_net_admin or cap_tracing will _not_ be able to
+filter out the helper at attach time that shouldn't be there.
 
-Cc: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 80 ++++++++++++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  7 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 56 ++++++++++++++++
- 3 files changed, 141 insertions(+), 2 deletions(-)
+Example of how this patch set works:
+- to load and attach networking progs
+both cap_bpf and cap_net_admin are necessary.
+- to load and attach tracing progs
+both cap_bpf and cap_tracing are necessary.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 5c7379e..f8a834f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1988,7 +1988,9 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 			goto async_event_process_exit;
- 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
- 		break;
--	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY:
-+	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY: {
-+		u32 data1 = le32_to_cpu(cmpl->event_data1);
-+
- 		bp->fw_reset_timestamp = jiffies;
- 		bp->fw_reset_min_dsecs = cmpl->timestamp_lo;
- 		if (!bp->fw_reset_min_dsecs)
-@@ -1996,8 +1998,16 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 		bp->fw_reset_max_dsecs = le16_to_cpu(cmpl->timestamp_hi);
- 		if (!bp->fw_reset_max_dsecs)
- 			bp->fw_reset_max_dsecs = BNXT_DFLT_FW_RST_MAX_DSECS;
-+		if (EVENT_DATA1_RESET_NOTIFY_FATAL(data1)) {
-+			netdev_warn(bp->dev, "Firmware fatal reset event received\n");
-+			set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
-+		} else {
-+			netdev_warn(bp->dev, "Firmware non-fatal reset event received, max wait time %d msec\n",
-+				    bp->fw_reset_max_dsecs * 100);
-+		}
- 		set_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event);
- 		break;
-+	}
- 	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY: {
- 		struct bnxt_fw_health *fw_health = bp->fw_health;
- 		u32 data1 = le32_to_cpu(cmpl->event_data1);
-@@ -4414,6 +4424,7 @@ static int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp)
- {
- 	struct hwrm_func_drv_rgtr_output *resp = bp->hwrm_cmd_resp_addr;
- 	struct hwrm_func_drv_rgtr_input req = {0};
-+	u32 flags;
- 	int rc;
- 
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_DRV_RGTR, -1, -1);
-@@ -4423,7 +4434,11 @@ static int bnxt_hwrm_func_drv_rgtr(struct bnxt *bp)
- 			    FUNC_DRV_RGTR_REQ_ENABLES_VER);
- 
- 	req.os_type = cpu_to_le16(FUNC_DRV_RGTR_REQ_OS_TYPE_LINUX);
--	req.flags = cpu_to_le32(FUNC_DRV_RGTR_REQ_FLAGS_16BIT_VER_MODE);
-+	flags = FUNC_DRV_RGTR_REQ_FLAGS_16BIT_VER_MODE |
-+		FUNC_DRV_RGTR_REQ_FLAGS_HOT_RESET_SUPPORT;
-+	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
-+		flags |= FUNC_DRV_RGTR_REQ_FLAGS_ERROR_RECOVERY_SUPPORT;
-+	req.flags = cpu_to_le32(flags);
- 	req.ver_maj_8b = DRV_VER_MAJ;
- 	req.ver_min_8b = DRV_VER_MIN;
- 	req.ver_upd_8b = DRV_VER_UPD;
-@@ -9926,6 +9941,38 @@ static void bnxt_tx_timeout(struct net_device *dev)
- 	bnxt_queue_sp_work(bp);
- }
- 
-+static void bnxt_fw_health_check(struct bnxt *bp)
-+{
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	u32 val;
-+
-+	if (!fw_health || !fw_health->enabled ||
-+	    test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
-+		return;
-+
-+	if (fw_health->tmr_counter) {
-+		fw_health->tmr_counter--;
-+		return;
-+	}
-+
-+	val = bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
-+	if (val == fw_health->last_fw_heartbeat)
-+		goto fw_reset;
-+
-+	fw_health->last_fw_heartbeat = val;
-+
-+	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+	if (val != fw_health->last_fw_reset_cnt)
-+		goto fw_reset;
-+
-+	fw_health->tmr_counter = fw_health->tmr_multiplier;
-+	return;
-+
-+fw_reset:
-+	set_bit(BNXT_FW_EXCEPTION_SP_EVENT, &bp->sp_event);
-+	bnxt_queue_sp_work(bp);
-+}
-+
- static void bnxt_timer(struct timer_list *t)
- {
- 	struct bnxt *bp = from_timer(bp, t, timer);
-@@ -9937,6 +9984,9 @@ static void bnxt_timer(struct timer_list *t)
- 	if (atomic_read(&bp->intr_sem) != 0)
- 		goto bnxt_restart_timer;
- 
-+	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
-+		bnxt_fw_health_check(bp);
-+
- 	if (bp->link_info.link_up && (bp->flags & BNXT_FLAG_PORT_STATS) &&
- 	    bp->stats_coal_ticks) {
- 		set_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event);
-@@ -10003,6 +10053,26 @@ static void bnxt_fw_reset_close(struct bnxt *bp)
- 	bp->ctx = NULL;
- }
- 
-+static bool is_bnxt_fw_ok(struct bnxt *bp)
-+{
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	bool no_heartbeat = false, has_reset = false;
-+	u32 val;
-+
-+	val = bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
-+	if (val == fw_health->last_fw_heartbeat)
-+		no_heartbeat = true;
-+
-+	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+	if (val != fw_health->last_fw_reset_cnt)
-+		has_reset = true;
-+
-+	if (!no_heartbeat && has_reset)
-+		return true;
-+
-+	return false;
-+}
-+
- /* rtnl_lock is acquired before calling this function */
- static void bnxt_force_fw_reset(struct bnxt *bp)
- {
-@@ -10207,6 +10277,12 @@ static void bnxt_sp_task(struct work_struct *work)
- 	if (test_and_clear_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event))
- 		bnxt_devlink_health_report(bp, BNXT_FW_RESET_NOTIFY_SP_EVENT);
- 
-+	if (test_and_clear_bit(BNXT_FW_EXCEPTION_SP_EVENT, &bp->sp_event)) {
-+		if (!is_bnxt_fw_ok(bp))
-+			bnxt_devlink_health_report(bp,
-+						   BNXT_FW_EXCEPTION_SP_EVENT);
-+	}
-+
- 	smp_mb__before_atomic();
- 	clear_bit(BNXT_STATE_IN_SP_TASK, &bp->state);
- }
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 3459b2a..333b0a8 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -472,6 +472,11 @@ struct rx_tpa_end_cmp_ext {
- 	((le32_to_cpu((rx_tpa_end_ext)->rx_tpa_end_cmp_dup_acks) &	\
- 	 RX_TPA_END_CMP_AGG_BUFS_P5) >> RX_TPA_END_CMP_AGG_BUFS_SHIFT_P5)
- 
-+#define EVENT_DATA1_RESET_NOTIFY_FATAL(data1)				\
-+	(((data1) &							\
-+	  ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA1_REASON_CODE_MASK) ==\
-+	 ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA1_REASON_CODE_FW_EXCEPTION_FATAL)
-+
- #define EVENT_DATA1_RECOVERY_MASTER_FUNC(data1)				\
- 	!!((data1) &							\
- 	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_MASTER_FUNC)
-@@ -1372,6 +1377,7 @@ struct bnxt_fw_health {
- 	u32 fw_reset_seq_delay_msec[16];
- 	struct devlink_health_reporter	*fw_reporter;
- 	struct devlink_health_reporter *fw_reset_reporter;
-+	struct devlink_health_reporter *fw_fatal_reporter;
- };
- 
- struct bnxt_fw_reporter_ctx {
-@@ -1728,6 +1734,7 @@ struct bnxt {
- #define BNXT_UPDATE_PHY_SP_EVENT	16
- #define BNXT_RING_COAL_NOW_SP_EVENT	17
- #define BNXT_FW_RESET_NOTIFY_SP_EVENT	18
-+#define BNXT_FW_EXCEPTION_SP_EVENT	19
- 
- 	struct delayed_work	fw_reset_task;
- 	int			fw_reset_state;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 8512467..e664392 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -83,6 +83,31 @@ struct devlink_health_reporter_ops bnxt_dl_fw_reset_reporter_ops = {
- 	.recover = bnxt_fw_reset_recover,
- };
- 
-+static int bnxt_fw_fatal_recover(struct devlink_health_reporter *reporter,
-+				 void *priv_ctx)
-+{
-+	struct bnxt *bp = devlink_health_reporter_priv(reporter);
-+	struct bnxt_fw_reporter_ctx *fw_reporter_ctx = priv_ctx;
-+	unsigned long event;
-+
-+	if (!priv_ctx)
-+		return -EOPNOTSUPP;
-+
-+	event = fw_reporter_ctx->sp_event;
-+	if (event == BNXT_FW_RESET_NOTIFY_SP_EVENT)
-+		bnxt_fw_reset(bp);
-+	else if (event == BNXT_FW_EXCEPTION_SP_EVENT)
-+		bnxt_fw_exception(bp);
-+
-+	return 0;
-+}
-+
-+static const
-+struct devlink_health_reporter_ops bnxt_dl_fw_fatal_reporter_ops = {
-+	.name = "fw_fatal",
-+	.recover = bnxt_fw_fatal_recover,
-+};
-+
- static void bnxt_dl_fw_reporters_create(struct bnxt *bp)
- {
- 	struct bnxt_fw_health *health = bp->fw_health;
-@@ -108,6 +133,16 @@ static void bnxt_dl_fw_reporters_create(struct bnxt *bp)
- 			    PTR_ERR(health->fw_reset_reporter));
- 		health->fw_reset_reporter = NULL;
- 	}
-+
-+	health->fw_fatal_reporter =
-+		devlink_health_reporter_create(bp->dl,
-+					       &bnxt_dl_fw_fatal_reporter_ops,
-+					       0, true, bp);
-+	if (IS_ERR(health->fw_fatal_reporter)) {
-+		netdev_warn(bp->dev, "Failed to create FW fatal health reporter, rc = %ld\n",
-+			    PTR_ERR(health->fw_fatal_reporter));
-+		health->fw_fatal_reporter = NULL;
-+	}
- }
- 
- static void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
-@@ -122,6 +157,9 @@ static void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
- 
- 	if (health->fw_reset_reporter)
- 		devlink_health_reporter_destroy(health->fw_reset_reporter);
-+
-+	if (health->fw_fatal_reporter)
-+		devlink_health_reporter_destroy(health->fw_fatal_reporter);
- }
- 
- void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event)
-@@ -135,6 +173,15 @@ void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event)
- 	fw_reporter_ctx.sp_event = event;
- 	switch (event) {
- 	case BNXT_FW_RESET_NOTIFY_SP_EVENT:
-+		if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state)) {
-+			if (!fw_health->fw_fatal_reporter)
-+				return;
-+
-+			devlink_health_report(fw_health->fw_fatal_reporter,
-+					      "FW fatal async event received",
-+					      &fw_reporter_ctx);
-+			return;
-+		}
- 		if (!fw_health->fw_reset_reporter)
- 			return;
- 
-@@ -142,6 +189,15 @@ void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event)
- 				      "FW non-fatal reset event received",
- 				      &fw_reporter_ctx);
- 		return;
-+
-+	case BNXT_FW_EXCEPTION_SP_EVENT:
-+		if (!fw_health->fw_fatal_reporter)
-+			return;
-+
-+		devlink_health_report(fw_health->fw_fatal_reporter,
-+				      "FW fatal error reported",
-+				      &fw_reporter_ctx);
-+		return;
- 	}
- }
- 
--- 
-2.5.1
-
+when networking prog is using bpf_trace_printk
+then cap_tracing is needed too.
+And it's checked at load time.
+If we do what you're proposing:
+"lets allow load of all networking with bpf+net_admin"
+then this won't work for bpf_trace_printk.
+Per helper function capability check is still needed.
+And since it's needed I see no reason to limit
+networking progs to bpf+net_admin at load time.
+Load time is still cap_bpf only.
+And helpers will be filtered out at attach by net_admin.
