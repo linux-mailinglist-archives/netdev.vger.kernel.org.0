@@ -2,76 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 631ABA3B08
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C879DA3B18
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728194AbfH3Pwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 11:52:35 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38630 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727791AbfH3Pwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:52:35 -0400
-Received: by mail-pl1-f193.google.com with SMTP id w11so3571049plp.5;
-        Fri, 30 Aug 2019 08:52:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=3aRbcb7mxKQhl3wvmytYCrnDqahAtopYovMiaFP7Dy8=;
-        b=rgJ6w8Z7MmdO0Hp0qryaIgI2vza5UivQ0SOUdnJpS1vqPLzqjk8fuGUPSsXsqKVpye
-         uWqB2Xd4dFoNdamuvDf6zbqYNb8fVTvv6RM7UNMycIsZqrppP+bVcvaHsMkHkDP7C2Hx
-         OI70ReTP+yE72H5kd+X2HLXTT9z16DsWK2M5oygh588jg1sP7WZ6rZqkUOHSI2aSKOyL
-         imyr/NYOixwQF8+4WfrSb7KCUQ2qvu8+2R19sq0FO3egqMqFg79X/q/rt0u99WtQJBy3
-         e4SAAUkJhnYQGGkzs1TPrnhFdP6X05RmoQ/I/qARjdGj0oiL7arQl4BRlRzeVQcBUq2Q
-         TM/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=3aRbcb7mxKQhl3wvmytYCrnDqahAtopYovMiaFP7Dy8=;
-        b=RLZEutoCIlhIEP3vEGITm5xKrNY1aRvSnNmIg9S1B1DCjVhockV08uvI/GydyFnWMg
-         H0JqHlptLK37J2VAfttAXJUIefRn6EMphblJxFlejjpLHssdYHqFzIlYEHSxsc71pbFC
-         35n3c7LYKa7QvJ5tEWdlwv88gCQODoh2MoYH36t58D9jWOHWuAOPJFHWMKiyT8QhDudP
-         kfXMkVpHyBYaEui/+DZ1BOviFY87Ps5ddJ03OqY3lGmU8fRCssPxQhuiO8sM4bPoj8Ed
-         boZUxSCg9h8DmbS6oKPguZ+9bDxCHb4cA/J2oOd83l+ehMvG8fXfqkLUKRLRGjSuxalb
-         MD2w==
-X-Gm-Message-State: APjAAAVvTYewZAR9wjSXPJwIkb8li0yJeCD4R7qdeNlFXMqTOCLLnEoc
-        XlCA4y3f3iHryApW2eV3znw=
-X-Google-Smtp-Source: APXvYqxBKMNukScLMmC9gZpQf+27nAE4AepJTruMT6n2P7I8TuROlQ9AdU2fRT8efHkSAak4hUNxHA==
-X-Received: by 2002:a17:902:780c:: with SMTP id p12mr2079429pll.290.1567180354650;
-        Fri, 30 Aug 2019 08:52:34 -0700 (PDT)
-Received: from [172.26.108.102] ([2620:10d:c090:180::7594])
-        by smtp.gmail.com with ESMTPSA id r2sm4248607pfq.60.2019.08.30.08.52.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 08:52:34 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Kevin Laatz" <kevin.laatz@intel.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com,
-        maximmi@mellanox.com, stephen@networkplumber.org,
-        bruce.richardson@intel.com, ciara.loftus@intel.com,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH bpf-next v6 00/12] XDP unaligned chunk placement support
-Date:   Fri, 30 Aug 2019 08:52:32 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <542303AD-5786-4184-8B4F-075DD945F4C4@gmail.com>
-In-Reply-To: <20190827022531.15060-1-kevin.laatz@intel.com>
-References: <20190822014427.49800-1-kevin.laatz@intel.com>
- <20190827022531.15060-1-kevin.laatz@intel.com>
+        id S1727820AbfH3P4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 11:56:39 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:39226 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727280AbfH3P4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:56:38 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7UFuVso032150, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7UFuVso032150
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Fri, 30 Aug 2019 23:56:31 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Fri, 30 Aug
+ 2019 23:56:30 +0800
+From:   Hau <hau@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Josh Boyer <jwboyer@kernel.org>,
+        Linux Firmware <linux-firmware@kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: RE: [PATCH] rtl_nic: add firmware rtl8125a-3
+Thread-Topic: [PATCH] rtl_nic: add firmware rtl8125a-3
+Thread-Index: AQHVXFz1knouPozvFUa3jgqbAoK3mKcOYVIAgABmRQCABRYM4A==
+Date:   Fri, 30 Aug 2019 15:56:29 +0000
+Message-ID: <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
+References: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
+ <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
+ <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com>
+In-Reply-To: <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.157]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 26 Aug 2019, at 19:25, Kevin Laatz wrote:
-
-> This patch set adds the ability to use unaligned chunks in the XDP umem.
-
-Thanks, Kevin for your hard work and perseverance on this patch set!
--- 
-Jonathan
+PiBPbiAyNy4wOC4yMDE5IDE0OjA4LCBKb3NoIEJveWVyIHdyb3RlOg0KPiA+IE9uIE1vbiwgQXVn
+IDI2LCAyMDE5IGF0IDY6MjMgUE0gSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNv
+bT4NCj4gd3JvdGU6DQo+ID4+DQo+ID4+IFRoaXMgYWRkcyBmaXJtd2FyZSBydGw4MTI1YS0zIGZv
+ciBSZWFsdGVrJ3MgMi41R2JwcyBjaGlwIFJUTDgxMjUuDQo+ID4+DQo+ID4+IFNpZ25lZC1vZmYt
+Ynk6IEhlaW5lciBLYWxsd2VpdCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+DQo+ID4+IC0tLQ0KPiA+
+PiBGaXJtd2FyZSBmaWxlIHdhcyBwcm92aWRlZCBieSBSZWFsdGVrIGFuZCB0aGV5IGFza2VkIG1l
+IHRvIHN1Ym1pdCBpdC4NCj4gPg0KPiA+IENhbiB3ZSBnZXQgYSBTaWduZWQtb2ZmLWJ5IGZyb20g
+c29tZW9uZSBhdCBSZWFsdGVrIHRoZW4/DQo+ID4NCj4gSGkgSGF1LA0KPiANCj4gY2FuIHlvdSBy
+ZXBseSBhbmQgYWRkIHlvdXIgU2lnbmVkLW9mZi1ieT8NCj4gSSBzYXcgdGhhdCBhbGwgdGhlIFJU
+TDgxNjggZmlybXdhcmUgd2FzIHN1Ym1pdHRlZCBieSBIYXllcyBXYW5nLg0KPiANCj4gPiBqb3No
+DQo+ID4NCj4gSGVpbmVyDQo+IA0KDQpTaWduZWQtb2ZmLWJ5OiBDaHVuaGFvIExpbiA8aGF1QHJl
+YWx0ZWsuY29tPg0KDQo+ID4+IFRoZSByZWxhdGVkIGV4dGVuc2lvbiB0byByODE2OSBkcml2ZXIg
+d2lsbCBiZSBzdWJtaXR0ZWQgaW4gdGhlIG5leHQgZGF5cy4NCj4gPj4gLS0tDQo+ID4+ICBXSEVO
+Q0UgICAgICAgICAgICAgICAgfCAgIDMgKysrDQo+ID4+ICBydGxfbmljL3J0bDgxMjVhLTMuZncg
+fCBCaW4gMCAtPiAzNDU2IGJ5dGVzDQo+ID4+ICAyIGZpbGVzIGNoYW5nZWQsIDMgaW5zZXJ0aW9u
+cygrKQ0KPiA+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IHJ0bF9uaWMvcnRsODEyNWEtMy5mdw0KPiA+
+Pg0KPiA+PiBkaWZmIC0tZ2l0IGEvV0hFTkNFIGIvV0hFTkNFDQo+ID4+IGluZGV4IGZiMTI5MjQu
+LmRiZWMxOGEgMTAwNjQ0DQo+ID4+IC0tLSBhL1dIRU5DRQ0KPiA+PiArKysgYi9XSEVOQ0UNCj4g
+Pj4gQEAgLTI5MDYsNiArMjkwNiw5IEBAIFZlcnNpb246IDAuMC4yDQo+ID4+ICBGaWxlOiBydGxf
+bmljL3J0bDgxMDdlLTIuZncNCj4gPj4gIFZlcnNpb246IDAuMC4yDQo+ID4+DQo+ID4+ICtGaWxl
+OiBydGxfbmljL3J0bDgxMjVhLTMuZncNCj4gPj4gK1ZlcnNpb246IDAuMC4xDQo+ID4+ICsNCj4g
+Pj4gIExpY2VuY2U6DQo+ID4+ICAgKiBDb3B5cmlnaHQgwqkgMjAxMS0yMDEzLCBSZWFsdGVrIFNl
+bWljb25kdWN0b3IgQ29ycG9yYXRpb24NCj4gPj4gICAqDQo+ID4+IGRpZmYgLS1naXQgYS9ydGxf
+bmljL3J0bDgxMjVhLTMuZncgYi9ydGxfbmljL3J0bDgxMjVhLTMuZncgbmV3IGZpbGUNCj4gPj4g
+bW9kZSAxMDA2NDQgaW5kZXgNCj4gPj4NCj4gMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDAwMC4uZmFjNjM1MjYzZjkyZThkOTczNDQ1NmI3NQ0KPiA5Mw0KPiA+PiAyYjIwODhl
+ZGQ1ZWY5DQo+ID4+IEdJVCBiaW5hcnkgcGF0Y2gNCj4gPj4gbGl0ZXJhbCAzNDU2DQo+ID4+DQo+
+IHpjbWI3RzRAe0tqOEdyOU0maHc8bDM5bDM+cCpNUEUjd2ViTTZxc3FRaXVDKGhYUGk/K3dETCNW
+KFoqNCNLJQ0KPiBGRHsNCj4gPj4NCj4gemQjUEgrdFRKYnFaRz9hYCkqNUcqbTNGMnptTmA3aHg7
+MipJS2lWdTs7fkh3YV9FQF41K1peb29hdiRxeVdhfCF8DQo+ID4+IHp7SiFWXl5GSHRNZSV+dkU1
+UyF+YTw8SE1xU1VHbj1jXzJIR0o+TTZ8cE89JDZaKy0NCj4gIUZgZDJ8Smp1VD0/dFghNnQNCj4g
+Pj4gem8xZUcxeXNvbC1WQC0NCj4gS2dVMChUPyNAZjZFZnI5ZCEhMkUqeno9R19tQ3VAQ3lLO2dv
+aSFpRCtiMXlrNkIyJWImNg0KPiA+PiB6N2VkUzt4a3pxTzA/OS0ybDlFVzBsdE19K3JJRkd9ODYr
+UG1sako5NWZoQn42Wn5+MHkzSllYfT9aXiYwdXF5MXQNCj4gPj4NCj4gem55P0ZOISl9fW5DKllt
+MTJra0Y8QHQmRTRfPXY9eW5GOUFuRHoyRG1hRSt1UnY2ciEqQCFebSE2Tm1oTU8NCj4genE4cg0K
+PiA+PiB6Y3lTZ1M7bntIWiZWaVZqTytFbTdDPG8kOUV7dzd+Iz82T0E2dkYtDQo+IENBfCE/JE1C
+a1BtVU5hWk5JWn1rUFRaLVdkDQo+ID4+IHo4RjJQSWZ+bGNwen1SeGNoZ09oWk5uQXl+MVYhPHNz
+RUlGd15XKmd4ez0pfE4mc1ZAN3M9fkYtDQo+IFlTPVFLSylBQzgNCj4gPj4NCj4gejtsYCZCSGFC
+NShxIXU0Rio1VWljWDREdzx4WmNAX3hRd2x8KishY3QrSDl1e0ZlQjdWfERFKlRPPGZDaHQ8PiRJ
+DQo+ID4+IHpaWkd9WUBVKmQ/ejZhPnJQVz9nWlUhd2pIXl9eJmNyVklBLQ0KPiBoYXVpUmZ9Km1j
+QE8qTCViPmNYRkReOCZJb3w5YnINCj4gPj4NCj4gekZTKygjQTxOVWw9UXNGIzNVN01lZ2wpIVkl
+I05JYW45KztKTSRWISMpUUEzdDVINmJpYTdUV0pPWGx6NGlvQT08DQo+ID4+IHo8Xj96LTFNSy1B
+OUZhPkhYdDt1XzxgN25sZTFQd3NgeTt4WjRiJCUkUnZYdCpWdGotKCN4UDJhOHlHU14jcnd1Kg0K
+PiA+PiB6NyZSbFhOQik4YDt8cStMZjgrQylTWkRrTHtUKCtNWVpQa0BwJDBuYVlEdmhVZEs7Vy0N
+Cj4gJn4mSzw1eDJUdkNhNEVTDQo+ID4+DQo+IHpKU3FfT3M9YG9gPlRpKGhxTTQjUmt5TGZiT2o4
+TXdiYW1PeFEwfENOVGBARDJFODxySjRPIX17SVpNU3lXfj1QDQo+IGINCj4gPj4gejlMQ0cwTytl
+ajBsQX5zdyVULQ0KPiA7Xj1CYU9uQClAZzh0dV97XjY1fk8mI3Q1b1hXM2RgQ2lxIWk/dV5LZkVX
+c2Z8Zg0KPiA+Pg0KPiB6JThYQGQldntkcjY+NlFhUXVUTU5WKkM9ZCkrbEFZV2h5MUtwN0ElKHpl
+NHFQUkhAYHBIVGZzaGtYZlZSQg0KPiAyVGdZDQo+ID4+DQo+IHpPPWArV3QocTM5UT1XNjEpbTVY
+T2M4JkRrTzVDUGdwKGJUTnpnPnk5cH44akRzJHpKajU8Uj1zO09pflFePk00DQo+ICgNCj4gPj4N
+Cj4gekdgdlROcWBoaXRVekBgQl9OeCkmZldwM1o8PikpOD80ZyZHSUNEckhfalczOFo8bEppYWhT
+M3JscFIkPDk4PUB4DQo+ID4+IHo2aXgpPS1TQiVuSU9Yd1RlUEklZ2NfcEB1cEk7R2RvfkY7VG13
+KTVgeSVeXzM5blgxS2ktSjZ+TDFGS3o3TlNqdg0KPiA+PiB6X2Bua1B6Mz9MJHclcm9oci0odmdC
+RjE8aTtxQkVuRFA3NUFDNlgrWjhkRHtfO0pibk5WKzszTF8pYG1pVz9fZWcNCj4gPj4gei00LTR2
+cmUybyNWVEhze1B7UENhenxkbGU0NUY1PXQ3S2ZSdDMqY2VoPXIkI1RBeTdta3h0d0hXI2opRUhn
+bXApDQo+ID4+IHpPKWhPX0dIPmNiNXtgPSEoQCNqKWhfLWp4Z0NuZWlEOUhjZDtpeGBRPnJYfnl5
+MmN7YmVTM198bT45bTg3O0JlSw0KPiA+PiB6OV48fi0+TGBrZDVzWm1adXc/UVdOdz52bGlIVSlq
+NyZFUTQtZjFtMSMrY342LQ0KPiBqNVU5azl+Ym4qKiNwVj8kTnwtDQo+ID4+IHpxJE5yOFQjJEl7
+Sj9jM3QyVkotRjk9QWpfXnt0a0VgIXd6P1hGflZhYWc1WHdfNGAmbFFUUDFrUVFtTSRffEIwKA0K
+PiA+Pg0KPiB6T2t4ZGxAMFRifWsjTzxaTnE/UDdeQlBAbzU/UCR0RE1VWVVEZG1+T2hqazJNQSE5
+cDxQMFp+ZUNhQCsNCj4gdXY3Tk9GDQo+ID4+IHpWKXR+JEFjYEBHaVN5dFVsYj9xZmh+YGNFS2hY
+WFFgZ2tRUytvUWdKWDhnbmlpSyUrc3pscUJCUU1RK0xqSW9ZQQ0KPiA+PiB6N1BlYTBWJlFISmNV
+c3M/ZTFVIS0NCj4gZW5NO2AjQFc3RmhtVyQhJmIzNHxaPm9pVTMlX0lHWTZ+fThfPD1fODc1JDVL
+DQo+ID4+IHotcDw+ZWxXXjBuTy1YYiR2KT8tPDU/KkclNC0NCj4ga0pPNSMpWnUrVCZYOCZyalpB
+NERSWDFwaE4qQCNMbjNaNWAmeD4NCj4gPj4gek1eQ2d6O3g1ey1jaX0wVnlROEZUI156aSZJTHs5
+SD94SFUhKD4hIWUke3dUNCRHcUJhM0g+eGlHKlZhM2Q3aEJsDQo+ID4+IHokLQ0KPiBsQVYpX1Qz
+V3NUYX1Rd3dUO3spXnlGS3RuYl5iUHhGSkV4emw9VyZvZWpJZXdTNmRqXkFoSD50VmgmKjV+ZWAN
+Cj4gPj4NCj4gemphOWRnNz97S3NaXyReIWRnanBRTDlnZjAzZyZudm56TXY2dnA9UzlEWVZzbm5g
+eTwxcWtSfGNBRjdoTHdvJjRfDQo+ID4+IHokMGIlI3VnXzZOV2ZiKiRJbH1xI2EoIU9iNj1lUE1Y
+cnBCLQ0KPiB2PCNISkVQM0MhdiE1QDw/O0RuMU1VMDwqZjhReHoNCj4gPj4NCj4gekFqVTcqQH5l
+eVMpOEMzYWAyfVBBXnUxRW9pNU5mSz9fdV5eJiZNdE0mb3pJK3s9MndGRWlkTX0/Uj1pdGV+dGc3
+DQo+ID4+IHpwWUdZeW9QKmAweHVnVj1vQDFSeUZ3Y01EUT5PYmU7amljQ2I9dkJoMk1oVTQ8S0Ik
+VmsyTmNRPChgLQ0KPiBxWGl4ckENCj4gPj4gejheNDkhJCskc0dBaWx5YGF1WnZiLSRma1lFSUVs
+Z0QwZEphQykkYlFYVXN3YEB1ckJMPzxSaUoxR14tKTZMLUJUDQo+ID4+IHpAIy1ScHJSMnctDQo+
+IG1xd3FQS1YkQntiQThNaU4xSEV5RXBhcH5AZ1paXyplbCFUVHdeSkYqKEs1YTBRMiNAcnRzVWcN
+Cj4gPj4genQ2U292b3dEaGFKPG9iNlluaE8tVU9VZ1NvdzlVTmtCLQ0KPiBNIytzTn4zZHlAUWhp
+OWNFVmY3M1pgTl5EXjV1V3tXSw0KPiA+PiB6TUUlfll2YXM2MXQ7RT1TJVpAU082Vnw7JmgtDQo+
+IGghM2NiZEQhPSh6NmdAakgjYV92cFMmKzs9ez17RFFwaTI8IUs2DQo+ID4+IERlRVk2Rg0KPiA+
+Pg0KPiA+PiBsaXRlcmFsIDANCj4gPj4gSGNtVj9kMDAwMDENCj4gPj4NCj4gPj4gLS0NCj4gPj4g
+Mi4yMy4wDQo+ID4+DQo+ID4NCj4gDQo+IA0KPiAtLS0tLS1QbGVhc2UgY29uc2lkZXIgdGhlIGVu
+dmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg==
