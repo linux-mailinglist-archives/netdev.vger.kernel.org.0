@@ -2,102 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C51C5A2BBF
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B8EA2BE6
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbfH3Au6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 20:50:58 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45481 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727900AbfH3Au4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 20:50:56 -0400
-Received: by mail-lj1-f196.google.com with SMTP id l1so4768004lji.12
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 17:50:55 -0700 (PDT)
+        id S1727701AbfH3Axf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 20:53:35 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54289 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727171AbfH3Axf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 20:53:35 -0400
+Received: by mail-wm1-f66.google.com with SMTP id k2so4066086wmj.4
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 17:53:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mY025N9ZTLshq6bUASscJHYyFWN73WCKPGSueHP30TA=;
-        b=Okdsp5ZxNf0c0ZS1PgudZ1/Uzcx1vh+JyUHLIBaB4gA9eHqIu0am2+/xAGRamBrEmK
-         qCvznYgVkMcSDDWdiuCGk34vVj8/mP+ro1bCTjA8Ka3xrOrkCNjL5U6xgrBRNELJmuje
-         tp5PnYpAOK9+P7pd2AMtrpQ2VFUiwZgdf+VjTUiXBMwwiLm0B+wHxS9J4hkKQKTR1PMo
-         g5JzQdW9lrRdG4QItLYA3aqHsMKgs2n4aIc4BsxCiDVNYjJ1gBnQXG5diF7z2I2DKLba
-         2UWvt484BgUsrYmmG+TmQ/bM0gM9QCmze3gdMrsQwFGwno6fmli/VeP2qEfoN4+I/6o0
-         LHHg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=fpie0LVs3JvkthYMwpH8W4HcaDPyVptXJ2Sag9vYk6o=;
+        b=IFIVPtl/NsqoGHDO/kb//XOddmp/Xtb/MTqT9FB7ySW8MgM5gP7NvUkRIEiIW8MKmd
+         X2l+TEfr7D2afC4BGEYf9F1cHql9zicj7UAaBRj6g2dJXO//bvNrc7KlAa7siENt72vd
+         pScAdXewwN4HQaYu/DKNinWytQS3+Ffsr0Z586QB8p3/Nz2DPvUA4znSEvwrf7vG9u4v
+         9+jddvxXfBftIOZYrpd8aAnccz29ekHzGRm+52gg826HfraZIxfxkdM2qwt2mpQIvxRf
+         fuGnON1nvOl8jKp6zGAq6j9T5v/oOUb8UT6dg8QIqjt6PEb6aKIZblpNCWz9LEnLAPvf
+         CzFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=mY025N9ZTLshq6bUASscJHYyFWN73WCKPGSueHP30TA=;
-        b=izKk1Y2g+9FXgdEBDWCzOCTv7PaKeRVRO3NobcFJCviW4mZKP7hJo+MIXOdiy40/7c
-         ya/ThARz8k7X7O5weWNTji9zau/xQdhJAHKvTuGUFl5HJpt5fnfsJCkY6yCiw8nMpNRm
-         EgcFtWd8jnP913HoeL4W/UW7nUAIPdA0BT9h0IPTiVst7x9ZS2EAj82cqySLdmlZmrdg
-         38vJkBIq2RaCZO6QD5TU0WY7BDOoGeEkwKZ+DwWLq+iUr2WymNUT8s7OgxGM0i5+o7T6
-         yRhHrp34rx9VYLiEKEAjareTYeMQjDLhtI2Cns97jkNAbbGzrs2vI/agD4we92VrxTxH
-         uMag==
-X-Gm-Message-State: APjAAAUbn8qPxM/GTxmR2NzLl0E3yXxP+u0WITHDwqD3WqmNptZuxnoG
-        y+SPw95XJW8V7lCL/OTG6JHmTQ==
-X-Google-Smtp-Source: APXvYqwqImk+P6XTagmx3q1aVV2TwK0n5J/VZAS+IZlC8HW1HTeVnR0gZP11ETCdNHIKYsMWLXe3bA==
-X-Received: by 2002:a2e:2bda:: with SMTP id r87mr1097319ljr.3.1567126254430;
-        Thu, 29 Aug 2019 17:50:54 -0700 (PDT)
-Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id f19sm628149lfk.43.2019.08.29.17.50.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fpie0LVs3JvkthYMwpH8W4HcaDPyVptXJ2Sag9vYk6o=;
+        b=rKN2fYlURGoVR59w2JSMpsdf3UOztOUobD3bvbwhc6+tBIVf4Z73D5ELlShT+gyBIj
+         0YTb6QIFD+yedvlAIn6AZQ7DePfmPkLjTV8O55EiHz09lT0OnismVR+uQx8HXkYoqQXJ
+         wqcOw9BBiVZ26bNVzvMbsZHFEtrkFbBU16quqintWHsUqDsxQ4r9rvPLwIVOCD3jrX1J
+         FquTsxjSSO/fBotXbexw8iBEYR2IzACIfTBrKbXN717O3DMKw1nxVEYyK6fcMXZ2i/HO
+         l1h6KJFr3bh+zHhZgQQXR+I/Mxr6sKdetp2WrhRBuPoz5gbqWPUvHxg10QNRPjG8Lru3
+         5qfQ==
+X-Gm-Message-State: APjAAAV0DeLIq1xQoHFzeWkvLMHhDHqURSBvelEIQ76BD3YvmqEeAh+A
+        YtPyDoZPPMEvTRjODyNh3fc=
+X-Google-Smtp-Source: APXvYqyB2pDp6I7pEYU69fihYUJBga6WRJ6aYKjbS5zGsO4JHVBnX3Gt8zJUZZ3osOVLE6cOdzfbwA==
+X-Received: by 2002:a7b:cf2d:: with SMTP id m13mr14613464wmg.120.1567126413063;
+        Thu, 29 Aug 2019 17:53:33 -0700 (PDT)
+Received: from localhost.localdomain ([86.126.25.232])
+        by smtp.gmail.com with ESMTPSA id w7sm4691669wrn.11.2019.08.29.17.53.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 17:50:53 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     linux@armlinux.org.uk, ast@kernel.org, daniel@iogearbox.net,
-        yhs@fb.com, davem@davemloft.net, jakub.kicinski@netronome.com,
-        hawk@kernel.org, john.fastabend@gmail.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH RFC bpf-next 10/10] arm: include: asm: unified: mask .syntax unified for clang
-Date:   Fri, 30 Aug 2019 03:50:37 +0300
-Message-Id: <20190830005037.24004-11-ivan.khoronzhuk@linaro.org>
+        Thu, 29 Aug 2019 17:53:32 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        idosch@idosch.org, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v3 net-next 0/2] Dynamic toggling of vlan_filtering for SJA1105 DSA
+Date:   Fri, 30 Aug 2019 03:53:23 +0300
+Message-Id: <20190830005325.26526-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190830005037.24004-1-ivan.khoronzhuk@linaro.org>
-References: <20190830005037.24004-1-ivan.khoronzhuk@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The samples/bpf reuses linux headers, with clang -emit-llvm,
-so this w/a is only for samples/bpf (samples/bpf/Makefile CLANG-bpf).
+This patchset addresses a limitation in dsa_8021q where this sequence of
+commands was causing the switch to stop forwarding traffic:
 
-It allows to build samples/bpf for arm on target board.
-In another way clang -emit-llvm generates errors like:
+  ip link add name br0 type bridge vlan_filtering 0
+  ip link set dev swp2 master br0
+  echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+  echo 0 > /sys/class/net/br0/bridge/vlan_filtering
 
-<inline asm>:1:1: error: unknown directive
-.syntax unified
+The issue has to do with the VLAN table manipulations that dsa_8021q
+does without notifying the bridge layer. The solution is to always
+restore the VLANs that the bridge knows about, when disabling tagging.
 
-I have verified it on clang 5, 6 ,7, 8, 9, 10
-as on native platform as for cross-compiling. This decision is
-arguable, but it doesn't have impact on samples/bpf so it's easier
-just ignore it for clang, at least for now...
+Vladimir Oltean (2):
+  net: bridge: Populate the pvid flag in br_vlan_get_info
+  net: dsa: tag_8021q: Restore bridge VLANs when enabling vlan_filtering
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- arch/arm/include/asm/unified.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/bridge/br_vlan.c |   2 +
+ net/dsa/tag_8021q.c  | 102 ++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 84 insertions(+), 20 deletions(-)
 
-diff --git a/arch/arm/include/asm/unified.h b/arch/arm/include/asm/unified.h
-index 1e2c3eb04353..3cf8757b9a14 100644
---- a/arch/arm/include/asm/unified.h
-+++ b/arch/arm/include/asm/unified.h
-@@ -11,7 +11,11 @@
- #if defined(__ASSEMBLY__)
- 	.syntax unified
- #else
--__asm__(".syntax unified");
-+
-+#ifndef __clang__
-+	__asm__(".syntax unified");
-+#endif
-+
- #endif
- 
- #ifdef CONFIG_CPU_V7M
 -- 
 2.17.1
 
