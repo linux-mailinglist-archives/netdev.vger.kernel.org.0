@@ -2,137 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D02F5A3EDD
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 22:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB472A3EEA
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 22:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728117AbfH3UPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 16:15:16 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37205 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728138AbfH3UPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 16:15:16 -0400
-Received: by mail-pg1-f193.google.com with SMTP id d1so4072430pgp.4
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 13:15:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=a6iN+pwJ7vrmX1H+dzIi/TKd0qsBtlF9jo10cWeeCWs=;
-        b=ZJ93UVFBrkW68hAG0iT6jJcxri/8ieSCOfCeF1WRhWEhwc8pXmySXs109taBDGvw8h
-         vid/2OV0HdFTGfQJcLQB8Bu2kvePDbGhlJ7OST6A4LKaX7kfuZspwb57MXb0UNJeI+HJ
-         ZpPQ4Qb+KsKbKhTvTzOIT4UBIRDHoQsuPM2aI3K1ip2at11v119uwMu0m7zeTZESmUsW
-         sbyJ3AeTGfUFJ/3ndX5aK1xvzkphftDRalL+6WM7O4g/4vRkKHZ86Q2c6qt7BWhj71SZ
-         4h6Rze2cAiSHN5hb6SEh21XJtRAWvHa6b8rUPBu1FCBGEkzQBmk8mR3VNypD8V1s8cg4
-         qgGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=a6iN+pwJ7vrmX1H+dzIi/TKd0qsBtlF9jo10cWeeCWs=;
-        b=CvUg5fgtt8zcV+Z3m9B6WH4i3XEE2GVMt/zoHfA3ZglTH3v6V6rnb4BTDScg3w+vbG
-         qnp+OFLDA+A6bmCR6VX5cZ2haMtWDbIzbvu+sikKCy3YiN5r0J+Vq+HliSuUtxKyAAb6
-         ZWdgnvOLheGbpwh4K7XkYHhc2uKL4XRxbwbUYkUzvY331TqoOM/tZJoYvLyK0ssMb1fj
-         1y/QRSsZ7HwJe94kETQos9PHDf0771VW9ShlAW6755GNxLaY+rdVuhXANUWz2cnIA5Y4
-         m7nIwLtI72uZRoLIRzaN4stYm/JGSygdG1GZkuhi82UJj4YZIji04GC784yJb+ej7iQ2
-         /WEw==
-X-Gm-Message-State: APjAAAXGnQ56vk9avGlgZke3UGhlKMfZR4/ZxryEmdwpmcYyiRYwHSEc
-        IgZI8Pj1nvr6Nz+HUJkiiFSbkA==
-X-Google-Smtp-Source: APXvYqzy14D+UOFPHU/6U/qi89zti6bRxhra2XowGr5nshW5OF/0Ya0KHUPkwHH6qx2LzFzUMrjkaQ==
-X-Received: by 2002:a17:90a:bb92:: with SMTP id v18mr366213pjr.78.1567196115743;
-        Fri, 30 Aug 2019 13:15:15 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id w2sm6949840pjr.27.2019.08.30.13.15.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Aug 2019 13:15:15 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 13:15:13 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Brian Vazquez <brianvv@google.com>, Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 00/13] bpf: adding map batch processing support
-Message-ID: <20190830201513.GA2101@mini-arch>
-References: <20190829064502.2750303-1-yhs@fb.com>
- <20190829113932.5c058194@cakuba.netronome.com>
- <CAMzD94S87BD0HnjjHVmhMPQ3UijS+oNu+H7NtMN8z8EAexgFtg@mail.gmail.com>
- <20190829171513.7699dbf3@cakuba.netronome.com>
+        id S1728199AbfH3UXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 16:23:36 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:30873 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727304AbfH3UXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 16:23:35 -0400
+Received: from localhost.localdomain ([90.126.97.183])
+        by mwinf5d57 with ME
+        id vYPF200053xPcdm03YPRdx; Fri, 30 Aug 2019 22:23:34 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 30 Aug 2019 22:23:34 +0200
+X-ME-IP: 90.126.97.183
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     yangbo.lu@nxp.com, claudiu.manoil@nxp.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] enetc: Add missing call to 'pci_free_irq_vectors()' in probe and remove functions
+Date:   Fri, 30 Aug 2019 22:23:12 +0200
+Message-Id: <20190830202312.21287-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190829171513.7699dbf3@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/29, Jakub Kicinski wrote:
-> On Thu, 29 Aug 2019 16:13:59 -0700, Brian Vazquez wrote:
-> > > We need a per-map implementation of the exec side, but roughly maps
-> > > would do:
-> > >
-> > >         LIST_HEAD(deleted);
-> > >
-> > >         for entry in map {
-> > >                 struct map_op_ctx {
-> > >                         .key    = entry->key,
-> > >                         .value  = entry->value,
-> > >                 };
-> > >
-> > >                 act = BPF_PROG_RUN(filter, &map_op_ctx);
-> > >                 if (act & ~ACT_BITS)
-> > >                         return -EINVAL;
-> > >
-> > >                 if (act & DELETE) {
-> > >                         map_unlink(entry);
-> > >                         list_add(entry, &deleted);
-> > >                 }
-> > >                 if (act & STOP)
-> > >                         break;
-> > >         }
-> > >
-> > >         synchronize_rcu();
-> > >
-> > >         for entry in deleted {
-> > >                 struct map_op_ctx {
-> > >                         .key    = entry->key,
-> > >                         .value  = entry->value,
-> > >                 };
-> > >
-> > >                 BPF_PROG_RUN(dumper, &map_op_ctx);
-> > >                 map_free(entry);
-> > >         }
-> > >  
-> > Hi Jakub,
-> > 
-> > how would that approach support percpu maps?
-> > 
-> > I'm thinking of a scenario where you want to do some calculations on
-> > percpu maps and you are interested on the info on all the cpus not
-> > just the one that is running the bpf program. Currently on a pcpu map
-> > the bpf_map_lookup_elem helper only returns the pointer to the data of
-> > the executing cpu.
-> 
-> Right, we need to have the iteration outside of the bpf program itself,
-> and pass the element in through the context. That way we can feed each
-> per cpu entry into the program separately.
-My 2 cents:
+Call to 'pci_free_irq_vectors()' are missing both in the error handling
+path of the probe function, and in the remove function.
+Add them.
 
-I personally like Jakub's/Quentin's proposal more. So if I get to choose
-between this series and Jakub's filter+dump in BPF, I'd pick filter+dump
-(pending per-cpu issue which we actually care about).
+Fixes: 19971f5ea0ab ("enetc: add PTP clock driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_ptp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-But if we can have both, I don't have any objections; this patch
-series looks to me a lot like what Brian did, just extended to more
-commands. If we are fine with the shortcomings raised about the
-original series, then let's go with this version. Maybe we can also
-look into addressing these independently.
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+index 2fd2586e42bf..bc594892507a 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+@@ -82,7 +82,7 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
+ 	n = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSIX);
+ 	if (n != 1) {
+ 		err = -EPERM;
+-		goto err_irq;
++		goto err_irq_vectors;
+ 	}
+ 
+ 	ptp_qoriq->irq = pci_irq_vector(pdev, 0);
+@@ -107,6 +107,8 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
+ err_no_clock:
+ 	free_irq(ptp_qoriq->irq, ptp_qoriq);
+ err_irq:
++	pci_free_irq_vectors(pdev);
++err_irq_vectors:
+ 	iounmap(base);
+ err_ioremap:
+ 	kfree(ptp_qoriq);
+@@ -125,6 +127,7 @@ static void enetc_ptp_remove(struct pci_dev *pdev)
+ 
+ 	enetc_phc_index = -1;
+ 	ptp_qoriq_free(ptp_qoriq);
++	pci_free_irq_vectors(pdev);
+ 	kfree(ptp_qoriq);
+ 
+ 	pci_release_mem_regions(pdev);
+-- 
+2.20.1
 
-But if I pretend that we live in an ideal world, I'd just go with
-whatever Jakub and Quentin are doing so we don't have to support
-two APIs that essentially do the same (minus batching update, but
-it looks like there is no clear use case for that yet; maybe).
-
-I guess you can hold off this series a bit and discuss it at LPC,
-you have a talk dedicated to that :-) (and afaiu, you are all going)
