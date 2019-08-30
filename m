@@ -2,62 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 913EDA3F2D
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 22:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4EE6A3F30
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 22:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728164AbfH3Uzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 16:55:37 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41694 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727992AbfH3Uzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 16:55:36 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2AB31154FD908;
-        Fri, 30 Aug 2019 13:55:36 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 13:55:35 -0700 (PDT)
-Message-Id: <20190830.135535.690331861133879813.davem@davemloft.net>
-To:     tbogendoerfer@suse.de
-Cc:     ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/15] ioc3-eth improvements
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190830092539.24550-1-tbogendoerfer@suse.de>
-References: <20190830092539.24550-1-tbogendoerfer@suse.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 30 Aug 2019 13:55:36 -0700 (PDT)
+        id S1728208AbfH3Uzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 16:55:51 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:58868 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727992AbfH3Uzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 16:55:51 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1i3nvp-0006RE-4L; Fri, 30 Aug 2019 22:55:41 +0200
+Date:   Fri, 30 Aug 2019 22:55:41 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Leonardo Bras <leonardo@linux.ibm.com>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 2/2] net: br_netfiler_hooks: Drops IPv6 packets if
+ IPv6 module is not loaded
+Message-ID: <20190830205541.GR20113@breakpoint.cc>
+References: <20190830181354.26279-1-leonardo@linux.ibm.com>
+ <20190830181354.26279-3-leonardo@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190830181354.26279-3-leonardo@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Date: Fri, 30 Aug 2019 11:25:23 +0200
-
-> In my patch series for splitting out the serial code from ioc3-eth
-> by using a MFD device there was one big patch for ioc3-eth.c,
-> which wasn't really usefull for reviews. This series contains the
-> ioc3-eth changes splitted in smaller steps and few more cleanups.
-> Only the conversion to MFD will be done later in a different series.
+Leonardo Bras <leonardo@linux.ibm.com> wrote:
+> A kernel panic can happen if a host has disabled IPv6 on boot and have to
+> process guest packets (coming from a bridge) using it's ip6tables.
 > 
-> Changes in v3:
-> - no need to check skb == NULL before passing it to dev_kfree_skb_any
-> - free memory allocated with get_page(s) with free_page(s)
-> - allocate rx ring with just GFP_KERNEL
-> - add required alignment for rings in comments
+> IPv6 packets need to be dropped if the IPv6 module is not loaded.
 > 
-> Changes in v2:
-> - use net_err_ratelimited for printing various ioc3 errors
-> - added missing clearing of rx buf valid flags into ioc3_alloc_rings
-> - use __func__ for printing out of memory messages
+> Signed-off-by: Leonardo Bras <leonardo@linux.ibm.com>
+> ---
+>  net/bridge/br_netfilter_hooks.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+> index d3f9592f4ff8..5e8693730df1 100644
+> --- a/net/bridge/br_netfilter_hooks.c
+> +++ b/net/bridge/br_netfilter_hooks.c
+> @@ -493,6 +493,8 @@ static unsigned int br_nf_pre_routing(void *priv,
+>  	brnet = net_generic(state->net, brnf_net_id);
+>  	if (IS_IPV6(skb) || is_vlan_ipv6(skb, state->net) ||
+>  	    is_pppoe_ipv6(skb, state->net)) {
+> +		if (!ipv6_mod_enabled())
+> +			return NF_DROP;
+>  		if (!brnet->call_ip6tables &&
+>  		    !br_opt_get(br, BROPT_NF_CALL_IP6TABLES))
+>  			return NF_ACCEPT;
 
-Series applied, thanks.
+No, thats too aggressive and turns the bridge into an ipv6 blackhole.
 
-I might be nice to use get_order() instead of hardcoding the page size
-when "2" is passed into the page alloc/free calls.  Just FYI...
+There are two solutions:
+1. The above patch, but use NF_ACCEPT instead
+2. keep the DROP, but move it below the call_ip6tables test,
+   so that users can tweak call-ip6tables to accept packets.
+
+Perhaps it would be good to also add a pr_warn_once() that
+tells that ipv6 was disabled on command line and
+call-ip6tables isn't supported in this configuration.
+
+I would go with option two.
