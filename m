@@ -2,131 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C879DA3B18
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0639BA3B21
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:58:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727820AbfH3P4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 11:56:39 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:39226 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727280AbfH3P4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:56:38 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7UFuVso032150, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7UFuVso032150
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Fri, 30 Aug 2019 23:56:31 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Fri, 30 Aug
- 2019 23:56:30 +0800
-From:   Hau <hau@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Josh Boyer <jwboyer@kernel.org>,
-        Linux Firmware <linux-firmware@kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: RE: [PATCH] rtl_nic: add firmware rtl8125a-3
-Thread-Topic: [PATCH] rtl_nic: add firmware rtl8125a-3
-Thread-Index: AQHVXFz1knouPozvFUa3jgqbAoK3mKcOYVIAgABmRQCABRYM4A==
-Date:   Fri, 30 Aug 2019 15:56:29 +0000
-Message-ID: <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
-References: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
- <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
- <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com>
-In-Reply-To: <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.157]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728146AbfH3P60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 11:58:26 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:57806 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727280AbfH3P60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:58:26 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1i3jI3-0004tU-DS; Fri, 30 Aug 2019 17:58:19 +0200
+Date:   Fri, 30 Aug 2019 17:58:19 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Leonardo Bras <leonardo@linux.ibm.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
+ IPv6 is disabled on boot
+Message-ID: <20190830155819.GQ20113@breakpoint.cc>
+References: <20190821141505.2394-1-leonardo@linux.ibm.com>
+ <db0f02c5b1a995fde174f036540a3d11008cf116.camel@linux.ibm.com>
+ <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
+ <20190829205832.GM20113@breakpoint.cc>
+ <4b3b52d0f73aeb1437b4b2a46325b36e9c41f92b.camel@linux.ibm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b3b52d0f73aeb1437b4b2a46325b36e9c41f92b.camel@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiAyNy4wOC4yMDE5IDE0OjA4LCBKb3NoIEJveWVyIHdyb3RlOg0KPiA+IE9uIE1vbiwgQXVn
-IDI2LCAyMDE5IGF0IDY6MjMgUE0gSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNv
-bT4NCj4gd3JvdGU6DQo+ID4+DQo+ID4+IFRoaXMgYWRkcyBmaXJtd2FyZSBydGw4MTI1YS0zIGZv
-ciBSZWFsdGVrJ3MgMi41R2JwcyBjaGlwIFJUTDgxMjUuDQo+ID4+DQo+ID4+IFNpZ25lZC1vZmYt
-Ynk6IEhlaW5lciBLYWxsd2VpdCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+DQo+ID4+IC0tLQ0KPiA+
-PiBGaXJtd2FyZSBmaWxlIHdhcyBwcm92aWRlZCBieSBSZWFsdGVrIGFuZCB0aGV5IGFza2VkIG1l
-IHRvIHN1Ym1pdCBpdC4NCj4gPg0KPiA+IENhbiB3ZSBnZXQgYSBTaWduZWQtb2ZmLWJ5IGZyb20g
-c29tZW9uZSBhdCBSZWFsdGVrIHRoZW4/DQo+ID4NCj4gSGkgSGF1LA0KPiANCj4gY2FuIHlvdSBy
-ZXBseSBhbmQgYWRkIHlvdXIgU2lnbmVkLW9mZi1ieT8NCj4gSSBzYXcgdGhhdCBhbGwgdGhlIFJU
-TDgxNjggZmlybXdhcmUgd2FzIHN1Ym1pdHRlZCBieSBIYXllcyBXYW5nLg0KPiANCj4gPiBqb3No
-DQo+ID4NCj4gSGVpbmVyDQo+IA0KDQpTaWduZWQtb2ZmLWJ5OiBDaHVuaGFvIExpbiA8aGF1QHJl
-YWx0ZWsuY29tPg0KDQo+ID4+IFRoZSByZWxhdGVkIGV4dGVuc2lvbiB0byByODE2OSBkcml2ZXIg
-d2lsbCBiZSBzdWJtaXR0ZWQgaW4gdGhlIG5leHQgZGF5cy4NCj4gPj4gLS0tDQo+ID4+ICBXSEVO
-Q0UgICAgICAgICAgICAgICAgfCAgIDMgKysrDQo+ID4+ICBydGxfbmljL3J0bDgxMjVhLTMuZncg
-fCBCaW4gMCAtPiAzNDU2IGJ5dGVzDQo+ID4+ICAyIGZpbGVzIGNoYW5nZWQsIDMgaW5zZXJ0aW9u
-cygrKQ0KPiA+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IHJ0bF9uaWMvcnRsODEyNWEtMy5mdw0KPiA+
-Pg0KPiA+PiBkaWZmIC0tZ2l0IGEvV0hFTkNFIGIvV0hFTkNFDQo+ID4+IGluZGV4IGZiMTI5MjQu
-LmRiZWMxOGEgMTAwNjQ0DQo+ID4+IC0tLSBhL1dIRU5DRQ0KPiA+PiArKysgYi9XSEVOQ0UNCj4g
-Pj4gQEAgLTI5MDYsNiArMjkwNiw5IEBAIFZlcnNpb246IDAuMC4yDQo+ID4+ICBGaWxlOiBydGxf
-bmljL3J0bDgxMDdlLTIuZncNCj4gPj4gIFZlcnNpb246IDAuMC4yDQo+ID4+DQo+ID4+ICtGaWxl
-OiBydGxfbmljL3J0bDgxMjVhLTMuZncNCj4gPj4gK1ZlcnNpb246IDAuMC4xDQo+ID4+ICsNCj4g
-Pj4gIExpY2VuY2U6DQo+ID4+ICAgKiBDb3B5cmlnaHQgwqkgMjAxMS0yMDEzLCBSZWFsdGVrIFNl
-bWljb25kdWN0b3IgQ29ycG9yYXRpb24NCj4gPj4gICAqDQo+ID4+IGRpZmYgLS1naXQgYS9ydGxf
-bmljL3J0bDgxMjVhLTMuZncgYi9ydGxfbmljL3J0bDgxMjVhLTMuZncgbmV3IGZpbGUNCj4gPj4g
-bW9kZSAxMDA2NDQgaW5kZXgNCj4gPj4NCj4gMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw
-MDAwMDAwMDAwMC4uZmFjNjM1MjYzZjkyZThkOTczNDQ1NmI3NQ0KPiA5Mw0KPiA+PiAyYjIwODhl
-ZGQ1ZWY5DQo+ID4+IEdJVCBiaW5hcnkgcGF0Y2gNCj4gPj4gbGl0ZXJhbCAzNDU2DQo+ID4+DQo+
-IHpjbWI3RzRAe0tqOEdyOU0maHc8bDM5bDM+cCpNUEUjd2ViTTZxc3FRaXVDKGhYUGk/K3dETCNW
-KFoqNCNLJQ0KPiBGRHsNCj4gPj4NCj4gemQjUEgrdFRKYnFaRz9hYCkqNUcqbTNGMnptTmA3aHg7
-MipJS2lWdTs7fkh3YV9FQF41K1peb29hdiRxeVdhfCF8DQo+ID4+IHp7SiFWXl5GSHRNZSV+dkU1
-UyF+YTw8SE1xU1VHbj1jXzJIR0o+TTZ8cE89JDZaKy0NCj4gIUZgZDJ8Smp1VD0/dFghNnQNCj4g
-Pj4gem8xZUcxeXNvbC1WQC0NCj4gS2dVMChUPyNAZjZFZnI5ZCEhMkUqeno9R19tQ3VAQ3lLO2dv
-aSFpRCtiMXlrNkIyJWImNg0KPiA+PiB6N2VkUzt4a3pxTzA/OS0ybDlFVzBsdE19K3JJRkd9ODYr
-UG1sako5NWZoQn42Wn5+MHkzSllYfT9aXiYwdXF5MXQNCj4gPj4NCj4gem55P0ZOISl9fW5DKllt
-MTJra0Y8QHQmRTRfPXY9eW5GOUFuRHoyRG1hRSt1UnY2ciEqQCFebSE2Tm1oTU8NCj4genE4cg0K
-PiA+PiB6Y3lTZ1M7bntIWiZWaVZqTytFbTdDPG8kOUV7dzd+Iz82T0E2dkYtDQo+IENBfCE/JE1C
-a1BtVU5hWk5JWn1rUFRaLVdkDQo+ID4+IHo4RjJQSWZ+bGNwen1SeGNoZ09oWk5uQXl+MVYhPHNz
-RUlGd15XKmd4ez0pfE4mc1ZAN3M9fkYtDQo+IFlTPVFLSylBQzgNCj4gPj4NCj4gejtsYCZCSGFC
-NShxIXU0Rio1VWljWDREdzx4WmNAX3hRd2x8KishY3QrSDl1e0ZlQjdWfERFKlRPPGZDaHQ8PiRJ
-DQo+ID4+IHpaWkd9WUBVKmQ/ejZhPnJQVz9nWlUhd2pIXl9eJmNyVklBLQ0KPiBoYXVpUmZ9Km1j
-QE8qTCViPmNYRkReOCZJb3w5YnINCj4gPj4NCj4gekZTKygjQTxOVWw9UXNGIzNVN01lZ2wpIVkl
-I05JYW45KztKTSRWISMpUUEzdDVINmJpYTdUV0pPWGx6NGlvQT08DQo+ID4+IHo8Xj96LTFNSy1B
-OUZhPkhYdDt1XzxgN25sZTFQd3NgeTt4WjRiJCUkUnZYdCpWdGotKCN4UDJhOHlHU14jcnd1Kg0K
-PiA+PiB6NyZSbFhOQik4YDt8cStMZjgrQylTWkRrTHtUKCtNWVpQa0BwJDBuYVlEdmhVZEs7Vy0N
-Cj4gJn4mSzw1eDJUdkNhNEVTDQo+ID4+DQo+IHpKU3FfT3M9YG9gPlRpKGhxTTQjUmt5TGZiT2o4
-TXdiYW1PeFEwfENOVGBARDJFODxySjRPIX17SVpNU3lXfj1QDQo+IGINCj4gPj4gejlMQ0cwTytl
-ajBsQX5zdyVULQ0KPiA7Xj1CYU9uQClAZzh0dV97XjY1fk8mI3Q1b1hXM2RgQ2lxIWk/dV5LZkVX
-c2Z8Zg0KPiA+Pg0KPiB6JThYQGQldntkcjY+NlFhUXVUTU5WKkM9ZCkrbEFZV2h5MUtwN0ElKHpl
-NHFQUkhAYHBIVGZzaGtYZlZSQg0KPiAyVGdZDQo+ID4+DQo+IHpPPWArV3QocTM5UT1XNjEpbTVY
-T2M4JkRrTzVDUGdwKGJUTnpnPnk5cH44akRzJHpKajU8Uj1zO09pflFePk00DQo+ICgNCj4gPj4N
-Cj4gekdgdlROcWBoaXRVekBgQl9OeCkmZldwM1o8PikpOD80ZyZHSUNEckhfalczOFo8bEppYWhT
-M3JscFIkPDk4PUB4DQo+ID4+IHo2aXgpPS1TQiVuSU9Yd1RlUEklZ2NfcEB1cEk7R2RvfkY7VG13
-KTVgeSVeXzM5blgxS2ktSjZ+TDFGS3o3TlNqdg0KPiA+PiB6X2Bua1B6Mz9MJHclcm9oci0odmdC
-RjE8aTtxQkVuRFA3NUFDNlgrWjhkRHtfO0pibk5WKzszTF8pYG1pVz9fZWcNCj4gPj4gei00LTR2
-cmUybyNWVEhze1B7UENhenxkbGU0NUY1PXQ3S2ZSdDMqY2VoPXIkI1RBeTdta3h0d0hXI2opRUhn
-bXApDQo+ID4+IHpPKWhPX0dIPmNiNXtgPSEoQCNqKWhfLWp4Z0NuZWlEOUhjZDtpeGBRPnJYfnl5
-MmN7YmVTM198bT45bTg3O0JlSw0KPiA+PiB6OV48fi0+TGBrZDVzWm1adXc/UVdOdz52bGlIVSlq
-NyZFUTQtZjFtMSMrY342LQ0KPiBqNVU5azl+Ym4qKiNwVj8kTnwtDQo+ID4+IHpxJE5yOFQjJEl7
-Sj9jM3QyVkotRjk9QWpfXnt0a0VgIXd6P1hGflZhYWc1WHdfNGAmbFFUUDFrUVFtTSRffEIwKA0K
-PiA+Pg0KPiB6T2t4ZGxAMFRifWsjTzxaTnE/UDdeQlBAbzU/UCR0RE1VWVVEZG1+T2hqazJNQSE5
-cDxQMFp+ZUNhQCsNCj4gdXY3Tk9GDQo+ID4+IHpWKXR+JEFjYEBHaVN5dFVsYj9xZmh+YGNFS2hY
-WFFgZ2tRUytvUWdKWDhnbmlpSyUrc3pscUJCUU1RK0xqSW9ZQQ0KPiA+PiB6N1BlYTBWJlFISmNV
-c3M/ZTFVIS0NCj4gZW5NO2AjQFc3RmhtVyQhJmIzNHxaPm9pVTMlX0lHWTZ+fThfPD1fODc1JDVL
-DQo+ID4+IHotcDw+ZWxXXjBuTy1YYiR2KT8tPDU/KkclNC0NCj4ga0pPNSMpWnUrVCZYOCZyalpB
-NERSWDFwaE4qQCNMbjNaNWAmeD4NCj4gPj4gek1eQ2d6O3g1ey1jaX0wVnlROEZUI156aSZJTHs5
-SD94SFUhKD4hIWUke3dUNCRHcUJhM0g+eGlHKlZhM2Q3aEJsDQo+ID4+IHokLQ0KPiBsQVYpX1Qz
-V3NUYX1Rd3dUO3spXnlGS3RuYl5iUHhGSkV4emw9VyZvZWpJZXdTNmRqXkFoSD50VmgmKjV+ZWAN
-Cj4gPj4NCj4gemphOWRnNz97S3NaXyReIWRnanBRTDlnZjAzZyZudm56TXY2dnA9UzlEWVZzbm5g
-eTwxcWtSfGNBRjdoTHdvJjRfDQo+ID4+IHokMGIlI3VnXzZOV2ZiKiRJbH1xI2EoIU9iNj1lUE1Y
-cnBCLQ0KPiB2PCNISkVQM0MhdiE1QDw/O0RuMU1VMDwqZjhReHoNCj4gPj4NCj4gekFqVTcqQH5l
-eVMpOEMzYWAyfVBBXnUxRW9pNU5mSz9fdV5eJiZNdE0mb3pJK3s9MndGRWlkTX0/Uj1pdGV+dGc3
-DQo+ID4+IHpwWUdZeW9QKmAweHVnVj1vQDFSeUZ3Y01EUT5PYmU7amljQ2I9dkJoMk1oVTQ8S0Ik
-VmsyTmNRPChgLQ0KPiBxWGl4ckENCj4gPj4gejheNDkhJCskc0dBaWx5YGF1WnZiLSRma1lFSUVs
-Z0QwZEphQykkYlFYVXN3YEB1ckJMPzxSaUoxR14tKTZMLUJUDQo+ID4+IHpAIy1ScHJSMnctDQo+
-IG1xd3FQS1YkQntiQThNaU4xSEV5RXBhcH5AZ1paXyplbCFUVHdeSkYqKEs1YTBRMiNAcnRzVWcN
-Cj4gPj4genQ2U292b3dEaGFKPG9iNlluaE8tVU9VZ1NvdzlVTmtCLQ0KPiBNIytzTn4zZHlAUWhp
-OWNFVmY3M1pgTl5EXjV1V3tXSw0KPiA+PiB6TUUlfll2YXM2MXQ7RT1TJVpAU082Vnw7JmgtDQo+
-IGghM2NiZEQhPSh6NmdAakgjYV92cFMmKzs9ez17RFFwaTI8IUs2DQo+ID4+IERlRVk2Rg0KPiA+
-Pg0KPiA+PiBsaXRlcmFsIDANCj4gPj4gSGNtVj9kMDAwMDENCj4gPj4NCj4gPj4gLS0NCj4gPj4g
-Mi4yMy4wDQo+ID4+DQo+ID4NCj4gDQo+IA0KPiAtLS0tLS1QbGVhc2UgY29uc2lkZXIgdGhlIGVu
-dmlyb25tZW50IGJlZm9yZSBwcmludGluZyB0aGlzIGUtbWFpbC4NCg==
+Leonardo Bras <leonardo@linux.ibm.com> wrote:
+> On Thu, 2019-08-29 at 22:58 +0200, Florian Westphal wrote:
+> [...]
+> > 1. add a patch to BREAK in nft_fib_netdev.c for !ipv6_mod_enabled()
+> [...]
+> 
+> But this is still needed? I mean, in nft_fib_netdev_eval there are only
+> 2 functions being called for IPv6 protocol : nft_fib6_eval and
+> nft_fib6_eval_type. Both are already protected by this current patch.
+> 
+> Is your 1st suggestion about this patch, or you think it's better to
+> move this change to nft_fib_netdev_eval ?
+
+Ah, it was the latter.
+Making bridge netfilter not pass packets up with ipv6 off closes
+the problem for fib_ipv6 and inet, so only _netdev.c needs fixing.
