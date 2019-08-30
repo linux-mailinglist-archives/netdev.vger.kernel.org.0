@@ -2,142 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D07A38F1
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0416A3920
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728192AbfH3OQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 10:16:15 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1244 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727751AbfH3OQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 10:16:15 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7UE3hwn132775;
-        Fri, 30 Aug 2019 10:15:31 -0400
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2uq0kt2772-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Aug 2019 10:15:31 -0400
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7UEB94f005012;
-        Fri, 30 Aug 2019 14:15:30 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma02dal.us.ibm.com with ESMTP id 2un65kfrta-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Aug 2019 14:15:30 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7UEFT5i55312664
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Aug 2019 14:15:29 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5DA40112064;
-        Fri, 30 Aug 2019 14:15:29 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 027CB11206E;
-        Fri, 30 Aug 2019 14:15:26 +0000 (GMT)
-Received: from LeoBras (unknown [9.85.151.141])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 30 Aug 2019 14:15:26 +0000 (GMT)
-Message-ID: <daa9f83eaeba2ce41a72ac2fa23e24817ef3d4a1.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
-From:   Leonardo Bras <leonardo@linux.ibm.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Date:   Fri, 30 Aug 2019 11:15:22 -0300
-In-Reply-To: <20190829205832.GM20113@breakpoint.cc>
-References: <20190821141505.2394-1-leonardo@linux.ibm.com>
-         <db0f02c5b1a995fde174f036540a3d11008cf116.camel@linux.ibm.com>
-         <b6585989069fd832a65b73d1c4f4319a10714165.camel@linux.ibm.com>
-         <20190829205832.GM20113@breakpoint.cc>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-+IABKuOZYCco6cLZ6aAe"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1727930AbfH3OXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 10:23:30 -0400
+Received: from mail-io1-f44.google.com ([209.85.166.44]:45948 "EHLO
+        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727751AbfH3OX3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 10:23:29 -0400
+Received: by mail-io1-f44.google.com with SMTP id t3so14232616ioj.12;
+        Fri, 30 Aug 2019 07:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bAKN2+5gOLPMPuf7BlJbUSjK0cWgyfFP2uN2z8ewCJg=;
+        b=dGeJ+U42tAGk9rSl2hMfBIfQAJpAlT/1/zDEnfF05khwqumThOytKi8gtwnEtRZbN9
+         LixkjUHYfb/WITvZ01c21aFhxGgvRafaohxZlh9Y3ZX6JuYlTsa32WkGdW5DtyKMyZ4h
+         9WqxA4H+3+tSLWstQpXbrWWwzljRFSo6hH2S3QQzTuDTioSbAo/ljkOExntlHY5n+VtO
+         GhWE27ZLeMduZS0yLIiThQNDilngVjYxPI60gupwzrc2Aedl9o5dVxq4aZV8uxoFdvgc
+         u7V/acNyPMIDx+4BVh9Ezws3DUmQSIBKr7938W8S4Y/Yq6xmlpYFouV2U2WFsfFUHKam
+         1tgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bAKN2+5gOLPMPuf7BlJbUSjK0cWgyfFP2uN2z8ewCJg=;
+        b=iWvuf8iJpulQrnPz29hied7+iC/FcbXVqPy58gx6xE5mEDZCXWwhkhdxJM8IXZ90cq
+         kMeJhQZFqh/PYF6SgtNOQnJkYoor/59/Y51/P9YoaarLcKw/37hOgiwDHo/sZM+SwS5B
+         NtTPLlzLcvcDHd8pEhwg17lqFzXHNsCZF4ScDDvhTPhIVd9Q1V+6JoVNortxgG1V1SgL
+         HAwPX9io9DkFwUkcoNwbU45Lf3fUyYpebFDa8jh6WIAYyLydWKBi6KGekjTXUO+bMPET
+         +GbYs7lbk5iRiKk4QqLYFYX4Mjf4o/kWEp5ZxTXtjqS1iKKoOR9vuwFNHVcn06pzwrER
+         UsFw==
+X-Gm-Message-State: APjAAAWiPguvsjhPUjUYucs71Keba95vizh1ZO9w5JgxTPzrnBGXC6ya
+        3KRhfhFUGs87DD4p/dLiiMVj8M1gkPQ3MCSmD5o=
+X-Google-Smtp-Source: APXvYqwpFvalYsCne/ND6Uu8f0n9Qhicy+mp0atcatB2VB0PQJvW2LXDJmPSYERIVaKNF1rr6SuUVYo83e7pGmfkkU0=
+X-Received: by 2002:a5d:8444:: with SMTP id w4mr13537606ior.51.1567175008927;
+ Fri, 30 Aug 2019 07:23:28 -0700 (PDT)
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-30_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908300146
+References: <3a4ff829-7302-7201-81c2-a557fe35afc8@canonical.com>
+In-Reply-To: <3a4ff829-7302-7201-81c2-a557fe35afc8@canonical.com>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Fri, 30 Aug 2019 16:26:33 +0200
+Message-ID: <CAOi1vP9x1SS9YGFgHuZcpga5fTYac-y3vazsAKr9N8WJB7-hpA@mail.gmail.com>
+Subject: Re: bug report: libceph: follow redirect replies from osds
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 30, 2019 at 4:05 PM Colin Ian King <colin.king@canonical.com> wrote:
+>
+> Hi,
+>
+> Static analysis with Coverity has picked up an issue with commit:
+>
+> commit 205ee1187a671c3b067d7f1e974903b44036f270
+> Author: Ilya Dryomov <ilya.dryomov@inktank.com>
+> Date:   Mon Jan 27 17:40:20 2014 +0200
+>
+>     libceph: follow redirect replies from osds
+>
+> Specifically in function ceph_redirect_decode in net/ceph/osd_client.c:
+>
+> 3485
+> 3486        len = ceph_decode_32(p);
+>
+> CID 17904: Unused value (UNUSED_VALUE)
+>
+> 3487        *p += len; /* skip osd_instructions */
+> 3488
+> 3489        /* skip the rest */
+> 3490        *p = struct_end;
+>
+> The double write to *p looks wrong, I suspect the *p += len; should be
+> just incrementing pointer p as in: p += len.  Am I correct to assume
+> this is the correct fix?
 
---=-+IABKuOZYCco6cLZ6aAe
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi Colin,
 
-On Thu, 2019-08-29 at 22:58 +0200, Florian Westphal wrote:
-> In any case your patch looks ok to me.
+No, the double write to *p is correct.  It skips over len bytes and
+then skips to the end of the redirect reply.  There is no bug here but
+we could drop
 
-Great! Please give your feedback on v3:=20
-http://patchwork.ozlabs.org/patch/1154040/
+  len = ceph_decode_32(p);
+  *p += len; /* skip osd_instructions */
 
-[...]
->=20
-> Even if we disable call-ip6tables in br_netfilter we will at least
-> in addition need a patch for nft_fib_netdev.c.
->=20
-> From a "avoid calls to ipv6 stack when its disabled" standpoint,
-> the safest fix is to disable call-ip6tables functionality if ipv6
-> module is off *and* fix nft_fib_netdev.c to BREAK in ipv6 is off case.
->=20
-> I started to place a list of suspicous modules here, but that got out
-> of hand quickly.
->=20
-> So, given I don't want to plaster ipv6_mod_enabled() everywhere, I
-> would suggest this course of action:
->=20
-> 1. add a patch to BREAK in nft_fib_netdev.c for !ipv6_mod_enabled()
-> 2. change net/bridge/br_netfilter_hooks.c, br_nf_pre_routing() to
->    make sure ipv6_mod_enabled() is true before doing the ipv6 stack
->    "emulation".
->=20
-> Makes sense?
-IMHO sure.
+and skip to the end directly to make Coverity happier.
 
-Shortly, I will send a couple patches proposing the above changes.
-(Or my best understanding about them :) )=20
+Thanks,
 
->=20
-> Thanks,
-> Florian
-
-Thank you,
-Leonardo Bras
-
---=-+IABKuOZYCco6cLZ6aAe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEMdeUgIzgjf6YmUyOlQYWtz9SttQFAl1pL3oACgkQlQYWtz9S
-ttRoEg//YEDzqVS2pknZEenxYLlPas/7KfnsR9DlKgvsPOgmMGilF7cNsmX6TGRj
-LeosgkxEJF2vr0Slja1c9jRNNl1gTBq9ICTdRw9CFMni/XOAmwPKgHVqqA6XMd9I
-K5D7hdsJz2Yev00SylE5/bI+WPGhgA2deBQToKgPQiILKxQH/aU4TJer6fdiuOra
-kip4EG58o164qwZH3nqPArQR32RjGOPiK4J6LxMB0OQttrBjk6i0oTQjXgYfdX/P
-MqV5KZEBKRvM6NiFat1ZR7C5ns1lDONTfOAzmX1zGBHXY28xDCEpaaCSdQTUj+5G
-SoCwkBtnN8h+xHtP4XuyBdlBQVJOIqoW2ICGqaYonO+k0Pa4QoXuW9VKSrRfK/x8
-qLd+JHjLSPnZo9c35Gz7TaFbDPelaQnFRjBVmXhzgWiJeAIRosFzWVtzH7aQ6wAU
-UOEFYMSrkYLe06gyarZR1Lltb6qSJK5SSwV7lG8kl2YmMRbc25a+UmaaRaZ2ePjt
-FwyXTuYjrKL2zAwo2heF+EnJwWL4QlQifdBMS2uczXTdhX5OayElOZFYU68Mcg/n
-QEe5u0G+FolDPWaA7X0eqRzjQoCmaAWNF6i78mP6NjhPdgsif5XbSzmzrYB9Tzdv
-oGmHflawcvhTciuqVOZRFwN9Uow0B88OpQtSWh7H/lx7qIgf77w=
-=WcP3
------END PGP SIGNATURE-----
-
---=-+IABKuOZYCco6cLZ6aAe--
-
+                Ilya
