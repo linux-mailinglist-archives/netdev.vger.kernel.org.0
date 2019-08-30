@@ -2,130 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6474CA2F6C
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 08:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4955A2F88
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 08:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727433AbfH3GLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 02:11:15 -0400
-Received: from mxhk.zte.com.cn ([63.217.80.70]:46068 "EHLO mxhk.zte.com.cn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726236AbfH3GLP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 02:11:15 -0400
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
-        by Forcepoint Email with ESMTPS id F1867EBCD69760BD4332;
-        Fri, 30 Aug 2019 14:11:12 +0800 (CST)
-Received: from notes_smtp.zte.com.cn (notes_smtp.zte.com.cn [10.30.1.239])
-        by mse-fl2.zte.com.cn with ESMTP id x7U6B1Mg089976;
-        Fri, 30 Aug 2019 14:11:01 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-host8.localdomain ([10.74.120.8])
-          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
-          with ESMTP id 2019083014113696-3292051 ;
-          Fri, 30 Aug 2019 14:11:36 +0800 
-From:   Cheng Lin <wang.yi59@zte.com.cn>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        wang.liang82@zte.com.cn, Cheng Lin <cheng.lin130@zte.com.cn>
-Subject: [PATCH v3] ipv6: Not to probe neighbourless routes
-Date:   Fri, 30 Aug 2019 14:11:16 +0800
-Message-Id: <1567145476-33802-1-git-send-email-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
- 21, 2013) at 2019-08-30 14:11:37,
-        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
- 2019-08-30 14:11:06,
-        Serialize complete at 2019-08-30 14:11:06
-X-MAIL: mse-fl2.zte.com.cn x7U6B1Mg089976
+        id S1727681AbfH3GNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 02:13:31 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54014 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbfH3GNa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 02:13:30 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 10so5982839wmp.3
+        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 23:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mIaRAmZlXfrUjHkJ2pUtw5Qyx4E/Zd4jn5MOod/LYBs=;
+        b=n7fov0x47sWP5sCMWoI5rq1YKFAt3fENNVa7hKIxjXLPyJnd8Ua2g7xj1VBit6kbd3
+         0nqV2Wpe1JHoFm34DmXbVlz4YQnhNYhDVgcVou1/k5gnQVK8cEx2Fx4/jBSkORs+2TDh
+         OeoAMJ2WlkuQxBBMXzmwFi4/GC9V5Mcqk9thteQP9ci50ZH8BnW4UMEWftep4dQ1uXbd
+         JOUKUJq6uFY0O/97wiGWSrmElPY9Rg+FwGDE+TQmEk1HBIUKKCYgqhWvZqncBtegy3z1
+         CgPE78jUNUJ8/K+E+LKDCvr52JKo+Fp2Pj9ZdvinnLBxzNvPZWj6udtxls+BcGqURCET
+         VAOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mIaRAmZlXfrUjHkJ2pUtw5Qyx4E/Zd4jn5MOod/LYBs=;
+        b=UCQEOh3UxiDWrDAFKq+wyI/3kWzOdWjIzk5amLeovlVppm2lXYOrzUHRaVMBy2IPUB
+         smm7tls/sQ/MyIQu6l5ExcYtfFprMn+dQVTQj/fpaJgPlS9XKTAw0EtraCF4eLcQGnHp
+         /JWsvl9j/HleLKNh8SODOEKwSwAAA3powDgH2+jxxKx3ZoAuvD3PGLGy41yNUH69W7+T
+         6a/mrg2WiYOF3uiAJN84zV+B1RCSAkaAIP+iZw72CfjgxfyIT8vVvx3uRj2aq2HaMWDv
+         IDb6ddTolpozDbe8m8Ax24jvby7EXkqfeDcXolLg0ofUe0rgjEL0NL6U8vkXNxpmggb/
+         Pl3g==
+X-Gm-Message-State: APjAAAW1R0tRCsG8S4GaRdf3RtWyld4J74Fj8hVM6AVtg5vMSDEx2gLt
+        8q/jB9GfRHL++WPROGVnaHf1CQ==
+X-Google-Smtp-Source: APXvYqzgSjDY01QZirK6eSfj6ygsDQjdl74s3/VEjfgEpizF1MqSMoTDCtlSWInLYPaY73yFDtJ3WA==
+X-Received: by 2002:a05:600c:2245:: with SMTP id a5mr8590411wmm.53.1567145608620;
+        Thu, 29 Aug 2019 23:13:28 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id j9sm3826665wrx.66.2019.08.29.23.13.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Aug 2019 23:13:28 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 08:13:27 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, allan.nielsen@microchip.com,
+        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190830061327.GM2312@nanopsycho>
+References: <1567070549-29255-1-git-send-email-horatiu.vultur@microchip.com>
+ <1567070549-29255-2-git-send-email-horatiu.vultur@microchip.com>
+ <20190829095100.GH2312@nanopsycho>
+ <20190829132611.GC6998@lunn.ch>
+ <20190829134901.GJ2312@nanopsycho>
+ <20190829143732.GB17864@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190829143732.GB17864@lunn.ch>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cheng Lin <cheng.lin130@zte.com.cn>
+Thu, Aug 29, 2019 at 04:37:32PM CEST, andrew@lunn.ch wrote:
+>> Wait, I believe there has been some misundestanding. Promisc mode is NOT
+>> about getting packets to the cpu. It's about setting hw filters in a way
+>> that no rx packet is dropped.
+>> 
+>> If you want to get packets from the hw forwarding dataplane to cpu, you
+>> should not use promisc mode for that. That would be incorrect.
+>
+>Hi Jiri
+>
+>I'm not sure a wireshark/tcpdump/pcap user would agree with you. They
+>want to see packets on an interface, so they use these tools. The fact
+>that the interface is a switch interface should not matter. The
+>switchdev model is that we try to hide away the interface happens to
+>be on a switch, you can just use it as normal. So why should promisc
+>mode not work as normal?
 
-Originally, Router Reachability Probing require a neighbour entry
-existed. Commit 2152caea7196 ("ipv6: Do not depend on rt->n in
-rt6_probe().") removed the requirement for a neighbour entry. And
-commit f547fac624be ("ipv6: rate-limit probes for neighbourless
-routes") adds rate-limiting for neighbourless routes.
+It does, disables the rx filter. Why do you think it means the same
+thing as "trap all to cpu"? Hw datapath was never considered by
+wireshark.
 
-And, the Neighbor Discovery for IP version 6 (IPv6)(rfc4861) says,
-"
-7.2.5.  Receipt of Neighbor Advertisements
+In fact, I have usecase where I need to see only slow-path traffic by
+wireshark, not all packets going through hw. So apparently, there is a
+need of another wireshark option and perhaps another flag
+IFF_HW_TRAPPING?.
 
-When a valid Neighbor Advertisement is received (either solicited or
-unsolicited), the Neighbor Cache is searched for the target's entry.
-If no entry exists, the advertisement SHOULD be silently discarded.
-There is no need to create an entry if none exists, since the
-recipient has apparently not initiated any communication with the
-target.
-".
+tcpdump -i eth0
+tcpdump -i eth0 --no-promiscuous-mode
+tcpdump -i eth0 --hw-trapping-mode
 
-In rt6_probe(), just a Neighbor Solicitation message are transmited.
-When receiving a Neighbor Advertisement, the node does nothing in a
-Neighborless condition.
 
-Not sure it's needed to create a neighbor entry in Router
-Reachability Probing. And the Original way may be the right way.
-
-This patch recover the requirement for a neighbour entry.
-
-Signed-off-by: Cheng Lin <cheng.lin130@zte.com.cn>
----
- include/net/ip6_fib.h | 5 -----
- net/ipv6/route.c      | 6 +-----
- 2 files changed, 1 insertion(+), 10 deletions(-)
-
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 4b5656c..8c2e022 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -124,11 +124,6 @@ struct rt6_exception {
- 
- struct fib6_nh {
- 	struct fib_nh_common	nh_common;
--
--#ifdef CONFIG_IPV6_ROUTER_PREF
--	unsigned long		last_probe;
--#endif
--
- 	struct rt6_info * __percpu *rt6i_pcpu;
- 	struct rt6_exception_bucket __rcu *rt6i_exception_bucket;
- };
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index fd059e0..1839dd7 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -639,12 +639,12 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- 	nh_gw = &fib6_nh->fib_nh_gw6;
- 	dev = fib6_nh->fib_nh_dev;
- 	rcu_read_lock_bh();
--	idev = __in6_dev_get(dev);
- 	neigh = __ipv6_neigh_lookup_noref(dev, nh_gw);
- 	if (neigh) {
- 		if (neigh->nud_state & NUD_VALID)
- 			goto out;
- 
-+		idev = __in6_dev_get(dev);
- 		write_lock(&neigh->lock);
- 		if (!(neigh->nud_state & NUD_VALID) &&
- 		    time_after(jiffies,
-@@ -654,13 +654,9 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- 				__neigh_set_probe_once(neigh);
- 		}
- 		write_unlock(&neigh->lock);
--	} else if (time_after(jiffies, fib6_nh->last_probe +
--				       idev->cnf.rtr_probe_interval)) {
--		work = kmalloc(sizeof(*work), GFP_ATOMIC);
- 	}
- 
- 	if (work) {
--		fib6_nh->last_probe = jiffies;
- 		INIT_WORK(&work->work, rt6_probe_deferred);
- 		work->target = *nh_gw;
- 		dev_hold(dev);
--- 
-1.8.3.1
-
+> 
+>> If you want to get packets from the hw forwarding dataplane to cpu, you
+>> should use tc trap action. It is there exactly for this purpose.
+>
+>Do you really think a wireshark/tcpdump/pcap user should need to use
+>tc trap for the special case the interface is a switch port? Doesn't that
+>break the switchdev model?
+>
+>tc trap is more about fine grained selection of packets. Also, it
+>seems like trapped packets are not forwarded, which is not what you
+>would expect from wireshark/tcpdump/pcap.
+>
+>      Andrew
