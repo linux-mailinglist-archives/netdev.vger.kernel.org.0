@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4F3A3158
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E3DA3159
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 09:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728585AbfH3Hm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 03:42:27 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55058 "EHLO
+        id S1727889AbfH3Hmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 03:42:31 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:63036 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727681AbfH3Hm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:42:26 -0400
+        by vger.kernel.org with ESMTP id S1727595AbfH3Hma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 03:42:30 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7U7dltx026578;
-        Fri, 30 Aug 2019 00:42:25 -0700
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7U7dlu0026578;
+        Fri, 30 Aug 2019 00:42:28 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=fYCX6gTwJlDfqkcoRyf49ghtKXpAkog9HvcfqWFMLwc=;
- b=HpPe/jJsKdqDvFCGiAJ+mQgMiUeIIzLyeKG+OkEEWxLHtJVl40v/w9MbvWJxkjrFL+UL
- zkcr8uS5EHMiNdCft5jGeA8R0W7U8lbvzTF/pLvROjpKRy0s0R0YRX5fAM9Er//vnBBR
- 77h1W8y00iTgEJsr8GzTWTZ5BuHoLyEhULKoEwqTCT9dtrPR22PjMTl7txsQz6kgBZHx
- ywvGZfgsbUB72hbi8KrVcYkT5MDLjYt1vOSK2h6gzWuvgJM7kP00KhbE+c2SP7Ujm/Ts
- D4F3ShYX7s31nb6shQDYABWfw9t1qIlD3c66xFByPvk52NZwKzGTQF6Y/Bbu1GB3KDeU Zg== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2upmepjc1u-1
+ content-type; s=pfpt0818; bh=41hQPZAQkm6Da9Ya/uA7Uw+VfiZy2UXyu0/1b8ucmZE=;
+ b=mDh1ompWXIS8I50jZj+5LHpRcPwJ49gKoj95JVDHxo8rEORG9Kz+zSGR+jEe/YpEkS8x
+ Z+5wQJ7PWdobLV3IDaYy0ODc4z2UJIk5SzeJKGDgtKuAncN5CPvNBYzTB3EhbPcdNguj
+ avFz6PTgUEQ16xwgt3obpv0AlZ8j7UQptPzOqxNIQIrdLlT1KSEd7hU2its09cXt7/es
+ ByflmGitTMMBmRjgu+M/wcjXCn3Fj820gSIabHs0jkxo4uo9X+8dkZBg2TCM2qqpZHNQ
+ SvaqDRhgNWOPsPYKK0wFV/r5/lTDbWtfLGCANW0H3+JmgO1W+rkSC2yxp70wHrV5JhB3 Iw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2upmepjc22-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 30 Aug 2019 00:42:25 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 30 Aug
- 2019 00:42:23 -0700
+        Fri, 30 Aug 2019 00:42:28 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 30 Aug
+ 2019 00:42:26 -0700
 Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Fri, 30 Aug 2019 00:42:23 -0700
+ Transport; Fri, 30 Aug 2019 00:42:26 -0700
 Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 65B283F7043;
-        Fri, 30 Aug 2019 00:42:23 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 9A7293F704A;
+        Fri, 30 Aug 2019 00:42:26 -0700 (PDT)
 Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x7U7gNcb008884;
-        Fri, 30 Aug 2019 00:42:23 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x7U7gQmj008888;
+        Fri, 30 Aug 2019 00:42:26 -0700
 Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x7U7gN7C008883;
-        Fri, 30 Aug 2019 00:42:23 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x7U7gQWi008887;
+        Fri, 30 Aug 2019 00:42:26 -0700
 From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
         <aelior@marvell.com>
-Subject: [PATCH net-next 2/4] qede: Add support for reading the config id attributes.
-Date:   Fri, 30 Aug 2019 00:42:04 -0700
-Message-ID: <20190830074206.8836-3-skalluru@marvell.com>
+Subject: [PATCH net-next 3/4] qed: Add APIs for configuring grc dump config flags.
+Date:   Fri, 30 Aug 2019 00:42:05 -0700
+Message-ID: <20190830074206.8836-4-skalluru@marvell.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20190830074206.8836-1-skalluru@marvell.com>
 References: <20190830074206.8836-1-skalluru@marvell.com>
@@ -60,162 +60,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver support for dumping the config id attributes via ethtool dump
-interfaces.
+The patch adds driver support for configuring the grc dump config flags.
 
 Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qede/qede.h         | 14 ++++
- drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 89 +++++++++++++++++++++++++
- 2 files changed, 103 insertions(+)
+ drivers/net/ethernet/qlogic/qed/qed_debug.c | 82 +++++++++++++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h   | 15 ++++++
+ drivers/net/ethernet/qlogic/qed/qed_main.c  | 21 ++++++++
+ include/linux/qed/qed_if.h                  |  9 ++++
+ 4 files changed, 127 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index 0e931c0..8f2adde 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -177,6 +177,19 @@ enum qede_flags_bit {
- 	QEDE_FLAGS_TX_TIMESTAMPING_EN
- };
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+index 5ea6c4f..859caa6 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+@@ -1756,6 +1756,15 @@ static u32 qed_read_unaligned_dword(u8 *buf)
+ 	return dword;
+ }
  
-+#define QEDE_DUMP_MAX_ARGS 4
-+enum qede_dump_cmd {
-+	QEDE_DUMP_CMD_NONE = 0,
-+	QEDE_DUMP_CMD_NVM_CFG,
-+	QEDE_DUMP_CMD_MAX
-+};
++/* Sets the value of the specified GRC param */
++static void qed_grc_set_param(struct qed_hwfn *p_hwfn,
++			      enum dbg_grc_params grc_param, u32 val)
++{
++	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
 +
-+struct qede_dump_info {
-+	enum qede_dump_cmd cmd;
-+	u8 num_args;
-+	u32 args[QEDE_DUMP_MAX_ARGS];
-+};
++	dev_data->grc.param_val[grc_param] = val;
++}
 +
- struct qede_dev {
- 	struct qed_dev			*cdev;
- 	struct net_device		*ndev;
-@@ -262,6 +275,7 @@ struct qede_dev {
- 	struct qede_rdma_dev		rdma_info;
+ /* Returns the value of the specified GRC param */
+ static u32 qed_grc_get_param(struct qed_hwfn *p_hwfn,
+ 			     enum dbg_grc_params grc_param)
+@@ -5119,6 +5128,69 @@ bool qed_read_fw_info(struct qed_hwfn *p_hwfn,
+ 	return false;
+ }
  
- 	struct bpf_prog *xdp_prog;
-+	struct qede_dump_info		dump_info;
- };
++enum dbg_status qed_dbg_grc_config(struct qed_hwfn *p_hwfn,
++				   struct qed_ptt *p_ptt,
++				   enum dbg_grc_params grc_param, u32 val)
++{
++	enum dbg_status status;
++	int i;
++
++	DP_VERBOSE(p_hwfn, QED_MSG_DEBUG,
++		   "dbg_grc_config: paramId = %d, val = %d\n", grc_param, val);
++
++	status = qed_dbg_dev_init(p_hwfn, p_ptt);
++	if (status != DBG_STATUS_OK)
++		return status;
++
++	/* Initializes the GRC parameters (if not initialized). Needed in order
++	 * to set the default parameter values for the first time.
++	 */
++	qed_dbg_grc_init_params(p_hwfn);
++
++	if (grc_param >= MAX_DBG_GRC_PARAMS)
++		return DBG_STATUS_INVALID_ARGS;
++	if (val < s_grc_param_defs[grc_param].min ||
++	    val > s_grc_param_defs[grc_param].max)
++		return DBG_STATUS_INVALID_ARGS;
++
++	if (s_grc_param_defs[grc_param].is_preset) {
++		/* Preset param */
++
++		/* Disabling a preset is not allowed. Call
++		 * dbg_grc_set_params_default instead.
++		 */
++		if (!val)
++			return DBG_STATUS_INVALID_ARGS;
++
++		/* Update all params with the preset values */
++		for (i = 0; i < MAX_DBG_GRC_PARAMS; i++) {
++			u32 preset_val;
++
++			/* Skip persistent params */
++			if (s_grc_param_defs[i].is_persistent)
++				continue;
++
++			/* Find preset value */
++			if (grc_param == DBG_GRC_PARAM_EXCLUDE_ALL)
++				preset_val =
++				    s_grc_param_defs[i].exclude_all_preset_val;
++			else if (grc_param == DBG_GRC_PARAM_CRASH)
++				preset_val =
++				    s_grc_param_defs[i].crash_preset_val;
++			else
++				return DBG_STATUS_INVALID_ARGS;
++
++			qed_grc_set_param(p_hwfn,
++					  (enum dbg_grc_params)i, preset_val);
++		}
++	} else {
++		/* Regular param - set its value */
++		qed_grc_set_param(p_hwfn, grc_param, val);
++	}
++
++	return DBG_STATUS_OK;
++}
++
+ /* Assign default GRC param values */
+ void qed_dbg_grc_set_params_default(struct qed_hwfn *p_hwfn)
+ {
+@@ -7997,9 +8069,16 @@ static u32 qed_calc_regdump_header(enum debug_print_features feature,
+ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
+ {
+ 	u8 cur_engine, omit_engine = 0, org_engine;
++	struct qed_hwfn *p_hwfn =
++		&cdev->hwfns[cdev->dbg_params.engine_for_debug];
++	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
++	int grc_params[MAX_DBG_GRC_PARAMS], i;
+ 	u32 offset = 0, feature_size;
+ 	int rc;
  
- enum QEDE_STATE {
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index abcee47..2359293 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -48,6 +48,9 @@
- 	 {QEDE_RQSTAT_OFFSET(stat_name), QEDE_RQSTAT_STRING(stat_name)}
++	for (i = 0; i < MAX_DBG_GRC_PARAMS; i++)
++		grc_params[i] = dev_data->grc.param_val[i];
++
+ 	if (cdev->num_hwfns == 1)
+ 		omit_engine = 1;
  
- #define QEDE_SELFTEST_POLL_COUNT 100
-+#define QEDE_DUMP_VERSION	0x1
-+#define QEDE_DUMP_NVM_BUF_LEN	32
-+#define QEDE_DUMP_NVM_ARG_COUNT	2
+@@ -8087,6 +8166,9 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
+ 			       rc);
+ 		}
  
- static const struct {
- 	u64 offset;
-@@ -1973,6 +1976,89 @@ static int qede_get_module_eeprom(struct net_device *dev,
++		for (i = 0; i < MAX_DBG_GRC_PARAMS; i++)
++			dev_data->grc.param_val[i] = grc_params[i];
++
+ 		/* GRC dump - must be last because when mcp stuck it will
+ 		 * clutter idle_chk, reg_fifo, ...
+ 		 */
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+index 557a12e..cf3ceb6 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+@@ -3024,6 +3024,21 @@ void qed_read_regs(struct qed_hwfn *p_hwfn,
+  */
+ bool qed_read_fw_info(struct qed_hwfn *p_hwfn,
+ 		      struct qed_ptt *p_ptt, struct fw_info *fw_info);
++/**
++ * @brief qed_dbg_grc_config - Sets the value of a GRC parameter.
++ *
++ * @param p_hwfn -	HW device data
++ * @param grc_param -	GRC parameter
++ * @param val -		Value to set.
++ *
++ * @return error if one of the following holds:
++ *	- the version wasn't set
++ *	- grc_param is invalid
++ *	- val is outside the allowed boundaries
++ */
++enum dbg_status qed_dbg_grc_config(struct qed_hwfn *p_hwfn,
++				   struct qed_ptt *p_ptt,
++				   enum dbg_grc_params grc_param, u32 val);
+ 
+ /**
+  * @brief qed_dbg_grc_set_params_default - Reverts all GRC parameters to their
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index c9a7571..ac1511a8 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -2583,6 +2583,26 @@ static int qed_read_module_eeprom(struct qed_dev *cdev, char *buf,
  	return rc;
  }
  
-+static int qede_set_dump(struct net_device *dev, struct ethtool_dump *val)
++static int qed_set_grc_config(struct qed_dev *cdev, u32 cfg_id, u32 val)
 +{
-+	struct qede_dev *edev = netdev_priv(dev);
++	struct qed_hwfn *hwfn = QED_LEADING_HWFN(cdev);
++	struct qed_ptt *ptt;
 +	int rc = 0;
 +
-+	if (edev->dump_info.cmd == QEDE_DUMP_CMD_NONE) {
-+		if (val->flag > QEDE_DUMP_CMD_MAX) {
-+			DP_ERR(edev, "Invalid command %d\n", val->flag);
-+			return -EINVAL;
-+		}
-+		edev->dump_info.cmd = val->flag;
-+		edev->dump_info.num_args = 0;
++	if (IS_VF(cdev))
 +		return 0;
-+	}
 +
-+	if (edev->dump_info.num_args == QEDE_DUMP_MAX_ARGS) {
-+		DP_ERR(edev, "Arg count = %d\n", edev->dump_info.num_args);
-+		return -EINVAL;
-+	}
++	ptt = qed_ptt_acquire(hwfn);
++	if (!ptt)
++		return -EAGAIN;
 +
-+	switch (edev->dump_info.cmd) {
-+	case QEDE_DUMP_CMD_NVM_CFG:
-+		edev->dump_info.args[edev->dump_info.num_args] = val->flag;
-+		edev->dump_info.num_args++;
-+		break;
-+	default:
-+		break;
-+	}
++	rc = qed_dbg_grc_config(hwfn, ptt, cfg_id, val);
++
++	qed_ptt_release(hwfn, ptt);
 +
 +	return rc;
 +}
 +
-+static int qede_get_dump_flag(struct net_device *dev,
-+			      struct ethtool_dump *dump)
-+{
-+	struct qede_dev *edev = netdev_priv(dev);
-+
-+	dump->version = QEDE_DUMP_VERSION;
-+	switch (edev->dump_info.cmd) {
-+	case QEDE_DUMP_CMD_NVM_CFG:
-+		dump->flag = QEDE_DUMP_CMD_NVM_CFG;
-+		dump->len = QEDE_DUMP_NVM_BUF_LEN;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	DP_VERBOSE(edev, QED_MSG_DEBUG,
-+		   "dump->version = 0x%x dump->flag = %d dump->len = %d\n",
-+		   dump->version, dump->flag, dump->len);
-+	return 0;
-+}
-+
-+static int qede_get_dump_data(struct net_device *dev,
-+			      struct ethtool_dump *dump, void *buf)
-+{
-+	struct qede_dev *edev = netdev_priv(dev);
-+	int rc;
-+
-+	switch (edev->dump_info.cmd) {
-+	case QEDE_DUMP_CMD_NVM_CFG:
-+		if (edev->dump_info.num_args != QEDE_DUMP_NVM_ARG_COUNT) {
-+			DP_ERR(edev, "Arg count = %d required = %d\n",
-+			       edev->dump_info.num_args,
-+			       QEDE_DUMP_NVM_ARG_COUNT);
-+			return -EINVAL;
-+		}
-+		rc =  edev->ops->common->read_nvm_cfg(edev->cdev, (u8 **)&buf,
-+						      edev->dump_info.args[0],
-+						      edev->dump_info.args[1]);
-+		break;
-+	default:
-+		DP_ERR(edev, "Invalid cmd = %d\n", edev->dump_info.cmd);
-+		rc = -EINVAL;
-+		break;
-+	}
-+
-+	edev->dump_info.cmd = QEDE_DUMP_CMD_NONE;
-+	edev->dump_info.num_args = 0;
-+
-+	return rc;
-+}
-+
- static const struct ethtool_ops qede_ethtool_ops = {
- 	.get_link_ksettings = qede_get_link_ksettings,
- 	.set_link_ksettings = qede_set_link_ksettings,
-@@ -2014,6 +2100,9 @@ static int qede_get_module_eeprom(struct net_device *dev,
- 	.get_tunable = qede_get_tunable,
- 	.set_tunable = qede_set_tunable,
- 	.flash_device = qede_flash_device,
-+	.get_dump_flag = qede_get_dump_flag,
-+	.get_dump_data = qede_get_dump_data,
-+	.set_dump = qede_set_dump,
+ static u8 qed_get_affin_hwfn_idx(struct qed_dev *cdev)
+ {
+ 	return QED_AFFIN_HWFN_IDX(cdev);
+@@ -2637,6 +2657,7 @@ static u8 qed_get_affin_hwfn_idx(struct qed_dev *cdev)
+ 	.read_module_eeprom = &qed_read_module_eeprom,
+ 	.get_affin_hwfn_idx = &qed_get_affin_hwfn_idx,
+ 	.read_nvm_cfg = &qed_nvm_flash_cfg_read,
++	.set_grc_config = &qed_set_grc_config,
  };
  
- static const struct ethtool_ops qede_vf_ethtool_ops = {
+ void qed_get_protocol_stats(struct qed_dev *cdev,
+diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+index 06fd958..e354638 100644
+--- a/include/linux/qed/qed_if.h
++++ b/include/linux/qed/qed_if.h
+@@ -1143,6 +1143,15 @@ struct qed_common_ops {
+  */
+ 	int (*read_nvm_cfg)(struct qed_dev *cdev, u8 **buf, u32 cmd,
+ 			    u32 entity_id);
++
++/**
++ * @brief set_grc_config - Configure value for grc config id.
++ * @param cdev
++ * @param cfg_id - grc config id
++ * @param val - grc config value
++ *
++ */
++	int (*set_grc_config)(struct qed_dev *cdev, u32 cfg_id, u32 val);
+ };
+ 
+ #define MASK_FIELD(_name, _value) \
 -- 
 1.8.3.1
 
