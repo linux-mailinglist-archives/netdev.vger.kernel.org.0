@@ -2,152 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4951A2BF1
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5BCA2BF7
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 02:54:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727903AbfH3Ax7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 20:53:59 -0400
-Received: from correo.us.es ([193.147.175.20]:55036 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727103AbfH3Ax6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Aug 2019 20:53:58 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7D56627F8C6
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 02:53:54 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6B5A4D1911
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 02:53:54 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 5EB6FDA840; Fri, 30 Aug 2019 02:53:54 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2F174DA72F;
-        Fri, 30 Aug 2019 02:53:52 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 30 Aug 2019 02:53:52 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id CCEF84265A5A;
-        Fri, 30 Aug 2019 02:53:51 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, vishal@chelsio.com,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com, jiri@resnulli.us
-Subject: [PATCH net-next 4/4] netfilter: nft_payload: packet mangling offload support
-Date:   Fri, 30 Aug 2019 02:53:36 +0200
-Message-Id: <20190830005336.23604-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190830005336.23604-1-pablo@netfilter.org>
-References: <20190830005336.23604-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727884AbfH3Ay0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 20:54:26 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56268 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726825AbfH3Ay0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 20:54:26 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 92A6C153D58C8;
+        Thu, 29 Aug 2019 17:54:25 -0700 (PDT)
+Date:   Thu, 29 Aug 2019 17:54:25 -0700 (PDT)
+Message-Id: <20190829.175425.1248230437028888792.davem@davemloft.net>
+To:     gustavo@embeddedor.com
+Cc:     kou.ishizaki@toshiba.co.jp, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: spider_net: Use struct_size() helper
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190828202108.GA9494@embeddedor>
+References: <20190828202108.GA9494@embeddedor>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 29 Aug 2019 17:54:25 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows for mangling packet fields using hardware offload
-infrastructure.
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Date: Wed, 28 Aug 2019 15:21:08 -0500
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_payload.c | 72 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+> One of the more common cases of allocation size calculations is finding
+> the size of a structure that has a zero-sized array at the end, along
+> with memory for some number of elements for that array. For example:
+> 
+> struct spider_net_card {
+> 	...
+>         struct spider_net_descr darray[0];
+> };
+> 
+> Make use of the struct_size() helper instead of an open-coded version
+> in order to avoid any potential type mistakes.
+> 
+> So, replace the following form:
+> 
+> sizeof(struct spider_net_card) + (tx_descriptors + rx_descriptors) * sizeof(struct spider_net_descr)
+> 
+> with:
+> 
+> struct_size(card, darray, tx_descriptors + rx_descriptors)
+> 
+> Notice that, in this case, variable alloc_size is not necessary, hence it
+> is removed.
+> 
+> Building: allmodconfig powerpc.
+> 
+> This code was detected with the help of Coccinelle.
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 22a80eb60222..39882f81ca8d 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -562,12 +562,84 @@ static int nft_payload_set_dump(struct sk_buff *skb, const struct nft_expr *expr
- 	return -1;
- }
- 
-+static int nft_payload_offload_set_nh(struct nft_offload_ctx *ctx,
-+				      struct nft_flow_rule *flow,
-+				      const struct nft_payload_set *priv)
-+{
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+
-+	switch (ctx->dep.l3num) {
-+	case htons(ETH_P_IP):
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_IP4;
-+		break;
-+	case htons(ETH_P_IPV6):
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_IP6;
-+		break;
-+	}
-+
-+	return type;
-+}
-+
-+static int nft_payload_offload_set_th(struct nft_offload_ctx *ctx,
-+				      struct nft_flow_rule *flow,
-+				      const struct nft_payload_set *priv)
-+{
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+
-+	switch (ctx->dep.protonum) {
-+	case IPPROTO_TCP:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_TCP;
-+		break;
-+	case IPPROTO_UDP:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_UDP;
-+		break;
-+	}
-+
-+	return type;
-+}
-+
-+static int nft_payload_set_offload(struct nft_offload_ctx *ctx,
-+				   struct nft_flow_rule *flow,
-+				   const struct nft_expr *expr)
-+{
-+	const struct nft_payload_set *priv = nft_expr_priv(expr);
-+	struct nft_offload_reg *sreg = &ctx->regs[priv->sreg];
-+	int type = FLOW_ACT_MANGLE_UNSPEC;
-+	struct flow_action_entry *entry;
-+
-+	switch (priv->base) {
-+	case NFT_PAYLOAD_LL_HEADER:
-+		type = FLOW_ACT_MANGLE_HDR_TYPE_ETH;
-+		break;
-+	case NFT_PAYLOAD_NETWORK_HEADER:
-+		type = nft_payload_offload_set_nh(ctx, flow, priv);
-+		break;
-+	case NFT_PAYLOAD_TRANSPORT_HEADER:
-+		type = nft_payload_offload_set_th(ctx, flow, priv);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
-+	}
-+
-+	entry = &flow->rule->action.entries[ctx->num_actions++];
-+	entry->mangle.htype	= type;
-+	entry->mangle.offset	= priv->offset;
-+	entry->mangle.len	= priv->len;
-+
-+	memcpy(entry->mangle.val, sreg->data.data, priv->len);
-+	memset(entry->mangle.mask, 0xff, priv->len);
-+
-+	return type != FLOW_ACT_MANGLE_UNSPEC ? 0 : -EOPNOTSUPP;
-+}
-+
- static const struct nft_expr_ops nft_payload_set_ops = {
- 	.type		= &nft_payload_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_payload_set)),
- 	.eval		= nft_payload_set_eval,
- 	.init		= nft_payload_set_init,
- 	.dump		= nft_payload_set_dump,
-+	.offload	= nft_payload_set_offload,
- };
- 
- static const struct nft_expr_ops *
--- 
-2.11.0
-
+Applied to net-next, thanks.
