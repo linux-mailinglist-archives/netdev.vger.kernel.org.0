@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6445A3A9D
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C03A3AA4
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 17:42:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbfH3PmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 11:42:11 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45264 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727751AbfH3PmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:42:11 -0400
-Received: by mail-pf1-f196.google.com with SMTP id w26so4864513pfq.12;
-        Fri, 30 Aug 2019 08:42:10 -0700 (PDT)
+        id S1728286AbfH3Pmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 11:42:50 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43285 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727434AbfH3Pmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 11:42:50 -0400
+Received: by mail-pl1-f196.google.com with SMTP id 4so3529664pld.10;
+        Fri, 30 Aug 2019 08:42:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=nz/4S1faYNn5ga9nu2L9rgyJ6VH4Vo5eCb4dHh7ASd0=;
-        b=feCZi9AysGNFNdmbrv3UlPoWlxPyrVVaIWXPbelUWUy+OLm90AQm03AiptBFbPco57
-         raLwJ1wC6nmlhdFUa0wi5EkQ2OSBLB3kAuSzAXZ4VY+iyCUOSVZmk6zF81near5WToaM
-         Mfe7qBO9qIUo39cnGOVh+IV2fJXet9VUEtPyBMxbk5YlkLA1TL0160j4VAdF5+L1WBWW
-         QVD3DYK1qg4ZD7vY7CVgwkBDwyXvM0AqHq+/pbpP1nTxMcAjs1AKnx85BZ++0lqKowxE
-         0wqf5erbSMHClxag/A7+9PWwYAfGWIXEJ3My+xNL8+471mlip0pgttp4R643Bi1Y16sI
-         VB0w==
+        bh=IZK133rvLPFOXdT1nth00dyTGLOoSKiaU2rUxXtqO8Q=;
+        b=VuTxARF1T1QleDYqDcJQPzhgXTCw85eSxY26+Hh1yCqIy1SHUspXMjuo4l1TGA75SV
+         BZm+4WBy3aWO640xWNGhPEy5iQ+9pLhylJgLWHMiSR/5INL//0NTDt1ug+tSe1d6eKzS
+         yTPBxQ+3QfNTnVGMBDqlsScJBX0lf0nvF5Kl8k7ejc9TUf2o+ByIQD0CmZBrp7wgcRrp
+         bo+FR4t52pCGDQTSNqONEubdog44dYtFf/ClX8X4M3hWI3b1zDlJj78LJnC2+j6AVG10
+         ACDvKLcWRNAy0uz1a/41CWLPIj+8FXB2smJA2JjmYdYFl0JlvTQlXacNc51FEJlSZHQ3
+         jv7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=nz/4S1faYNn5ga9nu2L9rgyJ6VH4Vo5eCb4dHh7ASd0=;
-        b=tSAO1FRN+Z/+SKtVhY+Mfetje9YM9SzJytEMDqmY7NXYlhZpGpkLNwmmB+H6qzFd3C
-         xGCWT6zH8pPAZlv5TzJlZYmriSA45GihNUMrwj/EhMqcJG+aREijrZPCznC/k/jBtFvY
-         vZWBrSsaxiRJey6tX3Zi0NCJmA+HToK9azRLOLCdZrEVbcAiyE6ovHt0JEJaJ6fQ6WsO
-         MqWKnvS3xY/gsFEcDSKWEwmsKhZVnLDC87eJtFx0FOL2RtjVugWT1x6e0nUSzHY6stsf
-         I8SnmA1t0WpgDKui9sGY8jiEYgRzDyBHofHljSIaraZSuPbkWbHAkzVRlW55/iWXt+Qi
-         GguA==
-X-Gm-Message-State: APjAAAW0D9pP6i3yw9Lh+EcvLnd256rcxOzjMd9jfV6oMu43BbPSEj4r
-        XfCwzFmRuMWmmKh0QKB2o2s=
-X-Google-Smtp-Source: APXvYqwrMFL8ZtVqMHspZc6WTRMYl7zk0ebMROhOMmI7eKfMdRPNn6Lb3rQGyzLuzKgmk+uSyAakxw==
-X-Received: by 2002:a65:644b:: with SMTP id s11mr3197425pgv.305.1567179730421;
-        Fri, 30 Aug 2019 08:42:10 -0700 (PDT)
+        bh=IZK133rvLPFOXdT1nth00dyTGLOoSKiaU2rUxXtqO8Q=;
+        b=R2JC/Hs0gexCmK1SCgAdqCw21nNGf0RB/HstbrPdwrco0ftIJuyw8vsB13WDVSjmlz
+         UH0l7ojinTMLce8t4OeQZLpHwQfUh/BnBsWZIdM09/kKb3RT17QFeakZSbJ5dAZc6S+w
+         6D6HHP1NlR5UrqXleF0S7X6YAOaXwY3tiD+7z4uqmw+IzB5Eh36ha3xGF1M2+k1SXxJy
+         4n9i/SgYvz3MyvbNIWKoI7ok9mOp3UZjt9Ev3kqbHOJMNwbbyKBGyquqiUK+6tk6uCP4
+         oy8lxEc5C/xBbcRoiLxYmhEoSoDzkxGs3BsUF9TwGyRgLafOrO4eJbK7fh62+nLftOu7
+         L5kg==
+X-Gm-Message-State: APjAAAVMgsax5a1AOVy5tIL2Z5GhwvZIP5u0KI65rk3nedN92t/a+PM1
+        WfB1A0Zit14c+hQxBYv+L14=
+X-Google-Smtp-Source: APXvYqw/+bPQywjqon9wScZJzLXOScWoq0YFcZPuTDgX6BIFmkMdLuno9VKUxorEGVTYjPCRq2Yk6w==
+X-Received: by 2002:a17:902:f64:: with SMTP id 91mr16367396ply.334.1567179769383;
+        Fri, 30 Aug 2019 08:42:49 -0700 (PDT)
 Received: from [172.26.108.102] ([2620:10d:c090:180::7594])
-        by smtp.gmail.com with ESMTPSA id z63sm6368612pfb.163.2019.08.30.08.42.09
+        by smtp.gmail.com with ESMTPSA id d11sm8579760pfh.59.2019.08.30.08.42.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 08:42:09 -0700 (PDT)
+        Fri, 30 Aug 2019 08:42:48 -0700 (PDT)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
 To:     "Kevin Laatz" <kevin.laatz@intel.com>
 Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -52,15 +52,15 @@ Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         maximmi@mellanox.com, stephen@networkplumber.org,
         bruce.richardson@intel.com, ciara.loftus@intel.com,
         bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH bpf-next v6 04/12] i40e: modify driver for handling
+Subject: Re: [PATCH bpf-next v6 05/12] ixgbe: modify driver for handling
  offsets
-Date:   Fri, 30 Aug 2019 08:42:08 -0700
+Date:   Fri, 30 Aug 2019 08:42:47 -0700
 X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <34527E59-0A29-4904-B794-9592C5E818C1@gmail.com>
-In-Reply-To: <20190827022531.15060-5-kevin.laatz@intel.com>
+Message-ID: <14CCB060-4354-462E-BCCD-F6CE7A02F688@gmail.com>
+In-Reply-To: <20190827022531.15060-6-kevin.laatz@intel.com>
 References: <20190822014427.49800-1-kevin.laatz@intel.com>
  <20190827022531.15060-1-kevin.laatz@intel.com>
- <20190827022531.15060-5-kevin.laatz@intel.com>
+ <20190827022531.15060-6-kevin.laatz@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -77,6 +77,5 @@ On 26 Aug 2019, at 19:25, Kevin Laatz wrote:
 > in. This patch modifies the driver to appropriately mask the address for
 > each case.
 >
-> Signed-off-by: Bruce Richardson <bruce.richardson@intel.com>
 > Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
 Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
