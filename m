@@ -2,58 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61250A3E72
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0932A3E76
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 21:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbfH3Tcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 15:32:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40514 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728180AbfH3Tcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:32:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 79143154F93C5;
-        Fri, 30 Aug 2019 12:32:34 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 12:32:31 -0700 (PDT)
-Message-Id: <20190830.123231.792067088434189707.davem@davemloft.net>
-To:     colin.king@canonical.com
-Cc:     inaky.perez-gonzalez@intel.com, linux-wimax@intel.com,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][V2] wimax/i2400m: remove debug containing bogus
- calculation of index
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190830090711.15300-1-colin.king@canonical.com>
-References: <20190830090711.15300-1-colin.king@canonical.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728031AbfH3TgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 15:36:00 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41354 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727963AbfH3Tf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 15:35:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id x15so4012896pgg.8
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 12:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=FJowHpKGv7nCHoLEVLkWHTbiOBZw1S7cDpB8XtLumrw=;
+        b=fn65hvcpicxhyEpyhZBXM5UE+OQld94AzbvcFhXqrGBDvVIgM79MYl5XU0Tm1vrijf
+         OBOv5DYfq4YIVK5zDm4oX7mkKjTKwMGEgFvSitUvD+LxS5vnLyVGLmtQJDvUxXYwoiG8
+         JFSpZsRf2/2NNg03Qbj8Ow7plF8D3trFdqtdQ6xbBDo/yvQutFf1HiimRoe+RMygDmTc
+         bW6iH5Vqrju3awjc/2LT5QlbHA7IUXOlCc653m817vnmn/ovK2I2aYhIQjMwWa1he4ne
+         LqVDfTmhHfBljbvJ6yUH9DvAODcjfzHlNdGhn5QNsEkLCsE/1vmKwZmVTSEoq6Lc6BST
+         Y44g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=FJowHpKGv7nCHoLEVLkWHTbiOBZw1S7cDpB8XtLumrw=;
+        b=hZIcj5qrWHrEIC1nxS7lvSteoeWNk3FHBbndA7hU5YyLEG2wcM/AvjTfcsQHlJrpQm
+         K0Xa+viSjipRhqmBcw4DZ7j2ZB2qpH6xesMukgbsgvh4NmqgYryosIQr94TrSti74Va6
+         o8EjlAGSmWC4Qx8kVZwBy3oGR2Lsvb8EGk8jB9U7gvu5GrLWfLdVL7TZfwL/GG5ODg96
+         EfMeHvklJ9uEjm3Ov6q0l8kUA9CEDRY0PCMRhxYPZ5pi7lviqna+X13OZndlwULfWOwF
+         h6Pj5SzTiu5QuAiLDIgzcb0CTxKzlVn8YYH9e5htpmWjYtn6XjmyOahawJ3rNRnyLDqZ
+         oSKg==
+X-Gm-Message-State: APjAAAVOKL2rkQ7LqtjtzeKl4jZdFl5HAywVuBUKb6tRSft/Ilyeklzg
+        /oZLcN4SS9scbqgALPg8GEXCR81Jjz4=
+X-Google-Smtp-Source: APXvYqxAh+qjrMpMMJ+rewesAtgBWPaauN0OM8tC26BfbVnsFGIZuuT0WqPUh/1X/m5624RJGMy96Q==
+X-Received: by 2002:a62:5501:: with SMTP id j1mr19674863pfb.166.1567193758998;
+        Fri, 30 Aug 2019 12:35:58 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id i124sm7266932pfe.61.2019.08.30.12.35.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 30 Aug 2019 12:35:58 -0700 (PDT)
+Subject: Re: [PATCH v6 net-next 12/19] ionic: Add Rx filter and rx_mode ndo
+ support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190829182720.68419-1-snelson@pensando.io>
+ <20190829182720.68419-13-snelson@pensando.io>
+ <20190829160610.60563ca0@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <8fc45b3b-291c-cdab-326e-b5235874847e@pensando.io>
+Date:   Fri, 30 Aug 2019 12:35:56 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190829160610.60563ca0@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 30 Aug 2019 12:32:34 -0700 (PDT)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin King <colin.king@canonical.com>
-Date: Fri, 30 Aug 2019 10:07:11 +0100
+On 8/29/19 4:06 PM, Jakub Kicinski wrote:
+> On Thu, 29 Aug 2019 11:27:13 -0700, Shannon Nelson wrote:
+>> @@ -588,8 +866,26 @@ static int ionic_set_features(struct net_device *netdev,
+>>   
+>>   static int ionic_set_mac_address(struct net_device *netdev, void *sa)
+>>   {
+>> -	netdev_info(netdev, "%s: stubbed\n", __func__);
+>> -	return 0;
+>> +	struct sockaddr *addr = sa;
+>> +	u8 *mac;
+>> +
+>> +	mac = (u8 *)addr->sa_data;
+>> +	if (ether_addr_equal(netdev->dev_addr, mac))
+>> +		return 0;
+>> +
+>> +	if (!is_valid_ether_addr(mac))
+>> +		return -EADDRNOTAVAIL;
+>> +
+>> +	if (!is_zero_ether_addr(netdev->dev_addr)) {
+>> +		netdev_info(netdev, "deleting mac addr %pM\n",
+>> +			    netdev->dev_addr);
+>> +		ionic_addr_del(netdev, netdev->dev_addr);
+>> +	}
+>> +
+>> +	memcpy(netdev->dev_addr, mac, netdev->addr_len);
+>> +	netdev_info(netdev, "updating mac addr %pM\n", mac);
+>> +
+>> +	return ionic_addr_add(netdev, mac);
+>>   }
+> Please use the eth_prepare_mac_addr_change() and
+> eth_commit_mac_addr_change() helpers.
 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The subtraction of the two pointers is automatically scaled by the
-> size of the size of the object the pointers point to, so the division
-> by sizeof(*i2400m->barker) is incorrect.  This has been broken since
-> day one of the driver and is only debug, so remove the debug completely.
-> 
-> Also move && in condition to clean up a checkpatch warning.
-> 
-> Addresses-Coverity: ("Extra sizeof expression")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
-> 
-> V2: completely remove debug, clean up checkpatch warning, change subject line
+Oh, hadn't seen those before... sure.
+sln
 
-Applied to net-next, thanks Colin.
