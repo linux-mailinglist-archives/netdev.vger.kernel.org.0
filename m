@@ -2,58 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 295F8A331E
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E394A3325
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:54:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726978AbfH3Is7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 04:48:59 -0400
-Received: from resqmta-ch2-04v.sys.comcast.net ([69.252.207.36]:54524 "EHLO
-        resqmta-ch2-04v.sys.comcast.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725780AbfH3Is6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:48:58 -0400
-Received: from resomta-ch2-09v.sys.comcast.net ([69.252.207.105])
-        by resqmta-ch2-04v.sys.comcast.net with ESMTP
-        id 3caXimwTlbgbq3caXiEQEP; Fri, 30 Aug 2019 08:48:57 +0000
+        id S1727236AbfH3IyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 04:54:07 -0400
+Received: from resqmta-ch2-11v.sys.comcast.net ([69.252.207.43]:39056 "EHLO
+        resqmta-ch2-11v.sys.comcast.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726492AbfH3IyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:54:07 -0400
+Received: from resomta-ch2-15v.sys.comcast.net ([69.252.207.111])
+        by resqmta-ch2-11v.sys.comcast.net with ESMTP
+        id 3cfViYttEwUr53cfViOtjJ; Fri, 30 Aug 2019 08:54:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comcast.net;
-        s=20190202a; t=1567154937;
-        bh=JrWJpfwHo/SmXQ8qoHOff7lIJvvG7n3bpiw5LABtK0c=;
+        s=20190202a; t=1567155245;
+        bh=0ZZQYHqNK41bV15iUWbThB1HnN5CtL9q456nkVw1an0=;
         h=Received:Received:From:To:Subject:Date:Message-ID:MIME-Version:
          Content-Type;
-        b=OWMGEKJISN65YQKrEFie8Bmol2YJjn+6CHxvZdvv8wq3tFK8U8pRDNpt+8UFVdsEW
-         JU7PR0KpAm2sT03dN1NNz4gxKKt3L6QnoHZPnCQ4IsbWFuqhEp7Mqp39wa9nht2V7U
-         +njCccrGeUdQ1OLoRszQn0mLuDK0L85NyGmtcnS2nADlezgUHQssv4m3ZDMLRJauxJ
-         3Lda9gQKa8KVfPLF9ziWsMs2jeNbAeZPxTmyoeIc+CGExgA4e3SQs/7+UCPVqDAWC6
-         1d+g8pFEF2s/Yd4eJm+4aUFnrOGryNjD/k8SdBWLDOGworgJAtWIlkOlIq0gYe4e72
-         MCy5V292TUTnw==
+        b=BzPUVt3KetHMGMvvAjpkugaYJWHdWLJgjwVXVwwLhRv6OO2scZ4EIH/qVXiEMOKmR
+         GMSA/iL3V5DFJ0MxGobzj/5tcPinimJ5W0ggK7cbUIOQ/QyJ/m5Z0O8Am3OhlhzfSN
+         5M42iMmSQw5qy7bt9WNb5Zn7BbO1BvoteA/CL9PuCMsgBqvWi5qjHwpFLJtS151DNj
+         hdkY3pOVaIB3igcg45C5ASTjgKbvUzTADCyWOQSFjqJmgI6Oj3OSSs+FmsRZM7w4La
+         lxuB8OV/k5JKiFSTW2y2tPxzHbz0dqRjtCJoHx15VR2q3gZ5pxP0AWECcTp6o0Xebr
+         GiktFCZ/G1INA==
 Received: from DireWolf ([108.49.206.201])
-        by resomta-ch2-09v.sys.comcast.net with ESMTPSA
-        id 3ca8iTrGpsv0O3caAiONaN; Fri, 30 Aug 2019 08:48:54 +0000
+        by resomta-ch2-15v.sys.comcast.net with ESMTPSA
+        id 3cf5iyI0YhmCt3cf6inloO; Fri, 30 Aug 2019 08:54:03 +0000
 X-Xfinity-VAAS: gggruggvucftvghtrhhoucdtuddrgeduvddrudeigedgtdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuvehomhgtrghsthdqtfgvshhipdfqfgfvpdfpqffurfetoffkrfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvfhgjufffkfggtgfgofhtsehtqhhgtddvtdejnecuhfhrohhmpedfufhtvghvvgcukggrsggvlhgvfdcuoeiirggsvghlvgestghomhgtrghsthdrnhgvtheqnecuffhomhgrihhnpehivghtfhdrohhrghenucfkphepuddtkedrgeelrddvtdeirddvtddunecurfgrrhgrmhephhgvlhhopeffihhrvgghohhlfhdpihhnvghtpedutdekrdegledrvddtiedrvddtuddpmhgrihhlfhhrohhmpeiirggsvghlvgestghomhgtrghsthdrnhgvthdprhgtphhtthhopegurghnihgvlhesihhoghgvrghrsghogidrnhgvthdprhgtphhtthhopehmrghrkhdrkhgvrghtohhnsehrrgihthhhvghonhdrtghomhdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehonhdvkhduiehnmhesghhmrghilhdrtghomhdprhgtphhtthhopehsrghifhhirdhkhhgrnhesshhtrhhikhhrrdhinhdprhgtphhtthhopehshhhumhestggrnhhnughrvgifrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhesnhgvthifohhrkhhplhhumhgsvghrrdhorhhgpdhrtghpthhtohepvhhlrgguihhmihhrudduieesghhmrghilhdrtghomhd
 X-Xfinity-VMeta: sc=-100;st=legit
 From:   "Steve Zabele" <zabele@comcast.net>
-To:     "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
+To:     "'Steve Zabele'" <zabele@comcast.net>,
+        "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
 Cc:     "'Network Development'" <netdev@vger.kernel.org>,
         <shum@canndrew.org>, <vladimir116@gmail.com>,
-        <saifi.khan@datasynergy.org>, <saifi.khan@strikr.in>,
-        "'Daniel Borkmann'" <daniel@iogearbox.net>, <on2k16nm@gmail.com>,
+        <saifi.khan@strikr.in>, "'Daniel Borkmann'" <daniel@iogearbox.net>,
+        <on2k16nm@gmail.com>,
         "'Stephen Hemminger'" <stephen@networkplumber.org>,
         <mark.keaton@raytheon.com>
-References: <010601d53bdc$79c86dc0$6d594940$@net> <20190716070246.0745ee6f@hermes.lan> <01db01d559e5$64d71de0$2e8559a0$@net> <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
-In-Reply-To: <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
+References: <010601d53bdc$79c86dc0$6d594940$@net> <20190716070246.0745ee6f@hermes.lan> <01db01d559e5$64d71de0$2e8559a0$@net> <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com> 
+In-Reply-To: 
 Subject: RE: Is bug 200755 in anyone's queue??
-Date:   Fri, 30 Aug 2019 04:48:35 -0400
-Message-ID: <000f01d55f0f$c2a921f0$47fb65d0$@net>
+Date:   Fri, 30 Aug 2019 04:53:41 -0400
+Message-ID: <001001d55f10$7a6c96f0$6f45c4d0$@net>
 MIME-Version: 1.0
 Content-Type: text/plain;
         charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Mailer: Microsoft Office Outlook 12.0
-Thread-Index: AdVen8s+yDx4SZXJTWeKQUT7IpkgqQAaiC1Q
+Thread-Index: AdVen8s+yDx4SZXJTWeKQUT7IpkgqQAaiC1QAAGOMvA=
 Content-Language: en-us
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+Resending since the last send bounced with this error
+
+The following recipient(s) cannot be reached:
+
+      'saifi.khan@datasynergy.org' on 8/30/2019 4:49 AM
+            550 5.1.1 <saifi.khan@datasynergy.org> recipient invalid =
+domain
+
+Sorry for the spam.
+
+Steve
+
+
+-----Original Message-----
+From: Steve Zabele [mailto:zabele@comcast.net]=20
+Sent: Friday, August 30, 2019 4:49 AM
+To: 'Willem de Bruijn'
+Cc: 'Network Development'; 'shum@canndrew.org'; 'vladimir116@gmail.com'; =
+'saifi.khan@datasynergy.org'; 'saifi.khan@strikr.in'; 'Daniel Borkmann'; =
+'on2k16nm@gmail.com'; 'Stephen Hemminger'; 'mark.keaton@raytheon.com'
+Subject: RE: Is bug 200755 in anyone's queue??
 
 Hi Willem!
 
