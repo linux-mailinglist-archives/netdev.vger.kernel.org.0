@@ -2,86 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64047A2C82
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 03:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B01A2CB7
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 04:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbfH3BzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Aug 2019 21:55:11 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36371 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727361AbfH3BzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 21:55:11 -0400
-Received: by mail-pf1-f193.google.com with SMTP id w2so3467045pfi.3
-        for <netdev@vger.kernel.org>; Thu, 29 Aug 2019 18:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=C/rIPqRnCxjehMrRZykfN2Pikoku80prbn4PQ3WrWxc=;
-        b=aBDiwEUf9orIecXXiHqnS7IC8pUBV0Etw6SQZV7DJzHPGg/pt8PswixOFjaa8bwf8T
-         1cqIbuwWE/5UbPNsKmOBBdYJDQrbxPrhDwmHO132AbwE2Hm47s92ieQari9fqdJWNCJs
-         5NvA6+rcdwkYqNVchSiDh7CFtwkiLQHvlIuGqrpB7QJ/bZRA5iyjFEI6HWxvBzdzQkQ6
-         qZm9vdfZtAoY7sW/NSHzPurEI6axHfFc4igBIMIl6cqHmIcIQ/VPGpPgn79Rz/uWZw+X
-         mWaySGkxk1n/ki1fSZ4xQNp8F9pSkP7SpKIlbFAArvHyYvxDxSsbHHm7vmjmu/ISgFeL
-         mfpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=C/rIPqRnCxjehMrRZykfN2Pikoku80prbn4PQ3WrWxc=;
-        b=kD6KnCB1r42RKzw5gWnBvJE5ApxO2/pU1z4mzj5zhK3ap+VE45UX2DStnYymE8h+6B
-         dJU1HUoo3TKdhJc2iuAGN03T+VTjv+5sV+bzBl8SXBWeWvgl00lddT10M1bY1jknScMW
-         pC6oQO47uAhK2t7VyOWPp587O9b4sW16yGT/f6gXi6sWWGe4/uqS5Hc8FQYHSx3PM1t1
-         vCzouX18MliTkTPF0mOXNxERxgC/D+hVNCZPkKFTcES9vZruSK8L+JvuozngbsGKx+rD
-         7H1DgA+XRH+nAovswH93w2+oguy7HNjneACdTfcMFjQ0kels0lWKZNQniRErUCH3tze8
-         eK4g==
-X-Gm-Message-State: APjAAAXzZ06sik6BWxftw01RxaLh7xc8EK8j6I3b1/68fMOoi0KPXZ/6
-        jdV6suXNqTkjn4GZCSlD6tyjF3PK2js=
-X-Google-Smtp-Source: APXvYqzUwCj01UDS+jNdtjarJp+Kqp1GKBmtVGAiF/Zp1EKlVuDOItf6c+d4TR6XBsictPqKO9GjWA==
-X-Received: by 2002:a63:6c4:: with SMTP id 187mr10155470pgg.401.1567130110117;
-        Thu, 29 Aug 2019 18:55:10 -0700 (PDT)
-Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id v18sm7116927pgl.87.2019.08.29.18.55.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Aug 2019 18:55:09 -0700 (PDT)
-Date:   Thu, 29 Aug 2019 18:54:48 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@resnulli.us
-Subject: Re: [PATCH 0/4 net-next] flow_offload: update mangle action
- representation
-Message-ID: <20190829185448.0b502af8@cakuba.netronome.com>
-In-Reply-To: <20190830005336.23604-1-pablo@netfilter.org>
-References: <20190830005336.23604-1-pablo@netfilter.org>
-Organization: Netronome Systems, Ltd.
+        id S1727735AbfH3CVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Aug 2019 22:21:08 -0400
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:15443 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727351AbfH3CVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Aug 2019 22:21:07 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d6888110001>; Thu, 29 Aug 2019 19:21:05 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Thu, 29 Aug 2019 19:21:04 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Thu, 29 Aug 2019 19:21:04 -0700
+Received: from [10.110.48.201] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 30 Aug
+ 2019 02:21:03 +0000
+Subject: Re: [PATCH v3 00/39] put_user_pages(): miscellaneous call sites
+To:     Mike Marshall <hubcap@omnibond.com>
+CC:     <john.hubbard@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <amd-gfx@lists.freedesktop.org>,
+        ceph-devel <ceph-devel@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-fbdev@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
+        <x86@kernel.org>, <xen-devel@lists.xenproject.org>
+References: <20190807013340.9706-1-jhubbard@nvidia.com>
+ <912eb2bd-4102-05c1-5571-c261617ad30b@nvidia.com>
+ <CAOg9mSQKGDywcMde2DE42diUS7J8m74Hdv+xp_PJhC39EXZQuw@mail.gmail.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <d453f865-2224-ed53-a2f4-f43d574c130a@nvidia.com>
+Date:   Thu, 29 Aug 2019 19:21:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAOg9mSQKGDywcMde2DE42diUS7J8m74Hdv+xp_PJhC39EXZQuw@mail.gmail.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1567131665; bh=ws5caXaEY0X3GX3egw6JsJDC0L7OwnIAHkDMK9ZQcE4=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=dIUKOH913DAYlocN1x3OWKU66rYzbsvcqMg6XurXOtfsQm0mTaQq0ufL9HiRQjmKf
+         MYeR8XR6MbUy9f2nOHFjitJW5jxjU59hEwD2KYzGMRBc0+P+o4b2mkzUliEchFZQzm
+         D0OR0ZfFBCp6cKpnoBGakw3Ch1supTeIz+DcDxFqgzxBAMqXWQoRbk0Sq3VWx6u9tp
+         6uURi8FKe6XveWY1U9zok9s2um/SF43+51Cnxqw5q2h2Dtp4kEwxNonMDqxzAcZjDx
+         HfyaHZc2XUvwuRV5WZb7Ki3OlH/mp5QHGx5CtmwXtp2TNme1r3iXAZgXDKrycQZylt
+         qlPWiGD9ap9bQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Aug 2019 02:53:32 +0200, Pablo Neira Ayuso wrote:
-> * Offsets do not need to be on the 32-bits boundaries anymore. This
->   patchset adds front-end code to adjust the offset and length coming
->   from the tc pedit representation, so drivers get an exact header field
->   offset and length.
+On 8/29/2019 6:29 PM, Mike Marshall wrote:
+> Hi John...
+> 
+> I added this patch series on top of Linux 5.3rc6 and ran
+> xfstests with no regressions...
+> 
+> Acked-by: Mike Marshall <hubcap@omnibond.com>
+> 
 
-But drivers use offsetof(start of field) to match headers, and I don't
-see you changing that. So how does this work then?
+Hi Mike (and I hope Ira and others are reading as well, because
+I'm making a bunch of claims further down),
 
-Say - I want to change the second byte of an IPv4 address.
+That's great news, thanks for running that test suite and for
+the report and the ACK.
 
-> * The front-end coalesces consecutive pedit actions into one single
->   word, so drivers can mangle IPv6 and ethernet address fields in one
->   single go.
+There is an interesting pause right now, due to the fact that
+we've made some tentative decisions about gup pinning, that affect
+the call sites. A key decision is that only pages that were
+requested via FOLL_PIN, will require put_user_page*() to release
+them. There are 4 main cases, which were first explained by Jan
+Kara and Vlastimil Babka, and are now written up in my FOLL_PIN
+patch [1].
 
-You still only coalesce up to 16 bytes, no?
+So, what that means for this series is that:
 
-As I said previously drivers will continue to implement mangle action
-merge code if that's the case. It'd be nice if core did the coalescing,
-and mark down first and last action, in case there is a setup cost for
-rewrite group.
+1. Some call sites (mlock.c for example, and a lot of the mm/ files
+in fact, and more) will not be converted: some of these patches will
+get dropped, especially in mm/.
+
+2. Call sites that do DirectIO or RDMA will need to set FOLL_PIN, and
+will also need to call put_user_page().
+
+3. Call sites that do RDMA will need to set FOLL_LONGTERM *and* FOLL_PIN,
+
+    3.a. ...and will at least in some cases need to provide a link to a
+    vaddr_pin object, and thus back to a struct file*...maybe. Still
+    under discussion.
+
+4. It's desirable to keep FOLL_* flags (or at least FOLL_PIN) internal
+to the gup() calls. That implies using a wrapper call such as Ira's
+vaddr_pin_[user]_pages(), instead of gup(), and vaddr_unpin_[user]_pages()
+instead of put_user_page*().
+
+5. We don't want to churn the call sites unnecessarily.
+
+With that in mind, I've taken another pass through all these patches
+and narrowed it down to:
+
+     a) 12 call sites that I'd like to convert soon, but even those
+        really look cleaner with a full conversion to a wrapper call
+        similar to (identical to?) vaddr_pin_[user]_pages(), probably
+        just the FOLL_PIN only variant (not FOLL_LONGTERM). That
+        wrapper call is not ready yet, though.
+
+     b) Some more call sites that require both FOLL_PIN and FOLL_LONGTERM.
+        Definitely will wait to use the wrapper calls for these, because
+        they may also require hooking up to a struct file*.
+
+     c) A few more that were already applied, which is fine, because they
+        show where to convert, and simplify a few sites anyway. But they'll
+        need follow-on changes to, one way or another, set FOLL_PIN.
+
+     d) And of course a few sites whose patches get dropped, as mentioned
+        above.
+
+[1] https://lore.kernel.org/r/20190821040727.19650-3-jhubbard@nvidia.com
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
