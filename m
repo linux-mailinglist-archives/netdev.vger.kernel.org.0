@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4974EA36ED
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:41:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D819A36FF
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727948AbfH3Mk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 08:40:59 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40976 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727603AbfH3Mk7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 08:40:59 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E000018C427D;
-        Fri, 30 Aug 2019 12:40:58 +0000 (UTC)
-Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06111100194E;
-        Fri, 30 Aug 2019 12:40:54 +0000 (UTC)
-Date:   Fri, 30 Aug 2019 14:40:52 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     alex.williamson@redhat.com, jiri@mellanox.com,
-        kwankhede@nvidia.com, davem@davemloft.net, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] mdev: Make mdev alias unique among all mdevs
-Message-ID: <20190830144052.11d23ec3.cohuck@redhat.com>
-In-Reply-To: <20190829111904.16042-3-parav@mellanox.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190829111904.16042-1-parav@mellanox.com>
-        <20190829111904.16042-3-parav@mellanox.com>
-Organization: Red Hat GmbH
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.62]); Fri, 30 Aug 2019 12:40:59 +0000 (UTC)
+        id S1728141AbfH3Mnw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Aug 2019 08:43:52 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:39723 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727417AbfH3Mnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 08:43:52 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC580.dip0.t-ipconnect.de [79.239.197.128])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 17EFACECDE;
+        Fri, 30 Aug 2019 14:52:35 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20190830092104.odipmbflounqpffo@flea>
+Date:   Fri, 30 Aug 2019 14:43:48 +0200
+Cc:     megous@megous.com, Chen-Yu Tsai <wens@csie.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <D02B89FB-F8C0-40AD-A99A-6C1B4FEB72A0@holtmann.org>
+References: <20190823103139.17687-1-megous@megous.com>
+ <5524D5E9-FA82-4244-A91F-78CF1C3FB3FB@holtmann.org>
+ <20190830092104.odipmbflounqpffo@flea>
+To:     Maxime Ripard <mripard@kernel.org>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Aug 2019 06:19:00 -0500
-Parav Pandit <parav@mellanox.com> wrote:
+Hi Maxime,
 
-> Mdev alias should be unique among all the mdevs, so that when such alias
-> is used by the mdev users to derive other objects, there is no
-> collision in a given system.
+>>> (Resend to add missing lists, sorry for the noise.)
+>>> 
+>>> This series implements bluetooth support for Xunlong Orange Pi 3 board.
+>>> 
+>>> The board uses AP6256 WiFi/BT 5.0 chip.
+>>> 
+>>> Summary of changes:
+>>> 
+>>> - add more delay to let initialize the chip
+>>> - let the kernel detect firmware file path
+>>> - add new compatible and update dt-bindings
+>>> - update Orange Pi 3 / H6 DTS
+>>> 
+>>> Please take a look.
+>>> 
+>>> thank you and regards,
+>>> Ondrej Jirman
+>>> 
+>>> Ondrej Jirman (5):
+>>> dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
+>>> bluetooth: bcm: Add support for loading firmware for BCM4345C5
+>>> bluetooth: hci_bcm: Give more time to come out of reset
+>>> arm64: dts: allwinner: h6: Add pin configs for uart1
+>>> arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
+>>> 
+>>> .../bindings/net/broadcom-bluetooth.txt       |  1 +
+>>> .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
+>>> arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
+>>> drivers/bluetooth/btbcm.c                     |  3 +++
+>>> drivers/bluetooth/hci_bcm.c                   |  3 ++-
+>>> 5 files changed, 35 insertions(+), 1 deletion(-)
+>> 
+>> all 5 patches have been applied to bluetooth-next tree.
 > 
-> Signed-off-by: Parav Pandit <parav@mellanox.com>
-> 
-> ---
-> Changelog:
-> v1->v2:
->  - Moved alias NULL check at beginning
-> v0->v1:
->  - Fixed inclusiong of alias for NULL check
->  - Added ratelimited debug print for sha1 hash collision error
-> ---
->  drivers/vfio/mdev/mdev_core.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-> index 3bdff0469607..c9bf2ac362b9 100644
-> --- a/drivers/vfio/mdev/mdev_core.c
-> +++ b/drivers/vfio/mdev/mdev_core.c
-> @@ -388,6 +388,13 @@ int mdev_device_create(struct kobject *kobj, struct device *dev,
->  			ret = -EEXIST;
->  			goto mdev_fail;
->  		}
-> +		if (alias && tmp->alias && strcmp(alias, tmp->alias) == 0) {
-> +			mutex_unlock(&mdev_list_lock);
-> +			ret = -EEXIST;
-> +			dev_dbg_ratelimited(dev, "Hash collision in alias creation for UUID %pUl\n",
-> +					    uuid);
-> +			goto mdev_fail;
-> +		}
->  	}
->  
->  	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+> The DTS patches (last 2) should go through the arm-soc tree, can you
+> drop them?
 
-Any reason not to merge this into the first patch?
+why is that? We have included DTS changes for Bluetooth devices directly all the time. What is different with this hardware?
+
+Regards
+
+Marcel
+
