@@ -2,119 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A55A31BD
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF86A31C0
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 10:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727544AbfH3IA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 04:00:26 -0400
-Received: from mga05.intel.com ([192.55.52.43]:24868 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726090AbfH3IA0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 04:00:26 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Aug 2019 01:00:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,446,1559545200"; 
-   d="asc'?scan'208";a="197984393"
-Received: from pipin.fi.intel.com (HELO pipin) ([10.237.72.175])
-  by fmsmga001.fm.intel.com with ESMTP; 30 Aug 2019 01:00:24 -0700
-From:   Felipe Balbi <felipe.balbi@linux.intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
-In-Reply-To: <20190829172848.GC2166@localhost>
-References: <20190829095825.2108-1-felipe.balbi@linux.intel.com> <20190829095825.2108-2-felipe.balbi@linux.intel.com> <20190829172509.GB2166@localhost> <20190829172848.GC2166@localhost>
-Date:   Fri, 30 Aug 2019 11:00:20 +0300
-Message-ID: <87r253ulpn.fsf@gmail.com>
+        id S1728331AbfH3IBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 04:01:37 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53569 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728236AbfH3IBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 04:01:35 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 10so6266006wmp.3
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 01:01:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xDWFOC5KIqBUnS5KsrM2GDBVfGw82n9BymZaCeLwnrQ=;
+        b=0tWMSg+ZCEeBjFWM+KTT8++sDU93IOoqfi78OtpLOYzGx5L6DqRT490amuDK/8IY3A
+         pi8I3hmd4hfEXFyWXXc3N4/L0XkzY5gsDvefa73RcNYXcXsMLUTEhEGgy7yLYZjSFMtj
+         lGd1jqIW2tkpwIbJyBN8vScRO/l1x+lAaxXfOFWu7Su19kQYp8N9T41hgufo8Ev5jz3f
+         vlPiW/Xp7sMVtKzdpENlIPKFCL7H5Fu9ISGCBT0OnHOdLDnQiFkAsa1jmW8kKaMtWcDZ
+         IUd6oNl9HT9RVQcrSDvg36v1WBdEcB7YKFXRtdQQl8pjSb2rLPhPBMoAXCSol4wZDm5Z
+         Foig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xDWFOC5KIqBUnS5KsrM2GDBVfGw82n9BymZaCeLwnrQ=;
+        b=sVHxZoxYu9cVhugRgVNssLwySAnAPiPhj1i7zzxC8GnFqpp0KB3GxjBAgfnKz5BuaK
+         jR9ZLgNxmzAsvTm1bQGUSHXVv/w0CCpNKUeHNHojAw3G6t/OUuuAcdTmgkJ7voABfuen
+         yUKO2RixqO1Ti3ThGtBW52HYEHoF7FUl4BPkB1IuG8FHVtem0zjFlMXFGcxtuWLZO97P
+         M7NnjJteRG+RZ/YQ7urYhp0dSCyAhP9y2Jc/xCA7uNmIhFChe13j6WHC4BdBnsLFCE9a
+         H23pdrPvCOQ8C/6bvN+Q+ll5qrfEZQ4S8s0EJ+K8G9AIXTeB7dyzGi+Qr8rS7h3Ka/za
+         xF5A==
+X-Gm-Message-State: APjAAAWEu56VF0NjMXwioLopa8MHKthLb8y2NaiJw5n7dzuQzU8oth6P
+        j0vDRUYiZK/EFZoT7VylCWh3Hg==
+X-Google-Smtp-Source: APXvYqx+aypUiGiA41kuEqSHGWPSBA1IhTUH9hae5gxadfLmM/cYcrrCHWto4Rv6vNFVumxKXZVSpQ==
+X-Received: by 2002:a1c:ca02:: with SMTP id a2mr1076784wmg.127.1567152092914;
+        Fri, 30 Aug 2019 01:01:32 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id j20sm9610535wre.65.2019.08.30.01.01.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2019 01:01:32 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 10:01:31 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Miller <davem@davemloft.net>
+Cc:     idosch@idosch.org, andrew@lunn.ch, horatiu.vultur@microchip.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        allan.nielsen@microchip.com, ivecera@redhat.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190830080131.GQ2312@nanopsycho>
+References: <20190830063624.GN2312@nanopsycho>
+ <20190830.001223.669650763835949848.davem@davemloft.net>
+ <20190830072133.GP2312@nanopsycho>
+ <20190830.003225.292019185488425085.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190830.003225.292019185488425085.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-
-Hi,
-
-Richard Cochran <richardcochran@gmail.com> writes:
-> Adding davem onto CC...
+Fri, Aug 30, 2019 at 09:32:25AM CEST, davem@davemloft.net wrote:
+>From: Jiri Pirko <jiri@resnulli.us>
+>Date: Fri, 30 Aug 2019 09:21:33 +0200
 >
-> On Thu, Aug 29, 2019 at 12:58:25PM +0300, Felipe Balbi wrote:
->> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
->> index 98ec1395544e..a407e5f76e2d 100644
->> --- a/drivers/ptp/ptp_chardev.c
->> +++ b/drivers/ptp/ptp_chardev.c
->> @@ -177,9 +177,8 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int =
-cmd, unsigned long arg)
->>  			err =3D -EFAULT;
->>  			break;
->>  		}
->> -		if ((req.perout.flags || req.perout.rsv[0] || req.perout.rsv[1]
->> -				|| req.perout.rsv[2] || req.perout.rsv[3])
->> -			&& cmd =3D=3D PTP_PEROUT_REQUEST2) {
->> +		if ((req.perout.rsv[0] || req.perout.rsv[1] || req.perout.rsv[2]
->> +			|| req.perout.rsv[3]) && cmd =3D=3D PTP_PEROUT_REQUEST2) {
+>> Fri, Aug 30, 2019 at 09:12:23AM CEST, davem@davemloft.net wrote:
+>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>Date: Fri, 30 Aug 2019 08:36:24 +0200
+>>>
+>>>> The promiscuity is a way to setup the rx filter. So promics == rx filter
+>>>> off. For normal nics, where there is no hw fwd datapath,
+>>>> this coincidentally means all received packets go to cpu.
+>>>
+>>>You cannot convince me that the HW datapath isn't a "rx filter" too, sorry.
+>> 
+>> If you look at it that way, then we have 2: rx_filter and hw_rx_filter.
+>> The point is, those 2 are not one item, that is the point I'm trying to
+>> make :/
 >
-> Please check that the reserved bits of req.perout.flags, namely
-> ~PTP_PEROUT_ONE_SHOT, are clear.
+>And you can turn both of them off when I ask for promiscuous mode, that's
+>a detail of the device not a semantic issue.
 
-Actually, we should check more. PEROUT_FEATURE_ENABLE is still valid
-here, right? So are RISING and FALLING edges, no?
+Well, bridge asks for promiscuous mode during enslave -> hw_rx_filter off
+When you, want to see all traffic in tcpdump -> rx_filter off
 
->
->>  			err =3D -EINVAL;
->>  			break;
->>  		} else if (cmd =3D=3D PTP_PEROUT_REQUEST) {
->> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clo=
-ck.h
->> index 039cd62ec706..95840e5f5c53 100644
->> --- a/include/uapi/linux/ptp_clock.h
->> +++ b/include/uapi/linux/ptp_clock.h
->> @@ -67,7 +67,9 @@ struct ptp_perout_request {
->>  	struct ptp_clock_time start;  /* Absolute start time. */
->>  	struct ptp_clock_time period; /* Desired period, zero means disable. */
->>  	unsigned int index;           /* Which channel to configure. */
->> -	unsigned int flags;           /* Reserved for future use. */
->> +
->> +#define PTP_PEROUT_ONE_SHOT BIT(0)
->> +	unsigned int flags;
->
-> @davem  Any CodingStyle policy on #define within a struct?  (Some
-> maintainers won't allow it.)
+So basically there are 2 flavours of promiscuous mode we have to somehow
+distinguish between, so the driver knows what to do.
 
-seems like this should be defined together with the other flags? If
-that's the case, it seems like we would EXTTS and PEROUT masks.
-
-=2D-=20
-balbi
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl1o15QACgkQzL64meEa
-mQY0jBAA1zCKLgKpD6T5AY9iNnfG+uJQm7wlFLkhxf6nmWqVOIDXeKKqTKlY6t/U
-SRcyjH5aEUM+r4sWHlkC3nue7fyI4I492bxe/ToBgUnkifGsc55/PtZCaRrIvh6H
-crSnwiG/+dA9LlI6nI1woq1Rd/AcUwJ6SAV8zHjUyWWo3/Pp7XJUwM9LRF10jrVj
-WG8OGKNhmFoCSn0esIyzFRaTGPUDEycQ7MjfhBDlaRca/pL60N4Y/e0Q+K2h5zSt
-tQU9Qa6NsyPBqYWMYR2+vAIBNq8pWAXnebYH3UbViAPOSDBLeFE8CezcAefZVgc7
-n5xYHMhRZgZKLG1QaD2jBysh0yFOGYDX0vY4hYUQeucgJUU3ksZtSVIAphupoxh3
-xjgvGN77ZxDUkQmwOmNfu2nEgYILdiSHuyOjFqmynFpDO2e0Dc4BafiNN4DjaRjI
-XrJREEgPGU6ck4FtVtQ1+22yxusNk2nqpAe5v5IDCbqZ7jmVgWiOqZGdJUhoqhIG
-KBWMM/UoA1ft5SdZvKidvZf0TIYsfCjAA9eEOgiRBf1CBRISmA51WJzL/uSSc+Qv
-mLeFHjwN/UdxO30fMDmjXxS86/6J1o6qQ1/8nZBbGSW6O3FqiUiR8sA7wW8j8gZE
-RQaXWTQmIeRCoPVqsJn0whIo9eOsL1t7N5Bkv1+ZsmBkioKHaVQ=
-=KWTp
------END PGP SIGNATURE-----
---=-=-=--
+Nothe that the hw_rx_filter off is not something special to bridge.
+There is a usecase for this when no bridge is there, only TC filters for
+example.
