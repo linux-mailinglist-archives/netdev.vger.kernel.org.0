@@ -2,143 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F81A3661
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E1DA36DC
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 14:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbfH3MIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 08:08:42 -0400
-Received: from mail-eopbgr770043.outbound.protection.outlook.com ([40.107.77.43]:57095
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S1728031AbfH3MfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 08:35:08 -0400
+Received: from mail-eopbgr70054.outbound.protection.outlook.com ([40.107.7.54]:20421
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728358AbfH3MIl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 08:08:41 -0400
+        id S1727595AbfH3MfI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 08:35:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lFtB7ENdyBw7JDGnxDtG/InImbOmDLPGEgpg+gkhDqLYGixUaeE2+YHzVzMDSFKrDbyEXV62TfXwtxYWEQnyRksR9obTwzXZbG1lmU1iM6Ap1V3CC9xW/VxUm9Wzzutj4Ifrey7Xg0wsqmGlOF28n/oFz42PQuHVy/wZiLVeceuJNJOQznK8C4eoMgqyA9+1taCR+7zeVT1nqI9liYp9LMjI1lHmRipOSmNxR/T8b6YcJZgHrn0lYcHUob0Vy5mdfyetgX6a0eSh9YbtrH1l4YPUQzQaSXczKefHw0xID/dxuSYPI2JYhdfFzYnXAjShuHh9IyineofhphZLK0aVRw==
+ b=Rvm2DAwnalmhJ3RrDdKTF8i+KYLoX0bQuAR88tgvFY7QAaafsraqK9O63NvvLhiyaoUktTq0Gh1Bv5tkk2hTemnQ3nvXZD3kbmG90mJftNmbdcrfHNPsZuuEDo2aoIn+0FdFPAnC9pPNYNZE/06oIlVmx8n69gIrTkokDvFWwGxbtEo3Bvp8CcVtN+pSoDgHG3yRz4/sb5x8fc2+n7pkWy86eJ/wCo3lg1Sqkc+Jz2KJs52C1Vi05uXw91vfem80E1i8nEuJTxPs16YzFR2TywiPtZMgtrb1AYc0ikFO58LH1t8dnv3j6JzWHWe0D+TQ0tcWwCB1+O1Xjm2OVZIr5Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufHx0CcxRCRq6tQhOihH1gbucJAgR8rpm/zJl1XThOM=;
- b=OxYagln04Im1Wd2FsBeNfwbxifdVka7DUU07GGzE+vMEma9mrbB0QYnbe22wCJ8QZRBup3ayQyAbn7cn9H2RLLO/Ec5AeEr0t4QO5lLPbx35Uoaqp9Ie24aGtKzSkn1ZXaRQx3HbEUGUgW1wUIO5eAHE7t0dMPVGuEmFXn3S5Pj3Yzyo2ECyviKW9QYjt4uwLoyM2kfE1jIttE2KWBTaM5n0RS/UzpaMlajnRi2lN588brd0iFv6J2A35/zx6tN5eKIka3rHnabrEabolIGIcFkwlWyqWirkto1TTwfXmQbFG8LX2umvF4L+ZciS01rUEblEcoh7xv8KR0jJX8txRw==
+ bh=KdX37xGidISmglrmzMJPhlohclo9OF05oPjPkZkoMyQ=;
+ b=QwMD4LlHoJ/q6JkgC/P0+EePZXhyVOKGIQwK/oyVFVeS/cgVVbMXr8xWHNIYdponzBFagSS9id5X63lyz3mrmW9ZlOOTrmTXMHioUGCWBNBQMul708Ni3Ef6AtN/v3rzvRmI0F/Lbq2eE292hgNK3nJnrUvyWtN++8ml0jWPc5r9YQTwnf5yfNV0sifZ1vcNfQVMl0wgvyG2cFo5l/VxutqpozB5VEvavHq+edhv2GG/i0VDqUn2HkyR7+j6BFPtx6co3fESaLxbqsgVYGp36qon3+5LFqYBr5sqVkzu/Qo8xM0Itu9Kahk1jVllDHByCtYz5nTaPJ0i5XkFrrXa4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
- dkim=pass header.d=aquantia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufHx0CcxRCRq6tQhOihH1gbucJAgR8rpm/zJl1XThOM=;
- b=RH7lWWJtdvKYAgeazFp6elUPzRKU2lj7/zgAL5K+yhdUG0diIdkFZwoxHYDhp2g3afOCDw/SNIBQiXGy2cmYHGRJ9wrQDyXA4GPHwRNF+pLs54TOVmOAw4E6tz1kLoQ/GPXmWdI+81GWBH8osh3q7tzezspFXfIRyfE31egEf8k=
-Received: from BN6PR11MB4081.namprd11.prod.outlook.com (10.255.128.166) by
- BN6PR11MB1684.namprd11.prod.outlook.com (10.173.28.23) with Microsoft SMTP
+ bh=KdX37xGidISmglrmzMJPhlohclo9OF05oPjPkZkoMyQ=;
+ b=nRJJ/YwNcEplsy/GK1UEz2Z2J7gbq+IesbrzZQA3dj0s2PV7cUblqgwvhQAYz4Adis3tJt7ic7g1ptxfUVs6x0TdyZQ4RgSUEKwDS9tiBgyS1mq68ww0kGmYG5H1UDF6oU+h/lKfAnWsbeITa2xsY4zFmlRdBcOYh79xhfrhqAk=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6577.eurprd05.prod.outlook.com (20.179.33.18) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.16; Fri, 30 Aug 2019 12:08:39 +0000
-Received: from BN6PR11MB4081.namprd11.prod.outlook.com
- ([fe80::95ec:a465:3f5f:e3e5]) by BN6PR11MB4081.namprd11.prod.outlook.com
- ([fe80::95ec:a465:3f5f:e3e5%3]) with mapi id 15.20.2220.013; Fri, 30 Aug 2019
- 12:08:38 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     "David S . Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Dmitry Bogdanov <Dmitry.Bogdanov@aquantia.com>
-Subject: [PATCH net 5/5] net: aquantia: fix out of memory condition on rx side
-Thread-Topic: [PATCH net 5/5] net: aquantia: fix out of memory condition on rx
- side
-Thread-Index: AQHVXyuoQEiPQtTL50mi6n4Lp9gLYQ==
-Date:   Fri, 30 Aug 2019 12:08:38 +0000
-Message-ID: <9514483a86bd29d882dc8b799167a85ecc5eddeb.1567163402.git.igor.russkikh@aquantia.com>
-References: <cover.1567163402.git.igor.russkikh@aquantia.com>
-In-Reply-To: <cover.1567163402.git.igor.russkikh@aquantia.com>
+ 15.20.2220.18; Fri, 30 Aug 2019 12:33:22 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2199.021; Fri, 30 Aug 2019
+ 12:33:22 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+Thread-Topic: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+Thread-Index: AQHVXluia2ak8fbBtkW+HkGgDQ+zpacTarsAgAA0s9A=
+Date:   Fri, 30 Aug 2019 12:33:22 +0000
+Message-ID: <AM0PR05MB48660877881F7A2D757A9C82D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190829111904.16042-1-parav@mellanox.com>
+        <20190829111904.16042-2-parav@mellanox.com>
+ <20190830111720.04aa54e9.cohuck@redhat.com>
+In-Reply-To: <20190830111720.04aa54e9.cohuck@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1P195CA0012.EURP195.PROD.OUTLOOK.COM (2603:10a6:3:fd::22)
- To BN6PR11MB4081.namprd11.prod.outlook.com (2603:10b6:405:78::38)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-originating-ip: [95.79.108.179]
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [106.51.18.188]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5f6daf0a-e07c-478b-fa7f-08d72d42ca83
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN6PR11MB1684;
-x-ms-traffictypediagnostic: BN6PR11MB1684:
+x-ms-office365-filtering-correlation-id: b732da52-04c3-4037-23d3-08d72d463f08
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6577;
+x-ms-traffictypediagnostic: AM0PR05MB6577:|AM0PR05MB6577:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR11MB1684B351CB227CCC79113AC898BD0@BN6PR11MB1684.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <AM0PR05MB65770A98E0AAFE5FD9F0A6BDD1BD0@AM0PR05MB6577.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 0145758B1D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(136003)(376002)(39840400004)(366004)(396003)(199004)(189003)(2906002)(476003)(6916009)(76176011)(4326008)(50226002)(99286004)(6436002)(305945005)(186003)(26005)(36756003)(478600001)(316002)(6486002)(6506007)(54906003)(25786009)(8936002)(107886003)(44832011)(52116002)(2616005)(3846002)(14454004)(102836004)(386003)(86362001)(53936002)(81156014)(6116002)(5660300002)(8676002)(81166006)(7736002)(6512007)(11346002)(64756008)(66446008)(14444005)(256004)(66556008)(66476007)(66946007)(71190400001)(71200400001)(66066001)(486006)(446003)(118296001)(79990200002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR11MB1684;H:BN6PR11MB4081.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(39860400002)(346002)(136003)(366004)(13464003)(189003)(199004)(54534003)(7696005)(76116006)(81166006)(33656002)(66946007)(66476007)(229853002)(86362001)(2906002)(66066001)(81156014)(8676002)(52536014)(6246003)(66556008)(64756008)(66446008)(53936002)(25786009)(4326008)(9686003)(55016002)(5660300002)(14454004)(508600001)(186003)(53546011)(6506007)(55236004)(102836004)(6916009)(486006)(446003)(14444005)(71200400001)(71190400001)(256004)(26005)(11346002)(6436002)(54906003)(99286004)(316002)(8936002)(9456002)(74316002)(305945005)(76176011)(6116002)(476003)(7736002)(3846002)(79990200002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6577;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: iYk6eHMxumPmV/XeDdF0DDcCNd3MnRl3Ssv3oD2rgkz7SYn0724ICngZcN2+cPMTDHBzlCVqqTQuvQxGuOPhvQ6uUxa4vv6vaRVCk/UbeQaOcGRZPLzD3ATXHrF0/bQVxmbr+bT51iWjImg9qDyQdzLpmnxcS+F/aNGhD6N38vYkqOimCYkjtO1LdM7pQeB1jNfXmDaL5Kf/pUULsenfBrXh59cHQ3i4RjPp5p7uw8HlHg9VDIMn+neOB65Sog1fcM+uPLJJu+S/p+YLg4WcktgIhYTxRXiRh+FqLGDiLVawo+NACuuYvNYFT1XIKreQ5DDD1t84SND0N6sNO01AXfMqWbxFJlAZ9j1BK6GsDwQhIFEy8ItxE4W2hGKdVEIPh10cjW4V0ZRT3WAm73O8rKC+IL4BOLADPZQTfdZHEaYZ6gMiztX501LokFgTc3CQoT3Ijr+fSQe6C95xB3jRLQ==
-Content-Type: text/plain; charset="iso-8859-1"
+x-microsoft-antispam-message-info: /TTA5SVqz0DSiAtaSzz+zP6AirrGu4fUJNreqQPR0sJYhCGSrm3kAv05mIo2gd1hcGiTwU+6bwFJhhQVbfPCMl5es6CVFLOqz/sgA3MI+llWNT1vQp5VmFcCjzbXUoh1kKHSMiXqe0hOxr03BDJ7H8avdjJe8uRzTxe1mZde6q/WCtitxQhUrTjQ3wtsH+vmn1s7CKxBxR+oHlafcu0L9BFpOkT5YUq0QJlgKA67Lt6LY97vT4klcoEgGy0WQtjAVDu2wGwS+pSwE9CZO8MhuQDzvC0t+koLKSRTeLHoN3mteNM1VQLhExdduE8mZLn+sLop1ovO+DL3v3DhW62qXE0S6uVs7pp1yjFm6iYW5l8+IcM9Cl8AQ98ZkVwzPvu27TDRG/ntA/lGtAlQAc7nzYdPNd5GpZDhrXrTLRVfr+7BbKCrhvgQTMBGL5+l1eFRcuNfmudDo2rSVeu5wyasKg==
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f6daf0a-e07c-478b-fa7f-08d72d42ca83
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 12:08:38.8920
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b732da52-04c3-4037-23d3-08d72d463f08
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2019 12:33:22.2914
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: H8qpCpIWnmi9KCHlSRCOrO8AjZicmZK+bgNAbjC2iB5rObkEHUaYsCz1hQbneSj6LZRHbBWdrZV+qUquIWw48w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1684
+X-MS-Exchange-CrossTenant-userprincipalname: D3WxN3nPHWf9iRsldXtLrY99jTZWegTo9JYD6F/6gBfWLIzWugzdIONQHS6dHQ+v9pHZ3cmJ5ZmHrYADk2UfHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6577
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
 
-On embedded environments with hard memory limits it is a normal although
-rare case when skb can't be allocated on rx part under high traffic.
 
-In such OOM cases napi_complete_done() was not called.
-So the napi object became in an invalid state like it is "scheduled".
-Kernel do not re-schedules the poll of that napi object.
+> -----Original Message-----
+> From: Cornelia Huck <cohuck@redhat.com>
+> Sent: Friday, August 30, 2019 2:47 PM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
+> kernel@vger.kernel.org; netdev@vger.kernel.org
+> Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
+>=20
+> On Thu, 29 Aug 2019 06:18:59 -0500
+> Parav Pandit <parav@mellanox.com> wrote:
+>=20
+> > Some vendor drivers want an identifier for an mdev device that is
+> > shorter than the UUID, due to length restrictions in the consumers of
+> > that identifier.
+> >
+> > Add a callback that allows a vendor driver to request an alias of a
+> > specified length to be generated for an mdev device. If generated,
+> > that alias is checked for collisions.
+> >
+> > It is an optional attribute.
+> > mdev alias is generated using sha1 from the mdev name.
+> >
+> > Signed-off-by: Parav Pandit <parav@mellanox.com>
+> >
+> > ---
+> > Changelog:
+> > v1->v2:
+> >  - Kept mdev_device naturally aligned
+> >  - Added error checking for crypt_*() calls
+> >  - Corrected a typo from 'and' to 'an'
+> >  - Changed return type of generate_alias() from int to char*
+> > v0->v1:
+> >  - Moved alias length check outside of the parent lock
+> >  - Moved alias and digest allocation from kvzalloc to kzalloc
+> >  - &alias[0] changed to alias
+> >  - alias_length check is nested under get_alias_length callback check
+> >  - Changed comments to start with an empty line
+> >  - Fixed cleaunup of hash if mdev_bus_register() fails
+> >  - Added comment where alias memory ownership is handed over to mdev
+> > device
+> >  - Updated commit log to indicate motivation for this feature
+> > ---
+> >  drivers/vfio/mdev/mdev_core.c    | 123
+> ++++++++++++++++++++++++++++++-
+> >  drivers/vfio/mdev/mdev_private.h |   5 +-
+> >  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
+> >  include/linux/mdev.h             |   4 +
+> >  4 files changed, 135 insertions(+), 10 deletions(-)
+> >
+>=20
+> (...)
+>=20
+> > +static const char *
+> > +generate_alias(const char *uuid, unsigned int max_alias_len) {
+> > +	struct shash_desc *hash_desc;
+> > +	unsigned int digest_size;
+> > +	unsigned char *digest;
+> > +	unsigned int alias_len;
+> > +	char *alias;
+> > +	int ret;
+> > +
+> > +	/*
+> > +	 * Align to multiple of 2 as bin2hex will generate
+> > +	 * even number of bytes.
+> > +	 */
+> > +	alias_len =3D roundup(max_alias_len, 2);
+> > +	alias =3D kzalloc(alias_len + 1, GFP_KERNEL);
+>=20
+> This function allocates alias...
+>=20
+> > +	if (!alias)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	/* Allocate and init descriptor */
+> > +	hash_desc =3D kvzalloc(sizeof(*hash_desc) +
+> > +			     crypto_shash_descsize(alias_hash),
+> > +			     GFP_KERNEL);
+> > +	if (!hash_desc) {
+> > +		ret =3D -ENOMEM;
+> > +		goto desc_err;
+> > +	}
+> > +
+> > +	hash_desc->tfm =3D alias_hash;
+> > +
+> > +	digest_size =3D crypto_shash_digestsize(alias_hash);
+> > +
+> > +	digest =3D kzalloc(digest_size, GFP_KERNEL);
+> > +	if (!digest) {
+> > +		ret =3D -ENOMEM;
+> > +		goto digest_err;
+> > +	}
+> > +	ret =3D crypto_shash_init(hash_desc);
+> > +	if (ret)
+> > +		goto hash_err;
+> > +
+> > +	ret =3D crypto_shash_update(hash_desc, uuid, UUID_STRING_LEN);
+> > +	if (ret)
+> > +		goto hash_err;
+> > +
+> > +	ret =3D crypto_shash_final(hash_desc, digest);
+> > +	if (ret)
+> > +		goto hash_err;
+> > +
+> > +	bin2hex(alias, digest, min_t(unsigned int, digest_size, alias_len / 2=
+));
+> > +	/*
+> > +	 * When alias length is odd, zero out an additional last byte
+> > +	 * that bin2hex has copied.
+> > +	 */
+> > +	if (max_alias_len % 2)
+> > +		alias[max_alias_len] =3D 0;
+> > +
+> > +	kfree(digest);
+> > +	kvfree(hash_desc);
+> > +	return alias;
+>=20
+> ...and returns it here on success...
+>=20
+> > +
+> > +hash_err:
+> > +	kfree(digest);
+> > +digest_err:
+> > +	kvfree(hash_desc);
+> > +desc_err:
+> > +	kfree(alias);
+> > +	return ERR_PTR(ret);
+> > +}
+> > +
+> > +int mdev_device_create(struct kobject *kobj, struct device *dev,
+> > +		       const char *uuid_str, const guid_t *uuid)
+> >  {
+> >  	int ret;
+> >  	struct mdev_device *mdev, *tmp;
+> >  	struct mdev_parent *parent;
+> >  	struct mdev_type *type =3D to_mdev_type(kobj);
+> > +	const char *alias =3D NULL;
+> >
+> >  	parent =3D mdev_get_parent(type->parent);
+> >  	if (!parent)
+> >  		return -EINVAL;
+> >
+> > +	if (parent->ops->get_alias_length) {
+> > +		unsigned int alias_len;
+> > +
+> > +		alias_len =3D parent->ops->get_alias_length();
+> > +		if (alias_len) {
+> > +			alias =3D generate_alias(uuid_str, alias_len);
+>=20
+> ...to be saved into a local variable here...
+>=20
+> > +			if (IS_ERR(alias)) {
+> > +				ret =3D PTR_ERR(alias);
+> > +				goto alias_fail;
+> > +			}
+> > +		}
+> > +	}
+> >  	mutex_lock(&mdev_list_lock);
+> >
+> >  	/* Check for duplicate */
+> > @@ -300,6 +398,12 @@ int mdev_device_create(struct kobject *kobj,
+> >  	}
+> >
+> >  	guid_copy(&mdev->uuid, uuid);
+> > +	mdev->alias =3D alias;
+>=20
+> ...and reassigned to the mdev member here...
+>=20
+> > +	/*
+> > +	 * At this point alias memory is owned by the mdev.
+> > +	 * Mark it NULL, so that only mdev can free it.
+> > +	 */
+> > +	alias =3D NULL;
+>=20
+> ...and detached from the local variable here. Who is freeing it? The comm=
+ent
+> states that it is done by the mdev, but I don't see it?
+>=20
+mdev_device_free() frees it.
+once its assigned to mdev, mdev is the owner of it.
 
-Consequently, kernel can not remove that object the system hangs on
-`ifconfig down` waiting for a poll.
+> This detour via the local variable looks weird to me. Can you either crea=
+te the
+> alias directly in the mdev (would need to happen later in the function, b=
+ut I'm
+> not sure why you generate the alias before checking for duplicates anyway=
+), or
+> do an explicit copy?
+Alias duplicate check is done after generating it, because duplicate alias =
+are not allowed.
+The probability of collision is rare.
+So it is speculatively generated without hold the lock, because there is no=
+ need to hold the lock.
+It is compared along with guid while mutex lock is held in single loop.
+And if it is duplicate, there is no need to allocate mdev.
 
-We are fixing this by gracefully closing napi poll routine with correct
-invocation of napi_complete_done.
+It will be sub optimal to run through the mdev list 2nd time after mdev cre=
+ation and after generating alias for duplicate check.
 
-This was reproduced with artificially failing the allocation of skb to
-simulate an "out of memory" error case and check that traffic does
-not get stuck.
-
-Fixes: 970a2e9864b0 ("net: ethernet: aquantia: Vector operations")
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_vec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/=
-ethernet/aquantia/atlantic/aq_vec.c
-index 715685aa48c3..28892b8acd0e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-@@ -86,6 +86,7 @@ static int aq_vec_poll(struct napi_struct *napi, int budg=
-et)
- 			}
- 		}
-=20
-+err_exit:
- 		if (!was_tx_cleaned)
- 			work_done =3D budget;
-=20
-@@ -95,7 +96,7 @@ static int aq_vec_poll(struct napi_struct *napi, int budg=
-et)
- 					1U << self->aq_ring_param.vec_idx);
- 		}
- 	}
--err_exit:
-+
- 	return work_done;
- }
-=20
---=20
-2.17.1
-
+>=20
+> >  	list_add(&mdev->next, &mdev_list);
+> >  	mutex_unlock(&mdev_list_lock);
+> >
+> > @@ -346,6 +450,8 @@ int mdev_device_create(struct kobject *kobj,
+> >  	up_read(&parent->unreg_sem);
+> >  	put_device(&mdev->dev);
+> >  mdev_fail:
+> > +	kfree(alias);
+> > +alias_fail:
+> >  	mdev_put_parent(parent);
+> >  	return ret;
+> >  }
+>=20
+> (...)
