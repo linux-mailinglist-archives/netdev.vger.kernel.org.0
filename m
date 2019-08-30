@@ -2,152 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF23AA38B9
-	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 594F2A38C3
+	for <lists+netdev@lfdr.de>; Fri, 30 Aug 2019 16:05:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727938AbfH3OCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 10:02:31 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:19836 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727135AbfH3OCa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Aug 2019 10:02:30 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 62C7FC075BD2;
-        Fri, 30 Aug 2019 14:02:30 +0000 (UTC)
-Received: from gondolin (dhcp-192-222.str.redhat.com [10.33.192.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 35E8D3DE1;
-        Fri, 30 Aug 2019 14:02:26 +0000 (UTC)
-Date:   Fri, 30 Aug 2019 16:02:23 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1727940AbfH3OFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 10:05:32 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:56877 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727135AbfH3OFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 10:05:31 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1i3hWr-0000GM-AR; Fri, 30 Aug 2019 14:05:29 +0000
+To:     Ilya Dryomov <idryomov@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        ceph-devel@vger.kernel.org,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
-Message-ID: <20190830160223.332fd81f.cohuck@redhat.com>
-In-Reply-To: <AM0PR05MB486621283F935B673455DA63D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190829111904.16042-1-parav@mellanox.com>
-        <20190829111904.16042-2-parav@mellanox.com>
-        <20190830111720.04aa54e9.cohuck@redhat.com>
-        <AM0PR05MB48660877881F7A2D757A9C82D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190830143927.163d13a7.cohuck@redhat.com>
-        <AM0PR05MB486621283F935B673455DA63D1BD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Red Hat GmbH
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: bug report: libceph: follow redirect replies from osds
+Message-ID: <3a4ff829-7302-7201-81c2-a557fe35afc8@canonical.com>
+Date:   Fri, 30 Aug 2019 15:05:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Fri, 30 Aug 2019 14:02:30 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Aug 2019 12:58:04 +0000
-Parav Pandit <parav@mellanox.com> wrote:
+Hi,
 
-> > -----Original Message-----
-> > From: Cornelia Huck <cohuck@redhat.com>
-> > Sent: Friday, August 30, 2019 6:09 PM
-> > To: Parav Pandit <parav@mellanox.com>
-> > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
-> > 
-> > On Fri, 30 Aug 2019 12:33:22 +0000
-> > Parav Pandit <parav@mellanox.com> wrote:
-> >   
-> > > > -----Original Message-----
-> > > > From: Cornelia Huck <cohuck@redhat.com>
-> > > > Sent: Friday, August 30, 2019 2:47 PM
-> > > > To: Parav Pandit <parav@mellanox.com>
-> > > > Cc: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
-> > > > kwankhede@nvidia.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > Subject: Re: [PATCH v2 1/6] mdev: Introduce sha1 based mdev alias
-> > > >
-> > > > On Thu, 29 Aug 2019 06:18:59 -0500
-> > > > Parav Pandit <parav@mellanox.com> wrote:
-> > > >  
-> > > > > Some vendor drivers want an identifier for an mdev device that is
-> > > > > shorter than the UUID, due to length restrictions in the consumers
-> > > > > of that identifier.
-> > > > >
-> > > > > Add a callback that allows a vendor driver to request an alias of
-> > > > > a specified length to be generated for an mdev device. If
-> > > > > generated, that alias is checked for collisions.
-> > > > >
-> > > > > It is an optional attribute.
-> > > > > mdev alias is generated using sha1 from the mdev name.
-> > > > >
-> > > > > Signed-off-by: Parav Pandit <parav@mellanox.com>
-> > > > >
-> > > > > ---
-> > > > > Changelog:
-> > > > > v1->v2:
-> > > > >  - Kept mdev_device naturally aligned
-> > > > >  - Added error checking for crypt_*() calls
-> > > > >  - Corrected a typo from 'and' to 'an'
-> > > > >  - Changed return type of generate_alias() from int to char*
-> > > > > v0->v1:
-> > > > >  - Moved alias length check outside of the parent lock
-> > > > >  - Moved alias and digest allocation from kvzalloc to kzalloc
-> > > > >  - &alias[0] changed to alias
-> > > > >  - alias_length check is nested under get_alias_length callback
-> > > > > check
-> > > > >  - Changed comments to start with an empty line
-> > > > >  - Fixed cleaunup of hash if mdev_bus_register() fails
-> > > > >  - Added comment where alias memory ownership is handed over to
-> > > > > mdev device
-> > > > >  - Updated commit log to indicate motivation for this feature
-> > > > > ---
-> > > > >  drivers/vfio/mdev/mdev_core.c    | 123  
-> > > > ++++++++++++++++++++++++++++++-  
-> > > > >  drivers/vfio/mdev/mdev_private.h |   5 +-
-> > > > >  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
-> > > > >  include/linux/mdev.h             |   4 +
-> > > > >  4 files changed, 135 insertions(+), 10 deletions(-)  
-> >   
-> > > > ...and detached from the local variable here. Who is freeing it? The
-> > > > comment states that it is done by the mdev, but I don't see it?
-> > > >  
-> > > mdev_device_free() frees it.  
-> > 
-> > Ah yes, I overlooked the kfree().
-> >   
-> > > once its assigned to mdev, mdev is the owner of it.
-> > >  
-> > > > This detour via the local variable looks weird to me. Can you either
-> > > > create the alias directly in the mdev (would need to happen later in
-> > > > the function, but I'm not sure why you generate the alias before
-> > > > checking for duplicates anyway), or do an explicit copy?  
-> > > Alias duplicate check is done after generating it, because duplicate alias are  
-> > not allowed.  
-> > > The probability of collision is rare.
-> > > So it is speculatively generated without hold the lock, because there is no  
-> > need to hold the lock.  
-> > > It is compared along with guid while mutex lock is held in single loop.
-> > > And if it is duplicate, there is no need to allocate mdev.
-> > >
-> > > It will be sub optimal to run through the mdev list 2nd time after mdev  
-> > creation and after generating alias for duplicate check.
-> > 
-> > Ok, but what about copying it? I find this "set local variable to NULL after
-> > ownership is transferred" pattern a bit unintuitive. Copying it to the mdev (and
-> > then unconditionally freeing it) looks more obvious to me.  
-> Its not unconditionally freed. 
+Static analysis with Coverity has picked up an issue with commit:
 
-That's not what I have been saying :(
+commit 205ee1187a671c3b067d7f1e974903b44036f270
+Author: Ilya Dryomov <ilya.dryomov@inktank.com>
+Date:   Mon Jan 27 17:40:20 2014 +0200
 
-> Its freed in the error unwinding path.
-> I think its ok along with the comment that describes this error path area.
+    libceph: follow redirect replies from osds
 
-It is not wrong, but I'm not sure I like it.
+Specifically in function ceph_redirect_decode in net/ceph/osd_client.c:
+
+3485
+3486        len = ceph_decode_32(p);
+
+CID 17904: Unused value (UNUSED_VALUE)
+
+3487        *p += len; /* skip osd_instructions */
+3488
+3489        /* skip the rest */
+3490        *p = struct_end;
+
+The double write to *p looks wrong, I suspect the *p += len; should be
+just incrementing pointer p as in: p += len.  Am I correct to assume
+this is the correct fix?
+
+Colin
+
+
+
