@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5E6A425D
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 07:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BA09A42BD
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 08:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725981AbfHaFKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 01:10:44 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39949 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbfHaFKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 01:10:44 -0400
-Received: by mail-pg1-f195.google.com with SMTP id w10so4543378pgj.7
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 22:10:43 -0700 (PDT)
+        id S1726116AbfHaGMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 02:12:44 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38989 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfHaGMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 02:12:44 -0400
+Received: by mail-pf1-f196.google.com with SMTP id a67so2660732pfa.6
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 23:12:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=ReUJTmBeqIj7S70KCNlTQYzqvVnsZSDUqfcL0RX20LU=;
-        b=PGdr5vuxrxENXCGSWCG9kxENkL9C6bFVWI1Zutupjw6pDxIj21xfzsmCb1YTPKvS5l
-         WSDb1d4A+73QLXOysqoJKUjxQ8BY4NnmVe6vBcD9v+dcpluOtb779/IUL+IwGKT3z0H7
-         I2u/6f8+zMewsbRTsevZ7qizJx+k4my2sV5oONhjKCw7yVXexL2FKoYXK27f658gkpAm
-         C18L2qWbn52G7qYURw+uXFimaVSsbMyNgjCJBdjgGk8m/jF+8EioqeS0/nKIu0wgemWp
-         43uWC0NKshvalyGU8nPOzFdRbuITz+VLlRyq32OV/oJdRi/oFzlUpbRfrnm/uJLgcxsA
-         wz2w==
+        bh=OYGLxIKuHw7K/Y8mwdbskAt8yT1cmTnUwixVFEiawGM=;
+        b=jOplZ52vBZ3/kgzf6GL13psoEoeT7LpPPJuv0rakAqsfJhTlmwxAyZ5MluAKM/GL4s
+         aETF3+DIh8ZJd9BZ0lJn/mmMNtfZsTRk3Z38PiWh6d2/6ySpEFcOMJJnpHqL5Af+9Vpb
+         2k2t2EkwSBKDHaOnlQA4WcQg1byHyHJmkcd3uwPKSEaUofySsWRda+sbfanbbivRSWuE
+         3i0Jjs67ZstEPEmJn3N9iIj6bcPiB8SG43TpNqHUafwwxl3xmJMWY3iu2zBUTDrKFjgx
+         gR6lkz7+zX8kh2l4akeF2q1ADGZXxd8YO8iyVhEKAdsPerkQjKKUw6BYyiFXMajgppmm
+         u2ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=ReUJTmBeqIj7S70KCNlTQYzqvVnsZSDUqfcL0RX20LU=;
-        b=cpNCEKTE2kssXmiMhQbOss4ujdI5DDKFz6fdPOPWKrLmhCeTD1lh6yZHh5UJJMFoZi
-         Yoy3+At/IgvJdhcaIEpheEX/hMTPw9/MFnBNA8poVEn3D6ha1mbs7FnUdubhvQQzg1mJ
-         6YPYwO8XLHmzWgMdOu7E26+gy9cGPDCQIaHe/eUm+m5xARdMWAffqKFYLiSQdGHiRBmv
-         +0akcbrDQ0s1It8iJqrslE0V1dywehF7pWJFzvrj5BvguUuQMazWJREvoGarEbwrOlvr
-         JP1akhqC/kVRQ7pzqCsjIRAdSEJl62rMdZ1lKaeSlFOPqbmr9+SeORtRr9T9akgffkYX
-         7mmw==
-X-Gm-Message-State: APjAAAX74jBxJE9eS/BfqQbHf4GLxXonNB20Am6tldm15WhSt+9IkvhV
-        l+czWabqYIL/g5RCv53o9hxBUw==
-X-Google-Smtp-Source: APXvYqzjdjU9DiC5m9nmUSPHQuN3lKcMiMkeJxBdUllNEO/vTm2lquN418Ek06F9fmBfU8uaAQZpvA==
-X-Received: by 2002:a63:ec13:: with SMTP id j19mr15606229pgh.369.1567228243339;
-        Fri, 30 Aug 2019 22:10:43 -0700 (PDT)
+        bh=OYGLxIKuHw7K/Y8mwdbskAt8yT1cmTnUwixVFEiawGM=;
+        b=lLBm8NSH8ZVnkjoI7DU1nI5WklGhcE9YSqDVQwkfPcVeb/MrXahCwDXXv7WYFdeRjV
+         Iru9PKrTYB5A9NlcRBRgzDgkKOowjK3d+odILEx6Yse3ciW/llt9e1Bt/nUplmt3752N
+         MHGTWFe6glXpZraDCT1PXn65gdM3zSpP+KmJJ2jexTts5iQe/rNHNmRkyDgPVdEcbVDy
+         Mm7MSrgnFojfw8/4bFRR4tiZ96GBEwoEgfK8sxZCSAdljIw3KfSPF+BeuOK+XjIwAEga
+         qLerOrm6ZwiVhYeVB4I6WCe7iikLbJY0JXyuomL7yMXfD7hR9lvTW7w4OmCdRIAef07U
+         6quw==
+X-Gm-Message-State: APjAAAXPBTmI7lp1iOwHbQtpNFhZAxe7EPRlzsv3hVxi567+FfF23g8B
+        QvCpdq/bt5fCs4L+/fo5G8RzdQ==
+X-Google-Smtp-Source: APXvYqz5dWr8kdQl2NL3qTCRGSUuenXgttVl7/MCJJcE7f4ZjwQe0r+pMVGY1uLVb+MurXFmd19zRw==
+X-Received: by 2002:a63:9e54:: with SMTP id r20mr16553506pgo.64.1567231963602;
+        Fri, 30 Aug 2019 23:12:43 -0700 (PDT)
 Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id y128sm6784778pgy.41.2019.08.30.22.10.42
+        by smtp.gmail.com with ESMTPSA id 69sm8033256pfb.145.2019.08.30.23.12.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Aug 2019 22:10:43 -0700 (PDT)
-Date:   Fri, 30 Aug 2019 22:10:19 -0700
+        Fri, 30 Aug 2019 23:12:43 -0700 (PDT)
+Date:   Fri, 30 Aug 2019 23:12:19 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <mkalderon@marvell.com>, <aelior@marvell.com>
-Subject: Re: [PATCH net-next 0/4] qed*: Enhancements.
-Message-ID: <20190830221019.0c5fc5f7@cakuba.netronome.com>
-In-Reply-To: <20190830074206.8836-1-skalluru@marvell.com>
-References: <20190830074206.8836-1-skalluru@marvell.com>
+To:     Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, ioana.ciornei@nxp.com
+Subject: Re: [PATCH net-next 0/3] dpaa2-eth: Add new statistics counters
+Message-ID: <20190830231219.2363758a@cakuba.netronome.com>
+In-Reply-To: <1567160443-31297-1-git-send-email-ruxandra.radulescu@nxp.com>
+References: <1567160443-31297-1-git-send-email-ruxandra.radulescu@nxp.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,17 +61,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Aug 2019 00:42:02 -0700, Sudarsana Reddy Kalluru wrote:
-> The patch series adds couple of enhancements to qed/qede drivers.
->   - Support for dumping the config id attributes via ethtool -w/W.
->   - Support for dumping the GRC data of required memory regions using
->     ethtool -w/W interfaces.
+On Fri, 30 Aug 2019 13:20:40 +0300, Ioana Radulescu wrote:
+> Recent firmware versions offer access to more DPNI statistics
+> counters. Add the relevant ones to ethtool interface stats.
 > 
-> Patch (1) adds driver APIs for reading the config id attributes.
-> Patch (2) adds ethtool support for dumping the config id attributes.
-> Patch (3) adds support for configuring the GRC dump config flags.
-> Patch (4) adds ethtool support for dumping the grc dump.
+> Also we can now make use of a new counter for in flight egress frames
+> to avoid sleeping an arbitrary amount of time in the ndo_stop routine.
 
-I don't see anything too objectionable here, but without knowing what
-GRC stands for etc. examples of what's actually exchanged here, it's
-a little hard to judge..
+A little messy there in the comment of patch 2, and IMHO if you're
+expecting particular errors to be ignored it's better to write:
+
+	if (err == -EOPNOTSUPP)
+		/* still fine*/;
+	else if (err)
+		/* real err */
+
+than assume any error is for unsupported and add a extra comment
+explaining that things may be not supported.
+
+Series LGTM tho.
