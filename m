@@ -2,74 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD8EA450F
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 17:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3625FA4527
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 17:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728200AbfHaPh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 11:37:56 -0400
-Received: from mail-pl1-f180.google.com ([209.85.214.180]:40921 "EHLO
-        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727816AbfHaPh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 11:37:56 -0400
-Received: by mail-pl1-f180.google.com with SMTP id h3so4692123pls.7
-        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 08:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3fDsNXmuloVaoguh8dR/kFjzVXN30yRINYg7z2nLNgU=;
-        b=IhhvOijO9KFBWhm8Ob+1eGjfYHLTM/hUmgXkFGc2k/Cdul5ODTozTJPHqSQbATM+Jb
-         RFHR5GKNxWmm1PM8iE+ZsKlHCjnXMi51Od42mnfsTe5WzR6RpbqMYthsVUlFjwVcx0Fc
-         IXpwiv/HutWZnQRE93oqgFScQyAfCQPMQCtdDSleEJg9B4C2Rj+rIC0M79pq8bSOODP6
-         qwvLNj6snSP9iHhHa+1os8k6wxmLUvdcBlmdebKA6+21uIlHjhuyWuC8bSPrR65OjD9F
-         uM3aDqKixM4P8/Hzsdv06zLC+BoTyee9VtK2yNSOmcREqVZG8uiJYPXqNjnkb5VXjPbn
-         tNaA==
+        id S1728441AbfHaPyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 11:54:18 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43877 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbfHaPyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 11:54:17 -0400
+Received: by mail-ed1-f65.google.com with SMTP id w9so1119664edx.10;
+        Sat, 31 Aug 2019 08:54:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3fDsNXmuloVaoguh8dR/kFjzVXN30yRINYg7z2nLNgU=;
-        b=So9/cEt4UUxjUKeAc/Ag8Ptdw19O5zHi8QGE1lycLpFRGUxNpuv8wcUq+k3mugEpc6
-         BGAqM1hTOKZEMWeyiNi6oXWQENtlCFOnnopk6xQM0lizJwxHr61Wss07Qw0qTDRm62Yb
-         6sRP+A7VFEX2W4Jzbd+kPT5NJFg89fjRziA23ccWAYEdMjvk4UZvYYfhIMVlYubbbjXn
-         32lbXarVf6DebNZVFy6Rz3RnvpgO5rT4omaGq0E1hx8Q/GvDgAcAfXLUr6VieLwomf2p
-         +5w23k6/Zs+/injtTLw4/s2Leu15b77jINMhToA3blS05RTUlQXbTukTlxj4J+MUlp/h
-         EIoA==
-X-Gm-Message-State: APjAAAUmxi2FuNkS6dLM1wZ9KPbrDnj2NiZR6z3PCc9Tu12/8zUT57rm
-        d1BoGzmFjpDY4vfpLoKo8NJRTiOR3aA=
-X-Google-Smtp-Source: APXvYqz1EkAu1+eubAOzYYTSrUfDPk3qr9YD3S7QDzhfwY6lWfbXrDkYhYX9J4ctvEjpyqba5X8JEw==
-X-Received: by 2002:a17:902:1024:: with SMTP id b33mr21952936pla.325.1567265875716;
-        Sat, 31 Aug 2019 08:37:55 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id ay7sm8042603pjb.4.2019.08.31.08.37.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Aug 2019 08:37:55 -0700 (PDT)
-Date:   Sat, 31 Aug 2019 08:37:51 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     <tomaspaukrt@email.cz>
-Cc:     <netdev@vger.kernel.org>
-Subject: Re: iproute2: tc: potential buffer overflow
-Message-ID: <20190831083751.3814ee37@hermes.lan>
-In-Reply-To: <8fo.ZWfD.3kvedbSyU2M.1TQd9t@seznam.cz>
-References: <8fo.ZWfD.3kvedbSyU2M.1TQd9t@seznam.cz>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AKTao77VaiaPvCbgcc+WiGV1j5w0joNictAVXbGzljc=;
+        b=R4ajDoerMmlECDnQkX99vdNxtcR7cn6zLBKaPiFd6KZCnw06bAe2VDoJ4ArsCyWk8P
+         ZiK8Hbj5v+VF8dctBSwc37WbM8TW8+jThDbNmkiugCVGo3CmL+l8w86zBCAAb5FR60dv
+         VCUMZAudSxbMEMK/JquwOlQE/j7S2pRAcIYJ45HoQcc0E2HiHKnIUKgqmr9O8gg8lR3x
+         ZtVLcXoKlZ1dRPzDopAYXdOb7hi/FOBA+5cMo0Jej3+ZgpMQQV3PMwlfKCyKIG4eLgte
+         VD5WDiaMoCrWLwh8kCl8JGBifF0zOkAZ8crgWekjX0pWD1qDYnKj6v0+1tjW2fBHc3Ud
+         31QQ==
+X-Gm-Message-State: APjAAAVv2B3RSpB1gxtnN1XWEGmKpnQvo63WK5qoxTkrWaxACy3R59Cm
+        5rc35+qpVErn8HRiim3fTKA=
+X-Google-Smtp-Source: APXvYqyUxiSvMtW/KeHJ5cA0AWsETqOjW7ApTaHBEHBAazWa/5cJ0LHfDHET8v0+ffDbuRqUR6oAiw==
+X-Received: by 2002:a05:6402:154e:: with SMTP id p14mr21582628edx.101.1567266854794;
+        Sat, 31 Aug 2019 08:54:14 -0700 (PDT)
+Received: from [10.68.32.192] (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.gmail.com with ESMTPSA id i19sm1234644ejf.7.2019.08.31.08.54.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 31 Aug 2019 08:54:14 -0700 (PDT)
+Subject: Re: [PATCH v3 01/11] checkpatch: check for nested (un)?likely() calls
+To:     Markus Elfring <Markus.Elfring@web.de>,
+        Joe Perches <joe@perches.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net, linux-rdma@vger.kernel.org,
+        linux-wimax@intel.com, linux-xfs@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        netdev@vger.kernel.org,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali.rohar@gmail.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Sean Paul <sean@poorly.run>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        xen-devel@lists.xenproject.org, Enrico Weigelt <lkml@metux.net>
+References: <20190829165025.15750-1-efremov@linux.com>
+ <0d9345ed-f16a-de0b-6125-1f663765eb46@web.de>
+From:   Denis Efremov <efremov@linux.com>
+Message-ID: <689c8baf-2298-f086-3461-5cd1cdd191c6@linux.com>
+Date:   Sat, 31 Aug 2019 18:54:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <0d9345ed-f16a-de0b-6125-1f663765eb46@web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 31 Aug 2019 15:13:27 +0200 (CEST)
-<tomaspaukrt@email.cz> wrote:
 
-> Hi,
+
+On 31.08.2019 12:15, Markus Elfring wrote:
+>> +# nested likely/unlikely calls
+>> +        if ($line =~ /\b(?:(?:un)?likely)\s*\(\s*!?\s*(IS_ERR(?:_OR_NULL|_VALUE)?|WARN)/) {
+>> +            WARN("LIKELY_MISUSE",
 > 
-> there are two potentially dangerous calls of strcpy function in the program "tc". In the attachment is a patch that fixes this issue.
-> 
-> Tomas
+> How do you think about to use the specification “(?:IS_ERR(?:_(?:OR_NULL|VALUE))?|WARN)”
+> in this regular expression?
 
-This looks correct.
+Hmm, 
+(?:   <- Catch group is required here, since it is used in diagnostic message,
+         see $1
+   IS_ERR
+   (?:_ <- Another atomic group just to show that '_' is a common prefix?
+           I'm not sure about this. Usually, Perl interpreter is very good at optimizing such things.
+           You could see this optimization if you run perl with -Mre=debug.
+     (?:OR_NULL|VALUE))?|WARN)
 
-Please fix with strlcpy() instead; that is clearer.
-Plus you can use XT_EXTENSION_MAX_NAMELEN here (optional).
+Regards,
+Denis
