@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC34BA4622
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 22:19:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D19E8A4624
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 22:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbfHaUTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 16:19:12 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:46690 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728595AbfHaUTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 16:19:07 -0400
-Received: by mail-qk1-f193.google.com with SMTP id q7so1198114qkn.13
-        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 13:19:06 -0700 (PDT)
+        id S1728629AbfHaUTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 16:19:13 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:43088 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728602AbfHaUTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 16:19:08 -0400
+Received: by mail-qk1-f196.google.com with SMTP id m2so9199486qkd.10
+        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 13:19:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TeByo3Ckpi8g7zRScvKHhMf+eNUsM1DU9OHs2z0ZFfI=;
-        b=EFvSJuOYDu94wMOonljtfeiwYYFJbaY5fhH+MBJtd92nFNu+mO6voHH3BEF8WU4ZNz
-         Iiuq6KFf4V0opm0VAT/glkSPglhcPbxtoHxl+kdRT114SSQLRMH1auZVgaJpCsVCpeOy
-         rNsEZOE7fiWmiLcKlLMdZOEeM8ZMuUqpbLLBhCOTjKZeUePw30CkDx02gUjN9T3/x1+o
-         u0YFyPFdCB/m3f+C67ByQ2XQ0eY7H9X1gi1ajnXMXGBwI6s6ODQd0wEuJx1X3BK+E8LH
-         Ezmi90UykNvQamRAv4evNpS9jPN4ZVcBEkNMmJEGPXYzp8HnJSjsAOLrMuLCncRupiAp
-         sqSg==
+        bh=h6ajpuxEsaLMzN/znFNgyYDS5Hy3WyXcICNNEbJUo2c=;
+        b=HgAikyonu9WMxdyrGqY3zzESmoawl9aoukaVuxT3KvpsD5HPFpj/YyL+GiNWqxytYf
+         treFsxgGUxBX14ihNon2cx8i4gj3JcaRHJReyiHC5I0Hmh67m3tcrWRf4eQU9OPTtsVJ
+         PuA1iov/TYohhOBaofu1/IEhI79Vme4UVm/zXh9Psstk2UA/x+XSXuYEw1PU2+fwcG5r
+         Lo3mk54C17NYA7ZUy/EB4cC57FVYVNgXie0whNd0P3Y4x8k4Tlohc5TgWFq3yTuICE5q
+         HivsM1uXN5gTlyMmb5J3P4aikSqQkMMBVwiS1l7LQqp4AvT4UP2ts47ZEqiFHjBf1n8d
+         dG4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TeByo3Ckpi8g7zRScvKHhMf+eNUsM1DU9OHs2z0ZFfI=;
-        b=hdbjVt0WU3rHHz50ePQDoFDkmHfTiLZlaNOOdb5IdoRCMG97m5h0mCnlfE5NoRHpqp
-         l0aymK0dvtLVBoHYEOST19OPRfAuQcUtlcn8CWfbiW/SIOwcOGGkOBEMsqrdwvhHK0R2
-         wdjopTdmqtgnRC9iqjiGxJuihWgErQHwZe+SD20OqOFIU/jhPCBTKxB0Nv2kuALW884i
-         unJ/7er1a1GaztKtuIKkuoai0hoYhLPmD/C1SHZon5SoE26vOiEZZtDXd6EEJlk7VlBx
-         OswfMDVy+tiVzAqu+KVK6tRnZWHOW+IfKYUddHEZeG+AcewxPAleSg8P5RxiWovHJ/fX
-         0OQw==
-X-Gm-Message-State: APjAAAWVQUM5dc5q8ZzFG0lPBh+8AboNs0n1A96AaR4wAV+5qKb35mKe
-        KwVbQaejR284z80d39B2v0vifdNF
-X-Google-Smtp-Source: APXvYqy4IVPzqmt7YMWKu8qtZP+xMPD+R1WmZIwYWrlVHVznsx/cBawHVv+7hdyeDLEIey6GYZ+N3Q==
-X-Received: by 2002:ae9:f812:: with SMTP id x18mr21444128qkh.290.1567282746209;
-        Sat, 31 Aug 2019 13:19:06 -0700 (PDT)
+        bh=h6ajpuxEsaLMzN/znFNgyYDS5Hy3WyXcICNNEbJUo2c=;
+        b=aC5jco/dJLmiVFXo5UgTb8rAunO5s9Fgm5TOCipjBbMytArsJGgxtJOsqKi76DDGqd
+         Ru8ral5zy5Uf8AbmtVhTvNyu0elzag1H9ESI2FZn959Y7HPFzaBSvHyfj2ikVUfw5IF3
+         qmfAAu+yzUpkp6sKkoVj0ToiGaOpOwrfZDM51TGUKQnVsF1CHeZsHjEc4tTWoW1HVpCv
+         bJkCXKpZEdKD+NnRjEW1t4x5q3D18UTGIoWsn7iInvwdY+QK5eKW09eHnufIPg65NXlN
+         93+rVcEUUVLYpAqm2GokUCKi2aM5pKmh+ap/0PhjqQSaXANrVUpG56asbmpijCezCFZJ
+         UPdA==
+X-Gm-Message-State: APjAAAVobpFmcfcYxeZmI6QSQJQXCYVNQekbV0TUH8pXLeMwXC/2BQ9d
+        BjwlbKVN8hjov8tPspwylsFBoEzO
+X-Google-Smtp-Source: APXvYqy+6d9nSsCUrtxlgjkzVJ6rEiEsHF3fGwNPyE3/gPS6Ynpt+hrMUAG5206+IpmK38v7+J8yeg==
+X-Received: by 2002:a37:512:: with SMTP id 18mr20712976qkf.220.1567282747667;
+        Sat, 31 Aug 2019 13:19:07 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id b192sm4187485qkg.39.2019.08.31.13.19.05
+        by smtp.gmail.com with ESMTPSA id m13sm4253883qka.92.2019.08.31.13.19.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Aug 2019 13:19:05 -0700 (PDT)
+        Sat, 31 Aug 2019 13:19:07 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
         f.fainelli@gmail.com, andrew@lunn.ch,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 08/10] net: dsa: mv88e6xxx: introduce .serdes_irq_enable
-Date:   Sat, 31 Aug 2019 16:18:34 -0400
-Message-Id: <20190831201836.19957-9-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 09/10] net: dsa: mv88e6xxx: introduce .serdes_irq_status
+Date:   Sat, 31 Aug 2019 16:18:35 -0400
+Message-Id: <20190831201836.19957-10-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20190831201836.19957-1-vivien.didelot@gmail.com>
 References: <20190831201836.19957-1-vivien.didelot@gmail.com>
@@ -63,332 +63,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a new .serdes_irq_enable operation to prepare the abstraction
-of IRQ enabling from the SERDES IRQ setup code.
+Introduce a new .serdes_irq_status operation to prepare the abstraction
+of IRQ thread from the SERDES IRQ setup code.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c   | 11 +++++
+ drivers/net/dsa/mv88e6xxx/chip.c   | 11 ++++++
  drivers/net/dsa/mv88e6xxx/chip.h   |  2 +
- drivers/net/dsa/mv88e6xxx/port.c   |  4 +-
- drivers/net/dsa/mv88e6xxx/serdes.c | 73 ++++++++++++------------------
- drivers/net/dsa/mv88e6xxx/serdes.h | 26 +++++++++--
- 5 files changed, 66 insertions(+), 50 deletions(-)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 59 +++++++++++++++++++-----------
+ drivers/net/dsa/mv88e6xxx/serdes.h | 13 +++++++
+ 4 files changed, 64 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 3522b11d5566..258174634bb2 100644
+index 258174634bb2..c2061e20bb32 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2934,6 +2934,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -2935,6 +2935,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
  	.serdes_get_lane = mv88e6341_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3184,6 +3185,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
- 	.serdes_get_lane = mv88e6352_serdes_get_lane,
+@@ -3186,6 +3187,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
  	.serdes_power = mv88e6352_serdes_power,
  	.serdes_irq_mapping = mv88e6352_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
++	.serdes_irq_status = mv88e6352_serdes_irq_status,
  	.serdes_irq_setup = mv88e6352_serdes_irq_setup,
  	.serdes_irq_free = mv88e6352_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3268,6 +3270,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3271,6 +3273,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
  	.serdes_get_lane = mv88e6390_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3316,6 +3319,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3320,6 +3323,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
  	.serdes_get_lane = mv88e6390x_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3364,6 +3368,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3369,6 +3373,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
  	.serdes_get_lane = mv88e6390_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.avb_ops = &mv88e6390_avb_ops,
-@@ -3414,6 +3419,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
- 	.serdes_get_lane = mv88e6352_serdes_get_lane,
+@@ -3420,6 +3425,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
  	.serdes_power = mv88e6352_serdes_power,
  	.serdes_irq_mapping = mv88e6352_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
++	.serdes_irq_status = mv88e6352_serdes_irq_status,
  	.serdes_irq_setup = mv88e6352_serdes_irq_setup,
  	.serdes_irq_free = mv88e6352_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3504,6 +3510,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3511,6 +3517,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
  	.serdes_get_lane = mv88e6390_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3642,6 +3649,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3650,6 +3657,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
  	.serdes_get_lane = mv88e6341_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3775,6 +3783,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.serdes_get_lane = mv88e6352_serdes_get_lane,
+@@ -3784,6 +3792,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
  	.serdes_power = mv88e6352_serdes_power,
  	.serdes_irq_mapping = mv88e6352_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6352_serdes_irq_enable,
++	.serdes_irq_status = mv88e6352_serdes_irq_status,
  	.serdes_irq_setup = mv88e6352_serdes_irq_setup,
  	.serdes_irq_free = mv88e6352_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3830,6 +3839,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3840,6 +3849,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
  	.serdes_get_lane = mv88e6390_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
-@@ -3882,6 +3892,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.serdes_power = mv88e6390_serdes_power,
+@@ -3893,6 +3903,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
  	.serdes_get_lane = mv88e6390x_serdes_get_lane,
  	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-+	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
+ 	.serdes_irq_enable = mv88e6390_serdes_irq_enable,
++	.serdes_irq_status = mv88e6390_serdes_irq_status,
  	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
  	.serdes_irq_free = mv88e6390_serdes_irq_free,
  	.gpio_ops = &mv88e6352_gpio_ops,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 724ce2bf8258..0c7b0f6053d8 100644
+index 0c7b0f6053d8..9a73fd1d643b 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -452,6 +452,8 @@ struct mv88e6xxx_ops {
- 					   int port);
- 	int (*serdes_irq_setup)(struct mv88e6xxx_chip *chip, int port);
+@@ -454,6 +454,8 @@ struct mv88e6xxx_ops {
  	void (*serdes_irq_free)(struct mv88e6xxx_chip *chip, int port);
-+	int (*serdes_irq_enable)(struct mv88e6xxx_chip *chip, int port, u8 lane,
-+				 bool enable);
+ 	int (*serdes_irq_enable)(struct mv88e6xxx_chip *chip, int port, u8 lane,
+ 				 bool enable);
++	irqreturn_t (*serdes_irq_status)(struct mv88e6xxx_chip *chip, int port,
++					 u8 lane);
  
  	/* Statistics from the SERDES interface */
  	int (*serdes_get_sset_count)(struct mv88e6xxx_chip *chip, int port);
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index df71c08eda35..04006344adb2 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -434,7 +434,7 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	lane = mv88e6xxx_serdes_get_lane(chip, port);
- 	if (lane) {
- 		if (chip->ports[port].serdes_irq) {
--			err = mv88e6390_serdes_irq_disable(chip, port, lane);
-+			err = mv88e6xxx_serdes_irq_disable(chip, port, lane);
- 			if (err)
- 				return err;
- 		}
-@@ -469,7 +469,7 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 			return err;
- 
- 		if (chip->ports[port].serdes_irq) {
--			err = mv88e6390_serdes_irq_enable(chip, port, lane);
-+			err = mv88e6xxx_serdes_irq_enable(chip, port, lane);
- 			if (err)
- 				return err;
- 		}
 diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index e3ea8cca85b0..3562ef03ae55 100644
+index 3562ef03ae55..d37419ba26ab 100644
 --- a/drivers/net/dsa/mv88e6xxx/serdes.c
 +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -226,15 +226,15 @@ static irqreturn_t mv88e6352_serdes_thread_fn(int irq, void *dev_id)
- 	return ret;
+@@ -202,25 +202,33 @@ static void mv88e6352_serdes_irq_link(struct mv88e6xxx_chip *chip, int port)
+ 	dsa_port_phylink_mac_change(ds, port, up);
  }
  
--static int mv88e6352_serdes_irq_enable(struct mv88e6xxx_chip *chip)
-+int mv88e6352_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
-+				bool enable)
+-static irqreturn_t mv88e6352_serdes_thread_fn(int irq, void *dev_id)
++irqreturn_t mv88e6352_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
++					u8 lane)
  {
--	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_INT_ENABLE,
--				      MV88E6352_SERDES_INT_LINK_CHANGE);
--}
-+	u16 val = 0;
- 
--static int mv88e6352_serdes_irq_disable(struct mv88e6xxx_chip *chip)
--{
--	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_INT_ENABLE, 0);
-+	if (enable)
-+		val |= MV88E6352_SERDES_INT_LINK_CHANGE;
-+
-+	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_INT_ENABLE, val);
- }
- 
- unsigned int mv88e6352_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
-@@ -245,9 +245,11 @@ unsigned int mv88e6352_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
- int mv88e6352_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
- {
- 	unsigned int irq;
-+	u8 lane;
+-	struct mv88e6xxx_port *port = dev_id;
+-	struct mv88e6xxx_chip *chip = port->chip;
+ 	irqreturn_t ret = IRQ_NONE;
+ 	u16 status;
  	int err;
  
--	if (!mv88e6352_port_has_serdes(chip, port))
-+	lane = mv88e6xxx_serdes_get_lane(chip, port);
-+	if (!lane)
- 		return 0;
+-	mv88e6xxx_reg_lock(chip);
+-
+ 	err = mv88e6352_serdes_read(chip, MV88E6352_SERDES_INT_STATUS, &status);
+ 	if (err)
+-		goto out;
++		return ret;
  
- 	irq = mv88e6xxx_serdes_irq_mapping(chip, port);
-@@ -272,15 +274,18 @@ int mv88e6352_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
- 		return err;
+ 	if (status & MV88E6352_SERDES_INT_LINK_CHANGE) {
+ 		ret = IRQ_HANDLED;
+-		mv88e6352_serdes_irq_link(chip, port->port);
++		mv88e6352_serdes_irq_link(chip, port);
  	}
- 
--	return mv88e6352_serdes_irq_enable(chip);
-+	return mv88e6xxx_serdes_irq_enable(chip, port, lane);
- }
- 
- void mv88e6352_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
- {
--	if (!mv88e6352_port_has_serdes(chip, port))
-+	u8 lane;
+-out:
 +
-+	lane = mv88e6xxx_serdes_get_lane(chip, port);
-+	if (!lane)
- 		return;
++	return ret;
++}
++
++static irqreturn_t mv88e6352_serdes_thread_fn(int irq, void *dev_id)
++{
++	struct mv88e6xxx_port *port = dev_id;
++	struct mv88e6xxx_chip *chip = port->chip;
++	irqreturn_t ret = IRQ_NONE;
++
++	mv88e6xxx_reg_lock(chip);
++	ret = mv88e6xxx_serdes_irq_status(chip, port->port, 0);
+ 	mv88e6xxx_reg_unlock(chip);
  
--	mv88e6352_serdes_irq_disable(chip);
-+	mv88e6xxx_serdes_irq_disable(chip, port, lane);
- 
- 	/* Freeing the IRQ will trigger irq callbacks. So we cannot
- 	 * hold the reg_lock.
-@@ -546,51 +551,31 @@ static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
+ 	return ret;
+@@ -589,21 +597,13 @@ static int mv88e6390_serdes_irq_status_sgmii(struct mv88e6xxx_chip *chip,
+ 	return err;
  }
  
- static int mv88e6390_serdes_irq_enable_sgmii(struct mv88e6xxx_chip *chip,
--					     u8 lane)
--{
--	return mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
--				      MV88E6390_SGMII_INT_ENABLE,
--				      MV88E6390_SGMII_INT_LINK_DOWN |
--				      MV88E6390_SGMII_INT_LINK_UP);
--}
--
--static int mv88e6390_serdes_irq_disable_sgmii(struct mv88e6xxx_chip *chip,
--					      u8 lane)
-+					     u8 lane, bool enable)
+-static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
++irqreturn_t mv88e6390_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
++					u8 lane)
  {
--	return mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
--				      MV88E6390_SGMII_INT_ENABLE, 0);
--}
-+	u16 val = 0;
- 
--int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port,
--				u8 lane)
--{
--	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
-+	if (enable)
-+		val |= MV88E6390_SGMII_INT_LINK_DOWN |
-+			MV88E6390_SGMII_INT_LINK_UP;
- 
--	switch (cmode) {
--	case MV88E6XXX_PORT_STS_CMODE_SGMII:
--	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
--	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
--		err = mv88e6390_serdes_irq_enable_sgmii(chip, lane);
--	}
+-	struct mv88e6xxx_port *port = dev_id;
+-	struct mv88e6xxx_chip *chip = port->chip;
++	u8 cmode = chip->ports[port].cmode;
+ 	irqreturn_t ret = IRQ_NONE;
+-	u8 cmode = port->cmode;
+ 	u16 status;
+ 	int err;
+-	u8 lane;
 -
--	return err;
-+	return mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
-+				      MV88E6390_SGMII_INT_ENABLE, val);
- }
- 
--int mv88e6390_serdes_irq_disable(struct mv88e6xxx_chip *chip, int port,
--				 u8 lane)
-+int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
-+				bool enable)
- {
- 	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
+-	mv88e6xxx_reg_lock(chip);
+-
+-	lane = mv88e6xxx_serdes_get_lane(chip, port->port);
+-	if (!lane)
+-		goto out;
  
  	switch (cmode) {
  	case MV88E6XXX_PORT_STS_CMODE_SGMII:
- 	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+@@ -611,13 +611,30 @@ static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
  	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
--		err = mv88e6390_serdes_irq_disable_sgmii(chip, lane);
-+		return mv88e6390_serdes_irq_enable_sgmii(chip, lane, enable);
+ 		err = mv88e6390_serdes_irq_status_sgmii(chip, lane, &status);
+ 		if (err)
+-			goto out;
++			return ret;
+ 		if (status & (MV88E6390_SGMII_INT_LINK_DOWN |
+ 			      MV88E6390_SGMII_INT_LINK_UP)) {
+ 			ret = IRQ_HANDLED;
+-			mv88e6390_serdes_irq_link_sgmii(chip, port->port, lane);
++			mv88e6390_serdes_irq_link_sgmii(chip, port, lane);
+ 		}
  	}
++
++	return ret;
++}
++
++static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
++{
++	struct mv88e6xxx_port *port = dev_id;
++	struct mv88e6xxx_chip *chip = port->chip;
++	irqreturn_t ret = IRQ_NONE;
++	u8 lane;
++
++	mv88e6xxx_reg_lock(chip);
++	lane = mv88e6xxx_serdes_get_lane(chip, port->port);
++	if (!lane)
++		goto out;
++
++	ret = mv88e6xxx_serdes_irq_status(chip, port->port, lane);
+ out:
+ 	mv88e6xxx_reg_unlock(chip);
  
--	return err;
-+	return 0;
- }
- 
- static int mv88e6390_serdes_irq_status_sgmii(struct mv88e6xxx_chip *chip,
-@@ -676,7 +661,7 @@ int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
- 		return err;
- 	}
- 
--	return mv88e6390_serdes_irq_enable(chip, port, lane);
-+	return mv88e6xxx_serdes_irq_enable(chip, port, lane);
- }
- 
- void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
-@@ -687,7 +672,7 @@ void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
- 	if (!lane)
- 		return;
- 
--	mv88e6390_serdes_irq_disable(chip, port, lane);
-+	mv88e6xxx_serdes_irq_disable(chip, port, lane);
- 
- 	/* Freeing the IRQ will trigger irq callbacks. So we cannot
- 	 * hold the reg_lock.
 diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index c70023f57090..e2d38b5d4222 100644
+index e2d38b5d4222..52f937347a36 100644
 --- a/drivers/net/dsa/mv88e6xxx/serdes.h
 +++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -88,15 +88,15 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, u8 lane,
- 			   bool on);
- int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port);
- void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port);
-+int mv88e6352_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
-+				bool enable);
-+int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
-+				bool enable);
+@@ -92,6 +92,10 @@ int mv88e6352_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
+ 				bool enable);
+ int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port, u8 lane,
+ 				bool enable);
++irqreturn_t mv88e6352_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
++					u8 lane);
++irqreturn_t mv88e6390_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
++					u8 lane);
  int mv88e6352_serdes_get_sset_count(struct mv88e6xxx_chip *chip, int port);
  int mv88e6352_serdes_get_strings(struct mv88e6xxx_chip *chip,
  				 int port, uint8_t *data);
- int mv88e6352_serdes_get_stats(struct mv88e6xxx_chip *chip, int port,
- 			       uint64_t *data);
--int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port,
--				u8 lane);
--int mv88e6390_serdes_irq_disable(struct mv88e6xxx_chip *chip, int port,
--				 u8 lane);
- int mv88e6352_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port);
- void mv88e6352_serdes_irq_free(struct mv88e6xxx_chip *chip, int port);
- 
-@@ -137,4 +137,22 @@ mv88e6xxx_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
- 	return chip->info->ops->serdes_irq_mapping(chip, port);
+@@ -155,4 +159,13 @@ static inline int mv88e6xxx_serdes_irq_disable(struct mv88e6xxx_chip *chip,
+ 	return chip->info->ops->serdes_irq_enable(chip, port, lane, false);
  }
  
-+static inline int mv88e6xxx_serdes_irq_enable(struct mv88e6xxx_chip *chip,
-+					      int port, u8 lane)
++static inline irqreturn_t
++mv88e6xxx_serdes_irq_status(struct mv88e6xxx_chip *chip, int port, u8 lane)
 +{
-+	if (!chip->info->ops->serdes_irq_enable)
-+		return -EOPNOTSUPP;
++	if (!chip->info->ops->serdes_irq_status)
++		return IRQ_NONE;
 +
-+	return chip->info->ops->serdes_irq_enable(chip, port, lane, true);
-+}
-+
-+static inline int mv88e6xxx_serdes_irq_disable(struct mv88e6xxx_chip *chip,
-+					       int port, u8 lane)
-+{
-+	if (!chip->info->ops->serdes_irq_enable)
-+		return -EOPNOTSUPP;
-+
-+	return chip->info->ops->serdes_irq_enable(chip, port, lane, false);
++	return chip->info->ops->serdes_irq_status(chip, port, lane);
 +}
 +
  #endif
