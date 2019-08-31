@@ -2,162 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AC2A4574
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 18:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6780CA457A
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 18:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbfHaQqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 12:46:55 -0400
-Received: from mout.web.de ([212.227.15.4]:38549 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727615AbfHaQqy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 31 Aug 2019 12:46:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1567269960;
-        bh=rm6OZE6ljUkECvv5QtQiOpGwZf85BXps+g793IIacr0=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=raKOvxSuxO0ebILYdQV2cnRxgQxF5DOMKENqU7Tu0URpWhrx2Wgn6EGvCUWUE041l
-         a9ajp1/qpuIRW7B0Ni1CM1JTTrRWmXocwzvr1oOeJEZ3nAsw/6TL/cinypKHTE1x6V
-         qCJqgU8IP8zqAwr2C+rwrI7oh7fttPRcs/w5qn3w=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.129.60]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MZDQ4-1hlThL3GXc-00KuZW; Sat, 31
- Aug 2019 18:46:00 +0200
-Subject: Re: [PATCH v3 01/11] checkpatch: check for nested (un)?likely() calls
-To:     Denis Efremov <efremov@linux.com>, Joe Perches <joe@perches.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        dri-devel@lists.freedesktop.org,
-        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, linux-rdma@vger.kernel.org,
-        linux-wimax@intel.com, linux-xfs@vger.kernel.org,
-        Mike Marciniszyn <mike.marciniszyn@intel.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali.rohar@gmail.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sean Paul <sean@poorly.run>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        xen-devel@lists.xenproject.org, Enrico Weigelt <lkml@metux.net>
-References: <20190829165025.15750-1-efremov@linux.com>
- <0d9345ed-f16a-de0b-6125-1f663765eb46@web.de>
- <689c8baf-2298-f086-3461-5cd1cdd191c6@linux.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <493a7377-2de9-1d44-cd8f-c658793d15db@web.de>
-Date:   Sat, 31 Aug 2019 18:45:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
+        id S1728331AbfHaQyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 12:54:53 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34456 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727905AbfHaQyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 12:54:53 -0400
+Received: by mail-ed1-f68.google.com with SMTP id s49so11608652edb.1
+        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 09:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=49o/9wKz1A3MUoxgATWz1MeNSvLEOCbfU8HYLSAJphs=;
+        b=aKWR5t4gW8q3hnStOjwYuhUUqcE9zcmwKz4b+CG2x5TD9NWNCzh+Y0iJcBqEHDgQ33
+         BSKDSNzJhAINT7HiHfOgsLs7Ifm6MTf68kzQHbqtySV8eC2fNLF9UlU0g8a8OermiFIM
+         B32jWXe3zUfpTnok3i86Xb5nh9VOH7FoekpnlDWMKrB/DxazzKXzVy1Y+jenNuQxxbrx
+         pGjfFXZYMNk4g+ASiZRoIHJV7trT+yIvtQ8/XMq1KDV5d2CmDPEBaPLyPu4eOXWjDXrE
+         jevu0WNKtAOY3mBYxBsTOCOggD+nOHGs/63hh5+md4pP9XvYWEgmBNao998A+naBsrpH
+         8ZZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=49o/9wKz1A3MUoxgATWz1MeNSvLEOCbfU8HYLSAJphs=;
+        b=DqCcwU3L58qKN1cE5spp3iW+SxGItSvJ5250UfGEOAM0eZ9pgP1cJKBHORaZFVi76F
+         xq36X5s61qBTN2kWG48fAXLYei3R51smv0qZAPf0TWACnxr2pLMoZcT3Jzcm4RPYjf8J
+         uREI5vPcftj/EGh5DJJN16/NUR+XfwQ0hMjhLT2nBdp57fqbVwr6La+4fDb+h6Fl7870
+         KNMt4Shc/F2mUvNO1MXDq3/2CIfmoFUehwJ/I56D7n/zd/pjtV14nRp6jaq85pgJkk2q
+         FYM09FO5rD+xGFkpVBYZDXSLsPshrQJxDxZdt381yARAxGSBKtwBVjYSo9KxSfeWI9Wy
+         41Rw==
+X-Gm-Message-State: APjAAAUCCxATamXP6gPKwZsVY0BjTUs2w9CK2JC0bhtQnLcnIZYYYf8m
+        6N5A3SkJXGEQvi2sn3F0HX+npxuRDi1neWyXHRY=
+X-Google-Smtp-Source: APXvYqx5X0TH6p0R3E7yqytLNsz07LDeZZ6weo/kiXY0PuGWtSEP+8nITTcYDiSXNvft2vlzmH4fsnAbHRgNMfiMFow=
+X-Received: by 2002:a17:906:d298:: with SMTP id ay24mr18138895ejb.230.1567270490866;
+ Sat, 31 Aug 2019 09:54:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <689c8baf-2298-f086-3461-5cd1cdd191c6@linux.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1L+cCQO3edmOUlVMXKxVQgZQYa4LR/jTtaG/k7hY0jvFzGA9G9q
- HWi19KhhK9a1vfzvVYuIZawQquCygt1hO4oC97DaXB2ZpgVEbfkC8llW/u0M6xN9a3X8B9I
- msvOrseLQDgMS/NsyS+xIVvd3tQVj5U9trfr++c3L1f40GywlStbhlVWFhc08RKBS9HMKBY
- 58JLvN2HaG49gVs5HlMVw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VhEuvvzylo4=:3p6CN3+YeibT+QHrA0rJE8
- jXp3wri957zlevWfHS/c+PS52+oWo953j5HMygod2ge3Y7CGMlcqgLO0MPO5RRIg7uUvPXVFM
- 379jZoUE5kueE12x3p4ssfNT8Fm40bbR+jTrCXJDStbDnLTby7FA7IxOhxfbUc637M9qsaozq
- FmM4+uZQ2lWEx+yu1wkEvI0kfMzEVrn5/vt7skK0+PeaH225xYdHu2LK2rf5RqoWu8WPSqfa2
- wEeJbNm8BfqiB2vL6LEdRAXX8gyfoGnPJ5Qm1q41RgQV7RCNhtrZo+EHZA/vPMHB6Eq0ecXBj
- LGuKKm+/SpFz1PzRYXO1QqR52QDdP4Cu35XBi2NP6Q844cSgBnw6RrzV/jW0EqOsVfU8z0Z5V
- Sf3HRXof4ewon2caaE3aiSGdgbw5wQYBJLK3QUfnmJWr0InQHtd8qQQe1T3c/qgrcB5ABDIrf
- GZy/9DqV5riGpZEJ9cZ+iM6InqL4SAVfUB2hhg7nwp5xXpCtIN6SuBm0bDDsPQDX2sfwE8guW
- 0GyYcU2kOIqReqB2C0Hwlmv14+88GNDb2jQDqHdJjupiEI2Yz8Y3NjOW79mU0lD3Gk/L2fBCd
- zb4qLY9yzm9g3uA1hQGeawT+B57gkJxHc+dfi8XXQp0jia5L+4/ZX35Lh+NHzVpgMBPseOtPI
- /b/7AjeuTqZjq6tgNw8XpGjxQfSbObCUwWsAOPecaBheHriMYnCL6tGDaK+JYLOiqgcxR0vQ+
- nMb69XF1HSE0FedQzM+J9aJpESm4upQtZxDAZcnJTKGdT48hXsDzreMgJjovpa3ZlK2YhNZCt
- F1/HcTS8HDlnTxXJdzEMH7hHp7sAgT+KRAjvQ/md1wG4SHa4TzLWt4D/7V/nWZdX5z5JASkG8
- RCC4i5tjqfEYUw5MSfN0VC4DMobYPN10nDg1RLFcy5AMm6VQm4DlXjKh649CAl2sqLMbyQJ4p
- F2eVxN3UAlmeBgE0m9VQrV5QnQAQS5sRx/RrkYqe89C+NJXtR0us8uxiM5bm91xW6/0XsqPOF
- SMz5D3ZDmyQbEtiW0w/3QmZRRq3m/3ThmGL6SL9syddVXqxfGKKP7+e0OVOsM/Bwb3dBknXVi
- 3zKeeIsDo25gEweJ/VGnfXPS3N4kmuIMK4I3EA6n2MlCUwXo4Sj7301iqCInTCS8lIWlrORY3
- 5vagzkLNsyXxrogrmB742zfdWZxWbG0lAmOIS9Xm7sNu3ydg==
+References: <20190831124619.460-1-olteanv@gmail.com> <20190831121958.GC12031@t480s.localdomain>
+In-Reply-To: <20190831121958.GC12031@t480s.localdomain>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 31 Aug 2019 19:54:40 +0300
+Message-ID: <CA+h21hoKcg3UUNkYRyEw8FS0q_vxdmoQL90BaOuKoW074DYYow@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: Fix off-by-one number of calls to devlink_port_unregister
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->>> +# nested likely/unlikely calls
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if ($line =3D~ /\b(?:(?:un=
-)?likely)\s*\(\s*!?\s*(IS_ERR(?:_OR_NULL|_VALUE)?|WARN)/) {
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 WA=
-RN("LIKELY_MISUSE",
->>
->> How do you think about to use the specification =E2=80=9C(?:IS_ERR(?:_(=
-?:OR_NULL|VALUE))?|WARN)=E2=80=9D
->> in this regular expression?
-=E2=80=A6
->    IS_ERR
->    (?:_ <- Another atomic group just to show that '_' is a common prefix=
-?
+Hi Vivien,
 
-Yes. - I hope that this specification detail can help a bit.
+On Sat, 31 Aug 2019 at 19:20, Vivien Didelot <vivien.didelot@gmail.com> wrote:
+>
+> Hi Vladimir,
+>
+> On Sat, 31 Aug 2019 15:46:19 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > When a function such as dsa_slave_create fails, currently the following
+> > stack trace can be seen:
+> >
+> > [    2.038342] sja1105 spi0.1: Probed switch chip: SJA1105T
+> > [    2.054556] sja1105 spi0.1: Reset switch and programmed static config
+> > [    2.063837] sja1105 spi0.1: Enabled switch tagging
+> > [    2.068706] fsl-gianfar soc:ethernet@2d90000 eth2: error -19 setting up slave phy
+> > [    2.076371] ------------[ cut here ]------------
+> > [    2.080973] WARNING: CPU: 1 PID: 21 at net/core/devlink.c:6184 devlink_free+0x1b4/0x1c0
+> > [    2.088954] Modules linked in:
+> > [    2.092005] CPU: 1 PID: 21 Comm: kworker/1:1 Not tainted 5.3.0-rc6-01360-g41b52e38d2b6-dirty #1746
+> > [    2.100912] Hardware name: Freescale LS1021A
+> > [    2.105162] Workqueue: events deferred_probe_work_func
+> > [    2.110287] [<c03133a4>] (unwind_backtrace) from [<c030d8cc>] (show_stack+0x10/0x14)
+> > [    2.117992] [<c030d8cc>] (show_stack) from [<c10b08d8>] (dump_stack+0xb4/0xc8)
+> > [    2.125180] [<c10b08d8>] (dump_stack) from [<c0349d04>] (__warn+0xe0/0xf8)
+> > [    2.132018] [<c0349d04>] (__warn) from [<c0349e34>] (warn_slowpath_null+0x40/0x48)
+> > [    2.139549] [<c0349e34>] (warn_slowpath_null) from [<c0f19d74>] (devlink_free+0x1b4/0x1c0)
+> > [    2.147772] [<c0f19d74>] (devlink_free) from [<c1064fc0>] (dsa_switch_teardown+0x60/0x6c)
+> > [    2.155907] [<c1064fc0>] (dsa_switch_teardown) from [<c1065950>] (dsa_register_switch+0x8e4/0xaa8)
+> > [    2.164821] [<c1065950>] (dsa_register_switch) from [<c0ba7fe4>] (sja1105_probe+0x21c/0x2ec)
+> > [    2.173216] [<c0ba7fe4>] (sja1105_probe) from [<c0b35948>] (spi_drv_probe+0x80/0xa4)
+> > [    2.180920] [<c0b35948>] (spi_drv_probe) from [<c0a4c1cc>] (really_probe+0x108/0x400)
+> > [    2.188711] [<c0a4c1cc>] (really_probe) from [<c0a4c694>] (driver_probe_device+0x78/0x1bc)
+> > [    2.196933] [<c0a4c694>] (driver_probe_device) from [<c0a4a3dc>] (bus_for_each_drv+0x58/0xb8)
+> > [    2.205414] [<c0a4a3dc>] (bus_for_each_drv) from [<c0a4c024>] (__device_attach+0xd0/0x168)
+> > [    2.213637] [<c0a4c024>] (__device_attach) from [<c0a4b1d0>] (bus_probe_device+0x84/0x8c)
+> > [    2.221772] [<c0a4b1d0>] (bus_probe_device) from [<c0a4b72c>] (deferred_probe_work_func+0x84/0xc4)
+> > [    2.230686] [<c0a4b72c>] (deferred_probe_work_func) from [<c03650a4>] (process_one_work+0x218/0x510)
+> > [    2.239772] [<c03650a4>] (process_one_work) from [<c03660d8>] (worker_thread+0x2a8/0x5c0)
+> > [    2.247908] [<c03660d8>] (worker_thread) from [<c036b348>] (kthread+0x148/0x150)
+> > [    2.255265] [<c036b348>] (kthread) from [<c03010e8>] (ret_from_fork+0x14/0x2c)
+> > [    2.262444] Exception stack(0xea965fb0 to 0xea965ff8)
+> > [    2.267466] 5fa0:                                     00000000 00000000 00000000 00000000
+> > [    2.275598] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> > [    2.283729] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> > [    2.290333] ---[ end trace ca5d506728a0581a ]---
+> >
+> > devlink_free is complaining right here:
+> >
+> >       WARN_ON(!list_empty(&devlink->port_list));
+> >
+> > This happens because devlink_port_unregister is no longer done right
+> > away in dsa_port_setup when a DSA_PORT_TYPE_USER has failed.
+> > Vivien said about this change that:
+> >
+> >     Also no need to call devlink_port_unregister from within dsa_port_setup
+> >     as this step is inconditionally handled by dsa_port_teardown on error.
+> >
+> > which is not really true. The devlink_port_unregister function _is_
+> > being called unconditionally from within dsa_port_setup, but not for
+>
+> Not from within dsa_port_setup, but from its caller dsa_tree_setup_switches.
+>
+> > this port that just failed, just for the previous ones which were set
+> > up.
+> >
+> > ports_teardown:
+> >       for (i = 0; i < port; i++)
+> >               dsa_port_teardown(&ds->ports[i]);
+> >
+> > Initially I was tempted to fix this by extending the "for" loop to also
+> > cover the port that failed during setup. But this could have potentially
+> > unforeseen consequences unrelated to devlink_port or even other types of
+> > ports than user ports, which I can't really test for. For example, if
+> > for some reason devlink_port_register itself would fail, then
+> > unconditionally unregistering it in dsa_port_teardown would not be a
+> > smart idea. The list might go on.
+> >
+> > So just make dsa_port_setup undo the setup it had done upon failure, and
+> > let the for loop undo the work of setting up the previous ports, which
+> > are guaranteed to be brought up to a consistent state.
+> >
+> > Fixes: 955222ca5281 ("net: dsa: use a single switch statement for port setup")
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> > ---
+> >  net/dsa/dsa2.c | 39 +++++++++++++++++++++++++++++----------
+> >  1 file changed, 29 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> > index f8445fa73448..b501c90aabe4 100644
+> > --- a/net/dsa/dsa2.c
+> > +++ b/net/dsa/dsa2.c
+> > @@ -259,8 +259,11 @@ static int dsa_port_setup(struct dsa_port *dp)
+> >       const unsigned char *id = (const unsigned char *)&dst->index;
+> >       const unsigned char len = sizeof(dst->index);
+> >       struct devlink_port *dlp = &dp->devlink_port;
+> > +     bool dsa_port_link_registered = false;
+> > +     bool devlink_port_registered = false;
+> >       struct devlink *dl = ds->devlink;
+> > -     int err;
+> > +     bool dsa_port_enabled = false;
+> > +     int err = 0;
+> >
+> >       switch (dp->type) {
+> >       case DSA_PORT_TYPE_UNUSED:
+> > @@ -272,15 +275,19 @@ static int dsa_port_setup(struct dsa_port *dp)
+> >                                      dp->index, false, 0, id, len);
+> >               err = devlink_port_register(dl, dlp, dp->index);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             devlink_port_registered = true;
+> >
+> >               err = dsa_port_link_register_of(dp);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             dsa_port_link_registered = true;
+> >
+> >               err = dsa_port_enable(dp, NULL);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             dsa_port_enabled = true;
+> > +
+> >               break;
+> >       case DSA_PORT_TYPE_DSA:
+> >               memset(dlp, 0, sizeof(*dlp));
+> > @@ -288,15 +295,19 @@ static int dsa_port_setup(struct dsa_port *dp)
+> >                                      dp->index, false, 0, id, len);
+> >               err = devlink_port_register(dl, dlp, dp->index);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             devlink_port_registered = true;
+> >
+> >               err = dsa_port_link_register_of(dp);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             dsa_port_link_registered = true;
+> >
+> >               err = dsa_port_enable(dp, NULL);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             dsa_port_enabled = true;
+> > +
+> >               break;
+> >       case DSA_PORT_TYPE_USER:
+> >               memset(dlp, 0, sizeof(*dlp));
+> > @@ -304,18 +315,26 @@ static int dsa_port_setup(struct dsa_port *dp)
+> >                                      dp->index, false, 0, id, len);
+> >               err = devlink_port_register(dl, dlp, dp->index);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> > +             devlink_port_registered = true;
+> >
+> >               dp->mac = of_get_mac_address(dp->dn);
+> >               err = dsa_slave_create(dp);
+> >               if (err)
+> > -                     return err;
+> > +                     break;
+> >
+> >               devlink_port_type_eth_set(dlp, dp->slave);
+> >               break;
+> >       }
+> >
+> > -     return 0;
+> > +     if (err && dsa_port_enabled)
+> > +             dsa_port_disable(dp);
+> > +     if (err && dsa_port_link_registered)
+> > +             dsa_port_link_unregister_of(dp);
+> > +     if (err && devlink_port_registered)
+> > +             devlink_port_unregister(dlp);
+> > +
+> > +     return err;
+> >  }
+>
+> No no, I'm pretty sure you can tell this is going to be a nightmare to
+> maintain these boolean states for all port types ;-)
+>
+> And this is not a proper fix for the problem you've spotted. The problem
+> you've spotted is that devlink_port_unregister isn't called for the current
+> port if its setup failed, because dsa_port_teardown -- which is supposed to
+> be called unconditionally on error -- isn't called for the current port. Your
+> first attempt was correct, simply fix the loop in dsa_tree_setup_switches
+> to include the current port:
+>
 
+Fine, I had not noticed the "registered" field from devlink_port.
+But I fail to see how dsa_port_teardown can be entered in the generic
+case from whatever failure state dsa_port_setup left it in. What if
+it's a DSA_PORT_TYPE_CPU whose devlink_port_register failed. What will
+happen to the PHYLINK instance behind dsa_port_link_register_of (not
+to mention about data that the driver might be allocating in
+dsa_port_enable and expecting a matching disable so it won't leak)?
+And that doesn't mean the fix isn't "proper". It may be "supposed" to
+be called unconditionally on error, but right now it isn't, so I doubt
+anybody has tested that, and that there aren't corner cases. Just
+playing the safe side.
 
->            Usually, Perl interpreter is very good at optimizing such thi=
-ngs.
+>
+>      ports_teardown:
+>     -       for (i = 0; i < port; i++)
+>     +       for (i = 0; i <= port; i++)
+>
+>
+> As for devlink_port_unregister, most kernel APIs unregistering objects are
+> self protected, so I'm tempted to propose the following patch for devlink:
+>
+>
+>     diff --git a/net/core/devlink.c b/net/core/devlink.c
+>     index 650f36379203..ab95607800d6 100644
+>     --- a/net/core/devlink.c
+>     +++ b/net/core/devlink.c
+>     @@ -6264,6 +6264,8 @@ void devlink_port_unregister(struct devlink_port *devlink_port)
+>      {
+>             struct devlink *devlink = devlink_port->devlink;
+>
+>     +       if (!devlink_port->registered)
+>     +               return;
+>             devlink_port_type_warn_cancel(devlink_port);
+>             devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
+>             mutex_lock(&devlink->lock);
+>
+>
+> Otherwise we can protect the devlink port unregistering ourselves with:
+>
+>
+>     if (dlp->registered)
+>         devlink_port_unregister(dlp);
+>
+>
+> BTW that is the subtlety between "unregister" which considers that the object
+> _may_ have been registered, and "deregister" which assumes the object _was_
 
-Would you like to help this software component by omitting a pair of
-non-capturing parentheses at the beginning?
+That concept is not familiar to me. Actually I grepped the DSA API for
+"unregister" and found:
 
-\b(?:un)?likely\s*
+static void dsa_tag_driver_unregister(struct dsa_tag_driver *dsa_tag_driver)
+{
+    mutex_lock(&dsa_tag_drivers_lock);
+    list_del(&dsa_tag_driver->list);
+    mutex_unlock(&dsa_tag_drivers_lock);
+}
 
+which looks pretty unconditional to me?
+
+> registered. Would you like to go ahead and propose the devlink patch?
+>
+
+Nope, I don't really know what I'm getting myself into :) If you want
+to send it, I will consider it during v2.
+
+>
+> Thanks for pointing this out,
+>
+>         Vivien
 
 Regards,
-Markus
+-Vladimir
