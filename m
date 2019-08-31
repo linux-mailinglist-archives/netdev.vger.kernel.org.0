@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BB52A461A
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 22:18:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4A9A461B
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 22:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728542AbfHaUS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 16:18:56 -0400
-Received: from mail-qk1-f176.google.com ([209.85.222.176]:42275 "EHLO
-        mail-qk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728481AbfHaUS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 16:18:56 -0400
-Received: by mail-qk1-f176.google.com with SMTP id f13so9169377qkm.9
-        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 13:18:55 -0700 (PDT)
+        id S1728548AbfHaUS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 16:18:58 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38229 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728481AbfHaUS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 16:18:58 -0400
+Received: by mail-qt1-f194.google.com with SMTP id b2so8014479qtq.5
+        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 13:18:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sj0D+eFn0rU86Ldnw9O27QT2ilcPXxYK+5EkTvk6Ao0=;
-        b=E1hPRZYn/INBiEKvKDs+DV7//GTuJAffdaK8hxyrwK21EK0/cPHmXpQZ976PeUNyNF
-         EaaNTbjFjc1YwktLYR+0NboUNbtLJnCJVK6rew+GyIwlwQz2eB0Mr//2dL2asbZ1IShx
-         DhRy8i0Z+beEavXMS1A3Up49m1fEYSrQ3WiLlzvL/wlb+kdjPXIKGr2JtzQTeRdDcegI
-         hliFMqiYskezh6iEtJuepQiom3zPJY61+5JYryMTNo+YrPGRYajgRTMm/3+U1xUNjiC5
-         fRlkouCWL63c1s7F5VOfVTslu0V5n69KMlDLUpnsB0jw8kBTERnvWQkxUKi9WmLcuUi0
-         BMxA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0OiSUird0vFe04TtU5pLNCnwi61Em2M+3v4sHmWrThc=;
+        b=NJrJndzO8L+5fIDAZeM3zaK2LjQ/xAiJYyEzLlJudfMg2SQa6QpdXEewuVt/NMF7NF
+         mEm8QUkaB6vsLxQcv38e4yMnhvaHqTyOK7YTYF5P/g2RNQhxH9fM5mw5/q6xETjMgZsF
+         O9QlZnUhKKElheUwMoaChdaesv0CsnErpH1DZAMU/biG2ALq9Y5r2Lhpa9PQ/DAe7ja7
+         Oq3QCzAR376ZTP6gpEe0fsLe7zpNIapA9iZkHyCQsaoHQCzzReQ/yEwNNfqMHyOu+aIP
+         orBQQGB0BHbt7ohi9HKzZsXMpilOfO8Vzkx128b6U3ogDmvtLog2+x29cDkU5ZeQSBjR
+         hKJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sj0D+eFn0rU86Ldnw9O27QT2ilcPXxYK+5EkTvk6Ao0=;
-        b=LqB/lc4WOdgkuoYSZh3YUKU1fgzb7w4cYzaSXCjrONzx6gEBeWN8zqNyPFDm6Ytjli
-         wERdG58y6rre6Ufl/z7eONovg/Nv8BiuzAwQ93kUUXIn+Ol7BwMFn6t7lXpV3+1gEDJq
-         /fQIfDMMjOhYVgMZcpH6g7pdbfGwSPAp5/26wlY0T588gz7eBgwT986oz6eRL1H4Ke3W
-         03VNkq7Gf/LV/lLVPM5w91wTjzN0b48QgOu7hvbBM0IQytVfJC4HxgyOR0BKj0jvfLHm
-         mYejYmiRliFGveocDKIm4O+CKgGWlMvfVIPiPH2zHg+moOvdEY5U90DHkAAEvrawVAJq
-         7HNw==
-X-Gm-Message-State: APjAAAW/27Rsip889F3OcaOp48d4jChycRCTOUY00Hau/YLRhFC9hX6d
-        ncwjCdO93Vf83hPbEzHkN4NFjHs1
-X-Google-Smtp-Source: APXvYqw1YW16KPBD4fSX4YADragnHG6JFPkgaYZKKG1ItU8yXUyhKpkzoiQTB4Nv+oxyN4uj5EICgg==
-X-Received: by 2002:a37:4d90:: with SMTP id a138mr21642093qkb.128.1567282735040;
-        Sat, 31 Aug 2019 13:18:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0OiSUird0vFe04TtU5pLNCnwi61Em2M+3v4sHmWrThc=;
+        b=WxeZ8X7ZIoi/kWFUTL4uMgLb/+1zVw6+2HXOJVKRMdyZQnG3C41JvAqXjwrZKA7kaG
+         kjCgSvPDjnNLSgLNzCWgefSWUYQkyrIWQobmQECEdB0s8ZJALWmj/c7w/N11GFonGPwu
+         CT39kunIejDklb6gZTWMqYCvQQqQ6D4JwqGWv2CYVgKpxOHffLEAsWVJF3Tx9ynfaeVH
+         fCWyl24/Pz2x7UskcTJAw777ehFdrFmRcRO+06LliZk/EoWHPB2Ba3+BG5Oldy+L+apg
+         CoX3X5o25YlrFVENfwaEx0of8RdsKplNIRObhtUZwlxnFOCqIkP+GLAC+XSbHPu8n+oG
+         wOwg==
+X-Gm-Message-State: APjAAAUn9Se+RbdzAHdBXY/s057dmNtVKDYOdxiusS2Ug1UFGLcC4IWb
+        RRyY29rvyJNEOjlfHaA1YCb8kz1p
+X-Google-Smtp-Source: APXvYqxpenul8S61t34InFqr/yBcPSujHhuyDjmonS8BgIsxXNBSmG1J6rqrXD8jlFKTk9wcYR/r3A==
+X-Received: by 2002:ac8:750e:: with SMTP id u14mr21833332qtq.282.1567282736887;
+        Sat, 31 Aug 2019 13:18:56 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c64sm2370385qkb.21.2019.08.31.13.18.53
+        by smtp.gmail.com with ESMTPSA id w34sm2128883qth.84.2019.08.31.13.18.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Aug 2019 13:18:54 -0700 (PDT)
+        Sat, 31 Aug 2019 13:18:56 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
         f.fainelli@gmail.com, andrew@lunn.ch,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 00/10] net: dsa: mv88e6xxx: centralize SERDES IRQ handling
-Date:   Sat, 31 Aug 2019 16:18:26 -0400
-Message-Id: <20190831201836.19957-1-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 01/10] net: dsa: mv88e6xxx: check errors in mv88e6352_serdes_irq_link
+Date:   Sat, 31 Aug 2019 16:18:27 -0400
+Message-Id: <20190831201836.19957-2-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20190831201836.19957-1-vivien.didelot@gmail.com>
+References: <20190831201836.19957-1-vivien.didelot@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -61,33 +63,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following Marek's work on the abstraction of the SERDES lanes mapping, this
-series trades the .serdes_irq_setup and .serdes_irq_free callbacks for new
-.serdes_irq_mapping, .serdes_irq_enable and .serdes_irq_status operations.
+The mv88e6352_serdes_irq_link helper is not checking for any error that
+may occur during hardware accesses. Worst, the "up" boolean is set from
+the potentially unused "status" variable, if read operations failed.
 
-This has the benefit to limit the various SERDES implementations to simple
-register accesses only; centralize the IRQ handling and mutex locking logic;
-as well as reducing boilerplate in the driver.
+As done in mv88e6390_serdes_irq_link_sgmii, return right away and do
+not call dsa_port_phylink_mac_change if an error occurred.
 
-Vivien Didelot (10):
-  net: dsa: mv88e6xxx: check errors in mv88e6352_serdes_irq_link
-  net: dsa: mv88e6xxx: fix SERDES IRQ mapping
-  net: dsa: mv88e6xxx: introduce .serdes_irq_mapping
-  net: dsa: mv88e6xxx: simplify .serdes_get_lane
-  net: dsa: mv88e6xxx: implement mv88e6352_serdes_get_lane
-  net: dsa: mv88e6xxx: merge mv88e6352_serdes_power_set
-  net: dsa: mv88e6xxx: pass lane to .serdes_power
-  net: dsa: mv88e6xxx: introduce .serdes_irq_enable
-  net: dsa: mv88e6xxx: introduce .serdes_irq_status
-  net: dsa: mv88e6xxx: centralize SERDES IRQ handling
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
- drivers/net/dsa/mv88e6xxx/chip.c   | 141 ++++++++---
- drivers/net/dsa/mv88e6xxx/chip.h   |  15 +-
- drivers/net/dsa/mv88e6xxx/port.c   |  21 +-
- drivers/net/dsa/mv88e6xxx/serdes.c | 382 ++++++++---------------------
- drivers/net/dsa/mv88e6xxx/serdes.h | 107 ++++++--
- 5 files changed, 315 insertions(+), 351 deletions(-)
-
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 38c0da2492c0..7eb7ed68c91d 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -186,14 +186,19 @@ static void mv88e6352_serdes_irq_link(struct mv88e6xxx_chip *chip, int port)
+ 	struct dsa_switch *ds = chip->ds;
+ 	u16 status;
+ 	bool up;
++	int err;
+ 
+-	mv88e6352_serdes_read(chip, MII_BMSR, &status);
++	err = mv88e6352_serdes_read(chip, MII_BMSR, &status);
++	if (err)
++		return;
+ 
+ 	/* Status must be read twice in order to give the current link
+ 	 * status. Otherwise the change in link status since the last
+ 	 * read of the register is returned.
+ 	 */
+-	mv88e6352_serdes_read(chip, MII_BMSR, &status);
++	err = mv88e6352_serdes_read(chip, MII_BMSR, &status);
++	if (err)
++		return;
+ 
+ 	up = status & BMSR_LSTATUS;
+ 
 -- 
 2.23.0
 
