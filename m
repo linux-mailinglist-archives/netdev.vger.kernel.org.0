@@ -2,139 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B120A412D
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 01:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A26A4155
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 02:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbfH3X5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 19:57:45 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34969 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728242AbfH3X5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 19:57:45 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n4so4303019pgv.2
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 16:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=vbfHQCbQOz6pXaMD1WdGmyVXpNXS38xujbQ+/0JQkQM=;
-        b=WMKWfiuBvH5lMjSQEzDAk5wOOd4aGxdQtY+6NmQT/fB9RTqFr/PPXO+mUlgKs6w35v
-         Cs9VGi6+VIsh2t02t6igMIdjhFRA0w0GFE6t1+xFQm8xF1x6vK8Lrmc55uQl/pb0N1sl
-         T+cWiA+BCKSmOxJZZmoHBHLl0ujBAKVkv6PtDR43Mk1ybUwawEWu7/Ksi02zkBcXqCHR
-         vw3+niyvhN1Tah3eMNBqwPK0BdTP4ZffNIvImkikbXtnQZnxqKwJSKnMCnfUbKBQ6sgC
-         lxqDvtEu4pjh2Fn8n2BmS30OVSp8bANnS+sR25t80GpBAOAUgM6voLnc0P/GKqm9w6CN
-         nOjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=vbfHQCbQOz6pXaMD1WdGmyVXpNXS38xujbQ+/0JQkQM=;
-        b=FrSbX9Ofw6afNigaaGNH/g0QkwvWIFBuNRyjH1cebQr8uWFK7DyiHvfIdfr/QWxuhe
-         6q7JQ1SSbgHhS4aTJGQlgLLpHAKtSwnRCjAtyL3VQ2Ja3Qg8KNQyyDcnBpi3RfUbZ9nb
-         yVGErU8t9HizUXLYtwHUxYFc0WOZMUFoGbGs/pG2MipyFe5IKXED6nlH0GVzUaFmZh5J
-         yLNT7pv5PQ2MFRdpmSH9JxFO+od1trX9gYLw9NjHBccIG3eGpfi8pkS1iPHISq+raWvL
-         Kfs/szDRqLy5eEmiS/79LbeTEvqw45DANIpy5hFXDYTvKsNDnxx2EWFbR2nA15Zo5HWe
-         ZmPg==
-X-Gm-Message-State: APjAAAX7CouJB4As0WOi+Qag63uuZkLUCqw6VGdbuJpYguwWsFnQxp8r
-        dqazdIT6ckpkny8DRXDWAMWWfCWoF4A=
-X-Google-Smtp-Source: APXvYqw0k5tlWlbqs7drBHLQwYkq9a+fObw8KXDFfk59hnyQgyajK/AzOvl/rwHX5+AmNXkqAX9KiA==
-X-Received: by 2002:a63:c304:: with SMTP id c4mr14821840pgd.126.1567209464341;
-        Fri, 30 Aug 2019 16:57:44 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id t9sm6152686pgj.89.2019.08.30.16.57.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 16:57:43 -0700 (PDT)
-Subject: Re: [PATCH v6 net-next 15/19] ionic: Add Tx and Rx handling
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20190829182720.68419-1-snelson@pensando.io>
- <20190829182720.68419-16-snelson@pensando.io>
- <20190829161852.1705d770@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <f1adfff7-82b8-9aca-1b17-706b7d45c4f3@pensando.io>
-Date:   Fri, 30 Aug 2019 16:57:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190829161852.1705d770@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S1728391AbfHaAa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 20:30:57 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:21450 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728248AbfHaAa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 20:30:57 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7V0RZZN096220;
+        Fri, 30 Aug 2019 20:30:51 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uqd461v3k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 20:30:51 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7V0Re3I096415;
+        Fri, 30 Aug 2019 20:30:51 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uqd461v3a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 30 Aug 2019 20:30:51 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7V0UOY9031573;
+        Sat, 31 Aug 2019 00:30:49 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01wdc.us.ibm.com with ESMTP id 2ujvv6wpfc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 31 Aug 2019 00:30:49 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7V0UnO429688118
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 31 Aug 2019 00:30:49 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 51F5F112063;
+        Sat, 31 Aug 2019 00:30:49 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C1A0C112062;
+        Sat, 31 Aug 2019 00:30:48 +0000 (GMT)
+Received: from [9.85.180.12] (unknown [9.85.180.12])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Sat, 31 Aug 2019 00:30:48 +0000 (GMT)
+Subject: Re: [v2] net_sched: act_police: add 2 new attributes to support
+ police 64bit rate and peakrate
+From:   "David Z. Dai" <zdai@linux.vnet.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     xiyou.wangcong@gmail.com, jhs@mojatatu.com, jiri@resnulli.us,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zdai@us.ibm.com
+In-Reply-To: <20190830.133335.323827182628557013.davem@davemloft.net>
+References: <1567191974-11578-1-git-send-email-zdai@linux.vnet.ibm.com>
+         <CAM_iQpVMYQUdQN5L+ntXZTffZkW4q659bvXoZ8+Ar+zeud7Y4Q@mail.gmail.com>
+         <1567195432.20025.18.camel@oc5348122405>
+         <20190830.133335.323827182628557013.davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 30 Aug 2019 19:30:47 -0500
+Message-ID: <1567211447.25082.3.camel@oc5348122405>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.32.3 (2.32.3-36.el6) 
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-31_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908310001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/19 4:18 PM, Jakub Kicinski wrote:
-> On Thu, 29 Aug 2019 11:27:16 -0700, Shannon Nelson wrote:
->> +netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
->> +{
->> +	u16 queue_index = skb_get_queue_mapping(skb);
->> +	struct ionic_lif *lif = netdev_priv(netdev);
->> +	struct ionic_queue *q;
->> +	int ndescs;
->> +	int err;
->> +
->> +	if (unlikely(!test_bit(IONIC_LIF_UP, lif->state))) {
->> +		dev_kfree_skb(skb);
->> +		return NETDEV_TX_OK;
->> +	}
->> +
->> +	if (likely(lif_to_txqcq(lif, queue_index)))
->> +		q = lif_to_txq(lif, queue_index);
->> +	else
->> +		q = lif_to_txq(lif, 0);
->> +
->> +	ndescs = ionic_tx_descs_needed(q, skb);
->> +	if (ndescs < 0)
->> +		goto err_out_drop;
->> +
->> +	if (!ionic_q_has_space(q, ndescs)) {
-> You should stop the queue in advance, whenever you can't ensure that a
-> max size frame can be placed on the ring. Requeuing is very expensive
-> so modern drivers should try to never return NETDEV_TX_BUSY
+On Fri, 2019-08-30 at 13:33 -0700, David Miller wrote:
+> From: "David Z. Dai" <zdai@linux.vnet.ibm.com>
+> Date: Fri, 30 Aug 2019 15:03:52 -0500
+> 
+> > I have the impression that last parameter num value should be larger
+> > than the attribute num value in 2nd parameter (TC_POLICE_RATE64 in this
+> > case).
+> 
+> The argument in question is explicitly the "padding" value.
+> 
+> Please explain in detail where you got the impression that the
+> argument has to be larger?
+In include/uapi/linux/pkt_sched.h header:
+For HTB:
+enum {
+        TCA_HTB_UNSPEC,
+        TCA_HTB_PARMS,
+        TCA_HTB_INIT,
+        TCA_HTB_CTAB,
+        TCA_HTB_RTAB,
+        TCA_HTB_DIRECT_QLEN,
+        TCA_HTB_RATE64,    /* <--- */
+        TCA_HTB_CEIL64,    /* <--- */
+        TCA_HTB_PAD,       /* <--- */
+        __TCA_HTB_MAX,
+};
+/* TCA_HTB_RATE64,TCA_HTB_CEIL64 are declared *before* TCA_HTB_PAD */
 
-Yes, I see how that's been done in nfp - good idea.
+For TBF:
+enum {
+        TCA_TBF_UNSPEC,
+        TCA_TBF_PARMS,
+        TCA_TBF_RTAB,
+        TCA_TBF_PTAB,
+        TCA_TBF_RATE64,   /* <--- */
+        TCA_TBF_PRATE64,  /* <--- */
+        TCA_TBF_BURST,
+        TCA_TBF_PBURST,
+        TCA_TBF_PAD,      /* <--- */
+        __TCA_TBF_MAX,
+};
+/* TCA_TBF_RATE64, TCA_TBF_PRATE64 are declared *before* TCA_TBF_PAD */
 
->
->> +		netif_stop_subqueue(netdev, queue_index);
->> +		q->stop++;
->> +
->> +		/* Might race with ionic_tx_clean, check again */
->> +		smp_rmb();
->> +		if (ionic_q_has_space(q, ndescs)) {
->> +			netif_wake_subqueue(netdev, queue_index);
->> +			q->wake++;
->> +		} else {
->> +			return NETDEV_TX_BUSY;
->> +		}
->> +	}
->> +
->> +	if (skb_is_gso(skb))
->> +		err = ionic_tx_tso(q, skb);
->> +	else
->> +		err = ionic_tx(q, skb);
->> +
->> +	if (err)
->> +		goto err_out_drop;
->> +
->> +	return NETDEV_TX_OK;
->> +
->> +err_out_drop:
->> +	netif_stop_subqueue(netdev, queue_index);
-> This stopping of the queue is suspicious, if ionic_tx() fails there's
-> no guarantee the queue will ever be woken up, no?
+For HTB, in net/sched/sch_htb.c file, htb_dump_class() routine:
+        if ((cl->rate.rate_bytes_ps >= (1ULL << 32)) &&
+            nla_put_u64_64bit(skb, TCA_HTB_RATE64,
+cl->rate.rate_bytes_ps,
+                              TCA_HTB_PAD))
+                goto nla_put_failure;
+        if ((cl->ceil.rate_bytes_ps >= (1ULL << 32)) &&
+            nla_put_u64_64bit(skb, TCA_HTB_CEIL64,
+cl->ceil.rate_bytes_ps,
+                              TCA_HTB_PAD))
+                goto nla_put_failure;
 
-Yes, that does look odd.  If there isn't a new descriptor with an skb in 
-the queue, it won't get cleaned and reenabled in the Tx clean.
+For TBF, in net/sched/sch_tbf.c file, tbf_dump() routine:
+       if (q->rate.rate_bytes_ps >= (1ULL << 32) &&
+            nla_put_u64_64bit(skb, TCA_TBF_RATE64,
+q->rate.rate_bytes_ps,
+                              TCA_TBF_PAD))
+                goto nla_put_failure;
+        if (tbf_peak_present(q) &&
+            q->peak.rate_bytes_ps >= (1ULL << 32) &&
+            nla_put_u64_64bit(skb, TCA_TBF_PRATE64,
+q->peak.rate_bytes_ps,
+                              TCA_TBF_PAD))
+                goto nla_put_failure;
 
-sln
+The last parameter used TCA_TBF_PAD, TCA_TBF_PAD are all declared
+*after* those attributes.
 
->
->> +	q->stop++;
->> +	q->drop++;
->> +	dev_kfree_skb(skb);
->> +	return NETDEV_TX_OK;
->> +}
+I am trying to keep it consistent in police part. That's where my
+impression is coming from.
+
+Now for suggestion/comment, do you think is it better to add a new PAD
+attribute in include/uapi/pkt_cls.h like this:
+enum {
+        TCA_POLICE_UNSPEC,
+        TCA_POLICE_TBF,
+        TCA_POLICE_RATE,
+        TCA_POLICE_PEAKRATE,
+        TCA_POLICE_AVRATE,
+        TCA_POLICE_RESULT,
+        TCA_POLICE_TM,
+        TCA_POLICE_PAD,
+        TCA_POLICE_RATE64,      /* <--- */
+        TCA_POLICE_PEAKRATE64,  /* <--- */
+        TCA_POLICE_PAD2,        /* <--- new PAD */
+        __TCA_POLICE_MAX
+#define TCA_POLICE_RESULT TCA_POLICE_RESULT
+#};
+Then use this TCA_POLICE_PAD2 as the last parameter in
+nla_put_u64_64bit()? 
+
+Thanks!
+                                                                                      
+
 
