@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37181A44CA
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 16:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42016A44E2
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 17:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728071AbfHaOrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 10:47:36 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:32882 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727177AbfHaOrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 10:47:36 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n190so5033316pgn.0;
-        Sat, 31 Aug 2019 07:47:36 -0700 (PDT)
+        id S1728368AbfHaPBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 11:01:53 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:32954 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728285AbfHaPBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 11:01:53 -0400
+Received: by mail-pl1-f193.google.com with SMTP id go14so4666948plb.0;
+        Sat, 31 Aug 2019 08:01:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=1vNkl17wUr355bA9XUF4U0DgDqgVJ+SrUpJnpFJZhcg=;
-        b=f/N2GqwB3jQeO8xF37anOuMwbzWXerJaartbtrl1HPCN4hOCYZ9ziQqNKg6qbvgI//
-         dEDvtY6ORvjILsrGguz1aD6l3N2T8HlwZTXYxmQK+EclfRkXA0fKCYzdSMfi4a5haxzM
-         WAAZcrphBP2EGi8nfdzRU0BdIzptz1EAZM1HOmpaCjzgpDg6qSpt8zgGl6tnfZCyZ+/u
-         oZwZxNQ03z+znf6C8XpPUCmo/ceelTESr4h3YhaKOvHT3WM/5+o1DoUoAUYFZj7ja8/U
-         kpvStSP5bupxf3XbjX3YKD2hRkBScDBw8OXvccLSnTeZvV2SSNo3fWdHqojlxJs6sa4J
-         MVCA==
+        bh=wb/A0nLfYSOW2oh301mQSunagMCByFHKWhdM0f4nMws=;
+        b=BVy1cPedwKZIPpS9m31cRI6RXGHB3AfxEHnmky4WC//YrFjYix6lDPI0RP+F2X2uU/
+         nyLSgCVc2Y09hgNsy48NVWBdKogqMMoPk/asQ/sYdQeJQo3dg+fPM/g+3omdsNWN54pK
+         W1Jt7vZcA93fzjmCDP8qewc8OyuQzUvbRXQeKTSW4ynDOkvCYm7ugEIIVBg2ncVLmTvm
+         d0817ItdSSvMHYFC8HwOPA/jdHPKIwA8cdlY7dGxHjnSqwRsfcW+M4sZyLlj4t8BVdV/
+         W0Jxgv3uRjz24X0mroL49extd3AHnQnRzKT/PUtITWeJhbIy+D0Xc8V/25YDLAUw7SjQ
+         O2FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1vNkl17wUr355bA9XUF4U0DgDqgVJ+SrUpJnpFJZhcg=;
-        b=jSAazNTJX9frwkTj/MeExKHvU/XtZ4hBzPXiy3jM0ZOgzluX8tGqiYsRPDteOEC/uB
-         VcmwSfw9AXn9DV63yv0N8LCxgFNxtwqnnL7hcI77+x7JA8PND6mETrUEEF33DPIWz253
-         QMNfRXrPVP4tsvXi88JZt2JiTLSaQtN29QQf8PONf1LXTFE45v8TWeSdXnHcd4ChPKQ+
-         ij2jiwmkm7byoFoKHCszgWUzxEYF/9MfGDPPUFw97aX2CzMss0aN76NMprjTXV66AuNh
-         H84ItMKNFUzuKQlMiz8mlfDNIMDwSTrDp7Ayj4ofVH253CIU3dw4L1EV/GGdT0dOuRlw
-         Z4yw==
-X-Gm-Message-State: APjAAAVJY9FQ9GUovw2sbpBP3VybnGeBPVxHQ60XqylaDaeqOGjmd4F/
-        +iqDoei8YLebJ6Bn4hipcmk8bGP2
-X-Google-Smtp-Source: APXvYqzSVpdqFNu3k5jxrf8I2vetrtv86WH0vY9neGkTCE8zTqvbZejF9gozPh/RO+kb7OjnluVH/Q==
-X-Received: by 2002:aa7:8b46:: with SMTP id i6mr24126455pfd.190.1567262855667;
-        Sat, 31 Aug 2019 07:47:35 -0700 (PDT)
+        bh=wb/A0nLfYSOW2oh301mQSunagMCByFHKWhdM0f4nMws=;
+        b=ftZa+eQ/Qo5G14jT3kxwEL0CECUL9X416oxiIK0oECeviJ0wV6VUSIjEtR78cCpzeu
+         fS52WCXnxZKm/8pHeVhhvya3mULf135MhPGRkvRJBUV0UuTstg+yWfccBoc/+Js2Ub0m
+         GEJAypKnGlbthKnJfbcWi5qJm3j804buf6prBZ4h8EJHw1oSQLFA8mtLBxNE2tWUNWbE
+         1qtyuz6YXuzppuKwWGkTXWDmJuoWvM34w1E3yfaZ/aMgPdaH5EvtVrj5jywocN5GIhbc
+         zDhOBDI+5/2pq/oEfO2bxJZ6t+FJxXuY5YTbbJhvhKkXeaQdlnVwb+eK4swC7+KRiH4d
+         NSRA==
+X-Gm-Message-State: APjAAAXss9HUaYQca9PTNwb4x+QzjWstbvp+uymtx7MBk3C1jJPWx12K
+        P2FxxxGKZVe07rYYLdH2TPY=
+X-Google-Smtp-Source: APXvYqz2mPcJCisbPMZtjM02edLEv+BRcy2qBwemiwWT87BNtWW7Vhq2Ak1XGaq47eCcsQNcu+ZOIQ==
+X-Received: by 2002:a17:902:1123:: with SMTP id d32mr21535084pla.218.1567263712480;
+        Sat, 31 Aug 2019 08:01:52 -0700 (PDT)
 Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id l6sm12196621pje.28.2019.08.31.07.47.34
+        by smtp.gmail.com with ESMTPSA id i9sm21212123pgo.46.2019.08.31.08.01.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Aug 2019 07:47:34 -0700 (PDT)
-Date:   Sat, 31 Aug 2019 07:47:32 -0700
+        Sat, 31 Aug 2019 08:01:51 -0700 (PDT)
+Date:   Sat, 31 Aug 2019 08:01:49 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Felipe Balbi <felipe.balbi@linux.intel.com>
 Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         davem@davemloft.net
 Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
-Message-ID: <20190831144732.GA1692@localhost>
+Message-ID: <20190831150149.GB1692@localhost>
 References: <20190829095825.2108-1-felipe.balbi@linux.intel.com>
  <20190829095825.2108-2-felipe.balbi@linux.intel.com>
  <20190829172509.GB2166@localhost>
@@ -68,45 +68,37 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Aug 30, 2019 at 11:00:20AM +0300, Felipe Balbi wrote:
-> >> @@ -177,9 +177,8 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
-> >>  			err = -EFAULT;
-> >>  			break;
-> >>  		}
-> >> -		if ((req.perout.flags || req.perout.rsv[0] || req.perout.rsv[1]
-> >> -				|| req.perout.rsv[2] || req.perout.rsv[3])
-> >> -			&& cmd == PTP_PEROUT_REQUEST2) {
-> >> +		if ((req.perout.rsv[0] || req.perout.rsv[1] || req.perout.rsv[2]
-> >> +			|| req.perout.rsv[3]) && cmd == PTP_PEROUT_REQUEST2) {
-> >
-> > Please check that the reserved bits of req.perout.flags, namely
-> > ~PTP_PEROUT_ONE_SHOT, are clear.
-> 
-> Actually, we should check more. PEROUT_FEATURE_ENABLE is still valid
-> here, right? So are RISING and FALLING edges, no?
+> seems like this should be defined together with the other flags? If
+> that's the case, it seems like we would EXTTS and PEROUT masks.
 
-No.  The ptp_extts_request.flags are indeed defined:
+Yes, let's make the meanings of the bit fields clear...
+
+--- ptp_clock.h ---
+
+/*
+ * Bits of the ptp_extts_request.flags field:
+ */
+#define PTP_ENABLE_FEATURE	BIT(0)
+#define PTP_RISING_EDGE		BIT(1)
+#define PTP_FALLING_EDGE	BIT(2)
+#define PTP_EXTTS_VALID_FLAGS	(PTP_ENABLE_FEATURE | \
+				 PTP_RISING_EDGE | \
+				 PTP_FALLING_EDGE)
+
+/*
+ * Bits of the ptp_perout_request.flags field:
+ */
+#define PTP_PEROUT_ONE_SHOT	BIT(0)
+#define PTP_PEROUT_VALID_FLAGS	(PTP_PEROUT_ONE_SHOT)
 
 struct ptp_extts_request {
-	...
-	unsigned int flags;  /* Bit field for PTP_xxx flags. */
-	...
+	unsigned int flags;  /* Bit field of PTP_EXTTS_VALID_FLAGS. */
 };
-
-But the ptp_perout_request.flags are reserved:
 
 struct ptp_perout_request {
-	...
-	unsigned int flags;           /* Reserved for future use. */
-	...
+	unsigned int flags;  /* Bit field of PTP_PEROUT_VALID_FLAGS. */
 };
 
-For this ioctl, the test for enable/disable is
-ptp_perout_request.period is zero:
-
-		enable = req.perout.period.sec || req.perout.period.nsec;
-		err = ops->enable(ops, &req, enable);
-
-The usage pattern here is taken from timer_settime(2).
 
 Thanks,
 Richard
