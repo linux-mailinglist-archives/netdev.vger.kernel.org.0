@@ -2,109 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63370A418B
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 03:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C28A4197
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 04:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbfHaBsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Aug 2019 21:48:07 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:46227 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbfHaBsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Aug 2019 21:48:07 -0400
-Received: by mail-pl1-f196.google.com with SMTP id o3so4096064plb.13
-        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 18:48:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=xJgw8Hr2Gj0y+BG1WKsKeKejJfrzJC2ejy3fwY+Cits=;
-        b=uvznGtnFnBGOusnhVGujW/quhqQPdEILIcqjabZYw2e3CNY+H2Sp8N+XyhqUe4hrT+
-         byOOKd0iAoyqPLGRY4me2W35Sk82TCZ+Vv8uSUnpgoai+/i5UBWt9ChgI4Jych2tCRBm
-         hMKikQxGTz1d7210uw3ZWEdIYwhhFAVYILIE+CLXKsQkZL66emsK5jIY5Pj8VCsyNTQ0
-         /3e14D1ZOfPRj9t47GShQBlm/CMI4I2D7j000clyIsIXN3foSL9LXeQpYuk/AtocDYnE
-         v1jC+J2T6fhCvTInARsvCbAqtKNawkHqpJfs3QOxz+bT0ZYzD6S2ty1QQgxx1xWRva/p
-         eiNA==
+        id S1728308AbfHaCAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Aug 2019 22:00:17 -0400
+Received: from mx6.ucr.edu ([138.23.62.71]:56624 "EHLO mx6.ucr.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728237AbfHaCAR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Aug 2019 22:00:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1567216818; x=1598752818;
+  h=from:to:cc:subject:date:message-id;
+  bh=9g/JKp5foaxieSnROfbCL0H+QjD7in4dyY/WHzgkS8M=;
+  b=HPZ3ZPuOaThj5A4OXBhlaGW7Yxw58hOJtzdGhBTz3rPzzmexptrEeztc
+   dBq0CRIne4QHWm5qL4kFfB1+ROAX2Ypafh5Icj9fKAQN8CkVgMG/QZQqh
+   Yid0Z2fT/XkKEAfaUq0vhSNuUoapqOiU22ZLZnSnyI8wUAfoMeEM0cqsF
+   ud9muGW7FL8bZmIBtDZX44WaB8An8Aod9KhjruRET2CCvHxZK923jaBaa
+   dvh1lPfJQnOXhB8VcjuRPG51EJyO9HU5Fo/Q3+NrSYhE5pPjdd9OF3zpH
+   DRtjmc9B66vJpLqQhxbTJ5BN3PpelZerwm95n9+ku7o9PX3Tx2fDNMQfi
+   Q==;
+IronPort-SDR: ATXjk5zp4JIJ5FgGOyeN/wp5rc2QpRtEfCHvEch+f7n2ycvOfb2PUO1RvkD1w25bby4OM7x5Ct
+ zX4HQjcFsDmS6NEParXK6NPAI7JU9Hr7AjHYGS0BLsU6D/FjUIp0DNhvJ3TDk5r2Mv920mxkbW
+ 99V2K4AhuodDTXvg8vL5CmsssUUe7ta4gJAEOBpsHiPGTtTN4khIhY5IOPCELaYYDhVVOUsPYs
+ NUMNYiAsBr63RFdn75tRMZidW27IWnuyqvM0dh36lkru46E/42DEKYu7KDz8Ziv7BUYUFZ/puj
+ CVY=
+IronPort-PHdr: =?us-ascii?q?9a23=3AeT+5PxervNw2EfjLZ5qQerbplGMj4u6mDksu8p?=
+ =?us-ascii?q?Mizoh2WeGdxcuyZh7h7PlgxGXEQZ/co6odzbaP6ea5BzFLvM3JmUtBWaQEbw?=
+ =?us-ascii?q?UCh8QSkl5oK+++Imq/EsTXaTcnFt9JTl5v8iLzG0FUHMHjew+a+SXqvnYdFR?=
+ =?us-ascii?q?rlKAV6OPn+FJLMgMSrzeCy/IDYbxlViDanbr5+MQu6oR/MusQXgYZuJaY8xx?=
+ =?us-ascii?q?XUqXZUZupawn9lK0iOlBjm/Mew+5Bj8yVUu/0/8sNLTLv3caclQ7FGFToqK2?=
+ =?us-ascii?q?866tHluhnFVguP+2ATUn4KnRpSAgjK9w/1U5HsuSbnrOV92S2aPcrrTbAoXD?=
+ =?us-ascii?q?mp8qlmRAP0hCoBKjU063/chNBug61HoRKhvx1/zJDSYIGJL/p1Y6fRccoHSW?=
+ =?us-ascii?q?ZdQspdUipMAoa9b4sUFOoBPOBYr4bgrFUQtBW1GAesBOLxxT9Mm3D9wKk23u?=
+ =?us-ascii?q?o9HQ3D2gErAtAAv2nOrNjtNKkcT/27wqfLwzvEdP5axSvx5ZLUfh07vf2AQb?=
+ =?us-ascii?q?R9etfRx0k1EAPFi02dpo7kPzKU1uQNrm+b5PdnWOOvim8nqxt+ojmzysswhI?=
+ =?us-ascii?q?TEnZ8VxUze9Slj3ok6OMC4RVd9bNW5E5VQrzmXO5VqTs4mWW1luyY3xqcYtZ?=
+ =?us-ascii?q?KmcyUG0okryhrbZvCfboSF4xbuWPyPLTp2hH9pYqyziheo/UWixeDxUNS/3k?=
+ =?us-ascii?q?xQoSpfiNbMs2gA1xnU6seaVPRw5lyh2TOT1wDL7eFEPFw0mbLbK5E/xr4wkY?=
+ =?us-ascii?q?IesUHZES/3nEX6lbeWdkE59uSx5eTrf7Hrq5uGO497jQH+NasumsihDugiLg?=
+ =?us-ascii?q?cOWG2b9fy91L3l40L5XK1HguMqnqTdqpzXJsQWqrSnDwNI3Ysv8QuzAjOi3d?=
+ =?us-ascii?q?gAmHkINlNFeBaJj4jzPFHOJej1DPe+glSsijhrxuzKMqHvD5jWM3jMjK3hca?=
+ =?us-ascii?q?xj5EFB1Qo/1cpf6I5MCrEdPPLzXVf8tNrGAR8lLgO73fjnBc5j1oMRR22PGL?=
+ =?us-ascii?q?WVMKDMvl+S4OIgPe2MaJUSuDbnJPh2r9D0inpsqF4PfbSulc8GenCxH6w+eG?=
+ =?us-ascii?q?2EamCqj9scRzRZ9jEiRfDn3QXRGQVYYGy/Cudjvjw=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2GHAQDa02ldgMfWVdFmHgEGBwaBVAg?=
+ =?us-ascii?q?LAYNXTBCNHYYPUQEBBosgGHGFeoMJhSSBewEIAQEBDAEBLQIBAYQ/gmMjNQg?=
+ =?us-ascii?q?OAgMIAQEFAQEBAQEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJ?=
+ =?us-ascii?q?HAYF2FAWhLYEDPIwjM4hrAQgMgUkJAQiBIocfhFmBEIEHg25zhA2DVoJEBIE?=
+ =?us-ascii?q?uAQEBjUCHFJYJAQYCgg0UgXOSWCeCMoF/iRo5il0BLaYJAgoHBg8hgTECgg1?=
+ =?us-ascii?q?NJYFsCoFEgnqOLR8zgQiLXIJUAQ?=
+X-IPAS-Result: =?us-ascii?q?A2GHAQDa02ldgMfWVdFmHgEGBwaBVAgLAYNXTBCNHYYPU?=
+ =?us-ascii?q?QEBBosgGHGFeoMJhSSBewEIAQEBDAEBLQIBAYQ/gmMjNQgOAgMIAQEFAQEBA?=
+ =?us-ascii?q?QEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJHAYF2FAWhLYEDP?=
+ =?us-ascii?q?IwjM4hrAQgMgUkJAQiBIocfhFmBEIEHg25zhA2DVoJEBIEuAQEBjUCHFJYJA?=
+ =?us-ascii?q?QYCgg0UgXOSWCeCMoF/iRo5il0BLaYJAgoHBg8hgTECgg1NJYFsCoFEgnqOL?=
+ =?us-ascii?q?R8zgQiLXIJUAQ?=
+X-IronPort-AV: E=Sophos;i="5.64,449,1559545200"; 
+   d="scan'208";a="73596727"
+Received: from mail-pl1-f199.google.com ([209.85.214.199])
+  by smtpmx6.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2019 19:00:17 -0700
+Received: by mail-pl1-f199.google.com with SMTP id v22so3632894ply.19
+        for <netdev@vger.kernel.org>; Fri, 30 Aug 2019 19:00:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xJgw8Hr2Gj0y+BG1WKsKeKejJfrzJC2ejy3fwY+Cits=;
-        b=HjOYYa6IYfpKbPrY1tSk3bdA8+OpnR/vqCRsRIssrRq/rxI5CQXO8Sk4IMl+3l3j/c
-         8R9F7GnfsijEPTHJfAWD6QRTpLTKk4554ymgxRXwzE1W2zPvhXkD+mmYvSaT/3qQs2HF
-         6jXTVFqSgtBM1Vc9IiCVJpOhauF10G2na0C3UY9N95Dz42P+O09S6JK/nLterJwnP7AH
-         92LkTqHcG+ukZYPwT795MKgjnSmwIUz0r2o1hW2vR0MPQ4sbc+tPDR8c6Bcjt98k0cEe
-         QoSHrFsLPTNH/2EAIIDC0ZqMsWK1t2MlKZxBwKs4ApMgHjS5OQIvujdvD6Zx0Q28G/ax
-         2QAw==
-X-Gm-Message-State: APjAAAWK1/RKV0Y8a+wOszmqmykXsQdSqG6n85HaY/EWMiCybkMpbMiC
-        M37sYm4ZJ+n+Y8OMquS7lrc=
-X-Google-Smtp-Source: APXvYqw/AqHDZKof8kjCS/9XU2viDTOnG/cZzPFV8xfH6+VFaeGfc+/1ipiw8/knrBBZC3xnogaTEA==
-X-Received: by 2002:a17:902:2bc8:: with SMTP id l66mr19054181plb.222.1567216086843;
-        Fri, 30 Aug 2019 18:48:06 -0700 (PDT)
-Received: from [192.168.1.82] (host-184-167-6-196.jcs-wy.client.bresnan.net. [184.167.6.196])
-        by smtp.googlemail.com with ESMTPSA id q8sm19472041pje.2.2019.08.30.18.48.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Aug 2019 18:48:05 -0700 (PDT)
-Subject: Re: [PATCH net] net: Properly update v4 routes with v6 nexthop
-To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org,
-        dsahern@kernel.org, sworley@cumulusnetworks.com
-References: <20190830181446.25262-1-sharpd@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c4b2e04e-295a-a8c4-138e-8b9dd5606cde@gmail.com>
-Date:   Fri, 30 Aug 2019 19:48:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190830181446.25262-1-sharpd@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DDyvegdKp6MmZvQoeqYKTe4rMUcvHNSrG5Su6nBLcf4=;
+        b=KicPoiz71pijnuerYLU4/cSblF556bCqD95Z1hwT4c9qFzKJbR5cz2SuTk/zniouKo
+         /NwDlR1hPAmeyFCncqSc9rUWXkrjvhVYoggewii6elqfcZsUbto3jk/D+pNs+g8/6iOO
+         IML2D7eYhM7sfO5G6v4Jfy45jUuXf805YLGoiivlmdkHXT0f94Ir6pFvQ913kgOF1nIl
+         tj9cGtwBV1qEa1ty8OVgGAmii5aolRrGXN0bzcnTDPUHPUrejVPTDbW4YcU2m1hrlE2v
+         GkpDfxI4rkp+NznhTKeSeVUjkuGUvNJ2uTe1mFse8d5KrkMny/G5wGv/Ps13QQqk7ODi
+         uNWg==
+X-Gm-Message-State: APjAAAUrxRmB8moKtOFNfH3YjUSDAW+lqYEUA6Bqh9I3GYYP9vf7FUZx
+        1Y6bTsJN507dT0o3mU22UNwAM+9LYDo1m0MHfpCgsXbuPhSMFcWdI59CBDhdEv6BPCLcC8f6usz
+        P6MTUhS0pk6huZ1WWDw==
+X-Received: by 2002:aa7:9495:: with SMTP id z21mr21413550pfk.220.1567216815847;
+        Fri, 30 Aug 2019 19:00:15 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqy2BLuGlLGxCSNkEHMBr+Frsk42bOM599GwK6aw54HDOsHA5LvdnFEX6NldgYdsc89eYIHNdQ==
+X-Received: by 2002:aa7:9495:: with SMTP id z21mr21413519pfk.220.1567216815530;
+        Fri, 30 Aug 2019 19:00:15 -0700 (PDT)
+Received: from Yizhuo.cs.ucr.edu (yizhuo.cs.ucr.edu. [169.235.26.74])
+        by smtp.googlemail.com with ESMTPSA id 127sm7549594pfy.56.2019.08.30.19.00.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Aug 2019 19:00:14 -0700 (PDT)
+From:   Yizhuo <yzhai003@ucr.edu>
+Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, Yizhuo <yzhai003@ucr.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: stmmac: dwmac-sun8i:  Variable "val" in function sun8i_dwmac_set_syscon() could be uninitialized
+Date:   Fri, 30 Aug 2019 19:00:48 -0700
+Message-Id: <20190831020049.6516-1-yzhai003@ucr.edu>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/30/19 12:14 PM, Donald Sharp wrote:
-> diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-> index 4c81846ccce8..c7e94edae482 100644
-> --- a/include/net/ip_fib.h
-> +++ b/include/net/ip_fib.h
-> @@ -513,7 +513,7 @@ int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
->  			  struct netlink_callback *cb);
->  
->  int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nh,
-> -		     unsigned char *flags, bool skip_oif);
-> +		     u8 family, unsigned char *flags, bool skip_oif);
->  int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nh,
-> -		    int nh_weight);
-> +		    int nh_weight, u8 family);
+In function sun8i_dwmac_set_syscon(), local variable "val" could
+be uninitialized if function regmap_field_read() returns -EINVAL.
+However, it will be used directly in the if statement, which
+is potentially unsafe.
 
-Call this rt_family in both for 'route family' to make it clear.
+Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
->  #endif  /* _NET_FIB_H */
-> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index 95f766c31c90..f13c61806abf 100644
-> --- a/include/net/nexthop.h
-> +++ b/include/net/nexthop.h
-> @@ -172,7 +172,7 @@ int nexthop_mpath_fill_node(struct sk_buff *skb, struct nexthop *nh)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 4083019c547a..f97a4096f8fc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -873,7 +873,12 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 	int ret;
+ 	u32 reg, val;
+ 
+-	regmap_field_read(gmac->regmap_field, &val);
++	ret = regmap_field_read(gmac->regmap_field, &val);
++	if (ret) {
++		dev_err(priv->device, "Fail to read from regmap field.\n");
++		return ret;
++	}
++
+ 	reg = gmac->variant->default_syscon_value;
+ 	if (reg != val)
+ 		dev_warn(priv->device,
+-- 
+2.17.1
 
-nexthop_mpath_fill_node should take the family as input argument and
-then ...
-
->  		struct fib_nh_common *nhc = &nhi->fib_nhc;
->  		int weight = nhg->nh_entries[i].weight;
->  
-> -		if (fib_add_nexthop(skb, nhc, weight) < 0)
-> +		if (fib_add_nexthop(skb, nhc, weight, nhc->nhc_family) < 0)
-
-pass it to fib_add_nexthop.
-
->  			return -EMSGSIZE;
->  	}
->  
-
-The rest looks ok to me.
-
-as an FYI for the archives, the fib_nexthops.sh script does show the
-unexpected gw for IPv6 but it does not flag it as an error. I need to
-fix that so this should have been caught in the original submission.
