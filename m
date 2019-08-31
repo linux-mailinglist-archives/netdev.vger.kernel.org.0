@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 663B2A45C7
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 20:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1551A45F9
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 21:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbfHaSc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 14:32:59 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:33527 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727816AbfHaSc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 14:32:59 -0400
-Received: by mail-io1-f67.google.com with SMTP id z3so20993765iog.0;
-        Sat, 31 Aug 2019 11:32:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=bjc7ayKa/cq03dThSGQ6pLp6rDV/WQ1aTS5E3AEYpH0=;
-        b=ZryxRM+FV/pPB+skU3zXg+PD8pSscNH2Cu8vRSJKsbFUD0cU1Ji7m9C/+AVs6j7N73
-         uJb8/HeZzJRSmhihRFO6BysF2fbpElxVvrvE1H6yyNAyCs4RhfxwD6Z7R7erwXHej5JJ
-         SUo/F+IBF/OE/Fy7+piRAkt1KHsO9Q7UKr32YCFABbBXZK8+mLQ6YnUo8YZ33WCaK+d1
-         42kpGPHxWEGr/6t5oVXXDE3XOVMKmkRrDuRDcEKxBBCRHrU7hhZln5t2PmQwEZgkCLOq
-         34yudrQlr03XKWuE3rz0WHOYxlx+7GCyIQgouv1gnsc/D0FzdF8uzMupWR6KXKnvVmye
-         5pWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=bjc7ayKa/cq03dThSGQ6pLp6rDV/WQ1aTS5E3AEYpH0=;
-        b=tumFfXg1u9/0k4KssIo/dtTDR8HKEAFwL5cp7ElvmuouOpDN8o0d1lE1bX/KM6V1u+
-         xsAf5Y4HNvcr4FsrQYlLNPYnlSZSiHP044INXyurq9Hu2wxajnznBQ+zCrkvluOdZ8mC
-         fdSnM1FiG8k9j1rVFBJnr3Iv+bwwuEqwgoaeorKke/P7/YnRhJP4bTio5WkX5NG3HjRG
-         kyUutI+qEY2B0EQKcS41XNlDXfvnw/AY9nAgUwYcmhSc8owK6nqdG/EWlItplcqdlrtN
-         BJtjndnDCcvcjXxbeb97m1pKKIx9/1OQWWI1D0lMuYJH06h24C3NNFZpCC9N1lDVfkJc
-         ZkyQ==
-X-Gm-Message-State: APjAAAV5lAdIAqSi+cTKUqYpl4u47Q4UB7FmaTfeXLqybVpCIDDYaBse
-        ZGGkeZndqmHouhK/qTeru1DOnakn13nNqQ==
-X-Google-Smtp-Source: APXvYqyisKeiw9N8atdC8F+/FU6smfv2c2VAswuz/G1tWYcTITkfZezGLZq8QOcY0JwjuIw934Fyow==
-X-Received: by 2002:a5d:9655:: with SMTP id d21mr7109935ios.99.1567276378114;
-        Sat, 31 Aug 2019 11:32:58 -0700 (PDT)
-Received: from [10.164.9.36] (cos-128-210-107-27.science.purdue.edu. [128.210.107.27])
-        by smtp.gmail.com with ESMTPSA id w17sm7672407ior.23.2019.08.31.11.32.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 31 Aug 2019 11:32:57 -0700 (PDT)
-From:   Hui Peng <benquike@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     security@kernel.org, Mathias Payer <mathias.payer@nebelwelt.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        id S1728556AbfHaTgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 15:36:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46528 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728544AbfHaTgQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Aug 2019 15:36:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UxDD8aMUwVVgoe7UqZ9DMJsv9cEhFyQpEU8yg66URO0=; b=egkZEaQiBdt8ozaVJahm2oa6Ib
+        DaalqvmOcRDOnNXHQhn9GcB7hvpLn/Tx7MelIb284JVJ0OQ3gTzweFV63HiATnK03yekg5O7aV6iQ
+        kKKGcsUmEzLdbyfJFosN7UUjtsV1Un3H4UA9I9z19NUGltsehYMQinmtTDavT77xv4i0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i49AC-000162-Ku; Sat, 31 Aug 2019 21:35:56 +0200
+Date:   Sat, 31 Aug 2019 21:35:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     David Miller <davem@davemloft.net>, jiri@resnulli.us,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, allan.nielsen@microchip.com,
+        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Fix a double free bug in rsi_91x_deinit
-References: <20190819220230.10597-1-benquike@gmail.com>
- <20190831181852.GA22160@roeck-us.net>
-Message-ID: <d5b3e9ff-ddca-52fc-81cf-9a213ad2c251@gmail.com>
-Date:   Sat, 31 Aug 2019 14:32:57 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
+Message-ID: <20190831193556.GB2647@lunn.ch>
+References: <20190829175759.GA19471@splinter>
+ <20190829182957.GA17530@lunn.ch>
+ <20190829193613.GA23259@splinter>
+ <20190829.151201.940681219080864052.davem@davemloft.net>
+ <20190830094319.GA31789@splinter>
 MIME-Version: 1.0
-In-Reply-To: <20190831181852.GA22160@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190830094319.GA31789@splinter>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/19 2:18 PM, Guenter Roeck wrote:
-> On Mon, Aug 19, 2019 at 06:02:29PM -0400, Hui Peng wrote:
->> `dev` (struct rsi_91x_usbdev *) field of adapter
->> (struct rsi_91x_usbdev *) is allocated  and initialized in
->> `rsi_init_usb_interface`. If any error is detected in information
->> read from the device side,  `rsi_init_usb_interface` will be
->> freed. However, in the higher level error handling code in
->> `rsi_probe`, if error is detected, `rsi_91x_deinit` is called
->> again, in which `dev` will be freed again, resulting double free.
->>
->> This patch fixes the double free by removing the free operation on
->> `dev` in `rsi_init_usb_interface`, because `rsi_91x_deinit` is also
->> used in `rsi_disconnect`, in that code path, the `dev` field is not
->>  (and thus needs to be) freed.
->>
->> This bug was found in v4.19, but is also present in the latest version
->> of kernel.
->>
->> Reported-by: Hui Peng <benquike@gmail.com>
->> Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
->> Signed-off-by: Hui Peng <benquike@gmail.com>
-> FWIW:
->
-> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->
-> This patch is listed as fix for CVE-2019-15504, which has a CVSS 2.0 score
-> of 10.0 (high) and CVSS 3.0 score of 9.8 (critical).
->
-> Are there any plans to apply this patch to the upstream kernel anytime
-> soon ? If not, are there reasons to believe that the problem is not as
-> severe as its CVSS score may indicate ?
-This patch is also still under review.
-> Thanks,
-> Guenter
->
->> ---
->>  drivers/net/wireless/rsi/rsi_91x_usb.c | 1 -
->>  1 file changed, 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
->> index c0a163e40402..ac917227f708 100644
->> --- a/drivers/net/wireless/rsi/rsi_91x_usb.c
->> +++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
->> @@ -640,7 +640,6 @@ static int rsi_init_usb_interface(struct rsi_hw *adapter,
->>  	kfree(rsi_dev->tx_buffer);
->>  
->>  fail_eps:
->> -	kfree(rsi_dev);
->>  
->>  	return status;
->>  }
->> -- 
->> 2.22.1
->>
+> Also, what happens when I'm running these application without putting
+> the interface in promisc mode? On an offloaded interface I would not be
+> able to even capture packets addressed to my interface's MAC address.
+
+Sorry for rejoining the discussion late. I've been travelling and i'm
+now 3/4 of the way to Lisbon.
+
+That statement i don't get. If the frame has the MAC address of the
+interface, it has to be delivered to the CPU. And so pcap will see it
+when running on the interface. I can pretty much guarantee every DSA
+driver does that.
+
+But to address the bigger picture. My understanding is that we want to
+model offloading as a mechanism to accelerate what Linux can already
+do. The user should not have to care about these accelerators. The
+interface should work like a normal Linux interface. I can put an IP
+address on it and ping a peer. I can run a dhcp client and get an IP
+address from a dhcp server. I can add the interface to a bridge, and
+packets will get bridged. I as a user should not need to care if this
+is done in software, or accelerated by offloading it. I can add a
+route, and if the accelerate knows about L3, it can accelerate that as
+well. If not, the kernel will route it.
+
+So if i run wireshark on an interface, i expect the interface will be
+put into promisc mode and i see all packets ingressing the interface.
+What the accelerator needs to do to achieve this, i as a user don't
+care.
+
+I can follow the argument that i won't necessarily see every
+packet. But that is always true. For many embedded systems, the CPU is
+too slow to receive at line rate, even when we are talking about 1G
+links. Packets do get dropped. And i hope tcpdump users understand
+that.
+
+For me, having tcpdump use tc trap is just wrong. It breaks the model
+that the user should not care about the accelerator. If anything, i
+think the driver needs to translate cBPF which pcap passes to the
+kernel to whatever internal format the accelerator can process. That
+is just another example of using hardware acceleration.
+
+   Andrew
