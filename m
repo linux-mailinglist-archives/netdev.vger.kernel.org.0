@@ -2,154 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A566EA4499
-	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 15:14:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C758A44B4
+	for <lists+netdev@lfdr.de>; Sat, 31 Aug 2019 16:22:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727672AbfHaNOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 31 Aug 2019 09:14:39 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39760 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727342AbfHaNOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 31 Aug 2019 09:14:39 -0400
-Received: by mail-ed1-f65.google.com with SMTP id u6so5277920edq.6
-        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 06:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NCveq5p6K2uyICDDPL3SYeS5aVC+SZIpfl3gFITmDIA=;
-        b=voERl/Tr7RA9iDLBMC1rWto6N5p0nIA1f97VJ9EA9NVRSIG+9s772t187L4PPtiwnV
-         zSC0tUuYnqk4ztJ18Y3xrWpECQCquuIqoNi1P1Bb5jW7aVP1p0j0+iuAfbZHXiuxHeGf
-         H7/6y3K+WXdK2APaUSGd6DUkxr78QbGlHxsUlSLuzKt66QWto6PGCI0Op4UVGygTapHi
-         muG35QJHBHK4LxZbEx4SJCbBX2Bq5JjziWuSjnQtyXB6oRe34W4sLZW2bYOcp+QLxxtB
-         y6qAo5Vfc0R/iNjVRdEqk5oPnVVlzqJthHBHkZ47j5lUjDLbNCLQILmltRpE2o8X9Fh1
-         s1Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NCveq5p6K2uyICDDPL3SYeS5aVC+SZIpfl3gFITmDIA=;
-        b=QQiH+RAMJcqqHseHUq9JTLWVlkD7dwVxCpr+XAlbgOcLNI9v1+SsTNHIY805s+/tfa
-         FY9N1kpM7wi6eGQCAWPAD6TPnpUNhc9XpcZsfIIY2jhSDT1sRO0dU4GzGoi6BKzFxTZ3
-         U+raKh2hpE022wISGCTPlVMp1AxJ4bwSE42oua3OSdOjUCrfozgdAkaxjwLDidvCQKj2
-         m0D0MoBybmT0cQUDeNRRiRRHL0zKk8xDY3X0wqZ5gq5gSwPZEMmSjk//5Ouc7b0OkWNq
-         bLbXvGAtiga0E3AGatEm3ATW/oZIRMA+gi2VYNGVV/5i+a14xRl5Ni9zRMkT096NozwM
-         oEMA==
-X-Gm-Message-State: APjAAAWKUpHSJ3DFjjgRviVvTkQCmQ5GoR+sDthHglsVvioPVBNemZHb
-        7awuyr5yyhf15Bkf1YTwlYofv6eZLb0Wug==
-X-Google-Smtp-Source: APXvYqwFFVlSsrlkKhzFN5Hc257qHk42yNbJCxHLAX+Wnh8jj1OfV04odUFLdRVu2EatUok677jsxA==
-X-Received: by 2002:a50:fc12:: with SMTP id i18mr21367909edr.23.1567257277392;
-        Sat, 31 Aug 2019 06:14:37 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:a03f:5ad4:8c00:287d:350d:b52f:ffb2])
-        by smtp.gmail.com with ESMTPSA id h58sm441101edb.43.2019.08.31.06.14.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 31 Aug 2019 06:14:36 -0700 (PDT)
-Subject: Re: [PATCH 4.14] tcp: fix tcp_rtx_queue_tail in case of empty
- retransmit queue
-To:     Sasha Levin <sashal@kernel.org>,
-        Tim Froidcoeur <tim.froidcoeur@tessares.net>
-Cc:     aprout@ll.mit.edu, cpaasch@apple.com, davem@davemloft.net,
-        edumazet@google.com, gregkh@linuxfoundation.org,
-        jonathan.lemon@gmail.com, jtl@netflix.com,
-        linux-kernel@vger.kernel.org, mkubecek@suse.cz,
-        ncardwell@google.com, stable@vger.kernel.org, ycheng@google.com,
-        netdev@vger.kernel.org
-References: <529376a4-cf63-f225-ce7c-4747e9966938@tessares.net>
- <20190824060351.3776-1-tim.froidcoeur@tessares.net>
- <20190831122036.GY5281@sasha-vm>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <35cd974b-2b31-4f86-d53d-8e9516d4077e@tessares.net>
-Date:   Sat, 31 Aug 2019 15:14:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726516AbfHaOWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 31 Aug 2019 10:22:23 -0400
+Received: from correo.us.es ([193.147.175.20]:46456 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726705AbfHaOWW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 31 Aug 2019 10:22:22 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D4B48130E25
+        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 16:22:18 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C72119D659
+        for <netdev@vger.kernel.org>; Sat, 31 Aug 2019 16:22:18 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AB37BD1DBB; Sat, 31 Aug 2019 16:22:18 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 84DAADA72F;
+        Sat, 31 Aug 2019 16:22:16 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 31 Aug 2019 16:22:16 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 6395F4265A5A;
+        Sat, 31 Aug 2019 16:22:16 +0200 (CEST)
+Date:   Sat, 31 Aug 2019 16:22:17 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, vishal@chelsio.com, saeedm@mellanox.com,
+        jiri@resnulli.us
+Subject: Re: [PATCH 0/4 net-next] flow_offload: update mangle action
+ representation
+Message-ID: <20190831142217.bvxx3vc6wpsmnxpe@salvia>
+References: <20190830005336.23604-1-pablo@netfilter.org>
+ <20190829185448.0b502af8@cakuba.netronome.com>
+ <20190830090710.g7q2chf3qulfs5e4@salvia>
+ <20190830153351.5d5330fa@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190831122036.GY5281@sasha-vm>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190830153351.5d5330fa@cakuba.netronome.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sasha,
-
-Thank you for your reply!
-
-On 31/08/2019 14:20, Sasha Levin wrote:
-> On Sat, Aug 24, 2019 at 08:03:51AM +0200, Tim Froidcoeur wrote:
->> Commit 8c3088f895a0 ("tcp: be more careful in tcp_fragment()")
->> triggers following stack trace:
->>
->> [25244.848046] kernel BUG at ./include/linux/skbuff.h:1406!
->> [25244.859335] RIP: 0010:skb_queue_prev+0x9/0xc
->> [25244.888167] Call Trace:
->> [25244.889182]  <IRQ>
->> [25244.890001]  tcp_fragment+0x9c/0x2cf
->> [25244.891295]  tcp_write_xmit+0x68f/0x988
->> [25244.892732]  __tcp_push_pending_frames+0x3b/0xa0
->> [25244.894347]  tcp_data_snd_check+0x2a/0xc8
->> [25244.895775]  tcp_rcv_established+0x2a8/0x30d
->> [25244.897282]  tcp_v4_do_rcv+0xb2/0x158
->> [25244.898666]  tcp_v4_rcv+0x692/0x956
->> [25244.899959]  ip_local_deliver_finish+0xeb/0x169
->> [25244.901547]  __netif_receive_skb_core+0x51c/0x582
->> [25244.903193]  ? inet_gro_receive+0x239/0x247
->> [25244.904756]  netif_receive_skb_internal+0xab/0xc6
->> [25244.906395]  napi_gro_receive+0x8a/0xc0
->> [25244.907760]  receive_buf+0x9a1/0x9cd
->> [25244.909160]  ? load_balance+0x17a/0x7b7
->> [25244.910536]  ? vring_unmap_one+0x18/0x61
->> [25244.911932]  ? detach_buf+0x60/0xfa
->> [25244.913234]  virtnet_poll+0x128/0x1e1
->> [25244.914607]  net_rx_action+0x12a/0x2b1
->> [25244.915953]  __do_softirq+0x11c/0x26b
->> [25244.917269]  ? handle_irq_event+0x44/0x56
->> [25244.918695]  irq_exit+0x61/0xa0
->> [25244.919947]  do_IRQ+0x9d/0xbb
->> [25244.921065]  common_interrupt+0x85/0x85
->> [25244.922479]  </IRQ>
->>
->> tcp_rtx_queue_tail() (called by tcp_fragment()) can call
->> tcp_write_queue_prev() on the first packet in the queue, which will
->> trigger
->> the BUG in tcp_write_queue_prev(), because there is no previous packet.
->>
->> This happens when the retransmit queue is empty, for example in case of a
->> zero window.
->>
->> Patch is needed for 4.4, 4.9 and 4.14 stable branches.
+On Fri, Aug 30, 2019 at 03:33:51PM -0700, Jakub Kicinski wrote:
+> On Fri, 30 Aug 2019 11:07:10 +0200, Pablo Neira Ayuso wrote:
+> > > > * The front-end coalesces consecutive pedit actions into one single
+> > > >   word, so drivers can mangle IPv6 and ethernet address fields in one
+> > > >   single go.  
+> > > 
+> > > You still only coalesce up to 16 bytes, no?  
+> > 
+> > You only have to rise FLOW_ACTION_MANGLE_MAXLEN coming in this patch
+> > if you need more. I don't know of any packet field larger than 16
+> > bytes. If there is a use-case for this, it should be easy to rise that
+> > definition.
 > 
-> There needs to be a better explanation of why it's not needed
-> upstream...
+> Please see the definitions of:
+> 
+> struct nfp_fl_set_eth
+> struct nfp_fl_set_ip4_addrs
+> struct nfp_fl_set_ip4_ttl_tos
+> struct nfp_fl_set_ipv6_tc_hl_fl
+> struct nfp_fl_set_ipv6_addr
+> struct nfp_fl_set_tport
+> 
+> These are the programming primitives for header rewrites in the NFP.
+> Since each of those contains more than just one field, we'll have to
+> keep all the field coalescing logic in the driver, even if you coalesce
+> while fields (i.e. IPv6 addresses).
 
-Commit 8c3088f895a0 ("tcp: be more careful in tcp_fragment()") was not a
-simple cherry-pick of the original one from master (b617158dc096)
-because there is a specific TCP rtx queue only since v4.15. For more
-details, please see the commit message of b617158dc096 ("tcp: be more
-careful in tcp_fragment()").
+nfp has been updated in this patch series to deal with the new mangle
+representation.
 
-The BUG() is hit due to the specific code added to versions older than
-v4.15. The comment in skb_queue_prev() (include/linux/skbuff.h:1406),
-just before the BUG_ON() somehow suggests to add a check before using
-it, what Tim did.
+> Perhaps it's not a serious blocker for the series, but it'd be nice if
+> rewrite action grouping was handled in the core. Since you're already
+> poking at that code..
 
-In master, this code path causing the issue will not be taken because
-the implementation of tcp_rtx_queue_tail() is different:
+Rewrite action grouping is already handled from the core front-end in
+this patch series.
 
-    tcp_fragment() → tcp_rtx_queue_tail() → tcp_write_queue_prev() →
-skb_queue_prev() → BUG_ON()
-
-Because this patch is specific to versions older than the two last
-stable ones but still linked to the network architecture, who can review
-and approve it? :)
-
-Cheers,
-Matt
--- 
-Matthieu Baerts | R&D Engineer
-matthieu.baerts@tessares.net
-Tessares SA | Hybrid Access Solutions
-www.tessares.net
-1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
+Thanks.
