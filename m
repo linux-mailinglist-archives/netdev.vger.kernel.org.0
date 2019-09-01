@@ -2,126 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 705B6A4B86
-	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 22:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D2CA4BFE
+	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 22:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728775AbfIAUG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Sep 2019 16:06:29 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:45938 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfIAUG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Sep 2019 16:06:28 -0400
-Received: by mail-yw1-f66.google.com with SMTP id n69so4116117ywd.12
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 13:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gfSNoy+Z45rbsOIpKQh4x/nE2e4rix2MvMV1bB+s1xA=;
-        b=pQXRGTBM3bgC/dZ5mxzrv/fpcOr322ON1b6FoMcIs8aEEktx4uYmvcE+McNwU2+He7
-         fvky5BMWk65LNrR/V4dWwEPDGIerI+Gqffjd9rzAZItY/jhEXE5T0UKDguF3MjlMv1ch
-         E/0Kq38u25aY3tFF6z2MnFbtWic/nryhnkN9L1q4qLa1BIAVseRKdy8WnJYu2z8rBV4/
-         Tlo6Cp4fH4qhNF+0HSEXqPQtNLY9QbahWm5wj7ZwuWjcpu3l8vE9bXbVW8A7iK+K4jY8
-         heWQoTP0G1L2Ir1fCkt9a3ZDhNUdZ+QWfnKiLAOkMFGSlRWHxCUi8+1mytMtCTLhrYMZ
-         7Dng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gfSNoy+Z45rbsOIpKQh4x/nE2e4rix2MvMV1bB+s1xA=;
-        b=be9LEWZ3/jrTjkrMZf4LGM7QGB17q0YBbHlTGH79uIZiPBWsKNB1UrjCNDy2cEpZwl
-         ymzBgins7xHELpiCQupkQHsUL1e9Me7GUUJlyitMjZLsOfVVDyJeQhjBt1pvZwHygWTD
-         RbyJNEMGk2Xqhe4rHchV6vmi1aZV7kcFgeZF1kYxSESJF2+KjATjuYbPuVypqaWGmVbv
-         tUtSb99tK3fkPsMvpoVbQiUHPZIezURiSsMW0nrpEEnmXOxHiF6DuZ1QF1Q/8ThQIVZ/
-         GKNBQrfda9oKUk2LWIvN0QRFih4b7DKvV3t+fFjAgCmZ1THWoeCpaa/+TvQO9NX3LNEn
-         W9Hw==
-X-Gm-Message-State: APjAAAVcLyVJHpq3ca5nNPi2yYQamG9ONyUEg4lbRf4TpJLlP2Yk69zW
-        FGIwiZKQYUwIElQeVFIHy7oihXtv
-X-Google-Smtp-Source: APXvYqwIjzcghYtx/qhbXft6UD7VOADUrf2xid18Ox7dRWQiWIhuU+pzV0AJpDSZDBGz+aT0iJ0kcw==
-X-Received: by 2002:a0d:e502:: with SMTP id o2mr18020594ywe.33.1567368386673;
-        Sun, 01 Sep 2019 13:06:26 -0700 (PDT)
-Received: from mail-yw1-f46.google.com (mail-yw1-f46.google.com. [209.85.161.46])
-        by smtp.gmail.com with ESMTPSA id e12sm2506843ywe.85.2019.09.01.13.06.25
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Sep 2019 13:06:25 -0700 (PDT)
-Received: by mail-yw1-f46.google.com with SMTP id 129so3503407ywb.8
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 13:06:25 -0700 (PDT)
-X-Received: by 2002:a81:2849:: with SMTP id o70mr13985443ywo.389.1567368384613;
- Sun, 01 Sep 2019 13:06:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190826170724.25ff616f@pixies> <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
- <20190827144218.5b098eac@pixies> <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
- <20190829152241.73734206@pixies>
-In-Reply-To: <20190829152241.73734206@pixies>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 1 Sep 2019 16:05:48 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
-Message-ID: <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
-Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
-To:     Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Shmulik Ladkani <shmulik@metanetworks.com>,
-        eyal@metanetworks.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1729004AbfIAUp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Sep 2019 16:45:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:48744 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728900AbfIAUp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Sep 2019 16:45:29 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4F71D1537CE95;
+        Sun,  1 Sep 2019 13:45:28 -0700 (PDT)
+Date:   Sun, 01 Sep 2019 13:45:25 -0700 (PDT)
+Message-Id: <20190901.134525.286041997131171719.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 01 Sep 2019 13:45:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 29, 2019 at 8:22 AM Shmulik Ladkani
-<shmulik.ladkani@gmail.com> wrote:
->
-> On Tue, 27 Aug 2019 14:10:35 +0200
-> Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> > Given first point above wrt hitting rarely, it would be good to first get a
-> > better understanding for writing a reproducer. Back then Yonghong added one
-> > to the BPF kernel test suite [0], so it would be desirable to extend it for
-> > the case you're hitting. Given NAT64 use-case is needed and used by multiple
-> > parties, we should try to (fully) fix it generically.
-> >
->
-> Thanks Daniel.
->
-> Managed to write a reproducer which mimics the skb we see on prodction,
-> that hits the exact same BUG_ON.
->
-> Submitted as a separate RFC PATCH to bpf-next.
 
-Thanks for the reproducer.
+1) Fix some length checks during OGM processing in batman-adv, from
+   Sven Eckelmann.
 
-One quick fix is to disable sg and thus revert to copying in this
-case. Not ideal, but better than a kernel splat:
+2) Fix regression that caused netfilter conntrack sysctls to not be per-netns
+   any more.  From Florian Westphal.
 
-@@ -3714,6 +3714,9 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
-        sg = !!(features & NETIF_F_SG);
-        csum = !!can_checksum_protocol(features, proto);
+3) Use after free in netpoll, from Feng Sun.
 
-+       if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag)
-+               sg = false;
-+
+4) Guard destruction of pfifo_fast per-cpu qdisc stats with
+   qdisc_is_percpu_stats(), from Davide Caratti.  Similar bug
+   is fixed in pfifo_fast_enqueue().
 
-It could perhaps be refined to avoid in the special case where
-skb_headlen(list_skb) == len and nskb aligned to start of list_skb.
-And needs looking into effect on GSO_BY_FRAGS.
+5) Fix memory leak in mld_del_delrec(), from Eric Dumazet.
 
-I also looked into trying to convert a kmalloc'ed skb->head into a
-headfrag. But even if possible, that conversion is non-trivial and
-easy to have bugs of its own.
+6) Handle neigh events on internal ports correctly in nfp, from John
+   Hurley.
 
-@@ -3849,8 +3885,8 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
-                                if (!skb_headlen(list_skb)) {
-                                        BUG_ON(!nfrags);
-                                } else {
--                                       BUG_ON(!list_skb->head_frag);
--
-+                                       BUG_ON(!list_skb->head_frag &&
-+
-!skb_to_headfrag(list_skb, GFP_ATOMIC));
+7) Clear SKB timestamp in NF flow table code so that it does not
+   confuse fq scheduler.  From Florian Westphal.
+
+8) taprio destroy can crash if it is invoked in a failure path of
+   taprio_init(), because the list head isn't setup properly yet
+   and the list del is unconditional.  Perform the list add earlier
+   to address this.  From Vladimir Oltean.
+
+9) Make sure to reapply vlan filters on device up, in aquantia driver.
+   From Dmitry Bogdanov.
+
+10) sgiseeq driver releases DMA memory using free_page() instead of
+    dma_free_attrs().  From Christophe JAILLET.
+
+Please pull, thanks a lot!
+
+The following changes since commit 9e8312f5e160ade069e131d54ab8652cf0e86e1a:
+
+  Merge tag 'nfs-for-5.3-3' of git://git.linux-nfs.org/projects/trondmy/linux-nfs (2019-08-27 13:22:57 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
+
+for you to fetch changes up to e1e54ec7fb55501c33b117c111cb0a045b8eded2:
+
+  net: seeq: Fix the function used to release some memory in an error handling path (2019-09-01 12:10:11 -0700)
+
+----------------------------------------------------------------
+Chen-Yu Tsai (1):
+      net: stmmac: dwmac-rk: Don't fail if phy regulator is absent
+
+Christophe JAILLET (2):
+      enetc: Add missing call to 'pci_free_irq_vectors()' in probe and remove functions
+      net: seeq: Fix the function used to release some memory in an error handling path
+
+Cong Wang (1):
+      net_sched: fix a NULL pointer deref in ipt action
+
+David Howells (8):
+      rxrpc: Improve jumbo packet counting
+      rxrpc: Use info in skbuff instead of reparsing a jumbo packet
+      rxrpc: Pass the input handler's data skb reference to the Rx ring
+      rxrpc: Abstract out rxtx ring cleanup
+      rxrpc: Add a private skb flag to indicate transmission-phase skbs
+      rxrpc: Use the tx-phase skb flag to simplify tracing
+      rxrpc: Use skb_unshare() rather than skb_cow_data()
+      rxrpc: Fix lack of conn cleanup when local endpoint is cleaned up [ver #2]
+
+David S. Miller (11):
+      Merge branch 'macb-Update-ethernet-compatible-string-for-SiFive-FU540'
+      Merge branch 'r8152-fix-side-effect'
+      Merge branch 'nfp-flower-fix-bugs-in-merge-tunnel-encap-code'
+      Merge tag 'mac80211-for-davem-2019-08-29' of git://git.kernel.org/.../jberg/mac80211
+      Merge tag 'rxrpc-fixes-20190827' of git://git.kernel.org/.../dhowells/linux-fs
+      Merge git://git.kernel.org/.../bpf/bpf
+      Merge git://git.kernel.org/.../pablo/nf
+      Merge tag 'batadv-net-for-davem-20190830' of git://git.open-mesh.org/linux-merge
+      Merge branch 'Fix-issues-in-tc-taprio-and-tc-cbs'
+      Merge branch 'net-aquantia-fixes-on-vlan-filters-and-other-conditions'
+      Merge branch 'net-dsa-microchip-add-KSZ8563-support'
+
+Davide Caratti (3):
+      net/sched: pfifo_fast: fix wrong dereference when qdisc is reset
+      net/sched: pfifo_fast: fix wrong dereference in pfifo_fast_enqueue
+      tc-testing: don't hardcode 'ip' in nsPlugin.py
+
+Denis Kenzior (2):
+      mac80211: Don't memset RXCB prior to PAE intercept
+      mac80211: Correctly set noencrypt for PAE frames
+
+Dmitry Bogdanov (4):
+      net: aquantia: fix removal of vlan 0
+      net: aquantia: fix limit of vlan filters
+      net: aquantia: reapply vlan filters on up
+      net: aquantia: fix out of memory condition on rx side
+
+Eric Dumazet (2):
+      tcp: remove empty skb from write queue in error cases
+      mld: fix memory leak in mld_del_delrec()
+
+Feng Sun (1):
+      net: fix skb use after free in netpoll
+
+Florian Westphal (2):
+      netfilter: conntrack: make sysctls per-namespace again
+      netfilter: nf_flow_table: clear skb tstamp before xmit
+
+George McCollister (1):
+      net: dsa: microchip: fill regmap_config name
+
+Greg Rose (1):
+      openvswitch: Properly set L4 keys on "later" IP fragments
+
+Hayes Wang (2):
+      Revert "r8152: napi hangup fix after disconnect"
+      r8152: remove calling netif_napi_del
+
+Igor Russkikh (1):
+      net: aquantia: linkstate irq should be oneshot
+
+Jiong Wang (1):
+      nfp: bpf: fix latency bug when updating stack index register
+
+John Hurley (2):
+      nfp: flower: prevent ingress block binds on internal ports
+      nfp: flower: handle neighbour events on internal ports
+
+Justin Pettit (1):
+      openvswitch: Clear the L4 portion of the key for "later" fragments.
+
+Ka-Cheong Poon (1):
+      net/rds: Fix info leak in rds6_inc_info_copy()
+
+Luca Coelho (1):
+      iwlwifi: pcie: handle switching killer Qu B0 NICs to C0
+
+Marco Hartmann (1):
+      Add genphy_c45_config_aneg() function to phy-c45.c
+
+Naveen N. Rao (1):
+      bpf: handle 32-bit zext during constant blinding
+
+Razvan Stefanescu (2):
+      dt-bindings: net: dsa: document additional Microchip KSZ8563 switch
+      net: dsa: microchip: add KSZ8563 compatibility string
+
+Ryan M. Collins (1):
+      net: bcmgenet: use ethtool_op_get_ts_info()
+
+Sven Eckelmann (2):
+      batman-adv: Only read OGM tvlv_len after buffer len check
+      batman-adv: Only read OGM2 tvlv_len after buffer len check
+
+Takashi Iwai (1):
+      sky2: Disable MSI on yet another ASUS boards (P6Xxxx)
+
+Thomas Falcon (1):
+      ibmvnic: Do not process reset during or after device removal
+
+Thomas Jarosch (1):
+      netfilter: nf_conntrack_ftp: Fix debug output
+
+Todd Seidelmann (1):
+      netfilter: xt_physdev: Fix spurious error message in physdev_mt_check
+
+Vlad Buslov (1):
+      net: sched: act_sample: fix psample group handling on overwrite
+
+Vladimir Oltean (4):
+      net: dsa: tag_8021q: Future-proof the reserved fields in the custom VID
+      taprio: Fix kernel panic in taprio_destroy
+      taprio: Set default link speed to 10 Mbps in taprio_set_picos_per_byte
+      net/sched: cbs: Set default link speed to 10 Mbps in cbs_set_port_rate
+
+Willem de Bruijn (1):
+      tcp: inherit timestamp on mtu probe
+
+Yash Shah (2):
+      macb: bindings doc: update sifive fu540-c000 binding
+      macb: Update compatibility string for SiFive FU540-C000
+
+YueHaibing (1):
+      amd-xgbe: Fix error path in xgbe_mod_init()
+
+wenxu (1):
+      netfilter: nft_meta_bridge: Fix get NFT_META_BRI_IIFVPROTO in network byteorder
+
+ Documentation/devicetree/bindings/net/dsa/ksz.txt         |   1 +
+ Documentation/devicetree/bindings/net/macb.txt            |   4 +-
+ drivers/net/dsa/microchip/ksz9477_spi.c                   |   1 +
+ drivers/net/dsa/microchip/ksz_common.h                    |   1 +
+ drivers/net/ethernet/amd/xgbe/xgbe-main.c                 |  10 ++-
+ drivers/net/ethernet/aquantia/atlantic/aq_filters.c       |   5 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_main.c          |   4 ++
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c           |   2 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_vec.c           |   3 +-
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c            |   1 +
+ drivers/net/ethernet/cadence/macb_main.c                  |   2 +-
+ drivers/net/ethernet/freescale/enetc/enetc_ptp.c          |   5 +-
+ drivers/net/ethernet/ibm/ibmvnic.c                        |   6 +-
+ drivers/net/ethernet/marvell/sky2.c                       |   7 +++
+ drivers/net/ethernet/netronome/nfp/bpf/jit.c              |  17 +++--
+ drivers/net/ethernet/netronome/nfp/flower/offload.c       |   7 ++-
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c   |   8 +--
+ drivers/net/ethernet/seeq/sgiseeq.c                       |   7 ++-
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c            |   6 +-
+ drivers/net/phy/phy-c45.c                                 |  26 ++++++++
+ drivers/net/phy/phy.c                                     |   2 +-
+ drivers/net/usb/r8152.c                                   |   5 +-
+ drivers/net/wireless/intel/iwlwifi/cfg/22000.c            |  24 ++++++++
+ drivers/net/wireless/intel/iwlwifi/iwl-config.h           |   2 +
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c             |   4 ++
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c           |   7 +--
+ include/linux/phy.h                                       |   1 +
+ include/net/act_api.h                                     |   4 +-
+ include/net/psample.h                                     |   1 +
+ include/trace/events/rxrpc.h                              |  59 +++++++++---------
+ kernel/bpf/core.c                                         |   8 ++-
+ net/batman-adv/bat_iv_ogm.c                               |  20 +++---
+ net/batman-adv/bat_v_ogm.c                                |  18 ++++--
+ net/bridge/netfilter/nft_meta_bridge.c                    |   2 +-
+ net/core/netpoll.c                                        |   6 +-
+ net/dsa/tag_8021q.c                                       |   2 +
+ net/ipv4/tcp.c                                            |  30 ++++++---
+ net/ipv4/tcp_output.c                                     |   3 +-
+ net/ipv6/mcast.c                                          |   5 +-
+ net/mac80211/rx.c                                         |   6 +-
+ net/netfilter/nf_conntrack_ftp.c                          |   2 +-
+ net/netfilter/nf_conntrack_standalone.c                   |   5 ++
+ net/netfilter/nf_flow_table_ip.c                          |   3 +-
+ net/netfilter/xt_physdev.c                                |   6 +-
+ net/openvswitch/conntrack.c                               |   5 ++
+ net/openvswitch/flow.c                                    | 160 +++++++++++++++++++++++++++--------------------
+ net/openvswitch/flow.h                                    |   1 +
+ net/psample/psample.c                                     |   2 +-
+ net/rds/recv.c                                            |   5 +-
+ net/rxrpc/af_rxrpc.c                                      |   3 -
+ net/rxrpc/ar-internal.h                                   |  17 +++--
+ net/rxrpc/call_event.c                                    |   8 +--
+ net/rxrpc/call_object.c                                   |  33 +++++-----
+ net/rxrpc/conn_client.c                                   |  44 +++++++++++++
+ net/rxrpc/conn_event.c                                    |   6 +-
+ net/rxrpc/conn_object.c                                   |   2 +-
+ net/rxrpc/input.c                                         | 304 +++++++++++++++++++++++++++++++++++++++++++++++++-----------------------------------------
+ net/rxrpc/local_event.c                                   |   4 +-
+ net/rxrpc/local_object.c                                  |   5 +-
+ net/rxrpc/output.c                                        |   6 +-
+ net/rxrpc/peer_event.c                                    |  10 +--
+ net/rxrpc/protocol.h                                      |   9 +++
+ net/rxrpc/recvmsg.c                                       |  47 ++++++++------
+ net/rxrpc/rxkad.c                                         |  32 +++-------
+ net/rxrpc/sendmsg.c                                       |  13 ++--
+ net/rxrpc/skbuff.c                                        |  40 ++++++++----
+ net/sched/act_bpf.c                                       |   2 +-
+ net/sched/act_connmark.c                                  |   2 +-
+ net/sched/act_csum.c                                      |   2 +-
+ net/sched/act_ct.c                                        |   2 +-
+ net/sched/act_ctinfo.c                                    |   2 +-
+ net/sched/act_gact.c                                      |   2 +-
+ net/sched/act_ife.c                                       |   2 +-
+ net/sched/act_ipt.c                                       |  11 ++--
+ net/sched/act_mirred.c                                    |   2 +-
+ net/sched/act_mpls.c                                      |   2 +-
+ net/sched/act_nat.c                                       |   2 +-
+ net/sched/act_pedit.c                                     |   2 +-
+ net/sched/act_police.c                                    |   2 +-
+ net/sched/act_sample.c                                    |   8 ++-
+ net/sched/act_simple.c                                    |   2 +-
+ net/sched/act_skbedit.c                                   |   2 +-
+ net/sched/act_skbmod.c                                    |   2 +-
+ net/sched/act_tunnel_key.c                                |   2 +-
+ net/sched/act_vlan.c                                      |   2 +-
+ net/sched/sch_cbs.c                                       |  19 +++---
+ net/sched/sch_generic.c                                   |  19 ++++--
+ net/sched/sch_taprio.c                                    |  31 +++++-----
+ tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py |  22 +++----
+ 89 files changed, 761 insertions(+), 487 deletions(-)
