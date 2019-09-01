@@ -2,116 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5972A4B3F
-	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 20:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38639A4B45
+	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 21:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbfIASse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Sep 2019 14:48:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47334 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729018AbfIASse (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Sep 2019 14:48:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hnimKs/jLgtBWYZWclCb62aoLe+8EQgWYyTHj3iDxqc=; b=ul3KpkOm7l4Uswx2WiebKEbF6Q
-        MxVJXBDDZD7l1yhLXkrC9XrpUn76Y0RcClCIjRnZq59M9/lZQlNBikbbaCEIWZONlraGb74jwjnG9
-        Fl3G+3Ke72A1o3+OpGKvcCJGM9lUVbO5KYnnoo/HfqLd/XVYsmJK73WwqQUv+2IAIwhI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i4Utf-0006Uh-SO; Sun, 01 Sep 2019 20:48:19 +0200
-Date:   Sun, 1 Sep 2019 20:48:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     David Miller <davem@davemloft.net>, jiri@resnulli.us,
-        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, allan.nielsen@microchip.com,
-        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
-Message-ID: <20190901184819.GA24673@lunn.ch>
-References: <20190829175759.GA19471@splinter>
- <20190829182957.GA17530@lunn.ch>
- <20190829193613.GA23259@splinter>
- <20190829.151201.940681219080864052.davem@davemloft.net>
- <20190830094319.GA31789@splinter>
- <20190831193556.GB2647@lunn.ch>
- <20190831204705.GA28380@splinter>
+        id S1729146AbfIATCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Sep 2019 15:02:21 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46467 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729095AbfIATCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Sep 2019 15:02:20 -0400
+Received: by mail-ed1-f68.google.com with SMTP id i8so47450edn.13;
+        Sun, 01 Sep 2019 12:02:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=36RBDfKrASGo4Jp+zlMidmvasdFpFW/8u/aX7fCMv7w=;
+        b=EqHKFzqWmfvXuYas24iS5IxH/0nUz2qwpJ3gxKcRq8y4K1/hpqbWh7LtfY+3q6Lfs3
+         XSPXOrRWDGlLEOZHN/vi2gcsepyw+8ECDjxHz8sr9oFSKFiZ5eWNJBivwF8FluCgWXKK
+         jkiOTHR8mshxKnF7HoHVulF7E2Y3ikS8MQHR1lp+lQHU/0+6r/facu9Ocqzi9ijFdods
+         jtXs20s/21DSrZytlzvSftWMWy+ctX1IIMKOOqAS6mmgJ+qurLJi94oPfqAvdVkTq7DI
+         xmQjl5Ka3Z1P7TD4JkXeeweHQxfp/qtl+FMFoW/2v5qkFEHJKeiOpSjev7I7T6TAMI+T
+         ibpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=36RBDfKrASGo4Jp+zlMidmvasdFpFW/8u/aX7fCMv7w=;
+        b=Hcn1lXAmZgzNndEh5EbFUJHKdS84Y45U1ZIulHE0bjpgtedFtQndd95K81Ny+KTaDI
+         ofTTM2iGGA1tiqW/MyxgNAuEbmYvq5Ro1SJInGTr68x4QLyaiPPLyKqt9RCZoYFxj/8g
+         6s5MpuWgRyLKMgAhdV2kEpVcmTTD5qMF5Gt7Eol0Utara0itY23q48hQ8aso2qoKWQLH
+         cQzaXQM0IiFTyll1b0VrE/Cz+UaaLOMpnz6wB44HVAGt9CNeOC85ARQmGWVFFmQGLZ/B
+         7EtbZW42GsFVFSg7Rva+t4nnCrzRidlzyQfpgWQPWWn4iVb/7D1vMeA5kegf1T+IHkOO
+         +r7g==
+X-Gm-Message-State: APjAAAWBMGJxledcHMaqxdpaecL+9bjDRDiNE+VPbSzBTXyB2QBiDQuc
+        pbhm7p1u1w2/v7PMhY0TXIZu9bRTmMGycCKIYlR5iilk
+X-Google-Smtp-Source: APXvYqxrlnoroTWmYh4Y1FKMmSaAbJ0sBTw5mp5/fPUm+IaU4y6d1kskMh55haHTy6rWLLYsAG/A5UaAq78/uKCcovU=
+X-Received: by 2002:a17:906:400c:: with SMTP id v12mr367071ejj.15.1567364538128;
+ Sun, 01 Sep 2019 12:02:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190831204705.GA28380@splinter>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 1 Sep 2019 22:02:07 +0300
+Message-ID: <CA+h21hqRFGvspMJtn1VDb_JzpRnApLSEARWPcGNvTADXCsou_w@mail.gmail.com>
+Subject: RT and PTP system timestamping
+To:     netdev <netdev@vger.kernel.org>, linux-rt-users@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Hubert Feurstein <h.feurstein@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 31, 2019 at 11:47:05PM +0300, Ido Schimmel wrote:
-> On Sat, Aug 31, 2019 at 09:35:56PM +0200, Andrew Lunn wrote:
-> > > Also, what happens when I'm running these application without putting
-> > > the interface in promisc mode? On an offloaded interface I would not be
-> > > able to even capture packets addressed to my interface's MAC address.
-> > 
-> > Sorry for rejoining the discussion late. I've been travelling and i'm
-> > now 3/4 of the way to Lisbon.
-> 
-> Hi Andrew,
-> 
-> Have fun!
-> 
-> > That statement i don't get. 
-> 
-> What about the other statements?
-> 
-> > If the frame has the MAC address of the interface, it has to be
-> > delivered to the CPU. 
-> 
-> So every packet that needs to be routed should be delivered to the CPU?
-> Definitely not.
-> 
-> > And so pcap will see it when running on the interface. I can pretty
-> > much guarantee every DSA driver does that.
-> 
-> I assume because you currently only consider L2 forwarding.
+Hello people of netdev, linux-rt-users and linux-spi,
 
-Yes, that is what i missed. The vast majority of switches which Linux
-supports are L2. All the switches i deal with are L2. So i did not
-think about L3. My bad.
+Apologies in advance for asking a question about something I know nothing about.
 
-> > But to address the bigger picture. My understanding is that we want to
-> > model offloading as a mechanism to accelerate what Linux can already
-> > do. The user should not have to care about these accelerators. The
-> > interface should work like a normal Linux interface. I can put an IP
-> > address on it and ping a peer. I can run a dhcp client and get an IP
-> > address from a dhcp server. I can add the interface to a bridge, and
-> > packets will get bridged. I as a user should not need to care if this
-> > is done in software, or accelerated by offloading it. I can add a
-> > route, and if the accelerate knows about L3, it can accelerate that as
-> > well. If not, the kernel will route it.
-> 
-> Yep, and this is how it's all working today.
+I am playing with a device driver of a SPI-controlled PTP timer. For
+my particular application it is important that the value of the PTP
+timer can be retrieved with an accuracy bound of less than +/- 400 ns.
+Currently that job has been served by the PTP_SYS_OFFSET_EXTENDED [1]
+ioctl (which allows for the timer's and the system's time to be
+correlated) plus some hacks in the SPI core and drivers which were
+submitted for review [2].
 
-So for a L3 switch, frames which match the MAC address, and one of the
-many global scope IP addresses on any interface, get delivered to the
-CPU, when the accelerator is L3 capable. If the IP address does not
-match, it gets routed in hardware, if there is an appropriate router,
-otherwise it get passed to the CPU, so the CPU can route it out an
-interface which is not part of the switch.
+In the future I would like to evaluate RT on the device I am playing
+with. There are a few dependency patches in flight and I'm not
+actually clear what my current evaluation options as of now are, so I
+think I'll just have to wait until 5.4-rt.
+But at least I need to consider the RT friendliness of the solution I
+am proposing. The gist of it (in the current version) is: put the
+controller in poll mode, disable local IRQs and preemption on the
+local CPU (via a spin_lock_irqsave), then surround the transfer of the
+SPI byte I'm interested in with (basically) calls to
+ktime_get_real_ts64.
 
-> Look, this again boils down to what promisc mode means with regards to
-> hardware offload. You want it to mean punt all traffic to the CPU? Fine.
-> Does not seem like anyone will be switching sides anyway, so lets move
-> forward. But the current approach is not good. Each driver needs to have
-> this special case logic and the semantics of promisc mode change not
-> only with regards to the value of the promisc counter, but also with
-> regards to the interface's uppers. This is highly fragile and confusing.
+Of course, this approach is completely incompatible with RT:
+- In RT, spin_lock_irqsave does not disable IRQs and preemption. But
+without those disabled, the PTP system timestamps are basically
+throw-away - they should capture the most precise "before" and "after"
+time of when the SPI slave device has received byte N of the transfer
+(that is when it's snapshotting its timer internally). It's true that
+the PTP_SYS_OFFSET_EXTENDED ioctl has a n_samples argument which can
+be used in a sort of "pick shortest readout time" fashion, but there
+is no guarantee that there will always be even 1 out of X readouts
+that complete atomically with no preemption.
+- Forcing the disabling of interrupts and preemption creates the
+opportunity for unbounded latency for the other threads in the system.
+- Disabling interrupts to record the before-and-after time for a TX
+event would also be a contradiction in terms for SPI controllers that
+don't do polling, i.e. DMA-based.
+- In RT, there is no hardirq context at all given to a SPI controller driver.
 
-Yes, i agree. We want one function, in the core, which handles all the
-different uppers. Maybe 2, if we need to consider L2 and L3 switches
-differently.
+The above constraints mean that the problem of timestamping byte N of
+a SPI transfer is intractable from within the SPI controller driver
+itself, at least with RT, as far as I can tell.
+Ensuring the atomicness of one system clock readout with the SPI
+transfer is hard enough I think, doing it for both the "pre" and the
+"post" times is even more so. There have been discussions about only
+taking one of the 2 timestamps, and deducing the other as being a
+constant offset far. That is something I may be open to experiment
+with, as long as there's least one place which can be timestamped,
+that has a known offset relative to the hardware event (e.g. the
+hardirq context - then the "pre" time can be backtraced).
+I noticed the record_irq_time() function call in kernel/irq/handle.c
+[3] and I do wonder whether it can be used for driver consumption?
+I don't love the idea of moving the driver back to interrupt mode
+though, but it's the only way I see currently. The other reason why I
+put it in poll mode is that 50% of the time spent for a transfer is
+simply wasted doing other stuff (an IRQ gets raised after each
+transferred byte). This is secondary however.
 
-	Andrew
+I am looking forward to comments that will hopefully put me on the right path.
+
+Regards,
+-Vladimir
+
+[1]: https://www.spinics.net/lists/netdev/msg532765.html
+[2]: https://www.spinics.net/lists/netdev/msg593404.html
+[3]: https://lwn.net/Articles/691297/
