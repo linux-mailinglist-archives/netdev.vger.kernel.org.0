@@ -2,208 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7736AA48B4
-	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 12:18:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B423A499F
+	for <lists+netdev@lfdr.de>; Sun,  1 Sep 2019 15:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728838AbfIAKSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Sep 2019 06:18:06 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57090 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726631AbfIAKSG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Sep 2019 06:18:06 -0400
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C836B4ACDF
-        for <netdev@vger.kernel.org>; Sun,  1 Sep 2019 10:18:05 +0000 (UTC)
-Received: by mail-qk1-f199.google.com with SMTP id y188so12593146qke.18
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 03:18:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=axJqbhswXeuOWGgZcXN6xzgPqVPx/M1YxoiXUe2de6s=;
-        b=lE3G1+ltoRqfr1PcfzxN8uX2hWF14sTcqrBdqx7JCRmKemcqqjqD3OXDb3sbpZmWE3
-         VRxMCOjJUF3d6VESclKPuJSgdmsLmD2zxOUmdNEo+qY2ZuFrxNoYp/0G7ugexXRYC9fT
-         kuASsmob/oOEb5Xx0VyANyhIpihFtJCvuMZaNFHiR0CTMf7CxX35poS6cuwBYI41+ehi
-         dd6kkLkb9Q1YgA3mKLr1fLhGQjbA1DJy1aV8C8+lIm8mmUd5ygySufgsyYIXsdVv5pKJ
-         0IGfgClFICRRqHiTdm0REQ4r2RZwsqjdoBT8h79iCkgPyOekGcN3mQFBnLbXBa33KTJ9
-         2riA==
-X-Gm-Message-State: APjAAAUx5GFc2W9lMI/Ua5NR8iiz/2ajXVP2OacrKdHTFfH2j1fN+AqC
-        uxapTvwBF6agmYpxTF2fj2A0PeGDmnY3M2XZcWn+COKp/VtFq3bQlZzqAt0apDvJh62BIQMTE9a
-        HAKOOMLUv6nQ5vUbZ
-X-Received: by 2002:ac8:140e:: with SMTP id k14mr1730710qtj.43.1567333085151;
-        Sun, 01 Sep 2019 03:18:05 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzmBSko76tGrsjEVoDETjc5RIhvsiH7pkCTt5b9+kKolAiuij4rSE64EAbMBV9kXwEbUo1J/w==
-X-Received: by 2002:ac8:140e:: with SMTP id k14mr1730693qtj.43.1567333084878;
-        Sun, 01 Sep 2019 03:18:04 -0700 (PDT)
-Received: from redhat.com (bzq-79-180-62-110.red.bezeqint.net. [79.180.62.110])
-        by smtp.gmail.com with ESMTPSA id s4sm5173520qkb.130.2019.09.01.03.18.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Sep 2019 03:18:03 -0700 (PDT)
-Date:   Sun, 1 Sep 2019 06:17:58 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] vsock/virtio: limit the memory used per-socket
-Message-ID: <20190901061707-mutt-send-email-mst@kernel.org>
-References: <20190729114302-mutt-send-email-mst@kernel.org>
- <20190729161903.yhaj5rfcvleexkhc@steredhat>
- <20190729165056.r32uzj6om3o6vfvp@steredhat>
- <20190729143622-mutt-send-email-mst@kernel.org>
- <20190730093539.dcksure3vrykir3g@steredhat>
- <20190730163807-mutt-send-email-mst@kernel.org>
- <20190801104754.lb3ju5xjfmnxioii@steredhat>
- <20190801091106-mutt-send-email-mst@kernel.org>
- <20190801133616.sik5drn6ecesukbb@steredhat>
- <20190901025815-mutt-send-email-mst@kernel.org>
+        id S1729121AbfIANzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Sep 2019 09:55:33 -0400
+Received: from mail-eopbgr780059.outbound.protection.outlook.com ([40.107.78.59]:55456
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728978AbfIANzd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Sep 2019 09:55:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ff6MekOaEN4J0ycNiAi6lPqpP21qDM3H+p9R4+xQSwNLvFYUuP6Mbco8fHUDIdsb2nBsWJLqVx5C8GY6QMgg9wQ4Y4vcwYsOrRBorXwRpY9nmkBLZXzxXk9c6tvqHPhSeVfW+0mMJuc/aSjRdsyUdvBNjQSg2L/a44SLR5/QuBL2UlmRSyWp1FQI/Vt9vc+SlAR8FeQEkn3zPVxg/8YOUKx8p/j2ioHde88ytSEqWv9lHI3A9RTGK7vFReiThoJpyhbCX7UIoDAMcB2T/Fqt/Q/FST5MgBwvQsU2aMJWjtgMjP7lOaaSwRNrIPVZZ/x1mqjffuRMRjtnnMUWUk0Ldg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h7yxwVP/AVkIX/8WRJlsX+U5eAJv6HlOvT6Hi8YIGeE=;
+ b=SWNYolaMK6uSGTlBDizyRSBTLGJFNwlaGXoGJlKTUwGn6+vJmlcsKAeqRlHFdnX/ex89vE4u0H4aVwCU6YVOw/6LgzCQAbULK85DI9kuQBdTaru1HKtwv1qZihZi8xXwfQmABBEJAWmjgOaKYSrzN+K6rtQL/Ju2e7yRHpd+ViVNznqyNCiF13Gwb4qXd+qlj2VwPGVSXsa3qzxXDjC4uXKkZMhDwv0T8r9+6+qdapcKkVtJzri4ssfqw4ME/C1dBWqr73ORqbNHi1j0wmv8m5fR4vI/3tGs2u6Rq5kV2ng2Ja6zO0ZheTtZY9EZpwTf2f/btAejNAYuLHpPOBwDLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h7yxwVP/AVkIX/8WRJlsX+U5eAJv6HlOvT6Hi8YIGeE=;
+ b=mhxe97xva7DC3v8cXW/WR2SxgepHazwDw+8hWs20iIfEDfAGIxGi4QEzf7V0OAIspW16/CNFcB4TgO6xv9aXyFHNY3BfUQ2qc+McbfswYFU9MBZ91VMt/yt9NAQ+f+SrXL3p/f6gtweYBxa+Zc3Rj0HnERyAg3orrvnPLdfCWfg=
+Received: from BN6PR02CA0094.namprd02.prod.outlook.com (10.161.158.35) by
+ SN6PR02MB5342.namprd02.prod.outlook.com (52.135.104.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2199.19; Sun, 1 Sep 2019 13:55:26 +0000
+Received: from BL2NAM02FT017.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::205) by BN6PR02CA0094.outlook.office365.com
+ (2603:10b6:405:60::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2199.21 via Frontend
+ Transport; Sun, 1 Sep 2019 13:55:26 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ BL2NAM02FT017.mail.protection.outlook.com (10.152.77.174) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2220.16
+ via Frontend Transport; Sun, 1 Sep 2019 13:55:26 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <kalyani.akula@xilinx.com>)
+        id 1i4QKD-0003IU-Mi; Sun, 01 Sep 2019 06:55:25 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <kalyani.akula@xilinx.com>)
+        id 1i4QK8-0002cJ-JH; Sun, 01 Sep 2019 06:55:20 -0700
+Received: from xsj-pvapsmtp01 (smtp2.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x81DtBOv010528;
+        Sun, 1 Sep 2019 06:55:11 -0700
+Received: from [172.23.155.44] (helo=xhdengvm155044.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <kalyania@xilinx.com>)
+        id 1i4QJz-0002an-Ek; Sun, 01 Sep 2019 06:55:11 -0700
+Received: by xhdengvm155044.xilinx.com (Postfix, from userid 23151)
+        id BD9678035F; Sun,  1 Sep 2019 19:25:10 +0530 (IST)
+From:   Kalyani Akula <kalyani.akula@xilinx.com>
+To:     herbert@gondor.apana.org.au, kstewart@linuxfoundation.org,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        pombredanne@nexb.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Kalyani Akula <kalyania@xilinx.com>,
+        Kalyani Akula <kalyani.akula@xilinx.com>
+Subject: [PATCH V2 0/4] Add Xilinx's ZynqMP AES driver support
+Date:   Sun,  1 Sep 2019 19:24:54 +0530
+Message-Id: <1567346098-27927-1-git-send-email-kalyani.akula@xilinx.com>
+X-Mailer: git-send-email 1.9.5
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(136003)(39850400004)(346002)(376002)(396003)(2980300002)(189003)(199004)(4326008)(26005)(6266002)(47776003)(478600001)(336012)(107886003)(2616005)(2906002)(51416003)(476003)(305945005)(426003)(52956003)(36386004)(186003)(8676002)(48376002)(103686004)(316002)(81156014)(16586007)(42186006)(50466002)(70206006)(36756003)(54906003)(44832011)(106002)(5660300002)(50226002)(6666004)(356004)(8936002)(70586007)(81166006)(126002)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR02MB5342;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190901025815-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f0e83762-9a62-495b-6d0c-08d72ee40ac5
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);SRVR:SN6PR02MB5342;
+X-MS-TrafficTypeDiagnostic: SN6PR02MB5342:
+X-Microsoft-Antispam-PRVS: <SN6PR02MB534229D264DB086F71B82C24AFBF0@SN6PR02MB5342.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 0147E151B5
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: /OcqxX6/QFtxAMYuot8kLDiqTJWgTQkVT10JyZ8ZE9oIxtJ04SpVvRrpKnx61HoWMIxz8DWmZBHv3iV+PscvabSWk8SYLenKM631XK8nuAIXyjS3HR5o4v5r4xUiqXYAMGjuH0MSTI9KS71bypvGX/V3fmAgHE7z/GemAzyxff8/Lbxi4dABhTQQpMR2daR2nwKFh72xLX4XzZBYeAk57/UeMamJJgrKWrfLuid36S4Y4C2YLJCL642KnHOlBjykd57JAJ2dkAYjFv/lUOIBhnbrTaJvGdx9brZC/oLcg3HhrukA6gvMpvFUUc7wmZpJuLIC5QaPqE7IYxm9nNv+VtTtuWm0pueK+1LuZufLZTW0LeqMb8JagVie706m9X53MzNEEREaA60iJod9y+BZBfu+Jxp0RyL9WOvG+3FMWJE=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2019 13:55:26.2611
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0e83762-9a62-495b-6d0c-08d72ee40ac5
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB5342
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 01, 2019 at 04:26:19AM -0400, Michael S. Tsirkin wrote:
-> On Thu, Aug 01, 2019 at 03:36:16PM +0200, Stefano Garzarella wrote:
-> > On Thu, Aug 01, 2019 at 09:21:15AM -0400, Michael S. Tsirkin wrote:
-> > > On Thu, Aug 01, 2019 at 12:47:54PM +0200, Stefano Garzarella wrote:
-> > > > On Tue, Jul 30, 2019 at 04:42:25PM -0400, Michael S. Tsirkin wrote:
-> > > > > On Tue, Jul 30, 2019 at 11:35:39AM +0200, Stefano Garzarella wrote:
-> > > > 
-> > > > (...)
-> > > > 
-> > > > > > 
-> > > > > > The problem here is the compatibility. Before this series virtio-vsock
-> > > > > > and vhost-vsock modules had the RX buffer size hard-coded
-> > > > > > (VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE = 4K). So, if we send a buffer smaller
-> > > > > > of 4K, there might be issues.
-> > > > > 
-> > > > > Shouldn't be if they are following the spec. If not let's fix
-> > > > > the broken parts.
-> > > > > 
-> > > > > > 
-> > > > > > Maybe it is the time to add add 'features' to virtio-vsock device.
-> > > > > > 
-> > > > > > Thanks,
-> > > > > > Stefano
-> > > > > 
-> > > > > Why would a remote care about buffer sizes?
-> > > > > 
-> > > > > Let's first see what the issues are. If they exist
-> > > > > we can either fix the bugs, or code the bug as a feature in spec.
-> > > > > 
-> > > > 
-> > > > The vhost_transport '.stream_enqueue' callback
-> > > > [virtio_transport_stream_enqueue()] calls the virtio_transport_send_pkt_info(),
-> > > > passing the user message. This function allocates a new packet, copying
-> > > > the user message, but (before this series) it limits the packet size to
-> > > > the VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE (4K):
-> > > > 
-> > > > static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
-> > > > 					  struct virtio_vsock_pkt_info *info)
-> > > > {
-> > > >  ...
-> > > > 	/* we can send less than pkt_len bytes */
-> > > > 	if (pkt_len > VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE)
-> > > > 		pkt_len = VIRTIO_VSOCK_DEFAULT_RX_BUF_SIZE;
-> > > > 
-> > > > 	/* virtio_transport_get_credit might return less than pkt_len credit */
-> > > > 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
-> > > > 
-> > > > 	/* Do not send zero length OP_RW pkt */
-> > > > 	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
-> > > > 		return pkt_len;
-> > > >  ...
-> > > > }
-> > > > 
-> > > > then it queues the packet for the TX worker calling .send_pkt()
-> > > > [vhost_transport_send_pkt() in the vhost_transport case]
-> > > > 
-> > > > The main function executed by the TX worker is
-> > > > vhost_transport_do_send_pkt() that picks up a buffer from the virtqueue
-> > > > and it tries to copy the packet (up to 4K) on it.  If the buffer
-> > > > allocated from the guest will be smaller then 4K, I think here it will
-> > > > be discarded with an error:
-> > > > 
-> > 
-> > I'm adding more lines to explain better.
-> > 
-> > > > static void
-> > > > vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> > > > 				struct vhost_virtqueue *vq)
-> > > > {
-> > 		...
-> > 
-> > 		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
-> > 					 &out, &in, NULL, NULL);
-> > 
-> > 		...
-> > 
-> > 		len = iov_length(&vq->iov[out], in);
-> > 		iov_iter_init(&iov_iter, READ, &vq->iov[out], in, len);
-> > 
-> > 		nbytes = copy_to_iter(&pkt->hdr, sizeof(pkt->hdr), &iov_iter);
-> > 		if (nbytes != sizeof(pkt->hdr)) {
-> > 			virtio_transport_free_pkt(pkt);
-> > 			vq_err(vq, "Faulted on copying pkt hdr\n");
-> > 			break;
-> > 		}
-> > 
-> > > >  ...
-> > > > 		nbytes = copy_to_iter(pkt->buf, pkt->len, &iov_iter);
-> > > 
-> > > isn't pck len the actual length though?
-> > > 
-> > 
-> > It is the length of the packet that we are copying in the guest RX
-> > buffers pointed by the iov_iter. The guest allocates an iovec with 2
-> > buffers, one for the header and one for the payload (4KB).
-> 
-> BTW at the moment that forces another kmalloc within virtio core. Maybe
-> vsock needs a flag to skip allocation in this case.  Worth benchmarking.
-> See virtqueue_use_indirect which just does total_sg > 1.
-> 
-> > 
-> > > > 		if (nbytes != pkt->len) {
-> > > > 			virtio_transport_free_pkt(pkt);
-> > > > 			vq_err(vq, "Faulted on copying pkt buf\n");
-> > > > 			break;
-> > > > 		}
-> > > >  ...
-> > > > }
-> > > > 
-> > > > 
-> > > > This series changes this behavior since now we will split the packet in
-> > > > vhost_transport_do_send_pkt() depending on the buffer found in the
-> > > > virtqueue.
-> > > > 
-> > > > We didn't change the buffer size in this series, so we still backward
-> > > > compatible, but if we will use buffers smaller than 4K, we should
-> > > > encounter the error described above.
-> 
-> So that's an implementation bug then? It made an assumption
-> of a 4K sized buffer? Or even PAGE_SIZE sized buffer?
+This patch set adds support for
+- dt-binding docs for Xilinx ZynqMP AES driver
+- Adds device tree node for ZynqMP AES driver
+- Adds communication layer support for aes in zynqmp.c
+- Adds Xilinx ZynqMP driver for AES Algorithm
 
-Assuming we miss nothing and buffers < 4K are broken,
-I think we need to add this to the spec, possibly with
-a feature bit to relax the requirement that all buffers
-are at least 4k in size.
+V2 Changes :
+- Converted RFC PATCH to PATCH
+- Removed ALG_SET_KEY_TYPE that was added to support keytype
+  attribute. Taken using setkey interface.
+- Removed deprecated BLKCIPHER in Kconfig
+- Erased Key/IV from the buffer.
+- Renamed zynqmp-aes driver to zynqmp-aes-gcm.
+- Addressed few other review comments
 
-> 
-> > > > 
-> > > > How do you suggest we proceed if we want to change the buffer size?
-> > > > Maybe adding a feature to "support any buffer size"?
-> > > > 
-> > > > Thanks,
-> > > > Stefano
-> > > 
-> > > 
-> > 
-> > -- 
+Kalyani Akula (4):
+  dt-bindings: crypto: Add bindings for ZynqMP AES driver
+  ARM64: zynqmp: Add Xilinix AES node.
+  firmware: xilinx: Add ZynqMP aes API for AES functionality
+  crypto: Add Xilinx AES driver
+
+ .../devicetree/bindings/crypto/xlnx,zynqmp-aes.txt |  12 +
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi             |   4 +
+ drivers/crypto/Kconfig                             |  11 +
+ drivers/crypto/Makefile                            |   1 +
+ drivers/crypto/zynqmp-aes-gcm.c                    | 297 +++++++++++++++++++++
+ drivers/firmware/xilinx/zynqmp.c                   |  23 ++
+ include/linux/firmware/xlnx-zynqmp.h               |   2 +
+ 7 files changed, 350 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/crypto/xlnx,zynqmp-aes.txt
+ create mode 100644 drivers/crypto/zynqmp-aes-gcm.c
+
+-- 
+1.8.3.1
+
