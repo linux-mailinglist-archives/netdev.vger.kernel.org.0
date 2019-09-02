@@ -2,156 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8989EA5E10
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 01:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FAFA5E19
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 01:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbfIBXVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 19:21:36 -0400
-Received: from mx3.ucr.edu ([138.23.248.64]:29251 "EHLO mx3.ucr.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726975AbfIBXVg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 19:21:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1567466496; x=1599002496;
-  h=mime-version:references:in-reply-to:from:date:message-id:
-   subject:cc;
-  bh=2tF0euXR3VYfwevVZ1jCeatrtkAWORyVRWQSZY/zVZs=;
-  b=fFDtwZha9ea9qra9b+6sRP15xg2qPaQF7Bv6DzFGAXNi72oucvD9h1Bf
-   LtXk2C4irwN5AHyG/UZsNYcFVC8trVHlE4FDaPBsNLdSHw0SWcrRhVABP
-   Mxidea39aFsbIgzSsDJY9smpf7gt6HlmTtwX86wz4St+D1Vw/M7pAztj/
-   sgbrwrxcLWOEmdltpEyniT1s8b5a0sAVsXJzpsFFG84P6Lkh/4xDjCIUY
-   S6YR3r2VMQERKc9sSHWoyaSDU9JNZqgTuS70iEz1WQv33/LHgv6X2MilL
-   BVwx4J5n7ucuk9yj+lLWBlIJPT2hqsoDHeqYFwvNmqmfc66WRXJvMVN+x
-   A==;
-IronPort-SDR: R3Rr03bUUz8T6bq+bEU+713X6KYQOGKYYnJjLywgF7QFSupjwZ0ECksD/cUvHIAASSv7aIeTxn
- QgmEfROr35zXaaMP3RGAytuwHNTV6CKCAZ2Awdh7XrY7eq5MLZAhYWicZX7Bm50TzhkLg6fWYv
- o/Lv3/O2NC7IUR/K7yl9eymbCEOjSYL4i/ckntPPdS++X3ztnRrde4I9b9xcbAtE74VEoGDeuR
- ti8hvcWIcAb5bj9JTtiz3BY8q/4TbyRJAIdWYzZFhll7+fNTRKDGTu+pTQtnrC6BKKLLkrN/bl
- t+s=
-IronPort-PHdr: =?us-ascii?q?9a23=3AjJA94R2NPxiQFU8VsmDT+DRfVm0co7zxezQtwd?=
- =?us-ascii?q?8Zse0RKfad9pjvdHbS+e9qxAeQG9mCsbQd1LOd6fiocFdDyK7JiGoFfp1IWk?=
- =?us-ascii?q?1NouQttCtkPvS4D1bmJuXhdS0wEZcKflZk+3amLRodQ56mNBXdrXKo8DEdBA?=
- =?us-ascii?q?j0OxZrKeTpAI7SiNm82/yv95HJbAhEmSSxbalvIBi0sAndudcajZd/Iast1x?=
- =?us-ascii?q?XFpWdFdf5Lzm1yP1KTmBj85sa0/JF99ilbpuws+c1dX6jkZqo0VbNXAigoPG?=
- =?us-ascii?q?Az/83rqALMTRCT6XsGU2UZiQRHDg7Y5xznRJjxsy/6tu1g2CmGOMD9UL45VS?=
- =?us-ascii?q?i+46ptVRTlkzkMOSIn/27Li8xwlKNbrwynpxxj2I7ffYWZOONjcq/BYd8WQG?=
- =?us-ascii?q?xMXsNQVyxaGYO8bo0PD+UcNuhGtof2ulUOrRqgCgmoGezk1ztEi3Hq0aE/1e?=
- =?us-ascii?q?kqDAPI0xE6H98Wv3vUotf6OqccX+620afH0S7Ob+9K1Trn9ITEbgwtrPOKUL?=
- =?us-ascii?q?ltccTR004vFwbdg1qSqIzkPjOV1vkKs2OG7OVgVfigi286oAx2ojmux8cshZ?=
- =?us-ascii?q?PIho4J1lzJ+z50wJspKt2iUkJ0f8OrEIZJuiycKoB4QdsiTnl2tComzrAKo5?=
- =?us-ascii?q?22cSgQxJg52xLSaOaLf5WM7x/gUuuaPC12i2h/eL2lgha/6U2gyurhWcaqyF?=
- =?us-ascii?q?tKtS9FksXUtnAKyhzT9tCLSvtj8Uel3jaCzwXT5ftFIUAwjKbbL5whzqMpmp?=
- =?us-ascii?q?odrEjOGiz7lF/5jK+RcUUk9eyo5Pr9brr6oZ+cMpd4igD4MqswhsyyGfo0Ph?=
- =?us-ascii?q?QKUmSB+umx1Kfv8VPlTLhJlPE6j63UvZPCKcQevKG5AgtV0og56xa4CjeryN?=
- =?us-ascii?q?QZnHgHLF1feRKLk5TlNl/VLfDlEfi/mU6gnyl2yPDbJrHhGInCLmDfkLf9er?=
- =?us-ascii?q?Zw80hcxxQvzd9C+Z1UFKoMIOz8WkDvrtzUFBw5PBKuw+bhFtp90pkSWWWVAq?=
- =?us-ascii?q?+WY+v8q1iNs9MuMemRY8cnuD/8Y6w09f7njCdhwncAdrPv0JcKPiPrVs96Kl?=
- =?us-ascii?q?mUNCK/yuwKFn0H609hFOE=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2FaAAAyo21dgMbQVdFlHgEGBwaBVQc?=
- =?us-ascii?q?LAYNWMxoQhCGPDIIPiWqBCYV6gwmFJIF7AQgBAQEOLwEBhD8CI4JKIzYHDgI?=
- =?us-ascii?q?DCAEBBQEBAQEBBgQBAQIQAQEJDQkIJ4VDgjopgmAJAQEBAxIRBFIQCwsNAgI?=
- =?us-ascii?q?fBwICIhIBBQEcGSI5gkiCCp1qgQM8iyR/M4hmAQgMgUkSeiiLeIIXhCM+hA2?=
- =?us-ascii?q?DQhSCRASBLgEBAY1EhxaWDQEGAoINFIwviCwbgjOHNoQdimAtpisPIYE2CoI?=
- =?us-ascii?q?AMxolfwZnCoFEgnqOLSMwjRuCVAE?=
-X-IPAS-Result: =?us-ascii?q?A2FaAAAyo21dgMbQVdFlHgEGBwaBVQcLAYNWMxoQhCGPD?=
- =?us-ascii?q?IIPiWqBCYV6gwmFJIF7AQgBAQEOLwEBhD8CI4JKIzYHDgIDCAEBBQEBAQEBB?=
- =?us-ascii?q?gQBAQIQAQEJDQkIJ4VDgjopgmAJAQEBAxIRBFIQCwsNAgIfBwICIhIBBQEcG?=
- =?us-ascii?q?SI5gkiCCp1qgQM8iyR/M4hmAQgMgUkSeiiLeIIXhCM+hA2DQhSCRASBLgEBA?=
- =?us-ascii?q?Y1EhxaWDQEGAoINFIwviCwbgjOHNoQdimAtpisPIYE2CoIAMxolfwZnCoFEg?=
- =?us-ascii?q?nqOLSMwjRuCVAE?=
-X-IronPort-AV: E=Sophos;i="5.64,461,1559545200"; 
-   d="scan'208";a="78457826"
-Received: from mail-lj1-f198.google.com ([209.85.208.198])
-  by smtp3.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2019 16:21:35 -0700
-Received: by mail-lj1-f198.google.com with SMTP id 17so2231066ljc.20
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 16:21:35 -0700 (PDT)
+        id S1727210AbfIBX3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 19:29:41 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46131 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726623AbfIBX3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 19:29:40 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q5so1753769pfg.13
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 16:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1vDWjmM70LfW6cc+QxrhskQlwC96kB2Yd7xei6b4mr4=;
+        b=OmMPaBjhVxcC+sm0hXVDwSCT6osf8G/CJFEqr4csefabTsFggDBppR6pQ5TFb+EKdN
+         hvYqEvlbaYzhNe3zNmma5a4LtJKmBZXe804z0nFXqZtLuvreFZ/LQtZCtqz2p1baUOH1
+         Ux+LS8veHDGnjdo8tEkkOzKzTQxMmlqlcwsEg51BwVrppt9jGjWOMYSn7IZGn/YiP6Tq
+         44pvWvZW6ibojpYZBjYF6Z+LZQ1/huL9ma/64YGGQB77ENHwYJDQeT4VSCHnB3eBGxds
+         +99aDAl9lV+p9KUNPVOPo6QjahLhbl0rD1/5dshi5yjVvWNIfjgTlbIAisYbWlprmIf8
+         PrgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:cc;
-        bh=11S+72wXCThjYHgY/hYu0pdk4ZjzkGTY7Jm1Oqj+h6Y=;
-        b=PnYLzMajSKo2XPqFj5PM6w3ABLE2hTIh34zxm+mMC/hqQuXLJ8dazCiQeftbgJ2dP+
-         ConVS/oAYBXpik1iyh2TbJNmkzyv3H/q30RUWdr+uJvm/K9azSp5bV3rHSiqotQcniFI
-         zE/i1IvBND7B3JbrtdTBoStvRdPnd1u8nI+cQfendBO6nxfEGV92DHlr18EO3w56uEVa
-         GaVEHdAATc7lN32ak6+lE6Omgv1tPnTxlx8wJzD3Yb3ZH36bnIVUeCMsrkII4zjw4SSQ
-         eyMlP9Y+6gK2/Q7flfp47L4RA7l7x7qogD6xp3AS1YlpQ1whxUXA/pekU4F9gOMMzRy3
-         xPAg==
-X-Gm-Message-State: APjAAAVJm8dIvzVAF/QcJ5JMbs8O3p/OyI0dj0eyvtovTU5xi4Xnls44
-        /Wyzsj6VLaSCZhZccwCsZRnTQG1jKsGWPoBeWCj3CiI3RHSqclCB81mxuwcv9aXg1jbgZbXY0H3
-        nkxNys0eTA2XN9AvmTu0rEXkdBPjhjRgMeQ==
-X-Google-Smtp-Source: APXvYqzagtcGa1G7dj7735BrefQ3wcMVlPJ8FZ55wNvzN2oHUyfNO0V8vrqkWiUgf7ZKhp7WQBwj/zDGMzNqzlDdptU=
-X-Received: by 2002:a2e:8806:: with SMTP id x6mr17626931ljh.190.1567466493336;
-        Mon, 02 Sep 2019 16:21:33 -0700 (PDT)
-X-Received: by 2002:a2e:8806:: with SMTP id x6mt12995385ljh.190.1567466493181;
- Mon, 02 Sep 2019 16:21:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1vDWjmM70LfW6cc+QxrhskQlwC96kB2Yd7xei6b4mr4=;
+        b=GVJfwB2/jHZHu4k3vU4Uwyk3WCTbpccSgZN6Tb6WUBbNyI1phLpyP2C4OMlGindmqp
+         GiD0IeTlHyU8BDdHMFTw5bty2wNmbK9mXHtp9NiVEUsGI4X/Uy3CQ+/f69i/JYzHH2hm
+         eq1DPGjK4WMxZPnuksCFcUG3rI4QaRPTO1b0HmdOH56mz4M4jeYb/Pvq1Nwp6IkNq1/O
+         rq9cPPZN3E2Y/f68XMC0HqLPrCgBsJcN7mnCRTz9ttnzjWUrMuA8vDuO0lAB06MlbVtU
+         +Z6f0LzPRSC73JxWwDtV9Mf/qhKNcZ1QxpbJnyUcZZWvoyBORI+Bs6ajjh1DHoY5nEXV
+         jCkA==
+X-Gm-Message-State: APjAAAWg3r3NWuc4URKpXlUUNHNxpbRrXPrrAiw/lp+JAV5w736++g7M
+        XVkYwQrrDT3vCZockHmfPLFFv/BEVZw=
+X-Google-Smtp-Source: APXvYqzibmJGG5KI/7tJo/gaMievXZ7b5wSnFhd4tphE+NEVI+MW28U/WwtsrJ/z43DyFh6gDpImHw==
+X-Received: by 2002:a17:90b:8ce:: with SMTP id ds14mr15250952pjb.105.1567466979554;
+        Mon, 02 Sep 2019 16:29:39 -0700 (PDT)
+Received: from dancer.lab.teklibre.com ([2603:3024:1536:86f0:eea8:6bff:fefe:9a2])
+        by smtp.gmail.com with ESMTPSA id v184sm16404703pgd.34.2019.09.02.16.29.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 02 Sep 2019 16:29:39 -0700 (PDT)
+From:   Dave Taht <dave.taht@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Dave Taht <dave.taht@gmail.com>
+Subject: [PATCH net-next] Convert usage of IN_MULTICAST to ipv4_is_multicast
+Date:   Mon,  2 Sep 2019 16:29:36 -0700
+Message-Id: <1567466976-1351-1-git-send-email-dave.taht@gmail.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20190902231510.21374-1-yzhai003@ucr.edu>
-In-Reply-To: <20190902231510.21374-1-yzhai003@ucr.edu>
-From:   Yizhuo Zhai <yzhai003@ucr.edu>
-Date:   Mon, 2 Sep 2019 16:22:03 -0700
-Message-ID: <CABvMjLSeQjMi0DPLGH3qnoLNb=gc+P_4ZF7OQQMHa6uRMD42Dg@mail.gmail.com>
-Subject: Re: [PATCH] net: hisilicon: Variable "reg_value" in function
- mdio_sc_cfg_reg_write() could be uninitialized
-Cc:     Chengyu Song <csong@cs.ucr.edu>, Zhiyun Qian <zhiyunq@cs.ucr.edu>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the inconvenience. I made some mistake here, please ignore
-this patch and I will submit a new one.
+IN_MULTICAST's primary intent is as a uapi macro.
 
-On Mon, Sep 2, 2019 at 4:14 PM Yizhuo <yzhai003@ucr.edu> wrote:
->
-> In function mdio_sc_cfg_reg_write(), variable reg_value could be
-> uninitialized if regmap_read() fails. However, this variable is
-> used later in the if statement, which is potentially unsafe.
->
-> Signed-off-by: Yizhuo <yzhai003@ucr.edu>
-> ---
->  drivers/net/ethernet/hisilicon/hns_mdio.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
-> index 3e863a71c513..f5b64cb2d0f6 100644
-> --- a/drivers/net/ethernet/hisilicon/hns_mdio.c
-> +++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
-> @@ -148,11 +148,17 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
->  {
->         u32 time_cnt;
->         u32 reg_value;
-> +       int ret;
->
->         regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
->
->         for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
-> -               regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-> +               ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-> +               if (ret) {
-> +                       dev_err(mdio_dev->regmap->dev, "Fail to read from the register\n");
-> +                       return ret;
-> +               }
-> +
->                 reg_value &= st_msk;
->                 if ((!!check_st) == (!!reg_value))
->                         break;
-> --
-> 2.17.1
->
+Elsewhere in the kernel we use ipv4_is_multicast consistently.
 
+This patch unifies linux's multicast checks to use that function
+rather than this macro.
 
+Signed-off-by: Dave Taht <dave.taht@gmail.com>
+Reviewed-by: Toke Høiland-Jørgensen <toke@toke.dk>
+
+---
+ drivers/net/geneve.c | 2 +-
+ include/net/vxlan.h  | 4 ++--
+ net/rds/af_rds.c     | 4 ++--
+ net/rds/bind.c       | 4 ++--
+ net/rds/send.c       | 4 ++--
+ 5 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index cb2ea8facd8d..3ab24fdccd3b 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -1345,7 +1345,7 @@ static int geneve_nl2info(struct nlattr *tb[], struct nlattr *data[],
+ 		info->key.u.ipv4.dst =
+ 			nla_get_in_addr(data[IFLA_GENEVE_REMOTE]);
+ 
+-		if (IN_MULTICAST(ntohl(info->key.u.ipv4.dst))) {
++		if (ipv4_is_multicast(info->key.u.ipv4.dst)) {
+ 			NL_SET_ERR_MSG_ATTR(extack, data[IFLA_GENEVE_REMOTE],
+ 					    "Remote IPv4 address cannot be Multicast");
+ 			return -EINVAL;
+diff --git a/include/net/vxlan.h b/include/net/vxlan.h
+index dc1583a1fb8a..335283dbe9b3 100644
+--- a/include/net/vxlan.h
++++ b/include/net/vxlan.h
+@@ -391,7 +391,7 @@ static inline bool vxlan_addr_multicast(const union vxlan_addr *ipa)
+ 	if (ipa->sa.sa_family == AF_INET6)
+ 		return ipv6_addr_is_multicast(&ipa->sin6.sin6_addr);
+ 	else
+-		return IN_MULTICAST(ntohl(ipa->sin.sin_addr.s_addr));
++		return ipv4_is_multicast(ipa->sin.sin_addr.s_addr);
+ }
+ 
+ #else /* !IS_ENABLED(CONFIG_IPV6) */
+@@ -403,7 +403,7 @@ static inline bool vxlan_addr_any(const union vxlan_addr *ipa)
+ 
+ static inline bool vxlan_addr_multicast(const union vxlan_addr *ipa)
+ {
+-	return IN_MULTICAST(ntohl(ipa->sin.sin_addr.s_addr));
++	return ipv4_is_multicast(ipa->sin.sin_addr.s_addr);
+ }
+ 
+ #endif /* IS_ENABLED(CONFIG_IPV6) */
+diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
+index 2977137c28eb..1a5bf3fa4578 100644
+--- a/net/rds/af_rds.c
++++ b/net/rds/af_rds.c
+@@ -559,7 +559,7 @@ static int rds_connect(struct socket *sock, struct sockaddr *uaddr,
+ 			ret = -EDESTADDRREQ;
+ 			break;
+ 		}
+-		if (IN_MULTICAST(ntohl(sin->sin_addr.s_addr)) ||
++		if (ipv4_is_multicast(sin->sin_addr.s_addr) ||
+ 		    sin->sin_addr.s_addr == htonl(INADDR_BROADCAST)) {
+ 			ret = -EINVAL;
+ 			break;
+@@ -593,7 +593,7 @@ static int rds_connect(struct socket *sock, struct sockaddr *uaddr,
+ 			addr4 = sin6->sin6_addr.s6_addr32[3];
+ 			if (addr4 == htonl(INADDR_ANY) ||
+ 			    addr4 == htonl(INADDR_BROADCAST) ||
+-			    IN_MULTICAST(ntohl(addr4))) {
++			    ipv4_is_multicast(addr4)) {
+ 				ret = -EPROTOTYPE;
+ 				break;
+ 			}
+diff --git a/net/rds/bind.c b/net/rds/bind.c
+index 0f4398e7f2a7..6dbb763bc1fd 100644
+--- a/net/rds/bind.c
++++ b/net/rds/bind.c
+@@ -181,7 +181,7 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 		if (addr_len < sizeof(struct sockaddr_in) ||
+ 		    sin->sin_addr.s_addr == htonl(INADDR_ANY) ||
+ 		    sin->sin_addr.s_addr == htonl(INADDR_BROADCAST) ||
+-		    IN_MULTICAST(ntohl(sin->sin_addr.s_addr)))
++		    ipv4_is_multicast(sin->sin_addr.s_addr))
+ 			return -EINVAL;
+ 		ipv6_addr_set_v4mapped(sin->sin_addr.s_addr, &v6addr);
+ 		binding_addr = &v6addr;
+@@ -206,7 +206,7 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 			addr4 = sin6->sin6_addr.s6_addr32[3];
+ 			if (addr4 == htonl(INADDR_ANY) ||
+ 			    addr4 == htonl(INADDR_BROADCAST) ||
+-			    IN_MULTICAST(ntohl(addr4)))
++			    ipv4_is_multicast(addr4))
+ 				return -EINVAL;
+ 		}
+ 		/* The scope ID must be specified for link local address. */
+diff --git a/net/rds/send.c b/net/rds/send.c
+index 9ce552abf9e9..82dcd8b84fe7 100644
+--- a/net/rds/send.c
++++ b/net/rds/send.c
+@@ -1144,7 +1144,7 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
+ 		case AF_INET:
+ 			if (usin->sin_addr.s_addr == htonl(INADDR_ANY) ||
+ 			    usin->sin_addr.s_addr == htonl(INADDR_BROADCAST) ||
+-			    IN_MULTICAST(ntohl(usin->sin_addr.s_addr))) {
++			    ipv4_is_multicast(usin->sin_addr.s_addr)) {
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
+@@ -1175,7 +1175,7 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
+ 				addr4 = sin6->sin6_addr.s6_addr32[3];
+ 				if (addr4 == htonl(INADDR_ANY) ||
+ 				    addr4 == htonl(INADDR_BROADCAST) ||
+-				    IN_MULTICAST(ntohl(addr4))) {
++				    ipv4_is_multicast(addr4)) {
+ 					ret = -EINVAL;
+ 					goto out;
+ 				}
 -- 
-Kind Regards,
+2.17.1
 
-Yizhuo Zhai
-
-Computer Science, Graduate Student
-University of California, Riverside
