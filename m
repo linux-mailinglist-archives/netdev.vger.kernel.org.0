@@ -2,105 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B2EDA5BCC
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 19:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF92A5BE0
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 19:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbfIBRYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 13:24:51 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:20188 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726275AbfIBRYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 13:24:51 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x82HLlp6077030;
-        Mon, 2 Sep 2019 13:24:43 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2us5eeukwy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Sep 2019 13:24:43 -0400
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x82HMi3q078694;
-        Mon, 2 Sep 2019 13:24:43 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2us5eeukwn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Sep 2019 13:24:43 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x82HKDnh020803;
-        Mon, 2 Sep 2019 17:24:42 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma04dal.us.ibm.com with ESMTP id 2uqgh6gxs7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Sep 2019 17:24:42 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x82HOf2n40960420
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 2 Sep 2019 17:24:41 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5609DAE06B;
-        Mon,  2 Sep 2019 17:24:41 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 810B4AE05C;
-        Mon,  2 Sep 2019 17:24:39 +0000 (GMT)
-Received: from kashyyyk (unknown [9.85.146.12])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Mon,  2 Sep 2019 17:24:39 +0000 (GMT)
-Date:   Mon, 2 Sep 2019 14:24:33 -0300
-From:   Mauro Rodrigues <maurosr@linux.vnet.ibm.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 11/15] i40e: Implement debug macro hw_dbg using
- pr_debug
-Message-ID: <20190902172433.GA8007@kashyyyk>
-References: <20190828064407.30168-1-jeffrey.t.kirsher@intel.com>
- <20190828064407.30168-12-jeffrey.t.kirsher@intel.com>
- <20190828153936.57ababbc@cakuba.netronome.com>
+        id S1726634AbfIBRlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 13:41:18 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:46113 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726464AbfIBRlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 13:41:18 -0400
+Received: by mail-lf1-f67.google.com with SMTP id n19so10886427lfe.13
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 10:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9bia60mvHh0gbszywhWElEGhJ/D0akHyw7FHDFQMRCg=;
+        b=vviNQCniwn2Pt5wqfCJ3Uoc4dO9TwZJWN63daVKPBL8Rk1XDPcribXQeMvEnCpgvjk
+         wA5nLX8ZeAO2hlT+MRVrarZ4JQJ49AvIy79qVmzvJNsydHBG0fwzrDrRPUADetA1l95S
+         vjZf/+8JKkwdMkHyFkp4oV4GZu3DqStIk/+1YvXXqnpPkdnwjIz6xf2q8v0/br3Q0+no
+         O2FSONtzzWaU40Hl+2+raJaj4GQbk4Uqp/5+PaZfbk8TorNpEhd7UqgfMQGU+9L+rTfB
+         daxzm1odQrYFmyh2KSTY56uf4K+3rr/v5lDhZwvYiuHzDIH15b10L2vgmc1qTO1R3QRp
+         nkoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=9bia60mvHh0gbszywhWElEGhJ/D0akHyw7FHDFQMRCg=;
+        b=DMeaMsD9e7PsQpNG4nAQpCSMg1PJgn2gGfujT1QT/UR3zgHWbrd3Qli/Th2IAgTpew
+         5rDh3u5i/Pef7ZgEKaxR2YJbyMo427pVAWUBV/4N3n0YYYUjA50fbQhctFjOXg1YALs3
+         VSv4csQGmHdRBOnSq7RNlE5q2psu6rSjFPWsL/860OONWlm/vdlF5T3i0tGK/BPJtwC3
+         1+bvudUL42d0LAsxnegK9+k2m7orqCHwW97ys3vf3rfO0+GU0q5a9E60tqK5h5+NyKo2
+         1rdfa+l+GxKjcfGPa4UXZeU0xmP1EXEJ/3lxhQ5TgGHFOTJYyOBjNlxqzmOrXa57Y4cd
+         i2rw==
+X-Gm-Message-State: APjAAAXJR5w2a+Hj2x3dQa+iBTbRo4mVt2jsIPPcXH64I7NnxIxTy3cX
+        VXXQqmdtbsddNUWtnaHMBHUHlw==
+X-Google-Smtp-Source: APXvYqxDD2wge+2LQ9/Ub63bv+73Femk+OMs/LM6ctbCLimLn/AjaBAeyv3tCs3oUN1EUOpKXAnTLA==
+X-Received: by 2002:ac2:483a:: with SMTP id 26mr6746631lft.188.1567446075908;
+        Mon, 02 Sep 2019 10:41:15 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:272:5afe:be7d:d15f:cff2:c9cf])
+        by smtp.gmail.com with ESMTPSA id i21sm1404107lfl.44.2019.09.02.10.41.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 Sep 2019 10:41:15 -0700 (PDT)
+Subject: Re: [net-next 2/3] ravb: Remove undocumented processing
+To:     Simon Horman <horms+renesas@verge.net.au>,
+        David Miller <davem@davemloft.net>
+Cc:     Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+References: <20190902080603.5636-1-horms+renesas@verge.net.au>
+ <20190902080603.5636-3-horms+renesas@verge.net.au>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <f54e244a-2d9d-7ba8-02fb-af5572b3a191@cogentembedded.com>
+Date:   Mon, 2 Sep 2019 20:41:14 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190828153936.57ababbc@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-02_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1909020196
+In-Reply-To: <20190902080603.5636-3-horms+renesas@verge.net.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 28, 2019 at 03:39:53PM -0700, Jakub Kicinski wrote:
-> On Tue, 27 Aug 2019 23:44:03 -0700, Jeff Kirsher wrote:
-> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_osdep.h b/drivers/net/ethernet/intel/i40e/i40e_osdep.h
-> > index a07574bff550..c0c9ce3eab23 100644
-> > --- a/drivers/net/ethernet/intel/i40e/i40e_osdep.h
-> > +++ b/drivers/net/ethernet/intel/i40e/i40e_osdep.h
-> > @@ -18,7 +18,12 @@
-> >   * actual OS primitives
-> >   */
-> >  
-> > -#define hw_dbg(hw, S, A...)	do {} while (0)
-> > +#define hw_dbg(hw, S, A...)							\
-> > +do {										\
-> > +	int domain = pci_domain_nr(((struct i40e_pf *)(hw)->back)->pdev->bus);	\
-> > +	pr_debug("i40e %04x:%02x:%02x.%x " S, domain, (hw)->bus.bus_id,		\
-> > +		 (hw)->bus.device, (hw)->bus.func, ## A);			\
+On 09/02/2019 11:06 AM, Simon Horman wrote:
+
+> From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
 > 
-> This looks like open coded dev_dbg() / dev_namie(), why?
+> This patch removes the use of the undocumented registers
+> CDCR, LCCR, CERCR, CEECR and the undocumented BOC bit of the CCC register.
 
-Indeed, thanks for pointing out. I'll fix this and the other patch you
-reviewed and resubmit.
+   The driver has many more #define's marked as undocumented. It's not clear
+why you crammed the counters and the endianness bit in one patch. It clearly
+needs to be split -- one patch for the MAC counters and one patch for the
+AVB-DMAC bit.
 
-I'm not sure what should be the preferred approach here though, just use
-dev_dbg to implement this macro or replace all of its occurrence in the
-code by dev_dbg?
-
-Jeff, do you have any preference?
+> Current documentation for EtherAVB (ravb) describes the offset of
+> what the driver uses as the BOC bit as reserved and that only a value of
+> 0 should be written. Furthermore, the offsets used for the undocumented
+> registers are also considered reserved nd should not be written to.
 > 
-> > +} while (0)
+> After some internal investigation with Renesas it remains unclear
+> why this driver accesses these fields but regardless of what the historical
+> reasons are the current code is considered incorrect.
+> 
+> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+[...]
+
+MBR, Sergei
