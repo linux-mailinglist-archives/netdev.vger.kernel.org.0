@@ -2,177 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11827A5C5F
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 20:46:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8709EA5C66
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 20:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbfIBSqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 14:46:04 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55924 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbfIBSqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 14:46:02 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g207so11575351wmg.5
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 11:46:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Gbv8DVb1rpLkpDqApLaTwYoA0SQ/zWkULUB+jO4dP28=;
-        b=l6E1gl8FRLj/yEk6uV+en7+oI2klMala2wWtBXuyWlDL7Fs4KbdGIEvB/wiRwmP2l0
-         bH2JcWM5ZJTw3Bu9kl+SYHXoC6It0ndDSXAZvrdYvtOimTR6DRK3fBI/Wx0usTgT/b03
-         kWyHAPSyORfRWJ3VAa9ENKxMfzumeQEZMgsBJMJ0w2vSOLH52EAZnLKMqEk7dbRX+C/2
-         k9amfuy7onIoXqAGGHQGEIZoEUl20VySD60l+c8OUSQo2mOrH5AQO3REXNfJidHPH7mI
-         tqd1cQBH+7yoINuY7RoQjKWdb2tfEEwI/A3oyTtq7mvXalTcDRzBN6PeKa6ziHb6H9FW
-         56ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Gbv8DVb1rpLkpDqApLaTwYoA0SQ/zWkULUB+jO4dP28=;
-        b=fdiwiurBz/EvP+TQiNR5IIp6IrZvDFL2/siYj49CCYVC1VdXMtvBOiZ6GFnMAlQK/Z
-         6ig3CTGvqOJ7y9++/SpDUjl46tRg0Ze8CJL9I9Idup5AHYA3FSscHshx/ArAfmqKP8AE
-         xLyCAsLnUzjgSTSvrf2guCFlwRbpTsTFXo/1leerFKQQF4MzvPSRnoUBma0pba12c5iv
-         stCpMrvYS+cVImAsf9Ftg8YL7m5nIAbJa21wHy3Ey8cM1uZgUyVnF7kDzZ3KUmYXhtZj
-         hI2U6p+h/QrZj89WUxTQBKZET5EILmHkGM0coJdFUyZNHVglL8LyNaof3xX8pv6JiIbo
-         MWTQ==
-X-Gm-Message-State: APjAAAVgDcLkvjAohZG+yPwuTD49oCsFWzCjgI7N9QPjqY9BakshidHF
-        gmVIJ0wER9Chb7PndZLorU3jl+z4E2A=
-X-Google-Smtp-Source: APXvYqz/R1TcZT6kyCoqMKCXVcRH7hUURx8AEQ7PLdZRgdVZ0PM8TpaI1iN7Top+9ETPw9lUAgx85w==
-X-Received: by 2002:a1c:9805:: with SMTP id a5mr605930wme.119.1567449959287;
-        Mon, 02 Sep 2019 11:45:59 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id q192sm3602237wme.23.2019.09.02.11.45.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2019 11:45:58 -0700 (PDT)
-Date:   Mon, 2 Sep 2019 20:45:57 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     David Miller <davem@davemloft.net>, idosch@idosch.org,
-        andrew@lunn.ch, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        ivecera@redhat.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        id S1726990AbfIBSr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 14:47:27 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:46253 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726849AbfIBSr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 14:47:27 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 061EF603;
+        Mon,  2 Sep 2019 14:47:25 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 02 Sep 2019 14:47:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=jvdK4Jen2RCEgg6SQll6JQs4XBc
+        0TdXI2+8sajCKgts=; b=HisKgtPmjyc50Q51dI6x7O1Av5K1DiCIy1weJNbAQyw
+        NfaB/lELa/xXGitPGzwxdP4YKIE5eQuWRkY8OjLThDrlGjy4wIRPCCCM0F8J5yPs
+        qnP44YP0hxLE5FZeJUtyhvgNsI36Mqeol2P+TGQHDyxUlnlN4j18++cV/3tV+IE4
+        sAx5isdqwoWqGWF3ztVVWl96xGEWu4nsEKeqldn2PPpiiLFAevmLCqR9yIdMbVmX
+        7VabDz+NgxGWM6wbJXuNX/lmuqFw8setF43TKQVJmr81WNCjoYdQrIIVI4293eSI
+        SD26MTg73bvsdM4RUMeiIIQI+q+6M7LCyMLotBZpeuQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=jvdK4J
+        en2RCEgg6SQll6JQs4XBc0TdXI2+8sajCKgts=; b=QabHFEFQWkHTq5vl5QGksW
+        rlyGRzCUhfuiZzb5RYyNPXDoPeynBP7U1fZBhwrCOiEiK9+QQuHrDu4ELhGYuMvr
+        5jpPp3vdaENeP2I8C3f3+aMAaypPBSHRNU5n7/hgekMNR0Ju+G8mTyUDgV6DRznD
+        c9o17kbAdA/rsu6g9nVWcUuZp7npeavjk5SgP//4v1++65Fdd6tTilrE9/Jh63vs
+        YHrXAubgBr5lqclByIZogtLha5AikIG2OogvGmkCz4URX5EBABHpcHUiHhN2ddjf
+        aBuGRkOyA0Md9CKU8Zqlzooni5O2EyQ39ojLYSrIO5crmHIUVbJjLVUO8DZDquPQ
+        ==
+X-ME-Sender: <xms:vGNtXbYhVGvIlWBwCFVBis5BFP2Resu-kSZ4wIOMT3prTAHAYErA8A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudejtddgudeftdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefirhgv
+    ghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucfkphepkeefrdekiedrkeelrd
+    dutdejnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomhen
+    ucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:vGNtXWQeoXkHmPTKTGMktd-Y0DdjZ_LkDh3cTGsR9MQgZ8NtvUJqew>
+    <xmx:vGNtXWzZ87g03H-RuVlzafF7d98RTNAQ3LsZpMP0IowkOHYiAbXBdQ>
+    <xmx:vGNtXaftgrtj1O4hdO2WxJX5rPxi8LAUiQvuOmN1pmZMxGdmO-BwiQ>
+    <xmx:vWNtXXE9soBGrsTKaiNyfLXGB8tdSUbTNs1CLLuy4Pndc4z0fis56A>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 46D188005B;
+        Mon,  2 Sep 2019 14:47:24 -0400 (EDT)
+Date:   Mon, 2 Sep 2019 20:47:22 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, Hui Peng <benquike@gmail.com>,
+        security@kernel.org, Mathias Payer <mathias.payer@nebelwelt.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] net: core: Notify on changes to dev->promiscuity.
-Message-ID: <20190902184557.GB2312@nanopsycho>
-References: <20190829193613.GA23259@splinter>
- <20190829.151201.940681219080864052.davem@davemloft.net>
- <20190830053940.GL2312@nanopsycho>
- <20190829.230233.287975311556641534.davem@davemloft.net>
- <20190830063624.GN2312@nanopsycho>
- <20190902174229.uur7r7duq4dvbnqq@lx-anielsen.microsemi.net>
- <20190902175124.GA2312@nanopsycho>
- <20190902180519.ytbs6x2dx5z23hys@lx-anielsen.microsemi.net>
+Subject: Re: [PATCH] Fix a double free bug in rsi_91x_deinit
+Message-ID: <20190902184722.GC5697@kroah.com>
+References: <20190819220230.10597-1-benquike@gmail.com>
+ <20190831181852.GA22160@roeck-us.net>
+ <87k1asqw87.fsf@kamboji.qca.qualcomm.com>
+ <385361d3-048e-9b3f-c749-aa5861e397e7@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190902180519.ytbs6x2dx5z23hys@lx-anielsen.microsemi.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <385361d3-048e-9b3f-c749-aa5861e397e7@roeck-us.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 02, 2019 at 08:05:20PM CEST, allan.nielsen@microchip.com wrote:
->The 09/02/2019 19:51, Jiri Pirko wrote:
->> External E-Mail
->> 
->> 
->> Mon, Sep 02, 2019 at 07:42:31PM CEST, allan.nielsen@microchip.com wrote:
->> >Hi Jiri,
->> >
->> >Sorry for joining the discussion this late, but I have been without mail access
->> >for the last few days.
->> >
->> >
->> >The 08/30/2019 08:36, Jiri Pirko wrote:
->> >> Fri, Aug 30, 2019 at 08:02:33AM CEST, davem@davemloft.net wrote:
->> >> >From: Jiri Pirko <jiri@resnulli.us>
->> >> >Date: Fri, 30 Aug 2019 07:39:40 +0200
->> >> >
->> >> >> Because the "promisc mode" would gain another meaning. Now how the
->> >> >> driver should guess which meaning the user ment when he setted it?
->> >> >> filter or trap?
->> >> >> 
->> >> >> That is very confusing. If the flag is the way to do this, let's
->> >> >> introduce another flag, like IFF_TRAPPING indicating that user wants
->> >> >> exactly this.
->> >> >
->> >> >I don't understand how the meaning of promiscuous mode for a
->> >> >networking device has suddenly become ambiguous, when did this start
->> >> >happening?
->> >> 
->> >> The promiscuity is a way to setup the rx filter. So promics == rx filter
->> >> off. For normal nics, where there is no hw fwd datapath,
->> >> this coincidentally means all received packets go to cpu.
->> >> But if there is hw fwd datapath, rx filter is still off, all rxed packets
->> >> are processed. But that does not mean they should be trapped to cpu.
->> >> 
->> >> Simple example:
->> >> I need to see slowpath packets, for example arps/stp/bgp/... that
->> >> are going to cpu, I do:
->> >> tcpdump -i swp1
->> >
->> >How is this different from "tcpdump -p -i swp1"
->> >
->> >> I don't want to get all the traffic running over hw running this cmd.
->> >> This is a valid usecase.
->> >> 
->> >> To cope with hw fwd datapath devices, I believe that tcpdump has to have
->> >> notion of that. Something like:
->> >> 
->> >> tcpdump -i swp1 --hw-trapping-mode
->> >> 
->> >> The logic can be inverse:
->> >> tcpdump -i swp1
->> >> tcpdump -i swp1 --no-hw-trapping-mode
->> >> 
->> >> However, that would provide inconsistent behaviour between existing and
->> >> patched tcpdump/kernel.
->> >> 
->> >> All I'm trying to say, there are 2 flags
->> >> needed (if we don't use tc trap).
->> >
->> >I have been reading through this thread several times and I still do not get it.
->> >
->> >As far as I understand you are arguing that we need 3 modes:
->> >
->> >- tcpdump -i swp1
->> 
->> Depends on default. Promisc is on.
->> 
->> 
->> >- tcpdump -p -i swp1
->> 
->> All traffic that is trapped to the cpu by default, not promisc means
->> only mac of the interface (if bridge for example haven't set promisc
->> already) and special macs. So host traffic (ip of host), bgp, arp, nsnd,
->> etc.
->
->In the case where the interface is enslaved to a bridge, it is put into promisc
->mode, which means that "tcpdump -i swp1" and "tcpdump -p -i swp1" give the same
->result, right?
->
->Is this desirable?
+On Sun, Sep 01, 2019 at 07:08:29AM -0700, Guenter Roeck wrote:
+> On 9/1/19 1:03 AM, Kalle Valo wrote:
+> > Guenter Roeck <linux@roeck-us.net> writes:
+> > 
+> > > On Mon, Aug 19, 2019 at 06:02:29PM -0400, Hui Peng wrote:
+> > > > `dev` (struct rsi_91x_usbdev *) field of adapter
+> > > > (struct rsi_91x_usbdev *) is allocated  and initialized in
+> > > > `rsi_init_usb_interface`. If any error is detected in information
+> > > > read from the device side,  `rsi_init_usb_interface` will be
+> > > > freed. However, in the higher level error handling code in
+> > > > `rsi_probe`, if error is detected, `rsi_91x_deinit` is called
+> > > > again, in which `dev` will be freed again, resulting double free.
+> > > > 
+> > > > This patch fixes the double free by removing the free operation on
+> > > > `dev` in `rsi_init_usb_interface`, because `rsi_91x_deinit` is also
+> > > > used in `rsi_disconnect`, in that code path, the `dev` field is not
+> > > >   (and thus needs to be) freed.
+> > > > 
+> > > > This bug was found in v4.19, but is also present in the latest version
+> > > > of kernel.
+> > > > 
+> > > > Reported-by: Hui Peng <benquike@gmail.com>
+> > > > Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
+> > > > Signed-off-by: Hui Peng <benquike@gmail.com>
+> > > 
+> > > FWIW:
+> > > 
+> > > Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> > > 
+> > > This patch is listed as fix for CVE-2019-15504, which has a CVSS 2.0 score
+> > > of 10.0 (high) and CVSS 3.0 score of 9.8 (critical).
+> > 
+> > A double free in error path is considered as a critical CVE issue? I'm
+> > very curious, why is that?
+> > 
+> 
+> You'd have to ask the people assigning CVSS scores. However, if the memory
+> was reallocated, that reallocated memory (which is still in use) is freed.
+> Then all kinds of bad things can happen.
 
-Yes, that is correct and expected. It it might not be bridged, depends
-on a usecase.
+Yes, but moving from "bad things _can_ happen" to "bad things happen" in
+an instance like this will be a tough task.  It also requires physical
+access to the machine.
 
+Anyway, that doesn't mean we shouldn't fix it, it's just that CVSS can
+be crazy when it comes to kernel patches (i.e. almost all fixes should
+be "critical"...)
 
->
->> >- tcpdump -i swp1 --hw-trapping-mode
->> 
->> Promisc is on, all traffic received on the port and pushed to cpu. User
->> has to be careful because in case of mlxsw this can lead to couple
->> hundred gigabit traffic going over limited pci bandwidth (gigabits).
->> 
->> 
->> >
->> >Would you mind provide an example of the traffic you want to see in the 3 cases
->> >(or the traffic which you do not want to see).
->> >
->> >/Allan
->> >
->> 
->
->-- 
->/Allan
+thanks,
+
+greg k-h
