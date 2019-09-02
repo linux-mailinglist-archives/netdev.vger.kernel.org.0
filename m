@@ -2,140 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5184CA5E04
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 01:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8989EA5E10
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 01:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfIBXOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 19:14:38 -0400
-Received: from mx1.ucr.edu ([138.23.248.2]:5684 "EHLO mx1.ucr.edu"
+        id S1727783AbfIBXVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 19:21:36 -0400
+Received: from mx3.ucr.edu ([138.23.248.64]:29251 "EHLO mx3.ucr.edu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726767AbfIBXOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 19:14:38 -0400
+        id S1726975AbfIBXVg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 19:21:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1567466279; x=1599002279;
-  h=from:to:cc:subject:date:message-id;
-  bh=wrJn6aBHz0Uw1eGhnnd+uYHpG8nT9vsMJN2vUur/bWQ=;
-  b=OhnTr0ldt5Mv8QIOqfKoGO5jKzVcBnhz2phCnjp8HMy3Z4zhSBlPlWZP
-   EdYsMgKQVGFjDTBARnjzO1+p3Zcad2mYHadNlnF8bnxE92fv/WzQFlQcb
-   vEZTyFZO1KJo4TYmIOza7DNBfwApnSU2GF4L1symoGL47trASjQk/1JEn
-   TjcyO48I5Hn3HOcQZetzNqa1uoOTmBSqSgD/ZzFZYdOQHzrR8iCXIdcX9
-   tHV1HJFyz8kl6wRNrcIXtc24rqWC47WNjpsvWfosz8Q8RG2kFodhLA1pS
-   8xHaERd8BlS1ilkFzBCGFHz5hAhSg9dCh13yw9eq0ANketdiJ9aYsHetA
-   Q==;
-IronPort-SDR: 91Demo70DShrkXVbUVWHMRod9XLbB0XHbZAAaQT9hfbpEDN1w0/HtArCyOppa6d2BO6nfiqw9F
- NMfG3CNOB2PQlnGX814Nuab2JGjdbWI4FmVuOfj77Obf2KxrGR1ATqL7yeFzZTtCINoxoJnR9H
- ulwrLIH/jk8ARFgV0JgobkrC3PW3Fjc1cN3UGsu9IE7LVdkZaY15DlD14iuF0NMhHUy/xXrs5U
- 4CKznKCnQoc+2O6x3X40LSItoVUPd5B0GrKH50Qo3nVpteGdI94HOmgDhw+7oCgU4CVyH9VRrO
- G+0=
-IronPort-PHdr: =?us-ascii?q?9a23=3AI61//hAIY9lmpQJWG2/7UyQJP3N1i/DPJgcQr6?=
- =?us-ascii?q?AfoPdwSPvzpcbcNUDSrc9gkEXOFd2Cra4d0ayP7PmrADNIyK3CmUhKSIZLWR?=
- =?us-ascii?q?4BhJdetC0bK+nBN3fGKuX3ZTcxBsVIWQwt1Xi6NU9IBJS2PAWK8TW94jEIBx?=
- =?us-ascii?q?rwKxd+KPjrFY7OlcS30P2594HObwlSizexfK1+IA+roQjTq8UajpZuJ6QswR?=
- =?us-ascii?q?bVv3VEfPhby3l1LlyJhRb84cmw/J9n8ytOvv8q6tBNX6bncakmVLJUFDspPX?=
- =?us-ascii?q?w7683trhnDUBCA5mAAXWUMkxpHGBbK4RfnVZrsqCT6t+592C6HPc3qSL0/RD?=
- =?us-ascii?q?qv47t3RBLulSwKLCAy/n3JhcNsjaJbuBOhqAJ5w47Ie4GeKf5ycrrAcd8GWW?=
- =?us-ascii?q?ZNW8BcVylAAoOndIsPDuwBPelFpIfjvlUFsBW+BQiyC+Pr1zBDm3v60KMm3+?=
- =?us-ascii?q?gkFwzNwQ4uEM8UsHnMrNv7KrocX+62wqfP1jjPc+9a1C3h5IXSbhwtvfeBVq?=
- =?us-ascii?q?9wf8rLzkkvEhvIgVeRqY3kPzOVy+MNuHWc4utgVOOvi3QoqwBtrjSzyMohkZ?=
- =?us-ascii?q?TJiZ4Pylze6yp23Zs1KMS+RUVmYtCkCINduz+GO4ZyWM8vQGFltDwkxrEbuZ?=
- =?us-ascii?q?O3ZjYGxIg7yxLHdvCKcoyF7gj9WOufITp0nmxpdbOlixuw/kWtzPD3WNOu31?=
- =?us-ascii?q?ZQtCVFl8HBtnUK1xPO9MeKUuB9/kK92TaX0ADT9/1ELVg0laXFL54hxaY9lp?=
- =?us-ascii?q?8JvkTCGi/6gV32jKCLekk99Oik9fjrbqn8qp+TMI90jQ7+MqAwlcClHes4NQ?=
- =?us-ascii?q?0OU3Ca+eS6yrLj4VX0TKtWgvAyiKXUs5DXKd4FqqKkAwJZyJgv5wqjAzu+1d?=
- =?us-ascii?q?QXh3gHLFZLeBKdiIjpPknDIfD5DPe/mVuskStny+zIM7D6H5XCMmLDnK3/cr?=
- =?us-ascii?q?lg9k5Q0BAzwsxH55JIFrEBJ+r+Wknvu9zEExA2LRK0zv35CNVyyIweQ3iDAq?=
- =?us-ascii?q?yHP6PIt1+H+OYvL/OLZI8PtzauY9Y/4Pu7vH4rmUIaNf24z5seaSjgRdx7KF?=
- =?us-ascii?q?/fbHbx1IRSWVwWtxYzGbS5wGaJViReMjPtB68=3D?=
+  t=1567466496; x=1599002496;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   subject:cc;
+  bh=2tF0euXR3VYfwevVZ1jCeatrtkAWORyVRWQSZY/zVZs=;
+  b=fFDtwZha9ea9qra9b+6sRP15xg2qPaQF7Bv6DzFGAXNi72oucvD9h1Bf
+   LtXk2C4irwN5AHyG/UZsNYcFVC8trVHlE4FDaPBsNLdSHw0SWcrRhVABP
+   Mxidea39aFsbIgzSsDJY9smpf7gt6HlmTtwX86wz4St+D1Vw/M7pAztj/
+   sgbrwrxcLWOEmdltpEyniT1s8b5a0sAVsXJzpsFFG84P6Lkh/4xDjCIUY
+   S6YR3r2VMQERKc9sSHWoyaSDU9JNZqgTuS70iEz1WQv33/LHgv6X2MilL
+   BVwx4J5n7ucuk9yj+lLWBlIJPT2hqsoDHeqYFwvNmqmfc66WRXJvMVN+x
+   A==;
+IronPort-SDR: R3Rr03bUUz8T6bq+bEU+713X6KYQOGKYYnJjLywgF7QFSupjwZ0ECksD/cUvHIAASSv7aIeTxn
+ QgmEfROr35zXaaMP3RGAytuwHNTV6CKCAZ2Awdh7XrY7eq5MLZAhYWicZX7Bm50TzhkLg6fWYv
+ o/Lv3/O2NC7IUR/K7yl9eymbCEOjSYL4i/ckntPPdS++X3ztnRrde4I9b9xcbAtE74VEoGDeuR
+ ti8hvcWIcAb5bj9JTtiz3BY8q/4TbyRJAIdWYzZFhll7+fNTRKDGTu+pTQtnrC6BKKLLkrN/bl
+ t+s=
+IronPort-PHdr: =?us-ascii?q?9a23=3AjJA94R2NPxiQFU8VsmDT+DRfVm0co7zxezQtwd?=
+ =?us-ascii?q?8Zse0RKfad9pjvdHbS+e9qxAeQG9mCsbQd1LOd6fiocFdDyK7JiGoFfp1IWk?=
+ =?us-ascii?q?1NouQttCtkPvS4D1bmJuXhdS0wEZcKflZk+3amLRodQ56mNBXdrXKo8DEdBA?=
+ =?us-ascii?q?j0OxZrKeTpAI7SiNm82/yv95HJbAhEmSSxbalvIBi0sAndudcajZd/Iast1x?=
+ =?us-ascii?q?XFpWdFdf5Lzm1yP1KTmBj85sa0/JF99ilbpuws+c1dX6jkZqo0VbNXAigoPG?=
+ =?us-ascii?q?Az/83rqALMTRCT6XsGU2UZiQRHDg7Y5xznRJjxsy/6tu1g2CmGOMD9UL45VS?=
+ =?us-ascii?q?i+46ptVRTlkzkMOSIn/27Li8xwlKNbrwynpxxj2I7ffYWZOONjcq/BYd8WQG?=
+ =?us-ascii?q?xMXsNQVyxaGYO8bo0PD+UcNuhGtof2ulUOrRqgCgmoGezk1ztEi3Hq0aE/1e?=
+ =?us-ascii?q?kqDAPI0xE6H98Wv3vUotf6OqccX+620afH0S7Ob+9K1Trn9ITEbgwtrPOKUL?=
+ =?us-ascii?q?ltccTR004vFwbdg1qSqIzkPjOV1vkKs2OG7OVgVfigi286oAx2ojmux8cshZ?=
+ =?us-ascii?q?PIho4J1lzJ+z50wJspKt2iUkJ0f8OrEIZJuiycKoB4QdsiTnl2tComzrAKo5?=
+ =?us-ascii?q?22cSgQxJg52xLSaOaLf5WM7x/gUuuaPC12i2h/eL2lgha/6U2gyurhWcaqyF?=
+ =?us-ascii?q?tKtS9FksXUtnAKyhzT9tCLSvtj8Uel3jaCzwXT5ftFIUAwjKbbL5whzqMpmp?=
+ =?us-ascii?q?odrEjOGiz7lF/5jK+RcUUk9eyo5Pr9brr6oZ+cMpd4igD4MqswhsyyGfo0Ph?=
+ =?us-ascii?q?QKUmSB+umx1Kfv8VPlTLhJlPE6j63UvZPCKcQevKG5AgtV0og56xa4CjeryN?=
+ =?us-ascii?q?QZnHgHLF1feRKLk5TlNl/VLfDlEfi/mU6gnyl2yPDbJrHhGInCLmDfkLf9er?=
+ =?us-ascii?q?Zw80hcxxQvzd9C+Z1UFKoMIOz8WkDvrtzUFBw5PBKuw+bhFtp90pkSWWWVAq?=
+ =?us-ascii?q?+WY+v8q1iNs9MuMemRY8cnuD/8Y6w09f7njCdhwncAdrPv0JcKPiPrVs96Kl?=
+ =?us-ascii?q?mUNCK/yuwKFn0H609hFOE=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2E8AACqgmddgMjXVdFlHgEGBwaBUwk?=
- =?us-ascii?q?LAYNXTBCNHYZcAQEBBosfGHGFeYMJhSSBewEIAQEBDAEBLQIBAYQ/glsjNAk?=
- =?us-ascii?q?OAgMIAQEFAQEBAQEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJ?=
- =?us-ascii?q?HAYF2FJ08gQM8jCMziGkBCAyBSQkBCIEiAYcdhFmBEIEHhGGEDYNWgkQEgS4?=
- =?us-ascii?q?BAQGUTpYFAQYCAYIMFIFyklMngjKBfokZOYpaAS2ldwIKBwYPIYEvghFNJYF?=
- =?us-ascii?q?sCoFEgnqOLR8zgQiMAYJUAQ?=
-X-IPAS-Result: =?us-ascii?q?A2E8AACqgmddgMjXVdFlHgEGBwaBUwkLAYNXTBCNHYZcA?=
- =?us-ascii?q?QEBBosfGHGFeYMJhSSBewEIAQEBDAEBLQIBAYQ/glsjNAkOAgMIAQEFAQEBA?=
- =?us-ascii?q?QEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJHAYF2FJ08gQM8j?=
- =?us-ascii?q?CMziGkBCAyBSQkBCIEiAYcdhFmBEIEHhGGEDYNWgkQEgS4BAQGUTpYFAQYCA?=
- =?us-ascii?q?YIMFIFyklMngjKBfokZOYpaAS2ldwIKBwYPIYEvghFNJYFsCoFEgnqOLR8zg?=
- =?us-ascii?q?QiMAYJUAQ?=
-X-IronPort-AV: E=Sophos;i="5.64,443,1559545200"; 
-   d="scan'208";a="5470476"
-Received: from mail-pg1-f200.google.com ([209.85.215.200])
-  by smtp1.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2019 16:17:58 -0700
-Received: by mail-pg1-f200.google.com with SMTP id m19so9675849pgv.7
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2FaAAAyo21dgMbQVdFlHgEGBwaBVQc?=
+ =?us-ascii?q?LAYNWMxoQhCGPDIIPiWqBCYV6gwmFJIF7AQgBAQEOLwEBhD8CI4JKIzYHDgI?=
+ =?us-ascii?q?DCAEBBQEBAQEBBgQBAQIQAQEJDQkIJ4VDgjopgmAJAQEBAxIRBFIQCwsNAgI?=
+ =?us-ascii?q?fBwICIhIBBQEcGSI5gkiCCp1qgQM8iyR/M4hmAQgMgUkSeiiLeIIXhCM+hA2?=
+ =?us-ascii?q?DQhSCRASBLgEBAY1EhxaWDQEGAoINFIwviCwbgjOHNoQdimAtpisPIYE2CoI?=
+ =?us-ascii?q?AMxolfwZnCoFEgnqOLSMwjRuCVAE?=
+X-IPAS-Result: =?us-ascii?q?A2FaAAAyo21dgMbQVdFlHgEGBwaBVQcLAYNWMxoQhCGPD?=
+ =?us-ascii?q?IIPiWqBCYV6gwmFJIF7AQgBAQEOLwEBhD8CI4JKIzYHDgIDCAEBBQEBAQEBB?=
+ =?us-ascii?q?gQBAQIQAQEJDQkIJ4VDgjopgmAJAQEBAxIRBFIQCwsNAgIfBwICIhIBBQEcG?=
+ =?us-ascii?q?SI5gkiCCp1qgQM8iyR/M4hmAQgMgUkSeiiLeIIXhCM+hA2DQhSCRASBLgEBA?=
+ =?us-ascii?q?Y1EhxaWDQEGAoINFIwviCwbgjOHNoQdimAtpisPIYE2CoIAMxolfwZnCoFEg?=
+ =?us-ascii?q?nqOLSMwjRuCVAE?=
+X-IronPort-AV: E=Sophos;i="5.64,461,1559545200"; 
+   d="scan'208";a="78457826"
+Received: from mail-lj1-f198.google.com ([209.85.208.198])
+  by smtp3.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2019 16:21:35 -0700
+Received: by mail-lj1-f198.google.com with SMTP id 17so2231066ljc.20
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 16:21:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=qbPcGIvjek55/mukFc57PQHYy7743OrNG7Y4v0Ab2d0=;
-        b=ZEqAToTCzX83vMgkLYF7QfBNXPOMLwGIaFa+xvKbP936+nHgmXNywaVTBlY4Pf/lwW
-         X46VkEeoq1GrwziVvA1Or13QenHRUX4JBAdwi80Wt7aoNyb1bJlzqxqbsabCJHSxBrCT
-         aSls4shoGEiKtGRpTV/yyv5P5kqH15Kwz78LQOZz428ca0YA85V3VuVj6FCJJNNCDNyQ
-         jaOrCLiQjCKftofLvw8F6qASKCEMMvlMDkDB86aupNpLQVBQ64NX0IHkNS7ZIIWVmrXF
-         s/z01P041DsMm5d+30zx/DZkLYXtRmXWfXycuRo+EPaQxxzCPfm0NRkw0/vfM3mOPTtz
-         3fgw==
-X-Gm-Message-State: APjAAAWDcNQnLOzTJETDL7w+rIfX8FSl4Lh7cG/qbEqwwWEPZSo1Ok5A
-        B6ogL2SeIRyXALw9wnmUUM5awO75NUgzVpBlByxtsXqxMpxZc4JLcvJdMh1fz5qROIbKuiFFVVW
-        HRuBvLKBeuwkvsucMsQ==
-X-Received: by 2002:a17:902:9f97:: with SMTP id g23mr25566852plq.248.1567466076389;
-        Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyG1mxoH7h9PwFtEKTdqe361X81McE/StIlugJILQyx3cKKtm08UaQvwZnUk/+e7cNgptjUmQ==
-X-Received: by 2002:a17:902:9f97:: with SMTP id g23mr25566835plq.248.1567466076169;
-        Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
-Received: from Yizhuo.cs.ucr.edu (yizhuo.cs.ucr.edu. [169.235.26.74])
-        by smtp.googlemail.com with ESMTPSA id 138sm18270374pfw.78.2019.09.02.16.14.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2019 16:14:35 -0700 (PDT)
-From:   Yizhuo <yzhai003@ucr.edu>
-Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, Yizhuo <yzhai003@ucr.edu>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:cc;
+        bh=11S+72wXCThjYHgY/hYu0pdk4ZjzkGTY7Jm1Oqj+h6Y=;
+        b=PnYLzMajSKo2XPqFj5PM6w3ABLE2hTIh34zxm+mMC/hqQuXLJ8dazCiQeftbgJ2dP+
+         ConVS/oAYBXpik1iyh2TbJNmkzyv3H/q30RUWdr+uJvm/K9azSp5bV3rHSiqotQcniFI
+         zE/i1IvBND7B3JbrtdTBoStvRdPnd1u8nI+cQfendBO6nxfEGV92DHlr18EO3w56uEVa
+         GaVEHdAATc7lN32ak6+lE6Omgv1tPnTxlx8wJzD3Yb3ZH36bnIVUeCMsrkII4zjw4SSQ
+         eyMlP9Y+6gK2/Q7flfp47L4RA7l7x7qogD6xp3AS1YlpQ1whxUXA/pekU4F9gOMMzRy3
+         xPAg==
+X-Gm-Message-State: APjAAAVJm8dIvzVAF/QcJ5JMbs8O3p/OyI0dj0eyvtovTU5xi4Xnls44
+        /Wyzsj6VLaSCZhZccwCsZRnTQG1jKsGWPoBeWCj3CiI3RHSqclCB81mxuwcv9aXg1jbgZbXY0H3
+        nkxNys0eTA2XN9AvmTu0rEXkdBPjhjRgMeQ==
+X-Google-Smtp-Source: APXvYqzagtcGa1G7dj7735BrefQ3wcMVlPJ8FZ55wNvzN2oHUyfNO0V8vrqkWiUgf7ZKhp7WQBwj/zDGMzNqzlDdptU=
+X-Received: by 2002:a2e:8806:: with SMTP id x6mr17626931ljh.190.1567466493336;
+        Mon, 02 Sep 2019 16:21:33 -0700 (PDT)
+X-Received: by 2002:a2e:8806:: with SMTP id x6mt12995385ljh.190.1567466493181;
+ Mon, 02 Sep 2019 16:21:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190902231510.21374-1-yzhai003@ucr.edu>
+In-Reply-To: <20190902231510.21374-1-yzhai003@ucr.edu>
+From:   Yizhuo Zhai <yzhai003@ucr.edu>
+Date:   Mon, 2 Sep 2019 16:22:03 -0700
+Message-ID: <CABvMjLSeQjMi0DPLGH3qnoLNb=gc+P_4ZF7OQQMHa6uRMD42Dg@mail.gmail.com>
+Subject: Re: [PATCH] net: hisilicon: Variable "reg_value" in function
+ mdio_sc_cfg_reg_write() could be uninitialized
+Cc:     Chengyu Song <csong@cs.ucr.edu>, Zhiyun Qian <zhiyunq@cs.ucr.edu>,
         Yisen Zhuang <yisen.zhuang@huawei.com>,
         Salil Mehta <salil.mehta@huawei.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hisilicon: Variable "reg_value" in function mdio_sc_cfg_reg_write() could be uninitialized
-Date:   Mon,  2 Sep 2019 16:15:10 -0700
-Message-Id: <20190902231510.21374-1-yzhai003@ucr.edu>
-X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain; charset="UTF-8"
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In function mdio_sc_cfg_reg_write(), variable reg_value could be
-uninitialized if regmap_read() fails. However, this variable is
-used later in the if statement, which is potentially unsafe.
+Sorry for the inconvenience. I made some mistake here, please ignore
+this patch and I will submit a new one.
 
-Signed-off-by: Yizhuo <yzhai003@ucr.edu>
----
- drivers/net/ethernet/hisilicon/hns_mdio.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+On Mon, Sep 2, 2019 at 4:14 PM Yizhuo <yzhai003@ucr.edu> wrote:
+>
+> In function mdio_sc_cfg_reg_write(), variable reg_value could be
+> uninitialized if regmap_read() fails. However, this variable is
+> used later in the if statement, which is potentially unsafe.
+>
+> Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+> ---
+>  drivers/net/ethernet/hisilicon/hns_mdio.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
+> index 3e863a71c513..f5b64cb2d0f6 100644
+> --- a/drivers/net/ethernet/hisilicon/hns_mdio.c
+> +++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
+> @@ -148,11 +148,17 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
+>  {
+>         u32 time_cnt;
+>         u32 reg_value;
+> +       int ret;
+>
+>         regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
+>
+>         for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
+> -               regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
+> +               ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
+> +               if (ret) {
+> +                       dev_err(mdio_dev->regmap->dev, "Fail to read from the register\n");
+> +                       return ret;
+> +               }
+> +
+>                 reg_value &= st_msk;
+>                 if ((!!check_st) == (!!reg_value))
+>                         break;
+> --
+> 2.17.1
+>
 
-diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
-index 3e863a71c513..f5b64cb2d0f6 100644
---- a/drivers/net/ethernet/hisilicon/hns_mdio.c
-+++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
-@@ -148,11 +148,17 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
- {
- 	u32 time_cnt;
- 	u32 reg_value;
-+	int ret;
- 
- 	regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
- 
- 	for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
--		regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-+		ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-+		if (ret) {
-+			dev_err(mdio_dev->regmap->dev, "Fail to read from the register\n");
-+			return ret;
-+		}
-+
- 		reg_value &= st_msk;
- 		if ((!!check_st) == (!!reg_value))
- 			break;
+
 -- 
-2.17.1
+Kind Regards,
 
+Yizhuo Zhai
+
+Computer Science, Graduate Student
+University of California, Riverside
