@@ -2,83 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF5D5A5A9C
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 17:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B28BCA5B44
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 18:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726230AbfIBPcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 11:32:21 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36985 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbfIBPcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 11:32:20 -0400
-Received: by mail-pl1-f195.google.com with SMTP id b10so1638082plr.4;
-        Mon, 02 Sep 2019 08:32:20 -0700 (PDT)
+        id S1726180AbfIBQXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 12:23:49 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35371 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbfIBQXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 12:23:49 -0400
+Received: by mail-pg1-f194.google.com with SMTP id n4so7691738pgv.2
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 09:23:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DiW9yVqBhWtRauUiW8YsGQd2zREZ2Dy2UGJg4F1V4Kc=;
-        b=JN4BtcDbFTrT7YoD/epUyxP4L5CK3fduvI4vHti124nm4e6AlfVK5B+S+IZuLqxmqs
-         qTU2dXLp7kM+gVpVwc0PshD6CV2pZzypFPTTNYBlpPdzD2lDOQ0hDBO2F4MoDNsavAG+
-         +zln+sXfiK8du5hT5Q8kQ1MWfvL//YWU3oGNLSn5OPYFySUKBFz8rWRWqkoKCQlhVy3f
-         ZTAHVQOyKfYH47JgcGNqrZM19jKNaCg0UCXXcb/GkBP2mCHEXs8Qs37fAcJ9G4UXJTZ8
-         f8u1rdii+5bIOuTT2yCdj6Yi7z4Cu7L5jxbxkfBdHFf224VOoEqsM8bgaaxxhvJM0IiW
-         xrxA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RGVpBUTE9zlD/KEyuf5xRtBdBy5b77PBEr9fjvCgQcI=;
+        b=Zhau8bJEg2IOc0fhd2r274JPpDVsC/t1k71o8gHxTeJEIswIaTtEfT6rOwoNuf2rPL
+         2dBjqdLiAaChV3V5AzGG/5oG4inMp3GpXpDIb65rCWGaF3H5l6mDjhuK9RxEeQXBoWR3
+         HxtDkM22A92OSMZXhpiMsEeJG5HtBsbl+Zc7TurzaVO6YoeckFZoSAWWHA/EgYcB5hWg
+         tWYlNliclNNU6IirbIVTcOUw6DERYo+PWal48Bl3wAMjqeUnJGpLRSsrvC1YS0dkQhAl
+         yzs9lQh726OJZCszKKzkizMtxXOTlucXOLjDvIMDk/cthA4pIY/jibH1T18755IreBe6
+         WoiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DiW9yVqBhWtRauUiW8YsGQd2zREZ2Dy2UGJg4F1V4Kc=;
-        b=OsduZQ6qqd5S31SvMWWevXT9OUKJ5QNLHw7UpkuQS0v67miP45QEK2eDay+xr6olSr
-         C8X/t1+58lQFh048wGHQ2quzYSeYBiiFSNWwDJqgl3R368x9KtDCdpOPUudB0oulXsTj
-         YzKWZYmmrg3TUh5Hl+BlWA7EDtGga0ErfuBRMl4ls9jZE7v3rS0amBcOE2WnitPXx68M
-         IWw4W49fqkRf2VIWkS7fC8nqdFr+y+1MvX9tS/G3T63Y5SBmn9iFUBBB8+n5JgT0xzDw
-         Y1s3rqajmKNvxymw78IWeQVOyB+YogfkcVScEZA7joWA0nyqJ6vY2kEFHS6+w3cM/8+5
-         Y4ZQ==
-X-Gm-Message-State: APjAAAXmDaJ+cSz/HAo8EXHfiU3CWcWOPg3V+g1Jfmxf6j3VXhzijH5+
-        VOXqvIN00bb5ZlD5X4eGViogM2Gf
-X-Google-Smtp-Source: APXvYqxMPO/2/ja3HR40TFWVz0/0N9BJfldM3TkPlwH/ZOLXsJmBlRflxvDz5YdCKAkmaFRMPvwiNw==
-X-Received: by 2002:a17:902:7592:: with SMTP id j18mr29946188pll.186.1567437870043;
-        Mon, 02 Sep 2019 08:24:30 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o129sm17524400pfg.1.2019.09.02.08.24.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Sep 2019 08:24:29 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net] sctp: use transport pf_retrans in sctp_do_8_2_transport_strike
-Date:   Mon,  2 Sep 2019 23:24:21 +0800
-Message-Id: <41769d6033d27d629798e060671a3b21f22e2a21.1567437861.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RGVpBUTE9zlD/KEyuf5xRtBdBy5b77PBEr9fjvCgQcI=;
+        b=SNO8LKbJaUZvF+E+oCIK732JUIrfHrdIzMxw9tizbNDCbybnE4Oj0OfThKXcaKNZtv
+         jblhbt23fYQxnbttZ31alpAZl0Lhx9RyZjH+I29o9wc+rDSRQgWTYxPAH2asrnnp9D5+
+         xHvXJm7utx3Jm6yONjSycd1a1dvfWmR4v7aOCbMxR6spmEdQuLYiAbGQdk7XHNJ1jF6z
+         PY4xmk6FRLfT6SO3+bDN7NDFNksrIGJcIUT/l3FV+2vXk081GjDHfU7GW5KxcX5/OuaJ
+         1Wh62rtHsLMw8YbO0okowTBCEkrpjvnQbHr10IZAMJQYPHBn+Pi5iBTp1LLo/OnmxuuD
+         iHeA==
+X-Gm-Message-State: APjAAAUf1gfVdHF9TgmLZSOwxF87VxTYEW1jNft8qeppdhDXCAdpVmhZ
+        Hw99cmc7BMGDsI0AgoxUpTizcXUCpGE=
+X-Google-Smtp-Source: APXvYqwZt2AzsRHN5gNLOG95HAklWGx3ARuZNMCV4PF6Ju5vFJI28ISDhP1QidTTE9SoyDg0Uw9SCQ==
+X-Received: by 2002:a17:90a:a611:: with SMTP id c17mr14361793pjq.17.1567441428474;
+        Mon, 02 Sep 2019 09:23:48 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id a134sm11767627pfa.162.2019.09.02.09.23.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Sep 2019 09:23:47 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Lorenzo Colitti <lorenzo@google.com>
+Subject: [PATCH v2] net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/128 local route (and others)
+Date:   Mon,  2 Sep 2019 09:23:36 -0700
+Message-Id: <20190902162336.240405-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+In-Reply-To: <565e386f-e72a-73db-1f34-fedb5190658a@gmail.com>
+References: <565e386f-e72a-73db-1f34-fedb5190658a@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Transport should use its own pf_retrans to do the error_count
-check, instead of asoc's. Otherwise, it's meaningless to make
-pf_retrans per transport.
+From: Maciej Żenczykowski <maze@google.com>
 
-Fixes: 5aa93bcf66f4 ("sctp: Implement quick failover draft from tsvwg")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+There is a subtle change in behaviour introduced by:
+  commit c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
+  'ipv6: Change addrconf_f6i_alloc to use ip6_route_info_create'
+
+Before that patch /proc/net/ipv6_route includes:
+00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001 lo
+
+Afterwards /proc/net/ipv6_route includes:
+00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80240001 lo
+
+ie. the above commit causes the ::1/128 local (automatic) route to be flagged with RTF_ADDRCONF (0x040000).
+
+AFAICT, this is incorrect since these routes are *not* coming from RA's.
+
+As such, this patch restores the old behaviour.
+
+Fixes: c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Lorenzo Colitti <lorenzo@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
- net/sctp/sm_sideeffect.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/route.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index 1cf5bb5..e52b212 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -547,7 +547,7 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
- 	if (net->sctp.pf_enable &&
- 	   (transport->state == SCTP_ACTIVE) &&
- 	   (transport->error_count < transport->pathmaxrxt) &&
--	   (transport->error_count > asoc->pf_retrans)) {
-+	   (transport->error_count > transport->pf_retrans)) {
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 558c6c68855f..516b2e568dae 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4365,13 +4365,14 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
+ 	struct fib6_config cfg = {
+ 		.fc_table = l3mdev_fib_table(idev->dev) ? : RT6_TABLE_LOCAL,
+ 		.fc_ifindex = idev->dev->ifindex,
+-		.fc_flags = RTF_UP | RTF_ADDRCONF | RTF_NONEXTHOP,
++		.fc_flags = RTF_UP | RTF_NONEXTHOP,
+ 		.fc_dst = *addr,
+ 		.fc_dst_len = 128,
+ 		.fc_protocol = RTPROT_KERNEL,
+ 		.fc_nlinfo.nl_net = net,
+ 		.fc_ignore_dev_down = true,
+ 	};
++	struct fib6_info *f6i;
  
- 		sctp_assoc_control_transport(asoc, transport,
- 					     SCTP_TRANSPORT_PF,
+ 	if (anycast) {
+ 		cfg.fc_type = RTN_ANYCAST;
+@@ -4381,7 +4382,10 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
+ 		cfg.fc_flags |= RTF_LOCAL;
+ 	}
+ 
+-	return ip6_route_info_create(&cfg, gfp_flags, NULL);
++	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
++	if (f6i)
++		f6i->dst_nocount = true;
++	return f6i;
+ }
+ 
+ /* remove deleted ip from prefsrc entries */
 -- 
-2.1.0
+2.23.0.187.g17f5b7556c-goog
 
