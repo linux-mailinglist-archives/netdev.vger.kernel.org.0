@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A57E1A4FB9
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D08A4FBA
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729746AbfIBHXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 03:23:42 -0400
-Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:57541
+        id S1729752AbfIBHXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:23:45 -0400
+Received: from mail-eopbgr70055.outbound.protection.outlook.com ([40.107.7.55]:51171
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729725AbfIBHXi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 03:23:38 -0400
+        id S1729735AbfIBHXn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 03:23:43 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UyzMHYusS6+8aiknXccow70GJvyLnJ4/7Mg73nDujuF3/1Hw1x3V4AXIqO3VP3Upzii5sjC4PojDRtNP5bO+WuYZg4b3CsPXkAcdX+WEHq5kWClK7EKNDKaMqlwGzDaAleyUUHODo9F6ebfP+11HX9Wu2vEWlsVumTfT156f/BZ2mYzyq9zFWUlfvwAlc+hXcb+tXMydjv/7mdr/fHvDDMgf37R+4v1bsruYHyhlm+vVHWZHBrbbxEvphM4IRHZs8pn0zvPc2sqUqWDChUiyYj0mxp1Apj5D6PX0Psw0F15g7Btg3wtHsVenKA+KB315fdwImy4lephBxqNrWQZfJg==
+ b=ijjgC87gl+jaNHK7nmv6GKC1b1JJ3zUrMpAcM+qbZ4WuvrXs8SrvcvMaSPHtmPVVPg5dbNM/B5F8ai2ejJgG4Kf6pdfvOYPZVJWn2hMHzuIEm6UUXG7PjY0Nu1WMH7TxuMzJ4lfYcywq+bthnBl6E8DbxmnBqo3ziCUqlnOnd8RBhREouPGEQDhzO6+f968jD4QzH7mGJDNKb1pj4pJMH7TYYuj7x9Q7rzuppq3ua5C99+FZCdH0GHBvqohmxYjukqqzB7ei3txkh474hcTWL0NClm/Pzgfn/9W6tfzJhnmxhacylpOvxvCPwUELeemnBMc8EwHxg+Z8UngbzZawSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VA6NXS3mevjNmHqvw5uMp8+Q8TWjmgZ4KZw/e79mfGE=;
- b=Dcx2kR15KoQSTWBbFcAnaaByYtm4QkndaGaaUtHtjhsC7ngfQ1IN3Rce2i48NjHI4msuGOmA7HcTEEIhw1/WJMyfAQv+zeZRsrGrEksgHjY7UlsQsMpxJ0V4nXBEgEO7YMhtuxh0LCpzMH97MqbMx4doFtJ0S9UOMTXmg5SaqpA7+sXPD9+QlKvG4UKmR6DxFb49NNJ3w+OUbZP5MsqJJZXxxCl9xtFP4zKTzn5IIqW0DyhcPouB0isXFIybMxG2Amlt6m0HM9nGa/9rRm2yfc/QP5yprM5dQElVyG8r5Gt50jrFTAkIMAiTzy5b89DABToeN0kh9zGdB5WNLXk26w==
+ bh=TofLDYzS7b/qNVxQ1zm+m5qTiOxoI3odo29q96a9pJA=;
+ b=h7Mv9pXFVU01/dySTpukDTXjbTlkpzSAcdq2I4H4aOP5BjK5PdhHOeg3Bf7ZiW3Xpo4y96iNs+nYwe9XhaEHM6LsSImMYnvffVlr3hta4AcxS9DlyjvAo62sLpg6+1FvIEm6/ZW+W0LkRzds3mRWS6nedfbl9I/xTM7ciRM5U0/9d6rwwKDKOZhrPWCwZOq2c9Ai8NEGWI4NFIMK+VaYyLP0PemcC+QFA3CQu9FvE7gplW8URBBsg54nIXr4RuOAelW26w06RmuDrMKNt9NFL7Ij1FQBCWRhbsJW0bc5zk1H26Ibq6af456o0dbOUZVwfOsMAT9Yychy9xBE5X1Yxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VA6NXS3mevjNmHqvw5uMp8+Q8TWjmgZ4KZw/e79mfGE=;
- b=NOyLcC9T+6IdF4TamnDqeH42aJ69pKxKyteyl/hnkUlyQhZhjvubXWkN+MdE77osqWv/2LFqJygrqO7H06bwLasxVZrFvxE9BXucIARkffPrax591+0p5MjXXibsAO3nT0I5IBxMawAZa7Hz8viiLgy97isqznnR0x/awd2saMk=
+ bh=TofLDYzS7b/qNVxQ1zm+m5qTiOxoI3odo29q96a9pJA=;
+ b=NjtccAhXUtzCIskn8b49mzROhdSv6xDl6oDx9lzANvgBAaqXJqMAG5hVfjgS1lDcAaUqrnQnbNXezlc6pr6r/jWqt6tPtqRyn1NUG31V9FmvPIVVW2QJMPDXz5CFkTl2Jr1967fprudiZvLqRoGlKN/UN4dqK3A1NokKGOLQ9nQ=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
  AM4PR0501MB2259.eurprd05.prod.outlook.com (10.165.38.155) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.20; Mon, 2 Sep 2019 07:23:13 +0000
+ 15.20.2220.20; Mon, 2 Sep 2019 07:23:16 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
- 07:23:13 +0000
+ 07:23:16 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -42,12 +42,12 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Erez Shitrit <erezsh@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 10/18] net/mlx5: DR, Expose steering action functionality
-Thread-Topic: [net-next 10/18] net/mlx5: DR, Expose steering action
+Subject: [net-next 11/18] net/mlx5: DR, Expose steering rule functionality
+Thread-Topic: [net-next 11/18] net/mlx5: DR, Expose steering rule
  functionality
-Thread-Index: AQHVYV9H78s41f3IVUOVKKt3XKgjmQ==
-Date:   Mon, 2 Sep 2019 07:23:13 +0000
-Message-ID: <20190902072213.7683-11-saeedm@mellanox.com>
+Thread-Index: AQHVYV9JsYMzUBjt6kmpK4pzj1yMLw==
+Date:   Mon, 2 Sep 2019 07:23:15 +0000
+Message-ID: <20190902072213.7683-12-saeedm@mellanox.com>
 References: <20190902072213.7683-1-saeedm@mellanox.com>
 In-Reply-To: <20190902072213.7683-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -63,30 +63,30 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 692a4016-957f-43d1-319e-08d72f766a0b
+x-ms-office365-filtering-correlation-id: 0c3306be-903f-4893-bbfc-08d72f766b7e
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2259;
 x-ms-traffictypediagnostic: AM4PR0501MB2259:|AM4PR0501MB2259:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB2259D933569485F8A90A9FB4BEBE0@AM4PR0501MB2259.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
+x-microsoft-antispam-prvs: <AM4PR0501MB2259FBB0E3445CFF5300C6FEBEBE0@AM4PR0501MB2259.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1227;
 x-forefront-prvs: 01480965DA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(1496009)(39860400002)(136003)(376002)(346002)(396003)(366004)(199004)(189003)(64756008)(478600001)(66946007)(66556008)(71190400001)(71200400001)(6916009)(5660300002)(54906003)(6486002)(8676002)(14454004)(81156014)(36756003)(81166006)(76176011)(1076003)(186003)(50226002)(99286004)(25786009)(4326008)(8936002)(316002)(30864003)(102836004)(386003)(6506007)(2906002)(26005)(14444005)(3846002)(256004)(6116002)(2616005)(66066001)(86362001)(53936002)(52116002)(53946003)(107886003)(486006)(6436002)(305945005)(7736002)(6512007)(446003)(476003)(66446008)(11346002)(66476007)(579004)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2259;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(1496009)(39860400002)(136003)(376002)(346002)(396003)(366004)(199004)(189003)(64756008)(478600001)(66946007)(66556008)(71190400001)(71200400001)(6916009)(5660300002)(54906003)(6486002)(8676002)(14454004)(81156014)(36756003)(81166006)(76176011)(1076003)(186003)(50226002)(99286004)(25786009)(4326008)(8936002)(316002)(30864003)(102836004)(386003)(6506007)(2906002)(26005)(14444005)(5024004)(3846002)(256004)(6116002)(2616005)(66066001)(86362001)(53936002)(52116002)(53946003)(107886003)(486006)(6436002)(305945005)(7736002)(6512007)(446003)(476003)(66446008)(11346002)(66476007)(579004)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2259;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 4GBcuor2N/AEH47cwkpU0s/3dnBv7oYMXDYOIM1VA8fbnYUkBWH4p1jGJmsMl7a4rZksbLEwwr8x+NklktB3uZUl8tAiRddkOD++7lUTPX/D3gL19H7ABmVkqb/MsVQ+ZO/wt6BlyWQr/2OSNAaIlk3N8JK1Mn55UIIsND21Rc864Zdbd7CBY2bG7MvA48UvBMB5JHGrLmkJoiT+s8j4CScTyjQYAM0y+7w9/7IFfkq3kCjphLeZbsWrQn+DyAfRJa1YOZDcJ9nzHB/0cXjjvDd0nKNtum7zZSLBicCMYLAsxxVJzlPFZfOfWdRIqUEhabhIR+lB6/TIZyERkX+qTp4tpCNKDlk3wyX5NBir/Il/BeIa67ZCVkZeAzP7maNQtimuXWOd3zTkgmUBFvJh+nyVYC29QWIviyFoFCZQyEA=
+x-microsoft-antispam-message-info: pAQCRiL8NcSwuGbNXROvKUYSWBVJAOPuKY0pqK8O8Ih4SsivQG3/yjDZRdJKjcA3/NcSVzlNjX0YKEl+B597CazEzNklIcgDdyaQ+ZNPKfRf75uKAHVda/XSzGihhmMIod+HAqTXUeFIK9+wBB7Nix/XROM1SZYJD2qLxYhuUjcJVGCjOIYXTLQ4iLE03u/7AoLfGjVUtcjw+KRiFD60m8/gL0VhP7G+kkYdSFIsjxF/nLdbnuKTYbpmEFepLTOriYMt19K8yGflBfleNlgPqcAALHlARNPc3vUvW8Jp3INdqGwkBfyOLknCsHxkhWxkl10LaPyEQueZmnvUpv9rATCO5Rf3W6EaGQ/vTOgf5y7+OQAqH2wvz/8WeWHmXGt8r9DLd5khNf7voGxg1gfs/Pg6sS+FUszZz3TdKq4D7uI=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 692a4016-957f-43d1-319e-08d72f766a0b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:13.1168
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c3306be-903f-4893-bbfc-08d72f766b7e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:15.9125
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 824Mo6C8J9t3Z0eGMiU4imK3wx/kxRGueiMC+4plIj+tiDGA/q6+nicZxK754A2KoG7H88HXP7sbzOQUxwkkAA==
+X-MS-Exchange-CrossTenant-userprincipalname: dAGeoghlFA8bpHHb5zkLh5LHI2Pgh6JPxL9q/h1QvYrIOX5OjQYOoMyQL0mX3E/Bs5B+paXnIQJ+39NkICBCvg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2259
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -95,1649 +95,1300 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Vesker <valex@mellanox.com>
 
-On rule creation a set of actions can be provided, the actions describe
-what to do with the packet in case of a match. It is possible to provide
-a set of actions which will be done by order.
+Rules are the actual objects that tie matchers, header values and
+actions. Each rule belongs to a matcher, which can hold multiple rules
+sharing the same mask. Each rule is a specific set of values and
+actions.
+When a packet reaches a matcher it is being matched against the
+matcher`s rules. In case of a match over a rule its actions will be
+executed. Each rule object contains a set of STEs, where each STE is a
+definition of match values and actions defined by the rule.
+This file handles the rule operations and processing.
 
 Signed-off-by: Alex Vesker <valex@mellanox.com>
-Reviewed-by: Erez Shitrit <erezsh@mellanox.com>
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/steering/dr_action.c   | 1588 +++++++++++++++++
- 1 file changed, 1588 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_act=
-ion.c
+ .../mellanox/mlx5/core/steering/dr_rule.c     | 1243 +++++++++++++++++
+ 1 file changed, 1243 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rul=
+e.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b=
-/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/d=
+rivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
 new file mode 100644
-index 000000000000..a02f87f85c17
+index 000000000000..3bc3f66b8fa8
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -0,0 +1,1588 @@
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -0,0 +1,1243 @@
 +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
 +/* Copyright (c) 2019 Mellanox Technologies. */
 +
 +#include "dr_types.h"
 +
-+enum dr_action_domain {
-+	DR_ACTION_DOMAIN_NIC_INGRESS,
-+	DR_ACTION_DOMAIN_NIC_EGRESS,
-+	DR_ACTION_DOMAIN_FDB_INGRESS,
-+	DR_ACTION_DOMAIN_FDB_EGRESS,
-+	DR_ACTION_DOMAIN_MAX,
++#define DR_RULE_MAX_STE_CHAIN (DR_RULE_MAX_STES + DR_ACTION_MAX_STES)
++
++struct mlx5dr_rule_action_member {
++	struct mlx5dr_action *action;
++	struct list_head list;
 +};
 +
-+enum dr_action_valid_state {
-+	DR_ACTION_STATE_ERR,
-+	DR_ACTION_STATE_NO_ACTION,
-+	DR_ACTION_STATE_REFORMAT,
-+	DR_ACTION_STATE_MODIFY_HDR,
-+	DR_ACTION_STATE_MODIFY_VLAN,
-+	DR_ACTION_STATE_NON_TERM,
-+	DR_ACTION_STATE_TERM,
-+	DR_ACTION_STATE_MAX,
-+};
-+
-+static const enum dr_action_valid_state
-+next_action_state[DR_ACTION_DOMAIN_MAX][DR_ACTION_STATE_MAX][DR_ACTION_TYP=
-_MAX] =3D {
-+	[DR_ACTION_DOMAIN_NIC_INGRESS] =3D {
-+		[DR_ACTION_STATE_NO_ACTION] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_QP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_TAG]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_TNL_L2_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_TNL_L3_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_REFORMAT] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_QP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_TAG]		=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_MODIFY_HDR] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_QP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_TAG]		=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_HDR,
-+		},
-+		[DR_ACTION_STATE_MODIFY_VLAN] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_QP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_TAG]		=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+		},
-+		[DR_ACTION_STATE_NON_TERM] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_QP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_TAG]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_TNL_L2_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_TNL_L3_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_TERM] =3D {
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_TERM,
-+		},
-+	},
-+	[DR_ACTION_DOMAIN_NIC_EGRESS] =3D {
-+		[DR_ACTION_STATE_NO_ACTION] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_REFORMAT] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_REFORMAT,
-+		},
-+		[DR_ACTION_STATE_MODIFY_HDR] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_MODIFY_VLAN] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+		},
-+		[DR_ACTION_STATE_NON_TERM] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+		},
-+		[DR_ACTION_STATE_TERM] =3D {
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_TERM,
-+		},
-+	},
-+	[DR_ACTION_DOMAIN_FDB_INGRESS] =3D {
-+		[DR_ACTION_STATE_NO_ACTION] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_TNL_L2_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_TNL_L3_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_REFORMAT] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_MODIFY_HDR] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_MODIFY_VLAN] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+		},
-+		[DR_ACTION_STATE_NON_TERM] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_TNL_L2_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_TNL_L3_TO_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_POP_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_TERM] =3D {
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_TERM,
-+		},
-+	},
-+	[DR_ACTION_DOMAIN_FDB_EGRESS] =3D {
-+		[DR_ACTION_STATE_NO_ACTION] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_REFORMAT] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_MODIFY_HDR] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_MODIFY_VLAN] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_NON_TERM] =3D {
-+			[DR_ACTION_TYP_DROP]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_FT]		=3D DR_ACTION_STATE_TERM,
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_NON_TERM,
-+			[DR_ACTION_TYP_MODIFY_HDR]	=3D DR_ACTION_STATE_MODIFY_HDR,
-+			[DR_ACTION_TYP_L2_TO_TNL_L2]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_L2_TO_TNL_L3]	=3D DR_ACTION_STATE_REFORMAT,
-+			[DR_ACTION_TYP_PUSH_VLAN]	=3D DR_ACTION_STATE_MODIFY_VLAN,
-+			[DR_ACTION_TYP_VPORT]		=3D DR_ACTION_STATE_TERM,
-+		},
-+		[DR_ACTION_STATE_TERM] =3D {
-+			[DR_ACTION_TYP_CTR]		=3D DR_ACTION_STATE_TERM,
-+		},
-+	},
-+};
-+
-+struct dr_action_modify_field_conv {
-+	u16 hw_field;
-+	u8 start;
-+	u8 end;
-+	u8 l3_type;
-+	u8 l4_type;
-+};
-+
-+static const struct dr_action_modify_field_conv dr_action_conv_arr[] =3D {
-+	[MLX5_ACTION_IN_FIELD_OUT_SMAC_47_16] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_1, .start =3D 16, .end =3D 47=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SMAC_15_0] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_1, .start =3D 0, .end =3D 15,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_ETHERTYPE] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_2, .start =3D 32, .end =3D 47=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DMAC_47_16] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_0, .start =3D 16, .end =3D 47=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DMAC_15_0] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_0, .start =3D 0, .end =3D 15,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_IP_DSCP] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_1, .start =3D 0, .end =3D 5,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_TCP_FLAGS] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_0, .start =3D 48, .end =3D 56=
-,
-+		.l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_TCP,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_TCP_SPORT] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_0, .start =3D 0, .end =3D 15,
-+		.l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_TCP,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_TCP_DPORT] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_0, .start =3D 16, .end =3D 31=
-,
-+		.l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_TCP,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_IP_TTL] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_1, .start =3D 8, .end =3D 15,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV4,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_IPV6_HOPLIMIT] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_1, .start =3D 8, .end =3D 15,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_UDP_SPORT] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_0, .start =3D 0, .end =3D 15,
-+		.l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_UDP,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_UDP_DPORT] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_0, .start =3D 16, .end =3D 31=
-,
-+		.l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_UDP,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SIPV6_127_96] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_3, .start =3D 32, .end =3D 63=
-,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SIPV6_95_64] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_3, .start =3D 0, .end =3D 31,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SIPV6_63_32] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_4, .start =3D 32, .end =3D 63=
-,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SIPV6_31_0] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_4, .start =3D 0, .end =3D 31,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DIPV6_127_96] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_0, .start =3D 32, .end =3D 63=
-,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DIPV6_95_64] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_0, .start =3D 0, .end =3D 31,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DIPV6_63_32] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_2, .start =3D 32, .end =3D 63=
-,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DIPV6_31_0] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_2, .start =3D 0, .end =3D 31,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_SIPV4] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_0, .start =3D 0, .end =3D 31,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV4,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_DIPV4] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L3_0, .start =3D 32, .end =3D 63=
-,
-+		.l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV4,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_A] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_METADATA, .start =3D 0, .end =3D=
- 31,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_B] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_METADATA, .start =3D 32, .end =
-=3D 63,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_0] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_0, .start =3D 32, .end =3D 6=
-3,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_1] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_0, .start =3D 0, .end =3D 31=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_2] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_1, .start =3D 32, .end =3D 6=
-3,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_3] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_1, .start =3D 0, .end =3D 31=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_4] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_2, .start =3D 32, .end =3D 6=
-3,
-+	},
-+	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_5] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_REG_2, .start =3D 0, .end =3D 31=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_TCP_SEQ_NUM] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_1, .start =3D 32, .end =3D 63=
-,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_TCP_ACK_NUM] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L4_1, .start =3D 0, .end =3D 31,
-+	},
-+	[MLX5_ACTION_IN_FIELD_OUT_FIRST_VID] =3D {
-+		.hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_L2_2, .start =3D 0, .end =3D 15,
-+	},
-+};
-+
-+#define MAX_VLANS 2
-+struct dr_action_vlan_info {
-+	int	count;
-+	u32	headers[MAX_VLANS];
-+};
-+
-+struct dr_action_apply_attr {
-+	u32	modify_index;
-+	u16	modify_actions;
-+	u32	decap_index;
-+	u16	decap_actions;
-+	u8	decap_with_vlan:1;
-+	u64	final_icm_addr;
-+	u32	flow_tag;
-+	u32	ctr_id;
-+	u16	gvmi;
-+	u16	hit_gvmi;
-+	u32	reformat_id;
-+	u32	reformat_size;
-+	struct	dr_action_vlan_info vlans;
-+};
-+
-+static int
-+dr_action_reformat_to_action_type(enum mlx5dr_action_reformat_type reforma=
-t_type,
-+				  enum mlx5dr_action_type *action_type)
++static int dr_rule_append_to_miss_list(struct mlx5dr_ste *new_last_ste,
++				       struct list_head *miss_list,
++				       struct list_head *send_list)
 +{
-+	switch (reformat_type) {
-+	case DR_ACTION_REFORMAT_TYP_TNL_L2_TO_L2:
-+		*action_type =3D DR_ACTION_TYP_TNL_L2_TO_L2;
-+		break;
-+	case DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L2:
-+		*action_type =3D DR_ACTION_TYP_L2_TO_TNL_L2;
-+		break;
-+	case DR_ACTION_REFORMAT_TYP_TNL_L3_TO_L2:
-+		*action_type =3D DR_ACTION_TYP_TNL_L3_TO_L2;
-+		break;
-+	case DR_ACTION_REFORMAT_TYP_L2_TO_TNL_L3:
-+		*action_type =3D DR_ACTION_TYP_L2_TO_TNL_L3;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
++	struct mlx5dr_ste_send_info *ste_info_last;
++	struct mlx5dr_ste *last_ste;
 +
-+	return 0;
-+}
-+
-+static void dr_actions_init_next_ste(u8 **last_ste,
-+				     u32 *added_stes,
-+				     enum mlx5dr_ste_entry_type entry_type,
-+				     u16 gvmi)
-+{
-+	(*added_stes)++;
-+	*last_ste +=3D DR_STE_SIZE;
-+	mlx5dr_ste_init(*last_ste, MLX5DR_STE_LU_TYPE_DONT_CARE, entry_type, gvmi=
-);
-+}
-+
-+static void dr_actions_apply_tx(struct mlx5dr_domain *dmn,
-+				u8 *action_type_set,
-+				u8 *last_ste,
-+				struct dr_action_apply_attr *attr,
-+				u32 *added_stes)
-+{
-+	bool encap =3D action_type_set[DR_ACTION_TYP_L2_TO_TNL_L2] ||
-+		action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3];
-+
-+	/* We want to make sure the modify header comes before L2
-+	 * encapsulation. The reason for that is that we support
-+	 * modify headers for outer headers only
-+	 */
-+	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
-+		mlx5dr_ste_set_entry_type(last_ste, MLX5DR_STE_TYPE_MODIFY_PKT);
-+		mlx5dr_ste_set_rewrite_actions(last_ste,
-+					       attr->modify_actions,
-+					       attr->modify_index);
-+	}
-+
-+	if (action_type_set[DR_ACTION_TYP_PUSH_VLAN]) {
-+		int i;
-+
-+		for (i =3D 0; i < attr->vlans.count; i++) {
-+			if (i || action_type_set[DR_ACTION_TYP_MODIFY_HDR])
-+				dr_actions_init_next_ste(&last_ste,
-+							 added_stes,
-+							 MLX5DR_STE_TYPE_TX,
-+							 attr->gvmi);
-+
-+			mlx5dr_ste_set_tx_push_vlan(last_ste,
-+						    attr->vlans.headers[i],
-+						    encap);
-+		}
-+	}
-+
-+	if (encap) {
-+		/* Modify header and encapsulation require a different STEs.
-+		 * Since modify header STE format doesn't support encapsulation
-+		 * tunneling_action.
-+		 */
-+		if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] ||
-+		    action_type_set[DR_ACTION_TYP_PUSH_VLAN])
-+			dr_actions_init_next_ste(&last_ste,
-+						 added_stes,
-+						 MLX5DR_STE_TYPE_TX,
-+						 attr->gvmi);
-+
-+		mlx5dr_ste_set_tx_encap(last_ste,
-+					attr->reformat_id,
-+					attr->reformat_size,
-+					action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3]);
-+		/* Whenever prio_tag_required enabled, we can be sure that the
-+		 * previous table (ACL) already push vlan to our packet,
-+		 * And due to HW limitation we need to set this bit, otherwise
-+		 * push vlan + reformat will not work.
-+		 */
-+		if (MLX5_CAP_GEN(dmn->mdev, prio_tag_required))
-+			mlx5dr_ste_set_go_back_bit(last_ste);
-+	}
-+
-+	if (action_type_set[DR_ACTION_TYP_CTR])
-+		mlx5dr_ste_set_counter_id(last_ste, attr->ctr_id);
-+}
-+
-+static void dr_actions_apply_rx(u8 *action_type_set,
-+				u8 *last_ste,
-+				struct dr_action_apply_attr *attr,
-+				u32 *added_stes)
-+{
-+	if (action_type_set[DR_ACTION_TYP_CTR])
-+		mlx5dr_ste_set_counter_id(last_ste, attr->ctr_id);
-+
-+	if (action_type_set[DR_ACTION_TYP_TNL_L3_TO_L2]) {
-+		mlx5dr_ste_set_entry_type(last_ste, MLX5DR_STE_TYPE_MODIFY_PKT);
-+		mlx5dr_ste_set_rx_decap_l3(last_ste, attr->decap_with_vlan);
-+		mlx5dr_ste_set_rewrite_actions(last_ste,
-+					       attr->decap_actions,
-+					       attr->decap_index);
-+	}
-+
-+	if (action_type_set[DR_ACTION_TYP_TNL_L2_TO_L2])
-+		mlx5dr_ste_set_rx_decap(last_ste);
-+
-+	if (action_type_set[DR_ACTION_TYP_POP_VLAN]) {
-+		int i;
-+
-+		for (i =3D 0; i < attr->vlans.count; i++) {
-+			if (i ||
-+			    action_type_set[DR_ACTION_TYP_TNL_L2_TO_L2] ||
-+			    action_type_set[DR_ACTION_TYP_TNL_L3_TO_L2])
-+				dr_actions_init_next_ste(&last_ste,
-+							 added_stes,
-+							 MLX5DR_STE_TYPE_RX,
-+							 attr->gvmi);
-+
-+			mlx5dr_ste_set_rx_pop_vlan(last_ste);
-+		}
-+	}
-+
-+	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
-+		if (mlx5dr_ste_get_entry_type(last_ste) =3D=3D MLX5DR_STE_TYPE_MODIFY_PK=
-T)
-+			dr_actions_init_next_ste(&last_ste,
-+						 added_stes,
-+						 MLX5DR_STE_TYPE_MODIFY_PKT,
-+						 attr->gvmi);
-+		else
-+			mlx5dr_ste_set_entry_type(last_ste, MLX5DR_STE_TYPE_MODIFY_PKT);
-+
-+		mlx5dr_ste_set_rewrite_actions(last_ste,
-+					       attr->modify_actions,
-+					       attr->modify_index);
-+	}
-+
-+	if (action_type_set[DR_ACTION_TYP_TAG]) {
-+		if (mlx5dr_ste_get_entry_type(last_ste) =3D=3D MLX5DR_STE_TYPE_MODIFY_PK=
-T)
-+			dr_actions_init_next_ste(&last_ste,
-+						 added_stes,
-+						 MLX5DR_STE_TYPE_RX,
-+						 attr->gvmi);
-+
-+		mlx5dr_ste_rx_set_flow_tag(last_ste, attr->flow_tag);
-+	}
-+}
-+
-+/* Apply the actions on the rule STE array starting from the last_ste.
-+ * Actions might require more than one STE, new_num_stes will return
-+ * the new size of the STEs array, rule with actions.
-+ */
-+static void dr_actions_apply(struct mlx5dr_domain *dmn,
-+			     enum mlx5dr_ste_entry_type ste_type,
-+			     u8 *action_type_set,
-+			     u8 *last_ste,
-+			     struct dr_action_apply_attr *attr,
-+			     u32 *new_num_stes)
-+{
-+	u32 added_stes =3D 0;
-+
-+	if (ste_type =3D=3D MLX5DR_STE_TYPE_RX)
-+		dr_actions_apply_rx(action_type_set, last_ste, attr, &added_stes);
-+	else
-+		dr_actions_apply_tx(dmn, action_type_set, last_ste, attr, &added_stes);
-+
-+	last_ste +=3D added_stes * DR_STE_SIZE;
-+	*new_num_stes +=3D added_stes;
-+
-+	mlx5dr_ste_set_hit_gvmi(last_ste, attr->hit_gvmi);
-+	mlx5dr_ste_set_hit_addr(last_ste, attr->final_icm_addr, 1);
-+}
-+
-+static enum dr_action_domain
-+dr_action_get_action_domain(enum mlx5dr_domain_type domain,
-+			    enum mlx5dr_ste_entry_type ste_type)
-+{
-+	switch (domain) {
-+	case MLX5DR_DOMAIN_TYPE_NIC_RX:
-+		return DR_ACTION_DOMAIN_NIC_INGRESS;
-+	case MLX5DR_DOMAIN_TYPE_NIC_TX:
-+		return DR_ACTION_DOMAIN_NIC_EGRESS;
-+	case MLX5DR_DOMAIN_TYPE_FDB:
-+		if (ste_type =3D=3D MLX5DR_STE_TYPE_RX)
-+			return DR_ACTION_DOMAIN_FDB_INGRESS;
-+		return DR_ACTION_DOMAIN_FDB_EGRESS;
-+	default:
-+		WARN_ON(true);
-+		return DR_ACTION_DOMAIN_MAX;
-+	}
-+}
-+
-+static
-+int dr_action_validate_and_get_next_state(enum dr_action_domain action_dom=
-ain,
-+					  u32 action_type,
-+					  u32 *state)
-+{
-+	u32 cur_state =3D *state;
-+
-+	/* Check action state machine is valid */
-+	*state =3D next_action_state[action_domain][cur_state][action_type];
-+
-+	if (*state =3D=3D DR_ACTION_STATE_ERR)
-+		return -EOPNOTSUPP;
-+
-+	return 0;
-+}
-+
-+static int dr_action_handle_cs_recalc(struct mlx5dr_domain *dmn,
-+				      struct mlx5dr_action *dest_action,
-+				      u64 *final_icm_addr)
-+{
-+	int ret;
-+
-+	switch (dest_action->action_type) {
-+	case DR_ACTION_TYP_FT:
-+		/* Allow destination flow table only if table is a terminating
-+		 * table, since there is an *assumption* that in such case FW
-+		 * will recalculate the CS.
-+		 */
-+		if (dest_action->dest_tbl.is_fw_tbl) {
-+			*final_icm_addr =3D dest_action->dest_tbl.fw_tbl.rx_icm_addr;
-+		} else {
-+			mlx5dr_dbg(dmn,
-+				   "Destination FT should be terminating when modify TTL is used\n");
-+			return -EINVAL;
-+		}
-+		break;
-+
-+	case DR_ACTION_TYP_VPORT:
-+		/* If destination is vport we will get the FW flow table
-+		 * that recalculates the CS and forwards to the vport.
-+		 */
-+		ret =3D mlx5dr_domain_cache_get_recalc_cs_ft_addr(dest_action->vport.dmn=
-,
-+								dest_action->vport.num,
-+								final_icm_addr);
-+		if (ret) {
-+			mlx5dr_err(dmn, "Failed to get FW cs recalc flow table\n");
-+			return ret;
-+		}
-+		break;
-+
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+#define WITH_VLAN_NUM_HW_ACTIONS 6
-+
-+int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
-+				 struct mlx5dr_matcher_rx_tx *nic_matcher,
-+				 struct mlx5dr_action *actions[],
-+				 u32 num_actions,
-+				 u8 *ste_arr,
-+				 u32 *new_hw_ste_arr_sz)
-+{
-+	struct mlx5dr_domain_rx_tx *nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
-+	bool rx_rule =3D nic_dmn->ste_type =3D=3D MLX5DR_STE_TYPE_RX;
-+	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
-+	u8 action_type_set[DR_ACTION_TYP_MAX] =3D {};
-+	struct mlx5dr_action *dest_action =3D NULL;
-+	u32 state =3D DR_ACTION_STATE_NO_ACTION;
-+	struct dr_action_apply_attr attr =3D {};
-+	enum dr_action_domain action_domain;
-+	bool recalc_cs_required =3D false;
-+	u8 *last_ste;
-+	int i, ret;
-+
-+	attr.gvmi =3D dmn->info.caps.gvmi;
-+	attr.hit_gvmi =3D dmn->info.caps.gvmi;
-+	attr.final_icm_addr =3D nic_dmn->default_icm_addr;
-+	action_domain =3D dr_action_get_action_domain(dmn->type, nic_dmn->ste_typ=
++	/* The new entry will be inserted after the last */
++	last_ste =3D list_entry(miss_list->prev, struct mlx5dr_ste, miss_list_nod=
 e);
++	WARN_ON(!last_ste);
 +
-+	for (i =3D 0; i < num_actions; i++) {
-+		struct mlx5dr_action *action;
-+		int max_actions_type =3D 1;
-+		u32 action_type;
-+
-+		action =3D actions[i];
-+		action_type =3D action->action_type;
-+
-+		switch (action_type) {
-+		case DR_ACTION_TYP_DROP:
-+			attr.final_icm_addr =3D nic_dmn->drop_icm_addr;
-+			break;
-+		case DR_ACTION_TYP_FT:
-+			dest_action =3D action;
-+			if (!action->dest_tbl.is_fw_tbl) {
-+				if (action->dest_tbl.tbl->dmn !=3D dmn) {
-+					mlx5dr_dbg(dmn,
-+						   "Destination table belongs to a different domain\n");
-+					goto out_invalid_arg;
-+				}
-+				if (action->dest_tbl.tbl->level <=3D matcher->tbl->level) {
-+					mlx5dr_dbg(dmn,
-+						   "Destination table level should be higher than source table\n");
-+					goto out_invalid_arg;
-+				}
-+				attr.final_icm_addr =3D rx_rule ?
-+					action->dest_tbl.tbl->rx.s_anchor->chunk->icm_addr :
-+					action->dest_tbl.tbl->tx.s_anchor->chunk->icm_addr;
-+			} else {
-+				struct mlx5dr_cmd_query_flow_table_details output;
-+				int ret;
-+
-+				/* get the relevant addresses */
-+				if (!action->dest_tbl.fw_tbl.rx_icm_addr) {
-+					ret =3D mlx5dr_cmd_query_flow_table(action->dest_tbl.fw_tbl.mdev,
-+									  action->dest_tbl.fw_tbl.ft->type,
-+									  action->dest_tbl.fw_tbl.ft->id,
-+									  &output);
-+					if (!ret) {
-+						action->dest_tbl.fw_tbl.tx_icm_addr =3D
-+							output.sw_owner_icm_root_1;
-+						action->dest_tbl.fw_tbl.rx_icm_addr =3D
-+							output.sw_owner_icm_root_0;
-+					} else {
-+						mlx5dr_dbg(dmn,
-+							   "Failed mlx5_cmd_query_flow_table ret: %d\n",
-+							   ret);
-+						return ret;
-+					}
-+				}
-+				attr.final_icm_addr =3D rx_rule ?
-+					action->dest_tbl.fw_tbl.rx_icm_addr :
-+					action->dest_tbl.fw_tbl.tx_icm_addr;
-+			}
-+			break;
-+		case DR_ACTION_TYP_QP:
-+			mlx5dr_info(dmn, "Domain doesn't support QP\n");
-+			goto out_invalid_arg;
-+		case DR_ACTION_TYP_CTR:
-+			attr.ctr_id =3D action->ctr.ctr_id +
-+				action->ctr.offeset;
-+			break;
-+		case DR_ACTION_TYP_TAG:
-+			attr.flow_tag =3D action->flow_tag;
-+			break;
-+		case DR_ACTION_TYP_TNL_L2_TO_L2:
-+			break;
-+		case DR_ACTION_TYP_TNL_L3_TO_L2:
-+			attr.decap_index =3D action->rewrite.index;
-+			attr.decap_actions =3D action->rewrite.num_of_actions;
-+			attr.decap_with_vlan =3D
-+				attr.decap_actions =3D=3D WITH_VLAN_NUM_HW_ACTIONS;
-+			break;
-+		case DR_ACTION_TYP_MODIFY_HDR:
-+			attr.modify_index =3D action->rewrite.index;
-+			attr.modify_actions =3D action->rewrite.num_of_actions;
-+			recalc_cs_required =3D action->rewrite.modify_ttl;
-+			break;
-+		case DR_ACTION_TYP_L2_TO_TNL_L2:
-+		case DR_ACTION_TYP_L2_TO_TNL_L3:
-+			attr.reformat_size =3D action->reformat.reformat_size;
-+			attr.reformat_id =3D action->reformat.reformat_id;
-+			break;
-+		case DR_ACTION_TYP_VPORT:
-+			attr.hit_gvmi =3D action->vport.caps->vhca_gvmi;
-+			dest_action =3D action;
-+			if (rx_rule) {
-+				/* Loopback on WIRE vport is not supported */
-+				if (action->vport.num =3D=3D WIRE_PORT)
-+					goto out_invalid_arg;
-+
-+				attr.final_icm_addr =3D action->vport.caps->icm_address_rx;
-+			} else {
-+				attr.final_icm_addr =3D action->vport.caps->icm_address_tx;
-+			}
-+			break;
-+		case DR_ACTION_TYP_POP_VLAN:
-+			max_actions_type =3D MAX_VLANS;
-+			attr.vlans.count++;
-+			break;
-+		case DR_ACTION_TYP_PUSH_VLAN:
-+			max_actions_type =3D MAX_VLANS;
-+			if (attr.vlans.count =3D=3D MAX_VLANS)
-+				return -EINVAL;
-+
-+			attr.vlans.headers[attr.vlans.count++] =3D action->push_vlan.vlan_hdr;
-+			break;
-+		default:
-+			goto out_invalid_arg;
-+		}
-+
-+		/* Check action duplication */
-+		if (++action_type_set[action_type] > max_actions_type) {
-+			mlx5dr_dbg(dmn, "Action type %d supports only max %d time(s)\n",
-+				   action_type, max_actions_type);
-+			goto out_invalid_arg;
-+		}
-+
-+		/* Check action state machine is valid */
-+		if (dr_action_validate_and_get_next_state(action_domain,
-+							  action_type,
-+							  &state)) {
-+			mlx5dr_dbg(dmn, "Invalid action sequence provided\n");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	*new_hw_ste_arr_sz =3D nic_matcher->num_of_builders;
-+	last_ste =3D ste_arr + DR_STE_SIZE * (nic_matcher->num_of_builders - 1);
-+
-+	/* Due to a HW bug, modifying TTL on RX flows will cause an incorrect
-+	 * checksum calculation. In this case we will use a FW table to
-+	 * recalculate.
-+	 */
-+	if (dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_FDB &&
-+	    rx_rule && recalc_cs_required && dest_action) {
-+		ret =3D dr_action_handle_cs_recalc(dmn, dest_action, &attr.final_icm_add=
-r);
-+		if (ret) {
-+			mlx5dr_dbg(dmn,
-+				   "Failed to handle checksum recalculation err %d\n",
-+				   ret);
-+			return ret;
-+		}
-+	}
-+
-+	dr_actions_apply(dmn,
-+			 nic_dmn->ste_type,
-+			 action_type_set,
-+			 last_ste,
-+			 &attr,
-+			 new_hw_ste_arr_sz);
-+
-+	return 0;
-+
-+out_invalid_arg:
-+	return -EINVAL;
-+}
-+
-+#define CVLAN_ETHERTYPE 0x8100
-+#define SVLAN_ETHERTYPE 0x88a8
-+#define HDR_LEN_L2_ONLY 14
-+#define HDR_LEN_L2_VLAN 18
-+#define REWRITE_HW_ACTION_NUM 6
-+
-+static int dr_actions_l2_rewrite(struct mlx5dr_domain *dmn,
-+				 struct mlx5dr_action *action,
-+				 void *data, size_t data_sz)
-+{
-+	struct mlx5_ifc_l2_hdr_bits *l2_hdr =3D data;
-+	u64 ops[REWRITE_HW_ACTION_NUM] =3D {};
-+	u32 hdr_fld_4b;
-+	u16 hdr_fld_2b;
-+	u16 vlan_type;
-+	bool vlan;
-+	int i =3D 0;
-+	int ret;
-+
-+	vlan =3D (data_sz !=3D HDR_LEN_L2_ONLY);
-+
-+	/* dmac_47_16 */
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_length, 0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_left_shifter, 16);
-+	hdr_fld_4b =3D MLX5_GET(l2_hdr, l2_hdr, dmac_47_16);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 inline_data, hdr_fld_4b);
-+	i++;
-+
-+	/* smac_47_16 */
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_length, 0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_1);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_left_shifter, 16);
-+	hdr_fld_4b =3D (MLX5_GET(l2_hdr, l2_hdr, smac_31_0) >> 16 |
-+		      MLX5_GET(l2_hdr, l2_hdr, smac_47_32) << 16);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 inline_data, hdr_fld_4b);
-+	i++;
-+
-+	/* dmac_15_0 */
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_length, 16);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_left_shifter, 0);
-+	hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, dmac_15_0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 inline_data, hdr_fld_2b);
-+	i++;
-+
-+	/* ethertype + (optional) vlan */
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_2);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_left_shifter, 32);
-+	if (!vlan) {
-+		hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, ethertype);
-+		MLX5_SET(dr_action_hw_set, ops + i, inline_data, hdr_fld_2b);
-+		MLX5_SET(dr_action_hw_set, ops + i, destination_length, 16);
-+	} else {
-+		hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, ethertype);
-+		vlan_type =3D hdr_fld_2b =3D=3D SVLAN_ETHERTYPE ? DR_STE_SVLAN : DR_STE_=
-CVLAN;
-+		hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, vlan);
-+		hdr_fld_4b =3D (vlan_type << 16) | hdr_fld_2b;
-+		MLX5_SET(dr_action_hw_set, ops + i, inline_data, hdr_fld_4b);
-+		MLX5_SET(dr_action_hw_set, ops + i, destination_length, 18);
-+	}
-+	i++;
-+
-+	/* smac_15_0 */
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_length, 16);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_1);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 destination_left_shifter, 0);
-+	hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, smac_31_0);
-+	MLX5_SET(dr_action_hw_set, ops + i,
-+		 inline_data, hdr_fld_2b);
-+	i++;
-+
-+	if (vlan) {
-+		MLX5_SET(dr_action_hw_set, ops + i,
-+			 opcode, MLX5DR_ACTION_MDFY_HW_OP_SET);
-+		hdr_fld_2b =3D MLX5_GET(l2_hdr, l2_hdr, vlan_type);
-+		MLX5_SET(dr_action_hw_set, ops + i,
-+			 inline_data, hdr_fld_2b);
-+		MLX5_SET(dr_action_hw_set, ops + i,
-+			 destination_length, 16);
-+		MLX5_SET(dr_action_hw_set, ops + i,
-+			 destination_field_code, MLX5DR_ACTION_MDFY_HW_FLD_L2_2);
-+		MLX5_SET(dr_action_hw_set, ops + i,
-+			 destination_left_shifter, 0);
-+		i++;
-+	}
-+
-+	action->rewrite.data =3D (void *)ops;
-+	action->rewrite.num_of_actions =3D i;
-+	action->rewrite.chunk->byte_size =3D i * sizeof(*ops);
-+
-+	ret =3D mlx5dr_send_postsend_action(dmn, action);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Writing encapsulation action to ICM failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct mlx5dr_action *
-+dr_action_create_generic(enum mlx5dr_action_type action_type)
-+{
-+	struct mlx5dr_action *action;
-+
-+	action =3D kzalloc(sizeof(*action), GFP_KERNEL);
-+	if (!action)
-+		return NULL;
-+
-+	action->action_type =3D action_type;
-+	refcount_set(&action->refcount, 1);
-+
-+	return action;
-+}
-+
-+struct mlx5dr_action *mlx5dr_action_create_drop(void)
-+{
-+	return dr_action_create_generic(DR_ACTION_TYP_DROP);
-+}
-+
-+struct mlx5dr_action *
-+mlx5dr_action_create_dest_table(struct mlx5dr_table *tbl)
-+{
-+	struct mlx5dr_action *action;
-+
-+	refcount_inc(&tbl->refcount);
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_FT);
-+	if (!action)
-+		goto dec_ref;
-+
-+	action->dest_tbl.tbl =3D tbl;
-+
-+	return action;
-+
-+dec_ref:
-+	refcount_dec(&tbl->refcount);
-+	return NULL;
-+}
-+
-+struct mlx5dr_action *
-+mlx5dr_create_action_dest_flow_fw_table(struct mlx5_flow_table *ft,
-+					struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5dr_action *action;
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_FT);
-+	if (!action)
-+		return NULL;
-+
-+	action->dest_tbl.is_fw_tbl =3D 1;
-+	action->dest_tbl.fw_tbl.ft =3D ft;
-+	action->dest_tbl.fw_tbl.mdev =3D mdev;
-+
-+	return action;
-+}
-+
-+struct mlx5dr_action *
-+mlx5dr_action_create_flow_counter(u32 counter_id)
-+{
-+	struct mlx5dr_action *action;
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_CTR);
-+	if (!action)
-+		return NULL;
-+
-+	action->ctr.ctr_id =3D counter_id;
-+
-+	return action;
-+}
-+
-+struct mlx5dr_action *mlx5dr_action_create_tag(u32 tag_value)
-+{
-+	struct mlx5dr_action *action;
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_TAG);
-+	if (!action)
-+		return NULL;
-+
-+	action->flow_tag =3D tag_value & 0xffffff;
-+
-+	return action;
-+}
-+
-+static int
-+dr_action_verify_reformat_params(enum mlx5dr_action_type reformat_type,
-+				 struct mlx5dr_domain *dmn,
-+				 size_t data_sz,
-+				 void *data)
-+{
-+	if ((!data && data_sz) || (data && !data_sz) || reformat_type >
-+		DR_ACTION_TYP_L2_TO_TNL_L3) {
-+		mlx5dr_dbg(dmn, "Invalid reformat parameter!\n");
-+		goto out_err;
-+	}
-+
-+	if (dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_FDB)
-+		return 0;
-+
-+	if (dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_NIC_RX) {
-+		if (reformat_type !=3D DR_ACTION_TYP_TNL_L2_TO_L2 &&
-+		    reformat_type !=3D DR_ACTION_TYP_TNL_L3_TO_L2) {
-+			mlx5dr_dbg(dmn, "Action reformat type not support on RX domain\n");
-+			goto out_err;
-+		}
-+	} else if (dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_NIC_TX) {
-+		if (reformat_type !=3D DR_ACTION_TYP_L2_TO_TNL_L2 &&
-+		    reformat_type !=3D DR_ACTION_TYP_L2_TO_TNL_L3) {
-+			mlx5dr_dbg(dmn, "Action reformat type not support on TX domain\n");
-+			goto out_err;
-+		}
-+	}
-+
-+	return 0;
-+
-+out_err:
-+	return -EINVAL;
-+}
-+
-+#define ACTION_CACHE_LINE_SIZE 64
-+
-+static int
-+dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
-+				 size_t data_sz, void *data,
-+				 struct mlx5dr_action *action)
-+{
-+	u32 reformat_id;
-+	int ret;
-+
-+	switch (action->action_type) {
-+	case DR_ACTION_TYP_L2_TO_TNL_L2:
-+	case DR_ACTION_TYP_L2_TO_TNL_L3:
-+	{
-+		enum mlx5dr_action_type rt;
-+
-+		if (action->action_type =3D=3D DR_ACTION_TYP_L2_TO_TNL_L2)
-+			rt =3D MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL;
-+		else
-+			rt =3D MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL;
-+
-+		ret =3D mlx5dr_cmd_create_reformat_ctx(dmn->mdev, rt, data_sz, data,
-+						     &reformat_id);
-+		if (ret)
-+			return ret;
-+
-+		action->reformat.reformat_id =3D reformat_id;
-+		action->reformat.reformat_size =3D data_sz;
-+		return 0;
-+	}
-+	case DR_ACTION_TYP_TNL_L2_TO_L2:
-+	{
-+		return 0;
-+	}
-+	case DR_ACTION_TYP_TNL_L3_TO_L2:
-+	{
-+		/* Only Ethernet frame is supported, with VLAN (18) or without (14) */
-+		if (data_sz !=3D HDR_LEN_L2_ONLY && data_sz !=3D HDR_LEN_L2_VLAN)
-+			return -EINVAL;
-+
-+		action->rewrite.chunk =3D mlx5dr_icm_alloc_chunk(dmn->action_icm_pool,
-+							       DR_CHUNK_SIZE_8);
-+		if (!action->rewrite.chunk)
-+			return -ENOMEM;
-+
-+		action->rewrite.index =3D (action->rewrite.chunk->icm_addr -
-+					 dmn->info.caps.hdr_modify_icm_addr) /
-+					 ACTION_CACHE_LINE_SIZE;
-+
-+		ret =3D dr_actions_l2_rewrite(dmn, action, data, data_sz);
-+		if (ret) {
-+			mlx5dr_icm_free_chunk(action->rewrite.chunk);
-+			return ret;
-+		}
-+		return 0;
-+	}
-+	default:
-+		mlx5dr_info(dmn, "Reformat type is not supported %d\n", action->action_t=
-ype);
-+		return -EINVAL;
-+	}
-+}
-+
-+struct mlx5dr_action *mlx5dr_action_create_pop_vlan(void)
-+{
-+	return dr_action_create_generic(DR_ACTION_TYP_POP_VLAN);
-+}
-+
-+struct mlx5dr_action *mlx5dr_action_create_push_vlan(struct mlx5dr_domain =
-*dmn,
-+						     __be32 vlan_hdr)
-+{
-+	u32 vlan_hdr_h =3D ntohl(vlan_hdr);
-+	u16 ethertype =3D vlan_hdr_h >> 16;
-+	struct mlx5dr_action *action;
-+
-+	if (ethertype !=3D SVLAN_ETHERTYPE && ethertype !=3D CVLAN_ETHERTYPE) {
-+		mlx5dr_dbg(dmn, "Invalid vlan ethertype\n");
-+		return NULL;
-+	}
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_PUSH_VLAN);
-+	if (!action)
-+		return NULL;
-+
-+	action->push_vlan.vlan_hdr =3D vlan_hdr_h;
-+	return action;
-+}
-+
-+struct mlx5dr_action *
-+mlx5dr_action_create_packet_reformat(struct mlx5dr_domain *dmn,
-+				     enum mlx5dr_action_reformat_type reformat_type,
-+				     size_t data_sz,
-+				     void *data)
-+{
-+	enum mlx5dr_action_type action_type;
-+	struct mlx5dr_action *action;
-+	int ret;
-+
-+	refcount_inc(&dmn->refcount);
-+
-+	/* General checks */
-+	ret =3D dr_action_reformat_to_action_type(reformat_type, &action_type);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Invalid reformat_type provided\n");
-+		goto dec_ref;
-+	}
-+
-+	ret =3D dr_action_verify_reformat_params(action_type, dmn, data_sz, data)=
-;
-+	if (ret)
-+		goto dec_ref;
-+
-+	action =3D dr_action_create_generic(action_type);
-+	if (!action)
-+		goto dec_ref;
-+
-+	action->reformat.dmn =3D dmn;
-+
-+	ret =3D dr_action_create_reformat_action(dmn,
-+					       data_sz,
-+					       data,
-+					       action);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Failed creating reformat action %d\n", ret);
-+		goto free_action;
-+	}
-+
-+	return action;
-+
-+free_action:
-+	kfree(action);
-+dec_ref:
-+	refcount_dec(&dmn->refcount);
-+	return NULL;
-+}
-+
-+static const struct dr_action_modify_field_conv *
-+dr_action_modify_get_hw_info(u16 sw_field)
-+{
-+	const struct dr_action_modify_field_conv *hw_action_info;
-+
-+	if (sw_field >=3D ARRAY_SIZE(dr_action_conv_arr))
-+		goto not_found;
-+
-+	hw_action_info =3D &dr_action_conv_arr[sw_field];
-+	if (!hw_action_info->end && !hw_action_info->start)
-+		goto not_found;
-+
-+	return hw_action_info;
-+
-+not_found:
-+	return NULL;
-+}
-+
-+static int
-+dr_action_modify_sw_to_hw(struct mlx5dr_domain *dmn,
-+			  __be64 *sw_action,
-+			  __be64 *hw_action,
-+			  const struct dr_action_modify_field_conv **ret_hw_info)
-+{
-+	const struct dr_action_modify_field_conv *hw_action_info;
-+	u8 offset, length, max_length, action;
-+	u16 sw_field;
-+	u8 hw_opcode;
-+	u32 data;
-+
-+	/* Get SW modify action data */
-+	action =3D MLX5_GET(set_action_in, sw_action, action_type);
-+	length =3D MLX5_GET(set_action_in, sw_action, length);
-+	offset =3D MLX5_GET(set_action_in, sw_action, offset);
-+	sw_field =3D MLX5_GET(set_action_in, sw_action, field);
-+	data =3D MLX5_GET(set_action_in, sw_action, data);
-+
-+	/* Convert SW data to HW modify action format */
-+	hw_action_info =3D dr_action_modify_get_hw_info(sw_field);
-+	if (!hw_action_info) {
-+		mlx5dr_dbg(dmn, "Modify action invalid field given\n");
-+		return -EINVAL;
-+	}
-+
-+	max_length =3D hw_action_info->end - hw_action_info->start + 1;
-+
-+	switch (action) {
-+	case MLX5_ACTION_TYPE_SET:
-+		hw_opcode =3D MLX5DR_ACTION_MDFY_HW_OP_SET;
-+		/* PRM defines that length zero specific length of 32bits */
-+		if (!length)
-+			length =3D 32;
-+
-+		if (length + offset > max_length) {
-+			mlx5dr_dbg(dmn, "Modify action length + offset exceeds limit\n");
-+			return -EINVAL;
-+		}
-+		break;
-+
-+	case MLX5_ACTION_TYPE_ADD:
-+		hw_opcode =3D MLX5DR_ACTION_MDFY_HW_OP_ADD;
-+		offset =3D 0;
-+		length =3D max_length;
-+		break;
-+
-+	default:
-+		mlx5dr_info(dmn, "Unsupported action_type for modify action\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	MLX5_SET(dr_action_hw_set, hw_action, opcode, hw_opcode);
-+
-+	MLX5_SET(dr_action_hw_set, hw_action, destination_field_code,
-+		 hw_action_info->hw_field);
-+
-+	MLX5_SET(dr_action_hw_set, hw_action, destination_left_shifter,
-+		 hw_action_info->start + offset);
-+
-+	MLX5_SET(dr_action_hw_set, hw_action, destination_length,
-+		 length =3D=3D 32 ? 0 : length);
-+
-+	MLX5_SET(dr_action_hw_set, hw_action, inline_data, data);
-+
-+	*ret_hw_info =3D hw_action_info;
-+
-+	return 0;
-+}
-+
-+static int
-+dr_action_modify_check_field_limitation(struct mlx5dr_domain *dmn,
-+					const __be64 *sw_action)
-+{
-+	u16 sw_field;
-+	u8 action;
-+
-+	sw_field =3D MLX5_GET(set_action_in, sw_action, field);
-+	action =3D MLX5_GET(set_action_in, sw_action, action_type);
-+
-+	/* Check if SW field is supported in current domain (RX/TX) */
-+	if (action =3D=3D MLX5_ACTION_TYPE_SET) {
-+		if (sw_field =3D=3D MLX5_ACTION_IN_FIELD_METADATA_REG_A) {
-+			if (dmn->type !=3D MLX5DR_DOMAIN_TYPE_NIC_TX) {
-+				mlx5dr_dbg(dmn, "Unsupported field %d for RX/FDB set action\n",
-+					   sw_field);
-+				return -EINVAL;
-+			}
-+		}
-+
-+		if (sw_field =3D=3D MLX5_ACTION_IN_FIELD_METADATA_REG_B) {
-+			if (dmn->type !=3D MLX5DR_DOMAIN_TYPE_NIC_RX) {
-+				mlx5dr_dbg(dmn, "Unsupported field %d for TX/FDB set action\n",
-+					   sw_field);
-+				return -EINVAL;
-+			}
-+		}
-+	} else if (action =3D=3D MLX5_ACTION_TYPE_ADD) {
-+		if (sw_field !=3D MLX5_ACTION_IN_FIELD_OUT_IP_TTL &&
-+		    sw_field !=3D MLX5_ACTION_IN_FIELD_OUT_IPV6_HOPLIMIT &&
-+		    sw_field !=3D MLX5_ACTION_IN_FIELD_OUT_TCP_SEQ_NUM &&
-+		    sw_field !=3D MLX5_ACTION_IN_FIELD_OUT_TCP_ACK_NUM) {
-+			mlx5dr_dbg(dmn, "Unsupported field %d for add action\n", sw_field);
-+			return -EINVAL;
-+		}
-+	} else {
-+		mlx5dr_info(dmn, "Unsupported action %d modify action\n", action);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static bool
-+dr_action_modify_check_is_ttl_modify(const u64 *sw_action)
-+{
-+	u16 sw_field =3D MLX5_GET(set_action_in, sw_action, field);
-+
-+	return sw_field =3D=3D MLX5_ACTION_IN_FIELD_OUT_IP_TTL;
-+}
-+
-+static int dr_actions_convert_modify_header(struct mlx5dr_domain *dmn,
-+					    u32 max_hw_actions,
-+					    u32 num_sw_actions,
-+					    __be64 sw_actions[],
-+					    __be64 hw_actions[],
-+					    u32 *num_hw_actions,
-+					    bool *modify_ttl)
-+{
-+	const struct dr_action_modify_field_conv *hw_action_info;
-+	u16 hw_field =3D MLX5DR_ACTION_MDFY_HW_FLD_RESERVED;
-+	u32 l3_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L3_NONE;
-+	u32 l4_type =3D MLX5DR_ACTION_MDFY_HW_HDR_L4_NONE;
-+	int ret, i, hw_idx =3D 0;
-+	__be64 *sw_action;
-+	__be64 hw_action;
-+
-+	*modify_ttl =3D false;
-+
-+	for (i =3D 0; i < num_sw_actions; i++) {
-+		sw_action =3D &sw_actions[i];
-+
-+		ret =3D dr_action_modify_check_field_limitation(dmn, sw_action);
-+		if (ret)
-+			return ret;
-+
-+		if (!(*modify_ttl))
-+			*modify_ttl =3D dr_action_modify_check_is_ttl_modify(sw_action);
-+
-+		/* Convert SW action to HW action */
-+		ret =3D dr_action_modify_sw_to_hw(dmn,
-+						sw_action,
-+						&hw_action,
-+						&hw_action_info);
-+		if (ret)
-+			return ret;
-+
-+		/* Due to a HW limitation we cannot modify 2 different L3 types */
-+		if (l3_type && hw_action_info->l3_type &&
-+		    hw_action_info->l3_type !=3D l3_type) {
-+			mlx5dr_dbg(dmn, "Action list can't support two different L3 types\n");
-+			return -EINVAL;
-+		}
-+		if (hw_action_info->l3_type)
-+			l3_type =3D hw_action_info->l3_type;
-+
-+		/* Due to a HW limitation we cannot modify two different L4 types */
-+		if (l4_type && hw_action_info->l4_type &&
-+		    hw_action_info->l4_type !=3D l4_type) {
-+			mlx5dr_dbg(dmn, "Action list can't support two different L4 types\n");
-+			return -EINVAL;
-+		}
-+		if (hw_action_info->l4_type)
-+			l4_type =3D hw_action_info->l4_type;
-+
-+		/* HW reads and executes two actions at once this means we
-+		 * need to create a gap if two actions access the same field
-+		 */
-+		if ((hw_idx % 2) && hw_field =3D=3D hw_action_info->hw_field) {
-+			/* Check if after gap insertion the total number of HW
-+			 * modify actions doesn't exceeds the limit
-+			 */
-+			hw_idx++;
-+			if ((num_sw_actions + hw_idx - i) >=3D max_hw_actions) {
-+				mlx5dr_dbg(dmn, "Modify header action number exceeds HW limit\n");
-+				return -EINVAL;
-+			}
-+		}
-+		hw_field =3D hw_action_info->hw_field;
-+
-+		hw_actions[hw_idx] =3D hw_action;
-+		hw_idx++;
-+	}
-+
-+	*num_hw_actions =3D hw_idx;
-+
-+	return 0;
-+}
-+
-+static int dr_action_create_modify_action(struct mlx5dr_domain *dmn,
-+					  size_t actions_sz,
-+					  __be64 actions[],
-+					  struct mlx5dr_action *action)
-+{
-+	struct mlx5dr_icm_chunk *chunk;
-+	u32 max_hw_actions;
-+	u32 num_hw_actions;
-+	u32 num_sw_actions;
-+	__be64 *hw_actions;
-+	bool modify_ttl;
-+	int ret;
-+
-+	num_sw_actions =3D actions_sz / DR_MODIFY_ACTION_SIZE;
-+	max_hw_actions =3D mlx5dr_icm_pool_chunk_size_to_entries(DR_CHUNK_SIZE_16=
-);
-+
-+	if (num_sw_actions > max_hw_actions) {
-+		mlx5dr_dbg(dmn, "Max number of actions %d exceeds limit %d\n",
-+			   num_sw_actions, max_hw_actions);
-+		return -EINVAL;
-+	}
-+
-+	chunk =3D mlx5dr_icm_alloc_chunk(dmn->action_icm_pool, DR_CHUNK_SIZE_16);
-+	if (!chunk)
++	ste_info_last =3D kzalloc(sizeof(*ste_info_last), GFP_KERNEL);
++	if (!ste_info_last)
 +		return -ENOMEM;
 +
-+	hw_actions =3D kcalloc(1, max_hw_actions * DR_MODIFY_ACTION_SIZE, GFP_KER=
-NEL);
-+	if (!hw_actions) {
-+		ret =3D -ENOMEM;
-+		goto free_chunk;
-+	}
++	mlx5dr_ste_set_miss_addr(last_ste->hw_ste,
++				 mlx5dr_ste_get_icm_addr(new_last_ste));
++	list_add_tail(&new_last_ste->miss_list_node, miss_list);
 +
-+	ret =3D dr_actions_convert_modify_header(dmn,
-+					       max_hw_actions,
-+					       num_sw_actions,
-+					       actions,
-+					       hw_actions,
-+					       &num_hw_actions,
-+					       &modify_ttl);
-+	if (ret)
-+		goto free_hw_actions;
-+
-+	action->rewrite.chunk =3D chunk;
-+	action->rewrite.modify_ttl =3D modify_ttl;
-+	action->rewrite.data =3D (u8 *)hw_actions;
-+	action->rewrite.num_of_actions =3D num_hw_actions;
-+	action->rewrite.index =3D (chunk->icm_addr -
-+				 dmn->info.caps.hdr_modify_icm_addr) /
-+				 ACTION_CACHE_LINE_SIZE;
-+
-+	ret =3D mlx5dr_send_postsend_action(dmn, action);
-+	if (ret)
-+		goto free_hw_actions;
++	mlx5dr_send_fill_and_append_ste_send_info(last_ste, DR_STE_SIZE_REDUCED,
++						  0, last_ste->hw_ste,
++						  ste_info_last, send_list, true);
 +
 +	return 0;
++}
 +
-+free_hw_actions:
-+	kfree(hw_actions);
-+free_chunk:
-+	mlx5dr_icm_free_chunk(chunk);
++static struct mlx5dr_ste *
++dr_rule_create_collision_htbl(struct mlx5dr_matcher *matcher,
++			      struct mlx5dr_matcher_rx_tx *nic_matcher,
++			      u8 *hw_ste)
++{
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_ste_htbl *new_htbl;
++	struct mlx5dr_ste *ste;
++
++	/* Create new table for miss entry */
++	new_htbl =3D mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
++					 DR_CHUNK_SIZE_1,
++					 MLX5DR_STE_LU_TYPE_DONT_CARE,
++					 0);
++	if (!new_htbl) {
++		mlx5dr_dbg(dmn, "Failed allocating collision table\n");
++		return NULL;
++	}
++
++	/* One and only entry, never grows */
++	ste =3D new_htbl->ste_arr;
++	mlx5dr_ste_set_miss_addr(hw_ste, nic_matcher->e_anchor->chunk->icm_addr);
++	mlx5dr_htbl_get(new_htbl);
++
++	return ste;
++}
++
++static struct mlx5dr_ste *
++dr_rule_create_collision_entry(struct mlx5dr_matcher *matcher,
++			       struct mlx5dr_matcher_rx_tx *nic_matcher,
++			       u8 *hw_ste,
++			       struct mlx5dr_ste *orig_ste)
++{
++	struct mlx5dr_ste *ste;
++
++	ste =3D dr_rule_create_collision_htbl(matcher, nic_matcher, hw_ste);
++	if (!ste) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Failed creating collision entry\n");
++		return NULL;
++	}
++
++	ste->ste_chain_location =3D orig_ste->ste_chain_location;
++
++	/* In collision entry, all members share the same miss_list_head */
++	ste->htbl->miss_list =3D mlx5dr_ste_get_miss_list(orig_ste);
++
++	/* Next table */
++	if (mlx5dr_ste_create_next_htbl(matcher, nic_matcher, ste, hw_ste,
++					DR_CHUNK_SIZE_1)) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Failed allocating table\n");
++		goto free_tbl;
++	}
++
++	return ste;
++
++free_tbl:
++	mlx5dr_ste_free(ste, matcher, nic_matcher);
++	return NULL;
++}
++
++static int
++dr_rule_handle_one_ste_in_update_list(struct mlx5dr_ste_send_info *ste_inf=
+o,
++				      struct mlx5dr_domain *dmn)
++{
++	int ret;
++
++	list_del(&ste_info->send_list);
++	ret =3D mlx5dr_send_postsend_ste(dmn, ste_info->ste, ste_info->data,
++				       ste_info->size, ste_info->offset);
++	if (ret)
++		goto out;
++	/* Copy data to ste, only reduced size, the last 16B (mask)
++	 * is already written to the hw.
++	 */
++	memcpy(ste_info->ste->hw_ste, ste_info->data, DR_STE_SIZE_REDUCED);
++
++out:
++	kfree(ste_info);
 +	return ret;
 +}
 +
-+struct mlx5dr_action *
-+mlx5dr_action_create_modify_header(struct mlx5dr_domain *dmn,
-+				   u32 flags,
-+				   size_t actions_sz,
-+				   __be64 actions[])
++static int dr_rule_send_update_list(struct list_head *send_ste_list,
++				    struct mlx5dr_domain *dmn,
++				    bool is_reverse)
 +{
-+	struct mlx5dr_action *action;
-+	int ret =3D 0;
++	struct mlx5dr_ste_send_info *ste_info, *tmp_ste_info;
++	int ret;
 +
-+	refcount_inc(&dmn->refcount);
-+
-+	if (actions_sz % DR_MODIFY_ACTION_SIZE) {
-+		mlx5dr_dbg(dmn, "Invalid modify actions size provided\n");
-+		goto dec_ref;
++	if (is_reverse) {
++		list_for_each_entry_safe_reverse(ste_info, tmp_ste_info,
++						 send_ste_list, send_list) {
++			ret =3D dr_rule_handle_one_ste_in_update_list(ste_info,
++								    dmn);
++			if (ret)
++				return ret;
++		}
++	} else {
++		list_for_each_entry_safe(ste_info, tmp_ste_info,
++					 send_ste_list, send_list) {
++			ret =3D dr_rule_handle_one_ste_in_update_list(ste_info,
++								    dmn);
++			if (ret)
++				return ret;
++		}
 +	}
 +
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_MODIFY_HDR);
-+	if (!action)
-+		goto dec_ref;
++	return 0;
++}
 +
-+	action->rewrite.dmn =3D dmn;
++static struct mlx5dr_ste *
++dr_rule_find_ste_in_miss_list(struct list_head *miss_list, u8 *hw_ste)
++{
++	struct mlx5dr_ste *ste;
 +
-+	ret =3D dr_action_create_modify_action(dmn,
-+					     actions_sz,
-+					     actions,
-+					     action);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Failed creating modify header action %d\n", ret);
-+		goto free_action;
++	if (list_empty(miss_list))
++		return NULL;
++
++	/* Check if hw_ste is present in the list */
++	list_for_each_entry(ste, miss_list, miss_list_node) {
++		if (mlx5dr_ste_equal_tag(ste->hw_ste, hw_ste))
++			return ste;
 +	}
 +
-+	return action;
-+
-+free_action:
-+	kfree(action);
-+dec_ref:
-+	refcount_dec(&dmn->refcount);
 +	return NULL;
 +}
 +
-+struct mlx5dr_action *
-+mlx5dr_action_create_dest_vport(struct mlx5dr_domain *dmn,
-+				u32 vport, u8 vhca_id_valid,
-+				u16 vhca_id)
++static struct mlx5dr_ste *
++dr_rule_rehash_handle_collision(struct mlx5dr_matcher *matcher,
++				struct mlx5dr_matcher_rx_tx *nic_matcher,
++				struct list_head *update_list,
++				struct mlx5dr_ste *col_ste,
++				u8 *hw_ste)
 +{
-+	struct mlx5dr_cmd_vport_cap *vport_cap;
-+	struct mlx5dr_domain *vport_dmn;
-+	struct mlx5dr_action *action;
-+	u8 peer_vport;
++	struct mlx5dr_ste *new_ste;
++	int ret;
 +
-+	peer_vport =3D vhca_id_valid && (vhca_id !=3D dmn->info.caps.gvmi);
-+	vport_dmn =3D peer_vport ? dmn->peer_dmn : dmn;
-+	if (!vport_dmn) {
-+		mlx5dr_dbg(dmn, "No peer vport domain for given vhca_id\n");
++	new_ste =3D dr_rule_create_collision_htbl(matcher, nic_matcher, hw_ste);
++	if (!new_ste)
 +		return NULL;
++
++	/* In collision entry, all members share the same miss_list_head */
++	new_ste->htbl->miss_list =3D mlx5dr_ste_get_miss_list(col_ste);
++
++	/* Update the previous from the list */
++	ret =3D dr_rule_append_to_miss_list(new_ste,
++					  mlx5dr_ste_get_miss_list(col_ste),
++					  update_list);
++	if (ret) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Failed update dup entry\n");
++		goto err_exit;
 +	}
 +
-+	if (vport_dmn->type !=3D MLX5DR_DOMAIN_TYPE_FDB) {
-+		mlx5dr_dbg(dmn, "Domain doesn't support vport actions\n");
-+		return NULL;
-+	}
++	return new_ste;
 +
-+	vport_cap =3D mlx5dr_get_vport_cap(&vport_dmn->info.caps, vport);
-+	if (!vport_cap) {
-+		mlx5dr_dbg(dmn, "Failed to get vport %d caps\n", vport);
-+		return NULL;
-+	}
-+
-+	action =3D dr_action_create_generic(DR_ACTION_TYP_VPORT);
-+	if (!action)
-+		return NULL;
-+
-+	action->vport.dmn =3D vport_dmn;
-+	action->vport.caps =3D vport_cap;
-+
-+	return action;
++err_exit:
++	mlx5dr_ste_free(new_ste, matcher, nic_matcher);
++	return NULL;
 +}
 +
-+int mlx5dr_action_destroy(struct mlx5dr_action *action)
++static void dr_rule_rehash_copy_ste_ctrl(struct mlx5dr_matcher *matcher,
++					 struct mlx5dr_matcher_rx_tx *nic_matcher,
++					 struct mlx5dr_ste *cur_ste,
++					 struct mlx5dr_ste *new_ste)
 +{
-+	if (refcount_read(&action->refcount) > 1)
-+		return -EBUSY;
++	new_ste->next_htbl =3D cur_ste->next_htbl;
++	new_ste->ste_chain_location =3D cur_ste->ste_chain_location;
 +
-+	switch (action->action_type) {
-+	case DR_ACTION_TYP_FT:
-+		if (!action->dest_tbl.is_fw_tbl)
-+			refcount_dec(&action->dest_tbl.tbl->refcount);
++	if (!mlx5dr_ste_is_last_in_rule(nic_matcher, new_ste->ste_chain_location)=
+)
++		new_ste->next_htbl->pointing_ste =3D new_ste;
++
++	/* We need to copy the refcount since this ste
++	 * may have been traversed several times
++	 */
++	refcount_set(&new_ste->refcount, refcount_read(&cur_ste->refcount));
++
++	/* Link old STEs rule_mem list to the new ste */
++	mlx5dr_rule_update_rule_member(cur_ste, new_ste);
++	INIT_LIST_HEAD(&new_ste->rule_list);
++	list_splice_tail_init(&cur_ste->rule_list, &new_ste->rule_list);
++}
++
++static struct mlx5dr_ste *
++dr_rule_rehash_copy_ste(struct mlx5dr_matcher *matcher,
++			struct mlx5dr_matcher_rx_tx *nic_matcher,
++			struct mlx5dr_ste *cur_ste,
++			struct mlx5dr_ste_htbl *new_htbl,
++			struct list_head *update_list)
++{
++	struct mlx5dr_ste_send_info *ste_info;
++	bool use_update_list =3D false;
++	u8 hw_ste[DR_STE_SIZE] =3D {};
++	struct mlx5dr_ste *new_ste;
++	int new_idx;
++	u8 sb_idx;
++
++	/* Copy STE mask from the matcher */
++	sb_idx =3D cur_ste->ste_chain_location - 1;
++	mlx5dr_ste_set_bit_mask(hw_ste, nic_matcher->ste_builder[sb_idx].bit_mask=
+);
++
++	/* Copy STE control and tag */
++	memcpy(hw_ste, cur_ste->hw_ste, DR_STE_SIZE_REDUCED);
++	mlx5dr_ste_set_miss_addr(hw_ste, nic_matcher->e_anchor->chunk->icm_addr);
++
++	new_idx =3D mlx5dr_ste_calc_hash_index(hw_ste, new_htbl);
++	new_ste =3D &new_htbl->ste_arr[new_idx];
++
++	if (mlx5dr_ste_not_used_ste(new_ste)) {
++		mlx5dr_htbl_get(new_htbl);
++		list_add_tail(&new_ste->miss_list_node,
++			      mlx5dr_ste_get_miss_list(new_ste));
++	} else {
++		new_ste =3D dr_rule_rehash_handle_collision(matcher,
++							  nic_matcher,
++							  update_list,
++							  new_ste,
++							  hw_ste);
++		if (!new_ste) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Failed adding collision entry, index: %d=
+\n",
++				   new_idx);
++			return NULL;
++		}
++		new_htbl->ctrl.num_of_collisions++;
++		use_update_list =3D true;
++	}
++
++	memcpy(new_ste->hw_ste, hw_ste, DR_STE_SIZE_REDUCED);
++
++	new_htbl->ctrl.num_of_valid_entries++;
++
++	if (use_update_list) {
++		ste_info =3D kzalloc(sizeof(*ste_info), GFP_KERNEL);
++		if (!ste_info)
++			goto err_exit;
++
++		mlx5dr_send_fill_and_append_ste_send_info(new_ste, DR_STE_SIZE, 0,
++							  hw_ste, ste_info,
++							  update_list, true);
++	}
++
++	dr_rule_rehash_copy_ste_ctrl(matcher, nic_matcher, cur_ste, new_ste);
++
++	return new_ste;
++
++err_exit:
++	mlx5dr_ste_free(new_ste, matcher, nic_matcher);
++	return NULL;
++}
++
++static int dr_rule_rehash_copy_miss_list(struct mlx5dr_matcher *matcher,
++					 struct mlx5dr_matcher_rx_tx *nic_matcher,
++					 struct list_head *cur_miss_list,
++					 struct mlx5dr_ste_htbl *new_htbl,
++					 struct list_head *update_list)
++{
++	struct mlx5dr_ste *tmp_ste, *cur_ste, *new_ste;
++
++	if (list_empty(cur_miss_list))
++		return 0;
++
++	list_for_each_entry_safe(cur_ste, tmp_ste, cur_miss_list, miss_list_node)=
+ {
++		new_ste =3D dr_rule_rehash_copy_ste(matcher,
++						  nic_matcher,
++						  cur_ste,
++						  new_htbl,
++						  update_list);
++		if (!new_ste)
++			goto err_insert;
++
++		list_del(&cur_ste->miss_list_node);
++		mlx5dr_htbl_put(cur_ste->htbl);
++	}
++	return 0;
++
++err_insert:
++	mlx5dr_err(matcher->tbl->dmn, "Fatal error during resize\n");
++	WARN_ON(true);
++	return -EINVAL;
++}
++
++static int dr_rule_rehash_copy_htbl(struct mlx5dr_matcher *matcher,
++				    struct mlx5dr_matcher_rx_tx *nic_matcher,
++				    struct mlx5dr_ste_htbl *cur_htbl,
++				    struct mlx5dr_ste_htbl *new_htbl,
++				    struct list_head *update_list)
++{
++	struct mlx5dr_ste *cur_ste;
++	int cur_entries;
++	int err =3D 0;
++	int i;
++
++	cur_entries =3D mlx5dr_icm_pool_chunk_size_to_entries(cur_htbl->chunk_siz=
+e);
++
++	if (cur_entries < 1) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Invalid number of entries\n");
++		return -EINVAL;
++	}
++
++	for (i =3D 0; i < cur_entries; i++) {
++		cur_ste =3D &cur_htbl->ste_arr[i];
++		if (mlx5dr_ste_not_used_ste(cur_ste)) /* Empty, nothing to copy */
++			continue;
++
++		err =3D dr_rule_rehash_copy_miss_list(matcher,
++						    nic_matcher,
++						    mlx5dr_ste_get_miss_list(cur_ste),
++						    new_htbl,
++						    update_list);
++		if (err)
++			goto clean_copy;
++	}
++
++clean_copy:
++	return err;
++}
++
++static struct mlx5dr_ste_htbl *
++dr_rule_rehash_htbl(struct mlx5dr_rule *rule,
++		    struct mlx5dr_rule_rx_tx *nic_rule,
++		    struct mlx5dr_ste_htbl *cur_htbl,
++		    u8 ste_location,
++		    struct list_head *update_list,
++		    enum mlx5dr_icm_chunk_size new_size)
++{
++	struct mlx5dr_ste_send_info *del_ste_info, *tmp_ste_info;
++	struct mlx5dr_matcher *matcher =3D rule->matcher;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_matcher_rx_tx *nic_matcher;
++	struct mlx5dr_ste_send_info *ste_info;
++	struct mlx5dr_htbl_connect_info info;
++	struct mlx5dr_domain_rx_tx *nic_dmn;
++	u8 formatted_ste[DR_STE_SIZE] =3D {};
++	LIST_HEAD(rehash_table_send_list);
++	struct mlx5dr_ste *ste_to_update;
++	struct mlx5dr_ste_htbl *new_htbl;
++	int err;
++
++	nic_matcher =3D nic_rule->nic_matcher;
++	nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
++
++	ste_info =3D kzalloc(sizeof(*ste_info), GFP_KERNEL);
++	if (!ste_info)
++		return NULL;
++
++	new_htbl =3D mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
++					 new_size,
++					 cur_htbl->lu_type,
++					 cur_htbl->byte_mask);
++	if (!new_htbl) {
++		mlx5dr_err(dmn, "Failed to allocate new hash table\n");
++		goto free_ste_info;
++	}
++
++	/* Write new table to HW */
++	info.type =3D CONNECT_MISS;
++	info.miss_icm_addr =3D nic_matcher->e_anchor->chunk->icm_addr;
++	mlx5dr_ste_set_formatted_ste(dmn->info.caps.gvmi,
++				     nic_dmn,
++				     new_htbl,
++				     formatted_ste,
++				     &info);
++
++	new_htbl->pointing_ste =3D cur_htbl->pointing_ste;
++	new_htbl->pointing_ste->next_htbl =3D new_htbl;
++	err =3D dr_rule_rehash_copy_htbl(matcher,
++				       nic_matcher,
++				       cur_htbl,
++				       new_htbl,
++				       &rehash_table_send_list);
++	if (err)
++		goto free_new_htbl;
++
++	if (mlx5dr_send_postsend_htbl(dmn, new_htbl, formatted_ste,
++				      nic_matcher->ste_builder[ste_location - 1].bit_mask)) {
++		mlx5dr_err(dmn, "Failed writing table to HW\n");
++		goto free_new_htbl;
++	}
++
++	/* Writing to the hw is done in regular order of rehash_table_send_list,
++	 * in order to have the origin data written before the miss address of
++	 * collision entries, if exists.
++	 */
++	if (dr_rule_send_update_list(&rehash_table_send_list, dmn, false)) {
++		mlx5dr_err(dmn, "Failed updating table to HW\n");
++		goto free_ste_list;
++	}
++
++	/* Connect previous hash table to current */
++	if (ste_location =3D=3D 1) {
++		/* The previous table is an anchor, anchors size is always one STE */
++		struct mlx5dr_ste_htbl *prev_htbl =3D cur_htbl->pointing_ste->htbl;
++
++		/* On matcher s_anchor we keep an extra refcount */
++		mlx5dr_htbl_get(new_htbl);
++		mlx5dr_htbl_put(cur_htbl);
++
++		nic_matcher->s_htbl =3D new_htbl;
++
++		/* It is safe to operate dr_ste_set_hit_addr on the hw_ste here
++		 * (48B len) which works only on first 32B
++		 */
++		mlx5dr_ste_set_hit_addr(prev_htbl->ste_arr[0].hw_ste,
++					new_htbl->chunk->icm_addr,
++					new_htbl->chunk->num_of_entries);
++
++		ste_to_update =3D &prev_htbl->ste_arr[0];
++	} else {
++		mlx5dr_ste_set_hit_addr_by_next_htbl(cur_htbl->pointing_ste->hw_ste,
++						     new_htbl);
++		ste_to_update =3D cur_htbl->pointing_ste;
++	}
++
++	mlx5dr_send_fill_and_append_ste_send_info(ste_to_update, DR_STE_SIZE_REDU=
+CED,
++						  0, ste_to_update->hw_ste, ste_info,
++						  update_list, false);
++
++	return new_htbl;
++
++free_ste_list:
++	/* Clean all ste_info's from the new table */
++	list_for_each_entry_safe(del_ste_info, tmp_ste_info,
++				 &rehash_table_send_list, send_list) {
++		list_del(&del_ste_info->send_list);
++		kfree(del_ste_info);
++	}
++
++free_new_htbl:
++	mlx5dr_ste_htbl_free(new_htbl);
++free_ste_info:
++	kfree(ste_info);
++	mlx5dr_info(dmn, "Failed creating rehash table\n");
++	return NULL;
++}
++
++static struct mlx5dr_ste_htbl *dr_rule_rehash(struct mlx5dr_rule *rule,
++					      struct mlx5dr_rule_rx_tx *nic_rule,
++					      struct mlx5dr_ste_htbl *cur_htbl,
++					      u8 ste_location,
++					      struct list_head *update_list)
++{
++	struct mlx5dr_domain *dmn =3D rule->matcher->tbl->dmn;
++	enum mlx5dr_icm_chunk_size new_size;
++
++	new_size =3D mlx5dr_icm_next_higher_chunk(cur_htbl->chunk_size);
++	new_size =3D min_t(u32, new_size, dmn->info.max_log_sw_icm_sz);
++
++	if (new_size =3D=3D cur_htbl->chunk_size)
++		return NULL; /* Skip rehash, we already at the max size */
++
++	return dr_rule_rehash_htbl(rule, nic_rule, cur_htbl, ste_location,
++				   update_list, new_size);
++}
++
++static struct mlx5dr_ste *
++dr_rule_handle_collision(struct mlx5dr_matcher *matcher,
++			 struct mlx5dr_matcher_rx_tx *nic_matcher,
++			 struct mlx5dr_ste *ste,
++			 u8 *hw_ste,
++			 struct list_head *miss_list,
++			 struct list_head *send_list)
++{
++	struct mlx5dr_ste_send_info *ste_info;
++	struct mlx5dr_ste *new_ste;
++
++	ste_info =3D kzalloc(sizeof(*ste_info), GFP_KERNEL);
++	if (!ste_info)
++		return NULL;
++
++	new_ste =3D dr_rule_create_collision_entry(matcher, nic_matcher, hw_ste, =
+ste);
++	if (!new_ste)
++		goto free_send_info;
++
++	if (dr_rule_append_to_miss_list(new_ste, miss_list, send_list)) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Failed to update prev miss_list\n");
++		goto err_exit;
++	}
++
++	mlx5dr_send_fill_and_append_ste_send_info(new_ste, DR_STE_SIZE, 0, hw_ste=
+,
++						  ste_info, send_list, false);
++
++	ste->htbl->ctrl.num_of_collisions++;
++	ste->htbl->ctrl.num_of_valid_entries++;
++
++	return new_ste;
++
++err_exit:
++	mlx5dr_ste_free(new_ste, matcher, nic_matcher);
++free_send_info:
++	kfree(ste_info);
++	return NULL;
++}
++
++static void dr_rule_remove_action_members(struct mlx5dr_rule *rule)
++{
++	struct mlx5dr_rule_action_member *action_mem;
++	struct mlx5dr_rule_action_member *tmp;
++
++	list_for_each_entry_safe(action_mem, tmp, &rule->rule_actions_list, list)=
+ {
++		list_del(&action_mem->list);
++		refcount_dec(&action_mem->action->refcount);
++		kvfree(action_mem);
++	}
++}
++
++static int dr_rule_add_action_members(struct mlx5dr_rule *rule,
++				      size_t num_actions,
++				      struct mlx5dr_action *actions[])
++{
++	struct mlx5dr_rule_action_member *action_mem;
++	int i;
++
++	for (i =3D 0; i < num_actions; i++) {
++		action_mem =3D kvzalloc(sizeof(*action_mem), GFP_KERNEL);
++		if (!action_mem)
++			goto free_action_members;
++
++		action_mem->action =3D actions[i];
++		INIT_LIST_HEAD(&action_mem->list);
++		list_add_tail(&action_mem->list, &rule->rule_actions_list);
++		refcount_inc(&action_mem->action->refcount);
++	}
++
++	return 0;
++
++free_action_members:
++	dr_rule_remove_action_members(rule);
++	return -ENOMEM;
++}
++
++/* While the pointer of ste is no longer valid, like while moving ste to b=
+e
++ * the first in the miss_list, and to be in the origin table,
++ * all rule-members that are attached to this ste should update their ste =
+member
++ * to the new pointer
++ */
++void mlx5dr_rule_update_rule_member(struct mlx5dr_ste *ste,
++				    struct mlx5dr_ste *new_ste)
++{
++	struct mlx5dr_rule_member *rule_mem;
++
++	if (!list_empty(&ste->rule_list))
++		list_for_each_entry(rule_mem, &ste->rule_list, use_ste_list)
++			rule_mem->ste =3D new_ste;
++}
++
++static void dr_rule_clean_rule_members(struct mlx5dr_rule *rule,
++				       struct mlx5dr_rule_rx_tx *nic_rule)
++{
++	struct mlx5dr_rule_member *rule_mem;
++	struct mlx5dr_rule_member *tmp_mem;
++
++	if (list_empty(&nic_rule->rule_members_list))
++		return;
++	list_for_each_entry_safe(rule_mem, tmp_mem, &nic_rule->rule_members_list,=
+ list) {
++		list_del(&rule_mem->list);
++		list_del(&rule_mem->use_ste_list);
++		mlx5dr_ste_put(rule_mem->ste, rule->matcher, nic_rule->nic_matcher);
++		kvfree(rule_mem);
++	}
++}
++
++static bool dr_rule_need_enlarge_hash(struct mlx5dr_ste_htbl *htbl,
++				      struct mlx5dr_domain *dmn,
++				      struct mlx5dr_domain_rx_tx *nic_dmn)
++{
++	struct mlx5dr_ste_htbl_ctrl *ctrl =3D &htbl->ctrl;
++
++	if (dmn->info.max_log_sw_icm_sz <=3D htbl->chunk_size)
++		return false;
++
++	if (!ctrl->may_grow)
++		return false;
++
++	if (ctrl->num_of_collisions >=3D ctrl->increase_threshold &&
++	    (ctrl->num_of_valid_entries - ctrl->num_of_collisions) >=3D ctrl->inc=
+rease_threshold)
++		return true;
++
++	return false;
++}
++
++static int dr_rule_add_member(struct mlx5dr_rule_rx_tx *nic_rule,
++			      struct mlx5dr_ste *ste)
++{
++	struct mlx5dr_rule_member *rule_mem;
++
++	rule_mem =3D kvzalloc(sizeof(*rule_mem), GFP_KERNEL);
++	if (!rule_mem)
++		return -ENOMEM;
++
++	rule_mem->ste =3D ste;
++	list_add_tail(&rule_mem->list, &nic_rule->rule_members_list);
++
++	list_add_tail(&rule_mem->use_ste_list, &ste->rule_list);
++
++	return 0;
++}
++
++static int dr_rule_handle_action_stes(struct mlx5dr_rule *rule,
++				      struct mlx5dr_rule_rx_tx *nic_rule,
++				      struct list_head *send_ste_list,
++				      struct mlx5dr_ste *last_ste,
++				      u8 *hw_ste_arr,
++				      u32 new_hw_ste_arr_sz)
++{
++	struct mlx5dr_matcher_rx_tx *nic_matcher =3D nic_rule->nic_matcher;
++	struct mlx5dr_ste_send_info *ste_info_arr[DR_ACTION_MAX_STES];
++	u8 num_of_builders =3D nic_matcher->num_of_builders;
++	struct mlx5dr_matcher *matcher =3D rule->matcher;
++	u8 *curr_hw_ste, *prev_hw_ste;
++	struct mlx5dr_ste *action_ste;
++	int i, k, ret;
++
++	/* Two cases:
++	 * 1. num_of_builders is equal to new_hw_ste_arr_sz, the action in the st=
+e
++	 * 2. num_of_builders is less then new_hw_ste_arr_sz, new ste was added
++	 *    to support the action.
++	 */
++	if (num_of_builders =3D=3D new_hw_ste_arr_sz)
++		return 0;
++
++	for (i =3D num_of_builders, k =3D 0; i < new_hw_ste_arr_sz; i++, k++) {
++		curr_hw_ste =3D hw_ste_arr + i * DR_STE_SIZE;
++		prev_hw_ste =3D (i =3D=3D 0) ? curr_hw_ste : hw_ste_arr + ((i - 1) * DR_=
+STE_SIZE);
++		action_ste =3D dr_rule_create_collision_htbl(matcher,
++							   nic_matcher,
++							   curr_hw_ste);
++		if (!action_ste)
++			return -ENOMEM;
++
++		mlx5dr_ste_get(action_ste);
++
++		/* While free ste we go over the miss list, so add this ste to the list =
+*/
++		list_add_tail(&action_ste->miss_list_node,
++			      mlx5dr_ste_get_miss_list(action_ste));
++
++		ste_info_arr[k] =3D kzalloc(sizeof(*ste_info_arr[k]),
++					  GFP_KERNEL);
++		if (!ste_info_arr[k])
++			goto err_exit;
++
++		/* Point current ste to the new action */
++		mlx5dr_ste_set_hit_addr_by_next_htbl(prev_hw_ste, action_ste->htbl);
++		ret =3D dr_rule_add_member(nic_rule, action_ste);
++		if (ret) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Failed adding rule member\n");
++			goto free_ste_info;
++		}
++		mlx5dr_send_fill_and_append_ste_send_info(action_ste, DR_STE_SIZE, 0,
++							  curr_hw_ste,
++							  ste_info_arr[k],
++							  send_ste_list, false);
++	}
++
++	return 0;
++
++free_ste_info:
++	kfree(ste_info_arr[k]);
++err_exit:
++	mlx5dr_ste_put(action_ste, matcher, nic_matcher);
++	return -ENOMEM;
++}
++
++static int dr_rule_handle_empty_entry(struct mlx5dr_matcher *matcher,
++				      struct mlx5dr_matcher_rx_tx *nic_matcher,
++				      struct mlx5dr_ste_htbl *cur_htbl,
++				      struct mlx5dr_ste *ste,
++				      u8 ste_location,
++				      u8 *hw_ste,
++				      struct list_head *miss_list,
++				      struct list_head *send_list)
++{
++	struct mlx5dr_ste_send_info *ste_info;
++
++	/* Take ref on table, only on first time this ste is used */
++	mlx5dr_htbl_get(cur_htbl);
++
++	/* new entry -> new branch */
++	list_add_tail(&ste->miss_list_node, miss_list);
++
++	mlx5dr_ste_set_miss_addr(hw_ste, nic_matcher->e_anchor->chunk->icm_addr);
++
++	ste->ste_chain_location =3D ste_location;
++
++	ste_info =3D kzalloc(sizeof(*ste_info), GFP_KERNEL);
++	if (!ste_info)
++		goto clean_ste_setting;
++
++	if (mlx5dr_ste_create_next_htbl(matcher,
++					nic_matcher,
++					ste,
++					hw_ste,
++					DR_CHUNK_SIZE_1)) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Failed allocating table\n");
++		goto clean_ste_info;
++	}
++
++	cur_htbl->ctrl.num_of_valid_entries++;
++
++	mlx5dr_send_fill_and_append_ste_send_info(ste, DR_STE_SIZE, 0, hw_ste,
++						  ste_info, send_list, false);
++
++	return 0;
++
++clean_ste_info:
++	kfree(ste_info);
++clean_ste_setting:
++	list_del_init(&ste->miss_list_node);
++	mlx5dr_htbl_put(cur_htbl);
++
++	return -ENOMEM;
++}
++
++static struct mlx5dr_ste *
++dr_rule_handle_ste_branch(struct mlx5dr_rule *rule,
++			  struct mlx5dr_rule_rx_tx *nic_rule,
++			  struct list_head *send_ste_list,
++			  struct mlx5dr_ste_htbl *cur_htbl,
++			  u8 *hw_ste,
++			  u8 ste_location,
++			  struct mlx5dr_ste_htbl **put_htbl)
++{
++	struct mlx5dr_matcher *matcher =3D rule->matcher;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_matcher_rx_tx *nic_matcher;
++	struct mlx5dr_domain_rx_tx *nic_dmn;
++	struct mlx5dr_ste_htbl *new_htbl;
++	struct mlx5dr_ste *matched_ste;
++	struct list_head *miss_list;
++	bool skip_rehash =3D false;
++	struct mlx5dr_ste *ste;
++	int index;
++
++	nic_matcher =3D nic_rule->nic_matcher;
++	nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
++
++again:
++	index =3D mlx5dr_ste_calc_hash_index(hw_ste, cur_htbl);
++	miss_list =3D &cur_htbl->chunk->miss_list[index];
++	ste =3D &cur_htbl->ste_arr[index];
++
++	if (mlx5dr_ste_not_used_ste(ste)) {
++		if (dr_rule_handle_empty_entry(matcher, nic_matcher, cur_htbl,
++					       ste, ste_location,
++					       hw_ste, miss_list,
++					       send_ste_list))
++			return NULL;
++	} else {
++		/* Hash table index in use, check if this ste is in the miss list */
++		matched_ste =3D dr_rule_find_ste_in_miss_list(miss_list, hw_ste);
++		if (matched_ste) {
++			/* If it is last STE in the chain, and has the same tag
++			 * it means that all the previous stes are the same,
++			 * if so, this rule is duplicated.
++			 */
++			if (mlx5dr_ste_is_last_in_rule(nic_matcher,
++						       matched_ste->ste_chain_location)) {
++				mlx5dr_info(dmn, "Duplicate rule inserted, aborting!!\n");
++				return NULL;
++			}
++			return matched_ste;
++		}
++
++		if (!skip_rehash && dr_rule_need_enlarge_hash(cur_htbl, dmn, nic_dmn)) {
++			/* Hash table index in use, try to resize of the hash */
++			skip_rehash =3D true;
++
++			/* Hold the table till we update.
++			 * Release in dr_rule_create_rule()
++			 */
++			*put_htbl =3D cur_htbl;
++			mlx5dr_htbl_get(cur_htbl);
++
++			new_htbl =3D dr_rule_rehash(rule, nic_rule, cur_htbl,
++						  ste_location, send_ste_list);
++			if (!new_htbl) {
++				mlx5dr_htbl_put(cur_htbl);
++				mlx5dr_info(dmn, "failed creating rehash table, htbl-log_size: %d\n",
++					    cur_htbl->chunk_size);
++			} else {
++				cur_htbl =3D new_htbl;
++			}
++			goto again;
++		} else {
++			/* Hash table index in use, add another collision (miss) */
++			ste =3D dr_rule_handle_collision(matcher,
++						       nic_matcher,
++						       ste,
++						       hw_ste,
++						       miss_list,
++						       send_ste_list);
++			if (!ste) {
++				mlx5dr_dbg(dmn, "failed adding collision entry, index: %d\n",
++					   index);
++				return NULL;
++			}
++		}
++	}
++	return ste;
++}
++
++static bool dr_rule_cmp_value_to_mask(u8 *mask, u8 *value,
++				      u32 s_idx, u32 e_idx)
++{
++	u32 i;
++
++	for (i =3D s_idx; i < e_idx; i++) {
++		if (value[i] & ~mask[i]) {
++			pr_info("Rule parameters contains a value not specified by mask\n");
++			return false;
++		}
++	}
++	return true;
++}
++
++static bool dr_rule_verify(struct mlx5dr_matcher *matcher,
++			   struct mlx5dr_match_parameters *value,
++			   struct mlx5dr_match_param *param)
++{
++	u8 match_criteria =3D matcher->match_criteria;
++	size_t value_size =3D value->match_sz;
++	u8 *mask_p =3D (u8 *)&matcher->mask;
++	u8 *param_p =3D (u8 *)param;
++	u32 s_idx, e_idx;
++
++	if (!value_size ||
++	    (value_size > sizeof(struct mlx5dr_match_param) ||
++	     (value_size % sizeof(u32)))) {
++		mlx5dr_dbg(matcher->tbl->dmn, "Rule parameters length is incorrect\n");
++		return false;
++	}
++
++	mlx5dr_ste_copy_param(matcher->match_criteria, param, value);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_OUTER) {
++		s_idx =3D offsetof(struct mlx5dr_match_param, outer);
++		e_idx =3D min(s_idx + sizeof(param->outer), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Rule outer parameters contains a value n=
+ot specified by mask\n");
++			return false;
++		}
++	}
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC) {
++		s_idx =3D offsetof(struct mlx5dr_match_param, misc);
++		e_idx =3D min(s_idx + sizeof(param->misc), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Rule misc parameters contains a value no=
+t specified by mask\n");
++			return false;
++		}
++	}
++
++	if (match_criteria & DR_MATCHER_CRITERIA_INNER) {
++		s_idx =3D offsetof(struct mlx5dr_match_param, inner);
++		e_idx =3D min(s_idx + sizeof(param->inner), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Rule inner parameters contains a value n=
+ot specified by mask\n");
++			return false;
++		}
++	}
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC2) {
++		s_idx =3D offsetof(struct mlx5dr_match_param, misc2);
++		e_idx =3D min(s_idx + sizeof(param->misc2), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Rule misc2 parameters contains a value n=
+ot specified by mask\n");
++			return false;
++		}
++	}
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC3) {
++		s_idx =3D offsetof(struct mlx5dr_match_param, misc3);
++		e_idx =3D min(s_idx + sizeof(param->misc3), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_dbg(matcher->tbl->dmn, "Rule misc3 parameters contains a value n=
+ot specified by mask\n");
++			return false;
++		}
++	}
++	return true;
++}
++
++static int dr_rule_destroy_rule_nic(struct mlx5dr_rule *rule,
++				    struct mlx5dr_rule_rx_tx *nic_rule)
++{
++	dr_rule_clean_rule_members(rule, nic_rule);
++	return 0;
++}
++
++static int dr_rule_destroy_rule_fdb(struct mlx5dr_rule *rule)
++{
++	dr_rule_destroy_rule_nic(rule, &rule->rx);
++	dr_rule_destroy_rule_nic(rule, &rule->tx);
++	return 0;
++}
++
++static int dr_rule_destroy_rule(struct mlx5dr_rule *rule)
++{
++	struct mlx5dr_domain *dmn =3D rule->matcher->tbl->dmn;
++
++	switch (dmn->type) {
++	case MLX5DR_DOMAIN_TYPE_NIC_RX:
++		dr_rule_destroy_rule_nic(rule, &rule->rx);
 +		break;
-+	case DR_ACTION_TYP_TNL_L2_TO_L2:
-+		refcount_dec(&action->reformat.dmn->refcount);
++	case MLX5DR_DOMAIN_TYPE_NIC_TX:
++		dr_rule_destroy_rule_nic(rule, &rule->tx);
 +		break;
-+	case DR_ACTION_TYP_TNL_L3_TO_L2:
-+		mlx5dr_icm_free_chunk(action->rewrite.chunk);
-+		refcount_dec(&action->reformat.dmn->refcount);
-+		break;
-+	case DR_ACTION_TYP_L2_TO_TNL_L2:
-+	case DR_ACTION_TYP_L2_TO_TNL_L3:
-+		mlx5dr_cmd_destroy_reformat_ctx((action->reformat.dmn)->mdev,
-+						action->reformat.reformat_id);
-+		refcount_dec(&action->reformat.dmn->refcount);
-+		break;
-+	case DR_ACTION_TYP_MODIFY_HDR:
-+		mlx5dr_icm_free_chunk(action->rewrite.chunk);
-+		refcount_dec(&action->rewrite.dmn->refcount);
++	case MLX5DR_DOMAIN_TYPE_FDB:
++		dr_rule_destroy_rule_fdb(rule);
 +		break;
 +	default:
++		return -EINVAL;
++	}
++
++	dr_rule_remove_action_members(rule);
++	kfree(rule);
++	return 0;
++}
++
++static bool dr_rule_is_ipv6(struct mlx5dr_match_param *param)
++{
++	return (param->outer.ip_version =3D=3D 6 ||
++		param->inner.ip_version =3D=3D 6 ||
++		param->outer.ethertype =3D=3D ETH_P_IPV6 ||
++		param->inner.ethertype =3D=3D ETH_P_IPV6);
++}
++
++static bool dr_rule_skip(enum mlx5dr_domain_type domain,
++			 enum mlx5dr_ste_entry_type ste_type,
++			 struct mlx5dr_match_param *mask,
++			 struct mlx5dr_match_param *value)
++{
++	if (domain !=3D MLX5DR_DOMAIN_TYPE_FDB)
++		return false;
++
++	if (mask->misc.source_port) {
++		if (ste_type =3D=3D MLX5DR_STE_TYPE_RX)
++			if (value->misc.source_port !=3D WIRE_PORT)
++				return true;
++
++		if (ste_type =3D=3D MLX5DR_STE_TYPE_TX)
++			if (value->misc.source_port =3D=3D WIRE_PORT)
++				return true;
++	}
++
++	/* Metadata C can be used to describe the source vport */
++	if (mask->misc2.metadata_reg_c_0) {
++		if (ste_type =3D=3D MLX5DR_STE_TYPE_RX)
++			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) !=3D WIRE_PORT)
++				return true;
++
++		if (ste_type =3D=3D MLX5DR_STE_TYPE_TX)
++			if ((value->misc2.metadata_reg_c_0 & WIRE_PORT) =3D=3D WIRE_PORT)
++				return true;
++	}
++	return false;
++}
++
++static int
++dr_rule_create_rule_nic(struct mlx5dr_rule *rule,
++			struct mlx5dr_rule_rx_tx *nic_rule,
++			struct mlx5dr_match_param *param,
++			size_t num_actions,
++			struct mlx5dr_action *actions[])
++{
++	struct mlx5dr_ste_send_info *ste_info, *tmp_ste_info;
++	struct mlx5dr_matcher *matcher =3D rule->matcher;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_matcher_rx_tx *nic_matcher;
++	struct mlx5dr_domain_rx_tx *nic_dmn;
++	struct mlx5dr_ste_htbl *htbl =3D NULL;
++	struct mlx5dr_ste_htbl *cur_htbl;
++	struct mlx5dr_ste *ste =3D NULL;
++	LIST_HEAD(send_ste_list);
++	u8 *hw_ste_arr =3D NULL;
++	u32 new_hw_ste_arr_sz;
++	int ret, i;
++
++	nic_matcher =3D nic_rule->nic_matcher;
++	nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
++
++	INIT_LIST_HEAD(&nic_rule->rule_members_list);
++
++	if (dr_rule_skip(dmn->type, nic_dmn->ste_type, &matcher->mask, param))
++		return 0;
++
++	ret =3D mlx5dr_matcher_select_builders(matcher,
++					     nic_matcher,
++					     dr_rule_is_ipv6(param));
++	if (ret)
++		goto out_err;
++
++	hw_ste_arr =3D kzalloc(DR_RULE_MAX_STE_CHAIN * DR_STE_SIZE, GFP_KERNEL);
++	if (!hw_ste_arr) {
++		ret =3D -ENOMEM;
++		goto out_err;
++	}
++
++	/* Set the tag values inside the ste array */
++	ret =3D mlx5dr_ste_build_ste_arr(matcher, nic_matcher, param, hw_ste_arr)=
+;
++	if (ret)
++		goto free_hw_ste;
++
++	/* Set the actions values/addresses inside the ste array */
++	ret =3D mlx5dr_actions_build_ste_arr(matcher, nic_matcher, actions,
++					   num_actions, hw_ste_arr,
++					   &new_hw_ste_arr_sz);
++	if (ret)
++		goto free_hw_ste;
++
++	cur_htbl =3D nic_matcher->s_htbl;
++
++	/* Go over the array of STEs, and build dr_ste accordingly.
++	 * The loop is over only the builders which are equal or less to the
++	 * number of stes, in case we have actions that lives in other stes.
++	 */
++	for (i =3D 0; i < nic_matcher->num_of_builders; i++) {
++		/* Calculate CRC and keep new ste entry */
++		u8 *cur_hw_ste_ent =3D hw_ste_arr + (i * DR_STE_SIZE);
++
++		ste =3D dr_rule_handle_ste_branch(rule,
++						nic_rule,
++						&send_ste_list,
++						cur_htbl,
++						cur_hw_ste_ent,
++						i + 1,
++						&htbl);
++		if (!ste) {
++			mlx5dr_err(dmn, "Failed creating next branch\n");
++			ret =3D -ENOENT;
++			goto free_rule;
++		}
++
++		cur_htbl =3D ste->next_htbl;
++
++		/* Keep all STEs in the rule struct */
++		ret =3D dr_rule_add_member(nic_rule, ste);
++		if (ret) {
++			mlx5dr_dbg(dmn, "Failed adding rule member index %d\n", i);
++			goto free_ste;
++		}
++
++		mlx5dr_ste_get(ste);
++	}
++
++	/* Connect actions */
++	ret =3D dr_rule_handle_action_stes(rule, nic_rule, &send_ste_list,
++					 ste, hw_ste_arr, new_hw_ste_arr_sz);
++	if (ret) {
++		mlx5dr_dbg(dmn, "Failed apply actions\n");
++		goto free_rule;
++	}
++	ret =3D dr_rule_send_update_list(&send_ste_list, dmn, true);
++	if (ret) {
++		mlx5dr_err(dmn, "Failed sending ste!\n");
++		goto free_rule;
++	}
++
++	if (htbl)
++		mlx5dr_htbl_put(htbl);
++
++	return 0;
++
++free_ste:
++	mlx5dr_ste_put(ste, matcher, nic_matcher);
++free_rule:
++	dr_rule_clean_rule_members(rule, nic_rule);
++	/* Clean all ste_info's */
++	list_for_each_entry_safe(ste_info, tmp_ste_info, &send_ste_list, send_lis=
+t) {
++		list_del(&ste_info->send_list);
++		kfree(ste_info);
++	}
++free_hw_ste:
++	kfree(hw_ste_arr);
++out_err:
++	return ret;
++}
++
++static int
++dr_rule_create_rule_fdb(struct mlx5dr_rule *rule,
++			struct mlx5dr_match_param *param,
++			size_t num_actions,
++			struct mlx5dr_action *actions[])
++{
++	struct mlx5dr_match_param copy_param =3D {};
++	int ret;
++
++	/* Copy match_param since they will be consumed during the first
++	 * nic_rule insertion.
++	 */
++	memcpy(&copy_param, param, sizeof(struct mlx5dr_match_param));
++
++	ret =3D dr_rule_create_rule_nic(rule, &rule->rx, param,
++				      num_actions, actions);
++	if (ret)
++		return ret;
++
++	ret =3D dr_rule_create_rule_nic(rule, &rule->tx, &copy_param,
++				      num_actions, actions);
++	if (ret)
++		goto destroy_rule_nic_rx;
++
++	return 0;
++
++destroy_rule_nic_rx:
++	dr_rule_destroy_rule_nic(rule, &rule->rx);
++	return ret;
++}
++
++static struct mlx5dr_rule *
++dr_rule_create_rule(struct mlx5dr_matcher *matcher,
++		    struct mlx5dr_match_parameters *value,
++		    size_t num_actions,
++		    struct mlx5dr_action *actions[])
++{
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_match_param param =3D {};
++	struct mlx5dr_rule *rule;
++	int ret;
++
++	if (!dr_rule_verify(matcher, value, &param))
++		return NULL;
++
++	rule =3D kzalloc(sizeof(*rule), GFP_KERNEL);
++	if (!rule)
++		return NULL;
++
++	rule->matcher =3D matcher;
++	INIT_LIST_HEAD(&rule->rule_actions_list);
++
++	ret =3D dr_rule_add_action_members(rule, num_actions, actions);
++	if (ret)
++		goto free_rule;
++
++	switch (dmn->type) {
++	case MLX5DR_DOMAIN_TYPE_NIC_RX:
++		rule->rx.nic_matcher =3D &matcher->rx;
++		ret =3D dr_rule_create_rule_nic(rule, &rule->rx, &param,
++					      num_actions, actions);
++		break;
++	case MLX5DR_DOMAIN_TYPE_NIC_TX:
++		rule->tx.nic_matcher =3D &matcher->tx;
++		ret =3D dr_rule_create_rule_nic(rule, &rule->tx, &param,
++					      num_actions, actions);
++		break;
++	case MLX5DR_DOMAIN_TYPE_FDB:
++		rule->rx.nic_matcher =3D &matcher->rx;
++		rule->tx.nic_matcher =3D &matcher->tx;
++		ret =3D dr_rule_create_rule_fdb(rule, &param,
++					      num_actions, actions);
++		break;
++	default:
++		ret =3D -EINVAL;
 +		break;
 +	}
 +
-+	kfree(action);
-+	return 0;
++	if (ret)
++		goto remove_action_members;
++
++	return rule;
++
++remove_action_members:
++	dr_rule_remove_action_members(rule);
++free_rule:
++	kfree(rule);
++	mlx5dr_info(dmn, "Failed creating rule\n");
++	return NULL;
++}
++
++struct mlx5dr_rule *mlx5dr_rule_create(struct mlx5dr_matcher *matcher,
++				       struct mlx5dr_match_parameters *value,
++				       size_t num_actions,
++				       struct mlx5dr_action *actions[])
++{
++	struct mlx5dr_rule *rule;
++
++	mutex_lock(&matcher->tbl->dmn->mutex);
++	refcount_inc(&matcher->refcount);
++
++	rule =3D dr_rule_create_rule(matcher, value, num_actions, actions);
++	if (!rule)
++		refcount_dec(&matcher->refcount);
++
++	mutex_unlock(&matcher->tbl->dmn->mutex);
++
++	return rule;
++}
++
++int mlx5dr_rule_destroy(struct mlx5dr_rule *rule)
++{
++	struct mlx5dr_matcher *matcher =3D rule->matcher;
++	struct mlx5dr_table *tbl =3D rule->matcher->tbl;
++	int ret;
++
++	mutex_lock(&tbl->dmn->mutex);
++
++	ret =3D dr_rule_destroy_rule(rule);
++
++	mutex_unlock(&tbl->dmn->mutex);
++
++	if (!ret)
++		refcount_dec(&matcher->refcount);
++	return ret;
 +}
 --=20
 2.21.0
