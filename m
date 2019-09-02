@@ -2,167 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E942CA4EDA
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 07:32:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C04EA4F0B
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 08:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729501AbfIBFct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 01:32:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53102 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725839AbfIBFcs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 01:32:48 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CF58A307D847;
-        Mon,  2 Sep 2019 05:32:47 +0000 (UTC)
-Received: from [10.72.12.94] (ovpn-12-94.pek2.redhat.com [10.72.12.94])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5534510016EB;
-        Mon,  2 Sep 2019 05:32:44 +0000 (UTC)
-Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        eric dumazet <eric.dumazet@gmail.com>,
-        xiyou wangcong <xiyou.wangcong@gmail.com>,
-        weiyongjun1@huawei.com
-References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
- <20190819.182522.414877916903078544.davem@davemloft.net>
- <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com>
- <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com>
- <5D5E3133.2070108@huawei.com> <5D5E90C3.50306@huawei.com>
- <1676209666.10068041.1566529505528.JavaMail.zimbra@redhat.com>
- <5D5FB3B6.5080800@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <1be732b2-6eda-4ea6-772d-780694557910@redhat.com>
-Date:   Mon, 2 Sep 2019 13:32:44 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        id S1729320AbfIBGHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 02:07:10 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42312 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729299AbfIBGHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 02:07:10 -0400
+Received: by mail-wr1-f66.google.com with SMTP id b16so12616239wrq.9
+        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 23:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aZ5yhpG1AvzEHVUh5pbSBFa79E4SS9Gu4iGsyjR3fgI=;
+        b=a57bu/OD7MJ/EH5j5mj340qbCTL8hbY2B+VCxViKZtsKLvhZjs/FUC4FMzcOlQOGdj
+         1EARXfDqHU/m+i7OrjvWuupPnwGa2Hcy48vmsrWTmLYzMoEVASOhhBo1UA/GBBJiXZPv
+         2sxu9LjzTpZr05ny5i00G78hOkNJdPbaWQV7V67PqNRf9WXs3IhkpLb6HwXOAy5fqdRU
+         Kqj+0CUtMp/hKYDBypRIiylYFZ4FGK0S674piUvLuo6pmKp86RGPEs12FVpdHqH6efxD
+         L//Qi2ga6SFi/JG17GPn74IN1EMtyyLcE4IGPFiC4BAupd5/uu3kCNtyHvY2ge8MzECX
+         rGiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aZ5yhpG1AvzEHVUh5pbSBFa79E4SS9Gu4iGsyjR3fgI=;
+        b=qrshXu2BuYtj/f6jaTkfJzHFdAAnao1CU8fok3kz7Mgl/8Vud/oPwzh0/K+5iTw4gJ
+         rnH7OgvioDzilbTO26CQO0fgxF6FVzqh6tEeSWl7xo9xyamFM6FjS8kHMBkIwUBTIiT5
+         uvTYM4fpfptycfpOoMoVWIn2EBbFqUWzQ6E++GF+7C4sMsaTnC99jheI1+MjhbUyyu+V
+         05gl3eRDEVpyg1cwjgFkFgs9PSOIMH/dQj8u/Az4Il2eVHbraK70M6aM9cnv93GJ6S7l
+         GHDinyz73E6lZR2DDXNqieYVO2EuPGQ8PqexPeVpkSpajoNZpgX3sx9bfjzFNMuhUVEd
+         cceA==
+X-Gm-Message-State: APjAAAWT8A/ZNsqdipfss//bdvfiJ15neNQlNooIhwiAHBkV/GcaJaIM
+        SSIRll28oStPOnrNMLjWSWmeOQBu
+X-Google-Smtp-Source: APXvYqxTf9fbmI0dQ4x7Rbe7jRXXK9iglQXaWIzKQyfwZYxCXZU20gOhUjSd5gz+3+ipXKM3yOThSA==
+X-Received: by 2002:adf:bd84:: with SMTP id l4mr34009204wrh.143.1567404427958;
+        Sun, 01 Sep 2019 23:07:07 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:5d9c:1ca4:a630:705f? (p200300EA8F047C005D9C1CA4A630705F.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:5d9c:1ca4:a630:705f])
+        by smtp.googlemail.com with ESMTPSA id w125sm29866191wmg.32.2019.09.01.23.07.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 01 Sep 2019 23:07:07 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net: phy: realtek: add support for the
+ 2.5Gbps PHY in RTL8125
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <ddbf28b9-f32e-7399-10a6-27b79ca0aaf9@gmail.com>
+ <64769c3d-42b6-8eb8-26e4-722869408986@gmail.com>
+ <20190808193743.GL27917@lunn.ch>
+ <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
+ <20190808202029.GN27917@lunn.ch>
+ <94cc3fe3-98ed-d8d2-2444-84bf3eae0c5e@gmail.com>
+ <fafc1c05-d7ac-f108-74f9-207617773968@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <a37799d5-e2e0-7987-9f9d-0186060963a7@gmail.com>
+Date:   Mon, 2 Sep 2019 08:07:01 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <5D5FB3B6.5080800@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <fafc1c05-d7ac-f108-74f9-207617773968@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 02 Sep 2019 05:32:48 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/8/23 下午5:36, Yang Yingliang wrote:
->
->
-> On 2019/8/23 11:05, Jason Wang wrote:
->> ----- Original Message -----
+On 02.09.2019 04:07, Florian Fainelli wrote:
+> 
+> 
+> On 8/8/2019 1:24 PM, Heiner Kallweit wrote:
+>> On 08.08.2019 22:20, Andrew Lunn wrote:
+>>>> I have a contact in Realtek who provided the information about
+>>>> the vendor-specific registers used in the patch. I also asked for
+>>>> a method to auto-detect 2.5Gbps support but have no feedback so far.
+>>>> What may contribute to the problem is that also the integrated 1Gbps
+>>>> PHY's (all with the same PHY ID) differ significantly from each other,
+>>>> depending on the network chip version.
 >>>
->>> On 2019/8/22 14:07, Yang Yingliang wrote:
->>>>
->>>> On 2019/8/22 10:13, Jason Wang wrote:
->>>>> On 2019/8/20 上午10:28, Jason Wang wrote:
->>>>>> On 2019/8/20 上午9:25, David Miller wrote:
->>>>>>> From: Yang Yingliang <yangyingliang@huawei.com>
->>>>>>> Date: Mon, 19 Aug 2019 21:31:19 +0800
->>>>>>>
->>>>>>>> Call tun_attach() after register_netdevice() to make sure 
->>>>>>>> tfile->tun
->>>>>>>> is not published until the netdevice is registered. So the 
->>>>>>>> read/write
->>>>>>>> thread can not use the tun pointer that may freed by 
->>>>>>>> free_netdev().
->>>>>>>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they
->>>>>>>> can
->>>>>>>> be freed by netdev_freemem().)
->>>>>>> register_netdevice() must always be the last operation in the 
->>>>>>> order of
->>>>>>> network device setup.
->>>>>>>
->>>>>>> At the point register_netdevice() is called, the device is visible
->>>>>>> globally
->>>>>>> and therefore all of it's software state must be fully 
->>>>>>> initialized and
->>>>>>> ready for us.
->>>>>>>
->>>>>>> You're going to have to find another solution to these problems.
->>>>>>
->>>>>> The device is loosely coupled with sockets/queues. Each side is
->>>>>> allowed to be go away without caring the other side. So in this
->>>>>> case, there's a small window that network stack think the device has
->>>>>> one queue but actually not, the code can then safely drop them.
->>>>>> Maybe it's ok here with some comments?
->>>>>>
->>>>>> Or if not, we can try to hold the device before tun_attach and drop
->>>>>> it after register_netdevice().
->>>>>
->>>>> Hi Yang:
->>>>>
->>>>> I think maybe we can try to hold refcnt instead of playing real num
->>>>> queues here. Do you want to post a V4?
->>>> I think the refcnt can prevent freeing the memory in this case.
->>>> When register_netdevice() failed, free_netdev() will be called 
->>>> directly,
->>>> dev->pcpu_refcnt and dev are freed without checking refcnt of dev.
->>> How about using patch-v1 that using a flag to check whether the device
->>> registered successfully.
+>>> Hi Heiner
 >>>
->> As I said, it lacks sufficient locks or barriers. To be clear, I meant
->> something like (compile-test only):
->>
->> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->> index db16d7a13e00..e52678f9f049 100644
->> --- a/drivers/net/tun.c
->> +++ b/drivers/net/tun.c
->> @@ -2828,6 +2828,7 @@ static int tun_set_iff(struct net *net, struct 
->> file *file, struct ifreq *ifr)
->>                                (ifr->ifr_flags & TUN_FEATURES);
->>                    INIT_LIST_HEAD(&tun->disabled);
->> +               dev_hold(dev);
->>                  err = tun_attach(tun, file, false, ifr->ifr_flags & 
->> IFF_NAPI,
->>                                   ifr->ifr_flags & IFF_NAPI_FRAGS);
->>                  if (err < 0)
->> @@ -2836,6 +2837,7 @@ static int tun_set_iff(struct net *net, struct 
->> file *file, struct ifreq *ifr)
->>                  err = register_netdevice(tun->dev);
->>                  if (err < 0)
->>                          goto err_detach;
->> +               dev_put(dev);
->>          }
->>            netif_carrier_on(tun->dev);
->> @@ -2852,11 +2854,13 @@ static int tun_set_iff(struct net *net, 
->> struct file *file, struct ifreq *ifr)
->>          return 0;
->>     err_detach:
->> +       dev_put(dev);
->>          tun_detach_all(dev);
->>          /* register_netdevice() already called tun_free_netdev() */
->>          goto err_free_dev;
->>     err_free_flow:
->> +       dev_put(dev);
->>          tun_flow_uninit(tun);
->>          security_tun_dev_free_security(tun->security);
->>   err_free_stat:
->>
->> What's your thought?
->
-> The dev pointer are freed without checking the refcount in 
-> free_netdev() called by err_free_dev
->
-> path, so I don't understand how the refcount protects this pointer.
->
+>>> Some of the PHYs embedded in Marvell switches have an OUI, but no
+>>> product ID. We work around this brokenness by trapping the reads to
+>>> the ID registers in the MDIO bus controller driver and inserting the
+>>> switch product ID. The Marvell PHY driver then recognises these IDs
+>>> and does the right thing.
+>>>
+>>> Maybe you can do something similar here?
+>>>
+>> Yes, this would be an idea. Let me check.
+> 
+> Since this is an integrated PHY you could have the MAC driver pass a
+> specific phydev->dev_flag bit that indicates that this is RTL8215, since
+> I am assuming that PCI IDs for those different chipsets do have to be
+> allocated, right?
+> 
+Hi Florian,
 
-The refcount are guaranteed to be zero there, isn't it?
+thanks for the feedback. In the meantime Realtek provided a method to
+identify NBaseT-capable PHY's, and the respective match_phy_device
+callback implementations had been done in
+5181b473d64e ("net: phy: realtek: add NBase-T PHY auto-detection").
 
-Thanks
-
-
-> Thanks,
-> Yang
->
->>
->> Thanks
->>
->> .
->>
->
->
+Heiner
