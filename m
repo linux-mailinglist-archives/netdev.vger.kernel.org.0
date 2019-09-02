@@ -2,358 +2,371 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FB7A4F68
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 08:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63629A4FAA
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729629AbfIBG7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 02:59:01 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35930 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729619AbfIBG7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 02:59:01 -0400
-Received: by mail-wm1-f66.google.com with SMTP id p13so13369235wmh.1;
-        Sun, 01 Sep 2019 23:58:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5AF32yjhGbbOvKpLT0QnkitaASa0bJqQFXYiSlxM9BU=;
-        b=gNXVl2UG6lgFfc0QyBzFSW2tSehhEaX+qyC/fIy+E/ot2IAkiLyixz0Y7Ch0LwZ9g3
-         stsC0NgyHbUYDDSfmsydh4YPG7WXDUonWlYIWWwWA4aUEcBo/zdDmb1IoA/co11oTmfo
-         o0zK1QJGLAo6yrZqaHEL/+KviP86DQZR6AZ9QPYngijtHdcJObxPEZIQkshC4GMN3hSM
-         gGnKStQowGQY4QgMe/3iIdL8m4Qc0O9QXuX3/y449ADpum0WKfsbKAbUWKjRTHJy0M0j
-         iJVAhv3+LOHjNB87eyntntCuudLBewzSEr2PhuswfyXVcfc3pLJvfiPFXYL1PmsVTI0Z
-         YwVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5AF32yjhGbbOvKpLT0QnkitaASa0bJqQFXYiSlxM9BU=;
-        b=tiRWLaSqb0m4eKsoPN0owJ13/a7mG48EdhtLDB4MYp6FPvtWQ/0MZzEn7YkW6EO9gV
-         TEj6jUJoD65Zw1E6LEdfXC3VPKCoqTLg8X81Pjn93P/FR/VZ6KjQM2yfG7MgNPankJM5
-         OadLF9diPmN1ads4p1UzinYx9nCvtk+tg0rHxlPDRCfNVj/xdsny4cE9JbMhFvfbOFVj
-         6fw4V2P0VYdLMYtUvJGFyTtz9Z/3gEcGyPQvbiCztVuYSFbLsxXTxSvcAm5RP3hYZmGE
-         Z8xuUyPV9akPddAAd1YOxxFcBMquD1gPwmZJez1ZPFJNjXGh2fraNJNNWkAXXJmQkeqb
-         UL0A==
-X-Gm-Message-State: APjAAAV7X904qzTkhV/2sLGtVGC4E4D0jaVAOZk/GdzJpz+WGj3oB7qG
-        tvPvrR/q4X1NjeVpqaQ9BnA=
-X-Google-Smtp-Source: APXvYqweYciAqINF0LptZvUegqJRZK0cdpf1zntScf0vjs3F3MTX3o6XMZJ4CSQhXfaLyagt38aA9A==
-X-Received: by 2002:a05:600c:2047:: with SMTP id p7mr7532151wmg.13.1567407538017;
-        Sun, 01 Sep 2019 23:58:58 -0700 (PDT)
-Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
-        by smtp.googlemail.com with ESMTPSA id x5sm6155601wrg.69.2019.09.01.23.58.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 01 Sep 2019 23:58:57 -0700 (PDT)
-Date:   Mon, 2 Sep 2019 08:58:54 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Kalyani Akula <kalyani.akula@xilinx.com>
-Cc:     herbert@gondor.apana.org.au, kstewart@linuxfoundation.org,
-        gregkh@linuxfoundation.org, tglx@linutronix.de,
-        pombredanne@nexb.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Kalyani Akula <kalyania@xilinx.com>
-Subject: Re: [PATCH V2 4/4] crypto: Add Xilinx AES driver
-Message-ID: <20190902065854.GA28750@Red>
-References: <1567346098-27927-1-git-send-email-kalyani.akula@xilinx.com>
- <1567346098-27927-5-git-send-email-kalyani.akula@xilinx.com>
+        id S1729586AbfIBHXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:23:08 -0400
+Received: from mail-eopbgr80075.outbound.protection.outlook.com ([40.107.8.75]:38403
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726375AbfIBHXH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 03:23:07 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E3KKEMfcDabLLQDRVD0nMMxOHocspQkollSG6RoEFMpGqGGgSKR8Vs5CVVek8gAWBYuXnDFLn1Buq7Ha0AIw2ZIEyn7b2Ii/GaBccqjh8eD5eAZamqG0ZADdYoHEoN9+ycfVuNzgIHwd46SdMZy6suPYVdW5AZjkZTi4FWtoESHiCt80qo1nDHM1URy+LkJ4jFG3+l8L3mET/PpLtIAHCesNKe1PbwhB7pksFaP6Py9UJLZFd8qAl99miKS8ndEyWMIJYCdaAiyOktjT5eX4KswFbcjrdFa+qvSFl5HjmR9jqFol0SbqX4pxvXCP1knPJ9iI/QVnBiXU6/lpbRw6EA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SaGyCJ3io7tcphpOL5sWaWwv3wCrah1xBD+fATx4+50=;
+ b=O1lJRUz/KUHZBnCnrvUFph6I2gBYMEII8VTJmChTtUXu3kUEsniv+oK19wA5TmLD+BiNpPPx6qpY5TN3C8STzFnSEBN/dNU3qBAVI0nYpqXXM83SN1hdvwPEoy0Mr2wEAQpU7qznobUZ4M3AlAZl4ySI5MjWitZmEjvEJiywYGyF7gQEESzXJ9gxtdJkgt4bCg2jy1DDgYvrKaMV8FTMZtCG2wLuIrcODpDtDVwHPAU5I791c4xdLthyWkH1NNR39smUphwGO9nMNuQ0kLDMpuzAzJePQZbofAStX5G4xzXSHFaro3o45D3iPjJsEu4ymtOwH0daltWyM1GkcqOl1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SaGyCJ3io7tcphpOL5sWaWwv3wCrah1xBD+fATx4+50=;
+ b=GYBqi3vgfWJcJ1YpKQ/pEY78JH5Ug7Bys5KKTeaEOg/8P1FGDIfLylxnYUkWxPneQESzWTdnsw3afysCbEf4k9taekBMEJ39uSKzcMjjVohwKKwuyqf8iiYpkU/S5+ZmBPak92kUlSVQ2RgEcVv2VDw1RJ1C+qJvKbIKTm0GBDk=
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
+ AM4PR0501MB2625.eurprd05.prod.outlook.com (10.172.217.140) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.19; Mon, 2 Sep 2019 07:22:50 +0000
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
+ 07:22:50 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alex Vesker <valex@mellanox.com>,
+        Erez Shitrit <erezsh@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/18] Mellanox, mlx5 software managed
+ steering
+Thread-Topic: [pull request][net-next 00/18] Mellanox, mlx5 software managed
+ steering
+Thread-Index: AQHVYV86mwDfNt4LTUS4O32RtLTxIw==
+Date:   Mon, 2 Sep 2019 07:22:50 +0000
+Message-ID: <20190902072213.7683-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [73.15.39.150]
+x-clientproxiedby: BYAPR11CA0085.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::26) To AM4PR0501MB2756.eurprd05.prod.outlook.com
+ (2603:10a6:200:5c::10)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ad3bf1af-7bd6-428e-c937-08d72f765c88
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2625;
+x-ms-traffictypediagnostic: AM4PR0501MB2625:|AM4PR0501MB2625:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM4PR0501MB26251129199CB84E7B30F3A8BEBE0@AM4PR0501MB2625.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 01480965DA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(199004)(189003)(8676002)(107886003)(14454004)(7736002)(6512007)(1076003)(64756008)(66556008)(66476007)(66946007)(66446008)(50226002)(26005)(2616005)(36756003)(99286004)(102836004)(478600001)(71200400001)(6486002)(71190400001)(53936002)(52116002)(305945005)(66066001)(3846002)(256004)(186003)(316002)(486006)(4326008)(14444005)(54906003)(6916009)(81166006)(6116002)(81156014)(30864003)(86362001)(2906002)(5660300002)(8936002)(25786009)(6506007)(386003)(476003)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2625;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: MgmkNrGWtr9ImW+jlg6q2eMXeMSYo37M76mdx+hvzevfstUEggB1vnuYkqJoihkUPEcevMN22pfXWq/0FywIBIr3/FKs1JYKoFfw+BZOy2HkRja/ME2/uLu4nakawJ7Sl4g5uwY5UN7Tc7L85cxycjXHQsfDlJNKhwZcjioHGf0XjRsb7Aald2bEGSjZg4amU6XKuG3nMtI23iZzSbcvkSCX7zTKxFiGX/HSc5B1jUHWZgynalTwyrgP0lGuKZb2GTtyoeHv0NCWsPNfG20OL6b1T6/mJXsAzooQWwtqS2is9da1dxhxZSvGyEet8qP0jjJpR26D+ecAtinoKcUILkcX9ay+PBrHVRsppYawIa2N3ss7D9qjpjVqCBFxcEB/mpilnCY40z0IYtrL5dYbBq9IEVDW7CQ9Li+bJ47jzzI=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1567346098-27927-5-git-send-email-kalyani.akula@xilinx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad3bf1af-7bd6-428e-c937-08d72f765c88
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:22:50.3708
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: R8/mj0SkEgxkhdWMCD/yHVf75rIGWCwe0TtpWK6Ev02u6nfvbQb6t2cz24E9ZJnjuGeuM5IiXLeQ0Z+J6O5cRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2625
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 01, 2019 at 07:24:58PM +0530, Kalyani Akula wrote:
-> This patch adds AES driver support for the Xilinx
-> ZynqMP SoC.
-> 
-> Signed-off-by: Kalyani Akula <kalyani.akula@xilinx.com>
-> ---
+Hi Dave,
 
-Hello
+This series adds the support for software (driver managed) flow steering.
+For more information please see tag log below.
 
-I have some comment below
+Please pull and let me know if there is any problem.
 
->  drivers/crypto/Kconfig          |  11 ++
->  drivers/crypto/Makefile         |   1 +
->  drivers/crypto/zynqmp-aes-gcm.c | 297 ++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 309 insertions(+)
->  create mode 100644 drivers/crypto/zynqmp-aes-gcm.c
-> 
-> diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig
-> index 603413f..a0d058a 100644
-> --- a/drivers/crypto/Kconfig
-> +++ b/drivers/crypto/Kconfig
-> @@ -677,6 +677,17 @@ config CRYPTO_DEV_ROCKCHIP
->  	  This driver interfaces with the hardware crypto accelerator.
->  	  Supporting cbc/ecb chainmode, and aes/des/des3_ede cipher mode.
->  
-> +config CRYPTO_DEV_ZYNQMP_AES
-> +	tristate "Support for Xilinx ZynqMP AES hw accelerator"
-> +	depends on ARCH_ZYNQMP || COMPILE_TEST
-> +	select CRYPTO_AES
-> +	select CRYPTO_SKCIPHER
-> +	help
-> +	  Xilinx ZynqMP has AES-GCM engine used for symmetric key
-> +	  encryption and decryption. This driver interfaces with AES hw
-> +	  accelerator. Select this if you want to use the ZynqMP module
-> +	  for AES algorithms.
-> +
->  config CRYPTO_DEV_MEDIATEK
->  	tristate "MediaTek's EIP97 Cryptographic Engine driver"
->  	depends on (ARM && ARCH_MEDIATEK) || COMPILE_TEST
-> diff --git a/drivers/crypto/Makefile b/drivers/crypto/Makefile
-> index afc4753..c99663a 100644
-> --- a/drivers/crypto/Makefile
-> +++ b/drivers/crypto/Makefile
-> @@ -48,3 +48,4 @@ obj-$(CONFIG_CRYPTO_DEV_BCM_SPU) += bcm/
->  obj-$(CONFIG_CRYPTO_DEV_SAFEXCEL) += inside-secure/
->  obj-$(CONFIG_CRYPTO_DEV_ARTPEC6) += axis/
->  obj-y += hisilicon/
-> +obj-$(CONFIG_CRYPTO_DEV_ZYNQMP_AES) += zynqmp-aes-gcm.o
-> diff --git a/drivers/crypto/zynqmp-aes-gcm.c b/drivers/crypto/zynqmp-aes-gcm.c
-> new file mode 100644
-> index 0000000..d65f038
-> --- /dev/null
-> +++ b/drivers/crypto/zynqmp-aes-gcm.c
-> @@ -0,0 +1,297 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Xilinx ZynqMP AES Driver.
-> + * Copyright (c) 2019 Xilinx Inc.
-> + */
-> +
-> +#include <crypto/aes.h>
-> +#include <crypto/scatterwalk.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/scatterlist.h>
-> +#include <linux/firmware/xlnx-zynqmp.h>
-> +
-> +#define ZYNQMP_AES_IV_SIZE			12
-> +#define ZYNQMP_AES_GCM_SIZE			16
-> +#define ZYNQMP_AES_KEY_SIZE			32
-> +
-> +#define ZYNQMP_AES_DECRYPT			0
-> +#define ZYNQMP_AES_ENCRYPT			1
-> +
-> +#define ZYNQMP_AES_KUP_KEY			0
-> +#define ZYNQMP_AES_DEVICE_KEY			1
-> +#define ZYNQMP_AES_PUF_KEY			2
-> +
-> +#define ZYNQMP_AES_GCM_TAG_MISMATCH_ERR		0x01
-> +#define ZYNQMP_AES_SIZE_ERR			0x06
-> +#define ZYNQMP_AES_WRONG_KEY_SRC_ERR		0x13
-> +#define ZYNQMP_AES_PUF_NOT_PROGRAMMED		0xE300
-> +
-> +#define ZYNQMP_AES_BLOCKSIZE			0x04
-> +
-> +static const struct zynqmp_eemi_ops *eemi_ops;
-> +struct zynqmp_aes_dev *aes_dd;
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
 
-I still think that using a global variable for storing device driver data is bad.
+Thanks,
+Saeed.
 
-> +
-> +struct zynqmp_aes_dev {
-> +	struct device *dev;
-> +};
-> +
-> +struct zynqmp_aes_op {
-> +	struct zynqmp_aes_dev *dd;
-> +	void *src;
-> +	void *dst;
-> +	int len;
-> +	u8 key[ZYNQMP_AES_KEY_SIZE];
-> +	u8 *iv;
-> +	u32 keylen;
-> +	u32 keytype;
-> +};
-> +
-> +struct zynqmp_aes_data {
-> +	u64 src;
-> +	u64 iv;
-> +	u64 key;
-> +	u64 dst;
-> +	u64 size;
-> +	u64 optype;
-> +	u64 keysrc;
-> +};
-> +
-> +static int zynqmp_setkey_blk(struct crypto_tfm *tfm, const u8 *key,
-> +			     unsigned int len)
-> +{
-> +	struct zynqmp_aes_op *op = crypto_tfm_ctx(tfm);
-> +
-> +	if (((len != 1) && (len !=  ZYNQMP_AES_KEY_SIZE)) || (!key))
+---
+The following changes since commit a06ebb8d953b4100236f3057be51d67640e06323=
+:
 
-typo, two space
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git=
+/mellanox/linux (2019-09-02 00:16:05 -0700)
 
-> +		return -EINVAL;
-> +
-> +	if (len == 1) {
-> +		op->keytype = *key;
-> +
-> +		if ((op->keytype < ZYNQMP_AES_KUP_KEY) ||
-> +			(op->keytype > ZYNQMP_AES_PUF_KEY))
-> +			return -EINVAL;
-> +
-> +	} else if (len == ZYNQMP_AES_KEY_SIZE) {
-> +		op->keytype = ZYNQMP_AES_KUP_KEY;
-> +		op->keylen = len;
-> +		memcpy(op->key, key, len);
-> +	}
-> +
-> +	return 0;
-> +}
+are available in the Git repository at:
 
-It seems your driver does not support AES keysize of 128/196, you need to fallback in that case.
-You need to comment the keylen=1 usecase and use a define for this value.
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2019-09-01
 
-> +
-> +static int zynqmp_aes_xcrypt(struct blkcipher_desc *desc,
-> +			     struct scatterlist *dst,
-> +			     struct scatterlist *src,
-> +			     unsigned int nbytes,
-> +			     unsigned int flags)
-> +{
-> +	struct zynqmp_aes_op *op = crypto_blkcipher_ctx(desc->tfm);
-> +	struct zynqmp_aes_dev *dd = aes_dd;
-> +	int err, ret, copy_bytes, src_data = 0, dst_data = 0;
-> +	dma_addr_t dma_addr, dma_addr_buf;
-> +	struct zynqmp_aes_data *abuf;
-> +	struct blkcipher_walk walk;
-> +	unsigned int data_size;
-> +	size_t dma_size;
-> +	char *kbuf;
-> +
-> +	if (!eemi_ops->aes)
-> +		return -ENOTSUPP;
-> +
-> +	if (op->keytype == ZYNQMP_AES_KUP_KEY)
-> +		dma_size = nbytes + ZYNQMP_AES_KEY_SIZE
-> +			+ ZYNQMP_AES_IV_SIZE;
-> +	else
-> +		dma_size = nbytes + ZYNQMP_AES_IV_SIZE;
-> +
-> +	kbuf = dma_alloc_coherent(dd->dev, dma_size, &dma_addr, GFP_KERNEL);
-> +	if (!kbuf)
-> +		return -ENOMEM;
-> +
-> +	abuf = dma_alloc_coherent(dd->dev, sizeof(struct zynqmp_aes_data),
-> +				  &dma_addr_buf, GFP_KERNEL);
-> +	if (!abuf) {
-> +		dma_free_coherent(dd->dev, dma_size, kbuf, dma_addr);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data_size = nbytes;
-> +	blkcipher_walk_init(&walk, dst, src, data_size);
-> +	err = blkcipher_walk_virt(desc, &walk);
-> +	op->iv = walk.iv;
-> +
-> +	while ((nbytes = walk.nbytes)) {
-> +		op->src = walk.src.virt.addr;
-> +		memcpy(kbuf + src_data, op->src, nbytes);
-> +		src_data = src_data + nbytes;
-> +		nbytes &= (ZYNQMP_AES_BLOCKSIZE - 1);
-> +		err = blkcipher_walk_done(desc, &walk, nbytes);
-> +	}
-> +	memcpy(kbuf + data_size, op->iv, ZYNQMP_AES_IV_SIZE);
-> +	abuf->src = dma_addr;
-> +	abuf->dst = dma_addr;
-> +	abuf->iv = abuf->src + data_size;
-> +	abuf->size = data_size - ZYNQMP_AES_GCM_SIZE;
-> +	abuf->optype = flags;
-> +	abuf->keysrc = op->keytype;
-> +
-> +	if (op->keytype == ZYNQMP_AES_KUP_KEY) {
-> +		memcpy(kbuf + data_size + ZYNQMP_AES_IV_SIZE,
-> +		       op->key, ZYNQMP_AES_KEY_SIZE);
-> +
-> +		abuf->key = abuf->src + data_size + ZYNQMP_AES_IV_SIZE;
-> +	} else {
-> +		abuf->key = 0;
-> +	}
-> +	eemi_ops->aes(dma_addr_buf, &ret);
-> +
-> +	if (ret != 0) {
-> +		switch (ret) {
-> +		case ZYNQMP_AES_GCM_TAG_MISMATCH_ERR:
-> +			dev_err(dd->dev, "ERROR: Gcm Tag mismatch\n\r");
-> +			break;
-> +		case ZYNQMP_AES_SIZE_ERR:
-> +			dev_err(dd->dev, "ERROR : Non word aligned data\n\r");
-> +			break;
-> +		case ZYNQMP_AES_WRONG_KEY_SRC_ERR:
-> +			dev_err(dd->dev, "ERROR: Wrong KeySrc, enable secure mode\n\r");
-> +			break;
-> +		case ZYNQMP_AES_PUF_NOT_PROGRAMMED:
-> +			dev_err(dd->dev, "ERROR: PUF is not registered\r\n");
-> +			break;
-> +		default:
-> +			dev_err(dd->dev, "ERROR: Invalid");
-> +			break;
-> +		}
-> +		goto END;
-> +	}
-> +	if (flags)
-> +		copy_bytes = data_size;
-> +	else
-> +		copy_bytes = data_size - ZYNQMP_AES_GCM_SIZE;
-> +
-> +	blkcipher_walk_init(&walk, dst, src, copy_bytes);
-> +	err = blkcipher_walk_virt(desc, &walk);
-> +
-> +	while ((nbytes = walk.nbytes)) {
-> +		memcpy(walk.dst.virt.addr, kbuf + dst_data, nbytes);
-> +		dst_data = dst_data + nbytes;
-> +		nbytes &= (ZYNQMP_AES_BLOCKSIZE - 1);
-> +		err = blkcipher_walk_done(desc, &walk, nbytes);
-> +	}
-> +END:
-> +	memset(kbuf, 0, dma_size);
-> +	memset(abuf, 0, sizeof(struct zynqmp_aes_data));
-> +	dma_free_coherent(dd->dev, dma_size, kbuf, dma_addr);
-> +	dma_free_coherent(dd->dev, sizeof(struct zynqmp_aes_data),
-> +			  abuf, dma_addr_buf);
-> +	return err;
-> +}
-> +
-> +static int zynqmp_aes_decrypt(struct blkcipher_desc *desc,
-> +			      struct scatterlist *dst,
-> +			      struct scatterlist *src,
-> +			      unsigned int nbytes)
-> +{
-> +	return zynqmp_aes_xcrypt(desc, dst, src, nbytes, ZYNQMP_AES_DECRYPT);
-> +}
-> +
-> +static int zynqmp_aes_encrypt(struct blkcipher_desc *desc,
-> +			      struct scatterlist *dst,
-> +			      struct scatterlist *src,
-> +			      unsigned int nbytes)
-> +{
-> +	return zynqmp_aes_xcrypt(desc, dst, src, nbytes, ZYNQMP_AES_ENCRYPT);
-> +}
-> +
-> +static struct crypto_alg zynqmp_alg = {
-> +	.cra_name		=	"xilinx-zynqmp-aes",
-> +	.cra_driver_name	=	"zynqmp-aes-gcm",
-> +	.cra_priority		=	400,
-> +	.cra_flags		=	CRYPTO_ALG_TYPE_BLKCIPHER |
-> +					CRYPTO_ALG_KERN_DRIVER_ONLY,
-> +	.cra_blocksize		=	ZYNQMP_AES_BLOCKSIZE,
-> +	.cra_ctxsize		=	sizeof(struct zynqmp_aes_op),
-> +	.cra_alignmask		=	15,
-> +	.cra_type		=	&crypto_blkcipher_type,
-> +	.cra_module		=	THIS_MODULE,
-> +	.cra_u			=	{
-> +	.blkcipher	=	{
-> +			.min_keysize	=	0,
+for you to fetch changes up to 6208aecc121dde491047008f8dbc1e734c8e634b:
 
-Are you sure to accept this a keysize of 0 ?
+  net/mlx5: Add devlink flow_steering_mode parameter (2019-09-02 00:16:14 -=
+0700)
 
-Regards
+----------------------------------------------------------------
+mlx5-updates-2019-09-01  (Software steering support)
+
+Abstract:
+--------
+Mellanox ConnetX devices supports packet matching, packet modification and
+redirection. These functionalities are also referred to as flow-steering.
+To configure a steering rule, the rule is written to the device owned
+memory, this memory is accessed and cached by the device when processing
+a packet.
+Steering rules are constructed from multiple steering entries (STE).
+
+Rules are configured using the Firmware command interface. The Firmware
+processes the given driver command and translates them to STEs, then
+writes them to the device memory in the current steering tables.
+This process is slow due to the architecture of the command interface and
+the processing complexity of each rule.
+
+The highlight of this patchset is to cut the middle man (The firmware) and
+do steering rules programming into device directly from the driver, with
+no firmware intervention whatsoever.
+
+Motivation:
+-----------
+Software (driver managed) steering allows for high rule insertion rates
+compared to the FW steering described above, this is achieved by using
+internal RDMA writes to the device owned memory instead of the slow
+command interface to program steering rules.
+
+Software (driver managed) steering, doesn't depend on new FW
+for new steering functionality, new implementations can be done in the
+driver skipping the FW layer.
+
+Performance:
+------------
+The insertion rate on a single core using the new approach allows
+programming ~300K rules per sec.
+
+Test: TC L2 rules
+33K/s with Software steering (this patchset).
+5K/s  with FW and current driver.
+This will improve OVS based solution performance.
+
+Architecture and implementation details:
+----------------------------------------
+Software steering will be dynamically selected via devlink device
+parameter. Example:
+$ devlink dev param show pci/0000:06:00.0 name flow_steering_mode
+          pci/0000:06:00.0:
+          name flow_steering_mode type driver-specific
+          values:
+             cmode runtime value smfs
+
+mlx5 software steering module a.k.a (DR - Direct Rule) is implemented
+and contained in mlx5/core/steering directory and controlled by
+MLX5_SW_STEERING kconfig flag.
+
+mlx5 core steering layer (fs_core) already provides a shim layer for
+implementing different steering mechanisms, software steering will
+leverage that as seen at the end of this series.
+
+When Software Steering for a specific steering domain
+(NIC/RDMA/Vport/ESwitch, etc ..) is supported, it will cause rules
+targeting this domain to be created using  SW steering instead of FW.
+
+The implementation includes:
+Domain - The steering domain is the object that all other object resides
+    in. It holds the memory allocator, send engine, locks and other shared
+    data needed by lower objects such as table, matcher, rule, action.
+    Each domain can contain multiple tables. Domain is equivalent to
+    namespaces e.g (NIC/RDMA/Vport/ESwitch, etc ..) as implemented
+    currently in mlx5_core fs_core (flow steering core).
+
+Table - Table objects are used for holding multiple matchers, each table
+    has a level used to prevent processing loops. Packets are being
+    directed to this table once it is set as the root table, this is done
+    by fs_core using a FW command. A packet is being processed inside the
+    table matcher by matcher until a successful hit, otherwise the packet
+    will perform the default action.
+
+Matcher - Matchers objects are used to specify the fields mask for
+    matching when processing a packet. A matcher belongs to a table, each
+    matcher can hold multiple rules, each rule with different matching
+    values corresponding to the matcher mask. Each matcher has a priority
+    used for rule processing order inside the table.
+
+Action - Action objects are created to specify different steering actions
+    such as count, reformat (encapsulate, decapsulate, ...), modify
+    header, forward to table and many other actions. When creating a rule
+    a sequence of actions can be provided to be executed on a successful
+    match.
+
+Rule - Rule objects are used to specify a specific match on packets as
+    well as the actions that should be executed. A rule belongs to a
+    matcher.
+
+STE - This layer is used to hold the specific STE format for the device
+    and to convert the requested rule to STEs. Each rule is constructed of
+    an STE chain, Multiple rules construct a steering graph. Each node in
+    the graph is a hash table containing multiple STEs. The index of each
+    STE in the hash table is being calculated using a CRC32 hash function.
+
+Memory pool - Used for managing and caching device owned memory for rule
+    insertion. The memory is being allocated using DM (device memory) API.
+
+Communication with device - layer for standard RDMA operation using  RC QP
+    to configure the device steering.
+
+Command utility - This module holds all of the FW commands that are
+    required for SW steering to function.
+
+Patch planning and files:
+-------------------------
+1) First patch, adds the support to Add flow steering actions to fs_cmd
+shim layer.
+
+2) Next 12 patch will add a file per each Software steering
+functionality/module as described above. (See patches with title: DR, *)
+
+3) Add CONFIG_MLX5_SW_STEERING for software steering support and enable
+build with the new files
+
+4) Next two patches will add the support for software steering in mlx5
+steering shim layer
+net/mlx5: Add API to set the namespace steering mode
+net/mlx5: Add direct rule fs_cmd implementation
+
+5) Last two patches will add the new devlink parameter to select mlx5
+steering mode, will be valid only for switchdev mode for now.
+Two modes are supported:
+    1. DMFS - Device managed flow steering
+    2. SMFS - Software/Driver managed flow steering.
+
+    In the DMFS mode, the HW steering entities are created through the
+    FW. In the SMFS mode this entities are created though the driver
+    directly.
+
+    The driver will use the devlink steering mode only if the steering
+    domain supports it, for now SMFS will manages only the switchdev
+    eswitch steering domain.
+
+    User command examples:
+    - Set SMFS flow steering mode::
+
+        $ devlink dev param set pci/0000:06:00.0 name flow_steering_mode va=
+lue "smfs" cmode runtime
+
+    - Read device flow steering mode::
+
+        $ devlink dev param show pci/0000:06:00.0 name flow_steering_mode
+          pci/0000:06:00.0:
+          name flow_steering_mode type driver-specific
+          values:
+             cmode runtime value smfs
+
+----------------------------------------------------------------
+Alex Vesker (13):
+      net/mlx5: DR, Add the internal direct rule types definitions
+      net/mlx5: DR, Add direct rule command utilities
+      net/mlx5: DR, ICM pool memory allocator
+      net/mlx5: DR, Expose an internal API to issue RDMA operations
+      net/mlx5: DR, Add Steering entry (STE) utilities
+      net/mlx5: DR, Expose steering domain functionality
+      net/mlx5: DR, Expose steering table functionality
+      net/mlx5: DR, Expose steering matcher functionality
+      net/mlx5: DR, Expose steering action functionality
+      net/mlx5: DR, Expose steering rule functionality
+      net/mlx5: DR, Add required FW steering functionality
+      net/mlx5: DR, Expose APIs for direct rule managing
+      net/mlx5: DR, Add CONFIG_MLX5_SW_STEERING for software steering suppo=
+rt
+
+Maor Gottlieb (5):
+      net/mlx5: Add flow steering actions to fs_cmd shim layer
+      net/mlx5: Add direct rule fs_cmd implementation
+      net/mlx5: Add API to set the namespace steering mode
+      net/mlx5: Add support to use SMFS in switchdev mode
+      net/mlx5: Add devlink flow_steering_mode parameter
+
+ .../networking/device_drivers/mellanox/mlx5.rst    |   33 +
+ drivers/infiniband/hw/mlx5/flow.c                  |   18 +-
+ drivers/infiniband/hw/mlx5/main.c                  |    7 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h               |    5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |    7 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    7 +
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  112 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |   27 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   46 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |    7 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   87 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |  116 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.h   |   25 +
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  160 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   39 +-
+ .../ethernet/mellanox/mlx5/core/steering/Makefile  |    2 +
+ .../mellanox/mlx5/core/steering/dr_action.c        | 1588 ++++++++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  480 ++++
+ .../mellanox/mlx5/core/steering/dr_crc32.c         |   98 +
+ .../mellanox/mlx5/core/steering/dr_domain.c        |  395 ++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_fw.c   |   93 +
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      |  570 +++++
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  770 +++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c | 1243 +++++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |  976 +++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 2308 ++++++++++++++++=
+++++
+ .../mellanox/mlx5/core/steering/dr_table.c         |  294 +++
+ .../mellanox/mlx5/core/steering/dr_types.h         | 1060 +++++++++
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  600 +++++
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.h   |   60 +
+ .../mellanox/mlx5/core/steering/mlx5_ifc_dr.h      |  604 +++++
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |  212 ++
+ include/linux/mlx5/fs.h                            |   33 +-
+ 34 files changed, 11964 insertions(+), 120 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/Makefi=
+le
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_act=
+ion.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd=
+.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_crc=
+32.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dom=
+ain.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.=
+c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm=
+_pool.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_mat=
+cher.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rul=
+e.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_sen=
+d.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste=
+.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_tab=
+le.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_typ=
+es.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.=
+c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.=
+h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_i=
+fc_dr.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr=
+.h
