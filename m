@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B83A56F8
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 15:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA013A56F6
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 15:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730164AbfIBNCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 09:02:41 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:35072 "EHLO mx.0dd.nl"
+        id S1730112AbfIBNCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 09:02:39 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:35088 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730048AbfIBNCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 09:02:40 -0400
+        id S1730049AbfIBNCi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 09:02:38 -0400
 Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 88FF95FBAB;
+        by mx.0dd.nl (Postfix) with ESMTPS id A7E575FC4B;
         Mon,  2 Sep 2019 15:02:35 +0200 (CEST)
 Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="az5UkfxB";
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="LhJEJsW3";
         dkim-atps=neutral
 Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.232])
-        by mail.vdorst.com (Postfix) with ESMTPA id 466261DB401A;
+        by mail.vdorst.com (Postfix) with ESMTPA id 64F6B1DB401B;
         Mon,  2 Sep 2019 15:02:35 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 466261DB401A
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 64F6B1DB401B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
         s=default; t=1567429355;
-        bh=f9WqKZUCC1IscPa4l+rg5ZDVraoOS3GhoWyxkIj1AVk=;
+        bh=UHciqm/4YKRSRYfKMGzXa5FgKHnSG2boSl+FvMHHCns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=az5UkfxBuHD+yYDkVg2J5E3rnSrDl99dhx+QZ/Svsm2KMG2bzxBUCrXBmM6QzkQfH
-         DVU3LsP6CFL3smaluN1R6NhnRauOGBlvMuXXE+uYoB22YckL2bTpXOh4RuFboeIdEZ
-         4wq9TJKTn2SCoL18pNvwf6I/FdCv7QCRb0TCd+FKQDah9uZiQ8YHWEjpJt3vSZHXIi
-         b7EjfqV2L5UasbP62UqhmpkBN1etwJ5zxehF22DJF//bGzAO4BLkU3QUuv5VP+Ci8/
-         U4EsUjj5QDKO49xGkEd2s3dGbeYNHXYrHfGYdBYa/IGBw15LbNi6FVnaMxycfz8Jq7
-         IT6tJ/hltM/JQ==
+        b=LhJEJsW3EOGTBA9zGrBkk1Ewo+ZU6hUlJwd6TguYvl3BVQi54LEgWAPoZHxrbyip9
+         raWMRth0K1XilZWTLI6f5owNYS9DyanfXTZwi8Z8vqgJJyZTm0pkDrXOLBedn1JNmF
+         CBcdLb6/X1qQuFYDS6yKN3RKtSfLHH1q+lE9i7yRwVNPdyEwHwxM1P+AiUfHUPjtg8
+         T9LxyEwzJoBZ4gKiJOt4PaWL88Dg1XV/xX8MnjjcMRadcmkbH/hPwOBBWjlldzHEde
+         /jPZ2mZAdBr3f0ZOm/SnprQ9/iSmHJGItbOF9QNqGkuHbkgbKHJ95jqP0WpqtJhDYn
+         XaYJ4UKAaIDPQ==
 From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
 To:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -45,10 +45,10 @@ Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         John Crispin <john@phrozen.org>, linux-mips@vger.kernel.org,
         Frank Wunderlich <frank-w@public-files.de>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH net-next v3 1/3] net: dsa: mt7530: Convert to PHYLINK API
-Date:   Mon,  2 Sep 2019 15:02:24 +0200
-Message-Id: <20190902130226.26845-2-opensource@vdorst.com>
+        devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next v3 2/3] dt-bindings: net: dsa: mt7530: Add support for port 5
+Date:   Mon,  2 Sep 2019 15:02:25 +0200
+Message-Id: <20190902130226.26845-3-opensource@vdorst.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190902130226.26845-1-opensource@vdorst.com>
 References: <20190902130226.26845-1-opensource@vdorst.com>
@@ -60,440 +60,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert mt7530 to PHYLINK API
+MT7530 port 5 has many modes/configurations.
+Update the documentation how to use port 5.
 
 Signed-off-by: René van Dorst <opensource@vdorst.com>
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+Cc: devicetree@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>
 ---
 v2->v3:
-* No change
-* Add tags acked-by and tested-by
+* Remove 'status = "okay";' lines, suggested by Rob Herring
 v1->v2:
-* Refactor "unsupported" phy_interface part in
-  mt7530_phylink_mac_validate() suggested by Russell King
-* Report and return when phylink tries to use autoneg_inband in
-  mt7530_phylink_mac_config() suggested by Russell King
-* Refactor port 6 setup in mt7530_phylink_mac_config()
+* Adding extra note about RGMII2 and gpio use.
 rfc->v1:
-* Renamed P5_MODE_* to P5_INTF_SEL_*. fits the function more
-* Convert if-statement for speed bits to a switch suggested by
-  Daniel Santos
-* Refactor flow_control pause bits and don't use state->link in
-  mt7530_phylink_mac_config() suggested by Russell King
-* Move MAC tx/rx en/disable to mt7530_phylink_mac_link_up/down()
-  suggested by Russell King
-* Always support PHY_INTERFACE_MODE_NA in mt7530_phylink_validate()
-  suggested by Russell King
-* Added phylink_set_port_modes() in mt7530_phylink_validate() suggested
-  by Russell King
-* Remove dev_err on the end of mt7530_phylink_mac_config() suggested by
-  Russell King
+* No change
 
- drivers/net/dsa/mt7530.c | 266 +++++++++++++++++++++++++++++----------
- drivers/net/dsa/mt7530.h |  32 +++--
- 2 files changed, 211 insertions(+), 87 deletions(-)
+ .../devicetree/bindings/net/dsa/mt7530.txt    | 214 ++++++++++++++++++
+ 1 file changed, 214 insertions(+)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c48e29486b10..ecc13b57e619 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -13,7 +13,7 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
--#include <linux/phy.h>
-+#include <linux/phylink.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
-@@ -633,63 +633,6 @@ mt7530_get_sset_count(struct dsa_switch *ds, int port, int sset)
- 	return ARRAY_SIZE(mt7530_mib);
- }
+diff --git a/Documentation/devicetree/bindings/net/dsa/mt7530.txt b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+index 47aa205ee0bd..c5ed5d25f642 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mt7530.txt
++++ b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+@@ -35,6 +35,42 @@ Required properties for the child nodes within ports container:
+ - phy-mode: String, must be either "trgmii" or "rgmii" for port labeled
+ 	 "cpu".
  
--static void mt7530_adjust_link(struct dsa_switch *ds, int port,
--			       struct phy_device *phydev)
--{
--	struct mt7530_priv *priv = ds->priv;
--
--	if (phy_is_pseudo_fixed_link(phydev)) {
--		dev_dbg(priv->dev, "phy-mode for master device = %x\n",
--			phydev->interface);
--
--		/* Setup TX circuit incluing relevant PAD and driving */
--		mt7530_pad_clk_setup(ds, phydev->interface);
--
--		if (priv->id == ID_MT7530) {
--			/* Setup RX circuit, relevant PAD and driving on the
--			 * host which must be placed after the setup on the
--			 * device side is all finished.
--			 */
--			mt7623_pad_clk_setup(ds);
--		}
--	} else {
--		u16 lcl_adv = 0, rmt_adv = 0;
--		u8 flowctrl;
--		u32 mcr = PMCR_USERP_LINK | PMCR_FORCE_MODE;
--
--		switch (phydev->speed) {
--		case SPEED_1000:
--			mcr |= PMCR_FORCE_SPEED_1000;
--			break;
--		case SPEED_100:
--			mcr |= PMCR_FORCE_SPEED_100;
--			break;
--		}
--
--		if (phydev->link)
--			mcr |= PMCR_FORCE_LNK;
--
--		if (phydev->duplex) {
--			mcr |= PMCR_FORCE_FDX;
--
--			if (phydev->pause)
--				rmt_adv = LPA_PAUSE_CAP;
--			if (phydev->asym_pause)
--				rmt_adv |= LPA_PAUSE_ASYM;
--
--			lcl_adv = linkmode_adv_to_lcl_adv_t(
--				phydev->advertising);
--			flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
--
--			if (flowctrl & FLOW_CTRL_TX)
--				mcr |= PMCR_TX_FC_EN;
--			if (flowctrl & FLOW_CTRL_RX)
--				mcr |= PMCR_RX_FC_EN;
--		}
--		mt7530_write(priv, MT7530_PMCR_P(port), mcr);
--	}
--}
--
- static int
- mt7530_cpu_port_enable(struct mt7530_priv *priv,
- 		       int port)
-@@ -698,9 +641,6 @@ mt7530_cpu_port_enable(struct mt7530_priv *priv,
- 	mt7530_write(priv, MT7530_PVC_P(port),
- 		     PORT_SPEC_TAG);
- 
--	/* Setup the MAC by default for the cpu port */
--	mt7530_write(priv, MT7530_PMCR_P(port), PMCR_CPUP_LINK);
--
- 	/* Disable auto learning on the cpu port */
- 	mt7530_set(priv, MT7530_PSC_P(port), SA_DIS);
- 
-@@ -731,9 +671,6 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
- 
- 	mutex_lock(&priv->reg_mutex);
- 
--	/* Setup the MAC for the user port */
--	mt7530_write(priv, MT7530_PMCR_P(port), PMCR_USERP_LINK);
--
- 	/* Allow the user port gets connected to the cpu port and also
- 	 * restore the port matrix if the port is the member of a certain
- 	 * bridge.
-@@ -742,7 +679,7 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
- 	priv->ports[port].enable = true;
- 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
- 		   priv->ports[port].pm);
--	mt7530_port_set_status(priv, port, 1);
-+	mt7530_port_set_status(priv, port, 0);
- 
- 	mutex_unlock(&priv->reg_mutex);
- 
-@@ -1232,10 +1169,10 @@ static int
- mt7530_setup(struct dsa_switch *ds)
- {
- 	struct mt7530_priv *priv = ds->priv;
--	int ret, i;
--	u32 id, val;
--	struct device_node *dn;
- 	struct mt7530_dummy_poll p;
-+	struct device_node *dn;
-+	u32 id, val;
-+	int ret, i;
- 
- 	/* The parent node of master netdev which holds the common system
- 	 * controller also is the container for two GMACs nodes representing
-@@ -1305,6 +1242,8 @@ mt7530_setup(struct dsa_switch *ds)
- 	val |= MHWTRAP_MANUAL;
- 	mt7530_write(priv, MT7530_MHWTRAP, val);
- 
-+	priv->p6_interface = PHY_INTERFACE_MODE_NA;
++Port 5 of the switch is muxed between:
++1. GMAC5: GMAC5 can interface with another external MAC or PHY.
++2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
++   of the SOC. Used in many setups where port 0/4 becomes the WAN port.
++   Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
++	 GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
++	 connected to external component!
 +
- 	/* Enable and reset MIB counters */
- 	mt7530_mib_reset(ds);
- 
-@@ -1329,6 +1268,191 @@ mt7530_setup(struct dsa_switch *ds)
- 	return 0;
- }
- 
-+static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
-+				      unsigned int mode,
-+				      const struct phylink_link_state *state)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	u32 mcr_cur, mcr_new;
++Port 5 modes/configurations:
++1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
++   GMAC of the SOC.
++   In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
++   GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
++2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
++   It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
++   and RGMII delay.
++3. Port 5 is muxed to GMAC5 and can interface to an external phy.
++   Port 5 becomes an extra switch port.
++   Only works on platform where external phy TX<->RX lines are swapped.
++   Like in the Ubiquiti ER-X-SFP.
++4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
++   Currently a 2nd CPU port is not supported by DSA code.
 +
-+	switch (port) {
-+	case 0: /* Internal phy */
-+	case 1:
-+	case 2:
-+	case 3:
-+	case 4:
-+		if (state->interface != PHY_INTERFACE_MODE_GMII)
-+			return;
-+		break;
-+	/* case 5: Port 5 is not supported! */
-+	case 6: /* 1st cpu port */
-+		if (priv->p6_interface == state->interface)
-+			break;
++Depending on how the external PHY is wired:
++1. normal: The PHY can only connect to 2nd GMAC but not to the switch
++2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
++   a ethernet port. But can't interface to the 2nd GMAC.
 +
-+		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_TRGMII)
-+			return;
++Based on the DT the port 5 mode is configured.
 +
-+		/* Setup TX circuit incluing relevant PAD and driving */
-+		mt7530_pad_clk_setup(ds, state->interface);
++Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
++When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
++phy-mode must be set, see also example 2 below!
++ * mt7621: phy-mode = "rgmii-txid";
++ * mt7623: phy-mode = "rgmii";
 +
-+		if (priv->id == ID_MT7530) {
-+			/* Setup RX circuit, relevant PAD and driving on the
-+			 * host which must be placed after the setup on the
-+			 * device side is all finished.
-+			 */
-+			mt7623_pad_clk_setup(ds);
-+		}
+ See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
+ required, optional properties and how the integrated switch subnodes must
+ be specified.
+@@ -94,3 +130,181 @@ Example:
+ 			};
+ 		};
+ 	};
 +
-+		priv->p6_interface = state->interface;
-+		break;
-+	default:
-+		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-+		return;
-+	}
++Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
 +
-+	if (phylink_autoneg_inband(mode)) {
-+		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
-+			__func__);
-+		return;
-+	}
++&eth {
++	gmac0: mac@0 {
++		compatible = "mediatek,eth-mac";
++		reg = <0>;
++		phy-mode = "rgmii";
 +
-+	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
-+	mcr_new = mcr_cur;
-+	mcr_new &= ~(PMCR_FORCE_SPEED_1000 | PMCR_FORCE_SPEED_100 |
-+		     PMCR_FORCE_FDX | PMCR_TX_FC_EN | PMCR_RX_FC_EN);
-+	mcr_new |= PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
-+		   PMCR_BACKPR_EN | PMCR_FORCE_MODE | PMCR_FORCE_LNK;
++		fixed-link {
++			speed = <1000>;
++			full-duplex;
++			pause;
++		};
++	};
 +
-+	switch (state->speed) {
-+	case SPEED_1000:
-+		mcr_new |= PMCR_FORCE_SPEED_1000;
-+		break;
-+	case SPEED_100:
-+		mcr_new |= PMCR_FORCE_SPEED_100;
-+		break;
-+	}
-+	if (state->duplex == DUPLEX_FULL) {
-+		mcr_new |= PMCR_FORCE_FDX;
-+		if (state->pause & MLO_PAUSE_TX)
-+			mcr_new |= PMCR_TX_FC_EN;
-+		if (state->pause & MLO_PAUSE_RX)
-+			mcr_new |= PMCR_RX_FC_EN;
-+	}
++	gmac1: mac@1 {
++		compatible = "mediatek,eth-mac";
++		reg = <1>;
++		phy-mode = "rgmii-txid";
++		phy-handle = <&phy4>;
++	};
 +
-+	if (mcr_new != mcr_cur)
-+		mt7530_write(priv, MT7530_PMCR_P(port), mcr_new);
-+}
++	mdio: mdio-bus {
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+static void mt7530_phylink_mac_link_down(struct dsa_switch *ds, int port,
-+					 unsigned int mode,
-+					 phy_interface_t interface)
-+{
-+	struct mt7530_priv *priv = ds->priv;
++		/* Internal phy */
++		phy4: ethernet-phy@4 {
++			reg = <4>;
++		};
 +
-+	mt7530_port_set_status(priv, port, 0);
-+}
++		mt7530: switch@1f {
++			compatible = "mediatek,mt7621";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x1f>;
++			pinctrl-names = "default";
++			mediatek,mcm;
 +
-+static void mt7530_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+				       unsigned int mode,
-+				       phy_interface_t interface,
-+				       struct phy_device *phydev)
-+{
-+	struct mt7530_priv *priv = ds->priv;
++			resets = <&rstctrl 2>;
++			reset-names = "mcm";
 +
-+	mt7530_port_set_status(priv, port, 1);
-+}
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
 +
-+static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
-+				    unsigned long *supported,
-+				    struct phylink_link_state *state)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
++				port@0 {
++					reg = <0>;
++					label = "lan0";
++				};
 +
-+	switch (port) {
-+	case 0: /* Internal phy */
-+	case 1:
-+	case 2:
-+	case 3:
-+	case 4:
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			goto unsupported;
-+		break;
-+	/* case 5: Port 5 not supported! */
-+	case 6: /* 1st cpu port */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_TRGMII)
-+			goto unsupported;
-+		break;
-+	default:
-+		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-+unsupported:
-+		linkmode_zero(supported);
-+		return;
-+	}
++				port@1 {
++					reg = <1>;
++					label = "lan1";
++				};
 +
-+	phylink_set_port_modes(mask);
-+	phylink_set(mask, Autoneg);
++				port@2 {
++					reg = <2>;
++					label = "lan2";
++				};
 +
-+	if (state->interface != PHY_INTERFACE_MODE_TRGMII) {
-+		phylink_set(mask, 10baseT_Half);
-+		phylink_set(mask, 10baseT_Full);
-+		phylink_set(mask, 100baseT_Half);
-+		phylink_set(mask, 100baseT_Full);
-+		phylink_set(mask, 1000baseT_Half);
-+	}
++				port@3 {
++					reg = <3>;
++					label = "lan3";
++				};
 +
-+	phylink_set(mask, 1000baseT_Full);
++/* Commented out. Port 4 is handled by 2nd GMAC.
++				port@4 {
++					reg = <4>;
++					label = "lan4";
++				};
++*/
 +
-+	phylink_set(mask, Pause);
-+	phylink_set(mask, Asym_Pause);
++				cpu_port0: port@6 {
++					reg = <6>;
++					label = "cpu";
++					ethernet = <&gmac0>;
++					phy-mode = "rgmii";
 +
-+	linkmode_and(supported, supported, mask);
-+	linkmode_and(state->advertising, state->advertising, mask);
-+}
++					fixed-link {
++						speed = <1000>;
++						full-duplex;
++						pause;
++					};
++				};
++			};
++		};
++	};
++};
 +
-+static int
-+mt7530_phylink_mac_link_state(struct dsa_switch *ds, int port,
-+			      struct phylink_link_state *state)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	u32 pmsr;
++Example 3: MT7621: Port 5 is connected to external PHY: Port 5 -> external PHY.
 +
-+	if (port < 0 || port >= MT7530_NUM_PORTS)
-+		return -EINVAL;
++&eth {
++	gmac0: mac@0 {
++		compatible = "mediatek,eth-mac";
++		reg = <0>;
++		phy-mode = "rgmii";
 +
-+	pmsr = mt7530_read(priv, MT7530_PMSR_P(port));
++		fixed-link {
++			speed = <1000>;
++			full-duplex;
++			pause;
++		};
++	};
 +
-+	state->link = (pmsr & PMSR_LINK);
-+	state->an_complete = state->link;
-+	state->duplex = !!(pmsr & PMSR_DPX);
++	mdio: mdio-bus {
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+	switch (pmsr & PMSR_SPEED_MASK) {
-+	case PMSR_SPEED_10:
-+		state->speed = SPEED_10;
-+		break;
-+	case PMSR_SPEED_100:
-+		state->speed = SPEED_100;
-+		break;
-+	case PMSR_SPEED_1000:
-+		state->speed = SPEED_1000;
-+		break;
-+	default:
-+		state->speed = SPEED_UNKNOWN;
-+		break;
-+	}
++		/* External phy */
++		ephy5: ethernet-phy@7 {
++			reg = <7>;
++		};
 +
-+	state->pause &= ~(MLO_PAUSE_RX | MLO_PAUSE_TX);
-+	if (pmsr & PMSR_RX_FC)
-+		state->pause |= MLO_PAUSE_RX;
-+	if (pmsr & PMSR_TX_FC)
-+		state->pause |= MLO_PAUSE_TX;
++		mt7530: switch@1f {
++			compatible = "mediatek,mt7621";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0x1f>;
++			pinctrl-names = "default";
++			mediatek,mcm;
 +
-+	return 1;
-+}
++			resets = <&rstctrl 2>;
++			reset-names = "mcm";
 +
- static const struct dsa_switch_ops mt7530_switch_ops = {
- 	.get_tag_protocol	= mtk_get_tag_protocol,
- 	.setup			= mt7530_setup,
-@@ -1337,7 +1461,6 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
- 	.phy_write		= mt7530_phy_write,
- 	.get_ethtool_stats	= mt7530_get_ethtool_stats,
- 	.get_sset_count		= mt7530_get_sset_count,
--	.adjust_link		= mt7530_adjust_link,
- 	.port_enable		= mt7530_port_enable,
- 	.port_disable		= mt7530_port_disable,
- 	.port_stp_state_set	= mt7530_stp_state_set,
-@@ -1350,6 +1473,11 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
- 	.port_vlan_prepare	= mt7530_port_vlan_prepare,
- 	.port_vlan_add		= mt7530_port_vlan_add,
- 	.port_vlan_del		= mt7530_port_vlan_del,
-+	.phylink_validate	= mt7530_phylink_validate,
-+	.phylink_mac_link_state = mt7530_phylink_mac_link_state,
-+	.phylink_mac_config	= mt7530_phylink_mac_config,
-+	.phylink_mac_link_down	= mt7530_phylink_mac_link_down,
-+	.phylink_mac_link_up	= mt7530_phylink_mac_link_up,
- };
- 
- static const struct of_device_id mt7530_of_match[] = {
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index bfac90f48102..107dd04acede 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -198,26 +198,20 @@ enum mt7530_vlan_port_attr {
- #define  PMCR_FORCE_SPEED_100		BIT(2)
- #define  PMCR_FORCE_FDX			BIT(1)
- #define  PMCR_FORCE_LNK			BIT(0)
--#define  PMCR_COMMON_LINK		(PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
--					 PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
--					 PMCR_TX_EN | PMCR_RX_EN | \
--					 PMCR_TX_FC_EN | PMCR_RX_FC_EN)
--#define  PMCR_CPUP_LINK			(PMCR_COMMON_LINK | PMCR_FORCE_MODE | \
--					 PMCR_FORCE_SPEED_1000 | \
--					 PMCR_FORCE_FDX | \
--					 PMCR_FORCE_LNK)
--#define  PMCR_USERP_LINK		PMCR_COMMON_LINK
--#define  PMCR_FIXED_LINK		(PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
--					 PMCR_FORCE_MODE | PMCR_TX_EN | \
--					 PMCR_RX_EN | PMCR_BACKPR_EN | \
--					 PMCR_BACKOFF_EN | \
--					 PMCR_FORCE_SPEED_1000 | \
--					 PMCR_FORCE_FDX | \
--					 PMCR_FORCE_LNK)
--#define PMCR_FIXED_LINK_FC		(PMCR_FIXED_LINK | \
--					 PMCR_TX_FC_EN | PMCR_RX_FC_EN)
-+#define  PMCR_SPEED_MASK		(PMCR_FORCE_SPEED_100 | \
-+					 PMCR_FORCE_SPEED_1000)
- 
- #define MT7530_PMSR_P(x)		(0x3008 + (x) * 0x100)
-+#define  PMSR_EEE1G			BIT(7)
-+#define  PMSR_EEE100M			BIT(6)
-+#define  PMSR_RX_FC			BIT(5)
-+#define  PMSR_TX_FC			BIT(4)
-+#define  PMSR_SPEED_1000		BIT(3)
-+#define  PMSR_SPEED_100			BIT(2)
-+#define  PMSR_SPEED_10			0x00
-+#define  PMSR_SPEED_MASK		(PMSR_SPEED_100 | PMSR_SPEED_1000)
-+#define  PMSR_DPX			BIT(1)
-+#define  PMSR_LINK			BIT(0)
- 
- /* Register for MIB */
- #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
-@@ -423,6 +417,7 @@ struct mt7530_port {
-  * @ports:		Holding the state among ports
-  * @reg_mutex:		The lock for protecting among process accessing
-  *			registers
-+ * @p6_interface	Holding the current port 6 interface
-  */
- struct mt7530_priv {
- 	struct device		*dev;
-@@ -435,6 +430,7 @@ struct mt7530_priv {
- 	struct gpio_desc	*reset;
- 	unsigned int		id;
- 	bool			mcm;
-+	phy_interface_t		p6_interface;
- 
- 	struct mt7530_port	ports[MT7530_NUM_PORTS];
- 	/* protect among processes for registers access*/
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					reg = <0>;
++					label = "lan0";
++				};
++
++				port@1 {
++					reg = <1>;
++					label = "lan1";
++				};
++
++				port@2 {
++					reg = <2>;
++					label = "lan2";
++				};
++
++				port@3 {
++					reg = <3>;
++					label = "lan3";
++				};
++
++				port@4 {
++					reg = <4>;
++					label = "lan4";
++				};
++
++				port@5 {
++					reg = <5>;
++					label = "lan5";
++					phy-mode = "rgmii";
++					phy-handle = <&ephy5>;
++				};
++
++				cpu_port0: port@6 {
++					reg = <6>;
++					label = "cpu";
++					ethernet = <&gmac0>;
++					phy-mode = "rgmii";
++
++					fixed-link {
++						speed = <1000>;
++						full-duplex;
++						pause;
++					};
++				};
++			};
++		};
++	};
++};
 -- 
 2.20.1
 
