@@ -2,190 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD69A5053
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:52:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C6CA5057
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:53:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729963AbfIBHwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 03:52:31 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56025 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729408AbfIBHwb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 03:52:31 -0400
-Received: from [5.158.153.52] (helo=linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt.kanzenbach@linutronix.de>)
-        id 1i4h8D-0007Gj-TA; Mon, 02 Sep 2019 09:52:09 +0200
-Date:   Mon, 2 Sep 2019 09:52:09 +0200
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net, vinicius.gomes@intel.com,
-        vedang.patel@intel.com, richardcochran@gmail.com,
-        weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v2 net-next 10/15] net: dsa: Pass ndo_setup_tc slave
- callback to drivers
-Message-ID: <20190902075209.GC3343@linutronix.de>
-References: <20190830004635.24863-1-olteanv@gmail.com>
- <20190830004635.24863-11-olteanv@gmail.com>
+        id S1729972AbfIBHwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:52:54 -0400
+Received: from paleale.coelho.fi ([176.9.41.70]:40030 "EHLO
+        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729408AbfIBHwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 03:52:54 -0400
+Received: from [91.156.6.193] (helo=redipa)
+        by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92)
+        (envelope-from <luca@coelho.fi>)
+        id 1i4h8g-0003aF-Cr; Mon, 02 Sep 2019 10:52:38 +0300
+Message-ID: <c22d4775fdad4e34fdc386e2cf728b63dfe13ffe.camel@coelho.fi>
+From:   Luca Coelho <luca@coelho.fi>
+To:     Krzysztof Wilczynski <kw@linux.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sara Sharon <sara.sharon@intel.com>,
+        Shaul Triebitz <shaul.triebitz@intel.com>,
+        Liad Kaufman <liad.kaufman@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 02 Sep 2019 10:52:36 +0300
+In-Reply-To: <20190831220108.10602-1-kw@linux.com>
+References: <20190831220108.10602-1-kw@linux.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="8X7/QrJGcKSMr1RN"
-Content-Disposition: inline
-In-Reply-To: <20190830004635.24863-11-olteanv@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on farmhouse.coelho.fi
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.2
+Subject: Re: [PATCH] iwlwifi: mvm: Move static keyword to the front of
+ declarations
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---8X7/QrJGcKSMr1RN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi,
-
-On Fri, Aug 30, 2019 at 03:46:30AM +0300, Vladimir Oltean wrote:
-> DSA currently handles shared block filters (for the classifier-action
-> qdisc) in the core due to what I believe are simply pragmatic reasons -
-> hiding the complexity from drivers and offerring a simple API for port
-> mirroring.
->
-> Extend the dsa_slave_setup_tc function by passing all other qdisc
-> offloads to the driver layer, where the driver may choose what it
-> implements and how. DSA is simply a pass-through in this case.
-
-I'm having the same problem on how to pass the taprio schedule down to
-the DSA driver. I didn't perform a pass-through to keep it in sync with
-the already implemented offload. See my approach below.
-
->
-> There is an open question related to the drivers potentially needing to
-> do work in process context, but .ndo_setup_tc is called in atomic
-> context. At the moment the drivers are left to handle this on their own.
-> The risk is that once accepting the offload callback right away in the
-> DSA core, then the driver would have no way to signal an error back. So
-> right now the driver has to do as much error checking as possible in the
-> atomic context and only defer (probably) the actual configuring of the
-> offload.
->
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+On Sun, 2019-09-01 at 00:01 +0200, Krzysztof Wilczynski wrote:
+> Move the static keyword to the front of declarations of
+> he_if_types_ext_capa_sta and he_iftypes_ext_capa, and
+> resolve the following compiler warnings that can be seen
+> when building with warnings enabled (W=1):
+> 
+> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:427:1: warning:
+>   ‘static’ is not at beginning of declaration [-Wold-style-declaration]
+> 
+> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:434:1: warning:
+>   ‘static’ is not at beginning of declaration [-Wold-style-declaration]
+> 
+> Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
 > ---
->  include/net/dsa.h |  3 +++
->  net/dsa/slave.c   | 12 ++++++++----
->  2 files changed, 11 insertions(+), 4 deletions(-)
->
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 96acb14ec1a8..232b5d36815d 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -154,6 +154,7 @@ struct dsa_mall_tc_entry {
->  	};
+> Related: https://lore.kernel.org/r/20190827233017.GK9987@google.com
+> 
+>  drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+> index d6499763f0dd..937a843fed56 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+> @@ -424,14 +424,14 @@ int iwl_mvm_init_fw_regd(struct iwl_mvm *mvm)
+>  	return ret;
+>  }
+>  
+> -const static u8 he_if_types_ext_capa_sta[] = {
+> +static const u8 he_if_types_ext_capa_sta[] = {
+>  	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
+>  	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
+>  	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
+>  	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
 >  };
->
-> +struct tc_taprio_qopt_offload;
+>  
+> -const static struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+> +static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+>  	{
+>  		.iftype = NL80211_IFTYPE_STATION,
+>  		.extended_capabilities = he_if_types_ext_capa_sta,
 
-Is this needed? The rest looks good to me.
+Thanks for your patch! Though we already have this change in our
+internal tree (submitted by YueHaibing) and it will reach the mainline
+soon.
 
-My approach:
+--
+Cheers,
+Luca.
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index ba6dfff98196..a60bd55f27f2 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -20,6 +20,7 @@
- #include <linux/platform_data/dsa.h>
- #include <net/devlink.h>
- #include <net/switchdev.h>
-+#include <net/pkt_sched.h>
-
- struct tc_action;
- struct phy_device;
-@@ -539,6 +540,13 @@ struct dsa_switch_ops {
- 	 */
- 	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
- 					  struct sk_buff *skb);
-+
-+	/*
-+	 * Scheduled traffic functionality
-+	 */
-+	int (*port_set_schedule)(struct dsa_switch *ds, int port,
-+				 const struct tc_taprio_qopt_offload *taprio);
-+	int (*port_del_schedule)(struct dsa_switch *ds, int port);
- };
-
- struct dsa_switch_driver {
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 8157be7e162d..6290d55e6011 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -15,6 +15,7 @@
- #include <linux/mdio.h>
- #include <net/rtnetlink.h>
- #include <net/pkt_cls.h>
-+#include <net/pkt_sched.h>
- #include <net/tc_act/tc_mirred.h>
- #include <linux/if_bridge.h>
- #include <linux/netpoll.h>
-@@ -953,12 +954,33 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
- 	}
- }
-
-+static int dsa_slave_setup_tc_taprio(struct net_device *dev,
-+				     const struct tc_taprio_qopt_offload *taprio)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (taprio->enable) {
-+		if (!ds->ops->port_set_schedule)
-+			return -EOPNOTSUPP;
-+
-+		return ds->ops->port_set_schedule(ds, dp->index, taprio);
-+	}
-+
-+	if (!ds->ops->port_del_schedule)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->port_del_schedule(ds, dp->index);
-+}
-+
- static int dsa_slave_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			      void *type_data)
- {
- 	switch (type) {
- 	case TC_SETUP_BLOCK:
- 		return dsa_slave_setup_tc_block(dev, type_data);
-+	case TC_SETUP_QDISC_TAPRIO:
-+		return dsa_slave_setup_tc_taprio(dev, type_data);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-
-Thanks,
-Kurt
-
---8X7/QrJGcKSMr1RN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl1syikACgkQeSpbgcuY
-8Kbm5Q//WR9nvGA4c32slCjbHUqa8Oc99pIPdPzImQyDlSRD1PskZj46arcl2EvM
-A6Ot7u4K3dZ+QBiquLGag2jVM5obgkwJp6jk5DU2yiliAfqCxrHYfjIrjkaEmJ9T
-Qx4h6KzkuQv6kFvL5M6ExMY6gaF7iPInd0UKBntOAeJV2Kes90uOaBQQQYcIfP0R
-LEdUejQZef+E5J/g/ZSzbzI0x2qyDfHHpULYEWoJsyCUV5EABcXn/b/evU4aspvk
-9/yaTWuw6ZCAzjchMFpeO4gPWvGGydgPsH893JGBhvk8iUhdsbnxpSZPo2bp0e56
-qFlUMGaGeiYdf1qH8I9V8Qts5KRhq80k3mI6lBnFdbuVHrqvpt8DeTB2vcLQvpus
-JpmY7Ry4vwAL68kw7K0oFfrG8XLKWopwKa+ad2pPSUHi2T6AdBnEfShxIK7RMUm1
-TH+XR523WWRtPV9FAoYhnSQLpoJO/HKPPkWOVRR6kz8GqkUBg6qly1xZMP6WebZo
-Qpt69DuJofbmX4I2/WHjK8F2wT7qSw+E9XHBgos0JUQgQVGGWdGR75XlNUuSlGBI
-UWCaew7+geOC6lRTdb6SG0Ikf/AdogdEOQXbO9QvfyRKo4HIRpF5rVDqkCL3kgln
-PvWhMME5uqiDdUugv/Dvl5Z/aGAwieN2putt7PJa+PQvwsAEhDo=
-=O5AP
------END PGP SIGNATURE-----
-
---8X7/QrJGcKSMr1RN--
