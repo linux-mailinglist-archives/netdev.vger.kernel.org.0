@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 319C5A4FB0
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119AEA4FB2
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729711AbfIBHXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 03:23:23 -0400
-Received: from mail-eopbgr80075.outbound.protection.outlook.com ([40.107.8.75]:38403
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1729720AbfIBHX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:23:27 -0400
+Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:57541
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729529AbfIBHXV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 03:23:21 -0400
+        id S1726375AbfIBHXZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 03:23:25 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SdVaFkqVNe79w/VIY8FE9iQ+YZExs8vIUgYebAyODjeWWt1qjSpN98isplhtytf29SKWWmzfFvwe0SbycmzPrugyY/EhsJuBzdmlBPs3pUuj2cteud+1kL+hLDMwrkUnuhprN2zk39Wj9BvFQMd1fWJkd9ZGJjZUaq1Td8ktXe4YfSpztqrK4zUk33+9zRskSUXu6WkRR4rVUNS6Lh8RWCoabrPqKhalKIyrR/FF7n2kBCu3gu2HuCYVCGs/g9tzQuo91wQMbFndsHbbbAwjGP3k4tRQFisu4pw9w6YfL8aigtKrPp2siM8rRbVzxI9t4MwwpKkZZiR99aOVuKnxUA==
+ b=M+ltBh8uVi8AKTxP2WG+5DznzL2hj0KyIyFAV6RM13JZsA7UJ3nOHDoB/J6k1dPJWgXxh+VwghxF1DHmA0DqGbHcumua7MRz6smIPeLP9vI1YJ4cVUzllzyu+non0CJV9ud36VaZTKsa2sesLV7k+VSd05CP8ZmprejjZvQulCQTE7nH72UhCw/ak0SlGDXLGcVeiS/Wd3R2Z1TjW59YhLpn6fcG3bArjJsv8+Ol8ELnHD78jn3xXBHUe5ejScuLKMwpAdBPvNqO9Qq+dRUdz5sfP6tkdCUMJQGxn9n9t9yBvXhHnGnOxxH/Z0L6+cwyJ3NSCYV277rNOaG+0JBAFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Xgfi3tyxCQ59Wt9ws7v8E9CNoFI2rGxHlxq5BD5J30=;
- b=FYeOZdNcNvembrgh+YwLsL/k19uY2Bx+SadMWaI14YsncKLbK2nDzjU4KbvCxPMK8s1jYZBgiT5ADY4VlKyh50ktCzxoHIAqZ+25Aj1G6YtgtdE0PuTQsjIJRg9OWWDfsZRx2dtHPMeIJ1D+Qy2LlWsfnoTQRWVRoTwcvDrU6Wdm700tOPrhlDE9/wXK5bfYUuE9b5OagAktAnhXy1pV9AtXna11YI9vbIfoKpfA1ZUh6KWdNW8iBaOUC8Max7j1p6yFcYwThk92h2a7b8P7CPlxLeJhmYeGuafQ0uRChCYB3IQnV0fiApMcet6KKYQ9FTcJW5NyywqrDAzCb+GP3Q==
+ bh=9KGCiOtPQ7vXhNWYo2As7TUL3aELie4NipFxlSNSM9c=;
+ b=dBm4Z+j7OURTxzssAY8UZdp/U9JLPGFT9dsnX929Fxg6ibviaebYyikkEVpxs+EpJkmU0F+2dn0xKpsU/NfjxfRdn/yKHpdG6GeXEvwahvqvsvvVzQ815RJe45jpJ7fw8Vd/gSPkBk6hThrQvqo/IbBuduj94n3+G4S7rQItoA7fZdz9oMM4dxfW9/r8onZhNluZ6MFrV44d7H8L1F7Hlu5OvGs+TOBuzLdy7BHjRKIO3ycbcBukGIOxolECeg0cwqSZehPbI7zmj+pebFzd3pGFQ6B25EYgaU1Vep8Anj9iTySyWwG7JnHBzl5OtijF66xSON3Sl/Kyg5qUesIBHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Xgfi3tyxCQ59Wt9ws7v8E9CNoFI2rGxHlxq5BD5J30=;
- b=FYfAfOQ9p4SZKKkcCx3RhyqL78aScDHLVeq+Wd1CYWpjfoFISh2aZIUcWnW7JS+5xaRivKEimXBXSx7FGprXIxVLEhaLjNPUE4VW0VKVapVu5jeQvgQIkzPtE4iBchYNAevZpazHnkUbAwAJZd3YSeKSKBkmLSieUnGIeHbwgHI=
+ bh=9KGCiOtPQ7vXhNWYo2As7TUL3aELie4NipFxlSNSM9c=;
+ b=jVJsaGwyGwRDv5rdnCFIWXvrwN+ia0iEqsI2brI+oZGsDwTRmpqBoJ74ej9NYYQ+dBls4btXhk0Uf6TdRYpkqutDRQcwYLlrdA5R5gbTUfEUwALYpCZH2zcwfH8Px1uYztRIi5OBe4ct3dbTcvmbU1g3hwCMWDeVQJTO3DnfnXA=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2625.eurprd05.prod.outlook.com (10.172.217.140) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.19; Mon, 2 Sep 2019 07:23:02 +0000
+ AM4PR0501MB2259.eurprd05.prod.outlook.com (10.165.38.155) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.20; Mon, 2 Sep 2019 07:23:04 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
- 07:23:02 +0000
+ 07:23:04 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -42,13 +42,12 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Erez Shitrit <erezsh@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 05/18] net/mlx5: DR, Expose an internal API to issue RDMA
- operations
-Thread-Topic: [net-next 05/18] net/mlx5: DR, Expose an internal API to issue
- RDMA operations
-Thread-Index: AQHVYV9B8oXx2eZDRk+ViOoANjIgXA==
-Date:   Mon, 2 Sep 2019 07:23:02 +0000
-Message-ID: <20190902072213.7683-6-saeedm@mellanox.com>
+Subject: [net-next 06/18] net/mlx5: DR, Add Steering entry (STE) utilities
+Thread-Topic: [net-next 06/18] net/mlx5: DR, Add Steering entry (STE)
+ utilities
+Thread-Index: AQHVYV9CoCFKXw3HGkmz7F1a7Nvq5Q==
+Date:   Mon, 2 Sep 2019 07:23:04 +0000
+Message-ID: <20190902072213.7683-7-saeedm@mellanox.com>
 References: <20190902072213.7683-1-saeedm@mellanox.com>
 In-Reply-To: <20190902072213.7683-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -64,31 +63,32 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ad27ba44-0b2a-45c6-e398-08d72f766381
+x-ms-office365-filtering-correlation-id: 88fa2fbe-3570-4a1c-ad0a-08d72f7664b5
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2625;
-x-ms-traffictypediagnostic: AM4PR0501MB2625:|AM4PR0501MB2625:
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2259;
+x-ms-traffictypediagnostic: AM4PR0501MB2259:|AM4PR0501MB2259:
+x-ms-exchange-purlcount: 1
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB2625D6D33B74EC5D527ABDDFBEBE0@AM4PR0501MB2625.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-microsoft-antispam-prvs: <AM4PR0501MB2259A4F656BBF9F150C6B560BEBE0@AM4PR0501MB2259.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1107;
 x-forefront-prvs: 01480965DA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(199004)(189003)(8676002)(107886003)(14454004)(7736002)(6512007)(1076003)(53946003)(11346002)(64756008)(66556008)(66476007)(66946007)(66446008)(50226002)(26005)(2616005)(36756003)(99286004)(102836004)(478600001)(71200400001)(446003)(6486002)(71190400001)(53936002)(52116002)(305945005)(66066001)(76176011)(3846002)(256004)(186003)(316002)(486006)(4326008)(5024004)(14444005)(54906003)(6916009)(81166006)(6116002)(81156014)(30864003)(86362001)(2906002)(5660300002)(8936002)(25786009)(6506007)(386003)(476003)(6436002)(579004)(559001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2625;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(396003)(366004)(199004)(189003)(64756008)(478600001)(66946007)(66556008)(71190400001)(966005)(71200400001)(6916009)(5660300002)(54906003)(6486002)(8676002)(14454004)(81156014)(36756003)(81166006)(76176011)(1076003)(186003)(50226002)(99286004)(25786009)(4326008)(8936002)(316002)(30864003)(102836004)(386003)(6506007)(2906002)(26005)(14444005)(3846002)(256004)(6116002)(2616005)(66066001)(86362001)(53936002)(52116002)(53946003)(107886003)(486006)(6436002)(305945005)(7736002)(6512007)(446003)(6306002)(476003)(66446008)(11346002)(66476007)(579004)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2259;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: H6WbdWTWtO+Ia0royWvnMYxceMnQ6Bo17MORJDvtdUDpsrWkn+3q1Re6915yZXHyZOQWb6siZmun+aeb8Ujyk+9YDOszVtdquuqSK1rryCOR5OQbFixuwyzd2OS2VbQKNRfk1Lx/i0IrV5t17Hg9T36nREUksm8n27tmHY4nILM5Tdic8U1Eperk0xu6P9VpxRs1lmM+7dSL6FwdPwkWtTaFQaBINdeLQ7YIR875alFufNHxwGq0Pvj0gq/zqnhbP25Q3AVPzSHn7XLjDSeu7b4xFQS0Ht++W9TAqPWFduUX9vGCKr2mVY+3tPwFgmJXzVcCBnc09DdOQJzg3VJIb4jhM5A1B+1spyEaELTBEsXL0zOnM2oRJgyH+4wAwGeSZWISEwY8Hk2HwLTwkT1N7mM0G3jy4blZTfXdu3NaigY=
+x-microsoft-antispam-message-info: i1VQwVhiRgrGFFyKVZ8qKc1YM9Tn5F1vEZMTfnExgOnYbKezlmNswdVW32Ia5CKCfitpwjpyw2AEMxiH+R+Ck5PFzMotWqIFVk/zcYkDGgLT9NwaCbo5VZSdjaX6Laa6EozV6sTZth3us0ehhMM5OB9RoskkEUCRVPho/b94CnXLupTv+awMLB0KcPtDjXEZr+kKYo5EtFd+SE0zL2nBWu/mg7jJt6HdgvOajUjUNA+mhsu71qeLzc9p58mm1d2nn+MhiRGWN//b6G2OIRhszaNOLwSApEYN2EmDn8tOCP1Z7qOImg5i42+KbZF+hDR45uYEutdjRMee8699uawOGqGsGb6BzA2J3xyOx8MoXlYBRxGBFS95xk2wLs/FmgKED3Hf7lDP2Man4Rjt2DruakYXX4RZzdXeeQNP5RioivA=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad27ba44-0b2a-45c6-e398-08d72f766381
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:02.0596
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88fa2fbe-3570-4a1c-ad0a-08d72f7664b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:04.2247
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Yco4rR3GHVKIl6sWl/wxEfOVa6ExzYJZsqwinWiDCvX9+x64QKLpEAcUL39AcpfpNLQfTPalYZwbAe85AdF23Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2625
+X-MS-Exchange-CrossTenant-userprincipalname: T71/XcZaITGB6ERmGpnqaqW7cBL7on/NVsJieX6OYnIVktsPa5JoXr+PXE5tHeLCGAOkom24MX11CNk4H1OBkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2259
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -96,1012 +96,2579 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Vesker <valex@mellanox.com>
 
-Inserting or deleting a rule is done by RDMA read/write operation to SW
-ICM device memory. This file provides the support for executing these
-operations. It includes allocating the needed resources and providing an
-API for writing steering entries to the memory.
+Steering Entry (STE) object is the basic building block of the steering
+map. There are several types of STEs. Each rule can be constructed of
+multiple STEs. Each STE dictates which fields of the packet's header are
+being matched as well as the information about the next step in map (hit
+and miss pointers). The hardware gets a packet and tries to match it
+against the STEs, going to either the hit pointer or the miss pointer.
+This file handles the STE operations.
 
 Signed-off-by: Alex Vesker <valex@mellanox.com>
-Signed-off-by: Mark Bloch <markb@mellanox.com>
-Reviewed-by: Erez Shitrit <erezsh@mellanox.com>
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/steering/dr_send.c     | 976 ++++++++++++++++++
- 1 file changed, 976 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_sen=
-d.c
+ .../mellanox/mlx5/core/steering/dr_crc32.c    |   98 +
+ .../mellanox/mlx5/core/steering/dr_ste.c      | 2308 +++++++++++++++++
+ 2 files changed, 2406 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_crc=
+32.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste=
+.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_crc32.c b/=
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_crc32.c
 new file mode 100644
-index 000000000000..ef0dea44f3b3
+index 000000000000..9e2eccbb1eb8
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -0,0 +1,976 @@
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_crc32.c
+@@ -0,0 +1,98 @@
 +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
 +/* Copyright (c) 2019 Mellanox Technologies. */
 +
++/* Copyright (c) 2011-2015 Stephan Brumme. All rights reserved.
++ * Slicing-by-16 contributed by Bulat Ziganshin
++ *
++ * This software is provided 'as-is', without any express or implied warra=
+nty.
++ * In no event will the author be held liable for any damages arising from=
+ the
++ * of this software.
++ *
++ * Permission is granted to anyone to use this software for any purpose,
++ * including commercial applications, and to alter it and redistribute it
++ * freely, subject to the following restrictions:
++ *
++ * 1. The origin of this software must not be misrepresented; you must not
++ *    claim that you wrote the original software.
++ * 2. If you use this software in a product, an acknowledgment in the prod=
+uct
++ *    documentation would be appreciated but is not required.
++ * 3. Altered source versions must be plainly marked as such, and must not=
+ be
++ *    misrepresented as being the original software.
++ *
++ * Taken from http://create.stephan-brumme.com/crc32/ and adapted.
++ */
++
 +#include "dr_types.h"
 +
-+#define QUEUE_SIZE 128
-+#define SIGNAL_PER_DIV_QUEUE 16
-+#define TH_NUMS_TO_DRAIN 2
++#define DR_STE_CRC_POLY 0xEDB88320L
 +
-+enum { CQ_OK =3D 0, CQ_EMPTY =3D -1, CQ_POLL_ERR =3D -2 };
++static u32 dr_ste_crc_tab32[8][256];
 +
-+struct dr_data_seg {
-+	u64 addr;
-+	u32 length;
-+	u32 lkey;
-+	unsigned int send_flags;
-+};
-+
-+struct postsend_info {
-+	struct dr_data_seg write;
-+	struct dr_data_seg read;
-+	u64 remote_addr;
-+	u32 rkey;
-+};
-+
-+struct dr_qp_rtr_attr {
-+	struct mlx5dr_cmd_gid_attr dgid_attr;
-+	enum ib_mtu mtu;
-+	u32 qp_num;
-+	u16 port_num;
-+	u8 min_rnr_timer;
-+	u8 sgid_index;
-+	u16 udp_src_port;
-+};
-+
-+struct dr_qp_rts_attr {
-+	u8 timeout;
-+	u8 retry_cnt;
-+	u8 rnr_retry;
-+};
-+
-+struct dr_qp_init_attr {
-+	u32 cqn;
-+	u32 pdn;
-+	u32 max_send_wr;
-+	struct mlx5_uars_page *uar;
-+};
-+
-+static int dr_parse_cqe(struct mlx5dr_cq *dr_cq, struct mlx5_cqe64 *cqe64)
++static void dr_crc32_calc_lookup_entry(u32 (*tbl)[256], u8 i, u8 j)
 +{
-+	unsigned int idx;
-+	u8 opcode;
++	tbl[i][j] =3D (tbl[i - 1][j] >> 8) ^ tbl[0][tbl[i - 1][j] & 0xff];
++}
 +
-+	opcode =3D get_cqe_opcode(cqe64);
-+	if (opcode =3D=3D MLX5_CQE_REQ_ERR) {
-+		idx =3D be16_to_cpu(cqe64->wqe_counter) &
-+			(dr_cq->qp->sq.wqe_cnt - 1);
-+		dr_cq->qp->sq.cc =3D dr_cq->qp->sq.wqe_head[idx] + 1;
-+	} else if (opcode =3D=3D MLX5_CQE_RESP_ERR) {
-+		++dr_cq->qp->sq.cc;
-+	} else {
-+		idx =3D be16_to_cpu(cqe64->wqe_counter) &
-+			(dr_cq->qp->sq.wqe_cnt - 1);
-+		dr_cq->qp->sq.cc =3D dr_cq->qp->sq.wqe_head[idx] + 1;
++void mlx5dr_crc32_init_table(void)
++{
++	u32 crc, i, j;
 +
-+		return CQ_OK;
++	for (i =3D 0; i < 256; i++) {
++		crc =3D i;
++		for (j =3D 0; j < 8; j++) {
++			if (crc & 0x00000001L)
++				crc =3D (crc >> 1) ^ DR_STE_CRC_POLY;
++			else
++				crc =3D crc >> 1;
++		}
++		dr_ste_crc_tab32[0][i] =3D crc;
 +	}
 +
-+	return CQ_POLL_ERR;
-+}
-+
-+static int dr_cq_poll_one(struct mlx5dr_cq *dr_cq)
-+{
-+	struct mlx5_cqe64 *cqe64;
-+	int err;
-+
-+	cqe64 =3D mlx5_cqwq_get_cqe(&dr_cq->wq);
-+	if (!cqe64)
-+		return CQ_EMPTY;
-+
-+	mlx5_cqwq_pop(&dr_cq->wq);
-+	err =3D dr_parse_cqe(dr_cq, cqe64);
-+	mlx5_cqwq_update_db_record(&dr_cq->wq);
-+
-+	return err;
-+}
-+
-+static int dr_poll_cq(struct mlx5dr_cq *dr_cq, int ne)
-+{
-+	int npolled;
-+	int err =3D 0;
-+
-+	for (npolled =3D 0; npolled < ne; ++npolled) {
-+		err =3D dr_cq_poll_one(dr_cq);
-+		if (err !=3D CQ_OK)
-+			break;
++	/* Init CRC lookup tables according to crc_slice_8 algorithm */
++	for (i =3D 0; i < 256; i++) {
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 1, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 2, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 3, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 4, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 5, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 6, i);
++		dr_crc32_calc_lookup_entry(dr_ste_crc_tab32, 7, i);
 +	}
-+
-+	return err =3D=3D CQ_POLL_ERR ? err : npolled;
 +}
 +
-+static void dr_qp_event(struct mlx5_core_qp *mqp, int event)
++/* Compute CRC32 (Slicing-by-8 algorithm) */
++u32 mlx5dr_crc32_slice8_calc(const void *input_data, size_t length)
 +{
-+	pr_info("DR QP event %u on QP #%u\n", event, mqp->qpn);
-+}
++	const u32 *curr =3D (const u32 *)input_data;
++	const u8 *curr_char;
++	u32 crc =3D 0, one, two;
 +
-+static struct mlx5dr_qp *dr_create_rc_qp(struct mlx5_core_dev *mdev,
-+					 struct dr_qp_init_attr *attr)
-+{
-+	u32 temp_qpc[MLX5_ST_SZ_DW(qpc)] =3D {};
-+	struct mlx5_wq_param wqp;
-+	struct mlx5dr_qp *dr_qp;
-+	int inlen;
-+	void *qpc;
-+	void *in;
-+	int err;
-+
-+	dr_qp =3D kzalloc(sizeof(*dr_qp), GFP_KERNEL);
-+	if (!dr_qp)
-+		return NULL;
-+
-+	wqp.buf_numa_node =3D mdev->priv.numa_node;
-+	wqp.db_numa_node =3D mdev->priv.numa_node;
-+
-+	dr_qp->rq.pc =3D 0;
-+	dr_qp->rq.cc =3D 0;
-+	dr_qp->rq.wqe_cnt =3D 4;
-+	dr_qp->sq.pc =3D 0;
-+	dr_qp->sq.cc =3D 0;
-+	dr_qp->sq.wqe_cnt =3D roundup_pow_of_two(attr->max_send_wr);
-+
-+	MLX5_SET(qpc, temp_qpc, log_rq_stride, ilog2(MLX5_SEND_WQE_DS) - 4);
-+	MLX5_SET(qpc, temp_qpc, log_rq_size, ilog2(dr_qp->rq.wqe_cnt));
-+	MLX5_SET(qpc, temp_qpc, log_sq_size, ilog2(dr_qp->sq.wqe_cnt));
-+	err =3D mlx5_wq_qp_create(mdev, &wqp, temp_qpc, &dr_qp->wq,
-+				&dr_qp->wq_ctrl);
-+	if (err) {
-+		mlx5_core_info(mdev, "Can't create QP WQ\n");
-+		goto err_wq;
-+	}
-+
-+	dr_qp->sq.wqe_head =3D kcalloc(dr_qp->sq.wqe_cnt,
-+				     sizeof(dr_qp->sq.wqe_head[0]),
-+				     GFP_KERNEL);
-+
-+	if (!dr_qp->sq.wqe_head) {
-+		mlx5_core_warn(mdev, "Can't allocate wqe head\n");
-+		goto err_wqe_head;
-+	}
-+
-+	inlen =3D MLX5_ST_SZ_BYTES(create_qp_in) +
-+		MLX5_FLD_SZ_BYTES(create_qp_in, pas[0]) *
-+		dr_qp->wq_ctrl.buf.npages;
-+	in =3D kvzalloc(inlen, GFP_KERNEL);
-+	if (!in) {
-+		err =3D -ENOMEM;
-+		goto err_in;
-+	}
-+
-+	qpc =3D MLX5_ADDR_OF(create_qp_in, in, qpc);
-+	MLX5_SET(qpc, qpc, st, MLX5_QP_ST_RC);
-+	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
-+	MLX5_SET(qpc, qpc, pd, attr->pdn);
-+	MLX5_SET(qpc, qpc, uar_page, attr->uar->index);
-+	MLX5_SET(qpc, qpc, log_page_size,
-+		 dr_qp->wq_ctrl.buf.page_shift - MLX5_ADAPTER_PAGE_SHIFT);
-+	MLX5_SET(qpc, qpc, fre, 1);
-+	MLX5_SET(qpc, qpc, rlky, 1);
-+	MLX5_SET(qpc, qpc, cqn_snd, attr->cqn);
-+	MLX5_SET(qpc, qpc, cqn_rcv, attr->cqn);
-+	MLX5_SET(qpc, qpc, log_rq_stride, ilog2(MLX5_SEND_WQE_DS) - 4);
-+	MLX5_SET(qpc, qpc, log_rq_size, ilog2(dr_qp->rq.wqe_cnt));
-+	MLX5_SET(qpc, qpc, rq_type, MLX5_NON_ZERO_RQ);
-+	MLX5_SET(qpc, qpc, log_sq_size, ilog2(dr_qp->sq.wqe_cnt));
-+	MLX5_SET64(qpc, qpc, dbr_addr, dr_qp->wq_ctrl.db.dma);
-+	if (MLX5_CAP_GEN(mdev, cqe_version) =3D=3D 1)
-+		MLX5_SET(qpc, qpc, user_index, 0xFFFFFF);
-+	mlx5_fill_page_frag_array(&dr_qp->wq_ctrl.buf,
-+				  (__be64 *)MLX5_ADDR_OF(create_qp_in,
-+							 in, pas));
-+
-+	err =3D mlx5_core_create_qp(mdev, &dr_qp->mqp, in, inlen);
-+	kfree(in);
-+
-+	if (err) {
-+		mlx5_core_warn(mdev, " Can't create QP\n");
-+		goto err_in;
-+	}
-+	dr_qp->mqp.event =3D dr_qp_event;
-+	dr_qp->uar =3D attr->uar;
-+
-+	return dr_qp;
-+
-+err_in:
-+	kfree(dr_qp->sq.wqe_head);
-+err_wqe_head:
-+	mlx5_wq_destroy(&dr_qp->wq_ctrl);
-+err_wq:
-+	kfree(dr_qp);
-+	return NULL;
-+}
-+
-+static void dr_destroy_qp(struct mlx5_core_dev *mdev,
-+			  struct mlx5dr_qp *dr_qp)
-+{
-+	mlx5_core_destroy_qp(mdev, &dr_qp->mqp);
-+	kfree(dr_qp->sq.wqe_head);
-+	mlx5_wq_destroy(&dr_qp->wq_ctrl);
-+	kfree(dr_qp);
-+}
-+
-+static void dr_cmd_notify_hw(struct mlx5dr_qp *dr_qp, void *ctrl)
-+{
-+	dma_wmb();
-+	*dr_qp->wq.sq.db =3D cpu_to_be32(dr_qp->sq.pc & 0xfffff);
-+
-+	/* After wmb() the hw aware of new work */
-+	wmb();
-+
-+	mlx5_write64(ctrl, dr_qp->uar->map + MLX5_BF_OFFSET);
-+}
-+
-+static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
-+			     u32 rkey, struct dr_data_seg *data_seg,
-+			     u32 opcode, int nreq)
-+{
-+	struct mlx5_wqe_raddr_seg *wq_raddr;
-+	struct mlx5_wqe_ctrl_seg *wq_ctrl;
-+	struct mlx5_wqe_data_seg *wq_dseg;
-+	unsigned int size;
-+	unsigned int idx;
-+
-+	size =3D sizeof(*wq_ctrl) / 16 + sizeof(*wq_dseg) / 16 +
-+		sizeof(*wq_raddr) / 16;
-+
-+	idx =3D dr_qp->sq.pc & (dr_qp->sq.wqe_cnt - 1);
-+
-+	wq_ctrl =3D mlx5_wq_cyc_get_wqe(&dr_qp->wq.sq, idx);
-+	wq_ctrl->imm =3D 0;
-+	wq_ctrl->fm_ce_se =3D (data_seg->send_flags) ?
-+		MLX5_WQE_CTRL_CQ_UPDATE : 0;
-+	wq_ctrl->opmod_idx_opcode =3D cpu_to_be32(((dr_qp->sq.pc & 0xffff) << 8) =
-|
-+						opcode);
-+	wq_ctrl->qpn_ds =3D cpu_to_be32(size | dr_qp->mqp.qpn << 8);
-+	wq_raddr =3D (void *)(wq_ctrl + 1);
-+	wq_raddr->raddr =3D cpu_to_be64(remote_addr);
-+	wq_raddr->rkey =3D cpu_to_be32(rkey);
-+	wq_raddr->reserved =3D 0;
-+
-+	wq_dseg =3D (void *)(wq_raddr + 1);
-+	wq_dseg->byte_count =3D cpu_to_be32(data_seg->length);
-+	wq_dseg->lkey =3D cpu_to_be32(data_seg->lkey);
-+	wq_dseg->addr =3D cpu_to_be64(data_seg->addr);
-+
-+	dr_qp->sq.wqe_head[idx] =3D dr_qp->sq.pc++;
-+
-+	if (nreq)
-+		dr_cmd_notify_hw(dr_qp, wq_ctrl);
-+}
-+
-+static void dr_post_send(struct mlx5dr_qp *dr_qp, struct postsend_info *se=
-nd_info)
-+{
-+	dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
-+			 &send_info->write, MLX5_OPCODE_RDMA_WRITE, 0);
-+	dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
-+			 &send_info->read, MLX5_OPCODE_RDMA_READ, 1);
-+}
-+
-+/**
-+ * mlx5dr_send_fill_and_append_ste_send_info: Add data to be sent
-+ * with send_list parameters:
-+ *
-+ *     @ste:       The data that attached to this specific ste
-+ *     @size:      of data to write
-+ *     @offset:    of the data from start of the hw_ste entry
-+ *     @data:      data
-+ *     @ste_info:  ste to be sent with send_list
-+ *     @send_list: to append into it
-+ *     @copy_data: if true indicates that the data should be kept because
-+ *                 it's not backuped any where (like in re-hash).
-+ *                 if false, it lets the data to be updated after
-+ *                 it was added to the list.
-+ */
-+void mlx5dr_send_fill_and_append_ste_send_info(struct mlx5dr_ste *ste, u16=
- size,
-+					       u16 offset, u8 *data,
-+					       struct mlx5dr_ste_send_info *ste_info,
-+					       struct list_head *send_list,
-+					       bool copy_data)
-+{
-+	ste_info->size =3D size;
-+	ste_info->ste =3D ste;
-+	ste_info->offset =3D offset;
-+
-+	if (copy_data) {
-+		memcpy(ste_info->data_cont, data, size);
-+		ste_info->data =3D ste_info->data_cont;
-+	} else {
-+		ste_info->data =3D data;
-+	}
-+
-+	list_add_tail(&ste_info->send_list, send_list);
-+}
-+
-+/* The function tries to consume one wc each time, unless the queue is ful=
-l, in
-+ * that case, which means that the hw is behind the sw in a full queue len
-+ * the function will drain the cq till it empty.
-+ */
-+static int dr_handle_pending_wc(struct mlx5dr_domain *dmn,
-+				struct mlx5dr_send_ring *send_ring)
-+{
-+	bool is_drain =3D false;
-+	int ne;
-+
-+	if (send_ring->pending_wqe < send_ring->signal_th)
++	if (!input_data)
 +		return 0;
 +
-+	/* Queue is full start drain it */
-+	if (send_ring->pending_wqe >=3D
-+	    dmn->send_ring->signal_th * TH_NUMS_TO_DRAIN)
-+		is_drain =3D true;
++	/* Process eight bytes at once (Slicing-by-8) */
++	while (length >=3D 8) {
++		one =3D *curr++ ^ crc;
++		two =3D *curr++;
 +
-+	do {
-+		ne =3D dr_poll_cq(send_ring->cq, 1);
-+		if (ne < 0)
-+			return ne;
-+		else if (ne =3D=3D 1)
-+			send_ring->pending_wqe -=3D send_ring->signal_th;
-+	} while (is_drain && send_ring->pending_wqe);
++		crc =3D dr_ste_crc_tab32[0][(two >> 24) & 0xff]
++			^ dr_ste_crc_tab32[1][(two >> 16) & 0xff]
++			^ dr_ste_crc_tab32[2][(two >> 8) & 0xff]
++			^ dr_ste_crc_tab32[3][two & 0xff]
++			^ dr_ste_crc_tab32[4][(one >> 24) & 0xff]
++			^ dr_ste_crc_tab32[5][(one >> 16) & 0xff]
++			^ dr_ste_crc_tab32[6][(one >> 8) & 0xff]
++			^ dr_ste_crc_tab32[7][one & 0xff];
 +
-+	return 0;
-+}
-+
-+static void dr_fill_data_segs(struct mlx5dr_send_ring *send_ring,
-+			      struct postsend_info *send_info)
-+{
-+	send_ring->pending_wqe++;
-+
-+	if (send_ring->pending_wqe % send_ring->signal_th =3D=3D 0)
-+		send_info->write.send_flags |=3D IB_SEND_SIGNALED;
-+
-+	send_ring->pending_wqe++;
-+	send_info->read.length =3D send_info->write.length;
-+	/* Read into the same write area */
-+	send_info->read.addr =3D (uintptr_t)send_info->write.addr;
-+	send_info->read.lkey =3D send_ring->mr->mkey.key;
-+
-+	if (send_ring->pending_wqe % send_ring->signal_th =3D=3D 0)
-+		send_info->read.send_flags =3D IB_SEND_SIGNALED;
-+	else
-+		send_info->read.send_flags =3D 0;
-+}
-+
-+static int dr_postsend_icm_data(struct mlx5dr_domain *dmn,
-+				struct postsend_info *send_info)
-+{
-+	struct mlx5dr_send_ring *send_ring =3D dmn->send_ring;
-+	u32 buff_offset;
-+	int ret;
-+
-+	ret =3D dr_handle_pending_wc(dmn, send_ring);
-+	if (ret)
-+		return ret;
-+
-+	if (send_info->write.length > dmn->info.max_inline_size) {
-+		buff_offset =3D (send_ring->tx_head &
-+			       (dmn->send_ring->signal_th - 1)) *
-+			send_ring->max_post_send_size;
-+		/* Copy to ring mr */
-+		memcpy(send_ring->buf + buff_offset,
-+		       (void *)(uintptr_t)send_info->write.addr,
-+		       send_info->write.length);
-+		send_info->write.addr =3D (uintptr_t)send_ring->mr->dma_addr + buff_offs=
-et;
-+		send_info->write.lkey =3D send_ring->mr->mkey.key;
++		length -=3D 8;
 +	}
 +
-+	send_ring->tx_head++;
-+	dr_fill_data_segs(send_ring, send_info);
-+	dr_post_send(send_ring->qp, send_info);
++	curr_char =3D (const u8 *)curr;
++	/* Remaining 1 to 7 bytes (standard algorithm) */
++	while (length-- !=3D 0)
++		crc =3D (crc >> 8) ^ dr_ste_crc_tab32[0][(crc & 0xff)
++			^ *curr_char++];
 +
-+	return 0;
++	return ((crc >> 24) & 0xff) | ((crc << 8) & 0xff0000) |
++		((crc >> 8) & 0xff00) | ((crc << 24) & 0xff000000);
 +}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/dr=
+ivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+new file mode 100644
+index 000000000000..6b0af64536d8
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -0,0 +1,2308 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2019 Mellanox Technologies. */
 +
-+static int dr_get_tbl_copy_details(struct mlx5dr_domain *dmn,
-+				   struct mlx5dr_ste_htbl *htbl,
-+				   u8 **data,
-+				   u32 *byte_size,
-+				   int *iterations,
-+				   int *num_stes)
++#include <linux/types.h>
++#include "dr_types.h"
++
++#define DR_STE_CRC_POLY 0xEDB88320L
++#define STE_IPV4 0x1
++#define STE_IPV6 0x2
++#define STE_TCP 0x1
++#define STE_UDP 0x2
++#define STE_SPI 0x3
++#define IP_VERSION_IPV4 0x4
++#define IP_VERSION_IPV6 0x6
++#define STE_SVLAN 0x1
++#define STE_CVLAN 0x2
++
++#define DR_STE_ENABLE_FLOW_TAG BIT(31)
++
++/* Set to STE a specific value using DR_STE_SET */
++#define DR_STE_SET_VAL(lookup_type, tag, t_fname, spec, s_fname, value) do=
+ { \
++	if ((spec)->s_fname) { \
++		MLX5_SET(ste_##lookup_type, tag, t_fname, value); \
++		(spec)->s_fname =3D 0; \
++	} \
++} while (0)
++
++/* Set to STE spec->s_fname to tag->t_fname */
++#define DR_STE_SET_TAG(lookup_type, tag, t_fname, spec, s_fname) \
++	DR_STE_SET_VAL(lookup_type, tag, t_fname, spec, s_fname, spec->s_fname)
++
++/* Set to STE -1 to bit_mask->bm_fname and set spec->s_fname as used */
++#define DR_STE_SET_MASK(lookup_type, bit_mask, bm_fname, spec, s_fname) \
++	DR_STE_SET_VAL(lookup_type, bit_mask, bm_fname, spec, s_fname, -1)
++
++/* Set to STE spec->s_fname to bit_mask->bm_fname and set spec->s_fname as=
+ used */
++#define DR_STE_SET_MASK_V(lookup_type, bit_mask, bm_fname, spec, s_fname) =
+\
++	DR_STE_SET_VAL(lookup_type, bit_mask, bm_fname, spec, s_fname, (spec)->s_=
+fname)
++
++#define DR_STE_SET_TCP_FLAGS(lookup_type, tag, spec) do { \
++	MLX5_SET(ste_##lookup_type, tag, tcp_ns, !!((spec)->tcp_flags & (1 << 8))=
+); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_cwr, !!((spec)->tcp_flags & (1 << 7)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_ece, !!((spec)->tcp_flags & (1 << 6)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_urg, !!((spec)->tcp_flags & (1 << 5)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_ack, !!((spec)->tcp_flags & (1 << 4)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_psh, !!((spec)->tcp_flags & (1 << 3)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_rst, !!((spec)->tcp_flags & (1 << 2)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_syn, !!((spec)->tcp_flags & (1 << 1)=
+)); \
++	MLX5_SET(ste_##lookup_type, tag, tcp_fin, !!((spec)->tcp_flags & (1 << 0)=
+)); \
++} while (0)
++
++#define DR_STE_SET_MPLS_MASK(lookup_type, mask, in_out, bit_mask) do { \
++	DR_STE_SET_MASK_V(lookup_type, mask, mpls0_label, mask, \
++			  in_out##_first_mpls_label);\
++	DR_STE_SET_MASK_V(lookup_type, mask, mpls0_s_bos, mask, \
++			  in_out##_first_mpls_s_bos); \
++	DR_STE_SET_MASK_V(lookup_type, mask, mpls0_exp, mask, \
++			  in_out##_first_mpls_exp); \
++	DR_STE_SET_MASK_V(lookup_type, mask, mpls0_ttl, mask, \
++			  in_out##_first_mpls_ttl); \
++} while (0)
++
++#define DR_STE_SET_MPLS_TAG(lookup_type, mask, in_out, tag) do { \
++	DR_STE_SET_TAG(lookup_type, tag, mpls0_label, mask, \
++		       in_out##_first_mpls_label);\
++	DR_STE_SET_TAG(lookup_type, tag, mpls0_s_bos, mask, \
++		       in_out##_first_mpls_s_bos); \
++	DR_STE_SET_TAG(lookup_type, tag, mpls0_exp, mask, \
++		       in_out##_first_mpls_exp); \
++	DR_STE_SET_TAG(lookup_type, tag, mpls0_ttl, mask, \
++		       in_out##_first_mpls_ttl); \
++} while (0)
++
++#define DR_STE_IS_OUTER_MPLS_OVER_GRE_SET(_misc) (\
++	(_misc)->outer_first_mpls_over_gre_label || \
++	(_misc)->outer_first_mpls_over_gre_exp || \
++	(_misc)->outer_first_mpls_over_gre_s_bos || \
++	(_misc)->outer_first_mpls_over_gre_ttl)
++#define DR_STE_IS_OUTER_MPLS_OVER_UDP_SET(_misc) (\
++	(_misc)->outer_first_mpls_over_udp_label || \
++	(_misc)->outer_first_mpls_over_udp_exp || \
++	(_misc)->outer_first_mpls_over_udp_s_bos || \
++	(_misc)->outer_first_mpls_over_udp_ttl)
++
++#define DR_STE_CALC_LU_TYPE(lookup_type, rx, inner) \
++	((inner) ? MLX5DR_STE_LU_TYPE_##lookup_type##_I : \
++		   (rx) ? MLX5DR_STE_LU_TYPE_##lookup_type##_D : \
++			  MLX5DR_STE_LU_TYPE_##lookup_type##_O)
++
++enum dr_ste_tunl_action {
++	DR_STE_TUNL_ACTION_NONE		=3D 0,
++	DR_STE_TUNL_ACTION_ENABLE	=3D 1,
++	DR_STE_TUNL_ACTION_DECAP	=3D 2,
++	DR_STE_TUNL_ACTION_L3_DECAP	=3D 3,
++	DR_STE_TUNL_ACTION_POP_VLAN	=3D 4,
++};
++
++enum dr_ste_action_type {
++	DR_STE_ACTION_TYPE_PUSH_VLAN	=3D 1,
++	DR_STE_ACTION_TYPE_ENCAP_L3	=3D 3,
++	DR_STE_ACTION_TYPE_ENCAP	=3D 4,
++};
++
++struct dr_hw_ste_format {
++	u8 ctrl[DR_STE_SIZE_CTRL];
++	u8 tag[DR_STE_SIZE_TAG];
++	u8 mask[DR_STE_SIZE_MASK];
++};
++
++u32 mlx5dr_ste_calc_hash_index(u8 *hw_ste_p, struct mlx5dr_ste_htbl *htbl)
 +{
-+	int alloc_size;
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	u8 masked[DR_STE_SIZE_TAG] =3D {};
++	u32 crc32, index;
++	u16 bit;
++	int i;
 +
-+	if (htbl->chunk->byte_size > dmn->send_ring->max_post_send_size) {
-+		*iterations =3D htbl->chunk->byte_size /
-+			dmn->send_ring->max_post_send_size;
-+		*byte_size =3D dmn->send_ring->max_post_send_size;
-+		alloc_size =3D *byte_size;
-+		*num_stes =3D *byte_size / DR_STE_SIZE;
-+	} else {
-+		*iterations =3D 1;
-+		*num_stes =3D htbl->chunk->num_of_entries;
-+		alloc_size =3D *num_stes * DR_STE_SIZE;
++	/* Don't calculate CRC if the result is predicted */
++	if (htbl->chunk->num_of_entries =3D=3D 1 || htbl->byte_mask =3D=3D 0)
++		return 0;
++
++	/* Mask tag using byte mask, bit per byte */
++	bit =3D 1 << (DR_STE_SIZE_TAG - 1);
++	for (i =3D 0; i < DR_STE_SIZE_TAG; i++) {
++		if (htbl->byte_mask & bit)
++			masked[i] =3D hw_ste->tag[i];
++
++		bit =3D bit >> 1;
 +	}
 +
-+	*data =3D kzalloc(alloc_size, GFP_KERNEL);
-+	if (!*data)
-+		return -ENOMEM;
++	crc32 =3D mlx5dr_crc32_slice8_calc(masked, DR_STE_SIZE_TAG);
++	index =3D crc32 & (htbl->chunk->num_of_entries - 1);
 +
-+	return 0;
++	return index;
 +}
 +
-+/**
-+ * mlx5dr_send_postsend_ste: write size bytes into offset from the hw cm.
++static u16 dr_ste_conv_bit_to_byte_mask(u8 *bit_mask)
++{
++	u16 byte_mask =3D 0;
++	int i;
++
++	for (i =3D 0; i < DR_STE_SIZE_MASK; i++) {
++		byte_mask =3D byte_mask << 1;
++		if (bit_mask[i] =3D=3D 0xff)
++			byte_mask |=3D 1;
++	}
++	return byte_mask;
++}
++
++void mlx5dr_ste_set_bit_mask(u8 *hw_ste_p, u8 *bit_mask)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++
++	memcpy(hw_ste->mask, bit_mask, DR_STE_SIZE_MASK);
++}
++
++void mlx5dr_ste_rx_set_flow_tag(u8 *hw_ste_p, u32 flow_tag)
++{
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, qp_list_pointer,
++		 DR_STE_ENABLE_FLOW_TAG | flow_tag);
++}
++
++void mlx5dr_ste_set_counter_id(u8 *hw_ste_p, u32 ctr_id)
++{
++	/* This can be used for both rx_steering_mult and for sx_transmit */
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, counter_trigger_15_0, ctr_id);
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, counter_trigger_23_16, ctr_id >>=
+ 16);
++}
++
++void mlx5dr_ste_set_go_back_bit(u8 *hw_ste_p)
++{
++	MLX5_SET(ste_sx_transmit, hw_ste_p, go_back, 1);
++}
++
++void mlx5dr_ste_set_tx_push_vlan(u8 *hw_ste_p, u32 vlan_hdr,
++				 bool go_back)
++{
++	MLX5_SET(ste_sx_transmit, hw_ste_p, action_type,
++		 DR_STE_ACTION_TYPE_PUSH_VLAN);
++	MLX5_SET(ste_sx_transmit, hw_ste_p, encap_pointer_vlan_data, vlan_hdr);
++	/* Due to HW limitation we need to set this bit, otherwise reforamt +
++	 * push vlan will not work.
++	 */
++	if (go_back)
++		mlx5dr_ste_set_go_back_bit(hw_ste_p);
++}
++
++void mlx5dr_ste_set_tx_encap(void *hw_ste_p, u32 reformat_id, int size, bo=
+ol encap_l3)
++{
++	MLX5_SET(ste_sx_transmit, hw_ste_p, action_type,
++		 encap_l3 ? DR_STE_ACTION_TYPE_ENCAP_L3 : DR_STE_ACTION_TYPE_ENCAP);
++	/* The hardware expects here size in words (2 byte) */
++	MLX5_SET(ste_sx_transmit, hw_ste_p, action_description, size / 2);
++	MLX5_SET(ste_sx_transmit, hw_ste_p, encap_pointer_vlan_data, reformat_id)=
+;
++}
++
++void mlx5dr_ste_set_rx_decap(u8 *hw_ste_p)
++{
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, tunneling_action,
++		 DR_STE_TUNL_ACTION_DECAP);
++}
++
++void mlx5dr_ste_set_rx_pop_vlan(u8 *hw_ste_p)
++{
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, tunneling_action,
++		 DR_STE_TUNL_ACTION_POP_VLAN);
++}
++
++void mlx5dr_ste_set_rx_decap_l3(u8 *hw_ste_p, bool vlan)
++{
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, tunneling_action,
++		 DR_STE_TUNL_ACTION_L3_DECAP);
++	MLX5_SET(ste_modify_packet, hw_ste_p, action_description, vlan ? 1 : 0);
++}
++
++void mlx5dr_ste_set_entry_type(u8 *hw_ste_p, u8 entry_type)
++{
++	MLX5_SET(ste_general, hw_ste_p, entry_type, entry_type);
++}
++
++u8 mlx5dr_ste_get_entry_type(u8 *hw_ste_p)
++{
++	return MLX5_GET(ste_general, hw_ste_p, entry_type);
++}
++
++void mlx5dr_ste_set_rewrite_actions(u8 *hw_ste_p, u16 num_of_actions,
++				    u32 re_write_index)
++{
++	MLX5_SET(ste_modify_packet, hw_ste_p, number_of_re_write_actions,
++		 num_of_actions);
++	MLX5_SET(ste_modify_packet, hw_ste_p, header_re_write_actions_pointer,
++		 re_write_index);
++}
++
++void mlx5dr_ste_set_hit_gvmi(u8 *hw_ste_p, u16 gvmi)
++{
++	MLX5_SET(ste_general, hw_ste_p, next_table_base_63_48, gvmi);
++}
++
++void mlx5dr_ste_init(u8 *hw_ste_p, u8 lu_type, u8 entry_type,
++		     u16 gvmi)
++{
++	MLX5_SET(ste_general, hw_ste_p, entry_type, entry_type);
++	MLX5_SET(ste_general, hw_ste_p, entry_sub_type, lu_type);
++	MLX5_SET(ste_general, hw_ste_p, next_lu_type, MLX5DR_STE_LU_TYPE_DONT_CAR=
+E);
++
++	/* Set GVMI once, this is the same for RX/TX
++	 * bits 63_48 of next table base / miss address encode the next GVMI
++	 */
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, gvmi, gvmi);
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, next_table_base_63_48, gvmi);
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_63_48, gvmi);
++}
++
++static void dr_ste_set_always_hit(struct dr_hw_ste_format *hw_ste)
++{
++	memset(&hw_ste->tag, 0, sizeof(hw_ste->tag));
++	memset(&hw_ste->mask, 0, sizeof(hw_ste->mask));
++}
++
++static void dr_ste_set_always_miss(struct dr_hw_ste_format *hw_ste)
++{
++	hw_ste->tag[0] =3D 0xdc;
++	hw_ste->mask[0] =3D 0;
++}
++
++u64 mlx5dr_ste_get_miss_addr(u8 *hw_ste)
++{
++	u64 index =3D
++		(MLX5_GET(ste_rx_steering_mult, hw_ste, miss_address_31_6) |
++		 MLX5_GET(ste_rx_steering_mult, hw_ste, miss_address_39_32) << 26);
++
++	return index << 6;
++}
++
++void mlx5dr_ste_set_hit_addr(u8 *hw_ste, u64 icm_addr, u32 ht_size)
++{
++	u64 index =3D (icm_addr >> 5) | ht_size;
++
++	MLX5_SET(ste_general, hw_ste, next_table_base_39_32_size, index >> 27);
++	MLX5_SET(ste_general, hw_ste, next_table_base_31_5_size, index);
++}
++
++u64 mlx5dr_ste_get_icm_addr(struct mlx5dr_ste *ste)
++{
++	u32 index =3D ste - ste->htbl->ste_arr;
++
++	return ste->htbl->chunk->icm_addr + DR_STE_SIZE * index;
++}
++
++u64 mlx5dr_ste_get_mr_addr(struct mlx5dr_ste *ste)
++{
++	u32 index =3D ste - ste->htbl->ste_arr;
++
++	return ste->htbl->chunk->mr_addr + DR_STE_SIZE * index;
++}
++
++struct list_head *mlx5dr_ste_get_miss_list(struct mlx5dr_ste *ste)
++{
++	u32 index =3D ste - ste->htbl->ste_arr;
++
++	return &ste->htbl->miss_list[index];
++}
++
++static void dr_ste_always_hit_htbl(struct mlx5dr_ste *ste,
++				   struct mlx5dr_ste_htbl *next_htbl)
++{
++	struct mlx5dr_icm_chunk *chunk =3D next_htbl->chunk;
++	u8 *hw_ste =3D ste->hw_ste;
++
++	MLX5_SET(ste_general, hw_ste, byte_mask, next_htbl->byte_mask);
++	MLX5_SET(ste_general, hw_ste, next_lu_type, next_htbl->lu_type);
++	mlx5dr_ste_set_hit_addr(hw_ste, chunk->icm_addr, chunk->num_of_entries);
++
++	dr_ste_set_always_hit((struct dr_hw_ste_format *)ste->hw_ste);
++}
++
++bool mlx5dr_ste_is_last_in_rule(struct mlx5dr_matcher_rx_tx *nic_matcher,
++				u8 ste_location)
++{
++	return ste_location =3D=3D nic_matcher->num_of_builders;
++}
++
++/* Replace relevant fields, except of:
++ * htbl - keep the origin htbl
++ * miss_list + list - already took the src from the list.
++ * icm_addr/mr_addr - depends on the hosting table.
 + *
-+ *     @dmn:    Domain
-+ *     @ste:    The ste struct that contains the data (at
-+ *              least part of it)
-+ *     @data:   The real data to send size data
-+ *     @size:   for writing.
-+ *     @offset: The offset from the icm mapped data to
-+ *              start write to this for write only part of the
-+ *              buffer.
++ * Before:
++ * | a | -> | b | -> | c | ->
 + *
-+ * Return: 0 on success.
++ * After:
++ * | a | -> | c | ->
++ * While the data that was in b copied to a.
 + */
-+int mlx5dr_send_postsend_ste(struct mlx5dr_domain *dmn, struct mlx5dr_ste =
-*ste,
-+			     u8 *data, u16 size, u16 offset)
++static void dr_ste_replace(struct mlx5dr_ste *dst, struct mlx5dr_ste *src)
 +{
-+	struct postsend_info send_info =3D {};
++	memcpy(dst->hw_ste, src->hw_ste, DR_STE_SIZE_REDUCED);
++	dst->next_htbl =3D src->next_htbl;
++	if (dst->next_htbl)
++		dst->next_htbl->pointing_ste =3D dst;
 +
-+	send_info.write.addr =3D (uintptr_t)data;
-+	send_info.write.length =3D size;
-+	send_info.write.lkey =3D 0;
-+	send_info.remote_addr =3D mlx5dr_ste_get_mr_addr(ste) + offset;
-+	send_info.rkey =3D ste->htbl->chunk->rkey;
++	refcount_set(&dst->refcount, refcount_read(&src->refcount));
 +
-+	return dr_postsend_icm_data(dmn, &send_info);
++	INIT_LIST_HEAD(&dst->rule_list);
++	list_splice_tail_init(&src->rule_list, &dst->rule_list);
 +}
 +
-+int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
-+			      struct mlx5dr_ste_htbl *htbl,
-+			      u8 *formatted_ste, u8 *mask)
++/* Free ste which is the head and the only one in miss_list */
++static void
++dr_ste_remove_head_ste(struct mlx5dr_ste *ste,
++		       struct mlx5dr_matcher_rx_tx *nic_matcher,
++		       struct mlx5dr_ste_send_info *ste_info_head,
++		       struct list_head *send_ste_list,
++		       struct mlx5dr_ste_htbl *stats_tbl)
 +{
-+	u32 byte_size =3D htbl->chunk->byte_size;
-+	int num_stes_per_iter;
-+	int iterations;
-+	u8 *data;
-+	int ret;
-+	int i;
-+	int j;
++	u8 tmp_data_ste[DR_STE_SIZE] =3D {};
++	struct mlx5dr_ste tmp_ste =3D {};
++	u64 miss_addr;
 +
-+	ret =3D dr_get_tbl_copy_details(dmn, htbl, &data, &byte_size,
-+				      &iterations, &num_stes_per_iter);
-+	if (ret)
-+		return ret;
++	tmp_ste.hw_ste =3D tmp_data_ste;
 +
-+	/* Send the data iteration times */
-+	for (i =3D 0; i < iterations; i++) {
-+		u32 ste_index =3D i * (byte_size / DR_STE_SIZE);
-+		struct postsend_info send_info =3D {};
++	/* Use temp ste because dr_ste_always_miss_addr
++	 * touches bit_mask area which doesn't exist at ste->hw_ste.
++	 */
++	memcpy(tmp_ste.hw_ste, ste->hw_ste, DR_STE_SIZE_REDUCED);
++	miss_addr =3D nic_matcher->e_anchor->chunk->icm_addr;
++	mlx5dr_ste_always_miss_addr(&tmp_ste, miss_addr);
++	memcpy(ste->hw_ste, tmp_ste.hw_ste, DR_STE_SIZE_REDUCED);
 +
-+		/* Copy all ste's on the data buffer
-+		 * need to add the bit_mask
++	list_del_init(&ste->miss_list_node);
++
++	/* Write full STE size in order to have "always_miss" */
++	mlx5dr_send_fill_and_append_ste_send_info(ste, DR_STE_SIZE,
++						  0, tmp_data_ste,
++						  ste_info_head,
++						  send_ste_list,
++						  true /* Copy data */);
++
++	stats_tbl->ctrl.num_of_valid_entries--;
++}
++
++/* Free ste which is the head but NOT the only one in miss_list:
++ * |_ste_| --> |_next_ste_| -->|__| -->|__| -->/0
++ */
++static void
++dr_ste_replace_head_ste(struct mlx5dr_ste *ste, struct mlx5dr_ste *next_st=
+e,
++			struct mlx5dr_ste_send_info *ste_info_head,
++			struct list_head *send_ste_list,
++			struct mlx5dr_ste_htbl *stats_tbl)
++
++{
++	struct mlx5dr_ste_htbl *next_miss_htbl;
++
++	next_miss_htbl =3D next_ste->htbl;
++
++	/* Remove from the miss_list the next_ste before copy */
++	list_del_init(&next_ste->miss_list_node);
++
++	/* All rule-members that use next_ste should know about that */
++	mlx5dr_rule_update_rule_member(next_ste, ste);
++
++	/* Move data from next into ste */
++	dr_ste_replace(ste, next_ste);
++
++	/* Del the htbl that contains the next_ste.
++	 * The origin htbl stay with the same number of entries.
++	 */
++	mlx5dr_htbl_put(next_miss_htbl);
++
++	mlx5dr_send_fill_and_append_ste_send_info(ste, DR_STE_SIZE_REDUCED,
++						  0, ste->hw_ste,
++						  ste_info_head,
++						  send_ste_list,
++						  true /* Copy data */);
++
++	stats_tbl->ctrl.num_of_collisions--;
++	stats_tbl->ctrl.num_of_valid_entries--;
++}
++
++/* Free ste that is located in the middle of the miss list:
++ * |__| -->|_prev_ste_|->|_ste_|-->|_next_ste_|
++ */
++static void dr_ste_remove_middle_ste(struct mlx5dr_ste *ste,
++				     struct mlx5dr_ste_send_info *ste_info,
++				     struct list_head *send_ste_list,
++				     struct mlx5dr_ste_htbl *stats_tbl)
++{
++	struct mlx5dr_ste *prev_ste;
++	u64 miss_addr;
++
++	prev_ste =3D list_entry(mlx5dr_ste_get_miss_list(ste)->prev, struct mlx5d=
+r_ste,
++			      miss_list_node);
++	if (!prev_ste) {
++		WARN_ON(true);
++		return;
++	}
++
++	miss_addr =3D mlx5dr_ste_get_miss_addr(ste->hw_ste);
++	mlx5dr_ste_set_miss_addr(prev_ste->hw_ste, miss_addr);
++
++	mlx5dr_send_fill_and_append_ste_send_info(prev_ste, DR_STE_SIZE_REDUCED, =
+0,
++						  prev_ste->hw_ste, ste_info,
++						  send_ste_list, true /* Copy data*/);
++
++	list_del_init(&ste->miss_list_node);
++
++	stats_tbl->ctrl.num_of_valid_entries--;
++	stats_tbl->ctrl.num_of_collisions--;
++}
++
++void mlx5dr_ste_free(struct mlx5dr_ste *ste,
++		     struct mlx5dr_matcher *matcher,
++		     struct mlx5dr_matcher_rx_tx *nic_matcher)
++{
++	struct mlx5dr_ste_send_info *cur_ste_info, *tmp_ste_info;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_ste_send_info ste_info_head;
++	struct mlx5dr_ste *next_ste, *first_ste;
++	bool put_on_origin_table =3D true;
++	struct mlx5dr_ste_htbl *stats_tbl;
++	LIST_HEAD(send_ste_list);
++
++	first_ste =3D list_entry(mlx5dr_ste_get_miss_list(ste)->next,
++			       struct mlx5dr_ste, miss_list_node);
++	stats_tbl =3D first_ste->htbl;
++
++	/* Two options:
++	 * 1. ste is head:
++	 *	a. head ste is the only ste in the miss list
++	 *	b. head ste is not the only ste in the miss-list
++	 * 2. ste is not head
++	 */
++	if (first_ste =3D=3D ste) { /* Ste is the head */
++		struct mlx5dr_ste *last_ste;
++
++		last_ste =3D list_last_entry(mlx5dr_ste_get_miss_list(ste),
++					   struct mlx5dr_ste, miss_list_node);
++		if (last_ste =3D=3D first_ste)
++			next_ste =3D NULL;
++		else
++			next_ste =3D list_entry(ste->miss_list_node.next,
++					      struct mlx5dr_ste, miss_list_node);
++
++		if (!next_ste) {
++			/* One and only entry in the list */
++			dr_ste_remove_head_ste(ste, nic_matcher,
++					       &ste_info_head,
++					       &send_ste_list,
++					       stats_tbl);
++		} else {
++			/* First but not only entry in the list */
++			dr_ste_replace_head_ste(ste, next_ste, &ste_info_head,
++						&send_ste_list, stats_tbl);
++			put_on_origin_table =3D false;
++		}
++	} else { /* Ste in the middle of the list */
++		dr_ste_remove_middle_ste(ste, &ste_info_head, &send_ste_list, stats_tbl)=
+;
++	}
++
++	/* Update HW */
++	list_for_each_entry_safe(cur_ste_info, tmp_ste_info,
++				 &send_ste_list, send_list) {
++		list_del(&cur_ste_info->send_list);
++		mlx5dr_send_postsend_ste(dmn, cur_ste_info->ste,
++					 cur_ste_info->data, cur_ste_info->size,
++					 cur_ste_info->offset);
++	}
++
++	if (put_on_origin_table)
++		mlx5dr_htbl_put(ste->htbl);
++}
++
++bool mlx5dr_ste_equal_tag(void *src, void *dst)
++{
++	struct dr_hw_ste_format *s_hw_ste =3D (struct dr_hw_ste_format *)src;
++	struct dr_hw_ste_format *d_hw_ste =3D (struct dr_hw_ste_format *)dst;
++
++	return !memcmp(s_hw_ste->tag, d_hw_ste->tag, DR_STE_SIZE_TAG);
++}
++
++void mlx5dr_ste_set_hit_addr_by_next_htbl(u8 *hw_ste,
++					  struct mlx5dr_ste_htbl *next_htbl)
++{
++	struct mlx5dr_icm_chunk *chunk =3D next_htbl->chunk;
++
++	mlx5dr_ste_set_hit_addr(hw_ste, chunk->icm_addr, chunk->num_of_entries);
++}
++
++void mlx5dr_ste_set_miss_addr(u8 *hw_ste_p, u64 miss_addr)
++{
++	u64 index =3D miss_addr >> 6;
++
++	/* Miss address for TX and RX STEs located in the same offsets */
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_39_32, index >> 26)=
+;
++	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_31_6, index);
++}
++
++void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr)
++{
++	u8 *hw_ste =3D ste->hw_ste;
++
++	MLX5_SET(ste_rx_steering_mult, hw_ste, next_lu_type, MLX5DR_STE_LU_TYPE_D=
+ONT_CARE);
++	mlx5dr_ste_set_miss_addr(hw_ste, miss_addr);
++	dr_ste_set_always_miss((struct dr_hw_ste_format *)ste->hw_ste);
++}
++
++/* The assumption here is that we don't update the ste->hw_ste if it is no=
+t
++ * used ste, so it will be all zero, checking the next_lu_type.
++ */
++bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)p_hw_ste;
++
++	if (MLX5_GET(ste_general, hw_ste, next_lu_type) =3D=3D
++	    MLX5DR_STE_LU_TYPE_NOP)
++		return true;
++
++	return false;
++}
++
++bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste)
++{
++	return !refcount_read(&ste->refcount);
++}
++
++static u16 get_bits_per_mask(u16 byte_mask)
++{
++	u16 bits =3D 0;
++
++	while (byte_mask) {
++		byte_mask =3D byte_mask & (byte_mask - 1);
++		bits++;
++	}
++
++	return bits;
++}
++
++/* Init one ste as a pattern for ste data array */
++void mlx5dr_ste_set_formatted_ste(u16 gvmi,
++				  struct mlx5dr_domain_rx_tx *nic_dmn,
++				  struct mlx5dr_ste_htbl *htbl,
++				  u8 *formatted_ste,
++				  struct mlx5dr_htbl_connect_info *connect_info)
++{
++	struct mlx5dr_ste ste =3D {};
++
++	mlx5dr_ste_init(formatted_ste, htbl->lu_type, nic_dmn->ste_type, gvmi);
++	ste.hw_ste =3D formatted_ste;
++
++	if (connect_info->type =3D=3D CONNECT_HIT)
++		dr_ste_always_hit_htbl(&ste, connect_info->hit_next_htbl);
++	else
++		mlx5dr_ste_always_miss_addr(&ste, connect_info->miss_icm_addr);
++}
++
++int mlx5dr_ste_htbl_init_and_postsend(struct mlx5dr_domain *dmn,
++				      struct mlx5dr_domain_rx_tx *nic_dmn,
++				      struct mlx5dr_ste_htbl *htbl,
++				      struct mlx5dr_htbl_connect_info *connect_info,
++				      bool update_hw_ste)
++{
++	u8 formatted_ste[DR_STE_SIZE] =3D {};
++
++	mlx5dr_ste_set_formatted_ste(dmn->info.caps.gvmi,
++				     nic_dmn,
++				     htbl,
++				     formatted_ste,
++				     connect_info);
++
++	return mlx5dr_send_postsend_formatted_htbl(dmn, htbl, formatted_ste, upda=
+te_hw_ste);
++}
++
++int mlx5dr_ste_create_next_htbl(struct mlx5dr_matcher *matcher,
++				struct mlx5dr_matcher_rx_tx *nic_matcher,
++				struct mlx5dr_ste *ste,
++				u8 *cur_hw_ste,
++				enum mlx5dr_icm_chunk_size log_table_size)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)cur_hw_ste=
+;
++	struct mlx5dr_domain_rx_tx *nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_htbl_connect_info info;
++	struct mlx5dr_ste_htbl *next_htbl;
++
++	if (!mlx5dr_ste_is_last_in_rule(nic_matcher, ste->ste_chain_location)) {
++		u32 bits_in_mask;
++		u8 next_lu_type;
++		u16 byte_mask;
++
++		next_lu_type =3D MLX5_GET(ste_general, hw_ste, next_lu_type);
++		byte_mask =3D MLX5_GET(ste_general, hw_ste, byte_mask);
++
++		/* Don't allocate table more than required,
++		 * the size of the table defined via the byte_mask, so no need
++		 * to allocate more than that.
 +		 */
-+		for (j =3D 0; j < num_stes_per_iter; j++) {
-+			u8 *hw_ste =3D htbl->ste_arr[ste_index + j].hw_ste;
-+			u32 ste_off =3D j * DR_STE_SIZE;
++		bits_in_mask =3D get_bits_per_mask(byte_mask) * BITS_PER_BYTE;
++		log_table_size =3D min(log_table_size, bits_in_mask);
 +
-+			if (mlx5dr_ste_is_not_valid_entry(hw_ste)) {
-+				memcpy(data + ste_off,
-+				       formatted_ste, DR_STE_SIZE);
-+			} else {
-+				/* Copy data */
-+				memcpy(data + ste_off,
-+				       htbl->ste_arr[ste_index + j].hw_ste,
-+				       DR_STE_SIZE_REDUCED);
-+				/* Copy bit_mask */
-+				memcpy(data + ste_off + DR_STE_SIZE_REDUCED,
-+				       mask, DR_STE_SIZE_MASK);
-+			}
++		next_htbl =3D mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
++						  log_table_size,
++						  next_lu_type,
++						  byte_mask);
++		if (!next_htbl) {
++			mlx5dr_dbg(dmn, "Failed allocating table\n");
++			return -ENOMEM;
 +		}
 +
-+		send_info.write.addr =3D (uintptr_t)data;
-+		send_info.write.length =3D byte_size;
-+		send_info.write.lkey =3D 0;
-+		send_info.remote_addr =3D
-+			mlx5dr_ste_get_mr_addr(htbl->ste_arr + ste_index);
-+		send_info.rkey =3D htbl->chunk->rkey;
-+
-+		ret =3D dr_postsend_icm_data(dmn, &send_info);
-+		if (ret)
-+			goto out_free;
-+	}
-+
-+out_free:
-+	kfree(data);
-+	return ret;
-+}
-+
-+/* Initialize htble with default STEs */
-+int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
-+					struct mlx5dr_ste_htbl *htbl,
-+					u8 *ste_init_data,
-+					bool update_hw_ste)
-+{
-+	u32 byte_size =3D htbl->chunk->byte_size;
-+	int iterations;
-+	int num_stes;
-+	u8 *data;
-+	int ret;
-+	int i;
-+
-+	ret =3D dr_get_tbl_copy_details(dmn, htbl, &data, &byte_size,
-+				      &iterations, &num_stes);
-+	if (ret)
-+		return ret;
-+
-+	for (i =3D 0; i < num_stes; i++) {
-+		u8 *copy_dst;
-+
-+		/* Copy the same ste on the data buffer */
-+		copy_dst =3D data + i * DR_STE_SIZE;
-+		memcpy(copy_dst, ste_init_data, DR_STE_SIZE);
-+
-+		if (update_hw_ste) {
-+			/* Copy the reduced ste to hash table ste_arr */
-+			copy_dst =3D htbl->hw_ste_arr + i * DR_STE_SIZE_REDUCED;
-+			memcpy(copy_dst, ste_init_data, DR_STE_SIZE_REDUCED);
++		/* Write new table to HW */
++		info.type =3D CONNECT_MISS;
++		info.miss_icm_addr =3D nic_matcher->e_anchor->chunk->icm_addr;
++		if (mlx5dr_ste_htbl_init_and_postsend(dmn, nic_dmn, next_htbl,
++						      &info, false)) {
++			mlx5dr_info(dmn, "Failed writing table to HW\n");
++			goto free_table;
 +		}
++
++		mlx5dr_ste_set_hit_addr_by_next_htbl(cur_hw_ste, next_htbl);
++		ste->next_htbl =3D next_htbl;
++		next_htbl->pointing_ste =3D ste;
 +	}
-+
-+	/* Send the data iteration times */
-+	for (i =3D 0; i < iterations; i++) {
-+		u8 ste_index =3D i * (byte_size / DR_STE_SIZE);
-+		struct postsend_info send_info =3D {};
-+
-+		send_info.write.addr =3D (uintptr_t)data;
-+		send_info.write.length =3D byte_size;
-+		send_info.write.lkey =3D 0;
-+		send_info.remote_addr =3D
-+			mlx5dr_ste_get_mr_addr(htbl->ste_arr + ste_index);
-+		send_info.rkey =3D htbl->chunk->rkey;
-+
-+		ret =3D dr_postsend_icm_data(dmn, &send_info);
-+		if (ret)
-+			goto out_free;
-+	}
-+
-+out_free:
-+	kfree(data);
-+	return ret;
-+}
-+
-+int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
-+				struct mlx5dr_action *action)
-+{
-+	struct postsend_info send_info =3D {};
-+	int ret;
-+
-+	send_info.write.addr =3D (uintptr_t)action->rewrite.data;
-+	send_info.write.length =3D action->rewrite.chunk->byte_size;
-+	send_info.write.lkey =3D 0;
-+	send_info.remote_addr =3D action->rewrite.chunk->mr_addr;
-+	send_info.rkey =3D action->rewrite.chunk->rkey;
-+
-+	mutex_lock(&dmn->mutex);
-+	ret =3D dr_postsend_icm_data(dmn, &send_info);
-+	mutex_unlock(&dmn->mutex);
-+
-+	return ret;
-+}
-+
-+static int dr_modify_qp_rst2init(struct mlx5_core_dev *mdev,
-+				 struct mlx5dr_qp *dr_qp,
-+				 int port)
-+{
-+	u32 in[MLX5_ST_SZ_DW(rst2init_qp_in)] =3D {};
-+	void *qpc;
-+
-+	qpc =3D MLX5_ADDR_OF(rst2init_qp_in, in, qpc);
-+
-+	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, port);
-+	MLX5_SET(qpc, qpc, pm_state, MLX5_QPC_PM_STATE_MIGRATED);
-+	MLX5_SET(qpc, qpc, rre, 1);
-+	MLX5_SET(qpc, qpc, rwe, 1);
-+
-+	return mlx5_core_qp_modify(mdev, MLX5_CMD_OP_RST2INIT_QP, 0, qpc,
-+				   &dr_qp->mqp);
-+}
-+
-+static int dr_cmd_modify_qp_rtr2rts(struct mlx5_core_dev *mdev,
-+				    struct mlx5dr_qp *dr_qp,
-+				    struct dr_qp_rts_attr *attr)
-+{
-+	u32 in[MLX5_ST_SZ_DW(rtr2rts_qp_in)] =3D {};
-+	void *qpc;
-+
-+	qpc  =3D MLX5_ADDR_OF(rtr2rts_qp_in, in, qpc);
-+
-+	MLX5_SET(rtr2rts_qp_in, in, qpn, dr_qp->mqp.qpn);
-+
-+	MLX5_SET(qpc, qpc, log_ack_req_freq, 0);
-+	MLX5_SET(qpc, qpc, retry_count, attr->retry_cnt);
-+	MLX5_SET(qpc, qpc, rnr_retry, attr->rnr_retry);
-+
-+	return mlx5_core_qp_modify(mdev, MLX5_CMD_OP_RTR2RTS_QP, 0, qpc,
-+				   &dr_qp->mqp);
-+}
-+
-+static int dr_cmd_modify_qp_init2rtr(struct mlx5_core_dev *mdev,
-+				     struct mlx5dr_qp *dr_qp,
-+				     struct dr_qp_rtr_attr *attr)
-+{
-+	u32 in[MLX5_ST_SZ_DW(init2rtr_qp_in)] =3D {};
-+	void *qpc;
-+
-+	qpc =3D MLX5_ADDR_OF(init2rtr_qp_in, in, qpc);
-+
-+	MLX5_SET(init2rtr_qp_in, in, qpn, dr_qp->mqp.qpn);
-+
-+	MLX5_SET(qpc, qpc, mtu, attr->mtu);
-+	MLX5_SET(qpc, qpc, log_msg_max, DR_CHUNK_SIZE_MAX - 1);
-+	MLX5_SET(qpc, qpc, remote_qpn, attr->qp_num);
-+	memcpy(MLX5_ADDR_OF(qpc, qpc, primary_address_path.rmac_47_32),
-+	       attr->dgid_attr.mac, sizeof(attr->dgid_attr.mac));
-+	memcpy(MLX5_ADDR_OF(qpc, qpc, primary_address_path.rgid_rip),
-+	       attr->dgid_attr.gid, sizeof(attr->dgid_attr.gid));
-+	MLX5_SET(qpc, qpc, primary_address_path.src_addr_index,
-+		 attr->sgid_index);
-+
-+	if (attr->dgid_attr.roce_ver =3D=3D MLX5_ROCE_VERSION_2)
-+		MLX5_SET(qpc, qpc, primary_address_path.udp_sport,
-+			 attr->udp_src_port);
-+
-+	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, attr->port_num);
-+	MLX5_SET(qpc, qpc, min_rnr_nak, 1);
-+
-+	return mlx5_core_qp_modify(mdev, MLX5_CMD_OP_INIT2RTR_QP, 0, qpc,
-+				   &dr_qp->mqp);
-+}
-+
-+static int dr_prepare_qp_to_rts(struct mlx5dr_domain *dmn)
-+{
-+	struct mlx5dr_qp *dr_qp =3D dmn->send_ring->qp;
-+	struct dr_qp_rts_attr rts_attr =3D {};
-+	struct dr_qp_rtr_attr rtr_attr =3D {};
-+	enum ib_mtu mtu =3D IB_MTU_1024;
-+	u16 gid_index =3D 0;
-+	int port =3D 1;
-+	int ret;
-+
-+	/* Init */
-+	ret =3D dr_modify_qp_rst2init(dmn->mdev, dr_qp, port);
-+	if (ret)
-+		return ret;
-+
-+	/* RTR */
-+	ret =3D mlx5dr_cmd_query_gid(dmn->mdev, port, gid_index, &rtr_attr.dgid_a=
-ttr);
-+	if (ret)
-+		return ret;
-+
-+	rtr_attr.mtu		=3D mtu;
-+	rtr_attr.qp_num		=3D dr_qp->mqp.qpn;
-+	rtr_attr.min_rnr_timer	=3D 12;
-+	rtr_attr.port_num	=3D port;
-+	rtr_attr.sgid_index	=3D gid_index;
-+	rtr_attr.udp_src_port	=3D dmn->info.caps.roce_min_src_udp;
-+
-+	ret =3D dr_cmd_modify_qp_init2rtr(dmn->mdev, dr_qp, &rtr_attr);
-+	if (ret)
-+		return ret;
-+
-+	/* RTS */
-+	rts_attr.timeout	=3D 14;
-+	rts_attr.retry_cnt	=3D 7;
-+	rts_attr.rnr_retry	=3D 7;
-+
-+	ret =3D dr_cmd_modify_qp_rtr2rts(dmn->mdev, dr_qp, &rts_attr);
-+	if (ret)
-+		return ret;
 +
 +	return 0;
++
++free_table:
++	mlx5dr_ste_htbl_free(next_htbl);
++	return -ENOENT;
 +}
 +
-+static void dr_cq_event(struct mlx5_core_cq *mcq,
-+			enum mlx5_event event)
++static void dr_ste_set_ctrl(struct mlx5dr_ste_htbl *htbl)
 +{
-+	pr_info("CQ event %u on CQ #%u\n", event, mcq->cqn);
++	struct mlx5dr_ste_htbl_ctrl *ctrl =3D &htbl->ctrl;
++	int num_of_entries;
++
++	htbl->ctrl.may_grow =3D true;
++
++	if (htbl->chunk_size =3D=3D DR_CHUNK_SIZE_MAX - 1)
++		htbl->ctrl.may_grow =3D false;
++
++	/* Threshold is 50%, one is added to table of size 1 */
++	num_of_entries =3D mlx5dr_icm_pool_chunk_size_to_entries(htbl->chunk_size=
+);
++	ctrl->increase_threshold =3D (num_of_entries + 1) / 2;
 +}
 +
-+static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
-+				      struct mlx5_uars_page *uar,
-+				      size_t ncqe)
++struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct mlx5dr_icm_pool *pool=
+,
++					      enum mlx5dr_icm_chunk_size chunk_size,
++					      u8 lu_type, u16 byte_mask)
 +{
-+	u32 temp_cqc[MLX5_ST_SZ_DW(cqc)] =3D {};
-+	u32 out[MLX5_ST_SZ_DW(create_cq_out)];
-+	struct mlx5_wq_param wqp;
-+	struct mlx5_cqe64 *cqe;
-+	struct mlx5dr_cq *cq;
-+	int inlen, err, eqn;
-+	unsigned int irqn;
-+	void *cqc, *in;
-+	__be64 *pas;
-+	u32 i;
++	struct mlx5dr_icm_chunk *chunk;
++	struct mlx5dr_ste_htbl *htbl;
++	int i;
 +
-+	cq =3D kzalloc(sizeof(*cq), GFP_KERNEL);
-+	if (!cq)
++	htbl =3D kzalloc(sizeof(*htbl), GFP_KERNEL);
++	if (!htbl)
 +		return NULL;
 +
-+	ncqe =3D roundup_pow_of_two(ncqe);
-+	MLX5_SET(cqc, temp_cqc, log_cq_size, ilog2(ncqe));
++	chunk =3D mlx5dr_icm_alloc_chunk(pool, chunk_size);
++	if (!chunk)
++		goto out_free_htbl;
 +
-+	wqp.buf_numa_node =3D mdev->priv.numa_node;
-+	wqp.db_numa_node =3D mdev->priv.numa_node;
++	htbl->chunk =3D chunk;
++	htbl->lu_type =3D lu_type;
++	htbl->byte_mask =3D byte_mask;
++	htbl->ste_arr =3D chunk->ste_arr;
++	htbl->hw_ste_arr =3D chunk->hw_ste_arr;
++	htbl->miss_list =3D chunk->miss_list;
++	refcount_set(&htbl->refcount, 0);
 +
-+	err =3D mlx5_cqwq_create(mdev, &wqp, temp_cqc, &cq->wq,
-+			       &cq->wq_ctrl);
-+	if (err)
-+		goto out;
++	for (i =3D 0; i < chunk->num_of_entries; i++) {
++		struct mlx5dr_ste *ste =3D &htbl->ste_arr[i];
 +
-+	for (i =3D 0; i < mlx5_cqwq_get_size(&cq->wq); i++) {
-+		cqe =3D mlx5_cqwq_get_wqe(&cq->wq, i);
-+		cqe->op_own =3D MLX5_CQE_INVALID << 4 | MLX5_CQE_OWNER_MASK;
++		ste->hw_ste =3D htbl->hw_ste_arr + i * DR_STE_SIZE_REDUCED;
++		ste->htbl =3D htbl;
++		refcount_set(&ste->refcount, 0);
++		INIT_LIST_HEAD(&ste->miss_list_node);
++		INIT_LIST_HEAD(&htbl->miss_list[i]);
++		INIT_LIST_HEAD(&ste->rule_list);
 +	}
 +
-+	inlen =3D MLX5_ST_SZ_BYTES(create_cq_in) +
-+		sizeof(u64) * cq->wq_ctrl.buf.npages;
-+	in =3D kvzalloc(inlen, GFP_KERNEL);
-+	if (!in)
-+		goto err_cqwq;
++	htbl->chunk_size =3D chunk_size;
++	dr_ste_set_ctrl(htbl);
++	return htbl;
 +
-+	err =3D mlx5_vector2eqn(mdev, smp_processor_id(), &eqn, &irqn);
-+	if (err) {
-+		kvfree(in);
-+		goto err_cqwq;
-+	}
-+
-+	cqc =3D MLX5_ADDR_OF(create_cq_in, in, cq_context);
-+	MLX5_SET(cqc, cqc, log_cq_size, ilog2(ncqe));
-+	MLX5_SET(cqc, cqc, c_eqn, eqn);
-+	MLX5_SET(cqc, cqc, uar_page, uar->index);
-+	MLX5_SET(cqc, cqc, log_page_size, cq->wq_ctrl.buf.page_shift -
-+		 MLX5_ADAPTER_PAGE_SHIFT);
-+	MLX5_SET64(cqc, cqc, dbr_addr, cq->wq_ctrl.db.dma);
-+
-+	pas =3D (__be64 *)MLX5_ADDR_OF(create_cq_in, in, pas);
-+	mlx5_fill_page_frag_array(&cq->wq_ctrl.buf, pas);
-+
-+	cq->mcq.event =3D dr_cq_event;
-+
-+	err =3D mlx5_core_create_cq(mdev, &cq->mcq, in, inlen, out, sizeof(out));
-+	kvfree(in);
-+
-+	if (err)
-+		goto err_cqwq;
-+
-+	cq->mcq.cqe_sz =3D 64;
-+	cq->mcq.set_ci_db =3D cq->wq_ctrl.db.db;
-+	cq->mcq.arm_db =3D cq->wq_ctrl.db.db + 1;
-+	*cq->mcq.set_ci_db =3D 0;
-+	*cq->mcq.arm_db =3D 0;
-+	cq->mcq.vector =3D 0;
-+	cq->mcq.irqn =3D irqn;
-+	cq->mcq.uar =3D uar;
-+
-+	return cq;
-+
-+err_cqwq:
-+	mlx5_wq_destroy(&cq->wq_ctrl);
-+out:
-+	kfree(cq);
++out_free_htbl:
++	kfree(htbl);
 +	return NULL;
 +}
 +
-+static void dr_destroy_cq(struct mlx5_core_dev *mdev, struct mlx5dr_cq *cq=
-)
++int mlx5dr_ste_htbl_free(struct mlx5dr_ste_htbl *htbl)
 +{
-+	mlx5_core_destroy_cq(mdev, &cq->mcq);
-+	mlx5_wq_destroy(&cq->wq_ctrl);
-+	kfree(cq);
++	if (refcount_read(&htbl->refcount))
++		return -EBUSY;
++
++	mlx5dr_icm_free_chunk(htbl->chunk);
++	kfree(htbl);
++	return 0;
 +}
 +
-+static int
-+dr_create_mkey(struct mlx5_core_dev *mdev, u32 pdn, struct mlx5_core_mkey =
-*mkey)
++int mlx5dr_ste_build_pre_check(struct mlx5dr_domain *dmn,
++			       u8 match_criteria,
++			       struct mlx5dr_match_param *mask,
++			       struct mlx5dr_match_param *value)
 +{
-+	u32 in[MLX5_ST_SZ_DW(create_mkey_in)] =3D {};
-+	void *mkc;
-+
-+	mkc =3D MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
-+	MLX5_SET(mkc, mkc, access_mode_1_0, MLX5_MKC_ACCESS_MODE_PA);
-+	MLX5_SET(mkc, mkc, a, 1);
-+	MLX5_SET(mkc, mkc, rw, 1);
-+	MLX5_SET(mkc, mkc, rr, 1);
-+	MLX5_SET(mkc, mkc, lw, 1);
-+	MLX5_SET(mkc, mkc, lr, 1);
-+
-+	MLX5_SET(mkc, mkc, pd, pdn);
-+	MLX5_SET(mkc, mkc, length64, 1);
-+	MLX5_SET(mkc, mkc, qpn, 0xffffff);
-+
-+	return mlx5_core_create_mkey(mdev, mkey, in, sizeof(in));
-+}
-+
-+static struct mlx5dr_mr *dr_reg_mr(struct mlx5_core_dev *mdev,
-+				   u32 pdn, void *buf, size_t size)
-+{
-+	struct mlx5dr_mr *mr =3D kzalloc(sizeof(*mr), GFP_KERNEL);
-+	struct device *dma_device;
-+	dma_addr_t dma_addr;
-+	int err;
-+
-+	if (!mr)
-+		return NULL;
-+
-+	dma_device =3D &mdev->pdev->dev;
-+	dma_addr =3D dma_map_single(dma_device, buf, size,
-+				  DMA_BIDIRECTIONAL);
-+	err =3D dma_mapping_error(dma_device, dma_addr);
-+	if (err) {
-+		mlx5_core_warn(mdev, "Can't dma buf\n");
-+		kfree(mr);
-+		return NULL;
-+	}
-+
-+	err =3D dr_create_mkey(mdev, pdn, &mr->mkey);
-+	if (err) {
-+		mlx5_core_warn(mdev, "Can't create mkey\n");
-+		dma_unmap_single(dma_device, dma_addr, size,
-+				 DMA_BIDIRECTIONAL);
-+		kfree(mr);
-+		return NULL;
-+	}
-+
-+	mr->dma_addr =3D dma_addr;
-+	mr->size =3D size;
-+	mr->addr =3D buf;
-+
-+	return mr;
-+}
-+
-+static void dr_dereg_mr(struct mlx5_core_dev *mdev, struct mlx5dr_mr *mr)
-+{
-+	mlx5_core_destroy_mkey(mdev, &mr->mkey);
-+	dma_unmap_single(&mdev->pdev->dev, mr->dma_addr, mr->size,
-+			 DMA_BIDIRECTIONAL);
-+	kfree(mr);
-+}
-+
-+int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
-+{
-+	struct dr_qp_init_attr init_attr =3D {};
-+	int cq_size;
-+	int size;
-+	int ret;
-+
-+	dmn->send_ring =3D kzalloc(sizeof(*dmn->send_ring), GFP_KERNEL);
-+	if (!dmn->send_ring)
-+		return -ENOMEM;
-+
-+	cq_size =3D QUEUE_SIZE + 1;
-+	dmn->send_ring->cq =3D dr_create_cq(dmn->mdev, dmn->uar, cq_size);
-+	if (!dmn->send_ring->cq) {
-+		ret =3D -ENOMEM;
-+		goto free_send_ring;
-+	}
-+
-+	init_attr.cqn =3D dmn->send_ring->cq->mcq.cqn;
-+	init_attr.pdn =3D dmn->pdn;
-+	init_attr.uar =3D dmn->uar;
-+	init_attr.max_send_wr =3D QUEUE_SIZE;
-+
-+	dmn->send_ring->qp =3D dr_create_rc_qp(dmn->mdev, &init_attr);
-+	if (!dmn->send_ring->qp)  {
-+		ret =3D -ENOMEM;
-+		goto clean_cq;
-+	}
-+
-+	dmn->send_ring->cq->qp =3D dmn->send_ring->qp;
-+
-+	dmn->info.max_send_wr =3D QUEUE_SIZE;
-+	dmn->info.max_inline_size =3D min(dmn->send_ring->qp->max_inline_data,
-+					DR_STE_SIZE);
-+
-+	dmn->send_ring->signal_th =3D dmn->info.max_send_wr /
-+		SIGNAL_PER_DIV_QUEUE;
-+
-+	/* Prepare qp to be used */
-+	ret =3D dr_prepare_qp_to_rts(dmn);
-+	if (ret)
-+		goto clean_qp;
-+
-+	dmn->send_ring->max_post_send_size =3D
-+		mlx5dr_icm_pool_chunk_size_to_byte(DR_CHUNK_SIZE_1K,
-+						   DR_ICM_TYPE_STE);
-+
-+	/* Allocating the max size as a buffer for writing */
-+	size =3D dmn->send_ring->signal_th * dmn->send_ring->max_post_send_size;
-+	dmn->send_ring->buf =3D kzalloc(size, GFP_KERNEL);
-+	if (!dmn->send_ring->buf) {
-+		ret =3D -ENOMEM;
-+		goto clean_qp;
-+	}
-+
-+	memset(dmn->send_ring->buf, 0, size);
-+	dmn->send_ring->buf_size =3D size;
-+
-+	dmn->send_ring->mr =3D dr_reg_mr(dmn->mdev,
-+				       dmn->pdn, dmn->send_ring->buf, size);
-+	if (!dmn->send_ring->mr) {
-+		ret =3D -ENOMEM;
-+		goto free_mem;
-+	}
-+
-+	dmn->send_ring->sync_mr =3D dr_reg_mr(dmn->mdev,
-+					    dmn->pdn, dmn->send_ring->sync_buff,
-+					    MIN_READ_SYNC);
-+	if (!dmn->send_ring->sync_mr) {
-+		ret =3D -ENOMEM;
-+		goto clean_mr;
++	if (!value && (match_criteria & DR_MATCHER_CRITERIA_MISC)) {
++		if (mask->misc.source_port && mask->misc.source_port !=3D 0xffff) {
++			mlx5dr_dbg(dmn, "Partial mask source_port is not supported\n");
++			return -EINVAL;
++		}
 +	}
 +
 +	return 0;
-+
-+clean_mr:
-+	dr_dereg_mr(dmn->mdev, dmn->send_ring->mr);
-+free_mem:
-+	kfree(dmn->send_ring->buf);
-+clean_qp:
-+	dr_destroy_qp(dmn->mdev, dmn->send_ring->qp);
-+clean_cq:
-+	dr_destroy_cq(dmn->mdev, dmn->send_ring->cq);
-+free_send_ring:
-+	kfree(dmn->send_ring);
-+
-+	return ret;
 +}
 +
-+void mlx5dr_send_ring_free(struct mlx5dr_domain *dmn,
-+			   struct mlx5dr_send_ring *send_ring)
++int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
++			     struct mlx5dr_matcher_rx_tx *nic_matcher,
++			     struct mlx5dr_match_param *value,
++			     u8 *ste_arr)
 +{
-+	dr_destroy_qp(dmn->mdev, send_ring->qp);
-+	dr_destroy_cq(dmn->mdev, send_ring->cq);
-+	dr_dereg_mr(dmn->mdev, send_ring->sync_mr);
-+	dr_dereg_mr(dmn->mdev, send_ring->mr);
-+	kfree(send_ring->buf);
-+	kfree(send_ring);
-+}
++	struct mlx5dr_domain_rx_tx *nic_dmn =3D nic_matcher->nic_tbl->nic_dmn;
++	struct mlx5dr_domain *dmn =3D matcher->tbl->dmn;
++	struct mlx5dr_ste_build *sb;
++	int ret, i;
 +
-+int mlx5dr_send_ring_force_drain(struct mlx5dr_domain *dmn)
-+{
-+	struct mlx5dr_send_ring *send_ring =3D dmn->send_ring;
-+	struct postsend_info send_info =3D {};
-+	u8 data[DR_STE_SIZE];
-+	int num_of_sends_req;
-+	int ret;
-+	int i;
++	ret =3D mlx5dr_ste_build_pre_check(dmn, matcher->match_criteria,
++					 &matcher->mask, value);
++	if (ret)
++		return ret;
 +
-+	/* Sending this amount of requests makes sure we will get drain */
-+	num_of_sends_req =3D send_ring->signal_th * TH_NUMS_TO_DRAIN / 2;
++	sb =3D nic_matcher->ste_builder;
++	for (i =3D 0; i < nic_matcher->num_of_builders; i++) {
++		mlx5dr_ste_init(ste_arr,
++				sb->lu_type,
++				nic_dmn->ste_type,
++				dmn->info.caps.gvmi);
 +
-+	/* Send fake requests forcing the last to be signaled */
-+	send_info.write.addr =3D (uintptr_t)data;
-+	send_info.write.length =3D DR_STE_SIZE;
-+	send_info.write.lkey =3D 0;
-+	/* Using the sync_mr in order to write/read */
-+	send_info.remote_addr =3D (uintptr_t)send_ring->sync_mr->addr;
-+	send_info.rkey =3D send_ring->sync_mr->mkey.key;
++		mlx5dr_ste_set_bit_mask(ste_arr, sb->bit_mask);
 +
-+	for (i =3D 0; i < num_of_sends_req; i++) {
-+		ret =3D dr_postsend_icm_data(dmn, &send_info);
++		ret =3D sb->ste_build_tag_func(value, sb, ste_arr);
 +		if (ret)
 +			return ret;
++
++		/* Connect the STEs */
++		if (i < (nic_matcher->num_of_builders - 1)) {
++			/* Need the next builder for these fields,
++			 * not relevant for the last ste in the chain.
++			 */
++			sb++;
++			MLX5_SET(ste_general, ste_arr, next_lu_type, sb->lu_type);
++			MLX5_SET(ste_general, ste_arr, byte_mask, sb->byte_mask);
++		}
++		ste_arr +=3D DR_STE_SIZE;
++	}
++	return 0;
++}
++
++static int dr_ste_build_eth_l2_src_des_bit_mask(struct mlx5dr_match_param =
+*value,
++						bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l2_src_dst, bit_mask, dmac_47_16, mask, dmac_47_16)=
+;
++	DR_STE_SET_MASK_V(eth_l2_src_dst, bit_mask, dmac_15_0, mask, dmac_15_0);
++
++	if (mask->smac_47_16 || mask->smac_15_0) {
++		MLX5_SET(ste_eth_l2_src_dst, bit_mask, smac_47_32,
++			 mask->smac_47_16 >> 16);
++		MLX5_SET(ste_eth_l2_src_dst, bit_mask, smac_31_0,
++			 mask->smac_47_16 << 16 | mask->smac_15_0);
++		mask->smac_47_16 =3D 0;
++		mask->smac_15_0 =3D 0;
 +	}
 +
-+	ret =3D dr_handle_pending_wc(dmn, send_ring);
++	DR_STE_SET_MASK_V(eth_l2_src_dst, bit_mask, first_vlan_id, mask, first_vi=
+d);
++	DR_STE_SET_MASK_V(eth_l2_src_dst, bit_mask, first_cfi, mask, first_cfi);
++	DR_STE_SET_MASK_V(eth_l2_src_dst, bit_mask, first_priority, mask, first_p=
+rio);
++	DR_STE_SET_MASK(eth_l2_src_dst, bit_mask, l3_type, mask, ip_version);
 +
-+	return ret;
++	if (mask->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_src_dst, bit_mask, first_vlan_qualifier, -1);
++		mask->cvlan_tag =3D 0;
++	} else if (mask->svlan_tag) {
++		MLX5_SET(ste_eth_l2_src_dst, bit_mask, first_vlan_qualifier, -1);
++		mask->svlan_tag =3D 0;
++	}
++
++	if (mask->cvlan_tag || mask->svlan_tag) {
++		pr_info("Invalid c/svlan mask configuration\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static void dr_ste_copy_mask_misc(char *mask, struct mlx5dr_match_misc *sp=
+ec)
++{
++	spec->gre_c_present =3D MLX5_GET(fte_match_set_misc, mask, gre_c_present)=
+;
++	spec->gre_k_present =3D MLX5_GET(fte_match_set_misc, mask, gre_k_present)=
+;
++	spec->gre_s_present =3D MLX5_GET(fte_match_set_misc, mask, gre_s_present)=
+;
++	spec->source_vhca_port =3D MLX5_GET(fte_match_set_misc, mask, source_vhca=
+_port);
++	spec->source_sqn =3D MLX5_GET(fte_match_set_misc, mask, source_sqn);
++
++	spec->source_port =3D MLX5_GET(fte_match_set_misc, mask, source_port);
++
++	spec->outer_second_prio =3D MLX5_GET(fte_match_set_misc, mask, outer_seco=
+nd_prio);
++	spec->outer_second_cfi =3D MLX5_GET(fte_match_set_misc, mask, outer_secon=
+d_cfi);
++	spec->outer_second_vid =3D MLX5_GET(fte_match_set_misc, mask, outer_secon=
+d_vid);
++	spec->inner_second_prio =3D MLX5_GET(fte_match_set_misc, mask, inner_seco=
+nd_prio);
++	spec->inner_second_cfi =3D MLX5_GET(fte_match_set_misc, mask, inner_secon=
+d_cfi);
++	spec->inner_second_vid =3D MLX5_GET(fte_match_set_misc, mask, inner_secon=
+d_vid);
++
++	spec->outer_second_cvlan_tag =3D
++		MLX5_GET(fte_match_set_misc, mask, outer_second_cvlan_tag);
++	spec->inner_second_cvlan_tag =3D
++		MLX5_GET(fte_match_set_misc, mask, inner_second_cvlan_tag);
++	spec->outer_second_svlan_tag =3D
++		MLX5_GET(fte_match_set_misc, mask, outer_second_svlan_tag);
++	spec->inner_second_svlan_tag =3D
++		MLX5_GET(fte_match_set_misc, mask, inner_second_svlan_tag);
++
++	spec->gre_protocol =3D MLX5_GET(fte_match_set_misc, mask, gre_protocol);
++
++	spec->gre_key_h =3D MLX5_GET(fte_match_set_misc, mask, gre_key.nvgre.hi);
++	spec->gre_key_l =3D MLX5_GET(fte_match_set_misc, mask, gre_key.nvgre.lo);
++
++	spec->vxlan_vni =3D MLX5_GET(fte_match_set_misc, mask, vxlan_vni);
++
++	spec->geneve_vni =3D MLX5_GET(fte_match_set_misc, mask, geneve_vni);
++	spec->geneve_oam =3D MLX5_GET(fte_match_set_misc, mask, geneve_oam);
++
++	spec->outer_ipv6_flow_label =3D
++		MLX5_GET(fte_match_set_misc, mask, outer_ipv6_flow_label);
++
++	spec->inner_ipv6_flow_label =3D
++		MLX5_GET(fte_match_set_misc, mask, inner_ipv6_flow_label);
++
++	spec->geneve_opt_len =3D MLX5_GET(fte_match_set_misc, mask, geneve_opt_le=
+n);
++	spec->geneve_protocol_type =3D
++		MLX5_GET(fte_match_set_misc, mask, geneve_protocol_type);
++
++	spec->bth_dst_qp =3D MLX5_GET(fte_match_set_misc, mask, bth_dst_qp);
++}
++
++static void dr_ste_copy_mask_spec(char *mask, struct mlx5dr_match_spec *sp=
+ec)
++{
++	u32 raw_ip[4];
++
++	spec->smac_47_16 =3D MLX5_GET(fte_match_set_lyr_2_4, mask, smac_47_16);
++
++	spec->smac_15_0 =3D MLX5_GET(fte_match_set_lyr_2_4, mask, smac_15_0);
++	spec->ethertype =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ethertype);
++
++	spec->dmac_47_16 =3D MLX5_GET(fte_match_set_lyr_2_4, mask, dmac_47_16);
++
++	spec->dmac_15_0 =3D MLX5_GET(fte_match_set_lyr_2_4, mask, dmac_15_0);
++	spec->first_prio =3D MLX5_GET(fte_match_set_lyr_2_4, mask, first_prio);
++	spec->first_cfi =3D MLX5_GET(fte_match_set_lyr_2_4, mask, first_cfi);
++	spec->first_vid =3D MLX5_GET(fte_match_set_lyr_2_4, mask, first_vid);
++
++	spec->ip_protocol =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ip_protocol);
++	spec->ip_dscp =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ip_dscp);
++	spec->ip_ecn =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ip_ecn);
++	spec->cvlan_tag =3D MLX5_GET(fte_match_set_lyr_2_4, mask, cvlan_tag);
++	spec->svlan_tag =3D MLX5_GET(fte_match_set_lyr_2_4, mask, svlan_tag);
++	spec->frag =3D MLX5_GET(fte_match_set_lyr_2_4, mask, frag);
++	spec->ip_version =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ip_version);
++	spec->tcp_flags =3D MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_flags);
++	spec->tcp_sport =3D MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_sport);
++	spec->tcp_dport =3D MLX5_GET(fte_match_set_lyr_2_4, mask, tcp_dport);
++
++	spec->ttl_hoplimit =3D MLX5_GET(fte_match_set_lyr_2_4, mask, ttl_hoplimit=
+);
++
++	spec->udp_sport =3D MLX5_GET(fte_match_set_lyr_2_4, mask, udp_sport);
++	spec->udp_dport =3D MLX5_GET(fte_match_set_lyr_2_4, mask, udp_dport);
++
++	memcpy(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
++				    src_ipv4_src_ipv6.ipv6_layout.ipv6),
++				    sizeof(raw_ip));
++
++	spec->src_ip_127_96 =3D be32_to_cpu(raw_ip[0]);
++	spec->src_ip_95_64 =3D be32_to_cpu(raw_ip[1]);
++	spec->src_ip_63_32 =3D be32_to_cpu(raw_ip[2]);
++	spec->src_ip_31_0 =3D be32_to_cpu(raw_ip[3]);
++
++	memcpy(raw_ip, MLX5_ADDR_OF(fte_match_set_lyr_2_4, mask,
++				    dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
++				    sizeof(raw_ip));
++
++	spec->dst_ip_127_96 =3D be32_to_cpu(raw_ip[0]);
++	spec->dst_ip_95_64 =3D be32_to_cpu(raw_ip[1]);
++	spec->dst_ip_63_32 =3D be32_to_cpu(raw_ip[2]);
++	spec->dst_ip_31_0 =3D be32_to_cpu(raw_ip[3]);
++}
++
++static void dr_ste_copy_mask_misc2(char *mask, struct mlx5dr_match_misc2 *=
+spec)
++{
++	spec->outer_first_mpls_label =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_label);
++	spec->outer_first_mpls_exp =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_exp);
++	spec->outer_first_mpls_s_bos =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_s_bos);
++	spec->outer_first_mpls_ttl =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls.mpls_ttl);
++	spec->inner_first_mpls_label =3D
++		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_label);
++	spec->inner_first_mpls_exp =3D
++		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_exp);
++	spec->inner_first_mpls_s_bos =3D
++		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_s_bos);
++	spec->inner_first_mpls_ttl =3D
++		MLX5_GET(fte_match_set_misc2, mask, inner_first_mpls.mpls_ttl);
++	spec->outer_first_mpls_over_gre_label =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_label=
+);
++	spec->outer_first_mpls_over_gre_exp =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_exp);
++	spec->outer_first_mpls_over_gre_s_bos =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_s_bos=
+);
++	spec->outer_first_mpls_over_gre_ttl =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_gre.mpls_ttl);
++	spec->outer_first_mpls_over_udp_label =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_label=
+);
++	spec->outer_first_mpls_over_udp_exp =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_exp);
++	spec->outer_first_mpls_over_udp_s_bos =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_s_bos=
+);
++	spec->outer_first_mpls_over_udp_ttl =3D
++		MLX5_GET(fte_match_set_misc2, mask, outer_first_mpls_over_udp.mpls_ttl);
++	spec->metadata_reg_c_7 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_7);
++	spec->metadata_reg_c_6 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_6);
++	spec->metadata_reg_c_5 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_5);
++	spec->metadata_reg_c_4 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_4);
++	spec->metadata_reg_c_3 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_3);
++	spec->metadata_reg_c_2 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_2);
++	spec->metadata_reg_c_1 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_1);
++	spec->metadata_reg_c_0 =3D MLX5_GET(fte_match_set_misc2, mask, metadata_r=
+eg_c_0);
++	spec->metadata_reg_a =3D MLX5_GET(fte_match_set_misc2, mask, metadata_reg=
+_a);
++	spec->metadata_reg_b =3D MLX5_GET(fte_match_set_misc2, mask, metadata_reg=
+_b);
++}
++
++static void dr_ste_copy_mask_misc3(char *mask, struct mlx5dr_match_misc3 *=
+spec)
++{
++	spec->inner_tcp_seq_num =3D MLX5_GET(fte_match_set_misc3, mask, inner_tcp=
+_seq_num);
++	spec->outer_tcp_seq_num =3D MLX5_GET(fte_match_set_misc3, mask, outer_tcp=
+_seq_num);
++	spec->inner_tcp_ack_num =3D MLX5_GET(fte_match_set_misc3, mask, inner_tcp=
+_ack_num);
++	spec->outer_tcp_ack_num =3D MLX5_GET(fte_match_set_misc3, mask, outer_tcp=
+_ack_num);
++	spec->outer_vxlan_gpe_vni =3D
++		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_vni);
++	spec->outer_vxlan_gpe_next_protocol =3D
++		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_next_protocol);
++	spec->outer_vxlan_gpe_flags =3D
++		MLX5_GET(fte_match_set_misc3, mask, outer_vxlan_gpe_flags);
++	spec->icmpv4_header_data =3D MLX5_GET(fte_match_set_misc3, mask, icmp_hea=
+der_data);
++	spec->icmpv6_header_data =3D
++		MLX5_GET(fte_match_set_misc3, mask, icmpv6_header_data);
++	spec->icmpv4_type =3D MLX5_GET(fte_match_set_misc3, mask, icmp_type);
++	spec->icmpv4_code =3D MLX5_GET(fte_match_set_misc3, mask, icmp_code);
++	spec->icmpv6_type =3D MLX5_GET(fte_match_set_misc3, mask, icmpv6_type);
++	spec->icmpv6_code =3D MLX5_GET(fte_match_set_misc3, mask, icmpv6_code);
++}
++
++void mlx5dr_ste_copy_param(u8 match_criteria,
++			   struct mlx5dr_match_param *set_param,
++			   struct mlx5dr_match_parameters *mask)
++{
++	u8 tail_param[MLX5_ST_SZ_BYTES(fte_match_set_lyr_2_4)] =3D {};
++	u8 *data =3D (u8 *)mask->match_buf;
++	size_t param_location;
++	void *buff;
++
++	if (match_criteria & DR_MATCHER_CRITERIA_OUTER) {
++		if (mask->match_sz < sizeof(struct mlx5dr_match_spec)) {
++			memcpy(tail_param, data, mask->match_sz);
++			buff =3D tail_param;
++		} else {
++			buff =3D mask->match_buf;
++		}
++		dr_ste_copy_mask_spec(buff, &set_param->outer);
++	}
++	param_location =3D sizeof(struct mlx5dr_match_spec);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC) {
++		if (mask->match_sz < param_location +
++		    sizeof(struct mlx5dr_match_misc)) {
++			memcpy(tail_param, data + param_location,
++			       mask->match_sz - param_location);
++			buff =3D tail_param;
++		} else {
++			buff =3D data + param_location;
++		}
++		dr_ste_copy_mask_misc(buff, &set_param->misc);
++	}
++	param_location +=3D sizeof(struct mlx5dr_match_misc);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_INNER) {
++		if (mask->match_sz < param_location +
++		    sizeof(struct mlx5dr_match_spec)) {
++			memcpy(tail_param, data + param_location,
++			       mask->match_sz - param_location);
++			buff =3D tail_param;
++		} else {
++			buff =3D data + param_location;
++		}
++		dr_ste_copy_mask_spec(buff, &set_param->inner);
++	}
++	param_location +=3D sizeof(struct mlx5dr_match_spec);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC2) {
++		if (mask->match_sz < param_location +
++		    sizeof(struct mlx5dr_match_misc2)) {
++			memcpy(tail_param, data + param_location,
++			       mask->match_sz - param_location);
++			buff =3D tail_param;
++		} else {
++			buff =3D data + param_location;
++		}
++		dr_ste_copy_mask_misc2(buff, &set_param->misc2);
++	}
++
++	param_location +=3D sizeof(struct mlx5dr_match_misc2);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC3) {
++		if (mask->match_sz < param_location +
++		    sizeof(struct mlx5dr_match_misc3)) {
++			memcpy(tail_param, data + param_location,
++			       mask->match_sz - param_location);
++			buff =3D tail_param;
++		} else {
++			buff =3D data + param_location;
++		}
++		dr_ste_copy_mask_misc3(buff, &set_param->misc3);
++	}
++}
++
++static int dr_ste_build_eth_l2_src_des_tag(struct mlx5dr_match_param *valu=
+e,
++					   struct mlx5dr_ste_build *sb,
++					   u8 *hw_ste_p)
++{
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l2_src_dst, tag, dmac_47_16, spec, dmac_47_16);
++	DR_STE_SET_TAG(eth_l2_src_dst, tag, dmac_15_0, spec, dmac_15_0);
++
++	if (spec->smac_47_16 || spec->smac_15_0) {
++		MLX5_SET(ste_eth_l2_src_dst, tag, smac_47_32,
++			 spec->smac_47_16 >> 16);
++		MLX5_SET(ste_eth_l2_src_dst, tag, smac_31_0,
++			 spec->smac_47_16 << 16 | spec->smac_15_0);
++		spec->smac_47_16 =3D 0;
++		spec->smac_15_0 =3D 0;
++	}
++
++	if (spec->ip_version) {
++		if (spec->ip_version =3D=3D IP_VERSION_IPV4) {
++			MLX5_SET(ste_eth_l2_src_dst, tag, l3_type, STE_IPV4);
++			spec->ip_version =3D 0;
++		} else if (spec->ip_version =3D=3D IP_VERSION_IPV6) {
++			MLX5_SET(ste_eth_l2_src_dst, tag, l3_type, STE_IPV6);
++			spec->ip_version =3D 0;
++		} else {
++			pr_info("Unsupported ip_version value\n");
++			return -EINVAL;
++		}
++	}
++
++	DR_STE_SET_TAG(eth_l2_src_dst, tag, first_vlan_id, spec, first_vid);
++	DR_STE_SET_TAG(eth_l2_src_dst, tag, first_cfi, spec, first_cfi);
++	DR_STE_SET_TAG(eth_l2_src_dst, tag, first_priority, spec, first_prio);
++
++	if (spec->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_src_dst, tag, first_vlan_qualifier, DR_STE_CVLAN);
++		spec->cvlan_tag =3D 0;
++	} else if (spec->svlan_tag) {
++		MLX5_SET(ste_eth_l2_src_dst, tag, first_vlan_qualifier, DR_STE_SVLAN);
++		spec->svlan_tag =3D 0;
++	}
++	return 0;
++}
++
++int mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *sb,
++				    struct mlx5dr_match_param *mask,
++				    bool inner, bool rx)
++{
++	int ret;
++
++	ret =3D dr_ste_build_eth_l2_src_des_bit_mask(mask, inner, sb->bit_mask);
++	if (ret)
++		return ret;
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL2_SRC_DST, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l2_src_des_tag;
++
++	return 0;
++}
++
++static void dr_ste_build_eth_l3_ipv6_dst_bit_mask(struct mlx5dr_match_para=
+m *value,
++						  bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l3_ipv6_dst, bit_mask, dst_ip_127_96, mask, dst_ip_=
+127_96);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_dst, bit_mask, dst_ip_95_64, mask, dst_ip_9=
+5_64);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_dst, bit_mask, dst_ip_63_32, mask, dst_ip_6=
+3_32);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_dst, bit_mask, dst_ip_31_0, mask, dst_ip_31=
+_0);
++}
++
++static int dr_ste_build_eth_l3_ipv6_dst_tag(struct mlx5dr_match_param *val=
+ue,
++					    struct mlx5dr_ste_build *sb,
++					    u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l3_ipv6_dst, tag, dst_ip_127_96, spec, dst_ip_127_96);
++	DR_STE_SET_TAG(eth_l3_ipv6_dst, tag, dst_ip_95_64, spec, dst_ip_95_64);
++	DR_STE_SET_TAG(eth_l3_ipv6_dst, tag, dst_ip_63_32, spec, dst_ip_63_32);
++	DR_STE_SET_TAG(eth_l3_ipv6_dst, tag, dst_ip_31_0, spec, dst_ip_31_0);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l3_ipv6_dst(struct mlx5dr_ste_build *sb,
++				      struct mlx5dr_match_param *mask,
++				      bool inner, bool rx)
++{
++	dr_ste_build_eth_l3_ipv6_dst_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL3_IPV6_DST, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l3_ipv6_dst_tag;
++}
++
++static void dr_ste_build_eth_l3_ipv6_src_bit_mask(struct mlx5dr_match_para=
+m *value,
++						  bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l3_ipv6_src, bit_mask, src_ip_127_96, mask, src_ip_=
+127_96);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_src, bit_mask, src_ip_95_64, mask, src_ip_9=
+5_64);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_src, bit_mask, src_ip_63_32, mask, src_ip_6=
+3_32);
++	DR_STE_SET_MASK_V(eth_l3_ipv6_src, bit_mask, src_ip_31_0, mask, src_ip_31=
+_0);
++}
++
++static int dr_ste_build_eth_l3_ipv6_src_tag(struct mlx5dr_match_param *val=
+ue,
++					    struct mlx5dr_ste_build *sb,
++					    u8 *hw_ste_p)
++{
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l3_ipv6_src, tag, src_ip_127_96, spec, src_ip_127_96);
++	DR_STE_SET_TAG(eth_l3_ipv6_src, tag, src_ip_95_64, spec, src_ip_95_64);
++	DR_STE_SET_TAG(eth_l3_ipv6_src, tag, src_ip_63_32, spec, src_ip_63_32);
++	DR_STE_SET_TAG(eth_l3_ipv6_src, tag, src_ip_31_0, spec, src_ip_31_0);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l3_ipv6_src(struct mlx5dr_ste_build *sb,
++				      struct mlx5dr_match_param *mask,
++				      bool inner, bool rx)
++{
++	dr_ste_build_eth_l3_ipv6_src_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL3_IPV6_SRC, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l3_ipv6_src_tag;
++}
++
++static void dr_ste_build_eth_l3_ipv4_5_tuple_bit_mask(struct mlx5dr_match_=
+param *value,
++						      bool inner,
++						      u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  destination_address, mask, dst_ip_31_0);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  source_address, mask, src_ip_31_0);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  destination_port, mask, tcp_dport);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  destination_port, mask, udp_dport);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  source_port, mask, tcp_sport);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  source_port, mask, udp_sport);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  protocol, mask, ip_protocol);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  fragmented, mask, frag);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  dscp, mask, ip_dscp);
++	DR_STE_SET_MASK_V(eth_l3_ipv4_5_tuple, bit_mask,
++			  ecn, mask, ip_ecn);
++
++	if (mask->tcp_flags) {
++		DR_STE_SET_TCP_FLAGS(eth_l3_ipv4_5_tuple, bit_mask, mask);
++		mask->tcp_flags =3D 0;
++	}
++}
++
++static int dr_ste_build_eth_l3_ipv4_5_tuple_tag(struct mlx5dr_match_param =
+*value,
++						struct mlx5dr_ste_build *sb,
++						u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, destination_address, spec, dst_i=
+p_31_0);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, source_address, spec, src_ip_31_=
+0);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, destination_port, spec, tcp_dpor=
+t);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, destination_port, spec, udp_dpor=
+t);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, source_port, spec, tcp_sport);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, source_port, spec, udp_sport);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, protocol, spec, ip_protocol);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, fragmented, spec, frag);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, dscp, spec, ip_dscp);
++	DR_STE_SET_TAG(eth_l3_ipv4_5_tuple, tag, ecn, spec, ip_ecn);
++
++	if (spec->tcp_flags) {
++		DR_STE_SET_TCP_FLAGS(eth_l3_ipv4_5_tuple, tag, spec);
++		spec->tcp_flags =3D 0;
++	}
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l3_ipv4_5_tuple(struct mlx5dr_ste_build *sb,
++					  struct mlx5dr_match_param *mask,
++					  bool inner, bool rx)
++{
++	dr_ste_build_eth_l3_ipv4_5_tuple_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL3_IPV4_5_TUPLE, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l3_ipv4_5_tuple_tag;
++}
++
++static void
++dr_ste_build_eth_l2_src_or_dst_bit_mask(struct mlx5dr_match_param *value,
++					bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++	struct mlx5dr_match_misc *misc_mask =3D &value->misc;
++
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, first_vlan_id, mask, first_vid);
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, first_cfi, mask, first_cfi);
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, first_priority, mask, first_prio)=
+;
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, ip_fragmented, mask, frag);
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, l3_ethertype, mask, ethertype);
++	DR_STE_SET_MASK(eth_l2_src, bit_mask, l3_type, mask, ip_version);
++
++	if (mask->svlan_tag || mask->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_src, bit_mask, first_vlan_qualifier, -1);
++		mask->cvlan_tag =3D 0;
++		mask->svlan_tag =3D 0;
++	}
++
++	if (inner) {
++		if (misc_mask->inner_second_cvlan_tag ||
++		    misc_mask->inner_second_svlan_tag) {
++			MLX5_SET(ste_eth_l2_src, bit_mask, second_vlan_qualifier, -1);
++			misc_mask->inner_second_cvlan_tag =3D 0;
++			misc_mask->inner_second_svlan_tag =3D 0;
++		}
++
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_vlan_id, misc_mask, inner_second_vid);
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_cfi, misc_mask, inner_second_cfi);
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_priority, misc_mask, inner_second_prio);
++	} else {
++		if (misc_mask->outer_second_cvlan_tag ||
++		    misc_mask->outer_second_svlan_tag) {
++			MLX5_SET(ste_eth_l2_src, bit_mask, second_vlan_qualifier, -1);
++			misc_mask->outer_second_cvlan_tag =3D 0;
++			misc_mask->outer_second_svlan_tag =3D 0;
++		}
++
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_vlan_id, misc_mask, outer_second_vid);
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_cfi, misc_mask, outer_second_cfi);
++		DR_STE_SET_MASK_V(eth_l2_src, bit_mask,
++				  second_priority, misc_mask, outer_second_prio);
++	}
++}
++
++static int dr_ste_build_eth_l2_src_or_dst_tag(struct mlx5dr_match_param *v=
+alue,
++					      bool inner, u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D inner ? &value->inner : &value->outer;
++	struct mlx5dr_match_misc *misc_spec =3D &value->misc;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l2_src, tag, first_vlan_id, spec, first_vid);
++	DR_STE_SET_TAG(eth_l2_src, tag, first_cfi, spec, first_cfi);
++	DR_STE_SET_TAG(eth_l2_src, tag, first_priority, spec, first_prio);
++	DR_STE_SET_TAG(eth_l2_src, tag, ip_fragmented, spec, frag);
++	DR_STE_SET_TAG(eth_l2_src, tag, l3_ethertype, spec, ethertype);
++
++	if (spec->ip_version) {
++		if (spec->ip_version =3D=3D IP_VERSION_IPV4) {
++			MLX5_SET(ste_eth_l2_src, tag, l3_type, STE_IPV4);
++			spec->ip_version =3D 0;
++		} else if (spec->ip_version =3D=3D IP_VERSION_IPV6) {
++			MLX5_SET(ste_eth_l2_src, tag, l3_type, STE_IPV6);
++			spec->ip_version =3D 0;
++		} else {
++			pr_info("Unsupported ip_version value\n");
++			return -EINVAL;
++		}
++	}
++
++	if (spec->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_src, tag, first_vlan_qualifier, DR_STE_CVLAN);
++		spec->cvlan_tag =3D 0;
++	} else if (spec->svlan_tag) {
++		MLX5_SET(ste_eth_l2_src, tag, first_vlan_qualifier, DR_STE_SVLAN);
++		spec->svlan_tag =3D 0;
++	}
++
++	if (inner) {
++		if (misc_spec->inner_second_cvlan_tag) {
++			MLX5_SET(ste_eth_l2_src, tag, second_vlan_qualifier, DR_STE_CVLAN);
++			misc_spec->inner_second_cvlan_tag =3D 0;
++		} else if (misc_spec->inner_second_svlan_tag) {
++			MLX5_SET(ste_eth_l2_src, tag, second_vlan_qualifier, DR_STE_SVLAN);
++			misc_spec->inner_second_svlan_tag =3D 0;
++		}
++
++		DR_STE_SET_TAG(eth_l2_src, tag, second_vlan_id, misc_spec, inner_second_=
+vid);
++		DR_STE_SET_TAG(eth_l2_src, tag, second_cfi, misc_spec, inner_second_cfi)=
+;
++		DR_STE_SET_TAG(eth_l2_src, tag, second_priority, misc_spec, inner_second=
+_prio);
++	} else {
++		if (misc_spec->outer_second_cvlan_tag) {
++			MLX5_SET(ste_eth_l2_src, tag, second_vlan_qualifier, DR_STE_CVLAN);
++			misc_spec->outer_second_cvlan_tag =3D 0;
++		} else if (misc_spec->outer_second_svlan_tag) {
++			MLX5_SET(ste_eth_l2_src, tag, second_vlan_qualifier, DR_STE_SVLAN);
++			misc_spec->outer_second_svlan_tag =3D 0;
++		}
++		DR_STE_SET_TAG(eth_l2_src, tag, second_vlan_id, misc_spec, outer_second_=
+vid);
++		DR_STE_SET_TAG(eth_l2_src, tag, second_cfi, misc_spec, outer_second_cfi)=
+;
++		DR_STE_SET_TAG(eth_l2_src, tag, second_priority, misc_spec, outer_second=
+_prio);
++	}
++
++	return 0;
++}
++
++static void dr_ste_build_eth_l2_src_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, smac_47_16, mask, smac_47_16);
++	DR_STE_SET_MASK_V(eth_l2_src, bit_mask, smac_15_0, mask, smac_15_0);
++
++	dr_ste_build_eth_l2_src_or_dst_bit_mask(value, inner, bit_mask);
++}
++
++static int dr_ste_build_eth_l2_src_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l2_src, tag, smac_47_16, spec, smac_47_16);
++	DR_STE_SET_TAG(eth_l2_src, tag, smac_15_0, spec, smac_15_0);
++
++	return dr_ste_build_eth_l2_src_or_dst_tag(value, sb->inner, hw_ste_p);
++}
++
++void mlx5dr_ste_build_eth_l2_src(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask,
++				 bool inner, bool rx)
++{
++	dr_ste_build_eth_l2_src_bit_mask(mask, inner, sb->bit_mask);
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL2_SRC, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l2_src_tag;
++}
++
++static void dr_ste_build_eth_l2_dst_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l2_dst, bit_mask, dmac_47_16, mask, dmac_47_16);
++	DR_STE_SET_MASK_V(eth_l2_dst, bit_mask, dmac_15_0, mask, dmac_15_0);
++
++	dr_ste_build_eth_l2_src_or_dst_bit_mask(value, inner, bit_mask);
++}
++
++static int dr_ste_build_eth_l2_dst_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l2_dst, tag, dmac_47_16, spec, dmac_47_16);
++	DR_STE_SET_TAG(eth_l2_dst, tag, dmac_15_0, spec, dmac_15_0);
++
++	return dr_ste_build_eth_l2_src_or_dst_tag(value, sb->inner, hw_ste_p);
++}
++
++void mlx5dr_ste_build_eth_l2_dst(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask,
++				 bool inner, bool rx)
++{
++	dr_ste_build_eth_l2_dst_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL2_DST, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l2_dst_tag;
++}
++
++static void dr_ste_build_eth_l2_tnl_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++	struct mlx5dr_match_misc *misc =3D &value->misc;
++
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, dmac_47_16, mask, dmac_47_16);
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, dmac_15_0, mask, dmac_15_0);
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, first_vlan_id, mask, first_vid);
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, first_cfi, mask, first_cfi);
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, first_priority, mask, first_prio)=
+;
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, ip_fragmented, mask, frag);
++	DR_STE_SET_MASK_V(eth_l2_tnl, bit_mask, l3_ethertype, mask, ethertype);
++	DR_STE_SET_MASK(eth_l2_tnl, bit_mask, l3_type, mask, ip_version);
++
++	if (misc->vxlan_vni) {
++		MLX5_SET(ste_eth_l2_tnl, bit_mask,
++			 l2_tunneling_network_id, (misc->vxlan_vni << 8));
++		misc->vxlan_vni =3D 0;
++	}
++
++	if (mask->svlan_tag || mask->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_tnl, bit_mask, first_vlan_qualifier, -1);
++		mask->cvlan_tag =3D 0;
++		mask->svlan_tag =3D 0;
++	}
++}
++
++static int dr_ste_build_eth_l2_tnl_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc *misc =3D &value->misc;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l2_tnl, tag, dmac_47_16, spec, dmac_47_16);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, dmac_15_0, spec, dmac_15_0);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, first_vlan_id, spec, first_vid);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, first_cfi, spec, first_cfi);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, ip_fragmented, spec, frag);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, first_priority, spec, first_prio);
++	DR_STE_SET_TAG(eth_l2_tnl, tag, l3_ethertype, spec, ethertype);
++
++	if (misc->vxlan_vni) {
++		MLX5_SET(ste_eth_l2_tnl, tag, l2_tunneling_network_id,
++			 (misc->vxlan_vni << 8));
++		misc->vxlan_vni =3D 0;
++	}
++
++	if (spec->cvlan_tag) {
++		MLX5_SET(ste_eth_l2_tnl, tag, first_vlan_qualifier, DR_STE_CVLAN);
++		spec->cvlan_tag =3D 0;
++	} else if (spec->svlan_tag) {
++		MLX5_SET(ste_eth_l2_tnl, tag, first_vlan_qualifier, DR_STE_SVLAN);
++		spec->svlan_tag =3D 0;
++	}
++
++	if (spec->ip_version) {
++		if (spec->ip_version =3D=3D IP_VERSION_IPV4) {
++			MLX5_SET(ste_eth_l2_tnl, tag, l3_type, STE_IPV4);
++			spec->ip_version =3D 0;
++		} else if (spec->ip_version =3D=3D IP_VERSION_IPV6) {
++			MLX5_SET(ste_eth_l2_tnl, tag, l3_type, STE_IPV6);
++			spec->ip_version =3D 0;
++		} else {
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l2_tnl(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask, bool inner, bool rx)
++{
++	dr_ste_build_eth_l2_tnl_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_ETHL2_TUNNELING_I;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l2_tnl_tag;
++}
++
++static void dr_ste_build_eth_l3_ipv4_misc_bit_mask(struct mlx5dr_match_par=
+am *value,
++						   bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l3_ipv4_misc, bit_mask, time_to_live, mask, ttl_hop=
+limit);
++}
++
++static int dr_ste_build_eth_l3_ipv4_misc_tag(struct mlx5dr_match_param *va=
+lue,
++					     struct mlx5dr_ste_build *sb,
++					     u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l3_ipv4_misc, tag, time_to_live, spec, ttl_hoplimit);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l3_ipv4_misc(struct mlx5dr_ste_build *sb,
++				       struct mlx5dr_match_param *mask,
++				       bool inner, bool rx)
++{
++	dr_ste_build_eth_l3_ipv4_misc_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL3_IPV4_MISC, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l3_ipv4_misc_tag;
++}
++
++static void dr_ste_build_ipv6_l3_l4_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_spec *mask =3D inner ? &value->inner : &value->outer;
++
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, dst_port, mask, tcp_dport);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, src_port, mask, tcp_sport);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, dst_port, mask, udp_dport);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, src_port, mask, udp_sport);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, protocol, mask, ip_protocol);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, fragmented, mask, frag);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, dscp, mask, ip_dscp);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, ecn, mask, ip_ecn);
++	DR_STE_SET_MASK_V(eth_l4, bit_mask, ipv6_hop_limit, mask, ttl_hoplimit);
++
++	if (mask->tcp_flags) {
++		DR_STE_SET_TCP_FLAGS(eth_l4, bit_mask, mask);
++		mask->tcp_flags =3D 0;
++	}
++}
++
++static int dr_ste_build_ipv6_l3_l4_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct mlx5dr_match_spec *spec =3D sb->inner ? &value->inner : &value->ou=
+ter;
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(eth_l4, tag, dst_port, spec, tcp_dport);
++	DR_STE_SET_TAG(eth_l4, tag, src_port, spec, tcp_sport);
++	DR_STE_SET_TAG(eth_l4, tag, dst_port, spec, udp_dport);
++	DR_STE_SET_TAG(eth_l4, tag, src_port, spec, udp_sport);
++	DR_STE_SET_TAG(eth_l4, tag, protocol, spec, ip_protocol);
++	DR_STE_SET_TAG(eth_l4, tag, fragmented, spec, frag);
++	DR_STE_SET_TAG(eth_l4, tag, dscp, spec, ip_dscp);
++	DR_STE_SET_TAG(eth_l4, tag, ecn, spec, ip_ecn);
++	DR_STE_SET_TAG(eth_l4, tag, ipv6_hop_limit, spec, ttl_hoplimit);
++
++	if (spec->tcp_flags) {
++		DR_STE_SET_TCP_FLAGS(eth_l4, tag, spec);
++		spec->tcp_flags =3D 0;
++	}
++
++	return 0;
++}
++
++void mlx5dr_ste_build_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask,
++				 bool inner, bool rx)
++{
++	dr_ste_build_ipv6_l3_l4_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL4, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_ipv6_l3_l4_tag;
++}
++
++static int dr_ste_build_empty_always_hit_tag(struct mlx5dr_match_param *va=
+lue,
++					     struct mlx5dr_ste_build *sb,
++					     u8 *hw_ste_p)
++{
++	return 0;
++}
++
++void mlx5dr_ste_build_empty_always_hit(struct mlx5dr_ste_build *sb, bool r=
+x)
++{
++	sb->rx =3D rx;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_DONT_CARE;
++	sb->byte_mask =3D 0;
++	sb->ste_build_tag_func =3D &dr_ste_build_empty_always_hit_tag;
++}
++
++static void dr_ste_build_mpls_bit_mask(struct mlx5dr_match_param *value,
++				       bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc2 *misc2_mask =3D &value->misc2;
++
++	if (inner)
++		DR_STE_SET_MPLS_MASK(mpls, misc2_mask, inner, bit_mask);
++	else
++		DR_STE_SET_MPLS_MASK(mpls, misc2_mask, outer, bit_mask);
++}
++
++static int dr_ste_build_mpls_tag(struct mlx5dr_match_param *value,
++				 struct mlx5dr_ste_build *sb,
++				 u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc2 *misc2_mask =3D &value->misc2;
++	u8 *tag =3D hw_ste->tag;
++
++	if (sb->inner)
++		DR_STE_SET_MPLS_TAG(mpls, misc2_mask, inner, tag);
++	else
++		DR_STE_SET_MPLS_TAG(mpls, misc2_mask, outer, tag);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_mpls(struct mlx5dr_ste_build *sb,
++			   struct mlx5dr_match_param *mask,
++			   bool inner, bool rx)
++{
++	dr_ste_build_mpls_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(MPLS_FIRST, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_mpls_tag;
++}
++
++static void dr_ste_build_gre_bit_mask(struct mlx5dr_match_param *value,
++				      bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc *misc_mask =3D &value->misc;
++
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_protocol, misc_mask, gre_protocol);
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_k_present, misc_mask, gre_k_present)=
+;
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_key_h, misc_mask, gre_key_h);
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_key_l, misc_mask, gre_key_l);
++
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_c_present, misc_mask, gre_c_present)=
+;
++	DR_STE_SET_MASK_V(gre, bit_mask, gre_s_present, misc_mask, gre_s_present)=
+;
++}
++
++static int dr_ste_build_gre_tag(struct mlx5dr_match_param *value,
++				struct mlx5dr_ste_build *sb,
++				u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct  mlx5dr_match_misc *misc =3D &value->misc;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(gre, tag, gre_protocol, misc, gre_protocol);
++
++	DR_STE_SET_TAG(gre, tag, gre_k_present, misc, gre_k_present);
++	DR_STE_SET_TAG(gre, tag, gre_key_h, misc, gre_key_h);
++	DR_STE_SET_TAG(gre, tag, gre_key_l, misc, gre_key_l);
++
++	DR_STE_SET_TAG(gre, tag, gre_c_present, misc, gre_c_present);
++
++	DR_STE_SET_TAG(gre, tag, gre_s_present, misc, gre_s_present);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_gre(struct mlx5dr_ste_build *sb,
++			  struct mlx5dr_match_param *mask, bool inner, bool rx)
++{
++	dr_ste_build_gre_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_GRE;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_gre_tag;
++}
++
++static void dr_ste_build_flex_parser_0_bit_mask(struct mlx5dr_match_param =
+*value,
++						bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++
++	if (DR_STE_IS_OUTER_MPLS_OVER_GRE_SET(misc_2_mask)) {
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_label,
++				  misc_2_mask, outer_first_mpls_over_gre_label);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_exp,
++				  misc_2_mask, outer_first_mpls_over_gre_exp);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_s_bos,
++				  misc_2_mask, outer_first_mpls_over_gre_s_bos);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_ttl,
++				  misc_2_mask, outer_first_mpls_over_gre_ttl);
++	} else {
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_label,
++				  misc_2_mask, outer_first_mpls_over_udp_label);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_exp,
++				  misc_2_mask, outer_first_mpls_over_udp_exp);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_s_bos,
++				  misc_2_mask, outer_first_mpls_over_udp_s_bos);
++
++		DR_STE_SET_MASK_V(flex_parser_0, bit_mask, parser_3_ttl,
++				  misc_2_mask, outer_first_mpls_over_udp_ttl);
++	}
++}
++
++static int dr_ste_build_flex_parser_0_tag(struct mlx5dr_match_param *value=
+,
++					  struct mlx5dr_ste_build *sb,
++					  u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++	u8 *tag =3D hw_ste->tag;
++
++	if (DR_STE_IS_OUTER_MPLS_OVER_GRE_SET(misc_2_mask)) {
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_label,
++			       misc_2_mask, outer_first_mpls_over_gre_label);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_exp,
++			       misc_2_mask, outer_first_mpls_over_gre_exp);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_s_bos,
++			       misc_2_mask, outer_first_mpls_over_gre_s_bos);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_ttl,
++			       misc_2_mask, outer_first_mpls_over_gre_ttl);
++	} else {
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_label,
++			       misc_2_mask, outer_first_mpls_over_udp_label);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_exp,
++			       misc_2_mask, outer_first_mpls_over_udp_exp);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_s_bos,
++			       misc_2_mask, outer_first_mpls_over_udp_s_bos);
++
++		DR_STE_SET_TAG(flex_parser_0, tag, parser_3_ttl,
++			       misc_2_mask, outer_first_mpls_over_udp_ttl);
++	}
++	return 0;
++}
++
++void mlx5dr_ste_build_flex_parser_0(struct mlx5dr_ste_build *sb,
++				    struct mlx5dr_match_param *mask,
++				    bool inner, bool rx)
++{
++	dr_ste_build_flex_parser_0_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_FLEX_PARSER_0;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_flex_parser_0_tag;
++}
++
++#define ICMP_TYPE_OFFSET_FIRST_DW		24
++#define ICMP_CODE_OFFSET_FIRST_DW		16
++#define ICMP_HEADER_DATA_OFFSET_SECOND_DW	0
++
++static int dr_ste_build_flex_parser_1_bit_mask(struct mlx5dr_match_param *=
+mask,
++					       struct mlx5dr_cmd_caps *caps,
++					       u8 *bit_mask)
++{
++	struct mlx5dr_match_misc3 *misc_3_mask =3D &mask->misc3;
++	bool is_ipv4_mask =3D DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(misc_3_mask);
++	u32 icmp_header_data_mask;
++	u32 icmp_type_mask;
++	u32 icmp_code_mask;
++	int dw0_location;
++	int dw1_location;
++
++	if (is_ipv4_mask) {
++		icmp_header_data_mask	=3D misc_3_mask->icmpv4_header_data;
++		icmp_type_mask		=3D misc_3_mask->icmpv4_type;
++		icmp_code_mask		=3D misc_3_mask->icmpv4_code;
++		dw0_location		=3D caps->flex_parser_id_icmp_dw0;
++		dw1_location		=3D caps->flex_parser_id_icmp_dw1;
++	} else {
++		icmp_header_data_mask	=3D misc_3_mask->icmpv6_header_data;
++		icmp_type_mask		=3D misc_3_mask->icmpv6_type;
++		icmp_code_mask		=3D misc_3_mask->icmpv6_code;
++		dw0_location		=3D caps->flex_parser_id_icmpv6_dw0;
++		dw1_location		=3D caps->flex_parser_id_icmpv6_dw1;
++	}
++
++	switch (dw0_location) {
++	case 4:
++		if (icmp_type_mask) {
++			MLX5_SET(ste_flex_parser_1, bit_mask, flex_parser_4,
++				 (icmp_type_mask << ICMP_TYPE_OFFSET_FIRST_DW));
++			if (is_ipv4_mask)
++				misc_3_mask->icmpv4_type =3D 0;
++			else
++				misc_3_mask->icmpv6_type =3D 0;
++		}
++		if (icmp_code_mask) {
++			u32 cur_val =3D MLX5_GET(ste_flex_parser_1, bit_mask,
++					       flex_parser_4);
++			MLX5_SET(ste_flex_parser_1, bit_mask, flex_parser_4,
++				 cur_val | (icmp_code_mask << ICMP_CODE_OFFSET_FIRST_DW));
++			if (is_ipv4_mask)
++				misc_3_mask->icmpv4_code =3D 0;
++			else
++				misc_3_mask->icmpv6_code =3D 0;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (dw1_location) {
++	case 5:
++		if (icmp_header_data_mask) {
++			MLX5_SET(ste_flex_parser_1, bit_mask, flex_parser_5,
++				 (icmp_header_data_mask << ICMP_HEADER_DATA_OFFSET_SECOND_DW));
++			if (is_ipv4_mask)
++				misc_3_mask->icmpv4_header_data =3D 0;
++			else
++				misc_3_mask->icmpv6_header_data =3D 0;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int dr_ste_build_flex_parser_1_tag(struct mlx5dr_match_param *value=
+,
++					  struct mlx5dr_ste_build *sb,
++					  u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc3 *misc_3 =3D &value->misc3;
++	u8 *tag =3D hw_ste->tag;
++	u32 icmp_header_data;
++	int dw0_location;
++	int dw1_location;
++	u32 icmp_type;
++	u32 icmp_code;
++	bool is_ipv4;
++
++	is_ipv4 =3D DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(misc_3);
++	if (is_ipv4) {
++		icmp_header_data	=3D misc_3->icmpv4_header_data;
++		icmp_type		=3D misc_3->icmpv4_type;
++		icmp_code		=3D misc_3->icmpv4_code;
++		dw0_location		=3D sb->caps->flex_parser_id_icmp_dw0;
++		dw1_location		=3D sb->caps->flex_parser_id_icmp_dw1;
++	} else {
++		icmp_header_data	=3D misc_3->icmpv6_header_data;
++		icmp_type		=3D misc_3->icmpv6_type;
++		icmp_code		=3D misc_3->icmpv6_code;
++		dw0_location		=3D sb->caps->flex_parser_id_icmpv6_dw0;
++		dw1_location		=3D sb->caps->flex_parser_id_icmpv6_dw1;
++	}
++
++	switch (dw0_location) {
++	case 4:
++		if (icmp_type) {
++			MLX5_SET(ste_flex_parser_1, tag, flex_parser_4,
++				 (icmp_type << ICMP_TYPE_OFFSET_FIRST_DW));
++			if (is_ipv4)
++				misc_3->icmpv4_type =3D 0;
++			else
++				misc_3->icmpv6_type =3D 0;
++		}
++
++		if (icmp_code) {
++			u32 cur_val =3D MLX5_GET(ste_flex_parser_1, tag,
++					       flex_parser_4);
++			MLX5_SET(ste_flex_parser_1, tag, flex_parser_4,
++				 cur_val | (icmp_code << ICMP_CODE_OFFSET_FIRST_DW));
++			if (is_ipv4)
++				misc_3->icmpv4_code =3D 0;
++			else
++				misc_3->icmpv6_code =3D 0;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (dw1_location) {
++	case 5:
++		if (icmp_header_data) {
++			MLX5_SET(ste_flex_parser_1, tag, flex_parser_5,
++				 (icmp_header_data << ICMP_HEADER_DATA_OFFSET_SECOND_DW));
++			if (is_ipv4)
++				misc_3->icmpv4_header_data =3D 0;
++			else
++				misc_3->icmpv6_header_data =3D 0;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++int mlx5dr_ste_build_flex_parser_1(struct mlx5dr_ste_build *sb,
++				   struct mlx5dr_match_param *mask,
++				   struct mlx5dr_cmd_caps *caps,
++				   bool inner, bool rx)
++{
++	int ret;
++
++	ret =3D dr_ste_build_flex_parser_1_bit_mask(mask, caps, sb->bit_mask);
++	if (ret)
++		return ret;
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->caps =3D caps;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_FLEX_PARSER_1;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_flex_parser_1_tag;
++
++	return 0;
++}
++
++static void dr_ste_build_general_purpose_bit_mask(struct mlx5dr_match_para=
+m *value,
++						  bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++
++	DR_STE_SET_MASK_V(general_purpose, bit_mask,
++			  general_purpose_lookup_field, misc_2_mask,
++			  metadata_reg_a);
++}
++
++static int dr_ste_build_general_purpose_tag(struct mlx5dr_match_param *val=
+ue,
++					    struct mlx5dr_ste_build *sb,
++					    u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(general_purpose, tag, general_purpose_lookup_field,
++		       misc_2_mask, metadata_reg_a);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_general_purpose(struct mlx5dr_ste_build *sb,
++				      struct mlx5dr_match_param *mask,
++				      bool inner, bool rx)
++{
++	dr_ste_build_general_purpose_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_GENERAL_PURPOSE;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_general_purpose_tag;
++}
++
++static void dr_ste_build_eth_l4_misc_bit_mask(struct mlx5dr_match_param *v=
+alue,
++					      bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc3 *misc_3_mask =3D &value->misc3;
++
++	if (inner) {
++		DR_STE_SET_MASK_V(eth_l4_misc, bit_mask, seq_num, misc_3_mask,
++				  inner_tcp_seq_num);
++		DR_STE_SET_MASK_V(eth_l4_misc, bit_mask, ack_num, misc_3_mask,
++				  inner_tcp_ack_num);
++	} else {
++		DR_STE_SET_MASK_V(eth_l4_misc, bit_mask, seq_num, misc_3_mask,
++				  outer_tcp_seq_num);
++		DR_STE_SET_MASK_V(eth_l4_misc, bit_mask, ack_num, misc_3_mask,
++				  outer_tcp_ack_num);
++	}
++}
++
++static int dr_ste_build_eth_l4_misc_tag(struct mlx5dr_match_param *value,
++					struct mlx5dr_ste_build *sb,
++					u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc3 *misc3 =3D &value->misc3;
++	u8 *tag =3D hw_ste->tag;
++
++	if (sb->inner) {
++		DR_STE_SET_TAG(eth_l4_misc, tag, seq_num, misc3, inner_tcp_seq_num);
++		DR_STE_SET_TAG(eth_l4_misc, tag, ack_num, misc3, inner_tcp_ack_num);
++	} else {
++		DR_STE_SET_TAG(eth_l4_misc, tag, seq_num, misc3, outer_tcp_seq_num);
++		DR_STE_SET_TAG(eth_l4_misc, tag, ack_num, misc3, outer_tcp_ack_num);
++	}
++
++	return 0;
++}
++
++void mlx5dr_ste_build_eth_l4_misc(struct mlx5dr_ste_build *sb,
++				  struct mlx5dr_match_param *mask,
++				  bool inner, bool rx)
++{
++	dr_ste_build_eth_l4_misc_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D DR_STE_CALC_LU_TYPE(ETHL4_MISC, rx, inner);
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_eth_l4_misc_tag;
++}
++
++static void dr_ste_build_flex_parser_tnl_bit_mask(struct mlx5dr_match_para=
+m *value,
++						  bool inner, u8 *bit_mask)
++{
++	struct mlx5dr_match_misc3 *misc_3_mask =3D &value->misc3;
++
++	if (misc_3_mask->outer_vxlan_gpe_flags ||
++	    misc_3_mask->outer_vxlan_gpe_next_protocol) {
++		MLX5_SET(ste_flex_parser_tnl, bit_mask,
++			 flex_parser_tunneling_header_63_32,
++			 (misc_3_mask->outer_vxlan_gpe_flags << 24) |
++			 (misc_3_mask->outer_vxlan_gpe_next_protocol));
++		misc_3_mask->outer_vxlan_gpe_flags =3D 0;
++		misc_3_mask->outer_vxlan_gpe_next_protocol =3D 0;
++	}
++
++	if (misc_3_mask->outer_vxlan_gpe_vni) {
++		MLX5_SET(ste_flex_parser_tnl, bit_mask,
++			 flex_parser_tunneling_header_31_0,
++			 misc_3_mask->outer_vxlan_gpe_vni << 8);
++		misc_3_mask->outer_vxlan_gpe_vni =3D 0;
++	}
++}
++
++static int dr_ste_build_flex_parser_tnl_tag(struct mlx5dr_match_param *val=
+ue,
++					    struct mlx5dr_ste_build *sb,
++					    u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc3 *misc3 =3D &value->misc3;
++	u8 *tag =3D hw_ste->tag;
++
++	if (misc3->outer_vxlan_gpe_flags ||
++	    misc3->outer_vxlan_gpe_next_protocol) {
++		MLX5_SET(ste_flex_parser_tnl, tag,
++			 flex_parser_tunneling_header_63_32,
++			 (misc3->outer_vxlan_gpe_flags << 24) |
++			 (misc3->outer_vxlan_gpe_next_protocol));
++		misc3->outer_vxlan_gpe_flags =3D 0;
++		misc3->outer_vxlan_gpe_next_protocol =3D 0;
++	}
++
++	if (misc3->outer_vxlan_gpe_vni) {
++		MLX5_SET(ste_flex_parser_tnl, tag,
++			 flex_parser_tunneling_header_31_0,
++			 misc3->outer_vxlan_gpe_vni << 8);
++		misc3->outer_vxlan_gpe_vni =3D 0;
++	}
++
++	return 0;
++}
++
++void mlx5dr_ste_build_flex_parser_tnl(struct mlx5dr_ste_build *sb,
++				      struct mlx5dr_match_param *mask,
++				      bool inner, bool rx)
++{
++	dr_ste_build_flex_parser_tnl_bit_mask(mask, inner, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_FLEX_PARSER_TNL_HEADER;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_flex_parser_tnl_tag;
++}
++
++static void dr_ste_build_register_0_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     u8 *bit_mask)
++{
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++
++	DR_STE_SET_MASK_V(register_0, bit_mask, register_0_h,
++			  misc_2_mask, metadata_reg_c_0);
++	DR_STE_SET_MASK_V(register_0, bit_mask, register_0_l,
++			  misc_2_mask, metadata_reg_c_1);
++	DR_STE_SET_MASK_V(register_0, bit_mask, register_1_h,
++			  misc_2_mask, metadata_reg_c_2);
++	DR_STE_SET_MASK_V(register_0, bit_mask, register_1_l,
++			  misc_2_mask, metadata_reg_c_3);
++}
++
++static int dr_ste_build_register_0_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc2 *misc2 =3D &value->misc2;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(register_0, tag, register_0_h, misc2, metadata_reg_c_0);
++	DR_STE_SET_TAG(register_0, tag, register_0_l, misc2, metadata_reg_c_1);
++	DR_STE_SET_TAG(register_0, tag, register_1_h, misc2, metadata_reg_c_2);
++	DR_STE_SET_TAG(register_0, tag, register_1_l, misc2, metadata_reg_c_3);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_register_0(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask,
++				 bool inner, bool rx)
++{
++	dr_ste_build_register_0_bit_mask(mask, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_STEERING_REGISTERS_0;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_register_0_tag;
++}
++
++static void dr_ste_build_register_1_bit_mask(struct mlx5dr_match_param *va=
+lue,
++					     u8 *bit_mask)
++{
++	struct mlx5dr_match_misc2 *misc_2_mask =3D &value->misc2;
++
++	DR_STE_SET_MASK_V(register_1, bit_mask, register_2_h,
++			  misc_2_mask, metadata_reg_c_4);
++	DR_STE_SET_MASK_V(register_1, bit_mask, register_2_l,
++			  misc_2_mask, metadata_reg_c_5);
++	DR_STE_SET_MASK_V(register_1, bit_mask, register_3_h,
++			  misc_2_mask, metadata_reg_c_6);
++	DR_STE_SET_MASK_V(register_1, bit_mask, register_3_l,
++			  misc_2_mask, metadata_reg_c_7);
++}
++
++static int dr_ste_build_register_1_tag(struct mlx5dr_match_param *value,
++				       struct mlx5dr_ste_build *sb,
++				       u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc2 *misc2 =3D &value->misc2;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(register_1, tag, register_2_h, misc2, metadata_reg_c_4);
++	DR_STE_SET_TAG(register_1, tag, register_2_l, misc2, metadata_reg_c_5);
++	DR_STE_SET_TAG(register_1, tag, register_3_h, misc2, metadata_reg_c_6);
++	DR_STE_SET_TAG(register_1, tag, register_3_l, misc2, metadata_reg_c_7);
++
++	return 0;
++}
++
++void mlx5dr_ste_build_register_1(struct mlx5dr_ste_build *sb,
++				 struct mlx5dr_match_param *mask,
++				 bool inner, bool rx)
++{
++	dr_ste_build_register_1_bit_mask(mask, sb->bit_mask);
++
++	sb->rx =3D rx;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_STEERING_REGISTERS_1;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_register_1_tag;
++}
++
++static int dr_ste_build_src_gvmi_qpn_bit_mask(struct mlx5dr_match_param *v=
+alue,
++					      u8 *bit_mask)
++{
++	struct mlx5dr_match_misc *misc_mask =3D &value->misc;
++
++	if (misc_mask->source_port !=3D 0xffff)
++		return -EINVAL;
++
++	DR_STE_SET_MASK(src_gvmi_qp, bit_mask, source_gvmi, misc_mask, source_por=
+t);
++	DR_STE_SET_MASK(src_gvmi_qp, bit_mask, source_qp, misc_mask, source_sqn);
++
++	return 0;
++}
++
++static int dr_ste_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
++					 struct mlx5dr_ste_build *sb,
++					 u8 *hw_ste_p)
++{
++	struct dr_hw_ste_format *hw_ste =3D (struct dr_hw_ste_format *)hw_ste_p;
++	struct mlx5dr_match_misc *misc =3D &value->misc;
++	struct mlx5dr_cmd_vport_cap *vport_cap;
++	u8 *tag =3D hw_ste->tag;
++
++	DR_STE_SET_TAG(src_gvmi_qp, tag, source_qp, misc, source_sqn);
++
++	vport_cap =3D mlx5dr_get_vport_cap(sb->caps, misc->source_port);
++	if (!vport_cap)
++		return -EINVAL;
++
++	if (vport_cap->vport_gvmi)
++		MLX5_SET(ste_src_gvmi_qp, tag, source_gvmi, vport_cap->vport_gvmi);
++
++	misc->source_port =3D 0;
++
++	return 0;
++}
++
++int mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
++				  struct mlx5dr_match_param *mask,
++				  struct mlx5dr_cmd_caps *caps,
++				  bool inner, bool rx)
++{
++	int ret;
++
++	ret =3D dr_ste_build_src_gvmi_qpn_bit_mask(mask, sb->bit_mask);
++	if (ret)
++		return ret;
++
++	sb->rx =3D rx;
++	sb->caps =3D caps;
++	sb->inner =3D inner;
++	sb->lu_type =3D MLX5DR_STE_LU_TYPE_SRC_GVMI_AND_QP;
++	sb->byte_mask =3D dr_ste_conv_bit_to_byte_mask(sb->bit_mask);
++	sb->ste_build_tag_func =3D &dr_ste_build_src_gvmi_qpn_tag;
++
++	return 0;
 +}
 --=20
 2.21.0
