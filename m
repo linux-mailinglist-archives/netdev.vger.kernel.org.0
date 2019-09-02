@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F3EA4FAF
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1DAA4FA9
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729701AbfIBHXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 03:23:20 -0400
-Received: from mail-eopbgr80075.outbound.protection.outlook.com ([40.107.8.75]:38403
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1729445AbfIBHXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:23:07 -0400
+Received: from mail-eopbgr70087.outbound.protection.outlook.com ([40.107.7.87]:57541
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726377AbfIBHXT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 03:23:19 -0400
+        id S1726377AbfIBHXH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 03:23:07 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VjzZwhxTzEQJHOsxx/zX8iZUwOw7Aegu9LNcqTd4fwLCxjtHNZWACHDgzIUqr73S5kAOCTtXz9Z6DpFrSAVrzkQZrymp1+1K1Ut2L6MBjihSxsLHA2SBZ1xC8iG1swozB2zjJFqxpWSHjAsvYb9NLDI5Kr6/TrXd00VZV26qKJul0yHyFOIMtprJkrsbEVKyvOcsQvpr+OC5fUw2eORyVmk9voknSKO1W/xUUyUtzxNT8+UaXgqgMFUx/XsZch1JaaVsgB+mmSspMWlL1ISi9Is/tWshNb/5dqO8Zznl3YhTtdIkXZQCRWcVJOJghQkxyp42KRBp1nhMmOMlwso0Kg==
+ b=Pn7qDDGn4ZPPE1vlvc+GAWskA9Ri6MCjuJPUTKjn7zkd+tN4cGkyTkzcyHps9z1nuCUfFsysc/nCp6HVC+/e/ql82ozevPryq9oqIB9SO11wapYrS2Re5A9yJhFujvTQJshqWk1Q5K8aq3ZD0XFdNKudmjfRP9f3GsPEKSCzf4wnQftRKmXL+XtrgcqNWiqBm+/NZGAxd6AnZ59qHrCoQy3tqAFlsQzjuom2VzNXEgPot0JkO8uYub0MUvNzapwUvRYApZQyQpUW9NaYtJq+E6Y9QsdcHd8GAuoKZ1NsD2AfI/MKyu9AVwCmsIIaPE+6sEJ7DxFKgFDBuNQKtR3oyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lpj/0VS4Rmm+KK0e5yNk2TxCx/GsGUW5Qnr6lW1NDVY=;
- b=h58XhNl8aP2sPljTchriBL2tY4+Ps6Y+e3U7iICCbBx8+zOOWqHtVdvrjVFuAT0R610N/YjrIHefnrKw++Hf7uv9RpudtJEqT2gj3MXhRhrDhfTV9T30+t1fNJ8fokFwGfdTpHw4sIPHUmcZstEm5oCySHELvO54G3U380Nnns4ziq3GTe4kbyba9qk97PxMF5nQ0wNglrz2SoXbWjzUEnt2IxqpL+87Gu0YkjguLYmUTm4dfuF4vZmzQyfx3OHIeccwZdsBBPDOG4ILIAoeW7JFvYa5OlWc7kZopTGKApInI7naBbYH+ei0X2z4HFSXdhVV0t7NG5t+lmofmOmhrw==
+ bh=XRnuHKCfwxvS+8QpE0AFH74kT1nPgwHUHJCWGWAozEU=;
+ b=VqhJQh2luSM+UphqO8oqtQrsRYSNW5aHP02R7IOiO7lZZyPfDE0JK5KimE6qKE37ES+uGzEyEBbW0TUFzZwUREWtX+3med7p2qxTjL1CqLr63qvZ2i9MnSIoen2mNAdIdB9wPrnKzGMJ+D8inX9qEZZK2EF9WjH0VLxZ4WOfDcmBU9ErAljhpTnYkiDVA8OGhQHZAJzRjleOPB6RjERDToseGDpZidZXy/QmEpvt56TRel71wDCaE04beUlPEXubYKTd6yktyvN2S/Tf3RvqRo9inaeeRb/uKeHUWO7up2+rqYlroYXqCEUp6WJDpVk8oW9GNvbCrbscJ87I/C3GJw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lpj/0VS4Rmm+KK0e5yNk2TxCx/GsGUW5Qnr6lW1NDVY=;
- b=hyXcIXqK9AueOykziqyS36/1XVES+oiokKiw7FY28cfe887VmDpupbcfCyTZJdImHnJv3FbGfRqaQrVzszeyE/0TMyxi8TBGdFf85N//EFCDhWRqwpT69DWeTQfcoWlKhO6mnuz5lyYDZWvSv4P3ZU9MOJ5vd8niqP8DzaxD910=
+ bh=XRnuHKCfwxvS+8QpE0AFH74kT1nPgwHUHJCWGWAozEU=;
+ b=noG6oScVFM2xhwTEyYJHeHimH/goufsFiGwPFSQsOx8U7D5ZrZpldaWxbWWu0O0bZTAqs8fN16NbAcdNZi7D5NXZA6HFk/K5Dqx1bieTC4eknWtg+LMyab9Z7pavw1vNSQBjDXAv62kAi6LXWJEIbJ/E1Ndhiic3dW20E/yGrAE=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2625.eurprd05.prod.outlook.com (10.172.217.140) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.19; Mon, 2 Sep 2019 07:22:55 +0000
+ AM4PR0501MB2259.eurprd05.prod.outlook.com (10.165.38.155) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.20; Mon, 2 Sep 2019 07:22:57 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
- 07:22:55 +0000
+ 07:22:57 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Alex Vesker <valex@mellanox.com>,
         Erez Shitrit <erezsh@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 02/18] net/mlx5: DR, Add the internal direct rule types
- definitions
-Thread-Topic: [net-next 02/18] net/mlx5: DR, Add the internal direct rule
- types definitions
-Thread-Index: AQHVYV88tPJUDgRWBEiv0A2/jzzkrg==
-Date:   Mon, 2 Sep 2019 07:22:54 +0000
-Message-ID: <20190902072213.7683-3-saeedm@mellanox.com>
+Subject: [net-next 03/18] net/mlx5: DR, Add direct rule command utilities
+Thread-Topic: [net-next 03/18] net/mlx5: DR, Add direct rule command utilities
+Thread-Index: AQHVYV8+GVP3rTPkt0Cns0lJOCydNg==
+Date:   Mon, 2 Sep 2019 07:22:57 +0000
+Message-ID: <20190902072213.7683-4-saeedm@mellanox.com>
 References: <20190902072213.7683-1-saeedm@mellanox.com>
 In-Reply-To: <20190902072213.7683-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -65,31 +62,31 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d064ef09-0219-46ee-437b-08d72f765f42
+x-ms-office365-filtering-correlation-id: 86573be9-ae97-4d67-a974-08d72f76606d
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2625;
-x-ms-traffictypediagnostic: AM4PR0501MB2625:|AM4PR0501MB2625:
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2259;
+x-ms-traffictypediagnostic: AM4PR0501MB2259:|AM4PR0501MB2259:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB262572E373EA9262C5EA44B7BEBE0@AM4PR0501MB2625.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1247;
+x-microsoft-antispam-prvs: <AM4PR0501MB2259C491A471A7ECF6FD986DBEBE0@AM4PR0501MB2259.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 01480965DA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(199004)(189003)(8676002)(107886003)(14454004)(7736002)(6512007)(1076003)(53946003)(11346002)(64756008)(66556008)(66476007)(66946007)(66446008)(50226002)(26005)(2616005)(36756003)(99286004)(102836004)(478600001)(71200400001)(446003)(6486002)(71190400001)(53936002)(52116002)(305945005)(66066001)(76176011)(3846002)(256004)(186003)(316002)(486006)(4326008)(5024004)(14444005)(54906003)(6916009)(81166006)(6116002)(81156014)(30864003)(86362001)(2906002)(5660300002)(8936002)(25786009)(6506007)(386003)(476003)(6436002)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2625;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(396003)(366004)(199004)(189003)(64756008)(478600001)(66946007)(66556008)(71190400001)(71200400001)(6916009)(5660300002)(54906003)(6486002)(8676002)(14454004)(81156014)(36756003)(81166006)(76176011)(1076003)(186003)(50226002)(99286004)(25786009)(4326008)(8936002)(316002)(30864003)(102836004)(386003)(6506007)(2906002)(26005)(14444005)(3846002)(256004)(6116002)(2616005)(66066001)(86362001)(53936002)(52116002)(53946003)(107886003)(486006)(6436002)(305945005)(7736002)(6512007)(446003)(476003)(66446008)(11346002)(66476007)(579004)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2259;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0n3GCL5aI/zubEGcgYqRRyieN/2LrH1CQ4bqXGkYuvPlxskLK0a0ElD1AxxwpQ8gLihW91lWb4Y2yo3TgtNIFHkkAjkiakkshaRu3Sawg/JbKgNSQi1njwOFsdQKlkte4hrS25ZZwtCdGg55Wn9AC/+Ymul2VuHMPzQi95Om4241CfGm5oNyhNtbtSzhaAzzd3AXWecoN5j5jvv9PJXVZJoMpNiONjdei5PUET6LfQqEfP+SmpOSP/rkGltroRjwelR+8N3dY8Kx9a9TVRnBi0k91+wJfJJZJqGvBksfyv5z2fhh+w3+aGlVBfn5SfnNUNZSp4H7oSzXwp0P2ISTGXcdSRfJlRS7Jxoiw5FwunQYgfrUzf1x9f9QFTVvkuhyF7CZQlxzPkfgGHuBdymGJM0kyC/NDAhudFLh+Mk8DE4=
+x-microsoft-antispam-message-info: baIP8cv3EWJX0pckGccw611YUkqC/BAmmSx2CzLpsu4Q0SUSN+9CP6aMlCVSwQy4sOuIPPepL2POBevOnvWsOxXxZi5hgk5v3I93u4mDsuNTNuVoHuzJdcwPsAx2awKfCiwfDybxWNmqbYmqAJ3dG+NlH0X/JNLKXAbUVyL8AsoCkmRZk5sn5AXF+nl39abzpe4Oecw2J5srn/FEUy6kqHURwbNeL5jfK2f+lTwf03w0BBP2xY+dU+vRHBTgUbIYJ15NgeyMUcwl/ZZHubrNsj21jowQuqczSBHBH9fr81mmOWfku5a9huzYhWnwVbOFVcgaH60Fcgo3KaN49hKeeJaS00yxO/iZRV1zMxxqtpUb0AbW6cbzvH3xARxLBRNEfABZLvlZ0iMjgSERDtos7xyEUhJxT9groqtsmmqhppQ=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d064ef09-0219-46ee-437b-08d72f765f42
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:22:54.9737
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86573be9-ae97-4d67-a974-08d72f76606d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:22:57.1288
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GipddxtnVwJGhAvNTZ4A/MzUtp3Y5I42nxhJHynfN8ZeVFfJKGHgHN+jpqDGyn6x3E+4dmCYVhdFO946B243Yw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2625
+X-MS-Exchange-CrossTenant-userprincipalname: 3mglKY9zgAF/P3z94oBPdaL6T6b0YTt51VcqL+o8HS6+vzK4HhgEMYtQTjqEoLqcxYKMhsDmMzh5gtq8JMc06w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2259
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -97,942 +94,358 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Vesker <valex@mellanox.com>
 
-Add the internal header file that contains various types
-definition that will be used in coming patches as well as
-the internal functions decelerations.
+Add direct rule command utilities which consists of all the FW
+commands that are executed to provide the SW steering functionality.
 
 Signed-off-by: Alex Vesker <valex@mellanox.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@mellanox.com>
 Reviewed-by: Erez Shitrit <erezsh@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/steering/dr_types.h    | 1060 +++++++++++++++++
- 1 file changed, 1060 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_typ=
-es.h
+ .../mellanox/mlx5/core/steering/dr_cmd.c      | 480 ++++++++++++++
+ .../mellanox/mlx5/core/steering/mlx5_ifc_dr.h | 604 ++++++++++++++++++
+ 2 files changed, 1084 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd=
+.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_i=
+fc_dr.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/=
-drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/dr=
+ivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
 new file mode 100644
-index 000000000000..a37ee6359be2
+index 000000000000..41662c4e2664
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -0,0 +1,1060 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2019, Mellanox Technologies */
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -0,0 +1,480 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2019 Mellanox Technologies. */
 +
-+#ifndef	_DR_TYPES_
-+#define	_DR_TYPES_
++#include "dr_types.h"
 +
-+#include <linux/mlx5/driver.h>
-+#include <linux/refcount.h>
-+#include "fs_core.h"
-+#include "wq.h"
-+#include "lib/mlx5.h"
-+#include "mlx5_ifc_dr.h"
-+#include "mlx5dr.h"
-+
-+#define DR_RULE_MAX_STES 17
-+#define DR_ACTION_MAX_STES 5
-+#define WIRE_PORT 0xFFFF
-+#define DR_STE_SVLAN 0x1
-+#define DR_STE_CVLAN 0x2
-+
-+#define mlx5dr_err(dmn, arg...) mlx5_core_err((dmn)->mdev, ##arg)
-+#define mlx5dr_info(dmn, arg...) mlx5_core_info((dmn)->mdev, ##arg)
-+#define mlx5dr_dbg(dmn, arg...) mlx5_core_dbg((dmn)->mdev, ##arg)
-+
-+enum mlx5dr_icm_chunk_size {
-+	DR_CHUNK_SIZE_1,
-+	DR_CHUNK_SIZE_MIN =3D DR_CHUNK_SIZE_1, /* keep updated when changing */
-+	DR_CHUNK_SIZE_2,
-+	DR_CHUNK_SIZE_4,
-+	DR_CHUNK_SIZE_8,
-+	DR_CHUNK_SIZE_16,
-+	DR_CHUNK_SIZE_32,
-+	DR_CHUNK_SIZE_64,
-+	DR_CHUNK_SIZE_128,
-+	DR_CHUNK_SIZE_256,
-+	DR_CHUNK_SIZE_512,
-+	DR_CHUNK_SIZE_1K,
-+	DR_CHUNK_SIZE_2K,
-+	DR_CHUNK_SIZE_4K,
-+	DR_CHUNK_SIZE_8K,
-+	DR_CHUNK_SIZE_16K,
-+	DR_CHUNK_SIZE_32K,
-+	DR_CHUNK_SIZE_64K,
-+	DR_CHUNK_SIZE_128K,
-+	DR_CHUNK_SIZE_256K,
-+	DR_CHUNK_SIZE_512K,
-+	DR_CHUNK_SIZE_1024K,
-+	DR_CHUNK_SIZE_2048K,
-+	DR_CHUNK_SIZE_MAX,
-+};
-+
-+enum mlx5dr_icm_type {
-+	DR_ICM_TYPE_STE,
-+	DR_ICM_TYPE_MODIFY_ACTION,
-+};
-+
-+static inline enum mlx5dr_icm_chunk_size
-+mlx5dr_icm_next_higher_chunk(enum mlx5dr_icm_chunk_size chunk)
-+{
-+	chunk +=3D 2;
-+	if (chunk < DR_CHUNK_SIZE_MAX)
-+		return chunk;
-+
-+	return DR_CHUNK_SIZE_MAX;
-+}
-+
-+enum {
-+	DR_STE_SIZE =3D 64,
-+	DR_STE_SIZE_CTRL =3D 32,
-+	DR_STE_SIZE_TAG =3D 16,
-+	DR_STE_SIZE_MASK =3D 16,
-+};
-+
-+enum {
-+	DR_STE_SIZE_REDUCED =3D DR_STE_SIZE - DR_STE_SIZE_MASK,
-+};
-+
-+enum {
-+	DR_MODIFY_ACTION_SIZE =3D 8,
-+};
-+
-+enum mlx5dr_matcher_criteria {
-+	DR_MATCHER_CRITERIA_EMPTY =3D 0,
-+	DR_MATCHER_CRITERIA_OUTER =3D 1 << 0,
-+	DR_MATCHER_CRITERIA_MISC =3D 1 << 1,
-+	DR_MATCHER_CRITERIA_INNER =3D 1 << 2,
-+	DR_MATCHER_CRITERIA_MISC2 =3D 1 << 3,
-+	DR_MATCHER_CRITERIA_MISC3 =3D 1 << 4,
-+	DR_MATCHER_CRITERIA_MAX =3D 1 << 5,
-+};
-+
-+enum mlx5dr_action_type {
-+	DR_ACTION_TYP_TNL_L2_TO_L2,
-+	DR_ACTION_TYP_L2_TO_TNL_L2,
-+	DR_ACTION_TYP_TNL_L3_TO_L2,
-+	DR_ACTION_TYP_L2_TO_TNL_L3,
-+	DR_ACTION_TYP_DROP,
-+	DR_ACTION_TYP_QP,
-+	DR_ACTION_TYP_FT,
-+	DR_ACTION_TYP_CTR,
-+	DR_ACTION_TYP_TAG,
-+	DR_ACTION_TYP_MODIFY_HDR,
-+	DR_ACTION_TYP_VPORT,
-+	DR_ACTION_TYP_POP_VLAN,
-+	DR_ACTION_TYP_PUSH_VLAN,
-+	DR_ACTION_TYP_MAX,
-+};
-+
-+struct mlx5dr_icm_pool;
-+struct mlx5dr_icm_chunk;
-+struct mlx5dr_icm_bucket;
-+struct mlx5dr_ste_htbl;
-+struct mlx5dr_match_param;
-+struct mlx5dr_cmd_caps;
-+struct mlx5dr_matcher_rx_tx;
-+
-+struct mlx5dr_ste {
-+	u8 *hw_ste;
-+	/* refcount: indicates the num of rules that using this ste */
-+	refcount_t refcount;
-+
-+	/* attached to the miss_list head at each htbl entry */
-+	struct list_head miss_list_node;
-+
-+	/* each rule member that uses this ste attached here */
-+	struct list_head rule_list;
-+
-+	/* this ste is member of htbl */
-+	struct mlx5dr_ste_htbl *htbl;
-+
-+	struct mlx5dr_ste_htbl *next_htbl;
-+
-+	/* this ste is part of a rule, located in ste's chain */
-+	u8 ste_chain_location;
-+};
-+
-+struct mlx5dr_ste_htbl_ctrl {
-+	/* total number of valid entries belonging to this hash table. This
-+	 * includes the non collision and collision entries
-+	 */
-+	unsigned int num_of_valid_entries;
-+
-+	/* total number of collisions entries attached to this table */
-+	unsigned int num_of_collisions;
-+	unsigned int increase_threshold;
-+	u8 may_grow:1;
-+};
-+
-+struct mlx5dr_ste_htbl {
-+	u8 lu_type;
-+	u16 byte_mask;
-+	refcount_t refcount;
-+	struct mlx5dr_icm_chunk *chunk;
-+	struct mlx5dr_ste *ste_arr;
-+	u8 *hw_ste_arr;
-+
-+	struct list_head *miss_list;
-+
-+	enum mlx5dr_icm_chunk_size chunk_size;
-+	struct mlx5dr_ste *pointing_ste;
-+
-+	struct mlx5dr_ste_htbl_ctrl ctrl;
-+};
-+
-+struct mlx5dr_ste_send_info {
-+	struct mlx5dr_ste *ste;
-+	struct list_head send_list;
-+	u16 size;
-+	u16 offset;
-+	u8 data_cont[DR_STE_SIZE];
-+	u8 *data;
-+};
-+
-+void mlx5dr_send_fill_and_append_ste_send_info(struct mlx5dr_ste *ste, u16=
- size,
-+					       u16 offset, u8 *data,
-+					       struct mlx5dr_ste_send_info *ste_info,
-+					       struct list_head *send_list,
-+					       bool copy_data);
-+
-+struct mlx5dr_ste_build {
-+	u8 inner:1;
-+	u8 rx:1;
-+	struct mlx5dr_cmd_caps *caps;
-+	u8 lu_type;
-+	u16 byte_mask;
-+	u8 bit_mask[DR_STE_SIZE_MASK];
-+	int (*ste_build_tag_func)(struct mlx5dr_match_param *spec,
-+				  struct mlx5dr_ste_build *sb,
-+				  u8 *hw_ste_p);
-+};
-+
-+struct mlx5dr_ste_htbl *
-+mlx5dr_ste_htbl_alloc(struct mlx5dr_icm_pool *pool,
-+		      enum mlx5dr_icm_chunk_size chunk_size,
-+		      u8 lu_type, u16 byte_mask);
-+
-+int mlx5dr_ste_htbl_free(struct mlx5dr_ste_htbl *htbl);
-+
-+static inline void mlx5dr_htbl_put(struct mlx5dr_ste_htbl *htbl)
-+{
-+	if (refcount_dec_and_test(&htbl->refcount))
-+		mlx5dr_ste_htbl_free(htbl);
-+}
-+
-+static inline void mlx5dr_htbl_get(struct mlx5dr_ste_htbl *htbl)
-+{
-+	refcount_inc(&htbl->refcount);
-+}
-+
-+/* STE utils */
-+u32 mlx5dr_ste_calc_hash_index(u8 *hw_ste_p, struct mlx5dr_ste_htbl *htbl)=
-;
-+void mlx5dr_ste_init(u8 *hw_ste_p, u8 lu_type, u8 entry_type, u16 gvmi);
-+void mlx5dr_ste_always_hit_htbl(struct mlx5dr_ste *ste,
-+				struct mlx5dr_ste_htbl *next_htbl);
-+void mlx5dr_ste_set_miss_addr(u8 *hw_ste, u64 miss_addr);
-+u64 mlx5dr_ste_get_miss_addr(u8 *hw_ste);
-+void mlx5dr_ste_set_hit_gvmi(u8 *hw_ste_p, u16 gvmi);
-+void mlx5dr_ste_set_hit_addr(u8 *hw_ste, u64 icm_addr, u32 ht_size);
-+void mlx5dr_ste_always_miss_addr(struct mlx5dr_ste *ste, u64 miss_addr);
-+void mlx5dr_ste_set_bit_mask(u8 *hw_ste_p, u8 *bit_mask);
-+bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste);
-+bool mlx5dr_ste_is_last_in_rule(struct mlx5dr_matcher_rx_tx *nic_matcher,
-+				u8 ste_location);
-+void mlx5dr_ste_rx_set_flow_tag(u8 *hw_ste_p, u32 flow_tag);
-+void mlx5dr_ste_set_counter_id(u8 *hw_ste_p, u32 ctr_id);
-+void mlx5dr_ste_set_tx_encap(void *hw_ste_p, u32 reformat_id,
-+			     int size, bool encap_l3);
-+void mlx5dr_ste_set_rx_decap(u8 *hw_ste_p);
-+void mlx5dr_ste_set_rx_decap_l3(u8 *hw_ste_p, bool vlan);
-+void mlx5dr_ste_set_rx_pop_vlan(u8 *hw_ste_p);
-+void mlx5dr_ste_set_tx_push_vlan(u8 *hw_ste_p, u32 vlan_tpid_pcp_dei_vid,
-+				 bool go_back);
-+void mlx5dr_ste_set_entry_type(u8 *hw_ste_p, u8 entry_type);
-+u8 mlx5dr_ste_get_entry_type(u8 *hw_ste_p);
-+void mlx5dr_ste_set_rewrite_actions(u8 *hw_ste_p, u16 num_of_actions,
-+				    u32 re_write_index);
-+void mlx5dr_ste_set_go_back_bit(u8 *hw_ste_p);
-+u64 mlx5dr_ste_get_icm_addr(struct mlx5dr_ste *ste);
-+u64 mlx5dr_ste_get_mr_addr(struct mlx5dr_ste *ste);
-+struct list_head *mlx5dr_ste_get_miss_list(struct mlx5dr_ste *ste);
-+
-+void mlx5dr_ste_free(struct mlx5dr_ste *ste,
-+		     struct mlx5dr_matcher *matcher,
-+		     struct mlx5dr_matcher_rx_tx *nic_matcher);
-+static inline void mlx5dr_ste_put(struct mlx5dr_ste *ste,
-+				  struct mlx5dr_matcher *matcher,
-+				  struct mlx5dr_matcher_rx_tx *nic_matcher)
-+{
-+	if (refcount_dec_and_test(&ste->refcount))
-+		mlx5dr_ste_free(ste, matcher, nic_matcher);
-+}
-+
-+/* initial as 0, increased only when ste appears in a new rule */
-+static inline void mlx5dr_ste_get(struct mlx5dr_ste *ste)
-+{
-+	refcount_inc(&ste->refcount);
-+}
-+
-+void mlx5dr_ste_set_hit_addr_by_next_htbl(u8 *hw_ste,
-+					  struct mlx5dr_ste_htbl *next_htbl);
-+bool mlx5dr_ste_equal_tag(void *src, void *dst);
-+int mlx5dr_ste_create_next_htbl(struct mlx5dr_matcher *matcher,
-+				struct mlx5dr_matcher_rx_tx *nic_matcher,
-+				struct mlx5dr_ste *ste,
-+				u8 *cur_hw_ste,
-+				enum mlx5dr_icm_chunk_size log_table_size);
-+
-+/* STE build functions */
-+int mlx5dr_ste_build_pre_check(struct mlx5dr_domain *dmn,
-+			       u8 match_criteria,
-+			       struct mlx5dr_match_param *mask,
-+			       struct mlx5dr_match_param *value);
-+int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
-+			     struct mlx5dr_matcher_rx_tx *nic_matcher,
-+			     struct mlx5dr_match_param *value,
-+			     u8 *ste_arr);
-+int mlx5dr_ste_build_eth_l2_src_des(struct mlx5dr_ste_build *builder,
-+				    struct mlx5dr_match_param *mask,
-+				    bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l3_ipv4_5_tuple(struct mlx5dr_ste_build *sb,
-+					  struct mlx5dr_match_param *mask,
-+					  bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l3_ipv4_misc(struct mlx5dr_ste_build *sb,
-+				       struct mlx5dr_match_param *mask,
-+				       bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l3_ipv6_dst(struct mlx5dr_ste_build *sb,
-+				      struct mlx5dr_match_param *mask,
-+				      bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l3_ipv6_src(struct mlx5dr_ste_build *sb,
-+				      struct mlx5dr_match_param *mask,
-+				      bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l2_src(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l2_dst(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l2_tnl(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+void mlx5dr_ste_build_ipv6_l3_l4(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+void mlx5dr_ste_build_eth_l4_misc(struct mlx5dr_ste_build *sb,
-+				  struct mlx5dr_match_param *mask,
-+				  bool inner, bool rx);
-+void mlx5dr_ste_build_gre(struct mlx5dr_ste_build *sb,
-+			  struct mlx5dr_match_param *mask,
-+			  bool inner, bool rx);
-+void mlx5dr_ste_build_mpls(struct mlx5dr_ste_build *sb,
-+			   struct mlx5dr_match_param *mask,
-+			   bool inner, bool rx);
-+void mlx5dr_ste_build_flex_parser_0(struct mlx5dr_ste_build *sb,
-+				    struct mlx5dr_match_param *mask,
-+				    bool inner, bool rx);
-+int mlx5dr_ste_build_flex_parser_1(struct mlx5dr_ste_build *sb,
-+				   struct mlx5dr_match_param *mask,
-+				   struct mlx5dr_cmd_caps *caps,
-+				   bool inner, bool rx);
-+void mlx5dr_ste_build_flex_parser_tnl(struct mlx5dr_ste_build *sb,
-+				      struct mlx5dr_match_param *mask,
-+				      bool inner, bool rx);
-+void mlx5dr_ste_build_general_purpose(struct mlx5dr_ste_build *sb,
-+				      struct mlx5dr_match_param *mask,
-+				      bool inner, bool rx);
-+void mlx5dr_ste_build_register_0(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+void mlx5dr_ste_build_register_1(struct mlx5dr_ste_build *sb,
-+				 struct mlx5dr_match_param *mask,
-+				 bool inner, bool rx);
-+int mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_build *sb,
-+				  struct mlx5dr_match_param *mask,
-+				  struct mlx5dr_cmd_caps *caps,
-+				  bool inner, bool rx);
-+void mlx5dr_ste_build_empty_always_hit(struct mlx5dr_ste_build *sb, bool r=
-x);
-+
-+/* Actions utils */
-+int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
-+				 struct mlx5dr_matcher_rx_tx *nic_matcher,
-+				 struct mlx5dr_action *actions[],
-+				 u32 num_actions,
-+				 u8 *ste_arr,
-+				 u32 *new_hw_ste_arr_sz);
-+
-+struct mlx5dr_match_spec {
-+	u32 smac_47_16;		/* Source MAC address of incoming packet */
-+	/* Incoming packet Ethertype - this is the Ethertype
-+	 * following the last VLAN tag of the packet
-+	 */
-+	u32 ethertype:16;
-+	u32 smac_15_0:16;	/* Source MAC address of incoming packet */
-+	u32 dmac_47_16;		/* Destination MAC address of incoming packet */
-+	/* VLAN ID of first VLAN tag in the incoming packet.
-+	 * Valid only when cvlan_tag=3D=3D1 or svlan_tag=3D=3D1
-+	 */
-+	u32 first_vid:12;
-+	/* CFI bit of first VLAN tag in the incoming packet.
-+	 * Valid only when cvlan_tag=3D=3D1 or svlan_tag=3D=3D1
-+	 */
-+	u32 first_cfi:1;
-+	/* Priority of first VLAN tag in the incoming packet.
-+	 * Valid only when cvlan_tag=3D=3D1 or svlan_tag=3D=3D1
-+	 */
-+	u32 first_prio:3;
-+	u32 dmac_15_0:16;	/* Destination MAC address of incoming packet */
-+	/* TCP flags. ;Bit 0: FIN;Bit 1: SYN;Bit 2: RST;Bit 3: PSH;Bit 4: ACK;
-+	 *             Bit 5: URG;Bit 6: ECE;Bit 7: CWR;Bit 8: NS
-+	 */
-+	u32 tcp_flags:9;
-+	u32 ip_version:4;	/* IP version */
-+	u32 frag:1;		/* Packet is an IP fragment */
-+	/* The first vlan in the packet is s-vlan (0x8a88).
-+	 * cvlan_tag and svlan_tag cannot be set together
-+	 */
-+	u32 svlan_tag:1;
-+	/* The first vlan in the packet is c-vlan (0x8100).
-+	 * cvlan_tag and svlan_tag cannot be set together
-+	 */
-+	u32 cvlan_tag:1;
-+	/* Explicit Congestion Notification derived from
-+	 * Traffic Class/TOS field of IPv6/v4
-+	 */
-+	u32 ip_ecn:2;
-+	/* Differentiated Services Code Point derived from
-+	 * Traffic Class/TOS field of IPv6/v4
-+	 */
-+	u32 ip_dscp:6;
-+	u32 ip_protocol:8;	/* IP protocol */
-+	/* TCP destination port.
-+	 * tcp and udp sport/dport are mutually exclusive
-+	 */
-+	u32 tcp_dport:16;
-+	/* TCP source port.;tcp and udp sport/dport are mutually exclusive */
-+	u32 tcp_sport:16;
-+	u32 ttl_hoplimit:8;
-+	u32 reserved:24;
-+	/* UDP destination port.;tcp and udp sport/dport are mutually exclusive *=
-/
-+	u32 udp_dport:16;
-+	/* UDP source port.;tcp and udp sport/dport are mutually exclusive */
-+	u32 udp_sport:16;
-+	/* IPv6 source address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 src_ip_127_96;
-+	/* IPv6 source address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 src_ip_95_64;
-+	/* IPv6 source address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 src_ip_63_32;
-+	/* IPv6 source address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 src_ip_31_0;
-+	/* IPv6 destination address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 dst_ip_127_96;
-+	/* IPv6 destination address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 dst_ip_95_64;
-+	/* IPv6 destination address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 dst_ip_63_32;
-+	/* IPv6 destination address of incoming packets
-+	 * For IPv4 address use bits 31:0 (rest of the bits are reserved)
-+	 * This field should be qualified by an appropriate ethertype
-+	 */
-+	u32 dst_ip_31_0;
-+};
-+
-+struct mlx5dr_match_misc {
-+	u32 source_sqn:24;		/* Source SQN */
-+	u32 source_vhca_port:4;
-+	/* used with GRE, sequence number exist when gre_s_present =3D=3D 1 */
-+	u32 gre_s_present:1;
-+	/* used with GRE, key exist when gre_k_present =3D=3D 1 */
-+	u32 gre_k_present:1;
-+	u32 reserved_auto1:1;
-+	/* used with GRE, checksum exist when gre_c_present =3D=3D 1 */
-+	u32 gre_c_present:1;
-+	/* Source port.;0xffff determines wire port */
-+	u32 source_port:16;
-+	u32 reserved_auto2:16;
-+	/* VLAN ID of first VLAN tag the inner header of the incoming packet.
-+	 * Valid only when inner_second_cvlan_tag =3D=3D1 or inner_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 inner_second_vid:12;
-+	/* CFI bit of first VLAN tag in the inner header of the incoming packet.
-+	 * Valid only when inner_second_cvlan_tag =3D=3D1 or inner_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 inner_second_cfi:1;
-+	/* Priority of second VLAN tag in the inner header of the incoming packet=
-.
-+	 * Valid only when inner_second_cvlan_tag =3D=3D1 or inner_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 inner_second_prio:3;
-+	/* VLAN ID of first VLAN tag the outer header of the incoming packet.
-+	 * Valid only when outer_second_cvlan_tag =3D=3D1 or outer_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 outer_second_vid:12;
-+	/* CFI bit of first VLAN tag in the outer header of the incoming packet.
-+	 * Valid only when outer_second_cvlan_tag =3D=3D1 or outer_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 outer_second_cfi:1;
-+	/* Priority of second VLAN tag in the outer header of the incoming packet=
-.
-+	 * Valid only when outer_second_cvlan_tag =3D=3D1 or outer_second_svlan_t=
-ag =3D=3D1
-+	 */
-+	u32 outer_second_prio:3;
-+	u32 gre_protocol:16;		/* GRE Protocol (outer) */
-+	u32 reserved_auto3:12;
-+	/* The second vlan in the inner header of the packet is s-vlan (0x8a88).
-+	 * inner_second_cvlan_tag and inner_second_svlan_tag cannot be set togeth=
-er
-+	 */
-+	u32 inner_second_svlan_tag:1;
-+	/* The second vlan in the outer header of the packet is s-vlan (0x8a88).
-+	 * outer_second_cvlan_tag and outer_second_svlan_tag cannot be set togeth=
-er
-+	 */
-+	u32 outer_second_svlan_tag:1;
-+	/* The second vlan in the inner header of the packet is c-vlan (0x8100).
-+	 * inner_second_cvlan_tag and inner_second_svlan_tag cannot be set togeth=
-er
-+	 */
-+	u32 inner_second_cvlan_tag:1;
-+	/* The second vlan in the outer header of the packet is c-vlan (0x8100).
-+	 * outer_second_cvlan_tag and outer_second_svlan_tag cannot be set togeth=
-er
-+	 */
-+	u32 outer_second_cvlan_tag:1;
-+	u32 gre_key_l:8;		/* GRE Key [7:0] (outer) */
-+	u32 gre_key_h:24;		/* GRE Key[31:8] (outer) */
-+	u32 reserved_auto4:8;
-+	u32 vxlan_vni:24;		/* VXLAN VNI (outer) */
-+	u32 geneve_oam:1;		/* GENEVE OAM field (outer) */
-+	u32 reserved_auto5:7;
-+	u32 geneve_vni:24;		/* GENEVE VNI field (outer) */
-+	u32 outer_ipv6_flow_label:20;	/* Flow label of incoming IPv6 packet (oute=
-r) */
-+	u32 reserved_auto6:12;
-+	u32 inner_ipv6_flow_label:20;	/* Flow label of incoming IPv6 packet (inne=
-r) */
-+	u32 reserved_auto7:12;
-+	u32 geneve_protocol_type:16;	/* GENEVE protocol type (outer) */
-+	u32 geneve_opt_len:6;		/* GENEVE OptLen (outer) */
-+	u32 reserved_auto8:10;
-+	u32 bth_dst_qp:24;		/* Destination QP in BTH header */
-+	u32 reserved_auto9:8;
-+	u8 reserved_auto10[20];
-+};
-+
-+struct mlx5dr_match_misc2 {
-+	u32 outer_first_mpls_ttl:8;		/* First MPLS TTL (outer) */
-+	u32 outer_first_mpls_s_bos:1;		/* First MPLS S_BOS (outer) */
-+	u32 outer_first_mpls_exp:3;		/* First MPLS EXP (outer) */
-+	u32 outer_first_mpls_label:20;		/* First MPLS LABEL (outer) */
-+	u32 inner_first_mpls_ttl:8;		/* First MPLS TTL (inner) */
-+	u32 inner_first_mpls_s_bos:1;		/* First MPLS S_BOS (inner) */
-+	u32 inner_first_mpls_exp:3;		/* First MPLS EXP (inner) */
-+	u32 inner_first_mpls_label:20;		/* First MPLS LABEL (inner) */
-+	u32 outer_first_mpls_over_gre_ttl:8;	/* last MPLS TTL (outer) */
-+	u32 outer_first_mpls_over_gre_s_bos:1;	/* last MPLS S_BOS (outer) */
-+	u32 outer_first_mpls_over_gre_exp:3;	/* last MPLS EXP (outer) */
-+	u32 outer_first_mpls_over_gre_label:20;	/* last MPLS LABEL (outer) */
-+	u32 outer_first_mpls_over_udp_ttl:8;	/* last MPLS TTL (outer) */
-+	u32 outer_first_mpls_over_udp_s_bos:1;	/* last MPLS S_BOS (outer) */
-+	u32 outer_first_mpls_over_udp_exp:3;	/* last MPLS EXP (outer) */
-+	u32 outer_first_mpls_over_udp_label:20;	/* last MPLS LABEL (outer) */
-+	u32 metadata_reg_c_7;			/* metadata_reg_c_7 */
-+	u32 metadata_reg_c_6;			/* metadata_reg_c_6 */
-+	u32 metadata_reg_c_5;			/* metadata_reg_c_5 */
-+	u32 metadata_reg_c_4;			/* metadata_reg_c_4 */
-+	u32 metadata_reg_c_3;			/* metadata_reg_c_3 */
-+	u32 metadata_reg_c_2;			/* metadata_reg_c_2 */
-+	u32 metadata_reg_c_1;			/* metadata_reg_c_1 */
-+	u32 metadata_reg_c_0;			/* metadata_reg_c_0 */
-+	u32 metadata_reg_a;			/* metadata_reg_a */
-+	u32 metadata_reg_b;			/* metadata_reg_b */
-+	u8 reserved_auto2[8];
-+};
-+
-+struct mlx5dr_match_misc3 {
-+	u32 inner_tcp_seq_num;
-+	u32 outer_tcp_seq_num;
-+	u32 inner_tcp_ack_num;
-+	u32 outer_tcp_ack_num;
-+	u32 outer_vxlan_gpe_vni:24;
-+	u32 reserved_auto1:8;
-+	u32 reserved_auto2:16;
-+	u32 outer_vxlan_gpe_flags:8;
-+	u32 outer_vxlan_gpe_next_protocol:8;
-+	u32 icmpv4_header_data;
-+	u32 icmpv6_header_data;
-+	u32 icmpv6_code:8;
-+	u32 icmpv6_type:8;
-+	u32 icmpv4_code:8;
-+	u32 icmpv4_type:8;
-+	u8 reserved_auto3[0x1c];
-+};
-+
-+struct mlx5dr_match_param {
-+	struct mlx5dr_match_spec outer;
-+	struct mlx5dr_match_misc misc;
-+	struct mlx5dr_match_spec inner;
-+	struct mlx5dr_match_misc2 misc2;
-+	struct mlx5dr_match_misc3 misc3;
-+};
-+
-+#define DR_MASK_IS_FLEX_PARSER_ICMPV4_SET(_misc3) ((_misc3)->icmpv4_type |=
-| \
-+						   (_misc3)->icmpv4_code || \
-+						   (_misc3)->icmpv4_header_data)
-+
-+struct mlx5dr_esw_caps {
-+	u64 drop_icm_address_rx;
-+	u64 drop_icm_address_tx;
-+	u64 uplink_icm_address_rx;
-+	u64 uplink_icm_address_tx;
-+	bool sw_owner;
-+};
-+
-+struct mlx5dr_cmd_vport_cap {
-+	u16 vport_gvmi;
-+	u16 vhca_gvmi;
-+	u64 icm_address_rx;
-+	u64 icm_address_tx;
-+	u32 num;
-+};
-+
-+struct mlx5dr_cmd_caps {
-+	u16 gvmi;
-+	u64 nic_rx_drop_address;
-+	u64 nic_tx_drop_address;
-+	u64 nic_tx_allow_address;
-+	u64 esw_rx_drop_address;
-+	u64 esw_tx_drop_address;
-+	u32 log_icm_size;
-+	u64 hdr_modify_icm_addr;
-+	u32 flex_protocols;
-+	u8 flex_parser_id_icmp_dw0;
-+	u8 flex_parser_id_icmp_dw1;
-+	u8 flex_parser_id_icmpv6_dw0;
-+	u8 flex_parser_id_icmpv6_dw1;
-+	u8 max_ft_level;
-+	u16 roce_min_src_udp;
-+	u8 num_esw_ports;
-+	bool eswitch_manager;
-+	bool rx_sw_owner;
-+	bool tx_sw_owner;
-+	bool fdb_sw_owner;
-+	u32 num_vports;
-+	struct mlx5dr_esw_caps esw_caps;
-+	struct mlx5dr_cmd_vport_cap *vports_caps;
-+	bool prio_tag_required;
-+};
-+
-+struct mlx5dr_domain_rx_tx {
-+	u64 drop_icm_addr;
-+	u64 default_icm_addr;
-+	enum mlx5dr_ste_entry_type ste_type;
-+};
-+
-+struct mlx5dr_domain_info {
-+	bool supp_sw_steering;
-+	u32 max_inline_size;
-+	u32 max_send_wr;
-+	u32 max_log_sw_icm_sz;
-+	u32 max_log_action_icm_sz;
-+	struct mlx5dr_domain_rx_tx rx;
-+	struct mlx5dr_domain_rx_tx tx;
-+	struct mlx5dr_cmd_caps caps;
-+};
-+
-+struct mlx5dr_domain_cache {
-+	struct mlx5dr_fw_recalc_cs_ft **recalc_cs_ft;
-+};
-+
-+struct mlx5dr_domain {
-+	struct mlx5dr_domain *peer_dmn;
-+	struct mlx5_core_dev *mdev;
-+	u32 pdn;
-+	struct mlx5_uars_page *uar;
-+	enum mlx5dr_domain_type type;
-+	refcount_t refcount;
-+	struct mutex mutex; /* protect domain */
-+	struct mlx5dr_icm_pool *ste_icm_pool;
-+	struct mlx5dr_icm_pool *action_icm_pool;
-+	struct mlx5dr_send_ring *send_ring;
-+	struct mlx5dr_domain_info info;
-+	struct mlx5dr_domain_cache cache;
-+};
-+
-+struct mlx5dr_table_rx_tx {
-+	struct mlx5dr_ste_htbl *s_anchor;
-+	struct mlx5dr_domain_rx_tx *nic_dmn;
-+	u64 default_icm_addr;
-+};
-+
-+struct mlx5dr_table {
-+	struct mlx5dr_domain *dmn;
-+	struct mlx5dr_table_rx_tx rx;
-+	struct mlx5dr_table_rx_tx tx;
-+	u32 level;
-+	u32 table_type;
-+	u32 table_id;
-+	struct list_head matcher_list;
-+	struct mlx5dr_action *miss_action;
-+	refcount_t refcount;
-+};
-+
-+struct mlx5dr_matcher_rx_tx {
-+	struct mlx5dr_ste_htbl *s_htbl;
-+	struct mlx5dr_ste_htbl *e_anchor;
-+	struct mlx5dr_ste_build *ste_builder;
-+	struct mlx5dr_ste_build ste_builder4[DR_RULE_MAX_STES];
-+	struct mlx5dr_ste_build ste_builder6[DR_RULE_MAX_STES];
-+	u8 num_of_builders;
-+	u8 num_of_builders4;
-+	u8 num_of_builders6;
-+	u64 default_icm_addr;
-+	struct mlx5dr_table_rx_tx *nic_tbl;
-+};
-+
-+struct mlx5dr_matcher {
-+	struct mlx5dr_table *tbl;
-+	struct mlx5dr_matcher_rx_tx rx;
-+	struct mlx5dr_matcher_rx_tx tx;
-+	struct list_head matcher_list;
-+	u16 prio;
-+	struct mlx5dr_match_param mask;
-+	u8 match_criteria;
-+	refcount_t refcount;
-+	struct mlx5dv_flow_matcher *dv_matcher;
-+};
-+
-+struct mlx5dr_rule_member {
-+	struct mlx5dr_ste *ste;
-+	/* attached to mlx5dr_rule via this */
-+	struct list_head list;
-+	/* attached to mlx5dr_ste via this */
-+	struct list_head use_ste_list;
-+};
-+
-+struct mlx5dr_action {
-+	enum mlx5dr_action_type action_type;
-+	refcount_t refcount;
-+	union {
-+		struct {
-+			struct mlx5dr_domain *dmn;
-+			struct mlx5dr_icm_chunk *chunk;
-+			u8 *data;
-+			u32 data_size;
-+			u16 num_of_actions;
-+			u32 index;
-+			u8 allow_rx:1;
-+			u8 allow_tx:1;
-+			u8 modify_ttl:1;
-+		} rewrite;
-+		struct {
-+			struct mlx5dr_domain *dmn;
-+			u32 reformat_id;
-+			u32 reformat_size;
-+		} reformat;
-+		struct {
-+			u8 is_fw_tbl:1;
-+			union {
-+				struct mlx5dr_table *tbl;
-+				struct {
-+					struct mlx5_flow_table *ft;
-+					u64 rx_icm_addr;
-+					u64 tx_icm_addr;
-+					struct mlx5_core_dev *mdev;
-+				} fw_tbl;
-+			};
-+		} dest_tbl;
-+		struct {
-+			u32 ctr_id;
-+			u32 offeset;
-+		} ctr;
-+		struct {
-+			struct mlx5dr_domain *dmn;
-+			struct mlx5dr_cmd_vport_cap *caps;
-+			u32 num;
-+		} vport;
-+		struct {
-+			u32 vlan_hdr; /* tpid_pcp_dei_vid */
-+		} push_vlan;
-+		u32 flow_tag;
-+	};
-+};
-+
-+enum mlx5dr_connect_type {
-+	CONNECT_HIT	=3D 1,
-+	CONNECT_MISS	=3D 2,
-+};
-+
-+struct mlx5dr_htbl_connect_info {
-+	enum mlx5dr_connect_type type;
-+	union {
-+		struct mlx5dr_ste_htbl *hit_next_htbl;
-+		u64 miss_icm_addr;
-+	};
-+};
-+
-+struct mlx5dr_rule_rx_tx {
-+	struct list_head rule_members_list;
-+	struct mlx5dr_matcher_rx_tx *nic_matcher;
-+};
-+
-+struct mlx5dr_rule {
-+	struct mlx5dr_matcher *matcher;
-+	struct mlx5dr_rule_rx_tx rx;
-+	struct mlx5dr_rule_rx_tx tx;
-+	struct list_head rule_actions_list;
-+};
-+
-+void mlx5dr_rule_update_rule_member(struct mlx5dr_ste *new_ste,
-+				    struct mlx5dr_ste *ste);
-+
-+struct mlx5dr_icm_chunk {
-+	struct mlx5dr_icm_bucket *bucket;
-+	struct list_head chunk_list;
-+	u32 rkey;
-+	u32 num_of_entries;
-+	u32 byte_size;
-+	u64 icm_addr;
-+	u64 mr_addr;
-+
-+	/* Memory optimisation */
-+	struct mlx5dr_ste *ste_arr;
-+	u8 *hw_ste_arr;
-+	struct list_head *miss_list;
-+};
-+
-+static inline int
-+mlx5dr_matcher_supp_flex_parser_icmp_v4(struct mlx5dr_cmd_caps *caps)
-+{
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED;
-+}
-+
-+static inline int
-+mlx5dr_matcher_supp_flex_parser_icmp_v6(struct mlx5dr_cmd_caps *caps)
-+{
-+	return caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V6_ENABLED;
-+}
-+
-+int mlx5dr_matcher_select_builders(struct mlx5dr_matcher *matcher,
-+				   struct mlx5dr_matcher_rx_tx *nic_matcher,
-+				   bool ipv6);
-+
-+static inline u32
-+mlx5dr_icm_pool_chunk_size_to_entries(enum mlx5dr_icm_chunk_size chunk_siz=
-e)
-+{
-+	return 1 << chunk_size;
-+}
-+
-+static inline int
-+mlx5dr_icm_pool_chunk_size_to_byte(enum mlx5dr_icm_chunk_size chunk_size,
-+				   enum mlx5dr_icm_type icm_type)
-+{
-+	int num_of_entries;
-+	int entry_size;
-+
-+	if (icm_type =3D=3D DR_ICM_TYPE_STE)
-+		entry_size =3D DR_STE_SIZE;
-+	else
-+		entry_size =3D DR_MODIFY_ACTION_SIZE;
-+
-+	num_of_entries =3D mlx5dr_icm_pool_chunk_size_to_entries(chunk_size);
-+
-+	return entry_size * num_of_entries;
-+}
-+
-+static inline struct mlx5dr_cmd_vport_cap *
-+mlx5dr_get_vport_cap(struct mlx5dr_cmd_caps *caps, u32 vport)
-+{
-+	if (!caps->vports_caps ||
-+	    (vport >=3D caps->num_vports && vport !=3D WIRE_PORT))
-+		return NULL;
-+
-+	if (vport =3D=3D WIRE_PORT)
-+		vport =3D caps->num_vports;
-+
-+	return &caps->vports_caps[vport];
-+}
-+
-+struct mlx5dr_cmd_query_flow_table_details {
-+	u8 status;
-+	u8 level;
-+	u64 sw_owner_icm_root_1;
-+	u64 sw_owner_icm_root_0;
-+};
-+
-+/* internal API functions */
-+int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
-+			    struct mlx5dr_cmd_caps *caps);
 +int mlx5dr_cmd_query_esw_vport_context(struct mlx5_core_dev *mdev,
-+				       bool other_vport, u16 vport_number,
++				       bool other_vport,
++				       u16 vport_number,
 +				       u64 *icm_address_rx,
-+				       u64 *icm_address_tx);
-+int mlx5dr_cmd_query_gvmi(struct mlx5_core_dev *mdev,
-+			  bool other_vport, u16 vport_number, u16 *gvmi);
++				       u64 *icm_address_tx)
++{
++	u32 out[MLX5_ST_SZ_DW(query_esw_vport_context_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(query_esw_vport_context_in)] =3D {};
++	int err;
++
++	MLX5_SET(query_esw_vport_context_in, in, opcode,
++		 MLX5_CMD_OP_QUERY_ESW_VPORT_CONTEXT);
++	MLX5_SET(query_esw_vport_context_in, in, other_vport, other_vport);
++	MLX5_SET(query_esw_vport_context_in, in, vport_number, vport_number);
++
++	err =3D mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (err)
++		return err;
++
++	*icm_address_rx =3D
++		MLX5_GET64(query_esw_vport_context_out, out,
++			   esw_vport_context.sw_steering_vport_icm_address_rx);
++	*icm_address_tx =3D
++		MLX5_GET64(query_esw_vport_context_out, out,
++			   esw_vport_context.sw_steering_vport_icm_address_tx);
++	return 0;
++}
++
++int mlx5dr_cmd_query_gvmi(struct mlx5_core_dev *mdev, bool other_vport,
++			  u16 vport_number, u16 *gvmi)
++{
++	u32 in[MLX5_ST_SZ_DW(query_hca_cap_in)] =3D {};
++	int out_size;
++	void *out;
++	int err;
++
++	out_size =3D MLX5_ST_SZ_BYTES(query_hca_cap_out);
++	out =3D kzalloc(out_size, GFP_KERNEL);
++	if (!out)
++		return -ENOMEM;
++
++	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
++	MLX5_SET(query_hca_cap_in, in, other_function, other_vport);
++	MLX5_SET(query_hca_cap_in, in, function_id, vport_number);
++	MLX5_SET(query_hca_cap_in, in, op_mod,
++		 MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE << 1 |
++		 HCA_CAP_OPMOD_GET_CUR);
++
++	err =3D mlx5_cmd_exec(mdev, in, sizeof(in), out, out_size);
++	if (err) {
++		kfree(out);
++		return err;
++	}
++
++	*gvmi =3D MLX5_GET(query_hca_cap_out, out, capability.cmd_hca_cap.vhca_id=
+);
++
++	kfree(out);
++	return 0;
++}
++
 +int mlx5dr_cmd_query_esw_caps(struct mlx5_core_dev *mdev,
-+			      struct mlx5dr_esw_caps *caps);
-+int mlx5dr_cmd_sync_steering(struct mlx5_core_dev *mdev);
++			      struct mlx5dr_esw_caps *caps)
++{
++	caps->drop_icm_address_rx =3D
++		MLX5_CAP64_ESW_FLOWTABLE(mdev,
++					 sw_steering_fdb_action_drop_icm_address_rx);
++	caps->drop_icm_address_tx =3D
++		MLX5_CAP64_ESW_FLOWTABLE(mdev,
++					 sw_steering_fdb_action_drop_icm_address_tx);
++	caps->uplink_icm_address_rx =3D
++		MLX5_CAP64_ESW_FLOWTABLE(mdev,
++					 sw_steering_uplink_icm_address_rx);
++	caps->uplink_icm_address_tx =3D
++		MLX5_CAP64_ESW_FLOWTABLE(mdev,
++					 sw_steering_uplink_icm_address_tx);
++	caps->sw_owner =3D
++		MLX5_CAP_ESW_FLOWTABLE_FDB(mdev,
++					   sw_owner);
++
++	return 0;
++}
++
++int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
++			    struct mlx5dr_cmd_caps *caps)
++{
++	caps->prio_tag_required	=3D MLX5_CAP_GEN(mdev, prio_tag_required);
++	caps->eswitch_manager	=3D MLX5_CAP_GEN(mdev, eswitch_manager);
++	caps->gvmi		=3D MLX5_CAP_GEN(mdev, vhca_id);
++	caps->flex_protocols	=3D MLX5_CAP_GEN(mdev, flex_parser_protocols);
++
++	if (mlx5dr_matcher_supp_flex_parser_icmp_v4(caps)) {
++		caps->flex_parser_id_icmp_dw0 =3D MLX5_CAP_GEN(mdev, flex_parser_id_icmp=
+_dw0);
++		caps->flex_parser_id_icmp_dw1 =3D MLX5_CAP_GEN(mdev, flex_parser_id_icmp=
+_dw1);
++	}
++
++	if (mlx5dr_matcher_supp_flex_parser_icmp_v6(caps)) {
++		caps->flex_parser_id_icmpv6_dw0 =3D
++			MLX5_CAP_GEN(mdev, flex_parser_id_icmpv6_dw0);
++		caps->flex_parser_id_icmpv6_dw1 =3D
++			MLX5_CAP_GEN(mdev, flex_parser_id_icmpv6_dw1);
++	}
++
++	caps->nic_rx_drop_address =3D
++		MLX5_CAP64_FLOWTABLE(mdev, sw_steering_nic_rx_action_drop_icm_address);
++	caps->nic_tx_drop_address =3D
++		MLX5_CAP64_FLOWTABLE(mdev, sw_steering_nic_tx_action_drop_icm_address);
++	caps->nic_tx_allow_address =3D
++		MLX5_CAP64_FLOWTABLE(mdev, sw_steering_nic_tx_action_allow_icm_address);
++
++	caps->rx_sw_owner =3D MLX5_CAP_FLOWTABLE_NIC_RX(mdev, sw_owner);
++	caps->max_ft_level =3D MLX5_CAP_FLOWTABLE_NIC_RX(mdev, max_ft_level);
++
++	caps->tx_sw_owner =3D MLX5_CAP_FLOWTABLE_NIC_TX(mdev, sw_owner);
++
++	caps->log_icm_size =3D MLX5_CAP_DEV_MEM(mdev, log_steering_sw_icm_size);
++	caps->hdr_modify_icm_addr =3D
++		MLX5_CAP64_DEV_MEM(mdev, header_modify_sw_icm_start_address);
++
++	caps->roce_min_src_udp =3D MLX5_CAP_ROCE(mdev, r_roce_min_src_udp_port);
++
++	return 0;
++}
++
++int mlx5dr_cmd_query_flow_table(struct mlx5_core_dev *dev,
++				enum fs_flow_table_type type,
++				u32 table_id,
++				struct mlx5dr_cmd_query_flow_table_details *output)
++{
++	u32 out[MLX5_ST_SZ_DW(query_flow_table_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(query_flow_table_in)] =3D {};
++	int err;
++
++	MLX5_SET(query_flow_table_in, in, opcode,
++		 MLX5_CMD_OP_QUERY_FLOW_TABLE);
++
++	MLX5_SET(query_flow_table_in, in, table_type, type);
++	MLX5_SET(query_flow_table_in, in, table_id, table_id);
++
++	err =3D mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
++	if (err)
++		return err;
++
++	output->status =3D MLX5_GET(query_flow_table_out, out, status);
++	output->level =3D MLX5_GET(query_flow_table_out, out, flow_table_context.=
+level);
++
++	output->sw_owner_icm_root_1 =3D MLX5_GET64(query_flow_table_out, out,
++						 flow_table_context.sw_owner_icm_root_1);
++	output->sw_owner_icm_root_0 =3D MLX5_GET64(query_flow_table_out, out,
++						 flow_table_context.sw_owner_icm_root_0);
++
++	return 0;
++}
++
++int mlx5dr_cmd_sync_steering(struct mlx5_core_dev *mdev)
++{
++	u32 out[MLX5_ST_SZ_DW(sync_steering_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(sync_steering_in)] =3D {};
++
++	MLX5_SET(sync_steering_in, in, opcode, MLX5_CMD_OP_SYNC_STEERING);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
 +int mlx5dr_cmd_set_fte_modify_and_vport(struct mlx5_core_dev *mdev,
 +					u32 table_type,
 +					u32 table_id,
 +					u32 group_id,
 +					u32 modify_header_id,
-+					u32 vport_id);
++					u32 vport_id)
++{
++	u32 out[MLX5_ST_SZ_DW(set_fte_out)] =3D {};
++	void *in_flow_context;
++	unsigned int inlen;
++	void *in_dests;
++	u32 *in;
++	int err;
++
++	inlen =3D MLX5_ST_SZ_BYTES(set_fte_in) +
++		1 * MLX5_ST_SZ_BYTES(dest_format_struct); /* One destination only */
++
++	in =3D kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	MLX5_SET(set_fte_in, in, opcode, MLX5_CMD_OP_SET_FLOW_TABLE_ENTRY);
++	MLX5_SET(set_fte_in, in, table_type, table_type);
++	MLX5_SET(set_fte_in, in, table_id, table_id);
++
++	in_flow_context =3D MLX5_ADDR_OF(set_fte_in, in, flow_context);
++	MLX5_SET(flow_context, in_flow_context, group_id, group_id);
++	MLX5_SET(flow_context, in_flow_context, modify_header_id, modify_header_i=
+d);
++	MLX5_SET(flow_context, in_flow_context, destination_list_size, 1);
++	MLX5_SET(flow_context, in_flow_context, action,
++		 MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
++		 MLX5_FLOW_CONTEXT_ACTION_MOD_HDR);
++
++	in_dests =3D MLX5_ADDR_OF(flow_context, in_flow_context, destination);
++	MLX5_SET(dest_format_struct, in_dests, destination_type,
++		 MLX5_FLOW_DESTINATION_TYPE_VPORT);
++	MLX5_SET(dest_format_struct, in_dests, destination_id, vport_id);
++
++	err =3D mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
++	kvfree(in);
++
++	return err;
++}
++
 +int mlx5dr_cmd_del_flow_table_entry(struct mlx5_core_dev *mdev,
 +				    u32 table_type,
-+				    u32 table_id);
++				    u32 table_id)
++{
++	u32 out[MLX5_ST_SZ_DW(delete_fte_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(delete_fte_in)] =3D {};
++
++	MLX5_SET(delete_fte_in, in, opcode, MLX5_CMD_OP_DELETE_FLOW_TABLE_ENTRY);
++	MLX5_SET(delete_fte_in, in, table_type, table_type);
++	MLX5_SET(delete_fte_in, in, table_id, table_id);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
 +int mlx5dr_cmd_alloc_modify_header(struct mlx5_core_dev *mdev,
 +				   u32 table_type,
 +				   u8 num_of_actions,
 +				   u64 *actions,
-+				   u32 *modify_header_id);
++				   u32 *modify_header_id)
++{
++	u32 out[MLX5_ST_SZ_DW(alloc_modify_header_context_out)] =3D {};
++	void *p_actions;
++	u32 inlen;
++	u32 *in;
++	int err;
++
++	inlen =3D MLX5_ST_SZ_BYTES(alloc_modify_header_context_in) +
++		 num_of_actions * sizeof(u64);
++	in =3D kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	MLX5_SET(alloc_modify_header_context_in, in, opcode,
++		 MLX5_CMD_OP_ALLOC_MODIFY_HEADER_CONTEXT);
++	MLX5_SET(alloc_modify_header_context_in, in, table_type, table_type);
++	MLX5_SET(alloc_modify_header_context_in, in, num_of_actions, num_of_actio=
+ns);
++	p_actions =3D MLX5_ADDR_OF(alloc_modify_header_context_in, in, actions);
++	memcpy(p_actions, actions, num_of_actions * sizeof(u64));
++
++	err =3D mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
++	if (err)
++		goto out;
++
++	*modify_header_id =3D MLX5_GET(alloc_modify_header_context_out, out,
++				     modify_header_id);
++out:
++	kvfree(in);
++	return err;
++}
++
 +int mlx5dr_cmd_dealloc_modify_header(struct mlx5_core_dev *mdev,
-+				     u32 modify_header_id);
++				     u32 modify_header_id)
++{
++	u32 out[MLX5_ST_SZ_DW(dealloc_modify_header_context_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(dealloc_modify_header_context_in)] =3D {};
++
++	MLX5_SET(dealloc_modify_header_context_in, in, opcode,
++		 MLX5_CMD_OP_DEALLOC_MODIFY_HEADER_CONTEXT);
++	MLX5_SET(dealloc_modify_header_context_in, in, modify_header_id,
++		 modify_header_id);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
 +int mlx5dr_cmd_create_empty_flow_group(struct mlx5_core_dev *mdev,
 +				       u32 table_type,
 +				       u32 table_id,
-+				       u32 *group_id);
++				       u32 *group_id)
++{
++	u32 out[MLX5_ST_SZ_DW(create_flow_group_out)] =3D {};
++	int inlen =3D MLX5_ST_SZ_BYTES(create_flow_group_in);
++	u32 *in;
++	int err;
++
++	in =3D kzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	MLX5_SET(create_flow_group_in, in, opcode, MLX5_CMD_OP_CREATE_FLOW_GROUP)=
+;
++	MLX5_SET(create_flow_group_in, in, table_type, table_type);
++	MLX5_SET(create_flow_group_in, in, table_id, table_id);
++
++	err =3D mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
++	if (err)
++		goto out;
++
++	*group_id =3D MLX5_GET(create_flow_group_out, out, group_id);
++
++out:
++	kfree(in);
++	return err;
++}
++
 +int mlx5dr_cmd_destroy_flow_group(struct mlx5_core_dev *mdev,
 +				  u32 table_type,
 +				  u32 table_id,
-+				  u32 group_id);
++				  u32 group_id)
++{
++	u32 in[MLX5_ST_SZ_DW(destroy_flow_group_in)] =3D {};
++	u32 out[MLX5_ST_SZ_DW(destroy_flow_group_out)] =3D {};
++
++	MLX5_SET(create_flow_group_in, in, opcode, MLX5_CMD_OP_DESTROY_FLOW_GROUP=
+);
++	MLX5_SET(destroy_flow_group_in, in, table_type, table_type);
++	MLX5_SET(destroy_flow_group_in, in, table_id, table_id);
++	MLX5_SET(destroy_flow_group_in, in, group_id, group_id);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
 +int mlx5dr_cmd_create_flow_table(struct mlx5_core_dev *mdev,
 +				 u32 table_type,
 +				 u64 icm_addr_rx,
@@ -1041,164 +454,773 @@ e)
 +				 bool sw_owner,
 +				 bool term_tbl,
 +				 u64 *fdb_rx_icm_addr,
-+				 u32 *table_id);
++				 u32 *table_id)
++{
++	u32 out[MLX5_ST_SZ_DW(create_flow_table_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(create_flow_table_in)] =3D {};
++	void *ft_mdev;
++	int err;
++
++	MLX5_SET(create_flow_table_in, in, opcode, MLX5_CMD_OP_CREATE_FLOW_TABLE)=
+;
++	MLX5_SET(create_flow_table_in, in, table_type, table_type);
++
++	ft_mdev =3D MLX5_ADDR_OF(create_flow_table_in, in, flow_table_context);
++	MLX5_SET(flow_table_context, ft_mdev, termination_table, term_tbl);
++	MLX5_SET(flow_table_context, ft_mdev, sw_owner, sw_owner);
++	MLX5_SET(flow_table_context, ft_mdev, level, level);
++
++	if (sw_owner) {
++		/* icm_addr_0 used for FDB RX / NIC TX / NIC_RX
++		 * icm_addr_1 used for FDB TX
++		 */
++		if (table_type =3D=3D MLX5_FLOW_TABLE_TYPE_NIC_RX) {
++			MLX5_SET64(flow_table_context, ft_mdev,
++				   sw_owner_icm_root_0, icm_addr_rx);
++		} else if (table_type =3D=3D MLX5_FLOW_TABLE_TYPE_NIC_TX) {
++			MLX5_SET64(flow_table_context, ft_mdev,
++				   sw_owner_icm_root_0, icm_addr_tx);
++		} else if (table_type =3D=3D MLX5_FLOW_TABLE_TYPE_FDB) {
++			MLX5_SET64(flow_table_context, ft_mdev,
++				   sw_owner_icm_root_0, icm_addr_rx);
++			MLX5_SET64(flow_table_context, ft_mdev,
++				   sw_owner_icm_root_1, icm_addr_tx);
++		}
++	}
++
++	err =3D mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (err)
++		return err;
++
++	*table_id =3D MLX5_GET(create_flow_table_out, out, table_id);
++	if (!sw_owner && table_type =3D=3D MLX5_FLOW_TABLE_TYPE_FDB)
++		*fdb_rx_icm_addr =3D
++		(u64)MLX5_GET(create_flow_table_out, out, icm_address_31_0) |
++		(u64)MLX5_GET(create_flow_table_out, out, icm_address_39_32) << 32 |
++		(u64)MLX5_GET(create_flow_table_out, out, icm_address_63_40) << 40;
++
++	return 0;
++}
++
 +int mlx5dr_cmd_destroy_flow_table(struct mlx5_core_dev *mdev,
 +				  u32 table_id,
-+				  u32 table_type);
-+int mlx5dr_cmd_query_flow_table(struct mlx5_core_dev *dev,
-+				enum fs_flow_table_type type,
-+				u32 table_id,
-+				struct mlx5dr_cmd_query_flow_table_details *output);
++				  u32 table_type)
++{
++	u32 out[MLX5_ST_SZ_DW(destroy_flow_table_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(destroy_flow_table_in)] =3D {};
++
++	MLX5_SET(destroy_flow_table_in, in, opcode,
++		 MLX5_CMD_OP_DESTROY_FLOW_TABLE);
++	MLX5_SET(destroy_flow_table_in, in, table_type, table_type);
++	MLX5_SET(destroy_flow_table_in, in, table_id, table_id);
++
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
++
 +int mlx5dr_cmd_create_reformat_ctx(struct mlx5_core_dev *mdev,
 +				   enum mlx5_reformat_ctx_type rt,
 +				   size_t reformat_size,
 +				   void *reformat_data,
-+				   u32 *reformat_id);
++				   u32 *reformat_id)
++{
++	u32 out[MLX5_ST_SZ_DW(alloc_packet_reformat_context_out)] =3D {};
++	size_t inlen, cmd_data_sz, cmd_total_sz;
++	void *prctx;
++	void *pdata;
++	void *in;
++	int err;
++
++	cmd_total_sz =3D MLX5_ST_SZ_BYTES(alloc_packet_reformat_context_in);
++	cmd_data_sz =3D MLX5_FLD_SZ_BYTES(alloc_packet_reformat_context_in,
++					packet_reformat_context.reformat_data);
++	inlen =3D ALIGN(cmd_total_sz + reformat_size - cmd_data_sz, 4);
++	in =3D kvzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	MLX5_SET(alloc_packet_reformat_context_in, in, opcode,
++		 MLX5_CMD_OP_ALLOC_PACKET_REFORMAT_CONTEXT);
++
++	prctx =3D MLX5_ADDR_OF(alloc_packet_reformat_context_in, in, packet_refor=
+mat_context);
++	pdata =3D MLX5_ADDR_OF(packet_reformat_context_in, prctx, reformat_data);
++
++	MLX5_SET(packet_reformat_context_in, prctx, reformat_type, rt);
++	MLX5_SET(packet_reformat_context_in, prctx, reformat_data_size, reformat_=
+size);
++	memcpy(pdata, reformat_data, reformat_size);
++
++	err =3D mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
++	if (err)
++		return err;
++
++	*reformat_id =3D MLX5_GET(alloc_packet_reformat_context_out, out, packet_=
+reformat_id);
++	kvfree(in);
++
++	return err;
++}
++
 +void mlx5dr_cmd_destroy_reformat_ctx(struct mlx5_core_dev *mdev,
-+				     u32 reformat_id);
++				     u32 reformat_id)
++{
++	u32 out[MLX5_ST_SZ_DW(dealloc_packet_reformat_context_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(dealloc_packet_reformat_context_in)] =3D {};
 +
-+struct mlx5dr_cmd_gid_attr {
-+	u8 gid[16];
-+	u8 mac[6];
-+	u32 roce_ver;
-+};
++	MLX5_SET(dealloc_packet_reformat_context_in, in, opcode,
++		 MLX5_CMD_OP_DEALLOC_PACKET_REFORMAT_CONTEXT);
++	MLX5_SET(dealloc_packet_reformat_context_in, in, packet_reformat_id,
++		 reformat_id);
 +
-+struct mlx5dr_cmd_qp_create_attr {
-+	u32 page_id;
-+	u32 pdn;
-+	u32 cqn;
-+	u32 pm_state;
-+	u32 service_type;
-+	u32 buff_umem_id;
-+	u32 db_umem_id;
-+	u32 sq_wqe_cnt;
-+	u32 rq_wqe_cnt;
-+	u32 rq_wqe_shift;
-+};
++	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++}
 +
 +int mlx5dr_cmd_query_gid(struct mlx5_core_dev *mdev, u8 vhca_port_num,
-+			 u16 index, struct mlx5dr_cmd_gid_attr *attr);
++			 u16 index, struct mlx5dr_cmd_gid_attr *attr)
++{
++	u32 out[MLX5_ST_SZ_DW(query_roce_address_out)] =3D {};
++	u32 in[MLX5_ST_SZ_DW(query_roce_address_in)] =3D {};
++	int err;
 +
-+struct mlx5dr_icm_pool *mlx5dr_icm_pool_create(struct mlx5dr_domain *dmn,
-+					       enum mlx5dr_icm_type icm_type);
-+void mlx5dr_icm_pool_destroy(struct mlx5dr_icm_pool *pool);
++	MLX5_SET(query_roce_address_in, in, opcode,
++		 MLX5_CMD_OP_QUERY_ROCE_ADDRESS);
 +
-+struct mlx5dr_icm_chunk *
-+mlx5dr_icm_alloc_chunk(struct mlx5dr_icm_pool *pool,
-+		       enum mlx5dr_icm_chunk_size chunk_size);
-+void mlx5dr_icm_free_chunk(struct mlx5dr_icm_chunk *chunk);
-+bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste);
-+int mlx5dr_ste_htbl_init_and_postsend(struct mlx5dr_domain *dmn,
-+				      struct mlx5dr_domain_rx_tx *nic_dmn,
-+				      struct mlx5dr_ste_htbl *htbl,
-+				      struct mlx5dr_htbl_connect_info *connect_info,
-+				      bool update_hw_ste);
-+void mlx5dr_ste_set_formatted_ste(u16 gvmi,
-+				  struct mlx5dr_domain_rx_tx *nic_dmn,
-+				  struct mlx5dr_ste_htbl *htbl,
-+				  u8 *formatted_ste,
-+				  struct mlx5dr_htbl_connect_info *connect_info);
-+void mlx5dr_ste_copy_param(u8 match_criteria,
-+			   struct mlx5dr_match_param *set_param,
-+			   struct mlx5dr_match_parameters *mask);
++	MLX5_SET(query_roce_address_in, in, roce_address_index, index);
++	MLX5_SET(query_roce_address_in, in, vhca_port_num, vhca_port_num);
 +
-+void mlx5dr_crc32_init_table(void);
-+u32 mlx5dr_crc32_slice8_calc(const void *input_data, size_t length);
++	err =3D mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (err)
++		return err;
 +
-+struct mlx5dr_qp {
-+	struct mlx5_core_dev *mdev;
-+	struct mlx5_wq_qp wq;
-+	struct mlx5_uars_page *uar;
-+	struct mlx5_wq_ctrl wq_ctrl;
-+	struct mlx5_core_qp mqp;
-+	struct {
-+		unsigned int pc;
-+		unsigned int cc;
-+		unsigned int size;
-+		unsigned int *wqe_head;
-+		unsigned int wqe_cnt;
-+	} sq;
-+	struct {
-+		unsigned int pc;
-+		unsigned int cc;
-+		unsigned int size;
-+		unsigned int wqe_cnt;
-+	} rq;
-+	int max_inline_data;
++	memcpy(&attr->gid,
++	       MLX5_ADDR_OF(query_roce_address_out,
++			    out, roce_address.source_l3_address),
++	       sizeof(attr->gid));
++	memcpy(attr->mac,
++	       MLX5_ADDR_OF(query_roce_address_out, out,
++			    roce_address.source_mac_47_32),
++	       sizeof(attr->mac));
++
++	if (MLX5_GET(query_roce_address_out, out,
++		     roce_address.roce_version) =3D=3D MLX5_ROCE_VERSION_2)
++		attr->roce_ver =3D MLX5_ROCE_VERSION_2;
++	else
++		attr->roce_ver =3D MLX5_ROCE_VERSION_1;
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr.h=
+ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr.h
+new file mode 100644
+index 000000000000..596c927220d9
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr.h
+@@ -0,0 +1,604 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2019, Mellanox Technologies */
++
++#ifndef MLX5_IFC_DR_H
++#define MLX5_IFC_DR_H
++
++enum {
++	MLX5DR_ACTION_MDFY_HW_FLD_L2_0		=3D 0,
++	MLX5DR_ACTION_MDFY_HW_FLD_L2_1		=3D 1,
++	MLX5DR_ACTION_MDFY_HW_FLD_L2_2		=3D 2,
++	MLX5DR_ACTION_MDFY_HW_FLD_L3_0		=3D 3,
++	MLX5DR_ACTION_MDFY_HW_FLD_L3_1		=3D 4,
++	MLX5DR_ACTION_MDFY_HW_FLD_L3_2		=3D 5,
++	MLX5DR_ACTION_MDFY_HW_FLD_L3_3		=3D 6,
++	MLX5DR_ACTION_MDFY_HW_FLD_L3_4		=3D 7,
++	MLX5DR_ACTION_MDFY_HW_FLD_L4_0		=3D 8,
++	MLX5DR_ACTION_MDFY_HW_FLD_L4_1		=3D 9,
++	MLX5DR_ACTION_MDFY_HW_FLD_MPLS		=3D 10,
++	MLX5DR_ACTION_MDFY_HW_FLD_L2_TNL_0	=3D 11,
++	MLX5DR_ACTION_MDFY_HW_FLD_REG_0		=3D 12,
++	MLX5DR_ACTION_MDFY_HW_FLD_REG_1		=3D 13,
++	MLX5DR_ACTION_MDFY_HW_FLD_REG_2		=3D 14,
++	MLX5DR_ACTION_MDFY_HW_FLD_REG_3		=3D 15,
++	MLX5DR_ACTION_MDFY_HW_FLD_L4_2		=3D 16,
++	MLX5DR_ACTION_MDFY_HW_FLD_FLEX_0	=3D 17,
++	MLX5DR_ACTION_MDFY_HW_FLD_FLEX_1	=3D 18,
++	MLX5DR_ACTION_MDFY_HW_FLD_FLEX_2	=3D 19,
++	MLX5DR_ACTION_MDFY_HW_FLD_FLEX_3	=3D 20,
++	MLX5DR_ACTION_MDFY_HW_FLD_L2_TNL_1	=3D 21,
++	MLX5DR_ACTION_MDFY_HW_FLD_METADATA	=3D 22,
++	MLX5DR_ACTION_MDFY_HW_FLD_RESERVED	=3D 23,
 +};
 +
-+struct mlx5dr_cq {
-+	struct mlx5_core_dev *mdev;
-+	struct mlx5_cqwq wq;
-+	struct mlx5_wq_ctrl wq_ctrl;
-+	struct mlx5_core_cq mcq;
-+	struct mlx5dr_qp *qp;
++enum {
++	MLX5DR_ACTION_MDFY_HW_OP_SET		=3D 0x2,
++	MLX5DR_ACTION_MDFY_HW_OP_ADD		=3D 0x3,
 +};
 +
-+struct mlx5dr_mr {
-+	struct mlx5_core_dev *mdev;
-+	struct mlx5_core_mkey mkey;
-+	dma_addr_t dma_addr;
-+	void *addr;
-+	size_t size;
++enum {
++	MLX5DR_ACTION_MDFY_HW_HDR_L3_NONE	=3D 0x0,
++	MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV4	=3D 0x1,
++	MLX5DR_ACTION_MDFY_HW_HDR_L3_IPV6	=3D 0x2,
 +};
 +
-+#define MAX_SEND_CQE		64
-+#define MIN_READ_SYNC		64
-+
-+struct mlx5dr_send_ring {
-+	struct mlx5dr_cq *cq;
-+	struct mlx5dr_qp *qp;
-+	struct mlx5dr_mr *mr;
-+	/* How much wqes are waiting for completion */
-+	u32 pending_wqe;
-+	/* Signal request per this trash hold value */
-+	u16 signal_th;
-+	/* Each post_send_size less than max_post_send_size */
-+	u32 max_post_send_size;
-+	/* manage the send queue */
-+	u32 tx_head;
-+	void *buf;
-+	u32 buf_size;
-+	struct ib_wc wc[MAX_SEND_CQE];
-+	u8 sync_buff[MIN_READ_SYNC];
-+	struct mlx5dr_mr *sync_mr;
++enum {
++	MLX5DR_ACTION_MDFY_HW_HDR_L4_NONE	=3D 0x0,
++	MLX5DR_ACTION_MDFY_HW_HDR_L4_TCP	=3D 0x1,
++	MLX5DR_ACTION_MDFY_HW_HDR_L4_UDP	=3D 0x2,
 +};
 +
-+int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn);
-+void mlx5dr_send_ring_free(struct mlx5dr_domain *dmn,
-+			   struct mlx5dr_send_ring *send_ring);
-+int mlx5dr_send_ring_force_drain(struct mlx5dr_domain *dmn);
-+int mlx5dr_send_postsend_ste(struct mlx5dr_domain *dmn,
-+			     struct mlx5dr_ste *ste,
-+			     u8 *data,
-+			     u16 size,
-+			     u16 offset);
-+int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
-+			      struct mlx5dr_ste_htbl *htbl,
-+			      u8 *formatted_ste, u8 *mask);
-+int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
-+					struct mlx5dr_ste_htbl *htbl,
-+					u8 *ste_init_data,
-+					bool update_hw_ste);
-+int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
-+				struct mlx5dr_action *action);
-+
-+struct mlx5dr_fw_recalc_cs_ft {
-+	u64 rx_icm_addr;
-+	u32 table_id;
-+	u32 group_id;
-+	u32 modify_hdr_id;
++enum {
++	MLX5DR_STE_LU_TYPE_NOP				=3D 0x00,
++	MLX5DR_STE_LU_TYPE_SRC_GVMI_AND_QP		=3D 0x05,
++	MLX5DR_STE_LU_TYPE_ETHL2_TUNNELING_I		=3D 0x0a,
++	MLX5DR_STE_LU_TYPE_ETHL2_DST_O			=3D 0x06,
++	MLX5DR_STE_LU_TYPE_ETHL2_DST_I			=3D 0x07,
++	MLX5DR_STE_LU_TYPE_ETHL2_DST_D			=3D 0x1b,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_O			=3D 0x08,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_I			=3D 0x09,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_D			=3D 0x1c,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_DST_O		=3D 0x36,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_DST_I		=3D 0x37,
++	MLX5DR_STE_LU_TYPE_ETHL2_SRC_DST_D		=3D 0x38,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_DST_O		=3D 0x0d,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_DST_I		=3D 0x0e,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_DST_D		=3D 0x1e,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_SRC_O		=3D 0x0f,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_SRC_I		=3D 0x10,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV6_SRC_D		=3D 0x1f,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_5_TUPLE_O		=3D 0x11,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_5_TUPLE_I		=3D 0x12,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_5_TUPLE_D		=3D 0x20,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_MISC_O		=3D 0x29,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_MISC_I		=3D 0x2a,
++	MLX5DR_STE_LU_TYPE_ETHL3_IPV4_MISC_D		=3D 0x2b,
++	MLX5DR_STE_LU_TYPE_ETHL4_O			=3D 0x13,
++	MLX5DR_STE_LU_TYPE_ETHL4_I			=3D 0x14,
++	MLX5DR_STE_LU_TYPE_ETHL4_D			=3D 0x21,
++	MLX5DR_STE_LU_TYPE_ETHL4_MISC_O			=3D 0x2c,
++	MLX5DR_STE_LU_TYPE_ETHL4_MISC_I			=3D 0x2d,
++	MLX5DR_STE_LU_TYPE_ETHL4_MISC_D			=3D 0x2e,
++	MLX5DR_STE_LU_TYPE_MPLS_FIRST_O			=3D 0x15,
++	MLX5DR_STE_LU_TYPE_MPLS_FIRST_I			=3D 0x24,
++	MLX5DR_STE_LU_TYPE_MPLS_FIRST_D			=3D 0x25,
++	MLX5DR_STE_LU_TYPE_GRE				=3D 0x16,
++	MLX5DR_STE_LU_TYPE_FLEX_PARSER_0		=3D 0x22,
++	MLX5DR_STE_LU_TYPE_FLEX_PARSER_1		=3D 0x23,
++	MLX5DR_STE_LU_TYPE_FLEX_PARSER_TNL_HEADER	=3D 0x19,
++	MLX5DR_STE_LU_TYPE_GENERAL_PURPOSE		=3D 0x18,
++	MLX5DR_STE_LU_TYPE_STEERING_REGISTERS_0		=3D 0x2f,
++	MLX5DR_STE_LU_TYPE_STEERING_REGISTERS_1		=3D 0x30,
++	MLX5DR_STE_LU_TYPE_DONT_CARE			=3D 0x0f,
 +};
 +
-+struct mlx5dr_fw_recalc_cs_ft *
-+mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u32 vport_num);
-+void mlx5dr_fw_destroy_recalc_cs_ft(struct mlx5dr_domain *dmn,
-+				    struct mlx5dr_fw_recalc_cs_ft *recalc_cs_ft);
-+int mlx5dr_domain_cache_get_recalc_cs_ft_addr(struct mlx5dr_domain *dmn,
-+					      u32 vport_num,
-+					      u64 *rx_icm_addr);
-+#endif  /* _DR_TYPES_H_ */
++enum mlx5dr_ste_entry_type {
++	MLX5DR_STE_TYPE_TX		=3D 1,
++	MLX5DR_STE_TYPE_RX		=3D 2,
++	MLX5DR_STE_TYPE_MODIFY_PKT	=3D 6,
++};
++
++struct mlx5_ifc_ste_general_bits {
++	u8         entry_type[0x4];
++	u8         reserved_at_4[0x4];
++	u8         entry_sub_type[0x8];
++	u8         byte_mask[0x10];
++
++	u8         next_table_base_63_48[0x10];
++	u8         next_lu_type[0x8];
++	u8         next_table_base_39_32_size[0x8];
++
++	u8         next_table_base_31_5_size[0x1b];
++	u8         linear_hash_enable[0x1];
++	u8         reserved_at_5c[0x2];
++	u8         next_table_rank[0x2];
++
++	u8         reserved_at_60[0xa0];
++	u8         tag_value[0x60];
++	u8         bit_mask[0x60];
++};
++
++struct mlx5_ifc_ste_sx_transmit_bits {
++	u8         entry_type[0x4];
++	u8         reserved_at_4[0x4];
++	u8         entry_sub_type[0x8];
++	u8         byte_mask[0x10];
++
++	u8         next_table_base_63_48[0x10];
++	u8         next_lu_type[0x8];
++	u8         next_table_base_39_32_size[0x8];
++
++	u8         next_table_base_31_5_size[0x1b];
++	u8         linear_hash_enable[0x1];
++	u8         reserved_at_5c[0x2];
++	u8         next_table_rank[0x2];
++
++	u8         sx_wire[0x1];
++	u8         sx_func_lb[0x1];
++	u8         sx_sniffer[0x1];
++	u8         sx_wire_enable[0x1];
++	u8         sx_func_lb_enable[0x1];
++	u8         sx_sniffer_enable[0x1];
++	u8         action_type[0x3];
++	u8         reserved_at_69[0x1];
++	u8         action_description[0x6];
++	u8         gvmi[0x10];
++
++	u8         encap_pointer_vlan_data[0x20];
++
++	u8         loopback_syndome_en[0x8];
++	u8         loopback_syndome[0x8];
++	u8         counter_trigger[0x10];
++
++	u8         miss_address_63_48[0x10];
++	u8         counter_trigger_23_16[0x8];
++	u8         miss_address_39_32[0x8];
++
++	u8         miss_address_31_6[0x1a];
++	u8         learning_point[0x1];
++	u8         go_back[0x1];
++	u8         match_polarity[0x1];
++	u8         mask_mode[0x1];
++	u8         miss_rank[0x2];
++};
++
++struct mlx5_ifc_ste_rx_steering_mult_bits {
++	u8         entry_type[0x4];
++	u8         reserved_at_4[0x4];
++	u8         entry_sub_type[0x8];
++	u8         byte_mask[0x10];
++
++	u8         next_table_base_63_48[0x10];
++	u8         next_lu_type[0x8];
++	u8         next_table_base_39_32_size[0x8];
++
++	u8         next_table_base_31_5_size[0x1b];
++	u8         linear_hash_enable[0x1];
++	u8         reserved_at_[0x2];
++	u8         next_table_rank[0x2];
++
++	u8         member_count[0x10];
++	u8         gvmi[0x10];
++
++	u8         qp_list_pointer[0x20];
++
++	u8         reserved_at_a0[0x1];
++	u8         tunneling_action[0x3];
++	u8         action_description[0x4];
++	u8         reserved_at_a8[0x8];
++	u8         counter_trigger_15_0[0x10];
++
++	u8         miss_address_63_48[0x10];
++	u8         counter_trigger_23_16[0x08];
++	u8         miss_address_39_32[0x8];
++
++	u8         miss_address_31_6[0x1a];
++	u8         learning_point[0x1];
++	u8         fail_on_error[0x1];
++	u8         match_polarity[0x1];
++	u8         mask_mode[0x1];
++	u8         miss_rank[0x2];
++};
++
++struct mlx5_ifc_ste_modify_packet_bits {
++	u8         entry_type[0x4];
++	u8         reserved_at_4[0x4];
++	u8         entry_sub_type[0x8];
++	u8         byte_mask[0x10];
++
++	u8         next_table_base_63_48[0x10];
++	u8         next_lu_type[0x8];
++	u8         next_table_base_39_32_size[0x8];
++
++	u8         next_table_base_31_5_size[0x1b];
++	u8         linear_hash_enable[0x1];
++	u8         reserved_at_[0x2];
++	u8         next_table_rank[0x2];
++
++	u8         number_of_re_write_actions[0x10];
++	u8         gvmi[0x10];
++
++	u8         header_re_write_actions_pointer[0x20];
++
++	u8         reserved_at_a0[0x1];
++	u8         tunneling_action[0x3];
++	u8         action_description[0x4];
++	u8         reserved_at_a8[0x8];
++	u8         counter_trigger_15_0[0x10];
++
++	u8         miss_address_63_48[0x10];
++	u8         counter_trigger_23_16[0x08];
++	u8         miss_address_39_32[0x8];
++
++	u8         miss_address_31_6[0x1a];
++	u8         learning_point[0x1];
++	u8         fail_on_error[0x1];
++	u8         match_polarity[0x1];
++	u8         mask_mode[0x1];
++	u8         miss_rank[0x2];
++};
++
++struct mlx5_ifc_ste_eth_l2_src_bits {
++	u8         smac_47_16[0x20];
++
++	u8         smac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         qp_type[0x2];
++	u8         ethertype_filter[0x1];
++	u8         reserved_at_43[0x1];
++	u8         sx_sniffer[0x1];
++	u8         force_lb[0x1];
++	u8         functional_lb[0x1];
++	u8         port[0x1];
++	u8         reserved_at_48[0x4];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_qualifier[0x2];
++	u8         reserved_at_52[0x2];
++	u8         first_vlan_id[0xc];
++
++	u8         ip_fragmented[0x1];
++	u8         tcp_syn[0x1];
++	u8         encp_type[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         reserved_at_68[0x4];
++	u8         second_priority[0x3];
++	u8         second_cfi[0x1];
++	u8         second_vlan_qualifier[0x2];
++	u8         reserved_at_72[0x2];
++	u8         second_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l2_dst_bits {
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         qp_type[0x2];
++	u8         ethertype_filter[0x1];
++	u8         reserved_at_43[0x1];
++	u8         sx_sniffer[0x1];
++	u8         force_lb[0x1];
++	u8         functional_lb[0x1];
++	u8         port[0x1];
++	u8         reserved_at_48[0x4];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_qualifier[0x2];
++	u8         reserved_at_52[0x2];
++	u8         first_vlan_id[0xc];
++
++	u8         ip_fragmented[0x1];
++	u8         tcp_syn[0x1];
++	u8         encp_type[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         reserved_at_68[0x4];
++	u8         second_priority[0x3];
++	u8         second_cfi[0x1];
++	u8         second_vlan_qualifier[0x2];
++	u8         reserved_at_72[0x2];
++	u8         second_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l2_src_dst_bits {
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         smac_47_32[0x10];
++
++	u8         smac_31_0[0x20];
++
++	u8         sx_sniffer[0x1];
++	u8         force_lb[0x1];
++	u8         functional_lb[0x1];
++	u8         port[0x1];
++	u8         l3_type[0x2];
++	u8         reserved_at_66[0x6];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_qualifier[0x2];
++	u8         reserved_at_72[0x2];
++	u8         first_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv4_5_tuple_bits {
++	u8         destination_address[0x20];
++
++	u8         source_address[0x20];
++
++	u8         source_port[0x10];
++	u8         destination_port[0x10];
++
++	u8         fragmented[0x1];
++	u8         first_fragment[0x1];
++	u8         reserved_at_62[0x2];
++	u8         reserved_at_64[0x1];
++	u8         ecn[0x2];
++	u8         tcp_ns[0x1];
++	u8         tcp_cwr[0x1];
++	u8         tcp_ece[0x1];
++	u8         tcp_urg[0x1];
++	u8         tcp_ack[0x1];
++	u8         tcp_psh[0x1];
++	u8         tcp_rst[0x1];
++	u8         tcp_syn[0x1];
++	u8         tcp_fin[0x1];
++	u8         dscp[0x6];
++	u8         reserved_at_76[0x2];
++	u8         protocol[0x8];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv6_dst_bits {
++	u8         dst_ip_127_96[0x20];
++
++	u8         dst_ip_95_64[0x20];
++
++	u8         dst_ip_63_32[0x20];
++
++	u8         dst_ip_31_0[0x20];
++};
++
++struct mlx5_ifc_ste_eth_l2_tnl_bits {
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         l2_tunneling_network_id[0x20];
++
++	u8         ip_fragmented[0x1];
++	u8         tcp_syn[0x1];
++	u8         encp_type[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         reserved_at_6c[0x3];
++	u8         gre_key_flag[0x1];
++	u8         first_vlan_qualifier[0x2];
++	u8         reserved_at_72[0x2];
++	u8         first_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv6_src_bits {
++	u8         src_ip_127_96[0x20];
++
++	u8         src_ip_95_64[0x20];
++
++	u8         src_ip_63_32[0x20];
++
++	u8         src_ip_31_0[0x20];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv4_misc_bits {
++	u8         version[0x4];
++	u8         ihl[0x4];
++	u8         reserved_at_8[0x8];
++	u8         total_length[0x10];
++
++	u8         identification[0x10];
++	u8         flags[0x3];
++	u8         fragment_offset[0xd];
++
++	u8         time_to_live[0x8];
++	u8         reserved_at_48[0x8];
++	u8         checksum[0x10];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_ste_eth_l4_bits {
++	u8         fragmented[0x1];
++	u8         first_fragment[0x1];
++	u8         reserved_at_2[0x6];
++	u8         protocol[0x8];
++	u8         dst_port[0x10];
++
++	u8         ipv6_version[0x4];
++	u8         reserved_at_24[0x1];
++	u8         ecn[0x2];
++	u8         tcp_ns[0x1];
++	u8         tcp_cwr[0x1];
++	u8         tcp_ece[0x1];
++	u8         tcp_urg[0x1];
++	u8         tcp_ack[0x1];
++	u8         tcp_psh[0x1];
++	u8         tcp_rst[0x1];
++	u8         tcp_syn[0x1];
++	u8         tcp_fin[0x1];
++	u8         src_port[0x10];
++
++	u8         ipv6_payload_length[0x10];
++	u8         ipv6_hop_limit[0x8];
++	u8         dscp[0x6];
++	u8         reserved_at_5e[0x2];
++
++	u8         tcp_data_offset[0x4];
++	u8         reserved_at_64[0x8];
++	u8         flow_label[0x14];
++};
++
++struct mlx5_ifc_ste_eth_l4_misc_bits {
++	u8         checksum[0x10];
++	u8         length[0x10];
++
++	u8         seq_num[0x20];
++
++	u8         ack_num[0x20];
++
++	u8         urgent_pointer[0x10];
++	u8         window_size[0x10];
++};
++
++struct mlx5_ifc_ste_mpls_bits {
++	u8         mpls0_label[0x14];
++	u8         mpls0_exp[0x3];
++	u8         mpls0_s_bos[0x1];
++	u8         mpls0_ttl[0x8];
++
++	u8         mpls1_label[0x20];
++
++	u8         mpls2_label[0x20];
++
++	u8         reserved_at_60[0x16];
++	u8         mpls4_s_bit[0x1];
++	u8         mpls4_qualifier[0x1];
++	u8         mpls3_s_bit[0x1];
++	u8         mpls3_qualifier[0x1];
++	u8         mpls2_s_bit[0x1];
++	u8         mpls2_qualifier[0x1];
++	u8         mpls1_s_bit[0x1];
++	u8         mpls1_qualifier[0x1];
++	u8         mpls0_s_bit[0x1];
++	u8         mpls0_qualifier[0x1];
++};
++
++struct mlx5_ifc_ste_register_0_bits {
++	u8         register_0_h[0x20];
++
++	u8         register_0_l[0x20];
++
++	u8         register_1_h[0x20];
++
++	u8         register_1_l[0x20];
++};
++
++struct mlx5_ifc_ste_register_1_bits {
++	u8         register_2_h[0x20];
++
++	u8         register_2_l[0x20];
++
++	u8         register_3_h[0x20];
++
++	u8         register_3_l[0x20];
++};
++
++struct mlx5_ifc_ste_gre_bits {
++	u8         gre_c_present[0x1];
++	u8         reserved_at_30[0x1];
++	u8         gre_k_present[0x1];
++	u8         gre_s_present[0x1];
++	u8         strict_src_route[0x1];
++	u8         recur[0x3];
++	u8         flags[0x5];
++	u8         version[0x3];
++	u8         gre_protocol[0x10];
++
++	u8         checksum[0x10];
++	u8         offset[0x10];
++
++	u8         gre_key_h[0x18];
++	u8         gre_key_l[0x8];
++
++	u8         seq_num[0x20];
++};
++
++struct mlx5_ifc_ste_flex_parser_0_bits {
++	u8         parser_3_label[0x14];
++	u8         parser_3_exp[0x3];
++	u8         parser_3_s_bos[0x1];
++	u8         parser_3_ttl[0x8];
++
++	u8         flex_parser_2[0x20];
++
++	u8         flex_parser_1[0x20];
++
++	u8         flex_parser_0[0x20];
++};
++
++struct mlx5_ifc_ste_flex_parser_1_bits {
++	u8         flex_parser_7[0x20];
++
++	u8         flex_parser_6[0x20];
++
++	u8         flex_parser_5[0x20];
++
++	u8         flex_parser_4[0x20];
++};
++
++struct mlx5_ifc_ste_flex_parser_tnl_bits {
++	u8         flex_parser_tunneling_header_63_32[0x20];
++
++	u8         flex_parser_tunneling_header_31_0[0x20];
++
++	u8         reserved_at_40[0x40];
++};
++
++struct mlx5_ifc_ste_general_purpose_bits {
++	u8         general_purpose_lookup_field[0x20];
++
++	u8         reserved_at_20[0x20];
++
++	u8         reserved_at_40[0x20];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_ste_src_gvmi_qp_bits {
++	u8         loopback_syndrome[0x8];
++	u8         reserved_at_8[0x8];
++	u8         source_gvmi[0x10];
++
++	u8         reserved_at_20[0x5];
++	u8         force_lb[0x1];
++	u8         functional_lb[0x1];
++	u8         source_is_requestor[0x1];
++	u8         source_qp[0x18];
++
++	u8         reserved_at_40[0x20];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_l2_hdr_bits {
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         smac_47_32[0x10];
++
++	u8         smac_31_0[0x20];
++
++	u8         ethertype[0x10];
++	u8         vlan_type[0x10];
++
++	u8         vlan[0x10];
++	u8         reserved_at_90[0x10];
++};
++
++/* Both HW set and HW add share the same HW format with different opcodes =
+*/
++struct mlx5_ifc_dr_action_hw_set_bits {
++	u8         opcode[0x8];
++	u8         destination_field_code[0x8];
++	u8         reserved_at_10[0x2];
++	u8         destination_left_shifter[0x6];
++	u8         reserved_at_18[0x3];
++	u8         destination_length[0x5];
++
++	u8         inline_data[0x20];
++};
++
++#endif /* MLX5_IFC_DR_H */
 --=20
 2.21.0
 
