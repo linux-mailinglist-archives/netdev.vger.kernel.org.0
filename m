@@ -2,368 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5EBA56F4
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 15:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94905A5788
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 15:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730128AbfIBNCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 09:02:40 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:35100 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730057AbfIBNCj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 09:02:39 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id BE2665FCA5;
-        Mon,  2 Sep 2019 15:02:35 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="s0MMPz7M";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.232])
-        by mail.vdorst.com (Postfix) with ESMTPA id 835051DB401D;
-        Mon,  2 Sep 2019 15:02:35 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 835051DB401D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1567429355;
-        bh=c5CowxsKg7aQtP5kjKr4wmlHQMzfCS4P53SOVOub17I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s0MMPz7M/hFr9ZA7BGBLGkxvxpt0ZG/8BhODWsX6qor6XcyBhp60cBTfAtoS7pfXV
-         FwUPY1t6bxhX++QOptiwWg25wPNJ/t617nBbWbfdUh161kh1aJcmbHt9ymJdebQ42P
-         rCnIIG0sElpMCN1hpjgCzbAGblGqb1OTYg+dDR1ZFNT/Q30MlZfz72E/5pgS7YNqch
-         lFsHzhmDnRNkOO+JWwcBS/RCMBdMcz+/EvpeW5PoAmTUd4w1L4B5iPW24O1TfOAPdz
-         yzYy6I4l3pZUPJGheFKCo5vTbqzioxTEAxdNaQ5To0iM5WDrncqckufLrpWpVOJuf5
-         +GVGPMye+xppg==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Russell King <linux@armlinux.org.uk>,
-        John Crispin <john@phrozen.org>, linux-mips@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH net-next v3 3/3] net: dsa: mt7530: Add support for port 5
-Date:   Mon,  2 Sep 2019 15:02:26 +0200
-Message-Id: <20190902130226.26845-4-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190902130226.26845-1-opensource@vdorst.com>
-References: <20190902130226.26845-1-opensource@vdorst.com>
+        id S1730597AbfIBNQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 09:16:38 -0400
+Received: from mail-eopbgr1410110.outbound.protection.outlook.com ([40.107.141.110]:19425
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729983AbfIBNQi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 09:16:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AmqYHhGdEr1TZixBB0xI6v9/MpQPe6sy/wfj+HAgpN992R70EiliHdfvyrXsT0Y5M8cicDEsSDwvTFaFLR4IB7swLBi0esTz2yyibX7X7wD5wclYPKmx8I1wZwyMuhX1ePHhIC5D20FZBIKyU3AMaVaNF8lhrYYJL8Y/Pg4J0BeV5xllcgXmKzefFLAkC6ln93S3mF2gWCUkbuylAjGKDURRc/3OvGpEYzfAb2RUO5rTmMaMfxb0dTrvjw01F443U1GvLmdR9PuBkrtKwFDZqVvNI24KzxFKtoxGvQIq5M44NbrHkkwqtyiHeuUfakMS6InSmUW+DZ+HH5GmptBTJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Ll1MPDM8CwRGSncq1MvW6TEFDpjZk3yQjumbcuoYew=;
+ b=mJeE2jWI5TRdfrLBH4SbzpdZQbwe6YPOsIsuEFvOM+MCZ4LNPQH8OCbIQuAgJmPZQpALgGeidxAw7Is996upt2oFBLh7gNionOWvKswGQNviF6DSbHCnJNT8tI5F45PAxKLINjIr/wj99FAkIPvbwbtMKvB9lehWPiuPUpg8pvNRlQNCLMhEkQfqgHfu1Q0QdYzY2VywiXasVTzmRISf053HaS5AyLjMF2hvskWHx65UzYSelZ+4P2qUN1EX5eKNVVxj4UqB45ac9q0GLw8QypLbubHI/J5IohIDOnsDv23IsAMPP8O4siAVyYB6QjJeYaQhSRlj+my9XvwitMB+nQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Ll1MPDM8CwRGSncq1MvW6TEFDpjZk3yQjumbcuoYew=;
+ b=sJAGH6EgsIgMhY/yqdVlBlixXLqwRvabDuxJg7DRGUkGecijsXngs+IM6N7fqbXCq9iau+Qvpvp0MN0+IEL4zBpWsxMeAS0Mv8KrVpaFIVbwS7cdPqpkMSwxBeRMIRhPjFVZfDR4I+OnkMndrIXLIViknZHV5dLSn8liIrV3CRg=
+Received: from TYAPR01MB2285.jpnprd01.prod.outlook.com (52.133.177.145) by
+ TYAPR01MB2528.jpnprd01.prod.outlook.com (20.177.105.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.20; Mon, 2 Sep 2019 13:16:20 +0000
+Received: from TYAPR01MB2285.jpnprd01.prod.outlook.com
+ ([fe80::10cb:fc85:630a:9731]) by TYAPR01MB2285.jpnprd01.prod.outlook.com
+ ([fe80::10cb:fc85:630a:9731%7]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
+ 13:16:20 +0000
+From:   Chris Paterson <Chris.Paterson2@renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+CC:     David Miller <davem@davemloft.net>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [net-next 0/3] ravb: Remove use of undocumented registers
+Thread-Topic: [net-next 0/3] ravb: Remove use of undocumented registers
+Thread-Index: AQHVYWVZjB9QVcK1g0SbN95xC7vuJacYCqGAgABRwqA=
+Date:   Mon, 2 Sep 2019 13:16:20 +0000
+Message-ID: <TYAPR01MB2285D3BD0F2CCD2F72AA1B1FB7BE0@TYAPR01MB2285.jpnprd01.prod.outlook.com>
+References: <20190902080603.5636-1-horms+renesas@verge.net.au>
+ <CAMuHMdXQypGJ_oqUndOcf02GCqxEGEOK15+jnS5ehqdUJ+A8aw@mail.gmail.com>
+In-Reply-To: <CAMuHMdXQypGJ_oqUndOcf02GCqxEGEOK15+jnS5ehqdUJ+A8aw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Chris.Paterson2@renesas.com; 
+x-originating-ip: [193.141.220.21]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d920395e-4c21-43ef-3d45-08d72fa7beb4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:TYAPR01MB2528;
+x-ms-traffictypediagnostic: TYAPR01MB2528:|TYAPR01MB2528:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <TYAPR01MB2528F3DFABF56FA91F9BDEA4B7BE0@TYAPR01MB2528.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 01480965DA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(396003)(39850400004)(366004)(376002)(136003)(189003)(199004)(229853002)(86362001)(25786009)(7736002)(305945005)(256004)(33656002)(71200400001)(4326008)(8936002)(66556008)(81166006)(81156014)(8676002)(71190400001)(76116006)(66946007)(66476007)(5660300002)(52536014)(64756008)(476003)(486006)(446003)(11346002)(66446008)(186003)(3846002)(26005)(2906002)(14454004)(55016002)(6116002)(99286004)(9686003)(53936002)(316002)(110136005)(6436002)(478600001)(54906003)(7696005)(76176011)(102836004)(74316002)(6246003)(6506007)(53546011)(66066001);DIR:OUT;SFP:1102;SCL:1;SRVR:TYAPR01MB2528;H:TYAPR01MB2285.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 5ilqEzJichD5o6TYF8LsOzgH5ZI845sIv/wkPdk7VnSVIreyYzUjxO9KqOZ1WdAgK9GJAIPmFcoGEhVT7/xY0DAvj+GfU4uC/jEjt1SU710zwcgOx5Ro7aMXGHRKJ1HZsU7+I7cwbAGq8+bNW2XP3aOKg3467Imx96Yh14kNIuyXaJ11huaKvcj474TJ9WDkl2xv85nbriiocZjSchseCb1vkRGC7qbE2fyu1qHnYowIitmdISyhQL3PUKiN0TC16rknUgtOQLSwiJuKkUyAgQyO3H1r7ad5qbsEBdyt8QMJNUcUPH1Cl38NmOgyKa+nJz2ZGViegz2jvy0b5PaODM75Vt9qPxHaoqxT32dULIDKdniegklykz0MlYHJYCr6puHKvLvg35H6ab+8u9XcSgrwSjwp/CPWKDtHDfaEKS8=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d920395e-4c21-43ef-3d45-08d72fa7beb4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 13:16:20.0472
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YzUACY4diKaCQRHiOGc/Tqu4A66J/kuHMgEV5GNVSF0XaSpzTmAkxLHW/fRchrLUwIU8czFzyQBq+WcYNTa1Po2Llu6/RIrXJZjf1nYSJJU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2528
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support for port 5.
-
-Port 5 can muxed/interface to:
-- internal 5th GMAC of the switch; can be used as 2nd CPU port or as
-  extra port with an external phy for a 6th ethernet port.
-- internal PHY of port 0 or 4; Used in most applications so that port 0
-  or 4 is the WAN port and interfaces with the 2nd GMAC of the SOC.
-
-Signed-off-by: René van Dorst <opensource@vdorst.com>
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-v2->v3:
-* Change in mt7530_setup_port5() the port 5 setup message in to a debug
-  message. Suggested by David Miller
-* Add tags acked-by and tested-by
-v1->v2:
-* Also report 1000base-x support for port 5 suggested by Russell King
-* Reorder variable declaraiant in reverse christmas tree suggested by
-  Daved Miller
-* Refactor phy-handle lookup for 2nd GMAC.
-* Use of_mdio_parse_addr() instead of do it manualy suggested by
-  Florian Fainelli
-* Refactor port 5 setup in mt7530_phylink_mac_config()
-rfc->v1:
-* Removed unnecessary info print suggested by Andrew Lunn
-* Added support for MII mode for port 5
-
- drivers/net/dsa/mt7530.c | 145 +++++++++++++++++++++++++++++++++++++--
- drivers/net/dsa/mt7530.h |  29 ++++++++
- 2 files changed, 168 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index ecc13b57e619..1d8d36de4d20 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -633,6 +633,77 @@ mt7530_get_sset_count(struct dsa_switch *ds, int port, int sset)
- 	return ARRAY_SIZE(mt7530_mib);
- }
- 
-+static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	u8 tx_delay = 0;
-+	int val;
-+
-+	mutex_lock(&priv->reg_mutex);
-+
-+	val = mt7530_read(priv, MT7530_MHWTRAP);
-+
-+	val |= MHWTRAP_MANUAL | MHWTRAP_P5_MAC_SEL | MHWTRAP_P5_DIS;
-+	val &= ~MHWTRAP_P5_RGMII_MODE & ~MHWTRAP_PHY0_SEL;
-+
-+	switch (priv->p5_intf_sel) {
-+	case P5_INTF_SEL_PHY_P0:
-+		/* MT7530_P5_MODE_GPHY_P0: 2nd GMAC -> P5 -> P0 */
-+		val |= MHWTRAP_PHY0_SEL;
-+		/* fall through */
-+	case P5_INTF_SEL_PHY_P4:
-+		/* MT7530_P5_MODE_GPHY_P4: 2nd GMAC -> P5 -> P4 */
-+		val &= ~MHWTRAP_P5_MAC_SEL & ~MHWTRAP_P5_DIS;
-+
-+		/* Setup the MAC by default for the cpu port */
-+		mt7530_write(priv, MT7530_PMCR_P(5), 0x56300);
-+		break;
-+	case P5_INTF_SEL_GMAC5:
-+		/* MT7530_P5_MODE_GMAC: P5 -> External phy or 2nd GMAC */
-+		val &= ~MHWTRAP_P5_DIS;
-+		break;
-+	case P5_DISABLED:
-+		interface = PHY_INTERFACE_MODE_NA;
-+		break;
-+	default:
-+		dev_err(ds->dev, "Unsupported p5_intf_sel %d\n",
-+			priv->p5_intf_sel);
-+		goto unlock_exit;
-+	}
-+
-+	/* Setup RGMII settings */
-+	if (phy_interface_mode_is_rgmii(interface)) {
-+		val |= MHWTRAP_P5_RGMII_MODE;
-+
-+		/* P5 RGMII RX Clock Control: delay setting for 1000M */
-+		mt7530_write(priv, MT7530_P5RGMIIRXCR, CSR_RGMII_EDGE_ALIGN);
-+
-+		/* Don't set delay in DSA mode */
-+		if (!dsa_is_dsa_port(priv->ds, 5) &&
-+		    (interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-+		     interface == PHY_INTERFACE_MODE_RGMII_ID))
-+			tx_delay = 4; /* n * 0.5 ns */
-+
-+		/* P5 RGMII TX Clock Control: delay x */
-+		mt7530_write(priv, MT7530_P5RGMIITXCR,
-+			     CSR_RGMII_TXC_CFG(0x10 + tx_delay));
-+
-+		/* reduce P5 RGMII Tx driving, 8mA */
-+		mt7530_write(priv, MT7530_IO_DRV_CR,
-+			     P5_IO_CLK_DRV(1) | P5_IO_DATA_DRV(1));
-+	}
-+
-+	mt7530_write(priv, MT7530_MHWTRAP, val);
-+
-+	dev_dbg(ds->dev, "Setup P5, HWTRAP=0x%x, intf_sel=%s, phy-mode=%s\n",
-+		val, p5_intf_modes(priv->p5_intf_sel), phy_modes(interface));
-+
-+	priv->p5_interface = interface;
-+
-+unlock_exit:
-+	mutex_unlock(&priv->reg_mutex);
-+}
-+
- static int
- mt7530_cpu_port_enable(struct mt7530_priv *priv,
- 		       int port)
-@@ -1169,7 +1240,10 @@ static int
- mt7530_setup(struct dsa_switch *ds)
- {
- 	struct mt7530_priv *priv = ds->priv;
-+	struct device_node *phy_node;
-+	struct device_node *mac_np;
- 	struct mt7530_dummy_poll p;
-+	phy_interface_t interface;
- 	struct device_node *dn;
- 	u32 id, val;
- 	int ret, i;
-@@ -1260,6 +1334,40 @@ mt7530_setup(struct dsa_switch *ds)
- 			mt7530_port_disable(ds, i);
- 	}
- 
-+	/* Setup port 5 */
-+	priv->p5_intf_sel = P5_DISABLED;
-+	interface = PHY_INTERFACE_MODE_NA;
-+
-+	if (!dsa_is_unused_port(ds, 5)) {
-+		priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
-+		interface = of_get_phy_mode(ds->ports[5].dn);
-+	} else {
-+		/* Scan the ethernet nodes. look for GMAC1, lookup used phy */
-+		for_each_child_of_node(dn, mac_np) {
-+			if (!of_device_is_compatible(mac_np,
-+						     "mediatek,eth-mac"))
-+				continue;
-+
-+			ret = of_property_read_u32(mac_np, "reg", &id);
-+			if (ret < 0 || id != 1)
-+				continue;
-+
-+			phy_node = of_parse_phandle(mac_np, "phy-handle", 0);
-+			if (phy_node->parent == priv->dev->of_node->parent) {
-+				interface = of_get_phy_mode(mac_np);
-+				id = of_mdio_parse_addr(ds->dev, phy_node);
-+				if (id == 0)
-+					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
-+				if (id == 4)
-+					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
-+			}
-+			of_node_put(phy_node);
-+			break;
-+		}
-+	}
-+
-+	mt7530_setup_port5(ds, interface);
-+
- 	/* Flush the FDB table */
- 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
- 	if (ret < 0)
-@@ -1284,7 +1392,16 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
- 		if (state->interface != PHY_INTERFACE_MODE_GMII)
- 			return;
- 		break;
--	/* case 5: Port 5 is not supported! */
-+	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+		if (priv->p5_interface == state->interface)
-+			break;
-+		if (!phy_interface_mode_is_rgmii(state->interface) &&
-+		    state->interface != PHY_INTERFACE_MODE_MII &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			return;
-+
-+		mt7530_setup_port5(ds, state->interface);
-+		break;
- 	case 6: /* 1st cpu port */
- 		if (priv->p6_interface == state->interface)
- 			break;
-@@ -1324,6 +1441,10 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
- 	mcr_new |= PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
- 		   PMCR_BACKPR_EN | PMCR_FORCE_MODE | PMCR_FORCE_LNK;
- 
-+	/* Are we connected to external phy */
-+	if (port == 5 && dsa_is_user_port(ds, 5))
-+		mcr_new |= PMCR_EXT_PHY;
-+
- 	switch (state->speed) {
- 	case SPEED_1000:
- 		mcr_new |= PMCR_FORCE_SPEED_1000;
-@@ -1379,7 +1500,13 @@ static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
- 		    state->interface != PHY_INTERFACE_MODE_GMII)
- 			goto unsupported;
- 		break;
--	/* case 5: Port 5 not supported! */
-+	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    !phy_interface_mode_is_rgmii(state->interface) &&
-+		    state->interface != PHY_INTERFACE_MODE_MII &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			goto unsupported;
-+		break;
- 	case 6: /* 1st cpu port */
- 		if (state->interface != PHY_INTERFACE_MODE_NA &&
- 		    state->interface != PHY_INTERFACE_MODE_RGMII &&
-@@ -1396,15 +1523,21 @@ static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
- 	phylink_set_port_modes(mask);
- 	phylink_set(mask, Autoneg);
- 
--	if (state->interface != PHY_INTERFACE_MODE_TRGMII) {
-+	if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
-+		phylink_set(mask, 1000baseT_Full);
-+	} else {
- 		phylink_set(mask, 10baseT_Half);
- 		phylink_set(mask, 10baseT_Full);
- 		phylink_set(mask, 100baseT_Half);
- 		phylink_set(mask, 100baseT_Full);
--		phylink_set(mask, 1000baseT_Half);
--	}
- 
--	phylink_set(mask, 1000baseT_Full);
-+		if (state->interface != PHY_INTERFACE_MODE_MII) {
-+			phylink_set(mask, 1000baseT_Half);
-+			phylink_set(mask, 1000baseT_Full);
-+			if (port == 5)
-+				phylink_set(mask, 1000baseX_Full);
-+		}
-+	}
- 
- 	phylink_set(mask, Pause);
- 	phylink_set(mask, Asym_Pause);
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 107dd04acede..ccb9da8cad0d 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -186,6 +186,7 @@ enum mt7530_vlan_port_attr {
- /* Register for port MAC control register */
- #define MT7530_PMCR_P(x)		(0x3000 + ((x) * 0x100))
- #define  PMCR_IFG_XMIT(x)		(((x) & 0x3) << 18)
-+#define  PMCR_EXT_PHY			BIT(17)
- #define  PMCR_MAC_MODE			BIT(16)
- #define  PMCR_FORCE_MODE		BIT(15)
- #define  PMCR_TX_EN			BIT(14)
-@@ -245,6 +246,7 @@ enum mt7530_vlan_port_attr {
- 
- /* Register for hw trap modification */
- #define MT7530_MHWTRAP			0x7804
-+#define  MHWTRAP_PHY0_SEL		BIT(20)
- #define  MHWTRAP_MANUAL			BIT(16)
- #define  MHWTRAP_P5_MAC_SEL		BIT(13)
- #define  MHWTRAP_P6_DIS			BIT(8)
-@@ -402,6 +404,30 @@ struct mt7530_port {
- 	u16 pvid;
- };
- 
-+/* Port 5 interface select definitions */
-+enum p5_interface_select {
-+	P5_DISABLED = 0,
-+	P5_INTF_SEL_PHY_P0,
-+	P5_INTF_SEL_PHY_P4,
-+	P5_INTF_SEL_GMAC5,
-+};
-+
-+static const char *p5_intf_modes(unsigned int p5_interface)
-+{
-+	switch (p5_interface) {
-+	case P5_DISABLED:
-+		return "DISABLED";
-+	case P5_INTF_SEL_PHY_P0:
-+		return "PHY P0";
-+	case P5_INTF_SEL_PHY_P4:
-+		return "PHY P4";
-+	case P5_INTF_SEL_GMAC5:
-+		return "GMAC5";
-+	default:
-+		return "unknown";
-+	}
-+}
-+
- /* struct mt7530_priv -	This is the main data structure for holding the state
-  *			of the driver
-  * @dev:		The device pointer
-@@ -418,6 +444,7 @@ struct mt7530_port {
-  * @reg_mutex:		The lock for protecting among process accessing
-  *			registers
-  * @p6_interface	Holding the current port 6 interface
-+ * @p5_intf_sel:	Holding the current port 5 interface select
-  */
- struct mt7530_priv {
- 	struct device		*dev;
-@@ -431,6 +458,8 @@ struct mt7530_priv {
- 	unsigned int		id;
- 	bool			mcm;
- 	phy_interface_t		p6_interface;
-+	phy_interface_t		p5_interface;
-+	unsigned int		p5_intf_sel;
- 
- 	struct mt7530_port	ports[MT7530_NUM_PORTS];
- 	/* protect among processes for registers access*/
--- 
-2.20.1
-
+SGVsbG8gR2VlcnQsDQoNCj4gRnJvbTogbmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZyA8bmV0
+ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZz4NCj4gT24gQmVoYWxmIE9mIEdlZXJ0IFV5dHRlcmhv
+ZXZlbg0KPiBTZW50OiAwMiBTZXB0ZW1iZXIgMjAxOSAwOToxNg0KPiANCj4gSGkgU2ltb24sIEJp
+anUsIEZhYnJpemlvLA0KPiANCj4gT24gTW9uLCBTZXAgMiwgMjAxOSBhdCAxMDowNiBBTSBTaW1v
+biBIb3JtYW4NCj4gPGhvcm1zK3JlbmVzYXNAdmVyZ2UubmV0LmF1PiB3cm90ZToNCj4gPiB0aGlz
+IHNob3J0IHNlcmllcyBjbGVhbnMgdXAgdGhlIFJBVkIgZHJpdmVyIGEgbGl0dGxlLg0KPiA+DQo+
+ID4gVGhlIGZpcnN0IHBhdGNoIGNvcnJlY3RzIHRoZSBzcGVsbGluZyBvZiB0aGUgRkJQIGZpZWxk
+IG9mIFNGTyByZWdpc3Rlci4NCj4gPiBUaGlzIHJlZ2lzdGVyIGZpZWxkIGlzIHVudXNlZCBhbmQg
+c2hvdWxkIGhhdmUgbm8gcnVuLXRpbWUgZWZmZWN0Lg0KPiA+DQo+ID4gVGhlIHJlbWFpbmluZyB0
+d28gcGF0Y2hlcyByZW1vdmUgdGhlIHVzZSBvZiB1bmRvY3VtZW50ZWQgcmVnaXN0ZXJzDQo+ID4g
+YWZ0ZXIgc29tZSBjb25zdWx0YXRpb24gd2l0aCB0aGUgaW50ZXJuYWwgUmVuZXNhcyBCU1AgdGVh
+bS4NCj4gPg0KPiA+IEFsbCBwYXRjaGVzIGhhdmUgYmVlbiBsaWdodGx5IHRlc3RlZCBvbjoNCj4g
+PiAqIEUzIEViaXN1DQo+ID4gKiBIMyBTYWx2YXRvci1YUyAoRVMyLjApDQo+ID4gKiBNMy1XIFNh
+bHZhdG9yLVhTDQo+ID4gKiBNMy1OIFNhbHZhdG9yLVhTDQo+IA0KPiBJdCB3b3VsZCBiZSBnb29k
+IGlmIHNvbWVvbmUgY291bGQgdGVzdCB0aGlzIG9uIGFuIFItQ2FyIEdlbjIgYm9hcmQNCj4gdGhh
+dCB1c2VzIHJhdmIgKGl3ZzIyZCBvciBpd2cyM3MpLg0KDQpJJ3ZlIHRyaWVkIHRoaXMgc2VyaWVz
+ICsgbmV0LW5leHQgb24gdGhlIGl3ZzIzcyBoYXZlbid0IHNlZW4gYW55IGlzc3VlcyBmcm9tIGEg
+cXVpY2sgc2FuaXR5IHRlc3QuDQoNCktpbmQgcmVnYXJkcywgQ2hyaXMNCg0KPiANCj4gVGhhbmtz
+IQ0KPiANCj4gPiBLYXp1eWEgTWl6dWd1Y2hpICgyKToNCj4gPiAgIHJhdmI6IGNvcnJlY3QgdHlw
+byBpbiBGQlAgZmllbGQgb2YgU0ZPIHJlZ2lzdGVyDQo+ID4gICByYXZiOiBSZW1vdmUgdW5kb2N1
+bWVudGVkIHByb2Nlc3NpbmcNCj4gPg0KPiA+IFNpbW9uIEhvcm1hbiAoMSk6DQo+ID4gICByYXZi
+OiBUUk9DUiByZWdpc3RlciBpcyBvbmx5IHByZXNlbnQgb24gUi1DYXIgR2VuMw0KPiANCj4gR3J7
+b2V0amUsZWV0aW5nfXMsDQo+IA0KPiAgICAgICAgICAgICAgICAgICAgICAgICBHZWVydA0KPiAN
+Cj4gLS0NCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBvZiBMaW51eCBiZXlv
+bmQgaWEzMiAtLSBnZWVydEBsaW51eC0NCj4gbTY4ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNv
+bnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2Vy
+LiBCdXQNCj4gd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9n
+cmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
