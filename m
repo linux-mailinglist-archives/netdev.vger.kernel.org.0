@@ -2,111 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C04EA4F0B
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 08:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D90A4F1F
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 08:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729320AbfIBGHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 02:07:10 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:42312 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729299AbfIBGHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 02:07:10 -0400
-Received: by mail-wr1-f66.google.com with SMTP id b16so12616239wrq.9
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 23:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aZ5yhpG1AvzEHVUh5pbSBFa79E4SS9Gu4iGsyjR3fgI=;
-        b=a57bu/OD7MJ/EH5j5mj340qbCTL8hbY2B+VCxViKZtsKLvhZjs/FUC4FMzcOlQOGdj
-         1EARXfDqHU/m+i7OrjvWuupPnwGa2Hcy48vmsrWTmLYzMoEVASOhhBo1UA/GBBJiXZPv
-         2sxu9LjzTpZr05ny5i00G78hOkNJdPbaWQV7V67PqNRf9WXs3IhkpLb6HwXOAy5fqdRU
-         Kqj+0CUtMp/hKYDBypRIiylYFZ4FGK0S674piUvLuo6pmKp86RGPEs12FVpdHqH6efxD
-         L//Qi2ga6SFi/JG17GPn74IN1EMtyyLcE4IGPFiC4BAupd5/uu3kCNtyHvY2ge8MzECX
-         rGiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aZ5yhpG1AvzEHVUh5pbSBFa79E4SS9Gu4iGsyjR3fgI=;
-        b=qrshXu2BuYtj/f6jaTkfJzHFdAAnao1CU8fok3kz7Mgl/8Vud/oPwzh0/K+5iTw4gJ
-         rnH7OgvioDzilbTO26CQO0fgxF6FVzqh6tEeSWl7xo9xyamFM6FjS8kHMBkIwUBTIiT5
-         uvTYM4fpfptycfpOoMoVWIn2EBbFqUWzQ6E++GF+7C4sMsaTnC99jheI1+MjhbUyyu+V
-         05gl3eRDEVpyg1cwjgFkFgs9PSOIMH/dQj8u/Az4Il2eVHbraK70M6aM9cnv93GJ6S7l
-         GHDinyz73E6lZR2DDXNqieYVO2EuPGQ8PqexPeVpkSpajoNZpgX3sx9bfjzFNMuhUVEd
-         cceA==
-X-Gm-Message-State: APjAAAWT8A/ZNsqdipfss//bdvfiJ15neNQlNooIhwiAHBkV/GcaJaIM
-        SSIRll28oStPOnrNMLjWSWmeOQBu
-X-Google-Smtp-Source: APXvYqxTf9fbmI0dQ4x7Rbe7jRXXK9iglQXaWIzKQyfwZYxCXZU20gOhUjSd5gz+3+ipXKM3yOThSA==
-X-Received: by 2002:adf:bd84:: with SMTP id l4mr34009204wrh.143.1567404427958;
-        Sun, 01 Sep 2019 23:07:07 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f04:7c00:5d9c:1ca4:a630:705f? (p200300EA8F047C005D9C1CA4A630705F.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:5d9c:1ca4:a630:705f])
-        by smtp.googlemail.com with ESMTPSA id w125sm29866191wmg.32.2019.09.01.23.07.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 01 Sep 2019 23:07:07 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/3] net: phy: realtek: add support for the
- 2.5Gbps PHY in RTL8125
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ddbf28b9-f32e-7399-10a6-27b79ca0aaf9@gmail.com>
- <64769c3d-42b6-8eb8-26e4-722869408986@gmail.com>
- <20190808193743.GL27917@lunn.ch>
- <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
- <20190808202029.GN27917@lunn.ch>
- <94cc3fe3-98ed-d8d2-2444-84bf3eae0c5e@gmail.com>
- <fafc1c05-d7ac-f108-74f9-207617773968@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a37799d5-e2e0-7987-9f9d-0186060963a7@gmail.com>
-Date:   Mon, 2 Sep 2019 08:07:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729486AbfIBGPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 02:15:01 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:22448 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729415AbfIBGPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 02:15:01 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8264pmb026548;
+        Sun, 1 Sep 2019 23:14:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=G+tb34DLVI/GaywJTNbYC1jeXErBz+Ms/6koVGt7RTU=;
+ b=K3syjr2bCax7AufTwpWHSbhbUxU5VYIwQEGesdU+fjDriqoSzEFdkr2JUq977PDcmeX7
+ uuc14vje7aiqve851BL7WogZtLYTz0XWArF5xGzBtOTHm80fceTgWCY1i7TJDxdLR7b6
+ aQY2phvHAnpFQvujyc1ht8rSzxumpnnrgGexiwo+0sAxrDgW+277R4zSow83oGnV1nPm
+ n5ZqLh6CVeEy1Z2ukXY74mOeELiVxKdof9BJYbxbnBJJCtbuNk4cHveoXOVAI/8v+L69
+ 5KyB0KUP69rHZi7jXrl8CNGPgOIVe4M9ILgvYaNvF6rzGe4VoN50GIuCpyvOKgDZ7C2b 6g== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2uqrdm52ma-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 01 Sep 2019 23:14:30 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Sun, 1 Sep
+ 2019 23:14:27 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Sun, 1 Sep 2019 23:14:27 -0700
+Received: from jerin-lab.marvell.com (jerin-lab.marvell.com [10.28.34.14])
+        by maili.marvell.com (Postfix) with ESMTP id BA3533F703F;
+        Sun,  1 Sep 2019 23:14:23 -0700 (PDT)
+From:   <jerinj@marvell.com>
+To:     <netdev@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "open list:BPF JIT for ARM64" <bpf@vger.kernel.org>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+CC:     Jerin Jacob <jerinj@marvell.com>
+Subject: [PATCH bpf-next] arm64: bpf: optimize modulo operation
+Date:   Mon, 2 Sep 2019 11:44:48 +0530
+Message-ID: <20190902061448.28252-1-jerinj@marvell.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <fafc1c05-d7ac-f108-74f9-207617773968@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-02_02:2019-08-29,2019-09-02 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.09.2019 04:07, Florian Fainelli wrote:
-> 
-> 
-> On 8/8/2019 1:24 PM, Heiner Kallweit wrote:
->> On 08.08.2019 22:20, Andrew Lunn wrote:
->>>> I have a contact in Realtek who provided the information about
->>>> the vendor-specific registers used in the patch. I also asked for
->>>> a method to auto-detect 2.5Gbps support but have no feedback so far.
->>>> What may contribute to the problem is that also the integrated 1Gbps
->>>> PHY's (all with the same PHY ID) differ significantly from each other,
->>>> depending on the network chip version.
->>>
->>> Hi Heiner
->>>
->>> Some of the PHYs embedded in Marvell switches have an OUI, but no
->>> product ID. We work around this brokenness by trapping the reads to
->>> the ID registers in the MDIO bus controller driver and inserting the
->>> switch product ID. The Marvell PHY driver then recognises these IDs
->>> and does the right thing.
->>>
->>> Maybe you can do something similar here?
->>>
->> Yes, this would be an idea. Let me check.
-> 
-> Since this is an integrated PHY you could have the MAC driver pass a
-> specific phydev->dev_flag bit that indicates that this is RTL8215, since
-> I am assuming that PCI IDs for those different chipsets do have to be
-> allocated, right?
-> 
-Hi Florian,
+From: Jerin Jacob <jerinj@marvell.com>
 
-thanks for the feedback. In the meantime Realtek provided a method to
-identify NBaseT-capable PHY's, and the respective match_phy_device
-callback implementations had been done in
-5181b473d64e ("net: phy: realtek: add NBase-T PHY auto-detection").
+Optimize modulo operation instruction generation by
+using single MSUB instruction vs MUL followed by SUB
+instruction scheme.
 
-Heiner
+Signed-off-by: Jerin Jacob <jerinj@marvell.com>
+---
+ arch/arm64/net/bpf_jit.h      | 3 +++
+ arch/arm64/net/bpf_jit_comp.c | 6 ++----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+index cb7ab50b7657..eb73f9f72c46 100644
+--- a/arch/arm64/net/bpf_jit.h
++++ b/arch/arm64/net/bpf_jit.h
+@@ -171,6 +171,9 @@
+ /* Rd = Ra + Rn * Rm */
+ #define A64_MADD(sf, Rd, Ra, Rn, Rm) aarch64_insn_gen_data3(Rd, Ra, Rn, Rm, \
+ 	A64_VARIANT(sf), AARCH64_INSN_DATA3_MADD)
++/* Rd = Ra - Rn * Rm */
++#define A64_MSUB(sf, Rd, Ra, Rn, Rm) aarch64_insn_gen_data3(Rd, Ra, Rn, Rm, \
++	A64_VARIANT(sf), AARCH64_INSN_DATA3_MSUB)
+ /* Rd = Rn * Rm */
+ #define A64_MUL(sf, Rd, Rn, Rm) A64_MADD(sf, Rd, A64_ZR, Rn, Rm)
+ 
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index f5b437f8a22b..cdc79de0c794 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -409,8 +409,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 			break;
+ 		case BPF_MOD:
+ 			emit(A64_UDIV(is64, tmp, dst, src), ctx);
+-			emit(A64_MUL(is64, tmp, tmp, src), ctx);
+-			emit(A64_SUB(is64, dst, dst, tmp), ctx);
++			emit(A64_MSUB(is64, dst, dst, tmp, src), ctx);
+ 			break;
+ 		}
+ 		break;
+@@ -516,8 +515,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 	case BPF_ALU64 | BPF_MOD | BPF_K:
+ 		emit_a64_mov_i(is64, tmp2, imm, ctx);
+ 		emit(A64_UDIV(is64, tmp, dst, tmp2), ctx);
+-		emit(A64_MUL(is64, tmp, tmp, tmp2), ctx);
+-		emit(A64_SUB(is64, dst, dst, tmp), ctx);
++		emit(A64_MSUB(is64, dst, dst, tmp, tmp2), ctx);
+ 		break;
+ 	case BPF_ALU | BPF_LSH | BPF_K:
+ 	case BPF_ALU64 | BPF_LSH | BPF_K:
+-- 
+2.23.0
+
