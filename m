@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 304DAA5B52
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 18:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C66D9A5B57
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 18:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbfIBQ0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 12:26:11 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38996 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbfIBQ0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 12:26:11 -0400
-Received: by mail-wm1-f67.google.com with SMTP id n2so13826982wmk.4
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 09:26:08 -0700 (PDT)
+        id S1726578AbfIBQ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 12:26:16 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:54878 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbfIBQ0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 12:26:12 -0400
+Received: by mail-wm1-f65.google.com with SMTP id k2so13769365wmj.4
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 09:26:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7fqXvMwO4H4DCMYInQDVAKG7+yztYSFNOnbaMRf+t8s=;
-        b=RiNbaRU32VsPn6ObO9oNLNEe/FB38U+odOPeccubPrA7qPXWH8Kcty1MsJ+qD6svWM
-         xHMyb1Wa0/rhKj/8tE2izyuQTs9wgweIk+cO5wKLam9aNNBpqSHddcw/M2AOZzCU08Sl
-         1pJ0cNjmgX1cradW8JXcv+AHwTXRZI5rYxhcvUN41AhivV0JF/lERmbmavXaUAFlK3Ka
-         Wsck+Bfb4aw+0eIR5h7B4jpBla//iuDNYqX9FxsOzGBuHnHZrVlCnXFBN5N7pDcdeCJM
-         NLWRqiPbBxyeSLNqGljTBmxR63/Vs9uNppMO+otmjOGUYKdRhhop0/k0nD1O4SLWy6vf
-         6sCg==
+        bh=ZuoYrwGuIFIIS4av/7OK9DPr+C0u9MSvVNPfiSIOuL4=;
+        b=TnY6/egipLSfJ0Gg5eGGfPk/T6RtGYLrx4Ryi+oyUL8xt7DGWA7AnpTh2zSA0KjMUA
+         LmaJtxPGWGdIM40TeEkNaqzmcsQwD6EEHqGMNr2Gk5HjKTaElmM3pKa0HwSUqVx5c1RH
+         RVtQDni0CRfjXjr3qEvp59gz7jKdZFc58Sfj09HhbIak1P0r7VKHUJCY/QCnJyzMkSqR
+         1mburnvCbemV2nXf9dJZdQlsfRgPuz5u8+D/xWViQKfUirircmSGYvws2vt/3x08hplP
+         x8mwD+OhtfilHq0VA/yJNu6NEq+jBLAeIAdW33KJDOm8J+OljynePRno0DpyEMI05b/V
+         BADg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7fqXvMwO4H4DCMYInQDVAKG7+yztYSFNOnbaMRf+t8s=;
-        b=ivLOCmzT0YED0yIYWWyDUXKaSWMrT/WfDUNgf7OSgLGhxlsRD3Y+VdgaJtG6SE9FyI
-         us6MTE2wjs93JLlsm0T/rI0Agk7TvHhHokVM16QWlig4uP6jJUoGpDclS1V1HHhlyqHV
-         5OT6lXqfvwyb++pTh8IwhswIk9pcndHiIrmzMQDnItNI7jIw4XakJxy5JXw9qF9V1PnY
-         5ttCcbVV7hP72VxFw4cKmjX/MXX0ZfMOLZcVjuC/jJrUDGKvdcUzcqTyNL0t/+4Yz3WS
-         PkkdoYxYDX0uSYXUeyzxNX9U0hzENFzpEVX2rzC3VfHxsYFAJ7XQt8HKsNJqtzrmGBOI
-         T0Nw==
-X-Gm-Message-State: APjAAAUGd9LuxjpJqc5/UoxYZG8harrxj2+Mp6k9HTCE/f4WWmXbtfnZ
-        tNyo7dczZ2juHhhR8M5nH5E=
-X-Google-Smtp-Source: APXvYqwaQ3BSInLPO4DURxAKijHNmUv/YZ2q+/E47YFDLuWpAZLjMnPfK2maaIv5Oq05n0J0QAbkGQ==
-X-Received: by 2002:a05:600c:2111:: with SMTP id u17mr38645131wml.64.1567441567623;
-        Mon, 02 Sep 2019 09:26:07 -0700 (PDT)
+        bh=ZuoYrwGuIFIIS4av/7OK9DPr+C0u9MSvVNPfiSIOuL4=;
+        b=iwe2AUe6QBfXGLWPvBvm9bTQcNArlJA6RjwJrfPcxLFdHc0nmb1eeKnoGBlETFtLLT
+         Sedeh87vLpgzToqCcWxCR34JcEjhdS52ePlPWang+q5WML6wmcW8HtJgcI2hs481WL+r
+         A9mf/PN8nAuBJWo1qFc+HlwzUNQjz3HCY8rvgORHIit+/pgDJSnMYdLMHXR4MeoioE8i
+         NNZQAszMBc4lrU7T3Cy5nn9IuDNzGx7aRveMfYlPf+HUhWjgvkxd4bX2Mujn/G0isvP+
+         OqjhQnXC+yUSIVTtNxGAakTz5/Ltwr2N5LqN0/EAs5h/Nqf7pL0hRp4ycbWxBLSKJoR6
+         hOTg==
+X-Gm-Message-State: APjAAAWwZhFwKUy/WrlHkh99aTk3yfU0dwvfnuwxhPnKVHN+rOLXvg14
+        6NGT73pMu82KdtfRdX++z3Q=
+X-Google-Smtp-Source: APXvYqwwAKeR0Fv+Xhrv/YFvjgc68wce4t5cHuMy05rSQv/7iIyPRsJrASxwwOPqhtIJZMoIDdO0jw==
+X-Received: by 2002:a7b:c92d:: with SMTP id h13mr14344212wml.86.1567441569011;
+        Mon, 02 Sep 2019 09:26:09 -0700 (PDT)
 Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id z187sm2879994wmb.0.2019.09.02.09.26.06
+        by smtp.gmail.com with ESMTPSA id z187sm2879994wmb.0.2019.09.02.09.26.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2019 09:26:07 -0700 (PDT)
+        Mon, 02 Sep 2019 09:26:08 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, vinicius.gomes@intel.com,
@@ -52,9 +52,9 @@ Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         kurt.kanzenbach@linutronix.de, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v1 net-next 03/15] net: dsa: sja1105: Switch to hardware operations for PTP
-Date:   Mon,  2 Sep 2019 19:25:32 +0300
-Message-Id: <20190902162544.24613-4-olteanv@gmail.com>
+Subject: [PATCH v1 net-next 04/15] net: dsa: sja1105: Implement the .gettimex64 system call for PTP
+Date:   Mon,  2 Sep 2019 19:25:33 +0300
+Message-Id: <20190902162544.24613-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190902162544.24613-1-olteanv@gmail.com>
 References: <20190902162544.24613-1-olteanv@gmail.com>
@@ -63,504 +63,289 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adjusting the hardware clock (PTPCLKVAL, PTPCLKADD, PTPCLKRATE) is a
-requirement for the auxiliary PTP functionality of the switch
-(TTEthernet, PPS input, PPS output).
+Through the PTP_SYS_OFFSET_EXTENDED ioctl, it is possible for userspace
+applications (i.e. phc2sys) to compensate for the delays incurred while
+reading the PHC's time.
 
-Now that the sync precision issues have been identified (and fixed in
-the spi-fsl-dspi driver), we can get rid of the timecounter/cyclecounter
-implementation, which is reliant on the free-running PTPTSCLK.
+For now implement this ioctl in the driver, although the performance
+improvements are minimal. The goal with this patch is to rework the
+infrastructure in the driver for SPI transfers to be timestamped. Other
+patches depend on this change.
+
+The "performance" implementation of this ioctl will come later, once the
+API in the SPI subsystem is agreed upon. The change in the sja1105
+driver will be minimal then.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
 Changes since RFC:
 - None.
 
- drivers/net/dsa/sja1105/sja1105.h      |  16 +--
- drivers/net/dsa/sja1105/sja1105_main.c |  18 ++-
- drivers/net/dsa/sja1105/sja1105_ptp.c  | 181 ++++++++++++-------------
- drivers/net/dsa/sja1105/sja1105_ptp.h  |  22 +++
- drivers/net/dsa/sja1105/sja1105_spi.c  |   2 -
- 5 files changed, 122 insertions(+), 117 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h      |  3 ++-
+ drivers/net/dsa/sja1105/sja1105_main.c |  8 +++---
+ drivers/net/dsa/sja1105/sja1105_ptp.c  | 20 ++++++++------
+ drivers/net/dsa/sja1105/sja1105_ptp.h  |  6 +++--
+ drivers/net/dsa/sja1105/sja1105_spi.c  | 36 +++++++++++++++++++-------
+ 5 files changed, 48 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index d8a92646e80a..e4955a025e46 100644
+index e4955a025e46..c80be59dafbd 100644
 --- a/drivers/net/dsa/sja1105/sja1105.h
 +++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -32,7 +32,6 @@ struct sja1105_regs {
- 	u64 ptp_control;
- 	u64 ptpclk;
- 	u64 ptpclkrate;
--	u64 ptptsclk;
- 	u64 ptpegr_ts[SJA1105_NUM_PORTS];
- 	u64 pad_mii_tx[SJA1105_NUM_PORTS];
- 	u64 pad_mii_id[SJA1105_NUM_PORTS];
-@@ -50,8 +49,15 @@ struct sja1105_regs {
- 	u64 qlevel[SJA1105_NUM_PORTS];
- };
- 
-+enum sja1105_ptp_clk_mode {
-+	PTP_ADD_MODE = 1,
-+	PTP_SET_MODE = 0,
-+};
-+
- struct sja1105_ptp_cmd {
- 	u64 resptp;		/* reset */
-+	u64 corrclk4ts;		/* use the corrected clock for timestamps */
-+	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
- };
- 
- struct sja1105_info {
-@@ -96,13 +102,7 @@ struct sja1105_private {
- 	struct sja1105_ptp_cmd ptp_cmd;
- 	struct ptp_clock_info ptp_caps;
- 	struct ptp_clock *clock;
--	/* The cycle counter translates the PTP timestamps (based on
--	 * a free-running counter) into a software time domain.
--	 */
--	struct cyclecounter tstamp_cc;
--	struct timecounter tstamp_tc;
--	struct delayed_work refresh_work;
--	/* Serializes all operations on the cycle counter */
-+	/* Serializes all operations on the PTP hardware clock */
- 	struct mutex ptp_lock;
- 	/* Serializes transmission of management frames so that
- 	 * the switch doesn't confuse them with one another.
+@@ -131,7 +131,8 @@ int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
+ 				void *packed_buf, size_t size_bytes);
+ int sja1105_spi_send_int(const struct sja1105_private *priv,
+ 			 sja1105_spi_rw_mode_t rw, u64 reg_addr,
+-			 u64 *value, u64 size_bytes);
++			 u64 *value, u64 size_bytes,
++			 struct ptp_system_timestamp *ptp_sts);
+ int sja1105_spi_send_long_packed_buf(const struct sja1105_private *priv,
+ 				     sja1105_spi_rw_mode_t rw, u64 base_addr,
+ 				     void *packed_buf, u64 buf_len);
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index d8cff0107ec4..630f7e337fe9 100644
+index 630f7e337fe9..f7f03d486499 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1813,7 +1813,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
- 	struct skb_shared_hwtstamps shwt = {0};
- 	int slot = sp->mgmt_slot;
- 	struct sk_buff *clone;
--	u64 now, ts;
-+	u64 ticks, ts;
- 	int rc;
- 
- 	/* The tragic fact about the switch having 4x2 slots for installing
 @@ -1844,7 +1844,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
  
  	mutex_lock(&priv->ptp_lock);
  
--	now = priv->tstamp_cc.read(&priv->tstamp_cc);
-+	ticks = sja1105_ptpclkval_read(priv);
+-	ticks = sja1105_ptpclkval_read(priv);
++	ticks = sja1105_ptpclkval_read(priv, NULL);
  
  	rc = sja1105_ptpegr_ts_poll(priv, slot, &ts);
  	if (rc < 0) {
-@@ -1853,10 +1853,9 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
- 		goto out_unlock_ptp;
- 	}
- 
--	ts = sja1105_tstamp_reconstruct(priv, now, ts);
--	ts = timecounter_cyc2time(&priv->tstamp_tc, ts);
-+	ts = sja1105_tstamp_reconstruct(priv, ticks, ts);
- 
--	shwt.hwtstamp = ns_to_ktime(ts);
-+	shwt.hwtstamp = ns_to_ktime(sja1105_ticks_to_ns(ts));
- 	skb_complete_tx_timestamp(clone, &shwt);
- 
- out_unlock_ptp:
-@@ -1994,11 +1993,11 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
- 	struct sja1105_tagger_data *data = to_tagger(work);
- 	struct sja1105_private *priv = to_sja1105(data);
- 	struct sk_buff *skb;
--	u64 now;
-+	u64 ticks;
+@@ -1997,7 +1997,7 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
  
  	mutex_lock(&priv->ptp_lock);
  
--	now = priv->tstamp_cc.read(&priv->tstamp_cc);
-+	ticks = sja1105_ptpclkval_read(priv);
+-	ticks = sja1105_ptpclkval_read(priv);
++	ticks = sja1105_ptpclkval_read(priv, NULL);
  
  	while ((skb = skb_dequeue(&data->skb_rxtstamp_queue)) != NULL) {
  		struct skb_shared_hwtstamps *shwt = skb_hwtstamps(skb);
-@@ -2007,10 +2006,9 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
- 		*shwt = (struct skb_shared_hwtstamps) {0};
+@@ -2092,8 +2092,8 @@ static int sja1105_check_device_id(struct sja1105_private *priv)
+ 	u64 part_no;
+ 	int rc;
  
- 		ts = SJA1105_SKB_CB(skb)->meta_tstamp;
--		ts = sja1105_tstamp_reconstruct(priv, now, ts);
--		ts = timecounter_cyc2time(&priv->tstamp_tc, ts);
-+		ts = sja1105_tstamp_reconstruct(priv, ticks, ts);
- 
--		shwt->hwtstamp = ns_to_ktime(ts);
-+		shwt->hwtstamp = ns_to_ktime(sja1105_ticks_to_ns(ts));
- 		netif_rx_ni(skb);
- 	}
+-	rc = sja1105_spi_send_int(priv, SPI_READ, regs->device_id,
+-				  &device_id, SJA1105_SIZE_DEVICE_ID);
++	rc = sja1105_spi_send_int(priv, SPI_READ, regs->device_id, &device_id,
++				  SJA1105_SIZE_DEVICE_ID, NULL);
+ 	if (rc < 0)
+ 		return rc;
  
 diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 13f9f5799e46..bcdfdda46b9c 100644
+index bcdfdda46b9c..04693c702b09 100644
 --- a/drivers/net/dsa/sja1105/sja1105_ptp.c
 +++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -13,24 +13,6 @@
- #define SJA1105_MAX_ADJ_PPB		32000000
- #define SJA1105_SIZE_PTP_CMD		4
- 
--/* Timestamps are in units of 8 ns clock ticks (equivalent to a fixed
-- * 125 MHz clock) so the scale factor (MULT / SHIFT) needs to be 8.
-- * Furthermore, wisely pick SHIFT as 28 bits, which translates
-- * MULT into 2^31 (0x80000000).  This is the same value around which
-- * the hardware PTPCLKRATE is centered, so the same ppb conversion
-- * arithmetic can be reused.
-- */
--#define SJA1105_CC_SHIFT		28
--#define SJA1105_CC_MULT			(8 << SJA1105_CC_SHIFT)
--
--/* Having 33 bits of cycle counter left until a 64-bit overflow during delta
-- * conversion, we multiply this by the 8 ns counter resolution and arrive at
-- * a comfortable 68.71 second refresh interval until the delta would cause
-- * an integer overflow, in absence of any other readout.
-- * Approximate to 1 minute.
-- */
--#define SJA1105_REFRESH_INTERVAL	(HZ * 60)
--
- /*            This range is actually +/- SJA1105_MAX_ADJ_PPB
-  *            divided by 1000 (ppb -> ppm) and with a 16-bit
-  *            "fractional" part (actually fixed point).
-@@ -41,7 +23,7 @@
-  *
-  * This forgoes a "ppb" numeric representation (up to NSEC_PER_SEC)
-  * and defines the scaling factor between scaled_ppm and the actual
-- * frequency adjustments (both cycle counter and hardware).
-+ * frequency adjustments of the PHC.
-  *
-  *   ptpclkrate = scaled_ppm * 2^31 / (10^6 * 2^16)
-  *   simplifies to
-@@ -49,10 +31,9 @@
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
   */
- #define SJA1105_CC_MULT_NUM		(1 << 9)
- #define SJA1105_CC_MULT_DEM		15625
-+#define SJA1105_CC_MULT			0x80000000
++#include <linux/spi/spi.h>
+ #include "sja1105.h"
  
- #define ptp_to_sja1105(d) container_of((d), struct sja1105_private, ptp_caps)
--#define cc_to_sja1105(d) container_of((d), struct sja1105_private, tstamp_cc)
--#define dw_to_sja1105(d) container_of((d), struct sja1105_private, refresh_work)
+ /* The adjfine API clamps ppb between [-32,768,000, 32,768,000], and
+@@ -214,15 +215,16 @@ int sja1105_ptp_reset(struct sja1105_private *priv)
+ 	return rc;
+ }
  
- int sja1105_get_ts_info(struct dsa_switch *ds, int port,
- 			struct ethtool_ts_info *info)
-@@ -86,6 +67,8 @@ int sja1105et_ptp_cmd(const void *ctx, const void *data)
- 
- 	sja1105_pack(buf, &valid,           31, 31, size);
- 	sja1105_pack(buf, &cmd->resptp,      2,  2, size);
-+	sja1105_pack(buf, &cmd->corrclk4ts,  1,  1, size);
-+	sja1105_pack(buf, &cmd->ptpclkadd,   0,  0, size);
- 
- 	return sja1105_spi_send_packed_buf(priv, SPI_WRITE, regs->ptp_control,
- 					   buf, SJA1105_SIZE_PTP_CMD);
-@@ -103,6 +86,8 @@ int sja1105pqrs_ptp_cmd(const void *ctx, const void *data)
- 
- 	sja1105_pack(buf, &valid,           31, 31, size);
- 	sja1105_pack(buf, &cmd->resptp,      3,  3, size);
-+	sja1105_pack(buf, &cmd->corrclk4ts,  2,  2, size);
-+	sja1105_pack(buf, &cmd->ptpclkadd,   0,  0, size);
- 
- 	return sja1105_spi_send_packed_buf(priv, SPI_WRITE, regs->ptp_control,
- 					   buf, SJA1105_SIZE_PTP_CMD);
-@@ -215,17 +200,14 @@ int sja1105_ptpegr_ts_poll(struct sja1105_private *priv, int port, u64 *ts)
- int sja1105_ptp_reset(struct sja1105_private *priv)
+-static int sja1105_ptp_gettime(struct ptp_clock_info *ptp,
+-			       struct timespec64 *ts)
++static int sja1105_ptp_gettimex(struct ptp_clock_info *ptp,
++				struct timespec64 *ts,
++				struct ptp_system_timestamp *sts)
  {
- 	struct sja1105_ptp_cmd cmd = priv->ptp_cmd;
--	struct dsa_switch *ds = priv->ds;
- 	int rc;
+ 	struct sja1105_private *priv = ptp_to_sja1105(ptp);
+ 	u64 ticks;
  
  	mutex_lock(&priv->ptp_lock);
  
- 	cmd.resptp = 1;
--	dev_dbg(ds->dev, "Resetting PTP clock\n");
--	rc = priv->info->ptp_cmd(priv, &cmd);
- 
--	timecounter_init(&priv->tstamp_tc, &priv->tstamp_cc,
--			 ktime_to_ns(ktime_get_real()));
-+	dev_dbg(priv->ds->dev, "Resetting PTP clock\n");
-+	rc = priv->info->ptp_cmd(priv, &cmd);
+-	ticks = sja1105_ptpclkval_read(priv);
++	ticks = sja1105_ptpclkval_read(priv, sts);
+ 	*ts = ns_to_timespec64(sja1105_ticks_to_ns(ticks));
  
  	mutex_unlock(&priv->ptp_lock);
- 
-@@ -236,124 +218,130 @@ static int sja1105_ptp_gettime(struct ptp_clock_info *ptp,
- 			       struct timespec64 *ts)
+@@ -247,7 +249,8 @@ static int sja1105_ptpclkval_write(struct sja1105_private *priv, u64 val)
  {
- 	struct sja1105_private *priv = ptp_to_sja1105(ptp);
--	u64 ns;
-+	u64 ticks;
- 
- 	mutex_lock(&priv->ptp_lock);
--	ns = timecounter_read(&priv->tstamp_tc);
--	mutex_unlock(&priv->ptp_lock);
- 
--	*ts = ns_to_timespec64(ns);
-+	ticks = sja1105_ptpclkval_read(priv);
-+	*ts = ns_to_timespec64(sja1105_ticks_to_ns(ticks));
-+
-+	mutex_unlock(&priv->ptp_lock);
- 
- 	return 0;
- }
- 
-+/* Caller must hold priv->ptp_lock */
-+static int sja1105_ptp_mode_set(struct sja1105_private *priv,
-+				enum sja1105_ptp_clk_mode mode)
-+{
-+	if (priv->ptp_cmd.ptpclkadd == mode)
-+		return 0;
-+
-+	priv->ptp_cmd.ptpclkadd = mode;
-+
-+	return priv->info->ptp_cmd(priv, &priv->ptp_cmd);
-+}
-+
-+/* Caller must hold priv->ptp_lock */
-+static int sja1105_ptpclkval_write(struct sja1105_private *priv, u64 val)
-+{
-+	const struct sja1105_regs *regs = priv->info->regs;
-+
-+	return sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclk, &val, 8);
-+}
-+
-+/* Write to PTPCLKVAL while PTPCLKADD is 0 */
- static int sja1105_ptp_settime(struct ptp_clock_info *ptp,
- 			       const struct timespec64 *ts)
- {
-+	u64 ticks = ns_to_sja1105_ticks(timespec64_to_ns(ts));
- 	struct sja1105_private *priv = ptp_to_sja1105(ptp);
--	u64 ns = timespec64_to_ns(ts);
-+	int rc;
- 
- 	mutex_lock(&priv->ptp_lock);
--	timecounter_init(&priv->tstamp_tc, &priv->tstamp_cc, ns);
-+
-+	rc = sja1105_ptp_mode_set(priv, PTP_SET_MODE);
-+	if (rc < 0) {
-+		dev_err(priv->ds->dev, "Failed to put PTPCLK in set mode\n");
-+		goto out;
-+	}
-+
-+	rc = sja1105_ptpclkval_write(priv, ticks);
-+
-+out:
- 	mutex_unlock(&priv->ptp_lock);
- 
--	return 0;
-+	return rc;
- }
- 
- static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	const struct sja1105_regs *regs = priv->info->regs;
- 	s64 clkrate;
-+	int rc;
- 
- 	clkrate = (s64)scaled_ppm * SJA1105_CC_MULT_NUM;
- 	clkrate = div_s64(clkrate, SJA1105_CC_MULT_DEM);
- 
--	mutex_lock(&priv->ptp_lock);
--
--	/* Force a readout to update the timer *before* changing its frequency.
--	 *
--	 * This way, its corrected time curve can at all times be modeled
--	 * as a linear "A * x + B" function, where:
--	 *
--	 * - B are past frequency adjustments and offset shifts, all
--	 *   accumulated into the cycle_last variable.
--	 *
--	 * - A is the new frequency adjustments we're just about to set.
--	 *
--	 * Reading now makes B accumulate the correct amount of time,
--	 * corrected at the old rate, before changing it.
--	 *
--	 * Hardware timestamps then become simple points on the curve and
--	 * are approximated using the above function.  This is still better
--	 * than letting the switch take the timestamps using the hardware
--	 * rate-corrected clock (PTPCLKVAL) - the comparison in this case would
--	 * be that we're shifting the ruler at the same time as we're taking
--	 * measurements with it.
--	 *
--	 * The disadvantage is that it's possible to receive timestamps when
--	 * a frequency adjustment took place in the near past.
--	 * In this case they will be approximated using the new ppb value
--	 * instead of a compound function made of two segments (one at the old
--	 * and the other at the new rate) - introducing some inaccuracy.
--	 */
--	timecounter_read(&priv->tstamp_tc);
--
--	priv->tstamp_cc.mult = SJA1105_CC_MULT + clkrate;
-+	/* Take a +/- value and re-center it around 2^31. */
-+	clkrate = SJA1105_CC_MULT + clkrate;
-+	clkrate &= GENMASK_ULL(31, 0);
- 
--	mutex_unlock(&priv->ptp_lock);
--
--	return 0;
--}
-+	mutex_lock(&priv->ptp_lock);
- 
--static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
--{
--	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
-+				  &clkrate, 4);
- 
--	mutex_lock(&priv->ptp_lock);
--	timecounter_adjtime(&priv->tstamp_tc, delta);
- 	mutex_unlock(&priv->ptp_lock);
- 
--	return 0;
-+	return rc;
- }
- 
--static u64 sja1105_ptptsclk_read(const struct cyclecounter *cc)
-+/* Caller must hold priv->ptp_lock */
-+u64 sja1105_ptpclkval_read(struct sja1105_private *priv)
- {
--	struct sja1105_private *priv = cc_to_sja1105(cc);
  	const struct sja1105_regs *regs = priv->info->regs;
--	u64 ptptsclk = 0;
-+	u64 ptpclkval = 0;
+ 
+-	return sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclk, &val, 8);
++	return sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclk, &val, 8,
++				    NULL);
+ }
+ 
+ /* Write to PTPCLKVAL while PTPCLKADD is 0 */
+@@ -291,7 +294,7 @@ static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	mutex_lock(&priv->ptp_lock);
+ 
+ 	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
+-				  &clkrate, 4);
++				  &clkrate, 4, NULL);
+ 
+ 	mutex_unlock(&priv->ptp_lock);
+ 
+@@ -299,14 +302,15 @@ static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ }
+ 
+ /* Caller must hold priv->ptp_lock */
+-u64 sja1105_ptpclkval_read(struct sja1105_private *priv)
++u64 sja1105_ptpclkval_read(struct sja1105_private *priv,
++			   struct ptp_system_timestamp *sts)
+ {
+ 	const struct sja1105_regs *regs = priv->info->regs;
+ 	u64 ptpclkval = 0;
  	int rc;
  
--	rc = sja1105_spi_send_int(priv, SPI_READ, regs->ptptsclk,
--				  &ptptsclk, 8);
-+	rc = sja1105_spi_send_int(priv, SPI_READ, regs->ptpclk,
-+				  &ptpclkval, 8);
+ 	rc = sja1105_spi_send_int(priv, SPI_READ, regs->ptpclk,
+-				  &ptpclkval, 8);
++				  &ptpclkval, 8, sts);
  	if (rc < 0)
  		dev_err_ratelimited(priv->ds->dev,
--				    "failed to read ptp cycle counter: %d\n",
-+				    "failed to read ptp time: %d\n",
- 				    rc);
--	return ptptsclk;
-+
-+	return ptpclkval;
- }
- 
--static void sja1105_ptp_overflow_check(struct work_struct *work)
-+/* Write to PTPCLKVAL while PTPCLKADD is 1 */
-+static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
--	struct delayed_work *dw = to_delayed_work(work);
--	struct sja1105_private *priv = dw_to_sja1105(dw);
--	struct timespec64 ts;
-+	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	s64 ticks = ns_to_sja1105_ticks(delta);
-+	int rc;
- 
--	sja1105_ptp_gettime(&priv->ptp_caps, &ts);
-+	mutex_lock(&priv->ptp_lock);
- 
--	schedule_delayed_work(&priv->refresh_work, SJA1105_REFRESH_INTERVAL);
-+	rc = sja1105_ptp_mode_set(priv, PTP_ADD_MODE);
-+	if (rc < 0) {
-+		dev_err(priv->ds->dev, "Failed to put PTPCLK in add mode\n");
-+		goto out;
-+	}
-+
-+	rc = sja1105_ptpclkval_write(priv, ticks);
-+
-+out:
-+	mutex_unlock(&priv->ptp_lock);
-+
-+	return rc;
- }
- 
- int sja1105_ptp_clock_register(struct sja1105_private *priv)
- {
- 	struct dsa_switch *ds = priv->ds;
- 
--	/* Set up the cycle counter */
--	priv->tstamp_cc = (struct cyclecounter) {
--		.read		= sja1105_ptptsclk_read,
--		.mask		= CYCLECOUNTER_MASK(64),
--		.shift		= SJA1105_CC_SHIFT,
--		.mult		= SJA1105_CC_MULT,
--	};
- 	priv->ptp_caps = (struct ptp_clock_info) {
- 		.owner		= THIS_MODULE,
+ 				    "failed to read ptp time: %d\n",
+@@ -347,7 +351,7 @@ int sja1105_ptp_clock_register(struct sja1105_private *priv)
  		.name		= "SJA1105 PHC",
-@@ -370,8 +358,8 @@ int sja1105_ptp_clock_register(struct sja1105_private *priv)
- 	if (IS_ERR_OR_NULL(priv->clock))
- 		return PTR_ERR(priv->clock);
- 
--	INIT_DELAYED_WORK(&priv->refresh_work, sja1105_ptp_overflow_check);
--	schedule_delayed_work(&priv->refresh_work, SJA1105_REFRESH_INTERVAL);
-+	priv->ptp_cmd.corrclk4ts = true;
-+	priv->ptp_cmd.ptpclkadd = PTP_SET_MODE;
- 
- 	return sja1105_ptp_reset(priv);
- }
-@@ -381,7 +369,6 @@ void sja1105_ptp_clock_unregister(struct sja1105_private *priv)
- 	if (IS_ERR_OR_NULL(priv->clock))
- 		return;
- 
--	cancel_delayed_work_sync(&priv->refresh_work);
- 	ptp_clock_unregister(priv->clock);
- 	priv->clock = NULL;
- }
+ 		.adjfine	= sja1105_ptp_adjfine,
+ 		.adjtime	= sja1105_ptp_adjtime,
+-		.gettime64	= sja1105_ptp_gettime,
++		.gettimex64	= sja1105_ptp_gettimex,
+ 		.settime64	= sja1105_ptp_settime,
+ 		.max_adj	= SJA1105_MAX_ADJ_PPB,
+ 	};
 diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.h b/drivers/net/dsa/sja1105/sja1105_ptp.h
-index af456b0a4d27..51e21d951548 100644
+index 51e21d951548..80c33e5e4503 100644
 --- a/drivers/net/dsa/sja1105/sja1105_ptp.h
 +++ b/drivers/net/dsa/sja1105/sja1105_ptp.h
-@@ -4,6 +4,21 @@
- #ifndef _SJA1105_PTP_H
- #define _SJA1105_PTP_H
- 
-+/* Timestamps are in units of 8 ns clock ticks (equivalent to
-+ * a fixed 125 MHz clock).
-+ */
-+#define SJA1105_TICK_NS			8
-+
-+static inline s64 ns_to_sja1105_ticks(s64 ns)
-+{
-+	return ns / SJA1105_TICK_NS;
-+}
-+
-+static inline s64 sja1105_ticks_to_ns(s64 ticks)
-+{
-+	return ticks * SJA1105_TICK_NS;
-+}
-+
- #if IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP)
- 
- int sja1105_ptp_clock_register(struct sja1105_private *priv);
-@@ -24,6 +39,8 @@ u64 sja1105_tstamp_reconstruct(struct sja1105_private *priv, u64 now,
+@@ -39,7 +39,8 @@ u64 sja1105_tstamp_reconstruct(struct sja1105_private *priv, u64 now,
  
  int sja1105_ptp_reset(struct sja1105_private *priv);
  
-+u64 sja1105_ptpclkval_read(struct sja1105_private *priv);
-+
+-u64 sja1105_ptpclkval_read(struct sja1105_private *priv);
++u64 sja1105_ptpclkval_read(struct sja1105_private *priv,
++			   struct ptp_system_timestamp *sts);
+ 
  #else
  
- static inline int sja1105_ptp_clock_register(struct sja1105_private *priv)
-@@ -53,6 +70,11 @@ static inline int sja1105_ptp_reset(struct sja1105_private *priv)
+@@ -70,7 +71,8 @@ static inline int sja1105_ptp_reset(struct sja1105_private *priv)
  	return 0;
  }
  
-+static inline u64 sja1105_ptpclkval_read(struct sja1105_private *priv)
-+{
-+	return 0;
-+}
-+
- #define sja1105et_ptp_cmd NULL
- 
- #define sja1105pqrs_ptp_cmd NULL
+-static inline u64 sja1105_ptpclkval_read(struct sja1105_private *priv)
++static inline u64 sja1105_ptpclkval_read(struct sja1105_private *priv,
++					 struct ptp_system_timestamp *sts)
+ {
+ 	return 0;
+ }
 diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 84dc603138cf..1953d8c54af6 100644
+index 1953d8c54af6..26985f1209ad 100644
 --- a/drivers/net/dsa/sja1105/sja1105_spi.c
 +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -517,7 +517,6 @@ static struct sja1105_regs sja1105et_regs = {
- 	.ptp_control = 0x17,
- 	.ptpclk = 0x18, /* Spans 0x18 to 0x19 */
- 	.ptpclkrate = 0x1A,
--	.ptptsclk = 0x1B, /* Spans 0x1B to 0x1C */
- };
+@@ -15,7 +15,8 @@
+ 	(SJA1105_SIZE_SPI_MSG_HEADER + SJA1105_SIZE_SPI_MSG_MAXLEN)
  
- static struct sja1105_regs sja1105pqrs_regs = {
-@@ -548,7 +547,6 @@ static struct sja1105_regs sja1105pqrs_regs = {
- 	.ptp_control = 0x18,
- 	.ptpclk = 0x19,
- 	.ptpclkrate = 0x1B,
--	.ptptsclk = 0x1C,
- };
+ static int sja1105_spi_transfer(const struct sja1105_private *priv,
+-				const void *tx, void *rx, int size)
++				const void *tx, void *rx, int size,
++				struct ptp_system_timestamp *ptp_sts)
+ {
+ 	struct spi_device *spi = priv->spidev;
+ 	struct spi_transfer transfer = {
+@@ -35,12 +36,16 @@ static int sja1105_spi_transfer(const struct sja1105_private *priv,
+ 	spi_message_init(&msg);
+ 	spi_message_add_tail(&transfer, &msg);
  
- struct sja1105_info sja1105e_info = {
++	ptp_read_system_prets(ptp_sts);
++
+ 	rc = spi_sync(spi, &msg);
+ 	if (rc < 0) {
+ 		dev_err(&spi->dev, "SPI transfer failed: %d\n", rc);
+ 		return rc;
+ 	}
+ 
++	ptp_read_system_postts(ptp_sts);
++
+ 	return rc;
+ }
+ 
+@@ -66,9 +71,11 @@ sja1105_spi_message_pack(void *buf, const struct sja1105_spi_message *msg)
+  * @size_bytes is smaller than SIZE_SPI_MSG_MAXLEN. Larger packed buffers
+  * are chunked in smaller pieces by sja1105_spi_send_long_packed_buf below.
+  */
+-int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
+-				sja1105_spi_rw_mode_t rw, u64 reg_addr,
+-				void *packed_buf, size_t size_bytes)
++static int
++__sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
++			      sja1105_spi_rw_mode_t rw, u64 reg_addr,
++			      void *packed_buf, size_t size_bytes,
++			      struct ptp_system_timestamp *ptp_sts)
+ {
+ 	u8 tx_buf[SJA1105_SIZE_SPI_TRANSFER_MAX] = {0};
+ 	u8 rx_buf[SJA1105_SIZE_SPI_TRANSFER_MAX] = {0};
+@@ -90,7 +97,7 @@ int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
+ 		memcpy(tx_buf + SJA1105_SIZE_SPI_MSG_HEADER,
+ 		       packed_buf, size_bytes);
+ 
+-	rc = sja1105_spi_transfer(priv, tx_buf, rx_buf, msg_len);
++	rc = sja1105_spi_transfer(priv, tx_buf, rx_buf, msg_len, ptp_sts);
+ 	if (rc < 0)
+ 		return rc;
+ 
+@@ -101,6 +108,14 @@ int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
+ 	return 0;
+ }
+ 
++int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
++				sja1105_spi_rw_mode_t rw, u64 reg_addr,
++				void *packed_buf, size_t size_bytes)
++{
++	return __sja1105_spi_send_packed_buf(priv, rw, reg_addr, packed_buf,
++					     size_bytes, NULL);
++}
++
+ /* If @rw is:
+  * - SPI_WRITE: creates and sends an SPI write message at absolute
+  *		address reg_addr, taking size_bytes from *packed_buf
+@@ -114,7 +129,8 @@ int sja1105_spi_send_packed_buf(const struct sja1105_private *priv,
+  */
+ int sja1105_spi_send_int(const struct sja1105_private *priv,
+ 			 sja1105_spi_rw_mode_t rw, u64 reg_addr,
+-			 u64 *value, u64 size_bytes)
++			 u64 *value, u64 size_bytes,
++			 struct ptp_system_timestamp *ptp_sts)
+ {
+ 	u8 packed_buf[SJA1105_SIZE_SPI_MSG_MAXLEN];
+ 	int rc;
+@@ -126,8 +142,8 @@ int sja1105_spi_send_int(const struct sja1105_private *priv,
+ 		sja1105_pack(packed_buf, value, 8 * size_bytes - 1, 0,
+ 			     size_bytes);
+ 
+-	rc = sja1105_spi_send_packed_buf(priv, rw, reg_addr, packed_buf,
+-					 size_bytes);
++	rc = __sja1105_spi_send_packed_buf(priv, rw, reg_addr, packed_buf,
++					   size_bytes, ptp_sts);
+ 
+ 	if (rw == SPI_READ)
+ 		sja1105_unpack(packed_buf, value, 8 * size_bytes - 1, 0,
+@@ -291,7 +307,7 @@ int sja1105_inhibit_tx(const struct sja1105_private *priv,
+ 	int rc;
+ 
+ 	rc = sja1105_spi_send_int(priv, SPI_READ, regs->port_control,
+-				  &inhibit_cmd, SJA1105_SIZE_PORT_CTRL);
++				  &inhibit_cmd, SJA1105_SIZE_PORT_CTRL, NULL);
+ 	if (rc < 0)
+ 		return rc;
+ 
+@@ -301,7 +317,7 @@ int sja1105_inhibit_tx(const struct sja1105_private *priv,
+ 		inhibit_cmd &= ~port_bitmap;
+ 
+ 	return sja1105_spi_send_int(priv, SPI_WRITE, regs->port_control,
+-				    &inhibit_cmd, SJA1105_SIZE_PORT_CTRL);
++				    &inhibit_cmd, SJA1105_SIZE_PORT_CTRL, NULL);
+ }
+ 
+ struct sja1105_status {
 -- 
 2.17.1
 
