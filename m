@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB06A50C7
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 10:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50AADA50B7
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 10:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730219AbfIBID1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 04:03:27 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:51426 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729954AbfIBICS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 04:02:18 -0400
+        id S1730073AbfIBICT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 04:02:19 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:51378 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729910AbfIBICR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 04:02:17 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id AED08C0438;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D5EB1C0439;
         Mon,  2 Sep 2019 08:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567411337; bh=/MasdnODAJKEeH9TitBj6mYJC/lGR8OKb/0AXAK0+ss=;
+        t=1567411337; bh=i9xcnzMF9fbzhtXBItSqt+iaoB57JVPuXM/inApdYsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=YUT83e9PcMthqHTF3hahkdErxCAMXoCE0ZDhtMpc186kRRBCay/6Ea3Dxo7JsEOGu
-         qFfUiS5ZToKJ+Fox6+bg1IEjaDPgOjlqd4Lm2rt81kC2+emY+a5u3xfZJNwcyEGOdA
-         4BwA1TjGOeIRCIYuXSnr9rhG74GfVJluss16COhgWzAXIZJydhZGwlROs+OK0l7IW7
-         vCT1i8ycy4lAPDDWwgH1tc9aJURpsIR4mfBTY8KxbbAB+3gVu3EpeantFP/aWnkd27
-         R54D8mO/+gpnAOmCdkYr1A2Q1ZzUcCOQ3oh7aEnTwHkQhxDh2EQCGeMd/pL7euE5By
-         ZBUnz6o4PsNng==
+        b=WJdpqBgWOqiWE5WWvElUPMX1sjW9Zy0JyMNN0QOH9RqfMIjD716hcYN2a/juJqeRO
+         zSgNUWoG7WhFYGYs3P3yRETpDOmZPW4m5GVP1sTzFpwCQJW1zXhouiS9OeNM9E9zNv
+         2t7Mf6yPVPa4keZZhFwOW1u1Ivt59d6IGkO5Pj5x9A0frxNEFGr4wLCRfzHCGUBuul
+         +nlX36XjEqZjcibwakI1SfsZ7wRvVe54F33FXKUxqhLW9D3lPR5NODk7nbfVF6kqiW
+         rZBfuj+ogakt2TDQwZGRs5hsqPGvzKLK1PioTyAFztaRqQfcSFqrfGi7sMaMi91UlX
+         5n28aOAWfM1Dw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 73665A0078;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 7BB78A0079;
         Mon,  2 Sep 2019 08:02:15 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 07/13] net: stmmac: selftests: Implement the ARP Offload test
-Date:   Mon,  2 Sep 2019 10:01:49 +0200
-Message-Id: <dadd04bc5a62a1467a60f33ac6369159f5528fd5.1567410970.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 08/13] net: stmmac: Only consider RX error when HW Timestamping is not enabled
+Date:   Mon,  2 Sep 2019 10:01:50 +0200
+Message-Id: <294057d4ce5713f4f4d389d26e846d42d6fb9d99.1567410970.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1567410970.git.joabreu@synopsys.com>
 References: <cover.1567410970.git.joabreu@synopsys.com>
@@ -52,7 +52,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement a test for ARP Offload feature.
+Only consider that we have an error when HW Timestamping is not enabled
+as this can give false positives due to the fact the RX Timestamping in
+XGMAC and GMAC cores comes from context descriptors.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -67,144 +69,25 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 110 +++++++++++++++++++++
- 1 file changed, 110 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 8e9d0aeda817..f531dbe038df 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -196,6 +196,24 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
- 	return skb;
- }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index c59c232aca64..5271c6129f0e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3511,9 +3511,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 					&priv->xstats, rx_q->dma_erx + entry);
+ 		if (unlikely(status == discard_frame)) {
+ 			page_pool_recycle_direct(rx_q->page_pool, buf->page);
+-			priv->dev->stats.rx_errors++;
+ 			buf->page = NULL;
+ 			error = 1;
++			if (!priv->hwts_rx_en)
++				priv->dev->stats.rx_errors++;
+ 		}
  
-+static struct sk_buff *stmmac_test_get_arp_skb(struct stmmac_priv *priv,
-+					       struct stmmac_packet_attrs *attr)
-+{
-+	__be32 ip_src = htonl(attr->ip_src);
-+	__be32 ip_dst = htonl(attr->ip_dst);
-+	struct sk_buff *skb = NULL;
-+
-+	skb = arp_create(ARPOP_REQUEST, ETH_P_ARP, ip_dst, priv->dev, ip_src,
-+			 NULL, attr->src, attr->dst);
-+	if (!skb)
-+		return NULL;
-+
-+	skb->pkt_type = PACKET_HOST;
-+	skb->dev = priv->dev;
-+
-+	return skb;
-+}
-+
- struct stmmac_test_priv {
- 	struct stmmac_packet_attrs *packet;
- 	struct packet_type pt;
-@@ -1396,6 +1414,94 @@ static int stmmac_test_l4filt_sa_udp(struct stmmac_priv *priv)
- 	return __stmmac_test_l4filt(priv, 0, dummy_port, 0, ~0, true);
- }
- 
-+static int stmmac_test_arp_validate(struct sk_buff *skb,
-+				    struct net_device *ndev,
-+				    struct packet_type *pt,
-+				    struct net_device *orig_ndev)
-+{
-+	struct stmmac_test_priv *tpriv = pt->af_packet_priv;
-+	struct ethhdr *ehdr;
-+	struct arphdr *ahdr;
-+
-+	ehdr = (struct ethhdr *)skb_mac_header(skb);
-+	if (!ether_addr_equal(ehdr->h_dest, tpriv->packet->src))
-+		goto out;
-+
-+	ahdr = arp_hdr(skb);
-+	if (ahdr->ar_op != htons(ARPOP_REPLY))
-+		goto out;
-+
-+	tpriv->ok = true;
-+	complete(&tpriv->comp);
-+out:
-+	kfree_skb(skb);
-+	return 0;
-+}
-+
-+static int stmmac_test_arpoffload(struct stmmac_priv *priv)
-+{
-+	unsigned char src[ETH_ALEN] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-+	unsigned char dst[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-+	struct stmmac_packet_attrs attr = { };
-+	struct stmmac_test_priv *tpriv;
-+	struct sk_buff *skb = NULL;
-+	u32 ip_addr = 0xdeadcafe;
-+	u32 ip_src = 0xdeadbeef;
-+	int ret;
-+
-+	if (!priv->dma_cap.arpoffsel)
-+		return -EOPNOTSUPP;
-+
-+	tpriv = kzalloc(sizeof(*tpriv), GFP_KERNEL);
-+	if (!tpriv)
-+		return -ENOMEM;
-+
-+	tpriv->ok = false;
-+	init_completion(&tpriv->comp);
-+
-+	tpriv->pt.type = htons(ETH_P_ARP);
-+	tpriv->pt.func = stmmac_test_arp_validate;
-+	tpriv->pt.dev = priv->dev;
-+	tpriv->pt.af_packet_priv = tpriv;
-+	tpriv->packet = &attr;
-+	dev_add_pack(&tpriv->pt);
-+
-+	attr.src = src;
-+	attr.ip_src = ip_src;
-+	attr.dst = dst;
-+	attr.ip_dst = ip_addr;
-+
-+	skb = stmmac_test_get_arp_skb(priv, &attr);
-+	if (!skb) {
-+		ret = -ENOMEM;
-+		goto cleanup;
-+	}
-+
-+	ret = stmmac_set_arp_offload(priv, priv->hw, true, ip_addr);
-+	if (ret)
-+		goto cleanup;
-+
-+	ret = dev_set_promiscuity(priv->dev, 1);
-+	if (ret)
-+		goto cleanup;
-+
-+	skb_set_queue_mapping(skb, 0);
-+	ret = dev_queue_xmit(skb);
-+	if (ret)
-+		goto cleanup_promisc;
-+
-+	wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
-+	ret = tpriv->ok ? 0 : -ETIMEDOUT;
-+
-+cleanup_promisc:
-+	dev_set_promiscuity(priv->dev, -1);
-+cleanup:
-+	stmmac_set_arp_offload(priv, priv->hw, false, 0x0);
-+	dev_remove_pack(&tpriv->pt);
-+	kfree(tpriv);
-+	return ret;
-+}
-+
- #define STMMAC_LOOPBACK_NONE	0
- #define STMMAC_LOOPBACK_MAC	1
- #define STMMAC_LOOPBACK_PHY	2
-@@ -1505,6 +1611,10 @@ static const struct stmmac_test {
- 		.name = "L4 SA UDP Filtering ",
- 		.lb = STMMAC_LOOPBACK_PHY,
- 		.fn = stmmac_test_l4filt_sa_udp,
-+	}, {
-+		.name = "ARP Offload         ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_arpoffload,
- 	},
- };
- 
+ 		if (unlikely(error && (status & rx_not_ls)))
 -- 
 2.7.4
 
