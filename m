@@ -2,79 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D315A5DBB
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 00:07:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5184CA5E04
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 01:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727706AbfIBWHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 18:07:43 -0400
-Received: from mail-io1-f50.google.com ([209.85.166.50]:44739 "EHLO
-        mail-io1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727603AbfIBWHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 18:07:43 -0400
-Received: by mail-io1-f50.google.com with SMTP id j4so31518013iog.11
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 15:07:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=oEvieRULttewWyaTSiWpUULjie9Mu4pA0y30GmKhSg4=;
-        b=nEf5WglIduL0REvosKWLBe1s7S71pCYjhKHUa19OrDW4NjuUFPCVEi6GD64rax1D/9
-         nSKNKrzBe950uoJF3cJBM7XLC6Nqkxwv/aZqTRw1QXXNvptkfsSEwBLW+uGUqjADs3+G
-         3dZw1MRS2l1KrxvGkpuFEd6Cu+PjGPfgwslIpzXPk6TK685eYeR40N+4Y5xKbkmuoOtQ
-         Sznvi66gb13hrvmTdyAgzrRnGhV6MJ6DsDqolKJ21irVLy1J7wPgai3+MzH0Lrm4xT78
-         GtAXTe6pW8b3j0V/5wJzmQ0Bfhi9AQCMnZOR71BKRnTTEfWAosqjRoOr5QvqTIRu8cTI
-         T5HA==
+        id S1727123AbfIBXOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 19:14:38 -0400
+Received: from mx1.ucr.edu ([138.23.248.2]:5684 "EHLO mx1.ucr.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726767AbfIBXOi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 19:14:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1567466279; x=1599002279;
+  h=from:to:cc:subject:date:message-id;
+  bh=wrJn6aBHz0Uw1eGhnnd+uYHpG8nT9vsMJN2vUur/bWQ=;
+  b=OhnTr0ldt5Mv8QIOqfKoGO5jKzVcBnhz2phCnjp8HMy3Z4zhSBlPlWZP
+   EdYsMgKQVGFjDTBARnjzO1+p3Zcad2mYHadNlnF8bnxE92fv/WzQFlQcb
+   vEZTyFZO1KJo4TYmIOza7DNBfwApnSU2GF4L1symoGL47trASjQk/1JEn
+   TjcyO48I5Hn3HOcQZetzNqa1uoOTmBSqSgD/ZzFZYdOQHzrR8iCXIdcX9
+   tHV1HJFyz8kl6wRNrcIXtc24rqWC47WNjpsvWfosz8Q8RG2kFodhLA1pS
+   8xHaERd8BlS1ilkFzBCGFHz5hAhSg9dCh13yw9eq0ANketdiJ9aYsHetA
+   Q==;
+IronPort-SDR: 91Demo70DShrkXVbUVWHMRod9XLbB0XHbZAAaQT9hfbpEDN1w0/HtArCyOppa6d2BO6nfiqw9F
+ NMfG3CNOB2PQlnGX814Nuab2JGjdbWI4FmVuOfj77Obf2KxrGR1ATqL7yeFzZTtCINoxoJnR9H
+ ulwrLIH/jk8ARFgV0JgobkrC3PW3Fjc1cN3UGsu9IE7LVdkZaY15DlD14iuF0NMhHUy/xXrs5U
+ 4CKznKCnQoc+2O6x3X40LSItoVUPd5B0GrKH50Qo3nVpteGdI94HOmgDhw+7oCgU4CVyH9VRrO
+ G+0=
+IronPort-PHdr: =?us-ascii?q?9a23=3AI61//hAIY9lmpQJWG2/7UyQJP3N1i/DPJgcQr6?=
+ =?us-ascii?q?AfoPdwSPvzpcbcNUDSrc9gkEXOFd2Cra4d0ayP7PmrADNIyK3CmUhKSIZLWR?=
+ =?us-ascii?q?4BhJdetC0bK+nBN3fGKuX3ZTcxBsVIWQwt1Xi6NU9IBJS2PAWK8TW94jEIBx?=
+ =?us-ascii?q?rwKxd+KPjrFY7OlcS30P2594HObwlSizexfK1+IA+roQjTq8UajpZuJ6QswR?=
+ =?us-ascii?q?bVv3VEfPhby3l1LlyJhRb84cmw/J9n8ytOvv8q6tBNX6bncakmVLJUFDspPX?=
+ =?us-ascii?q?w7683trhnDUBCA5mAAXWUMkxpHGBbK4RfnVZrsqCT6t+592C6HPc3qSL0/RD?=
+ =?us-ascii?q?qv47t3RBLulSwKLCAy/n3JhcNsjaJbuBOhqAJ5w47Ie4GeKf5ycrrAcd8GWW?=
+ =?us-ascii?q?ZNW8BcVylAAoOndIsPDuwBPelFpIfjvlUFsBW+BQiyC+Pr1zBDm3v60KMm3+?=
+ =?us-ascii?q?gkFwzNwQ4uEM8UsHnMrNv7KrocX+62wqfP1jjPc+9a1C3h5IXSbhwtvfeBVq?=
+ =?us-ascii?q?9wf8rLzkkvEhvIgVeRqY3kPzOVy+MNuHWc4utgVOOvi3QoqwBtrjSzyMohkZ?=
+ =?us-ascii?q?TJiZ4Pylze6yp23Zs1KMS+RUVmYtCkCINduz+GO4ZyWM8vQGFltDwkxrEbuZ?=
+ =?us-ascii?q?O3ZjYGxIg7yxLHdvCKcoyF7gj9WOufITp0nmxpdbOlixuw/kWtzPD3WNOu31?=
+ =?us-ascii?q?ZQtCVFl8HBtnUK1xPO9MeKUuB9/kK92TaX0ADT9/1ELVg0laXFL54hxaY9lp?=
+ =?us-ascii?q?8JvkTCGi/6gV32jKCLekk99Oik9fjrbqn8qp+TMI90jQ7+MqAwlcClHes4NQ?=
+ =?us-ascii?q?0OU3Ca+eS6yrLj4VX0TKtWgvAyiKXUs5DXKd4FqqKkAwJZyJgv5wqjAzu+1d?=
+ =?us-ascii?q?QXh3gHLFZLeBKdiIjpPknDIfD5DPe/mVuskStny+zIM7D6H5XCMmLDnK3/cr?=
+ =?us-ascii?q?lg9k5Q0BAzwsxH55JIFrEBJ+r+Wknvu9zEExA2LRK0zv35CNVyyIweQ3iDAq?=
+ =?us-ascii?q?yHP6PIt1+H+OYvL/OLZI8PtzauY9Y/4Pu7vH4rmUIaNf24z5seaSjgRdx7KF?=
+ =?us-ascii?q?/fbHbx1IRSWVwWtxYzGbS5wGaJViReMjPtB68=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2E8AACqgmddgMjXVdFlHgEGBwaBUwk?=
+ =?us-ascii?q?LAYNXTBCNHYZcAQEBBosfGHGFeYMJhSSBewEIAQEBDAEBLQIBAYQ/glsjNAk?=
+ =?us-ascii?q?OAgMIAQEFAQEBAQEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJ?=
+ =?us-ascii?q?HAYF2FJ08gQM8jCMziGkBCAyBSQkBCIEiAYcdhFmBEIEHhGGEDYNWgkQEgS4?=
+ =?us-ascii?q?BAQGUTpYFAQYCAYIMFIFyklMngjKBfokZOYpaAS2ldwIKBwYPIYEvghFNJYF?=
+ =?us-ascii?q?sCoFEgnqOLR8zgQiMAYJUAQ?=
+X-IPAS-Result: =?us-ascii?q?A2E8AACqgmddgMjXVdFlHgEGBwaBUwkLAYNXTBCNHYZcA?=
+ =?us-ascii?q?QEBBosfGHGFeYMJhSSBewEIAQEBDAEBLQIBAYQ/glsjNAkOAgMIAQEFAQEBA?=
+ =?us-ascii?q?QEGBAEBAhABAQkNCQgnhUOCOimCYAsWFVJWPwEFATUiOYJHAYF2FJ08gQM8j?=
+ =?us-ascii?q?CMziGkBCAyBSQkBCIEiAYcdhFmBEIEHhGGEDYNWgkQEgS4BAQGUTpYFAQYCA?=
+ =?us-ascii?q?YIMFIFyklMngjKBfokZOYpaAS2ldwIKBwYPIYEvghFNJYFsCoFEgnqOLR8zg?=
+ =?us-ascii?q?QiMAYJUAQ?=
+X-IronPort-AV: E=Sophos;i="5.64,443,1559545200"; 
+   d="scan'208";a="5470476"
+Received: from mail-pg1-f200.google.com ([209.85.215.200])
+  by smtp1.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2019 16:17:58 -0700
+Received: by mail-pg1-f200.google.com with SMTP id m19so9675849pgv.7
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=oEvieRULttewWyaTSiWpUULjie9Mu4pA0y30GmKhSg4=;
-        b=Q8dOGT+/xMRMGrPkfCdXvl/H8TXJBGNCzODGVyCzc+18Mv8k6BkZpO7qiqHWqyxImW
-         +0m5IvC40SqXtJ7QhlP9GKgjsN+72kO52L/IARDhhSJtDWMuQxJMZYF2fr5mZ3iof2wO
-         N1/V4BBvcGNhEA3dbli5bjT28ZhONA4fPEpkK/iKBm9DUvqrl2dvDVJ3j4jwgiwWUzYL
-         1neMFJ2O2TZruwKQiIo6gdcRYp7jqL/XHLh6eWmurug/h7ySCIXXwHkQTF0bYq8zZyrr
-         ioQbKKQY7/Zgjnox76qW9c01bcdWRWD1xrdg5Q1JAwHaZ9hJuMwrp1nkSA0hQHJpPEbe
-         ZsQA==
-X-Gm-Message-State: APjAAAU6VxXBSdo8x9R177wVC9H/PXIj0YlPN15oyxJk7Agg1mjBWxcZ
-        h5dxtltu1+8aOdCJRGgRgtNjV7byIC3pOugNYbCOT/M8
-X-Google-Smtp-Source: APXvYqz27Wv1kFCc/6Gnjf8qo8E9tceeXTJnEC96BkHcRugyiBPnvMbvh2Cdw7+O79z0PEHT77y0pSqgqM1f3j9WOWk=
-X-Received: by 2002:a02:716a:: with SMTP id n42mr7997488jaf.38.1567462062520;
- Mon, 02 Sep 2019 15:07:42 -0700 (PDT)
-MIME-Version: 1.0
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 2 Sep 2019 15:07:31 -0700
-Message-ID: <CAA93jw73AJMwLL+6cNLB2R6oqA2DyMYc1ZUsrFPndESs0ZONng@mail.gmail.com>
-Subject: how to search for the best route from userspace in netlink?
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=qbPcGIvjek55/mukFc57PQHYy7743OrNG7Y4v0Ab2d0=;
+        b=ZEqAToTCzX83vMgkLYF7QfBNXPOMLwGIaFa+xvKbP936+nHgmXNywaVTBlY4Pf/lwW
+         X46VkEeoq1GrwziVvA1Or13QenHRUX4JBAdwi80Wt7aoNyb1bJlzqxqbsabCJHSxBrCT
+         aSls4shoGEiKtGRpTV/yyv5P5kqH15Kwz78LQOZz428ca0YA85V3VuVj6FCJJNNCDNyQ
+         jaOrCLiQjCKftofLvw8F6qASKCEMMvlMDkDB86aupNpLQVBQ64NX0IHkNS7ZIIWVmrXF
+         s/z01P041DsMm5d+30zx/DZkLYXtRmXWfXycuRo+EPaQxxzCPfm0NRkw0/vfM3mOPTtz
+         3fgw==
+X-Gm-Message-State: APjAAAWDcNQnLOzTJETDL7w+rIfX8FSl4Lh7cG/qbEqwwWEPZSo1Ok5A
+        B6ogL2SeIRyXALw9wnmUUM5awO75NUgzVpBlByxtsXqxMpxZc4JLcvJdMh1fz5qROIbKuiFFVVW
+        HRuBvLKBeuwkvsucMsQ==
+X-Received: by 2002:a17:902:9f97:: with SMTP id g23mr25566852plq.248.1567466076389;
+        Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyG1mxoH7h9PwFtEKTdqe361X81McE/StIlugJILQyx3cKKtm08UaQvwZnUk/+e7cNgptjUmQ==
+X-Received: by 2002:a17:902:9f97:: with SMTP id g23mr25566835plq.248.1567466076169;
+        Mon, 02 Sep 2019 16:14:36 -0700 (PDT)
+Received: from Yizhuo.cs.ucr.edu (yizhuo.cs.ucr.edu. [169.235.26.74])
+        by smtp.googlemail.com with ESMTPSA id 138sm18270374pfw.78.2019.09.02.16.14.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Sep 2019 16:14:35 -0700 (PDT)
+From:   Yizhuo <yzhai003@ucr.edu>
+Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, Yizhuo <yzhai003@ucr.edu>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hisilicon: Variable "reg_value" in function mdio_sc_cfg_reg_write() could be uninitialized
+Date:   Mon,  2 Sep 2019 16:15:10 -0700
+Message-Id: <20190902231510.21374-1-yzhai003@ucr.edu>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Windows has the "RtmGetMostSpecificDestination" call:
-https://docs.microsoft.com/en-us/windows/win32/rras/search-for-the-best-rou=
-te
+In function mdio_sc_cfg_reg_write(), variable reg_value could be
+uninitialized if regmap_read() fails. However, this variable is
+used later in the if statement, which is potentially unsafe.
 
-In particular, I wanted to search for the best route, AND pick up the
-PMTU from that (if it existed)
-for older UDP applications like dnssec[1] and newer ones like QUIC[2].
-The alternatives, which
-basically include probing perpetually and/or picking really low
-values, seem increasingly less than
-optimal.
+Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+---
+ drivers/net/ethernet/hisilicon/hns_mdio.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Put in a wrapper around bpf[3]'s lpm calls? Create a new netlink message?
+diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
+index 3e863a71c513..f5b64cb2d0f6 100644
+--- a/drivers/net/ethernet/hisilicon/hns_mdio.c
++++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
+@@ -148,11 +148,17 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
+ {
+ 	u32 time_cnt;
+ 	u32 reg_value;
++	int ret;
+ 
+ 	regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
+ 
+ 	for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
+-		regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
++		ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
++		if (ret) {
++			dev_err(mdio_dev->regmap->dev, "Fail to read from the register\n");
++			return ret;
++		}
++
+ 		reg_value &= st_msk;
+ 		if ((!!check_st) == (!!reg_value))
+ 			break;
+-- 
+2.17.1
 
-[1] https://github.com/dns-violations/dnsflagday/issues/125
-[2] https://tools.ietf.org/html/draft-ietf-quic-transport-22#section-14.1
-[3] https://github.com/torvalds/linux/blob/master/kernel/bpf/lpm_trie.c#L16=
-4
-
---=20
-
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-205-9740
