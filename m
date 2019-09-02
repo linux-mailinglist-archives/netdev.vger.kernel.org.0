@@ -2,114 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88849A53EE
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 12:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A58DA5416
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 12:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730740AbfIBKXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 06:23:24 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:42714 "EHLO inva020.nxp.com"
+        id S1730348AbfIBKeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 06:34:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44880 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730645AbfIBKXW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 06:23:22 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D69C11A02F8;
-        Mon,  2 Sep 2019 12:23:20 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CA4E91A0022;
-        Mon,  2 Sep 2019 12:23:20 +0200 (CEST)
-Received: from fsr-ub1664-019.ea.freescale.net (fsr-ub1664-019.ea.freescale.net [10.171.71.230])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 8938D203B1;
-        Mon,  2 Sep 2019 12:23:20 +0200 (CEST)
-From:   Ioana Radulescu <ruxandra.radulescu@nxp.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     ioana.ciornei@nxp.com
-Subject: [PATCH net-next v2 3/3] dpaa2-eth: Poll Tx pending frames counter on if down
-Date:   Mon,  2 Sep 2019 13:23:19 +0300
-Message-Id: <1567419799-28179-4-git-send-email-ruxandra.radulescu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1567419799-28179-1-git-send-email-ruxandra.radulescu@nxp.com>
-References: <1567419799-28179-1-git-send-email-ruxandra.radulescu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1729806AbfIBKeK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 06:34:10 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D3FFCC049E23;
+        Mon,  2 Sep 2019 10:34:10 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D7D160C05;
+        Mon,  2 Sep 2019 10:34:09 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix misplaced traceline
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Hillf Danton <hdanton@sina.com>, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Mon, 02 Sep 2019 11:34:08 +0100
+Message-ID: <156742044878.3320.3639294965607016931.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/unknown-version
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Mon, 02 Sep 2019 10:34:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Starting with firmware version MC10.18.0, a new counter for in flight
-Tx frames is offered. Use it when bringing down the interface to
-determine when all pending Tx frames have been processed by hardware
-instead of sleeping a fixed amount of time.
+There's a misplaced traceline in rxrpc_input_packet() which is looking at a
+packet that just got released rather than the replacement packet.
 
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Fix this by moving the traceline after the assignment that moves the new
+packet pointer to the actual packet pointer.
+
+Fixes: d0d5c0cd1e71 ("rxrpc: Use skb_unshare() rather than skb_cow_data()")
+Reported-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-v2: no changes
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 31 +++++++++++++++++++++---
- 1 file changed, 28 insertions(+), 3 deletions(-)
+ net/rxrpc/input.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 5402867..162d7d8 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1348,7 +1348,7 @@ static u32 ingress_fq_count(struct dpaa2_eth_priv *priv)
- 	return total;
- }
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index d122c53c8697..157be1ff8697 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -1262,8 +1262,8 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
  
--static void wait_for_fq_empty(struct dpaa2_eth_priv *priv)
-+static void wait_for_ingress_fq_empty(struct dpaa2_eth_priv *priv)
- {
- 	int retries = 10;
- 	u32 pending;
-@@ -1360,6 +1360,31 @@ static void wait_for_fq_empty(struct dpaa2_eth_priv *priv)
- 	} while (pending && --retries);
- }
- 
-+#define DPNI_TX_PENDING_VER_MAJOR	7
-+#define DPNI_TX_PENDING_VER_MINOR	13
-+static void wait_for_egress_fq_empty(struct dpaa2_eth_priv *priv)
-+{
-+	union dpni_statistics stats;
-+	int retries = 10;
-+	int err;
-+
-+	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_TX_PENDING_VER_MAJOR,
-+				   DPNI_TX_PENDING_VER_MINOR) < 0)
-+		goto out;
-+
-+	do {
-+		err = dpni_get_statistics(priv->mc_io, 0, priv->mc_token, 6,
-+					  &stats);
-+		if (err)
-+			goto out;
-+		if (stats.page_6.tx_pending_frames == 0)
-+			return;
-+	} while (--retries);
-+
-+out:
-+	msleep(500);
-+}
-+
- static int dpaa2_eth_stop(struct net_device *net_dev)
- {
- 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-@@ -1379,7 +1404,7 @@ static int dpaa2_eth_stop(struct net_device *net_dev)
- 	 * on WRIOP. After it finishes, wait until all remaining frames on Rx
- 	 * and Tx conf queues are consumed on NAPI poll.
- 	 */
--	msleep(500);
-+	wait_for_egress_fq_empty(priv);
- 
- 	do {
- 		dpni_disable(priv->mc_io, 0, priv->mc_token);
-@@ -1395,7 +1420,7 @@ static int dpaa2_eth_stop(struct net_device *net_dev)
- 		 */
- 	}
- 
--	wait_for_fq_empty(priv);
-+	wait_for_ingress_fq_empty(priv);
- 	disable_ch_napi(priv);
- 
- 	/* Empty the buffer pool */
--- 
-2.7.4
+ 			if (nskb != skb) {
+ 				rxrpc_eaten_skb(skb, rxrpc_skb_received);
+-				rxrpc_new_skb(skb, rxrpc_skb_unshared);
+ 				skb = nskb;
++				rxrpc_new_skb(skb, rxrpc_skb_unshared);
+ 				sp = rxrpc_skb(skb);
+ 			}
+ 		}
 
