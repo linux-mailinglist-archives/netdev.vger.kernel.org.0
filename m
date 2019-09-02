@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B064DA5B59
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 18:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C39A5B61
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 18:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbfIBQ0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 12:26:21 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39145 "EHLO
+        id S1726735AbfIBQ0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 12:26:37 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35914 "EHLO
         mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbfIBQ0Q (ORCPT
+        with ESMTP id S1726518AbfIBQ0Q (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 12:26:16 -0400
-Received: by mail-wr1-f67.google.com with SMTP id t16so14613957wra.6
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 09:26:14 -0700 (PDT)
+Received: by mail-wr1-f67.google.com with SMTP id y19so14617252wrd.3
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 09:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=o8ob7CT9RhUp5Jo6Rvp1sITdANctIrChOb4+j6V602o=;
-        b=KHBWh61+2CREq5EacTY3daM4ghzMOT2ftljZjXtnifbpyuuPW8TGiQKqAFpzebPAws
-         Fz1SFN2+5j/+ZvR4qP1RqfTGB6wTiaDCbVibPKUh4slA0EFfToFmmoAkOOOsAp2NTKKy
-         px8JtSV6LBwXowp7YUgbLWIyq7wbW07L2nOK+NbFdpvaaGcwKoOOh2hJdBipxmKGBEle
-         017T9iq/xGw0JwtC9aRvJvkCBFeYteBSYYCHs3tRym7zadfBM0MwuFS0bvVMBhYVFNtx
-         GI1BfsLbYwC5c11982AkdHYPcqEebwSWGmcYsyQV4TO2SV5OZY+dolXUnklrfWyvRPsH
-         WR6A==
+        bh=SYxf9CRVbaV+rLLJ6JizDSXGmG6m/J27AtW3b+akHF0=;
+        b=IZEzswrd4WRNNoYZfl9X/AE3hdsGgwnViUeL2Jn7Z5Eqfu3ZKf29PaPmCCSPtAWJcU
+         ZzzT+W2vfGeYwOMwawIwzWXpt0bNhJqYDm2CGZ6kjPUwHLDS+7wHaQnZUsvk75zAA++l
+         qh8ZzLls0+FR3ScYzgWm1OeZqP1nzmgYb8n4YzI4dmYDznj/RCvouq52AoLsiBO5TrBw
+         jTypIRtne4WzeHFc/oWjRaA4IdUM5Rt0oyyMmgEMCA2+BsvB+mxxSAh/gZO7chbxqi4V
+         CrlducF6vPYYv8vuuuygZqKIcLSdyVxZ4gooaIR8UHqIvPhRI4R2yqfgNWgZZdPaEwGS
+         wfwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=o8ob7CT9RhUp5Jo6Rvp1sITdANctIrChOb4+j6V602o=;
-        b=bBHUZ0zpas7g8oYN8J7MMIpa+1djU811wxzXz/L07HRIWychtQQWubfQ3ltVypUedo
-         pZVG7u5DOA38upFpm1yNNhLcp3fMCtz0Q0caGIkZCzDBI08pFOi0WA24G5jqk4jffcvS
-         JQ2beOmOQtA22e/J68dJ/4TdEAf+n0p0t3da6dqq4UaQdoZwiipG8cpSdHeM8FGmOjFG
-         OUKGGhf2pYGCQPtwiVdD+kY/IXkp55GIZTYvYrakrxx0QKEG8w/fTYQgB2vZN/gNBmhe
-         CDoRGT3cNF3UY4crBX1uKFifmdDFnbLD2S0tHucc6S5VnwEZUoIPNtJY1dMX8e5gEqfw
-         pWXQ==
-X-Gm-Message-State: APjAAAV3NhXwWhRpaYXFfMRZSSSuBcApH80A6Fsx+lATqNjmv8aijoWT
-        XfTB7MCF0DeuS4rjY1wQJhE=
-X-Google-Smtp-Source: APXvYqw2W7aj6NFeNj76W/F8a9Z1FnWO6nAQWyWyllSxICFrLkChvKgZevFYPdkRo/JX0xGvoo1caw==
-X-Received: by 2002:adf:f304:: with SMTP id i4mr40059433wro.61.1567441573281;
-        Mon, 02 Sep 2019 09:26:13 -0700 (PDT)
+        bh=SYxf9CRVbaV+rLLJ6JizDSXGmG6m/J27AtW3b+akHF0=;
+        b=Y/4Q4KjmkMatfiuyL5YaeWlf2I1fyPCt9wLHVum1Q7fRsy0oSYK1BKU6OvaMx5393y
+         Unj6L2ILxiuS21jEEOMoSXNTJ/b5+iaF1GcsZsfdKRjhUJ1lLITGja+l3rxYxuyt5bA8
+         7/BZvjLkiGVj1vyqWTd5SgTQFrAjWCRBoHDvjmZ1bOOy0qA5PXLbOvSoIZ3VZeNpajvH
+         1TuJGAMEZghHFxZ8cEymnFHcTuIYUNjifWLpiURsNQm+2yA5IEP3xH94lJ/dxMVpeZP+
+         STx7bvAX/BQpyUDKdP8c+jjmXGSQN5NDLUysY6M5Dh7s3xkGAS1xCVkIfirARj7CsOBw
+         EYaA==
+X-Gm-Message-State: APjAAAXMie2lSAzrFiwmKBGBRjpNcJDW6UE+HMHrrxB680nRJee4EqN3
+        IrTP12z7sdm1PUwMJizxfhY=
+X-Google-Smtp-Source: APXvYqxOPTlN0/ugPLRuCLb3Y8TGEl+7v/NzodIP/F9R4TKEpH1I3wPzNdkW5TI7M41b5nLlHfUU5w==
+X-Received: by 2002:a5d:6588:: with SMTP id q8mr17031622wru.184.1567441574687;
+        Mon, 02 Sep 2019 09:26:14 -0700 (PDT)
 Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id z187sm2879994wmb.0.2019.09.02.09.26.11
+        by smtp.gmail.com with ESMTPSA id z187sm2879994wmb.0.2019.09.02.09.26.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2019 09:26:12 -0700 (PDT)
+        Mon, 02 Sep 2019 09:26:14 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, vinicius.gomes@intel.com,
@@ -52,9 +52,9 @@ Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         kurt.kanzenbach@linutronix.de, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v1 net-next 07/15] net: dsa: sja1105: Move PTP data to its own private structure
-Date:   Mon,  2 Sep 2019 19:25:36 +0300
-Message-Id: <20190902162544.24613-8-olteanv@gmail.com>
+Subject: [PATCH v1 net-next 08/15] net: dsa: sja1105: Advertise the 8 TX queues
+Date:   Mon,  2 Sep 2019 19:25:37 +0300
+Message-Id: <20190902162544.24613-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190902162544.24613-1-olteanv@gmail.com>
 References: <20190902162544.24613-1-olteanv@gmail.com>
@@ -63,398 +63,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reduce the size of the sja1105_private structure when
-CONFIG_NET_DSA_SJA1105_PTP is not enabled. Also make the PTP code a
-little bit more self-contained.
+This is a preparation patch for the tc-taprio offload (and potentially
+for other future offloads such as tc-mqprio).
+
+Instead of looking directly at skb->priority during xmit, let's get the
+netdev queue and the queue-to-traffic-class mapping, and put the
+resulting traffic class into the dsa_8021q PCP field. The switch is
+configured with a 1-to-1 PCP-to-ingress-queue-to-egress-queue mapping
+(see vlan_pmap in sja1105_main.c), so the effect is that we can inject
+into a front-panel's egress traffic class through VLAN tagging from
+Linux, completely transparently.
+
+Unfortunately the switch doesn't look at the VLAN PCP in the case of
+management traffic to/from the CPU (link-local frames at
+01-80-C2-xx-xx-xx or 01-1B-19-xx-xx-xx) so we can't alter the
+transmission queue of this type of traffic on a frame-by-frame basis. It
+is only selected through the "hostprio" setting which ATM is harcoded in
+the driver to 7.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
 Changes since RFC:
 - None.
 
- drivers/net/dsa/sja1105/sja1105.h      | 20 +------
- drivers/net/dsa/sja1105/sja1105_main.c | 12 ++--
- drivers/net/dsa/sja1105/sja1105_ptp.c  | 81 +++++++++++++++-----------
- drivers/net/dsa/sja1105/sja1105_ptp.h  | 29 +++++++++
- 4 files changed, 84 insertions(+), 58 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 7 ++++++-
+ net/dsa/tag_sja1105.c                  | 3 ++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index c80be59dafbd..3ca0b87aa3e4 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -20,6 +20,8 @@
-  */
- #define SJA1105_AGEING_TIME_MS(ms)	((ms) / 10)
- 
-+#include "sja1105_ptp.h"
-+
- /* Keeps the different addresses between E/T and P/Q/R/S */
- struct sja1105_regs {
- 	u64 device_id;
-@@ -49,17 +51,6 @@ struct sja1105_regs {
- 	u64 qlevel[SJA1105_NUM_PORTS];
- };
- 
--enum sja1105_ptp_clk_mode {
--	PTP_ADD_MODE = 1,
--	PTP_SET_MODE = 0,
--};
--
--struct sja1105_ptp_cmd {
--	u64 resptp;		/* reset */
--	u64 corrclk4ts;		/* use the corrected clock for timestamps */
--	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
--};
--
- struct sja1105_info {
- 	u64 device_id;
- 	/* Needed for distinction between P and R, and between Q and S
-@@ -99,20 +90,15 @@ struct sja1105_private {
- 	struct spi_device *spidev;
- 	struct dsa_switch *ds;
- 	struct sja1105_port ports[SJA1105_NUM_PORTS];
--	struct sja1105_ptp_cmd ptp_cmd;
--	struct ptp_clock_info ptp_caps;
--	struct ptp_clock *clock;
--	/* Serializes all operations on the PTP hardware clock */
--	struct mutex ptp_lock;
- 	/* Serializes transmission of management frames so that
- 	 * the switch doesn't confuse them with one another.
- 	 */
- 	struct mutex mgmt_lock;
- 	struct sja1105_tagger_data tagger_data;
-+	struct sja1105_ptp_data ptp_data;
- };
- 
- #include "sja1105_dynamic_config.h"
--#include "sja1105_ptp.h"
- 
- struct sja1105_spi_message {
- 	u64 access;
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index d92f15b3aea9..670c069722d5 100644
+index 670c069722d5..8b930cc2dabc 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1406,7 +1406,7 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
- 	}
+@@ -384,7 +384,9 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+ 		/* Disallow dynamic changing of the mirror port */
+ 		.mirr_ptacu = 0,
+ 		.switchid = priv->ds->index,
+-		/* Priority queue for link-local frames trapped to CPU */
++		/* Priority queue for link-local management frames
++		 * (both ingress to and egress from CPU - PTP, STP etc)
++		 */
+ 		.hostprio = 7,
+ 		.mac_fltres1 = SJA1105_LINKLOCAL_FILTER_A,
+ 		.mac_flt1    = SJA1105_LINKLOCAL_FILTER_A_MASK,
+@@ -1745,6 +1747,9 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	 */
+ 	ds->vlan_filtering_is_global = true;
  
- 	/* No PTP operations can run right now */
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&priv->ptp_data.lock);
- 
- 	ptpclkval = __sja1105_ptp_gettimex(priv, &ptp_sts_before);
- 
-@@ -1433,7 +1433,7 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
- 	__sja1105_ptp_adjtime(priv, ptpclkval);
- 
- out_unlock_ptp:
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&priv->ptp_data.lock);
- 
- 	/* Configure the CGU (PLLs) for MII and RMII PHYs.
- 	 * For these interfaces there is no dynamic configuration
-@@ -1876,7 +1876,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
- 
- 	skb_shinfo(clone)->tx_flags |= SKBTX_IN_PROGRESS;
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&priv->ptp_data.lock);
- 
- 	ticks = sja1105_ptpclkval_read(priv, NULL);
- 
-@@ -1893,7 +1893,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
- 	skb_complete_tx_timestamp(clone, &shwt);
- 
- out_unlock_ptp:
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&priv->ptp_data.lock);
- out:
- 	mutex_unlock(&priv->mgmt_lock);
- 	return NETDEV_TX_OK;
-@@ -2029,7 +2029,7 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
- 	struct sk_buff *skb;
- 	u64 ticks;
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&priv->ptp_data.lock);
- 
- 	ticks = sja1105_ptpclkval_read(priv, NULL);
- 
-@@ -2046,7 +2046,7 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
- 		netif_rx_ni(skb);
- 	}
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&priv->ptp_data.lock);
- }
- 
- /* Called from dsa_skb_defer_rx_timestamp */
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index a7722c0944fb..f85f44bdab31 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -34,7 +34,10 @@
- #define SJA1105_CC_MULT_DEM		15625
- #define SJA1105_CC_MULT			0x80000000
- 
--#define ptp_to_sja1105(d) container_of((d), struct sja1105_private, ptp_caps)
-+#define ptp_to_sja1105_data(d) \
-+		container_of((d), struct sja1105_ptp_data, caps)
-+#define ptp_data_to_sja1105(d) \
-+		container_of((d), struct sja1105_private, ptp_data)
- 
- int sja1105_get_ts_info(struct dsa_switch *ds, int port,
- 			struct ethtool_ts_info *info)
-@@ -42,7 +45,7 @@ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
- 	struct sja1105_private *priv = ds->priv;
- 
- 	/* Called during cleanup */
--	if (!priv->clock)
-+	if (!priv->ptp_data.clock)
- 		return -ENODEV;
- 
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
-@@ -52,7 +55,7 @@ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
- 			 (1 << HWTSTAMP_TX_ON);
- 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
- 			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT);
--	info->phc_index = ptp_clock_index(priv->clock);
-+	info->phc_index = ptp_clock_index(priv->ptp_data.clock);
- 	return 0;
- }
- 
-@@ -200,22 +203,23 @@ int sja1105_ptpegr_ts_poll(struct sja1105_private *priv, int port, u64 *ts)
- 
- int sja1105_ptp_reset(struct sja1105_private *priv)
- {
--	struct sja1105_ptp_cmd cmd = priv->ptp_cmd;
-+	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
-+	struct sja1105_ptp_cmd cmd = ptp_data->cmd;
- 	int rc;
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&ptp_data->lock);
- 
- 	cmd.resptp = 1;
- 
- 	dev_dbg(priv->ds->dev, "Resetting PTP clock\n");
- 	rc = priv->info->ptp_cmd(priv, &cmd);
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&ptp_data->lock);
- 
- 	return rc;
- }
- 
--/* Caller must hold priv->ptp_lock */
-+/* Caller must hold priv->ptp_data.lock */
- u64 __sja1105_ptp_gettimex(struct sja1105_private *priv,
- 			   struct ptp_system_timestamp *sts)
- {
-@@ -230,30 +234,31 @@ static int sja1105_ptp_gettimex(struct ptp_clock_info *ptp,
- 				struct timespec64 *ts,
- 				struct ptp_system_timestamp *sts)
- {
--	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
-+	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&ptp_data->lock);
- 
- 	*ts = ns_to_timespec64(__sja1105_ptp_gettimex(priv, sts));
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&ptp_data->lock);
- 
- 	return 0;
- }
- 
--/* Caller must hold priv->ptp_lock */
-+/* Caller must hold priv->ptp_data.lock */
- static int sja1105_ptp_mode_set(struct sja1105_private *priv,
- 				enum sja1105_ptp_clk_mode mode)
- {
--	if (priv->ptp_cmd.ptpclkadd == mode)
-+	if (priv->ptp_data.cmd.ptpclkadd == mode)
- 		return 0;
- 
--	priv->ptp_cmd.ptpclkadd = mode;
-+	priv->ptp_data.cmd.ptpclkadd = mode;
- 
--	return priv->info->ptp_cmd(priv, &priv->ptp_cmd);
-+	return priv->info->ptp_cmd(priv, &priv->ptp_data.cmd);
- }
- 
--/* Caller must hold priv->ptp_lock */
-+/* Caller must hold priv->ptp_data.lock */
- static int sja1105_ptpclkval_write(struct sja1105_private *priv, u64 val,
- 				   struct ptp_system_timestamp *ptp_sts)
- {
-@@ -282,22 +287,24 @@ int __sja1105_ptp_settime(struct sja1105_private *priv, u64 ns,
- static int sja1105_ptp_settime(struct ptp_clock_info *ptp,
- 			       const struct timespec64 *ts)
- {
--	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
-+	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
- 	u64 ns = timespec64_to_ns(ts);
- 	int rc;
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&ptp_data->lock);
- 
- 	rc = __sja1105_ptp_settime(priv, ns, NULL);
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&ptp_data->lock);
- 
- 	return rc;
- }
- 
- static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
--	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
-+	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
- 	const struct sja1105_regs *regs = priv->info->regs;
- 	s64 clkrate;
- 	int rc;
-@@ -309,17 +316,17 @@ static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 	clkrate = SJA1105_CC_MULT + clkrate;
- 	clkrate &= GENMASK_ULL(31, 0);
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&priv->ptp_data.lock);
- 
- 	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
- 				  &clkrate, 4, NULL);
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&priv->ptp_data.lock);
- 
- 	return rc;
- }
- 
--/* Caller must hold priv->ptp_lock */
-+/* Caller must hold priv->ptp_data.lock */
- u64 sja1105_ptpclkval_read(struct sja1105_private *priv,
- 			   struct ptp_system_timestamp *sts)
- {
-@@ -354,23 +361,25 @@ int __sja1105_ptp_adjtime(struct sja1105_private *priv, s64 delta)
- 
- static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
--	struct sja1105_private *priv = ptp_to_sja1105(ptp);
-+	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
-+	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
- 	int rc;
- 
--	mutex_lock(&priv->ptp_lock);
-+	mutex_lock(&ptp_data->lock);
- 
- 	rc = __sja1105_ptp_adjtime(priv, delta);
- 
--	mutex_unlock(&priv->ptp_lock);
-+	mutex_unlock(&ptp_data->lock);
- 
- 	return rc;
- }
- 
- int sja1105_ptp_clock_register(struct sja1105_private *priv)
- {
-+	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
- 	struct dsa_switch *ds = priv->ds;
- 
--	priv->ptp_caps = (struct ptp_clock_info) {
-+	ptp_data->caps = (struct ptp_clock_info) {
- 		.owner		= THIS_MODULE,
- 		.name		= "SJA1105 PHC",
- 		.adjfine	= sja1105_ptp_adjfine,
-@@ -380,23 +389,25 @@ int sja1105_ptp_clock_register(struct sja1105_private *priv)
- 		.max_adj	= SJA1105_MAX_ADJ_PPB,
- 	};
- 
--	mutex_init(&priv->ptp_lock);
-+	mutex_init(&ptp_data->lock);
- 
--	priv->clock = ptp_clock_register(&priv->ptp_caps, ds->dev);
--	if (IS_ERR_OR_NULL(priv->clock))
--		return PTR_ERR(priv->clock);
-+	ptp_data->clock = ptp_clock_register(&ptp_data->caps, ds->dev);
-+	if (IS_ERR_OR_NULL(ptp_data->clock))
-+		return PTR_ERR(ptp_data->clock);
- 
--	priv->ptp_cmd.corrclk4ts = true;
--	priv->ptp_cmd.ptpclkadd = PTP_SET_MODE;
-+	ptp_data->cmd.corrclk4ts = true;
-+	ptp_data->cmd.ptpclkadd = PTP_SET_MODE;
- 
- 	return sja1105_ptp_reset(priv);
- }
- 
- void sja1105_ptp_clock_unregister(struct sja1105_private *priv)
- {
--	if (IS_ERR_OR_NULL(priv->clock))
-+	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
++	/* Advertise the 8 egress queues */
++	ds->num_tx_queues = SJA1105_NUM_TC;
 +
-+	if (IS_ERR_OR_NULL(ptp_data->clock))
- 		return;
+ 	/* The DSA/switchdev model brings up switch ports in standalone mode by
+ 	 * default, and that means vlan_filtering is 0 since they're not under
+ 	 * a bridge, so it's safe to set up switch tagging at this time.
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 47ee88163a9d..9c9aff3e52cf 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -89,7 +89,8 @@ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
+ 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+ 	struct dsa_switch *ds = dp->ds;
+ 	u16 tx_vid = dsa_8021q_tx_vid(ds, dp->index);
+-	u8 pcp = skb->priority;
++	u16 queue_mapping = skb_get_queue_mapping(skb);
++	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
  
--	ptp_clock_unregister(priv->clock);
--	priv->clock = NULL;
-+	ptp_clock_unregister(ptp_data->clock);
-+	ptp_data->clock = NULL;
- }
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.h b/drivers/net/dsa/sja1105/sja1105_ptp.h
-index c699611e585d..dfe856200394 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.h
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.h
-@@ -19,8 +19,29 @@ static inline s64 sja1105_ticks_to_ns(s64 ticks)
- 	return ticks * SJA1105_TICK_NS;
- }
- 
-+struct sja1105_private;
-+
- #if IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP)
- 
-+enum sja1105_ptp_clk_mode {
-+	PTP_ADD_MODE = 1,
-+	PTP_SET_MODE = 0,
-+};
-+
-+struct sja1105_ptp_cmd {
-+	u64 resptp;		/* reset */
-+	u64 corrclk4ts;		/* use the corrected clock for timestamps */
-+	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
-+};
-+
-+struct sja1105_ptp_data {
-+	struct sja1105_ptp_cmd cmd;
-+	struct ptp_clock_info caps;
-+	struct ptp_clock *clock;
-+	/* Serializes all operations on the PTP hardware clock */
-+	struct mutex lock;
-+};
-+
- int sja1105_ptp_clock_register(struct sja1105_private *priv);
- 
- void sja1105_ptp_clock_unregister(struct sja1105_private *priv);
-@@ -52,6 +73,14 @@ int __sja1105_ptp_adjtime(struct sja1105_private *priv, s64 delta);
- 
- #else
- 
-+/* Structures cannot be empty in C. Bah!
-+ * Keep the mutex as the only element, which is a bit more difficult to
-+ * refactor out of sja1105_main.c anyway.
-+ */
-+struct sja1105_ptp_data {
-+	struct mutex lock;
-+};
-+
- static inline int sja1105_ptp_clock_register(struct sja1105_private *priv)
- {
- 	return 0;
+ 	/* Transmitting management traffic does not rely upon switch tagging,
+ 	 * but instead SPI-installed management routes. Part 2 of this
 -- 
 2.17.1
 
