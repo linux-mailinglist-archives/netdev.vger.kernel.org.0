@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D62A5BB9
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 19:12:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2EDA5BCC
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 19:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfIBRMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 13:12:14 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:32947 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbfIBRMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 13:12:14 -0400
-Received: by mail-lf1-f66.google.com with SMTP id d10so2984864lfi.0
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 10:12:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=from:subject:to:cc:references:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E7g5tM3WWBAJ5GFVwE5QOy9tpwo5F4zgFbFtuMqETxU=;
-        b=UWqWQQr4d/4D7FyY68KrSzqJ5FAmWICdxsRrLt/6MqTqO1X0VP3Jcrxa8ez5V6Mxle
-         GLwe6tmvpcfOjH4GVsHtWSOBhxMBSHVLtKkNKKiq49XEV8iVj441qxiYBe6fecS0gcgL
-         ngp97u5TzHmAyOzuWek3I1DyZJS/Pi9thXo8P8fJZP/fNtw85YGADkWH0U1xPPdGbEAw
-         m8m5PAZBWset3rWjH5+3YHGxI9gwrcYEpzM/ixjk1bjZdle0ysfkCsngKrnVa95lcjdC
-         9JfzDEPmuodlurtbQp118TFFEWbSAzqrnYpUVNS6pI79VL+sX4vwL1MR98biRu5FI1/T
-         eA7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=E7g5tM3WWBAJ5GFVwE5QOy9tpwo5F4zgFbFtuMqETxU=;
-        b=eGTgySGHMWmgTOndSiloyKej2NUmU+/tPFUy6cw8+kyX5W2vtSq417ubfFpfGe6RlD
-         /N4OeQNsL/sBWgXgMPaXbox17mrWI71DoW6xQW51mNT8Oq4NRmELmkO7xzHg9iAK47bv
-         Myg3fdQhp6woGLVP16QDAnNLa0j/kuIyH7EFdsm0iNJXUklb7rXgv4LypFvha8o7uCNN
-         Hnp7aAaun1TwAGUKX57DjEBlSQ9DB3tLBKG9NJGlhCCcILXtn5mn3F4gDD2LA07zfZNE
-         4S8YJx8L9ZWSNa4kyk8kt5ce45vGHkKs0qMxM5cr2bWYmvvaY06JqVIxnxTkQqzsM0fR
-         AXkw==
-X-Gm-Message-State: APjAAAUccaQyOpLiaifcBiDUkYG+SynbhAfj3YqWDznpmGam0pJA8P2Q
-        Q5jR2rUVaIb6EC5N4B+I83Zh2g==
-X-Google-Smtp-Source: APXvYqwdTVQmz0A+5FgQoXERvwk0lxN6oEmHMMkbrlTQvyjpnXiPRqsuZ2Kh1YESSBlrfK1oOqDBKQ==
-X-Received: by 2002:ac2:528c:: with SMTP id q12mr201010lfm.135.1567444332875;
-        Mon, 02 Sep 2019 10:12:12 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:272:5afe:be7d:d15f:cff2:c9cf])
-        by smtp.gmail.com with ESMTPSA id l23sm2413295lje.106.2019.09.02.10.12.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Sep 2019 10:12:12 -0700 (PDT)
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [net-next 1/3] ravb: correct typo in FBP field of SFO register
-To:     Simon Horman <horms+renesas@verge.net.au>,
-        David Miller <davem@davemloft.net>
-Cc:     Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-References: <20190902080603.5636-1-horms+renesas@verge.net.au>
- <20190902080603.5636-2-horms+renesas@verge.net.au>
-Organization: Cogent Embedded
-Message-ID: <f0811b31-c51a-db1e-a9f3-26f7f0416517@cogentembedded.com>
-Date:   Mon, 2 Sep 2019 20:12:11 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        id S1726437AbfIBRYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 13:24:51 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:20188 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726275AbfIBRYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 13:24:51 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x82HLlp6077030;
+        Mon, 2 Sep 2019 13:24:43 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2us5eeukwy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Sep 2019 13:24:43 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x82HMi3q078694;
+        Mon, 2 Sep 2019 13:24:43 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2us5eeukwn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Sep 2019 13:24:43 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x82HKDnh020803;
+        Mon, 2 Sep 2019 17:24:42 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma04dal.us.ibm.com with ESMTP id 2uqgh6gxs7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 02 Sep 2019 17:24:42 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x82HOf2n40960420
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 2 Sep 2019 17:24:41 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5609DAE06B;
+        Mon,  2 Sep 2019 17:24:41 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 810B4AE05C;
+        Mon,  2 Sep 2019 17:24:39 +0000 (GMT)
+Received: from kashyyyk (unknown [9.85.146.12])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Mon,  2 Sep 2019 17:24:39 +0000 (GMT)
+Date:   Mon, 2 Sep 2019 14:24:33 -0300
+From:   Mauro Rodrigues <maurosr@linux.vnet.ibm.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next 11/15] i40e: Implement debug macro hw_dbg using
+ pr_debug
+Message-ID: <20190902172433.GA8007@kashyyyk>
+References: <20190828064407.30168-1-jeffrey.t.kirsher@intel.com>
+ <20190828064407.30168-12-jeffrey.t.kirsher@intel.com>
+ <20190828153936.57ababbc@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190902080603.5636-2-horms+renesas@verge.net.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190828153936.57ababbc@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-02_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1909020196
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On 09/02/2019 11:06 AM, Simon Horman wrote:
-
-> From: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+On Wed, Aug 28, 2019 at 03:39:53PM -0700, Jakub Kicinski wrote:
+> On Tue, 27 Aug 2019 23:44:03 -0700, Jeff Kirsher wrote:
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_osdep.h b/drivers/net/ethernet/intel/i40e/i40e_osdep.h
+> > index a07574bff550..c0c9ce3eab23 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_osdep.h
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_osdep.h
+> > @@ -18,7 +18,12 @@
+> >   * actual OS primitives
+> >   */
+> >  
+> > -#define hw_dbg(hw, S, A...)	do {} while (0)
+> > +#define hw_dbg(hw, S, A...)							\
+> > +do {										\
+> > +	int domain = pci_domain_nr(((struct i40e_pf *)(hw)->back)->pdev->bus);	\
+> > +	pr_debug("i40e %04x:%02x:%02x.%x " S, domain, (hw)->bus.bus_id,		\
+> > +		 (hw)->bus.device, (hw)->bus.func, ## A);			\
 > 
-> The field name is FBP rather than FPB.
-> 
-> This field is unused and could equally be removed from the driver entirely.
-> But there seems no harm in leaving as documentation of the presence of the
-> field.
-> 
-> Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> This looks like open coded dev_dbg() / dev_namie(), why?
 
-Acked-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Indeed, thanks for pointing out. I'll fix this and the other patch you
+reviewed and resubmit.
 
-> ---
-> v0 - Kazuya Mizuguchi
+I'm not sure what should be the preferred approach here though, just use
+dev_dbg to implement this macro or replace all of its occurrence in the
+code by dev_dbg?
+
+Jeff, do you have any preference?
 > 
-> v1 - Simon Horman
-> * Extracted from larger patch
-
-   I'd just claim the authorship in this case (and mentioned that it's based
-on Mizuguchi-san's large patch right in the change log).
-
-> * Wrote changelog
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index ac9195add811..bdb051f04b0c 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -317,7 +312,7 @@ enum UFCD_BIT {
-> 
->  /* SFO */
->  enum SFO_BIT {
-> -	SFO_FPB		= 0x0000003F,
-> +	SFO_FBP		= 0x0000003F,
->  };
-> 
->  /* RTC */
-> ---
-
-   This is where the actual patch starts, right?
-
->  drivers/net/ethernet/renesas/ravb.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index ac9195add811..2596a95a4300 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -317,7 +317,7 @@ enum UFCD_BIT {
->  
->  /* SFO */
->  enum SFO_BIT {
-> -	SFO_FPB		= 0x0000003F,
-> +	SFO_FBP		= 0x0000003F,
->  };
->  
->  /* RTC */
-
-MBR, Sergei
+> > +} while (0)
