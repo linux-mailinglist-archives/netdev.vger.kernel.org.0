@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 889B1A4FC2
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 395D7A4FB6
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 09:23:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729764AbfIBHYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 03:24:31 -0400
-Received: from mail-eopbgr70059.outbound.protection.outlook.com ([40.107.7.59]:61185
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1729733AbfIBHXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 03:23:36 -0400
+Received: from mail-eopbgr10070.outbound.protection.outlook.com ([40.107.1.70]:26649
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729598AbfIBHYa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 03:24:30 -0400
+        id S1726527AbfIBHXe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 03:23:34 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MBMcGLlVP/Cy8vliByIZJbgy3o2bei2MSddQugA+hUk7ZN1IUtWYNqn895xYpl5Cql40tZb5Ht1PMqf72RR/sn3s1Z/ugsOlGMMzh/jMOqQYZ41wJlg0ZgOL4DCwovF2ns5Vw1d2Djd0t5KO19FiNz4U0N9qrfGWJhLWAr+Je3PQGlxaqTShm7EyxUnZaG/loWQEmuQPStxGKqOPCvF+DJ9H0CvEgkdOew+jTtRxLNbJpYPWj84s+pn69a8JBzRtM7VqYk6x1D0Wi0dlvhJGd0gc5RP7/TUMSZ/HEKuO7GgrRwMY8EA03J09EAbGjbCaZrdtWVQEtPM9Xv3cuooTzA==
+ b=FKUE134FtUEo5FEaMoWyARPIHtbuenVRmRsz010nQ1m/dT/QdcWi+o9yK/oQJQCCiTBLvEXCctOLBLvcTzs8vg4TYcPMvKavE3YgXZo4TvLNPIy34Ifht/5i16TWE5PSNsEik547uciKOt7swBgIWLec+eOtwn0qiBAU6CrGuPgS0o7h9tjyNlkxNmDxOxZ1mmH24QIMDSQHdZJ1eNUwfTd5gHqgRvLO8nyftmdPcyXNmMMwZsZyhV5riIaxnBYur5Eqqhg52vQVo4o2J4inozSsCLPcEC6l6bH5K7NvW1a0Hn/uGyo7dm/Es+STlYSgMbc/b9cga94j0rY9BkXwcQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=45zUTMG/spy0GUca5qoim7RcdMGHSQ0S6N+hsIpQxxM=;
- b=lm39AiXfhZRfPfCtN31vyUzZ4Dns/7BtbNUa8SAj3b6dX3+6RDfx8yHM0eXQKuQSJmoTPAzLwYvtb6ivbhHd1KB4vP4rSPYlQSH7rYTVmFu7nHxk09AB68K5Pj+iZY57vVSE8ptVpSOsk8ofv754lD1stCHFakD/GW+BozGcQvLUJnTvF7VkdGlR4inbUTCwB5XzNZoufUFLaP+YqxgcG+xw4UEjGksN936b9tDqZcV7tzmErXwXtRXVA7IYzivPkJ5NSrIvZ7xtHWro59GbCrRWpJHvQpuidIo+OFRiba4JZwuSFKLRFjWMyRrabq9eBTEQDVKaEDFW3tZS2lpkSw==
+ bh=8hG3teaNP/dDeKMqOzvIva2WHzxNKLzdFapZJIh7inE=;
+ b=U1VMvA+MdPQgSvmbAExFrI7Fanh0r7x8OUUAjmfC7xM5iKKspDHThQKM22emBawG/VR3Q2P5hiRhlytq8pBnaS96GtWSG52+sUytOhDCkUghRaN9CL0LxWSG9aMvLo0V3YBzdBJV0WVV1aX/4c0fdb32Djoop/JqHlaefBss9JO3ns39sTnBli5o1KOu/M0/aPTA1IF7t7yzira/xyEnuyX/qLu6v/X+ix8WORQ6wZFEvRizWR0IwcIUa5whjAwTOSm0hlpi7biSCGS90VMOzbUv1KhxbGMzVqtEg7i/WSZlwBuE8jKUVm01/oVVPiz+h6R277nT7W+N9WZEWuEDQA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=45zUTMG/spy0GUca5qoim7RcdMGHSQ0S6N+hsIpQxxM=;
- b=s82M6KySgg1SKOuHGw6AtX6Ep/wQCyfy/G+xSip+Moqqz99gPrFpguOghXbJKZeZH0gPufp95EP89lCe5cq2lNUFOUwRgtyeSp8hW6oVtOUV2rZOB28aw0i3GpI6bDfb2F/PCbw1uQ/RCGL5cXrs4mCmzERIZcareMxLmD0pNu8=
+ bh=8hG3teaNP/dDeKMqOzvIva2WHzxNKLzdFapZJIh7inE=;
+ b=h2irFayaKcyw2cLC9/rXA7qDR++9qRBaWzw3Z1z1ltMfIibYKlPzQ8w++l7P7wJ3f/TvP/sqGbcqQ1DsoEfKA6FZZd/JnUphDOeGjGuIJjgbP3SWBteJGVc5oHyJS1Ye1YWzKPzhtriaRnaHQKd5YhJz+dJdvRNUaGz29YBpVrA=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2259.eurprd05.prod.outlook.com (10.165.38.155) with Microsoft SMTP
+ AM4PR0501MB2659.eurprd05.prod.outlook.com (10.172.215.21) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.20; Mon, 2 Sep 2019 07:23:27 +0000
+ 15.20.2220.18; Mon, 2 Sep 2019 07:23:29 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
- 07:23:27 +0000
+ 07:23:29 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -43,12 +43,12 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Maor Gottlieb <maorg@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 16/18] net/mlx5: Add API to set the namespace steering mode
-Thread-Topic: [net-next 16/18] net/mlx5: Add API to set the namespace steering
+Subject: [net-next 17/18] net/mlx5: Add support to use SMFS in switchdev mode
+Thread-Topic: [net-next 17/18] net/mlx5: Add support to use SMFS in switchdev
  mode
-Thread-Index: AQHVYV9QwEZsEtxoNEaCsp4LlIYASA==
-Date:   Mon, 2 Sep 2019 07:23:27 +0000
-Message-ID: <20190902072213.7683-17-saeedm@mellanox.com>
+Thread-Index: AQHVYV9R3wI2PYmibUaj1mp1WIC3mw==
+Date:   Mon, 2 Sep 2019 07:23:29 +0000
+Message-ID: <20190902072213.7683-18-saeedm@mellanox.com>
 References: <20190902072213.7683-1-saeedm@mellanox.com>
 In-Reply-To: <20190902072213.7683-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -64,31 +64,31 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a00b3316-afbb-4198-d4fc-08d72f767292
+x-ms-office365-filtering-correlation-id: 321db71f-ec1a-412e-00d7-08d72f7673ea
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2259;
-x-ms-traffictypediagnostic: AM4PR0501MB2259:|AM4PR0501MB2259:
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2659;
+x-ms-traffictypediagnostic: AM4PR0501MB2659:|AM4PR0501MB2659:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB22591FA8BA36BA0BFABCFFC9BEBE0@AM4PR0501MB2259.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-microsoft-antispam-prvs: <AM4PR0501MB2659AB71A01026CDEC1584F2BEBE0@AM4PR0501MB2659.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1060;
 x-forefront-prvs: 01480965DA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(1496009)(39860400002)(136003)(376002)(346002)(396003)(366004)(199004)(189003)(64756008)(478600001)(66946007)(66556008)(71190400001)(71200400001)(6916009)(5660300002)(54906003)(6486002)(8676002)(14454004)(81156014)(36756003)(81166006)(76176011)(1076003)(186003)(50226002)(99286004)(25786009)(4326008)(8936002)(316002)(102836004)(386003)(6506007)(2906002)(26005)(14444005)(3846002)(256004)(6116002)(2616005)(66066001)(86362001)(53936002)(52116002)(107886003)(486006)(6436002)(305945005)(7736002)(6512007)(446003)(476003)(66446008)(11346002)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2259;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(346002)(39860400002)(136003)(376002)(199004)(189003)(26005)(6506007)(6486002)(2906002)(36756003)(386003)(2616005)(446003)(102836004)(52116002)(316002)(14444005)(86362001)(76176011)(6116002)(11346002)(3846002)(256004)(186003)(66066001)(476003)(7736002)(54906003)(107886003)(305945005)(25786009)(4326008)(99286004)(5660300002)(6436002)(53936002)(478600001)(6512007)(71190400001)(71200400001)(1076003)(8936002)(50226002)(486006)(14454004)(6916009)(66446008)(66476007)(66556008)(64756008)(81166006)(66946007)(81156014)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2659;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: oUgNPQfbV61EagHNtyGLXg/gm4KqFIiZmf51Q+VNplORhXPBdhGAnHwhzn+7DY1lq1O53tkzNBep/5gPu6XcG8Z3IcGtuMRaqLSd6who6IkPESJaFihb+HzYei0wE+ZkqGvczu95eoatFDSk5dXRkDswWU0C0gdjtWxax62d/w5YaCdpG+ZmRrNxrJOqwYYBFde7kjf2i4LQoDnwWhAUy09kzAIczwvUv23bqAVoGFT+S+dXIFfweGi5U6agoli5Q4sa81kGYFq7UjMA7Zk58B3ADM08GoET1YgyKZouKjXnryOvMFrEBKYkCmmSb9IbzeOWv2hldsjUalNcDsKXBv757vRwA4lu1f6k2chfEsU8rJfQG512RdiT4CFeE9L2RhhNLMCTdmm8wcufFPPl9mtWFogBMmjb4iQnngsehFk=
+x-microsoft-antispam-message-info: rWjWsRTSfw9wb4X7iMw67Pc0vXjoNHnMao5z5Ps3VU2jNsCfvKAY5E+2hmZNM5e/7ywao/xbrccyZuCqpqWaz5E96E9VLUnu2k7W8d1WI48vxjBDxJT/kvY6Wi08qV64PZrKQz+D4gSRdc5WyM8fiQHy6Tb82dlBCDvNKUjmB0WBWg5D9ddoctmP06Kn1iLp/65OuIcjpH2vvts70BEdmH1/L/Jjr/b9nFn+tU6UJYX9mSkID9zzZIWj1i5RktN4OGtsqhl2IYLlwPILX3NNJ9fYcCEwRr+QjNkBPonyAKFVXhnJdTiqRYxvvpoxP2jsgDXEKHEjhdCC3YxwDPtNxypfVsAI77ZfJadkvHjsBG7XonclsHiRzyy86jBjfqPyR/WoKUfHRMhFF4LDf4wZhcdg2rY95dmled1DaW1cTto=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a00b3316-afbb-4198-d4fc-08d72f767292
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:27.3215
+X-MS-Exchange-CrossTenant-Network-Message-Id: 321db71f-ec1a-412e-00d7-08d72f7673ea
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 07:23:29.5365
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2kjr0cfkiBRI0VPJIJ2ZKScQAyNIMSRhZ7r3LsL20rgZQGzS0kYd7MAUBQocO+7dg+DEViAnyR23tUHfsQK+Og==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2259
+X-MS-Exchange-CrossTenant-userprincipalname: TL9w+rX6ihsDoIp1q70pj49+Q5Xfca99LmkgZrwepGJea5q8AkWPoIG96d0HmtbjZ1kfz0WhiTlc01Rw8NEKkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2659
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -96,119 +96,198 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Gottlieb <maorg@mellanox.com>
 
-Add API to set the flow steering root namesapce mode.
-Setting new mode should be called before any steering operation
-is executed on the namespace.
-This API is going to be used by steering users such switchdev.
+In case that flow steering mode of the driver is SMFS (Software Managed
+Flow Steering), then use the DR (SW steering) API to create the steering
+objects.
+
+In addition, add a call to the set peer namespace when switchdev gets
+devcom pair event. It is required to support VF LAG in SMFS.
 
 Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 49 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/fs_core.h | 12 ++++-
- 2 files changed, 60 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 +
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 61 ++++++++++++++++---
+ 2 files changed, 55 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/fs_core.c
-index c2d6e9f4cb90..3bbb49354829 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2995,5 +2995,54 @@ EXPORT_SYMBOL(mlx5_packet_reformat_dealloc);
- int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
- 				 struct mlx5_flow_root_namespace *peer_ns)
- {
-+	if (peer_ns && ns->mode !=3D peer_ns->mode) {
-+		mlx5_core_err(ns->dev,
-+			      "Can't peer namespace of different steering mode\n");
-+		return -EINVAL;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/eswitch.h
+index 4f70202db6af..6bd6f5895244 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -153,6 +153,7 @@ struct mlx5_eswitch_fdb {
+ 		} legacy;
+=20
+ 		struct offloads_fdb {
++			struct mlx5_flow_namespace *ns;
+ 			struct mlx5_flow_table *slow_fdb;
+ 			struct mlx5_flow_group *send_to_vport_grp;
+ 			struct mlx5_flow_group *peer_miss_grp;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
+rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index bee67ff58137..afa623b15a38 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1068,6 +1068,13 @@ static int esw_create_offloads_fdb_tables(struct mlx=
+5_eswitch *esw, int nvports)
+ 		err =3D -EOPNOTSUPP;
+ 		goto ns_err;
+ 	}
++	esw->fdb_table.offloads.ns =3D root_ns;
++	err =3D mlx5_flow_namespace_set_mode(root_ns,
++					   esw->dev->priv.steering->mode);
++	if (err) {
++		esw_warn(dev, "Failed to set FDB namespace steering mode\n");
++		goto ns_err;
 +	}
-+
- 	return ns->cmds->set_peer(ns, peer_ns);
+=20
+ 	max_flow_counter =3D (MLX5_CAP_GEN(dev, max_flow_counter_31_16) << 16) |
+ 			    MLX5_CAP_GEN(dev, max_flow_counter_15_0);
+@@ -1207,6 +1214,8 @@ static int esw_create_offloads_fdb_tables(struct mlx5=
+_eswitch *esw, int nvports)
+ 	esw_destroy_offloads_fast_fdb_tables(esw);
+ 	mlx5_destroy_flow_table(esw->fdb_table.offloads.slow_fdb);
+ slow_fdb_err:
++	/* Holds true only as long as DMFS is the default */
++	mlx5_flow_namespace_set_mode(root_ns, MLX5_FLOW_STEERING_MODE_DMFS);
+ ns_err:
+ 	kvfree(flow_group_in);
+ 	return err;
+@@ -1226,6 +1235,9 @@ static void esw_destroy_offloads_fdb_tables(struct ml=
+x5_eswitch *esw)
+=20
+ 	mlx5_destroy_flow_table(esw->fdb_table.offloads.slow_fdb);
+ 	esw_destroy_offloads_fast_fdb_tables(esw);
++	/* Holds true only as long as DMFS is the default */
++	mlx5_flow_namespace_set_mode(esw->fdb_table.offloads.ns,
++				     MLX5_FLOW_STEERING_MODE_DMFS);
  }
-+
-+/* This function should be called only at init stage of the namespace.
-+ * It is not safe to call this function while steering operations
-+ * are executed in the namespace.
-+ */
-+int mlx5_flow_namespace_set_mode(struct mlx5_flow_namespace *ns,
-+				 enum mlx5_flow_steering_mode mode)
+=20
+ static int esw_create_offloads_table(struct mlx5_eswitch *esw, int nvports=
+)
+@@ -1623,13 +1635,42 @@ static void mlx5_esw_offloads_unpair(struct mlx5_es=
+witch *esw)
+ 	esw_del_fdb_peer_miss_rules(esw);
+ }
+=20
++static int mlx5_esw_offloads_set_ns_peer(struct mlx5_eswitch *esw,
++					 struct mlx5_eswitch *peer_esw,
++					 bool pair)
 +{
-+	struct mlx5_flow_root_namespace *root;
-+	const struct mlx5_flow_cmds *cmds;
++	struct mlx5_flow_root_namespace *peer_ns;
++	struct mlx5_flow_root_namespace *ns;
 +	int err;
 +
-+	root =3D find_root(&ns->node);
-+	if (&root->ns !=3D ns)
-+	/* Can't set cmds to non root namespace */
-+		return -EINVAL;
++	peer_ns =3D peer_esw->dev->priv.steering->fdb_root_ns;
++	ns =3D esw->dev->priv.steering->fdb_root_ns;
 +
-+	if (root->table_type !=3D FS_FT_FDB)
-+		return -EOPNOTSUPP;
++	if (pair) {
++		err =3D mlx5_flow_namespace_set_peer(ns, peer_ns);
++		if (err)
++			return err;
 +
-+	if (root->mode =3D=3D mode)
-+		return 0;
-+
-+	if (mode =3D=3D MLX5_FLOW_STEERING_MODE_SMFS)
-+		cmds =3D mlx5_fs_cmd_get_dr_cmds();
-+	else
-+		cmds =3D mlx5_fs_cmd_get_fw_cmds();
-+	if (!cmds)
-+		return -EOPNOTSUPP;
-+
-+	err =3D cmds->create_ns(root);
-+	if (err) {
-+		mlx5_core_err(root->dev, "Failed to create flow namespace (%d)\n",
-+			      err);
-+		return err;
++		mlx5_flow_namespace_set_peer(peer_ns, ns);
++		if (err) {
++			mlx5_flow_namespace_set_peer(ns, NULL);
++			return err;
++		}
++	} else {
++		mlx5_flow_namespace_set_peer(ns, NULL);
++		mlx5_flow_namespace_set_peer(peer_ns, NULL);
 +	}
-+
-+	root->cmds->destroy_ns(root);
-+	root->cmds =3D cmds;
-+	root->mode =3D mode;
 +
 +	return 0;
 +}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/fs_core.h
-index a133ec5487ae..00717eba2256 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-@@ -98,9 +98,15 @@ enum fs_fte_status {
- 	FS_FTE_STATUS_EXISTING =3D 1UL << 0,
- };
-=20
-+enum mlx5_flow_steering_mode {
-+	MLX5_FLOW_STEERING_MODE_DMFS,
-+	MLX5_FLOW_STEERING_MODE_SMFS
-+};
 +
- struct mlx5_flow_steering {
- 	struct mlx5_core_dev *dev;
--	struct kmem_cache               *fgs_cache;
-+	enum   mlx5_flow_steering_mode	mode;
-+	struct kmem_cache		*fgs_cache;
- 	struct kmem_cache               *ftes_cache;
- 	struct mlx5_flow_root_namespace *root_ns;
- 	struct mlx5_flow_root_namespace *fdb_root_ns;
-@@ -235,6 +241,7 @@ struct mlx5_flow_group {
+ static int mlx5_esw_offloads_devcom_event(int event,
+ 					  void *my_data,
+ 					  void *event_data)
+ {
+ 	struct mlx5_eswitch *esw =3D my_data;
+-	struct mlx5_eswitch *peer_esw =3D event_data;
+ 	struct mlx5_devcom *devcom =3D esw->dev->priv.devcom;
++	struct mlx5_eswitch *peer_esw =3D event_data;
+ 	int err;
 =20
- struct mlx5_flow_root_namespace {
- 	struct mlx5_flow_namespace	ns;
-+	enum   mlx5_flow_steering_mode	mode;
- 	struct mlx5_fs_dr_domain	fs_dr_domain;
- 	enum   fs_flow_table_type	table_type;
- 	struct mlx5_core_dev		*dev;
-@@ -258,6 +265,9 @@ const struct mlx5_flow_cmds *mlx5_fs_cmd_get_fw_cmds(vo=
-id);
- int mlx5_flow_namespace_set_peer(struct mlx5_flow_root_namespace *ns,
- 				 struct mlx5_flow_root_namespace *peer_ns);
+ 	switch (event) {
+@@ -1638,9 +1679,12 @@ static int mlx5_esw_offloads_devcom_event(int event,
+ 		    mlx5_eswitch_vport_match_metadata_enabled(peer_esw))
+ 			break;
 =20
-+int mlx5_flow_namespace_set_mode(struct mlx5_flow_namespace *ns,
-+				 enum mlx5_flow_steering_mode mode);
-+
- int mlx5_init_fs(struct mlx5_core_dev *dev);
- void mlx5_cleanup_fs(struct mlx5_core_dev *dev);
+-		err =3D mlx5_esw_offloads_pair(esw, peer_esw);
++		err =3D mlx5_esw_offloads_set_ns_peer(esw, peer_esw, true);
+ 		if (err)
+ 			goto err_out;
++		err =3D mlx5_esw_offloads_pair(esw, peer_esw);
++		if (err)
++			goto err_peer;
+=20
+ 		err =3D mlx5_esw_offloads_pair(peer_esw, esw);
+ 		if (err)
+@@ -1656,6 +1700,7 @@ static int mlx5_esw_offloads_devcom_event(int event,
+ 		mlx5_devcom_set_paired(devcom, MLX5_DEVCOM_ESW_OFFLOADS, false);
+ 		mlx5_esw_offloads_unpair(peer_esw);
+ 		mlx5_esw_offloads_unpair(esw);
++		mlx5_esw_offloads_set_ns_peer(esw, peer_esw, false);
+ 		break;
+ 	}
+=20
+@@ -1663,7 +1708,8 @@ static int mlx5_esw_offloads_devcom_event(int event,
+=20
+ err_pair:
+ 	mlx5_esw_offloads_unpair(esw);
+-
++err_peer:
++	mlx5_esw_offloads_set_ns_peer(esw, peer_esw, false);
+ err_out:
+ 	mlx5_core_err(esw->dev, "esw offloads devcom event failure, event %u err =
+%d",
+ 		      event, err);
+@@ -2115,9 +2161,10 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
+ 	else
+ 		esw->offloads.encap =3D DEVLINK_ESWITCH_ENCAP_MODE_NONE;
+=20
++	mlx5_rdma_enable_roce(esw->dev);
+ 	err =3D esw_offloads_steering_init(esw);
+ 	if (err)
+-		return err;
++		goto err_steering_init;
+=20
+ 	err =3D esw_set_passing_vport_metadata(esw, true);
+ 	if (err)
+@@ -2132,8 +2179,6 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
+ 	esw_offloads_devcom_init(esw);
+ 	mutex_init(&esw->offloads.termtbl_mutex);
+=20
+-	mlx5_rdma_enable_roce(esw->dev);
+-
+ 	return 0;
+=20
+ err_reps:
+@@ -2141,6 +2186,8 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
+ 	esw_set_passing_vport_metadata(esw, false);
+ err_vport_metadata:
+ 	esw_offloads_steering_cleanup(esw);
++err_steering_init:
++	mlx5_rdma_disable_roce(esw->dev);
+ 	return err;
+ }
+=20
+@@ -2165,12 +2212,12 @@ static int esw_offloads_stop(struct mlx5_eswitch *e=
+sw,
+=20
+ void esw_offloads_disable(struct mlx5_eswitch *esw)
+ {
+-	mlx5_rdma_disable_roce(esw->dev);
+ 	esw_offloads_devcom_cleanup(esw);
+ 	esw_offloads_unload_all_reps(esw);
+ 	mlx5_eswitch_disable_pf_vf_vports(esw);
+ 	esw_set_passing_vport_metadata(esw, false);
+ 	esw_offloads_steering_cleanup(esw);
++	mlx5_rdma_disable_roce(esw->dev);
+ 	esw->offloads.encap =3D DEVLINK_ESWITCH_ENCAP_MODE_NONE;
+ }
 =20
 --=20
 2.21.0
