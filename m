@@ -2,196 +2,677 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F87BA4DC4
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 05:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE94A4E3F
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 06:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729331AbfIBDcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Sep 2019 23:32:03 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42715 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729294AbfIBDcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Sep 2019 23:32:01 -0400
-Received: by mail-qt1-f193.google.com with SMTP id t12so14249440qtp.9
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 20:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D3eEAJRNuM73t6UGy+rqWo2ZMxDf5SIzk32fNYrqO0s=;
-        b=lR084Au0lZ6fKz7VAekiDZXtbLlXKOGYzVS3iBew7iqtjfbT3L+uNiQ/HnrzDH0vTJ
-         +3VrqlBfyg3SVEMkVcm8KSRSehOY7QR6EK45wJiTGNhfxJz3M42PqqbbFDFErD6VNb29
-         aHZRkcdxMLzAnP6YVdYio8mPw+W/cnSITsbOmw4s7b0K2e4L52AGGVng31fy3b0x0b9K
-         KHEX9G27nhVb26JtA+G9anOHm5QH7JO2gWfT4uJHA0Mtn+ljZbu6Uis0Gf5N2hRhPwbr
-         TR7jt0BORftYSUKyqDLMp0CwLUFZ7I+fk1xq62jEO5HOSJ70+O0KwZsC73LBriEJ8KwB
-         EY4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D3eEAJRNuM73t6UGy+rqWo2ZMxDf5SIzk32fNYrqO0s=;
-        b=LoJDCD+GDBrgKcpEMCCXyvnECtr1Q/PyTSO2h/LNEsyhRKqJbZQqK9opp+pQ1Gg5h4
-         Kuwb2+xWr1mzlE+Zga2/MLlafpWv7p7skzG/+nWhM58k2iIb+eXcb2br3pYZOWdhUlqk
-         8OYxYBZV5NNpX8HZ25C7RtjKwEyfiv3Ocyy02M0patdBHzvwaMpMKWX0O6I+Bd9GMtrZ
-         o8JzSQstUykxpHrTzTZNz5/TT+lMfC9tBHGqaGs3CCJWvo8kAQYBP5V4Cx9Ib15ku2WD
-         bGf3xgUgC40Wad6uWiTtC4upYDeiFv+s0oaNtEdEb8PNXufj1MKcgKRmkI8ebDOKFiYO
-         LDlQ==
-X-Gm-Message-State: APjAAAVhUpjWECjk1Ta5VPvQwiPip1lbStrBnaxifmtMQk1sYgs7O00g
-        3BXOOEcmtcvyO1ngHeWFOYJ991uqXkfN+wNhqATyMQ==
-X-Google-Smtp-Source: APXvYqwYFvrXy5NdZnsFss4k+WmRnTUEwkHF1lUSbMzXGsini36kkaO/WVs4hR0aHTT7X/h3pLmNDetR8DfU40qdTrk=
-X-Received: by 2002:ac8:45d6:: with SMTP id e22mr21953894qto.380.1567395119566;
- Sun, 01 Sep 2019 20:31:59 -0700 (PDT)
+        id S1729437AbfIBEPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 00:15:19 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53028 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729341AbfIBEPT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 00:15:19 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1B05481F13;
+        Mon,  2 Sep 2019 04:15:17 +0000 (UTC)
+Received: from [10.72.12.232] (ovpn-12-232.pek2.redhat.com [10.72.12.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA7A35D6B7;
+        Mon,  2 Sep 2019 04:15:05 +0000 (UTC)
+Subject: Re: [RFC v3] vhost: introduce mdev based hardware vhost backend
+To:     Tiwei Bie <tiwei.bie@intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com, maxime.coquelin@redhat.com
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, lingshan.zhu@intel.com
+References: <20190828053712.26106-1-tiwei.bie@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b91820c4-2fe2-55ee-5089-5f7c94322521@redhat.com>
+Date:   Mon, 2 Sep 2019 12:15:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <000000000000cd5fdf0588fed11c@google.com>
-In-Reply-To: <000000000000cd5fdf0588fed11c@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Sun, 1 Sep 2019 20:31:47 -0700
-Message-ID: <CACT4Y+ZEgcU=R6jeW8dtNO+oVJczQgZuFh6dbRSnLsUyzS_GSA@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in __xfrm_policy_unlink (2)
-To:     syzbot <syzbot+0025447b4cb6f208558f@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190828053712.26106-1-tiwei.bie@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Mon, 02 Sep 2019 04:15:17 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 3:35 AM syzbot
-<syzbot+0025447b4cb6f208558f@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    3b0f31f2 genetlink: make policy common to family
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12a319df200000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f05902bca21d8935
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0025447b4cb6f208558f
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->
-> Unfortunately, I don't have any reproducer for this crash yet.
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+0025447b4cb6f208558f@syzkaller.appspotmail.com
 
-This looks like what has been fixed by:
+On 2019/8/28 下午1:37, Tiwei Bie wrote:
+> Details about this can be found here:
+>
+> https://lwn.net/Articles/750770/
+>
+> What's new in this version
+> ==========================
+>
+> There are three choices based on the discussion [1] in RFC v2:
+>
+>> #1. We expose a VFIO device, so we can reuse the VFIO container/group
+>>      based DMA API and potentially reuse a lot of VFIO code in QEMU.
+>>
+>>      But in this case, we have two choices for the VFIO device interface
+>>      (i.e. the interface on top of VFIO device fd):
+>>
+>>      A) we may invent a new vhost protocol (as demonstrated by the code
+>>         in this RFC) on VFIO device fd to make it work in VFIO's way,
+>>         i.e. regions and irqs.
+>>
+>>      B) Or as you proposed, instead of inventing a new vhost protocol,
+>>         we can reuse most existing vhost ioctls on the VFIO device fd
+>>         directly. There should be no conflicts between the VFIO ioctls
+>>         (type is 0x3B) and VHOST ioctls (type is 0xAF) currently.
+>>
+>> #2. Instead of exposing a VFIO device, we may expose a VHOST device.
+>>      And we will introduce a new mdev driver vhost-mdev to do this.
+>>      It would be natural to reuse the existing kernel vhost interface
+>>      (ioctls) on it as much as possible. But we will need to invent
+>>      some APIs for DMA programming (reusing VHOST_SET_MEM_TABLE is a
+>>      choice, but it's too heavy and doesn't support vIOMMU by itself).
+> This version is more like a quick PoC to try Jason's proposal on
+> reusing vhost ioctls. And the second way (#1/B) in above three
+> choices was chosen in this version to demonstrate the idea quickly.
+>
+> Now the userspace API looks like this:
+>
+> - VFIO's container/group based IOMMU API is used to do the
+>    DMA programming.
+>
+> - Vhost's existing ioctls are used to setup the device.
+>
+> And the device will report device_api as "vfio-vhost".
+>
+> Note that, there are dirty hacks in this version. If we decide to
+> go this way, some refactoring in vhost.c/vhost.h may be needed.
+>
+> PS. The direct mapping of the notify registers isn't implemented
+>      in this version.
+>
+> [1] https://lkml.org/lkml/2019/7/9/101
 
-#syz fix:
-xfrm: policy: Fix out-of-bound array accesses in __xfrm_policy_unlink
+
+Thanks for the patch, see comments inline.
 
 
-> ==================================================================
-> BUG: KASAN: use-after-free in __write_once_size
-> include/linux/compiler.h:220 [inline]
-> BUG: KASAN: use-after-free in __hlist_del include/linux/list.h:713 [inline]
-> BUG: KASAN: use-after-free in hlist_del_rcu include/linux/rculist.h:455
-> [inline]
-> BUG: KASAN: use-after-free in __xfrm_policy_unlink+0x4b1/0x5c0
-> net/xfrm/xfrm_policy.c:2212
-> Write of size 8 at addr ffff8880a55a9e80 by task kworker/u4:6/7431
 >
-> CPU: 1 PID: 7431 Comm: kworker/u4:6 Not tainted 5.0.0+ #106
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> Workqueue: netns cleanup_net
-> Call Trace:
->   __dump_stack lib/dump_stack.c:77 [inline]
->   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
->   print_address_description.cold+0x7c/0x20d mm/kasan/report.c:187
->   kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
->   __asan_report_store8_noabort+0x17/0x20 mm/kasan/generic_report.c:137
->   __write_once_size include/linux/compiler.h:220 [inline]
->   __hlist_del include/linux/list.h:713 [inline]
->   hlist_del_rcu include/linux/rculist.h:455 [inline]
->   __xfrm_policy_unlink+0x4b1/0x5c0 net/xfrm/xfrm_policy.c:2212
->   xfrm_policy_flush+0x331/0x460 net/xfrm/xfrm_policy.c:1789
->   xfrm_policy_fini+0x49/0x3a0 net/xfrm/xfrm_policy.c:3871
->   xfrm_net_exit+0x1d/0x70 net/xfrm/xfrm_policy.c:3933
->   ops_exit_list.isra.0+0xb0/0x160 net/core/net_namespace.c:153
->   cleanup_net+0x3fb/0x960 net/core/net_namespace.c:551
->   process_one_work+0x98e/0x1790 kernel/workqueue.c:2269
->   worker_thread+0x98/0xe40 kernel/workqueue.c:2415
->   kthread+0x357/0x430 kernel/kthread.c:253
->   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
->
-> Allocated by task 7242:
->   save_stack+0x45/0xd0 mm/kasan/common.c:75
->   set_track mm/kasan/common.c:87 [inline]
->   __kasan_kmalloc mm/kasan/common.c:497 [inline]
->   __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:470
->   kasan_kmalloc+0x9/0x10 mm/kasan/common.c:511
->   __do_kmalloc mm/slab.c:3726 [inline]
->   __kmalloc+0x15c/0x740 mm/slab.c:3735
->   kmalloc include/linux/slab.h:550 [inline]
->   kzalloc include/linux/slab.h:740 [inline]
->   ext4_htree_store_dirent+0x8a/0x650 fs/ext4/dir.c:450
->   htree_dirblock_to_tree+0x4fe/0x910 fs/ext4/namei.c:1021
->   ext4_htree_fill_tree+0x252/0xa50 fs/ext4/namei.c:1098
->   ext4_dx_readdir fs/ext4/dir.c:574 [inline]
->   ext4_readdir+0x1999/0x3490 fs/ext4/dir.c:121
->   iterate_dir+0x489/0x5f0 fs/readdir.c:51
->   __do_sys_getdents fs/readdir.c:231 [inline]
->   __se_sys_getdents fs/readdir.c:212 [inline]
->   __x64_sys_getdents+0x1dd/0x370 fs/readdir.c:212
->   do_syscall_64+0x103/0x610 arch/x86/entry/common.c:290
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
->
-> Freed by task 7242:
->   save_stack+0x45/0xd0 mm/kasan/common.c:75
->   set_track mm/kasan/common.c:87 [inline]
->   __kasan_slab_free+0x102/0x150 mm/kasan/common.c:459
->   kasan_slab_free+0xe/0x10 mm/kasan/common.c:467
->   __cache_free mm/slab.c:3498 [inline]
->   kfree+0xcf/0x230 mm/slab.c:3821
->   free_rb_tree_fname+0x87/0xe0 fs/ext4/dir.c:402
->   ext4_htree_free_dir_info fs/ext4/dir.c:424 [inline]
->   ext4_release_dir+0x46/0x70 fs/ext4/dir.c:622
->   __fput+0x2e5/0x8d0 fs/file_table.c:278
->   ____fput+0x16/0x20 fs/file_table.c:309
->   task_work_run+0x14a/0x1c0 kernel/task_work.c:113
->   tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->   exit_to_usermode_loop+0x273/0x2c0 arch/x86/entry/common.c:166
->   prepare_exit_to_usermode arch/x86/entry/common.c:197 [inline]
->   syscall_return_slowpath arch/x86/entry/common.c:268 [inline]
->   do_syscall_64+0x52d/0x610 arch/x86/entry/common.c:293
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
->
-> The buggy address belongs to the object at ffff8880a55a9e80
->   which belongs to the cache kmalloc-64 of size 64
-> The buggy address is located 0 bytes inside of
->   64-byte region [ffff8880a55a9e80, ffff8880a55a9ec0)
-> The buggy address belongs to the page:
-> page:ffffea0002956a40 count:1 mapcount:0 mapping:ffff88812c3f0340 index:0x0
-> flags: 0x1fffc0000000200(slab)
-> raw: 01fffc0000000200 ffffea0002a0d748 ffffea00018af1c8 ffff88812c3f0340
-> raw: 0000000000000000 ffff8880a55a9000 0000000100000020 0000000000000000
-> page dumped because: kasan: bad access detected
->
-> Memory state around the buggy address:
->   ffff8880a55a9d80: 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc
->   ffff8880a55a9e00: 00 00 00 00 04 fc fc fc fc fc fc fc fc fc fc fc
-> > ffff8880a55a9e80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
->                     ^
->   ffff8880a55a9f00: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
->   ffff8880a55a9f80: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
-> ==================================================================
->
->
+> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
 > ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>   drivers/vhost/Kconfig      |   9 +
+>   drivers/vhost/Makefile     |   3 +
+>   drivers/vhost/mdev.c       | 382 +++++++++++++++++++++++++++++++++++++
+>   include/linux/vhost_mdev.h |  58 ++++++
+>   include/uapi/linux/vfio.h  |   2 +
+>   include/uapi/linux/vhost.h |   8 +
+>   6 files changed, 462 insertions(+)
+>   create mode 100644 drivers/vhost/mdev.c
+>   create mode 100644 include/linux/vhost_mdev.h
 >
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000cd5fdf0588fed11c%40google.com.
-> For more options, visit https://groups.google.com/d/optout.
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index 3d03ccbd1adc..2ba54fcf43b7 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -34,6 +34,15 @@ config VHOST_VSOCK
+>   	To compile this driver as a module, choose M here: the module will be called
+>   	vhost_vsock.
+>   
+> +config VHOST_MDEV
+> +	tristate "Hardware vhost accelerator abstraction"
+> +	depends on EVENTFD && VFIO && VFIO_MDEV
+> +	select VHOST
+> +	default n
+> +	---help---
+> +	Say Y here to enable the vhost_mdev module
+> +	for use with hardware vhost accelerators
+> +
+>   config VHOST
+>   	tristate
+>   	---help---
+> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+> index 6c6df24f770c..ad9c0f8c6d8c 100644
+> --- a/drivers/vhost/Makefile
+> +++ b/drivers/vhost/Makefile
+> @@ -10,4 +10,7 @@ vhost_vsock-y := vsock.o
+>   
+>   obj-$(CONFIG_VHOST_RING) += vringh.o
+>   
+> +obj-$(CONFIG_VHOST_MDEV) += vhost_mdev.o
+> +vhost_mdev-y := mdev.o
+> +
+>   obj-$(CONFIG_VHOST)	+= vhost.o
+> diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
+> new file mode 100644
+> index 000000000000..6bef1d9ae2e6
+> --- /dev/null
+> +++ b/drivers/vhost/mdev.c
+> @@ -0,0 +1,382 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/vfio.h>
+> +#include <linux/vhost.h>
+> +#include <linux/mdev.h>
+> +#include <linux/vhost_mdev.h>
+> +
+> +#include "vhost.h"
+> +
+> +struct vhost_mdev {
+> +	struct vhost_dev dev;
+> +	bool opened;
+> +	int nvqs;
+> +	u64 state;
+> +	u64 acked_features;
+> +	u64 features;
+> +	const struct vhost_mdev_device_ops *ops;
+> +	struct mdev_device *mdev;
+> +	void *private;
+> +	struct vhost_virtqueue vqs[];
+> +};
+> +
+> +static void handle_vq_kick(struct vhost_work *work)
+> +{
+> +	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
+> +						  poll.work);
+> +	struct vhost_mdev *vdpa = container_of(vq->dev, struct vhost_mdev, dev);
+> +
+> +	vdpa->ops->notify(vdpa, vq - vdpa->vqs);
+> +}
+> +
+> +static int vhost_set_state(struct vhost_mdev *vdpa, u64 __user *statep)
+> +{
+> +	u64 state;
+> +
+> +	if (copy_from_user(&state, statep, sizeof(state)))
+> +		return -EFAULT;
+> +
+> +	if (state >= VHOST_MDEV_S_MAX)
+> +		return -EINVAL;
+> +
+> +	if (vdpa->state == state)
+> +		return 0;
+> +
+> +	mutex_lock(&vdpa->dev.mutex);
+> +
+> +	vdpa->state = state;
+> +
+> +	switch (vdpa->state) {
+> +	case VHOST_MDEV_S_RUNNING:
+> +		vdpa->ops->start(vdpa);
+> +		break;
+> +	case VHOST_MDEV_S_STOPPED:
+> +		vdpa->ops->stop(vdpa);
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&vdpa->dev.mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_features(struct vhost_mdev *vdpa, u64 __user *featurep)
+> +{
+> +	u64 features;
+> +
+> +	if (copy_from_user(&features, featurep, sizeof(features)))
+> +		return -EFAULT;
+> +
+> +	if (features & ~vdpa->features)
+> +		return -EINVAL;
+> +
+> +	vdpa->acked_features = features;
+> +	vdpa->ops->features_changed(vdpa);
+> +	return 0;
+> +}
+> +
+> +static int vhost_get_features(struct vhost_mdev *vdpa, u64 __user *featurep)
+> +{
+> +	if (copy_to_user(featurep, &vdpa->features, sizeof(vdpa->features)))
+> +		return -EFAULT;
+> +	return 0;
+> +}
+> +
+> +static int vhost_get_vring_base(struct vhost_mdev *vdpa, void __user *argp)
+> +{
+> +	struct vhost_virtqueue *vq;
+> +	u32 idx;
+> +	int r;
+> +
+> +	r = get_user(idx, (u32 __user *)argp);
+> +	if (r < 0)
+> +		return r;
+> +
+> +	vq = &vdpa->vqs[idx];
+> +	vq->last_avail_idx = vdpa->ops->get_vring_base(vdpa, idx);
+> +
+> +	return vhost_vring_ioctl(&vdpa->dev, VHOST_GET_VRING_BASE, argp);
+> +}
+> +
+> +/*
+> + * Helpers for backend to register mdev.
+> + */
+> +
+> +struct vhost_mdev *vhost_mdev_alloc(struct mdev_device *mdev, void *private,
+> +				    int nvqs)
+> +{
+> +	struct vhost_mdev *vdpa;
+> +	struct vhost_dev *dev;
+> +	struct vhost_virtqueue **vqs;
+> +	size_t size;
+> +	int i;
+> +
+> +	size = sizeof(struct vhost_mdev) + nvqs * sizeof(struct vhost_virtqueue);
+> +
+> +	vdpa = kzalloc(size, GFP_KERNEL);
+> +	if (!vdpa)
+> +		return NULL;
+> +
+> +	vdpa->nvqs = nvqs;
+> +
+> +	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
+> +	if (!vqs) {
+> +		kfree(vdpa);
+> +		return NULL;
+> +	}
+> +
+> +	dev = &vdpa->dev;
+> +	for (i = 0; i < nvqs; i++) {
+> +		vqs[i] = &vdpa->vqs[i];
+> +		vqs[i]->handle_kick = handle_vq_kick;
+> +	}
+> +	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0);
+> +
+> +	vdpa->private = private;
+> +	vdpa->mdev = mdev;
+> +
+> +	mdev_set_drvdata(mdev, vdpa);
+> +
+> +	return vdpa;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_alloc);
+> +
+> +void vhost_mdev_free(struct vhost_mdev *vdpa)
+> +{
+> +	struct mdev_device *mdev;
+> +
+> +	mdev = vdpa->mdev;
+> +	mdev_set_drvdata(mdev, NULL);
+> +
+> +	vhost_dev_stop(&vdpa->dev);
+> +	vhost_dev_cleanup(&vdpa->dev);
+> +	kfree(vdpa->dev.vqs);
+> +	kfree(vdpa);
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_free);
+> +
+> +ssize_t vhost_mdev_read(struct mdev_device *mdev, char __user *buf,
+> +		  size_t count, loff_t *ppos)
+> +{
+> +	return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_read);
+> +
+> +
+> +ssize_t vhost_mdev_write(struct mdev_device *mdev, const char __user *buf,
+> +		   size_t count, loff_t *ppos)
+> +{
+> +	return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_write);
+> +
+> +int vhost_mdev_mmap(struct mdev_device *mdev, struct vm_area_struct *vma)
+> +{
+> +	// TODO
+> +	return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_mmap);
+> +
+> +long vhost_mdev_ioctl(struct mdev_device *mdev, unsigned int cmd,
+> +		      unsigned long arg)
+> +{
+> +	void __user *argp = (void __user *)arg;
+> +	struct vhost_mdev *vdpa;
+> +	unsigned long minsz;
+> +	int ret = 0;
+> +
+> +	if (!mdev)
+> +		return -EINVAL;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	switch (cmd) {
+> +	case VFIO_DEVICE_GET_INFO:
+> +	{
+> +		struct vfio_device_info info;
+> +
+> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz)) {
+> +			ret = -EFAULT;
+> +			break;
+> +		}
+> +
+> +		if (info.argsz < minsz) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		info.flags = VFIO_DEVICE_FLAGS_VHOST;
+> +		info.num_regions = 0;
+> +		info.num_irqs = 0;
+> +
+> +		if (copy_to_user((void __user *)arg, &info, minsz)) {
+> +			ret = -EFAULT;
+> +			break;
+> +		}
+> +
+> +		break;
+> +	}
+> +	case VFIO_DEVICE_GET_REGION_INFO:
+> +	case VFIO_DEVICE_GET_IRQ_INFO:
+> +	case VFIO_DEVICE_SET_IRQS:
+> +	case VFIO_DEVICE_RESET:
+> +		ret = -EINVAL;
+> +		break;
+> +
+> +	case VHOST_MDEV_SET_STATE:
+> +		ret = vhost_set_state(vdpa, argp);
+> +		break;
+
+
+So this is used to start or stop the device. This means if userspace 
+want to drive a network device, the API is not 100% compatible. Any 
+blocker for this? E.g for SET_BACKEND, we can pass a fd and then 
+identify the type of backend.
+
+Another question is, how can user know the type of a device?
+
+
+> +	case VHOST_GET_FEATURES:
+> +		ret = vhost_get_features(vdpa, argp);
+> +		break;
+> +	case VHOST_SET_FEATURES:
+> +		ret = vhost_set_features(vdpa, argp);
+> +		break;
+> +	case VHOST_GET_VRING_BASE:
+> +		ret = vhost_get_vring_base(vdpa, argp);
+> +		break;
+> +	default:
+> +		ret = vhost_dev_ioctl(&vdpa->dev, cmd, argp);
+> +		if (ret == -ENOIOCTLCMD)
+> +			ret = vhost_vring_ioctl(&vdpa->dev, cmd, argp);
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_ioctl);
+> +
+> +int vhost_mdev_open(struct mdev_device *mdev)
+> +{
+> +	struct vhost_mdev *vdpa;
+> +	int ret = 0;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&vdpa->dev.mutex);
+> +
+> +	if (vdpa->opened)
+> +		ret = -EBUSY;
+> +	else
+> +		vdpa->opened = true;
+> +
+> +	mutex_unlock(&vdpa->dev.mutex);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_open);
+> +
+> +void vhost_mdev_close(struct mdev_device *mdev)
+> +{
+> +	struct vhost_mdev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +
+> +	mutex_lock(&vdpa->dev.mutex);
+> +
+> +	vhost_dev_stop(&vdpa->dev);
+> +	vhost_dev_cleanup(&vdpa->dev);
+> +
+> +	vdpa->opened = false;
+> +	mutex_unlock(&vdpa->dev.mutex);
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_close);
+> +
+> +/*
+> + * Helpers for backend to set/get information.
+> + */
+> +
+> +int vhost_mdev_set_device_ops(struct vhost_mdev *vdpa,
+> +			      const struct vhost_mdev_device_ops *ops)
+> +{
+> +	vdpa->ops = ops;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_set_device_ops);
+> +
+> +int vhost_mdev_set_features(struct vhost_mdev *vdpa, u64 features)
+> +{
+> +	vdpa->features = features;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_set_features);
+> +
+> +struct eventfd_ctx *
+> +vhost_mdev_get_call_ctx(struct vhost_mdev *vdpa, int queue_id)
+> +{
+> +	return vdpa->vqs[queue_id].call_ctx;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_call_ctx);
+> +
+> +int vhost_mdev_get_acked_features(struct vhost_mdev *vdpa, u64 *features)
+> +{
+> +	*features = vdpa->acked_features;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_acked_features);
+> +
+> +int vhost_mdev_get_vring_num(struct vhost_mdev *vdpa, int queue_id, u16 *num)
+> +{
+> +	*num = vdpa->vqs[queue_id].num;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_vring_num);
+> +
+> +int vhost_mdev_get_vring_base(struct vhost_mdev *vdpa, int queue_id, u16 *base)
+> +{
+> +	*base = vdpa->vqs[queue_id].last_avail_idx;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_vring_base);
+> +
+> +int vhost_mdev_get_vring_addr(struct vhost_mdev *vdpa, int queue_id,
+> +			      struct vhost_vring_addr *addr)
+> +{
+> +	struct vhost_virtqueue *vq = &vdpa->vqs[queue_id];
+> +
+> +	/*
+> +	 * XXX: we need userspace to pass guest physical address or
+> +	 *      IOVA directly.
+> +	 */
+> +	addr->flags = vq->log_used ? (0x1 << VHOST_VRING_F_LOG) : 0;
+> +	addr->desc_user_addr = (__u64)vq->desc;
+> +	addr->avail_user_addr = (__u64)vq->avail;
+> +	addr->used_user_addr = (__u64)vq->used;
+> +	addr->log_guest_addr = (__u64)vq->log_addr;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_vring_addr);
+> +
+> +int vhost_mdev_get_log_base(struct vhost_mdev *vdpa, int queue_id,
+> +			    void **log_base, u64 *log_size)
+> +{
+> +	// TODO
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_log_base);
+> +
+> +struct mdev_device *vhost_mdev_get_mdev(struct vhost_mdev *vdpa)
+> +{
+> +	return vdpa->mdev;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_mdev);
+> +
+> +void *vhost_mdev_get_private(struct vhost_mdev *vdpa)
+> +{
+> +	return vdpa->private;
+> +}
+> +EXPORT_SYMBOL(vhost_mdev_get_private);
+> +
+> +MODULE_VERSION("0.0.0");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("Hardware vhost accelerator abstraction");
+> diff --git a/include/linux/vhost_mdev.h b/include/linux/vhost_mdev.h
+> new file mode 100644
+> index 000000000000..070787ce6b36
+> --- /dev/null
+> +++ b/include/linux/vhost_mdev.h
+> @@ -0,0 +1,58 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + */
+> +
+> +#ifndef _VHOST_MDEV_H
+> +#define _VHOST_MDEV_H
+> +
+> +struct mdev_device;
+> +struct vhost_mdev;
+> +
+> +typedef int (*vhost_mdev_start_device_t)(struct vhost_mdev *vdpa);
+> +typedef int (*vhost_mdev_stop_device_t)(struct vhost_mdev *vdpa);
+> +typedef int (*vhost_mdev_set_features_t)(struct vhost_mdev *vdpa);
+> +typedef void (*vhost_mdev_notify_device_t)(struct vhost_mdev *vdpa, int queue_id);
+> +typedef u64 (*vhost_mdev_get_notify_addr_t)(struct vhost_mdev *vdpa, int queue_id);
+> +typedef u16 (*vhost_mdev_get_vring_base_t)(struct vhost_mdev *vdpa, int queue_id);
+> +typedef void (*vhost_mdev_features_changed_t)(struct vhost_mdev *vdpa);
+> +
+> +struct vhost_mdev_device_ops {
+> +	vhost_mdev_start_device_t	start;
+> +	vhost_mdev_stop_device_t	stop;
+> +	vhost_mdev_notify_device_t	notify;
+> +	vhost_mdev_get_notify_addr_t	get_notify_addr;
+> +	vhost_mdev_get_vring_base_t	get_vring_base;
+> +	vhost_mdev_features_changed_t	features_changed;
+> +};
+
+
+Consider we want to implement a network device, who is going to 
+implement the device configuration space? I believe it's not good to 
+invent another set of API for doing this. So I believe we want something 
+like read_config/write_config here.
+
+Then I came up an idea:
+
+1) introduce a new mdev bus transport, and a new mdev driver virtio_mdev
+2) vDPA (either software or hardware) can register as a device of virtio 
+mdev device
+3) then we can use kernel virtio driver to drive vDPA device and utilize 
+kernel networking/storage stack
+4) for userspace driver like vhost-mdev, it could be built of top of 
+mdev transport
+
+Having a full new transport for virtio, the advantages are obvious:
+
+1) A generic solution for both kernel and userspace driver and support 
+configuration space access
+2) For kernel driver, exist kernel networking/storage stack could be 
+reused, and so did fast path implementation (e.g XDP, io_uring etc).
+2) For userspace driver, the function of virtio transport is a superset 
+of vhost, any API could be built on top easily (e.g vhost ioctl).
+
+What's your thought?
+
+Thanks
+
+
+> +
+> +struct vhost_mdev *vhost_mdev_alloc(struct mdev_device *mdev,
+> +		void *private, int nvqs);
+> +void vhost_mdev_free(struct vhost_mdev *vdpa);
+> +
+> +ssize_t vhost_mdev_read(struct mdev_device *mdev, char __user *buf,
+> +		size_t count, loff_t *ppos);
+> +ssize_t vhost_mdev_write(struct mdev_device *mdev, const char __user *buf,
+> +		size_t count, loff_t *ppos);
+> +long vhost_mdev_ioctl(struct mdev_device *mdev, unsigned int cmd,
+> +		unsigned long arg);
+> +int vhost_mdev_mmap(struct mdev_device *mdev, struct vm_area_struct *vma);
+> +int vhost_mdev_open(struct mdev_device *mdev);
+> +void vhost_mdev_close(struct mdev_device *mdev);
+> +
+> +int vhost_mdev_set_device_ops(struct vhost_mdev *vdpa,
+> +		const struct vhost_mdev_device_ops *ops);
+> +int vhost_mdev_set_features(struct vhost_mdev *vdpa, u64 features);
+> +struct eventfd_ctx *vhost_mdev_get_call_ctx(struct vhost_mdev *vdpa,
+> +		int queue_id);
+> +int vhost_mdev_get_acked_features(struct vhost_mdev *vdpa, u64 *features);
+> +int vhost_mdev_get_vring_num(struct vhost_mdev *vdpa, int queue_id, u16 *num);
+> +int vhost_mdev_get_vring_base(struct vhost_mdev *vdpa, int queue_id, u16 *base);
+> +int vhost_mdev_get_vring_addr(struct vhost_mdev *vdpa, int queue_id,
+> +		struct vhost_vring_addr *addr);
+> +int vhost_mdev_get_log_base(struct vhost_mdev *vdpa, int queue_id,
+> +		void **log_base, u64 *log_size);
+> +struct mdev_device *vhost_mdev_get_mdev(struct vhost_mdev *vdpa);
+> +void *vhost_mdev_get_private(struct vhost_mdev *vdpa);
+> +
+> +#endif /* _VHOST_MDEV_H */
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 8f10748dac79..0300d6831cc5 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -201,6 +201,7 @@ struct vfio_device_info {
+>   #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
+>   #define VFIO_DEVICE_FLAGS_CCW	(1 << 4)	/* vfio-ccw device */
+>   #define VFIO_DEVICE_FLAGS_AP	(1 << 5)	/* vfio-ap device */
+> +#define VFIO_DEVICE_FLAGS_VHOST	(1 << 6)	/* vfio-vhost device */
+>   	__u32	num_regions;	/* Max region index + 1 */
+>   	__u32	num_irqs;	/* Max IRQ index + 1 */
+>   };
+> @@ -217,6 +218,7 @@ struct vfio_device_info {
+>   #define VFIO_DEVICE_API_AMBA_STRING		"vfio-amba"
+>   #define VFIO_DEVICE_API_CCW_STRING		"vfio-ccw"
+>   #define VFIO_DEVICE_API_AP_STRING		"vfio-ap"
+> +#define VFIO_DEVICE_API_VHOST_STRING		"vfio-vhost"
+>   
+>   /**
+>    * VFIO_DEVICE_GET_REGION_INFO - _IOWR(VFIO_TYPE, VFIO_BASE + 8,
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index 40d028eed645..5afbc2f08fa3 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -116,4 +116,12 @@
+>   #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>   #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>   
+> +/* VHOST_MDEV specific defines */
+> +
+> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
+> +
+> +#define VHOST_MDEV_S_STOPPED	0
+> +#define VHOST_MDEV_S_RUNNING	1
+> +#define VHOST_MDEV_S_MAX	2
+> +
+>   #endif
