@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78BEAA4E64
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 06:25:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F07A4EB2
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 06:44:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729578AbfIBEY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 00:24:58 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35701 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729505AbfIBEY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 00:24:56 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 2 Sep 2019 07:24:53 +0300
-Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x824OeRP001225;
-        Mon, 2 Sep 2019 07:24:51 +0300
-From:   Parav Pandit <parav@mellanox.com>
-To:     alex.williamson@redhat.com, jiri@mellanox.com,
-        kwankhede@nvidia.com, cohuck@redhat.com, davem@davemloft.net
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>
-Subject: [PATCH v3 5/5] mtty: Optionally support mtty alias
-Date:   Sun,  1 Sep 2019 23:24:36 -0500
-Message-Id: <20190902042436.23294-6-parav@mellanox.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190902042436.23294-1-parav@mellanox.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
- <20190902042436.23294-1-parav@mellanox.com>
+        id S1729357AbfIBEoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 00:44:03 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:40686 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbfIBEoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 00:44:03 -0400
+Received: by mail-yw1-f67.google.com with SMTP id k200so141687ywa.7
+        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 21:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aKoJ+LaCvnVpPwDl5kwNo0LaTSn5NTE8656xAo7GLOU=;
+        b=EbGM/qY8tcJETmnvGxguHwXt5WslO+IaXJ1dP+bbX5MHHXSlQoeCqt5FVZw3lbHE5a
+         EKCHfhiyFx2G4FyLJwZwUIFxiMXbrPHbSBgy1zgCEUfuT3kch8hFs89LK8yRPx4T1voP
+         COzTqbGz7KyDIazC6cUvwz7gt8zxNaVp4gOu7eLPAi9oRy2Z7eLUG9CN+0KeZg2tFrQg
+         aarjJT3Px0QqneVObmMNn7F/Frwd0ljmk03rW0Hai+OQAEWtWYNnzf/5NqbmBhjPKPrC
+         qSSX1+K4pBMRxHV8QlhBrFkBmsS+7CBZUzhimoh+ePAPKzy3/hIgBUcfUysYWUjRsv6B
+         gx1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aKoJ+LaCvnVpPwDl5kwNo0LaTSn5NTE8656xAo7GLOU=;
+        b=KJl1vVkIhFqzYY4LsXjBJlxo4hupJx6L5/E1v3W6HcQFcqfjXqS0LSLPrqJcMRkaOC
+         0lKbYTwToGufU1FoZBwESuDzK5JqLQViwasEzTkgWkwHl/zta1xCxBZ1ciK2uRY/4UOe
+         ac/rVFiAbwWW3AuEePdzspXCMcZFgb+xR1zagFlK4j2BzFK2lj0Mp/WOxj2qRmgU3Epc
+         6wKddyqSPLM/cbKu9/UPxKji1k5+Io4O8EaJfGcQHvuRIqFLx//0H/p/TBDv85tOYpkl
+         MHZfb9LQdGkIZaSL2gwG3bkUT4LA6FpxdQucMQjrX6IwvFMPLWN4nkzVU+sMUh/40IrD
+         Fg9w==
+X-Gm-Message-State: APjAAAU6dhSS9vA2MyiIylDEhgb9mZr84KjorQgvShZbPENTv2iK1b15
+        681NEpvMKEiixa5kg0VqZJMFXx46HBX6BVUtww==
+X-Google-Smtp-Source: APXvYqznwlh+2CU8mwf89Y2S/OdH7I+pPa+XBtlkRH9n74FELeDeQcNF9e7DzkD141efq+l4cSFprlB5vKc8eIXvvuU=
+X-Received: by 2002:a81:3b09:: with SMTP id i9mr7273783ywa.166.1567399442764;
+ Sun, 01 Sep 2019 21:44:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190826162517.8082-1-danieltimlee@gmail.com> <CAPhsuW6dnbwtCxf5AO6gJe07qu4ewvO1NQ+ZiQVBR8jUVfQ9uQ@mail.gmail.com>
+ <CAEKGpzhGkLGswP3G9BzY1YErVOuNQRRBD2y=4g7u7dfh1by3aA@mail.gmail.com>
+In-Reply-To: <CAEKGpzhGkLGswP3G9BzY1YErVOuNQRRBD2y=4g7u7dfh1by3aA@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Mon, 2 Sep 2019 13:43:46 +0900
+Message-ID: <CAEKGpzjmCj4Fjt1e0ztnPW2xjvK1ea9oMFLs8GyOaqpryDKkLA@mail.gmail.com>
+Subject: Re: [bpf-next, v2] samples: bpf: add max_pckt_size option at xdp_adjust_tail
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide a module parameter to set alias length to optionally generate
-mdev alias.
+On Fri, Aug 30, 2019 at 3:23 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+>
+> On Fri, Aug 30, 2019 at 5:42 AM Song Liu <liu.song.a23@gmail.com> wrote:
+> >
+> > On Mon, Aug 26, 2019 at 9:52 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> > >
+> > > Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
+> > > to 600. To make this size flexible, a new map 'pcktsz' is added.
+> > >
+> > > By updating new packet size to this map from the userland,
+> > > xdp_adjust_tail_kern.o will use this value as a new max_pckt_size.
+> > >
+> > > If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
+> > > will be 600 as a default.
+> >
+> > Please also cc bpf@vger.kernel.org for bpf patches.
+> >
+>
+> I'll make sure to have it included next time.
+>
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> >
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> >
+> > With a nit below.
+> >
+> > [...]
+> >
+> > > diff --git a/samples/bpf/xdp_adjust_tail_user.c b/samples/bpf/xdp_adjust_tail_user.c
+> > > index a3596b617c4c..29ade7caf841 100644
+> > > --- a/samples/bpf/xdp_adjust_tail_user.c
+> > > +++ b/samples/bpf/xdp_adjust_tail_user.c
+> > > @@ -72,6 +72,7 @@ static void usage(const char *cmd)
+> > >         printf("Usage: %s [...]\n", cmd);
+> > >         printf("    -i <ifname|ifindex> Interface\n");
+> > >         printf("    -T <stop-after-X-seconds> Default: 0 (forever)\n");
+> > > +       printf("    -P <MAX_PCKT_SIZE> Default: 600\n");
+> >
+> > nit: printf("    -P <MAX_PCKT_SIZE> Default: %u\n", MAX_PCKT_SIZE);
+>
+> With all due respect, I'm afraid that MAX_PCKT_SIZE constant is only
+> defined at '_kern.c'.
+> Are you saying that it should be defined at '_user.c' either?
+>
+> Thanks for the review!
 
-Example to request mdev alias.
-$ modprobe mtty alias_length=12
-
-Make use of mtty_alias() API when alias_length module parameter is set.
-
-Signed-off-by: Parav Pandit <parav@mellanox.com>
----
-Changelog:
-v1->v2:
- - Added mdev_alias() usage sample
----
- samples/vfio-mdev/mtty.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/samples/vfio-mdev/mtty.c b/samples/vfio-mdev/mtty.c
-index 92e770a06ea2..075d65440bc0 100644
---- a/samples/vfio-mdev/mtty.c
-+++ b/samples/vfio-mdev/mtty.c
-@@ -150,6 +150,10 @@ static const struct file_operations vd_fops = {
- 	.owner          = THIS_MODULE,
- };
- 
-+static unsigned int mtty_alias_length;
-+module_param_named(alias_length, mtty_alias_length, uint, 0444);
-+MODULE_PARM_DESC(alias_length, "mdev alias length; default=0");
-+
- /* function prototypes */
- 
- static int mtty_trigger_interrupt(const guid_t *uuid);
-@@ -770,6 +774,9 @@ static int mtty_create(struct kobject *kobj, struct mdev_device *mdev)
- 	list_add(&mdev_state->next, &mdev_devices_list);
- 	mutex_unlock(&mdev_list_lock);
- 
-+	if (mtty_alias_length)
-+		dev_dbg(mdev_dev(mdev), "alias is %s\n", mdev_alias(mdev));
-+
- 	return 0;
- }
- 
-@@ -1410,6 +1417,11 @@ static struct attribute_group *mdev_type_groups[] = {
- 	NULL,
- };
- 
-+static unsigned int mtty_get_alias_length(void)
-+{
-+	return mtty_alias_length;
-+}
-+
- static const struct mdev_parent_ops mdev_fops = {
- 	.owner                  = THIS_MODULE,
- 	.dev_attr_groups        = mtty_dev_groups,
-@@ -1422,6 +1434,7 @@ static const struct mdev_parent_ops mdev_fops = {
- 	.read                   = mtty_read,
- 	.write                  = mtty_write,
- 	.ioctl		        = mtty_ioctl,
-+	.get_alias_length	= mtty_get_alias_length
- };
- 
- static void mtty_device_release(struct device *dev)
--- 
-2.19.2
-
+Ping?
