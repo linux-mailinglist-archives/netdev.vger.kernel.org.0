@@ -2,78 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6D7A4CB0
-	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 01:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B909A4CD1
+	for <lists+netdev@lfdr.de>; Mon,  2 Sep 2019 02:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729191AbfIAX1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Sep 2019 19:27:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:54113 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729179AbfIAX1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Sep 2019 19:27:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id c22so16900233ioi.20
-        for <netdev@vger.kernel.org>; Sun, 01 Sep 2019 16:27:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=J9R5UWhJGlCe+z3+nucL39myfoeuGM8nvHYUB/xY98o=;
-        b=m6CZ959QZ/OrDQSoxCY8rG90tsnb9cH93TEb307pBMowpRN6SZ0oG7T+C/gnL6tHC0
-         EfEX2fO26owDUmvpuDWnr3Z5RAaBx4WCovOwXA6qD1gDJpqpCjZ+AJbHrzse/KDeYbJ+
-         m5ZZCvct+uBpvtdnIPzsTpE2oGK4ncfiex1KBGdxM57xm3NV9QAo+i7XwfA/l72d+qxB
-         7QlLdL3rxIdSrUbEHDzkdznNRtPLUYUAuLMnOeXQI3gfMr+DZDs4+EUlWLZ9ozVybpV6
-         OEwIoeBHR/aR08fatCCyEMlp1EdUquyt73TFTyha2UoDgl9C1B+B7vhenKbDJ2/u31ey
-         1p2A==
-X-Gm-Message-State: APjAAAU3eLe5MSjwG+uaKF9gwMug/CF8Ex1wL0DjOQItPKwEpgulEgqI
-        WKfe/1sf9ATuKdgu5t9W+lKhInB2/TKmA5/+Gi48r5M4X97j
-X-Google-Smtp-Source: APXvYqyItaafiwMkd1H+5kjnZ9JNOwQM6ej3KsrARUzXzizMl0n0yT36VjMczsAumjk+Tr6sic7s729hxL6NhVHhebXTsUgQIsul
+        id S1729207AbfIBAbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Sep 2019 20:31:42 -0400
+Received: from ozlabs.org ([203.11.71.1]:51059 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729098AbfIBAbm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Sep 2019 20:31:42 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46M9xl1h88z9s7T;
+        Mon,  2 Sep 2019 10:31:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1567384299;
+        bh=3UK8Ztozs7xxNmcWzuV44WDq2E9dwhhyHjl2lEEbEkU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aXPkA3t9zkmY1opkoyhblLlGZRlDM/u6uPUCR8DeSf2NqcyNRlwgyCtyvMcuezdvI
+         qPx153lpd1OYhvRv/NBcqWtKyCRH+o/XiGnWUPDoPJ5rKplcMEw2TIn4SdogeE00vz
+         iGRv5jNhDnABlCxEL/00b+NxsQJSQA/uXqh2gCxLoiu9400n59HKifSnpENRUXvIRf
+         mCIzgASsGisgOxMLo4IWYMDQnHrlOKeqonngHFkzGOUrmXkN/CBepOxK0NQOPMSydm
+         RzrPPbm5n6Fhe98VneDEePF8fYkubeEDjk+Qt984RMwSqN+/7V3qi1O1L4YBs1LooY
+         J3Gtuy4sYdI9g==
+Date:   Mon, 2 Sep 2019 10:31:37 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Howells <dhowells@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: manual merge of the afs tree with the net tree
+Message-ID: <20190902103137.4c676df4@canb.auug.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8f41:: with SMTP id x1mr7358100iop.191.1567380426244;
- Sun, 01 Sep 2019 16:27:06 -0700 (PDT)
-Date:   Sun, 01 Sep 2019 16:27:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000088cdb2059186312f@google.com>
-Subject: kernel panic: stack is corrupted in lock_release (2)
-From:   syzbot <syzbot+97deee97cf14574b96d0@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: multipart/signed; boundary="Sig_/l8KMogUmRNMDxS9Y+qQ/mQ0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+--Sig_/l8KMogUmRNMDxS9Y+qQ/mQ0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-syzbot found the following crash on:
+Hi all,
 
-HEAD commit:    dd7078f0 enetc: Add missing call to 'pci_free_irq_vectors(..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=115fe0fa600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2a6a2b9826fdadf9
-dashboard link: https://syzkaller.appspot.com/bug?extid=97deee97cf14574b96d0
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f7c2fe600000
+Today's linux-next merge of the afs tree got conflicts in:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+97deee97cf14574b96d0@syzkaller.appspotmail.com
+  include/trace/events/rxrpc.h
+  net/rxrpc/ar-internal.h
+  net/rxrpc/call_object.c
+  net/rxrpc/conn_client.c
+  net/rxrpc/input.c
+  net/rxrpc/recvmsg.c
+  net/rxrpc/skbuff.c
 
-Kernel panic - not syncing: stack-protector: Kernel stack is corrupted in:  
-lock_release+0x866/0x960 kernel/locking/lockdep.c:4435
-CPU: 0 PID: 9965 Comm: syz-executor.0 Not tainted 5.3.0-rc6+ #182
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+between various commits from the net tree and similar commits from the
+afs tree.
 
+I fixed it up (I just dropped the afs tree for today) and can carry the
+fix as necessary. This is now fixed as far as linux-next is concerned,
+but any non trivial conflicts should be mentioned to your upstream
+maintainer when your tree is submitted for merging.  You may also want
+to consider cooperating with the maintainer of the conflicting tree to
+minimise any particularly complex conflicts.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+It looks like the afs tree has older versions fo some commits in the
+net tree ... plus some more.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/l8KMogUmRNMDxS9Y+qQ/mQ0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1sYuoACgkQAVBC80lX
+0GzQjgf+It47t1OqGXjGJJ0BgTasfwU/KZJBYN9SaQjkJ/MAOPb/a9ogS+/9fQbh
+EuOI5F61Is/Re9fZovrd8OA+WurolTPxW6CNiyDeqTVIx00g6rU7eyE3FKfHrEyE
+1ZEZcZT/I68yo/WHcMR5KFfOwFCUeRK9JgaaEuY4oPcRsVhpEcI/WvcOniAMZIO9
+y2aqNq63V9u1kzMr8IncTlp54XkPcAo+J1prB3up0Ex0uXc1Hwb9fIGPgEyajDlZ
+novm9Zhed14fdrffY5LBAk7bFuUlZS9YTaH89Sormhpbg36crX2N2qhPzP8EGvbP
+VLNo2m7l54k5NKETBg6xFAIwqYduUg==
+=Jhmu
+-----END PGP SIGNATURE-----
+
+--Sig_/l8KMogUmRNMDxS9Y+qQ/mQ0--
