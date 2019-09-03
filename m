@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04742A603D
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 06:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF7AA603E
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 06:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbfICEbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 00:31:34 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39789 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbfICEbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 00:31:33 -0400
-Received: by mail-wm1-f67.google.com with SMTP id n2so15073771wmk.4
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 21:31:32 -0700 (PDT)
+        id S1726383AbfICEbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 00:31:37 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40774 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbfICEbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 00:31:37 -0400
+Received: by mail-wm1-f66.google.com with SMTP id t9so16459431wmi.5
+        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 21:31:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nUK4apPGc2+uDg3ukHbT2qck5VI6YUi/oWJ8+jehbE0=;
-        b=chzFDgawlyDoFtKPBB5NxgFntFPM0cxCQ36DdlzkZ66TxXN9L8XVyd5+9/pC8Eaw7J
-         Bz3qhTp5ZmOdoK2Iiub2TTsh0p2fEBnJs9aLV+TD2VEX4kQFuWMKZ9whHEjW822Ncy5I
-         vY75bFeryKLwl+QvU2pQzXKDGfujJ9h+TThoQgM0U+vD20qDl8tCtoqjqeO5NlBrf5oD
-         jegwFK4UkeXr2L16pbBusaciuBzajhnvl3u6/vHANlKt5mLHMZYD+IZL+xP806gJOl/E
-         shqFoKMuFU5ewv3LN8VDfr4bKPHmNNSmXJHQ26iDR89jLZXQJ+iobz+TC9C+2sE1Q4JN
-         FHEQ==
+        bh=SMJ1L28NfyCI4pCcxApBzu/aQJPfByqOIykyBOmTxOw=;
+        b=mDOJFQfk2f4HwiPwPoUfgtAipNiW8z2X++x/jjWRsCWKiYZ6eU7GpnkVpLV1O2FkJW
+         6if4jviP+adGbL7ZjeD+EtePIKX2vYLjZBgEXGc2KblebL+fGnLPGe1BNShX+L4J5xc5
+         lhjUXxfeqxvWO2Ok33cypibsFuiwlr/SDgrv13LVvtIRRTnMdTaIQMYA1XKIyWK0TV0N
+         3mgHL6KCluLBMplTM6Xw3lsH9YalnzmxAAr2cmWckjUPYjxWm6niBWXaWfbr3bizNt3Q
+         jup6c86eCknVgOz+QtQ+J7Lv0kjLBA9+oaj/jhh6rR7ochreqHPATFlalTymwUwGq0df
+         JYSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nUK4apPGc2+uDg3ukHbT2qck5VI6YUi/oWJ8+jehbE0=;
-        b=bnii683CJsqqKL7ofb/7jHvesGa4Q82ow1bsVz0kXvcybunFDilhaGL8SaKp9jqJRW
-         IT9hwUssThtljZKhs1+O8AlGyuaBGTKdbzUHNonRcQ41aN498Npusd/poQ54AyKSXoz7
-         5WG8Uh/yg5aayn/oHN8wD/wmapIerdKsfTyoNcISwn31nIWyw9vkyvJhVq5sNkj756wN
-         Egum2eBxQ8hBQgzpef1BOnnWb3UKf8H48+ANlIqZruPZtasEU7rhS88seC4a39oRrahT
-         W3B+Fwu7CyTlPYj35AMRtZwMvtm1TXE2lkOdfaivpuLZUCRwRXAvHSSQtYP3h95bV4ni
-         oY3Q==
-X-Gm-Message-State: APjAAAWoFmh/Af5096eb2LEnI1VpyKHJFBkFQQiY/d7depI8xThw0HvB
-        2CyN6JKtTvtqNCgJa0edLBsxsw==
-X-Google-Smtp-Source: APXvYqyyJc+8vWA+3EiDglfC2VB4jSJ4iV2N/zrIVodTIti3oSZZeKpQ5sACSS0XteozVqkUFqYlig==
-X-Received: by 2002:a7b:c013:: with SMTP id c19mr31546850wmb.118.1567485092108;
-        Mon, 02 Sep 2019 21:31:32 -0700 (PDT)
+        bh=SMJ1L28NfyCI4pCcxApBzu/aQJPfByqOIykyBOmTxOw=;
+        b=fEXc1Sxj6GOC4cLomKJNBBUJ0q2eiTwBq6kO9QGflm2E6imfMZQt2Fcw2rsC18fu4j
+         UDJiXCui8UjP3oTUXYq2zrO1YJnY26nOBSzhkx5QRHEE4594qJ8p3W65YPyENN9v+yWJ
+         RXRmX0OPTIr2y1R5Vv92UDt+vfX1pevvgvcucdL97LdO5xJhs/kGaD05PMg/7UJ/o7cB
+         w7kqtDaWZR+37j5DpfeMc4J/oKmzu5I15Ir17q+ojpZmZVWum92E0B5kPdb9YnrMdqoi
+         36b4ikQkgzeC4vVfPS3N/Pg+urGJTokP6w5VtyXKqKZ+Y+smm1dqjEjnxr8ApT2HuziV
+         uw3g==
+X-Gm-Message-State: APjAAAXmv90M6IBRF28a3H1N+YvAUMUfXEhz77RAxEpkdxgGG66X1di1
+        iFeYWsLyRwqcRSdOBn4tc/xDrA==
+X-Google-Smtp-Source: APXvYqwEWlnvEVyhRSWoTcvArVt24703ds1SHbMoBaQLe3cNIB26BVclXlmxZ/1U0QOtRcfMPyd6gQ==
+X-Received: by 2002:a1c:540c:: with SMTP id i12mr2110133wmb.90.1567485095250;
+        Mon, 02 Sep 2019 21:31:35 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e13sm21024465wmh.44.2019.09.02.21.31.29
+        by smtp.gmail.com with ESMTPSA id e13sm21024465wmh.44.2019.09.02.21.31.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Sep 2019 21:31:31 -0700 (PDT)
+        Mon, 02 Sep 2019 21:31:34 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
@@ -52,9 +52,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         John Hurley <john.hurley@netronome.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net-next 1/5] net/tls: use the full sk_proto pointer
-Date:   Mon,  2 Sep 2019 21:31:02 -0700
-Message-Id: <20190903043106.27570-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 2/5] net/tls: don't jump to return
+Date:   Mon,  2 Sep 2019 21:31:03 -0700
+Message-Id: <20190903043106.27570-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190903043106.27570-1-jakub.kicinski@netronome.com>
 References: <20190903043106.27570-1-jakub.kicinski@netronome.com>
@@ -65,160 +65,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we already have the pointer to the full original sk_proto
-stored use that instead of storing all individual callback
-pointers as well.
+Reusing parts of error path for normal exit will make
+next commit harder to read, untangle the two.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- drivers/crypto/chelsio/chtls/chtls_main.c |  6 +++--
- include/net/tls.h                         | 10 ---------
- net/tls/tls_main.c                        | 27 +++++++++--------------
- 3 files changed, 14 insertions(+), 29 deletions(-)
+ net/tls/tls_device.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/crypto/chelsio/chtls/chtls_main.c b/drivers/crypto/chelsio/chtls/chtls_main.c
-index 635bb4b447fb..e6df5b95ed47 100644
---- a/drivers/crypto/chelsio/chtls/chtls_main.c
-+++ b/drivers/crypto/chelsio/chtls/chtls_main.c
-@@ -474,7 +474,8 @@ static int chtls_getsockopt(struct sock *sk, int level, int optname,
- 	struct tls_context *ctx = tls_get_ctx(sk);
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index e188139f0464..2cd7318a1338 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -838,22 +838,18 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	struct net_device *netdev;
+ 	char *iv, *rec_seq;
+ 	struct sk_buff *skb;
+-	int rc = -EINVAL;
+ 	__be64 rcd_sn;
++	int rc;
  
- 	if (level != SOL_TLS)
--		return ctx->getsockopt(sk, level, optname, optval, optlen);
-+		return ctx->sk_proto->getsockopt(sk, level,
-+						 optname, optval, optlen);
+ 	if (!ctx)
+-		goto out;
++		return -EINVAL;
  
- 	return do_chtls_getsockopt(sk, optval, optlen);
- }
-@@ -541,7 +542,8 @@ static int chtls_setsockopt(struct sock *sk, int level, int optname,
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 
- 	if (level != SOL_TLS)
--		return ctx->setsockopt(sk, level, optname, optval, optlen);
-+		return ctx->sk_proto->setsockopt(sk, level,
-+						 optname, optval, optlen);
- 
- 	return do_chtls_setsockopt(sk, optname, optval, optlen);
- }
-diff --git a/include/net/tls.h b/include/net/tls.h
-index ec3c3ed2c6c3..6dab6683e42f 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -275,16 +275,6 @@ struct tls_context {
- 	struct proto *sk_proto;
- 
- 	void (*sk_destruct)(struct sock *sk);
--	void (*sk_proto_close)(struct sock *sk, long timeout);
--
--	int  (*setsockopt)(struct sock *sk, int level,
--			   int optname, char __user *optval,
--			   unsigned int optlen);
--	int  (*getsockopt)(struct sock *sk, int level,
--			   int optname, char __user *optval,
--			   int __user *optlen);
--	int  (*hash)(struct sock *sk);
--	void (*unhash)(struct sock *sk);
- 
- 	union tls_crypto_context crypto_send;
- 	union tls_crypto_context crypto_recv;
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 277f7c209fed..2df1ae8b77fa 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -331,7 +331,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 		tls_sw_strparser_done(ctx);
- 	if (ctx->rx_conf == TLS_SW)
- 		tls_sw_free_ctx_rx(ctx);
--	ctx->sk_proto_close(sk, timeout);
-+	ctx->sk_proto->close(sk, timeout);
- 
- 	if (free_ctx)
- 		tls_ctx_free(sk, ctx);
-@@ -451,7 +451,8 @@ static int tls_getsockopt(struct sock *sk, int level, int optname,
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 
- 	if (level != SOL_TLS)
--		return ctx->getsockopt(sk, level, optname, optval, optlen);
-+		return ctx->sk_proto->getsockopt(sk, level,
-+						 optname, optval, optlen);
- 
- 	return do_tls_getsockopt(sk, optname, optval, optlen);
- }
-@@ -609,7 +610,8 @@ static int tls_setsockopt(struct sock *sk, int level, int optname,
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 
- 	if (level != SOL_TLS)
--		return ctx->setsockopt(sk, level, optname, optval, optlen);
-+		return ctx->sk_proto->setsockopt(sk, level, optname, optval,
-+						 optlen);
- 
- 	return do_tls_setsockopt(sk, optname, optval, optlen);
- }
-@@ -624,10 +626,7 @@ static struct tls_context *create_ctx(struct sock *sk)
- 		return NULL;
- 
- 	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
--	ctx->setsockopt = sk->sk_prot->setsockopt;
--	ctx->getsockopt = sk->sk_prot->getsockopt;
--	ctx->sk_proto_close = sk->sk_prot->close;
--	ctx->unhash = sk->sk_prot->unhash;
-+	ctx->sk_proto = sk->sk_prot;
- 	return ctx;
- }
- 
-@@ -683,9 +682,6 @@ static int tls_hw_prot(struct sock *sk)
- 
- 			spin_unlock_bh(&device_spinlock);
- 			tls_build_proto(sk);
--			ctx->hash = sk->sk_prot->hash;
--			ctx->unhash = sk->sk_prot->unhash;
--			ctx->sk_proto_close = sk->sk_prot->close;
- 			ctx->sk_destruct = sk->sk_destruct;
- 			sk->sk_destruct = tls_hw_sk_destruct;
- 			ctx->rx_conf = TLS_HW_RECORD;
-@@ -717,7 +713,7 @@ static void tls_hw_unhash(struct sock *sk)
- 		}
- 	}
- 	spin_unlock_bh(&device_spinlock);
--	ctx->unhash(sk);
-+	ctx->sk_proto->unhash(sk);
- }
- 
- static int tls_hw_hash(struct sock *sk)
-@@ -726,7 +722,7 @@ static int tls_hw_hash(struct sock *sk)
- 	struct tls_device *dev;
- 	int err;
- 
--	err = ctx->hash(sk);
-+	err = ctx->sk_proto->hash(sk);
- 	spin_lock_bh(&device_spinlock);
- 	list_for_each_entry(dev, &device_list, dev_list) {
- 		if (dev->hash) {
-@@ -816,7 +812,6 @@ static int tls_init(struct sock *sk)
- 
- 	ctx->tx_conf = TLS_BASE;
- 	ctx->rx_conf = TLS_BASE;
--	ctx->sk_proto = sk->sk_prot;
- 	update_sk_prot(sk, ctx);
- out:
- 	write_unlock_bh(&sk->sk_callback_lock);
-@@ -828,12 +823,10 @@ static void tls_update(struct sock *sk, struct proto *p)
- 	struct tls_context *ctx;
- 
- 	ctx = tls_get_ctx(sk);
--	if (likely(ctx)) {
--		ctx->sk_proto_close = p->close;
-+	if (likely(ctx))
- 		ctx->sk_proto = p;
--	} else {
-+	else
- 		sk->sk_prot = p;
+-	if (ctx->priv_ctx_tx) {
+-		rc = -EEXIST;
+-		goto out;
 -	}
++	if (ctx->priv_ctx_tx)
++		return -EEXIST;
+ 
+ 	start_marker_record = kmalloc(sizeof(*start_marker_record), GFP_KERNEL);
+-	if (!start_marker_record) {
+-		rc = -ENOMEM;
+-		goto out;
+-	}
++	if (!start_marker_record)
++		return -ENOMEM;
+ 
+ 	offload_ctx = kzalloc(TLS_OFFLOAD_CONTEXT_SIZE_TX, GFP_KERNEL);
+ 	if (!offload_ctx) {
+@@ -982,7 +978,8 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	smp_store_release(&sk->sk_validate_xmit_skb, tls_validate_xmit_skb);
+ 	dev_put(netdev);
+ 	up_read(&device_offload_lock);
+-	goto out;
++
++	return 0;
+ 
+ release_netdev:
+ 	dev_put(netdev);
+@@ -999,7 +996,6 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	ctx->priv_ctx_tx = NULL;
+ free_marker_record:
+ 	kfree(start_marker_record);
+-out:
+ 	return rc;
  }
  
- static int tls_get_info(const struct sock *sk, struct sk_buff *skb)
+@@ -1058,7 +1054,11 @@ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx)
+ 		goto free_sw_resources;
+ 
+ 	tls_device_attach(ctx, sk, netdev);
+-	goto release_netdev;
++	up_read(&device_offload_lock);
++
++	dev_put(netdev);
++
++	return 0;
+ 
+ free_sw_resources:
+ 	up_read(&device_offload_lock);
 -- 
 2.21.0
 
