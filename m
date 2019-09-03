@@ -2,123 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57031A6495
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DFCA64C6
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727667AbfICJCG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 3 Sep 2019 05:02:06 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:41636 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbfICJCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 05:02:06 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x8391rMf021012, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x8391rMf021012
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 3 Sep 2019 17:01:53 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
- 14.03.0468.000; Tue, 3 Sep 2019 17:01:49 +0800
-From:   Bambi Yeh <bambi.yeh@realtek.com>
-To:     Hayes Wang <hayeswang@realtek.com>,
-        Amber Chen <amber.chen@realtek.com>,
-        Prashant Malani <pmalani@chromium.org>
-CC:     David Miller <davem@davemloft.net>,
+        id S1728347AbfICJK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 05:10:56 -0400
+Received: from mail-eopbgr790137.outbound.protection.outlook.com ([40.107.79.137]:26592
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726557AbfICJK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 05:10:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U7f2aBRBK/Oo0+6H9g+KSxATOxlJ97Xuu+UMFPKpMyUVjIpoM/V95/3kUCZVGDwoYTBKUYfTZDv4UjzQvREMrsr9ZmfAjJUvH8A0Hpz2JIEqfa3K7s6wd5mjTSoCa55Czkf+GJ/yZLID+4drz5HqhQrdY8jv0h3QcTr34Ns/lTQzOtPdfzrsCiUZrg0gz/XiIrYtqKp1Cu0whQKB69tYLOkXiSc2lpRmUfKZTlBTfyhtgL8pgThe+vstU16pnYSGwANfgZy7svSvwbnymMVwf27G4V3Pk3rn+FvvR6fSc8Lk9SPYKgOPYLGZVBi8cpD0l0JYjlUx2UW+XTDiLyLt/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O9EUhd1jB7mK6BzogD/0f2+S4IN+aQkhGwbN+Hw5ymc=;
+ b=jb2WcWyDJ9DWxc+ogs8mcRT0W4ZKUdq3M1v2kQhflzaTjd/FhM7VtTYzaQlazC+dHdh9haiXFkflQuvuT24Xr5rYWioJTcZfpfsDG15eDI3f2R9xgfEcbmUB/jn05Jns0iqVPP8a+oOuAM1yDfry+7J1MbhuvDOL5iqcuuYSOFChoEOgxvBalt8UU6u3Y6nzoSDACwCKTEh7v1MZt8bD1gXjaefLI8CKJyfg+1o4Oe1y3mUiSm354rfZIC+ncMA1nioOPOOFFN7yQ8ejbQhfwavl9yLfzZl0R2BigtTDcWyCuMa1rQ6PuAkumSkRVu83rqvL052+3mHqzexrsyJkEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
+ dkim=pass header.d=mips.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O9EUhd1jB7mK6BzogD/0f2+S4IN+aQkhGwbN+Hw5ymc=;
+ b=upScYiC7qsvh4ZlWPdsztvpQeO5AQuUZkaXLlAL7L+lxOw42AksKBY5ZTGBNwGYzD+jUAHx6a2QDIUcGx+Gilkx6N4kaulWjEH8HE7SYdSVrM1h0xzOyUDsgQITMfCaKNeH2ZYAbTCJBSLpNHRy9o+T7VS0BPFFf3EycmV87XNU=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
+ MWHPR2201MB1311.namprd22.prod.outlook.com (10.172.62.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.18; Tue, 3 Sep 2019 09:10:53 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::f9e8:5e8c:7194:fad3]) by MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::f9e8:5e8c:7194:fad3%11]) with mapi id 15.20.2220.021; Tue, 3 Sep 2019
+ 09:10:53 +0000
+From:   Paul Burton <paul.burton@mips.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+CC:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <pburton@wavecomp.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ryankao <ryankao@realtek.com>, Jackc <jackc@realtek.com>,
-        Albertk <albertk@realtek.com>,
-        "marcochen@google.com" <marcochen@google.com>,
-        nic_swsd <nic_swsd@realtek.com>,
-        Grant Grundler <grundler@chromium.org>
-Subject: RE: Proposal: r8152 firmware patching framework
-Thread-Topic: Proposal: r8152 firmware patching framework
-Thread-Index: AQHVX4GpTTdtotue5kafn6EzHtNLuacT5+mAgAOC+QCAAkCM0A==
-Date:   Tue, 3 Sep 2019 09:01:48 +0000
-Message-ID: <BAD4255E2724E442BCB37085A3D9C93AEEA087DF@RTITMBSVM03.realtek.com.tw>
-References: <CACeCKacOcg01NuCWgf2RRer3bdmW-CH7d90Y+iD2wQh5Ka6Mew@mail.gmail.com>,<CACeCKacjCkS5UmzS9irm0JjGmk98uBBBsTLSzrXoDUJ60Be9Vw@mail.gmail.com>
- <755AFD2B-D66F-40FF-ADCD-5077ECC569FE@realtek.com>
- <0835B3720019904CB8F7AA43166CEEB2F18DA7A9@RTITMBSVM03.realtek.com.tw>
-In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18DA7A9@RTITMBSVM03.realtek.com.tw>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
+Subject: Re: [PATCH v5 04/17] MIPS: PCI: refactor ioc3 special handling
+Thread-Topic: [PATCH v5 04/17] MIPS: PCI: refactor ioc3 special handling
+Thread-Index: AQHVYjd8rUWfDFbi7Ey4tyNvKR/uvw==
+Date:   Tue, 3 Sep 2019 09:10:53 +0000
+Message-ID: <MWHPR2201MB12779E08754158B97B8A9A83C1B90@MWHPR2201MB1277.namprd22.prod.outlook.com>
+References: <20190819163144.3478-5-tbogendoerfer@suse.de>
+In-Reply-To: <20190819163144.3478-5-tbogendoerfer@suse.de>
+Accept-Language: en-US
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.234.218]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+x-clientproxiedby: LO2P265CA0275.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a1::23) To MWHPR2201MB1277.namprd22.prod.outlook.com
+ (2603:10b6:301:18::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [94.196.173.241]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1c2ffbb5-a1cb-4b3e-a585-08d7304e9ef6
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR2201MB1311;
+x-ms-traffictypediagnostic: MWHPR2201MB1311:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR2201MB13116C2472901BEE809FBA89C1B90@MWHPR2201MB1311.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 01494FA7F7
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39840400004)(346002)(376002)(366004)(136003)(199004)(189003)(14454004)(4326008)(386003)(102836004)(42882007)(55236004)(6506007)(186003)(26005)(52116002)(476003)(486006)(44832011)(7696005)(14444005)(6916009)(33656002)(7416002)(446003)(11346002)(76176011)(966005)(71190400001)(6246003)(66446008)(71200400001)(64756008)(66946007)(66556008)(2906002)(5660300002)(4744005)(66476007)(256004)(8936002)(81156014)(6116002)(66066001)(8676002)(55016002)(316002)(54906003)(9686003)(6306002)(99286004)(6436002)(53936002)(478600001)(305945005)(25786009)(7736002)(74316002)(81166006)(229853002)(52536014)(3846002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1311;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: yESQEe8lVZsqkoEgMi2IOYjILal4xTOxUCwVfoJcqkLtd9FtHTUGWsaPrdX4APvzlDSm1mQV8UoAetwBAZIg3Eu1KCpuri+/APsQqMLICoFZeUjhMFTvMQNPpfPVYE4tYAzfvD6mzZbiv/DUuGRHVYRhVcd32GnY3RmKLdqzJH+gytY7/Q4j9CK/lkMWzph7cGxLeTiB+tZ3A7jmiw2CA4P0QRpC8jFFRia4LtKPpKdLa//bZNUqpojg5M+V8DYL8pD180FLjP3pGQoimTLnANOjZorCW8gwLGXQY/jj4K3f9EHSR4W/dETpWWVFDgI86DVNvtmo1bj22HhgEdU2LqdWeoYutaHFwIQPUb8/btTI4DIhDfuQ/WOwi6MbfPYJoDoseCdJ1KPKiN6S66AHnuE1uHa3ZR1ZBpYLxtnggnI=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c2ffbb5-a1cb-4b3e-a585-08d7304e9ef6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 09:10:53.4698
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: U8qbxL4VbGaO/9gop127afN6NFWAoDSdPZbl9O+eCmIbsTC/w7xSOzDZUmxrMSSzvuQOHl19soEiN6HDgc14ZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1311
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Prashant:
+Hello,
 
-We will try to implement your requests.
-Based on our experience, upstream reviewer often reject our modification if they have any concern.
-Do you think you can talk to them about this idea and see if they will accept it or not?
-Or if you can help on this after we submit it?
+Thomas Bogendoerfer wrote:
+> Refactored code to only have one ioc3 special handling for read
+> access and one for write access.
 
-Also, Hayes is now updating our current upstream driver and it goes back and forth for a while.
-So we will need some time to finish it and the target schedule to have your request done is in the end of this month.
+Applied to mips-next.
 
-Thank you very much.
+> commit 813cafc4109c
+> https://git.kernel.org/mips/c/813cafc4109c
+>=20
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Signed-off-by: Paul Burton <paul.burton@mips.com>
 
-Best Regards,
-Bambi Yeh
+Thanks,
+    Paul
 
------Original Message-----
-From: Hayes Wang <hayeswang@realtek.com> 
-Sent: Monday, September 2, 2019 2:31 PM
-To: Amber Chen <amber.chen@realtek.com>; Prashant Malani <pmalani@chromium.org>
-Cc: David Miller <davem@davemloft.net>; netdev@vger.kernel.org; Bambi Yeh <bambi.yeh@realtek.com>; Ryankao <ryankao@realtek.com>; Jackc <jackc@realtek.com>; Albertk <albertk@realtek.com>; marcochen@google.com; nic_swsd <nic_swsd@realtek.com>; Grant Grundler <grundler@chromium.org>
-Subject: RE: Proposal: r8152 firmware patching framework
-
-Prashant Malani <pmalani@chromium.org> 
-> >
-> > (Adding a few more Realtek folks)
-> >
-> > Friendly ping. Any thoughts / feedback, Realtek folks (and others) ?
-> >
-> >> On Thu, Aug 29, 2019 at 11:40 AM Prashant Malani
-> <pmalani@chromium.org> wrote:
-> >>
-> >> Hi,
-> >>
-> >> The r8152 driver source code distributed by Realtek (on
-> >> www.realtek.com) contains firmware patches. This involves binary 
-> >> byte-arrays being written byte/word-wise to the hardware memory
-> >> Example: grundler@chromium.org (cc-ed) has an experimental patch
-> which
-> >> includes the firmware patching code which was distributed with the 
-> >> Realtek source :
-> >>
-> https://chromium-review.googlesource.com/c/chromiumos/third_party/kern
-> el
-> /+/1417953
-> >>
-> >> It would be nice to have a way to incorporate these firmware fixes 
-> >> into the upstream code. Since having indecipherable byte-arrays is 
-> >> not possible upstream, I propose the following:
-> >> - We use the assistance of Realtek to come up with a format which 
-> >> the firmware patch files can follow (this can be documented in the 
-> >> comments).
-> >>       - A real simple format could look like this:
-> >>               +
-> >>
-> <section1><size_in_bytes><address1><data1><address2><data2>...<address
-> N
-> ><dataN><section2>...
-> >>                + The driver would be able to understand how to 
-> >> parse each section (e.g is each data entry a byte or a word?)
-> >>
-> >> - We use request_firmware() to load the firmware, parse it and 
-> >> write the data to the relevant registers.
-
-I plan to finish the patches which I am going to submit, first. Then, I could focus on this. However, I don't think I would start this quickly. There are many preparations and they would take me a lot of time.
-
-Best Regards,
-Hayes
-
-
+[ This message was auto-generated; if you believe anything is incorrect
+  then please email paul.burton@mips.com to report it. ]
