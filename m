@@ -2,114 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7845FA7145
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 19:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C2AA7152
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 19:06:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729796AbfICRDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 13:03:18 -0400
-Received: from mail-wr1-f53.google.com ([209.85.221.53]:44676 "EHLO
-        mail-wr1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728967AbfICRDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 13:03:18 -0400
-Received: by mail-wr1-f53.google.com with SMTP id 30so7338272wrk.11
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 10:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DZ0aOZf1y/WdjmY6eDN/6MXurBrmKvj0PHjzfefqdrU=;
-        b=e82AgbPBuoxxaiJ0nm+OZ1kRVQgVI6gr5EAQLzeSDjM1ThIn4EeHbc41YTttdfDWy4
-         bEVfdRskYtZLLzCJmsv6i493n3gNtjIgfn2Do2SAWAetACuAxJdqw7jhM84B9EN8Fx/E
-         OMyVO2YnH06P/3gmubnYxEKx+iqAk7EZ8Bc3E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DZ0aOZf1y/WdjmY6eDN/6MXurBrmKvj0PHjzfefqdrU=;
-        b=Ao+4KLAqcmrY3ysGEQ1Vl7GJjaQDnklaqWhu9OdZIDJQYhKmaTkJofF6NrNfFTB8Bx
-         zDx7BhKL4SzMMBwDFo6syes9x6fFuGfPUZhl4fo73gIU1V7zXtjy/OVp0IXDLw7xw4h+
-         qq5KOYCXM7fLaOwNvyS0KsqUePb55wPxzOvsIE2XErjBWGOzOWATB1jO6Pbn/luujs7t
-         3268yA/y7Az/foV/UeHW8mB+Y63qUt2gU8z+kLCtoDyPgd3vny1eDx7JgtPijEYrZOfo
-         DUqBuoBMFb5u6Czk8rm6qaSh/d2s7j4/9wIcKf7J7K5nFh25HKLS2y4UIcY8krl9WD9L
-         Cnww==
-X-Gm-Message-State: APjAAAWP4+ZoJgct/h4/+wuUl1rqpHEmb2twcU7iXL78aja3gicK5Zi1
-        mRCW+SZZxQaZf0BpRKK3YSuztA==
-X-Google-Smtp-Source: APXvYqzqLpl3fuIm4/9kaqhutGIRGVgyXP+lmDHCG1tglICiZQyn/LP+68zoX26Mzcku5pFRCGCRhA==
-X-Received: by 2002:adf:e488:: with SMTP id i8mr16175393wrm.20.1567530195750;
-        Tue, 03 Sep 2019 10:03:15 -0700 (PDT)
-Received: from pixies ([5.102.239.190])
-        by smtp.gmail.com with ESMTPSA id y13sm16943988wrg.8.2019.09.03.10.03.13
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 03 Sep 2019 10:03:14 -0700 (PDT)
-Date:   Tue, 3 Sep 2019 20:03:12 +0300
-From:   Shmulik Ladkani <shmulik@metanetworks.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        eyal@metanetworks.com
-Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
-Message-ID: <20190903200312.7e0ec75e@pixies>
-In-Reply-To: <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
-References: <20190826170724.25ff616f@pixies>
-        <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
-        <20190827144218.5b098eac@pixies>
-        <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
-        <20190829152241.73734206@pixies>
-        <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
-        <20190903185121.56906d31@pixies>
-        <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
+        id S1730090AbfICRF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 13:05:59 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:42914 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727107AbfICRF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 13:05:58 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1i5CFa-0003c1-IC; Tue, 03 Sep 2019 19:05:50 +0200
+Date:   Tue, 3 Sep 2019 19:05:50 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Leonardo Bras <leonardo@linux.ibm.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, FlorianWestphal <fw@strlen.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 1/2] netfilter: Terminate rule eval if protocol=IPv6
+ and ipv6 module is disabled
+Message-ID: <20190903170550.GA13660@breakpoint.cc>
+References: <20190830181354.26279-1-leonardo@linux.ibm.com>
+ <20190830181354.26279-2-leonardo@linux.ibm.com>
+ <20190830205802.GS20113@breakpoint.cc>
+ <99e3ef9c5ead1c95df697d49ab9cc83a95b0ac7c.camel@linux.ibm.com>
+ <20190903164948.kuvtpy7viqhcmp77@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190903164948.kuvtpy7viqhcmp77@salvia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Sep 2019 12:23:54 -0400
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
-
-> This is a lot more code change. Especially for stable fixes that need
-> to be backported, a smaller patch is preferable.
-
-Indeed. Thanks for the feedback.
-
-> My suggestion only tested the first frag_skb length. If a list can be
-> created where the first frag_skb is head_frag but a later one is not,
-> it will fail short. I kind of doubt that.
+Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> On Tue, Sep 03, 2019 at 01:46:50PM -0300, Leonardo Bras wrote:
+> > On Fri, 2019-08-30 at 22:58 +0200, Florian Westphal wrote:
+> > > Leonardo Bras <leonardo@linux.ibm.com> wrote:
+> > > > If IPv6 is disabled on boot (ipv6.disable=1), but nft_fib_inet ends up
+> > > > dealing with a IPv6 packet, it causes a kernel panic in
+> > > > fib6_node_lookup_1(), crashing in bad_page_fault.
+> > > > 
+> > > > The panic is caused by trying to deference a very low address (0x38
+> > > > in ppc64le), due to ipv6.fib6_main_tbl = NULL.
+> > > > BUG: Kernel NULL pointer dereference at 0x00000038
+> > > > 
+> > > > The kernel panic was reproduced in a host that disabled IPv6 on boot and
+> > > > have to process guest packets (coming from a bridge) using it's ip6tables.
+> > > > 
+> > > > Terminate rule evaluation when packet protocol is IPv6 but the ipv6 module
+> > > > is not loaded.
+> > > > 
+> > > > Signed-off-by: Leonardo Bras <leonardo@linux.ibm.com>
+> > > 
+> > > Acked-by: Florian Westphal <fw@strlen.de>
+> > > 
+> > 
+> > Hello Pablo,
+> > 
+> > Any trouble with this patch? 
+> > I could see the other* one got applied, but not this one.
+> > *(The other did not get acked, so i released it alone as v5)
+> > 
+> > Is there any fix I need to do in this one?
 > 
-> By default skb_gro_receive builds GSO skbs that can be segmented
-> along the original gso_size boundaries. We have so far only observed
-> this issue when messing with gso_size.
-
-The rationale was based on inputs specified in 43170c4e0ba7, where a GRO
-skb has a fraglist with different amounts of payloads.
-
-> We can easily refine the test to fall back on to copying only if
-> skb_headlen(list_skb) != mss.
-
-I'm concerned this is too generic; innocent skbs may fall victim to our
-skb copy fallback. Probably those mentioned in 43170c4e0ba7.
-
-> Alternatively, only on SKB_GSO_DODGY is fine, too.
+> Hm, I see, so this one:
 > 
-> I suggest we stick with the two-liner.
+> https://patchwork.ozlabs.org/patch/1156100/
+> 
+> is not enough?
 
-OK.
-So lets refine your original codition, testing only the first
-frag_skb, but also ensuring SKB_GSO_DODGY *and* 'skb_headlen(list_skb) != mss'
-(we know existing code DOES work OK for unchanged gso_size, even if frags
-have linear, non head_frag, data).
+No, its not.
 
-This hits the known, reproducable case of the mentioned BUG_ON, and is
-tightly scoped to that case.
+> I was expecting we could find a way to handle this from br_netfilter
+> alone itself.
 
-If that's agreed, I'll submit a proper patch.
+We can't because we support ipv6 fib lookups from the netdev family
+as well.
 
-Best,
-Shmulik
+Alternative is to auto-accept ipv6 packets from the nf_tables eval loop,
+but I think its worse.
