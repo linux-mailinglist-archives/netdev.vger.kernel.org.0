@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB07A69D4
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C5FA69F6
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729097AbfICN24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 09:28:56 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:43856 "EHLO
+        id S1729118AbfICNg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 09:36:27 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:48834 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727667AbfICN24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 09:28:56 -0400
+        with ESMTP id S1727941AbfICNg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 09:36:27 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 8AD376083E; Tue,  3 Sep 2019 13:28:55 +0000 (UTC)
+        id DD0A3605A2; Tue,  3 Sep 2019 13:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567517335;
-        bh=K3E/QGwt8PVRCKQtxROTYRObKHRnmgQXb96agiICqk8=;
+        s=default; t=1567517785;
+        bh=T4+qthdIa+JdtJ1JZNw78DDAC6sdnSeXsq52RWos8i8=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=oWyyGkcBm1bYRXtIfgtVXK459fuDWDJoQMzTNnBsY/ImTIbY9QSWvLttZzumOIZA1
-         kDaHy4tacjsRgjM64U0+vY49NBK5IlXrv9ChgsfiX3OjX9MPUdKAUSqhNwYZF2D8WB
-         hofKGcTK4EQkXUQnLK6CxS3yIFjbuWvuJ3/CNcAw=
+        b=eu4SuX4XJTg98x2tGFMxG20wx4cFDttZSQzpbJg3b6Wn1pO346QTjqcrRO3rxZxjJ
+         KUYy1H6vDhwFTMKl0B4xb+w+mEmMtbryFE88MC7ogW7bf+f5yHdmFPpt1cYRe74B2z
+         rybsJ5EqkOjXuBHzp4eS6OSoZAUib3VzPelsncUA=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,57 +30,56 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9BE12605A2;
-        Tue,  3 Sep 2019 13:28:53 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CB942602CA;
+        Tue,  3 Sep 2019 13:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567517335;
-        bh=K3E/QGwt8PVRCKQtxROTYRObKHRnmgQXb96agiICqk8=;
+        s=default; t=1567517785;
+        bh=T4+qthdIa+JdtJ1JZNw78DDAC6sdnSeXsq52RWos8i8=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=Pnl8xAnYep/ueky0p38sQ5/fga0Je+FBS3gzV+NwrmnenpvFCrATfI+ltEAHqdYiB
-         Opdsiuopg4OisnZpnm1kjyEuyUsKq8GdSb96qRUzGY5bmJSVY2izYar8wEzsgWlywB
-         iH9/9lue5LhiNXIPrbwStw0XnfCUTA4GLUnHh+C0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9BE12605A2
+        b=n4N6oMCI7ZAh48ltOR5O3mymXNlUO4JcKKK99is1xAel8K0RsIq0Mrj8yLzJLlctL
+         gr79ARrs4bsck8Od+R9MUGVVnLj3WhaC/HwYmQDERP7t4fOGClJUggt0H4bnpZwlcL
+         JLPn0o7Fm41sqbVjRi0Q1rqaTvhu3NZvjQHeQhwQ=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CB942602CA
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: remove unused variables
- 'RTL8712_SDIO_EFUSE_TABLE' and 'MAX_PGPKT_SIZE'
+Subject: Re: [PATCH] rtw88: remove redundant assignment to pointer
+ debugfs_topdir
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190816140513.72572-1-yuehaibing@huawei.com>
-References: <20190816140513.72572-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <pkshih@realtek.com>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
+In-Reply-To: <20190822113728.25494-1-colin.king@canonical.com>
+References: <20190822113728.25494-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190903132855.8AD376083E@smtp.codeaurora.org>
-Date:   Tue,  3 Sep 2019 13:28:55 +0000 (UTC)
+Message-Id: <20190903133625.DD0A3605A2@smtp.codeaurora.org>
+Date:   Tue,  3 Sep 2019 13:36:25 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+Colin King <colin.king@canonical.com> wrote:
 
-> drivers/net/wireless/realtek/rtlwifi/efuse.c:16:31:
->  warning: RTL8712_SDIO_EFUSE_TABLE defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless/realtek/rtlwifi/efuse.c:9:17:
->  warning: MAX_PGPKT_SIZE defined but not used [-Wunused-const-variable=]
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> They are never used, so can be removed.
+> Pointer debugfs_topdir is initialized to a value that is never read
+> and it is re-assigned later. The initialization is redundant and can
+> be removed.
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-84d31d3b6234 rtlwifi: remove unused variables 'RTL8712_SDIO_EFUSE_TABLE' and 'MAX_PGPKT_SIZE'
+9f7d65fb3935 rtw88: remove redundant assignment to pointer debugfs_topdir
 
 -- 
-https://patchwork.kernel.org/patch/11097803/
+https://patchwork.kernel.org/patch/11109159/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
