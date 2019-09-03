@@ -2,73 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE2A2A64EF
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECAACA652D
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:29:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbfICJS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 05:18:57 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:42558 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbfICJS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 05:18:57 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x839ImAN028943, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x839ImAN028943
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 3 Sep 2019 17:18:48 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Tue, 3 Sep 2019
- 17:18:48 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>
-Subject: RE: [PATCH v4] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
-Thread-Topic: [PATCH v4] rtw88: pci: Move a mass of jobs in hw IRQ to soft
- IRQ
-Thread-Index: AQHVYYiSKHM1M02ZmUe7DBCiQj9296cYujYAgADzjqA=
-Date:   Tue, 3 Sep 2019 09:18:47 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D18C363B@RTITMBSVM04.realtek.com.tw>
-References: <F7CD281DE3E379468C6D07993EA72F84D18A5786@RTITMBSVM04.realtek.com.tw>
- <20190826070827.1436-1-jian-hong@endlessm.com>
- <F7CD281DE3E379468C6D07993EA72F84D18AE2DA@RTITMBSVM04.realtek.com.tw>
- <875zmarivz.fsf@kamboji.qca.qualcomm.com>
- <CAPpJ_efAxQN4pRdpVmT5Pdkp-6Y-QVOQdJR4iY4A-PXZokLGtA@mail.gmail.com>
-In-Reply-To: <CAPpJ_efAxQN4pRdpVmT5Pdkp-6Y-QVOQdJR4iY4A-PXZokLGtA@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728128AbfICJ3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 05:29:32 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42760 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfICJ3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 05:29:31 -0400
+Received: by mail-io1-f68.google.com with SMTP id n197so32390684iod.9
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 02:29:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8Jt2xE+wUv9+deP8KWEAK1pKoGoCtpCuIlNTIBVFtsk=;
+        b=sE0kMM1ehxOBajVIEEyhAsbhFmOEaL7cNOzXZYeedi2dQID0MrrCdMMpN03VsY0qGf
+         JKg9uUb5SwUCS3N9sfLTEUeACxFZUgymPriNvXGYj8gilPuVNvBI4M+R4qIgWhd6Lt5Y
+         W2MUif97ljnk6aVb2UJ6W+6Rnc9jvZUUcTrIRwbhL60Q/zBWeOlZ+aOVLV9M9l0rb5/h
+         ojKLxt7YAnJFIgNW7Gt8OVdx/gorzSmCGapqB2tLOn23gLoJDVz3G4+pLxLSLK3h6Hpw
+         E0dLwmURj2Z+rDpLQycUxgn0GYNeXRvepGWSZVXorEqr1sHCbIwuorU/+7b8kKyCVvyN
+         guRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8Jt2xE+wUv9+deP8KWEAK1pKoGoCtpCuIlNTIBVFtsk=;
+        b=Vm9o7tJTV0QBKBdJH9JE0M0P2aBwLWqSq24RV75/IVa6cZt+s39DUeA2W128IIMr39
+         jPWzkN7NcGAfYBbpSl3i0nuSu91KwJv4GZJ1VpnwjR9gziH3RtOaN34KMAmMNQUENO9f
+         b2mB8QN3Tqe0RM9z/BXfgzWH1wMDQRKN3b0aAhLMahzwyoWLk7gAq6oI/n2vE/Tnt+WU
+         DIRISaX/DaOpJczr26r+H7sSB94Se6gCOxu3BAMUzd79FAihNl9Yt+VBXSZJqSwKz5On
+         IJMNcAg2hCdFrQBA+T33xD+DGzm4bTB5A4g7tB72VVJy+fq/sm6cgwhJdHDsT1jSC9/f
+         S6yQ==
+X-Gm-Message-State: APjAAAXKQAdCYhlec2/0NKpl+cvirdkDKyrztKjjgD6i7z97jo8sM2u/
+        wDEkzXgNrX7X/byXSvWoAym8HLwbBS2sFIo83h4=
+X-Google-Smtp-Source: APXvYqyqmApAaMaXTtqEbD1y/Ln9NWqeKiV+OTfXPjdHpU5VpeEoQQH1lRinS+CH1cwZDlWiM0MrRImp4R6iHhXu8xo=
+X-Received: by 2002:a02:ad0e:: with SMTP id s14mr16247237jan.97.1567502971141;
+ Tue, 03 Sep 2019 02:29:31 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAA93jw73AJMwLL+6cNLB2R6oqA2DyMYc1ZUsrFPndESs0ZONng@mail.gmail.com>
+ <3e8fd488-1bd1-3213-6329-6baf8935a446@gmail.com>
+In-Reply-To: <3e8fd488-1bd1-3213-6329-6baf8935a446@gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Tue, 3 Sep 2019 02:29:20 -0700
+Message-ID: <CAA93jw5KLS2be7ZhaiCOM3Jz-TsmQBY=z7iF0Oq6QU6=mQH8pA@mail.gmail.com>
+Subject: Re: how to search for the best route from userspace in netlink?
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBKaWFuLUhvbmcgUGFuIFttYWlsdG86amlhbi1ob25nQGVuZGxlc3NtLmNvbV0NCj4g
-DQo+ID4NCj4gPiBUb255IENodWFuZyA8eWhjaHVhbmdAcmVhbHRlay5jb20+IHdyaXRlczoNCj4g
-Pg0KPiA+ID4+IEZyb206IEppYW4tSG9uZyBQYW4NCj4gPiA+PiBTdWJqZWN0OiBbUEFUQ0ggdjRd
-IHJ0dzg4OiBwY2k6IE1vdmUgYSBtYXNzIG9mIGpvYnMgaW4gaHcgSVJRIHRvIHNvZnQNCj4gSVJR
-DQo+ID4gPj4NCj4gPiA+PiBUaGVyZSBpcyBhIG1hc3Mgb2Ygam9icyBiZXR3ZWVuIHNwaW4gbG9j
-ayBhbmQgdW5sb2NrIGluIHRoZSBoYXJkd2FyZQ0KPiA+ID4+IElSUSB3aGljaCB3aWxsIG9jY3Vw
-eSBtdWNoIHRpbWUgb3JpZ2luYWxseS4gVG8gbWFrZSBzeXN0ZW0gd29yayBtb3JlDQo+ID4gPj4g
-ZWZmaWNpZW50bHksIHRoaXMgcGF0Y2ggbW92ZXMgdGhlIGpvYnMgdG8gdGhlIHNvZnQgSVJRIChi
-b3R0b20gaGFsZikgdG8NCj4gPiA+PiByZWR1Y2UgdGhlIHRpbWUgaW4gaGFyZHdhcmUgSVJRLg0K
-PiA+ID4+DQo+ID4gPj4gU2lnbmVkLW9mZi1ieTogSmlhbi1Ib25nIFBhbiA8amlhbi1ob25nQGVu
-ZGxlc3NtLmNvbT4NCj4gPiA+DQo+ID4gPiBOb3cgaXQgd29ya3MgZmluZSB3aXRoIE1TSSBpbnRl
-cnJ1cHQgZW5hYmxlZC4NCj4gPiA+DQo+ID4gPiBCdXQgdGhpcyBwYXRjaCBpcyBjb25mbGljdGlu
-ZyB3aXRoIE1TSSBpbnRlcnJ1cHQgcGF0Y2guDQo+ID4gPiBJcyB0aGVyZSBhIGJldHRlciB3YXkg
-d2UgY2FuIG1ha2UgS2FsbGUgYXBwbHkgdGhlbSBtb3JlIHNtb290aGx5Pw0KPiA+ID4gSSBjYW4g
-cmViYXNlIHRoZW0gYW5kIHN1Ym1pdCBib3RoIGlmIHlvdSdyZSBPSy4NCj4gDQo+IFRoZSByZWJh
-c2Ugd29yayBpcyBhcHByZWNpYXRlZC4NCj4gDQoNClJlYmFzZWQgYW5kIHNlbnQuIFBsZWFzZSBj
-aGVjayBpdCBhbmQgc2VlIGlmIEkndmUgZG9uZSBhbnl0aGluZyB3cm9uZyA6KQ0KaHR0cHM6Ly9w
-YXRjaHdvcmsua2VybmVsLm9yZy9jb3Zlci8xMTEyNzQ1My8NCg0KVGhhbmtzLA0KWWFuLUhzdWFu
-DQo=
+On Mon, Sep 2, 2019 at 8:13 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 9/2/19 4:07 PM, Dave Taht wrote:
+> > Windows has the "RtmGetMostSpecificDestination" call:
+> > https://docs.microsoft.com/en-us/windows/win32/rras/search-for-the-best=
+-route
+> >
+> > In particular, I wanted to search for the best route, AND pick up the
+> > PMTU from that (if it existed)
+> > for older UDP applications like dnssec[1] and newer ones like QUIC[2].
+>
+> RTM_GETROUTE with data for the route lookup. See iproute2 code as an
+> example.
+
+Yes. I really didn't describe my thinking very well. It's coping with
+pmtu better
+in the case of a more increasingly udp'd and tunneled internet. tcp
+(being kernel based)
+will do the probe and cache that attribute of the path, udp does not.
+A udp based app with root privs could be setting it after figuring it
+out,  a userspace one cannot.
+
+for more detail from server-al sides of that philosophical debate,
+please see the links I posted
+originally.
+
+
+
+--=20
+
+Dave T=C3=A4ht
+CTO, TekLibre, LLC
+http://www.teklibre.com
+Tel: 1-831-205-9740
