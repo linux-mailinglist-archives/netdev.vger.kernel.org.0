@@ -2,237 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE5FA68C4
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 14:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1E7A68E8
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 14:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbfICMnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 08:43:05 -0400
-Received: from mga14.intel.com ([192.55.52.115]:8104 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729124AbfICMnD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 08:43:03 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Sep 2019 05:43:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,463,1559545200"; 
-   d="scan'208";a="211975658"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 03 Sep 2019 05:43:00 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E0417139; Tue,  3 Sep 2019 15:42:59 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        id S1728994AbfICMuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 08:50:17 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36177 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728587AbfICMuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 08:50:17 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1i58GC-0000u7-CQ; Tue, 03 Sep 2019 14:50:12 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:746e:2448:cd8f:dc51] (unknown [IPv6:2a03:f580:87bc:d400:746e:2448:cd8f:dc51])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2ACFB452803;
+        Tue,  3 Sep 2019 12:50:10 +0000 (UTC)
+Subject: Re: [PATCH v2 0/4] can: mcp251x: Make use of device properties
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v2 4/4] can: mcp251x: Get rid of legacy platform data
-Date:   Tue,  3 Sep 2019 15:42:59 +0300
-Message-Id: <20190903124259.60920-5-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.23.0.rc1
-In-Reply-To: <20190903124259.60920-1-andriy.shevchenko@linux.intel.com>
 References: <20190903124259.60920-1-andriy.shevchenko@linux.intel.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXzuQENBFxSzJYBCAC58uHRFEjVVE3J
+ 31eyEQT6H1zSFCccTMPO/ewwAnotQWo98Bc67ecmprcnjRjSUKTbyY/eFxS21JnC4ZB0pJKx
+ MNwK6zq71wLmpseXOgjufuG3kvCgwHLGf/nkBHXmSINHvW00eFK/kJBakwHEbddq8Dr4ewmr
+ G7yr8d6A3CSn/qhOYWhIxNORK3SVo4Io7ExNX/ljbisGsgRzsWvY1JlN4sabSNEr7a8YaqTd
+ 2CfFe/5fPcQRGsfhAbH2pVGigr7JddONJPXGE7XzOrx5KTwEv19H6xNe+D/W3FwjZdO4TKIo
+ vcZveSDrFWOi4o2Te4O5OB/2zZbNWPEON8MaXi9zABEBAAGJA3IEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXFLMlgIbAgUJAeKNmgFACRArXuIRxYrqVMB0IAQZAQoAHRYhBJrx
+ JF84Dn3PPNRrhVrGIaOR5J0gBQJcUsyWAAoJEFrGIaOR5J0grw4H/itil/yryJCvzi6iuZHS
+ suSHHOiEf+UQHib1MLP96LM7FmDabjVSmJDpH4TsMu17A0HTG+bPMAdeia0+q9FWSvSHYW8D
+ wNhfkb8zojpa37qBpVpiNy7r6BKGSRSoFOv6m/iIoRJuJ041AEKao6djj/FdQF8OV1EtWKRO
+ +nE2bNuDCcwHkhHP+FHExdzhKSmnIsMjGpGwIQKN6DxlJ7fN4W7UZFIQdSO21ei+akinBo4K
+ O0uNCnVmePU1UzrwXKG2sS2f97A+sZE89vkc59NtfPHhofI3JkmYexIF6uqLA3PumTqLQ2Lu
+ bywPAC3YNphlhmBrG589p+sdtwDQlpoH9O7NeBAAg/lyGOUUIONrheii/l/zR0xxr2TDE6tq
+ 6HZWdtjWoqcaky6MSyJQIeJ20AjzdV/PxMkd8zOijRVTnlK44bcfidqFM6yuT1bvXAO6NOPy
+ pvBRnfP66L/xECnZe7s07rXpNFy72XGNZwhj89xfpK4a9E8HQcOD0mNtCJaz7TTugqBOsQx2
+ 45VPHosmhdtBQ6/gjlf2WY9FXb5RyceeSuK4lVrz9uZB+fUHBge/giOSsrqFo/9fWAZsE67k
+ 6Mkdbpc7ZQwxelcpP/giB9N+XAfBsffQ8q6kIyuFV4ILsIECCIA4nt1rYmzphv6t5J6PmlTq
+ TzW9jNzbYANoOFAGnjzNRyc9i8UiLvjhTzaKPBOkQfhStEJaZrdSWuR/7Tt2wZBBoNTsgNAw
+ A+cEu+SWCvdX7vNpsCHMiHtcEmVt5R0Tex1Ky87EfXdnGR2mDi6Iyxi3MQcHez3C61Ga3Baf
+ P8UtXR6zrrrlX22xXtpNJf4I4Z6RaLpB/avIXTFXPbJ8CUUbVD2R2mZ/jyzaTzgiABDZspbS
+ gw17QQUrKqUog0nHXuaGGA1uvreHTnyBWx5P8FP7rhtvYKhw6XdJ06ns+2SFcQv0Bv6PcSDK
+ aRXmnW+OsDthn84x1YkfGIRJEPvvmiOKQsFEiB4OUtTX2pheYmZcZc81KFfJMmE8Z9+LT6Ry
+ uSS5AQ0EXFLNDgEIAL14qAzTMCE1PwRrYJRI/RSQGAGF3HLdYvjbQd9Ozzg02K3mNCF2Phb1
+ cjsbMk/V6WMxYoZCEtCh4X2GjQG2GDDW4KC9HOa8cTmr9Vcno+f+pUle09TMzWDgtnH92WKx
+ d0FIQev1zDbxU7lk1dIqyOjjpyhmR8Put6vgunvuIjGJ/GapHL/O0yjVlpumtmow6eME2muc
+ TeJjpapPWBGcy/8VU4LM8xMeMWv8DtQML5ogyJxZ0Smt+AntIzcF9miV2SeYXA3OFiojQstF
+ vScN7owL1XiQ3UjJotCp6pUcSVgVv0SgJXbDo5Nv87M2itn68VPfTu2uBBxRYqXQovsR++kA
+ EQEAAYkCPAQYAQoAJhYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUs0OAhsMBQkB4o0iAAoJ
+ ECte4hHFiupUbioQAJ40bEJmMOF28vFcGvQrpI+lfHJGk9zSrh4F4SlJyOVWV1yWyUAINr8w
+ v1aamg2nAppZ16z4nAnGU/47tWZ4P8blLVG8x4SWzz3D7MCy1FsQBTrWGLqWldPhkBAGp2VH
+ xDOK4rLhuQWx3H5zd3kPXaIgvHI3EliWaQN+u2xmTQSJN75I/V47QsaPvkm4TVe3JlB7l1Fg
+ OmSvYx31YC+3slh89ayjPWt8hFaTLnB9NaW9bLhs3E2ESF9Dei0FRXIt3qnFV/hnETsx3X4h
+ KEnXxhSRDVeURP7V6P/z3+WIfddVKZk5ZLHi39fJpxvsg9YLSfStMJ/cJfiPXk1vKdoa+FjN
+ 7nGAZyF6NHTNhsI7aHnvZMDavmAD3lK6CY+UBGtGQA3QhrUc2cedp1V53lXwor/D/D3Wo9wY
+ iSXKOl4fFCh2Peo7qYmFUaDdyiCxvFm+YcIeMZ8wO5udzkjDtP4lWKAn4tUcdcwMOT5d0I3q
+ WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
+ lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
+ QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
+Message-ID: <9ba9d56b-c045-74d3-9693-a9a959ffb675@pengutronix.de>
+Date:   Tue, 3 Sep 2019 14:50:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190903124259.60920-1-andriy.shevchenko@linux.intel.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="7Yt3Q353SybWsFgzEVINh2PvoljzLd32L"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using legacy platform data, switch to use device properties.
-For clock frequency we are using well established clock-frequency property.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7Yt3Q353SybWsFgzEVINh2PvoljzLd32L
+Content-Type: multipart/mixed; boundary="voW4yvnxECFVU7r2EVZB7ikWHKSkpr20J";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Wolfgang Grandegger <wg@grandegger.com>, linux-can@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Message-ID: <9ba9d56b-c045-74d3-9693-a9a959ffb675@pengutronix.de>
+Subject: Re: [PATCH v2 0/4] can: mcp251x: Make use of device properties
+References: <20190903124259.60920-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20190903124259.60920-1-andriy.shevchenko@linux.intel.com>
 
-Users, two for now, are also converted here.
+--voW4yvnxECFVU7r2EVZB7ikWHKSkpr20J
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Daniel Mack <daniel@zonque.org>
-Cc: Haojian Zhuang <haojian.zhuang@gmail.com>
-Cc: Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: Russell King <linux@armlinux.org.uk>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- arch/arm/mach-pxa/icontrol.c         |  9 +++++----
- arch/arm/mach-pxa/zeus.c             |  9 +++++----
- drivers/net/can/spi/mcp251x.c        | 19 ++++++++-----------
- include/linux/can/platform/mcp251x.h | 22 ----------------------
- 4 files changed, 18 insertions(+), 41 deletions(-)
- delete mode 100644 include/linux/can/platform/mcp251x.h
+On 9/3/19 2:42 PM, Andy Shevchenko wrote:
+> The purpose of this series is to simplify driver by switching to use de=
+vice
+> properties. In particular it allows to drop legacy platform data.
+>=20
+> Patch 1 switches driver to use devm_clk_get_optional() API.
+>=20
+> Patch 2 unifies getting the driver data independently of the table whic=
+h
+> provides it.
+>=20
+> Patch 3 drops extra check for regulator presence by switch to use an al=
+ready
+> present wrapper.
+>=20
+> And patch 4 gets rid of legacy platform data.
+>=20
+> Changelog v2:
+> - add patch 4 to get rid of legacy platform data
 
-diff --git a/arch/arm/mach-pxa/icontrol.c b/arch/arm/mach-pxa/icontrol.c
-index 865b10344ea2..aa4ccb9bb1c1 100644
---- a/arch/arm/mach-pxa/icontrol.c
-+++ b/arch/arm/mach-pxa/icontrol.c
-@@ -12,6 +12,7 @@
- 
- #include <linux/irq.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/gpio.h>
- 
- #include <asm/mach-types.h>
-@@ -22,7 +23,6 @@
- 
- #include <linux/spi/spi.h>
- #include <linux/spi/pxa2xx_spi.h>
--#include <linux/can/platform/mcp251x.h>
- #include <linux/regulator/machine.h>
- 
- #include "generic.h"
-@@ -69,8 +69,9 @@ static struct pxa2xx_spi_chip mcp251x_chip_info4 = {
- 	.gpio_cs        = ICONTROL_MCP251x_nCS4
- };
- 
--static struct mcp251x_platform_data mcp251x_info = {
--	.oscillator_frequency = 16E6,
-+static const struct property_entry mcp251x_properties = {
-+	PROPERTY_ENTRY_U32("clock-frequency", 16000000),
-+	{}
- };
- 
- static struct spi_board_info mcp251x_board_info[] = {
-@@ -79,7 +80,7 @@ static struct spi_board_info mcp251x_board_info[] = {
- 		.max_speed_hz    = 6500000,
- 		.bus_num         = 3,
- 		.chip_select     = 0,
--		.platform_data   = &mcp251x_info,
-+		.properties      = &mcp251x_properties,
- 		.controller_data = &mcp251x_chip_info1,
- 		.irq             = PXA_GPIO_TO_IRQ(ICONTROL_MCP251x_nIRQ1)
- 	},
-diff --git a/arch/arm/mach-pxa/zeus.c b/arch/arm/mach-pxa/zeus.c
-index da113c8eefbf..645500ef427a 100644
---- a/arch/arm/mach-pxa/zeus.c
-+++ b/arch/arm/mach-pxa/zeus.c
-@@ -13,6 +13,7 @@
- #include <linux/leds.h>
- #include <linux/irq.h>
- #include <linux/pm.h>
-+#include <linux/property.h>
- #include <linux/gpio.h>
- #include <linux/gpio/machine.h>
- #include <linux/serial_8250.h>
-@@ -27,7 +28,6 @@
- #include <linux/platform_data/i2c-pxa.h>
- #include <linux/platform_data/pca953x.h>
- #include <linux/apm-emulation.h>
--#include <linux/can/platform/mcp251x.h>
- #include <linux/regulator/fixed.h>
- #include <linux/regulator/machine.h>
- 
-@@ -428,14 +428,15 @@ static struct gpiod_lookup_table can_regulator_gpiod_table = {
- 	},
- };
- 
--static struct mcp251x_platform_data zeus_mcp2515_pdata = {
--	.oscillator_frequency	= 16*1000*1000,
-+static const struct property_entry mcp251x_properties = {
-+	PROPERTY_ENTRY_U32("clock-frequency", 16000000),
-+	{}
- };
- 
- static struct spi_board_info zeus_spi_board_info[] = {
- 	[0] = {
- 		.modalias	= "mcp2515",
--		.platform_data	= &zeus_mcp2515_pdata,
-+		.properties	= &mcp251x_properties,
- 		.irq		= PXA_GPIO_TO_IRQ(ZEUS_CAN_GPIO),
- 		.max_speed_hz	= 1*1000*1000,
- 		.bus_num	= 3,
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index 6ee0ea51399a..3a4d7089dc7c 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -20,29 +20,26 @@
-  *
-  * Your platform definition file should specify something like:
-  *
-- * static struct mcp251x_platform_data mcp251x_info = {
-- *         .oscillator_frequency = 8000000,
-+ * static const struct property_entry mpc251x_properties[] = {
-+ *         PROPERTY_ENTRY_U32("clock-frequency", 8000000),
-+ *         {}
-  * };
-  *
-  * static struct spi_board_info spi_board_info[] = {
-  *         {
-  *                 .modalias = "mcp2510",
-  *			// "mcp2515" or "mcp25625" depending on your controller
-- *                 .platform_data = &mcp251x_info,
-+ *                 .properties = &mcp251x_properties,
-  *                 .irq = IRQ_EINT13,
-  *                 .max_speed_hz = 2*1000*1000,
-  *                 .chip_select = 2,
-  *         },
-  * };
-- *
-- * Please see mcp251x.h for a description of the fields in
-- * struct mcp251x_platform_data.
-  */
- 
- #include <linux/can/core.h>
- #include <linux/can/dev.h>
- #include <linux/can/led.h>
--#include <linux/can/platform/mcp251x.h>
- #include <linux/clk.h>
- #include <linux/completion.h>
- #include <linux/delay.h>
-@@ -1006,19 +1003,19 @@ MODULE_DEVICE_TABLE(spi, mcp251x_id_table);
- static int mcp251x_can_probe(struct spi_device *spi)
- {
- 	const void *match = device_get_match_data(&spi->dev);
--	struct mcp251x_platform_data *pdata = dev_get_platdata(&spi->dev);
- 	struct net_device *net;
- 	struct mcp251x_priv *priv;
- 	struct clk *clk;
--	int freq, ret;
-+	u32 freq;
-+	int ret;
- 
- 	clk = devm_clk_get_optional(&spi->dev, NULL);
- 	if (IS_ERR(clk))
- 		return PTR_ERR(clk);
- 
- 	freq = clk_get_rate(clk);
--	if (freq == 0 && pdata)
--		freq = pdata->oscillator_frequency;
-+	if (freq == 0)
-+		device_property_read_u32(&spi->dev, "clock-frequency", &freq);
- 
- 	/* Sanity check */
- 	if (freq < 1000000 || freq > 25000000)
-diff --git a/include/linux/can/platform/mcp251x.h b/include/linux/can/platform/mcp251x.h
-deleted file mode 100644
-index 9e5ac27fb6c1..000000000000
---- a/include/linux/can/platform/mcp251x.h
-+++ /dev/null
-@@ -1,22 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _CAN_PLATFORM_MCP251X_H
--#define _CAN_PLATFORM_MCP251X_H
--
--/*
-- *
-- * CAN bus driver for Microchip 251x CAN Controller with SPI Interface
-- *
-- */
--
--#include <linux/spi/spi.h>
--
--/*
-- * struct mcp251x_platform_data - MCP251X SPI CAN controller platform data
-- * @oscillator_frequency:       - oscillator frequency in Hz
-- */
--
--struct mcp251x_platform_data {
--	unsigned long oscillator_frequency;
--};
--
--#endif /* !_CAN_PLATFORM_MCP251X_H */
--- 
-2.23.0.rc1
+Sorry for not telling, your v1 series has already been applied and it's
+included in the latest pull request. Can you please rebase your patches
+on top of:
 
+https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/ta=
+g/?h=3Dlinux-can-next-for-5.4-20190903
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--voW4yvnxECFVU7r2EVZB7ikWHKSkpr20J--
+
+--7Yt3Q353SybWsFgzEVINh2PvoljzLd32L
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1uYX0ACgkQWsYho5Hk
+nSCm0QgAm+Sda/74mBP+bp1ZxemzNMhFzxXTngvEvG6rvix6LibHF0djn+nDkikB
+NvsDNpZwPrgsBnN2P9sHmlF1/7tZBRku+zRqrVBT2/jzJqjyTmuiZq/rx9vyI00o
+a9yySSPM7AKdZpoBvo4Llq4eEuVHTfrkiAqE4+YQEd7fEY6QCEjW8i4WS80QO3uK
+nQGDUavgpbzHR9TCWBzfQsWFUhcasyPJABxncO8uFKqn3eZSzj0IE0kVqsf5OnIL
+pRupplOyhohUYFp1zEnNQKEs19G0t0SikWQJdRa7VblZ/vZcfjkk9uOhSNARYrR1
+tO6EhFh0QGVd/CHPQ09MVMTZcC619Q==
+=eXKT
+-----END PGP SIGNATURE-----
+
+--7Yt3Q353SybWsFgzEVINh2PvoljzLd32L--
