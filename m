@@ -2,78 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB0D2A72B6
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 20:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2649A72D4
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 20:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726230AbfICSrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 14:47:04 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43669 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbfICSrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 14:47:03 -0400
-Received: by mail-pf1-f194.google.com with SMTP id d15so1812702pfo.10
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 11:47:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0oInCZCVxRDHHNZQh2zohajIbQXd80RnFiXOh17nr5s=;
-        b=po8fmDDfAyX0J7mKw5i3nGhJqgplMWsh7yvHMJOTo4QL9xiohPTIxTXmIS8Ik5Wkb6
-         EkY3zYe5bbSw60G5xdh8s1sYG8CAZK/V7bGsBPiEwEnS2B+eKJcd1Wdhvxn6pzgrmJKa
-         A0qsjTWJj+roUdGoUIzQ5pYm4hzXAsNXCvEcrilgFc0+1ksqmhSWEEwdLPlGn6alPr19
-         DYJ1MQOKGSrzyFoEm7zswOdZRj2cCPkyi91/FMpdphrMWESVG6lqBNq8K1Ob5sQUu6bE
-         bU3954Xd+TnrrCtAXc+MHmp3AMdxrdoGFovyroeInAWeErMGR6RXjc+xvTIclqDcaCF8
-         vR0w==
-X-Gm-Message-State: APjAAAX0EnZMXAq5vqHeWNoc98v+TEb3NOjTNDrr25yP+AAHdxbu8Ulz
-        1v+fXj0/QT4e7B3NjXjhkHkDvxHZv78=
-X-Google-Smtp-Source: APXvYqyp6PsxC1jX74zAlOl3wgnSC/9PRLW24Vcbklx8mzvvIBD9O83FyaKqeLaZGizKum9GXqavpg==
-X-Received: by 2002:a63:5402:: with SMTP id i2mr31425861pgb.414.1567536422460;
-        Tue, 03 Sep 2019 11:47:02 -0700 (PDT)
-Received: from localhost ([2601:647:5b80:29f7:1bdd:d748:9a4e:8083])
-        by smtp.gmail.com with ESMTPSA id j26sm2975585pfe.181.2019.09.03.11.47.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2019 11:47:01 -0700 (PDT)
-From:   Moritz Fischer <mdf@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        Moritz Fischer <mdf@kernel.org>
-Subject: [PATCH] net: fixed_phy: Add forward declaration for struct gpio_desc;
-Date:   Tue,  3 Sep 2019 11:46:52 -0700
-Message-Id: <20190903184652.3148-1-mdf@kernel.org>
-X-Mailer: git-send-email 2.22.0
+        id S1726607AbfICSxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 14:53:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43862 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726179AbfICSxN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 14:53:13 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 95500B117;
+        Tue,  3 Sep 2019 18:53:12 +0000 (UTC)
+Date:   Tue, 3 Sep 2019 20:53:05 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Qian Cai <cai@lca.pw>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190903185305.GA14028@dhcp22.suse.cz>
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+ <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+ <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1567525342.5576.60.camel@lca.pw>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add forward declaration for struct gpio_desc in order to address
-the following:
+On Tue 03-09-19 11:42:22, Qian Cai wrote:
+> On Tue, 2019-09-03 at 15:22 +0200, Michal Hocko wrote:
+> > On Fri 30-08-19 18:15:22, Eric Dumazet wrote:
+> > > If there is a risk of flooding the syslog, we should fix this generically
+> > > in mm layer, not adding hundred of __GFP_NOWARN all over the places.
+> > 
+> > We do already ratelimit in warn_alloc. If it isn't sufficient then we
+> > can think of a different parameters. Or maybe it is the ratelimiting
+> > which doesn't work here. Hard to tell and something to explore.
+> 
+> The time-based ratelimit won't work for skb_build() as when a system under
+> memory pressure, and the CPU is fast and IO is so slow, it could take a long
+> time to swap and trigger OOM.
 
-./include/linux/phy_fixed.h:48:17: error: 'struct gpio_desc' declared inside parameter list [-Werror]
-./include/linux/phy_fixed.h:48:17: error: its scope is only this definition or declaration, which is probably not what you want [-Werror]
+I really do not understand what does OOM and swapping have to do with
+the ratelimiting here. The sole purpose of the ratelimit is to reduce
+the amount of warnings to be printed. Slow IO might have an effect on
+when the OOM killer is invoked but atomic allocations are not directly
+dependent on IO.
 
-Fixes commit 71bd106d2567 ("net: fixed-phy: Add
-fixed_phy_register_with_gpiod() API")
-Signed-off-by: Moritz Fischer <mdf@kernel.org>
----
- include/linux/phy_fixed.h | 1 +
- 1 file changed, 1 insertion(+)
+> I suppose what happens is those skb_build() allocations are from softirq, and
+> once one of them failed, it calls printk() which generates more interrupts.
+> Hence, the infinite loop.
 
-diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
-index 1e5d86ebdaeb..52bc8e487ef7 100644
---- a/include/linux/phy_fixed.h
-+++ b/include/linux/phy_fixed.h
-@@ -11,6 +11,7 @@ struct fixed_phy_status {
- };
- 
- struct device_node;
-+struct gpio_desc;
- 
- #if IS_ENABLED(CONFIG_FIXED_PHY)
- extern int fixed_phy_change_carrier(struct net_device *dev, bool new_carrier);
+Please elaborate more.
+
 -- 
-2.23.0.187.g17f5b7556c-goog
-
+Michal Hocko
+SUSE Labs
