@@ -2,96 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24980A7495
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 22:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30111A74FF
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 22:35:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbfICUZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 16:25:05 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:32793 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfICUZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 16:25:03 -0400
-Received: by mail-io1-f66.google.com with SMTP id m11so7070194ioo.0
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 13:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=Fv8PJ8fir2xnvGC1POtiy3M/j8q+YPjSYLavW811w7U=;
-        b=qnaeJJLWLR7380HlTdDUdTzil+uyvqdhB73kLZJyAyUZXsTSU8wLDsoOM6SFJsN/l/
-         DDNi2ZF0CaKWMew2e6NntD6XVCKhKpMugH049rnbMVOTI4U0JO2lleq1eQGLIldAbdoz
-         koY1TtLBzT02fgjpElfBHg6HZUc/pQdjk3l80UxBJSjMud3cdVlv5sNtgXqwdFB+Ncuu
-         N5Afh83Jd1TEHA2dWMNplC3rkb1uFZcJMZBlTbeRR9Df9sdr3KpjY4QJCJuXq6/Xnv4k
-         Xdk+hTXXeZQEFEhrt9C/3BY4D8jMcuWVBqeJPc3GqfBAb+0mOrFigrFVSGraQzbPdFci
-         GPEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=Fv8PJ8fir2xnvGC1POtiy3M/j8q+YPjSYLavW811w7U=;
-        b=iT4SlvWIZpw+bdVv+nPsFHaHFEjDRz0FOIQdE1jx/ispIfEMzM0sTA2uZ+cP2et15S
-         4gXy1mXC62ePWPRMg5tUs2Jq5MU+MHAicxGWU8r8l68zb7Vb9K5CRALJ2GaHRrCXAHMC
-         Ibi1ZHd6r9Z5qzWJEDPEEDzBW9zxpA//pVpG3dRxALkOH21PHQ3EFtdjSqyohWIeqXGI
-         X73DbWiJe7f4/OkCurB07VTV/UKNJ59iQVyKfCJD6Kbkl+jnDcUUEH4LaGK1wBQW08fI
-         WTV3fn8aJ2xvXaADj6yvk1o5Xbc8SCyaFD45+vCtFVayod6Bi0xcXkw4bLAGL4LH+GRx
-         9Mlg==
-X-Gm-Message-State: APjAAAUe1fOtSOcCOq4xIVfBa+63vhCaY+pxz3I2oyBb6rhMIErWImlf
-        rtCu+1dFaqN4UeT0UGHEu+dnQet3
-X-Google-Smtp-Source: APXvYqwLl3OknIrJklt4EXRsKeraHjtbvJis/rkXa2fSK70wAh4iKurBoid38gif2TnRnL+8caVABA==
-X-Received: by 2002:a5d:89cd:: with SMTP id a13mr3675997iot.272.1567542302773;
-        Tue, 03 Sep 2019 13:25:02 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id 80sm27047498iou.13.2019.09.03.13.24.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 03 Sep 2019 13:25:02 -0700 (PDT)
-Subject: [net PATCH] net: sock_map, fix missing ulp check in sock hash case
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     hdanton@sina.com, jakub.kicinski@netronome.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com
-Date:   Tue, 03 Sep 2019 13:24:50 -0700
-Message-ID: <156754228993.21629.4076822768659778848.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        id S1727346AbfICUet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 16:34:49 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:35564 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726810AbfICUes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 16:34:48 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 0020E6085C; Tue,  3 Sep 2019 20:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567542887;
+        bh=a5RdGD9HLYb5JfSs7oy4DNSHjvThStqYpkCPLyypeXI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YpFNdcA3B5iO75sqlzYMiPZHzh6peHRjOPUuwogCCxIIt+zNzzDdH9Gf4LG9xl8xP
+         c1E3c2RkZm3D06+d6oacmWxqK6sG8dIonDLnXLjICEGAOvVKKHlktkYImG5P6M5Y7M
+         +S2pC3JX0HlYI+9KJgmYHIPnX5KPRrTxcepVNSPQ=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 75D0A607F4;
+        Tue,  3 Sep 2019 20:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567542886;
+        bh=a5RdGD9HLYb5JfSs7oy4DNSHjvThStqYpkCPLyypeXI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=by1/C/XwQOR2JMGNbIHZpL80J7fw3o3bfwbvpEhRfNc+eGosK+jh8rTFNOPbFZNtj
+         km0e20Qh1vXd1zwX37D0Qht80SIWSycP9man0W7qFAnaNSzciwgpqfpvTX2of0E8Cu
+         L2CpekKKEIFhT0b+oFMr1jmTmEpC6E/PSVfg267c=
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Tue, 03 Sep 2019 14:34:45 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, stranche@codeaurora.org
+Subject: Re: [PATCH net-next] net: Fail explicit bind to local reserved ports
+In-Reply-To: <20190830.142202.1082989152863915040.davem@davemloft.net>
+References: <1567049214-19804-1-git-send-email-subashab@codeaurora.org>
+ <20190830.142202.1082989152863915040.davem@davemloft.net>
+Message-ID: <10c297103bf3992e1630604972efa681@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sock_map and ULP only work together when ULP is loaded after the sock
-map is loaded. In the sock_map case we added a check for this to fail
-the load if ULP is already set. However, we missed the check on the
-sock_hash side.
+> I don't know how happy I am about this.  Whatever sets up the 
+> transparent
+> proxy business can block any attempt to communicate over these ports.
+> 
+> Also, protocols like SCTP need the new handling too.
 
-Add a ULP check to the sock_hash update path.
+Hi David
 
-Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-Reported-by: syzbot+7a6ee4d0078eac6bf782@syzkaller.appspotmail.com
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- net/core/sock_map.c |    3 +++
- 1 file changed, 3 insertions(+)
+The purpose of this patch was to allow the transparent proxy application
+to block the specific socket ranges to prevent the communication on the
+specific ports.
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 1330a74..50916f9 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -656,6 +656,7 @@ static int sock_hash_update_common(struct bpf_map *map, void *key,
- 				   struct sock *sk, u64 flags)
- {
- 	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	u32 key_size = map->key_size, hash;
- 	struct bpf_htab_elem *elem, *elem_new;
- 	struct bpf_htab_bucket *bucket;
-@@ -666,6 +667,8 @@ static int sock_hash_update_common(struct bpf_map *map, void *key,
- 	WARN_ON_ONCE(!rcu_read_lock_held());
- 	if (unlikely(flags > BPF_EXIST))
- 		return -EINVAL;
-+	if (unlikely(icsk->icsk_ulp_data))
-+		return -EINVAL;
- 
- 	link = sk_psock_init_link();
- 	if (!link)
+Dropping packets for this particular port using iptables could lead to
+applications on the system getting stuck without getting a socket error.
+If bind fails explicitly, the application can atleast retry for some 
+other
+port.
+Is there some alternate existing mechanism to achieve this already?
 
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
