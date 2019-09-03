@@ -2,240 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9649A6831
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 14:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CBAA6870
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 14:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729259AbfICMIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 08:08:42 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:38244 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729079AbfICMIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 08:08:12 -0400
-Received: by mail-io1-f70.google.com with SMTP id m5so9985996ioj.5
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 05:08:11 -0700 (PDT)
+        id S1729025AbfICMR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 08:17:29 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39654 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728094AbfICMR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 08:17:29 -0400
+Received: by mail-lf1-f65.google.com with SMTP id l11so12706828lfk.6
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 05:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Qv4oJJa2X3Y5AdLf66xb1Ocrs5t/7Zc99IlLR7urFo=;
+        b=mHPCQnOu+veHe+EikJ7kdmysJxzK2hH8EJRJwY9nok5faaYskDMoEP+k79jrcNHTPp
+         9+CvXYkYO23zt+UFjjgfWZUS+xkADCepsY0UaO2ncd2K2LrcOjob0q1Mfn1Bz+RKyxry
+         z4jdC03LtFig9Ien3D5Y620FeKG6jtPjR2tcYRt92kVSi2t0l4xDkr8Sw7D3TN2L4ZU/
+         AuDpW9oqfszD/N944umdESm+A7FsC/iMaWZuOZ1UYjVYdS5fHjVfAKbm+MAH2ug6H3fZ
+         ae/xjCINFetzRqcg0YHxyvXAblgYx7ZVBw/ADFe2ld9e64N8cUbFWqjoeeLL39sUlQdD
+         6DsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/khp7RLKDbuAFdo3jKpk9UJZrZZoyaQ8xZvd94qR6QY=;
-        b=XXtqTryylXpf8Z/1eEwxekI1lMWLOeI2jVfMOY9hQ5OTkRyrxedwCokqLewLRqo3cK
-         pM3XpuEQHe5oQKf2HFHZp4nEnLmiqf+ZSGz7L0buXt8ThV7t2Pm6xBytBc1sO3Sq2PQJ
-         1m5tpGp7SdhZa7WrasH23wptm5nXWxmD1P2HWumaQiBjwijGp7BO6xj5LA1u6llxbzxs
-         JdewR3l0cDEUB5n+MikHlQtkyXikC3KCYs+3IJJEWv8qI2T3R7AB/NTzr5Xdm2RvAtiP
-         w0SOj85sShbPdBJTpqQi5fNkq5Bg7etonWIcgzomG8abEkSKh05R3dPMbDx5ghO2Qb6k
-         Ws3A==
-X-Gm-Message-State: APjAAAV/nK6XUJnkGllvpp+HLYFXZrda9t2BjmNOC15EvgnFLTNEdIhT
-        wcHZfziCeTb02pa1oCyPiBNHJUlgvGWVl219lo26fjWG1P0m
-X-Google-Smtp-Source: APXvYqyo05hyAl/TPp/osCOoUfM+aWgFBqmLOv4KRwCriyc4cYP690ztriQ3FeUVkBLx2u8jY48YkdQVAdGAYmf/Qa7ItGu3ALER
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Qv4oJJa2X3Y5AdLf66xb1Ocrs5t/7Zc99IlLR7urFo=;
+        b=eIHe8+b5f7LCoIm/Gxf7roRdhqz06jNW6ngOtz16xvLnW1XAZf27EdXaf4RJ4B60ZC
+         CA8WGbKb7bGH0R+ieSw06WTPMay9dCAeFeSwHPNkvjwV+EWPgsfu61VYlmWQpiVElM10
+         OHWQqHlAf/kGwEfB9dxrGuL1xZYhWqBj43ASNAzufVJVg6xxL9upq4vPComHArPn0RFA
+         naruD8Wi8Ne7sXGiXZO7GWe19ZtGEeMAf1idBRuyiSFEM5PhpSf2KLZGt31PMETwD1Uq
+         eFSBU4XhWEwxQ4QYAGPtKHnpfK3Q0VVEAJURpJN26DIwHAnmOKoMoSFG2FtoenTQovat
+         kzBQ==
+X-Gm-Message-State: APjAAAUUtzISCVib7KUFGpwag/h7n1rIzhZvSPqV5aqeCSMIim5w5mCo
+        6EKPwGupXa758M8Bq/zzrF7Dg/ygg2TlaOLQ8dQOfyCSApMKbQ==
+X-Google-Smtp-Source: APXvYqzoD+XQvXieZKdhEYWT483EKiabxRXp4iaiLyt4VDp6XacLeumYOIq7Ex/jDLszvz9DJEtfm222b5TRTgYo3to=
+X-Received: by 2002:a19:ec16:: with SMTP id b22mr6221460lfa.1.1567513047459;
+ Tue, 03 Sep 2019 05:17:27 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a6b:bc47:: with SMTP id m68mr340143iof.70.1567512491131;
- Tue, 03 Sep 2019 05:08:11 -0700 (PDT)
-Date:   Tue, 03 Sep 2019 05:08:11 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003712560591a4f1b1@google.com>
-Subject: KASAN: use-after-free Read in rsi_rx_done_handler
-From:   syzbot <syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com>
-To:     amitkarwar@gmail.com, andreyknvl@google.com, davem@davemloft.net,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, siva8118@gmail.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20190901174759.257032-1-zenczykowski@gmail.com>
+ <CAHo-Ooy_g-7eZvBSbKR2eaQW3_Bk+fik5YaYAgN60GjmAU=ADA@mail.gmail.com>
+ <CAKD1Yr2tcRiiLwGdTB3TwpxoAH0+R=dgfCDh6TpZ2fHTE2rC9w@mail.gmail.com>
+ <cd6b7a9b-59a7-143a-0d5f-e73069d9295d@gmail.com> <CAKD1Yr2ykCyEiUyY4R+hYoZ+eWGjbE78wtSf2=_ZjLpCyp0n-Q@mail.gmail.com>
+In-Reply-To: <CAKD1Yr2ykCyEiUyY4R+hYoZ+eWGjbE78wtSf2=_ZjLpCyp0n-Q@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 3 Sep 2019 14:17:17 +0200
+Message-ID: <CAHo-OoyQzJptNDcLe93o3-G10oRN+93ZZ35jKkLudSanvgn-2Q@mail.gmail.com>
+Subject: Re: [PATCH] net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/128
+ local route (and others)
+To:     Lorenzo Colitti <lorenzo@google.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux NetDev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Well, if you look at the commit my commit is fixing, ie.
+  commit c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
+then you'll see this in the commit description:
+  "- dst_nocount is handled by the RTF_ADDRCONF flag"
+and the patch diff itself is from
+  "f6i->fib6_flags = RTF_UP | RTF_NONEXTHOP;
+   f6i->dst_nocount = true;"
+to
+  " .fc_flags = RTF_UP | RTF_ADDRCONF | RTF_NONEXTHOP,"
 
-syzbot found the following crash on:
+(and RTF_ANYCAST or RTF_LOCAL is later or'ed in in both versions of the code)
 
-HEAD commit:    eea39f24 usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=1031c5f2600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d0c62209eedfd54e
-dashboard link: https://syzkaller.appspot.com/bug?extid=b563b7f8dbe8223a51e8
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+so I'm pretty sure that patch adds ADDRCONF unconditionally to that
+function, and my commit unconditionally removes it.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Perhaps since then the call graph has changed???
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com
+Unfortunately I'm already in Europe on ancient ipv6 free networks and
+since the office move my ipv6 lab is still not up (something about the
+newly wired office jacks being blue which means corp, instead of any
+other colour for a lab...) so I don't actually have an easy way to
+test ipv6 slaac behaviour. :-(
 
-==================================================================
-BUG: KASAN: use-after-free in rsi_rx_done_handler+0x3ba/0x490  
-drivers/net/wireless/rsi/rsi_91x_usb.c:267
-Read of size 8 at addr ffff8881cebc0fe8 by task kworker/0:2/102
-
-CPU: 0 PID: 102 Comm: kworker/0:2 Not tainted 5.3.0-rc5+ #28
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  <IRQ>
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xca/0x13e lib/dump_stack.c:113
-  print_address_description+0x6a/0x32c mm/kasan/report.c:351
-  __kasan_report.cold+0x1a/0x33 mm/kasan/report.c:482
-  kasan_report+0xe/0x12 mm/kasan/common.c:612
-  rsi_rx_done_handler+0x3ba/0x490 drivers/net/wireless/rsi/rsi_91x_usb.c:267
-  __usb_hcd_giveback_urb+0x1f2/0x470 drivers/usb/core/hcd.c:1657
-  usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1722
-  dummy_timer+0x120f/0x2fa2 drivers/usb/gadget/udc/dummy_hcd.c:1965
-  call_timer_fn+0x179/0x650 kernel/time/timer.c:1322
-  expire_timers kernel/time/timer.c:1366 [inline]
-  __run_timers kernel/time/timer.c:1685 [inline]
-  __run_timers kernel/time/timer.c:1653 [inline]
-  run_timer_softirq+0x5cc/0x14b0 kernel/time/timer.c:1698
-  __do_softirq+0x221/0x912 kernel/softirq.c:292
-  invoke_softirq kernel/softirq.c:373 [inline]
-  irq_exit+0x178/0x1a0 kernel/softirq.c:413
-  exiting_irq arch/x86/include/asm/apic.h:537 [inline]
-  smp_apic_timer_interrupt+0x12f/0x500 arch/x86/kernel/apic/apic.c:1095
-  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:830
-  </IRQ>
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/irqflags.h:85 [inline]
-RIP: 0010:console_unlock+0xa2a/0xc40 kernel/printk/printk.c:2471
-Code: 00 89 ee 48 c7 c7 20 89 d3 86 e8 61 ad 03 00 65 ff 0d 72 b5 d9 7e e9  
-db f9 ff ff e8 80 a0 15 00 e8 2b ca 1a 00 ff 74 24 30 9d <e9> 18 fe ff ff  
-e8 6c a0 15 00 48 8d 7d 08 48 89 f8 48 c1 e8 03 42
-RSP: 0018:ffff8881d5077200 EFLAGS: 00000216 ORIG_RAX: ffffffffffffff13
-RAX: 0000000000000007 RBX: 0000000000000200 RCX: 0000000000000006
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff8881d5068844
-RBP: 0000000000000000 R08: ffff8881d5068000 R09: fffffbfff11ad791
-R10: fffffbfff11ad790 R11: ffffffff88d6bc87 R12: 000000000000004d
-R13: dffffc0000000000 R14: ffffffff829090d0 R15: ffffffff87077430
-  vprintk_emit+0x171/0x3e0 kernel/printk/printk.c:1986
-  vprintk_func+0x75/0x113 kernel/printk/printk_safe.c:386
-  printk+0xba/0xed kernel/printk/printk.c:2046
-  really_probe.cold+0x69/0x1f6 drivers/base/dd.c:628
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
-  hub_port_connect drivers/usb/core/hub.c:5098 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
-  port_event drivers/usb/core/hub.c:5359 [inline]
-  hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 102:
-  save_stack+0x1b/0x80 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc mm/kasan/common.c:487 [inline]
-  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:460
-  kmalloc include/linux/slab.h:552 [inline]
-  kzalloc include/linux/slab.h:748 [inline]
-  rsi_init_usb_interface drivers/net/wireless/rsi/rsi_91x_usb.c:599 [inline]
-  rsi_probe+0x11a/0x15a0 drivers/net/wireless/rsi/rsi_91x_usb.c:780
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
-  hub_port_connect drivers/usb/core/hub.c:5098 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
-  port_event drivers/usb/core/hub.c:5359 [inline]
-  hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Freed by task 102:
-  save_stack+0x1b/0x80 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:449
-  slab_free_hook mm/slub.c:1423 [inline]
-  slab_free_freelist_hook mm/slub.c:1474 [inline]
-  slab_free mm/slub.c:3016 [inline]
-  kfree+0xe4/0x2f0 mm/slub.c:3957
-  rsi_91x_deinit+0x270/0x2f0 drivers/net/wireless/rsi/rsi_91x_main.c:407
-  rsi_probe+0xcec/0x15a0 drivers/net/wireless/rsi/rsi_91x_usb.c:834
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
-  hub_port_connect drivers/usb/core/hub.c:5098 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
-  port_event drivers/usb/core/hub.c:5359 [inline]
-  hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the object at ffff8881cebc0f00
-  which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 232 bytes inside of
-  512-byte region [ffff8881cebc0f00, ffff8881cebc1100)
-The buggy address belongs to the page:
-page:ffffea00073af000 refcount:1 mapcount:0 mapping:ffff8881da002500  
-index:0x0 compound_mapcount: 0
-flags: 0x200000000010200(slab|head)
-raw: 0200000000010200 0000000000000000 0000000b00000001 ffff8881da002500
-raw: 0000000000000000 00000000800c000c 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8881cebc0e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff8881cebc0f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff8881cebc0f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                           ^
-  ffff8881cebc1000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8881cebc1080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+On Tue, Sep 3, 2019 at 6:58 AM Lorenzo Colitti <lorenzo@google.com> wrote:
+>
+> On Tue, Sep 3, 2019 at 11:18 AM David Ahern <dsahern@gmail.com> wrote:
+> > addrconf_f6i_alloc is used for addresses added by userspace
+> > (ipv6_add_addr) and anycast. ie., from what I can see it is not used for RAs
+>
+> Isn't ipv6_add_addr called by addrconf_prefix_rcv_add_addr, which is
+> called by addrconf_prefix_rcv, which is called by
+> ndisc_router_discovery? That is what happens when we process an RA;
+> AFAICS manual configuration is inet6_addr_add, not ipv6_add_addr.
+>
+> Maciej, with this patch, do SLAAC addresses still have RTF_ADDRCONF?
+> Per my previous message, my assumption would be no, but I might be
+> misreading the code.
