@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB38A6D7E
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D974A6DB3
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729955AbfICQGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:06:05 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33109 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729653AbfICQGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:06:05 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n190so9410042pgn.0
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:06:05 -0700 (PDT)
+        id S1729903AbfICQM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:12:28 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41931 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729117AbfICQM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:12:28 -0400
+Received: by mail-pg1-f195.google.com with SMTP id x15so9398485pgg.8
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:12:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=EL2fd9EDmw/V9xd1iIcy4FvsH4ybya6e+PAXznQJoOc=;
-        b=lrfLRdZropQCprNjFLY8ENPyobYGPnZbKNG5lPNTdvbv0SjimzdFHqRV/2veYLBozg
-         SqNFJdWRkgpbR9XAk7QS6DPQqfB7b7m2ZuDX8lS292yvIJVqZN5Qwp60E0okVW7+IBwK
-         vY3VpMVLrrdnh0IcxYEdOu/LJ1v6fIMjixHPTRYnxxWVLeF3QcthJYztkZZRenkxrSZg
-         VIuKg8gzXFlSAn0kfcqqKSY7MlCenlA5JOtQdi+Qg1zZGKTXJ60YEQ0EsCzypxcstxwC
-         I2ikfxmF4nxy7hMGZitMPobK4TDZpwkAfgqqroDG2OWbfrZdTcRtGxVLVaI+VmJJEo81
-         TiRw==
+        bh=eAzhkGrUGlZ1wulGEoFo1F97Q7k0qF/nRhydpfxsRs8=;
+        b=N+gGqUnzr7RUZ8zJ8pxLJI+LK2wHRK8tTcyay3JzN+tNY8v7Su7avhzWWoxePtf1LZ
+         GwH4BLYTzuSjDk+54J27IT3i7/hEy3nH44zJWFYJ4QO2+lH9CSujlLWaWSiv+AKfxNRH
+         a2IAlYuQLI2XgEFMYzypXjR8bH68lKID2TT01LhFPrYpUxax4BOyT7G4V43KS3mPibZO
+         VpZ67tMBGbJ2XUEdwOfr+Tf7Qn6rv4YEFPXsBdsrS3PVPvdO8QwwqARZ/l7hq40hVH9E
+         1ig6o6sI8xFmo0OVUVyICt3d2C3Ho1lwLLkaNSvd0aNi4sVSh7Hxv0Noyd4NODYCCuSD
+         xDfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=EL2fd9EDmw/V9xd1iIcy4FvsH4ybya6e+PAXznQJoOc=;
-        b=GQmqSPsy0GcbEBWq1ALBbytaORaYEThy3wraGqBjwCln/D4vzACqpx7ouY96RITTzG
-         cSECJlioiuEXB0/Y3oCvTRJv5CLRws6yhCkL4w8yuzYYOw/Xvs8M+IAS+XeDOL7QIaf2
-         6DaeQno0osySPHmH447/dIgLFDPyg7LDV35CdgBmyPu/611+bel2d+0aq/aG3APynNat
-         I18jBhieO0ubv1huOnxpTgJqlLWcslnTOm2hut6RELdlq9Eaiis+KnuDuf5VXiOwxZT8
-         448IcXI/YDcEprx+UOQrm8vVRFaBbFgEjkhJwt9udJbCb9kGFXQde5fWvvoghfW1gDqH
-         T81g==
-X-Gm-Message-State: APjAAAW1OskmZGWxL+L8HTa3698BTCyTKIBwoQbZmAbkyXvWGkLrnLtw
-        BThUMo/svYQyBf7CDpseeXE=
-X-Google-Smtp-Source: APXvYqzTIrWg1amaduNMIQ13NY+l19W4KUO4V3XWmhXvP1tG3cLmGwSBMsHF0aexR7QPL9+zQWinWA==
-X-Received: by 2002:a63:8ac4:: with SMTP id y187mr31679350pgd.412.1567526764738;
-        Tue, 03 Sep 2019 09:06:04 -0700 (PDT)
+        bh=eAzhkGrUGlZ1wulGEoFo1F97Q7k0qF/nRhydpfxsRs8=;
+        b=LadLCD/siOtLSl2ZOAsvglgon8tlZ1jGUHi0aS2ZVJXiIPpViYM7V/QsdX0ytA84G0
+         3wd451J2BrmuNkOEEHJ9a12lUJaFcnPXp6WvqISpOx4eABC8Cqq15eOR/C2vI02IpV0F
+         cQgkFJwxywyFqdu76Wc7ZLBW1smJtHWXgX/Lg/OoF/fcD+gO/bysYGjUYdhtFoc9EJX3
+         v5pwjK2Wqmd+8eKXjyCGiSMqYNMJywUvHOp44sdLp0QlFISYi3IVcQjgLY2wKBLuoQbY
+         K8bPFX+X9lEPL/bFkRy+0Il5V0d67u2ID8Ta2+RyFHGH4YUeYbbjCgg8bYMqVRPfjw5f
+         wuHQ==
+X-Gm-Message-State: APjAAAVp4xt/m/URbsulpBC89zFn64dwqNxcSm/2RuR+M0ZFDGBNB5JU
+        JTvzuKPlW8ZIYqFBJeMDB4M=
+X-Google-Smtp-Source: APXvYqxc5sAdiR1EN199ggz0ZF9xUL5/FpLJoks95XP4iQfivxp0ZaiS7G7VGpb99pCO2XQ2O2ISuQ==
+X-Received: by 2002:a63:1045:: with SMTP id 5mr17072905pgq.165.1567527147652;
+        Tue, 03 Sep 2019 09:12:27 -0700 (PDT)
 Received: from [192.168.1.2] (155-97-234-108.usahousing.utah.edu. [155.97.234.108])
-        by smtp.gmail.com with ESMTPSA id c1sm19363908pfb.135.2019.09.03.09.06.03
+        by smtp.gmail.com with ESMTPSA id r1sm16090758pgv.70.2019.09.03.09.12.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 09:06:04 -0700 (PDT)
+        Tue, 03 Sep 2019 09:12:27 -0700 (PDT)
 Subject: Re: [PATCH] Clock-independent TCP ISN generation
 To:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net
 Cc:     shiraz.saleem@intel.com, jgg@ziepe.ca, arnd@arndb.de,
@@ -79,8 +79,8 @@ Autocrypt: addr=sirus.shahini@gmail.com; prefer-encrypt=mutual; keydata=
  K0Ilqi1XNb0quwm3lGE8SJqbM3yFV5ArMFG5QZN7O+TK+uC9Ruj3kV6hqV4LXaNJ4lug76yx
  tPbu9w6p2nOJ8d2Gv5T6K0uSoUCfplZa0hmX8ZZBYSQZLrEk0KrlorH0GZfvr1Rv2gXa6/Ne
  I9Sdj0Bd/WQRUnr8l6HlVPHA/diIFwSzo5taOqx62QXI1RbSozDjJ7QoR/gTilEDF18C
-Message-ID: <e3bf138f-672e-cefa-5fe5-ea25af8d3d61@gmail.com>
-Date:   Tue, 3 Sep 2019 10:06:03 -0600
+Message-ID: <4ffba048-a46c-41da-ce67-e5dbac1de5a7@gmail.com>
+Date:   Tue, 3 Sep 2019 10:12:26 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -96,9 +96,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 9/3/19 9:59 AM, Eric Dumazet wrote:
-> 
+
 > You could add a random delay to all SYN packets, if you believe your host has clock skews.
 
-In theory yes, but again do you know any practical example with tested
-applications and the list of the rules? I'm interested to see an actual example
-that somebody has carried out and observed its results.
+And by the way adding delays has its own performance penalties.
