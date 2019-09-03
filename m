@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B80A6BE3
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 16:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE63A6C00
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 16:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729539AbfICOwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 10:52:11 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38254 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727069AbfICOwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 10:52:11 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x5so2102745qkh.5;
-        Tue, 03 Sep 2019 07:52:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Ps+1qBIYP6KjmN8NHqV42MFrNx7S+FPkimZnp5acIJM=;
-        b=H1gNxc0JLn3joY50JU2Pzk3TS3uT9gU0LFdRRE69+ngcrlSk9KMgl1XqvamadffXL/
-         Nc/BBykO7P/Q/nNwqv27Il0NHH/tMdC6/XVfotrL8aWj4orUTxkF0cdaFFdNP0ogVlR6
-         k9dxeddj1xhm01hoWJTNZXE7WCdkC2P2wcD7ScgMcucdpEgLmAUHEz/c3Z3N3lhHCyxq
-         QL6e3RL7QDgaQ9L2dHlUfkDuV33nbnyTs7QW/Rq+R1Lss4fUX3GzpjvVnxkQ3J3fxhIy
-         AxNw+lmZfk36GdCXUplQFj3J9kbmLHfiir19tduGVNw7NBjpdbgSJ3Kwm58oGRquixfn
-         /8hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Ps+1qBIYP6KjmN8NHqV42MFrNx7S+FPkimZnp5acIJM=;
-        b=Hkzg54u/B6E2eUUz/uUUfxJxgAqMqy8HB6wk/d5gjfk3Js6r6fVyA152ioo3QPhJEr
-         V5H40XYb4FNMo7p8g/407HMLwwHe0um2KSCSlhUPg00v+0Ssxpu7UY2fHwBuyD8zDAc2
-         Rx50WZayLMvEUESDEVtLB62+kpCrj0HXOR6jKVZjk9ezWbW9jhf2ByHR2EOzLevZPCqH
-         qGnzp0oLL6q5/H1c/5rYT6/jut/omzO14lGPagOzSvvUB4LjZ6cpKQLr504p2ewRV09M
-         nIvdlO8QXJrb4gAhY8ozAl6f0+lZJrScyaVGOtPX0V6zm05CIaPTFhLWwdWKiwn2v0F4
-         x7rg==
-X-Gm-Message-State: APjAAAWVimiKOgawQaE/F48gkhGhWUNz+oMkjPpeiK9DqG3SITFgh4Gl
-        CND7pnqGAm2cHbj7+aRR6Ro=
-X-Google-Smtp-Source: APXvYqyfJvk1FLvTIKPQax5aRgCZRm04gyo09ArgZmDwHWxKZZA1zWCtx3JvcimIROODb9XBFwPk6A==
-X-Received: by 2002:a37:4ed8:: with SMTP id c207mr31794090qkb.99.1567522330103;
-        Tue, 03 Sep 2019 07:52:10 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:f7da:37d1:dcc1:ef78:a481])
-        by smtp.gmail.com with ESMTPSA id p186sm8727223qkc.65.2019.09.03.07.52.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2019 07:52:09 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id EDC8EC0A43; Tue,  3 Sep 2019 11:52:06 -0300 (-03)
-Date:   Tue, 3 Sep 2019 11:52:06 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Baolin Wang <baolin.wang@linaro.org>
-Cc:     stable@vger.kernel.org, vyasevich@gmail.com, nhorman@tuxdriver.com,
-        davem@davemloft.net, hariprasad.kelam@gmail.com,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org, arnd@arndb.de,
-        orsonzhai@gmail.com, vincent.guittot@linaro.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [BACKPORT 4.14.y 4/8] net: sctp: fix warning "NULL check before
- some freeing functions is not needed"
-Message-ID: <20190903145206.GB3499@localhost.localdomain>
-References: <cover.1567492316.git.baolin.wang@linaro.org>
- <0e71732006c11f119826b3be9c1a9ccd102742d8.1567492316.git.baolin.wang@linaro.org>
+        id S1729718AbfICO4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 10:56:37 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:34772 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729083AbfICO4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 10:56:37 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BE7D3A40070;
+        Tue,  3 Sep 2019 14:56:35 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 Sep
+ 2019 07:56:26 -0700
+Subject: Re: [PATCH net-next v3] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+To:     Paul Blakey <paulb@mellanox.com>,
+        Pravin B Shelar <pshelar@ovn.org>, <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Justin Pettit" <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>
+CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        "Yossi Kuperman" <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+References: <1567517015-10778-1-git-send-email-paulb@mellanox.com>
+ <1567517015-10778-2-git-send-email-paulb@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <6d2e1ef7-f859-32f4-584f-1f0f772edadf@solarflare.com>
+Date:   Tue, 3 Sep 2019 15:56:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e71732006c11f119826b3be9c1a9ccd102742d8.1567492316.git.baolin.wang@linaro.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <1567517015-10778-2-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24886.005
+X-TM-AS-Result: No-6.761900-4.000000-10
+X-TMASE-MatchedRID: 9zTThWtzImvmLzc6AOD8DfHkpkyUphL9IbOOW42tNMuRoQLwUmtov39v
+        gq7iW97M2Vt6jneXAxGNT0huAYqCsxls7x5eGXm3ZdorcofH/GnM8zLNncnslcuSXx71bvSLEMj
+        Dscz85YVjrNRspPVGhslBeRDxZMPWuqiZIj+FoTPGAzTlP3eD9u1lLt5eTung/zIkW73uAA7mxl
+        PBgd8Ezl6c8x2gdhqGX7bicKxRIU2No+PRbWqfRLI7zVffJqTzaCwhMlkvgVANlWX5ZKNfRcLeW
+        2iJjcdjedZdmwmJiLL9LJu/I3bQC37cGd19dSFd
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.761900-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24886.005
+X-MDID: 1567522596-9OUjt9N0LBtv
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 03, 2019 at 02:58:16PM +0800, Baolin Wang wrote:
-> From: Hariprasad Kelam <hariprasad.kelam@gmail.com>
-> 
-> This patch removes NULL checks before calling kfree.
-> 
-> fixes below issues reported by coccicheck
-> net/sctp/sm_make_chunk.c:2586:3-8: WARNING: NULL check before some
-> freeing functions is not needed.
-> net/sctp/sm_make_chunk.c:2652:3-8: WARNING: NULL check before some
-> freeing functions is not needed.
-> net/sctp/sm_make_chunk.c:2667:3-8: WARNING: NULL check before some
-> freeing functions is not needed.
-> net/sctp/sm_make_chunk.c:2684:3-8: WARNING: NULL check before some
-> freeing functions is not needed.
-
-Hi. This doesn't seem the kind of patch that should be backported to
-such old/stable releases. After all, it's just a cleanup.
-
-  Marcelo
+On 03/09/2019 14:23, Paul Blakey wrote:
+> Offloaded OvS datapath rules are translated one to one to tc rules,
+> for example the following simplified OvS rule:
+>
+> recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
+>
+> Will be translated to the following tc rule:
+>
+> $ tc filter add dev dev1 ingress \
+> 	    prio 1 chain 0 proto ip \
+> 		flower tcp ct_state -trk \
+> 		action ct pipe \
+> 		action goto chain 2
+>
+> Received packets will first travel though tc, and if they aren't stolen
+> by it, like in the above rule, they will continue to OvS datapath.
+> Since we already did some actions (action ct in this case) which might
+> modify the packets, and updated action stats, we would like to continue
+> the proccessing with the correct recirc_id in OvS (here recirc_id(2))
+> where we left off.
+IMHO each offload (OvS -> tc, and tc -> hw) ought only take place for a rule
+ if all sequelae of that rule are also offloaded, or if non-offloaded sequelae
+ can be guaranteed to provide an unmodified packet so that the exception path
+ can start from the beginning.  I don't like this idea of doing part of the
+ processing in one place and then resuming the rest later in an entirely
+ different piece of code.
