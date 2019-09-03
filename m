@@ -2,99 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1FFA7622
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 23:26:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55120A7642
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 23:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfICV0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 17:26:46 -0400
-Received: from mga01.intel.com ([192.55.52.88]:58077 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725939AbfICV0q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 17:26:46 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Sep 2019 14:26:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,464,1559545200"; 
-   d="scan'208";a="383234073"
-Received: from ellie.jf.intel.com (HELO ellie) ([10.24.13.22])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Sep 2019 14:26:45 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: sched: taprio: Fix potential integer overflow in taprio_set_picos_per_byte
-In-Reply-To: <CA+h21hpCAJhE8xhsgDQ55_MUUiesV=uVY4tD=TzaCE6wynUPoQ@mail.gmail.com>
-References: <20190903010817.GA13595@embeddedor> <cb7d53cd-3f1e-146b-c1ab-f11a584a7224@gmail.com> <CA+h21hpCAJhE8xhsgDQ55_MUUiesV=uVY4tD=TzaCE6wynUPoQ@mail.gmail.com>
-Date:   Tue, 03 Sep 2019 14:26:45 -0700
-Message-ID: <8736hd9ilm.fsf@intel.com>
+        id S1727383AbfICVcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 17:32:14 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34242 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726873AbfICVcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 17:32:13 -0400
+Received: by mail-qt1-f196.google.com with SMTP id a13so21922723qtj.1
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 14:32:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IYBiOaZnylPAyvBRtjuJJugmlxGUEWO40VSIEvur7MU=;
+        b=ldX73UrlYb/SfB1Y+QNKLKHlHQoetlB8wjksWbqh7uuSu+pC/QBA9RQuxP7Rr1IyyY
+         wTLlN3lF3NJPE/WqeSkNMf6KHeQsU1rQR3Mo79uojvjR++kau7u4NGOeIvNAwBaikvQe
+         0Z8B71M6GF8+0I0rdMn3B58afgikpItgcYTys=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IYBiOaZnylPAyvBRtjuJJugmlxGUEWO40VSIEvur7MU=;
+        b=chYvpwPOzeTOn8KUg4L8NucokjFc3p7z/AJRzdTCVEluTimATkFWqRQHUM98zFjXie
+         EpLLqy3TuylouV9wuZdLMwG8TBJM7eyr0GJwHWY9tHdCd0INwxQz4y4Dzyp8ZsCBrFhu
+         A+lSuFCmC5m0KZ2uFSrO8dXA5G/P10AjdRb8NvJyrxS/qst92n+EnV2954T+IzjpRwJQ
+         btzriF6XGEM9GB8UauNSkQnEIfYo/i6iT9FPq362t2g3Ahtn1Z/fozIMOpHLUAf2Y+x1
+         cNs8teQM3OL3SI6vjPJ+XxmXqxPU4KwWin5zJaStqIYmou9vsID3vnc+0b8FGITxymLp
+         Bvhg==
+X-Gm-Message-State: APjAAAWh5eoTQNB16MCsuIHp2/44ALixJYDLNM8RTdf7NNmiRQ6pMYTH
+        36k1LpXjlavJqAUGwNG7OPlJ9oW318GI0gM6c+Mpww==
+X-Google-Smtp-Source: APXvYqwm3ckWcMUnDQElnCku6LE62c264Wiusvcm08pK5ln+ecvZDxzkyqmvIrwHJD3nyJ2JzOaIFuQozGH45mgdd50=
+X-Received: by 2002:ac8:4542:: with SMTP id z2mr36302364qtn.265.1567546332341;
+ Tue, 03 Sep 2019 14:32:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CACeCKacOcg01NuCWgf2RRer3bdmW-CH7d90Y+iD2wQh5Ka6Mew@mail.gmail.com>
+ <CACeCKacjCkS5UmzS9irm0JjGmk98uBBBsTLSzrXoDUJ60Be9Vw@mail.gmail.com>
+ <755AFD2B-D66F-40FF-ADCD-5077ECC569FE@realtek.com> <0835B3720019904CB8F7AA43166CEEB2F18DA7A9@RTITMBSVM03.realtek.com.tw>
+ <BAD4255E2724E442BCB37085A3D9C93AEEA087DF@RTITMBSVM03.realtek.com.tw>
+In-Reply-To: <BAD4255E2724E442BCB37085A3D9C93AEEA087DF@RTITMBSVM03.realtek.com.tw>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 3 Sep 2019 14:32:01 -0700
+Message-ID: <CACeCKadhJz3fdR+0rm+O2E39EbJgmN5NipMT8GRNtorus8myEg@mail.gmail.com>
+Subject: Re: Proposal: r8152 firmware patching framework
+To:     Bambi Yeh <bambi.yeh@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Hayes Wang <hayeswang@realtek.com>,
+        Amber Chen <amber.chen@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ryankao <ryankao@realtek.com>, Jackc <jackc@realtek.com>,
+        Albertk <albertk@realtek.com>,
+        "marcochen@google.com" <marcochen@google.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Grant Grundler <grundler@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Bambi,
 
-Vladimir Oltean <olteanv@gmail.com> writes:
+Thank you for your response. We'd be more than happy to assist in
+working out a solution that would be acceptable by the upstream
+maintainers.
+I think having a maintainable and safe way to deploy firmware fixes
+would be much appreciated by hardware users as well as upstream devs,
+and certainly more manageable than big static byte-arrays in the
+source code!
 
-> Right. And while we're at it, there's still the potential
-> division-by-zero problem which I still don't know how to solve without
-> implementing a full-blown __ethtool_get_link_ksettings parser that
-> checks against all the possible outputs it can have under the "no
-> carrier" condition - see "[RFC PATCH 1/1] phylink: Set speed to
-> SPEED_UNKNOWN when there is no PHY connected" for details.
-> And there's also a third fix to be made: the netdev_dbg should be made
-> to print "speed" instead of "ecmd.base.speed".
+I've moved David to the TO list to hopefully get his suggestions and
+guidance about how to design this in a upstream-compatible way.
 
-For the ksettings part I am thinking on adding something like this to
-ethtool.c. Do you think anything is missing (apart from the
-documentation)?
+I'd be happy to implement it too (I feel this can occur concurrent to
+Hayes' upstreaming efforts).
 
-->
+David, could you kindly advise the best way to incorporate deploying
+these firmware patches? This change link gives an idea of what we're
+dealing with: https://chromium-review.googlesource.com/c/chromiumos/third_p=
+arty/kernel/+/1417953
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 95991e43..d37c80b 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -177,6 +177,9 @@ void ethtool_convert_legacy_u32_to_link_mode(unsigned long *dst,
- bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
- 				     const unsigned long *src);
- 
-+u32 ethtool_link_ksettings_to_speed(const struct ethtool_link_ksettings *settings,
-+				    u32 default_speed);
-+
- /**
-  * struct ethtool_ops - optional netdev operations
-  * @get_drvinfo: Report driver/device information.  Should only set the
-diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-index 6288e69..80e3db3 100644
---- a/net/core/ethtool.c
-+++ b/net/core/ethtool.c
-@@ -539,6 +539,18 @@ struct ethtool_link_usettings {
- 	} link_modes;
- };
- 
-+u32 ethtool_link_ksettings_to_speed(const struct ethtool_link_ksettings *settings,
-+				   u32 default_speed)
-+{
-+	if (settings->base.speed == SPEED_UNKNOWN)
-+		return default_speed;
-+
-+	if (settings->base.speed == 0)
-+		return default_speed;
-+
-+	return settings->base.speed;
-+}
-+
- /* Internal kernel helper to query a device ethtool_link_settings. */
- int __ethtool_get_link_ksettings(struct net_device *dev,
- 				 struct ethtool_link_ksettings *link_ksettings)
+My original strawman is to just have a simple firmware format like so:
+<section1><size_in_bytes><address1><data1><address2><data2>...<addressN><da=
+taN><section2>
+
+The driver code can have parts to deal with each section in an
+appropriate fashion (e.g is each data entry a word or a byte? does
+this section have a key which needs to be written to a certain
+register etc.)
+
+We'd be grateful if you can offer your advice about best practices (or
+suggestions about who might be a good reviewer), so that we can have a
+design in place before sending out any patches.
+
+Thanks and best regards,
+
+-Prashant
+
+On Tue, Sep 3, 2019 at 2:01 AM Bambi Yeh <bambi.yeh@realtek.com> wrote:
+>
+> Hi Prashant:
+>
+> We will try to implement your requests.
+> Based on our experience, upstream reviewer often reject our modification =
+if they have any concern.
+> Do you think you can talk to them about this idea and see if they will ac=
+cept it or not?
+> Or if you can help on this after we submit it?
+>
+> Also, Hayes is now updating our current upstream driver and it goes back =
+and forth for a while.
+> So we will need some time to finish it and the target schedule to have yo=
+ur request done is in the end of this month.
+>
+> Thank you very much.
+>
+> Best Regards,
+> Bambi Yeh
+>
+> -----Original Message-----
+> From: Hayes Wang <hayeswang@realtek.com>
+> Sent: Monday, September 2, 2019 2:31 PM
+> To: Amber Chen <amber.chen@realtek.com>; Prashant Malani <pmalani@chromiu=
+m.org>
+> Cc: David Miller <davem@davemloft.net>; netdev@vger.kernel.org; Bambi Yeh=
+ <bambi.yeh@realtek.com>; Ryankao <ryankao@realtek.com>; Jackc <jackc@realt=
+ek.com>; Albertk <albertk@realtek.com>; marcochen@google.com; nic_swsd <nic=
+_swsd@realtek.com>; Grant Grundler <grundler@chromium.org>
+> Subject: RE: Proposal: r8152 firmware patching framework
+>
+> Prashant Malani <pmalani@chromium.org>
+> > >
+> > > (Adding a few more Realtek folks)
+> > >
+> > > Friendly ping. Any thoughts / feedback, Realtek folks (and others) ?
+> > >
+> > >> On Thu, Aug 29, 2019 at 11:40 AM Prashant Malani
+> > <pmalani@chromium.org> wrote:
+> > >>
+> > >> Hi,
+> > >>
+> > >> The r8152 driver source code distributed by Realtek (on
+> > >> www.realtek.com) contains firmware patches. This involves binary
+> > >> byte-arrays being written byte/word-wise to the hardware memory
+> > >> Example: grundler@chromium.org (cc-ed) has an experimental patch
+> > which
+> > >> includes the firmware patching code which was distributed with the
+> > >> Realtek source :
+> > >>
+> > https://chromium-review.googlesource.com/c/chromiumos/third_party/kern
+> > el
+> > /+/1417953
+> > >>
+> > >> It would be nice to have a way to incorporate these firmware fixes
+> > >> into the upstream code. Since having indecipherable byte-arrays is
+> > >> not possible upstream, I propose the following:
+> > >> - We use the assistance of Realtek to come up with a format which
+> > >> the firmware patch files can follow (this can be documented in the
+> > >> comments).
+> > >>       - A real simple format could look like this:
+> > >>               +
+> > >>
+> > <section1><size_in_bytes><address1><data1><address2><data2>...<address
+> > N
+> > ><dataN><section2>...
+> > >>                + The driver would be able to understand how to
+> > >> parse each section (e.g is each data entry a byte or a word?)
+> > >>
+> > >> - We use request_firmware() to load the firmware, parse it and
+> > >> write the data to the relevant registers.
+>
+> I plan to finish the patches which I am going to submit, first. Then, I c=
+ould focus on this. However, I don't think I would start this quickly. Ther=
+e are many preparations and they would take me a lot of time.
+>
+> Best Regards,
+> Hayes
+>
+>
