@@ -2,139 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB35A69FB
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D46A6A04
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728679AbfICNgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 09:36:40 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40769 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727941AbfICNgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 09:36:40 -0400
-Received: by mail-wr1-f66.google.com with SMTP id c3so17524516wrd.7
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 06:36:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XXWSbLsKaHg5I5JkLpivESPwDR8ogw0XgJNZimWH3ok=;
-        b=Teo2ZSWsXJgYtI6aGJ8QIQR+ijFjruZMSiEKuPtDDv0rMWQA0JmLG8nCCISOKQnYOy
-         NetFt3DFd8uyAB6021HDj4DFccgfSM4sBbIlxeI1rKOwg3QzraEgEh+ThJcOSdrv5d55
-         uExIHOud/g8s4F0JPk7gKA21BRQPPzEtOtip2/XRe+lhkE11tZ4PWNIMOWN5QJZqWTtK
-         Fdb1GR/CCAVhWDIN7dqtnJ8cf1VY4BVaHTBaPKv3H8hPnsdvKauzoulc4sl9lfsh9RoR
-         ZfIpNv+vVinopMauyptxX2ecDAnDzLuhRMkyoBI06LnO1RCjRYVURbwuBH0N63JG858w
-         Z6xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XXWSbLsKaHg5I5JkLpivESPwDR8ogw0XgJNZimWH3ok=;
-        b=X7n3vRwHys3IjMg/NWl4UmbCsv9FQZzeAPEbk9aFWaO8TK/uuBzt6pffSyLSmCI/Cw
-         Vv2huRnijyTCkEf2Wac4zSzWQ54LvKlzQYdazNzw0Q5o2ZvWtmwniDmBChNYpg4YfG4p
-         Il8DNUIQ5pUgksORQUTEsXEtAEkXSRVsqHaCBspf+wV2kItE98C1H9BlGjwNJ+GzVLMp
-         uHNkpAtD8/4ZQH5MqCZv9r8X5Wfb1BNK5tFUIsbHiunC1d+t7w3wr/6hs9a+vBAlfMY+
-         59OOSB1+pQa+blu6GT6K3EFErxircMCDFIDAjPaKtBUlK7ACOAlqCxEzpJdR8AgRk5ex
-         bXgA==
-X-Gm-Message-State: APjAAAUVsfZRA7pJY/sg4dKh9B371nnz30b7aPPZeA7i8GnrBsGb8Jfu
-        X0nUf1Ezq/EIR+bSAkqGz24=
-X-Google-Smtp-Source: APXvYqz4KjqpS358nHrAmtKP8SWA3RqP5GCb/rip3hF2qCoodxn/l/koaslM3TPkpsB28aXEdVBDig==
-X-Received: by 2002:a5d:4402:: with SMTP id z2mr10102991wrq.183.1567517798269;
-        Tue, 03 Sep 2019 06:36:38 -0700 (PDT)
-Received: from tycho (ipbcc09208.dynamic.kabel-deutschland.de. [188.192.146.8])
-        by smtp.gmail.com with ESMTPSA id f143sm11102046wme.40.2019.09.03.06.36.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2019 06:36:37 -0700 (PDT)
-Date:   Tue, 3 Sep 2019 15:36:36 +0200
-From:   Zahari Doychev <zahari.doychev@linux.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     netdev@vger.kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        jiri@resnulli.us, nikolay@cumulusnetworks.com,
-        simon.horman@netronome.com, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org, jhs@mojatatu.com,
-        dsahern@gmail.com, xiyou.wangcong@gmail.com,
-        johannes@sipsolutions.net, alexei.starovoitov@gmail.com
-Subject: Re: [Bridge] [PATCH v3 1/2] net: bridge: use mac_len in bridge
- forwarding
-Message-ID: <20190903133635.siw6xcaqwk7m5a5a@tycho>
-References: <20190902181000.25638-1-zahari.doychev@linux.com>
- <76b7723b-68dd-0efc-9a93-0597e9d9b827@gmail.com>
+        id S1729287AbfICNhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 09:37:41 -0400
+Received: from mga03.intel.com ([134.134.136.65]:29014 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727941AbfICNhl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 09:37:41 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Sep 2019 06:37:39 -0700
+X-IronPort-AV: E=Sophos;i="5.64,463,1559545200"; 
+   d="scan'208";a="182125814"
+Received: from jnikula-mobl3.fi.intel.com (HELO localhost) ([10.237.66.161])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Sep 2019 06:37:36 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     jani.nikula@intel.com,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Julia Lawall <julia.lawall@lip6.fr>
+Subject: [PATCH 1/2] linux/kernel.h: add yesno(), onoff(), enableddisabled(), plural() helpers
+Date:   Tue,  3 Sep 2019 16:37:30 +0300
+Message-Id: <20190903133731.2094-1-jani.nikula@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76b7723b-68dd-0efc-9a93-0597e9d9b827@gmail.com>
-User-Agent: NeoMutt/20180716
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 03, 2019 at 08:37:36PM +0900, Toshiaki Makita wrote:
-> Hi Zahari,
-> 
-> Sorry for reviewing this late.
-> 
-> On 2019/09/03 3:09, Zahari Doychev wrote:
-> ...
-> > @@ -466,13 +466,14 @@ static bool __allowed_ingress(const struct net_bridge *br,
-> >   		/* Tagged frame */
-> >   		if (skb->vlan_proto != br->vlan_proto) {
-> >   			/* Protocol-mismatch, empty out vlan_tci for new tag */
-> > -			skb_push(skb, ETH_HLEN);
-> > +			skb_push(skb, skb->mac_len);
-> >   			skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
-> >   							skb_vlan_tag_get(skb));
-> 
-> I think we should insert vlan at skb->data, i.e. mac_header + mac_len, while this
-> function inserts the tag at mac_header + ETH_HLEN which is not always the correct
-> offset.
+The kernel has plenty of ternary operators to choose between constant
+strings, such as condition ? "yes" : "no", as well as value == 1 ? "" :
+"s":
 
-Maybe I am misunderstanding the concern here but this should make sure that
-the VLAN tag from the skb is move back in the payload as the outer most tag.
-So it should follow the ethernet header. It looks like this e.g.,:
+$ git grep '? "yes" : "no"' | wc -l
+258
+$ git grep '? "on" : "off"' | wc -l
+204
+$ git grep '? "enabled" : "disabled"' | wc -l
+196
+$ git grep '? "" : "s"' | wc -l
+25
 
-VLAN1 in skb:
-+------+------+-------+
-| DMAC | SMAC | ETYPE |
-+------+------+-------+
+Additionally, there are some occurences of the same in reverse order,
+split to multiple lines, or otherwise not caught by the simple grep.
 
-VLAN1 moved to payload:
-+------+------+-------+-------+
-| DMAC | SMAC | VLAN1 | ETYPE |
-+------+------+-------+-------+
+Add helpers to return the constant strings. Remove existing equivalent
+and conflicting functions in i915, cxgb4, and USB core. Further
+conversion can be done incrementally.
 
-VLAN2 in skb:
-+------+------+-------+-------+
-| DMAC | SMAC | VLAN1 | ETYPE |
-+------+------+-------+-------+
+While the main goal here is to abstract recurring patterns, and slightly
+clean up the code base by not open coding the ternary operators, there
+are also some space savings to be had via better string constant
+pooling.
 
-VLAN2 moved to payload:
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: Vishal Kulkarni <vishal@chelsio.com>
+Cc: netdev@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+---
+ drivers/gpu/drm/i915/i915_utils.h             | 15 -------------
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    | 11 ----------
+ drivers/usb/core/config.c                     |  5 -----
+ drivers/usb/core/generic.c                    |  5 -----
+ include/linux/kernel.h                        | 21 +++++++++++++++++++
+ 5 files changed, 21 insertions(+), 36 deletions(-)
 
-+------+------+-------+-------+
-| DMAC | SMAC | VLAN2 | VLAN1 | ....
-+------+------+-------+-------+
+diff --git a/drivers/gpu/drm/i915/i915_utils.h b/drivers/gpu/drm/i915/i915_utils.h
+index 2987219a6300..9754e277622f 100644
+--- a/drivers/gpu/drm/i915/i915_utils.h
++++ b/drivers/gpu/drm/i915/i915_utils.h
+@@ -355,19 +355,4 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
+ #define MBps(x) KBps(1000 * (x))
+ #define GBps(x) ((u64)1000 * MBps((x)))
+ 
+-static inline const char *yesno(bool v)
+-{
+-	return v ? "yes" : "no";
+-}
+-
+-static inline const char *onoff(bool v)
+-{
+-	return v ? "on" : "off";
+-}
+-
+-static inline const char *enableddisabled(bool v)
+-{
+-	return v ? "enabled" : "disabled";
+-}
+-
+ #endif /* !__I915_UTILS_H */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index d692251ee252..d0be14d93df7 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -2023,17 +2023,6 @@ static const struct file_operations rss_debugfs_fops = {
+ /* RSS Configuration.
+  */
+ 
+-/* Small utility function to return the strings "yes" or "no" if the supplied
+- * argument is non-zero.
+- */
+-static const char *yesno(int x)
+-{
+-	static const char *yes = "yes";
+-	static const char *no = "no";
+-
+-	return x ? yes : no;
+-}
+-
+ static int rss_config_show(struct seq_file *seq, void *v)
+ {
+ 	struct adapter *adapter = seq->private;
+diff --git a/drivers/usb/core/config.c b/drivers/usb/core/config.c
+index 9d6cb709ca7b..7da06aa06ced 100644
+--- a/drivers/usb/core/config.c
++++ b/drivers/usb/core/config.c
+@@ -19,11 +19,6 @@
+ #define USB_MAXCONFIG			8	/* Arbitrary limit */
+ 
+ 
+-static inline const char *plural(int n)
+-{
+-	return (n == 1 ? "" : "s");
+-}
+-
+ static int find_next_descriptor(unsigned char *buffer, int size,
+     int dt1, int dt2, int *num_skipped)
+ {
+diff --git a/drivers/usb/core/generic.c b/drivers/usb/core/generic.c
+index 1ac9c1e5f773..95a87b6cd35f 100644
+--- a/drivers/usb/core/generic.c
++++ b/drivers/usb/core/generic.c
+@@ -24,11 +24,6 @@
+ #include <uapi/linux/usb/audio.h>
+ #include "usb.h"
+ 
+-static inline const char *plural(int n)
+-{
+-	return (n == 1 ? "" : "s");
+-}
+-
+ static int is_rndis(struct usb_interface_descriptor *desc)
+ {
+ 	return desc->bInterfaceClass == USB_CLASS_COMM
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 4fa360a13c1e..3375f054aefd 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -1008,4 +1008,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+ 	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
+ 	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
+ 	 (perms))
++
++static inline const char *yesno(bool v)
++{
++	return v ? "yes" : "no";
++}
++
++static inline const char *onoff(bool v)
++{
++	return v ? "on" : "off";
++}
++
++static inline const char *enableddisabled(bool v)
++{
++	return v ? "enabled" : "disabled";
++}
++
++static inline const char *plural(long v)
++{
++	return v == 1 ? "" : "s";
++}
++
+ #endif
+-- 
+2.20.1
 
-Doing the skb push with mac_len makes sure that VLAN tag is inserted in the
-correct offset. For mac_len == ETH_HLEN this does not change the current
-behaviour.
-
-> 
-> >   			if (unlikely(!skb))
-> >   				return false;
-> >   			skb_pull(skb, ETH_HLEN);
-> 
-> Now skb->data is mac_header + ETH_HLEN which would be broken when mac_len is not
-> ETH_HLEN?
-
-I thought it would be better to point in this case to the outer tag as otherwise
-if mac_len is used the skb->data will point to the next tag which I find somehow
-inconsistent or do you see some case where this can cause problems?
-
-
-> 
-> > +			skb_reset_network_header(skb);
-> >   			skb_reset_mac_len(skb);
-> >   			*vid = 0;
-> >   			tagged = false;
-> > 
-> 
-> Toshiaki Makita
