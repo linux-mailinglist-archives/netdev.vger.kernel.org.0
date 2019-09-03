@@ -2,123 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA13A76C4
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAE1A76CB
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727056AbfICWQW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 3 Sep 2019 18:16:22 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36698 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726567AbfICWQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 18:16:21 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x83MFUTr025545
-        for <netdev@vger.kernel.org>; Tue, 3 Sep 2019 15:16:20 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2usubphp7w-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 15:16:20 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 3 Sep 2019 15:16:19 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 5BCB4760919; Tue,  3 Sep 2019 15:16:17 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: fix precision tracking of stack slots
-Date:   Tue, 3 Sep 2019 15:16:17 -0700
-Message-ID: <20190903221617.635375-1-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
+        id S1726375AbfICWRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 18:17:14 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44446 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726079AbfICWRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 18:17:14 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i18so9974819pgl.11
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 15:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=+49jYAt/cTc0JQj+iUCFarvKdCzcdPAe1yY7LUy2AAk=;
+        b=uvdjWga77TsAe82aS3x1gRTcSsz+baGSOKaPSoQDWsSCXJLtMniab8X2lzhaXseAg0
+         0ghBxgxYM9LpxtV57IFrIaaQ20mLfCIg3nYQeFLmb/ucSCj2biNRtN3cnkjpiuJxm9ZI
+         fMSIZZOXusU6a9U6YrvBn2xlPJHn82VLfGv7AqmBuV++Pt9ePhKymkVA+YwGQhNw2ckA
+         rlycyEsHBiXPWvlQ8fRYwMEI8K5ioKrmTm4Ua1n4bfU45ee++kWi/nRJ1WyXgsDgxLBb
+         oZ91Rir2MvOlLqpHiHJXJtVskc747thK9EC0UfAMy72+9OId1LaQPjJUzHI6234DBQ6G
+         vg0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+49jYAt/cTc0JQj+iUCFarvKdCzcdPAe1yY7LUy2AAk=;
+        b=Q+Dy4f4AxyW6iAGFrP9SCWP/y06WgXkIOOaeBon5F0ANHcRYyvo/0oUXDjePruEYez
+         LWeAWY6q5btxxtMebbU13hjANQO9gCh2jvKTuvaU2MLKBilsoiyP+XA0jQbnq7p1lAli
+         MHhOi+R224V/iImLx2+VQ11ABXM0hvrb7A86/u1QmQjFMjJTcu79Ih2hw8IcHe0zZtPv
+         JyR8CtXdHod9NaWNqJMsblLPX9skhgUHuLWeaMxYdqHE6/DC09wwSe1lhQuYjjcJX+81
+         6+m8HXuHC6/oCkk2zJ1ru42V0eOhsigjWpCqnsV7FZqPetcx9fIv+He4BiaTysnixwD/
+         o3Mw==
+X-Gm-Message-State: APjAAAWep+wHPvxQkM2FNQAMz6fL10JGT22d2C2kzRXHAN50U1L4XpYt
+        QZzDSSVCztNs4wwe/Ho+pL0Cnifm
+X-Google-Smtp-Source: APXvYqwJ0xRHffyBnGrmJx8fQS9xSlwNgWMsyBcxkNk2GIe2llUkSzkkkEF/bZkce1TjXC19Au+VCw==
+X-Received: by 2002:a63:4a51:: with SMTP id j17mr32210231pgl.284.1567549033254;
+        Tue, 03 Sep 2019 15:17:13 -0700 (PDT)
+Received: from [172.27.227.244] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id x5sm5940588pfn.149.2019.09.03.15.17.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Sep 2019 15:17:11 -0700 (PDT)
+Subject: Re: [PATCH v2 net] net: Properly update v4 routes with v6 nexthop
+To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org,
+        dsahern@kernel.org, sworley@cumulusnetworks.com
+References: <20190831122254.29928-1-sharpd@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4cecf207-775c-6b40-8152-66880de2be58@gmail.com>
+Date:   Tue, 3 Sep 2019 16:17:10 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-03_05:2019-09-03,2019-09-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- adultscore=0 spamscore=0 priorityscore=1501 phishscore=0 bulkscore=0
- mlxscore=0 malwarescore=0 mlxlogscore=816 suspectscore=1 impostorscore=0
- clxscore=1034 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909030221
-X-FB-Internal: deliver
+In-Reply-To: <20190831122254.29928-1-sharpd@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The problem can be seen in the following two tests:
-0: (bf) r3 = r10
-1: (55) if r3 != 0x7b goto pc+0
-2: (7a) *(u64 *)(r3 -8) = 0
-3: (79) r4 = *(u64 *)(r10 -8)
-..
-0: (85) call bpf_get_prandom_u32#7
-1: (bf) r3 = r10
-2: (55) if r3 != 0x7b goto pc+0
-3: (7b) *(u64 *)(r3 -8) = r0
-4: (79) r4 = *(u64 *)(r10 -8)
+On 8/31/19 6:22 AM, Donald Sharp wrote:
+> @@ -1684,7 +1684,8 @@ EXPORT_SYMBOL_GPL(fib_add_nexthop);
+>  #endif
+>  
+>  #ifdef CONFIG_IP_ROUTE_MULTIPATH
+> -static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+> +static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi,
+> +			     u8 rt_family)
 
-When backtracking need to mark R4 it will mark slot fp-8.
-But ST or STX into fp-8 could belong to the same block of instructions.
-When backtracing is done the parent state may have fp-8 slot
-as "unallocated stack". Which will cause verifier to warn
-and incorrectly reject such programs.
+The fib_info argument makes this an IPv4 only function, so the rt_family
+is extraneous. Remove it here and the #else path below and use AF_INET
+for the 2 calls below.
 
-Writes into stack via non-R10 register are rare. llvm always
-generates canonical stack spill/fill.
-For such pathological case fall back to conservative precision
-tracking instead of rejecting.
-
-Reported-by: syzbot+c8d66267fd2b5955287e@syzkaller.appspotmail.com
-Fixes: b5dc0163d8fd ("bpf: precise scalar_value tracking")
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
-tests will be submitted to bpf-next.
-
- kernel/bpf/verifier.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index b5c14c9d7b98..c36a719fee6d 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1772,16 +1772,21 @@ static int __mark_chain_precision(struct bpf_verifier_env *env, int regno,
- 		bitmap_from_u64(mask, stack_mask);
- 		for_each_set_bit(i, mask, 64) {
- 			if (i >= func->allocated_stack / BPF_REG_SIZE) {
--				/* This can happen if backtracking
--				 * is propagating stack precision where
--				 * caller has larger stack frame
--				 * than callee, but backtrack_insn() should
--				 * have returned -ENOTSUPP.
-+				/* the sequence of instructions:
-+				 * 2: (bf) r3 = r10
-+				 * 3: (7b) *(u64 *)(r3 -8) = r0
-+				 * 4: (79) r4 = *(u64 *)(r10 -8)
-+				 * doesn't contain jmps. It's backtracked
-+				 * as a single block.
-+				 * During backtracking insn 3 is not recognized as
-+				 * stack access, so at the end of backtracking
-+				 * stack slot fp-8 is still marked in stack_mask.
-+				 * However the parent state may not have accessed
-+				 * fp-8 and it's "unallocated" stack space.
-+				 * In such case fallback to conservative.
- 				 */
--				verbose(env, "BUG spi %d stack_size %d\n",
--					i, func->allocated_stack);
--				WARN_ONCE(1, "verifier backtracking bug");
--				return -EFAULT;
-+				mark_all_scalars_precise(env, st);
-+				return 0;
- 			}
- 
- 			if (func->stack[i].slot_type[0] != STACK_SPILL) {
--- 
-2.20.0
-
+>  {
+>  	struct nlattr *mp;
+>  
+> @@ -1693,13 +1694,14 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+>  		goto nla_put_failure;
+>  
+>  	if (unlikely(fi->nh)) {
+> -		if (nexthop_mpath_fill_node(skb, fi->nh) < 0)
+> +		if (nexthop_mpath_fill_node(skb, fi->nh, rt_family) < 0)
+>  			goto nla_put_failure;
+>  		goto mp_end;
+>  	}
+>  
+>  	for_nexthops(fi) {
+> -		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight) < 0)
+> +		if (fib_add_nexthop(skb, &nh->nh_common, nh->fib_nh_weight,
+> +				    rt_family) < 0)
+>  			goto nla_put_failure;
+>  #ifdef CONFIG_IP_ROUTE_CLASSID
+>  		if (nh->nh_tclassid &&
+> @@ -1717,7 +1719,8 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+>  	return -EMSGSIZE;
+>  }
+>  #else
+> -static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
+> +static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi,
+> +			     u8 family)
+>  {
+>  	return 0;
+>  }
