@@ -2,136 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E807A6E11
+	by mail.lfdr.de (Postfix) with ESMTP id 821E7A6E12
 	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730113AbfICQYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:24:35 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:39320 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729692AbfICQYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:24:34 -0400
-Received: by mail-yw1-f68.google.com with SMTP id n11so6006910ywn.6
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:24:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k4jAl0jr+VDYMLBaKjmvgDuo55wDGIKUx9tH04YBR2I=;
-        b=CdMgX2AwL2kucVow2RTckKdKEIqoz6XbtCnoXV9NKo+uOIWq0bEIOqsFwvaaMP+T+q
-         eLCJ6bpQ/QfKADI9GVYi/LE0gEmYpghhhnoHdQTwA6FtCAzq+nzZwEcbE+eHBFlHb0lb
-         E/txq54bpt1rwcG8M9Gv9AvvY3hwOYje4N46id8W6Yv9rzRIEiAmP3USk+E5bwqhn5RU
-         HiHOFDOFC087uQSlbhrwdYh3HntGk4ZvlUFSBpp8HoHog04hfW8iHwigNVdI2FAbB8zS
-         Gc/pG5i53Q7U+HUNOsTFFPaJMEYOm/MDsAyxXhiIqjzzJJpi9H+LbsHyr6wo5d7Ik4AW
-         CsNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k4jAl0jr+VDYMLBaKjmvgDuo55wDGIKUx9tH04YBR2I=;
-        b=bGbHbxim763S+s9oHjzpbsfm4o+Bxun8YckbM3EvuuB+G5g41jiD/rUTNCxrYJPgKA
-         EYwJ9Cz3rNXvSyGlFE32OXBzaggzXCFt5TrtfqWLCz6nRND7k/HinduufGKLZ7d5ZPYP
-         1UwG75GGrLo7iwD0Vll8tC44daUZMcsRA/Y/fFRSMNu0KHFSc7lm6eag0jSifoLoZ6+I
-         8MKv1GU9ZZM1QV2+TCubG6V9oOKST8M0TQNdcEYPQV0C3S1R7hMjWruFgxv2323iAIqv
-         +B4+zZUuuR4k+PtWQRiZfojZdpzO+SAklEhn4Ydnivk05hdyO6u2pCbAFaOpfW2bB7PA
-         QGZg==
-X-Gm-Message-State: APjAAAU1IuooT9n7FHD/MLRPbhqApsVTT+uQSNQNRGO6m6kJ3LBut5RW
-        ZMDO77RkhHNEo4MPFtNWGdIDgIIr
-X-Google-Smtp-Source: APXvYqwdV7ZriEzV9QO5vwQpP0TDT9juNzph2l6RLQIHg3uyotn/JGeOjW/cNeMFChfGybcDsqaAvg==
-X-Received: by 2002:a0d:d891:: with SMTP id a139mr9546656ywe.52.1567527872899;
-        Tue, 03 Sep 2019 09:24:32 -0700 (PDT)
-Received: from mail-yw1-f50.google.com (mail-yw1-f50.google.com. [209.85.161.50])
-        by smtp.gmail.com with ESMTPSA id v8sm405651ywg.91.2019.09.03.09.24.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
-Received: by mail-yw1-f50.google.com with SMTP id n69so5984340ywd.12
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
-X-Received: by 2002:a0d:c305:: with SMTP id f5mr23970216ywd.109.1567527871026;
- Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
+        id S1730122AbfICQYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:24:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44292 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729692AbfICQYg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 12:24:36 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DCFAD23774;
+        Tue,  3 Sep 2019 16:24:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1567527875;
+        bh=tQYdSnR4RAFFHKgXxk0+4Ah5CW2SuX2RsiYvzji9Pww=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SibseHw57bmkPv+NIC/xggxo17qyzOVZ7XVz/Q4DUPm2wWkKQmzFCfLa1j3QfgHSW
+         pfYPJ5zUNznrqg7g56PuZliHWxM/DyjcQdbrNK/sYO4lhkjz482ldk/F9wj2eK+7mH
+         JP0lmN/6ArZ5+UVqjm7IhnRG+nVIAJNPPV0CnylM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ihab Zhaika <ihab.zhaika@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 04/23] iwlwifi: add new cards for 22000 and fix struct name
+Date:   Tue,  3 Sep 2019 12:24:05 -0400
+Message-Id: <20190903162424.6877-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190903162424.6877-1-sashal@kernel.org>
+References: <20190903162424.6877-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20190826170724.25ff616f@pixies> <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
- <20190827144218.5b098eac@pixies> <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
- <20190829152241.73734206@pixies> <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
- <20190903185121.56906d31@pixies>
-In-Reply-To: <20190903185121.56906d31@pixies>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 3 Sep 2019 12:23:54 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
-Message-ID: <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
-Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
-To:     Shmulik Ladkani <shmulik@metanetworks.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        eyal@metanetworks.com
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 3, 2019 at 11:52 AM Shmulik Ladkani
-<shmulik@metanetworks.com> wrote:
->
-> On Sun, 1 Sep 2019 16:05:48 -0400
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
->
-> > One quick fix is to disable sg and thus revert to copying in this
-> > case. Not ideal, but better than a kernel splat:
-> >
-> > @@ -3714,6 +3714,9 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
-> >         sg = !!(features & NETIF_F_SG);
-> >         csum = !!can_checksum_protocol(features, proto);
-> >
-> > +       if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag)
-> > +               sg = false;
-> > +
->
-> Thanks Willem.
->
-> I followed this approach, and further refined it based on the conditions
-> that lead to this BUG_ON:
->
->  - existance of frag_list
->  - mangled gso_size (using SKB_GSO_DODGY as a hint)
->  - some frag in the frag_list has a linear part that is NOT head_frag,
->    or length not equal to the requested gso_size
->
-> BTW, doing so allowed me to refactor a loop that tests for similar
-> conditions in the !(features & NETIF_F_GSO_PARTIAL) case, where an
-> attempt to execute partial splitting at the frag_list pointer (see
-> 07b26c9454a2 and 43170c4e0ba7).
->
-> I've tested this using the reproducer, with various linear skbs in
-> the frag_list and different gso_size mangling. All resulting 'segs'
-> looked correct. Did not test on a live system yet.
->
-> Comments are welcome.
->
-> specifically, I would like to know whether we can
->  - better refine the condition where this "sg=false fallback" needs
->    to be applied
->  - consolidate my new 'list_skb && (type & SKB_GSO_DODGY)' case with
->    the existing '!(features & NETIF_F_GSO_PARTIAL)' case
+From: Ihab Zhaika <ihab.zhaika@intel.com>
 
-This is a lot more code change. Especially for stable fixes that need
-to be backported, a smaller patch is preferable.
+add few PCI ID'S for 22000 and fix the wrong name for one
+of the structs
 
-My suggestion only tested the first frag_skb length. If a list can be
-created where the first frag_skb is head_frag but a later one is not,
-it will fail short. I kind of doubt that.
+Signed-off-by: Ihab Zhaika <ihab.zhaika@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+---
+ .../net/wireless/intel/iwlwifi/cfg/22000.c    | 20 ++++++++++++----
+ .../net/wireless/intel/iwlwifi/iwl-config.h   |  5 ++--
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 23 +++++++++++++------
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   |  4 ++--
+ 4 files changed, 37 insertions(+), 15 deletions(-)
 
-By default skb_gro_receive builds GSO skbs that can be segmented
-along the original gso_size boundaries. We have so far only observed
-this issue when messing with gso_size.
+diff --git a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c b/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
+index a9c846c59289e..650ca46efc48f 100644
+--- a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
++++ b/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
+@@ -241,6 +241,18 @@ const struct iwl_cfg iwl_ax101_cfg_qu_hr = {
+ 	.max_tx_agg_size = IEEE80211_MAX_AMPDU_BUF_HT,
+ };
+ 
++const struct iwl_cfg iwl_ax201_cfg_qu_hr = {
++	.name = "Intel(R) Wi-Fi 6 AX201 160MHz",
++	.fw_name_pre = IWL_22000_QU_B_HR_B_FW_PRE,
++	IWL_DEVICE_22500,
++	/*
++	 * This device doesn't support receiving BlockAck with a large bitmap
++	 * so we need to restrict the size of transmitted aggregation to the
++	 * HT size; mac80211 would otherwise pick the HE max (256) by default.
++	 */
++	.max_tx_agg_size = IEEE80211_MAX_AMPDU_BUF_HT,
++};
++
+ const struct iwl_cfg iwl_ax101_cfg_quz_hr = {
+ 	.name = "Intel(R) Wi-Fi 6 AX101",
+ 	.fw_name_pre = IWL_QUZ_A_HR_B_FW_PRE,
+@@ -424,12 +436,12 @@ const struct iwl_cfg iwlax210_2ax_cfg_so_jf_a0 = {
+ };
+ 
+ const struct iwl_cfg iwlax210_2ax_cfg_so_hr_a0 = {
+-	.name = "Intel(R) Wi-Fi 6 AX201 160MHz",
++	.name = "Intel(R) Wi-Fi 7 AX210 160MHz",
+ 	.fw_name_pre = IWL_22000_SO_A_HR_B_FW_PRE,
+ 	IWL_DEVICE_AX210,
+ };
+ 
+-const struct iwl_cfg iwlax210_2ax_cfg_so_gf_a0 = {
++const struct iwl_cfg iwlax211_2ax_cfg_so_gf_a0 = {
+ 	.name = "Intel(R) Wi-Fi 7 AX211 160MHz",
+ 	.fw_name_pre = IWL_22000_SO_A_GF_A_FW_PRE,
+ 	.uhb_supported = true,
+@@ -443,8 +455,8 @@ const struct iwl_cfg iwlax210_2ax_cfg_ty_gf_a0 = {
+ 	IWL_DEVICE_AX210,
+ };
+ 
+-const struct iwl_cfg iwlax210_2ax_cfg_so_gf4_a0 = {
+-	.name = "Intel(R) Wi-Fi 7 AX210 160MHz",
++const struct iwl_cfg iwlax411_2ax_cfg_so_gf4_a0 = {
++	.name = "Intel(R) Wi-Fi 7 AX411 160MHz",
+ 	.fw_name_pre = IWL_22000_SO_A_GF4_A_FW_PRE,
+ 	IWL_DEVICE_AX210,
+ };
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-config.h b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+index f3e69edf89071..29aaf649c13c3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-config.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+@@ -562,6 +562,7 @@ extern const struct iwl_cfg iwl_ax101_cfg_qu_hr;
+ extern const struct iwl_cfg iwl_ax101_cfg_quz_hr;
+ extern const struct iwl_cfg iwl22000_2ax_cfg_hr;
+ extern const struct iwl_cfg iwl_ax200_cfg_cc;
++extern const struct iwl_cfg iwl_ax201_cfg_qu_hr;
+ extern const struct iwl_cfg killer1650s_2ax_cfg_qu_b0_hr_b0;
+ extern const struct iwl_cfg killer1650i_2ax_cfg_qu_b0_hr_b0;
+ extern const struct iwl_cfg killer1650x_2ax_cfg;
+@@ -580,9 +581,9 @@ extern const struct iwl_cfg iwl9560_2ac_cfg_qnj_jf_b0;
+ extern const struct iwl_cfg iwl22000_2ax_cfg_qnj_hr_a0;
+ extern const struct iwl_cfg iwlax210_2ax_cfg_so_jf_a0;
+ extern const struct iwl_cfg iwlax210_2ax_cfg_so_hr_a0;
+-extern const struct iwl_cfg iwlax210_2ax_cfg_so_gf_a0;
++extern const struct iwl_cfg iwlax211_2ax_cfg_so_gf_a0;
+ extern const struct iwl_cfg iwlax210_2ax_cfg_ty_gf_a0;
+-extern const struct iwl_cfg iwlax210_2ax_cfg_so_gf4_a0;
++extern const struct iwl_cfg iwlax411_2ax_cfg_so_gf4_a0;
+ #endif /* CPTCFG_IWLMVM || CPTCFG_IWLFMAC */
+ 
+ #endif /* __IWL_CONFIG_H__ */
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index cd035061cdd55..2f3ee5769fdd3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -897,6 +897,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x02F0, 0x0310, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x02F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0x02F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0x02F0, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x02F0, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x06F0, 0x0070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x06F0, 0x0074, iwl_ax101_cfg_qu_hr)},
+@@ -905,6 +906,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x06F0, 0x0310, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x06F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0x06F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0x06F0, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x06F0, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x0000, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x0040, iwl_ax101_cfg_qu_hr)},
+@@ -918,6 +920,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x2720, 0x1080, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0x2720, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x34F0, 0x0040, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x34F0, 0x0070, iwl_ax101_cfg_qu_hr)},
+@@ -927,6 +930,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x34F0, 0x0310, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x34F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0x34F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0x34F0, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x34F0, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x43F0, 0x0040, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x43F0, 0x0070, iwl_ax101_cfg_qu_hr)},
+@@ -935,6 +939,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x43F0, 0x007C, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x43F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0x43F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0x43F0, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0x43F0, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x0000, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x0040, iwl_ax101_cfg_qu_hr)},
+@@ -946,6 +951,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x0A10, iwl_ax101_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x1651, killer1650s_2ax_cfg_qu_b0_hr_b0)},
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0)},
++	{IWL_PCI_DEVICE(0xA0F0, 0x2074, iwl_ax201_cfg_qu_hr)},
+ 	{IWL_PCI_DEVICE(0xA0F0, 0x4070, iwl_ax101_cfg_qu_hr)},
+ 
+ 	{IWL_PCI_DEVICE(0x2723, 0x0080, iwl_ax200_cfg_cc)},
+@@ -958,13 +964,16 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x2723, 0x4080, iwl_ax200_cfg_cc)},
+ 	{IWL_PCI_DEVICE(0x2723, 0x4088, iwl_ax200_cfg_cc)},
+ 
+-	{IWL_PCI_DEVICE(0x2725, 0x0090, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x7A70, 0x0090, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x7A70, 0x0310, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x2725, 0x0020, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x2725, 0x0310, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x2725, 0x0A10, iwlax210_2ax_cfg_so_hr_a0)},
+-	{IWL_PCI_DEVICE(0x2725, 0x00B0, iwlax210_2ax_cfg_so_hr_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x0090, iwlax211_2ax_cfg_so_gf_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x0020, iwlax210_2ax_cfg_ty_gf_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x0310, iwlax210_2ax_cfg_ty_gf_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x0510, iwlax210_2ax_cfg_ty_gf_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x0A10, iwlax210_2ax_cfg_ty_gf_a0)},
++	{IWL_PCI_DEVICE(0x2725, 0x00B0, iwlax411_2ax_cfg_so_gf4_a0)},
++	{IWL_PCI_DEVICE(0x7A70, 0x0090, iwlax211_2ax_cfg_so_gf_a0)},
++	{IWL_PCI_DEVICE(0x7A70, 0x0310, iwlax211_2ax_cfg_so_gf_a0)},
++	{IWL_PCI_DEVICE(0x7A70, 0x0510, iwlax211_2ax_cfg_so_gf_a0)},
++	{IWL_PCI_DEVICE(0x7A70, 0x0A10, iwlax211_2ax_cfg_so_gf_a0)},
+ 
+ #endif /* CONFIG_IWLMVM */
+ 
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index 199eddea82a9a..51a3f77474e66 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -3569,10 +3569,10 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 			trans->cfg = &iwlax210_2ax_cfg_so_jf_a0;
+ 		} else if (CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
+ 			   CSR_HW_RF_ID_TYPE_CHIP_ID(CSR_HW_RF_ID_TYPE_GF)) {
+-			trans->cfg = &iwlax210_2ax_cfg_so_gf_a0;
++			trans->cfg = &iwlax211_2ax_cfg_so_gf_a0;
+ 		} else if (CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
+ 			   CSR_HW_RF_ID_TYPE_CHIP_ID(CSR_HW_RF_ID_TYPE_GF4)) {
+-			trans->cfg = &iwlax210_2ax_cfg_so_gf4_a0;
++			trans->cfg = &iwlax411_2ax_cfg_so_gf4_a0;
+ 		}
+ 	} else if (cfg == &iwl_ax101_cfg_qu_hr) {
+ 		if ((CSR_HW_RF_ID_TYPE_CHIP_ID(trans->hw_rf_id) ==
+-- 
+2.20.1
 
-We can easily refine the test to fall back on to copying only if
-skb_headlen(list_skb) != mss. Alternatively, only on SKB_GSO_DODGY is fine, too.
-
-I suggest we stick with the two-liner.
