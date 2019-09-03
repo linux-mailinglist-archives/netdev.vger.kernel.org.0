@@ -2,171 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE0C2A76EE
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49896A76F2
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbfICW1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 18:27:14 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33423 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726635AbfICW1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 18:27:14 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q10so6739783pfl.0
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 15:27:13 -0700 (PDT)
+        id S1726179AbfICW2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 18:28:47 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:38897 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfICW2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 18:28:47 -0400
+Received: by mail-pl1-f196.google.com with SMTP id w11so8606078plp.5
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 15:28:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TDK0yPP3UaTvpEb1rUB8fJ3YnVhy6RuZ/98K7uw4/fc=;
-        b=HJwBkM1gUIyoLQcA3L83Yg22Me5qhPjoVorl/nz2aRsANwmKCBUMbzfgJ16CFP4hjd
-         w9KzoH6FxY5PhXVdf8ouJQo3hK5gmzFbLBA3jgUlRNIeB244LlwZAd8ufFP0NC+zvf+5
-         50xMa0Rz4gmhtaLFhJolaToJKT5l7g6Fo+sJA04CjLzIUlDH1XYOAV0M+nCUxCrwEm4b
-         lyEpWzLQ77p5Fx5/4G/74O50/aA+NrzNzMrHwyNbPu5YWtsgYQFu4IIE01A85qdvfxFK
-         p+X5pydbdyeQ+Ef+aTVKt6lll+DQFvECjjd6A7is+i6ZMpSD7oEzJzFS9bgI2PCVqw0y
-         CMBg==
+        d=pensando.io; s=google;
+        h=from:to:subject:date:message-id;
+        bh=A2sEr+1QrV+YNmNc4TZSi78k0/DJOuY8ZZIy9c/4H1s=;
+        b=lJyTCZOGvyM/siqacYHcqgUJd0RfA8ln5NqkrKtwAs/a4POKpAAjD/vbQ8DMGWH0eb
+         ENmOx767Q51mgqGPgnFO554eEUZglxNGjxc40mj5NbwVX3C2n0IdUG07p+bW1tKno9I3
+         1aq3lKLqgX7NCh9Zb1LdKbOdmXTzpJiVjL50XtNQMdDYGGjfKYoaQWiQgVh5/2sVy/NE
+         yen+/Yc66dLzhqe1AmU8bIC9nuz7DnXyVgktXoxHyi/RaUZqaxbFFm9hlNcw+hnAH2r5
+         bZ6ZPj+dxJzbsK8exiCHjoxsK0a+kqLd0OGkRVIbvim7eLa5eAcjJ0h6MJtDXyz8Y9eT
+         N4sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=TDK0yPP3UaTvpEb1rUB8fJ3YnVhy6RuZ/98K7uw4/fc=;
-        b=fLon9aCG1qWQ1eBG/NNPuJDjCCPJUDAxvtSTvaY9xZxa25usRz4KSy85wtNXxJ+qCE
-         Gy+VOnohu+Mk36tdgFkKnukllNw8GMgNzRiTYgJ++029MdxutkOtmk6E+ENSNiYlg8tv
-         TmTth+QfhRSNF/Axr3mnHz11YLF9973hkQKAT4Pp/RnDOvcHuFhygEalcR0lJPINdktG
-         V5eChdiJdgkhBVttlMpJM7dL16T39KYiuoQP0oR5puzDfM+TEzMXDxzLFAFIzGYvLWx+
-         +n0B54NrVZJo2vVQ8nZwha1K6wKnBkEBtuDVS3tHRmXcEM2KC53zqc9Ko22i/5+YYsVy
-         kAsQ==
-X-Gm-Message-State: APjAAAVLSdqItlU9vwAUgCJLvVsPiEAX3HIzwUJ7CMDs8UGeGEfqS5Aa
-        Tii8lb/qK6giIB/sfu5FVuofag==
-X-Google-Smtp-Source: APXvYqyCxZAyHS5bALzM5AAA/1h452WNgdmENzF8lc4UoFSzfyh0aYXJVa3SUFGrZNigtoeHcIcYLA==
-X-Received: by 2002:a62:7641:: with SMTP id r62mr41163391pfc.201.1567549633023;
-        Tue, 03 Sep 2019 15:27:13 -0700 (PDT)
-Received: from localhost ([12.206.222.5])
-        by smtp.gmail.com with ESMTPSA id w10sm490850pjv.23.2019.09.03.15.27.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2019 15:27:12 -0700 (PDT)
-Date:   Tue, 03 Sep 2019 15:27:12 -0700 (PDT)
-X-Google-Original-Date: Tue, 03 Sep 2019 15:24:39 PDT (-0700)
-Subject:     Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-In-Reply-To: <419CB0D1-E51C-49D5-9745-7771C863462F@amacapital.net>
-CC:     keescook@chromium.org, david.abdurachmanov@gmail.com,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, oleg@redhat.com, wad@chromium.org,
-        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        tglx@linutronix.de, allison@lohutok.net, alexios.zavras@intel.com,
-        Anup Patel <Anup.Patel@wdc.com>, vincentc@andestech.com,
-        alankao@andestech.com, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, me@carlosedp.com
-From:   Palmer Dabbelt <palmer@sifive.com>
-To:     luto@amacapital.net
-Message-ID: <mhng-c8a768f7-1a90-4228-b654-be9e879c92ec@palmer-si-x1c4>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=A2sEr+1QrV+YNmNc4TZSi78k0/DJOuY8ZZIy9c/4H1s=;
+        b=pBXRASuTN1+ofn85a4ME/ExfxHKm63DFQuPsmrZ5IWB3nT3+3CGReDYXw+UHG+DOV1
+         1iMkDte94f0mXzxbdnZzZun/E7TZ1VWdDZxHEIpFUHvy0D3BywX6QUkjUF4qSm2//kHO
+         DzR8pSbzT5Pre10RcluDABn50ykDiMtlOUL0z55e/yquz5SGh5Xeara/1WrUtSfNFQx1
+         7Ssy4xGc59qWX+mV4D5Pyz038g7GDihis+9NLiOY4hiMlZ0NvtYNtyQb+B771AHvJJqB
+         0UFD9xPsKjNxnFQuiSbYO73dk+qX6kPdZoM8g7FmYTRBr6G2gIrT5UjOyUejMxwRTMEb
+         WlgA==
+X-Gm-Message-State: APjAAAVe5v9mMMo0oR99sQkrgHiz9dy0v+Dh9iTjQR3Trql1d7VjQ6ob
+        QKIfkkbMn3ZgMhuRB2P4oFCVJQ==
+X-Google-Smtp-Source: APXvYqw/xPax9YNPcJBndALGP2b6hq8uIrXICmv0G/kbfGGk3mHwqQZDeXwXcJlwi3jyq2nGGCveyQ==
+X-Received: by 2002:a17:902:9889:: with SMTP id s9mr38255088plp.100.1567549726172;
+        Tue, 03 Sep 2019 15:28:46 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id e17sm520520pjt.6.2019.09.03.15.28.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Sep 2019 15:28:45 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     snelson@pensando.io, netdev@vger.kernel.org, davem@davemloft.net
+Subject: [PATCH v7 net-next 00/19] ionic: Add ionic driver
+Date:   Tue,  3 Sep 2019 15:28:02 -0700
+Message-Id: <20190903222821.46161-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Aug 2019 10:52:05 PDT (-0700), luto@amacapital.net wrote:
->
->
->> On Aug 25, 2019, at 2:59 PM, Kees Cook <keescook@chromium.org> wrote:
->> 
->>> On Thu, Aug 22, 2019 at 01:55:22PM -0700, David Abdurachmanov wrote:
->>> This patch was extensively tested on Fedora/RISCV (applied by default on
->>> top of 5.2-rc7 kernel for <2 months). The patch was also tested with 5.3-rc
->>> on QEMU and SiFive Unleashed board.
->> 
->> Oops, I see the mention of QEMU here. Where's the best place to find
->> instructions on creating a qemu riscv image/environment?
->
-> I don’t suppose one of you riscv folks would like to contribute riscv support to virtme?  virtme-run —arch=riscv would be quite nice, and the total patch should be just a couple lines.  Unfortunately, it helps a lot to understand the subtleties of booting the architecture to write those couple lines :)
+This is a patch series that adds the ionic driver, supporting the Pensando
+ethernet device.
 
-What mailing list should I sent this to?  You need to use the "virtme" branch 
-of kernel.org/palmer/linux.git until I send the defconfig patches.
+In this initial patchset we implement basic transmit and receive.  Later
+patchsets will add more advanced features.
 
-commit a8bd7b318691891991caea298f9a5ed0f815c322
-gpg: Signature made Tue 03 Sep 2019 03:22:45 PM PDT
-gpg:                using RSA key 00CE76D1834960DFCE886DF8EF4CA1502CCBAB41
-gpg:                issuer "palmer@dabbelt.com"
-gpg: Good signature from "Palmer Dabbelt <palmer@dabbelt.com>" [ultimate]
-gpg:                 aka "Palmer Dabbelt <palmer@sifive.com>" [ultimate]
-Author: Palmer Dabbelt <palmer@sifive.com>
-Date:   Tue Sep 3 14:39:39 2019 -0700
+Our thanks to Saeed Mahameed, David Miller, Andrew Lunn, Michal Kubecek,
+Jacub Kicinski, Jiri Pirko, Yunsheng Lin, and the ever present kbuild
+test robots for their comments and suggestions.
 
-    Add RISC-V support
+New in v7:
+ - stop Tx queue if no descriptor space left after a Tx
+ - return ETIMEDOUT if the module data can't be copied out safely
+ - remove unnecessary synchronize_irq() before free_irq()
+ - use eth_prepare_mac_addr_change() and eth_commit_mac_addr_change() helpers
+ - propagate error out of ionic_dl_info_get()
 
-    This expects a kernel with the plan 9 stuff supported (not yet in
-    defconfig) and a new QEMU (as described in the README).  I'm also not
-    100% sure it's working, as I'm getting
+New in v6:
+ - added a new patch with devlink info tags for ASIC and general FW
+ - use the new devlink info tags in the driver
+ - fixed up TxRx cleanup on setup failure
+ - allow for possible 0 address from dma mapping of Tx buffers
+ - remove a few more unnecessary debugfs error checks
+ - use innocuous hardcoded strings in the identify message
+ - removed a couple of unused functions and definitions
+ - fix a leak in the error handling of port_info setup
+ - changed from BUILD_BUG_ON() to static_assert()
 
-        /bin/sh: exec: line 1: /run/virtme/guesttools/virtme-init: not found
+New in v5:
+ - code reorganized for more sane layout, with a side benefit of getting
+   rid of a "defined but not used" complaint after patch 5
+ - added "ionic_" prefix to struct definitions and fixed up remaining
+   reverse christmas tree formatting (I think I got them all...)
+ - ndo_open and ndo_stop reworked for better error recovery
+ - interrupt coalescing enabled at driver start
+ - unnecessary log messaging removed from events
+ - double copy added in the module prom read to assure a clean copy
+ - added BQL counting
+ - fixed a TSO unmap issue found in testing
+ - generalize a bit-flag wait with timeout
+ - added devlink into earlier code and dropped patch 19
 
-    Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
+New in v4:
+ - use devlink struct alloc for ionic device specific struct
+ - add support for devlink_port
+ - fixup devlink fixed vs running version usage
+ - use bitmap_copy() instead of memcpy() for link_ksettings
+ - don't bother to zero out the advertising bits before copying
+   in the support bits
+ - drop unknown xcvr types (will be expanded on later)
+ - flap the connection to force auto-negotiation
+ - use is_power_of_2() rather than open code
+ - simplify set/get_pauseparam use of pause->autoneg
+ - add a couple comments about NIC status data updated in DMA spaces
 
-diff --git a/README.md b/README.md
-index 51b6583..d53a456 100644
---- a/README.md
-+++ b/README.md
-@@ -112,6 +112,14 @@ PPC64
+New in v3:
+ - use le32_to_cpu() on queue_count[] values in debugfs
+ - dma_free_coherent() can handle NULL pointers
+ - remove unused SS_TEST from ethtool handlers
+ - one more case of stop the tx ring if there is no room
+ - remove a couple of stray // comments
 
- PPC64 appears to be reasonably functional.
+New in v2:
+ - removed debugfs error checking and cut down on debugfs use
+ - remove redundant bounds checking on incoming values for mtu and ethtool
+ - don't alloc rx_filter memory until the match type has been checked
+ - free the ionic struct on remove
+ - simplified link_up and netif_carrier_ok comparison
+ - put stats into ethtool -S, out of debugfs
+ - moved dev_cmd and dev_info dumping to ethtool -d, out of debugfs
+ - added devlink support
+ - used kernel's rss init routines rather than open code
+ - set the Kbuild dependant on 64BIT
+ - cut down on some unnecessary log messaging
+ - cleaned up ionic_get_link_ksettings
+ - cleaned up other little code bits here and there
 
-+RISC-V
-+------
-+
-+riscv64 works out of the box, but you'll neet at least QEMU-4.1.0 to be
-+able to run `vmlinux`-style kernels.  riscv32 is not supported because
-+there are no existing userspace images for it.  Support is provided via
-+QEMU's `virt` machine with OpenSBI for firmware.
-+
- Others
- ------
+Shannon Nelson (19):
+  devlink: Add new info version tags for ASIC and FW
+  ionic: Add basic framework for IONIC Network device driver
+  ionic: Add hardware init and device commands
+  ionic: Add port management commands
+  ionic: Add basic lif support
+  ionic: Add interrupts and doorbells
+  ionic: Add basic adminq support
+  ionic: Add adminq action
+  ionic: Add notifyq support
+  ionic: Add the basic NDO callbacks for netdev support
+  ionic: Add management of rx filters
+  ionic: Add Rx filter and rx_mode ndo support
+  ionic: Add async link status check and basic stats
+  ionic: Add initial ethtool support
+  ionic: Add Tx and Rx handling
+  ionic: Add netdev-event handling
+  ionic: Add driver stats
+  ionic: Add RSS support
+  ionic: Add coalesce and other features
 
-diff --git a/virtme/architectures.py b/virtme/architectures.py
-index 9871ea4..ee84494 100644
---- a/virtme/architectures.py
-+++ b/virtme/architectures.py
-@@ -207,6 +207,30 @@ class Arch_ppc64(Arch):
-         # Apparently SLOF (QEMU's bundled firmware?) can't boot a zImage.
-         return 'vmlinux'
+ .../networking/device_drivers/index.rst       |    1 +
+ .../device_drivers/pensando/ionic.rst         |   43 +
+ .../networking/devlink-info-versions.rst      |   16 +
+ MAINTAINERS                                   |    8 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/pensando/Kconfig         |   32 +
+ drivers/net/ethernet/pensando/Makefile        |    6 +
+ drivers/net/ethernet/pensando/ionic/Makefile  |    8 +
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   73 +
+ .../net/ethernet/pensando/ionic/ionic_bus.h   |   16 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  292 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  248 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.h   |   34 +
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  500 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  299 ++
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   99 +
+ .../ethernet/pensando/ionic/ionic_devlink.h   |   14 +
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  779 ++++++
+ .../ethernet/pensando/ionic/ionic_ethtool.h   |    9 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 2482 +++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 2274 +++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  277 ++
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  549 ++++
+ .../net/ethernet/pensando/ionic/ionic_regs.h  |  136 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.c |  150 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.h |   35 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  310 ++
+ .../net/ethernet/pensando/ionic/ionic_stats.h |   53 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  925 ++++++
+ .../net/ethernet/pensando/ionic/ionic_txrx.h  |   15 +
+ include/net/devlink.h                         |    7 +
+ 32 files changed, 9692 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/pensando/ionic.rst
+ create mode 100644 drivers/net/ethernet/pensando/Kconfig
+ create mode 100644 drivers/net/ethernet/pensando/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_if.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_main.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_regs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.h
 
-+class Arch_riscv64(Arch):
-+    def __init__(self, name):
-+        Arch.__init__(self, name)
-+
-+        self.defconfig_target = 'riscv64_defconfig'
-+        self.qemuname = 'riscv64'
-+        self.linuxname = 'riscv'
-+        self.gccname = 'riscv64'
-+
-+    def qemuargs(self, is_native):
-+        ret = Arch.qemuargs(is_native)
-+
-+        ret.extend(['-machine', 'virt'])
-+        ret.extend(['-bios', 'default'])
-+
-+        return ret
-+
-+    @staticmethod
-+    def serial_console_args():
-+        return ['console=ttyS0']
-+
-+    def kimg_path(self):
-+        return 'arch/riscv/boot/Image'
-+
- class Arch_sparc64(Arch):
-     def __init__(self, name):
-         Arch.__init__(self, name)
-@@ -264,6 +288,7 @@ ARCHES = {
-     'arm': Arch_arm,
-     'aarch64': Arch_aarch64,
-     'ppc64': Arch_ppc64,
-+    'riscv64': Arch_riscv64,
-     'sparc64': Arch_sparc64,
-     's390x': Arch_s390x,
- }
+-- 
+2.17.1
 
