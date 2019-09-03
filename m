@@ -2,160 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E2DA76D3
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3574A76E0
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 00:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbfICWT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 18:19:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45590 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726105AbfICWT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 18:19:26 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1787E22DBF;
-        Tue,  3 Sep 2019 22:19:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567549165;
-        bh=os5DoJQjeP1IjdfFGsNUMfF3F51+E+sA6Ts9E8OiqNY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YJJr/ewkoS9c43cs9GkL++64OU1aUYBUo/bCRPD4MZSAjWlQq8y2M4mFIn2Z7t141
-         E/WPT3XxRKulVmgQ1D/K8bSy4WfjA2ul0J+g4jI7uQHDf9D0gP4GmEvnLV0m7hFGG6
-         gc35pO5bhpfaebrFRBXF/ZmUwzNcKizAPvQI9QuM=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, sharpd@cumulusnetworks.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net 2/2] selftest: A few cleanups for fib_nexthops.sh
-Date:   Tue,  3 Sep 2019 15:22:13 -0700
-Message-Id: <20190903222213.7029-3-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190903222213.7029-1-dsahern@kernel.org>
-References: <20190903222213.7029-1-dsahern@kernel.org>
+        id S1726770AbfICWXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 18:23:52 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:44769 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfICWXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 18:23:52 -0400
+Received: by mail-pf1-f201.google.com with SMTP id b204so4984412pfb.11
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 15:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=+PCvSOkvySdWxOAJeySwLu3Fy1OiB15fqDnVbwKlIag=;
+        b=qS3pG4Ke205Cz4lU2fIMU8nWWTJ8t2as68GAJkrkJ1i37AY1tNZMcn5UpM3RF7MENe
+         QqGa31NuhXtorP3lnuqI+YtVnxbHuwoFbopkYQSQZIz0UcOPCFPyfqAIZ6i7CcvyoSMC
+         E/fTnk2F8SVYLZcKyc5gPZqwa4wturG4ZrcImqEnhXR0xkmmErRaty2F6KbJ09W88Nv6
+         uMmgDNR0RCt6nv2onrhhzMI93cwr93V8rYcLMqKy0VHRMRvmWMy00+sBK/1KTxp5c86K
+         gpnyRFIP/rHdqtc89hRLTVrsHA6LHL6BOZj7tmnpW0EmQ2lbjQ4cEbWzEvebjEIdBbTr
+         8wFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=+PCvSOkvySdWxOAJeySwLu3Fy1OiB15fqDnVbwKlIag=;
+        b=EmQLlbQXOc0wdNeHHD/vcrhPA3fQltXSxVs0kzIU0b1qag+xrNPyLt1X1ChQgUMho0
+         +Ki4QvFuowpAxaDuTocYSXLxgoyJYyktnR+HmTsy6xIYJKlo3QDm/GfwAUNi1NINV+M0
+         e3t5dbnpo/ghJiJljPrgjQm96cIq+qSc7jtjw+H26E4gY78Jv2KHEK06s5vl3gdJE8Ih
+         mQeiR8pvAXnZ/JGpB+GOWoCQ8wLBfw5hAYoWlDSC7tBzdDr+cMMYO18uiE5eGF4uJEW7
+         DWwrx/+MJEEaUwtwNeQ6xDE88fcMMj3Nx5WcHLykLk5T2BixGjT5KCZN+m4XLysZGftR
+         Jr3A==
+X-Gm-Message-State: APjAAAWmN69bF2Tse1FpLFq9wUIXnFjEjEPXRxAGPK+83EMOTYm3urqq
+        Xcj5nzumN/r9tCYFRrFHfSS2TSWBtkT7
+X-Google-Smtp-Source: APXvYqxAAc4HdeiZ6eQP+fKw1JNSLP+M3gfPQWQibaGz4LPlLosNOhf/qVzV9gmkpuGd6wLeSMjQjgb6lhZW
+X-Received: by 2002:a63:a011:: with SMTP id r17mr9498033pge.219.1567549431056;
+ Tue, 03 Sep 2019 15:23:51 -0700 (PDT)
+Date:   Tue,  3 Sep 2019 15:23:46 -0700
+Message-Id: <20190903222346.42583-1-moritzf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+Subject: [PATCH v2] net: fixed_phy: Add forward declaration for struct gpio_desc;
+From:   Moritz Fischer <moritzf@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com, davem@davemloft.net,
+        Moritz Fischer <mdf@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: Moritz Fischer <mdf@kernel.org>
 
-Cleanups of the tests in fib_nexthops.sh
-1. Several tests noted unexpected route output, but the
-   discrepancy was not showing in the summary output and
-   overlooked in the verbose output. Add a WARNING message
-   to the summary output to make it clear a test is not showing
-   expected output.
+Add forward declaration for struct gpio_desc in order to address
+the following:
 
-2. Several check_* calls are missing extra data like scope and metric
-   causing mismatches when the nexthops or routes are correct - some of
-   them are a side effect of the evolving iproute2 command. Update the
-   data to the expected output.
+./include/linux/phy_fixed.h:48:17: error: 'struct gpio_desc' declared inside parameter list [-Werror]
+./include/linux/phy_fixed.h:48:17: error: its scope is only this definition or declaration, which is probably not what you want [-Werror]
 
-3. Several check_routes are checking for the wrong nexthop data,
-   most likely a copy-paste-update error.
-
-4. A couple of tests were re-using a nexthop id that already existed.
-   Fix those to use a new id.
-
-Fixes: 6345266a9989 ("selftests: Add test cases for nexthop objects")
-Signed-off-by: David Ahern <dsahern@gmail.com>
+Fixes: 71bd106d2567 ("net: fixed-phy: Add
+fixed_phy_register_with_gpiod() API")
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Moritz Fischer <mdf@kernel.org>
 ---
- tools/testing/selftests/net/fib_nexthops.sh | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ include/linux/phy_fixed.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index c5c93d5fb3ad..f9ebeac1e6f2 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -212,6 +212,8 @@ check_output()
- 			printf "        ${out}\n"
- 			printf "    Expected:\n"
- 			printf "        ${expected}\n\n"
-+		else
-+			echo "      WARNING: Unexpected route entry"
- 		fi
- 	fi
+diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
+index 1e5d86ebdaeb..52bc8e487ef7 100644
+--- a/include/linux/phy_fixed.h
++++ b/include/linux/phy_fixed.h
+@@ -11,6 +11,7 @@ struct fixed_phy_status {
+ };
  
-@@ -274,7 +276,7 @@ ipv6_fcnal()
+ struct device_node;
++struct gpio_desc;
  
- 	run_cmd "$IP nexthop get id 52"
- 	log_test $? 0 "Get nexthop by id"
--	check_nexthop "id 52" "id 52 via 2001:db8:91::2 dev veth1"
-+	check_nexthop "id 52" "id 52 via 2001:db8:91::2 dev veth1 scope link"
- 
- 	run_cmd "$IP nexthop del id 52"
- 	log_test $? 0 "Delete nexthop by id"
-@@ -479,12 +481,12 @@ ipv6_fcnal_runtime()
- 	run_cmd "$IP -6 nexthop add id 85 dev veth1"
- 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 85"
- 	log_test $? 0 "IPv6 route with device only nexthop"
--	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1 metric 1024 pref medium"
- 
- 	run_cmd "$IP nexthop add id 123 group 81/85"
- 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 123"
- 	log_test $? 0 "IPv6 multipath route with nexthop mix - dev only + gw"
--	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 nexthop via 2001:db8:91::2 dev veth1 nexthop dev veth1"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 123 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop dev veth1 weight 1 pref medium"
- 
- 	#
- 	# IPv6 route with v4 nexthop - not allowed
-@@ -538,7 +540,7 @@ ipv4_fcnal()
- 
- 	run_cmd "$IP nexthop get id 12"
- 	log_test $? 0 "Get nexthop by id"
--	check_nexthop "id 12" "id 12 via 172.16.1.2 src 172.16.1.1 dev veth1 scope link"
-+	check_nexthop "id 12" "id 12 via 172.16.1.2 dev veth1 scope link"
- 
- 	run_cmd "$IP nexthop del id 12"
- 	log_test $? 0 "Delete nexthop by id"
-@@ -685,7 +687,7 @@ ipv4_withv6_fcnal()
- 	set +e
- 	run_cmd "$IP ro add 172.16.101.1/32 nhid 11"
- 	log_test $? 0 "IPv6 nexthop with IPv4 route"
--	check_route "172.16.101.1" "172.16.101.1 nhid 11 via ${lladdr} dev veth1"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 11 via inet6 ${lladdr} dev veth1"
- 
- 	set -e
- 	run_cmd "$IP nexthop add id 12 via 172.16.1.2 dev veth1"
-@@ -694,11 +696,11 @@ ipv4_withv6_fcnal()
- 	run_cmd "$IP ro replace 172.16.101.1/32 nhid 101"
- 	log_test $? 0 "IPv6 nexthop with IPv4 route"
- 
--	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via inet6 ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
- 
- 	run_cmd "$IP ro replace 172.16.101.1/32 via inet6 ${lladdr} dev veth1"
- 	log_test $? 0 "IPv4 route with IPv6 gateway"
--	check_route "172.16.101.1" "172.16.101.1 via ${lladdr} dev veth1"
-+	check_route "172.16.101.1" "172.16.101.1 via inet6 ${lladdr} dev veth1"
- 
- 	run_cmd "$IP ro replace 172.16.101.1/32 via inet6 2001:db8:50::1 dev veth1"
- 	log_test $? 2 "IPv4 route with invalid IPv6 gateway"
-@@ -785,10 +787,10 @@ ipv4_fcnal_runtime()
- 	log_test $? 0 "IPv4 route with device only nexthop"
- 	check_route "172.16.101.1" "172.16.101.1 nhid 85 dev veth1"
- 
--	run_cmd "$IP nexthop add id 122 group 21/85"
--	run_cmd "$IP ro replace 172.16.101.1/32 nhid 122"
-+	run_cmd "$IP nexthop add id 123 group 21/85"
-+	run_cmd "$IP ro replace 172.16.101.1/32 nhid 123"
- 	log_test $? 0 "IPv4 multipath route with nexthop mix - dev only + gw"
--	check_route "172.16.101.1" "172.16.101.1 nhid 85 nexthop via 172.16.1.2 dev veth1 nexthop dev veth1"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 123 nexthop via 172.16.1.2 dev veth1 weight 1 nexthop dev veth1 weight 1"
- 
- 	#
- 	# IPv4 with IPv6
-@@ -820,7 +822,7 @@ ipv4_fcnal_runtime()
- 	run_cmd "$IP ro replace 172.16.101.1/32 nhid 101"
- 	log_test $? 0 "IPv4 route with mixed v4-v6 multipath route"
- 
--	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
-+	check_route "172.16.101.1" "172.16.101.1 nhid 101 nexthop via inet6 ${lladdr} dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
- 
- 	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
- 	log_test $? 0 "IPv6 nexthop with IPv4 route"
+ #if IS_ENABLED(CONFIG_FIXED_PHY)
+ extern int fixed_phy_change_carrier(struct net_device *dev, bool new_carrier);
 -- 
-2.11.0
+2.23.0.187.g17f5b7556c-goog
 
