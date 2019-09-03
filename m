@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ACF5A70FD
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:50:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B79D8A7126
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:56:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbfICQtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:49:53 -0400
-Received: from correo.us.es ([193.147.175.20]:37158 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727624AbfICQtx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 12:49:53 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A001BDA3CF
-        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 18:49:49 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 92269B8017
-        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 18:49:49 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 86E78B7FF9; Tue,  3 Sep 2019 18:49:49 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E356AD1929;
-        Tue,  3 Sep 2019 18:49:46 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 03 Sep 2019 18:49:46 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id AEF35426CCBC;
-        Tue,  3 Sep 2019 18:49:46 +0200 (CEST)
-Date:   Tue, 3 Sep 2019 18:49:48 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Leonardo Bras <leonardo@linux.ibm.com>
+        id S1729873AbfICQ4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:56:30 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14246 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728864AbfICQ43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:56:29 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x83GsJJn110938;
+        Tue, 3 Sep 2019 12:56:16 -0400
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ustn7bj4c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 Sep 2019 12:56:16 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x83GtdQO015415;
+        Tue, 3 Sep 2019 16:56:15 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma05wdc.us.ibm.com with ESMTP id 2usa0m5gvw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 Sep 2019 16:56:15 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x83GuFnf54657390
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 3 Sep 2019 16:56:15 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2CCCCAE05C;
+        Tue,  3 Sep 2019 16:56:15 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B4E43AE060;
+        Tue,  3 Sep 2019 16:56:12 +0000 (GMT)
+Received: from LeoBras (unknown [9.80.220.79])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  3 Sep 2019 16:56:12 +0000 (GMT)
+Message-ID: <a2f0d0b08a73d86e8a1f67c4eeea3be11614aada.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 1/2] netfilter: Terminate rule eval if protocol=IPv6
+ and ipv6 module is disabled
+From:   Leonardo Bras <leonardo@linux.ibm.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
 Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, FlorianWestphal <fw@strlen.de>,
@@ -47,61 +50,92 @@ Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 1/2] netfilter: Terminate rule eval if protocol=IPv6
- and ipv6 module is disabled
-Message-ID: <20190903164948.kuvtpy7viqhcmp77@salvia>
+Date:   Tue, 03 Sep 2019 13:56:11 -0300
+In-Reply-To: <20190903164948.kuvtpy7viqhcmp77@salvia>
 References: <20190830181354.26279-1-leonardo@linux.ibm.com>
- <20190830181354.26279-2-leonardo@linux.ibm.com>
- <20190830205802.GS20113@breakpoint.cc>
- <99e3ef9c5ead1c95df697d49ab9cc83a95b0ac7c.camel@linux.ibm.com>
+         <20190830181354.26279-2-leonardo@linux.ibm.com>
+         <20190830205802.GS20113@breakpoint.cc>
+         <99e3ef9c5ead1c95df697d49ab9cc83a95b0ac7c.camel@linux.ibm.com>
+         <20190903164948.kuvtpy7viqhcmp77@salvia>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-sCCUtoKpTC9VzNlcdhEG"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <99e3ef9c5ead1c95df697d49ab9cc83a95b0ac7c.camel@linux.ibm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-03_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1909030172
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 03, 2019 at 01:46:50PM -0300, Leonardo Bras wrote:
-> On Fri, 2019-08-30 at 22:58 +0200, Florian Westphal wrote:
-> > Leonardo Bras <leonardo@linux.ibm.com> wrote:
-> > > If IPv6 is disabled on boot (ipv6.disable=1), but nft_fib_inet ends up
-> > > dealing with a IPv6 packet, it causes a kernel panic in
-> > > fib6_node_lookup_1(), crashing in bad_page_fault.
-> > > 
-> > > The panic is caused by trying to deference a very low address (0x38
-> > > in ppc64le), due to ipv6.fib6_main_tbl = NULL.
-> > > BUG: Kernel NULL pointer dereference at 0x00000038
-> > > 
-> > > The kernel panic was reproduced in a host that disabled IPv6 on boot and
-> > > have to process guest packets (coming from a bridge) using it's ip6tables.
-> > > 
-> > > Terminate rule evaluation when packet protocol is IPv6 but the ipv6 module
-> > > is not loaded.
-> > > 
-> > > Signed-off-by: Leonardo Bras <leonardo@linux.ibm.com>
-> > 
-> > Acked-by: Florian Westphal <fw@strlen.de>
-> > 
-> 
-> Hello Pablo,
-> 
-> Any trouble with this patch? 
-> I could see the other* one got applied, but not this one.
-> *(The other did not get acked, so i released it alone as v5)
-> 
-> Is there any fix I need to do in this one?
 
-Hm, I see, so this one:
+--=-sCCUtoKpTC9VzNlcdhEG
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-https://patchwork.ozlabs.org/patch/1156100/
+On Tue, 2019-09-03 at 18:49 +0200, Pablo Neira Ayuso wrote:
+> On Tue, Sep 03, 2019 at 01:46:50PM -0300, Leonardo Bras wrote:
+> > On Fri, 2019-08-30 at 22:58 +0200, Florian Westphal wrote:
+> > Hello Pablo,
+> >=20
+> > Any trouble with this patch?=20
+> > I could see the other* one got applied, but not this one.
+> > *(The other did not get acked, so i released it alone as v5)
+> >=20
+> > Is there any fix I need to do in this one?
+>=20
+> Hm, I see, so this one:
+>=20
+> https://patchwork.ozlabs.org/patch/1156100/
+>=20
+> is not enough?
 
-is not enough?
+By what I could understand of Florian e-mail, we would need both:
 
-I was expecting we could find a way to handle this from br_netfilter
-alone itself.
+>> So, given I don't want to plaster ipv6_mod_enabled() everywhere, I
+>> would suggest this course of action:
+>>
+>> 1. add a patch to BREAK in nft_fib_netdev.c for !ipv6_mod_enabled()
+>> 2. change net/bridge/br_netfilter_hooks.c, br_nf_pre_routing() to
+>>    make sure ipv6_mod_enabled() is true before doing the ipv6 stack
+>>    "emulation".
 
-Thanks.
+Is that ok?
+
+>=20
+> I was expecting we could find a way to handle this from br_netfilter
+> alone itself.
+>=20
+> Thanks.
+Thank you!
+
+--=-sCCUtoKpTC9VzNlcdhEG
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEMdeUgIzgjf6YmUyOlQYWtz9SttQFAl1umysACgkQlQYWtz9S
+ttSPAA/9GCXjQ8Us2+uyMm9QRIsc5twobC8qN1ce3/b24ZxQ9u5+agoyU3d4mMJD
+CXH4Ws1wl7wzkByiZiDaJxzKj9yM4RjqyXHhquOG1qqbYq6f7077irnslJTYySEs
+yIXs/MQMEB2mF9ZRXRdwSvNJSyyR52EwZbMSY7xHKW3Z/l25gNbjgJLMy3Dbu7jr
+k0/36+iPPXSVp+08LMtxuysM3Rwji4fRftdPuEq7ardu+7GQOaim6oSZ0s9pzw5O
+jEsSjEjmP+kVc6HCFlyA0eDD9zInjmjLRsHizbSISx+My9obHy1OnburEd846z/y
+UNaQd269+0eFmRXZuQun+Myrs5GgUBt9DvGLcEKm7AXN3bgaHv2+w/k3GDr/OWCp
+7fsDHLkJdPuPc4mUFG3u5KhKWRHMkTURI14OuZGC9NO83lIi412imaZLSEkWVpL2
+MX9DJhbE/daNz3DhAMq3mEf6cyMGARUWU+oeJY80pjbrrsQKPEsV5KjxJLRNRZxz
+UBp+C5I3ASMS2gzjswwHUMJX4iV5zJDmEiaID1ftgcZlPeuoxBgVGTeF2Rp9gcts
+XHVl6hort3xwRx7hf1N83wmakhyV/wYEFVGmorzJu2Y4+5OJkk/+CoNv9pQwljvJ
+tL2K8VjDhxp6dkQK7dGmflb95qMfeQN1kXimC84IcKA3wFc1SCk=
+=IFln
+-----END PGP SIGNATURE-----
+
+--=-sCCUtoKpTC9VzNlcdhEG--
+
