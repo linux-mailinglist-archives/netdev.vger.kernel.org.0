@@ -2,87 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD93A6DCB
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E807A6E11
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730034AbfICQRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:17:13 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39537 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728571AbfICQRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:17:13 -0400
-Received: by mail-wr1-f67.google.com with SMTP id t16so18163458wra.6
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:17:12 -0700 (PDT)
+        id S1730113AbfICQYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:24:35 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:39320 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729692AbfICQYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:24:34 -0400
+Received: by mail-yw1-f68.google.com with SMTP id n11so6006910ywn.6
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:24:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=e1amEEi7DPleRDG4iwwlMlME+rEqQsHQWVcEf1HZJDk=;
-        b=Oi5pIQeUGiG/BPcOqP3Lv4SwTaWI0ADcoHLhXf/vQK76+p+/deVdjuSPrIgIg7oTOm
-         IBmk7o0+9wVdoPfL/YcX7ldQ347HyAyG6oRoh1ePoRCzo1nmGF5DEWa0VtuXLoDweQi9
-         +wCKx7eFX22DQtydqIsQ4jQ1wq5RXa734QWQuNmMsMO/5S6CyA5sNjQemTyxmJZE8OUy
-         Qj8ZjHQMjCD67VgLShJ2ZeBaEvurK2/Z7FFR2NDKcBMJy3NpONNkcaxGqNm6r38FwQ2Y
-         6ol4XdlHF5XsfWPf/nzcKNEG2+R0jMRcF46Fhn4DRQsSsa3JfBW/OmPT61XcFZPCRDdn
-         ruAg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k4jAl0jr+VDYMLBaKjmvgDuo55wDGIKUx9tH04YBR2I=;
+        b=CdMgX2AwL2kucVow2RTckKdKEIqoz6XbtCnoXV9NKo+uOIWq0bEIOqsFwvaaMP+T+q
+         eLCJ6bpQ/QfKADI9GVYi/LE0gEmYpghhhnoHdQTwA6FtCAzq+nzZwEcbE+eHBFlHb0lb
+         E/txq54bpt1rwcG8M9Gv9AvvY3hwOYje4N46id8W6Yv9rzRIEiAmP3USk+E5bwqhn5RU
+         HiHOFDOFC087uQSlbhrwdYh3HntGk4ZvlUFSBpp8HoHog04hfW8iHwigNVdI2FAbB8zS
+         Gc/pG5i53Q7U+HUNOsTFFPaJMEYOm/MDsAyxXhiIqjzzJJpi9H+LbsHyr6wo5d7Ik4AW
+         CsNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e1amEEi7DPleRDG4iwwlMlME+rEqQsHQWVcEf1HZJDk=;
-        b=OYINvCTLCFjIAvW34p8GciBdr5GGFi4Mu0oi47w4oibsWvJxyE9e7QxCG0LMnDwxW0
-         aXkxln+sw3p1/5q4JrcYWGtAti86FRlN0sjsF0wtXruVZ2rk7zWj+mLNaempye1l+QX3
-         Oy80bKbsHb+SPt3aHJTWzW4mar/oOU1AJ+lH4jZcK1tts5Iaus4keqwrjKwDFvnBKFaK
-         KYlWxFUU+0VIGlGtY0BO3m3a1yGY9TZgu4I4YnX6hKIt6I2V7ztNPh4DHHAt/N66lHtR
-         lz17AbG1q/uTymIQ3ZRqA40YdzuYorRWx8UjnbMEIj/cgobNkBUwMkY0bTkilgLAbaRt
-         vveg==
-X-Gm-Message-State: APjAAAXFnt8q6QgBOeIg7ITNbZCe3MriL+BP+RCdJCG4OggV09rMt2I+
-        1xvm5X34kUZVcwVxQ3mrvEw=
-X-Google-Smtp-Source: APXvYqz3d/ClUWRkLtdLQNijnlJ4gfrZjRtkVEEKE6TnUHYwaMBEFgRlLQCnxdBcu7Oz+6XHY7MDUg==
-X-Received: by 2002:a5d:6ac8:: with SMTP id u8mr7959317wrw.104.1567527431480;
-        Tue, 03 Sep 2019 09:17:11 -0700 (PDT)
-Received: from [192.168.8.147] (83.173.185.81.rev.sfr.net. [81.185.173.83])
-        by smtp.gmail.com with ESMTPSA id j20sm27829937wre.65.2019.09.03.09.17.10
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k4jAl0jr+VDYMLBaKjmvgDuo55wDGIKUx9tH04YBR2I=;
+        b=bGbHbxim763S+s9oHjzpbsfm4o+Bxun8YckbM3EvuuB+G5g41jiD/rUTNCxrYJPgKA
+         EYwJ9Cz3rNXvSyGlFE32OXBzaggzXCFt5TrtfqWLCz6nRND7k/HinduufGKLZ7d5ZPYP
+         1UwG75GGrLo7iwD0Vll8tC44daUZMcsRA/Y/fFRSMNu0KHFSc7lm6eag0jSifoLoZ6+I
+         8MKv1GU9ZZM1QV2+TCubG6V9oOKST8M0TQNdcEYPQV0C3S1R7hMjWruFgxv2323iAIqv
+         +B4+zZUuuR4k+PtWQRiZfojZdpzO+SAklEhn4Ydnivk05hdyO6u2pCbAFaOpfW2bB7PA
+         QGZg==
+X-Gm-Message-State: APjAAAU1IuooT9n7FHD/MLRPbhqApsVTT+uQSNQNRGO6m6kJ3LBut5RW
+        ZMDO77RkhHNEo4MPFtNWGdIDgIIr
+X-Google-Smtp-Source: APXvYqwdV7ZriEzV9QO5vwQpP0TDT9juNzph2l6RLQIHg3uyotn/JGeOjW/cNeMFChfGybcDsqaAvg==
+X-Received: by 2002:a0d:d891:: with SMTP id a139mr9546656ywe.52.1567527872899;
+        Tue, 03 Sep 2019 09:24:32 -0700 (PDT)
+Received: from mail-yw1-f50.google.com (mail-yw1-f50.google.com. [209.85.161.50])
+        by smtp.gmail.com with ESMTPSA id v8sm405651ywg.91.2019.09.03.09.24.31
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 09:17:11 -0700 (PDT)
-Subject: Re: [PATCH] Clock-independent TCP ISN generation
-To:     Cyrus Sh <sirus.shahini@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net
-Cc:     shiraz.saleem@intel.com, jgg@ziepe.ca, arnd@arndb.de,
-        netdev@vger.kernel.org, sirus@cs.utah.edu
-References: <70c41960-6d14-3943-31ca-75598ad3d2d7@gmail.com>
- <fa0aadb3-9ada-fb08-6f32-450f5ac3a3e1@gmail.com>
- <bf10fbfb-a83f-a8d8-fefc-2a2fd1633ef8@gmail.com>
- <2cbd5a8f-f120-a7df-83a3-923f33ca0a10@gmail.com>
- <e3bf138f-672e-cefa-5fe5-ea25af8d3d61@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <492bb69e-0722-f6fc-077a-2348edf081d8@gmail.com>
-Date:   Tue, 3 Sep 2019 18:17:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
+Received: by mail-yw1-f50.google.com with SMTP id n69so5984340ywd.12
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
+X-Received: by 2002:a0d:c305:: with SMTP id f5mr23970216ywd.109.1567527871026;
+ Tue, 03 Sep 2019 09:24:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <e3bf138f-672e-cefa-5fe5-ea25af8d3d61@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190826170724.25ff616f@pixies> <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
+ <20190827144218.5b098eac@pixies> <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
+ <20190829152241.73734206@pixies> <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
+ <20190903185121.56906d31@pixies>
+In-Reply-To: <20190903185121.56906d31@pixies>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 3 Sep 2019 12:23:54 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
+Message-ID: <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
+Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
+To:     Shmulik Ladkani <shmulik@metanetworks.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        eyal@metanetworks.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Sep 3, 2019 at 11:52 AM Shmulik Ladkani
+<shmulik@metanetworks.com> wrote:
+>
+> On Sun, 1 Sep 2019 16:05:48 -0400
+> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+>
+> > One quick fix is to disable sg and thus revert to copying in this
+> > case. Not ideal, but better than a kernel splat:
+> >
+> > @@ -3714,6 +3714,9 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+> >         sg = !!(features & NETIF_F_SG);
+> >         csum = !!can_checksum_protocol(features, proto);
+> >
+> > +       if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag)
+> > +               sg = false;
+> > +
+>
+> Thanks Willem.
+>
+> I followed this approach, and further refined it based on the conditions
+> that lead to this BUG_ON:
+>
+>  - existance of frag_list
+>  - mangled gso_size (using SKB_GSO_DODGY as a hint)
+>  - some frag in the frag_list has a linear part that is NOT head_frag,
+>    or length not equal to the requested gso_size
+>
+> BTW, doing so allowed me to refactor a loop that tests for similar
+> conditions in the !(features & NETIF_F_GSO_PARTIAL) case, where an
+> attempt to execute partial splitting at the frag_list pointer (see
+> 07b26c9454a2 and 43170c4e0ba7).
+>
+> I've tested this using the reproducer, with various linear skbs in
+> the frag_list and different gso_size mangling. All resulting 'segs'
+> looked correct. Did not test on a live system yet.
+>
+> Comments are welcome.
+>
+> specifically, I would like to know whether we can
+>  - better refine the condition where this "sg=false fallback" needs
+>    to be applied
+>  - consolidate my new 'list_skb && (type & SKB_GSO_DODGY)' case with
+>    the existing '!(features & NETIF_F_GSO_PARTIAL)' case
 
+This is a lot more code change. Especially for stable fixes that need
+to be backported, a smaller patch is preferable.
 
-On 9/3/19 6:06 PM, Cyrus Sh wrote:
-> 
-> 
-> On 9/3/19 9:59 AM, Eric Dumazet wrote:
->>
->> You could add a random delay to all SYN packets, if you believe your host has clock skews.
-> 
-> In theory yes, but again do you know any practical example with tested
-> applications and the list of the rules? I'm interested to see an actual example
-> that somebody has carried out and observed its results.
-> 
+My suggestion only tested the first frag_skb length. If a list can be
+created where the first frag_skb is head_frag but a later one is not,
+it will fail short. I kind of doubt that.
 
-Do you have a real program showing us how this clock skew can be used practically ?
+By default skb_gro_receive builds GSO skbs that can be segmented
+along the original gso_size boundaries. We have so far only observed
+this issue when messing with gso_size.
 
+We can easily refine the test to fall back on to copying only if
+skb_headlen(list_skb) != mss. Alternatively, only on SKB_GSO_DODGY is fine, too.
+
+I suggest we stick with the two-liner.
