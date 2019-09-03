@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFAB0A70BE
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B669A70DF
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730067AbfICQm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:42:29 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40605 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728854AbfICQm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:42:29 -0400
-Received: by mail-wm1-f65.google.com with SMTP id t9so208618wmi.5
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:42:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ylZs7DGz6wpCCyGME6HbynOFCxReGxvj5XhEN84pHoM=;
-        b=pUGypGucWx4oyiuFrl6lLsgWRNnmS9lExOIY6U74FwIOJ4dlBZWA5+PMleOaHsmV/T
-         kCAv3fioOfwf2ARMU3oEDGT0QpHQjZvkMPt4Zf6d5g4gDY/2IfOW8hSvn6Q6Nf1Pz712
-         JnrxdUVWPmijha6FVqHoMzder/jpjwXTKjLx7fxFVjFuugJgD3C3Vts1TogWIB0y0DZQ
-         +IwrE1n8tbjUx1zUOW8XZ32FIFhvcS1Pcm1jU8mvBHqAwtsObTynEWuOzW3gE7g0s7I+
-         0aYLnwVHqFVwUKBOusSJc4k/p0ReeQrw+UW1brvgBhv9FiOL4j4dgE0VC86HLwWQBZ/2
-         NL0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ylZs7DGz6wpCCyGME6HbynOFCxReGxvj5XhEN84pHoM=;
-        b=pnKPTxwx4ovPGjNWoLpeUbYdH+zSLX2cSIuVJsihAv8YK7viLrz2xEONTzLcoBIBaG
-         fjRvuXsdzrjYx0ihXi1pEEDOBA9fDP6FGS4TlvB4GqsArkLuaR9bGzCc3h6zdnE7f4tL
-         0N1UhrtOrDk9N+Qrg67N8mPg/y0pwoDZrCCSRphEpnaibzC8c/nWLwQqrVIxaPCqQ2OA
-         f4ZzgwApBvN9cRcGAqQjh6M6qxmNNIAqepoQ9o65xyFjXqCSaaUYOgR3RxZM3+AkVrZz
-         PgEryzb2Bioz1Vel/huZBEM3dsWfu5TwpSV5cX8+TcVA725PakdBZlzEoiQY7wqnVPCK
-         Goqg==
-X-Gm-Message-State: APjAAAXs3Ci6Gclg9Yj/oepvn5jb/VWFIrJeSNt89HqZXIPfzGlDl0MW
-        ArD9s/vCK2ErjYJ7f3JKHLapCJsg
-X-Google-Smtp-Source: APXvYqzotxQSfmOnbsgHHQ+gyTNQXYXrESn1ZjN6WOezhqmQ4/IqlrUs7JiVgGceyuxKhplEdcIFNg==
-X-Received: by 2002:a1c:984b:: with SMTP id a72mr202995wme.149.1567528948074;
-        Tue, 03 Sep 2019 09:42:28 -0700 (PDT)
-Received: from [192.168.8.147] (83.173.185.81.rev.sfr.net. [81.185.173.83])
-        by smtp.gmail.com with ESMTPSA id l62sm156714wml.13.2019.09.03.09.42.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 09:42:27 -0700 (PDT)
-Subject: Re: [PATCH] Clock-independent TCP ISN generation
-To:     Cyrus Sh <sirus.shahini@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net
-Cc:     shiraz.saleem@intel.com, jgg@ziepe.ca, arnd@arndb.de,
-        netdev@vger.kernel.org, sirus@cs.utah.edu
-References: <70c41960-6d14-3943-31ca-75598ad3d2d7@gmail.com>
- <fa0aadb3-9ada-fb08-6f32-450f5ac3a3e1@gmail.com>
- <bf10fbfb-a83f-a8d8-fefc-2a2fd1633ef8@gmail.com>
- <2cbd5a8f-f120-a7df-83a3-923f33ca0a10@gmail.com>
- <e3bf138f-672e-cefa-5fe5-ea25af8d3d61@gmail.com>
- <492bb69e-0722-f6fc-077a-2348edf081d8@gmail.com>
- <e02c0aac-05c5-e0a4-9ae1-57685a0c3160@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <3fc44b3a-3ac0-d008-272a-e7acb98ad761@gmail.com>
-Date:   Tue, 3 Sep 2019 18:42:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <e02c0aac-05c5-e0a4-9ae1-57685a0c3160@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1730222AbfICQp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:45:27 -0400
+Received: from correo.us.es ([193.147.175.20]:35554 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730183AbfICQp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 12:45:26 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E445DDA85C
+        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 18:45:21 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D3883B8001
+        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 18:45:21 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BAACCB7FF6; Tue,  3 Sep 2019 18:45:21 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9D87ED2B1E;
+        Tue,  3 Sep 2019 18:45:19 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 03 Sep 2019 18:45:19 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 455874265A5A;
+        Tue,  3 Sep 2019 18:45:19 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        jakub.kicinski@netronome.com, jiri@resnulli.us,
+        saeedm@mellanox.com, vishal@chelsio.com, vladbu@mellanox.com
+Subject: [PATCH net-next,v2 0/4] flow_offload: update mangle action representation
+Date:   Tue,  3 Sep 2019 18:45:09 +0200
+Message-Id: <20190903164513.15462-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch updates the mangle action representation:
 
+Patch 1) Undo bitwise NOT operation on the mangle mask (coming from tc
+         pedit userspace).
 
-On 9/3/19 6:27 PM, Cyrus Sh wrote:
-> 
-> 
-> On 9/3/19 10:17 AM, Eric Dumazet wrote:
-> 
->> Do you have a real program showing us how this clock skew can be used practically ?
-> This is a well studied issue. You can take a look at this presentation as an
-> example:
-> http://caia.swin.edu.au/talks/CAIA-TALK-080728A.pdf
+Patch 2) mangle value &= mask from the front-end side.
 
-2008 ? Really ?
+Patch 3) adjust offset, length and coalesce consecutive pedit keys into
+         one single action.
 
-I do not want an example, I want a proof that current systems are
-exhibiting all the needed behavior.
+Patch 4) add support for payload mangling for netfilter.
 
-I do not have time to spend hours reading old stuff based
-on old architectures.
+After this patchset:
 
-> 
->> You will have to convince people at IETF and get a proper RFC 
-> No I won't. A lot of these standards have been written at a time that anonymity
-> networks were not of big importance. Now that they are, we try to lessen the
-> negative impacts of some RFC deficiencies by improving the implementation. It's
-> up to you whether to want to keep using a problematic code that may endanger
-> users or want to do something about it since we won't insist on having a patch
-> accepted.
-> 
+* Offset to payload does not need to be on the 32-bits boundaries anymore.
+  This patchset adds front-end code to adjust the offset and length coming
+  from the tc pedit representation, so drivers get an exact header field
+  offset and length.
 
-Then this is the end. linux wont change something as fundamental without
-proper feedback from the community.
+* This new front-end code coalesces consecutive pedit actions into one
+  single action, so drivers can mangle IPv6 and ethernet address fields
+  in one go, instead once for each 32-bit word.
+
+On the driver side, diffstat -t shows that drivers code to deal with
+payload mangling gets simplified:
+
+        INSERTED,DELETED,MODIFIED,FILENAME
+        46,116,0,drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c (-70 LOC)
+        12,28,0,drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h (-16 LOC)
+        30,60,0,drivers/net/ethernet/mellanox/mlx5/core/en_tc.c (-30 LOC)
+        89,111,0,drivers/net/ethernet/netronome/nfp/flower/action.c (-17 LOC)
+
+While, on the front-end side the balance is the following:
+
+	123,22,0,net/sched/cls_api.c (+101 LOC)
+
+Changes since v1:
+
+* Fix missing flow_action->num_entries adjustment from tc_setup_flow_action()
+  reported by Vlad Buslov.
+* Action entry ID in netfilter payload mangling action was not properly set.
+* Fix incorrect p_exact[] assignment logic in nfp_fl_set_helper().
+
+Please, apply.
+
+Pablo Neira Ayuso (4):
+  net: flow_offload: flip mangle action mask
+  net: flow_offload: bitwise AND on mangle action value field
+  net: flow_offload: mangle action at byte level
+  netfilter: nft_payload: packet mangling offload support
+
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c   | 163 +++++-----------
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h   |  40 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  90 +++------
+ drivers/net/ethernet/netronome/nfp/flower/action.c | 204 ++++++++++-----------
+ include/net/flow_offload.h                         |   7 +-
+ net/netfilter/nft_payload.c                        |  73 ++++++++
+ net/sched/cls_api.c                                | 144 ++++++++++++---
+ 7 files changed, 382 insertions(+), 339 deletions(-)
+
+-- 
+2.11.0
 
