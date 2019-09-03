@@ -2,139 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17855A646C
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 10:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57031A6495
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:02:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbfICIzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 04:55:46 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5730 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726946AbfICIzp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 04:55:45 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 9048D9AD3D7876E57CA4;
-        Tue,  3 Sep 2019 16:55:43 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Tue, 3 Sep 2019
- 16:55:39 +0800
-Subject: Re: [PATCH 4.14] tcp: fix tcp_rtx_queue_tail in case of empty
- retransmit queue
-To:     Tim Froidcoeur <tim.froidcoeur@tessares.net>,
-        <eric.dumazet@gmail.com>
+        id S1727667AbfICJCG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 3 Sep 2019 05:02:06 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:41636 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfICJCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 05:02:06 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x8391rMf021012, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x8391rMf021012
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 3 Sep 2019 17:01:53 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0468.000; Tue, 3 Sep 2019 17:01:49 +0800
+From:   Bambi Yeh <bambi.yeh@realtek.com>
+To:     Hayes Wang <hayeswang@realtek.com>,
+        Amber Chen <amber.chen@realtek.com>,
+        Prashant Malani <pmalani@chromium.org>
 CC:     David Miller <davem@davemloft.net>,
-        "cpaasch@apple.com" <cpaasch@apple.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "matthieu.baerts@tessares.net" <matthieu.baerts@tessares.net>,
-        "aprout@ll.mit.edu" <aprout@ll.mit.edu>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "jtl@netflix.com" <jtl@netflix.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "ncardwell@google.com" <ncardwell@google.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        "ycheng@google.com" <ycheng@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190824060351.3776-1-tim.froidcoeur@tessares.net>
- <400C4757-E7AD-4CCF-8077-79563EA869B1@gmail.com>
- <20190830232657.GL45416@MacBook-Pro-64.local>
- <20190830.192049.1447010488040109227.davem@davemloft.net>
- <F95AC9340317A84688A5F0DF0246F3F21AAAA8E1@dggeml532-mbs.china.huawei.com>
- <CAOj+RUsqTUF9fuetskRRw26Z=sBM-mELSMcV21Ch06007aP5yQ@mail.gmail.com>
- <F95AC9340317A84688A5F0DF0246F3F21AAB8F82@dggeml512-mbx.china.huawei.com>
- <CAOj+RUvXMaoVKzSeDab4oTn3p=-BJtuhgqwKDCUuhCQWHO7bgQ@mail.gmail.com>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <88936af6-4b98-c78f-930f-47e5d69c961d@huawei.com>
-Date:   Tue, 3 Sep 2019 16:55:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ryankao <ryankao@realtek.com>, Jackc <jackc@realtek.com>,
+        Albertk <albertk@realtek.com>,
+        "marcochen@google.com" <marcochen@google.com>,
+        nic_swsd <nic_swsd@realtek.com>,
+        Grant Grundler <grundler@chromium.org>
+Subject: RE: Proposal: r8152 firmware patching framework
+Thread-Topic: Proposal: r8152 firmware patching framework
+Thread-Index: AQHVX4GpTTdtotue5kafn6EzHtNLuacT5+mAgAOC+QCAAkCM0A==
+Date:   Tue, 3 Sep 2019 09:01:48 +0000
+Message-ID: <BAD4255E2724E442BCB37085A3D9C93AEEA087DF@RTITMBSVM03.realtek.com.tw>
+References: <CACeCKacOcg01NuCWgf2RRer3bdmW-CH7d90Y+iD2wQh5Ka6Mew@mail.gmail.com>,<CACeCKacjCkS5UmzS9irm0JjGmk98uBBBsTLSzrXoDUJ60Be9Vw@mail.gmail.com>
+ <755AFD2B-D66F-40FF-ADCD-5077ECC569FE@realtek.com>
+ <0835B3720019904CB8F7AA43166CEEB2F18DA7A9@RTITMBSVM03.realtek.com.tw>
+In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18DA7A9@RTITMBSVM03.realtek.com.tw>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.234.218]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <CAOj+RUvXMaoVKzSeDab4oTn3p=-BJtuhgqwKDCUuhCQWHO7bgQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Prashant:
 
-On 2019/9/3 14:58, Tim Froidcoeur wrote:
-> Hi,
-> 
-> I also tried to reproduce this in a targeted way, and run into the
-> same difficulty as you: satisfying the first condition “
-> (sk->sk_wmem_queued >> 1) > limit “.
-> I will not have bandwidth the coming days to try and reproduce it in
-> this way. Maybe simply forcing a very small send buffer using sysctl
-> net.ipv4.tcp_wmem might even do the trick?
-> 
-> I suspect that the bug is easier to trigger with the MPTCP patch like
-> I did originally, due to the way this patch manages the tcp subflow
-> buffers (it can temporarily overfill the buffers, satisfying that
-> first condition more often).
-> 
-> another thing, the stacktrace you shared before seems caused by
-> another issue (corrupted socket?), it will not be solved by the patch
-> we submitted.
+We will try to implement your requests.
+Based on our experience, upstream reviewer often reject our modification if they have any concern.
+Do you think you can talk to them about this idea and see if they will accept it or not?
+Or if you can help on this after we submit it?
 
-The trace shows zero window probe message can be BUG_ON in skb_queue_prev,
-this is reproduced on our platform with syzkaller. It can be resolved by
-your fix patch.
-The thing I need to think is why the first condition can be satisfied?
-Eric, Do you have any comments to reproduce it as the first condition
-is hard to be true?
-(sk->sk_wmem_queued >> 1) > limit
+Also, Hayes is now updating our current upstream driver and it goes back and forth for a while.
+So we will need some time to finish it and the target schedule to have your request done is in the end of this month.
 
-> 
-> kind regards,
-> 
-> Tim
-> 
-> 
-> On Tue, Sep 3, 2019 at 5:22 AM maowenan <maowenan@huawei.com> wrote:
->>
->> Hi Tim,
->>
->>
->>
->> I try to reproduce it with packetdrill or user application, but I can’t.
->>
->> The first condition “ (sk->sk_wmem_queued >> 1) > limit “    can’t be satisfied,
->>
->> This condition is to avoid tiny SO_SNDBUF values set by user.
->>
->> It also adds the some room due to the fact that tcp_sendmsg()
->>
->> and tcp_sendpage() might overshoot sk_wmem_queued by about one full
->>
->> TSO skb (64KB size).
->>
->>
->>
->>         limit = sk->sk_sndbuf + 2 * SKB_TRUESIZE(GSO_MAX_SIZE);
->>
->>         if (unlikely((sk->sk_wmem_queued >> 1) > limit &&
->>
->>                      skb != tcp_rtx_queue_head(sk) &&
->>
->>                      skb != tcp_rtx_queue_tail(sk))) {
->>
->>                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
->>
->>                 return -ENOMEM;
->>
->>         }
->>
->>
->>
->> Can you try to reproduce it with packetdrill or C socket application?
->>
->>
-> 
-> 
-> 
+Thank you very much.
+
+Best Regards,
+Bambi Yeh
+
+-----Original Message-----
+From: Hayes Wang <hayeswang@realtek.com> 
+Sent: Monday, September 2, 2019 2:31 PM
+To: Amber Chen <amber.chen@realtek.com>; Prashant Malani <pmalani@chromium.org>
+Cc: David Miller <davem@davemloft.net>; netdev@vger.kernel.org; Bambi Yeh <bambi.yeh@realtek.com>; Ryankao <ryankao@realtek.com>; Jackc <jackc@realtek.com>; Albertk <albertk@realtek.com>; marcochen@google.com; nic_swsd <nic_swsd@realtek.com>; Grant Grundler <grundler@chromium.org>
+Subject: RE: Proposal: r8152 firmware patching framework
+
+Prashant Malani <pmalani@chromium.org> 
+> >
+> > (Adding a few more Realtek folks)
+> >
+> > Friendly ping. Any thoughts / feedback, Realtek folks (and others) ?
+> >
+> >> On Thu, Aug 29, 2019 at 11:40 AM Prashant Malani
+> <pmalani@chromium.org> wrote:
+> >>
+> >> Hi,
+> >>
+> >> The r8152 driver source code distributed by Realtek (on
+> >> www.realtek.com) contains firmware patches. This involves binary 
+> >> byte-arrays being written byte/word-wise to the hardware memory
+> >> Example: grundler@chromium.org (cc-ed) has an experimental patch
+> which
+> >> includes the firmware patching code which was distributed with the 
+> >> Realtek source :
+> >>
+> https://chromium-review.googlesource.com/c/chromiumos/third_party/kern
+> el
+> /+/1417953
+> >>
+> >> It would be nice to have a way to incorporate these firmware fixes 
+> >> into the upstream code. Since having indecipherable byte-arrays is 
+> >> not possible upstream, I propose the following:
+> >> - We use the assistance of Realtek to come up with a format which 
+> >> the firmware patch files can follow (this can be documented in the 
+> >> comments).
+> >>       - A real simple format could look like this:
+> >>               +
+> >>
+> <section1><size_in_bytes><address1><data1><address2><data2>...<address
+> N
+> ><dataN><section2>...
+> >>                + The driver would be able to understand how to 
+> >> parse each section (e.g is each data entry a byte or a word?)
+> >>
+> >> - We use request_firmware() to load the firmware, parse it and 
+> >> write the data to the relevant registers.
+
+I plan to finish the patches which I am going to submit, first. Then, I could focus on this. However, I don't think I would start this quickly. There are many preparations and they would take me a lot of time.
+
+Best Regards,
+Hayes
+
 
