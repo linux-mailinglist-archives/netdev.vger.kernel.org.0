@@ -2,103 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEEFA5E60
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 02:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8259A5EA0
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 02:36:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbfICAFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 20:05:52 -0400
-Received: from correo.us.es ([193.147.175.20]:41650 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727904AbfICAFw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 20:05:52 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id B69351878A4
-        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 02:05:47 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A8E6EB8017
-        for <netdev@vger.kernel.org>; Tue,  3 Sep 2019 02:05:47 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 99BB2B8004; Tue,  3 Sep 2019 02:05:47 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8CA4CDA72F;
-        Tue,  3 Sep 2019 02:05:45 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 03 Sep 2019 02:05:45 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 6C2624265A5A;
-        Tue,  3 Sep 2019 02:05:45 +0200 (CEST)
-Date:   Tue, 3 Sep 2019 02:05:46 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, vishal@chelsio.com, saeedm@mellanox.com,
-        jiri@resnulli.us
-Subject: Re: [PATCH 0/4 net-next] flow_offload: update mangle action
- representation
-Message-ID: <20190903000546.rmjmxqozycylgbdb@salvia>
-References: <20190830005336.23604-1-pablo@netfilter.org>
- <20190829185448.0b502af8@cakuba.netronome.com>
- <20190830090710.g7q2chf3qulfs5e4@salvia>
- <20190830153351.5d5330fa@cakuba.netronome.com>
- <20190831142217.bvxx3vc6wpsmnxpe@salvia>
- <20190901134754.1bcd72d4@cakuba.netronome.com>
+        id S1725990AbfICAgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 20:36:03 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41440 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbfICAgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 20:36:03 -0400
+Received: by mail-pf1-f195.google.com with SMTP id b13so3048016pfo.8;
+        Mon, 02 Sep 2019 17:36:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WXtfRvg0HAQ1AbEkMFK2l6qpRZ1eLo172QU9YP505tU=;
+        b=XPt6HoNIPUbuL/95hSsOFO0I1CAdHaDzNErILR0nCfMLntVWTY24bl3CMpH5IhNewN
+         S3/vnM0T/fE4nyLTw5JFoKy0pkFkZhXYRN/TaOyrpaEU13CT7kHyUnV4n9bnjYxbGwyi
+         J6w56A32kTq9m2b9o4Ca3uP6FyVC+oWZT/nPGftMTRqpUD3O+lzBs1r3o0xShuuYJZP/
+         g5QogblP9INkNpN3QGHH9eVwdHbjALej5NkB1va1cn7PmXpIc1m4K8hWuJe5y1GK5KHv
+         tg9iAtdt3BM9E8lMhuATUGQrk69mdNrswTj7baUG4XL4Tz3/0zMq1MtS+BVzVukeBfoK
+         DIeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WXtfRvg0HAQ1AbEkMFK2l6qpRZ1eLo172QU9YP505tU=;
+        b=V1yY/iCURdbiAq36aVwdHa3XIPdc10rIaRXpx1W4QtMWxZVx93pnz/jg5NdLlI5rzj
+         b4nOtBycMtL98QujaQUvGEfvBoCaPelV5DhtmgTbxNTmWnlNAa0aJVd6NoZ7TPDug1oa
+         b5kdmyjA5pJxSwEXZfceRUEUhOMqSHZabVOn/u7Y/vM2+jMiZ4WfPnZr6WqkyygwyHU4
+         38KfKFnmYCHIFESmT4fynWZ9b8QiKelILdy5Z/0DJaaBG6IhtNcGjbZCcGRR46frYqC4
+         GAnuaubGfIZjSTPh/v6EE9sQ5L0H4uun29CLi9cr7vxJ0501OrrRXwbsRx0GCyVB1Iep
+         jWNA==
+X-Gm-Message-State: APjAAAW+Zu3bHGUcOPVSwRfCRgsZGT09gfwJ9ss5EONIlXpogXiZdLU1
+        y7MmwrZWY0TSFF5ZlmKSYqIf90ci
+X-Google-Smtp-Source: APXvYqycvnSPCdJaiVlKt7unzIMr9yXnjMozZhnMiM7HNdOy26e4EDqRyUsVQaHOYZcxp9um/bw0yg==
+X-Received: by 2002:a63:5b52:: with SMTP id l18mr27404687pgm.21.1567470962173;
+        Mon, 02 Sep 2019 17:36:02 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id q186sm2031334pfb.47.2019.09.02.17.36.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 Sep 2019 17:36:01 -0700 (PDT)
+Subject: Re: [PATCH] Fix a double free bug in rsi_91x_deinit
+To:     Greg KH <greg@kroah.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, Hui Peng <benquike@gmail.com>,
+        security@kernel.org, Mathias Payer <mathias.payer@nebelwelt.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190819220230.10597-1-benquike@gmail.com>
+ <20190831181852.GA22160@roeck-us.net>
+ <87k1asqw87.fsf@kamboji.qca.qualcomm.com>
+ <385361d3-048e-9b3f-c749-aa5861e397e7@roeck-us.net>
+ <20190902184722.GC5697@kroah.com>
+ <804fb4dc-23e5-3442-c64e-9857d61d6b6c@roeck-us.net>
+ <20190902200635.GA29465@kroah.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Message-ID: <a3432c17-f3ec-6d1e-77ec-fab43feefcaf@roeck-us.net>
+Date:   Mon, 2 Sep 2019 17:35:59 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190901134754.1bcd72d4@cakuba.netronome.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20190902200635.GA29465@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 01, 2019 at 01:47:54PM -0700, Jakub Kicinski wrote:
-> On Sat, 31 Aug 2019 16:22:17 +0200, Pablo Neira Ayuso wrote:
-[...]
-> > > Please see the definitions of:
-> > > 
-> > > struct nfp_fl_set_eth
-> > > struct nfp_fl_set_ip4_addrs
-> > > struct nfp_fl_set_ip4_ttl_tos
-> > > struct nfp_fl_set_ipv6_tc_hl_fl
-> > > struct nfp_fl_set_ipv6_addr
-> > > struct nfp_fl_set_tport
-> > > 
-> > > These are the programming primitives for header rewrites in the NFP.
-> > > Since each of those contains more than just one field, we'll have to
-> > > keep all the field coalescing logic in the driver, even if you coalesce
-> > > while fields (i.e. IPv6 addresses).  
-> > 
-> > nfp has been updated in this patch series to deal with the new mangle
-> > representation.
+On 9/2/19 1:06 PM, Greg KH wrote:
+> On Mon, Sep 02, 2019 at 12:32:37PM -0700, Guenter Roeck wrote:
+>> On 9/2/19 11:47 AM, Greg KH wrote:
+>>> On Sun, Sep 01, 2019 at 07:08:29AM -0700, Guenter Roeck wrote:
+>>>> On 9/1/19 1:03 AM, Kalle Valo wrote:
+>>>>> Guenter Roeck <linux@roeck-us.net> writes:
+>>>>>
+>>>>>> On Mon, Aug 19, 2019 at 06:02:29PM -0400, Hui Peng wrote:
+>>>>>>> `dev` (struct rsi_91x_usbdev *) field of adapter
+>>>>>>> (struct rsi_91x_usbdev *) is allocated  and initialized in
+>>>>>>> `rsi_init_usb_interface`. If any error is detected in information
+>>>>>>> read from the device side,  `rsi_init_usb_interface` will be
+>>>>>>> freed. However, in the higher level error handling code in
+>>>>>>> `rsi_probe`, if error is detected, `rsi_91x_deinit` is called
+>>>>>>> again, in which `dev` will be freed again, resulting double free.
+>>>>>>>
+>>>>>>> This patch fixes the double free by removing the free operation on
+>>>>>>> `dev` in `rsi_init_usb_interface`, because `rsi_91x_deinit` is also
+>>>>>>> used in `rsi_disconnect`, in that code path, the `dev` field is not
+>>>>>>>     (and thus needs to be) freed.
+>>>>>>>
+>>>>>>> This bug was found in v4.19, but is also present in the latest version
+>>>>>>> of kernel.
+>>>>>>>
+>>>>>>> Reported-by: Hui Peng <benquike@gmail.com>
+>>>>>>> Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
+>>>>>>> Signed-off-by: Hui Peng <benquike@gmail.com>
+>>>>>>
+>>>>>> FWIW:
+>>>>>>
+>>>>>> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+>>>>>>
+>>>>>> This patch is listed as fix for CVE-2019-15504, which has a CVSS 2.0 score
+>>>>>> of 10.0 (high) and CVSS 3.0 score of 9.8 (critical).
+>>>>>
+>>>>> A double free in error path is considered as a critical CVE issue? I'm
+>>>>> very curious, why is that?
+>>>>>
+>>>>
+>>>> You'd have to ask the people assigning CVSS scores. However, if the memory
+>>>> was reallocated, that reallocated memory (which is still in use) is freed.
+>>>> Then all kinds of bad things can happen.
+>>>
+>>> Yes, but moving from "bad things _can_ happen" to "bad things happen" in
+>>> an instance like this will be a tough task.  It also requires physical
+>>> access to the machine.
+>>>
+>>
+>> Is this correct even with usbip enabled ?
 > 
-> It has been updated to handle the trivial coalescing.
+> Who has usbip enabled anywhere?  :)
 > 
-> > > Perhaps it's not a serious blocker for the series, but it'd be nice if
-> > > rewrite action grouping was handled in the core. Since you're already
-> > > poking at that code..  
-> > 
-> > Rewrite action grouping is already handled from the core front-end in
-> > this patch series.
-> 
-> If you did what I'm asking the functions nfp_fl_check_mangle_start()
-> and nfp_fl_check_mangle_end() would no longer exist. They were not
-> really needed before you "common flow API" changes.
 
-Thanks for the pointer. This driver-level coalescing routine you are
-refering to is specific to optimize your layout. I agree the core
-could be updated to do more coalescing, but this would need a way to
-express what coalescing the driver would like to see in place. I would
-wait to see more drivers that can benefit from that. I can only make
-incremental steps, it's already hard to navigate over all this code.
+It is enabled in Ubuntu, and it looks like it is enabled in Fedora as well.
+It is disabled in Chrome OS. I didn't check other distributions.
+
+> I don't know if usbip can trigger this type of thing, maybe someone
+> needs to test that...
+> 
+
+I seemed to recall someone mentioning that it is possible to use usbip
+for remote attacks. This is why I mentioned it. I don't recall details,
+though, and I don't know if it is really possible and to what extent.
+
+Guenter
