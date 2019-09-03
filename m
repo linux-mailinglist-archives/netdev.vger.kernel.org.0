@@ -2,98 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CD66A5F76
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 04:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43185A5F7B
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 04:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfICCq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 22:46:29 -0400
-Received: from mail-ua1-f68.google.com ([209.85.222.68]:41532 "EHLO
-        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfICCq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Sep 2019 22:46:28 -0400
-Received: by mail-ua1-f68.google.com with SMTP id x2so4993689uar.8
-        for <netdev@vger.kernel.org>; Mon, 02 Sep 2019 19:46:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=AByWFfabD0l5iIzr5haXrtys5MddymuIhBEL878c4XY=;
-        b=r+fx7yV1xbQ9sHs5L7OOr1JLJ+A4esBD3gDKm9U2L8BCCFvyDYOSHxOSPBzf9a1EZZ
-         xtOz7Hr1MIbb4f/YVB4o/bEzbaC57dstqFY4WU4nUq5+Y+FP0r1m7WIEC+/vFr4Sk4QI
-         ePzwfTXS2Ah6+Iu3ib9mI9DAfPBz1puxEZnoI965Pe8Rbe/q5+t5BhaMxS8jWtD38uwJ
-         6VwI8OZfzg2P4speGtcr0VD2ZYSRKs9U+es+7Eii36rvMU7Cna4J1SKAirmVglAn37Fv
-         KOdPws33K8IAtQ/btnf5BVwdGd5pXjDRFjr9sWXkILTIEXjW263cb00WR9/whbe3DKL0
-         YPpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AByWFfabD0l5iIzr5haXrtys5MddymuIhBEL878c4XY=;
-        b=BTAqTqn0H7KFLnrjWL3CyhHsKv9Y7SDcpZgh3xwhi9mrc0Jb8NIFfw+2hVSe810T8u
-         0DuC1gt696F2YQwG2z9SFTPUb5XKdpnCKMILjUbQFXJUPhTihc7mYLY0Mqvqq50kpzmi
-         XBniAuNLRceedynQhYXo6tgt/YivfuOISrlh0KmkvN/YOotZEd+lDxVA2pVoW2zLOK89
-         XDvqjjSndm6vAbYfX7KvW0vMdtjpxtL5r+h1HCsbpZZo7Ha/vYoqBeAxdEhnTdrhtRWG
-         m4J700xqQf5MQyy9oNGJ4soRDHkGHBqN/MLupskI++j/Pm1ZxXu/4fJVQHeNQCAoCQT8
-         5KEg==
-X-Gm-Message-State: APjAAAV/uSEjVUvQATClkbUU0Eo6M27IKUmO009ZaSFkE+F/ErIdOVus
-        P7is+W6sy41tCSgGXwnAclwavK2rPi+YTgI+bAzplA==
-X-Google-Smtp-Source: APXvYqzjf5enxc0SW2FFkOXEpgTPIgid1ZZ4ujO1/Sq4DMROIL+2Z+lkMf6wyEuNdktTUPuG5JsXpOzdhYyXmJpHM94=
-X-Received: by 2002:ab0:248a:: with SMTP id i10mr14573606uan.32.1567478787657;
- Mon, 02 Sep 2019 19:46:27 -0700 (PDT)
+        id S1726952AbfICCva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 22:51:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39452 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725981AbfICCva (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 22:51:30 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 852D1C0568FA;
+        Tue,  3 Sep 2019 02:51:28 +0000 (UTC)
+Received: from [10.72.12.109] (ovpn-12-109.pek2.redhat.com [10.72.12.109])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E7FEF19D70;
+        Tue,  3 Sep 2019 02:51:16 +0000 (UTC)
+Subject: Re: [RFC v3] vhost: introduce mdev based hardware vhost backend
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+References: <20190828053712.26106-1-tiwei.bie@intel.com>
+ <b91820c4-2fe2-55ee-5089-5f7c94322521@redhat.com>
+ <20190903015602.GA11404@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <61e80c3a-ec9e-ab34-3d63-dfbe126d5051@redhat.com>
+Date:   Tue, 3 Sep 2019 10:51:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <F7CD281DE3E379468C6D07993EA72F84D18A5786@RTITMBSVM04.realtek.com.tw>
- <20190826070827.1436-1-jian-hong@endlessm.com> <F7CD281DE3E379468C6D07993EA72F84D18AE2DA@RTITMBSVM04.realtek.com.tw>
- <875zmarivz.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <875zmarivz.fsf@kamboji.qca.qualcomm.com>
-From:   Jian-Hong Pan <jian-hong@endlessm.com>
-Date:   Tue, 3 Sep 2019 10:45:50 +0800
-Message-ID: <CAPpJ_efAxQN4pRdpVmT5Pdkp-6Y-QVOQdJR4iY4A-PXZokLGtA@mail.gmail.com>
-Subject: Re: [PATCH v4] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190903015602.GA11404@___>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 03 Sep 2019 02:51:28 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> =E6=96=BC 2019=E5=B9=B49=E6=9C=882=E6=97=
-=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=888:18=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> Tony Chuang <yhchuang@realtek.com> writes:
->
-> >> From: Jian-Hong Pan
-> >> Subject: [PATCH v4] rtw88: pci: Move a mass of jobs in hw IRQ to soft =
-IRQ
-> >>
-> >> There is a mass of jobs between spin lock and unlock in the hardware
-> >> IRQ which will occupy much time originally. To make system work more
-> >> efficiently, this patch moves the jobs to the soft IRQ (bottom half) t=
-o
-> >> reduce the time in hardware IRQ.
-> >>
-> >> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
-> >
-> > Now it works fine with MSI interrupt enabled.
-> >
-> > But this patch is conflicting with MSI interrupt patch.
-> > Is there a better way we can make Kalle apply them more smoothly?
-> > I can rebase them and submit both if you're OK.
 
-The rebase work is appreciated.
+On 2019/9/3 上午9:56, Tiwei Bie wrote:
+> On Mon, Sep 02, 2019 at 12:15:05PM +0800, Jason Wang wrote:
+>> On 2019/8/28 下午1:37, Tiwei Bie wrote:
+>>> Details about this can be found here:
+>>>
+>>> https://lwn.net/Articles/750770/
+>>>
+>>> What's new in this version
+>>> ==========================
+>>>
+>>> There are three choices based on the discussion [1] in RFC v2:
+>>>
+>>>> #1. We expose a VFIO device, so we can reuse the VFIO container/group
+>>>>       based DMA API and potentially reuse a lot of VFIO code in QEMU.
+>>>>
+>>>>       But in this case, we have two choices for the VFIO device interface
+>>>>       (i.e. the interface on top of VFIO device fd):
+>>>>
+>>>>       A) we may invent a new vhost protocol (as demonstrated by the code
+>>>>          in this RFC) on VFIO device fd to make it work in VFIO's way,
+>>>>          i.e. regions and irqs.
+>>>>
+>>>>       B) Or as you proposed, instead of inventing a new vhost protocol,
+>>>>          we can reuse most existing vhost ioctls on the VFIO device fd
+>>>>          directly. There should be no conflicts between the VFIO ioctls
+>>>>          (type is 0x3B) and VHOST ioctls (type is 0xAF) currently.
+>>>>
+>>>> #2. Instead of exposing a VFIO device, we may expose a VHOST device.
+>>>>       And we will introduce a new mdev driver vhost-mdev to do this.
+>>>>       It would be natural to reuse the existing kernel vhost interface
+>>>>       (ioctls) on it as much as possible. But we will need to invent
+>>>>       some APIs for DMA programming (reusing VHOST_SET_MEM_TABLE is a
+>>>>       choice, but it's too heavy and doesn't support vIOMMU by itself).
+>>> This version is more like a quick PoC to try Jason's proposal on
+>>> reusing vhost ioctls. And the second way (#1/B) in above three
+>>> choices was chosen in this version to demonstrate the idea quickly.
+>>>
+>>> Now the userspace API looks like this:
+>>>
+>>> - VFIO's container/group based IOMMU API is used to do the
+>>>     DMA programming.
+>>>
+>>> - Vhost's existing ioctls are used to setup the device.
+>>>
+>>> And the device will report device_api as "vfio-vhost".
+>>>
+>>> Note that, there are dirty hacks in this version. If we decide to
+>>> go this way, some refactoring in vhost.c/vhost.h may be needed.
+>>>
+>>> PS. The direct mapping of the notify registers isn't implemented
+>>>       in this version.
+>>>
+>>> [1] https://lkml.org/lkml/2019/7/9/101
+>>
+>> Thanks for the patch, see comments inline.
+>>
+>>
+>>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+>>> ---
+>>>    drivers/vhost/Kconfig      |   9 +
+>>>    drivers/vhost/Makefile     |   3 +
+>>>    drivers/vhost/mdev.c       | 382 +++++++++++++++++++++++++++++++++++++
+>>>    include/linux/vhost_mdev.h |  58 ++++++
+>>>    include/uapi/linux/vfio.h  |   2 +
+>>>    include/uapi/linux/vhost.h |   8 +
+>>>    6 files changed, 462 insertions(+)
+>>>    create mode 100644 drivers/vhost/mdev.c
+>>>    create mode 100644 include/linux/vhost_mdev.h
+> [...]
+>>> +
+>>> +		break;
+>>> +	}
+>>> +	case VFIO_DEVICE_GET_REGION_INFO:
+>>> +	case VFIO_DEVICE_GET_IRQ_INFO:
+>>> +	case VFIO_DEVICE_SET_IRQS:
+>>> +	case VFIO_DEVICE_RESET:
+>>> +		ret = -EINVAL;
+>>> +		break;
+>>> +
+>>> +	case VHOST_MDEV_SET_STATE:
+>>> +		ret = vhost_set_state(vdpa, argp);
+>>> +		break;
+>>
+>> So this is used to start or stop the device. This means if userspace want to
+>> drive a network device, the API is not 100% compatible. Any blocker for
+>> this? E.g for SET_BACKEND, we can pass a fd and then identify the type of
+>> backend.
+> This is a legacy from the previous RFC code. I didn't try to
+> get rid of it while getting this POC to work. I can try to make
+> the vhost ioctls fully compatible with the existing userspace
+> if possible.
 
-Thank you,
-Jian-Hong Pan
 
-> Yeah, submitting all the MSI patches in the same patchset is the easiest
-> approach. That way they apply cleanly to wireless-drivers-next.
+That would be fine.
+
+
 >
-> --
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
-tches
+>> Another question is, how can user know the type of a device?
+> Maybe we can introduce an attribute in $UUID/ to tell the type.
+
+
+Yes, something like this or using mdev types and identify through 
+something similar to get_socket() etc.
+
+
+>
+>>
+>>> +	case VHOST_GET_FEATURES:
+>>> +		ret = vhost_get_features(vdpa, argp);
+>>> +		break;
+>>> +	case VHOST_SET_FEATURES:
+>>> +		ret = vhost_set_features(vdpa, argp);
+>>> +		break;
+>>> +	case VHOST_GET_VRING_BASE:
+>>> +		ret = vhost_get_vring_base(vdpa, argp);
+>>> +		break;
+>>> +	default:
+>>> +		ret = vhost_dev_ioctl(&vdpa->dev, cmd, argp);
+>>> +		if (ret == -ENOIOCTLCMD)
+>>> +			ret = vhost_vring_ioctl(&vdpa->dev, cmd, argp);
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+> [...]
+>>> +struct mdev_device;
+>>> +struct vhost_mdev;
+>>> +
+>>> +typedef int (*vhost_mdev_start_device_t)(struct vhost_mdev *vdpa);
+>>> +typedef int (*vhost_mdev_stop_device_t)(struct vhost_mdev *vdpa);
+>>> +typedef int (*vhost_mdev_set_features_t)(struct vhost_mdev *vdpa);
+>>> +typedef void (*vhost_mdev_notify_device_t)(struct vhost_mdev *vdpa, int queue_id);
+>>> +typedef u64 (*vhost_mdev_get_notify_addr_t)(struct vhost_mdev *vdpa, int queue_id);
+>>> +typedef u16 (*vhost_mdev_get_vring_base_t)(struct vhost_mdev *vdpa, int queue_id);
+>>> +typedef void (*vhost_mdev_features_changed_t)(struct vhost_mdev *vdpa);
+>>> +
+>>> +struct vhost_mdev_device_ops {
+>>> +	vhost_mdev_start_device_t	start;
+>>> +	vhost_mdev_stop_device_t	stop;
+>>> +	vhost_mdev_notify_device_t	notify;
+>>> +	vhost_mdev_get_notify_addr_t	get_notify_addr;
+>>> +	vhost_mdev_get_vring_base_t	get_vring_base;
+>>> +	vhost_mdev_features_changed_t	features_changed;
+>>> +};
+>>
+>> Consider we want to implement a network device, who is going to implement
+>> the device configuration space? I believe it's not good to invent another
+>> set of API for doing this. So I believe we want something like
+>> read_config/write_config here.
+>>
+>> Then I came up an idea:
+>>
+>> 1) introduce a new mdev bus transport, and a new mdev driver virtio_mdev
+>> 2) vDPA (either software or hardware) can register as a device of virtio
+>> mdev device
+>> 3) then we can use kernel virtio driver to drive vDPA device and utilize
+>> kernel networking/storage stack
+>> 4) for userspace driver like vhost-mdev, it could be built of top of mdev
+>> transport
+>>
+>> Having a full new transport for virtio, the advantages are obvious:
+>>
+>> 1) A generic solution for both kernel and userspace driver and support
+>> configuration space access
+>> 2) For kernel driver, exist kernel networking/storage stack could be reused,
+>> and so did fast path implementation (e.g XDP, io_uring etc).
+>> 2) For userspace driver, the function of virtio transport is a superset of
+>> vhost, any API could be built on top easily (e.g vhost ioctl).
+>>
+>> What's your thought?
+> This sounds interesting to me! ;)
+>
+> But I'm not quite sure whether it's the best choice to abstract
+> vhost accelerators as virtio device in vDPA. Virtio device is
+> the frontend device. There are some backend features missing in
+> virtio currently. E.g. there is no way to tell the virtio device
+> to do dirty page logging.
+
+
+This could be extended via new mdev transport. E.g set an memory region 
+for logging dirty pages.
+
+
+> Besides, e.g. the control vq in network
+> case seems not a quite good interface for a backend device.
+
+
+Yes, it was not implemented in current vhost-net. Having a new transport 
+will solve this issue.
+
+
+>   In
+> this case, the userspace virtio-mdev driver in QEMU will do the
+> DMA mapping to allow guest driver to be able to use GPA/IOVA to
+> access the Rx/Tx queues of the virtio-mdev device directly, but
+> I'm wondering will this userspace virtio-mdev driver in QEMU use
+> similar IOVA to access the software based control vq of the same
+> virtio-mdev device at the same time?
+
+
+Let me clarify.
+
+- The first thing is to introduce a new mdev based transport, this could 
+something similar to virtio MMIO but the command was set through mdev bus.
+- Next step is to implement a mdev based transport for kernel driver, 
+this allow kernel virtio driver work with mdev device that implements 
+mdev transport. Then kernel networking or storage stack could be reused. 
+It work as, register a new mdev driver and a new mdev virtio transport, 
+then what it does is basically translate virtio_config_ops to mdev bus 
+command.
+- The third step is to implement virtio mdev device (mdev transport). 
+Then kernel virtio driver can drive those device without any modification.
+- The last part is to implement another mdev driver (e.g vhost-mdev), 
+this is for userspace driver. It did translation between userspace mdev 
+API (ioctl, etc) to mdev bus command.
+
+
+For the question of IOVA, in mdev transport, we will have a command like:
+
+#define VIRTIO_MDEV_QUEUE_DESC_LOW    0x080
+#define VIRTIO_MDEV_QUEUE_DESC_HIGH    0x084
+
+There's no need for the device know about what kind of address it is 
+(kernel or userspace, GPA or IOVA). It's the responsibility of parent 
+(mdev device) to do proper mapping. And mdev device implementation can 
+choose to emulate control vq, offloaded it fully to hardware or even 
+claim it was not supported.
+
+
+Thanks
+
+>
+> Thanks,
+> Tiwei
+>
+>> Thanks
+>>
+>>
+>>> +
+>>> +struct vhost_mdev *vhost_mdev_alloc(struct mdev_device *mdev,
+>>> +		void *private, int nvqs);
+>>> +void vhost_mdev_free(struct vhost_mdev *vdpa);
+>>> +
+>>> +ssize_t vhost_mdev_read(struct mdev_device *mdev, char __user *buf,
+>>> +		size_t count, loff_t *ppos);
+>>> +ssize_t vhost_mdev_write(struct mdev_device *mdev, const char __user *buf,
+>>> +		size_t count, loff_t *ppos);
+>>> +long vhost_mdev_ioctl(struct mdev_device *mdev, unsigned int cmd,
+>>> +		unsigned long arg);
+>>> +int vhost_mdev_mmap(struct mdev_device *mdev, struct vm_area_struct *vma);
+>>> +int vhost_mdev_open(struct mdev_device *mdev);
+>>> +void vhost_mdev_close(struct mdev_device *mdev);
+>>> +
+>>> +int vhost_mdev_set_device_ops(struct vhost_mdev *vdpa,
+>>> +		const struct vhost_mdev_device_ops *ops);
+>>> +int vhost_mdev_set_features(struct vhost_mdev *vdpa, u64 features);
+>>> +struct eventfd_ctx *vhost_mdev_get_call_ctx(struct vhost_mdev *vdpa,
+>>> +		int queue_id);
+>>> +int vhost_mdev_get_acked_features(struct vhost_mdev *vdpa, u64 *features);
+>>> +int vhost_mdev_get_vring_num(struct vhost_mdev *vdpa, int queue_id, u16 *num);
+>>> +int vhost_mdev_get_vring_base(struct vhost_mdev *vdpa, int queue_id, u16 *base);
+>>> +int vhost_mdev_get_vring_addr(struct vhost_mdev *vdpa, int queue_id,
+>>> +		struct vhost_vring_addr *addr);
+>>> +int vhost_mdev_get_log_base(struct vhost_mdev *vdpa, int queue_id,
+>>> +		void **log_base, u64 *log_size);
+>>> +struct mdev_device *vhost_mdev_get_mdev(struct vhost_mdev *vdpa);
+>>> +void *vhost_mdev_get_private(struct vhost_mdev *vdpa);
+>>> +
+>>> +#endif /* _VHOST_MDEV_H */
+>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>>> index 8f10748dac79..0300d6831cc5 100644
+>>> --- a/include/uapi/linux/vfio.h
+>>> +++ b/include/uapi/linux/vfio.h
+>>> @@ -201,6 +201,7 @@ struct vfio_device_info {
+>>>    #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
+>>>    #define VFIO_DEVICE_FLAGS_CCW	(1 << 4)	/* vfio-ccw device */
+>>>    #define VFIO_DEVICE_FLAGS_AP	(1 << 5)	/* vfio-ap device */
+>>> +#define VFIO_DEVICE_FLAGS_VHOST	(1 << 6)	/* vfio-vhost device */
+>>>    	__u32	num_regions;	/* Max region index + 1 */
+>>>    	__u32	num_irqs;	/* Max IRQ index + 1 */
+>>>    };
+>>> @@ -217,6 +218,7 @@ struct vfio_device_info {
+>>>    #define VFIO_DEVICE_API_AMBA_STRING		"vfio-amba"
+>>>    #define VFIO_DEVICE_API_CCW_STRING		"vfio-ccw"
+>>>    #define VFIO_DEVICE_API_AP_STRING		"vfio-ap"
+>>> +#define VFIO_DEVICE_API_VHOST_STRING		"vfio-vhost"
+>>>    /**
+>>>     * VFIO_DEVICE_GET_REGION_INFO - _IOWR(VFIO_TYPE, VFIO_BASE + 8,
+>>> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+>>> index 40d028eed645..5afbc2f08fa3 100644
+>>> --- a/include/uapi/linux/vhost.h
+>>> +++ b/include/uapi/linux/vhost.h
+>>> @@ -116,4 +116,12 @@
+>>>    #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>>>    #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>>> +/* VHOST_MDEV specific defines */
+>>> +
+>>> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
+>>> +
+>>> +#define VHOST_MDEV_S_STOPPED	0
+>>> +#define VHOST_MDEV_S_RUNNING	1
+>>> +#define VHOST_MDEV_S_MAX	2
+>>> +
+>>>    #endif
