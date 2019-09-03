@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB84EA7432
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 22:05:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC8EBA7435
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 22:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbfICUFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 16:05:18 -0400
+        id S1726994AbfICUFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 16:05:25 -0400
 Received: from mail-eopbgr140044.outbound.protection.outlook.com ([40.107.14.44]:24054
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726876AbfICUFR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 16:05:17 -0400
+        id S1726009AbfICUFU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Sep 2019 16:05:20 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FcyYtm5ugKFkVGh6c9fX56faT1OZ/plcSiBZlH2yEYcgGZW2i0Zrt1WXAnnL3GUiuB6niqYgC1LT7mVdaAMtW1Fe1FSjYqJob+kJDQEYtEk21RTwYPZgoR9RV2tVknoRXYMy5gKvBIPKOje8zP5Ce7JluzQcix8RxfFR0OuPkW3ePCL+aoaiUsshCaSa6P2ZqdkMG8nKM6rI5O7DI/jsuPHHFwaXlWLL50beWjSruseArJePPlC/gnB97CrUFBubneevm2EF0dgWxfqImiXabJV8ePc2/ibDBxTcILyWs6hDvlWeh095ZSRxTmNCkDXQSwSilWgI/O/ij3RAHJ00Mw==
+ b=T3sTQbI5dayDWO8u7KaM7KI40o3/5uYiLcQd0EL0MWkq7rPLjS9Z1T9MhvWTdZ+OjoXMhNzhN4j1WTSv8QySMcrZCZLZCSMhyDp8A46VIAAaTe3JRcaA0Px6DlGvL8jssIEULnjyj1hrngSRxeyuD/3BVAQNxgnCqNt5pk3Avx4FWzCVDffdgO9gWhGMzCYXgwxcRRpuQlEw1N2i0Gq6pxFrL/84CtJYMHdB98wGrNE0B07Hg2+RFZ1OJeM0xqUdIxYpH1QtN+rcG35cpf3JTFXFdf2LP4fgIu5/o2yYJJHcipr1wO/zLtdD7wyqaXD9USaKFLmFbFJkKgmzoXEpIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gkfn/suaKlnXow2yNd/mPoky5qh1RmCXS0f2lgOkwrw=;
- b=idU9De07MJhNTkZO+tFt9ce/yqwJgOxzYd/eS62y+Wm9SW9YlxNKeLKnMPIKR35wjiOo/C70uWtJ+XvtSYH/EjQqEL5yjEtuEOXfPoCgrgg9d1BRY1k6gFWfhrixHJ5O9EO2dmrmkZAbGF6ae9rDZBe9o4ilDnYCsWGs0I2ejZQq31FaafkqrlwINoM4Wu/t6nlGKRoBYyb7+8Ty1+7tjxt3ReXDv9Nra0kt6x+zBsBaOzAKct3ncvZcVF1TX2xtJ3awoApikFwMl07P/ueGFqjF6a9UZr4Da+N6rsRAbHvEqVOWc3Mnk0xf84o3eomeyFD8wjez4dbvu5lybpGnVQ==
+ bh=HBdoHsGKqEAIOcRsI7OXDnuZq1MX0wqIXz8lEb1Q+Ek=;
+ b=VDRbUENHweaDPWrzQG0C4S93V/mG5BjgrfXWwnSVkCXuBL8dUUKnC9FEmEJXLPxhiHOoTxcHRHX0hqzdwVVcVtQI+o72CsObF+AnAyyNzqw5WJ1DN4/c/CPnYwNyG8PcWt2m6y/AF+684PC2zeCMmIEWY52+0KzNuPRIjgRW3szFvfFsis3CYC+Fec+QpZgg0BbCZ/uBxkCSWQYYzUYJ2rhckbNuLHqyl9QqK/l//3xk3bEK/+DigyrYGZjPECWq4RIvGC/AgHyll7DH7vE/aZRPn+LHQbNCUCZ8GrkVrLq/ZPNmshKNqniHWQkmZ77Neo2KFTLO0Lyvd/xlGGqJUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gkfn/suaKlnXow2yNd/mPoky5qh1RmCXS0f2lgOkwrw=;
- b=JN6L2RPYkgfZKfXyxgOrA6A40YldhL+YLb8aTe4paAd2Rvth5HdrPtawYpWa4Q60gKgeLiDxNNZpUz6PzQE9laZWdIkqgyYWL6JGafvztEiT7oXVklbk+ns9EYJ7BtILKFvxtvyZ2+pXbr0GazO7L+/LPAqgtFRWyv6pe8lZa4M=
+ bh=HBdoHsGKqEAIOcRsI7OXDnuZq1MX0wqIXz8lEb1Q+Ek=;
+ b=Zi8RsR+Jtdcwc11Pw1G5j9t3MF3y9o66wvke5GIHWVeU5lWqX9yiZD5vg0GVY+fm5Jzw2NTKuZG8cjQNjzNYV9fJsE6w3Hwd567VhnZSL2aINcmcv9XLvzp+b1CvfWJYy6LTK+DhSCAlFD0a32qW0jjeVf05SbGaM0ntcUkB540=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
  AM4PR0501MB2706.eurprd05.prod.outlook.com (10.172.221.142) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.21; Tue, 3 Sep 2019 20:04:42 +0000
+ 15.20.2220.21; Tue, 3 Sep 2019 20:04:44 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::58d1:d1d6:dbda:3576%4]) with mapi id 15.20.2220.021; Tue, 3 Sep 2019
- 20:04:41 +0000
+ 20:04:44 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -42,13 +42,12 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Erez Shitrit <erezsh@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 07/18] net/mlx5: DR, Expose steering domain
+Subject: [net-next V2 08/18] net/mlx5: DR, Expose steering table functionality
+Thread-Topic: [net-next V2 08/18] net/mlx5: DR, Expose steering table
  functionality
-Thread-Topic: [net-next V2 07/18] net/mlx5: DR, Expose steering domain
- functionality
-Thread-Index: AQHVYpLSl31Q03kCRk2oPsFr7xEihg==
-Date:   Tue, 3 Sep 2019 20:04:41 +0000
-Message-ID: <20190903200409.14406-8-saeedm@mellanox.com>
+Thread-Index: AQHVYpLUC9FqQK5uSkKZyz+T+IoKpA==
+Date:   Tue, 3 Sep 2019 20:04:44 +0000
+Message-ID: <20190903200409.14406-9-saeedm@mellanox.com>
 References: <20190903200409.14406-1-saeedm@mellanox.com>
 In-Reply-To: <20190903200409.14406-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -64,30 +63,30 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 56b66514-07ed-4320-8793-08d730a9f505
+x-ms-office365-filtering-correlation-id: 6a377ed0-0eb0-4325-08aa-08d730a9f66b
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2706;
 x-ms-traffictypediagnostic: AM4PR0501MB2706:|AM4PR0501MB2706:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB270667C943CEBCDC9445C27ABEB90@AM4PR0501MB2706.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:334;
+x-microsoft-antispam-prvs: <AM4PR0501MB2706AEC661580F64C3C8E794BEB90@AM4PR0501MB2706.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:252;
 x-forefront-prvs: 01494FA7F7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(4636009)(376002)(346002)(136003)(39860400002)(396003)(366004)(199004)(189003)(2906002)(102836004)(256004)(26005)(11346002)(50226002)(186003)(66446008)(386003)(6506007)(64756008)(66556008)(14444005)(66476007)(71190400001)(66946007)(2616005)(476003)(76176011)(71200400001)(5660300002)(8936002)(66066001)(446003)(81166006)(81156014)(30864003)(478600001)(54906003)(6916009)(8676002)(486006)(36756003)(3846002)(7736002)(53936002)(6436002)(305945005)(14454004)(6116002)(52116002)(6512007)(86362001)(316002)(99286004)(1076003)(6486002)(4326008)(107886003)(25786009)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2706;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(4636009)(376002)(346002)(136003)(39860400002)(396003)(366004)(199004)(189003)(2906002)(102836004)(256004)(26005)(11346002)(50226002)(186003)(66446008)(386003)(6506007)(64756008)(66556008)(14444005)(66476007)(71190400001)(66946007)(2616005)(476003)(76176011)(71200400001)(5660300002)(8936002)(66066001)(446003)(81166006)(81156014)(478600001)(54906003)(6916009)(8676002)(486006)(36756003)(3846002)(7736002)(53936002)(6436002)(305945005)(14454004)(6116002)(52116002)(6512007)(86362001)(316002)(99286004)(1076003)(6486002)(4326008)(107886003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2706;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Pqv0TargazML4NjWhbbLuW7/QVscFA5G16M7mY/DVOj85LlfFMf82f8ILaiLn7r/Vf8V6pvIo17cIz/NSPbe5xgGPBHZ7+7fCG+B86tlSBbD6anfdH7uCsMFR9Ono2MBPSi+2Vvva7z9mRnooPNLvwynWlvAugrWmgKsHrY4RNjetZ8aN1KRcM9jtJhmu0Uxy9KsxjAs3EM261Y3rXvbQEL5C+rMv/YRBaGjSRiS+21mM6AGosK0JC5JlziFSG5km411RSmXeiihb41yZAxso+WGgsBmUiylNTruEIgUdz4XjdQiletzOVqbWE1Pl98VHQR8Lqf0/q78g3LGaLQbC6lwMuEyBlXLcEVzberWY9bIXWCo7t2DlHcEADp3PwfYbAbKGQoT8U88pJwSNsBHTCAxvIu4EKYkTdJ2N5Hrs5A=
+x-microsoft-antispam-message-info: dykpmfAJlG5JuoHCXCPJgMF/yMvPeVWmF0hrYbqcGiCwK4ggD+DJbkmZcpnbI69fz+OX9d0z7O5gr9RJuXaGcHLF8dUWXkOWXji5B2AB50NPyiHNBzE1JwXn+ip2Rm+jw+texleCykNLwOQ4cQw07O6AIFG37PFmPboB3Ic5qP/Egmm2KOhuoqQbqKqkxuiLtSb+H6answYqD+rnnk5FgdevlXdbOBP9OHZkWeaYUk3BgjTGPdWgkG8iBHbdFZypIq2XIJJu/eQGJdyvTHzws2O94dxuMuUeBcGg53eJKOFIfNSGX3BDvd62Avby13oSdjng6VQyWtevVI7bkqny2EipDXHk4WrQrjSPxP2bztBM7TyCmobWU9R1CHnmSTQpI5GNGyN3qQVMq65zz5LId/P+NO4QmX3LFzlWDiAgKyQ=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56b66514-07ed-4320-8793-08d730a9f505
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 20:04:41.8729
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a377ed0-0eb0-4325-08aa-08d730a9f66b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 20:04:44.1289
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SvE34OPuiyJi4gpsfeAyPO07hDF61mYYfZF30+laQAK7mT7dvD9GQ1l4zd03b3QO9LM6PD/6U56cxtH1VoJSFA==
+X-MS-Exchange-CrossTenant-userprincipalname: hkdDhqEWgchapwekAD/j8VYDVYBt/D/PAt7oMqzs3PxPSs0RAduMilCrTK0h8KR0iMObn85vqBp4Y7tcT1qV4A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2706
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -96,430 +95,323 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alex Vesker <valex@mellanox.com>
 
-Domain is the frame for all of the dr (direct rule) objects.
-There are different domain types which also affect the object under that
-domain. Each domain can hold multiple tables which can hold multiple
-matchers and so on, this means that all of the dr (direct rule) objects
-exist under a specific domain. The domain object also holds the
-resources needed for other objects such as memory management and
-communication with the device.
+Tables are objects which are used for storing matchers, each table
+belongs to a domain and defined by the domain type. When a packet
+reaches the table it is being processed by each of its matchers until a
+successful match. Tables can hold multiple matchers ordered by matcher
+priority. Each table has a level.
 
 Signed-off-by: Alex Vesker <valex@mellanox.com>
 Reviewed-by: Erez Shitrit <erezsh@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../mellanox/mlx5/core/steering/dr_domain.c   | 395 ++++++++++++++++++
- 1 file changed, 395 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dom=
-ain.c
+ .../mellanox/mlx5/core/steering/dr_table.c    | 294 ++++++++++++++++++
+ 1 file changed, 294 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_tab=
+le.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b=
-/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c b/=
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
 new file mode 100644
-index 000000000000..3b9cf0bccf4d
+index 000000000000..e178d8d3dbc9
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-@@ -0,0 +1,395 @@
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
+@@ -0,0 +1,294 @@
 +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
 +/* Copyright (c) 2019 Mellanox Technologies. */
 +
-+#include <linux/mlx5/eswitch.h>
 +#include "dr_types.h"
 +
-+static int dr_domain_init_cache(struct mlx5dr_domain *dmn)
++int mlx5dr_table_set_miss_action(struct mlx5dr_table *tbl,
++				 struct mlx5dr_action *action)
 +{
-+	/* Per vport cached FW FT for checksum recalculation, this
-+	 * recalculation is needed due to a HW bug.
-+	 */
-+	dmn->cache.recalc_cs_ft =3D kcalloc(dmn->info.caps.num_vports,
-+					  sizeof(dmn->cache.recalc_cs_ft[0]),
-+					  GFP_KERNEL);
-+	if (!dmn->cache.recalc_cs_ft)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static void dr_domain_uninit_cache(struct mlx5dr_domain *dmn)
-+{
-+	int i;
-+
-+	for (i =3D 0; i < dmn->info.caps.num_vports; i++) {
-+		if (!dmn->cache.recalc_cs_ft[i])
-+			continue;
-+
-+		mlx5dr_fw_destroy_recalc_cs_ft(dmn, dmn->cache.recalc_cs_ft[i]);
-+	}
-+
-+	kfree(dmn->cache.recalc_cs_ft);
-+}
-+
-+int mlx5dr_domain_cache_get_recalc_cs_ft_addr(struct mlx5dr_domain *dmn,
-+					      u32 vport_num,
-+					      u64 *rx_icm_addr)
-+{
-+	struct mlx5dr_fw_recalc_cs_ft *recalc_cs_ft;
-+
-+	recalc_cs_ft =3D dmn->cache.recalc_cs_ft[vport_num];
-+	if (!recalc_cs_ft) {
-+		/* Table not in cache, need to allocate a new one */
-+		recalc_cs_ft =3D mlx5dr_fw_create_recalc_cs_ft(dmn, vport_num);
-+		if (!recalc_cs_ft)
-+			return -EINVAL;
-+
-+		dmn->cache.recalc_cs_ft[vport_num] =3D recalc_cs_ft;
-+	}
-+
-+	*rx_icm_addr =3D recalc_cs_ft->rx_icm_addr;
-+
-+	return 0;
-+}
-+
-+static int dr_domain_init_resources(struct mlx5dr_domain *dmn)
-+{
++	struct mlx5dr_matcher *last_matcher =3D NULL;
++	struct mlx5dr_htbl_connect_info info;
++	struct mlx5dr_ste_htbl *last_htbl;
 +	int ret;
 +
-+	ret =3D mlx5_core_alloc_pd(dmn->mdev, &dmn->pdn);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Couldn't allocate PD\n");
-+		return ret;
++	if (action && action->action_type !=3D DR_ACTION_TYP_FT)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&tbl->dmn->mutex);
++
++	if (!list_empty(&tbl->matcher_list))
++		last_matcher =3D list_last_entry(&tbl->matcher_list,
++					       struct mlx5dr_matcher,
++					       matcher_list);
++
++	if (tbl->dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_NIC_RX ||
++	    tbl->dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_FDB) {
++		if (last_matcher)
++			last_htbl =3D last_matcher->rx.e_anchor;
++		else
++			last_htbl =3D tbl->rx.s_anchor;
++
++		tbl->rx.default_icm_addr =3D action ?
++			action->dest_tbl.tbl->rx.s_anchor->chunk->icm_addr :
++			tbl->rx.nic_dmn->default_icm_addr;
++
++		info.type =3D CONNECT_MISS;
++		info.miss_icm_addr =3D tbl->rx.default_icm_addr;
++
++		ret =3D mlx5dr_ste_htbl_init_and_postsend(tbl->dmn,
++							tbl->rx.nic_dmn,
++							last_htbl,
++							&info, true);
++		if (ret) {
++			mlx5dr_dbg(tbl->dmn, "Failed to set RX miss action, ret %d\n", ret);
++			goto out;
++		}
 +	}
 +
-+	dmn->uar =3D mlx5_get_uars_page(dmn->mdev);
-+	if (!dmn->uar) {
-+		mlx5dr_err(dmn, "Couldn't allocate UAR\n");
-+		goto clean_pd;
++	if (tbl->dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_NIC_TX ||
++	    tbl->dmn->type =3D=3D MLX5DR_DOMAIN_TYPE_FDB) {
++		if (last_matcher)
++			last_htbl =3D last_matcher->tx.e_anchor;
++		else
++			last_htbl =3D tbl->tx.s_anchor;
++
++		tbl->tx.default_icm_addr =3D action ?
++			action->dest_tbl.tbl->tx.s_anchor->chunk->icm_addr :
++			tbl->tx.nic_dmn->default_icm_addr;
++
++		info.type =3D CONNECT_MISS;
++		info.miss_icm_addr =3D tbl->tx.default_icm_addr;
++
++		ret =3D mlx5dr_ste_htbl_init_and_postsend(tbl->dmn,
++							tbl->tx.nic_dmn,
++							last_htbl, &info, true);
++		if (ret) {
++			mlx5dr_dbg(tbl->dmn, "Failed to set TX miss action, ret %d\n", ret);
++			goto out;
++		}
 +	}
 +
-+	dmn->ste_icm_pool =3D mlx5dr_icm_pool_create(dmn, DR_ICM_TYPE_STE);
-+	if (!dmn->ste_icm_pool) {
-+		mlx5dr_err(dmn, "Couldn't get icm memory for %s\n",
-+			   dev_name(dmn->mdev->device));
-+		goto clean_uar;
-+	}
++	/* Release old action */
++	if (tbl->miss_action)
++		refcount_dec(&tbl->miss_action->refcount);
 +
-+	dmn->action_icm_pool =3D mlx5dr_icm_pool_create(dmn, DR_ICM_TYPE_MODIFY_A=
-CTION);
-+	if (!dmn->action_icm_pool) {
-+		mlx5dr_err(dmn, "Couldn't get action icm memory for %s\n",
-+			   dev_name(dmn->mdev->device));
-+		goto free_ste_icm_pool;
-+	}
++	/* Set new miss action */
++	tbl->miss_action =3D action;
++	if (tbl->miss_action)
++		refcount_inc(&action->refcount);
 +
-+	ret =3D mlx5dr_send_ring_alloc(dmn);
-+	if (ret) {
-+		mlx5dr_err(dmn, "Couldn't create send-ring for %s\n",
-+			   dev_name(dmn->mdev->device));
-+		goto free_action_icm_pool;
-+	}
-+
-+	return 0;
-+
-+free_action_icm_pool:
-+	mlx5dr_icm_pool_destroy(dmn->action_icm_pool);
-+free_ste_icm_pool:
-+	mlx5dr_icm_pool_destroy(dmn->ste_icm_pool);
-+clean_uar:
-+	mlx5_put_uars_page(dmn->mdev, dmn->uar);
-+clean_pd:
-+	mlx5_core_dealloc_pd(dmn->mdev, dmn->pdn);
-+
++out:
++	mutex_unlock(&tbl->dmn->mutex);
 +	return ret;
 +}
 +
-+static void dr_domain_uninit_resources(struct mlx5dr_domain *dmn)
++static void dr_table_uninit_nic(struct mlx5dr_table_rx_tx *nic_tbl)
 +{
-+	mlx5dr_send_ring_free(dmn, dmn->send_ring);
-+	mlx5dr_icm_pool_destroy(dmn->action_icm_pool);
-+	mlx5dr_icm_pool_destroy(dmn->ste_icm_pool);
-+	mlx5_put_uars_page(dmn->mdev, dmn->uar);
-+	mlx5_core_dealloc_pd(dmn->mdev, dmn->pdn);
++	mlx5dr_htbl_put(nic_tbl->s_anchor);
 +}
 +
-+static int dr_domain_query_vport(struct mlx5dr_domain *dmn,
-+				 bool other_vport,
-+				 u16 vport_number)
++static void dr_table_uninit_fdb(struct mlx5dr_table *tbl)
 +{
-+	struct mlx5dr_cmd_vport_cap *vport_caps;
-+	int ret;
-+
-+	vport_caps =3D &dmn->info.caps.vports_caps[vport_number];
-+
-+	ret =3D mlx5dr_cmd_query_esw_vport_context(dmn->mdev,
-+						 other_vport,
-+						 vport_number,
-+						 &vport_caps->icm_address_rx,
-+						 &vport_caps->icm_address_tx);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D mlx5dr_cmd_query_gvmi(dmn->mdev,
-+				    other_vport,
-+				    vport_number,
-+				    &vport_caps->vport_gvmi);
-+	if (ret)
-+		return ret;
-+
-+	vport_caps->num =3D vport_number;
-+	vport_caps->vhca_gvmi =3D dmn->info.caps.gvmi;
-+
-+	return 0;
++	dr_table_uninit_nic(&tbl->rx);
++	dr_table_uninit_nic(&tbl->tx);
 +}
 +
-+static int dr_domain_query_vports(struct mlx5dr_domain *dmn)
++static void dr_table_uninit(struct mlx5dr_table *tbl)
 +{
-+	struct mlx5dr_esw_caps *esw_caps =3D &dmn->info.caps.esw_caps;
-+	struct mlx5dr_cmd_vport_cap *wire_vport;
-+	int vport;
-+	int ret;
++	mutex_lock(&tbl->dmn->mutex);
 +
-+	/* Query vports (except wire vport) */
-+	for (vport =3D 0; vport < dmn->info.caps.num_esw_ports - 1; vport++) {
-+		ret =3D dr_domain_query_vport(dmn, !!vport, vport);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* Last vport is the wire port */
-+	wire_vport =3D &dmn->info.caps.vports_caps[vport];
-+	wire_vport->num =3D WIRE_PORT;
-+	wire_vport->icm_address_rx =3D esw_caps->uplink_icm_address_rx;
-+	wire_vport->icm_address_tx =3D esw_caps->uplink_icm_address_tx;
-+	wire_vport->vport_gvmi =3D 0;
-+	wire_vport->vhca_gvmi =3D dmn->info.caps.gvmi;
-+
-+	return 0;
-+}
-+
-+static int dr_domain_query_fdb_caps(struct mlx5_core_dev *mdev,
-+				    struct mlx5dr_domain *dmn)
-+{
-+	int ret;
-+
-+	if (!dmn->info.caps.eswitch_manager)
-+		return -EOPNOTSUPP;
-+
-+	ret =3D mlx5dr_cmd_query_esw_caps(mdev, &dmn->info.caps.esw_caps);
-+	if (ret)
-+		return ret;
-+
-+	dmn->info.caps.fdb_sw_owner =3D dmn->info.caps.esw_caps.sw_owner;
-+	dmn->info.caps.esw_rx_drop_address =3D dmn->info.caps.esw_caps.drop_icm_a=
-ddress_rx;
-+	dmn->info.caps.esw_tx_drop_address =3D dmn->info.caps.esw_caps.drop_icm_a=
-ddress_tx;
-+
-+	dmn->info.caps.vports_caps =3D kcalloc(dmn->info.caps.num_esw_ports,
-+					     sizeof(dmn->info.caps.vports_caps[0]),
-+					     GFP_KERNEL);
-+	if (!dmn->info.caps.vports_caps)
-+		return -ENOMEM;
-+
-+	ret =3D dr_domain_query_vports(dmn);
-+	if (ret) {
-+		mlx5dr_dbg(dmn, "Failed to query vports caps\n");
-+		goto free_vports_caps;
-+	}
-+
-+	dmn->info.caps.num_vports =3D dmn->info.caps.num_esw_ports - 1;
-+
-+	return 0;
-+
-+free_vports_caps:
-+	kfree(dmn->info.caps.vports_caps);
-+	dmn->info.caps.vports_caps =3D NULL;
-+	return ret;
-+}
-+
-+static int dr_domain_caps_init(struct mlx5_core_dev *mdev,
-+			       struct mlx5dr_domain *dmn)
-+{
-+	struct mlx5dr_cmd_vport_cap *vport_cap;
-+	int ret;
-+
-+	if (MLX5_CAP_GEN(mdev, port_type) !=3D MLX5_CAP_PORT_TYPE_ETH) {
-+		mlx5dr_dbg(dmn, "Failed to allocate domain, bad link type\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	dmn->info.caps.num_esw_ports =3D mlx5_eswitch_get_total_vports(mdev);
-+
-+	ret =3D mlx5dr_cmd_query_device(mdev, &dmn->info.caps);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D dr_domain_query_fdb_caps(mdev, dmn);
-+	if (ret)
-+		return ret;
-+
-+	switch (dmn->type) {
++	switch (tbl->dmn->type) {
 +	case MLX5DR_DOMAIN_TYPE_NIC_RX:
-+		if (!dmn->info.caps.rx_sw_owner)
-+			return -ENOTSUPP;
-+
-+		dmn->info.supp_sw_steering =3D true;
-+		dmn->info.rx.ste_type =3D MLX5DR_STE_TYPE_RX;
-+		dmn->info.rx.default_icm_addr =3D dmn->info.caps.nic_rx_drop_address;
-+		dmn->info.rx.drop_icm_addr =3D dmn->info.caps.nic_rx_drop_address;
++		dr_table_uninit_nic(&tbl->rx);
 +		break;
 +	case MLX5DR_DOMAIN_TYPE_NIC_TX:
-+		if (!dmn->info.caps.tx_sw_owner)
-+			return -ENOTSUPP;
-+
-+		dmn->info.supp_sw_steering =3D true;
-+		dmn->info.tx.ste_type =3D MLX5DR_STE_TYPE_TX;
-+		dmn->info.tx.default_icm_addr =3D dmn->info.caps.nic_tx_allow_address;
-+		dmn->info.tx.drop_icm_addr =3D dmn->info.caps.nic_tx_drop_address;
++		dr_table_uninit_nic(&tbl->tx);
 +		break;
 +	case MLX5DR_DOMAIN_TYPE_FDB:
-+		if (!dmn->info.caps.eswitch_manager)
-+			return -ENOTSUPP;
-+
-+		if (!dmn->info.caps.fdb_sw_owner)
-+			return -ENOTSUPP;
-+
-+		dmn->info.rx.ste_type =3D MLX5DR_STE_TYPE_RX;
-+		dmn->info.tx.ste_type =3D MLX5DR_STE_TYPE_TX;
-+		vport_cap =3D mlx5dr_get_vport_cap(&dmn->info.caps, 0);
-+		if (!vport_cap) {
-+			mlx5dr_dbg(dmn, "Failed to get esw manager vport\n");
-+			return -ENOENT;
-+		}
-+
-+		dmn->info.supp_sw_steering =3D true;
-+		dmn->info.tx.default_icm_addr =3D vport_cap->icm_address_tx;
-+		dmn->info.rx.default_icm_addr =3D vport_cap->icm_address_rx;
-+		dmn->info.rx.drop_icm_addr =3D dmn->info.caps.esw_rx_drop_address;
-+		dmn->info.tx.drop_icm_addr =3D dmn->info.caps.esw_tx_drop_address;
++		dr_table_uninit_fdb(tbl);
 +		break;
 +	default:
-+		mlx5dr_dbg(dmn, "Invalid domain\n");
-+		ret =3D -EINVAL;
++		WARN_ON(true);
 +		break;
 +	}
 +
++	mutex_unlock(&tbl->dmn->mutex);
++}
++
++static int dr_table_init_nic(struct mlx5dr_domain *dmn,
++			     struct mlx5dr_table_rx_tx *nic_tbl)
++{
++	struct mlx5dr_domain_rx_tx *nic_dmn =3D nic_tbl->nic_dmn;
++	struct mlx5dr_htbl_connect_info info;
++	int ret;
++
++	nic_tbl->default_icm_addr =3D nic_dmn->default_icm_addr;
++
++	nic_tbl->s_anchor =3D mlx5dr_ste_htbl_alloc(dmn->ste_icm_pool,
++						  DR_CHUNK_SIZE_1,
++						  MLX5DR_STE_LU_TYPE_DONT_CARE,
++						  0);
++	if (!nic_tbl->s_anchor)
++		return -ENOMEM;
++
++	info.type =3D CONNECT_MISS;
++	info.miss_icm_addr =3D nic_dmn->default_icm_addr;
++	ret =3D mlx5dr_ste_htbl_init_and_postsend(dmn, nic_dmn,
++						nic_tbl->s_anchor,
++						&info, true);
++	if (ret)
++		goto free_s_anchor;
++
++	mlx5dr_htbl_get(nic_tbl->s_anchor);
++
++	return 0;
++
++free_s_anchor:
++	mlx5dr_ste_htbl_free(nic_tbl->s_anchor);
 +	return ret;
 +}
 +
-+static void dr_domain_caps_uninit(struct mlx5dr_domain *dmn)
++static int dr_table_init_fdb(struct mlx5dr_table *tbl)
 +{
-+	kfree(dmn->info.caps.vports_caps);
-+}
-+
-+struct mlx5dr_domain *
-+mlx5dr_domain_create(struct mlx5_core_dev *mdev, enum mlx5dr_domain_type t=
-ype)
-+{
-+	struct mlx5dr_domain *dmn;
 +	int ret;
 +
-+	if (type > MLX5DR_DOMAIN_TYPE_FDB)
-+		return NULL;
++	ret =3D dr_table_init_nic(tbl->dmn, &tbl->rx);
++	if (ret)
++		return ret;
 +
-+	dmn =3D kzalloc(sizeof(*dmn), GFP_KERNEL);
-+	if (!dmn)
-+		return NULL;
++	ret =3D dr_table_init_nic(tbl->dmn, &tbl->tx);
++	if (ret)
++		goto destroy_rx;
 +
-+	dmn->mdev =3D mdev;
-+	dmn->type =3D type;
-+	refcount_set(&dmn->refcount, 1);
-+	mutex_init(&dmn->mutex);
++	return 0;
 +
-+	if (dr_domain_caps_init(mdev, dmn)) {
-+		mlx5dr_dbg(dmn, "Failed init domain, no caps\n");
-+		goto free_domain;
-+	}
-+
-+	dmn->info.max_log_action_icm_sz =3D DR_CHUNK_SIZE_4K;
-+	dmn->info.max_log_sw_icm_sz =3D min_t(u32, DR_CHUNK_SIZE_1024K,
-+					    dmn->info.caps.log_icm_size);
-+
-+	if (!dmn->info.supp_sw_steering) {
-+		mlx5dr_err(dmn, "SW steering not supported for %s\n",
-+			   dev_name(mdev->device));
-+		goto uninit_caps;
-+	}
-+
-+	/* Allocate resources */
-+	ret =3D dr_domain_init_resources(dmn);
-+	if (ret) {
-+		mlx5dr_err(dmn, "Failed init domain resources for %s\n",
-+			   dev_name(mdev->device));
-+		goto uninit_caps;
-+	}
-+
-+	ret =3D dr_domain_init_cache(dmn);
-+	if (ret) {
-+		mlx5dr_err(dmn, "Failed initialize domain cache\n");
-+		goto uninit_resourses;
-+	}
-+
-+	/* Init CRC table for htbl CRC calculation */
-+	mlx5dr_crc32_init_table();
-+
-+	return dmn;
-+
-+uninit_resourses:
-+	dr_domain_uninit_resources(dmn);
-+uninit_caps:
-+	dr_domain_caps_uninit(dmn);
-+free_domain:
-+	kfree(dmn);
-+	return NULL;
++destroy_rx:
++	dr_table_uninit_nic(&tbl->rx);
++	return ret;
 +}
 +
-+/* Assure synchronization of the device steering tables with updates made =
-by SW
-+ * insertion.
-+ */
-+int mlx5dr_domain_sync(struct mlx5dr_domain *dmn, u32 flags)
++static int dr_table_init(struct mlx5dr_table *tbl)
 +{
 +	int ret =3D 0;
 +
-+	if (flags & MLX5DR_DOMAIN_SYNC_FLAGS_SW) {
-+		mutex_lock(&dmn->mutex);
-+		ret =3D mlx5dr_send_ring_force_drain(dmn);
-+		mutex_unlock(&dmn->mutex);
-+		if (ret)
-+			return ret;
++	INIT_LIST_HEAD(&tbl->matcher_list);
++
++	mutex_lock(&tbl->dmn->mutex);
++
++	switch (tbl->dmn->type) {
++	case MLX5DR_DOMAIN_TYPE_NIC_RX:
++		tbl->table_type =3D MLX5_FLOW_TABLE_TYPE_NIC_RX;
++		tbl->rx.nic_dmn =3D &tbl->dmn->info.rx;
++		ret =3D dr_table_init_nic(tbl->dmn, &tbl->rx);
++		break;
++	case MLX5DR_DOMAIN_TYPE_NIC_TX:
++		tbl->table_type =3D MLX5_FLOW_TABLE_TYPE_NIC_TX;
++		tbl->tx.nic_dmn =3D &tbl->dmn->info.tx;
++		ret =3D dr_table_init_nic(tbl->dmn, &tbl->tx);
++		break;
++	case MLX5DR_DOMAIN_TYPE_FDB:
++		tbl->table_type =3D MLX5_FLOW_TABLE_TYPE_FDB;
++		tbl->rx.nic_dmn =3D &tbl->dmn->info.rx;
++		tbl->tx.nic_dmn =3D &tbl->dmn->info.tx;
++		ret =3D dr_table_init_fdb(tbl);
++		break;
++	default:
++		WARN_ON(true);
++		break;
 +	}
 +
-+	if (flags & MLX5DR_DOMAIN_SYNC_FLAGS_HW)
-+		ret =3D mlx5dr_cmd_sync_steering(dmn->mdev);
++	mutex_unlock(&tbl->dmn->mutex);
 +
 +	return ret;
 +}
 +
-+int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
++static int dr_table_destroy_sw_owned_tbl(struct mlx5dr_table *tbl)
 +{
-+	if (refcount_read(&dmn->refcount) > 1)
-+		return -EBUSY;
-+
-+	/* make sure resources are not used by the hardware */
-+	mlx5dr_cmd_sync_steering(dmn->mdev);
-+	dr_domain_uninit_cache(dmn);
-+	dr_domain_uninit_resources(dmn);
-+	dr_domain_caps_uninit(dmn);
-+	mutex_destroy(&dmn->mutex);
-+	kfree(dmn);
-+	return 0;
++	return mlx5dr_cmd_destroy_flow_table(tbl->dmn->mdev,
++					     tbl->table_id,
++					     tbl->table_type);
 +}
 +
-+void mlx5dr_domain_set_peer(struct mlx5dr_domain *dmn,
-+			    struct mlx5dr_domain *peer_dmn)
++static int dr_table_create_sw_owned_tbl(struct mlx5dr_table *tbl)
 +{
-+	mutex_lock(&dmn->mutex);
++	u64 icm_addr_rx =3D 0;
++	u64 icm_addr_tx =3D 0;
++	int ret;
 +
-+	if (dmn->peer_dmn)
-+		refcount_dec(&dmn->peer_dmn->refcount);
++	if (tbl->rx.s_anchor)
++		icm_addr_rx =3D tbl->rx.s_anchor->chunk->icm_addr;
 +
-+	dmn->peer_dmn =3D peer_dmn;
++	if (tbl->tx.s_anchor)
++		icm_addr_tx =3D tbl->tx.s_anchor->chunk->icm_addr;
 +
-+	if (dmn->peer_dmn)
-+		refcount_inc(&dmn->peer_dmn->refcount);
++	ret =3D mlx5dr_cmd_create_flow_table(tbl->dmn->mdev,
++					   tbl->table_type,
++					   icm_addr_rx,
++					   icm_addr_tx,
++					   tbl->dmn->info.caps.max_ft_level - 1,
++					   true, false, NULL,
++					   &tbl->table_id);
 +
-+	mutex_unlock(&dmn->mutex);
++	return ret;
++}
++
++struct mlx5dr_table *mlx5dr_table_create(struct mlx5dr_domain *dmn, u32 le=
+vel)
++{
++	struct mlx5dr_table *tbl;
++	int ret;
++
++	refcount_inc(&dmn->refcount);
++
++	tbl =3D kzalloc(sizeof(*tbl), GFP_KERNEL);
++	if (!tbl)
++		goto dec_ref;
++
++	tbl->dmn =3D dmn;
++	tbl->level =3D level;
++	refcount_set(&tbl->refcount, 1);
++
++	ret =3D dr_table_init(tbl);
++	if (ret)
++		goto free_tbl;
++
++	ret =3D dr_table_create_sw_owned_tbl(tbl);
++	if (ret)
++		goto uninit_tbl;
++
++	return tbl;
++
++uninit_tbl:
++	dr_table_uninit(tbl);
++free_tbl:
++	kfree(tbl);
++dec_ref:
++	refcount_dec(&dmn->refcount);
++	return NULL;
++}
++
++int mlx5dr_table_destroy(struct mlx5dr_table *tbl)
++{
++	int ret;
++
++	if (refcount_read(&tbl->refcount) > 1)
++		return -EBUSY;
++
++	ret =3D dr_table_destroy_sw_owned_tbl(tbl);
++	if (ret)
++		return ret;
++
++	dr_table_uninit(tbl);
++
++	if (tbl->miss_action)
++		refcount_dec(&tbl->miss_action->refcount);
++
++	refcount_dec(&tbl->dmn->refcount);
++	kfree(tbl);
++
++	return ret;
++}
++
++u32 mlx5dr_table_get_id(struct mlx5dr_table *tbl)
++{
++	return tbl->table_id;
 +}
 --=20
 2.21.0
