@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2224EA6248
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 09:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5447FA625C
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 09:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727248AbfICHMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 03:12:52 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:44025 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfICHMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 03:12:52 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y8so16157290wrn.10;
-        Tue, 03 Sep 2019 00:12:50 -0700 (PDT)
+        id S1726743AbfICHT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 03:19:27 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34558 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbfICHT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 03:19:27 -0400
+Received: by mail-wr1-f66.google.com with SMTP id s18so16246705wrn.1;
+        Tue, 03 Sep 2019 00:19:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0nREtTN95potLu4W2e5nNuzYPnZZK1vRcOjmxb5qt8k=;
-        b=GuKXlPx3GBaC6/0CpcczL7/+ySL6PYqohNeR9jse0yMlI+17sN+eI/Raj26KvtYxFc
-         rTTNTzo0mJx6u+6Xh2/NWh7eNfU+5ihvheFRNn+LQaj29cILcWuDJg8TRqQea4FkB/ZL
-         1u3pmOokfoytQN+uVg9Klcwbt8puWMNBcKcP0XOmX9p0ZvNtpXqu7DRXXMIelASqWbuc
-         dAgkOG8lTSn2rALzfAm0stvbwmXUv+A52bvu4CDeyEuKMVuCpBGXiyZfXxHCMuImAcXe
-         bR4Q7ABEi0PPS2wcSmOtfgXVOpgqO1vHfsch7jyfBPIgzIpn0gM8M7BXi053K5X3AS2b
-         v8Eg==
+        bh=GqH/uYZ59Bqs/aZMOtR7L5hy5zatr+ayALX3/njulog=;
+        b=SdjKZTcKow3BwpqzEoZ74B/a0a4BzQMcq17IpfK/VbNfdBnz0guteqJRqoqJCjFdMu
+         O/i3gQWktka6LrFwgkXToXYMiwvtpvBOh/4yTyuiHz4kOhmmoucFxSsnBzj7Mr1SyOUM
+         lu/wG6vKwhcX8EpVp0Sfwen11G38vEkqDJ7hJx3O0MXKqq0zlfBHPf6q2IQ90WNTNeF+
+         D0EEaNDCEixjvBR1jXcNRV0FjOq6HZbRSK1APaZK29E8vIUrEAllRVwmHqqQ8P1xeQDr
+         XhRfqLbQVaYKxJ7FRbMCe/dfJPVZvG0WYrHZ9o6xwm1XR9ZrKPFdVLUG4BbRAXcjmuj3
+         Y/wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0nREtTN95potLu4W2e5nNuzYPnZZK1vRcOjmxb5qt8k=;
-        b=Aze2Okk7llwzVVo6iHLlNnPD2rBS+dv8d3Wb4U8R+ArqDDXoNVCLzfSv+pYhxfMinU
-         LmWfr2yvrhtwr6OCZ1RJExz2km+o2saNlJeY2RU3zNLmCCamH1nMhc0t7856OW5Ef7cu
-         mPGvgwqi6Wxu5iAZjMT3hRM9+S1YHa0uaDAZ63NVJkdyuqejIp2ah+EQhas3SNa9vSG4
-         WeanCHFxMVpYtnDDJPlBd32yNjT/zdrUfGjrvpS6aVQVVs/nG7aAnve5dbEsA+drXZZ9
-         rfdGqU7R3Gm6oNItnMfp0e5R01xVbhQWJ1qcEOc9/CGOSRpEN5W7AaJfKYYi1DtDvFro
-         vgFQ==
-X-Gm-Message-State: APjAAAU5uwjWNM0glf7H/9Pov4q5B2eHTgEyU/fyca15auUANufLdBck
-        Ijp5bER4rlhfIM9FtyimUcHVfJvs
-X-Google-Smtp-Source: APXvYqzfWk6g6SoBPMwtQ2eo0rdkdMGUgpd52YcdCfxsIuGYU52KA26KDcqM3qZNXbPz7tOCgdyICg==
-X-Received: by 2002:adf:e452:: with SMTP id t18mr40790664wrm.0.1567494770075;
-        Tue, 03 Sep 2019 00:12:50 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f04:7c00:f018:f11c:b684:4652? (p200300EA8F047C00F018F11CB6844652.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:f018:f11c:b684:4652])
-        by smtp.googlemail.com with ESMTPSA id z189sm9155590wmc.25.2019.09.03.00.12.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 03 Sep 2019 00:12:49 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8152: modify rtl8152_set_speed function
-To:     Hayes Wang <hayeswang@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1394712342-15778-326-Taiwan-albertk@realtek.com>
- <280e6a3d-c6c3-ef32-a65d-19566190a1d3@gmail.com>
- <0835B3720019904CB8F7AA43166CEEB2F18DAB41@RTITMBSVM03.realtek.com.tw>
- <aa9513ff-3cef-4b9f-ecbd-1310660a911c@gmail.com>
- <0835B3720019904CB8F7AA43166CEEB2F18DACE1@RTITMBSVM03.realtek.com.tw>
- <56675c6b-c792-245e-54d0-eacd50e7a139@gmail.com>
- <0835B3720019904CB8F7AA43166CEEB2F18DAD2A@RTITMBSVM03.realtek.com.tw>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <32d490ae-70af-ba86-93de-be342a2a7e39@gmail.com>
-Date:   Tue, 3 Sep 2019 09:12:43 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+        bh=GqH/uYZ59Bqs/aZMOtR7L5hy5zatr+ayALX3/njulog=;
+        b=RrsVxAOKmRhqhKAdR6LdzQW5dEniuIP+OZQZXd49qmPXJY1EJhMZBBvY82t5pqiXg1
+         3nFU4Fng1RiZ9PlgzEwEyY8PaFP5vBeZLz8jMEfp9qYtq7yD7QGcQxHFDbR9+nwm+tTN
+         NyaNP0E8uHccNVlM5j70kL82AIy/vIXW+JoS7sj06Nkg5qjf7xQnvJG/OX+7qhyzgpGF
+         qNCFPtHFZ0VSdRtne+atIV8J6L4+zttCm/0CBvjMHirwv8JdqBRbrtaV+AYb2XeUelBI
+         BzjppKkA6ailjeN4PuqyXy7MeFd9tVUS6GxoDYRGuQFkw7TZbaerg/pRe0Y0RmAem+D6
+         scVg==
+X-Gm-Message-State: APjAAAW6mJiNO1RSot94wwiOTw8zGUIq5lVwqV+1Ek+go8Gp2Q53m+Xa
+        dtE3Nf2UTXGDjN4AjkAhUDLE204r
+X-Google-Smtp-Source: APXvYqxOocrTfmKiAGEZz4fx57g2L5+yjh0cPJzIhAabUSSgcLVev56Qus1QEHOFR5x1pb8KHAwiug==
+X-Received: by 2002:adf:a415:: with SMTP id d21mr7857725wra.94.1567495164717;
+        Tue, 03 Sep 2019 00:19:24 -0700 (PDT)
+Received: from [192.168.8.147] (85.162.185.81.rev.sfr.net. [81.185.162.85])
+        by smtp.gmail.com with ESMTPSA id n12sm23312517wmc.24.2019.09.03.00.19.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Sep 2019 00:19:23 -0700 (PDT)
+Subject: Re: [PATCH] net: sched: taprio: Fix potential integer overflow in
+ taprio_set_picos_per_byte
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190903010817.GA13595@embeddedor>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <cb7d53cd-3f1e-146b-c1ab-f11a584a7224@gmail.com>
+Date:   Tue, 3 Sep 2019 09:19:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18DAD2A@RTITMBSVM03.realtek.com.tw>
+In-Reply-To: <20190903010817.GA13595@embeddedor>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,37 +70,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.09.2019 08:55, Hayes Wang wrote:
-> Heiner Kallweit [mailto:hkallweit1@gmail.com]
->> Sent: Tuesday, September 03, 2019 2:45 PM
-> [...]
->>> Besides, I have a question. I think I don't need rtl8152_set_speed()
->>> if I implement phylib. However, I need to record some information
->>> according to the settings of speed. For now, I do it in rtl8152_set_speed().
->>> Do you have any idea about how I should do it with phylib without
->>> rtl8152_set_speed()?
->>>
->> When saying "record some information", what kind of information?
-> 
-> Some of our chips support the feature of UPS. When satisfying certain
-> condition, the hw would recover the settings of speed. Therefore, I have
-> to record the settings of the speed, and set them to hw.
-> 
-Not knowing the UPS feature in detail:
-In net-next I changed the software "PHY speed-down" implementation to
-be more generic. It stores the old advertised settings in a new
-phy_device member adv_old, and restores them in phy_speed_up().
-Maybe what you need is similar.
 
->> The speed itself is stored in struct phy_device, if you need to adjust
->> certain chip settings depending on negotiated speed, then you can do
->> this in a callback (parameter handler of phy_connect_direct).
->> See e.g. r8169_phylink_handler()
+
+On 9/3/19 3:08 AM, Gustavo A. R. Silva wrote:
+> Add suffix LL to constant 1000 in order to avoid a potential integer
+> overflow and give the compiler complete information about the proper
+> arithmetic to use. Notice that this constant is being used in a context
+> that expects an expression of type s64, but it's currently evaluated
+> using 32-bit arithmetic.
 > 
-> Thanks. I would study it.
+> Addresses-Coverity-ID: 1453459 ("Unintentional integer overflow")
+> Fixes: f04b514c0ce2 ("taprio: Set default link speed to 10 Mbps in taprio_set_picos_per_byte")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>  net/sched/sch_taprio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Best Regards,
-> Hayes
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 8d8bc2ec5cd6..956f837436ea 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -966,7 +966,7 @@ static void taprio_set_picos_per_byte(struct net_device *dev,
+>  
+>  skip:
+>  	picos_per_byte = div64_s64(NSEC_PER_SEC * 1000LL * 8,
+> -				   speed * 1000 * 1000);
+> +				   speed * 1000LL * 1000);
+>  
+>  	atomic64_set(&q->picos_per_byte, picos_per_byte);
+>  	netdev_dbg(dev, "taprio: set %s's picos_per_byte to: %lld, linkspeed: %d\n",
 > 
-> 
-Heiner
+
+But, why even multiplying by 1,000,000 in the first place, this seems silly,
+a standard 32 bit divide could be used instead.
+
+->
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 8d8bc2ec5cd6281d811fd5d8a5c5211ebb0edd73..944b1af3215668e927d486b6c6c65c4599fb9539 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -965,8 +965,7 @@ static void taprio_set_picos_per_byte(struct net_device *dev,
+                speed = ecmd.base.speed;
+ 
+ skip:
+-       picos_per_byte = div64_s64(NSEC_PER_SEC * 1000LL * 8,
+-                                  speed * 1000 * 1000);
++       picos_per_byte = (USEC_PER_SEC * 8) / speed;
+ 
+        atomic64_set(&q->picos_per_byte, picos_per_byte);
+        netdev_dbg(dev, "taprio: set %s's picos_per_byte to: %lld, linkspeed: %d\n",
+
+
+
