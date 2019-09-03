@@ -2,353 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43185A5F7B
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 04:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636F4A5F82
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 05:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726952AbfICCva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Sep 2019 22:51:30 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39452 "EHLO mx1.redhat.com"
+        id S1726133AbfICDDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Sep 2019 23:03:42 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41496 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725981AbfICCva (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Sep 2019 22:51:30 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        id S1725816AbfICDDl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Sep 2019 23:03:41 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 852D1C0568FA;
-        Tue,  3 Sep 2019 02:51:28 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 01423307CDFC;
+        Tue,  3 Sep 2019 03:03:41 +0000 (UTC)
 Received: from [10.72.12.109] (ovpn-12-109.pek2.redhat.com [10.72.12.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E7FEF19D70;
-        Tue,  3 Sep 2019 02:51:16 +0000 (UTC)
-Subject: Re: [RFC v3] vhost: introduce mdev based hardware vhost backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-References: <20190828053712.26106-1-tiwei.bie@intel.com>
- <b91820c4-2fe2-55ee-5089-5f7c94322521@redhat.com>
- <20190903015602.GA11404@___>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 67749608AB;
+        Tue,  3 Sep 2019 03:03:37 +0000 (UTC)
+Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        eric dumazet <eric.dumazet@gmail.com>,
+        xiyou wangcong <xiyou.wangcong@gmail.com>,
+        weiyongjun1@huawei.com
+References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
+ <20190819.182522.414877916903078544.davem@davemloft.net>
+ <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com>
+ <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com>
+ <5D5E3133.2070108@huawei.com> <5D5E90C3.50306@huawei.com>
+ <1676209666.10068041.1566529505528.JavaMail.zimbra@redhat.com>
+ <5D5FB3B6.5080800@huawei.com>
+ <1be732b2-6eda-4ea6-772d-780694557910@redhat.com>
+ <5D6DC5BF.5020009@huawei.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <61e80c3a-ec9e-ab34-3d63-dfbe126d5051@redhat.com>
-Date:   Tue, 3 Sep 2019 10:51:15 +0800
+Message-ID: <4a5d84b7-f3cb-c4e1-d6fe-28d186a551ee@redhat.com>
+Date:   Tue, 3 Sep 2019 11:03:36 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190903015602.GA11404@___>
+In-Reply-To: <5D6DC5BF.5020009@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 03 Sep 2019 02:51:28 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 03 Sep 2019 03:03:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/9/3 上午9:56, Tiwei Bie wrote:
-> On Mon, Sep 02, 2019 at 12:15:05PM +0800, Jason Wang wrote:
->> On 2019/8/28 下午1:37, Tiwei Bie wrote:
->>> Details about this can be found here:
->>>
->>> https://lwn.net/Articles/750770/
->>>
->>> What's new in this version
->>> ==========================
->>>
->>> There are three choices based on the discussion [1] in RFC v2:
->>>
->>>> #1. We expose a VFIO device, so we can reuse the VFIO container/group
->>>>       based DMA API and potentially reuse a lot of VFIO code in QEMU.
->>>>
->>>>       But in this case, we have two choices for the VFIO device interface
->>>>       (i.e. the interface on top of VFIO device fd):
->>>>
->>>>       A) we may invent a new vhost protocol (as demonstrated by the code
->>>>          in this RFC) on VFIO device fd to make it work in VFIO's way,
->>>>          i.e. regions and irqs.
->>>>
->>>>       B) Or as you proposed, instead of inventing a new vhost protocol,
->>>>          we can reuse most existing vhost ioctls on the VFIO device fd
->>>>          directly. There should be no conflicts between the VFIO ioctls
->>>>          (type is 0x3B) and VHOST ioctls (type is 0xAF) currently.
->>>>
->>>> #2. Instead of exposing a VFIO device, we may expose a VHOST device.
->>>>       And we will introduce a new mdev driver vhost-mdev to do this.
->>>>       It would be natural to reuse the existing kernel vhost interface
->>>>       (ioctls) on it as much as possible. But we will need to invent
->>>>       some APIs for DMA programming (reusing VHOST_SET_MEM_TABLE is a
->>>>       choice, but it's too heavy and doesn't support vIOMMU by itself).
->>> This version is more like a quick PoC to try Jason's proposal on
->>> reusing vhost ioctls. And the second way (#1/B) in above three
->>> choices was chosen in this version to demonstrate the idea quickly.
->>>
->>> Now the userspace API looks like this:
->>>
->>> - VFIO's container/group based IOMMU API is used to do the
->>>     DMA programming.
->>>
->>> - Vhost's existing ioctls are used to setup the device.
->>>
->>> And the device will report device_api as "vfio-vhost".
->>>
->>> Note that, there are dirty hacks in this version. If we decide to
->>> go this way, some refactoring in vhost.c/vhost.h may be needed.
->>>
->>> PS. The direct mapping of the notify registers isn't implemented
->>>       in this version.
->>>
->>> [1] https://lkml.org/lkml/2019/7/9/101
->>
->> Thanks for the patch, see comments inline.
->>
->>
->>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
->>> ---
->>>    drivers/vhost/Kconfig      |   9 +
->>>    drivers/vhost/Makefile     |   3 +
->>>    drivers/vhost/mdev.c       | 382 +++++++++++++++++++++++++++++++++++++
->>>    include/linux/vhost_mdev.h |  58 ++++++
->>>    include/uapi/linux/vfio.h  |   2 +
->>>    include/uapi/linux/vhost.h |   8 +
->>>    6 files changed, 462 insertions(+)
->>>    create mode 100644 drivers/vhost/mdev.c
->>>    create mode 100644 include/linux/vhost_mdev.h
-> [...]
->>> +
->>> +		break;
->>> +	}
->>> +	case VFIO_DEVICE_GET_REGION_INFO:
->>> +	case VFIO_DEVICE_GET_IRQ_INFO:
->>> +	case VFIO_DEVICE_SET_IRQS:
->>> +	case VFIO_DEVICE_RESET:
->>> +		ret = -EINVAL;
->>> +		break;
->>> +
->>> +	case VHOST_MDEV_SET_STATE:
->>> +		ret = vhost_set_state(vdpa, argp);
->>> +		break;
->>
->> So this is used to start or stop the device. This means if userspace want to
->> drive a network device, the API is not 100% compatible. Any blocker for
->> this? E.g for SET_BACKEND, we can pass a fd and then identify the type of
->> backend.
-> This is a legacy from the previous RFC code. I didn't try to
-> get rid of it while getting this POC to work. I can try to make
-> the vhost ioctls fully compatible with the existing userspace
-> if possible.
-
-
-That would be fine.
-
-
+On 2019/9/3 上午9:45, Yang Yingliang wrote:
 >
->> Another question is, how can user know the type of a device?
-> Maybe we can introduce an attribute in $UUID/ to tell the type.
-
-
-Yes, something like this or using mdev types and identify through 
-something similar to get_socket() etc.
-
-
 >
+> On 2019/9/2 13:32, Jason Wang wrote:
 >>
->>> +	case VHOST_GET_FEATURES:
->>> +		ret = vhost_get_features(vdpa, argp);
->>> +		break;
->>> +	case VHOST_SET_FEATURES:
->>> +		ret = vhost_set_features(vdpa, argp);
->>> +		break;
->>> +	case VHOST_GET_VRING_BASE:
->>> +		ret = vhost_get_vring_base(vdpa, argp);
->>> +		break;
->>> +	default:
->>> +		ret = vhost_dev_ioctl(&vdpa->dev, cmd, argp);
->>> +		if (ret == -ENOIOCTLCMD)
->>> +			ret = vhost_vring_ioctl(&vdpa->dev, cmd, argp);
->>> +	}
->>> +
->>> +	return ret;
->>> +}
-> [...]
->>> +struct mdev_device;
->>> +struct vhost_mdev;
->>> +
->>> +typedef int (*vhost_mdev_start_device_t)(struct vhost_mdev *vdpa);
->>> +typedef int (*vhost_mdev_stop_device_t)(struct vhost_mdev *vdpa);
->>> +typedef int (*vhost_mdev_set_features_t)(struct vhost_mdev *vdpa);
->>> +typedef void (*vhost_mdev_notify_device_t)(struct vhost_mdev *vdpa, int queue_id);
->>> +typedef u64 (*vhost_mdev_get_notify_addr_t)(struct vhost_mdev *vdpa, int queue_id);
->>> +typedef u16 (*vhost_mdev_get_vring_base_t)(struct vhost_mdev *vdpa, int queue_id);
->>> +typedef void (*vhost_mdev_features_changed_t)(struct vhost_mdev *vdpa);
->>> +
->>> +struct vhost_mdev_device_ops {
->>> +	vhost_mdev_start_device_t	start;
->>> +	vhost_mdev_stop_device_t	stop;
->>> +	vhost_mdev_notify_device_t	notify;
->>> +	vhost_mdev_get_notify_addr_t	get_notify_addr;
->>> +	vhost_mdev_get_vring_base_t	get_vring_base;
->>> +	vhost_mdev_features_changed_t	features_changed;
->>> +};
+>> On 2019/8/23 下午5:36, Yang Yingliang wrote:
+>>>
+>>>
+>>> On 2019/8/23 11:05, Jason Wang wrote:
+>>>> ----- Original Message -----
+>>>>>
+>>>>> On 2019/8/22 14:07, Yang Yingliang wrote:
+>>>>>>
+>>>>>> On 2019/8/22 10:13, Jason Wang wrote:
+>>>>>>> On 2019/8/20 上午10:28, Jason Wang wrote:
+>>>>>>>> On 2019/8/20 上午9:25, David Miller wrote:
+>>>>>>>>> From: Yang Yingliang <yangyingliang@huawei.com>
+>>>>>>>>> Date: Mon, 19 Aug 2019 21:31:19 +0800
+>>>>>>>>>
+>>>>>>>>>> Call tun_attach() after register_netdevice() to make sure 
+>>>>>>>>>> tfile->tun
+>>>>>>>>>> is not published until the netdevice is registered. So the 
+>>>>>>>>>> read/write
+>>>>>>>>>> thread can not use the tun pointer that may freed by 
+>>>>>>>>>> free_netdev().
+>>>>>>>>>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), 
+>>>>>>>>>> they
+>>>>>>>>>> can
+>>>>>>>>>> be freed by netdev_freemem().)
+>>>>>>>>> register_netdevice() must always be the last operation in the 
+>>>>>>>>> order of
+>>>>>>>>> network device setup.
+>>>>>>>>>
+>>>>>>>>> At the point register_netdevice() is called, the device is 
+>>>>>>>>> visible
+>>>>>>>>> globally
+>>>>>>>>> and therefore all of it's software state must be fully 
+>>>>>>>>> initialized and
+>>>>>>>>> ready for us.
+>>>>>>>>>
+>>>>>>>>> You're going to have to find another solution to these problems.
+>>>>>>>>
+>>>>>>>> The device is loosely coupled with sockets/queues. Each side is
+>>>>>>>> allowed to be go away without caring the other side. So in this
+>>>>>>>> case, there's a small window that network stack think the 
+>>>>>>>> device has
+>>>>>>>> one queue but actually not, the code can then safely drop them.
+>>>>>>>> Maybe it's ok here with some comments?
+>>>>>>>>
+>>>>>>>> Or if not, we can try to hold the device before tun_attach and 
+>>>>>>>> drop
+>>>>>>>> it after register_netdevice().
+>>>>>>>
+>>>>>>> Hi Yang:
+>>>>>>>
+>>>>>>> I think maybe we can try to hold refcnt instead of playing real num
+>>>>>>> queues here. Do you want to post a V4?
+>>>>>> I think the refcnt can prevent freeing the memory in this case.
+>>>>>> When register_netdevice() failed, free_netdev() will be called 
+>>>>>> directly,
+>>>>>> dev->pcpu_refcnt and dev are freed without checking refcnt of dev.
+>>>>> How about using patch-v1 that using a flag to check whether the 
+>>>>> device
+>>>>> registered successfully.
+>>>>>
+>>>> As I said, it lacks sufficient locks or barriers. To be clear, I meant
+>>>> something like (compile-test only):
+>>>>
+>>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>>>> index db16d7a13e00..e52678f9f049 100644
+>>>> --- a/drivers/net/tun.c
+>>>> +++ b/drivers/net/tun.c
+>>>> @@ -2828,6 +2828,7 @@ static int tun_set_iff(struct net *net, 
+>>>> struct file *file, struct ifreq *ifr)
+>>>>                                (ifr->ifr_flags & TUN_FEATURES);
+>>>>                    INIT_LIST_HEAD(&tun->disabled);
+>>>> +               dev_hold(dev);
+>>>>                  err = tun_attach(tun, file, false, ifr->ifr_flags 
+>>>> & IFF_NAPI,
+>>>>                                   ifr->ifr_flags & IFF_NAPI_FRAGS);
+>>>>                  if (err < 0)
+>>>> @@ -2836,6 +2837,7 @@ static int tun_set_iff(struct net *net, 
+>>>> struct file *file, struct ifreq *ifr)
+>>>>                  err = register_netdevice(tun->dev);
+>>>>                  if (err < 0)
+>>>>                          goto err_detach;
+>>>> +               dev_put(dev);
+>>>>          }
+>>>>            netif_carrier_on(tun->dev);
+>>>> @@ -2852,11 +2854,13 @@ static int tun_set_iff(struct net *net, 
+>>>> struct file *file, struct ifreq *ifr)
+>>>>          return 0;
+>>>>     err_detach:
+>>>> +       dev_put(dev);
+>>>>          tun_detach_all(dev);
+>>>>          /* register_netdevice() already called tun_free_netdev() */
+>>>>          goto err_free_dev;
+>>>>     err_free_flow:
+>>>> +       dev_put(dev);
+>>>>          tun_flow_uninit(tun);
+>>>>          security_tun_dev_free_security(tun->security);
+>>>>   err_free_stat:
+>>>>
+>>>> What's your thought?
+>>>
+>>> The dev pointer are freed without checking the refcount in 
+>>> free_netdev() called by err_free_dev
+>>>
+>>> path, so I don't understand how the refcount protects this pointer.
+>>>
 >>
->> Consider we want to implement a network device, who is going to implement
->> the device configuration space? I believe it's not good to invent another
->> set of API for doing this. So I believe we want something like
->> read_config/write_config here.
->>
->> Then I came up an idea:
->>
->> 1) introduce a new mdev bus transport, and a new mdev driver virtio_mdev
->> 2) vDPA (either software or hardware) can register as a device of virtio
->> mdev device
->> 3) then we can use kernel virtio driver to drive vDPA device and utilize
->> kernel networking/storage stack
->> 4) for userspace driver like vhost-mdev, it could be built of top of mdev
->> transport
->>
->> Having a full new transport for virtio, the advantages are obvious:
->>
->> 1) A generic solution for both kernel and userspace driver and support
->> configuration space access
->> 2) For kernel driver, exist kernel networking/storage stack could be reused,
->> and so did fast path implementation (e.g XDP, io_uring etc).
->> 2) For userspace driver, the function of virtio transport is a superset of
->> vhost, any API could be built on top easily (e.g vhost ioctl).
->>
->> What's your thought?
-> This sounds interesting to me! ;)
+>> The refcount are guaranteed to be zero there, isn't it?
+> No, it's not.
 >
-> But I'm not quite sure whether it's the best choice to abstract
-> vhost accelerators as virtio device in vDPA. Virtio device is
-> the frontend device. There are some backend features missing in
-> virtio currently. E.g. there is no way to tell the virtio device
-> to do dirty page logging.
+> err_free_dev:
+>         free_netdev(dev);
+>
+> void free_netdev(struct net_device *dev)
+> {
+> ...
+>         /* pcpu_refcnt can be freed without checking refcount */
+>         free_percpu(dev->pcpu_refcnt);
+>         dev->pcpu_refcnt = NULL;
+>
+>         /*  Compatibility with error handling in drivers */
+>         if (dev->reg_state == NETREG_UNINITIALIZED) {
+>                 /* dev can be freed without checking refcount */
+>                 netdev_freemem(dev);
+>                 return;
+>         }
+> ...
+> }
 
 
-This could be extended via new mdev transport. E.g set an memory region 
-for logging dirty pages.
-
-
-> Besides, e.g. the control vq in network
-> case seems not a quite good interface for a backend device.
-
-
-Yes, it was not implemented in current vhost-net. Having a new transport 
-will solve this issue.
-
-
->   In
-> this case, the userspace virtio-mdev driver in QEMU will do the
-> DMA mapping to allow guest driver to be able to use GPA/IOVA to
-> access the Rx/Tx queues of the virtio-mdev device directly, but
-> I'm wondering will this userspace virtio-mdev driver in QEMU use
-> similar IOVA to access the software based control vq of the same
-> virtio-mdev device at the same time?
-
-
-Let me clarify.
-
-- The first thing is to introduce a new mdev based transport, this could 
-something similar to virtio MMIO but the command was set through mdev bus.
-- Next step is to implement a mdev based transport for kernel driver, 
-this allow kernel virtio driver work with mdev device that implements 
-mdev transport. Then kernel networking or storage stack could be reused. 
-It work as, register a new mdev driver and a new mdev virtio transport, 
-then what it does is basically translate virtio_config_ops to mdev bus 
-command.
-- The third step is to implement virtio mdev device (mdev transport). 
-Then kernel virtio driver can drive those device without any modification.
-- The last part is to implement another mdev driver (e.g vhost-mdev), 
-this is for userspace driver. It did translation between userspace mdev 
-API (ioctl, etc) to mdev bus command.
-
-
-For the question of IOVA, in mdev transport, we will have a command like:
-
-#define VIRTIO_MDEV_QUEUE_DESC_LOW    0x080
-#define VIRTIO_MDEV_QUEUE_DESC_HIGH    0x084
-
-There's no need for the device know about what kind of address it is 
-(kernel or userspace, GPA or IOVA). It's the responsibility of parent 
-(mdev device) to do proper mapping. And mdev device implementation can 
-choose to emulate control vq, offloaded it fully to hardware or even 
-claim it was not supported.
-
+Right, but what I meant is in my patch, when code reaches free_netdev() 
+the refcnt is zero. What did I miss?
 
 Thanks
 
+
 >
-> Thanks,
-> Tiwei
->
+>>
 >> Thanks
 >>
 >>
->>> +
->>> +struct vhost_mdev *vhost_mdev_alloc(struct mdev_device *mdev,
->>> +		void *private, int nvqs);
->>> +void vhost_mdev_free(struct vhost_mdev *vdpa);
->>> +
->>> +ssize_t vhost_mdev_read(struct mdev_device *mdev, char __user *buf,
->>> +		size_t count, loff_t *ppos);
->>> +ssize_t vhost_mdev_write(struct mdev_device *mdev, const char __user *buf,
->>> +		size_t count, loff_t *ppos);
->>> +long vhost_mdev_ioctl(struct mdev_device *mdev, unsigned int cmd,
->>> +		unsigned long arg);
->>> +int vhost_mdev_mmap(struct mdev_device *mdev, struct vm_area_struct *vma);
->>> +int vhost_mdev_open(struct mdev_device *mdev);
->>> +void vhost_mdev_close(struct mdev_device *mdev);
->>> +
->>> +int vhost_mdev_set_device_ops(struct vhost_mdev *vdpa,
->>> +		const struct vhost_mdev_device_ops *ops);
->>> +int vhost_mdev_set_features(struct vhost_mdev *vdpa, u64 features);
->>> +struct eventfd_ctx *vhost_mdev_get_call_ctx(struct vhost_mdev *vdpa,
->>> +		int queue_id);
->>> +int vhost_mdev_get_acked_features(struct vhost_mdev *vdpa, u64 *features);
->>> +int vhost_mdev_get_vring_num(struct vhost_mdev *vdpa, int queue_id, u16 *num);
->>> +int vhost_mdev_get_vring_base(struct vhost_mdev *vdpa, int queue_id, u16 *base);
->>> +int vhost_mdev_get_vring_addr(struct vhost_mdev *vdpa, int queue_id,
->>> +		struct vhost_vring_addr *addr);
->>> +int vhost_mdev_get_log_base(struct vhost_mdev *vdpa, int queue_id,
->>> +		void **log_base, u64 *log_size);
->>> +struct mdev_device *vhost_mdev_get_mdev(struct vhost_mdev *vdpa);
->>> +void *vhost_mdev_get_private(struct vhost_mdev *vdpa);
->>> +
->>> +#endif /* _VHOST_MDEV_H */
->>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
->>> index 8f10748dac79..0300d6831cc5 100644
->>> --- a/include/uapi/linux/vfio.h
->>> +++ b/include/uapi/linux/vfio.h
->>> @@ -201,6 +201,7 @@ struct vfio_device_info {
->>>    #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
->>>    #define VFIO_DEVICE_FLAGS_CCW	(1 << 4)	/* vfio-ccw device */
->>>    #define VFIO_DEVICE_FLAGS_AP	(1 << 5)	/* vfio-ap device */
->>> +#define VFIO_DEVICE_FLAGS_VHOST	(1 << 6)	/* vfio-vhost device */
->>>    	__u32	num_regions;	/* Max region index + 1 */
->>>    	__u32	num_irqs;	/* Max IRQ index + 1 */
->>>    };
->>> @@ -217,6 +218,7 @@ struct vfio_device_info {
->>>    #define VFIO_DEVICE_API_AMBA_STRING		"vfio-amba"
->>>    #define VFIO_DEVICE_API_CCW_STRING		"vfio-ccw"
->>>    #define VFIO_DEVICE_API_AP_STRING		"vfio-ap"
->>> +#define VFIO_DEVICE_API_VHOST_STRING		"vfio-vhost"
->>>    /**
->>>     * VFIO_DEVICE_GET_REGION_INFO - _IOWR(VFIO_TYPE, VFIO_BASE + 8,
->>> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
->>> index 40d028eed645..5afbc2f08fa3 100644
->>> --- a/include/uapi/linux/vhost.h
->>> +++ b/include/uapi/linux/vhost.h
->>> @@ -116,4 +116,12 @@
->>>    #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
->>>    #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
->>> +/* VHOST_MDEV specific defines */
->>> +
->>> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
->>> +
->>> +#define VHOST_MDEV_S_STOPPED	0
->>> +#define VHOST_MDEV_S_RUNNING	1
->>> +#define VHOST_MDEV_S_MAX	2
->>> +
->>>    #endif
+>>> Thanks,
+>>> Yang
+>>>
+>>>>
+>>>> Thanks
+>>>>
+>>>> .
+>>>>
+>>>
+>>>
+>>
+>> .
+>>
+>
+>
