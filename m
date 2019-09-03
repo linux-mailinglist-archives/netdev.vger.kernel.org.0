@@ -2,48 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47A23A69A3
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0963AA69A9
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 15:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729090AbfICNWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 09:22:38 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60424 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728538AbfICNWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 09:22:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 49677B11B;
-        Tue,  3 Sep 2019 13:22:37 +0000 (UTC)
-Date:   Tue, 3 Sep 2019 15:22:31 +0200
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Qian Cai <cai@lca.pw>, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20190903132231.GC18939@dhcp22.suse.cz>
-References: <1567177025-11016-1-git-send-email-cai@lca.pw>
- <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
- <1567178728.5576.32.camel@lca.pw>
- <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729366AbfICNXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 09:23:46 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60775 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729318AbfICNXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 09:23:46 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 3 Sep 2019 16:23:41 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x83DNfJM014008;
+        Tue, 3 Sep 2019 16:23:41 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: [PATCH net-next v3] tc SKB extension for tc Chains/Conntrack hardware offload
+Date:   Tue,  3 Sep 2019 16:23:34 +0300
+Message-Id: <1567517015-10778-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 30-08-19 18:15:22, Eric Dumazet wrote:
-> If there is a risk of flooding the syslog, we should fix this generically
-> in mm layer, not adding hundred of __GFP_NOWARN all over the places.
+The following patch introduces a new SKB extension to support hardware offload of 
+multi chain rules such as by connection tracking scenarios.
+The patch is required for two use-cases. The first, implemented here,
+uses the extension for tc -> OvS miss path. 
+A following patch set will reuse this extension to pass information from HW/Driver -> tc miss path.
 
-We do already ratelimit in warn_alloc. If it isn't sufficient then we
-can think of a different parameters. Or maybe it is the ratelimiting
-which doesn't work here. Hard to tell and something to explore.
+The HW/Driver -> tc miss path:
+In tc multi chain rules scenarios, some of the rules might be offloaded
+and some not (e.g skip_hw, unsupported rules by HW, vxlan encapsulation, 
+offload order, etc).
+Therefore, HW can miss at any point of the processing chain.
+SW will need to continue processing in correct tc chain where the HW 
+left off, as HW might have modified the packet and updated stats for it.
+This scenario can reuse this tc SKB extension to restore the tc chain.
+
+skb extension was chosen over skb control block, as skb control block acts a scratchpad area
+for storing temporary information and isn't suppose to be pass around between different
+layers of processing. HW/Driver -> tc - >OvS  are different layers, and not necessarily 
+processing the packet one after another.
+There can be bridges, tunnel devices, VLAN devices, Netfilter (Conntrack) and a host of
+other entities processing the packet in between so we can't guarantee the control block
+integrity between this main processing entities (HW/Driver, Tc, Ovs).
+So if we'll use the control block, it will restrict such use cases.
+For example, the napi API which we use, uses the control block and comes right after our
+driver layer. This will overwrite any usage of CB by us.
+
+Thanks,
+Paul B.
+
+
+Paul Blakey (1):
+  net: openvswitch: Set OvS recirc_id from tc chain index
+
+ include/linux/skbuff.h           | 13 +++++++++++++
+ include/net/sch_generic.h        |  5 ++++-
+ include/uapi/linux/openvswitch.h |  3 +++
+ net/core/skbuff.c                |  6 ++++++
+ net/openvswitch/datapath.c       | 38 +++++++++++++++++++++++++++++++++-----
+ net/openvswitch/datapath.h       |  2 ++
+ net/openvswitch/flow.c           | 13 +++++++++++++
+ net/sched/Kconfig                | 13 +++++++++++++
+ net/sched/act_api.c              |  1 +
+ net/sched/cls_api.c              | 12 ++++++++++++
+ 10 files changed, 100 insertions(+), 6 deletions(-)
 
 -- 
-Michal Hocko
-SUSE Labs
+1.8.3.1
+
