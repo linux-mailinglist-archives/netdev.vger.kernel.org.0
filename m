@@ -2,121 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F2FA719E
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 19:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F41A71A6
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 19:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729921AbfICRZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 13:25:24 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:37754 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728571AbfICRZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 13:25:24 -0400
-Received: by mail-yw1-f67.google.com with SMTP id u141so6081588ywe.4
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 10:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e36E2j0U86/ncYIwgoAp63b76wxN4ppVlGDgKcPnY6c=;
-        b=dsdkVf4dC/PZnstDzqOgYZeyRjIBS6I+z2N6RJN2H90B2+PfdhYT+hKsk1O/jb/pMC
-         9gat57kZq3vIoYfhiNdLHrcYLp6ESw3RFVZnPY5btvQ4hGDEKcWTFQrvwfEnP2SEuJik
-         bp58BnBaVzHW6r0NyrEDXZplmmhnifkgoXxJQ9SJ1Q5N4kXNiV17LYaKfq/AylwhQrs2
-         9JZyvCK4ZKzdHLIxlGARTIzQNBJ/ZcO5gEaF60C2ZTYsLBHOuQ/kfasBXOuBxlljJcyS
-         cgIoCeodNUWgWq6bs3X/ucsR4lJJMQ+krA3GfpCU9uHTVXh3rYVJcbF4lDOvziC4dHPz
-         sjJQ==
+        id S1730121AbfICR26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 13:28:58 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50262 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728571AbfICR25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 13:28:57 -0400
+Received: by mail-wm1-f68.google.com with SMTP id c10so377478wmc.0;
+        Tue, 03 Sep 2019 10:28:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e36E2j0U86/ncYIwgoAp63b76wxN4ppVlGDgKcPnY6c=;
-        b=Husd4N/lJzWBHHSzvS/N2POf7zTPBc69ecxj+sleA1uLJtpRKrmIeulZKP7J4NnnQZ
-         HPHJOLF42h/9oH5dzvu+OyTa0aGOesp3ZnmEKRCblGzSoaPRkVZH3+egN3oPrO/UIKXv
-         w4T5LRqvLg8E7q0/MjHYjGe70F6+0EXSpcE0lNSlZMx7Z7xBD3xuncbpf05lIXD9wOtj
-         dyVsQ3H0XLVXWlutC6WptsYyyoTqXJEMXZ6PClKNsywpxaIqK0O8JscsCK/kSP+XZJ7Z
-         bam2zNs647pCZ9MxhhdNkqVxhJIqhEXqkfoFve/2KsRLRygsFkz9wpI3c7i/p7qaAXcS
-         tr2g==
-X-Gm-Message-State: APjAAAU17KzIA7oD6mVMDkEsOcqfNyiHV/a/M6lqEwowEftnVZaC3T19
-        aOM+4OrsGB5IDf0D7ByVTuS6LJne
-X-Google-Smtp-Source: APXvYqxUcfDLcDujaGYjBIHjYpOAszs50egxJvsLPN0fIzconAvk+8Ug9la95AxUf1O3PW58czMQ0g==
-X-Received: by 2002:a81:7743:: with SMTP id s64mr2074163ywc.183.1567531522524;
-        Tue, 03 Sep 2019 10:25:22 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id b66sm3711149ywd.110.2019.09.03.10.25.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 10:25:21 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id c9so6142362ybf.2
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 10:25:20 -0700 (PDT)
-X-Received: by 2002:a25:7396:: with SMTP id o144mr25610482ybc.390.1567531519961;
- Tue, 03 Sep 2019 10:25:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=w+K4u8odsUFPax+hx2zddlYzhjzmD0FICwYsOGh0olA=;
+        b=cNtJI/Jt7DHqIdgmuUg5lLy/m4T7YfAuV1Uh5CAeCrJTFaADChTMm0dvT7bW4s6jDg
+         sHBLlvcYJKG/V04T/X9h2gqoDCDtf0kmDPOLQUHUTeZ25d7Regy+PwkAQAUg+FN2tHa/
+         6aedAkPaIfoigyB3dxvgJ4MalWvXAIw2MgWm/RXDlafQU9riirAUDepHNokgEl1d3fFT
+         rWrBMbGJkLZeTDm3Nn+zToaIMzkMq+wgxVoGbNdqo1whHqIONFfLnaxr8g4YQaJKGBda
+         PhdM4ebYIVgYt49M3Tk0za7qreqcoRokpvAgW7FIruIkLY9xOEo8yJs+BvMyPgmE/24T
+         wotQ==
+X-Gm-Message-State: APjAAAUo0aKV1d9yzcLNGKmXTZC6nrF9atvdFz5n9l9VfBqcqCMWRTDl
+        MfQhB6j/P6fusIPIpD/Ocw==
+X-Google-Smtp-Source: APXvYqwPuaDBS6n+RBokvyyYviJLgi2039CDrIzaeWlaVrymSkQw9o6arf548BTNUXBQu9FsTGLNgQ==
+X-Received: by 2002:a1c:4b14:: with SMTP id y20mr548705wma.10.1567531735329;
+        Tue, 03 Sep 2019 10:28:55 -0700 (PDT)
+Received: from localhost ([176.12.107.132])
+        by smtp.gmail.com with ESMTPSA id u17sm19865544wru.25.2019.09.03.10.28.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Sep 2019 10:28:54 -0700 (PDT)
+Date:   Tue, 3 Sep 2019 18:28:53 +0100
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Russell King <linux@armlinux.org.uk>,
+        John Crispin <john@phrozen.org>, linux-mips@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/3] dt-bindings: net: dsa: mt7530: Add
+ support for port 5
+Message-ID: <20190903172853.GA14176@bogus>
+References: <20190902130226.26845-1-opensource@vdorst.com>
+ <20190902130226.26845-3-opensource@vdorst.com>
 MIME-Version: 1.0
-References: <20190826170724.25ff616f@pixies> <94cd6f4d-09d4-11c0-64f4-bdc544bb3dcb@gmail.com>
- <20190827144218.5b098eac@pixies> <88a3da53-fecc-0d8c-56dc-a4c3b0e11dfd@iogearbox.net>
- <20190829152241.73734206@pixies> <CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com>
- <20190903185121.56906d31@pixies> <CA+FuTScE=pyopY=3f5E4JGx1zyGqT+XS+8ss13UN4if4TZ2NbA@mail.gmail.com>
- <20190903200312.7e0ec75e@pixies>
-In-Reply-To: <20190903200312.7e0ec75e@pixies>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 3 Sep 2019 13:24:43 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScFchWJL5f9DcsK28YKFSBOG4rUc8-7k4TnboN199zXJA@mail.gmail.com>
-Message-ID: <CA+FuTScFchWJL5f9DcsK28YKFSBOG4rUc8-7k4TnboN199zXJA@mail.gmail.com>
-Subject: Re: BUG_ON in skb_segment, after bpf_skb_change_proto was applied
-To:     Shmulik Ladkani <shmulik@metanetworks.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        eyal@metanetworks.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190902130226.26845-3-opensource@vdorst.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 3, 2019 at 1:03 PM Shmulik Ladkani <shmulik@metanetworks.com> wrote:
->
-> On Tue, 3 Sep 2019 12:23:54 -0400
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
->
-> > This is a lot more code change. Especially for stable fixes that need
-> > to be backported, a smaller patch is preferable.
->
-> Indeed. Thanks for the feedback.
->
-> > My suggestion only tested the first frag_skb length. If a list can be
-> > created where the first frag_skb is head_frag but a later one is not,
-> > it will fail short. I kind of doubt that.
-> >
-> > By default skb_gro_receive builds GSO skbs that can be segmented
-> > along the original gso_size boundaries. We have so far only observed
-> > this issue when messing with gso_size.
->
-> The rationale was based on inputs specified in 43170c4e0ba7, where a GRO
-> skb has a fraglist with different amounts of payloads.
->
-> > We can easily refine the test to fall back on to copying only if
-> > skb_headlen(list_skb) != mss.
->
-> I'm concerned this is too generic; innocent skbs may fall victim to our
-> skb copy fallback. Probably those mentioned in 43170c4e0ba7.
->
-> > Alternatively, only on SKB_GSO_DODGY is fine, too.
-> >
-> > I suggest we stick with the two-liner.
->
-> OK.
-> So lets refine your original codition, testing only the first
-> frag_skb, but also ensuring SKB_GSO_DODGY *and* 'skb_headlen(list_skb) != mss'
-> (we know existing code DOES work OK for unchanged gso_size, even if frags
-> have linear, non head_frag, data).
->
-> This hits the known, reproducable case of the mentioned BUG_ON, and is
-> tightly scoped to that case.
->
-> If that's agreed, I'll submit a proper patch.
+On Mon,  2 Sep 2019 15:02:25 +0200, =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= wrote:
+> MT7530 port 5 has many modes/configurations.
+> Update the documentation how to use port 5.
+> 
+> Signed-off-by: René van Dorst <opensource@vdorst.com>
+> Cc: devicetree@vger.kernel.org
+> Cc: Rob Herring <robh@kernel.org>
+> ---
+> v2->v3:
+> * Remove 'status = "okay";' lines, suggested by Rob Herring
+> v1->v2:
+> * Adding extra note about RGMII2 and gpio use.
+> rfc->v1:
+> * No change
+> 
+>  .../devicetree/bindings/net/dsa/mt7530.txt    | 214 ++++++++++++++++++
+>  1 file changed, 214 insertions(+)
+> 
 
-Yep, that sounds good to me.
+Reviewed-by: Rob Herring <robh@kernel.org>
