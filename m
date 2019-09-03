@@ -2,127 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DFCA64C6
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D202A64E3
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 11:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbfICJK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 05:10:56 -0400
-Received: from mail-eopbgr790137.outbound.protection.outlook.com ([40.107.79.137]:26592
-        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726557AbfICJK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Sep 2019 05:10:56 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U7f2aBRBK/Oo0+6H9g+KSxATOxlJ97Xuu+UMFPKpMyUVjIpoM/V95/3kUCZVGDwoYTBKUYfTZDv4UjzQvREMrsr9ZmfAjJUvH8A0Hpz2JIEqfa3K7s6wd5mjTSoCa55Czkf+GJ/yZLID+4drz5HqhQrdY8jv0h3QcTr34Ns/lTQzOtPdfzrsCiUZrg0gz/XiIrYtqKp1Cu0whQKB69tYLOkXiSc2lpRmUfKZTlBTfyhtgL8pgThe+vstU16pnYSGwANfgZy7svSvwbnymMVwf27G4V3Pk3rn+FvvR6fSc8Lk9SPYKgOPYLGZVBi8cpD0l0JYjlUx2UW+XTDiLyLt/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O9EUhd1jB7mK6BzogD/0f2+S4IN+aQkhGwbN+Hw5ymc=;
- b=jb2WcWyDJ9DWxc+ogs8mcRT0W4ZKUdq3M1v2kQhflzaTjd/FhM7VtTYzaQlazC+dHdh9haiXFkflQuvuT24Xr5rYWioJTcZfpfsDG15eDI3f2R9xgfEcbmUB/jn05Jns0iqVPP8a+oOuAM1yDfry+7J1MbhuvDOL5iqcuuYSOFChoEOgxvBalt8UU6u3Y6nzoSDACwCKTEh7v1MZt8bD1gXjaefLI8CKJyfg+1o4Oe1y3mUiSm354rfZIC+ncMA1nioOPOOFFN7yQ8ejbQhfwavl9yLfzZl0R2BigtTDcWyCuMa1rQ6PuAkumSkRVu83rqvL052+3mHqzexrsyJkEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
- dkim=pass header.d=mips.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O9EUhd1jB7mK6BzogD/0f2+S4IN+aQkhGwbN+Hw5ymc=;
- b=upScYiC7qsvh4ZlWPdsztvpQeO5AQuUZkaXLlAL7L+lxOw42AksKBY5ZTGBNwGYzD+jUAHx6a2QDIUcGx+Gilkx6N4kaulWjEH8HE7SYdSVrM1h0xzOyUDsgQITMfCaKNeH2ZYAbTCJBSLpNHRy9o+T7VS0BPFFf3EycmV87XNU=
-Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
- MWHPR2201MB1311.namprd22.prod.outlook.com (10.172.62.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.18; Tue, 3 Sep 2019 09:10:53 +0000
-Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
- ([fe80::f9e8:5e8c:7194:fad3]) by MWHPR2201MB1277.namprd22.prod.outlook.com
- ([fe80::f9e8:5e8c:7194:fad3%11]) with mapi id 15.20.2220.021; Tue, 3 Sep 2019
- 09:10:53 +0000
-From:   Paul Burton <paul.burton@mips.com>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-CC:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <pburton@wavecomp.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
-Subject: Re: [PATCH v5 04/17] MIPS: PCI: refactor ioc3 special handling
-Thread-Topic: [PATCH v5 04/17] MIPS: PCI: refactor ioc3 special handling
-Thread-Index: AQHVYjd8rUWfDFbi7Ey4tyNvKR/uvw==
-Date:   Tue, 3 Sep 2019 09:10:53 +0000
-Message-ID: <MWHPR2201MB12779E08754158B97B8A9A83C1B90@MWHPR2201MB1277.namprd22.prod.outlook.com>
-References: <20190819163144.3478-5-tbogendoerfer@suse.de>
-In-Reply-To: <20190819163144.3478-5-tbogendoerfer@suse.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0275.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a1::23) To MWHPR2201MB1277.namprd22.prod.outlook.com
- (2603:10b6:301:18::12)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=pburton@wavecomp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [94.196.173.241]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1c2ffbb5-a1cb-4b3e-a585-08d7304e9ef6
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR2201MB1311;
-x-ms-traffictypediagnostic: MWHPR2201MB1311:
-x-ms-exchange-purlcount: 1
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR2201MB13116C2472901BEE809FBA89C1B90@MWHPR2201MB1311.namprd22.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 01494FA7F7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39840400004)(346002)(376002)(366004)(136003)(199004)(189003)(14454004)(4326008)(386003)(102836004)(42882007)(55236004)(6506007)(186003)(26005)(52116002)(476003)(486006)(44832011)(7696005)(14444005)(6916009)(33656002)(7416002)(446003)(11346002)(76176011)(966005)(71190400001)(6246003)(66446008)(71200400001)(64756008)(66946007)(66556008)(2906002)(5660300002)(4744005)(66476007)(256004)(8936002)(81156014)(6116002)(66066001)(8676002)(55016002)(316002)(54906003)(9686003)(6306002)(99286004)(6436002)(53936002)(478600001)(305945005)(25786009)(7736002)(74316002)(81166006)(229853002)(52536014)(3846002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1311;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: wavecomp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: yESQEe8lVZsqkoEgMi2IOYjILal4xTOxUCwVfoJcqkLtd9FtHTUGWsaPrdX4APvzlDSm1mQV8UoAetwBAZIg3Eu1KCpuri+/APsQqMLICoFZeUjhMFTvMQNPpfPVYE4tYAzfvD6mzZbiv/DUuGRHVYRhVcd32GnY3RmKLdqzJH+gytY7/Q4j9CK/lkMWzph7cGxLeTiB+tZ3A7jmiw2CA4P0QRpC8jFFRia4LtKPpKdLa//bZNUqpojg5M+V8DYL8pD180FLjP3pGQoimTLnANOjZorCW8gwLGXQY/jj4K3f9EHSR4W/dETpWWVFDgI86DVNvtmo1bj22HhgEdU2LqdWeoYutaHFwIQPUb8/btTI4DIhDfuQ/WOwi6MbfPYJoDoseCdJ1KPKiN6S66AHnuE1uHa3ZR1ZBpYLxtnggnI=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1728188AbfICJPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 05:15:39 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39435 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbfICJPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 05:15:39 -0400
+Received: by mail-wm1-f66.google.com with SMTP id n2so15905610wmk.4
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 02:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2zn2+gGBVSe8RHtdUqIeIke+cPnfQF4ffAmKjrpAITo=;
+        b=R8t/RMXye8kSD/UOlq3Z+gPssebfcPLSUSn2PzHbUIVnznehGmQgSU5rd0ogvdVHLd
+         Hmp/OSGEQnN9462gGUCD7USO22w1hwG3OZ6ULg6VcjoJZZtG4z6RMCwoQVmqTT2SOLAe
+         ta1Qx0nzyqYL/PhnGFQXqDTRIPyZolhcWpE7c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2zn2+gGBVSe8RHtdUqIeIke+cPnfQF4ffAmKjrpAITo=;
+        b=lfi1iY50Z719Cy1n3MIT7ichiW+R7WyPAXy/DzteW9BPMzHSDpDGsaIYUsaLa7A335
+         b8M+E5GvrmA+GfmRRDkFY5kJLKLluJUMMnufCuYeG8LdHW2pQtDjkcF7C7I5m6QkUYDn
+         3HfmuLL3RCcbSfmW+a6I66L6hPj+I7dbWga94g4dQrqvyZM0jmeI9Ysvabtf/o3Wr5V2
+         b0Cdojr5M+pGcbaJq16bZJwqX6ULhGyFg0El+SuYt3pRwAH06H9ETZM9GZSlAjnkeUUv
+         /RnlNu2Tc1lNUlM+TR5ZsPg9XZhQusdyD4JCrX5VYWLvtX+eZ+ak7QxaQUOFDMpoaKG6
+         +jRA==
+X-Gm-Message-State: APjAAAVENP351V2p02ZUFMbxb40YkjOYDDjqOq4NrFXkCyUOVzvqKGsK
+        VFRyzEA2sfgkqGyoY14pk40rNgz0xGf9+w==
+X-Google-Smtp-Source: APXvYqy7M9SrDfhOnQD6yg2YgKjwAJ278uOV4J0BmVbfAKqXnYI5IP2G84iyjXWA3Wwy3AoC3UqYQA==
+X-Received: by 2002:a1c:9dc1:: with SMTP id g184mr25555636wme.77.1567502136131;
+        Tue, 03 Sep 2019 02:15:36 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id m18sm10934920wrg.97.2019.09.03.02.15.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Sep 2019 02:15:35 -0700 (PDT)
+Subject: Re: [PATCH net] ipmr: remove cache_resolve_queue_len
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     Phil Karn <karn@ka9q.net>,
+        Sukumar Gopalakrishnan <sukumarg1973@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <20190903084359.13310-1-liuhangbin@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <e0261582-78ce-038f-ed4c-c2694fb70250@cumulusnetworks.com>
+Date:   Tue, 3 Sep 2019 12:15:34 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: mips.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c2ffbb5-a1cb-4b3e-a585-08d7304e9ef6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Sep 2019 09:10:53.4698
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: U8qbxL4VbGaO/9gop127afN6NFWAoDSdPZbl9O+eCmIbsTC/w7xSOzDZUmxrMSSzvuQOHl19soEiN6HDgc14ZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1311
+In-Reply-To: <20190903084359.13310-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 03/09/2019 11:43, Hangbin Liu wrote:
+> This is a re-post of previous patch wrote by David Miller[1].
+> 
+> Phil Karn reported[2] that on busy networks with lots of unresolved
+> multicast routing entries, the creation of new multicast group routes
+> can be extremely slow and unreliable.
+> 
+> The reason is we hard-coded multicast route entries with unresolved source
+> addresses(cache_resolve_queue_len) to 10. If some multicast route never
+> resolves and the unresolved source addresses increased, there will
+> be no ability to create new multicast route cache.
+> 
+> To resolve this issue, we need either add a sysctl entry to make the
+> cache_resolve_queue_len configurable, or just remove cache_resolve_queue_len
+> directly, as we already have the socket receive queue limits of mrouted
+> socket, pointed by David.
+> 
+> From my side, I'd perfer to remove the cache_resolve_queue_len instead
+> of creating two more(IPv4 and IPv6 version) sysctl entry.
+> 
+> [1] https://lkml.org/lkml/2018/7/22/11
+> [2] https://lkml.org/lkml/2018/7/21/343
+> 
+> Reported-by: Phil Karn <karn@ka9q.net>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  include/linux/mroute_base.h |  2 --
+>  net/ipv4/ipmr.c             | 27 ++++++++++++++++++---------
+>  net/ipv6/ip6mr.c            | 10 +++-------
+>  3 files changed, 21 insertions(+), 18 deletions(-)
+> 
 
-Thomas Bogendoerfer wrote:
-> Refactored code to only have one ioc3 special handling for read
-> access and one for write access.
+Hi,
+IMO this is definitely net-next material. A few more comments below.
 
-Applied to mips-next.
+Note that hosts will automatically have this limit lifted to about 270
+entries with current defaults, some might be surprised if they have
+higher limits set and could be left with queues allowing for thousands
+of entries in a linked list.
 
-> commit 813cafc4109c
-> https://git.kernel.org/mips/c/813cafc4109c
->=20
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> Signed-off-by: Paul Burton <paul.burton@mips.com>
+> diff --git a/include/linux/mroute_base.h b/include/linux/mroute_base.h
+> index 34de06b426ef..50fb89533029 100644
+> --- a/include/linux/mroute_base.h
+> +++ b/include/linux/mroute_base.h
+> @@ -235,7 +235,6 @@ struct mr_table_ops {
+>   * @mfc_hash: Hash table of all resolved routes for easy lookup
+>   * @mfc_cache_list: list of resovled routes for possible traversal
+>   * @maxvif: Identifier of highest value vif currently in use
+> - * @cache_resolve_queue_len: current size of unresolved queue
+>   * @mroute_do_assert: Whether to inform userspace on wrong ingress
+>   * @mroute_do_pim: Whether to receive IGMP PIMv1
+>   * @mroute_reg_vif_num: PIM-device vif index
+> @@ -252,7 +251,6 @@ struct mr_table {
+>  	struct rhltable		mfc_hash;
+>  	struct list_head	mfc_cache_list;
+>  	int			maxvif;
+> -	atomic_t		cache_resolve_queue_len;
+>  	bool			mroute_do_assert;
+>  	bool			mroute_do_pim;
+>  	bool			mroute_do_wrvifwhole;
+> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> index c07bc82cbbe9..6c5278b45afb 100644
+> --- a/net/ipv4/ipmr.c
+> +++ b/net/ipv4/ipmr.c
+> @@ -744,8 +744,6 @@ static void ipmr_destroy_unres(struct mr_table *mrt, struct mfc_cache *c)
+>  	struct sk_buff *skb;
+>  	struct nlmsgerr *e;
+>  
+> -	atomic_dec(&mrt->cache_resolve_queue_len);
+> -
+>  	while ((skb = skb_dequeue(&c->_c.mfc_un.unres.unresolved))) {
+>  		if (ip_hdr(skb)->version == 0) {
+>  			struct nlmsghdr *nlh = skb_pull(skb,
+> @@ -1133,9 +1131,11 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
+>  	}
+>  
+>  	if (!found) {
+> +		bool was_empty;
+> +
+>  		/* Create a new entry if allowable */
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
+> -		    (c = ipmr_cache_alloc_unres()) == NULL) {
+> +		c = ipmr_cache_alloc_unres();
+> +		if (!c) {
+>  			spin_unlock_bh(&mfc_unres_lock);
+>  
+>  			kfree_skb(skb);
+> @@ -1161,11 +1161,11 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
+>  			return err;
+>  		}
+>  
+> -		atomic_inc(&mrt->cache_resolve_queue_len);
+> +		was_empty = list_empty(&mrt->mfc_unres_queue);
+>  		list_add(&c->_c.list, &mrt->mfc_unres_queue);
+>  		mroute_netlink_event(mrt, c, RTM_NEWROUTE);
+>  
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) == 1)
+> +		if (was_empty)
+>  			mod_timer(&mrt->ipmr_expire_timer,
+>  				  c->_c.mfc_un.unres.expires);
+>  	}
+> @@ -1272,7 +1272,6 @@ static int ipmr_mfc_add(struct net *net, struct mr_table *mrt,
+>  		if (uc->mfc_origin == c->mfc_origin &&
+>  		    uc->mfc_mcastgrp == c->mfc_mcastgrp) {
+>  			list_del(&_uc->list);
+> -			atomic_dec(&mrt->cache_resolve_queue_len);
+>  			found = true;
+>  			break;
+>  		}
+> @@ -1328,7 +1327,7 @@ static void mroute_clean_tables(struct mr_table *mrt, int flags)
+>  	}
+>  
+>  	if (flags & MRT_FLUSH_MFC) {
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) != 0) {
+> +		if (!list_empty(&mrt->mfc_unres_queue)) {
+>  			spin_lock_bh(&mfc_unres_lock);
+>  			list_for_each_entry_safe(c, tmp, &mrt->mfc_unres_queue, list) {
+>  				list_del(&c->list);
+> @@ -2750,9 +2749,19 @@ static int ipmr_rtm_route(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  		return ipmr_mfc_delete(tbl, &mfcc, parent);
+>  }
+>  
+> +static int queue_count(struct mr_table *mrt)
+> +{
+> +	struct list_head *pos;
+> +	int count = 0;
+> +
+> +	list_for_each(pos, &mrt->mfc_unres_queue)
+> +		count++;
+> +	return count;
+> +}
 
-Thanks,
-    Paul
+I don't think we hold the mfc_unres_lock here while walking
+the unresolved list below in ipmr_fill_table().
 
-[ This message was auto-generated; if you believe anything is incorrect
-  then please email paul.burton@mips.com to report it. ]
+> +
+>  static bool ipmr_fill_table(struct mr_table *mrt, struct sk_buff *skb)
+>  {
+> -	u32 queue_len = atomic_read(&mrt->cache_resolve_queue_len);
+> +	u32 queue_len = queue_count(mrt);
+>  
+>  	if (nla_put_u32(skb, IPMRA_TABLE_ID, mrt->id) ||
+>  	    nla_put_u32(skb, IPMRA_TABLE_CACHE_RES_QUEUE_LEN, queue_len) ||
+> diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+> index e80d36c5073d..d02f0f903559 100644
+> --- a/net/ipv6/ip6mr.c
+> +++ b/net/ipv6/ip6mr.c
+> @@ -768,8 +768,6 @@ static void ip6mr_destroy_unres(struct mr_table *mrt, struct mfc6_cache *c)
+>  	struct net *net = read_pnet(&mrt->net);
+>  	struct sk_buff *skb;
+>  
+> -	atomic_dec(&mrt->cache_resolve_queue_len);
+> -
+>  	while ((skb = skb_dequeue(&c->_c.mfc_un.unres.unresolved)) != NULL) {
+>  		if (ipv6_hdr(skb)->version == 0) {
+>  			struct nlmsghdr *nlh = skb_pull(skb,
+> @@ -1148,8 +1146,8 @@ static int ip6mr_cache_unresolved(struct mr_table *mrt, mifi_t mifi,
+>  		 *	Create a new entry if allowable
+>  		 */
+>  
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
+> -		    (c = ip6mr_cache_alloc_unres()) == NULL) {
+> +		c = ip6mr_cache_alloc_unres();
+> +		if (!c) {
+>  			spin_unlock_bh(&mfc_unres_lock);
+>  
+>  			kfree_skb(skb);
+> @@ -1176,7 +1174,6 @@ static int ip6mr_cache_unresolved(struct mr_table *mrt, mifi_t mifi,
+>  			return err;
+>  		}
+>  
+> -		atomic_inc(&mrt->cache_resolve_queue_len);
+>  		list_add(&c->_c.list, &mrt->mfc_unres_queue);
+>  		mr6_netlink_event(mrt, c, RTM_NEWROUTE);
+>  
+> @@ -1468,7 +1465,6 @@ static int ip6mr_mfc_add(struct net *net, struct mr_table *mrt,
+>  		if (ipv6_addr_equal(&uc->mf6c_origin, &c->mf6c_origin) &&
+>  		    ipv6_addr_equal(&uc->mf6c_mcastgrp, &c->mf6c_mcastgrp)) {
+>  			list_del(&_uc->list);
+> -			atomic_dec(&mrt->cache_resolve_queue_len);
+>  			found = true;
+>  			break;
+>  		}
+> @@ -1526,7 +1522,7 @@ static void mroute_clean_tables(struct mr_table *mrt, int flags)
+>  	}
+>  
+>  	if (flags & MRT6_FLUSH_MFC) {
+> -		if (atomic_read(&mrt->cache_resolve_queue_len) != 0) {
+> +		if (!list_empty(&mrt->mfc_unres_queue)) {
+>  			spin_lock_bh(&mfc_unres_lock);
+>  			list_for_each_entry_safe(c, tmp, &mrt->mfc_unres_queue, list) {
+>  				list_del(&c->list);
+> 
+
