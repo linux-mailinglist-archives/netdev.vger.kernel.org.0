@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 533B6A7212
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 20:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9EAA728D
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 20:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728113AbfICSAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 14:00:16 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:45889 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfICSAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 14:00:16 -0400
-Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
-        (envelope-from <linville@tuxdriver.com>)
-        id 1i5D6A-00011R-80; Tue, 03 Sep 2019 14:00:10 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by localhost.localdomain (8.15.2/8.14.6) with ESMTP id x83HoNAS011808;
-        Tue, 3 Sep 2019 13:50:23 -0400
-Received: (from linville@localhost)
-        by localhost.localdomain (8.15.2/8.15.2/Submit) id x83HoEDt011805;
-        Tue, 3 Sep 2019 13:50:14 -0400
-Date:   Tue, 3 Sep 2019 13:50:14 -0400
-From:   "John W. Linville" <linville@tuxdriver.com>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        davem@davemloft.net
-Subject: Re: [PATCH 0/4] ethtool: implement Energy Detect Powerdown support
- via phy-tunable
-Message-ID: <20190903175014.GB29528@tuxdriver.com>
-References: <20190903160626.7518-1-alexandru.ardelean@analog.com>
+        id S1726090AbfICSdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 14:33:35 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:40073 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725882AbfICSdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 14:33:35 -0400
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6A2FE2B0E;
+        Tue,  3 Sep 2019 14:33:34 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Tue, 03 Sep 2019 14:33:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=0oVSMAna4kl3ETzzaxWLpTjV167
+        ytiAyprd3AP+QQXw=; b=PserZJwwfQjDUhVLwb/5F3N1u/ETLAjozYldNmdsd59
+        C12dTcJOKvfjFMJBpYqcE8lBbu0G0B2EDDZYNbYj/XcdoDJtgKOyyD/lx4zM6Cqr
+        pcJl1oXdXENQcB5/nnaKcxQf+4JqmtgAD+/gFV858lksC6KktQpTM7cy7ZC7aZS8
+        SodE2PzZRNgZlOc54gsETmMzAz8B38LtP/0B8lS2afS8Vs0bXIC/6ysCrs+QuSem
+        UARqh0pvVnp3bA77ndzrjJx/vaRQiHyIUz47S/JU4ESiceV8nhQmih9l2reoxiHl
+        hdyrCqMewL20r9tRgsHcFIhf0hxxUDg0+SVlqF78iMQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0oVSMA
+        na4kl3ETzzaxWLpTjV167ytiAyprd3AP+QQXw=; b=1AxtKOYrmlq6eSttWS8/0h
+        N1IF6Kb+qO2ihJcgUrNpcbYIG5QSGOOfP/6eRXt4Gkke1NPTbn8mJOFpOIZVNYvD
+        8BVqaZ8yqdXg90wcl2h3qjoC3X4DKIDFenHStLj0GQnytHkQ6HAiWub0QwH5/bXL
+        c0ky4AFwOfUcfKzViNlffue+Mkr9eveH2sYngzmZA1ksbs7Yua27CeVl82WgcVGU
+        EboAfYV6A3wmQr6RfTvWZR2aA4kUxPotd75gmPsmRLXl6/QPXcOdKtpluPBQdgYH
+        mtRiH9J3+NqwxPyRFOgzXjPFCcQHB9+NhSZ9Cp71/JUfpNMkxlOPzJac8c/07URg
+        ==
+X-ME-Sender: <xms:_bFuXeHlbcEIwt-w9gyEdsbOdEogfPHRw0o8ZvVgB95SsAe78d2Yiw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudejfedgleejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuffhomhgrihhnpehnvggvuggvug
+    drnhgvthenucfkphepkeefrdekiedrkeelrddutdejnecurfgrrhgrmhepmhgrihhlfhhr
+    ohhmpehgrhgvgheskhhrohgrhhdrtghomhenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:_bFuXcsXOYeI7lCn8pNMPn4p_9g9uT5VRTOnQAjwrQotwpYtt9WjUw>
+    <xmx:_bFuXXDPFV3bBOQY7O5eBBTgLN_G1b-brbKWrUSDd_dwJGmjKv6PVQ>
+    <xmx:_bFuXRQEfS3vOYsq_2-4MSqwe95WFfcClzC6irEJKVdPhLu60ecP7A>
+    <xmx:_rFuXXSQVSipUIezTmy7mUaCzax62G-NbHj3REnGt3Qaj66pFKTQjw>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 30D57D6005E;
+        Tue,  3 Sep 2019 14:33:33 -0400 (EDT)
+Date:   Tue, 3 Sep 2019 20:33:31 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Baolin Wang <baolin.wang@linaro.org>, stable@vger.kernel.org,
+        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        hariprasad.kelam@gmail.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, arnd@arndb.de, orsonzhai@gmail.com,
+        vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [BACKPORT 4.14.y 4/8] net: sctp: fix warning "NULL check before
+ some freeing functions is not needed"
+Message-ID: <20190903183331.GB26562@kroah.com>
+References: <cover.1567492316.git.baolin.wang@linaro.org>
+ <0e71732006c11f119826b3be9c1a9ccd102742d8.1567492316.git.baolin.wang@linaro.org>
+ <20190903145206.GB3499@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190903160626.7518-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20190903145206.GB3499@localhost.localdomain>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 03, 2019 at 07:06:22PM +0300, Alexandru Ardelean wrote:
-> This patch series is actually 2 series in 1.
+On Tue, Sep 03, 2019 at 11:52:06AM -0300, Marcelo Ricardo Leitner wrote:
+> On Tue, Sep 03, 2019 at 02:58:16PM +0800, Baolin Wang wrote:
+> > From: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+> > 
+> > This patch removes NULL checks before calling kfree.
+> > 
+> > fixes below issues reported by coccicheck
+> > net/sctp/sm_make_chunk.c:2586:3-8: WARNING: NULL check before some
+> > freeing functions is not needed.
+> > net/sctp/sm_make_chunk.c:2652:3-8: WARNING: NULL check before some
+> > freeing functions is not needed.
+> > net/sctp/sm_make_chunk.c:2667:3-8: WARNING: NULL check before some
+> > freeing functions is not needed.
+> > net/sctp/sm_make_chunk.c:2684:3-8: WARNING: NULL check before some
+> > freeing functions is not needed.
 > 
-> First 2 patches implement the kernel support for controlling Energy Detect
-> Powerdown support via phy-tunable, and the next 2 patches implement the
-> ethtool user-space control.
-> Hopefully, this combination of 2 series is an acceptable approach; if not,
-> I am fine to re-update it based on feedback.
+> Hi. This doesn't seem the kind of patch that should be backported to
+> such old/stable releases. After all, it's just a cleanup.
 
-I understand your reasoning, but do keep in mind that userland ethtool
-and the kernel are managed in different git trees. Seperate patchsets
-would be preferable in general, although in some cases having an
-initial userland implementation to show against proposed kernel
-changes could be helpful.
+I agree, this does not seem necessary _unless_ it is needed for a later
+real fix.
 
-It would not be unusual for someone to ask for changes on the kernel
-patches. If that happens, just repost the kernel changes until you get
-a final merge. Once that happens, then repost the userland patches as
-a seperate patchset. But I'll keep an eye here -- if Dave merges the
-existing kernel patches as-is, I can take the already posted patchs
-(unless problems are found in code review).
+thanks,
 
-John
- 
-> The `phy_tunable_id` has been named `ETHTOOL_PHY_EDPD` since it looks like
-> this feature is common across other PHYs (like EEE), and defining
-> `ETHTOOL_PHY_ENERGY_DETECT_POWER_DOWN` seems too long.
->     
-> The way EDPD works, is that the RX block is put to a lower power mode,
-> except for link-pulse detection circuits. The TX block is also put to low
-> power mode, but the PHY wakes-up periodically to send link pulses, to avoid
-> lock-ups in case the other side is also in EDPD mode.
->     
-> Currently, there are 2 PHY drivers that look like they could use this new
-> PHY tunable feature: the `adin` && `micrel` PHYs.
-> 
-> This series updates only the `adin` PHY driver to support this new feature,
-> as this chip has been tested. A change for `micrel` can be proposed after a
-> discussion of the PHY-tunable API is resolved.
-> 
-> -- 
-> 2.20.1
-> 
-> 
-
--- 
-John W. Linville		Someday the world will need a hero, and you
-linville@tuxdriver.com			might be all we have.  Be ready.
+greg k-h
