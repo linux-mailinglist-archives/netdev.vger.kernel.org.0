@@ -2,89 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D974A6DB3
-	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC57A6DC0
+	for <lists+netdev@lfdr.de>; Tue,  3 Sep 2019 18:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729903AbfICQM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Sep 2019 12:12:28 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:41931 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729117AbfICQM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:12:28 -0400
-Received: by mail-pg1-f195.google.com with SMTP id x15so9398485pgg.8
-        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:12:28 -0700 (PDT)
+        id S1729109AbfICQQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Sep 2019 12:16:14 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:54341 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728571AbfICQQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Sep 2019 12:16:14 -0400
+Received: by mail-wm1-f65.google.com with SMTP id k2so112637wmj.4
+        for <netdev@vger.kernel.org>; Tue, 03 Sep 2019 09:16:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eAzhkGrUGlZ1wulGEoFo1F97Q7k0qF/nRhydpfxsRs8=;
-        b=N+gGqUnzr7RUZ8zJ8pxLJI+LK2wHRK8tTcyay3JzN+tNY8v7Su7avhzWWoxePtf1LZ
-         GwH4BLYTzuSjDk+54J27IT3i7/hEy3nH44zJWFYJ4QO2+lH9CSujlLWaWSiv+AKfxNRH
-         a2IAlYuQLI2XgEFMYzypXjR8bH68lKID2TT01LhFPrYpUxax4BOyT7G4V43KS3mPibZO
-         VpZ67tMBGbJ2XUEdwOfr+Tf7Qn6rv4YEFPXsBdsrS3PVPvdO8QwwqARZ/l7hq40hVH9E
-         1ig6o6sI8xFmo0OVUVyICt3d2C3Ho1lwLLkaNSvd0aNi4sVSh7Hxv0Noyd4NODYCCuSD
-         xDfQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n+PT/ljKd90pClvM3jxWxKx7GDQ+a9uqR7P0TDJ8Ozc=;
+        b=LuOz2fIyE+NoZIDgyr5PX+GllkuAYKXCoB+ZK+NsodemE0THaZn2BBIlUG7zLEgBlf
+         DfF4FSBBbLo/plvEim1na00qpmUxTD9rLDAJVU+5KBPoaeBfAItdgRFDa0nfkr1hXWz5
+         jY5ixDPCM8dZZxYv3tnGAN/nQbs0fEdKtMYpHIMPyY5uspPFrAcbjzesR+0CAwq/Ue5N
+         qVkXaQNZGanGJnEU1WqZXGhCm2lLPolGOf/jeq723ZovFV359Y0AhaWYe0vuR93d/UgF
+         d90nLktEHh+WNfv2vhwbLyKpHtWvyHGuSFQBGy1/ZADcTP3mWNOZSt63Ib3ZMeZc3Cet
+         aiqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=eAzhkGrUGlZ1wulGEoFo1F97Q7k0qF/nRhydpfxsRs8=;
-        b=LadLCD/siOtLSl2ZOAsvglgon8tlZ1jGUHi0aS2ZVJXiIPpViYM7V/QsdX0ytA84G0
-         3wd451J2BrmuNkOEEHJ9a12lUJaFcnPXp6WvqISpOx4eABC8Cqq15eOR/C2vI02IpV0F
-         cQgkFJwxywyFqdu76Wc7ZLBW1smJtHWXgX/Lg/OoF/fcD+gO/bysYGjUYdhtFoc9EJX3
-         v5pwjK2Wqmd+8eKXjyCGiSMqYNMJywUvHOp44sdLp0QlFISYi3IVcQjgLY2wKBLuoQbY
-         K8bPFX+X9lEPL/bFkRy+0Il5V0d67u2ID8Ta2+RyFHGH4YUeYbbjCgg8bYMqVRPfjw5f
-         wuHQ==
-X-Gm-Message-State: APjAAAVp4xt/m/URbsulpBC89zFn64dwqNxcSm/2RuR+M0ZFDGBNB5JU
-        JTvzuKPlW8ZIYqFBJeMDB4M=
-X-Google-Smtp-Source: APXvYqxc5sAdiR1EN199ggz0ZF9xUL5/FpLJoks95XP4iQfivxp0ZaiS7G7VGpb99pCO2XQ2O2ISuQ==
-X-Received: by 2002:a63:1045:: with SMTP id 5mr17072905pgq.165.1567527147652;
-        Tue, 03 Sep 2019 09:12:27 -0700 (PDT)
-Received: from [192.168.1.2] (155-97-234-108.usahousing.utah.edu. [155.97.234.108])
-        by smtp.gmail.com with ESMTPSA id r1sm16090758pgv.70.2019.09.03.09.12.26
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n+PT/ljKd90pClvM3jxWxKx7GDQ+a9uqR7P0TDJ8Ozc=;
+        b=R1OVVWkhsz9qPtXBntTHxtz+9pShstI0jqSXsQGFRkeCXohiFKzKtWHZv50tbyJj3J
+         x2ImYhePmEFc3OjYMXOo6T1QWNA8d/CmSR5QAswOr1g8ep0PuTGbnlHB1juzvlAiZixH
+         chLlz3ppQT5hftOIRNhXT8AmL7jDTkhRjQ19x89uNllIpSA4uVKypCwH2iF4M4P5ZTlD
+         MLjVX87/bbHN4Fwra2S+wA1FkOQQ9F39VpbHmilhbueQDkR/YW3Hh+3v4RoxE9KQB6Sw
+         aGDetflOkduALNi06IZIqqsFc/K5RZJKVcvDd8eGalot0qI8pEOoSxSgtcCvnqsTwf3e
+         JO/g==
+X-Gm-Message-State: APjAAAU1FWg5Jpe89p4AucQGx+P4OW2fVEuo5lCf04mpTU/4KxtEG7nf
+        nCPQPKg3nhiZUBuXVCLLHsX3GeKg
+X-Google-Smtp-Source: APXvYqz+rGPnriaCs7gj788p9+vae80S2uASplQZMrP5U79AyBFQonOjbz4l6ibk0lx2joMnU72q7A==
+X-Received: by 2002:a1c:1aca:: with SMTP id a193mr111904wma.120.1567527372092;
+        Tue, 03 Sep 2019 09:16:12 -0700 (PDT)
+Received: from [192.168.8.147] (83.173.185.81.rev.sfr.net. [81.185.173.83])
+        by smtp.gmail.com with ESMTPSA id d17sm27343040wre.27.2019.09.03.09.16.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Sep 2019 09:12:27 -0700 (PDT)
+        Tue, 03 Sep 2019 09:16:11 -0700 (PDT)
 Subject: Re: [PATCH] Clock-independent TCP ISN generation
-To:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net
+To:     Cyrus Sh <sirus.shahini@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net
 Cc:     shiraz.saleem@intel.com, jgg@ziepe.ca, arnd@arndb.de,
         netdev@vger.kernel.org, sirus@cs.utah.edu
 References: <70c41960-6d14-3943-31ca-75598ad3d2d7@gmail.com>
  <fa0aadb3-9ada-fb08-6f32-450f5ac3a3e1@gmail.com>
  <bf10fbfb-a83f-a8d8-fefc-2a2fd1633ef8@gmail.com>
  <2cbd5a8f-f120-a7df-83a3-923f33ca0a10@gmail.com>
-From:   Cyrus Sh <sirus.shahini@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=sirus.shahini@gmail.com; prefer-encrypt=mutual; keydata=
- mQENBFeVDCUBCADQxg44Jls52jg8sAvXE2CC8BKZBXxjI2SbHtWkYdchayCiOOhSn7P+aW8F
- OEiI6qJD8/jcq5F7xQv4LZSm5KRG7RbHhfk2ZgB/yM9GksXS4lZdzu+mR1YoIc9/rtgLQ+bv
- mIfbXSyI0zidQ3mpZAmfIxLg8aNNAbW6AIafCwmUS847cK3vadzu1Jc5j3VLFATkh4eb0HXR
- tbwtqqvLLKqXBfre4sMysUFK/0bcF4FtGBw89iMD9CpXKtTF+UmJ8Ir7/eK4qUIPMvCCvpcO
- wH38xP1biWKzknmK0NDgDmUOVAgPB82puYJHZwGLHB2K1Wl+kBR0td1LrOP7+XCMUELjABEB
- AAG0IkN5cnVzLlNoIDxzaXJ1cy5zaGFoaW5pQGdtYWlsLmNvbT6JATgEEwECACIFAleVDCUC
- GwMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJELUzPfwK/ZGvHn4H/iSfPYufKTwJU9DD
- ynx5/HsyMOGh5JKXyDu84WE3+8jlNXKNCpPAHylvCE1CgIF6d4W60Zy7sSgOep3svKSdo9A0
- qbajUttEv2xSuv4il+8Z3QcdVnHw11IoQxj/ayxsctPDDYvk/7vPmVXMZEnpIbDw/nPzR+Jt
- axa/xWOp8kufOSc7DdP2OiRTXLqddCM6uWqL/ckvmvBB58BP4QYedUEZxxaMj3/ErzEGEjUY
- tke796IU8HWcc/venQfPEEuHgNsfgbXtUiKu4UBAhVmXwCRgrUodd+9ZJlqYOY56e9y6bLjj
- gw3Ls8Du7SsRP/apFwnbQMbLpxiPOSUWYngNGOK5AQ0EV5UMJQEIAMLFZAP8zwnD8Q/smVtJ
- 8ltJn1w1gNuUTEQvIzGTYVTW1E5LqZZB+RLte+UH+uZ04ii2/Qm+//xk23gq+4wQvlX8Vpxj
- gEyaZl2QibaUWDzh+1w4XcLHs9su37kSQoBljm86fk4qgnyTDxTa4sUACZzj+dT6tvxM+yYg
- WM2rglpFQ2d4boAa0/ScEXOVhPKV7D8jVSerK8Jb1jDjG3zovS8h6+Sv3II50K2Fwg+qLz6r
- KQRcxqM7FTBrurug8HGpYXwUs96ZtkOvdBr0Rll9ibi/3ksNbVJVJqKixIHxHwoddfDqS3Xc
- t1F0spHPkZK1FB5Kj7gvlFq8Fd8N7S2tescAEQEAAYkBHwQYAQIACQUCV5UMJQIbDAAKCRC1
- Mz38Cv2Rr6ZXB/9M3Er23Hu5/aHHceCTwPbQIsM1GzQ7vCzzb7+L908tjlc5mj1S7wNyBg+J
- XhaK3N1QYgc4ZEQiY91h3lAgiAw1fghDK9CEEcVV9RgakfLbhfMsQQj0TnhZ/afSAD84h8gZ
- K0Ilqi1XNb0quwm3lGE8SJqbM3yFV5ArMFG5QZN7O+TK+uC9Ruj3kV6hqV4LXaNJ4lug76yx
- tPbu9w6p2nOJ8d2Gv5T6K0uSoUCfplZa0hmX8ZZBYSQZLrEk0KrlorH0GZfvr1Rv2gXa6/Ne
- I9Sdj0Bd/WQRUnr8l6HlVPHA/diIFwSzo5taOqx62QXI1RbSozDjJ7QoR/gTilEDF18C
-Message-ID: <4ffba048-a46c-41da-ce67-e5dbac1de5a7@gmail.com>
-Date:   Tue, 3 Sep 2019 10:12:26 -0600
+ <4ffba048-a46c-41da-ce67-e5dbac1de5a7@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <db9ad0f0-9aa8-4002-60e3-57124ef619ba@gmail.com>
+Date:   Tue, 3 Sep 2019 18:16:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <2cbd5a8f-f120-a7df-83a3-923f33ca0a10@gmail.com>
+In-Reply-To: <4ffba048-a46c-41da-ce67-e5dbac1de5a7@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -95,8 +72,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/3/19 9:59 AM, Eric Dumazet wrote:
+On 9/3/19 6:12 PM, Cyrus Sh wrote:
+> 
+> 
+> On 9/3/19 9:59 AM, Eric Dumazet wrote:
+> 
+>> You could add a random delay to all SYN packets, if you believe your host has clock skews.
+> 
+> And by the way adding delays has its own performance penalties.
+> 
 
-> You could add a random delay to all SYN packets, if you believe your host has clock skews.
 
-And by the way adding delays has its own performance penalties.
+You understand your patch has been rejected, right ?
+
+You will have to convince people at IETF and get a proper RFC before
+I even look at the idea.
+
+BTW, sending a patch only dealing with IPv4 is also not a good thing.
