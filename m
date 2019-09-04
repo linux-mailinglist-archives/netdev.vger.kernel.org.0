@@ -2,105 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3CD3A7CCF
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:32:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E41A7CE6
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728532AbfIDHcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 03:32:01 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:36323 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725840AbfIDHcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:32:00 -0400
-Received: from [5.158.153.52] (helo=linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt.kanzenbach@linutronix.de>)
-        id 1i5PlX-0007CC-1C; Wed, 04 Sep 2019 09:31:43 +0200
-Date:   Wed, 4 Sep 2019 09:31:42 +0200
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        vedang.patel@intel.com, Richard Cochran <richardcochran@gmail.com>,
-        weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        xiyou.wangcong@gmail.com, netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH v2 net-next 10/15] net: dsa: Pass ndo_setup_tc slave
- callback to drivers
-Message-ID: <20190904073142.GB8133@linutronix.de>
-References: <20190830004635.24863-1-olteanv@gmail.com>
- <20190830004635.24863-11-olteanv@gmail.com>
- <20190902075209.GC3343@linutronix.de>
- <CA+h21hoVv0SwFf8=MS_SZf85QsObrNKQf_w_p=j_97i16psjDQ@mail.gmail.com>
+        id S1728816AbfIDHjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 03:39:12 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:34333 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728300AbfIDHjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:39:11 -0400
+Received: by mail-wr1-f44.google.com with SMTP id s18so20110274wrn.1
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 00:39:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=O24WUm2SHjCUp3nfiJu2C00yeuq1HwCwXI0nqaVJozU=;
+        b=Ax+1nqKD6kfGuBOYXwk4ycttrKAxBk/3f8Z2AccXHR4MBdJJgHaSkjwfTmHk8ACUGy
+         BGSCLUGfsSBrFWOdbx48GquLmWjFIFqkAGydRpbCFm1XywhT8iA6sjAnorUGBnq8iCVG
+         fY5/5ZI2rVdjureWrLjHwuvS/5ajib6FeTzgjASu2ufGoB7FKDPAqbUJif4IpJBe9uHf
+         u0X3RA9GW07Rc0evb2i3ulcj59ifMN0eszeq6peYv5D0B6tsk1JYuuFJlUgEN4zDOz+4
+         kqnnsUamW04FYWfEtjK29GG/PRnZWLO/ioblEJ0wnzVqa8/l4qGF02WIymivuxrcPH6w
+         OzKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O24WUm2SHjCUp3nfiJu2C00yeuq1HwCwXI0nqaVJozU=;
+        b=snq/vCEJIT2f/nvYvl7+sWDbr8q1V020VcPFXRDd7nIEQdfRZuAFdaez9UYrG8qyoI
+         E+CwnjXQL+QmREcxZ3wPkeHzGKsOyZbSMsWhY/fEFmZ8f+IskUCSrvx9T9nWSCyVJ3LA
+         yhZkbmY4g/6moI4xZAEiWnRKMh7eGt7q/4sbw9W+FimBWf9WRAxmvspkWH/lnYqzFtLU
+         Jd+zOC7p4kQ4wxJTb82uI7Vtz2MGyu1YNODjnymwkneyECACMXTlnwzy96d+OsaaNP8s
+         EqpP2V0E00c0FVifQ2RtZ3GbgVaenRmlw5TQumwWTuC0Hjg4UbYO6uFNsfSGzkcKyMcI
+         rcpA==
+X-Gm-Message-State: APjAAAUzDirkQ7H+ZH0Pz7XPrs9iKVZeQxAvI9nr+wdJs4tLUrme1YBL
+        hrWTooQiFaY8xdKQjfrhob71IOfA
+X-Google-Smtp-Source: APXvYqz0Oyl84xrHHs0W1C7MjrOJUw2Xl8VATmWZnAEMoeTJgzsRN8l16l8xrmhBmD8rVVrJYM4hTg==
+X-Received: by 2002:a5d:4b41:: with SMTP id w1mr8526036wrs.23.1567582749379;
+        Wed, 04 Sep 2019 00:39:09 -0700 (PDT)
+Received: from [192.168.8.147] (83.173.185.81.rev.sfr.net. [81.185.173.83])
+        by smtp.gmail.com with ESMTPSA id n14sm66611615wra.75.2019.09.04.00.39.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Sep 2019 00:39:08 -0700 (PDT)
+Subject: Re: rtnl_lock() question
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <29EC5179-D939-42CD-8577-682BE4B05916@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <3164f8de-de20-44f7-03fb-8bc39ca8449e@gmail.com>
+Date:   Wed, 4 Sep 2019 09:39:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="WYTEVAkct0FjGQmd"
-Content-Disposition: inline
-In-Reply-To: <CA+h21hoVv0SwFf8=MS_SZf85QsObrNKQf_w_p=j_97i16psjDQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <29EC5179-D939-42CD-8577-682BE4B05916@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---WYTEVAkct0FjGQmd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Vladimir,
+On 9/3/19 11:55 PM, Jonathan Lemon wrote:
+> How appropriate is it to hold the rtnl_lock() across a sleepable
+> memory allocation?  On one hand it's just a mutex, but it would
+> seem like it could block quite a few things.
+> 
 
-On Mon, Sep 02, 2019 at 11:49:30AM +0300, Vladimir Oltean wrote:
-> I did something similar in v1 with a .port_setup_taprio in "[RFC PATCH
-> net-next 3/6] net: dsa: Pass tc-taprio offload to drivers".
+Sure, all GFP_KERNEL allocations can sleep for quite a while.
 
-Okay, didn't see that one.
+On the other hand, we may want to delay stuff if memory is under pressure,
+or complex operations like NEWLINK would fail.
 
-> Would this address Ilias's comment about DSA not really needing to
-> have this level of awareness into the qdisc offload type? Rightfully I
-> can agree that the added-value of making a .port_set_schedule and
-> .port_del_schedule in DSA compared to simply passing the ndo_setup_tc
-> is not that great.
+RTNL is mostly taken for control path operations, we prefer them to be
+mostly reliable, otherwise admins job would be a nightmare.
 
-I wanted to avoid that drivers have to the same kind of work, and it put
-it therefore into the core part. However, I agree that the added-value
-is not that high for TAPRIO.
-
->
-> By the way, thanks for the iproute2 patch for parsing 64-bit base time
-> on ARM 32, saved me a bit of debugging time :)
-
-No problem :). That cost me a bit of time.
-
-> Regards,
-> -Vladimir
-
-Thanks,
-Kurt
-
---WYTEVAkct0FjGQmd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl1vaF4ACgkQeSpbgcuY
-8KbU/g//YlZxyN0osVyXXOfrLsOUmd5JJGptlEGa4twAqZxKQbhu5TD2l0kEf8fn
-z7gXfkAyvH/bvo7ufT10PeSQJ4eB+iqsWhxnwfqCuNQMstrkils/qq4A5pMWoVTi
-69jEF+lWBwTcOKOVCLF5p16BvydbaDuDLMH3tN5HOs5cpaOHb/0Dw7U7vs0YmYjJ
-veZo+iDZmwVMjGP99uTGf1JztLoi5Uv0ML9etnuaO6R4j/liUEKYAgjKO7YNTAQ9
-JZJW2G6SvHkO+otFDT31KgK9IZFIhiK0JM+NKEu7yq2jS713ZXX29Z51RRMeCgBH
-OS5NNJHNIJb3uETe3MUVu8JoR3KmEVkNT85riMIsAyXRBmwJ4mIFTXcZCg+9DuqP
-ykzxXJXRo8+RjCoG6SB3sCpjtnp2dAQ0FEwvcNaqxG61qT/ZuBwqH8vBOo1AZRqC
-Mf0Vd/5hC1pLmRz2wnMGRMDFtx6oEAadmqir0TastMVf0inEFbxvrUhzfWApVep4
-w1Ts02o6RF8QDcCYfnsc+y+cqABnqZsgcrX1gB/zNJG9T2mjj4u3z+FHwRH2i3dv
-mkTXuvliP2lPgWlO5Ig8i4lgSriwXyeZ/HcrFHYJNZ+i0198F8mQoA0ZiCnBY1Yf
-Je8WE21MbZESy95TefIwKYaHrw+mGO48KV8ktrd/vWUk7W0GqaU=
-=Hk2+
------END PGP SIGNATURE-----
-
---WYTEVAkct0FjGQmd--
+In some cases, it is relatively easy to pre-allocate memory before rtnl is taken,
+but that will only take care of some selected paths.
