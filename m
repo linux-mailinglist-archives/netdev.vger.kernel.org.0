@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D05A8A3D
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D9DA8A46
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732110AbfIDP6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:58:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32890 "EHLO mail.kernel.org"
+        id S1732138AbfIDP6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:58:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731540AbfIDP6p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:45 -0400
+        id S1732119AbfIDP6u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:58:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AE14622CF7;
-        Wed,  4 Sep 2019 15:58:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 00623233FF;
+        Wed,  4 Sep 2019 15:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612724;
-        bh=4KNWvu8UlFqosnanh2IlDJuiApyVITIiozQEuYanuy4=;
+        s=default; t=1567612729;
+        bh=fb/h9KR3pLXlfXJogUmAfXxs7PKwlfI//BnBLXHS7Mw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C8SPzWyXZ1/Y7Ou1vmW0O3gDQ51QQHDI1yo4/eJBAf6I0IWc8SCQs1u+RGALWoLbz
-         Ue5nRybrlX25w2J4CwyanAiZ/SIx4/DiJg7NzEfNmlbNuMZQnWV/Sx8UyRRS0I+BUm
-         KD9KhYquzYJq6RGdrE9X4pXJrfv3jTJo0J2YHumM=
+        b=Zh7KWDeaHuaZgRyOqYsbMYM2+cGUB8zIA/5ZlzkBlvmF3VKjYFX89DYoVVg2PX3GI
+         ypFXym4AXnLoHQ/3CvGl0WqSgmVvqECpje1J22FQEy+VsAI+uSiPovpepslqO0CB6G
+         lGXVqtcQkIYtyZhq+yMebq7vxcImV//Y+gS4DAIw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Prashant Malani <pmalani@chromium.org>,
-        Hayes Wang <hayeswang@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 43/94] r8152: Set memory to all 0xFFs on failed reg reads
-Date:   Wed,  4 Sep 2019 11:56:48 -0400
-Message-Id: <20190904155739.2816-43-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 46/94] SUNRPC: Handle connection breakages correctly in call_status()
+Date:   Wed,  4 Sep 2019 11:56:51 -0400
+Message-Id: <20190904155739.2816-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -45,50 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prashant Malani <pmalani@chromium.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit f53a7ad189594a112167efaf17ea8d0242b5ac00 ]
+[ Upstream commit c82e5472c9980e0e483f4b689044150eefaca408 ]
 
-get_registers() blindly copies the memory written to by the
-usb_control_msg() call even if the underlying urb failed.
+If the connection breaks while we're waiting for a reply from the
+server, then we want to immediately try to reconnect.
 
-This could lead to junk register values being read by the driver, since
-some indirect callers of get_registers() ignore the return values. One
-example is:
-  ocp_read_dword() ignores the return value of generic_ocp_read(), which
-  calls get_registers().
-
-So, emulate PCI "Master Abort" behavior by setting the buffer to all
-0xFFs when usb_control_msg() fails.
-
-This patch is copied from the r8152 driver (v2.12.0) published by
-Realtek (www.realtek.com).
-
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
-Acked-by: Hayes Wang <hayeswang@realtek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: ec6017d90359 ("SUNRPC fix regression in umount of a secure mount")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/r8152.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/sunrpc/clnt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index e0dcb681cfe5a..7542afba019bb 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -787,8 +787,11 @@ int get_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
- 	ret = usb_control_msg(tp->udev, usb_rcvctrlpipe(tp->udev, 0),
- 			      RTL8152_REQ_GET_REGS, RTL8152_REQT_READ,
- 			      value, index, tmp, size, 500);
-+	if (ret < 0)
-+		memset(data, 0xff, size);
-+	else
-+		memcpy(data, tmp, size);
- 
--	memcpy(data, tmp, size);
- 	kfree(tmp);
- 
- 	return ret;
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 3f090a75f3721..49adae7cf4c2d 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -2292,7 +2292,7 @@ call_status(struct rpc_task *task)
+ 	case -ECONNABORTED:
+ 	case -ENOTCONN:
+ 		rpc_force_rebind(clnt);
+-		/* fall through */
++		break;
+ 	case -EADDRINUSE:
+ 		rpc_delay(task, 3*HZ);
+ 		/* fall through */
 -- 
 2.20.1
 
