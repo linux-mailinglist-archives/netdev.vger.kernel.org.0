@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC300A8D18
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2CCA8D1B
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731646AbfIDQZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:25:20 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:38141 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731623AbfIDQZU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 12:25:20 -0400
-Received: by mail-qk1-f201.google.com with SMTP id l64so23684988qkb.5
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 09:25:19 -0700 (PDT)
+        id S1731679AbfIDQZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:25:23 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:38626 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731660AbfIDQZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 12:25:22 -0400
+Received: by mail-pf1-f201.google.com with SMTP id b8so17050153pfd.5
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 09:25:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Tbz4Llm/4l7fjtRQCiC4O/nrvoLwptRAGpztTTGChds=;
-        b=s0VQNg6llkx51zJubhuRV81XkomkbxAV/nmtQdncZWrGz5ct5Ynp9JZhnkpoS0muNv
-         2FM6bhTEWbDWZpKbi3Wdjz1ktBxLw1v1Vu97sRwWvh5RXbQjmWPn8c99H8OpSySrL+Tb
-         xD3bjRe6vRSWH1ta/iDhItbjgNrKNwqiDZwn+qw0CuK9zOUQrflwvJBCTgfJjMcPPQm6
-         WJysAvSDjEOI7uJNhkc+tXGwvvMHWh74SDXzfYnHGER0L+CI+mhPnc7BRHpG9Ax+Y1Pm
-         WCrEVnt7lUoqu6RuXh9lijsdFgqC9M4Yu//Q4ta5Wrgt1WYr+2+abPAhcIa9tJzNcOB+
-         RT4Q==
+        bh=PKBNn7QHICb88J96DR4dcB71cwak21YXIgp4bI9raYQ=;
+        b=kp1ziuYLM00emul/vYxvoONHGZq9eJwyLEBYeGpWkcVBSWphwLoM1t3imA/pesfzR0
+         Xm+HU+Ap8xYz9SjdVOEXho3PMJT5IYwf0mk984TYznZuNph9+USEqUDUNnZDBmh7PryM
+         IDL6Dr5GUGy4L0UvLJo4xYLsfpAY+LTtK9J4FXQMBJWiTcfUzFBwqYH/owvr9DK67JT5
+         ULvAxSdjqq7MmlNSnuBf+b49/aceEpCL6/y2mrxc7WDAi0zx8Qk558oLp/zco6NVAhhT
+         X1OOj9dgA39TeS776iMrFH6zGDQ77VWTSFeNSyn95jQRwW8mfMQMHTByiMymwDHudhfJ
+         RB3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Tbz4Llm/4l7fjtRQCiC4O/nrvoLwptRAGpztTTGChds=;
-        b=FsJScUpx3iieQnc5zRtUC0OsBC5ngtjA6dM/PQkWDuzrLHVliTWPbtVB4H0lA723JC
-         dsDKcMKwj5PMQY/Lc7Fbi/AEOFD8THMLWdm0Va9tm2gCKQ8g0Lg+GGTZ4nTdCPilYcd9
-         nDwQXMDv+8WYpDpq1KgoXWJ7jfTIqdmGWf1HpxFjIBKVyX4wocjsBga7wBMKyT5m94U8
-         tmYZae6F+GMfVoAn3/oxMPBCX6ipMEmq7RUu/9S2X4/VM0OYCc0p4EvVJahi887Fofh5
-         OgHOPOIZ65L97ZSA3BSsZoB648Bktpzdje/qZUA3NzNB/yLLMWwkUgPI6M6PRDcDYX+/
-         6PiQ==
-X-Gm-Message-State: APjAAAXyMl0iL0AADPP18OlxOKKdcR9EF+RrWux5I+lcJ4NSuVjf5/Uf
-        uLE6F4epflbgf2+ZQ4xjSGLqtdSj6fWgvvzu5CnYi0JdHRWfrW+Ecv06qBT0z0e7+LsuWb6FgwL
-        t/E+dqbkf67tEfL4zneSmIJKi3Xenuy6CerzE2SRPy2KdmqyazH9ubw==
-X-Google-Smtp-Source: APXvYqwYVnKA79WdSsPE3RVtyuyaYVCq8vJILrhSa54pH2Ae1s8MRx8Eg3ZI3MzsEGswEsR34s/s9lw=
-X-Received: by 2002:a37:470a:: with SMTP id u10mr11515071qka.17.1567614319295;
- Wed, 04 Sep 2019 09:25:19 -0700 (PDT)
-Date:   Wed,  4 Sep 2019 09:25:06 -0700
+        bh=PKBNn7QHICb88J96DR4dcB71cwak21YXIgp4bI9raYQ=;
+        b=QEUxQzloYKHtQWpd3dQgpHHDyj0hsgZ9ftWCza6TnFWkNA5nXwWunIxiR47RYC62gY
+         oaH8VMhwj5faPxh5+7x8sC8e8dteIZtTQmmEAwH2quyAaNUMNsQIS5NO6kPF9gcwp35E
+         UTJV9VZX8hBrb3r+UaTTAzu5Fpg1aL2NngGFwGXiHLAaR0V/QvNt8bd5uxN+/9tszO9b
+         Wlb1rC/U9XsU3pgHo4j6elaBeRstCGd5kOtRW2iY8Wk02r0dXlTjrVX3ihIRSfBVk5Ee
+         YzBaGk1u3rQB6bT9CHd81+JQ/TByS7LArGE6so9bgHoKHU2kYuKMXi5dsknqsG+6NzHn
+         xfhw==
+X-Gm-Message-State: APjAAAWLoUvBN35feIw5EKvbP4rc1fb3Uo9ZIshHJmOzwv0odKG703ca
+        80ZgTHwmC2dwYQebBKwMJHTpjtwW2PhcZB0cVxkIcOjfGFa0iHtU0xsTe4nC6Ur1zMlpgOP9PkP
+        ikVTgK01T20lVdw8n5S4tONA9GZT7H1lCYFN3vnmzOyMejwctSWJOVA==
+X-Google-Smtp-Source: APXvYqyT1LUBgP9MRRfz5tL5ApXkfhCTmJlsAU5YD18nV6Hcyr14CEch6kn8E7WUZycQ5xWn5HfGyU8=
+X-Received: by 2002:a65:49cc:: with SMTP id t12mr33548600pgs.83.1567614321459;
+ Wed, 04 Sep 2019 09:25:21 -0700 (PDT)
+Date:   Wed,  4 Sep 2019 09:25:07 -0700
 In-Reply-To: <20190904162509.199561-1-sdf@google.com>
-Message-Id: <20190904162509.199561-4-sdf@google.com>
+Message-Id: <20190904162509.199561-5-sdf@google.com>
 Mime-Version: 1.0
 References: <20190904162509.199561-1-sdf@google.com>
 X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
-Subject: [PATCH bpf-next 3/6] selftests/bpf: test_progs: convert test_sockopt_sk
+Subject: [PATCH bpf-next 4/6] selftests/bpf: test_progs: convert test_sockopt_multi
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -64,61 +64,59 @@ Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
  tools/testing/selftests/bpf/.gitignore        |  1 -
  tools/testing/selftests/bpf/Makefile          |  3 +-
- .../sockopt_sk.c}                             | 60 ++++---------------
- tools/testing/selftests/bpf/test_progs.h      |  3 +-
- 4 files changed, 15 insertions(+), 52 deletions(-)
- rename tools/testing/selftests/bpf/{test_sockopt_sk.c => prog_tests/sockopt_sk.c} (79%)
+ .../sockopt_multi.c}                          | 62 +++----------------
+ 3 files changed, 11 insertions(+), 55 deletions(-)
+ rename tools/testing/selftests/bpf/{test_sockopt_multi.c => prog_tests/sockopt_multi.c} (83%)
 
 diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 0315120eac8f..bc83c1a7ea1b 100644
+index bc83c1a7ea1b..4143add5a11e 100644
 --- a/tools/testing/selftests/bpf/.gitignore
 +++ b/tools/testing/selftests/bpf/.gitignore
-@@ -39,7 +39,6 @@ libbpf.so.*
+@@ -39,6 +39,5 @@ libbpf.so.*
  test_hashmap
  test_btf_dump
  xdping
--test_sockopt_sk
- test_sockopt_multi
+-test_sockopt_multi
  test_sockopt_inherit
  test_tcp_rtt
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 08e2183974d5..ea790901297c 100644
+index ea790901297c..271f8ce89c97 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -28,7 +28,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
- 	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+@@ -29,7 +29,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
  	test_cgroup_storage test_select_reuseport test_section_names \
  	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
--	test_btf_dump test_cgroup_attach xdping test_sockopt_sk \
-+	test_btf_dump test_cgroup_attach xdping \
- 	test_sockopt_multi test_sockopt_inherit test_tcp_rtt
+ 	test_btf_dump test_cgroup_attach xdping \
+-	test_sockopt_multi test_sockopt_inherit test_tcp_rtt
++	test_sockopt_inherit test_tcp_rtt
  
  BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+ TEST_GEN_FILES = $(BPF_OBJ_FILES)
 @@ -109,7 +109,6 @@ $(OUTPUT)/test_netcnt: cgroup_helpers.c
  $(OUTPUT)/test_sock_fields: cgroup_helpers.c
  $(OUTPUT)/test_sysctl: cgroup_helpers.c
  $(OUTPUT)/test_cgroup_attach: cgroup_helpers.c
--$(OUTPUT)/test_sockopt_sk: cgroup_helpers.c
- $(OUTPUT)/test_sockopt_multi: cgroup_helpers.c
+-$(OUTPUT)/test_sockopt_multi: cgroup_helpers.c
  $(OUTPUT)/test_sockopt_inherit: cgroup_helpers.c
  $(OUTPUT)/test_tcp_rtt: cgroup_helpers.c
-diff --git a/tools/testing/selftests/bpf/test_sockopt_sk.c b/tools/testing/selftests/bpf/prog_tests/sockopt_sk.c
-similarity index 79%
-rename from tools/testing/selftests/bpf/test_sockopt_sk.c
-rename to tools/testing/selftests/bpf/prog_tests/sockopt_sk.c
-index e4f6055d92e9..2061a6beac0f 100644
---- a/tools/testing/selftests/bpf/test_sockopt_sk.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockopt_sk.c
-@@ -1,23 +1,7 @@
+ 
+diff --git a/tools/testing/selftests/bpf/test_sockopt_multi.c b/tools/testing/selftests/bpf/prog_tests/sockopt_multi.c
+similarity index 83%
+rename from tools/testing/selftests/bpf/test_sockopt_multi.c
+rename to tools/testing/selftests/bpf/prog_tests/sockopt_multi.c
+index 4be3441db867..29188d6f5c8d 100644
+--- a/tools/testing/selftests/bpf/test_sockopt_multi.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockopt_multi.c
+@@ -1,19 +1,5 @@
  // SPDX-License-Identifier: GPL-2.0
 -
+-#include <error.h>
 -#include <errno.h>
 -#include <stdio.h>
 -#include <unistd.h>
 -#include <sys/types.h>
 -#include <sys/socket.h>
 -#include <netinet/in.h>
--#include <netinet/tcp.h>
 -
 -#include <linux/filter.h>
 -#include <bpf/bpf.h>
@@ -129,98 +127,81 @@ index e4f6055d92e9..2061a6beac0f 100644
 +#include <test_progs.h>
  #include "cgroup_helpers.h"
  
--#define CG_PATH				"/sockopt"
--
- #define SOL_CUSTOM			0xdeadbeef
- 
- static int getsetsockopt(void)
-@@ -176,7 +160,7 @@ static int prog_attach(struct bpf_object *obj, int cgroup_fd, const char *title)
- 	return 0;
+ static int prog_attach(struct bpf_object *obj, int cgroup_fd, const char *title)
+@@ -308,7 +294,7 @@ static int run_setsockopt_test(struct bpf_object *obj, int cg_parent,
+ 	return err;
  }
  
--static int run_test(int cgroup_fd)
-+static void run_test(int cgroup_fd)
+-int main(int argc, char **argv)
++void test_sockopt_multi(void)
  {
  	struct bpf_prog_load_attr attr = {
- 		.file = "./sockopt_sk.o",
-@@ -186,51 +170,31 @@ static int run_test(int cgroup_fd)
- 	int err;
+ 		.file = "./sockopt_multi.o",
+@@ -319,56 +305,28 @@ int main(int argc, char **argv)
+ 	int err = -1;
+ 	int ignored;
+ 
+-	if (setup_cgroup_environment()) {
+-		log_err("Failed to setup cgroup environment\n");
+-		goto out;
+-	}
+-
+-	cg_parent = create_and_get_cgroup("/parent");
+-	if (cg_parent < 0) {
+-		log_err("Failed to create cgroup /parent\n");
+-		goto out;
+-	}
+-
+-	cg_child = create_and_get_cgroup("/parent/child");
+-	if (cg_child < 0) {
+-		log_err("Failed to create cgroup /parent/child\n");
++	cg_parent = test__join_cgroup("/parent");
++	if (CHECK_FAIL(cg_parent < 0))
+ 		goto out;
+-	}
+ 
+-	if (join_cgroup("/parent/child")) {
+-		log_err("Failed to join cgroup /parent/child\n");
++	cg_child = test__join_cgroup("/parent/child");
++	if (CHECK_FAIL(cg_child < 0))
+ 		goto out;
+-	}
  
  	err = bpf_prog_load_xattr(&attr, &obj, &ignored);
 -	if (err) {
 -		log_err("Failed to load BPF object");
--		return -1;
++	if (CHECK_FAIL(err))
+ 		goto out;
 -	}
-+	if (CHECK_FAIL(err))
-+		return;
  
- 	err = prog_attach(obj, cgroup_fd, "cgroup/getsockopt");
--	if (err)
-+	if (CHECK_FAIL(err))
- 		goto close_bpf_object;
+ 	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+-	if (sock_fd < 0) {
+-		log_err("Failed to create socket");
++	if (CHECK_FAIL(sock_fd < 0))
+ 		goto out;
+-	}
  
- 	err = prog_attach(obj, cgroup_fd, "cgroup/setsockopt");
--	if (err)
-+	if (CHECK_FAIL(err))
- 		goto close_bpf_object;
+-	if (run_getsockopt_test(obj, cg_parent, cg_child, sock_fd))
+-		err = -1;
+-	printf("test_sockopt_multi: getsockopt %s\n",
+-	       err ? "FAILED" : "PASSED");
+-
+-	if (run_setsockopt_test(obj, cg_parent, cg_child, sock_fd))
+-		err = -1;
+-	printf("test_sockopt_multi: setsockopt %s\n",
+-	       err ? "FAILED" : "PASSED");
++	CHECK_FAIL(run_getsockopt_test(obj, cg_parent, cg_child, sock_fd));
++	CHECK_FAIL(run_setsockopt_test(obj, cg_parent, cg_child, sock_fd));
  
--	err = getsetsockopt();
-+	CHECK_FAIL(getsetsockopt());
- 
- close_bpf_object:
+ out:
+ 	close(sock_fd);
  	bpf_object__close(obj);
--	return err;
+ 	close(cg_child);
+ 	close(cg_parent);
+-
+-	printf("test_sockopt_multi: %s\n", err ? "FAILED" : "PASSED");
+-	return err ? EXIT_FAILURE : EXIT_SUCCESS;
  }
- 
--int main(int args, char **argv)
-+void test_sockopt_sk(void)
- {
- 	int cgroup_fd;
--	int err = EXIT_SUCCESS;
--
--	if (setup_cgroup_environment())
--		goto cleanup_obj;
--
--	cgroup_fd = create_and_get_cgroup(CG_PATH);
--	if (cgroup_fd < 0)
--		goto cleanup_cgroup_env;
--
--	if (join_cgroup(CG_PATH))
--		goto cleanup_cgroup;
--
--	if (run_test(cgroup_fd))
--		err = EXIT_FAILURE;
- 
--	printf("test_sockopt_sk: %s\n",
--	       err == EXIT_SUCCESS ? "PASSED" : "FAILED");
-+	cgroup_fd = test__join_cgroup("/sockopt_sk");
-+	if (CHECK_FAIL(cgroup_fd < 0))
-+		return;
- 
--cleanup_cgroup:
-+	run_test(cgroup_fd);
- 	close(cgroup_fd);
--cleanup_cgroup_env:
--	cleanup_cgroup_environment();
--cleanup_obj:
--	return err;
- }
-diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-index e518bd5da3e2..0c48f64f732b 100644
---- a/tools/testing/selftests/bpf/test_progs.h
-+++ b/tools/testing/selftests/bpf/test_progs.h
-@@ -16,9 +16,10 @@ typedef __u16 __sum16;
- #include <linux/if_packet.h>
- #include <linux/ip.h>
- #include <linux/ipv6.h>
--#include <linux/tcp.h>
-+#include <netinet/tcp.h>
- #include <linux/filter.h>
- #include <linux/perf_event.h>
-+#include <linux/socket.h>
- #include <linux/unistd.h>
- 
- #include <sys/ioctl.h>
 -- 
 2.23.0.187.g17f5b7556c-goog
 
