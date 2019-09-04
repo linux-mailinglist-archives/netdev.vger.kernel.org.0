@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 855C5A8A39
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECDAA8A36
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732089AbfIDP6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:58:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60976 "EHLO mail.kernel.org"
+        id S1732076AbfIDP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:58:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732047AbfIDP6i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:38 -0400
+        id S1732038AbfIDP6k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:58:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 08AC42070C;
-        Wed,  4 Sep 2019 15:58:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 646C222DBF;
+        Wed,  4 Sep 2019 15:58:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612716;
-        bh=GKqQqdOW1fttTEPCtnHImZlE451qBP1GL+jPuoydfcU=;
+        s=default; t=1567612719;
+        bh=WCP6QyaYIxXcP8RcE8oUkk9e6+XZKDW0z21xQZ+MEZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZY0+fD0NVIgd9uotyr1rqdAL9MFyfo2nhczVVXaMQnZQVTMwWZugzJEMe67uPE6K
-         SIgcOg3/pBuMGCFha8RS7/DBRip312o28HPKSPXvEqptX9bCDEUu41UsZpGZRp1UQx
-         iVaS7NseOUpP65VmU54gGmoSu6k4Q0SwhjevTEqU=
+        b=K3XTBGuGYMKGqGBO3x5WBbEjxULDFz0O6vO4onPlq5jIMfZex9TQiyZEHuD3NF7zE
+         O6qi+bqGumGNx6dEMShoxhSxF7amEXeWozZy8jCdufv6NoFqTu/LtjSCFOfadH8Ud2
+         PwbotcEckw1aWhtuYGFgLy+sIBFACXldPlcy29LM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 39/94] batman-adv: Only read OGM2 tvlv_len after buffer len check
-Date:   Wed,  4 Sep 2019 11:56:44 -0400
-Message-Id: <20190904155739.2816-39-sashal@kernel.org>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 40/94] flow_dissector: Fix potential use-after-free on BPF_PROG_DETACH
+Date:   Wed,  4 Sep 2019 11:56:45 -0400
+Message-Id: <20190904155739.2816-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -43,71 +46,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 0ff0f15a32c093381ad1abc06abe85afb561ab28 ]
+[ Upstream commit db38de39684dda2bf307f41797db2831deba64e9 ]
 
-Multiple batadv_ogm2_packet can be stored in an skbuff. The functions
-batadv_v_ogm_send_to_if() uses batadv_v_ogm_aggr_packet() to check if there
-is another additional batadv_ogm2_packet in the skb or not before they
-continue processing the packet.
+Call to bpf_prog_put(), with help of call_rcu(), queues an RCU-callback to
+free the program once a grace period has elapsed. The callback can run
+together with new RCU readers that started after the last grace period.
+New RCU readers can potentially see the "old" to-be-freed or already-freed
+pointer to the program object before the RCU update-side NULLs it.
 
-The length for such an OGM2 is BATADV_OGM2_HLEN +
-batadv_ogm2_packet->tvlv_len. The check must first check that at least
-BATADV_OGM2_HLEN bytes are available before it accesses tvlv_len (which is
-part of the header. Otherwise it might try read outside of the currently
-available skbuff to get the content of tvlv_len.
+Reorder the operations so that the RCU update-side resets the protected
+pointer before the end of the grace period after which the program will be
+freed.
 
-Fixes: 9323158ef9f4 ("batman-adv: OGMv2 - implement originators logic")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
+Reported-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Petar Penkov <ppenkov@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/bat_v_ogm.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ net/core/flow_dissector.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/batman-adv/bat_v_ogm.c b/net/batman-adv/bat_v_ogm.c
-index fad95ef64e01a..bc06e3cdfa84f 100644
---- a/net/batman-adv/bat_v_ogm.c
-+++ b/net/batman-adv/bat_v_ogm.c
-@@ -631,17 +631,23 @@ batadv_v_ogm_process_per_outif(struct batadv_priv *bat_priv,
-  * batadv_v_ogm_aggr_packet() - checks if there is another OGM aggregated
-  * @buff_pos: current position in the skb
-  * @packet_len: total length of the skb
-- * @tvlv_len: tvlv length of the previously considered OGM
-+ * @ogm2_packet: potential OGM2 in buffer
-  *
-  * Return: true if there is enough space for another OGM, false otherwise.
-  */
--static bool batadv_v_ogm_aggr_packet(int buff_pos, int packet_len,
--				     __be16 tvlv_len)
-+static bool
-+batadv_v_ogm_aggr_packet(int buff_pos, int packet_len,
-+			 const struct batadv_ogm2_packet *ogm2_packet)
- {
- 	int next_buff_pos = 0;
- 
--	next_buff_pos += buff_pos + BATADV_OGM2_HLEN;
--	next_buff_pos += ntohs(tvlv_len);
-+	/* check if there is enough space for the header */
-+	next_buff_pos += buff_pos + sizeof(*ogm2_packet);
-+	if (next_buff_pos > packet_len)
-+		return false;
-+
-+	/* check if there is enough space for the optional TVLV */
-+	next_buff_pos += ntohs(ogm2_packet->tvlv_len);
- 
- 	return (next_buff_pos <= packet_len) &&
- 	       (next_buff_pos <= BATADV_MAX_AGGREGATION_BYTES);
-@@ -818,7 +824,7 @@ int batadv_v_ogm_packet_recv(struct sk_buff *skb,
- 	ogm_packet = (struct batadv_ogm2_packet *)skb->data;
- 
- 	while (batadv_v_ogm_aggr_packet(ogm_offset, skb_headlen(skb),
--					ogm_packet->tvlv_len)) {
-+					ogm_packet)) {
- 		batadv_v_ogm_process(skb, ogm_offset, if_incoming);
- 
- 		ogm_offset += BATADV_OGM2_HLEN;
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index edd622956083d..b15c0c0f6e557 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -138,8 +138,8 @@ int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
+ 		mutex_unlock(&flow_dissector_mutex);
+ 		return -ENOENT;
+ 	}
+-	bpf_prog_put(attached);
+ 	RCU_INIT_POINTER(net->flow_dissector_prog, NULL);
++	bpf_prog_put(attached);
+ 	mutex_unlock(&flow_dissector_mutex);
+ 	return 0;
+ }
 -- 
 2.20.1
 
