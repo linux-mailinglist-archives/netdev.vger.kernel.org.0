@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 789F2A8A9F
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3031EA8AA5
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732571AbfIDQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:00:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34858 "EHLO mail.kernel.org"
+        id S1732604AbfIDQAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:00:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35000 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732554AbfIDQAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:00:09 -0400
+        id S1731942AbfIDQAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:00:14 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EB25E20820;
-        Wed,  4 Sep 2019 16:00:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF83222CED;
+        Wed,  4 Sep 2019 16:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612807;
-        bh=OWnVuFGQtNxK4edV8WWlxrCODApxNE/4x30tpYdErYQ=;
+        s=default; t=1567612813;
+        bh=vRRFaWWGUOYTPrur3oc3/d02XUTCjrwdPwVR3rAWPoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gXEq2aaID4lQYz+ZaWgm2HGqbLWY5er66OD7Wky0MoNSE4LPA9Q3fp1zR53x90W1Z
-         /8Jzp9nHnLGYDr8wyAmyyqbGzG98CvJw+MWJeYmE5+eX3FDBdnyRQn315u1iIwHL7C
-         iDV9D14IE7LhqYHABd5ocg2Sc1s0XNOyzypCoWVU=
+        b=mRQvw6hGWVIGQktfftGbYZhmDka6inDIaNox6gBXX79lMPcq/FO6GQEjTOYrFAIpY
+         WHb7Cy+p/o2GCWMlIEaMFszpLEmlwI2sDY1xRDUWa8kCcZjQ98yDPM4kHgGHQmXAfN
+         m1iAfQzHANXsH5bbLDOo94DfBNBx7d/uPtV9Esdw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Alexander Aring <aring@mojatatu.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/52] ieee802154: hwsim: unregister hw while hwsim_subscribe_all_others fails
-Date:   Wed,  4 Sep 2019 11:59:14 -0400
-Message-Id: <20190904160004.3671-2-sashal@kernel.org>
+Cc:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/52] s390/bpf: fix lcgr instruction encoding
+Date:   Wed,  4 Sep 2019 11:59:18 -0400
+Message-Id: <20190904160004.3671-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160004.3671-1-sashal@kernel.org>
 References: <20190904160004.3671-1-sashal@kernel.org>
@@ -45,98 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit de166bbe861738c8bc3e5dad5b03f45d7d6ef914 ]
+[ Upstream commit bb2d267c448f4bc3a3389d97c56391cb779178ae ]
 
-KASAN report this:
+"masking, test in bounds 3" fails on s390, because
+BPF_ALU64_IMM(BPF_NEG, BPF_REG_2, 0) ignores the top 32 bits of
+BPF_REG_2. The reason is that JIT emits lcgfr instead of lcgr.
+The associated comment indicates that the code was intended to
+emit lcgr in the first place, it's just that the wrong opcode
+was used.
 
-kernel BUG at net/mac802154/main.c:130!
-invalid opcode: 0000 [#1] PREEMPT SMP
-CPU: 0 PID: 19932 Comm: modprobe Not tainted 5.1.0-rc6+ #22
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
-RIP: 0010:ieee802154_free_hw+0x2a/0x30 [mac802154]
-Code: 55 48 8d 57 38 48 89 e5 53 48 89 fb 48 8b 47 38 48 39 c2 75 15 48 8d 7f 48 e8 82 85 16 e1 48 8b 7b 28 e8 f9 ef 83 e2 5b 5d c3 <0f> 0b 0f 1f 40 00 55 48 89 e5 53 48 89 fb 0f b6 86 80 00 00 00 88
-RSP: 0018:ffffc90001c7b9f0 EFLAGS: 00010206
-RAX: ffff88822df3aa80 RBX: ffff88823143d5c0 RCX: 0000000000000002
-RDX: ffff88823143d5f8 RSI: ffff88822b1fabc0 RDI: ffff88823143d5c0
-RBP: ffffc90001c7b9f8 R08: 0000000000000000 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: 00000000fffffff4
-R13: ffff88822dea4f50 R14: ffff88823143d7c0 R15: 00000000fffffff4
-FS: 00007ff52e999540(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdc06dba768 CR3: 000000023160a000 CR4: 00000000000006f0
-Call Trace:
- hwsim_add_one+0x2dd/0x540 [mac802154_hwsim]
- hwsim_probe+0x2f/0xb0 [mac802154_hwsim]
- platform_drv_probe+0x3a/0x90
- ? driver_sysfs_add+0x79/0xb0
- really_probe+0x1d4/0x2d0
- driver_probe_device+0x50/0xf0
- device_driver_attach+0x54/0x60
- __driver_attach+0x7e/0xd0
- ? device_driver_attach+0x60/0x60
- bus_for_each_dev+0x68/0xc0
- driver_attach+0x19/0x20
- bus_add_driver+0x15e/0x200
- driver_register+0x5b/0xf0
- __platform_driver_register+0x31/0x40
- hwsim_init_module+0x74/0x1000 [mac802154_hwsim]
- ? 0xffffffffa00e9000
- do_one_initcall+0x6c/0x3cc
- ? kmem_cache_alloc_trace+0x248/0x3b0
- do_init_module+0x5b/0x1f1
- load_module+0x1db1/0x2690
- ? m_show+0x1d0/0x1d0
- __do_sys_finit_module+0xc5/0xd0
- __x64_sys_finit_module+0x15/0x20
- do_syscall_64+0x6b/0x1d0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x7ff52e4a2839
-Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1f f6 2c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffffa7b3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-RAX: ffffffffffffffda RBX: 00005647560a2a00 RCX: 00007ff52e4a2839
-RDX: 0000000000000000 RSI: 00005647547f3c2e RDI: 0000000000000003
-RBP: 00005647547f3c2e R08: 0000000000000000 R09: 00005647560a2a00
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
-R13: 00005647560a2c10 R14: 0000000000040000 R15: 00005647560a2a00
-Modules linked in: mac802154_hwsim(+) mac802154 [last unloaded: mac802154_hwsim]
+Fix by using the correct opcode.
 
-In hwsim_add_one, if hwsim_subscribe_all_others fails, we
-should call ieee802154_unregister_hw to free resources.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Alexander Aring <aring@mojatatu.com>
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: 054623105728 ("s390/bpf: Add s390x eBPF JIT compiler backend")
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Acked-by: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ieee802154/mac802154_hwsim.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/s390/net/bpf_jit_comp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-index 20b4c0c21e36a..be1f1a86bcd61 100644
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -821,7 +821,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
- 		err = hwsim_subscribe_all_others(phy);
- 		if (err < 0) {
- 			mutex_unlock(&hwsim_phys_lock);
--			goto err_reg;
-+			goto err_subscribe;
- 		}
- 	}
- 	list_add_tail(&phy->list, &hwsim_phys);
-@@ -831,6 +831,8 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
- 
- 	return idx;
- 
-+err_subscribe:
-+	ieee802154_unregister_hw(phy->hw);
- err_reg:
- 	kfree(pib);
- err_pib:
+diff --git a/arch/s390/net/bpf_jit_comp.c b/arch/s390/net/bpf_jit_comp.c
+index d7052cbe984f8..a3ce1fdc3d802 100644
+--- a/arch/s390/net/bpf_jit_comp.c
++++ b/arch/s390/net/bpf_jit_comp.c
+@@ -841,7 +841,7 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
+ 		break;
+ 	case BPF_ALU64 | BPF_NEG: /* dst = -dst */
+ 		/* lcgr %dst,%dst */
+-		EMIT4(0xb9130000, dst_reg, dst_reg);
++		EMIT4(0xb9030000, dst_reg, dst_reg);
+ 		break;
+ 	/*
+ 	 * BPF_FROM_BE/LE
 -- 
 2.20.1
 
