@@ -2,150 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B2FCA88BF
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6C1A88D1
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730572AbfIDOYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 10:24:11 -0400
-Received: from mail-yb1-f174.google.com ([209.85.219.174]:42353 "EHLO
-        mail-yb1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729803AbfIDOYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 10:24:10 -0400
-Received: by mail-yb1-f174.google.com with SMTP id z2so7345690ybp.9
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 07:24:10 -0700 (PDT)
+        id S1730702AbfIDOcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 10:32:33 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53266 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729809AbfIDOcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 10:32:32 -0400
+Received: by mail-wm1-f65.google.com with SMTP id q19so3584473wmc.3
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 07:32:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TqbBjT4kT1qbUGCyGDy3gjE7dsSWpZE/WioNquc8cYk=;
-        b=nN3mXX9O02lU74x6iAcOX9lm/BJgMJDYXqlZhB+1zJdCZCcXY2BTz99PYIRUgrSC83
-         9pxO00s/b8ppfz42ybmQuxcWp0upklK/TFl+2l7n9vDjiV9KekW7Nsk9y/1UbRmA+JHT
-         eypAezLQOiN0ts5n9E4Mk66/BYH0ZDxvNNu9W9clf9vcv/zu7JPX3P57Jt0L532Fkii6
-         0vejTsLaE40gWeJjgVHn9EZsU5igwbfn8cSx6ri9j/AeYRJF3CW/FZkpFylfVmnT3w0q
-         V2qky4k8t1v3Yi7RbPOawtzlGCkbAFOGzX7BmJI8UIQUVx1wLSO4bUWd8XBgCCgMJE3Z
-         7bQA==
+        d=googlemail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=THa8tcHpmGXEJKGCFwAm5Uk/uRFZwqU8Lnh8dAdqGFw=;
+        b=qVJOu6386rZuyTtS1RXMfVDdnq3DajWXH/D2LyNgmy84Q0cYHVzcN3sxbDVpe0IviI
+         9okn3vebMigGLU6vKsicy7dHYhtwJrkhg6JxEctN9o6LJlEZ0s4rezLGyatJp3MvdoWd
+         DNQ5JM4hBAsGljbvQkVnAqUvhrnJ2npZnB89FzFIXN0f2mIehQs+J04zgAZQA33bOgY1
+         pLu5AhaA72oEWk1KaumSvX80AckZJi4FBSO372g7EKeuGkUzYKYTx34r4W16GOMDy1/s
+         /VgllY7E86rR1Nmv7udiEVU45+uNJ2L8DZ6DPQ5ABK97otpY+Nr4loZMz6PSlmHPhavX
+         qbUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TqbBjT4kT1qbUGCyGDy3gjE7dsSWpZE/WioNquc8cYk=;
-        b=i0e6zVRmWNdgh025NB/WXZs8m4jeBg4fXHi1RIcUYE5uaPC0se92qL9i0U+sFzXXs/
-         lNrbj5uVlinJyLECCmlknk8TYNxb7T/ghSAd5CENqO7mpQLF+m/VZVm+sCgX+9wv8lNg
-         tLcQoMyKoQJHEWDpgnHkUIVEpkyO6nI+nJ22kgNlGMxWK5s0vUnc55HbVvC2XE+QqKL2
-         rXvV39xmHs7710KwF2a04xTrQLKOxE1kURuTYr2d8qw+Aralw0SH5zc68IotqMp6Fz6+
-         HN09AOeuVJguffktqBJGpZISWxOnT3mC8n3UE+p9qMFcPtxMw66z6JuCXKNtbKqnTv5F
-         OZyA==
-X-Gm-Message-State: APjAAAVGLQbMunuqJvgQhBXZ4Tn4Uf/cgwJh1rlbMezQsJHll/5foTnz
-        bY7QSrysLTcgdc1McCSa6bIKU3mQ
-X-Google-Smtp-Source: APXvYqyttR+fT5B3VkhIrI0/Ihv/HJWfdINVQaUvM2CrYDEla4IlgOLYlzE/VPEuozvmcF/x58xDew==
-X-Received: by 2002:a25:c242:: with SMTP id s63mr28043715ybf.79.1567607049057;
-        Wed, 04 Sep 2019 07:24:09 -0700 (PDT)
-Received: from mail-yw1-f50.google.com (mail-yw1-f50.google.com. [209.85.161.50])
-        by smtp.gmail.com with ESMTPSA id r9sm4333918ywl.108.2019.09.04.07.24.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Sep 2019 07:24:07 -0700 (PDT)
-Received: by mail-yw1-f50.google.com with SMTP id x64so4201309ywg.3
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 07:24:06 -0700 (PDT)
-X-Received: by 2002:a81:554b:: with SMTP id j72mr6376895ywb.190.1567607046119;
- Wed, 04 Sep 2019 07:24:06 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=THa8tcHpmGXEJKGCFwAm5Uk/uRFZwqU8Lnh8dAdqGFw=;
+        b=AANgACXr3jeSOeLnyNeFlSUUQUZAFp3rugjxwlpD/ivd/8XHsHqHiOAmFMTVpIYF0F
+         Y512JwwsPEbRrrD947PY6B1IVJC+xoRzYTTRjiOUB4opLWM6Ltj/8FUqkj+rebWne03+
+         WKwdzBUz9WZ7U/LB6HZfj1PDTcFF/823lbE0RtjJALxM0NkchjGeZfrkIkk3e88e1tYf
+         q+KU/9Fsa21Sye36kxtpxGWAGJfNywxLB+QapAg+ZELoY4i259rRyhuebzhLTa5FWQUw
+         nBlUv9ImmSGP+Mfk5VZQVZK/E9hrm36jLUTaUuNzj8vGtGqE4QYjwWtSBVeobcDq5gt/
+         /63g==
+X-Gm-Message-State: APjAAAUBGa7IG456aU9eFp/9t03KOWP8aupwsTK/wYqN761H1OQ7QW5z
+        /NA6ngKd3HJV0I+u9yqnqnQ=
+X-Google-Smtp-Source: APXvYqzyw0MPGCNd++mOuBa8REAhRNC6dJpfnJfXHdFLYbnPFhu2UAYvHSYeUWoqOi/Su7m4WwZK2w==
+X-Received: by 2002:a1c:f704:: with SMTP id v4mr4998945wmh.90.1567607549835;
+        Wed, 04 Sep 2019 07:32:29 -0700 (PDT)
+Received: from tycho (ipbcc09208.dynamic.kabel-deutschland.de. [188.192.146.8])
+        by smtp.gmail.com with ESMTPSA id r28sm1016704wrr.94.2019.09.04.07.32.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 07:32:29 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 16:32:28 +0200
+From:   Zahari Doychev <zahari.doychev@linux.com>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     netdev@vger.kernel.org, makita.toshiaki@lab.ntt.co.jp,
+        jiri@resnulli.us, nikolay@cumulusnetworks.com,
+        simon.horman@netronome.com, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org, jhs@mojatatu.com,
+        dsahern@gmail.com, xiyou.wangcong@gmail.com,
+        johannes@sipsolutions.net, alexei.starovoitov@gmail.com
+Subject: Re: [Bridge] [PATCH v3 1/2] net: bridge: use mac_len in bridge
+ forwarding
+Message-ID: <20190904143227.5jpn2gnu3fed55wg@tycho>
+References: <20190902181000.25638-1-zahari.doychev@linux.com>
+ <76b7723b-68dd-0efc-9a93-0597e9d9b827@gmail.com>
+ <20190903133635.siw6xcaqwk7m5a5a@tycho>
+ <a9a093f2-1ec6-339c-b015-eb658618cf2b@gmail.com>
 MIME-Version: 1.0
-References: <010601d53bdc$79c86dc0$6d594940$@net> <20190716070246.0745ee6f@hermes.lan>
- <01db01d559e5$64d71de0$2e8559a0$@net> <CA+FuTSdu5inPWp_jkUcFnb-Fs-rdk0AMiieCYtjLE7Qs5oFWZQ@mail.gmail.com>
- <8f4bda24-5bd4-3f12-4c98-5e1097dde84a@gmail.com> <CA+FuTSf4iLXh-+ADfBNxqcsw=u_vGm7Wsx7vchgwgwvGFYOA6w@mail.gmail.com>
- <CA+FuTSdi=tw=N4X2f+paFNM7KHqBgNkV_se-ykZ0+WoA7q0AhQ@mail.gmail.com>
- <00aa01d5630b$7e062660$7a127320$@net> <4242994D-E2CF-499A-848A-7B14CE536E33@raytheon.com>
- <c3b83305-82a5-f3c8-2602-1aed2e9b51ca@gmail.com>
-In-Reply-To: <c3b83305-82a5-f3c8-2602-1aed2e9b51ca@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 4 Sep 2019 10:23:29 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdV0mAZ+-GzikjTJWMxW70q4DLSKAaKu8hXMeoFCoWSWg@mail.gmail.com>
-Message-ID: <CA+FuTSdV0mAZ+-GzikjTJWMxW70q4DLSKAaKu8hXMeoFCoWSWg@mail.gmail.com>
-Subject: Re: Is bug 200755 in anyone's queue??
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Mark KEATON <mark.keaton@raytheon.com>,
-        Steve Zabele <zabele@comcast.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        "shum@canndrew.org" <shum@canndrew.org>,
-        "vladimir116@gmail.com" <vladimir116@gmail.com>,
-        "saifi.khan@strikr.in" <saifi.khan@strikr.in>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "on2k16nm@gmail.com" <on2k16nm@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a9a093f2-1ec6-339c-b015-eb658618cf2b@gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 4, 2019 at 8:23 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 9/4/19 2:00 PM, Mark KEATON wrote:
-> > Hi Willem,
-> >
-> > I am the person who commented on the original bug report in bugzilla.
-> >
-> > In communicating with Steve just now about possible solutions that main=
-tain the efficiency that you are after, what would you think of the followi=
-ng:  keep two lists of UDP sockets, those connected and those not connected=
-, and always searching the connected list first.
->
-> This was my suggestion.
->
-> Note that this requires adding yet another hash table, and yet another lo=
-okup
-> (another cache line miss per incoming packet)
->
-> This lookup will slow down DNS and QUIC servers, or any application solel=
-y using not connected sockets.
+On Wed, Sep 04, 2019 at 04:14:28PM +0900, Toshiaki Makita wrote:
+> On 2019/09/03 22:36, Zahari Doychev wrote:
+> > On Tue, Sep 03, 2019 at 08:37:36PM +0900, Toshiaki Makita wrote:
+> > > Hi Zahari,
+> > > 
+> > > Sorry for reviewing this late.
+> > > 
+> > > On 2019/09/03 3:09, Zahari Doychev wrote:
+> > > ...
+> > > > @@ -466,13 +466,14 @@ static bool __allowed_ingress(const struct net_bridge *br,
+> > > >    		/* Tagged frame */
+> > > >    		if (skb->vlan_proto != br->vlan_proto) {
+> > > >    			/* Protocol-mismatch, empty out vlan_tci for new tag */
+> > > > -			skb_push(skb, ETH_HLEN);
+> > > > +			skb_push(skb, skb->mac_len);
+> > > >    			skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
+> > > >    							skb_vlan_tag_get(skb));
+> > > 
+> > > I think we should insert vlan at skb->data, i.e. mac_header + mac_len, while this
+> > > function inserts the tag at mac_header + ETH_HLEN which is not always the correct
+> > > offset.
+> > 
+> > Maybe I am misunderstanding the concern here but this should make sure that
+> > the VLAN tag from the skb is move back in the payload as the outer most tag.
+> > So it should follow the ethernet header. It looks like this e.g.,:
+> > 
+> > VLAN1 in skb:
+> > +------+------+-------+
+> > | DMAC | SMAC | ETYPE |
+> > +------+------+-------+
+> > 
+> > VLAN1 moved to payload:
+> > +------+------+-------+-------+
+> > | DMAC | SMAC | VLAN1 | ETYPE |
+> > +------+------+-------+-------+
+> > 
+> > VLAN2 in skb:
+> > +------+------+-------+-------+
+> > | DMAC | SMAC | VLAN1 | ETYPE |
+> > +------+------+-------+-------+
+> > 
+> > VLAN2 moved to payload:
+> > 
+> > +------+------+-------+-------+
+> > | DMAC | SMAC | VLAN2 | VLAN1 | ....
+> > +------+------+-------+-------+
+> > 
+> > Doing the skb push with mac_len makes sure that VLAN tag is inserted in the
+> > correct offset. For mac_len == ETH_HLEN this does not change the current
+> > behaviour.
+> 
+> Reordering VLAN headers here does not look correct to me. If skb->data points to ETH+VLAN,
+> then we should insert the vlan at the offset.
+> Vlan devices with reorder_hdr disabled produce packets whose mac_len includes ETH+VLAN header,
+> and they expects vlan insertion after the outer vlan header.
 
-Exactly.
+I see so in this case we should handle differently as it seems sometimes
+we have to insert after or before the tag in the packet. I am not quite sure
+if this is possible to be detected here. I was trying to do bridging with VLAN
+devices with reorder_hdr disabled working but somehow I was not able to get
+mac_len longer then ETH_HLEN in all cases that I tried. Can you provide some
+example how can I try this out? It will really help me to understand the
+problem better.
 
-The only way around it that I see is to keep the single list and
-optionally mark a struct reuseport_sock as having no connected
-members, in which case the search can break on the first reuseport
-match, as it does today.
+> 
+> Also I'm not sure there is standard ethernet header in mac_len, as mac_len is not ETH_HLEN.
+> E.g. tun devices can produce vlan packets without ehternet header.
 
-"
-On top of the main patch it requires something like
+How is the bridge forwarding decision done in this case when there are no
+MAC addresses, vlan based only?
 
-@@ -22,6 +22,7 @@ struct sock_reuseport {
-        /* ID stays the same even after the size of socks[] grows. */
-        unsigned int            reuseport_id;
-        bool                    bind_inany;
-+       unsigned int             connected;
-        struct bpf_prog __rcu   *prog;          /* optional BPF sock select=
-or */
-        struct sock             *socks[0];      /* array of sock pointers *=
-/
- };
+> 
+> > 
+> > > 
+> > > >    			if (unlikely(!skb))
+> > > >    				return false;
+> > > >    			skb_pull(skb, ETH_HLEN);
+> > > 
+> > > Now skb->data is mac_header + ETH_HLEN which would be broken when mac_len is not
+> > > ETH_HLEN?
+> > 
+> > I thought it would be better to point in this case to the outer tag as otherwise
+> > if mac_len is used the skb->data will point to the next tag which I find somehow
+> > inconsistent or do you see some case where this can cause problems?
+> 
+> Vlan devices with reorder_hdr off will break because it relies on skb->data offset
+> as I described in the previous discussion.
 
-@@ -73,6 +74,15 @@ int __ip4_datagram_connect(struct sock *sk, struct
-sockaddr *uaddr, int addr_len
-        sk_set_txhash(sk);
-        inet->inet_id =3D jiffies;
+I also see in vlan_do_receive that the VLAN tag is moved to the payload when
+reorder_hdr is off and the vlan_dev is not a bridge port. So it seems that
+I am misunderstanding the reorder_hdr option so if you can give me some more
+details about how it is supposed to be used will be highly appreciated.
 
-+       if (rcu_access_pointer(sk->sk_reuseport_cb)) {
-+               struct sock_reuseport *reuse;
-+
-+               rcu_read_lock();
-+               reuse =3D rcu_dereference(sk->sk_reuseport_cb);
-+               reuse->connected =3D 1;
-+               rcu_read_unlock();
-+       }
-+
-        sk_dst_set(sk, &rt->dst);
-        err =3D 0;
-"
+Thanks
+Zahari
 
-plus a way for reuseport_select_sock to communicate that. Probably a
-variant __reuseport_select_sock with an extra argument.
-
-As for BPF: the example I pointed out does read ip addresses and uses
-a BPF map for socket selection. But as that feature is new with 4.19
-it is probably moot for this purpose, as we are targeting a fix that
-can be backported to 4.19 stable.
+> 
+> Toshiaki Makita
