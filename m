@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E88A8CD5
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB180A8CC2
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732614AbfIDQSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:18:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33002 "EHLO mail.kernel.org"
+        id S1732446AbfIDQRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:17:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731543AbfIDP6t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:49 -0400
+        id S1732299AbfIDP7N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:59:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF93B22CF7;
-        Wed,  4 Sep 2019 15:58:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 53D1122CF5;
+        Wed,  4 Sep 2019 15:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612728;
-        bh=9ihFwqapVZ8ImWO7Fe8EEFOgFkuhEe0mW9hNiTymonE=;
+        s=default; t=1567612753;
+        bh=lQYj4NUXHSkeIRtL2lZVGzZ2tZyvwgqLTUTTjnchcWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ohLXILHVZqYXQ7dnTI/nap5vJ4RtGBTzoJiYYfcfqqMqMVgOBxeX3awnRp9+u0tA7
-         9J7Pb9v8Fb5cimz+ASNPkNOecG9nIngO/Xov283NAOjxdzgSOM56CPTwUoz+rbJu+H
-         lS7nHFssubgkJHeLWs4u+SdnRQcgPr/x0UoSopkk=
+        b=FkVVKNcJRscE51XVCDAzvT79U7qlKGzqreDZeumKSzVf2SnZ2hoMkwLdLTGnmMkEg
+         SJdDo+jLVabVzHCcvJE75NuGhh2l7SZ8oYFxyeL0+geBexHo6igwUKIDGjGiC0WhLY
+         6zA3/Az16Op5RCxkuAIlXDC/6y47nJq3cmGhKmo4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 45/94] SUNRPC: Handle EADDRINUSE and ENOBUFS correctly
-Date:   Wed,  4 Sep 2019 11:56:50 -0400
-Message-Id: <20190904155739.2816-45-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 62/94] libceph: don't call crypto_free_sync_skcipher() on a NULL tfm
+Date:   Wed,  4 Sep 2019 11:57:07 -0400
+Message-Id: <20190904155739.2816-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -43,70 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 80f455da6cd0998a5be30a8af24ea2a22815c212 ]
+[ Upstream commit e8c99200b4d117c340c392ebd5e62d85dfeed027 ]
 
-If a connect or bind attempt returns EADDRINUSE, that means we want to
-retry with a different port. It is not a fatal connection error.
-Similarly, ENOBUFS is not fatal, but just indicates a memory allocation
-issue. Retry after a short delay.
+In set_secret(), key->tfm is assigned to NULL on line 55, and then
+ceph_crypto_key_destroy(key) is executed.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+ceph_crypto_key_destroy(key)
+  crypto_free_sync_skcipher(key->tfm)
+    crypto_free_skcipher(&tfm->base);
+
+This happens to work because crypto_sync_skcipher is a trivial wrapper
+around crypto_skcipher: &tfm->base is still 0 and crypto_free_skcipher()
+handles that.  Let's not rely on the layout of crypto_sync_skcipher.
+
+This bug is found by a static analysis tool STCheck written by us.
+
+Fixes: 69d6302b65a8 ("libceph: Remove VLA usage of skcipher").
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/ceph/crypto.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 9e1743b364ec4..3f090a75f3721 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1926,6 +1926,9 @@ call_bind_status(struct rpc_task *task)
- 		task->tk_rebind_retry--;
- 		rpc_delay(task, 3*HZ);
- 		goto retry_timeout;
-+	case -ENOBUFS:
-+		rpc_delay(task, HZ >> 2);
-+		goto retry_timeout;
- 	case -EAGAIN:
- 		goto retry_timeout;
- 	case -ETIMEDOUT:
-@@ -1949,7 +1952,6 @@ call_bind_status(struct rpc_task *task)
- 	case -ENETDOWN:
- 	case -EHOSTUNREACH:
- 	case -ENETUNREACH:
--	case -ENOBUFS:
- 	case -EPIPE:
- 		dprintk("RPC: %5u remote rpcbind unreachable: %d\n",
- 				task->tk_pid, task->tk_status);
-@@ -2040,8 +2042,6 @@ call_connect_status(struct rpc_task *task)
- 	case -ENETDOWN:
- 	case -ENETUNREACH:
- 	case -EHOSTUNREACH:
--	case -EADDRINUSE:
--	case -ENOBUFS:
- 	case -EPIPE:
- 		xprt_conditional_disconnect(task->tk_rqstp->rq_xprt,
- 					    task->tk_rqstp->rq_connect_cookie);
-@@ -2050,6 +2050,7 @@ call_connect_status(struct rpc_task *task)
- 		/* retry with existing socket, after a delay */
- 		rpc_delay(task, 3*HZ);
- 		/* fall through */
-+	case -EADDRINUSE:
- 	case -ENOTCONN:
- 	case -EAGAIN:
- 	case -ETIMEDOUT:
-@@ -2058,6 +2059,9 @@ call_connect_status(struct rpc_task *task)
- 		clnt->cl_stats->netreconn++;
- 		task->tk_action = call_transmit;
- 		return;
-+	case -ENOBUFS:
-+		rpc_delay(task, HZ >> 2);
-+		goto out_retry;
+diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+index 5d6724cee38f9..4f75df40fb121 100644
+--- a/net/ceph/crypto.c
++++ b/net/ceph/crypto.c
+@@ -136,8 +136,10 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
+ 	if (key) {
+ 		kfree(key->key);
+ 		key->key = NULL;
+-		crypto_free_sync_skcipher(key->tfm);
+-		key->tfm = NULL;
++		if (key->tfm) {
++			crypto_free_sync_skcipher(key->tfm);
++			key->tfm = NULL;
++		}
  	}
- 	rpc_call_rpcerror(task, status);
- 	return;
+ }
+ 
 -- 
 2.20.1
 
