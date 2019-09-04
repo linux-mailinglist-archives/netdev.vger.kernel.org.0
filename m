@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF18FA8A50
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE878A8A54
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731523AbfIDP67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:58:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33182 "EHLO mail.kernel.org"
+        id S1732215AbfIDP7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:59:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732170AbfIDP66 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:58 -0400
+        id S1732190AbfIDP7A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:59:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2C0A2377B;
-        Wed,  4 Sep 2019 15:58:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3197523784;
+        Wed,  4 Sep 2019 15:58:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612737;
-        bh=hg3v9mNCEl88hPyO4T2hxcD97UjdZDKcsaSktvnl8vA=;
+        s=default; t=1567612739;
+        bh=csKgyx9cIvcyBdEkZTLKA3ImSwmlRCwcW6veHW3zcEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NL9qhQ2l9gQj1/YdGGGAswMh9omB5qQlUel54FkUkVirZ957Zqog4aXksHjSy3ool
-         Mj4bND+3k7aiG5mnwh4OQWS7cmnrRnsr47VdQbodc1+6VEwqtSIqmk5aUIvlMU8S0g
-         8cP/xPkO54X87Ii6zLrWh6KQqgHeJfU+0McfPYU0=
+        b=y4B6BFWFtijfVWzLcd+0hXzrwGuPk2MErLJtYiAZQUnPX0lwIXmcsW+it98YWuQOV
+         Ka3OJ7Pj12TSGwbrF58nBwfpc2bWZBPOooz7AvUvi8zub3FSAKbRb/gIUn7NN+VQeG
+         17J1nlRotRBs822reo9bD7U6j5T0oMRsDQCaonRc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Todd Seidelmann <tseidelmann@linode.com>,
-        Florian Westphal <fw@strlen.de>,
+Cc:     Thomas Jarosch <thomas.jarosch@intra2net.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 51/94] netfilter: xt_physdev: Fix spurious error message in physdev_mt_check
-Date:   Wed,  4 Sep 2019 11:56:56 -0400
-Message-Id: <20190904155739.2816-51-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 52/94] netfilter: nf_conntrack_ftp: Fix debug output
+Date:   Wed,  4 Sep 2019 11:56:57 -0400
+Message-Id: <20190904155739.2816-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -46,44 +45,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Todd Seidelmann <tseidelmann@linode.com>
+From: Thomas Jarosch <thomas.jarosch@intra2net.com>
 
-[ Upstream commit 3cf2f450fff304be9cf4868bf0df17f253bc5b1c ]
+[ Upstream commit 3a069024d371125227de3ac8fa74223fcf473520 ]
 
-Simplify the check in physdev_mt_check() to emit an error message
-only when passed an invalid chain (ie, NF_INET_LOCAL_OUT).
-This avoids cluttering up the log with errors against valid rules.
+The find_pattern() debug output was printing the 'skip' character.
+This can be a NULL-byte and messes up further pr_debug() output.
 
-For large/heavily modified rulesets, current behavior can quickly
-overwhelm the ring buffer, because this function gets called on
-every change, regardless of the rule that was changed.
+Output without the fix:
+kernel: nf_conntrack_ftp: Pattern matches!
+kernel: nf_conntrack_ftp: Skipped up to `<7>nf_conntrack_ftp: find_pattern `PORT': dlen = 8
+kernel: nf_conntrack_ftp: find_pattern `EPRT': dlen = 8
 
-Signed-off-by: Todd Seidelmann <tseidelmann@linode.com>
-Acked-by: Florian Westphal <fw@strlen.de>
+Output with the fix:
+kernel: nf_conntrack_ftp: Pattern matches!
+kernel: nf_conntrack_ftp: Skipped up to 0x0 delimiter!
+kernel: nf_conntrack_ftp: Match succeeded!
+kernel: nf_conntrack_ftp: conntrack_ftp: match `172,17,0,100,200,207' (20 bytes at 4150681645)
+kernel: nf_conntrack_ftp: find_pattern `PORT': dlen = 8
+
+Signed-off-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/xt_physdev.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/netfilter/nf_conntrack_ftp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/xt_physdev.c b/net/netfilter/xt_physdev.c
-index ead7c60222086..b92b22ce8abd3 100644
---- a/net/netfilter/xt_physdev.c
-+++ b/net/netfilter/xt_physdev.c
-@@ -101,11 +101,9 @@ static int physdev_mt_check(const struct xt_mtchk_param *par)
- 	if (info->bitmask & (XT_PHYSDEV_OP_OUT | XT_PHYSDEV_OP_ISOUT) &&
- 	    (!(info->bitmask & XT_PHYSDEV_OP_BRIDGED) ||
- 	     info->invert & XT_PHYSDEV_OP_BRIDGED) &&
--	    par->hook_mask & ((1 << NF_INET_LOCAL_OUT) |
--	    (1 << NF_INET_FORWARD) | (1 << NF_INET_POST_ROUTING))) {
-+	    par->hook_mask & (1 << NF_INET_LOCAL_OUT)) {
- 		pr_info_ratelimited("--physdev-out and --physdev-is-out only supported in the FORWARD and POSTROUTING chains with bridged traffic\n");
--		if (par->hook_mask & (1 << NF_INET_LOCAL_OUT))
--			return -EINVAL;
-+		return -EINVAL;
+diff --git a/net/netfilter/nf_conntrack_ftp.c b/net/netfilter/nf_conntrack_ftp.c
+index 8c6c11bab5b67..b5df6c4c159cd 100644
+--- a/net/netfilter/nf_conntrack_ftp.c
++++ b/net/netfilter/nf_conntrack_ftp.c
+@@ -322,7 +322,7 @@ static int find_pattern(const char *data, size_t dlen,
+ 		i++;
  	}
  
- 	if (!brnf_probed) {
+-	pr_debug("Skipped up to `%c'!\n", skip);
++	pr_debug("Skipped up to 0x%hhx delimiter!\n", skip);
+ 
+ 	*numoff = i;
+ 	*numlen = getnum(data + i, dlen - i, cmd, term, numoff);
 -- 
 2.20.1
 
