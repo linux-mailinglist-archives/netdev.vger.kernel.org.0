@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 019FEA91F7
+	by mail.lfdr.de (Postfix) with ESMTP id 6F46BA91F8
 	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:40:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387730AbfIDSks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 14:40:48 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37737 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732465AbfIDSks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:40:48 -0400
-Received: by mail-pf1-f193.google.com with SMTP id y9so13794304pfl.4
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 11:40:48 -0700 (PDT)
+        id S2387742AbfIDSlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 14:41:03 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44466 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732543AbfIDSlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:41:03 -0400
+Received: by mail-pl1-f194.google.com with SMTP id k1so2607811pls.11
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 11:41:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=Vrtqv1cFw27uAgADwsiiIYgq/XSGYJzvztXErTTVhxI=;
-        b=ffAMriBnv/YvkWiIL2QcmeNNjHiBPSn3Tdjbpfsd+xrm9eHnAB+1ZcaBvRVA8Yton9
-         VVau6qwfo3BYRzfWtlTM/Xkl6+IwLMC0gsa13AaGKs8RSxivRxDSrNYBZR1M1mNb8AM5
-         nBLMUU1pJrySzI+5+EIWI2OOs2vCsrcbnwb7CfGzLGSaCHsSbud/7aaKu8sQiQEwcz+2
-         8mKok5j8a0keHuATB8k+XgiKpoZO6x+zgtJrX8/STIhYUEghcfO0AyOLwxnC54dy+Cpi
-         yHsQoMXsPnbAZ5yRwhQBcHeD/7IoamjF8vr+swkq6ySC1ivcbVCXJhhG3G2xGhQf5mcR
-         8nrg==
+        bh=xTQKEQ6Ui/AXXfKIWIQiYloo4DpFVjrVF9m6m1aadIw=;
+        b=ns4/yhTtwFuHl0OzCY6V/3cKyZkuDtazC+3sNyDAV3nm0a4dS2ua91e5mva65D6BTE
+         kbf5fiPQ62E1N9ZA+YsCTzbsp/WgItqTtDMuuoC/FxOaxzVRNbMpsuQdc6ZBKYiGEH2U
+         96+ERAZzU2XWwsVIRK0U/JjQykl5WVQe7XmwizGvdu479/zfy+FfwFDQvDa5T96fW/Gl
+         uksMuN9hRbMJQEbQ17/+RPGMPVpCfKCkC5FNV7eQ2ZWV7NneIi3ZD2x8UGWTmS3DAuyC
+         osXIG21lYBcprV4OGGvkhFGj5t645w18i7Gz102QQhpk3nBEvPhPgWdHHKQ0hnaEZS5h
+         qzTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Vrtqv1cFw27uAgADwsiiIYgq/XSGYJzvztXErTTVhxI=;
-        b=jA+3z6w3tWUsqTKzd9idohZ/t+z9T7o/HPNDw5slz00L0odn17MpbzE0tJugh1p2eq
-         3HQbPTS29FAXWvChAxvH7RrZK6zymn/x9wYza6k0nQQojXmLxn0ZJwzTyZkjxDaEw8or
-         Ik4/1U4MsZEUwiWKVNudR3XhEwrEkvNODbyeoF6xu8D9hVYFK1Shj9R0NFkMc4AHITO5
-         VDOfQug7vfZsjEP14redugpLKN1uzsYpINGrR0y6AARF66OtcoterqcWl9ahwbNVR90Q
-         kawqmfZ0xlyuyaHOg5TFPLkkxBn+Mx61Z7yn+jWsxtFXYKSDz7v91Bs38tvbEv0ssG0v
-         O0+A==
-X-Gm-Message-State: APjAAAWa7x1EPYZcmVETWBchP0/XmiOfm2xirKRT3Kjn41Fn3z3xeh85
-        82DnmKmYq2kHEVSRScRR5FYSNwHWW9E=
-X-Google-Smtp-Source: APXvYqzB9RXhIKrX4n1iQ5ElIkela9+HlLOOZfgr/m9o3U4bwQvc5BgO5CvlEIW83/gneGEuuzYxXQ==
-X-Received: by 2002:a17:90a:8c01:: with SMTP id a1mr6173268pjo.82.1567622447568;
-        Wed, 04 Sep 2019 11:40:47 -0700 (PDT)
+        bh=xTQKEQ6Ui/AXXfKIWIQiYloo4DpFVjrVF9m6m1aadIw=;
+        b=l5Iraz30wtqC2F+jKfLRVZAvNwM0KchZTPBUFnzIHeKFAqolhWFALd6x2FdfxZ187Q
+         MF2V+M6QDyzGGAutmdAw9Vw4TaHFQxqIc46IguoAEZBiB25v7mitAbUC6svyZ1CXncc2
+         72EselWJOyOcsT/hM1XKLpJDYiepYDUUS7uSI/A0xKY8fb7lQxUoVINq1In1llDSG93Z
+         dYEsok0fSrX7JyroMjZQpRCtUrqx2sZw527NFosjVj7o5YjttGZ1LzY6mUivwk9piFcT
+         jOUJLpIyazdoHwtdHKS21Y9p+WPYhm8sVDLBQkCj5V0SIoEMYQ8+fvoz90uJkjrbvJC8
+         vEtQ==
+X-Gm-Message-State: APjAAAUPkyGwlSSv2tedm5JfgRemi7wvxH/4nXb/CkWvWsgdJMcDaiFH
+        6mYHRL6XAIjrl7X2L1cfyHVNGToV9c8=
+X-Google-Smtp-Source: APXvYqzewZeNFogWpu6R97seVy3a+RZDcCaf6Vctvxnb7MruBiN9hR+ngE7J8u2j9QW7F82bgZh+4A==
+X-Received: by 2002:a17:902:7791:: with SMTP id o17mr26009686pll.10.1567622462106;
+        Wed, 04 Sep 2019 11:41:02 -0700 (PDT)
 Received: from ap-To-be-filled-by-O-E-M.1.1.1.1 ([14.33.120.60])
-        by smtp.gmail.com with ESMTPSA id r1sm19115921pgv.70.2019.09.04.11.40.41
+        by smtp.gmail.com with ESMTPSA id a17sm24511431pfc.26.2019.09.04.11.40.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2019 11:40:46 -0700 (PDT)
+        Wed, 04 Sep 2019 11:41:00 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
         vfalico@gmail.com, andy@greyhouse.net, jiri@resnulli.us,
@@ -51,77 +51,347 @@ To:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
         hare@suse.de, varun@chelsio.com, ubraun@linux.ibm.com,
         kgraul@linux.ibm.com
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 08/11] macsec: fix refcnt leak in module exit routine
-Date:   Thu,  5 Sep 2019 03:40:36 +0900
-Message-Id: <20190904184036.15229-1-ap420073@gmail.com>
+Subject: [PATCH net 09/11] net: core: add ignore flag to netdev_adjacent structure
+Date:   Thu,  5 Sep 2019 03:40:52 +0900
+Message-Id: <20190904184052.15324-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a macsec interface is created, it increases a refcnt to a lower
-device(real device). when macsec interface is deleted, the refcnt is
-decreased in macsec_free_netdev(), which is ->priv_destructor() of
-macsec interface.
+In order to link an adjacent node, netdev_upper_dev_link() is used
+and in order to unlink an adjacent node, netdev_upper_dev_unlink() is used.
+unlink operation does not fail, but link operation can fail.
 
-The problem scenario is this.
-When nested macsec interfaces are exiting, the exit routine of the
-macsec module makes refcnt leaks.
+In order to exchange adjacent nodes, we should unlink an old adjacent
+node first. then, link a new adjacent node.
+If link operation is failed, we should link an old adjacent node again.
+But this link operation can fail too.
+It eventually breaks the adjacent link relationship.
 
-Test commands:
-    ip link add dummy0 type dummy
-    ip link add macsec0 link dummy0 type macsec
-    ip link add macsec1 link macsec0 type macsec
-    modprobe -rv macsec
+This patch adds an ignore flag into the netdev_adjacent structure.
+If this flag is set, netdev_upper_dev_link() ignores an old adjacent
+node for a moment.
+So we can skip unlink operation before link operation.
 
-[  208.629433] unregister_netdevice: waiting for macsec0 to become free. Usage count = 1
-
-Steps of exit routine of macsec module are below.
-1. Calls ->dellink() in __rtnl_link_unregister().
-2. Checks refcnt and wait refcnt to be 0 if refcnt is not 0 in
-netdev_run_todo().
-3. Calls ->priv_destruvtor() in netdev_run_todo().
-
-Step2 checks refcnt, but step3 decreases refcnt.
-So, step2 waits forever.
-
-This patch makes the macsec module do not hold a refcnt of the lower
-device because it already holds a refcnt of the lower device with
-netdev_upper_dev_link().
-
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/macsec.c | 4 ----
- 1 file changed, 4 deletions(-)
+ include/linux/netdevice.h |   4 +
+ net/core/dev.c            | 160 +++++++++++++++++++++++++++++++++-----
+ 2 files changed, 144 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 25a4fc88145d..41ec1ed0d545 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3031,12 +3031,10 @@ static const struct nla_policy macsec_rtnl_policy[IFLA_MACSEC_MAX + 1] = {
- static void macsec_free_netdev(struct net_device *dev)
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index a2c47f43e54b..d9ca4a79f715 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4322,6 +4322,10 @@ int netdev_master_upper_dev_link(struct net_device *dev,
+ 				 struct netlink_ext_ack *extack);
+ void netdev_upper_dev_unlink(struct net_device *dev,
+ 			     struct net_device *upper_dev);
++void netdev_adjacent_dev_disable(struct net_device *upper_dev,
++				struct net_device *lower_dev);
++void netdev_adjacent_dev_enable(struct net_device *upper_dev,
++				struct net_device *lower_dev);
+ void netdev_adjacent_rename_links(struct net_device *dev, char *oldname);
+ void *netdev_lower_dev_get_private(struct net_device *dev,
+ 				   struct net_device *lower_dev);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6a4b4ce62204..ac055b531c96 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6448,6 +6448,9 @@ struct netdev_adjacent {
+ 	/* upper master flag, there can only be one master device per list */
+ 	bool master;
+ 
++	/* lookup ignore flag */
++	bool ignore;
++
+ 	/* counter for the number of times this device was added to us */
+ 	u16 ref_nr;
+ 
+@@ -6553,6 +6556,22 @@ struct net_device *netdev_master_upper_dev_get(struct net_device *dev)
+ }
+ EXPORT_SYMBOL(netdev_master_upper_dev_get);
+ 
++struct net_device *netdev_master_upper_dev_get_ignore(struct net_device *dev)
++{
++	struct netdev_adjacent *upper;
++
++	ASSERT_RTNL();
++
++	if (list_empty(&dev->adj_list.upper))
++		return NULL;
++
++	upper = list_first_entry(&dev->adj_list.upper,
++				 struct netdev_adjacent, list);
++	if (likely(upper->master) && !upper->ignore)
++		return upper->dev;
++	return NULL;
++}
++
+ /**
+  * netdev_has_any_lower_dev - Check if device is linked to some device
+  * @dev: device
+@@ -6603,8 +6622,9 @@ struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(netdev_upper_get_next_dev_rcu);
+ 
+-static struct net_device *netdev_next_upper_dev(struct net_device *dev,
+-						struct list_head **iter)
++static struct net_device *netdev_next_upper_dev_ignore(struct net_device *dev,
++						       struct list_head **iter,
++						       bool *ignore)
  {
- 	struct macsec_dev *macsec = macsec_priv(dev);
--	struct net_device *real_dev = macsec->real_dev;
+ 	struct netdev_adjacent *upper;
  
- 	free_percpu(macsec->stats);
- 	free_percpu(macsec->secy.tx_sc.stats);
+@@ -6614,6 +6634,7 @@ static struct net_device *netdev_next_upper_dev(struct net_device *dev,
+ 		return NULL;
  
--	dev_put(real_dev);
+ 	*iter = &upper->list;
++	*ignore = upper->ignore;
+ 
+ 	return upper->dev;
+ }
+@@ -6635,26 +6656,29 @@ static struct net_device *netdev_next_upper_dev_rcu(struct net_device *dev,
+ 	return upper->dev;
  }
  
- static void macsec_setup(struct net_device *dev)
-@@ -3291,8 +3289,6 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 	if (err < 0)
- 		return err;
+-int netdev_walk_all_upper_dev(struct net_device *dev,
+-			      int (*fn)(struct net_device *dev,
+-					void *data),
+-			      void *data)
++int netdev_walk_all_upper_dev_ignore(struct net_device *dev,
++				     int (*fn)(struct net_device *dev,
++					       void *data),
++				     void *data)
+ {
+ 	struct net_device *udev;
+ 	struct list_head *iter;
+ 	int ret;
++	bool ignore;
  
--	dev_hold(real_dev);
--
- 	macsec->nest_level = dev_get_nest_level(real_dev) + 1;
+ 	for (iter = &dev->adj_list.upper,
+-	     udev = netdev_next_upper_dev(dev, &iter);
++	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore);
+ 	     udev;
+-	     udev = netdev_next_upper_dev(dev, &iter)) {
++	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore)) {
++		if (ignore)
++			continue;
+ 		/* first is the upper device itself */
+ 		ret = fn(udev, data);
+ 		if (ret)
+ 			return ret;
  
- 	err = netdev_upper_dev_link(real_dev, dev, extack);
+ 		/* then look at all of its upper devices */
+-		ret = netdev_walk_all_upper_dev(udev, fn, data);
++		ret = netdev_walk_all_upper_dev_ignore(udev, fn, data);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -6690,6 +6714,15 @@ int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
+ }
+ EXPORT_SYMBOL_GPL(netdev_walk_all_upper_dev_rcu);
+ 
++bool netdev_has_upper_dev_ignore(struct net_device *dev,
++				 struct net_device *upper_dev)
++{
++	ASSERT_RTNL();
++
++	return netdev_walk_all_upper_dev_ignore(dev, __netdev_has_upper_dev,
++						upper_dev);
++}
++
+ /**
+  * netdev_lower_get_next_private - Get the next ->private from the
+  *				   lower neighbour list
+@@ -6786,6 +6819,23 @@ static struct net_device *netdev_next_lower_dev(struct net_device *dev,
+ 	return lower->dev;
+ }
+ 
++static struct net_device *netdev_next_lower_dev_ignore(struct net_device *dev,
++						       struct list_head **iter,
++						       bool *ignore)
++{
++	struct netdev_adjacent *lower;
++
++	lower = list_entry((*iter)->next, struct netdev_adjacent, list);
++
++	if (&lower->list == &dev->adj_list.lower)
++		return NULL;
++
++	*iter = &lower->list;
++	*ignore = lower->ignore;
++
++	return lower->dev;
++}
++
+ int netdev_walk_all_lower_dev(struct net_device *dev,
+ 			      int (*fn)(struct net_device *dev,
+ 					void *data),
+@@ -6814,6 +6864,36 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
+ }
+ EXPORT_SYMBOL_GPL(netdev_walk_all_lower_dev);
+ 
++int netdev_walk_all_lower_dev_ignore(struct net_device *dev,
++				     int (*fn)(struct net_device *dev,
++					       void *data),
++				     void *data)
++{
++	struct net_device *ldev;
++	struct list_head *iter;
++	int ret;
++	bool ignore;
++
++	for (iter = &dev->adj_list.lower,
++	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore);
++	     ldev;
++	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore)) {
++		if (ignore)
++			continue;
++		/* first is the lower device itself */
++		ret = fn(ldev, data);
++		if (ret)
++			return ret;
++
++		/* then look at all of its lower devices */
++		ret = netdev_walk_all_lower_dev_ignore(ldev, fn, data);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
+ static struct net_device *netdev_next_lower_dev_rcu(struct net_device *dev,
+ 						    struct list_head **iter)
+ {
+@@ -6833,11 +6913,14 @@ static u8 __netdev_upper_depth(struct net_device *dev)
+ 	struct net_device *udev;
+ 	struct list_head *iter;
+ 	u8 max_depth = 0;
++	bool ignore;
+ 
+ 	for (iter = &dev->adj_list.upper,
+-	     udev = netdev_next_upper_dev(dev, &iter);
++	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore);
+ 	     udev;
+-	     udev = netdev_next_upper_dev(dev, &iter)) {
++	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore)) {
++		if (ignore)
++			continue;
+ 		if (max_depth < udev->upper_level)
+ 			max_depth = udev->upper_level;
+ 	}
+@@ -6850,11 +6933,14 @@ static u8 __netdev_lower_depth(struct net_device *dev)
+ 	struct net_device *ldev;
+ 	struct list_head *iter;
+ 	u8 max_depth = 0;
++	bool ignore;
+ 
+ 	for (iter = &dev->adj_list.lower,
+-	     ldev = netdev_next_lower_dev(dev, &iter);
++	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore);
+ 	     ldev;
+-	     ldev = netdev_next_lower_dev(dev, &iter)) {
++	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore)) {
++		if (ignore)
++			continue;
+ 		if (max_depth < ldev->lower_level)
+ 			max_depth = ldev->lower_level;
+ 	}
+@@ -6999,6 +7085,7 @@ static int __netdev_adjacent_dev_insert(struct net_device *dev,
+ 	adj->master = master;
+ 	adj->ref_nr = 1;
+ 	adj->private = private;
++	adj->ignore = false;
+ 	dev_hold(adj_dev);
+ 
+ 	pr_debug("Insert adjacency: dev %s adj_dev %s adj->ref_nr %d; dev_hold on %s\n",
+@@ -7149,17 +7236,17 @@ static int __netdev_upper_dev_link(struct net_device *dev,
+ 		return -EBUSY;
+ 
+ 	/* To prevent loops, check if dev is not upper device to upper_dev. */
+-	if (netdev_has_upper_dev(upper_dev, dev))
++	if (netdev_has_upper_dev_ignore(upper_dev, dev))
+ 		return -EBUSY;
+ 
+ 	if ((dev->lower_level + upper_dev->upper_level) > MAX_NEST_DEV)
+ 		return -EMLINK;
+ 
+ 	if (!master) {
+-		if (netdev_has_upper_dev(dev, upper_dev))
++		if (netdev_has_upper_dev_ignore(dev, upper_dev))
+ 			return -EEXIST;
+ 	} else {
+-		master_dev = netdev_master_upper_dev_get(dev);
++		master_dev = netdev_master_upper_dev_get_ignore(dev);
+ 		if (master_dev)
+ 			return master_dev == upper_dev ? -EEXIST : -EBUSY;
+ 	}
+@@ -7182,10 +7269,12 @@ static int __netdev_upper_dev_link(struct net_device *dev,
+ 		goto rollback;
+ 
+ 	__netdev_update_upper_level(dev, NULL);
+-	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
++	netdev_walk_all_lower_dev_ignore(dev, __netdev_update_upper_level,
++					 NULL);
+ 
+ 	__netdev_update_lower_level(upper_dev, NULL);
+-	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
++	netdev_walk_all_upper_dev_ignore(upper_dev,
++					 __netdev_update_lower_level, NULL);
+ 
+ 	return 0;
+ 
+@@ -7271,13 +7360,44 @@ void netdev_upper_dev_unlink(struct net_device *dev,
+ 				      &changeupper_info.info);
+ 
+ 	__netdev_update_upper_level(dev, NULL);
+-	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
++	netdev_walk_all_lower_dev_ignore(dev, __netdev_update_upper_level,
++					 NULL);
+ 
+ 	__netdev_update_lower_level(upper_dev, NULL);
+-	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
++	netdev_walk_all_upper_dev_ignore(upper_dev,
++					 __netdev_update_lower_level, NULL);
+ }
+ EXPORT_SYMBOL(netdev_upper_dev_unlink);
+ 
++void __netdev_adjacent_dev_set(struct net_device *upper_dev,
++			       struct net_device *lower_dev,
++			       bool val)
++{
++	struct netdev_adjacent *adj;
++
++	adj = __netdev_find_adj(lower_dev, &upper_dev->adj_list.lower);
++	if (adj)
++		adj->ignore = val;
++
++	adj = __netdev_find_adj(upper_dev, &lower_dev->adj_list.upper);
++	if (adj)
++		adj->ignore = val;
++}
++
++void netdev_adjacent_dev_disable(struct net_device *upper_dev,
++				 struct net_device *lower_dev)
++{
++	__netdev_adjacent_dev_set(upper_dev, lower_dev, true);
++}
++EXPORT_SYMBOL(netdev_adjacent_dev_disable);
++
++void netdev_adjacent_dev_enable(struct net_device *upper_dev,
++				struct net_device *lower_dev)
++{
++	__netdev_adjacent_dev_set(upper_dev, lower_dev, false);
++}
++EXPORT_SYMBOL(netdev_adjacent_dev_enable);
++
+ /**
+  * netdev_bonding_info_change - Dispatch event about slave change
+  * @dev: device
 -- 
 2.17.1
 
