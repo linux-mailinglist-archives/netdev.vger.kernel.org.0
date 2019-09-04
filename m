@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C23A8BA3
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3B7A8B94
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732713AbfIDQEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:04:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40054 "EHLO mail.kernel.org"
+        id S1733055AbfIDQDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:03:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387674AbfIDQD2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:03:28 -0400
+        id S2387697AbfIDQDb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:03:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F181923431;
-        Wed,  4 Sep 2019 16:03:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4B6A20820;
+        Wed,  4 Sep 2019 16:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567613007;
-        bh=d9E8e5Yl/LVurahZOx39SNiiMA2U+50O6/6d+nmjWBs=;
+        s=default; t=1567613010;
+        bh=yx3NuZ2IIf9E6pMH2Ag2YDTHyO0z815AA/8i5DWjOXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G96vgdEls5rlYp7lpw1cRbe5SkGCBdcbwLg/um03ZXkQqveoULUf8+zjv9mmBbXma
-         wRoYYBbHAtGb0VrCF0cMdCS3vG77eJtTjfa068R7OicepgoMefbTXGP1NEIfQAf9Sg
-         CvTCbfNcGnFgCtHQAdgi9VwpevPtte/fBWPovmBQ=
+        b=RDHlubuiuVIPJvdtlJCq/nrSJFd3KyALruqE8VkefMZcfq425byXhhFeuONWhki7P
+         Cso84jZTuv5cVBQwoTZzNf3oaw46DXGKmnAEiCISoq/u+vSwLuRkgXCXnxAqO5e8F6
+         7UVcnNdI4yPikwJeG4tlDCi2Ntlag0Uch6fCMmqQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, SteveM <swm@swm1.com>,
+Cc:     Chen-Yu Tsai <wens@csie.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 16/20] sky2: Disable MSI on yet another ASUS boards (P6Xxxx)
-Date:   Wed,  4 Sep 2019 12:02:59 -0400
-Message-Id: <20190904160303.5062-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 18/20] net: stmmac: dwmac-rk: Don't fail if phy regulator is absent
+Date:   Wed,  4 Sep 2019 12:03:01 -0400
+Message-Id: <20190904160303.5062-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160303.5062-1-sashal@kernel.org>
 References: <20190904160303.5062-1-sashal@kernel.org>
@@ -43,41 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit 189308d5823a089b56e2299cd96589507dac7319 ]
+[ Upstream commit 3b25528e1e355c803e73aa326ce657b5606cda73 ]
 
-A similar workaround for the suspend/resume problem is needed for yet
-another ASUS machines, P6X models.  Like the previous fix, the BIOS
-doesn't provide the standard DMI_SYS_* entry, so again DMI_BOARD_*
-entries are used instead.
+The devicetree binding lists the phy phy as optional. As such, the
+driver should not bail out if it can't find a regulator. Instead it
+should just skip the remaining regulator related code and continue
+on normally.
 
-Reported-and-tested-by: SteveM <swm@swm1.com>
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Skip the remainder of phy_power_on() if a regulator supply isn't
+available. This also gets rid of the bogus return code.
+
+Fixes: 2e12f536635f ("net: stmmac: dwmac-rk: Use standard devicetree property for phy regulator")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/sky2.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index dcd72b2a37150..8ba9eadc20791 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4946,6 +4946,13 @@ static const struct dmi_system_id msi_blacklist[] = {
- 			DMI_MATCH(DMI_BOARD_NAME, "P6T"),
- 		},
- 	},
-+	{
-+		.ident = "ASUS P6X",
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
-+			DMI_MATCH(DMI_BOARD_NAME, "P6X"),
-+		},
-+	},
- 	{}
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 398b08e07149b..68a58333bd740 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -429,10 +429,8 @@ static int phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
+ 	int ret;
+ 	struct device *dev = &bsp_priv->pdev->dev;
  
+-	if (!ldo) {
+-		dev_err(dev, "no regulator found\n");
+-		return -1;
+-	}
++	if (!ldo)
++		return 0;
+ 
+ 	if (enable) {
+ 		ret = regulator_enable(ldo);
 -- 
 2.20.1
 
