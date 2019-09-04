@@ -2,102 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4642AA88A0
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17DA6A88AA
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:22:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730760AbfIDOTk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Sep 2019 10:19:40 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:56859 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727722AbfIDOTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 10:19:40 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC197.dip0.t-ipconnect.de [79.239.193.151])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 15095CECB0;
-        Wed,  4 Sep 2019 16:28:25 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [RESEND PATCH 0/5] Add bluetooth support for Orange Pi 3
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20190830132034.u65arlv7umh64lx6@flea>
-Date:   Wed, 4 Sep 2019 16:19:37 +0200
-Cc:     megous@megous.com, Chen-Yu Tsai <wens@csie.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <76FD40C7-10C5-4818-8EF9-60326ECA4243@holtmann.org>
-References: <20190823103139.17687-1-megous@megous.com>
- <5524D5E9-FA82-4244-A91F-78CF1C3FB3FB@holtmann.org>
- <20190830092104.odipmbflounqpffo@flea>
- <D02B89FB-F8C0-40AD-A99A-6C1B4FEB72A0@holtmann.org>
- <20190830132034.u65arlv7umh64lx6@flea>
-To:     Maxime Ripard <mripard@kernel.org>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1730749AbfIDOVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 10:21:20 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37145 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729993AbfIDOVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 10:21:20 -0400
+Received: by mail-wm1-f68.google.com with SMTP id r195so4020393wme.2;
+        Wed, 04 Sep 2019 07:21:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aVkZQqOuZnmw6j0QSgYaya0CSEyCvqv8Llmj2i2rC7o=;
+        b=YAWN4s0W76Y7PAvCuk9fzZEwQho+kNNc2lnHVPIaK1fpUCKN08UfUbAQnLLotYAdrm
+         CdI4ytIXTFFIlqxMjej8vpyjn4Z1t0Qp+dWz+k/eewhxkoOaWTeUWx+G+c3wIZ5WjosQ
+         lDz/qiVrLoxjPvQ6mLKw0OWXul3EFhS5fVh9ln8K30I97tG+t2MrqHAoDCqP38isfxqU
+         rActlDMdJr2Cjx0kjx3YEFa0ljrZolRsHagvyXta8s75mCTHogXIwQU1erqz4QHShR8X
+         gWHAth2Eo/LK41XxyjJKCQn22vjGHQsVYlc0b+x5EmAkTtmC0CwDrOuITo6sOaRdk6TR
+         fMIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=aVkZQqOuZnmw6j0QSgYaya0CSEyCvqv8Llmj2i2rC7o=;
+        b=YWRBG6kblAcd5TGskfZ87x6h5ikJ+gQ1fu+QwhXKeynozCg6lJ+9YTkI3JPuarEVRl
+         BMXn18QK63STZol1u4QOtFm/LTCxxjm4iSuVjiXlWf0dwPDw4bTK7ssfqqbTDWpE3/Fh
+         CGvTs/SWs5MiGu9nh3fYvnE0X9HpNn5ISTFsOlr4xWgfEoNEmklnHL2wlieT9tXvODpR
+         TUqP57B1zpBjR0XRo/3HytGzxR2Xf1u1NWp7f4c0KKo0aBJ+Zt7a77XtCFeYEEQFLRe3
+         OrJWuXiJxA3s70wFqx8J39RZi4nQ4eh3klQXgGEr4l2tu8TsXYztv8CZfUC9HL3JQ5rt
+         yNVg==
+X-Gm-Message-State: APjAAAU3JEEXG4E9qQ05zoRR+cV2chxLk4wQD1k6y+ttFohwdacCfyg/
+        b0PtKLWlC39ZXK72/XR/Nc0=
+X-Google-Smtp-Source: APXvYqyzvgDjB54xrywRGdsKRfpeyKScXMU6k5GFXvDSArzUzuLnIZFXN8gCsazBi74dmbo38aFq2A==
+X-Received: by 2002:a1c:3cc3:: with SMTP id j186mr4454404wma.119.1567606878094;
+        Wed, 04 Sep 2019 07:21:18 -0700 (PDT)
+Received: from localhost.localdomain (ip5b4096c3.dynamic.kabel-deutschland.de. [91.64.150.195])
+        by smtp.gmail.com with ESMTPSA id j1sm15056618wrg.24.2019.09.04.07.21.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 07:21:17 -0700 (PDT)
+From:   Krzysztof Wilczynski <kw@linux.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Huang Zijiang <huang.zijiang@zte.com.cn>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hns: Move static keyword to the front of declaration
+Date:   Wed,  4 Sep 2019 16:21:16 +0200
+Message-Id: <20190904142116.31884-1-kw@linux.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maxime,
+Move the static keyword to the front of declaration of g_dsaf_mode_match,
+and resolve the following compiler warning that can be seen when building
+with warnings enabled (W=1):
 
->>>>> (Resend to add missing lists, sorry for the noise.)
->>>>> 
->>>>> This series implements bluetooth support for Xunlong Orange Pi 3 board.
->>>>> 
->>>>> The board uses AP6256 WiFi/BT 5.0 chip.
->>>>> 
->>>>> Summary of changes:
->>>>> 
->>>>> - add more delay to let initialize the chip
->>>>> - let the kernel detect firmware file path
->>>>> - add new compatible and update dt-bindings
->>>>> - update Orange Pi 3 / H6 DTS
->>>>> 
->>>>> Please take a look.
->>>>> 
->>>>> thank you and regards,
->>>>> Ondrej Jirman
->>>>> 
->>>>> Ondrej Jirman (5):
->>>>> dt-bindings: net: Add compatible for BCM4345C5 bluetooth device
->>>>> bluetooth: bcm: Add support for loading firmware for BCM4345C5
->>>>> bluetooth: hci_bcm: Give more time to come out of reset
->>>>> arm64: dts: allwinner: h6: Add pin configs for uart1
->>>>> arm64: dts: allwinner: orange-pi-3: Enable UART1 / Bluetooth
->>>>> 
->>>>> .../bindings/net/broadcom-bluetooth.txt       |  1 +
->>>>> .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 19 +++++++++++++++++++
->>>>> arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi  | 10 ++++++++++
->>>>> drivers/bluetooth/btbcm.c                     |  3 +++
->>>>> drivers/bluetooth/hci_bcm.c                   |  3 ++-
->>>>> 5 files changed, 35 insertions(+), 1 deletion(-)
->>>> 
->>>> all 5 patches have been applied to bluetooth-next tree.
->>> 
->>> The DTS patches (last 2) should go through the arm-soc tree, can you
->>> drop them?
->> 
->> why is that? We have included DTS changes for Bluetooth devices
->> directly all the time. What is different with this hardware?
-> 
-> I guess some maintainers are more relaxed with it than we are then,
-> but for the why, well, it's the usual reasons, the most immediate one
-> being that it reduces to a minimum the conflicts between trees.
-> 
-> The other being that it's not really usual to merge patches supposed
-> to be handled by another maintainer without (at least) his
-> consent. I'm pretty sure you would have asked the same request if I
-> would have merged the bluetooth patches through my tree without
-> notice.
+drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c:27:1: warning:
+  ‘static’ is not at beginning of declaration [-Wold-style-declaration]
 
-I took the two DTS patches out now and let the submitter deal with getting these merged.
+Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
+---
+Related: https://lore.kernel.org/r/20190827233017.GK9987@google.com
 
-Regards
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Marcel
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
+index c1eba421ba82..3a14bbc26ea2 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_main.c
+@@ -24,7 +24,7 @@
+ #include "hns_dsaf_rcb.h"
+ #include "hns_dsaf_misc.h"
+ 
+-const static char *g_dsaf_mode_match[DSAF_MODE_MAX] = {
++static const char *g_dsaf_mode_match[DSAF_MODE_MAX] = {
+ 	[DSAF_MODE_DISABLE_2PORT_64VM] = "2port-64vf",
+ 	[DSAF_MODE_DISABLE_6PORT_0VM] = "6port-16rss",
+ 	[DSAF_MODE_DISABLE_6PORT_16VM] = "6port-16vf",
+-- 
+2.22.1
 
