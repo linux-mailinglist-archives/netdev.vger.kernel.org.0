@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8316CA8B19
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5260CA8B1D
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733112AbfIDQBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:01:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37372 "EHLO mail.kernel.org"
+        id S1733128AbfIDQBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:01:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37508 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733108AbfIDQBs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:01:48 -0400
+        id S1733118AbfIDQBx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:01:53 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F5662087E;
-        Wed,  4 Sep 2019 16:01:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF7A422DBF;
+        Wed,  4 Sep 2019 16:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612907;
-        bh=IvU46ufIgJ4CzMSuwftImTGxs1s1RzZcG7u/afqd5Yg=;
+        s=default; t=1567612912;
+        bh=gdfIsCQ3akrb6/fwj/1NzIgPbIVHf0Aisr6RhVLPZNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XcxOPVtz6j7qkc9tdDQznr0ZbuPn52dRdVWCUYXS/rQGXmrMno625ItKntg9+rF80
-         +YpnUXP1LG22pPpK4yadEICWSx8U8fWHSHJE03aFv6VQ/YQzFYJ7hsCR5M3BQ7gt66
-         dzS7k2HflEWxJRighSQAfbyr1dUmJ1+NPrBThMiM=
+        b=AjAJHEdPIaAkumBUU6ktWqwizMRaNk3HbkBXnPCD7tEtKNAgRLVSdLh0nrxxunlyq
+         E5+KVP4XGn+CHgOrqIcZlTtrebBMP+gZwEM4O1jF5q0MdDdTrSmTVP+N1QYa6FRK5C
+         z5I83lPuL2GaNYGsO9rYHcZOIpf/0HvQQSzj4Ddk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Prashant Malani <pmalani@chromium.org>,
-        Hayes Wang <hayeswang@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+Cc:     Thomas Jarosch <thomas.jarosch@intra2net.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 17/36] r8152: Set memory to all 0xFFs on failed reg reads
-Date:   Wed,  4 Sep 2019 12:01:03 -0400
-Message-Id: <20190904160122.4179-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 19/36] netfilter: nf_conntrack_ftp: Fix debug output
+Date:   Wed,  4 Sep 2019 12:01:05 -0400
+Message-Id: <20190904160122.4179-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160122.4179-1-sashal@kernel.org>
 References: <20190904160122.4179-1-sashal@kernel.org>
@@ -45,50 +45,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prashant Malani <pmalani@chromium.org>
+From: Thomas Jarosch <thomas.jarosch@intra2net.com>
 
-[ Upstream commit f53a7ad189594a112167efaf17ea8d0242b5ac00 ]
+[ Upstream commit 3a069024d371125227de3ac8fa74223fcf473520 ]
 
-get_registers() blindly copies the memory written to by the
-usb_control_msg() call even if the underlying urb failed.
+The find_pattern() debug output was printing the 'skip' character.
+This can be a NULL-byte and messes up further pr_debug() output.
 
-This could lead to junk register values being read by the driver, since
-some indirect callers of get_registers() ignore the return values. One
-example is:
-  ocp_read_dword() ignores the return value of generic_ocp_read(), which
-  calls get_registers().
+Output without the fix:
+kernel: nf_conntrack_ftp: Pattern matches!
+kernel: nf_conntrack_ftp: Skipped up to `<7>nf_conntrack_ftp: find_pattern `PORT': dlen = 8
+kernel: nf_conntrack_ftp: find_pattern `EPRT': dlen = 8
 
-So, emulate PCI "Master Abort" behavior by setting the buffer to all
-0xFFs when usb_control_msg() fails.
+Output with the fix:
+kernel: nf_conntrack_ftp: Pattern matches!
+kernel: nf_conntrack_ftp: Skipped up to 0x0 delimiter!
+kernel: nf_conntrack_ftp: Match succeeded!
+kernel: nf_conntrack_ftp: conntrack_ftp: match `172,17,0,100,200,207' (20 bytes at 4150681645)
+kernel: nf_conntrack_ftp: find_pattern `PORT': dlen = 8
 
-This patch is copied from the r8152 driver (v2.12.0) published by
-Realtek (www.realtek.com).
-
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
-Acked-by: Hayes Wang <hayeswang@realtek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/r8152.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_ftp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 66beff4d76467..455eec3c46942 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -787,8 +787,11 @@ int get_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
- 	ret = usb_control_msg(tp->udev, usb_rcvctrlpipe(tp->udev, 0),
- 			      RTL8152_REQ_GET_REGS, RTL8152_REQT_READ,
- 			      value, index, tmp, size, 500);
-+	if (ret < 0)
-+		memset(data, 0xff, size);
-+	else
-+		memcpy(data, tmp, size);
+diff --git a/net/netfilter/nf_conntrack_ftp.c b/net/netfilter/nf_conntrack_ftp.c
+index f0e9a7511e1ac..c236c7d1655d0 100644
+--- a/net/netfilter/nf_conntrack_ftp.c
++++ b/net/netfilter/nf_conntrack_ftp.c
+@@ -323,7 +323,7 @@ static int find_pattern(const char *data, size_t dlen,
+ 		i++;
+ 	}
  
--	memcpy(data, tmp, size);
- 	kfree(tmp);
+-	pr_debug("Skipped up to `%c'!\n", skip);
++	pr_debug("Skipped up to 0x%hhx delimiter!\n", skip);
  
- 	return ret;
+ 	*numoff = i;
+ 	*numlen = getnum(data + i, dlen - i, cmd, term, numoff);
 -- 
 2.20.1
 
