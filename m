@@ -2,207 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92403A8455
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 15:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3BDA846B
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 15:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730553AbfIDNR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 09:17:58 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:33544 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730388AbfIDNRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 09:17:15 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2A412C574B;
-        Wed,  4 Sep 2019 13:17:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567603034; bh=fVgKtOUoZF/RIBy2oRdL40fGc5slKdHyqiJANdI73fg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=BsEJsVkYTa4hTxbGgnApod2WHQl2E4+UFc4LI3zGikiYk9FtpUUIPoSN03LYk+3Ct
-         8hhPzIHdtvhkIWRSqpUwIaH2QcRHFdQks+Wqin/YwmyZxmu5ISo6feyedEP9gOS/O0
-         eeRnjd7oRd9R7R5PXM6LggaehNR6kmxF00/ye1RjEc7bjGFBkFj4MtTl4wUhiKdp69
-         u3IxRraTCm/cmO8IZHBrk3fCp5wY5APV6UvVirc1LtU3zEU6xCBYst9dbp6ua2zl0F
-         abKtZIsViodLrQLxECuxuRI8xu5fUGExk118luTQk9LGW5CafDv6dJ7in2xztRAj5Z
-         5qk+YOrY/xPgw==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id DC328A0087;
-        Wed,  4 Sep 2019 13:17:12 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 13/13] net: stmmac: selftests: Add Jumbo Frame tests
-Date:   Wed,  4 Sep 2019 15:17:05 +0200
-Message-Id: <268473e4dff60cc2dbdbc6afacff7599a7ce6278.1567602868.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1567602867.git.joabreu@synopsys.com>
-References: <cover.1567602867.git.joabreu@synopsys.com>
-In-Reply-To: <cover.1567602867.git.joabreu@synopsys.com>
-References: <cover.1567602867.git.joabreu@synopsys.com>
+        id S1729890AbfIDNX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 09:23:56 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:4658 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727900AbfIDNX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 09:23:56 -0400
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x84DNHlI018404;
+        Wed, 4 Sep 2019 09:23:47 -0400
+Received: from nam01-sn1-obe.outbound.protection.outlook.com (mail-sn1nam01lp2058.outbound.protection.outlook.com [104.47.32.58])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2uqjna7w99-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Sep 2019 09:23:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IUQtmZNENC48mp0+6aEdA/KnLHr0xBFGXWAS1+LsQx5FLbnTRe29gcRpgxMaMkaLZun/Ad6id8mr5zyia5QqyD+Bh32kD7OlzymV70PXBnSQONoCalRQnMAg7VF+cBsYISZT0v930GxXgqUe4xhdzQh39osy+rH8eCkSpcNF/pB1ssqXyq9Oi7EdKcBbjW8kGIj+DG0ach3e1p4yr50tjdhoGdozkbyhecIApsE5VvutJ3pdF4ul7B5KvihqRlHANHc1qQiyvscu7e+6dUxAy9TJhI5/uUlBQmjfLFZjRewYSSk+LG++DGWDv+5ycXTjQnCObBq0mdp4ullnhLBNFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ec/uExRD7S/CRGCRzUGYG245wPOFoD3FYFLFf4+oQ1k=;
+ b=Mg79Roo1NxpTyMhvkYmIFjDgH2q/WP+sMnjRtqUf0P7lfHooZ7Z3k6yN3rkdRVYDJ2uVmem413VtAtEtrNpKa0CMrVoTEGfH6Ya6rooP6/bF3KKA/R/IdpPp6I+MemE43r0/TFUOt8MxrkUS8A/fqGDoW53mr9YVI544UVUnA4kHUJH5SZQiGjYdBe1wpdMedgut/rMqrmF/9xbEZKpD08bO7wntfmpY/GGcmTEL/XqfiPEeZDYpFBdgIgOMqOsYsXcmtgaoI1JeuwId+kXg5hFo0EiADSt6+npQk91537T9ELwbVByztBZoamueX5KBYxia8ocAEZx5vYu9UCqoUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=lunn.ch smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ec/uExRD7S/CRGCRzUGYG245wPOFoD3FYFLFf4+oQ1k=;
+ b=sc2g+WXdP6RE6RZJL3oiYdOgUqkV0QdcSMBfWXuel9Y1whAVEELg9AZagZ0PBKJxTyb2g1FApvfy0xFwi0elnB9ODJzifJC0d7kcVkuuhxoLKDjWk+c+FPW7T4JlNYsiHjKps0go849jUjO8LJUS2KroWvND4TfOwWoFsI3MdB8=
+Received: from BN3PR03CA0111.namprd03.prod.outlook.com (2603:10b6:400:4::29)
+ by DM6PR03MB4236.namprd03.prod.outlook.com (2603:10b6:5:8::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.19; Wed, 4 Sep 2019 13:23:43 +0000
+Received: from CY1NAM02FT040.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::208) by BN3PR03CA0111.outlook.office365.com
+ (2603:10b6:400:4::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2241.14 via Frontend
+ Transport; Wed, 4 Sep 2019 13:23:43 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT040.mail.protection.outlook.com (10.152.75.135) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2220.16
+ via Frontend Transport; Wed, 4 Sep 2019 13:23:41 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x84DNed2019812
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Wed, 4 Sep 2019 06:23:40 -0700
+Received: from saturn.ad.analog.com (10.48.65.123) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Wed, 4 Sep 2019 09:23:39 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 0/2] ethtool: implement Energy Detect Powerdown support via phy-tunable
+Date:   Wed, 4 Sep 2019 19:23:20 +0300
+Message-ID: <20190904162322.17542-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(346002)(396003)(376002)(39860400002)(2980300002)(54534003)(189003)(199004)(50226002)(8676002)(106002)(478600001)(107886003)(8936002)(110136005)(246002)(4326008)(47776003)(70586007)(70206006)(54906003)(2870700001)(44832011)(486006)(426003)(26005)(336012)(186003)(356004)(6666004)(2906002)(316002)(36756003)(86362001)(48376002)(51416003)(14444005)(50466002)(1076003)(2616005)(7696005)(476003)(126002)(5660300002)(305945005)(7636002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB4236;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7acf0da2-1832-42b8-7dac-08d7313b1aaf
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);SRVR:DM6PR03MB4236;
+X-MS-TrafficTypeDiagnostic: DM6PR03MB4236:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB4236DDB4B6AC8887A9488006F9B80@DM6PR03MB4236.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 0150F3F97D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: ndOu/8xworqyjDMUxIvA8lzbvW7nzkVNyMQQMFs+oOahhSx0l+g+Am7FzNRzodGBNO0SuYqaHnv3rxdaE3fJjSTzwaMs7F9S4cGJhftbnxSB8DPnO/WHGyjnJ1z2jIws6BDgZeevL4rbZgRiNOnEVuHGE440t2lwK8STCDRVPpRSiga0tNNfFJQyJHacx06zqDDAJgdVBwA1uCCJu4cnc73z7+VVXWZs38M6HvOw5fNNmmqv6IVYT1KnjU8r5x9+cy81nf8YKH1rwx2N8/pFjzIfCq25yLs5628dc7m7Vtv696ifcd45Gj1dOukvvhNRBeWX6Ip0iGpLPTMCniszASnAqKoCufKwPDe0U0XHLCcwEHZ/9BlrikLVCdTB1j4YRMaz99No8L7n2Q9MBmME0xBYhRA10q+jRntLv0KVeIM=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2019 13:23:41.1770
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7acf0da2-1832-42b8-7dac-08d7313b1aaf
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4236
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-04_04:2019-09-03,2019-09-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ bulkscore=0 adultscore=0 clxscore=1015 mlxlogscore=654 priorityscore=1501
+ suspectscore=0 mlxscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1906280000
+ definitions=main-1909040135
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test to validate the Jumbo Frame support in stmmac in single
-channel and multichannel mode.
+This changeset proposes a new control for PHY tunable to control Energy
+Detect Power Down.
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+The `phy_tunable_id` has been named `ETHTOOL_PHY_EDPD` since it looks like
+this feature is common across other PHYs (like EEE), and defining
+`ETHTOOL_PHY_ENERGY_DETECT_POWER_DOWN` seems too long.
+    
+The way EDPD works, is that the RX block is put to a lower power mode,
+except for link-pulse detection circuits. The TX block is also put to low
+power mode, but the PHY wakes-up periodically to send link pulses, to avoid
+lock-ups in case the other side is also in EDPD mode.
+    
+Currently, there are 2 PHY drivers that look like they could use this new
+PHY tunable feature: the `adin` && `micrel` PHYs.
 
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 65 +++++++++++++++++++++-
- 1 file changed, 62 insertions(+), 3 deletions(-)
+This series updates only the `adin` PHY driver to support this new feature,
+as this chip has been tested. A change for `micrel` can be proposed after a
+discussion of the PHY-tunable API is resolved.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 8446b414b44d..305d24935cf4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -43,9 +43,11 @@ struct stmmac_packet_attrs {
- 	int dont_wait;
- 	int timeout;
- 	int size;
-+	int max_size;
- 	int remove_sa;
- 	u8 id;
- 	int sarc;
-+	u16 queue_mapping;
- };
- 
- static u8 stmmac_test_next_id;
-@@ -73,12 +75,14 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
- 	else
- 		size += sizeof(struct udphdr);
- 
--	skb = netdev_alloc_skb(priv->dev, size);
-+	if (attr->max_size && (attr->max_size > size))
-+		size = attr->max_size;
-+
-+	skb = netdev_alloc_skb_ip_align(priv->dev, size);
- 	if (!skb)
- 		return NULL;
- 
- 	prefetchw(skb->data);
--	skb_reserve(skb, NET_IP_ALIGN);
- 
- 	if (attr->vlan > 1)
- 		ehdr = skb_push(skb, ETH_HLEN + 8);
-@@ -147,6 +151,9 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
- 		uhdr->source = htons(attr->sport);
- 		uhdr->dest = htons(attr->dport);
- 		uhdr->len = htons(sizeof(*shdr) + sizeof(*uhdr) + attr->size);
-+		if (attr->max_size)
-+			uhdr->len = htons(attr->max_size -
-+					  (sizeof(*ihdr) + sizeof(*ehdr)));
- 		uhdr->check = 0;
- 	}
- 
-@@ -162,6 +169,10 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
- 		iplen += sizeof(*thdr);
- 	else
- 		iplen += sizeof(*uhdr);
-+
-+	if (attr->max_size)
-+		iplen = attr->max_size - sizeof(*ehdr);
-+
- 	ihdr->tot_len = htons(iplen);
- 	ihdr->frag_off = 0;
- 	ihdr->saddr = htonl(attr->ip_src);
-@@ -178,6 +189,8 @@ static struct sk_buff *stmmac_test_get_udp_skb(struct stmmac_priv *priv,
- 
- 	if (attr->size)
- 		skb_put(skb, attr->size);
-+	if (attr->max_size && (attr->max_size > skb->len))
-+		skb_put(skb, attr->max_size - skb->len);
- 
- 	skb->csum = 0;
- 	skb->ip_summed = CHECKSUM_PARTIAL;
-@@ -324,7 +337,7 @@ static int __stmmac_test_loopback(struct stmmac_priv *priv,
- 		goto cleanup;
- 	}
- 
--	skb_set_queue_mapping(skb, 0);
-+	skb_set_queue_mapping(skb, attr->queue_mapping);
- 	ret = dev_queue_xmit(skb);
- 	if (ret)
- 		goto cleanup;
-@@ -1534,6 +1547,44 @@ static int stmmac_test_arpoffload(struct stmmac_priv *priv)
- 	return ret;
- }
- 
-+static int __stmmac_test_jumbo(struct stmmac_priv *priv, u16 queue)
-+{
-+	struct stmmac_packet_attrs attr = { };
-+	int size = priv->dma_buf_sz;
-+
-+	/* Only XGMAC has SW support for multiple RX descs in same packet */
-+	if (priv->plat->has_xgmac)
-+		size = priv->dev->max_mtu;
-+
-+	attr.dst = priv->dev->dev_addr;
-+	attr.max_size = size - ETH_FCS_LEN;
-+	attr.queue_mapping = queue;
-+
-+	return __stmmac_test_loopback(priv, &attr);
-+}
-+
-+static int stmmac_test_jumbo(struct stmmac_priv *priv)
-+{
-+	return __stmmac_test_jumbo(priv, 0);
-+}
-+
-+static int stmmac_test_mjumbo(struct stmmac_priv *priv)
-+{
-+	u32 chan, tx_cnt = priv->plat->tx_queues_to_use;
-+	int ret;
-+
-+	if (tx_cnt <= 1)
-+		return -EOPNOTSUPP;
-+
-+	for (chan = 0; chan < tx_cnt; chan++) {
-+		ret = __stmmac_test_jumbo(priv, chan);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- #define STMMAC_LOOPBACK_NONE	0
- #define STMMAC_LOOPBACK_MAC	1
- #define STMMAC_LOOPBACK_PHY	2
-@@ -1647,6 +1698,14 @@ static const struct stmmac_test {
- 		.name = "ARP Offload         ",
- 		.lb = STMMAC_LOOPBACK_PHY,
- 		.fn = stmmac_test_arpoffload,
-+	}, {
-+		.name = "Jumbo Frame         ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_jumbo,
-+	}, {
-+		.name = "Multichannel Jumbo  ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_mjumbo,
- 	},
- };
- 
+Alexandru Ardelean (2):
+  ethtool: implement Energy Detect Powerdown support via phy-tunable
+  net: phy: adin: implement Energy Detect Powerdown mode via phy-tunable
+
+ drivers/net/phy/adin.c       | 50 ++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/ethtool.h |  5 ++++
+ net/core/ethtool.c           |  6 +++++
+ 3 files changed, 61 insertions(+)
+
+Changelog v1 -> v2:
+* initial series was made up of 2 sub-series: 1 for kernel & 1 for ethtool
+  in userspace; v2 contains only the kernel series
+
 -- 
-2.7.4
+2.20.1
 
