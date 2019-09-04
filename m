@@ -2,140 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B30A7BD1
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D93ACA7BE1
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728506AbfIDGjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 02:39:37 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:32930 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725966AbfIDGjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 02:39:36 -0400
-Received: by mail-ot1-f66.google.com with SMTP id p23so19536917oto.0;
-        Tue, 03 Sep 2019 23:39:36 -0700 (PDT)
+        id S1728504AbfIDGlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 02:41:50 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45966 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfIDGlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 02:41:49 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 4so7125437pgm.12;
+        Tue, 03 Sep 2019 23:41:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CiTEvMacHMcz5KgIJIStryb30Nvcfi9N11uorEQ1Wwc=;
-        b=Jw2OqgO+BOi8+M5wPtkN1Td3wmkXhq0pvtEQiVpxk0H+Uis7Zlj2G/e7ukcInlKLe8
-         A/RIGkhyMhy+kf20S/d6+jqTYyzITPw7iJ7F/OooswonKa7Y8ddaRdBbvVgcdQt091JS
-         SItQaL2F8pfINvA58ogE4LSTti5RrYfEZKqxWNHYGt3m5QECA2dusgqUo8VbTTNdghJN
-         vEHW4L1OzPjUdPcB4547MwMEFOSR7tbk1JwK5yT+r+LtABqRECrsgKgOdNlosdZW/sbY
-         aHoXD3/J5s7W/tnQ9k1e48llA0ivjNvx5cjS3DA2b9aoRg4tL9h5ogqUNSvLtE2JfCft
-         FAXg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=DMpkUZoYpQuFlQy5IOlVsmVJ1SynRY2j23KVkYnZyyw=;
+        b=FjCcM5NcsALyToL+/efgvC10cKWuqAB0RrY/JdhE1rrAavMTWUVT2Va1pxl4+6dfjc
+         ATNamgIRbZdeqT26YDOWRLRksxuy2GgYbX0gZQwfAaIBWshGqhVn5qlLbphca4ajsMqJ
+         rxOd4uQtu0aFOsIKM8ORWHN/VqnLM7rSY0+Ck0XmrE+7MusNB16oYMpS3HAASXXerExy
+         IENPoRF8Yd8lTFWd09ip1MiqKXWHnNTfTp/WKFt45OYwSc8soXmjAiB99WLWyxVUWfiT
+         dZ4rxmssPdThUID22OHy0Gr3E2X7mWEfm+4BEBmJ2moopZKpSbKYBZcr3IJ56rPFWe73
+         X/sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CiTEvMacHMcz5KgIJIStryb30Nvcfi9N11uorEQ1Wwc=;
-        b=LSgZooVfexceVGnA/ePrIk2Zzd8kIt1i4peXel6d+lW5GspG63obHQ2arIckzY/io2
-         /4UUAO9gHEAi6Ypfu7N5Zv3jRPcH7J+TobGajohw7epSIJkSvCwrWx0XtYfeHosBhGgR
-         9N5Er2P6zvgOvHRK3I6q2n/9lLaHM9nk32KyJeHny5C0Rwnmketb9XacFFBajcZ525Du
-         TsPyHQk+OFY35074VJNijIjAzEjaMbHfnwlj6bravGPdtPZ/p+tawj0uFjJE1XYM1EvM
-         IN4zmx/lnQUaaYeV/4DJvzp6rwVogUllP+uWqi4WZhTovL2C+3rhmuULRanZpH5Z2M1W
-         dt1w==
-X-Gm-Message-State: APjAAAXqBDt1Q5BtqxeHxxgtj1xAJ8bNP9O42SahnYdHQ+PV3mulL57O
-        4iGxCFyCC5QBC1Sgnc4/TFQYVrgD09oIE64DgFM=
-X-Google-Smtp-Source: APXvYqyrcgEk6qanS2YcMIOXi6IKymklHzxppBKvk02XBolrZOMr1uin0BCqVicxV/XjBSK3PjZ5WAv9PpPa5XrDWhI=
-X-Received: by 2002:a9d:6256:: with SMTP id i22mr4151279otk.139.1567579175754;
- Tue, 03 Sep 2019 23:39:35 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=DMpkUZoYpQuFlQy5IOlVsmVJ1SynRY2j23KVkYnZyyw=;
+        b=EhPavIaoWVlVEtRML3f4srL+XrZ9roya/Q4PXOzOZsgzxIbnFVr+h7dTM4NuluLtcf
+         r+CneR76HUp+kPXkmSARAEId63k328Z4nEs4W/GiLipER9J7smCkfb7Sz0pC4dr+Whqo
+         6q5Vltn85rcaALQj7cczKUJQiMzrQzoOOCEaB8XpaA5UiQJ5XZAJdvTjGplMgMppTM1s
+         Bgd37U3tivocQNTFPkWjvt1+A/9M1I/oNO+Ya4/NHANznDi0Ry389lVmlWMz5ta+4O4p
+         6gSvVniyAkUitEjRWt/8elllMxI5GvfkHMFThh+PM2lzY08nykhy70gJe+inNSmAi1P9
+         5xgw==
+X-Gm-Message-State: APjAAAUfnDKDhZtM6eLchoTnf1OjjcVKl4NN2vM/oGuH4OV6zNY2AImo
+        kTWSzurPOa2WM+ov0MLynD3EzaFD
+X-Google-Smtp-Source: APXvYqyfXC8L7rj1syVBr+7repNVVgjAKOV7Ku9+6MkbERA0AwGQUvVilgxRxmnY29sZeht3XH0xuQ==
+X-Received: by 2002:a62:65c7:: with SMTP id z190mr45930199pfb.9.1567579309211;
+        Tue, 03 Sep 2019 23:41:49 -0700 (PDT)
+Received: from localhost ([175.223.23.37])
+        by smtp.gmail.com with ESMTPSA id e189sm23617073pgc.15.2019.09.03.23.41.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Sep 2019 23:41:48 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 15:41:44 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190904064144.GA5487@jagdpanzerIV>
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+ <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+ <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
+ <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
+ <20190904061501.GB3838@dhcp22.suse.cz>
 MIME-Version: 1.0
-References: <1554792253-27081-1-git-send-email-magnus.karlsson@intel.com>
- <1554792253-27081-3-git-send-email-magnus.karlsson@intel.com> <xunyo9007hk9.fsf@redhat.com>
-In-Reply-To: <xunyo9007hk9.fsf@redhat.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 4 Sep 2019 08:39:24 +0200
-Message-ID: <CAJ8uoz2LEun-bjUYQKZdx9NbLBOSRGsZZTWAp10=vhiP7Dms9g@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] libbpf: remove dependency on barrier.h in xsk.h
-To:     Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190904061501.GB3838@dhcp22.suse.cz>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 4, 2019 at 7:32 AM Yauheni Kaliuta
-<yauheni.kaliuta@redhat.com> wrote:
->
-> Hi, Magnus!
->
-> >>>>> On Tue,  9 Apr 2019 08:44:13 +0200, Magnus Karlsson  wrote:
->
->  > The use of smp_rmb() and smp_wmb() creates a Linux header dependency
->  > on barrier.h that is uneccessary in most parts. This patch implements
->  > the two small defines that are needed from barrier.h. As a bonus, the
->  > new implementations are faster than the default ones as they default
->  > to sfence and lfence for x86, while we only need a compiler barrier in
->  > our case. Just as it is when the same ring access code is compiled in
->  > the kernel.
->
->  > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
->  > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->  > ---
->  >  tools/lib/bpf/xsk.h | 19 +++++++++++++++++--
->  >  1 file changed, 17 insertions(+), 2 deletions(-)
->
->  > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
->  > index 3638147..317b44f 100644
->  > --- a/tools/lib/bpf/xsk.h
->  > +++ b/tools/lib/bpf/xsk.h
->  > @@ -39,6 +39,21 @@ DEFINE_XSK_RING(xsk_ring_cons);
->  >  struct xsk_umem;
->  >  struct xsk_socket;
->
->  > +#if !defined bpf_smp_rmb && !defined bpf_smp_wmb
->  > +# if defined(__i386__) || defined(__x86_64__)
->  > +#  define bpf_smp_rmb() asm volatile("" : : : "memory")
->  > +#  define bpf_smp_wmb() asm volatile("" : : : "memory")
->  > +# elif defined(__aarch64__)
->  > +#  define bpf_smp_rmb() asm volatile("dmb ishld" : : : "memory")
->  > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
->  > +# elif defined(__arm__)
->  > +#  define bpf_smp_rmb() asm volatile("dmb ish" : : : "memory")
->  > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
->  > +# else
->  > +#  error Architecture not supported by the XDP socket code in libbpf.
->  > +# endif
->  > +#endif
->  > +
->
-> What about other architectures then?
+On (09/04/19 08:15), Michal Hocko wrote:
+> > If you look at the original report, the failed allocation dump_stack() is,
+> > 
+> >  <IRQ>
+> >  warn_alloc.cold.43+0x8a/0x148
+> >  __alloc_pages_nodemask+0x1a5c/0x1bb0
+> >  alloc_pages_current+0x9c/0x110
+> >  allocate_slab+0x34a/0x11f0
+> >  new_slab+0x46/0x70
+> >  ___slab_alloc+0x604/0x950
+> >  __slab_alloc+0x12/0x20
+> >  kmem_cache_alloc+0x32a/0x400
+> >  __build_skb+0x23/0x60
+> >  build_skb+0x1a/0xb0
+> >  igb_clean_rx_irq+0xafc/0x1010 [igb]
+> >  igb_poll+0x4bb/0xe30 [igb]
+> >  net_rx_action+0x244/0x7a0
+> >  __do_softirq+0x1a0/0x60a
+> >  irq_exit+0xb5/0xd0
+> >  do_IRQ+0x81/0x170
+> >  common_interrupt+0xf/0xf
+> >  </IRQ>
+> > 
+> > Since it has no __GFP_NOWARN to begin with, it will call,
 
-AF_XDP has not been tested on anything else, as far as I know. But
-contributions that extend it to more archs are very welcome.
+I think that DEFAULT_RATELIMIT_INTERVAL and DEFAULT_RATELIMIT_BURST
+are good when we ratelimit just a single printk() call, so the ratelimit
+is "max 10 kernel log lines in 5 seconds".
 
-/Magnus
+But the thing is different in case of dump_stack() + show_mem() +
+some other output. Because now we ratelimit not a single printk() line,
+but hundreds of them. The ratelimit becomes - 10 * $$$ lines in 5 seconds
+(IOW, now we talk about thousands of lines). Significantly more permissive
+ratelimiting.
 
->
->  >  static inline __u64 *xsk_ring_prod__fill_addr(struct xsk_ring_prod *fill,
->  >                                            __u32 idx)
->  >  {
->  > @@ -119,7 +134,7 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
->  >      /* Make sure everything has been written to the ring before signalling
->  >       * this to the kernel.
->  >       */
->  > -    smp_wmb();
->  > +    bpf_smp_wmb();
->
->  >      *prod->producer += nb;
->  >  }
->  > @@ -133,7 +148,7 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
->  >              /* Make sure we do not speculatively read the data before
->  >               * we have received the packet buffers from the ring.
->  >               */
->  > -            smp_rmb();
->  > +            bpf_smp_rmb();
->
->  >              *idx = cons->cached_cons;
->  cons-> cached_cons += entries;
->  > --
->  > 2.7.4
->
->
-> --
-> WBR,
-> Yauheni Kaliuta
+	-ss
