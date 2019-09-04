@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E785A8ABD
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F8EA8AC5
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732726AbfIDQAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:00:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35372 "EHLO mail.kernel.org"
+        id S1732751AbfIDQAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:00:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732712AbfIDQAa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:00:30 -0400
+        id S1732727AbfIDQAb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:00:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AA1582339E;
-        Wed,  4 Sep 2019 16:00:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D46D52070C;
+        Wed,  4 Sep 2019 16:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612829;
-        bh=au813PDI6FI9tO98w4fyc/QYGAA9QqrIDbR/WbIjSdY=;
+        s=default; t=1567612830;
+        bh=f37VyrfJ+6B8a1BBEwyKuj1RitCm1kFr2ZZwpsJCCW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2IAVE3QjME5GQyNqUs+aRlXYj5lYZvrmfXHDwWTqWwiCJtfBWFH6tYEKuhytiXrUV
-         6r6XvJ7Oy9ZXNCcbBfWFaZxmUefyK4xXJ/FfE/5UGoxiSucyw6nKziaBLvmxrA18TX
-         WgImdtzSu0IPHoIUs+jwIxu6C4ozyAcQLgnOD/CQ=
+        b=E+BYq3NbgJcLeWoO1HSmJNTO0UJfHbRt2eszecooKe28J6ik0GvKliHMZW57B7fDq
+         wePaPcluTT6EZRnY0cTlR0Pwdenz8/Ggr7j4rV5JS1XUfJRBcNTjRdFOuiIAxMZhiH
+         utnG75EicrsBqGFbZZ5xxU13v+1jZemilC9Wb6g0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 17/52] netfilter: nft_flow_offload: missing netlink attribute policy
-Date:   Wed,  4 Sep 2019 11:59:29 -0400
-Message-Id: <20190904160004.3671-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 18/52] netfilter: xt_nfacct: Fix alignment mismatch in xt_nfacct_match_info
+Date:   Wed,  4 Sep 2019 11:59:30 -0400
+Message-Id: <20190904160004.3671-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160004.3671-1-sashal@kernel.org>
 References: <20190904160004.3671-1-sashal@kernel.org>
@@ -44,43 +46,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
 
-[ Upstream commit 14c415862c0630e01712a4eeaf6159a2b1b6d2a4 ]
+[ Upstream commit 89a26cd4b501e9511d3cd3d22327fc76a75a38b3 ]
 
-The netlink attribute policy for NFTA_FLOW_TABLE_NAME is missing.
+When running a 64-bit kernel with a 32-bit iptables binary, the size of
+the xt_nfacct_match_info struct diverges.
 
-Fixes: a3c90f7a2323 ("netfilter: nf_tables: flow offload expression")
+    kernel: sizeof(struct xt_nfacct_match_info) : 40
+    iptables: sizeof(struct xt_nfacct_match_info)) : 36
+
+Trying to append nfacct related rules results in an unhelpful message.
+Although it is suggested to look for more information in dmesg, nothing
+can be found there.
+
+    # iptables -A <chain> -m nfacct --nfacct-name <acct-object>
+    iptables: Invalid argument. Run `dmesg' for more information.
+
+This patch fixes the memory misalignment by enforcing 8-byte alignment
+within the struct's first revision. This solution is often used in many
+other uapi netfilter headers.
+
+Signed-off-by: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_flow_offload.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/uapi/linux/netfilter/xt_nfacct.h |  5 ++++
+ net/netfilter/xt_nfacct.c                | 36 ++++++++++++++++--------
+ 2 files changed, 30 insertions(+), 11 deletions(-)
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index 6e0c26025ab13..5a838f12052fb 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -146,6 +146,11 @@ static int nft_flow_offload_validate(const struct nft_ctx *ctx,
- 	return nft_chain_validate_hooks(ctx->chain, hook_mask);
- }
+diff --git a/include/uapi/linux/netfilter/xt_nfacct.h b/include/uapi/linux/netfilter/xt_nfacct.h
+index 5c8a4d760ee34..b5123ab8d54a8 100644
+--- a/include/uapi/linux/netfilter/xt_nfacct.h
++++ b/include/uapi/linux/netfilter/xt_nfacct.h
+@@ -11,4 +11,9 @@ struct xt_nfacct_match_info {
+ 	struct nf_acct	*nfacct;
+ };
  
-+static const struct nla_policy nft_flow_offload_policy[NFTA_FLOW_MAX + 1] = {
-+	[NFTA_FLOW_TABLE_NAME]	= { .type = NLA_STRING,
-+				    .len = NFT_NAME_MAXLEN - 1 },
++struct xt_nfacct_match_info_v1 {
++	char		name[NFACCT_NAME_MAX];
++	struct nf_acct	*nfacct __attribute__((aligned(8)));
 +};
 +
- static int nft_flow_offload_init(const struct nft_ctx *ctx,
- 				 const struct nft_expr *expr,
- 				 const struct nlattr * const tb[])
-@@ -204,6 +209,7 @@ static const struct nft_expr_ops nft_flow_offload_ops = {
- static struct nft_expr_type nft_flow_offload_type __read_mostly = {
- 	.name		= "flow_offload",
- 	.ops		= &nft_flow_offload_ops,
-+	.policy		= nft_flow_offload_policy,
- 	.maxattr	= NFTA_FLOW_MAX,
- 	.owner		= THIS_MODULE,
+ #endif /* _XT_NFACCT_MATCH_H */
+diff --git a/net/netfilter/xt_nfacct.c b/net/netfilter/xt_nfacct.c
+index 6b56f4170860c..3241fee9f2a19 100644
+--- a/net/netfilter/xt_nfacct.c
++++ b/net/netfilter/xt_nfacct.c
+@@ -57,25 +57,39 @@ nfacct_mt_destroy(const struct xt_mtdtor_param *par)
+ 	nfnl_acct_put(info->nfacct);
+ }
+ 
+-static struct xt_match nfacct_mt_reg __read_mostly = {
+-	.name       = "nfacct",
+-	.family     = NFPROTO_UNSPEC,
+-	.checkentry = nfacct_mt_checkentry,
+-	.match      = nfacct_mt,
+-	.destroy    = nfacct_mt_destroy,
+-	.matchsize  = sizeof(struct xt_nfacct_match_info),
+-	.usersize   = offsetof(struct xt_nfacct_match_info, nfacct),
+-	.me         = THIS_MODULE,
++static struct xt_match nfacct_mt_reg[] __read_mostly = {
++	{
++		.name       = "nfacct",
++		.revision   = 0,
++		.family     = NFPROTO_UNSPEC,
++		.checkentry = nfacct_mt_checkentry,
++		.match      = nfacct_mt,
++		.destroy    = nfacct_mt_destroy,
++		.matchsize  = sizeof(struct xt_nfacct_match_info),
++		.usersize   = offsetof(struct xt_nfacct_match_info, nfacct),
++		.me         = THIS_MODULE,
++	},
++	{
++		.name       = "nfacct",
++		.revision   = 1,
++		.family     = NFPROTO_UNSPEC,
++		.checkentry = nfacct_mt_checkentry,
++		.match      = nfacct_mt,
++		.destroy    = nfacct_mt_destroy,
++		.matchsize  = sizeof(struct xt_nfacct_match_info_v1),
++		.usersize   = offsetof(struct xt_nfacct_match_info_v1, nfacct),
++		.me         = THIS_MODULE,
++	},
  };
+ 
+ static int __init nfacct_mt_init(void)
+ {
+-	return xt_register_match(&nfacct_mt_reg);
++	return xt_register_matches(nfacct_mt_reg, ARRAY_SIZE(nfacct_mt_reg));
+ }
+ 
+ static void __exit nfacct_mt_exit(void)
+ {
+-	xt_unregister_match(&nfacct_mt_reg);
++	xt_unregister_matches(nfacct_mt_reg, ARRAY_SIZE(nfacct_mt_reg));
+ }
+ 
+ module_init(nfacct_mt_init);
 -- 
 2.20.1
 
