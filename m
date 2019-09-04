@@ -2,137 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D09F0A7C1B
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3B15A7C36
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbfIDG4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 02:56:47 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36252 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726061AbfIDG4q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 02:56:46 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8BFAB3082E20;
-        Wed,  4 Sep 2019 06:56:46 +0000 (UTC)
-Received: from astarta.redhat.com (ovpn-116-92.ams2.redhat.com [10.36.116.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5043860606;
-        Wed,  4 Sep 2019 06:56:45 +0000 (UTC)
-From:   Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf 2/2] libbpf: remove dependency on barrier.h in xsk.h
-References: <1554792253-27081-1-git-send-email-magnus.karlsson@intel.com>
-        <1554792253-27081-3-git-send-email-magnus.karlsson@intel.com>
-        <xunyo9007hk9.fsf@redhat.com>
-        <CAJ8uoz2LEun-bjUYQKZdx9NbLBOSRGsZZTWAp10=vhiP7Dms9g@mail.gmail.com>
-Date:   Wed, 04 Sep 2019 09:56:43 +0300
-In-Reply-To: <CAJ8uoz2LEun-bjUYQKZdx9NbLBOSRGsZZTWAp10=vhiP7Dms9g@mail.gmail.com>
-        (Magnus Karlsson's message of "Wed, 4 Sep 2019 08:39:24 +0200")
-Message-ID: <xunyftlc7dn8.fsf@redhat.com>
+        id S1728802AbfIDHAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 03:00:48 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46739 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727787AbfIDHAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:00:47 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q5so4763436pfg.13;
+        Wed, 04 Sep 2019 00:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0jgAF8J58aWl0sjFxiXtsOlB308+Q67iE1jg4iTF8/A=;
+        b=c0ktxI2d6mLipekS0Gyb/pF9PPPM9kTMCdtTBrqZBmBoxhFgDHL83YHdISem/zmndi
+         fBr3HDDmvC8mM9PrN+jNEE/b7TQdwSH6nFsLgKiypVevSXBsgFhioq5L0YuMud4RK9pq
+         rLzDgafT+CKTGnz2+oMYSHtS7Chx2y3X0aA1JZL8qd7BfgqkpDHTKc6xfogU+w8mxAv+
+         ohessldjc/M4d0bn7Bvpz/dEzgLdiH7/QoPXMumNToUidXiX0sVXd9Vcxp7cA+reoZ3g
+         v9Egr9JYvBeb7/D3e4X9Qc0yZDXmzMwBo25ujSNXQKfiTjsmYQegHGBR+0qQJpSb1YVX
+         PByA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0jgAF8J58aWl0sjFxiXtsOlB308+Q67iE1jg4iTF8/A=;
+        b=Vp/xCK4HmbdbP5XYhbEFbXwCBJEOJ7PoSH3hZoGQzWBah4d0BqT8IYW8+gGCBlcXbe
+         JdcUyEGY3wXUX0elpRkoU8j0fsNjw2gSzI5n5CpNG4bZ/7pFDFvgb3uST3hDbVT9BotO
+         M8QT5iX09UZofu1k/1Sr+Yn9BApVq3WcA32asA6Zb88B4eaE+tKnoVKR+2H697Ua9nTd
+         4o8mwdypsC9hAxKAF40d2GfyyUB/6DfSt15s+CASnUQRB9mfQ87UO8QGKpDZqFGtglyp
+         16t8lgj1810nUIjRpQolCD0trKjsAyDtnpzonBAntumx/YSDeluKjB9LMe6UvAwYOvxj
+         ETjQ==
+X-Gm-Message-State: APjAAAWp2GqfGQ6r45VfEAJ56L8Jd0m8KMzSzAqEuobejRwDv+j6j2oB
+        WG95KOelgG/XwSH9+jo0IIQ=
+X-Google-Smtp-Source: APXvYqwzHahC/ZrTpolUl6fKkmnQKYzORYyELnj9JSN1bbSC7s7LQjrvvGR6/yrUpDLjvrNjP3jOyg==
+X-Received: by 2002:a62:7790:: with SMTP id s138mr42802476pfc.243.1567580447147;
+        Wed, 04 Sep 2019 00:00:47 -0700 (PDT)
+Received: from localhost ([175.223.23.37])
+        by smtp.gmail.com with ESMTPSA id v20sm18223934pfm.63.2019.09.04.00.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 00:00:46 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 16:00:42 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190904070042.GA11968@jagdpanzerIV>
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+ <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+ <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
+ <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
+ <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 04 Sep 2019 06:56:46 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190904064144.GA5487@jagdpanzerIV>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Magnus!
+On (09/04/19 15:41), Sergey Senozhatsky wrote:
+> But the thing is different in case of dump_stack() + show_mem() +
+> some other output. Because now we ratelimit not a single printk() line,
+> but hundreds of them. The ratelimit becomes - 10 * $$$ lines in 5 seconds
+> (IOW, now we talk about thousands of lines).
 
->>>>> On Wed, 4 Sep 2019 08:39:24 +0200, Magnus Karlsson  wrote:
+And on devices with slow serial consoles this can be somewhat close to
+"no ratelimit". *Suppose* that warn_alloc() adds 700 lines each time.
+Within 5 seconds we can call warn_alloc() 10 times, which will add 7000
+lines to the logbuf. If printk() can evict only 6000 lines in 5 seconds
+then we have a growing number of pending logbuf messages.
 
- > On Wed, Sep 4, 2019 at 7:32 AM Yauheni Kaliuta
- > <yauheni.kaliuta@redhat.com> wrote:
- >> 
- >> Hi, Magnus!
- >> 
- >> >>>>> On Tue,  9 Apr 2019 08:44:13 +0200, Magnus Karlsson  wrote:
- >> 
- >> > The use of smp_rmb() and smp_wmb() creates a Linux header dependency
- >> > on barrier.h that is uneccessary in most parts. This patch implements
- >> > the two small defines that are needed from barrier.h. As a bonus, the
- >> > new implementations are faster than the default ones as they default
- >> > to sfence and lfence for x86, while we only need a compiler barrier in
- >> > our case. Just as it is when the same ring access code is compiled in
- >> > the kernel.
- >> 
- >> > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
- >> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
- >> > ---
- >> >  tools/lib/bpf/xsk.h | 19 +++++++++++++++++--
- >> >  1 file changed, 17 insertions(+), 2 deletions(-)
- >> 
- >> > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
- >> > index 3638147..317b44f 100644
- >> > --- a/tools/lib/bpf/xsk.h
- >> > +++ b/tools/lib/bpf/xsk.h
- >> > @@ -39,6 +39,21 @@ DEFINE_XSK_RING(xsk_ring_cons);
- >> >  struct xsk_umem;
- >> >  struct xsk_socket;
- >> 
- >> > +#if !defined bpf_smp_rmb && !defined bpf_smp_wmb
- >> > +# if defined(__i386__) || defined(__x86_64__)
- >> > +#  define bpf_smp_rmb() asm volatile("" : : : "memory")
- >> > +#  define bpf_smp_wmb() asm volatile("" : : : "memory")
- >> > +# elif defined(__aarch64__)
- >> > +#  define bpf_smp_rmb() asm volatile("dmb ishld" : : : "memory")
- >> > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
- >> > +# elif defined(__arm__)
- >> > +#  define bpf_smp_rmb() asm volatile("dmb ish" : : : "memory")
- >> > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
- >> > +# else
- >> > +#  error Architecture not supported by the XDP socket code in libbpf.
- >> > +# endif
- >> > +#endif
- >> > +
- >> 
- >> What about other architectures then?
-
- > AF_XDP has not been tested on anything else, as far as I
- > know. But contributions that extend it to more archs are very
- > welcome.
-
-Well, I'll may be try to fetch something from barrier.h's (since
-I cannot consider myself as a specialist in the area), but at the
-moment the patch breaks the build on that arches.
-
- > /Magnus
-
- >> 
- >> >  static inline __u64 *xsk_ring_prod__fill_addr(struct xsk_ring_prod *fill,
- >> >                                            __u32 idx)
- >> >  {
- >> > @@ -119,7 +134,7 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
- >> >      /* Make sure everything has been written to the ring before signalling
- >> >       * this to the kernel.
- >> >       */
- >> > -    smp_wmb();
- >> > +    bpf_smp_wmb();
- >> 
- >> >      *prod->producer += nb;
- >> >  }
- >> > @@ -133,7 +148,7 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
- >> >              /* Make sure we do not speculatively read the data before
- >> >               * we have received the packet buffers from the ring.
- >> >               */
- >> > -            smp_rmb();
- >> > +            bpf_smp_rmb();
- >> 
- >> >              *idx = cons->cached_cons;
- cons-> cached_cons += entries;
- >> > --
- >> > 2.7.4
- >> 
- >> 
- >> --
- >> WBR,
- >> Yauheni Kaliuta
-
--- 
-WBR,
-Yauheni Kaliuta
+	-ss
