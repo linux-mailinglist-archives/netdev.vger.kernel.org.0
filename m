@@ -2,94 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CB8A8D22
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32DA6A8D3C
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731674AbfIDQ1i convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Sep 2019 12:27:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36504 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731540AbfIDQ1h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:27:37 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9178919D381
-        for <netdev@vger.kernel.org>; Wed,  4 Sep 2019 16:27:37 +0000 (UTC)
-Received: by mail-ed1-f70.google.com with SMTP id a7so12929012edm.23
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 09:27:37 -0700 (PDT)
+        id S1731784AbfIDQiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:38:12 -0400
+Received: from mail-pl1-f171.google.com ([209.85.214.171]:36933 "EHLO
+        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731719AbfIDQiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 12:38:11 -0400
+Received: by mail-pl1-f171.google.com with SMTP id b10so4738924plr.4
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 09:38:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=6p+EadpIEkDO8QoEYI3Jt17cSz/BH+ON+7PoffN3Xhc=;
+        b=M9T0J4qAQOkwfTE2/xDLS8ecvYc4kFqyL/WnIDImvGdqKjxF36Kgohw4IfcxAJflLq
+         Q24IuRFANU2tNNtDD9fJqbgIv/8n4RBYxt/N8BlWp5OzkmjatBOH4xV4CS4aQlpKozvH
+         jPhV5LTJxVXQCThVedS0630Vfyc4NjIASZsfV3rkuNLBk1+K7gPnoOGie+tgo2M26iSl
+         cQJEwdTUIwPgRd1exlvTfpB7EENMUhnc3eQTdoYobl0SEmJy1qN7cqyQFnWHLL+8JXco
+         LRfgPZQTYgMjAfo4zaTRjfJyIk0A21Cz8TGlwbNOOVitv9k6NBEfIgd78+FF3wmj70yp
+         mETA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=h4oUNZ4wMsQSEwRJL6RAFeQ8Rl32XhPNb9uk7Llrzoo=;
-        b=CB4d+/CTgMS88kLeet7bmfZ/uih+op5nN3DEu0i8P22JZSitpSrhvX3MYDfsVby5Lk
-         YWYY0JHc4X++IekUSvczLvex+vZciRF2OQsDHq3gy5x+Yr1eOT3TbxdDI+NwRHrR2NIq
-         1dTA/2Wg1di0KicGgCMejsF7bpMSuGXQIt+5aoITv6iVlO2P3NR/lwNtKirns5sjrrx9
-         sw4RHJNVbiudlBjYnRsBrbqT53D4btcHEt7V0qhdyYrhiRoSzTzELLSjN6CVYH3XDJxp
-         Owu+gUVvGieDFs2XELm3EbNBPWCKW4KT6cJ3tKKnyRqwaAOa7FkwGvauLRrsY52eqHUJ
-         pSXQ==
-X-Gm-Message-State: APjAAAWNi0Ja30/+t2TGfBNxxcwLe7JJ5LL1wEslS7XLuXXdLxwDvpHK
-        7b864RwhB1H4W8UfVT+MPX7avlYynKJKQpr9Hq28iSbQXJxOYWvQ6c1wSLtIk/gSfkJrfb3gftE
-        8wuoBPwJfCu0yj7o+yF0DBrLDOqS6t4eZ
-X-Received: by 2002:a50:ac03:: with SMTP id v3mr23653498edc.113.1567614456188;
-        Wed, 04 Sep 2019 09:27:36 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzz07V3rKofyk8EJM2zdapcLrR20ECkStRJLTj0UvaoYlZUvOftmQPN0m+fYnhW3+XIbrUDgGHAx52qnpGlbpc=
-X-Received: by 2002:a50:ac03:: with SMTP id v3mr23653485edc.113.1567614456014;
- Wed, 04 Sep 2019 09:27:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=6p+EadpIEkDO8QoEYI3Jt17cSz/BH+ON+7PoffN3Xhc=;
+        b=qvvtAhVCJn+3X2gOBW8e2t3jFABI5N/H82MdGQVVeds6VggT7x/ya81f+4XqeeFhXo
+         qHolkCgfMUk+YXH6wKHtt5Z6EW1/oSRA3weyLmOxz95K/Yc7p0FFi5zOkrtSb6m6UZmY
+         gjhlr/hXg9aPPelIcyNP48DtaF3NzkQ1h/KfnfX/ot5KY4hC3UzueTfRufA8RWiWF+jh
+         wGaXl4ysOK9+N/thSHhYmvzSyt+4jJoPdfOfNHWkZipm8cPaUFkhouWFknO0w7nl9nOx
+         jY/Mz2cZ21tTByhl4oKP6LsnPqDeSJ3g+3IJNZ8fWBo5PnJn+4R0xLP/VHW0+baS/71u
+         W8Rg==
+X-Gm-Message-State: APjAAAUjOZVRQKNQjnZTlQzr5OmSVeix7k4r264aiDUmUwyWQMGfc0oo
+        oPGgfDsJD4OPFNodeGEUN8w=
+X-Google-Smtp-Source: APXvYqzrQSAILX3UJwyETrmK0ezO2eCIdRGvVSxAHH7rU2uFMHZc+FzyH01zerWZ1RzwAdj5R1/cqg==
+X-Received: by 2002:a17:902:968e:: with SMTP id n14mr41554677plp.312.1567615091169;
+        Wed, 04 Sep 2019 09:38:11 -0700 (PDT)
+Received: from [172.26.108.37] ([2620:10d:c090:180::85c5])
+        by smtp.gmail.com with ESMTPSA id s5sm5806528pfe.52.2019.09.04.09.38.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Sep 2019 09:38:10 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Eric Dumazet" <eric.dumazet@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@mellanox.com>
+Subject: Re: rtnl_lock() question
+Date:   Wed, 04 Sep 2019 09:38:08 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <C46053D2-6BF5-4CFE-BF76-32DDCAD7BC10@gmail.com>
+In-Reply-To: <3164f8de-de20-44f7-03fb-8bc39ca8449e@gmail.com>
+References: <29EC5179-D939-42CD-8577-682BE4B05916@gmail.com>
+ <3164f8de-de20-44f7-03fb-8bc39ca8449e@gmail.com>
 MIME-Version: 1.0
-References: <12a9cb8d91e41a08466141d4bb8ee659487d01df.1567611976.git.aclaudi@redhat.com>
-In-Reply-To: <12a9cb8d91e41a08466141d4bb8ee659487d01df.1567611976.git.aclaudi@redhat.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Wed, 4 Sep 2019 18:28:53 +0200
-Message-ID: <CAPpH65yZjSPZMLrq10ZwrwWwh3xBJUi+7v0VT4pVn4z=7nx+qg@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next] bpf: fix snprintf truncation warning
-To:     linux-netdev <netdev@vger.kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; format=flowed; markup=markdown
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 4, 2019 at 5:50 PM Andrea Claudi <aclaudi@redhat.com> wrote:
->
-> gcc v9.2.1 produces the following warning compiling iproute2:
->
-> bpf.c: In function ‘bpf_get_work_dir’:
-> bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
->   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
->       |                                                 ^
-> bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
->   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
->       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Fix it extending bpf_wrk_dir size by 1 byte for the extra "/" char.
->
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  lib/bpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/lib/bpf.c b/lib/bpf.c
-> index 7d2a322ffbaec..95de7894a93ce 100644
-> --- a/lib/bpf.c
-> +++ b/lib/bpf.c
-> @@ -742,7 +742,7 @@ static int bpf_gen_hierarchy(const char *base)
->  static const char *bpf_get_work_dir(enum bpf_prog_type type)
->  {
->         static char bpf_tmp[PATH_MAX] = BPF_DIR_MNT;
-> -       static char bpf_wrk_dir[PATH_MAX];
-> +       static char bpf_wrk_dir[PATH_MAX + 1];
->         static const char *mnt;
->         static bool bpf_mnt_cached;
->         const char *mnt_env = getenv(BPF_ENV_MNT);
-> --
-> 2.21.0
->
+On 4 Sep 2019, at 0:39, Eric Dumazet wrote:
 
-Sorry, I forgot to add:
+> On 9/3/19 11:55 PM, Jonathan Lemon wrote:
+>> How appropriate is it to hold the rtnl_lock() across a sleepable
+>> memory allocation?  On one hand it's just a mutex, but it would
+>> seem like it could block quite a few things.
+>>
+>
+> Sure, all GFP_KERNEL allocations can sleep for quite a while.
+>
+> On the other hand, we may want to delay stuff if memory is under 
+> pressure,
+> or complex operations like NEWLINK would fail.
+>
+> RTNL is mostly taken for control path operations, we prefer them to be
+> mostly reliable, otherwise admins job would be a nightmare.
+>
+> In some cases, it is relatively easy to pre-allocate memory before 
+> rtnl is taken,
+> but that will only take care of some selected paths.
 
-Fixes: e42256699cac ("bpf: make tc's bpf loader generic and move into lib")
+The particular code path that I'm looking at is mlx5e_tx_timeout_work().
+
+This is called on TX timeout, and mlx5 wants to move an entire channel
+and all the supporting structures elsewhere.  Under the rtnl_lock(), it
+calls kvzmalloc() in order to grab a large chunk of contig memory, which
+ends up stalling the system.
+
+I suspect these large allocation should really be done outside the lock.
+-- 
+Jonathan
