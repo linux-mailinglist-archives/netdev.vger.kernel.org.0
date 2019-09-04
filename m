@@ -2,202 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC06A80CE
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 13:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0815A8172
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 13:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729456AbfIDLFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 07:05:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38236 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729269AbfIDLFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 07:05:16 -0400
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0287721670
-        for <netdev@vger.kernel.org>; Wed,  4 Sep 2019 11:05:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567595115;
-        bh=8OjxixVaCcpwuEKX0fX6h9o2bXAxxBtMveIpTXpaZSo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jIFIKe/Rz2ILpghfQx5aLLHNDoiTgJxfo8Gi4HEK5MVjVyfRVea7gtZzpYkgdyuMo
-         WWv9BCpYWlOqYB93p9M4KxOuuq465t+/kOMaeeQh9cBL8ktdB7eaALtv9lP85uKAaq
-         ITVkd1WNhQ95wW98ouNQZxChGLU97ZEQ5ICqa4Wc=
-Received: by mail-qk1-f180.google.com with SMTP id x5so5031353qkh.5
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 04:05:14 -0700 (PDT)
-X-Gm-Message-State: APjAAAVLZJwi+0ylSBwXiyDLqelWWJFceLjUQaH3D2NnjynVtPZ0fxrf
-        eLzR2QCJ9LgxovHTd+VMuSfgM7NvNnnMymt49KI=
-X-Google-Smtp-Source: APXvYqxgiwU2a9GdzGVVb7gtoCCXL7EAjYYLLhv16RUKeQtejch9sSCilIRZsNrrHdXFEoNcATW6TyippRaVR62BjZs=
-X-Received: by 2002:a05:620a:1487:: with SMTP id w7mr1211945qkj.95.1567595114192;
- Wed, 04 Sep 2019 04:05:14 -0700 (PDT)
+        id S1728878AbfIDLt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 07:49:28 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44638 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbfIDLt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 07:49:27 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i18so11109016pgl.11;
+        Wed, 04 Sep 2019 04:49:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=shoUwDqLr310eJk91YJF4EppjGh0Fisx8iWq37S83vk=;
+        b=ioB7UE5VRVoQGx4VYTZOVpzYDft0sVBvHoPHFun6tN1p1ZYmWegcF8lBw1biYlLxE+
+         bqQ1R2MVKFe0R8nwWYLhQvWi0tUfKFMMIO9wKNTZJQw2gXSC+KlZ8HkIJGFIEOqekoCF
+         zbc2dtzR9DXvIkAVCvVQjBnvLf3tGUErgaV3BEXVBzDCKlwrmZVELbpGDJg/zCZJ8rDT
+         s7NvG+i6BBdkJGj/VlMGT00ZDx+OiXSB+2jyGDqsRDFCosotE+EOIm7OfcPscYZmtQaZ
+         Xalh/Z6wqKb2XE42VhegavUMj4hefFXP1j//J7O2fAZ0XhCtil8sOFt0610E7XAG5JHc
+         arbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=shoUwDqLr310eJk91YJF4EppjGh0Fisx8iWq37S83vk=;
+        b=RYx0a/Y1m0XhcYSPxTbqa4hTFognOlT4fID/wuQAs2MQqmvuOwUlfp0dZTk2UYksfT
+         BDzWuznZtqVF2r2fw88uL1zgIZnTh7e4Hqb8Ca9c1OHhNk3KnLAIW8QL/aDhS+b1dp9u
+         y+emKVZfuKZL/H/NmsQtoSTGHGZ+u80ZxTpP2/Eb9CpoGl2XiBJKA5mc4Tc5d4WWUJLq
+         6XG5vGcb+danRK6PxChmPhFp7+eA0oHUwJrAgTkfYo6mUYXAcAua6EuocVZjs6OHlOaD
+         usZWqRN7L9nibBm6enlW7vyeP7ksXalzgSK8zIgY+5r3jw0pU0ZGogstW2ypFaaYkW84
+         lzDA==
+X-Gm-Message-State: APjAAAWnRwCGqb1LaWlSpVh+fuy8IWSbY3IaCz/Tu39LmP4URR/rcnGv
+        kSRjnjTia3AfDyN9fI9uFA4=
+X-Google-Smtp-Source: APXvYqyn5h9DmOoaWXxhsEQ4LB4GP2Dk0vDBy3um1djGKx1pHsMrATDkgmA7w96U06rewLk5ZpNHrw==
+X-Received: by 2002:a65:63c4:: with SMTP id n4mr34306743pgv.44.1567597766906;
+        Wed, 04 Sep 2019 04:49:26 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.54.39])
+        by smtp.gmail.com with ESMTPSA id b126sm48257008pfa.177.2019.09.04.04.49.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 04:49:26 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        bpf@vger.kernel.org, bjorn.topel@intel.com,
+        jonathan.lemon@gmail.com,
+        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
+        hdanton@sina.com, i.maximets@samsung.com
+Subject: [PATCH bpf-next v3 0/4] xsk: various CPU barrier and {READ, WRITE}_ONCE
+Date:   Wed,  4 Sep 2019 13:49:09 +0200
+Message-Id: <20190904114913.17217-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
- <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
- <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com> <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
-In-Reply-To: <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
-From:   Josh Boyer <jwboyer@kernel.org>
-Date:   Wed, 4 Sep 2019 07:05:03 -0400
-X-Gmail-Original-Message-ID: <CA+5PVA5bbmQfBUDVsVtbq2JDHOLbppJkYesKomtHneHm4-z1xA@mail.gmail.com>
-Message-ID: <CA+5PVA5bbmQfBUDVsVtbq2JDHOLbppJkYesKomtHneHm4-z1xA@mail.gmail.com>
-Subject: Re: [PATCH] rtl_nic: add firmware rtl8125a-3
-To:     Hau <hau@realtek.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Linux Firmware <linux-firmware@kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 11:56 AM Hau <hau@realtek.com> wrote:
->
-> > On 27.08.2019 14:08, Josh Boyer wrote:
-> > > On Mon, Aug 26, 2019 at 6:23 PM Heiner Kallweit <hkallweit1@gmail.com=
->
-> > wrote:
-> > >>
-> > >> This adds firmware rtl8125a-3 for Realtek's 2.5Gbps chip RTL8125.
-> > >>
-> > >> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> > >> ---
-> > >> Firmware file was provided by Realtek and they asked me to submit it=
-.
-> > >
-> > > Can we get a Signed-off-by from someone at Realtek then?
-> > >
-> > Hi Hau,
-> >
-> > can you reply and add your Signed-off-by?
-> > I saw that all the RTL8168 firmware was submitted by Hayes Wang.
-> >
-> > > josh
-> > >
-> > Heiner
-> >
->
-> Signed-off-by: Chunhao Lin <hau@realtek.com>
+This is a four patch series of various barrier, {READ, WRITE}_ONCE
+cleanups in the AF_XDP socket code. More details can be found in the
+corresponding commit message. Previous revisions: v1 [4] and v2 [5].
 
-Thank you.  Applied and pushed out.
+For an AF_XDP socket, most control plane operations are done under the
+control mutex (struct xdp_sock, mutex), but there are some places
+where members of the struct is read outside the control mutex. The
+dev, queue_id members are set in bind() and cleared at cleanup. The
+umem, fq, cq, tx, rx, and state member are all assigned in various
+places, e.g. bind() and setsockopt(). When the members are assigned,
+they are protected by the control mutex, but since they are read
+outside the mutex, a WRITE_ONCE is required to avoid store-tearing on
+the read-side.
 
-josh
+Prior the state variable was introduced by Ilya, the dev member was
+used to determine whether the socket was bound or not. However, when
+dev was read, proper SMP barriers and READ_ONCE were missing. In order
+to address the missing barriers and READ_ONCE, we start using the
+state variable as a point of synchronization. The state member
+read/write is paired with proper SMP barriers, and from this follows
+that the members described above does not need READ_ONCE statements if
+used in conjunction with state check.
 
->
-> > >> The related extension to r8169 driver will be submitted in the next =
-days.
-> > >> ---
-> > >>  WHENCE                |   3 +++
-> > >>  rtl_nic/rtl8125a-3.fw | Bin 0 -> 3456 bytes
-> > >>  2 files changed, 3 insertions(+)
-> > >>  create mode 100644 rtl_nic/rtl8125a-3.fw
-> > >>
-> > >> diff --git a/WHENCE b/WHENCE
-> > >> index fb12924..dbec18a 100644
-> > >> --- a/WHENCE
-> > >> +++ b/WHENCE
-> > >> @@ -2906,6 +2906,9 @@ Version: 0.0.2
-> > >>  File: rtl_nic/rtl8107e-2.fw
-> > >>  Version: 0.0.2
-> > >>
-> > >> +File: rtl_nic/rtl8125a-3.fw
-> > >> +Version: 0.0.1
-> > >> +
-> > >>  Licence:
-> > >>   * Copyright =C2=A9 2011-2013, Realtek Semiconductor Corporation
-> > >>   *
-> > >> diff --git a/rtl_nic/rtl8125a-3.fw b/rtl_nic/rtl8125a-3.fw new file
-> > >> mode 100644 index
-> > >>
-> > 0000000000000000000000000000000000000000..fac635263f92e8d9734456b75
-> > 93
-> > >> 2b2088edd5ef9
-> > >> GIT binary patch
-> > >> literal 3456
-> > >>
-> > zcmb7G4@{Kj8Gr9M&hw<l39l3>p*MPE#webM6qsqQiuC(hXPi?+wDL#V(Z*4#K%
-> > FD{
-> > >>
-> > zd#PH+tTJbqZG?a`)*5G*m3F2zmN`7hx;2*IKiVu;;~Hwa_E@^5+Z^ooav$qyWa|!|
-> > >> z{J!V^^FHtMe%~vE5S!~a<<HMqSUGn=3Dc_2HGJ>M6|pO=3D$6Z+-
-> > !F`d2|JjuT=3D?tX!6t
-> > >> zo1eG1ysol-V@-
-> > KgU0(T?#@f6Efr9d!!2E*zz=3DG_mCu@CyK;goi!iD+b1yk6B2%b&6
-> > >> z7edS;xkzqO0?9-2l9EW0ltM}+rIFG}86+PmljJ95fhB~6Z~~0y3JYX}?Z^&0uqy1t
-> > >>
-> > zny?FN!)}}nC*Ym12kkF<@t&E4_=3Dv=3DynF9AnDz2DmaE+uRv6r!*@!^m!6NmhMO
-> > zq8r
-> > >> zcySgS;n{HZ&ViVjO+Em7C<o$9E{w7~#?6OA6vF-
-> > CA|!?$MBkPmUNaZNIZ}kPTZ-Wd
-> > >> z8F2PIf~lcpz}RxchgOhZNnAy~1V!<ssEIFw^W*gx{=3D)|N&sV@7s=3D~F-
-> > YS=3DQKK)AC8
-> > >>
-> > z;l`&BHaB5(q!u4F*5UicX4Dw<xZc@_xQwl|*+!ct+H9u{FeB7V|DE*TO<fCht<>$I
-> > >> zZZG}Y@U*d?z6a>rPW?gZU!wjH^_^&crVIA-
-> > hauiRf}*mc@O*L%b>cXFD^8&Io|9br
-> > >>
-> > zFS+(#A<NUl=3DQsF#3U7Megl)!Y%#NIan9+;JM$V!#)QA3t5H6bia7TWJOXlz4ioA=3D<
-> > >> z<^?z-1MK-A9Fa>HXt;u_<`7nle1Pws`y;xZ4b$%$RvXt*Vtj-(#xP2a8yGS^#rwu*
-> > >> z7&RlXNB)8`;|q+Lf8+C)SZDkL{T(+MYZPk@p$0naYDvhUdK;W-
-> > &~&K<5x2TvCa4ES
-> > >>
-> > zJSq_Os=3D`o`>Ti(hqM4#RkyLfbOj8MwbamOxQ0|CNT`@D2E8<rJ4O!}{IZMSyW~=3DP
-> > b
-> > >> z9LCG0O+ej0lA~sw%T-
-> > ;^=3DBaOn@)@g8tu_{^65~O&#t5oXW3d`Ciq!i?u^KfEWsf|f
-> > >>
-> > z%8X@d%v{dr6>6QaQuTMNV*C=3Dd)+lAYWhy1Kp7A%(ze4qPRH@`pHTfshkXfVRB
-> > 2TgY
-> > >>
-> > zO=3D`+Wt(q39Q=3DW61)m5XOc8&DkO5CPgp(bTNzg>y9p~8jDs$zJj5<R=3Ds;Oi~Q^>M4
-> > (
-> > >>
-> > zG`vTNq`hitUz@`B_Nx)&fWp3Z<>))8?4g&GICDrH_jW38Z<lJiahS3rlpR$<98=3D@x
-> > >> z6ix)=3D-SB%nIOXwTePI%gc_p@upI;Gdo~F;Tmw)5`y%^_39nX1Ki-J6~L1FKz7NSjv
-> > >> z_`nkPz3?L$w%rohr-(vgBF1<i;qBEnDP75AC6X+Z8dD{_;JbnNV+;3L_)`miW?_eg
-> > >> z-4-4vre2o#VTHs{P{PCaz|dle45F5=3Dt7KfRt3*ceh=3Dr$#TAy7mkxtwHW#j)EHgm=
-p)
-> > >> zO)hO_GH>cb5{`=3D!(@#j)h_-jxgCneiD9Hcd;ix`Q>rX~yy2c{beS3_|m>9m87;BeK
-> > >> z9^<~->L`kd5sZmZuw?QWNw>vliHU)j7&EQ4-f1m1#+c~6-
-> > j5U9k9~bn**#pV?$N|-
-> > >> zq$Nr8T#$I{J?c3t2VJ-F9=3DAj_^{tkE`!wz?XF~Vaag5Xw_4`&lQTP1kQQmM$_|B0(
-> > >>
-> > zOkxdl@0Tb}k#O<ZNq?P7^BP@o5?P$tDMUYUDdm~Ohjk2MA!9p<P0Z~eCa@+
-> > uv7NOF
-> > >> zV)t~$Ac`@GiSytUlb?qfh~`cEKhXXQ`gkQS+oQgJX8gniiK%+szlqBBQMQ+LjIoYA
-> > >> z7Pea0V&QHJcUss?e1U!-
-> > enM;`#@W7FhmW$!&b34|Z>oiU3%_IGY6~}8_<=3D_875$5K
-> > >> z-p<>elW^0nO-Xb$v)?-<5?*G%4-
-> > kJO5#)Zu+T&X8&rjZA4DRX1phN*@#Ln3Z5`&x>
-> > >> zM^Cgz;x5{-ci}0VyQ8FT#^zi&IL{9H?xHU!(>!!e${wT4$GqBa3H>xiG*Va3d7hBl
-> > >> z$-
-> > lAV)_T3WsTa}QwwT;{)^yFKtnb^bPxFJExzl=3DW&oejIewS6dj^AhH>tVh&*5~e`
-> > >>
-> > zja9dg7?{KsZ_$^!dgjpQL9gf03g&nvnzMv6vp=3DS9DYVsnn`y<1qkR|cAF7hLwo&4_
-> > >> z$0b%#ug_6NWfb*$Il}q#a(!Ob6=3DePMXrpB-
-> > v<#HJEP3C!v!5@<?;Dn1MU0<*f8Qxz
-> > >>
-> > zAjU7*@~eyS)8C3a`2}PA^u1Eoi5NfK?_u^^&&MtM&ozI+{=3D2wFEidM}?R=3Dite~tg7
-> > >> zpYGYyoP*`0xugV=3Do@1RyFwcMDQ>Obe;jicCb=3DvBh2MhU4<KB$Vk2NcQ<(`-
-> > qXixrA
-> > >> z8^49!$+$sGAily`auZvb-$fkYEIElgD0dJaC)$bQXUsw`@urBL?<RiJ1G^-)6L-BT
-> > >> z@#-RprR2w-
-> > mqwqPKV$B{bA8MiN1HEyEpap~@gZZ_*el!TTw^JF*(K5a0Q2#@rtsUg
-> > >> zt6SovowDhaJ<ob6YnhO-UOUgSow9UNkB-
-> > M#+sN~3dy@Qhi9cEVf73Z`N^D^5uW{WK
-> > >> zME%~Yvas61t;E=3DS%Z@SO6V|;&h-
-> > h!3cbdD!=3D(z6g@jH#a_vpS&+;=3D{=3D{DQpi2<!K6
-> > >> DeEY6F
-> > >>
-> > >> literal 0
-> > >> HcmV?d00001
-> > >>
-> > >> --
-> > >> 2.23.0
-> > >>
-> > >
-> >
-> >
-> > ------Please consider the environment before printing this e-mail.
+To summarize: The members struct xdp_sock members dev, queue_id, umem,
+fq, cq, tx, rx, and state were read lock-less, with incorrect barriers
+and missing {READ, WRITE}_ONCE. After this series umem, fq, cq, tx,
+rx, and state are read lock-less. When these members are updated,
+WRITE_ONCE is used. When read, READ_ONCE are only used when read
+outside the control mutex (e.g. mmap) or, not synchronized with the
+state member (XSK_BOUND plus smp_rmb())
+
+Thanks,
+Björn
+
+[1] https://lore.kernel.org/bpf/beef16bb-a09b-40f1-7dd0-c323b4b89b17@iogearbox.net/
+[2] https://lwn.net/Articles/793253/
+[3] https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE
+[4] https://lore.kernel.org/bpf/20190822091306.20581-1-bjorn.topel@gmail.com/
+[5] https://lore.kernel.org/bpf/20190826061053.15996-1-bjorn.topel@gmail.com/
+
+v2->v3:
+  Minor restructure of commits.
+  Improve cover and commit messages. (Daniel)
+v1->v2:
+  Removed redundant dev check. (Jonathan)
+
+Björn Töpel (4):
+  xsk: avoid store-tearing when assigning queues
+  xsk: avoid store-tearing when assigning umem
+  xsk: use state member for socket synchronization
+  xsk: lock the control mutex in sock_diag interface
+
+ net/xdp/xsk.c      | 60 ++++++++++++++++++++++++++++++++--------------
+ net/xdp/xsk_diag.c |  3 +++
+ 2 files changed, 45 insertions(+), 18 deletions(-)
+
+-- 
+2.20.1
+
