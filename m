@@ -2,87 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89172A8925
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50049A892D
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730891AbfIDPCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:02:37 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43832 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729773AbfIDPCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 11:02:37 -0400
-Received: by mail-qk1-f196.google.com with SMTP id m2so19842100qkd.10
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 08:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=aWIQlr0z1EDLkRUzCFDPWvY7EfuWtjpEBMTiuGObd7c=;
-        b=G2qOnRt3prG5xVqjTPsXF4ifGe3Zl49GtEI4HKzfS7wFQz4WPPvlMP69Fj8X40umej
-         IIzFDFg2Yvve7R/MeLizSdI6gpYL69QzXDU7RB59T6gdwnlFghWUa/9ur3weNEFx2PEV
-         mae3gGmfOKBiLs30joX9S3fkz6bfmtlUVOM5auA/6BCWxz1xSBLI/CbP1DAbDaNj6bb4
-         gWmn2a8MvsJk07oN7gcRAGUuPLw5g6ejUUpNIV0YadRw43u5DKQEIINMJvApNctBB/Gj
-         HR+NIiqOPXNtQIUOuy6UqMHU8uuvJfGiUXa1HFjOSJyXkZKGhdyb1IiaolLIQppMmy5e
-         8Fyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aWIQlr0z1EDLkRUzCFDPWvY7EfuWtjpEBMTiuGObd7c=;
-        b=NB/gABbRAhQYvG6qVDNQuPRsN/5yGzhtpDphIz3lOfB+aUsSmofDiD5h+mDiCj/2pZ
-         jJzeIXXeCmhr+whyZIzZMmBadiyIeRLF3rH7fO96OSCfhly4OPQsUDnFRxK0hb+ExBbr
-         LWOw14xoD7Nd/GcegGXJ9WJfRU3Fr5I8SDnDci9/LByE/ipyQSkZrTVNsXyWhV5k1Hc3
-         +d7I1bUXXnRx7V7bSqtaGyDOivPRPLT5vlzFWozpihHlTie6/AO6FbPtq+3boUm+GEOQ
-         Tr/24OWEiLDCdm6qJhXZwJYHygk+CGZw1IEUq99qzoLKRE3tVXBIiQzWoSUL94ea4bZd
-         UDmA==
-X-Gm-Message-State: APjAAAVNePf6O5LkUmy8euwGNSOhv9fVgOkOk5lHnrCAOZArnWmPJFIy
-        LoHyE2sDSHvcSFQ1m7eMpZbvFv2hdVU=
-X-Google-Smtp-Source: APXvYqxTdQxszs/DrPW6iGph3N4DiPQOgqjf4AiwdpYMTpUdqweW/KJZJCRrBqh2XcpjBugYo6Z1Eg==
-X-Received: by 2002:a37:9544:: with SMTP id x65mr3158097qkd.100.1567609356858;
-        Wed, 04 Sep 2019 08:02:36 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:fd80:3904:3263:f338:4c8b])
-        by smtp.googlemail.com with ESMTPSA id 10sm6497150qtw.64.2019.09.04.08.02.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Sep 2019 08:02:35 -0700 (PDT)
-Subject: Re: [PATCH v3 net] net: Properly update v4 routes with v6 nexthop
-To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org,
-        dsahern@kernel.org, sworley@cumulusnetworks.com
-References: <20190904141158.17021-1-sharpd@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <239e0cb1-241b-cc5e-66e6-d707d2edcc21@gmail.com>
-Date:   Wed, 4 Sep 2019 09:02:33 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190904141158.17021-1-sharpd@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1731192AbfIDPEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:04:05 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44356 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730604AbfIDPEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 11:04:04 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x84Ev7JB059495;
+        Wed, 4 Sep 2019 11:03:50 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2utdmwwb89-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Sep 2019 11:03:50 -0400
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x84EwGKg064747;
+        Wed, 4 Sep 2019 11:03:50 -0400
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2utdmwwb7v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Sep 2019 11:03:50 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x84Exfgd030870;
+        Wed, 4 Sep 2019 15:03:49 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma05wdc.us.ibm.com with ESMTP id 2usa0mbcku-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Sep 2019 15:03:49 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x84F3nCV13435646
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 4 Sep 2019 15:03:49 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EBCD2112062;
+        Wed,  4 Sep 2019 15:03:48 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CB9AF112061;
+        Wed,  4 Sep 2019 15:03:47 +0000 (GMT)
+Received: from oc5348122405.ibm.com.austin.ibm.com (unknown [9.53.179.215])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  4 Sep 2019 15:03:47 +0000 (GMT)
+From:   David Dai <zdai@linux.vnet.ibm.com>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     zdai@us.ibm.com, zdai@linux.vnet.ibm.com
+Subject: [v3] net_sched: act_police: add 2 new attributes to support police 64bit rate and peakrate
+Date:   Wed,  4 Sep 2019 10:03:43 -0500
+Message-Id: <1567609423-26826-1-git-send-email-zdai@linux.vnet.ibm.com>
+X-Mailer: git-send-email 1.7.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-04_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1909040147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/19 8:11 AM, Donald Sharp wrote:
-> When creating a v4 route that uses a v6 nexthop from a nexthop group.
-> Allow the kernel to properly send the nexthop as v6 via the RTA_VIA
-> attribute.
-> 
+For high speed adapter like Mellanox CX-5 card, it can reach upto
+100 Gbits per second bandwidth. Currently htb already supports 64bit rate
+in tc utility. However police action rate and peakrate are still limited
+to 32bit value (upto 32 Gbits per second). Add 2 new attributes
+TCA_POLICE_RATE64 and TCA_POLICE_RATE64 in kernel for 64bit support
+so that tc utility can use them for 64bit rate and peakrate value to
+break the 32bit limit, and still keep the backward binary compatibility.
 
-...
+Tested-by: David Dai <zdai@linux.vnet.ibm.com>
+Signed-off-by: David Dai <zdai@linux.vnet.ibm.com>
+---
+Changelog:
+v1->v2:
+ - Move 2 attributes TCA_POLICE_RATE64 TCA_POLICE_PEAKRATE64 after
+   TCA_POLICE_PAD in pkt_cls.h header.
+v2->v3:
+ - Use TCA_POLICE_PAD instead of __TCA_POLICE_MAX as padding attr
+   in last parameter in nla_put_u64_64bit() routine.
+---
+ include/uapi/linux/pkt_cls.h |    2 ++
+ net/sched/act_police.c       |   27 +++++++++++++++++++++++----
+ 2 files changed, 25 insertions(+), 4 deletions(-)
 
-> 
-> Fixes: dcb1ecb50edf (“ipv4: Prepare for fib6_nh from a nexthop object”)
-> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
-> ---
->  include/net/ip_fib.h     |  4 ++--
->  include/net/nexthop.h    |  5 +++--
->  net/ipv4/fib_semantics.c | 15 ++++++++-------
->  net/ipv6/route.c         | 11 ++++++-----
->  4 files changed, 19 insertions(+), 16 deletions(-)
-> 
-
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index b057aee..a6aa466 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -160,6 +160,8 @@ enum {
+ 	TCA_POLICE_RESULT,
+ 	TCA_POLICE_TM,
+ 	TCA_POLICE_PAD,
++	TCA_POLICE_RATE64,
++	TCA_POLICE_PEAKRATE64,
+ 	__TCA_POLICE_MAX
+ #define TCA_POLICE_RESULT TCA_POLICE_RESULT
+ };
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 49cec3e..425f2a3 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -40,6 +40,8 @@ static int tcf_police_walker(struct net *net, struct sk_buff *skb,
+ 	[TCA_POLICE_PEAKRATE]	= { .len = TC_RTAB_SIZE },
+ 	[TCA_POLICE_AVRATE]	= { .type = NLA_U32 },
+ 	[TCA_POLICE_RESULT]	= { .type = NLA_U32 },
++	[TCA_POLICE_RATE64]     = { .type = NLA_U64 },
++	[TCA_POLICE_PEAKRATE64] = { .type = NLA_U64 },
+ };
+ 
+ static int tcf_police_init(struct net *net, struct nlattr *nla,
+@@ -58,6 +60,7 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
+ 	struct tcf_police_params *new;
+ 	bool exists = false;
+ 	u32 index;
++	u64 rate64, prate64;
+ 
+ 	if (nla == NULL)
+ 		return -EINVAL;
+@@ -155,14 +158,18 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
+ 	}
+ 	if (R_tab) {
+ 		new->rate_present = true;
+-		psched_ratecfg_precompute(&new->rate, &R_tab->rate, 0);
++		rate64 = tb[TCA_POLICE_RATE64] ?
++			 nla_get_u64(tb[TCA_POLICE_RATE64]) : 0;
++		psched_ratecfg_precompute(&new->rate, &R_tab->rate, rate64);
+ 		qdisc_put_rtab(R_tab);
+ 	} else {
+ 		new->rate_present = false;
+ 	}
+ 	if (P_tab) {
+ 		new->peak_present = true;
+-		psched_ratecfg_precompute(&new->peak, &P_tab->rate, 0);
++		prate64 = tb[TCA_POLICE_PEAKRATE64] ?
++			  nla_get_u64(tb[TCA_POLICE_PEAKRATE64]) : 0;
++		psched_ratecfg_precompute(&new->peak, &P_tab->rate, prate64);
+ 		qdisc_put_rtab(P_tab);
+ 	} else {
+ 		new->peak_present = false;
+@@ -313,10 +320,22 @@ static int tcf_police_dump(struct sk_buff *skb, struct tc_action *a,
+ 				      lockdep_is_held(&police->tcf_lock));
+ 	opt.mtu = p->tcfp_mtu;
+ 	opt.burst = PSCHED_NS2TICKS(p->tcfp_burst);
+-	if (p->rate_present)
++	if (p->rate_present) {
+ 		psched_ratecfg_getrate(&opt.rate, &p->rate);
+-	if (p->peak_present)
++		if ((police->params->rate.rate_bytes_ps >= (1ULL << 32)) &&
++		    nla_put_u64_64bit(skb, TCA_POLICE_RATE64,
++				      police->params->rate.rate_bytes_ps,
++				      TCA_POLICE_PAD))
++			goto nla_put_failure;
++	}
++	if (p->peak_present) {
+ 		psched_ratecfg_getrate(&opt.peakrate, &p->peak);
++		if ((police->params->peak.rate_bytes_ps >= (1ULL << 32)) &&
++		    nla_put_u64_64bit(skb, TCA_POLICE_PEAKRATE64,
++				      police->params->peak.rate_bytes_ps,
++				      TCA_POLICE_PAD))
++			goto nla_put_failure;
++	}
+ 	if (nla_put(skb, TCA_POLICE_TBF, sizeof(opt), &opt))
+ 		goto nla_put_failure;
+ 	if (p->tcfp_result &&
+-- 
+1.7.1
 
