@@ -2,112 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE09A7ABF
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 07:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D3EA7B0F
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbfIDFcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 01:32:10 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:32918 "EHLO mx1.redhat.com"
+        id S1727340AbfIDGA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 02:00:27 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:51589 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725877AbfIDFcK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 01:32:10 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725877AbfIDGA1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 02:00:27 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B5D7810277E2;
-        Wed,  4 Sep 2019 05:32:09 +0000 (UTC)
-Received: from astarta.redhat.com (ovpn-116-92.ams2.redhat.com [10.36.116.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5C6A31001DC0;
-        Wed,  4 Sep 2019 05:32:08 +0000 (UTC)
-From:   Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf 2/2] libbpf: remove dependency on barrier.h in xsk.h
-References: <1554792253-27081-1-git-send-email-magnus.karlsson@intel.com>
-        <1554792253-27081-3-git-send-email-magnus.karlsson@intel.com>
-Date:   Wed, 04 Sep 2019 08:32:06 +0300
-In-Reply-To: <1554792253-27081-3-git-send-email-magnus.karlsson@intel.com>
-        (Magnus Karlsson's message of "Tue, 9 Apr 2019 08:44:13 +0200")
-Message-ID: <xunyo9007hk9.fsf@redhat.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46NY865qKBz9sDB;
+        Wed,  4 Sep 2019 16:00:22 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1567576823;
+        bh=t+9dnYK3oBolgwlJFR6x9mvuGOLTEaj/jY1jCsV0Omc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=i4mPsmhnilHZQhKCHvaWM8onzDYZGbkgTOA7cYhTvR/wl6HajTlTtowWsYs+ERb9Y
+         WC9sSw9+GsVeLfr/5sWVYps5kMw6X6SKlcwk8O9ANYntyHTs7fzb+0UMaWrutiqO3c
+         L11+ioaYkOLvm5574/OOHn34J8PleGA9x8V4qlZeCemsRtOhZYqTu096wHhq4sskBo
+         g0KLTwvV6NnK4xzsj7ujxK8k/G36FL+M95cLF61wRJr3QSQ8NvPOs2O0zgXWUu1UVC
+         m0E57PDA+PyTUqSWXzfdG+h0N1WbhqK/ypfkyl+m+VIBSdHirhRVs5nWxi+16TP/li
+         QxLIqApXDbl1w==
+Date:   Wed, 4 Sep 2019 16:00:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20190904160021.72d104f1@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Wed, 04 Sep 2019 05:32:09 +0000 (UTC)
+Content-Type: multipart/signed; boundary="Sig_/QTWFWPom_661+i5lo5rk3WG";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Magnus!
+--Sig_/QTWFWPom_661+i5lo5rk3WG
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
->>>>> On Tue,  9 Apr 2019 08:44:13 +0200, Magnus Karlsson  wrote:
+Hi all,
 
- > The use of smp_rmb() and smp_wmb() creates a Linux header dependency
- > on barrier.h that is uneccessary in most parts. This patch implements
- > the two small defines that are needed from barrier.h. As a bonus, the
- > new implementations are faster than the default ones as they default
- > to sfence and lfence for x86, while we only need a compiler barrier in
- > our case. Just as it is when the same ring access code is compiled in
- > the kernel.
+After merging the net-next tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
 
- > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
- > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
- > ---
- >  tools/lib/bpf/xsk.h | 19 +++++++++++++++++--
- >  1 file changed, 17 insertions(+), 2 deletions(-)
+scripts/link-vmlinux.sh: 74: Bad substitution
 
- > diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
- > index 3638147..317b44f 100644
- > --- a/tools/lib/bpf/xsk.h
- > +++ b/tools/lib/bpf/xsk.h
- > @@ -39,6 +39,21 @@ DEFINE_XSK_RING(xsk_ring_cons);
- >  struct xsk_umem;
- >  struct xsk_socket;
- 
- > +#if !defined bpf_smp_rmb && !defined bpf_smp_wmb
- > +# if defined(__i386__) || defined(__x86_64__)
- > +#  define bpf_smp_rmb() asm volatile("" : : : "memory")
- > +#  define bpf_smp_wmb() asm volatile("" : : : "memory")
- > +# elif defined(__aarch64__)
- > +#  define bpf_smp_rmb() asm volatile("dmb ishld" : : : "memory")
- > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
- > +# elif defined(__arm__)
- > +#  define bpf_smp_rmb() asm volatile("dmb ish" : : : "memory")
- > +#  define bpf_smp_wmb() asm volatile("dmb ishst" : : : "memory")
- > +# else
- > +#  error Architecture not supported by the XDP socket code in libbpf.
- > +# endif
- > +#endif
- > +
+Caused by commit
 
-What about other architectures then?
+  341dfcf8d78e ("btf: expose BTF info through sysfs")
 
+interacting with commit
 
- >  static inline __u64 *xsk_ring_prod__fill_addr(struct xsk_ring_prod *fill,
- >  					      __u32 idx)
- >  {
- > @@ -119,7 +134,7 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
- >  	/* Make sure everything has been written to the ring before signalling
- >  	 * this to the kernel.
- >  	 */
- > -	smp_wmb();
- > +	bpf_smp_wmb();
- 
- >  	*prod->producer += nb;
- >  }
- > @@ -133,7 +148,7 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
- >  		/* Make sure we do not speculatively read the data before
- >  		 * we have received the packet buffers from the ring.
- >  		 */
- > -		smp_rmb();
- > +		bpf_smp_rmb();
- 
- >  		*idx = cons->cached_cons;
- cons-> cached_cons += entries;
- > -- 
- > 2.7.4
+  1267f9d3047d ("kbuild: add $(BASH) to run scripts with bash-extension")
 
+from the kbuild tree.
 
--- 
-WBR,
-Yauheni Kaliuta
+The change in the net-next tree turned link-vmlinux.sh into a bash script
+(I think).
+
+I have applied the following patch for today:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 4 Sep 2019 15:43:41 +1000
+Subject: [PATCH] link-vmlinux.sh is now a bash script
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ Makefile                | 4 ++--
+ scripts/link-vmlinux.sh | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index ac97fb282d99..523d12c5cebe 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1087,7 +1087,7 @@ ARCH_POSTLINK :=3D $(wildcard $(srctree)/arch/$(SRCAR=
+CH)/Makefile.postlink)
+=20
+ # Final link of vmlinux with optional arch pass after final link
+ cmd_link-vmlinux =3D                                                 \
+-	$(CONFIG_SHELL) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
++	$(BASH) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
+ 	$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
+=20
+ vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
+@@ -1403,7 +1403,7 @@ clean: rm-files :=3D $(CLEAN_FILES)
+ PHONY +=3D archclean vmlinuxclean
+=20
+ vmlinuxclean:
+-	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/link-vmlinux.sh clean
++	$(Q)$(BASH) $(srctree)/scripts/link-vmlinux.sh clean
+ 	$(Q)$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) clean)
+=20
+ clean: archclean vmlinuxclean
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index f7edb75f9806..ea1f8673869d 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ #
+ # link vmlinux
+--=20
+2.23.0.rc1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/QTWFWPom_661+i5lo5rk3WG
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1vUvUACgkQAVBC80lX
+0GzjyQgAnQfiteckT1XZtpBJIHgCriDzDQqrEz05XEKBmPDc5xi3w76wOh/VzzHB
+mNvEKEeOfAfGrPFKyfcJuF+MgdZPqgAv/JXm+kWrR11cQjcFJrERgYeTM6woyt9J
+qkwSAZ6v8jcH/iFgSbiAawXdCE3zJxR7lMNMn8QZ3IWZgswNQK2yvEleFAZEVnF5
+KZUymnHzjI+MRWVR0y1TtoOLj+OzX8fTgdvthbiYfPhSXNKnLQYcbGbY7Kc+1o76
+JkjOb53KVzlI33Vl/Tl7PC0R8T0AGZFWNSmt8eu38OgrlQGsPumKNnA1CarQSvGX
+6GGiG0Gzdjm0eH4XDxGRguDc+UrlvQ==
+=Qlyc
+-----END PGP SIGNATURE-----
+
+--Sig_/QTWFWPom_661+i5lo5rk3WG--
