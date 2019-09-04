@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01CB4A8A76
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F54A8A86
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732394AbfIDP73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:59:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33966 "EHLO mail.kernel.org"
+        id S1732472AbfIDP7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:59:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731634AbfIDP71 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:59:27 -0400
+        id S1731450AbfIDP7j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:59:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5057E20820;
-        Wed,  4 Sep 2019 15:59:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4911A20820;
+        Wed,  4 Sep 2019 15:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612766;
-        bh=BvbLYBycoaBZwSCz1J1OhvVyGPOAwRk9sZnNSfbTWlY=;
+        s=default; t=1567612778;
+        bh=0gtA+4axqSela8BK/JWyYry7bzmyKYrLYJp0ZL3+mS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tEs54ryfdq4ENtpV/qL0glDgzYWMfGYr7Y2Kg/mpkgaDuErlujbsYmllWegBWa4xq
-         ZJcEKhG0SgHdX4frve18q34H4HJB/GgUU8lLx0Oxmvg5kT77VC+DMRoUvvrV4MurlP
-         CoUguOjk1vuIbccp7iZR+MM6a4m1Ne+BLyA43nZE=
+        b=gRz70iISMPt06qcOacJCQOfkVs8Kt1KcmlVB4Aaf9sl/AyKVBhF5tk722lN/JmZ7q
+         DETODofhmojsk9vGLnWP1ZKikshyhArxy6jBwtgho6YDEeaikTVjAwJ0MrCoyJrAd9
+         f5+w5DPl2lWCoyiqnadZakV/QsxO8M4pU72GeNTU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+Cc:     Chen-Yu Tsai <wens@csie.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 68/94] nfp: flower: handle neighbour events on internal ports
-Date:   Wed,  4 Sep 2019 11:57:13 -0400
-Message-Id: <20190904155739.2816-68-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 76/94] net: stmmac: dwmac-rk: Don't fail if phy regulator is absent
+Date:   Wed,  4 Sep 2019 11:57:21 -0400
+Message-Id: <20190904155739.2816-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -46,54 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Hurley <john.hurley@netronome.com>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit e8024cb483abb2b0290b3ef5e34c736e9de2492f ]
+[ Upstream commit 3b25528e1e355c803e73aa326ce657b5606cda73 ]
 
-Recent code changes to NFP allowed the offload of neighbour entries to FW
-when the next hop device was an internal port. This allows for offload of
-tunnel encap when the end-point IP address is applied to such a port.
+The devicetree binding lists the phy phy as optional. As such, the
+driver should not bail out if it can't find a regulator. Instead it
+should just skip the remaining regulator related code and continue
+on normally.
 
-Unfortunately, the neighbour event handler still rejects events that are
-not associated with a repr dev and so the firmware neighbour table may get
-out of sync for internal ports.
+Skip the remainder of phy_power_on() if a regulator supply isn't
+available. This also gets rid of the bogus return code.
 
-Fix this by allowing internal port neighbour events to be correctly
-processed.
-
-Fixes: 45756dfedab5 ("nfp: flower: allow tunnels to output to internal port")
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Fixes: 2e12f536635f ("net: stmmac: dwmac-rk: Use standard devicetree property for phy regulator")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index 8c67505865a46..43faad1893f7f 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -329,13 +329,13 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 4644b2aeeba1c..e2e469c37a4d0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -1194,10 +1194,8 @@ static int phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
+ 	int ret;
+ 	struct device *dev = &bsp_priv->pdev->dev;
  
- 	flow.daddr = *(__be32 *)n->primary_key;
+-	if (!ldo) {
+-		dev_err(dev, "no regulator found\n");
+-		return -1;
+-	}
++	if (!ldo)
++		return 0;
  
--	/* Only concerned with route changes for representors. */
--	if (!nfp_netdev_is_nfp_repr(n->dev))
--		return NOTIFY_DONE;
--
- 	app_priv = container_of(nb, struct nfp_flower_priv, tun.neigh_nb);
- 	app = app_priv->app;
- 
-+	if (!nfp_netdev_is_nfp_repr(n->dev) &&
-+	    !nfp_flower_internal_port_can_offload(app, n->dev))
-+		return NOTIFY_DONE;
-+
- 	/* Only concerned with changes to routes already added to NFP. */
- 	if (!nfp_tun_has_route(app, flow.daddr))
- 		return NOTIFY_DONE;
+ 	if (enable) {
+ 		ret = regulator_enable(ldo);
 -- 
 2.20.1
 
