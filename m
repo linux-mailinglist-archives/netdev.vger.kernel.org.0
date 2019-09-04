@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DD6A844E
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 15:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6408A8447
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 15:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730513AbfIDNRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 09:17:33 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:33594 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730452AbfIDNRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 09:17:17 -0400
+        id S1730442AbfIDNRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 09:17:17 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:33520 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729968AbfIDNRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 09:17:15 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 78F4EC5740;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 7A880C5739;
         Wed,  4 Sep 2019 13:17:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567603037; bh=KtB3Uov2hN4nf9kUa8PMFbl3ixv9iikyZQaPSyHRMNw=;
+        t=1567603034; bh=KCQxzNKdPciLpCzMYFXS00/1ZDMQ64xO5mQOdoiRlGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=TTl1bzQi9wafn8aTGF4cwQ9XIZVRroMxpt87Sjf3ljSSbsf0iCqDT2n1K6IS0hT+c
-         J4N7o59AmdUA/+UXlEL8VKjexhaVnohJ8i1zrk3UMC/oD09gqs0+jdqwn3y492O1RS
-         wlORvU6iAUiZVrFvzgsJFNo0LSwXhoWKU9iU8HRpYKk3xazRjGoIrIreOWWiqIQv54
-         7Nqw5Z/QWWVQE9/HHd+XUXhryWhsjFJRCGykyZteitT8r6OPbBWPP3fMjnwOD6CT4f
-         6QRvkZXrcv9qdruoS+mLADL/hkbjD2rN7V85sM8JqiDijCk4o3E/tjbMWbQ/HX0DsO
-         c4a/kac5Ft5Zw==
+        b=LrQLnL9TNVB0sEP0RLSqKIC7mMIs7rPaXWeroMbywkEtXelwxhVPTgX4Wab2iqUIk
+         KZdprBXxNC3GrTv1XIV4iX0YUDZMgVZpGAxlHlQRSaplxKK0kU9/LNg6VjR2r7uVoD
+         Hcd8BBSD0EwmXvtatGjG7zvZP6GRWF/D2gdVxc5BO9pGIt6bAEfDj8rGsLjvVmM63S
+         ujfnhRBXBs08Zn7Jmaxw/h+RBZTqYW+4/MhGCb16NFACF+UMvCMXXY7l/bkF3dXK2q
+         HLtA8H81o9zNnMfq2ck/b3325Fa0CTyehjA1uRMmrbAVhbI/0zsr+l0t0fqoLo6KT+
+         2jIU9NlNWKjvw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 2888FA0066;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 3B957A0069;
         Wed,  4 Sep 2019 13:17:12 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 02/13] net: stmmac: xgmac: Add RBU handling in DMA interrupt
-Date:   Wed,  4 Sep 2019 15:16:54 +0200
-Message-Id: <42759cafe734764d692597437835b42eec66e059.1567602867.git.joabreu@synopsys.com>
+Subject: [PATCH v2 net-next 03/13] net: stmmac: Do not return error code in TC Initialization
+Date:   Wed,  4 Sep 2019 15:16:55 +0200
+Message-Id: <acfa0062f7bd087e3b80eaa87ff8dc1f058b5e61.1567602867.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1567602867.git.joabreu@synopsys.com>
 References: <cover.1567602867.git.joabreu@synopsys.com>
@@ -52,8 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the handling of Receive Buffer Unavailable interrupt in the DMA
-handler of XGMAC cores.
+As we can still use the remaining TC callbacks, e.g. CBS. We should not
+fail in the initialization only because RX Parser is not available.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -68,24 +68,24 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 64956465c030..e77eb0ddf9b5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -322,6 +322,10 @@ static int dwxgmac2_dma_interrupt(void __iomem *ioaddr,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+index 6c305b6ecad0..8dbbbf181ada 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+@@ -243,8 +243,9 @@ static int tc_init(struct stmmac_priv *priv)
+ 	struct dma_features *dma_cap = &priv->dma_cap;
+ 	unsigned int count;
  
- 	/* ABNORMAL interrupts */
- 	if (unlikely(intr_status & XGMAC_AIS)) {
-+		if (unlikely(intr_status & XGMAC_RBU)) {
-+			x->rx_buf_unav_irq++;
-+			ret |= handle_rx;
-+		}
- 		if (unlikely(intr_status & XGMAC_TPS)) {
- 			x->tx_process_stopped_irq++;
- 			ret |= tx_hard_error;
++	/* Fail silently as we can still use remaining features, e.g. CBS */
+ 	if (!dma_cap->frpsel)
+-		return -EINVAL;
++		return 0;
+ 
+ 	switch (dma_cap->frpbs) {
+ 	case 0x0:
 -- 
 2.7.4
 
