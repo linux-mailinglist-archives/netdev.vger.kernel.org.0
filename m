@@ -2,75 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCD7A8914
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E360A891B
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:23:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731154AbfIDO6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 10:58:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54316 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729773AbfIDO6M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 10:58:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Q7YjRxMVBLW49pVZW335BT3nkbBU2QFciowm7uU04mE=; b=wkDKne3ilaCN6mH8SXsvMTKeWo
-        gi7Moz1AorgBLU8+tpw/KXHRTS1vY/Yp3P0eufYXnqyqWmS2wiv7MqUvHw3TtMTGD3dc4WMdQh//e
-        uEDOr4tGmLnSEx63Fp0V4FLgOyWrpEVTkGGU0gTqoDdWBhqVDKIgc9x13jGmAUM7URYk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i5WjU-000313-KS; Wed, 04 Sep 2019 16:58:04 +0200
-Date:   Wed, 4 Sep 2019 16:58:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Voon Weifeng <weifeng.voon@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH v2 net-next] net: stmmac: Add support for MDIO interrupts
-Message-ID: <20190904145804.GA9068@lunn.ch>
-References: <1567605774-5500-1-git-send-email-weifeng.voon@intel.com>
+        id S1730937AbfIDO7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 10:59:36 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:44634 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727929AbfIDO7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 10:59:36 -0400
+Received: by mail-qk1-f193.google.com with SMTP id i78so18405216qke.11
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 07:59:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=lLWByCn+2pQBcuv1hYWdFa737ROB/e4Wp77nL6+S7oQ=;
+        b=A/YLVuylKKWqcmRlKHHYY010VkYfDyDbXUVImzIMm+sp7wnRK5etP0FyAipIzy8HgO
+         E7M06Eyrbu/LW2Gtf6Tul/ajMYDiXrkRT7RgMlRGZEeAZza046RkSPPmtz6b9VwLFrlg
+         xfMtF8QeJzZ1s01g5fBziO9P5ORSzpZl1LfdBu1kfsT4q1uGNBLcGxbxUSf3s4cPOybP
+         NnJBk2HYwY/ldoTiBmWDRwXOAYCH3FH56RJS6qiw5oFcH6scXt6y/0bwM3GKmb0kJJhZ
+         OfqNSJbHkQ0T8q2YihFyXz/zNzh/J4YZ5U3UB3F5p0xGTWB/cXzRL6gDDiN4SGPRgrXk
+         opvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lLWByCn+2pQBcuv1hYWdFa737ROB/e4Wp77nL6+S7oQ=;
+        b=dhNqOLcAA0uo9br73WPw+RYQaqWBB7iom7mMYCBC5hZ9sDZMMLvYqumUzd0wUq4RtR
+         BsL0Vv0X+zBoiBRxxt8RccBkYk9WkkVKTKOOdgabDjP3NO9OCQlc2VGSzoJxFslAlFxY
+         2sOlivWjqs8/5RT8O6qUqP+S2Kq2Ld2by2mXCPE0sQpboiFH7LIwenTobPrYsxtsfUC2
+         KMlD6EI8q96YNYSZS6LeV/k1vT2/A0KLxp6KQ0EkHK82Rgs3I1LNYj01Ac968B5lG+Yh
+         NGWZ2asIWUSTzfoEkxhdRy6xyWH9rxDGnGM8i6fmA5z5L9DSFbJtqDg86/uuh8CljbEK
+         0/fg==
+X-Gm-Message-State: APjAAAUlDNKvuX0kGfl4UR5DG9RwfV3uCLgZgqj6ZLCxoCcS+Sgt5MRF
+        K0qnOwL3YcITNOUtYJowWHg=
+X-Google-Smtp-Source: APXvYqzs24CXWZfGasqYYE2eoMEb2+fpKZBGqGVgFX2DaKnZJJMyn9jZkqSF00aHGS3RGEAaG+DFmg==
+X-Received: by 2002:a37:a083:: with SMTP id j125mr39408990qke.329.1567609175097;
+        Wed, 04 Sep 2019 07:59:35 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:fd80:3904:3263:f338:4c8b])
+        by smtp.googlemail.com with ESMTPSA id h29sm12073995qtb.46.2019.09.04.07.59.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Sep 2019 07:59:33 -0700 (PDT)
+Subject: Re: [PATCH 2/2] ip nexthop: Allow flush|list operations to specify a
+ specific protocol
+To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org
+References: <20190810001843.32068-3-sharpd@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0931aee4-b92e-dc89-8414-fa144062258f@gmail.com>
+Date:   Wed, 4 Sep 2019 08:59:31 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1567605774-5500-1-git-send-email-weifeng.voon@intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190810001843.32068-3-sharpd@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 04, 2019 at 10:02:54PM +0800, Voon Weifeng wrote:
-> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
+On 8/9/19 6:18 PM, Donald Sharp wrote:
+> In the case where we have a large number of nexthops from a specific
+> protocol, allow the flush and list operations to take a protocol
+> to limit the commands scopes.
 > 
-> DW EQoS v5.xx controllers added capability for interrupt generation
-> when MDIO interface is done (GMII Busy bit is cleared).
-> This patch adds support for this interrupt on supported HW to avoid
-> polling on GMII Busy bit.
+> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
+> ---
+>  ip/ipnexthop.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
 > 
-> stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
-> called by the interrupt handler.
-> 
-> Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-> Reviewed-by: Kweh, Hock Leong <hock.leong.kweh@intel.com>
-> Reviewed-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> Signed-off-by: Chuah, Kim Tatt <kim.tatt.chuah@intel.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 
-Hi Voon
-
-It is normal to include a short description of what you changed
-between the previous version and this version.
-
-The formatting of this patch also looks a bit odd. Did you use 
-git format-patch ; git send-email?
-
-Thanks
-	Andrew
+applied to iproute2-next. Thanks for the test cases.
