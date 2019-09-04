@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26AC7A8A91
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E10A8C77
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732508AbfIDP7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:59:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34448 "EHLO mail.kernel.org"
+        id S1732750AbfIDQN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:13:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732495AbfIDP7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:59:53 -0400
+        id S1732497AbfIDP7y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:59:54 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F19022CF5;
-        Wed,  4 Sep 2019 15:59:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 39EA922CED;
+        Wed,  4 Sep 2019 15:59:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612792;
-        bh=n2926yFWZh0mBBiNvBFZd63smTpyjMh0h8bNLtb991U=;
+        s=default; t=1567612794;
+        bh=VIVGQW933409S6l5xD/IZ/Cjm0sBXwCF9l4GLmhsxcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKiQYs11ZMpzqy331sm4dUX5c+5MVukboJCpG3vq6RDhg/YZDCxp67cUJDCiWTMDA
-         m6B3yNsTEVS2OT5eqyZgQrq1z3ACNz8SCCc05vqr3ol5DzYMh9uyns8mbSOiEgLFvO
-         9rg5q9Sc8CSefsLi0n7wbvZ4Edgz861AnpRUYEm8=
+        b=scwpC+SLvAS3/qxGlIVvFne7/hr0amSHB73j8upv3gX+RNODqJlVkCvz8GMkjDQAj
+         28n9A09bhUmo0J3cKqs4zJTzMloytppIqPVtmGTR7wNHXcrAEpEx854JWeMSQZCzjq
+         LDhQPN9iuTCw2bevcZskOVIiQz8+OAyFApccJyMo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>,
         Igor Russkikh <igor.russkikh@aquantia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 87/94] net: aquantia: fix removal of vlan 0
-Date:   Wed,  4 Sep 2019 11:57:32 -0400
-Message-Id: <20190904155739.2816-87-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 88/94] net: aquantia: fix limit of vlan filters
+Date:   Wed,  4 Sep 2019 11:57:33 -0400
+Message-Id: <20190904155739.2816-88-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -46,34 +46,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
 
-[ Upstream commit 6fdc060d7476ef73c8029b652d252c1a7b4de948 ]
+[ Upstream commit 392349f60110dc2c3daf86464fd926afc53d6143 ]
 
-Due to absence of checking against the rx flow rule when vlan 0 is being
-removed, the other rule could be removed instead of the rule with vlan 0
+Fix a limit condition of vlans on the interface before setting vlan
+promiscuous mode
 
-Fixes: 7975d2aff5afb ("net: aquantia: add support of rx-vlan-filter offload")
+Fixes: 48dd73d08d4dd ("net: aquantia: fix vlans not working over bridged network")
 Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
 Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_filters.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_filters.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-index 1fff462a4175e..11d7385babb07 100644
+index 11d7385babb07..3dbf3ff1c4506 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-@@ -431,7 +431,8 @@ int aq_del_fvlan_by_vlan(struct aq_nic_s *aq_nic, u16 vlan_id)
- 		if (be16_to_cpu(rule->aq_fsp.h_ext.vlan_tci) == vlan_id)
- 			break;
- 	}
--	if (rule && be16_to_cpu(rule->aq_fsp.h_ext.vlan_tci) == vlan_id) {
-+	if (rule && rule->type == aq_rx_filter_vlan &&
-+	    be16_to_cpu(rule->aq_fsp.h_ext.vlan_tci) == vlan_id) {
- 		struct ethtool_rxnfc cmd;
+@@ -844,7 +844,7 @@ int aq_filters_vlans_update(struct aq_nic_s *aq_nic)
+ 		return err;
  
- 		cmd.fs.location = rule->aq_fsp.location;
+ 	if (aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) {
+-		if (hweight < AQ_VLAN_MAX_FILTERS && hweight > 0) {
++		if (hweight <= AQ_VLAN_MAX_FILTERS && hweight > 0) {
+ 			err = aq_hw_ops->hw_filter_vlan_ctrl(aq_hw,
+ 				!(aq_nic->packet_filter & IFF_PROMISC));
+ 			aq_nic->aq_nic_cfg.is_vlan_force_promisc = false;
 -- 
 2.20.1
 
