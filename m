@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDC60A8D7E
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF0AA8D86
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732568AbfIDRHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 13:07:04 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45230 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731635AbfIDRHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 13:07:03 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y72so6050812pfb.12;
-        Wed, 04 Sep 2019 10:07:03 -0700 (PDT)
+        id S1732017AbfIDRLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 13:11:18 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35916 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731635AbfIDRLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 13:11:17 -0400
+Received: by mail-pl1-f195.google.com with SMTP id f19so9842991plr.3;
+        Wed, 04 Sep 2019 10:11:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=EzYaqmoxa7r0POdmVVPZhNlpIqvfD++k70LUTmwnZhc=;
-        b=OnJpYMuHwY5ZMCOJDIliHljNjMsxn3xMgi8xgEgBs7y17G9voiKU6LQbLpeUHg9YIR
-         BJOdDCNINHIJGnw3Pya0fNH/oI38OOB4Xdq7lhhxMeNb5TuIg1HcaQ2ZY0zb8aCedFID
-         ZpVLJlmgrgx7AL5lLdOY9Ynv3Na5UfS9xzQSdZs7f+sLCcw2XuGoZEI1ckkBX2bdN2+7
-         f2ItECj6ELTwSbedbW9u0fCK96d6ULXqL6yWdCrihtgV5L+Vw1fez3VGennon+RrUZb5
-         1jmrHYtJLg4GUeulxXK7U2C4G2cKYciVDz1q3QDtml80gycbCIwWXzm0WVO9TviJoBM6
-         7mfg==
+        bh=vYEEXFOhxtvYv/yYJOcMUmKNs0oEV4AL/NRwjoex32s=;
+        b=hHdD8bIeCBjJio5A7m8CJgEDEiHtSigJRtRdIcbuzRbewe3bc45IFg5j+qlkBynoXd
+         YXScxuygluqmLk01crpDYcFseLk6p87mZoeWvIQbWDRXnq7AqsFXcKFh3wS6kcTIUHz0
+         304YmdcmtmCzUEUT5UTro6nEIfY0AQIgwwzmfVdwK1ujvSoF65sYirx0luvpn4591bBy
+         hfwkuBevYmIwmiAWV8gllppR6L+oW6Iaa562pZw0UCg+lkW4+Cj+ZhgO9LPH0Hs4l+YO
+         +BjbKP2H/8G1+T3QqqhRouhi1qzf8E2PQUDcmfDw7hI1PWgb5XPL3uD1c8Mj18Q/0fV+
+         eRUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=EzYaqmoxa7r0POdmVVPZhNlpIqvfD++k70LUTmwnZhc=;
-        b=ttUAo+PuoI7Yzh1XEmM2BH82kePALO82kP6GjsPg/aaas42k4L37QkMYMoSlJEDQ97
-         9jqC00uWQ0HLz8CnMs6lTVU5yMHYggkhagpYzuUWsgu1dzBTUUjoFAFrIzySK1XY1ieX
-         VpPerkigp8dQSNwuXuSrjrBpCLDXs9MOeo1UsWDqPEH2SRDBBXpOGNmfjWw9MVjRIJjH
-         Tu4Q8j2tQfQAI5TuLhzNOeYAYhvaROh++6Atg66d9soFq/RmenDpwh33ZGaX2MqOKgDP
-         8bgPsxrz4XKqyORahEHED+JUxrN0BB0mFQ/13dc1eYn5NzW/iY6L21Lrvy11aNKwF5cZ
-         B33A==
-X-Gm-Message-State: APjAAAWP033ajkhlyUJZYn/BfbDDRWOjzAik5vnIifYPwVuSYz4QyleF
-        23DpBYxn+kI5akWatzoCG3E=
-X-Google-Smtp-Source: APXvYqxsFcvHZTfZFvrnmNLR2f1Q4acClEr9VGexWVr18Hd/KWXHkQF3TpuhOZ3hvMvDSQMSEKf1sw==
-X-Received: by 2002:a17:90a:b38e:: with SMTP id e14mr5529233pjr.120.1567616822631;
-        Wed, 04 Sep 2019 10:07:02 -0700 (PDT)
+        bh=vYEEXFOhxtvYv/yYJOcMUmKNs0oEV4AL/NRwjoex32s=;
+        b=oKgnbFMClmY0VfzfGhbCWde4/Y0cZUsUi/68fGXwcfa+41DOD6tEmF28b8uibUNE7j
+         ytiRT0jgRfvI26awZnHFiGYqhoBCR7NTZrlC8nIRWKpBbA3XszwQGa2u8s7fD4kuX4Jd
+         dQOWSqRyKHqAg79r+or/W2loHDheE6RnFnFyB3iJQuvsBo7GWLPinCm3NGJ8kLnQuPmb
+         nIjBnvSMPkHS0z918o3lRl1+hxkD2gOWmVncHyUyoka5QFx9+/22bjOY2R7pi3NdwRmg
+         Lf3B2goasiXV6u+dFvrV8YS9fXy44WeRQnDcfv/QvYED9uiuP2MU/CtffyhpCymp5pm8
+         TiRg==
+X-Gm-Message-State: APjAAAXWxoKUhtByMC6YArBtRb7FKJkM9kIbKhbsdNzu3VGdLv3WZVF9
+        4llPy908I14IxheSIfM3p+/PX0CAY+g=
+X-Google-Smtp-Source: APXvYqxeIb7V3OhRRZv7aV+cgE3F2J0ubBjn6ANX3uLEnAOYw/PugW11KAJc9aaY1V+Q+vuKxv13nw==
+X-Received: by 2002:a17:902:e407:: with SMTP id ci7mr42394265plb.326.1567617076816;
+        Wed, 04 Sep 2019 10:11:16 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x11sm5402350pja.3.2019.09.04.10.07.01
+        by smtp.googlemail.com with ESMTPSA id y25sm22869474pfm.95.2019.09.04.10.11.14
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Sep 2019 10:07:01 -0700 (PDT)
-Subject: Re: [PATCH v2 1/2] include: mdio: Add driver data helpers
+        Wed, 04 Sep 2019 10:11:16 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] net: phy: gmii2rgmii: Dont use priv field in phy
+ device
 To:     Harini Katakam <harini.katakam@xilinx.com>, andrew@lunn.ch,
         hkallweit1@gmail.com, davem@davemloft.net
 Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         harinikatakamlinux@gmail.com, radhey.shyam.pandey@xilinx.com
 References: <1567605621-6818-1-git-send-email-harini.katakam@xilinx.com>
- <1567605621-6818-2-git-send-email-harini.katakam@xilinx.com>
+ <1567605621-6818-3-git-send-email-harini.katakam@xilinx.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -110,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <8d514c3e-7dd0-3dc9-b6b3-1ad52e769ba7@gmail.com>
-Date:   Wed, 4 Sep 2019 10:07:00 -0700
+Message-ID: <93b1f1d1-4499-04c1-f240-ef0ea73db5ea@gmail.com>
+Date:   Wed, 4 Sep 2019 10:11:12 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <1567605621-6818-2-git-send-email-harini.katakam@xilinx.com>
+In-Reply-To: <1567605621-6818-3-git-send-email-harini.katakam@xilinx.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,7 +126,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/4/19 7:00 AM, Harini Katakam wrote:
-> Add set/get drv_data helpers for mdio device.
+> Use set/get drv data in phydev's mdio device instead. Phy device priv
+> field maybe used by the external phy driver and should not be
+> overwritten.
 > 
 > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
 
