@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 386A5A8BDB
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516C9A8B31
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732683AbfIDQG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:06:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38000 "EHLO mail.kernel.org"
+        id S1732486AbfIDQCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:02:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733177AbfIDQCL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:02:11 -0400
+        id S1733194AbfIDQCM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:02:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1042123711;
-        Wed,  4 Sep 2019 16:02:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2D24522CF5;
+        Wed,  4 Sep 2019 16:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612930;
-        bh=PAUG5iixFXxTPmQ6sxSR0YC0MClEKtce7SpzYuzozrE=;
+        s=default; t=1567612931;
+        bh=XTWT0GLRT137n4aAiPNoeEPynziTQES2TZ5NDZpB7R8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qt5YkeD7hRKbDTFY2WGIYjvbK2vBI5PLl/A1Tw0b8esIpO0KIDYE4Whmv6KKMmrnB
-         T9B8HOfWMrwVA22ryRT168kVgTVCM5HXkorG/8M3kprp6F9sKbyMUOn2ZRmAuxfVjX
-         94jII+8+PHsf7NyiqUyuLgRktmvRGW1tanzjmUKY=
+        b=HVwnX74Z0ZjOh3ees5ce/zynQlw0rsLwhr8xRjmrxce3klZGYhhkEjtRg4OJTJuXX
+         uwq/ux90HO5aRClOJAWNX0XTuh8dLyVBqW0jy5NrJFot6agx7VwDQhulAMdeHxdUy0
+         xHqQKhM5DDgyMum9AenB90Zf/NiUqtv0i/kxxIGw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+Cc:     Chen-Yu Tsai <wens@csie.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 31/36] amd-xgbe: Fix error path in xgbe_mod_init()
-Date:   Wed,  4 Sep 2019 12:01:17 -0400
-Message-Id: <20190904160122.4179-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 32/36] net: stmmac: dwmac-rk: Don't fail if phy regulator is absent
+Date:   Wed,  4 Sep 2019 12:01:18 -0400
+Message-Id: <20190904160122.4179-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160122.4179-1-sashal@kernel.org>
 References: <20190904160122.4179-1-sashal@kernel.org>
@@ -43,48 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit b6b4dc4c1fa7f1c99398e7dc85758049645e9588 ]
+[ Upstream commit 3b25528e1e355c803e73aa326ce657b5606cda73 ]
 
-In xgbe_mod_init(), we should do cleanup if some error occurs
+The devicetree binding lists the phy phy as optional. As such, the
+driver should not bail out if it can't find a regulator. Instead it
+should just skip the remaining regulator related code and continue
+on normally.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: efbaa828330a ("amd-xgbe: Add support to handle device renaming")
-Fixes: 47f164deab22 ("amd-xgbe: Add PCI device support")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Skip the remainder of phy_power_on() if a regulator supply isn't
+available. This also gets rid of the bogus return code.
+
+Fixes: 2e12f536635f ("net: stmmac: dwmac-rk: Use standard devicetree property for phy regulator")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-main.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-main.c b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-index e31d9d1fb6a66..e4e632e025d31 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-main.c
-@@ -487,13 +487,19 @@ static int __init xgbe_mod_init(void)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+index 01787344f6e59..712b5eb3507ab 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -1145,10 +1145,8 @@ static int phy_power_on(struct rk_priv_data *bsp_priv, bool enable)
+ 	int ret;
+ 	struct device *dev = &bsp_priv->pdev->dev;
  
- 	ret = xgbe_platform_init();
- 	if (ret)
--		return ret;
-+		goto err_platform_init;
+-	if (!ldo) {
+-		dev_err(dev, "no regulator found\n");
+-		return -1;
+-	}
++	if (!ldo)
++		return 0;
  
- 	ret = xgbe_pci_init();
- 	if (ret)
--		return ret;
-+		goto err_pci_init;
- 
- 	return 0;
-+
-+err_pci_init:
-+	xgbe_platform_exit();
-+err_platform_init:
-+	unregister_netdevice_notifier(&xgbe_netdev_notifier);
-+	return ret;
- }
- 
- static void __exit xgbe_mod_exit(void)
+ 	if (enable) {
+ 		ret = regulator_enable(ldo);
 -- 
 2.20.1
 
