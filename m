@@ -2,156 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1B3A7B8A
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:19:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0439DA7B96
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728648AbfIDGTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 02:19:41 -0400
-Received: from conssluserg-04.nifty.com ([210.131.2.83]:55575 "EHLO
-        conssluserg-04.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbfIDGTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 02:19:41 -0400
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id x846JWTl031934;
-        Wed, 4 Sep 2019 15:19:32 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com x846JWTl031934
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1567577973;
-        bh=KcfNyd0d6qNZe5po5Im8NYxMh43Vdsb11cvHEmcz+PU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NFYOBONJGnDm89krh6tmh/c8NV0RUljxr598tyzlAbpSSOaVDb87+GVW4MsSfaON6
-         S4QKPqIosZT1KHKY8MdVlNwS55LxMR4DCI90fCS0H5aarqAFr0yAmBST3cp9kY9eHb
-         Xa3g6vPXnjryY96J0APPuerVKK1/HpwmCHvAJteKQb6SkTfFVRmYe24DG5K3lyDNhN
-         9/vTU0ppedz8raShu8Klo827RW2HKq98AZSReapijmt+7sXBRm9Pn4+aaCVYStEh88
-         TCVcGZYg+2emGCBdK24mzGhgjQeWKeJUo3GSIb7h3f5Al12Na2feckj29W9/6+ScKH
-         fZaxPHjZLqSaw==
-X-Nifty-SrcIP: [209.85.222.46]
-Received: by mail-ua1-f46.google.com with SMTP id w16so561374uap.9;
-        Tue, 03 Sep 2019 23:19:32 -0700 (PDT)
-X-Gm-Message-State: APjAAAVpRN4eZF+ZbilvY3pw16/WlpqiL48VzgqOeZc421+9uaaJV9Nd
-        ej0kqy3jBnZ7+s6Yx53neFMs47WPFDdP5Vd6Sz0=
-X-Google-Smtp-Source: APXvYqzoSSq06AWlxLOXNs6NXjP7RWzDcrzRDyOUl33juPGfn0YLfNVF/6LIYBBz8pfzQph1UskTHf1y0APVT0gkpOg=
-X-Received: by 2002:ab0:32d8:: with SMTP id f24mr18756941uao.121.1567577971564;
- Tue, 03 Sep 2019 23:19:31 -0700 (PDT)
+        id S1728532AbfIDGVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 02:21:48 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:38192 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfIDGVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 02:21:47 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id B6D60611C5; Wed,  4 Sep 2019 06:21:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567578106;
+        bh=TPgwvKctOwymLvmyyZZR51ik0MV3E88Ok8sQi1Pt0ik=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=ISfgP38VuLvEgqxm7IFujKsnfnYGs/t8g3hKuPggbeTb+t5rtdE40G6/1cnQV3r/I
+         Jh78KqRzTzKFiPQ3gq7PiiPBRP3eplxlMLFoQNfFuUIA047CRQ8ktfLNJa2m5Ud4R1
+         wKsWXvYQ8Zaei8K2m2uElNGHp74EA7v1Hidp3Lqw=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 78032602A7;
+        Wed,  4 Sep 2019 06:21:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567578106;
+        bh=TPgwvKctOwymLvmyyZZR51ik0MV3E88Ok8sQi1Pt0ik=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=CZKc/atyhx0Bz9SPu1S3FG5C0jMBpRU3ENSWD0EpysigTTM9J37BVmTea8Y4ya0U9
+         d8pLxn9NOavUJHkDBxBny/ZXv9VwGmOreFWb2qQXeV/KC8PHfRvi2UPd4YlzVUchuO
+         CLcATN06vJ7T63Vi0OOyyMkphPMsx+j0s5JEUMHQ=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 78032602A7
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20190904160021.72d104f1@canb.auug.org.au>
-In-Reply-To: <20190904160021.72d104f1@canb.auug.org.au>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Wed, 4 Sep 2019 15:18:55 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQEU6uu-Z=VeR2KNa8ezCLA7VHtpvM2tvAKsWtUTi6Eug@mail.gmail.com>
-Message-ID: <CAK7LNAQEU6uu-Z=VeR2KNa8ezCLA7VHtpvM2tvAKsWtUTi6Eug@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath6kl: Fix a possible null-pointer dereference in
+ ath6kl_htc_mbox_create()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190729030305.18410-1-baijiaju1990@gmail.com>
+References: <20190729030305.18410-1-baijiaju1990@gmail.com>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190904062146.B6D60611C5@smtp.codeaurora.org>
+Date:   Wed,  4 Sep 2019 06:21:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 4, 2019 at 3:00 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> After merging the net-next tree, today's linux-next build (arm
-> multi_v7_defconfig) failed like this:
->
-> scripts/link-vmlinux.sh: 74: Bad substitution
->
-> Caused by commit
->
->   341dfcf8d78e ("btf: expose BTF info through sysfs")
->
-> interacting with commit
->
->   1267f9d3047d ("kbuild: add $(BASH) to run scripts with bash-extension")
->
-> from the kbuild tree.
+Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
 
+> In ath6kl_htc_mbox_create(), when kzalloc() on line 2855 fails,
+> target->dev is assigned to NULL, and ath6kl_htc_mbox_cleanup(target) is
+> called on line 2885.
+> 
+> In ath6kl_htc_mbox_cleanup(), target->dev is used on line 2895:
+>     ath6kl_hif_cleanup_scatter(target->dev->ar);
+> 
+> Thus, a null-pointer dereference may occur.
+> 
+> To fix this bug, kfree(target) is called and NULL is returned when
+> kzalloc() on line 2855 fails.
+> 
+> This bug is found by a static analysis tool STCheck written by us.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-I knew that they were using bash-extension
-in the #!/bin/sh script.  :-D
+Patch applied to ath-next branch of ath.git, thanks.
 
+0e7bf23e4967 ath6kl: Fix a possible null-pointer dereference in ath6kl_htc_mbox_create()
 
-In fact, I wrote my patch in order to break their code
-and  make btf people realize that they were doing wrong.
+-- 
+https://patchwork.kernel.org/patch/11063157/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-
-> The change in the net-next tree turned link-vmlinux.sh into a bash script
-> (I think).
->
-> I have applied the following patch for today:
-
-
-But, this is a temporary fix only for linux-next.
-
-scripts/link-vmlinux.sh does not need to use the
-bash-extension ${@:2} in the first place.
-
-I hope btf people will write the correct code.
-
-Thanks.
-
-
-
-
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Wed, 4 Sep 2019 15:43:41 +1000
-> Subject: [PATCH] link-vmlinux.sh is now a bash script
->
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  Makefile                | 4 ++--
->  scripts/link-vmlinux.sh | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/Makefile b/Makefile
-> index ac97fb282d99..523d12c5cebe 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1087,7 +1087,7 @@ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
->
->  # Final link of vmlinux with optional arch pass after final link
->  cmd_link-vmlinux =                                                 \
-> -       $(CONFIG_SHELL) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
-> +       $(BASH) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
->         $(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
->
->  vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
-> @@ -1403,7 +1403,7 @@ clean: rm-files := $(CLEAN_FILES)
->  PHONY += archclean vmlinuxclean
->
->  vmlinuxclean:
-> -       $(Q)$(CONFIG_SHELL) $(srctree)/scripts/link-vmlinux.sh clean
-> +       $(Q)$(BASH) $(srctree)/scripts/link-vmlinux.sh clean
->         $(Q)$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) clean)
->
->  clean: archclean vmlinuxclean
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index f7edb75f9806..ea1f8673869d 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -1,4 +1,4 @@
-> -#!/bin/sh
-> +#!/bin/bash
->  # SPDX-License-Identifier: GPL-2.0
->  #
->  # link vmlinux
-> --
-> 2.23.0.rc1
->
-> --
-> Cheers,
-> Stephen Rothwell
-
-
-
---
-Best Regards
-Masahiro Yamada
