@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ECDAA8A36
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D05A8A3D
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:25:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732076AbfIDP6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:58:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32774 "EHLO mail.kernel.org"
+        id S1732110AbfIDP6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:58:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732038AbfIDP6k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:40 -0400
+        id S1731540AbfIDP6p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:58:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 646C222DBF;
-        Wed,  4 Sep 2019 15:58:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE14622CF7;
+        Wed,  4 Sep 2019 15:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612719;
-        bh=WCP6QyaYIxXcP8RcE8oUkk9e6+XZKDW0z21xQZ+MEZ0=;
+        s=default; t=1567612724;
+        bh=4KNWvu8UlFqosnanh2IlDJuiApyVITIiozQEuYanuy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K3XTBGuGYMKGqGBO3x5WBbEjxULDFz0O6vO4onPlq5jIMfZex9TQiyZEHuD3NF7zE
-         O6qi+bqGumGNx6dEMShoxhSxF7amEXeWozZy8jCdufv6NoFqTu/LtjSCFOfadH8Ud2
-         PwbotcEckw1aWhtuYGFgLy+sIBFACXldPlcy29LM=
+        b=C8SPzWyXZ1/Y7Ou1vmW0O3gDQ51QQHDI1yo4/eJBAf6I0IWc8SCQs1u+RGALWoLbz
+         Ue5nRybrlX25w2J4CwyanAiZ/SIx4/DiJg7NzEfNmlbNuMZQnWV/Sx8UyRRS0I+BUm
+         KD9KhYquzYJq6RGdrE9X4pXJrfv3jTJo0J2YHumM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 40/94] flow_dissector: Fix potential use-after-free on BPF_PROG_DETACH
-Date:   Wed,  4 Sep 2019 11:56:45 -0400
-Message-Id: <20190904155739.2816-40-sashal@kernel.org>
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        Hayes Wang <hayeswang@realtek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 43/94] r8152: Set memory to all 0xFFs on failed reg reads
+Date:   Wed,  4 Sep 2019 11:56:48 -0400
+Message-Id: <20190904155739.2816-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -46,44 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Prashant Malani <pmalani@chromium.org>
 
-[ Upstream commit db38de39684dda2bf307f41797db2831deba64e9 ]
+[ Upstream commit f53a7ad189594a112167efaf17ea8d0242b5ac00 ]
 
-Call to bpf_prog_put(), with help of call_rcu(), queues an RCU-callback to
-free the program once a grace period has elapsed. The callback can run
-together with new RCU readers that started after the last grace period.
-New RCU readers can potentially see the "old" to-be-freed or already-freed
-pointer to the program object before the RCU update-side NULLs it.
+get_registers() blindly copies the memory written to by the
+usb_control_msg() call even if the underlying urb failed.
 
-Reorder the operations so that the RCU update-side resets the protected
-pointer before the end of the grace period after which the program will be
-freed.
+This could lead to junk register values being read by the driver, since
+some indirect callers of get_registers() ignore the return values. One
+example is:
+  ocp_read_dword() ignores the return value of generic_ocp_read(), which
+  calls get_registers().
 
-Fixes: d58e468b1112 ("flow_dissector: implements flow dissector BPF hook")
-Reported-by: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Petar Penkov <ppenkov@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+So, emulate PCI "Master Abort" behavior by setting the buffer to all
+0xFFs when usb_control_msg() fails.
+
+This patch is copied from the r8152 driver (v2.12.0) published by
+Realtek (www.realtek.com).
+
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Acked-by: Hayes Wang <hayeswang@realtek.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/flow_dissector.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index edd622956083d..b15c0c0f6e557 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -138,8 +138,8 @@ int skb_flow_dissector_bpf_prog_detach(const union bpf_attr *attr)
- 		mutex_unlock(&flow_dissector_mutex);
- 		return -ENOENT;
- 	}
--	bpf_prog_put(attached);
- 	RCU_INIT_POINTER(net->flow_dissector_prog, NULL);
-+	bpf_prog_put(attached);
- 	mutex_unlock(&flow_dissector_mutex);
- 	return 0;
- }
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index e0dcb681cfe5a..7542afba019bb 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -787,8 +787,11 @@ int get_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
+ 	ret = usb_control_msg(tp->udev, usb_rcvctrlpipe(tp->udev, 0),
+ 			      RTL8152_REQ_GET_REGS, RTL8152_REQT_READ,
+ 			      value, index, tmp, size, 500);
++	if (ret < 0)
++		memset(data, 0xff, size);
++	else
++		memcpy(data, tmp, size);
+ 
+-	memcpy(data, tmp, size);
+ 	kfree(tmp);
+ 
+ 	return ret;
 -- 
 2.20.1
 
