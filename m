@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C35A8CE2
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC1EA8CDE
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732247AbfIDQTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:19:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60694 "EHLO mail.kernel.org"
+        id S1732470AbfIDQSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:18:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731992AbfIDP62 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:58:28 -0400
+        id S1731479AbfIDP6m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:58:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EAB412377D;
-        Wed,  4 Sep 2019 15:58:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE2132070C;
+        Wed,  4 Sep 2019 15:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612707;
-        bh=jsxjZ6c2pKwOfwzh1srusN1d3KgkyddtgzEIeAdJ3vY=;
+        s=default; t=1567612720;
+        bh=KT1cqQYuCdglFPdumvq7H8CWoXVeOetimjy1U9BQ8MQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zeyD17NVoWoeheTbxmWyfz8R5xex0yCZIFxiHXiDJmN/MkMmuszaejaImEWV2c3Ft
-         UaRw657ZNDa5Rr4U7wh2T8XxhfP/qy2sqlbpYwDJTXe78DKBtG+k/7RsydoG2HZtbd
-         FFrXvR4pWKGAbK2oXdl+RZaoXsKVpz8gqtThoC+c=
+        b=DVv0KBhkdS/Lpwk6kw2O7mkrO39W0dzE4+NwyZpI/zbo474cwVXT9OPosd8gAkOJk
+         2VTWxjNkatZbaMRoBPe1Vpjf2hCw7Znyiw31NNYenTk8ENmJ199oJNA00ZVGBfAee5
+         E8I7FOSMdblK2GmQHSSrq/Odf1KaJ1X2Il8ebKdI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 34/94] qed: Add cleanup in qed_slowpath_start()
-Date:   Wed,  4 Sep 2019 11:56:39 -0400
-Message-Id: <20190904155739.2816-34-sashal@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 41/94] bpf: fix use after free in prog symbol exposure
+Date:   Wed,  4 Sep 2019 11:56:46 -0400
+Message-Id: <20190904155739.2816-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -44,44 +45,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wenwen Wang <wenwen@cs.uga.edu>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit de0e4fd2f07ce3bbdb69dfb8d9426b7227451b69 ]
+[ Upstream commit c751798aa224fadc5124b49eeb38fb468c0fa039 ]
 
-If qed_mcp_send_drv_version() fails, no cleanup is executed, leading to
-memory leaks. To fix this issue, introduce the label 'err4' to perform the
-cleanup work before returning the error.
+syzkaller managed to trigger the warning in bpf_jit_free() which checks via
+bpf_prog_kallsyms_verify_off() for potentially unlinked JITed BPF progs
+in kallsyms, and subsequently trips over GPF when walking kallsyms entries:
 
-Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
-Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  [...]
+  8021q: adding VLAN 0 to HW filter on device batadv0
+  8021q: adding VLAN 0 to HW filter on device batadv0
+  WARNING: CPU: 0 PID: 9869 at kernel/bpf/core.c:810 bpf_jit_free+0x1e8/0x2a0
+  Kernel panic - not syncing: panic_on_warn set ...
+  CPU: 0 PID: 9869 Comm: kworker/0:7 Not tainted 5.0.0-rc8+ #1
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  Workqueue: events bpf_prog_free_deferred
+  Call Trace:
+   __dump_stack lib/dump_stack.c:77 [inline]
+   dump_stack+0x113/0x167 lib/dump_stack.c:113
+   panic+0x212/0x40b kernel/panic.c:214
+   __warn.cold.8+0x1b/0x38 kernel/panic.c:571
+   report_bug+0x1a4/0x200 lib/bug.c:186
+   fixup_bug arch/x86/kernel/traps.c:178 [inline]
+   do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:271
+   do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:290
+   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:973
+  RIP: 0010:bpf_jit_free+0x1e8/0x2a0
+  Code: 02 4c 89 e2 83 e2 07 38 d0 7f 08 84 c0 0f 85 86 00 00 00 48 ba 00 02 00 00 00 00 ad de 0f b6 43 02 49 39 d6 0f 84 5f fe ff ff <0f> 0b e9 58 fe ff ff 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1
+  RSP: 0018:ffff888092f67cd8 EFLAGS: 00010202
+  RAX: 0000000000000007 RBX: ffffc90001947000 RCX: ffffffff816e9d88
+  RDX: dead000000000200 RSI: 0000000000000008 RDI: ffff88808769f7f0
+  RBP: ffff888092f67d00 R08: fffffbfff1394059 R09: fffffbfff1394058
+  R10: fffffbfff1394058 R11: ffffffff89ca02c7 R12: ffffc90001947002
+  R13: ffffc90001947020 R14: ffffffff881eca80 R15: ffff88808769f7e8
+  BUG: unable to handle kernel paging request at fffffbfff400d000
+  #PF error: [normal kernel read fault]
+  PGD 21ffee067 P4D 21ffee067 PUD 21ffed067 PMD 9f942067 PTE 0
+  Oops: 0000 [#1] PREEMPT SMP KASAN
+  CPU: 0 PID: 9869 Comm: kworker/0:7 Not tainted 5.0.0-rc8+ #1
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  Workqueue: events bpf_prog_free_deferred
+  RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:495 [inline]
+  RIP: 0010:bpf_tree_comp kernel/bpf/core.c:558 [inline]
+  RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
+  RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
+  RIP: 0010:bpf_prog_kallsyms_find+0x107/0x2e0 kernel/bpf/core.c:632
+  Code: 00 f0 ff ff 44 38 c8 7f 08 84 c0 0f 85 fa 00 00 00 41 f6 45 02 01 75 02 0f 0b 48 39 da 0f 82 92 00 00 00 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 45 01 00 00 8b 03 48 c1 e0
+  [...]
+
+Upon further debugging, it turns out that whenever we trigger this
+issue, the kallsyms removal in bpf_prog_ksym_node_del() was /skipped/
+but yet bpf_jit_free() reported that the entry is /in use/.
+
+Problem is that symbol exposure via bpf_prog_kallsyms_add() but also
+perf_event_bpf_event() were done /after/ bpf_prog_new_fd(). Once the
+fd is exposed to the public, a parallel close request came in right
+before we attempted to do the bpf_prog_kallsyms_add().
+
+Given at this time the prog reference count is one, we start to rip
+everything underneath us via bpf_prog_release() -> bpf_prog_put().
+The memory is eventually released via deferred free, so we're seeing
+that bpf_jit_free() has a kallsym entry because we added it from
+bpf_prog_load() but /after/ bpf_prog_put() from the remote CPU.
+
+Therefore, move both notifications /before/ we install the fd. The
+issue was never seen between bpf_prog_alloc_id() and bpf_prog_new_fd()
+because upon bpf_prog_get_fd_by_id() we'll take another reference to
+the BPF prog, so we're still holding the original reference from the
+bpf_prog_load().
+
+Fixes: 6ee52e2a3fe4 ("perf, bpf: Introduce PERF_RECORD_BPF_EVENT")
+Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
+Reported-by: syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Song Liu <songliubraving@fb.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 30 ++++++++++++++++++------------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 6de23b56b2945..c875a2fa75966 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -1215,7 +1215,7 @@ static int qed_slowpath_start(struct qed_dev *cdev,
- 					      &drv_version);
- 		if (rc) {
- 			DP_NOTICE(cdev, "Failed sending drv version command\n");
--			return rc;
-+			goto err4;
- 		}
- 	}
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 42d17f7307802..d2146277071f3 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1686,20 +1686,26 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	if (err)
+ 		goto free_used_maps;
  
-@@ -1223,6 +1223,8 @@ static int qed_slowpath_start(struct qed_dev *cdev,
+-	err = bpf_prog_new_fd(prog);
+-	if (err < 0) {
+-		/* failed to allocate fd.
+-		 * bpf_prog_put() is needed because the above
+-		 * bpf_prog_alloc_id() has published the prog
+-		 * to the userspace and the userspace may
+-		 * have refcnt-ed it through BPF_PROG_GET_FD_BY_ID.
+-		 */
+-		bpf_prog_put(prog);
+-		return err;
+-	}
+-
++	/* Upon success of bpf_prog_alloc_id(), the BPF prog is
++	 * effectively publicly exposed. However, retrieving via
++	 * bpf_prog_get_fd_by_id() will take another reference,
++	 * therefore it cannot be gone underneath us.
++	 *
++	 * Only for the time /after/ successful bpf_prog_new_fd()
++	 * and before returning to userspace, we might just hold
++	 * one reference and any parallel close on that fd could
++	 * rip everything out. Hence, below notifications must
++	 * happen before bpf_prog_new_fd().
++	 *
++	 * Also, any failure handling from this point onwards must
++	 * be using bpf_prog_put() given the program is exposed.
++	 */
+ 	bpf_prog_kallsyms_add(prog);
+ 	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
++
++	err = bpf_prog_new_fd(prog);
++	if (err < 0)
++		bpf_prog_put(prog);
+ 	return err;
  
- 	return 0;
- 
-+err4:
-+	qed_ll2_dealloc_if(cdev);
- err3:
- 	qed_hw_stop(cdev);
- err2:
+ free_used_maps:
 -- 
 2.20.1
 
