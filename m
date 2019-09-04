@@ -2,196 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08368A9211
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14630A921E
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387864AbfIDSug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 14:50:36 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:50626 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733107AbfIDSuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:50:35 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 80201602DC; Wed,  4 Sep 2019 18:50:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567623033;
-        bh=wsSJmWXJqVVde5Bv2h2QhkTdrCFiLCte1RvEBqlXDuI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g5DviwN80llLEEhmDYcTOJEzQgjVnl9w+pg0D629L+6ovTheZtGTtyGoprCLTsHIL
-         czT3Veuc3CpULsx0E6nQ/qMnv41rXgcBfSZSFT36jN3b6zSxhATkZsYOVRLhFgj66Z
-         FRGqSHUk+hSULq4yOhTlhZr4IaEGzYmeN/+znQSo=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id 6C1DE602EE;
-        Wed,  4 Sep 2019 18:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567623032;
-        bh=wsSJmWXJqVVde5Bv2h2QhkTdrCFiLCte1RvEBqlXDuI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HeuPv79XqDvsho9WGXEJhIip+0oHX1rubTp4uMXwo+ZlRBXdMFlhYrAY70Dtbcwz+
-         DtlzvNx49OD/FE0A5y4dAzjG7ooLEj25BODDljqeOU/pD/ThpVNvOiN7EIHQvYyQia
-         AR/r6UemRCZOSIhk1FIN+J+7dXEsGyvF25h0ofaU=
+        id S2387843AbfIDS6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 14:58:42 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:32885 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387787AbfIDS6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:58:42 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q10so8770502pfl.0
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 11:58:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DHI4vXRePEAWMNkI9NCrzqFuBWvTwJ/KW5ZAkRrLcog=;
+        b=f3Q9pxh++B5jy0lf3xpNTByhuGIcauOmTraxgmLfWDDPHU0q1HjC2yfdu/5SQedRiB
+         XafUDup/Vy/wjkLGiEMekQzNFp2R8JXe3Ucy6G9Wr1bWPsRSqaxZnZ/a5A9hZOPCYX25
+         9+XfqYB/XSexVauwdueTrggifbKxOsFXywiyFKHe4zI5wavINrtfMPf6l32iZiWphA/B
+         qQ21RQpq7IfBYDKUff8zrlp/+GuA1yZiJhJEscnsLgBQIr8bY5vup7iDR2MNolwIKah4
+         koafFuRGMTDvf2ujYxvQFwZEdHXg4uiRN1ApEIVVcC9iUG+7+86m+P0v1LHw8ey0pWQ2
+         oy4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DHI4vXRePEAWMNkI9NCrzqFuBWvTwJ/KW5ZAkRrLcog=;
+        b=tbFoXpbBUET90YUVYn6C1oRQL+yhqIunTrKR2D8sgS1atOjedX2L7cyPKtlu26KRQ9
+         hpKEECFaiYdaKJ1SdBzkr6tZ4/Ky9m5Mf7D5Bz5eJ1B9OIodmpQnQZGFENKEazIF2tfX
+         boKvzBkrmDsO4zeAS6BYet4sWo6urKOhQC7psgaNhsUtA0nMw0MkI0xhe4ilYPveoivI
+         zQCa7YGBp1U82PIQxxg9gn1bPUCcSNuq4y1gwhWAN5BgyQHNghto3K1emVgtFztrMZLz
+         jidzipnx4VVJ7NRTbItQjjcJvZhBDtbaVpfhA2CSslPd19LLlzbIFMecs7bAD/zPXts4
+         vfMQ==
+X-Gm-Message-State: APjAAAWHbw8j8oF9lhI+HTXBBpXrlzFt1QYRnexZLAudO06JFR3SYNBc
+        NUMcoYP087+IZsu5YQoEsFC3IQ==
+X-Google-Smtp-Source: APXvYqwQiWc9tFbCPqod9TYK1PeqtsN8Fexdd50WqmwyJlsLHLrI6rW5cqnJ12MppTD/5YdPAgB/ag==
+X-Received: by 2002:a62:7911:: with SMTP id u17mr32844735pfc.162.1567623521382;
+        Wed, 04 Sep 2019 11:58:41 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id u17sm12108486pfm.153.2019.09.04.11.58.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 11:58:41 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 11:58:39 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, jiri@resnulli.us,
+        sd@queasysnail.net, roopa@cumulusnetworks.com, saeedm@mellanox.com,
+        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org,
+        hare@suse.de, varun@chelsio.com, ubraun@linux.ibm.com,
+        kgraul@linux.ibm.com
+Subject: Re: [PATCH net 00/11] net: fix nested device bugs
+Message-ID: <20190904115839.64c27609@hermes.lan>
+In-Reply-To: <20190904183828.14260-1-ap420073@gmail.com>
+References: <20190904183828.14260-1-ap420073@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 04 Sep 2019 12:50:32 -0600
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: Re: [PATCH net] dev: Delay the free of the percpu refcount
-In-Reply-To: <adbe6efaabd34538fa424e028bdc6699@codeaurora.org>
-References: <1567142596-25923-1-git-send-email-subashab@codeaurora.org>
- <959f4b3e-387d-a148-3281-aed26a6a7aa5@gmail.com>
- <adbe6efaabd34538fa424e028bdc6699@codeaurora.org>
-Message-ID: <a539983647c166a28db839dbff32a6bc@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-08-30 15:03, Subash Abhinov Kasiviswanathan wrote:
->> This looks bogus.
->> 
->> Whatever layer tries to access dev refcnt after free_netdev() has been
->> called is buggy.
->> 
->> I would rather trap early and fix the root cause.
->> 
->> Untested patch :
->> 
->> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->> index b5d28dadf964..8080f1305417 100644
->> --- a/include/linux/netdevice.h
->> +++ b/include/linux/netdevice.h
->> @@ -3723,6 +3723,7 @@ void netdev_run_todo(void);
->>   */
->>  static inline void dev_put(struct net_device *dev)
->>  {
->> +       BUG_ON(!dev->pcpu_refcnt);
->>         this_cpu_dec(*dev->pcpu_refcnt);
->>  }
->> 
->> @@ -3734,6 +3735,7 @@ static inline void dev_put(struct net_device 
->> *dev)
->>   */
->>  static inline void dev_hold(struct net_device *dev)
->>  {
->> +       BUG_ON(!dev->pcpu_refcnt);
->>         this_cpu_inc(*dev->pcpu_refcnt);
->>  }
-> 
-> Hello Eric
-> 
-> I am seeing a similar crash with your patch as well.
-> The NULL dev->pcpu_refcnt was caught by the BUG you added.
-> 
->    786.510217:   <6> kernel BUG at include/linux/netdevice.h:3633!
->    786.510263:   <2> pc : in_dev_finish_destroy+0xcc/0xd0
->    786.510267:   <2> lr : in_dev_finish_destroy+0x2c/0xd0
->    786.511220:   <2> Call trace:
->    786.511225:   <2>  in_dev_finish_destroy+0xcc/0xd0
->    786.511230:   <2>  in_dev_rcu_put+0x24/0x30
->    786.511237:   <2>  rcu_nocb_kthread+0x43c/0x468
->    786.511243:   <2>  kthread+0x118/0x128
->    786.511249:   <2>  ret_from_fork+0x10/0x1c
-> 
-> This seems to be happening when there is an allocation failure
-> in the IPv6 notifier callback only.
-> 
-> I had added some additional debug to narrow down the refcount
-> validity along the callers of the dev_put/dev_hold.
-> refcnt valid below shows that the pointer dev->pcpu_refcnt is valid
-> while refcnt null shows the case where dev->pcpu_refcnt is NULL.
-> The last dev_put happens after free_netdev leading to the
-> dev->pcpu_refcnt to be accessed when NULL.
-> 
-> 309.908501:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
-> setup_net+0xa0/0x210 -> ops_init+0x88/0x110
-> 309.908674:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
-> register_netdevice+0x29c/0x5b0 -> netdev_register_kobject+0xd8/0x150
-> 309.908696:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
-> register_netdevice+0x29c/0x5b0 -> netdev_register_kobject+0x100/0x150
-> 309.908717:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
-> vti6_init_net+0x188/0x1c0 -> register_netdev+0x28/0x40
-> 309.908763:   <6> neighbour: dev_hold() ffffffe13c9df000 ip6_vti0
-> refcnt valid inetdev_event+0x43c/0x528 -> inetdev_init+0x80/0x1e0
-> 309.908835:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
-> raw_notifier_call_chain+0x3c/0x68 -> inetdev_event+0x43c/0x528
-> 309.908882:   <6> neighbour: dev_hold() ffffffe13c9df000 ip6_vti0
-> refcnt valid addrconf_notify+0x42c/0xe58 -> ipv6_add_dev+0xe4/0x588
-> 309.908890:   <6> IPv6: dev_hold() ffffffe13c9df000 ip6_vti0 refcnt
-> valid raw_notifier_call_chain+0x3c/0x68 -> addrconf_notify+0x42c/0xe58
-> 309.908906:   <6> stress-ng-clone: page allocation failure: order:0,
-> mode:0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null)
-> 309.908910:   <6> stress-ng-clone cpuset=foreground mems_allowed=0
-> 309.908925:   <2> Call trace:
-> 309.908931:   <2>  dump_backtrace+0x0/0x158
-> 309.908934:   <2>  show_stack+0x14/0x20
-> 309.908939:   <2>  dump_stack+0xc4/0xfc
-> 309.908944:   <2>  warn_alloc+0xf8/0x168
-> 309.908947:   <2>  __alloc_pages_nodemask+0xff4/0x1018
-> 309.908955:   <2>  new_slab+0x128/0x5b8
-> 309.908958:   <2>  ___slab_alloc+0x4cc/0x5f8
-> 309.908960:   <2>  kmem_cache_alloc_trace+0x2a4/0x2c0
-> 309.908963:   <2>  ipv6_add_dev+0x220/0x588
-> 309.908966:   <2>  addrconf_notify+0x42c/0xe58
-> 309.908969:   <2>  raw_notifier_call_chain+0x3c/0x68
-> 309.908972:   <2>  register_netdevice+0x3c4/0x5b0
-> 309.908974:   <2>  register_netdev+0x28/0x40
-> 309.908978:   <2>  vti6_init_net+0x188/0x1c0
-> 309.908981:   <2>  ops_init+0x88/0x110
-> 309.908983:   <2>  setup_net+0xa0/0x210
-> 309.908986:   <2>  copy_net_ns+0xa8/0x130
-> 309.908990:   <2>  create_new_namespaces+0x138/0x170
-> 309.908993:   <2>  unshare_nsproxy_namespaces+0x68/0x90
-> 309.908999:   <2>  ksys_unshare+0x17c/0x248
-> 309.909001:   <2>  __arm64_sys_unshare+0x10/0x20
-> 309.909004:   <2>  el0_svc_common+0xa0/0x158
-> 309.909007:   <2>  el0_svc_handler+0x6c/0x88
-> 309.909010:   <2>  el0_svc+0x8/0xc
-> 309.909021:   <6> neighbour: dev_put() ffffffe13c9df000 ip6_vti0
-> refcnt valid addrconf_notify+0x42c/0xe58 -> ipv6_add_dev+0x400/0x588
-> 309.909030:   <6> IPv6: dev_put() ffffffe13c9df000 ip6_vti0 refcnt
-> valid raw_notifier_call_chain+0x3c/0x68 -> addrconf_notify+0x42c/0xe58
-> 309.918097:   <6> neighbour: dev_put() ffffffe13c9df000 ip6_vti0
-> refcnt valid raw_notifier_call_chain+0x3c/0x68 ->
-> inetdev_event+0x290/0x528
-> 309.918249:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
-> register_netdevice+0x3f8/0x5b0 -> rollback_registered_many+0x488/0x658
-> 309.918318:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
-> net_rx_queue_update_kobjects+0x1ec/0x238 -> kobject_put+0x7c/0xc0
-> 309.918405:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
-> netdev_queue_update_kobjects+0x1dc/0x228 -> kobject_put+0x7c/0xc0
-> 309.918759:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
-> register_netdev+0x28/0x40 -> register_netdevice+0x3f8/0x5b0
-> 309.918778:   <6> free_netdev() ffffffe13c9df000 ip6_vti0 refcnt valid
-> ops_init+0x88/0x110 -> vti6_init_net+0x1ac/0x1c0
-> 309.980671:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt null
-> rcu_nocb_kthread+0x43c/0x468 -> in_dev_rcu_put+0x24/0x30
-> 309.980838:   <6> kernel BUG at include/linux/netdevice.h:3636!
+On Thu,  5 Sep 2019 03:38:28 +0900
+Taehee Yoo <ap420073@gmail.com> wrote:
 
-Hello Eric
+> This patchset fixes several bugs that are related to nesting
+> device infrastructure.
+> Current nesting infrastructure code doesn't limit the depth level of
+> devices. nested devices could be handled recursively. at that moment,
+> it needs huge memory and stack overflow could occur.
+> Below devices type have same bug.
+> VLAN, BONDING, TEAM, MACSEC, MACVLAN and VXLAN.
+> 
+> Test commands:
+>     ip link add dummy0 type dummy
+>     ip link add vlan1 link dummy0 type vlan id 1
+> 
+>     for i in {2..100}
+>     do
+> 	    let A=$i-1
+> 	    ip link add name vlan$i link vlan$A type vlan id $i
+>     done
+>     ip link del dummy0
+> 
+> 1st patch actually fixes the root cause.
+> It adds new common variables {upper/lower}_level that represent
+> depth level. upper_level variable is depth of upper devices.
+> lower_level variable is depth of lower devices.
+> 
+>       [U][L]       [U][L]
+> vlan1  1  5  vlan4  1  4
+> vlan2  2  4  vlan5  2  3
+> vlan3  3  3    |
+>   |            |
+>   +------------+
+>   |
+> vlan6  4  2
+> dummy0 5  1
+> 
+> After this patch, the nesting infrastructure code uses this variable to
+> check the depth level.
+> 
+> 2, 4, 5, 6, 7 patches fix lockdep related problem.
+> Before this patch, devices use static lockdep map.
+> So, if devices that are same type is nested, lockdep will warn about
+> recursive situation.
+> These patches make these devices use dynamic lockdep key instead of
+> static lock or subclass.
+> 
+> 3rd patch splits IFF_BONDING flag into IFF_BONDING and IFF_BONDING_SLAVE.
+> Before this patch, there is only IFF_BONDING flags, which means
+> a bonding master or a bonding slave device.
+> But this single flag could be problem when bonding devices are set to
+> nested.
+> 
+> 8th patch fixes a refcnt leak in the macsec module.
+> 
+> 9th patch adds ignore flag to an adjacent structure.
+> In order to exchange an adjacent node safely, ignore flag is needed.
+> 
+> 10th patch makes vxlan add an adjacent link to limit depth level.
+> 
+> 11th patch removes unnecessary variables and callback.
+> 
+> Taehee Yoo (11):
+>   net: core: limit nested device depth
+>   vlan: use dynamic lockdep key instead of subclass
+>   bonding: split IFF_BONDING into IFF_BONDING and IFF_BONDING_SLAVE
+>   bonding: use dynamic lockdep key instead of subclass
+>   team: use dynamic lockdep key instead of static key
+>   macsec: use dynamic lockdep key instead of subclass
+>   macvlan: use dynamic lockdep key instead of subclass
+>   macsec: fix refcnt leak in module exit routine
+>   net: core: add ignore flag to netdev_adjacent structure
+>   vxlan: add adjacent link to limit depth level
+>   net: remove unnecessary variables and callback
+> 
+>  drivers/net/bonding/bond_alb.c                |   2 +-
+>  drivers/net/bonding/bond_main.c               |  87 ++++--
+>  .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
+>  .../ethernet/qlogic/netxen/netxen_nic_main.c  |   2 +-
+>  drivers/net/hyperv/netvsc_drv.c               |   3 +-
+>  drivers/net/macsec.c                          |  50 ++--
+>  drivers/net/macvlan.c                         |  36 ++-
+>  drivers/net/team/team.c                       |  61 ++++-
+>  drivers/net/vxlan.c                           |  71 ++++-
+>  drivers/scsi/fcoe/fcoe.c                      |   2 +-
+>  drivers/target/iscsi/cxgbit/cxgbit_cm.c       |   2 +-
+>  include/linux/if_macvlan.h                    |   3 +-
+>  include/linux/if_team.h                       |   5 +
+>  include/linux/if_vlan.h                       |  13 +-
+>  include/linux/netdevice.h                     |  29 +-
+>  include/net/bonding.h                         |   4 +-
+>  include/net/vxlan.h                           |   1 +
+>  net/8021q/vlan.c                              |   1 -
+>  net/8021q/vlan_dev.c                          |  32 +--
+>  net/core/dev.c                                | 252 ++++++++++++++++--
+>  net/core/dev_addr_lists.c                     |  12 +-
+>  net/smc/smc_core.c                            |   2 +-
+>  net/smc/smc_pnet.c                            |   2 +-
+>  23 files changed, 519 insertions(+), 155 deletions(-)
+> 
 
-Could you please review this? The main concern here is that
-dev_put() is getting called after free_netdev() causing a NULL
-dereference.
-
-309.918778:   <6> free_netdev() ffffffe13c9df000 ip6_vti0 refcnt valid
-ops_init+0x88/0x110 -> vti6_init_net+0x1ac/0x1c0
-309.980671:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt null
-rcu_nocb_kthread+0x43c/0x468 -> in_dev_rcu_put+0x24/0x30
-
-I am able to reproduce this consistently and open to testing
-out patches.
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+The network receive path already avoids excessive stack
+depth. Maybe the real problem is in the lockdep code.
