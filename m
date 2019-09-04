@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A487A8A74
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CB4A8A76
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731636AbfIDP72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 11:59:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33866 "EHLO mail.kernel.org"
+        id S1732394AbfIDP73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 11:59:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731505AbfIDP7Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:59:24 -0400
+        id S1731634AbfIDP71 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 11:59:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B11FA2087E;
-        Wed,  4 Sep 2019 15:59:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5057E20820;
+        Wed,  4 Sep 2019 15:59:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612763;
-        bh=agH5+U3fXKJyCeEab3jPzf+6QiPNlR+qYEGA4l7+8So=;
+        s=default; t=1567612766;
+        bh=BvbLYBycoaBZwSCz1J1OhvVyGPOAwRk9sZnNSfbTWlY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GH+G2rJxoA/JGwP+3GkXVP4FdPd5sJW7Td7V0vF1xe4aEGZNG10UPZwHnjUObp56C
-         RWkr7ajmLXxAuw9HF0XE4PP5vk9M6A3PQt6wmf6/7HhQV5C+HCDV1hD1yx6DEYgCYd
-         f9Eh5MHq0bqnyhQyMTVzK6i0tV85Zb2TjUPkHr8A=
+        b=tEs54ryfdq4ENtpV/qL0glDgzYWMfGYr7Y2Kg/mpkgaDuErlujbsYmllWegBWa4xq
+         ZJcEKhG0SgHdX4frve18q34H4HJB/GgUU8lLx0Oxmvg5kT77VC+DMRoUvvrV4MurlP
+         CoUguOjk1vuIbccp7iZR+MM6a4m1Ne+BLyA43nZE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+Cc:     John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 67/94] ibmvnic: Do not process reset during or after device removal
-Date:   Wed,  4 Sep 2019 11:57:12 -0400
-Message-Id: <20190904155739.2816-67-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 68/94] nfp: flower: handle neighbour events on internal ports
+Date:   Wed,  4 Sep 2019 11:57:13 -0400
+Message-Id: <20190904155739.2816-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -45,52 +46,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
+From: John Hurley <john.hurley@netronome.com>
 
-[ Upstream commit 36f1031c51a2538e5558fb44c6d6b88f98d3c0f2 ]
+[ Upstream commit e8024cb483abb2b0290b3ef5e34c736e9de2492f ]
 
-Currently, the ibmvnic driver will not schedule device resets
-if the device is being removed, but does not check the device
-state before the reset is actually processed. This leads to a race
-where a reset is scheduled with a valid device state but is
-processed after the driver has been removed, resulting in an oops.
+Recent code changes to NFP allowed the offload of neighbour entries to FW
+when the next hop device was an internal port. This allows for offload of
+tunnel encap when the end-point IP address is applied to such a port.
 
-Fix this by checking the device state before processing a queued
-reset event.
+Unfortunately, the neighbour event handler still rejects events that are
+not associated with a repr dev and so the firmware neighbour table may get
+out of sync for internal ports.
 
-Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Fix this by allowing internal port neighbour events to be correctly
+processed.
+
+Fixes: 45756dfedab5 ("nfp: flower: allow tunnels to output to internal port")
+Signed-off-by: John Hurley <john.hurley@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 3da6800732656..d103be77eb406 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1981,6 +1981,10 @@ static void __ibmvnic_reset(struct work_struct *work)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index 8c67505865a46..43faad1893f7f 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -329,13 +329,13 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
  
- 	rwi = get_next_rwi(adapter);
- 	while (rwi) {
-+		if (adapter->state == VNIC_REMOVING ||
-+		    adapter->state == VNIC_REMOVED)
-+			goto out;
-+
- 		if (adapter->force_reset_recovery) {
- 			adapter->force_reset_recovery = false;
- 			rc = do_hard_reset(adapter, rwi, reset_state);
-@@ -2005,7 +2009,7 @@ static void __ibmvnic_reset(struct work_struct *work)
- 		netdev_dbg(adapter->netdev, "Reset failed\n");
- 		free_all_rwi(adapter);
- 	}
+ 	flow.daddr = *(__be32 *)n->primary_key;
+ 
+-	/* Only concerned with route changes for representors. */
+-	if (!nfp_netdev_is_nfp_repr(n->dev))
+-		return NOTIFY_DONE;
 -
-+out:
- 	adapter->resetting = false;
- 	if (we_lock_rtnl)
- 		rtnl_unlock();
+ 	app_priv = container_of(nb, struct nfp_flower_priv, tun.neigh_nb);
+ 	app = app_priv->app;
+ 
++	if (!nfp_netdev_is_nfp_repr(n->dev) &&
++	    !nfp_flower_internal_port_can_offload(app, n->dev))
++		return NOTIFY_DONE;
++
+ 	/* Only concerned with changes to routes already added to NFP. */
+ 	if (!nfp_tun_has_route(app, flow.daddr))
+ 		return NOTIFY_DONE;
 -- 
 2.20.1
 
