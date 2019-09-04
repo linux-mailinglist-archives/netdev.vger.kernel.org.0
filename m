@@ -2,60 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC93A7CF5
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A9FA7CF2
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729083AbfIDHo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 03:44:26 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6201 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725267AbfIDHo0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 03:44:26 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id D60405E7619FEC6AE1FE;
-        Wed,  4 Sep 2019 15:44:20 +0800 (CST)
-Received: from linux-ibm.site (10.175.102.37) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 4 Sep 2019 15:44:13 +0800
-From:   zhong jiang <zhongjiang@huawei.com>
-To:     <kvalo@codeaurora.org>, <davem@davemloft.net>
-CC:     <ath10k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <zhongjiang@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ath10k: Use ARRAY_SIZE instead of dividing sizeof array with sizeof an element
-Date:   Wed, 4 Sep 2019 15:41:18 +0800
-Message-ID: <1567582878-18739-1-git-send-email-zhongjiang@huawei.com>
-X-Mailer: git-send-email 1.7.12.4
+        id S1728769AbfIDHnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 03:43:17 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39829 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfIDHnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:43:17 -0400
+Received: by mail-pl1-f193.google.com with SMTP id bd8so2868080plb.6;
+        Wed, 04 Sep 2019 00:43:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Qj+DAxsSIX3ZqKCcNj9WFrsINQyctNKm0DapU8GePMg=;
+        b=lCya9oPWLL6Z2sCvMqFx61guCAYb06hPqKEzeto7EkIbJJkzeWfSzu7uAmnoTtP8ml
+         xwSSllg+7Cg/uFNKX3vW16GYIPDhCkAmstIR4IRc7GPm9D3jCJl1sgbuWkmzesSTQa1k
+         VJyOgK5+Mv7W53iq0EhizOvaAZvrpzkaEotfxKWSziTRO3SQwvKiakik9sZQSga92v12
+         CF8lOSfMAKCJw8Qxi7kpK3/tCDkU3CULfpbAp+Lj3IGZp+WZtzlPfFHzYLA1zDI9nhXY
+         hxsUV472mag4UDl6Vv5Go5942fXu/+UV8xMWd9JR43SMVyF30BYgkHYkcg/JrLxHLCR7
+         mUeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Qj+DAxsSIX3ZqKCcNj9WFrsINQyctNKm0DapU8GePMg=;
+        b=fl5WoNzprwaFMwDohNLAX4kGjzktXPhNFP/9IYnyPT8xhBt7Pj4aYj5BVqoN0K/uHq
+         JlMktfuZM0BUpWyVRMEG6/9BLbetsIG6PUYPBfOryhb9b8WEk8oZdwZTe9fvhCwsm33M
+         P4vXYiC/Qf40xtpeueTkuWMIClO7Q2bcNJmJJRnAzS/s+3f71b5LHlm0qHY2moHdhb+9
+         AUNw/jEz0221gKVnDWYfDXYxPJOP3Z25s3jXbXlk4MMmblXAZtIGssxcGjHOjtS/Vnjv
+         /8ce1QVridC85kmELe6aDNwK5oLmXqzawo+26JLuARVMOI6zI/EERH7ocyBHXJX/QSC3
+         LQGg==
+X-Gm-Message-State: APjAAAV+McYaoy/UQ4hRn2dkblOqi7wW4QlYFXqhhS/oA1pNEVFSqX1T
+        pm0pybJpUQcnZUINYu5a9qc=
+X-Google-Smtp-Source: APXvYqwf8YuF18rL+t+nFsRll+w6Tgkdib8E7Z6IJLldxGfK/Upkt0ST6okY6POe2h+lSN5PdkHtzw==
+X-Received: by 2002:a17:902:6b88:: with SMTP id p8mr38148119plk.95.1567582996648;
+        Wed, 04 Sep 2019 00:43:16 -0700 (PDT)
+Received: from localhost ([175.223.23.37])
+        by smtp.gmail.com with ESMTPSA id c6sm14214884pgd.66.2019.09.04.00.43.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 00:43:15 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 16:43:12 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190904074312.GA25744@jagdpanzerIV>
+References: <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
+ <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
+ <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
+ <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.102.37]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190904071911.GB11968@jagdpanzerIV>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the help of Coccinelle, ARRAY_SIZE can be replaced in ath10k_snoc_wlan_enable.
+On (09/04/19 16:19), Sergey Senozhatsky wrote:
+> Hmm. I need to look at this more... wake_up_klogd() queues work only once
+> on particular CPU: irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+> 
+> bool irq_work_queue()
+> {
+> 	/* Only queue if not already pending */
+> 	if (!irq_work_claim(work))
+> 		return false;
+> 
+> 	 __irq_work_queue_local(work);
+> }
 
-Signed-off-by: zhong jiang <zhongjiang@huawei.com>
----
- drivers/net/wireless/ath/ath10k/snoc.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Plus one more check - waitqueue_active(&log_wait). printk() adds
+pending irq_work only if there is a user-space process sleeping on
+log_wait and irq_work is not already scheduled. If the syslog is
+active or there is noone to wakeup then we don't queue irq_work.
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index b491361..49fc044 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -976,8 +976,7 @@ static int ath10k_snoc_wlan_enable(struct ath10k *ar,
- 				  sizeof(struct ath10k_svc_pipe_cfg);
- 	cfg.ce_svc_cfg = (struct ath10k_svc_pipe_cfg *)
- 		&target_service_to_ce_map_wlan;
--	cfg.num_shadow_reg_cfg = sizeof(target_shadow_reg_cfg_map) /
--					sizeof(struct ath10k_shadow_reg_cfg);
-+	cfg.num_shadow_reg_cfg = ARRAY_SIZE(target_shadow_reg_cfg_map);
- 	cfg.shadow_reg_cfg = (struct ath10k_shadow_reg_cfg *)
- 		&target_shadow_reg_cfg_map;
- 
--- 
-1.7.12.4
-
+	-ss
