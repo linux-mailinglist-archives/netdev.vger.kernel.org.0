@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8EE8A8C65
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:29:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD112A8A99
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732538AbfIDQNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:13:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34592 "EHLO mail.kernel.org"
+        id S1731553AbfIDQAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:00:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732513AbfIDP77 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 11:59:59 -0400
+        id S1732520AbfIDQAA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:00:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B51742070C;
-        Wed,  4 Sep 2019 15:59:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B8AFF20820;
+        Wed,  4 Sep 2019 15:59:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612798;
-        bh=m4oCH407rQAW5XKyhGt+ZTvbJSZ9olcE4tP3pKB+GGo=;
+        s=default; t=1567612799;
+        bh=7jrej0KAdtSGw1xy2W0LyObM7950SsjKvp9AEmqT/q4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AZ0k01+H4uQCTIhPhlBhaSVM2/1IkYrjbd/lL4Gp0+wfVifej1pR6Yzg8vBwmzho7
-         7lzhGyLKGH2RKBvW8f+SoDDfBmx7VXMNYjRrgVDWny9jfEKH9ehzEiCcYn2ivUUHqp
-         3epphV0uSgBFVXYjz9R/CI1CWmQ0l/WQOoqX0tdg=
+        b=SvQWC2YLUEijZwnksmuWRaNS02CybXBGyak3q4KF/ogERWNwAOoNqbF6z528d39pt
+         K5GwDZxzKIFfrhcL6LhwSGdRhtwzRaLRJgBnunZ0tOtjxtYWrIqT4+brGseC7+c6+O
+         16xZ/TZMe4rfjlDwZREvpCeyE6gYAhGxLB5kZco0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Razvan Stefanescu <razvan.stefanescu@microchip.com>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 92/94] net: dsa: microchip: add KSZ8563 compatibility string
-Date:   Wed,  4 Sep 2019 11:57:37 -0400
-Message-Id: <20190904155739.2816-92-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 93/94] enetc: Add missing call to 'pci_free_irq_vectors()' in probe and remove functions
+Date:   Wed,  4 Sep 2019 11:57:38 -0400
+Message-Id: <20190904155739.2816-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904155739.2816-1-sashal@kernel.org>
 References: <20190904155739.2816-1-sashal@kernel.org>
@@ -43,31 +43,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit d9033ae95cf445150fcc5856ccf024f41f0bd0b9 ]
+[ Upstream commit dd7078f05e1b774a9e8c9f117101d97e4ccd0691 ]
 
-It is a 3-Port 10/100 Ethernet Switch with 1588v2 PTP.
+Call to 'pci_free_irq_vectors()' are missing both in the error handling
+path of the probe function, and in the remove function.
+Add them.
 
-Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+Fixes: 19971f5ea0ab ("enetc: add PTP clock driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/microchip/ksz9477_spi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/freescale/enetc/enetc_ptp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
-index 75178624d3f56..fb15f255a1db4 100644
---- a/drivers/net/dsa/microchip/ksz9477_spi.c
-+++ b/drivers/net/dsa/microchip/ksz9477_spi.c
-@@ -157,6 +157,7 @@ static const struct of_device_id ksz9477_dt_ids[] = {
- 	{ .compatible = "microchip,ksz9897" },
- 	{ .compatible = "microchip,ksz9893" },
- 	{ .compatible = "microchip,ksz9563" },
-+	{ .compatible = "microchip,ksz8563" },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+index 8c1497e7d9c5c..aa31948eac644 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+@@ -79,7 +79,7 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
+ 	n = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSIX);
+ 	if (n != 1) {
+ 		err = -EPERM;
+-		goto err_irq;
++		goto err_irq_vectors;
+ 	}
+ 
+ 	ptp_qoriq->irq = pci_irq_vector(pdev, 0);
+@@ -103,6 +103,8 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
+ err_no_clock:
+ 	free_irq(ptp_qoriq->irq, ptp_qoriq);
+ err_irq:
++	pci_free_irq_vectors(pdev);
++err_irq_vectors:
+ 	iounmap(base);
+ err_ioremap:
+ 	kfree(ptp_qoriq);
+@@ -120,6 +122,7 @@ static void enetc_ptp_remove(struct pci_dev *pdev)
+ 	struct ptp_qoriq *ptp_qoriq = pci_get_drvdata(pdev);
+ 
+ 	ptp_qoriq_free(ptp_qoriq);
++	pci_free_irq_vectors(pdev);
+ 	kfree(ptp_qoriq);
+ 
+ 	pci_release_mem_regions(pdev);
 -- 
 2.20.1
 
