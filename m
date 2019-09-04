@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E9DA8B4A
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6428AA8B4E
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733304AbfIDQCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:02:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38464 "EHLO mail.kernel.org"
+        id S2387397AbfIDQCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:02:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733289AbfIDQC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 12:02:28 -0400
+        id S1733309AbfIDQCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 12:02:30 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C95B123400;
-        Wed,  4 Sep 2019 16:02:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DBFC62339D;
+        Wed,  4 Sep 2019 16:02:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612947;
-        bh=uIJ/qXrVA5TDqANFCndn0F8SKWCcjEj0dGLzNlGQtWA=;
+        s=default; t=1567612950;
+        bh=1uYRIa9dJFLkZU1QyZXcVGUl/P1dDHw2UzJHa6GuqiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dpNhKRBQcBaWmeHu35p6QqZ6BQF8J/rXuS1V79JAf3Gt/C7VmeMPYrNrZlDwEj5fR
-         2072kz0mSRjew0K1Fj0UuQjGwgu+pO34pWFfg+1zOND2DFhMoVDb3RcQ9S2pZqvQBL
-         uxqys6apEppDbeyQb+SVdx0+QU3ISuyp+ZX6pV/c=
+        b=ucqoSuX8PH6CJPQJCn5nPte5Z76ZGrd4BWgdIboMkNQZVnngnFQnmDmx0r42iXKej
+         gis8TBNXdFGIUGSaDQtMGahEGvO+BzsxfhvRt6+b/wvM2pm1Zim3on7gvGmSUFfDaa
+         MjtyIcQofSiifh5DG3pcZwuS3LAmGCiegvUPLWMY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/27] batman-adv: fix uninit-value in batadv_netlink_get_ifindex()
-Date:   Wed,  4 Sep 2019 12:01:58 -0400
-Message-Id: <20190904160220.4545-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 08/27] Kconfig: Fix the reference to the IDT77105 Phy driver in the description of ATM_NICSTAR_USE_IDT77105
+Date:   Wed,  4 Sep 2019 12:02:01 -0400
+Message-Id: <20190904160220.4545-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160220.4545-1-sashal@kernel.org>
 References: <20190904160220.4545-1-sashal@kernel.org>
@@ -45,67 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 3ee1bb7aae97324ec9078da1f00cb2176919563f ]
+[ Upstream commit cd9d4ff9b78fcd0fc4708900ba3e52e71e1a7690 ]
 
-batadv_netlink_get_ifindex() needs to make sure user passed
-a correct u32 attribute.
+This should be IDT77105, not IDT77015.
 
-syzbot reported :
-BUG: KMSAN: uninit-value in batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
-CPU: 1 PID: 11705 Comm: syz-executor888 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x191/0x1f0 lib/dump_stack.c:113
- kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
- __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
- batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
- genl_lock_dumpit+0xc6/0x130 net/netlink/genetlink.c:482
- netlink_dump+0xa84/0x1ab0 net/netlink/af_netlink.c:2253
- __netlink_dump_start+0xa3a/0xb30 net/netlink/af_netlink.c:2361
- genl_family_rcv_msg net/netlink/genetlink.c:550 [inline]
- genl_rcv_msg+0xfc1/0x1a40 net/netlink/genetlink.c:627
- netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2486
- genl_rcv+0x63/0x80 net/netlink/genetlink.c:638
- netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
- netlink_unicast+0xf3e/0x1020 net/netlink/af_netlink.c:1337
- netlink_sendmsg+0x127e/0x12f0 net/netlink/af_netlink.c:1926
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:661 [inline]
- ___sys_sendmsg+0xcc6/0x1200 net/socket.c:2260
- __sys_sendmsg net/socket.c:2298 [inline]
- __do_sys_sendmsg net/socket.c:2307 [inline]
- __se_sys_sendmsg+0x305/0x460 net/socket.c:2305
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2305
- do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
- entry_SYSCALL_64_after_hwframe+0x63/0xe7
-RIP: 0033:0x440209
-
-Fixes: b60620cf567b ("batman-adv: netlink: hardif query")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/netlink.c | 2 +-
+ drivers/atm/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
-index 64cb6acbe0a64..d7ba4fd24e3de 100644
---- a/net/batman-adv/netlink.c
-+++ b/net/batman-adv/netlink.c
-@@ -114,7 +114,7 @@ batadv_netlink_get_ifindex(const struct nlmsghdr *nlh, int attrtype)
- {
- 	struct nlattr *attr = nlmsg_find_attr(nlh, GENL_HDRLEN, attrtype);
+diff --git a/drivers/atm/Kconfig b/drivers/atm/Kconfig
+index 31c60101a69a4..7fa840170151b 100644
+--- a/drivers/atm/Kconfig
++++ b/drivers/atm/Kconfig
+@@ -199,7 +199,7 @@ config ATM_NICSTAR_USE_SUNI
+ 	  make the card work).
  
--	return attr ? nla_get_u32(attr) : 0;
-+	return (attr && nla_len(attr) == sizeof(u32)) ? nla_get_u32(attr) : 0;
- }
- 
- /**
+ config ATM_NICSTAR_USE_IDT77105
+-	bool "Use IDT77015 PHY driver (25Mbps)"
++	bool "Use IDT77105 PHY driver (25Mbps)"
+ 	depends on ATM_NICSTAR
+ 	help
+ 	  Support for the PHYsical layer chip in ForeRunner LE25 cards. In
 -- 
 2.20.1
 
