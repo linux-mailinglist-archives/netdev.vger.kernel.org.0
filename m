@@ -2,102 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69F01A80A4
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 12:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC06A80CE
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 13:05:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729356AbfIDKsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 06:48:00 -0400
-Received: from mga14.intel.com ([192.55.52.115]:34529 "EHLO mga14.intel.com"
+        id S1729456AbfIDLFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 07:05:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727722AbfIDKsA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 06:48:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Sep 2019 03:48:00 -0700
-X-IronPort-AV: E=Sophos;i="5.64,465,1559545200"; 
-   d="scan'208";a="176903236"
-Received: from jnikula-mobl3.fi.intel.com (HELO localhost) ([10.237.66.161])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Sep 2019 03:47:55 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Cc:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        intel-gfx@lists.freedesktop.org,
-        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 1/2] linux/kernel.h: add yesno(), onoff(), enableddisabled(), plural() helpers
-In-Reply-To: <dcdf1abc-7b8e-1f42-a955-0438b90fe9dc@rasmusvillemoes.dk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20190903133731.2094-1-jani.nikula@intel.com> <dcdf1abc-7b8e-1f42-a955-0438b90fe9dc@rasmusvillemoes.dk>
-Date:   Wed, 04 Sep 2019 13:47:52 +0300
-Message-ID: <87blw049t3.fsf@intel.com>
+        id S1729269AbfIDLFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 07:05:16 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0287721670
+        for <netdev@vger.kernel.org>; Wed,  4 Sep 2019 11:05:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1567595115;
+        bh=8OjxixVaCcpwuEKX0fX6h9o2bXAxxBtMveIpTXpaZSo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jIFIKe/Rz2ILpghfQx5aLLHNDoiTgJxfo8Gi4HEK5MVjVyfRVea7gtZzpYkgdyuMo
+         WWv9BCpYWlOqYB93p9M4KxOuuq465t+/kOMaeeQh9cBL8ktdB7eaALtv9lP85uKAaq
+         ITVkd1WNhQ95wW98ouNQZxChGLU97ZEQ5ICqa4Wc=
+Received: by mail-qk1-f180.google.com with SMTP id x5so5031353qkh.5
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 04:05:14 -0700 (PDT)
+X-Gm-Message-State: APjAAAVLZJwi+0ylSBwXiyDLqelWWJFceLjUQaH3D2NnjynVtPZ0fxrf
+        eLzR2QCJ9LgxovHTd+VMuSfgM7NvNnnMymt49KI=
+X-Google-Smtp-Source: APXvYqxgiwU2a9GdzGVVb7gtoCCXL7EAjYYLLhv16RUKeQtejch9sSCilIRZsNrrHdXFEoNcATW6TyippRaVR62BjZs=
+X-Received: by 2002:a05:620a:1487:: with SMTP id w7mr1211945qkj.95.1567595114192;
+ Wed, 04 Sep 2019 04:05:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <dd3220fb-7ed3-c5d1-d501-5e94f270a6b4@gmail.com>
+ <CA+5PVA54CyX1od+drTF+R0cp-Kf5L51CxHf473R-FJd1HZA2-g@mail.gmail.com>
+ <b4faccd6-10ff-c6ab-523d-39a1734e1b72@gmail.com> <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
+In-Reply-To: <80377ECBC5453840BA8C7155328B5377F227C3A6@RTITMBSVM03.realtek.com.tw>
+From:   Josh Boyer <jwboyer@kernel.org>
+Date:   Wed, 4 Sep 2019 07:05:03 -0400
+X-Gmail-Original-Message-ID: <CA+5PVA5bbmQfBUDVsVtbq2JDHOLbppJkYesKomtHneHm4-z1xA@mail.gmail.com>
+Message-ID: <CA+5PVA5bbmQfBUDVsVtbq2JDHOLbppJkYesKomtHneHm4-z1xA@mail.gmail.com>
+Subject: Re: [PATCH] rtl_nic: add firmware rtl8125a-3
+To:     Hau <hau@realtek.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Linux Firmware <linux-firmware@kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 04 Sep 2019, Rasmus Villemoes <linux@rasmusvillemoes.dk> wrote:
-> On 03/09/2019 15.37, Jani Nikula wrote:
+On Fri, Aug 30, 2019 at 11:56 AM Hau <hau@realtek.com> wrote:
 >
->> While the main goal here is to abstract recurring patterns, and slightly
->> clean up the code base by not open coding the ternary operators, there
->> are also some space savings to be had via better string constant
->> pooling.
+> > On 27.08.2019 14:08, Josh Boyer wrote:
+> > > On Mon, Aug 26, 2019 at 6:23 PM Heiner Kallweit <hkallweit1@gmail.com=
 >
-> Eh, no? The linker does that across translation units anyway - moreover,
-> given that you make them static inlines, "yes" and "no" will still live
-> in .rodata.strX.Y in each individual TU that uses the yesno() helper.
-
-I should've been more careful there; this allows us to do better
-constant pooling but does not actually deliver on that here. You'd need
-to return pointers to strings in the kernel image. The linker can't
-constant pool across modules by itself.
-
-Anyway, that was not the main point here.
-
-> The enableddisabled() is a mouthful, perhaps the helpers should have an
-> underscore between the choices
+> > wrote:
+> > >>
+> > >> This adds firmware rtl8125a-3 for Realtek's 2.5Gbps chip RTL8125.
+> > >>
+> > >> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> > >> ---
+> > >> Firmware file was provided by Realtek and they asked me to submit it=
+.
+> > >
+> > > Can we get a Signed-off-by from someone at Realtek then?
+> > >
+> > Hi Hau,
+> >
+> > can you reply and add your Signed-off-by?
+> > I saw that all the RTL8168 firmware was submitted by Hayes Wang.
+> >
+> > > josh
+> > >
+> > Heiner
+> >
 >
-> yes_no()
-> enabled_disabled()
-> on_off()
+> Signed-off-by: Chunhao Lin <hau@realtek.com>
+
+Thank you.  Applied and pushed out.
+
+josh
+
 >
-> ?
-
-I'm replacing existing functions that are being used in the kernel
-already.
-
-$ git grep "[^a-zA-Z0-9_]\(yesno\|onoff\|enableddisabled\)(" | wc -l
-241
-
-Not keen on renaming all of them.
-
->>  drivers/gpu/drm/i915/i915_utils.h             | 15 -------------
->>  .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    | 11 ----------
->>  drivers/usb/core/config.c                     |  5 -----
->>  drivers/usb/core/generic.c                    |  5 -----
->>  include/linux/kernel.h                        | 21 +++++++++++++++++++
->
-> Pet peeve: Can we please stop using linux/kernel.h as a dumping ground
-> for every little utility/helper? That makes each and every translation
-> unit in the kernel slightly larger, hence slower to compile. Please make
-> a linux/string-choice.h and put them there.
-
-*grin*
-
-In the absense of a natural candidate in include/linux/*.h, I thought
-shoving them to kernel.h would provoke the best feedback on where to put
-them. A new string-choice.h works for me, thanks. :)
-
-BR,
-Jani.
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+> > >> The related extension to r8169 driver will be submitted in the next =
+days.
+> > >> ---
+> > >>  WHENCE                |   3 +++
+> > >>  rtl_nic/rtl8125a-3.fw | Bin 0 -> 3456 bytes
+> > >>  2 files changed, 3 insertions(+)
+> > >>  create mode 100644 rtl_nic/rtl8125a-3.fw
+> > >>
+> > >> diff --git a/WHENCE b/WHENCE
+> > >> index fb12924..dbec18a 100644
+> > >> --- a/WHENCE
+> > >> +++ b/WHENCE
+> > >> @@ -2906,6 +2906,9 @@ Version: 0.0.2
+> > >>  File: rtl_nic/rtl8107e-2.fw
+> > >>  Version: 0.0.2
+> > >>
+> > >> +File: rtl_nic/rtl8125a-3.fw
+> > >> +Version: 0.0.1
+> > >> +
+> > >>  Licence:
+> > >>   * Copyright =C2=A9 2011-2013, Realtek Semiconductor Corporation
+> > >>   *
+> > >> diff --git a/rtl_nic/rtl8125a-3.fw b/rtl_nic/rtl8125a-3.fw new file
+> > >> mode 100644 index
+> > >>
+> > 0000000000000000000000000000000000000000..fac635263f92e8d9734456b75
+> > 93
+> > >> 2b2088edd5ef9
+> > >> GIT binary patch
+> > >> literal 3456
+> > >>
+> > zcmb7G4@{Kj8Gr9M&hw<l39l3>p*MPE#webM6qsqQiuC(hXPi?+wDL#V(Z*4#K%
+> > FD{
+> > >>
+> > zd#PH+tTJbqZG?a`)*5G*m3F2zmN`7hx;2*IKiVu;;~Hwa_E@^5+Z^ooav$qyWa|!|
+> > >> z{J!V^^FHtMe%~vE5S!~a<<HMqSUGn=3Dc_2HGJ>M6|pO=3D$6Z+-
+> > !F`d2|JjuT=3D?tX!6t
+> > >> zo1eG1ysol-V@-
+> > KgU0(T?#@f6Efr9d!!2E*zz=3DG_mCu@CyK;goi!iD+b1yk6B2%b&6
+> > >> z7edS;xkzqO0?9-2l9EW0ltM}+rIFG}86+PmljJ95fhB~6Z~~0y3JYX}?Z^&0uqy1t
+> > >>
+> > zny?FN!)}}nC*Ym12kkF<@t&E4_=3Dv=3DynF9AnDz2DmaE+uRv6r!*@!^m!6NmhMO
+> > zq8r
+> > >> zcySgS;n{HZ&ViVjO+Em7C<o$9E{w7~#?6OA6vF-
+> > CA|!?$MBkPmUNaZNIZ}kPTZ-Wd
+> > >> z8F2PIf~lcpz}RxchgOhZNnAy~1V!<ssEIFw^W*gx{=3D)|N&sV@7s=3D~F-
+> > YS=3DQKK)AC8
+> > >>
+> > z;l`&BHaB5(q!u4F*5UicX4Dw<xZc@_xQwl|*+!ct+H9u{FeB7V|DE*TO<fCht<>$I
+> > >> zZZG}Y@U*d?z6a>rPW?gZU!wjH^_^&crVIA-
+> > hauiRf}*mc@O*L%b>cXFD^8&Io|9br
+> > >>
+> > zFS+(#A<NUl=3DQsF#3U7Megl)!Y%#NIan9+;JM$V!#)QA3t5H6bia7TWJOXlz4ioA=3D<
+> > >> z<^?z-1MK-A9Fa>HXt;u_<`7nle1Pws`y;xZ4b$%$RvXt*Vtj-(#xP2a8yGS^#rwu*
+> > >> z7&RlXNB)8`;|q+Lf8+C)SZDkL{T(+MYZPk@p$0naYDvhUdK;W-
+> > &~&K<5x2TvCa4ES
+> > >>
+> > zJSq_Os=3D`o`>Ti(hqM4#RkyLfbOj8MwbamOxQ0|CNT`@D2E8<rJ4O!}{IZMSyW~=3DP
+> > b
+> > >> z9LCG0O+ej0lA~sw%T-
+> > ;^=3DBaOn@)@g8tu_{^65~O&#t5oXW3d`Ciq!i?u^KfEWsf|f
+> > >>
+> > z%8X@d%v{dr6>6QaQuTMNV*C=3Dd)+lAYWhy1Kp7A%(ze4qPRH@`pHTfshkXfVRB
+> > 2TgY
+> > >>
+> > zO=3D`+Wt(q39Q=3DW61)m5XOc8&DkO5CPgp(bTNzg>y9p~8jDs$zJj5<R=3Ds;Oi~Q^>M4
+> > (
+> > >>
+> > zG`vTNq`hitUz@`B_Nx)&fWp3Z<>))8?4g&GICDrH_jW38Z<lJiahS3rlpR$<98=3D@x
+> > >> z6ix)=3D-SB%nIOXwTePI%gc_p@upI;Gdo~F;Tmw)5`y%^_39nX1Ki-J6~L1FKz7NSjv
+> > >> z_`nkPz3?L$w%rohr-(vgBF1<i;qBEnDP75AC6X+Z8dD{_;JbnNV+;3L_)`miW?_eg
+> > >> z-4-4vre2o#VTHs{P{PCaz|dle45F5=3Dt7KfRt3*ceh=3Dr$#TAy7mkxtwHW#j)EHgm=
+p)
+> > >> zO)hO_GH>cb5{`=3D!(@#j)h_-jxgCneiD9Hcd;ix`Q>rX~yy2c{beS3_|m>9m87;BeK
+> > >> z9^<~->L`kd5sZmZuw?QWNw>vliHU)j7&EQ4-f1m1#+c~6-
+> > j5U9k9~bn**#pV?$N|-
+> > >> zq$Nr8T#$I{J?c3t2VJ-F9=3DAj_^{tkE`!wz?XF~Vaag5Xw_4`&lQTP1kQQmM$_|B0(
+> > >>
+> > zOkxdl@0Tb}k#O<ZNq?P7^BP@o5?P$tDMUYUDdm~Ohjk2MA!9p<P0Z~eCa@+
+> > uv7NOF
+> > >> zV)t~$Ac`@GiSytUlb?qfh~`cEKhXXQ`gkQS+oQgJX8gniiK%+szlqBBQMQ+LjIoYA
+> > >> z7Pea0V&QHJcUss?e1U!-
+> > enM;`#@W7FhmW$!&b34|Z>oiU3%_IGY6~}8_<=3D_875$5K
+> > >> z-p<>elW^0nO-Xb$v)?-<5?*G%4-
+> > kJO5#)Zu+T&X8&rjZA4DRX1phN*@#Ln3Z5`&x>
+> > >> zM^Cgz;x5{-ci}0VyQ8FT#^zi&IL{9H?xHU!(>!!e${wT4$GqBa3H>xiG*Va3d7hBl
+> > >> z$-
+> > lAV)_T3WsTa}QwwT;{)^yFKtnb^bPxFJExzl=3DW&oejIewS6dj^AhH>tVh&*5~e`
+> > >>
+> > zja9dg7?{KsZ_$^!dgjpQL9gf03g&nvnzMv6vp=3DS9DYVsnn`y<1qkR|cAF7hLwo&4_
+> > >> z$0b%#ug_6NWfb*$Il}q#a(!Ob6=3DePMXrpB-
+> > v<#HJEP3C!v!5@<?;Dn1MU0<*f8Qxz
+> > >>
+> > zAjU7*@~eyS)8C3a`2}PA^u1Eoi5NfK?_u^^&&MtM&ozI+{=3D2wFEidM}?R=3Dite~tg7
+> > >> zpYGYyoP*`0xugV=3Do@1RyFwcMDQ>Obe;jicCb=3DvBh2MhU4<KB$Vk2NcQ<(`-
+> > qXixrA
+> > >> z8^49!$+$sGAily`auZvb-$fkYEIElgD0dJaC)$bQXUsw`@urBL?<RiJ1G^-)6L-BT
+> > >> z@#-RprR2w-
+> > mqwqPKV$B{bA8MiN1HEyEpap~@gZZ_*el!TTw^JF*(K5a0Q2#@rtsUg
+> > >> zt6SovowDhaJ<ob6YnhO-UOUgSow9UNkB-
+> > M#+sN~3dy@Qhi9cEVf73Z`N^D^5uW{WK
+> > >> zME%~Yvas61t;E=3DS%Z@SO6V|;&h-
+> > h!3cbdD!=3D(z6g@jH#a_vpS&+;=3D{=3D{DQpi2<!K6
+> > >> DeEY6F
+> > >>
+> > >> literal 0
+> > >> HcmV?d00001
+> > >>
+> > >> --
+> > >> 2.23.0
+> > >>
+> > >
+> >
+> >
+> > ------Please consider the environment before printing this e-mail.
