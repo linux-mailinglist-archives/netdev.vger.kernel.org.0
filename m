@@ -2,64 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B2DBA968F
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 00:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24447A96A1
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 00:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729740AbfIDWh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 18:37:26 -0400
-Received: from sonic306-21.consmr.mail.sg3.yahoo.com ([106.10.241.141]:38793
-        "EHLO sonic306-21.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727156AbfIDWh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 18:37:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1567636643; bh=xJNgyXLYKKzlKVDzCSe1mWOtzuvfwzMEi3xOQNM+MeM=; h=Date:From:Reply-To:Subject:From:Subject; b=G7LPWfrUoCipLmf4ncstpi6cBsM85+2N3ZztjQTWswEpAheRb53bcjVWEVqdmh7ZvtOwQoVtF+KlcMczb0ve3n2myB5jziA2pRymfv+9Sdynuex/BOzKci15FuCK49UWERgnOpzJxExflDOu+bF0dgzAACFzN4s4vs2Dmxt3ol4Xyxa/cnqlDSk5OWeHtVuMUwMnJ2bz7FIBQWhF79KcVbVMcYfZhLYGJwhFEH+Z8Hu+jZtXRkGN/6PywtU+vzE3ooEaZGShU4IQ3SEOhrtEzyAEIgnBIT3t5LFOfkzRgQGeUlnNvGqQgK4VsMEGNOZPwu18lYbKT/J5eX58W/UHlQ==
-X-YMail-OSG: hs3beNkVM1lpa5EcY6SuaVpK5SNDBBD4nKP_UADIpfa_3KURkKltSqc1cwtRCDP
- 5FNNl4dpBy15Uj4IzATEeYFUHA7tJwXWQGIlZLuq9vsA7oJVBTVUFp0EWFKS7vuSapWB6xFd1seT
- eC84WNAW0zwLogSentKr48.1nWLNt_76bbILn1bDxcJF4CY1kb0FBDX5DUYrFR7_GvGdchfVLu4a
- cvQHYGDa0wr8WN9jR1cPFOiVjDbzY4700HypWjngRRUzNNhydnsVJKh_KHu6foBzjV4eu4ULKgff
- W670q.FAAgcopdTM4Lb2yeCtGXk2p3F8iN_zPSjdLhwzzlIqRqQYyhWlbLf55b55iBnzavRi9Xpr
- OxZG15wOTCPE2qbGMq1rDp1IE.hz84BldmmtigHwh_30Z4a06h5Y8SI1Ws7iBR3o_mJmK2hiZAXO
- Eu17r6JoJgzQlOHEqd6T0UTe19guNswvkYITrYF2Bc4rx7CnFVRQbCk1uBtKRBiBDu0q2vRKO_Hi
- smjgbLzpkR3yneBjQosD4Jn5Xr3lMqsHbF.DCk9GAfTfwrDtdEgdhV9lWEb6GwW4jQxKXwBkXM29
- aKrtfr0_W7yi3MAbUeu2bWuDR8AogOHtSbhGGmQJpjwfKue2vuk95TP18CpShKRia8Sh1RVwW5PZ
- bGeKuQFX6trmJIkIVNbSZnhsxIb4.rfR6_lW.8J7qGdvTsiLQXXyiK5CWjU_kzgWxz2bflLsYauN
- BUCsHvo8Tcocm93NBewfk4bNBxR3N619HWNi0qvOvjS53wujtdzuGG.3J67uHGK_FZL_8eK248Qw
- korgciLY1UcEMIpdkAExovplTqw5qgMZnN2CEGZrEglMiV4rt2ueshKAxjCEbeuEbbW04Fm4Osc6
- YvMuSDUHsatQj.3Zu6jrZIkS0pEiBkuZFm1_MS21y.gP8RZsg5HmC4yJ.UnHr2yLIvVHmiS1w6vI
- KyzykBG7OeB7xxCPlAdjFpjdws75PYFEASbE85kN7gEUWBT0kQfPXQBJmqA60BzQFidbDzk2m_bE
- ADia9KQpQpe0kPDjCqshQDJVMvXfciTeO3QQQhHXvM4anpxm1W6PZbmCLHWiheJ8Fq15Avv1De9K
- VAnjjTXFhnwEI0vflPaqHAVUFxVtaXh6Gv_FMeJk5fbhk4o4yQVWfjP0NTNxtNGIwA_R1Q0G_IXu
- 4X59WY2YaOLSLmEju3lOiU7xozlC2Js4qTQhD9ksNza0MSiBWiSNYq7ERRQMMFD280g9itpIDRxX
- 8KhXJrtAXX.1GcSy9wPIeAbISeKw-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.sg3.yahoo.com with HTTP; Wed, 4 Sep 2019 22:37:23 +0000
-Date:   Wed, 4 Sep 2019 22:37:20 +0000 (UTC)
-From:   "Mrs. Gaddafi" <mrs.aishagad@gmail.com>
-Reply-To: mrsaishag502@gmail.com
-Message-ID: <544137416.2118002.1567636640909@mail.yahoo.com>
-Subject: HOW IS YOUR DAY,
+        id S1730498AbfIDWlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 18:41:47 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43057 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727125AbfIDWln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 18:41:43 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d15so341939pfo.10
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 15:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=F7w7OYWEZp92dbWwWfKCD0/GMcWvLQYFBW0H+BsI0yY=;
+        b=S9HabiEoGTVsur2kzoliknHRgENKmGHHuORCxFux0MZLNCi4uI64q0L3AbjfI9oXiW
+         Ol+n98+2c8TLzKp0JmirprwgYfGCrcw71+13XO81KW5vfmAo4zLwCLJ0Iq9kB5zs4dra
+         MDGKCqgFMdOZxhKxxH8KgBs7K8pBLSFSmqva8inGOOfYMooL0Yn/w9p4vLS4/cVqVLdk
+         C1OY3tpJZWWHeXm975Z36vbSasINlDUdZ9yFqkIp8OzHx+SzTcZzJ1kx6iLQx6BWYIRG
+         IjBHE4ZP9eIRYpOAa/75/9sB7/kIiFGmUkMS6XZ7PWK4pDco+bVol5pYXYKqHHtghJ1S
+         Zo/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=F7w7OYWEZp92dbWwWfKCD0/GMcWvLQYFBW0H+BsI0yY=;
+        b=uNPj5FSGvbXqazuYmgKAtMpypGdcji+amEYR6F0sYFVAcgnTq96rE+fNjgki9seXTV
+         h3W+xRxSSAfz0F5lQ/jwEDJhVndxwSyHR/1kUaDlnlEFzhTAI+W6gbRPkrQjRtuen512
+         clvkgh2iKqOVrq5Ng047xV2NZcb/SYoii7eKhKGvACgCKvfJk9O6x2kTVuYZ21ycUEBb
+         3RKNmlopOlkDBmrP3v/rlH3dgXr/Qqt082OeefsMwp/EXSwiyjhrXslWcliarKfmPHUY
+         aHGBUoFb3faOUqYtr4XNzi1XPDfnG4CGDIcJCgMMx7sXTG3PGrmuweBz7l4b9LN4ljwV
+         PhQg==
+X-Gm-Message-State: APjAAAVg/bAFiVT1HLWxKoH3i7yhbGEI1/qeNgvDAyHBeSoVnDFuA6XP
+        uhODcf6MdXWDbtE8815pvJDdkw==
+X-Google-Smtp-Source: APXvYqznDsIr2C14kjGSQV8JdcBv9qpoetbNHpdsCPFVRFAR3SY86n+TqDytSXZBKzEHxh8lgZfLrg==
+X-Received: by 2002:a17:90a:ac0a:: with SMTP id o10mr519853pjq.139.1567636902930;
+        Wed, 04 Sep 2019 15:41:42 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t9sm148163pgj.89.2019.09.04.15.41.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 15:41:42 -0700 (PDT)
+Date:   Wed, 4 Sep 2019 15:41:40 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hui Peng <benquike@gmail.com>
+Cc:     syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        alexios.zavras@intel.com, andreyknvl@google.com,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        mathias.payer@nebelwelt.net, netdev@vger.kernel.org,
+        rfontana@redhat.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Subject: Re: WARNING in hso_free_net_device
+Message-ID: <20190904154140.45dfb398@hermes.lan>
+In-Reply-To: <d6e4d2da-66c6-a8fe-2fea-a3435fa7cb54@gmail.com>
+References: <0000000000002a95df0591a4f114@google.com>
+        <d6e4d2da-66c6-a8fe-2fea-a3435fa7cb54@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 4 Sep 2019 16:27:50 -0400
+Hui Peng <benquike@gmail.com> wrote:
 
+> Hi, all:
+>=20
+> I looked at the bug a little.
+>=20
+> The issue is that in the error handling code, hso_free_net_device
+> unregisters
+>=20
+> the net_device (hso_net->net)=C2=A0 by calling unregister_netdev. In the
+> error handling code path,
+>=20
+> hso_net->net has not been registered yet.
+>=20
+> I think there are two ways to solve the issue:
+>=20
+> 1. fix it in drivers/net/usb/hso.c to avoiding unregistering the
+> net_device when it is still not registered
+>=20
+> 2. fix it in unregister_netdev. We can add a field in net_device to
+> record whether it is registered, and make unregister_netdev return if
+> the net_device is not registered yet.
+>=20
+> What do you guys think ?
 
-Dear Friend,
-
-I came across your e-mail contact prior a private search whilst in need of your partnership for investment assistance in your country. I am opportune to use this medium to exhibit my legal intentions towards investing to your country under your management. I am fully convinced that you will really be of help as a business partner.
-
-My name is Aisha Gaddafi a single Mother and a Widow and i have three Children. I am the only biological Daughter of late Libyan President (Late Colonel Muammar Gaddafi).
-
-I have investment funds worth Twenty Seven Million Five Hundred Thousand United State Dollar ($27.500.000.00 ) and i need a trusted investment Manager/Partner. I am planning to go into investment projects in your country of origin or present country of Location to assist me establish the investments project.
-
- I am willing to negotiate investment/business profit sharing ratio with you base on the future investment earning profits.
-
-If you are willing to handle this project on my behalf kindly reply urgent to enable me provide you tell you more details about myself and more information about the release of the investment funds.
-
-I appreciate Your Urgent Reply to my email address:
-
-Best Regards
-Mrs Aisha Gaddafi
+#1
