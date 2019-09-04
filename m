@@ -2,109 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52135A7C9B
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D6DA7CC3
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728515AbfIDHTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 03:19:16 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:42408 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbfIDHTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:19:16 -0400
-Received: by mail-pg1-f195.google.com with SMTP id p3so10720340pgb.9;
-        Wed, 04 Sep 2019 00:19:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=n1xJLcKf6G7UK7Awxu+0eoxUIpLlcPu/xrtHp78aqKs=;
-        b=kAd/S4ItI9NfrNpl4fV3Iwmom3OvfqoEARr0paqvmqdlwOatMUrX35wBFrH+vd34o9
-         82skrRaOLz+25PCNJzD0/wanlpygzPg4D94SOqVmK/bwNXKcBwMzLSFKW/Q7F+IqqNDb
-         16E+YzXxzTGFrevpw+oPQmLAZM5kPNxfjwalJJYMA1qL8+8uW5KPSkiQ0V/HgF3o6Y6l
-         W8uRNNygMdlbhE5G9awFudVHh6GGQNxcMNKbrcxGnP3n5b+PlGCKUyHA563NZ3p0gEnD
-         z6vvHdrJ3GcWZb2eNVn6uzYfAr6rYxjuAAO5N9Fmpg0ZwxTcXakFTj40FpBFWyIgOodq
-         N3Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=n1xJLcKf6G7UK7Awxu+0eoxUIpLlcPu/xrtHp78aqKs=;
-        b=L+Ecjg3f4Pg0K0rtSQ7RbD2gT8I3DFPgzgtSLykD4tuK4evhSQI0RRQiAc64+9EhuU
-         tdnuTYytVo6mSBgK6AN/4WQew42YLmDP0Jy9N6ce53I7dseZACmiJVxGIGXCI/bd4d7v
-         dUQ9PIcDm3YFv+3kxgjU3646nMd1dIXD3l6wwKsDvm7CZsnrkWzu8RuMrd5+Zx9UQtw8
-         WRUdJiK8FXvWNp8BACzayHxvbY+K++M2ALdzJVSkqxQp7Mpxn4ia8x8Z2WLskZv+BK1n
-         tLSimpSI3k2A/tBD9+LXvk9Qj5/Wfw0JdWd/wMULAhQOKtIm21XO/RsPRSW1Ed2OXpzF
-         kuNQ==
-X-Gm-Message-State: APjAAAVOCaQULiHU7sJb11FeeDFEsnNy9i1cAmWjVcWv8hXDzue12k7K
-        2ivOSs+BimYycRxUyFyc3dg=
-X-Google-Smtp-Source: APXvYqzRaeXZEO+6LGaGeK4K4LMnx1yY/nhZrTQwTO0+RRnG1IFJHv+PBZ1wPsB7+32Gq0gbpGAb7Q==
-X-Received: by 2002:a17:90a:8996:: with SMTP id v22mr3517563pjn.131.1567581555849;
-        Wed, 04 Sep 2019 00:19:15 -0700 (PDT)
-Received: from localhost ([175.223.23.37])
-        by smtp.gmail.com with ESMTPSA id s5sm21619783pfm.97.2019.09.04.00.19.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2019 00:19:14 -0700 (PDT)
-Date:   Wed, 4 Sep 2019 16:19:11 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>,
-        davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20190904071911.GB11968@jagdpanzerIV>
-References: <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
- <1567178728.5576.32.camel@lca.pw>
- <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
- <20190903132231.GC18939@dhcp22.suse.cz>
- <1567525342.5576.60.camel@lca.pw>
- <20190903185305.GA14028@dhcp22.suse.cz>
- <1567546948.5576.68.camel@lca.pw>
- <20190904061501.GB3838@dhcp22.suse.cz>
- <20190904064144.GA5487@jagdpanzerIV>
- <20190904065455.GE3838@dhcp22.suse.cz>
+        id S1729015AbfIDH10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 03:27:26 -0400
+Received: from mga05.intel.com ([192.55.52.43]:1839 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725840AbfIDH1Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 03:27:25 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Sep 2019 00:27:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,465,1559545200"; 
+   d="scan'208";a="198965380"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.66]) ([10.237.72.66])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Sep 2019 00:27:21 -0700
+Subject: Re: [PATCH v5] perf machine: arm/arm64: Improve completeness for
+ kernel address space
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+References: <20190815082521.16885-1-leo.yan@linaro.org>
+ <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
+ <20190815113242.GA28881@leoy-ThinkPad-X240s>
+ <e0919e39-7607-815b-3a12-96f098e45a5f@intel.com>
+ <20190816014541.GA17960@leoy-ThinkPad-X240s>
+ <363577f1-097e-eddd-a6ca-b23f644dd8ce@intel.com>
+ <20190826125105.GA3288@leoy-ThinkPad-X240s>
+ <20190902141511.GF4931@leoy-ThinkPad-X240s>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Message-ID: <c16ee888-73cc-588d-6156-bb5528d635cf@intel.com>
+Date:   Wed, 4 Sep 2019 10:26:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190904065455.GE3838@dhcp22.suse.cz>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190902141511.GF4931@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (09/04/19 08:54), Michal Hocko wrote:
-> I am sorry, I could have been more explicit when CCing you.
+On 2/09/19 5:15 PM, Leo Yan wrote:
+> Hi Adrian,
+> 
+> On Mon, Aug 26, 2019 at 08:51:05PM +0800, Leo Yan wrote:
+>> Hi Adrian,
+>>
+>> On Fri, Aug 16, 2019 at 04:00:02PM +0300, Adrian Hunter wrote:
+>>> On 16/08/19 4:45 AM, Leo Yan wrote:
+>>>> Hi Adrian,
+>>>>
+>>>> On Thu, Aug 15, 2019 at 02:45:57PM +0300, Adrian Hunter wrote:
+>>>>
+>>>> [...]
+>>>>
+>>>>>>> How come you cannot use kallsyms to get the information?
+>>>>>>
+>>>>>> Thanks for pointing out this.  Sorry I skipped your comment "I don't
+>>>>>> know how you intend to calculate ARM_PRE_START_SIZE" when you reviewed
+>>>>>> the patch v3, I should use that chance to elaborate the detailed idea
+>>>>>> and so can get more feedback/guidance before procceed.
+>>>>>>
+>>>>>> Actually, I have considered to use kallsyms when worked on the previous
+>>>>>> patch set.
+>>>>>>
+>>>>>> As mentioned in patch set v4's cover letter, I tried to implement
+>>>>>> machine__create_extra_kernel_maps() for arm/arm64, the purpose is to
+>>>>>> parse kallsyms so can find more kernel maps and thus also can fixup
+>>>>>> the kernel start address.  But I found the 'perf script' tool directly
+>>>>>> calls machine__get_kernel_start() instead of running into the flow for
+>>>>>> machine__create_extra_kernel_maps();
+>>>>>
+>>>>> Doesn't it just need to loop through each kernel map to find the lowest
+>>>>> start address?
+>>>>
+>>>> Based on your suggestion, I worked out below change and verified it
+>>>> can work well on arm64 for fixing up start address; please let me know
+>>>> if the change works for you?
+>>>
+>>> How does that work if take a perf.data file to a machine with a different
+>>> architecture?
+>>
+>> Sorry I delayed so long to respond to your question; I didn't have
+>> confidence to give out very reasonale answer and this is the main reason
+>> for delaying.
+> 
+> Could you take chance to review my below replying?  I'd like to get
+> your confirmation before I send out offical patch.
 
-Oh, sorry! My bad!
+It is not necessary to do kallsyms__parse for x86_64, so it would be better
+to check the arch before calling that.
 
-> Sure the ratelimit is part of the problem. But I was more interested
-> in the potential livelock (infinite loop) mentioned by Qian Cai. It
-> is not important whether we generate one or more lines of output from
-> the softirq context as long as the printk generates more irq processing
-> which might end up doing the same. Is this really possible?
+However in general, having to copy and use kallsyms with perf.data if on a
+different arch does not seem very user friendly.  But really that is up to
+Arnaldo.
 
-Hmm. I need to look at this more... wake_up_klogd() queues work only once
-on particular CPU: irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+> 
+> Thanks,
+> Leo Yan
+> 
+>>
+>> For your question for taking a perf.data file to a machine with a
+>> different architecture, we can firstly use command 'perf buildid-list'
+>> to print out the buildid for kallsyms, based on the dumped buildid we
+>> can find out the location for the saved kallsyms file; then we can use
+>> option '--kallsyms' to specify the offline kallsyms file and use the
+>> offline kallsyms to fixup kernel start address.  The detailed commands
+>> are listed as below:
+>>
+>> root@debian:~# perf buildid-list
+>> 7b36dfca8317ef74974ebd7ee5ec0a8b35c97640 [kernel.kallsyms]
+>> 56b84aa88a1bcfe222a97a53698b92723a3977ca /usr/lib/systemd/systemd
+>> 0956b952e9cd673d48ff2cfeb1a9dbd0c853e686 /usr/lib/aarch64-linux-gnu/libm-2.28.so
+>> [...]
+>>
+>> root@debian:~# perf script --kallsyms ~/.debug/\[kernel.kallsyms\]/7b36dfca8317ef74974ebd7ee5ec0a8b35c97640/kallsyms
+>>
+>> The amended patch is as below, please review and always welcome
+>> any suggestions or comments!
+>>
+>> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+>> index 5734460fc89e..593f05cc453f 100644
+>> --- a/tools/perf/util/machine.c
+>> +++ b/tools/perf/util/machine.c
+>> @@ -2672,9 +2672,26 @@ int machine__nr_cpus_avail(struct machine *machine)
+>>  	return machine ? perf_env__nr_cpus_avail(machine->env) : 0;
+>>  }
+>>  
+>> +static int machine__fixup_kernel_start(void *arg,
+>> +				       const char *name __maybe_unused,
+>> +				       char type,
+>> +				       u64 start)
+>> +{
+>> +	struct machine *machine = arg;
+>> +
+>> +	type = toupper(type);
+>> +
+>> +	/* Fixup for text, weak, data and bss sections. */
+>> +	if (type == 'T' || type == 'W' || type == 'D' || type == 'B')
+>> +		machine->kernel_start = min(machine->kernel_start, start);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  int machine__get_kernel_start(struct machine *machine)
+>>  {
+>>  	struct map *map = machine__kernel_map(machine);
+>> +	char filename[PATH_MAX];
+>>  	int err = 0;
+>>  
+>>  	/*
+>> @@ -2696,6 +2713,22 @@ int machine__get_kernel_start(struct machine *machine)
+>>  		if (!err && !machine__is(machine, "x86_64"))
+>>  			machine->kernel_start = map->start;
+>>  	}
+>> +
+>> +	if (symbol_conf.kallsyms_name != NULL) {
+>> +		strncpy(filename, symbol_conf.kallsyms_name, PATH_MAX);
+>> +	} else {
+>> +		machine__get_kallsyms_filename(machine, filename, PATH_MAX);
+>> +
+>> +		if (symbol__restricted_filename(filename, "/proc/kallsyms"))
+>> +			goto out;
+>> +	}
+>> +
+>> +	if (kallsyms__parse(filename, machine, machine__fixup_kernel_start))
+>> +		pr_warning("Fail to fixup kernel start address. skipping...\n");
+>> +
+>> +out:
+>>  	return err;
+>>  }
+>>  
+>>
+>> Thanks,
+>> Leo Yan
+> 
 
-bool irq_work_queue()
-{
-	/* Only queue if not already pending */
-	if (!irq_work_claim(work))
-		return false;
-
-	 __irq_work_queue_local(work);
-}
-
-softirqs are processed in batches, right? The softirq batch can add XXXX
-lines to printk logbuf, but there will be only one PRINTK_PENDING_WAKEUP
-queued. Qian Cai mentioned that "net_rx_action softirqs again which are
-plenty due to connected via ssh etc." so the proportion still seems to be
-N:1 - we process N softirqs, add 1 printk irq_work.
-
-But need to think more.
-Interesting question.
-
-	-ss
