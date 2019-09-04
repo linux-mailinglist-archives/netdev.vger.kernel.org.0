@@ -2,76 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F0DA7BF0
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:47:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27939A7C17
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728816AbfIDGrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 02:47:01 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6200 "EHLO huawei.com"
+        id S1728698AbfIDGy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 02:54:58 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45228 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726033AbfIDGrA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 02:47:00 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 16EF720EACC9E19A8E38;
-        Wed,  4 Sep 2019 14:46:50 +0800 (CST)
-Received: from linux-ibm.site (10.175.102.37) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 4 Sep 2019 14:46:42 +0800
-From:   zhong jiang <zhongjiang@huawei.com>
-To:     <kvalo@codeaurora.org>
-CC:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <zhongjiang@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ath9k: Remove unneeded variable to store return value
-Date:   Wed, 4 Sep 2019 14:43:48 +0800
-Message-ID: <1567579428-16377-1-git-send-email-zhongjiang@huawei.com>
-X-Mailer: git-send-email 1.7.12.4
+        id S1727499AbfIDGy6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 02:54:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id ABD1DACFA;
+        Wed,  4 Sep 2019 06:54:56 +0000 (UTC)
+Date:   Wed, 4 Sep 2019 08:54:55 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc:     Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>,
+        davem@davemloft.net, netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190904065455.GE3838@dhcp22.suse.cz>
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+ <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+ <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
+ <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
+ <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.102.37]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190904064144.GA5487@jagdpanzerIV>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ath9k_reg_rmw_single do not need return value to cope with different
-cases. And change functon return type to void.
+On Wed 04-09-19 15:41:44, Sergey Senozhatsky wrote:
+> On (09/04/19 08:15), Michal Hocko wrote:
+> > > If you look at the original report, the failed allocation dump_stack() is,
+> > > 
+> > >  <IRQ>
+> > >  warn_alloc.cold.43+0x8a/0x148
+> > >  __alloc_pages_nodemask+0x1a5c/0x1bb0
+> > >  alloc_pages_current+0x9c/0x110
+> > >  allocate_slab+0x34a/0x11f0
+> > >  new_slab+0x46/0x70
+> > >  ___slab_alloc+0x604/0x950
+> > >  __slab_alloc+0x12/0x20
+> > >  kmem_cache_alloc+0x32a/0x400
+> > >  __build_skb+0x23/0x60
+> > >  build_skb+0x1a/0xb0
+> > >  igb_clean_rx_irq+0xafc/0x1010 [igb]
+> > >  igb_poll+0x4bb/0xe30 [igb]
+> > >  net_rx_action+0x244/0x7a0
+> > >  __do_softirq+0x1a0/0x60a
+> > >  irq_exit+0xb5/0xd0
+> > >  do_IRQ+0x81/0x170
+> > >  common_interrupt+0xf/0xf
+> > >  </IRQ>
+> > > 
+> > > Since it has no __GFP_NOWARN to begin with, it will call,
+> 
+> I think that DEFAULT_RATELIMIT_INTERVAL and DEFAULT_RATELIMIT_BURST
+> are good when we ratelimit just a single printk() call, so the ratelimit
+> is "max 10 kernel log lines in 5 seconds".
 
-Signed-off-by: zhong jiang <zhongjiang@huawei.com>
----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index 214c682..d961095 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -463,7 +463,7 @@ static void ath9k_enable_rmw_buffer(void *hw_priv)
- 	atomic_inc(&priv->wmi->m_rmw_cnt);
- }
- 
--static u32 ath9k_reg_rmw_single(void *hw_priv,
-+static void ath9k_reg_rmw_single(void *hw_priv,
- 				 u32 reg_offset, u32 set, u32 clr)
- {
- 	struct ath_hw *ah = hw_priv;
-@@ -471,7 +471,6 @@ static u32 ath9k_reg_rmw_single(void *hw_priv,
- 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
- 	struct register_rmw buf, buf_ret;
- 	int ret;
--	u32 val = 0;
- 
- 	buf.reg = cpu_to_be32(reg_offset);
- 	buf.set = cpu_to_be32(set);
-@@ -485,7 +484,6 @@ static u32 ath9k_reg_rmw_single(void *hw_priv,
- 		ath_dbg(common, WMI, "REGISTER RMW FAILED:(0x%04x, %d)\n",
- 			reg_offset, ret);
- 	}
--	return val;
- }
- 
- static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
+I am sorry, I could have been more explicit when CCing you. Sure the
+ratelimit is part of the problem. But I was more interested in the
+potential livelock (infinite loop) mentioned by Qian Cai. It is not
+important whether we generate one or more lines of output from the
+softirq context as long as the printk generates more irq processing
+which might end up doing the same. Is this really possible?
 -- 
-1.7.12.4
-
+Michal Hocko
+SUSE Labs
