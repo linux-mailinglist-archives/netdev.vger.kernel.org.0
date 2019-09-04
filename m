@@ -2,298 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED82CA8330
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 14:52:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42857A840A
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 15:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbfIDMsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 08:48:54 -0400
-Received: from mail-eopbgr150078.outbound.protection.outlook.com ([40.107.15.78]:56616
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S1729919AbfIDNBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 09:01:16 -0400
+Received: from mail-eopbgr140054.outbound.protection.outlook.com ([40.107.14.54]:19076
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727675AbfIDMsy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 08:48:54 -0400
+        id S1727741AbfIDNBP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 09:01:15 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j8vOIxvJRqT5Qy5dlPkd/36p2w+wVJ6vWAslAsuKMdWkkMHhuTWkUy+yJJK/KbYy891ce4vReJshUwesKL3sK51Pq2c0sO6UgYyuCOOa0PV47HKoFsYNIkCpVpfDCb6Cslr6f7FJU7yFTvC9FndEbb5p/KUkuo1XhwI7CMbzYhqP+Aba/mkxyX4oXAJHHE3xxpuc3tJ5HzavKTD68WtKDh2SFw95HXtBYV8TUiQNGvujuy57Udkfpp7DaAOlCngbmPVolKXuiQMPg5hhenozOJpG+5B3Kx8lZ6/adlwYwW1PN5MdPjYCAnzvsgTnMxgtHuPkSlxzaF1QIGexFG4ckw==
+ b=na7AKkv5dAwIU1bmVZBLjHechiiOnOCXIPqJjNz8LBFQoUr8XXsgw5ODvs9kyygMkqI2LV8SejUWQf+51OfLrZsuH5LOta0KO7ow/j73zXjOrRcC1o0e5ZR0dZ8vqZLyldzJP4iHOkm+55zd7KOxLJlEHXtjQwNUVew+H2JFYKMuxDfFWFJTdE+t1rh4DkpU+hC+amQSg0CxS8gr4FtywJgZ8QFhS0wVsJ1B89tUjyV6M0Y/9TAv8Rbrstkd1LMfd0W+Fv8qOMLQ5TOEcpo5VnZdbHorF1k0LHBq+A4JNowD1/o2o6tAj0bXCF+ZgE/foTrZjuQ6NnvnOzAynmfxXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GsGdnGh1HlvSGF+5FlfwKbx1G5TeR5vTYK41aU05nHU=;
- b=H1nwKpybElo52PwQuR8TF5qae0D0kf2Bp6nT7UoHChF9L2+4SMOe0/U2KvMRUp4c0Q9qUIzb6vJPBOQxGTAkVjYOLfK02QKO96eLWZmWa7hP06a0JY+QDrl+8HbujvMzYpcIV+pJ/HDIYkPfS8IGM1XrJMgeYUpDPiOSDbbIo9rDErXrzwh3FSy7vyJJirXS3xy8dD62zGlXOSZ5DHBLfsmoo6jQfqyH7TkdlUIGmKiDVcm+l2//Tx4pCyP1oKVcke74LeGkLNQstZgWzBw6rv5m1gLaUAJ5DqxlqHgbroOjz2fgoxpXqr06Gf94YHb3eA+gfN/JR/tUpvTDyqSz5g==
+ bh=vXYpvXQpPipJfG+Ilrho0CxdI9GNwGSP02X7xdC2Zfw=;
+ b=IDgPdpbChMJ0xFEVp/uFC7Yp4bP42A6axSZCPRLwIskS9e6viui8t3YURjP0cnNzCFk9V1H9ox87JD2TcVHChKStTNVvHD21OflkniGRaelpvXlcjOwa8rUovP9FnG8552W8IjfQhRQF3Nc+MvadFgVLb9rqiIM1N0N6UOKdYBRI47U5nR+ikwcl5YZK4z1D9C0xKZHAPslhXh3Q5Z68fbEUaPdXc+WTmuO/SkaX4sYLYKwXEPvRRYjBnaZKFqK4RU3w7TgQ1C6Zgii39tXKtGIBZdYfmgky2GaYfHv5/BsQVFsO8JVMNCsW/tegraeh2M5352UvIibt7VoomObV3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GsGdnGh1HlvSGF+5FlfwKbx1G5TeR5vTYK41aU05nHU=;
- b=HWIAqIHgThx7TLhXO/GtzKGmsRLE4t5LRM4SSyWb6tDn8AKslTnUCCJMqVLayR/1GlEtmDSac5SPui07SnasU1LnkBeCmRcA/hDsNkO3ks4VWs6OvUK81zkHSH4cmgG4EqVL+Ho9sU5oTxOA4Pm6tfK5wza4FovXJwdYz/1eR4Y=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB3232.eurprd05.prod.outlook.com (10.170.238.13) with Microsoft SMTP
+ bh=vXYpvXQpPipJfG+Ilrho0CxdI9GNwGSP02X7xdC2Zfw=;
+ b=i7hOkezR4MnO3F4IN95bDgpTzmsj0GjOkBR8FN/g3guwuvaJvuzk8QQ0Bjka6A3qhA0sE8PCMSeVa3vUG6YHsrSbVWP/ZUAEty5GH9JlDeuN36Kwr/94aabt/5r6KNrWunIaKmzAvg4VwRMY/E6Ybu5LF0kTpJA30ddzJKXCWKU=
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
+ AM4PR05MB3156.eurprd05.prod.outlook.com (10.171.186.21) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.19; Wed, 4 Sep 2019 12:48:49 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d%6]) with mapi id 15.20.2220.022; Wed, 4 Sep 2019
- 12:48:49 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+ 15.20.2220.19; Wed, 4 Sep 2019 13:01:11 +0000
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::bd07:1f1a:7d30:7a5b]) by AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::bd07:1f1a:7d30:7a5b%7]) with mapi id 15.20.2220.020; Wed, 4 Sep 2019
+ 13:01:11 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Davide Caratti <dcaratti@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Vlad Buslov <vladbu@mellanox.com>
-Subject: Re: [PATCH net-next,v2 3/4] net: flow_offload: mangle action at byte
- level
-Thread-Topic: [PATCH net-next,v2 3/4] net: flow_offload: mangle action at byte
- level
-Thread-Index: AQHVYnb/E4qJRxGwlUqfiGrLUAlB/acbeTYA
-Date:   Wed, 4 Sep 2019 12:48:49 +0000
-Message-ID: <vbfimq88bx5.fsf@mellanox.com>
-References: <20190903164513.15462-1-pablo@netfilter.org>
- <20190903164513.15462-4-pablo@netfilter.org>
-In-Reply-To: <20190903164513.15462-4-pablo@netfilter.org>
+CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: Re: [PATCH net-next v3] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+Thread-Topic: [PATCH net-next v3] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+Thread-Index: AQHVYlrbUKqndwhXAEqU3e07e25doqcbRryAgAA2L4A=
+Date:   Wed, 4 Sep 2019 13:01:10 +0000
+Message-ID: <1ee4b82c-34d7-7cbb-e445-945f0e52bc31@mellanox.com>
+References: <1567517015-10778-1-git-send-email-paulb@mellanox.com>
+ <1567517015-10778-2-git-send-email-paulb@mellanox.com>
+ <6b56001da1c3795ff9bb18a2aded62dea360faf9.camel@redhat.com>
+In-Reply-To: <6b56001da1c3795ff9bb18a2aded62dea360faf9.camel@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0164.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9::32) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
+x-clientproxiedby: AM0PR05CA0041.eurprd05.prod.outlook.com
+ (2603:10a6:208:be::18) To AM4PR05MB3411.eurprd05.prod.outlook.com
+ (2603:10a6:205:b::30)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
+ smtp.mailfrom=paulb@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
+x-originating-ip: [193.47.165.251]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: da301924-6860-45bf-781e-08d731363b56
+x-ms-office365-filtering-correlation-id: 280adc26-57da-4544-8ff3-08d73137f557
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB3232;
-x-ms-traffictypediagnostic: VI1PR05MB3232:|VI1PR05MB3232:
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3156;
+x-ms-traffictypediagnostic: AM4PR05MB3156:|AM4PR05MB3156:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB323250B99AE3D389CDF4CDF8ADB80@VI1PR05MB3232.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-microsoft-antispam-prvs: <AM4PR05MB315693D3B0E0DABA8805A378CFB80@AM4PR05MB3156.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0150F3F97D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(52314003)(199004)(189003)(66556008)(66446008)(66066001)(14454004)(66946007)(7736002)(86362001)(66476007)(305945005)(64756008)(229853002)(5660300002)(71200400001)(71190400001)(256004)(81156014)(6486002)(81166006)(14444005)(8936002)(6916009)(478600001)(8676002)(3846002)(6116002)(186003)(36756003)(99286004)(102836004)(52116002)(386003)(6506007)(76176011)(26005)(316002)(54906003)(6246003)(476003)(2616005)(53936002)(107886003)(11346002)(446003)(6512007)(4326008)(486006)(6436002)(2906002)(25786009)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3232;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(376002)(136003)(39860400002)(346002)(189003)(199004)(81166006)(6636002)(3846002)(6116002)(8936002)(2906002)(229853002)(81156014)(8676002)(66946007)(66476007)(66556008)(99286004)(6486002)(64756008)(66446008)(5660300002)(2501003)(14444005)(256004)(53936002)(478600001)(316002)(11346002)(2616005)(476003)(486006)(107886003)(446003)(14454004)(102836004)(31696002)(52116002)(6246003)(76176011)(6506007)(53546011)(386003)(71200400001)(86362001)(71190400001)(7736002)(6512007)(25786009)(305945005)(31686004)(4326008)(26005)(66066001)(110136005)(54906003)(36756003)(186003)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3156;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: q47CsSjalvWIV3FEvhpcki26j/7fI3kgkLImx2JQkY6WL+Sn83Su9kVT2CpqaOGqOifALnfPr1h1WhVdYB13R6yplBtKJFN1RTNmN4eDj5fA0G6Gya/pFQbKDFZk8VDAiY2zLQb3YiL96CaIFRe0xQ2E6Ymif3SoBjXcodRdQLNQgfc1MPahDLTxeop9UJDOkvMkMM44g2ZuYhbdzzmoyVn2rte+nFcILfVrMDmH3/ShrxmE1z80jb9VojAnZs6YEamDEj9JpIUWD9BPlA19BP8GvUlTbgw2rRgkGqI5rC2WT4u+JVXRGwwbC3Fwam4Frjus2aWAx7KYPtmQVFnSwDMT/shMaBmO5ai91YpZmIbDiKTtJj4bkh6avXZktEvN6iUW1L4oIS4xWGLvRn2xFgJ89SdDJNApMT5iG9UqFlE=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: 2yOHugHWnW3Wy89MJ4ZqUbFZLj3JXEFtGAQXA3+58znZq6a7/Fq1SNDnLtpj8sQHdu9t+DGEG8cPXu+HlOJgiIHDopMfUVVI6LDYt+Mi8/qjCvK92v7NzVw8HK/zmSFfLJB1NhdYZiwZtppC3K2B8iJiPLCjbgNTWuvLwvsSF6VVJmsvo4CGGsF/nPeZ3PmMRHakArMWPRWOc7S88hN6AK7TCWCkWfSAu/Yex8OOK6ss14TbSqPBBoU8tp12Dm0fqnTR54ZzB/GeSkXz4KxPhIXTO3cPggaJzoRuYMEEcVUe0zSgOfSQTWoWBwLX3qxBmT5mMoRRH9i3juWJdZRkjxPQc74nDNZiaDXzeN2sZHMEBVmVcGvHv8VpJtz2sD445iDrbkw+xpEYk7qko8WH0kzpVtDYmSMgz9Z/g3S4cmA=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FFF7FCF039CD4C40B4351B4ABB1EDCD6@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da301924-6860-45bf-781e-08d731363b56
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Sep 2019 12:48:49.1631
+X-MS-Exchange-CrossTenant-Network-Message-Id: 280adc26-57da-4544-8ff3-08d73137f557
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Sep 2019 13:01:10.9201
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YoD/KM9y2/KFwbE5CBzc9TIlpwnwnAnCDoJwvkoRlmdgqFmjcFztbyV6N/uqnqLoaqUhl20IGF0gWUinLsrvBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3232
+X-MS-Exchange-CrossTenant-userprincipalname: ZvhGBybmrD60QvBZkpXVhPIeDlyXFe76e5mXraagNWGS8TrJDToQGy4ki991yVDV+HKGXNozmoe/y30OSxvcLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3156
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Tue 03 Sep 2019 at 19:45, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> The flow mangle action is originally modeled after the tc pedit action,
-> this has a number of shortcomings:
->
-> 1) The tc pedit offset must be set on the 32-bits boundaries. Many
->    protocol header field offsets are not aligned to 32-bits, eg. port
->    destination, port source and ethernet destination. This patch adjusts
->    the offset accordingly and trim off length in these case, so drivers g=
-et
->    an exact offset and length to the header fields.
->
-> 2) The maximum mangle length is one word of 32-bits, hence you need to
->    up to four actions to mangle an IPv6 address. This patch coalesces
->    consecutive tc pedit actions into one single action so drivers can
->    configure the IPv6 mangling in one go. Ethernet address fields now
->    require one single action instead of two too.
->
-> The following drivers have been updated accordingly to use this new
-> mangle action layout:
->
-> 1) The cxgb4 driver does not need to split protocol field matching
->    larger than one 32-bit words into multiple definitions. Instead one
->    single definition per protocol field is enough. Checking for
->    transport protocol ports is also simplified.
->
-> 2) The mlx5 driver logic to disallow IPv4 ttl and IPv6 hoplimit fields
->    becomes more simple too.
->
-> 3) The nfp driver uses the nfp_fl_set_helper() function to configure the
->    payload mangling. The memchr_inv() function is used to check for
->    proper initialization of the value and mask. The driver has been
->    updated to refer to the exact protocol header offsets too.
->
-> As a result, this patch reduces code complexity on the driver side at
-> the cost of adding ~100 LOC at the core to perform offset and length
-> adjustment; and to coalesce consecutive actions.
->
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> ---
->  .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c   | 162 +++++----------=
--
->  .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h   |  40 ++--
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  90 +++------
->  drivers/net/ethernet/netronome/nfp/flower/action.c | 203 ++++++++++-----=
-------
->  include/net/flow_offload.h                         |   7 +-
->  net/sched/cls_api.c                                | 145 ++++++++++++---
->  6 files changed, 309 insertions(+), 338 deletions(-)
-
-[...]
-
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/en_tc.c
-> index f29895b3a947..b7b88bc22cf7 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -2201,19 +2201,24 @@ static int pedit_header_offsets[] =3D {
->
->  #define pedit_header(_ph, _htype) ((void *)(_ph) + pedit_header_offsets[=
-_htype])
->
-> -static int set_pedit_val(u8 hdr_type, u32 mask, u32 val, u32 offset,
-> +static int set_pedit_val(u8 hdr_type, const struct flow_action_entry *ac=
-t,
->  			 struct pedit_headers_action *hdrs)
->  {
-> -	u32 *curr_pmask, *curr_pval;
-> +	u32 offset =3D act->mangle.offset;
-> +	u8 *curr_pmask, *curr_pval;
-> +	int i;
->
-> -	curr_pmask =3D (u32 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
-> -	curr_pval  =3D (u32 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
-> +	curr_pmask =3D (u8 *)(pedit_header(&hdrs->masks, hdr_type) + offset);
-> +	curr_pval  =3D (u8 *)(pedit_header(&hdrs->vals, hdr_type) + offset);
->
-> -	if (*curr_pmask & mask)  /* disallow acting twice on the same location =
-*/
-> -		goto out_err;
-> +	for (i =3D 0; i < act->mangle.len; i++) {
-> +		/* disallow acting twice on the same location */
-> +		if (curr_pmask[i] & act->mangle.mask[i])
-> +			goto out_err;
->
-> -	*curr_pmask |=3D mask;
-> -	*curr_pval  |=3D val;
-> +		curr_pmask[i] |=3D act->mangle.mask[i];
-> +		curr_pval[i] |=3D act->mangle.val[i];
-> +	}
->
->  	return 0;
->
-> @@ -2487,7 +2492,6 @@ static int parse_tc_pedit_action(struct mlx5e_priv =
-*priv,
->  {
->  	u8 cmd =3D (act->id =3D=3D FLOW_ACTION_MANGLE) ? 0 : 1;
->  	int err =3D -EOPNOTSUPP;
-> -	u32 mask, val, offset;
->  	u8 htype;
->
->  	htype =3D act->mangle.htype;
-> @@ -2504,11 +2508,7 @@ static int parse_tc_pedit_action(struct mlx5e_priv=
- *priv,
->  		goto out_err;
->  	}
->
-> -	mask =3D act->mangle.mask;
-> -	val =3D act->mangle.val;
-> -	offset =3D act->mangle.offset;
-> -
-> -	err =3D set_pedit_val(htype, mask, val, offset, &hdrs[cmd]);
-> +	err =3D set_pedit_val(htype, act, &hdrs[cmd]);
->  	if (err)
->  		goto out_err;
->
-> @@ -2589,50 +2589,18 @@ static bool csum_offload_supported(struct mlx5e_p=
-riv *priv,
->  	return true;
->  }
->
-> -struct ip_ttl_word {
-> -	__u8	ttl;
-> -	__u8	protocol;
-> -	__sum16	check;
-> -};
-> -
-> -struct ipv6_hoplimit_word {
-> -	__be16	payload_len;
-> -	__u8	nexthdr;
-> -	__u8	hop_limit;
-> -};
-> -
->  static bool is_action_keys_supported(const struct flow_action_entry *act=
-)
->  {
-> -	u32 mask, offset;
-> -	u8 htype;
-> +	u32 offset =3D act->mangle.offset;
-> +	u8 htype =3D act->mangle.htype;
->
-> -	htype =3D act->mangle.htype;
-> -	offset =3D act->mangle.offset;
-> -	mask =3D act->mangle.mask;
-> -	/* For IPv4 & IPv6 header check 4 byte word,
-> -	 * to determine that modified fields
-> -	 * are NOT ttl & hop_limit only.
-> -	 */
-> -	if (htype =3D=3D FLOW_ACT_MANGLE_HDR_TYPE_IP4) {
-> -		struct ip_ttl_word *ttl_word =3D
-> -			(struct ip_ttl_word *)&mask;
-> -
-> -		if (offset !=3D offsetof(struct iphdr, ttl) ||
-> -		    ttl_word->protocol ||
-> -		    ttl_word->check) {
-> -			return true;
-> -		}
-> -	} else if (htype =3D=3D FLOW_ACT_MANGLE_HDR_TYPE_IP6) {
-> -		struct ipv6_hoplimit_word *hoplimit_word =3D
-> -			(struct ipv6_hoplimit_word *)&mask;
-> -
-> -		if (offset !=3D offsetof(struct ipv6hdr, payload_len) ||
-> -		    hoplimit_word->payload_len ||
-> -		    hoplimit_word->nexthdr) {
-> -			return true;
-> -		}
-> -	}
-> -	return false;
-> +	if ((htype =3D=3D FLOW_ACT_MANGLE_HDR_TYPE_IP4 &&
-> +	     offset =3D=3D offsetof(struct iphdr, ttl)) ||
-> +	    (htype =3D=3D FLOW_ACT_MANGLE_HDR_TYPE_IP6 &&
-> +	     offset =3D=3D offsetof(struct ipv6hdr, hop_limit)))
-> +		return false;
-> +
-> +	return true;
->  }
-
-With this change is_action_keys_supported() incorrectly returns true for
-non-IP{4|6} mangles. I guess naming of the functions doesn't help
-because it should be something like is_action_iphdr_keys_supported()...
-
-Anyway, this results following rule to be incorrectly rejected by
-driver:
-
-tc filter add dev ens1f0_0 protocol ip parent ffff: prio 3
-flower dst_mac e4:1d:2d:fd:8b:02 skip_sw
-action pedit ex munge eth src set 11:22:33:44:55:66 munge eth dst set
-       aa:bb:cc:dd:ee:ff pipe
-action csum ip pipe
-action tunnel_key set id 98 src_ip 2.2.2.2 dst_ip 2.2.2.3 dst_port 1234
-action mirred egress redirect dev vxlan1
-
-The pedit action is rejected by conditional that follows the loop in
-modify_header_match_supported() which calls is_action_keys_supported().
-With this change modify_ip_header=3D=3Dtrue (even though the pedit only
-modifies eth header), which causes failure because ip proto is not
-supported:
-
-Error: mlx5_core: can't offload re-write of non TCP/UDP.
-ERROR: [ 3345.830338] can't offload re-write of ip proto 0
+DQpPbiA5LzQvMjAxOSAxMjo0NyBQTSwgRGF2aWRlIENhcmF0dGkgd3JvdGU6DQo+IE9uIFR1ZSwg
+MjAxOS0wOS0wMyBhdCAxNjoyMyArMDMwMCwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+PiBPZmZsb2Fk
+ZWQgT3ZTIGRhdGFwYXRoIHJ1bGVzIGFyZSB0cmFuc2xhdGVkIG9uZSB0byBvbmUgdG8gdGMgcnVs
+ZXMsDQo+PiBmb3IgZXhhbXBsZSB0aGUgZm9sbG93aW5nIHNpbXBsaWZpZWQgT3ZTIHJ1bGU6DQo+
+Pg0KPj4gcmVjaXJjX2lkKDApLGluX3BvcnQoZGV2MSksZXRoX3R5cGUoMHgwODAwKSxjdF9zdGF0
+ZSgtdHJrKSBhY3Rpb25zOmN0KCkscmVjaXJjKDIpDQo+Pg0KPj4gV2lsbCBiZSB0cmFuc2xhdGVk
+IHRvIHRoZSBmb2xsb3dpbmcgdGMgcnVsZToNCj4+DQo+PiAkIHRjIGZpbHRlciBhZGQgZGV2IGRl
+djEgaW5ncmVzcyBcDQo+PiAJICAgIHByaW8gMSBjaGFpbiAwIHByb3RvIGlwIFwNCj4+IAkJZmxv
+d2VyIHRjcCBjdF9zdGF0ZSAtdHJrIFwNCj4+IAkJYWN0aW9uIGN0IHBpcGUgXA0KPj4gCQlhY3Rp
+b24gZ290byBjaGFpbiAyDQo+IGhlbGxvIFBhdWwhDQo+DQo+IG9uZSBzbWFsbCBxdWVzdGlvbjoN
+Cj4NCj4gWy4uLiBdDQo+DQo+PiBpbmRleCA0M2Y1YjdlLi4yZmRjNzQ2IDEwMDY0NA0KPj4gLS0t
+IGEvaW5jbHVkZS9uZXQvc2NoX2dlbmVyaWMuaA0KPj4gKysrIGIvaW5jbHVkZS9uZXQvc2NoX2dl
+bmVyaWMuaA0KPj4gQEAgLTI3NCw3ICsyNzQsMTAgQEAgc3RydWN0IHRjZl9yZXN1bHQgew0KPj4g
+ICAJCQl1bnNpZ25lZCBsb25nCWNsYXNzOw0KPj4gICAJCQl1MzIJCWNsYXNzaWQ7DQo+PiAgIAkJ
+fTsNCj4+IC0JCWNvbnN0IHN0cnVjdCB0Y2ZfcHJvdG8gKmdvdG9fdHA7DQo+PiArCQlzdHJ1Y3Qg
+ew0KPj4gKwkJCWNvbnN0IHN0cnVjdCB0Y2ZfcHJvdG8gKmdvdG9fdHA7DQo+PiArCQkJdTMyIGdv
+dG9faW5kZXg7DQo+IEkgZG9uJ3QgdW5kZXJzdGFuZCB3aHkgd2UgbmVlZCB0byBzdG9yZSBhbm90
+aGVyIGNvcHkgb2YgdGhlIGNoYWluIGluZGV4IGluDQo+ICdyZXMuZ290b19pbmRleCcuDQo+IChz
+ZWUgYmVsb3cpDQo+DQo+IFsuLi5dDQo+DQo+PiBpbmRleCAzMzk3MTIyLi5jMzkzNjA0IDEwMDY0
+NA0KPj4gLS0tIGEvbmV0L3NjaGVkL2FjdF9hcGkuYw0KPj4gKysrIGIvbmV0L3NjaGVkL2FjdF9h
+cGkuYw0KPj4gQEAgLTI3LDYgKzI3LDcgQEAgc3RhdGljIHZvaWQgdGNmX2FjdGlvbl9nb3RvX2No
+YWluX2V4ZWMoY29uc3Qgc3RydWN0IHRjX2FjdGlvbiAqYSwNCj4+ICAgew0KPj4gICAJY29uc3Qg
+c3RydWN0IHRjZl9jaGFpbiAqY2hhaW4gPSByY3VfZGVyZWZlcmVuY2VfYmgoYS0+Z290b19jaGFp
+bik7DQo+PiAgIA0KPj4gKwlyZXMtPmdvdG9faW5kZXggPSBjaGFpbi0+aW5kZXg7DQo+IEkgc2Vl
+ICJhLT5nb3RvX2NoYWluIiBpcyB1c2VkIHRvIHJlYWQgdGhlIGNoYWluIGluZGV4LCBidXQgSSB0
+aGluayBpdCdzDQo+IG5vdCBuZWVkZWQgXyBiZWNhdXNlIHRoZSBjaGFpbiBpbmRleCBpcyBlbmNv
+ZGVkIHRvZ2V0aGVyIHdpdGggdGhlICJnb3RvDQo+IGNoYWluIiBjb250cm9sIGFjdGlvbi4NCj4N
+Cj4+ICAgCXJlcy0+Z290b190cCA9IHJjdV9kZXJlZmVyZW5jZV9iaChjaGFpbi0+ZmlsdGVyX2No
+YWluKTsNCj4+ICAgfQ0KPj4gICANCj4+IGRpZmYgLS1naXQgYS9uZXQvc2NoZWQvY2xzX2FwaS5j
+IGIvbmV0L3NjaGVkL2Nsc19hcGkuYw0KPj4gaW5kZXggNjcxY2E5MC4uZGQxNDdiZSAxMDA2NDQN
+Cj4+IC0tLSBhL25ldC9zY2hlZC9jbHNfYXBpLmMNCj4+ICsrKyBiL25ldC9zY2hlZC9jbHNfYXBp
+LmMNCj4+IEBAIC0xNTE0LDYgKzE1MTQsMTggQEAgaW50IHRjZl9jbGFzc2lmeShzdHJ1Y3Qgc2tf
+YnVmZiAqc2tiLCBjb25zdCBzdHJ1Y3QgdGNmX3Byb3RvICp0cCwNCj4+ICAgCQkJZ290byByZXNl
+dDsNCj4+ICAgCQl9IGVsc2UgaWYgKHVubGlrZWx5KFRDX0FDVF9FWFRfQ01QKGVyciwgVENfQUNU
+X0dPVE9fQ0hBSU4pKSkgew0KPj4gICAJCQlmaXJzdF90cCA9IHJlcy0+Z290b190cDsNCj4+ICsN
+Cj4+ICsjaWYgSVNfRU5BQkxFRChDT05GSUdfTkVUX1RDX1NLQl9FWFQpDQo+PiArCQkJew0KPj4g
+KwkJCQlzdHJ1Y3QgdGNfc2tiX2V4dCAqZXh0Ow0KPj4gKw0KPj4gKwkJCQlleHQgPSBza2JfZXh0
+X2FkZChza2IsIFRDX1NLQl9FWFQpOw0KPj4gKwkJCQlpZiAoV0FSTl9PTl9PTkNFKCFleHQpKQ0K
+Pj4gKwkJCQkJcmV0dXJuIFRDX0FDVF9TSE9UOw0KPj4gKw0KPj4gKwkJCQlleHQtPmNoYWluID0g
+cmVzLT5nb3RvX2luZGV4Ow0KPiB0aGUgdmFsdWUgb2YgJ3Jlcy0+Z290b19pbmRleCcgaXMgYWxy
+ZWFkeSBlbmNvZGVkIGluIHRoZSBjb250cm9sIGFjdGlvbg0KPiAnZXJyJyAobWFza2VkIHdpdGgg
+VENfQUNUX0VYVF9WQUxfTUFTSyksIHNpbmNlIFRDX0FDVF9HT1RPX0NIQUlOIGJpdHMgYXJlDQo+
+IG5vdCB6ZXJvLg0KPg0KPiB5b3UgY2FuIGp1c3QgZ2V0IHJpZCBvZiByZXMtPmdvdG9faW5kZXgs
+IGFuZCBqdXN0IGRvOg0KPg0KPiAJZXh0LT5jaGFpbiA9IGVyciAmIFRDX0FDVF9FWFRfVkFMX01B
+U0s7DQo+DQo+IGFtIEkgbWlzc2luZyBzb21ldGhpbmc/DQo+DQo+IHRoYW5rcyENCg0KTm8sIGdv
+b2QgY2F0Y2ggOikgVGhhbmtzLg0KDQp0Y2ZfYWN0aW9uX3NldF9jdHJsYWN0IHNldHMgdGhlIGFj
+dGlvbiB3aXRoIHRoZSBjaGFpbiBpbmRleCBvbiB0YyBhY3Rpb24gDQppbnN0YW5jZSAodGNmX2Fj
+dGlvbiksIHNvIHllcyB3ZSBjYW4gYWNjZXNzIGl0IGp1c3QgbGlrZSB5b3Ugc2F5Lg0KDQpJJ2xs
+IHNlbmQgYSBmaXguDQoNCg0K
