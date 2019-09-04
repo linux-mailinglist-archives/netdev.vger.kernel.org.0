@@ -2,233 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C8EA91FF
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08368A9211
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387424AbfIDSnm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Sep 2019 14:43:42 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11832 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733224AbfIDSnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:43:42 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x84IhMoM032612
-        for <netdev@vger.kernel.org>; Wed, 4 Sep 2019 11:43:41 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2usu2fp5dq-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 11:43:41 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 4 Sep 2019 11:43:40 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 656947609CE; Wed,  4 Sep 2019 11:43:39 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <peterz@infradead.org>,
-        <luto@amacapital.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>,
-        <linux-api@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 3/3] perf: implement CAP_TRACING
-Date:   Wed, 4 Sep 2019 11:43:35 -0700
-Message-ID: <20190904184335.360074-3-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190904184335.360074-1-ast@kernel.org>
-References: <20190904184335.360074-1-ast@kernel.org>
+        id S2387864AbfIDSug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 14:50:36 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:50626 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733107AbfIDSuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 14:50:35 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 80201602DC; Wed,  4 Sep 2019 18:50:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567623033;
+        bh=wsSJmWXJqVVde5Bv2h2QhkTdrCFiLCte1RvEBqlXDuI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g5DviwN80llLEEhmDYcTOJEzQgjVnl9w+pg0D629L+6ovTheZtGTtyGoprCLTsHIL
+         czT3Veuc3CpULsx0E6nQ/qMnv41rXgcBfSZSFT36jN3b6zSxhATkZsYOVRLhFgj66Z
+         FRGqSHUk+hSULq4yOhTlhZr4IaEGzYmeN/+znQSo=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 6C1DE602EE;
+        Wed,  4 Sep 2019 18:50:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1567623032;
+        bh=wsSJmWXJqVVde5Bv2h2QhkTdrCFiLCte1RvEBqlXDuI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HeuPv79XqDvsho9WGXEJhIip+0oHX1rubTp4uMXwo+ZlRBXdMFlhYrAY70Dtbcwz+
+         DtlzvNx49OD/FE0A5y4dAzjG7ooLEj25BODDljqeOU/pD/ThpVNvOiN7EIHQvYyQia
+         AR/r6UemRCZOSIhk1FIN+J+7dXEsGyvF25h0ofaU=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-04_05:2019-09-04,2019-09-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- spamscore=0 phishscore=0 impostorscore=0 clxscore=1034 suspectscore=1
- lowpriorityscore=0 priorityscore=1501 malwarescore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909040187
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 04 Sep 2019 12:50:32 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Sean Tranchetti <stranche@codeaurora.org>
+Subject: Re: [PATCH net] dev: Delay the free of the percpu refcount
+In-Reply-To: <adbe6efaabd34538fa424e028bdc6699@codeaurora.org>
+References: <1567142596-25923-1-git-send-email-subashab@codeaurora.org>
+ <959f4b3e-387d-a148-3281-aed26a6a7aa5@gmail.com>
+ <adbe6efaabd34538fa424e028bdc6699@codeaurora.org>
+Message-ID: <a539983647c166a28db839dbff32a6bc@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement permissions as stated in uapi/linux/capability.h
+On 2019-08-30 15:03, Subash Abhinov Kasiviswanathan wrote:
+>> This looks bogus.
+>> 
+>> Whatever layer tries to access dev refcnt after free_netdev() has been
+>> called is buggy.
+>> 
+>> I would rather trap early and fix the root cause.
+>> 
+>> Untested patch :
+>> 
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index b5d28dadf964..8080f1305417 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -3723,6 +3723,7 @@ void netdev_run_todo(void);
+>>   */
+>>  static inline void dev_put(struct net_device *dev)
+>>  {
+>> +       BUG_ON(!dev->pcpu_refcnt);
+>>         this_cpu_dec(*dev->pcpu_refcnt);
+>>  }
+>> 
+>> @@ -3734,6 +3735,7 @@ static inline void dev_put(struct net_device 
+>> *dev)
+>>   */
+>>  static inline void dev_hold(struct net_device *dev)
+>>  {
+>> +       BUG_ON(!dev->pcpu_refcnt);
+>>         this_cpu_inc(*dev->pcpu_refcnt);
+>>  }
+> 
+> Hello Eric
+> 
+> I am seeing a similar crash with your patch as well.
+> The NULL dev->pcpu_refcnt was caught by the BUG you added.
+> 
+>    786.510217:   <6> kernel BUG at include/linux/netdevice.h:3633!
+>    786.510263:   <2> pc : in_dev_finish_destroy+0xcc/0xd0
+>    786.510267:   <2> lr : in_dev_finish_destroy+0x2c/0xd0
+>    786.511220:   <2> Call trace:
+>    786.511225:   <2>  in_dev_finish_destroy+0xcc/0xd0
+>    786.511230:   <2>  in_dev_rcu_put+0x24/0x30
+>    786.511237:   <2>  rcu_nocb_kthread+0x43c/0x468
+>    786.511243:   <2>  kthread+0x118/0x128
+>    786.511249:   <2>  ret_from_fork+0x10/0x1c
+> 
+> This seems to be happening when there is an allocation failure
+> in the IPv6 notifier callback only.
+> 
+> I had added some additional debug to narrow down the refcount
+> validity along the callers of the dev_put/dev_hold.
+> refcnt valid below shows that the pointer dev->pcpu_refcnt is valid
+> while refcnt null shows the case where dev->pcpu_refcnt is NULL.
+> The last dev_put happens after free_netdev leading to the
+> dev->pcpu_refcnt to be accessed when NULL.
+> 
+> 309.908501:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
+> setup_net+0xa0/0x210 -> ops_init+0x88/0x110
+> 309.908674:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
+> register_netdevice+0x29c/0x5b0 -> netdev_register_kobject+0xd8/0x150
+> 309.908696:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
+> register_netdevice+0x29c/0x5b0 -> netdev_register_kobject+0x100/0x150
+> 309.908717:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
+> vti6_init_net+0x188/0x1c0 -> register_netdev+0x28/0x40
+> 309.908763:   <6> neighbour: dev_hold() ffffffe13c9df000 ip6_vti0
+> refcnt valid inetdev_event+0x43c/0x528 -> inetdev_init+0x80/0x1e0
+> 309.908835:   <6> dev_hold() ffffffe13c9df000 ip6_vti0 refcnt valid
+> raw_notifier_call_chain+0x3c/0x68 -> inetdev_event+0x43c/0x528
+> 309.908882:   <6> neighbour: dev_hold() ffffffe13c9df000 ip6_vti0
+> refcnt valid addrconf_notify+0x42c/0xe58 -> ipv6_add_dev+0xe4/0x588
+> 309.908890:   <6> IPv6: dev_hold() ffffffe13c9df000 ip6_vti0 refcnt
+> valid raw_notifier_call_chain+0x3c/0x68 -> addrconf_notify+0x42c/0xe58
+> 309.908906:   <6> stress-ng-clone: page allocation failure: order:0,
+> mode:0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null)
+> 309.908910:   <6> stress-ng-clone cpuset=foreground mems_allowed=0
+> 309.908925:   <2> Call trace:
+> 309.908931:   <2>  dump_backtrace+0x0/0x158
+> 309.908934:   <2>  show_stack+0x14/0x20
+> 309.908939:   <2>  dump_stack+0xc4/0xfc
+> 309.908944:   <2>  warn_alloc+0xf8/0x168
+> 309.908947:   <2>  __alloc_pages_nodemask+0xff4/0x1018
+> 309.908955:   <2>  new_slab+0x128/0x5b8
+> 309.908958:   <2>  ___slab_alloc+0x4cc/0x5f8
+> 309.908960:   <2>  kmem_cache_alloc_trace+0x2a4/0x2c0
+> 309.908963:   <2>  ipv6_add_dev+0x220/0x588
+> 309.908966:   <2>  addrconf_notify+0x42c/0xe58
+> 309.908969:   <2>  raw_notifier_call_chain+0x3c/0x68
+> 309.908972:   <2>  register_netdevice+0x3c4/0x5b0
+> 309.908974:   <2>  register_netdev+0x28/0x40
+> 309.908978:   <2>  vti6_init_net+0x188/0x1c0
+> 309.908981:   <2>  ops_init+0x88/0x110
+> 309.908983:   <2>  setup_net+0xa0/0x210
+> 309.908986:   <2>  copy_net_ns+0xa8/0x130
+> 309.908990:   <2>  create_new_namespaces+0x138/0x170
+> 309.908993:   <2>  unshare_nsproxy_namespaces+0x68/0x90
+> 309.908999:   <2>  ksys_unshare+0x17c/0x248
+> 309.909001:   <2>  __arm64_sys_unshare+0x10/0x20
+> 309.909004:   <2>  el0_svc_common+0xa0/0x158
+> 309.909007:   <2>  el0_svc_handler+0x6c/0x88
+> 309.909010:   <2>  el0_svc+0x8/0xc
+> 309.909021:   <6> neighbour: dev_put() ffffffe13c9df000 ip6_vti0
+> refcnt valid addrconf_notify+0x42c/0xe58 -> ipv6_add_dev+0x400/0x588
+> 309.909030:   <6> IPv6: dev_put() ffffffe13c9df000 ip6_vti0 refcnt
+> valid raw_notifier_call_chain+0x3c/0x68 -> addrconf_notify+0x42c/0xe58
+> 309.918097:   <6> neighbour: dev_put() ffffffe13c9df000 ip6_vti0
+> refcnt valid raw_notifier_call_chain+0x3c/0x68 ->
+> inetdev_event+0x290/0x528
+> 309.918249:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
+> register_netdevice+0x3f8/0x5b0 -> rollback_registered_many+0x488/0x658
+> 309.918318:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
+> net_rx_queue_update_kobjects+0x1ec/0x238 -> kobject_put+0x7c/0xc0
+> 309.918405:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
+> netdev_queue_update_kobjects+0x1dc/0x228 -> kobject_put+0x7c/0xc0
+> 309.918759:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt valid
+> register_netdev+0x28/0x40 -> register_netdevice+0x3f8/0x5b0
+> 309.918778:   <6> free_netdev() ffffffe13c9df000 ip6_vti0 refcnt valid
+> ops_init+0x88/0x110 -> vti6_init_net+0x1ac/0x1c0
+> 309.980671:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt null
+> rcu_nocb_kthread+0x43c/0x468 -> in_dev_rcu_put+0x24/0x30
+> 309.980838:   <6> kernel BUG at include/linux/netdevice.h:3636!
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- arch/powerpc/perf/core-book3s.c |  4 ++--
- arch/x86/events/intel/bts.c     |  2 +-
- arch/x86/events/intel/core.c    |  2 +-
- arch/x86/events/intel/p4.c      |  2 +-
- kernel/events/core.c            | 14 +++++++-------
- kernel/events/hw_breakpoint.c   |  2 +-
- kernel/trace/trace_event_perf.c |  4 ++--
- 7 files changed, 15 insertions(+), 15 deletions(-)
+Hello Eric
 
-diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
-index ca92e01d0bd1..a204a3c6c68b 100644
---- a/arch/powerpc/perf/core-book3s.c
-+++ b/arch/powerpc/perf/core-book3s.c
-@@ -204,7 +204,7 @@ static inline void perf_get_data_addr(struct pt_regs *regs, u64 *addrp)
- 	if (!(mmcra & MMCRA_SAMPLE_ENABLE) || sdar_valid)
- 		*addrp = mfspr(SPRN_SDAR);
- 
--	if (perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN) &&
-+	if (perf_paranoid_kernel() && !capable_tracing() &&
- 		is_kernel_addr(mfspr(SPRN_SDAR)))
- 		*addrp = 0;
- }
-@@ -472,7 +472,7 @@ static void power_pmu_bhrb_read(struct cpu_hw_events *cpuhw)
- 			 * exporting it to userspace (avoid exposure of regions
- 			 * where we could have speculative execution)
- 			 */
--			if (perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN) &&
-+			if (perf_paranoid_kernel() && !capable_tracing() &&
- 				is_kernel_addr(addr))
- 				continue;
- 
-diff --git a/arch/x86/events/intel/bts.c b/arch/x86/events/intel/bts.c
-index 5ee3fed881d3..bd713b2dd7c2 100644
---- a/arch/x86/events/intel/bts.c
-+++ b/arch/x86/events/intel/bts.c
-@@ -550,7 +550,7 @@ static int bts_event_init(struct perf_event *event)
- 	 * users to profile the kernel.
- 	 */
- 	if (event->attr.exclude_kernel && perf_paranoid_kernel() &&
--	    !capable(CAP_SYS_ADMIN))
-+	    !capable_tracing())
- 		return -EACCES;
- 
- 	if (x86_add_exclusive(x86_lbr_exclusive_bts))
-diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index 648260b5f367..277b12c054fa 100644
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -3307,7 +3307,7 @@ static int intel_pmu_hw_config(struct perf_event *event)
- 	if (x86_pmu.version < 3)
- 		return -EINVAL;
- 
--	if (perf_paranoid_cpu() && !capable(CAP_SYS_ADMIN))
-+	if (perf_paranoid_cpu() && !capable_tracing())
- 		return -EACCES;
- 
- 	event->hw.config |= ARCH_PERFMON_EVENTSEL_ANY;
-diff --git a/arch/x86/events/intel/p4.c b/arch/x86/events/intel/p4.c
-index dee579efb2b2..f379a358c9cb 100644
---- a/arch/x86/events/intel/p4.c
-+++ b/arch/x86/events/intel/p4.c
-@@ -776,7 +776,7 @@ static int p4_validate_raw_event(struct perf_event *event)
- 	 * the user needs special permissions to be able to use it
- 	 */
- 	if (p4_ht_active() && p4_event_bind_map[v].shared) {
--		if (perf_paranoid_cpu() && !capable(CAP_SYS_ADMIN))
-+		if (perf_paranoid_cpu() && !capable_tracing())
- 			return -EACCES;
- 	}
- 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 0463c1151bae..eaba102e5d91 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -4134,7 +4134,7 @@ find_get_context(struct pmu *pmu, struct task_struct *task,
- 
- 	if (!task) {
- 		/* Must be root to operate on a CPU event: */
--		if (perf_paranoid_cpu() && !capable(CAP_SYS_ADMIN))
-+		if (perf_paranoid_cpu() && !capable_tracing())
- 			return ERR_PTR(-EACCES);
- 
- 		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
-@@ -8741,7 +8741,7 @@ static int perf_kprobe_event_init(struct perf_event *event)
- 	if (event->attr.type != perf_kprobe.type)
- 		return -ENOENT;
- 
--	if (!capable(CAP_SYS_ADMIN))
-+	if (!capable_tracing())
- 		return -EACCES;
- 
- 	/*
-@@ -8801,7 +8801,7 @@ static int perf_uprobe_event_init(struct perf_event *event)
- 	if (event->attr.type != perf_uprobe.type)
- 		return -ENOENT;
- 
--	if (!capable(CAP_SYS_ADMIN))
-+	if (!capable_tracing())
- 		return -EACCES;
- 
- 	/*
-@@ -10588,7 +10588,7 @@ static int perf_copy_attr(struct perf_event_attr __user *uattr,
- 		}
- 		/* privileged levels capture (kernel, hv): check permissions */
- 		if ((mask & PERF_SAMPLE_BRANCH_PERM_PLM)
--		    && perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN))
-+		    && perf_paranoid_kernel() && !capable_tracing())
- 			return -EACCES;
- 	}
- 
-@@ -10807,12 +10807,12 @@ SYSCALL_DEFINE5(perf_event_open,
- 		return err;
- 
- 	if (!attr.exclude_kernel) {
--		if (perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN))
-+		if (perf_paranoid_kernel() && !capable_tracing())
- 			return -EACCES;
- 	}
- 
- 	if (attr.namespaces) {
--		if (!capable(CAP_SYS_ADMIN))
-+		if (!capable_tracing())
- 			return -EACCES;
- 	}
- 
-@@ -10826,7 +10826,7 @@ SYSCALL_DEFINE5(perf_event_open,
- 
- 	/* Only privileged users can get physical addresses */
- 	if ((attr.sample_type & PERF_SAMPLE_PHYS_ADDR) &&
--	    perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN))
-+	    perf_paranoid_kernel() && !capable_tracing())
- 		return -EACCES;
- 
- 	/*
-diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
-index c5cd852fe86b..8bc4d7d8c913 100644
---- a/kernel/events/hw_breakpoint.c
-+++ b/kernel/events/hw_breakpoint.c
-@@ -404,7 +404,7 @@ static int hw_breakpoint_parse(struct perf_event *bp,
- 		 * Don't let unprivileged users set a breakpoint in the trap
- 		 * path to avoid trap recursion attacks.
- 		 */
--		if (!capable(CAP_SYS_ADMIN))
-+		if (!capable_tracing())
- 			return -EPERM;
- 	}
- 
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index 0892e38ed6fb..6861307f14d6 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -46,7 +46,7 @@ static int perf_trace_event_perm(struct trace_event_call *tp_event,
- 
- 	/* The ftrace function trace is allowed only for root. */
- 	if (ftrace_event_is_function(tp_event)) {
--		if (perf_paranoid_tracepoint_raw() && !capable(CAP_SYS_ADMIN))
-+		if (perf_paranoid_tracepoint_raw() && !capable_tracing())
- 			return -EPERM;
- 
- 		if (!is_sampling_event(p_event))
-@@ -82,7 +82,7 @@ static int perf_trace_event_perm(struct trace_event_call *tp_event,
- 	 * ...otherwise raw tracepoint data can be a severe data leak,
- 	 * only allow root to have these.
- 	 */
--	if (perf_paranoid_tracepoint_raw() && !capable(CAP_SYS_ADMIN))
-+	if (perf_paranoid_tracepoint_raw() && !capable_tracing())
- 		return -EPERM;
- 
- 	return 0;
+Could you please review this? The main concern here is that
+dev_put() is getting called after free_netdev() causing a NULL
+dereference.
+
+309.918778:   <6> free_netdev() ffffffe13c9df000 ip6_vti0 refcnt valid
+ops_init+0x88/0x110 -> vti6_init_net+0x1ac/0x1c0
+309.980671:   <6> dev_put() ffffffe13c9df000 ip6_vti0 refcnt null
+rcu_nocb_kthread+0x43c/0x468 -> in_dev_rcu_put+0x24/0x30
+
+I am able to reproduce this consistently and open to testing
+out patches.
+
 -- 
-2.20.0
-
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
