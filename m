@@ -2,310 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 037ADA877F
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAAFA87F7
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730185AbfIDN4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 09:56:47 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38930 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729677AbfIDN4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 09:56:46 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 4 Sep 2019 16:56:41 +0300
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x84DufkR014996;
-        Wed, 4 Sep 2019 16:56:41 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Justin Pettit <jpettit@nicira.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Subject: [PATCH net-next v4 1/1] net: openvswitch: Set OvS recirc_id from tc chain index
-Date:   Wed,  4 Sep 2019 16:56:37 +0300
-Message-Id: <1567605397-14060-2-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1567605397-14060-1-git-send-email-paulb@mellanox.com>
-References: <1567605397-14060-1-git-send-email-paulb@mellanox.com>
+        id S1730939AbfIDOAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 10:00:48 -0400
+Received: from mail-eopbgr790049.outbound.protection.outlook.com ([40.107.79.49]:27575
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730906AbfIDOAr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 10:00:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cop01YPNsNA8eNV5hmjiVKS8sVpMvW7dvKBRnGmQxdUdMkyfWxijvwSk/P3lce9zU+fefkq89mErNjqBXiIf0deN8rs2AZlOQIW5915fIqEq54YEK7qxFCvBuvIX0z9HRucWve5775s0p4mV3rldWCvD1r0hqm2SJ4qonEjv1vqRlCMlB9HJM5nNGgnMvv0B8WdEGyx8L5JPp2m3ml1yVCxI+QJnY3+aFBlopwdMnyStBE/52VMev9HaEFgtjYFf5Ey57FkPuYPRblTTHf3CdmMGIwSiKDuPdR75BiBPi2rdbfLxUpCFNq0/1OgTWRs5O47Ox6GE3umtw287KvPfug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jbV0KiQXzhkjTQ9Cz5SKCJoDIfgb95NPUpA5Zl8XTIo=;
+ b=apKRykCEi/UnhXKcg6yhgvMhlYuDpETIxVw7uqNZM2PBYMFEWGS+sArRg8KAwYhRYb3tn+IsI4o7xNI1lwuX0U+eTUmZTunf/REpZ5htM9u48S/cbL/6grf8Ktj3tstunFra/Oa5VdIKBv/dUw7sZUfC9nRJNocU5nXzkeYaz2Rq1bP8HojV97BFc8S/UVAFMvznuV+2OXTGKuT6I9yzPXBbQ/VxYKbumKmuZYPMoNj+s2tYE3ICsNtHiBmKQoe7GSvEvMBo/CzYqpEDOWNAioTEHgB2e9yd+sQ6W+yZkKqxUlhh9G47E6hFlejpb9XVQhtNJFb76m2QV7jO5HeitQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.100) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jbV0KiQXzhkjTQ9Cz5SKCJoDIfgb95NPUpA5Zl8XTIo=;
+ b=DWoGDVP0uYDek1T0ETF5SEHPQXFYgPiygTjhpm/WWZbCkacXRA3l7b9San2Q68TVcauh5LqAuZi9o6ez1hElluIHFgEhvq/vJU3wgq/9f6vxBnnWPp3fMOTMZJ+2a6/gBqjGaafL95JVQEMuh/yuUkEB907eKW8zwBNvo0itO3Q=
+Received: from MWHPR02CA0037.namprd02.prod.outlook.com (2603:10b6:301:60::26)
+ by SN6PR02MB5262.namprd02.prod.outlook.com (2603:10b6:805:70::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2199.21; Wed, 4 Sep
+ 2019 14:00:44 +0000
+Received: from BL2NAM02FT064.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::206) by MWHPR02CA0037.outlook.office365.com
+ (2603:10b6:301:60::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2241.14 via Frontend
+ Transport; Wed, 4 Sep 2019 14:00:44 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.100)
+ smtp.mailfrom=xilinx.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.100; helo=xsj-pvapsmtpgw02;
+Received: from xsj-pvapsmtpgw02 (149.199.60.100) by
+ BL2NAM02FT064.mail.protection.outlook.com (10.152.77.119) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2220.16
+ via Frontend Transport; Wed, 4 Sep 2019 14:00:43 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66]:54097 helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw02 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1i5Vpy-0000x0-K6; Wed, 04 Sep 2019 07:00:42 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1i5Vpt-0002TG-GD; Wed, 04 Sep 2019 07:00:37 -0700
+Received: from xsj-pvapsmtp01 (mail.xilinx.com [149.199.38.66] (may be forged))
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x84E0PXH024453;
+        Wed, 4 Sep 2019 07:00:26 -0700
+Received: from [10.140.6.13] (helo=xhdharinik40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1i5Vph-0002Ac-3i; Wed, 04 Sep 2019 07:00:25 -0700
+From:   Harini Katakam <harini.katakam@xilinx.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net
+Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        harinikatakamlinux@gmail.com, harini.katakam@xilinx.com,
+        radhey.shyam.pandey@xilinx.com
+Subject: [PATCH v2 0/2] Fix GMII2RGMII private field
+Date:   Wed,  4 Sep 2019 19:30:19 +0530
+Message-Id: <1567605621-6818-1-git-send-email-harini.katakam@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.100;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(396003)(376002)(136003)(2980300002)(199004)(189003)(186003)(26005)(70206006)(356004)(486006)(336012)(6666004)(126002)(70586007)(107886003)(2616005)(476003)(4326008)(426003)(51416003)(316002)(44832011)(48376002)(50466002)(305945005)(478600001)(47776003)(2906002)(9786002)(8676002)(81166006)(106002)(7696005)(81156014)(5660300002)(36386004)(50226002)(36756003)(4744005)(16586007)(8936002)(42866002)(5001870100001);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR02MB5262;H:xsj-pvapsmtpgw02;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-100.xilinx.com,xapps1.xilinx.com;A:1;MX:1;
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0d153411-1981-44a9-ef12-08d731404735
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(4709080)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:SN6PR02MB5262;
+X-MS-TrafficTypeDiagnostic: SN6PR02MB5262:
+X-Microsoft-Antispam-PRVS: <SN6PR02MB5262131CA2193EFD4852BF28C9B80@SN6PR02MB5262.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-Forefront-PRVS: 0150F3F97D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 4NOLcwE3N/OP+ldJTEN2k3ygoQe4DsY4E8ZovyV4P8C7ffbaGFh/87Nrmz2OuhDtRQQ17hwHgDkIyL81DdVF3Rmh952txvC2FiLtl2rpso3Z5L1K/pir/RiSUnz/6R73VYnVD3EiKhPt36t/PceN1XkP0hzqeQSxU52yEl3rWyAv/z7ye/c5Fc8XO3oGhBWWCt2zN7FnHdDdq0nfvWFFDQz+AmWoY3gIyuGrX8T2gBEuHTO0Uwdg64c5sZXvLIWTxVKKQpsFU/Vw7JCRT+YBENf6W7v9HzzVbPf4lgErV+AvFxxuKwbznQb4ruL4WhwWyPgzVMnEsUnkAQR8wrdHe4Bmsl9pvpJGFmpBd34AbCdsNi2KBte3jCvGF7JjOWs+R+DwTYdLN8hGaXyGYQfiKC4HJUtQREIhzsXoNXuP7Rw=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2019 14:00:43.6858
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d153411-1981-44a9-ef12-08d731404735
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.100];Helo=[xsj-pvapsmtpgw02]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB5262
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offloaded OvS datapath rules are translated one to one to tc rules,
-for example the following simplified OvS rule:
+Fix the usage of external phy's priv field by gmii2rgmii driver.
 
-recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
+Based on net-next.
 
-Will be translated to the following tc rule:
+Harini Katakam (2):
+  include: mdio: Add driver data helpers
+  net: phy: gmii2rgmii: Dont use priv field in phy device
 
-$ tc filter add dev dev1 ingress \
-	    prio 1 chain 0 proto ip \
-		flower tcp ct_state -trk \
-		action ct pipe \
-		action goto chain 2
+ drivers/net/phy/xilinx_gmii2rgmii.c |  4 ++--
+ include/linux/mdio.h                | 11 +++++++++++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-Received packets will first travel though tc, and if they aren't stolen
-by it, like in the above rule, they will continue to OvS datapath.
-Since we already did some actions (action ct in this case) which might
-modify the packets, and updated action stats, we would like to continue
-the proccessing with the correct recirc_id in OvS (here recirc_id(2))
-where we left off.
-
-To support this, introduce a new skb extension for tc, which
-will be used for translating tc chain to ovs recirc_id to
-handle these miss cases. Last tc chain index will be set
-by tc goto chain action and read by OvS datapath.
-
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
-Changelog:
-V3->V4:
-	Removed changes to tcf_result, instead us action return value to get chain index
-
- include/linux/skbuff.h           | 13 +++++++++++++
- include/uapi/linux/openvswitch.h |  3 +++
- net/core/skbuff.c                |  6 ++++++
- net/openvswitch/datapath.c       | 38 +++++++++++++++++++++++++++++++++-----
- net/openvswitch/datapath.h       |  2 ++
- net/openvswitch/flow.c           | 13 +++++++++++++
- net/sched/Kconfig                | 13 +++++++++++++
- net/sched/cls_api.c              | 12 ++++++++++++
- 8 files changed, 95 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 77c6dc88..028e684 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -279,6 +279,16 @@ struct nf_bridge_info {
- };
- #endif
- 
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+/* Chain in tc_skb_ext will be used to share the tc chain with
-+ * ovs recirc_id. It will be set to the current chain by tc
-+ * and read by ovs to recirc_id.
-+ */
-+struct tc_skb_ext {
-+	__u32 chain;
-+};
-+#endif
-+
- struct sk_buff_head {
- 	/* These two members must be first. */
- 	struct sk_buff	*next;
-@@ -4058,6 +4068,9 @@ enum skb_ext_id {
- #ifdef CONFIG_XFRM
- 	SKB_EXT_SEC_PATH,
- #endif
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	TC_SKB_EXT,
-+#endif
- 	SKB_EXT_NUM, /* must be last */
- };
- 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index f271f1e..1887a45 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -123,6 +123,9 @@ struct ovs_vport_stats {
- /* Allow datapath to associate multiple Netlink PIDs to each vport */
- #define OVS_DP_F_VPORT_PIDS	(1 << 1)
- 
-+/* Allow tc offload recirc sharing */
-+#define OVS_DP_F_TC_RECIRC_SHARING	(1 << 2)
-+
- /* Fixed logical ports. */
- #define OVSP_LOCAL      ((__u32)0)
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ea8e8d3..2b40b5a 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4087,6 +4087,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- #ifdef CONFIG_XFRM
- 	[SKB_EXT_SEC_PATH] = SKB_EXT_CHUNKSIZEOF(struct sec_path),
- #endif
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	[TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
-+#endif
- };
- 
- static __always_inline unsigned int skb_ext_total_length(void)
-@@ -4098,6 +4101,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
- #ifdef CONFIG_XFRM
- 		skb_ext_type_len[SKB_EXT_SEC_PATH] +
- #endif
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+		skb_ext_type_len[TC_SKB_EXT] +
-+#endif
- 		0;
- }
- 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 65122bb..dde9d76 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1545,10 +1545,34 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb, struct genl_info *in
- 	dp->user_features = 0;
- }
- 
--static void ovs_dp_change(struct datapath *dp, struct nlattr *a[])
-+DEFINE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
-+
-+static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
- {
--	if (a[OVS_DP_ATTR_USER_FEATURES])
--		dp->user_features = nla_get_u32(a[OVS_DP_ATTR_USER_FEATURES]);
-+	u32 user_features = 0;
-+
-+	if (a[OVS_DP_ATTR_USER_FEATURES]) {
-+		user_features = nla_get_u32(a[OVS_DP_ATTR_USER_FEATURES]);
-+
-+		if (user_features & ~(OVS_DP_F_VPORT_PIDS |
-+				      OVS_DP_F_UNALIGNED |
-+				      OVS_DP_F_TC_RECIRC_SHARING))
-+			return -EOPNOTSUPP;
-+
-+#if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+		if (user_features & OVS_DP_F_TC_RECIRC_SHARING)
-+			return -EOPNOTSUPP;
-+#endif
-+	}
-+
-+	dp->user_features = user_features;
-+
-+	if (dp->user_features & OVS_DP_F_TC_RECIRC_SHARING)
-+		static_branch_enable(&tc_recirc_sharing_support);
-+	else
-+		static_branch_disable(&tc_recirc_sharing_support);
-+
-+	return 0;
- }
- 
- static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
-@@ -1610,7 +1634,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	parms.port_no = OVSP_LOCAL;
- 	parms.upcall_portids = a[OVS_DP_ATTR_UPCALL_PID];
- 
--	ovs_dp_change(dp, a);
-+	err = ovs_dp_change(dp, a);
-+	if (err)
-+		goto err_destroy_meters;
- 
- 	/* So far only local changes have been made, now need the lock. */
- 	ovs_lock();
-@@ -1736,7 +1762,9 @@ static int ovs_dp_cmd_set(struct sk_buff *skb, struct genl_info *info)
- 	if (IS_ERR(dp))
- 		goto err_unlock_free;
- 
--	ovs_dp_change(dp, info->attrs);
-+	err = ovs_dp_change(dp, info->attrs);
-+	if (err)
-+		goto err_unlock_free;
- 
- 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
- 				   info->snd_seq, 0, OVS_DP_CMD_SET);
-diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-index 751d34a..81e85dd 100644
---- a/net/openvswitch/datapath.h
-+++ b/net/openvswitch/datapath.h
-@@ -218,6 +218,8 @@ static inline struct datapath *get_dp(struct net *net, int dp_ifindex)
- extern struct notifier_block ovs_dp_device_notifier;
- extern struct genl_family dp_vport_genl_family;
- 
-+DECLARE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
-+
- void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key);
- void ovs_dp_detach_port(struct vport *);
- int ovs_dp_upcall(struct datapath *, struct sk_buff *,
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index 9d81d2c..38147e6 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -842,6 +842,9 @@ static int key_extract_mac_proto(struct sk_buff *skb)
- int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 			 struct sk_buff *skb, struct sw_flow_key *key)
- {
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	struct tc_skb_ext *tc_ext;
-+#endif
- 	int res, err;
- 
- 	/* Extract metadata from packet. */
-@@ -874,7 +877,17 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 	if (res < 0)
- 		return res;
- 	key->mac_proto = res;
-+
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+	if (static_branch_unlikely(&tc_recirc_sharing_support)) {
-+		tc_ext = skb_ext_find(skb, TC_SKB_EXT);
-+		key->recirc_id = tc_ext ? tc_ext->chain : 0;
-+	} else {
-+		key->recirc_id = 0;
-+	}
-+#else
- 	key->recirc_id = 0;
-+#endif
- 
- 	err = key_extract(skb, key);
- 	if (!err)
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index afd2ba1..b3faafe 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -963,6 +963,19 @@ config NET_IFE_SKBTCINDEX
-         tristate "Support to encoding decoding skb tcindex on IFE action"
-         depends on NET_ACT_IFE
- 
-+config NET_TC_SKB_EXT
-+	bool "TC recirculation support"
-+	depends on NET_CLS_ACT
-+	default y if NET_CLS_ACT
-+	select SKB_EXTENSIONS
-+
-+	help
-+	  Say Y here to allow tc chain misses to continue in OvS datapath in
-+	  the correct recirc_id, and hardware chain misses to continue in
-+	  the correct chain in tc software datapath.
-+
-+	  Say N here if you won't be using tc<->ovs offload or tc chains offload.
-+
- endif # NET_SCHED
- 
- config NET_SCH_FIFO
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 671ca90..05c4fe1 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1514,6 +1514,18 @@ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 			goto reset;
- 		} else if (unlikely(TC_ACT_EXT_CMP(err, TC_ACT_GOTO_CHAIN))) {
- 			first_tp = res->goto_tp;
-+
-+#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-+			{
-+				struct tc_skb_ext *ext;
-+
-+				ext = skb_ext_add(skb, TC_SKB_EXT);
-+				if (WARN_ON_ONCE(!ext))
-+					return TC_ACT_SHOT;
-+
-+				ext->chain = err & TC_ACT_EXT_VAL_MASK;
-+			}
-+#endif
- 			goto reset;
- 		}
- #endif
 -- 
-1.8.3.1
+2.7.4
 
