@@ -2,146 +2,402 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64077A87F9
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB14CA885B
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbfIDOAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 10:00:48 -0400
-Received: from mail-eopbgr820047.outbound.protection.outlook.com ([40.107.82.47]:6144
-        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730884AbfIDOAr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 10:00:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OcMru5ImdBXMqxGbiQJk8ur/WTIgM948nw2Qcdsk3sByT1goFILyHd9/2Hz5BBR4sI1PypTMv7qhV4mT5wSM1P9qMX9+a89K8do4RbyGWze8r90EmNggMxDacvhBZEKS2YeJz0Q5i0mEs7UVfEV55Kwsr7m4CdMHhBnW7i98jUQ7NM3smdnnKBLzzmhAAiiwyp8FLjK9RAwf3gkfiECDJx9/ccVHbZSHaBDfN6iZwdAYwPrETCXhepYdA78lewLZPv+hKDIYlOmuQRWVo1aX56fBPXE3gd8OVOBO0PBThq9H01exNC2PXRlZVXb5DCU/M1eh5iBQOKKFmu6mwVx+9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/V4f60/Nx26StgbMQdFv46yJ98WHK/ltwx48sogd1Uo=;
- b=TRv7M6+5xh1aSk0DF/Y1eVBWJrzN1pObbe8fSLl8A7kBdguzEbJRxgb7UVT7M7fFXshV07rjTKw8WvhAaa5Dj8Y1eBDiyIrsYdjC9t2FthP5yysoOEJh3bLU1GRtdYH4nTOIJNX9otMqpgZWpbsCjNKQmldl0etxIEwON3nx2plrCSjKxZaq2WVz3jHbt5gV3afZuBBMXtDYookPTxPlXt/MXQ+jstL5Cj/BPTwjgMCdDN80LLmXN49WJlYQA/vnPwXbGhxvENhVCFaxclOTw78wlUUCdfeCZtvZVaw7JRq2QX4DadMKXWk4Z/iAHIi+jcBLP7oTsjtjXvL2M6JHRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/V4f60/Nx26StgbMQdFv46yJ98WHK/ltwx48sogd1Uo=;
- b=ev74SlvCQvJjfWSNOEIHCHdDpwZzNlH7fBU3Eq74GszP0BVTkqVcm6bhu+Cqzvy2DeN3996zN8LLGPrGan9lhVycS99q5GSR/l/oqMmnZ6El+kkosHlTW4Byw4+/qTjb+mI1bpUFe8UJhhLA9c8JO0rogW+wU7fQ/InizHPrgLA=
-Received: from MWHPR0201CA0005.namprd02.prod.outlook.com
- (2603:10b6:301:74::18) by DM6PR02MB5260.namprd02.prod.outlook.com
- (2603:10b6:5:51::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2220.22; Wed, 4 Sep
- 2019 14:00:44 +0000
-Received: from BL2NAM02FT045.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::206) by MWHPR0201CA0005.outlook.office365.com
- (2603:10b6:301:74::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2241.15 via Frontend
- Transport; Wed, 4 Sep 2019 14:00:43 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- BL2NAM02FT045.mail.protection.outlook.com (10.152.77.16) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2241.14
- via Frontend Transport; Wed, 4 Sep 2019 14:00:43 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1i5Vpy-0002PY-Jo; Wed, 04 Sep 2019 07:00:42 -0700
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1i5Vpt-0002TG-EK; Wed, 04 Sep 2019 07:00:37 -0700
-Received: from xsj-pvapsmtp01 (xsj-mail.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x84E0W5S024675;
-        Wed, 4 Sep 2019 07:00:32 -0700
-Received: from [10.140.6.13] (helo=xhdharinik40.xilinx.com)
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1i5Vpn-0002Ac-LX; Wed, 04 Sep 2019 07:00:32 -0700
-From:   Harini Katakam <harini.katakam@xilinx.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        davem@davemloft.net
-Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        harinikatakamlinux@gmail.com, harini.katakam@xilinx.com,
-        radhey.shyam.pandey@xilinx.com
-Subject: [PATCH v2 2/2] net: phy: gmii2rgmii: Dont use priv field in phy device
-Date:   Wed,  4 Sep 2019 19:30:21 +0530
-Message-Id: <1567605621-6818-3-git-send-email-harini.katakam@xilinx.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1567605621-6818-1-git-send-email-harini.katakam@xilinx.com>
-References: <1567605621-6818-1-git-send-email-harini.katakam@xilinx.com>
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(396003)(346002)(2980300002)(189003)(199004)(11346002)(446003)(426003)(336012)(9786002)(36386004)(47776003)(2906002)(44832011)(478600001)(476003)(486006)(126002)(76176011)(51416003)(7696005)(26005)(186003)(106002)(2616005)(36756003)(316002)(6666004)(356004)(107886003)(4326008)(70586007)(16586007)(305945005)(81156014)(81166006)(50226002)(8936002)(5660300002)(50466002)(8676002)(48376002)(70206006)(192303002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR02MB5260;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
-MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ae95ccfa-44cc-49f4-8d7b-08d7314046e6
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);SRVR:DM6PR02MB5260;
-X-MS-TrafficTypeDiagnostic: DM6PR02MB5260:
-X-Microsoft-Antispam-PRVS: <DM6PR02MB52607A6980A607F238C383C3C9B80@DM6PR02MB5260.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-Forefront-PRVS: 0150F3F97D
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: xPGxrXNxEaHFvdf7ogoln7F5UoMR6ChHgvYYgH7n2M7LTr5dIjBA43RVQjh/+Uk/uUhvbndc6rhNGa2WYJGzLNnwGLHggEKc6jAL+kG9lYtMX1zEJdLunHFaiBBtvQrwpzoIF2dT7ZsCTPvOvgQmQN96xB0n2sKNCJZ2+sNtaQ1KeqaC+myN+/NefX3ORKQsIPlFdYsgqcSumhmweUj+d7W/xPNmT1NCuKYnUidu21CqoAzJvNoMeYLQxUO4TJjppyhWM2IqL6qR5RH+/mcfNFHggUtlpKtbvd0gqYKBy1DZLDEs57PFIFjKJhcKwu9KkYmJYtbrT4d6KtcZAsWYzr7uKD6kHeV6IlJawRiZOwfhulG0o3ZH3uo1T+ftACLSe2ozi8SWFG++t74V9QPopOFlQWngoBwRR6X2vSOPSyU=
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2019 14:00:43.1655
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae95ccfa-44cc-49f4-8d7b-08d7314046e6
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5260
+        id S1730876AbfIDOC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 10:02:59 -0400
+Received: from mga12.intel.com ([192.55.52.136]:18936 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730533AbfIDOC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 10:02:58 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Sep 2019 07:02:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,467,1559545200"; 
+   d="scan'208";a="382522930"
+Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Sep 2019 07:02:55 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH v2 net-next] net: stmmac: Add support for MDIO interrupts
+Date:   Wed,  4 Sep 2019 22:02:54 +0800
+Message-Id: <1567605774-5500-1-git-send-email-weifeng.voon@intel.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use set/get drv data in phydev's mdio device instead. Phy device priv
-field maybe used by the external phy driver and should not be
-overwritten.
+From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
----
-v2:
-Use mdio driver data helper.
+DW EQoS v5.xx controllers added capability for interrupt generation
+when MDIO interface is done (GMII Busy bit is cleared).
+This patch adds support for this interrupt on supported HW to avoid
+polling on GMII Busy bit.
 
- drivers/net/phy/xilinx_gmii2rgmii.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
+called by the interrupt handler.
 
-diff --git a/drivers/net/phy/xilinx_gmii2rgmii.c b/drivers/net/phy/xilinx_gmii2rgmii.c
-index 2d14493..151c2a3 100644
---- a/drivers/net/phy/xilinx_gmii2rgmii.c
-+++ b/drivers/net/phy/xilinx_gmii2rgmii.c
-@@ -29,7 +29,7 @@ struct gmii2rgmii {
+Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+Reviewed-by: Kweh, Hock Leong <hock.leong.kweh@intel.com>
+Reviewed-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Chuah, Kim Tatt <kim.tatt.chuah@intel.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 49aa56ca09cc..775a1c114b1a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -448,6 +448,8 @@ struct mac_device_info {
+ 	unsigned int pcs;
+ 	unsigned int pmt;
+ 	unsigned int ps;
++	bool mdio_intr_en;
++	wait_queue_head_t mdio_busy_wait;
+ };
  
- static int xgmiitorgmii_read_status(struct phy_device *phydev)
- {
--	struct gmii2rgmii *priv = phydev->priv;
-+	struct gmii2rgmii *priv = mdiodev_get_drvdata(&phydev->mdio);
- 	struct mii_bus *bus = priv->mdio->bus;
- 	int addr = priv->mdio->addr;
- 	u16 val = 0;
-@@ -90,7 +90,7 @@ static int xgmiitorgmii_probe(struct mdio_device *mdiodev)
- 	memcpy(&priv->conv_phy_drv, priv->phy_dev->drv,
- 	       sizeof(struct phy_driver));
- 	priv->conv_phy_drv.read_status = xgmiitorgmii_read_status;
--	priv->phy_dev->priv = priv;
-+	mdiodev_set_drvdata(&priv->phy_dev->mdio, priv);
- 	priv->phy_dev->drv = &priv->conv_phy_drv;
+ struct stmmac_rx_routing {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+index 2ed11a581d80..1be6a8a88b8f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+@@ -106,6 +106,7 @@ enum dwmac4_irq_status {
+ 	mmc_irq = 0x00000100,
+ 	lpi_irq = 0x00000020,
+ 	pmt_irq = 0x00000010,
++	mdio_irq = 0x00040000,
+ };
  
+ /* MAC PMT bitmap */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index fc9954e4a772..97fca6d65141 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -59,6 +59,9 @@ static void dwmac4_core_init(struct mac_device_info *hw,
+ 	if (hw->pcs)
+ 		value |= GMAC_PCS_IRQ_DEFAULT;
+ 
++	if (hw->mdio_intr_en)
++		value |= GMAC_INT_MDIO_EN;
++
+ 	writel(value, ioaddr + GMAC_INT_EN);
+ }
+ 
+@@ -629,6 +632,9 @@ static int dwmac4_irq_status(struct mac_device_info *hw,
+ 			x->irq_rx_path_exit_lpi_mode_n++;
+ 	}
+ 
++	if (intr_status & mdio_irq)
++		wake_up(&hw->mdio_busy_wait);
++
+ 	dwmac_pcs_isr(ioaddr, GMAC_PCS_BASE, intr_status, x);
+ 	if (intr_status & PCS_RGSMIIIS_IRQ)
+ 		dwmac4_phystatus(ioaddr, x);
+@@ -836,6 +842,7 @@ static void dwmac4_set_mac_loopback(void __iomem *ioaddr, bool enable)
+ 	.rxp_config = dwmac5_rxp_config,
+ 	.flex_pps_config = dwmac5_flex_pps_config,
+ 	.set_mac_loopback = dwmac4_set_mac_loopback,
++	.mdio_intr_dis = dwmac5_mdio_intr_dis,
+ };
+ 
+ int dwmac4_setup(struct stmmac_priv *priv)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+index 3f4f3132e16b..c58751e1dcb6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+@@ -549,3 +549,11 @@ int dwmac5_flex_pps_config(void __iomem *ioaddr, int index,
+ 	writel(val, ioaddr + MAC_PPS_CONTROL);
  	return 0;
+ }
++
++void dwmac5_mdio_intr_dis(void __iomem *ioaddr)
++{
++	u32 val = readl(ioaddr + GMAC_INT_EN);
++
++	val &= ~GMAC_INT_MDIO_EN;
++	writel(val, ioaddr + GMAC_INT_EN);
++}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
+index 775db776b3cc..a56511a4c97d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
+@@ -72,6 +72,9 @@
+ #define TCEIE				BIT(0)
+ #define DMA_ECC_INT_STATUS		0x00001088
+ 
++/* MDIO interrupt enable in MAC_Interrupt_Enable register */
++#define GMAC_INT_MDIO_EN		BIT(18)
++
+ int dwmac5_safety_feat_config(void __iomem *ioaddr, unsigned int asp);
+ int dwmac5_safety_feat_irq_status(struct net_device *ndev,
+ 		void __iomem *ioaddr, unsigned int asp,
+@@ -83,5 +86,6 @@ int dwmac5_rxp_config(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
+ int dwmac5_flex_pps_config(void __iomem *ioaddr, int index,
+ 			   struct stmmac_pps_cfg *cfg, bool enable,
+ 			   u32 sub_second_inc, u32 systime_flags);
++void dwmac5_mdio_intr_dis(void __iomem *ioaddr);
+ 
+ #endif /* __DWMAC5_H__ */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.c b/drivers/net/ethernet/stmicro/stmmac/hwif.c
+index 3af2e5015245..7127efe652db 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.c
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.c
+@@ -73,6 +73,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 	bool gmac;
+ 	bool gmac4;
+ 	bool xgmac;
++	bool mdio_intr_en;
+ 	u32 min_id;
+ 	const struct stmmac_regs_off regs;
+ 	const void *desc;
+@@ -90,6 +91,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = false,
+ 		.xgmac = false,
++		.mdio_intr_en = false,
+ 		.min_id = 0,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC3_X_OFFSET,
+@@ -108,6 +110,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = true,
+ 		.gmac4 = false,
+ 		.xgmac = false,
++		.mdio_intr_en = false,
+ 		.min_id = 0,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC3_X_OFFSET,
+@@ -126,6 +129,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = true,
+ 		.xgmac = false,
++		.mdio_intr_en = false,
+ 		.min_id = 0,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC4_OFFSET,
+@@ -144,6 +148,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = true,
+ 		.xgmac = false,
++		.mdio_intr_en = false,
+ 		.min_id = DWMAC_CORE_4_00,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC4_OFFSET,
+@@ -162,6 +167,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = true,
+ 		.xgmac = false,
++		.mdio_intr_en = false,
+ 		.min_id = DWMAC_CORE_4_10,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC4_OFFSET,
+@@ -180,6 +186,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = true,
+ 		.xgmac = false,
++		.mdio_intr_en = true,
+ 		.min_id = DWMAC_CORE_5_10,
+ 		.regs = {
+ 			.ptp_off = PTP_GMAC4_OFFSET,
+@@ -198,6 +205,7 @@ static int stmmac_dwmac4_quirks(struct stmmac_priv *priv)
+ 		.gmac = false,
+ 		.gmac4 = false,
+ 		.xgmac = true,
++		.mdio_intr_en = false,
+ 		.min_id = DWXGMAC_CORE_2_10,
+ 		.regs = {
+ 			.ptp_off = PTP_XGMAC_OFFSET,
+@@ -276,6 +284,7 @@ int stmmac_hwif_init(struct stmmac_priv *priv)
+ 		mac->mode = mac->mode ? : entry->mode;
+ 		mac->tc = mac->tc ? : entry->tc;
+ 		mac->mmc = mac->mmc ? : entry->mmc;
++		mac->mdio_intr_en = mac->mdio_intr_en ? : entry->mdio_intr_en;
+ 
+ 		priv->hw = mac;
+ 		priv->ptpaddr = priv->ioaddr + entry->regs.ptp_off;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index 9435b312495d..d42885426e78 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -363,6 +363,8 @@ struct stmmac_ops {
+ 	int (*get_mac_tx_timestamp)(struct mac_device_info *hw, u64 *ts);
+ 	/* Source Address Insertion / Replacement */
+ 	void (*sarc_configure)(void __iomem *ioaddr, int val);
++	/* Disable mdio interrupt */
++	void (*mdio_intr_dis)(void __iomem *ioaddr);
+ };
+ 
+ #define stmmac_core_init(__priv, __args...) \
+@@ -443,6 +445,8 @@ struct stmmac_ops {
+ 	stmmac_do_callback(__priv, mac, get_mac_tx_timestamp, __args)
+ #define stmmac_sarc_configure(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, mac, sarc_configure, __args)
++#define stmmac_mdio_intr_dis(__priv, __args...) \
++	stmmac_do_void_callback(__priv, mac, mdio_intr_dis, __args)
+ 
+ /* PTP and HW Timer helpers */
+ struct stmmac_hwtimestamp {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 06ccd216ae90..2557a2beb03d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2768,6 +2768,8 @@ static int stmmac_release(struct net_device *dev)
+ 	phylink_stop(priv->phylink);
+ 	phylink_disconnect_phy(priv->phylink);
+ 
++	stmmac_mdio_intr_dis(priv, priv->ioaddr);
++
+ 	stmmac_stop_all_queues(priv);
+ 
+ 	stmmac_disable_all_queues(priv);
+@@ -4463,6 +4465,9 @@ int stmmac_dvr_probe(struct device *device,
+ 	if (ret)
+ 		goto error_hw_init;
+ 
++	/* mdio intr wait queue */
++	init_waitqueue_head(&priv->hw->mdio_busy_wait);
++
+ 	stmmac_check_ether_addr(priv);
+ 
+ 	/* Configure real RX and TX queues */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index 40c42637ad75..625e1fde0c86 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -19,6 +19,8 @@
+ #include <linux/property.h>
+ #include <linux/slab.h>
+ 
++#include "dwmac4.h"
++#include "dwmac5.h"
+ #include "dwxgmac2.h"
+ #include "stmmac.h"
+ 
+@@ -142,6 +144,18 @@ static int stmmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
+ 				  !(tmp & MII_XGMAC_BUSY), 100, 10000);
+ }
+ 
++static bool stmmac_mdio_intr_done(struct mii_bus *bus)
++{
++	struct net_device *ndev = bus->priv;
++	struct stmmac_priv *priv;
++	unsigned int mii_address;
++
++	priv = netdev_priv(ndev);
++	mii_address = priv->hw->mii.addr;
++
++	return !(readl(priv->ioaddr + mii_address) & MII_BUSY);
++}
++
+ /**
+  * stmmac_mdio_read
+  * @bus: points to the mii_bus structure
+@@ -159,9 +173,11 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 	unsigned int mii_address = priv->hw->mii.addr;
+ 	unsigned int mii_data = priv->hw->mii.data;
+ 	u32 value = MII_BUSY;
++	u32 mdio_intr_en = 0;
+ 	int data = 0;
+ 	u32 v;
+ 
++	mdio_intr_en = readl(priv->ioaddr + GMAC_INT_EN) & GMAC_INT_MDIO_EN;
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
+ 	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
+@@ -181,16 +197,26 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 		}
+ 	}
+ 
+-	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+-			       100, 10000))
++	if (mdio_intr_en) {
++		if (!wait_event_timeout(priv->hw->mdio_busy_wait,
++					stmmac_mdio_intr_done(bus), HZ / 100))
++			return -EBUSY;
++	} else if (readl_poll_timeout(priv->ioaddr + mii_address, v,
++				      !(v & MII_BUSY), 100, 10000)) {
+ 		return -EBUSY;
++	}
+ 
+ 	writel(data, priv->ioaddr + mii_data);
+ 	writel(value, priv->ioaddr + mii_address);
+ 
+-	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+-			       100, 10000))
++	if (mdio_intr_en) {
++		if (!wait_event_timeout(priv->hw->mdio_busy_wait,
++					stmmac_mdio_intr_done(bus), HZ / 100))
++			return -EBUSY;
++	} else if (readl_poll_timeout(priv->ioaddr + mii_address, v,
++				      !(v & MII_BUSY), 100, 10000)) {
+ 		return -EBUSY;
++	}
+ 
+ 	/* Read the data from the MII data register */
+ 	data = (int)readl(priv->ioaddr + mii_data) & MII_DATA_MASK;
+@@ -214,9 +240,11 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+ 	unsigned int mii_address = priv->hw->mii.addr;
+ 	unsigned int mii_data = priv->hw->mii.data;
+ 	u32 value = MII_BUSY;
++	u32 mdio_intr_en = 0;
+ 	int data = phydata;
+ 	u32 v;
+ 
++	mdio_intr_en = readl(priv->ioaddr + GMAC_INT_EN) & GMAC_INT_MDIO_EN;
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
+ 	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
+@@ -240,17 +268,30 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+ 	}
+ 
+ 	/* Wait until any existing MII operation is complete */
+-	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+-			       100, 10000))
++	if (mdio_intr_en) {
++		if (!wait_event_timeout(priv->hw->mdio_busy_wait,
++					stmmac_mdio_intr_done(bus), HZ / 100))
++			return -EBUSY;
++	} else if (readl_poll_timeout(priv->ioaddr + mii_address, v,
++				      !(v & MII_BUSY), 100, 10000)) {
+ 		return -EBUSY;
++	}
+ 
+ 	/* Set the MII address register to write */
+ 	writel(data, priv->ioaddr + mii_data);
+ 	writel(value, priv->ioaddr + mii_address);
+ 
+ 	/* Wait until any existing MII operation is complete */
+-	return readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
+-				  100, 10000);
++	if (mdio_intr_en) {
++		if (!wait_event_timeout(priv->hw->mdio_busy_wait,
++					stmmac_mdio_intr_done(bus), HZ / 100))
++			return -EBUSY;
++	} else if (readl_poll_timeout(priv->ioaddr + mii_address, v,
++				      !(v & MII_BUSY), 100, 10000)) {
++		return -EBUSY;
++	}
++
++	return 0;
+ }
+ 
+ /**
 -- 
-2.7.4
+Changelog v2
+*mdio interrupt mode or polling mode will depends on mdio interrupt enable bit
+*Disable the mdio interrupt enable bit in stmmac_release
+*Remove the condition for initialize wait queues
+*Applied reverse Christmas tree
+1.9.1
 
