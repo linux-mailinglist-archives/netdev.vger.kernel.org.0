@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10995A8AB2
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65141A8C43
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 21:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732676AbfIDQAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 12:00:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35236 "EHLO mail.kernel.org"
+        id S1732300AbfIDQLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 12:11:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732662AbfIDQAX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732667AbfIDQAX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 4 Sep 2019 12:00:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51C0C2070C;
-        Wed,  4 Sep 2019 16:00:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 83A5C22CF7;
+        Wed,  4 Sep 2019 16:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567612822;
-        bh=ktGTrJ3wz1U8LW7KHbEeGaC+lWSgAu8Hhu4NlfM9HzQ=;
+        s=default; t=1567612823;
+        bh=mrHPstL9iqpCEs00xslJimRfbU5IgiEpQekd6zBwPBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VMbFEmNzMh5OaIEJFhQDEt9OnZeOjJAIUGhgrg1ZlRGIqgoeBQQzgy09y5kcknrQN
-         CKL1r4nuJujgCN8JjtXvBzCA3jpW0EQtVKeZjnJo8KTz4rMnFJN5XGi49XRtz3JCtK
-         fWLDk9eYe7jkus1d8zoPrwyUCj/HvKB2g7EOF3Kw=
+        b=Bk7toRb+ptV+tlpdYJjIbJsz8mbNj8R8qHlHDsQMCvaMMLhYcbGTWUmHJmaKnnqs2
+         b4Z4HHtblTP/QHRgnN1Cw3neGtJi0AdbZNVB6+plSCtg1FFfYDYhsNu2aUup/tWibe
+         4YlyEuRGi03UI0F8GynlQUG61IGTLmqX55zshF2E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/52] batman-adv: fix uninit-value in batadv_netlink_get_ifindex()
-Date:   Wed,  4 Sep 2019 11:59:24 -0400
-Message-Id: <20190904160004.3671-12-sashal@kernel.org>
+Cc:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/52] selftests/bpf: fix "bind{4, 6} deny specific IP & port" on s390
+Date:   Wed,  4 Sep 2019 11:59:25 -0400
+Message-Id: <20190904160004.3671-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190904160004.3671-1-sashal@kernel.org>
 References: <20190904160004.3671-1-sashal@kernel.org>
@@ -45,67 +45,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit 3ee1bb7aae97324ec9078da1f00cb2176919563f ]
+[ Upstream commit 27df5c7068bf23cab282dc64b1c9894429b3b8a0 ]
 
-batadv_netlink_get_ifindex() needs to make sure user passed
-a correct u32 attribute.
+"bind4 allow specific IP & port" and "bind6 deny specific IP & port"
+fail on s390 because of endianness issue: the 4 IP address bytes are
+loaded as a word and compared with a constant, but the value of this
+constant should be different on big- and little- endian machines, which
+is not the case right now.
 
-syzbot reported :
-BUG: KMSAN: uninit-value in batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
-CPU: 1 PID: 11705 Comm: syz-executor888 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x191/0x1f0 lib/dump_stack.c:113
- kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
- __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
- batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
- genl_lock_dumpit+0xc6/0x130 net/netlink/genetlink.c:482
- netlink_dump+0xa84/0x1ab0 net/netlink/af_netlink.c:2253
- __netlink_dump_start+0xa3a/0xb30 net/netlink/af_netlink.c:2361
- genl_family_rcv_msg net/netlink/genetlink.c:550 [inline]
- genl_rcv_msg+0xfc1/0x1a40 net/netlink/genetlink.c:627
- netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2486
- genl_rcv+0x63/0x80 net/netlink/genetlink.c:638
- netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
- netlink_unicast+0xf3e/0x1020 net/netlink/af_netlink.c:1337
- netlink_sendmsg+0x127e/0x12f0 net/netlink/af_netlink.c:1926
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg net/socket.c:661 [inline]
- ___sys_sendmsg+0xcc6/0x1200 net/socket.c:2260
- __sys_sendmsg net/socket.c:2298 [inline]
- __do_sys_sendmsg net/socket.c:2307 [inline]
- __se_sys_sendmsg+0x305/0x460 net/socket.c:2305
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2305
- do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
- entry_SYSCALL_64_after_hwframe+0x63/0xe7
-RIP: 0033:0x440209
+Use __bpf_constant_ntohl to generate proper value based on machine
+endianness.
 
-Fixes: b60620cf567b ("batman-adv: netlink: hardif query")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Fixes: 1d436885b23b ("selftests/bpf: Selftest for sys_bind post-hooks.")
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/netlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/test_sock.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
-index 0d9459b69bdb8..c32820963b8e7 100644
---- a/net/batman-adv/netlink.c
-+++ b/net/batman-adv/netlink.c
-@@ -118,7 +118,7 @@ batadv_netlink_get_ifindex(const struct nlmsghdr *nlh, int attrtype)
- {
- 	struct nlattr *attr = nlmsg_find_attr(nlh, GENL_HDRLEN, attrtype);
+diff --git a/tools/testing/selftests/bpf/test_sock.c b/tools/testing/selftests/bpf/test_sock.c
+index b8ebe2f580741..e9567122070a3 100644
+--- a/tools/testing/selftests/bpf/test_sock.c
++++ b/tools/testing/selftests/bpf/test_sock.c
+@@ -13,6 +13,7 @@
+ #include <bpf/bpf.h>
  
--	return attr ? nla_get_u32(attr) : 0;
-+	return (attr && nla_len(attr) == sizeof(u32)) ? nla_get_u32(attr) : 0;
- }
+ #include "cgroup_helpers.h"
++#include "bpf_endian.h"
+ #include "bpf_rlimit.h"
+ #include "bpf_util.h"
  
- /**
+@@ -231,7 +232,8 @@ static struct sock_test tests[] = {
+ 			/* if (ip == expected && port == expected) */
+ 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
+ 				    offsetof(struct bpf_sock, src_ip6[3])),
+-			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x01000000, 4),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
++				    __bpf_constant_ntohl(0x00000001), 4),
+ 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
+ 				    offsetof(struct bpf_sock, src_port)),
+ 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x2001, 2),
+@@ -260,7 +262,8 @@ static struct sock_test tests[] = {
+ 			/* if (ip == expected && port == expected) */
+ 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
+ 				    offsetof(struct bpf_sock, src_ip4)),
+-			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x0100007F, 4),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
++				    __bpf_constant_ntohl(0x7F000001), 4),
+ 			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
+ 				    offsetof(struct bpf_sock, src_port)),
+ 			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
 -- 
 2.20.1
 
