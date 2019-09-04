@@ -2,78 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A870A7CED
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F75FA7CEE
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 09:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728948AbfIDHkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 03:40:14 -0400
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:7988 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728209AbfIDHkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:40:14 -0400
-X-IronPort-AV: E=Sophos;i="5.64,465,1559491200"; 
-   d="scan'208";a="74815429"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 04 Sep 2019 15:40:06 +0800
-Received: from G08CNEXCHPEKD03.g08.fujitsu.local (unknown [10.167.33.85])
-        by cn.fujitsu.com (Postfix) with ESMTP id 2AF7B4CE14E6;
-        Wed,  4 Sep 2019 15:40:07 +0800 (CST)
-Received: from localhost.localdomain (10.167.226.33) by
- G08CNEXCHPEKD03.g08.fujitsu.local (10.167.33.89) with Microsoft SMTP Server
- (TLS) id 14.3.439.0; Wed, 4 Sep 2019 15:40:10 +0800
-From:   Su Yanjun <suyj.fnst@cn.fujitsu.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <suyj.fnst@cn.fujitsu.com>
-Subject: [PATCH net] ipv4: fix ifa_flags reuse problem in using ifconfig tool
-Date:   Wed, 4 Sep 2019 15:37:47 +0800
-Message-ID: <1567582667-56549-1-git-send-email-suyj.fnst@cn.fujitsu.com>
-X-Mailer: git-send-email 2.7.4
+        id S1729060AbfIDHkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 03:40:51 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:44049 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfIDHku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 03:40:50 -0400
+Received: by mail-wr1-f66.google.com with SMTP id 30so9105445wrk.11
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 00:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5b6TPM5eiQFK15d5tzfX/l4e96iBteUT3XLgPo6At4M=;
+        b=RR6HwOd2T0Te9CgD9h+Cg/EyogNJfyKCMP4gIxREW/AqqhfMDN8UcmCcs7Lqi7cHZb
+         Lhf2ZrtOsGNEzV02EJ6LR33Rn+MzLKsynTUF/Y8nkHPwun4AoFG/2mv4p1GTT6OykeJk
+         kKVyZruoz08ZV1NhDSLN4MqR0pOZIbeymzwnPKVlGU+KATmdru7gUirlmpRE0Ix5IXmi
+         Utl9mRN0jgaJAM/5FWxXmjEZKEr/rQsacsuxX+eD6SIFk17EMxZZsP4iEKswY6gvOHpB
+         kZxxyrS8u4d22WpblMCjkXT4DXG+sG740vE7JW4XLT/moDlLyzfnqSlV/t+RTSUG1QhF
+         yidA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5b6TPM5eiQFK15d5tzfX/l4e96iBteUT3XLgPo6At4M=;
+        b=qYtqBaErBVWCQQuOHrhtldI9Lp7wAGemBZxf1rYEkQ0EvU7T4lf6NvUAQ9xDoVMDhN
+         z/DeVA1VUt9IMkVGjJouGGxkR4eU/cYdn+UIwElw/i7rD7hkDT2YOgBu56G6zzphN6HV
+         x3cfQJgee4rl/EUYuLjq+f2Pdb9J6EqZv7jWoRmPujiE/3hxV/BO5+xonlhkcI0PpFC0
+         g+gtmeuUePgH6kgceP4sNVgfsZ94AWboLxP/7cSZS5ZJInIcAGPsRTuGpdipucA+h6nm
+         /qbwHjvHva3hdQoUtLPY5yrI3lZ4h7o087yFa23grcFaaiGS4/gy0HYNX9tt5El8i+Uf
+         TyZQ==
+X-Gm-Message-State: APjAAAW1AF7Gfi8RipOj7VizZsBT3HU8JFrelWZVsYdwe4Lgqj0bp2xG
+        XVCI5c7ztf17oQtdFix+eJXhMkAE9w0=
+X-Google-Smtp-Source: APXvYqysQ6z6G9rSZJ4NppyNNQ2HFdIpeMWDXKTvkxOamjTo3LNgroWxJt3xjDgkwsC2Lw7/nPIYSw==
+X-Received: by 2002:adf:fc8a:: with SMTP id g10mr36764693wrr.354.1567582848663;
+        Wed, 04 Sep 2019 00:40:48 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id a130sm4286160wmf.48.2019.09.04.00.40.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 00:40:48 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, mlxsw@mellanox.com
+Subject: [patch net-next] rocker: add missing init_net check in FIB notifier
+Date:   Wed,  4 Sep 2019 09:40:47 +0200
+Message-Id: <20190904074047.840-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.167.226.33]
-X-yoursite-MailScanner-ID: 2AF7B4CE14E6.A1108
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: suyj.fnst@cn.fujitsu.com
-X-Spam-Status: No
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When NetworkManager has already set ipv4 address then uses
-ifconfig set another ipv4 address. It will use previous ifa_flags
-that will cause device route not be inserted.
+From: Jiri Pirko <jiri@mellanox.com>
 
-As NetworkManager has already support IFA_F_NOPREFIXROUTE flag [1],
-but ifconfig will reuse the ifa_flags. It's weird especially
-some old scripts or program [2]  still  use ifconfig.
+Take only FIB events that are happening in init_net into account. No other
+namespaces are supported.
 
-[1] https://gitlab.freedesktop.org/NetworkManager/NetworkManager/
-commit/fec80e7473ad16979af75ed299d68103e7aa3fe9
-
-[2] LTP or TAHI
-
-Signed-off-by: Su Yanjun <suyj.fnst@cn.fujitsu.com>
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- net/ipv4/devinet.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/rocker/rocker_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index a4b5bd4..56ca339 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -1159,6 +1159,7 @@ int devinet_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr)
- 			inet_del_ifa(in_dev, ifap, 0);
- 			ifa->ifa_broadcast = 0;
- 			ifa->ifa_scope = 0;
-+			ifa->ifa_flags = 0;
- 		}
+diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
+index 2c5d3f5b84dd..786b158bd305 100644
+--- a/drivers/net/ethernet/rocker/rocker_main.c
++++ b/drivers/net/ethernet/rocker/rocker_main.c
+@@ -2189,6 +2189,9 @@ static int rocker_router_fib_event(struct notifier_block *nb,
+ 	struct rocker_fib_event_work *fib_work;
+ 	struct fib_notifier_info *info = ptr;
  
- 		ifa->ifa_address = ifa->ifa_local = sin->sin_addr.s_addr;
++	if (!net_eq(info->net, &init_net))
++		return NOTIFY_DONE;
++
+ 	if (info->family != AF_INET)
+ 		return NOTIFY_DONE;
+ 
 -- 
-2.7.4
-
-
+2.21.0
 
