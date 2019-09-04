@@ -2,87 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2C3A7B3D
-	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:10:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1393FA7B60
+	for <lists+netdev@lfdr.de>; Wed,  4 Sep 2019 08:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728610AbfIDGKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 02:10:06 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:53470 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725840AbfIDGKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 02:10:05 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id D482D6119D; Wed,  4 Sep 2019 06:10:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567577404;
-        bh=F5sXdp2HFRFRyPdk3dQOYFx1vtSHFJAa+zl8mZ6v0h4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=htTJrfdL5OwahU2sPxDzyDGV1iMmr/gZDBwkllEEJXHHe65vm2SuHAIOhfaqnstmy
-         6/FItbcyATdK+zkAcLN1tVr/mthZqDdocDAE+hOfNsE+9HueUbux0Jn+uQoMGo/krS
-         EffivWzjqWW1UhnSuqgL/RA4iyZ3NJc2+Xu65nTk=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2B36460C72;
-        Wed,  4 Sep 2019 06:10:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567577403;
-        bh=F5sXdp2HFRFRyPdk3dQOYFx1vtSHFJAa+zl8mZ6v0h4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=nJ/czposdCMZLkxI+okMPpLMVuHBf8ktvL36/tn0cjGJ8I1Vgam0SlnDZ8utv2HCZ
-         gqLDeXrI3rXsnih23LLPDT/xrcK9K54wpM5GR9zjwcPGnAZBj/hR9X/6kyZWaq22Z6
-         Sf/qV/A2YDPj1rJg0zwViE3VDq/wnjFXqwVQTI4Y=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2B36460C72
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728661AbfIDGPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 02:15:04 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33342 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726589AbfIDGPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 02:15:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 8055DACB4;
+        Wed,  4 Sep 2019 06:15:02 +0000 (UTC)
+Date:   Wed, 4 Sep 2019 08:15:01 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Qian Cai <cai@lca.pw>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190904061501.GB3838@dhcp22.suse.cz>
+References: <1567177025-11016-1-git-send-email-cai@lca.pw>
+ <6109dab4-4061-8fee-96ac-320adf94e130@gmail.com>
+ <1567178728.5576.32.camel@lca.pw>
+ <229ebc3b-1c7e-474f-36f9-0fa603b889fb@gmail.com>
+ <20190903132231.GC18939@dhcp22.suse.cz>
+ <1567525342.5576.60.camel@lca.pw>
+ <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH -next] carl9170: remove set but not used variable 'udev'
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190702141207.47552-1-yuehaibing@huawei.com>
-References: <20190702141207.47552-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <chunkeey@googlemail.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-        <davem@davemloft.net>, YueHaibing <yuehaibing@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190904061004.D482D6119D@smtp.codeaurora.org>
-Date:   Wed,  4 Sep 2019 06:10:04 +0000 (UTC)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1567546948.5576.68.camel@lca.pw>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+Cc printk maintainers
 
-> Fixes gcc '-Wunused-but-set-variable' warning:
+On Tue 03-09-19 17:42:28, Qian Cai wrote:
+> > > I suppose what happens is those skb_build() allocations are from softirq,
+> > > and
+> > > once one of them failed, it calls printk() which generates more interrupts.
+> > > Hence, the infinite loop.
+> > 
+> > Please elaborate more.
+> > 
 > 
-> drivers/net/wireless/ath/carl9170/usb.c: In function carl9170_usb_disconnect:
-> drivers/net/wireless/ath/carl9170/usb.c:1110:21:
->  warning: variable udev set but not used [-Wunused-but-set-variable]
+> If you look at the original report, the failed allocation dump_stack() is,
 > 
-> It is not use since commit feb09b293327 ("carl9170:
-> fix misuse of device driver API")
+>  <IRQ>
+>  warn_alloc.cold.43+0x8a/0x148
+>  __alloc_pages_nodemask+0x1a5c/0x1bb0
+>  alloc_pages_current+0x9c/0x110
+>  allocate_slab+0x34a/0x11f0
+>  new_slab+0x46/0x70
+>  ___slab_alloc+0x604/0x950
+>  __slab_alloc+0x12/0x20
+>  kmem_cache_alloc+0x32a/0x400
+>  __build_skb+0x23/0x60
+>  build_skb+0x1a/0xb0
+>  igb_clean_rx_irq+0xafc/0x1010 [igb]
+>  igb_poll+0x4bb/0xe30 [igb]
+>  net_rx_action+0x244/0x7a0
+>  __do_softirq+0x1a0/0x60a
+>  irq_exit+0xb5/0xd0
+>  do_IRQ+0x81/0x170
+>  common_interrupt+0xf/0xf
+>  </IRQ>
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-
-Patch applied to ath-next branch of ath.git, thanks.
-
-68092f9cf932 carl9170: remove set but not used variable 'udev'
-
+> Since it has no __GFP_NOWARN to begin with, it will call,
+> 
+> printk
+>   vprintk_default
+>     vprintk_emit
+>       wake_up_klogd
+>         irq_work_queue
+>           __irq_work_queue_local
+>             arch_irq_work_raise
+>               apic->send_IPI_self(IRQ_WORK_VECTOR)
+>                 smp_irq_work_interrupt
+>                   exiting_irq
+>                     irq_exit
+> 
+> and end up processing pending net_rx_action softirqs again which are plenty due
+> to connected via ssh etc.
 -- 
-https://patchwork.kernel.org/patch/11027909/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Michal Hocko
+SUSE Labs
