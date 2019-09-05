@@ -2,152 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28962AA7E0
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 18:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA07FAA7E2
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 18:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390498AbfIEQDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 12:03:18 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:39707 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389591AbfIEQDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 12:03:17 -0400
-Received: by mail-qk1-f195.google.com with SMTP id 4so2618975qki.6
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 09:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ARdJcCTl1yvQzK9KFLXbOHVAx1PUXY0NiCi5/Ki6zRU=;
-        b=srJv115Is3P1U681GfWFzKE7i0Oyph2BEelIw9RQDw4Dln8DnSnc88Tiza/8Et1j36
-         3OEPDoDLDWMDlfCdb9bby1HL0sCkqqlMEzLjdLZh8tpE4MRAyc99rr6a/hlqrGjxx2m/
-         KaXYbChyJ7NwsgcfkNrN3Qr78Nqmzy3gFHjtA/dT2vDsmG502OtHEQGe9og31RxU+rJI
-         tS2S5wrJxZz/0XgpVwuQsY+3fY3ghD8rqtVwNRBRhNdj8C68YXgGsHZ8G7KJlj71db1s
-         oKW1//ih086eB7lxRtuLID5QBMTp+6gknvrXt5Gk+261Ch7f+flyF9712noDYKC6CGOJ
-         B6fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ARdJcCTl1yvQzK9KFLXbOHVAx1PUXY0NiCi5/Ki6zRU=;
-        b=aVfaEHF9x7kVmDK4f/xZm7k6kf0a+8SLset1h72S9nEDqzmnbp5/CoDpNI/id73gv9
-         DHVjR+ViClachP9utWu/gLdMT3kG0/1A796sGLzqxoEl4nju9uyqVSGz2om7HqvG5pKC
-         LohEoMQ/d7AiDEF0i6fTT/uJH22Xk2kM372gWM8A5k2iyVpPpk9phtcwiuVeIRcDmHYC
-         yYODrTLUind7JEJKI/0/nstd8qJhLPXrldKY90kMRQam8fT9myy2DL05IKsDY/ptBGwa
-         IW3MuBJShThKsU5snHGFV34aJj8b3msLipKg+sB1aSF2suvLX8ASyfnV+0TEWkAbBJ77
-         I1YA==
-X-Gm-Message-State: APjAAAU6i+Gu2uBG+Cc5Y4If4gmVS5+Febk2vpA+UA8oxCynf9v82Ojv
-        ToGew0xH+HkLzMUCbIwc4yIBjA==
-X-Google-Smtp-Source: APXvYqwz5Ih1cBni0LNoxZQih9BYTQsib4BYdkphk3cPMd+iJT2Lx0QIEW7e93FPRyn81x6iF6WcRA==
-X-Received: by 2002:ae9:e50f:: with SMTP id w15mr3683737qkf.129.1567699396301;
-        Thu, 05 Sep 2019 09:03:16 -0700 (PDT)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id p126sm1346062qkc.84.2019.09.05.09.03.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Sep 2019 09:03:15 -0700 (PDT)
-Message-ID: <1567699393.5576.96.camel@lca.pw>
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-From:   Qian Cai <cai@lca.pw>
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 05 Sep 2019 12:03:13 -0400
-In-Reply-To: <20190905113208.GA521@jagdpanzerIV>
-References: <20190903185305.GA14028@dhcp22.suse.cz>
-         <1567546948.5576.68.camel@lca.pw> <20190904061501.GB3838@dhcp22.suse.cz>
-         <20190904064144.GA5487@jagdpanzerIV> <20190904065455.GE3838@dhcp22.suse.cz>
-         <20190904071911.GB11968@jagdpanzerIV> <20190904074312.GA25744@jagdpanzerIV>
-         <1567599263.5576.72.camel@lca.pw>
-         <20190904144850.GA8296@tigerII.localdomain>
-         <1567629737.5576.87.camel@lca.pw> <20190905113208.GA521@jagdpanzerIV>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2390731AbfIEQEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 12:04:08 -0400
+Received: from correo.us.es ([193.147.175.20]:53014 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731857AbfIEQEH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 12:04:07 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D2CB51228C5
+        for <netdev@vger.kernel.org>; Thu,  5 Sep 2019 18:04:03 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C3EF9B8001
+        for <netdev@vger.kernel.org>; Thu,  5 Sep 2019 18:04:03 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B8B44A7D59; Thu,  5 Sep 2019 18:04:03 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id AD266B7FF2;
+        Thu,  5 Sep 2019 18:04:01 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 05 Sep 2019 18:04:01 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 81EC742EE38E;
+        Thu,  5 Sep 2019 18:04:01 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/8] Netfilter updates for net-next
+Date:   Thu,  5 Sep 2019 18:03:52 +0200
+Message-Id: <20190905160400.25399-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-05 at 20:32 +0900, Sergey Senozhatsky wrote:
-> On (09/04/19 16:42), Qian Cai wrote:
-> > > Let me think more.
-> > 
-> > To summary, those look to me are all good long-term improvement that would
-> > reduce the likelihood of this kind of livelock in general especially for
-> > other
-> > unknown allocations that happen while processing softirqs, but it is still
-> > up to
-> > the air if it fixes it 100% in all situations as printk() is going to take
-> > more
-> > time
-> 
-> Well. So. I guess that we don't need irq_work most of the time.
-> 
-> We need to queue irq_work for "safe" wake_up_interruptible(), when we
-> know that we can deadlock in scheduler. IOW, only when we are invoked
-> from the scheduler. Scheduler has printk_deferred(), which tells printk()
-> that it cannot do wake_up_interruptible(). Otherwise we can just use
-> normal wake_up_process() and don't need that irq_work->wake_up_interruptible()
-> indirection. The parts of the scheduler, which by mistake call plain printk()
-> from under pi_lock or rq_lock have chances to deadlock anyway and should
-> be switched to printk_deferred().
-> 
-> I think we can queue significantly much less irq_work-s from printk().
-> 
-> Petr, Steven, what do you think?
-> 
-> Something like this. Call wake_up_interruptible(), switch to
-> wake_up_klogd() only when called from sched code.
-> 
-> ---
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index cd51aa7d08a9..89cb47882254 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
->  	pending_output = (curr_log_seq != log_next_seq);
->  	logbuf_unlock_irqrestore(flags);
->  
-> +	if (!pending_output)
-> +		return printed_len;
-> +
->  	/* If called from the scheduler, we can not call up(). */
-> -	if (!in_sched && pending_output) {
-> +	if (!in_sched) {
->  		/*
->  		 * Disable preemption to avoid being preempted while holding
->  		 * console_sem which would prevent anyone from printing to
-> @@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
->  		if (console_trylock_spinning())
->  			console_unlock();
->  		preempt_enable();
-> -	}
->  
-> -	if (pending_output)
-> +		wake_up_interruptible(&log_wait);
-> +	} else {
->  		wake_up_klogd();
-> +	}
->  	return printed_len;
->  }
->  EXPORT_SYMBOL(vprintk_emit);
-> ---
-> 
-> > and could deal with console hardware that involve irq_exit() anyway.
-> 
-> printk->console_driver->write() does not involve irq.
+Hi,
 
-Hmm, from the article,
+The following patchset contains Netfilter updates for net-next:
 
-https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter
+1) Add nft_reg_store64() and nft_reg_load64() helpers, from Ander Juaristi.
 
-"Since transmission of a single or multiple characters may take a long time
-relative to CPU speeds, a UART maintains a flag showing busy status so that the
-host system knows if there is at least one character in the transmit buffer or
-shift register; "ready for next character(s)" may also be signaled with an
-interrupt."
+2) Time matching support, also from Ander Juaristi.
+
+3) VLAN support for nfnetlink_log, from Michael Braun.
+
+4) Support for set element deletions from the packet path, also from Ander.
+
+5) Remove __read_mostly from conntrack spinlock, from Li RongQing.
+
+6) Support for updating stateful objects, this also includes the initial
+   client for this infrastructure: the quota extension. A follow up fix
+   for the control plane also comes in this batch. Patches from
+   Fernando Fernandez Mancera.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 0846e1616f0f3365cea732e82e2383932fe644e5:
+
+  cirrus: cs89x0: remove set but not used variable 'lp' (2019-08-25 19:48:59 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to aa4095a156b56b00ca202d482b40d191ef5c54e8:
+
+  netfilter: nf_tables: fix possible null-pointer dereference in object update (2019-09-05 13:40:27 +0200)
+
+----------------------------------------------------------------
+Ander Juaristi (3):
+      netfilter: nf_tables: Introduce new 64-bit helper register functions
+      netfilter: nft_meta: support for time matching
+      netfilter: nft_dynset: support for element deletion
+
+Fernando Fernandez Mancera (3):
+      netfilter: nf_tables: Introduce stateful object update operation
+      netfilter: nft_quota: add quota object update support
+      netfilter: nf_tables: fix possible null-pointer dereference in object update
+
+Li RongQing (1):
+      netfilter: not mark a spinlock as __read_mostly
+
+Michael Braun (1):
+      netfilter: nfnetlink_log: add support for VLAN information
+
+ include/net/netfilter/nf_tables.h            | 44 ++++++++++++---
+ include/uapi/linux/netfilter/nf_tables.h     |  7 +++
+ include/uapi/linux/netfilter/nfnetlink_log.h | 11 ++++
+ net/netfilter/nf_conntrack_core.c            |  3 +-
+ net/netfilter/nf_conntrack_labels.c          |  2 +-
+ net/netfilter/nf_tables_api.c                | 81 +++++++++++++++++++++++++---
+ net/netfilter/nfnetlink_log.c                | 57 ++++++++++++++++++++
+ net/netfilter/nft_byteorder.c                |  9 ++--
+ net/netfilter/nft_dynset.c                   |  6 +++
+ net/netfilter/nft_meta.c                     | 46 ++++++++++++++++
+ net/netfilter/nft_quota.c                    | 29 +++++++---
+ net/netfilter/nft_set_hash.c                 | 19 +++++++
+ 12 files changed, 285 insertions(+), 29 deletions(-)
