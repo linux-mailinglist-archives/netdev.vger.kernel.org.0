@@ -2,135 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F439A9A65
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 08:14:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55793A9A9F
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 08:25:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730539AbfIEGOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 02:14:52 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34851 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbfIEGOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 02:14:52 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n4so809399pgv.2;
-        Wed, 04 Sep 2019 23:14:52 -0700 (PDT)
+        id S1731519AbfIEGZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 02:25:20 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:3644 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731109AbfIEGZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 02:25:19 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x856OBTG000730;
+        Thu, 5 Sep 2019 02:25:14 -0400
+Received: from nam03-by2-obe.outbound.protection.outlook.com (mail-by2nam03lp2051.outbound.protection.outlook.com [104.47.42.51])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2uqjrah6n2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Sep 2019 02:25:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VpcRoXjJktZw4JvU7GI5vAaHB2TzOtS9h9hzDc5j6a/eRzAXkLUCRAYt/Jk+ILxjzxaZp51D4rasFnvfn+kjFsDZ8ZYdGPah8QTyQ083it5FpBpr1l8e7Rn/75vL3ZYFduYYXtxNMvzCpAcI3S+dysvlIUxqoM6nc5syG7QOYx6Sn/I5FQBQnuA/vyeYJ773xxMMA9mZQqg8N1PM7KX6KcrIZyapj/xqP7kmInd6gWDQpQVg0J+Uu/fqHoiguJYkaYFn21Fd8rnDvqtJcRPxUUvrpkK6l4sS3Pq9ZyzX6XCiB4eH+UcIunPd4S7AyCsCXw7Fa82jUPRglzHlXJfdLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dqKhGqqafYfESryIr+oRIuk3wUzuRMfm+WeXiXJ8Txs=;
+ b=T9zRqPoRDrTurCREOS6LYIHSmXtiBc93TbaN8liizDg6I5l6L7POP+LAnZ1Dyi/6gXPIk4+PSl6pYFN1f5XcWnq9noUanNjY8GU1PV6lnntjIdnKD9iwBxhx603VED8xhYcO2+hRm3C8pAq392hQ93Wz4fCVJz1r6Bg+IIQg4v+YvAWS1hhK4QwVSmtxF/UhhXDx5Co5NfV9KMP//iMzjwnURP5/DX9I4vO2Ze0EYp4+Qo/2f9ErPqLBoAnREvB0eDiMaz5TYu60aroE6v8cYq99eILCyj6Xvf+SOCk0wSO4khFQXz8s8iN116yJMPhsVctvA2ow2Sm0jWCmts1jWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition:user-agent;
-        bh=9MyJls/3pTeaGKyKyHjzn9JlAJCd6lHjYWAtz/m6Flw=;
-        b=jnMYGG4ip7r2EjqeJXdUO1MFOeUjXFq8ce0sSbZR2YKHVQHKmeYPZUVqoddpwDKf0P
-         QgIIh84afLxq0A6z9jLCkf9BVenlrigWoE8hlnuVWiODkGjY1xcq2FioC6PEayai3+iF
-         btIK5lWVyc440yVNOVQuflM7xTWG29/Et/rCbn2oJv4cQjbM3BDMUSbcIuSj5zOstSYs
-         +JaPQMCdjE3RcNDChmPOx+f66sA9OrkezVMC4RSltDxmwEi4j0rkyLyeGgsJQhiHLbyZ
-         rYBAiSKBFBkPivu2ofSThh77zNr3tk1LasbNPzkBdCnO4C+ziGYp2X223G88Q5+VQs+v
-         9nFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:mime-version:content-disposition:user-agent;
-        bh=9MyJls/3pTeaGKyKyHjzn9JlAJCd6lHjYWAtz/m6Flw=;
-        b=mu/9cetQuUw3vdLAC3v3JrEtg6UtIZbs4eR3hnFVzHtBosLaakmvDGE10tVRX2AxAt
-         aM1T2nxcORg8f5WhLQtLluK5TEg58mNH0sARkznnj28h4Y2NCoxgjJxXNcA1/+vtEXFX
-         Bp+3hZUqFwKYGFxckdwmQzfcpjzCTmUgJni+6mp9qj70ha/2EeFLhuKD5cZkS52A4qKZ
-         Qkbx/X2tFLmFAnqk/kyEr5k8MfMtMbkscruGLA9XcXfi0I5Ef0sU+bcoJ+N4rAMPhtQT
-         efxvYANVNtiE+koJYrc/lpAzJm1xdQj9mpwtZKPdmC014JMPtzPUpy33JSBIfyb838MS
-         ZlkQ==
-X-Gm-Message-State: APjAAAVTvnCCEIyBFgh/zBMEHK+fl6NdoOcaXUrztlpEzv6ZK2Qwlm/d
-        j3rzb5U2Bw72Zc5IwBo9kJeDC83C4MmKXg==
-X-Google-Smtp-Source: APXvYqybNEzEiOFp47YxU9xk8vlpckBv4BbmnghyyTs2egxlOHXMeFb9cFmBA3idHk/m1G/e/UQK9g==
-X-Received: by 2002:a63:5402:: with SMTP id i2mr1648429pgb.414.1567664091625;
-        Wed, 04 Sep 2019 23:14:51 -0700 (PDT)
-Received: from localhost (fmdmzpr04-ext.fm.intel.com. [192.55.54.39])
-        by smtp.gmail.com with ESMTPSA id b24sm1187360pfi.75.2019.09.04.23.14.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Sep 2019 23:14:50 -0700 (PDT)
-Date:   Thu, 5 Sep 2019 09:14:44 +0300
-From:   Johan Hedberg <johan.hedberg@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull request: bluetooth 2019-09-05
-Message-ID: <20190905061444.GA47480@blobacz-mobl.ger.corp.intel.com>
-Mail-Followup-To: davem@davemloft.net, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dqKhGqqafYfESryIr+oRIuk3wUzuRMfm+WeXiXJ8Txs=;
+ b=geC6ARY6pK7SvM6GNDxmzf5EiSjZajO++w3zdz9gIXB7OJ3nQXJ0CcmQps+WXdx6TYodLwj9eT1w0RwRDTbvrsdajNgbR1RuuvXFslri7MaMwGhSHBZ2d2ynDk6CbKFn58qE6yogVGyMma4cJ/fVZCK34qx7C7JLC2u3DbWQLMc=
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
+ CH2PR03MB5157.namprd03.prod.outlook.com (20.180.15.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.19; Thu, 5 Sep 2019 06:25:13 +0000
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::ad16:8446:873b:4042]) by CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::ad16:8446:873b:4042%3]) with mapi id 15.20.2220.022; Thu, 5 Sep 2019
+ 06:25:13 +0000
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2 1/2] ethtool: implement Energy Detect Powerdown support
+ via phy-tunable
+Thread-Topic: [PATCH v2 1/2] ethtool: implement Energy Detect Powerdown
+ support via phy-tunable
+Thread-Index: AQHVYyQB6qcesgWQmU23B3bQFKorp6cb7rGAgADipwA=
+Date:   Thu, 5 Sep 2019 06:25:13 +0000
+Message-ID: <361eb94a4da73d1fa21893e8e294639f0fc0bcd2.camel@analog.com>
+References: <20190904162322.17542-1-alexandru.ardelean@analog.com>
+         <20190904162322.17542-2-alexandru.ardelean@analog.com>
+         <20190904195357.GA21264@lunn.ch>
+In-Reply-To: <20190904195357.GA21264@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [137.71.226.54]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8a73a648-6ec9-4a30-dda1-08d731c9cf4a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:CH2PR03MB5157;
+x-ms-traffictypediagnostic: CH2PR03MB5157:
+x-microsoft-antispam-prvs: <CH2PR03MB515790C55E157D66726FAC54F9BB0@CH2PR03MB5157.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 015114592F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(136003)(376002)(39860400002)(346002)(199004)(189003)(71190400001)(25786009)(71200400001)(6436002)(1730700003)(4326008)(91956017)(66476007)(2501003)(478600001)(66556008)(64756008)(66446008)(66946007)(256004)(486006)(316002)(446003)(76116006)(14454004)(6512007)(36756003)(2906002)(26005)(99286004)(53936002)(186003)(476003)(2616005)(6116002)(2351001)(5660300002)(305945005)(6246003)(66066001)(86362001)(5640700003)(6486002)(76176011)(118296001)(229853002)(8936002)(8676002)(6916009)(6506007)(7736002)(81166006)(54906003)(11346002)(102836004)(3846002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5157;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: analog.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: eWJHKChnDZbWTARInB5h+3/dp67dSMKmNyc/yWRcNmsc/ErTOcmWsgiub2U0m3jlVPbz/VC8NT6SDpILE4KKLbzWTbavtSG/SUKdYHV3N5eKJuVw9ZLo9UJ6i4dyi2eA5zyDYEMryekhref3cT8Md3CQATxUS918O20BVdZWLItCIv3N+Bs8vYa/3o7cXFlyE0M3Fwm3H2n5aA+tlBbuTEQpapjfYoPeRgJbX9F2bXy6UR48x1zzqgJGp8Ul6rNNomB+CVmNodJgfX8YBsPT0adTjAPs3GIuKgQVcehYguc/V4br6DyAICMJ3YYajdHloz1MIdNzUhlhc/DBz4REKeixNHO8teRQJ4JqhdA1NEYcl8k6gGhVk5jN0/e1fQl3Ruo82pam+CLm2+D4DWrMWgzR0yan+Dgs+g9VwTMAipU=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1BA918C9BD23494ABC7477F27478EBE3@namprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="LQksG6bCIzRHxTLp"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a73a648-6ec9-4a30-dda1-08d731c9cf4a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 06:25:13.1521
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: c8hJPblyvDD5cHoasY4tRibc6N9Ou4Jrqo5nFu3BoTuX0VTmpOnKnTSsGE8Sw5PBXhtsR15n+o0u92d0y3bUpAnsgtjcd+CfGnpckBXXa6s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5157
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-05_02:2019-09-04,2019-09-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=949 spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015
+ lowpriorityscore=0 phishscore=0 adultscore=0 mlxscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1909050065
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---LQksG6bCIzRHxTLp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Dave,
-
-Here are a few more Bluetooth fixes for 5.3. I hope they can still make
-it. There's one USB ID addition for btusb, two reverts due to discovered
-regressions, and two other important fixes.
-
-Please let me know if there any issues pulling. Thanks.
-
-Johan
-
----
-The following changes since commit 8693265329560af4d1190aaa195ad767a05ceeab:
-
-  Merge tag 'mac80211-for-davem-2019-08-29' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211 (2019-08-29 16:44:15 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git for-upstream
-
-for you to fetch changes up to 68d19d7d995759b96169da5aac313363f92a9075:
-
-  Revert "Bluetooth: validate BLE connection interval updates" (2019-09-05 09:02:59 +0300)
-
-----------------------------------------------------------------
-Harish Bandi (1):
-      Bluetooth: hci_qca: disable irqs when spinlock is acquired
-
-Jian-Hong Pan (1):
-      Bluetooth: btrtl: Additional Realtek 8822CE Bluetooth devices
-
-Marcel Holtmann (1):
-      Revert "Bluetooth: validate BLE connection interval updates"
-
-Mario Limonciello (1):
-      Revert "Bluetooth: btusb: driver to enable the usb-wakeup feature"
-
-Navid Emamdoost (1):
-      Bluetooth: bpa10x: change return value
-
- drivers/bluetooth/bpa10x.c  |  2 +-
- drivers/bluetooth/btusb.c   |  8 +++-----
- drivers/bluetooth/hci_qca.c | 10 ++++++----
- net/bluetooth/hci_event.c   |  5 -----
- net/bluetooth/l2cap_core.c  |  9 +--------
- 5 files changed, 11 insertions(+), 23 deletions(-)
-
---LQksG6bCIzRHxTLp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEyxvsVXjY3jV7sQ0/JCP2+/mo1BIFAl1wp9IACgkQJCP2+/mo
-1BLznw/+LIFw58lLX/bOeG513L1ikqFrc10Udt+PuvPBEi1MDu8TOfRNdd0uKgWJ
-AsoVfoQT3nsxz4g86A6KEbsj3QAwdHXZTxd1YxA4d1H7GdVSy79rCBTUhsoz9Vs9
-EnNp9thWNlR2GUeQHoYsxHGBaglCJpowpxwXof6bKLS3bMfdCTkAv+yYNtRf83Cr
-ADqnTWTElAxKe7RY4NjKXPyzBULKY/s0y/4Iu9Xy1gRZBn8LqBt723K7cPYhteMH
-qgu6brILHvU4RrlE5xXkSi6Qh1GLqDwWRathqsnmAsqHQAFFD3YAO3DBL7nL/GNJ
-OLAw5Doysdfh8mHP+LL2ZFauNHsIp7OpO6AwwoBMPDsGdFVTk6AQ+65t9HVv06AG
-wHvjSuvC4TloD0M3ldhoFyB2aqT8j+abuSEML37LcT7n6hvmgCnBQiztPl8pMX41
-PMmHyCTU62HgVQvmz4nr9GE/5f/HUhCIDeqRYly6yLyqFTxlSf4vkfrV8CWTXEPV
-yElbF4rCvyPyRBi6uvPOT5bFaPg27galY77HZRnXfBKOpkDZzphddOjHosTSwECu
-YtM/66bf+lKUCTpVUeitEo5WA1ipm3zCDL6TqwEM6/qe6ThjPoEOD2rbrsMHV0XT
-GgC9mtTpFlS3XtS/d14shL/lum67qKfQDrAo2eifncqVGMf9ZD0=
-=BCWj
------END PGP SIGNATURE-----
-
---LQksG6bCIzRHxTLp--
+T24gV2VkLCAyMDE5LTA5LTA0IGF0IDIxOjUzICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+W0V4dGVybmFsXQ0KPiANCj4gT24gV2VkLCBTZXAgMDQsIDIwMTkgYXQgMDc6MjM6MjFQTSArMDMw
+MCwgQWxleGFuZHJ1IEFyZGVsZWFuIHdyb3RlOg0KPiANCj4gSGkgQWxleGFuZHJ1DQo+IA0KPiBT
+b21ld2hlcmUgd2UgbmVlZCBhIGNvbW1lbnQgc3RhdGluZyB3aGF0IEVEUEQgbWVhbnMuIEhlcmUg
+d291bGQgYmUgYQ0KPiBnb29kIHBsYWNlLg0KDQphY2sNCg0KPiANCj4gPiArI2RlZmluZSBFVEhU
+T09MX1BIWV9FRFBEX0RGTFRfVFhfSU5URVJWQUwJMHg3ZmZmDQo+ID4gKyNkZWZpbmUgRVRIVE9P
+TF9QSFlfRURQRF9OT19UWAkJCTB4ODAwMA0KPiA+ICsjZGVmaW5lIEVUSFRPT0xfUEhZX0VEUERf
+RElTQUJMRQkJMA0KPiANCj4gSSB0aGluayB5b3UgYXJlIHBhc3NpbmcgYSB1MTYuIFNvIHdoeSBu
+b3QgMHhmZmZlIGFuZCAweGZmZmY/ICBXZSBhbHNvDQo+IG5lZWQgdG8gbWFrZSBpdCBjbGVhciB3
+aGF0IHRoZSB1bml0cyBhcmUgZm9yIGludGVydmFsLiBUaGlzIGZpbGUNCg0KSSBpbml0aWFsbHkg
+dGhvdWdodCBhYm91dCBrZWVwaW5nIHRoaXMgdTggYW5kIGdvaW5nIHdpdGggMHhmZiAmIDB4ZmUu
+DQpCdXQgMjU0IG9yIDI1MyBjb3VsZCBiZSB0b28gc21hbGwgdG8gc3BlY2lmeSB0aGUgdmFsdWUg
+b2YgYW4gaW50ZXJ2YWwuDQoNCkFsc28gKG1heWJlIGR1ZSB0aSBhbGwgdGhlIGNvZGluZy1wYXR0
+ZXJucyB0aGF0IEkgc2F3IG92ZXIgdGhlIGNvdXJzZSBvZiBzb21lIHRpbWUpLCBtYWtlIG1lIGZl
+ZWwgdGhhdCBJIHNob3VsZCBhZGQgYQ0KZmxhZyBzb21ld2hlcmUuDQoNCkJvdHRvbSBsaW5lIGlz
+OiAweGZmZmUgYW5kIDB4ZmZmZiBhbHNvIHdvcmsgZnJvbSBteSBzaWRlLCBpZiBpdCBpcyBhY2Nl
+cHRhYmxlIChieSB0aGUgY29tbXVuaXR5KS4NCg0KQW5vdGhlciBhcHByb2FjaCBJIGNvbnNpZGVy
+ZWQsIHdhcyB0byBtYXliZSBoYXZlIHRoaXMgRURQRCBqdXN0IGRvIGVuYWJsZSAmIGRpc2FibGUg
+KHdoaWNoIGlzIHN1ZmZpY2llbnQgZm9yIHRoZSBgYWRpbmANClBIWSAmIGBtaWNyZWxgIGFzIHdl
+bGwpLg0KVGhhdCB3b3VsZCBtZWFuIHRoYXQgaWYgd2Ugd291bGQgZXZlciB3YW50IHRvIGNvbmZp
+Z3VyZSB0aGUgVFggaW50ZXJ2YWwgKGluIHRoZSBmdXR1cmUpLCB3ZSB3b3VsZCBuZWVkIGFuIGV4
+dHJhIFBIWS0NCnR1bmFibGUgcGFyYW1ldGVyIGp1c3QgZm9yIHRoYXQ7IGJlY2F1c2UgY2hhbmdp
+bmcgdGhlIGVuYWJsZS9kaXNhYmxlIGJlaGF2aW9yIHdvdWxkIGJlIGRhbmdlcm91cy4NCkFuZCBh
+bHNvLCBkZWZlcnJpbmcgdGhlIFRYLWludGVydmFsIGNvbmZpZ3VyYXRpb24sIGRvZXMgbm90IHNv
+dW5kIGxpa2UgZ29vZCBkZXNpZ24vcGF0dGVybiwgc2luY2UgaXQgY2FuIGFsbG93IGZvciB0b25z
+DQpvZiBQSFktdHVuYWJsZSBwYXJhbWV0ZXJzIGZvciBldmVyeSBsaXR0bGUga25vYi4NCg0KPiBz
+cGVjaWZpZXMgdGhlIGNvbnRyYWN0IGJldHdlZW4gdGhlIGtlcm5lbCBhbmQgdXNlciBzcGFjZS4g
+U28gd2UgbmVlZA0KPiB0byBjbGVhcmx5IGRlZmluZSB3aGF0IHdlIG1lYW4gaGVyZS4gTG90cyBv
+ZiBjb21tZW50cyBhcmUgYmV0dGVyIHRoYW4NCj4gbm8gY29tbWVudHMuDQoNCldpbGwgY29tZSBi
+YWNrIHdpdGggbW9yZSBjb21tZW50cy4NCg0KPiANCj4gICAgQW5kcmV3DQo=
