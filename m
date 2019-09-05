@@ -2,112 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6263DA9FFA
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 12:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC53FAA00E
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 12:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732175AbfIEKjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 06:39:54 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35686 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbfIEKjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 06:39:54 -0400
-Received: by mail-ed1-f66.google.com with SMTP id t50so2218094edd.2
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 03:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sGxOAYT15qI5OMXfo8+5qUnea8NFB7aSKsTydG8dS/c=;
-        b=De0QW/7DDtEJmC1xmooNTWlxg5VC3R7Wd9q25zlvUZOlP8cFpJD/UgEF5tGAa5toUy
-         zgY1WkZZBBtsccHfdXunz8hYxSBv9ZVf0Wh35rH7XpfQF5qyjLCQQiHmqof+NWaShGvT
-         86K/S5dAw9/980szeHaZ11A4GIaBO/XUMmkrflU1Yk8Oa4QzjpPhak2H363Xg2Ql20yd
-         l6vYcb9FKneBMzF8qc2/fmjWhtrmKR+ER22J4lMs9gHHueW8iEmUpoGjFSQPPA0nsOI5
-         aIUGZuKccY3mIBoz+5ejhlMN3PhSYfo47zGc6s4vuaA1cy0hcC7rMAbuFtrXHwBYEBmu
-         S3Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sGxOAYT15qI5OMXfo8+5qUnea8NFB7aSKsTydG8dS/c=;
-        b=Gr+yRC8CsaXgAQltFbgDWbTEJO4Wx5mZaVFO4jz4V4d22bg8Ofl4FpwDBdmc6kPGtJ
-         rsNpBJw0GedlBThSJtmvT4o4gvLyhQ7A0OkF7XEKB7o0P7l3V++bADmpHjRB3qxcZhS9
-         GsTJuvJx6gJuGj6Tq2jpl9OE/hNFyQiChy+y0V9ICJpNX5GQ+kQ7G+6vn5TtUv3RqV2P
-         +Hds8Ov2jZZqzX3JH9DPiI3w/7OAXP0r5rb0JVDOkcqzGrJQ6vg85FFybNbYkSpo//pm
-         wp3HtBoR9AYt5cZYutISOPaWTFlvYPnQAjiO33fMJN/VQHtbCv9Qrm/G+xcvKdnUMIq4
-         xp/Q==
-X-Gm-Message-State: APjAAAUBQjfx4i+hY/h4uL1WNuv32RDy6k1WjFcN/sdj4kGmIwHbVOOm
-        u7NY8KiIYxDF9uo1s9RI5Dx5PjZK0Y8fSs92bB8=
-X-Google-Smtp-Source: APXvYqzSANp4b3QIbBM93nOry82YCKPvqABrPk6E1UlJ0QARXG/6X9MEUhkkSeJV596lIsmlQT0YEXRokhu+cWd0T7g=
-X-Received: by 2002:a50:d552:: with SMTP id f18mr3009315edj.36.1567679992768;
- Thu, 05 Sep 2019 03:39:52 -0700 (PDT)
+        id S2388011AbfIEKkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 06:40:47 -0400
+Received: from mga05.intel.com ([192.55.52.43]:2752 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732763AbfIEKkr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 06:40:47 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Sep 2019 03:40:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,470,1559545200"; 
+   d="asc'?scan'208";a="212736836"
+Received: from pipin.fi.intel.com (HELO pipin) ([10.237.72.175])
+  by fmsmga002.fm.intel.com with ESMTP; 05 Sep 2019 03:40:45 -0700
+From:   Felipe Balbi <felipe.balbi@linux.intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
+In-Reply-To: <20190831150149.GB1692@localhost>
+References: <20190829095825.2108-1-felipe.balbi@linux.intel.com> <20190829095825.2108-2-felipe.balbi@linux.intel.com> <20190829172509.GB2166@localhost> <20190829172848.GC2166@localhost> <87r253ulpn.fsf@gmail.com> <20190831150149.GB1692@localhost>
+Date:   Thu, 05 Sep 2019 13:40:41 +0300
+Message-ID: <87ef0vowk6.fsf@gmail.com>
 MIME-Version: 1.0
-References: <CA+h21hruqt6nGG5ksDSwrGH_w5GtGF4fjAMCWJne7QJrjusERQ@mail.gmail.com>
- <20190904135223.31754-1-asolokha@kb.kras.ru>
-In-Reply-To: <20190904135223.31754-1-asolokha@kb.kras.ru>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 5 Sep 2019 13:39:41 +0300
-Message-ID: <CA+h21hpbtsJtUSVUqRO1mpi+Y-KxEi-BfesbDF80bgH-QGAAnQ@mail.gmail.com>
-Subject: Re: [PATCH 0/4] gianfar: some assorted cleanup
-To:     Arseny Solokha <asolokha@kb.kras.ru>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Sep 2019 at 16:53, Arseny Solokha <asolokha@kb.kras.ru> wrote:
->
-> This is a cleanup series for the gianfar Ethernet driver, following up a
-> discussion in [1]. It is intended to precede a conversion of gianfar from
-> PHYLIB to PHYLINK API, which will be submitted later in its version 2.
-> However, it won't make a conversion cleaner, except for the last patch in
-> this series. Obviously this series is not intended for -stable.
->
-> The first patch looks super controversial to me, as it moves lots of code
-> around for the sole purpose of getting rid of static forward declarations
-> in two translation units. On the other hand, this change is purely
-> mechanical and cannot do any harm other than cluttering git blame output.
-> I can prepare an alternative patch for only swapping adjacent functions
-> around, if necessary.
->
-> The second patch is a trivial follow-up to the first one, making functions
-> that are only called from the same translation unit static.
->
-> The third patch removes some now unused macro and structure definitions
-> from gianfar.h, slipped away from various cleanups in the past.
->
-> The fourth patch, also suggested in [1], makes the driver consistently use
-> PHY connection type value obtained from a Device Tree node, instead of
-> ignoring it and using the one auto-detected by MAC, when connecting to PHY.
-> Obviously a value has to be specified correctly in DT source, or omitted
-> altogether, in which case the driver will fall back to auto-detection. When
-> querying a DT node, the driver will also take both applicable properties
-> into account by making a proper API call instead of open-coding the lookup
-> half-way correctly.
->
-> [1] https://lore.kernel.org/netdev/CA+h21hruqt6nGG5ksDSwrGH_w5GtGF4fjAMCWJne7QJrjusERQ@mail.gmail.com/
->
-> Arseny Solokha (4):
->   gianfar: remove forward declarations
->   gianfar: make five functions static
->   gianfar: cleanup gianfar.h
->   gianfar: use DT more consistently when selecting PHY connection type
->
->  drivers/net/ethernet/freescale/gianfar.c      | 4647 ++++++++---------
->  drivers/net/ethernet/freescale/gianfar.h      |   45 -
->  .../net/ethernet/freescale/gianfar_ethtool.c  |   13 -
->  3 files changed, 2303 insertions(+), 2402 deletions(-)
->
-> --
-> 2.23.0
->
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the cleanup!
 
--Vladimir
+Hi,
+
+Richard Cochran <richardcochran@gmail.com> writes:
+> On Fri, Aug 30, 2019 at 11:00:20AM +0300, Felipe Balbi wrote:
+>> seems like this should be defined together with the other flags? If
+>> that's the case, it seems like we would EXTTS and PEROUT masks.
+>
+> Yes, let's make the meanings of the bit fields clear...
+>
+> --- ptp_clock.h ---
+>
+> /*
+>  * Bits of the ptp_extts_request.flags field:
+>  */
+> #define PTP_ENABLE_FEATURE	BIT(0)
+> #define PTP_RISING_EDGE		BIT(1)
+> #define PTP_FALLING_EDGE	BIT(2)
+> #define PTP_EXTTS_VALID_FLAGS	(PTP_ENABLE_FEATURE | \
+> 				 PTP_RISING_EDGE | \
+> 				 PTP_FALLING_EDGE)
+>
+> /*
+>  * Bits of the ptp_perout_request.flags field:
+>  */
+> #define PTP_PEROUT_ONE_SHOT	BIT(0)
+> #define PTP_PEROUT_VALID_FLAGS	(PTP_PEROUT_ONE_SHOT)
+>
+> struct ptp_extts_request {
+> 	unsigned int flags;  /* Bit field of PTP_EXTTS_VALID_FLAGS. */
+> };
+>
+> struct ptp_perout_request {
+> 	unsigned int flags;  /* Bit field of PTP_PEROUT_VALID_FLAGS. */
+> };
+
+Below you can find the combined patch. Locally, I have it split into two
+patches, but this lets us look at the full picture. I'll send it as v3
+series of two patches on Monday if you like the result. Let me know if
+you prefer that I convert the flags to BIT() macro calls instead.
+
+8<------------------------------------------------------------------------
+
+From=20633a8214c86a43dcf880d7aed33758b576933369 Mon Sep 17 00:00:00 2001
+From: Felipe Balbi <felipe.balbi@linux.intel.com>
+Date: Wed, 14 Aug 2019 10:31:08 +0300
+Subject: [PATCH 1/5] PTP: introduce new versions of IOCTLs
+
+The current version of the IOCTL have a small problem which prevents us
+from extending the API by making use of reserved fields. In these new
+IOCTLs, we are now making sure that flags and rsv fields are zero which
+will allow us to extend the API in the future.
+
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+=2D--
+ drivers/ptp/ptp_chardev.c      | 63 ++++++++++++++++++++++++++++++++++
+ include/uapi/linux/ptp_clock.h | 26 ++++++++++++--
+ 2 files changed, 87 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 18ffe449efdf..9c18476d8d10 100644
+=2D-- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -126,7 +126,9 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd=
+, unsigned long arg)
+ 	switch (cmd) {
+=20
+ 	case PTP_CLOCK_GETCAPS:
++	case PTP_CLOCK_GETCAPS2:
+ 		memset(&caps, 0, sizeof(caps));
++
+ 		caps.max_adj =3D ptp->info->max_adj;
+ 		caps.n_alarm =3D ptp->info->n_alarm;
+ 		caps.n_ext_ts =3D ptp->info->n_ext_ts;
+@@ -139,11 +141,24 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int c=
+md, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_EXTTS_REQUEST:
++	case PTP_EXTTS_REQUEST2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (copy_from_user(&req.extts, (void __user *)arg,
+ 				   sizeof(req.extts))) {
+ 			err =3D -EFAULT;
+ 			break;
+ 		}
++		if (((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
++			req.extts.rsv[0] || req.extts.rsv[1]) &&
++			cmd =3D=3D PTP_EXTTS_REQUEST2) {
++			err =3D -EINVAL;
++			break;
++		} else if (cmd =3D=3D PTP_EXTTS_REQUEST) {
++			req.extts.flags &=3D ~PTP_EXTTS_VALID_FLAGS;
++			req.extts.rsv[0] =3D 0;
++			req.extts.rsv[1] =3D 0;
++		}
+ 		if (req.extts.index >=3D ops->n_ext_ts) {
+ 			err =3D -EINVAL;
+ 			break;
+@@ -154,11 +169,27 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int c=
+md, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_PEROUT_REQUEST:
++	case PTP_PEROUT_REQUEST2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (copy_from_user(&req.perout, (void __user *)arg,
+ 				   sizeof(req.perout))) {
+ 			err =3D -EFAULT;
+ 			break;
+ 		}
++		if (((req.perout.flags & ~PTP_PEROUT_VALID_FLAGS) ||
++			req.perout.rsv[0] || req.perout.rsv[1] ||
++			req.perout.rsv[2] || req.perout.rsv[3]) &&
++			cmd =3D=3D PTP_PEROUT_REQUEST2) {
++			err =3D -EINVAL;
++			break;
++		} else if (cmd =3D=3D PTP_PEROUT_REQUEST) {
++			req.perout.flags &=3D ~PTP_PEROUT_VALID_FLAGS;
++			req.perout.rsv[0] =3D 0;
++			req.perout.rsv[1] =3D 0;
++			req.perout.rsv[2] =3D 0;
++			req.perout.rsv[3] =3D 0;
++		}
+ 		if (req.perout.index >=3D ops->n_per_out) {
+ 			err =3D -EINVAL;
+ 			break;
+@@ -169,6 +200,9 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd=
+, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_ENABLE_PPS:
++	case PTP_ENABLE_PPS2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (!capable(CAP_SYS_TIME))
+ 			return -EPERM;
+ 		req.type =3D PTP_CLK_REQ_PPS;
+@@ -177,6 +211,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd=
+, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_SYS_OFFSET_PRECISE:
++	case PTP_SYS_OFFSET_PRECISE2:
+ 		if (!ptp->info->getcrosststamp) {
+ 			err =3D -EOPNOTSUPP;
+ 			break;
+@@ -201,6 +236,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd=
+, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_SYS_OFFSET_EXTENDED:
++	case PTP_SYS_OFFSET_EXTENDED2:
+ 		if (!ptp->info->gettimex64) {
+ 			err =3D -EOPNOTSUPP;
+ 			break;
+@@ -232,6 +268,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd=
+, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_SYS_OFFSET:
++	case PTP_SYS_OFFSET2:
+ 		sysoff =3D memdup_user((void __user *)arg, sizeof(*sysoff));
+ 		if (IS_ERR(sysoff)) {
+ 			err =3D PTR_ERR(sysoff);
+@@ -266,10 +303,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int c=
+md, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_PIN_GETFUNC:
++	case PTP_PIN_GETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err =3D -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd =3D=3D PTP_PIN_GETFUNC2) {
++			err =3D -EINVAL;
++			break;
++		} else if (cmd =3D=3D PTP_PIN_GETFUNC) {
++			pd.rsv[0] =3D 0;
++			pd.rsv[1] =3D 0;
++			pd.rsv[2] =3D 0;
++			pd.rsv[3] =3D 0;
++			pd.rsv[4] =3D 0;
++		}
+ 		pin_index =3D pd.index;
+ 		if (pin_index >=3D ops->n_pins) {
+ 			err =3D -EINVAL;
+@@ -285,10 +335,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int c=
+md, unsigned long arg)
+ 		break;
+=20
+ 	case PTP_PIN_SETFUNC:
++	case PTP_PIN_SETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err =3D -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd =3D=3D PTP_PIN_SETFUNC2) {
++			err =3D -EINVAL;
++			break;
++		} else if (cmd =3D=3D PTP_PIN_SETFUNC) {
++			pd.rsv[0] =3D 0;
++			pd.rsv[1] =3D 0;
++			pd.rsv[2] =3D 0;
++			pd.rsv[3] =3D 0;
++			pd.rsv[4] =3D 0;
++		}
+ 		pin_index =3D pd.index;
+ 		if (pin_index >=3D ops->n_pins) {
+ 			err =3D -EINVAL;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 1bc794ad957a..cbdc0d97b471 100644
+=2D-- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -25,11 +25,21 @@
+ #include <linux/ioctl.h>
+ #include <linux/types.h>
+=20
+=2D/* PTP_xxx bits, for the flags field within the request structures. */
++/*
++ * Bits of the ptp_extts_request.flags field:
++ */
+ #define PTP_ENABLE_FEATURE (1<<0)
+ #define PTP_RISING_EDGE    (1<<1)
+ #define PTP_FALLING_EDGE   (1<<2)
++#define PTP_EXTTS_VALID_FLAGS	(PTP_ENABLE_FEATURE |	\
++				 PTP_RISING_EDGE |	\
++				 PTP_FALLING_EDGE)
+=20
++/*
++ * Bits of the ptp_perout_request.flags field:
++ */
++#define PTP_PEROUT_ONE_SHOT (1<<0)
++#define PTP_PEROUT_VALID_FLAGS	(~PTP_PEROUT_ONE_SHOT)
+ /*
+  * struct ptp_clock_time - represents a time value
+  *
+@@ -67,7 +77,7 @@ struct ptp_perout_request {
+ 	struct ptp_clock_time start;  /* Absolute start time. */
+ 	struct ptp_clock_time period; /* Desired period, zero means disable. */
+ 	unsigned int index;           /* Which channel to configure. */
+=2D	unsigned int flags;           /* Reserved for future use. */
++	unsigned int flags;
+ 	unsigned int rsv[4];          /* Reserved for future use. */
+ };
+=20
+@@ -149,6 +159,18 @@ struct ptp_pin_desc {
+ #define PTP_SYS_OFFSET_EXTENDED \
+ 	_IOWR(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
+=20
++#define PTP_CLOCK_GETCAPS2  _IOR(PTP_CLK_MAGIC, 10, struct ptp_clock_caps)
++#define PTP_EXTTS_REQUEST2  _IOW(PTP_CLK_MAGIC, 11, struct ptp_extts_reque=
+st)
++#define PTP_PEROUT_REQUEST2 _IOW(PTP_CLK_MAGIC, 12, struct ptp_perout_requ=
+est)
++#define PTP_ENABLE_PPS2     _IOW(PTP_CLK_MAGIC, 13, int)
++#define PTP_SYS_OFFSET2     _IOW(PTP_CLK_MAGIC, 14, struct ptp_sys_offset)
++#define PTP_PIN_GETFUNC2    _IOWR(PTP_CLK_MAGIC, 15, struct ptp_pin_desc)
++#define PTP_PIN_SETFUNC2    _IOW(PTP_CLK_MAGIC, 16, struct ptp_pin_desc)
++#define PTP_SYS_OFFSET_PRECISE2 \
++	_IOWR(PTP_CLK_MAGIC, 17, struct ptp_sys_offset_precise)
++#define PTP_SYS_OFFSET_EXTENDED2 \
++	_IOWR(PTP_CLK_MAGIC, 18, struct ptp_sys_offset_extended)
++
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+ 	unsigned int index;      /* Which channel produced the event. */
+=2D-=20
+2.23.0
+
+
+=2D-=20
+balbi
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl1w5ikACgkQzL64meEa
+mQbwhw//QR9zKOURzDECiTDuaFWVFfTbQwuIKk5YykFM2LdCI5qc1TsCd0dEueVG
+Wt7DEkeFrjrgvH1rnPLQlXGcaq4a/icX/vPx4N+cV92HS8KfVyun/wVRLQPPoazE
+Twe5PTFKo6ez++bw1Dn8KHxT+CKeuA5TQUN3Fkkh1qSI9USnXNob2Dl+1OY6vc8k
+d8T4rGyNIsKpt2yKnZBL1qmEgTiRVjEwRYnK1js329c5TwPMs5SDolJ90iOrvX63
+mOc3zYjlO9SdM8eX3ZTMpgDdRA1a2OEqu35jNSYNORwjS3c7QJsYubkwsKd0366x
+LyRlsZFJx1fjeToSe/uxqmnD0eQRabAkQKVwClC6CLCyenPSROOWwk/TFxPFCIur
+FDZbbL9jE6l8WsRK1TVnvY8Puhs0aB2hTRlDToYrJj9b6bH0uONGTGoY8Io/LJT6
+NmpmFwLBVrYfr+6BuvaWtars44jqybCPm0/Fl8hOXzd8WJRni1W0WTToE7qP6mDf
+zsQaKAxUP68+iXZLN1BSkwaePE4FOOgwVFQmCEwhxcNQrH/xgKO5VduXkB/HUe4x
+2mImCjTkOMkNOEdFwvGzPh2PpCNJFrkj/43ECYbKVI8W+gfI+Q06kSsjDcrnn7N6
+m1dm6PUSOq2P13Q5z1EdLk/Bdzo41Rn2EsNMG40hLixdotPRaJE=
+=rVLn
+-----END PGP SIGNATURE-----
+--=-=-=--
