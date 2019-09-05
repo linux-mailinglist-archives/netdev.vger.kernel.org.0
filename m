@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 489D4AA5A4
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 16:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1575BAA69F
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 17:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387813AbfIEOUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 10:20:02 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:51618 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728666AbfIEOUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 10:20:02 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 2ED086058E; Thu,  5 Sep 2019 14:20:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567693201;
-        bh=CQnx7U4IU5RtD4vXyAeIpL8Vvix5Ftn8Uv26HEnCIsA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=fQoZr3RkWCfjlw/x4UfChN5WDe2PxJP2QKncrLHKIY6wub1FqPqGF8/R3+QoPPvE3
-         XmsCi1dgc3vH9aTuo63DciZKL5fb4UglLZs+12gpxqW5fZ5tHEyu+ZZkfy/fILi9Ea
-         +4uJC1M3yYTFqUkwpqWtvgjqBrG9Lqd0iLdM4Tg4=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 35191602DC;
-        Thu,  5 Sep 2019 14:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567693200;
-        bh=CQnx7U4IU5RtD4vXyAeIpL8Vvix5Ftn8Uv26HEnCIsA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=PEpyC/egL0Epv7HLTDxUShyjV/W0Jp/ycJYdiDHqAKXnz/I+2/B9KBnRHfUsGJOB9
-         IAKjLYDBTaHJV0w8Jczf8mkad3ccggtcjV2OC/8K0acmv86mRVnFr9fE5P3+4KMRo9
-         REVzXYHJL50gccbjZPYv1X2w2HGSap9ORwYYZL5A=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 35191602DC
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] hostap: remove set but not used variable 'copied' in prism2_io_debug_proc_read
-References: <1567497430-22539-1-git-send-email-zhongjiang@huawei.com>
-        <5D6E1DF2.1000109@huawei.com> <87zhjij1q6.fsf@tynnyri.adurom.net>
-        <5D711760.20903@huawei.com>
-Date:   Thu, 05 Sep 2019 17:19:56 +0300
-In-Reply-To: <5D711760.20903@huawei.com> (zhong jiang's message of "Thu, 5 Sep
-        2019 22:10:40 +0800")
-Message-ID: <87ftlalt9v.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2390151AbfIEPA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 11:00:29 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:38232 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389796AbfIEPA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 11:00:28 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1i5tFG-0006AZ-Cc; Thu, 05 Sep 2019 15:00:22 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rtlwifi: rtl8821ae: make array static const and remove redundant assignment
+Date:   Thu,  5 Sep 2019 16:00:22 +0100
+Message-Id: <20190905150022.3609-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> writes:
+From: Colin Ian King <colin.king@canonical.com>
 
-> On 2019/9/5 21:45, Kalle Valo wrote:
->> zhong jiang <zhongjiang@huawei.com> writes:
->>
->>> Please ignore the patch.  Because  the hostap_proc.c is marked as 'obsolete'.
->> You mean marked in the MAINTAINERS file? I don't see that as a problem,
->> I can (and should) still apply any patches submitted to hostap driver.
->>
-> I  hit the following issue when checking the patch by checkpatch.pl
->
-> WARNING: drivers/net/wireless/intersil/hostap/hostap_proc.c is marked
-> as 'obsolete' in the MAINTAINERS hierarchy.
-> No unnecessary modifications please.
->
-> I certainly hope it can be appiled to upstream if the above check doesn't matter.
+The array channel_all can be make static const rather than populating
+it on the stack, this makes the code smaller.  Also, variable place
+is being initialized with a value that is never read, so this assignment
+is redundant and can be removed.
 
-I have no idea why checkpatch says like that and I'm going to just
-ignore that warning. As long as the driver is in the tree I think it
-should be improved.
+Before:
+   text	   data	    bss	    dec	    hex	filename
+ 118537	   9591	      0	 128128	  1f480	realtek/rtlwifi/rtl8821ae/phy.o
 
+After:
+   text	   data	    bss	    dec	    hex	filename
+ 118331	   9687	      0	 128018	  1f412	realtek/rtlwifi/rtl8821ae/phy.o
+
+Saves 110 bytes, (gcc version 9.2.1, amd64)
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+index 408af144098e..979e434a4e73 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+@@ -3613,14 +3613,14 @@ u8 rtl8821ae_phy_sw_chnl(struct ieee80211_hw *hw)
+ 
+ u8 _rtl8812ae_get_right_chnl_place_for_iqk(u8 chnl)
+ {
+-	u8 channel_all[TARGET_CHNL_NUM_2G_5G_8812] = {
++	static const u8 channel_all[TARGET_CHNL_NUM_2G_5G_8812] = {
+ 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+ 		14, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54,
+ 		56, 58, 60, 62, 64, 100, 102, 104, 106, 108,
+ 		110, 112, 114, 116, 118, 120, 122, 124, 126,
+ 		128, 130, 132, 134, 136, 138, 140, 149, 151,
+ 		153, 155, 157, 159, 161, 163, 165};
+-	u8 place = chnl;
++	u8 place;
+ 
+ 	if (chnl > 14) {
+ 		for (place = 14; place < sizeof(channel_all); place++)
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.20.1
+
