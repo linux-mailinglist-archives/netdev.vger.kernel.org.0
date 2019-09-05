@@ -2,157 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFC5AAB2E
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:37:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D526AAB76
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732541AbfIESg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 14:36:58 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37216 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbfIESg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:36:58 -0400
-Received: by mail-wr1-f65.google.com with SMTP id i1so3350966wro.4
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:36:57 -0700 (PDT)
+        id S2391437AbfIEStJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 14:49:09 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36570 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391424AbfIEStI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:49:08 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y19so3981925wrd.3
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LUtFTWcoH9Wa00NdUp1MJqfK28DnqzwScRV0Z3qhU9Y=;
-        b=WFQTW3F+Ua1O4q0fY+wZ7rU0lfpr+zNq2vZcmAX8sEmjfo1chXK4vpdXATM7FRB4wB
-         N8Dq/hQL2qql6LXIONgd+j/UjODugdCi7r5ZO/nvkK98t1sTXKW0pLYbXk5/s4MLKCXP
-         BY7JbdpI50vBA71HZFx9I1d4nrEUxIBhv0lZE=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xQniiTwVco7xvOlj75jt1pG4KaCruGDU+fZtYV4pADE=;
+        b=YyszYXUYxTSlWt//fw18ofLcQP9xDYG4Z0rqSokNQK9xPf8zO+8OUlJBXayce20FDY
+         LyJ07swNIsmQQ/2LYuttREBIbi2Ol69Qw4JK90FGMDi3nRyKRDdahFbw7PkedEjZ0TYG
+         9FybWNku1RW6JT+ERrePIblbhFam1Rr6sk2QTwiLXZbsrgfpAXz7afEfiRYI+/ycK+/C
+         RgZ7rntzgrB7F5sSisocKFEUGfg9/ySl9Gt058Qa8+7vxHYw+VGQXiwPbp/Gumw7Bp7L
+         jvRAmBcXaQq9iL0oGmQtgU2t78ViUTpz3ryqO+nQ43yhL4TDIUdqSITeh+glMTdM4Vog
+         HYUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=LUtFTWcoH9Wa00NdUp1MJqfK28DnqzwScRV0Z3qhU9Y=;
-        b=KZt7vQvCHee70+TPvQOXa2kHU18jYp2tRJr6+TeBzc8CnbgSKeFpyI9ya60Oolyq05
-         7loq9SSHaZ3ztVQHUlrIGUMfugfJ3an8qYaqCSxRufO7nDhvp79/xQTXw5vh0hHk+3rM
-         D8POevaIzPuga+MryRZ00cka0xeO0jDD6e4LXYcJHX4OZhcjml47hbQUWhT7ScpsD66i
-         n2WX8i+Qi2uvm2EbNHzS2pk01Yfbt0GGNBoYEi+VJciUqetmIeA/4u5qx37FEDg/bJdc
-         TX3YN2fB4zuHRyg+khpJc2V4Oug+6Gjy968k+OFu7Q8Ob9XqCCLd/sGyE6xjv1HOK4OQ
-         mi1w==
-X-Gm-Message-State: APjAAAVxJVFBH6l3VtqIJ++vo8V89FxWOusObvd3gl1ut2X14UPYT+hS
-        xUSi487/fDHx43/rqrP1PsS1Pg==
-X-Google-Smtp-Source: APXvYqxm8tywSmT64Gkrt5Dh2krTdjNqG6Boz/sLCpFLfNvLN9CBu5h90+3dus1t86lrvg5C33e4gw==
-X-Received: by 2002:adf:f186:: with SMTP id h6mr3735091wro.274.1567708616437;
-        Thu, 05 Sep 2019 11:36:56 -0700 (PDT)
-Received: from pixies.home ([141.226.9.174])
-        by smtp.gmail.com with ESMTPSA id o12sm3780036wmh.43.2019.09.05.11.36.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2019 11:36:55 -0700 (PDT)
-From:   Shmulik Ladkani <shmulik@metanetworks.com>
-X-Google-Original-From: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     eyal@metanetworks.com, netdev <netdev@vger.kernel.org>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH net] net: gso: Fix skb_segment splat when splitting gso_size mangled skb having linear-headed frag_list
-Date:   Thu,  5 Sep 2019 21:36:33 +0300
-Message-Id: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
-X-Mailer: git-send-email 2.19.1
+        bh=xQniiTwVco7xvOlj75jt1pG4KaCruGDU+fZtYV4pADE=;
+        b=aqT75sevWoZHZ6jYZSQgwuXi+WBuct1wwQFlJ5J1DMM9cpI6SRDmfCBkGswRqHN7j4
+         YeI+wdEKymuFB1G0F1y5/rq2lBRuB6YxXRsYTkFlr5GImaRsDzb3RI59yqISrHXst+as
+         DshCdIpl2bTtNx7JNHjluNYCANUK0ajDQJZxw1XK47tG74pN9Vf3ZWPUPREr12n8cOUc
+         m6vP4TPxkBZqipmJtTq5Yqv2+fba/7U9TMFUdf/dNJshGOa3Bfkt0uuzhWgX2wYQpfPz
+         Q0585EDYbH4H7RWF+AVps3usXhusXt0UfdVpRG/JDFYEn8rlNF8FgZP7apnPqUOp9KDz
+         O6lA==
+X-Gm-Message-State: APjAAAWeJS7pw0z3919ch1CLACkKPUbJXt3VC7t3xs440JhkneXvAsiy
+        n+e1MWA0MXwFCXyCOlzA2S6JPSQU
+X-Google-Smtp-Source: APXvYqyvs7MnhF4gAjwAJyXQvAbQiaBcu2FO0GWeN2+oW+xlRyvUC4XdEi/9liXJDjajMM9wueRMpg==
+X-Received: by 2002:adf:dc81:: with SMTP id r1mr3825746wrj.52.1567709346780;
+        Thu, 05 Sep 2019 11:49:06 -0700 (PDT)
+Received: from [192.168.8.147] (163.175.185.81.rev.sfr.net. [81.185.175.163])
+        by smtp.gmail.com with ESMTPSA id f15sm3271171wml.8.2019.09.05.11.49.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Sep 2019 11:49:06 -0700 (PDT)
+Subject: Re: [PATCH v2] net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/128
+ local route (and others)
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Lorenzo Colitti <lorenzo@google.com>
+References: <565e386f-e72a-73db-1f34-fedb5190658a@gmail.com>
+ <20190902162336.240405-1-zenczykowski@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <98b8a95f-245a-0bdf-6a4c-c07a372d4d0f@gmail.com>
+Date:   Thu, 5 Sep 2019 20:49:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190902162336.240405-1-zenczykowski@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Historically, support for frag_list packets entering skb_segment() was
-limited to frag_list members terminating on exact same gso_size
-boundaries. This is verified with a BUG_ON since commit 89319d3801d1
-("net: Add frag_list support to skb_segment"), quote:
 
-    As such we require all frag_list members terminate on exact MSS
-    boundaries.  This is checked using BUG_ON.
-    As there should only be one producer in the kernel of such packets,
-    namely GRO, this requirement should not be difficult to maintain.
 
-However, since commit 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper"),
-the "exact MSS boundaries" assumption no longer holds:
-An eBPF program using bpf_skb_change_proto() DOES modify 'gso_size', but
-leaves the frag_list members as originally merged by GRO with the
-original 'gso_size'. Example of such programs are bpf-based NAT46 or
-NAT64.
+On 9/2/19 6:23 PM, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+> 
+> There is a subtle change in behaviour introduced by:
+>   commit c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
+>   'ipv6: Change addrconf_f6i_alloc to use ip6_route_info_create'
+> 
+> Before that patch /proc/net/ipv6_route includes:
+> 00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001 lo
+> 
+> Afterwards /proc/net/ipv6_route includes:
+> 00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80240001 lo
+> 
+> ie. the above commit causes the ::1/128 local (automatic) route to be flagged with RTF_ADDRCONF (0x040000).
+> 
+> AFAICT, this is incorrect since these routes are *not* coming from RA's.
+> 
+> As such, this patch restores the old behaviour.
+> 
+> Fixes: c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
+> Cc: David Ahern <dsahern@gmail.com>
+> Cc: Lorenzo Colitti <lorenzo@google.com>
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> ---
+>  net/ipv6/route.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 558c6c68855f..516b2e568dae 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -4365,13 +4365,14 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
+>  	struct fib6_config cfg = {
+>  		.fc_table = l3mdev_fib_table(idev->dev) ? : RT6_TABLE_LOCAL,
+>  		.fc_ifindex = idev->dev->ifindex,
+> -		.fc_flags = RTF_UP | RTF_ADDRCONF | RTF_NONEXTHOP,
+> +		.fc_flags = RTF_UP | RTF_NONEXTHOP,
+>  		.fc_dst = *addr,
+>  		.fc_dst_len = 128,
+>  		.fc_protocol = RTPROT_KERNEL,
+>  		.fc_nlinfo.nl_net = net,
+>  		.fc_ignore_dev_down = true,
+>  	};
+> +	struct fib6_info *f6i;
+>  
+>  	if (anycast) {
+>  		cfg.fc_type = RTN_ANYCAST;
+> @@ -4381,7 +4382,10 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
+>  		cfg.fc_flags |= RTF_LOCAL;
+>  	}
+>  
+> -	return ip6_route_info_create(&cfg, gfp_flags, NULL);
+> +	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
+> +	if (f6i)
+> +		f6i->dst_nocount = true;
 
-This lead to a kernel BUG_ON for flows involving:
- - GRO generating a frag_list skb
- - bpf program performing bpf_skb_change_proto() or bpf_skb_adjust_room()
- - skb_segment() of the skb
+Shouldn't it use 
 
-See example BUG_ON reports in [0].
+	if (!IS_ERR(f6i))
+		f6i->dst_nocount = true;
 
-In commit 13acc94eff12 ("net: permit skb_segment on head_frag frag_list skb"),
-skb_segment() was modified to support the "gso_size mangling" case of
-a frag_list GRO'ed skb, but *only* for frag_list members having
-head_frag==true (having a page-fragment head).
+???
 
-Alas, GRO packets having frag_list members with a linear kmalloced head
-(head_frag==false) still hit the BUG_ON.
 
-This commit adds support to skb_segment() for a 'head_skb' packet having
-a frag_list whose members are *non* head_frag, with gso_size mangled, by
-disabling SG and thus falling-back to copying the data from the given
-'head_skb' into the generated segmented skbs - as suggested by Willem de
-Bruijn [1].
-
-Since this approach involves the penalty of skb_copy_and_csum_bits()
-when building the segments, care was taken in order to enable this
-solution only when required:
- - untrusted gso_size, by testing SKB_GSO_DODGY is set
-   (SKB_GSO_DODGY is set by any gso_size mangling functions in
-    net/core/filter.c)
- - the frag_list is non empty, its item is a non head_frag, *and* the
-   headlen of the given 'head_skb' does not match the gso_size.
-
-[0]
-https://lore.kernel.org/netdev/20190826170724.25ff616f@pixies/
-https://lore.kernel.org/netdev/9265b93f-253d-6b8c-f2b8-4b54eff1835c@fb.com/
-
-[1]
-https://lore.kernel.org/netdev/CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com/
-
-Fixes: 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper")
-Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
----
- net/core/skbuff.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ea8e8d332d85..c4bd1881acff 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3678,6 +3678,24 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 	sg = !!(features & NETIF_F_SG);
- 	csum = !!can_checksum_protocol(features, proto);
- 
-+	if (mss != GSO_BY_FRAGS &&
-+	    (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
-+		/* gso_size is untrusted.
-+		 *
-+		 * If head_skb has a frag_list with a linear non head_frag
-+		 * item, and head_skb's headlen does not fit requested
-+		 * gso_size, fall back to copying the skbs - by disabling sg.
-+		 *
-+		 * We assume checking the first frag suffices, i.e if either of
-+		 * the frags have non head_frag data, then the first frag is
-+		 * too.
-+		 */
-+		if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag &&
-+		    (mss != skb_headlen(head_skb) - doffset)) {
-+			sg = false;
-+		}
-+	}
-+
- 	if (sg && csum && (mss != GSO_BY_FRAGS))  {
- 		if (!(features & NETIF_F_GSO_PARTIAL)) {
- 			struct sk_buff *iter;
--- 
-2.19.1
-
+> +	return f6i;
+>  }
+>  
+>  /* remove deleted ip from prefsrc entries */
+> 
