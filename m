@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C174AA48B
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8654DAA485
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728849AbfIENeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728983AbfIENeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 5 Sep 2019 09:34:18 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:55916 "EHLO huawei.com"
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55918 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727809AbfIENeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728793AbfIENeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 5 Sep 2019 09:34:16 -0400
 Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id C310ED5F5F231C711E42;
+        by Forcepoint Email with ESMTP id C743BDCF414F8159860B;
         Thu,  5 Sep 2019 21:34:14 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 5 Sep 2019 21:34:04 +0800
+ 14.3.439.0; Thu, 5 Sep 2019 21:34:05 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Guojia Liao <liaoguojia@huawei.com>,
-        "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 5/7] net: hns3: remove explicit conversion to bool
-Date:   Thu, 5 Sep 2019 21:31:40 +0800
-Message-ID: <1567690302-16648-6-git-send-email-tanhuazhong@huawei.com>
+        Yufeng Mo <moyufeng@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 6/7] net: hns3: disable loopback setting in hclge_mac_init
+Date:   Thu, 5 Sep 2019 21:31:41 +0800
+Message-ID: <1567690302-16648-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1567690302-16648-1-git-send-email-tanhuazhong@huawei.com>
 References: <1567690302-16648-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,30 +39,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-Relational and logical operators evaluate to bool,
-explicit conversion is overly verbose and unnecessary.
+If the selftest and reset are performed at the same time, the loopback
+setting may be still in the enable state after the reset. As a result,
+packets cannot be sent out.
 
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+This patch fixes this issue by disabling loopback in hclge_mac_init.
+
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 34 +++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 76e1c84..dde752f 100644
+index dde752f..8d4dc1b 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -6174,7 +6174,7 @@ static void hclge_enable_fd(struct hnae3_handle *handle, bool enable)
- 	bool clear;
+@@ -66,6 +66,7 @@ static void hclge_rfs_filter_expire(struct hclge_dev *hdev);
+ static void hclge_clear_arfs_rules(struct hnae3_handle *handle);
+ static enum hnae3_reset_type hclge_get_reset_level(struct hnae3_ae_dev *ae_dev,
+ 						   unsigned long *addr);
++static int hclge_set_default_loopback(struct hclge_dev *hdev);
  
- 	hdev->fd_en = enable;
--	clear = hdev->fd_active_type == HCLGE_FD_ARFS_ACTIVE ? true : false;
-+	clear = hdev->fd_active_type == HCLGE_FD_ARFS_ACTIVE;
- 	if (!enable)
- 		hclge_del_all_fd_entries(handle, clear);
- 	else
+ static struct hnae3_ae_algo ae_algo;
+ 
+@@ -2599,6 +2600,10 @@ static int hclge_mac_init(struct hclge_dev *hdev)
+ 		return ret;
+ 	}
+ 
++	ret = hclge_set_default_loopback(hdev);
++	if (ret)
++		return ret;
++
+ 	ret = hclge_buffer_alloc(hdev);
+ 	if (ret)
+ 		dev_err(&hdev->pdev->dev,
+@@ -6331,7 +6336,7 @@ static int hclge_set_app_loopback(struct hclge_dev *hdev, bool en)
+ 	return ret;
+ }
+ 
+-static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
++static int hclge_cfg_serdes_loopback(struct hclge_dev *hdev, bool en,
+ 				     enum hnae3_loop loop_mode)
+ {
+ #define HCLGE_SERDES_RETRY_MS	10
+@@ -6392,6 +6397,17 @@ static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
+ 		dev_err(&hdev->pdev->dev, "serdes loopback set failed in fw\n");
+ 		return -EIO;
+ 	}
++	return ret;
++}
++
++static int hclge_set_serdes_loopback(struct hclge_dev *hdev, bool en,
++				     enum hnae3_loop loop_mode)
++{
++	int ret;
++
++	ret = hclge_cfg_serdes_loopback(hdev, en, loop_mode);
++	if (ret)
++		return ret;
+ 
+ 	hclge_cfg_mac_mode(hdev, en);
+ 
+@@ -6535,6 +6551,22 @@ static int hclge_set_loopback(struct hnae3_handle *handle,
+ 	return 0;
+ }
+ 
++static int hclge_set_default_loopback(struct hclge_dev *hdev)
++{
++	int ret;
++
++	ret = hclge_set_app_loopback(hdev, false);
++	if (ret)
++		return ret;
++
++	ret = hclge_cfg_serdes_loopback(hdev, false, HNAE3_LOOP_SERIAL_SERDES);
++	if (ret)
++		return ret;
++
++	return hclge_cfg_serdes_loopback(hdev, false,
++					 HNAE3_LOOP_PARALLEL_SERDES);
++}
++
+ static void hclge_reset_tqp_stats(struct hnae3_handle *handle)
+ {
+ 	struct hclge_vport *vport = hclge_get_vport(handle);
 -- 
 2.7.4
 
