@@ -2,133 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 317FCAADF3
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBA97AADFD
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:46:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389095AbfIEVow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 17:44:52 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42180 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726936AbfIEVov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 17:44:51 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y23so4028446lje.9;
-        Thu, 05 Sep 2019 14:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h2bk3j52P30Q1CTEXW10Z5tA0jiFGXaEQ+rZ6Wp9rtw=;
-        b=f/a2wjUZxmDspNldx7I3qghloHCzwxYNI4xFcoXbdP5KP+eN1RQmq83F9HgVXwJaPX
-         NCinIjm2C0lQAHsiGIAPUUmlErnY/jzThdbblnlCyYU2opwVbOm7x9h/pErfp7SkqiTM
-         a3Kjv89nvO7DVtUTyakUmpPMukfusBraJpzzFcRjSkWtfyZ6AlbIgUu8jo6bIDWQ6N0M
-         5Yb4ayEuktTJzvSgPKBENAc+vnDZTmRBZAjgpB2tnCAyG6RA4lKMc3g2ICHdl1tYh5DR
-         WG/Kg2d9CWerk17gLxqDjJFIh4a+pVYbhl9hSOsBDoD66/J5BGqBG/S8Vph5S/E5irCq
-         +rkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h2bk3j52P30Q1CTEXW10Z5tA0jiFGXaEQ+rZ6Wp9rtw=;
-        b=X9Lhkv3b7x6Bmc74ZexKr8JTBKhaGHeL9Yg1Ld17TwJODtzPiKySURp4cutB1eVS5g
-         sdBGmlw5ekmCQg0n/rnoGRubFe10IqZkmo/Ls5DQsXHKpVeP7pxh9DtAZeKn0YXYRpa5
-         Nt9zECNjuvFXrjNc5Dr7UxauEzN3kd74y3YgRiiqT9dhGfoEbRT7m0QNtnKuSZ8uNk1+
-         g96R1g3fWGgvn7kCnZmR6v+VOS0xded9pbGTZJDSTwTdD7mxdTinUiDfsT1nuARP6Bk0
-         RKrT1I1o5QEN0tbylyCurq4gh6fcIfPmjTt0aLbYUq2OYYtELC+6M6l5yEqqOTe+fzlS
-         N02g==
-X-Gm-Message-State: APjAAAVuP4hqvfNFdNbeHcaTDCd1db3jvKRt6u02FETcSbUXUWHIVEkX
-        ZbqZZSuG067JUaEIueuAuJqaf9nZ2EZyNoSLJ2c=
-X-Google-Smtp-Source: APXvYqyk6skdfl/16FhYXB68WgXTcAV0P1eaA9Y9REhksLUKbhCAx0u0UL9AhebkLoG8ZgVXF2woSJqnHh7LpFzcAho=
-X-Received: by 2002:a2e:4489:: with SMTP id b9mr3613889ljf.17.1567719889033;
- Thu, 05 Sep 2019 14:44:49 -0700 (PDT)
+        id S2390886AbfIEVqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 17:46:13 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:50275 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389651AbfIEVqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 17:46:13 -0400
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 8270F240004
+        for <netdev@vger.kernel.org>; Thu,  5 Sep 2019 21:46:11 +0000 (UTC)
+Received: by mail-vs1-f53.google.com with SMTP id z14so2659499vsz.13
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 14:46:11 -0700 (PDT)
+X-Gm-Message-State: APjAAAW5bx2cKpn9HnM6vni3rtJrdOevbkIYYgvM/HK2X7s0rIrtnVv1
+        Q7W232Ll+gNZd9UbjFbYNc0/ZSzQ5aMrHuIyTgE=
+X-Google-Smtp-Source: APXvYqyNLk8M7tQOi36xdJ93KbukbEt25PuiOrP6ZK4Axg7RgwzjmXjY/q/wtnbjKy8hxKOjtnPw+SGwf5nVgSgGahw=
+X-Received: by 2002:a67:fb1a:: with SMTP id d26mr3090648vsr.58.1567719970305;
+ Thu, 05 Sep 2019 14:46:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000005091a70591d3e1d9@google.com>
-In-Reply-To: <0000000000005091a70591d3e1d9@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 5 Sep 2019 14:44:37 -0700
-Message-ID: <CAADnVQK94boXD8Y=g1LsBtNG4wrYQ0Jnjxhq7hdxvyBKZuPwXw@mail.gmail.com>
-Subject: Re: general protection fault in dev_map_hash_update_elem
-To:     syzbot <syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+References: <1567605397-14060-1-git-send-email-paulb@mellanox.com> <1567605397-14060-2-git-send-email-paulb@mellanox.com>
+In-Reply-To: <1567605397-14060-2-git-send-email-paulb@mellanox.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Thu, 5 Sep 2019 14:48:46 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_DewA97iO48NfKyUT0U2uFmnBsvRLk17gJP_s-xvU=P0g@mail.gmail.com>
+Message-ID: <CAOrHB_DewA97iO48NfKyUT0U2uFmnBsvRLk17gJP_s-xvU=P0g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/1] net: openvswitch: Set OvS recirc_id from
+ tc chain index
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 5, 2019 at 1:08 PM syzbot
-<syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com> wrote:
+On Wed, Sep 4, 2019 at 6:56 AM Paul Blakey <paulb@mellanox.com> wrote:
 >
-> Hello,
+> Offloaded OvS datapath rules are translated one to one to tc rules,
+> for example the following simplified OvS rule:
 >
-> syzbot found the following crash on:
+> recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
 >
-> HEAD commit:    6d028043 Add linux-next specific files for 20190830
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=135c1a92600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=82a6bec43ab0cb69
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4e7a85b1432052e8d6f8
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109124e1600000
+> Will be translated to the following tc rule:
 >
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
+> $ tc filter add dev dev1 ingress \
+>             prio 1 chain 0 proto ip \
+>                 flower tcp ct_state -trk \
+>                 action ct pipe \
+>                 action goto chain 2
 >
-> kasan: CONFIG_KASAN_INLINE enabled
-> kasan: GPF could be caused by NULL-ptr deref or user memory access
-> general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 10235 Comm: syz-executor.0 Not tainted 5.3.0-rc6-next-20190830
-> #75
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:__write_once_size include/linux/compiler.h:203 [inline]
-> RIP: 0010:__hlist_del include/linux/list.h:795 [inline]
-> RIP: 0010:hlist_del_rcu include/linux/rculist.h:475 [inline]
-> RIP: 0010:__dev_map_hash_update_elem kernel/bpf/devmap.c:668 [inline]
-> RIP: 0010:dev_map_hash_update_elem+0x3c8/0x6e0 kernel/bpf/devmap.c:691
-> Code: 48 89 f1 48 89 75 c8 48 c1 e9 03 80 3c 11 00 0f 85 d3 02 00 00 48 b9
-> 00 00 00 00 00 fc ff df 48 8b 53 10 48 89 d6 48 c1 ee 03 <80> 3c 0e 00 0f
-> 85 97 02 00 00 48 85 c0 48 89 02 74 38 48 89 55 b8
-> RSP: 0018:ffff88808d607c30 EFLAGS: 00010046
-> RAX: 0000000000000000 RBX: ffff8880a7f14580 RCX: dffffc0000000000
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a7f14588
-> RBP: ffff88808d607c78 R08: 0000000000000004 R09: ffffed1011ac0f73
-> R10: ffffed1011ac0f72 R11: 0000000000000003 R12: ffff88809f4e9400
-> R13: ffff88809b06ba00 R14: 0000000000000000 R15: ffff88809f4e9528
-> FS:  00007f3a3d50c700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007feb3fcd0000 CR3: 00000000986b9000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   map_update_elem+0xc82/0x10b0 kernel/bpf/syscall.c:966
->   __do_sys_bpf+0x8b5/0x3350 kernel/bpf/syscall.c:2854
->   __se_sys_bpf kernel/bpf/syscall.c:2825 [inline]
->   __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2825
->   do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x459879
-> Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7
-> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
-> ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007f3a3d50bc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459879
-> RDX: 0000000000000020 RSI: 0000000020000040 RDI: 0000000000000002
-> RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f3a3d50c6d4
-> R13: 00000000004bfc86 R14: 00000000004d1960 R15: 00000000ffffffff
-> Modules linked in:
-> ---[ end trace 083223e21dbd0ae5 ]---
-> RIP: 0010:__write_once_size include/linux/compiler.h:203 [inline]
-> RIP: 0010:__hlist_del include/linux/list.h:795 [inline]
-> RIP: 0010:hlist_del_rcu include/linux/rculist.h:475 [inline]
-> RIP: 0010:__dev_map_hash_update_elem kernel/bpf/devmap.c:668 [inline]
-> RIP: 0010:dev_map_hash_update_elem+0x3c8/0x6e0 kernel/bpf/devmap.c:691
+> Received packets will first travel though tc, and if they aren't stolen
+> by it, like in the above rule, they will continue to OvS datapath.
+> Since we already did some actions (action ct in this case) which might
+> modify the packets, and updated action stats, we would like to continue
+> the proccessing with the correct recirc_id in OvS (here recirc_id(2))
+> where we left off.
+>
+> To support this, introduce a new skb extension for tc, which
+> will be used for translating tc chain to ovs recirc_id to
+> handle these miss cases. Last tc chain index will be set
+> by tc goto chain action and read by OvS datapath.
+>
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-Toke,
-please take a look.
-Thanks!
+Looks good to me.
+
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
+
+Thanks,
+Pravin.
