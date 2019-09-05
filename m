@@ -2,125 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 072E5AAE2C
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 00:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB6EAAEF5
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 01:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388329AbfIEWAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 18:00:44 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46923 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726323AbfIEWAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 18:00:43 -0400
-Received: by mail-pg1-f193.google.com with SMTP id m3so2191992pgv.13;
-        Thu, 05 Sep 2019 15:00:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=T+9biPh5RdrW3Egc82kqY4BMucKCWo26PBUBGrS3wzk=;
-        b=Vvil7N+/c/iMDJFFYPxEHJp/sebIu8IGWwqgJfTbbEweScFC1wLVuSZwWkL7u3i3fE
-         xqcYjtEkACE71xV7tRLCZNPBD8NWk0yOcdf3Ur4q6AdZmuww7xhIaU/WDwYRiEWbl8WE
-         /OpKt4n64SsDIBwT6aD1eNh7n6B8er2AbM+VoUsKwId1/fHBneBpB9Zjnau7hljToDAq
-         s+TF1ebSL5RuphLkNkXHodds6qjKVAp+U4OyaiMLkVIMVLlq2UNSKw64GNOPOrN6h11M
-         Q/6pt1Z7Wlj/g7AvpCfWCXowELkGV3hhvYiU2cYDIcx3NIaJWSzRebXpUDYE9NWDhyII
-         k9nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=T+9biPh5RdrW3Egc82kqY4BMucKCWo26PBUBGrS3wzk=;
-        b=cSgamYVzvsvSnL18tpDPSF6cR+88myxAVb3w2V5Q5Iq8pgPKIdWyWxtn8DCOalGMGx
-         8aLHsVvov7ZeyionP/31QnKfFy4xkdHxTec1Cw+T+8s326bSNWythaOCJ3qGZT8WLFv6
-         XqEWKbe6gL5uCkq3Qc1hPxqxeHjELDUbEVWHvctzZdpMicHHmL9yPtGvE8NKLLg+Kk/j
-         jQllNuUh6yhbctrSY0vkOTRoYTItT32NeS70O8rTmsgc7MMQDl2pP4vHMgalHOiCmCtu
-         i728td7Uqx55U6mwJSP/LZN+rpP7FWWCxX1u1c8oop/WkVmb25royYjSYTdFkNZTe3yz
-         y0WA==
-X-Gm-Message-State: APjAAAX2tant3hLBFRTGQPPpJwEHHTz20FMyHwQkmn4+raLJuJPGm/Y6
-        4YvqiPHKXNOcIVaZaFzW79o=
-X-Google-Smtp-Source: APXvYqwyWsK3WYFmy64R5CSfPTnoVaKbqtPOBBjm2VGzu8inS0r9f2K/ygXlcME/GbUYJNw+o1IAmg==
-X-Received: by 2002:aa7:9343:: with SMTP id 3mr6521647pfn.145.1567720842369;
-        Thu, 05 Sep 2019 15:00:42 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:267c])
-        by smtp.gmail.com with ESMTPSA id h12sm3975050pgr.8.2019.09.05.15.00.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Sep 2019 15:00:41 -0700 (PDT)
-Date:   Thu, 5 Sep 2019 15:00:40 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        id S1732792AbfIEXIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 19:08:15 -0400
+Received: from mail-eopbgr740102.outbound.protection.outlook.com ([40.107.74.102]:56048
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726626AbfIEXIO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 19:08:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e8qlrodEcqIRyzRhYCqlYy3KKA6QZg5ZhIaOcrqxClRbrlhmZFFCqby5HRBs/wUpCMbPdggHWXCIACXPZvOH6OaTCYTGivwLoQz+DzyzbxyzOVhwqnWAuJrdE29g4zs9wQ3Rg7OGl38AzlgECNlrrKaeV3PTPn6+hcp2z6nUrP3etOqOiwR0AkKdlMuQ74cmDyjvT+48urMQ9dlLBXP2losS2UZHmaSGoqd743ldl2M+6mBdYyTcVMUE/COGbWsDg4z/SjOICQe8zr+v/vjHIDqcVfNUPYwx0sPYD7sAeHlLnyEfrMsnaW6T9lPX4DA7jJ0Z2B1uQVQH0KQ1ojYhdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gtMAG5qxbOZu6s6pC+n+AdcM8AUGaXFamTe4x60QX54=;
+ b=PGK1vehlinKN+Ski3ZwVmV+Sjz0+77bflzeArhunRJfKa8ZR4agZVLBWEod4yuW8paQgcOyak6D5C+cx5EuE+1vfXyDsN+y23CubAu8K4r4jTHFvmjB0xTHIQrUMZoLb1yjxDJvxnyBKDj0mGWt9iaBMXkAzPJRlmEtRrPgeoSwZrTYPM+UOdf8XU/ZV++nWTjUxtN8r25QEb+JkTm3LGxSoLsY7KLpSfm4M78JTimv00wwgcaLE0EwjbhvOc9CK6yACWUXZEbV5K4uWGMRuwshoDDDIUUETISCH1I8Tarmk/lTnmybRAVBfPU61UEY/GOmB9itIh9DNPH76MSduvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gtMAG5qxbOZu6s6pC+n+AdcM8AUGaXFamTe4x60QX54=;
+ b=JLLvyaVaCNuwdTJ9Lo50yoLdvUp/f7m+vAMlfHM2E5eqwdqAN3E9oayfMePgFOQl849SB17b/uKuc41cCCdj+095dxg/uxQA9EZHfMYmuyR7Is2Wn8m16O5p3QYM7EXkjXecuxEHEG240FwhvPadk21ym3jnya/x1sgZVT3jHyI=
+Received: from DM6PR21MB1337.namprd21.prod.outlook.com (20.179.53.80) by
+ DM6PR21MB1417.namprd21.prod.outlook.com (20.180.21.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2263.4; Thu, 5 Sep 2019 23:07:32 +0000
+Received: from DM6PR21MB1337.namprd21.prod.outlook.com
+ ([fe80::2cde:35d7:e09a:5639]) by DM6PR21MB1337.namprd21.prod.outlook.com
+ ([fe80::2cde:35d7:e09a:5639%6]) with mapi id 15.20.2263.005; Thu, 5 Sep 2019
+ 23:07:32 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20190905220038.77qqrkrqmjtco6ld@ast-mbp.dhcp.thefacebook.com>
-References: <20190829051253.1927291-1-ast@kernel.org>
- <20190829051253.1927291-2-ast@kernel.org>
- <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
- <20190829173034.up5g74onaekp53zd@ast-mbp.dhcp.thefacebook.com>
- <59ac111e-7ce7-5e00-32c9-9b55482fe701@6wind.com>
- <46df2c36-4276-33c0-626b-c51e77b3a04f@fb.com>
- <5e36a193-8ad9-77e7-e2ff-429fb521a79c@iogearbox.net>
- <99acd443-69d7-f53a-1af0-263e0b73abef@fb.com>
- <acc09eaf-5289-9457-3ce1-f27efb6013b8@iogearbox.net>
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+Subject: RE: [PATCH net-next, 2/2] hv_netvsc: Sync offloading features to VF
+ NIC
+Thread-Topic: [PATCH net-next, 2/2] hv_netvsc: Sync offloading features to VF
+ NIC
+Thread-Index: AQHVXuVjZEYmBu9A80OagVmDV3gGfqcUUN2AgAlrzFA=
+Date:   Thu, 5 Sep 2019 23:07:32 +0000
+Message-ID: <DM6PR21MB13373166435FD2FC5543D349CABB0@DM6PR21MB1337.namprd21.prod.outlook.com>
+References: <1567136656-49288-1-git-send-email-haiyangz@microsoft.com>
+        <1567136656-49288-3-git-send-email-haiyangz@microsoft.com>
+ <20190830160451.43a61cf9@cakuba.netronome.com>
+In-Reply-To: <20190830160451.43a61cf9@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-09-05T23:07:30.9040322Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f1f33891-0eb0-440a-9ebe-a5e6eb79496f;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=haiyangz@microsoft.com; 
+x-originating-ip: [96.61.92.94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ff0464a8-2242-4c64-ad68-08d73255d50b
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DM6PR21MB1417;
+x-ms-traffictypediagnostic: DM6PR21MB1417:|DM6PR21MB1417:|DM6PR21MB1417:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR21MB1417EC4451D151C89F163658CABB0@DM6PR21MB1417.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 015114592F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(396003)(136003)(39860400002)(346002)(376002)(189003)(199004)(13464003)(9686003)(316002)(10090500001)(66066001)(6246003)(54906003)(53936002)(22452003)(3846002)(6116002)(6436002)(4326008)(6916009)(2906002)(55016002)(5660300002)(66446008)(66556008)(66476007)(76116006)(52536014)(66946007)(64756008)(6506007)(8990500004)(11346002)(8936002)(26005)(478600001)(305945005)(102836004)(186003)(74316002)(229853002)(486006)(7736002)(81156014)(8676002)(81166006)(7696005)(14454004)(76176011)(446003)(86362001)(53546011)(476003)(33656002)(99286004)(25786009)(71200400001)(10290500003)(256004)(71190400001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1417;H:DM6PR21MB1337.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: d4Y5YAHQC+x4MYOfU4eiGVL1GWtyblaKJ4W9rN5U2LHRkRy21IZiqWxKuX0NpiEllCPleSAR5BHeuPecCQ76BK1hQSJ91pSC2wSDqDYhYgMdKnTlB/A67YXeHQs6CMuapyxR86KcxUntx90qVUf/BF2w2RXR0R2gf6Z/iVKvJpXabGqS7PKFmdmtPvRjMb/GJEoL44ONw1qhSMapJ+Ll/+4r2bppDq/8m9d/7E4vb6ujXHBWSWbg+Y2tFmEjkU0HlDehFMgsLU1NRpMBt35oGDIxNZ+V3aE+TPhkvLXU0RQ4tHgJ3Xmx+Ggw8XmeplVYnSRtV5FvTvHbWrVa9zM+D4+OGr2TnYYCkuAw+2zS4Y/bad2dzBKUnOWFgCM8k2ZQyz8oLl0l6h8mKGcOz7GpfBpbhfr5mHa2JX2tRomH+hA=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acc09eaf-5289-9457-3ce1-f27efb6013b8@iogearbox.net>
-User-Agent: NeoMutt/20180223
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff0464a8-2242-4c64-ad68-08d73255d50b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 23:07:32.3687
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gIIi0+bs9zrW6ckkEJ0itoeBXAYCnEF9gJuUZfAZg1DMJ7nPb0Uzwu5amEWxzczDPp5JPjVXU1By2m+jwAAfIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1417
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 05, 2019 at 10:37:03AM +0200, Daniel Borkmann wrote:
-> On 9/4/19 5:21 PM, Alexei Starovoitov wrote:
-> > On 9/4/19 8:16 AM, Daniel Borkmann wrote:
-> > > opening/creating BPF maps" error="Unable to create map
-> > > /run/cilium/bpffs/tc/globals/cilium_lxc: operation not permitted"
-> > > subsys=daemon
-> > > 2019-09-04T14:11:47.28178666Z level=fatal msg="Error while creating
-> > > daemon" error="Unable to create map
-> > > /run/cilium/bpffs/tc/globals/cilium_lxc: operation not permitted"
-> > > subsys=daemon
-> > 
-> > Ok. We have to include caps in both cap_sys_admin and cap_bpf then.
-> > 
-> > > And /same/ deployment with reverted patches, hence no CAP_BPF gets it up
-> > > and running again:
-> > > 
-> > > # kubectl get pods --all-namespaces -o wide
-> > 
-> > Can you share what this magic commands do underneath?
-> 
-> What do you mean by magic commands? Latter is showing all pods in the cluster:
-> 
-> https://kubernetes.io/docs/reference/kubectl/cheatsheet/#viewing-finding-resources
 
-"magic" in a sense that I have no idea how k8s "services" and "pods" map
-to kernel namespaces.
 
-> Checking moby go code, it seems to exec with GetAllCapabilities which returns
-> all of the capabilities it is aware of, and afaics, they seem to be using
-> the below go library to get the hard-coded list from where obviously CAP_BPF
-> is unknown which might also explain the breakage I've been seeing:
-> 
-> https://github.com/syndtr/gocapability/blob/33e07d32887e1e06b7c025f27ce52f62c7990bc0/capability/enum_gen.go
+> -----Original Message-----
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Sent: Friday, August 30, 2019 7:05 PM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org;
+> netdev@vger.kernel.org; KY Srinivasan <kys@microsoft.com>; Stephen
+> Hemminger <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
+> <vkuznets@redhat.com>; davem@davemloft.net; linux-
+> kernel@vger.kernel.org; Mark Bloch <markb@mellanox.com>
+> Subject: Re: [PATCH net-next, 2/2] hv_netvsc: Sync offloading features to=
+ VF
+> NIC
+>=20
+> On Fri, 30 Aug 2019 03:45:38 +0000, Haiyang Zhang wrote:
+> > VF NIC may go down then come up during host servicing events. This
+> > causes the VF NIC offloading feature settings to roll back to the
+> > defaults. This patch can synchronize features from synthetic NIC to
+> > the VF NIC during ndo_set_features (ethtool -K), and
+> > netvsc_register_vf when VF comes back after host events.
+> >
+> > Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> > Cc: Mark Bloch <markb@mellanox.com>
+>=20
+> If we want to make this change in behaviour we should change net_failover
+> at the same time.
 
-thanks for the link.
-That library is much better written than libcap.
-capability_linux.go is reading cap_last_cap dynamically and it can understand
-proposed CAP_BPF, CAP_TRACING without need o be recompiled (unlike libcap).
-So passing new caps to k8s should be trivial. The library won't know
-their names, but passing by number looks to be already supported.
-I'm still not sure which part of k8s setup clears the caps and
-why this v2 set doesn't work, but that doesn't matter any more.
-I believe I addressed this compat issue in v3 set.
-Could you please give a try just repeating your previous commands?
+After checking the net_failover, I found it's for virtio based SRIOV, and v=
+ery=20
+different from what we did for Hyper-V based SRIOV.
+
+We let the netvsc driver acts as both the synthetic (PV) driver and the tra=
+nsparent=20
+bonding master for the VF NIC. But net_failover acts as a master device on =
+top=20
+of both virtio PV NIC, and VF NIC. And the net_failover doesn't implemented=
+=20
+operations, like ndo_set_features.
+So the code change for our netvsc driver cannot be applied to net_failover =
+driver.
+
+I will re-submit my two patches (fixing the extra tab in the 1st one as you=
+ pointed=20
+out). Thanks!
+
+- Haiyang
 
