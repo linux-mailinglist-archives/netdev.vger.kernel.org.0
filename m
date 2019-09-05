@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB1EA98B8
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA9CA98C6
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731029AbfIEDGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 23:06:55 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38413 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730652AbfIEDGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 23:06:55 -0400
-Received: by mail-pf1-f194.google.com with SMTP id h195so750647pfe.5
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 20:06:55 -0700 (PDT)
+        id S1730805AbfIEDLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 23:11:19 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43797 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730804AbfIEDLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 23:11:18 -0400
+Received: by mail-pl1-f196.google.com with SMTP id 4so560566pld.10
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 20:11:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ELttBCRw1A5YO2An5LqOnscxESNC1jHrDOB2eOhUzf0=;
-        b=nPb1Hpra7lqtzWoDX7p3CwYYne28JfIDVytSB/01eknPmAJcb7kVWu95VG+U4ZEZgE
-         l5VuOduJ/BjKaWI6PJMfHuIsIZoA06axlX2II/apMQ/HDWsfAvMOxTThrr5cCjTsPUz/
-         grodGpmKSfuMPURQWkJyvU+wUKQqG7i4MVckTpeYCEK+4FbcShEV/QALo+bKQXj132oy
-         NSnHrBwwDCfRme5aKHxcALcRPXH5m+EsUIBjnYOXUoDPGA8YL+FEqsYRrxoLl4tVIjWo
-         7Wn9k/0y4dfyRVEBQT68Z+JMflYckhBJosyoUP1DYcsvz/qGmPBCXWceAAKgpjpQQuA6
-         RoUQ==
+        bh=fcnS+G2pmrv/7FtDCpDg3ydXize5+qRthlkH+i6Nzg4=;
+        b=ZDy0QoVXR8NP5HmcAeSd42ZlxZcaLRWuNT1x335B6K+p+Wl3Du5eTC5yr6GVVDrjSH
+         7WRPbXrq1z8SL59ItZNjYg8SzxrkWTv6LI7g+hPEQl2BjMN2TmQxgCKh8woupiYlfAlj
+         AV0o7p5uLxvxmSttnBp6QAb3dzRHetI1bKxJE7v6/CDOhbqHlreQ6Hz/6+puwDsD0Nq7
+         YiBQQfuUrE1WkAkIq3ITPMKBQi/oLcpy5oCvmMtSPX6o1XstJ5KBLtOEqVYy4td6/8rp
+         k4RHtKkJeyANVP6Y72Z9ATUdqnf4C7K624iLqDVZ9ropU0y3Z3zO4zvDwY5xE5A3Foq0
+         PBPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ELttBCRw1A5YO2An5LqOnscxESNC1jHrDOB2eOhUzf0=;
-        b=EFnAsy5Yo19a/SmqRyaytERQ947j2Nx1n4eXl+1wh8VIPd3FXZxUZOplULyiuC/feG
-         VkbyJWW0jpkIKtvTic/nZhWTzZAbgaJViS2VKikIOcRPj1Pkr8f37cDpPc1Q79byuZUK
-         D8OFmp4Zt7hGs7N8pUqpvJp8xUJf+tapEuwx6RH4+zlTuV87u45n28h+93uzzMgy/FUM
-         OVzddx/ji+NotApjPTsT3HBXJMdS6tM2Hnu3QblrA7zVbaT+R/EuuWnYTRv+Zs58c+YA
-         Kqn05JZprDAL9PRIhd8+zXCihIuPKnInxEHXnEUY/qC3VW9iCpz5Zdah9B9tNkhLpfqi
-         xO9g==
-X-Gm-Message-State: APjAAAWxaKjFxlJcyFy4KmCWyd5HxgweERXHe1dZRu5EXp3ut5P1yaZv
-        6Vwg1wjRanchpNkk9o9uC5IMdw==
-X-Google-Smtp-Source: APXvYqxS7NXgi1tDYJCAiwpQskzahnsXS/8F9dZOzXw7WrSxv/s3pHyxNQ2yC/Uojecq9VUcpTJ53Q==
-X-Received: by 2002:a17:90a:8a02:: with SMTP id w2mr198598pjn.131.1567652814821;
-        Wed, 04 Sep 2019 20:06:54 -0700 (PDT)
+        bh=fcnS+G2pmrv/7FtDCpDg3ydXize5+qRthlkH+i6Nzg4=;
+        b=oQoNYKkNuALMyjXD4z7sh8GGeKlHPY/RkcsXpYJzG4LhrMUD9Z7IDlciI4pqkbVXv+
+         XJtiWICjazI/Cd7sZ9ESe3YpcDjMkUfhp9WoaijSZ6Sh4MNTnati+DdCkGu+TETDPcUT
+         eYksaiw3q4tqkkcPbsGjcuzn8e5EKe+IyEWXzTWf0W8fH9odDqPm5ANIldIyCYoZiNTE
+         kLnw55ibpji9XnTS3Cqopp2Fk9GHRMHUbbwITOdIjabO4D+8AoRHvkHQKaX37VYRj+gE
+         mwweLoLrVi5V9+Xkn/s6TQkTYGXKSI/hNhZ/olPQ4jSEGG3Dv7Z9VKwKxejJX4gLeLFb
+         juIw==
+X-Gm-Message-State: APjAAAXoYiyGD0zpp0CYzeURGxIkjFOX93KxyTxTX9j0oaTCnnC0XSv+
+        NiDpnsQJf8pvpMaPEXw4/+orzw==
+X-Google-Smtp-Source: APXvYqzBFhlg64JEELcYEpxge8o+Trj6bBxB+7UyvFsapXetocrCnzyulDI8AJ5Yy6Z/egaVAHxGog==
+X-Received: by 2002:a17:902:8a81:: with SMTP id p1mr1019815plo.71.1567653078050;
+        Wed, 04 Sep 2019 20:11:18 -0700 (PDT)
 Received: from baolinwangubtpc.spreadtrum.com ([117.18.48.82])
-        by smtp.gmail.com with ESMTPSA id n9sm461728pgf.64.2019.09.04.20.06.51
+        by smtp.gmail.com with ESMTPSA id q4sm531864pfh.115.2019.09.04.20.11.15
         (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 04 Sep 2019 20:06:54 -0700 (PDT)
+        Wed, 04 Sep 2019 20:11:17 -0700 (PDT)
 From:   Baolin Wang <baolin.wang@linaro.org>
-To:     stable@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Cc:     edumazet@google.com, netdev@vger.kernel.org, arnd@arndb.de,
-        baolin.wang@linaro.org, orsonzhai@gmail.com,
-        vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
-Subject: [BACKPORT 4.14.y v2 1/6] ip6: fix skb leak in ip6frag_expire_frag_queue()
-Date:   Thu,  5 Sep 2019 11:06:18 +0800
-Message-Id: <48fc1cc230c4840898ded9e57653b11f274d511a.1567649729.git.baolin.wang@linaro.org>
+To:     stable@vger.kernel.org, paulus@samba.org
+Cc:     ebiggers@google.com, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, arnd@arndb.de, baolin.wang@linaro.org,
+        orsonzhai@gmail.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org
+Subject: [BACKPORT 4.14.y v2 5/6] ppp: mppe: Revert "ppp: mppe: Add softdep to arc4"
+Date:   Thu,  5 Sep 2019 11:10:45 +0800
+Message-Id: <c24710bae9098ba971a2778a1a44627d5fa3ddc0.1567649729.git.baolin.wang@linaro.org>
 X-Mailer: git-send-email 1.7.9.5
 In-Reply-To: <cover.1567649728.git.baolin.wang@linaro.org>
 References: <cover.1567649728.git.baolin.wang@linaro.org>
@@ -60,59 +60,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[Upstream commit 47d3d7fdb10a21c223036b58bd70ffdc24a472c4]
+[Upstream commit 25a09ce79639a8775244808c17282c491cff89cf]
 
-Since ip6frag_expire_frag_queue() now pulls the head skb
-from frag queue, we should no longer use skb_get(), since
-this leads to an skb leak.
+Commit 0e5a610b5ca5 ("ppp: mppe: switch to RC4 library interface"),
+which was merged through the crypto tree for v5.3, changed ppp_mppe.c to
+use the new arc4_crypt() library function rather than access RC4 through
+the dynamic crypto_skcipher API.
 
-Stefan Bader initially reported a problem in 4.4.stable [1] caused
-by the skb_get(), so this patch should also fix this issue.
+Meanwhile commit aad1dcc4f011 ("ppp: mppe: Add softdep to arc4") was
+merged through the net tree and added a module soft-dependency on "arc4".
 
-296583.091021] kernel BUG at /build/linux-6VmqmP/linux-4.4.0/net/core/skbuff.c:1207!
-[296583.091734] Call Trace:
-[296583.091749]  [<ffffffff81740e50>] __pskb_pull_tail+0x50/0x350
-[296583.091764]  [<ffffffff8183939a>] _decode_session6+0x26a/0x400
-[296583.091779]  [<ffffffff817ec719>] __xfrm_decode_session+0x39/0x50
-[296583.091795]  [<ffffffff818239d0>] icmpv6_route_lookup+0xf0/0x1c0
-[296583.091809]  [<ffffffff81824421>] icmp6_send+0x5e1/0x940
-[296583.091823]  [<ffffffff81753238>] ? __netif_receive_skb+0x18/0x60
-[296583.091838]  [<ffffffff817532b2>] ? netif_receive_skb_internal+0x32/0xa0
-[296583.091858]  [<ffffffffc0199f74>] ? ixgbe_clean_rx_irq+0x594/0xac0 [ixgbe]
-[296583.091876]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
-[296583.091893]  [<ffffffff8183d431>] icmpv6_send+0x21/0x30
-[296583.091906]  [<ffffffff8182b500>] ip6_expire_frag_queue+0xe0/0x120
-[296583.091921]  [<ffffffffc04eb27f>] nf_ct_frag6_expire+0x1f/0x30 [nf_defrag_ipv6]
-[296583.091938]  [<ffffffff810f3b57>] call_timer_fn+0x37/0x140
-[296583.091951]  [<ffffffffc04eb260>] ? nf_ct_net_exit+0x50/0x50 [nf_defrag_ipv6]
-[296583.091968]  [<ffffffff810f5464>] run_timer_softirq+0x234/0x330
-[296583.091982]  [<ffffffff8108a339>] __do_softirq+0x109/0x2b0
+The latter commit no longer makes sense because the code now uses the
+"libarc4" module rather than "arc4", and also due to the direct use of
+arc4_crypt(), no module soft-dependency is required.
 
-Fixes: d4289fcc9b16 ("net: IP6 defrag: use rbtrees for IPv6 defrag")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Stefan Bader <stefan.bader@canonical.com>
-Cc: Peter Oskolkov <posk@google.com>
-Cc: Florian Westphal <fw@strlen.de>
+So revert the latter commit.
+
+Cc: Takashi Iwai <tiwai@suse.de>
+Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
 ---
- include/net/ipv6_frag.h |    1 -
+ drivers/net/ppp/ppp_mppe.c |    1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
-index 28aa9b3..1f77fb4 100644
---- a/include/net/ipv6_frag.h
-+++ b/include/net/ipv6_frag.h
-@@ -94,7 +94,6 @@ static inline u32 ip6frag_obj_hashfn(const void *data, u32 len, u32 seed)
- 		goto out;
+diff --git a/drivers/net/ppp/ppp_mppe.c b/drivers/net/ppp/ppp_mppe.c
+index d9eda7c..6c7fd98 100644
+--- a/drivers/net/ppp/ppp_mppe.c
++++ b/drivers/net/ppp/ppp_mppe.c
+@@ -63,7 +63,6 @@
+ MODULE_DESCRIPTION("Point-to-Point Protocol Microsoft Point-to-Point Encryption support");
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_ALIAS("ppp-compress-" __stringify(CI_MPPE));
+-MODULE_SOFTDEP("pre: arc4");
+ MODULE_VERSION("1.0.2");
  
- 	head->dev = dev;
--	skb_get(head);
- 	spin_unlock(&fq->q.lock);
- 
- 	icmpv6_send(head, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
+ static unsigned int
 -- 
 1.7.9.5
 
