@@ -2,181 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D71AAE04
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C37AAE06
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730454AbfIEVt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 17:49:57 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:43047 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728769AbfIEVt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 17:49:57 -0400
-Received: by mail-io1-f68.google.com with SMTP id u185so8164200iod.10
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 14:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2caBvcKHVMq32Jxk0H+/A3pTBK8PMMlG7a0kcmaGZZE=;
-        b=oBjTKkYG+xqGujbBBfwdwHp9kgsw78wf6Y9tZMXaQLEKVfnUmslJem8kZWP3bQESOf
-         Ww49Abh7kr4I/J/MIh+sQFWyXRVO3za6PyTgH6prjufPQu2YfjJtByjRP4XZNI1RDODy
-         CHr7wbSSAMB3l88XxRCHbiHTJuPs/1JWmnz7WyVkKsASYBLCESXEt9V/HNV/N0IZJDyn
-         P+Laf/bYo6ANC7VYzunVFfHywcSTg9Mgt/HVjZlEv49jUbzwZWLXPIkqNckeoFmpSZ/g
-         Jnmkty6qftY83XaFodXpRl5W9gkMZtQk5T+k2Pl6QwpNlQwJ7aSjVC7FwUg7/ZXYM0FK
-         Hzdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2caBvcKHVMq32Jxk0H+/A3pTBK8PMMlG7a0kcmaGZZE=;
-        b=ecnmVezVVsC6F6npJVMxsei9ZRiB0AyE9SyXneCxAbbIAYdDZAiA7+usRW+B0XylkH
-         nKtCttg5i4c+9tBiOEHEhQv5fqtagv/m4zGX4zxVhc1V1U1S4Z0PZnOJiABJeripxgcj
-         zO9gZNwGZudE8/oRGMYlJyVjmJ10molZFVo7z4ekkVPy48nHM6K9XzGJZ4QWfZqS+sQs
-         05giKcxe9jTZ9zVGQDbf9uZFPvb4ggi0Htjfd/7wVm7ixipaUaCuQ/euOupZGQfH1R7v
-         OyccX6LuAEdXmAL669QRZ9w4N7YAdOr2H1wLXmdjQIrjPhIpbvugCXURxxrSmrFJEAgD
-         OlWA==
-X-Gm-Message-State: APjAAAUASMmKttVyuwdVTgK4yZdlzq7JJ8D6xnQjA/cnOAYtLbUe7IKQ
-        9bonlJJZ/9cBi6MRLmweDhg5+1Vpspf41rcc+yY=
-X-Google-Smtp-Source: APXvYqxnvT0XycGYyiZSAFGeVVd1/phIFE0qpExljVECVFXHdsK9i9+goSpKGmKxbx+627rQbvphR+vdNxkIAYgdaek=
-X-Received: by 2002:a6b:fc02:: with SMTP id r2mr6228559ioh.15.1567720196055;
- Thu, 05 Sep 2019 14:49:56 -0700 (PDT)
+        id S1732629AbfIEVu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 17:50:57 -0400
+Received: from mail-eopbgr140087.outbound.protection.outlook.com ([40.107.14.87]:28743
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728769AbfIEVu4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 17:50:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fb4JFLLmsazpgB94M+nAgRxwa2kfd+enixs6X5tcGVmBfP5hrQzxCtjNFt3S9x0+w4sfElROlJWLI0up9WCYuJjIHoh4emiH1YEekkbVE6h+RkTKgBmmV3jD57wkk5PUWAFB0Y0yuG2VE6m0ljEQ6ZPW39mAG+GqtKYj8vOyAE96c84A0eSZRv/VR1Q6ue8sbeWEJbIiDoEvZId8o4cGxB+EF0Td+SegDpi33cPAPw4J9/9I4nRAAWb1EZ/unaQv6fBzFXS9c1Ya3bLz0TBCyLY3mNBIqkbzDI6q5uyzdaRGtVNTqR0ew46T1hS2GmtZfUIgetpCIzwOoPrOXOAhEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P1lopIy63iQqgh+yeBJ42jvNuywW7vFc/UuoaoWODVU=;
+ b=lQM7vZCooNcRLraYslONdpW74J7sVxoIdMYCD+GXGdKh5GYuby13K86+QUq19uxIqqDGOSV/yDaS202asQJDFVM1d6HXKDfOizFLYEdPpTg/0JjrTOcuislgBa32WTpDnGSBkWiaOKpzIuAXxPoGk6wIwJ2pZ2Cx6AZtc6DbB05RnrycL86w9Lb99mqSPMHB1ER410j4Vy8aAFR+/rLSrpErVW+/m9NyeNAqLsqMsfNJWHw6B126nIiP4j1hfsuOEXNmWxB1l7EhkJsidHZ5DCQWNMqZateZpQVDkBr9b/iDCGxeLQfkUp8/N4ICfyN7T6PmYj0sf6tGtyle7fjJog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P1lopIy63iQqgh+yeBJ42jvNuywW7vFc/UuoaoWODVU=;
+ b=RYo6tQ0mgnWt4Vw2FR0b6b1jVTVna2XYFtoYWSXG01HsHvH8WJwSviWQe9xs2K5RoECJDNVLazh7EiZkyaKQRln4pYOPG32XDbP69JhG5gfqQdIgoV2nDQ+2giNGp4a8Dx1t9RfkWQPIAAyDFLXENkRHHEFNTdd08npeEbOYiyU=
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
+ VI1PR0501MB2191.eurprd05.prod.outlook.com (10.169.134.138) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.18; Thu, 5 Sep 2019 21:50:52 +0000
+Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::c4f0:4270:5311:f4b9]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
+ ([fe80::c4f0:4270:5311:f4b9%5]) with mapi id 15.20.2220.022; Thu, 5 Sep 2019
+ 21:50:52 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/14] Mellanox, mlx5 cleanups & port
+ congestion stats
+Thread-Topic: [pull request][net-next 00/14] Mellanox, mlx5 cleanups & port
+ congestion stats
+Thread-Index: AQHVZDP8kFh0NdzpVEigyri4/hfonQ==
+Date:   Thu, 5 Sep 2019 21:50:52 +0000
+Message-ID: <20190905215034.22713-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR06CA0023.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::36) To VI1PR0501MB2765.eurprd05.prod.outlook.com
+ (2603:10a6:800:9a::12)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d787ce20-6334-47be-6e10-08d7324b1f3c
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2191;
+x-ms-traffictypediagnostic: VI1PR0501MB2191:|VI1PR0501MB2191:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0501MB21911C73DF4A83ABE88E6017BEBB0@VI1PR0501MB2191.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 015114592F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(199004)(189003)(54906003)(316002)(2906002)(256004)(8936002)(14444005)(8676002)(6486002)(305945005)(99286004)(7736002)(5660300002)(81156014)(81166006)(50226002)(1076003)(478600001)(6512007)(26005)(25786009)(36756003)(86362001)(4326008)(14454004)(6436002)(53936002)(102836004)(486006)(6506007)(386003)(66066001)(2616005)(476003)(186003)(107886003)(71190400001)(6916009)(71200400001)(52116002)(6116002)(66446008)(64756008)(66556008)(66476007)(66946007)(3846002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2191;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: WY+cqQMfyTT/VB+ErcelNegQVDpi1aHhYY5KfG7f8GTB5Pb7/LbEhX4quXNtZTq89A1n3cPBgdeHPq+Jg3r/bAjgO3qVk8wHU1PrLfgzvYCpInw03aZm1CHErkjFSkGP6wzNqJbkfKHSjm1BoZIOtuet0We2LjgPx6BrBHANYUt7zKt7K2n3fXoIH5gUfYrNFLdi0RdxcNKOA5LhxMxMytKvv0PnlbxcNNk/JpkJtQNJ8TbNYtUiNQvrt3DxVUCZd9fELniGeriDB8hkPcejqNRmob2HQewlJ08QcD2Aut6cWTvzkbYmQxhLxk7vaY8qEBiuFXMTcv4f5krshaQi71VaBD1K0YcZFyCF7vTzSVbrMeWmgj1ycSulPvhJdgNZovofyDi2pOxelYWbohvCQ+HefIh/SI5ZSSJaR1CCbCU=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
-In-Reply-To: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 5 Sep 2019 14:49:44 -0700
-Message-ID: <CAKgT0Uf-OvKKycJz7aTZ93J=RdUuwd=SFS9C9pTngieDxe0uYQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: gso: Fix skb_segment splat when splitting
- gso_size mangled skb having linear-headed frag_list
-To:     Shmulik Ladkani <shmulik@metanetworks.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        eyal@metanetworks.com, netdev <netdev@vger.kernel.org>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d787ce20-6334-47be-6e10-08d7324b1f3c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 21:50:52.8117
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VuQ9X3k22WEUSdVWbKXRD3COB17lUcqCSFRcreKiICpVAUD+h3lHpKfSB2JPS1OEfCuQTH2E6a/BLZBjQE2TOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2191
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 5, 2019 at 11:36 AM Shmulik Ladkani
-<shmulik@metanetworks.com> wrote:
->
-> Historically, support for frag_list packets entering skb_segment() was
-> limited to frag_list members terminating on exact same gso_size
-> boundaries. This is verified with a BUG_ON since commit 89319d3801d1
-> ("net: Add frag_list support to skb_segment"), quote:
->
->     As such we require all frag_list members terminate on exact MSS
->     boundaries.  This is checked using BUG_ON.
->     As there should only be one producer in the kernel of such packets,
->     namely GRO, this requirement should not be difficult to maintain.
->
-> However, since commit 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper"),
-> the "exact MSS boundaries" assumption no longer holds:
-> An eBPF program using bpf_skb_change_proto() DOES modify 'gso_size', but
-> leaves the frag_list members as originally merged by GRO with the
-> original 'gso_size'. Example of such programs are bpf-based NAT46 or
-> NAT64.
->
-> This lead to a kernel BUG_ON for flows involving:
->  - GRO generating a frag_list skb
->  - bpf program performing bpf_skb_change_proto() or bpf_skb_adjust_room()
->  - skb_segment() of the skb
->
-> See example BUG_ON reports in [0].
->
-> In commit 13acc94eff12 ("net: permit skb_segment on head_frag frag_list skb"),
-> skb_segment() was modified to support the "gso_size mangling" case of
-> a frag_list GRO'ed skb, but *only* for frag_list members having
-> head_frag==true (having a page-fragment head).
->
-> Alas, GRO packets having frag_list members with a linear kmalloced head
-> (head_frag==false) still hit the BUG_ON.
->
-> This commit adds support to skb_segment() for a 'head_skb' packet having
-> a frag_list whose members are *non* head_frag, with gso_size mangled, by
-> disabling SG and thus falling-back to copying the data from the given
-> 'head_skb' into the generated segmented skbs - as suggested by Willem de
-> Bruijn [1].
->
-> Since this approach involves the penalty of skb_copy_and_csum_bits()
-> when building the segments, care was taken in order to enable this
-> solution only when required:
->  - untrusted gso_size, by testing SKB_GSO_DODGY is set
->    (SKB_GSO_DODGY is set by any gso_size mangling functions in
->     net/core/filter.c)
->  - the frag_list is non empty, its item is a non head_frag, *and* the
->    headlen of the given 'head_skb' does not match the gso_size.
->
-> [0]
-> https://lore.kernel.org/netdev/20190826170724.25ff616f@pixies/
-> https://lore.kernel.org/netdev/9265b93f-253d-6b8c-f2b8-4b54eff1835c@fb.com/
->
-> [1]
-> https://lore.kernel.org/netdev/CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com/
->
-> Fixes: 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper")
-> Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> Cc: Alexander Duyck <alexander.duyck@gmail.com>
-> Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-> ---
->  net/core/skbuff.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index ea8e8d332d85..c4bd1881acff 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3678,6 +3678,24 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
->         sg = !!(features & NETIF_F_SG);
->         csum = !!can_checksum_protocol(features, proto);
->
-> +       if (mss != GSO_BY_FRAGS &&
-> +           (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
-> +               /* gso_size is untrusted.
-> +                *
-> +                * If head_skb has a frag_list with a linear non head_frag
-> +                * item, and head_skb's headlen does not fit requested
-> +                * gso_size, fall back to copying the skbs - by disabling sg.
-> +                *
-> +                * We assume checking the first frag suffices, i.e if either of
-> +                * the frags have non head_frag data, then the first frag is
-> +                * too.
-> +                */
-> +               if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag &&
-> +                   (mss != skb_headlen(head_skb) - doffset)) {
-> +                       sg = false;
-> +               }
-> +       }
-> +
+Hi Dave,
 
-I would change the order of the tests you use here so that we can
-eliminate the possibility of needing to perform many tests for the
-more common cases. You could probably swap "list_skb" and "mss !=
-GSO_BY_FRAGS" since list_skb is more likely to be false for many of
-the common cases such as a standard TSO send from a socket. You might
-even consider moving the GSO_BY_FRAGS check toward the end of your
-checks since SCTP is the only protocol that I believe uses it and the
-likelihood of encountering it is much lower compared to other
-protocols.
+This series provides 12 mlx5 cleanup patches and last 2 patches provide
+port congestion stats to ethtool.
 
-You could probably test for !list_skb->head_frag before seeing if
-there is a headlen since many NICs would be generating frames using
-head_frag, so in the GRO case you mentioned above it could probably
-save you some effort on a number of NICs.
+For more information please see tag log below.
 
-You might also consider moving this code up before we push the mac
-header back on and instead of setting sg to false you could just clear
-the NETIF_F_SG flag from features. It would save you from having to
-then remove doffset in your last check.
+Please pull and let me know if there is any problem.
 
->         if (sg && csum && (mss != GSO_BY_FRAGS))  {
->                 if (!(features & NETIF_F_GSO_PARTIAL)) {
->                         struct sk_buff *iter;
-> --
-> 2.19.1
->
+Thanks,
+Saeed.
+
+---
+The following changes since commit 0e5b36bc4c1fccfc18dd851d960781589c16dae8=
+:
+
+  r8152: adjust the settings of ups flags (2019-09-05 12:41:11 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2019-09-05
+
+for you to fetch changes up to 1297d97f4862ad690d882ae5b0487e3d1ff15953:
+
+  net/mlx5e: Add port buffer's congestion counters (2019-09-05 14:44:43 -07=
+00)
+
+----------------------------------------------------------------
+mlx5-updates-2019-09-05
+
+1) Allover mlx5 cleanups
+
+2) Added port congestion counters to ethtool stats:
+
+Add 3 counters per priority to ethtool using PPCNT:
+  2.1) rx_prio[p]_buf_discard - the number of packets discarded by device
+       due to lack of per host receive buffers
+  2.2) rx_prio[p]_cong_discard - the number of packets discarded by device
+       due to per host congestion
+  2.3) rx_prio[p]_marked - the number of packets ECN marked by device due
+       to per host congestion
+
+----------------------------------------------------------------
+Aya Levin (2):
+      net/mlx5: Expose HW capability bits for port buffer per priority cong=
+estion counters
+      net/mlx5e: Add port buffer's congestion counters
+
+Colin Ian King (2):
+      net/mlx5: fix spelling mistake "offlaods" -> "offloads"
+      net/mlx5: fix missing assignment of variable err
+
+Eran Ben Elisha (1):
+      net/mlx5e: Fix static checker warning of potential pointer math issue
+
+Mao Wenan (1):
+      net/mlx5: Kconfig: Fix MLX5_CORE dependency with PCI_HYPERV_INTERFACE
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Remove unnecessary clear_bit()s
+
+Roi Dayan (1):
+      net/mlx5e: Remove leftover declaration
+
+Saeed Mahameed (2):
+      net/mlx5e: Use ipv6_stub to avoid dependency with ipv6 being a module
+      net/mlx5: DR, Remove redundant dev_name print from err log
+
+Tariq Toukan (1):
+      net/mlx5e: kTLS, Remove unused function parameter
+
+Wei Yongjun (2):
+      net/mlx5: DR, Remove useless set memory to zero use memset()
+      net/mlx5: DR, Fix error return code in dr_domain_init_resources()
+
+zhong jiang (1):
+      net/mlx5: Use PTR_ERR_OR_ZERO rather than its implementation
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c |   9 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   2 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  23 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 149 +++++++++++++++++=
++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   7 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   2 +-
+ .../mellanox/mlx5/core/steering/dr_domain.c        |  18 ++-
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |   1 -
+ include/linux/mlx5/device.h                        |   1 +
+ include/linux/mlx5/mlx5_ifc.h                      |  29 +++-
+ 15 files changed, 207 insertions(+), 47 deletions(-)
