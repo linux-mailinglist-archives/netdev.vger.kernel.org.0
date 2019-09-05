@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D526AAB76
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27B3AABA4
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 21:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391437AbfIEStJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 14:49:09 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36570 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391424AbfIEStI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:49:08 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y19so3981925wrd.3
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xQniiTwVco7xvOlj75jt1pG4KaCruGDU+fZtYV4pADE=;
-        b=YyszYXUYxTSlWt//fw18ofLcQP9xDYG4Z0rqSokNQK9xPf8zO+8OUlJBXayce20FDY
-         LyJ07swNIsmQQ/2LYuttREBIbi2Ol69Qw4JK90FGMDi3nRyKRDdahFbw7PkedEjZ0TYG
-         9FybWNku1RW6JT+ERrePIblbhFam1Rr6sk2QTwiLXZbsrgfpAXz7afEfiRYI+/ycK+/C
-         RgZ7rntzgrB7F5sSisocKFEUGfg9/ySl9Gt058Qa8+7vxHYw+VGQXiwPbp/Gumw7Bp7L
-         jvRAmBcXaQq9iL0oGmQtgU2t78ViUTpz3ryqO+nQ43yhL4TDIUdqSITeh+glMTdM4Vog
-         HYUQ==
+        id S2389288AbfIETCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 15:02:19 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:44988 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388876AbfIETCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 15:02:19 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p2so2570566edx.11;
+        Thu, 05 Sep 2019 12:02:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=xQniiTwVco7xvOlj75jt1pG4KaCruGDU+fZtYV4pADE=;
-        b=aqT75sevWoZHZ6jYZSQgwuXi+WBuct1wwQFlJ5J1DMM9cpI6SRDmfCBkGswRqHN7j4
-         YeI+wdEKymuFB1G0F1y5/rq2lBRuB6YxXRsYTkFlr5GImaRsDzb3RI59yqISrHXst+as
-         DshCdIpl2bTtNx7JNHjluNYCANUK0ajDQJZxw1XK47tG74pN9Vf3ZWPUPREr12n8cOUc
-         m6vP4TPxkBZqipmJtTq5Yqv2+fba/7U9TMFUdf/dNJshGOa3Bfkt0uuzhWgX2wYQpfPz
-         Q0585EDYbH4H7RWF+AVps3usXhusXt0UfdVpRG/JDFYEn8rlNF8FgZP7apnPqUOp9KDz
-         O6lA==
-X-Gm-Message-State: APjAAAWeJS7pw0z3919ch1CLACkKPUbJXt3VC7t3xs440JhkneXvAsiy
-        n+e1MWA0MXwFCXyCOlzA2S6JPSQU
-X-Google-Smtp-Source: APXvYqyvs7MnhF4gAjwAJyXQvAbQiaBcu2FO0GWeN2+oW+xlRyvUC4XdEi/9liXJDjajMM9wueRMpg==
-X-Received: by 2002:adf:dc81:: with SMTP id r1mr3825746wrj.52.1567709346780;
-        Thu, 05 Sep 2019 11:49:06 -0700 (PDT)
-Received: from [192.168.8.147] (163.175.185.81.rev.sfr.net. [81.185.175.163])
-        by smtp.gmail.com with ESMTPSA id f15sm3271171wml.8.2019.09.05.11.49.05
+        bh=v4l9+uLQJWURusV4drj/K/JT9G0Yx+NFjnv0KyB59Ic=;
+        b=PnvOvkJDFNg+acQrpzjam3LrhWcZUIbSV03EXhQ9SgNbgVR/AqtMhjbwuZ8GDXBab3
+         ouBdHhiZCSRrmT2gHqDdanSS6HIFRf/nXPryS9H8+kvwoMp2PAnGnDO/+cJvgywYy2Za
+         JeFkKSzL5kUSupSwMvaxqd82u/l1fPg2nzvaKVrbzCG14Q20EaOycbVhfaizWgyJJB5K
+         m9FjaMKFN6JUSiJi+bZA1mdxIrlUBOFg/tZowzXyIs3eWkJWbnuwRnHKYQumEFbSZZUg
+         f2ERshrDuYFC6s8QkTCd8ZjXuBljgZkySCK/glC+0VyfDHo6MtSQX39kYHAT5Ffbt4K0
+         Z1gA==
+X-Gm-Message-State: APjAAAUgp9GMIoRuVgBWGV8XOfl7FXGalJGgHLLokoRsw03bJoW/bIi3
+        yHqTZQnrW1Zq0jG6uRSSc5G5O671j/o=
+X-Google-Smtp-Source: APXvYqxzTd47MqlgRCViKZrBRfYIigl7s3wz0sbueSZHBfhnmYPyF1bujYRjHD25yQvX/uZoFR+sVg==
+X-Received: by 2002:a17:906:4e12:: with SMTP id z18mr4200348eju.187.1567710136067;
+        Thu, 05 Sep 2019 12:02:16 -0700 (PDT)
+Received: from [10.68.32.192] (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.gmail.com with ESMTPSA id t22sm520533edd.79.2019.09.05.12.02.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Sep 2019 11:49:06 -0700 (PDT)
-Subject: Re: [PATCH v2] net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/128
- local route (and others)
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Lorenzo Colitti <lorenzo@google.com>
-References: <565e386f-e72a-73db-1f34-fedb5190658a@gmail.com>
- <20190902162336.240405-1-zenczykowski@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <98b8a95f-245a-0bdf-6a4c-c07a372d4d0f@gmail.com>
-Date:   Thu, 5 Sep 2019 20:49:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 05 Sep 2019 12:02:15 -0700 (PDT)
+Subject: Re: [PATCH v2 00/10] Add definition for the number of standard PCI
+ BARs
+To:     Andrew Murray <andrew.murray@arm.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Peter Jones <pjones@redhat.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>, kvm@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, linux-s390@vger.kernel.org
+References: <20190816092437.31846-1-efremov@linux.com>
+ <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
+From:   Denis Efremov <efremov@linux.com>
+Message-ID: <5d8cdc6b-f8c9-c3f1-e11d-13b3a7eb5b26@linux.com>
+Date:   Thu, 5 Sep 2019 22:02:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-In-Reply-To: <20190902162336.240405-1-zenczykowski@gmail.com>
+In-Reply-To: <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -71,72 +71,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/2/19 6:23 PM, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
+On 16.08.2019 13:51, Andrew Murray wrote:
+> On Fri, Aug 16, 2019 at 12:24:27PM +0300, Denis Efremov wrote:
+>> Code that iterates over all standard PCI BARs typically uses
+>> PCI_STD_RESOURCE_END, but this is error-prone because it requires
+>> "i <= PCI_STD_RESOURCE_END" rather than something like
+>> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+>> way PCI_SRIOV_NUM_BARS is used. There is already the definition
+>> PCI_BAR_COUNT for s390 only. Thus, this patchset introduces it globally.
+>>
+>> Changes in v2:
+>>   - Reverse checks in pci_iomap_range,pci_iomap_wc_range.
+>>   - Refactor loops in vfio_pci to keep PCI_STD_RESOURCES.
+>>   - Add 2 new patches to replace the magic constant with new define.
+>>   - Split net patch in v1 to separate stmmac and dwc-xlgmac patches.
+>>
+>> Denis Efremov (10):
+>>   PCI: Add define for the number of standard PCI BARs
+>>   s390/pci: Loop using PCI_STD_NUM_BARS
+>>   x86/PCI: Loop using PCI_STD_NUM_BARS
+>>   stmmac: pci: Loop using PCI_STD_NUM_BARS
+>>   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+>>   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+>>   efifb: Loop using PCI_STD_NUM_BARS
+>>   vfio_pci: Loop using PCI_STD_NUM_BARS
+>>   PCI: hv: Use PCI_STD_NUM_BARS
+>>   PCI: Use PCI_STD_NUM_BARS
+>>
+>>  arch/s390/include/asm/pci.h                      |  5 +----
+>>  arch/s390/include/asm/pci_clp.h                  |  6 +++---
+>>  arch/s390/pci/pci.c                              | 16 ++++++++--------
+>>  arch/s390/pci/pci_clp.c                          |  6 +++---
+>>  arch/x86/pci/common.c                            |  2 +-
+>>  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  4 ++--
+>>  drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c   |  2 +-
+>>  drivers/pci/controller/pci-hyperv.c              | 10 +++++-----
+>>  drivers/pci/pci.c                                | 11 ++++++-----
+>>  drivers/pci/quirks.c                             |  4 ++--
+>>  drivers/rapidio/devices/tsi721.c                 |  2 +-
+>>  drivers/vfio/pci/vfio_pci.c                      | 11 +++++++----
+>>  drivers/vfio/pci/vfio_pci_config.c               | 10 ++++++----
+>>  drivers/vfio/pci/vfio_pci_private.h              |  4 ++--
+>>  drivers/video/fbdev/efifb.c                      |  2 +-
+>>  include/linux/pci.h                              |  2 +-
+>>  include/uapi/linux/pci_regs.h                    |  1 +
+>>  17 files changed, 51 insertions(+), 47 deletions(-)
 > 
-> There is a subtle change in behaviour introduced by:
->   commit c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
->   'ipv6: Change addrconf_f6i_alloc to use ip6_route_info_create'
+> I've come across a few more places where this change can be made. There
+> may be multiple instances in the same file, but only the first is shown
+> below:
 > 
-> Before that patch /proc/net/ipv6_route includes:
-> 00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001 lo
+> drivers/misc/pci_endpoint_test.c:       for (bar = BAR_0; bar <= BAR_5; bar++) {
+> drivers/net/ethernet/intel/e1000/e1000_main.c:          for (i = BAR_1; i <= BAR_5; i++) {
+> drivers/net/ethernet/intel/ixgb/ixgb_main.c:    for (i = BAR_1; i <= BAR_5; i++) {
+> drivers/pci/controller/dwc/pci-dra7xx.c:        for (bar = BAR_0; bar <= BAR_5; bar++)
+> drivers/pci/controller/dwc/pci-layerscape-ep.c: for (bar = BAR_0; bar <= BAR_5; bar++)
+> drivers/pci/controller/dwc/pcie-artpec6.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
+> drivers/pci/controller/dwc/pcie-designware-plat.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
+> drivers/pci/endpoint/functions/pci-epf-test.c:  for (bar = BAR_0; bar <= BAR_5; bar++) {
+> include/linux/pci-epc.h:        u64     bar_fixed_size[BAR_5 + 1];
+> drivers/scsi/pm8001/pm8001_hwi.c:       for (bar = 0; bar < 6; bar++) {
+> drivers/scsi/pm8001/pm8001_init.c:      for (bar = 0; bar < 6; bar++) {
+> drivers/ata/sata_nv.c:  for (bar = 0; bar < 6; bar++)
+> drivers/video/fbdev/core/fbmem.c:       for (idx = 0, bar = 0; bar < PCI_ROM_RESOURCE; bar++) {
+> drivers/staging/gasket/gasket_core.c:   for (i = 0; i < GASKET_NUM_BARS; i++) {
+> drivers/tty/serial/8250/8250_pci.c:     for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) { <-----------
 > 
-> Afterwards /proc/net/ipv6_route includes:
-> 00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80240001 lo
+> It looks like BARs are often iterated with PCI_NUM_BAR_RESOURCES, there
+> are a load of these too found with:
 > 
-> ie. the above commit causes the ::1/128 local (automatic) route to be flagged with RTF_ADDRCONF (0x040000).
+> git grep PCI_ROM_RESOURCE | grep "< "
 > 
-> AFAICT, this is incorrect since these routes are *not* coming from RA's.
+> I'm happy to share patches if preferred.
 > 
-> As such, this patch restores the old behaviour.
-> 
-> Fixes: c7a1ce397adacaf5d4bb2eab0a738b5f80dc3e43
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Lorenzo Colitti <lorenzo@google.com>
-> Signed-off-by: Maciej Żenczykowski <maze@google.com>
-> ---
->  net/ipv6/route.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 558c6c68855f..516b2e568dae 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -4365,13 +4365,14 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
->  	struct fib6_config cfg = {
->  		.fc_table = l3mdev_fib_table(idev->dev) ? : RT6_TABLE_LOCAL,
->  		.fc_ifindex = idev->dev->ifindex,
-> -		.fc_flags = RTF_UP | RTF_ADDRCONF | RTF_NONEXTHOP,
-> +		.fc_flags = RTF_UP | RTF_NONEXTHOP,
->  		.fc_dst = *addr,
->  		.fc_dst_len = 128,
->  		.fc_protocol = RTPROT_KERNEL,
->  		.fc_nlinfo.nl_net = net,
->  		.fc_ignore_dev_down = true,
->  	};
-> +	struct fib6_info *f6i;
->  
->  	if (anycast) {
->  		cfg.fc_type = RTN_ANYCAST;
-> @@ -4381,7 +4382,10 @@ struct fib6_info *addrconf_f6i_alloc(struct net *net,
->  		cfg.fc_flags |= RTF_LOCAL;
->  	}
->  
-> -	return ip6_route_info_create(&cfg, gfp_flags, NULL);
-> +	f6i = ip6_route_info_create(&cfg, gfp_flags, NULL);
-> +	if (f6i)
-> +		f6i->dst_nocount = true;
 
-Shouldn't it use 
+I'm not sure about lib/devres.c
+265:#define PCIM_IOMAP_MAX      PCI_ROM_RESOURCE
+268:    void __iomem *table[PCIM_IOMAP_MAX];
+277:    for (i = 0; i < PCIM_IOMAP_MAX; i++)
+324:    BUG_ON(bar >= PCIM_IOMAP_MAX);
+352:    for (i = 0; i < PCIM_IOMAP_MAX; i++)
+455:    for (i = 0; i < PCIM_IOMAP_MAX; i++) {
 
-	if (!IS_ERR(f6i))
-		f6i->dst_nocount = true;
+Is it worth changing?
+#define PCIM_IOMAP_MAX  PCI_STD_NUM_BARS
 
-???
-
-
-> +	return f6i;
->  }
->  
->  /* remove deleted ip from prefsrc entries */
-> 
+Thanks,
+Denis
