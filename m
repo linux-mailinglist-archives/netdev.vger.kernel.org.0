@@ -2,71 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61132A9811
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:39:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E17A981F
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730377AbfIEBja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 21:39:30 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:42110 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727162AbfIEBja (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 21:39:30 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id E23C17C8EED83C01DF7D;
-        Thu,  5 Sep 2019 09:39:28 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 5 Sep 2019 09:39:20 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <eric.dumazet@gmail.com>, <tsbogend@alpha.franken.de>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH v2 net] net: sonic: return NETDEV_TX_OK if failed to map buffer
-Date:   Thu, 5 Sep 2019 09:57:12 +0800
-Message-ID: <20190905015712.107173-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <960c7d1f-6e80-84fb-8d7a-9c5692605500@huawei.com>
-References: <960c7d1f-6e80-84fb-8d7a-9c5692605500@huawei.com>
+        id S1730589AbfIEBrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 21:47:42 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44055 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727156AbfIEBrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 21:47:42 -0400
+Received: by mail-wr1-f65.google.com with SMTP id 30so707770wrk.11;
+        Wed, 04 Sep 2019 18:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3fEmvX2c1XkJUmAyhbV7F+bK25TJga6/ywCtOVMKmMA=;
+        b=esUmt9b0sGHozIEiOVEOlY0vld6q09PgYLIFYPDi07C0kEEjHmhVlIZ7Dg5Dgo+Gfg
+         iuxMmprgwv08CL/Mgu0PWdBS2U109aUyVsiqxPDlpxgu9HiFf+onaUnOxitDidVzeIfz
+         ZXpz9L6eRM3P00LwQNam5JkcS4qH3wDflAvWdXO+iMSttVYe7k0YCj9PctxvoWEYI1sg
+         jU59sChuxCKfBsdM3boEKEtcUyOUk+x+DEZKlG7qGZZlMUPWFzQi5MA7YAi2t1y2fQxr
+         LHv7eSLWuzYfsbKuwJJ1ZVO4k8npFVtnSXHZk5X/EItp/NPMriz6MPN1sN+fPJE1tFcs
+         ot9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3fEmvX2c1XkJUmAyhbV7F+bK25TJga6/ywCtOVMKmMA=;
+        b=ICzDP7z3KSkFa9pwb/REFcYJbEgTE6FK+3E3jh6E83Fe/ZXmrq/NSGFxjOTDIxNcwh
+         uFuyWDeCMGEryPeG2T2Rs4pgA326us/Oh4w/tvavVOlpzMZXyjXQJTiwUiYdNKwUQDXE
+         afddDZH5VHaO/035LgpA//sKnUPn6YK6zznQAQ4HvLtvH0wO8HNHzWdmkhIq4s0yj6PT
+         lkilx9A0OvK97v+CBWm9cz5KH3cFfliY3ZvEFJKH8v4Ff2uVrqMXmn0KuMq3zca7svTG
+         SUPpFOJpEYNkFnP+7MBMUKUeNfw7LWdyO1wW3TwmbVw+Rnue+YSafLT5ds3JohEDP2fL
+         jFkQ==
+X-Gm-Message-State: APjAAAUoSAWqJ5X3kPnpvnKW3CukkkPcNwDHfss7mf6Af7vDiYML5Cmj
+        1DdzXkjMTLW+/z9/NwEa/Zg=
+X-Google-Smtp-Source: APXvYqxssPj/S9IdzdM4cz0nCvWyZIltFhf2meIfABTwT42pnpG3zBVCnvSQTXqK9lglKEC+BBqOHA==
+X-Received: by 2002:adf:de8a:: with SMTP id w10mr377490wrl.276.1567648060012;
+        Wed, 04 Sep 2019 18:47:40 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id v7sm507565wru.87.2019.09.04.18.47.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 18:47:39 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] net/mlx5: Fix rt's type in dr_action_create_reformat_action
+Date:   Wed,  4 Sep 2019 18:47:33 -0700
+Message-Id: <20190905014733.17564-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NETDEV_TX_BUSY really should only be used by drivers that call
-netif_tx_stop_queue() at the wrong moment. If dma_map_single() is
-failed to map tx DMA buffer, it might trigger an infinite loop.
-This patch use NETDEV_TX_OK instead of NETDEV_TX_BUSY, and change
-printk to pr_err_ratelimited.
+clang warns:
 
-Fixes: d9fb9f384292 ("*sonic/natsemi/ns83829: Move the National Semi-conductor drivers")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1080:9:
+warning: implicit conversion from enumeration type 'enum
+mlx5_reformat_ctx_type' to different enumeration type 'enum
+mlx5dr_action_type' [-Wenum-conversion]
+                        rt = MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL;
+                           ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1082:9:
+warning: implicit conversion from enumeration type 'enum
+mlx5_reformat_ctx_type' to different enumeration type 'enum
+mlx5dr_action_type' [-Wenum-conversion]
+                        rt = MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL;
+                           ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1084:51:
+warning: implicit conversion from enumeration type 'enum
+mlx5dr_action_type' to different enumeration type 'enum
+mlx5_reformat_ctx_type' [-Wenum-conversion]
+                ret = mlx5dr_cmd_create_reformat_ctx(dmn->mdev, rt, data_sz, data,
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~            ^~
+3 warnings generated.
+
+Use the right type for rt, which is mlx5_reformat_ctx_type so there are
+no warnings about mismatched types.
+
+Fixes: 9db810ed2d37 ("net/mlx5: DR, Expose steering action functionality")
+Link: https://github.com/ClangBuiltLinux/linux/issues/652
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
- v2: change subject and description of patch, use NETDEV_TX_OK instead of NETDEV_TX_BUSY.
- drivers/net/ethernet/natsemi/sonic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
-index d0a01e8f000a..18fd62fbfb64 100644
---- a/drivers/net/ethernet/natsemi/sonic.c
-+++ b/drivers/net/ethernet/natsemi/sonic.c
-@@ -232,9 +232,9 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index a02f87f85c17..7d81a7735de5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -1074,7 +1074,7 @@ dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
+ 	case DR_ACTION_TYP_L2_TO_TNL_L2:
+ 	case DR_ACTION_TYP_L2_TO_TNL_L3:
+ 	{
+-		enum mlx5dr_action_type rt;
++		enum mlx5_reformat_ctx_type rt;
  
- 	laddr = dma_map_single(lp->device, skb->data, length, DMA_TO_DEVICE);
- 	if (!laddr) {
--		printk(KERN_ERR "%s: failed to map tx DMA buffer.\n", dev->name);
-+		pr_err_ratelimited("%s: failed to map tx DMA buffer.\n", dev->name);
- 		dev_kfree_skb(skb);
--		return NETDEV_TX_BUSY;
-+		return NETDEV_TX_OK;
- 	}
- 
- 	sonic_tda_put(dev, entry, SONIC_TD_STATUS, 0);       /* clear status */
+ 		if (action->action_type == DR_ACTION_TYP_L2_TO_TNL_L2)
+ 			rt = MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL;
 -- 
-2.20.1
+2.23.0
 
