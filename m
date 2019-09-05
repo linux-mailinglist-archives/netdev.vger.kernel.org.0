@@ -2,167 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA09AA13C
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 13:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B28DAAA181
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 13:32:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732400AbfIELYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 07:24:34 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:33078 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732541AbfIELYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 07:24:34 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t11so1175383plo.0
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 04:24:33 -0700 (PDT)
+        id S2388530AbfIELcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 07:32:14 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43002 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388518AbfIELcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 07:32:13 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w22so1555494pfi.9;
+        Thu, 05 Sep 2019 04:32:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oautEYXJNPg/LAxxq6KlzXzuc7s3EzH8MSqml3mnlFM=;
-        b=LBAX7V6D1Th2QUfX/hRQEHFvGDknVdyFkdXkIGgUFkxAk71cJS7G6lToozs2iu8Mu8
-         IQTQRSRqI+MDORXMr1YoTANBKUF9rZYD55NsSR7xubUHPn/sanRnQw/RSlfnvoEyfpzk
-         DsWs4tEgDfO6hnU9U9z5vTyNFILRWeenXG8IP/D+2Y9DHv8+KxklGSvCJDobVsdLzwbf
-         pnsqLg/MeGCE0evJfnekkkkUrBQPaO2jyzEMoKp5p7+W59kPOzCkq1W2a7hPII36GUs0
-         n+Yx9VprJg/gWKbZz+kda/jHxDOGXMZRgVkj7CPp2//Roi+nGzE/ckhwkFRGyiINfNc+
-         5OsA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=O2/2/UiNnPo2yFEZQiWQVkrfXLV3W+bgqpQbiqeCV1g=;
+        b=Z8+XdGz7F2tDUyCosgkoIQT++5bXAeKZmhLPORlnDKcdVvyoeiYDUAM+Bz+BZrUdXD
+         9v50xTLEkfzHJItvhLjlTCfg8cH7NFDUWKGg/JBWiYLP1pbiqciVQVv/kR7H43kpFyxM
+         dVznmyxSukLwD3F/fuwtNxUQdtdU1f8qEGtXFZCLXduqzl7Kb/ptZHOOXwo9KHuhZsJt
+         tjZCYiHCNiiFwlbMLtqTDMYd7yDm73JuA29rHETz0A9DDSMUuPJNL6ObCtWTpLQY900C
+         KLU4y3igDxU+UslXXWebYVKFfqNGd3CRDKSBO6KxXSt9dTtvZhT0qQQykJRr81/FuvXs
+         3qPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oautEYXJNPg/LAxxq6KlzXzuc7s3EzH8MSqml3mnlFM=;
-        b=BZuLDKp9tm4B3fQfcbwZsykeUMXSuTpTnwBpp3mKtP/4qcu/eKMQROppLdZRQU2Fio
-         1HIrYRzMewG4auKFlcVGFgUL/CJrTLOyFQi+1rQ/vzGsRZEX8v6T9TaqJYn5KbfcILbZ
-         HaDS2OnQEXhx/9WhlqsEqTt38OLwJ3AFiyOV/Asvpt/n1jqzVehlvpBEaPeigN3j7Bo/
-         WhxinKQgnzsz/2ORnVk5/B9Ushn48zEculOpGcwPbHH+7fYTmuHwF/mEgdL3wrqBFB5j
-         4dG1ZdYQnzVnMOB2XoOg+GDnJREAJb6VhaLbcdCf86JHeogm/0ZADmLrVQcDBUc/Oijl
-         8QmQ==
-X-Gm-Message-State: APjAAAU+yq9Y/hTdtNREzlVI05aRNmKAeZnEBN2arZXygpWdzDvLKGrq
-        v2d6f8/6vsX0Q77NsOe7wQ9ow5gTGD0xhOV2MV6/eQ==
-X-Google-Smtp-Source: APXvYqzYlJ+6XFJMLoIVm5KsjILP4hj1Nh+pP6z9kQbgaMFL3BtoAq5YkC9z3vteSvPXzaBhc1WHdlr4zCbLtT7lfnU=
-X-Received: by 2002:a17:902:8c92:: with SMTP id t18mr277036plo.147.1567682673098;
- Thu, 05 Sep 2019 04:24:33 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=O2/2/UiNnPo2yFEZQiWQVkrfXLV3W+bgqpQbiqeCV1g=;
+        b=lRhSdyBRUoB0LtCvSC35SNs4Ah7MLQYsJr1jZR3wAnbJcbPodcNmA4HwjZk4tFdZzM
+         K4JCQITdg3L5n/Vv75tHHDB6ptxgWwTPeV0EIb+XHQri5W+FrUU4dg++R9gQlrdN7yaG
+         2P7PKq/WDfIBlG31Dnja6EiLkOmnNku54H+gGS8br4iiC4dKJm9sZdmt64Wy1eioUBVk
+         wrBBjlefbFChg2fViljBgi9deAcs0C7qZzJgIYzD8vnJIoVweIqSonExk9qcOJHuhhmt
+         oSJApoH0xkXwaA5ZsjN5CEuwaQJ4lIdeXWSeycJKXUxkbE+NRoE3I4ARyfBBQuHb/ZhO
+         7XXA==
+X-Gm-Message-State: APjAAAUClQoyX4c4++9PzZkSZe/zVMG2Hli3/HVOAx+uvVPIVWAtoDht
+        AuV4cqHToe27WpfEds7GHBc=
+X-Google-Smtp-Source: APXvYqwMP3hi30dLG+ZuFVM6jRWm3eBY7wUln0Huh4bzmedKn7U/jTUHn6v2CFn6EGBQZ6I4thMKgQ==
+X-Received: by 2002:a17:90a:3462:: with SMTP id o89mr3387204pjb.2.1567683132905;
+        Thu, 05 Sep 2019 04:32:12 -0700 (PDT)
+Received: from localhost ([175.223.39.227])
+        by smtp.gmail.com with ESMTPSA id q2sm3101737pfg.144.2019.09.05.04.32.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 04:32:12 -0700 (PDT)
+Date:   Thu, 5 Sep 2019 20:32:08 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Qian Cai <cai@lca.pw>, Steven Rostedt <rostedt@goodmis.org>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190905113208.GA521@jagdpanzerIV>
+References: <20190903185305.GA14028@dhcp22.suse.cz>
+ <1567546948.5576.68.camel@lca.pw>
+ <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
+ <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
+ <20190904074312.GA25744@jagdpanzerIV>
+ <1567599263.5576.72.camel@lca.pw>
+ <20190904144850.GA8296@tigerII.localdomain>
+ <1567629737.5576.87.camel@lca.pw>
 MIME-Version: 1.0
-References: <0000000000002a95df0591a4f114@google.com> <d6e4d2da-66c6-a8fe-2fea-a3435fa7cb54@gmail.com>
- <20190904154140.45dfb398@hermes.lan> <285edb24-01f9-3f9d-4946-b2f41ccd0774@gmail.com>
-In-Reply-To: <285edb24-01f9-3f9d-4946-b2f41ccd0774@gmail.com>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Thu, 5 Sep 2019 13:24:21 +0200
-Message-ID: <CAAeHK+y3eQ7bXvo1tiAkwLCsFkbSU5B+6hsKbdEzkSXP2_Jyzg@mail.gmail.com>
-Subject: Re: WARNING in hso_free_net_device
-To:     Hui Peng <benquike@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
-        alexios.zavras@intel.com, "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Mathias Payer <mathias.payer@nebelwelt.net>,
-        netdev <netdev@vger.kernel.org>, rfontana@redhat.com,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Oliver Neukum <oneukum@suse.com>
-Content-Type: multipart/mixed; boundary="000000000000dabb730591cc9008"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1567629737.5576.87.camel@lca.pw>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000dabb730591cc9008
-Content-Type: text/plain; charset="UTF-8"
+On (09/04/19 16:42), Qian Cai wrote:
+> > Let me think more.
+> 
+> To summary, those look to me are all good long-term improvement that would
+> reduce the likelihood of this kind of livelock in general especially for other
+> unknown allocations that happen while processing softirqs, but it is still up to
+> the air if it fixes it 100% in all situations as printk() is going to take more
+> time
 
-On Thu, Sep 5, 2019 at 4:20 AM Hui Peng <benquike@gmail.com> wrote:
->
-> Can you guys have  a look at the attached patch?
+Well. So. I guess that we don't need irq_work most of the time.
 
-Let's try it:
+We need to queue irq_work for "safe" wake_up_interruptible(), when we
+know that we can deadlock in scheduler. IOW, only when we are invoked
+from the scheduler. Scheduler has printk_deferred(), which tells printk()
+that it cannot do wake_up_interruptible(). Otherwise we can just use
+normal wake_up_process() and don't need that irq_work->wake_up_interruptible()
+indirection. The parts of the scheduler, which by mistake call plain printk()
+from under pi_lock or rq_lock have chances to deadlock anyway and should
+be switched to printk_deferred().
 
-#syz test: https://github.com/google/kasan.git eea39f24
+I think we can queue significantly much less irq_work-s from printk().
 
-FYI: there are two more reports coming from this driver, which might
-(or might not) have the same root cause. One of them has a suggested
-fix by Oliver.
+Petr, Steven, what do you think?
 
-https://syzkaller.appspot.com/bug?extid=67b2bd0e34f952d0321e
-https://syzkaller.appspot.com/bug?extid=93f2f45b19519b289613
+Something like this. Call wake_up_interruptible(), switch to
+wake_up_klogd() only when called from sched code.
 
->
-> On 9/4/19 6:41 PM, Stephen Hemminger wrote:
-> > On Wed, 4 Sep 2019 16:27:50 -0400
-> > Hui Peng <benquike@gmail.com> wrote:
-> >
-> >> Hi, all:
-> >>
-> >> I looked at the bug a little.
-> >>
-> >> The issue is that in the error handling code, hso_free_net_device
-> >> unregisters
-> >>
-> >> the net_device (hso_net->net)  by calling unregister_netdev. In the
-> >> error handling code path,
-> >>
-> >> hso_net->net has not been registered yet.
-> >>
-> >> I think there are two ways to solve the issue:
-> >>
-> >> 1. fix it in drivers/net/usb/hso.c to avoiding unregistering the
-> >> net_device when it is still not registered
-> >>
-> >> 2. fix it in unregister_netdev. We can add a field in net_device to
-> >> record whether it is registered, and make unregister_netdev return if
-> >> the net_device is not registered yet.
-> >>
-> >> What do you guys think ?
-> > #1
+---
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index cd51aa7d08a9..89cb47882254 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 	pending_output = (curr_log_seq != log_next_seq);
+ 	logbuf_unlock_irqrestore(flags);
+ 
++	if (!pending_output)
++		return printed_len;
++
+ 	/* If called from the scheduler, we can not call up(). */
+-	if (!in_sched && pending_output) {
++	if (!in_sched) {
+ 		/*
+ 		 * Disable preemption to avoid being preempted while holding
+ 		 * console_sem which would prevent anyone from printing to
+@@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		if (console_trylock_spinning())
+ 			console_unlock();
+ 		preempt_enable();
+-	}
+ 
+-	if (pending_output)
++		wake_up_interruptible(&log_wait);
++	} else {
+ 		wake_up_klogd();
++	}
+ 	return printed_len;
+ }
+ EXPORT_SYMBOL(vprintk_emit);
+---
 
---000000000000dabb730591cc9008
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-Fix-a-wrong-unregistering-bug-in-hso_free_net_device.patch"
-Content-Disposition: attachment; 
-	filename="0001-Fix-a-wrong-unregistering-bug-in-hso_free_net_device.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_k06lry3b0>
-X-Attachment-Id: f_k06lry3b0
+> and could deal with console hardware that involve irq_exit() anyway.
 
-RnJvbSBmM2ZkZWU4ZmMwM2FhMmJjOTgyZjIyZGExZDI5YmJmNmJjYTcyOTM1IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogSHVpIFBlbmcgPGJlbnF1aWtlQGdtYWlsLmNvbT4NCkRhdGU6
-IFdlZCwgNCBTZXAgMjAxOSAyMTozODozNSAtMDQwMA0KU3ViamVjdDogW1BBVENIXSBGaXggYSB3
-cm9uZyB1bnJlZ2lzdGVyaW5nIGJ1ZyBpbiBoc29fZnJlZV9uZXRfZGV2aWNlDQoNCkFzIHNob3du
-IGJlbG93LCBoc29fY3JlYXRlX25ldF9kZXZpY2UgbWF5IGNhbGwgaHNvX2ZyZWVfbmV0X2Rldmlj
-ZQ0KYmVmb3JlIHRoZSBuZXRfZGV2aWNlIGlzIHJlZ2lzdGVyZWQuIGhzb19mcmVlX25ldF9kZXZp
-Y2Ugd2lsbA0KdW5yZWdpc3RlciB0aGUgbmV0d29yayBkZXZpY2Ugbm8gbWF0dGVyIGl0IGlzIHJl
-Z2lzdGVyZWQgb3Igbm90LA0KdW5yZWdpc3Rlcl9uZXRkZXYgaXMgbm90IGFibGUgdG8gaGFuZGxl
-IHVucmVnaXN0ZXJlZCBuZXRfZGV2aWNlLA0KcmVzdWx0aW5nIGluIHRoZSBidWcgcmVwb3J0ZWQg
-YnkgdGhlIHN5emJvdC4NCg0KYGBgDQpzdGF0aWMgc3RydWN0IGhzb19kZXZpY2UgKmhzb19jcmVh
-dGVfbmV0X2RldmljZShzdHJ1Y3QgdXNiX2ludGVyZmFjZSAqaW50ZXJmYWNlLA0KCQkJCQkgICAg
-ICAgaW50IHBvcnRfc3BlYykNCnsNCgkuLi4uLi4NCgluZXQgPSBhbGxvY19uZXRkZXYoc2l6ZW9m
-KHN0cnVjdCBoc29fbmV0KSwgImhzbyVkIiwgTkVUX05BTUVfVU5LTk9XTiwNCiAgICAgIAkJCSAg
-ICBoc29fbmV0X2luaXQpOw0KCS4uLi4uLg0KCWlmICghaHNvX25ldC0+b3V0X2VuZHApIHsNCiAg
-IAkgICAJZGV2X2VycigmaW50ZXJmYWNlLT5kZXYsICJDYW4ndCBmaW5kIEJVTEsgT1VUIGVuZHBv
-aW50XG4iKTsNCgkJZ290byBleGl0Ow0KCX0NCg0KCS4uLi4uLg0KCXJlc3VsdCA9IHJlZ2lzdGVy
-X25ldGRldihuZXQpOw0KCS4uLi4uLg0KZXhpdDoNCgloc29fZnJlZV9uZXRfZGV2aWNlKGhzb19k
-ZXYpOw0KCXJldHVybiBOVUxMOw0KfQ0KDQpzdGF0aWMgdm9pZCBoc29fZnJlZV9uZXRfZGV2aWNl
-KHN0cnVjdCBoc29fZGV2aWNlICpoc29fZGV2KQ0Kew0KCS4uLi4uLg0KCWlmIChoc29fbmV0LT5u
-ZXQpDQoJCXVucmVnaXN0ZXJfbmV0ZGV2KGhzb19uZXQtPm5ldCk7DQoJLi4uLi4uDQp9DQoNCmBg
-YA0KDQpUaGlzIHBhdGNoIGFkZHMgYSBuZXRfcmVnaXN0ZXJlZCBmaWVsZCBpbiBzdHJ1Y3QgaHNv
-X25ldCB0byByZWNvcmQgd2hldGhlcg0KdGhlIGNvbnRhaW5pbmcgbmV0X2RldmljZSBpcyByZWdp
-c3RlcmVkIG9yIG5vdCwgYW5kIGF2b2lkIHVucmVnaXN0ZXJpbmcgaXQNCmlmIGl0IGlzIG5vdCBy
-ZWdpc3RlcmVkIHlldC4NCg0KUmVwb3J0ZWQtYnk6IHN5emJvdCs0NGQ1M2M3MjU1YmIxYWVhMjJk
-MkBzeXprYWxsZXIuYXBwc3BvdG1haWwuY29tDQpTaWduZWQtb2ZmLWJ5OiBIdWkgUGVuZyA8YmVu
-cXVpa2VAZ21haWwuY29tPg0KLS0tDQogZHJpdmVycy9uZXQvdXNiL2hzby5jIHwgNCArKystDQog
-MSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvdXNiL2hzby5jIGIvZHJpdmVycy9uZXQvdXNiL2hzby5jDQppbmRl
-eCBjZTc4NzE0Li41YjNkZjMzIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvdXNiL2hzby5jDQor
-KysgYi9kcml2ZXJzL25ldC91c2IvaHNvLmMNCkBAIC0xMjgsNiArMTI4LDcgQEAgc3RydWN0IGhz
-b19zaGFyZWRfaW50IHsNCiBzdHJ1Y3QgaHNvX25ldCB7DQogCXN0cnVjdCBoc29fZGV2aWNlICpw
-YXJlbnQ7DQogCXN0cnVjdCBuZXRfZGV2aWNlICpuZXQ7DQorCWJvb2wgbmV0X3JlZ2lzdGVyZWQ7
-DQogCXN0cnVjdCByZmtpbGwgKnJma2lsbDsNCiAJY2hhciBuYW1lWzI0XTsNCiANCkBAIC0yMzYy
-LDcgKzIzNjMsNyBAQCBzdGF0aWMgdm9pZCBoc29fZnJlZV9uZXRfZGV2aWNlKHN0cnVjdCBoc29f
-ZGV2aWNlICpoc29fZGV2KQ0KIA0KIAlyZW1vdmVfbmV0X2RldmljZShoc29fbmV0LT5wYXJlbnQp
-Ow0KIA0KLQlpZiAoaHNvX25ldC0+bmV0KQ0KKwlpZiAoaHNvX25ldC0+bmV0ICYmIGhzb19uZXQt
-Pm5ldF9yZWdpc3RlcmVkKQ0KIAkJdW5yZWdpc3Rlcl9uZXRkZXYoaHNvX25ldC0+bmV0KTsNCiAN
-CiAJLyogc3RhcnQgZnJlZWluZyAqLw0KQEAgLTI1NDQsNiArMjU0NSw3IEBAIHN0YXRpYyBzdHJ1
-Y3QgaHNvX2RldmljZSAqaHNvX2NyZWF0ZV9uZXRfZGV2aWNlKHN0cnVjdCB1c2JfaW50ZXJmYWNl
-ICppbnRlcmZhY2UsDQogCQlkZXZfZXJyKCZpbnRlcmZhY2UtPmRldiwgIkZhaWxlZCB0byByZWdp
-c3RlciBkZXZpY2VcbiIpOw0KIAkJZ290byBleGl0Ow0KIAl9DQorCWhzb19uZXQtPm5ldF9yZWdp
-c3RlcmVkID0gdHJ1ZTsNCiANCiAJaHNvX2xvZ19wb3J0KGhzb19kZXYpOw0KIA0KLS0gDQoyLjcu
-NA0KDQo=
---000000000000dabb730591cc9008--
+printk->console_driver->write() does not involve irq.
+
+> On the other hand, adding __GPF_NOWARN in the build_skb() allocation will fix
+> this known NET_TX_SOFTIRQ case which is common when softirqd involved at least
+> in short-term. It even have a benefit to reduce the overall warn_alloc() noise
+> out there.
+
+That's not up to me to decide.
+
+	-ss
