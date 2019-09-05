@@ -2,124 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F14AAA79
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EA21AAA8C
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391198AbfIESAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 14:00:21 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2666 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391194AbfIESAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:00:21 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x85I0GmE005786
-        for <netdev@vger.kernel.org>; Thu, 5 Sep 2019 11:00:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=7ke73pEVb/kU37IV/XVhV4TkVIqC/yt+sS0yMFGN1Y0=;
- b=f4+b8EtvvVw6Zd1b3NVvDsrHXX9hXWiOndTBw1WCqFGinVXgprBBcsOoBxpXowggBETD
- cznJJMWj0Gpryw0dZe46XXOcTKdyZcBkCX6lyoOlkRKZK71OAbDXchx/ybKG9uUL8uny
- R/o8AhiTUANGjZflqA6MSBMWZP8DKT0878U= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2utkkxvvbg-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:00:20 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 5 Sep 2019 10:59:53 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 9DD42861892; Thu,  5 Sep 2019 10:59:52 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next] kbuild: replace BASH-specific ${@:2} with shift and ${@}
-Date:   Thu, 5 Sep 2019 10:59:38 -0700
-Message-ID: <20190905175938.599455-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S2391127AbfIESG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 14:06:59 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38370 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbfIESG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:06:59 -0400
+Received: by mail-wm1-f66.google.com with SMTP id o184so4159190wme.3
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=du8hrenMmR1OpU9VoB6zsRD7zRZu3iWJjdW2a83saTk=;
+        b=th25xKhRNt+w+xMvjuZ5DEElWcUH9g8Lzv4DUKcZ1l3k85fDU0s6h2t+/oaSboeYcs
+         9lw8mgM0GUFVArOy5JU0iVm4JerdqFr91gBHF1L1Hz4zBAlfSeKlQQcSDjQYkXUCb96V
+         lq0SID0LwSRRbbdjXdlI3Xjb0Ip5hO34SuzPbq0rpSLa7dNjV6rDOfkIZ53UB1tsvWjD
+         se2MZYcOL/vhuAiN7L1GeYkKxAYoUr+WU3V22EiydeMIwFUaWc/kqCnqJvGr+CEfhqjy
+         Eonn3372uan5vGMcvVrhx7Lfw/y2E+noQYONZhbt1ZEgf6zXslOiZnL0cSzh/Rw/uRGB
+         nxEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=du8hrenMmR1OpU9VoB6zsRD7zRZu3iWJjdW2a83saTk=;
+        b=qc7q/95HyfU5YrCnouSxY1Ew2d+Eiigs9NLk+kao58uEq7MXZKGlCoNKrfBSvI+Lfe
+         4K753t5zzQhAyudGeJHEek6oYDBer1CopePWee0CzzYWhyqmOQPabIEhA9J7PEO00Al+
+         hde6FEXgpkJrS3mmvwRvnsk3wL9Q3zTfL5mTQkRZ6zrbLiiZU2RFmbj0ekeeh7Dra5mb
+         wxvlMBIf2ihq21/cldhwloAPyqqcI6CRF+zaLC4PMnlZmKVDDq9+QLkUOnlSXnWBsuJY
+         Vc5nGOdXgtD5VDogFX6uV3HhQLJmxGiOWK8TiWE0h0/un45XPOdJbWobgFmvPVa4RQos
+         vWjg==
+X-Gm-Message-State: APjAAAVdjSbCO1dk8r0aCuXAhr+lJCcYmX0E//W5kDEbHvB9sAG9XoFe
+        4UhJcIfzUsPHFMdAhaV3AvE3qa8Lq7A=
+X-Google-Smtp-Source: APXvYqyCuDTTVK0oIgljWvDxjQTTqN/WUiR0VyQrSE58esTFeCO0FUn0mqP3R71aHtC+YTqz/JlNfg==
+X-Received: by 2002:a1c:9d15:: with SMTP id g21mr4167590wme.96.1567706817408;
+        Thu, 05 Sep 2019 11:06:57 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id r17sm3504227wrt.68.2019.09.05.11.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 11:06:56 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next] net: fib_notifier: move fib_notifier_ops from struct net into per-net struct
+Date:   Thu,  5 Sep 2019 20:06:56 +0200
+Message-Id: <20190905180656.4756-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-05_05:2019-09-04,2019-09-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- lowpriorityscore=0 spamscore=0 priorityscore=1501 phishscore=0
- mlxlogscore=500 mlxscore=0 clxscore=1015 adultscore=0 suspectscore=9
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1906280000 definitions=main-1909050170
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-${@:2} is BASH-specific extension, which makes link-vmlinux.sh rely on
-BASH. Use shift and ${@} instead to fix this issue.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+No need for fib_notifier_ops to be in struct net. It is used only by
+fib_notifier as a private data. Use net_generic to introduce per-net
+fib_notifier struct and move fib_notifier_ops there.
+
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- scripts/link-vmlinux.sh | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ include/net/net_namespace.h |  3 ---
+ net/core/fib_notifier.c     | 29 +++++++++++++++++++++++------
+ 2 files changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 0d8f41db8cd6..8c59970a09dc 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -57,12 +57,16 @@ modpost_link()
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index ab40d7afdc54..64bcb589a610 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -103,9 +103,6 @@ struct net {
+ 	/* core fib_rules */
+ 	struct list_head	rules_ops;
  
- # Link of vmlinux
- # ${1} - output file
--# ${@:2} - optional extra .o files
-+# ${2}, ${3}, ... - optional extra .o files
- vmlinux_link()
- {
- 	local lds="${objtree}/${KBUILD_LDS}"
-+	local output=${1}
- 	local objects
+-	struct list_head	fib_notifier_ops;  /* Populated by
+-						    * register_pernet_subsys()
+-						    */
+ 	struct net_device       *loopback_dev;          /* The loopback */
+ 	struct netns_core	core;
+ 	struct netns_mib	mib;
+diff --git a/net/core/fib_notifier.c b/net/core/fib_notifier.c
+index 13a40b831d6d..470a606d5e8d 100644
+--- a/net/core/fib_notifier.c
++++ b/net/core/fib_notifier.c
+@@ -5,8 +5,15 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <net/net_namespace.h>
++#include <net/netns/generic.h>
+ #include <net/fib_notifier.h>
  
-+	# skip output file argument
-+	shift
++static unsigned int fib_notifier_net_id;
 +
- 	if [ "${SRCARCH}" != "um" ]; then
- 		objects="--whole-archive			\
- 			${KBUILD_VMLINUX_OBJS}			\
-@@ -70,9 +74,10 @@ vmlinux_link()
- 			--start-group				\
- 			${KBUILD_VMLINUX_LIBS}			\
- 			--end-group				\
--			${@:2}"
-+			${@}"
++struct fib_notifier_net {
++	struct list_head fib_notifier_ops;
++};
++
+ static ATOMIC_NOTIFIER_HEAD(fib_chain);
  
--		${LD} ${KBUILD_LDFLAGS} ${LDFLAGS_vmlinux} -o ${1}	\
-+		${LD} ${KBUILD_LDFLAGS} ${LDFLAGS_vmlinux}	\
-+			-o ${output}				\
- 			-T ${lds} ${objects}
- 	else
- 		objects="-Wl,--whole-archive			\
-@@ -81,9 +86,10 @@ vmlinux_link()
- 			-Wl,--start-group			\
- 			${KBUILD_VMLINUX_LIBS}			\
- 			-Wl,--end-group				\
--			${@:2}"
-+			${@}"
+ int call_fib_notifier(struct notifier_block *nb, struct net *net,
+@@ -34,6 +41,7 @@ EXPORT_SYMBOL(call_fib_notifiers);
  
--		${CC} ${CFLAGS_vmlinux} -o ${1}			\
-+		${CC} ${CFLAGS_vmlinux}				\
-+			-o ${output}				\
- 			-Wl,-T,${lds}				\
- 			${objects}				\
- 			-lutil -lrt -lpthread
+ static unsigned int fib_seq_sum(void)
+ {
++	struct fib_notifier_net *fn_net;
+ 	struct fib_notifier_ops *ops;
+ 	unsigned int fib_seq = 0;
+ 	struct net *net;
+@@ -41,8 +49,9 @@ static unsigned int fib_seq_sum(void)
+ 	rtnl_lock();
+ 	down_read(&net_rwsem);
+ 	for_each_net(net) {
++		fn_net = net_generic(net, fib_notifier_net_id);
+ 		rcu_read_lock();
+-		list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
++		list_for_each_entry_rcu(ops, &fn_net->fib_notifier_ops, list) {
+ 			if (!try_module_get(ops->owner))
+ 				continue;
+ 			fib_seq += ops->fib_seq_read(net);
+@@ -58,9 +67,10 @@ static unsigned int fib_seq_sum(void)
+ 
+ static int fib_net_dump(struct net *net, struct notifier_block *nb)
+ {
++	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
+ 	struct fib_notifier_ops *ops;
+ 
+-	list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
++	list_for_each_entry_rcu(ops, &fn_net->fib_notifier_ops, list) {
+ 		int err;
+ 
+ 		if (!try_module_get(ops->owner))
+@@ -127,12 +137,13 @@ EXPORT_SYMBOL(unregister_fib_notifier);
+ static int __fib_notifier_ops_register(struct fib_notifier_ops *ops,
+ 				       struct net *net)
+ {
++	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
+ 	struct fib_notifier_ops *o;
+ 
+-	list_for_each_entry(o, &net->fib_notifier_ops, list)
++	list_for_each_entry(o, &fn_net->fib_notifier_ops, list)
+ 		if (ops->family == o->family)
+ 			return -EEXIST;
+-	list_add_tail_rcu(&ops->list, &net->fib_notifier_ops);
++	list_add_tail_rcu(&ops->list, &fn_net->fib_notifier_ops);
+ 	return 0;
+ }
+ 
+@@ -167,18 +178,24 @@ EXPORT_SYMBOL(fib_notifier_ops_unregister);
+ 
+ static int __net_init fib_notifier_net_init(struct net *net)
+ {
+-	INIT_LIST_HEAD(&net->fib_notifier_ops);
++	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
++
++	INIT_LIST_HEAD(&fn_net->fib_notifier_ops);
+ 	return 0;
+ }
+ 
+ static void __net_exit fib_notifier_net_exit(struct net *net)
+ {
+-	WARN_ON_ONCE(!list_empty(&net->fib_notifier_ops));
++	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
++
++	WARN_ON_ONCE(!list_empty(&fn_net->fib_notifier_ops));
+ }
+ 
+ static struct pernet_operations fib_notifier_net_ops = {
+ 	.init = fib_notifier_net_init,
+ 	.exit = fib_notifier_net_exit,
++	.id = &fib_notifier_net_id,
++	.size = sizeof(struct fib_notifier_net),
+ };
+ 
+ static int __init fib_notifier_init(void)
 -- 
 2.21.0
 
