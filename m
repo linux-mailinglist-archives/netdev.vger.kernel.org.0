@@ -2,115 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2796AA9EA
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 19:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8BFAA9EF
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 19:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390178AbfIERXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 13:23:38 -0400
-Received: from us-smtp-delivery-168.mimecast.com ([63.128.21.168]:52242 "EHLO
-        us-smtp-delivery-168.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732000AbfIERXh (ORCPT
+        id S1732970AbfIERXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 13:23:37 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40061 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732590AbfIERXh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 13:23:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=impinj.com;
-        s=mimecast20190405; t=1567704216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Gf6jfM7rdt5Q4+6guZE62JzUBQ9yVcnMN5zBZSqZvig=;
-        b=ChmBqPy1ItRQNXwlWvDhx815dQdpNoI4IFIHhFKLeC6Z11Kxm+3ux9UtSWIj7NY83axTM0
-        gBcb3pYCY/3ZVcm0OUhlQw4P/tKyAe3aj+BOOBVyLLbvahOJt+EYv51oTSzFABuRMo4ZAB
-        Z3jSBpZ12dX9zFIGZVsgXLs/o4RT+/A=
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com
- (mail-bn3nam01lp2055.outbound.protection.outlook.com [104.47.33.55]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-BJgYo9w9OjyOHSO1FD-7lw-1; Thu, 05 Sep 2019 13:06:23 -0400
-Received: from MWHPR0601MB3708.namprd06.prod.outlook.com (10.167.236.38) by
- MWHPR0601MB3659.namprd06.prod.outlook.com (10.167.236.25) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.14; Thu, 5 Sep 2019 17:06:17 +0000
-Received: from MWHPR0601MB3708.namprd06.prod.outlook.com
- ([fe80::60b3:e38a:69b0:3f95]) by MWHPR0601MB3708.namprd06.prod.outlook.com
- ([fe80::60b3:e38a:69b0:3f95%7]) with mapi id 15.20.2241.014; Thu, 5 Sep 2019
- 17:06:17 +0000
-From:   Trent Piepho <tpiepho@impinj.com>
-To:     "vitaly.gaiduk@cloudbear.ru" <vitaly.gaiduk@cloudbear.ru>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
+Received: by mail-pf1-f193.google.com with SMTP id x127so2183638pfb.7;
+        Thu, 05 Sep 2019 10:23:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1l6gOYgbY/8S5SuKPJEtRablfkztDo49+Znc3rixGCM=;
+        b=cvmGJgqPmVAuGDHTFTtOKuLvvF8PEu2ArODEQqt+Zv61WlzcBHvgmhJZSI0HyMsrdD
+         gOFAL0I1z7jXYkHBegLHwD/xvtZNMPCVDqzOeW2nSxbZrus6MnTAf0ekqUiSCQyQDdmX
+         FquDXCKs6FYRdBadQLHNfAjAqnfrT8rLhaQMJDG5kUbRNheRA2/esFQsd7Ch57+r73EF
+         F7/MH1x8tqLt+Lzi8wp0MKTt8jFpQrIjUU6mLwEKZPupWO5y6D1SQgNIQlhrnQ+yHc/L
+         sumdRCs7n55z+pOaOHV3KMB8jTfUlFkIklgl6PgMjVgIN4CHuXk4fWjiB/CJjt6Smkcy
+         RqHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1l6gOYgbY/8S5SuKPJEtRablfkztDo49+Znc3rixGCM=;
+        b=B0kmpLW8L3l3xLtQpk7UyV9H3hTqXHkgMnC07v70/KXSjEYZHAeb3bcTTijZNPsBR0
+         gMwOKF6ZqQhlpxovcn0TbI4cCeQ0HUl6MVtgtsejPgTdlKr4f5xfzL/k8cnrmQ0OAiKk
+         tL8FtSyriSYe27W2gSpJDyWSDqwk7w1sWuvw+jXS/Dx4gENuvAxTWejk5hikvzCs4Oe+
+         xokp3DNbIK7QeJZWlNMFvFU1692/JmymZZWodLA+9+5AGSZqNnkQhoWtuvks9kw3KTWm
+         St4bDVu/so/CVH8uCKWTEMr0S6GSAeSEXMhGGHT4Ait2V1jiBdLzjVoUnYc0RiDarE75
+         wMzQ==
+X-Gm-Message-State: APjAAAX8EtBFNFh84xxsuV7TcC1/sNDYvQP5pgniFlcEzXThfO0L7VDA
+        J2ydUaDeL1K+WhpG3H2w6/w=
+X-Google-Smtp-Source: APXvYqwNQ6XtulxcHVwMdpNWP/D8PMBP+dZ1m8NBqJpHi1PomT2HgRYzmpDNPuTDS4nzftS7R0NQfA==
+X-Received: by 2002:a62:e216:: with SMTP id a22mr5279101pfi.249.1567704216460;
+        Thu, 05 Sep 2019 10:23:36 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h66sm9805651pjb.0.2019.09.05.10.23.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 05 Sep 2019 10:23:35 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] ethtool: implement Energy Detect Powerdown support
+ via phy-tunable
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/2] net: phy: dp83867: Add documentation for SGMII mode
- type
-Thread-Topic: [PATCH 1/2] net: phy: dp83867: Add documentation for SGMII mode
- type
-Thread-Index: AQHVZAe9yk928RLMPka3wG1dYOEMaacdUGUA
-Date:   Thu, 5 Sep 2019 17:06:17 +0000
-Message-ID: <1567703176.6344.4.camel@impinj.com>
-References: <1567700761-14195-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
-         <1567700761-14195-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
-In-Reply-To: <1567700761-14195-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [216.207.205.253]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 53904907-2f58-4aca-ee8c-08d732235dce
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR0601MB3659;
-x-ms-traffictypediagnostic: MWHPR0601MB3659:
-x-microsoft-antispam-prvs: <MWHPR0601MB36599C9E052F795EFC031910D3BB0@MWHPR0601MB3659.namprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 015114592F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(346002)(136003)(396003)(39850400004)(376002)(199004)(189003)(71200400001)(64756008)(3846002)(316002)(66446008)(6246003)(53936002)(71190400001)(99286004)(54906003)(256004)(6512007)(66556008)(66476007)(110136005)(66066001)(478600001)(4326008)(14454004)(25786009)(2906002)(6436002)(6486002)(229853002)(5660300002)(36756003)(6506007)(7736002)(8676002)(305945005)(26005)(476003)(11346002)(2616005)(446003)(486006)(76176011)(102836004)(6116002)(91956017)(66946007)(76116006)(14444005)(186003)(2201001)(103116003)(81156014)(81166006)(8936002)(86362001)(2501003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR0601MB3659;H:MWHPR0601MB3708.namprd06.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: y01FR+au3D4natsqwzSZb3wU2I53LAkzRp7w6cfU8yBL2tH52JhNkQjxMg5m3LIsFMii1Eoqk1Tf6tcGknEEoCHXHPv277M773/ExhNJi4cTSOQp+9lwjWg5Vm5Ja08k0VdmM3KMpZZb+zI/Nanpwq2Yb4JGlqE0W8mo1H5u5z/J/SLG8URKDMquXwXq6HnIx+m7f/OO1cQ7g52pS03TjGT3iHfkiH06VTr8rHKHpCv+9lH9UmRcWzcJx2zm61lkIxj2057/6ItNKizmMRnacCZPGwnlV0wYbAKZtb3KPgZ34uYQhHkuSBmOEzhqr6T1YPg6YLkphcMyytfUN7EZe+Ak7vpNl+DDgppw+TmmICxpTHjzr/B24eUWrI6xLhlqWb82gBiCBjcZzuCbs6Eobk+GTb0gpiF8TCPoXHkrMuM=
-x-ms-exchange-transport-forked: True
-Content-ID: <A5BA510434E86445A2548D318A9B8682@namprd06.prod.outlook.com>
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+References: <20190904162322.17542-1-alexandru.ardelean@analog.com>
+ <20190904162322.17542-2-alexandru.ardelean@analog.com>
+ <20190904195357.GA21264@lunn.ch>
+ <361eb94a4da73d1fa21893e8e294639f0fc0bcd2.camel@analog.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <1b398b5c-ce16-fee7-6e83-c6cd6bc6c840@gmail.com>
+Date:   Thu, 5 Sep 2019 10:23:33 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: impinj.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53904907-2f58-4aca-ee8c-08d732235dce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 17:06:17.3532
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 6de70f0f-7357-4529-a415-d8cbb7e93e5e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jvHCVECOOlmP7xarwEf8MTmkUzibuspuJforPob25HeiwAfk0/O0vWUk59O+KYOtATkqUQ2N64w2Ywg4at25ZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0601MB3659
-X-MC-Unique: BJgYo9w9OjyOHSO1FD-7lw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <361eb94a4da73d1fa21893e8e294639f0fc0bcd2.camel@analog.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA5LTA1IGF0IDE5OjI2ICswMzAwLCBWaXRhbHkgR2FpZHVrIHdyb3RlOg0K
-PiBBZGQgZG9jdW1lbnRhdGlvbiBvZiB0aSxzZ21paS10eXBlIHdoaWNoIGNhbiBiZSB1c2VkIHRv
-IHNlbGVjdA0KPiBTR01JSSBtb2RlIHR5cGUgKDQgb3IgNi13aXJlKS4NCj4gDQo+IFNpZ25lZC1v
-ZmYtYnk6IFZpdGFseSBHYWlkdWsgPHZpdGFseS5nYWlkdWtAY2xvdWRiZWFyLnJ1Pg0KPiAtLS0N
-Cj4gIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvdGksZHA4Mzg2Ny50eHQg
-fCAxICsNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPiANCj4gZGlmZiAtLWdp
-dCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvdGksZHA4Mzg2Ny50eHQg
-Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L3RpLGRwODM4NjcudHh0DQo+
-IGluZGV4IGRiNmFhM2YyMjE1Yi4uMThlN2ZkNTI4OTdmIDEwMDY0NA0KPiAtLS0gYS9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L3RpLGRwODM4NjcudHh0DQo+ICsrKyBiL0Rv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvdGksZHA4Mzg2Ny50eHQNCj4gQEAg
-LTM3LDYgKzM3LDcgQEAgT3B0aW9uYWwgcHJvcGVydHk6DQo+ICAJCQkgICAgICBmb3IgYXBwbGlj
-YWJsZSB2YWx1ZXMuICBUaGUgQ0xLX09VVCBwaW4gY2FuIGFsc28NCj4gIAkJCSAgICAgIGJlIGRp
-c2FibGVkIGJ5IHRoaXMgcHJvcGVydHkuICBXaGVuIG9taXR0ZWQsIHRoZQ0KPiAgCQkJICAgICAg
-UEhZJ3MgZGVmYXVsdCB3aWxsIGJlIGxlZnQgYXMgaXMuDQo+ICsJLSB0aSxzZ21paS10eXBlIC0g
-VGhpcyBkZW5vdGVzIHRoZSBmYWN0IHdoaWNoIFNHTUlJIG1vZGUgaXMgdXNlZCAoNCBvciA2LXdp
-cmUpLg0KDQpSZWFsbHkgc2hvdWxkIGV4cGxhaW4gd2hhdCBraW5kIG9mIHZhbHVlIGl0IGlzIGFu
-ZCB3aGF0IHRoZSB2YWx1ZXMNCm1lYW4uICBJLmUuLCBzaG91bGQgdGhpcyBiZSB0aSxzZ2ltaWkt
-dHlwZSA9IDw0PiB0byBzZWxlY3QgNCB3aXJlPw0KDQpNYXliZSBhIGJvb2xlYW4sICJzZ21paS1j
-bG9jayIsIHRvIGluZGljYXRlIHRoZSBwcmVzZW5jZSBvZiBzZ21paSByeA0KY2xvY2sgbGluZXMs
-IHdvdWxkIG1ha2UgbW9yZSBzZW5zZT8NCg0KSSBhbHNvIHdvbmRlciBpZiBwaHktbW9kZSA9ICJz
-Z21paS1jbGsiIG9yICJzZ21paS02d2lyZSIsIHZzIHRoZQ0KZXhpc3RpbmcgcGh5LW1vZGUgPSAi
-c2dtaWkiLCBtaWdodCBhbHNvIGJlIGEgYmV0dGVyIHdheSB0byBkZXNjcmliZQ0KdGhpcyBpbnN0
-ZWFkIG9mIGEgbmV3IHByb3BlcnR5Lg0K
+On 9/4/19 11:25 PM, Ardelean, Alexandru wrote:
+> On Wed, 2019-09-04 at 21:53 +0200, Andrew Lunn wrote:
+>> [External]
+>>
+>> On Wed, Sep 04, 2019 at 07:23:21PM +0300, Alexandru Ardelean wrote:
+>>
+>> Hi Alexandru
+>>
+>> Somewhere we need a comment stating what EDPD means. Here would be a
+>> good place.
+> 
+> ack
+> 
+>>
+>>> +#define ETHTOOL_PHY_EDPD_DFLT_TX_INTERVAL	0x7fff
+>>> +#define ETHTOOL_PHY_EDPD_NO_TX			0x8000
+>>> +#define ETHTOOL_PHY_EDPD_DISABLE		0
+>>
+>> I think you are passing a u16. So why not 0xfffe and 0xffff?  We also
+>> need to make it clear what the units are for interval. This file
+> 
+> I initially thought about keeping this u8 and going with 0xff & 0xfe.
+> But 254 or 253 could be too small to specify the value of an interval.
+> 
+> Also (maybe due ti all the coding-patterns that I saw over the course of some time), make me feel that I should add a
+> flag somewhere.
+> 
+> Bottom line is: 0xfffe and 0xffff also work from my side, if it is acceptable (by the community).
+> 
+> Another approach I considered, was to maybe have this EDPD just do enable & disable (which is sufficient for the `adin`
+> PHY & `micrel` as well).
+> That would mean that if we would ever want to configure the TX interval (in the future), we would need an extra PHY-
+> tunable parameter just for that; because changing the enable/disable behavior would be dangerous.
+> And also, deferring the TX-interval configuration, does not sound like good design/pattern, since it can allow for tons
+> of PHY-tunable parameters for every little knob.
 
+It seems to me that the interval is a better way to deal with that, if
+you specify a non zero interval, you enable EDPD, even if your PHY can
+only act on an enable/disable bit. For PHYs that do support setting a TX
+internal, the non-zero interval can be translated into whatever
+appropriate unit. In all cases, a 0 interval means disable.
+
+Andrew, does that work  for you?
+-- 
+Florian
