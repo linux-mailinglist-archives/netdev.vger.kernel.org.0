@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E16AAD15
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 22:34:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EFB4AAD1B
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 22:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403956AbfIEUeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 16:34:18 -0400
-Received: from mga06.intel.com ([134.134.136.31]:45343 "EHLO mga06.intel.com"
+        id S2391690AbfIEUe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 16:34:28 -0400
+Received: from mga06.intel.com ([134.134.136.31]:45332 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391666AbfIEUeQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Sep 2019 16:34:16 -0400
+        id S2391650AbfIEUeP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 16:34:15 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Sep 2019 13:34:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,471,1559545200"; 
-   d="scan'208";a="267136566"
+   d="scan'208";a="267136569"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga001.jf.intel.com with ESMTP; 05 Sep 2019 13:34:11 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 13/16] ice: Allow for delayed LLDP MIB change registration
-Date:   Thu,  5 Sep 2019 13:34:03 -0700
-Message-Id: <20190905203406.4152-14-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 14/16] ice: Minor refactor in queue management
+Date:   Thu,  5 Sep 2019 13:34:04 -0700
+Message-Id: <20190905203406.4152-15-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190905203406.4152-1-jeffrey.t.kirsher@intel.com>
 References: <20190905203406.4152-1-jeffrey.t.kirsher@intel.com>
@@ -40,197 +40,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Add an additional boolean parameter to the ice_init_dcb
-function.  This boolean controls if the LLDP MIB change
-events are registered for.  Also, add a new function
-defined ice_cfg_lldp_mib_change.  The additional function
-is necessary to be able to register for LLDP MIB change
-events after calling ice_init_dcb.  The net effect of these
-two changes is to allow a delayed registration for MIB change
-events so that the driver is not accepting events before it
-is ready for them.
+Remove q_left_tx and q_left_rx from the PF struct as these can be
+obtained by calling ice_get_avail_txq_count and ice_get_avail_rxq_count
+respectively.
 
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+The function ice_determine_q_usage is only setting num_lan_tx and
+num_lan_rx in the PF structure, and these are later assigned to
+vsi->alloc_txq and vsi->alloc_rxq respectively. This is an unnecessary
+indirection, so remove ice_determine_q_usage and just assign values
+for vsi->alloc_txq and vsi->alloc_rxq in ice_vsi_set_num_qs and use
+these to set num_lan_tx and num_lan_rx respectively.
+
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb.c     | 39 ++++++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_dcb.h     | 11 ++----
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c |  4 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 10 ++++-
- drivers/net/ethernet/intel/ice/ice_main.c    |  2 +
- 5 files changed, 51 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |  4 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 25 ++++++----
+ drivers/net/ethernet/intel/ice/ice_main.c     | 50 +++++++++++--------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 14 +++---
+ 4 files changed, 54 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index c5ee8d930611..dd7efff121bd 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -60,7 +60,7 @@ ice_aq_get_lldp_mib(struct ice_hw *hw, u8 bridge_type, u8 mib_type, void *buf,
-  * Enable or Disable posting of an event on ARQ when LLDP MIB
-  * associated with the interface changes (0x0A01)
-  */
--enum ice_status
-+static enum ice_status
- ice_aq_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_update,
- 			   struct ice_sq_cd *cd)
- {
-@@ -943,10 +943,11 @@ enum ice_status ice_get_dcb_cfg(struct ice_port_info *pi)
- /**
-  * ice_init_dcb
-  * @hw: pointer to the HW struct
-+ * @enable_mib_change: enable MIB change event
-  *
-  * Update DCB configuration from the Firmware
-  */
--enum ice_status ice_init_dcb(struct ice_hw *hw)
-+enum ice_status ice_init_dcb(struct ice_hw *hw, bool enable_mib_change)
- {
- 	struct ice_port_info *pi = hw->port_info;
- 	enum ice_status ret = 0;
-@@ -972,9 +973,39 @@ enum ice_status ice_init_dcb(struct ice_hw *hw)
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index c7f234688499..6c4faf7551f6 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -368,8 +368,6 @@ struct ice_pf {
+ 	u32 num_lan_msix;	/* Total MSIX vectors for base driver */
+ 	u16 num_lan_tx;		/* num LAN Tx queues setup */
+ 	u16 num_lan_rx;		/* num LAN Rx queues setup */
+-	u16 q_left_tx;		/* remaining num Tx queues left unclaimed */
+-	u16 q_left_rx;		/* remaining num Rx queues left unclaimed */
+ 	u16 next_vsi;		/* Next free slot in pf->vsi[] - 0-based! */
+ 	u16 num_alloc_vsi;
+ 	u16 corer_count;	/* Core reset count */
+@@ -438,6 +436,8 @@ static inline struct ice_vsi *ice_get_main_vsi(struct ice_pf *pf)
+ int ice_vsi_setup_tx_rings(struct ice_vsi *vsi);
+ int ice_vsi_setup_rx_rings(struct ice_vsi *vsi);
+ void ice_set_ethtool_ops(struct net_device *netdev);
++u16 ice_get_avail_txq_count(struct ice_pf *pf);
++u16 ice_get_avail_rxq_count(struct ice_pf *pf);
+ void ice_update_vsi_stats(struct ice_vsi *vsi);
+ void ice_update_pf_stats(struct ice_pf *pf);
+ int ice_up(struct ice_vsi *vsi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 5f7c75c3b24b..7cd8c5d13bcc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -343,8 +343,20 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
  
- 	/* Configure the LLDP MIB change event */
--	ret = ice_aq_cfg_lldp_mib_change(hw, true, NULL);
-+	if (enable_mib_change) {
-+		ret = ice_aq_cfg_lldp_mib_change(hw, true, NULL);
-+		if (!ret)
-+			pi->is_sw_lldp = false;
-+	}
+ 	switch (vsi->type) {
+ 	case ICE_VSI_PF:
+-		vsi->alloc_txq = pf->num_lan_tx;
+-		vsi->alloc_rxq = pf->num_lan_rx;
++		vsi->alloc_txq = min_t(int, ice_get_avail_txq_count(pf),
++				       num_online_cpus());
 +
-+	return ret;
-+}
++		pf->num_lan_tx = vsi->alloc_txq;
 +
-+/**
-+ * ice_cfg_lldp_mib_change
-+ * @hw: pointer to the HW struct
-+ * @ena_mib: enable/disable MIB change event
-+ *
-+ * Configure (disable/enable) MIB
-+ */
-+enum ice_status ice_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_mib)
-+{
-+	struct ice_port_info *pi = hw->port_info;
-+	enum ice_status ret;
++		/* only 1 Rx queue unless RSS is enabled */
++		if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags))
++			vsi->alloc_rxq = 1;
++		else
++			vsi->alloc_rxq = min_t(int, ice_get_avail_rxq_count(pf),
++					       num_online_cpus());
 +
-+	if (!hw->func_caps.common_cap.dcb)
-+		return ICE_ERR_NOT_SUPPORTED;
++		pf->num_lan_rx = vsi->alloc_rxq;
 +
-+	/* Get DCBX status */
-+	pi->dcbx_status = ice_get_dcbx_status(hw);
-+
-+	if (pi->dcbx_status == ICE_DCBX_STATUS_DIS)
-+		return ICE_ERR_NOT_READY;
-+
-+	ret = ice_aq_cfg_lldp_mib_change(hw, ena_mib, NULL);
- 	if (!ret)
--		pi->is_sw_lldp = false;
-+		pi->is_sw_lldp = !ena_mib;
+ 		vsi->num_q_vectors = max_t(int, vsi->alloc_rxq, vsi->alloc_txq);
+ 		break;
+ 	case ICE_VSI_VF:
+@@ -2577,9 +2589,6 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
+ 		if (ret)
+ 			goto unroll_vector_base;
  
- 	return ret;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.h b/drivers/net/ethernet/intel/ice/ice_dcb.h
-index 522e1452abe2..ee138f9bdc7c 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.h
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.h
-@@ -125,7 +125,7 @@ ice_aq_get_dcb_cfg(struct ice_hw *hw, u8 mib_type, u8 bridgetype,
- 		   struct ice_dcbx_cfg *dcbcfg);
- enum ice_status ice_get_dcb_cfg(struct ice_port_info *pi);
- enum ice_status ice_set_dcb_cfg(struct ice_port_info *pi);
--enum ice_status ice_init_dcb(struct ice_hw *hw);
-+enum ice_status ice_init_dcb(struct ice_hw *hw, bool enable_mib_change);
- enum ice_status
- ice_query_port_ets(struct ice_port_info *pi,
- 		   struct ice_aqc_port_ets_elem *buf, u16 buf_size,
-@@ -139,9 +139,7 @@ ice_aq_start_lldp(struct ice_hw *hw, bool persist, struct ice_sq_cd *cd);
- enum ice_status
- ice_aq_start_stop_dcbx(struct ice_hw *hw, bool start_dcbx_agent,
- 		       bool *dcbx_agent_status, struct ice_sq_cd *cd);
--enum ice_status
--ice_aq_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_update,
--			   struct ice_sq_cd *cd);
-+enum ice_status ice_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_mib);
- #else /* CONFIG_DCB */
- static inline enum ice_status
- ice_aq_stop_lldp(struct ice_hw __always_unused *hw,
-@@ -172,9 +170,8 @@ ice_aq_start_stop_dcbx(struct ice_hw __always_unused *hw,
- }
+-		pf->q_left_tx -= vsi->alloc_txq;
+-		pf->q_left_rx -= vsi->alloc_rxq;
+-
+ 		/* Do not exit if configuring RSS had an issue, at least
+ 		 * receive traffic on first queue. Hence no need to capture
+ 		 * return value
+@@ -2643,8 +2652,6 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
+ 	ice_vsi_delete(vsi);
+ unroll_get_qs:
+ 	ice_vsi_put_qs(vsi);
+-	pf->q_left_tx += vsi->alloc_txq;
+-	pf->q_left_rx += vsi->alloc_rxq;
+ 	ice_vsi_clear(vsi);
  
- static inline enum ice_status
--ice_aq_cfg_lldp_mib_change(struct ice_hw __always_unused *hw,
--			   bool __always_unused ena_update,
--			   struct ice_sq_cd __always_unused *cd)
-+ice_cfg_lldp_mib_change(struct ice_hw __always_unused *hw,
-+			bool __always_unused ena_mib)
- {
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 20f440a64650..97c22d4aae1d 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -318,7 +318,7 @@ void ice_dcb_rebuild(struct ice_pf *pf)
- 		goto dcb_error;
- 	}
+ 	return NULL;
+@@ -2992,8 +2999,6 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 	ice_vsi_clear_rings(vsi);
  
--	ice_init_dcb(&pf->hw);
-+	ice_init_dcb(&pf->hw, true);
- 	if (pf->hw.port_info->dcbx_status == ICE_DCBX_STATUS_DIS)
- 		pf->hw.port_info->is_sw_lldp = true;
- 	else
-@@ -451,7 +451,7 @@ int ice_init_pf_dcb(struct ice_pf *pf, bool locked)
+ 	ice_vsi_put_qs(vsi);
+-	pf->q_left_tx += vsi->alloc_txq;
+-	pf->q_left_rx += vsi->alloc_rxq;
  
- 	port_info = hw->port_info;
+ 	/* retain SW VSI data structure since it is needed to unregister and
+ 	 * free VSI netdev when PF is not in reset recovery pending state,\
+@@ -3102,8 +3107,6 @@ int ice_vsi_rebuild(struct ice_vsi *vsi)
+ 		if (ret)
+ 			goto err_vectors;
  
--	err = ice_init_dcb(hw);
-+	err = ice_init_dcb(hw, false);
- 	if (err && !port_info->is_sw_lldp) {
- 		dev_err(&pf->pdev->dev, "Error initializing DCB %d\n", err);
- 		goto dcb_init_err;
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index ae9921b7de7b..d5db1426d484 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1206,8 +1206,8 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 			enum ice_status status;
- 
- 			/* Disable FW LLDP engine */
--			status = ice_aq_cfg_lldp_mib_change(&pf->hw, false,
--							    NULL);
-+			status = ice_cfg_lldp_mib_change(&pf->hw, false);
-+
- 			/* If unregistering for LLDP events fails, this is
- 			 * not an error state, as there shouldn't be any
- 			 * events to respond to.
-@@ -1273,6 +1273,12 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 			 * The FW LLDP engine will now be consuming them.
- 			 */
- 			ice_cfg_sw_lldp(vsi, false, false);
-+
-+			/* Register for MIB change events */
-+			status = ice_cfg_lldp_mib_change(&pf->hw, true);
-+			if (status)
-+				dev_dbg(&pf->pdev->dev,
-+					"Fail to enable MIB change events\n");
- 		}
- 	}
- 	clear_bit(ICE_FLAG_ETHTOOL_CTXT, pf->flags);
+-		pf->q_left_tx -= vsi->alloc_txq;
+-		pf->q_left_rx -= vsi->alloc_rxq;
+ 		break;
+ 	default:
+ 		break;
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 8bb3b81876a9..2d92d8591a8a 100644
+index 2d92d8591a8a..f8be9ada2447 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2536,6 +2536,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		if (ice_init_pf_dcb(pf, false)) {
- 			clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
- 			clear_bit(ICE_FLAG_DCB_ENA, pf->flags);
-+		} else {
-+			ice_cfg_lldp_mib_change(&pf->hw, true);
+@@ -2192,36 +2192,48 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
+ 		ice_vsi_free_q_vectors(vsi);
+ 		ice_vsi_delete(vsi);
+ 		ice_vsi_put_qs(vsi);
+-		pf->q_left_tx += vsi->alloc_txq;
+-		pf->q_left_rx += vsi->alloc_rxq;
+ 		ice_vsi_clear(vsi);
+ 	}
+ 	return status;
+ }
+ 
+ /**
+- * ice_determine_q_usage - Calculate queue distribution
+- * @pf: board private structure
+- *
+- * Return -ENOMEM if we don't get enough queues for all ports
++ * ice_get_avail_q_count - Get count of queues in use
++ * @pf_qmap: bitmap to get queue use count from
++ * @lock: pointer to a mutex that protects access to pf_qmap
++ * @size: size of the bitmap
+  */
+-static void ice_determine_q_usage(struct ice_pf *pf)
++static u16
++ice_get_avail_q_count(unsigned long *pf_qmap, struct mutex *lock, u16 size)
+ {
+-	u16 q_left_tx, q_left_rx;
++	u16 count = 0, bit;
+ 
+-	q_left_tx = pf->hw.func_caps.common_cap.num_txq;
+-	q_left_rx = pf->hw.func_caps.common_cap.num_rxq;
++	mutex_lock(lock);
++	for_each_clear_bit(bit, pf_qmap, size)
++		count++;
++	mutex_unlock(lock);
+ 
+-	pf->num_lan_tx = min_t(int, q_left_tx, num_online_cpus());
++	return count;
++}
+ 
+-	/* only 1 Rx queue unless RSS is enabled */
+-	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags))
+-		pf->num_lan_rx = 1;
+-	else
+-		pf->num_lan_rx = min_t(int, q_left_rx, num_online_cpus());
++/**
++ * ice_get_avail_txq_count - Get count of Tx queues in use
++ * @pf: pointer to an ice_pf instance
++ */
++u16 ice_get_avail_txq_count(struct ice_pf *pf)
++{
++	return ice_get_avail_q_count(pf->avail_txqs, &pf->avail_q_mutex,
++				     pf->max_pf_txqs);
++}
+ 
+-	pf->q_left_tx = q_left_tx - pf->num_lan_tx;
+-	pf->q_left_rx = q_left_rx - pf->num_lan_rx;
++/**
++ * ice_get_avail_rxq_count - Get count of Rx queues in use
++ * @pf: pointer to an ice_pf instance
++ */
++u16 ice_get_avail_rxq_count(struct ice_pf *pf)
++{
++	return ice_get_avail_q_count(pf->avail_rxqs, &pf->avail_q_mutex,
++				     pf->max_pf_rxqs);
+ }
+ 
+ /**
+@@ -2541,8 +2553,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
  		}
  	}
  
+-	ice_determine_q_usage(pf);
+-
+ 	pf->num_alloc_vsi = hw->func_caps.guar_num_vsi;
+ 	if (!pf->num_alloc_vsi) {
+ 		err = -EIO;
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 30e8e6166a59..64de05ccbc47 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -595,7 +595,8 @@ static int ice_alloc_vf_res(struct ice_vf *vf)
+ 	/* Update number of VF queues, in case VF had requested for queue
+ 	 * changes
+ 	 */
+-	tx_rx_queue_left = min_t(int, pf->q_left_tx, pf->q_left_rx);
++	tx_rx_queue_left = min_t(int, ice_get_avail_txq_count(pf),
++				 ice_get_avail_rxq_count(pf));
+ 	tx_rx_queue_left += ICE_DFLT_QS_PER_VF;
+ 	if (vf->num_req_qs && vf->num_req_qs <= tx_rx_queue_left &&
+ 	    vf->num_req_qs != vf->num_vf_qs)
+@@ -898,11 +899,11 @@ static int ice_check_avail_res(struct ice_pf *pf)
+ 	 * at runtime through Virtchnl, that is the reason we start by reserving
+ 	 * few queues.
+ 	 */
+-	num_txq = ice_determine_res(pf, pf->q_left_tx, ICE_DFLT_QS_PER_VF,
+-				    ICE_MIN_QS_PER_VF);
++	num_txq = ice_determine_res(pf, ice_get_avail_txq_count(pf),
++				    ICE_DFLT_QS_PER_VF, ICE_MIN_QS_PER_VF);
+ 
+-	num_rxq = ice_determine_res(pf, pf->q_left_rx, ICE_DFLT_QS_PER_VF,
+-				    ICE_MIN_QS_PER_VF);
++	num_rxq = ice_determine_res(pf, ice_get_avail_rxq_count(pf),
++				    ICE_DFLT_QS_PER_VF, ICE_MIN_QS_PER_VF);
+ 
+ 	if (!num_txq || !num_rxq)
+ 		return -EIO;
+@@ -2511,7 +2512,8 @@ static int ice_vc_request_qs_msg(struct ice_vf *vf, u8 *msg)
+ 	}
+ 
+ 	cur_queues = vf->num_vf_qs;
+-	tx_rx_queue_left = min_t(u16, pf->q_left_tx, pf->q_left_rx);
++	tx_rx_queue_left = min_t(u16, ice_get_avail_txq_count(pf),
++				 ice_get_avail_rxq_count(pf));
+ 	max_allowed_vf_queues = tx_rx_queue_left + cur_queues;
+ 	if (!req_queues) {
+ 		dev_err(&pf->pdev->dev,
 -- 
 2.21.0
 
