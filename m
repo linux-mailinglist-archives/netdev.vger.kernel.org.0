@@ -2,99 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D23D4AAA91
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EFC5AAB2E
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388425AbfIESHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 14:07:46 -0400
-Received: from mga03.intel.com ([134.134.136.65]:20501 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbfIESHp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Sep 2019 14:07:45 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Sep 2019 11:07:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,470,1559545200"; 
-   d="asc'?scan'208";a="382983113"
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Sep 2019 11:07:44 -0700
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.119]) by
- ORSMSX102.amr.corp.intel.com ([169.254.3.129]) with mapi id 14.03.0439.000;
- Thu, 5 Sep 2019 11:07:44 -0700
-From:   "Rustad, Mark D" <mark.d.rustad@intel.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: rtnl_lock() question
-Thread-Topic: rtnl_lock() question
-Thread-Index: AQHVYqJNX0fhsn8qT0SzmT0mxtlDA6cbl76AgACWmQCAAHFSgIABOguA
-Date:   Thu, 5 Sep 2019 18:07:43 +0000
-Message-ID: <FFDA0C01-0608-4A4A-B612-8964287D8E0A@intel.com>
-References: <29EC5179-D939-42CD-8577-682BE4B05916@gmail.com>
- <3164f8de-de20-44f7-03fb-8bc39ca8449e@gmail.com>
- <C46053D2-6BF5-4CFE-BF76-32DDCAD7BC10@gmail.com>
- <867cf373f204715aec3b2e04ef9f65454cf25a2e.camel@mellanox.com>
-In-Reply-To: <867cf373f204715aec3b2e04ef9f65454cf25a2e.camel@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.233.99.21]
-Content-Type: multipart/signed;
-        boundary="Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107";
-        protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1732541AbfIESg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 14:36:58 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37216 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725290AbfIESg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:36:58 -0400
+Received: by mail-wr1-f65.google.com with SMTP id i1so3350966wro.4
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:36:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=metanetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LUtFTWcoH9Wa00NdUp1MJqfK28DnqzwScRV0Z3qhU9Y=;
+        b=WFQTW3F+Ua1O4q0fY+wZ7rU0lfpr+zNq2vZcmAX8sEmjfo1chXK4vpdXATM7FRB4wB
+         N8Dq/hQL2qql6LXIONgd+j/UjODugdCi7r5ZO/nvkK98t1sTXKW0pLYbXk5/s4MLKCXP
+         BY7JbdpI50vBA71HZFx9I1d4nrEUxIBhv0lZE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LUtFTWcoH9Wa00NdUp1MJqfK28DnqzwScRV0Z3qhU9Y=;
+        b=KZt7vQvCHee70+TPvQOXa2kHU18jYp2tRJr6+TeBzc8CnbgSKeFpyI9ya60Oolyq05
+         7loq9SSHaZ3ztVQHUlrIGUMfugfJ3an8qYaqCSxRufO7nDhvp79/xQTXw5vh0hHk+3rM
+         D8POevaIzPuga+MryRZ00cka0xeO0jDD6e4LXYcJHX4OZhcjml47hbQUWhT7ScpsD66i
+         n2WX8i+Qi2uvm2EbNHzS2pk01Yfbt0GGNBoYEi+VJciUqetmIeA/4u5qx37FEDg/bJdc
+         TX3YN2fB4zuHRyg+khpJc2V4Oug+6Gjy968k+OFu7Q8Ob9XqCCLd/sGyE6xjv1HOK4OQ
+         mi1w==
+X-Gm-Message-State: APjAAAVxJVFBH6l3VtqIJ++vo8V89FxWOusObvd3gl1ut2X14UPYT+hS
+        xUSi487/fDHx43/rqrP1PsS1Pg==
+X-Google-Smtp-Source: APXvYqxm8tywSmT64Gkrt5Dh2krTdjNqG6Boz/sLCpFLfNvLN9CBu5h90+3dus1t86lrvg5C33e4gw==
+X-Received: by 2002:adf:f186:: with SMTP id h6mr3735091wro.274.1567708616437;
+        Thu, 05 Sep 2019 11:36:56 -0700 (PDT)
+Received: from pixies.home ([141.226.9.174])
+        by smtp.gmail.com with ESMTPSA id o12sm3780036wmh.43.2019.09.05.11.36.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 11:36:55 -0700 (PDT)
+From:   Shmulik Ladkani <shmulik@metanetworks.com>
+X-Google-Original-From: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     eyal@metanetworks.com, netdev <netdev@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH net] net: gso: Fix skb_segment splat when splitting gso_size mangled skb having linear-headed frag_list
+Date:   Thu,  5 Sep 2019 21:36:33 +0300
+Message-Id: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii;
-	delsp=yes;
-	format=flowed
+Historically, support for frag_list packets entering skb_segment() was
+limited to frag_list members terminating on exact same gso_size
+boundaries. This is verified with a BUG_ON since commit 89319d3801d1
+("net: Add frag_list support to skb_segment"), quote:
 
-On Sep 4, 2019, at 4:23 PM, Saeed Mahameed <saeedm@mellanox.com> wrote:
+    As such we require all frag_list members terminate on exact MSS
+    boundaries.  This is checked using BUG_ON.
+    As there should only be one producer in the kernel of such packets,
+    namely GRO, this requirement should not be difficult to maintain.
 
-> some allocations require parameters that should remain valid and
-> constant across the whole reconfiguration procedure such
-> params.num_channels, so they must be done inside the lock.
+However, since commit 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper"),
+the "exact MSS boundaries" assumption no longer holds:
+An eBPF program using bpf_skb_change_proto() DOES modify 'gso_size', but
+leaves the frag_list members as originally merged by GRO with the
+original 'gso_size'. Example of such programs are bpf-based NAT46 or
+NAT64.
 
-You could always check if those parameters have changed once under the lock  
-and, if they did, drop the lock, reallocate and try again. Since such  
-changes should be very infrequent, this is something that really should not  
-loop multiple times.
+This lead to a kernel BUG_ON for flows involving:
+ - GRO generating a frag_list skb
+ - bpf program performing bpf_skb_change_proto() or bpf_skb_adjust_room()
+ - skb_segment() of the skb
 
---
-Mark Rustad, Networking Division, Intel Corporation
+See example BUG_ON reports in [0].
 
---Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Message signed with OpenPGP
+In commit 13acc94eff12 ("net: permit skb_segment on head_frag frag_list skb"),
+skb_segment() was modified to support the "gso_size mangling" case of
+a frag_list GRO'ed skb, but *only* for frag_list members having
+head_frag==true (having a page-fragment head).
 
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
+Alas, GRO packets having frag_list members with a linear kmalloced head
+(head_frag==false) still hit the BUG_ON.
 
-iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAl1xTu8ACgkQPA7/547j
-7m704g/+NNurCjTB3J2ILgNoj84TiT3eUJ7KofmgwWwvpijPsimzn+FySyXdZu68
-7ARZC+z1z0exIYJ5RxETBvG4SXlc1d0W9aS3fl1SBO3kIgqQmHglp63mh0JzXc5o
-D57370FSpST3IM3kbIjqEmZx5bPoxYnL7mD0lyZ8nb2gxHi2mRBU6SQbnYRfIN8b
-SH4INmomIz2WV3V7zp4UoVslhEG+/laiEndnZD4L6SXWFS9XMdHShisfoDdQWtWZ
-PhI/64KgrbzvRivWqI/WC0FwOxTB0czylskbiAmRtD2gxrka/fNq2D6QA74WXlpf
-OYNXLZ7F1qfBtpJsBue4x/Y3jo7Mfiar6SEq6wXVCzskjMBw9IzRlcgNzQhVoVTf
-ZW6c6wqia/6RgK46HH28kh8kexsbpl5WwwxPZNEelfCjZZcw6yDEN1VE1WpfFEuj
-FQ0jYyoxXe5GGY7MeriFHcllg3ue4B1NCYH+LsTAtYTwTNK/mYHrrU60T1TV/rD0
-DoB5vD/1tNl57QaA/Nj9sDoWSKHy4yo5oMPmKCMbDF7KZv1/a05gDxROMt5ryiQ2
-tfK/IKhmsO20xPf30OJyBrgLXm67s+UdCBUuY6MzZXONLSHeeQXWVZP5OdSZSpJM
-1E97/9d//1fiNHQuG75FKo7anbJOdJyC9zjXb4c3F80W3oty/8s=
-=nrv/
------END PGP SIGNATURE-----
+This commit adds support to skb_segment() for a 'head_skb' packet having
+a frag_list whose members are *non* head_frag, with gso_size mangled, by
+disabling SG and thus falling-back to copying the data from the given
+'head_skb' into the generated segmented skbs - as suggested by Willem de
+Bruijn [1].
 
---Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107--
+Since this approach involves the penalty of skb_copy_and_csum_bits()
+when building the segments, care was taken in order to enable this
+solution only when required:
+ - untrusted gso_size, by testing SKB_GSO_DODGY is set
+   (SKB_GSO_DODGY is set by any gso_size mangling functions in
+    net/core/filter.c)
+ - the frag_list is non empty, its item is a non head_frag, *and* the
+   headlen of the given 'head_skb' does not match the gso_size.
+
+[0]
+https://lore.kernel.org/netdev/20190826170724.25ff616f@pixies/
+https://lore.kernel.org/netdev/9265b93f-253d-6b8c-f2b8-4b54eff1835c@fb.com/
+
+[1]
+https://lore.kernel.org/netdev/CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com/
+
+Fixes: 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper")
+Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>
+Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+---
+ net/core/skbuff.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ea8e8d332d85..c4bd1881acff 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3678,6 +3678,24 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+ 	sg = !!(features & NETIF_F_SG);
+ 	csum = !!can_checksum_protocol(features, proto);
+ 
++	if (mss != GSO_BY_FRAGS &&
++	    (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
++		/* gso_size is untrusted.
++		 *
++		 * If head_skb has a frag_list with a linear non head_frag
++		 * item, and head_skb's headlen does not fit requested
++		 * gso_size, fall back to copying the skbs - by disabling sg.
++		 *
++		 * We assume checking the first frag suffices, i.e if either of
++		 * the frags have non head_frag data, then the first frag is
++		 * too.
++		 */
++		if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag &&
++		    (mss != skb_headlen(head_skb) - doffset)) {
++			sg = false;
++		}
++	}
++
+ 	if (sg && csum && (mss != GSO_BY_FRAGS))  {
+ 		if (!(features & NETIF_F_GSO_PARTIAL)) {
+ 			struct sk_buff *iter;
+-- 
+2.19.1
+
