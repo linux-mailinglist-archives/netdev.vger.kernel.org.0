@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CDDFAA422
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2787AA430
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388761AbfIENPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 09:15:14 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56088 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731758AbfIENPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 09:15:13 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i5rbJ-0007g9-Kk; Thu, 05 Sep 2019 15:15:01 +0200
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i5rbJ-0007sg-BH; Thu, 05 Sep 2019 15:15:01 +0200
-Subject: Re: [PATCH bpf] bpf: fix precision tracking of stack slots
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-References: <20190903221617.635375-1-ast@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f48e1484-08f4-ab3e-4b5e-98410e0c9a7a@iogearbox.net>
-Date:   Thu, 5 Sep 2019 15:15:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731881AbfIENST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 09:18:19 -0400
+Received: from first.geanix.com ([116.203.34.67]:60752 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730780AbfIENST (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 09:18:19 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 828064F77A;
+        Thu,  5 Sep 2019 13:18:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1567689486; bh=uqw2IhKzhaaQEY3xZMRFUOw9w2YuraMJ6etB4+yxZJs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=Ml3w2efT3Emn/hXQ/8/SEyjO9ojZAHevEDeZFwq2RpUwQoqKejZda/7pY4uahpi7a
+         apqCLLTVeCJRveHKP/raaBYDhFV39S0AyBe58evr2UpwLamg+zCgTRNOfgcJdDotfT
+         P5AXs+m9SAhg8ta1t8EoQiCu2FrN2un3odAf18V54STEOdsB3r//8xQLouJsDywPiO
+         5qgsRgLz65Ie9EgJXCkQ285sblKWsCYn/2dtfdQDbOr+UqZM1TBhRMs+GOz39jaZ9j
+         B/JTtvZV7PoiK5kUVNH/DMfnASKOcq7EwrLmMCFP6WZIhTE52keok7LJg2xxeFdSKe
+         ibiOsnuqAXbIA==
+Subject: Re: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
+ wakeup
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>
+References: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
+ <20190816081749.19300-2-qiangqing.zhang@nxp.com>
+ <dd8f5269-8403-702b-b054-e031423ffc73@geanix.com>
+ <DB7PR04MB4618A1F984F2281C66959B06E6AB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <35190c5b-f8be-8784-5b4f-32a691a6cffe@geanix.com>
+ <6a9bc081-334a-df91-3a23-b74a6cdd3633@geanix.com>
+ <DB7PR04MB4618E527339B69AEAD46FB06E6A20@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <588ab34d-613d-ac01-7949-921140ca4543@geanix.com>
+ <DB7PR04MB461868320DA0B25CC8255213E6BB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <1655f342-7aaf-5e36-d141-d00eee84f3ec@geanix.com>
+Date:   Thu, 5 Sep 2019 15:17:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-In-Reply-To: <20190903221617.635375-1-ast@kernel.org>
+In-Reply-To: <DB7PR04MB461868320DA0B25CC8255213E6BB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Language: en-US-large
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25563/Thu Sep  5 10:24:28 2019)
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/19 12:16 AM, Alexei Starovoitov wrote:
-> The problem can be seen in the following two tests:
-> 0: (bf) r3 = r10
-> 1: (55) if r3 != 0x7b goto pc+0
-> 2: (7a) *(u64 *)(r3 -8) = 0
-> 3: (79) r4 = *(u64 *)(r10 -8)
-> ..
-> 0: (85) call bpf_get_prandom_u32#7
-> 1: (bf) r3 = r10
-> 2: (55) if r3 != 0x7b goto pc+0
-> 3: (7b) *(u64 *)(r3 -8) = r0
-> 4: (79) r4 = *(u64 *)(r10 -8)
-> 
-> When backtracking need to mark R4 it will mark slot fp-8.
-> But ST or STX into fp-8 could belong to the same block of instructions.
-> When backtracing is done the parent state may have fp-8 slot
-> as "unallocated stack". Which will cause verifier to warn
-> and incorrectly reject such programs.
-> 
-> Writes into stack via non-R10 register are rare. llvm always
-> generates canonical stack spill/fill.
-> For such pathological case fall back to conservative precision
-> tracking instead of rejecting.
-> 
-> Reported-by: syzbot+c8d66267fd2b5955287e@syzkaller.appspotmail.com
-> Fixes: b5dc0163d8fd ("bpf: precise scalar_value tracking")
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-Applied, thanks!
+
+On 05/09/2019 09.10, Joakim Zhang wrote:
+> Hi Sean,
+> 
+> Could you update lastest flexcan driver using linux-can-next/flexcan and then merge below two patches from linux-can/testing?
+> d0b53616716e (HEAD -> testing, origin/testing) can: flexcan: add LPSR mode support for i.MX7D
+> 803eb6bad65b can: flexcan: fix deadlock when using self wakeup
+> 
+> Best Regards,
+> Joakim Zhang
+
+The testing branch have some UBI bugs, when suspending it crashes...
+So will have to leave this, until they are resolved :-)
+
+/Sean
