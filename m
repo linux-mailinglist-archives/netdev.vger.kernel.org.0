@@ -2,113 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F97AA1EA
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 13:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B27CAA1F5
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 13:48:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731785AbfIELnj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 5 Sep 2019 07:43:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55584 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728267AbfIELnj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Sep 2019 07:43:39 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6239B2A09CC
-        for <netdev@vger.kernel.org>; Thu,  5 Sep 2019 11:43:38 +0000 (UTC)
-Received: by mail-ed1-f70.google.com with SMTP id e13so1327796edl.13
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 04:43:38 -0700 (PDT)
+        id S1732528AbfIELrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 07:47:01 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:48654 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728072AbfIELrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 07:47:01 -0400
+Received: by mail-io1-f69.google.com with SMTP id p1so2862846iom.15
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 04:47:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=D04TA81v364lO9nJt/9dgosV//n5Ru/JhSib4N6uUa4=;
-        b=SFTS+1iudYOyHmrMYzyqMA1Dbd+68dFpsqXmKbrtaR6Ev6aQqwabCuvBGVkhgYVMWI
-         85PbqZLvAPayioaczrj99SdYOH3k63dri1AvhPJ94X2/2xYx4bcTE57/RQi0nrcPL8PH
-         0ceneBJ/htNY1fV/gFWFQvoRQY3NwMqEW3JAa8tdR4QQEhAppH+0n+LflsDsFikXi8et
-         jo8kjZmNLGnF0Q6kFigCk6B92eLF+ou7oExXHA9mARtTxnsGLy1QILVK8nZYWZqELHmb
-         UnriPtzBwgJVde7wwV7IA9tweWzc6lmA2wHDy5WtK/pJ1XitM57Xm5udU1IQwAFpUYJg
-         Jz0Q==
-X-Gm-Message-State: APjAAAUuwMocZV1Yo5hwaFJBnN3T3lQ73oYzhFGLlGOJUo31F6QwAz79
-        UvyIjwbTqyC25daacQFx/XHmMt5gvH07jZAPsyk5fzO7ER5QqtTpCkYfpFeMN19gN+E17F8zfPH
-        DwtNCL90yd3efM7yjw3rtFGrbPR25kK10
-X-Received: by 2002:a50:b0e6:: with SMTP id j93mr3109476edd.169.1567683817123;
-        Thu, 05 Sep 2019 04:43:37 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzsbwr9NRQs+RWqvX63zGUTBiNGp0UEDt+KZTC7UtdV8Vh/WEs8cMQyZlwUn78j4heqi4pQ2O7uCdMaFkmjdCw=
-X-Received: by 2002:a50:b0e6:: with SMTP id j93mr3109468edd.169.1567683816950;
- Thu, 05 Sep 2019 04:43:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Nuyvp9vyMVnR3ZMhOYe+0oKwj4ltt2pST6dZGPPFdDs=;
+        b=t7g/TfSodM08phUab8Jzwkw1R2gGy15lZlpKBE52bRsJgk+RecqK8jKIiYiVnyi/a2
+         P7RLBFBbsh5dgsTCZJpgTf5U4GYidcjskxuOEeizaTKslZVLY78RzuBhky2c5xwS+VZy
+         A8xQmjf3NEGBhCsVU8TMo72+rIUV6hHIRYPzcEljOhBXAWMKbLtj6O67sl56ys9CYnTm
+         eqo6h6EV+B9uozlECm3KUb4mtkaTf4+riRKuItQ29NVVBJzrmb+cAAcFL0ZWQIw6BxQx
+         oHOkXYSU/ysZyYPFXUroB/Wq4wF1JqDnmi3fPW2M1Pz1XRVOclEkoGg8FXrv4roEmGOM
+         ZLMQ==
+X-Gm-Message-State: APjAAAXQoIX1VZL0xR2WX2GQ2CXGpXYJ7QplKQkqFCOS0q4NfwAr45LE
+        YV1AR4b0w0THfAtesEudKVavvSee3ycYoUH8gTKNthEsMtM6
+X-Google-Smtp-Source: APXvYqwXx5xVREHqN2GcbqE+Tt8E1onLoKBKAcj+sRYuDGmkwww2a9nv2C6YStKt8wJGXh8WFQyP/WmdeP9MEZWuHR92/vOHwLjw
 MIME-Version: 1.0
-References: <12a9cb8d91e41a08466141d4bb8ee659487d01df.1567611976.git.aclaudi@redhat.com>
- <83242eb4-6304-0fcf-2d2a-6ef4de464e81@gmail.com>
-In-Reply-To: <83242eb4-6304-0fcf-2d2a-6ef4de464e81@gmail.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Thu, 5 Sep 2019 13:44:55 +0200
-Message-ID: <CAPpH65xtgWp2ELuPBdDOFfhJfHCA6brwxqbPxZogTnnnQ26CmA@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next] bpf: fix snprintf truncation warning
-To:     David Ahern <dsahern@gmail.com>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+X-Received: by 2002:a5d:8599:: with SMTP id f25mr3413002ioj.265.1567684020483;
+ Thu, 05 Sep 2019 04:47:00 -0700 (PDT)
+Date:   Thu, 05 Sep 2019 04:47:00 -0700
+In-Reply-To: <CAAeHK+y3eQ7bXvo1tiAkwLCsFkbSU5B+6hsKbdEzkSXP2_Jyzg@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000293ed00591cce18a@google.com>
+Subject: Re: WARNING in hso_free_net_device
+From:   syzbot <syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com>
+To:     alexios.zavras@intel.com, andreyknvl@google.com,
+        benquike@gmail.com, davem@davemloft.net,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, mathias.payer@nebelwelt.net,
+        netdev@vger.kernel.org, oneukum@suse.com, rfontana@redhat.com,
+        stephen@networkplumber.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 5, 2019 at 12:15 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 9/4/19 9:50 AM, Andrea Claudi wrote:
-> > gcc v9.2.1 produces the following warning compiling iproute2:
-> >
-> > bpf.c: In function ‘bpf_get_work_dir’:
-> > bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
-> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-> >       |                                                 ^
-> > bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
-> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-> >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> > Fix it extending bpf_wrk_dir size by 1 byte for the extra "/" char.
-> >
-> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> > ---
-> >  lib/bpf.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/lib/bpf.c b/lib/bpf.c
-> > index 7d2a322ffbaec..95de7894a93ce 100644
-> > --- a/lib/bpf.c
-> > +++ b/lib/bpf.c
-> > @@ -742,7 +742,7 @@ static int bpf_gen_hierarchy(const char *base)
-> >  static const char *bpf_get_work_dir(enum bpf_prog_type type)
-> >  {
-> >       static char bpf_tmp[PATH_MAX] = BPF_DIR_MNT;
-> > -     static char bpf_wrk_dir[PATH_MAX];
-> > +     static char bpf_wrk_dir[PATH_MAX + 1];
-> >       static const char *mnt;
-> >       static bool bpf_mnt_cached;
-> >       const char *mnt_env = getenv(BPF_ENV_MNT);
-> >
->
-> PATH_MAX is meant to be the max length for a filesystem path including
-> the null terminator, so I think it would be better to change the
-> snprintf to 'sizeof(bpf_wrk_dir) - 1'.
+Hello,
 
-With 'sizeof(bpf_wrk_dir) - 1' snprintf simply truncates at byte 4095
-instead of byte 4096.
-This means that bpf_wrk_dir can again be truncated before the final
-"/", as it is by now.
-Am I missing something?
+syzbot has tested the proposed patch and the reproducer did not trigger  
+crash:
 
-Trying your suggestion I have this slightly different warning message:
+Reported-and-tested-by:  
+syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
 
-bpf.c: In function ‘bpf_get_work_dir’:
-bpf.c:784:52: warning: ‘/’ directive output may be truncated writing 1
-byte into a region of size between 0 and 4095 [-Wformat-truncation=]
-  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
-      |                                                    ^
-bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a
-destination of size 4095
-  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tested on:
+
+commit:         eea39f24 usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d0c62209eedfd54e
+dashboard link: https://syzkaller.appspot.com/bug?extid=44d53c7255bb1aea22d2
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1188fcc6600000
+
+Note: testing is done by a robot and is best-effort only.
