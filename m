@@ -2,89 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C4BFAA1E8
+	by mail.lfdr.de (Postfix) with ESMTP id E6F97AA1EA
 	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 13:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731942AbfIELnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 07:43:22 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:52952 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731584AbfIELnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 07:43:22 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1731785AbfIELnj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 5 Sep 2019 07:43:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55584 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728267AbfIELnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 07:43:39 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 92F59C2A1C;
-        Thu,  5 Sep 2019 11:43:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567683802; bh=Qjz7X2UzGUnHTi/Vxd8hfhSuMVDRCM9oZteF3iucUAU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=D9ku2U0j2gUu3CQPQ1LegWt0SFGVSTOOriWxGP7M4M68mJORHkM2Gb9P08uVD/pRw
-         gyCHyZTALg6NpglcstFKMPnI6uYW7K496aYK8Z6gr7+H/ZnqR/m8mnYtcbWeE2NlKA
-         et6hmXk3Fc3OXE+RurA6ZuM+MXoicC064lETuIdnMc+d0JWvAJ0V9HnF8hsedwrrkX
-         8kkFhf5yWJfaMfnVodZozevS+07Hu+NRa3xymEz0QRXjVETZz8pF6Hl3fnp5MLp4rj
-         NYSvgTfcyL0TO7jxIaR/LVsEQwfO6SYVRKqaM+hFGN2mttFoexwHdY9+GHrLY4R6Lq
-         NEA7z74W2g3IQ==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 87AE1A005C;
-        Thu,  5 Sep 2019 11:43:17 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: phy: Do not check Link status when loopback is enabled
-Date:   Thu,  5 Sep 2019 13:43:10 +0200
-Message-Id: <7db46f6b1318ec22d45f7e6f6f907eda015a9df6.1567683751.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
+        by mx1.redhat.com (Postfix) with ESMTPS id 6239B2A09CC
+        for <netdev@vger.kernel.org>; Thu,  5 Sep 2019 11:43:38 +0000 (UTC)
+Received: by mail-ed1-f70.google.com with SMTP id e13so1327796edl.13
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 04:43:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=D04TA81v364lO9nJt/9dgosV//n5Ru/JhSib4N6uUa4=;
+        b=SFTS+1iudYOyHmrMYzyqMA1Dbd+68dFpsqXmKbrtaR6Ev6aQqwabCuvBGVkhgYVMWI
+         85PbqZLvAPayioaczrj99SdYOH3k63dri1AvhPJ94X2/2xYx4bcTE57/RQi0nrcPL8PH
+         0ceneBJ/htNY1fV/gFWFQvoRQY3NwMqEW3JAa8tdR4QQEhAppH+0n+LflsDsFikXi8et
+         jo8kjZmNLGnF0Q6kFigCk6B92eLF+ou7oExXHA9mARtTxnsGLy1QILVK8nZYWZqELHmb
+         UnriPtzBwgJVde7wwV7IA9tweWzc6lmA2wHDy5WtK/pJ1XitM57Xm5udU1IQwAFpUYJg
+         Jz0Q==
+X-Gm-Message-State: APjAAAUuwMocZV1Yo5hwaFJBnN3T3lQ73oYzhFGLlGOJUo31F6QwAz79
+        UvyIjwbTqyC25daacQFx/XHmMt5gvH07jZAPsyk5fzO7ER5QqtTpCkYfpFeMN19gN+E17F8zfPH
+        DwtNCL90yd3efM7yjw3rtFGrbPR25kK10
+X-Received: by 2002:a50:b0e6:: with SMTP id j93mr3109476edd.169.1567683817123;
+        Thu, 05 Sep 2019 04:43:37 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzsbwr9NRQs+RWqvX63zGUTBiNGp0UEDt+KZTC7UtdV8Vh/WEs8cMQyZlwUn78j4heqi4pQ2O7uCdMaFkmjdCw=
+X-Received: by 2002:a50:b0e6:: with SMTP id j93mr3109468edd.169.1567683816950;
+ Thu, 05 Sep 2019 04:43:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <12a9cb8d91e41a08466141d4bb8ee659487d01df.1567611976.git.aclaudi@redhat.com>
+ <83242eb4-6304-0fcf-2d2a-6ef4de464e81@gmail.com>
+In-Reply-To: <83242eb4-6304-0fcf-2d2a-6ef4de464e81@gmail.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Thu, 5 Sep 2019 13:44:55 +0200
+Message-ID: <CAPpH65xtgWp2ELuPBdDOFfhJfHCA6brwxqbPxZogTnnnQ26CmA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next] bpf: fix snprintf truncation warning
+To:     David Ahern <dsahern@gmail.com>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running stmmac selftests I found that in my 1G setup some tests
-were failling when running with PHY loopback enabled.
+On Thu, Sep 5, 2019 at 12:15 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 9/4/19 9:50 AM, Andrea Claudi wrote:
+> > gcc v9.2.1 produces the following warning compiling iproute2:
+> >
+> > bpf.c: In function ‘bpf_get_work_dir’:
+> > bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
+> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
+> >       |                                                 ^
+> > bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
+> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
+> >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Fix it extending bpf_wrk_dir size by 1 byte for the extra "/" char.
+> >
+> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> > ---
+> >  lib/bpf.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/lib/bpf.c b/lib/bpf.c
+> > index 7d2a322ffbaec..95de7894a93ce 100644
+> > --- a/lib/bpf.c
+> > +++ b/lib/bpf.c
+> > @@ -742,7 +742,7 @@ static int bpf_gen_hierarchy(const char *base)
+> >  static const char *bpf_get_work_dir(enum bpf_prog_type type)
+> >  {
+> >       static char bpf_tmp[PATH_MAX] = BPF_DIR_MNT;
+> > -     static char bpf_wrk_dir[PATH_MAX];
+> > +     static char bpf_wrk_dir[PATH_MAX + 1];
+> >       static const char *mnt;
+> >       static bool bpf_mnt_cached;
+> >       const char *mnt_env = getenv(BPF_ENV_MNT);
+> >
+>
+> PATH_MAX is meant to be the max length for a filesystem path including
+> the null terminator, so I think it would be better to change the
+> snprintf to 'sizeof(bpf_wrk_dir) - 1'.
 
-It looks like when loopback is enabled the PHY will report that Link is
-down even though there is a valid connection.
+With 'sizeof(bpf_wrk_dir) - 1' snprintf simply truncates at byte 4095
+instead of byte 4096.
+This means that bpf_wrk_dir can again be truncated before the final
+"/", as it is by now.
+Am I missing something?
 
-As in loopback mode the data will not be sent anywhere we can bypass the
-logic of checking if Link is valid thus saving unecessary reads.
+Trying your suggestion I have this slightly different warning message:
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-
----
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/phy/phy.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 35d29a823af8..7c92afd36bbe 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -525,6 +525,12 @@ static int phy_check_link_status(struct phy_device *phydev)
- 
- 	WARN_ON(!mutex_is_locked(&phydev->lock));
- 
-+	/* Keep previous state if loopback is enabled because some PHYs
-+	 * report that Link is Down when loopback is enabled.
-+	 */
-+	if (phydev->loopback_enabled)
-+		return 0;
-+
- 	err = phy_read_status(phydev);
- 	if (err)
- 		return err;
--- 
-2.7.4
-
+bpf.c: In function ‘bpf_get_work_dir’:
+bpf.c:784:52: warning: ‘/’ directive output may be truncated writing 1
+byte into a region of size between 0 and 4095 [-Wformat-truncation=]
+  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
+      |                                                    ^
+bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a
+destination of size 4095
+  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
