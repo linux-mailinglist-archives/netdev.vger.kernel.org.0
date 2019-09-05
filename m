@@ -2,157 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55D91A98D2
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:15:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D07D3A98E7
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:37:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbfIEDPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 23:15:24 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:39905 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730522AbfIEDPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 23:15:24 -0400
-Received: by mail-pl1-f195.google.com with SMTP id bd8so576407plb.6;
-        Wed, 04 Sep 2019 20:15:23 -0700 (PDT)
+        id S1729907AbfIEDhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 23:37:22 -0400
+Received: from mail-pf1-f178.google.com ([209.85.210.178]:36735 "EHLO
+        mail-pf1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbfIEDhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 23:37:22 -0400
+Received: by mail-pf1-f178.google.com with SMTP id y22so802099pfr.3
+        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 20:37:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=M9kK4lnn4QWgK3aVUJHGfBKHMQgkBIahHY2CNTBrC38=;
-        b=ps8vcP/NzmSlHSVUktgvOMCdEfBc6LNuqs8/Ua+QBFMrCpZ0RzpkqdlACzMERPvose
-         g2WDt/RTbyIbwY0y3Ujuyo4UwRQ1rz1ykFSpX/l9d3AxR8NwjcqWytJN+ajm6wcQGwpx
-         5avFfRsm6Ce5Zh6kiAVEG3ewL2AVsrRKd8pJDRhOZQYMR6IwfFcc88A9+htQdGBL13/8
-         2X09m1mazkMFiDZnxq6x+bGZG1XnOmdS2MKOIeRz3uKGjrwgYV//l+FsA6nKbOtd2J57
-         1jD9QHj53f+4kd/CNpR4/mBtpIy50HDI82bWHdqN9Q/P8NmQKPviVkt7E7j2mngvaB7p
-         7EUg==
+        bh=UMP/S2fCberFyG7WUfO4nV2dQ7qbF+SuAvDENBNoKNI=;
+        b=EGs34kWpT03Zsuc4XSokotaRGPtwpQibk43T9mJVeLNDoSiKnrifVp+Th9bRssLLcv
+         LMXY+AGA16JIVk5NxUSQFjge/KKqrtuJuTFZr5nvdzVsY1m/gwzEEe12e3fWyOwTUZd4
+         pL2qQwxV+5XB85XPEXDTaXSm0waN4HqPXfhEN8rayhDeMccIlTsqKVbofRPmY+2AZqcd
+         7UdBXF+Tv1+rgbWNG82XyujfoxSLm5tKQGCuPuna3AjTGHU+x5b3T+sk+sDsPXNYJU4s
+         oVUQKqlVg8ZHD5pqAG1J+rbj2el0TldPW5B0N9Khe9aniREDrwOseUVYecgSbGM1GkWB
+         p2lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=M9kK4lnn4QWgK3aVUJHGfBKHMQgkBIahHY2CNTBrC38=;
-        b=kiEN+3W+JmUxSDNaQ1iLLIV6m7b/ReQ+at3C6iH3RC0GL/TRYe+7a65WzIcRDurhIb
-         MPg3GxHkcbRzkoJ/zgWYc7CxGmMlFU1V/Yrvhh9Tr//ZMYzxHVmCeesnfyLf+DTLX8a0
-         Tp793J/CHSoYg/fbSp6/hAqfxnic1iUFo9+kHpJYz2RUKafEdPJ8ooIXa0aPz94pNDrF
-         5HxNjhRV3/9WYFpzhjOGPvmlowHtlKw6SDgYAXXPj0sJGNSJuvhDz8WncuhQbTrQ6l4B
-         +cQgPRfUY6/+75SwndUvZ1N301HGGjz5VkyIP3uC/4Lw+ISCzyeGClgVligpyvEPVOwr
-         gaHw==
-X-Gm-Message-State: APjAAAVm1A5f9KW4S7nlTcTlwg4K8OlCRZExdUMLPo2w6eq87ZGoxEcq
-        zAWuDeiT1RWAeOpPmP1JY0s=
-X-Google-Smtp-Source: APXvYqxD9A+uQyPcPcvllT5lUgOILEJX3q3tGQfTYmDsbChMdOxYNaahmdH50zQ51LQorjZkAV38Rw==
-X-Received: by 2002:a17:902:5a1:: with SMTP id f30mr1119434plf.64.1567653323106;
-        Wed, 04 Sep 2019 20:15:23 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::af43])
-        by smtp.gmail.com with ESMTPSA id g14sm508166pfo.133.2019.09.04.20.15.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Sep 2019 20:15:22 -0700 (PDT)
-Date:   Wed, 4 Sep 2019 20:15:20 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        bh=UMP/S2fCberFyG7WUfO4nV2dQ7qbF+SuAvDENBNoKNI=;
+        b=rgEvh3gG4E8fKTe0ZbSuqfo2lDoNpDVuA0rcxZ+5LM1i8l2+C0BDSNZg1mes/jl5sz
+         UM4+Hl2/ncEx9zi5XHUz6vNxQ+2pqwtwhJv5yat4T3Q4ToHoTFvWYVrzMs8MiecmN84e
+         Ao08Cn4gv2ZUWbQLVwNyG3/G/hcl9boUtD2o1ayA3FGtSgPEQtewln1gpp38Bu66QBh4
+         JrmjJyER8ujOby5cdVmBi0oAtuxN1+ZN/GZXbkYEYHxSRn0TgkfhoifivQUN/vq6iSv3
+         tiGH9/bbK3HaukgXdXNencXRTanRl2EwXm2lrRqBaKU0uhn9Q5DaC0U06AXe7zRWJODy
+         hvKA==
+X-Gm-Message-State: APjAAAWZNR6Nx9Q4Sf1wJKTWnA1VbsG6Nvn7xtQ4VaOlaTHXR6A2GZy8
+        b66GFA2NORHlHpMKG+2SVoQ=
+X-Google-Smtp-Source: APXvYqzQQvKSugyR6iYrE9m2J/8M6ZtRzOaY1qpDYGj/qXt7uS17XOAKXKjIqhOd0kOs3w8B1Zj0ng==
+X-Received: by 2002:aa7:91d7:: with SMTP id z23mr1185755pfa.262.1567654641519;
+        Wed, 04 Sep 2019 20:37:21 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id k36sm494708pgl.42.2019.09.04.20.37.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Sep 2019 20:37:20 -0700 (PDT)
+Date:   Thu, 5 Sep 2019 11:37:10 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Phil Karn <karn@ka9q.net>,
+        Sukumar Gopalakrishnan <sukumarg1973@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20190905031518.behyq7olkh6fjsoe@ast-mbp.dhcp.thefacebook.com>
-References: <20190904184335.360074-1-ast@kernel.org>
- <20190904184335.360074-2-ast@kernel.org>
- <CE3B644F-D1A5-49F7-96B6-FD663C5F8961@fb.com>
- <20190905013245.wguhhcxvxt5rnc6h@ast-mbp.dhcp.thefacebook.com>
- <E342EC2A-24F6-4581-BFDC-119B5E02B560@fb.com>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCHv2 net-next] ipmr: remove cache_resolve_queue_len
+Message-ID: <20190905033710.GI18865@dhcp-12-139.nay.redhat.com>
+References: <20190903084359.13310-1-liuhangbin@gmail.com>
+ <20190904033408.13988-1-liuhangbin@gmail.com>
+ <aa759647-953e-23b5-32e2-b0b7373e07e4@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E342EC2A-24F6-4581-BFDC-119B5E02B560@fb.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <aa759647-953e-23b5-32e2-b0b7373e07e4@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 05, 2019 at 02:51:51AM +0000, Song Liu wrote:
+On Wed, Sep 04, 2019 at 09:50:15AM +0200, Eric Dumazet wrote:
+> > +static int queue_count(struct mr_table *mrt)
+> > +{
+> > +	struct list_head *pos;
+> > +	int count = 0;
+> > +
+> > +	spin_lock_bh(&mfc_unres_lock);
+> > +	list_for_each(pos, &mrt->mfc_unres_queue)
+> > +		count++;
+> > +	spin_unlock_bh(&mfc_unres_lock);
+> > +
+> > +	return count;
+> > +}
 > 
+> I guess that even if we remove a limit on the number of items, we probably should
+> keep the atomic counter (no code churn, patch much easier to review...)
 > 
-> > On Sep 4, 2019, at 6:32 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > 
-> > On Thu, Sep 05, 2019 at 12:34:36AM +0000, Song Liu wrote:
-> >> 
-> >> 
-> >>> On Sep 4, 2019, at 11:43 AM, Alexei Starovoitov <ast@kernel.org> wrote:
-> >>> 
-> >>> Implement permissions as stated in uapi/linux/capability.h
-> >>> 
-> >>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> >>> 
-> >> 
-> >> [...]
-> >> 
-> >>> @@ -1648,11 +1648,11 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
-> >>> 	is_gpl = license_is_gpl_compatible(license);
-> >>> 
-> >>> 	if (attr->insn_cnt == 0 ||
-> >>> -	    attr->insn_cnt > (capable(CAP_SYS_ADMIN) ? BPF_COMPLEXITY_LIMIT_INSNS : BPF_MAXINSNS))
-> >>> +	    attr->insn_cnt > (capable_bpf() ? BPF_COMPLEXITY_LIMIT_INSNS : BPF_MAXINSNS))
-> >>> 		return -E2BIG;
-> >>> 	if (type != BPF_PROG_TYPE_SOCKET_FILTER &&
-> >>> 	    type != BPF_PROG_TYPE_CGROUP_SKB &&
-> >>> -	    !capable(CAP_SYS_ADMIN))
-> >>> +	    !capable_bpf())
-> >>> 		return -EPERM;
-> >> 
-> >> Do we allow load BPF_PROG_TYPE_SOCKET_FILTER and BPF_PROG_TYPE_CGROUP_SKB
-> >> without CAP_BPF? If so, maybe highlight in the header?
-> > 
-> > of course. there is no change in behavior.
-> > 'highlight in the header'?
-> > you mean in commit log?
-> > I think it's a bit weird to describe things in commit that patch
-> > is _not_ changing vs things that patch does actually change.
-> > This type of comment would be great in a doc though.
-> > The doc will be coming separately in the follow up assuming
-> > the whole thing lands. I'll remember to note that bit.
+> Your patch could be a one liner really [1]
 > 
-> I meant capability.h:
+> Eventually replacing this linear list with an RB-tree, so that we can be on the safe side.
 > 
-> + * CAP_BPF allows the following BPF operations:
-> + * - Loading all types of BPF programs
-> 
-> But CAP_BPF is not required to load all types of programs. 
+> [1]
+> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> index c07bc82cbbe96d53d05c1665b2f03faa055f1084..313470f6bb148326b4afbc00d265b6a1e40d93bd 100644
+> --- a/net/ipv4/ipmr.c
+> +++ b/net/ipv4/ipmr.c
+> @@ -1134,8 +1134,8 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
+>  
+>         if (!found) {
+>                 /* Create a new entry if allowable */
+> -               if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
+> -                   (c = ipmr_cache_alloc_unres()) == NULL) {
+> +               c = ipmr_cache_alloc_unres();
+> +               if (!c) {
+>                         spin_unlock_bh(&mfc_unres_lock);
+>  
+>                         kfree_skb(skb);
 
-yes, but above statement is still correct, right?
+hmm, that looks more clear and easy to review..
 
-And right below it says:
- * CAP_BPF allows the following BPF operations:
- * - Loading all types of BPF programs
- * - Creating all types of BPF maps except:
- *    - stackmap that needs CAP_TRACING
- *    - devmap that needs CAP_NET_ADMIN
- *    - cpumap that needs CAP_SYS_ADMIN
-which is also correct, but CAP_BPF is not required
-for array, hash, prog_array, percpu, map-in-map ...
-except their lru variants...
-and except if they contain bpf_spin_lock...
-and if they need BTF it currently can be loaded with cap_sys_admin only...
+Hi David, Alexey,
 
-If we say something about socket_filter, cg_skb progs in capability.h
-we should clarify maps as well, but then it will become too big for .h
-The comments in capability.h already look too long to me.
-All that info and a lot more belongs in the doc.
+What do you think? If you also agree, I could post a new version patch.
 
-> On a second thought, I am not sure whether we will keep capability.h
-> up to date with all features. So this is probably OK.
-
-It's clearly not for cap_sys_admin.
-cap_net_admin is not up to date either.
-These two are kitchen sink of anything root-like and networking-root like.
-Developers didn't bother updating that .h
-With CAP_BPF we can enforce through patch acceptance policy that
-major new things (like big verifier features) should have a line
-in capability.h
-Though .h is not a replacement for proper doc which will come as follow up.
-Unlike bpf.h that serves as a template for auto-generating man pages
-capability.h is not such thing. I won't change often either.
-So normal doc is a better way to document all details.
-
+Thanks
+Hangbin
