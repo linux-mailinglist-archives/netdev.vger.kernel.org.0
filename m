@@ -2,135 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25202A97CD
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7ACA9800
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730112AbfIEBID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 21:08:03 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:56132 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729919AbfIEBIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 21:08:01 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g207so695604wmg.5;
-        Wed, 04 Sep 2019 18:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=BtXETVKXFJe6FPHxTO9TLLqiQam7bkQepJpAF4AjFU4=;
-        b=ZU+Sw84HT/8IphJQh6loSkm9KNVNDZ9QZvq4/msqw3ML3gPpjOCXlCtR9bz6vioEx1
-         LVBaeiUIngr3gxwGuyNv3DwewNExRQyDnhon7oUp4yGAIJVTU9rvtnFQ/wHC7wcE/bJd
-         2HGUPbJEyRAO4koqdKXyETffUMx6xiAhUwn4Pm7E7tDuF3M6ja4VWgAbQNgIJ8vdVbt4
-         rLqiCicnxa2KaXprJTDTUZMA0I0BrzdKTckjiEsxoklXmMbC0VgA/6OFUER6SzGnTYfp
-         dWuG/qhyinG+ITu52jyvgHmm2x+hxA/91tKLijww7DjeAspjMhy8CBsnze46qoMZcPIf
-         BJEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=BtXETVKXFJe6FPHxTO9TLLqiQam7bkQepJpAF4AjFU4=;
-        b=DvPyIu3mvjDF5kqd/UiVrIzG+YHrbKZwEFfa6Qa+6FxqNkpeqZB5T9D7W89TUI2gYH
-         /Na3NvhJon/8qfNyQInFjkVZD2JJjaZMPOjrTN4NEMmkYGUl4ANqul1fVp6V33iX2+Ye
-         yxbUNu3uLPR0aZWYNv6TnmdThilDKXiwGddi13zUc57QJ66MYtV6vE4ios7SNpu58pPd
-         dzjUymM288tslB+E6lK58bT+ircjqvsW9BrRKafKlhabtbt3eX9WE8/igppfg14S9SjA
-         LdQsBqkF7fPsg62tRPbId2BzUk4N6XEJsoq3mD0ICC2beObnOaGIfS67KsFA002m6SDW
-         dOSw==
-X-Gm-Message-State: APjAAAVAMWngx8usg26NSRhF4CPGi+o1U6uxXQd9Twbehc6A4lrHSKA2
-        CPETLEt6T+tcOcKM9KW8NNI=
-X-Google-Smtp-Source: APXvYqwkNdnA21T9Gkqk+LdFzxj2v/Zcw/nfaiilL0gGv9t9KTapp8SYOFjemZrLHrW/97tN8K8xyg==
-X-Received: by 2002:a1c:1d85:: with SMTP id d127mr773378wmd.14.1567645680086;
-        Wed, 04 Sep 2019 18:08:00 -0700 (PDT)
-Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id b15sm670125wmb.28.2019.09.04.18.07.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2019 18:07:59 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     broonie@kernel.org, h.feurstein@gmail.com, mlichvar@redhat.com,
-        richardcochran@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com
-Cc:     linux-spi@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 4/4] spi: spi-fsl-dspi: Always use the TCFQ devices in poll mode
-Date:   Thu,  5 Sep 2019 04:01:14 +0300
-Message-Id: <20190905010114.26718-5-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190905010114.26718-1-olteanv@gmail.com>
-References: <20190905010114.26718-1-olteanv@gmail.com>
+        id S1730451AbfIEBXN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Sep 2019 21:23:13 -0400
+Received: from mga09.intel.com ([134.134.136.24]:18044 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726240AbfIEBXN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 21:23:13 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Sep 2019 18:23:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,469,1559545200"; 
+   d="scan'208";a="358289549"
+Received: from kmsmsx153.gar.corp.intel.com ([172.21.73.88])
+  by orsmga005.jf.intel.com with ESMTP; 04 Sep 2019 18:23:10 -0700
+Received: from pgsmsx110.gar.corp.intel.com (10.221.44.111) by
+ KMSMSX153.gar.corp.intel.com (172.21.73.88) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 5 Sep 2019 09:23:09 +0800
+Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.25]) by
+ PGSMSX110.gar.corp.intel.com ([169.254.13.32]) with mapi id 14.03.0439.000;
+ Thu, 5 Sep 2019 09:23:09 +0800
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Subject: RE: [PATCH v2 net-next] net: stmmac: Add support for MDIO interrupts
+Thread-Topic: [PATCH v2 net-next] net: stmmac: Add support for MDIO
+ interrupts
+Thread-Index: AQHVYymBSgLFf/MxREuRucVyuWUrHacbFd8AgAEzd7A=
+Date:   Thu, 5 Sep 2019 01:23:08 +0000
+Message-ID: <D6759987A7968C4889FDA6FA91D5CBC81475C23E@PGSMSX103.gar.corp.intel.com>
+References: <1567605774-5500-1-git-send-email-weifeng.voon@intel.com>
+ <20190904145804.GA9068@lunn.ch>
+In-Reply-To: <20190904145804.GA9068@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.206]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this patch, the "interrupts" property from the device tree bindings
-is ignored, even if present, if the driver runs in TCFQ mode.
+> On Wed, Sep 04, 2019 at 10:02:54PM +0800, Voon Weifeng wrote:
+> > From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
+> >
+> > DW EQoS v5.xx controllers added capability for interrupt generation
+> > when MDIO interface is done (GMII Busy bit is cleared).
+> > This patch adds support for this interrupt on supported HW to avoid
+> > polling on GMII Busy bit.
+> >
+> > stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
+> > called by the interrupt handler.
+> >
+> > Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+> > Reviewed-by: Kweh, Hock Leong <hock.leong.kweh@intel.com>
+> > Reviewed-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> > Signed-off-by: Chuah, Kim Tatt <kim.tatt.chuah@intel.com>
+> > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> 
+> Hi Voon
+> 
+> It is normal to include a short description of what you changed between
+> the previous version and this version.
 
-Switching to using the DSPI in poll mode has several distinct
-benefits:
+The change log is near the end of the patch:
+/**
+--
+Changelog v2
+*mdio interrupt mode or polling mode will depends on mdio interrupt enable bit
+*Disable the mdio interrupt enable bit in stmmac_release
+*Remove the condition for initialize wait queues
+*Applied reverse Christmas tree
+1.9.1
 
-- With interrupts, the DSPI driver in TCFQ mode raises an IRQ after each
-  transmitted word. There is more time wasted for the "waitq" event than
-  for actual I/O. And the DSPI IRQ count can easily get the largest in
-  /proc/interrupts on Freescale boards with attached SPI devices.
+> 
+> The formatting of this patch also looks a bit odd. Did you use git
+> format-patch ; git send-email?
 
-- The SPI I/O time is both lower, and more consistently so. Attached to
-  some Freescale devices are either PTP switches, or SPI RTCs. For
-  reading time off of a SPI slave device, it is important that all SPI
-  transfers take a deterministic time to complete.
+Yes, I do git format-patch, then ./scripts/checkpatch.pl. 
+Lastly git send-email
 
-- In poll mode there is much less time spent by the CPU in hardirq
-  context, which helps with the response latency of the system, and at
-  the same time there is more control over when interrupts must be
-  disabled (to get a precise timestamp measurement): win-win.
-
-On the LS1021A-TSN board, where the SPI device is a SJA1105 PTP switch
-(with a bits_per_word=8 driver), I created a "benchmark" where I read
-its PTP time once per second, for 120 seconds. Each "read PTP time" is a
-12-byte SPI transfer. I then recorded the time before putting the first
-byte in the TX FIFO, and the time after reading the last byte from the
-RX FIFO. That is the transfer delay in nanoseconds.
-
-Interrupt mode:
-
-  delay: min 125120 max 168320 mean 150286 std dev 17675.3
-
-Poll mode:
-
-  delay: min 69440 max 119040 mean 70312.9 std dev 8065.34
-
-Both the mean latency and the standard deviation are more than 50% lower
-in poll mode than in interrupt mode. This is with an 'ondemand' governor
-on an otherwise idle system - therefore running mostly at 600 MHz out of
-a max of 1200 MHz.
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
-Changes in v2:
-- None.
-
- drivers/spi/spi-fsl-dspi.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/spi/spi-fsl-dspi.c b/drivers/spi/spi-fsl-dspi.c
-index 7caea2da4397..c30325faa050 100644
---- a/drivers/spi/spi-fsl-dspi.c
-+++ b/drivers/spi/spi-fsl-dspi.c
-@@ -716,7 +716,7 @@ static irqreturn_t dspi_interrupt(int irq, void *dev_id)
- 	regmap_read(dspi->regmap, SPI_SR, &spi_sr);
- 	regmap_write(dspi->regmap, SPI_SR, spi_sr);
- 
--	if (!(spi_sr & (SPI_SR_EOQF | SPI_SR_TCFQF)))
-+	if (!(spi_sr & SPI_SR_EOQF))
- 		return IRQ_NONE;
- 
- 	if (dspi_rxtx(dspi) == 0) {
-@@ -1126,6 +1126,9 @@ static int dspi_probe(struct platform_device *pdev)
- 
- 	dspi_init(dspi);
- 
-+	if (dspi->devtype_data->trans_mode == DSPI_TCFQ_MODE)
-+		goto poll_mode;
-+
- 	dspi->irq = platform_get_irq(pdev, 0);
- 	if (dspi->irq <= 0) {
- 		dev_info(&pdev->dev,
--- 
-2.17.1
-
+> 
+> Thanks
+> 	Andrew
