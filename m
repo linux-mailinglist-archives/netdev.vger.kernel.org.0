@@ -2,212 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF8B6AA7FE
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 18:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D7DAA81D
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 18:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388907AbfIEQJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 12:09:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17000 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388167AbfIEQJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 12:09:15 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x85G4Jwa009425;
-        Thu, 5 Sep 2019 09:08:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=HmdCIrboWkM9rUDFDSHelcJxJIvcYEcwzcIwg5HXSv4=;
- b=Nvr1CwMdhk5yTP752OlBaag9+s9vu7xtzAJh9L/y9KbfDZ6hBVXhBuooI2Rk5FQVq/mT
- oSOe8zV6Y7/Qshq3LXqZf61pVDiWWTBtRMMWcToZj5tJVfBTCsLIhezMYSqhOwaEkBHa
- 4sIS54SSPAGC2u5VcDUB6vERhCjjdztdfmc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2utqxfk55h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 05 Sep 2019 09:08:46 -0700
-Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
- ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 5 Sep 2019 09:08:45 -0700
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 5 Sep 2019 09:08:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TDNDT1P6NUNFaYpIJWwA2kKU98bjWpweFAphE37ukYQY7BXd53XRGBughtlG3B9smXGCjpsNKk7uFTKpoxQbBHjWs8/W2VS0/Xb+QyhZXL3Y6Z5HjksVWkPcx0PrKe7WUA5BcIBegc/FudgVvTULBWryodAy9QuxhNxJXqK3cP6J1Rt76fXooRkrdiXKLvsFId/JJcGPby96BXhb8i2bI6NE2wvu4v2Au+cPpipPJGqozRGyxldJnHbajLaCsZstEgotSEohoqNy2gWHtN4SHZpGxIYuOPZ+Y8y6gHeSAso0A2YfuovnJT8XXC8nyKdK1oyDaKbrz3z4keYJyv5WAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HmdCIrboWkM9rUDFDSHelcJxJIvcYEcwzcIwg5HXSv4=;
- b=QI3h//HARrEhJeUTj96jjTzSU/ffuCOnja7/rAkDZdTeKFFL71tsF2kWZA31QxyqChOsuq4fUIcAkPDfe31jPUuerVpq5utc92usAmTJT/1VanggEfymKM3Hx53QViyGCE7v3VcB6MXQ5AV2+BulVy2VH4qzdMubD9MmkAZ3L4WgkUsHtXT8/DFtBCZ0pFu1IDDPMRsqZf+bgtF2h5iQ/yVqUy0/P5YBNyEwAK4SL4+4YpXU8+ngjy8KhD7bCwGOqURdH1iQrtdsC8Eq7rLnBd6QqJql/L6UeeFO3U+yJ1wkpRyJMArgPaHzGBL2+Sk1j+WFAjzgTvh9h9qCbRs86A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HmdCIrboWkM9rUDFDSHelcJxJIvcYEcwzcIwg5HXSv4=;
- b=IcLFG45sga9sEnTnd1KwMjFeON3NbdIcyv69Xn/iGdKRfMPs+SnMbmRwOy9JOcJOgR3YFB0u0iMF+VL0wK2HEk7y81i3BMpikyR8rgbKW9DFNtVB4JcZDXBUS4ERJNq+3+eD0NfNwK8Yn82EpA45U0FR9uWBMBn08bcCCnPE/RE=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1616.namprd15.prod.outlook.com (10.175.142.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.15; Thu, 5 Sep 2019 16:08:44 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::a828:5750:379d:b9a1%8]) with mapi id 15.20.2220.022; Thu, 5 Sep 2019
- 16:08:44 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 2/3] bpf: implement CAP_BPF
-Thread-Topic: [PATCH v3 bpf-next 2/3] bpf: implement CAP_BPF
-Thread-Index: AQHVY1Cvn0QzeDIQmEifJi8CsD4pqaccPMEAgAAQQQCAABYXAIAABpEAgADYFYA=
-Date:   Thu, 5 Sep 2019 16:08:44 +0000
-Message-ID: <A0BD5C17-3118-4C90-825F-23CE187209EA@fb.com>
-References: <20190904184335.360074-1-ast@kernel.org>
- <20190904184335.360074-2-ast@kernel.org>
- <CE3B644F-D1A5-49F7-96B6-FD663C5F8961@fb.com>
- <20190905013245.wguhhcxvxt5rnc6h@ast-mbp.dhcp.thefacebook.com>
- <E342EC2A-24F6-4581-BFDC-119B5E02B560@fb.com>
- <20190905031518.behyq7olkh6fjsoe@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190905031518.behyq7olkh6fjsoe@ast-mbp.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::2:b3a5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b028d633-26dd-4ce8-53e6-08d7321b538e
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1616;
-x-ms-traffictypediagnostic: MWHPR15MB1616:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1616B4295D5ECE5ED6D17791B3BB0@MWHPR15MB1616.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 015114592F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(39860400002)(346002)(376002)(136003)(189003)(199004)(71190400001)(57306001)(14444005)(316002)(256004)(54906003)(71200400001)(6916009)(76176011)(8936002)(5660300002)(102836004)(8676002)(6506007)(86362001)(81156014)(81166006)(53546011)(4326008)(50226002)(36756003)(6116002)(25786009)(446003)(46003)(476003)(7736002)(11346002)(305945005)(2616005)(2906002)(486006)(186003)(99286004)(6486002)(6512007)(6436002)(33656002)(76116006)(66446008)(64756008)(66556008)(66476007)(66946007)(229853002)(53936002)(14454004)(6246003)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1616;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0T38qyKJCGtdyNt7e6VdpHc4iBJ7YfkoeznQ1Q0QtcEtrCqh3bK98rKg5AIcR04Y1LwrvKrdaVcCiIcWlhRSXJGP9oHo8+kEaPqrscpqLtuRkTHp1cTaZoL4cZcqh7mbrabuP77GBKI2MZ3+lJEhT26VHnFAhUkQqlkCFFNaT8eyBGBxtBldYiBx1neCkwSOM6weo7OH3tsW8Ebo/41M/mnU3lXmGQEvTapbPzphdjqyGqLbiYEsF8RUEidKbJbzXHfB/YwVpwDXoJgFHy0Egacf3Lrpj9MxSzZ0uNNgGivn1cR+BFwcC9GyiQshNXV65rvgaJjyURGVGod0WU4Ud8BNGM4KrRTWNxFuICum0jSwOhAiUJjz0bgrS4LQhJRdeV4FT7/YBHSn2VpHuSQaAu4TSDL7CI989DoxZXiwI6s=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4A33147E45FBAE45A2DA4C175F6E64EE@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1732747AbfIEQQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 12:16:49 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43767 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731901AbfIEQQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 12:16:49 -0400
+Received: by mail-pg1-f195.google.com with SMTP id u72so1665681pgb.10
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 09:16:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zLM+6nR5kv0jA5pGHIzbvsVXa3x+dUW2QtYks/r40f8=;
+        b=Rs23x8dw7GNwFF5sAuRVlA7534c9DKs0L/yALEsSWRiX4/5qSOq4NsK/+UkxmIa5la
+         Gq/rTRc8kEE1eEFrGxGAuNTTnQ0iawxg53jfe6sYokG7mIkkq3ZYbAE1uMWLCmsnerLw
+         +pC8IIsmjQ2c7fy3Y9Qq+TjopTvaljw//fQliuUdnTRWCD+tev7K5ztgokg9Qw5qdoRi
+         LKD6d0yFh9jVBb/gWWCma52CyZziSZyX6VcXQ/WVHH7eQt66nfsmI5Zn5Dd849Dwqmyj
+         BZjMHQ9xA9yr1+faHo1NgNM8I47zagV/SXGBm4tcYhSdY7w/8Zt/7H2SRUPZH9wE0Ohw
+         raZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=zLM+6nR5kv0jA5pGHIzbvsVXa3x+dUW2QtYks/r40f8=;
+        b=FVuO3u/+UfPcw7FYTgErZDydffqSYvPMAAemYfd45hvpX0lpPDe9HnRlZ2HWYYdc35
+         UrHSfzx6VN5g/GP7q0kh94ePPe3YWco2HBZOxDWaBKcU8VyCCY+jUfDeBe57lGGRgFkX
+         DYaqygYQ52VSuHsRS62eylWziOvsL/CHAKqL+FcF3cv4tlwbAo4q3pftNPlp/gor6aw2
+         L3Ow1i51OCSL6JEkRTnQE4BDNVi2Dkb/67gXJHEqVXHwlk1Q98o5aKBOqKiBqzK1M70T
+         G7M249YgSUWJV/yKLxg5jALJFeE8pMC4NlvO16AvD9pJplRaQvGPBpy6wYdOC60LWj9Y
+         OseQ==
+X-Gm-Message-State: APjAAAXr12INJF/gHm/4UDEsM1xpNuWtWhapvXF4WVYIRTedN9g7/kcX
+        XZOe8GbtxK2RwZoz0lHB1EFevw==
+X-Google-Smtp-Source: APXvYqxEBFkp4cs0Pgueg9uCVRPDD958q5uceWoGhxYtP8uOhgc042tzvTTvOAKl/Q+rSGxux5qnbg==
+X-Received: by 2002:a63:5648:: with SMTP id g8mr3831728pgm.81.1567700207580;
+        Thu, 05 Sep 2019 09:16:47 -0700 (PDT)
+Received: from google.com ([2620:15c:201:2:765b:31cb:30c4:166])
+        by smtp.gmail.com with ESMTPSA id c125sm4858015pfa.107.2019.09.05.09.16.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 09:16:46 -0700 (PDT)
+Date:   Thu, 5 Sep 2019 09:16:42 -0700
+From:   Eric Biggers <ebiggers@google.com>
+To:     Baolin Wang <baolin.wang@linaro.org>
+Cc:     stable@vger.kernel.org, paulus@samba.org,
+        linux-ppp@vger.kernel.org, netdev@vger.kernel.org, arnd@arndb.de,
+        orsonzhai@gmail.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [BACKPORT 4.14.y v2 5/6] ppp: mppe: Revert "ppp: mppe: Add
+ softdep to arc4"
+Message-ID: <20190905161642.GA5659@google.com>
+Mail-Followup-To: Baolin Wang <baolin.wang@linaro.org>,
+        stable@vger.kernel.org, paulus@samba.org, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, arnd@arndb.de, orsonzhai@gmail.com,
+        vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
+References: <cover.1567649728.git.baolin.wang@linaro.org>
+ <c24710bae9098ba971a2778a1a44627d5fa3ddc0.1567649729.git.baolin.wang@linaro.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b028d633-26dd-4ce8-53e6-08d7321b538e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 16:08:44.1077
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /gIcgxvTiHOpkqKMzYgpmyxcGzEpm2hU7eD+0bHwXlyBjNBdl42sN2161iGf3h3YuznkNgXbKJo28nFpTYwj7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1616
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-05_05:2019-09-04,2019-09-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- spamscore=0 clxscore=1015 adultscore=0 impostorscore=0 malwarescore=0
- phishscore=0 lowpriorityscore=0 bulkscore=0 mlxscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909050152
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c24710bae9098ba971a2778a1a44627d5fa3ddc0.1567649729.git.baolin.wang@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 05, 2019 at 11:10:45AM +0800, Baolin Wang wrote:
+> From: Eric Biggers <ebiggers@google.com>
+> 
+> [Upstream commit 25a09ce79639a8775244808c17282c491cff89cf]
+> 
+> Commit 0e5a610b5ca5 ("ppp: mppe: switch to RC4 library interface"),
+> which was merged through the crypto tree for v5.3, changed ppp_mppe.c to
+> use the new arc4_crypt() library function rather than access RC4 through
+> the dynamic crypto_skcipher API.
+> 
+> Meanwhile commit aad1dcc4f011 ("ppp: mppe: Add softdep to arc4") was
+> merged through the net tree and added a module soft-dependency on "arc4".
+> 
+> The latter commit no longer makes sense because the code now uses the
+> "libarc4" module rather than "arc4", and also due to the direct use of
+> arc4_crypt(), no module soft-dependency is required.
+> 
+> So revert the latter commit.
+> 
+> Cc: Takashi Iwai <tiwai@suse.de>
+> Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+> Signed-off-by: Eric Biggers <ebiggers@google.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> ---
+>  drivers/net/ppp/ppp_mppe.c |    1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/ppp/ppp_mppe.c b/drivers/net/ppp/ppp_mppe.c
+> index d9eda7c..6c7fd98 100644
+> --- a/drivers/net/ppp/ppp_mppe.c
+> +++ b/drivers/net/ppp/ppp_mppe.c
+> @@ -63,7 +63,6 @@
+>  MODULE_DESCRIPTION("Point-to-Point Protocol Microsoft Point-to-Point Encryption support");
+>  MODULE_LICENSE("Dual BSD/GPL");
+>  MODULE_ALIAS("ppp-compress-" __stringify(CI_MPPE));
+> -MODULE_SOFTDEP("pre: arc4");
 
+Why is this being backported?  This revert was only needed because of a
+different patch that was merged in v5.3, as I explained in the commit message.
 
-> On Sep 4, 2019, at 8:15 PM, Alexei Starovoitov <alexei.starovoitov@gmail.=
-com> wrote:
->=20
-> On Thu, Sep 05, 2019 at 02:51:51AM +0000, Song Liu wrote:
->>=20
->>=20
->>> On Sep 4, 2019, at 6:32 PM, Alexei Starovoitov <alexei.starovoitov@gmai=
-l.com> wrote:
->>>=20
->>> On Thu, Sep 05, 2019 at 12:34:36AM +0000, Song Liu wrote:
->>>>=20
->>>>=20
->>>>> On Sep 4, 2019, at 11:43 AM, Alexei Starovoitov <ast@kernel.org> wrot=
-e:
->>>>>=20
->>>>> Implement permissions as stated in uapi/linux/capability.h
->>>>>=20
->>>>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->>>>>=20
->>>>=20
->>>> [...]
->>>>=20
->>>>> @@ -1648,11 +1648,11 @@ static int bpf_prog_load(union bpf_attr *attr=
-, union bpf_attr __user *uattr)
->>>>> 	is_gpl =3D license_is_gpl_compatible(license);
->>>>>=20
->>>>> 	if (attr->insn_cnt =3D=3D 0 ||
->>>>> -	    attr->insn_cnt > (capable(CAP_SYS_ADMIN) ? BPF_COMPLEXITY_LIMIT=
-_INSNS : BPF_MAXINSNS))
->>>>> +	    attr->insn_cnt > (capable_bpf() ? BPF_COMPLEXITY_LIMIT_INSNS : =
-BPF_MAXINSNS))
->>>>> 		return -E2BIG;
->>>>> 	if (type !=3D BPF_PROG_TYPE_SOCKET_FILTER &&
->>>>> 	    type !=3D BPF_PROG_TYPE_CGROUP_SKB &&
->>>>> -	    !capable(CAP_SYS_ADMIN))
->>>>> +	    !capable_bpf())
->>>>> 		return -EPERM;
->>>>=20
->>>> Do we allow load BPF_PROG_TYPE_SOCKET_FILTER and BPF_PROG_TYPE_CGROUP_=
-SKB
->>>> without CAP_BPF? If so, maybe highlight in the header?
->>>=20
->>> of course. there is no change in behavior.
->>> 'highlight in the header'?
->>> you mean in commit log?
->>> I think it's a bit weird to describe things in commit that patch
->>> is _not_ changing vs things that patch does actually change.
->>> This type of comment would be great in a doc though.
->>> The doc will be coming separately in the follow up assuming
->>> the whole thing lands. I'll remember to note that bit.
->>=20
->> I meant capability.h:
->>=20
->> + * CAP_BPF allows the following BPF operations:
->> + * - Loading all types of BPF programs
->>=20
->> But CAP_BPF is not required to load all types of programs.=20
->=20
-> yes, but above statement is still correct, right?
->=20
-> And right below it says:
-> * CAP_BPF allows the following BPF operations:
-> * - Loading all types of BPF programs
-> * - Creating all types of BPF maps except:
-> *    - stackmap that needs CAP_TRACING
-> *    - devmap that needs CAP_NET_ADMIN
-> *    - cpumap that needs CAP_SYS_ADMIN
-> which is also correct, but CAP_BPF is not required
-> for array, hash, prog_array, percpu, map-in-map ...
-> except their lru variants...
-> and except if they contain bpf_spin_lock...
-> and if they need BTF it currently can be loaded with cap_sys_admin only..=
-.
->=20
-> If we say something about socket_filter, cg_skb progs in capability.h
-> we should clarify maps as well, but then it will become too big for .h
-> The comments in capability.h already look too long to me.
-> All that info and a lot more belongs in the doc.
-
-Agreed. We cannot put all these details in capability.h. Doc/wikipages=20
-would be better fit for these information.=20
-
-Thanks,
-Song
-
-
+- Eric
