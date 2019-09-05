@@ -2,159 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E27B3AABA4
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 21:02:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 914AAAABEC
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 21:26:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389288AbfIETCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 15:02:19 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44988 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388876AbfIETCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 15:02:19 -0400
-Received: by mail-ed1-f68.google.com with SMTP id p2so2570566edx.11;
-        Thu, 05 Sep 2019 12:02:16 -0700 (PDT)
+        id S2387438AbfIET00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 15:26:26 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:37064 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727900AbfIET00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 15:26:26 -0400
+Received: by mail-qt1-f195.google.com with SMTP id g13so3779233qtj.4;
+        Thu, 05 Sep 2019 12:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0r/znGHIj2Grw9klAyjeQvZth4AaeZj93+usoxZBVCI=;
+        b=nnrajutKL1aJFG4M+XqaQqsGbl1ULe2ZDuBP5kA06rya+jN3ZjXcDANxXsQythz+Bo
+         XSUticCROrNWMMomCwX54h9/gF0LZYg2y9WoQ7w/tb6/iI6wfMF8oaWter2DRQarneOA
+         g7pWoVLTNrkbqs9et/yeKphmWQFcnDfQ1iNmy8MepfARUhHRPtkwSQWHxUk9DCkdo1Ma
+         YjqlZhdvCb4b082lDq3IhxxnLNbWIaVvRVWa5v+dWU+D1YLNw04sTa5nIdQ/5nV8A6bq
+         CIEhV4dOBHcj++mizon8s4jYHPG7VXaoR/2FJYNsT2fCy+TrL6Mb0S0x4Z6Kdq5ZkEaJ
+         lopw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v4l9+uLQJWURusV4drj/K/JT9G0Yx+NFjnv0KyB59Ic=;
-        b=PnvOvkJDFNg+acQrpzjam3LrhWcZUIbSV03EXhQ9SgNbgVR/AqtMhjbwuZ8GDXBab3
-         ouBdHhiZCSRrmT2gHqDdanSS6HIFRf/nXPryS9H8+kvwoMp2PAnGnDO/+cJvgywYy2Za
-         JeFkKSzL5kUSupSwMvaxqd82u/l1fPg2nzvaKVrbzCG14Q20EaOycbVhfaizWgyJJB5K
-         m9FjaMKFN6JUSiJi+bZA1mdxIrlUBOFg/tZowzXyIs3eWkJWbnuwRnHKYQumEFbSZZUg
-         f2ERshrDuYFC6s8QkTCd8ZjXuBljgZkySCK/glC+0VyfDHo6MtSQX39kYHAT5Ffbt4K0
-         Z1gA==
-X-Gm-Message-State: APjAAAUgp9GMIoRuVgBWGV8XOfl7FXGalJGgHLLokoRsw03bJoW/bIi3
-        yHqTZQnrW1Zq0jG6uRSSc5G5O671j/o=
-X-Google-Smtp-Source: APXvYqxzTd47MqlgRCViKZrBRfYIigl7s3wz0sbueSZHBfhnmYPyF1bujYRjHD25yQvX/uZoFR+sVg==
-X-Received: by 2002:a17:906:4e12:: with SMTP id z18mr4200348eju.187.1567710136067;
-        Thu, 05 Sep 2019 12:02:16 -0700 (PDT)
-Received: from [10.68.32.192] (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
-        by smtp.gmail.com with ESMTPSA id t22sm520533edd.79.2019.09.05.12.02.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Sep 2019 12:02:15 -0700 (PDT)
-Subject: Re: [PATCH v2 00/10] Add definition for the number of standard PCI
- BARs
-To:     Andrew Murray <andrew.murray@arm.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Peter Jones <pjones@redhat.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>, kvm@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, linux-s390@vger.kernel.org
-References: <20190816092437.31846-1-efremov@linux.com>
- <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
-From:   Denis Efremov <efremov@linux.com>
-Message-ID: <5d8cdc6b-f8c9-c3f1-e11d-13b3a7eb5b26@linux.com>
-Date:   Thu, 5 Sep 2019 22:02:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0r/znGHIj2Grw9klAyjeQvZth4AaeZj93+usoxZBVCI=;
+        b=rTXsvlwIy/neP52g44etntola0h+dcYSuMvMzzJBOW7hZS11evp9/25CIdH9FCVnZY
+         n0lG7DgNmbKnJzN1V2Q5tG5Yj6aYL4BQhkE2XRZ4zhPoNgVX7K+oTQhTCHupdUpmHiZE
+         VEqk4AN5Z5zlRWqKUkXPU4KHhiBMFNlVJ590n07BQo3vGJ4EkNX70dPOAS0WyyjVVjpx
+         LDz6DPpnxyPj6ez01oJpR1b+ZthlYv9mbJc+nt9i6ygbHBacGeIwSeKn/YMLvq5Mq8V3
+         FKrIjYP0IZeQDb0Dpn0aFEva4B8ADAG8tc4gUVJuge4CWXakRBzePA5MRzyDBesgenIB
+         zw9Q==
+X-Gm-Message-State: APjAAAUbfc9RH0zNDvPnVqgK/UWbH7aXTjWhKoN03NJJB4mQ9FKOgM3s
+        INz6p1x+vhGyqlB3Bfm4m44oFnhIPOYPyvJMG2k=
+X-Google-Smtp-Source: APXvYqwMbXNzfBi/GIvilhcFGjlZQw/f5m+TrIcysRJsasuXyqXs1FeFeOSQeHZzhK+9dJHguhczBeE0knW9cEvflu0=
+X-Received: by 2002:ac8:478a:: with SMTP id k10mr5266013qtq.117.1567711584703;
+ Thu, 05 Sep 2019 12:26:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190904160021.72d104f1@canb.auug.org.au> <CAK7LNAQEU6uu-Z=VeR2KNa8ezCLA7VHtpvM2tvAKsWtUTi6Eug@mail.gmail.com>
+In-Reply-To: <CAK7LNAQEU6uu-Z=VeR2KNa8ezCLA7VHtpvM2tvAKsWtUTi6Eug@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 5 Sep 2019 12:26:13 -0700
+Message-ID: <CAEf4BzZLBV3o=t9+a4o4T7KZ_M04vddD0RMVs3s4JvDsvQ8onA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+To:     Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Sep 3, 2019 at 11:20 PM Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+>
+> On Wed, Sep 4, 2019 at 3:00 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > Hi all,
+> >
+> > After merging the net-next tree, today's linux-next build (arm
+> > multi_v7_defconfig) failed like this:
+> >
+> > scripts/link-vmlinux.sh: 74: Bad substitution
+> >
+> > Caused by commit
+> >
+> >   341dfcf8d78e ("btf: expose BTF info through sysfs")
+> >
+> > interacting with commit
+> >
+> >   1267f9d3047d ("kbuild: add $(BASH) to run scripts with bash-extension")
+> >
+> > from the kbuild tree.
+>
+>
+> I knew that they were using bash-extension
+> in the #!/bin/sh script.  :-D
+>
+> In fact, I wrote my patch in order to break their code
+> and  make btf people realize that they were doing wrong.
+
+Was there a specific reason to wait until this would break during
+Stephen's merge, instead of giving me a heads up (or just replying on
+original patch) and letting me fix it and save everyone's time and
+efforts?
+
+Either way, I've fixed the issue in
+https://patchwork.ozlabs.org/patch/1158620/ and will pay way more
+attention to BASH-specific features going forward (I found it pretty
+hard to verify stuff like this, unfortunately). But again, code review
+process is the best place to catch this and I really hope in the
+future we can keep this process productive. Thanks!
+
+>
+>
+>
+> > The change in the net-next tree turned link-vmlinux.sh into a bash script
+> > (I think).
+> >
+> > I have applied the following patch for today:
+>
+>
+> But, this is a temporary fix only for linux-next.
+>
+> scripts/link-vmlinux.sh does not need to use the
+> bash-extension ${@:2} in the first place.
+>
+> I hope btf people will write the correct code.
+
+I replaced ${@:2} with shift and ${@}, I hope that's a correct fix,
+but if you think it's not, please reply on the patch and let me know.
 
 
-On 16.08.2019 13:51, Andrew Murray wrote:
-> On Fri, Aug 16, 2019 at 12:24:27PM +0300, Denis Efremov wrote:
->> Code that iterates over all standard PCI BARs typically uses
->> PCI_STD_RESOURCE_END, but this is error-prone because it requires
->> "i <= PCI_STD_RESOURCE_END" rather than something like
->> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
->> way PCI_SRIOV_NUM_BARS is used. There is already the definition
->> PCI_BAR_COUNT for s390 only. Thus, this patchset introduces it globally.
->>
->> Changes in v2:
->>   - Reverse checks in pci_iomap_range,pci_iomap_wc_range.
->>   - Refactor loops in vfio_pci to keep PCI_STD_RESOURCES.
->>   - Add 2 new patches to replace the magic constant with new define.
->>   - Split net patch in v1 to separate stmmac and dwc-xlgmac patches.
->>
->> Denis Efremov (10):
->>   PCI: Add define for the number of standard PCI BARs
->>   s390/pci: Loop using PCI_STD_NUM_BARS
->>   x86/PCI: Loop using PCI_STD_NUM_BARS
->>   stmmac: pci: Loop using PCI_STD_NUM_BARS
->>   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
->>   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
->>   efifb: Loop using PCI_STD_NUM_BARS
->>   vfio_pci: Loop using PCI_STD_NUM_BARS
->>   PCI: hv: Use PCI_STD_NUM_BARS
->>   PCI: Use PCI_STD_NUM_BARS
->>
->>  arch/s390/include/asm/pci.h                      |  5 +----
->>  arch/s390/include/asm/pci_clp.h                  |  6 +++---
->>  arch/s390/pci/pci.c                              | 16 ++++++++--------
->>  arch/s390/pci/pci_clp.c                          |  6 +++---
->>  arch/x86/pci/common.c                            |  2 +-
->>  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  4 ++--
->>  drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c   |  2 +-
->>  drivers/pci/controller/pci-hyperv.c              | 10 +++++-----
->>  drivers/pci/pci.c                                | 11 ++++++-----
->>  drivers/pci/quirks.c                             |  4 ++--
->>  drivers/rapidio/devices/tsi721.c                 |  2 +-
->>  drivers/vfio/pci/vfio_pci.c                      | 11 +++++++----
->>  drivers/vfio/pci/vfio_pci_config.c               | 10 ++++++----
->>  drivers/vfio/pci/vfio_pci_private.h              |  4 ++--
->>  drivers/video/fbdev/efifb.c                      |  2 +-
->>  include/linux/pci.h                              |  2 +-
->>  include/uapi/linux/pci_regs.h                    |  1 +
->>  17 files changed, 51 insertions(+), 47 deletions(-)
-> 
-> I've come across a few more places where this change can be made. There
-> may be multiple instances in the same file, but only the first is shown
-> below:
-> 
-> drivers/misc/pci_endpoint_test.c:       for (bar = BAR_0; bar <= BAR_5; bar++) {
-> drivers/net/ethernet/intel/e1000/e1000_main.c:          for (i = BAR_1; i <= BAR_5; i++) {
-> drivers/net/ethernet/intel/ixgb/ixgb_main.c:    for (i = BAR_1; i <= BAR_5; i++) {
-> drivers/pci/controller/dwc/pci-dra7xx.c:        for (bar = BAR_0; bar <= BAR_5; bar++)
-> drivers/pci/controller/dwc/pci-layerscape-ep.c: for (bar = BAR_0; bar <= BAR_5; bar++)
-> drivers/pci/controller/dwc/pcie-artpec6.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
-> drivers/pci/controller/dwc/pcie-designware-plat.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
-> drivers/pci/endpoint/functions/pci-epf-test.c:  for (bar = BAR_0; bar <= BAR_5; bar++) {
-> include/linux/pci-epc.h:        u64     bar_fixed_size[BAR_5 + 1];
-> drivers/scsi/pm8001/pm8001_hwi.c:       for (bar = 0; bar < 6; bar++) {
-> drivers/scsi/pm8001/pm8001_init.c:      for (bar = 0; bar < 6; bar++) {
-> drivers/ata/sata_nv.c:  for (bar = 0; bar < 6; bar++)
-> drivers/video/fbdev/core/fbmem.c:       for (idx = 0, bar = 0; bar < PCI_ROM_RESOURCE; bar++) {
-> drivers/staging/gasket/gasket_core.c:   for (i = 0; i < GASKET_NUM_BARS; i++) {
-> drivers/tty/serial/8250/8250_pci.c:     for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) { <-----------
-> 
-> It looks like BARs are often iterated with PCI_NUM_BAR_RESOURCES, there
-> are a load of these too found with:
-> 
-> git grep PCI_ROM_RESOURCE | grep "< "
-> 
-> I'm happy to share patches if preferred.
-> 
-
-I'm not sure about lib/devres.c
-265:#define PCIM_IOMAP_MAX      PCI_ROM_RESOURCE
-268:    void __iomem *table[PCIM_IOMAP_MAX];
-277:    for (i = 0; i < PCIM_IOMAP_MAX; i++)
-324:    BUG_ON(bar >= PCIM_IOMAP_MAX);
-352:    for (i = 0; i < PCIM_IOMAP_MAX; i++)
-455:    for (i = 0; i < PCIM_IOMAP_MAX; i++) {
-
-Is it worth changing?
-#define PCIM_IOMAP_MAX  PCI_STD_NUM_BARS
-
-Thanks,
-Denis
+>
+> Thanks.
+>
+>
+>
+>
+> > From: Stephen Rothwell <sfr@canb.auug.org.au>
+> > Date: Wed, 4 Sep 2019 15:43:41 +1000
+> > Subject: [PATCH] link-vmlinux.sh is now a bash script
+> >
+> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > ---
+> >  Makefile                | 4 ++--
+> >  scripts/link-vmlinux.sh | 2 +-
+> >  2 files changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/Makefile b/Makefile
+> > index ac97fb282d99..523d12c5cebe 100644
+> > --- a/Makefile
+> > +++ b/Makefile
+> > @@ -1087,7 +1087,7 @@ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
+> >
+> >  # Final link of vmlinux with optional arch pass after final link
+> >  cmd_link-vmlinux =                                                 \
+> > -       $(CONFIG_SHELL) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
+> > +       $(BASH) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
+> >         $(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
+> >
+> >  vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
+> > @@ -1403,7 +1403,7 @@ clean: rm-files := $(CLEAN_FILES)
+> >  PHONY += archclean vmlinuxclean
+> >
+> >  vmlinuxclean:
+> > -       $(Q)$(CONFIG_SHELL) $(srctree)/scripts/link-vmlinux.sh clean
+> > +       $(Q)$(BASH) $(srctree)/scripts/link-vmlinux.sh clean
+> >         $(Q)$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) clean)
+> >
+> >  clean: archclean vmlinuxclean
+> > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > index f7edb75f9806..ea1f8673869d 100755
+> > --- a/scripts/link-vmlinux.sh
+> > +++ b/scripts/link-vmlinux.sh
+> > @@ -1,4 +1,4 @@
+> > -#!/bin/sh
+> > +#!/bin/bash
+> >  # SPDX-License-Identifier: GPL-2.0
+> >  #
+> >  # link vmlinux
+> > --
+> > 2.23.0.rc1
+> >
+> > --
+> > Cheers,
+> > Stephen Rothwell
+>
+>
+>
+> --
+> Best Regards
+> Masahiro Yamada
