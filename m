@@ -2,108 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 878E0A9808
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61132A9811
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 03:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730552AbfIEBcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 21:32:51 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45529 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727156AbfIEBcv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 21:32:51 -0400
-Received: by mail-pg1-f194.google.com with SMTP id 4so410163pgm.12;
-        Wed, 04 Sep 2019 18:32:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XgsZEUINJb/sdtMHaBsrZPBuUAzc7NcFduJRU8eaG0k=;
-        b=vHfszr3sMklPGEJ5FI0NIf4sn7Dp0DN7d0Hu1xq8NpgPu0/181XkOcS2X4n+HzZwzd
-         Yh5iyXjIdJ0iGWYxkkwbhJVenqTimhmcPHMArwkVv5uzhZVG+FlndBPgmekbml4o5JCJ
-         M3w+ECdggD+pmX5hyPvGKN3va/vJMKfwxdjLyT4T4sn2oxizZMj68NTQpADHN3Nox7nb
-         JbKc4RkC9KccwyW82b12HKgJQlbx9nu3V3wwO5FeD90QtSSYfbzviA5lsZKZAq8rn/BH
-         nTYtsVmUCZjTJbwH9etvG4Kd1ta2Ou3ffnqEncca8h2gr041XBw3SfJudzY0GauzUS4m
-         NAYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XgsZEUINJb/sdtMHaBsrZPBuUAzc7NcFduJRU8eaG0k=;
-        b=q4/nMtqXA3Ab0UC0xjtTgLmY1IvLtpPOTiMb5HFz57qw29E3h/UdnBSQRv+CuuzGH+
-         GRFm7MuLGanpd+TqLtv1xIfrseZSQa2CFgs/Iq3AszzbSGSzIAreud+yqyROvqj4LyL3
-         lZjI9j+YNt+9fjuSOI7mYH+2nBjgJpnkcr/SRF7lzJLbwJeksQ2EHi9Zsla1jyDR6VnY
-         2QX8RWXfpGhAm49OdncxAyPxNMiGo12kkFo2tafilCIluJ5/cP3E88Ig0VLZiOGteXqx
-         RqXb6t2wFCMS9YGS3oE3LOYAr96SlUz0N5cagqVPqSg9Kc+ehDx5cNnShAlfioU4D8hS
-         p7RQ==
-X-Gm-Message-State: APjAAAXYi5/C0GaKiNQvoxjsdaY6jECgNyCp7gdSEkmORGRlyAnwjkrM
-        JVVCMguLFMjj12XRKSQ/bTc=
-X-Google-Smtp-Source: APXvYqwp63vYPD4NvQMzBvsn2IShTR+k3VoCpSTsiFe02Ci8Syu91/k4uYAVeGqZIcuazY2jKPtc4g==
-X-Received: by 2002:a17:90a:fa96:: with SMTP id cu22mr44116pjb.137.1567647170161;
-        Wed, 04 Sep 2019 18:32:50 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::62a])
-        by smtp.gmail.com with ESMTPSA id z6sm331848pgk.18.2019.09.04.18.32.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Sep 2019 18:32:49 -0700 (PDT)
-Date:   Wed, 4 Sep 2019 18:32:46 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20190905013245.wguhhcxvxt5rnc6h@ast-mbp.dhcp.thefacebook.com>
-References: <20190904184335.360074-1-ast@kernel.org>
- <20190904184335.360074-2-ast@kernel.org>
- <CE3B644F-D1A5-49F7-96B6-FD663C5F8961@fb.com>
+        id S1730377AbfIEBja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 21:39:30 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:42110 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727162AbfIEBja (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 21:39:30 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id E23C17C8EED83C01DF7D;
+        Thu,  5 Sep 2019 09:39:28 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 5 Sep 2019 09:39:20 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <eric.dumazet@gmail.com>, <tsbogend@alpha.franken.de>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH v2 net] net: sonic: return NETDEV_TX_OK if failed to map buffer
+Date:   Thu, 5 Sep 2019 09:57:12 +0800
+Message-ID: <20190905015712.107173-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <960c7d1f-6e80-84fb-8d7a-9c5692605500@huawei.com>
+References: <960c7d1f-6e80-84fb-8d7a-9c5692605500@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CE3B644F-D1A5-49F7-96B6-FD663C5F8961@fb.com>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 05, 2019 at 12:34:36AM +0000, Song Liu wrote:
-> 
-> 
-> > On Sep 4, 2019, at 11:43 AM, Alexei Starovoitov <ast@kernel.org> wrote:
-> > 
-> > Implement permissions as stated in uapi/linux/capability.h
-> > 
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > 
-> 
-> [...]
-> 
-> > @@ -1648,11 +1648,11 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
-> > 	is_gpl = license_is_gpl_compatible(license);
-> > 
-> > 	if (attr->insn_cnt == 0 ||
-> > -	    attr->insn_cnt > (capable(CAP_SYS_ADMIN) ? BPF_COMPLEXITY_LIMIT_INSNS : BPF_MAXINSNS))
-> > +	    attr->insn_cnt > (capable_bpf() ? BPF_COMPLEXITY_LIMIT_INSNS : BPF_MAXINSNS))
-> > 		return -E2BIG;
-> > 	if (type != BPF_PROG_TYPE_SOCKET_FILTER &&
-> > 	    type != BPF_PROG_TYPE_CGROUP_SKB &&
-> > -	    !capable(CAP_SYS_ADMIN))
-> > +	    !capable_bpf())
-> > 		return -EPERM;
-> 
-> Do we allow load BPF_PROG_TYPE_SOCKET_FILTER and BPF_PROG_TYPE_CGROUP_SKB
-> without CAP_BPF? If so, maybe highlight in the header?
+NETDEV_TX_BUSY really should only be used by drivers that call
+netif_tx_stop_queue() at the wrong moment. If dma_map_single() is
+failed to map tx DMA buffer, it might trigger an infinite loop.
+This patch use NETDEV_TX_OK instead of NETDEV_TX_BUSY, and change
+printk to pr_err_ratelimited.
 
-of course. there is no change in behavior.
-'highlight in the header'?
-you mean in commit log?
-I think it's a bit weird to describe things in commit that patch
-is _not_ changing vs things that patch does actually change.
-This type of comment would be great in a doc though.
-The doc will be coming separately in the follow up assuming
-the whole thing lands. I'll remember to note that bit.
+Fixes: d9fb9f384292 ("*sonic/natsemi/ns83829: Move the National Semi-conductor drivers")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ v2: change subject and description of patch, use NETDEV_TX_OK instead of NETDEV_TX_BUSY.
+ drivers/net/ethernet/natsemi/sonic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/natsemi/sonic.c b/drivers/net/ethernet/natsemi/sonic.c
+index d0a01e8f000a..18fd62fbfb64 100644
+--- a/drivers/net/ethernet/natsemi/sonic.c
++++ b/drivers/net/ethernet/natsemi/sonic.c
+@@ -232,9 +232,9 @@ static int sonic_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	laddr = dma_map_single(lp->device, skb->data, length, DMA_TO_DEVICE);
+ 	if (!laddr) {
+-		printk(KERN_ERR "%s: failed to map tx DMA buffer.\n", dev->name);
++		pr_err_ratelimited("%s: failed to map tx DMA buffer.\n", dev->name);
+ 		dev_kfree_skb(skb);
+-		return NETDEV_TX_BUSY;
++		return NETDEV_TX_OK;
+ 	}
+ 
+ 	sonic_tda_put(dev, entry, SONIC_TD_STATUS, 0);       /* clear status */
+-- 
+2.20.1
 
