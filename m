@@ -2,104 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3804A9D25
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 10:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47E7CA9DC5
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 11:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732454AbfIEIhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 04:37:20 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51468 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731190AbfIEIhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 04:37:20 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i5nGK-0000Nk-Vz; Thu, 05 Sep 2019 10:37:05 +0200
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i5nGK-000BkL-Jd; Thu, 05 Sep 2019 10:37:04 +0200
-Subject: Re: [PATCH v2 bpf-next 2/3] bpf: implement CAP_BPF
-To:     Alexei Starovoitov <ast@fb.com>,
-        "nicolas.dichtel@6wind.com" <nicolas.dichtel@6wind.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-References: <20190829051253.1927291-1-ast@kernel.org>
- <20190829051253.1927291-2-ast@kernel.org>
- <ed8796f5-eaea-c87d-ddd9-9d624059e5ee@iogearbox.net>
- <20190829173034.up5g74onaekp53zd@ast-mbp.dhcp.thefacebook.com>
- <59ac111e-7ce7-5e00-32c9-9b55482fe701@6wind.com>
- <46df2c36-4276-33c0-626b-c51e77b3a04f@fb.com>
- <5e36a193-8ad9-77e7-e2ff-429fb521a79c@iogearbox.net>
- <99acd443-69d7-f53a-1af0-263e0b73abef@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <acc09eaf-5289-9457-3ce1-f27efb6013b8@iogearbox.net>
-Date:   Thu, 5 Sep 2019 10:37:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <99acd443-69d7-f53a-1af0-263e0b73abef@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25562/Wed Sep  4 10:23:03 2019)
+        id S1732973AbfIEJG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 05:06:57 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:42674 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731737AbfIEJG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 05:06:56 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x858xRe7135167;
+        Thu, 5 Sep 2019 09:06:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id; s=corp-2019-08-05;
+ bh=1UVlVK5NB/19I7lsUZaSiNPwLU/7bYEfIKVNYCUZ6BU=;
+ b=HwoaTdu3AQl/TF8kzGe3g+CPP1CuOzRb/izcDinpqzsdKDNjG7Kr48k7z4n87gsW4fap
+ IZT+rXPMeB58QKKAOLyFoP41UmQGdswt8PjkvLwhqPPQCM/7GBVbW0yNkad6QUftJRba
+ UY6u1K0Op3mWyxscf28iq3Uz1PI2UBi7qR+0jUSKNtN/CgPIJTlKD6wfavycduPq1EiX
+ DFhvLFpdc5k1xYeG3vBqMixKl5I2El7zzXEo7FzyVQUrBW9PgHytAKNn39lAYaXXNuwi
+ I4zMHdnCg/5vm/YqbUjcRAj/Tz4Dd9Xg5hI9ak80jsaOh43KrHB20oDPFipTUsDJdYuk Dg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 2uty3yr5ub-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 05 Sep 2019 09:06:47 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x858xBMl123957;
+        Thu, 5 Sep 2019 09:06:47 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2utvr37xxf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 05 Sep 2019 09:06:47 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8596k37020563;
+        Thu, 5 Sep 2019 09:06:46 GMT
+Received: from shipfan.cn.oracle.com (/10.113.210.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 05 Sep 2019 02:06:46 -0700
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+To:     eric.dumazet@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCHv3 0/1] Fix deadlock problem and make performance better
+Date:   Thu,  5 Sep 2019 05:15:41 -0400
+Message-Id: <1567674942-5132-1-git-send-email-yanjun.zhu@oracle.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9370 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=372
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1909050094
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9370 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=438 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1909050094
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/19 5:21 PM, Alexei Starovoitov wrote:
-> On 9/4/19 8:16 AM, Daniel Borkmann wrote:
->> opening/creating BPF maps" error="Unable to create map
->> /run/cilium/bpffs/tc/globals/cilium_lxc: operation not permitted"
->> subsys=daemon
->> 2019-09-04T14:11:47.28178666Z level=fatal msg="Error while creating
->> daemon" error="Unable to create map
->> /run/cilium/bpffs/tc/globals/cilium_lxc: operation not permitted"
->> subsys=daemon
-> 
-> Ok. We have to include caps in both cap_sys_admin and cap_bpf then.
-> 
->> And /same/ deployment with reverted patches, hence no CAP_BPF gets it up
->> and running again:
->>
->> # kubectl get pods --all-namespaces -o wide
-> 
-> Can you share what this magic commands do underneath?
+When running with about 1Gbit/ses for very long time, running ifconfig
+and netstat causes dead lock. These symptoms are similar to the
+commit 5f6b4e14cada ("net: dsa: User per-cpu 64-bit statistics"). After
+replacing network devices statistics with per-cpu 64-bit statistics,
+the dead locks disappear even after very long time running with 1Gbit/sec.
 
-What do you mean by magic commands? Latter is showing all pods in the cluster:
+V2->V3:
+Based on David's advice, "Never use the inline keyword in foo.c files,
+let the compiler decide.".
 
-https://kubernetes.io/docs/reference/kubectl/cheatsheet/#viewing-finding-resources
+The inline keyword is removed from the functions nv_get_stats and
+rx_missing_handler.
 
-I've only been using the normal kubeadm guide for setup, it's pretty straight
-forward, just the kubeadm init to bootstrap and then the kubectl create for
-deploying if you need to give it a spin for testing:
+V1->V2:
+Based on Eric's advice, "If the loops are ever restarted, the
+storage->fields will have been modified multiple times.".
 
-https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tabs-pod-install-4
+A similar change in the commit 5f6b4e14cada ("net: dsa: User per-cpu
+64-bit statistics") is borrowed to fix the above problem.
 
-> What user do they pick to start under? and what caps are granted?
+Zhu Yanjun (1):
+  forcedeth: use per cpu to collect xmit/recv statistics
 
-The deployment is using a 'securityContext' with 'privileged: true' for the
-the container spec as majority of CNIs do. My understanding is that this is
-passed down to the underlying container runtime e.g. docker as one option.
+ drivers/net/ethernet/nvidia/forcedeth.c | 143 ++++++++++++++++++++++----------
+ 1 file changed, 99 insertions(+), 44 deletions(-)
 
-Checking moby go code, it seems to exec with GetAllCapabilities which returns
-all of the capabilities it is aware of, and afaics, they seem to be using
-the below go library to get the hard-coded list from where obviously CAP_BPF
-is unknown which might also explain the breakage I've been seeing:
+-- 
+2.7.4
 
-https://github.com/syndtr/gocapability/blob/33e07d32887e1e06b7c025f27ce52f62c7990bc0/capability/enum_gen.go
-
-Thanks,
-Daniel
