@@ -2,80 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92894AADB1
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F0B9AADED
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 23:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404139AbfIEVPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 17:15:36 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:37529 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388359AbfIEVPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 17:15:36 -0400
-Received: by mail-pf1-f201.google.com with SMTP id u3so1914914pfm.4
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 14:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=5OIWaQS8XUylUqWEOLvRcQ6wvtAGUWcmHb4qQooXQU4=;
-        b=sqoOcBxZdlqGDWySWP2Y/co94HGedfimwCSXcJFCDa2CSHTgUIbVs4Pv6YfiqW989D
-         qwxLXD2E6ccpMCJrXFqhjsQ8KvKmii4DOcdayDCxOPHgZnS3MYlw7VykblxC7tziuiWg
-         TGPazBMqwY4jU9+ikaAjXWzQA567E4smuiqVvfBzdgaMlJPhw+KkxBjnb4RpotPIP0yv
-         4To4Fb74sAf5hCcy3mrBjhnNGk5/27rRSbZnG99BZMVY57d6quzmuw/KdICvu3J8iC9a
-         ndMLLbyFrE67/RIXYeSI2gDac9o0MrmV7qytiMO9xmjTphHOMt5lwQ4Jjd8n6/kFiDV6
-         qRhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=5OIWaQS8XUylUqWEOLvRcQ6wvtAGUWcmHb4qQooXQU4=;
-        b=BULKArSPZ8MNdHk5mJeVlQDi2jj94JFOBBTI/jbMXf7E9oPv/WJSYcX4FfxEhzVhC3
-         G0WUoa4TUI5kfzZiOebhImAqofKvrad8ynxbW5IbBQ54QSI2OmMydtYcipZtv7ZAQlq6
-         JWSNX0pYlALE2CWJv/E3soU8oof0MLKZamJR7LaIgrN8cKWjLQteOG84OQ1DAn5kyIus
-         ZPkFxXsYCsMgtfJjadIjQkh00dKAqNZB5ungHbkfWu7ZdGhtUJULFiuTLqHyLVwFfbAe
-         Djb2RZVODJ2HQSuYBWj3sJd1JgsEWWg4ukbsoddPCBYw0QFBGFsS6pZ7idM420um6bWm
-         OVHg==
-X-Gm-Message-State: APjAAAWD02VnqceKlM8/tQyRujYD2t3KWokaJQDCHAnuhd47MP+gl7tX
-        eBPG3LmAX2LGxPSUYhiuQwtGIP7BwLcaE4SnRJE=
-X-Google-Smtp-Source: APXvYqwZtsOP4oeCbgdcEYz4SC/6uGacnOnUYdFPlg0VekmO8GAS2KcyDuLyw3ItW3lkQRTZoimV43SVKTXC9aSch7E=
-X-Received: by 2002:a63:2252:: with SMTP id t18mr5065062pgm.5.1567718135010;
- Thu, 05 Sep 2019 14:15:35 -0700 (PDT)
-Date:   Thu,  5 Sep 2019 14:15:28 -0700
-Message-Id: <20190905211528.97828-1-samitolvanen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
-Subject: [PATCH] kcm: use BPF_PROG_RUN
-From:   Sami Tolvanen <samitolvanen@google.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Tom Herbert <tom@herbertland.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2389138AbfIEVko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 17:40:44 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:25502 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388463AbfIEVko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 17:40:44 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x85LcB1g009459;
+        Thu, 5 Sep 2019 17:40:39 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uu9m5hrd7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Sep 2019 17:40:39 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x85LeFtb003198;
+        Thu, 5 Sep 2019 21:40:38 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma01dal.us.ibm.com with ESMTP id 2uqgh7nrj8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Sep 2019 21:40:38 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x85LeawM51970524
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 5 Sep 2019 21:40:37 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E3EE86A054;
+        Thu,  5 Sep 2019 21:40:36 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 985266A04F;
+        Thu,  5 Sep 2019 21:40:36 +0000 (GMT)
+Received: from ltcfleet2-lp9.aus.stglabs.ibm.com (unknown [9.40.195.116])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu,  5 Sep 2019 21:40:36 +0000 (GMT)
+From:   Juliet Kim <julietk@linux.vnet.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     julietk@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] net/ibmvnic: free reset work of removed device from queue
+Date:   Thu,  5 Sep 2019 17:30:01 -0400
+Message-Id: <20190905213001.19818-1-julietk@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.16.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-05_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1909050201
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of invoking struct bpf_prog::bpf_func directly, use the
-BPF_PROG_RUN macro.
+Commit 36f1031c51a2 ("ibmvnic: Do not process reset during or after
+ device removal") made the change to exit reset if the driver has been
+removed, but does not free reset work items of the adapter from queue.
 
-Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Ensure all reset work items are freed when breaking out of the loop early.
+
+Fixes: 36f1031c51a2 ("ibmnvic: Do not process reset during or after
+device removal”)
+
+Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
 ---
- net/kcm/kcmsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 5dbc0c48f8cb..f350c613bd7d 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -379,7 +379,7 @@ static int kcm_parse_func_strparser(struct strparser *strp, struct sk_buff *skb)
- 	struct kcm_psock *psock = container_of(strp, struct kcm_psock, strp);
- 	struct bpf_prog *prog = psock->bpf_prog;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index fa4bb940665c..6644cabc8e75 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1985,7 +1985,10 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 	while (rwi) {
+ 		if (adapter->state == VNIC_REMOVING ||
+ 		    adapter->state == VNIC_REMOVED)
+-			goto out;
++			kfree(rwi);
++			rc = EBUSY;
++			break;
++		}
  
--	return (*prog->bpf_func)(skb, prog->insnsi);
-+	return BPF_PROG_RUN(prog, skb);
- }
- 
- static int kcm_read_sock_done(struct strparser *strp, int err)
+ 		if (adapter->force_reset_recovery) {
+ 			adapter->force_reset_recovery = false;
+@@ -2011,7 +2014,7 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		netdev_dbg(adapter->netdev, "Reset failed\n");
+ 		free_all_rwi(adapter);
+ 	}
+-out:
++
+ 	adapter->resetting = false;
+ 	if (we_lock_rtnl)
+ 		rtnl_unlock();
 -- 
-2.23.0.187.g17f5b7556c-goog
+2.16.4
 
