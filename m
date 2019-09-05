@@ -2,95 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1E4A98EF
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 135DEA9986
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 06:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730767AbfIEDmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 23:42:17 -0400
-Received: from ozlabs.org ([203.11.71.1]:44493 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727156AbfIEDmQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Sep 2019 23:42:16 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46P62G4pP0z9sDB;
-        Thu,  5 Sep 2019 13:42:13 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1567654934;
-        bh=D20kb8FI3SomKAMFU69sx2kOZjLBDN7Zio+s1/ojh5g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=n4nBW4F6iU8JNHCd2sXvqFLwQv01DM83fps9ZYicuMoPD3F4t+EPZ7V99BScFAFN7
-         CcV3qQ4PoST4MbLMx7yKrxtPtJ/AVQd86IjYo2Efo3o193crsys7vNnYR0w+T8QLDT
-         f9XG5Q2Va93VGfrjsop0UJpAbttdKsn27U1+wg84/REF0wllVAWRhZrmXHqVBrNC8G
-         kHnBXwozJBeVgPFQTt6iX42ADyLRIu5P7NgdckkXzFPyfoISY9OHt9O5rzJrykyhMV
-         Be0hI3wOo/8tfxlR7OdqA3CshCpPcxMDrao2SUpkaFXYzRcn5KW40uFAMYM1zNPgMM
-         FTyVkJhnVE9qw==
-Date:   Thu, 5 Sep 2019 13:42:13 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: linux-next: manual merge of the net-next tree with the arm-soc tree
-Message-ID: <20190905134213.739ca375@canb.auug.org.au>
+        id S1731101AbfIEE2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 00:28:43 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6673 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729941AbfIEE2m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 00:28:42 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 4BD539422B7EA727F921;
+        Thu,  5 Sep 2019 12:28:40 +0800 (CST)
+Received: from linux-ibm.site (10.175.102.37) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 5 Sep 2019 12:28:32 +0800
+From:   zhong jiang <zhongjiang@huawei.com>
+To:     <johannes@sipsolutions.net>, <davem@davemloft.net>
+CC:     <linux-wireless@vger.kernel.org>, <zhongjiang@huawei.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] cfg80211: Do not compare with boolean in nl80211_common_reg_change_event
+Date:   Thu, 5 Sep 2019 12:25:37 +0800
+Message-ID: <1567657537-65472-1-git-send-email-zhongjiang@huawei.com>
+X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/7ZgpHNInDPnmm6UQg5TPdzE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain
+X-Originating-IP: [10.175.102.37]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/7ZgpHNInDPnmm6UQg5TPdzE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+With the help of boolinit.cocci, we use !nl80211_reg_change_event_fill
+instead of (nl80211_reg_change_event_fill == false). Meanwhile, Clean
+up the code.
 
-Hi all,
+Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+---
+ net/wireless/nl80211.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Today's linux-next merge of the net-next tree got a conflict in:
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 3e30e18..0c7fa60 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -14997,12 +14997,10 @@ void nl80211_common_reg_change_event(enum nl80211_commands cmd_id,
+ 		return;
+ 
+ 	hdr = nl80211hdr_put(msg, 0, 0, 0, cmd_id);
+-	if (!hdr) {
+-		nlmsg_free(msg);
+-		return;
+-	}
++	if (!hdr)
++		goto nla_put_failure;
+ 
+-	if (nl80211_reg_change_event_fill(msg, request) == false)
++	if (!nl80211_reg_change_event_fill(msg, request))
+ 		goto nla_put_failure;
+ 
+ 	genlmsg_end(msg, hdr);
+-- 
+1.7.12.4
 
-  drivers/net/ethernet/nuvoton/w90p910_ether.c
-
-between commit:
-
-  00d2fbf73d55 ("net: remove w90p910-ether driver")
-
-from the arm-soc tree and commit:
-
-  d1a55841ab24 ("net: Remove dev_err() usage after platform_get_irq()")
-
-from the net-next tree.
-
-I fixed it up (I removed the file) and can carry the fix as necessary.
-This is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/7ZgpHNInDPnmm6UQg5TPdzE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1whBUACgkQAVBC80lX
-0GxxrAf9F2t1WiC/CROxhOEgz3XgdRi7F4M0XLeKgV6HYsch3nX5Wj9Z1Vh8tW6l
-c/fbKI1ZSokhfgYm1cEiqm/9SQg2lhUiGywuszysvidYT7o1GX/zMb9CGNC5fg8p
-zJsmfVIjLY5Qzo4RtOQSqFlT8wgd+CXFK2fEn/9nEnryStrlzb/E6xA+b437SxuI
-gQ7U2Zl+eNgIgMJXMJlLQQP+3yfw5HJX7Ox4AbYxYbuV6wS9H1XZvWkT4JjCgSQZ
-jsn8b1Ly8foiIhxb7K7cDl7yUCJyjCoVUqIGTAY6grwXCxRGRm5EDr9thpRRrCgS
-yAxzxRctgd46mxhzjE9l0L2sbmpMOA==
-=nc/L
------END PGP SIGNATURE-----
-
---Sig_/7ZgpHNInDPnmm6UQg5TPdzE--
