@@ -2,183 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA21AAA8C
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:07:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D23D4AAA91
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 20:07:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391127AbfIESG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 14:06:59 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:38370 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfIESG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 14:06:59 -0400
-Received: by mail-wm1-f66.google.com with SMTP id o184so4159190wme.3
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 11:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=du8hrenMmR1OpU9VoB6zsRD7zRZu3iWJjdW2a83saTk=;
-        b=th25xKhRNt+w+xMvjuZ5DEElWcUH9g8Lzv4DUKcZ1l3k85fDU0s6h2t+/oaSboeYcs
-         9lw8mgM0GUFVArOy5JU0iVm4JerdqFr91gBHF1L1Hz4zBAlfSeKlQQcSDjQYkXUCb96V
-         lq0SID0LwSRRbbdjXdlI3Xjb0Ip5hO34SuzPbq0rpSLa7dNjV6rDOfkIZ53UB1tsvWjD
-         se2MZYcOL/vhuAiN7L1GeYkKxAYoUr+WU3V22EiydeMIwFUaWc/kqCnqJvGr+CEfhqjy
-         Eonn3372uan5vGMcvVrhx7Lfw/y2E+noQYONZhbt1ZEgf6zXslOiZnL0cSzh/Rw/uRGB
-         nxEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=du8hrenMmR1OpU9VoB6zsRD7zRZu3iWJjdW2a83saTk=;
-        b=qc7q/95HyfU5YrCnouSxY1Ew2d+Eiigs9NLk+kao58uEq7MXZKGlCoNKrfBSvI+Lfe
-         4K753t5zzQhAyudGeJHEek6oYDBer1CopePWee0CzzYWhyqmOQPabIEhA9J7PEO00Al+
-         hde6FEXgpkJrS3mmvwRvnsk3wL9Q3zTfL5mTQkRZ6zrbLiiZU2RFmbj0ekeeh7Dra5mb
-         wxvlMBIf2ihq21/cldhwloAPyqqcI6CRF+zaLC4PMnlZmKVDDq9+QLkUOnlSXnWBsuJY
-         Vc5nGOdXgtD5VDogFX6uV3HhQLJmxGiOWK8TiWE0h0/un45XPOdJbWobgFmvPVa4RQos
-         vWjg==
-X-Gm-Message-State: APjAAAVdjSbCO1dk8r0aCuXAhr+lJCcYmX0E//W5kDEbHvB9sAG9XoFe
-        4UhJcIfzUsPHFMdAhaV3AvE3qa8Lq7A=
-X-Google-Smtp-Source: APXvYqyCuDTTVK0oIgljWvDxjQTTqN/WUiR0VyQrSE58esTFeCO0FUn0mqP3R71aHtC+YTqz/JlNfg==
-X-Received: by 2002:a1c:9d15:: with SMTP id g21mr4167590wme.96.1567706817408;
-        Thu, 05 Sep 2019 11:06:57 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id r17sm3504227wrt.68.2019.09.05.11.06.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2019 11:06:56 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next] net: fib_notifier: move fib_notifier_ops from struct net into per-net struct
-Date:   Thu,  5 Sep 2019 20:06:56 +0200
-Message-Id: <20190905180656.4756-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        id S2388425AbfIESHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 14:07:46 -0400
+Received: from mga03.intel.com ([134.134.136.65]:20501 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726097AbfIESHp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 14:07:45 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Sep 2019 11:07:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,470,1559545200"; 
+   d="asc'?scan'208";a="382983113"
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+  by fmsmga005.fm.intel.com with ESMTP; 05 Sep 2019 11:07:44 -0700
+Received: from orsmsx101.amr.corp.intel.com ([169.254.8.119]) by
+ ORSMSX102.amr.corp.intel.com ([169.254.3.129]) with mapi id 14.03.0439.000;
+ Thu, 5 Sep 2019 11:07:44 -0700
+From:   "Rustad, Mark D" <mark.d.rustad@intel.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: rtnl_lock() question
+Thread-Topic: rtnl_lock() question
+Thread-Index: AQHVYqJNX0fhsn8qT0SzmT0mxtlDA6cbl76AgACWmQCAAHFSgIABOguA
+Date:   Thu, 5 Sep 2019 18:07:43 +0000
+Message-ID: <FFDA0C01-0608-4A4A-B612-8964287D8E0A@intel.com>
+References: <29EC5179-D939-42CD-8577-682BE4B05916@gmail.com>
+ <3164f8de-de20-44f7-03fb-8bc39ca8449e@gmail.com>
+ <C46053D2-6BF5-4CFE-BF76-32DDCAD7BC10@gmail.com>
+ <867cf373f204715aec3b2e04ef9f65454cf25a2e.camel@mellanox.com>
+In-Reply-To: <867cf373f204715aec3b2e04ef9f65454cf25a2e.camel@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.233.99.21]
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107";
+        protocol="application/pgp-signature"; micalg=pgp-sha256
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+--Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii;
+	delsp=yes;
+	format=flowed
 
-No need for fib_notifier_ops to be in struct net. It is used only by
-fib_notifier as a private data. Use net_generic to introduce per-net
-fib_notifier struct and move fib_notifier_ops there.
+On Sep 4, 2019, at 4:23 PM, Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- include/net/net_namespace.h |  3 ---
- net/core/fib_notifier.c     | 29 +++++++++++++++++++++++------
- 2 files changed, 23 insertions(+), 9 deletions(-)
+> some allocations require parameters that should remain valid and
+> constant across the whole reconfiguration procedure such
+> params.num_channels, so they must be done inside the lock.
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index ab40d7afdc54..64bcb589a610 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -103,9 +103,6 @@ struct net {
- 	/* core fib_rules */
- 	struct list_head	rules_ops;
- 
--	struct list_head	fib_notifier_ops;  /* Populated by
--						    * register_pernet_subsys()
--						    */
- 	struct net_device       *loopback_dev;          /* The loopback */
- 	struct netns_core	core;
- 	struct netns_mib	mib;
-diff --git a/net/core/fib_notifier.c b/net/core/fib_notifier.c
-index 13a40b831d6d..470a606d5e8d 100644
---- a/net/core/fib_notifier.c
-+++ b/net/core/fib_notifier.c
-@@ -5,8 +5,15 @@
- #include <linux/module.h>
- #include <linux/init.h>
- #include <net/net_namespace.h>
-+#include <net/netns/generic.h>
- #include <net/fib_notifier.h>
- 
-+static unsigned int fib_notifier_net_id;
-+
-+struct fib_notifier_net {
-+	struct list_head fib_notifier_ops;
-+};
-+
- static ATOMIC_NOTIFIER_HEAD(fib_chain);
- 
- int call_fib_notifier(struct notifier_block *nb, struct net *net,
-@@ -34,6 +41,7 @@ EXPORT_SYMBOL(call_fib_notifiers);
- 
- static unsigned int fib_seq_sum(void)
- {
-+	struct fib_notifier_net *fn_net;
- 	struct fib_notifier_ops *ops;
- 	unsigned int fib_seq = 0;
- 	struct net *net;
-@@ -41,8 +49,9 @@ static unsigned int fib_seq_sum(void)
- 	rtnl_lock();
- 	down_read(&net_rwsem);
- 	for_each_net(net) {
-+		fn_net = net_generic(net, fib_notifier_net_id);
- 		rcu_read_lock();
--		list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
-+		list_for_each_entry_rcu(ops, &fn_net->fib_notifier_ops, list) {
- 			if (!try_module_get(ops->owner))
- 				continue;
- 			fib_seq += ops->fib_seq_read(net);
-@@ -58,9 +67,10 @@ static unsigned int fib_seq_sum(void)
- 
- static int fib_net_dump(struct net *net, struct notifier_block *nb)
- {
-+	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
- 	struct fib_notifier_ops *ops;
- 
--	list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
-+	list_for_each_entry_rcu(ops, &fn_net->fib_notifier_ops, list) {
- 		int err;
- 
- 		if (!try_module_get(ops->owner))
-@@ -127,12 +137,13 @@ EXPORT_SYMBOL(unregister_fib_notifier);
- static int __fib_notifier_ops_register(struct fib_notifier_ops *ops,
- 				       struct net *net)
- {
-+	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
- 	struct fib_notifier_ops *o;
- 
--	list_for_each_entry(o, &net->fib_notifier_ops, list)
-+	list_for_each_entry(o, &fn_net->fib_notifier_ops, list)
- 		if (ops->family == o->family)
- 			return -EEXIST;
--	list_add_tail_rcu(&ops->list, &net->fib_notifier_ops);
-+	list_add_tail_rcu(&ops->list, &fn_net->fib_notifier_ops);
- 	return 0;
- }
- 
-@@ -167,18 +178,24 @@ EXPORT_SYMBOL(fib_notifier_ops_unregister);
- 
- static int __net_init fib_notifier_net_init(struct net *net)
- {
--	INIT_LIST_HEAD(&net->fib_notifier_ops);
-+	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
-+
-+	INIT_LIST_HEAD(&fn_net->fib_notifier_ops);
- 	return 0;
- }
- 
- static void __net_exit fib_notifier_net_exit(struct net *net)
- {
--	WARN_ON_ONCE(!list_empty(&net->fib_notifier_ops));
-+	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
-+
-+	WARN_ON_ONCE(!list_empty(&fn_net->fib_notifier_ops));
- }
- 
- static struct pernet_operations fib_notifier_net_ops = {
- 	.init = fib_notifier_net_init,
- 	.exit = fib_notifier_net_exit,
-+	.id = &fib_notifier_net_id,
-+	.size = sizeof(struct fib_notifier_net),
- };
- 
- static int __init fib_notifier_init(void)
--- 
-2.21.0
+You could always check if those parameters have changed once under the lock  
+and, if they did, drop the lock, reallocate and try again. Since such  
+changes should be very infrequent, this is something that really should not  
+loop multiple times.
 
+--
+Mark Rustad, Networking Division, Intel Corporation
+
+--Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
+
+iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAl1xTu8ACgkQPA7/547j
+7m704g/+NNurCjTB3J2ILgNoj84TiT3eUJ7KofmgwWwvpijPsimzn+FySyXdZu68
+7ARZC+z1z0exIYJ5RxETBvG4SXlc1d0W9aS3fl1SBO3kIgqQmHglp63mh0JzXc5o
+D57370FSpST3IM3kbIjqEmZx5bPoxYnL7mD0lyZ8nb2gxHi2mRBU6SQbnYRfIN8b
+SH4INmomIz2WV3V7zp4UoVslhEG+/laiEndnZD4L6SXWFS9XMdHShisfoDdQWtWZ
+PhI/64KgrbzvRivWqI/WC0FwOxTB0czylskbiAmRtD2gxrka/fNq2D6QA74WXlpf
+OYNXLZ7F1qfBtpJsBue4x/Y3jo7Mfiar6SEq6wXVCzskjMBw9IzRlcgNzQhVoVTf
+ZW6c6wqia/6RgK46HH28kh8kexsbpl5WwwxPZNEelfCjZZcw6yDEN1VE1WpfFEuj
+FQ0jYyoxXe5GGY7MeriFHcllg3ue4B1NCYH+LsTAtYTwTNK/mYHrrU60T1TV/rD0
+DoB5vD/1tNl57QaA/Nj9sDoWSKHy4yo5oMPmKCMbDF7KZv1/a05gDxROMt5ryiQ2
+tfK/IKhmsO20xPf30OJyBrgLXm67s+UdCBUuY6MzZXONLSHeeQXWVZP5OdSZSpJM
+1E97/9d//1fiNHQuG75FKo7anbJOdJyC9zjXb4c3F80W3oty/8s=
+=nrv/
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_E2A1B686-45D0-4ACE-81AC-0B6321B33107--
