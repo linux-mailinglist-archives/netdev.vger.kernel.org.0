@@ -2,101 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A876AAC18
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 21:37:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70205AACC5
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 22:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390811AbfIETh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 15:37:57 -0400
-Received: from mail-eopbgr40081.outbound.protection.outlook.com ([40.107.4.81]:17824
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726626AbfIETh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Sep 2019 15:37:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UFlP62oWxhllb/bIASTzlNHztRWF7LroF5M+S7M+gd63/apsmM3HjksAG9DVytsfjKygS9HTFkTMjS459zlDkSwiN7CglAoKwnASDz9bCL2+mZROyEHbp66RxFR2BEQdvEUO6HJU6AIBH8OTDqPog/s9qV233vjSC+6ransuyw06dHxQndBLRHK+4AwbAVgRnaaNB19JaeQ9f/mhilmviSUyUYm6px5IP8Fuodhf5zzZNPfZwN63Ee9K/r8iQq8Thzcuc+HGetxEAOW1EstsDdX4OnZgVGKyPG31kxnHhdu2Bb9XmGjw68Y8JXPYGKDjoDHz54StVfQfLo3CJpngjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qbYJiFqwhCsm3QJHjOrB3hO5E3DVf1d0kBPZJfVeo/o=;
- b=Sqh5uBKB6ZhbMccUisRI59nq3Q9YH7rVyu15OLQl1rbEQ2RTnDrQUwbqZa0KR3YOQ2gXyLamJIdC1QE+r/IAulXlK42axqNxkmR239tsVj2a5ZD/3OoEG57p/oXBEioDEFtACTftVcy+6O4g+/WtmRKxfD6dw15xscKSNEFU0IJlvVSxty8K4BDwSdlTbu42isahRrbxIGQki1keFsf4JvNFHSxyMNEkduL6CCBXexcCjJTl01MmozhYC/263vkT3medOCOeuD+CQCiyZJFgtuvtcKOTwIZNVVFegFd+LMnuRj+Ax443CvZxOIWA6UvylUfqDMHCijjFCR3RvRNP4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qbYJiFqwhCsm3QJHjOrB3hO5E3DVf1d0kBPZJfVeo/o=;
- b=D/2XolGnHane1ye5PU2dGyIg7HbzmWgOfkLnir1xSmhh7QTYzHokzWc2MENSZBYT/Ui8apKcMrkX+cOE5b6HEfVC/6E6Oc8XMhnqILGqLy7jfzgnDYxd0/ZwGkmErGYmpbPYdekPWFrWeV8qFoTpHJ7lByf2XjSLbCvSub9w4sY=
-Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
- VI1PR0501MB2528.eurprd05.prod.outlook.com (10.168.138.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.21; Thu, 5 Sep 2019 19:37:53 +0000
-Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
- ([fe80::c4f0:4270:5311:f4b9]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
- ([fe80::c4f0:4270:5311:f4b9%5]) with mapi id 15.20.2220.022; Thu, 5 Sep 2019
- 19:37:53 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Erez Shitrit <erezsh@mellanox.com>,
-        "weiyongjun1@huawei.com" <weiyongjun1@huawei.com>,
-        Mark Bloch <markb@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Alex Vesker <valex@mellanox.com>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/mlx5: DR, Fix error return code in
- dr_domain_init_resources()
-Thread-Topic: [PATCH net-next] net/mlx5: DR, Fix error return code in
- dr_domain_init_resources()
-Thread-Index: AQHVY82oshc0j/9jWk+M6+lFVJzxvKcdezOA
-Date:   Thu, 5 Sep 2019 19:37:53 +0000
-Message-ID: <c89c55e6b443996a9cf83f160e2a6babd37437e9.camel@mellanox.com>
-References: <20190905095600.127371-1-weiyongjun1@huawei.com>
-In-Reply-To: <20190905095600.127371-1-weiyongjun1@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4135777d-9f17-4620-81bc-08d732388bac
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2528;
-x-ms-traffictypediagnostic: VI1PR0501MB2528:|VI1PR0501MB2528:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0501MB252874E2C24B9FB07517F770BEBB0@VI1PR0501MB2528.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 015114592F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(376002)(136003)(396003)(39850400004)(199004)(189003)(102836004)(8936002)(2906002)(6246003)(5660300002)(53936002)(6506007)(86362001)(99286004)(76176011)(6486002)(316002)(229853002)(3846002)(14454004)(58126008)(2501003)(25786009)(54906003)(110136005)(6636002)(6116002)(4326008)(36756003)(478600001)(64756008)(4744005)(66446008)(7736002)(305945005)(71190400001)(486006)(476003)(71200400001)(2616005)(6436002)(91956017)(446003)(76116006)(66066001)(81166006)(11346002)(118296001)(66476007)(66556008)(186003)(66946007)(8676002)(6512007)(26005)(81156014)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2528;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: OQZYdob1JKJ4kDTC7ducJzAFa2b1c74QeLSJXX54Rg53+5AbE3AF1O7Azjb/nTdMp8UmfHH4VAIiqPUg8dGfIGXSi/qQeZCrNFxcRJye8iaKzcVFx+wCTuZnbCF3zKlFYfiKAkWDorloLkoNfMyTtnrYhnxggHzcuzw/3bs4qYa+BcmqU67ASIpPZsDwCItQo94aYrJgHCZFP5Zo8yr7DQh/Se3MpZ/0aC9gr7IQ3dcSXggEInMCQmsu+ndgBbe1LXbogV0JI0qhRZSI7JQfppZZFSzldjVdJzUhZBX41T1ck9+YHGJBCIYNU0cbC2eImwZ+8vrm8BJQKpqNsouo3rJgGHz26mHCpM8OWy5iWfHtTudKGitfL8huazol8bsec+wW201XgRMSZo7Cs5azvPLx5bY8YWVbMSlKzgGziWM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9C29A2B9572C6E4EAF16BD59A9037024@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2388059AbfIEUIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 16:08:09 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:46122 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733128AbfIEUIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 16:08:09 -0400
+Received: by mail-io1-f69.google.com with SMTP id o3so4648441iom.13
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 13:08:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Abbd0TSs66/zCB2hcq/kRDumBVAAFLe4IOeLRBtvGas=;
+        b=b9edP0NpbZ24wXcLCGvm6SNlVEzHUSv1NGWZRKFET5HXTZ8iYxGSfHX1eQzSBFNZLY
+         c2iF9QutMVsVhypg+cCLR1XCrdCc1e/7CSUBFdNRgTHSR88KprwtxVW/OR71QfEQw8UE
+         PpaYZTFNLQtLjtVbA2A6Ud/yeoBBdPHLnm2Ae33q5XpkAkHpu24rDhjj1Ri1Z3a6u9FN
+         +wJSWvFzFP7mXbdsf+W7ANtf72uxYOIfnk1ts3h+SLuDZihzGczCiKOZ8zUtdNxHFSwV
+         2nACQ7QdGDD+1gLoILQPU4wwjNxGtBQA74jRbZrBMi0agHD4W/vU4gHAW4+oabIHdpBh
+         reDA==
+X-Gm-Message-State: APjAAAUh1OHXqbgwBFTNK/wS2AazqxNUTxNhdin73MBxsrSK49SjolG8
+        HW0jnbWzE4npcCVDAJcfCL+GXR4lQgbRdHpr8jgQVEK32QDh
+X-Google-Smtp-Source: APXvYqwemc/4NDS04xk5eP5U95GqM6jnkkJWflKsban4wQWb879YYrAVRiYPmeVbK5uR5ZL4Kr7i98jSqkgtPCBagdaJpO0QD/58
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4135777d-9f17-4620-81bc-08d732388bac
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2019 19:37:53.7885
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oBI5AgUfDqXA9DwqY+48W3T2qot90Jw3UXql+i0jJ6etHzvfs0mLGjHC0f0ioIHoEdblmnrEIe68/mJYxj8G6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2528
+X-Received: by 2002:a5d:9591:: with SMTP id a17mr6266918ioo.303.1567714087830;
+ Thu, 05 Sep 2019 13:08:07 -0700 (PDT)
+Date:   Thu, 05 Sep 2019 13:08:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005091a70591d3e1d9@google.com>
+Subject: general protection fault in dev_map_hash_update_elem
+From:   syzbot <syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA5LTA1IGF0IDA5OjU2ICswMDAwLCBXZWkgWW9uZ2p1biB3cm90ZToNCj4g
-Rml4IHRvIHJldHVybiBuZWdhdGl2ZSBlcnJvciBjb2RlIC1FTk9NRU0gZnJvbSB0aGUgZXJyb3Ig
-aGFuZGxpbmcNCj4gY2FzZSBpbnN0ZWFkIG9mIDAsIGFzIGRvbmUgZWxzZXdoZXJlIGluIHRoaXMg
-ZnVuY3Rpb24uDQo+IA0KPiBGaXhlczogNGVjOWU3YjAyNjk3ICgibmV0L21seDU6IERSLCBFeHBv
-c2Ugc3RlZXJpbmcgZG9tYWluDQo+IGZ1bmN0aW9uYWxpdHkiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBX
-ZWkgWW9uZ2p1biA8d2VpeW9uZ2p1bjFAaHVhd2VpLmNvbT4NCj4gDQoNCkFwcGxpZWQgdG8gbmV0
-LW5leHQtbWx4NS4NClRoYW5rcyAhDQoNCg==
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    6d028043 Add linux-next specific files for 20190830
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=135c1a92600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=82a6bec43ab0cb69
+dashboard link: https://syzkaller.appspot.com/bug?extid=4e7a85b1432052e8d6f8
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109124e1600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
+
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 10235 Comm: syz-executor.0 Not tainted 5.3.0-rc6-next-20190830  
+#75
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:__write_once_size include/linux/compiler.h:203 [inline]
+RIP: 0010:__hlist_del include/linux/list.h:795 [inline]
+RIP: 0010:hlist_del_rcu include/linux/rculist.h:475 [inline]
+RIP: 0010:__dev_map_hash_update_elem kernel/bpf/devmap.c:668 [inline]
+RIP: 0010:dev_map_hash_update_elem+0x3c8/0x6e0 kernel/bpf/devmap.c:691
+Code: 48 89 f1 48 89 75 c8 48 c1 e9 03 80 3c 11 00 0f 85 d3 02 00 00 48 b9  
+00 00 00 00 00 fc ff df 48 8b 53 10 48 89 d6 48 c1 ee 03 <80> 3c 0e 00 0f  
+85 97 02 00 00 48 85 c0 48 89 02 74 38 48 89 55 b8
+RSP: 0018:ffff88808d607c30 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff8880a7f14580 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a7f14588
+RBP: ffff88808d607c78 R08: 0000000000000004 R09: ffffed1011ac0f73
+R10: ffffed1011ac0f72 R11: 0000000000000003 R12: ffff88809f4e9400
+R13: ffff88809b06ba00 R14: 0000000000000000 R15: ffff88809f4e9528
+FS:  00007f3a3d50c700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007feb3fcd0000 CR3: 00000000986b9000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  map_update_elem+0xc82/0x10b0 kernel/bpf/syscall.c:966
+  __do_sys_bpf+0x8b5/0x3350 kernel/bpf/syscall.c:2854
+  __se_sys_bpf kernel/bpf/syscall.c:2825 [inline]
+  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2825
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459879
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f3a3d50bc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459879
+RDX: 0000000000000020 RSI: 0000000020000040 RDI: 0000000000000002
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f3a3d50c6d4
+R13: 00000000004bfc86 R14: 00000000004d1960 R15: 00000000ffffffff
+Modules linked in:
+---[ end trace 083223e21dbd0ae5 ]---
+RIP: 0010:__write_once_size include/linux/compiler.h:203 [inline]
+RIP: 0010:__hlist_del include/linux/list.h:795 [inline]
+RIP: 0010:hlist_del_rcu include/linux/rculist.h:475 [inline]
+RIP: 0010:__dev_map_hash_update_elem kernel/bpf/devmap.c:668 [inline]
+RIP: 0010:dev_map_hash_update_elem+0x3c8/0x6e0 kernel/bpf/devmap.c:691
+Code: 48 89 f1 48 89 75 c8 48 c1 e9 03 80 3c 11 00 0f 85 d3 02 00 00 48 b9  
+00 00 00 00 00 fc ff df 48 8b 53 10 48 89 d6 48 c1 ee 03 <80> 3c 0e 00 0f  
+85 97 02 00 00 48 85 c0 48 89 02 74 38 48 89 55 b8
+RSP: 0018:ffff88808d607c30 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffff8880a7f14580 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff8880a7f14588
+RBP: ffff88808d607c78 R08: 0000000000000004 R09: ffffed1011ac0f73
+R10: ffffed1011ac0f72 R11: 0000000000000003 R12: ffff88809f4e9400
+R13: ffff88809b06ba00 R14: 0000000000000000 R15: ffff88809f4e9528
+FS:  00007f3a3d50c700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007feb3fcd0000 CR3: 00000000986b9000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
