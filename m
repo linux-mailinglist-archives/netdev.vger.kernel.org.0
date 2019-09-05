@@ -2,114 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D07D3A98E7
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1E4A98EF
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 05:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbfIEDhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Sep 2019 23:37:22 -0400
-Received: from mail-pf1-f178.google.com ([209.85.210.178]:36735 "EHLO
-        mail-pf1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbfIEDhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Sep 2019 23:37:22 -0400
-Received: by mail-pf1-f178.google.com with SMTP id y22so802099pfr.3
-        for <netdev@vger.kernel.org>; Wed, 04 Sep 2019 20:37:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=UMP/S2fCberFyG7WUfO4nV2dQ7qbF+SuAvDENBNoKNI=;
-        b=EGs34kWpT03Zsuc4XSokotaRGPtwpQibk43T9mJVeLNDoSiKnrifVp+Th9bRssLLcv
-         LMXY+AGA16JIVk5NxUSQFjge/KKqrtuJuTFZr5nvdzVsY1m/gwzEEe12e3fWyOwTUZd4
-         pL2qQwxV+5XB85XPEXDTaXSm0waN4HqPXfhEN8rayhDeMccIlTsqKVbofRPmY+2AZqcd
-         7UdBXF+Tv1+rgbWNG82XyujfoxSLm5tKQGCuPuna3AjTGHU+x5b3T+sk+sDsPXNYJU4s
-         oVUQKqlVg8ZHD5pqAG1J+rbj2el0TldPW5B0N9Khe9aniREDrwOseUVYecgSbGM1GkWB
-         p2lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UMP/S2fCberFyG7WUfO4nV2dQ7qbF+SuAvDENBNoKNI=;
-        b=rgEvh3gG4E8fKTe0ZbSuqfo2lDoNpDVuA0rcxZ+5LM1i8l2+C0BDSNZg1mes/jl5sz
-         UM4+Hl2/ncEx9zi5XHUz6vNxQ+2pqwtwhJv5yat4T3Q4ToHoTFvWYVrzMs8MiecmN84e
-         Ao08Cn4gv2ZUWbQLVwNyG3/G/hcl9boUtD2o1ayA3FGtSgPEQtewln1gpp38Bu66QBh4
-         JrmjJyER8ujOby5cdVmBi0oAtuxN1+ZN/GZXbkYEYHxSRn0TgkfhoifivQUN/vq6iSv3
-         tiGH9/bbK3HaukgXdXNencXRTanRl2EwXm2lrRqBaKU0uhn9Q5DaC0U06AXe7zRWJODy
-         hvKA==
-X-Gm-Message-State: APjAAAWZNR6Nx9Q4Sf1wJKTWnA1VbsG6Nvn7xtQ4VaOlaTHXR6A2GZy8
-        b66GFA2NORHlHpMKG+2SVoQ=
-X-Google-Smtp-Source: APXvYqzQQvKSugyR6iYrE9m2J/8M6ZtRzOaY1qpDYGj/qXt7uS17XOAKXKjIqhOd0kOs3w8B1Zj0ng==
-X-Received: by 2002:aa7:91d7:: with SMTP id z23mr1185755pfa.262.1567654641519;
-        Wed, 04 Sep 2019 20:37:21 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k36sm494708pgl.42.2019.09.04.20.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Sep 2019 20:37:20 -0700 (PDT)
-Date:   Thu, 5 Sep 2019 11:37:10 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Phil Karn <karn@ka9q.net>,
-        Sukumar Gopalakrishnan <sukumarg1973@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCHv2 net-next] ipmr: remove cache_resolve_queue_len
-Message-ID: <20190905033710.GI18865@dhcp-12-139.nay.redhat.com>
-References: <20190903084359.13310-1-liuhangbin@gmail.com>
- <20190904033408.13988-1-liuhangbin@gmail.com>
- <aa759647-953e-23b5-32e2-b0b7373e07e4@gmail.com>
+        id S1730767AbfIEDmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Sep 2019 23:42:17 -0400
+Received: from ozlabs.org ([203.11.71.1]:44493 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727156AbfIEDmQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Sep 2019 23:42:16 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46P62G4pP0z9sDB;
+        Thu,  5 Sep 2019 13:42:13 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1567654934;
+        bh=D20kb8FI3SomKAMFU69sx2kOZjLBDN7Zio+s1/ojh5g=;
+        h=Date:From:To:Cc:Subject:From;
+        b=n4nBW4F6iU8JNHCd2sXvqFLwQv01DM83fps9ZYicuMoPD3F4t+EPZ7V99BScFAFN7
+         CcV3qQ4PoST4MbLMx7yKrxtPtJ/AVQd86IjYo2Efo3o193crsys7vNnYR0w+T8QLDT
+         f9XG5Q2Va93VGfrjsop0UJpAbttdKsn27U1+wg84/REF0wllVAWRhZrmXHqVBrNC8G
+         kHnBXwozJBeVgPFQTt6iX42ADyLRIu5P7NgdckkXzFPyfoISY9OHt9O5rzJrykyhMV
+         Be0hI3wOo/8tfxlR7OdqA3CshCpPcxMDrao2SUpkaFXYzRcn5KW40uFAMYM1zNPgMM
+         FTyVkJhnVE9qw==
+Date:   Thu, 5 Sep 2019 13:42:13 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: linux-next: manual merge of the net-next tree with the arm-soc tree
+Message-ID: <20190905134213.739ca375@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa759647-953e-23b5-32e2-b0b7373e07e4@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="Sig_/7ZgpHNInDPnmm6UQg5TPdzE";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 04, 2019 at 09:50:15AM +0200, Eric Dumazet wrote:
-> > +static int queue_count(struct mr_table *mrt)
-> > +{
-> > +	struct list_head *pos;
-> > +	int count = 0;
-> > +
-> > +	spin_lock_bh(&mfc_unres_lock);
-> > +	list_for_each(pos, &mrt->mfc_unres_queue)
-> > +		count++;
-> > +	spin_unlock_bh(&mfc_unres_lock);
-> > +
-> > +	return count;
-> > +}
-> 
-> I guess that even if we remove a limit on the number of items, we probably should
-> keep the atomic counter (no code churn, patch much easier to review...)
-> 
-> Your patch could be a one liner really [1]
-> 
-> Eventually replacing this linear list with an RB-tree, so that we can be on the safe side.
-> 
-> [1]
-> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-> index c07bc82cbbe96d53d05c1665b2f03faa055f1084..313470f6bb148326b4afbc00d265b6a1e40d93bd 100644
-> --- a/net/ipv4/ipmr.c
-> +++ b/net/ipv4/ipmr.c
-> @@ -1134,8 +1134,8 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
->  
->         if (!found) {
->                 /* Create a new entry if allowable */
-> -               if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
-> -                   (c = ipmr_cache_alloc_unres()) == NULL) {
-> +               c = ipmr_cache_alloc_unres();
-> +               if (!c) {
->                         spin_unlock_bh(&mfc_unres_lock);
->  
->                         kfree_skb(skb);
+--Sig_/7ZgpHNInDPnmm6UQg5TPdzE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-hmm, that looks more clear and easy to review..
+Hi all,
 
-Hi David, Alexey,
+Today's linux-next merge of the net-next tree got a conflict in:
 
-What do you think? If you also agree, I could post a new version patch.
+  drivers/net/ethernet/nuvoton/w90p910_ether.c
 
-Thanks
-Hangbin
+between commit:
+
+  00d2fbf73d55 ("net: remove w90p910-ether driver")
+
+from the arm-soc tree and commit:
+
+  d1a55841ab24 ("net: Remove dev_err() usage after platform_get_irq()")
+
+from the net-next tree.
+
+I fixed it up (I removed the file) and can carry the fix as necessary.
+This is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/7ZgpHNInDPnmm6UQg5TPdzE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1whBUACgkQAVBC80lX
+0GxxrAf9F2t1WiC/CROxhOEgz3XgdRi7F4M0XLeKgV6HYsch3nX5Wj9Z1Vh8tW6l
+c/fbKI1ZSokhfgYm1cEiqm/9SQg2lhUiGywuszysvidYT7o1GX/zMb9CGNC5fg8p
+zJsmfVIjLY5Qzo4RtOQSqFlT8wgd+CXFK2fEn/9nEnryStrlzb/E6xA+b437SxuI
+gQ7U2Zl+eNgIgMJXMJlLQQP+3yfw5HJX7Ox4AbYxYbuV6wS9H1XZvWkT4JjCgSQZ
+jsn8b1Ly8foiIhxb7K7cDl7yUCJyjCoVUqIGTAY6grwXCxRGRm5EDr9thpRRrCgS
+yAxzxRctgd46mxhzjE9l0L2sbmpMOA==
+=nc/L
+-----END PGP SIGNATURE-----
+
+--Sig_/7ZgpHNInDPnmm6UQg5TPdzE--
