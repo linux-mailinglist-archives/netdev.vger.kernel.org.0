@@ -2,77 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2787AA430
-	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22958AA46F
+	for <lists+netdev@lfdr.de>; Thu,  5 Sep 2019 15:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731881AbfIENST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 09:18:19 -0400
-Received: from first.geanix.com ([116.203.34.67]:60752 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730780AbfIENST (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Sep 2019 09:18:19 -0400
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 828064F77A;
-        Thu,  5 Sep 2019 13:18:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1567689486; bh=uqw2IhKzhaaQEY3xZMRFUOw9w2YuraMJ6etB4+yxZJs=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Ml3w2efT3Emn/hXQ/8/SEyjO9ojZAHevEDeZFwq2RpUwQoqKejZda/7pY4uahpi7a
-         apqCLLTVeCJRveHKP/raaBYDhFV39S0AyBe58evr2UpwLamg+zCgTRNOfgcJdDotfT
-         P5AXs+m9SAhg8ta1t8EoQiCu2FrN2un3odAf18V54STEOdsB3r//8xQLouJsDywPiO
-         5qgsRgLz65Ie9EgJXCkQ285sblKWsCYn/2dtfdQDbOr+UqZM1TBhRMs+GOz39jaZ9j
-         B/JTtvZV7PoiK5kUVNH/DMfnASKOcq7EwrLmMCFP6WZIhTE52keok7LJg2xxeFdSKe
-         ibiOsnuqAXbIA==
-Subject: Re: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
- wakeup
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>
-References: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
- <20190816081749.19300-2-qiangqing.zhang@nxp.com>
- <dd8f5269-8403-702b-b054-e031423ffc73@geanix.com>
- <DB7PR04MB4618A1F984F2281C66959B06E6AB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <35190c5b-f8be-8784-5b4f-32a691a6cffe@geanix.com>
- <6a9bc081-334a-df91-3a23-b74a6cdd3633@geanix.com>
- <DB7PR04MB4618E527339B69AEAD46FB06E6A20@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <588ab34d-613d-ac01-7949-921140ca4543@geanix.com>
- <DB7PR04MB461868320DA0B25CC8255213E6BB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <1655f342-7aaf-5e36-d141-d00eee84f3ec@geanix.com>
-Date:   Thu, 5 Sep 2019 15:17:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
-MIME-Version: 1.0
-In-Reply-To: <DB7PR04MB461868320DA0B25CC8255213E6BB0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
+        id S1726883AbfIEN1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 09:27:14 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:37975 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726600AbfIEN1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 09:27:13 -0400
+Received: by mail-io1-f66.google.com with SMTP id p12so4843034iog.5
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 06:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=L1TnfyCLG7rlHGNonZ0i4cKuCdSYVp9z1iWPFj0gqwo=;
+        b=f3nEE8flnjwrCDtjgOcBKre/Hn8e6XQ5aBF+kZhhnb8c7RnU1edQbZ/qliD39R7b5R
+         sad4WXph+B53SJbBmjzVnWvV2M7FMZLMkcVwx9JcUyfDcL07yYDbWQ7HjabqAucrEijf
+         ZYat9r42UMs1gAYpG8076SyePTRwi5CUh59eH78G3F3hLJTOzQJE+JfYh6yW1pg7yHsF
+         feJ3927cP+c53BXcKDPJ4L2/KQfeD1gCbTxClHgi3yUDWqdEjwKYma0DvlbC7xflggKY
+         0T6DENU7aCWpXxc3n/cWMDy8uO30IRscY0B8lPKJkLn1T5EIVNyFU0HQKAsMrN3p45xX
+         enPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=L1TnfyCLG7rlHGNonZ0i4cKuCdSYVp9z1iWPFj0gqwo=;
+        b=tUwsnC0tu3AMHqpZbkyRmYd4gq9Ys/AgXGja7oRYJMFKHn8+v5UamkFeqE9iuW2cwz
+         lCV+tssmTrWhqNFPq6tuBEXUhHd00azfxyntcaz8gxyxpc8Ot8kW2ZySugQz90BUTpMY
+         qWd7nqSExQJbEChZq2ZGyFdpLvZNMTC/ohpSqwFzS+LyT5dhRfxuqDXP8qEeDlNcMAW5
+         CdE+FwChj09b9NiBCylmLKCwdOir39f6nEdjz+NOwPxyM8dk0Q3S5M5tNodGVhfYHIIk
+         i+gIdfiR9lRhEeGq9JLGXewzgH2zh7jQRnAyU160hyN6NwEH3SNtb3we/65LXteZbdOR
+         nlOQ==
+X-Gm-Message-State: APjAAAX6gTVLSC5jRlb5lbAMppFonqh2WYknZfqT1ZPBKP63MMdqzupf
+        X4g/iM44oxjzeyGsjulq4wU=
+X-Google-Smtp-Source: APXvYqyC0oReirvbL19su5YpavGFCppxlCLp+mXwQv2rkfVAFQ8iuQv2C/kTucZnekytIdimNDx29Q==
+X-Received: by 2002:a5d:940c:: with SMTP id v12mr4166096ion.233.1567690032389;
+        Thu, 05 Sep 2019 06:27:12 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id b7sm1653654iod.78.2019.09.05.06.27.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 06:27:11 -0700 (PDT)
+Date:   Thu, 05 Sep 2019 06:27:02 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Message-ID: <5d710d26b6a73_d1e2b257ce4c5c4db@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190905122022.106680-1-edumazet@google.com>
+References: <20190905122022.106680-1-edumazet@google.com>
+Subject: RE: [PATCH net] net: sched: fix reordering issues
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 05/09/2019 09.10, Joakim Zhang wrote:
-> Hi Sean,
+Eric Dumazet wrote:
+> Whenever MQ is not used on a multiqueue device, we experience
+> serious reordering problems. Bisection found the cited
+> commit.
 > 
-> Could you update lastest flexcan driver using linux-can-next/flexcan and then merge below two patches from linux-can/testing?
-> d0b53616716e (HEAD -> testing, origin/testing) can: flexcan: add LPSR mode support for i.MX7D
-> 803eb6bad65b can: flexcan: fix deadlock when using self wakeup
+> The issue can be described this way :
 > 
-> Best Regards,
-> Joakim Zhang
+> - A single qdisc hierarchy is shared by all transmit queues.
+>   (eg : tc qdisc replace dev eth0 root fq_codel)
+> 
+> - When/if try_bulk_dequeue_skb_slow() dequeues a packet targetting
+>   a different transmit queue than the one used to build a packet train,
+>   we stop building the current list and save the 'bad' skb (P1) in a
+>   special queue. (bad_txq)
+> 
+> - When dequeue_skb() calls qdisc_dequeue_skb_bad_txq() and finds this
+>   skb (P1), it checks if the associated transmit queues is still in frozen
+>   state. If the queue is still blocked (by BQL or NIC tx ring full),
+>   we leave the skb in bad_txq and return NULL.
+> 
+> - dequeue_skb() calls q->dequeue() to get another packet (P2)
+> 
+>   The other packet can target the problematic queue (that we found
+>   in frozen state for the bad_txq packet), but another cpu just ran
+>   TX completion and made room in the txq that is now ready to accept
+>   new packets.
+> 
+> - Packet P2 is sent while P1 is still held in bad_txq, P1 might be sent
+>   at next round. In practice P2 is the lead of a big packet train
+>   (P2,P3,P4 ...) filling the BQL budget and delaying P1 by many packets :/
+> 
+> To solve this problem, we have to block the dequeue process as long
+> as the first packet in bad_txq can not be sent. Reordering issues
+> disappear and no side effects have been seen.
+> 
+> Fixes: a53851e2c321 ("net: sched: explicit locking in gso_cpu fallback")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  net/sched/sch_generic.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
 
-The testing branch have some UBI bugs, when suspending it crashes...
-So will have to leave this, until they are resolved :-)
+Dang, missed this case. Thanks!
 
-/Sean
+Acked-by: John Fastabend <john.fastabend@gmail.com>
