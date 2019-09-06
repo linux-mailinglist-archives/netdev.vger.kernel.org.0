@@ -2,107 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3614EAB238
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 08:05:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2543AB242
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 08:13:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389077AbfIFGFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 02:05:48 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37294 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729318AbfIFGFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 02:05:47 -0400
-Received: by mail-wm1-f66.google.com with SMTP id r195so5595861wme.2
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 23:05:46 -0700 (PDT)
+        id S2389814AbfIFGNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 02:13:15 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:40044 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388912AbfIFGNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 02:13:15 -0400
+Received: by mail-oi1-f194.google.com with SMTP id b80so4014181oii.7
+        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 23:13:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=u3xop73voN5t+H1zOjf4whXixLu0Xg3mQaakczC8GoE=;
-        b=YoHI0sEBKh/IqHcUUQzXa8LStgtc1MpJSwovg5TO6ccdClihlMUSGpZTMzlUx3tw2W
-         ik7AnbmKhPakyF2eVh/cViJhehY08aSDH5JUzgnqrC99TuVGver57ExGcefbr5PnP40V
-         jhZqHCGTo1k9+0yZ6Mgn7y68D6p4vUuaop3TIninNrgNDdSIkupnygC7wOu9RrGVltVp
-         BmtYW6yRhgRO8iWUCWtZCmtA/vpKlWOQmkFoPt+U/VFbndw9ZgBoMGvNHcWJvxg8YhH8
-         nXV7nTExacJ8hMex3gZ88LRtLLPmK88aZ01jT1m9rZOLh+Zb3PGpJflkUcjJRuqcJn6P
-         faTg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=lm35lqYANr7RWzXjWDYZwksjF6Mq+BmtoOr5FpRGY5E=;
+        b=P1xzjDrAtEH0KIz7i+HCUC0aEUzA2M7SfWbAY6FsWDL8OowusO5ssEfZz/sK/Uqk+h
+         dJ/BS0UAHHJ05fFUVw/NgbsLuQ7e3coOMrKY61LZ6iB6y79ti/DgUu92lmPYz54/DBT6
+         x1Sq/PSpJednu5kJ5/IrA2RJKa6wPWMzVI1Te2pACQUg2el+5fFExFCM0etK5c64I+Ft
+         m+g9yVRH8A6Z0ZUOy5VlZ7S5ktwSGuxDxoA4ODLwaPc5mFrPA8IjnPRj2ecexyGQK4gl
+         eymHGHphsyZDy3BwwFVBtIJ5vUueJyO+xpyLVIWdnBrRJb1cTM/nSWSANBl0dPANwDEl
+         lNYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=u3xop73voN5t+H1zOjf4whXixLu0Xg3mQaakczC8GoE=;
-        b=b1K7rTQy/GdMclOwbCG0YkAJ8loB0oNhOUJRkMOIkOUjxqXyNcVtsGqo9igHANm3oL
-         hZYBA5Cxe1NUc5zrpwPFh60TseArZKLH4SwDMKhsqXUOEZ6xZjRXb5PRGmRABMXckLgF
-         mvubAFrKr+S26+s9PznXzofdvcMXrE/UbsxCV0YLZtNf4uwNgXR+nEqMuLOXKk7kcKT9
-         eh5YQ4pvNKzueiOt99wsnD8R+ycf3lzNWQ7l7Lw8F3zT/wBI0S9EwjmLUdlp2noi49cr
-         274bfrmfdPxUSphnzM1tqbw7yRpxWXXiEKzpeftl6lb+6+trPwMuF+0T4Nnv68EhXD/2
-         xoYg==
-X-Gm-Message-State: APjAAAUZzvtasl0f8ggbOiDPUFVBu3FZjmpRZK+dgQ/Vel2t6omvZk9n
-        bzSFqXosVtE8wWYHH35YuFwIJA==
-X-Google-Smtp-Source: APXvYqyeD592Tdecw+ops8SFwuo4jwPtVf6gbbWCxhmfMHWYcEzsBQTSsXFK0bo2msaHyZMyXbg8Ew==
-X-Received: by 2002:a1c:f50c:: with SMTP id t12mr5873528wmh.49.1567749945897;
-        Thu, 05 Sep 2019 23:05:45 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id b194sm9181776wmg.46.2019.09.05.23.05.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2019 23:05:45 -0700 (PDT)
-Date:   Fri, 6 Sep 2019 08:05:44 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
-        dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next] net: fib_notifier: move fib_notifier_ops from
- struct net into per-net struct
-Message-ID: <20190906060544.GA2264@nanopsycho.orion>
-References: <20190905180656.4756-1-jiri@resnulli.us>
- <bb24e9d5-24c6-d590-e490-be2226016288@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=lm35lqYANr7RWzXjWDYZwksjF6Mq+BmtoOr5FpRGY5E=;
+        b=XVDMP+8OHhrA40Rb3EjBVWNAXL9Os1CN8uRkGjHECUEb2+EHZi2uFLxm+I10E/VvdX
+         GW8oGbS9aqCRyGE6ildO95eGfKqFE08RrQ3rZISaQbWrXyGpQe4mATTnKzegtyJC44dU
+         3+0qjkolhJxdL2xBqH2CiQoTA++3oe4uKGuPkH15TUn/9rJnF4HV8ZRzl173f7OEKBwF
+         Qj1PtWOgvtcPfY9ZWmSCD3younRbGxK0DGgzJ5OMO6/JOuM2lEUipHbyJArEaMjKSVtW
+         36eVte/eLs4aSY8vSRtSPgABpsRqexNqJCx39p3Afjuqjz/Cs3uVaDqdSIOaBNzMVeFY
+         DHAQ==
+X-Gm-Message-State: APjAAAVFCU9Rs7AfkFBEnyOJGMOWYZ9CPtO1GCSnHDQ9bhDdJVV5XUpC
+        YQmBqucqMmwWQEsvsegIHoRDLJg3tXpFMFGTprFNiw==
+X-Google-Smtp-Source: APXvYqxgRgIp9PLl7te0QKBxk5XD4f5D41Jbzs5TkdJh3wkUZL28Q0diIuyhS40O/3LVoVDWP1DXCnE2wi9B7aJhpXc=
+X-Received: by 2002:aca:e183:: with SMTP id y125mr5704531oig.27.1567750394121;
+ Thu, 05 Sep 2019 23:13:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb24e9d5-24c6-d590-e490-be2226016288@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <cover.1567649728.git.baolin.wang@linaro.org> <c24710bae9098ba971a2778a1a44627d5fa3ddc0.1567649729.git.baolin.wang@linaro.org>
+ <20190905161642.GA5659@google.com>
+In-Reply-To: <20190905161642.GA5659@google.com>
+From:   Baolin Wang <baolin.wang@linaro.org>
+Date:   Fri, 6 Sep 2019 14:13:02 +0800
+Message-ID: <CAMz4kuJem-H4pPKSTDAy3vmWmYhAf-tdjH-HmZ_aN7VYXJN6mw@mail.gmail.com>
+Subject: Re: [BACKPORT 4.14.y v2 5/6] ppp: mppe: Revert "ppp: mppe: Add
+ softdep to arc4"
+To:     Baolin Wang <baolin.wang@linaro.org>,
+        "# 3.4.x" <stable@vger.kernel.org>, paulus@samba.org,
+        linux-ppp@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Sep 06, 2019 at 07:54:39AM CEST, eric.dumazet@gmail.com wrote:
+On Fri, 6 Sep 2019 at 00:16, Eric Biggers <ebiggers@google.com> wrote:
 >
+> On Thu, Sep 05, 2019 at 11:10:45AM +0800, Baolin Wang wrote:
+> > From: Eric Biggers <ebiggers@google.com>
+> >
+> > [Upstream commit 25a09ce79639a8775244808c17282c491cff89cf]
+> >
+> > Commit 0e5a610b5ca5 ("ppp: mppe: switch to RC4 library interface"),
+> > which was merged through the crypto tree for v5.3, changed ppp_mppe.c to
+> > use the new arc4_crypt() library function rather than access RC4 through
+> > the dynamic crypto_skcipher API.
+> >
+> > Meanwhile commit aad1dcc4f011 ("ppp: mppe: Add softdep to arc4") was
+> > merged through the net tree and added a module soft-dependency on "arc4".
+> >
+> > The latter commit no longer makes sense because the code now uses the
+> > "libarc4" module rather than "arc4", and also due to the direct use of
+> > arc4_crypt(), no module soft-dependency is required.
+> >
+> > So revert the latter commit.
+> >
+> > Cc: Takashi Iwai <tiwai@suse.de>
+> > Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+> > Signed-off-by: Eric Biggers <ebiggers@google.com>
+> > Signed-off-by: David S. Miller <davem@davemloft.net>
+> > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> > ---
+> >  drivers/net/ppp/ppp_mppe.c |    1 -
+> >  1 file changed, 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ppp/ppp_mppe.c b/drivers/net/ppp/ppp_mppe.c
+> > index d9eda7c..6c7fd98 100644
+> > --- a/drivers/net/ppp/ppp_mppe.c
+> > +++ b/drivers/net/ppp/ppp_mppe.c
+> > @@ -63,7 +63,6 @@
+> >  MODULE_DESCRIPTION("Point-to-Point Protocol Microsoft Point-to-Point Encryption support");
+> >  MODULE_LICENSE("Dual BSD/GPL");
+> >  MODULE_ALIAS("ppp-compress-" __stringify(CI_MPPE));
+> > -MODULE_SOFTDEP("pre: arc4");
 >
->On 9/5/19 8:06 PM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> No need for fib_notifier_ops to be in struct net. It is used only by
->> fib_notifier as a private data. Use net_generic to introduce per-net
->> fib_notifier struct and move fib_notifier_ops there.
->> 
->>
->
->...
->
->>  static struct pernet_operations fib_notifier_net_ops = {
->>  	.init = fib_notifier_net_init,
->>  	.exit = fib_notifier_net_exit,
->> +	.id = &fib_notifier_net_id,
->> +	.size = sizeof(struct fib_notifier_net),
->>  };
->>  
->>  static int __init fib_notifier_init(void)
->> 
->
->Note that this will allocate a block of memory (in ops_init()) to hold this,
->plus a second one to hold the pointer to this block.
->
->Due to kmalloc() constraints, this block will use more memory.
+> Why is this being backported?  This revert was only needed because of a
+> different patch that was merged in v5.3, as I explained in the commit message.
 
-I'm aware. But we have net_generic for exactly this purpose not to
-pullute struct net.
+Sorry I missed this. I should remove this patch from our product kernel too.
 
-
->
->Not sure your patch is a win, since it makes things a bit more complex.
->
->Is it a preparation patch so that you can add later other fields in struct fib_notifier_net ?
-
-Yes.
-
-
->
+-- 
+Baolin Wang
+Best Regards
