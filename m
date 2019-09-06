@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F9FAB35E
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:41:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B24AB364
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404583AbfIFHlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 03:41:31 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:33342 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2391079AbfIFHl3 (ORCPT
+        id S2404542AbfIFHla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 03:41:30 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:33366 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2392555AbfIFHl3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:41:29 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23988C0E35;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23683C0E03;
         Fri,  6 Sep 2019 07:41:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567755688; bh=4FNcbwGO762eeiYuWoydSpxazMahLxkBYcFUNjeJ3so=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QV3sTkQjRq3+DWj4SAq7M3ARw0wOD88Y820JB4aK6VQ3BqbtO+ozEBJg5jkZxP6ba
-         3K3PfEsnZAFP8beQSbvbq4rYsxCaqGuqw8h9pPqMiS6RCdbZ0eax/vPBjpPQJO3fpn
-         4GOoFgI8P87xZ6bFcQt0szF2m6kys4oWjegPndcukIUo4cRGrBYIT79WQrcuzC9ip9
-         4+AT6uXZ1T2NKq8mP+IAI4DwvUSgoSG5aniE63bpRkwW+wF/luxd0JWIyWzZQsXLIu
-         EiPm2rX5BcbHPhAqfeLgzesocBttjgJAAkBystKy36O3f9cHmcsjU3truRAWoxfcIF
-         40D7xgWd5/dhw==
+        t=1567755688; bh=1i/geIHgBQLLy7LPimv2MIzVFeg/Cl2TeuERvfMsPYk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
+         References:From;
+        b=UKDD5M3QsYIJSRZ7L9o99VGsWgvjEfmNmPwUfpdbQebZ8qBBDEJY4wRUNpNkuTO7v
+         R3FngN05ExpqQxQWK/icr3lKvhAY0ywtmn5/8r/PqTuIsg4ydYiO5Cl3boXasgE2E1
+         ZBhMsqDhvK405Rng3quH4TxJhW6j1zrVtFK7j/OgQEMgEsip9DpF1zKdV85M5cwbk/
+         9Urvg/z/EQ+Wi1K1i8RF2Tu89qxCxwVO1+5f8j9PrzaUVeCAA4l+c/b9s3P79xPQvG
+         Ij8OoXdWTGC/xipH4+25Qj+IkdTl35l43Ax/SERJpxFqYUXnOcrslIoNG2o1KpVRHz
+         xzGrdurzMs3PA==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 001F5A005C;
-        Fri,  6 Sep 2019 07:41:25 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTP id A5E9BA005D;
+        Fri,  6 Sep 2019 07:41:26 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
@@ -37,17 +38,23 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/5] net: stmmac: Improvements and fixes for -next
-Date:   Fri,  6 Sep 2019 09:41:12 +0200
-Message-Id: <cover.1567755423.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 1/5] net: stmmac: selftests: Add missing checks for support of SA
+Date:   Fri,  6 Sep 2019 09:41:13 +0200
+Message-Id: <3b38421ddf3d8c4e40400f990999d548b8c459b5.1567755423.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <cover.1567755423.git.joabreu@synopsys.com>
+References: <cover.1567755423.git.joabreu@synopsys.com>
+In-Reply-To: <cover.1567755423.git.joabreu@synopsys.com>
+References: <cover.1567755423.git.joabreu@synopsys.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improvements and fixes for recently introduced features. All for -next tree.
-More info in commit logs.
+Add checks for support of Source Address Insertion/Replacement before
+running the test.
+
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
 ---
 Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
@@ -59,20 +66,53 @@ Cc: netdev@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Jose Abreu (5):
-  net: stmmac: selftests: Add missing checks for support of SA
-  net: stmmac: selftests: Set RX tail pointer in Flow Control test
-  net: stmmac: dwmac4: Enable RX Jumbo frame support
-  net: stmmac: selftests: Add Split Header test
-  net: stmmac: Limit max speeds of XGMAC if asked to
-
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  3 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  6 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 25 +++++----
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 60 ++++++++++++++++++++++
- 4 files changed, 78 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index 305d24935cf4..dce34c081a1e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1057,6 +1057,9 @@ static int stmmac_test_desc_sai(struct stmmac_priv *priv)
+ 	struct stmmac_packet_attrs attr = { };
+ 	int ret;
+ 
++	if (!priv->dma_cap.vlins)
++		return -EOPNOTSUPP;
++
+ 	attr.remove_sa = true;
+ 	attr.sarc = true;
+ 	attr.src = src;
+@@ -1076,6 +1079,9 @@ static int stmmac_test_desc_sar(struct stmmac_priv *priv)
+ 	struct stmmac_packet_attrs attr = { };
+ 	int ret;
+ 
++	if (!priv->dma_cap.vlins)
++		return -EOPNOTSUPP;
++
+ 	attr.sarc = true;
+ 	attr.src = src;
+ 	attr.dst = priv->dev->dev_addr;
+@@ -1094,6 +1100,9 @@ static int stmmac_test_reg_sai(struct stmmac_priv *priv)
+ 	struct stmmac_packet_attrs attr = { };
+ 	int ret;
+ 
++	if (!priv->dma_cap.vlins)
++		return -EOPNOTSUPP;
++
+ 	attr.remove_sa = true;
+ 	attr.sarc = true;
+ 	attr.src = src;
+@@ -1114,6 +1123,9 @@ static int stmmac_test_reg_sar(struct stmmac_priv *priv)
+ 	struct stmmac_packet_attrs attr = { };
+ 	int ret;
+ 
++	if (!priv->dma_cap.vlins)
++		return -EOPNOTSUPP;
++
+ 	attr.sarc = true;
+ 	attr.src = src;
+ 	attr.dst = priv->dev->dev_addr;
 -- 
 2.7.4
 
