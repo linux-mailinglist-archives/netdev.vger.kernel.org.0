@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2B1ABF90
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02453ABF8F
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406130AbfIFSoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 14:44:25 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45258 "EHLO
+        id S2406134AbfIFSo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 14:44:26 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37182 "EHLO
         mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406106AbfIFSoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 14:44:24 -0400
-Received: by mail-wr1-f66.google.com with SMTP id l16so7541227wrv.12
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 11:44:22 -0700 (PDT)
+        with ESMTP id S2405022AbfIFSoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 14:44:25 -0400
+Received: by mail-wr1-f66.google.com with SMTP id i1so7011911wro.4
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 11:44:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1Px85ccY1M6kZoHc1ORoE9W+AQDSyF7JrgRDIUEZJ9E=;
-        b=grvdx2bqvSCz/xoW/kX2PZ4qgDfvAUoeY6eJ02rZQyBK+jP5j7fioP/kw7rOQpZbns
-         9bMfjaBtXXCvsXci9xFWiRLT5hxRBNO5UUBAtqmhUb21qXDSGIuwWPgZDMODaRIo8gr6
-         kWqjyqChsDwy77QcwxgcwfHBnT6TMsJOAWLjO8XyAjxou8vGs11UGYFZD6KsfFOPPXW+
-         teioKGvPIleUtK8Wx9FBM2fuVsCY3sTHmkgD9KtAJ0GEumqJIyr1sXbc2OuAFrPKuUBl
-         /1U6ZDtTsJ0/QRRP+h7z7TNwDobvtl9xRUQyjskdmSa1UABkTxX20LrTXVT4yiJKaNJj
-         Hx2g==
+        bh=B4eyirXQl/71JnvB81plFfN+FjkRupFKSw5b9ZxXNI8=;
+        b=YjTUFGFovYA4daKQVga83u1+RFJUrkg59qB8JXwj8+KuNB81fxQMMCfSBuef889myy
+         WMPuXW2Mnv74GhiJBQYc/XEyAboFlaVsWL3xVT7OmV4c1PeskoIDAPefkApmnNaLu4LZ
+         m1PK4RyimucfdgtwbgTZjGoIxyJotG0MQbcJusy0OKHDQNcx3d56LUljWfESLtyOiwvl
+         IdFCwrK3RndeYakWWZ+Bj1LMtvmVh8ywSSuMagKk56U4sQYL7Ifd8rLd+z3UkEc1/Pm5
+         iEObRZU9a+BlD7EchmTqvay1K2fzBmZgrTJdOG3YSY5Vi6nidmpUVfNu03jKKNsPXXbX
+         Vb8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1Px85ccY1M6kZoHc1ORoE9W+AQDSyF7JrgRDIUEZJ9E=;
-        b=LgrfjBhKsv9nCBCCcxp+AB1WCxv9NXJed7rR+lGHSITtnueT/bbpHTcj3dA3a044br
-         rPkMcJDAyWGwOlx+N1KyhN+hfL1FKj/iMWS882c1G1FPuEdQriV8mJoLOI1AbhGabT/K
-         Q7Fh3AIgL/1LfDP6cYxzDUsE8xx0rGHK2E6ez/bpTdaXoxLcRP7uevCAckhP4WwiT0Cz
-         HOnidEKRcTsMhvXhLOjgUtK7yiFx1ypHj1bg/Z0UMkFuqmgVSVk1a3hDFKZC6UTauvOW
-         QC/LZiu0VVMv5YFAJoRyrAU6VSVILg1MXS1M3qRHWQxuLCTK6JQ5aFb1kG4hEPR3wRUE
-         MQSg==
-X-Gm-Message-State: APjAAAU6J7YirYOy/RKteGVQ828msfEG0pbyzZsUENQUWXwsZjcssPBJ
-        VbmuKD9GFfnCsQTVty4Ee6x+QsDij9A=
-X-Google-Smtp-Source: APXvYqyh7YIm4S90Ej5s9OJE9uisT/Xh37WxFWR7JFmR9/v2fRr4jEC18quV3vlXcswm111W/F8HFg==
-X-Received: by 2002:a5d:658d:: with SMTP id q13mr8317868wru.78.1567795461995;
-        Fri, 06 Sep 2019 11:44:21 -0700 (PDT)
+        bh=B4eyirXQl/71JnvB81plFfN+FjkRupFKSw5b9ZxXNI8=;
+        b=BTM+6VAxpOzleeFmOvmbOmOAOe2Ja5BQ8GEHOPeUTJgeHTzEvVU8L///CQQcaZ8C7V
+         I17HWRrqzyn8QBV78hSZBncMguR0jc9ZyUyDiI4H7MyA8b541h2aERxK4kev0jJYvshr
+         xy4rg2NdC6E+fQ5sN3agMdK3IMyhhnnJTnX1mQCFaHxp6jG9Lt5RAkzS3zLlq7sBgop1
+         rQ1Oq5ZrcgX4p61fVZhPlBOF2fXm0gAivU1qa0KZMG+VBKpGQqh20TCH8/p35Eg0M8Wy
+         Cn8jx8lWFjFHXUJfiv34dbd/ewBGc3vHNj2cXA6DxQeZnHxb59466JexQMWkyIvTL4XZ
+         ualw==
+X-Gm-Message-State: APjAAAUuo8chKPLndh2ivBf0Lb0G69Y4e94Sc+XaIer7FTmTpLdnbbZS
+        OstHFXEwn04ADQQvQs03thRy4t5oko8=
+X-Google-Smtp-Source: APXvYqyqhxyJbwDPcSSwwI81Y4w0SfbbRIZhnJBdbhLgiNEZNbL45tJwOcXgepDXft0UY3AgdCEL8g==
+X-Received: by 2002:adf:b612:: with SMTP id f18mr8621015wre.97.1567795463026;
+        Fri, 06 Sep 2019 11:44:23 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id d17sm7442887wre.27.2019.09.06.11.44.21
+        by smtp.gmail.com with ESMTPSA id f75sm6788537wmf.2.2019.09.06.11.44.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 11:44:21 -0700 (PDT)
+        Fri, 06 Sep 2019 11:44:22 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 1/3] mlx4: Split restart_one into two functions
-Date:   Fri,  6 Sep 2019 20:44:17 +0200
-Message-Id: <20190906184419.5101-2-jiri@resnulli.us>
+Subject: [patch net-next 2/3] net: devlink: split reload op into two
+Date:   Fri,  6 Sep 2019 20:44:18 +0200
+Message-Id: <20190906184419.5101-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190906184419.5101-1-jiri@resnulli.us>
 References: <20190906184419.5101-1-jiri@resnulli.us>
@@ -64,108 +64,208 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Split the function restart_one into two functions and separate teardown
-and buildup.
+In order to properly implement failure indication during reload,
+split the reload op into two ops, one for down phase and one for
+up phase.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/catas.c |  2 +-
- drivers/net/ethernet/mellanox/mlx4/main.c  | 25 ++++++++++++++++++----
- drivers/net/ethernet/mellanox/mlx4/mlx4.h  |  3 +--
- 3 files changed, 23 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/main.c  | 19 +++++++++++++++----
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 19 +++++++++++++++----
+ drivers/net/netdevsim/dev.c                | 13 ++++++++++---
+ include/net/devlink.h                      |  5 ++++-
+ net/core/devlink.c                         | 16 ++++++++++++----
+ 5 files changed, 56 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/catas.c b/drivers/net/ethernet/mellanox/mlx4/catas.c
-index 87e90b5d4d7d..5b11557f1ae4 100644
---- a/drivers/net/ethernet/mellanox/mlx4/catas.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/catas.c
-@@ -210,7 +210,7 @@ static void mlx4_handle_error_state(struct mlx4_dev_persistent *persist)
- 	mutex_lock(&persist->interface_state_mutex);
- 	if (persist->interface_state & MLX4_INTERFACE_STATE_UP &&
- 	    !(persist->interface_state & MLX4_INTERFACE_STATE_DELETION)) {
--		err = mlx4_restart_one(persist->pdev, false, NULL);
-+		err = mlx4_restart_one(persist->pdev);
- 		mlx4_info(persist->dev, "mlx4_restart_one was ended, ret=%d\n",
- 			  err);
- 	}
 diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 07c204bd3fc4..a39c647c12dc 100644
+index a39c647c12dc..ef3f3d06ff1e 100644
 --- a/drivers/net/ethernet/mellanox/mlx4/main.c
 +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3931,6 +3931,10 @@ static void mlx4_devlink_param_load_driverinit_values(struct devlink *devlink)
- 	}
- }
+@@ -3935,17 +3935,27 @@ static void mlx4_restart_one_down(struct pci_dev *pdev);
+ static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
+ 			       struct devlink *devlink);
  
-+static void mlx4_restart_one_down(struct pci_dev *pdev);
-+static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
-+			       struct devlink *devlink);
-+
- static int mlx4_devlink_reload(struct devlink *devlink,
- 			       struct netlink_ext_ack *extack)
+-static int mlx4_devlink_reload(struct devlink *devlink,
+-			       struct netlink_ext_ack *extack)
++static int mlx4_devlink_reload_down(struct devlink *devlink,
++				    struct netlink_ext_ack *extack)
  {
-@@ -3941,9 +3945,11 @@ static int mlx4_devlink_reload(struct devlink *devlink,
+ 	struct mlx4_priv *priv = devlink_priv(devlink);
+ 	struct mlx4_dev *dev = &priv->dev;
+ 	struct mlx4_dev_persistent *persist = dev->persist;
+-	int err;
  
  	if (persist->num_vfs)
  		mlx4_warn(persist->dev, "Reload performed on PF, will cause reset on operating Virtual Functions\n");
--	err = mlx4_restart_one(persist->pdev, true, devlink);
-+	mlx4_restart_one_down(persist->pdev);
-+	err = mlx4_restart_one_up(persist->pdev, true, devlink);
+ 	mlx4_restart_one_down(persist->pdev);
++	return 0;
++}
++
++static int mlx4_devlink_reload_up(struct devlink *devlink,
++				  struct netlink_ext_ack *extack)
++{
++	struct mlx4_priv *priv = devlink_priv(devlink);
++	struct mlx4_dev *dev = &priv->dev;
++	struct mlx4_dev_persistent *persist = dev->persist;
++	int err;
++
+ 	err = mlx4_restart_one_up(persist->pdev, true, devlink);
  	if (err)
--		mlx4_err(persist->dev, "mlx4_restart_one failed, ret=%d\n", err);
-+		mlx4_err(persist->dev, "mlx4_restart_one_up failed, ret=%d\n",
-+			 err);
+ 		mlx4_err(persist->dev, "mlx4_restart_one_up failed, ret=%d\n",
+@@ -3956,7 +3966,8 @@ static int mlx4_devlink_reload(struct devlink *devlink,
  
- 	return err;
- }
-@@ -4163,7 +4169,13 @@ static int restore_current_port_types(struct mlx4_dev *dev,
- 	return err;
+ static const struct devlink_ops mlx4_devlink_ops = {
+ 	.port_type_set	= mlx4_devlink_port_type_set,
+-	.reload		= mlx4_devlink_reload,
++	.reload_down	= mlx4_devlink_reload_down,
++	.reload_up	= mlx4_devlink_reload_up,
+ };
+ 
+ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 963a2b4b61b1..c71a1d9ea17b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -984,16 +984,26 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+ 	return 0;
  }
  
--int mlx4_restart_one(struct pci_dev *pdev, bool reload, struct devlink *devlink)
-+static void mlx4_restart_one_down(struct pci_dev *pdev)
-+{
-+	mlx4_unload_one(pdev);
-+}
-+
-+static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
-+			       struct devlink *devlink)
+-static int mlxsw_devlink_core_bus_device_reload(struct devlink *devlink,
+-						struct netlink_ext_ack *extack)
++static int
++mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
++					  struct netlink_ext_ack *extack)
  {
- 	struct mlx4_dev_persistent *persist = pci_get_drvdata(pdev);
- 	struct mlx4_dev	 *dev  = persist->dev;
-@@ -4175,7 +4187,6 @@ int mlx4_restart_one(struct pci_dev *pdev, bool reload, struct devlink *devlink)
- 	total_vfs = dev->persist->num_vfs;
- 	memcpy(nvfs, dev->persist->nvfs, sizeof(dev->persist->nvfs));
+ 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
+-	int err;
  
--	mlx4_unload_one(pdev);
- 	if (reload)
- 		mlx4_devlink_param_load_driverinit_values(devlink);
- 	err = mlx4_load_one(pdev, pci_dev_data, total_vfs, nvfs, priv, 1);
-@@ -4194,6 +4205,12 @@ int mlx4_restart_one(struct pci_dev *pdev, bool reload, struct devlink *devlink)
+ 	if (!(mlxsw_core->bus->features & MLXSW_BUS_F_RESET))
+ 		return -EOPNOTSUPP;
+ 
+ 	mlxsw_core_bus_device_unregister(mlxsw_core, true);
++	return 0;
++}
++
++static int
++mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
++					struct netlink_ext_ack *extack)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	int err;
++
+ 	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+ 					     mlxsw_core->bus,
+ 					     mlxsw_core->bus_priv, true,
+@@ -1066,7 +1076,8 @@ mlxsw_devlink_trap_group_init(struct devlink *devlink,
+ }
+ 
+ static const struct devlink_ops mlxsw_devlink_ops = {
+-	.reload				= mlxsw_devlink_core_bus_device_reload,
++	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
++	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
+ 	.port_type_set			= mlxsw_devlink_port_type_set,
+ 	.port_split			= mlxsw_devlink_port_split,
+ 	.port_unsplit			= mlxsw_devlink_port_unsplit,
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 39cdb6c18ec0..7fba7b271a57 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -521,8 +521,14 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
+ 	kfree(nsim_dev->trap_data);
+ }
+ 
+-static int nsim_dev_reload(struct devlink *devlink,
+-			   struct netlink_ext_ack *extack)
++static int nsim_dev_reload_down(struct devlink *devlink,
++				struct netlink_ext_ack *extack)
++{
++	return 0;
++}
++
++static int nsim_dev_reload_up(struct devlink *devlink,
++			      struct netlink_ext_ack *extack)
+ {
+ 	enum nsim_resource_id res_ids[] = {
+ 		NSIM_RESOURCE_IPV4_FIB, NSIM_RESOURCE_IPV4_FIB_RULES,
+@@ -638,7 +644,8 @@ nsim_dev_devlink_trap_action_set(struct devlink *devlink,
+ }
+ 
+ static const struct devlink_ops nsim_dev_devlink_ops = {
+-	.reload = nsim_dev_reload,
++	.reload_down = nsim_dev_reload_down,
++	.reload_up = nsim_dev_reload_up,
+ 	.flash_update = nsim_dev_flash_update,
+ 	.trap_init = nsim_dev_devlink_trap_init,
+ 	.trap_action_set = nsim_dev_devlink_trap_action_set,
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 460bc629d1a4..c17709c0d0ec 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -637,7 +637,10 @@ enum devlink_trap_group_generic_id {
+ 	}
+ 
+ struct devlink_ops {
+-	int (*reload)(struct devlink *devlink, struct netlink_ext_ack *extack);
++	int (*reload_down)(struct devlink *devlink,
++			   struct netlink_ext_ack *extack);
++	int (*reload_up)(struct devlink *devlink,
++			 struct netlink_ext_ack *extack);
+ 	int (*port_type_set)(struct devlink_port *devlink_port,
+ 			     enum devlink_port_type port_type);
+ 	int (*port_split)(struct devlink *devlink, unsigned int port_index,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 6e52d639dac6..1e3a2288b0b2 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2672,12 +2672,17 @@ devlink_resources_validate(struct devlink *devlink,
  	return err;
  }
  
-+int mlx4_restart_one(struct pci_dev *pdev)
++static bool devlink_reload_supported(struct devlink *devlink)
 +{
-+	mlx4_restart_one_down(pdev);
-+	return mlx4_restart_one_up(pdev, false, NULL);
++	return devlink->ops->reload_down && devlink->ops->reload_up;
 +}
 +
- #define MLX_SP(id) { PCI_VDEVICE(MELLANOX, id), MLX4_PCI_DEV_FORCE_SENSE_PORT }
- #define MLX_VF(id) { PCI_VDEVICE(MELLANOX, id), MLX4_PCI_DEV_IS_VF }
- #define MLX_GN(id) { PCI_VDEVICE(MELLANOX, id), 0 }
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-index 23f1b5b512c2..527b52e48276 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-@@ -1043,8 +1043,7 @@ int mlx4_catas_init(struct mlx4_dev *dev);
- void mlx4_catas_end(struct mlx4_dev *dev);
- int mlx4_crdump_init(struct mlx4_dev *dev);
- void mlx4_crdump_end(struct mlx4_dev *dev);
--int mlx4_restart_one(struct pci_dev *pdev, bool reload,
--		     struct devlink *devlink);
-+int mlx4_restart_one(struct pci_dev *pdev);
- int mlx4_register_device(struct mlx4_dev *dev);
- void mlx4_unregister_device(struct mlx4_dev *dev);
- void mlx4_dispatch_event(struct mlx4_dev *dev, enum mlx4_dev_event type,
+ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	int err;
+ 
+-	if (!devlink->ops->reload)
++	if (!devlink_reload_supported(devlink))
+ 		return -EOPNOTSUPP;
+ 
+ 	err = devlink_resources_validate(devlink, NULL, info);
+@@ -2685,7 +2690,10 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 		NL_SET_ERR_MSG_MOD(info->extack, "resources size validation failed");
+ 		return err;
+ 	}
+-	return devlink->ops->reload(devlink, info->extack);
++	err = devlink->ops->reload_down(devlink, info->extack);
++	if (err)
++		return err;
++	return devlink->ops->reload_up(devlink, info->extack);
+ }
+ 
+ static int devlink_nl_flash_update_fill(struct sk_buff *msg,
+@@ -7145,7 +7153,7 @@ __devlink_param_driverinit_value_set(struct devlink *devlink,
+ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 				       union devlink_param_value *init_val)
+ {
+-	if (!devlink->ops->reload)
++	if (!devlink_reload_supported(devlink))
+ 		return -EOPNOTSUPP;
+ 
+ 	return __devlink_param_driverinit_value_get(&devlink->param_list,
+@@ -7192,7 +7200,7 @@ int devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
+ {
+ 	struct devlink *devlink = devlink_port->devlink;
+ 
+-	if (!devlink->ops->reload)
++	if (!devlink_reload_supported(devlink))
+ 		return -EOPNOTSUPP;
+ 
+ 	return __devlink_param_driverinit_value_get(&devlink_port->param_list,
 -- 
 2.21.0
 
