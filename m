@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE167ABA6B
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 16:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 342BEABA7B
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 16:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392662AbfIFOMo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Sep 2019 10:12:44 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:56083 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731109AbfIFOMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 10:12:44 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC197.dip0.t-ipconnect.de [79.239.193.151])
-        by mail.holtmann.org (Postfix) with ESMTPSA id C05D4CECE0;
-        Fri,  6 Sep 2019 16:21:29 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH] Bluetooth: hidp: Fix error checks in
- hidp_get/set_raw_report
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20190906140744.GC14147@kadam>
-Date:   Fri, 6 Sep 2019 16:12:41 +0200
-Cc:     Dan Elkouby <streetwalkermc@gmail.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Fabian Henneke <fabian.henneke@gmail.com>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <48E8A989-AE89-4F59-84F4-075911F4FC75@holtmann.org>
-References: <20190906094158.8854-1-streetwalkermc@gmail.com>
- <440C3662-1870-44D8-B4E3-C290CE154F1E@holtmann.org>
- <20190906140744.GC14147@kadam>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S2394086AbfIFOPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 10:15:47 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:48496 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731458AbfIFOPr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Sep 2019 10:15:47 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6BD1C1A05D4;
+        Fri,  6 Sep 2019 16:15:45 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5E6FF1A0210;
+        Fri,  6 Sep 2019 16:15:45 +0200 (CEST)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 22CB32061D;
+        Fri,  6 Sep 2019 16:15:45 +0200 (CEST)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     alexandru.marginean@nxp.com, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/5] enetc: Link mode init w/o bootloader
+Date:   Fri,  6 Sep 2019 17:15:39 +0300
+Message-Id: <1567779344-30965-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+The theme of this set is to clear the dependency on bootloader
+for PHY link mode protocol init (i.e. SGMII, SXGMII) and MAC
+configuration for the ENETC controller.
 
->>> Commit 48d9cc9d85dd ("Bluetooth: hidp: Let hidp_send_message return
->>> number of queued bytes") changed hidp_send_message to return non-zero
->>> values on success, which some other bits did not expect. This caused
->>> spurious errors to be propagated through the stack, breaking some (all?)
->>> drivers, such as hid-sony for the Dualshock 4 in Bluetooth mode.
->>> 
->>> Signed-off-by: Dan Elkouby <streetwalkermc@gmail.com>
->>> ---
->>> net/bluetooth/hidp/core.c | 4 ++--
->>> 1 file changed, 2 insertions(+), 2 deletions(-)
->> 
->> patch has been applied to bluetooth-next tree.
->> 
-> 
-> The v2 added an additional fix and used the Fixes tag.  Could you apply
-> that instead?
+First patch fixes the DT extracted PHY mode handling.
+The second one is a refactoring that prepares the introduction
+of the internal MDIO bus.
+Internal MDIO bus support is added along with SerDes protocol
+configuration routines (3rd patch).
+Then after a minor cleanup (patch 4), DT link mode information
+is being used to configure the MAC instead of relying on
+bootloader configurations.
 
-see my reply to Jiri. I replied to the wrong patch, but actually applied to the updated one.
+Alex Marginean (1):
+  enetc: Use DT protocol information to set up the ports
 
-Regards
+Claudiu Manoil (4):
+  enetc: Fix if_mode extraction
+  enetc: Make mdio accessors more generic
+  enetc: Initialize SerDes for SGMII and SXGMII protocols
+  enetc: Drop redundant device node check
 
-Marcel
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |  18 +++
+ .../net/ethernet/freescale/enetc/enetc_mdio.c |  91 +++++++++----
+ .../net/ethernet/freescale/enetc/enetc_mdio.h |   2 +-
+ .../ethernet/freescale/enetc/enetc_pci_mdio.c |   2 +
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 127 +++++++++++++-----
+ .../net/ethernet/freescale/enetc/enetc_pf.h   |   5 +
+ 6 files changed, 182 insertions(+), 63 deletions(-)
+
+-- 
+2.17.1
 
