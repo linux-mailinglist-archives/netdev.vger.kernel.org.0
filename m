@@ -2,122 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 594F6AB67B
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 12:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1006AB69A
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 13:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391698AbfIFK4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 06:56:45 -0400
-Received: from correo.us.es ([193.147.175.20]:43732 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732554AbfIFK4o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Sep 2019 06:56:44 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7125D303D17
-        for <netdev@vger.kernel.org>; Fri,  6 Sep 2019 12:56:39 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 63841A7E0F
-        for <netdev@vger.kernel.org>; Fri,  6 Sep 2019 12:56:39 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 5DEEBA7E28; Fri,  6 Sep 2019 12:56:39 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0A52DA7E18;
-        Fri,  6 Sep 2019 12:56:37 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 06 Sep 2019 12:56:37 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D24BE41E4800;
-        Fri,  6 Sep 2019 12:56:36 +0200 (CEST)
-Date:   Fri, 6 Sep 2019 12:56:38 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
-        jiri@resnulli.us, saeedm@mellanox.com, vishal@chelsio.com,
-        vladbu@mellanox.com
-Subject: Re: [PATCH net-next,v3 0/4] flow_offload: update mangle action
- representation
-Message-ID: <20190906105638.hylw6quhk7t3wff2@salvia>
-References: <20190906000403.3701-1-pablo@netfilter.org>
- <679ced4b-8bcd-5479-2773-7c75452c2a32@solarflare.com>
+        id S2392170AbfIFLHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 07:07:35 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:47010 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390377AbfIFLHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 07:07:35 -0400
+Received: by mail-wr1-f68.google.com with SMTP id h7so6120772wrt.13;
+        Fri, 06 Sep 2019 04:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JUfMY89FxK/4PZfbkgvJJAvRZHgggwqGP387mVBSBec=;
+        b=S3M0xG/jx0E4rGxCy8CVN6/zRlA0cXFS8/IV9aQhtVEJinXzEXPDKns32hds3EHFQI
+         DNM7KPNRAgRlaspudMCUM06Fe88Ur24TVa2js4g1T9CQpHTBg6BWpXZ7bc5XUgZ1//FJ
+         AGkdM4p7w8NdNpGUCI+Apy7DkYG+DVjq04Qom6nd4w/W0cY204ZTDtZQKEGjsbyvv/qY
+         WZOAqaasWNldcqXmCwbpQw+BWOJ1B1OVJO6T844q6WtqVC/IwEh91WeoXL4+HAHsILzu
+         deUs4dmp6iUimlvCrurIW5IXNaGM0DnSV4/zbFkwUHifGY67NuGs0UQw3jcOElSNqtGd
+         tIdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JUfMY89FxK/4PZfbkgvJJAvRZHgggwqGP387mVBSBec=;
+        b=YfbVdTjBzJpV7t5/WJm8l5OL9+f23vG+Rn0R9JDMjTxfQZUgr1uYBvANeeD87lTYUa
+         0kFfuRW9trsNgaxdJ85JYuXGGJu25ARRzu3kKIFM4u1WIm4t1cFRcOuzIL01t9timqxp
+         nbrqBZB7yxz4WLqb9tqrOXbmDPAezE5kYf4a/6qpdWiDF5MEMnOZUK+OPeXjjcXin+Go
+         6ERbW9869bjuQOEX9OrG+P6GF/Ftr0+CSanB3xIngygDFnanokQjwwqgmbIHAzovvw+Y
+         mPoCRug3eDERtoOtWFS4MwTEt0RutAVHicQp82RpwrXFS9r6m79bBa3Tz6EpAetzWRRX
+         RfZQ==
+X-Gm-Message-State: APjAAAUXiE/btcG8HwA8+kuw1SkhjCWz6A01GGPDfc+d+TWpqHQeEl62
+        dTctPC2MCR16vqHdlG5EE3U=
+X-Google-Smtp-Source: APXvYqwUgxvFFbfK4J/6FC9T0gRHiyy2dDDvOAgb/kCod1chhRzVIAEm94KmawloJ8DHxeqDd3WgfQ==
+X-Received: by 2002:a05:6000:108e:: with SMTP id y14mr6517608wrw.344.1567768052678;
+        Fri, 06 Sep 2019 04:07:32 -0700 (PDT)
+Received: from Akatsuki.lan (bzq-109-67-210-71.red.bezeqint.net. [109.67.210.71])
+        by smtp.googlemail.com with ESMTPSA id j30sm7949283wrb.66.2019.09.06.04.07.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Sep 2019 04:07:32 -0700 (PDT)
+From:   Dan Elkouby <streetwalkermc@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Dan Elkouby <streetwalkermc@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Fabian Henneke <fabian.henneke@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] Bluetooth: hidp: Fix assumptions on the return value of hidp_send_message
+Date:   Fri,  6 Sep 2019 14:06:44 +0300
+Message-Id: <20190906110645.27601-1-streetwalkermc@gmail.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20190906101306.GA12017@kadam>
+References: <20190906101306.GA12017@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <679ced4b-8bcd-5479-2773-7c75452c2a32@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 06, 2019 at 11:02:18AM +0100, Edward Cree wrote:
-> On 06/09/2019 01:03, Pablo Neira Ayuso wrote:
-> > This patch updates the mangle action representation:
-> >
-> > Patch 1) Undo bitwise NOT operation on the mangle mask (coming from tc
-> >          pedit userspace).
-> >
-> > Patch 2) mangle value &= mask from the front-end side.
-> >
-> > Patch 3) adjust offset, length and coalesce consecutive pedit keys into
-> >          one single action.
-> >
-> > Patch 4) add support for payload mangling for netfilter.
-> >
-> > After this patchset:
-> >
-> > * Offset to payload does not need to be on the 32-bits boundaries anymore.
-> >   This patchset adds front-end code to adjust the offset and length coming
-> >   from the tc pedit representation, so drivers get an exact header field
-> >   offset and length.
-> >
-> > * This new front-end code coalesces consecutive pedit actions into one
-> >   single action, so drivers can mangle IPv6 and ethernet address fields
-> >   in one go, instead once for each 32-bit word.
-> >
-> > On the driver side, diffstat -t shows that drivers code to deal with
-> > payload mangling gets simplified:
-> >
-> >         INSERTED,DELETED,MODIFIED,FILENAME
-> >         46,116,0,drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c (-70 LOC)
-> >         12,28,0,drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h (-16 LOC)
-> > 	26,54,0,drivers/net/ethernet/mellanox/mlx5/core/en_tc.c (-27 LOC)
-> >         89,111,0,drivers/net/ethernet/netronome/nfp/flower/action.c (-17 LOC)
-> >
-> > While, on the front-end side the balance is the following:
-> >
-> >         123,22,0,net/sched/cls_api.c (+101 LOC)
-> >
-> > Changes since v2:
-> >
-> > * Fix is_action_keys_supported() breakage in mlx5 reported by Vlad Buslov.
->
-> Still NAK for the same reasons as three versions ago (when it was called
->  "netfilter: payload mangling offload support"), you've never managed to
->  explain why this extra API complexity is useful.  (Reducing LOC does not
->  mean you've reduced complexity.)
+hidp_send_message was changed to return non-zero values on success,
+which some other bits did not expect. This caused spurious errors to be
+propagated through the stack, breaking some drivers, such as hid-sony
+for the Dualshock 4 in Bluetooth mode.
 
-Oh well...
+As pointed out by Dan Carpenter, hid-microsoft directly relied on that
+assumption as well.
 
-Patch 1) Mask is inverted for no reason, just because tc pedit needs
-this in this way. All drivers reverse this mask.
+Fixes: 48d9cc9d85dd ("Bluetooth: hidp: Let hidp_send_message return number of queued bytes")
 
-Patch 2) All drivers mask out meaningless fields in the value field.
+Signed-off-by: Dan Elkouby <streetwalkermc@gmail.com>
+---
+ drivers/hid/hid-microsoft.c | 2 +-
+ net/bluetooth/hidp/core.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Patch 3) Without this patchset, offsets are on the 32-bit boundary.
-Drivers need to play with the 32-bit mask to infer what field they are
-supposed to mangle... eg. with 32-bit offset alignment, checking if
-the use want to alter the ttl/hop_limit need for helper structures to
-check the 32-bit mask. Mangling a IPv6 address comes with one single
-action...
+diff --git a/drivers/hid/hid-microsoft.c b/drivers/hid/hid-microsoft.c
+index 8b3a922bdad3..2cf83856f2e4 100644
+--- a/drivers/hid/hid-microsoft.c
++++ b/drivers/hid/hid-microsoft.c
+@@ -303,7 +303,7 @@ static void ms_ff_worker(struct work_struct *work)
+ 	r->magnitude[MAGNITUDE_WEAK] = ms->weak;     /* right actuator */
+ 
+ 	ret = hid_hw_output_report(hdev, (__u8 *)r, sizeof(*r));
+-	if (ret)
++	if (ret < 0)
+ 		hid_warn(hdev, "failed to send FF report\n");
+ }
+ 
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 8d889969ae7e..bef84b95e2c4 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -267,7 +267,7 @@ static int hidp_get_raw_report(struct hid_device *hid,
+ 	set_bit(HIDP_WAITING_FOR_RETURN, &session->flags);
+ 	data[0] = report_number;
+ 	ret = hidp_send_ctrl_message(session, report_type, data, 1);
+-	if (ret)
++	if (ret < 0)
+ 		goto err;
+ 
+ 	/* Wait for the return of the report. The returned report
+@@ -343,7 +343,7 @@ static int hidp_set_raw_report(struct hid_device *hid, unsigned char reportnum,
+ 	data[0] = reportnum;
+ 	set_bit(HIDP_WAITING_FOR_SEND_ACK, &session->flags);
+ 	ret = hidp_send_ctrl_message(session, report_type, data, count);
+-	if (ret)
++	if (ret < 0)
+ 		goto err;
+ 
+ 	/* Wait for the ACK from the device. */
+-- 
+2.23.0
+
