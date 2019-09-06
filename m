@@ -2,161 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22487AB4D7
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 11:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47176AB4E6
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 11:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391340AbfIFJYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 05:24:01 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:50342 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727447AbfIFJYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 05:24:01 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c10so5740176wmc.0
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 02:23:58 -0700 (PDT)
+        id S2404129AbfIFJcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 05:32:50 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40470 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392912AbfIFJcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 05:32:50 -0400
+Received: by mail-qt1-f193.google.com with SMTP id g4so6299499qtq.7;
+        Fri, 06 Sep 2019 02:32:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yUcd4S+zm0+jtK7zRu7jP8L6UWwUXcJefrwtUq7Fewg=;
-        b=Olp/rY322yVcE6UB+GsR19BQ5buWIH+IwlXioIJ+DCSjzEm0qbpmSrj99toH9q79nz
-         3P1nxR2yj2onzLII1A0oWzcgkKaSgp42J/V1IgQ6w+o3oQrZ2o9wlM94oUENZ1FVP1Nd
-         D8OQFcQo//yS+dEPj/YJh9eF3lamzYO/tDmYY=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iLWP6NHVSlCxVbIED1XY7sj98JN5gmS0DomSdcvtZ7s=;
+        b=opcXYV1d0o/AlbZYXpPJPKF1g+Qg7wMOd5r4EDndIvpNSLjniHPAapb4FI3hXS7ApY
+         rIOBITvpgfgEaORp4G80Yj+MNQoV62Df+XSpFTWAiP81iFNDLarlNyh4wd4tQxJflMBR
+         DujZu+M1O8p3ULjHZPNHTCCnIAz3UqLkXCRqKv0h+SDmwVGmv8hmfQzknvcL3/DDXet5
+         7xrUPDzVR5uEO6Mb6N9xlE9oiJeiOVzFdgEbv1xWfftKdIo58ytZ5Z76tQK3owd27pwP
+         74zvUaVBHmcmdMr5D6svhyBHVdPp7blRsTiTY9hY0Pf6mgB7dCAqOHwsTH9I5PcLKt7i
+         xd8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yUcd4S+zm0+jtK7zRu7jP8L6UWwUXcJefrwtUq7Fewg=;
-        b=nnTewxQT6XpV2K76rXH3qGr/U6NN/2vuoofehebPF0zYnQUQFKAcW2WjHy4TxUmMRl
-         owkQImiqx4WpoI+v0HzviJV0Joo0X6sk+zAtKUvVmO2nRj+moYZ6IKeJSCgDa6McT0FU
-         s++2J+iXcMXCRfl+O8RND6paml9POmBK6PYliKMf7+8m9ahOwSJZ0A50oz3MR94aZE/g
-         ErH2MMfe60phW6+JAtmJskMQggdo5HLGZXCeByEAuJ9Y2/CnE61JAVTNW1zn2QEEl/+Y
-         ovc2SAarj3Qi9jQ7cedEo7wajyxTZxRw65IQVI3oPVKVHmvr4Zx72vjDEdrQsEsUVy08
-         3vdQ==
-X-Gm-Message-State: APjAAAU5uCMQenbGnrjPW4FD0zP0/sJx/6BP88S1VEpQCmVFYiTeLtDA
-        OgjrWYj5ciZz97qq4UYtb0FmyA==
-X-Google-Smtp-Source: APXvYqwj4TEGAncFlIT2zELJctwJr1MUyMU/0ZOKpk54EoR/5vX6aLlJHM+/K53LPjhnuCgq8nnRhg==
-X-Received: by 2002:a7b:ca4b:: with SMTP id m11mr6157196wml.144.1567761838079;
-        Fri, 06 Sep 2019 02:23:58 -0700 (PDT)
-Received: from localhost.localdomain ([141.226.9.174])
-        by smtp.gmail.com with ESMTPSA id x6sm8508081wmf.38.2019.09.06.02.23.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 02:23:57 -0700 (PDT)
-From:   Shmulik Ladkani <shmulik@metanetworks.com>
-X-Google-Original-From: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, eyal@metanetworks.com,
-        shmulik@metanetworks.com,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Subject: [PATCH v2 net] net: gso: Fix skb_segment splat when splitting gso_size mangled skb having linear-headed frag_list
-Date:   Fri,  6 Sep 2019 12:23:50 +0300
-Message-Id: <20190906092350.13929-1-shmulik.ladkani@gmail.com>
-X-Mailer: git-send-email 2.19.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iLWP6NHVSlCxVbIED1XY7sj98JN5gmS0DomSdcvtZ7s=;
+        b=LQuW4OjDO4vi9GyMSapVV8mkixds4JWfZP7v6mnO1N8RcK7uocnN96fXbMIDHvD7/7
+         EW5D9dcnkVo+O+08uZGJ1TQqGC3G6gvz//iATHcByurj6GoagAz5HEseVNnMY0jAhAcr
+         eVtu+BFFZ+DT7QHZT/LWgzzaXzqrZgxVkRsjgxLt/d0gi4LyDFjdXEKdNMsQVLb9LNS/
+         Nj5KGeGKwAk6mP5OAoiFde3wmwRh/CNUYwYwXYPqicPURc0vdRrU2oli6IYGgfC6G7NK
+         810zvTklQQWJofIof6Bad8JGch0j0le5lFfVgM6Gtait8SOhIkC2nfVsAL85wABt2lQj
+         X37Q==
+X-Gm-Message-State: APjAAAXkhydOf0XMH0qeeFGQq085p5sH7+cAaWTfFDDArfTrtMVm3+oK
+        o1nt4VfWRFmwGtrxvA+mYs1JGc7lHGxxNxo9qAQ=
+X-Google-Smtp-Source: APXvYqwkOBbJA908ZAOxlCtMjEN3cMkMp7dOIzjGQtWT4BKY4vBwlMoyBjBRQyhC6QAqXOEGg2Es4HVP/SPR1QzBCD8=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr7930949qtd.171.1567762369366;
+ Fri, 06 Sep 2019 02:32:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190904162509.199561-1-sdf@google.com> <20190904230331.ld4zsn4jgldu7l6q@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190904230331.ld4zsn4jgldu7l6q@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 Sep 2019 02:32:38 -0700
+Message-ID: <CAEf4Bzaoh0Ur6Ze0VLNYqhTJ21Vp6D2NBMkb7yAeseqom=TyKA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/6] selftests/bpf: move sockopt tests under test_progs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Historically, support for frag_list packets entering skb_segment() was
-limited to frag_list members terminating on exact same gso_size
-boundaries. This is verified with a BUG_ON since commit 89319d3801d1
-("net: Add frag_list support to skb_segment"), quote:
+On Wed, Sep 4, 2019 at 4:03 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Sep 04, 2019 at 09:25:03AM -0700, Stanislav Fomichev wrote:
+> > Now that test_progs is shaping into more generic test framework,
+> > let's convert sockopt tests to it. This requires adding
+> > a helper to create and join a cgroup first (test__join_cgroup).
+> > Since we already hijack stdout/stderr that shouldn't be
+> > a problem (cgroup helpers log to stderr).
+> >
+> > The rest of the patches just move sockopt tests files under prog_tests/
+> > and do the required small adjustments.
+>
+> Looks good. Thank you for working on it.
+> Could you de-verbose setsockopt test a bit?
+> #23/32 setsockopt: deny write ctx->retval:OK
+> #23/33 setsockopt: deny read ctx->retval:OK
+> #23/34 setsockopt: deny writing to ctx->optval:OK
+> #23/35 setsockopt: deny writing to ctx->optval_end:OK
+> #23/36 setsockopt: allow IP_TOS <= 128:OK
+> #23/37 setsockopt: deny IP_TOS > 128:OK
+> 37 subtests is a bit too much spam.
 
-    As such we require all frag_list members terminate on exact MSS
-    boundaries.  This is checked using BUG_ON.
-    As there should only be one producer in the kernel of such packets,
-    namely GRO, this requirement should not be difficult to maintain.
+If we merged test_btf into test_progs, we'd have >150 subtests, which
+would be pretty verbose as well. But the benefit of subtest is that
+you can run just that sub-test and debug/verify just it, without all
+the rest stuff.
 
-However, since commit 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper"),
-the "exact MSS boundaries" assumption no longer holds:
-An eBPF program using bpf_skb_change_proto() DOES modify 'gso_size', but
-leaves the frag_list members as originally merged by GRO with the
-original 'gso_size'. Example of such programs are bpf-based NAT46 or
-NAT64.
+So I'm wondering, if too many lines of default output is the only
+problem, should we just not output per-subtest line by default?
 
-This lead to a kernel BUG_ON for flows involving:
- - GRO generating a frag_list skb
- - bpf program performing bpf_skb_change_proto() or bpf_skb_adjust_room()
- - skb_segment() of the skb
-
-See example BUG_ON reports in [0].
-
-In commit 13acc94eff12 ("net: permit skb_segment on head_frag frag_list skb"),
-skb_segment() was modified to support the "gso_size mangling" case of
-a frag_list GRO'ed skb, but *only* for frag_list members having
-head_frag==true (having a page-fragment head).
-
-Alas, GRO packets having frag_list members with a linear kmalloced head
-(head_frag==false) still hit the BUG_ON.
-
-This commit adds support to skb_segment() for a 'head_skb' packet having
-a frag_list whose members are *non* head_frag, with gso_size mangled, by
-disabling SG and thus falling-back to copying the data from the given
-'head_skb' into the generated segmented skbs - as suggested by Willem de
-Bruijn [1].
-
-Since this approach involves the penalty of skb_copy_and_csum_bits()
-when building the segments, care was taken in order to enable this
-solution only when required:
- - untrusted gso_size, by testing SKB_GSO_DODGY is set
-   (SKB_GSO_DODGY is set by any gso_size mangling functions in
-    net/core/filter.c)
- - the frag_list is non empty, its item is a non head_frag, *and* the
-   headlen of the given 'head_skb' does not match the gso_size.
-
-[0]
-https://lore.kernel.org/netdev/20190826170724.25ff616f@pixies/
-https://lore.kernel.org/netdev/9265b93f-253d-6b8c-f2b8-4b54eff1835c@fb.com/
-
-[1]
-https://lore.kernel.org/netdev/CA+FuTSfVsgNDi7c=GUU8nMg2hWxF2SjCNLXetHeVPdnxAW5K-w@mail.gmail.com/
-
-Fixes: 6578171a7ff0 ("bpf: add bpf_skb_change_proto helper")
-Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
----
-v2: reorder the test conditions, as suggested by Alexander Duyck
----
- net/core/skbuff.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ea8e8d332d85..d540d00b93a9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3670,6 +3670,25 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 	int pos;
- 	int dummy;
- 
-+	if (list_skb && !list_skb->head_frag && skb_headlen(list_skb) &&
-+	    (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
-+		/* gso_size is untrusted, and we have a frag_list with a linear
-+		 * non head_frag head.
-+		 *
-+		 * (we assume checking the first list_skb member suffices;
-+		 * i.e if either of the list_skb members have non head_frag
-+		 * head, then the first one has too).
-+		 *
-+		 * If head_skb's headlen does not fit requested gso_size, it
-+		 * means that the frag_list members do NOT terminate on exact
-+		 * gso_size boundaries. Hence we cannot perform skb_frag_t page
-+		 * sharing. Therefore we must fallback to copying the frag_list
-+		 * skbs; we do so by disabling SG.
-+		 */
-+		if (mss != GSO_BY_FRAGS && mss != skb_headlen(head_skb))
-+			features &= ~NETIF_F_SG;
-+	}
-+
- 	__skb_push(head_skb, doffset);
- 	proto = skb_network_protocol(head_skb, &dummy);
- 	if (unlikely(!proto))
--- 
-2.19.1
-
+>
