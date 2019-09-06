@@ -2,132 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C49ABBF3
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17EEFABBF9
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:13:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388652AbfIFPM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 11:12:59 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:54149 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbfIFPM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:12:59 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1McY0L-1ijAZ70D9h-00cviz; Fri, 06 Sep 2019 17:12:44 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        wenxu <wenxu@ucloud.cn>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] netfilter: nf_tables: avoid excessive stack usage
-Date:   Fri,  6 Sep 2019 17:12:30 +0200
-Message-Id: <20190906151242.1115282-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S2389219AbfIFPNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 11:13:35 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:55682 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729088AbfIFPNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:13:34 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1403AB8005A;
+        Fri,  6 Sep 2019 15:13:33 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 6 Sep
+ 2019 08:13:18 -0700
+Subject: Re: [PATCH net-next,v3 0/4] flow_offload: update mangle action
+ representation
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <jakub.kicinski@netronome.com>,
+        <jiri@resnulli.us>, <saeedm@mellanox.com>, <vishal@chelsio.com>,
+        <vladbu@mellanox.com>
+References: <20190906000403.3701-1-pablo@netfilter.org>
+ <679ced4b-8bcd-5479-2773-7c75452c2a32@solarflare.com>
+ <20190906105638.hylw6quhk7t3wff2@salvia>
+ <b8baf681-b808-4b83-d521-0353c3136516@solarflare.com>
+ <20190906131457.7olkal45kkdtbevo@salvia>
+ <35ac21be-ff2f-a9cd-dd71-28bc37e8a51b@solarflare.com>
+ <20190906145019.2bggchaq43tcqdyc@salvia>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <be6eee6b-9d58-f0f7-571b-7e473612e2b3@solarflare.com>
+Date:   Fri, 6 Sep 2019 16:13:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
+In-Reply-To: <20190906145019.2bggchaq43tcqdyc@salvia>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:H4wBtVZNbYT58k3ooZMgp+mPB1WUVSJqouzTOP8MFKlvBbGsWfC
- CXKQuDBiBcnfb240Ianbu5O/iTJjNIwyMe9ub9lwbE4JlIUx1X8zg1/DjN1srdPSE1C/KQU
- Trz0oDCkLw+4aCZC1cB7J/h6CF0wFXT3sY+XhPtH1nST6si02Rj6Hq8j7o2yMg3uMA4vUoO
- MznQIClCOUcPSv3K49Mxg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dgvyv05Zu8g=:eRZphasKugh5xr/DCQ5H9T
- fNRZ+EXkGK7DYHkdeUs6ZF+q0Y7143WFsoJDKxotd0ykN5nCyaKrGCZSkpSqO7NCO/na2t7bx
- hMkSD0CR2+qf8e1wCQSI98w8VUDkpy1UgPyzGPekwo109R0FJ4yqFZbwCq0IqSYr1YaTynAov
- 7YHmV37ox7mzMA4SIVtIUZ6YWUrnN/O8+itm7rvyeU7yYaSYL4ih8ddtXaTrDJ5zzYbjDBb+4
- IMdNdhYVI2zjc+UjpFvx9hJczdz613IQdXEYlG9XkIlLGecBZIwDbeZj3Nx5XPBnIxTuWrHcL
- FWH7sppW//4BztL9Dz2UMvCEqDSNEP+asDftnusmJDN7vnRIAKoOyY52yOKvMxDIsv/3fYLsy
- tABpcEVapheu8pzQZatM1zMGbWwL+4bbfQBmBmT6RemRVTvJj0SVPhWJ7aZoJhsSZH9Zn54R7
- axZvSWBKtb0gVq9k68aEEH3pS6OudQWql0+NYBtEXHJqHngiwntA/LPhBy44BoWYETWikGCCw
- Vc1cdKbr7D636SysLHXyLc5KGViNXOSEYucYWn3OPRx00e+DA2JxqZ4ObxSMfcqbOhq3JawpQ
- 4GyHdJ16jiArJZWtmFTqggn/+YHkD8F5bRSTFAAptjd0HnTm7VePYWPr8XBB2kxR+2ic9ekEV
- GO2hVMXX7WD6w6GpqqiEnsdXofbgTdePbrijzJQ0KtOFEcN85jTfgDxUJHdbGSlYoi00uAwg9
- b5LX5nW3SRDHSu31Egllt2TMT5FA+iLFsBPS2Wvs44Jq346tuA95Suve8MNFTZuAFHLC+QmM8
- TSSeQQt98Sh5pXMhV5FJnuRgaslWg==
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24892.005
+X-TM-AS-Result: No-12.941200-4.000000-10
+X-TMASE-MatchedRID: cxtZ8fwm3r8eimh1YYHcKB4ejJMDGBzF69aS+7/zbj+qvcIF1TcLYHQ7
+        c/s1EnkfFjGWt2FXzm3YnvwuHYT0lueiDxJcK5MJi+quUbDYb+T2hUAowGKip63IiVD2OFIx6Za
+        mopeZkvkka5MiZO1ulOdnr/in5DtFNKnO1vGWufXB7F9jxUX48iILdc+InEErVtYy28d/67qYgr
+        VekbVGjWMOYwJcWd0kSYJ/FzwnGEbImuJG/muc0aKa0xB73sAAeouvej40T4j3auHSPFNajADCX
+        Bzs8w7j/aTpeC4wsRTm08Df+RptejCitzEOtuK1hUy0TABax1xJaD67iKvY00eRNQFi4zev7kOM
+        rBz6LknZYix/V81kpaY9k5zFch27Hv8ZmUNd5ssmGnPVO3QinxfbPFE2GHrVRJts9OIxqBMz6n4
+        2mzBmalWrn6UBj2xcJrqaPLhEiE9BJacAbR6CMQrgwFF/sjum9l9p8mNlkgkcbecIrrLrmRbC99
+        SYja1gplohFVq6HxmwTxtH2eEAisoWpgSv7kVyW1M77Gh1ugYKF0jiwuWuOBf/NXBpnlbDmKbhu
+        5KaCkcaBejRu8ydpl+24nCsUSFNt7DW3B48kkHdB/CxWTRRu25FeHtsUoHuvJ2XGXgMtBBVrwhn
+        OSWcXTEyKdvVWdNBdcn17rSLztmwFMlIPaIBbQ==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--12.941200-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24892.005
+X-MDID: 1567782813-3q_YbmY8-GSn
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The nft_offload_ctx structure is much too large to put on the
-stack:
+On 06/09/2019 15:50, Pablo Neira Ayuso wrote:
+> On Fri, Sep 06, 2019 at 02:37:16PM +0100, Edward Cree wrote:
+>> On 06/09/2019 14:14, Pablo Neira Ayuso wrote:
+>>> OK, I can document this semantics, I need just _time_ to write that
+>>> documentation. I was expecting this patch description is enough by now
+>>> until I can get to finish that documentation.
+>> I think for two structs with apparently the same contents but different
+>>  semantics (one has the mask bitwise complemented) it's best to hold up
+>>  the code change until the comment is ready to come with it, because
+>>  until then it's a dangerously confusing situation.
+> The idea is that flow rule API != tc front-end anymore. So the flow
+> rule API can evolve regardless the front-end requirements. Before this
+> update there was no other choice than using the tc pedit layout since
+> it was exposed to the drivers, this is not the case anymore.
+I'm not saying that they have to be the same.
+I'm saying that they're _almost_ the same, and having things that are
+ _almost_ the same but subtly different is a recipe for misunderstandings
+ and bugs, and so must must must have very visible comments in the code.
 
-net/netfilter/nf_tables_offload.c:31:23: error: stack frame size of 1200 bytes in function 'nft_flow_rule_create' [-Werror,-Wframe-larger-than=]
+>> So an IPv6 address mangle only comes as a single action if it's from
+>>  netfilter, not if it's coming from TC pedit.
+> Driver gets one single action from tc/netfilter (and potentially
+> ethtool if it would support for this), it comes as a single action
+> from both subsystems:
+>
+>         front-end -----> flow_rule API -----> drivers
+>
+> Front-end need to translate their representation to this
+> FLOW_ACTION_MANGLE layout.
+>
+> By front-end, I refer to ethtool/netfilter/tc.
+In your patch, flow_action_mangle() looks only at the offset and type
+ (add vs. set) of each pedit, coalesces them if compatible (so, unless
+ I'm misreading the code, it _will_ coalesce adjacent pedits to
+ contiguous fields like UDP sport & dport, unlike what you said),
+ because it doesn't know whether two contiguous pedits are part of the
+ same field or not (it doesn't have any knowledge of 'fields' at all).
+And for you to change that, while still coalescing IPv6 pedits, you
+ would need flow_action_mangle() to know what fields each pedit is in.
+It is not possible for code that doesn't know about fields to both:
+ (a) not coalesce edits of contiguous fields, and
+ (b) coalesce edits of larger-than-u32 fields
 
-Use dynamic allocation here, as we do elsewhere in the same
-function.
+>>  Yes, but we don't add code/features to the kernel based on what we
+>>  *could* use it for later
+> This is already useful: Look at the cxgb driver in particular, it's
+> way easier to read.
+Have you tested it?  Again, I might be misreading, but it looks like
+ your flow_action_mangle() *will* coalesce sport & dport, which it
+ appears will break that cxgb code.
 
-Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-Since we only really care about two members of the structure, an
-alternative would be a larger rewrite, but that is probably too
-late for v5.4.
----
- net/netfilter/nf_tables_offload.c | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+> Other existing drivers do not need to do things like:
+>
+>         case round_down(offsetof(struct iphdr, tos), 4):
+>
+> and the play with masks to infer if the user wants to mangle the TOS
+> field, they can just do:
+>
+>         case offsetof(struct iphdr, tos):
+>
+> which is way more natural representation.
+Proper thing to do is have helper functions available to drivers to test
+ the pedit, and not just switch on the offset.  Why do I say that?
+Well, consider a pedit on UDP dport, with mask 0x00ff (network endian).
+Now as a u32 pedit that's 0x000000ff offset 0, so field-blind offset
+ calculation (ffs in flow_action_mangle_entry()) will turn that into
+ offset 3 mask 0xff.  Now driver does
+    switch(offset) { /* 3 */
+    case offsetof(struct udphdr, dest): /* 2 */
+        /* Whoops, we never get here! */
+    }
+Do you see the problem?
 
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 3c2725ade61b..c94331aae552 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -30,15 +30,13 @@ static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
- 
- struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule)
- {
--	struct nft_offload_ctx ctx = {
--		.dep	= {
--			.type	= NFT_OFFLOAD_DEP_UNSPEC,
--		},
--	};
-+	struct nft_offload_ctx *ctx;
-+
- 	struct nft_flow_rule *flow;
- 	int num_actions = 0, err;
- 	struct nft_expr *expr;
- 
-+
- 	expr = nft_expr_first(rule);
- 	while (expr->ops && expr != nft_expr_last(rule)) {
- 		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
-@@ -52,21 +50,31 @@ struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule)
- 		return ERR_PTR(-ENOMEM);
- 
- 	expr = nft_expr_first(rule);
-+
-+	ctx = kzalloc(sizeof(struct nft_offload_ctx), GFP_KERNEL);
-+	if (!ctx) {
-+		err = -ENOMEM;
-+		goto err_out;
-+	}
-+	ctx->dep.type = NFT_OFFLOAD_DEP_UNSPEC;
-+
- 	while (expr->ops && expr != nft_expr_last(rule)) {
- 		if (!expr->ops->offload) {
- 			err = -EOPNOTSUPP;
- 			goto err_out;
- 		}
--		err = expr->ops->offload(&ctx, flow, expr);
-+		err = expr->ops->offload(ctx, flow, expr);
- 		if (err < 0)
- 			goto err_out;
- 
- 		expr = nft_expr_next(expr);
- 	}
--	flow->proto = ctx.dep.l3num;
-+	flow->proto = ctx->dep.l3num;
-+	kfree(ctx);
- 
- 	return flow;
- err_out:
-+	kfree(ctx);
- 	nft_flow_rule_destroy(flow);
- 
- 	return ERR_PTR(err);
--- 
-2.20.0
-
+-Ed
