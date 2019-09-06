@@ -2,96 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF8AAB12E
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 05:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974F3AB16E
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 05:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404441AbfIFDjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 23:39:06 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37560 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392155AbfIFDjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 23:39:05 -0400
-Received: by mail-pl1-f195.google.com with SMTP id b10so2436492plr.4;
-        Thu, 05 Sep 2019 20:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PXYF1M03RrcZFiPVCr+oafxI5KwHAQlJ1LzSSGxpPe0=;
-        b=Q21vkhzuAlNVXS4iv5SGd/V6DPV1QKXyuezlpF/KupK8aco7bH8L6xFRe+3rzjhuIi
-         LAAgTEASWHEHYVoAj7FVyFx3Xp5PZbquc6w1OkYAtwZ31L53Gw7JXTOe8GkX29sSmyjV
-         NqjvYJ/6KjMr5tH9UVt7rQsEBIztiZMRWNJ+YYvVx2fp9XRuNC/ZzQX2uySLo8ZgybfR
-         GJGLOSv0jY6mSzp91+tHXpjAgj9SSldX+EL6SzTMQdjoT8/KD5f31faQ7+RyIc/SPXp6
-         /32KsQdGPtu1HZwBEeCpce7NjL4p+ZDjPUPLNPaKFefZuIpcg1hxseD8csAyztj6AZPM
-         R4+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PXYF1M03RrcZFiPVCr+oafxI5KwHAQlJ1LzSSGxpPe0=;
-        b=KFjEmvV0PE6sLGmE3TzJcVADHJWUxvkp24P6MFU0P2NNZrZWG60gXOUWHSDTdzT64L
-         vpdJxNtxff9Gict5x/8JOyp7NXNVIC4WUSUbmHdS3UdXjRINJTbQ1R3AY/28PKN8cajo
-         WnlP3LiA7JN03KpN1nPZDXqCgJ+EqJw3qO/z7Y4TjVG+25L3a6P4tJReGFYQQaxsnOZO
-         j2rWD2MzOIoW9Q76kRkW4bwZBvjqsST1jxuKGiQA6AsLo5YGoCvwyxNN12NjKCG6Qwh1
-         LKRnAGzuF50BEuTMYX9LDEnYx1ifToPmv+GPFkASd3TDw3YpeUEG3jIJnAvrbv0JHL6/
-         L3mg==
-X-Gm-Message-State: APjAAAXVfXJZ0w63jQpfgWtINdcuhVkyXLBPUbceCD74/3oMcpy5zs8p
-        LPn6hXdld2VkHTIZ8r51/7WHe5QR
-X-Google-Smtp-Source: APXvYqzgmhLuIsIaUW3PQSBJiLj2kLVGPu55mYjmZmnUcycRvpUbGvdC1nBjLxYMCIJYaHa9rSMSYA==
-X-Received: by 2002:a17:902:4381:: with SMTP id j1mr6842157pld.318.1567741145109;
-        Thu, 05 Sep 2019 20:39:05 -0700 (PDT)
-Received: from localhost ([175.223.27.235])
-        by smtp.gmail.com with ESMTPSA id i6sm9072040pfq.20.2019.09.05.20.39.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Sep 2019 20:39:03 -0700 (PDT)
-Date:   Fri, 6 Sep 2019 12:39:00 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Qian Cai <cai@lca.pw>, Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20190906033900.GB1253@jagdpanzerIV>
-References: <20190904061501.GB3838@dhcp22.suse.cz>
- <20190904064144.GA5487@jagdpanzerIV>
- <20190904065455.GE3838@dhcp22.suse.cz>
- <20190904071911.GB11968@jagdpanzerIV>
- <20190904074312.GA25744@jagdpanzerIV>
- <1567599263.5576.72.camel@lca.pw>
- <20190904144850.GA8296@tigerII.localdomain>
- <1567629737.5576.87.camel@lca.pw>
- <20190905113208.GA521@jagdpanzerIV>
- <20190905132334.52b13d95@oasis.local.home>
+        id S2392213AbfIFDxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 23:53:25 -0400
+Received: from mx.socionext.com ([202.248.49.38]:28932 "EHLO mx.socionext.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732004AbfIFDxZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Sep 2019 23:53:25 -0400
+Received: from unknown (HELO kinkan-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 06 Sep 2019 12:53:23 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by kinkan-ex.css.socionext.com (Postfix) with ESMTP id 4B7CD180B7D;
+        Fri,  6 Sep 2019 12:53:23 +0900 (JST)
+Received: from 10.213.24.1 (10.213.24.1) by m-FILTER with ESMTP; Fri, 6 Sep 2019 12:53:23 +0900
+Received: from SOC-EX01V.e01.socionext.com (10.213.24.21) by
+ SOC-EX02V.e01.socionext.com (10.213.24.22) with Microsoft SMTP Server (TLS)
+ id 15.0.995.29; Fri, 6 Sep 2019 12:53:22 +0900
+Received: from SOC-EX01V.e01.socionext.com ([10.213.24.21]) by
+ SOC-EX01V.e01.socionext.com ([10.213.24.21]) with mapi id 15.00.0995.028;
+ Fri, 6 Sep 2019 12:53:22 +0900
+From:   <yamada.masahiro@socionext.com>
+To:     <andriin@fb.com>, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <ast@fb.com>, <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        <sfr@canb.auug.org.au>
+Subject: RE: [PATCH bpf-next] kbuild: replace BASH-specific ${@:2} with shift
+ and ${@}
+Thread-Topic: [PATCH bpf-next] kbuild: replace BASH-specific ${@:2} with shift
+ and ${@}
+Thread-Index: AQHVZBO7/L6pfNSQwUKKg4pTyRjpVacd+BEQ
+Date:   Fri, 6 Sep 2019 03:53:21 +0000
+Message-ID: <0b39dab4fdbe4c678902657c71364abd@SOC-EX01V.e01.socionext.com>
+References: <20190905175938.599455-1-andriin@fb.com>
+In-Reply-To: <20190905175938.599455-1-andriin@fb.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-securitypolicycheck: OK by SHieldMailChecker v2.5.2
+x-shieldmailcheckerpolicyversion: POLICY190801
+x-originating-ip: [10.213.24.1]
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190905132334.52b13d95@oasis.local.home>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (09/05/19 13:23), Steven Rostedt wrote:
-> > I think we can queue significantly much less irq_work-s from printk().
-> > 
-> > Petr, Steven, what do you think?
-
-[..]
-> I mean, really, do we need to keep calling wake up if it
-> probably never even executed?
-
-I guess ratelimiting you are talking about ("if it probably never even
-executed") would be to check if we have already called wake up on the
-log_wait ->head. For that we need to, at least, take log_wait spin_lock
-and check that ->head is still in TASK_INTERRUPTIBLE; which is (quite,
-but not exactly) close to what wake_up_interruptible() does - it doesn't
-wake up the same task twice, it bails out on `p->state & state' check.
-
-Or did I miss something?
-
-	-ss
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQW5kcmlpIE5ha3J5aWtv
+IDxhbmRyaWluQGZiLmNvbT4NCj4gU2VudDogRnJpZGF5LCBTZXB0ZW1iZXIgMDYsIDIwMTkgMzow
+MCBBTQ0KPiBUbzogYnBmQHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
+YXN0QGZiLmNvbTsNCj4gZGFuaWVsQGlvZ2VhcmJveC5uZXQNCj4gQ2M6IGFuZHJpaS5uYWtyeWlr
+b0BnbWFpbC5jb207IGtlcm5lbC10ZWFtQGZiLmNvbTsgQW5kcmlpIE5ha3J5aWtvDQo+IDxhbmRy
+aWluQGZiLmNvbT47IFN0ZXBoZW4gUm90aHdlbGwgPHNmckBjYW5iLmF1dWcub3JnLmF1PjsgWWFt
+YWRhLA0KPiBNYXNhaGlyby8bJEI7M0VEGyhCIBskQj8/OTAbKEIgPHlhbWFkYS5tYXNhaGlyb0Bz
+b2Npb25leHQuY29tPg0KPiBTdWJqZWN0OiBbUEFUQ0ggYnBmLW5leHRdIGtidWlsZDogcmVwbGFj
+ZSBCQVNILXNwZWNpZmljICR7QDoyfSB3aXRoIHNoaWZ0DQo+IGFuZCAke0B9DQo+IA0KPiAke0A6
+Mn0gaXMgQkFTSC1zcGVjaWZpYyBleHRlbnNpb24sIHdoaWNoIG1ha2VzIGxpbmstdm1saW51eC5z
+aCByZWx5IG9uDQo+IEJBU0guIFVzZSBzaGlmdCBhbmQgJHtAfSBpbnN0ZWFkIHRvIGZpeCB0aGlz
+IGlzc3VlLg0KPiANCj4gUmVwb3J0ZWQtYnk6IFN0ZXBoZW4gUm90aHdlbGwgPHNmckBjYW5iLmF1
+dWcub3JnLmF1Pg0KPiBGaXhlczogMzQxZGZjZjhkNzhlICgiYnRmOiBleHBvc2UgQlRGIGluZm8g
+dGhyb3VnaCBzeXNmcyIpDQo+IENjOiBTdGVwaGVuIFJvdGh3ZWxsIDxzZnJAY2FuYi5hdXVnLm9y
+Zy5hdT4NCj4gQ2M6IE1hc2FoaXJvIFlhbWFkYSA8eWFtYWRhLm1hc2FoaXJvQHNvY2lvbmV4dC5j
+b20+DQo+IFNpZ25lZC1vZmYtYnk6IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+DQoN
+ClJldmlld2VkLWJ5OiBNYXNhaGlybyBZYW1hZGEgPHlhbWFkYS5tYXNhaGlyb0Bzb2Npb25leHQu
+Y29tPg0KDQo=
