@@ -2,93 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D81CDABE3D
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 19:04:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670B0ABE43
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 19:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403878AbfIFREJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 13:04:09 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38734 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726936AbfIFREJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 13:04:09 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y23so6326623ljn.5;
-        Fri, 06 Sep 2019 10:04:07 -0700 (PDT)
+        id S2405952AbfIFRGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 13:06:36 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41709 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405919AbfIFRGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 13:06:36 -0400
+Received: by mail-lf1-f68.google.com with SMTP id j4so5637495lfh.8;
+        Fri, 06 Sep 2019 10:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xSkwWVIntzAztHmGrnQ70cK/qaHc5XCXtZJoNVAnchs=;
-        b=JnIE9GMir7yHps5tLNcNEJHeRUnZaIfZFdG5mcu3RDZwEDmA0NrAEmldrIGH8I4fSu
-         9w2WrT57vt+JKh2/6BpaKSoPEkyRfag4trKz8olb+UNZv0gCwZVGXnM4949BeDOXp5uo
-         wq2PwlVmu7P+vp0QLy0+Jg1mYy5I9YzASXoPolOzioDyNDy2Trixj7M5DGGc4EaCe/rv
-         niKa1/dqTQsRSIBCBFtRV6WQ9LJ8/JRySXzVVD7dkh1s8jjRoUK9CQ6SqkmcmkcB0qxh
-         nqvYI41YAu5AtcoPJWvoRVZmWQR0u1gW5WU8FTP6gkhoWteZ7fNGwazZK/tk6rR2auzH
-         KluQ==
+         :cc;
+        bh=NvfoOyEj+ih5o8wpzVxnSkvdM4Np7xE84LtSUp5GXZY=;
+        b=a6Q9UjJnl32Gh5jKV9aA1ESbWUq3TasZZByboadX5fxEGDdpUcSpQoyCrMHes6mySc
+         3BIFissMrM21WksNtJtPzit0lLOoyBZ5dbrM1pFFZwhSHe1C35l3Q87JmPhJUYH4pAil
+         EzLisbCm9JUYZPepSrNcMkvnW9bVeDi3a5EUIfGHdKVaNwnNFArWAZSYM4AMy9xliMCE
+         o1cwETUsX8MAJqQXcJ0Arvf3wp2rXdzHeCbj7nlz/SNfaHwvlxsHBYaNIgjHEwcbYxto
+         hIVrUPBjWpOQlmEJSnsL/YTcBsvJm0xSYD4/c8kwv3iWnUCirN2D3d2DPW1xA6Z1SZG9
+         i94w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xSkwWVIntzAztHmGrnQ70cK/qaHc5XCXtZJoNVAnchs=;
-        b=dXCQqdMr3YjlmXAiRrUC6x13opNY2RjGr87ZO0RTChagPBi5hsfVHRZl7zJArxeXe9
-         QP3YMVPDFIfmm7UFZXnMpjF+oMfi8KMOJz+fqo3RfwY2RVaLqyI8FOrUj2TsZgYgVICd
-         lDQrmw4hRHXAO/HF6UEW7zyDivwaeoKe2OLT8qQahQCTbq/ZMuumLbfiC1L8TumE7Ha/
-         Igy0jnCvuDQwQYbdPYmtCgkri5U/3XYMa1mtfIUxIqoHL9nh/ABzp4p8ZeLK15Q1yPuY
-         zcwnh3BpLHsAlN9t1LrBbTn28KvY67KJW4dnBAAyrx8YNVC9GT+SeseAadeHyWYFTxh3
-         zrMg==
-X-Gm-Message-State: APjAAAVWAd7klxO5UEJrW8+41oJbWrPMgir3LViD3j3rfID8ClJ6cEHx
-        mqra2+j3XNbMeU7WDMhi8j4VARKmjhiDu2FTsD4=
-X-Google-Smtp-Source: APXvYqx+KsNJ1OneC7BDX3h65/Rh370eJBldtEJJrVkVD5KWqi3Z/PYUYxRNxU7MBvmrlIlHduhm8dBMKcmCq+jCChg=
-X-Received: by 2002:a2e:87d6:: with SMTP id v22mr5912593ljj.195.1567789446991;
- Fri, 06 Sep 2019 10:04:06 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=NvfoOyEj+ih5o8wpzVxnSkvdM4Np7xE84LtSUp5GXZY=;
+        b=dv2RJ12tEUFhhafx7L/2syEBAaXBQj4Sjqij1SdDLYMC/plJ4yGeeWig8Z81ZEYIty
+         XgjEk3pOs4AFIK9SDJFH48rYU/80ezXQxum0c5L5RnvOwE4dQyR6BN0Fhcz6gvwPnwk5
+         hb8vSGWrUdoIaJDFCn/QxkuLAQcH6ulX+hpCJAX0WybBahhQtYHkG/G4+MfUPwp0gcVw
+         CsIgwiwgI8RWhQMgCq3RofzlV8PJ04/nnoiO3RajTGjJbHL96RwmeHUPY0OKv4onY2GM
+         n0MSjyWYMZgKlhAMjhP3jyvdMpZ6fJr8TA+UF4tfXyUbodiceMEVP93hHxyjc3UN84am
+         6GaA==
+X-Gm-Message-State: APjAAAURgl22LfbaJ1Uc5zsOWDCdV+8wCMmwmOH0Jpk40yJkGxaD6bzT
+        IYMIvwRwyQNJqSls7r3zpIyPWmw0gZBVbr51kxg=
+X-Google-Smtp-Source: APXvYqyYdeEKWQWkzvHxoiCTooug/jA/xryoDQ94eaq/KpyAX9ozJaRkjngWwLnE70ojLdQ+3Es+pZ8vvMksOdoIy/s=
+X-Received: by 2002:ac2:558a:: with SMTP id v10mr6747840lfg.162.1567789593473;
+ Fri, 06 Sep 2019 10:06:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190905175938.599455-1-andriin@fb.com> <0b39dab4fdbe4c678902657c71364abd@SOC-EX01V.e01.socionext.com>
-In-Reply-To: <0b39dab4fdbe4c678902657c71364abd@SOC-EX01V.e01.socionext.com>
+References: <20190905211528.97828-1-samitolvanen@google.com> <0f77cc31-4df5-a74f-5b64-a1e3fc439c6d@fb.com>
+In-Reply-To: <0f77cc31-4df5-a74f-5b64-a1e3fc439c6d@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 6 Sep 2019 10:03:55 -0700
-Message-ID: <CAADnVQKSH+bwXWK=noKuzqDeW9QLu+NQPFnE+x0JDz6O8rBP+Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] kbuild: replace BASH-specific ${@:2} with shift
- and ${@}
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
+Date:   Fri, 6 Sep 2019 10:06:21 -0700
+Message-ID: <CAADnVQJxrPDZtKAik4VEzvw=TwY6PoWytfp7HcQt5Jsaja7mxw@mail.gmail.com>
+Subject: Re: [PATCH] kcm: use BPF_PROG_RUN
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tom Herbert <tom@herbertland.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 3:34 AM <yamada.masahiro@socionext.com> wrote:
+On Fri, Sep 6, 2019 at 3:03 AM Yonghong Song <yhs@fb.com> wrote:
 >
 >
 >
-> > -----Original Message-----
-> > From: Andrii Nakryiko <andriin@fb.com>
-> > Sent: Friday, September 06, 2019 3:00 AM
-> > To: bpf@vger.kernel.org; netdev@vger.kernel.org; ast@fb.com;
-> > daniel@iogearbox.net
-> > Cc: andrii.nakryiko@gmail.com; kernel-team@fb.com; Andrii Nakryiko
-> > <andriin@fb.com>; Stephen Rothwell <sfr@canb.auug.org.au>; Yamada,
-> > Masahiro/=E5=B1=B1=E7=94=B0 =E7=9C=9F=E5=BC=98 <yamada.masahiro@socione=
-xt.com>
-> > Subject: [PATCH bpf-next] kbuild: replace BASH-specific ${@:2} with shi=
-ft
-> > and ${@}
+> On 9/5/19 2:15 PM, Sami Tolvanen wrote:
+> > Instead of invoking struct bpf_prog::bpf_func directly, use the
+> > BPF_PROG_RUN macro.
 > >
-> > ${@:2} is BASH-specific extension, which makes link-vmlinux.sh rely on
-> > BASH. Use shift and ${@} instead to fix this issue.
-> >
-> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
-> > Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 >
-> Reviewed-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Acked-by: Yonghong Song <yhs@fb.com>
 
 Applied. Thanks
