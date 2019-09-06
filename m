@@ -2,112 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6ADABE36
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 19:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D2DABE3B
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 19:03:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393234AbfIFRCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 13:02:16 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:46947 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727816AbfIFRCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 13:02:16 -0400
-Received: by mail-lf1-f66.google.com with SMTP id t8so5598423lfc.13;
-        Fri, 06 Sep 2019 10:02:14 -0700 (PDT)
+        id S2395128AbfIFRDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 13:03:36 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:33463 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726936AbfIFRDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 13:03:36 -0400
+Received: by mail-lf1-f68.google.com with SMTP id d10so5656867lfi.0;
+        Fri, 06 Sep 2019 10:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PSJtPQwc4FrIdIn1bFWZE5T/k3cdh8UKTtNfZmczf4g=;
-        b=OTmQvZcnK0iCDnsELaip34muwYlWJFwcsA7THUU6pGovXF2OzoDwBgA4ee9kibQ+HR
-         8mGEpxMlrXnSZ7mPNeUtTvTEsIAgHyvJpq5/RpWE5KOvNNXArFzLXc98UmE3JqcvbXaa
-         R9Y6CeTFqGBgYioSfm1stCN/FmtZwHwB54LHCwVAAPDOTPzc8mjJAM+MkV2iC8bEBjZK
-         YaDp3oqyrbMePBEET/ZsT65fyybS3qsaHUShcYU2kVG3yUAjND5YyAxhNRZX7EeaVLUr
-         GsvWUtqkX11NnndkTDZqF2+HPV10NI7t1er2xfaSbKCqkznGt0vfJiwKGW6e5iiXfXPb
-         X1dw==
+         :cc:content-transfer-encoding;
+        bh=pFej4wxE2EVtTNCk/OMsOq0HtvX92ziQW75AuLpO0jI=;
+        b=fCCbdpy0J2LVqBogsZvHd2IG/eeEvMSdJuJyiUhWz51mAnlaODNNrEmPPnNFK+D4bI
+         o/57TFe5dlo9TyPgJ4F0Qncz/i6ZdxeZF3ne12SZiOJgDqxoMxU0ewUshIo/euqMWKZk
+         0oZGNrmxloGU073Yg3gFIN+vBJfHGpAai2ypRMucmx7pgcit900qUVTTk5Z3InjlQ2Va
+         Ns9bycXRH7qBkerZQWGT9OZ4TDQN0awp4N95C+xXCkRj4Y1iDvdAassDH0sYCQRF3pln
+         69S8R2O3LxNukNTEEyCmuAcmCu+n7etOCpAuyv/ccIPfFWx4SbqMx6lRhHSsY5SWzHDF
+         Jqtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PSJtPQwc4FrIdIn1bFWZE5T/k3cdh8UKTtNfZmczf4g=;
-        b=EExyamqqs7sAu2VzJSH6doLHO+D1qKmcV7k1RP2z/+Mmhhy9hB/IfEnQodaVsDtbxx
-         XTICd3IubkCCv2xTVnJFqor1WbAOTcn/FivaCovAea3SDb+636snSeet6Y8xU1Zf3dn3
-         lrARgpsC/KfXf5DmHC+wzs/6kmkChRx0y+X9gO/5b5PWKrFi1Bc1/OGYNqduTQFZVPWx
-         ME8whtuya/8ahPnIvTk3KtnLbkA/eK+JETUKnMEbDSQKAHUMxPg7MRO69Pm09mWYBhob
-         OpopDFQYa0LG1/1YGezgcx9jsqrj3jvT3rN4AT6QJzxTb5jGSQZa86t+ZJ64ANGP2QNG
-         /Wnw==
-X-Gm-Message-State: APjAAAU7ojtLUtg8Z2l4osO+F9wZiq6yQRskRT6n/16ZZQC1iJyqigQF
-        9AhNBOZWlYpYSniz0NtbmlS8kit4+iPGcvqiRvk=
-X-Google-Smtp-Source: APXvYqyBNLjlyzQhzCYJ7R3Kb2Tml2uNfthnuo1Qdlo+bzwYhOsqQmyV1Ws/aC/ow0vTkrwDqP+se+q8W1085BzCv+A=
-X-Received: by 2002:ac2:558a:: with SMTP id v10mr6734254lfg.162.1567789333878;
- Fri, 06 Sep 2019 10:02:13 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pFej4wxE2EVtTNCk/OMsOq0HtvX92ziQW75AuLpO0jI=;
+        b=OFWjvO7lwfvqUjdzB01YbU67DWuxbm37yBU9BnKd9qNZGFEM5/RBAISKT+vLWUhf6v
+         RQYU4QO4+tPk5tb7KqO9oDG6hF9IN44p5ycRlUqYCRqq5RxZ2gQ/cB0TC9vF9cgOAlXY
+         XiICwYx4JDeynhUK3l9D9icxy5ReIcdjLoL+j9yMJhA4acspAsTHoluIqX5Sg5X8D81Q
+         AQ9yfJpeHRL4UMr+JRryCsdy7C+GqfYcPqldn8446JSQW3CNy5lQ+sRlH9If5jOpYDF8
+         wMElNp5WJvPxpQGjuYZHC/q5jjxsT3XED5P/Qn4STh55pXqKudOiVB5DQQAV5gVVDsLW
+         BOng==
+X-Gm-Message-State: APjAAAU8h404SrcwxMltfEVx0RwPz/cUeptaGRNy1ZteBqTElA2eI8bp
+        Gh+Ben8iZV3/9BUlk15VyTh4TWS5RSzv4gYFxJo=
+X-Google-Smtp-Source: APXvYqxGJHRmSFcPOHRRO9SHFvrZgGiX9ePQ4dMJWMmgTGarOHsAXny1n4pTLxjwE7yQJ+35p0sTchMdLiR2Nh0VJWs=
+X-Received: by 2002:ac2:4257:: with SMTP id m23mr6994101lfl.6.1567789414485;
+ Fri, 06 Sep 2019 10:03:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190904162509.199561-1-sdf@google.com> <20190904230331.ld4zsn4jgldu7l6q@ast-mbp.dhcp.thefacebook.com>
- <CAEf4Bzaoh0Ur6Ze0VLNYqhTJ21Vp6D2NBMkb7yAeseqom=TyKA@mail.gmail.com>
- <20190906151808.GD2101@mini-arch> <20190906164233.npuhtaeoezpp2dol@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20190906164233.npuhtaeoezpp2dol@ast-mbp.dhcp.thefacebook.com>
+References: <20190906073144.31068-1-jolsa@kernel.org> <62e760de-e746-c512-350a-c2188a2bb3ed@fb.com>
+In-Reply-To: <62e760de-e746-c512-350a-c2188a2bb3ed@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 6 Sep 2019 10:02:02 -0700
-Message-ID: <CAADnVQLbp72bCkqjV4RdchYre+Jc7buwE==vJZx_o9LTrnHj3g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/6] selftests/bpf: move sockopt tests under test_progs
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+Date:   Fri, 6 Sep 2019 10:03:23 -0700
+Message-ID: <CAADnVQLgzkyGU35_L8yJ-XhEBkKtZcNtWGL1B9S=_vdnAnHhzQ@mail.gmail.com>
+Subject: Re: [PATCH 0/7] libbpf: Fix cast away const qualifiers in btf.h
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 9:42 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Fri, Sep 6, 2019 at 2:09 AM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> On Fri, Sep 06, 2019 at 08:18:08AM -0700, Stanislav Fomichev wrote:
-> > On 09/06, Andrii Nakryiko wrote:
-> > > On Wed, Sep 4, 2019 at 4:03 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Wed, Sep 04, 2019 at 09:25:03AM -0700, Stanislav Fomichev wrote:
-> > > > > Now that test_progs is shaping into more generic test framework,
-> > > > > let's convert sockopt tests to it. This requires adding
-> > > > > a helper to create and join a cgroup first (test__join_cgroup).
-> > > > > Since we already hijack stdout/stderr that shouldn't be
-> > > > > a problem (cgroup helpers log to stderr).
-> > > > >
-> > > > > The rest of the patches just move sockopt tests files under prog_tests/
-> > > > > and do the required small adjustments.
-> > > >
-> > > > Looks good. Thank you for working on it.
-> > > > Could you de-verbose setsockopt test a bit?
-> > > > #23/32 setsockopt: deny write ctx->retval:OK
-> > > > #23/33 setsockopt: deny read ctx->retval:OK
-> > > > #23/34 setsockopt: deny writing to ctx->optval:OK
-> > > > #23/35 setsockopt: deny writing to ctx->optval_end:OK
-> > > > #23/36 setsockopt: allow IP_TOS <= 128:OK
-> > > > #23/37 setsockopt: deny IP_TOS > 128:OK
-> > > > 37 subtests is a bit too much spam.
-> > >
-> > > If we merged test_btf into test_progs, we'd have >150 subtests, which
-> > > would be pretty verbose as well. But the benefit of subtest is that
-> > > you can run just that sub-test and debug/verify just it, without all
-> > > the rest stuff.
-> > >
-> > > So I'm wondering, if too many lines of default output is the only
-> > > problem, should we just not output per-subtest line by default?
-> > Ack, we can output per-subtest line if it fails so it's easy to re-run;
-> > otherwise, hiding by default sounds good. I'll prepare a v3 sometime
-> > today; Alexei, let us know if you disagree.
+> On 9/6/19 8:31 AM, Jiri Olsa wrote:
+> > hi,
+> > when including btf.h in bpftrace, I'm getting -Wcast-qual warnings like=
+:
+> >
+> >    bpf/btf.h: In function =E2=80=98btf_var_secinfo* btf_var_secinfos(co=
+nst btf_type*)=E2=80=99:
+> >    bpf/btf.h:302:41: warning: cast from type =E2=80=98const btf_type*=
+=E2=80=99 to type
+> >    =E2=80=98btf_var_secinfo*=E2=80=99 casts away qualifiers [-Wcast-qua=
+l]
+> >      302 |  return (struct btf_var_secinfo *)(t + 1);
+> >          |                                         ^
+> >
+> > I changed the btf.h header to comply with -Wcast-qual checks
+> > and used const cast away casting in libbpf objects, where it's
 >
-> If the subtests are runnable and useful individually it's good to have
-> them as subtests.
-> I think in the above I misread them as a sequence of sub-checks that needs
-> to happen before actual test result.
-> Looking at test_sockopt.c I see that they're separate tests,
-> so yeah keep them.
-> No need to hide by default or extra flags.
-> Let me look at v1 and v2 again...
+> Hey Jiri,
+>
+> We made all those helper funcs return non-const structs intentionally to
+> improve their usability and avoid all those casts that you added back.
+>
+> Also, those helpers are now part of public API, so we can't just change
+> them to const, as it can break existing users easily.
+>
+> If there is a need to run with -Wcast-qual, we should probably disable
+> those checks where appropriate in libbpf code.
+>
+> So this will be a NACK from me, sorry.
 
-I applied v1 set. Thanks!
+Same opinion. This gcc warning is bogus.
