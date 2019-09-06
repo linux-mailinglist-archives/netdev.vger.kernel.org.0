@@ -2,214 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A22C4AB0C1
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 04:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D681AB0CA
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 05:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392044AbfIFCxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 22:53:46 -0400
-Received: from conssluserg-01.nifty.com ([210.131.2.80]:19502 "EHLO
-        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390200AbfIFCxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 22:53:46 -0400
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id x862rNhb032429;
-        Fri, 6 Sep 2019 11:53:24 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com x862rNhb032429
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1567738405;
-        bh=kAR/wUqcS7gRREBOyEy6+SqUwzX1vVwqh4NOYgKBk3o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fQUGbAtYnD8n9HX3vf4Acj0jkQKT7ErsEmAOElvGGUERqlMDMpf8FYbSsBORK2QzA
-         o/ezlgcjrNu7/U6njcJfAJ+bGRQIrUg2a2Y1jI03DQndkvEXzkK92z9xhErW1JcntT
-         5uf6xKjp+CWF0RJ/81egtD96BBxu5yOngPOUu0VK1l3zxzVSDiKjmDHemPSF5oqnKW
-         gAsD7vIkgx5c/xqbgsIuUsqTA9CO210EdIl92yaaxVOZGKelZdtYnROy3bSupfMa5M
-         hcbQh42DuARYJ+r1rGESp8GUJmpHfuwyh6I8Kp5FbzvTZv693X19b/YDBS+dW2tp3i
-         I72aPQlpwYuJg==
-X-Nifty-SrcIP: [209.85.221.169]
-Received: by mail-vk1-f169.google.com with SMTP id v78so972397vke.4;
-        Thu, 05 Sep 2019 19:53:24 -0700 (PDT)
-X-Gm-Message-State: APjAAAV7mGswYgoXJ2GBMLGp59n3Tm0G2bHhSuM+CCZb2ppI8wkU0V5Z
-        d9pWyP9GihPdnGjWwqwo5PdMEGafZwueM7D3Wqw=
-X-Google-Smtp-Source: APXvYqxKHG+SoIWTg+3MVhU4LfbuFQuaIy+CykEgSdi/cANBbzxlMXrAaA0HDNNda7sdr7Ki3nzikn9ylYx4U3nnShA=
-X-Received: by 2002:a1f:9e83:: with SMTP id h125mr3244894vke.84.1567738403251;
- Thu, 05 Sep 2019 19:53:23 -0700 (PDT)
+        id S2392083AbfIFDB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 23:01:56 -0400
+Received: from alln-iport-5.cisco.com ([173.37.142.92]:22445 "EHLO
+        alln-iport-5.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731491AbfIFDBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 23:01:55 -0400
+X-Greylist: delayed 423 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Sep 2019 23:01:54 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=3688; q=dns/txt; s=iport;
+  t=1567738914; x=1568948514;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=29g/MjG/SRZo9iSryE61I7U40l+EK7iDhodwVw1msDc=;
+  b=NkgqaJCONYmFd3y8/zjtuYSX2CRaYkC2/3M6jfHtLiq+8D9H5MEogpKO
+   uN68DM8tx/skeXF1MyXFl4Czm57rQdMm4c5g0O7vPt5zx0YsdlnibwTXO
+   ENId8STpGETnjknyxWoFyHs3KeHpLxBdeN5jRNEOxhXZ51KXF++GbxsXP
+   A=;
+X-IronPort-AV: E=Sophos;i="5.64,472,1559520000"; 
+   d="scan'208";a="325908215"
+Received: from rcdn-core-8.cisco.com ([173.37.93.144])
+  by alln-iport-5.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 06 Sep 2019 02:54:50 +0000
+Received: from sjc-ads-4595.cisco.com (sjc-ads-4595.cisco.com [10.28.38.115])
+        by rcdn-core-8.cisco.com (8.15.2/8.15.2) with ESMTP id x862snTN032447;
+        Fri, 6 Sep 2019 02:54:49 GMT
+Received: by sjc-ads-4595.cisco.com (Postfix, from userid 19784)
+        id 8FB421223; Thu,  5 Sep 2019 19:54:49 -0700 (PDT)
+From:   Enke Chen <enkechen@cisco.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Cc:     enkechen@cisco.com, linux-kernel@vger.kernel.org,
+        xe-linux-external@cisco.com
+Subject: [PATCH] net: Remove the source address setting in connect() for UDP
+Date:   Thu,  5 Sep 2019 19:54:37 -0700
+Message-Id: <20190906025437.613-1-enkechen@cisco.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-References: <20190904160021.72d104f1@canb.auug.org.au> <CAK7LNAQEU6uu-Z=VeR2KNa8ezCLA7VHtpvM2tvAKsWtUTi6Eug@mail.gmail.com>
- <CAEf4BzZLBV3o=t9+a4o4T7KZ_M04vddD0RMVs3s4JvDsvQ8onA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZLBV3o=t9+a4o4T7KZ_M04vddD0RMVs3s4JvDsvQ8onA@mail.gmail.com>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Fri, 6 Sep 2019 11:52:47 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATkk3VfzgynBEyOinKo3yBEDgNHLgO3bftLAPbDVVWx=A@mail.gmail.com>
-Message-ID: <CAK7LNATkk3VfzgynBEyOinKo3yBEDgNHLgO3bftLAPbDVVWx=A@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.28.38.115, sjc-ads-4595.cisco.com
+X-Outbound-Node: rcdn-core-8.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 4:26 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Sep 3, 2019 at 11:20 PM Masahiro Yamada
-> <yamada.masahiro@socionext.com> wrote:
-> >
-> > On Wed, Sep 4, 2019 at 3:00 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > >
-> > > Hi all,
-> > >
-> > > After merging the net-next tree, today's linux-next build (arm
-> > > multi_v7_defconfig) failed like this:
-> > >
-> > > scripts/link-vmlinux.sh: 74: Bad substitution
-> > >
-> > > Caused by commit
-> > >
-> > >   341dfcf8d78e ("btf: expose BTF info through sysfs")
-> > >
-> > > interacting with commit
-> > >
-> > >   1267f9d3047d ("kbuild: add $(BASH) to run scripts with bash-extension")
-> > >
-> > > from the kbuild tree.
-> >
-> >
-> > I knew that they were using bash-extension
-> > in the #!/bin/sh script.  :-D
-> >
-> > In fact, I wrote my patch in order to break their code
-> > and  make btf people realize that they were doing wrong.
->
-> Was there a specific reason to wait until this would break during
-> Stephen's merge, instead of giving me a heads up (or just replying on
-> original patch) and letting me fix it and save everyone's time and
-> efforts?
->
-> Either way, I've fixed the issue in
-> https://patchwork.ozlabs.org/patch/1158620/ and will pay way more
-> attention to BASH-specific features going forward (I found it pretty
-> hard to verify stuff like this, unfortunately). But again, code review
-> process is the best place to catch this and I really hope in the
-> future we can keep this process productive. Thanks!
+The connect() system call for a UDP socket is for setting the destination
+address and port. But the current code mistakenly sets the source address
+for the socket as well. Remove the source address setting in connect() for
+UDP in this patch.
 
-I could have pointed it out if I had noticed
-it in the review process.
+Implications of the bug:
 
-I actually noticed your patch by Stephen's
-former email.  (i.e. when it appeared in linux-next)
+  - Packet drop:
 
-(I try my best to check kbuild ML, and also search for
-my name in LKML in case I am explicitly addressed,
-but a large number of emails fall off my filter)
+    On a multi-homed device, an address assigned to any interface may
+    qualify as a source address when originating a packet. If needed, the
+    IP_PKTINFO option can be used to explicitly specify the source address.
+    But with the source address being mistakenly set for the socket in
+    connect(), a return packet (for the socket) destined to an interface
+    address different from that source address would be wrongly dropped
+    due to address mismatch.
 
-It was somewhat too late when I noticed it.
-Of course, I still could email you afterward, or even send a patch to btf ML,
-but I did not fix a particular instance of breakage
-because there are already the same type of breakages in code base.
+    This can be reproduced easily. The dropped packets are shown in the
+    following output by "netstat -s" for UDP:
 
-Then, I applied the all-or-nothing checker because I thought it was
-the only way to address the root cause of the problems.
+          xxx packets to unknown port received
 
-I admit I could have done the process better.
-Sorry if I made people uncomfortable and waste time.
+  - Source address selection:
 
-Thanks.
+    The source address, if unspecified via "bind()" or IP_PKTINFO, should
+    be determined by routing at the time of packet origination, and not at
+    the time when the connect() call is made. The difference matters as
+    routing can change, e.g., by interface down/up events, and using a
+    source address of an "down" interface is known to be problematic.
 
+There is no backward compatibility issue here as the source address setting
+in connect() is not needed anyway.
 
+  - No impact on the source address selection when the source address
+    is explicitly specified by "bind()", or by the "IP_PKTINFO" option.
 
+  - In the case that the source address is not explicitly specified,
+    the selection of the source address would be more accurate and
+    reliable based on the up-to-date routing table.
 
-> >
-> >
-> >
-> > > The change in the net-next tree turned link-vmlinux.sh into a bash script
-> > > (I think).
-> > >
-> > > I have applied the following patch for today:
-> >
-> >
-> > But, this is a temporary fix only for linux-next.
-> >
-> > scripts/link-vmlinux.sh does not need to use the
-> > bash-extension ${@:2} in the first place.
-> >
-> > I hope btf people will write the correct code.
->
-> I replaced ${@:2} with shift and ${@}, I hope that's a correct fix,
-> but if you think it's not, please reply on the patch and let me know.
->
->
-> >
-> > Thanks.
-> >
-> >
-> >
-> >
-> > > From: Stephen Rothwell <sfr@canb.auug.org.au>
-> > > Date: Wed, 4 Sep 2019 15:43:41 +1000
-> > > Subject: [PATCH] link-vmlinux.sh is now a bash script
-> > >
-> > > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > > ---
-> > >  Makefile                | 4 ++--
-> > >  scripts/link-vmlinux.sh | 2 +-
-> > >  2 files changed, 3 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/Makefile b/Makefile
-> > > index ac97fb282d99..523d12c5cebe 100644
-> > > --- a/Makefile
-> > > +++ b/Makefile
-> > > @@ -1087,7 +1087,7 @@ ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
-> > >
-> > >  # Final link of vmlinux with optional arch pass after final link
-> > >  cmd_link-vmlinux =                                                 \
-> > > -       $(CONFIG_SHELL) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
-> > > +       $(BASH) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
-> > >         $(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
-> > >
-> > >  vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
-> > > @@ -1403,7 +1403,7 @@ clean: rm-files := $(CLEAN_FILES)
-> > >  PHONY += archclean vmlinuxclean
-> > >
-> > >  vmlinuxclean:
-> > > -       $(Q)$(CONFIG_SHELL) $(srctree)/scripts/link-vmlinux.sh clean
-> > > +       $(Q)$(BASH) $(srctree)/scripts/link-vmlinux.sh clean
-> > >         $(Q)$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) clean)
-> > >
-> > >  clean: archclean vmlinuxclean
-> > > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> > > index f7edb75f9806..ea1f8673869d 100755
-> > > --- a/scripts/link-vmlinux.sh
-> > > +++ b/scripts/link-vmlinux.sh
-> > > @@ -1,4 +1,4 @@
-> > > -#!/bin/sh
-> > > +#!/bin/bash
-> > >  # SPDX-License-Identifier: GPL-2.0
-> > >  #
-> > >  # link vmlinux
-> > > --
-> > > 2.23.0.rc1
-> > >
-> > > --
-> > > Cheers,
-> > > Stephen Rothwell
-> >
-> >
-> >
-> > --
-> > Best Regards
-> > Masahiro Yamada
+Signed-off-by: Enke Chen <enkechen@cisco.com>
+---
+ net/ipv4/datagram.c |  7 -------
+ net/ipv6/datagram.c | 15 +--------------
+ 2 files changed, 1 insertion(+), 21 deletions(-)
 
+diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
+index f915abff1350..4065808ec6c1 100644
+--- a/net/ipv4/datagram.c
++++ b/net/ipv4/datagram.c
+@@ -64,13 +64,6 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
+ 		err = -EACCES;
+ 		goto out;
+ 	}
+-	if (!inet->inet_saddr)
+-		inet->inet_saddr = fl4->saddr;	/* Update source address */
+-	if (!inet->inet_rcv_saddr) {
+-		inet->inet_rcv_saddr = fl4->saddr;
+-		if (sk->sk_prot->rehash)
+-			sk->sk_prot->rehash(sk);
+-	}
+ 	inet->inet_daddr = fl4->daddr;
+ 	inet->inet_dport = usin->sin_port;
+ 	sk->sk_state = TCP_ESTABLISHED;
+diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
+index ecf440a4f593..80388cd50dc3 100644
+--- a/net/ipv6/datagram.c
++++ b/net/ipv6/datagram.c
+@@ -197,19 +197,6 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
+ 			goto out;
+ 
+ 		ipv6_addr_set_v4mapped(inet->inet_daddr, &sk->sk_v6_daddr);
+-
+-		if (ipv6_addr_any(&np->saddr) ||
+-		    ipv6_mapped_addr_any(&np->saddr))
+-			ipv6_addr_set_v4mapped(inet->inet_saddr, &np->saddr);
+-
+-		if (ipv6_addr_any(&sk->sk_v6_rcv_saddr) ||
+-		    ipv6_mapped_addr_any(&sk->sk_v6_rcv_saddr)) {
+-			ipv6_addr_set_v4mapped(inet->inet_rcv_saddr,
+-					       &sk->sk_v6_rcv_saddr);
+-			if (sk->sk_prot->rehash)
+-				sk->sk_prot->rehash(sk);
+-		}
+-
+ 		goto out;
+ 	}
+ 
+@@ -247,7 +234,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
+ 	 *	destination cache for it.
+ 	 */
+ 
+-	err = ip6_datagram_dst_update(sk, true);
++	err = ip6_datagram_dst_update(sk, false);
+ 	if (err) {
+ 		/* Restore the socket peer info, to keep it consistent with
+ 		 * the old socket state
+-- 
+2.19.1
 
-
---
-Best Regards
-Masahiro Yamada
