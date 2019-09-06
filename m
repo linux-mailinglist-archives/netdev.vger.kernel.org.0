@@ -2,93 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B29FBABCCC
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0F89ABCDF
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394894AbfIFPm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 11:42:57 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41274 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390317AbfIFPm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:42:57 -0400
-Received: by mail-io1-f65.google.com with SMTP id r26so13670302ioh.8
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 08:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5U1Ox+MsOd+Z4Ee8r/1hBKVH7HQBdNn2ZJGK4oLwh3U=;
-        b=h6NK55WCqwCrFgwCUq9R2uqoK0L37q8PEzxt61RWP3d9tQM1rgzC7hqMDekH/Zypnz
-         2GSAuzwlhBb9Db1bHDNWSgx5FhLIJ/7PZ45MDHijtND4OAjO9cmmVgH44Y/1tYvZq2Je
-         7n7PN8MrcIky59Lpsd86pZgkpBktwzl6XkzszswTfm+VBsZIiSomwmVjKTbtm8VKpDk/
-         LToNQEVrAODnysxPqBiM+k9JpdvuGPPBEhEJGNedk6TAuXnRiWqOwvb37fiPVesrwSMr
-         tspIFPyzoyG7Z+VDHUeHXv2p6aN0uT0i9/kwwtEDm0LPM9BIF8wDj0zSP41zy8rmQScL
-         F6hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5U1Ox+MsOd+Z4Ee8r/1hBKVH7HQBdNn2ZJGK4oLwh3U=;
-        b=KvXBqLRVOajRKOJdEFH3qPu0DntMeCoX8gjOh0UfMs1eLFnQ8SiJWYjT6eQrSDeXr4
-         O1pQ/AgS2wOC5Nxrvy3dC1cvlxNGSoh6I9n6nusL7VqYFmbHJiaCm78WWZBalnR5dPYh
-         OfYAaw0Rb7vamGrsbLBXx1wiLBKkeVNNWIYe883440WyaEfGOpLz3bX1g4ntX7hwnAfG
-         J3oUDphUTl8zGUT7xTQOg0uo1JoJGokfAwUEZBdK1pxlrYuyxfGFJU9ePy6sffTkFbeG
-         l7WM2W1MueeSmuTzE4p4ZoSflOfW1FPjWXRTc1vhCwGHvnqR1mNMPFqSOHYAdvvbDztB
-         mdmg==
-X-Gm-Message-State: APjAAAUfFefX6WH/9z8St0hgT/HtI0yAoq14+lXKhPEITqgqDXnZJ6r0
-        gIc70b6Sco/aVn0j8aJMJwqPEFCBbzWx1d7PYqve/w==
-X-Google-Smtp-Source: APXvYqz+X+qWivRnoSXnLrjZqh8wNDlPkEU+mXjSfvMtsP9zNCNrLKlc4JHagqHlKny+ANsUOQXCFrDSjtQ2GZVTAyE=
-X-Received: by 2002:a02:948c:: with SMTP id x12mr10555582jah.96.1567784576609;
- Fri, 06 Sep 2019 08:42:56 -0700 (PDT)
+        id S2405834AbfIFPqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 11:46:49 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:58036 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394878AbfIFPqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:46:49 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.1 #3 (Red Hat Linux))
+        id 1i6GRj-0005Pl-BW; Fri, 06 Sep 2019 15:46:47 +0000
+Date:   Fri, 6 Sep 2019 16:46:47 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     netdev@vger.kernel.org, yhs@fb.com, ebiederm@xmission.com,
+        brouer@redhat.com, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v10 2/4] bpf: new helper to obtain namespace
+ data from  current task New bpf helper bpf_get_current_pidns_info.
+Message-ID: <20190906154647.GA19707@ZenIV.linux.org.uk>
+References: <20190906150952.23066-1-cneirabustos@gmail.com>
+ <20190906150952.23066-3-cneirabustos@gmail.com>
+ <20190906152435.GW1131@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-References: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
- <CAF=yD-J9Ax9f7BsGBFAaG=QU6CPVw6sSzBkZJOHRW-m6o49oyw@mail.gmail.com>
- <20190906094744.345d9442@pixies> <CAF=yD-JB6TMQuyaxzLX8=9CZZF+Zk5EmniSkx_F81bVc87XqJw@mail.gmail.com>
- <20190906183707.3eaacd79@pixies>
-In-Reply-To: <20190906183707.3eaacd79@pixies>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 6 Sep 2019 08:42:45 -0700
-Message-ID: <CAKgT0Ufd40gmaW7eLu3sRHd=4CeY9WNmgRBUzNt5_+0tEKEMvA@mail.gmail.com>
-Subject: Re: [PATCH net] net: gso: Fix skb_segment splat when splitting
- gso_size mangled skb having linear-headed frag_list
-To:     Shmulik Ladkani <shmulik@metanetworks.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, eyal@metanetworks.com,
-        netdev <netdev@vger.kernel.org>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190906152435.GW1131@ZenIV.linux.org.uk>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 8:37 AM Shmulik Ladkani <shmulik@metanetworks.com> wrote:
->
-> On Fri, 6 Sep 2019 10:49:55 -0400
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
->
-> > But I wonder whether it is a given that head_skb has headlen.
->
-> This is what I observed for GRO packets that do have headlen frag_list
-> members: the 'head_skb' itself had a headlen too, and its head was
-> built using the original gso_size (similar to the frag_list members).
->
-> Maybe Eric can comment better.
->
-> > Btw, it seems slightly odd to me tot test head_frag before testing
-> > headlen in the v2 patch.
->
-> Requested by Alexander. I'm fine either way.
+On Fri, Sep 06, 2019 at 04:24:35PM +0100, Al Viro wrote:
+> > +	tmp = kmalloc(fnamesize, GFP_ATOMIC);
+> > +	if (unlikely(!tmp)) {
+> > +		__putname(fname);
+> > +		ret = -ENOMEM;
+> > +		goto clear;
+> > +	}
+> > +
+> > +	tmp->name = (char *)fname;
+> > +	fname = tmp;
+> > +	len = strlen(pidns_path) + 1;
+> > +	memcpy((char *)fname->name, pidns_path, len);
+> > +	fname->uptr = NULL;
+> > +	fname->aname = NULL;
+> > +	fname->refcnt = 1;
+> > +
+> > +	ret = filename_lookup(AT_FDCWD, fname, 0, &kp, NULL);
+> > +	if (ret)
+> > +		goto clear;
+> 
+> Where do I begin?
+> 	* getname_kernel() is there for purpose
+> 	* so's kern_path(), damnit
 
-Yeah, my thought on that was "do we care about the length if the data
-is stored in a head_frag?". I suppose you could flip the logic and
-make it "do we care about it being a head_frag if there is no data
-there?". The reason I had suggested the head_frag test first was
-because it was a single test bit whereas the length requires reading
-two fields and doing a comparison.
+Oh, and filename_lookup() *CAN* sleep, obviously.  So that
+GFP_ATOMIC above is completely pointless.
 
-For either ordering it is fine by me. So if we need to feel free to
-swap those two tests for a v3.
+> > +
+> > +	inode = d_backing_inode(kp.dentry);
+> > +	pidns_info->dev = (u32)inode->i_rdev;
 
-Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Why are plaing with device number, anyway?  And why would it
+be anything other than 0?
