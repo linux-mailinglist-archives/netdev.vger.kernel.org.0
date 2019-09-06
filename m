@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2E1ABA5B
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 16:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE167ABA6B
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 16:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394056AbfIFOK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 10:10:29 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:44702 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728978AbfIFOK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 10:10:29 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 898D76115B; Fri,  6 Sep 2019 14:10:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567779028;
-        bh=feH1EvpOenhl2IGvjR9dljrk5cvxpWB/HARVbpGVAN0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Ez1yUFu1Fgmpvd5G6H+wdWAIcs5EaWqKd8arPaUpsDc2kk47aAZU6kKvAGW3bdwZk
-         4CXbQHg6GT0Vcbvycc8WQrxLLN3TqLNRk7K7DmWSsVku1CZW3LMnzMgdvui3m+dYLw
-         BE8GTmWGOrVXZ9UbomOl/7E26webKgg73eG0cvRs=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 53CBD607F4;
-        Fri,  6 Sep 2019 14:10:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1567779027;
-        bh=feH1EvpOenhl2IGvjR9dljrk5cvxpWB/HARVbpGVAN0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=ZUGx+jQAkcNoXXo+DGw9/K6eTWQoqojqiFVvT2e3u5/fhjpS6EqcNmJLcaLpmY3Qm
-         yxrfOCRE+3VNgEx91mn/dBdlU+lpPBEiJWyN29nMpZ9XB0ez6iCZgBZJQ2/p2TkLZ/
-         Q2L/yYjB+Sy/Wy4jzqIuMtVaKEJhF4PRJ4MG7r2k=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 53CBD607F4
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] hostap: remove set but not used variable 'copied' in
- prism2_io_debug_proc_read
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1567497430-22539-1-git-send-email-zhongjiang@huawei.com>
-References: <1567497430-22539-1-git-send-email-zhongjiang@huawei.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <davem@davemloft.net>, <zhongjiang@huawei.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190906141028.898D76115B@smtp.codeaurora.org>
-Date:   Fri,  6 Sep 2019 14:10:28 +0000 (UTC)
+        id S2392662AbfIFOMo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Sep 2019 10:12:44 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:56083 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731109AbfIFOMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 10:12:44 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC197.dip0.t-ipconnect.de [79.239.193.151])
+        by mail.holtmann.org (Postfix) with ESMTPSA id C05D4CECE0;
+        Fri,  6 Sep 2019 16:21:29 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH] Bluetooth: hidp: Fix error checks in
+ hidp_get/set_raw_report
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20190906140744.GC14147@kadam>
+Date:   Fri, 6 Sep 2019 16:12:41 +0200
+Cc:     Dan Elkouby <streetwalkermc@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabian Henneke <fabian.henneke@gmail.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrea Parri <andrea.parri@amarulasolutions.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <48E8A989-AE89-4F59-84F4-075911F4FC75@holtmann.org>
+References: <20190906094158.8854-1-streetwalkermc@gmail.com>
+ <440C3662-1870-44D8-B4E3-C290CE154F1E@holtmann.org>
+ <20190906140744.GC14147@kadam>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> wrote:
+Hi Dan,
 
-> Obviously, variable 'copied' is initialized to zero. But it is not used.
-> hence just remove it.
+>>> Commit 48d9cc9d85dd ("Bluetooth: hidp: Let hidp_send_message return
+>>> number of queued bytes") changed hidp_send_message to return non-zero
+>>> values on success, which some other bits did not expect. This caused
+>>> spurious errors to be propagated through the stack, breaking some (all?)
+>>> drivers, such as hid-sony for the Dualshock 4 in Bluetooth mode.
+>>> 
+>>> Signed-off-by: Dan Elkouby <streetwalkermc@gmail.com>
+>>> ---
+>>> net/bluetooth/hidp/core.c | 4 ++--
+>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>> 
+>> patch has been applied to bluetooth-next tree.
+>> 
 > 
-> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+> The v2 added an additional fix and used the Fixes tag.  Could you apply
+> that instead?
 
-Patch applied to wireless-drivers-next.git, thanks.
+see my reply to Jiri. I replied to the wrong patch, but actually applied to the updated one.
 
-64827a6ac049 hostap: remove set but not used variable 'copied' in prism2_io_debug_proc_read
+Regards
 
--- 
-https://patchwork.kernel.org/patch/11127357/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Marcel
 
