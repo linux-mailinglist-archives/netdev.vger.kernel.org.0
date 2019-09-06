@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02453ABF8F
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A7AABF91
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406134AbfIFSo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 14:44:26 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37182 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405022AbfIFSoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 14:44:25 -0400
-Received: by mail-wr1-f66.google.com with SMTP id i1so7011911wro.4
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 11:44:23 -0700 (PDT)
+        id S2406138AbfIFSo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 14:44:28 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35993 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406127AbfIFSo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 14:44:26 -0400
+Received: by mail-wr1-f65.google.com with SMTP id y19so7608382wrd.3
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 11:44:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=B4eyirXQl/71JnvB81plFfN+FjkRupFKSw5b9ZxXNI8=;
-        b=YjTUFGFovYA4daKQVga83u1+RFJUrkg59qB8JXwj8+KuNB81fxQMMCfSBuef889myy
-         WMPuXW2Mnv74GhiJBQYc/XEyAboFlaVsWL3xVT7OmV4c1PeskoIDAPefkApmnNaLu4LZ
-         m1PK4RyimucfdgtwbgTZjGoIxyJotG0MQbcJusy0OKHDQNcx3d56LUljWfESLtyOiwvl
-         IdFCwrK3RndeYakWWZ+Bj1LMtvmVh8ywSSuMagKk56U4sQYL7Ifd8rLd+z3UkEc1/Pm5
-         iEObRZU9a+BlD7EchmTqvay1K2fzBmZgrTJdOG3YSY5Vi6nidmpUVfNu03jKKNsPXXbX
-         Vb8A==
+        bh=N2LrkRVvs2PR+tfGtFa9QDQzcTCt09WOrqEr77YS4yw=;
+        b=fEdz1P5C8ymqs8P+Ae13N+Bp59D0idBrXrVGdOwS8Qsz+Dg1/XCnYIVBvWgzwJB0MA
+         OvARgXeFjnvjpFlQNqOIg4UV1+r2PWqDr3MFKzYGpHQSmV8Wv1neM0Y79ELtKkdi1+tm
+         1XnvdJKtifkvDvUNrrYr0v+KTZOLKiAnVJmuLm9SY5A7gjwezT6GpU5OWNsIOB4tI+m/
+         XPrjhhdZVrlRcBRs2IfWTW+VLtXhbbxx8WxibfBDcxPfDtz7Wig2fsAgkkYbKgg1zPh8
+         wUr/4PFpLxkcE5cEDHerqL4eVxQxKHtd4Gp16/NtQqElxRGmkq1P2osDQ144pH/3D2QR
+         ETrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=B4eyirXQl/71JnvB81plFfN+FjkRupFKSw5b9ZxXNI8=;
-        b=BTM+6VAxpOzleeFmOvmbOmOAOe2Ja5BQ8GEHOPeUTJgeHTzEvVU8L///CQQcaZ8C7V
-         I17HWRrqzyn8QBV78hSZBncMguR0jc9ZyUyDiI4H7MyA8b541h2aERxK4kev0jJYvshr
-         xy4rg2NdC6E+fQ5sN3agMdK3IMyhhnnJTnX1mQCFaHxp6jG9Lt5RAkzS3zLlq7sBgop1
-         rQ1Oq5ZrcgX4p61fVZhPlBOF2fXm0gAivU1qa0KZMG+VBKpGQqh20TCH8/p35Eg0M8Wy
-         Cn8jx8lWFjFHXUJfiv34dbd/ewBGc3vHNj2cXA6DxQeZnHxb59466JexQMWkyIvTL4XZ
-         ualw==
-X-Gm-Message-State: APjAAAUuo8chKPLndh2ivBf0Lb0G69Y4e94Sc+XaIer7FTmTpLdnbbZS
-        OstHFXEwn04ADQQvQs03thRy4t5oko8=
-X-Google-Smtp-Source: APXvYqyqhxyJbwDPcSSwwI81Y4w0SfbbRIZhnJBdbhLgiNEZNbL45tJwOcXgepDXft0UY3AgdCEL8g==
-X-Received: by 2002:adf:b612:: with SMTP id f18mr8621015wre.97.1567795463026;
-        Fri, 06 Sep 2019 11:44:23 -0700 (PDT)
+        bh=N2LrkRVvs2PR+tfGtFa9QDQzcTCt09WOrqEr77YS4yw=;
+        b=BNsT940gHul8Xt5DobtdFi3YEnWQempdorkLwTQwQXhdVEaS0gTRi1ZTEB8bzKnyrX
+         W/8udrW6mdYe5+aA67mP5FnsIGIas91vfhZqYfMOKr0L/kXXZnCcdDTOeSwyJVO8tGFC
+         WtgSTssIJ+QVyupVb48gmapDxY0X/zPO4HewyFqGbQCa0H+q7M+SS1Ce6wdKOIRprfa6
+         p59Y5JtIpjpvuPpMvRZKVzSH0aCUE/cELafwi/f9Xt4Yu78L4Bnj+fOaHcd3Zt0/42Gk
+         +Ow4sCGR3JUf7OgCbCbE7hwrHt/dTgirZdx06786p+xM4hGPpne0A5dUo/Ax8xhrWzVX
+         3DsA==
+X-Gm-Message-State: APjAAAUxeipF5nxmYgDF9szaUuImHFC5o3g1uDI2I+I9lZZ2p0NhqSix
+        dhi7A2AljfnON0isQ/Kg1HZXT99QSOU=
+X-Google-Smtp-Source: APXvYqyjQc9CwjP/IZO7nhVPSIOoQRKNcj5J9QDUb+Rxm9M/1xLsVrmFlYVBXfHBitNCPkGCQojVcg==
+X-Received: by 2002:adf:e945:: with SMTP id m5mr8547515wrn.25.1567795464107;
+        Fri, 06 Sep 2019 11:44:24 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f75sm6788537wmf.2.2019.09.06.11.44.22
+        by smtp.gmail.com with ESMTPSA id j26sm12884451wrd.2.2019.09.06.11.44.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 11:44:22 -0700 (PDT)
+        Fri, 06 Sep 2019 11:44:23 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 2/3] net: devlink: split reload op into two
-Date:   Fri,  6 Sep 2019 20:44:18 +0200
-Message-Id: <20190906184419.5101-3-jiri@resnulli.us>
+Subject: [patch net-next 3/3] net: devlink: move reload fail indication to devlink core and expose to user
+Date:   Fri,  6 Sep 2019 20:44:19 +0200
+Message-Id: <20190906184419.5101-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190906184419.5101-1-jiri@resnulli.us>
 References: <20190906184419.5101-1-jiri@resnulli.us>
@@ -64,208 +64,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-In order to properly implement failure indication during reload,
-split the reload op into two ops, one for down phase and one for
-up phase.
+Currently the fact that devlink failed is stored in drivers. Move this
+flag into devlink core. Also, expose it to the user.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/main.c  | 19 +++++++++++++++----
- drivers/net/ethernet/mellanox/mlxsw/core.c | 19 +++++++++++++++----
- drivers/net/netdevsim/dev.c                | 13 ++++++++++---
- include/net/devlink.h                      |  5 ++++-
- net/core/devlink.c                         | 16 ++++++++++++----
- 5 files changed, 56 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 15 +++++----------
+ include/net/devlink.h                      |  3 +++
+ include/uapi/linux/devlink.h               |  2 ++
+ net/core/devlink.c                         | 21 ++++++++++++++++++++-
+ 4 files changed, 30 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index a39c647c12dc..ef3f3d06ff1e 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -3935,17 +3935,27 @@ static void mlx4_restart_one_down(struct pci_dev *pdev);
- static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
- 			       struct devlink *devlink);
- 
--static int mlx4_devlink_reload(struct devlink *devlink,
--			       struct netlink_ext_ack *extack)
-+static int mlx4_devlink_reload_down(struct devlink *devlink,
-+				    struct netlink_ext_ack *extack)
- {
- 	struct mlx4_priv *priv = devlink_priv(devlink);
- 	struct mlx4_dev *dev = &priv->dev;
- 	struct mlx4_dev_persistent *persist = dev->persist;
--	int err;
- 
- 	if (persist->num_vfs)
- 		mlx4_warn(persist->dev, "Reload performed on PF, will cause reset on operating Virtual Functions\n");
- 	mlx4_restart_one_down(persist->pdev);
-+	return 0;
-+}
-+
-+static int mlx4_devlink_reload_up(struct devlink *devlink,
-+				  struct netlink_ext_ack *extack)
-+{
-+	struct mlx4_priv *priv = devlink_priv(devlink);
-+	struct mlx4_dev *dev = &priv->dev;
-+	struct mlx4_dev_persistent *persist = dev->persist;
-+	int err;
-+
- 	err = mlx4_restart_one_up(persist->pdev, true, devlink);
- 	if (err)
- 		mlx4_err(persist->dev, "mlx4_restart_one_up failed, ret=%d\n",
-@@ -3956,7 +3966,8 @@ static int mlx4_devlink_reload(struct devlink *devlink,
- 
- static const struct devlink_ops mlx4_devlink_ops = {
- 	.port_type_set	= mlx4_devlink_port_type_set,
--	.reload		= mlx4_devlink_reload,
-+	.reload_down	= mlx4_devlink_reload_down,
-+	.reload_up	= mlx4_devlink_reload_up,
- };
- 
- static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 963a2b4b61b1..c71a1d9ea17b 100644
+index c71a1d9ea17b..3fa96076e8a5 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -984,16 +984,26 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
- 	return 0;
- }
- 
--static int mlxsw_devlink_core_bus_device_reload(struct devlink *devlink,
--						struct netlink_ext_ack *extack)
-+static int
-+mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
-+					  struct netlink_ext_ack *extack)
+@@ -80,7 +80,6 @@ struct mlxsw_core {
+ 	struct mlxsw_thermal *thermal;
+ 	struct mlxsw_core_port *ports;
+ 	unsigned int max_ports;
+-	bool reload_fail;
+ 	bool fw_flash_in_progress;
+ 	unsigned long driver_priv[0];
+ 	/* driver_priv has to be always the last item */
+@@ -1002,15 +1001,11 @@ mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
+ 					struct netlink_ext_ack *extack)
  {
  	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
 -	int err;
+-
+-	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+-					     mlxsw_core->bus,
+-					     mlxsw_core->bus_priv, true,
+-					     devlink);
+-	mlxsw_core->reload_fail = !!err;
  
- 	if (!(mlxsw_core->bus->features & MLXSW_BUS_F_RESET))
- 		return -EOPNOTSUPP;
- 
- 	mlxsw_core_bus_device_unregister(mlxsw_core, true);
-+	return 0;
-+}
-+
-+static int
-+mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
-+					struct netlink_ext_ack *extack)
-+{
-+	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
-+	int err;
-+
- 	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
- 					     mlxsw_core->bus,
- 					     mlxsw_core->bus_priv, true,
-@@ -1066,7 +1076,8 @@ mlxsw_devlink_trap_group_init(struct devlink *devlink,
+-	return err;
++	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
++					      mlxsw_core->bus,
++					      mlxsw_core->bus_priv, true,
++					      devlink);
  }
  
- static const struct devlink_ops mlxsw_devlink_ops = {
--	.reload				= mlxsw_devlink_core_bus_device_reload,
-+	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
-+	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
- 	.port_type_set			= mlxsw_devlink_port_type_set,
- 	.port_split			= mlxsw_devlink_port_split,
- 	.port_unsplit			= mlxsw_devlink_port_unsplit,
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 39cdb6c18ec0..7fba7b271a57 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -521,8 +521,14 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
- 	kfree(nsim_dev->trap_data);
- }
- 
--static int nsim_dev_reload(struct devlink *devlink,
--			   struct netlink_ext_ack *extack)
-+static int nsim_dev_reload_down(struct devlink *devlink,
-+				struct netlink_ext_ack *extack)
-+{
-+	return 0;
-+}
-+
-+static int nsim_dev_reload_up(struct devlink *devlink,
-+			      struct netlink_ext_ack *extack)
+ static int mlxsw_devlink_flash_update(struct devlink *devlink,
+@@ -1254,7 +1249,7 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
  {
- 	enum nsim_resource_id res_ids[] = {
- 		NSIM_RESOURCE_IPV4_FIB, NSIM_RESOURCE_IPV4_FIB_RULES,
-@@ -638,7 +644,8 @@ nsim_dev_devlink_trap_action_set(struct devlink *devlink,
- }
+ 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
  
- static const struct devlink_ops nsim_dev_devlink_ops = {
--	.reload = nsim_dev_reload,
-+	.reload_down = nsim_dev_reload_down,
-+	.reload_up = nsim_dev_reload_up,
- 	.flash_update = nsim_dev_flash_update,
- 	.trap_init = nsim_dev_devlink_trap_init,
- 	.trap_action_set = nsim_dev_devlink_trap_action_set,
+-	if (mlxsw_core->reload_fail) {
++	if (devlink_is_reload_failed(devlink)) {
+ 		if (!reload)
+ 			/* Only the parts that were not de-initialized in the
+ 			 * failed reload attempt need to be de-initialized.
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 460bc629d1a4..c17709c0d0ec 100644
+index c17709c0d0ec..9c881dc25273 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -637,7 +637,10 @@ enum devlink_trap_group_generic_id {
- 	}
+@@ -38,6 +38,7 @@ struct devlink {
+ 	struct device *dev;
+ 	possible_net_t _net;
+ 	struct mutex lock;
++	bool reload_failed;
+ 	char priv[0] __aligned(NETDEV_ALIGN);
+ };
  
- struct devlink_ops {
--	int (*reload)(struct devlink *devlink, struct netlink_ext_ack *extack);
-+	int (*reload_down)(struct devlink *devlink,
-+			   struct netlink_ext_ack *extack);
-+	int (*reload_up)(struct devlink *devlink,
-+			 struct netlink_ext_ack *extack);
- 	int (*port_type_set)(struct devlink_port *devlink_port,
- 			     enum devlink_port_type port_type);
- 	int (*port_split)(struct devlink *devlink, unsigned int port_index,
+@@ -940,6 +941,8 @@ void
+ devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
+ 				     enum devlink_health_reporter_state state);
+ 
++bool devlink_is_reload_failed(struct devlink *devlink);
++
+ void devlink_flash_update_begin_notify(struct devlink *devlink);
+ void devlink_flash_update_end_notify(struct devlink *devlink);
+ void devlink_flash_update_status_notify(struct devlink *devlink,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 546e75dd74ac..7cb5e8c5ae0d 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -410,6 +410,8 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_TRAP_METADATA,			/* nested */
+ 	DEVLINK_ATTR_TRAP_GROUP_NAME,			/* string */
+ 
++	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 6e52d639dac6..1e3a2288b0b2 100644
+index 1e3a2288b0b2..e00a4a643d17 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -2672,12 +2672,17 @@ devlink_resources_validate(struct devlink *devlink,
- 	return err;
+@@ -471,6 +471,8 @@ static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
+ 
+ 	if (devlink_nl_put_handle(msg, devlink))
+ 		goto nla_put_failure;
++	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_FAILED, devlink->reload_failed))
++		goto nla_put_failure;
+ 
+ 	genlmsg_end(msg, hdr);
+ 	return 0;
+@@ -2677,6 +2679,21 @@ static bool devlink_reload_supported(struct devlink *devlink)
+ 	return devlink->ops->reload_down && devlink->ops->reload_up;
  }
  
-+static bool devlink_reload_supported(struct devlink *devlink)
++static void devlink_reload_failed_set(struct devlink *devlink,
++				      bool reload_failed)
 +{
-+	return devlink->ops->reload_down && devlink->ops->reload_up;
++	if (devlink->reload_failed == reload_failed)
++		return;
++	devlink->reload_failed = reload_failed;
++	devlink_notify(devlink, DEVLINK_CMD_NEW);
 +}
++
++bool devlink_is_reload_failed(struct devlink *devlink)
++{
++	return devlink->reload_failed;
++}
++EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
 +
  static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
  {
  	struct devlink *devlink = info->user_ptr[0];
- 	int err;
- 
--	if (!devlink->ops->reload)
-+	if (!devlink_reload_supported(devlink))
- 		return -EOPNOTSUPP;
- 
- 	err = devlink_resources_validate(devlink, NULL, info);
-@@ -2685,7 +2690,10 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- 		NL_SET_ERR_MSG_MOD(info->extack, "resources size validation failed");
+@@ -2693,7 +2710,9 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 	err = devlink->ops->reload_down(devlink, info->extack);
+ 	if (err)
  		return err;
- 	}
--	return devlink->ops->reload(devlink, info->extack);
-+	err = devlink->ops->reload_down(devlink, info->extack);
-+	if (err)
-+		return err;
-+	return devlink->ops->reload_up(devlink, info->extack);
+-	return devlink->ops->reload_up(devlink, info->extack);
++	err = devlink->ops->reload_up(devlink, info->extack);
++	devlink_reload_failed_set(devlink, !!err);
++	return err;
  }
  
  static int devlink_nl_flash_update_fill(struct sk_buff *msg,
-@@ -7145,7 +7153,7 @@ __devlink_param_driverinit_value_set(struct devlink *devlink,
- int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value *init_val)
- {
--	if (!devlink->ops->reload)
-+	if (!devlink_reload_supported(devlink))
- 		return -EOPNOTSUPP;
- 
- 	return __devlink_param_driverinit_value_get(&devlink->param_list,
-@@ -7192,7 +7200,7 @@ int devlink_port_param_driverinit_value_get(struct devlink_port *devlink_port,
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 
--	if (!devlink->ops->reload)
-+	if (!devlink_reload_supported(devlink))
- 		return -EOPNOTSUPP;
- 
- 	return __devlink_param_driverinit_value_get(&devlink_port->param_list,
 -- 
 2.21.0
 
