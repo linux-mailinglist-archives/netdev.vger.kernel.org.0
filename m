@@ -2,125 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AB3AB5AC
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 12:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8538BAB5F2
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 12:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390993AbfIFKRt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Sep 2019 06:17:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43274 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389573AbfIFKRs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Sep 2019 06:17:48 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CA81669060
-        for <netdev@vger.kernel.org>; Fri,  6 Sep 2019 10:17:47 +0000 (UTC)
-Received: by mail-ed1-f70.google.com with SMTP id z39so3295118edc.15
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 03:17:47 -0700 (PDT)
+        id S2393125AbfIFKdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 06:33:16 -0400
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:39299 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393112AbfIFKdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 06:33:15 -0400
+Received: by mail-yb1-f193.google.com with SMTP id s142so2003528ybc.6
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 03:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=65kVRSd8L6r82UlwVzMF798b1GwajejAzPsNu4zkBd4=;
+        b=cNtLs7t70/jENml7I67T2qq/VnnyS6oVPTZ7t23q2zNAANfHm94FqvGIz5/A0B7lI1
+         yL55SqSaei7LxwdaPyritIGoz5+etu/qTp/kFN56tqjjX3LdoeXx1SOcdfyhzdERmzrr
+         Ybkgp1cfMf5YFJ6HlnUsQgV2FrVo1pK2NBnnp2qDKid9bM2CZ/hsPUTMzbaINBY5Nix+
+         z5ewMczg71ofUthuAF0uJW6xR30xHT5NwhVmvOi5Mlqv2Rc/oSw8j2FBb6rBtMbLmzop
+         cbnNyI+opTA0Sp4iWspHo0bGkPN04st+UR8dyeAe4UeeC3EOTbnV5VlXTwtDOa6iY68N
+         +a1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Of90RwY0BPgYlqIW5KJtWOerfX+Hnok6BAhYhxGfo3o=;
-        b=nIGEXQ3JGC3f7psG3bBo8z4DBTaOsWmJGTCzsD6A8vGouSwUnLQ6G+Mx5Fj0fEYsmB
-         hPBMS7H3umunPSvqerYBwGohIZGChyGy3oYptHEOeSsU8Ms7jpagM9h5sl2qO2dh+dfF
-         LTZ8f0a8eEiOPxVyeX76o3imhMG/1NlX3XX1sT2J995EizJrWRaoYfYMyN2upLpJ16hd
-         wynQ9pRB1jhJsOvmBIl7b4nb/8KBvyFiwYGhacY4MLJ0eqsS+onTCX+z41ybm7D4OUbm
-         Gipk43q/zBX38+j2Mp81Xe9bd3RuzZ92TMXnJFxBUo4LwXxpdkOKir3N479tkDUXbDVZ
-         nsTA==
-X-Gm-Message-State: APjAAAUS8GiBNRJO7kPQ1rbz2YCUpJM2DL4l6ZgPPE78RBbRCmz8fb9K
-        zJ7O68scOZx2KPXiqymjLmH1Q7OG1nHq0zOD9ooTHnJ15v6gGa/JyGqlpOM6ifbn9Y7RTxWnQWu
-        bNr+tgWnao0pTipy47Z5qC1utX81uzBKb
-X-Received: by 2002:a17:906:8251:: with SMTP id f17mr6732140ejx.222.1567765066352;
-        Fri, 06 Sep 2019 03:17:46 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwPMzfJkM70nzqSWQclnB4OBWzzVyJHDFbejnGDRI9YueoyniSsdFdff6jtC4hSYH+U9RZAIPsBIjBZlQBUYH0=
-X-Received: by 2002:a17:906:8251:: with SMTP id f17mr6732126ejx.222.1567765066134;
- Fri, 06 Sep 2019 03:17:46 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=65kVRSd8L6r82UlwVzMF798b1GwajejAzPsNu4zkBd4=;
+        b=kjWt8vrk1dVsYeVveOt9zwTRT9Z8fbUnu7aiB1Hhr90bkUjOc1NxObr3wG1p+fpfqq
+         aSKdPwfzz82WlUTQ/sa2dINOMwfk4hkfwU5CWtSO8qN0RdmBQsAZIAF46EW4lM/GdHlG
+         i6+jCZqsR3A+RY2Jgm6YT4+AlfDyiunk3ll2ogFBHRE5DGgfI7TZtnTNbqcEeWgiPXp9
+         ZUuOZjaQG76658QFXQ/SLBnXGOQc3Sar+oSDNpUSKcsCTOq9RDWlCCLEdUSbqhzEvTQt
+         6dSJLefPnWPUP5DXE8/a3/LEIGTPdH8EptbSvyRl7x+tpthoUamds6RDXOcBpqDPkEGC
+         UtsQ==
+X-Gm-Message-State: APjAAAVAHXi4rrS62de1IMeujiwlS926E9z0XKhnIU64jAk5636P57Gx
+        NhPxmKQTw+vO7LqRyedHfbI3wqiq8etdav/vWu3Mw1as0NnBWg==
+X-Google-Smtp-Source: APXvYqwBjBAwgsV078IZd+51O1lMDUU4BGyKOGjc61Zk4J4JlexzXKO2wa/7pvCSj8np7KCjXG6Vm/Iwj9cJB1u/qrk=
+X-Received: by 2002:a25:ca51:: with SMTP id a78mr5614515ybg.303.1567765993696;
+ Fri, 06 Sep 2019 03:33:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <12a9cb8d91e41a08466141d4bb8ee659487d01df.1567611976.git.aclaudi@redhat.com>
- <83242eb4-6304-0fcf-2d2a-6ef4de464e81@gmail.com> <CAPpH65xtgWp2ELuPBdDOFfhJfHCA6brwxqbPxZogTnnnQ26CmA@mail.gmail.com>
- <20190905085147.72772bba@hermes.lan>
-In-Reply-To: <20190905085147.72772bba@hermes.lan>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Fri, 6 Sep 2019 12:19:05 +0200
-Message-ID: <CAPpH65xdYE1_n9zR8X0UUfAT1TzjMLP=z-eFDNnfzXGQnKzdrA@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next] bpf: fix snprintf truncation warning
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>
+References: <20190906093429.930-1-chunguo.feng@amlogic.com>
+In-Reply-To: <20190906093429.930-1-chunguo.feng@amlogic.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 6 Sep 2019 12:33:02 +0200
+Message-ID: <CANn89iLK7oY0OZK+g+HadktByojxVbdbPj9d5ephYh0qs3fXRA@mail.gmail.com>
+Subject: Re: [PATCH] tcp: fix tcp_disconnect() not clear tp->fastopen_rsk sometimes
+To:     chunguo feng <chunguo.feng@amlogic.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 5, 2019 at 5:51 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+On Fri, Sep 6, 2019 at 11:34 AM chunguo feng <chunguo.feng@amlogic.com> wrote:
 >
-> On Thu, 5 Sep 2019 13:44:55 +0200
-> Andrea Claudi <aclaudi@redhat.com> wrote:
+> From: fengchunguo <chunguo.feng@amlogic.com>
 >
-> > On Thu, Sep 5, 2019 at 12:15 AM David Ahern <dsahern@gmail.com> wrote:
-> > >
-> > > On 9/4/19 9:50 AM, Andrea Claudi wrote:
-> > > > gcc v9.2.1 produces the following warning compiling iproute2:
-> > > >
-> > > > bpf.c: In function ‘bpf_get_work_dir’:
-> > > > bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
-> > > >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-> > > >       |                                                 ^
-> > > > bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
-> > > >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-> > > >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > >
-> > > > Fix it extending bpf_wrk_dir size by 1 byte for the extra "/" char.
-> > > >
-> > > > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> > > > ---
-> > > >  lib/bpf.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/lib/bpf.c b/lib/bpf.c
-> > > > index 7d2a322ffbaec..95de7894a93ce 100644
-> > > > --- a/lib/bpf.c
-> > > > +++ b/lib/bpf.c
-> > > > @@ -742,7 +742,7 @@ static int bpf_gen_hierarchy(const char *base)
-> > > >  static const char *bpf_get_work_dir(enum bpf_prog_type type)
-> > > >  {
-> > > >       static char bpf_tmp[PATH_MAX] = BPF_DIR_MNT;
-> > > > -     static char bpf_wrk_dir[PATH_MAX];
-> > > > +     static char bpf_wrk_dir[PATH_MAX + 1];
-> > > >       static const char *mnt;
-> > > >       static bool bpf_mnt_cached;
-> > > >       const char *mnt_env = getenv(BPF_ENV_MNT);
-> > > >
-> > >
-> > > PATH_MAX is meant to be the max length for a filesystem path including
-> > > the null terminator, so I think it would be better to change the
-> > > snprintf to 'sizeof(bpf_wrk_dir) - 1'.
-> >
-> > With 'sizeof(bpf_wrk_dir) - 1' snprintf simply truncates at byte 4095
-> > instead of byte 4096.
-> > This means that bpf_wrk_dir can again be truncated before the final
-> > "/", as it is by now.
-> > Am I missing something?
-> >
-> > Trying your suggestion I have this slightly different warning message:
-> >
-> > bpf.c: In function ‘bpf_get_work_dir’:
-> > bpf.c:784:52: warning: ‘/’ directive output may be truncated writing 1
-> > byte into a region of size between 0 and 4095 [-Wformat-truncation=]
-> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
-> >       |                                                    ^
-> > bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a
-> > destination of size 4095
-> >   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir) - 1, "%s/", mnt);
-> >       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> This patch avoids fastopen_rsk not be cleared every times, then occur
+> the below BUG_ON:
+> tcp_v4_destroy_sock
+>         ->BUG_ON(tp->fastopen_rsk);
 >
-> Why not rework this to use asprintf and avoid having huge buffers on stack?
+> When playback some videos from netwrok,used tcp_disconnect continually.
 
-Thanks for the suggestion. There are a lot of similar usages in
-lib/bpf.c, I'll send a v2 to rework them all.
+Wow, tcp_disconnect() being used by something else than syzkaller !
+
+>         kthread+0x114/0x140
+>         ret_from_fork+0x10/0x18
+>
+> Signed-off-by: fengchunguo <chunguo.feng@amlogic.com>
+> ---
+>  net/ipv4/tcp.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 61082065b26a..f5c354c0b24c 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2655,6 +2655,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+>         /* Clean up fastopen related fields */
+>         tcp_free_fastopen_req(tp);
+>         inet->defer_connect = 0;
+> +       tp->fastopen_rsk = 0;
+>
+>         WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);
+>
+
+This seems suspicious to me.
+
+Are we leaking a block of memory after your patch ?
+
+If the block of memory has been freed, maybe clear the pointer at the
+place the free happened ?
+
+I am traveling to Lisbon for LPC, maybe Yuchung or Neal can take a look.
