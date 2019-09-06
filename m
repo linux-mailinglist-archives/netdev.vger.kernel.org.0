@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B24AB364
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589C4AB35F
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:41:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404542AbfIFHla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 03:41:30 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:33366 "EHLO
+        id S2404591AbfIFHlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 03:41:32 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:33356 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392555AbfIFHl3 (ORCPT
+        by vger.kernel.org with ESMTP id S2392554AbfIFHl3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:41:29 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23683C0E03;
-        Fri,  6 Sep 2019 07:41:27 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2AE33C0E3C;
+        Fri,  6 Sep 2019 07:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567755688; bh=1i/geIHgBQLLy7LPimv2MIzVFeg/Cl2TeuERvfMsPYk=;
+        t=1567755688; bh=jZCMlvgCMuP7tUeAHLlMp4idCMgk/I/cK3F4CsQd+PQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=UKDD5M3QsYIJSRZ7L9o99VGsWgvjEfmNmPwUfpdbQebZ8qBBDEJY4wRUNpNkuTO7v
-         R3FngN05ExpqQxQWK/icr3lKvhAY0ywtmn5/8r/PqTuIsg4ydYiO5Cl3boXasgE2E1
-         ZBhMsqDhvK405Rng3quH4TxJhW6j1zrVtFK7j/OgQEMgEsip9DpF1zKdV85M5cwbk/
-         9Urvg/z/EQ+Wi1K1i8RF2Tu89qxCxwVO1+5f8j9PrzaUVeCAA4l+c/b9s3P79xPQvG
-         Ij8OoXdWTGC/xipH4+25Qj+IkdTl35l43Ax/SERJpxFqYUXnOcrslIoNG2o1KpVRHz
-         xzGrdurzMs3PA==
+        b=ishy2uzL4O1BH/uU/Pa3nyGxn/4goiVJhORDkg31zNiVDoAlF5mzhMnrO4K//S78l
+         M5w8LClhcaOfomTJJyC1Y8t0/MB3Bn4HQHGpbXPwx5s28vTGAiodYmdU3CNr96Yqpn
+         Z9Fsn3Sn7ctltDHFBal6vHhGBXc7PcwaOM2A8FTRtBWNFAklk/WeAQOZEcUuFeIxNy
+         dGiWO6o+WCI0WQZFzVazqZZtSJADj89mmVvkzoQZmV10bklpFZFT3/sLK2MnU8sH4o
+         RiUARgV7YIBtTQt8Qy9isheuBEat0Tvbv7Ge3QBO+jYeXEd9Kl+jDigztFruV5U9fp
+         dxI6hQxF0VEYA==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id A5E9BA005D;
+        by mailhost.synopsys.com (Postfix) with ESMTP id B9DA5A0062;
         Fri,  6 Sep 2019 07:41:26 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/5] net: stmmac: selftests: Add missing checks for support of SA
-Date:   Fri,  6 Sep 2019 09:41:13 +0200
-Message-Id: <3b38421ddf3d8c4e40400f990999d548b8c459b5.1567755423.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 2/5] net: stmmac: selftests: Set RX tail pointer in Flow Control test
+Date:   Fri,  6 Sep 2019 09:41:14 +0200
+Message-Id: <9e6d4447eeefa45d7e61e6bb9e4f602981c85c23.1567755423.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1567755423.git.joabreu@synopsys.com>
 References: <cover.1567755423.git.joabreu@synopsys.com>
@@ -51,8 +51,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add checks for support of Source Address Insertion/Replacement before
-running the test.
+We need to set the RX tail pointer so that RX engine starts working
+again after finishing the Flow Control test.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -66,53 +66,28 @@ Cc: netdev@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 305d24935cf4..dce34c081a1e 100644
+index dce34c081a1e..2943943bec43 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -1057,6 +1057,9 @@ static int stmmac_test_desc_sai(struct stmmac_priv *priv)
- 	struct stmmac_packet_attrs attr = { };
- 	int ret;
+@@ -722,8 +722,14 @@ static int stmmac_test_flowctrl(struct stmmac_priv *priv)
  
-+	if (!priv->dma_cap.vlins)
-+		return -EOPNOTSUPP;
-+
- 	attr.remove_sa = true;
- 	attr.sarc = true;
- 	attr.src = src;
-@@ -1076,6 +1079,9 @@ static int stmmac_test_desc_sar(struct stmmac_priv *priv)
- 	struct stmmac_packet_attrs attr = { };
- 	int ret;
+ 	for (i = 0; i < rx_cnt; i++) {
+ 		struct stmmac_channel *ch = &priv->channel[i];
++		u32 tail;
  
-+	if (!priv->dma_cap.vlins)
-+		return -EOPNOTSUPP;
++		tail = priv->rx_queue[i].dma_rx_phy +
++			(DMA_RX_SIZE * sizeof(struct dma_desc));
 +
- 	attr.sarc = true;
- 	attr.src = src;
- 	attr.dst = priv->dev->dev_addr;
-@@ -1094,6 +1100,9 @@ static int stmmac_test_reg_sai(struct stmmac_priv *priv)
- 	struct stmmac_packet_attrs attr = { };
- 	int ret;
- 
-+	if (!priv->dma_cap.vlins)
-+		return -EOPNOTSUPP;
++		stmmac_set_rx_tail_ptr(priv, priv->ioaddr, tail, i);
+ 		stmmac_start_rx(priv, priv->ioaddr, i);
 +
- 	attr.remove_sa = true;
- 	attr.sarc = true;
- 	attr.src = src;
-@@ -1114,6 +1123,9 @@ static int stmmac_test_reg_sar(struct stmmac_priv *priv)
- 	struct stmmac_packet_attrs attr = { };
- 	int ret;
- 
-+	if (!priv->dma_cap.vlins)
-+		return -EOPNOTSUPP;
-+
- 	attr.sarc = true;
- 	attr.src = src;
- 	attr.dst = priv->dev->dev_addr;
+ 		local_bh_disable();
+ 		napi_reschedule(&ch->rx_napi);
+ 		local_bh_enable();
 -- 
 2.7.4
 
