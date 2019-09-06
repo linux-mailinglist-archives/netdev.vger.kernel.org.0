@@ -2,87 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA71AC26F
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 00:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8FEAC28B
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 00:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404796AbfIFWUg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Sep 2019 18:20:36 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8146 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2404739AbfIFWUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 18:20:36 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x86MJZTH026398
-        for <netdev@vger.kernel.org>; Fri, 6 Sep 2019 15:20:35 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uup20u4dx-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 15:20:35 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Fri, 6 Sep 2019 15:20:33 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 6F2FF760B7B; Fri,  6 Sep 2019 15:20:32 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: pull-request: bpf 2019-09-06
-Date:   Fri, 6 Sep 2019 15:20:32 -0700
-Message-ID: <20190906222032.1007163-1-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
+        id S2405017AbfIFWaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 18:30:02 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:44364 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729244AbfIFWaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 18:30:02 -0400
+Received: by mail-qt1-f196.google.com with SMTP id u40so9001155qth.11;
+        Fri, 06 Sep 2019 15:30:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vh+tv90X665lH/REtb6+/d610dr7rZMEwkHzJTf882g=;
+        b=Z3O3wzzSdrMCen6a3VYOrtXrC/0pmnPywB8TgWjdXJ8jQG0tRPdlJZpkOnuuTTxD5I
+         jOe73Up7lDdHvNyzx/M+JjbwpOZtXBY82MuWBZCWuxTjpA6Nbd7D1lEpnyZwO3+Oq9Rl
+         LMFCAjOrJQk1aBUkxS8x1piKBDd+KW0bpyI/6Ehs8sS3eOztmwxq24M8OcabgCAOpZsO
+         wQcnIJX/h4IUxGDpOngbwJ29rGGRP2om+Ua+JZcgQOuHKTyloEJPuYoA3NqMK1Q69X9N
+         hKbJVlL/SYEij5vu/+kkCGZeQ5f0IN/MkE+FfcEMrbF1xBYd7/QwHWOp4mItUGzUm41u
+         FG8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vh+tv90X665lH/REtb6+/d610dr7rZMEwkHzJTf882g=;
+        b=Byh5k0WRJYys07/9plfX6cjGkU8xojYt+CuQmBo67Hdy+v6k/3bWcy/S8ATJPvevcw
+         RP6/REhX7nRox3zSxtMp0gS+yrGw76a4u1dmJU9T95p+W1XWhrtC6xPBYNaQKWNh4qzx
+         NvVskElW/gus/8IffSrwLoPQalt18MhVPd1wCeCQ6PdUfC8rzBKDBVCCS0OzMpVI92a0
+         HPcii8Vu/kdeG2vwwiaRVyueejsyOe1hE+kex4Ooq7mLYh2vOGCb9HlqwHvhjNnUDrQi
+         XOACcv9cqUTtLIFZZwGnqARfUkRsW1Ua0MJCzFIDezXobGLPc2vpy5TSiVL2B0zoUK2D
+         Pk2g==
+X-Gm-Message-State: APjAAAXSelyXXpjeqMHAoLhgZ/i23yhRRE3aT4RTYV5Ii0GDdQDno0ds
+        iwsPneHwX7W42LNAIJk1Z0y7RoPf/3Tz/aXqJyB4OLTx55265Q==
+X-Google-Smtp-Source: APXvYqz9fb4t7d8gRm1dZxb0sRijNXhl4SHv/ja68oTb6HnH6D35H1gu4yLcVFjFMAFA2DcdwaoVyZrZ0UdHBjs0rQI=
+X-Received: by 2002:ac8:c01:: with SMTP id k1mr11522625qti.59.1567809000648;
+ Fri, 06 Sep 2019 15:30:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-06_10:2019-09-04,2019-09-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 suspectscore=1
- bulkscore=0 impostorscore=0 mlxlogscore=778 adultscore=0 clxscore=1015
- spamscore=0 malwarescore=0 priorityscore=1501 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909060220
-X-FB-Internal: deliver
+References: <20190905152709.111193-1-sdf@google.com> <20190905152709.111193-2-sdf@google.com>
+In-Reply-To: <20190905152709.111193-2-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 Sep 2019 23:29:49 +0100
+Message-ID: <CAEf4Bzb=0gJv148r+RARMOYHikvvrzXJ-o5jQ7F_WtSzhRF38w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/6] selftests/bpf: test_progs: add
+ test__join_cgroup helper
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Thu, Sep 5, 2019 at 7:40 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> test__join_cgroup() combines the following operations that usually
+> go hand in hand and returns cgroup fd:
+>
+>   * setup cgroup environment (make sure cgroupfs is mounted)
+>   * mkdir cgroup
+>   * join cgroup
+>
+> It also marks a test as a "cgroup cleanup needed" and removes cgroup
+> state after the test is done.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
 
-The following pull-request contains BPF updates for your *net* tree.
+First of all, thanks a lot for all these improvements to test_progs
+and converting existing tests to test_progs tests, it's great to see
+this consolidation!
 
-The main changes are:
+[...]
 
-1) verifier precision tracking fix, from Alexei.
+> @@ -17,6 +18,7 @@ struct prog_test_def {
+>         int error_cnt;
+>         int skip_cnt;
+>         bool tested;
+> +       bool need_cgroup_cleanup;
+>
+>         const char *subtest_name;
+>         int subtest_num;
+> @@ -122,6 +124,39 @@ void test__fail(void)
+>         env.test->error_cnt++;
+>  }
+>
+> +int test__join_cgroup(const char *path)
 
-Please consider pulling these changes from:
+This doesn't seem to be testing-specific functionality, tbh. It's
+certainly useful helper, but I don't think it warrants test__ prefix.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+As for test->need_cgroup_cleanup field, this approach won't scale if
+we need other types of custom/optional clean up after test ends.
+Generic test framework code will need to know about every possible
+custom setup to be able to cleanup/undo it.
 
-Thanks a lot!
+I wonder if generalizing it to be able to add custom clean up code
+(some test frameworks have "teardown" overrides for this) would be
+cleaner and more maintainable solution.
 
-----------------------------------------------------------------
+Something like:
 
-The following changes since commit 44580a0118d3ede95fec4dce32df5f75f73cd663:
+typedef void (* test_teardown_fn)(struct test *test, void *ctx);
 
-  net: sock_map, fix missing ulp check in sock hash case (2019-09-05 11:56:19 +0200)
+/* somewhere at the beginning of test: */
+test__schedule_teardown(test_teardown_fn cb, void *ctx);
 
-are available in the Git repository at:
+[...]
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+> +
+> +               if (test->need_cgroup_cleanup)
+> +                       cleanup_cgroup_environment();
 
-for you to fetch changes up to 2339cd6cd0b5401fa3fe886bf1c0cb8822041957:
+Then in generic framework we'll just process a list of callbacks and
+call each one with stored ctx per each callback (in case we need some
+custom data to be stored, of course).
 
-  bpf: fix precision tracking of stack slots (2019-09-05 14:06:58 +0200)
+Thoughts?
 
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      bpf: fix precision tracking of stack slots
-
- kernel/bpf/verifier.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+[...]
