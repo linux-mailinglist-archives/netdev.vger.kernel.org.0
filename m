@@ -2,161 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C14F9AC2B5
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 00:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D5AAC2BD
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 00:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392504AbfIFWvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 18:51:09 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44285 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730864AbfIFWvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 18:51:09 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q21so5503863pfn.11
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 15:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=AtIdKbzr0YQu5CrLf8FM0b4YurkzEg55iDmeFG+2tak=;
-        b=0binOhGOwoRQMCYy+r2lVl/4uQDNcTSM0u79BGgMIGIa+0kKidpTExCV+giX0jQZUl
-         BoBYLJ0DgFNaJ7wmCYr/bqM6AuGbZgGwAunhxmFikADYEgL7HqEKRnAMpSZ8mXdLo79y
-         VXEqoyf75ZD/G5DuxOR6cY80P3asVghVAkGyz54Tq1XV8uwsX4vF34eQ6s0zo1DLpfA9
-         05lzYrxU2IKVuPj4jw8l3ku0Xmhs9FitNP7wKl7tTy6m5HaInCdmTdp0lG2flHmKAluC
-         ZO5KDuDExY020EYqj+cOy8ypSzkLOb74Yrk5dueDg/VQw3SP2afO6vn7Liit0FApJITC
-         f0AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=AtIdKbzr0YQu5CrLf8FM0b4YurkzEg55iDmeFG+2tak=;
-        b=KNR4gMotc80e3KSeize0+c7qO3TYofhpp1FY7sFR56KO4OKd0Wquwout6JXHFlRkns
-         8q+EsDAsHkBJzCyvWwhwRqj38Fks2vY76Ex2/qaMO07cSgGLixcruglcN1FI9F4xbVt8
-         FZ02I4/aOtQHne77LT/uSDMTW5kH+PfEwgqRZxO6QjYMnLq9Qv0ZcHcssMmxgc2LLf2M
-         pWotJinrk9/KvDILctmGeEyCZOHVtC4jxtLxcuHX105xrUmiXpIDsmZxFULQttuwdTjA
-         fUMBA5SZjkyuGhYYT+cB9Mgy2NmV1nxl+Q3SjhIjSHyBlgq07wIUh3hmCNOHRlySygHz
-         G8Lg==
-X-Gm-Message-State: APjAAAW/zvO8rTxMle+hSH3vwzVhCaHDVH6kfKzBWz8bIYP2dtfPn3Mo
-        0FM0CGYEHWtrGXBdoRitwLH7AuSHU6s=
-X-Google-Smtp-Source: APXvYqx8/OMFoqIecuvzfnIGVUYs+7jGK8L0qYnJ9e8kVhAN02awQXLnhghlfQ2SvpTV1wH7I1chYg==
-X-Received: by 2002:a62:2d3:: with SMTP id 202mr14023832pfc.141.1567810268481;
-        Fri, 06 Sep 2019 15:51:08 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id s5sm6555589pfe.52.2019.09.06.15.51.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 15:51:08 -0700 (PDT)
-Date:   Fri, 6 Sep 2019 15:51:07 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next v2 1/6] selftests/bpf: test_progs: add
- test__join_cgroup helper
-Message-ID: <20190906225107.GA10158@mini-arch>
-References: <20190905152709.111193-1-sdf@google.com>
- <20190905152709.111193-2-sdf@google.com>
- <CAEf4Bzb=0gJv148r+RARMOYHikvvrzXJ-o5jQ7F_WtSzhRF38w@mail.gmail.com>
+        id S2392700AbfIFWyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 18:54:55 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38450 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389698AbfIFWyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 18:54:55 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x86Mso13020433
+        for <netdev@vger.kernel.org>; Fri, 6 Sep 2019 15:54:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=nSFWwVxQsqHF3/M8YmhJm9tm7mNW8GuKI2jfSdkKnbI=;
+ b=As5aC5kSGgXKWDhJ5apGVDyphqIYf+O7oMLgDm+daWTry0FRHrTSt5vUlaTrAqPF9e//
+ RQNp8i4rByGf7c47HYU9rzod05MaFVeasAksevdO0DAAhAH98usczxPKFUZZidrdZbqO
+ 9mNoxXd6ueH86Q2YssMasH1kOGER6/r6IDY= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2uu8mdxbg7-9
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 15:54:54 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 6 Sep 2019 15:54:35 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id C532F3703134; Fri,  6 Sep 2019 15:54:34 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <ast@fb.com>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Stanislav Fomichev <sdf@google.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [RFC PATCH bpf-next v2 0/2] bpf: adding map batch processing support
+Date:   Fri, 6 Sep 2019 15:54:32 -0700
+Message-ID: <20190906225434.3635421-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzb=0gJv148r+RARMOYHikvvrzXJ-o5jQ7F_WtSzhRF38w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-06_10:2019-09-04,2019-09-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ suspectscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
+ mlxlogscore=754 clxscore=1015 mlxscore=0 lowpriorityscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1909060223
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/06, Andrii Nakryiko wrote:
-> On Thu, Sep 5, 2019 at 7:40 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > test__join_cgroup() combines the following operations that usually
-> > go hand in hand and returns cgroup fd:
-> >
-> >   * setup cgroup environment (make sure cgroupfs is mounted)
-> >   * mkdir cgroup
-> >   * join cgroup
-> >
-> > It also marks a test as a "cgroup cleanup needed" and removes cgroup
-> > state after the test is done.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> 
-> First of all, thanks a lot for all these improvements to test_progs
-> and converting existing tests to test_progs tests, it's great to see
-> this consolidation!
-> 
-> [...]
-> 
-> > @@ -17,6 +18,7 @@ struct prog_test_def {
-> >         int error_cnt;
-> >         int skip_cnt;
-> >         bool tested;
-> > +       bool need_cgroup_cleanup;
-> >
-> >         const char *subtest_name;
-> >         int subtest_num;
-> > @@ -122,6 +124,39 @@ void test__fail(void)
-> >         env.test->error_cnt++;
-> >  }
-> >
-> > +int test__join_cgroup(const char *path)
-> 
-> This doesn't seem to be testing-specific functionality, tbh. It's
-> certainly useful helper, but I don't think it warrants test__ prefix.
-I didn't like the mess we used to have:
+Previous discussion at:
+  https://lore.kernel.org/bpf/7ba9b492-8a08-a1d0-9c6e-03be4b8e5e07@fb.com/T/#t
 
-	if (setup_cgroup_environment())
-		goto cleanup_obj;
+Previous approach tries to use existing per-map looks like
+bpf_map_{get_next_key, lookup_elem, update_elem, delete_elem}
+to implement a batching process.
 
-	cgroup_fd = create_and_get_cgroup(CG_PATH);
-	if (cgroup_fd < 0)
-		goto cleanup_cgroup_env;
+It has a series drawback when the prev_key used by bpf_map_get_next_key()
+is not in hash table. In that case, as the hash table has no idea where
+the `prev_key` has been placed in the bucket before deletion, currently,
+it returns the first key. This makes batch processing may see
+duplicated elements, or in worst case if the hash table has heavy
+update/delete, the batch processing may never finish.
 
-	if (join_cgroup(CG_PATH))
-		goto cleanup_cgroup;
+This RFC patch set implements bucket based batching for hashtab.
+That is, for lookup/delete, either the whole bucket is processed
+or none of elements in the bucket is processed. Forward progress
+is also guaranteed as long as user provides enough buffer.
 
-	... do the test
+This RFC also serves as a base for discussion at upcoming
+LPC2019 BPF Microconference.
 
-	cleanup_cgroup_environment();
+Changelogs:
+   v1 -> RFC v2:
+     . To address the bpf_map_get_next_key() issue where
+       if a key is not available the first key will be returned,
+       implement per-map batch operations for hashtab/lru_hashtab,
+       using bucket lock, as suggested by Alexei.
 
-All I really want to do in several tests is to create a temporary cgroup
-and join it (I don't even really care about the name most of the time).
-We can rename and move this test__join_cgroup into cgroup_helpers.h if
-you prefer, I don't really mind. I just want to avoid repeating those
-10 lines over and over in each test that just wants to run in a cgroup.
+Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc: Brian Vazquez <brianvv@google.com>
+Cc: Stanislav Fomichev <sdf@google.com>
 
-> As for test->need_cgroup_cleanup field, this approach won't scale if
-> we need other types of custom/optional clean up after test ends.
-> Generic test framework code will need to know about every possible
-> custom setup to be able to cleanup/undo it.
-> 
-> I wonder if generalizing it to be able to add custom clean up code
-> (some test frameworks have "teardown" overrides for this) would be
-> cleaner and more maintainable solution.
-> 
-> Something like:
-> 
-> typedef void (* test_teardown_fn)(struct test *test, void *ctx);
-> 
-> /* somewhere at the beginning of test: */
-> test__schedule_teardown(test_teardown_fn cb, void *ctx);
-> 
-> [...]
-> 
-> > +
-> > +               if (test->need_cgroup_cleanup)
-> > +                       cleanup_cgroup_environment();
-> 
-> Then in generic framework we'll just process a list of callbacks and
-> call each one with stored ctx per each callback (in case we need some
-> custom data to be stored, of course).
-> 
-> Thoughts?
-Idk, I don't see the need to be too generic since we control both the
-tests and the framework. So putting something like test__join_cgroup
-and doing automatic cleanup looks fine to me if this is shared between
-several tests. If, at some point, it becomes unmanageable, we can
-think about refactoring; but until then, I'd not bother tbh.
+Yonghong Song (2):
+  bpf: adding map batch processing support
+  tools/bpf: test bpf_map_lookup_and_delete_batch()
+
+ include/linux/bpf.h                           |   9 +
+ include/uapi/linux/bpf.h                      |  22 ++
+ kernel/bpf/hashtab.c                          | 324 ++++++++++++++++++
+ kernel/bpf/syscall.c                          |  68 ++++
+ tools/include/uapi/linux/bpf.h                |  22 ++
+ tools/lib/bpf/bpf.c                           |  59 ++++
+ tools/lib/bpf/bpf.h                           |  13 +
+ tools/lib/bpf/libbpf.map                      |   4 +
+ .../map_tests/map_lookup_and_delete_batch.c   | 155 +++++++++
+ 9 files changed, 676 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch.c
+
+-- 
+2.17.1
+
