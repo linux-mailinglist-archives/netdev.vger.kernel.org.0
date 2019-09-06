@@ -2,136 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D64AB343
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9F9FAB35E
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389065AbfIFHgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 03:36:19 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:33070 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726936AbfIFHgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:36:19 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n190so3015981pgn.0
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 00:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wfTa9mVNxqo7UqKuHFn+1x6+Ls07vttUdga8PUYEOpc=;
-        b=nADoLtBc8Z0v1YqOgT6Sis/Djcow6dLcZu8gs9l0gNltHeqQPm7bSuPwGUsl0CHIwm
-         vPSDsF4wDBrjR0tEsWEXa1Dt7Pqz4MLlxK7Xus7TI6GrslvxYY2RdDm3YirprYMgX7Z3
-         KXc7b0Nu0aYE38/AJb540evVs1gz3tI+HSP5HROuvlNmb7qmgP82cLWoYG43lvkcpgYO
-         mS55zpAYCzPVtH+Tfj53FIjKmLLWM/PLH3JJncGusaba7cuZnettGZtRzQ6uJYzSR6WS
-         ZYwL9YaUkFSrpfw1L8O+7en0Rv1I8MvIuGQTqSxztzYOzN+asLtHFN/FuLGVHyZC0Yoj
-         rV8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wfTa9mVNxqo7UqKuHFn+1x6+Ls07vttUdga8PUYEOpc=;
-        b=GJnhyUI0y1TnadNiY51e7oGy+8tjcHUJFwNk2WUxl2nBbmq68Tq+lpwMnnTkJayIRT
-         a6TAruJUa6kmYwwx4wbGSggqjFxMGjFDfmP8QUXtat0jFQJJueYonTvpLt7XkZfUyfLx
-         sEzI79AYg7VZmozt299rG/Gb30ShLTx+gvs1bS2BzFfRXP2Pa4iv97j38FGyF8vrB3os
-         gNyBr0pZC8+vuzK/iHVex7tatdJtXYqr32jbGp5OhBNwU2lU4rLoVy/lEiWiHRg3IS3d
-         ghNUWvHdsMk9UTvKW+9+G8TWDjxBWQgEYgWAUnH3rWzP14Xn4YtC6dB3BcIJKfN5X3xf
-         3Ylg==
-X-Gm-Message-State: APjAAAVk9DWNPZl2h7lwKLRK8pd3AID1TAVkp6iUoCmB2IkRKKB8MGyz
-        XXn+ZZ/Bv8/hovCqLar4flGvhw8Gr6c=
-X-Google-Smtp-Source: APXvYqxpmVGOlfO+RqchLKyGqvM5wawEPPMJs7G1SjJkJNYztaVUDsvahh7bfWSkMnqJcpGvfzH4LA==
-X-Received: by 2002:a17:90a:ad88:: with SMTP id s8mr7857559pjq.53.1567755378212;
-        Fri, 06 Sep 2019 00:36:18 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id e192sm7914965pfh.83.2019.09.06.00.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 00:36:17 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
+        id S2404583AbfIFHlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 03:41:31 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:33342 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2391079AbfIFHl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:41:29 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23988C0E35;
+        Fri,  6 Sep 2019 07:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1567755688; bh=4FNcbwGO762eeiYuWoydSpxazMahLxkBYcFUNjeJ3so=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QV3sTkQjRq3+DWj4SAq7M3ARw0wOD88Y820JB4aK6VQ3BqbtO+ozEBJg5jkZxP6ba
+         3K3PfEsnZAFP8beQSbvbq4rYsxCaqGuqw8h9pPqMiS6RCdbZ0eax/vPBjpPQJO3fpn
+         4GOoFgI8P87xZ6bFcQt0szF2m6kys4oWjegPndcukIUo4cRGrBYIT79WQrcuzC9ip9
+         4+AT6uXZ1T2NKq8mP+IAI4DwvUSgoSG5aniE63bpRkwW+wF/luxd0JWIyWzZQsXLIu
+         EiPm2rX5BcbHPhAqfeLgzesocBttjgJAAkBystKy36O3f9cHmcsjU3truRAWoxfcIF
+         40D7xgWd5/dhw==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 001F5A005C;
+        Fri,  6 Sep 2019 07:41:25 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
-Cc:     Phil Karn <karn@ka9q.net>,
-        Sukumar Gopalakrishnan <sukumarg1973@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 net-next] ipmr: remove hard code cache_resolve_queue_len limit
-Date:   Fri,  6 Sep 2019 15:36:01 +0800
-Message-Id: <20190906073601.10525-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190903084359.13310-1-liuhangbin@gmail.com>
-References: <20190903084359.13310-1-liuhangbin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: stmmac: Improvements and fixes for -next
+Date:   Fri,  6 Sep 2019 09:41:12 +0200
+Message-Id: <cover.1567755423.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a re-post of previous patch wrote by David Miller[1].
+Improvements and fixes for recently introduced features. All for -next tree.
+More info in commit logs.
 
-Phil Karn reported[2] that on busy networks with lots of unresolved
-multicast routing entries, the creation of new multicast group routes
-can be extremely slow and unreliable.
-
-The reason is we hard-coded multicast route entries with unresolved source
-addresses(cache_resolve_queue_len) to 10. If some multicast route never
-resolves and the unresolved source addresses increased, there will
-be no ability to create new multicast route cache.
-
-To resolve this issue, we need either add a sysctl entry to make the
-cache_resolve_queue_len configurable, or just remove cache_resolve_queue_len
-limit directly, as we already have the socket receive queue limits of mrouted
-socket, pointed by David.
-
-From my side, I'd perfer to remove the cache_resolve_queue_len limit instead
-of creating two more(IPv4 and IPv6 version) sysctl entry.
-
-[1] https://lkml.org/lkml/2018/7/22/11
-[2] https://lkml.org/lkml/2018/7/21/343
-
-v3: instead of remove cache_resolve_queue_len totally, let's only remove
-the hard code limit when allocate the unresolved cache, as Eric Dumazet
-suggested, so we don't need to re-count it in other places.
-
-v2: hold the mfc_unres_lock while walking the unresolved list in
-queue_count(), as Nikolay Aleksandrov remind.
-
-Reported-by: Phil Karn <karn@ka9q.net>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/ipv4/ipmr.c  | 4 ++--
- net/ipv6/ip6mr.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index c07bc82cbbe9..313470f6bb14 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -1134,8 +1134,8 @@ static int ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi,
- 
- 	if (!found) {
- 		/* Create a new entry if allowable */
--		if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
--		    (c = ipmr_cache_alloc_unres()) == NULL) {
-+		c = ipmr_cache_alloc_unres();
-+		if (!c) {
- 			spin_unlock_bh(&mfc_unres_lock);
- 
- 			kfree_skb(skb);
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index e80d36c5073d..857a89ad4d6c 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -1148,8 +1148,8 @@ static int ip6mr_cache_unresolved(struct mr_table *mrt, mifi_t mifi,
- 		 *	Create a new entry if allowable
- 		 */
- 
--		if (atomic_read(&mrt->cache_resolve_queue_len) >= 10 ||
--		    (c = ip6mr_cache_alloc_unres()) == NULL) {
-+		c = ip6mr_cache_alloc_unres();
-+		if (!c) {
- 			spin_unlock_bh(&mfc_unres_lock);
- 
- 			kfree_skb(skb);
+Jose Abreu (5):
+  net: stmmac: selftests: Add missing checks for support of SA
+  net: stmmac: selftests: Set RX tail pointer in Flow Control test
+  net: stmmac: dwmac4: Enable RX Jumbo frame support
+  net: stmmac: selftests: Add Split Header test
+  net: stmmac: Limit max speeds of XGMAC if asked to
+
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  3 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  6 ---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 25 +++++----
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 60 ++++++++++++++++++++++
+ 4 files changed, 78 insertions(+), 16 deletions(-)
+
 -- 
-2.19.2
+2.7.4
 
