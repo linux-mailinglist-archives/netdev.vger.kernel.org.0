@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D061AB729
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 13:31:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593D1AB731
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 13:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388874AbfIFLb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 07:31:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732984AbfIFLb0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Sep 2019 07:31:26 -0400
-Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B45BF2070C;
-        Fri,  6 Sep 2019 11:31:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567769485;
-        bh=iogpGBQG7jXWKjVA6uZiFSlDPTuY7gAzoeRO+2zCtHs=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=yd935ui4dpymxpEuwbJ9LbamdQt/qCxtr11s6AswOEey2QNt0zao+eKe1PGz31BI9
-         qaxLcPg2RwxbttqksqxBVWxamHtR6qlHLzyA6E84hTviaChQOWijY1jvQWb62xfDQE
-         RXUaBanQkhqp0kgzGLXNcniuXFSNNufTqL3iRwQM=
-Date:   Fri, 6 Sep 2019 13:31:06 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Dan Elkouby <streetwalkermc@gmail.com>
-cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Fabian Henneke <fabian.henneke@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrea Parri <andrea.parri@amarulasolutions.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Bluetooth: hidp: Fix assumptions on the return value of
- hidp_send_message
-In-Reply-To: <20190906110645.27601-1-streetwalkermc@gmail.com>
-Message-ID: <nycvar.YFH.7.76.1909061330390.31470@cbobk.fhfr.pm>
-References: <20190906101306.GA12017@kadam> <20190906110645.27601-1-streetwalkermc@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        id S2389461AbfIFLeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 07:34:03 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:38045 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388752AbfIFLeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 07:34:03 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1i6CV2-0006NC-VZ; Fri, 06 Sep 2019 11:33:57 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     gJeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net/ixgbevf: make array api static const, makes object smaller
+Date:   Fri,  6 Sep 2019 12:33:56 +0100
+Message-Id: <20190906113356.9985-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Sep 2019, Dan Elkouby wrote:
+From: Colin Ian King <colin.king@canonical.com>
 
-> hidp_send_message was changed to return non-zero values on success,
-> which some other bits did not expect. This caused spurious errors to be
-> propagated through the stack, breaking some drivers, such as hid-sony
-> for the Dualshock 4 in Bluetooth mode.
-> 
-> As pointed out by Dan Carpenter, hid-microsoft directly relied on that
-> assumption as well.
-> 
-> Fixes: 48d9cc9d85dd ("Bluetooth: hidp: Let hidp_send_message return number of queued bytes")
-> 
-> Signed-off-by: Dan Elkouby <streetwalkermc@gmail.com>
+Don't populate the array api on the stack but instead make it
+static const. Makes the object code smaller by 58 bytes.
 
-Reviewed-by: Jiri Kosina <jkosina@suse.cz>
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  82969	   9763	    256	  92988	  16b3c	ixgbevf/ixgbevf_main.o
 
-Marcel, are you taking this through your tree?
+After:
+   text	   data	    bss	    dec	    hex	filename
+  82815	   9859	    256	  92930	  16b02	ixgbevf/ixgbevf_main.o
 
-Thanks,
+(gcc version 9.2.1, amd64)
 
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 8c011d4ce7a9..46c8e2501084 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -2261,12 +2261,14 @@ static void ixgbevf_init_last_counter_stats(struct ixgbevf_adapter *adapter)
+ static void ixgbevf_negotiate_api(struct ixgbevf_adapter *adapter)
+ {
+ 	struct ixgbe_hw *hw = &adapter->hw;
+-	int api[] = { ixgbe_mbox_api_14,
+-		      ixgbe_mbox_api_13,
+-		      ixgbe_mbox_api_12,
+-		      ixgbe_mbox_api_11,
+-		      ixgbe_mbox_api_10,
+-		      ixgbe_mbox_api_unknown };
++	static const int api[] = {
++		ixgbe_mbox_api_14,
++		ixgbe_mbox_api_13,
++		ixgbe_mbox_api_12,
++		ixgbe_mbox_api_11,
++		ixgbe_mbox_api_10,
++		ixgbe_mbox_api_unknown
++	};
+ 	int err, idx = 0;
+ 
+ 	spin_lock_bh(&adapter->mbx_lock);
 -- 
-Jiri Kosina
-SUSE Labs
+2.20.1
 
