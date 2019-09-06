@@ -2,92 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86EEAABCAA
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 712C7ABCAF
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404903AbfIFPgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 11:36:22 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34061 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404801AbfIFPgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:36:22 -0400
-Received: by mail-pf1-f196.google.com with SMTP id r12so4761473pfh.1
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 08:36:22 -0700 (PDT)
+        id S2405777AbfIFPhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 11:37:12 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37465 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404930AbfIFPhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:37:12 -0400
+Received: by mail-wm1-f66.google.com with SMTP id r195so7614373wme.2
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 08:37:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=HpjEWsWBbxV4+yzrMPtf/mM7e0LTvbXiTW1Tj/dUZfQ=;
-        b=cI9wCRY/+Zs4kwkoG8G6ewDFIMjERMpaVUNWJndg2lLdw/vbiaHM50YzqNm/erXVcL
-         VuoQULwl8ySyMXiHkiC1KNseoTxGP0pk7QLaYEC4CJ+AFbvJxkoFT7ty73DeWMtgl8t8
-         osmIHlTw376akMu8IOoUET4m7PbVo/9YZPh6k3WGI/GFzosqf8X6HSuORCYbpd5udMxv
-         vmkIjipT9Oz3Cj/a+YUtvfsLzGpUznCtmXQWWX7ovgJR1+ri/OxNWv5Pwvr3K6+x8tLg
-         SIIcwTHiBxppkx2+QHgSJ1zoLJqpNIxJaXsiyxIGkhTV8TWVkBBVltqLWsxAaAcmiIlB
-         RieA==
+        d=metanetworks.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AnKf/b8ee3mcAVBO1c6RnVhhFNnCiIgdGoebUkrMPHw=;
+        b=cpyKrOrAp86fXvUem/SwUx/ci5f3UWAbcADuzo5XRFv2NxWNOwih5oxTAmXeewdsoo
+         5aUbqqKdAQ1A7gVyb4CROVViH3fh7Rxm8FQ1xxUEpCub+TMPnLDUh896l5nrXCYRa824
+         QyWa51NTLVAQF5tdB3y2aap0qcP2tFagdNIx4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=HpjEWsWBbxV4+yzrMPtf/mM7e0LTvbXiTW1Tj/dUZfQ=;
-        b=VAkTXVsL3V1poFRx5rvHF//1k3kquq+VnODGh7bpg4BB3HXP8cPvrHQmpW7amVCscQ
-         LpwWsz56D0beTrgHQatQzqodN953xmJ8z+IbC/CvoOOWSJNLAe+PQU2BxT0sWCt9Te8m
-         4egqCYw6zvQMMKYcPCZBa2DieBuFN+gA/Ll/VYlhQnqGT3uDLdsBgsDrkLUdOE5MmeOl
-         Pd4/jbLrQX3OsZk0sdmSolJo3BA1OHCpuVbVWsM7AODv0yXFiRh/3886LGGJDaUsl74i
-         Ibzjoips18V3Po4U4fhdzI3qbZKTH6nddW0KxqdJD7qhjXfO4Xo3+k5jfDYsqEzZSgSM
-         aQVg==
-X-Gm-Message-State: APjAAAV3nFp4L23RI2M08vKcICo8SZ7lCRIArQ5f78a/TxhVqonyp3ge
-        q2LBTpH1bYag++vxUX742QoY6g==
-X-Google-Smtp-Source: APXvYqzY2AzbiTR6TecAkR9TlFGCfaBVlv/TcplEgRsaAi8ZTZk4Zr61REn7DjEbXjlq7t4rD8KlDg==
-X-Received: by 2002:a63:dd16:: with SMTP id t22mr8516756pgg.140.1567784181828;
-        Fri, 06 Sep 2019 08:36:21 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id k14sm4817415pgi.20.2019.09.06.08.36.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 06 Sep 2019 08:36:21 -0700 (PDT)
-Subject: Re: [PATCH net-next] ionic: Remove unused including <linux/version.h>
-To:     YueHaibing <yuehaibing@huawei.com>,
-        Pensando Drivers <drivers@pensando.io>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20190906095410.107596-1-yuehaibing@huawei.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <3556b355-0cd5-ed28-8821-525d24197d07@pensando.io>
-Date:   Fri, 6 Sep 2019 08:36:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AnKf/b8ee3mcAVBO1c6RnVhhFNnCiIgdGoebUkrMPHw=;
+        b=MdAaat0TfVVwd1TH/MBG7IRIXDoLVffCYCxupcxpAx7OBzER+amHcInOejXF1qaeym
+         R6KfPeD+SH8IVJ/XIkiArPE31Awah8xlhc+S85BJgDGXDp+JFE/MXztHCmwhv1QSG745
+         JNyH1Nsj/z+Tv+ZVXpO4J2joozZ1QxeIyDpTx3t/T6dvxKnJSnbFrlBcPfgvJGXWhBud
+         LsLykfs7Q8GV0WqDrhY9nfDfbi17RMl0ncma5/DklZLi5QilSPKRPZQqZPu5tgcma9zb
+         BAT2HiySKqI8Tq20BYZO69MEjhJFaaYtyRxFlVAouBBTIyRHtVm+N9AthXM7sIULq7/N
+         R92A==
+X-Gm-Message-State: APjAAAWo+UVY24I52OoyBwkzKgzQVQ7pWv90aB+Id4O6U/xsACBN+kbm
+        /noYf16g7puAIcbBxXMhJyhewA==
+X-Google-Smtp-Source: APXvYqwNeBDemGAupkBrwZ3cL+VpkGLAVMGcUD/WjAQMWaBUjLbTfTXophz8coDKGG0HHx17nIcMkQ==
+X-Received: by 2002:a7b:c954:: with SMTP id i20mr8166477wml.169.1567784230439;
+        Fri, 06 Sep 2019 08:37:10 -0700 (PDT)
+Received: from pixies ([141.226.9.174])
+        by smtp.gmail.com with ESMTPSA id r9sm9006432wra.19.2019.09.06.08.37.08
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 06 Sep 2019 08:37:09 -0700 (PDT)
+Date:   Fri, 6 Sep 2019 18:37:07 +0300
+From:   Shmulik Ladkani <shmulik@metanetworks.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, eyal@metanetworks.com,
+        netdev <netdev@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Subject: Re: [PATCH net] net: gso: Fix skb_segment splat when splitting
+ gso_size mangled skb having linear-headed frag_list
+Message-ID: <20190906183707.3eaacd79@pixies>
+In-Reply-To: <CAF=yD-JB6TMQuyaxzLX8=9CZZF+Zk5EmniSkx_F81bVc87XqJw@mail.gmail.com>
+References: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
+        <CAF=yD-J9Ax9f7BsGBFAaG=QU6CPVw6sSzBkZJOHRW-m6o49oyw@mail.gmail.com>
+        <20190906094744.345d9442@pixies>
+        <CAF=yD-JB6TMQuyaxzLX8=9CZZF+Zk5EmniSkx_F81bVc87XqJw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190906095410.107596-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 6 Sep 2019 10:49:55 -0400
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-On 9/6/19 2:54 AM, YueHaibing wrote:
-> Remove including <linux/version.h> that don't need it.
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_main.c | 1 -
->   1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> index 5ec67f3f1853..15e432386b35 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> @@ -2,7 +2,6 @@
->   /* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->   
->   #include <linux/module.h>
-> -#include <linux/version.h>
->   #include <linux/netdevice.h>
->   #include <linux/utsname.h>
->
->
+> But I wonder whether it is a given that head_skb has headlen.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
+This is what I observed for GRO packets that do have headlen frag_list
+members: the 'head_skb' itself had a headlen too, and its head was
+built using the original gso_size (similar to the frag_list members).
 
+Maybe Eric can comment better.
+
+> Btw, it seems slightly odd to me tot test head_frag before testing
+> headlen in the v2 patch.
+
+Requested by Alexander. I'm fine either way.
+
+Thanks
+Shmulik
