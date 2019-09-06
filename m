@@ -2,69 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A724AB0F2
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 05:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF8AAB12E
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 05:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392122AbfIFDbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Sep 2019 23:31:38 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:44018 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392118AbfIFDbi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 23:31:38 -0400
-Received: by mail-yb1-f194.google.com with SMTP id o82so1696353ybg.10
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 20:31:37 -0700 (PDT)
+        id S2404441AbfIFDjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Sep 2019 23:39:06 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37560 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392155AbfIFDjF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Sep 2019 23:39:05 -0400
+Received: by mail-pl1-f195.google.com with SMTP id b10so2436492plr.4;
+        Thu, 05 Sep 2019 20:39:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B+cAS7S6JDVsWh+Fo11sZQw1SyPIFidpqagDA1HwWY0=;
-        b=GjjLtJxWA1/3/v9bLgQePrd/ouRrhzQ3EzZcWrD68sTrdsk2GncxiN/ix6IIICsbU9
-         AZcMrFi1xdDEfIBH2gGF6uAaC5YiOr5Yi65xu9mlC3EA6x0izJ9wO8AYlqS8g/O1wy93
-         /zaw96fgF9Caq6Pg27UjHPSFdau8j/YxaS4g/9Zbupd/MN7s8IoGZGUy5XqgQ/7ur7i9
-         z3wq4+0VdAOPlJxGFUnTAbE/Q7Q0Uhdygi+NEnTHTAiBguN4V5ezasDLWtJnWxW1qhYk
-         c73Letwg9Tf04VFe+9DRZihtNo/iwky92MDShVLHgpMhGAaZqBUpVCxaQPRujpABir2D
-         y2Pw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PXYF1M03RrcZFiPVCr+oafxI5KwHAQlJ1LzSSGxpPe0=;
+        b=Q21vkhzuAlNVXS4iv5SGd/V6DPV1QKXyuezlpF/KupK8aco7bH8L6xFRe+3rzjhuIi
+         LAAgTEASWHEHYVoAj7FVyFx3Xp5PZbquc6w1OkYAtwZ31L53Gw7JXTOe8GkX29sSmyjV
+         NqjvYJ/6KjMr5tH9UVt7rQsEBIztiZMRWNJ+YYvVx2fp9XRuNC/ZzQX2uySLo8ZgybfR
+         GJGLOSv0jY6mSzp91+tHXpjAgj9SSldX+EL6SzTMQdjoT8/KD5f31faQ7+RyIc/SPXp6
+         /32KsQdGPtu1HZwBEeCpce7NjL4p+ZDjPUPLNPaKFefZuIpcg1hxseD8csAyztj6AZPM
+         R4+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B+cAS7S6JDVsWh+Fo11sZQw1SyPIFidpqagDA1HwWY0=;
-        b=eCfz3au+LGtTCy+h/ZpS7oZ/EDZQbN1TdSuGhgH/SgMvllLeuFUAZPCJ21mXHG029q
-         0Ow33iKNih5JJAn/npsTBkKnLyb3uZob515jJPS2Zw4hpQipt0wX0m2hGhFOrkFKOLfF
-         IzKk5QvbDWOcAvyD7UQvKIQlxyXiLVkHdeqQSokxxBpqcY5sVkPfXeDqCAVVqrapfmXC
-         KA9uopdM8uKeCt/3i1O7/Qp4EXwMPu/4YxwkZeqmT4LwluffoINXQ0/aj3NHtpJLUd5a
-         L1QpwB1NLcrXJYLH4fpRBYKWDoSUWfvH4NBRxUjlaTIJKLgAAR5BuLbvtqlOMFH/F+G8
-         FeMA==
-X-Gm-Message-State: APjAAAXvXkYXwCiHrIwKgcd0b7I3YgF1zJTpbcd/kacEgYJMTDLe7dRh
-        KPuhqenuH4HkElaOIzustd5B5DAiWBGfWm+FXkAWgA==
-X-Google-Smtp-Source: APXvYqzqwbkH5KijRZU2dqgA+IzF5vVB73pDqqQxSgKEoSRpnW34WQ04NImZG0+JcU6gHNOpf5TUDaXT6xILF5+Ar1I=
-X-Received: by 2002:a25:f50c:: with SMTP id a12mr4942528ybe.354.1567740696812;
- Thu, 05 Sep 2019 20:31:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PXYF1M03RrcZFiPVCr+oafxI5KwHAQlJ1LzSSGxpPe0=;
+        b=KFjEmvV0PE6sLGmE3TzJcVADHJWUxvkp24P6MFU0P2NNZrZWG60gXOUWHSDTdzT64L
+         vpdJxNtxff9Gict5x/8JOyp7NXNVIC4WUSUbmHdS3UdXjRINJTbQ1R3AY/28PKN8cajo
+         WnlP3LiA7JN03KpN1nPZDXqCgJ+EqJw3qO/z7Y4TjVG+25L3a6P4tJReGFYQQaxsnOZO
+         j2rWD2MzOIoW9Q76kRkW4bwZBvjqsST1jxuKGiQA6AsLo5YGoCvwyxNN12NjKCG6Qwh1
+         LKRnAGzuF50BEuTMYX9LDEnYx1ifToPmv+GPFkASd3TDw3YpeUEG3jIJnAvrbv0JHL6/
+         L3mg==
+X-Gm-Message-State: APjAAAXVfXJZ0w63jQpfgWtINdcuhVkyXLBPUbceCD74/3oMcpy5zs8p
+        LPn6hXdld2VkHTIZ8r51/7WHe5QR
+X-Google-Smtp-Source: APXvYqzgmhLuIsIaUW3PQSBJiLj2kLVGPu55mYjmZmnUcycRvpUbGvdC1nBjLxYMCIJYaHa9rSMSYA==
+X-Received: by 2002:a17:902:4381:: with SMTP id j1mr6842157pld.318.1567741145109;
+        Thu, 05 Sep 2019 20:39:05 -0700 (PDT)
+Received: from localhost ([175.223.27.235])
+        by smtp.gmail.com with ESMTPSA id i6sm9072040pfq.20.2019.09.05.20.39.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 20:39:03 -0700 (PDT)
+Date:   Fri, 6 Sep 2019 12:39:00 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Qian Cai <cai@lca.pw>, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190906033900.GB1253@jagdpanzerIV>
+References: <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
+ <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
+ <20190904074312.GA25744@jagdpanzerIV>
+ <1567599263.5576.72.camel@lca.pw>
+ <20190904144850.GA8296@tigerII.localdomain>
+ <1567629737.5576.87.camel@lca.pw>
+ <20190905113208.GA521@jagdpanzerIV>
+ <20190905132334.52b13d95@oasis.local.home>
 MIME-Version: 1.0
-References: <565e386f-e72a-73db-1f34-fedb5190658a@gmail.com>
- <20190902162336.240405-1-zenczykowski@gmail.com> <98b8a95f-245a-0bdf-6a4c-c07a372d4d0f@gmail.com>
-In-Reply-To: <98b8a95f-245a-0bdf-6a4c-c07a372d4d0f@gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Fri, 6 Sep 2019 05:31:23 +0200
-Message-ID: <CANP3RGcbEP2N-CDQ6N649k0-cV4AhQeWqF-niz7EMPFOFpkU1w@mail.gmail.com>
-Subject: Re: [PATCH v2] net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/128
- local route (and others)
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Colitti <lorenzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190905132334.52b13d95@oasis.local.home>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Shouldn't it use
->
->         if (!IS_ERR(f6i))
->                 f6i->dst_nocount = true;
->
-> ???
+On (09/05/19 13:23), Steven Rostedt wrote:
+> > I think we can queue significantly much less irq_work-s from printk().
+> > 
+> > Petr, Steven, what do you think?
 
-Yes, certainly.  I'll send a fix.
+[..]
+> I mean, really, do we need to keep calling wake up if it
+> probably never even executed?
+
+I guess ratelimiting you are talking about ("if it probably never even
+executed") would be to check if we have already called wake up on the
+log_wait ->head. For that we need to, at least, take log_wait spin_lock
+and check that ->head is still in TASK_INTERRUPTIBLE; which is (quite,
+but not exactly) close to what wake_up_interruptible() does - it doesn't
+wake up the same task twice, it bails out on `p->state & state' check.
+
+Or did I miss something?
+
+	-ss
