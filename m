@@ -2,112 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91EFDAB295
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 08:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE981AB301
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388555AbfIFGrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 02:47:49 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43964 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbfIFGrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 02:47:49 -0400
-Received: by mail-wr1-f68.google.com with SMTP id q17so561709wrx.10
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 23:47:48 -0700 (PDT)
+        id S2404518AbfIFHEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 03:04:43 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44675 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729391AbfIFHEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:04:42 -0400
+Received: by mail-wr1-f65.google.com with SMTP id 30so5314581wrk.11;
+        Fri, 06 Sep 2019 00:04:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LBuxtOCPLu6tHjo7Yq/3w0nPkrOsdOeRxnW0hcFRCho=;
-        b=SfxXVfnKc7BGqu/MCZrIUyeI4ZV9JorakO5YK0+b4cQvb2zKx9ho54RjX6kA/H/9Rw
-         eSegpA71cZLEZTe0xRyTw/dNJwhZAx2ZFTFnWInDgGtd/BHnWWmTNW0GORY0yLrBt9dF
-         4Jyh/m/q3FUaDfID5vr3Sv85bGVBcEriZNElc=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5pzmBZer/+TBMOVeXwQ9BsAmm7zzKnUjSwWoimEiUsE=;
+        b=utGMqSVus0m5uL9skhioJy/Wyar18PoXazYEoP81I4FMpvOuwKHoxczuwey+4Untcm
+         Z1TTGv1dcVI08WsY2mm2RsQH6i/AoScqiNiyUzRGYmoeDLwVFkQz1DN/COo7hOkSQXXL
+         2AqeSp2/KBwA7U8CLgaVkxDbyTgN4zJZXJ+fzMGm4xadjGjM5jmxNM4wCNsXTiBMeoBJ
+         mAq1KhYE1PEOxF4nUiptnN7XEH6+cEJ7dboGl0UKmzTVmVhMw6R52/Gm9qtmVsHyRQox
+         T0MqfD4o4ksanBDwB/zObxS8vXOs0yqSp4Tm/CjEBmQ8YET0DEu+gfnFJBJn/a09SMW0
+         ZDiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LBuxtOCPLu6tHjo7Yq/3w0nPkrOsdOeRxnW0hcFRCho=;
-        b=QGFk4FDQMdnUl43KTh7UyulgiBC6Y5HHQo9/rNyFZFofw7E7v/KaXORMjL1GTzmmHW
-         +sJlVHzBYzzrv16khehF74EtWMp2rBZaynKEzO3cNSXqYj7JMIrfQ6mTDBzm/jNq70YG
-         +xa1xkykPKfXvQSf6SXyG6LFqn8izNYvIRZZ1fTL506VpQo+LVr7df2/DupK4otn5l9r
-         Ak0acDMrQQS/QPlCNwXKssKdTiKNoaI3mJ0rk4Ho5pBgiUrud2D734n5GNnE9eqbs9mC
-         1Zgaj7FD+JL6lFHqo4ZZeUkl/SBe6iXDL1RLfPn+a3WOk7+PfEWjFmpjyxY9Ao3IEK6a
-         bFdg==
-X-Gm-Message-State: APjAAAV2bm1hyksNbHbM7dmkWZgA1cnDP33bDFZHoX6m3QMrwXUSI32K
-        SqKBE/zhqh9uah+kVubEAy290DwSBoxBbA==
-X-Google-Smtp-Source: APXvYqyQhLCDiMEeazq2E9r2iJPTNdYNJZHr9l34TcUWIEVaVqvJ3JFsBIlSY2n9dt6+orBTe3YaCA==
-X-Received: by 2002:a5d:4408:: with SMTP id z8mr5591694wrq.106.1567752467480;
-        Thu, 05 Sep 2019 23:47:47 -0700 (PDT)
-Received: from pixies ([141.226.9.174])
-        by smtp.gmail.com with ESMTPSA id j1sm6277790wrg.24.2019.09.05.23.47.45
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 05 Sep 2019 23:47:46 -0700 (PDT)
-Date:   Fri, 6 Sep 2019 09:47:44 +0300
-From:   Shmulik Ladkani <shmulik@metanetworks.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>, eyal@metanetworks.com,
-        netdev <netdev@vger.kernel.org>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net] net: gso: Fix skb_segment splat when splitting
- gso_size mangled skb having linear-headed frag_list
-Message-ID: <20190906094744.345d9442@pixies>
-In-Reply-To: <CAF=yD-J9Ax9f7BsGBFAaG=QU6CPVw6sSzBkZJOHRW-m6o49oyw@mail.gmail.com>
-References: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
-        <CAF=yD-J9Ax9f7BsGBFAaG=QU6CPVw6sSzBkZJOHRW-m6o49oyw@mail.gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5pzmBZer/+TBMOVeXwQ9BsAmm7zzKnUjSwWoimEiUsE=;
+        b=RJ0LE/GszGNyLoym3Y+TBZImo/9XtH3lR89KsqelH4kbFeSvjV6q0aFz70pPBIsZpf
+         +2YQtoiGB1fv7tO6Ho1M4smmgFVZk4vIo5FsYJ2VAKE4qvkrfUJpWYUYnpqeI/6wF9nl
+         b4X49A7tLfjf/N4MnV6Haswsak6Z5zEiF3V6JtibGdj/Z6GqIy+TfRD1YJSxWw5ThI4T
+         Tpw9CeMtu82NBdJI7RZVg+L1jO3mRRduGOyCau5wJwwWEFB4eSnnkxR/sH8UxBnfV67T
+         YBVmH4z66BzO97xWpMvdxd3vIF8aRU9cOk6z3TAT6Z19yrEdXl7GaBw+ur0vi8cvmUFi
+         SidQ==
+X-Gm-Message-State: APjAAAXK2r2QDN5nPlGXRtODzynAlaRk6iZ7Y7OPTS2oCNCP+iKedp9j
+        uLNEX0WME9TqWaZ9AXSLoEc=
+X-Google-Smtp-Source: APXvYqwD4aSpDy4eqO3m8n2Pm0zL/CB18gcJ4R9r7lJ449f/V5S/d+OCOxs0pPjNi6W1W2to5Yqkng==
+X-Received: by 2002:a5d:568c:: with SMTP id f12mr5867093wrv.248.1567753478970;
+        Fri, 06 Sep 2019 00:04:38 -0700 (PDT)
+Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
+        by smtp.googlemail.com with ESMTPSA id x6sm7908454wmf.38.2019.09.06.00.04.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Sep 2019 00:04:38 -0700 (PDT)
+Date:   Fri, 6 Sep 2019 09:04:35 +0200
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Kalyani Akula <kalyania@xilinx.com>
+Cc:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pombredanne@nexb.com" <pombredanne@nexb.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sarat Chand Savitala <saratcha@xilinx.com>
+Subject: Re: [PATCH V2 4/4] crypto: Add Xilinx AES driver
+Message-ID: <20190906070435.GA22006@Red>
+References: <1567346098-27927-1-git-send-email-kalyani.akula@xilinx.com>
+ <1567346098-27927-5-git-send-email-kalyani.akula@xilinx.com>
+ <20190902065854.GA28750@Red>
+ <BN7PR02MB512445C31936CED70F02D15AAFB80@BN7PR02MB5124.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN7PR02MB512445C31936CED70F02D15AAFB80@BN7PR02MB5124.namprd02.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 Sep 2019 17:51:20 -0400
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
-
-> On Thu, Sep 5, 2019 at 2:36 PM Shmulik Ladkani <shmulik@metanetworks.com> wrote:
-> >
-> > +       if (mss != GSO_BY_FRAGS &&
-> > +           (skb_shinfo(head_skb)->gso_type & SKB_GSO_DODGY)) {
-> > +               /* gso_size is untrusted.
-> > +                *
-> > +                * If head_skb has a frag_list with a linear non head_frag
-> > +                * item, and head_skb's headlen does not fit requested
-> > +                * gso_size, fall back to copying the skbs - by disabling sg.
-> > +                *
-> > +                * We assume checking the first frag suffices, i.e if either of
-> > +                * the frags have non head_frag data, then the first frag is
-> > +                * too.
-> > +                */
-> > +               if (list_skb && skb_headlen(list_skb) && !list_skb->head_frag &&
-> > +                   (mss != skb_headlen(head_skb) - doffset)) {  
+On Wed, Sep 04, 2019 at 05:40:22PM +0000, Kalyani Akula wrote:
+> Hi Corentin,
 > 
-> I thought the idea was to check skb_headlen(list_skb), as that is the
-> cause of the problem. Is skb_headlen(head_skb) a good predictor of
-> that? I can certainly imagine that it is, just not sure.
+> Thanks for the review comments.
+> Please find my response/queries inline.
+> 
+> > -----Original Message-----
+> > From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > Sent: Monday, September 2, 2019 12:29 PM
+> > To: Kalyani Akula <kalyania@xilinx.com>
+> > Cc: herbert@gondor.apana.org.au; kstewart@linuxfoundation.org;
+> > gregkh@linuxfoundation.org; tglx@linutronix.de; pombredanne@nexb.com;
+> > linux-crypto@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > netdev@vger.kernel.org; Kalyani Akula <kalyania@xilinx.com>
+> > Subject: Re: [PATCH V2 4/4] crypto: Add Xilinx AES driver
+> > 
+> > On Sun, Sep 01, 2019 at 07:24:58PM +0530, Kalyani Akula wrote:
+> > > This patch adds AES driver support for the Xilinx ZynqMP SoC.
+> > >
+> > > Signed-off-by: Kalyani Akula <kalyani.akula@xilinx.com>
+> > > ---
+> > 
+> > Hello
+> > 
+> > I have some comment below
+> > 
+> > >  drivers/crypto/Kconfig          |  11 ++
+> > >  drivers/crypto/Makefile         |   1 +
+> > >  drivers/crypto/zynqmp-aes-gcm.c | 297
+> > > ++++++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 309 insertions(+)
+> > >  create mode 100644 drivers/crypto/zynqmp-aes-gcm.c
+> > >
+> > > diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig index
+> > > 603413f..a0d058a 100644
+> > > --- a/drivers/crypto/Kconfig
+> > > +++ b/drivers/crypto/Kconfig
+> > > @@ -677,6 +677,17 @@ config CRYPTO_DEV_ROCKCHIP
+> > >  	  This driver interfaces with the hardware crypto accelerator.
+> > >  	  Supporting cbc/ecb chainmode, and aes/des/des3_ede cipher mode.
+> > >
+> > > +config CRYPTO_DEV_ZYNQMP_AES
+> > > +	tristate "Support for Xilinx ZynqMP AES hw accelerator"
+> > > +	depends on ARCH_ZYNQMP || COMPILE_TEST
+> > > +	select CRYPTO_AES
+> > > +	select CRYPTO_SKCIPHER
+> > > +	help
+> > > +	  Xilinx ZynqMP has AES-GCM engine used for symmetric key
+> > > +	  encryption and decryption. This driver interfaces with AES hw
+> > > +	  accelerator. Select this if you want to use the ZynqMP module
+> > > +	  for AES algorithms.
+> > > +
+> > >  config CRYPTO_DEV_MEDIATEK
+> > >  	tristate "MediaTek's EIP97 Cryptographic Engine driver"
+> > >  	depends on (ARM && ARCH_MEDIATEK) || COMPILE_TEST diff --git
+> > > a/drivers/crypto/Makefile b/drivers/crypto/Makefile index
+> > > afc4753..c99663a 100644
+> > > --- a/drivers/crypto/Makefile
+> > > +++ b/drivers/crypto/Makefile
+> > > @@ -48,3 +48,4 @@ obj-$(CONFIG_CRYPTO_DEV_BCM_SPU) += bcm/
+> > >  obj-$(CONFIG_CRYPTO_DEV_SAFEXCEL) += inside-secure/
+> > >  obj-$(CONFIG_CRYPTO_DEV_ARTPEC6) += axis/  obj-y += hisilicon/
+> > > +obj-$(CONFIG_CRYPTO_DEV_ZYNQMP_AES) += zynqmp-aes-gcm.o
+> > > diff --git a/drivers/crypto/zynqmp-aes-gcm.c
+> > > b/drivers/crypto/zynqmp-aes-gcm.c new file mode 100644 index
+> > > 0000000..d65f038
+> > > --- /dev/null
+> > > +++ b/drivers/crypto/zynqmp-aes-gcm.c
+> > > @@ -0,0 +1,297 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * Xilinx ZynqMP AES Driver.
+> > > + * Copyright (c) 2019 Xilinx Inc.
+> > > + */
+> > > +
+> > > +#include <crypto/aes.h>
+> > > +#include <crypto/scatterwalk.h>
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/of_device.h>
+> > > +#include <linux/scatterlist.h>
+> > > +#include <linux/firmware/xlnx-zynqmp.h>
+> > > +
+> > > +#define ZYNQMP_AES_IV_SIZE			12
+> > > +#define ZYNQMP_AES_GCM_SIZE			16
+> > > +#define ZYNQMP_AES_KEY_SIZE			32
+> > > +
+> > > +#define ZYNQMP_AES_DECRYPT			0
+> > > +#define ZYNQMP_AES_ENCRYPT			1
+> > > +
+> > > +#define ZYNQMP_AES_KUP_KEY			0
+> > > +#define ZYNQMP_AES_DEVICE_KEY			1
+> > > +#define ZYNQMP_AES_PUF_KEY			2
+> > > +
+> > > +#define ZYNQMP_AES_GCM_TAG_MISMATCH_ERR		0x01
+> > > +#define ZYNQMP_AES_SIZE_ERR			0x06
+> > > +#define ZYNQMP_AES_WRONG_KEY_SRC_ERR		0x13
+> > > +#define ZYNQMP_AES_PUF_NOT_PROGRAMMED		0xE300
+> > > +
+> > > +#define ZYNQMP_AES_BLOCKSIZE			0x04
+> > > +
+> > > +static const struct zynqmp_eemi_ops *eemi_ops; struct zynqmp_aes_dev
+> > > +*aes_dd;
+> > 
+> > I still think that using a global variable for storing device driver data is bad.
+> 
+> I think storing the list of dd's would solve up the issue with global variable, but there is only one AES instance here.
+> Please suggest
+> 
 
-Yes, 'mss != skb_headlen(HEAD_SKB)' seems to be a very good predictor,
-both for the test reproducer, and what's observered on a live system.
+Look what I do for amlogic driver https://patchwork.kernel.org/patch/11059633/.
+I store the device driver in the instatiation of a crypto template.
 
-We *CANNOT* use 'mss != skb_headlen(LIST_SKB)' as the test condition.
-The packet could have just a SINGLE frag_list member, and that member could
-be a "small remainder" not reaching the full mss size - so we could hit
-the test condition EVEN FOR NON gso_size mangled frag_list skbs -
-which is not desired.
+[...]
+> > > +static int zynqmp_setkey_blk(struct crypto_tfm *tfm, const u8 *key,
+> > > +			     unsigned int len)
+> > > +{
+> > > +	struct zynqmp_aes_op *op = crypto_tfm_ctx(tfm);
+> > > +
+> > > +	if (((len != 1) && (len !=  ZYNQMP_AES_KEY_SIZE)) || (!key))
+> > 
+> > typo, two space
+> 
+> Will fix in the next version
+> 
+> > 
+> > > +		return -EINVAL;
+> > > +
+> > > +	if (len == 1) {
+> > > +		op->keytype = *key;
+> > > +
+> > > +		if ((op->keytype < ZYNQMP_AES_KUP_KEY) ||
+> > > +			(op->keytype > ZYNQMP_AES_PUF_KEY))
+> > > +			return -EINVAL;
+> > > +
+> > > +	} else if (len == ZYNQMP_AES_KEY_SIZE) {
+> > > +		op->keytype = ZYNQMP_AES_KUP_KEY;
+> > > +		op->keylen = len;
+> > > +		memcpy(op->key, key, len);
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > 
+> > It seems your driver does not support AES keysize of 128/196, you need to
+> > fallback in that case.
+> 
+> [Kalyani] In case of 128/196 keysize, returning the error would suffice ?
+> Or still algorithm need to work ?
+> If error is enough, it is taken care by this condition 
+> if (((len != 1) && (len !=  ZYNQMP_AES_KEY_SIZE)) || (!key))
 
-Also, is we test 'mss != skb_headlen(list_skb)' and execute 'sg=false'
-ONLY IF 'list_skb' is *NOT* the last item, this is still bogus.
-Imagine a gso_size mangled packet having just head_skb and a single
-"small remainder" frag. This packet will hit the BUG_ON, as the
-'sg=false' solution is now skipped according to the revised condition.
+I think this problem just simply show us that your driver is not tested against crypto selftest.
+I have tried to refuse 128/196 in my driver and I get:
+alg: skcipher: cbc-aes-sun8i-ce setkey failed on test vector 0; expected_error=0, actual_error=-22, flags=0x1
 
-> Thanks for preparing the patch, and explaining the problem and
-> solution clearly in the commit message. I'm pretty sure I'll have
-> forgotten the finer details next time we have to look at this
-> function again.
+So if your hardware lack 128/196 keys support, you must fallback to a software version.
 
-Indeed. Apparently I've been there myself few years back and forgot all
-the gritty details :) see [0]
+Anyway please test your driver with crypto selftest enabled (and also CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y)
 
-[0] https://patchwork.ozlabs.org/patch/661419/ 
+Regards
