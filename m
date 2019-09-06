@@ -2,116 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAA01ABDEA
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 18:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D8BAABDEF
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 18:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392278AbfIFQmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 12:42:37 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38031 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732712AbfIFQmh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 12:42:37 -0400
-Received: by mail-pf1-f194.google.com with SMTP id h195so4876351pfe.5;
-        Fri, 06 Sep 2019 09:42:37 -0700 (PDT)
+        id S2388313AbfIFQop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 12:44:45 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:44196 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbfIFQop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 12:44:45 -0400
+Received: by mail-yb1-f195.google.com with SMTP id y21so2381610ybi.11
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 09:44:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8F4vyAP7xufW5sYJcgtxJXKLIYDbjk5khl9fDuHf24A=;
-        b=dBmU6TMrljwjRO2IWF/BCZHJDgxj9cvCSZ7GRmAvS0XysSxcJRaReaBhSYoArUz8KE
-         PlGwZO+/eNuRZ90iZalarVTROtWOrOaerTb6zkBhMKxahXz+vksiknkPK6Gngzb90Qpq
-         vZ2PCapsL0qYQomJRVl8uw3s98BspY5D/Rv6LWIhCh3m+TqPp1NmU/iv5WqBJ8e5gCCD
-         DJoD61bsIxCBDgaHJF921fz0k7n6sT8IxmaKI4YHU4KxZzerEdmMATsd6o5ZFaebDr7h
-         4L/U9GLLxqwbTzxTyW9bRxSRBGTEguLP1s2rHbOOm4Q1AdbyuWLc28TugywKuzF+6oQX
-         BVEw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4KfgqDWgseLxqotkMdCp/x5aRTk3rWI3G/nlTstqzFk=;
+        b=cWnZMfZauZmEnEq7pxRfRj44cK/v0thuVmlL+HfBymX2urw1faR+1+926W6wPIxQNe
+         zRf8epN8CWUW+6v7g8ivtYKtD8fxKvrZT8OSH4VzqT2gT+7zcM3TGPiToS53b/UxXpID
+         En1lNB6aZMXST1+BBM4xFiQiSNi+q0ih3KT08n77LuSsgWO/hkqFh2DP6yFbilQCK2+u
+         KQAtd5PUd00DJtH8WendR3xghlO9OLZo0uHJNyril2x1kG+QGuYD/iymMfKF4eZuSWlx
+         ouOiEe+BD4IYRese4Br5WSMID4cQsIIQqJEnaO7ZfW/CUtNLLcJKLj4b/m+DpsD5nvr2
+         xgIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8F4vyAP7xufW5sYJcgtxJXKLIYDbjk5khl9fDuHf24A=;
-        b=J2Ict8K9raLCdStUOqMgV+bXAhK3a4BQemuEOxObU0O2dj+Dc58D44k/YSb5pwCq5x
-         3L278cBFlzMwv+/r+d030TtOHrdbWzhWYd28UFdyr1UtSvquq7mZVrhnBJjYaFwdMV/7
-         xhUoKKAB5vwCECK7i2fTa7jQFAeF+yxRysM+fFWmUziJIPavkOrqkSkS1fIoWy9sCOPQ
-         zcXjyHMO7+4HOcFq2fmZTZGk3BhlwkiRcWSHhWc3SQDi31vXs3MfDWZodgzVtI3R7lYU
-         6lnkt/y2kMDmS6IVGHKsAXaZLOHJd+2MKplCXeTIuek1DAuvfSQKvLAI01ytJ70Oq2u5
-         JFEA==
-X-Gm-Message-State: APjAAAXxqVP1h1AJqS/i99yQ3Gp0C3glyJXg4I6az6tXhCqOJhnorAPH
-        wXmCRntt4ZeW+Cw1E5udzWM=
-X-Google-Smtp-Source: APXvYqzPpvPo2Qc+q/Yy5oo0nF+VvgkhJcZPO667cTqUhNR9jQKNkIYzFbniu5TkfQbQAlNXhvxNMg==
-X-Received: by 2002:a62:2b16:: with SMTP id r22mr11769282pfr.254.1567788156710;
-        Fri, 06 Sep 2019 09:42:36 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:46a4])
-        by smtp.gmail.com with ESMTPSA id g14sm6726362pfb.150.2019.09.06.09.42.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 06 Sep 2019 09:42:35 -0700 (PDT)
-Date:   Fri, 6 Sep 2019 09:42:34 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next 0/6] selftests/bpf: move sockopt tests under
- test_progs
-Message-ID: <20190906164233.npuhtaeoezpp2dol@ast-mbp.dhcp.thefacebook.com>
-References: <20190904162509.199561-1-sdf@google.com>
- <20190904230331.ld4zsn4jgldu7l6q@ast-mbp.dhcp.thefacebook.com>
- <CAEf4Bzaoh0Ur6Ze0VLNYqhTJ21Vp6D2NBMkb7yAeseqom=TyKA@mail.gmail.com>
- <20190906151808.GD2101@mini-arch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4KfgqDWgseLxqotkMdCp/x5aRTk3rWI3G/nlTstqzFk=;
+        b=CeW0+R81CDmYW7RtXNWL4m4Wl0rf+XcSWqL5fRtChOG2GD5pnBtwOnNw9CiL9S6G7r
+         MGRR7FAQAPiNdnyK/bE37Tx55QLnpJQk6SxDKSfHbWbH6hGt684PAzW9TniAxy06CFGJ
+         sOxuriviUnBFc0QButvU1Q+UfMolw05qyfYYvJ+2T8VXdLzQrEWMUsS0GSJ6kiSMin2b
+         9TmTYdPK3r/pJGa6RyEyCQXUOStVFgUU8tPvlEZ+BzSRdp9DziS/hsUttELY1Kmh6crj
+         Ge4abkhe99VNvCjGtIVB5RXPQlWESaeAXP/rXkjuxZUtN8X4aBT8GAKcGkdqqPW9by2z
+         9QDA==
+X-Gm-Message-State: APjAAAVloTjhU2AjnE60GSeVdS5m+7zUtNdzWBHPyQRC4azvvvLwbq2F
+        vb7Opv8OjX8cRzUg3voyNaVRrOn0
+X-Google-Smtp-Source: APXvYqxgokWVwayd1ZrWYKv5lXLYUFEOEtDmMIn1AgxOCvkwWk7/lwwkFkAg42mkKRdH19W8jrHc3w==
+X-Received: by 2002:a25:514:: with SMTP id 20mr6960770ybf.319.1567788283329;
+        Fri, 06 Sep 2019 09:44:43 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id i132sm1262108ywc.38.2019.09.06.09.44.41
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Sep 2019 09:44:41 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id u32so2378094ybi.12
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 09:44:41 -0700 (PDT)
+X-Received: by 2002:a25:7396:: with SMTP id o144mr7223804ybc.390.1567788280737;
+ Fri, 06 Sep 2019 09:44:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190906151808.GD2101@mini-arch>
-User-Agent: NeoMutt/20180223
+References: <20190905183633.8144-1-shmulik.ladkani@gmail.com>
+ <CAF=yD-J9Ax9f7BsGBFAaG=QU6CPVw6sSzBkZJOHRW-m6o49oyw@mail.gmail.com>
+ <20190906094744.345d9442@pixies> <CAF=yD-JB6TMQuyaxzLX8=9CZZF+Zk5EmniSkx_F81bVc87XqJw@mail.gmail.com>
+ <20190906183707.3eaacd79@pixies> <CAKgT0Ufd40gmaW7eLu3sRHd=4CeY9WNmgRBUzNt5_+0tEKEMvA@mail.gmail.com>
+In-Reply-To: <CAKgT0Ufd40gmaW7eLu3sRHd=4CeY9WNmgRBUzNt5_+0tEKEMvA@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 6 Sep 2019 12:44:04 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSea6gTEFFsBfwSECQ8CSi3TFqi2mEPvMuaWNdHwQxwcLg@mail.gmail.com>
+Message-ID: <CA+FuTSea6gTEFFsBfwSECQ8CSi3TFqi2mEPvMuaWNdHwQxwcLg@mail.gmail.com>
+Subject: Re: [PATCH net] net: gso: Fix skb_segment splat when splitting
+ gso_size mangled skb having linear-headed frag_list
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Shmulik Ladkani <shmulik@metanetworks.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, eyal@metanetworks.com,
+        netdev <netdev@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 06, 2019 at 08:18:08AM -0700, Stanislav Fomichev wrote:
-> On 09/06, Andrii Nakryiko wrote:
-> > On Wed, Sep 4, 2019 at 4:03 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Wed, Sep 04, 2019 at 09:25:03AM -0700, Stanislav Fomichev wrote:
-> > > > Now that test_progs is shaping into more generic test framework,
-> > > > let's convert sockopt tests to it. This requires adding
-> > > > a helper to create and join a cgroup first (test__join_cgroup).
-> > > > Since we already hijack stdout/stderr that shouldn't be
-> > > > a problem (cgroup helpers log to stderr).
-> > > >
-> > > > The rest of the patches just move sockopt tests files under prog_tests/
-> > > > and do the required small adjustments.
-> > >
-> > > Looks good. Thank you for working on it.
-> > > Could you de-verbose setsockopt test a bit?
-> > > #23/32 setsockopt: deny write ctx->retval:OK
-> > > #23/33 setsockopt: deny read ctx->retval:OK
-> > > #23/34 setsockopt: deny writing to ctx->optval:OK
-> > > #23/35 setsockopt: deny writing to ctx->optval_end:OK
-> > > #23/36 setsockopt: allow IP_TOS <= 128:OK
-> > > #23/37 setsockopt: deny IP_TOS > 128:OK
-> > > 37 subtests is a bit too much spam.
-> > 
-> > If we merged test_btf into test_progs, we'd have >150 subtests, which
-> > would be pretty verbose as well. But the benefit of subtest is that
-> > you can run just that sub-test and debug/verify just it, without all
-> > the rest stuff.
-> > 
-> > So I'm wondering, if too many lines of default output is the only
-> > problem, should we just not output per-subtest line by default?
-> Ack, we can output per-subtest line if it fails so it's easy to re-run;
-> otherwise, hiding by default sounds good. I'll prepare a v3 sometime
-> today; Alexei, let us know if you disagree.
+On Fri, Sep 6, 2019 at 11:44 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Fri, Sep 6, 2019 at 8:37 AM Shmulik Ladkani <shmulik@metanetworks.com> wrote:
+> >
+> > On Fri, 6 Sep 2019 10:49:55 -0400
+> > Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > > But I wonder whether it is a given that head_skb has headlen.
+> >
+> > This is what I observed for GRO packets that do have headlen frag_list
+> > members: the 'head_skb' itself had a headlen too, and its head was
+> > built using the original gso_size (similar to the frag_list members).
 
-If the subtests are runnable and useful individually it's good to have
-them as subtests.
-I think in the above I misread them as a sequence of sub-checks that needs
-to happen before actual test result.
-Looking at test_sockopt.c I see that they're separate tests,
-so yeah keep them.
-No need to hide by default or extra flags.
-Let me look at v1 and v2 again...
+That makes sense.
 
+I was thinking of, say, a driver that combines napi_gro_frags with a
+copy break optimization. But given that gso_size is the same for all
+segments expect perhaps the last, all those segments will have taken
+the same path.
+
+And if we're wrong we'll find out soon enough and can return to this
+topic yet again. skb_segment really puts the fun in function.
+
+> >
+> > Maybe Eric can comment better.
+> >
+> > > Btw, it seems slightly odd to me tot test head_frag before testing
+> > > headlen in the v2 patch.
+> >
+> > Requested by Alexander. I'm fine either way.
+>
+> Yeah, my thought on that was "do we care about the length if the data
+> is stored in a head_frag?". I suppose you could flip the logic and
+> make it "do we care about it being a head_frag if there is no data
+> there?". The reason I had suggested the head_frag test first was
+> because it was a single test bit whereas the length requires reading
+> two fields and doing a comparison.
+>
+> For either ordering it is fine by me. So if we need to feel free to
+> swap those two tests for a v3.
+
+Got it. I don't feel strongly either. No need for a v3 for that.
+
+> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+
+Reviewed-by: Willem de Bruijn <willemb@google.com>
