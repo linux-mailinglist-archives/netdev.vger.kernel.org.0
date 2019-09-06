@@ -2,113 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9E2ABF1E
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D47C1ABF3D
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 20:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404215AbfIFSGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 14:06:00 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44138 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731584AbfIFSGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 14:06:00 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q21so4983485pfn.11
-        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 11:06:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=android.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=p8V7F8KyP/+hxEP3mQzxR8zQvVH94st7p5AqUmIp58o=;
-        b=KYxNmbyKb7HyYEXpPpjDcy/Dpd9jCTYKt/74keKiG2/HtRpP/uMNQTR5+Px2Vx+XET
-         v3M9kvYTm7v7Au7BLwR9NgPNnRdvjymJcNFDAmCW3GGUJiIFPQi33CQCppw0DXIooxcZ
-         B5RxsyCrpNrhM0AS8Fg3xiZDSBNNvKcYUxgZ6DMZi2zLsZ9hwqhAkjsY73zk2HS2RDW9
-         ap56YyunzImXHMO9e48SVwU8uYB83UK8Zhfy27jG7ZV/74z200v2ARAckKv5L7zAKhCb
-         WkQO1K3tNZgfZqJlRjDp6+BFvEw4lrOD2MQxe4MG5PRrdn+FRJdCVZnzwgos5+FqJS0Y
-         tDgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=p8V7F8KyP/+hxEP3mQzxR8zQvVH94st7p5AqUmIp58o=;
-        b=q/KDQkWSgjzKc+D9sGGqv67co6td1ZmRYu/4uj4jxCGwVfziM9s8G3bt9dwKrbIM4o
-         hCatsc6UlcPWUn2uYmZ6TFHdF4mEoJXTQ1sovf0IT4w3U1beBygzyRT7xwaS1YQjNvXF
-         BfZmuAH+A4Ego72RvftMiWbmB1CgRhH5QR9tQTx4D63cM9/xbpLd7Y3wyzNB/81E2aOP
-         NFUcXtiq0z5JEc4kXuIE21gNlBgordMRyXzz3D3K/+v4G31G9Hz3CPKilZcIIcNvqumo
-         2sSZeT1hpSNLl84QVMoRORsjX2vT4iomrPSmY1xeuYaC4aCy/xl1YMDMPsRc1wsPdPHn
-         LL1g==
-X-Gm-Message-State: APjAAAWw/akDYHtDwr9aU8Bc81cK5mlFudek+iMI6Md+kzpxfSbX71bl
-        1u2ybpFu+VF0tAyh9JfoNHC7tQ==
-X-Google-Smtp-Source: APXvYqz3R0KV2UoI6cPr+Bfc/NaNPL+NeUrRz64kO6R/9IPa6CJkQmQDFNK6q7XylojGJ0m1fgULUw==
-X-Received: by 2002:a62:60c7:: with SMTP id u190mr12406747pfb.54.1567793159283;
-        Fri, 06 Sep 2019 11:05:59 -0700 (PDT)
-Received: from nebulus.mtv.corp.google.com ([2620:15c:211:200:5404:91ba:59dc:9400])
-        by smtp.gmail.com with ESMTPSA id b185sm8749287pfg.14.2019.09.06.11.05.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Sep 2019 11:05:58 -0700 (PDT)
-From:   Mark Salyzyn <salyzyn@android.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, Mark Salyzyn <salyzyn@android.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH] net: enable wireless core features with WIRELESS_ALLCONFIG
-Date:   Fri,  6 Sep 2019 11:05:45 -0700
-Message-Id: <20190906180551.163714-1-salyzyn@android.com>
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
+        id S2404355AbfIFSPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 14:15:33 -0400
+Received: from correo.us.es ([193.147.175.20]:47946 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404365AbfIFSPd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Sep 2019 14:15:33 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6B9FC18FD84
+        for <netdev@vger.kernel.org>; Fri,  6 Sep 2019 20:15:29 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5E29EDA8E8
+        for <netdev@vger.kernel.org>; Fri,  6 Sep 2019 20:15:29 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 50C43CA0F3; Fri,  6 Sep 2019 20:15:29 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1A5F5A5B1;
+        Fri,  6 Sep 2019 20:15:27 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 06 Sep 2019 20:15:27 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id BC9B14265A5A;
+        Fri,  6 Sep 2019 20:15:26 +0200 (CEST)
+Date:   Fri, 6 Sep 2019 20:15:28 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        jiri@resnulli.us, saeedm@mellanox.com, vishal@chelsio.com,
+        vladbu@mellanox.com
+Subject: Re: [PATCH net-next,v3 0/4] flow_offload: update mangle action
+ representation
+Message-ID: <20190906181528.5rucn6dmnicvzmto@salvia>
+References: <20190906000403.3701-1-pablo@netfilter.org>
+ <679ced4b-8bcd-5479-2773-7c75452c2a32@solarflare.com>
+ <20190906105638.hylw6quhk7t3wff2@salvia>
+ <b8baf681-b808-4b83-d521-0353c3136516@solarflare.com>
+ <20190906131457.7olkal45kkdtbevo@salvia>
+ <35ac21be-ff2f-a9cd-dd71-28bc37e8a51b@solarflare.com>
+ <20190906145019.2bggchaq43tcqdyc@salvia>
+ <be6eee6b-9d58-f0f7-571b-7e473612e2b3@solarflare.com>
+ <20190906155804.v4lviltxs72a45tq@salvia>
+ <1637ec50-daae-65df-fcaa-bfd763dbb1d9@solarflare.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1637ec50-daae-65df-fcaa-bfd763dbb1d9@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In embedded environments the requirements are to be able to pick and
-chose which features one requires built into the kernel.  If an
-embedded environment wants to supports loading modules that have been
-kbuilt out of tree, there is a need to enable hidden configurations
-for core features to provide the API surface for them to load.
+On Fri, Sep 06, 2019 at 05:49:07PM +0100, Edward Cree wrote:
+> On 06/09/2019 16:58, Pablo Neira Ayuso wrote:
+> > In tc pedit ex, those are _indeed_ two separated actions: 
+>
+>  I read the code again and I get it now, there's double iteration
+>  already over tcf_exts_for_each_action and tcf_pedit_nkeys, and
+>  it's only within the latter that you coalesce.
 
-Introduce CONFIG_WIRELESS_ALLCONFIG to select all wireless core
-features by activating all the hidden configuration options, without
-having to specifically select any wireless module(s).
+Exactly.
 
-Signed-off-by: Mark Salyzyn <salyzyn@android.com>
-Cc: kernel-team@android.com
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org # 4.19
----
- net/wireless/Kconfig | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+>  However, have you considered that iproute2 (i.e. tc tool) isn't
+>  guaranteed to be the only userland consumer of the TC uAPI?
+>  For all we know there could be another user out there producing things like
+>  a single pedit action with two keys, same offset but different
+>  masks, to mangle sport & dport separately, which your code now
+>  _would_ coalesce into a single mangle. I don't know if that would
+>  lead to any problems, but I want to be sure you've thought about it ;)
 
-diff --git a/net/wireless/Kconfig b/net/wireless/Kconfig
-index 67f8360dfcee..0d32350e1729 100644
---- a/net/wireless/Kconfig
-+++ b/net/wireless/Kconfig
-@@ -17,6 +17,20 @@ config WEXT_SPY
- config WEXT_PRIV
- 	bool
- 
-+config WIRELESS_ALLCONFIG
-+	bool "allconfig for wireless core"
-+	select WIRELESS_EXT
-+	select WEXT_CORE
-+	select WEXT_PROC
-+	select WEXT_SPY
-+	select WEXT_PRIV
-+	help
-+	  Config option used to enable all the wireless core functionality
-+	  used by modules.
-+
-+	  If you are not building a kernel to be used for a variety of
-+	  out-of-kernel built wireless modules, say N here.
-+
- config CFG80211
- 	tristate "cfg80211 - wireless configuration API"
- 	depends on RFKILL || !RFKILL
--- 
-2.23.0.187.g17f5b7556c-goog
+tc pedit only supports for the "extended mode". So the hardware
+offloads only support for a subset of the tc pedit uAPI already.
 
+Userland may decide not to use the "extended mode", however, it will
+not work for hardware offloads.
+
+> >> Proper thing to do is have helper functions available to drivers to test
+> >> the pedit, and not just switch on the offset.  Why do I say that?
+> >>
+> >> Well, consider a pedit on UDP dport, with mask 0x00ff (network endian).
+> >> Now as a u32 pedit that's 0x000000ff offset 0, so field-blind offset
+> >> calculation (ffs in flow_action_mangle_entry()) will turn that into
+> >> offset 3 mask 0xff.  Now driver does
+> >>     switch(offset) { /* 3 */
+> >>     case offsetof(struct udphdr, dest): /* 2 */
+> >>         /* Whoops, we never get here! */
+> >>     }
+> >>
+> >> Do you see the problem?
+> >
+> > This scenario you describe cannot _work_ right now, with the existing
+> > code. Without my patchset, this scenario you describe does _not_ work,
+> >
+> > The drivers in the tree need a mask of 0xffff to infer that this is
+> > UDP dport.
+> >
+> > The 'tc pedit ex' infrastructure does not allow for the scenario that
+> > you describe above.
+> >
+> > No driver in the tree allow for what you describe already.
+>
+>  Looks to me like existing nfp_fl_set_tport() handles just fine any
+>  arbitrary mask across the u32 that contains UDP sport & dport.
+>  And the uAPI we have to maintain is the uAPI we expose, not the subset
+>  that iproute2 uses. I could write a patched tc tool *today* that does
+>  a pedit of 'UDP header, offset 0, mask 0xff0000ff' and the nfp driver
+>  would accept that fine (no idea what the fw / chip would do with it,
+>  but presumably it works or Netronome folks would have put checks in),
+>  whereas with your patch it'll complain "invalid pedit L4 action"
+>  because the mask isn't all-1s.
+
+'UDP header, offset 0, mask 0xff0000ff': Mangle one byte of the UDP
+sport, and only one mangle of the dport via uAPI.
+
+I get your point: If you think that supporting for this is reasonable
+usecase, I'll fix this patchset and send a v4 so the nfp still works
+for this.
+
+>  And if I made it produce my example from above, mask 0x000000ff, you'd
+>  calculate an offset of 3 and hit the other error, "unsupported section
+>  of L4 header", which again would have worked before.
+
+'mask 0x000000ff' mangle only one byte of a UDP port.
+
+I'm sorry for this, I assumed in this case that the reasonable (sane)
+uAPI subset in this case to be supported for the hardware offloads is
+what tc tool via pedit ex generates.
+
+I'll restore the nfp driver so it works for these scenarios via uAPI
+that you describe.
