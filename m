@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C17DAB362
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F1AAB35A
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 09:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392563AbfIFHl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 03:41:29 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:33308 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730293AbfIFHl3 (ORCPT
+        id S2404570AbfIFHlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 03:41:31 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:33330 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390377AbfIFHl3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 03:41:29 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 50F4AC0E3E;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 47E3DC0E3D;
         Fri,  6 Sep 2019 07:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1567755688; bh=5PThB8CbPp7CzMhqALHU7PGlPrATo2NWaeXFnvxIVn8=;
+        t=1567755688; bh=EBL9Jc4mlbrbWU2YRFXqsB+Tqzg4pzZ34sKsco1vIEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=drvZ1NVfjP8S07HTglCD14IF98r7nF21bZy9Q7+7ipGQcVBY5gubVAMjK0yGX330n
-         3JXnT4RfjyfzDpBZ6o4X9wUF0q68w/W3dm1fVeMomjRC26jkU893lHRk9iYcpJ2ZzX
-         o8j22eZNVJ5Xv8Lq3UPedq0dczXiYjtqhRUD7kybd+D8/CoHbYji9MO73O1zrDdvbq
-         nSezPLPbgExNnMomZlzp5HSInq9ivBA5AVu1Jawa7lT93AVLWBp+KsNJrEZrbbVgGH
-         XdRWC/Z/DRw50fbXtY3vvaWuupikLWfsVVbLdejC1AgWAr1EiretupAuPe6hSptzxH
-         ukgdeVJtn5IbA==
+        b=awJF23K6k9+arQCYwI+jPTTiKkv2d8nThws2/sPR3Y/nm3WjIajWFCJz8xuvb/RJX
+         3n1UMBse2Vhho1bpGAOIM7zGorF/99uTp6EthLOY467PhoG8P0e+di9VlUhIku4geT
+         pVxdTCSLjViSXlutMbpsW4NAiw02XMUEf4vpNGpO39Y4uosXn2YdOYMppVO7UGF9zQ
+         JiJ8pjgF4EBP0wp7FqhkJjRmF68lZZXr9c2+pqUNmW6Q9eAp17oRWDTrTdeoxaZ/oT
+         M7beHJfcBibNCxiRlmeRblQJkAPPZuh4gDsUU+Brl8cVF3wHVzVxAL6pmRYOlh/mY5
+         3nbE+sr8nU3rQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id CDB44A0066;
+        by mailhost.synopsys.com (Postfix) with ESMTP id E359EA0069;
         Fri,  6 Sep 2019 07:41:26 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/5] net: stmmac: dwmac4: Enable RX Jumbo frame support
-Date:   Fri,  6 Sep 2019 09:41:15 +0200
-Message-Id: <1eb3adcf838e92cffd2c4a6ef405fed0f3ac2b1e.1567755423.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 4/5] net: stmmac: selftests: Add Split Header test
+Date:   Fri,  6 Sep 2019 09:41:16 +0200
+Message-Id: <b789f9f19115714646565c821e10f1a1e76a55c5.1567755423.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1567755423.git.joabreu@synopsys.com>
 References: <cover.1567755423.git.joabreu@synopsys.com>
@@ -51,8 +51,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are already doing it by default in the TX path so we can also enable
-Jumbo Frame support in the RX path independently of MTU value.
+Add a test to validate that Split Header feature is working correctly.
+It works by using the rececently introduced counter that increments each
+time a packet with split header is received.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -66,43 +67,68 @@ Cc: netdev@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h      | 3 ++-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 6 ------
- 2 files changed, 2 insertions(+), 7 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 42 ++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 2ed11a581d80..03301ffc0391 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -352,7 +352,8 @@ enum power_event {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index 2943943bec43..c56e89e1ae56 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1603,6 +1603,44 @@ static int stmmac_test_mjumbo(struct stmmac_priv *priv)
+ 	return 0;
+ }
  
- /* Default operating mode of the MAC */
- #define GMAC_CORE_INIT (GMAC_CONFIG_JD | GMAC_CONFIG_PS | \
--			GMAC_CONFIG_BE | GMAC_CONFIG_DCRS)
-+			GMAC_CONFIG_BE | GMAC_CONFIG_DCRS | \
-+			GMAC_CONFIG_JE)
- 
- /* To dump the core regs excluding  the Address Registers */
- #define	GMAC_REG_NUM	132
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index fc9954e4a772..596311a80d1c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -25,15 +25,9 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- {
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 value = readl(ioaddr + GMAC_CONFIG);
--	int mtu = dev->mtu;
- 
- 	value |= GMAC_CORE_INIT;
- 
--	if (mtu > 1500)
--		value |= GMAC_CONFIG_2K;
--	if (mtu > 2000)
--		value |= GMAC_CONFIG_JE;
--
- 	if (hw->ps) {
- 		value |= GMAC_CONFIG_TE;
++static int stmmac_test_sph(struct stmmac_priv *priv)
++{
++	unsigned long cnt_end, cnt_start = priv->xstats.rx_split_hdr_pkt_n;
++	struct stmmac_packet_attrs attr = { };
++	int ret;
++
++	if (!priv->sph)
++		return -EOPNOTSUPP;
++
++	/* Check for UDP first */
++	attr.dst = priv->dev->dev_addr;
++	attr.tcp = false;
++
++	ret = __stmmac_test_loopback(priv, &attr);
++	if (ret)
++		return ret;
++
++	cnt_end = priv->xstats.rx_split_hdr_pkt_n;
++	if (cnt_end <= cnt_start)
++		return -EINVAL;
++
++	/* Check for TCP now */
++	cnt_start = cnt_end;
++
++	attr.dst = priv->dev->dev_addr;
++	attr.tcp = true;
++
++	ret = __stmmac_test_loopback(priv, &attr);
++	if (ret)
++		return ret;
++
++	cnt_end = priv->xstats.rx_split_hdr_pkt_n;
++	if (cnt_end <= cnt_start)
++		return -EINVAL;
++
++	return 0;
++}
++
+ #define STMMAC_LOOPBACK_NONE	0
+ #define STMMAC_LOOPBACK_MAC	1
+ #define STMMAC_LOOPBACK_PHY	2
+@@ -1724,6 +1762,10 @@ static const struct stmmac_test {
+ 		.name = "Multichannel Jumbo  ",
+ 		.lb = STMMAC_LOOPBACK_PHY,
+ 		.fn = stmmac_test_mjumbo,
++	}, {
++		.name = "Split Header        ",
++		.lb = STMMAC_LOOPBACK_PHY,
++		.fn = stmmac_test_sph,
+ 	},
+ };
  
 -- 
 2.7.4
