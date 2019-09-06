@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E39ABC48
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7230ABC8C
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 17:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394772AbfIFPYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 11:24:38 -0400
-Received: from zeniv.linux.org.uk ([195.92.253.2]:57656 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbfIFPYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 11:24:38 -0400
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.1 #3 (Red Hat Linux))
-        id 1i6G6F-0004tJ-9r; Fri, 06 Sep 2019 15:24:35 +0000
-Date:   Fri, 6 Sep 2019 16:24:35 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Carlos Neira <cneirabustos@gmail.com>
-Cc:     netdev@vger.kernel.org, yhs@fb.com, ebiederm@xmission.com,
-        brouer@redhat.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v10 2/4] bpf: new helper to obtain namespace
- data from  current task New bpf helper bpf_get_current_pidns_info.
-Message-ID: <20190906152435.GW1131@ZenIV.linux.org.uk>
-References: <20190906150952.23066-1-cneirabustos@gmail.com>
- <20190906150952.23066-3-cneirabustos@gmail.com>
+        id S2394838AbfIFPcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 11:32:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51010 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725871AbfIFPcL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Sep 2019 11:32:11 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 22975AD69;
+        Fri,  6 Sep 2019 15:32:10 +0000 (UTC)
+Date:   Fri, 6 Sep 2019 17:32:09 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, davem@davemloft.net,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
+        Qian Cai <cai@lca.pw>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190906153209.ugkeuaespn2q5yix@pathway.suse.cz>
+References: <20190904064144.GA5487@jagdpanzerIV>
+ <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
+ <20190904074312.GA25744@jagdpanzerIV>
+ <1567599263.5576.72.camel@lca.pw>
+ <20190904144850.GA8296@tigerII.localdomain>
+ <1567629737.5576.87.camel@lca.pw>
+ <20190905113208.GA521@jagdpanzerIV>
+ <20190905132334.52b13d95@oasis.local.home>
+ <20190906033900.GB1253@jagdpanzerIV>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190906150952.23066-3-cneirabustos@gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190906033900.GB1253@jagdpanzerIV>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 06, 2019 at 11:09:50AM -0400, Carlos Neira wrote:
+On Fri 2019-09-06 12:39:00, Sergey Senozhatsky wrote:
+> On (09/05/19 13:23), Steven Rostedt wrote:
+> > > I think we can queue significantly much less irq_work-s from printk().
+> > > 
+> > > Petr, Steven, what do you think?
+> 
+> [..]
+> > I mean, really, do we need to keep calling wake up if it
+> > probably never even executed?
+> 
+> I guess ratelimiting you are talking about ("if it probably never even
+> executed") would be to check if we have already called wake up on the
+> log_wait ->head. For that we need to, at least, take log_wait spin_lock
+> and check that ->head is still in TASK_INTERRUPTIBLE; which is (quite,
+> but not exactly) close to what wake_up_interruptible() does - it doesn't
+> wake up the same task twice, it bails out on `p->state & state' check.
 
-> +BPF_CALL_2(bpf_get_current_pidns_info, struct bpf_pidns_info *, pidns_info, u32,
-> +	 size)
-> +{
-> +	const char *pidns_path = "/proc/self/ns/pid";
+I have just realized that only sleeping tasks are in the waitqueue.
+It is already handled by waitqueue_active() check.
 
-> +	fname = kmem_cache_alloc(names_cachep, GFP_ATOMIC);
-> +	if (unlikely(!fname)) {
-> +		ret = -ENOMEM;
-> +		goto clear;
-> +	}
-> +	const size_t fnamesize = offsetof(struct filename, iname[1]);
-> +	struct filename *tmp;
-> +
-> +	tmp = kmalloc(fnamesize, GFP_ATOMIC);
-> +	if (unlikely(!tmp)) {
-> +		__putname(fname);
-> +		ret = -ENOMEM;
-> +		goto clear;
-> +	}
-> +
-> +	tmp->name = (char *)fname;
-> +	fname = tmp;
-> +	len = strlen(pidns_path) + 1;
-> +	memcpy((char *)fname->name, pidns_path, len);
-> +	fname->uptr = NULL;
-> +	fname->aname = NULL;
-> +	fname->refcnt = 1;
-> +
-> +	ret = filename_lookup(AT_FDCWD, fname, 0, &kp, NULL);
-> +	if (ret)
-> +		goto clear;
+I am afraid that we could not ratelimit the wakeups. The userspace
+loggers might then miss the last lines for a long.
 
-Where do I begin?
-	* getname_kernel() is there for purpose
-	* so's kern_path(), damnit
-> +
-> +	inode = d_backing_inode(kp.dentry);
-> +	pidns_info->dev = (u32)inode->i_rdev;
+We could move wake_up_klogd() back to console_unlock(). But it might
+end up with a back-and-forth games according to who is currently
+complaining.
 
-	* ... and this is utter bollocks - userland doesn't
-have to have procfs mounted anywhere; it doesn't have to
-have it mounted on /proc; it can bloody well bind a symlink
-to anywhere and anythin on top of /proc/self even if its
-has procfs mounted there.
+Sigh, I still suggest to ratelimit the warning about failed
+allocation.
 
-	This is fundamentally wrong; nothing in the kernel
-(bpf very much included) has any business assuming anything
-about what's mounted where.  And while we are at it,
-how deep on kernel stack can that thing be called?
-Because pathname resolution can bring all kinds of interesting
-crap into the game - consider e.g. NFS4 referral traversal.
-And it can occur - see above about the lack of warranties
-that your pathwalk will go to procfs and will remain there.
-
-NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
+Best Regards,
+Petr
