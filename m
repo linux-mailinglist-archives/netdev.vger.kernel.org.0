@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3373AB1E2
-	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 07:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F70AB213
+	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 07:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392250AbfIFFKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 01:10:34 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:43880 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392246AbfIFFKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 01:10:34 -0400
-Received: by mail-yw1-f66.google.com with SMTP id q7so1771357ywe.10
-        for <netdev@vger.kernel.org>; Thu, 05 Sep 2019 22:10:33 -0700 (PDT)
+        id S2392379AbfIFFgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 01:36:00 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:37369 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392368AbfIFFgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 01:36:00 -0400
+Received: by mail-pl1-f196.google.com with SMTP id b10so2579055plr.4;
+        Thu, 05 Sep 2019 22:36:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=y6IeE+yO8WDFAoFSUo/oKcHKqaqbm5zUYVBFOzVC4ic=;
-        b=kM7ldr89EPoHljBUoX1gFUV/VYpqer67DdDkVify+wP8n0m7PW9BM3V6dQlQB4B2Rl
-         2AJ2maPjVXH1tVPl3Tcc68l7kh0hYlGIFZj2+qkUvdHvR2nEJ9eDjjXzZxY0VT6Jj8t0
-         mSiXbq+YU6z/5E06A0ATZPMp3TEX80rSfNpzE5gVrRj9eX9ytA7lcMHzBZy4aR6O0Qva
-         m9eCmatLMiZSRROyfqcrmKPahMN0YxWMYJMZjRbQXDXnViSMRHI6Tcnbs/ydmZbfg5iO
-         4Lbmc6FJOGkxWQwyhF2ZmmofUPzLfRls6GQlkwtBzZbwO4ur+YWAK8cDcg7EWqsa7WAF
-         pdqw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Vhdxc4ZQN68NuRvF/4TxwiVsBNkRj8a+6R5dyH9hgtQ=;
+        b=UrbyERNhnioC9vM34TKgslxPC9GDfQAzTuSQw1mIryRCBUBREBB3hRfMeTRKB3RKwN
+         zaeC1a0uYHuXi+N/QuPzAkGCJklAb5Pp7HS/M/tySpADiIZ2yynwvXPSkfbp612R3rCV
+         7j4rcZuODuOl1kFW4R+pvyrMSRSVtqIVPHRl4tcyctkiOm/t4o9h4D+vSb1bvg8vAgRt
+         0voKOxH55NyFoUcR3vu6R69BK6sxvO/tMATBib7tjmotXSif/9/doHVZMYHhq3PStpXC
+         fQDuoH+SZOkyp1TEnoizNbtOPuPFc2F7ZcDVeQOGokj8h1cPYnVa2X3dhlcdvBCeYebb
+         htGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=y6IeE+yO8WDFAoFSUo/oKcHKqaqbm5zUYVBFOzVC4ic=;
-        b=HMD4fhhwxGN0+y8kjlD9QTh0mud1KscuCkZLAz82CLS4bRPQ92UfTrzOS6U2uYzzT8
-         8iyAPe+Dq3yNcNnzoDyCQbnXBl5YQ1DHpnMi+WAYYoCq8FwjoLsQ5BS6wwD1P530pTih
-         g0LUsgn/Cmi3mJbYSd3qkvwDVsBExIgc8dbyMQ3n4XzdQFwHWxhrXXlHMMZd8MFN3bfZ
-         TsYY8snbqiJdBP/CJCTo95MdrP3Ar47tUMs7k53tjoMe+IHqnes6eEifLAhoJZoYNVUk
-         6ghDAUtsNFi0F9jW1btvmJAW8trexzgKGGfb1o5T32lUvJviXWAdiiJBafyNVfcQlypd
-         Sp8w==
-X-Gm-Message-State: APjAAAVDcqujf4WaK1bi/7hsnrA036P0BW0RuFX6gdvxsNjxdMlmBWgQ
-        hoYfomVl8WPi06//re3DugW1Jd+JGNco0mjLNjdBJw==
-X-Google-Smtp-Source: APXvYqyftFpsadm5i6LQAo3apuiS4GGQIu09alkMX/uq7dLucYag2ggkme16co8rSkzNtCMEGXc5qoxmUhCM46yNxAw=
-X-Received: by 2002:a0d:db56:: with SMTP id d83mr4878225ywe.135.1567746632573;
- Thu, 05 Sep 2019 22:10:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Vhdxc4ZQN68NuRvF/4TxwiVsBNkRj8a+6R5dyH9hgtQ=;
+        b=fbMC7e50rkPjzx0UvRwEaAjwRMuqdrn/kzvmWWkOoTERtYenZYB3qqJtgYCkLMuP5h
+         YgHsNGbrzeVXCidwEGJp1amBb6mASmhIXi5+piX0iIuJQn7GbQ1lqOP4Ea0txzFZiYWa
+         OoPaFltEfKiS3KMj3ECbPx5ukFnSZZvrQWliTqV3ncXYOR5rJmS0ZGz+Ct5wlCTcZs51
+         7sHI3zCDZa6ARB82j9yNlVZPKyouHYxPggPj0BLcBGAZkgrJ3QFQmjFvjddy+mwx1O5E
+         pcoGxzIwaRZwcKqfBXQh3MRnUoP96QdfI4zBob/p5eUIycBTO1MXiemRDqBZUVkMKOCQ
+         4RLA==
+X-Gm-Message-State: APjAAAXkw7FYIjBLkyrlsrXgDngB8a0QVWbTox78H+C4heQ7c4IU4Zl/
+        k1crL/Pbj3uinuhWiQn0PqE=
+X-Google-Smtp-Source: APXvYqwGOW6Dpz2/9KfdUuRutFfvd8nZK3snjg8Bnj4/+KQGpsMsMmWnW43raxny+4AGWGhjfFy/GQ==
+X-Received: by 2002:a17:902:f301:: with SMTP id gb1mr7279804plb.249.1567748159836;
+        Thu, 05 Sep 2019 22:35:59 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id v12sm3671516pgr.86.2019.09.05.22.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2019 22:35:58 -0700 (PDT)
+Date:   Thu, 5 Sep 2019 22:35:56 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH v2 2/2] PTP: add support for one-shot output
+Message-ID: <20190906053556.GB1422@localhost>
+References: <20190829095825.2108-1-felipe.balbi@linux.intel.com>
+ <20190829095825.2108-2-felipe.balbi@linux.intel.com>
+ <20190829172509.GB2166@localhost>
+ <20190829172848.GC2166@localhost>
+ <87r253ulpn.fsf@gmail.com>
+ <20190831144732.GA1692@localhost>
+ <87h85roy9p.fsf@gmail.com>
 MIME-Version: 1.0
-References: <CANP3RGcbEP2N-CDQ6N649k0-cV4AhQeWqF-niz7EMPFOFpkU1w@mail.gmail.com>
- <20190906035637.47097-1-zenczykowski@gmail.com>
-In-Reply-To: <20190906035637.47097-1-zenczykowski@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 6 Sep 2019 07:10:19 +0200
-Message-ID: <CANn89iKieZm8B+cB=mjK6jumM2koS+0Ae64STw_h_GCKom2vYQ@mail.gmail.com>
-Subject: Re: [PATCH] net-ipv6: addrconf_f6i_alloc - fix non-null pointer check
- to !IS_ERR()
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
-        Lorenzo Colitti <lorenzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87h85roy9p.fsf@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 5:56 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> From: Maciej =C5=BBenczykowski <maze@google.com>
->
-> Fixes a stupid bug I recently introduced...
-> ip6_route_info_create() returns an ERR_PTR(err) and not a NULL on error.
->
-> Fixes: d55a2e374a94 ("net-ipv6: fix excessive RTF_ADDRCONF flag on ::1/12=
-8 local route (and others)'")
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Lorenzo Colitti <lorenzo@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
-> ---
+On Thu, Sep 05, 2019 at 01:03:46PM +0300, Felipe Balbi wrote:
+> This a bit confusing, really. Specially when the comment right above
+> those flags states:
+> 
+> /* PTP_xxx bits, for the flags field within the request structures. */
 
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Agreed, it is confusing.  Go ahead and remove this comment.
 
-Thanks.
+> Seems like we will, at least, make it clear which flags are valid for
+> which request structures.
+
+Yes, please do make it as clear as you can.
+
+Thanks,
+Richard
