@@ -2,102 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8B1ABB88
+	by mail.lfdr.de (Postfix) with ESMTP id 9B8F0ABB89
 	for <lists+netdev@lfdr.de>; Fri,  6 Sep 2019 16:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392106AbfIFOzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Sep 2019 10:55:36 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58132 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725872AbfIFOzg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Sep 2019 10:55:36 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 79BDCAC67;
-        Fri,  6 Sep 2019 14:55:34 +0000 (UTC)
-Date:   Fri, 6 Sep 2019 16:55:33 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, Qian Cai <cai@lca.pw>,
-        davem@davemloft.net, Eric Dumazet <eric.dumazet@gmail.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20190906145533.4uw43a5pvsawmdov@pathway.suse.cz>
-References: <1567546948.5576.68.camel@lca.pw>
- <20190904061501.GB3838@dhcp22.suse.cz>
- <20190904064144.GA5487@jagdpanzerIV>
- <20190904065455.GE3838@dhcp22.suse.cz>
- <20190904071911.GB11968@jagdpanzerIV>
- <20190904074312.GA25744@jagdpanzerIV>
- <1567599263.5576.72.camel@lca.pw>
- <20190904144850.GA8296@tigerII.localdomain>
- <1567629737.5576.87.camel@lca.pw>
- <20190905113208.GA521@jagdpanzerIV>
+        id S1731772AbfIFO4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Sep 2019 10:56:03 -0400
+Received: from mail-wm1-f46.google.com ([209.85.128.46]:39253 "EHLO
+        mail-wm1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726019AbfIFO4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Sep 2019 10:56:02 -0400
+Received: by mail-wm1-f46.google.com with SMTP id q12so7453136wmj.4
+        for <netdev@vger.kernel.org>; Fri, 06 Sep 2019 07:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AlPfad4PCCBpyDs1jC4YhyIyakJmOQ1nP6oU5mESIzY=;
+        b=ajMLi2J6ivM65Gnvb0ugyd7Nm/dg2CPRsFPHPxvYyyjkuVv1K1vMSwbKDj6amYrin9
+         WBjpi4aNpZWAcDm7iq1VduGoSa1DGOXWtsc3G5H2RNOeBe3DKmavH4CzbtOd4w9K+5f4
+         bEuz5vRAaHqwe+qLx0DCq21NhLY0/R+P7Tm2NQHAXOWMLCzFGuLAoK816Cqx8izpEcMT
+         hp2qLJQztb83jcAsGfD1fVKdvTIifYi4BUWC8xO7gOJkWABLJa6ftDsdTM9rzflhb/28
+         Y55iRB1u8GfrTS14PBnbO0BywPQNNdMko0MXbrlAlUikyStrpOeTD4lRtVtqSuWhNsb/
+         1qOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=AlPfad4PCCBpyDs1jC4YhyIyakJmOQ1nP6oU5mESIzY=;
+        b=bHcwAXZQSxpFIN1lplcuSOXwB9My3TYFiMWocBYNR/QGh3pPH/PoTyTIU3+/7LXy1Z
+         uo2LMKz04nJqcwazxeupcUZVD/yLt9R6hBPzuDq04lhSaENXGwov52Ghwn4Q/+N7dQWp
+         Ms9G8ydIYayrQU6L6BJ5Cu3T8+4gfWYLzOxiLHqBbbm7GDZ+70HKgGh9VqEpoYQl6MOz
+         /9ac1acy2wdn8d2SVuPW4gJ5cF0njnj7mqpmCCzGR6ND07ZZ6h0htxXbWm6uQtbWSXqX
+         ySsR+s7AzRq4R/KSGYuS37XzYBtWFPXt6Cc0zEbRh8zyYv4PtF98jc8GTAVOU+0WK5bB
+         l2GQ==
+X-Gm-Message-State: APjAAAV9KRyrOkxJjy8kLka0gc1E8ZWbXdarzFpP/2fbP82UHWjlCNiM
+        sx7OzzjEDrw1yhgskJfT2DilN/BWDxI=
+X-Google-Smtp-Source: APXvYqwH58cL+Es9AHgZ8xcvF4ISYpmo7pihMWhqMJ6bB7VmLvpUxqVXdsgafsQkESONLZYnsXjAIg==
+X-Received: by 2002:a1c:7ecf:: with SMTP id z198mr7343809wmc.175.1567781760904;
+        Fri, 06 Sep 2019 07:56:00 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:8b63:dc30:3c8b:1257:3510:1a1b? ([2a01:e35:8b63:dc30:3c8b:1257:3510:1a1b])
+        by smtp.gmail.com with ESMTPSA id g185sm10772194wme.10.2019.09.06.07.55.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Sep 2019 07:56:00 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: Need more information on "ifi_change" in "struct ifinfomsg"
+To:     dhan lin <dhan.lin1989@gmail.com>, netdev@vger.kernel.org
+References: <CAMvS6vYbphKKM4evbV6Vre7vaR8r+oJgZ8TuQU6VtBSjVqH7dA@mail.gmail.com>
+ <CAMvS6vbeo5tBADNmLvkXUuSSHmxVpt3UW+jZtxY2Le9nXRbNDw@mail.gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <16579c2d-d0b7-179f-5381-3803118a8972@6wind.com>
+Date:   Fri, 6 Sep 2019 16:55:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190905113208.GA521@jagdpanzerIV>
-User-Agent: NeoMutt/20170912 (1.9.0)
+In-Reply-To: <CAMvS6vbeo5tBADNmLvkXUuSSHmxVpt3UW+jZtxY2Le9nXRbNDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 2019-09-05 20:32:08, Sergey Senozhatsky wrote:
-> On (09/04/19 16:42), Qian Cai wrote:
-> > > Let me think more.
-> > 
-> > To summary, those look to me are all good long-term improvement that would
-> > reduce the likelihood of this kind of livelock in general especially for other
-> > unknown allocations that happen while processing softirqs, but it is still up to
-> > the air if it fixes it 100% in all situations as printk() is going to take more
-> > time
+Le 06/09/2019 à 07:08, dhan lin a écrit :
+> Hi All,
 > 
-> Well. So. I guess that we don't need irq_work most of the time.
+> There is a field called ifi_change in "struct ifinfomsg". man page for
+> rtnetlink says its for future use and should be always set to
+> 0xFFFFFFFF.
 > 
-> We need to queue irq_work for "safe" wake_up_interruptible(), when we
-> know that we can deadlock in scheduler. IOW, only when we are invoked
-> from the scheduler. Scheduler has printk_deferred(), which tells printk()
-> that it cannot do wake_up_interruptible(). Otherwise we can just use
-> normal wake_up_process() and don't need that irq_work->wake_up_interruptible()
-> indirection. The parts of the scheduler, which by mistake call plain printk()
-> from under pi_lock or rq_lock have chances to deadlock anyway and should
-> be switched to printk_deferred().
+> But ive run some sample tests, to confirm the value is not as per man
+> pages explanation.
+> Its 0 most of the times and non-zero sometimes.
 > 
-> I think we can queue significantly much less irq_work-s from printk().
+> I've the following question,
 > 
-> Petr, Steven, what do you think?
-> 
-> Something like this. Call wake_up_interruptible(), switch to
-> wake_up_klogd() only when called from sched code.
-
-Replacing irq_work_queue() with wake_up_interruptible() looks
-dangerous to me.
-
-As a result, all "normal" printk() calls from the scheduler
-code will deadlock. There is almost always a userspace
-logger registered.
-
-By "normal" I mean anything that is not printk_deferred(). For
-example, any WARN() from sheduler will cause a deadlock.
-We will not even have chance to catch these problems in
-advance by lockdep.
-
-The difference is that console_unlock() calls wake_up_process()
-only when there is a waiter. And the hard console_lock() is not
-called that often.
+> Is ifi_change set only when there is a state change in interface values?
+ifi_change indicates which flags (ifi_flags) have changed.
+It does not cover other changes.
 
 
-Honestly, scheduling IRQ looks like the most lightweight and reliable
-solution for offloading. We are in big troubles if we could not use
-it in printk() code.
-
-IMHO, the best solution is to ratelimit the warnings about the
-allocation failures. It does not make sense to repeat the same
-warning again and again. We might need a better ratelimiting API
-if the current one is not reliable.
-
-Best Regards,
-Petr
+Regards,
+Nicolas
