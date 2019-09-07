@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5494CAC6D5
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 15:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50D56AC6D7
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 15:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404216AbfIGNrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Sep 2019 09:47:47 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33137 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733278AbfIGNrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 09:47:47 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so6417321pfl.0
-        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 06:47:47 -0700 (PDT)
+        id S2404416AbfIGNsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Sep 2019 09:48:01 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:36058 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733278AbfIGNsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 09:48:00 -0400
+Received: by mail-pg1-f194.google.com with SMTP id l21so5146689pgm.3
+        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 06:48:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=n/E8kVLcgaLVDmvB6aVHwxVJQ6pq71Ob2wO+rFoaOWI=;
-        b=CVkEyats1HA4Bf65u2sinwrRPYuzSkG4jhjmoIBUYatzkul4qGMB/Em4CM64OAMknz
-         gTwiNEp/TbSzzqTO6xduKdmAJr5mR/1nGONuugK5Ixv32P4H5EYegnnq/MsJpAQGVh1y
-         v55oMjUMOJcaMornPpv+G7STSwj1I4Jcr5UDV9jp5qHE/0KDtJnditCWWNWy/WSiMSdQ
-         +jAm3NPfs5kk5SavBrB+SAQRPC8jyDAGdwNWA0KZ8HeDKCXzqjCD/+wGnA5lrPMgu8xZ
-         R8f2aJ8BDRFcBdz5OPj/LTQQ0MjV6t3BYKsAVxyubrw2dEzrQf0igDwlXY/ukzpGEOZU
-         kZjA==
+        bh=mD1NbS4MMRS1ULiG3xa8+vRcPs1R+IjGKx+iMzbM8rU=;
+        b=Ib54I3f0qqugTqxPaFlHrycwlljwExW2pGtY7QIXGgV/CaFcbEFr4aqwc0Wh27HU+E
+         hbNjfJl5r5IfjcJQnkqwksKP47V0RcP/S1yBia6rvBHf2vNw5Kqh4dL9Sin+0cQO5PbE
+         Af9+oVjKyIqXOc9Frr1jM+juY+UKB8Wd2crwfh2bQ+olWGFXShCBqXT4c0f7RSmCgVG9
+         IDWPldk/3hwE2qSgLr8J+bKoYzHFa/kXHxpJaVMGc2wJoh4G3DE88X1Xd22516csNm6p
+         6+qUA3REc91ZkXvC4v//atXOy+9MLsrJXJQIVHyo1BENtwsGq904nxcWBjO+cCv2sevS
+         glUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=n/E8kVLcgaLVDmvB6aVHwxVJQ6pq71Ob2wO+rFoaOWI=;
-        b=HJ3G5nZFfgofSBuZesSxBNe6DHn6KWAhlfNogn9QClUeZRG/UndUK6ZK4tn28PKv9u
-         uyG2sIgIskdQ8OpmFSGgbpjgsbFvkQ/iXv3YJtp+YarmsvOrq5LC6dYSAClTPOZXhCpA
-         /wCoxL5kMo0zn/9wALd7xBEsFQKKWwOsoLhbushyRz4FqSjPGZeEfcz6BdMy7dU730yk
-         8Bo3hH04dQXuHGphfx01FopdJBRuipdjlMjzQDEPsLdTMxQRPxxD1I0gysilXdl427mo
-         yxipr5VmlCjHReONvoqGuah0il79GXQ2z3a4YlBwKFG4JkqTE+ZyzixHc86ALwtrD53z
-         y5ew==
-X-Gm-Message-State: APjAAAVNbR2jiGqj3YsAAvUmhoekxcWYYN/5NVH2nX4pcnXmbzOa6TXs
-        xYGVSjZyrAlA2Hn2Yt3Ac1Y=
-X-Google-Smtp-Source: APXvYqx1mRCSO3rwBnHK5YeZHiDf4WMFHaI0f9b4EmLQieJmfDOcsOdBChwn0My+mAGncV2FU4CBPQ==
-X-Received: by 2002:a63:58c:: with SMTP id 134mr13244988pgf.106.1567864066582;
-        Sat, 07 Sep 2019 06:47:46 -0700 (PDT)
+        bh=mD1NbS4MMRS1ULiG3xa8+vRcPs1R+IjGKx+iMzbM8rU=;
+        b=ulowS8AWApEZXhWYwMRGcLTdd2fCZ3IY5BdAxiBbMcReeuaVAGP9Ifvt4BAwDtipne
+         CQukauQPjRvENyyqF61v8R5iEvRaS4qEtlkBhMinU4zSpwxJb7p9DOB5im4nTYqn5nag
+         Tjx7874UXdR4z7ZGqtz1/vuaCaXo1EEgADNg3/raS02T+pq9M5QdDELfE6ECfnT8i2Vc
+         1GXjug+E5onPA1qAFnOjmKK9e51splO8vPN38vhl5+DgkpMYm0doekvhOCLqOqwJa75Z
+         hjF7UuMP7jWS1o9SiTdbqduyowq/e2SD5LmDzdh15/ow9LlBlQSNsKBwl+9RXpmzF6rk
+         Xqmg==
+X-Gm-Message-State: APjAAAUxy/RwNm9kejrn3a5Za1WpXSZ/Y8zRJyqFl6WONwKsYN+kA4oO
+        KCb+mevlc3YIVsg0C4Dj6tA=
+X-Google-Smtp-Source: APXvYqwUsSqsLvN00P7BlyPp0WlykfXE2eX++xBbdr0xd/w/rJKG+KDNgUDfpW3CLgAcd4WNMIOmCw==
+X-Received: by 2002:a63:1341:: with SMTP id 1mr12919684pgt.48.1567864079861;
+        Sat, 07 Sep 2019 06:47:59 -0700 (PDT)
 Received: from ap-To-be-filled-by-O-E-M.8.8.8.8 ([14.33.120.60])
-        by smtp.gmail.com with ESMTPSA id r23sm9184294pjo.22.2019.09.07.06.47.41
+        by smtp.gmail.com with ESMTPSA id dw7sm7440139pjb.21.2019.09.07.06.47.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Sep 2019 06:47:45 -0700 (PDT)
+        Sat, 07 Sep 2019 06:47:58 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
         vfalico@gmail.com, andy@greyhouse.net, jiri@resnulli.us,
@@ -51,350 +51,235 @@ To:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
         hare@suse.de, varun@chelsio.com, ubraun@linux.ibm.com,
         kgraul@linux.ibm.com, jay.vosburgh@canonical.com
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v2 09/11] net: core: add ignore flag to netdev_adjacent structure
-Date:   Sat,  7 Sep 2019 22:47:37 +0900
-Message-Id: <20190907134737.444-1-ap420073@gmail.com>
+Subject: [PATCH net v2 10/11] vxlan: add adjacent link to limit depth level
+Date:   Sat,  7 Sep 2019 22:47:49 +0900
+Message-Id: <20190907134749.557-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to link an adjacent node, netdev_upper_dev_link() is used
-and in order to unlink an adjacent node, netdev_upper_dev_unlink() is used.
-unlink operation does not fail, but link operation can fail.
+Current vxlan code doesn't limit the number of nested devices.
+Nested devices would be handled recursively and this routine needs
+huge stack memory. So, unlimited nested devices could make
+stack overflow.
 
-In order to exchange adjacent nodes, we should unlink an old adjacent
-node first. then, link a new adjacent node.
-If link operation is failed, we should link an old adjacent node again.
-But this link operation can fail too.
-It eventually breaks the adjacent link relationship.
+In order to fix this issue, this patch adds adjacent links.
+The adjacent link APIs internally check the depth level.
 
-This patch adds an ignore flag into the netdev_adjacent structure.
-If this flag is set, netdev_upper_dev_link() ignores an old adjacent
-node for a moment.
-So we can skip unlink operation before link operation.
+Test commands:
+    ip link add dummy0 type dummy
+    ip link add vxlan0 type vxlan id 0 group 239.1.1.1 dev dummy0 \
+	    dstport 4789
+    for i in {1..100}
+    do
+            let A=$i-1
+            ip link add vxlan$i type vxlan id $i group 239.1.1.1 \
+		    dev vxlan$A dstport 4789
+    done
+    ip link del dummy0
 
+The top upper link is vxlan100 and the lowest link is vxlan0.
+When vxlan0 is deleting, the upper devices will be deleted recursively.
+It needs huge stack memory so it makes stack overflow.
+
+Splat looks like:
+[  229.628477] =============================================================================
+[  229.629785] BUG page->ptl (Not tainted): Padding overwritten. 0x0000000026abf214-0x0000000091f6abb2
+[  229.629785] -----------------------------------------------------------------------------
+[  229.629785]
+[  229.655439] ==================================================================
+[  229.629785] INFO: Slab 0x00000000ff7cfda8 objects=19 used=19 fp=0x00000000fe33776c flags=0x200000000010200
+[  229.655688] BUG: KASAN: stack-out-of-bounds in unmap_single_vma+0x25a/0x2e0
+[  229.655688] Read of size 8 at addr ffff888113076928 by task vlan-network-in/2334
+[  229.655688]
+[  229.629785] Padding 0000000026abf214: 00 80 14 0d 81 88 ff ff 68 91 81 14 81 88 ff ff  ........h.......
+[  229.629785] Padding 0000000001e24790: 38 91 81 14 81 88 ff ff 68 91 81 14 81 88 ff ff  8.......h.......
+[  229.629785] Padding 00000000b39397c8: 33 30 62 a7 ff ff ff ff ff eb 60 22 10 f1 ff 1f  30b.......`"....
+[  229.629785] Padding 00000000bc98f53a: 80 60 07 13 81 88 ff ff 00 80 14 0d 81 88 ff ff  .`..............
+[  229.629785] Padding 000000002aa8123d: 68 91 81 14 81 88 ff ff f7 21 17 a7 ff ff ff ff  h........!......
+[  229.629785] Padding 000000001c8c2369: 08 81 14 0d 81 88 ff ff 03 02 00 00 00 00 00 00  ................
+[  229.629785] Padding 000000004e290c5d: 21 90 a2 21 10 ed ff ff 00 00 00 00 00 fc ff df  !..!............
+[  229.629785] Padding 000000000e25d731: 18 60 07 13 81 88 ff ff c0 8b 13 05 81 88 ff ff  .`..............
+[  229.629785] Padding 000000007adc7ab3: b3 8a b5 41 00 00 00 00                          ...A....
+[  229.629785] FIX page->ptl: Restoring 0x0000000026abf214-0x0000000091f6abb2=0x5a
+[  ... ]
+
+Fixes: acaf4e70997f ("net: vxlan: when lower dev unregisters remove vxlan dev as well")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v2 : this patch isn't changed
 
- include/linux/netdevice.h |   4 +
- net/core/dev.c            | 160 +++++++++++++++++++++++++++++++++-----
- 2 files changed, 144 insertions(+), 20 deletions(-)
+ drivers/net/vxlan.c | 71 ++++++++++++++++++++++++++++++++++++++-------
+ include/net/vxlan.h |  1 +
+ 2 files changed, 62 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 5bb5756129af..309ae000bae7 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4319,6 +4319,10 @@ int netdev_master_upper_dev_link(struct net_device *dev,
- 				 struct netlink_ext_ack *extack);
- void netdev_upper_dev_unlink(struct net_device *dev,
- 			     struct net_device *upper_dev);
-+void netdev_adjacent_dev_disable(struct net_device *upper_dev,
-+				struct net_device *lower_dev);
-+void netdev_adjacent_dev_enable(struct net_device *upper_dev,
-+				struct net_device *lower_dev);
- void netdev_adjacent_rename_links(struct net_device *dev, char *oldname);
- void *netdev_lower_dev_get_private(struct net_device *dev,
- 				   struct net_device *lower_dev);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6a4b4ce62204..ac055b531c96 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6448,6 +6448,9 @@ struct netdev_adjacent {
- 	/* upper master flag, there can only be one master device per list */
- 	bool master;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 3d9bcc957f7d..0d5c8d22d8a4 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3567,6 +3567,8 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+ 	struct vxlan_fdb *f = NULL;
++	struct net_device *remote_dev = NULL;
++	struct vxlan_rdst *dst = &vxlan->default_dst;
+ 	bool unregister = false;
+ 	int err;
  
-+	/* lookup ignore flag */
-+	bool ignore;
-+
- 	/* counter for the number of times this device was added to us */
- 	u16 ref_nr;
+@@ -3577,14 +3579,14 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	dev->ethtool_ops = &vxlan_ethtool_ops;
  
-@@ -6553,6 +6556,22 @@ struct net_device *netdev_master_upper_dev_get(struct net_device *dev)
- }
- EXPORT_SYMBOL(netdev_master_upper_dev_get);
+ 	/* create an fdb entry for a valid default destination */
+-	if (!vxlan_addr_any(&vxlan->default_dst.remote_ip)) {
++	if (!vxlan_addr_any(&dst->remote_ip)) {
+ 		err = vxlan_fdb_create(vxlan, all_zeros_mac,
+-				       &vxlan->default_dst.remote_ip,
++				       &dst->remote_ip,
+ 				       NUD_REACHABLE | NUD_PERMANENT,
+ 				       vxlan->cfg.dst_port,
+-				       vxlan->default_dst.remote_vni,
+-				       vxlan->default_dst.remote_vni,
+-				       vxlan->default_dst.remote_ifindex,
++				       dst->remote_vni,
++				       dst->remote_vni,
++				       dst->remote_ifindex,
+ 				       NTF_SELF, &f);
+ 		if (err)
+ 			return err;
+@@ -3595,26 +3597,43 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 		goto errout;
+ 	unregister = true;
  
-+struct net_device *netdev_master_upper_dev_get_ignore(struct net_device *dev)
-+{
-+	struct netdev_adjacent *upper;
++	if (dst->remote_ifindex) {
++		remote_dev = __dev_get_by_index(net, dst->remote_ifindex);
++		if (!remote_dev)
++			goto errout;
 +
-+	ASSERT_RTNL();
-+
-+	if (list_empty(&dev->adj_list.upper))
-+		return NULL;
-+
-+	upper = list_first_entry(&dev->adj_list.upper,
-+				 struct netdev_adjacent, list);
-+	if (likely(upper->master) && !upper->ignore)
-+		return upper->dev;
-+	return NULL;
-+}
-+
- /**
-  * netdev_has_any_lower_dev - Check if device is linked to some device
-  * @dev: device
-@@ -6603,8 +6622,9 @@ struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
- }
- EXPORT_SYMBOL(netdev_upper_get_next_dev_rcu);
- 
--static struct net_device *netdev_next_upper_dev(struct net_device *dev,
--						struct list_head **iter)
-+static struct net_device *netdev_next_upper_dev_ignore(struct net_device *dev,
-+						       struct list_head **iter,
-+						       bool *ignore)
- {
- 	struct netdev_adjacent *upper;
- 
-@@ -6614,6 +6634,7 @@ static struct net_device *netdev_next_upper_dev(struct net_device *dev,
- 		return NULL;
- 
- 	*iter = &upper->list;
-+	*ignore = upper->ignore;
- 
- 	return upper->dev;
- }
-@@ -6635,26 +6656,29 @@ static struct net_device *netdev_next_upper_dev_rcu(struct net_device *dev,
- 	return upper->dev;
- }
- 
--int netdev_walk_all_upper_dev(struct net_device *dev,
--			      int (*fn)(struct net_device *dev,
--					void *data),
--			      void *data)
-+int netdev_walk_all_upper_dev_ignore(struct net_device *dev,
-+				     int (*fn)(struct net_device *dev,
-+					       void *data),
-+				     void *data)
- {
- 	struct net_device *udev;
- 	struct list_head *iter;
- 	int ret;
-+	bool ignore;
- 
- 	for (iter = &dev->adj_list.upper,
--	     udev = netdev_next_upper_dev(dev, &iter);
-+	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore);
- 	     udev;
--	     udev = netdev_next_upper_dev(dev, &iter)) {
-+	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore)) {
-+		if (ignore)
-+			continue;
- 		/* first is the upper device itself */
- 		ret = fn(udev, data);
- 		if (ret)
- 			return ret;
- 
- 		/* then look at all of its upper devices */
--		ret = netdev_walk_all_upper_dev(udev, fn, data);
-+		ret = netdev_walk_all_upper_dev_ignore(udev, fn, data);
- 		if (ret)
- 			return ret;
- 	}
-@@ -6690,6 +6714,15 @@ int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
- }
- EXPORT_SYMBOL_GPL(netdev_walk_all_upper_dev_rcu);
- 
-+bool netdev_has_upper_dev_ignore(struct net_device *dev,
-+				 struct net_device *upper_dev)
-+{
-+	ASSERT_RTNL();
-+
-+	return netdev_walk_all_upper_dev_ignore(dev, __netdev_has_upper_dev,
-+						upper_dev);
-+}
-+
- /**
-  * netdev_lower_get_next_private - Get the next ->private from the
-  *				   lower neighbour list
-@@ -6786,6 +6819,23 @@ static struct net_device *netdev_next_lower_dev(struct net_device *dev,
- 	return lower->dev;
- }
- 
-+static struct net_device *netdev_next_lower_dev_ignore(struct net_device *dev,
-+						       struct list_head **iter,
-+						       bool *ignore)
-+{
-+	struct netdev_adjacent *lower;
-+
-+	lower = list_entry((*iter)->next, struct netdev_adjacent, list);
-+
-+	if (&lower->list == &dev->adj_list.lower)
-+		return NULL;
-+
-+	*iter = &lower->list;
-+	*ignore = lower->ignore;
-+
-+	return lower->dev;
-+}
-+
- int netdev_walk_all_lower_dev(struct net_device *dev,
- 			      int (*fn)(struct net_device *dev,
- 					void *data),
-@@ -6814,6 +6864,36 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
- }
- EXPORT_SYMBOL_GPL(netdev_walk_all_lower_dev);
- 
-+int netdev_walk_all_lower_dev_ignore(struct net_device *dev,
-+				     int (*fn)(struct net_device *dev,
-+					       void *data),
-+				     void *data)
-+{
-+	struct net_device *ldev;
-+	struct list_head *iter;
-+	int ret;
-+	bool ignore;
-+
-+	for (iter = &dev->adj_list.lower,
-+	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore);
-+	     ldev;
-+	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore)) {
-+		if (ignore)
-+			continue;
-+		/* first is the lower device itself */
-+		ret = fn(ldev, data);
-+		if (ret)
-+			return ret;
-+
-+		/* then look at all of its lower devices */
-+		ret = netdev_walk_all_lower_dev_ignore(ldev, fn, data);
-+		if (ret)
-+			return ret;
++		err = netdev_upper_dev_link(remote_dev, dev, extack);
++		if (err)
++			goto errout;
 +	}
 +
-+	return 0;
-+}
-+
- static struct net_device *netdev_next_lower_dev_rcu(struct net_device *dev,
- 						    struct list_head **iter)
- {
-@@ -6833,11 +6913,14 @@ static u8 __netdev_upper_depth(struct net_device *dev)
- 	struct net_device *udev;
- 	struct list_head *iter;
- 	u8 max_depth = 0;
-+	bool ignore;
+ 	err = rtnl_configure_link(dev, NULL);
+ 	if (err)
+-		goto errout;
++		goto unlink;
  
- 	for (iter = &dev->adj_list.upper,
--	     udev = netdev_next_upper_dev(dev, &iter);
-+	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore);
- 	     udev;
--	     udev = netdev_next_upper_dev(dev, &iter)) {
-+	     udev = netdev_next_upper_dev_ignore(dev, &iter, &ignore)) {
-+		if (ignore)
-+			continue;
- 		if (max_depth < udev->upper_level)
- 			max_depth = udev->upper_level;
+ 	if (f) {
+-		vxlan_fdb_insert(vxlan, all_zeros_mac,
+-				 vxlan->default_dst.remote_vni, f);
++		vxlan_fdb_insert(vxlan, all_zeros_mac, dst->remote_vni, f);
+ 
+ 		/* notify default fdb entry */
+ 		err = vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f),
+ 				       RTM_NEWNEIGH, true, extack);
+ 		if (err) {
+ 			vxlan_fdb_destroy(vxlan, f, false, false);
++			if (remote_dev)
++				netdev_upper_dev_unlink(remote_dev, dev);
+ 			goto unregister;
+ 		}
  	}
-@@ -6850,11 +6933,14 @@ static u8 __netdev_lower_depth(struct net_device *dev)
- 	struct net_device *ldev;
- 	struct list_head *iter;
- 	u8 max_depth = 0;
-+	bool ignore;
  
- 	for (iter = &dev->adj_list.lower,
--	     ldev = netdev_next_lower_dev(dev, &iter);
-+	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore);
- 	     ldev;
--	     ldev = netdev_next_lower_dev(dev, &iter)) {
-+	     ldev = netdev_next_lower_dev_ignore(dev, &iter, &ignore)) {
-+		if (ignore)
-+			continue;
- 		if (max_depth < ldev->lower_level)
- 			max_depth = ldev->lower_level;
- 	}
-@@ -6999,6 +7085,7 @@ static int __netdev_adjacent_dev_insert(struct net_device *dev,
- 	adj->master = master;
- 	adj->ref_nr = 1;
- 	adj->private = private;
-+	adj->ignore = false;
- 	dev_hold(adj_dev);
- 
- 	pr_debug("Insert adjacency: dev %s adj_dev %s adj->ref_nr %d; dev_hold on %s\n",
-@@ -7149,17 +7236,17 @@ static int __netdev_upper_dev_link(struct net_device *dev,
- 		return -EBUSY;
- 
- 	/* To prevent loops, check if dev is not upper device to upper_dev. */
--	if (netdev_has_upper_dev(upper_dev, dev))
-+	if (netdev_has_upper_dev_ignore(upper_dev, dev))
- 		return -EBUSY;
- 
- 	if ((dev->lower_level + upper_dev->upper_level) > MAX_NEST_DEV)
- 		return -EMLINK;
- 
- 	if (!master) {
--		if (netdev_has_upper_dev(dev, upper_dev))
-+		if (netdev_has_upper_dev_ignore(dev, upper_dev))
- 			return -EEXIST;
- 	} else {
--		master_dev = netdev_master_upper_dev_get(dev);
-+		master_dev = netdev_master_upper_dev_get_ignore(dev);
- 		if (master_dev)
- 			return master_dev == upper_dev ? -EEXIST : -EBUSY;
- 	}
-@@ -7182,10 +7269,12 @@ static int __netdev_upper_dev_link(struct net_device *dev,
- 		goto rollback;
- 
- 	__netdev_update_upper_level(dev, NULL);
--	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
-+	netdev_walk_all_lower_dev_ignore(dev, __netdev_update_upper_level,
-+					 NULL);
- 
- 	__netdev_update_lower_level(upper_dev, NULL);
--	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
-+	netdev_walk_all_upper_dev_ignore(upper_dev,
-+					 __netdev_update_lower_level, NULL);
- 
+ 	list_add(&vxlan->next, &vn->vxlan_list);
++	if (remote_dev) {
++		dst->remote_dev = remote_dev;
++		dev_hold(remote_dev);
++	}
  	return 0;
+-
++unlink:
++	if (remote_dev)
++		netdev_upper_dev_unlink(remote_dev, dev);
+ errout:
+ 	/* unregister_netdevice() destroys the default FDB entry with deletion
+ 	 * notification. But the addition notification was not sent yet, so
+@@ -3936,6 +3955,8 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	struct net_device *lowerdev;
+ 	struct vxlan_config conf;
+ 	int err;
++	bool linked = false;
++	bool disabled = false;
  
-@@ -7271,13 +7360,44 @@ void netdev_upper_dev_unlink(struct net_device *dev,
- 				      &changeupper_info.info);
+ 	err = vxlan_nl2conf(tb, data, dev, &conf, true, extack);
+ 	if (err)
+@@ -3946,6 +3967,16 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	if (err)
+ 		return err;
  
- 	__netdev_update_upper_level(dev, NULL);
--	netdev_walk_all_lower_dev(dev, __netdev_update_upper_level, NULL);
-+	netdev_walk_all_lower_dev_ignore(dev, __netdev_update_upper_level,
-+					 NULL);
++	if (lowerdev) {
++		if (dst->remote_dev && lowerdev != dst->remote_dev) {
++			netdev_adjacent_dev_disable(dst->remote_dev, dev);
++			disabled = true;
++		}
++		err = netdev_upper_dev_link(lowerdev, dev, extack);
++		if (err)
++			goto err;
++		linked = true;
++	}
+ 	/* handle default dst entry */
+ 	if (!vxlan_addr_equal(&conf.remote_ip, &dst->remote_ip)) {
+ 		u32 hash_index = fdb_head_index(vxlan, all_zeros_mac, conf.vni);
+@@ -3962,7 +3993,7 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
+ 					       NTF_SELF, true, extack);
+ 			if (err) {
+ 				spin_unlock_bh(&vxlan->hash_lock[hash_index]);
+-				return err;
++				goto err;
+ 			}
+ 		}
+ 		if (!vxlan_addr_any(&dst->remote_ip))
+@@ -3979,8 +4010,24 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	if (conf.age_interval != vxlan->cfg.age_interval)
+ 		mod_timer(&vxlan->age_timer, jiffies);
  
- 	__netdev_update_lower_level(upper_dev, NULL);
--	netdev_walk_all_upper_dev(upper_dev, __netdev_update_lower_level, NULL);
-+	netdev_walk_all_upper_dev_ignore(upper_dev,
-+					 __netdev_update_lower_level, NULL);
++	if (disabled) {
++		netdev_adjacent_dev_enable(dst->remote_dev, dev);
++		netdev_upper_dev_unlink(dst->remote_dev, dev);
++		dev_put(dst->remote_dev);
++	}
++	if (linked) {
++		dst->remote_dev = lowerdev;
++		dev_hold(dst->remote_dev);
++	}
++
+ 	vxlan_config_apply(dev, &conf, lowerdev, vxlan->net, true);
+ 	return 0;
++err:
++	if (linked)
++		netdev_upper_dev_unlink(lowerdev, dev);
++	if (disabled)
++		netdev_adjacent_dev_enable(dst->remote_dev, dev);
++	return err;
  }
- EXPORT_SYMBOL(netdev_upper_dev_unlink);
  
-+void __netdev_adjacent_dev_set(struct net_device *upper_dev,
-+			       struct net_device *lower_dev,
-+			       bool val)
-+{
-+	struct netdev_adjacent *adj;
-+
-+	adj = __netdev_find_adj(lower_dev, &upper_dev->adj_list.lower);
-+	if (adj)
-+		adj->ignore = val;
-+
-+	adj = __netdev_find_adj(upper_dev, &lower_dev->adj_list.upper);
-+	if (adj)
-+		adj->ignore = val;
-+}
-+
-+void netdev_adjacent_dev_disable(struct net_device *upper_dev,
-+				 struct net_device *lower_dev)
-+{
-+	__netdev_adjacent_dev_set(upper_dev, lower_dev, true);
-+}
-+EXPORT_SYMBOL(netdev_adjacent_dev_disable);
-+
-+void netdev_adjacent_dev_enable(struct net_device *upper_dev,
-+				struct net_device *lower_dev)
-+{
-+	__netdev_adjacent_dev_set(upper_dev, lower_dev, false);
-+}
-+EXPORT_SYMBOL(netdev_adjacent_dev_enable);
-+
- /**
-  * netdev_bonding_info_change - Dispatch event about slave change
-  * @dev: device
+ static void vxlan_dellink(struct net_device *dev, struct list_head *head)
+@@ -3991,6 +4038,10 @@ static void vxlan_dellink(struct net_device *dev, struct list_head *head)
+ 
+ 	list_del(&vxlan->next);
+ 	unregister_netdevice_queue(dev, head);
++	if (vxlan->default_dst.remote_dev) {
++		netdev_upper_dev_unlink(vxlan->default_dst.remote_dev, dev);
++		dev_put(vxlan->default_dst.remote_dev);
++	}
+ }
+ 
+ static size_t vxlan_get_size(const struct net_device *dev)
+diff --git a/include/net/vxlan.h b/include/net/vxlan.h
+index dc1583a1fb8a..08e237d7aa73 100644
+--- a/include/net/vxlan.h
++++ b/include/net/vxlan.h
+@@ -197,6 +197,7 @@ struct vxlan_rdst {
+ 	u8			 offloaded:1;
+ 	__be32			 remote_vni;
+ 	u32			 remote_ifindex;
++	struct net_device	 *remote_dev;
+ 	struct list_head	 list;
+ 	struct rcu_head		 rcu;
+ 	struct dst_cache	 dst_cache;
 -- 
 2.17.1
 
