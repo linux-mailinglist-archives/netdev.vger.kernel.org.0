@@ -2,61 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47775AC6F4
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 16:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66FCFAC709
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 16:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391998AbfIGOeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Sep 2019 10:34:11 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:45586 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388202AbfIGOeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 10:34:10 -0400
-Received: from localhost (unknown [88.214.184.0])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8B224152863F4;
-        Sat,  7 Sep 2019 07:34:09 -0700 (PDT)
-Date:   Sat, 07 Sep 2019 16:34:05 +0200 (CEST)
-Message-Id: <20190907.163405.2109572655243996399.davem@davemloft.net>
-To:     pablo@netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/8] Netfilter updates for net-next
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190905160400.25399-1-pablo@netfilter.org>
-References: <20190905160400.25399-1-pablo@netfilter.org>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 07 Sep 2019 07:34:10 -0700 (PDT)
+        id S2405995AbfIGOqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Sep 2019 10:46:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33110 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726626AbfIGOqM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 7 Sep 2019 10:46:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=SFLs9Wtw5K6HF7pbbP4w76MAtfouFt4h9mpnKSyF4Og=; b=NwMxhgpZGOv+n924F3G88DMzn1
+        fOt9vYUhghodulcpr4pxkicGhYrCrBs3W98kWFfXGKnEDZHtypWaEtYGmWHJuYD1FuKC0B9PsWlmh
+        t3xXNGRNzbCvmB/LJcZoTpaF4dDbQxyScoIVSfzITxcdj/BRpkW4wABWVCuzJthncz/Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i6byG-0005nj-5J; Sat, 07 Sep 2019 16:45:48 +0200
+Date:   Sat, 7 Sep 2019 16:45:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>, olteanv@gmail.com
+Cc:     olteanv@gmail.com, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        vinicius.gomes@intel.com, vedang.patel@intel.com,
+        richardcochran@gmail.com, weifeng.voon@intel.com,
+        jiri@mellanox.com, m-karicheri2@ti.com, Jose.Abreu@synopsys.com,
+        ilias.apalodimas@linaro.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, kurt.kanzenbach@linutronix.de,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v1 net-next 00/15] tc-taprio offload for SJA1105 DSA
+Message-ID: <20190907144548.GA21922@lunn.ch>
+References: <20190902162544.24613-1-olteanv@gmail.com>
+ <20190906.145403.657322945046640538.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190906.145403.657322945046640538.davem@davemloft.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
-Date: Thu,  5 Sep 2019 18:03:52 +0200
+On Fri, Sep 06, 2019 at 02:54:03PM +0200, David Miller wrote:
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Mon,  2 Sep 2019 19:25:29 +0300
+> 
+> > This is the first attempt to submit the tc-taprio offload model for
+> > inclusion in the net tree.
+> 
+> Someone really needs to review this.
 
-> The following patchset contains Netfilter updates for net-next:
-> 
-> 1) Add nft_reg_store64() and nft_reg_load64() helpers, from Ander Juaristi.
-> 
-> 2) Time matching support, also from Ander Juaristi.
-> 
-> 3) VLAN support for nfnetlink_log, from Michael Braun.
-> 
-> 4) Support for set element deletions from the packet path, also from Ander.
-> 
-> 5) Remove __read_mostly from conntrack spinlock, from Li RongQing.
-> 
-> 6) Support for updating stateful objects, this also includes the initial
->    client for this infrastructure: the quota extension. A follow up fix
->    for the control plane also comes in this batch. Patches from
->    Fernando Fernandez Mancera.
-> 
-> You can pull these changes from:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+Hi Vladimir
 
-Pulled, thanks.
+You might have more chance getting this reviewed if you split it up
+into a number of smaller series. Richard could probably review the
+plain PTP changes. Who else has worked on tc-taprio recently? A series
+purely about tc-taprio might be more likely reviewed by a tc-taprio
+person, if it does not contain PTP changes.
+
+    Andrew
