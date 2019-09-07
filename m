@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95DAFAC922
+	by mail.lfdr.de (Postfix) with ESMTP id 2BD02AC921
 	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 22:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436714AbfIGUBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2436719AbfIGUBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 7 Sep 2019 16:01:23 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36827 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406151AbfIGUBV (ORCPT
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33936 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436710AbfIGUBV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 16:01:21 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s18so9098255qkj.3
-        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 13:01:19 -0700 (PDT)
+Received: by mail-qt1-f193.google.com with SMTP id a13so11329147qtj.1
+        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 13:01:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1YgcD9PwYZNL/2nxblWLmUV1H5RKZO+r5RlmHPiYBBU=;
-        b=nDRIDshhJ0pQpI9zi4yT26sa9MmiQM/0Z0H4JgUaG6s6V5/5VimXHfZtDsxGHVUPe4
-         QvTzPc+sb0Q32UWG73uVvmI9FM3aMqPt8AOu8ALKNTGRHAxpmWx17JSntUcu/ixkYYFI
-         mYdxGbCy3g0vaPLjVp0gv2IlKmiQtlTVvbk6WHrIX7t48wqXu22T48Bt6mcn58Qs05gs
-         vFQAbsa9S+h2/voSgHORuuvPbLbl7GMSj1qMwJtLz/lnO+U580rK/w+ZykHS76jGeDqh
-         vya2QUfRu/NlDiCTwfBxSQ4Mo/l2VhvwAw/9+5xGxU6cnyS4iQuwWVfnTsCDGPfXtpO0
-         K9MA==
+        bh=VHWqLWNYbQSjJEbZH3NQJfj6PtoD6ad0zgoLKUQj7Qk=;
+        b=PSEitL7ngcQwVftZX6XTE6ApKx2Ugm1Vb0OtFmAPEdHl9qx6fXnXXXl/YnqJyYbZWe
+         cCNCsyw0Wuen48eVkYs4f1KhVr2sQM74vlMcR4Rw9pP7Y3PkX3TBXzVuso3EPLC9pbq3
+         1L4iA0JOLhnYnRmbpT0mUCebQ/PHBFpuzDRMVsGuC3oXEJzdaOLvVF6RCBs2wZ6VoaXm
+         XQKNTx4Riw7S5889ntKFO9pQIN7zwzjUJaBPWlCmsSRPYQ6bnDbdIoR8cka6hoiWUqJ2
+         pH6i5ERxC3y+gtj8vCXC8ocHAIo0cq+xir3xg2TaeRJruCeL0w5dFYuP6xpcsw++rmO5
+         0hLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1YgcD9PwYZNL/2nxblWLmUV1H5RKZO+r5RlmHPiYBBU=;
-        b=Kd3PaqAJH/+x0/EuOYQcbn1VSPGKtStyzsZrw3MclpLE/ZxeyGa60/TSLHBphrHrza
-         PZyml6DOZ1+6TU5/Ioc0zd6/pIwMDW61eKFzSLAO8n8L667sr4BDvPpySjisltLqB80I
-         DS1R+xTDcPtnr1gi4CLF8CIk3X2GhZSd3NGr84G5/7sLOvPv6R0HsDfkz7TRVNX91zjk
-         KJG/ElS6YktGNA+3Kjt0E0dPt51LBYysT7WqwwVezE2TfvXizf0K/oU0mSWj2c3GnzrM
-         //67eQOl70LxwizvELG6grXNkM1zkBUNtRwOZGC5H8+5Q+QylH3mo/PoiGy+8m7juBu1
-         yZ7g==
-X-Gm-Message-State: APjAAAVKm4o1IgbDpIJ0bWv7rU3pnJJPmc2lDscSLpmBKZ0XXArTTkDh
-        idH65VlaCaqnyJGAoBH+b2pO7X6h
-X-Google-Smtp-Source: APXvYqwKD5AMWhkJMymhimVhZvijQ4RWCpV/am8KNiC/xl37qmY8uDoHmoNeB0wnAsR5ZGen5ENxxQ==
-X-Received: by 2002:a05:620a:15c4:: with SMTP id o4mr15611208qkm.62.1567886479119;
-        Sat, 07 Sep 2019 13:01:19 -0700 (PDT)
+        bh=VHWqLWNYbQSjJEbZH3NQJfj6PtoD6ad0zgoLKUQj7Qk=;
+        b=rbEHJ9xJaW5crCPaRTRZXsh4sUmq0XSzqdl9MsUTiwn8Kjw8Y1wSyV2LBek5LBc4cI
+         J59vn9BfjS2Bso5XYnsncneVVs9fAKEp7OAHH8yTQuyGORtYgiNagonWJ6F2DTJc5LB4
+         13WQ7PB6hgWs9bEzpSrbC/pyHQBUQjxpwjdxBUcJOshE58/Q4C66yLJR8UeEdWSK5R4Q
+         cqlJDb0nxncU4fCmF0C7U0WY7qctZ8YTpiNa/58t6lmhJpk+HaiHgDgko1PqrA1DoAqD
+         fOpaJff5ed7PlcxU32l1mEZA6pbupbcHmLeNK9ygahiAKtUdUDsppbOEffzLk7D+huxB
+         4hmw==
+X-Gm-Message-State: APjAAAXm3xF3TH1F8OgPJMPgpg9VYognmb/KS0Y2c4iuPh+L2q9sHCN1
+        IjEqJcpK4ZoEApa0gb1+vIL2gby1
+X-Google-Smtp-Source: APXvYqxVr+dBX515AfzwLbsM1hU9yTt1d1IFuosPFH2jRWMfDKrO7WZLWxDta2oK3MR2amxXCsGV2Q==
+X-Received: by 2002:ac8:149a:: with SMTP id l26mr15805268qtj.267.1567886480477;
+        Sat, 07 Sep 2019 13:01:20 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id h68sm4321832qkf.2.2019.09.07.13.01.18
+        by smtp.gmail.com with ESMTPSA id b4sm4484538qkd.121.2019.09.07.13.01.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Sep 2019 13:01:18 -0700 (PDT)
+        Sat, 07 Sep 2019 13:01:19 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 2/3] net: dsa: mv88e6xxx: introduce .port_set_policy
-Date:   Sat,  7 Sep 2019 16:00:48 -0400
-Message-Id: <20190907200049.25273-3-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 3/3] net: dsa: mv88e6xxx: add RXNFC support
+Date:   Sat,  7 Sep 2019 16:00:49 -0400
+Message-Id: <20190907200049.25273-4-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20190907200049.25273-1-vivien.didelot@gmail.com>
 References: <20190907200049.25273-1-vivien.didelot@gmail.com>
@@ -61,252 +61,294 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a new .port_set_policy operation to configure a port's
-Policy Control List, based on mapping such as DA, SA, Etype and so on.
+Implement the .get_rxnfc and .set_rxnfc DSA operations to configure
+a port's Layer 2 Policy Control List (PCL) via ethtool.
 
-Models similar to 88E6352 and 88E6390 are supported at the moment.
+Currently only dropping frames based on MAC Destination or Source
+Address (including the option VLAN parameter) is supported.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |  9 ++++
- drivers/net/dsa/mv88e6xxx/chip.h | 22 ++++++++++
- drivers/net/dsa/mv88e6xxx/port.c | 74 ++++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h | 17 +++++++-
- 4 files changed, 121 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 213 +++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  13 ++
+ 2 files changed, 226 insertions(+)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0d54a69f3622..6f4d5303a1f3 100644
+index 6f4d5303a1f3..6787d560e9e3 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3132,6 +3132,7 @@ static const struct mv88e6xxx_ops mv88e6172_ops = {
- 	.port_set_rgmii_delay = mv88e6352_port_set_rgmii_delay,
- 	.port_set_speed = mv88e6352_port_set_speed,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3218,6 +3219,7 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
- 	.port_set_rgmii_delay = mv88e6352_port_set_rgmii_delay,
- 	.port_set_speed = mv88e6352_port_set_speed,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3303,6 +3305,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.port_set_speed = mv88e6390_port_set_speed,
- 	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3351,6 +3354,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.port_set_speed = mv88e6390x_port_set_speed,
- 	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3448,6 +3452,7 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
- 	.port_set_rgmii_delay = mv88e6352_port_set_rgmii_delay,
- 	.port_set_speed = mv88e6352_port_set_speed,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3539,6 +3544,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.port_set_speed = mv88e6390_port_set_speed,
- 	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3809,6 +3815,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.port_set_rgmii_delay = mv88e6352_port_set_rgmii_delay,
- 	.port_set_speed = mv88e6352_port_set_speed,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3863,6 +3870,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.port_set_speed = mv88e6390_port_set_speed,
- 	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
-@@ -3915,6 +3923,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.port_set_speed = mv88e6390x_port_set_speed,
- 	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
-+	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
- 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+@@ -1524,6 +1524,216 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+ 	return mv88e6xxx_g1_atu_loadpurge(chip, fid, &entry);
+ }
+ 
++static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
++				  const struct mv88e6xxx_policy *policy)
++{
++	enum mv88e6xxx_policy_mapping mapping = policy->mapping;
++	enum mv88e6xxx_policy_action action = policy->action;
++	const u8 *addr = policy->addr;
++	u16 vid = policy->vid;
++	u8 state;
++	int err;
++	int id;
++
++	if (!chip->info->ops->port_set_policy)
++		return -EOPNOTSUPP;
++
++	switch (mapping) {
++	case MV88E6XXX_POLICY_MAPPING_DA:
++	case MV88E6XXX_POLICY_MAPPING_SA:
++		if (action == MV88E6XXX_POLICY_ACTION_NORMAL)
++			state = 0; /* Dissociate the port and address */
++		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
++			 is_multicast_ether_addr(addr))
++			state = MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_POLICY;
++		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
++			 is_unicast_ether_addr(addr))
++			state = MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC_POLICY;
++		else
++			return -EOPNOTSUPP;
++
++		err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid,
++						   state);
++		if (err)
++			return err;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	/* Skip the port's policy clearing if the mapping is still in use */
++	if (action == MV88E6XXX_POLICY_ACTION_NORMAL)
++		idr_for_each_entry(&chip->policies, policy, id)
++			if (policy->port == port &&
++			    policy->mapping == mapping &&
++			    policy->action != action)
++				return 0;
++
++	return chip->info->ops->port_set_policy(chip, port, mapping, action);
++}
++
++static int mv88e6xxx_policy_insert(struct mv88e6xxx_chip *chip, int port,
++				   struct ethtool_rx_flow_spec *fs)
++{
++	struct ethhdr *mac_entry = &fs->h_u.ether_spec;
++	struct ethhdr *mac_mask = &fs->m_u.ether_spec;
++	enum mv88e6xxx_policy_mapping mapping;
++	enum mv88e6xxx_policy_action action;
++	struct mv88e6xxx_policy *policy;
++	u16 vid = 0;
++	u8 *addr;
++	int err;
++	int id;
++
++	if (fs->location != RX_CLS_LOC_ANY)
++		return -EINVAL;
++
++	if (fs->ring_cookie == RX_CLS_FLOW_DISC)
++		action = MV88E6XXX_POLICY_ACTION_DISCARD;
++	else
++		return -EOPNOTSUPP;
++
++	switch (fs->flow_type & ~FLOW_EXT) {
++	case ETHER_FLOW:
++		if (!is_zero_ether_addr(mac_mask->h_dest) &&
++		    is_zero_ether_addr(mac_mask->h_source)) {
++			mapping = MV88E6XXX_POLICY_MAPPING_DA;
++			addr = mac_entry->h_dest;
++		} else if (is_zero_ether_addr(mac_mask->h_dest) &&
++		    !is_zero_ether_addr(mac_mask->h_source)) {
++			mapping = MV88E6XXX_POLICY_MAPPING_SA;
++			addr = mac_entry->h_source;
++		} else {
++			/* Cannot support DA and SA mapping in the same rule */
++			return -EOPNOTSUPP;
++		}
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	if ((fs->flow_type & FLOW_EXT) && fs->m_ext.vlan_tci) {
++		if (fs->m_ext.vlan_tci != 0xffff)
++			return -EOPNOTSUPP;
++		vid = be16_to_cpu(fs->h_ext.vlan_tci) & VLAN_VID_MASK;
++	}
++
++	idr_for_each_entry(&chip->policies, policy, id) {
++		if (policy->port == port && policy->mapping == mapping &&
++		    policy->action == action && policy->vid == vid &&
++		    ether_addr_equal(policy->addr, addr))
++			return -EEXIST;
++	}
++
++	policy = devm_kzalloc(chip->dev, sizeof(*policy), GFP_KERNEL);
++	if (!policy)
++		return -ENOMEM;
++
++	fs->location = 0;
++	err = idr_alloc_u32(&chip->policies, policy, &fs->location, 0xffffffff,
++			    GFP_KERNEL);
++	if (err) {
++		devm_kfree(chip->dev, policy);
++		return err;
++	}
++
++	memcpy(&policy->fs, fs, sizeof(*fs));
++	ether_addr_copy(policy->addr, addr);
++	policy->mapping = mapping;
++	policy->action = action;
++	policy->port = port;
++	policy->vid = vid;
++
++	err = mv88e6xxx_policy_apply(chip, port, policy);
++	if (err) {
++		idr_remove(&chip->policies, fs->location);
++		devm_kfree(chip->dev, policy);
++		return err;
++	}
++
++	return 0;
++}
++
++static int mv88e6xxx_get_rxnfc(struct dsa_switch *ds, int port,
++			       struct ethtool_rxnfc *rxnfc, u32 *rule_locs)
++{
++	struct ethtool_rx_flow_spec *fs = &rxnfc->fs;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	struct mv88e6xxx_policy *policy;
++	int err;
++	int id;
++
++	mv88e6xxx_reg_lock(chip);
++
++	switch (rxnfc->cmd) {
++	case ETHTOOL_GRXCLSRLCNT:
++		rxnfc->data = 0;
++		rxnfc->data |= RX_CLS_LOC_SPECIAL;
++		rxnfc->rule_cnt = 0;
++		idr_for_each_entry(&chip->policies, policy, id)
++			if (policy->port == port)
++				rxnfc->rule_cnt++;
++		err = 0;
++		break;
++	case ETHTOOL_GRXCLSRULE:
++		err = -ENOENT;
++		policy = idr_find(&chip->policies, fs->location);
++		if (policy) {
++			memcpy(fs, &policy->fs, sizeof(*fs));
++			err = 0;
++		}
++		break;
++	case ETHTOOL_GRXCLSRLALL:
++		rxnfc->data = 0;
++		rxnfc->rule_cnt = 0;
++		idr_for_each_entry(&chip->policies, policy, id)
++			if (policy->port == port)
++				rule_locs[rxnfc->rule_cnt++] = id;
++		err = 0;
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
++}
++
++static int mv88e6xxx_set_rxnfc(struct dsa_switch *ds, int port,
++			       struct ethtool_rxnfc *rxnfc)
++{
++	struct ethtool_rx_flow_spec *fs = &rxnfc->fs;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	struct mv88e6xxx_policy *policy;
++	int err;
++
++	mv88e6xxx_reg_lock(chip);
++
++	switch (rxnfc->cmd) {
++	case ETHTOOL_SRXCLSRLINS:
++		err = mv88e6xxx_policy_insert(chip, port, fs);
++		break;
++	case ETHTOOL_SRXCLSRLDEL:
++		err = -ENOENT;
++		policy = idr_remove(&chip->policies, fs->location);
++		if (policy) {
++			policy->action = MV88E6XXX_POLICY_ACTION_NORMAL;
++			err = mv88e6xxx_policy_apply(chip, port, policy);
++			devm_kfree(chip->dev, policy);
++		}
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
++}
++
+ static int mv88e6xxx_port_add_broadcast(struct mv88e6xxx_chip *chip, int port,
+ 					u16 vid)
+ {
+@@ -4655,6 +4865,7 @@ static struct mv88e6xxx_chip *mv88e6xxx_alloc_chip(struct device *dev)
+ 
+ 	mutex_init(&chip->reg_lock);
+ 	INIT_LIST_HEAD(&chip->mdios);
++	idr_init(&chip->policies);
+ 
+ 	return chip;
+ }
+@@ -4739,6 +4950,8 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.set_eeprom		= mv88e6xxx_set_eeprom,
+ 	.get_regs_len		= mv88e6xxx_get_regs_len,
+ 	.get_regs		= mv88e6xxx_get_regs,
++	.get_rxnfc		= mv88e6xxx_get_rxnfc,
++	.set_rxnfc		= mv88e6xxx_set_rxnfc,
+ 	.set_ageing_time	= mv88e6xxx_set_ageing_time,
+ 	.port_bridge_join	= mv88e6xxx_port_bridge_join,
+ 	.port_bridge_leave	= mv88e6xxx_port_bridge_leave,
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 6bc0a4e4fe7b..04a329a98158 100644
+index 04a329a98158..e9b1a1ac9a8e 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.h
 +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -189,6 +189,24 @@ struct mv88e6xxx_port_hwtstamp {
- 	struct hwtstamp_config tstamp_config;
+@@ -8,6 +8,7 @@
+ #ifndef _MV88E6XXX_CHIP_H
+ #define _MV88E6XXX_CHIP_H
+ 
++#include <linux/idr.h>
+ #include <linux/if_vlan.h>
+ #include <linux/irq.h>
+ #include <linux/gpio/consumer.h>
+@@ -207,6 +208,15 @@ enum mv88e6xxx_policy_action {
+ 	MV88E6XXX_POLICY_ACTION_DISCARD,
  };
  
-+enum mv88e6xxx_policy_mapping {
-+	MV88E6XXX_POLICY_MAPPING_DA,
-+	MV88E6XXX_POLICY_MAPPING_SA,
-+	MV88E6XXX_POLICY_MAPPING_VTU,
-+	MV88E6XXX_POLICY_MAPPING_ETYPE,
-+	MV88E6XXX_POLICY_MAPPING_PPPOE,
-+	MV88E6XXX_POLICY_MAPPING_VBAS,
-+	MV88E6XXX_POLICY_MAPPING_OPT82,
-+	MV88E6XXX_POLICY_MAPPING_UDP,
-+};
-+
-+enum mv88e6xxx_policy_action {
-+	MV88E6XXX_POLICY_ACTION_NORMAL,
-+	MV88E6XXX_POLICY_ACTION_MIRROR,
-+	MV88E6XXX_POLICY_ACTION_TRAP,
-+	MV88E6XXX_POLICY_ACTION_DISCARD,
++struct mv88e6xxx_policy {
++	enum mv88e6xxx_policy_mapping mapping;
++	enum mv88e6xxx_policy_action action;
++	struct ethtool_rx_flow_spec fs;
++	u8 addr[ETH_ALEN];
++	int port;
++	u16 vid;
 +};
 +
  struct mv88e6xxx_port {
  	struct mv88e6xxx_chip *chip;
  	int port;
-@@ -381,6 +399,10 @@ struct mv88e6xxx_ops {
+@@ -265,6 +275,9 @@ struct mv88e6xxx_chip {
+ 	/* List of mdio busses */
+ 	struct list_head mdios;
  
- 	int (*port_tag_remap)(struct mv88e6xxx_chip *chip, int port);
- 
-+	int (*port_set_policy)(struct mv88e6xxx_chip *chip, int port,
-+			       enum mv88e6xxx_policy_mapping mapping,
-+			       enum mv88e6xxx_policy_action action);
++	/* Policy Control List IDs and rules */
++	struct idr policies;
 +
- 	int (*port_set_frame_mode)(struct mv88e6xxx_chip *chip, int port,
- 				   enum mv88e6xxx_frame_mode mode);
- 	int (*port_set_egress_floods)(struct mv88e6xxx_chip *chip, int port,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 04006344adb2..15ef81654b67 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1341,3 +1341,77 @@ int mv88e6390_port_tag_remap(struct mv88e6xxx_chip *chip, int port)
- 
- 	return 0;
- }
-+
-+/* Offset 0x0E: Policy Control Register */
-+
-+int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
-+			      enum mv88e6xxx_policy_mapping mapping,
-+			      enum mv88e6xxx_policy_action action)
-+{
-+	u16 reg, mask, val;
-+	int shift;
-+	int err;
-+
-+	switch (mapping) {
-+	case MV88E6XXX_POLICY_MAPPING_DA:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_DA_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_DA_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_SA:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_SA_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_SA_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_VTU:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VTU_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_VTU_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_ETYPE:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_PPPOE:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_VBAS:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_OPT82:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK;
-+		break;
-+	case MV88E6XXX_POLICY_MAPPING_UDP:
-+		shift = __bf_shf(MV88E6XXX_PORT_POLICY_CTL_UDP_MASK);
-+		mask = MV88E6XXX_PORT_POLICY_CTL_UDP_MASK;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	switch (action) {
-+	case MV88E6XXX_POLICY_ACTION_NORMAL:
-+		val = MV88E6XXX_PORT_POLICY_CTL_NORMAL;
-+		break;
-+	case MV88E6XXX_POLICY_ACTION_MIRROR:
-+		val = MV88E6XXX_PORT_POLICY_CTL_MIRROR;
-+		break;
-+	case MV88E6XXX_POLICY_ACTION_TRAP:
-+		val = MV88E6XXX_PORT_POLICY_CTL_TRAP;
-+		break;
-+	case MV88E6XXX_POLICY_ACTION_DISCARD:
-+		val = MV88E6XXX_PORT_POLICY_CTL_DISCARD;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_POLICY_CTL, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~mask;
-+	reg |= (val << shift) & mask;
-+
-+	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_POLICY_CTL, reg);
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index d4e9bea6e82f..03a480cd71b9 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -222,7 +222,19 @@
- #define MV88E6XXX_PORT_PRI_OVERRIDE	0x0d
- 
- /* Offset 0x0E: Policy Control Register */
--#define MV88E6XXX_PORT_POLICY_CTL	0x0e
-+#define MV88E6XXX_PORT_POLICY_CTL		0x0e
-+#define MV88E6XXX_PORT_POLICY_CTL_DA_MASK	0xc000
-+#define MV88E6XXX_PORT_POLICY_CTL_SA_MASK	0x3000
-+#define MV88E6XXX_PORT_POLICY_CTL_VTU_MASK	0x0c00
-+#define MV88E6XXX_PORT_POLICY_CTL_ETYPE_MASK	0x0300
-+#define MV88E6XXX_PORT_POLICY_CTL_PPPOE_MASK	0x00c0
-+#define MV88E6XXX_PORT_POLICY_CTL_VBAS_MASK	0x0030
-+#define MV88E6XXX_PORT_POLICY_CTL_OPT82_MASK	0x000c
-+#define MV88E6XXX_PORT_POLICY_CTL_UDP_MASK	0x0003
-+#define MV88E6XXX_PORT_POLICY_CTL_NORMAL	0x0000
-+#define MV88E6XXX_PORT_POLICY_CTL_MIRROR	0x0001
-+#define MV88E6XXX_PORT_POLICY_CTL_TRAP		0x0002
-+#define MV88E6XXX_PORT_POLICY_CTL_DISCARD	0x0003
- 
- /* Offset 0x0F: Port Special Ether Type */
- #define MV88E6XXX_PORT_ETH_TYPE		0x0f
-@@ -324,6 +336,9 @@ int mv88e6185_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
- 				     bool unicast, bool multicast);
- int mv88e6352_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
- 				     bool unicast, bool multicast);
-+int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
-+			      enum mv88e6xxx_policy_mapping mapping,
-+			      enum mv88e6xxx_policy_action action);
- int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
- 				  u16 etype);
- int mv88e6xxx_port_set_message_port(struct mv88e6xxx_chip *chip, int port,
+ 	/* There can be two interrupt controllers, which are chained
+ 	 * off a GPIO as interrupt source
+ 	 */
 -- 
 2.23.0
 
