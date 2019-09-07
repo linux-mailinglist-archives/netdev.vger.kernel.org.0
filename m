@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BFDAC981
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 23:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5890CAC977
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 23:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395291AbfIGVni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Sep 2019 17:43:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:47872 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727500AbfIGVni (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 17:43:38 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x87LeO1r184992;
-        Sat, 7 Sep 2019 21:41:55 GMT
+        id S2391825AbfIGVnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Sep 2019 17:43:13 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:43412 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728072AbfIGVnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 17:43:13 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x87LcdEE005427;
+        Sat, 7 Sep 2019 21:42:04 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2019-08-05;
- bh=2KBRlUWT4ksmvNSW05OqNn57DbrWSjLKL1wfx9ktXpc=;
- b=DL29CgIZY0aeH+1YF3g7Dkob+pAD5ciTRDYG0Tm1FhbuTi45cA3tMuniO1qIyFZsArMK
- DeiR3rNESKMsnVxiytk/oWmY9RLcPUKzb9PThWjjs5k2JzoQvGjy+kFERs86nDGNkmem
- rvUHiJBuaOy6lD+qgmd7W61g41WrRiMD+BVw/lZD82UpKbHQizZbdRlWhh6naIjxgobP
- bWCWrvGHot8WPrRszVRnJtJhPKOb5zPOfik2MTzug9w3vm4TgkfEfk0Qjt1EFrewVhLq
- UyyJP3DlN1N+8ZkmM3EvsXjMzwWKbivgX7ls6DSkXHt+/Y6SnAWzVnq3bg96N7rF9k6n bg== 
+ bh=vZXaDy+FtblbrcMxU5oAntjK0EYGuQifkpT7O1SFxRE=;
+ b=ZxHJoHAhapSzH05ws7zcKJZtvYSbmAA0LKSuZIiEyTg/aoLzPU1WCe6XYhIcEJeYyfHy
+ bPHnKmVwf0j4YBwygaueOoI0LJG4zT5mI6ZAJaWJarLeUHEFWartHbaLpdCmd7cRZvFd
+ Ys7v5FyFyGoFh+mOJbz7ZnqrqhcrcsTAloeCORZBhQx63mkULI53uPIwr6QID2ru5Ben
+ savzf6BXmhWZo76TPnLVoidDZSzDK1LiGm+8bCkE9HgZpi8PbDsI5PPmlEJCYBNvdvxZ
+ 67uJmko8u+JGG94s7q17kupHOP9rHq/h6z3hqH5cFTEUMoA0iplCaNk7d8RJW5rLXCWW /g== 
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2uvmef010e-1
+        by userp2130.oracle.com with ESMTP id 2uvme3r17e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 07 Sep 2019 21:41:55 +0000
+        Sat, 07 Sep 2019 21:42:04 +0000
 Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x87Lbfgf132661;
-        Sat, 7 Sep 2019 21:41:55 GMT
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x87LbfQK132625;
+        Sat, 7 Sep 2019 21:42:03 GMT
 Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 2uv2kxje45-1
+        by aserp3030.oracle.com with ESMTP id 2uv2kxje69-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 07 Sep 2019 21:41:54 +0000
+        Sat, 07 Sep 2019 21:42:03 +0000
 Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x87LfjF9006616;
-        Sat, 7 Sep 2019 21:41:45 GMT
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x87Lg1aQ006672;
+        Sat, 7 Sep 2019 21:42:01 GMT
 Received: from dhcp-10-175-169-153.vpn.oracle.com (/10.175.169.153)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 07 Sep 2019 14:41:44 -0700
+        with ESMTP ; Sat, 07 Sep 2019 14:42:01 -0700
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, davem@davemloft.net,
@@ -53,20 +53,20 @@ To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
         danieltimlee@gmail.com, ctakshak@fb.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
 Cc:     Alan Maguire <alan.maguire@oracle.com>
-Subject: [RFC bpf-next 1/7] bpf: add bpf_pcap() helper to simplify packet capture
-Date:   Sat,  7 Sep 2019 22:40:38 +0100
-Message-Id: <1567892444-16344-2-git-send-email-alan.maguire@oracle.com>
+Subject: [RFC bpf-next 2/7] bpf: extend bpf_pcap support to tracing programs
+Date:   Sat,  7 Sep 2019 22:40:39 +0100
+Message-Id: <1567892444-16344-3-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1567892444-16344-1-git-send-email-alan.maguire@oracle.com>
 References: <1567892444-16344-1-git-send-email-alan.maguire@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9373 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=4 malwarescore=0
  phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
  adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.0.1-1906280000 definitions=main-1909070235
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9373 signatures=668685
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ suspectscore=4 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
  lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
  definitions=main-1909070235
@@ -75,28 +75,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_pcap() simplifies packet capture for skb and XDP
-BPF programs by creating a BPF perf event containing information
-relevant for packet capture (protocol, actual/captured packet
-size, time of capture, etc) along with the packet payload itself.
-All of this is stored in a "struct bpf_pcap_hdr".
+packet capture is especially valuable in tracing contexts, so
+extend bpf_pcap helper to take a tracing-derived skb pointer
+as an argument.
 
-This header information can then be retrieved from the perf
-event map and used by packet capture frameworks such as libpcap
-to carry out packet capture.
+In the case of tracing programs, the starting protocol
+(corresponding to libpcap DLT_* values; 1 for Ethernet, 12 for
+IP, etc) needs to be specified and should reflect the protocol
+type which is pointed to by the skb->data pointer; i.e. the
+start of the packet.  This can derived in a limited set of cases,
+but should be specified where possible.  For skb and xdp programs
+this protocol will nearly always be 1 (BPF_PCAP_TYPE_ETH).
 
-skb and XDP programs currently deal in Ethernet-based traffic
-exclusively, so should specify BPF_PCAP_TYPE_ETH or
-BPF_PCAP_TYPE_UNSET.  The protocol parameter will be used
-in a later commit.
+Example usage for a tracing program, where we use a
+struct bpf_pcap_hdr array map to pass in preferences for
+protocol and max len:
 
-Note that libpcap assumes times are relative to the epoch while
-we record nanoseconds since boot; as a result any times need
-to be normalized with respect to the boot time for libpcap
-storage; sysinfo(2) can be used to retrieve boot time to normalize
-values appropriately.
-
-Example usage for a tc-bpf program:
+struct bpf_map_def SEC("maps") pcap_conf_map = {
+	.type = BPF_MAP_TYPE_ARRAY,
+	.key_size = sizeof(int),
+	.value_size = sizeof(struct bpf_pcap_hdr),
+	.max_entries = 1,
+};
 
 struct bpf_map_def SEC("maps") pcap_map = {
 	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
@@ -105,297 +105,318 @@ struct bpf_map_def SEC("maps") pcap_map = {
 	.max_entries = 1024,
 };
 
-SEC("cap")
-int cap(struct __sk_buff *skb)
+SEC("kprobe/kfree_skb")
+int probe_kfree_skb(struct pt_regs *ctx)
 {
-	bpf_pcap(skb, 1514, &pcap_map, BPF_PCAP_TYPE_ETH, 0);
+	struct bpf_pcap_hdr *conf;
+	int key = 0;
 
-	return TC_ACT_OK;
+	conf = bpf_map_lookup_elem(&pcap_conf_map, &key);
+	if (!conf)
+		return 0;
+
+	bpf_pcap((void *)PT_REGS_PARM1(ctx), conf->cap_len, &pcap_map,
+		 conf->protocol, BPF_F_CURRENT_CPU);
+	return 0;
 }
 
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- include/linux/bpf.h      | 20 +++++++++++++
- include/uapi/linux/bpf.h | 75 +++++++++++++++++++++++++++++++++++++++++++++++-
- kernel/bpf/verifier.c    |  4 ++-
- net/core/filter.c        | 67 ++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 164 insertions(+), 2 deletions(-)
+ include/uapi/linux/bpf.h |  21 ++++-
+ kernel/trace/bpf_trace.c | 214 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 233 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5b9d223..033c9cf 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1145,4 +1145,24 @@ static inline u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
- }
- #endif /* CONFIG_INET */
- 
-+
-+static inline int bpf_pcap_prepare(int protocol, u32 cap_len, u32 tot_len,
-+				   u64 flags, struct bpf_pcap_hdr *pcap)
-+{
-+	if (protocol < 0 || pcap == NULL)
-+		return -EINVAL;
-+
-+	pcap->magic = BPF_PCAP_MAGIC;
-+	pcap->protocol = protocol;
-+	pcap->flags = flags;
-+
-+	if (cap_len == 0 || tot_len < cap_len)
-+		cap_len = tot_len;
-+	pcap->cap_len = cap_len;
-+	pcap->tot_len = tot_len;
-+	pcap->ktime_ns = ktime_get_mono_fast_ns();
-+
-+	return 0;
-+}
-+
- #endif /* _LINUX_BPF_H */
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 77c6be9..a27e58e 100644
+index a27e58e..13f86d3 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -2750,6 +2750,39 @@ struct bpf_stack_build_id {
-  *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+@@ -2758,7 +2758,9 @@ struct bpf_stack_build_id {
+  *              held by *map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This
+  *		perf event has the same attributes as perf events generated
+  *		by bpf_perf_event_output.  For skb and xdp programs, *data*
+- *		is the relevant context.
++ *		is the relevant context, while for tracing programs,
++ *		*data* must be a pointer to a **struct sk_buff** derived
++ *		from kprobe or tracepoint arguments.
   *
-  *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
-+ *
-+ * int bpf_pcap(void *data, u32 size, struct bpf_map *map, int protocol,
-+ *		u64 flags)
-+ *	Description
-+ *		Write packet data from *data* into a special BPF perf event
-+ *              held by *map* of type **BPF_MAP_TYPE_PERF_EVENT_ARRAY**. This
-+ *		perf event has the same attributes as perf events generated
-+ *		by bpf_perf_event_output.  For skb and xdp programs, *data*
-+ *		is the relevant context.
-+ *
-+ *		Metadata for this event is a **struct bpf_pcap_hdr**; this
-+ *		contains the capture length, actual packet length and
-+ *		the starting protocol.
-+ *
-+ *		The max number of bytes of context to store is specified via
-+ *		*size*.
-+ *
-+ *		The flags value can be used to specify an id value of up
-+ *		to 48 bits; the id can be used to correlate captured packets
-+ *		with other trace data, since the passed-in flags value is stored
-+ *		stored in the **struct bpf_pcap_hdr** in the **flags** field.
-+ *
-+ *		The *protocol* value specifies the protocol type of the start
-+ *		of the packet so that packet capture can carry out
-+ *		interpretation.  See **pcap-linktype** (7) for details on
-+ *		the supported values.
-+ *
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-+ *		-ENOENT will be returned if the associated perf event
-+ *		map entry is empty, or the skb is zero-length.
-+ *		-EINVAL will be returned if the flags value is invalid.
-+ *
+  *		Metadata for this event is a **struct bpf_pcap_hdr**; this
+  *		contains the capture length, actual packet length and
+@@ -2771,6 +2773,14 @@ struct bpf_stack_build_id {
+  *		to 48 bits; the id can be used to correlate captured packets
+  *		with other trace data, since the passed-in flags value is stored
+  *		stored in the **struct bpf_pcap_hdr** in the **flags** field.
++ *		Specifying **BPF_F_PCAP_ID_IIFINDEX** and a non-zero value in
++ *		the id portion of the flags limits capture events to skbs
++ *		with the specified incoming ifindex, allowing limiting of
++ *		tracing to the the associated interface.  Specifying
++ *		**BPF_F_PCAP_STRICT_TYPE** will cause *bpf_pcap* to return
++ *		-EPROTO and skip capture if a specific protocol is specified
++ *		and it does not match the current skb.  These additional flags
++ *		are only valid (and useful) for tracing programs.
+  *
+  *		The *protocol* value specifies the protocol type of the start
+  *		of the packet so that packet capture can carry out
+@@ -2780,7 +2790,12 @@ struct bpf_stack_build_id {
+  *	Return
+  *		0 on success, or a negative error in case of failure.
+  *		-ENOENT will be returned if the associated perf event
+- *		map entry is empty, or the skb is zero-length.
++ *		map entry is empty, the skb is zero-length,  or the incoming
++ *		ifindex was specified and we failed to match.
++ *		-EPROTO will be returned if **BPF_PCAP_TYPE_UNSET** is specified
++ *		and no protocol can be determined, or if we specify a protocol
++ *		along with **BPF_F_PCAP_STRICT_TYPE** and the skb protocol does
++ *		not match.
+  *		-EINVAL will be returned if the flags value is invalid.
+  *
   */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2862,7 +2895,8 @@ struct bpf_stack_build_id {
- 	FN(sk_storage_get),		\
- 	FN(sk_storage_delete),		\
- 	FN(send_signal),		\
--	FN(tcp_gen_syncookie),
-+	FN(tcp_gen_syncookie),		\
-+	FN(pcap),
+@@ -2977,6 +2992,8 @@ enum bpf_func_id {
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-@@ -2941,6 +2975,9 @@ enum bpf_func_id {
- /* BPF_FUNC_sk_storage_get flags */
- #define BPF_SK_STORAGE_GET_F_CREATE	(1ULL << 0)
+ /* BPF_FUNC_pcap flags */
+ #define	BPF_F_PCAP_ID_MASK		0xffffffffffff
++#define BPF_F_PCAP_ID_IIFINDEX		(1ULL << 48)
++#define BPF_F_PCAP_STRICT_TYPE         (1ULL << 56)
  
-+/* BPF_FUNC_pcap flags */
-+#define	BPF_F_PCAP_ID_MASK		0xffffffffffff
-+
  /* Mode for BPF_FUNC_skb_adjust_room helper. */
  enum bpf_adj_room_mode {
- 	BPF_ADJ_ROOM_NET,
-@@ -3613,4 +3650,40 @@ struct bpf_sockopt {
- 	__s32	retval;
- };
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index ca1255d..311883b 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -13,6 +13,8 @@
+ #include <linux/kprobes.h>
+ #include <linux/syscalls.h>
+ #include <linux/error-injection.h>
++#include <linux/skbuff.h>
++#include <linux/ip.h>
  
-+/* bpf_pcap_hdr contains information related to a particular packet capture
-+ * flow.  It specifies
-+ *
-+ * - a magic number BPF_PCAP_MAGIC which identifies the perf event as
-+ *   a pcap-related event.
-+ * - a starting protocol is the protocol associated with the header
-+ * - a flags value, copied from the flags value passed into bpf_pcap().
-+ *   IDs can be used to correlate packet capture data and other tracing data.
-+ *
-+ * bpf_pcap_hdr also contains the information relating to the to-be-captured
-+ * packet, and closely corresponds to the struct pcap_pkthdr used by
-+ * pcap_dump (3PCAP).  The bpf_pcap helper sets ktime_ns (nanoseconds since
-+ * boot) to the ktime_ns value; to get sensible pcap times this value should
-+ * be converted to a struct timeval time since epoch in the struct pcap_pkthdr.
-+ *
-+ * When bpf_pcap() is used, a "struct bpf_pcap_hdr" is stored as we
-+ * need both information about the particular packet and the protocol
-+ * we are capturing.
-+ */
-+
-+#define BPF_PCAP_MAGIC		0xb7fca7
-+
-+struct bpf_pcap_hdr {
-+	__u32			magic;
-+	int			protocol;
-+	__u64			flags;
-+	__u64			ktime_ns;
-+	__u32			tot_len;
-+	__u32			cap_len;
-+	__u8			data[0];
-+};
-+
-+#define BPF_PCAP_TYPE_UNSET	-1
-+#define BPF_PCAP_TYPE_ETH	1
-+#define	BPF_PCAP_TYPE_IP	12
-+
- #endif /* _UAPI__LINUX_BPF_H__ */
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 3fb5075..a33ed24 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3440,7 +3440,8 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 	case BPF_MAP_TYPE_PERF_EVENT_ARRAY:
- 		if (func_id != BPF_FUNC_perf_event_read &&
- 		    func_id != BPF_FUNC_perf_event_output &&
--		    func_id != BPF_FUNC_perf_event_read_value)
-+		    func_id != BPF_FUNC_perf_event_read_value &&
-+		    func_id != BPF_FUNC_pcap)
- 			goto error;
- 		break;
- 	case BPF_MAP_TYPE_STACK_TRACE:
-@@ -3527,6 +3528,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 	case BPF_FUNC_perf_event_read:
- 	case BPF_FUNC_perf_event_output:
- 	case BPF_FUNC_perf_event_read_value:
-+	case BPF_FUNC_pcap:
- 		if (map->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY)
- 			goto error;
- 		break;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index ed65636..e0e23ee 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4158,6 +4158,35 @@ static unsigned long bpf_xdp_copy(void *dst_buff, const void *src_buff,
- 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
- };
+ #include <asm/tlb.h>
  
-+BPF_CALL_5(bpf_xdp_pcap, struct xdp_buff *, xdp, u32, size,
-+	   struct bpf_map *, map, int, protocol, u64, flags)
+@@ -530,6 +532,216 @@ u64 bpf_event_output(struct bpf_map *map, u64 flags, void *meta, u64 meta_size,
+ 	return __bpf_perf_event_output(regs, map, flags, sd);
+ }
+ 
++/* Essentially just skb_copy_bits() using probe_kernel_read() where needed. */
++static unsigned long bpf_trace_skb_copy(void *tobuf, const void *from,
++					unsigned long offset,
++					unsigned long len)
 +{
-+	unsigned long len = (unsigned long)(xdp->data_end - xdp->data);
++	const struct sk_buff *frag_iterp, *skb = from;
++	struct skb_shared_info *shinfop, shinfo;
++	struct sk_buff frag_iter;
++	unsigned long copy, start;
++	void *to = tobuf;
++	int i, ret;
++
++	start = skb_headlen(skb);
++
++	copy = start - offset;
++	if (copy > 0) {
++		if (copy > len)
++			copy = len;
++		ret = probe_kernel_read(to, skb->data, copy);
++		if (unlikely(ret < 0))
++			goto out;
++		len -= copy;
++		if (len == 0)
++			return 0;
++		offset += copy;
++		to += copy;
++	}
++
++	if (skb->data_len == 0)
++		goto out;
++
++	shinfop = skb_shinfo(skb);
++
++	ret = probe_kernel_read(&shinfo, shinfop, sizeof(shinfo));
++	if (unlikely(ret < 0))
++		goto out;
++
++	if (shinfo.nr_frags > MAX_SKB_FRAGS) {
++		ret = -EINVAL;
++		goto out;
++	}
++	for (i = 0; i < shinfo.nr_frags; i++) {
++		skb_frag_t *f = &shinfo.frags[i];
++		int end;
++
++		if (start > offset + len) {
++			ret = -E2BIG;
++			goto out;
++		}
++
++		end = start + skb_frag_size(f);
++		copy = end - offset;
++		if (copy > 0) {
++			u32 poff, p_len, copied;
++			struct page *p;
++			u8 *vaddr;
++
++			if (copy > len)
++				copy = len;
++
++			skb_frag_foreach_page(f,
++					      skb_frag_off(f) + offset - start,
++					      copy, p, poff, p_len, copied) {
++
++				vaddr = kmap_atomic(p);
++				ret = probe_kernel_read(to + copied,
++							vaddr + poff, p_len);
++				kunmap_atomic(vaddr);
++
++				if (unlikely(ret < 0))
++					goto out;
++			}
++			len -= copy;
++			if (len == 0)
++				return 0;
++			offset += copy;
++			to += copy;
++		}
++		start = end;
++	}
++
++	for (frag_iterp = shinfo.frag_list; frag_iterp;
++	     frag_iterp = frag_iter.next) {
++		int end;
++
++		if (start > offset + len) {
++			ret = -E2BIG;
++			goto out;
++		}
++		ret = probe_kernel_read(&frag_iter, frag_iterp,
++					sizeof(frag_iter));
++		if (ret)
++			goto out;
++
++		end = start + frag_iter.len;
++		copy = end - offset;
++		if (copy > 0) {
++			if (copy > len)
++				copy = len;
++			ret = bpf_trace_skb_copy(to, &frag_iter,
++						offset - start,
++						copy);
++			if (ret)
++				goto out;
++
++			len -= copy;
++			if (len == 0)
++				return 0;
++			offset += copy;
++			to += copy;
++		}
++		start = end;
++	}
++out:
++	if (ret)
++		memset(tobuf, 0, len);
++
++	return ret;
++}
++
++/* Derive protocol for some of the easier cases.  For tracing, a probe point
++ * may be dealing with packets in various states. Common cases are IP
++ * packets prior to adding MAC header (_PCAP_TYPE_IP) and a full packet
++ * (_PCAP_TYPE_ETH).  For other cases the caller must specify the
++ * protocol they expect.  Other heuristics for packet identification
++ * should be added here as needed, since determining the packet type
++ * ensures we do not capture packets that fail to match the desired
++ * pcap type in BPF_F_PCAP_STRICT_TYPE mode.
++ */
++static inline int bpf_skb_protocol_get(struct sk_buff *skb)
++{
++	switch (htons(skb->protocol)) {
++	case ETH_P_IP:
++	case ETH_P_IPV6:
++		if (skb_network_header(skb) == skb->data)
++			return BPF_PCAP_TYPE_IP;
++		else
++			return BPF_PCAP_TYPE_ETH;
++	default:
++		return BPF_PCAP_TYPE_UNSET;
++	}
++}
++
++BPF_CALL_5(bpf_trace_pcap, void *, data, u32, size, struct bpf_map *, map,
++	   int, protocol_wanted, u64, flags)
++{
 +	struct bpf_pcap_hdr pcap;
++	struct sk_buff skb;
++	int protocol;
 +	int ret;
 +
-+	if (unlikely(flags & ~BPF_F_PCAP_ID_MASK))
++	if (unlikely(flags & ~(BPF_F_PCAP_ID_IIFINDEX | BPF_F_PCAP_ID_MASK |
++			       BPF_F_PCAP_STRICT_TYPE)))
 +		return -EINVAL;
 +
-+	ret = bpf_pcap_prepare(protocol, size, len, flags, &pcap);
++	ret = probe_kernel_read(&skb, data, sizeof(skb));
++	if (unlikely(ret < 0))
++		return ret;
++
++	/* Sanity check skb len in case we get bogus data. */
++	if (unlikely(!skb.len))
++		return -ENOENT;
++	if (unlikely(skb.len > GSO_MAX_SIZE || skb.data_len > skb.len))
++		return -E2BIG;
++
++	protocol = bpf_skb_protocol_get(&skb);
++
++	if (protocol_wanted == BPF_PCAP_TYPE_UNSET) {
++		/* If we cannot determine protocol type, bail. */
++		if (protocol == BPF_PCAP_TYPE_UNSET)
++			return -EPROTO;
++	} else {
++		/* if we determine protocol type, and it's not what we asked
++		 * for _and_ we are in strict mode, bail.  Otherwise we assume
++		 * the packet is the requested protocol type and drive on.
++		 */
++		if (flags & BPF_F_PCAP_STRICT_TYPE &&
++		    protocol != BPF_PCAP_TYPE_UNSET &&
++		    protocol != protocol_wanted)
++			return -EPROTO;
++		protocol = protocol_wanted;
++	}
++
++	/* If we specified a matching incoming ifindex, bail if not a match. */
++	if (flags & BPF_F_PCAP_ID_IIFINDEX) {
++		int iif = flags & BPF_F_PCAP_ID_MASK;
++
++		if (iif && skb.skb_iif != iif)
++			return -ENOENT;
++	}
++
++	ret = bpf_pcap_prepare(protocol, size, skb.len, flags, &pcap);
 +	if (ret)
 +		return ret;
 +
 +	return bpf_event_output(map, BPF_F_CURRENT_CPU, &pcap, sizeof(pcap),
-+				xdp->data, pcap.cap_len, bpf_xdp_copy);
++				&skb, pcap.cap_len, bpf_trace_skb_copy);
 +}
 +
-+static const struct bpf_func_proto bpf_xdp_pcap_proto = {
-+	.func		= bpf_xdp_pcap,
-+	.gpl_only	= false,
++static const struct bpf_func_proto bpf_trace_pcap_proto = {
++	.func		= bpf_trace_pcap,
++	.gpl_only	= true,
 +	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg1_type	= ARG_ANYTHING,
 +	.arg2_type	= ARG_ANYTHING,
 +	.arg3_type	= ARG_CONST_MAP_PTR,
 +	.arg4_type	= ARG_ANYTHING,
 +	.arg5_type	= ARG_ANYTHING,
 +};
 +
- BPF_CALL_1(bpf_get_socket_cookie, struct sk_buff *, skb)
+ BPF_CALL_0(bpf_get_current_task)
  {
- 	return skb->sk ? sock_gen_cookie(skb->sk) : 0;
-@@ -5926,6 +5955,34 @@ u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
- 
- #endif /* CONFIG_INET */
- 
-+BPF_CALL_5(bpf_skb_pcap, struct sk_buff *, skb, u32, size,
-+	   struct bpf_map *, map, int, protocol, u64, flags)
-+{
-+	struct bpf_pcap_hdr pcap;
-+	int ret;
-+
-+	if (unlikely(flags & ~BPF_F_PCAP_ID_MASK))
-+		return -EINVAL;
-+
-+	ret = bpf_pcap_prepare(protocol, size, skb->len, flags, &pcap);
-+	if (ret)
-+		return ret;
-+
-+	return bpf_event_output(map, BPF_F_CURRENT_CPU, &pcap, sizeof(pcap),
-+				skb, pcap.cap_len, bpf_skb_copy);
-+}
-+
-+static const struct bpf_func_proto bpf_skb_pcap_proto = {
-+	.func		= bpf_skb_pcap,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_CONST_MAP_PTR,
-+	.arg4_type      = ARG_ANYTHING,
-+	.arg5_type	= ARG_ANYTHING,
-+};
-+
- bool bpf_helper_changes_pkt_data(void *func)
- {
- 	if (func == bpf_skb_vlan_push ||
-@@ -6075,6 +6132,8 @@ bool bpf_helper_changes_pkt_data(void *func)
- 		return &bpf_get_socket_uid_proto;
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_skb_event_output_proto;
-+	case BPF_FUNC_pcap:
-+		return &bpf_skb_pcap_proto;
- 	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-@@ -6216,6 +6275,8 @@ bool bpf_helper_changes_pkt_data(void *func)
- 	case BPF_FUNC_tcp_gen_syncookie:
- 		return &bpf_tcp_gen_syncookie_proto;
+ 	return (long) current;
+@@ -709,6 +921,8 @@ static void do_bpf_send_signal(struct irq_work *entry)
  #endif
+ 	case BPF_FUNC_send_signal:
+ 		return &bpf_send_signal_proto;
 +	case BPF_FUNC_pcap:
-+		return &bpf_skb_pcap_proto;
++		return &bpf_trace_pcap_proto;
  	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-@@ -6256,6 +6317,8 @@ bool bpf_helper_changes_pkt_data(void *func)
- 		return &bpf_tcp_check_syncookie_proto;
- 	case BPF_FUNC_tcp_gen_syncookie:
- 		return &bpf_tcp_gen_syncookie_proto;
-+	case BPF_FUNC_pcap:
-+		return &bpf_xdp_pcap_proto;
- #endif
- 	default:
- 		return bpf_base_func_proto(func_id);
-@@ -6361,6 +6424,8 @@ bool bpf_helper_changes_pkt_data(void *func)
- 	case BPF_FUNC_skc_lookup_tcp:
- 		return &bpf_skc_lookup_tcp_proto;
- #endif
-+	case BPF_FUNC_pcap:
-+		return &bpf_skb_pcap_proto;
- 	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-@@ -6399,6 +6464,8 @@ bool bpf_helper_changes_pkt_data(void *func)
- 		return &bpf_get_smp_processor_id_proto;
- 	case BPF_FUNC_skb_under_cgroup:
- 		return &bpf_skb_under_cgroup_proto;
-+	case BPF_FUNC_pcap:
-+		return &bpf_skb_pcap_proto;
- 	default:
- 		return bpf_base_func_proto(func_id);
+ 		return NULL;
  	}
 -- 
 1.8.3.1
