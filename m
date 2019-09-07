@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 212B1AC93B
-	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 22:38:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0057FAC94C
+	for <lists+netdev@lfdr.de>; Sat,  7 Sep 2019 22:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436691AbfIGUiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Sep 2019 16:38:46 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33907 "EHLO
+        id S2406240AbfIGUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Sep 2019 16:54:04 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46345 "EHLO
         mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392547AbfIGUiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 16:38:46 -0400
-Received: by mail-wr1-f67.google.com with SMTP id a11so87536wrx.1
-        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 13:38:44 -0700 (PDT)
+        with ESMTP id S1727309AbfIGUyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Sep 2019 16:54:03 -0400
+Received: by mail-wr1-f67.google.com with SMTP id h7so9887900wrt.13
+        for <netdev@vger.kernel.org>; Sat, 07 Sep 2019 13:54:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sZnVnjk3Mu1sOPCFBJdN1MA+54MpbYM+2Od0ykbq2rA=;
-        b=H5NGHEg+7sol0ZboX/MrXRwxxM72FRPJmBZw3USfKZwlAxxVtQGKqNocWTg/uG5sVZ
-         7nT0PNpvGkyilsMdTTfX4kgB9K9hon+9fx4XIUd60zEdiSBoNBNCyFGzn0c0Xk+rdYb+
-         +ACmGYQZ4YRtSqeBNqr4JsI6yv0/JbGKP3D7Is6vlZqezeuDN+VLqI/x9/DzXP8y0rSP
-         OGvQ/0i7X6ksO0s+UaI/hFt2al7yIpEG63Dy8/ziCF9i1wFb4pukJine9PvCqEvNMt3h
-         BmK0nhPxAFJyXd6tc8b1Vg0myY2J3obteZNyviknksI9PNqeWpVjfcQFGKeneeOTvuVY
-         4gfQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BPqHMrarnj/eqlovwm4Ti2RJQ9+Z2LObwoWgr5fDQsE=;
+        b=FVEVSk1YUPv2LcjEFQZEpp8THYPwHXwr7LVDrXoC0b+dCeco/jtgtUKjPERkii8zk1
+         EtQ3fi3J/Ev4M6cuzen/YaxYrDYeJbcnlK38MT1zIfTG83UXCNvRRTWFT17RcbGswFTF
+         l3YAm6E0wQ40rpzjKmBZBFo4WGO7xPz6wzLA/4cnjRNpa+VOVvPPVmk7DZY2t+ias6Qz
+         wJvd5YHyD3B5qhvurpaAvU/JP88vJDrs9GCZl89nDYfQVjwZ6lWI7hSyJhqaxw4IWiU9
+         7Qrq+0BsGVu16FvxjdsaMSHfjlYsi//TO/XwAWtgQjVkEsHtW/eV+VIAdz6d71phrY6U
+         lYFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sZnVnjk3Mu1sOPCFBJdN1MA+54MpbYM+2Od0ykbq2rA=;
-        b=qQVDJCnwhcZnsaTYS2VNrYjEQBA9T42ha5zE0HL0YHoqYybACMkzrr8GY80twMwQK5
-         2G2CHj20dvIxz37+TNWnliyU8f4kD1WNeQWr98WmB8peX00/57I8TifA6vmefNilC8sl
-         TwmbENkBSvCUGZOX44OlcbZMWeqBbK4IOq/jo1D/SslmQuqCFqC5WA321jfjgBd2R+AZ
-         mUtVZyIyhnHxoo02fin2ykjl52/yyXTyuYsSybUsuDw1bKivFGQEgO1vNntpvxHn5l45
-         KfjRs4ROYyYOI4PW43BVP7Wc9UVweXSu/JNdUwY5j16rpQofO2aaW/h/RFpodzCtGWwR
-         Pc6Q==
-X-Gm-Message-State: APjAAAV16aTw/q54gaidxV2BjhjcMDC1zyoWjKqN+KJh/i0Eveh9opXk
-        QdOcQP3MDI18EafAolE0EqGM6w==
-X-Google-Smtp-Source: APXvYqw1X7qNDFlYj4jvwmeG2WWFysHRDpXuEbesE6mFW8T5M+QtsFmK7JOVYM2LGBNyMI1n+JkGGw==
-X-Received: by 2002:adf:df8e:: with SMTP id z14mr13236230wrl.81.1567888724304;
-        Sat, 07 Sep 2019 13:38:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BPqHMrarnj/eqlovwm4Ti2RJQ9+Z2LObwoWgr5fDQsE=;
+        b=a8U3TaK4oxAkrNKcR70/Fp/+14vzWvvE6SnLkHy3y7C81M6RrEJU+zaLq8eUN8qXoJ
+         eNVILBEr3fsq0PxiZqzckrwK2jjaHQ5pkRePkLe8W+XCVlrp/bKBH1w/jqsh8UVrAwjh
+         1S3WrW9ozhvbt9c8qIDp2254YtATQ2xyVWvdExnYwFzGmpAkGXf4gsR6bilBxEATa6L4
+         TTAkND4z2Ro9IlLILyTtsU/uM1/fLtpIujTCKS5Qx/MdN0eH4mJDAqCtp0xMi6kWXyh5
+         dazL/WrhyOT6L07oLploamJSIOB9vobBarcnJ260xbi3H26KvKqWhUScDNrYHZqRmDKL
+         hKkw==
+X-Gm-Message-State: APjAAAWOwf1MmDycLxhcJUI7hODnAHamL0NFhVSZBkULAKx3LP8+5yC7
+        Vr5fkma7uuB50+1SUsF61LkMeYFsgjA=
+X-Google-Smtp-Source: APXvYqxDpHDxs7n7h8BKjdrh8ZwCDmLn9Y5ijtV3nD6Dt1wYdJ5euPS+BPQPSy3k15m8HiK5j1a8EA==
+X-Received: by 2002:adf:f151:: with SMTP id y17mr12131506wro.244.1567889641587;
+        Sat, 07 Sep 2019 13:54:01 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id q10sm14082672wrd.39.2019.09.07.13.38.43
+        by smtp.gmail.com with ESMTPSA id t123sm15236662wma.40.2019.09.07.13.54.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Sep 2019 13:38:43 -0700 (PDT)
-Date:   Sat, 7 Sep 2019 22:38:43 +0200
+        Sat, 07 Sep 2019 13:54:01 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         mlxsw@mellanox.com
-Subject: Re: [patch net-next 3/3] net: devlink: move reload fail indication
- to devlink core and expose to user
-Message-ID: <20190907203843.GC25407@nanopsycho.orion>
-References: <20190906184419.5101-1-jiri@resnulli.us>
- <20190906184419.5101-4-jiri@resnulli.us>
- <6ff0726a-f910-8107-883e-83476f80b9de@gmail.com>
+Subject: [patch net-next v2 0/3] net: devlink: move reload fail indication to devlink core and expose to user
+Date:   Sat,  7 Sep 2019 22:53:57 +0200
+Message-Id: <20190907205400.14589-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ff0726a-f910-8107-883e-83476f80b9de@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Sep 07, 2019 at 05:08:59PM CEST, dsahern@gmail.com wrote:
->On 9/6/19 7:44 PM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Currently the fact that devlink failed is stored in drivers. Move this
->> flag into devlink core. Also, expose it to the user.
->
->you mean 'reload failed', not 'devlink failed'?
+From: Jiri Pirko <jiri@mellanox.com>
 
-Yeah, "reload failed".
+First two patches are dependencies of the last one. That moves devlink
+reload failure indication to the devlink code, so the drivers do not
+have to track it themselves. Currently it is only mlxsw, but I will send
+a follow-up patchset that introduces this in netdevsim too.
 
->
+Jiri Pirko (3):
+  mlx4: Split restart_one into two functions
+  net: devlink: split reload op into two
+  net: devlink: move reload fail indication to devlink core and expose
+    to user
+
+ drivers/net/ethernet/mellanox/mlx4/catas.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c  | 44 ++++++++++++++++++----
+ drivers/net/ethernet/mellanox/mlx4/mlx4.h  |  3 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 30 +++++++++------
+ drivers/net/netdevsim/dev.c                | 13 +++++--
+ include/net/devlink.h                      |  8 +++-
+ include/uapi/linux/devlink.h               |  2 +
+ net/core/devlink.c                         | 35 +++++++++++++++--
+ 8 files changed, 106 insertions(+), 31 deletions(-)
+
+-- 
+2.21.0
+
