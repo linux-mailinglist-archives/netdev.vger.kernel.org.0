@@ -2,341 +2,476 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F269DAD0E6
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 00:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01795AD0EE
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 00:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730918AbfIHWDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 18:03:34 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45200 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726626AbfIHWDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 18:03:33 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x88Lx9kr006584;
-        Sun, 8 Sep 2019 15:02:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
- date : message-id : references : in-reply-to : content-type : content-id :
- content-transfer-encoding : mime-version; s=facebook;
- bh=gl5nnxFocihCdzjb6RCfaI9JgoQYXjD4qFWH0Q5+lpI=;
- b=Azj1Q85xID0QpljWRLj+jur7tKa7kQ7totaXxdpCPL0e1ISZsx6oWb+HsEHmbiVsUSNB
- S35am0fly748VRAY2NX1d9MFRpw6+gJ3dksm789FbOLTsf3x/pXoXFy4B4yb3P74KiVM
- lJPgnhaXYLSYeTMTpeyHlz3r3pxI9CIJMoQ= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uva9nckc3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 08 Sep 2019 15:02:17 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Sun, 8 Sep 2019 15:02:15 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Sun, 8 Sep 2019 15:02:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j6tj28cT2ArFb/A+d2GmrbemTHfKoRsXsSotexeWcoFD5qZGQeCij+c1aQgM0TswKJEytc9svwcEQAs6HRzsk9J2nXDgmVvDhtUV15DKrnnicIeP5HWkx+C5ByJZYgvbUHV7O2cJW4Pay/YP8ml7CrzNcrj8GCOawlL99+3HYG5ee0AmSbKiZ2mE90t2mTyOQT1TE/n0bbNohaTo3mRTdyIE7UA/k3sZt6TciXnFBC1mW5NOMvsHNzgNuYa5+vNU8f1xqbaY392/yKjV3m3LhbZvs/FHeN0+9Z94/I06pVb41dyE3cCkpp2vN9LxauATtpPnnwxobdogw6d68vPC6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gl5nnxFocihCdzjb6RCfaI9JgoQYXjD4qFWH0Q5+lpI=;
- b=D6s9hxF1qL4OJH1Qpna3v3RzRkXBf4zfyaCIRoycWeHGoBkRZbA5mVuTwsHOgnbbpAQ941EHejztbDnke8pL6hOBR/csKJdprX5r1oncZcwEeLVfr/cHOJCU6ChWbaZkRbiXXhUvL56AFUWgzWO4D1dK/RVLFCEz8QWWs1tm8g+ud2jMWhuLO1j1UiiDrGcNeawBZhF0dFD3nBEuV9cv7C7OQmF0i/YXOYAcP+Z42jCfrTXWBU2sCfjzr4DoFSzvWyAt731CZ3iEfBoWUoLMJGmEzYOMeRjeY9Enx1arWTnABAj3MEVXenR9jxX/rOMwddcqqxb0Oblo4oJ5fh7Tgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gl5nnxFocihCdzjb6RCfaI9JgoQYXjD4qFWH0Q5+lpI=;
- b=G50plFRD/dU2Q0XU75Vl413zbz3wmPzDKSviAbXrlvg3XrraJAvgHwc6qT/Z8un1Gli+BpYoX+AE71TMUtltZgSYNxAAh78uBIBUQ4EGb2K6NPxkGvMAl+179bgNVZYOGyo5EXiJcaupXdpu8OTBfgLQkILSH+VXpSqvkesoEI8=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.60.27) by
- BYAPR15MB3048.namprd15.prod.outlook.com (20.178.238.153) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.18; Sun, 8 Sep 2019 22:02:13 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::95ab:61a0:29f4:e07e]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::95ab:61a0:29f4:e07e%6]) with mapi id 15.20.2241.018; Sun, 8 Sep 2019
- 22:02:13 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Alan Maguire <alan.maguire@oracle.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "quentin.monnet@netronome.com" <quentin.monnet@netronome.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        "joe@wand.net.nz" <joe@wand.net.nz>,
-        "acme@redhat.com" <acme@redhat.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "alexey.budankov@linux.intel.com" <alexey.budankov@linux.intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "namhyung@kernel.org" <namhyung@kernel.org>,
-        "sdf@google.com" <sdf@google.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "peter@lekensteyn.nl" <peter@lekensteyn.nl>,
-        "ivan@cloudflare.com" <ivan@cloudflare.com>,
-        "Andrii Nakryiko" <andriin@fb.com>,
-        "bhole_prashant_q7@lab.ntt.co.jp" <bhole_prashant_q7@lab.ntt.co.jp>,
-        "david.calavera@gmail.com" <david.calavera@gmail.com>,
-        "danieltimlee@gmail.com" <danieltimlee@gmail.com>,
-        Takshak Chahande <ctakshak@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: Re: [RFC bpf-next 1/7] bpf: add bpf_pcap() helper to simplify packet
- capture
-Thread-Topic: [RFC bpf-next 1/7] bpf: add bpf_pcap() helper to simplify packet
- capture
-Thread-Index: AQHVZcUqgsaoDGdRfU2WgjzGAQZtxaciVoiA
-Date:   Sun, 8 Sep 2019 22:02:13 +0000
-Message-ID: <d5995641-9ce9-9cad-7a58-999614550963@fb.com>
-References: <1567892444-16344-1-git-send-email-alan.maguire@oracle.com>
- <1567892444-16344-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1567892444-16344-2-git-send-email-alan.maguire@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR13CA0025.namprd13.prod.outlook.com
- (2603:10b6:300:95::11) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:112::27)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::5aa4]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 269561ca-dec8-45e5-0985-08d734a83421
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3048;
-x-ms-traffictypediagnostic: BYAPR15MB3048:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3048A597B731A65329F0668CD3B40@BYAPR15MB3048.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1107;
-x-forefront-prvs: 0154C61618
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(346002)(396003)(366004)(39860400002)(199004)(189003)(110136005)(6116002)(11346002)(2501003)(2906002)(478600001)(30864003)(5660300002)(76176011)(7736002)(71200400001)(31696002)(86362001)(52116002)(66476007)(66556008)(66446008)(64756008)(6512007)(66946007)(8936002)(46003)(14454004)(6436002)(386003)(53546011)(7416002)(2201001)(102836004)(6506007)(53936002)(256004)(486006)(25786009)(81166006)(71190400001)(36756003)(6246003)(81156014)(186003)(99286004)(305945005)(31686004)(446003)(476003)(229853002)(316002)(6486002)(14444005)(2616005)(8676002)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3048;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: rhFSWTMXXYQ6njDu5TkGASiioLcTGSPzk34CusKNCX/Xj5W4a+T7wLVw4ygqqWhsXusI3lN26PBnyy97AfFdtYVCJg97ihwEn4YnY1Hm1O+jO5RrkBeHC+sJVbzw3g52Oua56osiGZ5/LiRtZPXB/uo0LJci+Hbo8pxintdVwSCSYXFOCYjYkKoCR/n3f5ojM6MhqdcVQBLBr9Op7O5KI+XtpL90wSugkzTMgDTS96JYBqzUGK4FP8hnyfcPI1zCgLPNFk3UKzsvA4Qq48lotv+34eNqvgbmNTMmy2yFoh7JhDDjW1KO5OOxwVpnqNL43GDcewk84EX2E4TyNBcZZIO85Ax1UujTd47Yh+xXy/efGRXuJnRbt9ZLQzLl7YVd+p84c4GVenq/qXsMlwmfNv84yRd0qZe/CprWjlBVC9o=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A97E7B4E05CC254780796431C4B56657@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1730974AbfIHWLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 18:11:49 -0400
+Received: from smtp-sh2.infomaniak.ch ([128.65.195.6]:54665 "EHLO
+        smtp-sh2.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730918AbfIHWLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 18:11:48 -0400
+Received: from smtp7.infomaniak.ch (smtp7.infomaniak.ch [83.166.132.30])
+        by smtp-sh2.infomaniak.ch (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id x88MASgM002202
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 9 Sep 2019 00:10:28 +0200
+Received: from ns3096276.ip-94-23-54.eu (ns3096276.ip-94-23-54.eu [94.23.54.103])
+        (authenticated bits=0)
+        by smtp7.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x88M9vw7178040
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NO);
+        Mon, 9 Sep 2019 00:10:23 +0200
+Subject: Re: [PATCH bpf-next v10 06/10] bpf,landlock: Add a new map type:
+ inode
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
+        linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+References: <20190721213116.23476-1-mic@digikod.net>
+ <20190721213116.23476-7-mic@digikod.net>
+ <20190727014048.3czy3n2hi6hfdy3m@ast-mbp.dhcp.thefacebook.com>
+ <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Openpgp: preference=signencrypt
+Message-ID: <894922a2-1150-366c-3f08-c8b759da0742@digikod.net>
+Date:   Mon, 9 Sep 2019 00:09:57 +0200
+User-Agent: 
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 269561ca-dec8-45e5-0985-08d734a83421
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2019 22:02:13.4612
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VVSe0YFvQvxWFYdkrwX+4lBdhDDvrwjk8bqmWF5Vr26OCPYr1PCEUAuMUVgOM2mP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3048
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-08_15:2019-09-08,2019-09-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=0 priorityscore=1501 impostorscore=0 adultscore=0 spamscore=0
- bulkscore=0 mlxscore=0 mlxlogscore=999 clxscore=1011 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909080242
-X-FB-Internal: deliver
+In-Reply-To: <a870c2c9-d2f7-e0fa-c8cc-35dbf8b5b87d@ssi.gouv.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
+X-Antivirus-Code: 0x100000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDkvNy8xOSAyOjQwIFBNLCBBbGFuIE1hZ3VpcmUgd3JvdGU6DQo+IGJwZl9wY2FwKCkg
-c2ltcGxpZmllcyBwYWNrZXQgY2FwdHVyZSBmb3Igc2tiIGFuZCBYRFANCj4gQlBGIHByb2dyYW1z
-IGJ5IGNyZWF0aW5nIGEgQlBGIHBlcmYgZXZlbnQgY29udGFpbmluZyBpbmZvcm1hdGlvbg0KPiBy
-ZWxldmFudCBmb3IgcGFja2V0IGNhcHR1cmUgKHByb3RvY29sLCBhY3R1YWwvY2FwdHVyZWQgcGFj
-a2V0DQo+IHNpemUsIHRpbWUgb2YgY2FwdHVyZSwgZXRjKSBhbG9uZyB3aXRoIHRoZSBwYWNrZXQg
-cGF5bG9hZCBpdHNlbGYuDQo+IEFsbCBvZiB0aGlzIGlzIHN0b3JlZCBpbiBhICJzdHJ1Y3QgYnBm
-X3BjYXBfaGRyIi4NCj4gDQo+IFRoaXMgaGVhZGVyIGluZm9ybWF0aW9uIGNhbiB0aGVuIGJlIHJl
-dHJpZXZlZCBmcm9tIHRoZSBwZXJmDQo+IGV2ZW50IG1hcCBhbmQgdXNlZCBieSBwYWNrZXQgY2Fw
-dHVyZSBmcmFtZXdvcmtzIHN1Y2ggYXMgbGlicGNhcA0KPiB0byBjYXJyeSBvdXQgcGFja2V0IGNh
-cHR1cmUuDQo+IA0KPiBza2IgYW5kIFhEUCBwcm9ncmFtcyBjdXJyZW50bHkgZGVhbCBpbiBFdGhl
-cm5ldC1iYXNlZCB0cmFmZmljDQo+IGV4Y2x1c2l2ZWx5LCBzbyBzaG91bGQgc3BlY2lmeSBCUEZf
-UENBUF9UWVBFX0VUSCBvcg0KPiBCUEZfUENBUF9UWVBFX1VOU0VULiAgVGhlIHByb3RvY29sIHBh
-cmFtZXRlciB3aWxsIGJlIHVzZWQNCj4gaW4gYSBsYXRlciBjb21taXQuDQo+IA0KPiBOb3RlIHRo
-YXQgbGlicGNhcCBhc3N1bWVzIHRpbWVzIGFyZSByZWxhdGl2ZSB0byB0aGUgZXBvY2ggd2hpbGUN
-Cj4gd2UgcmVjb3JkIG5hbm9zZWNvbmRzIHNpbmNlIGJvb3Q7IGFzIGEgcmVzdWx0IGFueSB0aW1l
-cyBuZWVkDQo+IHRvIGJlIG5vcm1hbGl6ZWQgd2l0aCByZXNwZWN0IHRvIHRoZSBib290IHRpbWUg
-Zm9yIGxpYnBjYXANCj4gc3RvcmFnZTsgc3lzaW5mbygyKSBjYW4gYmUgdXNlZCB0byByZXRyaWV2
-ZSBib290IHRpbWUgdG8gbm9ybWFsaXplDQo+IHZhbHVlcyBhcHByb3ByaWF0ZWx5Lg0KPiANCj4g
-RXhhbXBsZSB1c2FnZSBmb3IgYSB0Yy1icGYgcHJvZ3JhbToNCj4gDQo+IHN0cnVjdCBicGZfbWFw
-X2RlZiBTRUMoIm1hcHMiKSBwY2FwX21hcCA9IHsNCj4gCS50eXBlID0gQlBGX01BUF9UWVBFX1BF
-UkZfRVZFTlRfQVJSQVksDQo+IAkua2V5X3NpemUgPSBzaXplb2YoaW50KSwNCj4gCS52YWx1ZV9z
-aXplID0gc2l6ZW9mKGludCksDQo+IAkubWF4X2VudHJpZXMgPSAxMDI0LA0KPiB9Ow0KPiANCj4g
-U0VDKCJjYXAiKQ0KPiBpbnQgY2FwKHN0cnVjdCBfX3NrX2J1ZmYgKnNrYikNCj4gew0KPiAJYnBm
-X3BjYXAoc2tiLCAxNTE0LCAmcGNhcF9tYXAsIEJQRl9QQ0FQX1RZUEVfRVRILCAwKTsNCj4gDQo+
-IAlyZXR1cm4gVENfQUNUX09LOw0KPiB9DQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBBbGFuIE1hZ3Vp
-cmUgPGFsYW4ubWFndWlyZUBvcmFjbGUuY29tPg0KPiAtLS0NCj4gICBpbmNsdWRlL2xpbnV4L2Jw
-Zi5oICAgICAgfCAyMCArKysrKysrKysrKysrDQo+ICAgaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5o
-IHwgNzUgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystDQo+
-ICAga2VybmVsL2JwZi92ZXJpZmllci5jICAgIHwgIDQgKystDQo+ICAgbmV0L2NvcmUvZmlsdGVy
-LmMgICAgICAgIHwgNjcgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-DQo+ICAgNCBmaWxlcyBjaGFuZ2VkLCAxNjQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkN
-Cj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2JwZi5oIGIvaW5jbHVkZS9saW51eC9i
-cGYuaA0KPiBpbmRleCA1YjlkMjIzLi4wMzNjOWNmIDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xp
-bnV4L2JwZi5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvYnBmLmgNCj4gQEAgLTExNDUsNCArMTE0
-NSwyNCBAQCBzdGF0aWMgaW5saW5lIHUzMiBicGZfeGRwX3NvY2tfY29udmVydF9jdHhfYWNjZXNz
-KGVudW0gYnBmX2FjY2Vzc190eXBlIHR5cGUsDQo+ICAgfQ0KPiAgICNlbmRpZiAvKiBDT05GSUdf
-SU5FVCAqLw0KPiAgIA0KPiArDQo+ICtzdGF0aWMgaW5saW5lIGludCBicGZfcGNhcF9wcmVwYXJl
-KGludCBwcm90b2NvbCwgdTMyIGNhcF9sZW4sIHUzMiB0b3RfbGVuLA0KPiArCQkJCSAgIHU2NCBm
-bGFncywgc3RydWN0IGJwZl9wY2FwX2hkciAqcGNhcCkNCj4gK3sNCj4gKwlpZiAocHJvdG9jb2wg
-PCAwIHx8IHBjYXAgPT0gTlVMTCkNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gKwlwY2Fw
-LT5tYWdpYyA9IEJQRl9QQ0FQX01BR0lDOw0KPiArCXBjYXAtPnByb3RvY29sID0gcHJvdG9jb2w7
-DQo+ICsJcGNhcC0+ZmxhZ3MgPSBmbGFnczsNCj4gKw0KPiArCWlmIChjYXBfbGVuID09IDAgfHwg
-dG90X2xlbiA8IGNhcF9sZW4pDQo+ICsJCWNhcF9sZW4gPSB0b3RfbGVuOw0KPiArCXBjYXAtPmNh
-cF9sZW4gPSBjYXBfbGVuOw0KPiArCXBjYXAtPnRvdF9sZW4gPSB0b3RfbGVuOw0KPiArCXBjYXAt
-Pmt0aW1lX25zID0ga3RpbWVfZ2V0X21vbm9fZmFzdF9ucygpOw0KPiArDQo+ICsJcmV0dXJuIDA7
-DQo+ICt9DQo+ICsNCj4gICAjZW5kaWYgLyogX0xJTlVYX0JQRl9IICovDQo+IGRpZmYgLS1naXQg
-YS9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmggYi9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmgNCj4g
-aW5kZXggNzdjNmJlOS4uYTI3ZTU4ZSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4
-L2JwZi5oDQo+ICsrKyBiL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaA0KPiBAQCAtMjc1MCw2ICsy
-NzUwLDM5IEBAIHN0cnVjdCBicGZfc3RhY2tfYnVpbGRfaWQgew0KPiAgICAqCQkqKi1FT1BOT1RT
-VVBQKioga2VybmVsIGNvbmZpZ3VyYXRpb24gZG9lcyBub3QgZW5hYmxlIFNZTiBjb29raWVzDQo+
-ICAgICoNCj4gICAgKgkJKiotRVBST1RPTk9TVVBQT1JUKiogSVAgcGFja2V0IHZlcnNpb24gaXMg
-bm90IDQgb3IgNg0KPiArICoNCj4gKyAqIGludCBicGZfcGNhcCh2b2lkICpkYXRhLCB1MzIgc2l6
-ZSwgc3RydWN0IGJwZl9tYXAgKm1hcCwgaW50IHByb3RvY29sLA0KPiArICoJCXU2NCBmbGFncykN
-Cj4gKyAqCURlc2NyaXB0aW9uDQo+ICsgKgkJV3JpdGUgcGFja2V0IGRhdGEgZnJvbSAqZGF0YSog
-aW50byBhIHNwZWNpYWwgQlBGIHBlcmYgZXZlbnQNCj4gKyAqICAgICAgICAgICAgICBoZWxkIGJ5
-ICptYXAqIG9mIHR5cGUgKipCUEZfTUFQX1RZUEVfUEVSRl9FVkVOVF9BUlJBWSoqLiBUaGlzDQo+
-ICsgKgkJcGVyZiBldmVudCBoYXMgdGhlIHNhbWUgYXR0cmlidXRlcyBhcyBwZXJmIGV2ZW50cyBn
-ZW5lcmF0ZWQNCj4gKyAqCQlieSBicGZfcGVyZl9ldmVudF9vdXRwdXQuICBGb3Igc2tiIGFuZCB4
-ZHAgcHJvZ3JhbXMsICpkYXRhKg0KPiArICoJCWlzIHRoZSByZWxldmFudCBjb250ZXh0Lg0KPiAr
-ICoNCj4gKyAqCQlNZXRhZGF0YSBmb3IgdGhpcyBldmVudCBpcyBhICoqc3RydWN0IGJwZl9wY2Fw
-X2hkcioqOyB0aGlzDQo+ICsgKgkJY29udGFpbnMgdGhlIGNhcHR1cmUgbGVuZ3RoLCBhY3R1YWwg
-cGFja2V0IGxlbmd0aCBhbmQNCj4gKyAqCQl0aGUgc3RhcnRpbmcgcHJvdG9jb2wuDQo+ICsgKg0K
-PiArICoJCVRoZSBtYXggbnVtYmVyIG9mIGJ5dGVzIG9mIGNvbnRleHQgdG8gc3RvcmUgaXMgc3Bl
-Y2lmaWVkIHZpYQ0KPiArICoJCSpzaXplKi4NCj4gKyAqDQo+ICsgKgkJVGhlIGZsYWdzIHZhbHVl
-IGNhbiBiZSB1c2VkIHRvIHNwZWNpZnkgYW4gaWQgdmFsdWUgb2YgdXANCj4gKyAqCQl0byA0OCBi
-aXRzOyB0aGUgaWQgY2FuIGJlIHVzZWQgdG8gY29ycmVsYXRlIGNhcHR1cmVkIHBhY2tldHMNCj4g
-KyAqCQl3aXRoIG90aGVyIHRyYWNlIGRhdGEsIHNpbmNlIHRoZSBwYXNzZWQtaW4gZmxhZ3MgdmFs
-dWUgaXMgc3RvcmVkDQo+ICsgKgkJc3RvcmVkIGluIHRoZSAqKnN0cnVjdCBicGZfcGNhcF9oZHIq
-KiBpbiB0aGUgKipmbGFncyoqIGZpZWxkLg0KPiArICoNCj4gKyAqCQlUaGUgKnByb3RvY29sKiB2
-YWx1ZSBzcGVjaWZpZXMgdGhlIHByb3RvY29sIHR5cGUgb2YgdGhlIHN0YXJ0DQo+ICsgKgkJb2Yg
-dGhlIHBhY2tldCBzbyB0aGF0IHBhY2tldCBjYXB0dXJlIGNhbiBjYXJyeSBvdXQNCj4gKyAqCQlp
-bnRlcnByZXRhdGlvbi4gIFNlZSAqKnBjYXAtbGlua3R5cGUqKiAoNykgZm9yIGRldGFpbHMgb24N
-Cj4gKyAqCQl0aGUgc3VwcG9ydGVkIHZhbHVlcy4NCj4gKyAqDQo+ICsgKglSZXR1cm4NCj4gKyAq
-CQkwIG9uIHN1Y2Nlc3MsIG9yIGEgbmVnYXRpdmUgZXJyb3IgaW4gY2FzZSBvZiBmYWlsdXJlLg0K
-PiArICoJCS1FTk9FTlQgd2lsbCBiZSByZXR1cm5lZCBpZiB0aGUgYXNzb2NpYXRlZCBwZXJmIGV2
-ZW50DQo+ICsgKgkJbWFwIGVudHJ5IGlzIGVtcHR5LCBvciB0aGUgc2tiIGlzIHplcm8tbGVuZ3Ro
-Lg0KPiArICoJCS1FSU5WQUwgd2lsbCBiZSByZXR1cm5lZCBpZiB0aGUgZmxhZ3MgdmFsdWUgaXMg
-aW52YWxpZC4NCg0KVGhlIGZlYXR1cmUgaXRzZWxmIGluZGVlZCBzZWVtcyB1c2VmdWwgZm9yIG5l
-dHdvcmtpbmcgY29tbXVuaXR5Lg0KSSBqdXN0IGhhdmUgc29tZSBxdWVzdGlvbnMgd2hhdCBraW5k
-IG9mIGtlcm5lbCBzdXBwb3J0IGlzIG5lZWRlZC4NCg0KV2UgYWxyZWFkeSBoYXZlIHBlcmZfZXZl
-bnRfb3V0cHV0IGZvciBza2IgYW5kIHhkcC4NCkNhbiB3ZSBqdXN0IHVzZSB0aGUgb3JpZ2luYWwg
-aGVscGVycyBhbmQgZG8gYSBsaXR0bGUgYml0IHBvc3QNCnByb2Nlc3NpbmcgaW4gdXNlciBzcGFj
-ZSB0byBnZXQgd2hhdCB5b3Ugd2FudD8NCkl0IGxvb2tzIHBvc3NpYmxlIHRvIG1lIHRvIGdlbmVy
-YXRlIGJwZl9wY2FwX2hkciBpbiB1c2VyIHNwYWNlDQpiZWZvcmUgc2VuZGluZyBvdXRwdXQgdG8g
-cGNhcCBhbmFseXplci4NCg0KPiArICoNCj4gICAgKi8NCj4gICAjZGVmaW5lIF9fQlBGX0ZVTkNf
-TUFQUEVSKEZOKQkJXA0KPiAgIAlGTih1bnNwZWMpLAkJCVwNCj4gQEAgLTI4NjIsNyArMjg5NSw4
-IEBAIHN0cnVjdCBicGZfc3RhY2tfYnVpbGRfaWQgew0KPiAgIAlGTihza19zdG9yYWdlX2dldCks
-CQlcDQo+ICAgCUZOKHNrX3N0b3JhZ2VfZGVsZXRlKSwJCVwNCj4gICAJRk4oc2VuZF9zaWduYWwp
-LAkJXA0KPiAtCUZOKHRjcF9nZW5fc3luY29va2llKSwNCj4gKwlGTih0Y3BfZ2VuX3N5bmNvb2tp
-ZSksCQlcDQo+ICsJRk4ocGNhcCksDQo+ICAgDQo+ICAgLyogaW50ZWdlciB2YWx1ZSBpbiAnaW1t
-JyBmaWVsZCBvZiBCUEZfQ0FMTCBpbnN0cnVjdGlvbiBzZWxlY3RzIHdoaWNoIGhlbHBlcg0KPiAg
-ICAqIGZ1bmN0aW9uIGVCUEYgcHJvZ3JhbSBpbnRlbmRzIHRvIGNhbGwNCj4gQEAgLTI5NDEsNiAr
-Mjk3NSw5IEBAIGVudW0gYnBmX2Z1bmNfaWQgew0KPiAgIC8qIEJQRl9GVU5DX3NrX3N0b3JhZ2Vf
-Z2V0IGZsYWdzICovDQo+ICAgI2RlZmluZSBCUEZfU0tfU1RPUkFHRV9HRVRfRl9DUkVBVEUJKDFV
-TEwgPDwgMCkNCj4gICANCj4gKy8qIEJQRl9GVU5DX3BjYXAgZmxhZ3MgKi8NCj4gKyNkZWZpbmUJ
-QlBGX0ZfUENBUF9JRF9NQVNLCQkweGZmZmZmZmZmZmZmZg0KPiArDQo+ICAgLyogTW9kZSBmb3Ig
-QlBGX0ZVTkNfc2tiX2FkanVzdF9yb29tIGhlbHBlci4gKi8NCj4gICBlbnVtIGJwZl9hZGpfcm9v
-bV9tb2RlIHsNCj4gICAJQlBGX0FESl9ST09NX05FVCwNCj4gQEAgLTM2MTMsNCArMzY1MCw0MCBA
-QCBzdHJ1Y3QgYnBmX3NvY2tvcHQgew0KPiAgIAlfX3MzMglyZXR2YWw7DQo+ICAgfTsNCj4gICAN
-Cj4gKy8qIGJwZl9wY2FwX2hkciBjb250YWlucyBpbmZvcm1hdGlvbiByZWxhdGVkIHRvIGEgcGFy
-dGljdWxhciBwYWNrZXQgY2FwdHVyZQ0KPiArICogZmxvdy4gIEl0IHNwZWNpZmllcw0KPiArICoN
-Cj4gKyAqIC0gYSBtYWdpYyBudW1iZXIgQlBGX1BDQVBfTUFHSUMgd2hpY2ggaWRlbnRpZmllcyB0
-aGUgcGVyZiBldmVudCBhcw0KPiArICogICBhIHBjYXAtcmVsYXRlZCBldmVudC4NCj4gKyAqIC0g
-YSBzdGFydGluZyBwcm90b2NvbCBpcyB0aGUgcHJvdG9jb2wgYXNzb2NpYXRlZCB3aXRoIHRoZSBo
-ZWFkZXINCj4gKyAqIC0gYSBmbGFncyB2YWx1ZSwgY29waWVkIGZyb20gdGhlIGZsYWdzIHZhbHVl
-IHBhc3NlZCBpbnRvIGJwZl9wY2FwKCkuDQo+ICsgKiAgIElEcyBjYW4gYmUgdXNlZCB0byBjb3Jy
-ZWxhdGUgcGFja2V0IGNhcHR1cmUgZGF0YSBhbmQgb3RoZXIgdHJhY2luZyBkYXRhLg0KPiArICoN
-Cj4gKyAqIGJwZl9wY2FwX2hkciBhbHNvIGNvbnRhaW5zIHRoZSBpbmZvcm1hdGlvbiByZWxhdGlu
-ZyB0byB0aGUgdG8tYmUtY2FwdHVyZWQNCj4gKyAqIHBhY2tldCwgYW5kIGNsb3NlbHkgY29ycmVz
-cG9uZHMgdG8gdGhlIHN0cnVjdCBwY2FwX3BrdGhkciB1c2VkIGJ5DQo+ICsgKiBwY2FwX2R1bXAg
-KDNQQ0FQKS4gIFRoZSBicGZfcGNhcCBoZWxwZXIgc2V0cyBrdGltZV9ucyAobmFub3NlY29uZHMg
-c2luY2UNCj4gKyAqIGJvb3QpIHRvIHRoZSBrdGltZV9ucyB2YWx1ZTsgdG8gZ2V0IHNlbnNpYmxl
-IHBjYXAgdGltZXMgdGhpcyB2YWx1ZSBzaG91bGQNCj4gKyAqIGJlIGNvbnZlcnRlZCB0byBhIHN0
-cnVjdCB0aW1ldmFsIHRpbWUgc2luY2UgZXBvY2ggaW4gdGhlIHN0cnVjdCBwY2FwX3BrdGhkci4N
-Cj4gKyAqDQo+ICsgKiBXaGVuIGJwZl9wY2FwKCkgaXMgdXNlZCwgYSAic3RydWN0IGJwZl9wY2Fw
-X2hkciIgaXMgc3RvcmVkIGFzIHdlDQo+ICsgKiBuZWVkIGJvdGggaW5mb3JtYXRpb24gYWJvdXQg
-dGhlIHBhcnRpY3VsYXIgcGFja2V0IGFuZCB0aGUgcHJvdG9jb2wNCj4gKyAqIHdlIGFyZSBjYXB0
-dXJpbmcuDQo+ICsgKi8NCj4gKw0KPiArI2RlZmluZSBCUEZfUENBUF9NQUdJQwkJMHhiN2ZjYTcN
-Cj4gKw0KPiArc3RydWN0IGJwZl9wY2FwX2hkciB7DQo+ICsJX191MzIJCQltYWdpYzsNCj4gKwlp
-bnQJCQlwcm90b2NvbDsNCj4gKwlfX3U2NAkJCWZsYWdzOw0KPiArCV9fdTY0CQkJa3RpbWVfbnM7
-DQo+ICsJX191MzIJCQl0b3RfbGVuOw0KPiArCV9fdTMyCQkJY2FwX2xlbjsNCj4gKwlfX3U4CQkJ
-ZGF0YVswXTsNCj4gK307DQo+ICsNCj4gKyNkZWZpbmUgQlBGX1BDQVBfVFlQRV9VTlNFVAktMQ0K
-PiArI2RlZmluZSBCUEZfUENBUF9UWVBFX0VUSAkxDQo+ICsjZGVmaW5lCUJQRl9QQ0FQX1RZUEVf
-SVAJMTINCj4gKw0KPiAgICNlbmRpZiAvKiBfVUFQSV9fTElOVVhfQlBGX0hfXyAqLw0KWy4uLl0N
-Cj4gZGlmZiAtLWdpdCBhL25ldC9jb3JlL2ZpbHRlci5jIGIvbmV0L2NvcmUvZmlsdGVyLmMNCj4g
-aW5kZXggZWQ2NTYzNi4uZTBlMjNlZSAxMDA2NDQNCj4gLS0tIGEvbmV0L2NvcmUvZmlsdGVyLmMN
-Cj4gKysrIGIvbmV0L2NvcmUvZmlsdGVyLmMNCj4gQEAgLTQxNTgsNiArNDE1OCwzNSBAQCBzdGF0
-aWMgdW5zaWduZWQgbG9uZyBicGZfeGRwX2NvcHkodm9pZCAqZHN0X2J1ZmYsIGNvbnN0IHZvaWQg
-KnNyY19idWZmLA0KPiAgIAkuYXJnNV90eXBlCT0gQVJHX0NPTlNUX1NJWkVfT1JfWkVSTywNCj4g
-ICB9Ow0KPiAgIA0KPiArQlBGX0NBTExfNShicGZfeGRwX3BjYXAsIHN0cnVjdCB4ZHBfYnVmZiAq
-LCB4ZHAsIHUzMiwgc2l6ZSwNCj4gKwkgICBzdHJ1Y3QgYnBmX21hcCAqLCBtYXAsIGludCwgcHJv
-dG9jb2wsIHU2NCwgZmxhZ3MpDQo+ICt7DQo+ICsJdW5zaWduZWQgbG9uZyBsZW4gPSAodW5zaWdu
-ZWQgbG9uZykoeGRwLT5kYXRhX2VuZCAtIHhkcC0+ZGF0YSk7DQo+ICsJc3RydWN0IGJwZl9wY2Fw
-X2hkciBwY2FwOw0KPiArCWludCByZXQ7DQo+ICsNCj4gKwlpZiAodW5saWtlbHkoZmxhZ3MgJiB+
-QlBGX0ZfUENBUF9JRF9NQVNLKSkNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gKwlyZXQg
-PSBicGZfcGNhcF9wcmVwYXJlKHByb3RvY29sLCBzaXplLCBsZW4sIGZsYWdzLCAmcGNhcCk7DQo+
-ICsJaWYgKHJldCkNCj4gKwkJcmV0dXJuIHJldDsNCj4gKw0KPiArCXJldHVybiBicGZfZXZlbnRf
-b3V0cHV0KG1hcCwgQlBGX0ZfQ1VSUkVOVF9DUFUsICZwY2FwLCBzaXplb2YocGNhcCksDQo+ICsJ
-CQkJeGRwLT5kYXRhLCBwY2FwLmNhcF9sZW4sIGJwZl94ZHBfY29weSk7DQo+ICt9DQo+ICsNCj4g
-K3N0YXRpYyBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX3hkcF9wY2FwX3Byb3RvID0g
-ew0KPiArCS5mdW5jCQk9IGJwZl94ZHBfcGNhcCwNCj4gKwkuZ3BsX29ubHkJPSBmYWxzZSwNCj4g
-KwkucmV0X3R5cGUJPSBSRVRfSU5URUdFUiwNCj4gKwkuYXJnMV90eXBlCT0gQVJHX1BUUl9UT19D
-VFgsDQo+ICsJLmFyZzJfdHlwZQk9IEFSR19BTllUSElORywNCj4gKwkuYXJnM190eXBlCT0gQVJH
-X0NPTlNUX01BUF9QVFIsDQo+ICsJLmFyZzRfdHlwZQk9IEFSR19BTllUSElORywNCj4gKwkuYXJn
-NV90eXBlCT0gQVJHX0FOWVRISU5HLA0KPiArfTsNCj4gKw0KPiAgIEJQRl9DQUxMXzEoYnBmX2dl
-dF9zb2NrZXRfY29va2llLCBzdHJ1Y3Qgc2tfYnVmZiAqLCBza2IpDQo+ICAgew0KPiAgIAlyZXR1
-cm4gc2tiLT5zayA/IHNvY2tfZ2VuX2Nvb2tpZShza2ItPnNrKSA6IDA7DQo+IEBAIC01OTI2LDYg
-KzU5NTUsMzQgQEAgdTMyIGJwZl94ZHBfc29ja19jb252ZXJ0X2N0eF9hY2Nlc3MoZW51bSBicGZf
-YWNjZXNzX3R5cGUgdHlwZSwNCj4gICANCj4gICAjZW5kaWYgLyogQ09ORklHX0lORVQgKi8NCj4g
-ICANCj4gK0JQRl9DQUxMXzUoYnBmX3NrYl9wY2FwLCBzdHJ1Y3Qgc2tfYnVmZiAqLCBza2IsIHUz
-Miwgc2l6ZSwNCj4gKwkgICBzdHJ1Y3QgYnBmX21hcCAqLCBtYXAsIGludCwgcHJvdG9jb2wsIHU2
-NCwgZmxhZ3MpDQo+ICt7DQo+ICsJc3RydWN0IGJwZl9wY2FwX2hkciBwY2FwOw0KPiArCWludCBy
-ZXQ7DQo+ICsNCj4gKwlpZiAodW5saWtlbHkoZmxhZ3MgJiB+QlBGX0ZfUENBUF9JRF9NQVNLKSkN
-Cj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gKwlyZXQgPSBicGZfcGNhcF9wcmVwYXJlKHBy
-b3RvY29sLCBzaXplLCBza2ItPmxlbiwgZmxhZ3MsICZwY2FwKTsNCj4gKwlpZiAocmV0KQ0KPiAr
-CQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJcmV0dXJuIGJwZl9ldmVudF9vdXRwdXQobWFwLCBCUEZf
-Rl9DVVJSRU5UX0NQVSwgJnBjYXAsIHNpemVvZihwY2FwKSwNCj4gKwkJCQlza2IsIHBjYXAuY2Fw
-X2xlbiwgYnBmX3NrYl9jb3B5KTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBi
-cGZfZnVuY19wcm90byBicGZfc2tiX3BjYXBfcHJvdG8gPSB7DQo+ICsJLmZ1bmMJCT0gYnBmX3Nr
-Yl9wY2FwLA0KPiArCS5ncGxfb25seQk9IGZhbHNlLA0KPiArCS5yZXRfdHlwZQk9IFJFVF9JTlRF
-R0VSLA0KPiArCS5hcmcxX3R5cGUJPSBBUkdfUFRSX1RPX0NUWCwNCj4gKwkuYXJnMl90eXBlCT0g
-QVJHX0FOWVRISU5HLA0KPiArCS5hcmczX3R5cGUJPSBBUkdfQ09OU1RfTUFQX1BUUiwNCj4gKwku
-YXJnNF90eXBlICAgICAgPSBBUkdfQU5ZVEhJTkcsDQo+ICsJLmFyZzVfdHlwZQk9IEFSR19BTllU
-SElORywNCj4gK307DQo+ICsNCj4gICBib29sIGJwZl9oZWxwZXJfY2hhbmdlc19wa3RfZGF0YSh2
-b2lkICpmdW5jKQ0KPiAgIHsNCj4gICAJaWYgKGZ1bmMgPT0gYnBmX3NrYl92bGFuX3B1c2ggfHwN
-Cj4gQEAgLTYwNzUsNiArNjEzMiw4IEBAIGJvb2wgYnBmX2hlbHBlcl9jaGFuZ2VzX3BrdF9kYXRh
-KHZvaWQgKmZ1bmMpDQo+ICAgCQlyZXR1cm4gJmJwZl9nZXRfc29ja2V0X3VpZF9wcm90bzsNCj4g
-ICAJY2FzZSBCUEZfRlVOQ19wZXJmX2V2ZW50X291dHB1dDoNCj4gICAJCXJldHVybiAmYnBmX3Nr
-Yl9ldmVudF9vdXRwdXRfcHJvdG87DQo+ICsJY2FzZSBCUEZfRlVOQ19wY2FwOg0KPiArCQlyZXR1
-cm4gJmJwZl9za2JfcGNhcF9wcm90bzsNCj4gICAJZGVmYXVsdDoNCj4gICAJCXJldHVybiBicGZf
-YmFzZV9mdW5jX3Byb3RvKGZ1bmNfaWQpOw0KPiAgIAl9DQo+IEBAIC02MjE2LDYgKzYyNzUsOCBA
-QCBib29sIGJwZl9oZWxwZXJfY2hhbmdlc19wa3RfZGF0YSh2b2lkICpmdW5jKQ0KPiAgIAljYXNl
-IEJQRl9GVU5DX3RjcF9nZW5fc3luY29va2llOg0KPiAgIAkJcmV0dXJuICZicGZfdGNwX2dlbl9z
-eW5jb29raWVfcHJvdG87DQo+ICAgI2VuZGlmDQo+ICsJY2FzZSBCUEZfRlVOQ19wY2FwOg0KPiAr
-CQlyZXR1cm4gJmJwZl9za2JfcGNhcF9wcm90bzsNCj4gICAJZGVmYXVsdDoNCj4gICAJCXJldHVy
-biBicGZfYmFzZV9mdW5jX3Byb3RvKGZ1bmNfaWQpOw0KPiAgIAl9DQo+IEBAIC02MjU2LDYgKzYz
-MTcsOCBAQCBib29sIGJwZl9oZWxwZXJfY2hhbmdlc19wa3RfZGF0YSh2b2lkICpmdW5jKQ0KPiAg
-IAkJcmV0dXJuICZicGZfdGNwX2NoZWNrX3N5bmNvb2tpZV9wcm90bzsNCj4gICAJY2FzZSBCUEZf
-RlVOQ190Y3BfZ2VuX3N5bmNvb2tpZToNCj4gICAJCXJldHVybiAmYnBmX3RjcF9nZW5fc3luY29v
-a2llX3Byb3RvOw0KPiArCWNhc2UgQlBGX0ZVTkNfcGNhcDoNCj4gKwkJcmV0dXJuICZicGZfeGRw
-X3BjYXBfcHJvdG87DQo+ICAgI2VuZGlmDQo+ICAgCWRlZmF1bHQ6DQo+ICAgCQlyZXR1cm4gYnBm
-X2Jhc2VfZnVuY19wcm90byhmdW5jX2lkKTsNCj4gQEAgLTYzNjEsNiArNjQyNCw4IEBAIGJvb2wg
-YnBmX2hlbHBlcl9jaGFuZ2VzX3BrdF9kYXRhKHZvaWQgKmZ1bmMpDQo+ICAgCWNhc2UgQlBGX0ZV
-TkNfc2tjX2xvb2t1cF90Y3A6DQo+ICAgCQlyZXR1cm4gJmJwZl9za2NfbG9va3VwX3RjcF9wcm90
-bzsNCj4gICAjZW5kaWYNCj4gKwljYXNlIEJQRl9GVU5DX3BjYXA6DQo+ICsJCXJldHVybiAmYnBm
-X3NrYl9wY2FwX3Byb3RvOw0KPiAgIAlkZWZhdWx0Og0KPiAgIAkJcmV0dXJuIGJwZl9iYXNlX2Z1
-bmNfcHJvdG8oZnVuY19pZCk7DQo+ICAgCX0NCj4gQEAgLTYzOTksNiArNjQ2NCw4IEBAIGJvb2wg
-YnBmX2hlbHBlcl9jaGFuZ2VzX3BrdF9kYXRhKHZvaWQgKmZ1bmMpDQo+ICAgCQlyZXR1cm4gJmJw
-Zl9nZXRfc21wX3Byb2Nlc3Nvcl9pZF9wcm90bzsNCj4gICAJY2FzZSBCUEZfRlVOQ19za2JfdW5k
-ZXJfY2dyb3VwOg0KPiAgIAkJcmV0dXJuICZicGZfc2tiX3VuZGVyX2Nncm91cF9wcm90bzsNCj4g
-KwljYXNlIEJQRl9GVU5DX3BjYXA6DQo+ICsJCXJldHVybiAmYnBmX3NrYl9wY2FwX3Byb3RvOw0K
-PiAgIAlkZWZhdWx0Og0KPiAgIAkJcmV0dXJuIGJwZl9iYXNlX2Z1bmNfcHJvdG8oZnVuY19pZCk7
-DQo+ICAgCX0NCj4gDQo=
+
+
+On 31/07/2019 20:46, Mickaël Salaün wrote:
+> 
+> On 27/07/2019 03:40, Alexei Starovoitov wrote:
+>> On Sun, Jul 21, 2019 at 11:31:12PM +0200, Mickaël Salaün wrote:
+>>> FIXME: 64-bits in the doc
+> 
+> FYI, this FIXME was fixed, just not removed from this message. :)
+> 
+>>>
+>>> This new map store arbitrary values referenced by inode keys.  The map
+>>> can be updated from user space with file descriptor pointing to inodes
+>>> tied to a file system.  From an eBPF (Landlock) program point of view,
+>>> such a map is read-only and can only be used to retrieved a value tied
+>>> to a given inode.  This is useful to recognize an inode tagged by user
+>>> space, without access right to this inode (i.e. no need to have a write
+>>> access to this inode).
+>>>
+>>> Add dedicated BPF functions to handle this type of map:
+>>> * bpf_inode_htab_map_update_elem()
+>>> * bpf_inode_htab_map_lookup_elem()
+>>> * bpf_inode_htab_map_delete_elem()
+>>>
+>>> This new map require a dedicated helper inode_map_lookup_elem() because
+>>> of the key which is a pointer to an opaque data (only provided by the
+>>> kernel).  This act like a (physical or cryptographic) key, which is why
+>>> it is also not allowed to get the next key.
+>>>
+>>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>>
+>> there are too many things to comment on.
+>> Let's do this patch.
+>>
+>> imo inode_map concept is interesting, but see below...
+>>
+>>> +
+>>> +    /*
+>>> +     * Limit number of entries in an inode map to the maximum number of
+>>> +     * open files for the current process. The maximum number of file
+>>> +     * references (including all inode maps) for a process is then
+>>> +     * (RLIMIT_NOFILE - 1) * RLIMIT_NOFILE. If the process' RLIMIT_NOFILE
+>>> +     * is 0, then any entry update is forbidden.
+>>> +     *
+>>> +     * An eBPF program can inherit all the inode map FD. The worse case is
+>>> +     * to fill a bunch of arraymaps, create an eBPF program, close the
+>>> +     * inode map FDs, and start again. The maximum number of inode map
+>>> +     * entries can then be close to RLIMIT_NOFILE^3.
+>>> +     */
+>>> +    if (attr->max_entries > rlimit(RLIMIT_NOFILE))
+>>> +            return -EMFILE;
+>>
+>> rlimit is checked, but no fd are consumed.
+>> Once created such inode map_fd can be passed to a different process.
+>> map_fd can be pinned into bpffs.
+>> etc.
+>> what the value of the check?
+> 
+> I was looking for the most meaningful limit for a process, and rlimit is
+> the best I found. As the limit of open FD per processes, rlimit is not
+> perfect, but I think the semantic is close here (e.g. a process can also
+> pass FD through unix socket).
+> 
+>>
+>>> +
+>>> +    /* decorelate UAPI from kernel API */
+>>> +    attr->key_size = sizeof(struct inode *);
+>>> +
+>>> +    return htab_map_alloc_check(attr);
+>>> +}
+>>> +
+>>> +static void inode_htab_put_key(void *key)
+>>> +{
+>>> +    struct inode **inode = key;
+>>> +
+>>> +    if ((*inode)->i_state & I_FREEING)
+>>> +            return;
+>>
+>> checking the state without take a lock? isn't it racy?
+> 
+> This should only trigger when called from security_inode_free(). I'll
+> add a comment.
+> 
+>>
+>>> +    iput(*inode);
+>>> +}
+>>> +
+>>> +/* called from syscall or (never) from eBPF program */
+>>> +static int map_get_next_no_key(struct bpf_map *map, void *key, void *next_key)
+>>> +{
+>>> +    /* do not leak a file descriptor */
+>>
+>> what this comment suppose to mean?
+> 
+> Because a key is a reference to an inode, a possible return value for
+> this function could be a file descriptor pointing to this inode (the
+> same way a file descriptor is use to add an element). For now, I don't
+> want to implement a way for a process with such a map to extract such
+> inode, which I compare to a possible leak (of information, not kernel
+> memory nor object). This could be implemented in the future if there is
+> value in it (and probably some additional safeguards), though.
+> 
+>>
+>>> +    return -ENOTSUPP;
+>>> +}
+>>> +
+>>> +/* must call iput(inode) after this call */
+>>> +static struct inode *inode_from_fd(int ufd, bool check_access)
+>>> +{
+>>> +    struct inode *ret;
+>>> +    struct fd f;
+>>> +    int deny;
+>>> +
+>>> +    f = fdget(ufd);
+>>> +    if (unlikely(!f.file))
+>>> +            return ERR_PTR(-EBADF);
+>>> +    /* TODO?: add this check when called from an eBPF program too (already
+>>> +    * checked by the LSM parent hooks anyway) */
+>>> +    if (unlikely(IS_PRIVATE(file_inode(f.file)))) {
+>>> +            ret = ERR_PTR(-EINVAL);
+>>> +            goto put_fd;
+>>> +    }
+>>> +    /* check if the FD is tied to a mount point */
+>>> +    /* TODO?: add this check when called from an eBPF program too */
+>>> +    if (unlikely(f.file->f_path.mnt->mnt_flags & MNT_INTERNAL)) {
+>>> +            ret = ERR_PTR(-EINVAL);
+>>> +            goto put_fd;
+>>> +    }
+>>
+>> a bunch of TODOs do not inspire confidence.
+> 
+> I think the current implement is good, but these TODOs are here to draw
+> attention on particular points for which I would like external review
+> and opinion (hence the "?").
+> 
+>>
+>>> +    if (check_access) {
+>>> +            /*
+>>> +            * must be allowed to access attributes from this file to then
+>>> +            * be able to compare an inode to its map entry
+>>> +            */
+>>> +            deny = security_inode_getattr(&f.file->f_path);
+>>> +            if (deny) {
+>>> +                    ret = ERR_PTR(deny);
+>>> +                    goto put_fd;
+>>> +            }
+>>> +    }
+>>> +    ret = file_inode(f.file);
+>>> +    ihold(ret);
+>>> +
+>>> +put_fd:
+>>> +    fdput(f);
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +/*
+>>> + * The key is a FD when called from a syscall, but an inode address when called
+>>> + * from an eBPF program.
+>>> + */
+>>> +
+>>> +/* called from syscall */
+>>> +int bpf_inode_fd_htab_map_lookup_elem(struct bpf_map *map, int *key, void *value)
+>>> +{
+>>> +    void *ptr;
+>>> +    struct inode *inode;
+>>> +    int ret;
+>>> +
+>>> +    /* check inode access */
+>>> +    inode = inode_from_fd(*key, true);
+>>> +    if (IS_ERR(inode))
+>>> +            return PTR_ERR(inode);
+>>> +
+>>> +    rcu_read_lock();
+>>> +    ptr = htab_map_lookup_elem(map, &inode);
+>>> +    iput(inode);
+>>> +    if (IS_ERR(ptr)) {
+>>> +            ret = PTR_ERR(ptr);
+>>> +    } else if (!ptr) {
+>>> +            ret = -ENOENT;
+>>> +    } else {
+>>> +            ret = 0;
+>>> +            copy_map_value(map, value, ptr);
+>>> +    }
+>>> +    rcu_read_unlock();
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +/* called from kernel */
+>>
+>> wrong comment?
+>> kernel side cannot call it, right?
+> 
+> This is called from bpf_inode_fd_htab_map_delete_elem() (code just
+> beneath), and from
+> kernel/bpf/syscall.c:bpf_inode_ptr_unlocked_htab_map_delet_elem() which
+> can be called by security_inode_free() (hook_inode_free_security).
+> 
+>>
+>>> +int bpf_inode_ptr_locked_htab_map_delete_elem(struct bpf_map *map,
+>>> +            struct inode **key, bool remove_in_inode)
+>>> +{
+>>> +    if (remove_in_inode)
+>>> +            landlock_inode_remove_map(*key, map);
+>>> +    return htab_map_delete_elem(map, key);
+>>> +}
+>>> +
+>>> +/* called from syscall */
+>>> +int bpf_inode_fd_htab_map_delete_elem(struct bpf_map *map, int *key)
+>>> +{
+>>> +    struct inode *inode;
+>>> +    int ret;
+>>> +
+>>> +    /* do not check inode access (similar to directory check) */
+>>> +    inode = inode_from_fd(*key, false);
+>>> +    if (IS_ERR(inode))
+>>> +            return PTR_ERR(inode);
+>>> +    ret = bpf_inode_ptr_locked_htab_map_delete_elem(map, &inode, true);
+>>> +    iput(inode);
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +/* called from syscall */
+>>> +int bpf_inode_fd_htab_map_update_elem(struct bpf_map *map, int *key, void *value,
+>>> +            u64 map_flags)
+>>> +{
+>>> +    struct inode *inode;
+>>> +    int ret;
+>>> +
+>>> +    WARN_ON_ONCE(!rcu_read_lock_held());
+>>> +
+>>> +    /* check inode access */
+>>> +    inode = inode_from_fd(*key, true);
+>>> +    if (IS_ERR(inode))
+>>> +            return PTR_ERR(inode);
+>>> +    ret = htab_map_update_elem(map, &inode, value, map_flags);
+>>> +    if (!ret)
+>>> +            ret = landlock_inode_add_map(inode, map);
+>>> +    iput(inode);
+>>> +    return ret;
+>>> +}
+>>> +
+>>> +static void inode_htab_map_free(struct bpf_map *map)
+>>> +{
+>>> +    struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+>>> +    struct hlist_nulls_node *n;
+>>> +    struct hlist_nulls_head *head;
+>>> +    struct htab_elem *l;
+>>> +    int i;
+>>> +
+>>> +    for (i = 0; i < htab->n_buckets; i++) {
+>>> +            head = select_bucket(htab, i);
+>>> +            hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
+>>> +                    landlock_inode_remove_map(*((struct inode **)l->key), map);
+>>> +            }
+>>> +    }
+>>> +    htab_map_free(map);
+>>> +}
+>>
+>> user space can delete the map.
+>> that will trigger inode_htab_map_free() which will call
+>> landlock_inode_remove_map().
+>> which will simply itereate the list and delete from the list.
+> 
+> landlock_inode_remove_map() removes the reference to the map (being
+> freed) from the inode (with an RCU lock).
+> 
+>>
+>> While in parallel inode can be destoyed and hook_inode_free_security()
+>> will be called.
+>> I think nothing that protects from this race.
+> 
+> According to security_inode_free(), the inode is effectively freed after
+> the RCU grace period. However, I forgot to call bpf_map_inc() in
+> landlock_inode_add_map(), which would prevent the map to be freed
+> outside of the security_inode_free(). I'll fix that.
+> 
+>>
+>>> +
+>>> +/*
+>>> + * We need a dedicated helper to deal with inode maps because the key is a
+>>> + * pointer to an opaque data, only provided by the kernel.  This really act
+>>> + * like a (physical or cryptographic) key, which is why it is also not allowed
+>>> + * to get the next key with map_get_next_key().
+>>
+>> inode pointer is like cryptographic key? :)
+> 
+> I wanted to highlight the fact that, contrary to other map key types,
+> the value of this one should not be readable, only usable. A "secret
+> value" is more appropriate but still confusing. I'll rephrase that.
+> 
+>>
+>>> + */
+>>> +BPF_CALL_2(bpf_inode_map_lookup_elem, struct bpf_map *, map, void *, key)
+>>> +{
+>>> +    WARN_ON_ONCE(!rcu_read_lock_held());
+>>> +    return (unsigned long)htab_map_lookup_elem(map, &key);
+>>> +}
+>>> +
+>>> +const struct bpf_func_proto bpf_inode_map_lookup_elem_proto = {
+>>> +    .func           = bpf_inode_map_lookup_elem,
+>>> +    .gpl_only       = false,
+>>> +    .pkt_access     = true,
+>>
+>> pkt_access ? :)
+> 
+> This slipped in with this rebase, I'll remove it. :)
+> 
+>>
+>>> +    .ret_type       = RET_PTR_TO_MAP_VALUE_OR_NULL,
+>>> +    .arg1_type      = ARG_CONST_MAP_PTR,
+>>> +    .arg2_type      = ARG_PTR_TO_INODE,
+>>> +};
+>>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>>> index b2a8cb14f28e..e46441c42b68 100644
+>>> --- a/kernel/bpf/syscall.c
+>>> +++ b/kernel/bpf/syscall.c
+>>> @@ -801,6 +801,8 @@ static int map_lookup_elem(union bpf_attr *attr)
+>>>      } else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+>>>                 map->map_type == BPF_MAP_TYPE_STACK) {
+>>>              err = map->ops->map_peek_elem(map, value);
+>>> +    } else if (map->map_type == BPF_MAP_TYPE_INODE) {
+>>> +            err = bpf_inode_fd_htab_map_lookup_elem(map, key, value);
+>>>      } else {
+>>>              rcu_read_lock();
+>>>              if (map->ops->map_lookup_elem_sys_only)
+>>> @@ -951,6 +953,10 @@ static int map_update_elem(union bpf_attr *attr)
+>>>      } else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+>>>                 map->map_type == BPF_MAP_TYPE_STACK) {
+>>>              err = map->ops->map_push_elem(map, value, attr->flags);
+>>> +    } else if (map->map_type == BPF_MAP_TYPE_INODE) {
+>>> +            rcu_read_lock();
+>>> +            err = bpf_inode_fd_htab_map_update_elem(map, key, value, attr->flags);
+>>> +            rcu_read_unlock();
+>>>      } else {
+>>>              rcu_read_lock();
+>>>              err = map->ops->map_update_elem(map, key, value, attr->flags);
+>>> @@ -1006,7 +1012,10 @@ static int map_delete_elem(union bpf_attr *attr)
+>>>      preempt_disable();
+>>>      __this_cpu_inc(bpf_prog_active);
+>>>      rcu_read_lock();
+>>> -    err = map->ops->map_delete_elem(map, key);
+>>> +    if (map->map_type == BPF_MAP_TYPE_INODE)
+>>> +            err = bpf_inode_fd_htab_map_delete_elem(map, key);
+>>> +    else
+>>> +            err = map->ops->map_delete_elem(map, key);
+>>>      rcu_read_unlock();
+>>>      __this_cpu_dec(bpf_prog_active);
+>>>      preempt_enable();
+>>> @@ -1018,6 +1027,22 @@ static int map_delete_elem(union bpf_attr *attr)
+>>>      return err;
+>>>  }
+>>>
+>>> +int bpf_inode_ptr_unlocked_htab_map_delete_elem(struct bpf_map *map,
+>>> +                                            struct inode **key, bool remove_in_inode)
+>>> +{
+>>> +    int err;
+>>> +
+>>> +    preempt_disable();
+>>> +    __this_cpu_inc(bpf_prog_active);
+>>> +    rcu_read_lock();
+>>> +    err = bpf_inode_ptr_locked_htab_map_delete_elem(map, key, remove_in_inode);
+>>> +    rcu_read_unlock();
+>>> +    __this_cpu_dec(bpf_prog_active);
+>>> +    preempt_enable();
+>>> +    maybe_wait_bpf_programs(map);
+>>
+>> if that function was actually doing synchronize_rcu() the consequences
+>> would have been unpleasant. Fortunately it's a nop in this case.
+>> Please read the code carefully before copy-paste.
+>> Also what do you think the reason of bpf_prog_active above?
+>> What is the reason of rcu_read_lock above?
+> 
+> The RCU is used as for every map modifications (usually from userspace).
+> I wasn't sure about the other protections so I kept the same (generic)
+> checks as in map_delete_elem() (just above) because this function follow
+> the same semantic. What can I safely remove?
+> 
+>>
+>> I think the patch set needs to shrink at least in half to be reviewable.
+>> The way you tie seccomp and lsm is probably the biggest obstacle
+>> than any of the bugs above.
+>> Can you drop seccomp ? and do it as normal lsm ?
+> 
+> The seccomp/enforcement part is needed to have a minimum viable product,
+> i.e. a process able to sandbox itself. Are you suggesting to first merge
+> a version when it is only possible to create inode maps but not use them
+> in an useful way (i.e. for sandboxing)? I can do it if it's OK with you,
+> and I hope it will not be a problem for the security folks if it can
+> help to move forward.
+
+I talked with Kees Cook and James Morris at LSS NA, and I think the
+better strategy to shrink this patch series is to tackle a much less
+complex problem at first. Instead on focusing right now on file system,
+the next version of this patch series will focus on memory protection,
+which is also something desired. I'll then iterate with file system
+support (i.e. inode maps) and other use cases once the basics of
+Landlock are upstream. For this next series, the majority of the code
+will be on the LSM side, while the eBPF part will mainly consist to add
+a new program type. Because bpf-next is moving rapidly, I think it still
+make sense to base this work on this tree (instead of linux-security).
+
+Regards,
+ Mickaël
