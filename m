@@ -2,93 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76D4FACF2E
-	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 16:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C809BAD027
+	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 19:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728892AbfIHONJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 10:13:09 -0400
-Received: from mail02.iobjects.de ([188.40.134.68]:40388 "EHLO
-        mail02.iobjects.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbfIHONJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 10:13:09 -0400
-Received: from tux.wizards.de (pD9EBF359.dip0.t-ipconnect.de [217.235.243.89])
-        by mail02.iobjects.de (Postfix) with ESMTPSA id DBEDC416D0A6
-        for <netdev@vger.kernel.org>; Sun,  8 Sep 2019 16:13:07 +0200 (CEST)
-Received: from [192.168.100.223] (ragnarok.applied-asynchrony.com [192.168.100.223])
-        by tux.wizards.de (Postfix) with ESMTP id 9BEDDF015F9
-        for <netdev@vger.kernel.org>; Sun,  8 Sep 2019 16:13:07 +0200 (CEST)
-To:     Netdev <netdev@vger.kernel.org>
-From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-Subject: Default qdisc not correctly initialized with custom MTU
-Organization: Applied Asynchrony, Inc.
-Message-ID: <211c7151-7500-f895-7fd7-2c868dd48579@applied-asynchrony.com>
-Date:   Sun, 8 Sep 2019 16:13:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730351AbfIHRTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 13:19:05 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39087 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730062AbfIHRTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 13:19:05 -0400
+Received: by mail-lf1-f65.google.com with SMTP id l11so8668199lfk.6
+        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 10:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MN/k8JnJCOEcYirzdoyavFDle+e4eQE4j09q5zgR3Mc=;
+        b=P/fOWPzFGuUw2HnbXH0aGI1vTJtMlTcyLYQJDi7B1Fc6zZotQHBs4dKyvRTgVICulo
+         PAakjj5F8cfS2TJ/i/Gj9latl50LmDpUKB3ppf/OcTYNuOfab5BrnCwLljNSj7BTCk5m
+         QcvzdjLjAqPpiaGGVmEn+6xGYd0KEMGPisGGA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MN/k8JnJCOEcYirzdoyavFDle+e4eQE4j09q5zgR3Mc=;
+        b=Jw3c+cW8ZcvcsceyhguPTj6Btw6VMhtaJ2uC+muAfogqUBt9KBIXVhTySSeBnQrIB3
+         /Vxaqhsf0LoScqwsAwwNi4IBDtmbJBTAr3o1WZ+C4JLO0Z1DYJfynTzOQvqJtduIjhJv
+         4BBF2iJHk2deTOvT+K+g2VJCNaqD1oYgVkLoev8yrH01uqYnopRpzfwQ44fuo+o01ElD
+         JfF9+TF6AKz8mWUsmDFvIyhJnVz+6YcdaG3jccMrwd8DGuamSvZTk8Q7Mo1a52Z6c2g5
+         LvZBjyoneVIaV9T0Vh0NDkF8TX7b+ol/+g8jgn5o/0gOahHPRRdGBW/3W2Ulwbz8dVM3
+         phRw==
+X-Gm-Message-State: APjAAAUoJs32YxGZGA4v99O499jB6gmW353uxdwjPDJNTj/zm2XsiLSw
+        upDr6Ge34Q7AxfX/4Ns4TNpv5E0Lqcs=
+X-Google-Smtp-Source: APXvYqw+Z4dTkp2CjLd7aQ5XO2rqEmV8FeUqA+nIRs8BlU7OQ/I5GL79f3/merqahvwyV50MiiDRBA==
+X-Received: by 2002:ac2:4d04:: with SMTP id r4mr13359867lfi.57.1567963141856;
+        Sun, 08 Sep 2019 10:19:01 -0700 (PDT)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
+        by smtp.gmail.com with ESMTPSA id g10sm2330595lfb.76.2019.09.08.10.18.58
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Sep 2019 10:18:59 -0700 (PDT)
+Received: by mail-lj1-f173.google.com with SMTP id q22so5859955ljj.2
+        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 10:18:58 -0700 (PDT)
+X-Received: by 2002:a05:651c:1108:: with SMTP id d8mr5088745ljo.180.1567963138439;
+ Sun, 08 Sep 2019 10:18:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <000000000000df42500592047e0a@google.com>
+In-Reply-To: <000000000000df42500592047e0a@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 8 Sep 2019 10:18:42 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgZneAegyitz7f+JLjB6=28ewtvT7M4xy_a-wqsTjOX_w@mail.gmail.com>
+Message-ID: <CAHk-=wgZneAegyitz7f+JLjB6=28ewtvT7M4xy_a-wqsTjOX_w@mail.gmail.com>
+Subject: Re: general protection fault in qdisc_put
+To:     syzbot <syzbot+d5870a903591faaca4ae@syzkaller.appspotmail.com>
+Cc:     akinobu.mita@gmail.com, Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Dmitry Vyukov <dvyukov@google.com>, jhs@mojatatu.com,
+        jiri@resnulli.us,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Sep 7, 2019 at 11:08 PM syzbot
+<syzbot+d5870a903591faaca4ae@syzkaller.appspotmail.com> wrote:
+>
+> The bug was bisected to:
+>
+> commit e41d58185f1444368873d4d7422f7664a68be61d
+> Author: Dmitry Vyukov <dvyukov@google.com>
+> Date:   Wed Jul 12 21:34:35 2017 +0000
+>
+>      fault-inject: support systematic fault injection
 
-I just installed a better NIC (Aquantia 2.5/5/10Gb, apparently with
-multiple queues) and now get the "mq" pseudo-qdisc automatically installed -
-so far, so good. I also configure fq_codel as default qdisc via sysctls
-and a larger MTU of 9000 for the device. This somehow leads to some
-slight confusion about initialization order between the qdiscs and the
-device.
+That commit does seem a bit questionable, but not the cause of this
+problem (just the trigger).
 
-Right after booting, where sysctl runs before eth0 setup:
+I think the questionable part is that the new code doesn't honor the
+task filtering, and will fail even for protected tasks. Dmitry?
 
-$tc qd show
-qdisc noqueue 0: dev lo root refcnt 2
-qdisc mq 0: dev eth0 root
-qdisc fq_codel 0: dev eth0 parent :8 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :7 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :6 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :5 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :4 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :3 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :2 limit 10240p flows 1024 quantum 1514 ...
-qdisc fq_codel 0: dev eth0 parent :1 limit 10240p flows 1024 quantum 1514 ...
+> kasan: GPF could be caused by NULL-ptr deref or user memory access
+> general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 9699 Comm: syz-executor169 Not tainted 5.3.0-rc7+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> RIP: 0010:qdisc_put+0x25/0x90 net/sched/sch_generic.c:983
 
-Note that fq_codel thinks the quantum (derived from the MTU) is still 1500;
-it just used the default setting as there was no link yet.
+Yes, looks like 'qdisc' is NULL.
 
-Howwver, the MTU is set to 9000:
+This is the
 
-$ip link show eth0
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP mode DEFAULT group default qlen 1000
+        qdisc_put(q->qdisc);
 
-It seems the default qdisc is created before the link is set up, and then
-just attached to mq without consideration for the actual link configuration.
-Simply kicking the whole thing to replace mq with itself again does the trick:
+in sfb_destroy(), called from qdisc_create().
 
-$tc qd replace root dev eth0 mq
-$tc qd show
-qdisc noqueue 0: dev lo root refcnt 2
-qdisc mq 8001: dev eth0 root
-qdisc fq_codel 0: dev eth0 parent 8001:8 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:7 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:6 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:5 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:4 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:3 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:2 limit 10240p flows 1024 quantum 9014 ...
-qdisc fq_codel 0: dev eth0 parent 8001:1 limit 10240p flows 1024 quantum 9014 ...
+I think what is happening is this (in qdisc_create()):
 
-Now the quanta are in line with the actual MTU.
+        if (ops->init) {
+                err = ops->init(sch, tca[TCA_OPTIONS], extack);
+                if (err != 0)
+                        goto err_out5;
+        }
+        ...
+err_out5:
+        /* ops->init() failed, we call ->destroy() like qdisc_create_dflt() */
+        if (ops->destroy)
+                ops->destroy(sch);
 
-I can't help but feel this is a slight bug in terms of initialization order,
-and that the default qdisc should only be created when it's first being
-used/attached to a link, not when the sysctls are configured.
-Kernel is 5.2.x and I didn't see anything in 5.3 or net-next to address
-this yet.
+and "ops->init" is sfb_init(), which will not initialize q->qdisc if
+tcf_block_get() fails.
 
-Thoughts?
+I see two solutions:
 
-Holger
+ (a) move the
+
+        q->qdisc = &noop_qdisc;
+
+     up earlier in sfb_init(), so that qdisc is always initialized
+after sfb_init(), even on failure.
+
+ (b) just make qdisc_put(NULL) just silently work as a no-op.
+
+ (c) change all the semantics to not call ->destroy if ->init failed.
+
+Honestly, (a) seems very fragile - do all the other init routines do
+this? And (c) sounds like a big change, and very fragile too.
+
+So I'd suggest that qdisc_put() be made to just ignore a NULL pointer
+(and maybe an error pointer too?).
+
+But I'll leave it to the maintainers to sort out the proper fix.
+Maybe people prefer (a)?
+
+                   Linus
