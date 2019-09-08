@@ -2,130 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 746EAACB89
-	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 10:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A404ACBB3
+	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 10:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbfIHIUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 04:20:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43342 "EHLO mx1.redhat.com"
+        id S1727662AbfIHIy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 04:54:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34380 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbfIHIUt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Sep 2019 04:20:49 -0400
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 907B17E42F
-        for <netdev@vger.kernel.org>; Sun,  8 Sep 2019 08:20:48 +0000 (UTC)
-Received: by mail-ed1-f72.google.com with SMTP id 34so6235276edf.0
-        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 01:20:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tDUlvgh3TJNH+HOn7EG167U749zEBUbsuQdh4Cjmd8A=;
-        b=sTYDvJ8B3UoDLyWLaNnES3yPa5/1LV9DTcwe7Vy9wfJ3GbUNMzR8LGRFi0XTsGcSic
-         rtZx0fMyr+OBLt7YLialglXX0m7ZQReQqJwByC1XOO1eJqoz+ZgFt7ssjGGs08lnaITG
-         SxobL+9jr7ylrdeF5GcjazfhobbsI39kC8fqwMMRRk/OfP3R9TwunL3Pc428JDcUEV2h
-         wRHV3rtGiBsXe+cu/NCXpssm8lYoR/lJD6hRY7gSCOM81uOJafF2acEY1iolwh4so6Bl
-         pi2LdA0vIIMv8nYUFh8QbdKBWeG7CUShynS2yAKpb/6Z1i6NMriliGEOXZneOhIz8ijS
-         b7sQ==
-X-Gm-Message-State: APjAAAX1xOnGGHbXt8d9xiGhUMMx75tvSamQ5m5om64Ra0QqgR/CN8qg
-        p8GbpQ0lXUocpkSXa2nbyRVm8YifzHyZEHhmpueK5KrybpD2ZnToDl9ge3og0wOoaeYAqaBdgAg
-        ROpyhhPgl5/Gfu84e
-X-Received: by 2002:aa7:da18:: with SMTP id r24mr18610332eds.37.1567930847320;
-        Sun, 08 Sep 2019 01:20:47 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyUine6UkF8vYruWsm1TkYCnL+NgjVhuiXx0uWhrtbmqhr23a4HHNDbcMc+Zio0U1jaFUENZQ==
-X-Received: by 2002:aa7:da18:: with SMTP id r24mr18610313eds.37.1567930847128;
-        Sun, 08 Sep 2019 01:20:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id t21sm1364896ejs.37.2019.09.08.01.20.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Sep 2019 01:20:46 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0F739180615; Sun,  8 Sep 2019 09:20:44 +0100 (WEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     make-wifi-fast@lists.bufferbloat.net,
-        linux-wireless@vger.kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
-Subject: [PATCH bpf-next] xdp: Fix race in dev_map_hash_update_elem() when replacing element
-Date:   Sun,  8 Sep 2019 09:20:16 +0100
-Message-Id: <20190908082016.17214-1-toke@redhat.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <0000000000005091a70591d3e1d9@google.com>
-References: <0000000000005091a70591d3e1d9@google.com>
+        id S1727312AbfIHIy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Sep 2019 04:54:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8MiUPlhtzPdP7++tuRHoQSctPszJcQsc3WCeGa9AaEU=; b=d03zQhpQmDFSPjhUb2/9/79IQP
+        UYf8/RWDS4BF53TskUruVNUrJQ27U0ubN9PbDZGBquczqaTeP+iGsyL5DnQQFukDuQRprkclUjY9Y
+        oghrO6sJDBRCotthUA2CE5puTJ+F5uT8hiPwhbX7SKOap3UllAKoure5V2NIj1UFBY4E=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i6sxd-0007SP-74; Sun, 08 Sep 2019 10:54:17 +0200
+Date:   Sun, 8 Sep 2019 10:54:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Trent Piepho <tpiepho@impinj.com>
+Subject: Re: [PATCH 1/2] net: phy: dp83867: Add documentation for SGMII mode
+ type
+Message-ID: <20190908085417.GA28580@lunn.ch>
+References: <20190907153919.GC21922@lunn.ch>
+ <1567700761-14195-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+ <1567700761-14195-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
+ <2894361567896439@iva5-be053096037b.qloud-c.yandex.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <2894361567896439@iva5-be053096037b.qloud-c.yandex.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found a crash in dev_map_hash_update_elem(), when replacing an
-element with a new one. Jesper correctly identified the cause of the crash
-as a race condition between the initial lookup in the map (which is done
-before taking the lock), and the removal of the old element.
+On Sun, Sep 08, 2019 at 01:47:19AM +0300, Vitaly Gaiduk wrote:
+> Hi, Andrew.<div>I=E2=80=99m ready to do this property with such name but =
+is it good practice to do such long names? :)</div><div>Also, Trent Piepho =
+wrote about sgmii-clk and merged all ideas we have =E2=80=9Cti,sgmii-ref-cl=
+k=E2=80=9D.</div><div>It=E2=80=99s better, isn=E2=80=99t it?</div><div>Vita=
+ly.</div><div><div><br />07.09.2019, 18:39, "Andrew Lunn" &lt;andrew@lunn.c=
+h&gt;:<br /><blockquote><p>On Thu, Sep 05, 2019 at 07:26:00PM +0300, Vitaly=
+ Gaiduk wrote:<br /></p><blockquote class=3D"b4fd5cf2ec92bc68cb898700bb8135=
+5fwmi-quote">=C2=A0Add documentation of ti,sgmii-type which can be used to =
+select<br />=C2=A0SGMII mode type (4 or 6-wire).<br /><br />=C2=A0Signed-of=
+f-by: Vitaly Gaiduk &lt;<a href=3D"mailto:vitaly.gaiduk@cloudbear.ru">vital=
+y.gaiduk@cloudbear.ru</a>&gt;<br />=C2=A0---<br />=C2=A0=C2=A0Documentation=
+/devicetree/bindings/net/ti,dp83867.txt | 1 +<br />=C2=A0=C2=A01 file chang=
+ed, 1 insertion(+)<br /><br />=C2=A0diff --git a/Documentation/devicetree/b=
+indings/net/ti,dp83867.txt b/Documentation/devicetree/bindings/net/ti,dp838=
+67.txt<br />=C2=A0index db6aa3f2215b..18e7fd52897f 100644<br />=C2=A0--- a/=
+Documentation/devicetree/bindings/net/ti,dp83867.txt<br />=C2=A0+++ b/Docum=
+entation/devicetree/bindings/net/ti,dp83867.txt<br />=C2=A0@@ -37,6 +37,7 @=
+@ Optional property:<br />=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0for ap=
+plicable values.  The CLK_OUT pin can also<br />=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0be disabled by this property.  When omitted, the<br />=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0PHY's default will be left as is.<br />=
+=C2=A0+	- ti,sgmii-type - This denotes the fact which SGMII mode is used (4=
+ or 6-wire).<br /></blockquote><p><br />Hi Vitaly<br /><br />You probably w=
+ant to make this a Boolean. I don't think SGMII type is<br />a good idea. T=
+his is about enabling the receive clock to be passed to<br />the MAC. So ho=
+w about ti,sgmii-ref-clock-output-enable.<br /><br />=C2=A0=C2=A0=C2=A0=C2=
+=A0Andrew<br /></p></blockquote></div></div>
 
-Rather than just add a second lookup into the hashmap after taking the
-lock, fix this by reworking the function logic to take the lock before the
-initial lookup.
+Hi Vitaly
 
-Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
-Reported-and-tested-by: syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- kernel/bpf/devmap.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+Please reconfigure your mail client to not obfuscate with HTML.
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 9af048a932b5..d27f3b60ff6d 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -650,19 +650,22 @@ static int __dev_map_hash_update_elem(struct net *net, struct bpf_map *map,
- 	u32 ifindex = *(u32 *)value;
- 	u32 idx = *(u32 *)key;
- 	unsigned long flags;
-+	int err = -EEXIST;
- 
- 	if (unlikely(map_flags > BPF_EXIST || !ifindex))
- 		return -EINVAL;
- 
-+	spin_lock_irqsave(&dtab->index_lock, flags);
-+
- 	old_dev = __dev_map_hash_lookup_elem(map, idx);
- 	if (old_dev && (map_flags & BPF_NOEXIST))
--		return -EEXIST;
-+		goto out_err;
- 
- 	dev = __dev_map_alloc_node(net, dtab, ifindex, idx);
--	if (IS_ERR(dev))
--		return PTR_ERR(dev);
--
--	spin_lock_irqsave(&dtab->index_lock, flags);
-+	if (IS_ERR(dev)) {
-+		err = PTR_ERR(dev);
-+		goto out_err;
-+	}
- 
- 	if (old_dev) {
- 		hlist_del_rcu(&old_dev->index_hlist);
-@@ -683,6 +686,10 @@ static int __dev_map_hash_update_elem(struct net *net, struct bpf_map *map,
- 		call_rcu(&old_dev->rcu, __dev_map_entry_free);
- 
- 	return 0;
-+
-+out_err:
-+	spin_unlock_irqrestore(&dtab->index_lock, flags);
-+	return err;
- }
- 
- static int dev_map_hash_update_elem(struct bpf_map *map, void *key, void *value,
--- 
-2.23.0
+The length should be O.K. For a PHY node, it should not be too deeply
+indented, unless it happens to be part of an Ethernet switch.
 
+	  Andrew
