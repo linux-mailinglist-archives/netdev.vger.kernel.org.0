@@ -2,98 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD63AD0A0
-	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 22:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B79DAD0A1
+	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 22:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729263AbfIHUlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 16:41:15 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34870 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfIHUlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 16:41:15 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 205so7866794pfw.2
-        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 13:41:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4k6lBtMvpk5x4muUJCMEb/n4xMYmGxAkfxZ8Np8rDFI=;
-        b=ZwSTXW9eXG6CTAjAlD7xBR97VC+VnVxQh5uN9kKPE/eQkKbnMv4AeyTLJsYPOaYBlO
-         tIcOPqi38/JDYXp9wBrJt98GwXNxvC7YA8rUAv5ONRlDlleVnjlo5uOf3QDuYKXyRSEW
-         Mup6GBGpkQWxXJL09j5VLK3pk4x8EDDQ1lj1fvBLA7jI2lbcp8dkrMFV2325CG4fwY+Y
-         09DuaqlOuG4I0emV5qFe1bIgV4hh4xmFQ5uKEMnz/zceM0KBvi6BcOiyMQjcw7zzVZKu
-         XMfzR1JOUxwkmdpl4l6U9hvTBHPecFnXDZN4V//T4/Thf9X/6m4ZizpuFycraFvJmBSZ
-         v2mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4k6lBtMvpk5x4muUJCMEb/n4xMYmGxAkfxZ8Np8rDFI=;
-        b=nygT7c/kUMA7wfpr/vbJ3ljHyxuVNj5/XFo5LcnwXXxosr/7W7gK6Q6eOdEGGINXIG
-         e9+6WhXMixBWJTihHgWsVJfsPnz1hGrlY7PECDBHMXAApTIa40IGWQkESuV40DYbS6Ct
-         jQQKkiaD8YPFJUx6DdpiQStZZvlxc9cabF5GrusYqJ+fLCB0LFt9ITZ1y3G2m2L6jTsM
-         qAk3d3b1aC5vF7s8SrEgvUzuq/87Ds8s61R/5ebkJKk6YSmJXwyq1JNx8Pn4PvkdTMog
-         7tjIxPBIo2rSB8ZeRcg1xK7yZg7+q6oVJK7WqjQ8mBLFUqr51F9Fg8hmsmMQuof2oRfb
-         4nbA==
-X-Gm-Message-State: APjAAAVyo7qO4RfPGxtiYgjWqExRDtGlJi+Da3d1Ivee6F8lFMRJ7bzs
-        Sru8ShDWp3kdiBoSYAG+4DL2SQOk
-X-Google-Smtp-Source: APXvYqz9GUp22eZizXvRrjp7j45lGgYaXskjQJq0wO9vfEYIc55teiK/1BGuS68TOkqH8m9FE58l/Q==
-X-Received: by 2002:a65:60d2:: with SMTP id r18mr17966475pgv.71.1567975274189;
-        Sun, 08 Sep 2019 13:41:14 -0700 (PDT)
-Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
-        by smtp.gmail.com with ESMTPSA id d10sm14246281pfh.8.2019.09.08.13.41.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Sep 2019 13:41:13 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+bc6297c11f19ee807dc2@syzkaller.appspotmail.com,
-        syzbot+041483004a7f45f1f20a@syzkaller.appspotmail.com,
-        syzbot+55be5f513bed37fc4367@syzkaller.appspotmail.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, Terry Lam <vtlam@google.com>
-Subject: [Patch net] sch_hhf: ensure quantum and hhf_non_hh_weight are non-zero
-Date:   Sun,  8 Sep 2019 13:40:51 -0700
-Message-Id: <20190908204051.760-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        id S1729732AbfIHUmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 16:42:54 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34794 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729697AbfIHUmy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Sep 2019 16:42:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=QwXDVTAzTIEmbO6mkRqj9yinliGr7+s9z9v4Dam4EXQ=; b=XJ6NPqszO/x2cjMB+vINoqXTF3
+        rRX0VYHp1xP4w1nJmp7+LMuDXIVp/Ly03njSNQG29lCn4NQ8X6P1nv/fua33DOiBSDHlslW4c0ClC
+        lvuK8q1yJAE//jjtTOqtxLw+KBemRGjw/NbqmJe7Iua9XgBRGM8ITWaUzpiWGAADbZ5g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i740u-0001Ac-CM; Sun, 08 Sep 2019 22:42:24 +0200
+Date:   Sun, 8 Sep 2019 22:42:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, vinicius.gomes@intel.com,
+        vedang.patel@intel.com, richardcochran@gmail.com,
+        weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        kurt.kanzenbach@linutronix.de, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 net-next 00/15] tc-taprio offload for SJA1105 DSA
+Message-ID: <20190908204224.GA2730@lunn.ch>
+References: <20190902162544.24613-1-olteanv@gmail.com>
+ <20190906.145403.657322945046640538.davem@davemloft.net>
+ <20190907144548.GA21922@lunn.ch>
+ <CA+h21hqLF1gE+aDH9xQPadCuo6ih=xWY73JZvg7c58C1tC+0Jg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hqLF1gE+aDH9xQPadCuo6ih=xWY73JZvg7c58C1tC+0Jg@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of TCA_HHF_NON_HH_WEIGHT or TCA_HHF_QUANTUM is zero,
-it would make no progress inside the loop in hhf_dequeue() thus
-kernel would get stuck.
+On Sun, Sep 08, 2019 at 12:07:27PM +0100, Vladimir Oltean wrote:
+> I think Richard has been there when the taprio, etf qdiscs, SO_TXTIME
+> were first defined and developed:
+> https://patchwork.ozlabs.org/cover/808504/
+> I expect he is capable of delivering a competent review of the entire
+> series, possibly way more competent than my patch set itself.
+> 
+> The reason why I'm not splitting it up is because I lose around 10 ns
+> of synchronization offset when using the hardware-corrected PTPCLKVAL
+> clock for timestamping rather than the PTPTSCLK free-running counter.
 
-Fix this by checking this corner case in hhf_change().
+Hi Vladimir
 
-Fixes: 10239edf86f1 ("net-qdisc-hhf: Heavy-Hitter Filter (HHF) qdisc")
-Reported-by: syzbot+bc6297c11f19ee807dc2@syzkaller.appspotmail.com
-Reported-by: syzbot+041483004a7f45f1f20a@syzkaller.appspotmail.com
-Reported-by: syzbot+55be5f513bed37fc4367@syzkaller.appspotmail.com
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: Terry Lam <vtlam@google.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
----
- net/sched/sch_hhf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm not suggesting anything is wrong with your concept, when i say
+split it up. It is more than when somebody sees 15 patches, they
+decide they don't have the time at the moment, and put it off until
+later. And often later never happens. If however they see a smaller
+number of patches, they think that yes they have time now, and do the
+review.
 
-diff --git a/net/sched/sch_hhf.c b/net/sched/sch_hhf.c
-index cee6971c1c82..23cd1c873a2c 100644
---- a/net/sched/sch_hhf.c
-+++ b/net/sched/sch_hhf.c
-@@ -531,7 +531,7 @@ static int hhf_change(struct Qdisc *sch, struct nlattr *opt,
- 		new_hhf_non_hh_weight = nla_get_u32(tb[TCA_HHF_NON_HH_WEIGHT]);
- 
- 	non_hh_quantum = (u64)new_quantum * new_hhf_non_hh_weight;
--	if (non_hh_quantum > INT_MAX)
-+	if (non_hh_quantum == 0 || non_hh_quantum > INT_MAX)
- 		return -EINVAL;
- 
- 	sch_tree_lock(sch);
--- 
-2.21.0
+So if you are struggling to get something reviewed, make it more
+appealing for the reviewer. Salami tactics.
 
+    Andrew
