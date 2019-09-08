@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4432AD14B
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 01:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C16DFAD14C
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 01:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731624AbfIHXzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 19:55:04 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38137 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731595AbfIHXzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 19:55:02 -0400
-Received: by mail-qt1-f196.google.com with SMTP id b2so14136068qtq.5
-        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 16:55:01 -0700 (PDT)
+        id S1731644AbfIHXzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 19:55:05 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34519 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731610AbfIHXzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 19:55:04 -0400
+Received: by mail-qk1-f193.google.com with SMTP id q203so11376634qke.1
+        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 16:55:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=RZIDR3GQuJKZgF9/25aiSHfmiLcbtzo4S66qz4lxX18=;
-        b=ZqMF6x+1Hb9gAYBhHcoWAlsUPZLbVJ/FiwoGx5wYPKanqCg3mATmgCB9FBoXwSbP3a
-         Yut8DD4WuEq3utZ+vR5FEgiL0N7eDeyE2Gpl/wpp7ERjrVDBKPzdnhcWHER7igAvVtCh
-         pPlXjd+7ZhWWaueAtsJQy5QSZgmJa46FH6cJr5+KfxRBBB4T/cMxMTrmxhfgXTIxxHa2
-         Dv2BK92pN8EegmI7G8hcZURVuBCnrmijVpca5qE2dcZjtsD7Yh7RR8sK0LROlfZS94/i
-         aiiJpuy4ksLAQQM7umydFSC7FJin3XThNrbKrc8cZRqRJKMwFr1uz3kcwVhK0BX26imE
-         R9wg==
+        bh=/x8fezSSUhC/hAIW4Lx/qChUcik2wbuWNo0PZEZhMV4=;
+        b=kkHyCbMXPbuK3vmy5/uUDACgVvCNaAxKzGt11bTUtp5jYyfaOkhVjzrDoM2cL707SZ
+         zRPFNB/eSDDpYskGgaiWGRy1D8IojwESO8x3bNyRP/0dcsEs63qzDn+Omq4KJ4RFHsEE
+         DZku1FSZkygr1B43GJksEKwCM5s0cT2cvycXOF14MglOqdNBplvuWFOILTUlc5vPzw1o
+         j8qQAslZoS9A5K6+zU/JPSYMQLvOqnYxs3mElRxf8/0VrKnvRo/00GWgmBLRRr8YL4cW
+         oQNfXhqEuOlrPRSZ0pIzvUGw/+kbCfoVzgoW2aGt3zz8YohD1fnYgFOdHor9gLs7XJ0M
+         OgYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=RZIDR3GQuJKZgF9/25aiSHfmiLcbtzo4S66qz4lxX18=;
-        b=mDto83pjFdcnYVYCsOHZ1nLakrsMKlMX/k9qUg5j/1RZWeDUT9qBRRcl0IcX27m36X
-         xHCX5SRkxPxQ7pOtdEySH7QzTbMxWc47c4F65BmArBSGJqWxPA1gaBDREdIZDAq0BPFz
-         UaVQVR6tGHuGIX6P2MC/PTnxcf6C4u7FzdQASQPYoWWNcrANsBlQmucdGRZ9mXsQJsqv
-         89ede6bqFXEL92tgOt5hGbFTcYlQC3h03mReOJIhb7kp3qNUctYrQ97Xf36dwpAzOzrY
-         RFLjw5eL1nAU7VSKitPITreSSC1AkhHkpl/dAyXXp+CoaKxVePRkIriqpL5weheio2fn
-         p7cA==
-X-Gm-Message-State: APjAAAWWVMuuhEnqMybtHNmAswa0IyTcEi8LQyacwKlqW0ggySYQsewA
-        PVSKCVhD4wRB5i0SrS58IZh2pw==
-X-Google-Smtp-Source: APXvYqzFHZXp8hc2+YXpr4ft97gaYswBF+SKbccLc2G8ICPmz5LfFzLqYJPId+ql1iq6idinEc/9bA==
-X-Received: by 2002:ac8:748c:: with SMTP id v12mr20917049qtq.23.1567986900861;
-        Sun, 08 Sep 2019 16:55:00 -0700 (PDT)
+        bh=/x8fezSSUhC/hAIW4Lx/qChUcik2wbuWNo0PZEZhMV4=;
+        b=H2PlOwtv/mdkx6XLIJlSNSq1OU5v6ByJe1sWNwLhwQ1UFxENsWkovqdngbIfIOHDT1
+         BMQLu+Xz0zVzU963O8UmBiji5PHJUeqpV7cubreid8Sfwqt+moE7kxKgFEoHomhQgUDW
+         E35xDLwjMldU/dj7BjONt68zIqKv+n1FDldQMKwDPL7fVuYOcK1LCTThvMelPqD3X+dx
+         0zaHpmw4gbXVMOdzaMQblQI9jEKOQuja+6/+c4CZmcoTENr6ax0B2pPCbsCOMgqJRRPd
+         3ZGfisdhjMQTyazbz7pcovna657Rm2UbY+dxvi34GMDQ2gRjVIYRLJYns9z1p8D+11wd
+         fwjQ==
+X-Gm-Message-State: APjAAAWlmXzPV52f0aoCJOvfQ06vtqXMEXqwCQb/5j/pj6D5GFICI1I6
+        sVGymIJGgqniYnt1Y010Z/paBEdMI83fCA==
+X-Google-Smtp-Source: APXvYqwbnKYmabeipR8rVFjfDdx4tnVzSk24/9kYIOJjqJFf+I3+4ctuYZggkyJqK7SlFjR2K71oKg==
+X-Received: by 2002:a37:6358:: with SMTP id x85mr21556571qkb.229.1567986902689;
+        Sun, 08 Sep 2019 16:55:02 -0700 (PDT)
 Received: from penelope.pa.netronome.com (195-23-252-147.net.novis.pt. [195.23.252.147])
-        by smtp.gmail.com with ESMTPSA id p27sm5464406qkm.92.2019.09.08.16.54.59
+        by smtp.gmail.com with ESMTPSA id p27sm5464406qkm.92.2019.09.08.16.55.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 08 Sep 2019 16:55:00 -0700 (PDT)
+        Sun, 08 Sep 2019 16:55:02 -0700 (PDT)
 From:   Simon Horman <simon.horman@netronome.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         netdev@vger.kernel.org, oss-drivers@netronome.com,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net-next v2 06/11] nfp: honor FW reset and loading policies
-Date:   Mon,  9 Sep 2019 00:54:22 +0100
-Message-Id: <20190908235427.9757-7-simon.horman@netronome.com>
+Subject: [PATCH net-next v2 07/11] nfp: add devlink param infrastructure
+Date:   Mon,  9 Sep 2019 00:54:23 +0100
+Message-Id: <20190908235427.9757-8-simon.horman@netronome.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190908235427.9757-1-simon.horman@netronome.com>
 References: <20190908235427.9757-1-simon.horman@netronome.com>
@@ -62,280 +62,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 
-The firmware reset and loading policies can be controlled with the
-combination of three hwinfo keys, 'abi_drv_reset', 'abi_drv_load_ifc'
-and 'app_fw_from_flash'.
+Register devlink parameters for driver use. Subsequent patches will add
+support for specific parameters.
 
-'app_fw_from_flash' defines which firmware should take precedence,
-'Disk', 'Flash' or the 'Preferred' firmware. When 'Preferred'
-is selected, the management firmware makes the decision on which
-firmware will be loaded by comparing versions of the flash firmware
-and the host supplied firmware.
-
-'abi_drv_reset' defines when the driver should reset the firmware when
-the driver is probed, either 'Disk' if firmware was found on disk,
-'Always' reset or 'Never' reset. Note that the device is always reset
-on driver unload if firmware was loaded when the driver was probed.
-
-'abi_drv_load_ifc' defines a list of PF devices allowed to load FW on
-the device.
-
-Furthermore, we limit the cases to where the driver will unload firmware
-again when the driver is removed to only when firmware was loaded by the
-driver and only if this particular device was the only one that could
-have loaded firmware. This is needed to avoid firmware being removed
-while in use on multi-host platforms.
+In order to support devlink parameters, the management firmware needs to
+be able to lookup and set hwinfo keys.
 
 Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Simon Horman <simon.horman@netronome.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_main.c      | 140 +++++++++++++++++----
- drivers/net/ethernet/netronome/nfp/nfp_main.h      |   2 +
- .../net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h   |  15 +++
- 3 files changed, 132 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/netronome/nfp/Makefile        |  1 +
+ drivers/net/ethernet/netronome/nfp/devlink_param.c | 60 ++++++++++++++++++++++
+ drivers/net/ethernet/netronome/nfp/nfp_main.h      |  3 ++
+ drivers/net/ethernet/netronome/nfp/nfp_net_main.c  |  7 +++
+ 4 files changed, 71 insertions(+)
+ create mode 100644 drivers/net/ethernet/netronome/nfp/devlink_param.c
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-index 81679647e842..969850f8fe51 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-@@ -352,7 +352,7 @@ nfp_net_fw_request(struct pci_dev *pdev, struct nfp_pf *pf, const char *name)
- 
- 	err = request_firmware_direct(&fw, name, &pdev->dev);
- 	nfp_info(pf->cpp, "  %s: %s\n",
--		 name, err ? "not found" : "found, loading...");
-+		 name, err ? "not found" : "found");
- 	if (err)
- 		return NULL;
- 
-@@ -430,6 +430,33 @@ nfp_net_fw_find(struct pci_dev *pdev, struct nfp_pf *pf)
- 	return nfp_net_fw_request(pdev, pf, fw_name);
- }
- 
-+static int
-+nfp_get_fw_policy_value(struct pci_dev *pdev, struct nfp_nsp *nsp,
-+			const char *key, const char *default_val, int max_val,
-+			int *value)
+diff --git a/drivers/net/ethernet/netronome/nfp/Makefile b/drivers/net/ethernet/netronome/nfp/Makefile
+index 2805641965f3..d31772ae511d 100644
+--- a/drivers/net/ethernet/netronome/nfp/Makefile
++++ b/drivers/net/ethernet/netronome/nfp/Makefile
+@@ -17,6 +17,7 @@ nfp-objs := \
+ 	    nfpcore/nfp_target.o \
+ 	    ccm.o \
+ 	    ccm_mbox.o \
++	    devlink_param.o \
+ 	    nfp_asm.o \
+ 	    nfp_app.o \
+ 	    nfp_app_nic.o \
+diff --git a/drivers/net/ethernet/netronome/nfp/devlink_param.c b/drivers/net/ethernet/netronome/nfp/devlink_param.c
+new file mode 100644
+index 000000000000..aece98586e32
+--- /dev/null
++++ b/drivers/net/ethernet/netronome/nfp/devlink_param.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/* Copyright (C) 2019 Netronome Systems, Inc. */
++
++#include <net/devlink.h>
++
++#include "nfpcore/nfp_nsp.h"
++#include "nfp_main.h"
++
++static const struct devlink_param nfp_devlink_params[] = {
++};
++
++static int nfp_devlink_supports_params(struct nfp_pf *pf)
 +{
-+	char hwinfo[64];
-+	long hi_val;
++	struct nfp_nsp *nsp;
++	bool supported;
 +	int err;
 +
-+	snprintf(hwinfo, sizeof(hwinfo), key);
-+	err = nfp_nsp_hwinfo_lookup_optional(nsp, hwinfo, sizeof(hwinfo),
-+					     default_val);
-+	if (err)
++	nsp = nfp_nsp_open(pf->cpp);
++	if (IS_ERR(nsp)) {
++		err = PTR_ERR(nsp);
++		dev_err(&pf->pdev->dev, "Failed to access the NSP: %d\n", err);
 +		return err;
-+
-+	err = kstrtol(hwinfo, 0, &hi_val);
-+	if (err || hi_val < 0 || hi_val > max_val) {
-+		dev_warn(&pdev->dev,
-+			 "Invalid value '%s' from '%s', ignoring\n",
-+			 hwinfo, key);
-+		err = kstrtol(default_val, 0, &hi_val);
 +	}
 +
-+	*value = hi_val;
-+	return err;
++	supported = nfp_nsp_has_hwinfo_lookup(nsp) &&
++		    nfp_nsp_has_hwinfo_set(nsp);
++
++	nfp_nsp_close(nsp);
++	return supported;
 +}
 +
- /**
-  * nfp_net_fw_load() - Load the firmware image
-  * @pdev:       PCI Device structure
-@@ -441,44 +468,107 @@ nfp_net_fw_find(struct pci_dev *pdev, struct nfp_pf *pf)
- static int
- nfp_fw_load(struct pci_dev *pdev, struct nfp_pf *pf, struct nfp_nsp *nsp)
- {
--	const struct firmware *fw;
-+	bool do_reset, fw_loaded = false;
-+	const struct firmware *fw = NULL;
-+	int err, reset, policy, ifcs = 0;
-+	char *token, *ptr;
-+	char hwinfo[64];
- 	u16 interface;
--	int err;
++int nfp_devlink_params_register(struct nfp_pf *pf)
++{
++	struct devlink *devlink = priv_to_devlink(pf);
++	int err;
 +
-+	snprintf(hwinfo, sizeof(hwinfo), "abi_drv_load_ifc");
-+	err = nfp_nsp_hwinfo_lookup_optional(nsp, hwinfo, sizeof(hwinfo),
-+					     NFP_NSP_DRV_LOAD_IFC_DEFAULT);
-+	if (err)
++	err = nfp_devlink_supports_params(pf);
++	if (err <= 0)
 +		return err;
- 
- 	interface = nfp_cpp_interface(pf->cpp);
--	if (NFP_CPP_INTERFACE_UNIT_of(interface) != 0) {
--		/* Only Unit 0 should reset or load firmware */
-+	ptr = hwinfo;
-+	while ((token = strsep(&ptr, ","))) {
-+		unsigned long interface_hi;
 +
-+		err = kstrtoul(token, 0, &interface_hi);
-+		if (err) {
-+			dev_err(&pdev->dev,
-+				"Failed to parse interface '%s': %d\n",
-+				token, err);
-+			return err;
-+		}
-+
-+		ifcs++;
-+		if (interface == interface_hi)
-+			break;
-+	}
-+
-+	if (!token) {
- 		dev_info(&pdev->dev, "Firmware will be loaded by partner\n");
- 		return 0;
- 	}
- 
-+	err = nfp_get_fw_policy_value(pdev, nsp, "abi_drv_reset",
-+				      NFP_NSP_DRV_RESET_DEFAULT,
-+				      NFP_NSP_DRV_RESET_NEVER, &reset);
++	err = devlink_params_register(devlink, nfp_devlink_params,
++				      ARRAY_SIZE(nfp_devlink_params));
 +	if (err)
 +		return err;
 +
-+	err = nfp_get_fw_policy_value(pdev, nsp, "app_fw_from_flash",
-+				      NFP_NSP_APP_FW_LOAD_DEFAULT,
-+				      NFP_NSP_APP_FW_LOAD_PREF, &policy);
-+	if (err)
-+		return err;
++	devlink_params_publish(devlink);
++	return 0;
++}
 +
- 	fw = nfp_net_fw_find(pdev, pf);
--	if (!fw) {
--		if (nfp_nsp_has_stored_fw_load(nsp))
--			nfp_nsp_load_stored_fw(nsp);
--		return 0;
-+	do_reset = reset == NFP_NSP_DRV_RESET_ALWAYS ||
-+		   (fw && reset == NFP_NSP_DRV_RESET_DISK);
++void nfp_devlink_params_unregister(struct nfp_pf *pf)
++{
++	int err;
 +
-+	if (do_reset) {
-+		dev_info(&pdev->dev, "Soft-resetting the NFP\n");
-+		err = nfp_nsp_device_soft_reset(nsp);
-+		if (err < 0) {
-+			dev_err(&pdev->dev,
-+				"Failed to soft reset the NFP: %d\n", err);
-+			goto exit_release_fw;
-+		}
- 	}
- 
--	dev_info(&pdev->dev, "Soft-reset, loading FW image\n");
--	err = nfp_nsp_device_soft_reset(nsp);
--	if (err < 0) {
--		dev_err(&pdev->dev, "Failed to soft reset the NFP: %d\n",
--			err);
--		goto exit_release_fw;
--	}
-+	if (fw && policy != NFP_NSP_APP_FW_LOAD_FLASH) {
-+		if (nfp_nsp_has_fw_loaded(nsp) && nfp_nsp_fw_loaded(nsp))
-+			goto exit_release_fw;
- 
--	err = nfp_nsp_load_fw(nsp, fw);
--	if (err < 0) {
--		dev_err(&pdev->dev, "FW loading failed: %d\n", err);
--		goto exit_release_fw;
-+		err = nfp_nsp_load_fw(nsp, fw);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "FW loading failed: %d\n",
-+				err);
-+			goto exit_release_fw;
-+		}
-+		dev_info(&pdev->dev, "Finished loading FW image\n");
-+		fw_loaded = true;
-+	} else if (policy != NFP_NSP_APP_FW_LOAD_DISK &&
-+		   nfp_nsp_has_stored_fw_load(nsp)) {
++	err = nfp_devlink_supports_params(pf);
++	if (err <= 0)
++		return;
 +
-+		/* Don't propagate this error to stick with legacy driver
-+		 * behavior, failure will be detected later during init.
-+		 */
-+		if (!nfp_nsp_load_stored_fw(nsp))
-+			dev_info(&pdev->dev, "Finished loading stored FW image\n");
-+
-+		/* Don't flag the fw_loaded in this case since other devices
-+		 * may reuse the firmware when configured this way
-+		 */
-+	} else {
-+		dev_warn(&pdev->dev, "Didn't load firmware, please update flash or reconfigure card\n");
- 	}
- 
--	dev_info(&pdev->dev, "Finished loading FW image\n");
--
- exit_release_fw:
- 	release_firmware(fw);
- 
--	return err < 0 ? err : 1;
-+	/* We don't want to unload firmware when other devices may still be
-+	 * dependent on it, which could be the case if there are multiple
-+	 * devices that could load firmware.
-+	 */
-+	if (fw_loaded && ifcs == 1)
-+		pf->unload_fw_on_remove = true;
-+
-+	return err < 0 ? err : fw_loaded;
- }
- 
- static void
-@@ -704,7 +794,7 @@ static int nfp_pci_probe(struct pci_dev *pdev,
- err_fw_unload:
- 	kfree(pf->rtbl);
- 	nfp_mip_close(pf->mip);
--	if (pf->fw_loaded)
-+	if (pf->unload_fw_on_remove)
- 		nfp_fw_unload(pf);
- 	kfree(pf->eth_tbl);
- 	kfree(pf->nspi);
-@@ -744,7 +834,7 @@ static void __nfp_pci_shutdown(struct pci_dev *pdev, bool unload_fw)
- 	vfree(pf->dumpspec);
- 	kfree(pf->rtbl);
- 	nfp_mip_close(pf->mip);
--	if (unload_fw && pf->fw_loaded)
-+	if (unload_fw && pf->unload_fw_on_remove)
- 		nfp_fw_unload(pf);
- 
- 	destroy_workqueue(pf->wq);
++	devlink_params_unregister(priv_to_devlink(pf), nfp_devlink_params,
++				  ARRAY_SIZE(nfp_devlink_params));
++}
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.h b/drivers/net/ethernet/netronome/nfp/nfp_main.h
-index b7211f200d22..bd6450b0f23f 100644
+index bd6450b0f23f..5d5812fd9317 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_main.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_main.h
-@@ -64,6 +64,7 @@ struct nfp_dumpspec {
-  * @limit_vfs:		Number of VFs supported by firmware (~0 for PCI limit)
-  * @num_vfs:		Number of SR-IOV VFs enabled
-  * @fw_loaded:		Is the firmware loaded?
-+ * @unload_fw_on_remove:Do we need to unload firmware on driver removal?
-  * @ctrl_vnic:		Pointer to the control vNIC if available
-  * @mip:		MIP handle
-  * @rtbl:		RTsym table
-@@ -110,6 +111,7 @@ struct nfp_pf {
- 	unsigned int num_vfs;
- 
- 	bool fw_loaded;
-+	bool unload_fw_on_remove;
- 
- 	struct nfp_net *ctrl_vnic;
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-index 055fda05880d..1531c1870020 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-@@ -102,6 +102,21 @@ enum nfp_eth_fec {
- #define NFP_FEC_REED_SOLOMON	BIT(NFP_FEC_REED_SOLOMON_BIT)
- #define NFP_FEC_DISABLED	BIT(NFP_FEC_DISABLED_BIT)
- 
-+/* Defines the valid values of the 'abi_drv_reset' hwinfo key */
-+#define NFP_NSP_DRV_RESET_DISK			0
-+#define NFP_NSP_DRV_RESET_ALWAYS		1
-+#define NFP_NSP_DRV_RESET_NEVER			2
-+#define NFP_NSP_DRV_RESET_DEFAULT		"0"
+@@ -187,4 +187,7 @@ int nfp_shared_buf_pool_get(struct nfp_pf *pf, unsigned int sb, u16 pool_index,
+ int nfp_shared_buf_pool_set(struct nfp_pf *pf, unsigned int sb,
+ 			    u16 pool_index, u32 size,
+ 			    enum devlink_sb_threshold_type threshold_type);
 +
-+/* Defines the valid values of the 'app_fw_from_flash' hwinfo key */
-+#define NFP_NSP_APP_FW_LOAD_DISK		0
-+#define NFP_NSP_APP_FW_LOAD_FLASH		1
-+#define NFP_NSP_APP_FW_LOAD_PREF		2
-+#define NFP_NSP_APP_FW_LOAD_DEFAULT		"2"
++int nfp_devlink_params_register(struct nfp_pf *pf);
++void nfp_devlink_params_unregister(struct nfp_pf *pf);
+ #endif /* NFP_MAIN_H */
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+index 986464d4a206..47addac104fe 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+@@ -711,6 +711,10 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ 	if (err)
+ 		goto err_devlink_unreg;
+ 
++	err = nfp_devlink_params_register(pf);
++	if (err)
++		goto err_shared_buf_unreg;
 +
-+/* Define the default value for the 'abi_drv_load_ifc' key */
-+#define NFP_NSP_DRV_LOAD_IFC_DEFAULT		"0x10ff"
-+
- /**
-  * struct nfp_eth_table - ETH table information
-  * @count:	number of table entries
+ 	mutex_lock(&pf->lock);
+ 	pf->ddir = nfp_net_debugfs_device_add(pf->pdev);
+ 
+@@ -744,6 +748,8 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ err_clean_ddir:
+ 	nfp_net_debugfs_dir_clean(&pf->ddir);
+ 	mutex_unlock(&pf->lock);
++	nfp_devlink_params_unregister(pf);
++err_shared_buf_unreg:
+ 	nfp_shared_buf_unregister(pf);
+ err_devlink_unreg:
+ 	cancel_work_sync(&pf->port_refresh_work);
+@@ -773,6 +779,7 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
+ 
+ 	mutex_unlock(&pf->lock);
+ 
++	nfp_devlink_params_unregister(pf);
+ 	nfp_shared_buf_unregister(pf);
+ 	devlink_unregister(priv_to_devlink(pf));
+ 
 -- 
 2.11.0
 
