@@ -2,179 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65042ACC55
-	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 13:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CBC9ACC6A
+	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 13:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728775AbfIHLHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 07:07:30 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:36726 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728727AbfIHLHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 07:07:30 -0400
-Received: by mail-ed1-f66.google.com with SMTP id f2so4125504edw.3
-        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 04:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=omP7nETAjfzTclexGMoPX3GroZQHgIB9AEsr1Oe+bDE=;
-        b=Um7t2Bq51KXcPHbcj5vzFD033ljidqeagbss8kwqOZMcwzHDXhYQFpVMdwYLOvozGF
-         YefoIleuRsUdzaJpb04ve+PxLcOQkiV+As0Sx61bKSjfH27ySCItMDgqAYISezpNrvTv
-         VSxyVtOjIBtkSv8fYX2Pjj+wuvP47dXayhl3cncSvAEbvuDncn0tn1vvpUXAMhiWMGdT
-         X+Y3Un7kBkqLTnc2e4SMEL63fIigiHECOP9L8abgMi12KhO/Wv9IfJgoUr+ycpzpYohc
-         p5jkj0zd2fQSf978PGYW0gElFa1YP7I7aUXyOZPe94cfcde/R3n07lwRn+PbzgEsk92J
-         rTtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=omP7nETAjfzTclexGMoPX3GroZQHgIB9AEsr1Oe+bDE=;
-        b=OYDYIZWpUbGMEmXavWqoyPQDMLH0Q9k/aU86bJ3lpz+npTNKNUMkjlMdwtXtVxQ+/G
-         BUOXcyiEFmV/94XML1a7YhB1J5Rkk0ao325S3S9sS5oAwutPn6NrJ3CHl+KrXalkHCV4
-         ZRyBBCaAmkhY7WRRAb0GhAdDbPXmgR/IcoxsZBW+lKEF5xQlKlM+upSvOG7BG0zPzv5C
-         WoLp9iEGCtd3R9nSpXEGX7opc3zl3pZrktUuw2WUAv22Uv32hwNbk7SKK6mBZar1CAHO
-         ZbccssZce26GTskuKFYz22VQ6F33P+x+IyPno6gc8bmzz9y4Y0kA/SoXohstblAtqiCb
-         Frsg==
-X-Gm-Message-State: APjAAAVCuBJVM7TGc+dn0THz5LvtST8bL1URVQ56VH+d8w6OswoVTMy8
-        taASrRn6CwCypkc6eDAONvcDSS6GN2KruwFnVl0=
-X-Google-Smtp-Source: APXvYqzgkD5dOgDKNKkBijM1EqdqNF2hyq4lGNUxQlVfTvBymzC1Sb7RYKylr2rSgGI1EEg0ZZK8vUAqfOtuOPEdutE=
-X-Received: by 2002:a17:906:4056:: with SMTP id y22mr15277799ejj.230.1567940847573;
- Sun, 08 Sep 2019 04:07:27 -0700 (PDT)
+        id S1728861AbfIHLZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 07:25:40 -0400
+Received: from mail-eopbgr70084.outbound.protection.outlook.com ([40.107.7.84]:23875
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728608AbfIHLZk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Sep 2019 07:25:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GVtVaU28oN6x3sUr6vnxs0i//4joxBjZbWOkEAUGpev8G7fnzBQir7yCih0/Yzy2yL71lSJ02AAv9nNj2M9kqbf4Mxo2OCTM8f8dON/R4TRTK5Qi2vlJhl6ROqgqJhP7cQYgBm8S7xiEwADfuJ6nO+PO2O/oe2hnuSe7YuTOfNFFOtH/5taAY0+cjgE5l1GEpdMTsfJyHs+kMzqLfrAb494WbxBIBYlU3UsIYI+0qMKV9+Z8913pdrzeQSzp2GXknXN4Zyb+xC3X2aR7l6H2K4bJgOp5vQGtWvZUgil4obb+oQj9Tq0sZeoCLVje+knvWUtS6y4AnoGmY8oZ7/5fZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h/P7nGd5wtEHPUBRHt7ayL+g5GL7/AUq2ISgpyKmZXg=;
+ b=FnBVVzNszMgUILxdOzZcIgud+8t6EWAkBkiQwyq5LXmyrs8C9Yd1m1AdGF/g8iMKnycaurKVNNqPzDu9LrI72lxjtWTtGJ8wXSJ12slq0L7dk2D/2AkoQqWsjAdx6V5YLp9KSFd6zHvNzIQ2HPFD3RyvzeNIGCREtg6ZvzuhDw5EdeLK/A2hlrVjmA9ljQtI5Kkdl+C41PLKyd6WSHynyOnxYie0BvG0oSW2T11SwuAteUdcHr9YpaZ9OuIGaC7pFIqSIU7u8ow67W9mu6s6GzuNMsmPEbgw3ztvkgOZy1+29VnJuGO4CnN1+9P+so5vc7VFHMVi6ZLivLWdqklSqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h/P7nGd5wtEHPUBRHt7ayL+g5GL7/AUq2ISgpyKmZXg=;
+ b=R4GIluAD+hbFwUKKPZGFfM7ZZG6G+hizI6Hyi4aSj7iAIRXiPOelqSPTE8WfoA+psT/picbXha3Wirf0VZJfUgWDDCl23aWWykzfFST7yEMxfkHKm+HidCa+yTYZNk0tOq1FTAJymimB2VEHwHp73bRcrpxxx/xDpp4HPw9SQik=
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com (20.178.41.21) by
+ DB7PR05MB4889.eurprd05.prod.outlook.com (20.176.235.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.16; Sun, 8 Sep 2019 11:25:36 +0000
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::fb:7161:ff28:1b3b]) by DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::fb:7161:ff28:1b3b%5]) with mapi id 15.20.2241.018; Sun, 8 Sep 2019
+ 11:25:36 +0000
+From:   Ido Schimmel <idosch@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Tariq Toukan <tariqt@mellanox.com>, mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next v2 3/3] net: devlink: move reload fail indication
+ to devlink core and expose to user
+Thread-Topic: [patch net-next v2 3/3] net: devlink: move reload fail
+ indication to devlink core and expose to user
+Thread-Index: AQHVZjHHXlSzXvqvdEOU1kYu1RnBdKcho98A
+Date:   Sun, 8 Sep 2019 11:25:36 +0000
+Message-ID: <20190908112534.GA27998@splinter>
+References: <20190907205400.14589-1-jiri@resnulli.us>
+ <20190907205400.14589-4-jiri@resnulli.us>
+In-Reply-To: <20190907205400.14589-4-jiri@resnulli.us>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR0102CA0039.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208::16) To DB7PR05MB5338.eurprd05.prod.outlook.com
+ (2603:10a6:10:64::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=idosch@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4adea950-3e11-4100-9293-08d7344f452a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB7PR05MB4889;
+x-ms-traffictypediagnostic: DB7PR05MB4889:|DB7PR05MB4889:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR05MB48896ED3EF358B74DB5CFD92BFB40@DB7PR05MB4889.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-forefront-prvs: 0154C61618
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(136003)(366004)(346002)(376002)(39860400002)(396003)(199004)(189003)(476003)(66066001)(7736002)(33656002)(6506007)(8936002)(6916009)(86362001)(186003)(3846002)(6116002)(81156014)(81166006)(8676002)(478600001)(256004)(2906002)(305945005)(386003)(14454004)(102836004)(54906003)(6486002)(5660300002)(1076003)(25786009)(107886003)(6246003)(229853002)(66946007)(66476007)(4326008)(64756008)(66556008)(66446008)(71190400001)(71200400001)(26005)(316002)(6512007)(9686003)(558084003)(11346002)(76176011)(6436002)(446003)(99286004)(33716001)(52116002)(486006)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR05MB4889;H:DB7PR05MB5338.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: mhM491ePU4C0jP81+3Ko9iM8VHRFSQmnRcr9nQe58i1re2dygQsSW9Jmu2bpygV3jLqQi3Y8LETX0S4MdSSdP9YJdjU2gjX7UYFKnN0TJbPKVY11W7ZFUWiO7v5IKhwJeUJPjHhPK0+kLE4FG0D/OtMNiGufrcc0b2bSxQGy/WnVIb8pVC4EvqGKL0nxVxOzzQZNx+E6hwLvicX6bxWVYL+lpgD33AYXvmTRLVnMcU0xdEE3fyNDOq10ULpPtIKl+cgE2ikicpDnh9oZXJSlSVGjHdTi1Pfq0alyrJFjcWWrIEGFSq8eyjUjyPWNucJfcTbQQUwbdSR9TxOrvmudTqT+VRl2FYZstzm4a6nM+CCiE350cmC32tNxMEpzPLkwYXt0Oj6J7hK3Sg+vYk5r+fG+L2tth0k6ag82RD8qQoY=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C786AE329D012D4285C00B7D961B0612@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: by 2002:a17:906:e258:0:0:0:0 with HTTP; Sun, 8 Sep 2019 04:07:27
- -0700 (PDT)
-In-Reply-To: <20190907144548.GA21922@lunn.ch>
-References: <20190902162544.24613-1-olteanv@gmail.com> <20190906.145403.657322945046640538.davem@davemloft.net>
- <20190907144548.GA21922@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 8 Sep 2019 12:07:27 +0100
-Message-ID: <CA+h21hqLF1gE+aDH9xQPadCuo6ih=xWY73JZvg7c58C1tC+0Jg@mail.gmail.com>
-Subject: Re: [PATCH v1 net-next 00/15] tc-taprio offload for SJA1105 DSA
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        vinicius.gomes@intel.com, vedang.patel@intel.com,
-        richardcochran@gmail.com, weifeng.voon@intel.com,
-        jiri@mellanox.com, m-karicheri2@ti.com, Jose.Abreu@synopsys.com,
-        ilias.apalodimas@linaro.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, kurt.kanzenbach@linutronix.de,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4adea950-3e11-4100-9293-08d7344f452a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2019 11:25:36.5752
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: haBP5YvDCEXU6BlMfOHNWcpVOOWWYQpiOEOT5ZlHy82voXfuXEvdtCLVM5EFmLaTeshXPltjxmxuO2Lh8Pb6cg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB4889
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew, David,
+On Sat, Sep 07, 2019 at 10:54:00PM +0200, Jiri Pirko wrote:
+> +bool devlink_is_reload_failed(struct devlink *devlink)
 
-On Sep 7, 2019, at 3:46 PM, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Fri, Sep 06, 2019 at 02:54:03PM +0200, David Miller wrote:
->>
->>  From: Vladimir Oltean <olteanv@gmail.com>
->>  Date: Mon,  2 Sep 2019 19:25:29 +0300
->>
->>>
->>>  This is the first attempt to submit the tc-taprio offload model for
->>>  inclusion in the net tree.
->>
->>
->>  Someone really needs to review this.
->
-> Hi Vladimir
->
-> You might have more chance getting this reviewed if you split it up
-> into a number of smaller series. Richard could probably review the
-> plain PTP changes. Who else has worked on tc-taprio recently? A series
-> purely about tc-taprio might be more likely reviewed by a tc-taprio
-> person, if it does not contain PTP changes.
->
->     Andrew
+Forgot to mention that this can be 'const'
 
-I think Richard has been there when the taprio, etf qdiscs, SO_TXTIME
-were first defined and developed:
-https://patchwork.ozlabs.org/cover/808504/
-I expect he is capable of delivering a competent review of the entire
-series, possibly way more competent than my patch set itself.
-
-The reason why I'm not splitting it up is because I lose around 10 ns
-of synchronization offset when using the hardware-corrected PTPCLKVAL
-clock for timestamping rather than the PTPTSCLK free-running counter.
-This is mostly due to the fact that SPI interaction is reduced to a
-minimum when correcting the switch's PHC in software - OTOH when that
-correction translates into SPI writes to PTPCLKADD/PTPCLKVAL and
-PTPCLKRATE, that's when things go a bit downhill with the precision.
-Now the compromise is fully acceptable if the PTP clock is to be used
-as the trigger source for the time-aware scheduler, but the conversion
-would be quite pointless with no user to really require the hardware
-clock.
-
-Additionally, the 802.1AS PTP profile even calls for switches and
-end-stations to use timestamping counters that are free-running, and
-scale&rate-correct those in software - due to a perceived "double
-feedback loop", or "changing the ruler while measuring with it". Now
-I'm no expert at all, but it would be interesting if we went on with
-the discussion in the direction of what Linux is currently
-understanding by a "free-running" PTP counter. On one hand there's the
-timecounter/cyclecounter in the kernel which makes for a
-software-corrected PHC, and on the other there's the free_running
-option in linuxptp which makes for a "nowhere-corrected" PHC that is
-only being used in the E2E_TC and P2P_TC profiles. But user space
-otherwise has no insight into the PHC implementation from the kernel,
-and "free_running" from ptp4l can't really be used to implement the
-synchronization mechanism required by 802.1AS.
-
-To me, the most striking aspect is that this particular recommendation
-from 802.1AS is at direct odds with 802.1Qbv (time-based egress) /
-802.1Qci (time-based ingress policing) which clearly require a PTP
-counter in the NIC that ticks to the wall clock, and not to a random
-free-running time since boot up. I simply can't seem to reconcile the
-two.
-What this particular switch does is that it permits RX and TX
-timestamps to be taken in either corrected or uncorrected timebases
-(but unfortunately not both at the same time). I think the hardware
-designers' idea was to take timestamps off the uncorrected clock
-(PTPTSCLK) and then do a sort of phc2sys-to-itself: write the
-software-corrected value of the timecounter/cyclecounter into the
-PTPCLKVAL hardware registers which get used for Qbv/Qci.
-Actually I hate to use those terms when talking about SJA1105 hardware
-support, since it's more "in the style of" IEEE rather than strict
-compliance (timing of the design vs the standard might have played a
-role as well).
-
-But let's leave 802.1AS aside for a second - that's not what the patch
-set is about, but rather a bit of background on why there are 2 PTP
-clocks in this switch, and why I'm switching from one to the other.
-Richard didn't really warm up to the phc2sys-to-itself idea in the
-past, and opted for simplicity: just use the hardware-corrected
-PTPCLKVAL for everything, which is exactly what I'm doing as of now.
-
-The only people whom I know are working on TSN stuff are mostly
-entrenched in papers, standards and generally in the hardware-only
-mentality. There is obviously a lot to be done for Linux to be a
-proper TSN endpoint, and RT is a big one. For a switch in particular,
-things are a bit easier due to the fact that it just needs to ensure
-the real-time guarantees of a frame that was supposedly already
-delivered in-band with the schedule. And there's no other way to do
-that rather than through a hardware offload - otherwise the software
-tc-taprio would only shape the frames egressed by the management CPU
-of the switch. The tc-taprio offload for a switch only makes sense
-when taken together with the bridging offload, if you will.
-
-I "dared" to submit this for merging maybe because I don't see the
-subtleties that prevent it from going in, at least for a switch - it
-just works and does the job. I would have loved to see this in 5.4
-just so I would have to lug around a bit less patches when finally
-starting to evaluate the endpoint side of things with the 5.4-rt
-patch. But nonetheless, there's no hurry and getting a healthy
-discussion going is surely more important than the patches themselves
-are. On the other hand there needs to be a balance, and just talking
-with no code is no good either - fixes, improvements, rework can
-always come later once we commit to the basic offload model.
-
-I happen to be around at Plumbers during the following days to learn
-what else is going on in the Linux community, and develop a more
-complete mental model for myself for how TSN fits in with all of that.
-If anybody happens to also be around, I'd be more than happy to talk.
-
-Regards,
--Vladimir
+> +{
+> +	return devlink->reload_failed;
+> +}
+> +EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
