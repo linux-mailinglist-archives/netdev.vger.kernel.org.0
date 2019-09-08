@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41731ACC6C
-	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 13:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844E6ACCBC
+	for <lists+netdev@lfdr.de>; Sun,  8 Sep 2019 14:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728871AbfIHL2f convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 8 Sep 2019 07:28:35 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48666 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726186AbfIHL2f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Sep 2019 07:28:35 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B8A8018C891B;
-        Sun,  8 Sep 2019 11:28:34 +0000 (UTC)
-Received: from carbon (ovpn-200-20.brq.redhat.com [10.40.200.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7786D5C1D4;
-        Sun,  8 Sep 2019 11:28:23 +0000 (UTC)
-Date:   Sun, 8 Sep 2019 13:28:22 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     brouer@redhat.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        kafai@fb.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
-Subject: Re: [PATCH bpf-next] xdp: Fix race in dev_map_hash_update_elem()
- when replacing element
-Message-ID: <20190908132822.5ac2fbe1@carbon>
-In-Reply-To: <20190908082016.17214-1-toke@redhat.com>
-References: <0000000000005091a70591d3e1d9@google.com>
-        <20190908082016.17214-1-toke@redhat.com>
+        id S1729178AbfIHMdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 08:33:03 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41575 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726393AbfIHMdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 08:33:02 -0400
+Received: by mail-io1-f72.google.com with SMTP id t8so14310366iom.8
+        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 05:33:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Dlrt7nF+QMrAeB++A6Ck3UTmsUjVxvwblcY1dMvaVGw=;
+        b=Ttj0iT8383RBoixsxJi4rLlfoc5SDM4HtPR6zAnZVbNv9ejd029hqStmR4vEDpr1Nz
+         yZ7Tha1NdMa6mmDo/lBThgUmwcAZ9d4LNUA5Ts4jlyyA1dgV/QK/Nwjgk9DI1osqtOKW
+         1LWy+1s6U1rjMYLAkBrrmuEtGxN8Q/FTJP3AEQZKnZPmk4jMFYt4xYxFhPrH5LPKn6Iw
+         CrP66lzJfirLaYIQaINQKvqw90YFoNIDGO1DR94YkR3Zw/XnJCY2i6tUDl4EXYuBpWkK
+         +Ebk0HOj36o9NVpo32cfuOD0RU/3sex42j2d7xJjYA0DLP8SGLBmCE2UPM+mM9y8JbfF
+         9cFg==
+X-Gm-Message-State: APjAAAWQViFmeJzFsPcsTef7rgBOLmzZBI0/42i0u/szmvcOEaV9EK0W
+        C0ppsdDA8ZVzM6LDKuCyakgTI1HzlCxl3yTe8QfYA5j7mOy/
+X-Google-Smtp-Source: APXvYqxLRIrArmm5jACs2Lrk6VJ5eg+Ycgp5MA+m/Uphdu7Qq3nvbW1MwZilaMC6yRKZe3KSnSSU1qER9VS/0ttQsNbDjxeHCSFq
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.70]); Sun, 08 Sep 2019 11:28:35 +0000 (UTC)
+X-Received: by 2002:a05:6638:a12:: with SMTP id 18mr16975290jan.123.1567945980605;
+ Sun, 08 Sep 2019 05:33:00 -0700 (PDT)
+Date:   Sun, 08 Sep 2019 05:33:00 -0700
+In-Reply-To: <000000000000d2a5c60592047e58@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000337872059209df41@google.com>
+Subject: Re: general protection fault in cbs_destroy
+From:   syzbot <syzbot+3a8d6a998cbb73bcf337@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, hdanton@sina.com, jhs@mojatatu.com,
+        jiri@resnulli.us, leandro.maciel.dorileo@intel.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vedang.patel@intel.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  8 Sep 2019 09:20:16 +0100
-Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+syzbot has bisected this bug to:
 
-> syzbot found a crash in dev_map_hash_update_elem(), when replacing an
-> element with a new one. Jesper correctly identified the cause of the crash
-> as a race condition between the initial lookup in the map (which is done
-> before taking the lock), and the removal of the old element.
-> 
-> Rather than just add a second lookup into the hashmap after taking the
-> lock, fix this by reworking the function logic to take the lock before the
-> initial lookup.
-> 
-> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
-> Reported-and-tested-by: syzbot+4e7a85b1432052e8d6f8@syzkaller.appspotmail.com
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+commit e0a7683d30e91e30ee6cf96314ae58a0314a095e
+Author: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+Date:   Mon Apr 8 17:12:18 2019 +0000
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+     net/sched: cbs: fix port_rate miscalculation
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=158f3c01600000
+start commit:   3b47fd5c Merge tag 'nfs-for-5.3-4' of git://git.linux-nfs...
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=178f3c01600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=138f3c01600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=144488c6c6c6d2b6
+dashboard link: https://syzkaller.appspot.com/bug?extid=3a8d6a998cbb73bcf337
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17998f9e600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10421efa600000
+
+Reported-by: syzbot+3a8d6a998cbb73bcf337@syzkaller.appspotmail.com
+Fixes: e0a7683d30e9 ("net/sched: cbs: fix port_rate miscalculation")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
