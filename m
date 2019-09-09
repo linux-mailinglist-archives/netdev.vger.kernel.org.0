@@ -2,303 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB744ADCA5
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 18:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A9FADCAA
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 18:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbfIIQF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 12:05:28 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35114 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbfIIQF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 12:05:28 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1730033AbfIIQF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 12:05:56 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:41584 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727495AbfIIQFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 12:05:55 -0400
+Received: from mailhost.synopsys.com (dc2-mailhost1.synopsys.com [10.12.135.161])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id BE27B315C01B;
-        Mon,  9 Sep 2019 16:05:27 +0000 (UTC)
-Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EB50F5C1D8;
-        Mon,  9 Sep 2019 16:05:26 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-Subject: [PATCH iproute2-next] bpf: replace snprintf with asprintf when dealing with long buffers
-Date:   Mon,  9 Sep 2019 18:05:05 +0200
-Message-Id: <d2631870837a01f1488bf0bd547bb126f24de6b9.1568043463.git.aclaudi@redhat.com>
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 061CAC2B0D;
+        Mon,  9 Sep 2019 16:05:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1568045155; bh=e/UJGjNXRD/MpqfsqtOkseGBHSysp0B3sz09Hashra0=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=HyxVxlaSPP+hfwsQTfmNoOBWmWjHHFPwUw+L5xDEcFkV+ZGxEHWGhIENfWJldaGxf
+         WRkL2a0cYr0wv3WWShMhZEhdVKoLM2jArjCJP+65KfPQLlq4uBv9pF4YyekVzOHTKj
+         TjTmuOHU2ubxwiimBo0GQYspSEMgxTcBNAvSUFsAsPgDObXzfUFSvip7YjiTJHYIFX
+         NvL9LxMX3dOiVt82CvL1CUt+MUUndlTzKf/A5j/tSrahfgnIyr6SHDlQUCFYqflgm5
+         qK3CP0o6/kBn6ABSYcAimdEbifUcCyveTm//jLXLDTo2rQz8+dcJ6p/bLki1ttOIA5
+         aTo3ZoVZfbWDQ==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 8C02DA0094;
+        Mon,  9 Sep 2019 16:05:54 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 9 Sep 2019 09:05:54 -0700
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (10.13.134.195)
+ by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Mon, 9 Sep 2019 09:05:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QmlNb7Op3oekmVH+hjTmJu6+uLo1+xhwnUHuSiMO0YNFx4OxmfwrpfguBlBWmTPZ/zbxCmfI/FQeeUoirSg+S09luyY32eB1zn+ypu8cYtBPq1VffGSpLeTxikQfOUyXPGEW3Bo7dg60pQ2sgkO+J7RiK4yvzPaKZzdhQ4OdulzjDG3DZONnVp6MBpge9OiRpAll+MiG0BHxZmWmUCyG78F3ayJD5hexVc1/BW2YWGmNIu8wHQWyxN88OE1e0Gy4hoKbNP0lKd81cUDIC+vFZJQ1bqq2X9CH+UIk+rNoiOoKgDWi4fEbJyjpcEbKKGSPFl+ukdmqJLXN12I64TmEvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yUb/aSNvdWfUCnB/v1hB+6oqg2f4gIIYb8vVQjwZsnY=;
+ b=OVwBeYYzOKSohPCw0Atq7ngUM65dDSl6J4lxO12ojTVghLNevi2baOMvEkKiOu+IOvMG/HEC45/mVaGGu1b6AE+0XQyayFgGC+BHr16upPVNAKr+WWbUKIIovAPI34z9FhKsk+XzW9NGbJpSrUenvcx9SIKRRPkYc57mop/IUyLVvDotlPSTEA0AWPivqKciYA2O1jPFwCCt2JtZW+9OoEPBHKPfCO0xF0f4wig+t6vxGmUMwTNhS09z8jktIkCi7ZY0ZfOOlVQsRYRTD1tp4t+h9zV878qU2uiPU1cdj7AUsoO+qKncfWm052VTCQrr36NwXU/9q0KADMq9szvWnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yUb/aSNvdWfUCnB/v1hB+6oqg2f4gIIYb8vVQjwZsnY=;
+ b=N1KtfPMpKM0DzLwnB2UDvERFU/vIkm2by/69DNYZPeEWdSlJ4GOOqmMbaCiPIEvWWIKSZ/d44+y+rSjQDfX39VK1NXR8QuNiJGcMNeKBoCUAP2rNrZn/APPT8waCSaI973HtC32r7XaKkV/k2wcje3kbj4PwMG2Tam/bVP6N3MU=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3443.namprd12.prod.outlook.com (20.178.208.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.18; Mon, 9 Sep 2019 16:05:53 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2241.018; Mon, 9 Sep 2019
+ 16:05:53 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Bitan Biswas <bbiswas@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 2/2] net: stmmac: Support enhanced addressing
+ mode for DWMAC 4.10
+Thread-Topic: [PATCH net-next v2 2/2] net: stmmac: Support enhanced addressing
+ mode for DWMAC 4.10
+Thread-Index: AQHVZyLugLltb0ZW10+a6Fka6Re0xKcjgesw
+Date:   Mon, 9 Sep 2019 16:05:52 +0000
+Message-ID: <BN8PR12MB3266AAC6FF4819EC25CB087BD3B70@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20190909152546.383-1-thierry.reding@gmail.com>
+ <20190909152546.383-2-thierry.reding@gmail.com>
+In-Reply-To: <20190909152546.383-2-thierry.reding@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [148.69.85.38]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1fbde685-66b6-4e45-8d4f-08d7353f9713
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR12MB3443;
+x-ms-traffictypediagnostic: BN8PR12MB3443:
+x-microsoft-antispam-prvs: <BN8PR12MB34437E9256AAE2ABE7C7C659D3B70@BN8PR12MB3443.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 01559F388D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(376002)(396003)(366004)(136003)(346002)(199004)(189003)(53936002)(486006)(5660300002)(26005)(478600001)(256004)(52536014)(3846002)(6116002)(76116006)(66446008)(66556008)(229853002)(66476007)(66946007)(9686003)(7696005)(76176011)(6246003)(54906003)(110136005)(14454004)(55016002)(316002)(99286004)(66066001)(2906002)(6436002)(64756008)(4744005)(4326008)(81166006)(81156014)(25786009)(305945005)(7736002)(33656002)(8676002)(71200400001)(74316002)(86362001)(6506007)(71190400001)(186003)(476003)(11346002)(102836004)(446003)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3443;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: W/R7ULnY4EkC8ZzH2Gq3nILG7v5VdnDg9YGN6IDXtNYG1mMjVOjUp3gZLQo4qO9egwqG6UcpobVbWT0dGjsVUEANam/BApVPOK0fmkUhSPIV9IqUHCKVn2sV1f8KIPP/l8H4bmy3+b8X5TU1Lxee9H9NDr+hs532PxJLkXmy0iOmxFm5IKw4qoOh5X2OsyFL3c11G/D8PnIb0lgkCf9PSk+relmBA2WkJK1V6JJq0GkPUN++0fSpokevMqgeFxkoPoQAQqkWY0zLbwYEuxwQghQQffb5N12ZPtMmWhHZZjg1CILQZTsU81fBGwOyF1Wu/jMD+rMRQUmEioDYMa9B8Yyks9uPO6dKu5e3mCJyUoW7EmTvm8RUsXRq2c3BOIy7pPKhs5V02ps6+gbb9vtc1IT1pNA1Kn7UisIm2Kk2X+M=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Mon, 09 Sep 2019 16:05:27 +0000 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fbde685-66b6-4e45-8d4f-08d7353f9713
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2019 16:05:52.8328
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eqkDYnCbbfXfEZt7kyYSbmMcDj7qAdKTsZCs4QFWxZV7WaRiI160rAiIQ2Vb4nRoAGwrMurvUxrU2h4//EzrnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3443
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reduces stack usage, as asprintf allocates memory on the heap.
+From: Thierry Reding <thierry.reding@gmail.com>
+Date: Sep/09/2019, 16:25:46 (UTC+00:00)
 
-This indirectly fixes a snprintf truncation warning (from gcc v9.2.1):
+> @@ -79,6 +79,10 @@ static void dwmac4_dma_init_rx_chan(void __iomem *ioad=
+dr,
+>  	value =3D value | (rxpbl << DMA_BUS_MODE_RPBL_SHIFT);
+>  	writel(value, ioaddr + DMA_CHAN_RX_CONTROL(chan));
+> =20
+> +	if (dma_cfg->eame)
 
-bpf.c: In function ‘bpf_get_work_dir’:
-bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
-  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-      |                                                 ^
-bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
-  784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There is no need for this check. If EAME is not enabled then upper 32=20
+bits will be zero.
 
-Fixes: e42256699cac ("bpf: make tc's bpf loader generic and move into lib")
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> +		writel(upper_32_bits(dma_rx_phy),
+> +		       ioaddr + DMA_CHAN_RX_BASE_ADDR_HI(chan));
+> +
+>  	writel(lower_32_bits(dma_rx_phy), ioaddr + DMA_CHAN_RX_BASE_ADDR(chan))=
+;
+>  }
+
+> @@ -97,6 +101,10 @@ static void dwmac4_dma_init_tx_chan(void __iomem *ioa=
+ddr,
+> =20
+>  	writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
+> =20
+> +	if (dma_cfg->eame)
+
+Same here.
+
+> +		writel(upper_32_bits(dma_tx_phy),
+> +		       ioaddr + DMA_CHAN_TX_BASE_ADDR_HI(chan));
+> +
+>  	writel(lower_32_bits(dma_tx_phy), ioaddr + DMA_CHAN_TX_BASE_ADDR(chan))=
+;
+>  }
+
+Also, please provide a cover letter in next submission.
+
 ---
- lib/bpf.c | 95 +++++++++++++++++++++++++++++++++----------------------
- 1 file changed, 57 insertions(+), 38 deletions(-)
-
-diff --git a/lib/bpf.c b/lib/bpf.c
-index 7d2a322ffbaec..18e0334d3f11b 100644
---- a/lib/bpf.c
-+++ b/lib/bpf.c
-@@ -406,13 +406,14 @@ static int bpf_derive_elf_map_from_fdinfo(int fd, struct bpf_elf_map *map,
- 					  struct bpf_map_ext *ext)
- {
- 	unsigned int val, owner_type = 0, owner_jited = 0;
--	char file[PATH_MAX], buff[4096];
-+	char *file, buff[4096];
- 	FILE *fp;
- 
--	snprintf(file, sizeof(file), "/proc/%d/fdinfo/%d", getpid(), fd);
-+	asprintf(&file, "/proc/%d/fdinfo/%d", getpid(), fd);
- 	memset(map, 0, sizeof(*map));
- 
- 	fp = fopen(file, "r");
-+	free(file);
- 	if (!fp) {
- 		fprintf(stderr, "No procfs support?!\n");
- 		return -EIO;
-@@ -600,7 +601,7 @@ int bpf_trace_pipe(void)
- 		0,
- 	};
- 	int fd_in, fd_out = STDERR_FILENO;
--	char tpipe[PATH_MAX];
-+	char *tpipe;
- 	const char *mnt;
- 
- 	mnt = bpf_find_mntpt("tracefs", TRACEFS_MAGIC, tracefs_mnt,
-@@ -610,9 +611,10 @@ int bpf_trace_pipe(void)
- 		return -1;
- 	}
- 
--	snprintf(tpipe, sizeof(tpipe), "%s/trace_pipe", mnt);
-+	asprintf(&tpipe, "%s/trace_pipe", mnt);
- 
- 	fd_in = open(tpipe, O_RDONLY);
-+	free(tpipe);
- 	if (fd_in < 0)
- 		return -1;
- 
-@@ -633,37 +635,42 @@ int bpf_trace_pipe(void)
- 
- static int bpf_gen_global(const char *bpf_sub_dir)
- {
--	char bpf_glo_dir[PATH_MAX];
-+	char *bpf_glo_dir;
- 	int ret;
- 
--	snprintf(bpf_glo_dir, sizeof(bpf_glo_dir), "%s/%s/",
--		 bpf_sub_dir, BPF_DIR_GLOBALS);
-+	asprintf(&bpf_glo_dir, "%s/%s/", bpf_sub_dir, BPF_DIR_GLOBALS);
- 
- 	ret = mkdir(bpf_glo_dir, S_IRWXU);
- 	if (ret && errno != EEXIST) {
- 		fprintf(stderr, "mkdir %s failed: %s\n", bpf_glo_dir,
- 			strerror(errno));
--		return ret;
-+		goto out;
- 	}
- 
--	return 0;
-+	ret = 0;
-+out:
-+	free(bpf_glo_dir);
-+	return ret;
- }
- 
- static int bpf_gen_master(const char *base, const char *name)
- {
--	char bpf_sub_dir[PATH_MAX + NAME_MAX + 1];
-+	char *bpf_sub_dir;
- 	int ret;
- 
--	snprintf(bpf_sub_dir, sizeof(bpf_sub_dir), "%s%s/", base, name);
-+	asprintf(&bpf_sub_dir, "%s%s/", base, name);
- 
- 	ret = mkdir(bpf_sub_dir, S_IRWXU);
- 	if (ret && errno != EEXIST) {
- 		fprintf(stderr, "mkdir %s failed: %s\n", bpf_sub_dir,
- 			strerror(errno));
--		return ret;
-+		goto out;
- 	}
- 
--	return bpf_gen_global(bpf_sub_dir);
-+	ret = bpf_gen_global(bpf_sub_dir);
-+out:
-+	free(bpf_sub_dir);
-+	return ret;
- }
- 
- static int bpf_slave_via_bind_mnt(const char *full_name,
-@@ -692,13 +699,13 @@ static int bpf_slave_via_bind_mnt(const char *full_name,
- static int bpf_gen_slave(const char *base, const char *name,
- 			 const char *link)
- {
--	char bpf_lnk_dir[PATH_MAX + NAME_MAX + 1];
--	char bpf_sub_dir[PATH_MAX + NAME_MAX];
-+	char *bpf_lnk_dir;
-+	char *bpf_sub_dir;
- 	struct stat sb = {};
- 	int ret;
- 
--	snprintf(bpf_lnk_dir, sizeof(bpf_lnk_dir), "%s%s/", base, link);
--	snprintf(bpf_sub_dir, sizeof(bpf_sub_dir), "%s%s",  base, name);
-+	asprintf(&bpf_lnk_dir, "%s%s/", base, link);
-+	asprintf(&bpf_sub_dir, "%s%s",  base, name);
- 
- 	ret = symlink(bpf_lnk_dir, bpf_sub_dir);
- 	if (ret) {
-@@ -706,25 +713,30 @@ static int bpf_gen_slave(const char *base, const char *name,
- 			if (errno != EPERM) {
- 				fprintf(stderr, "symlink %s failed: %s\n",
- 					bpf_sub_dir, strerror(errno));
--				return ret;
-+				goto out;
- 			}
- 
--			return bpf_slave_via_bind_mnt(bpf_sub_dir,
--						      bpf_lnk_dir);
-+			ret = bpf_slave_via_bind_mnt(bpf_sub_dir, bpf_lnk_dir);
-+			goto out;
- 		}
- 
- 		ret = lstat(bpf_sub_dir, &sb);
- 		if (ret) {
- 			fprintf(stderr, "lstat %s failed: %s\n",
- 				bpf_sub_dir, strerror(errno));
--			return ret;
-+			goto out;
- 		}
- 
--		if ((sb.st_mode & S_IFMT) != S_IFLNK)
--			return bpf_gen_global(bpf_sub_dir);
-+		if ((sb.st_mode & S_IFMT) != S_IFLNK) {
-+			ret = bpf_gen_global(bpf_sub_dir);
-+			goto out;
-+		}
- 	}
- 
--	return 0;
-+out:
-+	free(bpf_lnk_dir);
-+	free(bpf_sub_dir);
-+	return ret;
- }
- 
- static int bpf_gen_hierarchy(const char *base)
-@@ -742,7 +754,7 @@ static int bpf_gen_hierarchy(const char *base)
- static const char *bpf_get_work_dir(enum bpf_prog_type type)
- {
- 	static char bpf_tmp[PATH_MAX] = BPF_DIR_MNT;
--	static char bpf_wrk_dir[PATH_MAX];
-+	static char *bpf_wrk_dir;
- 	static const char *mnt;
- 	static bool bpf_mnt_cached;
- 	const char *mnt_env = getenv(BPF_ENV_MNT);
-@@ -781,7 +793,7 @@ static const char *bpf_get_work_dir(enum bpf_prog_type type)
- 		}
- 	}
- 
--	snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
-+	asprintf(&bpf_wrk_dir, "%s/", mnt);
- 
- 	ret = bpf_gen_hierarchy(bpf_wrk_dir);
- 	if (ret) {
-@@ -1438,29 +1450,31 @@ static int bpf_probe_pinned(const char *name, const struct bpf_elf_ctx *ctx,
- 
- static int bpf_make_obj_path(const struct bpf_elf_ctx *ctx)
- {
--	char tmp[PATH_MAX];
-+	char *tmp;
- 	int ret;
- 
--	snprintf(tmp, sizeof(tmp), "%s/%s", bpf_get_work_dir(ctx->type),
--		 ctx->obj_uid);
-+	asprintf(&tmp, "%s/%s", bpf_get_work_dir(ctx->type), ctx->obj_uid);
- 
- 	ret = mkdir(tmp, S_IRWXU);
- 	if (ret && errno != EEXIST) {
- 		fprintf(stderr, "mkdir %s failed: %s\n", tmp, strerror(errno));
--		return ret;
-+		goto out;
- 	}
- 
--	return 0;
-+	ret = 0;
-+out:
-+	free(tmp);
-+	return ret;
- }
- 
- static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
- 				const char *todo)
- {
--	char tmp[PATH_MAX], rem[PATH_MAX], *sub;
-+	char *tmp, *rem, *sub;
- 	int ret;
- 
--	snprintf(tmp, sizeof(tmp), "%s/../", bpf_get_work_dir(ctx->type));
--	snprintf(rem, sizeof(rem), "%s/", todo);
-+	asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
-+	asprintf(&rem, "%s/", todo);
- 	sub = strtok(rem, "/");
- 
- 	while (sub) {
-@@ -1474,13 +1488,17 @@ static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
- 		if (ret && errno != EEXIST) {
- 			fprintf(stderr, "mkdir %s failed: %s\n", tmp,
- 				strerror(errno));
--			return ret;
-+			goto out;
- 		}
- 
- 		sub = strtok(NULL, "/");
- 	}
- 
--	return 0;
-+	ret = 0;
-+out:
-+	free(rem);
-+	free(tmp);
-+	return ret;
- }
- 
- static int bpf_place_pinned(int fd, const char *name,
-@@ -2581,14 +2599,15 @@ struct bpf_jited_aux {
- 
- static int bpf_derive_prog_from_fdinfo(int fd, struct bpf_prog_data *prog)
- {
--	char file[PATH_MAX], buff[4096];
-+	char *file, buff[4096];
- 	unsigned int val;
- 	FILE *fp;
- 
--	snprintf(file, sizeof(file), "/proc/%d/fdinfo/%d", getpid(), fd);
-+	asprintf(&file, "/proc/%d/fdinfo/%d", getpid(), fd);
- 	memset(prog, 0, sizeof(*prog));
- 
- 	fp = fopen(file, "r");
-+	free(file);
- 	if (!fp) {
- 		fprintf(stderr, "No procfs support?!\n");
- 		return -EIO;
--- 
-2.21.0
-
+Thanks,
+Jose Miguel Abreu
