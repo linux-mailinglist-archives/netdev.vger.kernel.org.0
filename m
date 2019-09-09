@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB680ADDB8
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 19:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEF6ADDED
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 19:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391353AbfIIRBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 13:01:34 -0400
-Received: from forward103o.mail.yandex.net ([37.140.190.177]:52994 "EHLO
-        forward103o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728529AbfIIRBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 13:01:34 -0400
-X-Greylist: delayed 543 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Sep 2019 13:01:31 EDT
-Received: from mxback28g.mail.yandex.net (mxback28g.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:328])
-        by forward103o.mail.yandex.net (Yandex) with ESMTP id D2C785F815FC;
-        Mon,  9 Sep 2019 19:52:26 +0300 (MSK)
-Received: from smtp2o.mail.yandex.net (smtp2o.mail.yandex.net [2a02:6b8:0:1a2d::26])
-        by mxback28g.mail.yandex.net (nwsmtp/Yandex) with ESMTP id XWZQwjux5k-qQKiwCRN;
-        Mon, 09 Sep 2019 19:52:26 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cloudbear.ru; s=mail; t=1568047946;
-        bh=k8swhfH/56jurkc7C5cLy1ftu0/fKHmRA39ehTChfM8=;
+        id S1727980AbfIIRTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 13:19:41 -0400
+Received: from forward103j.mail.yandex.net ([5.45.198.246]:55118 "EHLO
+        forward103j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726931AbfIIRTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 13:19:41 -0400
+Received: from mxback17g.mail.yandex.net (mxback17g.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:317])
+        by forward103j.mail.yandex.net (Yandex) with ESMTP id 862596741162;
+        Mon,  9 Sep 2019 20:19:35 +0300 (MSK)
+Received: from smtp4p.mail.yandex.net (smtp4p.mail.yandex.net [2a02:6b8:0:1402::15:6])
+        by mxback17g.mail.yandex.net (nwsmtp/Yandex) with ESMTP id VG426gUt4L-JYwa7EmW;
+        Mon, 09 Sep 2019 20:19:35 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cloudbear.ru; s=mail; t=1568049575;
+        bh=AwxsyEGDehcquIuiRTow6P2yBfFaC4ijyHy2rTy1NzI=;
         h=In-Reply-To:Subject:To:From:Cc:References:Date:Message-Id;
-        b=qvXsmizEqwj4U4oAE1Etz1OuSoxNXcRKg9VaSl1/zJkXw8FGHddDyywR6lQ6pV8tP
-         Gv6iPeWL8bk+eMSLDi4r92Vsaxo8WgKmj1vNVUkNu9ty0P4AUr4xGURUYH1gZjIC25
-         bmT0JFU7LTIFF52BO2fR64xefQLXsvBY4Hh1IgKI=
-Authentication-Results: mxback28g.mail.yandex.net; dkim=pass header.i=@cloudbear.ru
-Received: by smtp2o.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id aUn2Pn2Gxb-qPtC6UCe;
-        Mon, 09 Sep 2019 19:52:25 +0300
+        b=UJLQ8NG4qpyrtLgoglVVGuVCmtJ56n0b7gPO2xGoAFjbpPkq9RA2ydWqZama7iW0k
+         rvfFmY3q2KnpZZOcBRXNA096aE5Qv5j4xKw2awe66bRHlygON0jDGMnBYN7zbpm65s
+         f45gSvuOHAuX7gsQDDfcay/6U5za9wG9b3ERQKf4=
+Authentication-Results: mxback17g.mail.yandex.net; dkim=pass header.i=@cloudbear.ru
+Received: by smtp4p.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id rCsZlLVxqi-JXTSsDoi;
+        Mon, 09 Sep 2019 20:19:34 +0300
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client certificate not present)
 From:   Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>
@@ -37,12 +36,12 @@ Cc:     Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Trent Piepho <tpiepho@impinj.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] net: phy: dp83867: Add SGMII mode type switching
-Date:   Mon,  9 Sep 2019 19:52:18 +0300
-Message-Id: <1568047940-14490-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+Subject: [PATCH v4 2/2] net: phy: dp83867: Add SGMII mode type switching
+Date:   Mon,  9 Sep 2019 20:19:24 +0300
+Message-Id: <1568049566-16708-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1568026945-3857-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
-References: <1568026945-3857-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+In-Reply-To: <1568047940-14490-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
+References: <1568047940-14490-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -54,9 +53,6 @@ which enables differential SGMII clock to MAC.
 
 Signed-off-by: Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>
 ---
-Changes in v3:
-- Fixed retaining DP83867_SGMII_TYPE bit
-
  drivers/net/phy/dp83867.c | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
@@ -71,29 +67,29 @@ index 1f1ecee..37fceaf 100644
 +#define DP83867_SGMIICTL	0x00D3
  #define DP83867_10M_SGMII_CFG   0x016F
  #define DP83867_10M_SGMII_RATE_ADAPT_MASK BIT(7)
-
+ 
 @@ -61,6 +62,9 @@
  #define DP83867_RGMII_TX_CLK_DELAY_EN		BIT(1)
  #define DP83867_RGMII_RX_CLK_DELAY_EN		BIT(0)
-
+ 
 +/* SGMIICTL bits */
 +#define DP83867_SGMII_TYPE		BIT(14)
 +
  /* STRAP_STS1 bits */
  #define DP83867_STRAP_STS1_RESERVED		BIT(11)
-
+ 
 @@ -109,6 +113,7 @@ struct dp83867_private {
  	bool rxctrl_strap_quirk;
  	bool set_clk_output;
  	u32 clk_output_sel;
 +	bool sgmii_ref_clk_en;
  };
-
+ 
  static int dp83867_ack_interrupt(struct phy_device *phydev)
 @@ -197,6 +202,9 @@ static int dp83867_of_init(struct phy_device *phydev)
  	dp83867->rxctrl_strap_quirk = of_property_read_bool(of_node,
  					"ti,dp83867-rxctrl-strap-quirk");
-
+ 
 +	dp83867->sgmii_ref_clk_en = of_property_read_bool(of_node,
 +					"ti,sgmii-ref-clock-output-enable");
 +
@@ -101,7 +97,7 @@ index 1f1ecee..37fceaf 100644
  	 * mode, but rgmii should have meant no delay.  Warn existing users.
  	 */
 @@ -389,6 +397,17 @@ static int dp83867_config_init(struct phy_device *phydev)
-
+ 
  		if (ret)
  			return ret;
 +
@@ -116,8 +112,8 @@ index 1f1ecee..37fceaf 100644
 +			val &= ~DP83867_SGMII_TYPE;
 +		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
  	}
-
+ 
  	/* Enable Interrupt output INT_OE in CFG3 register */
---
+-- 
 2.7.4
 
