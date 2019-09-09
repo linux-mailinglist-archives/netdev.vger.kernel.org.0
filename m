@@ -2,180 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB49AE10D
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 00:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2CD6AE121
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 00:37:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729851AbfIIWco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 18:32:44 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:44124 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726214AbfIIWcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 18:32:43 -0400
-Received: by mail-pf1-f201.google.com with SMTP id b204so11545765pfb.11
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 15:32:41 -0700 (PDT)
+        id S1728706AbfIIWh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 18:37:28 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41514 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726940AbfIIWh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 18:37:28 -0400
+Received: by mail-pl1-f193.google.com with SMTP id m9so7372400pls.8
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 15:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=M+O0NRYJIUOQwM5A2IHz4DriBr4UGq0Iy2y9IwyZH3Y=;
-        b=uSSJ/9dBZ4SUH8Vu83YhRkxUrHRiMrFD+WA7dlH97UhoPXhKy+qvRVsO+ZyPiinTQU
-         kW2oquEGlQhnHPLYr7SnE5Hjed3eFAE/AON7FSZqmaqgDhmgDQHrhljk4122UnH/Zqbe
-         0POY/rndGLopqMAisGTRXR9NO7kWf1hrTA/bkwAirAJIwYthVB5j5F8G0bXWxoIEi34w
-         T1umkO9uwS4rgiGR5SVtwNBeH+FIbX4Bzy7dyei1tu7Tyx1pKaZqi3sLNMUWst1ZkfKm
-         zKdqIfkYW0ENInQpeOCbg9au+eoaAc+mib239FrA3O8lkyFzF2Hh2NtE97JuvzrVFGmK
-         ySjg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=eint4nhfCiEnji9TBmfOSvGzwj5ZKI3qj6Kalnk/SmM=;
+        b=bE2Y4D/OOjzjoXw0mx+BiEJSrzyC9l7jB036lYGT38qcnYHDvmdrFHJSlo0vj68jhm
+         saoQFTQUHCRZZxAJX6iXShzgb0p3F0TVIFFSeoetDO98pOjfA3GNr/V4QHzFSmn5bVyP
+         ai3AHVAaHGctkSdj8RX6jPDH8bp1w6LqvuXjEa/wQNgasmFTnHe+RsqjGztxKnLAuH4P
+         U9otBxA+rJ3laVM8RlxQuyHoJon5QQ6kac2uyTSeAKJmj8oNb83nOw7KsX/3I7T0BEAM
+         yB/bspiJba+2Do8zWwDoytdtWlph5L7tZrJbeOJtPCW4528/73a7YkVSNKwdrOvZC0+3
+         GbfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=M+O0NRYJIUOQwM5A2IHz4DriBr4UGq0Iy2y9IwyZH3Y=;
-        b=WBWMtL+HkI2M/IacwoAcO3iJQdiIkdIHKyGDabMSbAbm6htEoPk0qOmiIttt8ZxmpC
-         lGkzGYbm0JgHNcr13Cy923L1IdMSrmdUOPi5MkKaXeo2h6ZsIFLjasOz5lWZCjjhK9lf
-         oxH6tGcYVmkBoNliRR3mKlQt/DV4Ur1uTP+urm20pSFB48YkYdg3/b5rJLPDwvDVMd6O
-         UtTboH9xySlojSnAM/mNenbln7sQtDddiGBSVEbf88mnEUTpazd5RzXRvkkU8o5Tlham
-         7JbQObF+zhy8+y+DRFGa9IRKP8uThHBwAPclUTV6VHIq22Um3jP0qyOHPYQvKiWQkG5f
-         faXw==
-X-Gm-Message-State: APjAAAU8qhhKeboE2ElbEkuMjwiQ2kiReOrw4no4dU0A+wNcIWkKMnaa
-        xATaR++Q3pT+wOrYCm0IDqXSPCiaUBmS51i0r/0=
-X-Google-Smtp-Source: APXvYqxTeuYy2NwZex38o5nWcQCCKjZAMdZMxGFCfwQtbMikQBtzHTJqIJzQOMfqvPkqbuZsurBUBmTO57nF9ip9+eE=
-X-Received: by 2002:a63:f048:: with SMTP id s8mr23767917pgj.26.1568068361073;
- Mon, 09 Sep 2019 15:32:41 -0700 (PDT)
-Date:   Mon,  9 Sep 2019 15:32:36 -0700
-Message-Id: <20190909223236.157099-1-samitolvanen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.162.g0b9fbb3734-goog
-Subject: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
-From:   Sami Tolvanen <samitolvanen@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Kees Cook <keescook@chromium.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eint4nhfCiEnji9TBmfOSvGzwj5ZKI3qj6Kalnk/SmM=;
+        b=P9hhk0QjSPFCVRIUrAfaVhRH34+V6hupERKmu7MyAZJwjO3Ve+YLfAZVqCtRD4GQQs
+         BPY4CWPuaZ7rocDrhICskzlIjx8cVnStv0OnLik/MCr+Vrs3Te7a81vVhPNA1FAQeT1Y
+         5HIOvLLtc9cFlqxw1BXUs/jp2SfERlqqqagyZTvCfSqPzGX8Po2IGPEUrRTFU4OuLpn3
+         sLmG3xqDWCRvf5Og/+X6o7bJfybhIUnL648e76EOO5QrwveKWCK9vqoZTuIbo7UDJlRJ
+         StXxd4JZAg9tgrk18oV/UXc5jAkY1Nrs5J4AsyCvcXGHEik9qCE1wGvJcmuL0SbBOGS1
+         RcSg==
+X-Gm-Message-State: APjAAAWjIcYK3b98f3uaUOXKJBGm1xIlVGM7o3EnH6jBEWU4XgipyFc1
+        682Zjdn32V5pLp6iOr4yB/yIxnTrKJbapQ==
+X-Google-Smtp-Source: APXvYqxO87b/3lfZiwxls+JIcEJsMIPyu/p1zKX50OtZ3owTGESN6xJ/YTITNzcCWU9M25WiPmBP2Q==
+X-Received: by 2002:a17:902:fe01:: with SMTP id g1mr7585398plj.178.1568068647439;
+        Mon, 09 Sep 2019 15:37:27 -0700 (PDT)
+Received: from dancer.lab.teklibre.com ([2603:3024:1536:86f0:eea8:6bff:fefe:9a2])
+        by smtp.gmail.com with ESMTPSA id q204sm16186732pfq.176.2019.09.09.15.37.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 09 Sep 2019 15:37:26 -0700 (PDT)
+From:   Dave Taht <dave.taht@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Dave Taht <dave.taht@gmail.com>
+Subject: [RFC PATCH net-next 0/2] more IPv4 unicast extensions
+Date:   Mon,  9 Sep 2019 15:37:17 -0700
+Message-Id: <1568068639-6511-1-git-send-email-dave.taht@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With CONFIG_BPF_JIT, the kernel makes indirect calls to dynamically
-generated code. This change adds basic sanity checking to ensure
-we are jumping to a valid location, which narrows down the attack
-surface on the stored pointer. This also prepares the code for future
-Control-Flow Integrity (CFI) checking, which adds indirect call
-validation to call targets that can be determined at compile-time, but
-cannot validate calls to jited functions.
+Adding support in linux for the 240/4 and 0/8 ipv4 address ranges were
+easy, no brainer removals of obsolete support for obsolete
+specifications. Has anyone noticed yet?
 
-In addition, this change adds a weak arch_bpf_jit_check_func function,
-which architectures that implement BPF JIT can override to perform
-additional validation, such as verifying that the pointer points to
-the correct memory region.
+The following two patches are intended as discussion points fot
+my https://linuxplumbersconf.org/event/4/contributions/457/
+talk today.
 
-Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
----
- include/linux/filter.h | 26 ++++++++++++++++++++++++--
- kernel/bpf/core.c      | 25 +++++++++++++++++++++++++
- 2 files changed, 49 insertions(+), 2 deletions(-)
+Dave Taht (2):
+  Allow 225/8-231/8 as unicast
+  Reduce localhost to a /16
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 92c6e31fb008..abfb0e1b21a8 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -511,7 +511,10 @@ struct sock_fprog_kern {
- 	struct sock_filter	*filter;
- };
- 
-+#define BPF_BINARY_HEADER_MAGIC	0x05de0e82
-+
- struct bpf_binary_header {
-+	u32 magic;
- 	u32 pages;
- 	/* Some arches need word alignment for their instructions */
- 	u8 image[] __aligned(4);
-@@ -553,20 +556,39 @@ struct sk_filter {
- 
- DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- 
-+#ifdef CONFIG_BPF_JIT
-+/*
-+ * With JIT, the kernel makes an indirect call to dynamically generated
-+ * code. Use bpf_call_func to perform additional validation of the call
-+ * target to narrow down attack surface. Architectures implementing BPF
-+ * JIT can override arch_bpf_jit_check_func for arch-specific checking.
-+ */
-+extern unsigned int bpf_call_func(const struct bpf_prog *prog,
-+				  const void *ctx);
-+
-+extern bool arch_bpf_jit_check_func(const struct bpf_prog *prog);
-+#else
-+static inline unsigned int bpf_call_func(const struct bpf_prog *prog,
-+					 const void *ctx)
-+{
-+	return prog->bpf_func(ctx, prog->insnsi);
-+}
-+#endif
-+
- #define BPF_PROG_RUN(prog, ctx)	({				\
- 	u32 ret;						\
- 	cant_sleep();						\
- 	if (static_branch_unlikely(&bpf_stats_enabled_key)) {	\
- 		struct bpf_prog_stats *stats;			\
- 		u64 start = sched_clock();			\
--		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
-+		ret = bpf_call_func(prog, ctx);			\
- 		stats = this_cpu_ptr(prog->aux->stats);		\
- 		u64_stats_update_begin(&stats->syncp);		\
- 		stats->cnt++;					\
- 		stats->nsecs += sched_clock() - start;		\
- 		u64_stats_update_end(&stats->syncp);		\
- 	} else {						\
--		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
-+		ret = bpf_call_func(prog, ctx);			\
- 	}							\
- 	ret; })
- 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 66088a9e9b9e..7aad58f67105 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -792,6 +792,30 @@ void __weak bpf_jit_free_exec(void *addr)
- 	module_memfree(addr);
- }
- 
-+#ifdef CONFIG_BPF_JIT
-+bool __weak arch_bpf_jit_check_func(const struct bpf_prog *prog)
-+{
-+	return true;
-+}
-+
-+unsigned int bpf_call_func(const struct bpf_prog *prog, const void *ctx)
-+{
-+	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
-+
-+	if (!IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) && !prog->jited)
-+		return prog->bpf_func(ctx, prog->insnsi);
-+
-+	if (unlikely(hdr->magic != BPF_BINARY_HEADER_MAGIC ||
-+		     !arch_bpf_jit_check_func(prog))) {
-+		WARN(1, "attempt to jump to an invalid address");
-+		return 0;
-+	}
-+
-+	return prog->bpf_func(ctx, prog->insnsi);
-+}
-+EXPORT_SYMBOL_GPL(bpf_call_func);
-+#endif
-+
- struct bpf_binary_header *
- bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 		     unsigned int alignment,
-@@ -818,6 +842,7 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	/* Fill space with illegal/arch-dep instructions. */
- 	bpf_fill_ill_insns(hdr, size);
- 
-+	hdr->magic = BPF_BINARY_HEADER_MAGIC;
- 	hdr->pages = pages;
- 	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
- 		     PAGE_SIZE - sizeof(*hdr));
+ include/linux/in.h | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
 -- 
-2.23.0.162.g0b9fbb3734-goog
+2.17.1
 
