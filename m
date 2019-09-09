@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BADE0ADA16
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 15:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C63AADA17
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 15:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbfIINir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 09:38:47 -0400
+        id S1729859AbfIINiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 09:38:50 -0400
 Received: from mail-eopbgr770052.outbound.protection.outlook.com ([40.107.77.52]:40429
         "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728961AbfIINiq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 09:38:46 -0400
+        id S1728895AbfIINis (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 09:38:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H8Gw1qQEEuTAacR6Q1MUvoziUSzWsvHj+R4uE9P/CEtxvmMvjSezuhnB3BgIy4kNlyPSs3yW00OsJ/TSEpSrmlPNrnWYvcARY4U84mUj3ws0ES4xGMoyozxtpx2dofnDSMuBSToxU4NUsUTMyksk7arvnGzzhbnlyHGpJ359OTV8LLd+pEHreo3nyJLbVcVEU9pm7n04ejcsUhdVi0FxPexa9OXKj5P1UyjHefOcc2YIBfyFZSntODk0KuQ8HlBg9j1ylLt2inXho3DV5vlayqHbKq4i/BPvkWWUoyuvxSfEu2aXX0Uyc8cpM5ytWfvqjgJubcaXf1sEtYq/366KBg==
+ b=W7Ooru7/koUIuEOOld/35x7oPcRuETerhIgQcRxWKFWKma13jAB6FXuvShLzoqkirkwuPBRgvX8OsXgsyYaKCXmLwiiAxd2ASiTOsojscSZRsEAPsic6V2szG7gwP+2meAWlApm0ql3pfjGEg2tabQvWDvNskGcWlhExLwld789JauXU+r3XognaD9sm2IoSPg+yLmXXyI5UIukA1R2jO605z29OJWPBC1tWmG+3+t9c9I7ll9q78Izgn9Q3Cnh2N3yYuyj24oZTAp4vxNC9cVSuBlC+uneCwa6QncHjYmDkLR2No7Em2EW/MYrdDXgYDGnwQgq0zuwx72HkhpDCKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eApw+ZM5C+WzI9Q6sSBgl7Pdx3R2uub89nA9WG84TxU=;
- b=CLE3WZKlV7k+BA1MQ6Bk8ERtsa3wc3f5UyYuNY8J1KT4ig+J2r0OPhV3qS7uNApx/SfR5oFAVi6F6zKOlZPEr2KsTj4NixVr7iOeQZC+msPYL3RDP3xA8gZTj75qKSjYHYDiQWgUyHADn9Ef6xLBaFGAT0NZL5qhCD2rQh6LurcmAJ8mI8UFktMxSKJTiaHnEc4NLT0jB9mBhuJlEbt6k0f5Gc7MjI06FkFM6d0Jhv9NWcQfHLm2ywDfw9pjvobYRzsjSumbRNabe2dxsdnyzoYlEbTfPGzjC+/6qHqAawWlMNEDS9yRP9sJHL+w9uBb0On4AB5GzMNxS0OyG18s3g==
+ bh=23zk1y/9i1l+bYiM8bO7qA8O1mm4uCxPBxNqugDXEhs=;
+ b=ISuhCWMaA4ARZYBCQjkPxuST+utt0aIEoUwEShp5KRv0Pkp0C/i1EjBKJiuPfO3+YleFJKOSKg8XPFgWLX6kshzgxKwzwEzgG7HICpLJgDNWtpXxJVEkh8WOfZvcESRL1jB18eAFvtz9q10PJzFZOK87ZaOxasGL1rOivydckntvihXAq81O98K5kxz263lVQwpnofJCYzEytaXVvsySTIyQrG0nPIo4oTP/SXQWR6pi3Q16UfLa8xZKNamq4wmaxwga8MnYzsiSMhbQ1dlcHmDEp+lv1qHwm9h5Q4vcn4VqcgUEEZ9QloIyi4qPVdurk7G2ndVKEwQBn/5pyOHnVQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
  dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eApw+ZM5C+WzI9Q6sSBgl7Pdx3R2uub89nA9WG84TxU=;
- b=Z/SU1ZwIvtLsOTHjwXd4roF+Q+fnO4f3xaqgDSiYT8BCofX98T3ZQTQ/E2DQtbChrIISZ2kgYcdDdGQ4yNOorFG1+rEHx/tFJ/CzH0eSeud3XKdUKw4Qu4/omnxNENclXfEtADVsYNixMYddrW8YeRGK9ufHKc2rf+TtX+JQa/Y=
+ bh=23zk1y/9i1l+bYiM8bO7qA8O1mm4uCxPBxNqugDXEhs=;
+ b=0yDBjOrpZxDaJtZ7pn+oiBlUzeICeuFgK5ZuMlc4HVMsEQ46xB54g3WBA4A3buzAMXHu3mSN6oUONhRDMxd7W8ZeQr85IwcHUXpVMt8WAfkEtdG+mWvRVqQ5fMn2m8FjvAD/GKkSqr67J98DTv/qKMHlEELpwqZSMccnFjaLNfM=
 Received: from BN6PR11MB4081.namprd11.prod.outlook.com (10.255.128.166) by
  BN6PR11MB1747.namprd11.prod.outlook.com (10.175.99.10) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.20; Mon, 9 Sep 2019 13:38:42 +0000
+ 15.20.2241.20; Mon, 9 Sep 2019 13:38:44 +0000
 Received: from BN6PR11MB4081.namprd11.prod.outlook.com
  ([fe80::95ec:a465:3f5f:e3e5]) by BN6PR11MB4081.namprd11.prod.outlook.com
  ([fe80::95ec:a465:3f5f:e3e5%3]) with mapi id 15.20.2241.018; Mon, 9 Sep 2019
- 13:38:42 +0000
+ 13:38:44 +0000
 From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
@@ -43,12 +43,12 @@ CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
         Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>,
         Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
         Igor Russkikh <Igor.Russkikh@aquantia.com>
-Subject: [PATCH net-next 03/11] net: aquantia: add basic ptp_clock callbacks
-Thread-Topic: [PATCH net-next 03/11] net: aquantia: add basic ptp_clock
- callbacks
-Thread-Index: AQHVZxPlN6GC7N8UcEu4+SulFLiF+Q==
-Date:   Mon, 9 Sep 2019 13:38:42 +0000
-Message-ID: <8868449ec5508f498131ee141399149bf801ea94.1568034880.git.igor.russkikh@aquantia.com>
+Subject: [PATCH net-next 04/11] net: aquantia: add PTP rings infrastructure
+Thread-Topic: [PATCH net-next 04/11] net: aquantia: add PTP rings
+ infrastructure
+Thread-Index: AQHVZxPmz9SThlT8YUGs9mm9QKMS+w==
+Date:   Mon, 9 Sep 2019 13:38:44 +0000
+Message-ID: <041035a96f6e295ee6ada078deec5c4bf15d320b.1568034880.git.igor.russkikh@aquantia.com>
 References: <cover.1568034880.git.igor.russkikh@aquantia.com>
 In-Reply-To: <cover.1568034880.git.igor.russkikh@aquantia.com>
 Accept-Language: en-US
@@ -64,29 +64,29 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-mailer: git-send-email 2.17.1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e5d080c8-1d50-40b7-e99b-08d7352b078c
+x-ms-office365-filtering-correlation-id: de1ff275-ade5-4702-93b4-08d7352b08d3
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN6PR11MB1747;
 x-ms-traffictypediagnostic: BN6PR11MB1747:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR11MB1747C390791FB7450B76DF0E98B70@BN6PR11MB1747.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:227;
+x-microsoft-antispam-prvs: <BN6PR11MB1747269289EF4B60806D0DB198B70@BN6PR11MB1747.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:513;
 x-forefront-prvs: 01559F388D
 x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39840400004)(346002)(366004)(376002)(136003)(189003)(199004)(26005)(25786009)(6436002)(6486002)(118296001)(305945005)(99286004)(53946003)(5640700003)(14444005)(256004)(64756008)(1730700003)(107886003)(81166006)(81156014)(66446008)(316002)(478600001)(66476007)(76176011)(4326008)(8676002)(86362001)(52116002)(66556008)(30864003)(53936002)(186003)(2501003)(6506007)(386003)(476003)(11346002)(5660300002)(2616005)(44832011)(66066001)(36756003)(3846002)(8936002)(6512007)(2906002)(486006)(6116002)(71190400001)(14454004)(7736002)(66946007)(6916009)(54906003)(102836004)(50226002)(2351001)(446003)(71200400001)(579004);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR11MB1747;H:BN6PR11MB4081.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: aquantia.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: rWU9DbXQxdIEWPyKIrv+79MKOjSfcchV5EMklus17wA/FUAOkp5vcsJAVgkBxtWxvqLpYWFc+JGY8nxrCeiv9h4ZcTbSgPcjJELFpmY7lPxlViiMe+vcICT4nJ5NZHUuuIP4CTTQO2TMf7S99Dui49iotfJWW5o0gh0Q1Sp66Tuud3ap8+TgmrUtad9U+RbTFF+D6Pnj3he+4H433Ig2Njm8f8Z2Hk8V5fNnH2AFiFystLYai3lorW8lOTB9MCVIFrkequDOx14m6foXaj/tYsv3pYYlX6/MWeKKQqKrd7uI6fg4/Y1ju1BY16qDNiiM5Ku1bIDqZNu9SypzV26vvU8SOF9hubxGkC2V+SSoFgfHDZfSjiMC9QBh2k3wO7iO9/FmYb+6HJfPNfN4qzPh5n4bVCegBizQzD01GdmEeH4=
+x-microsoft-antispam-message-info: MRgAtB4C1ver5XSo3ckfqU+0UzqezEJpDZDsSluuWP8Hj91p9Uivom4j60ppe6++feRJDMi58bLiIhAuTp4uPJ6HmbolyCGqyIEvI2B7bIiuvpqA1NQySaQigUg5Y0XSKxUWpJXxmuuRL1HXSnQrfVC88oJXJeArv5AhQ0wra7D+QUpf6V+X/+FtOmbDGKRegYx1Qz17CCYQvCoi7vvszk+rxC3vblZ8CBa8YlU/6z1GZbdw+Bjy34rRx3EIYTtJfCdzyBfahYO3O6qU4F3Pevn1A1ixPPhkMu3a8Zk46LMXCwrEN4IcIVUPZb9zRVRp+sFoLaj7NUoUvJSyDfKlQqnl07lUe4vH9Z2oWhq5Uvz0GyMmHiEtpLK2Cvp5Tf5Bmw/KT5IULecKSafs+7CE2nU+8am4yZR5D2YZxG76f58=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5d080c8-1d50-40b7-e99b-08d7352b078c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2019 13:38:42.5204
+X-MS-Exchange-CrossTenant-Network-Message-Id: de1ff275-ade5-4702-93b4-08d7352b08d3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2019 13:38:44.6582
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: c+MIshKVFtLipleVHlfEXz4FX+ZClXc4JQNalOH9xsieHG66YyBy9Y0+UUL8qPr6jF0pV5wM9I/pS8us1A8kOA==
+X-MS-Exchange-CrossTenant-userprincipalname: jMR7zQ6bLdDpOxKj0dAHC6EfQ7RLgJaKPMWPKjoej1jPNNKBv01CcAXCn9+DDU5O4PE5YAL4tBT/qCLSC+okzQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1747
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -95,11 +95,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 
-Basic HW functions implemented for adjusting frequency, adjusting time,
-getting and setting time.
-Firmware interface for PTP requests and interactions.
+Add implementations of PTP rings alloc/free.
 
-Enable/disable PTP counters in HW on clock register/unregister
+PTP desing on this device uses two separate rings on a separate traffic
+class for traffic rx/tx.
+
+Third ring (hwts) is not a traffic ring, but is used only to receive timest=
+amps
+of the transmitted packets.
 
 Co-developed-by: Egor Pomozov <egor.pomozov@aquantia.com>
 Signed-off-by: Egor Pomozov <egor.pomozov@aquantia.com>
@@ -108,716 +111,659 @@ Signed-off-by: Sergey Samoilenko <sergey.samoilenko@aquantia.com>
 Signed-off-by: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_hw.h    |  20 ++-
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |   3 +
- .../net/ethernet/aquantia/atlantic/aq_ptp.c   | 116 ++++++++++++++++++
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 102 ++++++++++++++-
- .../aquantia/atlantic/hw_atl/hw_atl_llh.c     |  16 ++-
- .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |   8 +-
- .../atlantic/hw_atl/hw_atl_llh_internal.h     |  18 ++-
- .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |   5 +-
- .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |  30 +++++
- .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |  97 +++++++++++----
- 10 files changed, 385 insertions(+), 30 deletions(-)
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |   4 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |  16 ++
+ .../net/ethernet/aquantia/atlantic/aq_ptp.c   | 231 ++++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_ptp.h   |   8 +
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  |  33 ++-
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  |   6 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  45 +++-
+ .../atlantic/hw_atl/hw_atl_b0_internal.h      |   9 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.c     |  14 ++
+ .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |   6 +
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   8 +
+ 11 files changed, 368 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/e=
 thernet/aquantia/atlantic/aq_hw.h
-index 53d7478689a0..20f032ad41e1 100644
+index 20f032ad41e1..677453794ee8 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File aq_hw.h: Declaration of abstract interface for NIC hardware specif=
-ic
-@@ -15,6 +15,9 @@
- #include "aq_rss.h"
- #include "hw_atl/hw_atl_utils.h"
-=20
-+#define AQ_HW_MAC_COUNTER_HZ   312500000ll
-+#define AQ_HW_PHY_COUNTER_HZ   160000000ll
-+
- #define AQ_RX_FIRST_LOC_FVLANID     0U
- #define AQ_RX_LAST_LOC_FVLANID	   15U
- #define AQ_RX_FIRST_LOC_FETHERT    16U
-@@ -94,6 +97,7 @@ struct aq_stats_s {
- #define AQ_HW_FLAG_STOPPING    0x00000008U
- #define AQ_HW_FLAG_RESETTING   0x00000010U
- #define AQ_HW_FLAG_CLOSING     0x00000020U
-+#define AQ_HW_PTP_AVAILABLE    0x01000000U
- #define AQ_HW_LINK_DOWN        0x04000000U
- #define AQ_HW_FLAG_ERR_UNPLUG  0x40000000U
- #define AQ_HW_FLAG_ERR_HW      0x80000000U
-@@ -235,6 +239,14 @@ struct aq_hw_ops {
+@@ -239,6 +239,10 @@ struct aq_hw_ops {
  	int (*hw_set_offload)(struct aq_hw_s *self,
  			      struct aq_nic_cfg_s *aq_nic_cfg);
 =20
-+	void (*hw_get_ptp_ts)(struct aq_hw_s *self, u64 *stamp);
++	int (*hw_tx_tc_mode_get)(struct aq_hw_s *self, u32 *tc_mode);
 +
-+	int (*hw_adj_clock_freq)(struct aq_hw_s *self, s32 delta);
++	int (*hw_rx_tc_mode_get)(struct aq_hw_s *self, u32 *tc_mode);
 +
-+	int (*hw_adj_sys_clock)(struct aq_hw_s *self, s64 delta);
-+
-+	int (*hw_set_sys_clock)(struct aq_hw_s *self, u64 time, u64 ts);
-+
- 	int (*hw_set_fc)(struct aq_hw_s *self, u32 fc, u32 tc);
- };
+ 	void (*hw_get_ptp_ts)(struct aq_hw_s *self, u64 *stamp);
 =20
-@@ -267,6 +279,12 @@ struct aq_fw_ops {
- 	int (*set_power)(struct aq_hw_s *self, unsigned int power_state,
- 			 u8 *mac);
-=20
-+	int (*send_fw_request)(struct aq_hw_s *self,
-+			       const struct hw_fw_request_iface *fw_req,
-+			       size_t size);
-+
-+	void (*enable_ptp)(struct aq_hw_s *self, int enable);
-+
- 	int (*set_eee_rate)(struct aq_hw_s *self, u32 speed);
-=20
- 	int (*get_eee_rate)(struct aq_hw_s *self, u32 *rate,
+ 	int (*hw_adj_clock_freq)(struct aq_hw_s *self, s32 delta);
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
 ethernet/aquantia/atlantic/aq_nic.c
-index 8721d43fd129..8e01de6f22e3 100644
+index 8e01de6f22e3..87357755a72d 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -146,6 +146,9 @@ static int aq_nic_update_link_status(struct aq_nic_s *s=
-elf)
- 			self->aq_hw->aq_link_status.mbps);
- 		aq_nic_update_interrupt_moderation_settings(self);
+@@ -339,6 +339,14 @@ int aq_nic_init(struct aq_nic_s *self)
+ 	if (err < 0)
+ 		goto err_exit;
 =20
-+		if (self->aq_ptp)
-+			aq_ptp_clock_init(self);
-+
- 		/* Driver has to update flow control settings on RX block
- 		 * on any link event.
- 		 * We should query FW whether it negotiated FC.
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/=
-ethernet/aquantia/atlantic/aq_ptp.c
-index c6cdcdc1a6aa..0133745a89d0 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-@@ -16,15 +16,107 @@
- struct aq_ptp_s {
- 	struct aq_nic_s *aq_nic;
-=20
-+	spinlock_t ptp_lock;
- 	struct ptp_clock *ptp_clock;
- 	struct ptp_clock_info ptp_info;
- };
-=20
-+/* aq_ptp_adjfreq
-+ * @ptp: the ptp clock structure
-+ * @ppb: parts per billion adjustment from base
-+ *
-+ * adjust the frequency of the ptp cycle counter by the
-+ * indicated ppb from the base frequency.
-+ */
-+static int aq_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
-+{
-+	struct aq_ptp_s *self =3D container_of(ptp, struct aq_ptp_s, ptp_info);
-+	struct aq_nic_s *aq_nic =3D self->aq_nic;
-+
-+	mutex_lock(&aq_nic->fwreq_mutex);
-+	aq_nic->aq_hw_ops->hw_adj_clock_freq(aq_nic->aq_hw, ppb);
-+	mutex_unlock(&aq_nic->fwreq_mutex);
-+
-+	return 0;
-+}
-+
-+/* aq_ptp_adjtime
-+ * @ptp: the ptp clock structure
-+ * @delta: offset to adjust the cycle counter by
-+ *
-+ * adjust the timer by resetting the timecounter structure.
-+ */
-+static int aq_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	struct aq_ptp_s *self =3D container_of(ptp, struct aq_ptp_s, ptp_info);
-+	struct aq_nic_s *aq_nic =3D self->aq_nic;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&self->ptp_lock, flags);
-+	aq_nic->aq_hw_ops->hw_adj_sys_clock(aq_nic->aq_hw, delta);
-+	spin_unlock_irqrestore(&self->ptp_lock, flags);
-+
-+	return 0;
-+}
-+
-+/* aq_ptp_gettime
-+ * @ptp: the ptp clock structure
-+ * @ts: timespec structure to hold the current time value
-+ *
-+ * read the timecounter and return the correct value on ns,
-+ * after converting it into a struct timespec.
-+ */
-+static int aq_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *t=
-s)
-+{
-+	struct aq_ptp_s *self =3D container_of(ptp, struct aq_ptp_s, ptp_info);
-+	struct aq_nic_s *aq_nic =3D self->aq_nic;
-+	unsigned long flags;
-+	u64 ns;
-+
-+	spin_lock_irqsave(&self->ptp_lock, flags);
-+	aq_nic->aq_hw_ops->hw_get_ptp_ts(aq_nic->aq_hw, &ns);
-+	spin_unlock_irqrestore(&self->ptp_lock, flags);
-+
-+	*ts =3D ns_to_timespec64(ns);
-+
-+	return 0;
-+}
-+
-+/* aq_ptp_settime
-+ * @ptp: the ptp clock structure
-+ * @ts: the timespec containing the new time for the cycle counter
-+ *
-+ * reset the timecounter to use a new base value instead of the kernel
-+ * wall timer value.
-+ */
-+static int aq_ptp_settime(struct ptp_clock_info *ptp,
-+			  const struct timespec64 *ts)
-+{
-+	struct aq_ptp_s *self =3D container_of(ptp, struct aq_ptp_s, ptp_info);
-+	struct aq_nic_s *aq_nic =3D self->aq_nic;
-+	unsigned long flags;
-+	u64 ns =3D timespec64_to_ns(ts);
-+	u64 now;
-+
-+	spin_lock_irqsave(&self->ptp_lock, flags);
-+	aq_nic->aq_hw_ops->hw_get_ptp_ts(aq_nic->aq_hw, &now);
-+	aq_nic->aq_hw_ops->hw_adj_sys_clock(aq_nic->aq_hw, (s64)ns - (s64)now);
-+
-+	spin_unlock_irqrestore(&self->ptp_lock, flags);
-+
-+	return 0;
-+}
-+
- static struct ptp_clock_info aq_ptp_clock =3D {
- 	.owner		=3D THIS_MODULE,
- 	.name		=3D "atlantic ptp",
-+	.max_adj	=3D 999999999,
- 	.n_ext_ts	=3D 0,
- 	.pps		=3D 0,
-+	.adjfreq	=3D aq_ptp_adjfreq,
-+	.adjtime	=3D aq_ptp_adjtime,
-+	.gettime64	=3D aq_ptp_gettime,
-+	.settime64	=3D aq_ptp_settime,
- 	.n_per_out     =3D 0,
- 	.n_pins        =3D 0,
- 	.pin_config    =3D NULL,
-@@ -37,6 +129,16 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int i=
-dx_vec)
- 	struct aq_ptp_s *self;
- 	int err =3D 0;
-=20
-+	if (!aq_nic->aq_hw_ops->hw_get_ptp_ts) {
-+		aq_nic->aq_ptp =3D NULL;
-+		return 0;
-+	}
-+
-+	if (!aq_nic->aq_fw_ops->enable_ptp) {
-+		aq_nic->aq_ptp =3D NULL;
-+		return 0;
-+	}
-+
- 	hw_atl_utils_mpi_read_stats(aq_nic->aq_hw, &mbox);
-=20
- 	if (!(mbox.info.caps_ex & BIT(CAPS_EX_PHY_PTP_EN))) {
-@@ -52,6 +154,8 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int id=
-x_vec)
-=20
- 	self->aq_nic =3D aq_nic;
-=20
-+	spin_lock_init(&self->ptp_lock);
-+
- 	self->ptp_info =3D aq_ptp_clock;
- 	clock =3D ptp_clock_register(&self->ptp_info, &aq_nic->ndev->dev);
- 	if (!clock) {
-@@ -63,6 +167,13 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int i=
-dx_vec)
-=20
- 	aq_nic->aq_ptp =3D self;
-=20
-+	/* enable ptp counter */
-+	aq_utils_obj_set(&aq_nic->aq_hw->flags, AQ_HW_PTP_AVAILABLE);
-+	mutex_lock(&aq_nic->fwreq_mutex);
-+	aq_nic->aq_fw_ops->enable_ptp(aq_nic->aq_hw, 1);
-+	aq_ptp_clock_init(aq_nic);
-+	mutex_unlock(&aq_nic->fwreq_mutex);
-+
- 	return 0;
-=20
- err_exit:
-@@ -88,6 +199,11 @@ void aq_ptp_free(struct aq_nic_s *aq_nic)
- 	if (!self)
- 		return;
-=20
-+	/* disable ptp */
-+	mutex_lock(&aq_nic->fwreq_mutex);
-+	aq_nic->aq_fw_ops->enable_ptp(aq_nic->aq_hw, 0);
-+	mutex_unlock(&aq_nic->fwreq_mutex);
-+
- 	kfree(self);
- 	aq_nic->aq_ptp =3D NULL;
- }
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/dr=
-ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 30f7fc4c97ff..f3550fbb1c59 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File hw_atl_b0.c: Definition of Atlantic hardware specific functions. *=
-/
-@@ -86,6 +86,8 @@ const struct aq_hw_caps_s hw_atl_b0_caps_aqc109 =3D {
- 			  AQ_NIC_RATE_100M,
- };
-=20
-+static s64 ptp_clk_offset;
-+
- static int hw_atl_b0_hw_reset(struct aq_hw_s *self)
- {
- 	int err =3D 0;
-@@ -992,6 +994,96 @@ static int hw_atl_b0_hw_ring_rx_stop(struct aq_hw_s *s=
-elf,
- 	return aq_hw_err_from_flags(self);
- }
-=20
-+#define get_ptp_ts_val_u64(self, indx) \
-+	((u64)(hw_atl_pcs_ptp_clock_get(self, indx) & 0xffff))
-+
-+static void hw_atl_b0_get_ptp_ts(struct aq_hw_s *self, u64 *stamp)
-+{
-+	u64 ns;
-+
-+	hw_atl_pcs_ptp_clock_read_enable(self, 1);
-+	hw_atl_pcs_ptp_clock_read_enable(self, 0);
-+	ns =3D (get_ptp_ts_val_u64(self, 0) +
-+	      (get_ptp_ts_val_u64(self, 1) << 16)) * 1000000000llu +
-+	     (get_ptp_ts_val_u64(self, 3) +
-+	      (get_ptp_ts_val_u64(self, 4) << 16));
-+
-+	*stamp =3D ns + ptp_clk_offset;
-+}
-+
-+static void hw_atl_b0_adj_params_get(u64 freq, s64 adj, u32 *ns, u32 *fns)
-+{
-+	/* For accuracy, the digit is extended */
-+	s64 divisor =3D 0, base_ns =3D ((adj + 1000000000ll) * 1000000000ll) / fr=
-eq;
-+	u32 nsi_frac =3D 0, nsi =3D base_ns / 1000000000ll;
-+
-+	if (base_ns !=3D nsi * 1000000000ll) {
-+		divisor =3D 1000000000000000000ll /
-+			  (base_ns - nsi * 1000000000ll);
-+		nsi_frac =3D 0x100000000ll * 1000000000ll / divisor;
-+	}
-+
-+	*ns =3D nsi;
-+	*fns =3D nsi_frac;
-+}
-+
-+static void
-+hw_atl_b0_mac_adj_param_calc(struct hw_fw_request_ptp_adj_freq *ptp_adj_fr=
-eq,
-+			     u64 phyfreq, u64 macfreq)
-+{
-+	s64 fns_in_sec_phy =3D phyfreq * (ptp_adj_freq->fns_phy +
-+					0x100000000ll * ptp_adj_freq->ns_phy);
-+	s64 fns_in_sec_mac =3D macfreq * (ptp_adj_freq->fns_mac +
-+					0x100000000ll * ptp_adj_freq->ns_mac);
-+	s64 fault_in_sec_phy =3D 0x100000000ll * 1000000000ll - fns_in_sec_phy;
-+	s64 fault_in_sec_mac =3D 0x100000000ll * 1000000000ll - fns_in_sec_mac;
-+	/* MAC MCP counter freq is macfreq / 4 */
-+	s64 diff_in_mcp_overflow =3D (fault_in_sec_mac - fault_in_sec_phy) *
-+				   0x400000000ll / AQ_HW_MAC_COUNTER_HZ;
-+	s64 adj_fns_val =3D (ptp_adj_freq->fns_mac + 0x100000000ll *
-+			   ptp_adj_freq->ns_mac) + diff_in_mcp_overflow;
-+
-+	ptp_adj_freq->mac_ns_adj =3D adj_fns_val / 0x100000000ll;
-+	ptp_adj_freq->mac_fns_adj =3D adj_fns_val - ptp_adj_freq->mac_ns_adj *
-+				    0x100000000ll;
-+}
-+
-+static int hw_atl_b0_adj_sys_clock(struct aq_hw_s *self, s64 delta)
-+{
-+	ptp_clk_offset +=3D delta;
-+
-+	return 0;
-+}
-+
-+static int hw_atl_b0_set_sys_clock(struct aq_hw_s *self, u64 time, u64 ts)
-+{
-+	s64 delta =3D time - (ptp_clk_offset + ts);
-+
-+	return hw_atl_b0_adj_sys_clock(self, delta);
-+}
-+
-+static int hw_atl_b0_adj_clock_freq(struct aq_hw_s *self, s32 ppb)
-+{
-+	struct hw_fw_request_iface fwreq;
-+	size_t size;
-+
-+	memset(&fwreq, 0, sizeof(fwreq));
-+
-+	fwreq.msg_id =3D HW_AQ_FW_REQUEST_PTP_ADJ_FREQ;
-+	hw_atl_b0_adj_params_get(AQ_HW_MAC_COUNTER_HZ, ppb,
-+				 &fwreq.ptp_adj_freq.ns_mac,
-+				 &fwreq.ptp_adj_freq.fns_mac);
-+	hw_atl_b0_adj_params_get(AQ_HW_PHY_COUNTER_HZ, ppb,
-+				 &fwreq.ptp_adj_freq.ns_phy,
-+				 &fwreq.ptp_adj_freq.fns_phy);
-+	hw_atl_b0_mac_adj_param_calc(&fwreq.ptp_adj_freq,
-+				     AQ_HW_PHY_COUNTER_HZ,
-+				     AQ_HW_MAC_COUNTER_HZ);
-+
-+	size =3D sizeof(fwreq.msg_id) + sizeof(fwreq.ptp_adj_freq);
-+	return self->aq_fw_ops->send_fw_request(self, &fwreq, size);
-+}
-+
- static int hw_atl_b0_hw_fl3l4_clear(struct aq_hw_s *self,
- 				    struct aq_rx_filter_l3l4 *data)
- {
-@@ -1164,6 +1256,12 @@ const struct aq_hw_ops hw_atl_ops_b0 =3D {
- 	.hw_get_regs                 =3D hw_atl_utils_hw_get_regs,
- 	.hw_get_hw_stats             =3D hw_atl_utils_get_hw_stats,
- 	.hw_get_fw_version           =3D hw_atl_utils_get_fw_version,
--	.hw_set_offload              =3D hw_atl_b0_hw_offload_set,
-+
-+	.hw_get_ptp_ts           =3D hw_atl_b0_get_ptp_ts,
-+	.hw_adj_sys_clock        =3D hw_atl_b0_adj_sys_clock,
-+	.hw_set_sys_clock        =3D hw_atl_b0_set_sys_clock,
-+	.hw_adj_clock_freq       =3D hw_atl_b0_adj_clock_freq,
-+
-+	.hw_set_offload          =3D hw_atl_b0_hw_offload_set,
- 	.hw_set_fc                   =3D hw_atl_b0_set_fc,
- };
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index 1149812ae463..25e7261f6a44 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File hw_atl_llh.c: Definitions of bitfield and register access function=
-s for
-@@ -1513,6 +1513,20 @@ void hw_atl_reg_glb_cpu_scratch_scp_set(struct aq_hw=
-_s *aq_hw,
- 			glb_cpu_scratch_scp);
- }
-=20
-+void hw_atl_pcs_ptp_clock_read_enable(struct aq_hw_s *aq_hw,
-+				      u32 ptp_clock_read_enable)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_ADR,
-+			    HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_MSK,
-+			    HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_SHIFT,
-+			    ptp_clock_read_enable);
-+}
-+
-+u32 hw_atl_pcs_ptp_clock_get(struct aq_hw_s *aq_hw, u32 index)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL_PCS_PTP_TS_VAL_ADDR(index));
-+}
-+
- void hw_atl_mcp_up_force_intr_set(struct aq_hw_s *aq_hw, u32 up_force_intr=
-)
- {
- 	aq_hw_write_reg_bit(aq_hw, HW_ATL_MCP_UP_FORCE_INTERRUPT_ADR,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/d=
-rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-index 0c37abbabca5..a62693e51a6b 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File hw_atl_llh.h: Declarations of bitfield and register access functio=
-ns for
-@@ -712,6 +712,12 @@ void hw_atl_msm_reg_wr_strobe_set(struct aq_hw_s *aq_h=
-w, u32 reg_wr_strobe);
- /* set pci register reset disable */
- void hw_atl_pci_pci_reg_res_dis_set(struct aq_hw_s *aq_hw, u32 pci_reg_res=
-_dis);
-=20
-+/* pcs */
-+void hw_atl_pcs_ptp_clock_read_enable(struct aq_hw_s *aq_hw,
-+				      u32 ptp_clock_read_enable);
-+
-+u32 hw_atl_pcs_ptp_clock_get(struct aq_hw_s *aq_hw, u32 index);
-+
- /* set uP Force Interrupt */
- void hw_atl_mcp_up_force_intr_set(struct aq_hw_s *aq_hw, u32 up_force_intr=
-);
-=20
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_inter=
-nal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-index c3febcdfa92e..7716e0fc22b5 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh_internal.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File hw_atl_llh_internal.h: Preprocessor definitions
-@@ -2421,6 +2421,22 @@
- /* default value of bitfield register write strobe */
- #define HW_ATL_MSM_REG_WR_STROBE_DEFAULT 0x0
-=20
-+/* register address for bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_ADR 0x00004628
-+/* bitmask for bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_MSK 0x00000010
-+/* inverted bitmask for bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_MSKN 0xFFFFFFEF
-+/* lower bit position of bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_SHIFT 4
-+/* width of bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_WIDTH 1
-+/* default value of bitfield PTP Digital Clock Read Enable */
-+#define HW_ATL_PCS_PTP_CLOCK_READ_ENABLE_DEFAULT 0x0
-+
-+/* register address for ptp counter reading */
-+#define HW_ATL_PCS_PTP_TS_VAL_ADDR(index) (0x00004900 + (index) * 0x4)
-+
- /* mif soft reset bitfield definitions
-  * preprocessor definitions for the bitfield "soft reset".
-  * port=3D"pif_glb_res_i"
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b=
-/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index 32512539ae86..6fc5640065bd 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -327,8 +327,7 @@ int hw_atl_utils_fw_downld_dwords(struct aq_hw_s *self,=
- u32 a,
- 	return err;
- }
-=20
--static int hw_atl_utils_fw_upload_dwords(struct aq_hw_s *self, u32 a, u32 =
-*p,
--					 u32 cnt)
-+int hw_atl_utils_fw_upload_dwords(struct aq_hw_s *self, u32 a, u32 *p, u32=
- cnt)
- {
- 	u32 val;
- 	int err =3D 0;
-@@ -964,4 +963,6 @@ const struct aq_fw_ops aq_fw_1x_ops =3D {
- 	.set_eee_rate =3D NULL,
- 	.get_eee_rate =3D NULL,
- 	.set_flow_control =3D NULL,
-+	.send_fw_request =3D NULL,
-+	.enable_ptp =3D NULL,
- };
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b=
-/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-index 766e02c7fd4e..f2eb94f298e2 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-@@ -279,6 +279,34 @@ struct __packed offload_info {
- 	u8 buf[0];
- };
-=20
-+/* Mailbox FW Request interface */
-+struct __packed hw_fw_request_ptp_adj_freq {
-+	u32 ns_mac;
-+	u32 fns_mac;
-+	u32 ns_phy;
-+	u32 fns_phy;
-+	u32 mac_ns_adj;
-+	u32 mac_fns_adj;
-+};
-+
-+struct __packed hw_fw_request_ptp_adj_clock {
-+	u32 ns;
-+	u32 sec;
-+	int sign;
-+};
-+
-+#define HW_AQ_FW_REQUEST_PTP_ADJ_FREQ	         0x12
-+#define HW_AQ_FW_REQUEST_PTP_ADJ_CLOCK	         0x13
-+
-+struct __packed hw_fw_request_iface {
-+	u32 msg_id;
-+	union {
-+		/* PTP FW Request */
-+		struct hw_fw_request_ptp_adj_freq ptp_adj_freq;
-+		struct hw_fw_request_ptp_adj_clock ptp_adj_clock;
-+	};
-+};
-+
- enum hw_atl_rx_action_with_traffic {
- 	HW_ATL_RX_DISCARD,
- 	HW_ATL_RX_HOST,
-@@ -561,6 +589,8 @@ struct aq_stats_s *hw_atl_utils_get_hw_stats(struct aq_=
-hw_s *self);
- int hw_atl_utils_fw_downld_dwords(struct aq_hw_s *self, u32 a,
- 				  u32 *p, u32 cnt);
-=20
-+int hw_atl_utils_fw_upload_dwords(struct aq_hw_s *self, u32 a, u32 *p, u32=
- cnt);
-+
- int hw_atl_utils_fw_set_wol(struct aq_hw_s *self, bool wol_enabled, u8 *ma=
-c);
-=20
- int hw_atl_utils_fw_rpc_call(struct aq_hw_s *self, unsigned int rpc_size);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2=
-x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-index da726489e3c8..8b9824b1dc5e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * aQuantia Corporation Network Driver
-- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-+ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
-  */
-=20
- /* File hw_atl_utils_fw2x.c: Definition of firmware 2.x functions for
-@@ -17,14 +17,17 @@
- #include "hw_atl_utils.h"
- #include "hw_atl_llh.h"
-=20
--#define HW_ATL_FW2X_MPI_RPC_ADDR        0x334
-+#define HW_ATL_FW2X_MPI_RPC_ADDR         0x334
-=20
--#define HW_ATL_FW2X_MPI_MBOX_ADDR       0x360
--#define HW_ATL_FW2X_MPI_EFUSE_ADDR	0x364
--#define HW_ATL_FW2X_MPI_CONTROL_ADDR	0x368
--#define HW_ATL_FW2X_MPI_CONTROL2_ADDR	0x36C
--#define HW_ATL_FW2X_MPI_STATE_ADDR	0x370
--#define HW_ATL_FW2X_MPI_STATE2_ADDR     0x374
-+#define HW_ATL_FW2X_MPI_MBOX_ADDR        0x360
-+#define HW_ATL_FW2X_MPI_EFUSE_ADDR       0x364
-+#define HW_ATL_FW2X_MPI_CONTROL_ADDR     0x368
-+#define HW_ATL_FW2X_MPI_CONTROL2_ADDR    0x36C
-+#define HW_ATL_FW2X_MPI_STATE_ADDR       0x370
-+#define HW_ATL_FW2X_MPI_STATE2_ADDR      0x374
-+
-+#define HW_ATL_FW3X_EXT_CONTROL_ADDR     0x378
-+#define HW_ATL_FW3X_EXT_STATE_ADDR       0x37c
-=20
- #define HW_ATL_FW2X_CAP_PAUSE            BIT(CAPS_HI_PAUSE)
- #define HW_ATL_FW2X_CAP_ASYM_PAUSE       BIT(CAPS_HI_ASYMMETRIC_PAUSE)
-@@ -444,6 +447,54 @@ static int aq_fw2x_set_power(struct aq_hw_s *self, uns=
-igned int power_state,
- 	return err;
- }
-=20
-+static int aq_fw2x_send_fw_request(struct aq_hw_s *self,
-+				   const struct hw_fw_request_iface *fw_req,
-+				   size_t size)
-+{
-+	u32 ctrl2, orig_ctrl2;
-+	u32 dword_cnt;
-+	int err =3D 0;
-+	u32 val;
-+
-+	/* Write data to drvIface Mailbox */
-+	dword_cnt =3D size / sizeof(u32);
-+	if (size % sizeof(u32))
-+		dword_cnt++;
-+	err =3D hw_atl_utils_fw_upload_dwords(self, aq_fw2x_rpc_get(self),
-+					    (void *)fw_req, dword_cnt);
++	err =3D aq_ptp_ring_alloc(self);
 +	if (err < 0)
 +		goto err_exit;
 +
-+	/* Toggle statistics bit for FW to update */
-+	ctrl2 =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
-+	orig_ctrl2 =3D ctrl2 & BIT(CAPS_HI_FW_REQUEST);
-+	ctrl2 =3D ctrl2 ^ BIT(CAPS_HI_FW_REQUEST);
-+	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, ctrl2);
++	err =3D aq_ptp_ring_init(self);
++	if (err < 0)
++		goto err_exit;
 +
-+	/* Wait FW to report back */
-+	err =3D readx_poll_timeout_atomic(aq_fw2x_state2_get, self, val,
-+					orig_ctrl2 !=3D (val &
-+						       BIT(CAPS_HI_FW_REQUEST)),
-+					1U, 10000U);
+ 	netif_carrier_off(self->ndev);
+=20
+ err_exit:
+@@ -369,6 +377,10 @@ int aq_nic_start(struct aq_nic_s *self)
+ 			goto err_exit;
+ 	}
+=20
++	err =3D aq_ptp_ring_start(self);
++	if (err < 0)
++		goto err_exit;
++
+ 	err =3D self->aq_hw_ops->hw_start(self->aq_hw);
+ 	if (err < 0)
+ 		goto err_exit;
+@@ -963,6 +975,8 @@ int aq_nic_stop(struct aq_nic_s *self)
+ 		self->aq_vecs > i; ++i, aq_vec =3D self->aq_vec[i])
+ 		aq_vec_stop(aq_vec);
+=20
++	aq_ptp_ring_stop(self);
++
+ 	return self->aq_hw_ops->hw_stop(self->aq_hw);
+ }
+=20
+@@ -978,7 +992,9 @@ void aq_nic_deinit(struct aq_nic_s *self)
+ 		self->aq_vecs > i; ++i, aq_vec =3D self->aq_vec[i])
+ 		aq_vec_deinit(aq_vec);
+=20
++	aq_ptp_ring_deinit(self);
+ 	aq_ptp_unregister(self);
++	aq_ptp_ring_free(self);
+ 	aq_ptp_free(self);
+=20
+ 	if (likely(self->aq_fw_ops->deinit)) {
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/=
+ethernet/aquantia/atlantic/aq_ptp.c
+index 0133745a89d0..7305073c3845 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+@@ -12,15 +12,56 @@
+=20
+ #include "aq_nic.h"
+ #include "aq_ptp.h"
++#include "aq_ring.h"
++
++struct ptp_skb_ring {
++	struct sk_buff **buff;
++	spinlock_t lock;
++	unsigned int size;
++	unsigned int head;
++	unsigned int tail;
++};
+=20
+ struct aq_ptp_s {
+ 	struct aq_nic_s *aq_nic;
+=20
+ 	spinlock_t ptp_lock;
++	spinlock_t ptp_ring_lock;
+ 	struct ptp_clock *ptp_clock;
+ 	struct ptp_clock_info ptp_info;
++
++	struct aq_ring_param_s ptp_ring_param;
++
++	struct aq_ring_s ptp_tx;
++	struct aq_ring_s ptp_rx;
++	struct aq_ring_s hwts_rx;
++
++	struct ptp_skb_ring skb_ring;
+ };
+=20
++static int aq_ptp_skb_ring_init(struct ptp_skb_ring *ring, unsigned int si=
+ze)
++{
++	struct sk_buff **buff =3D kmalloc(sizeof(*buff) * size, GFP_KERNEL);
++
++	if (!buff)
++		return -ENOMEM;
++
++	spin_lock_init(&ring->lock);
++
++	ring->buff =3D buff;
++	ring->size =3D size;
++	ring->head =3D 0;
++	ring->tail =3D 0;
++
++	return 0;
++}
++
++static void aq_ptp_skb_ring_release(struct ptp_skb_ring *ring)
++{
++	kfree(ring->buff);
++	ring->buff =3D NULL;
++}
++
+ /* aq_ptp_adjfreq
+  * @ptp: the ptp clock structure
+  * @ppb: parts per billion adjustment from base
+@@ -107,6 +148,186 @@ static int aq_ptp_settime(struct ptp_clock_info *ptp,
+ 	return 0;
+ }
+=20
++int aq_ptp_ring_init(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++	int err =3D 0;
++
++	if (!self)
++		return 0;
++
++	err =3D aq_ring_init(&self->ptp_tx);
++	if (err < 0)
++		goto err_exit;
++	err =3D aq_nic->aq_hw_ops->hw_ring_tx_init(aq_nic->aq_hw,
++						 &self->ptp_tx,
++						 &self->ptp_ring_param);
++	if (err < 0)
++		goto err_exit;
++
++	err =3D aq_ring_init(&self->ptp_rx);
++	if (err < 0)
++		goto err_exit;
++	err =3D aq_nic->aq_hw_ops->hw_ring_rx_init(aq_nic->aq_hw,
++						 &self->ptp_rx,
++						 &self->ptp_ring_param);
++	if (err < 0)
++		goto err_exit;
++
++	err =3D aq_ring_rx_fill(&self->ptp_rx);
++	if (err < 0)
++		goto err_exit;
++	err =3D aq_nic->aq_hw_ops->hw_ring_rx_fill(aq_nic->aq_hw,
++						 &self->ptp_rx,
++						 0U);
++	if (err < 0)
++		goto err_exit;
++
++	err =3D aq_ring_init(&self->hwts_rx);
++	if (err < 0)
++		goto err_exit;
++	err =3D aq_nic->aq_hw_ops->hw_ring_rx_init(aq_nic->aq_hw,
++						 &self->hwts_rx,
++						 &self->ptp_ring_param);
 +
 +err_exit:
 +	return err;
 +}
 +
-+static void aq_fw3x_enable_ptp(struct aq_hw_s *self, int enable)
++int aq_ptp_ring_start(struct aq_nic_s *aq_nic)
 +{
-+	u32 ptp_opts =3D aq_hw_read_reg(self, HW_ATL_FW3X_EXT_STATE_ADDR);
-+	u32 all_ptp_features =3D BIT(CAPS_EX_PHY_PTP_EN) |
-+						   BIT(CAPS_EX_PTP_GPIO_EN);
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++	int err =3D 0;
 +
-+	if (enable)
-+		ptp_opts |=3D all_ptp_features;
-+	else
-+		ptp_opts &=3D ~all_ptp_features;
++	if (!self)
++		return 0;
 +
-+	aq_hw_write_reg(self, HW_ATL_FW3X_EXT_CONTROL_ADDR, ptp_opts);
++	err =3D aq_nic->aq_hw_ops->hw_ring_tx_start(aq_nic->aq_hw, &self->ptp_tx)=
+;
++	if (err < 0)
++		goto err_exit;
++
++	err =3D aq_nic->aq_hw_ops->hw_ring_rx_start(aq_nic->aq_hw, &self->ptp_rx)=
+;
++	if (err < 0)
++		goto err_exit;
++
++	err =3D aq_nic->aq_hw_ops->hw_ring_rx_start(aq_nic->aq_hw,
++						  &self->hwts_rx);
++	if (err < 0)
++		goto err_exit;
++
++err_exit:
++	return err;
 +}
 +
- static int aq_fw2x_set_eee_rate(struct aq_hw_s *self, u32 speed)
++void aq_ptp_ring_stop(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++
++	if (!self)
++		return;
++
++	aq_nic->aq_hw_ops->hw_ring_tx_stop(aq_nic->aq_hw, &self->ptp_tx);
++	aq_nic->aq_hw_ops->hw_ring_rx_stop(aq_nic->aq_hw, &self->ptp_rx);
++
++	aq_nic->aq_hw_ops->hw_ring_rx_stop(aq_nic->aq_hw, &self->hwts_rx);
++}
++
++void aq_ptp_ring_deinit(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++
++	if (!self || !self->ptp_tx.aq_nic || !self->ptp_rx.aq_nic)
++		return;
++
++	aq_ring_tx_clean(&self->ptp_tx);
++	aq_ring_rx_deinit(&self->ptp_rx);
++}
++
++#define PTP_8TC_RING_IDX             8
++#define PTP_4TC_RING_IDX            16
++#define PTP_HWST_RING_IDX           31
++
++int aq_ptp_ring_alloc(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++	unsigned int tx_ring_idx, rx_ring_idx;
++	struct aq_ring_s *hwts =3D 0;
++	u32 tx_tc_mode, rx_tc_mode;
++	struct aq_ring_s *ring;
++	int err;
++
++	if (!self)
++		return 0;
++
++	/* Index must to be 8 (8 TCs) or 16 (4 TCs).
++	 * It depends from Traffic Class mode.
++	 */
++	aq_nic->aq_hw_ops->hw_tx_tc_mode_get(aq_nic->aq_hw, &tx_tc_mode);
++	if (tx_tc_mode =3D=3D 0)
++		tx_ring_idx =3D PTP_8TC_RING_IDX;
++	else
++		tx_ring_idx =3D PTP_4TC_RING_IDX;
++
++	ring =3D aq_ring_tx_alloc(&self->ptp_tx, aq_nic,
++				tx_ring_idx, &aq_nic->aq_nic_cfg);
++	if (!ring) {
++		err =3D -ENOMEM;
++		goto err_exit_1;
++	}
++
++	aq_nic->aq_hw_ops->hw_rx_tc_mode_get(aq_nic->aq_hw, &rx_tc_mode);
++	if (rx_tc_mode =3D=3D 0)
++		rx_ring_idx =3D PTP_8TC_RING_IDX;
++	else
++		rx_ring_idx =3D PTP_4TC_RING_IDX;
++
++	ring =3D aq_ring_rx_alloc(&self->ptp_rx, aq_nic,
++				rx_ring_idx, &aq_nic->aq_nic_cfg);
++	if (!ring) {
++		err =3D -ENOMEM;
++		goto err_exit_2;
++	}
++
++	hwts =3D aq_ring_hwts_rx_alloc(&self->hwts_rx, aq_nic, PTP_HWST_RING_IDX,
++				     aq_nic->aq_nic_cfg.rxds,
++				     aq_nic->aq_nic_cfg.aq_hw_caps->rxd_size);
++	if (!hwts) {
++		err =3D -ENOMEM;
++		goto err_exit_3;
++	}
++
++	err =3D aq_ptp_skb_ring_init(&self->skb_ring, aq_nic->aq_nic_cfg.rxds);
++	if (err !=3D 0) {
++		err =3D -ENOMEM;
++		goto err_exit_4;
++	}
++
++	return 0;
++
++err_exit_4:
++	aq_ring_free(&self->hwts_rx);
++err_exit_3:
++	aq_ring_free(&self->ptp_rx);
++err_exit_2:
++	aq_ring_free(&self->ptp_tx);
++err_exit_1:
++	return err;
++}
++
++void aq_ptp_ring_free(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++
++	if (!self)
++		return;
++
++	aq_ring_free(&self->ptp_tx);
++	aq_ring_free(&self->ptp_rx);
++	aq_ring_free(&self->hwts_rx);
++
++	aq_ptp_skb_ring_release(&self->skb_ring);
++}
++
+ static struct ptp_clock_info aq_ptp_clock =3D {
+ 	.owner		=3D THIS_MODULE,
+ 	.name		=3D "atlantic ptp",
+@@ -122,6 +343,15 @@ static struct ptp_clock_info aq_ptp_clock =3D {
+ 	.pin_config    =3D NULL,
+ };
+=20
++void aq_ptp_clock_init(struct aq_nic_s *aq_nic)
++{
++	struct aq_ptp_s *self =3D aq_nic->aq_ptp;
++	struct timespec64 ts;
++
++	ktime_get_real_ts64(&ts);
++	aq_ptp_settime(&self->ptp_info, &ts);
++}
++
+ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec)
  {
- 	u32 mpi_opts =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
-@@ -534,19 +585,21 @@ static u32 aq_fw2x_state2_get(struct aq_hw_s *self)
+ 	struct hw_atl_utils_mbox mbox;
+@@ -155,6 +385,7 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int i=
+dx_vec)
+ 	self->aq_nic =3D aq_nic;
+=20
+ 	spin_lock_init(&self->ptp_lock);
++	spin_lock_init(&self->ptp_ring_lock);
+=20
+ 	self->ptp_info =3D aq_ptp_clock;
+ 	clock =3D ptp_clock_register(&self->ptp_info, &aq_nic->ndev->dev);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h b/drivers/net/=
+ethernet/aquantia/atlantic/aq_ptp.h
+index cea238959b20..32350f75e138 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
+@@ -17,6 +17,14 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int id=
+x_vec);
+ void aq_ptp_unregister(struct aq_nic_s *aq_nic);
+ void aq_ptp_free(struct aq_nic_s *aq_nic);
+=20
++int aq_ptp_ring_alloc(struct aq_nic_s *aq_nic);
++void aq_ptp_ring_free(struct aq_nic_s *aq_nic);
++
++int aq_ptp_ring_init(struct aq_nic_s *aq_nic);
++int aq_ptp_ring_start(struct aq_nic_s *aq_nic);
++void aq_ptp_ring_stop(struct aq_nic_s *aq_nic);
++void aq_ptp_ring_deinit(struct aq_nic_s *aq_nic);
++
+ void aq_ptp_clock_init(struct aq_nic_s *aq_nic);
+=20
+ #endif /* AQ_PTP_H */
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net=
+/ethernet/aquantia/atlantic/aq_ring.c
+index 3901d7994ca1..6d57928f8a37 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
+  */
+=20
+ /* File aq_ring.c: Definition of functions for Rx/Tx rings. */
+@@ -177,6 +177,37 @@ struct aq_ring_s *aq_ring_rx_alloc(struct aq_ring_s *s=
+elf,
+ 	return self;
  }
 =20
- const struct aq_fw_ops aq_fw_2x_ops =3D {
--	.init =3D aq_fw2x_init,
--	.deinit =3D aq_fw2x_deinit,
--	.reset =3D NULL,
--	.renegotiate =3D aq_fw2x_renegotiate,
--	.get_mac_permanent =3D aq_fw2x_get_mac_permanent,
--	.set_link_speed =3D aq_fw2x_set_link_speed,
--	.set_state =3D aq_fw2x_set_state,
-+	.init               =3D aq_fw2x_init,
-+	.deinit             =3D aq_fw2x_deinit,
-+	.reset              =3D NULL,
-+	.renegotiate        =3D aq_fw2x_renegotiate,
-+	.get_mac_permanent  =3D aq_fw2x_get_mac_permanent,
-+	.set_link_speed     =3D aq_fw2x_set_link_speed,
-+	.set_state          =3D aq_fw2x_set_state,
- 	.update_link_status =3D aq_fw2x_update_link_status,
--	.update_stats =3D aq_fw2x_update_stats,
--	.get_phy_temp =3D aq_fw2x_get_phy_temp,
--	.set_power =3D aq_fw2x_set_power,
--	.set_eee_rate =3D aq_fw2x_set_eee_rate,
--	.get_eee_rate =3D aq_fw2x_get_eee_rate,
--	.set_flow_control =3D aq_fw2x_set_flow_control,
--	.get_flow_control =3D aq_fw2x_get_flow_control
-+	.update_stats       =3D aq_fw2x_update_stats,
-+	.get_phy_temp       =3D aq_fw2x_get_phy_temp,
-+	.set_power          =3D aq_fw2x_set_power,
-+	.set_eee_rate       =3D aq_fw2x_set_eee_rate,
-+	.get_eee_rate       =3D aq_fw2x_get_eee_rate,
-+	.set_flow_control   =3D aq_fw2x_set_flow_control,
-+	.get_flow_control   =3D aq_fw2x_get_flow_control,
-+	.send_fw_request    =3D aq_fw2x_send_fw_request,
-+	.enable_ptp         =3D aq_fw3x_enable_ptp,
++struct aq_ring_s *
++aq_ring_hwts_rx_alloc(struct aq_ring_s *self, struct aq_nic_s *aq_nic,
++		      unsigned int idx, unsigned int size, unsigned int dx_size)
++{
++	struct device *dev =3D aq_nic_get_dev(aq_nic);
++	int err =3D 0;
++	size_t sz =3D size * dx_size + AQ_CFG_RXDS_DEF;
++
++	memset(self, 0, sizeof(*self));
++
++	self->aq_nic =3D aq_nic;
++	self->idx =3D idx;
++	self->size =3D size;
++	self->dx_size =3D dx_size;
++
++	self->dx_ring =3D dma_alloc_coherent(dev, sz, &self->dx_ring_pa,
++					   GFP_KERNEL);
++	if (!self->dx_ring) {
++		err =3D -ENOMEM;
++		goto err_exit;
++	}
++
++err_exit:
++	if (err < 0) {
++		aq_ring_free(self);
++		return NULL;
++	}
++
++	return self;
++}
++
+ int aq_ring_init(struct aq_ring_s *self)
+ {
+ 	self->hw_head =3D 0;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net=
+/ethernet/aquantia/atlantic/aq_ring.h
+index 47abd09d06c2..068689f44bc9 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
+  */
+=20
+ /* File aq_ring.h: Declaration of functions for Rx/Tx rings. */
+@@ -174,4 +174,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		     int budget);
+ int aq_ring_rx_fill(struct aq_ring_s *self);
+=20
++struct aq_ring_s *aq_ring_hwts_rx_alloc(struct aq_ring_s *self,
++		struct aq_nic_s *aq_nic, unsigned int idx,
++		unsigned int size, unsigned int dx_size);
++
+ #endif /* AQ_RING_H */
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/dr=
+ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index f3550fbb1c59..0e92db5c56fa 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -126,13 +126,16 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
+ 	hw_atl_tps_tx_pkt_shed_desc_tc_arb_mode_set(self, 0U);
+ 	hw_atl_tps_tx_pkt_shed_data_arb_mode_set(self, 0U);
+=20
+-	hw_atl_tps_tx_pkt_shed_tc_data_max_credit_set(self, 0xFFF, 0U);
+-	hw_atl_tps_tx_pkt_shed_tc_data_weight_set(self, 0x64, 0U);
+-	hw_atl_tps_tx_pkt_shed_desc_tc_max_credit_set(self, 0x50, 0U);
+-	hw_atl_tps_tx_pkt_shed_desc_tc_weight_set(self, 0x1E, 0U);
++	tc =3D 0;
++
++	/* TX Packet Scheduler Data TC0 */
++	hw_atl_tps_tx_pkt_shed_tc_data_max_credit_set(self, 0xFFF, tc);
++	hw_atl_tps_tx_pkt_shed_tc_data_weight_set(self, 0x64, tc);
++	hw_atl_tps_tx_pkt_shed_desc_tc_max_credit_set(self, 0x50, tc);
++	hw_atl_tps_tx_pkt_shed_desc_tc_weight_set(self, 0x1E, tc);
+=20
+-	/* Tx buf size */
+-	buff_size =3D HW_ATL_B0_TXBUF_MAX;
++	/* Tx buf size TC0 */
++	buff_size =3D HW_ATL_B0_TXBUF_MAX - HW_ATL_B0_PTP_TXBUF_SIZE;
+=20
+ 	hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, buff_size, tc);
+ 	hw_atl_tpb_tx_buff_hi_threshold_per_tc_set(self,
+@@ -143,10 +146,15 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
+ 						   (buff_size *
+ 						   (1024 / 32U) * 50U) /
+ 						   100U, tc);
++	/* Init TC2 for PTP_TX */
++	tc =3D 2;
++
++	hw_atl_tpb_tx_pkt_buff_size_per_tc_set(self, HW_ATL_B0_PTP_TXBUF_SIZE,
++					       tc);
+=20
+ 	/* QoS Rx buf size per TC */
+ 	tc =3D 0;
+-	buff_size =3D HW_ATL_B0_RXBUF_MAX;
++	buff_size =3D HW_ATL_B0_RXBUF_MAX - HW_ATL_B0_PTP_RXBUF_SIZE;
+=20
+ 	hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, buff_size, tc);
+ 	hw_atl_rpb_rx_buff_hi_threshold_per_tc_set(self,
+@@ -160,6 +168,14 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
+=20
+ 	hw_atl_b0_set_fc(self, self->aq_nic_cfg->flow_control, tc);
+=20
++	/* Init TC2 for PTP_RX */
++	tc =3D 2;
++
++	hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, HW_ATL_B0_PTP_RXBUF_SIZE,
++					       tc);
++	/* No flow control for PTP */
++	hw_atl_rpb_rx_xoff_en_per_tc_set(self, 0U, tc);
++
+ 	/* QoS 802.1p priority -> TC mapping */
+ 	for (i_priority =3D 8U; i_priority--;)
+ 		hw_atl_rpf_rpb_user_priority_tc_map_set(self, i_priority, 0U);
+@@ -994,6 +1010,18 @@ static int hw_atl_b0_hw_ring_rx_stop(struct aq_hw_s *=
+self,
+ 	return aq_hw_err_from_flags(self);
+ }
+=20
++static int hw_atl_b0_tx_tc_mode_get(struct aq_hw_s *self, u32 *tc_mode)
++{
++	*tc_mode =3D hw_atl_rpb_tps_tx_tc_mode_get(self);
++	return aq_hw_err_from_flags(self);
++}
++
++static int hw_atl_b0_rx_tc_mode_get(struct aq_hw_s *self, u32 *tc_mode)
++{
++	*tc_mode =3D hw_atl_rpb_rpf_rx_traf_class_mode_get(self);
++	return aq_hw_err_from_flags(self);
++}
++
+ #define get_ptp_ts_val_u64(self, indx) \
+ 	((u64)(hw_atl_pcs_ptp_clock_get(self, indx) & 0xffff))
+=20
+@@ -1257,6 +1285,9 @@ const struct aq_hw_ops hw_atl_ops_b0 =3D {
+ 	.hw_get_hw_stats             =3D hw_atl_utils_get_hw_stats,
+ 	.hw_get_fw_version           =3D hw_atl_utils_get_fw_version,
+=20
++	.hw_tx_tc_mode_get       =3D hw_atl_b0_tx_tc_mode_get,
++	.hw_rx_tc_mode_get       =3D hw_atl_b0_rx_tc_mode_get,
++
+ 	.hw_get_ptp_ts           =3D hw_atl_b0_get_ptp_ts,
+ 	.hw_adj_sys_clock        =3D hw_atl_b0_adj_sys_clock,
+ 	.hw_set_sys_clock        =3D hw_atl_b0_set_sys_clock,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_intern=
+al.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
+index 808d8cd4252a..7ab23a1751d3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0_internal.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * aQuantia Corporation Network Driver
+- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
++ * Copyright (C) 2014-2019 aQuantia Corporation. All rights reserved
+  */
+=20
+ /* File hw_atl_b0_internal.h: Definition of Atlantic B0 chip specific
+@@ -64,8 +64,11 @@
+ #define HW_ATL_B0_MPI_SPEED_MSK         0xFFFFU
+ #define HW_ATL_B0_MPI_SPEED_SHIFT       16U
+=20
+-#define HW_ATL_B0_TXBUF_MAX  160U
+-#define HW_ATL_B0_RXBUF_MAX  320U
++#define HW_ATL_B0_TXBUF_MAX              160U
++#define HW_ATL_B0_PTP_TXBUF_SIZE           8U
++
++#define HW_ATL_B0_RXBUF_MAX              320U
++#define HW_ATL_B0_PTP_RXBUF_SIZE          16U
+=20
+ #define HW_ATL_B0_RSS_REDIRECTION_MAX 64U
+ #define HW_ATL_B0_RSS_REDIRECTION_BITS 3U
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/d=
+rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
+index 25e7261f6a44..e3c5e2b30c09 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
+@@ -572,6 +572,13 @@ void hw_atl_rpb_rpf_rx_traf_class_mode_set(struct aq_h=
+w_s *aq_hw,
+ 			    rx_traf_class_mode);
+ }
+=20
++u32 hw_atl_rpb_rpf_rx_traf_class_mode_get(struct aq_hw_s *aq_hw)
++{
++	return aq_hw_read_reg_bit(aq_hw, HW_ATL_RPB_RPF_RX_TC_MODE_ADR,
++			HW_ATL_RPB_RPF_RX_TC_MODE_MSK,
++			HW_ATL_RPB_RPF_RX_TC_MODE_SHIFT);
++}
++
+ void hw_atl_rpb_rx_buff_en_set(struct aq_hw_s *aq_hw, u32 rx_buff_en)
+ {
+ 	aq_hw_write_reg_bit(aq_hw, HW_ATL_RPB_RX_BUF_EN_ADR,
+@@ -1277,6 +1284,13 @@ void hw_atl_tpb_tx_buff_en_set(struct aq_hw_s *aq_hw=
+, u32 tx_buff_en)
+ 			    HW_ATL_TPB_TX_BUF_EN_SHIFT, tx_buff_en);
+ }
+=20
++u32 hw_atl_rpb_tps_tx_tc_mode_get(struct aq_hw_s *aq_hw)
++{
++	return aq_hw_read_reg_bit(aq_hw, HW_ATL_TPB_TX_TC_MODE_ADDR,
++			HW_ATL_TPB_TX_TC_MODE_MSK,
++			HW_ATL_TPB_TX_TC_MODE_SHIFT);
++}
++
+ void hw_atl_rpb_tps_tx_tc_mode_set(struct aq_hw_s *aq_hw,
+ 				   u32 tx_traf_class_mode)
+ {
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/d=
+rivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
+index a62693e51a6b..d5042cc7ffeb 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
+@@ -292,6 +292,9 @@ void hw_atl_rpb_dma_sys_lbk_set(struct aq_hw_s *aq_hw, =
+u32 dma_sys_lbk);
+ void hw_atl_rpb_rpf_rx_traf_class_mode_set(struct aq_hw_s *aq_hw,
+ 					   u32 rx_traf_class_mode);
+=20
++/* get rx traffic class mode */
++u32 hw_atl_rpb_rpf_rx_traf_class_mode_get(struct aq_hw_s *aq_hw);
++
+ /* set rx buffer enable */
+ void hw_atl_rpb_rx_buff_en_set(struct aq_hw_s *aq_hw, u32 rx_buff_en);
+=20
+@@ -602,6 +605,9 @@ void hw_atl_thm_lso_tcp_flag_of_middle_pkt_set(struct a=
+q_hw_s *aq_hw,
+ void hw_atl_rpb_tps_tx_tc_mode_set(struct aq_hw_s *aq_hw,
+ 				   u32 tx_traf_class_mode);
+=20
++/* get TX Traffic Class Mode */
++u32 hw_atl_rpb_tps_tx_tc_mode_get(struct aq_hw_s *aq_hw);
++
+ /* set tx buffer enable */
+ void hw_atl_tpb_tx_buff_en_set(struct aq_hw_s *aq_hw, u32 tx_buff_en);
+=20
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b=
+/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+index f2eb94f298e2..77132bda4696 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+@@ -44,6 +44,14 @@ struct __packed hw_atl_rxd_wb_s {
+ 	u16 vlan;
  };
+=20
++/* Hardware rx HW TIMESTAMP writeback */
++struct __packed hw_atl_rxd_hwts_wb_s {
++	u32 sec_hw;
++	u32 ns;
++	u32 sec_lw0;
++	u32 sec_lw1;
++};
++
+ struct __packed hw_atl_stats_s {
+ 	u32 uprc;
+ 	u32 mprc;
 --=20
 2.17.1
 
