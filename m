@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6661ADD9D
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 18:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88389ADDA6
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 18:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727942AbfIIQ4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 12:56:12 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43471 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726415AbfIIQ4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 12:56:12 -0400
-Received: by mail-pl1-f193.google.com with SMTP id 4so6770232pld.10;
-        Mon, 09 Sep 2019 09:56:11 -0700 (PDT)
+        id S2391298AbfIIQ5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 12:57:02 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38037 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727097AbfIIQ5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 12:57:02 -0400
+Received: by mail-pf1-f193.google.com with SMTP id h195so9537216pfe.5;
+        Mon, 09 Sep 2019 09:57:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=y9qCic0RC1dfwolQU9PTEee+EfaFSRsxAIhwE6N8haM=;
-        b=CHcT5HCsHPf4Lbc9zn6G6j9Iw6QfdsUI0o478E9UA1zXDDJZSFXoSLMBaUJWzzITWJ
-         PTBMdvrshg0O6HEVPh2gJMgrgiRCFoLWiTlLz+82oIAgVEML7RxTlSp6YuU8E9Spto69
-         LggzvLDkec06+JMp7EMKGr+Zv5i3PhOmrs7KmIBpAd0BLwO9LJRUpEfvTpb9gxWGkSrq
-         y5J5Uv7AIoA38TPghSi00j07XVS/Xj42fno3Wl4U1uDW81mDqbqKFi1xN9O39dpFWWYJ
-         DeM150tU8e1TVgyUCwN5HbTe2clO7CUo98CN40oiRXrfYT5kP4MEJnEyBFHM4wsusWep
-         utVA==
+        bh=M44k0eFC5KSusyiVLncT3xySvZHF6ug9htNl1XIgwlI=;
+        b=JEd55kU7zbMlpoLe+04+O4x72Pyg81FsPU42tDl3qYuaKnXMBCP+V44Qh2yj0CwdyF
+         UDcCsUPqHe4MNlCEvxPLdtXTT/TobRJ4Ay++4+0VJqLRYFETkpVp+wVFw2savgnhALOe
+         w4YLqyCPnl/odSdhr1MyuIa0NV8qW3XrJqCHooAmfioomfwaMbWKBiYGZSoufAF89Amv
+         feB0qKGucJk8FbahXenQ5XV5CV6LyuCnqg31wiIsaalVkAG0MtmfUxQiw4xY3ZQft7BS
+         pDL8hc/b3nDVjhLd8aryrS/WUPxvYbaim6/x8grBdpPywzI1EcHMVxOLOrXTGaKpodEG
+         7CfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=y9qCic0RC1dfwolQU9PTEee+EfaFSRsxAIhwE6N8haM=;
-        b=H0KBjlOxbBahSfDQeTbECsppLIDfQATOkzTRf27td2xMnSCSmFzDxDJ6VlQmkDRUU8
-         55gthGKgVrBlvPmXAj0t/MoVKjEli89CNtIYt35z9wuTlrzTBdJpfU3GHzXoTSSzAcWk
-         Lo+TvTYQmlCz40jlaFww5reLryAFo4iURZkE0pcqqiXaJHvacNCB0drwfVlLNbV0r0u2
-         CWT+LEwaDQaXOgtF6Ffb65XDCn4nk9xQUs7RFyaYbIQwGxxPenoJeMlop5BuDs6WcLuH
-         tZuvltu2n9F4XogVDsJfmXX3EwTxWx7Ab5gyod/cSBhT/figq8AoCximJcs1uRI0/lnI
-         hQbw==
-X-Gm-Message-State: APjAAAVXFrtWyxigNdvtEGX+rTiDD4erRvFnHN6G6ZmVgaNJ2qJTTJFb
-        JHUxTl7dzTTkeVkexSs+lC1XYlgiusM=
-X-Google-Smtp-Source: APXvYqyKy5ZNYM7VFKQFK3xwWEa93feEA1A15MMlAXmhC+SZge85ANkrU37oZSFG3/19oTNlI0s9/g==
-X-Received: by 2002:a17:902:7685:: with SMTP id m5mr25519631pll.218.1568048170578;
-        Mon, 09 Sep 2019 09:56:10 -0700 (PDT)
+        bh=M44k0eFC5KSusyiVLncT3xySvZHF6ug9htNl1XIgwlI=;
+        b=rwA91/N8PgKYt4hJ9H1r8Yl1QXlEivGtapvUNBfGufHvRFTDKMTmJipTYmK3kc3DOv
+         Hr8Qyhekzvqmd0s2bF+YVk1V7EJCkReHiRJflkEpc8wHi0pbqXPlEucK00BobMHPhZkW
+         SM+wUXW7p0PBhDQm44oG3san3QKmhyw7ltyNPTq9xsSnhRLcVJ8iMMnWu3E2g33yWZBB
+         W/k0qiL2uX2+BBFutOkVAbfTWMv32Gazuv5Y1xX6nrMDoIIyUpGcAf3Zd82JWu9d37/E
+         UtshFfCN7vRpMFdOIKJV6euEm86MIRmDM/3dj0kQEU/Md3/GGYsVZedlmCeXfxbTmQtD
+         T3Xw==
+X-Gm-Message-State: APjAAAW3SMdPQmHnFPcy7un0T9e8BDo0AdeVkHO0RPGXknXMIkoREnVq
+        Zu9IrTEYYaEO7Kfp88r8or7Nfx00iNA=
+X-Google-Smtp-Source: APXvYqxXIugdHYxq4mYmwDe2MkQoURvjmSGC2fPgE3a9B87PtF4qwkXWlZOHCB2wnVJ1QKM7upokGw==
+X-Received: by 2002:aa7:81c5:: with SMTP id c5mr4206487pfn.247.1568048220668;
+        Mon, 09 Sep 2019 09:57:00 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 71sm30609915pfw.147.2019.09.09.09.56.08
+        by smtp.googlemail.com with ESMTPSA id i14sm17832849pfo.50.2019.09.09.09.56.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 09 Sep 2019 09:56:09 -0700 (PDT)
-Subject: Re: [PATCH v3 2/2] net: phy: dp83867: Add SGMII mode type switching
+        Mon, 09 Sep 2019 09:56:59 -0700 (PDT)
+Subject: Re: [PATCH v3 1/2] net: phy: dp83867: Add documentation for SGMII
+ mode type
 To:     Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>, davem@davemloft.net,
         robh+dt@kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Trent Piepho <tpiepho@impinj.com>, netdev@vger.kernel.org,
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Trent Piepho <tpiepho@impinj.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <1568026945-3857-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
  <1568047940-14490-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+ <1568047940-14490-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -111,12 +113,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <2375a453-b14a-c583-2258-e395493d937e@gmail.com>
-Date:   Mon, 9 Sep 2019 09:56:08 -0700
+Message-ID: <a606a302-03f3-7533-1e11-0f5590ca34fe@gmail.com>
+Date:   Mon, 9 Sep 2019 09:56:58 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <1568047940-14490-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+In-Reply-To: <1568047940-14490-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,11 +128,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/9/19 9:52 AM, Vitaly Gaiduk wrote:
-> This patch adds ability to switch beetween two PHY SGMII modes.
-> Some hardware, for example, FPGA IP designs may use 6-wire mode
-> which enables differential SGMII clock to MAC.
+> Add documentation of ti,sgmii-ref-clock-output-enable
+> which can be used to select SGMII mode type (4 or 6-wire).
 > 
 > Signed-off-by: Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>
+> ---
+>  Documentation/devicetree/bindings/net/ti,dp83867.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.txt b/Documentation/devicetree/bindings/net/ti,dp83867.txt
+> index db6aa3f..c98c682 100644
+> --- a/Documentation/devicetree/bindings/net/ti,dp83867.txt
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83867.txt
+> @@ -37,6 +37,10 @@ Optional property:
+>  			      for applicable values.  The CLK_OUT pin can also
+>  			      be disabled by this property.  When omitted, the
+>  			      PHY's default will be left as is.
+> +	- ti,sgmii-ref-clock-output-enable - This denotes the fact which
+> +				    SGMII configuration is used (4 or 6-wire modes).
+> +				    Some MACs work with differential SGMII clock.
+> +				    See data manual for details.
+
+The wording is a bit odd here, I would just omit "the fact" to make the
+sentence more readable. With that:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
