@@ -2,226 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51913AD150
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 01:55:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1030AD175
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 03:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731702AbfIHXzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Sep 2019 19:55:14 -0400
-Received: from mail-qt1-f179.google.com ([209.85.160.179]:38692 "EHLO
-        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731675AbfIHXzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 19:55:11 -0400
-Received: by mail-qt1-f179.google.com with SMTP id b2so14136406qtq.5
-        for <netdev@vger.kernel.org>; Sun, 08 Sep 2019 16:55:10 -0700 (PDT)
+        id S1731922AbfIIBKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Sep 2019 21:10:24 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40776 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731574AbfIIBKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Sep 2019 21:10:23 -0400
+Received: by mail-pf1-f196.google.com with SMTP id x127so8083376pfb.7;
+        Sun, 08 Sep 2019 18:10:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=INumR7NpyhxctnUiH8eSiMISlDBQHE0cLlhCKcV3eyk=;
-        b=Epl+RTl1oTm3S3AY/IZotMwyK0PHPEnR6liIV7+ljOcGs7DA9ihSnfvRyoFwA0meZj
-         scrAaba57/S2eFhBt5eqq2ZQtH2F9z/3Zu4UFJD+M1lwN1L10h9MLXJ89QrSBLGFTKdX
-         Vig19SH+OTY/Me3Fyphsv1nc6u0hBfdL7hInRG5OHp8NrgC4pXohihbQoyHug7MhJ4il
-         jF6Nkcm4Aayqgm2/kJe6uJovKVj56EGOpxwXJz6wiQDz4AwJkadaKp+QoujGaoIemO5M
-         ON6zM7xK14mgb3jHwyMbIF00O3n0YvwuE3CXW6oEVuSqgVEIbOsBgMmI1gwfRjLhVLHq
-         NYHg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OIovLqZ8dndVfgy4bS5bku+Skn01UN36L7YbEWe4yhw=;
+        b=lbxLDfcLHoEKq7QwulF8CGpwNbxQWZEmLCfz/9fdnClPG6kBHrUkUA87vaBr5UNBdS
+         b+8jWVpHZ1drk30QaPgcvQNO7LtwRn5uadC72pzEBiJUIx+X1tBFQ1XlQiayEsqRe74w
+         jCTab/fObzBXTYSVNx0DlDtckQzubsesiDGy+Oa//B0aXtJpRFB0snA1tjOKNeLySXaU
+         BF70FBEwh04yA41fAXtr79jeOqocLTWCq1Z5V0wZjZxxYO6/hs0YIF95wGFS1rYroFet
+         uhz1gSTV5eIHjp/f1WeABeVgz7DPHh4Fw42QOcIfDeWzqrOeiphZrfuzwIHu1MtBJzVi
+         zRRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=INumR7NpyhxctnUiH8eSiMISlDBQHE0cLlhCKcV3eyk=;
-        b=Hp8d69/ZCyDTax2Y7IqvwotFiVCOwDhjw44we9caZsNXgaEe0xJdFLUaV7uzrDhQoI
-         b1ZN/6o5FQ4rBlF6P0QAtI6cboGo+JouSh2tT3eNfg8eGFNAYjSuZrFDHaD7ZaSjpQbt
-         Sstu2HHPqN9UandtMB0oitdo+xM2QUvoJ3ajAG1k7IECzefoK6+VcTp2UTpmuRbIrINq
-         3GIbHYg/0hTKk9Xjr6Z2dVNVbtuQxk4BlakeiRIuHzZTDPgkMDuAbkYIZqw8wwSuGhSG
-         eMjPA6WSEg8ZzyJ5CWvoPkaUb1otPo/UNPh+m4EB1Go1qXYFgb3SbXZi0Ki02va6NgyS
-         RF9A==
-X-Gm-Message-State: APjAAAUFUeHj10ZFwl5iq5obVoIGpDZevxovuYqUnPG4+LaPSLA5EztU
-        XUK5ByEpiXhxRx+zVwYzXetqMA==
-X-Google-Smtp-Source: APXvYqwP37yOdgusaCv+L7fhZ+c5bQbRlHPs90xFZODFiLy2NUyeqAtt9jPSXDSiE3pDah9kQCvW6g==
-X-Received: by 2002:ad4:5303:: with SMTP id y3mr13043510qvr.19.1567986910163;
-        Sun, 08 Sep 2019 16:55:10 -0700 (PDT)
-Received: from penelope.pa.netronome.com (195-23-252-147.net.novis.pt. [195.23.252.147])
-        by smtp.gmail.com with ESMTPSA id p27sm5464406qkm.92.2019.09.08.16.55.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 08 Sep 2019 16:55:09 -0700 (PDT)
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net-next v2 11/11] Documentation: nfp: add nfp driver specific notes
-Date:   Mon,  9 Sep 2019 00:54:27 +0100
-Message-Id: <20190908235427.9757-12-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190908235427.9757-1-simon.horman@netronome.com>
-References: <20190908235427.9757-1-simon.horman@netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OIovLqZ8dndVfgy4bS5bku+Skn01UN36L7YbEWe4yhw=;
+        b=K/ySBpEcozLgTFtmFnh5pJgoN3m+4q8dzl6f7befz7+v6RLUofAlvr4PwKX3Ov7P5j
+         IJOHDvJQj6ci6mKfeA9bG42lMpnixnzRFWhFyJXTY5rHQRur6XMB4dWRAj9mQr8YPFzz
+         bhBTwrIj4z834O8iyzSAr/tJuI8RgVmB8o6a8/8WInoLLu5L/233PBoVVYVe62ojp240
+         2hfXkOIsdzmzBPPp1G90vcvqVvWKxsidSwbDGSMwGEU8FIKcREebu1rMnDpaPpXyuP7N
+         bcj4qTP0q2Ez9EyQ3fLpsviBn/9a2Wk85DzYJ0rnepTIDZC1OIbce83tquqdxhbsKUQk
+         2Ibg==
+X-Gm-Message-State: APjAAAWhksrILsaY4Rppp1lzvY1m3fllZNcWsOE1nBDF+HYqDXaa/ykc
+        WCYKXoOGPgjyrvIFxrz58Bs=
+X-Google-Smtp-Source: APXvYqzYZOL2H+AO47roS6quUoNyMxcsV/gsDZ5uGmZvAcUnt1tQhmDYovzK8DvnQqwgXxNF0LA8bQ==
+X-Received: by 2002:a63:1020:: with SMTP id f32mr19739610pgl.203.1567991423070;
+        Sun, 08 Sep 2019 18:10:23 -0700 (PDT)
+Received: from localhost ([110.70.15.13])
+        by smtp.gmail.com with ESMTPSA id v43sm24235493pjb.1.2019.09.08.18.10.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Sep 2019 18:10:22 -0700 (PDT)
+Date:   Mon, 9 Sep 2019 10:10:18 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>, davem@davemloft.net,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
+        Qian Cai <cai@lca.pw>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20190909011018.GB816@jagdpanzerIV>
+References: <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
+ <20190904074312.GA25744@jagdpanzerIV>
+ <1567599263.5576.72.camel@lca.pw>
+ <20190904144850.GA8296@tigerII.localdomain>
+ <1567629737.5576.87.camel@lca.pw>
+ <20190905113208.GA521@jagdpanzerIV>
+ <20190905132334.52b13d95@oasis.local.home>
+ <20190906033900.GB1253@jagdpanzerIV>
+ <20190906153209.ugkeuaespn2q5yix@pathway.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190906153209.ugkeuaespn2q5yix@pathway.suse.cz>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+On (09/06/19 17:32), Petr Mladek wrote:
+> > [..]
+> > > I mean, really, do we need to keep calling wake up if it
+> > > probably never even executed?
+> > 
+> > I guess ratelimiting you are talking about ("if it probably never even
+> > executed") would be to check if we have already called wake up on the
+> > log_wait ->head. For that we need to, at least, take log_wait spin_lock
+> > and check that ->head is still in TASK_INTERRUPTIBLE; which is (quite,
+> > but not exactly) close to what wake_up_interruptible() does - it doesn't
+> > wake up the same task twice, it bails out on `p->state & state' check.
+> 
+> I have just realized that only sleeping tasks are in the waitqueue.
+> It is already handled by waitqueue_active() check.
 
-This adds the initial documentation for the NFP driver specific
-documentation.
+Yes.
 
-Right now, only basic information is provided about acquiring firmware
-and configuring device firmware loading.
+> I am afraid that we could not ratelimit the wakeups. The userspace
+> loggers might then miss the last lines for a long.
 
-Original driver documentation can be found here:
-https://github.com/Netronome/nfp-drv-kmods/blob/master/README.md
+That's my concern as well.
 
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
----
- .../networking/device_drivers/netronome/nfp.rst    | 133 +++++++++++++++++++++
- 1 file changed, 133 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/netronome/nfp.rst
+> We could move wake_up_klogd() back to console_unlock(). But it might
+> end up with a back-and-forth games according to who is currently
+> complaining.
 
-diff --git a/Documentation/networking/device_drivers/netronome/nfp.rst b/Documentation/networking/device_drivers/netronome/nfp.rst
-new file mode 100644
-index 000000000000..6c08ac8b5147
---- /dev/null
-+++ b/Documentation/networking/device_drivers/netronome/nfp.rst
-@@ -0,0 +1,133 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+=============================================
-+Netronome Flow Processor (NFP) Kernel Drivers
-+=============================================
-+
-+Copyright (c) 2019, Netronome Systems, Inc.
-+
-+Contents
-+========
-+
-+- `Overview`_
-+- `Acquiring Firmware`_
-+
-+Overview
-+========
-+
-+This driver supports Netronome's line of Flow Processor devices,
-+including the NFP4000, NFP5000, and NFP6000 models, which are also
-+incorporated in the company's family of Agilio SmartNICs. The SR-IOV
-+physical and virtual functions for these devices are supported by
-+the driver.
-+
-+Acquiring Firmware
-+==================
-+
-+The NFP4000 and NFP6000 devices require application specific firmware
-+to function.  Application firmware can be located either on the host file system
-+or in the device flash (if supported by management firmware).
-+
-+Firmware files on the host filesystem contain card type (`AMDA-*` string), media
-+config etc.  They should be placed in `/lib/firmware/netronome` directory to
-+load firmware from the host file system.
-+
-+Firmware for basic NIC operation is available in the upstream
-+`linux-firmware.git` repository.
-+
-+Firmware in NVRAM
-+-----------------
-+
-+Recent versions of management firmware supports loading application
-+firmware from flash when the host driver gets probed.  The firmware loading
-+policy configuration may be used to configure this feature appropriately.
-+
-+Devlink or ethtool can be used to update the application firmware on the device
-+flash by providing the appropriate `nic_AMDA*.nffw` file to the respective
-+command.  Users need to take care to write the correct firmware image for the
-+card and media configuration to flash.
-+
-+Available storage space in flash depends on the card being used.
-+
-+Dealing with multiple projects
-+------------------------------
-+
-+NFP hardware is fully programmable therefore there can be different
-+firmware images targeting different applications.
-+
-+When using application firmware from host, we recommend placing
-+actual firmware files in application-named subdirectories in
-+`/lib/firmware/netronome` and linking the desired files, e.g.::
-+
-+    $ tree /lib/firmware/netronome/
-+    /lib/firmware/netronome/
-+    ├── bpf
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-+    ├── flower
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-+    ├── nic
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-+    ├── nic_AMDA0081-0001_1x40.nffw -> bpf/nic_AMDA0081-0001_1x40.nffw
-+    └── nic_AMDA0081-0001_4x10.nffw -> bpf/nic_AMDA0081-0001_4x10.nffw
-+
-+    3 directories, 8 files
-+
-+You may need to use hard instead of symbolic links on distributions
-+which use old `mkinitrd` command instead of `dracut` (e.g. Ubuntu).
-+
-+After changing firmware files you may need to regenerate the initramfs
-+image.  Initramfs contains drivers and firmware files your system may
-+need to boot.  Refer to the documentation of your distribution to find
-+out how to update initramfs.  Good indication of stale initramfs
-+is system loading wrong driver or firmware on boot, but when driver is
-+later reloaded manually everything works correctly.
-+
-+Selecting firmware per device
-+-----------------------------
-+
-+Most commonly all cards on the system use the same type of firmware.
-+If you want to load specific firmware image for a specific card, you
-+can use either the PCI bus address or serial number.  Driver will print
-+which files it's looking for when it recognizes a NFP device::
-+
-+    nfp: Looking for firmware file in order of priority:
-+    nfp:  netronome/serial-00-12-34-aa-bb-cc-10-ff.nffw: not found
-+    nfp:  netronome/pci-0000:02:00.0.nffw: not found
-+    nfp:  netronome/nic_AMDA0081-0001_1x40.nffw: found, loading...
-+
-+In this case if file (or link) called *serial-00-12-34-aa-bb-5d-10-ff.nffw*
-+or *pci-0000:02:00.0.nffw* is present in `/lib/firmware/netronome` this
-+firmware file will take precedence over `nic_AMDA*` files.
-+
-+Note that `serial-*` and `pci-*` files are **not** automatically included
-+in initramfs, you will have to refer to documentation of appropriate tools
-+to find out how to include them.
-+
-+Firmware loading policy
-+-----------------------
-+
-+Firmware loading policy is controlled via three HWinfo parameters
-+stored as key value pairs in the device flash:
-+
-+app_fw_from_flash
-+    Defines which firmware should take precedence, 'Disk' (0), 'Flash' (1) or
-+    the 'Preferred' (2) firmware. When 'Preferred' is selected, the management
-+    firmware makes the decision over which firmware will be loaded by comparing
-+    versions of the flash firmware and the host supplied firmware.
-+    This variable is configurable using the 'fw_load_policy'
-+    devlink parameter.
-+
-+abi_drv_reset
-+    Defines if the driver should reset the firmware when
-+    the driver is probed, either 'Disk' (0) if firmware was found on disk,
-+    'Always' (1) reset or 'Never' (2) reset. Note that the device is always
-+    reset on driver unload if firmware was loaded when the driver was probed.
-+    This variable is configurable using the 'reset_dev_on_drv_probe'
-+    devlink parameter.
-+
-+abi_drv_load_ifc
-+    Defines a list of PF devices allowed to load FW on the device.
-+    This variable is not currently user configurable.
--- 
-2.11.0
+We still don't need irq_work, tho.
 
+If we can do
+	printk()->console_unlock()->up()->try_to_wake_up()
+then we can also do
+	printk()           ->             try_to_wake_up()
+
+It's LOGLEVEL_SCHED which tells us if we can try_to_wake_up()
+or cannot.
+
+> Sigh, I still suggest to ratelimit the warning about failed
+> allocation.
+
+Hard to imagine how many printk()-s we will have to ratelimit.
+To imagine NET maintainers being OK with this is even harder.
+
+	-ss
