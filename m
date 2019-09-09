@@ -2,167 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D80ADEAC
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 20:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD12ADEC3
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 20:22:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729035AbfIISP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 14:15:28 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:37972 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728883AbfIISP2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 14:15:28 -0400
-Received: by mail-vs1-f65.google.com with SMTP id b123so9414118vsb.5
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 11:15:27 -0700 (PDT)
+        id S1730655AbfIISWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 14:22:05 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41480 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730531AbfIISWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 14:22:05 -0400
+Received: by mail-pl1-f196.google.com with SMTP id m9so6898687pls.8
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 11:22:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=9KnYd8hUsQjMlnfx0oKNiSQxGQXVvwoHZS+cy9f4814=;
-        b=g8agOywFwfG7ySIaH9FqiBPvG1Win15F61+M86FhRzwu2Lj64GFVnz47MtSGmBojPo
-         weOVgOR3lg8+KfnuITLjB1RNEmd+2fBtT6NltkAFURDsHU0WtXu0SrLOsVgNkEJpSOv6
-         ACcfzUXoc/DOeiZF0UaRz723lgCWgzj0eD+yzc/+H4SZV/2IdvWo2cVSUSDv/TVj5Zym
-         04tocen6UIRJS6Ky7m79WaGiKKPcYMFkcvddWBt+h8nD65JnRxLosTN26DWPVmRkH2Kj
-         2s6kOStEHux01fhoNd5kHbbiWeV9jdRTLKVKc50UyCEmx0Vvcrvucmh7yvNITgCY6tok
-         jgzw==
+        d=pensando.io; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=vG6VuqE6geve3tpL/KKpm7WkQz8oKYnKqgMS7iCqrDw=;
+        b=0j6vssGBKu4gjjwAFal33JOYEXrfc04DvlZALwZAK5AYEDyqh7g02EIe+Of9AGBy9V
+         NofJ+UKfRm4VCNDuBlc2DOgWgAjTx8VOCQyjR+9QcO3kHakha6EiYedqsfgk0JLZ/cud
+         lasdz2QcT8jzJOpqLrIaPMvIm+nk9H85n8PzTVlw9+gAOi4TTsuiat24dNvV4yErtWHb
+         O92109nYKHCh25PlVZrZHw5JqKkqMWHD1ZpI3xaxt4HLTsX9y0ODcu0Tma5oTKUDroHy
+         Yv+gEa9O6pyVBgxLREYywrpIeaDG8jnt9UlHcsfLij73wlxEnDqaA+Psf1POGb7iWFfX
+         3jiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=9KnYd8hUsQjMlnfx0oKNiSQxGQXVvwoHZS+cy9f4814=;
-        b=A+hBLRJ0dFjDOQQWAT5ZtUgdZY4kQLGTWefUZSNW6rfJwXqC4y7OszrB9TNBjak0iZ
-         ZnDP/adlf+TG6HO8PmXOOUddSufH4Kt/nLJXpENCyk2vkz5Xd/gTlJpI/nWLGXFTShuM
-         wtTnjbWownzyJArgdZYgOtCg6KWAWtIZSEe9SZqTorGqiUnxTQ/UeSx6hpz8DfU4KMJo
-         YLODSupOKFWapblqgJD1qvtMk4GcjQmzAQ9NqeHEsYv8swlnGjcILhCRYJSezJjLtiy6
-         udIcwb9IayPazB0Xn0jW3UOgMF5GabkXfndjlRwLM69Lgge1hzJmQ3+CVXZE+87Wild9
-         0YrA==
-X-Gm-Message-State: APjAAAULasFEaOAKll0tYLgl6nxlifK/NnGKhO1M3B2G3oNhqSr8lftY
-        BgPxon1SiRJomIfbvEDFAiXmGFJNZrKQY/fwgT9uRCNQ
-X-Google-Smtp-Source: APXvYqwE0MIkfV2RCBhVyqmMGioT0Ki20XLVn9SlXaruay9ybmeuwY7kRuAsUYX0K5/NFid/cOToVtUohF0RjCztyAY=
-X-Received: by 2002:a67:f6c8:: with SMTP id v8mr2535762vso.22.1568052926534;
- Mon, 09 Sep 2019 11:15:26 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=vG6VuqE6geve3tpL/KKpm7WkQz8oKYnKqgMS7iCqrDw=;
+        b=c+rqkx5jvlKdpw5Zw748itGZIity+fHvck35WV7WP3ZRkYN/MJrDVNVNAWDAWW1dxY
+         Zs9+2r0V1LtDAgA3IYW0YJ9sfB8PTPCVUgLvq/nQ8kti1A6Tl1NCV6rauVQ6x5nbqp40
+         WusNqqxhJYy5e0cMIEhyJ+l1Odriln0LWUPjF3w6AwMLfWx+VpTIVUPjI3g4aoNCvAX2
+         2DjlawoPfcV//gffUaXf0cq+1ARWHWiVeNe+53yzkZSYzBrqte3sVKlHPyrQuFWTQ1Z5
+         od6tCVTYLYyMCgS1D15e9hGy8VxNUVsA17fzgylGwA4xfHa2OGOqSK6FQw7kw+GtHRly
+         upzA==
+X-Gm-Message-State: APjAAAU3uPUOFEz2avubmaPuv+sOZ0hen470PWS8wQRQt09ANn6g4lz7
+        JoG88yu2MlPZsn6TMF4VhQL32w==
+X-Google-Smtp-Source: APXvYqyjNJTLwCG2ouVwQx0t/kkbP+nhbVWATowyeWAARkfqL1B7r68vNY6naL4T7MCCItYuOf+tZQ==
+X-Received: by 2002:a17:902:b40c:: with SMTP id x12mr26178238plr.236.1568053324588;
+        Mon, 09 Sep 2019 11:22:04 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id v22sm12738511pgk.69.2019.09.09.11.22.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Sep 2019 11:22:03 -0700 (PDT)
+Subject: Re: ixgbe: driver drops packets routed from an IPSec interface with a
+ "bad sa_idx" error
+To:     Michael Marley <michael@michaelmarley.com>, netdev@vger.kernel.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        steffen.klassert@secunet.com
+References: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <4caa4fb7-9963-99ab-318f-d8ada4f19205@pensando.io>
+Date:   Mon, 9 Sep 2019 19:21:59 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <CAOrEdsmpHT-=zH9zyHv=pLX2ENb1S0AnkrcWVgMxqWrxKsF3yw@mail.gmail.com>
- <CAOrEdsmxstWoBz2AotrTx_OBFN_jycqnSqtsvLxuCLGtKKi_dA@mail.gmail.com> <CAOrEdsnNZ3GJTFzfcBhUv6wvnXTJf=b9eJ8Exk2CXR6VyLsn1Q@mail.gmail.com>
-In-Reply-To: <CAOrEdsnNZ3GJTFzfcBhUv6wvnXTJf=b9eJ8Exk2CXR6VyLsn1Q@mail.gmail.com>
-From:   Pooja Trivedi <poojatrivedi@gmail.com>
-Date:   Mon, 9 Sep 2019 14:15:15 -0400
-Message-ID: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
-Subject: [PATCH net 1/1] net/tls(TLS_SW): Fix list_del double free caused by a
- race condition in tls_tx_records
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    Enclosing tls_tx_records within lock_sock/release_sock pair to ensure
-    write-synchronization is not sufficient because socket lock gets released
-    under memory pressure situation by sk_wait_event while it sleeps waiting
-    for memory, allowing another writer into tls_tx_records. This causes a
-    race condition with record deletion post transmission.
+On 9/6/19 11:13 AM, Michael Marley wrote:
+> (This is also reported at 
+> https://bugzilla.kernel.org/show_bug.cgi?id=204551, but it was 
+> recommended that I send it to this list as well.)
+>
+> I have a put together a router that routes traffic from several local 
+> subnets from a switch attached to an i82599ES card through an IPSec 
+> VPN interface set up with StrongSwan.  (The VPN is running on an 
+> unrelated second interface with a different driver.)  Traffic from the 
+> local interfaces to the VPN works as it should and eventually makes it 
+> through the VPN server and out to the Internet.  The return traffic 
+> makes it back to the router and tcpdump shows it leaving by the 
+> i82599, but the traffic never actually makes it onto the wire and I 
+> instead get one of
+>
+> enp1s0: ixgbe_ipsec_tx: bad sa_idx=64512 handle=0
+>
+> for each packet that should be transmitted.  (The sa_idx and handle 
+> values are always the same.)
+>
+> I realized this was probably related to ixgbe's IPSec offloading 
+> feature, so I tried with the motherboard's integrated e1000e device 
+> and didn't have the problem.  I tried using ethtool to disable all the 
+> IPSec-related offloads (tx-esp-segmentation, esp-hw-offload, 
+> esp-tx-csum-hw-offload), but the problem persisted.  I then tried 
+> recompiling the kernel with CONFIG_IXGBE_IPSEC=n and that worked 
+> around the problem.
+>
+> I was also able to find another instance of the same problem reported 
+> in Debian at 
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=930443.  That person 
+> seems to be having exactly the same issue as me, down to the sa_idx 
+> and handle values being the same.
+>
+> If there are any more details I can provide to make this easier to 
+> track down, please let me know.
+>
+> Thanks,
+>
+> Michael Marley
 
-    To fix this bug, use a flag set in tx_bitmask field of TLS context to
-    ensure single writer in tls_tx_records at a time
+Hi Michael,
 
-    The bug resulted in the following crash:
+Thanks for pointing this out.  The issue this error message is 
+complaining about is that the handle given to the driver is a bad 
+value.  The handle is what helps the driver find the right encryption 
+information, and in this case is an index into an array, one array for 
+Rx and one for Tx, each of which have up to 1024 entries.  In order to 
+encode them into a single value, 1024 is added to the Tx values to make 
+the handle, and 1024 is subtracted to use the handle later.  Note that 
+the bad sa_idx is 64512, which happens to also be -1024; if the Tx 
+handle given to ixgbe for xmit is 0, we subtract 1024 from that and get 
+this bad sa_idx value.
+
+That handle is supposed to be an opaque value only used by the driver.  
+It looks to me like either (a) the driver is not setting up the handle 
+correctly when the SA is first set up, or (b) something in the upper 
+levels of the ipsec code is clearing the handle value. We would need to 
+know more about all the bits in your SA set up to have a better idea 
+what parts of the ipsec code are being exercised when this problem happens.
+
+I currently don't have access to a good ixgbe setup on which to 
+test/debug this, and I haven't been paying much attention lately to 
+what's happening in the upper ipsec layers, so my help will be somewhat 
+limited.  I'm hoping the the Intel folks can add a little help, so I've 
+copied Jeff Kirsher on this (they'll probably point back to me since I 
+wrote this chunk :-) ).  I've also copied Stephen Klassert for his ipsec 
+thoughts.
+
+In the meantime, can you give more details on the exact ipsec rules that 
+are used here, and are there any error messages coming from ixgbe 
+regarding the ipsec rule setup that might help us identify what's happening?
+
+Thanks,
+sln
 
 
-    [  270.888952] ------------[ cut here ]------------
-    [  270.890450] list_del corruption, ffff91cc3753a800->prev is
-    LIST_POISON2 (dead000000000122)
-    [  270.891194] WARNING: CPU: 1 PID: 7387 at lib/list_debug.c:50
-    __list_del_entry_valid+0x62/0x90
-    [  270.892037] Modules linked in: n5pf(OE) netconsole tls(OE) bonding
-    intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal
-    intel_powerclamp coretemp kvm_intel kvm iTCO_wdt iTCO_vendor_support
-    irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
-    aesni_intel crypto_simd mei_me cryptd glue_helper ipmi_si sg mei
-    lpc_ich pcspkr joydev ioatdma i2c_i801 ipmi_devintf ipmi_msghandler
-    wmi ip_tables xfs libcrc32c sd_mod mgag200 drm_vram_helper ttm
-    drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm isci
-    libsas ahci scsi_transport_sas libahci crc32c_intel serio_raw igb
-    libata ptp pps_core dca i2c_algo_bit dm_mirror dm_region_hash dm_log
-    dm_mod [last unloaded: nitrox_drv]
-    [  270.896836] CPU: 1 PID: 7387 Comm: uperf Kdump: loaded Tainted: G
-            OE     5.3.0-rc4 #1
-    [  270.897711] Hardware name: Supermicro SYS-1027R-N3RF/X9DRW, BIOS
-    3.0c 03/24/2014
-    [  270.898597] RIP: 0010:__list_del_entry_valid+0x62/0x90
-    [  270.899478] Code: 00 00 00 c3 48 89 fe 48 89 c2 48 c7 c7 e0 f9 ee
-    8d e8 b2 cf c8 ff 0f 0b 31 c0 c3 48 89 fe 48 c7 c7 18 fa ee 8d e8 9e
-    cf c8 ff <0f> 0b 31 c0 c3 48 89 f2 48 89 fe 48 c7 c7 50 fa ee 8d e8 87
-    cf c8
-    [  270.901321] RSP: 0018:ffffb6ea86eb7c20 EFLAGS: 00010282
-    [  270.902240] RAX: 0000000000000000 RBX: ffff91cc3753c000 RCX:
-0000000000000000
-    [  270.903157] RDX: ffff91bc3f867080 RSI: ffff91bc3f857738 RDI:
-ffff91bc3f857738
-    [  270.904074] RBP: ffff91bc36020940 R08: 0000000000000560 R09:
-0000000000000000
-    [  270.904988] R10: 0000000000000000 R11: 0000000000000000 R12:
-0000000000000000
-    [  270.905902] R13: ffff91cc3753a800 R14: ffff91cc37cc6400 R15:
-ffff91cc3753a800
-    [  270.906809] FS:  00007f454a88d700(0000) GS:ffff91bc3f840000(0000)
-    knlGS:0000000000000000
-    [  270.907715] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-    [  270.908606] CR2: 00007f453c00292c CR3: 000000103554e003 CR4:
-00000000001606e0
-    [  270.909490] Call Trace:
-    [  270.910373]  tls_tx_records+0x138/0x1c0 [tls]
-    [  270.911262]  tls_sw_sendpage+0x3e0/0x420 [tls]
-    [  270.912154]  inet_sendpage+0x52/0x90
-    [  270.913045]  ? direct_splice_actor+0x40/0x40
-    [  270.913941]  kernel_sendpage+0x1a/0x30
-    [  270.914831]  sock_sendpage+0x20/0x30
-    [  270.915714]  pipe_to_sendpage+0x62/0x90
-    [  270.916592]  __splice_from_pipe+0x80/0x180
-    [  270.917461]  ? direct_splice_actor+0x40/0x40
-    [  270.918334]  splice_from_pipe+0x5d/0x90
-    [  270.919208]  direct_splice_actor+0x35/0x40
-    [  270.920086]  splice_direct_to_actor+0x103/0x230
-    [  270.920966]  ? generic_pipe_buf_nosteal+0x10/0x10
-    [  270.921850]  do_splice_direct+0x9a/0xd0
-    [  270.922733]  do_sendfile+0x1c9/0x3d0
-    [  270.923612]  __x64_sys_sendfile64+0x5c/0xc0
-
-    Signed-off-by: Pooja Trivedi <pooja.trivedi@stackpath.com>
-
-----------
-
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 41b2d41..f346a54 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -161,6 +161,7 @@ struct tls_sw_context_tx {
-
- #define BIT_TX_SCHEDULED 0
- #define BIT_TX_CLOSING 1
-+#define BIT_TX_IN_PROGRESS 2
-  unsigned long tx_bitmask;
- };
-
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 91d21b0..6e99c61 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -367,6 +367,10 @@ int tls_tx_records(struct sock *sk, int flags)
-  struct sk_msg *msg_en;
-  int tx_flags, rc = 0;
-
-+ /* If another writer is already in tls_tx_records, backoff and leave */
-+ if (test_and_set_bit(BIT_TX_IN_PROGRESS, &ctx->tx_bitmask))
-+ return 0;
-+
-  if (tls_is_partially_sent_record(tls_ctx)) {
-  rec = list_first_entry(&ctx->tx_list,
-        struct tls_rec, list);
-@@ -415,6 +419,9 @@ int tls_tx_records(struct sock *sk, int flags)
-  if (rc < 0 && rc != -EAGAIN)
-  tls_err_abort(sk, EBADMSG);
-
-+ /* clear the bit so another writer can get into tls_tx_records */
-+ clear_bit(BIT_TX_IN_PROGRESS, &ctx->tx_bitmask);
-+
-  return rc;
- }
