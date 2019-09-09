@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EEBADBC9
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4166BADC0E
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfIIPIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 11:08:52 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38281 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbfIIPIw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:08:52 -0400
-Received: by mail-wm1-f65.google.com with SMTP id o184so15117415wme.3;
-        Mon, 09 Sep 2019 08:08:50 -0700 (PDT)
+        id S1728155AbfIIPZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 11:25:51 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36096 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727003AbfIIPZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:25:51 -0400
+Received: by mail-wr1-f68.google.com with SMTP id y19so14340612wrd.3;
+        Mon, 09 Sep 2019 08:25:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bkcaGhT4i1YczVLSYGucQECEKh6an5T4AF5+XBynpKQ=;
-        b=Iv3YgMINM8MI4r/hatRem1z/iT7ykqT8egkiqnuw52yBf+jDx6cY8WMhkxN8Nx4Gpi
-         Stb1ZTPDWwC5HNYyLx/DZkFI+zu4H9RTejkzkyxtS73PhdBwAcW9Q+0CNeXHUAyHOSsO
-         Ut3Rbv0smOf0k8b9LxG09zqfYQXff1nDYTKSQRX4+slyBkQhqTj9k9+Fen6McEfCKZr1
-         zfNmh8io4htRpFg7jsZjteNezKKkXVegLtxJBYz/nAikGdObGcKW4ESvSySY4o5H4lSz
-         4Nf2jSLC2d0VLFBlHUSLgqusntK9QOuVKQBWYZKIA+tZXqYJMbMJBSuN/Vfq88eXnJH1
-         EOSQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
+        b=Xba/LdxzCdbiBnw4o//u2wrwkAcNGGpNbu3GOwEJ2dM11KLIXM6Hk92xL17HHYhIXu
+         cYqGN5fh1sKgWA+71tXOLqpSdSAYedFaVACd7fcQGVKs72kCrDAabx46D6H6pm04K7jH
+         f3ToY179K8Pr85/2tLj/7A+0xV+6mxc/FIzRxJNZxBsS5hhJb7C9pbHAXBSvqPxSWGoY
+         E5i9f6WUdmJH4kiPy3c6T2u+gMLhsCY/r7YsUVpZo2LjoHYsLgDE3EJ2/du8ukBnzmPj
+         +c5t5FWBbyAxH+V7s6v9vDZq3yeQv4AD6dNuxyZ58kBJcu+kRyL1QbkeaU7To2RPhmwN
+         a4uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bkcaGhT4i1YczVLSYGucQECEKh6an5T4AF5+XBynpKQ=;
-        b=BkZb15p6oOMxvhkj7DWIz5B9MHo04RnpSBDxeUtqrBYGblkl0B8fAvjegh9PXLyoBl
-         MZ+jeddWg0wtVC/kwPL2CLdEX0WpxKFa3Nh/xEhx1V+wzHBhiB6U26jrk2kN3oDOjmJi
-         qB7mB/kRk9O7Eno2H6pGSh7ngfeIPA/afUTl1Ijc1rJEq5IN70zZYa6c4qpfO8arVHOB
-         y7jEfXTL+GuO7KfGns2Xhh+6UgvaRQ0Gl1Mvfgx8g3wjyasNbVBnSyRVMxGTr1Z+VY9p
-         8bmkFWgQFFHqsVYIyc0Mm1anPpkeco9BSBu6AAmqEJOvuXHn5AOjPcpqfMzz9l8S7Wic
-         4F6A==
-X-Gm-Message-State: APjAAAWKpjPFyHbQd/VHrBF0FufwvbRYxpWF8ZOaYftXQ3xLMdPOwl3J
-        QTHAeAs71Ws15xxjJezVGWrQ9Z+b
-X-Google-Smtp-Source: APXvYqzZIZfIilwh1VWSffFxyOjQ5MCeUQJyfmu51e37HvfyP8HfRgJclAH0CfxzNJsRxLXoAItULw==
-X-Received: by 2002:a1c:6a0a:: with SMTP id f10mr19220017wmc.121.1568041729853;
-        Mon, 09 Sep 2019 08:08:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
+        b=tqdn+cFEZQBURqAMnWt5FD5IMPryzXi8YplctD0zypNDKeCuvDL6Tfb1Zy7x5y8zsJ
+         lVheyjf8EY6929PKIF15sNX1ZUn/NDQtBxmoPCbDYmYtfAr+9wllOSUAWGvHIg3D2x12
+         2rlxnDbqGlv4gJioTVrp1tOoHLP87U3uy71VOLO3qne4RdYoOJVdvVsfziF0/brk1XPm
+         R4U3Ul2P5ZT3wYBpgD6FfS+NnMdHVw5syCoJBCP+jssKHsJIiSyxriFAedqKP8j12+o8
+         12v2pi3jO3dpnO3iDWsFHq0s96D04sLB4Hqs0t4cAUI2LVZKzV9uEoI23wyNUOvBLvuX
+         OjcA==
+X-Gm-Message-State: APjAAAWJoSuHontGEpS5YQpfz3WdSK9MFxr+1vCaByun0xqXcyu7lt+S
+        hDYq7Ratr9s9CdQNym9lXww=
+X-Google-Smtp-Source: APXvYqzYRPmTs0f5GTR3GZSoUbSpD/6B4sqbBH9uCCkdVwBa6jhvtcmD14gGj1iHn6ASOLTM9oXmmA==
+X-Received: by 2002:adf:fe07:: with SMTP id n7mr19719899wrr.90.1568042748832;
+        Mon, 09 Sep 2019 08:25:48 -0700 (PDT)
 Received: from localhost (p2E5BE0B8.dip0.t-ipconnect.de. [46.91.224.184])
-        by smtp.gmail.com with ESMTPSA id 33sm14670646wra.41.2019.09.09.08.08.47
+        by smtp.gmail.com with ESMTPSA id v4sm23419801wrg.56.2019.09.09.08.25.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2019 08:08:47 -0700 (PDT)
-Date:   Mon, 9 Sep 2019 17:08:46 +0200
+        Mon, 09 Sep 2019 08:25:47 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -53,74 +52,75 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Jon Hunter <jonathanh@nvidia.com>,
         Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: stmmac: Support enhanced addressing
- mode for DWMAC 4.10
-Message-ID: <20190909150846.GA27056@ulmo>
-References: <20190909123627.29928-1-thierry.reding@gmail.com>
- <20190909123627.29928-2-thierry.reding@gmail.com>
+Subject: [PATCH net-next v2 1/2] net: stmmac: Only enable enhanced addressing mode when needed
+Date:   Mon,  9 Sep 2019 17:25:45 +0200
+Message-Id: <20190909152546.383-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="J2SCkAp4GZ/dPZZf"
-Content-Disposition: inline
-In-Reply-To: <20190909123627.29928-2-thierry.reding@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Thierry Reding <treding@nvidia.com>
 
---J2SCkAp4GZ/dPZZf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Enhanced addressing mode is only required when more than 32 bits need to
+be addressed. Add a DMA configuration parameter to enable this mode only
+when needed.
 
-On Mon, Sep 09, 2019 at 02:36:27PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
->=20
-> The address width of the controller can be read from hardware feature
-> registers much like on XGMAC. Add support for parsing the ADDR64 field
-> so that the DMA mask can be set accordingly.
->=20
-> This avoids getting swiotlb involved for DMA on Tegra186 and later.
->=20
-> Also make sure that the upper 32 bits of the DMA address are written to
-> the DMA descriptors when enhanced addressing mode is used.
->=20
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
->  .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  4 ++--
->  .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 20 +++++++++++++++++++
->  .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  1 +
->  4 files changed, 24 insertions(+), 2 deletions(-)
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 5 ++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 6 ++++++
+ include/linux/stmmac.h                             | 1 +
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
-I just ran into a case where this is not enough. The problem is that the
-driver not only doesn't fill in the upper 32 bits of the DMA address in
-the descriptors, it also doesn't program the upper 32 bits of the DMA
-address of the descriptors when initializing the channels. I'll update
-the patch for that case as well.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index 64956465c030..3e00fd8befcf 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -27,7 +27,10 @@ static void dwxgmac2_dma_init(void __iomem *ioaddr,
+ 	if (dma_cfg->aal)
+ 		value |= XGMAC_AAL;
+ 
+-	writel(value | XGMAC_EAME, ioaddr + XGMAC_DMA_SYSBUS_MODE);
++	if (dma_cfg->eame)
++		value |= XGMAC_EAME;
++
++	writel(value, ioaddr + XGMAC_DMA_SYSBUS_MODE);
+ }
+ 
+ static void dwxgmac2_dma_init_chan(void __iomem *ioaddr,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 06ccd216ae90..ecd461207dbc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4497,6 +4497,12 @@ int stmmac_dvr_probe(struct device *device,
+ 		if (!ret) {
+ 			dev_info(priv->device, "Using %d bits DMA width\n",
+ 				 priv->dma_cap.addr64);
++
++			/*
++			 * If more than 32 bits can be addressed, make sure to
++			 * enable enhanced addressing mode.
++			 */
++			priv->plat->dma_cfg->eame = true;
+ 		} else {
+ 			ret = dma_set_mask_and_coherent(device, DMA_BIT_MASK(32));
+ 			if (ret) {
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 7ad7ae35cf88..d300ac907c76 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -92,6 +92,7 @@ struct stmmac_dma_cfg {
+ 	int fixed_burst;
+ 	int mixed_burst;
+ 	bool aal;
++	bool eame;
+ };
+ 
+ #define AXI_BLEN	7
+-- 
+2.23.0
 
-Thierry
-
---J2SCkAp4GZ/dPZZf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl12avoACgkQ3SOs138+
-s6HKiw//TWM7ZrQDzc7XyoxuJLTo+cDwrkPcfuhx7j7KcMxyjDbUv1HqMhzxrs+Q
-iHgY3b2d3LubovfTDeEq+N1uDfFsv6T+dNQg7FVo7lFsRbEnwdt8bwQrvDsfVjCD
-e9aAPCp1tazMPiMLGvTpKyH/yLz6VECXcYNUH/bT/sp86NstNlmTatU10pyZC0sd
-JIAKcIUesQMZVwwObof1C3Y0XMuMuTnVu0PP6hVqxe19ajV++jDylqBNq1kanbHM
-GQTZoVy3ax/xwZM+RfQF6OO8bUfcDR4TRzjVEeksBCK6rMG4FLBnihHWDejN7f0N
-WwBUlNGB+y1Mpfm5Dg5lao+SyyhGFPLQyHKaemxAWRWMXQeo21A+hOXGd29wwkec
-4nwIeIj5YSLzN/xGel4+aJz8awfrAq+9ufCKPgz1zalXMbgq7uqY05jyiGzgqmEZ
-UIEj5iNCHnZcCDpzxspLGD1mtmIGC90zwdSayLvKrTjVj0wtjkuwHsg5AYe7aqxT
-ChEYn11wD088dLymiO70+r8puQR/YdHvdBNxOe2KMA4p6P/JEujUTG1IBYeH0x+H
-ii2vhX4hMJFp8T19Tqntfpt0YNhny9thbFfybokv4NyaIPG4QNWLB9ZioO1SzcO0
-yM33lw0ZFBc9pF6Fny2z9u7pyfCrFap3fSbynCZxBe9WNg/o4OM=
-=EFgV
------END PGP SIGNATURE-----
-
---J2SCkAp4GZ/dPZZf--
