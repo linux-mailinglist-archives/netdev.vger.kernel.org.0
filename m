@@ -2,133 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F39DADB15
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 16:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 787E2ADB1B
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 16:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbfIIOVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 10:21:49 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:58508 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726188AbfIIOVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 10:21:49 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 2856728BB4D
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v2] igb: add rx drop enable attribute
-Date:   Mon,  9 Sep 2019 15:21:01 +0100
-Message-Id: <20190909142117.20186-1-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.18.0
+        id S1726608AbfIIOXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 10:23:21 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:40793 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725769AbfIIOXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 10:23:21 -0400
+Received: by mail-ot1-f68.google.com with SMTP id y39so12600776ota.7;
+        Mon, 09 Sep 2019 07:23:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+qo6Cm0/mkvZdIkb/nI3qcoj0gdXAoPIp7Ut68/H0cU=;
+        b=RLM/Vg7pPP9Gs9ptF29WwngIfmrkDT5VfEUazZEBkCxuCsOn7b3wioQB60jcrqUEbW
+         6fw2m3n/87XYYfI4vthmzUUGA5tlat0RkdOErvas1keaMYyyALE+tZRB8b+Yu+1jBpi/
+         6T8fmVmuW+qoyfPVcQ86C932cqryRshSmRg/96kgfzMAgC3e5C2jNWSftJSjq7Z+2HBa
+         h9aT+B+GbPQpfiRDhwJCqJBenC84oDRH49r02S6ILJ9VoLP3vdLsJ36GfoFh80ubLdLy
+         JhU9zVK6B64gZ4wt90pWINwXY7Nx/7jcD8LQKzPe52CSNIx6A0TTx95mHnMe7Pj0xbK8
+         bM7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+qo6Cm0/mkvZdIkb/nI3qcoj0gdXAoPIp7Ut68/H0cU=;
+        b=ERD8yQ5uZgZ5ZV93PU3WMiJ9x7SIwh+cRjF7b1Zx6KxqZ3TwQOmZ3h4GZfmeqFM0Xs
+         YD8SFmpumtL5K5RkOlApl3w2JjcNnEQFhY6mVrcitx91v+UaZME5mgwN9itujkzprUs1
+         IbgrnQHLP8Hqc6wnxIZCN8+o+yxZC5IEn4v/0Me6tRTxelUqdOUfHRWgm9HXptP24meG
+         JK7Daw+JSBT+TPanvU+uBLEc1EsVJcd9H7QuOqrUDAQRl0GBYM+acqmyruk1oRcyycfC
+         knCoMYthLzAL2DLO/HgIzj3f2XK9/RSFj0cm4XAHDwi1HBxIyru5SGFFVtiI+qiXBZFs
+         YmMg==
+X-Gm-Message-State: APjAAAVVINKd2LlEvlPof3q//eIMIocpb6IkSZqqAN2CZwj+VMuOgb3Y
+        2MZyWB9Vu9a9EfXMuc23OfUV0G4cq2o=
+X-Google-Smtp-Source: APXvYqws85LcAfZO0YokCPWxv1uj06YGGxYuW0goQpnopcM79gobnZvf2h6kemt8zWk+0H7K92VBDg==
+X-Received: by 2002:a05:6830:91:: with SMTP id a17mr20257910oto.322.1568039000193;
+        Mon, 09 Sep 2019 07:23:20 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id s12sm1468806oij.56.2019.09.09.07.23.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Sep 2019 07:23:19 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] net: phy: dp83867: Add SGMII mode type switching
+To:     Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>, davem@davemloft.net,
+        robh+dt@kernel.org
+Cc:     Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Trent Piepho <tpiepho@impinj.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1567700761-14195-2-git-send-email-vitaly.gaiduk@cloudbear.ru>
+ <1568026945-3857-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <51cf6e69-14ad-394e-0998-6032d239b717@gmail.com>
+Date:   Mon, 9 Sep 2019 07:23:16 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <1568026945-3857-1-git-send-email-vitaly.gaiduk@cloudbear.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To allow userland to enable or disable dropping packets when descriptor
-ring is exhausted, add RX_DROP_EN private flag.
 
-This can be used in conjunction with flow control to mitigate packet storms
-(e.g. due to network loop or DoS) by forcing the network adapter to send
-pause frames whenever the ring is close to exhaustion.
 
-By default this will maintain previous behaviour of enabling dropping of
-packets during ring buffer exhaustion.
-Some use cases prefer to not drop packets upon exhaustion, but instead
-use flow control to limit ingress rates and ensure no dropped packets.
-This is useful when the host CPU cannot keep up with packet delivery,
-but data delivery is more important than throughput via multiple queues.
+On 9/9/2019 4:02 AM, Vitaly Gaiduk wrote:
+> This patch adds ability to switch beetween two PHY SGMII modes.
+> Some hardware, for example, FPGA IP designs may use 6-wire mode
+> which enables differential SGMII clock to MAC.
+> 
+> Signed-off-by: Vitaly Gaiduk <vitaly.gaiduk@cloudbear.ru>
+> ---
+> Changes in v2:
+> - changed variable sgmii_type name to sgmii_ref_clk_en
+> 
+>  drivers/net/phy/dp83867.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+> index 1f1ecee..cd6260e 100644
+> --- a/drivers/net/phy/dp83867.c
+> +++ b/drivers/net/phy/dp83867.c
+> @@ -37,6 +37,7 @@
+>  #define DP83867_STRAP_STS2	0x006f
+>  #define DP83867_RGMIIDCTL	0x0086
+>  #define DP83867_IO_MUX_CFG	0x0170
+> +#define DP83867_SGMIICTL	0x00D3
+>  #define DP83867_10M_SGMII_CFG   0x016F
+>  #define DP83867_10M_SGMII_RATE_ADAPT_MASK BIT(7)
+> 
+> @@ -61,6 +62,9 @@
+>  #define DP83867_RGMII_TX_CLK_DELAY_EN		BIT(1)
+>  #define DP83867_RGMII_RX_CLK_DELAY_EN		BIT(0)
+> 
+> +/* SGMIICTL bits */
+> +#define DP83867_SGMII_TYPE		BIT(14)
+> +
+>  /* STRAP_STS1 bits */
+>  #define DP83867_STRAP_STS1_RESERVED		BIT(11)
+> 
+> @@ -109,6 +113,7 @@ struct dp83867_private {
+>  	bool rxctrl_strap_quirk;
+>  	bool set_clk_output;
+>  	u32 clk_output_sel;
+> +	bool sgmii_ref_clk_en;
+>  };
+> 
+>  static int dp83867_ack_interrupt(struct phy_device *phydev)
+> @@ -197,6 +202,9 @@ static int dp83867_of_init(struct phy_device *phydev)
+>  	dp83867->rxctrl_strap_quirk = of_property_read_bool(of_node,
+>  					"ti,dp83867-rxctrl-strap-quirk");
+> 
+> +	dp83867->sgmii_ref_clk_en = of_property_read_bool(of_node,
+> +					"ti,sgmii-ref-clock-output-enable");
+> +
+>  	/* Existing behavior was to use default pin strapping delay in rgmii
+>  	 * mode, but rgmii should have meant no delay.  Warn existing users.
+>  	 */
+> @@ -389,6 +397,14 @@ static int dp83867_config_init(struct phy_device *phydev)
+> 
+>  		if (ret)
+>  			return ret;
+> +
+> +		/* SGMII type is set to 4-wire mode by default */
+> +		if (dp83867->sgmii_ref_clk_en) {
+> +			/* Switch on 6-wire mode */
+> +			val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL);
+> +			val |= DP83867_SGMII_TYPE;
+> +			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
+> +		}
 
-Userland can set this flag to 0 via ethtool to disable packet dropping.
+Is there a case where the value could be retained across a power
+on/reset cycle and you would want to make sure you do write the intended
+"wire mode" here? What I am suggesting is just changing this into a:
 
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
----
-
-Notes:
-    Changes since v1: re-written to use ethtool priv flags instead of sysfs attribute
-
- drivers/net/ethernet/intel/igb/igb.h         |  1 +
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  8 ++++++++
- drivers/net/ethernet/intel/igb/igb_main.c    | 11 +++++++++--
- 3 files changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-index ca54e268d157..ff4a61218e3e 100644
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -617,6 +617,7 @@ struct igb_adapter {
- #define IGB_FLAG_VLAN_PROMISC		BIT(15)
- #define IGB_FLAG_RX_LEGACY		BIT(16)
- #define IGB_FLAG_FQTSS			BIT(17)
-+#define IGB_FLAG_RX_DROP_EN		BIT(18)
- 
- /* Media Auto Sense */
- #define IGB_MAS_ENABLE_0		0X0001
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 3182b059bf55..b584fa1f0e14 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -128,6 +128,8 @@ static const char igb_gstrings_test[][ETH_GSTRING_LEN] = {
- static const char igb_priv_flags_strings[][ETH_GSTRING_LEN] = {
- #define IGB_PRIV_FLAGS_LEGACY_RX	BIT(0)
- 	"legacy-rx",
-+#define IGB_PRIV_FLAGS_RX_DROP_EN	BIT(1)
-+	"rx-drop-en",
- };
- 
- #define IGB_PRIV_FLAGS_STR_LEN ARRAY_SIZE(igb_priv_flags_strings)
-@@ -3444,6 +3446,8 @@ static u32 igb_get_priv_flags(struct net_device *netdev)
- 
- 	if (adapter->flags & IGB_FLAG_RX_LEGACY)
- 		priv_flags |= IGB_PRIV_FLAGS_LEGACY_RX;
-+	if (adapter->flags & IGB_FLAG_RX_DROP_EN)
-+		priv_flags |= IGB_PRIV_FLAGS_RX_DROP_EN;
- 
- 	return priv_flags;
- }
-@@ -3457,6 +3461,10 @@ static int igb_set_priv_flags(struct net_device *netdev, u32 priv_flags)
- 	if (priv_flags & IGB_PRIV_FLAGS_LEGACY_RX)
- 		flags |= IGB_FLAG_RX_LEGACY;
- 
-+	flags &= ~IGB_FLAG_RX_DROP_EN;
-+	if (priv_flags & IGB_PRIV_FLAGS_RX_DROP_EN)
-+		flags |= IGB_FLAG_RX_DROP_EN;
-+
- 	if (flags != adapter->flags) {
- 		adapter->flags = flags;
- 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 105b0624081a..51a8010dbe59 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3236,6 +3236,9 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	igb_validate_mdi_setting(hw);
- 
-+	/* By default, support dropping packets due to ring exhaustion */
-+	adapter->flags |= IGB_FLAG_RX_DROP_EN;
-+
- 	/* By default, support wake on port A */
- 	if (hw->bus.func == 0)
- 		adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-@@ -4503,8 +4506,12 @@ void igb_configure_rx_ring(struct igb_adapter *adapter,
- 	srrctl |= E1000_SRRCTL_DESCTYPE_ADV_ONEBUF;
- 	if (hw->mac.type >= e1000_82580)
- 		srrctl |= E1000_SRRCTL_TIMESTAMP;
--	/* Only set Drop Enable if we are supporting multiple queues */
--	if (adapter->vfs_allocated_count || adapter->num_rx_queues > 1)
-+	/*
-+	 * Only set Drop Enable if we are supporting multiple queues and
-+	 * allowed by flags
-+	 */
-+	if ((adapter->flags & IGB_FLAG_RX_DROP_EN) &&
-+		(adapter->vfs_allocated_count || adapter->num_rx_queues > 1))
- 		srrctl |= E1000_SRRCTL_DROP_EN;
- 
- 	wr32(E1000_SRRCTL(reg_idx), srrctl);
+	val =  phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL);
+	if (dp83867->sgmii_ref_clk_en)
+		val |= DP83867_SGMII_TYPE;
+	else
+		val &= ~DP83867_SGMII_TYPE;
+	phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_SGMIICTL, val);
+	
+Other than that, LGTM
 -- 
-2.18.0
-
+Florian
