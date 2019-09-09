@@ -2,364 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F2AAD869
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 14:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE687AD8AE
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 14:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404616AbfIIMBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 08:01:54 -0400
-Received: from mail.online.net ([62.210.16.11]:37226 "EHLO mail.online.net"
+        id S2404775AbfIIMQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 08:16:01 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49816 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404560AbfIIMBx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 08:01:53 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 0AE27F2BDEC4;
-        Mon,  9 Sep 2019 14:01:51 +0200 (CEST)
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 0FsJF2DgnFzv; Mon,  9 Sep 2019 14:01:50 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.online.net (Postfix) with ESMTP id 779B6F2BDEEB;
-        Mon,  9 Sep 2019 14:01:50 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.online.net 779B6F2BDEEB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=online.net;
-        s=4EC61654-9574-11E8-870F-3D38CA7095BF; t=1568030510;
-        bh=wVsJWki4ZKsRbO11oKL2Bg/v3N6jpPTJgoUsF6u+dOI=;
-        h=Mime-Version:From:Date:Message-Id:To;
-        b=djsLVKY1eiNAfqt6pQrKOa9YoZ6i7uWIvjiRPKRaJWqY4DKJ9hTQBTqI75yEgwJnA
-         ILe0ceL+CBJMfH71dvFA9hfch05osKtBg5VwRefkW+Orfk7DLo9/zwln2hdKc5c2U9
-         oX5qengJOuAy40R3hOZ9FNutecym/MEh5WQfVckSG5qvxXkcp5eC90TasXL8vrm/BU
-         bj2kfqwmbX7uXECqTq6keXZBqpQm2GZKPr9bXradWETGpQzX4mYCdHA/HCmqxDuiO4
-         a4QIBAOTk9IvgY0ATOKQtr71gQhkZYS5h2xnBE7GDugxpWYKO42ypw8ZCJwfRW7e9x
-         rUgcmCGXIkemA==
-X-Virus-Scanned: amavisd-new at mail.online.net
-Received: from mail.online.net ([127.0.0.1])
-        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8_FPd5PXneMl; Mon,  9 Sep 2019 14:01:50 +0200 (CEST)
-Received: from [10.33.104.14] (unknown [195.154.229.35])
-        by mail.online.net (Postfix) with ESMTPSA id 620F8F2BDEC4;
-        Mon,  9 Sep 2019 14:01:50 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: VRF Issue Since kernel 5
-From:   Alexis Bauvin <abauvin@online.net>
-In-Reply-To: <CWLP265MB1554B902B7F3B43E6E75FD0DFDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
-Date:   Mon, 9 Sep 2019 14:01:49 +0200
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <7CAF2F23-5D88-4BE7-B703-06B71D1EDD11@online.net>
-References: <CWLP265MB1554308A1373D9ECE68CB854FDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <9E920DE7-9CC9-493C-A1D2-957FE1AED897@online.net>
- <CWLP265MB1554B902B7F3B43E6E75FD0DFDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
-To:     Gowen <gowen@potatocomputing.co.uk>
-X-Mailer: Apple Mail (2.3445.9.1)
+        id S2391097AbfIIMQB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 08:16:01 -0400
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 006D1C054C52
+        for <netdev@vger.kernel.org>; Mon,  9 Sep 2019 12:16:01 +0000 (UTC)
+Received: by mail-qt1-f200.google.com with SMTP id o13so9926023qtr.15
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 05:16:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cR0iPk7k3gak2smW+VGCzi1D6+WqwWLkfLqRmEk+oQ0=;
+        b=LpN+SKy5O5ksFdNAKUgodKEIijsQesev0GA4r/d2rJsXkGHhy1KG3JCXZPxWAAyojD
+         BRmLvqH9iDM4HTw2qEcPZ/WJizn8+b/D9FdTnMmuiCTChc3OW1p7fyfAF4cFWRpXY1mH
+         LdLHY48DHkBnWKn3EU+2VdbVUFHfh6zdgGugyImfWvDn+VkIbubsltrNIbnxpzQAlb6A
+         UsFsCjiUxqGEL4Jz+S/1R0dC3gdDfW1sOSfdEvD4T0pJLE2cJKON5EAhKR8Eu3OptD8g
+         pPTM+5SubHaZJoHseVT7jiahQwEXedsF8m1evnj2CuNTYiPPUzrhZoqBpmgnE0NaQsb1
+         ga5g==
+X-Gm-Message-State: APjAAAWKAYylCEIHPHzveJjLR/387FyQmYS8Yg7NDnVoRpLHm52KPIk2
+        Y/MEWvrnwXKIoVqIDi6nRViyRmJ4yGXEcSt2uuItLql2JJ1ks5yO4kjH32XUSImoNTppStePayb
+        gR/0ktATIC+f09eid
+X-Received: by 2002:aed:3527:: with SMTP id a36mr23116296qte.82.1568031360372;
+        Mon, 09 Sep 2019 05:16:00 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwTjEC9gLktIgrr/FKS4EvJdW8yr2QsPhfhm1/EGltRDxNNwBhSFB09DwZLmFGxdw8mqFXn1g==
+X-Received: by 2002:aed:3527:: with SMTP id a36mr23116262qte.82.1568031360138;
+        Mon, 09 Sep 2019 05:16:00 -0700 (PDT)
+Received: from redhat.com ([80.74.107.118])
+        by smtp.gmail.com with ESMTPSA id g194sm7059848qke.46.2019.09.09.05.15.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Sep 2019 05:15:59 -0700 (PDT)
+Date:   Mon, 9 Sep 2019 08:15:52 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, jgg@mellanox.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        aarcange@redhat.com, jglisse@redhat.com, linux-mm@kvack.org
+Subject: Re: [PATCH 0/2] Revert and rework on the metadata accelreation
+Message-ID: <20190909081537-mutt-send-email-mst@kernel.org>
+References: <20190905122736.19768-1-jasowang@redhat.com>
+ <20190905135907.GB6011@mellanox.com>
+ <7785d39b-b4e7-8165-516c-ee6a08ac9c4e@redhat.com>
+ <20190906.151505.1486178691190611604.davem@davemloft.net>
+ <bb9ae371-58b7-b7fc-b728-b5c5f55d3a91@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bb9ae371-58b7-b7fc-b728-b5c5f55d3a91@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Sep 09, 2019 at 03:18:01PM +0800, Jason Wang wrote:
+> 
+> On 2019/9/6 下午9:15, David Miller wrote:
+> > From: Jason Wang <jasowang@redhat.com>
+> > Date: Fri, 6 Sep 2019 18:02:35 +0800
+> > 
+> > > On 2019/9/5 下午9:59, Jason Gunthorpe wrote:
+> > > > I think you should apply the revert this cycle and rebase the other
+> > > > patch for next..
+> > > > 
+> > > > Jason
+> > > Yes, the plan is to revert in this release cycle.
+> > Then you should reset patch #1 all by itself targetting 'net'.
+> 
+> 
+> Thanks for the reminding. I want the patch to go through Michael's vhost
+> tree, that's why I don't put 'net' prefix. For next time, maybe I can use
+> "vhost" as a prefix for classification?
 
-I guess all routing from the management VRF itself is working correctly =
-(i.e. cURLing
-an IP from this VRF or digging any DNS), and it is your route leakage =
-that=E2=80=99s at fault.
+That's fine by me.
 
-Could you try swapping the local and l3mdev rules?
-
-`ip rule del pref 0; ip rule add from all lookup local pref 1001`
-
-I faced security issues and behavioral weirdnesses from the default =
-kernel rule ordering
-regarding the default vrf.
-
-Alexis
-
-> Le 9 sept. 2019 =C3=A0 12:53, Gowen <gowen@potatocomputing.co.uk> a =
-=C3=A9crit :
->=20
-> Hi Alexis,
->=20
-> Admin@NETM06:~$ sysctl net.ipv4.tcp_l3mdev_accept
-> net.ipv4.tcp_l3mdev_accept =3D 1
->=20
-> Admin@NETM06:~$ sudo ip vrf exec mgmt-vrf curl kernel.org
-> curl: (6) Could not resolve host: kernel.org
->=20
-> the failure to resolve is the same with all DNS lookups from any =
-process I've run
->=20
-> The route is there from the guide I originally used, I can't remember =
-the purpose but I know I don't need it - I've removed it now and no =
-change
->=20
-> Admin@NETM06:~$ ip rule show
-> 0:      from all lookup local
-> 1000:   from all lookup [l3mdev-table]
-> 32766:  from all lookup main
-> 32767:  from all lookup default
->=20
-> I could switch the VRFs over, but this is a test-box and i have prod =
-boxes on this as well so not so keen on that if I can avoid it.
->=20
-> =46rom what I can speculate, because the TCP return traffic is met =
-with an RST, it looks like it may be something to do with iptables - but =
-even if I set the policy to ACCEPT and flush all the rules, the =
-behaviour remains the same.
->=20
-> Is it possible that the TCP stack isn't aware of the session (as is =
-mapped to wrong VRF internally or something to that effect) and is =
-therefore sending the RST?
->=20
-> Gareth
-> From: Alexis Bauvin <abauvin@online.net>
-> Sent: 09 September 2019 10:28
-> To: Gowen <gowen@potatocomputing.co.uk>
-> Cc: netdev@vger.kernel.org <netdev@vger.kernel.org>
-> Subject: Re: VRF Issue Since kernel 5
-> =20
-> Hi,
->=20
-> There has been some changes regarding VRF isolation in Linux 5 IIRC, =
-namely proper
-> isolation of the default VRF.
->=20
-> Some things you may try:
->=20
-> - looking at the l3mdev_accept sysctls (e.g. =
-`net.ipv4.tcp_l3mdev_accept`)
-> - querying stuff from the management vrf through `ip vrf exec vrf-mgmt =
-<stuff>`
->   e.g. `ip vrf exec vrf-mgmt curl kernel.org`
->        `ip vrf exec vrf-mgmt dig @1.1.1.1 kernel.org`
-> - reversing your logic: default VRF is your management one, the other =
-one is for your
->   other boxes
->=20
-> Also, your `unreachable default metric 4278198272` route looks odd to =
-me.
->=20
-> What are your routing rules? (`ip rule`)
->=20
-> Alexis
->=20
-> > Le 9 sept. 2019 =C3=A0 09:46, Gowen <gowen@potatocomputing.co.uk> a =
-=C3=A9crit :
-> >=20
-> > Hi there,
-> >=20
-> > Dave A said this was the mailer to send this to:
-> >=20
-> >=20
-> > I=E2=80=99ve been using my management interface in a VRF for several =
-months now and it=E2=80=99s worked perfectly =E2=80=93 I=E2=80=99ve been =
-able to update/upgrade the packages just fine and iptables works =
-excellently with it =E2=80=93 exactly as I needed.
-> >=20
-> >=20
-> > Since Kernel 5 though I am no longer able to update =E2=80=93 but =
-the issue is quite a curious one as some traffic appears to be fine (DNS =
-lookups use VRF correctly) but others don=E2=80=99t (updating/upgrading =
-the packages)
-> >=20
-> >=20
-> > I have on this device 2 interfaces:
-> > Eth0 for management =E2=80=93 inbound SSH, DNS, updates/upgrades
-> > Eth1 for managing other boxes (ansible using SSH)
-> >=20
-> >=20
-> > Link and addr info shown below:
-> >=20
-> >=20
-> > Admin@NETM06:~$ ip link show
-> > 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN =
-mode DEFAULT group default qlen 1000
-> >     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master =
-mgmt-vrf state UP mode DEFAULT group default qlen 1000
-> >     link/ether 00:22:48:07:cc:ad brd ff:ff:ff:ff:ff:ff
-> > 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state =
-UP mode DEFAULT group default qlen 1000
-> >     link/ether 00:22:48:07:c9:6c brd ff:ff:ff:ff:ff:ff
-> > 4: mgmt-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue =
-state UP mode DEFAULT group default qlen 1000
-> >     link/ether 8a:f6:26:65:02:5a brd ff:ff:ff:ff:ff:ff
-> >=20
-> >=20
-> > Admin@NETM06:~$ ip addr
-> > 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN =
-group default qlen 1000
-> >     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> >     inet 127.0.0.1/8 scope host lo
-> >        valid_lft forever preferred_lft forever
-> >     inet6 ::1/128 scope host
-> >        valid_lft forever preferred_lft forever
-> > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master =
-mgmt-vrf state UP group default qlen 1000
-> >     link/ether 00:22:48:07:cc:ad brd ff:ff:ff:ff:ff:ff
-> >     inet 10.24.12.10/24 brd 10.24.12.255 scope global eth0
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::222:48ff:fe07:ccad/64 scope link
-> >        valid_lft forever preferred_lft forever
-> > 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state =
-UP group default qlen 1000
-> >     link/ether 00:22:48:07:c9:6c brd ff:ff:ff:ff:ff:ff
-> >     inet 10.24.12.9/24 brd 10.24.12.255 scope global eth1
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::222:48ff:fe07:c96c/64 scope link
-> >        valid_lft forever preferred_lft forever
-> > 4: mgmt-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue =
-state UP group default qlen 1000
-> >     link/ether 8a:f6:26:65:02:5a brd ff:ff:ff:ff:ff:ff
-> >=20
-> >=20
-> >=20
-> > the production traffic is all in the 10.0.0.0/8 network (eth1 global =
-VRF) except for a few subnets (DNS) which are routed out eth0 (mgmt-vrf)
-> >=20
-> >=20
-> > Admin@NETM06:~$ ip route show
-> > default via 10.24.12.1 dev eth0
-> > 10.0.0.0/8 via 10.24.12.1 dev eth1
-> > 10.24.12.0/24 dev eth1 proto kernel scope link src 10.24.12.9
-> > 10.24.65.0/24 via 10.24.12.1 dev eth0
-> > 10.25.65.0/24 via 10.24.12.1 dev eth0
-> > 10.26.0.0/21 via 10.24.12.1 dev eth0
-> > 10.26.64.0/21 via 10.24.12.1 dev eth0
-> >=20
-> >=20
-> > Admin@NETM06:~$ ip route show vrf mgmt-vrf
-> > default via 10.24.12.1 dev eth0
-> > unreachable default metric 4278198272
-> > 10.24.12.0/24 dev eth0 proto kernel scope link src 10.24.12.10
-> > 10.24.65.0/24 via 10.24.12.1 dev eth0
-> > 10.25.65.0/24 via 10.24.12.1 dev eth0
-> > 10.26.0.0/21 via 10.24.12.1 dev eth0
-> > 10.26.64.0/21 via 10.24.12.1 dev eth0
-> >=20
-> >=20
-> >=20
-> > The strange activity occurs when I enter the command =E2=80=9Csudo =
-apt update=E2=80=9D as I can resolve the DNS request (10.24.65.203 or =
-10.24.64.203, verified with tcpdump) out eth0 but for the actual update =
-traffic there is no activity:
-> >=20
-> >=20
-> > sudo tcpdump -i eth0 '(host 10.24.65.203 or host 10.25.65.203) and =
-port 53' -n
-> > <OUTPUT OMITTED FOR BREVITY>
-> > 10:06:05.268735 IP 10.24.12.10.39963 > 10.24.65.203.53: 48798+ [1au] =
-A? security.ubuntu.com. (48)
-> > <OUTPUT OMITTED FOR BREVITY>
-> > 10:06:05.284403 IP 10.24.65.203.53 > 10.24.12.10.39963: 48798 13/0/1 =
-A 91.189.91.23, A 91.189.88.24, A 91.189.91.26, A 91.189.88.162, A =
-91.189.88.149, A 91.189.91.24, A 91.189.88.173, A 91.189.88.177, A =
-91.189.88.31, A 91.189.91.14, A 91.189.88.176, A 91.189.88.175, A =
-91.189.88.174 (256)
-> >=20
-> >=20
-> >=20
-> > You can see that the update traffic is returned but is not accepted =
-by the stack and a RST is sent
-> >=20
-> >=20
-> > Admin@NETM06:~$ sudo tcpdump -i eth0 '(not host 168.63.129.16 and =
-port 80)' -n
-> > tcpdump: verbose output suppressed, use -v or -vv for full protocol =
-decode
-> > listening on eth0, link-type EN10MB (Ethernet), capture size 262144 =
-bytes
-> > 10:17:12.690658 IP 10.24.12.10.40216 > 91.189.88.175.80: Flags [S], =
-seq 2279624826, win 64240, options [mss 1460,sackOK,TS val 2029365856 =
-ecr 0,nop,wscale 7], length 0
-> > 10:17:12.691929 IP 10.24.12.10.52362 > 91.189.95.83.80: Flags [S], =
-seq 1465797256, win 64240, options [mss 1460,sackOK,TS val 3833463674 =
-ecr 0,nop,wscale 7], length 0
-> > 10:17:12.696270 IP 91.189.88.175.80 > 10.24.12.10.40216: Flags [S.], =
-seq 968450722, ack 2279624827, win 28960, options [mss 1418,sackOK,TS =
-val 81957103 ecr 2029365856,nop,wscale 7], length 0                      =
-                                                                         =
-                            =20
-> > 10:17:12.696301 IP 10.24.12.10.40216 > 91.189.88.175.80: Flags [R], =
-seq 2279624827, win 0, length 0
-> > 10:17:12.697884 IP 91.189.95.83.80 > 10.24.12.10.52362: Flags [S.], =
-seq 4148330738, ack 1465797257, win 28960, options [mss 1418,sackOK,TS =
-val 2257624414 ecr 3833463674,nop,wscale 8], length 0                    =
-                                                                         =
-                           =20
-> > 10:17:12.697909 IP 10.24.12.10.52362 > 91.189.95.83.80: Flags [R], =
-seq 1465797257, win 0, length 0
-> >=20
-> >=20
-> >=20
-> >=20
-> > I can emulate the DNS lookup using netcat in the vrf:
-> >=20
-> >=20
-> > sudo ip vrf exec mgmt-vrf nc -u 10.24.65.203 53
-> >=20
-> >=20
-> > then interactively enter the binary for a www.google.co.uk request:
-> >=20
-> >=20
-> > =
-0035624be394010000010000000000010377777706676f6f676c6502636f02756b00000100=
-010000290200000000000000
-> >=20
-> >=20
-> > This returns as expected:
-> >=20
-> >=20
-> > =
-00624be394010000010000000000010377777706676f6f676c6502636f02756b0000010001=
-0000290200000000000000
-> >=20
-> >=20
-> > I can run:
-> >=20
-> >=20
-> > Admin@NETM06:~$ host www.google.co.uk
-> > www.google.co.uk has address 172.217.169.3
-> > www.google.co.uk has IPv6 address 2a00:1450:4009:80d::2003
-> >=20
-> >=20
-> > but I get a timeout for:
-> >=20
-> >=20
-> > sudo ip vrf  exec mgmt-vrf host www.google.co.uk
-> > ;; connection timed out; no servers could be reached
-> >=20
-> >=20
-> >=20
-> > However I can take a repo address and vrf exec to it on port 80:
-> >=20
-> >=20
-> > Admin@NETM06:~$ sudo ip vrf  exec mgmt-vrf nc 91.189.91.23 80
-> > hello
-> > HTTP/1.1 400 Bad Request
-> > <OUTPUT OMITTED>
-> >=20
-> > My iptables rule:
-> >=20
-> >=20
-> > sudo iptables -Z
-> > Admin@NETM06:~$ sudo iptables -L -v
-> > Chain INPUT (policy DROP 16 packets, 3592 bytes)
-> > pkts bytes target     prot opt in     out     source               =
-destination
-> >    44  2360 ACCEPT     tcp  --  any    any     anywhere             =
-anywhere             tcp spt:http ctstate RELATED,ESTABLISHED
-> >    83 10243 ACCEPT     udp  --  any    any     anywhere             =
-anywhere             udp spt:domain ctstate RELATED,ESTABLISHED
-> >=20
-> >=20
-> >=20
-> > I cannot find out why the update isn=E2=80=99t working. Any help =
-greatly appreciated
-> >=20
-> >=20
-> > Kind Regards,
-> >=20
-> >=20
-> > Gareth
-
+-- 
+MST
