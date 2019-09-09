@@ -2,159 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B60CAD455
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 09:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33EDAAD45B
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 09:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388679AbfIIH5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 03:57:40 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36581 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfIIH5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 03:57:39 -0400
-Received: by mail-pg1-f194.google.com with SMTP id l21so7350946pgm.3;
-        Mon, 09 Sep 2019 00:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=CU2s6tg88IjajhyVTh8zjloCz3yMLwmiGt2Qrh7Vf0E=;
-        b=TqW6RiIaG4GdFeON+Wwqs2H2pEO3iBS96Q2SVmsDOCTn4MYx6DU7g1iLPuW3yFc4j8
-         SNxCeOBc22BVsjJMR31MP38VCB3JcTpiSfkYkT7mxIcogPQEnhWv5HyqKVHkoj3j2BWK
-         Io/5LfuDIGm3r9HeMu1Mh2IlT9pDtbW6sxgPhsNZh0LXd2k3oJZzZ+Y8atAaGI3R8Ndk
-         qEccKHiVnMXGAVzwcBz7EPv1CYJEy/3jfbZlZ47Myp6MY5M+s5cpZtWyi4vCI9DJiSye
-         LJWlFx2LthQW+5odh2awf/t1CAi8lFQ5C3B3VkYBtNyYqOpcYebemry02wxM9fUfYbuo
-         vDGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=CU2s6tg88IjajhyVTh8zjloCz3yMLwmiGt2Qrh7Vf0E=;
-        b=XMH/RhgWc+jywDHESTPsshNYZe0vnqK+YVHiXwoVhexW4WRry1LT3iQqZjU06zjYxu
-         A28wYYiYr0pA/CXDBErBbO7Oaa/o6mgXeRj7GK8iU0IgYFe1CayfwiCkz5pcWQWAg9BD
-         t3hs3Y3Akcy3GGO+MYcaCuewSbVkKlw4tooig2K5rLVSF1DFhMm+yAlSNPr5/nRPeMnm
-         0UiUiBT3ilG+vFz2pNneR2PIZlfc/f9XrIW7JGoC6YryuDh5YX5sSKgGL9fdfzKku8qZ
-         PW6dTbFr8NQjFp+M8pB/RdIrUuI0wQ/hRPzcDhG8qxRi8XU7JbAtQANyPnoiFC30xZX+
-         HP6Q==
-X-Gm-Message-State: APjAAAVyDpmuwXskS1h6zultFKnqST9gbGHvJLlZgrp0DGUtUSlf0gAX
-        WhVmGrJ9oCVTuFEwwIh21aaYtPKWTaU=
-X-Google-Smtp-Source: APXvYqxwMNHIkSUvh+j/9F8FqxGimUpmjVbJPty1m6q3G/QetarrHUc7X4qxwm360vECnKsarhvs6g==
-X-Received: by 2002:a63:1507:: with SMTP id v7mr19358460pgl.397.1568015858889;
-        Mon, 09 Sep 2019 00:57:38 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p20sm18998335pgi.81.2019.09.09.00.57.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 09 Sep 2019 00:57:38 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
-Subject: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct sctp_paddrthlds
-Date:   Mon,  9 Sep 2019 15:56:51 +0800
-Message-Id: <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <06a808c98b94e92b52276469e0257ef9f58923d0.1568015756.git.lucien.xin@gmail.com>
-References: <cover.1568015756.git.lucien.xin@gmail.com>
- <b486e6b5e434f8fd2462addc81916d83b5a31707.1568015756.git.lucien.xin@gmail.com>
- <00fb06e74d8eedeb033dad83de18380bf6261231.1568015756.git.lucien.xin@gmail.com>
- <4836d0d8bb96e807b63f46e6c59af78b9b3e286b.1568015756.git.lucien.xin@gmail.com>
- <06a808c98b94e92b52276469e0257ef9f58923d0.1568015756.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1568015756.git.lucien.xin@gmail.com>
-References: <cover.1568015756.git.lucien.xin@gmail.com>
+        id S2388254AbfIIH7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 03:59:45 -0400
+Received: from mga03.intel.com ([134.134.136.65]:35724 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725999AbfIIH7p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 03:59:45 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Sep 2019 00:59:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,484,1559545200"; 
+   d="scan'208";a="335516806"
+Received: from pipin.fi.intel.com ([10.237.72.175])
+  by orsmga004.jf.intel.com with ESMTP; 09 Sep 2019 00:59:42 -0700
+From:   Felipe Balbi <felipe.balbi@linux.intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Felipe Balbi <felipe.balbi@linux.intel.com>
+Subject: [PATCH v3 1/2] PTP: introduce new versions of IOCTLs
+Date:   Mon,  9 Sep 2019 10:59:39 +0300
+Message-Id: <20190909075940.12843-1-felipe.balbi@linux.intel.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
-Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
-added to allow a user to change ps_retrans per sock/asoc/transport, as
-other 2 paddrthlds: pf_retrans, pathmaxrxt.
+The current version of the IOCTL have a small problem which prevents us
+from extending the API by making use of reserved fields. In these new
+IOCTLs, we are now making sure that flags and rsv fields are zero which
+will allow us to extend the API in the future.
 
-Note that ps_retrans is not allowed to be greater than pf_retrans.
-
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
 ---
- include/uapi/linux/sctp.h |  1 +
- net/sctp/socket.c         | 10 ++++++++++
- 2 files changed, 11 insertions(+)
 
-diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index a15cc28..dfd81e1 100644
---- a/include/uapi/linux/sctp.h
-+++ b/include/uapi/linux/sctp.h
-@@ -1069,6 +1069,7 @@ struct sctp_paddrthlds {
- 	struct sockaddr_storage spt_address;
- 	__u16 spt_pathmaxrxt;
- 	__u16 spt_pathpfthld;
-+	__u16 spt_pathcpthld;
- };
+Changes since v2:
+	- Define PTP_{PEROUT,EXTTS}_VALID_FLAGS
+	- Fix comment above PTP_*_FLAGS
+	- 
+
+Changes since v1:
+	- Add a blank line after memset()
+	- Move memset(req) to the three places where it's needed
+	- Fix the accidental removal of GETFUNC and SETFUNC
+
+ drivers/ptp/ptp_chardev.c      | 63 ++++++++++++++++++++++++++++++++++
+ include/uapi/linux/ptp_clock.h | 24 ++++++++++++-
+ 2 files changed, 86 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 18ffe449efdf..9c18476d8d10 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -126,7 +126,9 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 	switch (cmd) {
+ 
+ 	case PTP_CLOCK_GETCAPS:
++	case PTP_CLOCK_GETCAPS2:
+ 		memset(&caps, 0, sizeof(caps));
++
+ 		caps.max_adj = ptp->info->max_adj;
+ 		caps.n_alarm = ptp->info->n_alarm;
+ 		caps.n_ext_ts = ptp->info->n_ext_ts;
+@@ -139,11 +141,24 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_EXTTS_REQUEST:
++	case PTP_EXTTS_REQUEST2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (copy_from_user(&req.extts, (void __user *)arg,
+ 				   sizeof(req.extts))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if (((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
++			req.extts.rsv[0] || req.extts.rsv[1]) &&
++			cmd == PTP_EXTTS_REQUEST2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_EXTTS_REQUEST) {
++			req.extts.flags &= ~PTP_EXTTS_VALID_FLAGS;
++			req.extts.rsv[0] = 0;
++			req.extts.rsv[1] = 0;
++		}
+ 		if (req.extts.index >= ops->n_ext_ts) {
+ 			err = -EINVAL;
+ 			break;
+@@ -154,11 +169,27 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_PEROUT_REQUEST:
++	case PTP_PEROUT_REQUEST2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (copy_from_user(&req.perout, (void __user *)arg,
+ 				   sizeof(req.perout))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if (((req.perout.flags & ~PTP_PEROUT_VALID_FLAGS) ||
++			req.perout.rsv[0] || req.perout.rsv[1] ||
++			req.perout.rsv[2] || req.perout.rsv[3]) &&
++			cmd == PTP_PEROUT_REQUEST2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PEROUT_REQUEST) {
++			req.perout.flags &= ~PTP_PEROUT_VALID_FLAGS;
++			req.perout.rsv[0] = 0;
++			req.perout.rsv[1] = 0;
++			req.perout.rsv[2] = 0;
++			req.perout.rsv[3] = 0;
++		}
+ 		if (req.perout.index >= ops->n_per_out) {
+ 			err = -EINVAL;
+ 			break;
+@@ -169,6 +200,9 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_ENABLE_PPS:
++	case PTP_ENABLE_PPS2:
++		memset(&req, 0, sizeof(req));
++
+ 		if (!capable(CAP_SYS_TIME))
+ 			return -EPERM;
+ 		req.type = PTP_CLK_REQ_PPS;
+@@ -177,6 +211,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET_PRECISE:
++	case PTP_SYS_OFFSET_PRECISE2:
+ 		if (!ptp->info->getcrosststamp) {
+ 			err = -EOPNOTSUPP;
+ 			break;
+@@ -201,6 +236,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET_EXTENDED:
++	case PTP_SYS_OFFSET_EXTENDED2:
+ 		if (!ptp->info->gettimex64) {
+ 			err = -EOPNOTSUPP;
+ 			break;
+@@ -232,6 +268,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET:
++	case PTP_SYS_OFFSET2:
+ 		sysoff = memdup_user((void __user *)arg, sizeof(*sysoff));
+ 		if (IS_ERR(sysoff)) {
+ 			err = PTR_ERR(sysoff);
+@@ -266,10 +303,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_PIN_GETFUNC:
++	case PTP_PIN_GETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd == PTP_PIN_GETFUNC2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PIN_GETFUNC) {
++			pd.rsv[0] = 0;
++			pd.rsv[1] = 0;
++			pd.rsv[2] = 0;
++			pd.rsv[3] = 0;
++			pd.rsv[4] = 0;
++		}
+ 		pin_index = pd.index;
+ 		if (pin_index >= ops->n_pins) {
+ 			err = -EINVAL;
+@@ -285,10 +335,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_PIN_SETFUNC:
++	case PTP_PIN_SETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd == PTP_PIN_SETFUNC2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PIN_SETFUNC) {
++			pd.rsv[0] = 0;
++			pd.rsv[1] = 0;
++			pd.rsv[2] = 0;
++			pd.rsv[3] = 0;
++			pd.rsv[4] = 0;
++		}
+ 		pin_index = pd.index;
+ 		if (pin_index >= ops->n_pins) {
+ 			err = -EINVAL;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 1bc794ad957a..12911785991b 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -25,10 +25,20 @@
+ #include <linux/ioctl.h>
+ #include <linux/types.h>
+ 
+-/* PTP_xxx bits, for the flags field within the request structures. */
++/*
++ * Bits of the ptp_extts_request.flags field:
++ */
+ #define PTP_ENABLE_FEATURE (1<<0)
+ #define PTP_RISING_EDGE    (1<<1)
+ #define PTP_FALLING_EDGE   (1<<2)
++#define PTP_EXTTS_VALID_FLAGS	(PTP_ENABLE_FEATURE |	\
++				 PTP_RISING_EDGE |	\
++				 PTP_FALLING_EDGE)
++
++/*
++ * Bits of the ptp_perout_request.flags field:
++ */
++#define PTP_PEROUT_VALID_FLAGS (~0)
  
  /*
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 5e2098b..5b9774d 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -3954,6 +3954,9 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
- 			   sizeof(struct sctp_paddrthlds)))
- 		return -EFAULT;
+  * struct ptp_clock_time - represents a time value
+@@ -149,6 +159,18 @@ struct ptp_pin_desc {
+ #define PTP_SYS_OFFSET_EXTENDED \
+ 	_IOWR(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
  
-+	if (val.spt_pathpfthld > val.spt_pathcpthld)
-+		return -EINVAL;
++#define PTP_CLOCK_GETCAPS2  _IOR(PTP_CLK_MAGIC, 10, struct ptp_clock_caps)
++#define PTP_EXTTS_REQUEST2  _IOW(PTP_CLK_MAGIC, 11, struct ptp_extts_request)
++#define PTP_PEROUT_REQUEST2 _IOW(PTP_CLK_MAGIC, 12, struct ptp_perout_request)
++#define PTP_ENABLE_PPS2     _IOW(PTP_CLK_MAGIC, 13, int)
++#define PTP_SYS_OFFSET2     _IOW(PTP_CLK_MAGIC, 14, struct ptp_sys_offset)
++#define PTP_PIN_GETFUNC2    _IOWR(PTP_CLK_MAGIC, 15, struct ptp_pin_desc)
++#define PTP_PIN_SETFUNC2    _IOW(PTP_CLK_MAGIC, 16, struct ptp_pin_desc)
++#define PTP_SYS_OFFSET_PRECISE2 \
++	_IOWR(PTP_CLK_MAGIC, 17, struct ptp_sys_offset_precise)
++#define PTP_SYS_OFFSET_EXTENDED2 \
++	_IOWR(PTP_CLK_MAGIC, 18, struct ptp_sys_offset_extended)
 +
- 	if (!sctp_is_any(sk, (const union sctp_addr *)&val.spt_address)) {
- 		trans = sctp_addr_id2transport(sk, &val.spt_address,
- 					       val.spt_assoc_id);
-@@ -3963,6 +3966,7 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
- 		if (val.spt_pathmaxrxt)
- 			trans->pathmaxrxt = val.spt_pathmaxrxt;
- 		trans->pf_retrans = val.spt_pathpfthld;
-+		trans->ps_retrans = val.spt_pathcpthld;
- 
- 		return 0;
- 	}
-@@ -3978,17 +3982,20 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
- 			if (val.spt_pathmaxrxt)
- 				trans->pathmaxrxt = val.spt_pathmaxrxt;
- 			trans->pf_retrans = val.spt_pathpfthld;
-+			trans->ps_retrans = val.spt_pathcpthld;
- 		}
- 
- 		if (val.spt_pathmaxrxt)
- 			asoc->pathmaxrxt = val.spt_pathmaxrxt;
- 		asoc->pf_retrans = val.spt_pathpfthld;
-+		asoc->ps_retrans = val.spt_pathcpthld;
- 	} else {
- 		struct sctp_sock *sp = sctp_sk(sk);
- 
- 		if (val.spt_pathmaxrxt)
- 			sp->pathmaxrxt = val.spt_pathmaxrxt;
- 		sp->pf_retrans = val.spt_pathpfthld;
-+		sp->ps_retrans = val.spt_pathcpthld;
- 	}
- 
- 	return 0;
-@@ -7232,6 +7239,7 @@ static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
- 		if (!trans)
- 			return -ENOENT;
- 
-+		val.spt_pathcpthld = trans->ps_retrans;
- 		val.spt_pathmaxrxt = trans->pathmaxrxt;
- 		val.spt_pathpfthld = trans->pf_retrans;
- 
-@@ -7244,11 +7252,13 @@ static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
- 		return -EINVAL;
- 
- 	if (asoc) {
-+		val.spt_pathcpthld = asoc->ps_retrans;
- 		val.spt_pathpfthld = asoc->pf_retrans;
- 		val.spt_pathmaxrxt = asoc->pathmaxrxt;
- 	} else {
- 		struct sctp_sock *sp = sctp_sk(sk);
- 
-+		val.spt_pathcpthld = sp->ps_retrans;
- 		val.spt_pathpfthld = sp->pf_retrans;
- 		val.spt_pathmaxrxt = sp->pathmaxrxt;
- 	}
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+ 	unsigned int index;      /* Which channel produced the event. */
 -- 
-2.1.0
+2.23.0
 
