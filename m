@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4166BADC0E
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:25:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6A77ADC10
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:25:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728155AbfIIPZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 11:25:51 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36096 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727003AbfIIPZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:25:51 -0400
-Received: by mail-wr1-f68.google.com with SMTP id y19so14340612wrd.3;
-        Mon, 09 Sep 2019 08:25:49 -0700 (PDT)
+        id S1728825AbfIIPZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 11:25:53 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37797 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728248AbfIIPZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:25:53 -0400
+Received: by mail-wm1-f68.google.com with SMTP id r195so15235783wme.2;
+        Mon, 09 Sep 2019 08:25:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
-        b=Xba/LdxzCdbiBnw4o//u2wrwkAcNGGpNbu3GOwEJ2dM11KLIXM6Hk92xL17HHYhIXu
-         cYqGN5fh1sKgWA+71tXOLqpSdSAYedFaVACd7fcQGVKs72kCrDAabx46D6H6pm04K7jH
-         f3ToY179K8Pr85/2tLj/7A+0xV+6mxc/FIzRxJNZxBsS5hhJb7C9pbHAXBSvqPxSWGoY
-         E5i9f6WUdmJH4kiPy3c6T2u+gMLhsCY/r7YsUVpZo2LjoHYsLgDE3EJ2/du8ukBnzmPj
-         +c5t5FWBbyAxH+V7s6v9vDZq3yeQv4AD6dNuxyZ58kBJcu+kRyL1QbkeaU7To2RPhmwN
-         a4uQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=R3AmFgKIHr2+eUt61+JKy94/P0Wlw2GrMpTlHVuNEDk=;
+        b=G7CWSFT4CZd9+bbsEosATLyYlVIA698RGnbGUBVbM3gkz1tz56ou5rYC6gj9MgFbJi
+         0KG4jrSdkFiIK2CG/iOzyQRiBtRuyRNaXQqZ929Ci5ym8IEzKKt3ypcxqIEC0cidfaCg
+         /YQA8NZb45rL5rCkfyoKDL+UQiRJ/zLV2cJqyOCwhAx55IHbQNQXPyq8jGxYg3SKeu3E
+         fcBXer9fIcVAI3Ml5KHvOoO3cT9ZJfaaUVW8Bad4dQiT9H6nO3Qqf3bR9mJX0UTPRCE7
+         CfIZQ5RSsBIJU/j9Z/Yg9Y59vU0bLelKljCJoYp8F/MTMGlT5vA9MMc+HaXYcqboeHC+
+         115Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
-        b=tqdn+cFEZQBURqAMnWt5FD5IMPryzXi8YplctD0zypNDKeCuvDL6Tfb1Zy7x5y8zsJ
-         lVheyjf8EY6929PKIF15sNX1ZUn/NDQtBxmoPCbDYmYtfAr+9wllOSUAWGvHIg3D2x12
-         2rlxnDbqGlv4gJioTVrp1tOoHLP87U3uy71VOLO3qne4RdYoOJVdvVsfziF0/brk1XPm
-         R4U3Ul2P5ZT3wYBpgD6FfS+NnMdHVw5syCoJBCP+jssKHsJIiSyxriFAedqKP8j12+o8
-         12v2pi3jO3dpnO3iDWsFHq0s96D04sLB4Hqs0t4cAUI2LVZKzV9uEoI23wyNUOvBLvuX
-         OjcA==
-X-Gm-Message-State: APjAAAWJoSuHontGEpS5YQpfz3WdSK9MFxr+1vCaByun0xqXcyu7lt+S
-        hDYq7Ratr9s9CdQNym9lXww=
-X-Google-Smtp-Source: APXvYqzYRPmTs0f5GTR3GZSoUbSpD/6B4sqbBH9uCCkdVwBa6jhvtcmD14gGj1iHn6ASOLTM9oXmmA==
-X-Received: by 2002:adf:fe07:: with SMTP id n7mr19719899wrr.90.1568042748832;
-        Mon, 09 Sep 2019 08:25:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=R3AmFgKIHr2+eUt61+JKy94/P0Wlw2GrMpTlHVuNEDk=;
+        b=FASn0FPzDtt4xrrFJTjml6OTowRuq9AVQavST+kuqaLvWQCqHjwkyGRAHrixpfyFBT
+         ttKQ3R33IkEnkn0ld36WVUFiP7A+mrkVvchpCbeqCf/L75B2dTd6f/T0zfDI/aZ2GVkU
+         bb9chGhxihN+cIU+8cAZZjiJV19AKeYBbJrjcyfkkwzxHALYFO7KAr17jtrW6WDn3Afz
+         fI9E8FKV8mBRpGvCRzcoJFaCxXi0um/qztNijM8lq+w9HrKv8IMR1R4XoJVlzD6/Lcch
+         zVNYe9tzjV958jOf2DSu0zoFgJdSVgIoxUvobol4kXvyIoHnJkGv4emgYGM8Na3pIDj1
+         3tSw==
+X-Gm-Message-State: APjAAAWaIuo1S+WVsoUGojBo2G44eaS317HCelj3h6yfdFXzwHbbYbYQ
+        bDGvAVNl1ZL85fI0qFDqIAk=
+X-Google-Smtp-Source: APXvYqxZfaKzFKkTocNLZCLp3Ej++GlhMGfpyhz2jgr8N4zxCDaNaYDZG3YKVJwlM3jYEnCefAF4uA==
+X-Received: by 2002:a05:600c:cf:: with SMTP id u15mr20520044wmm.168.1568042750904;
+        Mon, 09 Sep 2019 08:25:50 -0700 (PDT)
 Received: from localhost (p2E5BE0B8.dip0.t-ipconnect.de. [46.91.224.184])
-        by smtp.gmail.com with ESMTPSA id v4sm23419801wrg.56.2019.09.09.08.25.47
+        by smtp.gmail.com with ESMTPSA id f23sm17150694wmf.1.2019.09.09.08.25.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2019 08:25:47 -0700 (PDT)
+        Mon, 09 Sep 2019 08:25:49 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -52,10 +52,12 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Jon Hunter <jonathanh@nvidia.com>,
         Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH net-next v2 1/2] net: stmmac: Only enable enhanced addressing mode when needed
-Date:   Mon,  9 Sep 2019 17:25:45 +0200
-Message-Id: <20190909152546.383-1-thierry.reding@gmail.com>
+Subject: [PATCH net-next v2 2/2] net: stmmac: Support enhanced addressing mode for DWMAC 4.10
+Date:   Mon,  9 Sep 2019 17:25:46 +0200
+Message-Id: <20190909152546.383-2-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20190909152546.383-1-thierry.reding@gmail.com>
+References: <20190909152546.383-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,62 +67,140 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-Enhanced addressing mode is only required when more than 32 bits need to
-be addressed. Add a DMA configuration parameter to enable this mode only
-when needed.
+The address width of the controller can be read from hardware feature
+registers much like on XGMAC. Add support for parsing the ADDR64 field
+so that the DMA mask can be set accordingly.
+
+This avoids getting swiotlb involved for DMA on Tegra186 and later.
+
+Also make sure that the upper 32 bits of the DMA address are written to
+the DMA descriptors when enhanced addressing mode is used. Similarily,
+for each channel, the upper 32 bits of the DMA descriptor ring's base
+address also need to be programmed to make sure the correct memory can
+be fetched when the DMA descriptor ring is located beyond the 32-bit
+boundary.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 5 ++++-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 6 ++++++
- include/linux/stmmac.h                             | 1 +
- 3 files changed, 11 insertions(+), 1 deletion(-)
+Changes in v2:
+- also program the upper 32 bits of the DMA descriptor base address for
+  each channel
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 64956465c030..3e00fd8befcf 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -27,7 +27,10 @@ static void dwxgmac2_dma_init(void __iomem *ioaddr,
- 	if (dma_cfg->aal)
- 		value |= XGMAC_AAL;
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
+ .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  4 +--
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 28 +++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  3 ++
+ 4 files changed, 34 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+index 2ed11a581d80..f634fa09dffc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+@@ -183,6 +183,7 @@ enum power_event {
+ #define GMAC_HW_HASH_TB_SZ		GENMASK(25, 24)
+ #define GMAC_HW_FEAT_AVSEL		BIT(20)
+ #define GMAC_HW_TSOEN			BIT(18)
++#define GMAC_HW_ADDR64			GENMASK(15, 14)
+ #define GMAC_HW_TXFIFOSIZE		GENMASK(10, 6)
+ #define GMAC_HW_RXFIFOSIZE		GENMASK(4, 0)
  
--	writel(value | XGMAC_EAME, ioaddr + XGMAC_DMA_SYSBUS_MODE);
-+	if (dma_cfg->eame)
-+		value |= XGMAC_EAME;
-+
-+	writel(value, ioaddr + XGMAC_DMA_SYSBUS_MODE);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+index dbde23e7e169..d546041d2fcd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+@@ -431,8 +431,8 @@ static void dwmac4_get_addr(struct dma_desc *p, unsigned int *addr)
+ 
+ static void dwmac4_set_addr(struct dma_desc *p, dma_addr_t addr)
+ {
+-	p->des0 = cpu_to_le32(addr);
+-	p->des1 = 0;
++	p->des0 = cpu_to_le32(lower_32_bits(addr));
++	p->des1 = cpu_to_le32(upper_32_bits(addr));
  }
  
- static void dwxgmac2_dma_init_chan(void __iomem *ioaddr,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 06ccd216ae90..ecd461207dbc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4497,6 +4497,12 @@ int stmmac_dvr_probe(struct device *device,
- 		if (!ret) {
- 			dev_info(priv->device, "Using %d bits DMA width\n",
- 				 priv->dma_cap.addr64);
-+
-+			/*
-+			 * If more than 32 bits can be addressed, make sure to
-+			 * enable enhanced addressing mode.
-+			 */
-+			priv->plat->dma_cfg->eame = true;
- 		} else {
- 			ret = dma_set_mask_and_coherent(device, DMA_BIT_MASK(32));
- 			if (ret) {
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 7ad7ae35cf88..d300ac907c76 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -92,6 +92,7 @@ struct stmmac_dma_cfg {
- 	int fixed_burst;
- 	int mixed_burst;
- 	bool aal;
-+	bool eame;
- };
+ static void dwmac4_clear(struct dma_desc *p)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+index 3ed5508586ef..e77410f21d7d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -79,6 +79,10 @@ static void dwmac4_dma_init_rx_chan(void __iomem *ioaddr,
+ 	value = value | (rxpbl << DMA_BUS_MODE_RPBL_SHIFT);
+ 	writel(value, ioaddr + DMA_CHAN_RX_CONTROL(chan));
  
- #define AXI_BLEN	7
++	if (dma_cfg->eame)
++		writel(upper_32_bits(dma_rx_phy),
++		       ioaddr + DMA_CHAN_RX_BASE_ADDR_HI(chan));
++
+ 	writel(lower_32_bits(dma_rx_phy), ioaddr + DMA_CHAN_RX_BASE_ADDR(chan));
+ }
+ 
+@@ -97,6 +101,10 @@ static void dwmac4_dma_init_tx_chan(void __iomem *ioaddr,
+ 
+ 	writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
+ 
++	if (dma_cfg->eame)
++		writel(upper_32_bits(dma_tx_phy),
++		       ioaddr + DMA_CHAN_TX_BASE_ADDR_HI(chan));
++
+ 	writel(lower_32_bits(dma_tx_phy), ioaddr + DMA_CHAN_TX_BASE_ADDR(chan));
+ }
+ 
+@@ -132,6 +140,9 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
+ 	if (dma_cfg->aal)
+ 		value |= DMA_SYS_BUS_AAL;
+ 
++	if (dma_cfg->eame)
++		value |= DMA_SYS_BUS_EAME;
++
+ 	writel(value, ioaddr + DMA_SYS_BUS_MODE);
+ }
+ 
+@@ -354,6 +365,23 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
+ 	dma_cap->hash_tb_sz = (hw_cap & GMAC_HW_HASH_TB_SZ) >> 24;
+ 	dma_cap->av = (hw_cap & GMAC_HW_FEAT_AVSEL) >> 20;
+ 	dma_cap->tsoen = (hw_cap & GMAC_HW_TSOEN) >> 18;
++
++	dma_cap->addr64 = (hw_cap & GMAC_HW_ADDR64) >> 14;
++	switch (dma_cap->addr64) {
++	case 0:
++		dma_cap->addr64 = 32;
++		break;
++	case 1:
++		dma_cap->addr64 = 40;
++		break;
++	case 2:
++		dma_cap->addr64 = 48;
++		break;
++	default:
++		dma_cap->addr64 = 32;
++		break;
++	}
++
+ 	/* RX and TX FIFO sizes are encoded as log2(n / 128). Undo that by
+ 	 * shifting and store the sizes in bytes.
+ 	 */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+index b66da0237d2a..5299fa1001a3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+@@ -65,6 +65,7 @@
+ #define DMA_SYS_BUS_MB			BIT(14)
+ #define DMA_AXI_1KBBE			BIT(13)
+ #define DMA_SYS_BUS_AAL			BIT(12)
++#define DMA_SYS_BUS_EAME		BIT(11)
+ #define DMA_AXI_BLEN256			BIT(7)
+ #define DMA_AXI_BLEN128			BIT(6)
+ #define DMA_AXI_BLEN64			BIT(5)
+@@ -91,7 +92,9 @@
+ #define DMA_CHAN_CONTROL(x)		DMA_CHANX_BASE_ADDR(x)
+ #define DMA_CHAN_TX_CONTROL(x)		(DMA_CHANX_BASE_ADDR(x) + 0x4)
+ #define DMA_CHAN_RX_CONTROL(x)		(DMA_CHANX_BASE_ADDR(x) + 0x8)
++#define DMA_CHAN_TX_BASE_ADDR_HI(x)	(DMA_CHANX_BASE_ADDR(x) + 0x10)
+ #define DMA_CHAN_TX_BASE_ADDR(x)	(DMA_CHANX_BASE_ADDR(x) + 0x14)
++#define DMA_CHAN_RX_BASE_ADDR_HI(x)	(DMA_CHANX_BASE_ADDR(x) + 0x18)
+ #define DMA_CHAN_RX_BASE_ADDR(x)	(DMA_CHANX_BASE_ADDR(x) + 0x1c)
+ #define DMA_CHAN_TX_END_ADDR(x)		(DMA_CHANX_BASE_ADDR(x) + 0x20)
+ #define DMA_CHAN_RX_END_ADDR(x)		(DMA_CHANX_BASE_ADDR(x) + 0x28)
 -- 
 2.23.0
 
