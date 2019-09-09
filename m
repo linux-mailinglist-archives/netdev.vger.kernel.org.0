@@ -2,165 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6561AD91E
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 14:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 180F3AD91F
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 14:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732469AbfIIMge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 08:36:34 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37289 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727868AbfIIMgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 08:36:33 -0400
-Received: by mail-wr1-f65.google.com with SMTP id i1so13067335wro.4;
-        Mon, 09 Sep 2019 05:36:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=T+Vyw4ZIebJvsSTp36+ydMCvBxUNFGAUV8YY2rbiGIo=;
-        b=otRW4PhapNgQN4LIbrqa9oGw1o7b8eKYoNQAPQn4FHOALoWiokuBftKtJ2QRhkB4IR
-         muh0e6uuqMYtA77tRDqEwNh8LU3qslBnVGoWwRAmQXt0LvWJRrF8B7GDqnSnjmrm1mou
-         qli3NPmwVufs86Tk9a3yFMPVRzLgz1vfVcGRjRkrA5OK6Mq7GA9AfmnmJfaiZvXm/NQs
-         XiPnI6lXJYK9iJ6CYZN7DcFe3UYhtRPSSeYr+7QbJl+Cy4I8R82F9ZTllTxuvK/vaC6V
-         msYQsWK4wAee2ypOwv2auvcVprO2z9KJX273KzxnVpynOT2dyquqw9UY0FadKLON+Cbc
-         YZaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T+Vyw4ZIebJvsSTp36+ydMCvBxUNFGAUV8YY2rbiGIo=;
-        b=FjOaDuFd4Pj+bjqt83Xq59K0pXt32H0PqcO41PaBBD+xYnFoXqtYsmIfKlUvOUQcx8
-         wgLMjJF5zVV12xdZ85vwLjnxw18JA4mLrK/JcoOUxjcI4Eq58rVr+qwbTyM8EemO5FwU
-         s5/2QopioYKqDtDDlM1EUjfmZDbJh2XE8wokANPczqRYZ1wrl83iWs47pcjqbkw7Vuoo
-         eCV9D9KLaOot4gS3StTvuOTM/Pjr2kQmOaDKGvlTAgAO4dGtb6TYDCE272LblegQ+P1g
-         h2UI6d2x7NxiysZJgKuKIYTKH75BBLTHTwm1HXjW2cUQVi0tSyec7ADU0Hoe0WAK46i7
-         Zydg==
-X-Gm-Message-State: APjAAAW1wl775XwPVLTANiMrXFbCl+ikPIVZAoUGqx6r4spc+Gvt4ssG
-        p46GJ4qUUqKVBF0SBockzuqyKiXF
-X-Google-Smtp-Source: APXvYqxTNJ9grQKHH7dOnEUb+cd796aRN4RPmbNG4blcBUBgr3Zwn9OM11WJTnMEjznkirg9K9LE2g==
-X-Received: by 2002:adf:dbc6:: with SMTP id e6mr2713546wrj.149.1568032591104;
-        Mon, 09 Sep 2019 05:36:31 -0700 (PDT)
-Received: from localhost (p2E5BE0B8.dip0.t-ipconnect.de. [46.91.224.184])
-        by smtp.gmail.com with ESMTPSA id i73sm20473688wmg.33.2019.09.09.05.36.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2019 05:36:30 -0700 (PDT)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: stmmac: Support enhanced addressing mode for DWMAC 4.10
-Date:   Mon,  9 Sep 2019 14:36:27 +0200
-Message-Id: <20190909123627.29928-2-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190909123627.29928-1-thierry.reding@gmail.com>
-References: <20190909123627.29928-1-thierry.reding@gmail.com>
+        id S1732515AbfIIMgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 08:36:37 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:16943 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727868AbfIIMgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 08:36:37 -0400
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Joergen.Andreasen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="Joergen.Andreasen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Joergen.Andreasen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Joergen.Andreasen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: Sj2TqHCQV3SJ2CUeozfnllHuARpq2/blLTHA6Cgw5SrOMblNqbzhIOIvHNyi3c448B4fim88zn
+ 5Iqs0NqV/nk1jISMecKmi1QlKjwUSJNQDnQWk9EbD/dc9gZtSv1OnoGFxI/qjR3TUrE0bbWEsk
+ WJalaeShQKeU7byxoIIh3QghSR4ttUurWkMiKgSb6SUmRkZHzwFWEhgYneMzWL+ob1SZacIluv
+ KSdyx0V/GNvvcg7e/Q/5Ab6LV181Hws8ebk1GfS/1OfAQrAClEhRjpL447dzrcsvMMIWCRI3JS
+ Cqw=
+X-IronPort-AV: E=Sophos;i="5.64,484,1559545200"; 
+   d="scan'208";a="48369774"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Sep 2019 05:36:34 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 9 Sep 2019 05:36:33 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Mon, 9 Sep 2019 05:36:34 -0700
+Date:   Mon, 9 Sep 2019 14:36:33 +0200
+From:   Joergen Andreasen <joergen.andreasen@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        David Miller <davem@davemloft.net>, <f.fainelli@gmail.com>,
+        <vivien.didelot@gmail.com>, <vinicius.gomes@intel.com>,
+        <vedang.patel@intel.com>, <richardcochran@gmail.com>,
+        <weifeng.voon@intel.com>, <jiri@mellanox.com>,
+        <m-karicheri2@ti.com>, <Jose.Abreu@synopsys.com>,
+        <ilias.apalodimas@linaro.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <kurt.kanzenbach@linutronix.de>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 net-next 00/15] tc-taprio offload for SJA1105 DSA
+Message-ID: <20190909123632.nvlmfdtw3otyx3xh@soft-dev16>
+References: <20190902162544.24613-1-olteanv@gmail.com>
+ <20190906.145403.657322945046640538.davem@davemloft.net>
+ <20190907144548.GA21922@lunn.ch>
+ <CA+h21hqLF1gE+aDH9xQPadCuo6ih=xWY73JZvg7c58C1tC+0Jg@mail.gmail.com>
+ <20190908204224.GA2730@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190908204224.GA2730@lunn.ch>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+The 09/08/2019 22:42, Andrew Lunn wrote:
+> On Sun, Sep 08, 2019 at 12:07:27PM +0100, Vladimir Oltean wrote:
+> > I think Richard has been there when the taprio, etf qdiscs, SO_TXTIME
+> > were first defined and developed:
+> > https://patchwork.ozlabs.org/cover/808504/
+> > I expect he is capable of delivering a competent review of the entire
+> > series, possibly way more competent than my patch set itself.
+> > 
+> > The reason why I'm not splitting it up is because I lose around 10 ns
+> > of synchronization offset when using the hardware-corrected PTPCLKVAL
+> > clock for timestamping rather than the PTPTSCLK free-running counter.
+> 
+> Hi Vladimir
+> 
+> I'm not suggesting anything is wrong with your concept, when i say
+> split it up. It is more than when somebody sees 15 patches, they
+> decide they don't have the time at the moment, and put it off until
+> later. And often later never happens. If however they see a smaller
+> number of patches, they think that yes they have time now, and do the
+> review.
+> 
+> So if you are struggling to get something reviewed, make it more
+> appealing for the reviewer. Salami tactics.
+> 
+>     Andrew
 
-The address width of the controller can be read from hardware feature
-registers much like on XGMAC. Add support for parsing the ADDR64 field
-so that the DMA mask can be set accordingly.
+I vote for splitting it up.
+I don't know enough about PTP and taprio/qdisc to review the entire series
+but the interface presented in patch 09/15 fits well with our future TSN
+switches.
 
-This avoids getting swiotlb involved for DMA on Tegra186 and later.
-
-Also make sure that the upper 32 bits of the DMA address are written to
-the DMA descriptors when enhanced addressing mode is used.
-
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
- .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  4 ++--
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 20 +++++++++++++++++++
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  1 +
- 4 files changed, 24 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 2ed11a581d80..f634fa09dffc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -183,6 +183,7 @@ enum power_event {
- #define GMAC_HW_HASH_TB_SZ		GENMASK(25, 24)
- #define GMAC_HW_FEAT_AVSEL		BIT(20)
- #define GMAC_HW_TSOEN			BIT(18)
-+#define GMAC_HW_ADDR64			GENMASK(15, 14)
- #define GMAC_HW_TXFIFOSIZE		GENMASK(10, 6)
- #define GMAC_HW_RXFIFOSIZE		GENMASK(4, 0)
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index dbde23e7e169..d546041d2fcd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -431,8 +431,8 @@ static void dwmac4_get_addr(struct dma_desc *p, unsigned int *addr)
- 
- static void dwmac4_set_addr(struct dma_desc *p, dma_addr_t addr)
- {
--	p->des0 = cpu_to_le32(addr);
--	p->des1 = 0;
-+	p->des0 = cpu_to_le32(lower_32_bits(addr));
-+	p->des1 = cpu_to_le32(upper_32_bits(addr));
- }
- 
- static void dwmac4_clear(struct dma_desc *p)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 3ed5508586ef..23dfbd0efc37 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -132,6 +132,9 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
- 	if (dma_cfg->aal)
- 		value |= DMA_SYS_BUS_AAL;
- 
-+	if (dma_cfg->eame)
-+		value |= DMA_SYS_BUS_EAME;
-+
- 	writel(value, ioaddr + DMA_SYS_BUS_MODE);
- }
- 
-@@ -354,6 +357,23 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
- 	dma_cap->hash_tb_sz = (hw_cap & GMAC_HW_HASH_TB_SZ) >> 24;
- 	dma_cap->av = (hw_cap & GMAC_HW_FEAT_AVSEL) >> 20;
- 	dma_cap->tsoen = (hw_cap & GMAC_HW_TSOEN) >> 18;
-+
-+	dma_cap->addr64 = (hw_cap & GMAC_HW_ADDR64) >> 14;
-+	switch (dma_cap->addr64) {
-+	case 0:
-+		dma_cap->addr64 = 32;
-+		break;
-+	case 1:
-+		dma_cap->addr64 = 40;
-+		break;
-+	case 2:
-+		dma_cap->addr64 = 48;
-+		break;
-+	default:
-+		dma_cap->addr64 = 32;
-+		break;
-+	}
-+
- 	/* RX and TX FIFO sizes are encoded as log2(n / 128). Undo that by
- 	 * shifting and store the sizes in bytes.
- 	 */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-index b66da0237d2a..d00776db20d6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-@@ -65,6 +65,7 @@
- #define DMA_SYS_BUS_MB			BIT(14)
- #define DMA_AXI_1KBBE			BIT(13)
- #define DMA_SYS_BUS_AAL			BIT(12)
-+#define DMA_SYS_BUS_EAME		BIT(11)
- #define DMA_AXI_BLEN256			BIT(7)
- #define DMA_AXI_BLEN128			BIT(6)
- #define DMA_AXI_BLEN64			BIT(5)
--- 
-2.23.0
-
+Joergen Andreasen, Microchip
