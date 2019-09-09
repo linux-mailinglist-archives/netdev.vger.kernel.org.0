@@ -2,160 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2257BAE143
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 00:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21168AE15B
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 01:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729192AbfIIWwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 18:52:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58156 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728989AbfIIWwm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 18:52:42 -0400
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F74C222C1
-        for <netdev@vger.kernel.org>; Mon,  9 Sep 2019 22:52:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568069560;
-        bh=KQdOtep/fJtO4YL+FRc2frDHqd9PIOzbuU5ucWQl2UQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aW6ay5Q8op/HZa/5vNXr2/suTkKSE3Q58tm2lo/KOu+l5ryRSyMxiQStM2Ne3W26V
-         Uw9XMcbsamtNuNlcG82q5AepsZc2U2Hq5OzHnsjnShO16kNRGn/eOUha36EfFl9ygd
-         9Ezdyqj9UOqOOtfYWF6Gmq7+Vh3Y14mgYSWqy6b4=
-Received: by mail-wr1-f44.google.com with SMTP id k6so4148884wrn.11
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 15:52:40 -0700 (PDT)
-X-Gm-Message-State: APjAAAXIC7n7iqpiN71+OUX156DJASlYGr1BwqS8b/2R72EcLvxPziCH
-        3gNEZr+AmJHoYEcHVzXPsXl2KgJtoM7M3XMqPcRC1A==
-X-Google-Smtp-Source: APXvYqxjXu9tLKEeidry8TRnmvMaltITLyIhvUtZf50njewqCflxdMPyZxPcqVEhtg99777/tMeAYnKT6NblO0sboVA=
-X-Received: by 2002:adf:fe0f:: with SMTP id n15mr886881wrr.343.1568069558803;
- Mon, 09 Sep 2019 15:52:38 -0700 (PDT)
+        id S1730670AbfIIXGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 19:06:14 -0400
+Received: from wnew3-smtp.messagingengine.com ([64.147.123.17]:42215 "EHLO
+        wnew3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728358AbfIIXGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 19:06:14 -0400
+X-Greylist: delayed 485 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Sep 2019 19:06:13 EDT
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id C597A5C0;
+        Mon,  9 Sep 2019 18:58:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 09 Sep 2019 18:58:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=c7SRxgGkl/n7ftaGRuh/aN2wiSp
+        1GC91qqjIL142vpY=; b=G3dZKzQxG/jRRbNObX/rxwuitX3uvOm0yJq4spn6u4F
+        yD2CpkOUVoxiuTrX2QZMwr5LUXv+DKhqAkX4KgyhTaUT58aDQgRUxDJt3eWbC5Mr
+        piw33yd5qX8u4yPMt9k2N5nEOUak+hc2Gr/H+CQBU8Ac8/4C2QL6WQ5RnDP9Mo4L
+        FusaMeESRa7eu1NPJqXpWUlekmBNcr+TVhqNMjBQbiEF/cOOz9rBJNoqG1UBfLy8
+        Ag2qtQf26igPzpoRjORYHrqlC6MIwfXJZAkfSFk0cBG3qqT5haB/DBlm5tUV8zrH
+        tkA1PSImctrM9gglg+mp/j5nggylrKIQ5YXM375XTEw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=c7SRxg
+        Gkl/n7ftaGRuh/aN2wiSp1GC91qqjIL142vpY=; b=RPWpxAuxPaSDJpabSG4dYI
+        Ptth1BbAnXyffkgaFO7Py31VLFwXre/UPi4ecVVdDVTqnRdQXj1g9s7cDnzaWDMv
+        JX10+fZipUFybkjtTEWISPKVBJyuRF6RGoVgROZRp+o8rNB2IAhypKZejBtzfjKC
+        lOYIqNLyqTqbn6aYVZL1VGSE0EcODUujXe7ewereY7ZM3MWvxQsOuN62IEU2X529
+        7poLNXuYYaYAQTIFjjgnPcbh/i9+tDKNpXU+o94lhOIz1AFTB8bkKTANpaTDQ5d8
+        aGK44GIfGfr2vqmCQZIgqlORbgROGILTtiJC3PmiXB9TwOMuN1I7ZWNgvp7AaJxw
+        ==
+X-ME-Sender: <xms:_th2XYFUAqHgaVXLqngGFV8WqvWxz17vLWRO4v8mF34Uq31HL17ARg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudekjedgudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    goufhprghmkfhpqdhouhhtucdlhedttddmnecujfgurhepfffhvffukfhfgggtuggjfges
+    thdtredttdervdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtg
+    homheqnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepiedvrddvkedrvdeg
+    tddruddugeenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtoh
+    hmnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:_th2XaF8_gevEinqTQQ_uNl-FdiE_vr_10nWdYvuL4Vg_bFMldp0Xg>
+    <xmx:_th2XQ3WXthQKPBf4ag-nrUOUCrRJiQARH8mBGnLtBjyhhkeB5niqg>
+    <xmx:_th2Xcdox1BsHrIBY_f9kUVdliBot0N3RNtWfUu8C9OINpQx6FUgoQ>
+    <xmx:_9h2Xdt6HwnmZejBm85Y1O-QNzqJqOUZpCfmiAxqpLkysdRAiHtjdk5ywtk>
+Received: from localhost (unknown [62.28.240.114])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1611280068;
+        Mon,  9 Sep 2019 18:58:05 -0400 (EDT)
+Date:   Mon, 9 Sep 2019 23:58:04 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Mark Salyzyn <salyzyn@android.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-team@android.com,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] net: enable wireless core features with
+ LEGACY_WEXT_ALLCONFIG
+Message-ID: <20190909225804.GA26405@kroah.com>
+References: <20190906192403.195620-1-salyzyn@android.com>
+ <20190906233045.GB9478@kroah.com>
+ <b7027a5d-5d75-677b-0e9b-cd70e5e30092@android.com>
 MIME-Version: 1.0
-References: <20190906231053.1276792-1-ast@kernel.org> <20190906231053.1276792-2-ast@kernel.org>
-In-Reply-To: <20190906231053.1276792-2-ast@kernel.org>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Mon, 9 Sep 2019 15:52:27 -0700
-X-Gmail-Original-Message-ID: <CALCETrVCimrLCzdZ2Jgb-AFd-Ptjd+MmyD-XW=baSt6uOOTtEg@mail.gmail.com>
-Message-ID: <CALCETrVCimrLCzdZ2Jgb-AFd-Ptjd+MmyD-XW=baSt6uOOTtEg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 1/4] capability: introduce CAP_BPF and CAP_TRACING
-To:     Alexei Starovoitov <ast@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b7027a5d-5d75-677b-0e9b-cd70e5e30092@android.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 6, 2019 at 4:10 PM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> Split BPF and perf/tracing operations that are allowed under
-> CAP_SYS_ADMIN into corresponding CAP_BPF and CAP_TRACING.
-> For backward compatibility include them in CAP_SYS_ADMIN as well.
->
-> The end result provides simple safety model for applications that use BPF:
-> - for tracing program types
->   BPF_PROG_TYPE_{KPROBE, TRACEPOINT, PERF_EVENT, RAW_TRACEPOINT, etc}
->   use CAP_BPF and CAP_TRACING
-> - for networking program types
->   BPF_PROG_TYPE_{SCHED_CLS, XDP, CGROUP_SKB, SK_SKB, etc}
->   use CAP_BPF and CAP_NET_ADMIN
->
-> There are few exceptions from this simple rule:
-> - bpf_trace_printk() is allowed in networking programs, but it's using
->   ftrace mechanism, hence this helper needs additional CAP_TRACING.
-> - cpumap is used by XDP programs. Currently it's kept under CAP_SYS_ADMIN,
->   but could be relaxed to CAP_NET_ADMIN in the future.
-> - BPF_F_ZERO_SEED flag for hash/lru map is allowed under CAP_SYS_ADMIN only
->   to discourage production use.
-> - BPF HW offload is allowed under CAP_SYS_ADMIN.
-> - cg_sysctl, cg_device, lirc program types are neither networking nor tracing.
->   They can be loaded under CAP_BPF, but attach is allowed under CAP_NET_ADMIN.
->   This will be cleaned up in the future.
->
-> userid=nobody + (CAP_TRACING | CAP_NET_ADMIN) + CAP_BPF is safer than
-> typical setup with userid=root and sudo by existing bpf applications.
-> It's not secure, since these capabilities:
-> - allow bpf progs access arbitrary memory
-> - let tasks access any bpf map
-> - let tasks attach/detach any bpf prog
->
-> bpftool, bpftrace, bcc tools binaries should not be installed with
-> cap_bpf+cap_tracing, since unpriv users will be able to read kernel secrets.
->
-> CAP_BPF, CAP_NET_ADMIN, CAP_TRACING are roughly equal in terms of
-> damage they can make to the system.
-> Example:
-> CAP_NET_ADMIN can stop network traffic. CAP_BPF can write into map
-> and if that map is used by firewall-like bpf prog the network traffic
-> may stop.
-> CAP_BPF allows many bpf prog_load commands in parallel. The verifier
-> may consume large amount of memory and significantly slow down the system.
-> CAP_TRACING allows many kprobes that can slow down the system.
+On Mon, Sep 09, 2019 at 07:24:29AM -0700, Mark Salyzyn wrote:
+> On 9/6/19 4:30 PM, Greg KH wrote:
+> > On Fri, Sep 06, 2019 at 12:24:00PM -0700, Mark Salyzyn wrote:
+> > > In embedded environments the requirements are to be able to pick and
+> > > chose which features one requires built into the kernel.  If an
+> > > embedded environment wants to supports loading modules that have been
+> > > kbuilt out of tree, there is a need to enable hidden configurations
+> > > for legacy wireless core features to provide the API surface for
+> > > them to load.
+> > > 
+> > > Introduce CONFIG_LEGACY_WEXT_ALLCONFIG to select all legacy wireless
+> > > extension core features by activating in turn all the associated
+> > > hidden configuration options, without having to specifically select
+> > > any wireless module(s).
+> > > 
+> > > Signed-off-by: Mark Salyzyn <salyzyn@android.com>
+> > > Cc: kernel-team@android.com
+> > > Cc: Johannes Berg <johannes@sipsolutions.net>
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > > Cc: linux-wireless@vger.kernel.org
+> > > Cc: netdev@vger.kernel.org
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Cc: stable@vger.kernel.org # 4.19
+> > > ---
+> > > v2: change name and documentation to CONFIG_LEGACY_WEXT_ALLCONFIG
+> > > ---
+> > >   net/wireless/Kconfig | 14 ++++++++++++++
+> > >   1 file changed, 14 insertions(+)
+> > > 
+> > > diff --git a/net/wireless/Kconfig b/net/wireless/Kconfig
+> > > index 67f8360dfcee..0d646cf28de5 100644
+> > > --- a/net/wireless/Kconfig
+> > > +++ b/net/wireless/Kconfig
+> > > @@ -17,6 +17,20 @@ config WEXT_SPY
+> > >   config WEXT_PRIV
+> > >   	bool
+> > > +config LEGACY_WEXT_ALLCONFIG
+> > > +	bool "allconfig for legacy wireless extensions"
+> > > +	select WIRELESS_EXT
+> > > +	select WEXT_CORE
+> > > +	select WEXT_PROC
+> > > +	select WEXT_SPY
+> > > +	select WEXT_PRIV
+> > > +	help
+> > > +	  Config option used to enable all the legacy wireless extensions to
+> > > +	  the core functionality used by add-in modules.
+> > > +
+> > > +	  If you are not building a kernel to be used for a variety of
+> > > +	  out-of-kernel built wireless modules, say N here.
+> > > +
+> > >   config CFG80211
+> > >   	tristate "cfg80211 - wireless configuration API"
+> > >   	depends on RFKILL || !RFKILL
+> > > -- 
+> > > 2.23.0.187.g17f5b7556c-goog
+> > > 
+> > How is this patch applicable to stable kernels???
+> 
+> A) worth a shot ;-}
 
-Do we want to split CAP_TRACE_KERNEL and CAP_TRACE_USER?  It's not
-entirely clear to me that it's useful.
+Not nice, please, you know better :)
 
->
-> In the future more fine-grained bpf permissions may be added.
->
-> Existing unprivileged BPF operations are not affected.
-> In particular unprivileged users are allowed to load socket_filter and cg_skb
-> program types and to create array, hash, prog_array, map-in-map map types.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  include/linux/capability.h          | 18 +++++++++++
->  include/uapi/linux/capability.h     | 49 ++++++++++++++++++++++++++++-
->  security/selinux/include/classmap.h |  4 +--
->  3 files changed, 68 insertions(+), 3 deletions(-)
->
-> diff --git a/include/linux/capability.h b/include/linux/capability.h
-> index ecce0f43c73a..13eb49c75797 100644
-> --- a/include/linux/capability.h
-> +++ b/include/linux/capability.h
-> @@ -247,6 +247,24 @@ static inline bool ns_capable_setid(struct user_namespace *ns, int cap)
->         return true;
->  }
->  #endif /* CONFIG_MULTIUSER */
-> +
-> +static inline bool capable_bpf(void)
-> +{
-> +       return capable(CAP_SYS_ADMIN) || capable(CAP_BPF);
-> +}
-> +static inline bool capable_tracing(void)
-> +{
-> +       return capable(CAP_SYS_ADMIN) || capable(CAP_TRACING);
-> +}
-> +static inline bool capable_bpf_tracing(void)
-> +{
-> +       return capable(CAP_SYS_ADMIN) || (capable(CAP_BPF) && capable(CAP_TRACING));
-> +}
-> +static inline bool capable_bpf_net_admin(void)
-> +{
-> +       return (capable(CAP_SYS_ADMIN) || capable(CAP_BPF)) && capable(CAP_NET_ADMIN);
-> +}
-> +
+> B) there is a shortcoming in _all_ kernel versions with respect to hidden
+> configurations options like this, hoping to set one precedent in how to
+> handle them if acceptable to the community.
 
-These helpers are all wrong, unfortunately, since they will produce
-inappropriate audit events.  capable_bpf() should look more like this:
+That's fine, but it's a new feature, not for stable.
 
-if (capable_noaudit(CAP_BPF))
-  return capable(CAP_BPF);
-if (capable_noaudit(CAP_SYS_ADMIN))
-  return capable(CAP_SYS_ADMIN);
+> C) [AGENDA ALERT] Android _will_ be back-porting this to android-4.19 kernel
+> anyway, would help maintenance if via stable. <holding hat in hand>
 
-return capable(CAP_BPF);
+That's fine, lots of distros backport loads of stuff for new features
+for stuff that is upstream.  That's trivial to do, don't try to abuse
+the stable tree for new features like this please.  It only makes
+maintainers grumpy when you do so :(
 
-James, etc: should there instead be new helpers to do this more
-generically rather than going through the noaudit contortions?  My
-code above is horrible.
+> D) Not an ABI or interface break, does not introduce instability, but rather
+> keeps downstream kernels of any distributions from having to hack in their
+> own alternate means of dealing with this problem leading to further
+> fragmentation.
+
+Again, new feature, not fixing a bug, so not applicable for stable.
+
+For penance I require a handwritten copy of:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+
+thanks,
+
+greg k-h
