@@ -2,108 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E82BAAE014
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 22:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D16AE01A
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 23:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbfIIU4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 16:56:06 -0400
-Received: from mail-qt1-f202.google.com ([209.85.160.202]:48277 "EHLO
-        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfIIU4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 16:56:06 -0400
-Received: by mail-qt1-f202.google.com with SMTP id o13so11700429qtr.15
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 13:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=EGp68VpaX6cWGyY6ngQL3v4AwpHmz/ufl+z8JevC3Q8=;
-        b=iDGH4mur1t3RRWxXM7ljk6+fmOhA9GB+3EhIo8dZoi+CriMUTWdnX/orHznIOlc02l
-         U+eL8kEcM1gKEWm/942vXgO90CfYfsmi6HgvlSQ4t8s344xTQZEGaFVfwr1EZOR8l9e/
-         Rv8vo/ITmH72JluxH2zMGQXyYqtR2tCp3wMz71XLbQ9KtbY7yvFG2foSocthN2utKInU
-         oddYKCvg3vzSJvW3x76zYXzOH96XI7B+CmMTDmVilOGrY/2gSzEJQ2nuD5UpLtfudTna
-         hln4+pLu8vuvWyU7Kn1Qgmt/WBJK5f26L9b9PjQBPJjyXsGYhYbXfaMaWEmLERubE2Ic
-         hlag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=EGp68VpaX6cWGyY6ngQL3v4AwpHmz/ufl+z8JevC3Q8=;
-        b=CTSq9Ec1PmEeTVHJrVt795uIOe2glOYmMYhuMoK5iezg68OegcQAc2hpwLZ5fNTeOw
-         gW/qaiirf+WhrwOEYR19pRmmyUSI9jw8uRngkDzxnwTKG36fZUx26cwp4Id4m7vdb+bI
-         l8stx0CoZfMQ2HUx2DGpD/4zyTPb0DUE6fVgK0TD0zUi7tAPe6V2e74RW62zIKKhMDdo
-         lQcg232Y76ho0I6doRNqtHG3MDq3EWBWqZiKIdgFrWe2oEM758bq4E81CjQVeumk0Skx
-         DrZfuVkLTmGuj5SCwUlIf0uB2ROPfciNNWBrzbud+/R64RBb7z4rFI8IbUEE3hU+KaGK
-         jTig==
-X-Gm-Message-State: APjAAAVQ5wPgCGTo6CJ4vXgjs2oObSGTu8TiSnVleb1cQwjE3QTjpLpv
-        /Z15kyOHnnAGfSFcKdizWSy+gOGZb7KdYVY=
-X-Google-Smtp-Source: APXvYqxWlZsCHUAniaGGnkYc/2u2aJS99/DnTGaKIjiXtKa61MbDsuvjoKVdedwJZiPaBOvPoyAtkjOY3gc7N6M=
-X-Received: by 2002:ac8:e8d:: with SMTP id v13mr23856477qti.96.1568062564621;
- Mon, 09 Sep 2019 13:56:04 -0700 (PDT)
-Date:   Mon,  9 Sep 2019 16:56:02 -0400
-Message-Id: <20190909205602.248472-1-ncardwell@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.162.g0b9fbb3734-goog
-Subject: [PATCH net] tcp: fix tcp_ecn_withdraw_cwr() to clear TCP_ECN_QUEUE_CWR
-From:   Neal Cardwell <ncardwell@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728385AbfIIVAQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 9 Sep 2019 17:00:16 -0400
+Received: from mga17.intel.com ([192.55.52.151]:2690 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727265AbfIIVAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 17:00:16 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Sep 2019 14:00:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,487,1559545200"; 
+   d="scan'208";a="268195801"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+  by orsmga001.jf.intel.com with ESMTP; 09 Sep 2019 14:00:15 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 9 Sep 2019 14:00:14 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 9 Sep 2019 14:00:14 -0700
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
+ fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
+ Mon, 9 Sep 2019 14:00:14 -0700
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH] i40e: clear __I40E_VIRTCHNL_OP_PENDING
+ on invalid min tx rate
+Thread-Topic: [Intel-wired-lan] [PATCH] i40e: clear __I40E_VIRTCHNL_OP_PENDING
+ on invalid min tx rate
+Thread-Index: AQHVYh3+xhY9fUhFcESFvkAjSnYfaKcj3sMA
+Date:   Mon, 9 Sep 2019 21:00:10 +0000
+Message-ID: <4bbcbce0cd2f419682fc390af5cd35e5@intel.com>
+References: <20190903060810.30775-1-sassmann@kpanic.de>
+In-Reply-To: <20190903060810.30775-1-sassmann@kpanic.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNmE1MmQ1NDUtZjVkMy00ZWIyLWI5N2EtYWMzZjFiM2QxYTFlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZSt2NDRqNlhGWStnXC81WGc4c2xWZXdIOThMSEdCYkdKMDdvMjg3Qk9tRnR5enR6SW1YaVhwSzczTE1UZDA0cVIifQ==
+dlp-reaction: no-action
+dlp-version: 11.0.400.15
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix tcp_ecn_withdraw_cwr() to clear the correct bit:
-TCP_ECN_QUEUE_CWR.
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Stefan Assmann
+> Sent: Monday, September 2, 2019 11:08 PM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org; davem@davemloft.net; sassmann@kpanic.de
+> Subject: [Intel-wired-lan] [PATCH] i40e: clear
+> __I40E_VIRTCHNL_OP_PENDING on invalid min tx rate
+> 
+> In the case of an invalid min tx rate being requested
+> i40e_ndo_set_vf_bw() immediately returns -EINVAL instead of releasing
+> __I40E_VIRTCHNL_OP_PENDING first.
+> 
+> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Rationale: basically, TCP_ECN_DEMAND_CWR is a bit that is purely about
-the behavior of data receivers, and deciding whether to reflect
-incoming IP ECN CE marks as outgoing TCP th->ece marks. The
-TCP_ECN_QUEUE_CWR bit is purely about the behavior of data senders,
-and deciding whether to send CWR. The tcp_ecn_withdraw_cwr() function
-is only called from tcp_undo_cwnd_reduction() by data senders during
-an undo, so it should zero the sender-side state,
-TCP_ECN_QUEUE_CWR. It does not make sense to stop the reflection of
-incoming CE bits on incoming data packets just because outgoing
-packets were spuriously retransmitted.
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
-The bug has been reproduced with packetdrill to manifest in a scenario
-with RFC3168 ECN, with an incoming data packet with CE bit set and
-carrying a TCP timestamp value that causes cwnd undo. Before this fix,
-the IP CE bit was ignored and not reflected in the TCP ECE header bit,
-and sender sent a TCP CWR ('W') bit on the next outgoing data packet,
-even though the cwnd reduction had been undone.  After this fix, the
-sender properly reflects the CE bit and does not set the W bit.
-
-Note: the bug actually predates 2005 git history; this Fixes footer is
-chosen to be the oldest SHA1 I have tested (from Sep 2007) for which
-the patch applies cleanly (since before this commit the code was in a
-.h file).
-
-Fixes: bdf1ee5d3bd3 ("[TCP]: Move code from tcp_ecn.h to tcp*.c and tcp.h & remove it")
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index c21e8a22fb3b..8a1cd93dbb09 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -266,7 +266,7 @@ static void tcp_ecn_accept_cwr(struct sock *sk, const struct sk_buff *skb)
- 
- static void tcp_ecn_withdraw_cwr(struct tcp_sock *tp)
- {
--	tp->ecn_flags &= ~TCP_ECN_DEMAND_CWR;
-+	tp->ecn_flags &= ~TCP_ECN_QUEUE_CWR;
- }
- 
- static void __tcp_ecn_check_ce(struct sock *sk, const struct sk_buff *skb)
--- 
-2.23.0.162.g0b9fbb3734-goog
 
