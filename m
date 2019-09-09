@@ -2,144 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A17D2ADB9F
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94EEBADBC9
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:08:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732364AbfIIPCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 11:02:00 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:38266 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbfIIPB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:01:59 -0400
-Received: by mail-yw1-f66.google.com with SMTP id f187so4885199ywa.5
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 08:01:59 -0700 (PDT)
+        id S1726587AbfIIPIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 11:08:52 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38281 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726311AbfIIPIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:08:52 -0400
+Received: by mail-wm1-f65.google.com with SMTP id o184so15117415wme.3;
+        Mon, 09 Sep 2019 08:08:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rUE9XfPQzVOkU8A+tW+bDNv+qPs+FQWcVStFD975yvI=;
-        b=kRZbfU+rV9xW2LykirPsmolWRrRRKz667vfMqIhKakBadeq0op5Swg1icESwt1yII4
-         QHYSZqWrRH6yq0yPCKWzjFuZ6j6BWvr7zzvv1IYAQkOEKlOKiI35dZipedDXhcQeZ+DC
-         dlK9oeypqXAksmGoo9YRON/4yEoRztbbARkL6yX3ng+t/4PNUQlKoSThHWF8Gdie4QSA
-         2WqrJXGC62QDwNsCZnzBI8OmpIweklBsQm49R+ouCn+6Elm4MMUjhiEty0SDgickT1Vb
-         YjfFykVuh/m7EMUqhDEj+NZ6z38l7Pc0AQYJkt0vl3Q0crb1zeGAm+wj9k50AXJzFIpP
-         Y4vw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=bkcaGhT4i1YczVLSYGucQECEKh6an5T4AF5+XBynpKQ=;
+        b=Iv3YgMINM8MI4r/hatRem1z/iT7ykqT8egkiqnuw52yBf+jDx6cY8WMhkxN8Nx4Gpi
+         Stb1ZTPDWwC5HNYyLx/DZkFI+zu4H9RTejkzkyxtS73PhdBwAcW9Q+0CNeXHUAyHOSsO
+         Ut3Rbv0smOf0k8b9LxG09zqfYQXff1nDYTKSQRX4+slyBkQhqTj9k9+Fen6McEfCKZr1
+         zfNmh8io4htRpFg7jsZjteNezKKkXVegLtxJBYz/nAikGdObGcKW4ESvSySY4o5H4lSz
+         4Nf2jSLC2d0VLFBlHUSLgqusntK9QOuVKQBWYZKIA+tZXqYJMbMJBSuN/Vfq88eXnJH1
+         EOSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rUE9XfPQzVOkU8A+tW+bDNv+qPs+FQWcVStFD975yvI=;
-        b=D+Q4nws2YAI1pZzmK18IKxqFDQOPRw7VSMfLYlG9X7I/xyeIWK2FQXtJqzjghO+2zz
-         KQCiApNBdNY03s5dSMaiXYe3xuFILRbUfduYnAp1Y7WboazeLBuNc9JBAXjGwQADsWm1
-         fE/kczzm5YMZs+S0kxJxnI5JkpeQe8jq6JDu7qmHmK8ADRBivM4NJmTLdiWyXKcFrkXD
-         yEhqRnlRPA/EkNq5mGtoaRNaq/GVgwy9J7GkuXRLjomDl7ALZWevf5R4jPZEJJXd6CQr
-         8GPE7ZD8+EkY58TavB0MITp838gmBGQ4XDLJ0tqazKRyi7jfeU52elhzyHDCN3Y26B4I
-         HEWw==
-X-Gm-Message-State: APjAAAUoEWeTFsXYwwk8/rQWy4JVTh5Y/U16utQHoYM9UALmSnSkTgAE
-        EzHAGa2lLnc6roY1X3z9Tc/PoBB/QiArvorbm/m1xg==
-X-Google-Smtp-Source: APXvYqwI/6onPZfQYtbeyVioyGWN5PxhSsG09TFQ/8M31BmYpXIR9U6m4vV6dkvnv9JQBlWBFzuQAAtGCRA1Wm7ooMk=
-X-Received: by 2002:a0d:db56:: with SMTP id d83mr16207277ywe.135.1568041318271;
- Mon, 09 Sep 2019 08:01:58 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bkcaGhT4i1YczVLSYGucQECEKh6an5T4AF5+XBynpKQ=;
+        b=BkZb15p6oOMxvhkj7DWIz5B9MHo04RnpSBDxeUtqrBYGblkl0B8fAvjegh9PXLyoBl
+         MZ+jeddWg0wtVC/kwPL2CLdEX0WpxKFa3Nh/xEhx1V+wzHBhiB6U26jrk2kN3oDOjmJi
+         qB7mB/kRk9O7Eno2H6pGSh7ngfeIPA/afUTl1Ijc1rJEq5IN70zZYa6c4qpfO8arVHOB
+         y7jEfXTL+GuO7KfGns2Xhh+6UgvaRQ0Gl1Mvfgx8g3wjyasNbVBnSyRVMxGTr1Z+VY9p
+         8bmkFWgQFFHqsVYIyc0Mm1anPpkeco9BSBu6AAmqEJOvuXHn5AOjPcpqfMzz9l8S7Wic
+         4F6A==
+X-Gm-Message-State: APjAAAWKpjPFyHbQd/VHrBF0FufwvbRYxpWF8ZOaYftXQ3xLMdPOwl3J
+        QTHAeAs71Ws15xxjJezVGWrQ9Z+b
+X-Google-Smtp-Source: APXvYqzZIZfIilwh1VWSffFxyOjQ5MCeUQJyfmu51e37HvfyP8HfRgJclAH0CfxzNJsRxLXoAItULw==
+X-Received: by 2002:a1c:6a0a:: with SMTP id f10mr19220017wmc.121.1568041729853;
+        Mon, 09 Sep 2019 08:08:49 -0700 (PDT)
+Received: from localhost (p2E5BE0B8.dip0.t-ipconnect.de. [46.91.224.184])
+        by smtp.gmail.com with ESMTPSA id 33sm14670646wra.41.2019.09.09.08.08.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Sep 2019 08:08:47 -0700 (PDT)
+Date:   Mon, 9 Sep 2019 17:08:46 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: stmmac: Support enhanced addressing
+ mode for DWMAC 4.10
+Message-ID: <20190909150846.GA27056@ulmo>
+References: <20190909123627.29928-1-thierry.reding@gmail.com>
+ <20190909123627.29928-2-thierry.reding@gmail.com>
 MIME-Version: 1.0
-References: <20190909142844.347495-1-tph@fb.com>
-In-Reply-To: <20190909142844.347495-1-tph@fb.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 9 Sep 2019 17:01:46 +0200
-Message-ID: <CANn89iJ5wANqhpR28y5AYf6GTBgzTau+u0N0ogG690C71LbxaA@mail.gmail.com>
-Subject: Re: [PATCH] tcp: Add TCP_INFO counter for packets received out-of-order
-To:     Thomas Higdon <tph@fb.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dave Jones <dsj@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="J2SCkAp4GZ/dPZZf"
+Content-Disposition: inline
+In-Reply-To: <20190909123627.29928-2-thierry.reding@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 9, 2019 at 4:30 PM Thomas Higdon <tph@fb.com> wrote:
->
-> For receive-heavy cases on the server-side, we want to track the
-> connection quality for individual client IPs. This counter, similar to
-> the existing system-wide TCPOFOQueue counter in /proc/net/netstat,
-> tracks out-of-order packet reception. By providing this counter in
-> TCP_INFO, it will allow understanding to what degree receive-heavy
-> sockets are experiencing out-of-order delivery and packet drops
-> indicating congestion.
->
-> Please note that this is similar to the counter in NetBSD TCP_INFO, and
-> has the same name.
->
-> Signed-off-by: Thomas Higdon <tph@fb.com>
+
+--J2SCkAp4GZ/dPZZf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Sep 09, 2019 at 02:36:27PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
+>=20
+> The address width of the controller can be read from hardware feature
+> registers much like on XGMAC. Add support for parsing the ADDR64 field
+> so that the DMA mask can be set accordingly.
+>=20
+> This avoids getting swiotlb involved for DMA on Tegra186 and later.
+>=20
+> Also make sure that the upper 32 bits of the DMA address are written to
+> the DMA descriptors when enhanced addressing mode is used.
+>=20
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
 > ---
->  include/linux/tcp.h      | 2 ++
->  include/uapi/linux/tcp.h | 2 ++
->  net/ipv4/tcp.c           | 1 +
->  net/ipv4/tcp_input.c     | 1 +
->  4 files changed, 6 insertions(+)
->
-> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> index f3a85a7fb4b1..a01dc78218f1 100644
-> --- a/include/linux/tcp.h
-> +++ b/include/linux/tcp.h
-> @@ -393,6 +393,8 @@ struct tcp_sock {
->          */
->         struct request_sock *fastopen_rsk;
->         u32     *saved_syn;
-> +
-> +       u32 rcv_ooopack; /* Received out-of-order packets, for tcpinfo */
->  };
->
->  enum tsq_enum {
-> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-> index b3564f85a762..20237987ccc8 100644
-> --- a/include/uapi/linux/tcp.h
-> +++ b/include/uapi/linux/tcp.h
-> @@ -270,6 +270,8 @@ struct tcp_info {
->         __u64   tcpi_bytes_retrans;  /* RFC4898 tcpEStatsPerfOctetsRetrans */
->         __u32   tcpi_dsack_dups;     /* RFC4898 tcpEStatsStackDSACKDups */
->         __u32   tcpi_reord_seen;     /* reordering events seen */
-> +
-> +       __u32   tcpi_rcv_ooopack;    /* Out-of-order packets received */
+>  drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
+>  .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  4 ++--
+>  .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 20 +++++++++++++++++++
+>  .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  1 +
+>  4 files changed, 24 insertions(+), 2 deletions(-)
 
-This is problematic : you create a 32bit hole in this structure that
-we will never be able to fill.
+I just ran into a case where this is not enough. The problem is that the
+driver not only doesn't fill in the upper 32 bits of the DMA address in
+the descriptors, it also doesn't program the upper 32 bits of the DMA
+address of the descriptors when initializing the channels. I'll update
+the patch for that case as well.
 
-We need to add another metric here so that the whole 64bit space is used.
+Thierry
 
->  };
->
->  /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 94df48bcecc2..d4386f054f18 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -3295,6 +3295,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
->         info->tcpi_bytes_retrans = tp->bytes_retrans;
->         info->tcpi_dsack_dups = tp->dsack_dups;
->         info->tcpi_reord_seen = tp->reord_seen;
-> +       info->tcpi_rcv_ooopack = tp->rcv_ooopack;
->         unlock_sock_fast(sk, slow);
->  }
->  EXPORT_SYMBOL_GPL(tcp_get_info);
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 706cbb3b2986..2774680c5d05 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -4555,6 +4555,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
->         tp->pred_flags = 0;
->         inet_csk_schedule_ack(sk);
->
-> +       tp->rcv_ooopack++;
+--J2SCkAp4GZ/dPZZf
+Content-Type: application/pgp-signature; name="signature.asc"
 
-We count skbs or we count segments ?
+-----BEGIN PGP SIGNATURE-----
 
-(GRO might have aggregated multiple segments)
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl12avoACgkQ3SOs138+
+s6HKiw//TWM7ZrQDzc7XyoxuJLTo+cDwrkPcfuhx7j7KcMxyjDbUv1HqMhzxrs+Q
+iHgY3b2d3LubovfTDeEq+N1uDfFsv6T+dNQg7FVo7lFsRbEnwdt8bwQrvDsfVjCD
+e9aAPCp1tazMPiMLGvTpKyH/yLz6VECXcYNUH/bT/sp86NstNlmTatU10pyZC0sd
+JIAKcIUesQMZVwwObof1C3Y0XMuMuTnVu0PP6hVqxe19ajV++jDylqBNq1kanbHM
+GQTZoVy3ax/xwZM+RfQF6OO8bUfcDR4TRzjVEeksBCK6rMG4FLBnihHWDejN7f0N
+WwBUlNGB+y1Mpfm5Dg5lao+SyyhGFPLQyHKaemxAWRWMXQeo21A+hOXGd29wwkec
+4nwIeIj5YSLzN/xGel4+aJz8awfrAq+9ufCKPgz1zalXMbgq7uqY05jyiGzgqmEZ
+UIEj5iNCHnZcCDpzxspLGD1mtmIGC90zwdSayLvKrTjVj0wtjkuwHsg5AYe7aqxT
+ChEYn11wD088dLymiO70+r8puQR/YdHvdBNxOe2KMA4p6P/JEujUTG1IBYeH0x+H
+ii2vhX4hMJFp8T19Tqntfpt0YNhny9thbFfybokv4NyaIPG4QNWLB9ZioO1SzcO0
+yM33lw0ZFBc9pF6Fny2z9u7pyfCrFap3fSbynCZxBe9WNg/o4OM=
+=EFgV
+-----END PGP SIGNATURE-----
 
-
->         NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOQUEUE);
->         seq = TCP_SKB_CB(skb)->seq;
->         end_seq = TCP_SKB_CB(skb)->end_seq;
-
-
-You forgot to clear the field in tcp_disconnect()
+--J2SCkAp4GZ/dPZZf--
