@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C06CDAD45C
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 09:59:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0A1AD4DF
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 10:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725846AbfIIH7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 03:59:47 -0400
-Received: from mga03.intel.com ([134.134.136.65]:35724 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725999AbfIIH7q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 03:59:46 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Sep 2019 00:59:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,484,1559545200"; 
-   d="scan'208";a="335516815"
-Received: from pipin.fi.intel.com ([10.237.72.175])
-  by orsmga004.jf.intel.com with ESMTP; 09 Sep 2019 00:59:44 -0700
-From:   Felipe Balbi <felipe.balbi@linux.intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Felipe Balbi <felipe.balbi@linux.intel.com>
-Subject: [PATCH v3 2/2] PTP: add support for one-shot output
-Date:   Mon,  9 Sep 2019 10:59:40 +0300
-Message-Id: <20190909075940.12843-2-felipe.balbi@linux.intel.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190909075940.12843-1-felipe.balbi@linux.intel.com>
-References: <20190909075940.12843-1-felipe.balbi@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2389112AbfIIIaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 04:30:19 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41935 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727023AbfIIIaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 04:30:19 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b13so8673398pfo.8
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 01:30:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=V/dDlvtPa/zUelwbyU9EaW9OfGFB6sH/7tZfOCqCgsE=;
+        b=Ijkbl+Mh7grNiX+5dgwU2rVOhB1D1Hows8vURc1vLDBWlu2BM6FwLaj+ulsBcO350T
+         VPsBU0r4Hotefp/kM0DZPESq7ZxYBsYlHvcre09Yn4bQb3UYkCjuMqUxF5ekjlBBsj2M
+         x7DUIqsl+xEkPR/+A+frtDtVcknmkzK0oEKXtaa/lJFZQbbVkykHpsRjEBJaRpejwYEE
+         kkqgfsywU+EnG/iDdGahv6XFwPXwwdCqQQo2NYmf59dxaZ+Ei6bd4uTkwLWYxaa3APTL
+         PDb3aBzSA6wHitVhNwmOgAMeN7V3P1SO0VTFfGM3kL1NxqTFTXl7H80X8LenUp3RwEoC
+         9UhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=V/dDlvtPa/zUelwbyU9EaW9OfGFB6sH/7tZfOCqCgsE=;
+        b=NLouBaQUJ6XqwLDDy4vTZX/BjTV++CUFTQbYNtS8NuvnGSFjte1ENo7oPqJACPByyr
+         nEAjcifPRazSQKKl4giVnpuJ5dd4v5EZ9ANwivUuMAaGQ20AgsMVrvUETVhtMX7Cf/I4
+         4QVA0683FjYyC0e/VnRGG6ClyF0N9d8qMNbYGWCbNdF3qzmhraAuPunhsfYa2EW0/Q7v
+         tek9I1hqqaiByJ9MaKAoJDPG5dCH16NLqpjGO09RNajV6B6l0UBrDLNZjyLEMlwo+i2O
+         jAC6vf9yrROxdsOpVbXgVKl/4XBn076e+T+HtoaBAWydDACmjKgNaYajyiX13bdvO+ij
+         XT4Q==
+X-Gm-Message-State: APjAAAUh/nDVU8T84tzsuBSjlj3U4IWt9vsomkXUhxvWgpqf4wRbkZ+7
+        MHhoOc6Be8qGeOtzY8zGCPucyokyGwo=
+X-Google-Smtp-Source: APXvYqycIypA4v5UcW83BQ7AWJkEwjOoZVSDQ8Hsf82Y9KXkz92Io3EzhX0J9U9gyhGiHIplahwgUA==
+X-Received: by 2002:a17:90a:f0c6:: with SMTP id fa6mr16265832pjb.136.1568017818207;
+        Mon, 09 Sep 2019 01:30:18 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c125sm19927793pfa.107.2019.09.09.01.30.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Sep 2019 01:30:17 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, steffen.klassert@secunet.com
+Subject: [PATCHv2 ipsec-next] xfrm: remove the unnecessary .net_exit for xfrmi
+Date:   Mon,  9 Sep 2019 16:30:10 +0800
+Message-Id: <0e9b72a6caf695dd99c02bd223168897977daaef.1568017810.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some controllers allow for a one-shot output pulse, in contrast to
-periodic output. Now that we have extensible versions of our IOCTLs, we
-can finally make use of the 'flags' field to pass a bit telling driver
-that if we want one-shot pulse output.
+The xfrm_if(s) on each netns can be deleted when its xfrmi dev is
+deleted. xfrmi dev's removal can happen when:
 
-Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+  a. netns is being removed and all xfrmi devs will be deleted.
+
+  b. rtnl_link_unregister(&xfrmi_link_ops) in xfrmi_fini() when
+     xfrm_interface.ko is being unloaded.
+
+So there's no need to use xfrmi_exit_net() to clean any xfrm_if up.
+
+v1->v2:
+  - Fix some changelog.
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
+ net/xfrm/xfrm_interface.c | 23 -----------------------
+ 1 file changed, 23 deletions(-)
 
-Changes since v2:
-	- Add _PEROUT_ to bit macro
-
-Changes since v1:
-	- remove comment from .flags field
-
- include/uapi/linux/ptp_clock.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-index 12911785991b..cbdc0d97b471 100644
---- a/include/uapi/linux/ptp_clock.h
-+++ b/include/uapi/linux/ptp_clock.h
-@@ -38,8 +38,8 @@
- /*
-  * Bits of the ptp_perout_request.flags field:
-  */
--#define PTP_PEROUT_VALID_FLAGS (~0)
--
-+#define PTP_PEROUT_ONE_SHOT (1<<0)
-+#define PTP_PEROUT_VALID_FLAGS	(~PTP_PEROUT_ONE_SHOT)
- /*
-  * struct ptp_clock_time - represents a time value
-  *
-@@ -77,7 +77,7 @@ struct ptp_perout_request {
- 	struct ptp_clock_time start;  /* Absolute start time. */
- 	struct ptp_clock_time period; /* Desired period, zero means disable. */
- 	unsigned int index;           /* Which channel to configure. */
--	unsigned int flags;           /* Reserved for future use. */
-+	unsigned int flags;
- 	unsigned int rsv[4];          /* Reserved for future use. */
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 74868f9..faa0518 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -738,30 +738,7 @@ static struct rtnl_link_ops xfrmi_link_ops __read_mostly = {
+ 	.get_link_net	= xfrmi_get_link_net,
  };
  
+-static void __net_exit xfrmi_destroy_interfaces(struct xfrmi_net *xfrmn)
+-{
+-	struct xfrm_if *xi;
+-	LIST_HEAD(list);
+-
+-	xi = rtnl_dereference(xfrmn->xfrmi[0]);
+-	if (!xi)
+-		return;
+-
+-	unregister_netdevice_queue(xi->dev, &list);
+-	unregister_netdevice_many(&list);
+-}
+-
+-static void __net_exit xfrmi_exit_net(struct net *net)
+-{
+-	struct xfrmi_net *xfrmn = net_generic(net, xfrmi_net_id);
+-
+-	rtnl_lock();
+-	xfrmi_destroy_interfaces(xfrmn);
+-	rtnl_unlock();
+-}
+-
+ static struct pernet_operations xfrmi_net_ops = {
+-	.exit = xfrmi_exit_net,
+ 	.id   = &xfrmi_net_id,
+ 	.size = sizeof(struct xfrmi_net),
+ };
 -- 
-2.23.0
+2.1.0
 
