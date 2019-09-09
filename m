@@ -2,100 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8A3AE040
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 23:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9CDAE044
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 23:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391744AbfIIVVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 17:21:36 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6940 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726930AbfIIVVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 17:21:36 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x89LHMWW084360;
-        Mon, 9 Sep 2019 17:21:10 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2uwx5srscx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Sep 2019 17:21:10 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x89LKCWU022942;
-        Mon, 9 Sep 2019 21:21:09 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 2uv466twy5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Sep 2019 21:21:09 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x89LL7KI57672074
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 9 Sep 2019 21:21:07 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B78C4C605A;
-        Mon,  9 Sep 2019 21:21:07 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 189C6C6059;
-        Mon,  9 Sep 2019 21:21:06 +0000 (GMT)
-Received: from oc6857751186.ibm.com (unknown [9.80.200.46])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  9 Sep 2019 21:21:05 +0000 (GMT)
-Subject: Re: [PATCH] net/ibmvnic: Fix missing { in __ibmvnic_reset
-To:     Michal Suchanek <msuchanek@suse.de>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Juliet Kim <julietk@linux.vnet.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        John Allen <jallen@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org
-References: <20190909204451.7929-1-msuchanek@suse.de>
-From:   Tyrel Datwyler <tyreld@linux.ibm.com>
-Message-ID: <060cae7c-48bf-bddd-5086-a2a0d8f02c1a@linux.ibm.com>
-Date:   Mon, 9 Sep 2019 14:21:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728872AbfIIV1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 17:27:06 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:37418 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727483AbfIIV1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 17:27:06 -0400
+Received: by mail-yb1-f194.google.com with SMTP id t5so5276558ybt.4
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 14:27:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RdmJq+X6Eql3hahtVdgxjTIS+jl2kpJtyltn1JtqD6I=;
+        b=B+drRcRQ17dpHTPyXWMyWFXBjMJuWTYd685I6t2FBJV7OOpKkkAS13mVIS4GYNsfoe
+         ZTken7SrnW8A47ms2dP+MSr93S9HKYeUzCg6jSfLPn2szs7r2smfQpsStsurPGCN4IW/
+         q67beT5w0LNfLT0qhKb7ymmnxl7Twsz1mIBnDu31xbNnGbKjj7peyY2MeksQCwQipkSR
+         sqXkTttSwmrZh1ZRA0xsdv0LYeNYotoNxXE5xsj7xVV3H7+3IjHZmUW9v1KHLXicdrfS
+         MVFut1Ga9ZLTryzbSxcL/ar92Gjw0rtPsG3oSU9IzRGrNT0fvIKdvDKh7VvVmlK/FEnS
+         Z0YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RdmJq+X6Eql3hahtVdgxjTIS+jl2kpJtyltn1JtqD6I=;
+        b=aygZnA5bADwGumrcwYFw1M14oVuIzBt5Yyz/lSralsFZxV1kUDAJukyRl/yc3Lvw5a
+         bfqqgcT6We7F10MICBHRB7sPf/JofwjUoL1rB2xnw6m8fp9fdqCuD3i9d/5hK9E60wxU
+         yw/u/3XHQn5vGKav16UW+5XRXaEVgngCTh0sqwfGzngeALqtYhHD9LqZKuD6M4qgZBnN
+         c/SgQdXs2htoFKhqEra+3GlQlpJXl6PUvcTRN7VdWZVtbSi/4U8lvCoG8otA/mZhR7Yi
+         Wfd7E+BKUwzihyGC+yuZjctXZgtCxuyHY7HTB0+h8G6ldq4TZ8HQa88loVZGhR+kMSWj
+         83zA==
+X-Gm-Message-State: APjAAAXajS2wc85zaTT4xX6YjRB2ry1eSOfNAAHmwjSEBL6jEjqDoTzT
+        iZCqgdfi8EJbQBuC0HSeyyoEgYicWdqwI0l+Hin/Vw==
+X-Google-Smtp-Source: APXvYqzh7yRXvNNIw0jzoSaWFDtRqEntaQWbapwM+FxAXVWoBYi9+Pt4PGjPAfP4deBSxR8JbwXv4IprJ78GRfXlKfI=
+X-Received: by 2002:a25:910:: with SMTP id 16mr6332317ybj.504.1568064424657;
+ Mon, 09 Sep 2019 14:27:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190909204451.7929-1-msuchanek@suse.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-09_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1909090206
+References: <20190909205602.248472-1-ncardwell@google.com>
+In-Reply-To: <20190909205602.248472-1-ncardwell@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 9 Sep 2019 23:26:52 +0200
+Message-ID: <CANn89iK2D_AWxbpZE+FgU_3=PR4QBPwOtpKO_3aJ1uzic=yVZw@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix tcp_ecn_withdraw_cwr() to clear TCP_ECN_QUEUE_CWR
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/19 1:44 PM, Michal Suchanek wrote:
-> Commit 1c2977c09499 ("net/ibmvnic: free reset work of removed device from queue")
-> adds a } without corresponding { causing build break.
-> 
-> Fixes: 1c2977c09499 ("net/ibmvnic: free reset work of removed device from queue")
-> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+On Mon, Sep 9, 2019 at 10:56 PM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> Fix tcp_ecn_withdraw_cwr() to clear the correct bit:
+> TCP_ECN_QUEUE_CWR.
+>
+> Rationale: basically, TCP_ECN_DEMAND_CWR is a bit that is purely about
+> the behavior of data receivers, and deciding whether to reflect
+> incoming IP ECN CE marks as outgoing TCP th->ece marks. The
+> TCP_ECN_QUEUE_CWR bit is purely about the behavior of data senders,
+> and deciding whether to send CWR. The tcp_ecn_withdraw_cwr() function
+> is only called from tcp_undo_cwnd_reduction() by data senders during
+> an undo, so it should zero the sender-side state,
+> TCP_ECN_QUEUE_CWR. It does not make sense to stop the reflection of
+> incoming CE bits on incoming data packets just because outgoing
+> packets were spuriously retransmitted.
+>
+> The bug has been reproduced with packetdrill to manifest in a scenario
+> with RFC3168 ECN, with an incoming data packet with CE bit set and
+> carrying a TCP timestamp value that causes cwnd undo. Before this fix,
+> the IP CE bit was ignored and not reflected in the TCP ECE header bit,
+> and sender sent a TCP CWR ('W') bit on the next outgoing data packet,
+> even though the cwnd reduction had been undone.  After this fix, the
+> sender properly reflects the CE bit and does not set the W bit.
+>
+> Note: the bug actually predates 2005 git history; this Fixes footer is
+> chosen to be the oldest SHA1 I have tested (from Sep 2007) for which
+> the patch applies cleanly (since before this commit the code was in a
+> .h file).
+>
+> Fixes: bdf1ee5d3bd3 ("[TCP]: Move code from tcp_ecn.h to tcp*.c and tcp.h & remove it")
+> Signed-off-by: Neal Cardwell <ncardwell@google.com>
+> Acked-by: Yuchung Cheng <ycheng@google.com>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Cc: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-> ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index 6644cabc8e75..5cb55ea671e3 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -1984,7 +1984,7 @@ static void __ibmvnic_reset(struct work_struct *work)
->  	rwi = get_next_rwi(adapter);
->  	while (rwi) {
->  		if (adapter->state == VNIC_REMOVING ||
-> -		    adapter->state == VNIC_REMOVED)
-> +		    adapter->state == VNIC_REMOVED) {
->  			kfree(rwi);
->  			rc = EBUSY;
->  			break;
-> 
-
+Thanks Neal
