@@ -2,261 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D3B3AD521
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 10:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 413A1AD5D4
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 11:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389529AbfIIIx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 04:53:26 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:47242 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389047AbfIIIxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 04:53:25 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x898r8WI019249;
-        Mon, 9 Sep 2019 04:53:08 -0400
-Received: from nam03-by2-obe.outbound.protection.outlook.com (mail-by2nam03lp2056.outbound.protection.outlook.com [104.47.42.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2uv6d983ba-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Sep 2019 04:53:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HM4Ow77pPKElk2NZIifySov/qZNCbAh/e+HFfG81xfLKwAjkiMeHEhfNsFiyZUCJAO8YSAzxcWXoXOmtw9VgN+k3/PQZD1OU1kS50oEInYugP6wGI1e96lpMbpI+71+EdmT++yKOdP4KT912FGgkoHZ5/0LWgQwNBrjWHqZ0KrSnkbttDvtAnlpAJwtRKHd6NumJotZscLeNS7aUkpqmsf7eNMNZPA/6sDGOZFWdvfSb99OYxaEz2ipYKAcDEbg+agag1vahfP2fF6c0HsWz+IyAFY217M1ZfZ3f+kySMuv3VWUe9coHf/buzHltwuhOraa7xe/3yznHF93HPMKohg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5rzaacQqsHtWxfDdbIq2SgzD1pSvBS4WIoqEaWc81c0=;
- b=O1E+aN9n+SaV5GHjbB7ZTHunU5LCkyiOhnAXUrCDPxkOk63VEOT//vW7QOt58nOjSZINRr+NrSZeklzhgzXQlT5jtsgI6FhxZVixmv1Qz4mFuuwO/royp5i1B3JfDt+wxThOQMDnOQMK47iJslN3WAHjYrQBPIRujDQj2jFctbofecPTWSaB1p9j6sMQ0SM+j2bTtAwe3AKDinDt4QqLr29OuVT44/Mabia21seliuFA3dHhFjCR2ZkAYrGbWLVGT7nfhwHmEaO68G8qL3caxoYBbmilfPADj3ehGxXTwabvth8+AIDTRQFiFTH3w5YBAbwk6cvnpoF9xH9bKKVZwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5rzaacQqsHtWxfDdbIq2SgzD1pSvBS4WIoqEaWc81c0=;
- b=K5xeXZhbkUj7R8GZvLiCYdqkxOZOeXvpgITXvPuo3sXe4crKKZ7dC+axgLVl9ayxxlJ+55t17jZKB6uaveTZBgZK1lXF8acCf9gT6ztT4RL3t5/vAK9XehYWQkXxzE1oy4KRCLJ2z848Wg8Np2La74G5F3N2jtg+NGbQcsoz+Fw=
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
- CH2PR03MB5239.namprd03.prod.outlook.com (20.180.5.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.15; Mon, 9 Sep 2019 08:53:06 +0000
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::344d:7f50:49a3:db1b]) by CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::344d:7f50:49a3:db1b%3]) with mapi id 15.20.2241.018; Mon, 9 Sep 2019
- 08:53:06 +0000
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "lkp@intel.com" <lkp@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kbuild-all@01.org" <kbuild-all@01.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH] net: stmmac: socfpga: re-use the `interface` parameter
- from platform data
-Thread-Topic: [PATCH] net: stmmac: socfpga: re-use the `interface` parameter
- from platform data
-Thread-Index: AQHVZK71MotWq7Szq0ysUG4QFG+T4qcgLVwAgALhQQA=
-Date:   Mon, 9 Sep 2019 08:53:06 +0000
-Message-ID: <a7dc54d6e1fad0dc464a30101c8740b8c11f2d8b.camel@analog.com>
-References: <20190906123054.5514-1-alexandru.ardelean@analog.com>
-         <201909072036.v1rX0Vwh%lkp@intel.com>
-In-Reply-To: <201909072036.v1rX0Vwh%lkp@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [137.71.226.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bcb38f20-807b-4034-9ad8-08d7350321b7
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:CH2PR03MB5239;
-x-ms-traffictypediagnostic: CH2PR03MB5239:
-x-ms-exchange-purlcount: 3
-x-microsoft-antispam-prvs: <CH2PR03MB5239E6EED9965DA7FB7D68DDF9B70@CH2PR03MB5239.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 01559F388D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(366004)(376002)(346002)(396003)(136003)(189003)(199004)(53936002)(4326008)(256004)(476003)(2351001)(229853002)(36756003)(76176011)(7416002)(102836004)(26005)(6916009)(305945005)(6506007)(2906002)(66476007)(64756008)(66446008)(66556008)(91956017)(76116006)(5024004)(7736002)(66946007)(4001150100001)(6116002)(3846002)(2501003)(6306002)(14454004)(8936002)(1730700003)(81156014)(81166006)(8676002)(86362001)(66066001)(966005)(118296001)(6436002)(25786009)(71200400001)(6486002)(486006)(99286004)(54906003)(186003)(71190400001)(11346002)(5660300002)(446003)(316002)(6246003)(478600001)(5640700003)(6512007)(2616005)(81973001);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5239;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: analog.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ajHTUKxXC9xufAzxcwqryCcL/eTfPtfGYT/zzdNvqlb155vLIShMKhxqm23sSV6qQXets1Zh5Itx60A5LM9o1TXmubSBizDT/KR99T6q7AIxMLd8NB00TpgyyznCss605vnbLLU1gsxekVGKJaeBm2hmd6WirXjtHSJ7wvL1+ySgP/2QEylnOKgSckfQDlxstCq3BVv+nvqp3wxg1k+iWONg4hZoHKqxfkrhfaAgJE1xsaJjRPdEWKWv2BiFQhMPxMuA8SmEbyJJQaOhJgSSVBLCkqNhMmTb5H+rL+3UHl6ilEjh3hibWX40ldNuWujF17OxtMl4mZYsC1rO1OklgYz9bPo7Kn6/uVxmjT2XpSqGZnHoyQmnuFCOraNoyya0QN9kDdZd9SrtkCBdz3l9TDJ7xQPSnJdPyQlq9ZXq3vM=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9888AC36AEA71944A2D723F4AABCB6CF@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bcb38f20-807b-4034-9ad8-08d7350321b7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2019 08:53:06.2068
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uUvQGx1/TRYTG1zyEWxRy0Xiqu/V2PRoHn34d16ctSIp5i/U7o/JsNdt+XL81+aNZ7fIc6nmWASb6ZlVxbLGn9t1mwKtit/oombUvQLXiso=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5239
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-09_04:2019-09-08,2019-09-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- malwarescore=0 suspectscore=0 priorityscore=1501 lowpriorityscore=0
- bulkscore=0 spamscore=0 mlxlogscore=999 adultscore=0 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909090094
+        id S1728492AbfIIJge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 05:36:34 -0400
+Received: from mail.online.net ([62.210.16.11]:51302 "EHLO mail.online.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728293AbfIIJge (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 05:36:34 -0400
+X-Greylist: delayed 452 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Sep 2019 05:36:32 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.online.net (Postfix) with ESMTP id 8815511740DC0;
+        Mon,  9 Sep 2019 11:28:59 +0200 (CEST)
+Received: from mail.online.net ([127.0.0.1])
+        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id PH4oKPqHfumU; Mon,  9 Sep 2019 11:28:59 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.online.net (Postfix) with ESMTP id 088EF11740DC5;
+        Mon,  9 Sep 2019 11:28:59 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.online.net 088EF11740DC5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=online.net;
+        s=4EC61654-9574-11E8-870F-3D38CA7095BF; t=1568021339;
+        bh=Stjf29fQ6O8lWdno1KLdSmGcU+KfXpZCT6LzQ45LWmU=;
+        h=Mime-Version:From:Date:Message-Id:To;
+        b=GoaWgVOODvu04g26+BK1l7Yh1EBDNztbzqrXGhjsZNTmpariVFB8MG9PpcDIsHyqE
+         mYxwnrYYvFSkSa5YEScYuaFtsaQr15cxeb2P2wEETbTxHyGbyGGm3xk12/fAQi3AW9
+         UG7YAgufMrvKUFJZM66HXwidNW1OzRieytRAY7Sl4Omql7FJRez7Ts0TSQ0TKoT898
+         xugpL4VOb0lxaMElZJUAeM7YpYT/g8ta6gsvwkmdKnrtr5etuzHb1hbkogdLAhTYTB
+         RkL1Krr3+vgIcBrucC9ZZ8VdSW9DaINMbD7mN0oFpdQ7EeWhekt1hxxatsJYwK6Ks2
+         oxNjv/T/UOiSQ==
+X-Virus-Scanned: amavisd-new at mail.online.net
+Received: from mail.online.net ([127.0.0.1])
+        by localhost (mail.online.net [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id CMB6Pq72iqUe; Mon,  9 Sep 2019 11:28:58 +0200 (CEST)
+Received: from [10.33.104.38] (unknown [195.154.229.35])
+        by mail.online.net (Postfix) with ESMTPSA id E655411740DC4;
+        Mon,  9 Sep 2019 11:28:58 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: VRF Issue Since kernel 5
+From:   Alexis Bauvin <abauvin@online.net>
+In-Reply-To: <CWLP265MB1554308A1373D9ECE68CB854FDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+Date:   Mon, 9 Sep 2019 11:28:58 +0200
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <9E920DE7-9CC9-493C-A1D2-957FE1AED897@online.net>
+References: <CWLP265MB1554308A1373D9ECE68CB854FDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+To:     Gowen <gowen@potatocomputing.co.uk>
+X-Mailer: Apple Mail (2.3445.9.1)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDE5LTA5LTA3IGF0IDIwOjU0ICswODAwLCBrYnVpbGQgdGVzdCByb2JvdCB3cm90
-ZToNCj4gW0V4dGVybmFsXQ0KPiANCj4gSGkgQWxleGFuZHJ1LA0KPiANCj4gSSBsb3ZlIHlvdXIg
-cGF0Y2ghIFlldCBzb21ldGhpbmcgdG8gaW1wcm92ZToNCj4gDQo+IFthdXRvIGJ1aWxkIHRlc3Qg
-RVJST1Igb24gbGludXMvbWFzdGVyXQ0KDQpIbW0sIHRoaXMgZXJyb3Igc2hvdWxkIGJlIGV4cGVj
-dGFibGUgSSBndWVzczogSSBhcHBsaWVkIHRoaXMgb24gbmV0LW5leHQvbWFzdGVyLg0KDQpBbGV4
-DQoNCj4gW2Nhbm5vdCBhcHBseSB0byB2NS4zLXJjNyBuZXh0LTIwMTkwOTA0XQ0KPiBbaWYgeW91
-ciBwYXRjaCBpcyBhcHBsaWVkIHRvIHRoZSB3cm9uZyBnaXQgdHJlZSwgcGxlYXNlIGRyb3AgdXMg
-YSBub3RlIHRvIGhlbHAgaW1wcm92ZSB0aGUgc3lzdGVtXQ0KPiANCj4gdXJsOiAgICANCj4gaHR0
-cHM6Ly9naXRodWIuY29tLzBkYXktY2kvbGludXgvY29tbWl0cy9BbGV4YW5kcnUtQXJkZWxlYW4v
-bmV0LXN0bW1hYy1zb2NmcGdhLXJlLXVzZS10aGUtaW50ZXJmYWNlLXBhcmFtZXRlci1mcm9tLXBs
-YXRmb3JtLWRhdGEvMjAxOTA5MDctMTkwNjI3DQo+IGNvbmZpZzogc3BhcmM2NC1hbGxtb2Rjb25m
-aWcgKGF0dGFjaGVkIGFzIC5jb25maWcpDQo+IGNvbXBpbGVyOiBzcGFyYzY0LWxpbnV4LWdjYyAo
-R0NDKSA3LjQuMA0KPiByZXByb2R1Y2U6DQo+ICAgICAgICAgd2dldCBodHRwczovL3Jhdy5naXRo
-dWJ1c2VyY29udGVudC5jb20vaW50ZWwvbGtwLXRlc3RzL21hc3Rlci9zYmluL21ha2UuY3Jvc3Mg
-LU8gfi9iaW4vbWFrZS5jcm9zcw0KPiAgICAgICAgIGNobW9kICt4IH4vYmluL21ha2UuY3Jvc3MN
-Cj4gICAgICAgICAjIHNhdmUgdGhlIGF0dGFjaGVkIC5jb25maWcgdG8gbGludXggYnVpbGQgdHJl
-ZQ0KPiAgICAgICAgIEdDQ19WRVJTSU9OPTcuNC4wIG1ha2UuY3Jvc3MgQVJDSD1zcGFyYzY0IA0K
-PiANCj4gSWYgeW91IGZpeCB0aGUgaXNzdWUsIGtpbmRseSBhZGQgZm9sbG93aW5nIHRhZw0KPiBS
-ZXBvcnRlZC1ieToga2J1aWxkIHRlc3Qgcm9ib3QgPGxrcEBpbnRlbC5jb20+DQo+IA0KPiBBbGwg
-ZXJyb3JzIChuZXcgb25lcyBwcmVmaXhlZCBieSA+Pik6DQo+IA0KPiAgICBJbiBmaWxlIGluY2x1
-ZGVkIGZyb20gaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oOjc6MCwNCj4gICAgICAgICAgICAg
-ICAgICAgICBmcm9tIGluY2x1ZGUvbGludXgvc2tidWZmLmg6MzAsDQo+ICAgICAgICAgICAgICAg
-ICAgICAgZnJvbSBpbmNsdWRlL2xpbnV4L2lmX2V0aGVyLmg6MTksDQo+ICAgICAgICAgICAgICAg
-ICAgICAgZnJvbSBpbmNsdWRlL3VhcGkvbGludXgvZXRodG9vbC5oOjE5LA0KPiAgICAgICAgICAg
-ICAgICAgICAgIGZyb20gaW5jbHVkZS9saW51eC9ldGh0b29sLmg6MTgsDQo+ICAgICAgICAgICAg
-ICAgICAgICAgZnJvbSBpbmNsdWRlL2xpbnV4L3BoeS5oOjE2LA0KPiAgICAgICAgICAgICAgICAg
-ICAgIGZyb20gZHJpdmVycy9uZXQvL2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXNvY2Zw
-Z2EuYzoxMToNCj4gICAgZHJpdmVycy9uZXQvL2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFj
-LXNvY2ZwZ2EuYzogSW4gZnVuY3Rpb24gJ3NvY2ZwZ2FfZ2VuNV9zZXRfcGh5X21vZGUnOg0KPiA+
-ID4gZHJpdmVycy9uZXQvL2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXNvY2ZwZ2EuYzoy
-NjQ6NDQ6IGVycm9yOiAncGh5bW9kZScgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMNCj4g
-PiA+IGZ1bmN0aW9uKTsgZGlkIHlvdSBtZWFuICdwaHlfbW9kZXMnPw0KPiAgICAgICBkZXZfZXJy
-KGR3bWFjLT5kZXYsICJiYWQgcGh5IG1vZGUgJWRcbiIsIHBoeW1vZGUpOw0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4NCj4gICAgaW5jbHVkZS9saW51
-eC9kZXZpY2UuaDoxNDk5OjMyOiBub3RlOiBpbiBkZWZpbml0aW9uIG9mIG1hY3JvICdkZXZfZXJy
-Jw0KPiAgICAgIF9kZXZfZXJyKGRldiwgZGV2X2ZtdChmbXQpLCAjI19fVkFfQVJHU19fKQ0KPiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+DQo+ICAgIGRyaXZl
-cnMvbmV0Ly9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYy1zb2NmcGdhLmM6MjY0OjQ0OiBu
-b3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5IG9uY2UNCj4g
-Zm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbg0KPiAgICAgICBkZXZfZXJyKGR3bWFjLT5k
-ZXYsICJiYWQgcGh5IG1vZGUgJWRcbiIsIHBoeW1vZGUpOw0KPiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4NCj4gICAgaW5jbHVkZS9saW51eC9kZXZpY2Uu
-aDoxNDk5OjMyOiBub3RlOiBpbiBkZWZpbml0aW9uIG9mIG1hY3JvICdkZXZfZXJyJw0KPiAgICAg
-IF9kZXZfZXJyKGRldiwgZGV2X2ZtdChmbXQpLCAjI19fVkFfQVJHU19fKQ0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIF5+fn5+fn5+fn5+DQo+ICAgIGRyaXZlcnMvbmV0Ly9l
-dGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYy1zb2NmcGdhLmM6IEluIGZ1bmN0aW9uICdzb2Nm
-cGdhX2dlbjEwX3NldF9waHlfbW9kZSc6DQo+ICAgIGRyaXZlcnMvbmV0Ly9ldGhlcm5ldC9zdG1p
-Y3JvL3N0bW1hYy9kd21hYy1zb2NmcGdhLmM6MzQwOjY6IGVycm9yOiAncGh5bW9kZScgdW5kZWNs
-YXJlZCAoZmlyc3QgdXNlIGluIHRoaXMNCj4gZnVuY3Rpb24pOyBkaWQgeW91IG1lYW4gJ3BoeV9t
-b2Rlcyc/DQo+ICAgICAgICAgIHBoeW1vZGUgPT0gUEhZX0lOVEVSRkFDRV9NT0RFX01JSSB8fA0K
-PiAgICAgICAgICBefn5+fn5+DQo+ICAgICAgICAgIHBoeV9tb2Rlcw0KPiANCj4gdmltICsyNjQg
-ZHJpdmVycy9uZXQvL2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXNvY2ZwZ2EuYw0KPiAN
-Cj4gNDBhZTI1NTA1ZmU4MzQgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTktMDYtMDUgIDI1NSAgDQo+
-IDQwYWUyNTUwNWZlODM0IERpbmggTmd1eWVuICAgICAgICAyMDE5LTA2LTA1ICAyNTYgIHN0YXRp
-YyBpbnQgc29jZnBnYV9nZW41X3NldF9waHlfbW9kZShzdHJ1Y3Qgc29jZnBnYV9kd21hYyAqZHdt
-YWMpDQo+IDQwYWUyNTUwNWZlODM0IERpbmggTmd1eWVuICAgICAgICAyMDE5LTA2LTA1ICAyNTcg
-IHsNCj4gNDBhZTI1NTA1ZmU4MzQgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTktMDYtMDUgIDI1OCAg
-CXN0cnVjdCByZWdtYXAgKnN5c19tZ3JfYmFzZV9hZGRyID0gZHdtYWMtPnN5c19tZ3JfYmFzZV9h
-ZGRyOw0KPiA0MGFlMjU1MDVmZTgzNCBEaW5oIE5ndXllbiAgICAgICAgMjAxOS0wNi0wNSAgMjU5
-ICAJdTMyIHJlZ19vZmZzZXQgPSBkd21hYy0+cmVnX29mZnNldDsNCj4gNDBhZTI1NTA1ZmU4MzQg
-RGluaCBOZ3V5ZW4gICAgICAgIDIwMTktMDYtMDUgIDI2MCAgCXUzMiByZWdfc2hpZnQgPSBkd21h
-Yy0+cmVnX3NoaWZ0Ow0KPiA0MGFlMjU1MDVmZTgzNCBEaW5oIE5ndXllbiAgICAgICAgMjAxOS0w
-Ni0wNSAgMjYxICAJdTMyIGN0cmwsIHZhbCwgbW9kdWxlOw0KPiA0MGFlMjU1MDVmZTgzNCBEaW5o
-IE5ndXllbiAgICAgICAgMjAxOS0wNi0wNSAgMjYyICANCj4gNjE2OWFmYmU0YTM0MGIgQWxleGFu
-ZHJ1IEFyZGVsZWFuIDIwMTktMDktMDYgIDI2MyAgCWlmIChzb2NmcGdhX3NldF9waHlfbW9kZV9j
-b21tb24oZHdtYWMsICZ2YWwpKSB7DQo+IDgwMWQyMzNiNzMwMmVlIERpbmggTmd1eWVuICAgICAg
-ICAyMDE0LTAzLTI2IEAyNjQgIAkJZGV2X2Vycihkd21hYy0+ZGV2LCAiYmFkIHBoeSBtb2RlICVk
-XG4iLCBwaHltb2RlKTsNCj4gODAxZDIzM2I3MzAyZWUgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTQt
-MDMtMjYgIDI2NSAgCQlyZXR1cm4gLUVJTlZBTDsNCj4gODAxZDIzM2I3MzAyZWUgRGluaCBOZ3V5
-ZW4gICAgICAgIDIwMTQtMDMtMjYgIDI2NiAgCX0NCj4gODAxZDIzM2I3MzAyZWUgRGluaCBOZ3V5
-ZW4gICAgICAgIDIwMTQtMDMtMjYgIDI2NyAgDQo+IGI0ODM0Yzg2ZTExYmFmIExleSBGb29uIFRh
-biAgICAgICAyMDE0LTA4LTIwICAyNjggIAkvKiBPdmVyd3JpdGUgdmFsIHRvIEdNSUkgaWYgc3Bs
-aXR0ZXIgY29yZSBpcyBlbmFibGVkLiBUaGUNCj4gcGh5bW9kZSBoZXJlDQo+IGI0ODM0Yzg2ZTEx
-YmFmIExleSBGb29uIFRhbiAgICAgICAyMDE0LTA4LTIwICAyNjkgIAkgKiBpcyB0aGUgYWN0dWFs
-IHBoeSBtb2RlIG9uIHBoeSBoYXJkd2FyZSwgYnV0IHBoeSBpbnRlcmZhY2UNCj4gZnJvbQ0KPiBi
-NDgzNGM4NmUxMWJhZiBMZXkgRm9vbiBUYW4gICAgICAgMjAxNC0wOC0yMCAgMjcwICAJICogRU1B
-QyBjb3JlIGlzIEdNSUkuDQo+IGI0ODM0Yzg2ZTExYmFmIExleSBGb29uIFRhbiAgICAgICAyMDE0
-LTA4LTIwICAyNzEgIAkgKi8NCj4gYjQ4MzRjODZlMTFiYWYgTGV5IEZvb24gVGFuICAgICAgIDIw
-MTQtMDgtMjAgIDI3MiAgCWlmIChkd21hYy0+c3BsaXR0ZXJfYmFzZSkNCj4gYjQ4MzRjODZlMTFi
-YWYgTGV5IEZvb24gVGFuICAgICAgIDIwMTQtMDgtMjAgIDI3MyAgCQl2YWwgPSBTWVNNR1JfRU1B
-Q0dSUF9DVFJMX1BIWVNFTF9FTlVNX0dNSUlfTUlJOw0KPiBiNDgzNGM4NmUxMWJhZiBMZXkgRm9v
-biBUYW4gICAgICAgMjAxNC0wOC0yMCAgMjc0ICANCj4gNzBjYjEzNmY3NzMwODMgSm9hY2hpbSBF
-YXN0d29vZCAgIDIwMTYtMDUtMDEgIDI3NSAgCS8qIEFzc2VydCByZXNldCB0byB0aGUgZW5ldCBj
-b250cm9sbGVyIGJlZm9yZSBjaGFuZ2luZyB0aGUgcGh5DQo+IG1vZGUgKi8NCj4gYmM4YTJkOWJj
-YmYxY2EgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTgtMDYtMTkgIDI3NiAgCXJlc2V0X2NvbnRyb2xf
-YXNzZXJ0KGR3bWFjLT5zdG1tYWNfb2NwX3JzdCk7DQo+IDcwY2IxMzZmNzczMDgzIEpvYWNoaW0g
-RWFzdHdvb2QgICAyMDE2LTA1LTAxICAyNzcgIAlyZXNldF9jb250cm9sX2Fzc2VydChkd21hYy0+
-c3RtbWFjX3JzdCk7DQo+IDcwY2IxMzZmNzczMDgzIEpvYWNoaW0gRWFzdHdvb2QgICAyMDE2LTA1
-LTAxICAyNzggIA0KPiA4MDFkMjMzYjczMDJlZSBEaW5oIE5ndXllbiAgICAgICAgMjAxNC0wMy0y
-NiAgMjc5ICAJcmVnbWFwX3JlYWQoc3lzX21ncl9iYXNlX2FkZHIsIHJlZ19vZmZzZXQsICZjdHJs
-KTsNCj4gODAxZDIzM2I3MzAyZWUgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTQtMDMtMjYgIDI4MCAg
-CWN0cmwgJj0gfihTWVNNR1JfRU1BQ0dSUF9DVFJMX1BIWVNFTF9NQVNLIDw8IHJlZ19zaGlmdCk7
-DQo+IDgwMWQyMzNiNzMwMmVlIERpbmggTmd1eWVuICAgICAgICAyMDE0LTAzLTI2ICAyODEgIAlj
-dHJsIHw9IHZhbCA8PCByZWdfc2hpZnQ7DQo+IDgwMWQyMzNiNzMwMmVlIERpbmggTmd1eWVuICAg
-ICAgICAyMDE0LTAzLTI2ICAyODIgIA0KPiAwMTNkYWU1ZGJjMDdhYSBTdGVwaGFuIEdhdHprYSAg
-ICAgMjAxNy0wOC0yMiAgMjgzICAJaWYgKGR3bWFjLT5mMmhfcHRwX3JlZl9jbGsgfHwNCj4gMDEz
-ZGFlNWRiYzA3YWEgU3RlcGhhbiBHYXR6a2EgICAgIDIwMTctMDgtMjIgIDI4NCAgCSAgICBwaHlt
-b2RlID09IFBIWV9JTlRFUkZBQ0VfTU9ERV9NSUkgfHwNCj4gMDEzZGFlNWRiYzA3YWEgU3RlcGhh
-biBHYXR6a2EgICAgIDIwMTctMDgtMjIgIDI4NSAgCSAgICBwaHltb2RlID09IFBIWV9JTlRFUkZB
-Q0VfTU9ERV9HTUlJIHx8DQo+IDAxM2RhZTVkYmMwN2FhIFN0ZXBoYW4gR2F0emthICAgICAyMDE3
-LTA4LTIyICAyODYgIAkgICAgcGh5bW9kZSA9PSBQSFlfSU5URVJGQUNFX01PREVfU0dNSUkpIHsN
-Cj4gNDM1Njk4MTRmYTM1YjIgUGhpbCBSZWlkICAgICAgICAgIDIwMTUtMTItMTQgIDI4NyAgCQlj
-dHJsIHw9IFNZU01HUl9FTUFDR1JQX0NUUkxfUFRQX1JFRl9DTEtfTUFTSyA8PA0KPiAocmVnX3No
-aWZ0IC8gMik7DQo+IDczNGUwMGZhMDJlZmY1IFBoaWwgUmVpZCAgICAgICAgICAyMDE2LTA0LTA3
-ICAyODggIAkJcmVnbWFwX3JlYWQoc3lzX21ncl9iYXNlX2FkZHIsDQo+IFNZU01HUl9GUEdBR1JQ
-X01PRFVMRV9SRUcsDQo+IDczNGUwMGZhMDJlZmY1IFBoaWwgUmVpZCAgICAgICAgICAyMDE2LTA0
-LTA3ICAyODkgIAkJCSAgICAmbW9kdWxlKTsNCj4gNzM0ZTAwZmEwMmVmZjUgUGhpbCBSZWlkICAg
-ICAgICAgIDIwMTYtMDQtMDcgIDI5MCAgCQltb2R1bGUgfD0gKFNZU01HUl9GUEdBR1JQX01PRFVM
-RV9FTUFDIDw8IChyZWdfc2hpZnQgLw0KPiAyKSk7DQo+IDczNGUwMGZhMDJlZmY1IFBoaWwgUmVp
-ZCAgICAgICAgICAyMDE2LTA0LTA3ICAyOTEgIAkJcmVnbWFwX3dyaXRlKHN5c19tZ3JfYmFzZV9h
-ZGRyLA0KPiBTWVNNR1JfRlBHQUdSUF9NT0RVTEVfUkVHLA0KPiA3MzRlMDBmYTAyZWZmNSBQaGls
-IFJlaWQgICAgICAgICAgMjAxNi0wNC0wNyAgMjkyICAJCQkgICAgIG1vZHVsZSk7DQo+IDczNGUw
-MGZhMDJlZmY1IFBoaWwgUmVpZCAgICAgICAgICAyMDE2LTA0LTA3ICAyOTMgIAl9IGVsc2Ugew0K
-PiA0MzU2OTgxNGZhMzViMiBQaGlsIFJlaWQgICAgICAgICAgMjAxNS0xMi0xNCAgMjk0ICAJCWN0
-cmwgJj0gfihTWVNNR1JfRU1BQ0dSUF9DVFJMX1BUUF9SRUZfQ0xLX01BU0sgPDwNCj4gKHJlZ19z
-aGlmdCAvIDIpKTsNCj4gNzM0ZTAwZmEwMmVmZjUgUGhpbCBSZWlkICAgICAgICAgIDIwMTYtMDQt
-MDcgIDI5NSAgCX0NCj4gNDM1Njk4MTRmYTM1YjIgUGhpbCBSZWlkICAgICAgICAgIDIwMTUtMTIt
-MTQgIDI5NiAgDQo+IDgwMWQyMzNiNzMwMmVlIERpbmggTmd1eWVuICAgICAgICAyMDE0LTAzLTI2
-ICAyOTcgIAlyZWdtYXBfd3JpdGUoc3lzX21ncl9iYXNlX2FkZHIsIHJlZ19vZmZzZXQsIGN0cmwp
-Ow0KPiA3MzRlMDBmYTAyZWZmNSBQaGlsIFJlaWQgICAgICAgICAgMjAxNi0wNC0wNyAgMjk4ICAN
-Cj4gNzBjYjEzNmY3NzMwODMgSm9hY2hpbSBFYXN0d29vZCAgIDIwMTYtMDUtMDEgIDI5OSAgCS8q
-IERlYXNzZXJ0IHJlc2V0IGZvciB0aGUgcGh5IGNvbmZpZ3VyYXRpb24gdG8gYmUgc2FtcGxlZCBi
-eQ0KPiA3MGNiMTM2Zjc3MzA4MyBKb2FjaGltIEVhc3R3b29kICAgMjAxNi0wNS0wMSAgMzAwICAJ
-ICogdGhlIGVuZXQgY29udHJvbGxlciwgYW5kIG9wZXJhdGlvbiB0byBzdGFydCBpbiByZXF1ZXN0
-ZWQgbW9kZQ0KPiA3MGNiMTM2Zjc3MzA4MyBKb2FjaGltIEVhc3R3b29kICAgMjAxNi0wNS0wMSAg
-MzAxICAJICovDQo+IGJjOGEyZDliY2JmMWNhIERpbmggTmd1eWVuICAgICAgICAyMDE4LTA2LTE5
-ICAzMDIgIAlyZXNldF9jb250cm9sX2RlYXNzZXJ0KGR3bWFjLT5zdG1tYWNfb2NwX3JzdCk7DQo+
-IDcwY2IxMzZmNzczMDgzIEpvYWNoaW0gRWFzdHdvb2QgICAyMDE2LTA1LTAxICAzMDMgIAlyZXNl
-dF9jb250cm9sX2RlYXNzZXJ0KGR3bWFjLT5zdG1tYWNfcnN0KTsNCj4gZmIzYmJkYjg1OTg5MWUg
-VGllbiBIb2NrIExvaCAgICAgIDIwMTYtMDctMDcgIDMwNCAgCWlmIChwaHltb2RlID09IFBIWV9J
-TlRFUkZBQ0VfTU9ERV9TR01JSSkgew0KPiBmYjNiYmRiODU5ODkxZSBUaWVuIEhvY2sgTG9oICAg
-ICAgMjAxNi0wNy0wNyAgMzA1ICAJCWlmICh0c2VfcGNzX2luaXQoZHdtYWMtPnBjcy50c2VfcGNz
-X2Jhc2UsICZkd21hYy0+cGNzKQ0KPiAhPSAwKSB7DQo+IGZiM2JiZGI4NTk4OTFlIFRpZW4gSG9j
-ayBMb2ggICAgICAyMDE2LTA3LTA3ICAzMDYgIAkJCWRldl9lcnIoZHdtYWMtPmRldiwgIlVuYWJs
-ZSB0byBpbml0aWFsaXplIFRTRQ0KPiBQQ1MiKTsNCj4gZmIzYmJkYjg1OTg5MWUgVGllbiBIb2Nr
-IExvaCAgICAgIDIwMTYtMDctMDcgIDMwNyAgCQkJcmV0dXJuIC1FSU5WQUw7DQo+IGZiM2JiZGI4
-NTk4OTFlIFRpZW4gSG9jayBMb2ggICAgICAyMDE2LTA3LTA3ICAzMDggIAkJfQ0KPiBmYjNiYmRi
-ODU5ODkxZSBUaWVuIEhvY2sgTG9oICAgICAgMjAxNi0wNy0wNyAgMzA5ICAJfQ0KPiA3MGNiMTM2
-Zjc3MzA4MyBKb2FjaGltIEVhc3R3b29kICAgMjAxNi0wNS0wMSAgMzEwICANCj4gODAxZDIzM2I3
-MzAyZWUgRGluaCBOZ3V5ZW4gICAgICAgIDIwMTQtMDMtMjYgIDMxMSAgCXJldHVybiAwOw0KPiA4
-MDFkMjMzYjczMDJlZSBEaW5oIE5ndXllbiAgICAgICAgMjAxNC0wMy0yNiAgMzEyICB9DQo+IDgw
-MWQyMzNiNzMwMmVlIERpbmggTmd1eWVuICAgICAgICAyMDE0LTAzLTI2ICAzMTMgIA0KPiANCj4g
-Ojo6Ojo6IFRoZSBjb2RlIGF0IGxpbmUgMjY0IHdhcyBmaXJzdCBpbnRyb2R1Y2VkIGJ5IGNvbW1p
-dA0KPiA6Ojo6OjogODAxZDIzM2I3MzAyZWVhYjk0NzUwNDI3YTYyM2MxMGMwNDRjYjBjYSBuZXQ6
-IHN0bW1hYzogQWRkIFNPQ0ZQR0EgZ2x1ZSBkcml2ZXINCj4gDQo+IDo6Ojo6OiBUTzogRGluaCBO
-Z3V5ZW4gPGRpbmd1eWVuQGFsdGVyYS5jb20+DQo+IDo6Ojo6OiBDQzogRGF2aWQgUy4gTWlsbGVy
-IDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KPiANCj4gLS0tDQo+IDAtREFZIGtlcm5lbCB0ZXN0IGlu
-ZnJhc3RydWN0dXJlICAgICAgICAgICAgICAgIE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2VudGVy
-DQo+IGh0dHBzOi8vbGlzdHMuMDEub3JnL3BpcGVybWFpbC9rYnVpbGQtYWxsICAgICAgICAgICAg
-ICAgICAgIEludGVsIENvcnBvcmF0aW9uDQo=
+Hi,
+
+There has been some changes regarding VRF isolation in Linux 5 IIRC, =
+namely proper
+isolation of the default VRF.
+
+Some things you may try:
+
+- looking at the l3mdev_accept sysctls (e.g. =
+`net.ipv4.tcp_l3mdev_accept`)
+- querying stuff from the management vrf through `ip vrf exec vrf-mgmt =
+<stuff>`
+  e.g. `ip vrf exec vrf-mgmt curl kernel.org`
+       `ip vrf exec vrf-mgmt dig @1.1.1.1 kernel.org`
+- reversing your logic: default VRF is your management one, the other =
+one is for your
+  other boxes
+
+Also, your `unreachable default metric 4278198272` route looks odd to =
+me.
+
+What are your routing rules? (`ip rule`)
+
+Alexis
+
+> Le 9 sept. 2019 =C3=A0 09:46, Gowen <gowen@potatocomputing.co.uk> a =
+=C3=A9crit :
+>=20
+> Hi there,
+>=20
+> Dave A said this was the mailer to send this to:
+>=20
+>=20
+> I=E2=80=99ve been using my management interface in a VRF for several =
+months now and it=E2=80=99s worked perfectly =E2=80=93 I=E2=80=99ve been =
+able to update/upgrade the packages just fine and iptables works =
+excellently with it =E2=80=93 exactly as I needed.
+>=20
+>=20
+> Since Kernel 5 though I am no longer able to update =E2=80=93 but the =
+issue is quite a curious one as some traffic appears to be fine (DNS =
+lookups use VRF correctly) but others don=E2=80=99t (updating/upgrading =
+the packages)
+>=20
+>=20
+> I have on this device 2 interfaces:
+> Eth0 for management =E2=80=93 inbound SSH, DNS, updates/upgrades
+> Eth1 for managing other boxes (ansible using SSH)
+>=20
+>=20
+> Link and addr info shown below:
+>=20
+>=20
+> Admin@NETM06:~$ ip link show
+> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN =
+mode DEFAULT group default qlen 1000
+>     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master =
+mgmt-vrf state UP mode DEFAULT group default qlen 1000
+>     link/ether 00:22:48:07:cc:ad brd ff:ff:ff:ff:ff:ff
+> 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP =
+mode DEFAULT group default qlen 1000
+>     link/ether 00:22:48:07:c9:6c brd ff:ff:ff:ff:ff:ff
+> 4: mgmt-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue state =
+UP mode DEFAULT group default qlen 1000
+>     link/ether 8a:f6:26:65:02:5a brd ff:ff:ff:ff:ff:ff
+>=20
+>=20
+> Admin@NETM06:~$ ip addr
+> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN =
+group default qlen 1000
+>     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+>     inet 127.0.0.1/8 scope host lo
+>        valid_lft forever preferred_lft forever
+>     inet6 ::1/128 scope host
+>        valid_lft forever preferred_lft forever
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master =
+mgmt-vrf state UP group default qlen 1000
+>     link/ether 00:22:48:07:cc:ad brd ff:ff:ff:ff:ff:ff
+>     inet 10.24.12.10/24 brd 10.24.12.255 scope global eth0
+>        valid_lft forever preferred_lft forever
+>     inet6 fe80::222:48ff:fe07:ccad/64 scope link
+>        valid_lft forever preferred_lft forever
+> 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP =
+group default qlen 1000
+>     link/ether 00:22:48:07:c9:6c brd ff:ff:ff:ff:ff:ff
+>     inet 10.24.12.9/24 brd 10.24.12.255 scope global eth1
+>        valid_lft forever preferred_lft forever
+>     inet6 fe80::222:48ff:fe07:c96c/64 scope link
+>        valid_lft forever preferred_lft forever
+> 4: mgmt-vrf: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue state =
+UP group default qlen 1000
+>     link/ether 8a:f6:26:65:02:5a brd ff:ff:ff:ff:ff:ff
+>=20
+>=20
+>=20
+> the production traffic is all in the 10.0.0.0/8 network (eth1 global =
+VRF) except for a few subnets (DNS) which are routed out eth0 (mgmt-vrf)
+>=20
+>=20
+> Admin@NETM06:~$ ip route show
+> default via 10.24.12.1 dev eth0
+> 10.0.0.0/8 via 10.24.12.1 dev eth1
+> 10.24.12.0/24 dev eth1 proto kernel scope link src 10.24.12.9
+> 10.24.65.0/24 via 10.24.12.1 dev eth0
+> 10.25.65.0/24 via 10.24.12.1 dev eth0
+> 10.26.0.0/21 via 10.24.12.1 dev eth0
+> 10.26.64.0/21 via 10.24.12.1 dev eth0
+>=20
+>=20
+> Admin@NETM06:~$ ip route show vrf mgmt-vrf
+> default via 10.24.12.1 dev eth0
+> unreachable default metric 4278198272
+> 10.24.12.0/24 dev eth0 proto kernel scope link src 10.24.12.10
+> 10.24.65.0/24 via 10.24.12.1 dev eth0
+> 10.25.65.0/24 via 10.24.12.1 dev eth0
+> 10.26.0.0/21 via 10.24.12.1 dev eth0
+> 10.26.64.0/21 via 10.24.12.1 dev eth0
+>=20
+>=20
+>=20
+> The strange activity occurs when I enter the command =E2=80=9Csudo apt =
+update=E2=80=9D as I can resolve the DNS request (10.24.65.203 or =
+10.24.64.203, verified with tcpdump) out eth0 but for the actual update =
+traffic there is no activity:
+>=20
+>=20
+> sudo tcpdump -i eth0 '(host 10.24.65.203 or host 10.25.65.203) and =
+port 53' -n
+> <OUTPUT OMITTED FOR BREVITY>
+> 10:06:05.268735 IP 10.24.12.10.39963 > 10.24.65.203.53: 48798+ [1au] =
+A? security.ubuntu.com. (48)
+> <OUTPUT OMITTED FOR BREVITY>
+> 10:06:05.284403 IP 10.24.65.203.53 > 10.24.12.10.39963: 48798 13/0/1 A =
+91.189.91.23, A 91.189.88.24, A 91.189.91.26, A 91.189.88.162, A =
+91.189.88.149, A 91.189.91.24, A 91.189.88.173, A 91.189.88.177, A =
+91.189.88.31, A 91.189.91.14, A 91.189.88.176, A 91.189.88.175, A =
+91.189.88.174 (256)
+>=20
+>=20
+>=20
+> You can see that the update traffic is returned but is not accepted by =
+the stack and a RST is sent
+>=20
+>=20
+> Admin@NETM06:~$ sudo tcpdump -i eth0 '(not host 168.63.129.16 and port =
+80)' -n
+> tcpdump: verbose output suppressed, use -v or -vv for full protocol =
+decode
+> listening on eth0, link-type EN10MB (Ethernet), capture size 262144 =
+bytes
+> 10:17:12.690658 IP 10.24.12.10.40216 > 91.189.88.175.80: Flags [S], =
+seq 2279624826, win 64240, options [mss 1460,sackOK,TS val 2029365856 =
+ecr 0,nop,wscale 7], length 0
+> 10:17:12.691929 IP 10.24.12.10.52362 > 91.189.95.83.80: Flags [S], seq =
+1465797256, win 64240, options [mss 1460,sackOK,TS val 3833463674 ecr =
+0,nop,wscale 7], length 0
+> 10:17:12.696270 IP 91.189.88.175.80 > 10.24.12.10.40216: Flags [S.], =
+seq 968450722, ack 2279624827, win 28960, options [mss 1418,sackOK,TS =
+val 81957103 ecr 2029365856,nop,wscale 7], length 0                      =
+                                                                         =
+                            =20
+> 10:17:12.696301 IP 10.24.12.10.40216 > 91.189.88.175.80: Flags [R], =
+seq 2279624827, win 0, length 0
+> 10:17:12.697884 IP 91.189.95.83.80 > 10.24.12.10.52362: Flags [S.], =
+seq 4148330738, ack 1465797257, win 28960, options [mss 1418,sackOK,TS =
+val 2257624414 ecr 3833463674,nop,wscale 8], length 0                    =
+                                                                         =
+                           =20
+> 10:17:12.697909 IP 10.24.12.10.52362 > 91.189.95.83.80: Flags [R], seq =
+1465797257, win 0, length 0
+>=20
+>=20
+>=20
+>=20
+> I can emulate the DNS lookup using netcat in the vrf:
+>=20
+>=20
+> sudo ip vrf exec mgmt-vrf nc -u 10.24.65.203 53
+>=20
+>=20
+> then interactively enter the binary for a www.google.co.uk request:
+>=20
+>=20
+> =
+0035624be394010000010000000000010377777706676f6f676c6502636f02756b00000100=
+010000290200000000000000
+>=20
+>=20
+> This returns as expected:
+>=20
+>=20
+> =
+00624be394010000010000000000010377777706676f6f676c6502636f02756b0000010001=
+0000290200000000000000
+>=20
+>=20
+> I can run:
+>=20
+>=20
+> Admin@NETM06:~$ host www.google.co.uk
+> www.google.co.uk has address 172.217.169.3
+> www.google.co.uk has IPv6 address 2a00:1450:4009:80d::2003
+>=20
+>=20
+> but I get a timeout for:
+>=20
+>=20
+> sudo ip vrf  exec mgmt-vrf host www.google.co.uk
+> ;; connection timed out; no servers could be reached
+>=20
+>=20
+>=20
+> However I can take a repo address and vrf exec to it on port 80:
+>=20
+>=20
+> Admin@NETM06:~$ sudo ip vrf  exec mgmt-vrf nc 91.189.91.23 80
+> hello
+> HTTP/1.1 400 Bad Request
+> <OUTPUT OMITTED>
+>=20
+> My iptables rule:
+>=20
+>=20
+> sudo iptables -Z
+> Admin@NETM06:~$ sudo iptables -L -v
+> Chain INPUT (policy DROP 16 packets, 3592 bytes)
+> pkts bytes target     prot opt in     out     source               =
+destination
+>    44  2360 ACCEPT     tcp  --  any    any     anywhere             =
+anywhere             tcp spt:http ctstate RELATED,ESTABLISHED
+>    83 10243 ACCEPT     udp  --  any    any     anywhere             =
+anywhere             udp spt:domain ctstate RELATED,ESTABLISHED
+>=20
+>=20
+>=20
+> I cannot find out why the update isn=E2=80=99t working. Any help =
+greatly appreciated
+>=20
+>=20
+> Kind Regards,
+>=20
+>=20
+> Gareth
+
