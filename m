@@ -2,111 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18145ADB64
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 16:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17D2ADB9F
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 17:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731001AbfIIOpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 10:45:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38956 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730029AbfIIOpP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 10:45:15 -0400
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id EFC19C057F2C
-        for <netdev@vger.kernel.org>; Mon,  9 Sep 2019 14:45:14 +0000 (UTC)
-Received: by mail-wm1-f69.google.com with SMTP id k67so4565429wmf.3
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 07:45:14 -0700 (PDT)
+        id S1732364AbfIIPCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 11:02:00 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:38266 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbfIIPB7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 11:01:59 -0400
+Received: by mail-yw1-f66.google.com with SMTP id f187so4885199ywa.5
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 08:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rUE9XfPQzVOkU8A+tW+bDNv+qPs+FQWcVStFD975yvI=;
+        b=kRZbfU+rV9xW2LykirPsmolWRrRRKz667vfMqIhKakBadeq0op5Swg1icESwt1yII4
+         QHYSZqWrRH6yq0yPCKWzjFuZ6j6BWvr7zzvv1IYAQkOEKlOKiI35dZipedDXhcQeZ+DC
+         dlK9oeypqXAksmGoo9YRON/4yEoRztbbARkL6yX3ng+t/4PNUQlKoSThHWF8Gdie4QSA
+         2WqrJXGC62QDwNsCZnzBI8OmpIweklBsQm49R+ouCn+6Elm4MMUjhiEty0SDgickT1Vb
+         YjfFykVuh/m7EMUqhDEj+NZ6z38l7Pc0AQYJkt0vl3Q0crb1zeGAm+wj9k50AXJzFIpP
+         Y4vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=TIU8l9uNtqi5N363chjsQODAD8NExttwuYVEnSx0c3k=;
-        b=Cygx1nlsJV8Pd0R2XqyzmUOWXDDlg1cqccoPBdXW90ceYTVzyzU9wCrfLC75J7qk/8
-         0LaD1ZJEEXeIaJgyRl8EysBnhh9lyD+hvUWdQBkLWv5249Ogy8PEVQHaOwmM/gPbgJbH
-         JAfEUFP//Mv89vIKu/O3n1gFmCZs8eMCbqUCmCwycA2J6dL0PFYbnmTC5c7IsQaD7Cl/
-         upiovpeb5WSyYPp8lM6Uz7/YsWzPItIAQFYsCVc/6SIC4HM+Bh20+C/3BeiPpbrB/D02
-         2U5XCqSFJXPLZ9k3bHzN+CTWXGqNZ6/03WRXjUKeLM2PKaXRWL2nF0BSo9pGWtfhng6I
-         7Zfw==
-X-Gm-Message-State: APjAAAUbtv8LwrKFEUuTR+7W9PKLwcpEG6HcHM0vqFTXLH8sip1KIOoM
-        Y0q1MP89ezczVRSb6MV+VmrBCREv2sIv/s9H5KVk8cD/0T94Cv5rwx1sydXlM4Aoj6L6wT3cWX3
-        PHnswY7ve9UrsVp/S
-X-Received: by 2002:adf:eb4b:: with SMTP id u11mr12031964wrn.121.1568040313765;
-        Mon, 09 Sep 2019 07:45:13 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzcqag+ERBvSjIm6CpVOwAwyVlX8Vd50VjCvuAgwQi1q8tVVx/gSm4B5gLVsG6xNkiMwg2Qkg==
-X-Received: by 2002:adf:eb4b:: with SMTP id u11mr12031946wrn.121.1568040313584;
-        Mon, 09 Sep 2019 07:45:13 -0700 (PDT)
-Received: from redhat.com ([80.74.107.118])
-        by smtp.gmail.com with ESMTPSA id y14sm26560796wrd.84.2019.09.09.07.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2019 07:45:12 -0700 (PDT)
-Date:   Mon, 9 Sep 2019 10:45:10 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH untested] vhost: block speculation of translated
- descriptors
-Message-ID: <20190909104355-mutt-send-email-mst@kernel.org>
-References: <20190908110521.4031-1-mst@redhat.com>
- <db4d77d7-c467-935d-b4ae-1da7635e9b6b@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rUE9XfPQzVOkU8A+tW+bDNv+qPs+FQWcVStFD975yvI=;
+        b=D+Q4nws2YAI1pZzmK18IKxqFDQOPRw7VSMfLYlG9X7I/xyeIWK2FQXtJqzjghO+2zz
+         KQCiApNBdNY03s5dSMaiXYe3xuFILRbUfduYnAp1Y7WboazeLBuNc9JBAXjGwQADsWm1
+         fE/kczzm5YMZs+S0kxJxnI5JkpeQe8jq6JDu7qmHmK8ADRBivM4NJmTLdiWyXKcFrkXD
+         yEhqRnlRPA/EkNq5mGtoaRNaq/GVgwy9J7GkuXRLjomDl7ALZWevf5R4jPZEJJXd6CQr
+         8GPE7ZD8+EkY58TavB0MITp838gmBGQ4XDLJ0tqazKRyi7jfeU52elhzyHDCN3Y26B4I
+         HEWw==
+X-Gm-Message-State: APjAAAUoEWeTFsXYwwk8/rQWy4JVTh5Y/U16utQHoYM9UALmSnSkTgAE
+        EzHAGa2lLnc6roY1X3z9Tc/PoBB/QiArvorbm/m1xg==
+X-Google-Smtp-Source: APXvYqwI/6onPZfQYtbeyVioyGWN5PxhSsG09TFQ/8M31BmYpXIR9U6m4vV6dkvnv9JQBlWBFzuQAAtGCRA1Wm7ooMk=
+X-Received: by 2002:a0d:db56:: with SMTP id d83mr16207277ywe.135.1568041318271;
+ Mon, 09 Sep 2019 08:01:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <db4d77d7-c467-935d-b4ae-1da7635e9b6b@redhat.com>
+References: <20190909142844.347495-1-tph@fb.com>
+In-Reply-To: <20190909142844.347495-1-tph@fb.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 9 Sep 2019 17:01:46 +0200
+Message-ID: <CANn89iJ5wANqhpR28y5AYf6GTBgzTau+u0N0ogG690C71LbxaA@mail.gmail.com>
+Subject: Re: [PATCH] tcp: Add TCP_INFO counter for packets received out-of-order
+To:     Thomas Higdon <tph@fb.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dave Jones <dsj@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 09, 2019 at 03:19:55PM +0800, Jason Wang wrote:
-> 
-> On 2019/9/8 下午7:05, Michael S. Tsirkin wrote:
-> > iovec addresses coming from vhost are assumed to be
-> > pre-validated, but in fact can be speculated to a value
-> > out of range.
-> > 
-> > Userspace address are later validated with array_index_nospec so we can
-> > be sure kernel info does not leak through these addresses, but vhost
-> > must also not leak userspace info outside the allowed memory table to
-> > guests.
-> > 
-> > Following the defence in depth principle, make sure
-> > the address is not validated out of node range.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> >   drivers/vhost/vhost.c | 4 +++-
-> >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > index 5dc174ac8cac..0ee375fb7145 100644
-> > --- a/drivers/vhost/vhost.c
-> > +++ b/drivers/vhost/vhost.c
-> > @@ -2072,7 +2072,9 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
-> >   		size = node->size - addr + node->start;
-> >   		_iov->iov_len = min((u64)len - s, size);
-> >   		_iov->iov_base = (void __user *)(unsigned long)
-> > -			(node->userspace_addr + addr - node->start);
-> > +			(node->userspace_addr +
-> > +			 array_index_nospec(addr - node->start,
-> > +					    node->size));
-> >   		s += size;
-> >   		addr += size;
-> >   		++ret;
-> 
-> 
-> I've tried this on Kaby Lake smap off metadata acceleration off using
-> testpmd (virtio-user) + vhost_net. I don't see obvious performance
-> difference with TX PPS.
-> 
-> Thanks
+On Mon, Sep 9, 2019 at 4:30 PM Thomas Higdon <tph@fb.com> wrote:
+>
+> For receive-heavy cases on the server-side, we want to track the
+> connection quality for individual client IPs. This counter, similar to
+> the existing system-wide TCPOFOQueue counter in /proc/net/netstat,
+> tracks out-of-order packet reception. By providing this counter in
+> TCP_INFO, it will allow understanding to what degree receive-heavy
+> sockets are experiencing out-of-order delivery and packet drops
+> indicating congestion.
+>
+> Please note that this is similar to the counter in NetBSD TCP_INFO, and
+> has the same name.
+>
+> Signed-off-by: Thomas Higdon <tph@fb.com>
+> ---
+>  include/linux/tcp.h      | 2 ++
+>  include/uapi/linux/tcp.h | 2 ++
+>  net/ipv4/tcp.c           | 1 +
+>  net/ipv4/tcp_input.c     | 1 +
+>  4 files changed, 6 insertions(+)
+>
+> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> index f3a85a7fb4b1..a01dc78218f1 100644
+> --- a/include/linux/tcp.h
+> +++ b/include/linux/tcp.h
+> @@ -393,6 +393,8 @@ struct tcp_sock {
+>          */
+>         struct request_sock *fastopen_rsk;
+>         u32     *saved_syn;
+> +
+> +       u32 rcv_ooopack; /* Received out-of-order packets, for tcpinfo */
+>  };
+>
+>  enum tsq_enum {
+> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> index b3564f85a762..20237987ccc8 100644
+> --- a/include/uapi/linux/tcp.h
+> +++ b/include/uapi/linux/tcp.h
+> @@ -270,6 +270,8 @@ struct tcp_info {
+>         __u64   tcpi_bytes_retrans;  /* RFC4898 tcpEStatsPerfOctetsRetrans */
+>         __u32   tcpi_dsack_dups;     /* RFC4898 tcpEStatsStackDSACKDups */
+>         __u32   tcpi_reord_seen;     /* reordering events seen */
+> +
+> +       __u32   tcpi_rcv_ooopack;    /* Out-of-order packets received */
 
-Should I push this to Linus right now then? It's a security thing so
-maybe we better do it ASAP ... what's your opinion?
+This is problematic : you create a 32bit hole in this structure that
+we will never be able to fill.
 
--- 
-MST
+We need to add another metric here so that the whole 64bit space is used.
+
+>  };
+>
+>  /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 94df48bcecc2..d4386f054f18 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -3295,6 +3295,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+>         info->tcpi_bytes_retrans = tp->bytes_retrans;
+>         info->tcpi_dsack_dups = tp->dsack_dups;
+>         info->tcpi_reord_seen = tp->reord_seen;
+> +       info->tcpi_rcv_ooopack = tp->rcv_ooopack;
+>         unlock_sock_fast(sk, slow);
+>  }
+>  EXPORT_SYMBOL_GPL(tcp_get_info);
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 706cbb3b2986..2774680c5d05 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -4555,6 +4555,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+>         tp->pred_flags = 0;
+>         inet_csk_schedule_ack(sk);
+>
+> +       tp->rcv_ooopack++;
+
+We count skbs or we count segments ?
+
+(GRO might have aggregated multiple segments)
+
+
+>         NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOQUEUE);
+>         seq = TCP_SKB_CB(skb)->seq;
+>         end_seq = TCP_SKB_CB(skb)->end_seq;
+
+
+You forgot to clear the field in tcp_disconnect()
