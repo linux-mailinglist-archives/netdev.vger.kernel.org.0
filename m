@@ -2,149 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DECEADB1E
-	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 16:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18145ADB64
+	for <lists+netdev@lfdr.de>; Mon,  9 Sep 2019 16:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbfIIOYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 10:24:32 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:43145 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbfIIOYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 10:24:32 -0400
-Received: by mail-pl1-f194.google.com with SMTP id 4so6590090pld.10
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 07:24:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=android.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=lbfN6bb/Cab8FhmK5hvUyGyJpQngTjGaLYzqkqMwwaw=;
-        b=EQ4hPfczVhylUYRlafgNbmIAVyWADkVHZnQxtGRIDwglF0ej4vEUlQs4ZeqXnwPEVT
-         2ItoFqyzus9e3C0nBj3hom99xV4k3T0CnheuBynGqH5sQvEQ34XAQhBwBybwtiIy3DG+
-         HFo0UykNjE7Ogp1fggKxfUNxUCAKcjjkDu/pIKDyQPDwrQnl584WWKljk91zf9jF9t5J
-         UxmGqAlEc3+ie2cousgkn5X6twTsNaKVgxb19X0CRygS41KNfbTazoD6PnAzvMvCjZsx
-         LwVP7Jkc348TE/OgZywMPCJfjkGWRz7YH79hq1nFdZgYockykF0oLyiXdECXQXnwNcbi
-         Cjtg==
+        id S1731001AbfIIOpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 10:45:15 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38956 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730029AbfIIOpP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 10:45:15 -0400
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EFC19C057F2C
+        for <netdev@vger.kernel.org>; Mon,  9 Sep 2019 14:45:14 +0000 (UTC)
+Received: by mail-wm1-f69.google.com with SMTP id k67so4565429wmf.3
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 07:45:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=lbfN6bb/Cab8FhmK5hvUyGyJpQngTjGaLYzqkqMwwaw=;
-        b=QpM4XE2jrOE/+DyD/SIQVNhIUTlwo+Q5xi3QMupPvaFgYCwq/CYsIXzUcy7fujNWlc
-         9WE1XuSnUNv8vUIPv3fTTGGcGqnvWKk5/EN4Zlka14wcNGtghti7Yb7E+4SkhmDSNvVb
-         lm4kqKE+f9WvbNWvHjRYYDIgFbSGIoD8AVPht49d7vALDRov0zo9wj8lbljJxjlBsDXf
-         uZRk0T0guiL18pG+NuAF4I1xlKCzf66NTVuURBeoyxyIuoWWoGJVH3Ml80YNQx2t1GVa
-         36pfoV68NXSv/lVWew5udajHKOPRKsykEJjsQsS2B8ct0DhKlZWEDWop1LkfUyg1dXHF
-         rAAQ==
-X-Gm-Message-State: APjAAAXhhrSpIlW5L78JGfdFweW8xBi6Oq42RcontZdamKcicaQumgdq
-        cpCSZAlWAoWdiYnkucxuCv84NA==
-X-Google-Smtp-Source: APXvYqyjDridxJhQUEYdPB5+tEjPSrzcb2ywbeHXAAUKunZY07oQ/lp8Rm8oyeLdMgC3OJ/Z3wtddQ==
-X-Received: by 2002:a17:902:a615:: with SMTP id u21mr23375821plq.4.1568039071132;
-        Mon, 09 Sep 2019 07:24:31 -0700 (PDT)
-Received: from nebulus.mtv.corp.google.com ([2620:15c:211:200:5404:91ba:59dc:9400])
-        by smtp.googlemail.com with ESMTPSA id z21sm16010682pfn.183.2019.09.09.07.24.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Sep 2019 07:24:30 -0700 (PDT)
-Subject: Re: [PATCH v2] net: enable wireless core features with
- LEGACY_WEXT_ALLCONFIG
-To:     Greg KH <greg@kroah.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@android.com,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20190906192403.195620-1-salyzyn@android.com>
- <20190906233045.GB9478@kroah.com>
-From:   Mark Salyzyn <salyzyn@android.com>
-Message-ID: <b7027a5d-5d75-677b-0e9b-cd70e5e30092@android.com>
-Date:   Mon, 9 Sep 2019 07:24:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=TIU8l9uNtqi5N363chjsQODAD8NExttwuYVEnSx0c3k=;
+        b=Cygx1nlsJV8Pd0R2XqyzmUOWXDDlg1cqccoPBdXW90ceYTVzyzU9wCrfLC75J7qk/8
+         0LaD1ZJEEXeIaJgyRl8EysBnhh9lyD+hvUWdQBkLWv5249Ogy8PEVQHaOwmM/gPbgJbH
+         JAfEUFP//Mv89vIKu/O3n1gFmCZs8eMCbqUCmCwycA2J6dL0PFYbnmTC5c7IsQaD7Cl/
+         upiovpeb5WSyYPp8lM6Uz7/YsWzPItIAQFYsCVc/6SIC4HM+Bh20+C/3BeiPpbrB/D02
+         2U5XCqSFJXPLZ9k3bHzN+CTWXGqNZ6/03WRXjUKeLM2PKaXRWL2nF0BSo9pGWtfhng6I
+         7Zfw==
+X-Gm-Message-State: APjAAAUbtv8LwrKFEUuTR+7W9PKLwcpEG6HcHM0vqFTXLH8sip1KIOoM
+        Y0q1MP89ezczVRSb6MV+VmrBCREv2sIv/s9H5KVk8cD/0T94Cv5rwx1sydXlM4Aoj6L6wT3cWX3
+        PHnswY7ve9UrsVp/S
+X-Received: by 2002:adf:eb4b:: with SMTP id u11mr12031964wrn.121.1568040313765;
+        Mon, 09 Sep 2019 07:45:13 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzcqag+ERBvSjIm6CpVOwAwyVlX8Vd50VjCvuAgwQi1q8tVVx/gSm4B5gLVsG6xNkiMwg2Qkg==
+X-Received: by 2002:adf:eb4b:: with SMTP id u11mr12031946wrn.121.1568040313584;
+        Mon, 09 Sep 2019 07:45:13 -0700 (PDT)
+Received: from redhat.com ([80.74.107.118])
+        by smtp.gmail.com with ESMTPSA id y14sm26560796wrd.84.2019.09.09.07.45.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Sep 2019 07:45:12 -0700 (PDT)
+Date:   Mon, 9 Sep 2019 10:45:10 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH untested] vhost: block speculation of translated
+ descriptors
+Message-ID: <20190909104355-mutt-send-email-mst@kernel.org>
+References: <20190908110521.4031-1-mst@redhat.com>
+ <db4d77d7-c467-935d-b4ae-1da7635e9b6b@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190906233045.GB9478@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <db4d77d7-c467-935d-b4ae-1da7635e9b6b@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/6/19 4:30 PM, Greg KH wrote:
-> On Fri, Sep 06, 2019 at 12:24:00PM -0700, Mark Salyzyn wrote:
->> In embedded environments the requirements are to be able to pick and
->> chose which features one requires built into the kernel.  If an
->> embedded environment wants to supports loading modules that have been
->> kbuilt out of tree, there is a need to enable hidden configurations
->> for legacy wireless core features to provide the API surface for
->> them to load.
->>
->> Introduce CONFIG_LEGACY_WEXT_ALLCONFIG to select all legacy wireless
->> extension core features by activating in turn all the associated
->> hidden configuration options, without having to specifically select
->> any wireless module(s).
->>
->> Signed-off-by: Mark Salyzyn <salyzyn@android.com>
->> Cc: kernel-team@android.com
->> Cc: Johannes Berg <johannes@sipsolutions.net>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: Marcel Holtmann <marcel@holtmann.org>
->> Cc: linux-wireless@vger.kernel.org
->> Cc: netdev@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: stable@vger.kernel.org # 4.19
->> ---
->> v2: change name and documentation to CONFIG_LEGACY_WEXT_ALLCONFIG
->> ---
->>   net/wireless/Kconfig | 14 ++++++++++++++
->>   1 file changed, 14 insertions(+)
->>
->> diff --git a/net/wireless/Kconfig b/net/wireless/Kconfig
->> index 67f8360dfcee..0d646cf28de5 100644
->> --- a/net/wireless/Kconfig
->> +++ b/net/wireless/Kconfig
->> @@ -17,6 +17,20 @@ config WEXT_SPY
->>   config WEXT_PRIV
->>   	bool
->>   
->> +config LEGACY_WEXT_ALLCONFIG
->> +	bool "allconfig for legacy wireless extensions"
->> +	select WIRELESS_EXT
->> +	select WEXT_CORE
->> +	select WEXT_PROC
->> +	select WEXT_SPY
->> +	select WEXT_PRIV
->> +	help
->> +	  Config option used to enable all the legacy wireless extensions to
->> +	  the core functionality used by add-in modules.
->> +
->> +	  If you are not building a kernel to be used for a variety of
->> +	  out-of-kernel built wireless modules, say N here.
->> +
->>   config CFG80211
->>   	tristate "cfg80211 - wireless configuration API"
->>   	depends on RFKILL || !RFKILL
->> -- 
->> 2.23.0.187.g17f5b7556c-goog
->>
-> How is this patch applicable to stable kernels???
+On Mon, Sep 09, 2019 at 03:19:55PM +0800, Jason Wang wrote:
+> 
+> On 2019/9/8 下午7:05, Michael S. Tsirkin wrote:
+> > iovec addresses coming from vhost are assumed to be
+> > pre-validated, but in fact can be speculated to a value
+> > out of range.
+> > 
+> > Userspace address are later validated with array_index_nospec so we can
+> > be sure kernel info does not leak through these addresses, but vhost
+> > must also not leak userspace info outside the allowed memory table to
+> > guests.
+> > 
+> > Following the defence in depth principle, make sure
+> > the address is not validated out of node range.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> >   drivers/vhost/vhost.c | 4 +++-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index 5dc174ac8cac..0ee375fb7145 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -2072,7 +2072,9 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
+> >   		size = node->size - addr + node->start;
+> >   		_iov->iov_len = min((u64)len - s, size);
+> >   		_iov->iov_base = (void __user *)(unsigned long)
+> > -			(node->userspace_addr + addr - node->start);
+> > +			(node->userspace_addr +
+> > +			 array_index_nospec(addr - node->start,
+> > +					    node->size));
+> >   		s += size;
+> >   		addr += size;
+> >   		++ret;
+> 
+> 
+> I've tried this on Kaby Lake smap off metadata acceleration off using
+> testpmd (virtio-user) + vhost_net. I don't see obvious performance
+> difference with TX PPS.
+> 
+> Thanks
 
-A) worth a shot ;-}
+Should I push this to Linus right now then? It's a security thing so
+maybe we better do it ASAP ... what's your opinion?
 
-B) there is a shortcoming in _all_ kernel versions with respect to 
-hidden configurations options like this, hoping to set one precedent in 
-how to handle them if acceptable to the community.
-
-C) [AGENDA ALERT] Android _will_ be back-porting this to android-4.19 
-kernel anyway, would help maintenance if via stable. <holding hat in hand>
-
-D) Not an ABI or interface break, does not introduce instability, but 
-rather keeps downstream kernels of any distributions from having to hack 
-in their own alternate means of dealing with this problem leading to 
-further fragmentation.
-
-E) Timely discussion item for LPC?
-
-Sincerely -- Mark Salyzyn
-
+-- 
+MST
