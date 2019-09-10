@@ -2,129 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8567AAF2AC
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 23:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EDEBAF2AF
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 23:49:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbfIJVqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 17:46:10 -0400
-Received: from mail-eopbgr60054.outbound.protection.outlook.com ([40.107.6.54]:37381
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726208AbfIJVqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 17:46:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L3cPTMfp0HqlKa5NiAQNqIJDlsfbkz7AQg0ZxwQt+pY21JKPdPQNZvXbF9OZ7dncc14tLemmhXJBqh2NItkfCUVNsV6533WujOZrPmdNUVIdJ6pKmH9Jn8Y0xWS06s8n0yT3pPlvP6F2ntf0GOTWyRZBmLlvJNMNjjxsx0AmevjxZAKqhh9LY/gbXg/fGsVUAheqzcO7n3y//nwANDxtaY9dwu6E9bLARSnRd7n/cj13F8oK1aUUB9Xp6ehw3DoSLbBxiBoYmXBnq4BO8Fzeaii6DwF9RCdk6JL6t9gGBHl4qk8ddWpnAs6iKf1MzMPOrD6L0sKpprTqHswI7owj0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qXMGX4rewH6TJ98TvqGgbprZpiAPJYbHguA98Yt4lMs=;
- b=KdUCOJtBU9KX3LOTEbR2yKcotUDFADuNEIN13WRhuy/7OKgeghZAOsZFnIWkzJrfTTwWgLSLGGVnnR0K2s0klq5pOhoYB9GOVtbXuSc9fFg302BnsiudYwZ6s6bPWWekybs8ZQ0REdltaduwOhGRk5NGGZuZoU0pK8MuRA68WeHHfIPLJTxrprUrR3R/HM91evfVcGqqgW2s9ZEzAyLCoPxZZS677M3gqmnK8NrTV3lBJ03lotBx+pkdF+bFmCazT/XOBFltzu8N5txMeHz2QHpzViMzJaS/bm32XQsS1fpvdAIIiD3HmH3leZEBpzM87x+sUqGkzyFs3fOPqfD+5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qXMGX4rewH6TJ98TvqGgbprZpiAPJYbHguA98Yt4lMs=;
- b=RD5zL2uL5u+eP1+A0XM/UzZxmZEe4zqlF7+w9KEPhtZ44EFb1fehjtEf/6vwnC8x7uUGFTQMqRe4vF0NnBXTEDy9G58PT9B06Bl/A/oxDNb1ekElsUGM9Ac0etZtXoqjkaSpnlSxzC4mOHFRcjQ5pvmuR41JU72+2W/Wsf791Fo=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2598.eurprd05.prod.outlook.com (10.168.77.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.18; Tue, 10 Sep 2019 21:46:02 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::f839:378:4972:3e43]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::f839:378:4972:3e43%12]) with mapi id 15.20.2241.018; Tue, 10 Sep 2019
- 21:46:02 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next 3/3] net/mlx5: FWTrace, Reduce stack usage
-Thread-Topic: [net-next 3/3] net/mlx5: FWTrace, Reduce stack usage
-Thread-Index: AQHVaCEkm9aV8vmSSUi6ytnyjnhl8Q==
-Date:   Tue, 10 Sep 2019 21:46:02 +0000
-Message-ID: <20190910214542.8433-4-saeedm@mellanox.com>
-References: <20190910214542.8433-1-saeedm@mellanox.com>
-In-Reply-To: <20190910214542.8433-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR06CA0058.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::35) To DB6PR0501MB2759.eurprd05.prod.outlook.com
- (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9cc9c096-4b83-40e9-c34d-08d736384655
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2598;
-x-ms-traffictypediagnostic: DB6PR0501MB2598:|DB6PR0501MB2598:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0501MB259888ACF9CC1794C8541758BEB60@DB6PR0501MB2598.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 01565FED4C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(39860400002)(376002)(346002)(189003)(199004)(81166006)(102836004)(6916009)(5660300002)(8936002)(14444005)(256004)(6486002)(50226002)(76176011)(6116002)(7736002)(99286004)(14454004)(36756003)(305945005)(4326008)(52116002)(6436002)(3846002)(6506007)(386003)(8676002)(476003)(66066001)(53936002)(11346002)(6512007)(446003)(2616005)(478600001)(64756008)(81156014)(486006)(1076003)(26005)(25786009)(86362001)(66946007)(66476007)(71190400001)(316002)(66556008)(54906003)(71200400001)(2906002)(66446008)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2598;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: J/kZgUrb1rDI4iTGU9B5h58KmmDbhUKoRK2mXcq+6IoEJzCFhjq/TCZMxgMSylmsMp6eg+j1kSDl9cjVSbhHSA6iBc/hraRcH8N1DobMNhqTQ6S4h9Z91DcG74Sl/B1AbqLMSlhfqmF+a9i64nTHmrzYucpD/XwPXywCgy1XLW2RnoY09gFYOHNJ5poZ0pNKhfnNGxPsQfaarrO9Phr8629kbhPK9jpV70ZOu9NJ3jP70OAJvs81+8zRNFgJFMkw7guc6CMGgMdrT2Zffn6CHSLSWtnPRF5icYf+/bUKrFSbo4lMMYra7qOuLtTaEicnOaF7VB9VkD+twyZ5f+Jop7UJLFw2I7y4g06o1mUKufXw0q4xld+YU3M3yj4QAIVfVENV/cuMEAvSZpP9UWwnfv4Wodd5md7AtQCEbQU3NfA=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cc9c096-4b83-40e9-c34d-08d736384655
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2019 21:46:02.6037
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ejWc1sFP3VF7QiMjzhGpthh5gi4GmqMpWOSdZV3j6ju6C5cICFo/eRHK8C3+6QR0LE2R9UfWWqILIHPaUF30fg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2598
+        id S1726294AbfIJVte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 17:49:34 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:43800 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbfIJVtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 17:49:33 -0400
+Received: by mail-pl1-f202.google.com with SMTP id y6so10629189plt.10
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 14:49:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=z94MmYK6uHXVXRc2VNDG+BQBt7iq7JdB7p0D6JqeVdk=;
+        b=u8SFatFRsWwvjji0dJhEKLMc1lrIeDxu9Smn9B7s9HxQQkDJrF9etw1rpSfgQm0bJ6
+         m9htemNYVM3mzIpj1mxOkW3L5H2XZrpodI9lXZBgouzkXOuqESUy90Z42cXMiqwsP1tn
+         vps3yLZMqS92T/0wq1igpeWpsVWGUo6eCZ6TyAiHzZqmr9vhhxbM/jJhKjTEdi+VHX5r
+         ouSqcUAgzDkxvAy1j5RQYICjMeY34g2cCV6IhOp0PA61DYv3slfkE80u4Lq0Gv02Jf64
+         7YmBo6oD/m9nXsOcYIewwH6ERPt3jMXHuWUJTCBpgyccPaJtcaWvBAKwDyupFoPmVBAn
+         U5QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=z94MmYK6uHXVXRc2VNDG+BQBt7iq7JdB7p0D6JqeVdk=;
+        b=DJ+qBTWpIRDo3Sinl1oeZZKlrmn2Cl8NSkprLwhiy4Uh+JabfUiMsWjn/V18WnquFk
+         8navK8nyYMBQBjGe5W8HYfPZX45XIx8t2Mo9FMdHuDDNTJVW9rYJtZ/RzbH+TX95Ex9T
+         HTP4pnopR8nDZBdbbMfNAJ72qn5k9lNxtiVyZNOjB9Gk1oPCTna/k4ReX2eCuEwaAaxw
+         sIJJRgB3JqMdFdjogyt4oo3MNyk6WboZK17+NxMHGNx0xUd4x6w4g0qePvxs7tO42gXe
+         azX0khkBDIqsnjrSJ3Yw29jMVLSFcXyA/pbe40FSuSroieuddldjz8iWxNqBNF2nIh33
+         NVrA==
+X-Gm-Message-State: APjAAAWKnGe1Dc6aI3iStQ1RL935eqNT4Qt6OwGgZ6iakSoKxzh4zThQ
+        dvK5URvlrLdCf0OVOxuuegn43llNa3a/2w==
+X-Google-Smtp-Source: APXvYqx3nANTaa4tp773CPFI6k0kLAamRwdxwElzH5pqD4kZ6FqoBPolJfijLKrPDM9gg1CDgyDFxIsvgrqGGw==
+X-Received: by 2002:a63:7887:: with SMTP id t129mr30164608pgc.309.1568152172520;
+ Tue, 10 Sep 2019 14:49:32 -0700 (PDT)
+Date:   Tue, 10 Sep 2019 14:49:28 -0700
+Message-Id: <20190910214928.220727-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.162.g0b9fbb3734-goog
+Subject: [PATCH net-next] tcp: force a PSH flag on TSO packets
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tariq Toukan <tariqt@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark mlx5_tracer_print_trace as noinline as the function only uses 512
-bytes on the stack to avoid the following build warning:
+When tcp sends a TSO packet, adding a PSH flag on it
+reduces the sojourn time of GRO packet in GRO receivers.
 
-drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c:660:13: error: sta=
-ck frame size of 1032 bytes in function 'mlx5_fw_tracer_handle_traces' [-We=
-rror,-Wframe-larger-than=3D]
+This is particularly the case under pressure, since RX queues
+receive packets for many concurrent flows.
 
-Fixes: 70dd6fdb8987 ("net/mlx5: FW tracer, parse traces and kernel tracing =
-support")
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+A sender can give a hint to GRO engines when it is
+appropriate to flush a super-packet, especially when pacing
+is in the picture, since next packet is probably delayed by
+one ms.
+
+Having less packets in GRO engine reduces chance
+of LRU eviction or inflated RTT, and reduces GRO cost.
+
+We found recently that we must not set the PSH flag on
+individual full-size MSS segments [1] :
+
+ Under pressure (CWR state), we better let the packet sit
+ for a small delay (depending on NAPI logic) so that the
+ ACK packet is delayed, and thus next packet we send is
+ also delayed a bit. Eventually the bottleneck queue can
+ be drained. DCTCP flows with CWND=1 have demonstrated
+ the issue.
+
+This patch allows to slowdown the aggregate traffic without
+involving high resolution timers on senders and/or
+receivers.
+
+It has been used at Google for about four years,
+and has been discussed at various networking conferences.
+
+[1] segments smaller than MSS already have PSH flag set
+    by tcp_sendmsg() / tcp_mark_push(), unless MSG_MORE
+    has been requested by the user.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Cc: Yuchung Cheng <ycheng@google.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Tariq Toukan <tariqt@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/ipv4/tcp_output.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/dri=
-vers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index 2011eaf15cc5..94d7b69a95c7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -553,9 +553,10 @@ static void mlx5_fw_tracer_save_trace(struct mlx5_fw_t=
-racer *tracer,
- 	mutex_unlock(&tracer->st_arr.lock);
- }
-=20
--static void mlx5_tracer_print_trace(struct tracer_string_format *str_frmt,
--				    struct mlx5_core_dev *dev,
--				    u64 trace_timestamp)
-+static noinline
-+void mlx5_tracer_print_trace(struct tracer_string_format *str_frmt,
-+			     struct mlx5_core_dev *dev,
-+			     u64 trace_timestamp)
- {
- 	char	tmp[512];
-=20
---=20
-2.21.0
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 42abc9bd687a5fea627cbc7cfa750d022f393d84..fec6d67bfd146dc78f0f25173fd71b8b8cc752fe 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1050,11 +1050,22 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+ 	tcb = TCP_SKB_CB(skb);
+ 	memset(&opts, 0, sizeof(opts));
+ 
+-	if (unlikely(tcb->tcp_flags & TCPHDR_SYN))
++	if (unlikely(tcb->tcp_flags & TCPHDR_SYN)) {
+ 		tcp_options_size = tcp_syn_options(sk, skb, &opts, &md5);
+-	else
++	} else {
+ 		tcp_options_size = tcp_established_options(sk, skb, &opts,
+ 							   &md5);
++		/* Force a PSH flag on all (GSO) packets to expedite GRO flush
++		 * at receiver : This slightly improve GRO performance.
++		 * Note that we do not force the PSH flag for non GSO packets,
++		 * because they might be sent under high congestion events,
++		 * and in this case it is better to delay the delivery of 1-MSS
++		 * packets and thus the corresponding ACK packet that would
++		 * release the following packet.
++		 */
++		if (tcp_skb_pcount(skb) > 1)
++			tcb->tcp_flags |= TCPHDR_PSH;
++	}
+ 	tcp_header_size = tcp_options_size + sizeof(struct tcphdr);
+ 
+ 	/* if no packet is in qdisc/device queue, then allow XPS to select
+-- 
+2.23.0.162.g0b9fbb3734-goog
 
