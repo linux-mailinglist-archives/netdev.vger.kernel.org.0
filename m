@@ -2,72 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08497AF250
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 22:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24845AF258
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 22:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbfIJUgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 16:36:03 -0400
-Received: from mga12.intel.com ([192.55.52.136]:57378 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725770AbfIJUgD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 16:36:03 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 13:36:02 -0700
-X-IronPort-AV: E=Sophos;i="5.64,490,1559545200"; 
-   d="scan'208";a="178795905"
-Received: from jesse-tab.amr.corp.intel.com (HELO localhost) ([134.134.177.212])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 13:36:01 -0700
-Date:   Tue, 10 Sep 2019 13:36:01 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     <netdev@vger.kernel.org>, Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, jesse.brandeburg@intel.com
-Subject: Re: [PATCH net-next 0/6] net: stmmac: Improvements for -next
-Message-ID: <20190910133601.00001c98@intel.com>
-In-Reply-To: <cover.1568126224.git.joabreu@synopsys.com>
-References: <cover.1568126224.git.joabreu@synopsys.com>
-X-Mailer: Claws Mail 3.14.0 (GTK+ 2.24.30; i686-w64-mingw32)
+        id S1726017AbfIJUio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 16:38:44 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:34581 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbfIJUio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 16:38:44 -0400
+Received: by mail-yb1-f194.google.com with SMTP id u68so6631860ybg.1
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 13:38:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vAfRQ5R/ff8mrp0d1mB+uOFw3g/C8+BEF4O5VcI23aw=;
+        b=Ki3GjWe+nnutVRayxMHjXfQNos6icQSY5FHGX0Vgc9c2V637z3IBXX9fB67IR38ISt
+         ae6RXwadN1dwFoVGNWCgz3R5Q4AiJVNl2nPWYyt3Q+CcVCN3jCSPZ7ROxZWg0Vy37Uts
+         YwT2KNMahoPiWnQs4Oxj/HQVTy6yDCIYud7efFbkic5U7btETkS1X1ItgVp9ET1/jcsb
+         vBHlGjAcCVRW6VYDI/ODSxRdHCXn32U6vfDHCJpidfU4FTnTNcYufWmLynJbkwzeh+GI
+         d1apWS8v2ZV74kMsM+m0BLIXzoifbdD+0nYmH+EiD/pd/RDEgnBodu8FGzcixd8PMGcd
+         sTAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vAfRQ5R/ff8mrp0d1mB+uOFw3g/C8+BEF4O5VcI23aw=;
+        b=dLb0RL51vnTTCqOvGXm7fTM2HgFi6z7qxjV5XSZCBPcww8Y4xAdrPhcdj/vfTmgQXi
+         S+fmYlkWWsVgh0iWRJTPpTanwHIdeenvrCRiRkOnImXNcoaLVyvkwKQlLNSiiJ7vBqNI
+         oKedPN3B2OEpn4eCP4T29+rA4PsIXYGMCPc+Zn2wolxbM4g30Sq34ybXG5ZDDWFXcynG
+         61mSZ7NrEe4JtU9lwISykS8UHDAY9ESzyx+red57/cUw0EjiAgJ6clyPNNsv+7gjEmBH
+         T6Yrz4tdpo3Ex6+ikwv3EAwYDAvJdxXJDSl4ueiEBRLP2lS+rt5b/V5ainphQqVQgrCN
+         uOjQ==
+X-Gm-Message-State: APjAAAVvbVTEa2+aOIkD3LW0nlaZyASME5ksLiTs61RBkpBvTnGdQkG4
+        FKZucvDxV7PeQpZUTudN3ILELh6nisTV1mTLmWdWQw==
+X-Google-Smtp-Source: APXvYqwxir7/w0k/aFoaSNGNjaEwIS1nm3pwLIkUoHX95VutKw8NfmB6NwEW6ZnMZK05u0mkuufedaDYzLm1pxupOOI=
+X-Received: by 2002:a25:1f41:: with SMTP id f62mr21116872ybf.518.1568147922987;
+ Tue, 10 Sep 2019 13:38:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190910201128.3967163-1-tph@fb.com>
+In-Reply-To: <20190910201128.3967163-1-tph@fb.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 10 Sep 2019 22:38:31 +0200
+Message-ID: <CANn89iKCSae880bS3MTwrm=MeTyPsntyXfkhJS7CfgtpiEpOsQ@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: Add TCP_INFO counter for packets received out-of-order
+To:     Thomas Higdon <tph@fb.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dave Jones <dsj@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Sep 2019 16:41:21 +0200 Jose wrote:
-> Misc patches for -next. It includes:
->  - Two fixes for features in -next only
->  - New features support for GMAC cores (which includes GMAC4 and GMAC5)
-> 
-> ---
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> Cc: Jose Abreu <joabreu@synopsys.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
-> 
-> Jose Abreu (6):
->   net: stmmac: Prevent divide-by-zero
->   net: stmmac: Add VLAN HASH filtering support in GMAC4+
->   net: stmmac: xgmac: Reinitialize correctly a variable
->   net: stmmac: Add support for SA Insertion/Replacement in GMAC4+
->   net: stmmac: Add support for VLAN Insertion Offload in GMAC4+
->   net: stmmac: ARP Offload for GMAC4+ Cores
+On Tue, Sep 10, 2019 at 10:11 PM Thomas Higdon <tph@fb.com> wrote:
+>
+>
+...
+> Because an additional 32-bit member in struct tcp_info would cause
+> a hole on 64-bit systems, we reserve a struct member '_reserved'.
+...
+> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> index b3564f85a762..990a5bae3ac1 100644
+> --- a/include/uapi/linux/tcp.h
+> +++ b/include/uapi/linux/tcp.h
+> @@ -270,6 +270,9 @@ struct tcp_info {
+>         __u64   tcpi_bytes_retrans;  /* RFC4898 tcpEStatsPerfOctetsRetrans */
+>         __u32   tcpi_dsack_dups;     /* RFC4898 tcpEStatsStackDSACKDups */
+>         __u32   tcpi_reord_seen;     /* reordering events seen */
+> +
+> +       __u32   _reserved;           /* Reserved for future 32-bit member. */
+> +       __u32   tcpi_rcv_ooopack;    /* Out-of-order packets received */
+>  };
+>
 
-For the series, looks good to me.
+Unfortunately we won't be able to use this hole, because the way the
+TCP_INFO works,
 
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+The kernel will report the same size after the reserved field is
+renamed to something else.
+
+User space code is able to detect which fields are there or not based
+on what the kernel
+returns for the size of the structure.
