@@ -2,74 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 290F5AF2DE
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 00:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB63AF2E1
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 00:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726126AbfIJWRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 18:17:54 -0400
-Received: from mail2.candelatech.com ([208.74.158.173]:36974 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbfIJWRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 18:17:54 -0400
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 181CC104B
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 15:17:54 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 181CC104B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1568153874;
-        bh=AzqHe4Zk3hV5iasQ9liR3A9xmq3ifWcsJBFcQOBGHD4=;
-        h=To:From:Subject:Date:From;
-        b=hWav/RoyGJoNy+Fnp7tC2YMOKU4RsPKc1Qr6qIjGWo8cf8VzJUDGpiW2sqH55J3gq
-         r9lgvoiGn5u7/bsG4XGH+iXA3wBDV+XRLbYL31YT43A32IQ3m6beDRNLahgwZKHXyI
-         Ppef8XhjcGByUyy+CmYOBpGBi2BpNS/ScqRCFccU=
-To:     netdev <netdev@vger.kernel.org>
-From:   Ben Greear <greearb@candelatech.com>
-Subject: Strange routing with VRF and 5.2.7+
-Organization: Candela Technologies
-Message-ID: <91749b17-7800-44c0-d137-5242b8ceb819@candelatech.com>
-Date:   Tue, 10 Sep 2019 15:17:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726341AbfIJWTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 18:19:14 -0400
+Received: from mga14.intel.com ([192.55.52.115]:11794 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726026AbfIJWTO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 18:19:14 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 15:19:13 -0700
+X-IronPort-AV: E=Sophos;i="5.64,490,1559545200"; 
+   d="scan'208";a="189483519"
+Received: from ahduyck-desk1.jf.intel.com ([10.7.198.76])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 15:19:13 -0700
+Message-ID: <91551885b0731a9e6121a3afe2c9a6cc912f61d5.camel@linux.intel.com>
+Subject: Re: [net-next 11/14] ixgbe: Prevent u8 wrapping of ITR value to
+ something less than 10us
+From:   Alexander Duyck <alexander.h.duyck@linux.intel.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Gregg Leventhal <gleventhal@janestreet.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Date:   Tue, 10 Sep 2019 15:19:13 -0700
+In-Reply-To: <20190910163434.2449-12-jeffrey.t.kirsher@intel.com>
+References: <20190910163434.2449-1-jeffrey.t.kirsher@intel.com>
+         <20190910163434.2449-12-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Today we were testing creating 200 virtual station vdevs on ath9k, and using
-VRF for the routing.
+On Tue, 2019-09-10 at 09:34 -0700, Jeff Kirsher wrote:
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> 
+> There were a couple cases where the ITR value generated via the adaptive
+> ITR scheme could exceed 126. This resulted in the value becoming either 0
+> or something less than 10. Switching back and forth between a value less
+> than 10 and a value greater than 10 can cause issues as certain hardware
+> features such as RSC to not function well when the ITR value has dropped
+> that low.
 
-This really slows down the machine in question.
+One quick thing we can add on here is:
+Fixes: b4ded8327fea ("ixgbe: Update adaptive ITR algorithm")
 
-During the minutes that it takes to bring these up and configure them,
-we loose network connectivity on the management port.
+This is likely something that we may want to backport to stable.
 
-If I do 'ip route show', it just shows the default route out of eth0, and
-the subnet route.  But, if I try to ping the gateway, I get an ICMP error
-coming back from the gateway of one of the virtual stations (which should be
-safely using VRFs and so not in use when I do a plain 'ping' from the shell).
+> Reported-by: Gregg Leventhal <gleventhal@janestreet.com>
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index dc034f4e8cf6..a5398b691aa8 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -2623,7 +2623,7 @@ static void ixgbe_update_itr(struct ixgbe_q_vector *q_vector,
+>  		/* 16K ints/sec to 9.2K ints/sec */
+>  		avg_wire_size *= 15;
+>  		avg_wire_size += 11452;
+> -	} else if (avg_wire_size <= 1980) {
+> +	} else if (avg_wire_size < 1968) {
+>  		/* 9.2K ints/sec to 8K ints/sec */
+>  		avg_wire_size *= 5;
+>  		avg_wire_size += 22420;
+> @@ -2656,6 +2656,8 @@ static void ixgbe_update_itr(struct ixgbe_q_vector *q_vector,
+>  	case IXGBE_LINK_SPEED_2_5GB_FULL:
+>  	case IXGBE_LINK_SPEED_1GB_FULL:
+>  	case IXGBE_LINK_SPEED_10_FULL:
+> +		if (avg_wire_size > 8064)
+> +			avg_wire_size = 8064;
+>  		itr += DIV_ROUND_UP(avg_wire_size,
+>  				    IXGBE_ITR_ADAPTIVE_MIN_INC * 64) *
+>  		       IXGBE_ITR_ADAPTIVE_MIN_INC;
 
-I tried running tshark on eth0 in the background and running ping, and it captures
-no packets leaving eth0.
-
-After some time (and during this time, my various scripts will be (re)configuring
-vrfs and stations and related vrf routing tables and such,
-but should *not* be messing with the main routing table, then suddenly
-things start working again.
-
-I am curious if anyone has seen anything similar or has suggestions for more
-ways to debug this.  It seems reproducible, but it is a pain to
-debug.
-
-Thanks,
-Ben
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
 
