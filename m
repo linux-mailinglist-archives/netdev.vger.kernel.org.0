@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4036BAF1C4
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 21:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0846CAF1C6
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 21:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727947AbfIJTSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 15:18:10 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:35502 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbfIJTSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 15:18:09 -0400
-Received: by mail-io1-f69.google.com with SMTP id 18so24488505iof.2
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 12:18:09 -0700 (PDT)
+        id S1728046AbfIJTSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 15:18:11 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:53295 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725263AbfIJTSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 15:18:10 -0400
+Received: by mail-io1-f70.google.com with SMTP id l21so24394305iob.20
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 12:18:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qJrPEyyq2wIkvZMXDLhRyvs6qoso+R0H+MG2NHGwSu4=;
-        b=gmlgyHS3Y19gDPaXgvTABzOT7Qfn0H7NbDPluLOxwH4zCDZkXclfvk538ziBjZbwgl
-         +3PTuSK8Y/NYplXCFD9e+Ds1oIaaUl+OvH+fPT4yx2AHnLMukJJISxCMIcskuRhMZevY
-         6+jNtSuLvDOClP2mHj5ZDiIGpIFOM/OKqxaDxDJujIjRkAqYlsViLAMHT1Ir7CmdWBQk
-         d7U80y1W29o6umaBaXs5ESeUg2B0p/RorxXsFRVK+ksintT+KE2X5v9E+IHaQrxB4K3p
-         i4Kvio3Zo61hhUaWwOl/kw/TxTPlKbxpX4GqGNGW87q7fhNgrNC0RqRAqKzCVdr1Lb11
-         IkGQ==
-X-Gm-Message-State: APjAAAX70wNImt+lFW8wNNLitiZoRjicAYH3B8iyp7hjM8Rt1Is/FoWi
-        UVW3/UrhTTbhyP2Da7b8aITyrt7pAB3xVmhnzdDIWo7U9BwZ
-X-Google-Smtp-Source: APXvYqwLp6TUDoXjKFeiVSnFe2tcLGdqsf8aJ3drx9I589lEwG+oRCppTSFpEhF9UmKXSYXlIfIgfWkn3OCz1rX4NX6lvbb6MkDc
+        bh=KICzFkLeQqtEwysB2QmS9o7mzKO9jXpOrCeO4D7f/cI=;
+        b=WoesZfQajsMLJZur5GyKwwcnRPgrRWdweQFT5yLmdB0Hv4e1p95/Ls0N9CbGIko1DU
+         wetV0mySFh5NuycY3o5KJHn/d8GnIJXZBSiE7+zrJ5YLGNgxDUa9NaBwGyENZkAEJQfa
+         eTBXWN3OznuMtoBZgSOz8dYn7pT+WtLBsghj0mBdF7GCS97em0ebhHPYaUCb/wTQjsH7
+         7Y2y8eX8PvD4zTkRm1S8tsSi31U+AfOluMqtYBw5anqGTwrO7R4/m3KExnDQ3pLvj1W5
+         VwDAgbNteI34oF9Vabom8rqm6GgazYkpzaZTR2rwMEEEVTJY5r7WWQ09osHvfurrmuWl
+         GXJg==
+X-Gm-Message-State: APjAAAUQ6cRywzjByrupUwIIoeXi/xMqTTELJx0nIVaAL+wJS4tpZwvr
+        YPklswj5lYIHmxaOBq0dq/uOU2U7yg6tRVQpp5VE64TNH1/g
+X-Google-Smtp-Source: APXvYqxPzKg6GbeoH6yRm1PjX2izZMuz0ieNKYMovQHrdeRH4rFXfA13QHVvWiKOqCtfYE2/LBdKRcjOVwklvTsHVCfIvW8qlWT4
 MIME-Version: 1.0
-X-Received: by 2002:a02:948c:: with SMTP id x12mr32825055jah.96.1568143088627;
+X-Received: by 2002:a5d:888b:: with SMTP id d11mr26874923ioo.236.1568143088331;
  Tue, 10 Sep 2019 12:18:08 -0700 (PDT)
 Date:   Tue, 10 Sep 2019 12:18:08 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c1391b059237c3a6@google.com>
-Subject: INFO: rcu detected stall in addrconf_dad_work
-From:   syzbot <syzbot+0055e43d6f67fb9b8ba1@syzkaller.appspotmail.com>
+Message-ID: <000000000000bcb83d059237c30a@google.com>
+Subject: INFO: rcu detected stall in br_handle_frame
+From:   syzbot <syzbot+2addc1f058bd021b0a40@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
@@ -50,29 +50,29 @@ syzbot found the following crash on:
 
 HEAD commit:    3b47fd5c Merge tag 'nfs-for-5.3-4' of git://git.linux-nfs...
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=126c0f51600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12983001600000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=b89bb446a3faaba4
-dashboard link: https://syzkaller.appspot.com/bug?extid=0055e43d6f67fb9b8ba1
+dashboard link: https://syzkaller.appspot.com/bug?extid=2addc1f058bd021b0a40
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1500264e600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d7a46e600000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17d8afae600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1253d1fa600000
 
 Bisection is inconclusive: the bug happens on the oldest tested release.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160261e1600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=110261e1600000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=109dcfc6600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=149dcfc6600000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0055e43d6f67fb9b8ba1@syzkaller.appspotmail.com
+Reported-by: syzbot+2addc1f058bd021b0a40@syzkaller.appspotmail.com
 
 rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	1-...!: (10499 ticks this GP) idle=e02/1/0x4000000000000002  
-softirq=9705/9705 fqs=4
-	(t=10500 jiffies g=9309 q=84)
-rcu: rcu_preempt kthread starved for 10492 jiffies! g9309 f0x0  
-RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
+rcu: 	0-...!: (10500 ticks this GP) idle=c4e/1/0x4000000000000002  
+softirq=10445/10445 fqs=0
+	(t=10500 jiffies g=10669 q=248)
+rcu: rcu_preempt kthread starved for 10500 jiffies! g10669 f0x0  
+RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=0
 rcu: RCU grace-period kthread stack dump:
-rcu_preempt     R  running task    29112    10      2 0x80004000
+rcu_preempt     I29392    10      2 0x80004000
 Call Trace:
   context_switch kernel/sched/core.c:3254 [inline]
   __schedule+0x755/0x1580 kernel/sched/core.c:3880
@@ -82,11 +82,10 @@ Call Trace:
   rcu_gp_kthread+0x9b2/0x18c0 kernel/rcu/tree.c:1768
   kthread+0x361/0x430 kernel/kthread.c:255
   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-NMI backtrace for cpu 1
-CPU: 1 PID: 3027 Comm: kworker/1:2 Not tainted 5.3.0-rc7+ #0
+NMI backtrace for cpu 0
+CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.3.0-rc7+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-Workqueue: ipv6_addrconf addrconf_dad_work
 Call Trace:
   <IRQ>
   __dump_stack lib/dump_stack.c:77 [inline]
@@ -110,19 +109,17 @@ Call Trace:
   smp_apic_timer_interrupt+0x160/0x610 arch/x86/kernel/apic/apic.c:1131
   apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:830
   </IRQ>
-RIP: 0010:__list_del_entry_valid+0x4b/0xf5 lib/list_debug.c:45
-Code: 54 80 3c 02 00 0f 85 a1 00 00 00 4c 89 f2 4d 8b 66 08 48 b8 00 00 00  
-00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 9d 00 00 00 <48> b8 00 01 00  
-00 00 00 ad de 4d 8b 2e 49 39 c5 0f 84 e1 00 00 00
-RSP: 0018:ffff88809ff26d30 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-RAX: dffffc0000000000 RBX: ffff88808c560778 RCX: ffffffff85c64b39
-RDX: 1ffff110118ac0ef RSI: ffffffff85c65006 RDI: ffff88808c560780
-RBP: ffff88809ff26d48 R08: ffff88809ff08300 R09: 0000000000000000
-R10: fffffbfff134af8f R11: ffff88809ff08300 R12: ffff88808c560810
-R13: ffff88808c560480 R14: ffff88808c560778 R15: 0000000000000000
-  __list_del_entry include/linux/list.h:131 [inline]
-  list_move_tail include/linux/list.h:213 [inline]
-  hhf_dequeue+0x5c5/0xa20 net/sched/sch_hhf.c:439
+RIP: 0010:write_comp_data+0x68/0x70 kernel/kcov.c:147
+Code: 00 00 4e 8d 14 dd 28 00 00 00 4d 39 d0 72 1b 49 83 c1 01 4a 89 7c 10  
+e0 4a 89 74 10 e8 4a 89 54 10 f0 4a 89 4c d8 20 4c 89 08 <c3> 0f 1f 80 00  
+00 00 00 55 40 0f b6 d6 40 0f b6 f7 31 ff 48 89 e5
+RSP: 0018:ffff8880a98be990 EFLAGS: 00000206 ORIG_RAX: ffffffffffffff13
+RAX: 0000000000000301 RBX: ffff88808c6eb0b8 RCX: ffffffff85c64b39
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000005
+RBP: ffff8880a98be998 R08: ffff8880a98b2240 R09: 0000000000000000
+R10: fffffbfff134af8f R11: ffff8880a98b2240 R12: dffffc0000000000
+R13: ffff88808c6eadc0 R14: ffff88808c6eb150 R15: 0000000000000000
+  hhf_dequeue+0xb9/0xa20 net/sched/sch_hhf.c:434
   dequeue_skb net/sched/sch_generic.c:258 [inline]
   qdisc_restart net/sched/sch_generic.c:361 [inline]
   __qdisc_run+0x1e7/0x19d0 net/sched/sch_generic.c:379
@@ -130,37 +127,48 @@ R13: ffff88808c560480 R14: ffff88808c560778 R15: 0000000000000000
   __dev_queue_xmit+0x16f1/0x3650 net/core/dev.c:3838
   dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
   br_dev_queue_push_xmit+0x3f3/0x5c0 net/bridge/br_forward.c:52
+  br_nf_dev_queue_xmit+0x34e/0x1470 net/bridge/br_netfilter_hooks.c:796
   NF_HOOK include/linux/netfilter.h:305 [inline]
   NF_HOOK include/linux/netfilter.h:299 [inline]
-  br_forward_finish+0xfa/0x400 net/bridge/br_forward.c:65
+  br_nf_post_routing+0x1502/0x1d30 net/bridge/br_netfilter_hooks.c:844
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_slow+0xbc/0x1e0 net/netfilter/core.c:512
+  nf_hook include/linux/netfilter.h:260 [inline]
+  NF_HOOK include/linux/netfilter.h:303 [inline]
+  br_forward_finish+0x215/0x400 net/bridge/br_forward.c:65
+  br_nf_hook_thresh+0x2e9/0x370 net/bridge/br_netfilter_hooks.c:1015
+  br_nf_forward_finish+0x66c/0xa90 net/bridge/br_netfilter_hooks.c:560
   NF_HOOK include/linux/netfilter.h:305 [inline]
   NF_HOOK include/linux/netfilter.h:299 [inline]
-  __br_forward+0x641/0xb00 net/bridge/br_forward.c:109
+  br_nf_forward_ip net/bridge/br_netfilter_hooks.c:630 [inline]
+  br_nf_forward_ip+0xc74/0x21e0 net/bridge/br_netfilter_hooks.c:571
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_slow+0xbc/0x1e0 net/netfilter/core.c:512
+  nf_hook include/linux/netfilter.h:260 [inline]
+  NF_HOOK include/linux/netfilter.h:303 [inline]
+  __br_forward+0x393/0xb00 net/bridge/br_forward.c:109
   deliver_clone+0x61/0xc0 net/bridge/br_forward.c:125
-  maybe_deliver+0x2c7/0x390 net/bridge/br_forward.c:181
-  br_flood+0x13a/0x3d0 net/bridge/br_forward.c:223
-  br_dev_xmit+0x98c/0x15a0 net/bridge/br_device.c:100
-  __netdev_start_xmit include/linux/netdevice.h:4406 [inline]
-  netdev_start_xmit include/linux/netdevice.h:4420 [inline]
-  xmit_one net/core/dev.c:3280 [inline]
-  dev_hard_start_xmit+0x1a3/0x9c0 net/core/dev.c:3296
-  __dev_queue_xmit+0x2b15/0x3650 net/core/dev.c:3869
-  dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
-  neigh_resolve_output net/core/neighbour.c:1490 [inline]
-  neigh_resolve_output+0x5a5/0x970 net/core/neighbour.c:1470
-  neigh_output include/net/neighbour.h:511 [inline]
-  ip6_finish_output2+0x1034/0x2520 net/ipv6/ip6_output.c:116
-  __ip6_finish_output+0x444/0xa50 net/ipv6/ip6_output.c:142
-  ip6_finish_output+0x38/0x1f0 net/ipv6/ip6_output.c:152
-  NF_HOOK_COND include/linux/netfilter.h:294 [inline]
-  ip6_output+0x235/0x7c0 net/ipv6/ip6_output.c:175
-  dst_output include/net/dst.h:436 [inline]
+  br_flood+0x325/0x3d0 net/bridge/br_forward.c:232
+  br_handle_frame_finish+0xb46/0x1670 net/bridge/br_input.c:162
+  br_nf_hook_thresh+0x2e9/0x370 net/bridge/br_netfilter_hooks.c:1015
+  br_nf_pre_routing_finish_ipv6+0x6fb/0xd80  
+net/bridge/br_netfilter_ipv6.c:206
   NF_HOOK include/linux/netfilter.h:305 [inline]
-  ndisc_send_skb+0xf29/0x1450 net/ipv6/ndisc.c:504
-  ndisc_send_ns+0x3a9/0x850 net/ipv6/ndisc.c:646
-  addrconf_dad_work+0xb88/0x1150 net/ipv6/addrconf.c:4120
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  br_nf_pre_routing_ipv6+0x456/0x832 net/bridge/br_netfilter_ipv6.c:236
+  br_nf_pre_routing+0x1743/0x2355 net/bridge/br_netfilter_hooks.c:501
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_bridge_pre net/bridge/br_input.c:223 [inline]
+  br_handle_frame+0x806/0x133e net/bridge/br_input.c:348
+  __netif_receive_skb_core+0xfc1/0x3060 net/core/dev.c:4905
+  __netif_receive_skb_one_core+0xa8/0x1a0 net/core/dev.c:5002
+  __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5118
+  process_backlog+0x206/0x750 net/core/dev.c:5929
+  napi_poll net/core/dev.c:6352 [inline]
+  net_rx_action+0x4d6/0x1030 net/core/dev.c:6418
+  __do_softirq+0x262/0x98c kernel/softirq.c:292
+  run_ksoftirqd kernel/softirq.c:603 [inline]
+  run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
+  smpboot_thread_fn+0x6a3/0xa40 kernel/smpboot.c:165
   kthread+0x361/0x430 kernel/kthread.c:255
   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
