@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD966AF11B
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 20:35:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC49AF11D
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 20:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727220AbfIJSfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 14:35:09 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40249 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfIJSfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 14:35:09 -0400
-Received: by mail-pf1-f196.google.com with SMTP id x127so12036770pfb.7;
-        Tue, 10 Sep 2019 11:35:08 -0700 (PDT)
+        id S1728034AbfIJSfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 14:35:22 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37229 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725928AbfIJSfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 14:35:21 -0400
+Received: by mail-pl1-f195.google.com with SMTP id b10so9021112plr.4;
+        Tue, 10 Sep 2019 11:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=poK72OVGFfuETdsk7HxJZWk8yAO0XjZaXx1VbWFzd/A=;
-        b=IywhtCBi4M8W4rgD/+Ez3bzUoVjV5vmxRcmOcKmJCeTKymyk0+XX2pas2ymP8dW2/p
-         TdHsFeYeV/Ptg6ox985IMZoHml5OPpORbcS3ZMVYhQrTwVbKFGKsCiOZ0w9j67uSiYOE
-         VSJ6jhFeyxYc2k8jJyx/G37pCFg1CGuDkDu5FZ53UU2dRgkXugLHsvNaxQtWclQgks0k
-         DXFtyeEazPgfPADkR8MhTfWTlcEDphvZVqAxA4ckjh3FRruTpmO2Mt/+CiMDG6Xg2Il3
-         3f50sRqd3FKu1Fkf7BfAtSifol59dEf+j97e+PLUFfYP3kZ682GuoLK9y8mhcps4uz1m
-         BhBw==
+        bh=WM/ZVzHPSOU5rKVNSkXKRpNjzoL4YwLnGjh31M3aA8A=;
+        b=Ziu7SXr+tofQUShsHsjFbpgQnDUhMSdBKfsx6WKxI0c6is8trSboxr0NsYIWTVnEGr
+         hfC2kfUS/gTURqRP+dQUKQTw4UZ5viKmTJP0LwLf3Cey6uM1/EC0uQw7rpNagTJaqkUv
+         XBbA08u8bJAeEfuBGYO9A28+reUgDG3O93yxr8jFgd6aGXajLGrKWvDGH/tA1wjPbdGS
+         kWI5CDT93CL1g96ZO/LRikqrArEZgRa8GtrRu9wm6w2svL8g1rqhP8M8OPEtiRnbXTSU
+         q4L/c26CLpNOcCqos1YHrojJ6EHG15BdM118VelBryJDAcCl2hpaxTW7KoqLam+zvKl3
+         oGvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=poK72OVGFfuETdsk7HxJZWk8yAO0XjZaXx1VbWFzd/A=;
-        b=e0puwNibl25Tx/AVVD+kV8sDLf2YetuLF0fy5Px0DCoIWjsFPQMd4Dmak7W2vYnPTQ
-         rChiFvXRwoqrUCgQVRNukW22rb5cTzz9FUh1mjOt9JTPqNxBDO8Z9KEB5hktFju1lidR
-         diOwTns9fynmToW0Q72teVgpls44BGzpIGECOz+1aUGVnxN+MOorxnXt/HUl2OjIByud
-         yKqOwdsur7KPErJZbe3/dOqeTYDOS8HF+qTFMYsW1Qgv/boJnKVMcv+v1EW9xAScvRTU
-         nRtIdq+ES/BjCF/LjPeOyGK0lMbZJsvw+l2RYOoRIXn6yHQC0SQMSXfMNOj1fDg+OrFS
-         Ya6Q==
-X-Gm-Message-State: APjAAAVUfIgI4Uux7khkh02nalsM3KzB/Fc3uA9UMpYFQ2wklPevRWPZ
-        UKy2iTDnzEefhI+60IYrK3eM+Wsv8RQ=
-X-Google-Smtp-Source: APXvYqw1HcUjMAYzvpR7n9PZ+PqwJnP5/AQvam237bWTwNSqrlyiSv8f7a06OJYCU6ZXye1In5HExA==
-X-Received: by 2002:a63:f357:: with SMTP id t23mr29774077pgj.421.1568140507810;
-        Tue, 10 Sep 2019 11:35:07 -0700 (PDT)
+        bh=WM/ZVzHPSOU5rKVNSkXKRpNjzoL4YwLnGjh31M3aA8A=;
+        b=Wh3hs+v6abRR7ORzMqEvOFW9CygAsG0uCVKUhiSOSQuk4pCOgeFxklf6DFN1b7g6Fn
+         ftjYS8fNbxGnk5W9SNEeQ1mV6jBVPu0wyMhhujlMq47stcl2AteTyqjZ47hLf+FFe3ak
+         VV9qvAY3in5H1NmjpWWAD7Vn2r7sR1NjWve6OotCnBP3qcVC1Wz3oXTXeOU1oWaHdTdo
+         18HVDuCtY2ot9Gc3rKqGgO12x81pnzLzFvhhaILsFoKK2gtdgBEL6n/WPxrlo05sFc9U
+         lZWgWuGSgm/OW5Sv2Gva1ashN9bdrSpeHgj7QApBoft8nat/8LPzIyBO8TIlZbWcs4NP
+         rGgQ==
+X-Gm-Message-State: APjAAAUPsqP5waSiiKZNH1k7Mxy7CRJ7CvnCbUfnjV3UJt6jDt27SHeL
+        dv9SYvvb0xWSnavq8bKjJb3UYo1CImM=
+X-Google-Smtp-Source: APXvYqyH4ZXDkInP3+R3r7j+noVq3KhxdnvVd0PWOfo+hkTbdOJiFrmqnldzuPeYMfuPYbc2ESy5Fg==
+X-Received: by 2002:a17:902:7245:: with SMTP id c5mr31385352pll.187.1568140520436;
+        Tue, 10 Sep 2019 11:35:20 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id dw14sm477115pjb.2.2019.09.10.11.35.05
+        by smtp.googlemail.com with ESMTPSA id e21sm1750237pgr.43.2019.09.10.11.35.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Sep 2019 11:35:07 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/3] net: dsa: microchip: remove
- NET_DSA_TAG_KSZ_COMMON
+        Tue, 10 Sep 2019 11:35:19 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: microchip: add ksz9567 to
+ ksz9477 driver
 To:     George McCollister <george.mccollister@gmail.com>,
         netdev@vger.kernel.org
 Cc:     Woojung Huh <woojung.huh@microchip.com>,
@@ -56,7 +56,7 @@ Cc:     Woojung Huh <woojung.huh@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org
 References: <20190910131836.114058-1-george.mccollister@gmail.com>
- <20190910131836.114058-4-george.mccollister@gmail.com>
+ <20190910131836.114058-3-george.mccollister@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -113,12 +113,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <10fa3d7b-de50-9342-ccfd-3a32ce8b204d@gmail.com>
-Date:   Tue, 10 Sep 2019 11:35:03 -0700
+Message-ID: <3ed156f6-0b6f-c55a-9349-5285f146232e@gmail.com>
+Date:   Tue, 10 Sep 2019 11:35:17 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190910131836.114058-4-george.mccollister@gmail.com>
+In-Reply-To: <20190910131836.114058-3-george.mccollister@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,9 +128,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 9/10/19 6:18 AM, George McCollister wrote:
-> Remove the superfluous NET_DSA_TAG_KSZ_COMMON and just use the existing
-> NET_DSA_TAG_KSZ. Update the description to mention the three switch
-> families it supports. No functional change.
+> Add support for the KSZ9567 7-Port Gigabit Ethernet Switch to the
+> ksz9477 driver. The KSZ9567 supports both SPI and I2C. Oddly the
+> ksz9567 is already in the device tree binding documentation.
 > 
 > Signed-off-by: George McCollister <george.mccollister@gmail.com>
 > Reviewed-by: Marek Vasut <marex@denx.de>
