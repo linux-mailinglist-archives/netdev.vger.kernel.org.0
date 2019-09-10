@@ -2,312 +2,450 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C1EAE247
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 04:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03541AE25B
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 04:31:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392671AbfIJCPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 22:15:37 -0400
-Received: from node.noduck.org ([207.192.71.159]:53266 "EHLO node.noduck.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392452AbfIJCPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Sep 2019 22:15:37 -0400
-X-Greylist: delayed 2753 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Sep 2019 22:15:36 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=noduck.org;
-         s=node; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:Cc:Subject:From:To:Sender:Reply-To:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=85eU4RmDOJPzcYl8tJEQRD8VSLV45S613gqUpCd/WK0=; b=vmTDcbo8UvBHFRq3iB5HvoTgrn
-        e5C0emrqmhjC49MtkdMy+5MgZYCNhG8k/F6VDLsheXQOrHBG24HRN0kuS9SZVzpvsiI9QKfBzn8zI
-        mk6hsAN/vG9mOsiT9opFptuAUA3HdTCHoyXY7xYtiBK/VNi6DKBhLegaegJihxonr60d9g/IimrYR
-        BmKzh3D0CjuuZyhAFlRqYwaUZwA9gP+U34I5/GzTwSwv62T/A9Xj0oQZd1T+yW7ixZ44GVeE5vVXi
-        eaJ++lWSeVYaUJ5ykxBo13qFuKPbqZG0/GzWwyXjhb7ce8oaraxjsDnUScqgYpppS8rwAMJaUKGbC
-        KFsFBN8g==;
-Received: from xxx.noduck.org ([2600:3c03:e001:400::8])
-        by node.noduck.org with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Mixe)
-        id 1i7UyR-0002X7-Cl from <raf@noduck.org>; Tue, 10 Sep 2019 01:29:39 +0000
-Received: from xxx.noduck.org ([2600:3c03:e001:400::b583])
-        by xxx.noduck.org with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Mixe)
-        id 1i7UyM-0005eU-1K from <raf@noduck.org>; Mon, 09 Sep 2019 21:29:39 -0400
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-From:   Rafael D'Halleweyn <raf@noduck.org>
-Subject: NULL pointer dereference in ip6_datagram_dst_update
-Cc:     netdev@vger.kernel.org
-Message-ID: <096ac8d4-4eab-3254-fe20-295e4c092554@noduck.org>
-Date:   Mon, 9 Sep 2019 21:29:33 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2403964AbfIJCb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 22:31:28 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:50668 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2392735AbfIJCb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Sep 2019 22:31:28 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id BCB3B5B38D226E5D2DEE;
+        Tue, 10 Sep 2019 10:31:25 +0800 (CST)
+Received: from [127.0.0.1] (10.133.205.80) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 10 Sep 2019
+ 10:31:19 +0800
+Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
+To:     Jason Wang <jasowang@redhat.com>
+References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
+ <5D5FB3B6.5080800@huawei.com>
+ <1be732b2-6eda-4ea6-772d-780694557910@redhat.com>
+ <5D6DC5BF.5020009@huawei.com>
+ <4a5d84b7-f3cb-c4e1-d6fe-28d186a551ee@redhat.com>
+ <5D6DFD57.7020905@huawei.com>
+ <71e17457-d4bc-15be-dfb3-d0a977fd7556@redhat.com>
+ <5D6E17A7.1020102@huawei.com>
+ <314835944.12221643.1567507811976.JavaMail.zimbra@redhat.com>
+ <5D706CE4.3000103@huawei.com>
+ <542aa2c2-fd54-1e6c-f2f4-46fcc2e6f6ee@redhat.com>
+CC:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        eric dumazet <eric.dumazet@gmail.com>,
+        xiyou wangcong <xiyou.wangcong@gmail.com>,
+        <weiyongjun1@huawei.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <5D770AF6.1060902@huawei.com>
+Date:   Tue, 10 Sep 2019 10:31:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <542aa2c2-fd54-1e6c-f2f4-46fcc2e6f6ee@redhat.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Spam_score: 1.5
-X-Spam_score_int: 15
-X-Spam_bar: +
-X-Spam_report: Spam detection software, running on the system "alto.noduck.org",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- @@CONTACT_ADDRESS@@ for details.
- Content preview:  Hi, While running 5.3.0-rc8 on my laptop, I receive an NULL
-    pointer error when trying to use IPv6 (i.e. just browsing with Firefox).
-   I have a desktop running the same version and kernel-config without pro [...]
- Content analysis details:   (1.5 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
-  1.5 BODY_8BITS             BODY: Body includes 8 consecutive 8-bit characters
+X-Originating-IP: [10.133.205.80]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-While running 5.3.0-rc8 on my laptop, I receive an NULL pointer error when trying to use IPv6 (i.e. just browsing with Firefox). I have a desktop running the same version and kernel-config without problem (but different hardware). The laptop is using wireless (Intel AX200 iwlwifi).
-
-Please let me know if you need more detailed information.
-
-Thanks,
-
-Raf.
 
 
-[   31.377880] dst_release: dst:00000000751fac0a refcnt:-1
-[   31.769445] BUG: kernel NULL pointer dereference, address: 00000000000000ed
-[   31.769449] #PF: supervisor read access in kernel mode
-[   31.769451] #PF: error_code(0x0000) - not-present page
-[   31.769452] PGD 0 P4D 0
-[   31.769455] Oops: 0000 [#1] SMP PTI
-[   31.769458] CPU: 7 PID: 3103 Comm: pool-gnome-shel Tainted: G           OE     5.3.0-rc8 #14
-[   31.769460] Hardware name: Dell Inc. XPS 13 9360/02PG84, BIOS 2.12.0 05/26/2019
-[   31.769465] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   31.769467] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   31.769469] RSP: 0018:ffffbc40c2253d10 EFLAGS: 00010202
-[   31.769471] RAX: 0000000000000080 RBX: ffffa01ac2098460 RCX: 0000000000000007
-[   31.769473] RDX: ffffbc40c2253d50 RSI: 000000000000007d RDI: ffffa01ac2098000
-[   31.769474] RBP: ffffa01ac2098460 R08: 0000000000000000 R09: 0000000000000000
-[   31.769475] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01ac2098038
-[   31.769476] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01ac2098460
-[   31.769479] FS:  00007f33320c5700(0000) GS:ffffa01b6e3c0000(0000) knlGS:0000000000000000
-[   31.769481] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   31.769482] CR2: 00000000000000ed CR3: 000000046be2e005 CR4: 00000000003606e0
-[   31.769483] Call Trace:
-[   31.769490]  ip6_datagram_dst_update+0x156/0x280
-[   31.769494]  __ip6_datagram_connect+0x1dc/0x380
-[   31.769497]  ip6_datagram_connect+0x27/0x40
-[   31.769500]  __sys_connect+0xd0/0x100
-[   31.769504]  ? __sys_socket+0xb7/0xe0
-[   31.769506]  __x64_sys_connect+0x16/0x20
-[   31.769509]  do_syscall_64+0x4f/0x120
-[   31.769514]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   31.769517] RIP: 0033:0x7f3375ebdb57
-[   31.769519] Code: 0f 1f 00 41 54 41 89 d4 55 48 89 f5 53 89 fb 48 83 ec 10 e8 8b d2 00 00 44 89 e2 48 89 ee 89 df 41 89 c0 b8 2a 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 89 44 24 0c e8 c5 d2 00 00 8b 44
-[   31.769521] RSP: 002b:00007f33320c4270 EFLAGS: 00000293 ORIG_RAX: 000000000000002a
-[   31.769523] RAX: ffffffffffffffda RBX: 0000000000000023 RCX: 00007f3375ebdb57
-[   31.769524] RDX: 000000000000001c RSI: 00007f3308001530 RDI: 0000000000000023
-[   31.769526] RBP: 00007f3308001530 R08: 0000000000000000 R09: 0000000000000000
-[   31.769527] R10: 0000000000000009 R11: 0000000000000293 R12: 000000000000001c
-[   31.769528] R13: 0000000000000023 R14: 000000000000000a R15: 00007f3308001500
-[   31.769531] Modules linked in: rfcomm msr nf_log_ipv4 nf_log_common xt_LOG xt_CHECKSUM iptable_mangle xt_MASQUERADE iptable_nat wireguard(OE) nf_nat ip6_udp_tunnel udp_tunnel ccm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter cmac bnep uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 btusb videobuf2_common btrtl btbcm btintel videodev bluetooth mc ecdh_generic ecc snd_hda_codec_hdmi binfmt_misc x86_pkg_temp_thermal intel_powerclamp coretemp joydev snd_hda_codec_realtek snd_hda_codec_generic snd_soc_skl kvm_intel snd_soc_hdac_hda snd_hda_ext_core snd_soc_skl_ipc kvm snd_soc_sst_ipc irqbypass snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core snd_compress ac97_bus snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core iwlmvm snd_hwdep snd_pcm crct10dif_pclmul nls_iso8859_1 mac80211 dell_laptop ledtrig_audio
-snd_seq_midi libarc4
-[   31.769567]  mei_hdcp crc32_pclmul intel_rapl_msr snd_seq_midi_event ghash_clmulni_intel snd_rawmidi i915 snd_seq iwlwifi snd_seq_device aesni_intel snd_timer dell_wmi cec dell_smbios aes_x86_64 crypto_simd dcdbas drm_kms_helper cryptd snd dell_wmi_descriptor cfg80211 glue_helper wmi_bmof intel_wmi_thunderbolt soundcore input_leds rtsx_pci_ms serio_raw drm memstick ucsi_acpi intel_gtt mei_me hid_multitouch processor_thermal_device i2c_algo_bit typec_ucsi fb_sys_fops syscopyarea mei idma64 intel_rapl_common sysfillrect virt_dma intel_xhci_usb_role_switch sysimgblt roles intel_pch_thermal intel_soc_dts_iosf typec soc_button_array intel_vbtn mac_hid intel_hid int3400_thermal int3403_thermal sparse_keymap acpi_thermal_rel int340x_thermal_zone acpi_pad sch_fq_codel parport_pc ppdev lp parport efivarfs ip_tables x_tables autofs4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear usbhid hid_generic
-rtsx_pci_sdmmc rtsx_pci
-[   31.769605]  i2c_i801 intel_lpss_pci i2c_hid intel_lpss wmi hid pinctrl_sunrisepoint video pinctrl_intel
-[   31.769613] CR2: 00000000000000ed
-[   31.769615] ---[ end trace 18eaad00960f2046 ]---
-[   31.769618] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   31.769621] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   31.769622] RSP: 0018:ffffbc40c2253d10 EFLAGS: 00010202
-[   31.769624] RAX: 0000000000000080 RBX: ffffa01ac2098460 RCX: 0000000000000007
-[   31.769625] RDX: ffffbc40c2253d50 RSI: 000000000000007d RDI: ffffa01ac2098000
-[   31.769627] RBP: ffffa01ac2098460 R08: 0000000000000000 R09: 0000000000000000
-[   31.769628] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01ac2098038
-[   31.769630] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01ac2098460
-[   31.769632] FS:  00007f33320c5700(0000) GS:ffffa01b6e3c0000(0000) knlGS:0000000000000000
-[   31.769633] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   31.769635] CR2: 00000000000000ed CR3: 000000046be2e005 CR4: 00000000003606e0
-[   43.255937] BUG: kernel NULL pointer dereference, address: 00000000000000ed
-[   43.255943] #PF: supervisor read access in kernel mode
-[   43.255946] #PF: error_code(0x0000) - not-present page
-[   43.255949] PGD 0 P4D 0
-[   43.255954] Oops: 0000 [#2] SMP PTI
-[   43.255960] CPU: 7 PID: 797 Comm: sd-resolve Tainted: G      D    OE     5.3.0-rc8 #14
-[   43.255963] Hardware name: Dell Inc. XPS 13 9360/02PG84, BIOS 2.12.0 05/26/2019
-[   43.255971] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   43.255976] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   43.255979] RSP: 0018:ffffbc40c0b9bd10 EFLAGS: 00010202
-[   43.255982] RAX: 0000000000000080 RBX: ffffa01b66018960 RCX: 0000000000000007
-[   43.255984] RDX: ffffbc40c0b9bd50 RSI: 000000000000007d RDI: ffffa01b66018500
-[   43.255986] RBP: ffffa01b66018960 R08: 0000000000000000 R09: 0000000000000000
-[   43.255988] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01b66018538
-[   43.255990] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01b66018960
-[   43.255993] FS:  00007f37b47a1700(0000) GS:ffffa01b6e3c0000(0000) knlGS:0000000000000000
-[   43.255995] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   43.255997] CR2: 00000000000000ed CR3: 0000000464eca004 CR4: 00000000003606e0
-[   43.255998] Call Trace:
-[   43.256008]  ip6_datagram_dst_update+0x156/0x280
-[   43.256014]  __ip6_datagram_connect+0x1dc/0x380
-[   43.256019]  ip6_datagram_connect+0x27/0x40
-[   43.256025]  __sys_connect+0xd0/0x100
-[   43.256034]  ? syscall_trace_enter+0x131/0x2c0
-[   43.256039]  __x64_sys_connect+0x16/0x20
-[   43.256044]  do_syscall_64+0x4f/0x120
-[   43.256051]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   43.256056] RIP: 0033:0x7f37b543bb57
-[   43.256061] Code: 0f 1f 00 41 54 41 89 d4 55 48 89 f5 53 89 fb 48 83 ec 10 e8 8b d2 00 00 44 89 e2 48 89 ee 89 df 41 89 c0 b8 2a 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 89 44 24 0c e8 c5 d2 00 00 8b 44
-[   43.256065] RSP: 002b:00007f37b479b410 EFLAGS: 00000293 ORIG_RAX: 000000000000002a
-[   43.256069] RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007f37b543bb57
-[   43.256071] RDX: 000000000000001c RSI: 00007f37ac003010 RDI: 000000000000000c
-[   43.256073] RBP: 00007f37ac003010 R08: 0000000000000000 R09: 0000000000000000
-[   43.256075] R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000001c
-[   43.256077] R13: 000000000000000c R14: 000000000000000a R15: 00007f37ac002fe0
-[   43.256080] Modules linked in: rfcomm msr nf_log_ipv4 nf_log_common xt_LOG xt_CHECKSUM iptable_mangle xt_MASQUERADE iptable_nat wireguard(OE) nf_nat ip6_udp_tunnel udp_tunnel ccm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter cmac bnep uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 btusb videobuf2_common btrtl btbcm btintel videodev bluetooth mc ecdh_generic ecc snd_hda_codec_hdmi binfmt_misc x86_pkg_temp_thermal intel_powerclamp coretemp joydev snd_hda_codec_realtek snd_hda_codec_generic snd_soc_skl kvm_intel snd_soc_hdac_hda snd_hda_ext_core snd_soc_skl_ipc kvm snd_soc_sst_ipc irqbypass snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core snd_compress ac97_bus snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core iwlmvm snd_hwdep snd_pcm crct10dif_pclmul nls_iso8859_1 mac80211 dell_laptop ledtrig_audio
-snd_seq_midi libarc4
-[   43.256123]  mei_hdcp crc32_pclmul intel_rapl_msr snd_seq_midi_event ghash_clmulni_intel snd_rawmidi i915 snd_seq iwlwifi snd_seq_device aesni_intel snd_timer dell_wmi cec dell_smbios aes_x86_64 crypto_simd dcdbas drm_kms_helper cryptd snd dell_wmi_descriptor cfg80211 glue_helper wmi_bmof intel_wmi_thunderbolt soundcore input_leds rtsx_pci_ms serio_raw drm memstick ucsi_acpi intel_gtt mei_me hid_multitouch processor_thermal_device i2c_algo_bit typec_ucsi fb_sys_fops syscopyarea mei idma64 intel_rapl_common sysfillrect virt_dma intel_xhci_usb_role_switch sysimgblt roles intel_pch_thermal intel_soc_dts_iosf typec soc_button_array intel_vbtn mac_hid intel_hid int3400_thermal int3403_thermal sparse_keymap acpi_thermal_rel int340x_thermal_zone acpi_pad sch_fq_codel parport_pc ppdev lp parport efivarfs ip_tables x_tables autofs4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear usbhid hid_generic
-rtsx_pci_sdmmc rtsx_pci
-[   43.256179]  i2c_i801 intel_lpss_pci i2c_hid intel_lpss wmi hid pinctrl_sunrisepoint video pinctrl_intel
-[   43.256188] CR2: 00000000000000ed
-[   43.256192] ---[ end trace 18eaad00960f2047 ]---
-[   43.256196] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   43.256200] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   43.256202] RSP: 0018:ffffbc40c2253d10 EFLAGS: 00010202
-[   43.256204] RAX: 0000000000000080 RBX: ffffa01ac2098460 RCX: 0000000000000007
-[   43.256206] RDX: ffffbc40c2253d50 RSI: 000000000000007d RDI: ffffa01ac2098000
-[   43.256208] RBP: ffffa01ac2098460 R08: 0000000000000000 R09: 0000000000000000
-[   43.256209] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01ac2098038
-[   43.256211] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01ac2098460
-[   43.256213] FS:  00007f37b47a1700(0000) GS:ffffa01b6e3c0000(0000) knlGS:0000000000000000
-[   43.256216] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   43.256217] CR2: 00000000000000ed CR3: 0000000464eca004 CR4: 00000000003606e0
-[   46.137611] dst_release: dst:00000000f80c721f refcnt:-1
-[   46.137627] dst_release: dst:00000000f80c721f refcnt:-2
-[   46.137635] dst_release: dst:00000000f80c721f refcnt:-3
-[   46.137642] dst_release: dst:00000000f80c721f refcnt:-4
-[   46.137649] dst_release: dst:00000000f80c721f refcnt:-5
-[   46.137656] dst_release: dst:00000000f80c721f refcnt:-6
-[   46.137663] dst_release: dst:00000000f80c721f refcnt:-7
-[   46.137669] dst_release: dst:00000000f80c721f refcnt:-8
-[   46.137900] BUG: kernel NULL pointer dereference, address: 00000000000000d1
-[   46.137902] #PF: supervisor read access in kernel mode
-[   46.137904] #PF: error_code(0x0000) - not-present page
-[   46.137905] PGD 80000003d7b10067 P4D 80000003d7b10067 PUD 0
-[   46.137908] Oops: 0000 [#3] SMP PTI
-[   46.137910] CPU: 3 PID: 3156 Comm: Socket Thread Tainted: G      D    OE     5.3.0-rc8 #14
-[   46.137911] Hardware name: Dell Inc. XPS 13 9360/02PG84, BIOS 2.12.0 05/26/2019
-[   46.137915] RIP: 0010:sk_setup_caps+0x38/0x130
-[   46.137917] Code: 53 48 89 fb 66 89 47 78 c7 87 88 01 00 00 00 00 00 00 48 89 f7 48 87 bb 38 01 00 00 e8 11 d0 02 00 48 8b 45 00 b9 01 00 00 00 <48> 8b 80 d0 00 00 00 48 0b 83 f8 01 00 00 48 89 c2 48 0d 00 00 1d
-[   46.137918] RSP: 0018:ffffbc40c0ecfcf8 EFLAGS: 00010246
-[   46.137920] RAX: 0000000000000001 RBX: ffffa01b1fe60000 RCX: 0000000000000001
-[   46.137921] RDX: 0000000000000000 RSI: ffffa01b5f588100 RDI: 0000000000000000
-[   46.137922] RBP: ffffa01b5f588100 R08: 0000000000000006 R09: 020401e0033c0026
-[   46.137923] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffbc40c0ecfe88
-[   46.137924] R13: 0000000000000000 R14: ffffa01b1fe60888 R15: 0000000000000000
-[   46.137925] FS:  00007fde8d541700(0000) GS:ffffa01b6e2c0000(0000) knlGS:0000000000000000
-[   46.137926] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   46.137927] CR2: 00000000000000d1 CR3: 0000000411536002 CR4: 00000000003606e0
-[   46.137928] Call Trace:
-[   46.137934]  tcp_v6_connect+0x405/0x5f0
-[   46.137938]  __inet_stream_connect+0xd1/0x370
-[   46.137941]  ? tomoyo_socket_connect_permission+0xa2/0xf0
-[   46.137943]  inet_stream_connect+0x36/0x50
-[   46.137945]  __sys_connect+0xd0/0x100
-[   46.137947]  ? __sys_setsockopt+0x16d/0x190
-[   46.137948]  __x64_sys_connect+0x16/0x20
-[   46.137951]  do_syscall_64+0x4f/0x120
-[   46.137954]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   46.137957] RIP: 0033:0x7fde9eceaf57
-[   46.137958] Code: 44 00 00 41 54 41 89 d4 55 48 89 f5 53 89 fb 48 83 ec 10 e8 9b fa ff ff 44 89 e2 48 89 ee 89 df 41 89 c0 b8 2a 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 89 44 24 0c e8 d5 fa ff ff 8b 44
-[   46.137959] RSP: 002b:00007fde8d540500 EFLAGS: 00000293 ORIG_RAX: 000000000000002a
-[   46.137961] RAX: ffffffffffffffda RBX: 000000000000007f RCX: 00007fde9eceaf57
-[   46.137962] RDX: 000000000000001c RSI: 00007fde8d540590 RDI: 000000000000007f
-[   46.137963] RBP: 00007fde8d540590 R08: 0000000000000000 R09: 0000000000000000
-[   46.137963] R10: 000000000000002e R11: 0000000000000293 R12: 000000000000001c
-[   46.137964] R13: 00007fde801e05e0 R14: 000000000000001c R15: 0000000000000014
-[   46.137966] Modules linked in: rfcomm msr nf_log_ipv4 nf_log_common xt_LOG xt_CHECKSUM iptable_mangle xt_MASQUERADE iptable_nat wireguard(OE) nf_nat ip6_udp_tunnel udp_tunnel ccm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter cmac bnep uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 btusb videobuf2_common btrtl btbcm btintel videodev bluetooth mc ecdh_generic ecc snd_hda_codec_hdmi binfmt_misc x86_pkg_temp_thermal intel_powerclamp coretemp joydev snd_hda_codec_realtek snd_hda_codec_generic snd_soc_skl kvm_intel snd_soc_hdac_hda snd_hda_ext_core snd_soc_skl_ipc kvm snd_soc_sst_ipc irqbypass snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core snd_compress ac97_bus snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core iwlmvm snd_hwdep snd_pcm crct10dif_pclmul nls_iso8859_1 mac80211 dell_laptop ledtrig_audio
-snd_seq_midi libarc4
-[   46.137991]  mei_hdcp crc32_pclmul intel_rapl_msr snd_seq_midi_event ghash_clmulni_intel snd_rawmidi i915 snd_seq iwlwifi snd_seq_device aesni_intel snd_timer dell_wmi cec dell_smbios aes_x86_64 crypto_simd dcdbas drm_kms_helper cryptd snd dell_wmi_descriptor cfg80211 glue_helper wmi_bmof intel_wmi_thunderbolt soundcore input_leds rtsx_pci_ms serio_raw drm memstick ucsi_acpi intel_gtt mei_me hid_multitouch processor_thermal_device i2c_algo_bit typec_ucsi fb_sys_fops syscopyarea mei idma64 intel_rapl_common sysfillrect virt_dma intel_xhci_usb_role_switch sysimgblt roles intel_pch_thermal intel_soc_dts_iosf typec soc_button_array intel_vbtn mac_hid intel_hid int3400_thermal int3403_thermal sparse_keymap acpi_thermal_rel int340x_thermal_zone acpi_pad sch_fq_codel parport_pc ppdev lp parport efivarfs ip_tables x_tables autofs4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear usbhid hid_generic
-rtsx_pci_sdmmc rtsx_pci
-[   46.138017]  i2c_i801 intel_lpss_pci i2c_hid intel_lpss wmi hid pinctrl_sunrisepoint video pinctrl_intel
-[   46.138022] CR2: 00000000000000d1
-[   46.138024] ---[ end trace 18eaad00960f2048 ]---
-[   46.138026] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   46.138027] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   46.138028] RSP: 0018:ffffbc40c2253d10 EFLAGS: 00010202
-[   46.138030] RAX: 0000000000000080 RBX: ffffa01ac2098460 RCX: 0000000000000007
-[   46.138030] RDX: ffffbc40c2253d50 RSI: 000000000000007d RDI: ffffa01ac2098000
-[   46.138031] RBP: ffffa01ac2098460 R08: 0000000000000000 R09: 0000000000000000
-[   46.138032] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01ac2098038
-[   46.138033] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01ac2098460
-[   46.138034] FS:  00007fde8d541700(0000) GS:ffffa01b6e2c0000(0000) knlGS:0000000000000000
-[   46.138035] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   46.138036] CR2: 00000000000000d1 CR3: 0000000411536002 CR4: 00000000003606e0
-[   90.518474] dst_release: dst:00000000f80c721f refcnt:-9
-[   90.518495] dst_release: dst:00000000f80c721f refcnt:-10
-[   90.518504] dst_release: dst:00000000f80c721f refcnt:-11
-[   90.518511] dst_release: dst:00000000f80c721f refcnt:-12
-[   90.518588] dst_release: dst:00000000f80c721f refcnt:-13
-[   90.521844] dst_release: dst:00000000e32e020e refcnt:-1
-[   90.521891] dst_release: dst:00000000e32e020e refcnt:-2
-[   90.522907] BUG: kernel NULL pointer dereference, address: 00000000000000d1
-[   90.522911] #PF: supervisor read access in kernel mode
-[   90.522912] #PF: error_code(0x0000) - not-present page
-[   90.522914] PGD 0 P4D 0
-[   90.522918] Oops: 0000 [#4] SMP PTI
-[   90.522921] CPU: 3 PID: 3773 Comm: http Tainted: G      D    OE     5.3.0-rc8 #14
-[   90.522922] Hardware name: Dell Inc. XPS 13 9360/02PG84, BIOS 2.12.0 05/26/2019
-[   90.522928] RIP: 0010:sk_setup_caps+0x38/0x130
-[   90.522931] Code: 53 48 89 fb 66 89 47 78 c7 87 88 01 00 00 00 00 00 00 48 89 f7 48 87 bb 38 01 00 00 e8 11 d0 02 00 48 8b 45 00 b9 01 00 00 00 <48> 8b 80 d0 00 00 00 48 0b 83 f8 01 00 00 48 89 c2 48 0d 00 00 1d
-[   90.522932] RSP: 0018:ffffbc40c1c87cf8 EFLAGS: 00010246
-[   90.522934] RAX: 0000000000000001 RBX: ffffa01aca530000 RCX: 0000000000000001
-[   90.522936] RDX: 0000000000000000 RSI: ffffa01b5f588100 RDI: 0000000000000000
-[   90.522937] RBP: ffffa01b5f588100 R08: 0000000000000000 R09: 0000000000000000
-[   90.522939] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01aca530038
-[   90.522940] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01aca530460
-[   90.522942] FS:  00007ff174d29a40(0000) GS:ffffa01b6e2c0000(0000) knlGS:0000000000000000
-[   90.522944] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   90.522945] CR2: 00000000000000d1 CR3: 00000003cd750006 CR4: 00000000003606e0
-[   90.522947] Call Trace:
-[   90.522953]  ip6_sk_dst_store_flow+0x9a/0xb0
-[   90.522958]  ip6_datagram_dst_update+0x156/0x280
-[   90.522963]  __ip6_datagram_connect+0x1dc/0x380
-[   90.522966]  ip6_datagram_connect+0x27/0x40
-[   90.522969]  __sys_connect+0xd0/0x100
-[   90.522972]  ? __sys_socket+0xb7/0xe0
-[   90.522974]  __x64_sys_connect+0x16/0x20
-[   90.522978]  do_syscall_64+0x4f/0x120
-[   90.522983]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   90.522987] RIP: 0033:0x7ff1758f5b24
-[   90.522989] Code: 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8d 05 b9 b8 0c 00 8b 00 85 c0 75 13 b8 2a 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 41 89 d4 55 48 89 f5 53
-[   90.522991] RSP: 002b:00007ffc0e6a79b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-[   90.522993] RAX: ffffffffffffffda RBX: 00007ffc0e6a7c30 RCX: 00007ff1758f5b24
-[   90.522994] RDX: 000000000000001c RSI: 0000556f0399faf0 RDI: 0000000000000003
-[   90.522995] RBP: 00007ffc0e6a8330 R08: 0000000000000018 R09: 0000000000000000
-[   90.522997] R10: 0000000000000009 R11: 0000000000000246 R12: 000000000000000d
-[   90.522998] R13: 0000000000000003 R14: 000000000000000a R15: 0000556f0399fac0
-[   90.523000] Modules linked in: rfcomm msr nf_log_ipv4 nf_log_common xt_LOG xt_CHECKSUM iptable_mangle xt_MASQUERADE iptable_nat wireguard(OE) nf_nat ip6_udp_tunnel udp_tunnel ccm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp tun bridge stp llc ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter cmac bnep uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_v4l2 btusb videobuf2_common btrtl btbcm btintel videodev bluetooth mc ecdh_generic ecc snd_hda_codec_hdmi binfmt_misc x86_pkg_temp_thermal intel_powerclamp coretemp joydev snd_hda_codec_realtek snd_hda_codec_generic snd_soc_skl kvm_intel snd_soc_hdac_hda snd_hda_ext_core snd_soc_skl_ipc kvm snd_soc_sst_ipc irqbypass snd_soc_sst_dsp snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core snd_compress ac97_bus snd_pcm_dmaengine snd_hda_intel snd_hda_codec snd_hda_core iwlmvm snd_hwdep snd_pcm crct10dif_pclmul nls_iso8859_1 mac80211 dell_laptop ledtrig_audio
-snd_seq_midi libarc4
-[   90.523039]  mei_hdcp crc32_pclmul intel_rapl_msr snd_seq_midi_event ghash_clmulni_intel snd_rawmidi i915 snd_seq iwlwifi snd_seq_device aesni_intel snd_timer dell_wmi cec dell_smbios aes_x86_64 crypto_simd dcdbas drm_kms_helper cryptd snd dell_wmi_descriptor cfg80211 glue_helper wmi_bmof intel_wmi_thunderbolt soundcore input_leds rtsx_pci_ms serio_raw drm memstick ucsi_acpi intel_gtt mei_me hid_multitouch processor_thermal_device i2c_algo_bit typec_ucsi fb_sys_fops syscopyarea mei idma64 intel_rapl_common sysfillrect virt_dma intel_xhci_usb_role_switch sysimgblt roles intel_pch_thermal intel_soc_dts_iosf typec soc_button_array intel_vbtn mac_hid intel_hid int3400_thermal int3403_thermal sparse_keymap acpi_thermal_rel int340x_thermal_zone acpi_pad sch_fq_codel parport_pc ppdev lp parport efivarfs ip_tables x_tables autofs4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear usbhid hid_generic
-rtsx_pci_sdmmc rtsx_pci
-[   90.523071]  i2c_i801 intel_lpss_pci i2c_hid intel_lpss wmi hid pinctrl_sunrisepoint video pinctrl_intel
-[   90.523076] CR2: 00000000000000d1
-[   90.523078] ---[ end trace 18eaad00960f2049 ]---
-[   90.523081] RIP: 0010:ip6_sk_dst_store_flow+0x7b/0xb0
-[   90.523082] Code: 48 8b 42 30 48 33 47 40 48 09 c1 0f b6 4f 12 b8 01 00 00 00 4d 0f 45 e1 31 db d3 e0 a9 bf ef ff ff 74 07 48 8b 9f f0 02 00 00 <48> 8b 46 70 31 d2 48 85 c0 74 0c 48 8b 40 10 48 85 c0 74 03 8b 50
-[   90.523083] RSP: 0018:ffffbc40c2253d10 EFLAGS: 00010202
-[   90.523084] RAX: 0000000000000080 RBX: ffffa01ac2098460 RCX: 0000000000000007
-[   90.523085] RDX: ffffbc40c2253d50 RSI: 000000000000007d RDI: ffffa01ac2098000
-[   90.523086] RBP: ffffa01ac2098460 R08: 0000000000000000 R09: 0000000000000000
-[   90.523087] R10: 83b567a7afeebe71 R11: ffffa01b5e85fb80 R12: ffffa01ac2098038
-[   90.523088] R13: 0000000000000000 R14: 0000000000000001 R15: ffffa01ac2098460
-[   90.523089] FS:  00007ff174d29a40(0000) GS:ffffa01b6e2c0000(0000) knlGS:0000000000000000
-[   90.523090] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   90.523091] CR2: 00000000000000d1 CR3: 00000003cd750006 CR4: 00000000003606e0
-[   90.558593] dst_release: dst:00000000c2af7d17 refcnt:-1
-[   90.558644] dst_release: dst:00000000c2af7d17 refcnt:-2
-[   90.575184] dst_release: dst:00000000c2af7d17 refcnt:-3
+On 2019/9/5 11:10, Jason Wang wrote:
+> On 2019/9/5 上午10:03, Yang Yingliang wrote:
+>>
+>> On 2019/9/3 18:50, Jason Wang wrote:
+>>> ----- Original Message -----
+>>>> On 2019/9/3 14:06, Jason Wang wrote:
+>>>>> On 2019/9/3 下午1:42, Yang Yingliang wrote:
+>>>>>> On 2019/9/3 11:03, Jason Wang wrote:
+>>>>>>> On 2019/9/3 上午9:45, Yang Yingliang wrote:
+>>>>>>>> On 2019/9/2 13:32, Jason Wang wrote:
+>>>>>>>>> On 2019/8/23 下午5:36, Yang Yingliang wrote:
+>>>>>>>>>> On 2019/8/23 11:05, Jason Wang wrote:
+>>>>>>>>>>> ----- Original Message -----
+>>>>>>>>>>>> On 2019/8/22 14:07, Yang Yingliang wrote:
+>>>>>>>>>>>>> On 2019/8/22 10:13, Jason Wang wrote:
+>>>>>>>>>>>>>> On 2019/8/20 上午10:28, Jason Wang wrote:
+>>>>>>>>>>>>>>> On 2019/8/20 上午9:25, David Miller wrote:
+>>>>>>>>>>>>>>>> From: Yang Yingliang <yangyingliang@huawei.com>
+>>>>>>>>>>>>>>>> Date: Mon, 19 Aug 2019 21:31:19 +0800
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> Call tun_attach() after register_netdevice() to make sure
+>>>>>>>>>>>>>>>>> tfile->tun
+>>>>>>>>>>>>>>>>> is not published until the netdevice is registered. So the
+>>>>>>>>>>>>>>>>> read/write
+>>>>>>>>>>>>>>>>> thread can not use the tun pointer that may freed by
+>>>>>>>>>>>>>>>>> free_netdev().
+>>>>>>>>>>>>>>>>> (The tun and dev pointer are allocated by
+>>>>>>>>>>>>>>>>> alloc_netdev_mqs(), they
+>>>>>>>>>>>>>>>>> can
+>>>>>>>>>>>>>>>>> be freed by netdev_freemem().)
+>>>>>>>>>>>>>>>> register_netdevice() must always be the last operation in
+>>>>>>>>>>>>>>>> the order of
+>>>>>>>>>>>>>>>> network device setup.
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> At the point register_netdevice() is called, the device is
+>>>>>>>>>>>>>>>> visible
+>>>>>>>>>>>>>>>> globally
+>>>>>>>>>>>>>>>> and therefore all of it's software state must be fully
+>>>>>>>>>>>>>>>> initialized and
+>>>>>>>>>>>>>>>> ready for us.
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> You're going to have to find another solution to these
+>>>>>>>>>>>>>>>> problems.
+>>>>>>>>>>>>>>> The device is loosely coupled with sockets/queues. Each
+>>>>>>>>>>>>>>> side is
+>>>>>>>>>>>>>>> allowed to be go away without caring the other side. So
+>>>>>>>>>>>>>>> in this
+>>>>>>>>>>>>>>> case, there's a small window that network stack think the
+>>>>>>>>>>>>>>> device has
+>>>>>>>>>>>>>>> one queue but actually not, the code can then safely drop
+>>>>>>>>>>>>>>> them.
+>>>>>>>>>>>>>>> Maybe it's ok here with some comments?
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Or if not, we can try to hold the device before tun_attach
+>>>>>>>>>>>>>>> and drop
+>>>>>>>>>>>>>>> it after register_netdevice().
+>>>>>>>>>>>>>> Hi Yang:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> I think maybe we can try to hold refcnt instead of playing
+>>>>>>>>>>>>>> real num
+>>>>>>>>>>>>>> queues here. Do you want to post a V4?
+>>>>>>>>>>>>> I think the refcnt can prevent freeing the memory in this
+>>>>>>>>>>>>> case.
+>>>>>>>>>>>>> When register_netdevice() failed, free_netdev() will be called
+>>>>>>>>>>>>> directly,
+>>>>>>>>>>>>> dev->pcpu_refcnt and dev are freed without checking refcnt of
+>>>>>>>>>>>>> dev.
+>>>>>>>>>>>> How about using patch-v1 that using a flag to check whether the
+>>>>>>>>>>>> device
+>>>>>>>>>>>> registered successfully.
+>>>>>>>>>>>>
+>>>>>>>>>>> As I said, it lacks sufficient locks or barriers. To be clear, I
+>>>>>>>>>>> meant
+>>>>>>>>>>> something like (compile-test only):
+>>>>>>>>>>>
+>>>>>>>>>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>>>>>>>>>>> index db16d7a13e00..e52678f9f049 100644
+>>>>>>>>>>> --- a/drivers/net/tun.c
+>>>>>>>>>>> +++ b/drivers/net/tun.c
+>>>>>>>>>>> @@ -2828,6 +2828,7 @@ static int tun_set_iff(struct net *net,
+>>>>>>>>>>> struct file *file, struct ifreq *ifr)
+>>>>>>>>>>>                                  (ifr->ifr_flags & TUN_FEATURES);
+>>>>>>>>>>> INIT_LIST_HEAD(&tun->disabled);
+>>>>>>>>>>> +               dev_hold(dev);
+>>>>>>>>>>>                    err = tun_attach(tun, file, false,
+>>>>>>>>>>> ifr->ifr_flags & IFF_NAPI,
+>>>>>>>>>>>                                     ifr->ifr_flags &
+>>>>>>>>>>> IFF_NAPI_FRAGS);
+>>>>>>>>>>>                    if (err < 0)
+>>>>>>>>>>> @@ -2836,6 +2837,7 @@ static int tun_set_iff(struct net *net,
+>>>>>>>>>>> struct file *file, struct ifreq *ifr)
+>>>>>>>>>>>                    err = register_netdevice(tun->dev);
+>>>>>>>>>>>                    if (err < 0)
+>>>>>>>>>>>                            goto err_detach;
+>>>>>>>>>>> +               dev_put(dev);
+>>>>>>>>>>>            }
+>>>>>>>>>>>              netif_carrier_on(tun->dev);
+>>>>>>>>>>> @@ -2852,11 +2854,13 @@ static int tun_set_iff(struct net *net,
+>>>>>>>>>>> struct file *file, struct ifreq *ifr)
+>>>>>>>>>>>            return 0;
+>>>>>>>>>>>       err_detach:
+>>>>>>>>>>> +       dev_put(dev);
+>>>>>>>>>>>            tun_detach_all(dev);
+>>>>>>>>>>>            /* register_netdevice() already called
+>>>>>>>>>>> tun_free_netdev() */
+>>>>>>>>>>>            goto err_free_dev;
+>>>>>>>>>>>       err_free_flow:
+>>>>>>>>>>> +       dev_put(dev);
+>>>>>>>>>>>            tun_flow_uninit(tun);
+>>>>>>>>>>> security_tun_dev_free_security(tun->security);
+>>>>>>>>>>>     err_free_stat:
+>>>>>>>>>>>
+>>>>>>>>>>> What's your thought?
+>>>>>>>>>> The dev pointer are freed without checking the refcount in
+>>>>>>>>>> free_netdev() called by err_free_dev
+>>>>>>>>>>
+>>>>>>>>>> path, so I don't understand how the refcount protects this
+>>>>>>>>>> pointer.
+>>>>>>>>>>
+>>>>>>>>> The refcount are guaranteed to be zero there, isn't it?
+>>>>>>>> No, it's not.
+>>>>>>>>
+>>>>>>>> err_free_dev:
+>>>>>>>>           free_netdev(dev);
+>>>>>>>>
+>>>>>>>> void free_netdev(struct net_device *dev)
+>>>>>>>> {
+>>>>>>>> ...
+>>>>>>>>           /* pcpu_refcnt can be freed without checking refcount */
+>>>>>>>>           free_percpu(dev->pcpu_refcnt);
+>>>>>>>>           dev->pcpu_refcnt = NULL;
+>>>>>>>>
+>>>>>>>>           /*  Compatibility with error handling in drivers */
+>>>>>>>>           if (dev->reg_state == NETREG_UNINITIALIZED) {
+>>>>>>>>                   /* dev can be freed without checking refcount */
+>>>>>>>>                   netdev_freemem(dev);
+>>>>>>>>                   return;
+>>>>>>>>           }
+>>>>>>>> ...
+>>>>>>>> }
+>>>>>>> Right, but what I meant is in my patch, when code reaches
+>>>>>>> free_netdev() the refcnt is zero. What did I miss?
+>>>>>> Yes, but it can't fix the UAF problem.
+>>>>> Well, it looks to me that the dev_put() in tun_put() won't release the
+>>>>> device in this case.
+>>>> The device is not released in tun_put().
+>>>> This is how the UAF occurs:
+>>>>
+>>>>            CPUA                                           CPUB
+>>>>        tun_set_iff()
+>>>>          alloc_netdev_mqs()
+>>>>          tun_attach()
+>>>>                                                       
+>>>> tun_chr_read_iter()
+>>>>                                                          tun_get()
+>>>>                                                          tun_do_read()
+>>>>                                                           
+>>>> tun_ring_recv()
+>>>>          register_netdevice() <-- inject error
+>>>>          goto err_detach
+>>>>          tun_detach_all() <-- set RCV_SHUTDOWN
+>>>>          free_netdev() <-- called from
+>>>>                           err_free_dev path
+>>>>            netdev_freemem() <-- free the memory
+>>>>                              without check refcount
+>>>>            (In this path, the refcount cannot prevent
+>>>>             freeing the memory of dev, and the memory
+>>>>             will be used by dev_put() called by
+>>>>             tun_chr_read_iter() on CPUB.)
+>>>>                                                           (Break from
+>>>>                                                          
+>>>> tun_ring_recv(),
+>>>>                                                           because
+>>>> RCV_SHUTDOWN
+>>>>                                                           is set)
+>>>>                                                         tun_put()
+>>>>                                                         dev_put() <--
+>>>> use the
+>>>>                                                         memory freed by
+>>>>                                                         netdev_freemem()
+>>>>
+>>>>
+>>> My bad, thanks for the patience. Since all evil come from the
+>>> tfile->tun, how about delay the publishing of tfile->tun until the
+>>> success of registration to make sure dev_put() and dev_hold() work.
+>>> (Compile test only)
+>>>
+>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>>> index db16d7a13e00..aab0be40d443 100644
+>>> --- a/drivers/net/tun.c
+>>> +++ b/drivers/net/tun.c
+>>> @@ -787,7 +787,8 @@ static void tun_detach_all(struct net_device *dev)
+>>>    }
+>>>      static int tun_attach(struct tun_struct *tun, struct file *file,
+>>> -              bool skip_filter, bool napi, bool napi_frags)
+>>> +              bool skip_filter, bool napi, bool napi_frags,
+>>> +              bool publish_tun)
+>>>    {
+>>>        struct tun_file *tfile = file->private_data;
+>>>        struct net_device *dev = tun->dev;
+>>> @@ -870,7 +871,8 @@ static int tun_attach(struct tun_struct *tun,
+>>> struct file *file,
+>>>         * initialized tfile; otherwise we risk using half-initialized
+>>>         * object.
+>>>         */
+>>> -    rcu_assign_pointer(tfile->tun, tun);
+>>> +    if (publish_tun)
+>>> +        rcu_assign_pointer(tfile->tun, tun);
+>>>        rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
+>>>        tun->numqueues++;
+>>>        tun_set_real_num_queues(tun);
+>>> @@ -2730,7 +2732,7 @@ static int tun_set_iff(struct net *net, struct
+>>> file *file, struct ifreq *ifr)
+>>>              err = tun_attach(tun, file, ifr->ifr_flags & IFF_NOFILTER,
+>>>                     ifr->ifr_flags & IFF_NAPI,
+>>> -                 ifr->ifr_flags & IFF_NAPI_FRAGS);
+>>> +                 ifr->ifr_flags & IFF_NAPI_FRAGS, true);
+>>>            if (err < 0)
+>>>                return err;
+>>>    @@ -2829,13 +2831,17 @@ static int tun_set_iff(struct net *net,
+>>> struct file *file, struct ifreq *ifr)
+>>>              INIT_LIST_HEAD(&tun->disabled);
+>>>            err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+>>> -                 ifr->ifr_flags & IFF_NAPI_FRAGS);
+>>> +                 ifr->ifr_flags & IFF_NAPI_FRAGS, false);
+>>>            if (err < 0)
+>>>                goto err_free_flow;
+>>>              err = register_netdevice(tun->dev);
+>>>            if (err < 0)
+>>>                goto err_detach;
+>>> +        /* free_netdev() won't check refcnt, to aovid race
+>>> +         * with dev_put() we need publish tun after registration.
+>>> +         */
+>>> +        rcu_assign_pointer(tfile->tun, tun);
+>>>        }
+>>>          netif_carrier_on(tun->dev);
+>>> @@ -2978,7 +2984,7 @@ static int tun_set_queue(struct file *file,
+>>> struct ifreq *ifr)
+>>>            if (ret < 0)
+>>>                goto unlock;
+>>>            ret = tun_attach(tun, file, false, tun->flags & IFF_NAPI,
+>>> -                 tun->flags & IFF_NAPI_FRAGS);
+>>> +                 tun->flags & IFF_NAPI_FRAGS, true);
+>>>        } else if (ifr->ifr_flags & IFF_DETACH_QUEUE) {
+>>>            tun = rtnl_dereference(tfile->tun);
+>>>            if (!tun || !(tun->flags & IFF_MULTI_QUEUE) ||
+>>> tfile->detached)
+>> I tested this patch, it can fix this UAF.
+>>
+>> But as Eric replied in my patch v1, tun_get() will return NULL as long
+>> as tun_set_iff() (TUNSETIFF ioctl())
+>> has not yet been called.
+>
+> Isn't this the expected behavior. Without TUNSETIFF, it means the
+> netdevice is not attached, tun_get() should return NULL here.
+>
+>
+>> This could break some applications, since tun_get() is used from poll()
+>> and other syscalls.
+>>
+>> I think it should return '-EAGIAN' instead of '-EBADFD' in this way. I
+>> did some change in patch v1,
+>> if it's OK, I will send a v4.
+>>
+>>   drivers/net/tun.c | 34 ++++++++++++++++++++++++++++++----
+>>   1 file changed, 30 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index db16d7a13e00..0abc654010e3 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -115,6 +115,7 @@ do {                                \
+>>   /* High bits in flags field are unused. */
+>>   #define TUN_VNET_LE     0x80000000
+>>   #define TUN_VNET_BE     0x40000000
+>> +#define TUN_DEV_REGISTERED    0x20000000
+>>
+>>   #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
+>>                 IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
+>> @@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile,
+>> bool clean)
+>>               netif_carrier_off(tun->dev);
+>>
+>>               if (!(tun->flags & IFF_PERSIST) &&
+>> -                tun->dev->reg_state == NETREG_REGISTERED)
+>> +                tun->dev->reg_state == NETREG_REGISTERED) {
+>> +                tun->flags &= ~TUN_DEV_REGISTERED;
+>
+> As I said for previous versions. It's not good that try to invent new
+> internal state like this, and you need carefully to deal with the
+> synchronization, it could be lock or barriers. Consider the
+> synchronization of tun is already complex, let's better try to avoid
+> adding more but using exist mechanism, e.g pointer publishing through RCU.
+OK, need I post a V4 by using the diff file you sent ?
+>
+> Thanks
+>
+>
+>>                   unregister_netdevice(tun->dev);
+>> +            }
+>>           }
+>>           if (tun)
+>>               xdp_rxq_info_unreg(&tfile->xdp_rxq);
+>> @@ -884,8 +887,12 @@ static struct tun_struct *tun_get(struct tun_file
+>> *tfile)
+>>
+>>       rcu_read_lock();
+>>       tun = rcu_dereference(tfile->tun);
+>> -    if (tun)
+>> -        dev_hold(tun->dev);
+>> +    if (tun) {
+>> +        if (tun->flags & TUN_DEV_REGISTERED)
+>> +            dev_hold(tun->dev);
+>> +        else
+>> +            tun = ERR_PTR(-EAGAIN);
+>> +    }
+>>       rcu_read_unlock();
+>>
+>>       return tun;
+>> @@ -1428,7 +1435,7 @@ static __poll_t tun_chr_poll(struct file *file,
+>> poll_table *wait)
+>>       struct sock *sk;
+>>       __poll_t mask = 0;
+>>
+>> -    if (!tun)
+>> +    if (IS_ERR_OR_NULL(tun))
+>>           return EPOLLERR;
+>>
+>>       sk = tfile->socket.sk;
+>> @@ -2017,6 +2024,9 @@ static ssize_t tun_chr_write_iter(struct kiocb
+>> *iocb, struct iov_iter *from)
+>>       if (!tun)
+>>           return -EBADFD;
+>>
+>> +    if (IS_ERR(tun))
+>> +        return PTR_ERR(tun);
+>> +
+>>       result = tun_get_user(tun, tfile, NULL, from,
+>>                     file->f_flags & O_NONBLOCK, false);
+>>
+>> @@ -2242,6 +2252,10 @@ static ssize_t tun_chr_read_iter(struct kiocb
+>> *iocb, struct iov_iter *to)
+>>
+>>       if (!tun)
+>>           return -EBADFD;
+>> +
+>> +    if (IS_ERR(tun))
+>> +        return PTR_ERR(tun);
+>> +
+>>       ret = tun_do_read(tun, tfile, to, file->f_flags & O_NONBLOCK, NULL);
+>>       ret = min_t(ssize_t, ret, len);
+>>       if (ret > 0)
+>> @@ -2525,6 +2539,9 @@ static int tun_sendmsg(struct socket *sock,
+>> struct msghdr *m, size_t total_len)
+>>       if (!tun)
+>>           return -EBADFD;
+>>
+>> +    if (IS_ERR(tun))
+>> +        return PTR_ERR(tun);
+>> +
+>>       if (ctl && (ctl->type == TUN_MSG_PTR)) {
+>>           struct tun_page tpage;
+>>           int n = ctl->num;
+>> @@ -2573,6 +2590,11 @@ static int tun_recvmsg(struct socket *sock,
+>> struct msghdr *m, size_t total_len,
+>>           goto out_free;
+>>       }
+>>
+>> +    if (IS_ERR(tun)) {
+>> +        ret = PTR_ERR(tun);
+>> +        goto out_free;
+>> +    }
+>> +
+>>       if (flags & ~(MSG_DONTWAIT|MSG_TRUNC|MSG_ERRQUEUE)) {
+>>           ret = -EINVAL;
+>>           goto out_put_tun;
+>> @@ -2622,6 +2644,9 @@ static int tun_peek_len(struct socket *sock)
+>>       if (!tun)
+>>           return 0;
+>>
+>> +    if (IS_ERR(tun))
+>> +        return PTR_ERR(tun);
+>> +
+>>       ret = PTR_RING_PEEK_CALL(&tfile->tx_ring, tun_ptr_peek_len);
+>>       tun_put(tun);
+>>
+>> @@ -2836,6 +2861,7 @@ static int tun_set_iff(struct net *net, struct
+>> file *file, struct ifreq *ifr)
+>>           err = register_netdevice(tun->dev);
+>>           if (err < 0)
+>>               goto err_detach;
+>> +        tun->flags |= TUN_DEV_REGISTERED;
+>>       }
+>>
+>>       netif_carrier_on(tun->dev);
+
 
