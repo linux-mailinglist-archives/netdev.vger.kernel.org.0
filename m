@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6944AE635
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D306AE63F
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731308AbfIJJBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 05:01:16 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:55750 "EHLO huawei.com"
+        id S1728900AbfIJJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 05:01:09 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55646 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728341AbfIJJBL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 05:01:11 -0400
+        id S1726691AbfIJJBJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 05:01:09 -0400
 Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B8AC2C03910CED310B4D;
+        by Forcepoint Email with ESMTP id A907289DECA5443E5615;
         Tue, 10 Sep 2019 17:01:07 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Tue, 10 Sep 2019 17:01:00 +0800
+ 14.3.439.0; Tue, 10 Sep 2019 17:01:01 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
         Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 5/7] net: hns3: modify some logs format
-Date:   Tue, 10 Sep 2019 16:58:26 +0800
-Message-ID: <1568105908-60983-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 6/7] net: hns3: check NULL pointer before use
+Date:   Tue, 10 Sep 2019 16:58:27 +0800
+Message-ID: <1568105908-60983-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1568105908-60983-1-git-send-email-tanhuazhong@huawei.com>
 References: <1568105908-60983-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,80 +41,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Guangbin Huang <huangguangbin2@huawei.com>
 
-The pfc_en and pfc_map need to be displayed in hexadecimal notation,
-printing dma address should use %pad, and the end of printed string
-needs to be add "\n".
-
-This patch modifies them.
+This patch checks ops->set_default_reset_request whether is NULL
+before using it in function hns3_slot_reset.
 
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c      | 7 +++++--
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c  | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
- 3 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index 5cf4c1e..28961a6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -166,6 +166,7 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	struct hns3_enet_ring *ring;
- 	u32 tx_index, rx_index;
- 	u32 q_num, value;
-+	dma_addr_t addr;
- 	int cnt;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 8dbaf36..616cad0 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2006,7 +2006,8 @@ static pci_ers_result_t hns3_slot_reset(struct pci_dev *pdev)
  
- 	cnt = sscanf(&cmd_buf[8], "%u %u", &q_num, &tx_index);
-@@ -194,8 +195,9 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	}
- 
- 	tx_desc = &ring->desc[tx_index];
-+	addr = le64_to_cpu(tx_desc->addr);
- 	dev_info(dev, "TX Queue Num: %u, BD Index: %u\n", q_num, tx_index);
--	dev_info(dev, "(TX)addr: 0x%llx\n", tx_desc->addr);
-+	dev_info(dev, "(TX)addr: %pad\n", &addr);
- 	dev_info(dev, "(TX)vlan_tag: %u\n", tx_desc->tx.vlan_tag);
- 	dev_info(dev, "(TX)send_size: %u\n", tx_desc->tx.send_size);
- 	dev_info(dev, "(TX)vlan_tso: %u\n", tx_desc->tx.type_cs_vlan_tso);
-@@ -217,8 +219,9 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	rx_index = (cnt == 1) ? value : tx_index;
- 	rx_desc	 = &ring->desc[rx_index];
- 
-+	addr = le64_to_cpu(rx_desc->addr);
- 	dev_info(dev, "RX Queue Num: %u, BD Index: %u\n", q_num, rx_index);
--	dev_info(dev, "(RX)addr: 0x%llx\n", rx_desc->addr);
-+	dev_info(dev, "(RX)addr: %pad\n", &addr);
- 	dev_info(dev, "(RX)l234_info: %u\n", rx_desc->rx.l234_info);
- 	dev_info(dev, "(RX)pkt_len: %u\n", rx_desc->rx.pkt_len);
- 	dev_info(dev, "(RX)size: %u\n", rx_desc->rx.size);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-index 816f920..c063301 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-@@ -342,7 +342,7 @@ static int hclge_ieee_setpfc(struct hnae3_handle *h, struct ieee_pfc *pfc)
- 	hdev->tm_info.pfc_en = pfc->pfc_en;
- 
- 	netif_dbg(h, drv, netdev,
--		  "set pfc: pfc_en=%u, pfc_map=%u, num_tc=%u\n",
-+		  "set pfc: pfc_en=%x, pfc_map=%x, num_tc=%u\n",
- 		  pfc->pfc_en, pfc_map, hdev->tm_info.num_tc);
- 
- 	hclge_tm_pfc_info_update(hdev);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 8d4dc1b..bc5bad3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3751,7 +3751,7 @@ static void hclge_reset_event(struct pci_dev *pdev, struct hnae3_handle *handle)
- 	else if (time_after(jiffies, (hdev->last_reset_time + 4 * 5 * HZ)))
- 		hdev->reset_level = HNAE3_FUNC_RESET;
- 
--	dev_info(&hdev->pdev->dev, "received reset event , reset type is %d",
-+	dev_info(&hdev->pdev->dev, "received reset event, reset type is %d\n",
- 		 hdev->reset_level);
- 
- 	/* request reset & schedule reset task */
+ 	ops = ae_dev->ops;
+ 	/* request the reset */
+-	if (ops->reset_event && ops->get_reset_level) {
++	if (ops->reset_event && ops->get_reset_level &&
++	    ops->set_default_reset_request) {
+ 		if (ae_dev->hw_err_reset_req) {
+ 			reset_type = ops->get_reset_level(ae_dev,
+ 						&ae_dev->hw_err_reset_req);
 -- 
 2.7.4
 
