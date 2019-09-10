@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF49AE636
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1AAAE634
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730201AbfIJJBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 05:01:16 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:55746 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729785AbfIJJBL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729881AbfIJJBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 10 Sep 2019 05:01:11 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55748 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729588AbfIJJBK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 05:01:10 -0400
 Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B27B7EE014CCFCA192FB;
+        by Forcepoint Email with ESMTP id ADFF15CEE0EE50052684;
         Tue, 10 Sep 2019 17:01:07 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Yonglong Liu <liuyonglong@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 3/7] net: hns3: fix shaper parameter algorithm
-Date:   Tue, 10 Sep 2019 16:58:24 +0800
-Message-ID: <1568105908-60983-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 4/7] net: hns3: fix port setting handle for fibre port
+Date:   Tue, 10 Sep 2019 16:58:25 +0800
+Message-ID: <1568105908-60983-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1568105908-60983-1-git-send-email-tanhuazhong@huawei.com>
 References: <1568105908-60983-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,59 +39,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonglong Liu <liuyonglong@huawei.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-Currently when hns3 driver configures the tm shaper to limit
-bandwidth below 20Mbit using the parameters calculated by
-hclge_shaper_para_calc(), the actual bandwidth limited by tm
-hardware module is not accurate enough, for example, 1.28 Mbit
-when the user is configuring 1 Mbit.
+For hardware doesn't support use specified speed and duplex
+to negotiate, it's unnecessary to check and modify the port
+speed and duplex for fibre port when autoneg is on.
 
-This patch adjusts the ir_calc to be closer to ir, and
-always calculate the ir_b parameter when user is configuring
-a small bandwidth. Also, removes an unnecessary parenthesis
-when calculating denominator.
-
-Fixes: 848440544b41 ("net: hns3: Add support of TX Scheduler & Shaper to HNS3 driver")
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Fixes: 22f48e24a23d ("net: hns3: add autoneg and change speed support for fibre port")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index e829101..9f0e35f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -81,16 +81,13 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
- 		return 0;
- 	} else if (ir_calc > ir) {
- 		/* Increasing the denominator to select ir_s value */
--		while (ir_calc > ir) {
-+		while (ir_calc >= ir && ir) {
- 			ir_s_calc++;
- 			ir_calc = DIVISOR_IR_B_126 / (tick * (1 << ir_s_calc));
- 		}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index f5a681d..680c350 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -726,6 +726,12 @@ static int hns3_check_ksettings_param(const struct net_device *netdev,
+ 	u8 duplex;
+ 	int ret;
  
--		if (ir_calc == ir)
--			*ir_b = 126;
--		else
--			*ir_b = (ir * tick * (1 << ir_s_calc) +
--				 (DIVISOR_CLK >> 1)) / DIVISOR_CLK;
-+		*ir_b = (ir * tick * (1 << ir_s_calc) + (DIVISOR_CLK >> 1)) /
-+			DIVISOR_CLK;
- 	} else {
- 		/* Increasing the numerator to select ir_u value */
- 		u32 numerator;
-@@ -104,7 +101,7 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
- 		if (ir_calc == ir) {
- 			*ir_b = 126;
- 		} else {
--			u32 denominator = (DIVISOR_CLK * (1 << --ir_u_calc));
-+			u32 denominator = DIVISOR_CLK * (1 << --ir_u_calc);
- 			*ir_b = (ir * tick + (denominator >> 1)) / denominator;
- 		}
++	/* hw doesn't support use specified speed and duplex to negotiate,
++	 * unnecessary to check them when autoneg on.
++	 */
++	if (cmd->base.autoneg)
++		return 0;
++
+ 	if (ops->get_ksettings_an_result) {
+ 		ops->get_ksettings_an_result(handle, &autoneg, &speed, &duplex);
+ 		if (cmd->base.autoneg == autoneg && cmd->base.speed == speed &&
+@@ -787,6 +793,15 @@ static int hns3_set_link_ksettings(struct net_device *netdev,
+ 			return ret;
  	}
+ 
++	/* hw doesn't support use specified speed and duplex to negotiate,
++	 * ignore them when autoneg on.
++	 */
++	if (cmd->base.autoneg) {
++		netdev_info(netdev,
++			    "autoneg is on, ignore the speed and duplex\n");
++		return 0;
++	}
++
+ 	if (ops->cfg_mac_speed_dup_h)
+ 		ret = ops->cfg_mac_speed_dup_h(handle, cmd->base.speed,
+ 					       cmd->base.duplex);
 -- 
 2.7.4
 
