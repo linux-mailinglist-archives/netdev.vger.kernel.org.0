@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72476AF3E2
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 03:18:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427D3AF3E4
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 03:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfIKBS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 21:18:28 -0400
-Received: from mga07.intel.com ([134.134.136.100]:58555 "EHLO mga07.intel.com"
+        id S1726562AbfIKBSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 21:18:41 -0400
+Received: from mga18.intel.com ([134.134.136.126]:61877 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726208AbfIKBS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 21:18:28 -0400
+        id S1726043AbfIKBSk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 21:18:40 -0400
 X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 18:18:23 -0700
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 18:18:22 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,489,1559545200"; 
-   d="gz'50?scan'50,208,50";a="336098321"
+X-IronPort-AV: E=Sophos;i="5.64,491,1559545200"; 
+   d="gz'50?scan'50,208,50";a="191981447"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 10 Sep 2019 18:18:19 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 10 Sep 2019 18:18:19 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1i7rH0-00076o-S3; Wed, 11 Sep 2019 09:18:18 +0800
-Date:   Tue, 10 Sep 2019 07:27:58 +0800
+        id 1i7rH0-00076Q-QK; Wed, 11 Sep 2019 09:18:18 +0800
+Date:   Tue, 10 Sep 2019 10:45:23 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
 Cc:     kbuild-all@01.org,
@@ -33,15 +33,15 @@ Cc:     kbuild-all@01.org,
         Egor Pomozov <Egor.Pomozov@aquantia.com>,
         Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>,
         Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>
-Subject: Re: [PATCH net-next 03/11] net: aquantia: add basic ptp_clock
- callbacks
-Message-ID: <201909100723.bysb6zCq%lkp@intel.com>
-References: <8868449ec5508f498131ee141399149bf801ea94.1568034880.git.igor.russkikh@aquantia.com>
+        Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Nikita Danilov <Nikita.Danilov@aquantia.com>
+Subject: Re: [PATCH net-next 11/11] net: aquantia: add support for PIN funcs
+Message-ID: <201909101030.0poAhhmh%lkp@intel.com>
+References: <b3eeb5dd7d38dab79ded5f4b7cca2a84505c8fac.1568034880.git.igor.russkikh@aquantia.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="wuhsmuhckux5kx2k"
+Content-Type: multipart/mixed; boundary="4pbpmpzs6cq6qqrx"
 Content-Disposition: inline
-In-Reply-To: <8868449ec5508f498131ee141399149bf801ea94.1568034880.git.igor.russkikh@aquantia.com>
+In-Reply-To: <b3eeb5dd7d38dab79ded5f4b7cca2a84505c8fac.1568034880.git.igor.russkikh@aquantia.com>
 X-Patchwork-Hint: ignore
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
@@ -50,7 +50,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---wuhsmuhckux5kx2k
+--4pbpmpzs6cq6qqrx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -72,31 +72,29 @@ Reported-by: kbuild test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   ld: drivers/net/ethernet/aquantia/atlantic/aq_nic.o: in function `aq_nic_update_link_status':
-   aq_nic.c:(.text+0xe1): undefined reference to `aq_ptp_clock_init'
-   ld: drivers/net/ethernet/aquantia/atlantic/aq_ptp.o: in function `aq_ptp_init':
-   aq_ptp.c:(.text+0x367): undefined reference to `aq_ptp_clock_init'
+   ld: drivers/net/ethernet/aquantia/atlantic/aq_ptp.o: in function `aq_ptp_gpio_feature_enable':
+>> aq_ptp.c:(.text+0x7fe): undefined reference to `__umoddi3'
    ld: drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.o: in function `hw_atl_b0_adj_clock_freq':
->> hw_atl_b0.c:(.text+0xad): undefined reference to `__udivdi3'
->> ld: hw_atl_b0.c:(.text+0xc2): undefined reference to `__divdi3'
-   ld: hw_atl_b0.c:(.text+0x11b): undefined reference to `__divdi3'
-   ld: hw_atl_b0.c:(.text+0x12b): undefined reference to `__divdi3'
->> ld: hw_atl_b0.c:(.text+0x165): undefined reference to `__udivdi3'
-   ld: hw_atl_b0.c:(.text+0x177): undefined reference to `__divdi3'
-   ld: hw_atl_b0.c:(.text+0x1ca): undefined reference to `__divdi3'
-   ld: hw_atl_b0.c:(.text+0x1da): undefined reference to `__divdi3'
-   ld: hw_atl_b0.c:(.text+0x247): undefined reference to `__divdi3'
+   hw_atl_b0.c:(.text+0xdd): undefined reference to `__udivdi3'
+   ld: hw_atl_b0.c:(.text+0xf2): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x14b): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x15b): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x195): undefined reference to `__udivdi3'
+   ld: hw_atl_b0.c:(.text+0x1a7): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x1fa): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x20a): undefined reference to `__divdi3'
+   ld: hw_atl_b0.c:(.text+0x277): undefined reference to `__divdi3'
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---wuhsmuhckux5kx2k
+--4pbpmpzs6cq6qqrx
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICP3Pdl0AAy5jb25maWcAlDzbctw2su/5iinnJamtJLpZdp1TegBJkIMMSTAAOJrxC0uR
+H4sICEIFd10AAy5jb25maWcAlDzbctw2su/5iinnJamtJLpZdp1TegBJkIMMSTAAOJrxC0uR
 R17V2pLPSNqN//50A7w0QFDObqXWYjeujb6jMT/+8OOKvTw/frl5vr+9+fz52+rT4eFwvHk+
 fFzd3X8+/O8qk6tamhXPhPkVGpf3Dy9//XZ//v5y9fbX819PfjnevlttDseHw+dV+vhwd//p
 BXrfPz788OMP8N+PAPzyFQY6/s/q0+3tL+9WP2WHP+9vHlbvfr2A3qenP7u/oG0q61wUXZp2
@@ -1373,4 +1371,4 @@ PQko0Pgu4m8fsayqJR+l8rn/TGB5JWlfrVsrZMlwFsHjDJcddL91LTYcUWarJOu4SSBNgFkr
 ctopLQeN5Wh3diQW1JkQ6yvAxOEKHpfHE+hhOEqhm208jebm6ZUT48lwW1vM4cQqT733amle
 KzTsguHUgB/uVB26i0BNwC69Ky5NdGj7gtf1EyGtj+kAkGJiobOAMuzyQf3///V2Mi5eYgQA
 
---wuhsmuhckux5kx2k--
+--4pbpmpzs6cq6qqrx--
