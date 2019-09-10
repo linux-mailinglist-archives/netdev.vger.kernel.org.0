@@ -2,131 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA199AF064
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 19:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD70AF067
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 19:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436845AbfIJRXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 13:23:00 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45408 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730225AbfIJRXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 13:23:00 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 4so10057362pgm.12
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 10:23:00 -0700 (PDT)
+        id S2437048AbfIJRZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 13:25:10 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:50420 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2394139AbfIJRZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 13:25:10 -0400
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2BEE7C29CA;
+        Tue, 10 Sep 2019 17:25:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1568136309; bh=Ph44MQ9XKynJLKZLZegBVnSuspU2un8Ep4rAHwifzWg=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=FvRfTqKX3KWjbYYW2JNYXP2K3tStL7YMdXZwlAbCFjNpvhpdJEX0CkwmSO1/7IgHk
+         rI0edlcJsqna284BtEItx8Ax7MouPcF8bvQ2A6ylJtMrIerYQ18OIseeAehgjJhedj
+         Kv6/YglrZQDXI+q7rbPM3PKb5gC9vIhWT2GGVVyuJMXTDend7L94vTQbKBPn2Ujqkj
+         hQqYT5xyVPobtG/f4bd9fzBURoN+ExaPS3Q5X4OAh0OqVdgoJ6l6M2Jk1LVLHf7H9G
+         +3ZMgAYB6/7lTw5SdY9WL1lP4GWKsXe/WaN1vuGq2GVGwuCC/xlCKl8oahaMQmwOA7
+         68zvUJwHf1wCw==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 0152EA00E0;
+        Tue, 10 Sep 2019 17:25:08 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 10 Sep 2019 10:25:07 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.13.134.195)
+ by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Tue, 10 Sep 2019 10:25:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ze1UUEJgjgp8jfcddWgUY6dSJGeoNEJt/p+99he3pGzzY8pXlzeLaqPPR/Es+gXFi9pnqL3lKVUA54/oIV+Xte3s+x25lan2ohGpxgDrl6QZqoIV0PxN/5cRB4pVkz9rgKpwF73ByRxF9Vmwhbujm5oMRYkNPYng4eQwgXaGRwAKzSO8i6Y5Oi7j/rSJN4dVBAgXJ0DolSkg78u/LcpYE0f3G7IRd7DWZitTgVYnNCuH1YC6METqbJW8dgSmiqYVJpexfCc6CqMmE7JeUpPzKbIO/GmG5GpGtRS6QxrOSM0jkO5OuY3us1hd58+Jy/TI+a1p4GP4N+PY1De9K4gaSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wafg6W+0oC+Np5oCZtVdaq1sWgMBCBkFiLQzU0E8YJo=;
+ b=mubBN7GtkfLJ03YuUBrWtAlq8rQv12YrDki6bIcAA7qmIiUAqMRJRZg3unAojRNHGa2W1dfuHye5BWZXV4yledtKp+4bjOQiZ9GTTXL1994Lc7ICfWcGDmhMSyEictOybTp2zEVwvsioNFup2QdbArvShwmimz6TuFyli0xKFwzwSPVkZPONHF32hl/D5JccUOU2Px7ajrCSg7D6IR4mzoF35WvwH9dzJLiY091ZF6krxRhS0nREcOv7jgYO2V2ZmtI0JD3/oqObYuXqw1bQcvYsKPBF1Hm9/00/A7p0QGAyivEG1vIUmGmTNmUltpv5QUF4AKH+FVCDD4aWmNWL6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WytUsbUCueuTaHp+R3kiieTTsIcIBaJbRPUzOY9zmMs=;
-        b=g8eBFeJURPLmM7K80XMyv6QCx9j8YlqaXas7oh2yW8WK40QJIDwACb+8Fed1j4td8M
-         rDgIx0hMCLUGE2ZLv0+DhqEU6GEAD9EgjaTcKC2f7slxN9qUxOR3H7UikEyiSWfyziwL
-         lzkvnZGQUh93SlN+8AXzBgLvJqZ2UCH0Zeycm3EFae21/p/tcstsMHN7DgvmMYWoSa/E
-         xEz6R5wNLvHQWPJ3Bb6JtYorQKBqOqedQneR/BXDcedQqQEDA50N8N9h36EL9837Y5G0
-         WlDnCjhRt6OajXG+J5ay44IycrumkvdYDUnesB54fFvPe3v8pBv4tcVLn8H/X/zSOSne
-         RDzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WytUsbUCueuTaHp+R3kiieTTsIcIBaJbRPUzOY9zmMs=;
-        b=lVLx6YbOWUu/Z/XsXSmd1uBsZ8PlFxA+6BW6qcMnAr4+K5oH2hVtDJDWp49CCr4nem
-         ZBmppsDcO4H/poeC8n8cYF6cDrSmWTVjt+g2q4rPhPB0V/ET6tekefG+JwE2XxNfT8r5
-         U3L5pRhBFKLGTEkoNLFkXMu0Rx6pLaZv7LO+edZixIQmXozuB2G7EHnpn1e6IjuDhpYo
-         BwubYQY1u+QiNGYd7Pp9vZg18xrwWkR/pFHc0nZdVsmT30vcTs8hDNXvSRnTQPlvU36M
-         xDSym+ORPQ6muhuTiLXe2vLlMlH/4NXSLtF/i3PneQhwdDMoFlPwgPuz59Pc9u5ZPFud
-         8nHg==
-X-Gm-Message-State: APjAAAU13rx+COwOskVowfMDtMh4NXqcX2jJENNL/imaHY9Y/yIknTOd
-        pBjZBhdx4eVSEEMvlh/Hp/Zlcg==
-X-Google-Smtp-Source: APXvYqxmkQCQc3l3UoT5KLzpgDQQV9we+Pmo9WXUarV5tvLUbmr6ZHi67Bb91kphtkBUZgPj7hoTOg==
-X-Received: by 2002:a63:dd0c:: with SMTP id t12mr27742480pgg.82.1568136178740;
-        Tue, 10 Sep 2019 10:22:58 -0700 (PDT)
-Received: from google.com ([2620:15c:201:2:ce90:ab18:83b0:619])
-        by smtp.gmail.com with ESMTPSA id j2sm19138413pfe.130.2019.09.10.10.22.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 10:22:58 -0700 (PDT)
-Date:   Tue, 10 Sep 2019 10:22:53 -0700
-From:   Sami Tolvanen <samitolvanen@google.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kees Cook <keescook@chromium.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Wafg6W+0oC+Np5oCZtVdaq1sWgMBCBkFiLQzU0E8YJo=;
+ b=R/EU86FGiQmr+AsR3wIH7GX1MMwuAN2tgsr1MYOi5e+xtZdTBiT+60XvYIXrEdY2eDRHNwu/4aU88eG9Me+lY0AKF1/YykIaYycruYandzIJTNxIxA8wvSOYQhNJIer/xPRNlwVnmtqMg+f7Yr1HFvM/nRhOjwwo0ekMFVGLa40=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3364.namprd12.prod.outlook.com (20.178.210.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.18; Tue, 10 Sep 2019 17:25:06 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2263.005; Tue, 10 Sep 2019
+ 17:25:06 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        Bitan Biswas <bbiswas@nvidia.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
-Message-ID: <20190910172253.GA164966@google.com>
-References: <20190909223236.157099-1-samitolvanen@google.com>
- <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com>
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 1/2] net: stmmac: Only enable enhanced
+ addressing mode when needed
+Thread-Topic: [PATCH net-next v2 1/2] net: stmmac: Only enable enhanced
+ addressing mode when needed
+Thread-Index: AQHVZyLsOFcggZ86CE2HdVeFQfSucacjgrwwgAAzwICAAN9oUIAAWluAgAA6FBA=
+Date:   Tue, 10 Sep 2019 17:25:05 +0000
+Message-ID: <BN8PR12MB3266DCD09369F3682CC38690D3B60@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20190909152546.383-1-thierry.reding@gmail.com>
+ <BN8PR12MB3266B232D3B895A4A4368191D3B70@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20190909191127.GA23804@mithrandir>
+ <BN8PR12MB3266850280A788D41C277B08D3B60@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20190910135427.GB9897@ulmo>
+In-Reply-To: <20190910135427.GB9897@ulmo>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [198.182.37.200]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bb3dac81-51ab-4066-0c07-08d73613d28a
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR12MB3364;
+x-ms-traffictypediagnostic: BN8PR12MB3364:
+x-ms-exchange-purlcount: 2
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB33642B26C76E099F6B4B3B35D3B60@BN8PR12MB3364.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 01565FED4C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(346002)(39860400002)(366004)(136003)(189003)(199004)(52314003)(81156014)(4326008)(99286004)(6116002)(3846002)(6246003)(14454004)(6436002)(229853002)(2906002)(486006)(71200400001)(66066001)(5660300002)(6636002)(11346002)(476003)(316002)(110136005)(54906003)(25786009)(446003)(76116006)(6506007)(102836004)(53936002)(186003)(478600001)(74316002)(33656002)(7696005)(55016002)(76176011)(26005)(6306002)(9686003)(8936002)(71190400001)(81166006)(66476007)(66946007)(66446008)(64756008)(66556008)(7736002)(966005)(8676002)(305945005)(86362001)(256004)(52536014);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3364;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: zTuToCsPTzoMv2HZQnQcC1U71KYFLm593LtKx2JUrOI6R1tHWkMUC/x+RINyVeea34BNT9YmpPhd+lo+HuwtcdRYZp/uEsBT94sbiwJhudflwOo9UcdfRw+u5x+f7uVK1z6P8PV1zEMfiAx2Qr5odrsR5Xy7k5YloN+vPrcn333TMyXiFr4A5nAuYJyN9bWGYbmYuk2wVIjS+9qL8E2uevjvTtoMhT7CLORPxevSAiZ4tmuAgijCJ+BxS+v4G5TQParcnhKFyulnOSJ0F9IbPNK3IBrTR70NGcsqAt+bT+IsF/KI31VxNJ+vrw8mn1n4mihYSLLs5Ln+30m2hoOd5cEEkhOBoiTdLxbLzNHinlFiKVEyZpWeqUJ3d1jew4ss08wiOoeXZvCrJ3/A+gWGt8q8+6E7nm1it69vOe3u7jw=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb3dac81-51ab-4066-0c07-08d73613d28a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2019 17:25:05.9126
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SDawYLyrBc6r+uMPfHOUWtW9nbO7lHziVF1RElWadYLwMEXZxHwi9sNf5btUbB5BfTO7wZCMUQPe07MlffX9dg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3364
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 10, 2019 at 08:37:19AM +0000, Yonghong Song wrote:
-> You did not mention BPF_BINARY_HEADER_MAGIC and added member
-> of `magic` in bpf_binary_header. Could you add some details
-> on what is the purpose for this `magic` member?
+From: Thierry Reding <thierry.reding@gmail.com>
+Date: Sep/10/2019, 14:54:27 (UTC+00:00)
 
-Sure, I'll add a description to the next version.
+> On Tue, Sep 10, 2019 at 08:32:38AM +0000, Jose Abreu wrote:
+> > From: Thierry Reding <thierry.reding@gmail.com>
+> > Date: Sep/09/2019, 20:11:27 (UTC+00:00)
+> >=20
+> > > On Mon, Sep 09, 2019 at 04:07:04PM +0000, Jose Abreu wrote:
+> > > > From: Thierry Reding <thierry.reding@gmail.com>
+> > > > Date: Sep/09/2019, 16:25:45 (UTC+00:00)
+> > > >=20
+> > > > > @@ -92,6 +92,7 @@ struct stmmac_dma_cfg {
+> > > > >  	int fixed_burst;
+> > > > >  	int mixed_burst;
+> > > > >  	bool aal;
+> > > > > +	bool eame;
+> > > >=20
+> > > > bools should not be used in struct's, please change to int.
+> > >=20
+> > > Huh? Since when? "aal" right above it is also bool. Can you provide a
+> > > specific rationale for why we shouldn't use bool in structs?
+> >=20
+> > Please see https://lkml.org/lkml/2017/11/21/384.
+>=20
+> The context is slightly different here. stmmac_dma_cfg exists once for
+> each of these ethernet devices in the system, and I would assume that in
+> the vast majority of cases there's exactly one such device in the system
+> so the potential size increase is very small. On the other hand, there
+> are potentially very many struct sched_dl_entity, so the size impact is
+> multiplied.
+>=20
+> Anyway, if you insist I'll rewrite this to use an unsigned int bitfield.
 
-The magic is a random number used to identify bpf_binary_header in
-memory. The purpose of this patch is to limit the possible call
-targets for the function pointer and checking for the magic helps
-ensure we are jumping to a page that contains a jited function,
-instead of allowing calls to arbitrary targets.
+For new code I would rather prefer "int" but I guess it's up to David to=20
+decide this. I'm okay with both options as the check for this usage was=20
+removed in checkpatch:=20
+https://lkml.org/lkml/2019/1/10/975
 
-This is particularly useful when combined with the compiler-based
-Control-Flow Integrity (CFI) mitigation, which Google started shipping
-in Pixel kernels last year. The compiler injects checks to all
-indirect calls, but cannot obviously validate jumps to dynamically
-generated code.
-
-> > +unsigned int bpf_call_func(const struct bpf_prog *prog, const void *ctx)
-> > +{
-> > +	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
-> > +
-> > +	if (!IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) && !prog->jited)
-> > +		return prog->bpf_func(ctx, prog->insnsi);
-> > +
-> > +	if (unlikely(hdr->magic != BPF_BINARY_HEADER_MAGIC ||
-> > +		     !arch_bpf_jit_check_func(prog))) {
-> > +		WARN(1, "attempt to jump to an invalid address");
-> > +		return 0;
-> > +	}
-> > +
-> > +	return prog->bpf_func(ctx, prog->insnsi);
-> > +}
-
-> The above can be rewritten as
-> 	if (IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) || prog->jited ||
-> 	    hdr->magic != BPF_BINARY_HEADER_MAGIC ||
-> 	    !arch_bpf_jit_check_func(prog))) {
-> 		WARN(1, "attempt to jump to an invalid address");
-> 		return 0;
-> 	}
-
-That doesn't look quite equivalent, but yes, this can be rewritten as a
-single if statement like this:
-
-	if ((IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) ||
-	     prog->jited) &&
-	    (hdr->magic != BPF_BINARY_HEADER_MAGIC ||
-	     !arch_bpf_jit_check_func(prog)))
-
-I think splitting the interpreter and JIT paths would be more readable,
-but I can certainly change this if you prefer.
-
-> BPF_PROG_RUN() will be called during xdp fast path.
-> Have you measured how much slowdown the above change could
-> cost for the performance?
-
-I have not measured the overhead, but it shouldn't be significant. Is
-there a particular benchmark you'd like me to run?
-
-Sami
+---
+Thanks,
+Jose Miguel=20
+Abreu
