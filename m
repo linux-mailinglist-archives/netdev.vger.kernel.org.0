@@ -2,79 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A73C8AE66A
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44293AE691
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:19:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfIJJOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 05:14:21 -0400
-Received: from mail02.iobjects.de ([188.40.134.68]:46114 "EHLO
-        mail02.iobjects.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbfIJJOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 05:14:21 -0400
-Received: from tux.wizards.de (pD9EBF359.dip0.t-ipconnect.de [217.235.243.89])
-        by mail02.iobjects.de (Postfix) with ESMTPSA id 27A7B416C9C4;
-        Tue, 10 Sep 2019 11:14:20 +0200 (CEST)
-Received: from [192.168.100.223] (ragnarok.applied-asynchrony.com [192.168.100.223])
-        by tux.wizards.de (Postfix) with ESMTP id CF4A7F015AB;
-        Tue, 10 Sep 2019 11:14:19 +0200 (CEST)
-Subject: Re: Default qdisc not correctly initialized with custom MTU
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-References: <211c7151-7500-f895-7fd7-2c868dd48579@applied-asynchrony.com>
- <CAM_iQpWKsSWDZ55kMO6mzDe5C7tHW-ub_eH91hRzZMdUtKJtfA@mail.gmail.com>
-From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-Organization: Applied Asynchrony, Inc.
-Message-ID: <dbc359d3-5cac-9b2e-6520-df4a25964bd3@applied-asynchrony.com>
-Date:   Tue, 10 Sep 2019 11:14:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389142AbfIJJSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 05:18:32 -0400
+Received: from smtp3.goneo.de ([85.220.129.37]:33086 "EHLO smtp3.goneo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729421AbfIJJSc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 05:18:32 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp3.goneo.de (Postfix) with ESMTP id 7112623FA2B;
+        Tue, 10 Sep 2019 11:18:29 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -3.036
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.036 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.136, BAYES_00=-1.9] autolearn=ham
+Received: from smtp3.goneo.de ([127.0.0.1])
+        by localhost (smtp3.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id A-la-1SYbXoo; Tue, 10 Sep 2019 11:18:28 +0200 (CEST)
+Received: from lem-wkst-02.lemonage.de. (hq.lemonage.de [87.138.178.34])
+        by smtp3.goneo.de (Postfix) with ESMTPA id A463F23F8EB;
+        Tue, 10 Sep 2019 11:18:27 +0200 (CEST)
+From:   Lars Poeschel <poeschel@lemonage.de>
+To:     Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Lars Poeschel <poeschel@lemonage.de>,
+        netdev@vger.kernel.org (open list:NFC SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     Johan Hovold <johan@kernel.org>
+Subject: [PATCH v7 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
+Date:   Tue, 10 Sep 2019 11:31:21 +0200
+Message-Id: <20190910093129.1844-1-poeschel@lemonage.de>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpWKsSWDZ55kMO6mzDe5C7tHW-ub_eH91hRzZMdUtKJtfA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/10/19 12:52 AM, Cong Wang wrote:
-> On Mon, Sep 9, 2019 at 5:44 AM Holger Hoffstätte
-> <holger@applied-asynchrony.com> wrote:
->> I can't help but feel this is a slight bug in terms of initialization order,
->> and that the default qdisc should only be created when it's first being
->> used/attached to a link, not when the sysctls are configured.
-> 
-> Yeah, this is because the fq_codel qdisc is initialized once and
-> doesn't get any notification when the netdev's MTU get changed.
+It is favourable to have one unified compatible string for devices that
+have multiple interfaces. So this adds simply "pn532" as the devicetree
+binding compatible string and makes a note that the old ones are
+deprecated.
 
-My point was that it shouldn't be created or initialized at all when
-the sysctl is configured, only the name should be validated/stored and
-queried when needed. If any interface is brought up before that point,
-no value (yet) would just mean "trod along with the defaults" to whoever
-is doing the work.
+Cc: Johan Hovold <johan@kernel.org>
+Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+---
+Changes in v6:
+- Rebased the patch series on v5.3-rc5
 
-> We can "fix" this by adding a NETDEV_CHANGEMTU notifier to
-> qdisc's, but I don't know if it is really worth the effort.
+Changes in v3:
+- This patch is new in v3
 
-This is essentially the opposite of what I had in mind. The problem is
-that the entity was created, not that it needs to be notified.
-Also I don't think that would work for scenarios with multiple links
-using different MTUs.
+ drivers/nfc/pn533/i2c.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> Is there any reason you can't change that order?
+diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+index 1832cd921ea7..1abd40398a5a 100644
+--- a/drivers/nfc/pn533/i2c.c
++++ b/drivers/nfc/pn533/i2c.c
+@@ -245,6 +245,11 @@ static int pn533_i2c_remove(struct i2c_client *client)
+ }
+ 
+ static const struct of_device_id of_pn533_i2c_match[] = {
++	{ .compatible = "nxp,pn532", },
++	/*
++	 * NOTE: The use of the compatibles with the trailing "...-i2c" is
++	 * deprecated and will be removed.
++	 */
+ 	{ .compatible = "nxp,pn533-i2c", },
+ 	{ .compatible = "nxp,pn532-i2c", },
+ 	{},
+-- 
+2.23.0
 
-Yes, because that wouldn't solve anything?
-Like i said I can just kick the root qdisc to update itself in
-a post interface-setup script, and that works fine. Since I need
-that script anyway for setting several other parameters for
-the device it's no big deal - just another workaround.
-
-A brief look at the initialization in sch_mq/sch_generic unfortunately
-didn't really help clear things up for me, hence I guess my real
-question is whether a qdisc *must* be created early for some reason
-(assuming sysctls come before link setup), or whether this is something
-that could be delayed and done on-demand.
-
-thanks,
-Holger
