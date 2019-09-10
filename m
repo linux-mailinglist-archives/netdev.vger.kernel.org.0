@@ -2,109 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 013E0AEF53
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 18:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C820AEF94
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 18:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436694AbfIJQOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 12:14:55 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:45697 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436678AbfIJQOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 12:14:55 -0400
-Received: by mail-qt1-f195.google.com with SMTP id r15so21368480qtn.12
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 09:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=/I0eJuB7Mn2faP8y12sx8Za0Hqcp2SsWTD2uzQobJqg=;
-        b=O2kmuvF5cYF497Guoq/6fE6lPopmNf2qzXkm/Kc2cxHRYevcfQkCVHq1fr5iVkStRn
-         Yf875GsgevBDcizWfJylwlb8b2570lwlzOKhv7LqpwXmjaF89NfaO3CZTA5tOJj9CmJY
-         8UtQQkmNqSWX/xwxPdAGtdnsfabb5reGHMTmb7noYPze4nscUYXcml010XqlsoazwR10
-         t7AhNss4i0IgzdXzFvXhU/4NtYJsUq19ZM1O6Bkig3nywVYXVh+7uRjeBXu2yuX/Q0kF
-         0tBnZCWUWJq6QMZsz5G/okGiMe9046EsgnLABDX93T1X8A1U1eG6V0XwEPdtg4E1i5hI
-         Jk/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=/I0eJuB7Mn2faP8y12sx8Za0Hqcp2SsWTD2uzQobJqg=;
-        b=kQt0urhhnwfZ5BIRYqcwkiMALG/J2UEfu4vDkokZDg1wV5rqWVsfkZjPpVKnoN8149
-         gjZ2dkfTr6CN/b5o+sTBPvhxYF8HlWdaM/gbOu/KngNVP1lmY2MVF8Kw6dNR0WQuSAWm
-         S4U69o8rZcpC0+3FXgU46Q/TBbaza7rvNoim5AYWWu9l5iCGuTxuHCKeUxAcm2BLUO14
-         Ezqx5n9XXhfQzvaTQJ1sfrxlYbU79/qydkOFbsHGRc5BH+1BW0tHVMDQ+1E664i5enWZ
-         s8alECx5X+eson/g7Zd3bBEoiQcQ9mx3wbGFXJDDk4FNQIv6kZyTu1tNVF8IhKR1Ykzi
-         szAg==
-X-Gm-Message-State: APjAAAXnYHdYkn5dqz1nCAERAcodE7cd6bPM+YTM1UB+XSfj4MjzGvVN
-        eC4o8y6UaoGvbNzpfxIjBHveV0BU
-X-Google-Smtp-Source: APXvYqw3PC/Fa+jCrM2U4fislKxwQztDQ6D5lXPCpQfWH8YWWO6UwXQDkRUUYuzIjKrgfgAo87h2zw==
-X-Received: by 2002:aed:3e41:: with SMTP id m1mr30000471qtf.273.1568132094186;
-        Tue, 10 Sep 2019 09:14:54 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id f14sm922057qtq.54.2019.09.10.09.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 09:14:53 -0700 (PDT)
-Date:   Tue, 10 Sep 2019 12:14:52 -0400
-Message-ID: <20190910121452.GB32337@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Robert Beckett <bob.beckett@collabora.com>
-Cc:     netdev@vger.kernel.org, Robert Beckett <bob.beckett@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
-In-Reply-To: <20190910154238.9155-2-bob.beckett@collabora.com>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
- <20190910154238.9155-2-bob.beckett@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S2436785AbfIJQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 12:30:46 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58870 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436473AbfIJQaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 12:30:46 -0400
+Received: from localhost (unknown [148.69.85.38])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 85B94154F9E17;
+        Tue, 10 Sep 2019 09:30:42 -0700 (PDT)
+Date:   Tue, 10 Sep 2019 18:30:35 +0200 (CEST)
+Message-Id: <20190910.183035.1659598063632819738.davem@davemloft.net>
+To:     simon.horman@netronome.com
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, dirk.vandermerwe@netronome.com
+Subject: Re: [PATCH net-next v2 00/11] nfp: implement firmware loading
+ policy
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190908235427.9757-1-simon.horman@netronome.com>
+References: <20190908235427.9757-1-simon.horman@netronome.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 10 Sep 2019 09:30:43 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Robert,
+From: Simon Horman <simon.horman@netronome.com>
+Date: Mon,  9 Sep 2019 00:54:16 +0100
 
-On Tue, 10 Sep 2019 16:41:47 +0100, Robert Beckett <bob.beckett@collabora.com> wrote:
-> Configure autoneg for phy connected CPU ports.
-> This allows us to use autoneg between the CPU port's phy and the link
-> partner's phy.
-> This enables us to negoatiate pause frame transmission to prioritise
-> packet delivery over throughput.
+> Dirk says:
 > 
-> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-> ---
->  net/dsa/port.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> This series adds configuration capabilities to the firmware loading policy of
+> the NFP driver.
 > 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index f071acf2842b..1b6832eac2c5 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -538,10 +538,20 @@ static int dsa_port_setup_phy_of(struct dsa_port *dp, bool enable)
->  		return PTR_ERR(phydev);
->  
->  	if (enable) {
-> +		phydev->supported = PHY_GBIT_FEATURES | SUPPORTED_MII |
-> +				    SUPPORTED_AUI | SUPPORTED_FIBRE |
-> +				    SUPPORTED_BNC | SUPPORTED_Pause |
-> +				    SUPPORTED_Asym_Pause;
-> +		phydev->advertising = phydev->supported;
-> +
+> NFP firmware loading is controlled via three HWinfo keys which can be set per
+> device: 'abi_drv_reset', 'abi_drv_load_ifc' and 'app_fw_from_flash'.
+> Refer to patch #11 for more detail on how these control the firmware loading.
+> 
+> In order to configure the full extend of FW loading policy, a new devlink
+> parameter has been introduced, 'reset_dev_on_drv_probe', which controls if the
+> driver should reset the device when it's probed. This, in conjunction with the
+> existing 'fw_load_policy' (extended to include a 'disk' option) provides the
+> means to tweak the NFP HWinfo keys as required by users.
+> 
+> Patches 1 and 2 adds the devlink modifications and patches 3 through 9 adds the
+> support into the NFP driver. Furthermore, the last 2 patches are documentation
+> only.
+> 
+> v2:
+>   Renamed all 'reset_dev_on_drv_probe' defines the same as the devlink parameter
+>   name (Jiri)
 
-This seems a bit intruisive to me. I'll get back to you.
-
->  		err = genphy_config_init(phydev);
->  		if (err < 0)
->  			goto err_put_dev;
->  
-> +		err = genphy_config_aneg(phydev);
-> +		if (err < 0)
-> +			goto err_put_dev;
-> +
->  		err = genphy_resume(phydev);
->  		if (err < 0)
->  			goto err_put_dev;
+Series applied, thanks Simon.
