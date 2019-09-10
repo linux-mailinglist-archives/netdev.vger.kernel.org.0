@@ -2,246 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 027A3AE1CE
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 03:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C894BAE1F0
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 03:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390948AbfIJBG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 21:06:56 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:36945 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbfIJBG4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 21:06:56 -0400
-Received: by mail-ed1-f66.google.com with SMTP id i1so15222594edv.4
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 18:06:54 -0700 (PDT)
+        id S2392375AbfIJBfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 21:35:42 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46907 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732574AbfIJBfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 21:35:42 -0400
+Received: by mail-wr1-f65.google.com with SMTP id d17so3972051wrq.13
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 18:35:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3AAp4uidMD6oK2/hORnz733Qbbeu8HkCNsTEU3urkwg=;
-        b=mX+AYJIBpreRw42Qcy6E3pFV3NTtBpsNiCQZtP0aHljelQlOAIuMYud9ssteGQ83nH
-         VKcwBVRPyr1wvs7DzzkUYAWo+Pan2mWGMafAHvC72ys/Rx0cso+P1GBy1RY6vXSWq5gw
-         uUs3wjmjiwnu3po8vKgjnHUAf2ysn9MxWjro0lQ1HUO1OZ4Zumu2LlhYIBLlTs+inZRy
-         hpdLhnaCvQtOMwkXH5kX5ze8TZ7kRuSY/Q3ctGGTNk9Onck1k3vYPzsm5tzfuNxmwKoJ
-         6jdnvnOevsXM3SqqZrWdXyi1ZL37wjsAS3FB5sjX0WaNYTU2EnJVYtKynZtLgcUHzmMP
-         Bh8w==
+        h=from:to:cc:subject:date:message-id;
+        bh=L5Cwv17g4KSeqrNFKDHEoFiNmmx9M0rq17M79gVDXzo=;
+        b=LSnkIwaE7ucKgLzum5rzaXFdexG2aANUYVryjHrAoxH9sZp9LQEWD+Jjg9s1kGqHMm
+         xvK65UcsgylFyroIprd6mm13Nhk7wDksd6i/aCRJfGr5eh5FAJoygH4aXhI+ew6QjZ3c
+         uaSw+B0dCNbabQ3bw6Ii2xKpPCCvI3i4tCvjUlnJ6miw/JoDkIntRYKvcGcs3FGVQRNP
+         iUMrV6LMsZxF4/QKe91mYvvmJ127/rTmFk6MF91kch+VteP05ZoyWAbYiixCPALWWAK7
+         qJOwNwjFScvOelipC2Zi7ql0GniyotCj0eIDUfeHOxUNQa8C0RkRj6Cx5uBK6vV6ykBj
+         soZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3AAp4uidMD6oK2/hORnz733Qbbeu8HkCNsTEU3urkwg=;
-        b=mJBlBiRTPZKm4VUF04qhyjC108p+9jWKb0h6vTTsGa5NKIZ2BjcNJDlnL2UtB5vyDU
-         IQltKX7bQGH+JOx7yoDePsyJeu9vUX5IN2YgzT4aOs1S0yc+6Wso0gnmoiVAiFzNwpHM
-         jWQrQ8eS1pBy7+X2khulyhO6nopBuJPrqNxXz0odRj64fZNLUuFrayjGHT/PgjBdozTP
-         bAIITphOKnogHPgJ83DFuIUllSazJ8KSPa2ATvIWXu4u5FHm2iGPU3zk/m6UdRJgf7J+
-         AMmB85OEHO3MrplUF0t4N2mlce2SAJgJSWxb+NT/ZWKgqHiLQdbyVCefq3VKekdtxoMp
-         tyrQ==
-X-Gm-Message-State: APjAAAUnW+f7btXZ84cYr0Gi3gZH3DKhovGCl3BKOF1Y9kulMjSWyM8X
-        fK9mDmGd69d51+iS1CR/boKZ0llb/3KcWLDvY0E=
-X-Google-Smtp-Source: APXvYqz5B3cjEeTzTJoMrrvhgEsnKTUO7JRXZjCY5BVLb5AQ67HxPMRXgc/ysiFs+Mf3KSIeA511PPl6jXE0dHENqt8=
-X-Received: by 2002:a17:906:4f0e:: with SMTP id t14mr21552495eju.47.1568077614161;
- Mon, 09 Sep 2019 18:06:54 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a17:906:e258:0:0:0:0 with HTTP; Mon, 9 Sep 2019 18:06:53
- -0700 (PDT)
-In-Reply-To: <BN6PR11MB00500FA0D6B5D39E794B44BB86B70@BN6PR11MB0050.namprd11.prod.outlook.com>
-References: <20190902162544.24613-1-olteanv@gmail.com> <20190907.155549.1880685136488421385.davem@davemloft.net>
- <BN6PR11MB00500FA0D6B5D39E794B44BB86B70@BN6PR11MB0050.namprd11.prod.outlook.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=L5Cwv17g4KSeqrNFKDHEoFiNmmx9M0rq17M79gVDXzo=;
+        b=hKstNHnKayUxFGXZSuJLKUOE+jP53zINqg7tspsmY4Crl1WXSMBDQLzWXcnhOTmvsd
+         BiXqns42I+0/1VIAj/ieGYnDKGtn5FjMi9D5pr7QkhoiS99jMl/QigktFae6xbeZBgIz
+         so2n+V3cSL9jiAi3KIviPs2LP/eziw8HpJgALTNwYZZPfLxZReYbJINjyCfrAt6kp+ic
+         SIkbKuEnoNcj419k5LIzF1KgC4LdQkwiRCN8QG5t8+EG8z03gz0avkhJzoUeMPi6B8cl
+         VB1DDgnoiL4ADei7bqIB5nK4yzvc3opD0boCX5B+Cvk0O6PhdCpSGrZ4hmAfzj+bZZHn
+         alog==
+X-Gm-Message-State: APjAAAVJAht8+rJUY/7M+f88RV7Ee0tiNX99QV6DB0hR4SDqQRvYsG5R
+        L+6rxfOvEFu0cH+cjYz87Nk=
+X-Google-Smtp-Source: APXvYqw66INrt19iYGDq7FQbAjEP3JTF/aWZC6k4O6bOW/yP29qVpIdn9zz31j2b5hJfMVOap99j3g==
+X-Received: by 2002:adf:e9c5:: with SMTP id l5mr416649wrn.40.1568079338236;
+        Mon, 09 Sep 2019 18:35:38 -0700 (PDT)
+Received: from localhost.localdomain ([86.124.196.40])
+        by smtp.gmail.com with ESMTPSA id b1sm1254597wmj.4.2019.09.09.18.35.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Sep 2019 18:35:37 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 10 Sep 2019 02:06:53 +0100
-Message-ID: <CA+h21hoQ-DaFGzALVmGo2mDJancUp5Fndc=o0f4LfD_9yaNi0g@mail.gmail.com>
-Subject: Re: [PATCH v1 net-next 00/15] tc-taprio offload for SJA1105 DSA
-To:     "Gomes, Vinicius" <vinicius.gomes@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "Patel, Vedang" <vedang.patel@intel.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "kurt.kanzenbach@linutronix.de" <kurt.kanzenbach@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v2 net-next 0/7] Hardware operations for the SJA1105 DSA PTP clock
+Date:   Tue, 10 Sep 2019 04:34:54 +0300
+Message-Id: <20190910013501.3262-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius!
+This series performs the following changes to the PTP portion of the
+driver:
+- Deletes the timecounter/cyclecounter implementation of a free-running
+  PHC and replaces it with actual hardware corrections of the PTP
+  timestamping clock.
+- Deletes the approximation of timecounter_init() with the argument of
+  ktime_to_ns(ktime_get_real()) (aka system clock) that is currently
+  done in sja1105_ptp_reset. Now that the PTP clock can keep the wall
+  time in hardware, it makes sense to do so (and thus arises the need
+  to restore the PTP time after resetting the switch).
+- Profits from the fact that timecounter/cyclecounter code has been
+  removed from sja1105_main.c, and goes a step further by doing some
+  more cleanup and making the PTP Kconfig more self-contained. The
+  cleanup also covers preparing the driver for the gettimex API
+  (PTP_SYS_OFFSET_EXTENDED ioctl) - an API which at the moment does
+  not have the best implementation available in the kernel for this
+  switch, but for which the addition of a better API is trivial after
+  the cleanup.
 
-On 10/09/2019, Gomes, Vinicius <vinicius.gomes@intel.com> wrote:
-> Hi Vladimir,
->
->> This is a warning that I will toss this patch series if it receives no
->> series review in
->> the next couple of days.
->
-> Sorry about the delay on reviewing this. On top on the usual business, so=
-me
-> changes to the
-> IT infrastructure here have hit my email workflow pretty hard.
->
+ drivers/net/dsa/sja1105/sja1105.h      |  18 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |  66 ++++--
+ drivers/net/dsa/sja1105/sja1105_ptp.c  | 283 +++++++++++++------------
+ drivers/net/dsa/sja1105/sja1105_ptp.h  |  78 +++++++
+ drivers/net/dsa/sja1105/sja1105_spi.c  |  42 ++--
+ 5 files changed, 310 insertions(+), 177 deletions(-)
 
-No problem, I've also been traveling and hence delaying patching some
-taprio issues we discussed last week.
+-- 
 
-> I am taking a look at the datasheet in the meantime, it's been a long tim=
-e
-> since I looked at it,
-> the idea is to help review the scheduler from hell :-)
->
+These are the PTP patches that have been split apart from:
+https://www.spinics.net/lists/netdev/msg597214.html
+("tc-taprio offload for SJA1105 DSA").
+As such I have marked them as v2. There are no changes since the
+tc-taprio patchset, it is only for better review-ability.
 
-Ok, but don't get hung up on it :)
+Vladimir Oltean (7):
+  net: dsa: sja1105: Get rid of global declaration of struct
+    ptp_clock_info
+  net: dsa: sja1105: Change the PTP command access pattern
+  net: dsa: sja1105: Switch to hardware operations for PTP
+  net: dsa: sja1105: Implement the .gettimex64 system call for PTP
+  net: dsa: sja1105: Restore PTP time after switch reset
+  net: dsa: sja1105: Disallow management xmit during switch reset
+  net: dsa: sja1105: Move PTP data to its own private structure
 
-> One thing that wasn't clear is what you did to test this series.
->
+2.17.1
 
-Right, this is one particular aspect I didn't really insist on a lot,
-and I hope I'm not going to lose everybody when explaining it, because
-it requires a bit of understanding of how sja1105 integrates with DSA
-overall.
-The basic idea is that none of the switch's ports is special in any
-way from a hardware perspective, and that includes the "CPU port". But
-to support the DSA paradigm of annotating frames that go towards the
-CPU with information about the source port they came from, I am
-repurposing VLAN tags with a customized EtherType (0xdadb instead of
-0x8100).
-This is relevant because to a 802.1Q bridge, the QoS hints come from:
-- The 3-bit PCP field from the VLAN header
-- A default, port-based VLAN PCP in case RX traffic is untagged (I
-would also like to have a knob to change this, currently hardcoded to
-0 in the driver!)
-So to inject a frame into a sja1105 TX queue means to annotate it with
-a VLAN PCP which maps to that queue. In the datasheet there is a
-VLAN_PMAP register that manages the ingress-priority ->
-egress-priority -> egress-queue mapping. I'm keeping that hardcoded to
-1:1:1 for sanity.
-Now back to the driver's use of the VLAN header.
-- When the sja1105 operates as a bridge with vlan_filtering=3D1, the
-VLANs are installed by the user (via the bridge command from
-iproute2), parsed by the switch and VLAN-tagged traffic is expected to
-be received from the connected ports. So it honors the VLAN PCP in
-this mode.
-- When it isn't (it is either a VLAN-unaware bridge, or 4x standalone
-ports), then the VLAN header (with custom EtherType) is used to route
-frames from the CPU towards the correct egress switch port. A
-consequence of it still being parsed by the switch as VLAN is that the
-host Linux system is able to specify the VLAN PCP to mean "inject in
-this egress queue".
-
-Now because the EtherType changes between these modes of operation,
-the switch can either expose the VLAN PCP to (a) the host Linux netdev
-queues (as DSA sees them*), or (b) to the devices connected to its
-external ports.
-* When operating in vlan_filtering=3D1 mode, technically the sja1105
-becomes a "managed dumb switch" (control traffic: PTP, STP etc still
-works, but for general purpose traffic you must now open your socket
-on the DSA master netdevice, not the switch ports). So the DSA master
-netdevice is in fact just another node connected to the switch in this
-mode, for all the hardware cares. So technically you _can_ still do
-QoS from the host Linux if you put a VLAN sub-interface on top of the
-DSA master netdevice.
-
-Now, to finally answer your question. I have used the sja1105 as a
-bridge between two endpoints who are sending/receiving VLAN-tagged
-traffic in a 3-board network synchronized by PTP. There is a schedule
-configured on the switch that is aligned to the beginning of the
-second, and the cycle time is known. PTP uses traffic class 7, and the
-scheduled traffic uses traffic class 5.
-The traffic sender is not too complicated: it's a raw L2 socket that
-is sending scheduled traffic based on calls to
-clock_nanosleep(CLOCK_REALTIME) and an a-priori knowledge of the
-network schedule (it's invoked from a script), minus an advance time.
-The reason I'm not sharing too many details about the traffic sender
-now is that I just configured the advance time experimentally and
-there's no hard guarantee that its egress latency will be smaller and
-that the frames will always be sent on time. But the sender's
-CLOCK_REALTIME is in sync with its /dev/ptp0 by phc2sys, that's why I
-can poll it instead of polling the hardware clock.
-Then I am taking TX and RX timestamps for the scheduled traffic on the
-sender and on the receiver. I can do a reasonable diff between the 2
-timestamps because the PHCs are kept in sync by PTP, and that is my
-path delay. I expect it to be more or less 2x a single link's path
-delay (sender -> bridge + bridge -> receiver), and not in any case a
-multiple of the cycle time (which is a sign that cycles were missed).
-
-As for the sja1105-as-endpoint use case, I checked that I can inject
-traffic into each particular queue, but I didn't really explore it
-further.
-
-I'll make sure this subtlety is more clearly formulated in the next
-version of the patch.
-
-> Cheers,
-> --
-> Vinicius
->
->
->
-
-Actually let me ask you a few questions as well:
-
-- I'm trying to understand what is the correct use of the tc-mqprio
-"queues" argument. I've only tested it with "1@0 1@1 1@2 1@3 1@4 1@5
-1@6 1@7", which I believe is equivalent to not specifying it at all? I
-believe it should be interpreted as: "allocate this many netdev queues
-for each traffic class", where "traffic class" means a group of queues
-having the same priority (equal to the traffic class's number), but
-engaged in a strict priority scheme with other groups of queues
-(traffic classes). Right?
-
-- DSA can only formally support multi-queue, because its connection to
-the Linux host is through an Ethernet MAC (FIFO). Even if the DSA
-master netdevice may be multi-queue, allocating and separating those
-queues for each front-panel switch port is a task best left to the
-user/administrator. This means that DSA should reject all other
-"queues" mappings except the trivial one I pointed to above?
-
-- I'm looking at the "tc_mask_to_queue_mask" function that I'm
-carrying along from your initial offload RFC. Are you sure this is the
-right approach? I don't feel a need to translate from traffic class to
-netdev queues, considering that in the general case, a traffic class
-is a group of queues, and 802.1Qbv doesn't really specify that you can
-gate individual queues from a traffic class. In the software
-implementation you are only looking at netdev_get_prio_tc_map, which
-is not equivalent as far as my understanding goes, but saner.
-Actually 802.1Q-2018 does not really clarify this either. It looks to
-me like they use the term "queue" and "traffic class" interchangeably.
-See two examples below (emphasis mine):
-
-Q.2 Using gate operations to create protected windows
-The enhancements for scheduled traffic described in 8.6.8.4 allow
-transmission to be switched on and off on a timed basis for each
-_traffic class_ that is implemented on a port. This switching is
-achieved by means of individual on/off transmission gates associated
-with each _traffic class_ and a list of gate operations that control
-the gates; an individual SetGateStates operation has a time delay
-parameter that indicates the delay after the gate operation is
-executed until the next operation is to occur, and a GateState
-parameter that defines a vector of up to eight state values (open or
-closed) that is to be applied to each gate when the operation is
-executed. The gate operations allow any combination of open/closed
-states to be defined, and the mechanism makes no assumptions about
-which _traffic classes_ are being =E2=80=9Cprotected=E2=80=9D and which are
-=E2=80=9Cunprotected=E2=80=9D; any such assumptions are left to the designe=
-r of the
-sequence of gate operations.
-
-Table 8-7=E2=80=94Gate operations
-The GateState parameter indicates a value, open or closed, for each of
-the Port=E2=80=99s _queues_.
-
-- What happens with the "clockid" argument now that hardware offload
-is possible? Do we allow "/dev/ptp0" to be specified as input?
-Actually this question is relevant to your txtime-assist mode as well:
-doesn't it assume that there is an implicit phc2sys instance running
-to keep the system time in sync with the PHC?
-
-Thanks,
--Vladimir
