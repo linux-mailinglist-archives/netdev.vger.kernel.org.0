@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE7AAED64
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 16:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEDAAED5A
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 16:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392567AbfIJOmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 10:42:01 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:42936 "EHLO
+        id S1732534AbfIJOlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 10:41:32 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:42870 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732260AbfIJOlc (ORCPT
+        by vger.kernel.org with ESMTP id S1729518AbfIJOlc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 10:41:32 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 55FC0C2B53;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 51791C2B50;
         Tue, 10 Sep 2019 14:41:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1568126492; bh=k7i2LIyV7LDIsI6c/mIJA82Jt8oRa7SZ14gdZwpgnzQ=;
+        t=1568126491; bh=vpC2LaVnSHpe6JlRbEIDa2bOrwXHEmXhM/4SypXpYqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=GT8lNuPEF+IGHxeJrxoakh2f6pBPKJ8bRrTnanH8xqxv2md2aoEDwo8J8lCvVVdgB
-         ji4XHJtmI8k+5pseKyepOsC+Gpp4E5//xaJwjj03QXBQoWReBGkmci2gJeQ3x1qmAO
-         YVskWAP52i0hzwr1F0X5QcRU1HzqGYguiA4labidVaQqARpg8Q4nBa/7zo0lcgrh2p
-         j+at4NSIz+aObQA4Y4/e77umsQGjNfizRjp/RSvj3XgIlo9txiqsVQ/2OzPCFD4Zc5
-         FhiXrID3ppkSXMPvy7XvFpX/sOaX9cVFTBOO2DBIwtNt49idd1NLetQ/StKOrbFJFh
-         5Rv/lwqdZlq3w==
+        b=f8MPfV91qgPx7+86kSMpLBVTZwGXAjNXJaNngvproKQM9MaUP5YivnzOFHTeiAvKs
+         Zd3wcCIX5WPWimQfr5iOjn97hv192WMShCdyGEUPHoJHPYNhADOl60WDG+pgQXcNhC
+         ys8KkWJJ/Fqa4lbO7ZIdkEdEtkUvCxmRqraSuH35oGb9zIEjddD/jgEGmwKdjIzAwL
+         qXdJlohdQs3XNFWIPbYfTCmOm1F40OF2N8QXfgU5TwCja/ki6z5mAhHss0tS0z+4s2
+         qGqnGgNTDpCW6bDhJB7Ex+MDXv38KJpmZUjrNsxLrGTvrw6iFA7Lt53KMd/AYpDQBP
+         fTe8RUupPyQQw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id EECDCA0067;
-        Tue, 10 Sep 2019 14:41:29 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTP id 10EFFA006A;
+        Tue, 10 Sep 2019 14:41:30 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/6] net: stmmac: Add support for SA Insertion/Replacement in GMAC4+
-Date:   Tue, 10 Sep 2019 16:41:25 +0200
-Message-Id: <34f683da6f4774a1336174a213d035483e9e088f.1568126224.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 5/6] net: stmmac: Add support for VLAN Insertion Offload in GMAC4+
+Date:   Tue, 10 Sep 2019 16:41:26 +0200
+Message-Id: <77be01eaccf369b78b70a1e80010e998780198fe.1568126224.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1568126224.git.joabreu@synopsys.com>
 References: <cover.1568126224.git.joabreu@synopsys.com>
@@ -52,9 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the support for Source Address Insertion and Replacement in GMAC4
-and GMAC5 cores. Two methods are supported: Descriptor based and
-register based.
+Adds support for TX VLAN Offload using descriptors based features
+available in GMAC4/5.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -69,129 +68,183 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  3 +++
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  | 13 +++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c |  8 ++++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h |  1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  6 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  | 16 ++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c | 35 ++++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h |  8 +++++
  drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   |  1 +
- 5 files changed, 26 insertions(+)
+ 5 files changed, 66 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 4dfa69850040..fad121cbfe0e 100644
+index fad121cbfe0e..e88dac1dd765 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -160,6 +160,8 @@ enum power_event {
- #define GMAC_DEBUG_RPESTS		BIT(0)
+@@ -19,6 +19,7 @@
+ #define GMAC_VLAN_TAG			0x00000050
+ #define GMAC_VLAN_HASH_TABLE		0x00000058
+ #define GMAC_RX_FLOW_CTRL		0x00000090
++#define GMAC_VLAN_INCL			0x00000060
+ #define GMAC_QX_TX_FLOW_CTRL(x)		(0x70 + x * 4)
+ #define GMAC_TXQ_PRTY_MAP0		0x98
+ #define GMAC_TXQ_PRTY_MAP1		0x9C
+@@ -75,6 +76,10 @@
+ #define GMAC_VLAN_ESVL			BIT(18)
+ #define GMAC_VLAN_ETV			BIT(16)
+ #define GMAC_VLAN_VID			GENMASK(15, 0)
++#define GMAC_VLAN_VLTI			BIT(20)
++#define GMAC_VLAN_CSVL			BIT(19)
++#define GMAC_VLAN_VLC			GENMASK(17, 16)
++#define GMAC_VLAN_VLC_SHIFT		16
  
- /* MAC config */
-+#define GMAC_CONFIG_SARC		GENMASK(30, 28)
-+#define GMAC_CONFIG_SARC_SHIFT		28
- #define GMAC_CONFIG_IPC			BIT(27)
- #define GMAC_CONFIG_2K			BIT(22)
- #define GMAC_CONFIG_ACS			BIT(20)
-@@ -175,6 +177,7 @@ enum power_event {
- #define GMAC_CONFIG_RE			BIT(0)
+ /* MAC RX Queue Enable */
+ #define GMAC_RX_QUEUE_CLEAR(queue)	~(GENMASK(1, 0) << ((queue) * 2))
+@@ -212,6 +217,7 @@ enum power_event {
+ #define GMAC_HW_FEAT_FRPES		GENMASK(14, 13)
+ #define GMAC_HW_FEAT_FRPBS		GENMASK(12, 11)
+ #define GMAC_HW_FEAT_FRPSEL		BIT(10)
++#define GMAC_HW_FEAT_DVLAN		BIT(5)
  
- /* MAC HW features0 bitmap */
-+#define GMAC_HW_FEAT_SAVLANINS		BIT(27)
- #define GMAC_HW_FEAT_ADDMAC		BIT(18)
- #define GMAC_HW_FEAT_RXCOESEL		BIT(16)
- #define GMAC_HW_FEAT_TXCOSEL		BIT(14)
+ /* MAC HW ADDR regs */
+ #define GMAC_HI_DCS			GENMASK(18, 16)
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 5b43a8df1536..73dbfd810fca 100644
+index 73dbfd810fca..a99effe61325 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -759,6 +759,16 @@ static void dwmac4_update_vlan_hash(struct mac_device_info *hw, u32 hash,
- 	}
+@@ -769,6 +769,19 @@ static void dwmac4_sarc_configure(void __iomem *ioaddr, int val)
+ 	writel(value, ioaddr + GMAC_CONFIG);
  }
  
-+static void dwmac4_sarc_configure(void __iomem *ioaddr, int val)
++static void dwmac4_enable_vlan(struct mac_device_info *hw, u32 type)
 +{
-+	u32 value = readl(ioaddr + GMAC_CONFIG);
++	void __iomem *ioaddr = hw->pcsr;
++	u32 value;
 +
-+	value &= ~GMAC_CONFIG_SARC;
-+	value |= val << GMAC_CONFIG_SARC_SHIFT;
-+
-+	writel(value, ioaddr + GMAC_CONFIG);
++	value = readl(ioaddr + GMAC_VLAN_INCL);
++	value |= GMAC_VLAN_VLTI;
++	value |= GMAC_VLAN_CSVL; /* Only use SVLAN */
++	value &= ~GMAC_VLAN_VLC;
++	value |= (type << GMAC_VLAN_VLC_SHIFT) & GMAC_VLAN_VLC;
++	writel(value, ioaddr + GMAC_VLAN_INCL);
 +}
 +
  const struct stmmac_ops dwmac4_ops = {
  	.core_init = dwmac4_core_init,
  	.set_mac = stmmac_set_mac,
-@@ -790,6 +800,7 @@ const struct stmmac_ops dwmac4_ops = {
- 	.set_filter = dwmac4_set_filter,
+@@ -801,6 +814,7 @@ const struct stmmac_ops dwmac4_ops = {
  	.set_mac_loopback = dwmac4_set_mac_loopback,
  	.update_vlan_hash = dwmac4_update_vlan_hash,
-+	.sarc_configure = dwmac4_sarc_configure,
+ 	.sarc_configure = dwmac4_sarc_configure,
++	.enable_vlan = dwmac4_enable_vlan,
  };
  
  const struct stmmac_ops dwmac410_ops = {
-@@ -823,6 +834,7 @@ const struct stmmac_ops dwmac410_ops = {
- 	.set_filter = dwmac4_set_filter,
+@@ -835,6 +849,7 @@ const struct stmmac_ops dwmac410_ops = {
  	.set_mac_loopback = dwmac4_set_mac_loopback,
  	.update_vlan_hash = dwmac4_update_vlan_hash,
-+	.sarc_configure = dwmac4_sarc_configure,
+ 	.sarc_configure = dwmac4_sarc_configure,
++	.enable_vlan = dwmac4_enable_vlan,
  };
  
  const struct stmmac_ops dwmac510_ops = {
-@@ -861,6 +873,7 @@ const struct stmmac_ops dwmac510_ops = {
- 	.flex_pps_config = dwmac5_flex_pps_config,
+@@ -874,6 +889,7 @@ const struct stmmac_ops dwmac510_ops = {
  	.set_mac_loopback = dwmac4_set_mac_loopback,
  	.update_vlan_hash = dwmac4_update_vlan_hash,
-+	.sarc_configure = dwmac4_sarc_configure,
+ 	.sarc_configure = dwmac4_sarc_configure,
++	.enable_vlan = dwmac4_enable_vlan,
  };
  
  int dwmac4_setup(struct stmmac_priv *priv)
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index dbde23e7e169..8edc9f8787cc 100644
+index 8edc9f8787cc..15eb1abba91d 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -443,6 +443,13 @@ static void dwmac4_clear(struct dma_desc *p)
- 	p->des3 = 0;
+@@ -459,6 +459,39 @@ static int set_16kib_bfsize(int mtu)
+ 	return ret;
  }
  
-+static void dwmac4_set_sarc(struct dma_desc *p, u32 sarc_type)
++static void dwmac4_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
++				u32 inner_type)
 +{
-+	sarc_type <<= TDES3_SA_INSERT_CTRL_SHIFT;
++	p->des0 = 0;
++	p->des1 = 0;
++	p->des2 = 0;
++	p->des3 = 0;
 +
-+	p->des3 |= cpu_to_le32(sarc_type & TDES3_SA_INSERT_CTRL_MASK);
++	/* Inner VLAN */
++	if (inner_type) {
++		u32 des = inner_tag << TDES2_IVT_SHIFT;
++
++		des &= TDES2_IVT_MASK;
++		p->des2 = cpu_to_le32(des);
++
++		des = inner_type << TDES3_IVTIR_SHIFT;
++		des &= TDES3_IVTIR_MASK;
++		p->des3 = cpu_to_le32(des | TDES3_IVLTV);
++	}
++
++	/* Outer VLAN */
++	p->des3 |= cpu_to_le32(tag & TDES3_VLAN_TAG);
++	p->des3 |= cpu_to_le32(TDES3_VLTV);
++
++	p->des3 |= cpu_to_le32(TDES3_CONTEXT_TYPE);
 +}
 +
- static int set_16kib_bfsize(int mtu)
- {
- 	int ret = 0;
-@@ -476,6 +483,7 @@ const struct stmmac_desc_ops dwmac4_desc_ops = {
- 	.get_addr = dwmac4_get_addr,
++static void dwmac4_set_vlan(struct dma_desc *p, u32 type)
++{
++	type <<= TDES2_VLAN_TAG_SHIFT;
++	p->des2 |= cpu_to_le32(type & TDES2_VLAN_TAG_MASK);
++}
++
+ const struct stmmac_desc_ops dwmac4_desc_ops = {
+ 	.tx_status = dwmac4_wrback_get_tx_status,
+ 	.rx_status = dwmac4_wrback_get_rx_status,
+@@ -484,6 +517,8 @@ const struct stmmac_desc_ops dwmac4_desc_ops = {
  	.set_addr = dwmac4_set_addr,
  	.clear = dwmac4_clear,
-+	.set_sarc = dwmac4_set_sarc,
+ 	.set_sarc = dwmac4_set_sarc,
++	.set_vlan_tag = dwmac4_set_vlan_tag,
++	.set_vlan = dwmac4_set_vlan,
  };
  
  const struct stmmac_mode_ops dwmac4_ring_mode_ops = {
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
-index f58191174287..6089d76a00d3 100644
+index 6089d76a00d3..0d7b3bbcd5a7 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.h
-@@ -32,6 +32,7 @@
- #define TDES3_HDR_LEN_SHIFT		19
- #define TDES3_SLOT_NUMBER_MASK		GENMASK(22, 19)
- #define TDES3_SA_INSERT_CTRL_MASK	GENMASK(25, 23)
-+#define TDES3_SA_INSERT_CTRL_SHIFT	23
- #define TDES3_CRC_PAD_CTRL_MASK		GENMASK(27, 26)
+@@ -18,13 +18,21 @@
+ /* TDES2 (read format) */
+ #define TDES2_BUFFER1_SIZE_MASK		GENMASK(13, 0)
+ #define TDES2_VLAN_TAG_MASK		GENMASK(15, 14)
++#define TDES2_VLAN_TAG_SHIFT		14
+ #define TDES2_BUFFER2_SIZE_MASK		GENMASK(29, 16)
+ #define TDES2_BUFFER2_SIZE_MASK_SHIFT	16
++#define TDES3_IVTIR_MASK		GENMASK(19, 18)
++#define TDES3_IVTIR_SHIFT		18
++#define TDES3_IVLTV			BIT(17)
+ #define TDES2_TIMESTAMP_ENABLE		BIT(30)
++#define TDES2_IVT_MASK			GENMASK(31, 16)
++#define TDES2_IVT_SHIFT			16
+ #define TDES2_INTERRUPT_ON_COMPLETION	BIT(31)
  
- /* TDES3 (write back format) */
+ /* TDES3 (read format) */
+ #define TDES3_PACKET_SIZE_MASK		GENMASK(14, 0)
++#define TDES3_VLAN_TAG			GENMASK(15, 0)
++#define TDES3_VLTV			BIT(16)
+ #define TDES3_CHECKSUM_INSERTION_MASK	GENMASK(17, 16)
+ #define TDES3_CHECKSUM_INSERTION_SHIFT	16
+ #define TDES3_TCP_PKT_PAYLOAD_MASK	GENMASK(17, 0)
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 2456f421aac9..82d9761b2df2 100644
+index 82d9761b2df2..f3ca0236450d 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -348,6 +348,7 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
- 	/* TX and RX csum */
- 	dma_cap->tx_coe = (hw_cap & GMAC_HW_FEAT_TXCOSEL) >> 14;
- 	dma_cap->rx_coe =  (hw_cap & GMAC_HW_FEAT_RXCOESEL) >> 16;
-+	dma_cap->vlins = (hw_cap & GMAC_HW_FEAT_SAVLANINS) >> 27;
+@@ -386,6 +386,7 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
+ 	dma_cap->frpes = (hw_cap & GMAC_HW_FEAT_FRPES) >> 13;
+ 	dma_cap->frpbs = (hw_cap & GMAC_HW_FEAT_FRPBS) >> 11;
+ 	dma_cap->frpsel = (hw_cap & GMAC_HW_FEAT_FRPSEL) >> 10;
++	dma_cap->dvlan = (hw_cap & GMAC_HW_FEAT_DVLAN) >> 5;
+ }
  
- 	/* MAC HW feature1 */
- 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE1);
+ /* Enable/disable TSO feature and set MSS */
 -- 
 2.7.4
 
