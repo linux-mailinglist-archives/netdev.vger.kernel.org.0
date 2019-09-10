@@ -2,119 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B68AF181
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 21:05:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DCCAF1B5
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 21:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfIJTEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 15:04:52 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45640 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726679AbfIJTEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 15:04:51 -0400
-Received: by mail-wr1-f68.google.com with SMTP id l16so21725668wrv.12;
-        Tue, 10 Sep 2019 12:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/hilQzsCJxKwP3iLZ8HzlKgy8yH9kb6fEFDV5ZKdCyE=;
-        b=guKxL0FnNLiU5TMDidgTSYgeuDCCp9r9hApW3wtyxtFScjHBwNUsnLsm6tbY6FDwTU
-         t/u6ZlTtchki5wWrmGjqydgbnJVG294aOW8R7AIuqm5Bs5KsHs3wl2T99FmZupA7VDCg
-         o0rxxL1oXw+Ri45p4uOBLTCt5GMjMfYHvHxVLajupEnJmLUrLAiwKh9bnKbrYIfBjYBx
-         6VvJkzNH7YWgmau1t/18BmxoxrWiWahHXK55ckcMydegZ7iwrbTXAlfVYOm9riF/dQkk
-         6gNcQydwC6SA9TgoL5a54gFvE7sWcMOBPCjOS0Gj3yCftaKtL2HpUMq/2Ll8s7UeZMQS
-         HgWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/hilQzsCJxKwP3iLZ8HzlKgy8yH9kb6fEFDV5ZKdCyE=;
-        b=Szp45FCjl0RcoC6iO247VrzOnGQ2N4AtQN0/3z/f44VQUyqchz+aOgpngQ1X/qRnt2
-         n80yAKEnkzqqMhuHsGe/+ZtSme0fqjT+FyLQTDeHyfXfossVw0dt9Yfs2XEH3M9reogG
-         b5SgdKGMxC8/4l+mly7MxSMaYSBmKRtOZr7WiYtQmwr8q01FYglE2kbOUhEUqoN240eB
-         UBDhQxhrcH8gENPsdsBpeZFhB1XJLiZWfOja5EhmCIFIlVkDthNT7Q0Jhh8xkU8cvjTI
-         Qlw4NH14vTFB/B66xb0TMAg+6bcjds/4r93CAm2FVYPuSDm8l908/VGPG71IU17aCcEY
-         aKNQ==
-X-Gm-Message-State: APjAAAWsl0ej9dmxc5LAxF3wJKELpFyZ3OY+Mcv5qCI36Cn+OcMlkbTW
-        s0T4YzBqiMP29wCnekJmuJk=
-X-Google-Smtp-Source: APXvYqziVqQ9ov3KhhvPUgg3puxHFUg4O/RuIwQstmHpmz5lZB8ZM3LWhklSgOXw5sYb+cS3M4JxRA==
-X-Received: by 2002:adf:f2cd:: with SMTP id d13mr26723957wrp.143.1568142289391;
-        Tue, 10 Sep 2019 12:04:49 -0700 (PDT)
-Received: from localhost.localdomain ([2a02:8108:96bf:e0ab:2b68:5d76:a12a:e6ba])
-        by smtp.gmail.com with ESMTPSA id w15sm14222967wru.53.2019.09.10.12.04.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 12:04:48 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     kvalo@codeaurora.org
-Cc:     pkshih@realtek.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 3/3] rtlwifi: rtl8192de: replace _rtl92d_evm_db_to_percentage with generic version
-Date:   Tue, 10 Sep 2019 21:04:22 +0200
-Message-Id: <20190910190422.63378-4-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190910190422.63378-1-straube.linux@gmail.com>
-References: <20190910190422.63378-1-straube.linux@gmail.com>
+        id S1726948AbfIJTKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 15:10:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38858 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725797AbfIJTKe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 15:10:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uHJsS7vyUh6LJRH0vWfRY7/KnHHTVhD4AwjLkdvjaSA=; b=OcI+tWt+hc3iFlMEuY/9j0HJo/
+        jH+dJy3ruJRrgs9i6dxN+ZVwOJi+iNX9TUHFZDCD5An4CyVdPgHzMfVq+Hf4ibbm68bhALJ5/lkaf
+        jaVSMUFjI4m+ctr52zriJy38B6XgFdcPoS68Er1oXtdNnYGPuTcTjQGTex25fhegEtTM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i7lX3-0003Yw-79; Tue, 10 Sep 2019 21:10:29 +0200
+Date:   Tue, 10 Sep 2019 21:10:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Egor Pomozov <Egor.Pomozov@aquantia.com>,
+        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>
+Subject: Re: [PATCH net-next 01/11] net: aquantia: PTP skeleton declarations
+ and callbacks
+Message-ID: <20190910191029.GE9761@lunn.ch>
+References: <cover.1568034880.git.igor.russkikh@aquantia.com>
+ <cf60b1d3d797d0666a4828fcf5e521e0bd73f8d4.1568034880.git.igor.russkikh@aquantia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf60b1d3d797d0666a4828fcf5e521e0bd73f8d4.1568034880.git.igor.russkikh@aquantia.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function _rtl92d_evm_db_to_percentage is functionally identical
-to the generic version rtl_evm_db_to_percentage, so remove
-_rtl92d_evm_db_to_percentage and use the generic version instead.
+On Mon, Sep 09, 2019 at 01:38:38PM +0000, Igor Russkikh wrote:
+> From: Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- .../wireless/realtek/rtlwifi/rtl8192de/trx.c   | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+Hi Igor, et al.
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
-index d162884a9e00..2494e1f118f8 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
-@@ -4,6 +4,7 @@
- #include "../wifi.h"
- #include "../pci.h"
- #include "../base.h"
-+#include "../stats.h"
- #include "reg.h"
- #include "def.h"
- #include "phy.h"
-@@ -32,21 +33,6 @@ static u8 _rtl92d_query_rxpwrpercentage(s8 antpower)
- 		return 100 + antpower;
- }
- 
--static u8 _rtl92d_evm_db_to_percentage(s8 value)
--{
--	s8 ret_val = value;
--
--	if (ret_val >= 0)
--		ret_val = 0;
--	if (ret_val <= -33)
--		ret_val = -33;
--	ret_val = 0 - ret_val;
--	ret_val *= 3;
--	if (ret_val == 99)
--		ret_val = 100;
--	return ret_val;
--}
--
- static long _rtl92de_translate_todbm(struct ieee80211_hw *hw,
- 				     u8 signal_strength_index)
- {
-@@ -215,7 +201,7 @@ static void _rtl92de_query_rxphystatus(struct ieee80211_hw *hw,
- 		else
- 			max_spatial_stream = 1;
- 		for (i = 0; i < max_spatial_stream; i++) {
--			evm = _rtl92d_evm_db_to_percentage(p_drvinfo->rxevm[i]);
-+			evm = rtl_evm_db_to_percentage(p_drvinfo->rxevm[i]);
- 			if (packet_match_bssid) {
- 				if (i == 0)
- 					pstats->signalquality =
--- 
-2.23.0
+> @@ -331,6 +332,10 @@ int aq_nic_init(struct aq_nic_s *self)
+>  		self->aq_vecs > i; ++i, aq_vec = self->aq_vec[i])
+>  		aq_vec_init(aq_vec, self->aq_hw_ops, self->aq_hw);
 
+> +int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec)
+> +{
+> +	struct hw_atl_utils_mbox mbox;
+> +	struct ptp_clock *clock;
+> +	struct aq_ptp_s *self;
+
+I find the use of self in this code quite confusing. It does not
+appear to have a clear meaning. It can be a aq_ring_s, aq_nic_c,
+aq_hw_s, aq_vec_s.
+
+Looking at this code i always have to figure out what self is. Could
+you not just use struct aq_ptp_s aq_ptp consistently in the code?
+
+> +	int err = 0;
+> +
+> +	hw_atl_utils_mpi_read_stats(aq_nic->aq_hw, &mbox);
+> +
+> +	if (!(mbox.info.caps_ex & BIT(CAPS_EX_PHY_PTP_EN))) {
+> +		aq_nic->aq_ptp = NULL;
+> +		return 0;
+> +	}
+> +
+> +	self = kzalloc(sizeof(*self), GFP_KERNEL);
+
+Using devm_kzalloc() will make your clean up easier.
+
+> +void aq_ptp_free(struct aq_nic_s *aq_nic)
+> +{
+> +	struct aq_ptp_s *self = aq_nic->aq_ptp;
+> +
+> +	if (!self)
+> +		return;
+> +
+> +	kfree(self);
+
+kfree() is happy to take a NULL pointer. But this could all go away
+with devm_kzalloc().
+
+     Andrew
