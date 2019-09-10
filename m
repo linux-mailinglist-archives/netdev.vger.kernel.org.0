@@ -2,86 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE28AEB9B
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 15:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B5BAEC57
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 15:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728837AbfIJNcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 09:32:13 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:44746 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725935AbfIJNcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 09:32:13 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 2DAE3602F2; Tue, 10 Sep 2019 13:32:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568122332;
-        bh=vQPgNw5a7gU0FduUPKVc7pHyoB4RAkWfX8HhQ2BonBY=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Kuy79+OsiVZi69+uo8aTQy6XYrve8opGsQxOGUI1M2SeGG9WJsxx1Hx/VrD/D7Ffg
-         Mh/CAlGN8fig8/sky/UO88/xsgUnCi4yYq1IGQgvapB/748K7HIPyaH/VMlTn5vuWC
-         qstsYV9bVyyq3iaidfihKzfP8ifCd+lqc7wQ7eFI=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727086AbfIJNw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 09:52:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49474 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726089AbfIJNw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 09:52:56 -0400
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 421EF602BC;
-        Tue, 10 Sep 2019 13:32:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568122331;
-        bh=vQPgNw5a7gU0FduUPKVc7pHyoB4RAkWfX8HhQ2BonBY=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=nYJ/FPZVw/skDA6fn9S/lZGMJvbw9+aRH3ncbVxul5PV/jnTLGL27uM82xIB8kQpj
-         J2OLOTtObzZYslP9fEgyPC8JledNL/vcqSmFedf846VXmVKm7d9CYjcO0Je8Etd7/p
-         lSFf9+kqCoTEYGOQlvEuVYIs+EJ/c00ZxM5H9v/Q=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 421EF602BC
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mx1.redhat.com (Postfix) with ESMTPS id 099D389AC7
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 13:52:56 +0000 (UTC)
+Received: by mail-qt1-f198.google.com with SMTP id i9so19948091qtj.2
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 06:52:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=vKjBadJZsVZtUGd3WVckVL2DIAFF4FA1DCNgRycmkBI=;
+        b=TEdMWvX4UNgO1qnzOKXXhAkESEF0KZXsXwiNgUdfc+VK/+99nSdEztztClnGpEUjOG
+         MXqAaLNKFd68vtOOg/rX9V+KimoAHohVXTsNJTnVRMHNGBZZtFJ9gtC+DaD+rJsBrUsE
+         j367HuFw6k3vQpAhjHfayH14KaTRTUFWT6sj84cjaoRIM8k9PSFFWrnqynM+feuwQ7qP
+         uiA3ZJQHLox1iwn8em9wNswyqYdpokAL3u3RZ+xUptBBO2p1teGYFtKbAHwxhLa8TzNa
+         2+uIHtaV/WSXomlJalGwbRL6BSxXuiPANUYVFg61bfyeRSX4hyB4WnmCL1Xetf+NeCn1
+         5SNQ==
+X-Gm-Message-State: APjAAAW7davwta8G2vAkSIA0ecVm9HYqDWfrwUWnAVpQBGn1mfY87nWb
+        57EhGTjHBBaCQjxhYOx1UXpApy3Srb0d4w1r19U6c4sMOHpKq1O/Na0qbrcSlVps4xS7WMU8usi
+        iyCeuQpVhZfJqiB4M
+X-Received: by 2002:a0c:e811:: with SMTP id y17mr7641975qvn.68.1568123575196;
+        Tue, 10 Sep 2019 06:52:55 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqy87Xk8h9CwEg4tdqy4DXt/JFYQLpQHouOJ6fOEiaMkub6yelg6yVSS11xTwQ5fJFutl2Pk0A==
+X-Received: by 2002:a0c:e811:: with SMTP id y17mr7641951qvn.68.1568123574950;
+        Tue, 10 Sep 2019 06:52:54 -0700 (PDT)
+Received: from redhat.com ([80.74.107.118])
+        by smtp.gmail.com with ESMTPSA id n42sm10807604qta.31.2019.09.10.06.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Sep 2019 06:52:53 -0700 (PDT)
+Date:   Tue, 10 Sep 2019 09:52:46 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kwankhede@nvidia.com, alex.williamson@redhat.com,
+        cohuck@redhat.com, tiwei.bie@intel.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, idos@mellanox.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com
+Subject: Re: [RFC PATCH 3/4] virtio: introudce a mdev based transport
+Message-ID: <20190910094807-mutt-send-email-mst@kernel.org>
+References: <20190910081935.30516-1-jasowang@redhat.com>
+ <20190910081935.30516-4-jasowang@redhat.com>
+ <20190910055744-mutt-send-email-mst@kernel.org>
+ <572ffc34-3081-8503-d3cc-192edc9b5311@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k: release allocated buffer if timed out
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190906185931.19288-1-navid.emamdoost@gmail.com>
-References: <20190906185931.19288-1-navid.emamdoost@gmail.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input) emamd001@umn.edu,
-        smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)emamd001@umn.edu
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190910133212.2DAE3602F2@smtp.codeaurora.org>
-Date:   Tue, 10 Sep 2019 13:32:12 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <572ffc34-3081-8503-d3cc-192edc9b5311@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
-
-> In ath9k_wmi_cmd, the allocated network buffer needs to be released
-> if timeout happens. Otherwise memory will be leaked.
+On Tue, Sep 10, 2019 at 09:13:02PM +0800, Jason Wang wrote:
 > 
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> On 2019/9/10 下午6:01, Michael S. Tsirkin wrote:
+> > > +#ifndef _LINUX_VIRTIO_MDEV_H
+> > > +#define _LINUX_VIRTIO_MDEV_H
+> > > +
+> > > +#include <linux/interrupt.h>
+> > > +#include <linux/vringh.h>
+> > > +#include <uapi/linux/virtio_net.h>
+> > > +
+> > > +/*
+> > > + * Ioctls
+> > > + */
+> > Pls add a bit more content here. It's redundant to state these
+> > are ioctls. Much better to document what does each one do.
+> 
+> 
+> Ok.
+> 
+> 
+> > 
+> > > +
+> > > +struct virtio_mdev_callback {
+> > > +	irqreturn_t (*callback)(void *);
+> > > +	void *private;
+> > > +};
+> > > +
+> > > +#define VIRTIO_MDEV 0xAF
+> > > +#define VIRTIO_MDEV_SET_VQ_CALLBACK _IOW(VIRTIO_MDEV, 0x00, \
+> > > +					 struct virtio_mdev_callback)
+> > > +#define VIRTIO_MDEV_SET_CONFIG_CALLBACK _IOW(VIRTIO_MDEV, 0x01, \
+> > > +					struct virtio_mdev_callback)
+> > Function pointer in an ioctl parameter? How does this ever make sense?
+> 
+> 
+> I admit this is hacky (casting).
+> 
+> 
+> > And can't we use a couple of registers for this, and avoid ioctls?
+> 
+> 
+> Yes, how about something like interrupt numbers for each virtqueue and
+> config?
 
-Patch applied to ath-next branch of ath.git, thanks.
+Should we just reuse VIRTIO_PCI_COMMON_Q_XXX then?
 
-728c1e2a05e4 ath9k: release allocated buffer if timed out
 
--- 
-https://patchwork.kernel.org/patch/11135843/
+> 
+> > 
+> > > +
+> > > +#define VIRTIO_MDEV_DEVICE_API_STRING		"virtio-mdev"
+> > > +
+> > > +/*
+> > > + * Control registers
+> > > + */
+> > > +
+> > > +/* Magic value ("virt" string) - Read Only */
+> > > +#define VIRTIO_MDEV_MAGIC_VALUE		0x000
+> > > +
+> > > +/* Virtio device version - Read Only */
+> > > +#define VIRTIO_MDEV_VERSION		0x004
+> > > +
+> > > +/* Virtio device ID - Read Only */
+> > > +#define VIRTIO_MDEV_DEVICE_ID		0x008
+> > > +
+> > > +/* Virtio vendor ID - Read Only */
+> > > +#define VIRTIO_MDEV_VENDOR_ID		0x00c
+> > > +
+> > > +/* Bitmask of the features supported by the device (host)
+> > > + * (32 bits per set) - Read Only */
+> > > +#define VIRTIO_MDEV_DEVICE_FEATURES	0x010
+> > > +
+> > > +/* Device (host) features set selector - Write Only */
+> > > +#define VIRTIO_MDEV_DEVICE_FEATURES_SEL	0x014
+> > > +
+> > > +/* Bitmask of features activated by the driver (guest)
+> > > + * (32 bits per set) - Write Only */
+> > > +#define VIRTIO_MDEV_DRIVER_FEATURES	0x020
+> > > +
+> > > +/* Activated features set selector - Write Only */
+> > > +#define VIRTIO_MDEV_DRIVER_FEATURES_SEL	0x024
+> > > +
+> > > +/* Queue selector - Write Only */
+> > > +#define VIRTIO_MDEV_QUEUE_SEL		0x030
+> > > +
+> > > +/* Maximum size of the currently selected queue - Read Only */
+> > > +#define VIRTIO_MDEV_QUEUE_NUM_MAX	0x034
+> > > +
+> > > +/* Queue size for the currently selected queue - Write Only */
+> > > +#define VIRTIO_MDEV_QUEUE_NUM		0x038
+> > > +
+> > > +/* Ready bit for the currently selected queue - Read Write */
+> > > +#define VIRTIO_MDEV_QUEUE_READY		0x044
+> > Is this same as started?
+> 
+> 
+> Do you mean "status"?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I really meant "enabled", didn't remember the correct name.
+As in:  VIRTIO_PCI_COMMON_Q_ENABLE
 
+> 
+> > 
+> > > +
+> > > +/* Alignment of virtqueue - Read Only */
+> > > +#define VIRTIO_MDEV_QUEUE_ALIGN		0x048
+> > > +
+> > > +/* Queue notifier - Write Only */
+> > > +#define VIRTIO_MDEV_QUEUE_NOTIFY	0x050
+> > > +
+> > > +/* Device status register - Read Write */
+> > > +#define VIRTIO_MDEV_STATUS		0x060
+> > > +
+> > > +/* Selected queue's Descriptor Table address, 64 bits in two halves */
+> > > +#define VIRTIO_MDEV_QUEUE_DESC_LOW	0x080
+> > > +#define VIRTIO_MDEV_QUEUE_DESC_HIGH	0x084
+> > > +
+> > > +/* Selected queue's Available Ring address, 64 bits in two halves */
+> > > +#define VIRTIO_MDEV_QUEUE_AVAIL_LOW	0x090
+> > > +#define VIRTIO_MDEV_QUEUE_AVAIL_HIGH	0x094
+> > > +
+> > > +/* Selected queue's Used Ring address, 64 bits in two halves */
+> > > +#define VIRTIO_MDEV_QUEUE_USED_LOW	0x0a0
+> > > +#define VIRTIO_MDEV_QUEUE_USED_HIGH	0x0a4
+> > > +
+> > > +/* Configuration atomicity value */
+> > > +#define VIRTIO_MDEV_CONFIG_GENERATION	0x0fc
+> > > +
+> > > +/* The config space is defined by each driver as
+> > > + * the per-driver configuration space - Read Write */
+> > > +#define VIRTIO_MDEV_CONFIG		0x100
+> > Mixing device and generic config space is what virtio pci did,
+> > caused lots of problems with extensions.
+> > It would be better to reserve much more space.
+> 
+> 
+> I see, will do this.
+> 
+> Thanks
+> 
+> 
+> > 
+> > 
+> > > +
+> > > +#endif
+> > > +
+> > > +
+> > > +/* Ready bit for the currently selected queue - Read Write */
+> > > -- 
+> > > 2.19.1
