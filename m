@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 934A8AEB7A
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 15:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7292AEB91
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 15:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732230AbfIJN0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 09:26:44 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:42080 "EHLO
+        id S1732385AbfIJN3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 09:29:06 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:43526 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726394AbfIJN0n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 09:26:43 -0400
+        with ESMTP id S1726394AbfIJN3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 09:29:06 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 91CAB6016D; Tue, 10 Sep 2019 13:26:42 +0000 (UTC)
+        id 23E80602BC; Tue, 10 Sep 2019 13:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568122002;
-        bh=zqYN9TIvb8LarZK+8eJvsrDczJXmcfvbrZQkTvUneDc=;
+        s=default; t=1568122145;
+        bh=Qd5RfGYiHCwy3bpUbxAghJdbdVfjVR23GDfE0IN+sDE=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=GEyEZwDrI0j82BMA5t5tjkeTGp3TGfQLyltT+h4tZTH5QOq6p0wdfATFPJ1xe+e+x
-         Ebta/H61Cq1kbfRrTAVWPJct7a50096QvURp6PsZY9Hp+L9zCm7ldk/SpoL3t5TBqY
-         TSIydz/0F09Vyq73jgngMdxkbjT6eiyAwlkxAArk=
+        b=Xq1EY1oHMatnwSDvLZVni9wYYLrfShk4joikKGtrueRyzCw7o70EwRWEn+REWMHU8
+         r6CDDRJkSprxSv3H0aO16dbruS6RYlXvWnQZCjJxyOdoFgAaElgS8VGsR/E0vZQ8pM
+         7JqAxbuWFOt/seuurC32awoDKILZVR2Cu6R2ihh0=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,51 +30,59 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3CBD16016D;
-        Tue, 10 Sep 2019 13:26:39 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E8A9F602BC;
+        Tue, 10 Sep 2019 13:29:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568122001;
-        bh=zqYN9TIvb8LarZK+8eJvsrDczJXmcfvbrZQkTvUneDc=;
+        s=default; t=1568122144;
+        bh=Qd5RfGYiHCwy3bpUbxAghJdbdVfjVR23GDfE0IN+sDE=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=HYZ8s6Shgh4IKV9FAwZUk4KmMMgYidyFUnuAt8p+6RFU0OHqw9m0lxhhc1fthWCiU
-         cUDz1xnpFNmSUdr6VHWhJZBatSPkCFJ2ehohI+IRn3hxRz9LCuf7hvV33Q60/xu5eK
-         Jb68uuhGwtuouqB8q5SHGSbcS1ORA+QYW8Orqpjw=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3CBD16016D
+        b=X1zbG0bNjqXZ7i3dokzqk0OdZlF7b4Hc651P4oLZw6EVg9zWWNBhJ2gl+UXcN5GjG
+         G9A7O8eIBgZTTS4LLckcKxV9CgpLxaDSN0LHTNcFUJ8BtfBxLMIZwt43kJLwIL6qGV
+         7mPEe8wMPrGZeNA3bRP+w5Nw+eUlB3ivYOeRgOAo=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E8A9F602BC
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k: Remove unneeded variable to store return value
+Subject: Re: [PATCH] ath9k_htc: release allocated buffer if timed out
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1567579428-16377-1-git-send-email-zhongjiang@huawei.com>
-References: <1567579428-16377-1-git-send-email-zhongjiang@huawei.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <zhongjiang@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+In-Reply-To: <20190906182604.9282-1-navid.emamdoost@gmail.com>
+References: <20190906182604.9282-1-navid.emamdoost@gmail.com>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     unlisted-recipients:; (no To-header on input) emamd001@umn.edu,
+        smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)emamd001@umn.edu
+                                                                     ^-missing end of address
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190910132642.91CAB6016D@smtp.codeaurora.org>
-Date:   Tue, 10 Sep 2019 13:26:42 +0000 (UTC)
+Message-Id: <20190910132905.23E80602BC@smtp.codeaurora.org>
+Date:   Tue, 10 Sep 2019 13:29:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> wrote:
+Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
 
-> ath9k_reg_rmw_single do not need return value to cope with different
-> cases. And change functon return type to void.
+> In htc_config_pipe_credits, htc_setup_complete, and htc_connect_service
+> if time out happens, the allocated buffer needs to be released.
+> Otherwise there will be memory leak.
 > 
-> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
 Patch applied to ath-next branch of ath.git, thanks.
 
-45f09a1c5b85 ath9k: Remove unneeded variable to store return value
+853acf7caf10 ath9k_htc: release allocated buffer if timed out
 
 -- 
-https://patchwork.kernel.org/patch/11129449/
+https://patchwork.kernel.org/patch/11135781/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
