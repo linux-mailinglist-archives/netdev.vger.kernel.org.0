@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A24F6AE538
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 10:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844BEAE54E
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 10:20:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405145AbfIJIPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 04:15:13 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:35881 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405050AbfIJIPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 04:15:12 -0400
-Received: by mail-qt1-f196.google.com with SMTP id o12so19736716qtf.3;
-        Tue, 10 Sep 2019 01:15:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pj4P7d4msDG9z+WyEQMeQ/b2Jubj1id8ACJalQ4i4z0=;
-        b=L9d7BVTEJ24huElcaaE2n2VSCC/XuTbSs5NsZD4SeEiI0MK8reo+eSGNblyGKgn2jz
-         LJMgIGwqur4DkUP0HgcOWKqf+X622WKc5iUJzRITgtbyYU/7WbQ3B7qw6e1OTvWEvHLg
-         d7QeFiaAPHsJXg2h7czErjeMg7isnAggGrL0YjT3ywivtNqKJaR0D+by51+2SLn8KnIZ
-         2jaSMBIYD3wpYyt5hxB63Iiw26IPktqtVP11ZB3P9tmvXnnCpSx8zEvXTSn3JqspgyyI
-         noeJ4QvogsVQKRGXCJzg8PlZ9TENwNPEx/yLPyAsAt4M1a9V2s5G+ju+x4xt/a0VfxOk
-         rchg==
-X-Gm-Message-State: APjAAAXJ+roGYFPMNOFdNSqaZqWRqokg/pKSk6p+mOeVnhEOpfWMUAEJ
-        2EGDNGWjJyV8dBidRB+XKw27g/CZHgS5mUvAJw8=
-X-Google-Smtp-Source: APXvYqxRcJpR/dFP45hslcmwKU+zLCjl92rL4uXDF5FVw/tWIpOcHcO+Pg1e9C8Zuz9qkkRhnaOdUplpzg/kKEUGHks=
-X-Received: by 2002:a0c:d084:: with SMTP id z4mr17113392qvg.63.1568103309691;
- Tue, 10 Sep 2019 01:15:09 -0700 (PDT)
+        id S2406737AbfIJIUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 04:20:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54330 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731155AbfIJIUE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 04:20:04 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 026D55859E;
+        Tue, 10 Sep 2019 08:20:03 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-188.pek2.redhat.com [10.72.12.188])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 449B56092F;
+        Tue, 10 Sep 2019 08:19:49 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, cohuck@redhat.com, tiwei.bie@intel.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com, idos@mellanox.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com
+Subject: [RFC PATCH 0/4] mdev based hardware virtio offloading support
+Date:   Tue, 10 Sep 2019 16:19:31 +0800
+Message-Id: <20190910081935.30516-1-jasowang@redhat.com>
 MIME-Version: 1.0
-References: <20190906151123.1088455-1-arnd@arndb.de> <383db08b6001503ac45c2e12ac514208dc5a4bba.camel@mellanox.com>
- <CAK8P3a0_VhZ9hYmc6P3Qx+Z6WSHh3PVZ7JZh7Tr=R1CAKvqWmA@mail.gmail.com> <5abccf6452a9d4efa2a1593c0af6d41703d4f16f.camel@mellanox.com>
-In-Reply-To: <5abccf6452a9d4efa2a1593c0af6d41703d4f16f.camel@mellanox.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 10 Sep 2019 10:14:53 +0200
-Message-ID: <CAK8P3a3q4NqiU-OydMqU3J=gT-8eBmsiL5tPsyJb1PNgR+48hA@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5: reduce stack usage in FW tracer
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "cai@lca.pw" <cai@lca.pw>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Erez Shitrit <erezsh@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Tue, 10 Sep 2019 08:20:03 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 9, 2019 at 11:53 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
-> On Mon, 2019-09-09 at 22:18 +0200, Arnd Bergmann wrote:
+Hi all:
 
-> > To do this right, a better approach may be to just rely on ftrace,
-> > storing
-> > the (pointer to the) format string and the arguments in the buffer
-> > without
-> > creating a string. Would that be an option here?
->
-> I am not sure how this would work, since the format parameters can
-> changes depending on the FW string and the specific traces.
+There are hardware that can do virtio datapath offloading while having
+its own control path. This path tries to implement a mdev based
+unified API to support using kernel virtio driver to drive those
+devices. This is done by introducing a new mdev transport for virtio
+(virtio_mdev) and register itself as a new kind of mdev driver. Then
+it provides a unified way for kernel virtio driver to talk with mdev
+device implementation.
 
-Ah, so the format string comes from the firmware? I didn't look
-at the code in enough detail to understand why it's done like this,
-only enough to notice that it's rather unusual.
+Though the series only contain kernel driver support, the goal is to
+make the transport generic enough to support userspace drivers. This
+means vhost-mdev[1] could be built on top as well by resuing the
+transport.
 
-Possibly trace_mlx5_fw might still get away with copying the format
-string and the arguments, leaving the snprintf() to the time we read
-the buffer, but I don't know enough about ftrace to be sure that
-would actually work, and you'd need to duplicate it in
-mlx5_devlink_fmsg_fill_trace().
+A sample driver is also implemented which simulate a virito-net
+loopback ethernet device on top of vringh + workqueue. This could be
+used as a reference implementation for real hardware driver.
 
-> > A more minimal approach might be to move what is now the on-stack
-> > buffer into the mlx5_fw_tracer function. I see that you already store
-> > a copy of the string in there from mlx5_fw_tracer_save_trace(),
-> > which conveniently also holds a mutex already that protects
-> > it from concurrent access.
-> >
->
-> This sounds plausible.
->
-> So for now let's do this or the noinline approach, Please let me know
-> which one do you prefer, if it is the mutex protected buffer, i can do
-> it myself.
->
-> I will open an internal task and discussion then address your valuable
-> points in a future submission, since we already in rc8 I don't want to
-> take the risk now.
+Notes:
 
-Yes, that sounds like a good plan. If you can't avoid the snprintf
-entirely, then the mutex protected buffer should be helpful, and
-also avoid a strncpy() along with the stack buffer.
+- Some of the key transport command for vhost-mdev(userspace driver)
+  is not introduced. This includes:
+  1) set/get virtqueue state (idx etc), this could be simply done by
+     introducing new transport command
+  2) dirty pages tracking, could be simply done by introducing new
+     transport command
+  3) set/get device internal state, this requires more thought, of
+     course we can introduce device specific transport command, but it
+     would be better to have a unified API
+- Current mdev_parent_ops assumes all pointers are userspace pointer,
+  this block the kernel driver, this series just abuse those as kernel
+  pointer and this could be addressed by inventing new parent_ops.
+- For quick POC, mdev transport was just derived from virtio-MMIO,
+  I'm pretty sure it has lots of space to be optimized, please share
+  your thought.
 
-      Arnd
+Please review.
+
+[1] https://lkml.org/lkml/2019/8/28/35
+
+Jason Wang (4):
+  vringh: fix copy direction of vringh_iov_push_kern()
+  mdev: introduce helper to set per device dma ops
+  virtio: introudce a mdev based transport
+  docs: Sample driver to demonstrate how to implement virtio-mdev
+    framework
+
+ drivers/vfio/mdev/Kconfig        |   7 +
+ drivers/vfio/mdev/Makefile       |   1 +
+ drivers/vfio/mdev/mdev_core.c    |   7 +
+ drivers/vfio/mdev/virtio_mdev.c  | 500 ++++++++++++++++++++
+ drivers/vhost/vringh.c           |   8 +-
+ include/linux/mdev.h             |   2 +
+ include/uapi/linux/virtio_mdev.h | 131 ++++++
+ samples/Kconfig                  |   7 +
+ samples/vfio-mdev/Makefile       |   1 +
+ samples/vfio-mdev/mvnet.c        | 766 +++++++++++++++++++++++++++++++
+ 10 files changed, 1429 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/vfio/mdev/virtio_mdev.c
+ create mode 100644 include/uapi/linux/virtio_mdev.h
+ create mode 100644 samples/vfio-mdev/mvnet.c
+
+-- 
+2.19.1
+
