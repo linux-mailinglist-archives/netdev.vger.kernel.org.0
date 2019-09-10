@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D8F2AEFAB
+	by mail.lfdr.de (Postfix) with ESMTP id 2F29EAEFAA
 	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 18:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436863AbfIJQev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 12:34:51 -0400
+        id S2436825AbfIJQej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 12:34:39 -0400
 Received: from mga09.intel.com ([134.134.136.24]:21105 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436816AbfIJQei (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 12:34:38 -0400
+        id S2436687AbfIJQej (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 12:34:39 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Sep 2019 09:34:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,490,1559545200"; 
-   d="scan'208";a="184223751"
+   d="scan'208";a="184223756"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga008.fm.intel.com with ESMTP; 10 Sep 2019 09:34:38 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 06/14] i40e: mark additional missing bits as reserved
-Date:   Tue, 10 Sep 2019 09:34:26 -0700
-Message-Id: <20190910163434.2449-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 07/14] i40e: fix missed "Negotiated" string in i40e_print_link_message()
+Date:   Tue, 10 Sep 2019 09:34:27 -0700
+Message-Id: <20190910163434.2449-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190910163434.2449-1-jeffrey.t.kirsher@intel.com>
 References: <20190910163434.2449-1-jeffrey.t.kirsher@intel.com>
@@ -39,33 +39,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-Mark bits 0xD through 0xF for the command flags of a cloud filter as
-reserved. These bits are not yet defined and are considered as reserved
-in the data sheet.
+The "Negotiated" string in i40e_print_link_message() function was missed.
+This string has been added to the dmesg and small refactoring done removing
+common substrings and unifying link status message format.
+Without this patch it was not clear that FEC is related to negotiated FEC.
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-index 7ff768761659..530613f31527 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-@@ -1394,6 +1394,9 @@ struct i40e_aqc_cloud_filters_element_data {
- #define I40E_AQC_ADD_CLOUD_FILTER_IMAC			0x000A
- #define I40E_AQC_ADD_CLOUD_FILTER_OMAC_TEN_ID_IMAC	0x000B
- #define I40E_AQC_ADD_CLOUD_FILTER_IIP			0x000C
-+/* 0x000D reserved */
-+/* 0x000E reserved */
-+/* 0x000F reserved */
- /* 0x0010 to 0x0017 is for custom filters */
- #define I40E_AQC_ADD_CLOUD_FILTER_IP_PORT		0x0010 /* Dest IP + L4 Port */
- #define I40E_AQC_ADD_CLOUD_FILTER_MAC_PORT		0x0011 /* Dest MAC + L4 Port */
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 3e2e465f43f9..700f38ec8e91 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -6569,19 +6569,19 @@ void i40e_print_link_message(struct i40e_vsi *vsi, bool isup)
+ 	}
+ 
+ 	if (pf->hw.phy.link_info.link_speed == I40E_LINK_SPEED_25GB) {
+-		req_fec = ", Requested FEC: None";
+-		fec = ", FEC: None";
+-		an = ", Autoneg: False";
++		req_fec = "None";
++		fec = "None";
++		an = "False";
+ 
+ 		if (pf->hw.phy.link_info.an_info & I40E_AQ_AN_COMPLETED)
+-			an = ", Autoneg: True";
++			an = "True";
+ 
+ 		if (pf->hw.phy.link_info.fec_info &
+ 		    I40E_AQ_CONFIG_FEC_KR_ENA)
+-			fec = ", FEC: CL74 FC-FEC/BASE-R";
++			fec = "CL74 FC-FEC/BASE-R";
+ 		else if (pf->hw.phy.link_info.fec_info &
+ 			 I40E_AQ_CONFIG_FEC_RS_ENA)
+-			fec = ", FEC: CL108 RS-FEC";
++			fec = "CL108 RS-FEC";
+ 
+ 		/* 'CL108 RS-FEC' should be displayed when RS is requested, or
+ 		 * both RS and FC are requested
+@@ -6590,13 +6590,14 @@ void i40e_print_link_message(struct i40e_vsi *vsi, bool isup)
+ 		    (I40E_AQ_REQUEST_FEC_KR | I40E_AQ_REQUEST_FEC_RS)) {
+ 			if (vsi->back->hw.phy.link_info.req_fec_info &
+ 			    I40E_AQ_REQUEST_FEC_RS)
+-				req_fec = ", Requested FEC: CL108 RS-FEC";
++				req_fec = "CL108 RS-FEC";
+ 			else
+-				req_fec = ", Requested FEC: CL74 FC-FEC/BASE-R";
++				req_fec = "CL74 FC-FEC/BASE-R";
+ 		}
+ 	}
+ 
+-	netdev_info(vsi->netdev, "NIC Link is Up, %sbps Full Duplex%s%s%s, Flow Control: %s\n",
++	netdev_info(vsi->netdev,
++		    "NIC Link is Up, %sbps Full Duplex, Requested FEC: %s, Negotiated FEC: %s, Autoneg: %s, Flow Control: %s\n",
+ 		    speed, req_fec, fec, an, fc);
+ }
+ 
 -- 
 2.21.0
 
