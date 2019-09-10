@@ -2,162 +2,363 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3447DAF309
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 00:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3255AF313
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 00:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbfIJWuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 18:50:09 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54754 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725942AbfIJWuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 18:50:08 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8AMm2JZ019889;
-        Tue, 10 Sep 2019 15:49:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=OzGLYXHvpqCLF2z0njmKUnMBzEuAM3k6JeYG+CorpNs=;
- b=pcIknUmiQmNgU0kiZ9LVIz3fQESXZj5F4ls+sgFsBF0LrJRxpbWVJj9H6VyEPwlGpFmV
- blOExo1rrOt5jMkF+TGler533XbgjUEAi6WKWvO8WtXFdAfHfcESdO+76E5J1m1PvN83
- 6JaIze2cXBAdxOjcR3ZnDMYeXRM6a7g/cYA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uxm1k885x-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 10 Sep 2019 15:49:02 -0700
-Received: from prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 10 Sep 2019 15:48:59 -0700
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 10 Sep 2019 15:48:45 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 10 Sep 2019 15:48:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CphlAtJPndqX4UNobm89dQwp95ZzDNIbEcuvqg/kZrCXIbDt92GjEC+6i6rYOzlUUP4VBek3R2A/3Tg+0r4RLJTZ0JlzlEYFB00uZtf220JLMcOfTYobxMW1tn1K91Y/Smgr8ypFaCD96/pyLkjfkoGKh5f7NkFFjulSE+PbH1rbk8+Qf3Ne+Ev0vO/xccuppx6NesoZA0+ZW5CP2ke0RG3xEAkfRnk/R8ke6SlZq+4kY1pz8pM3QB6XREYyqGUuGhz23L5qGn97m5CQxs3zc+CnMOcymaADO/jD3sc8ijcdb1wxSeMJ7hvUZIueZdvHt1Qnw3fKyjmMTjzrftstsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OzGLYXHvpqCLF2z0njmKUnMBzEuAM3k6JeYG+CorpNs=;
- b=N7eIQWb23KUCtdXfBFdXVZk1CEHZllkak3Eh8FloOYSh0v9TJVnco8juXPVDKAToC921QWECEQISQ6JqjiznDaZ/8uB9Fs/5x/yZbAkJcMyRc2x/z1jPhHpjPq7v+hNOv6ntCb1f99yLqhZF/eqpO+II2cH2o4g0H/bSyylCse1XbsncEcocb6CK4sGxMKsIFiaYRDOL+ejPCjj7SotXeEewvIn2sro5Wb32AqUcFkEoG54hACm4lxmywV9yY7FPVP5RdpP9jqVG5YakF1qdTI1OhcvfxvdzgqnLLjkbWq+R3SxnMn9Ft4DKCAunF3ES7kuRqXksUhIhcqNf1f0kwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OzGLYXHvpqCLF2z0njmKUnMBzEuAM3k6JeYG+CorpNs=;
- b=aJ2TA9cR8YjU1YNHJ3eT6JsAOQKQWXsAyC1aTacgH9D8hswfaN92blBr5q3jq1Ii8lnyWvb8Dsq0bpGQr2K8/dcn1wWZsa2OlJgj5Cb9ZcCuibfQQ0senjhd193hs+AllRBAywrA0uNCezoPy3W39FgxnP96EDGm6FvorOB0oKk=
-Received: from CY4PR15MB1269.namprd15.prod.outlook.com (10.172.177.11) by
- CY4PR15MB1893.namprd15.prod.outlook.com (10.174.53.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.15; Tue, 10 Sep 2019 22:48:43 +0000
-Received: from CY4PR15MB1269.namprd15.prod.outlook.com
- ([fe80::38b1:336:13e6:b02b]) by CY4PR15MB1269.namprd15.prod.outlook.com
- ([fe80::38b1:336:13e6:b02b%7]) with mapi id 15.20.2241.018; Tue, 10 Sep 2019
- 22:48:43 +0000
-From:   Vijay Khemka <vijaykhemka@fb.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Topic: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Index: AQHVaCL3HHZ/0IxjZ0GB2KAMVKzdAqcld28A//+WvAA=
-Date:   Tue, 10 Sep 2019 22:48:43 +0000
-Message-ID: <0797B1F1-883D-4129-AC16-794957ACCF1B@fb.com>
-References: <20190910213734.3112330-1-vijaykhemka@fb.com>
- <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
-In-Reply-To: <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2620:10d:c090:200::2:1b73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d1b28913-7c7f-4a0f-92d8-08d736410860
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CY4PR15MB1893;
-x-ms-traffictypediagnostic: CY4PR15MB1893:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CY4PR15MB18931BB2DCE395617414D917DDB60@CY4PR15MB1893.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 01565FED4C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(136003)(346002)(376002)(396003)(39860400002)(199004)(189003)(2616005)(76116006)(6436002)(6506007)(316002)(6512007)(305945005)(478600001)(5660300002)(2906002)(76176011)(46003)(66476007)(110136005)(8676002)(8936002)(99286004)(2201001)(446003)(486006)(11346002)(476003)(81156014)(81166006)(4326008)(66556008)(64756008)(66446008)(33656002)(7736002)(7416002)(25786009)(6116002)(14444005)(256004)(86362001)(36756003)(71190400001)(71200400001)(53546011)(6486002)(14454004)(186003)(2501003)(53936002)(229853002)(66946007)(102836004)(91956017)(54906003)(6246003)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR15MB1893;H:CY4PR15MB1269.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: IgVCWsROkr4MNUBNaNM/DgWtrjcTbutaoaEIgzVT55atD4+hPUWBVKLN6XZpwnz/UYWM2YayEo00jCc9xUzLq3/qiLeJTpMn6aJ7k+i01HP4okWwBlPqNoKAxPdBhCLbvnDGJuPxS5MPRxxNOT96Gouk3iTVk/v9viAXnG2pcmJfmajpFvVmpKrfo9Y/4hPiD3UxYeJS3fF/6fYnBMuGc1E1vuMaV3YLFqsSoys7iRWfhV0UlnAn1L+HN6j8QO5Umn6ypmfxoADA3AsfnPfYp2AfMADlcH9PzSlrmRZvY3Jc6SOqQDOSbhShL1nfBwKXnbrKJBxWoRSXNe9Zs00FlqpEbL+pqB61XDnqTFcFAIbwJBGKrHrw+H7uZm2TaaktAXnTui88YAVEDyW6iJmAHnzYYHcFwC90dYvH8lrsnjM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1D389ED39BF51C4895FEB95883E407AE@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726171AbfIJWxg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Sep 2019 18:53:36 -0400
+Received: from 2098.x.rootbsd.net ([208.79.82.66]:34608 "EHLO pilot.trilug.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725932AbfIJWxg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 18:53:36 -0400
+Received: by pilot.trilug.org (Postfix, from userid 8)
+        id 3EEA2169755; Tue, 10 Sep 2019 18:53:35 -0400 (EDT)
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on pilot.trilug.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable version=3.3.2
+Received: from michaelmarley.com (cpe-2606-A000-BFC0-90-509-B1D3-C76D-19C7.dyn6.twc.com [IPv6:2606:a000:bfc0:90:509:b1d3:c76d:19c7])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pilot.trilug.org (Postfix) with ESMTPSA id E1FF5169748;
+        Tue, 10 Sep 2019 18:53:32 -0400 (EDT)
+Received: from michaelmarley.com (localhost [127.0.0.1])
+        by michaelmarley.com (Postfix) with ESMTP id 015CF18012D;
+        Tue, 10 Sep 2019 18:53:30 -0400 (EDT)
+Received: from mamarley-desktop.lan ([fdda:5f29:421b:3:9174:925b:42b3:3bd7])
+        by michaelmarley.com with ESMTPSA
+        id yS0nO2opeF2vJQEAnAHMIA
+        (envelope-from <michael@michaelmarley.com>); Tue, 10 Sep 2019 18:53:30 -0400
+Subject: Re: ixgbe: driver drops packets routed from an IPSec interface with a
+ "bad sa_idx" error
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        steffen.klassert@secunet.com
+References: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
+ <4caa4fb7-9963-99ab-318f-d8ada4f19205@pensando.io>
+ <fb63dec226170199e9b0fd1b356d2314@michaelmarley.com>
+ <90dd9f8c-57fa-14c7-5d09-207b84ec3292@pensando.io>
+From:   Michael Marley <michael@michaelmarley.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=michael@michaelmarley.com; prefer-encrypt=mutual; keydata=
+ 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 Ol2t
+Message-ID: <6ab15854-154a-2c7c-b429-7ba6dfe785ae@michaelmarley.com>
+Date:   Tue, 10 Sep 2019 18:53:30 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1b28913-7c7f-4a0f-92d8-08d736410860
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2019 22:48:43.5916
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hrJy8e3cD3JHw0cUdr2zQJelvVy0ub4vqf+0IcK0O9KwF3KDRYPSWk+grmK3+Rh+T2CiKlooUDrN164a0DBHig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1893
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-10_12:2019-09-10,2019-09-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- clxscore=1015 impostorscore=0 bulkscore=0 mlxlogscore=999
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 phishscore=0
- spamscore=0 mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1906280000 definitions=main-1909100212
-X-FB-Internal: deliver
+In-Reply-To: <90dd9f8c-57fa-14c7-5d09-207b84ec3292@pensando.io>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Content-Language: en-GB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDkvMTAvMTksIDM6MDUgUE0sICJGbG9yaWFuIEZhaW5lbGxpIiA8Zi5mYWluZWxs
-aUBnbWFpbC5jb20+IHdyb3RlOg0KDQogICAgT24gOS8xMC8xOSAyOjM3IFBNLCBWaWpheSBLaGVt
-a2Egd3JvdGU6DQogICAgPiBIVyBjaGVja3N1bSBnZW5lcmF0aW9uIGlzIG5vdCB3b3JraW5nIGZv
-ciBBU1QyNTAwLCBzcGVjaWFsbHkgd2l0aCBJUFY2DQogICAgPiBvdmVyIE5DU0kuIEFsbCBUQ1Ag
-cGFja2V0cyB3aXRoIElQdjYgZ2V0IGRyb3BwZWQuIEJ5IGRpc2FibGluZyB0aGlzDQogICAgPiBp
-dCB3b3JrcyBwZXJmZWN0bHkgZmluZSB3aXRoIElQVjYuDQogICAgPiANCiAgICA+IFZlcmlmaWVk
-IHdpdGggSVBWNiBlbmFibGVkIGFuZCBjYW4gZG8gc3NoLg0KICAgIA0KICAgIEhvdyBhYm91dCBJ
-UHY0LCBkbyB0aGVzZSBwYWNrZXRzIGhhdmUgcHJvYmxlbT8gSWYgbm90LCBjYW4geW91IGNvbnRp
-bnVlDQogICAgYWR2ZXJ0aXNpbmcgTkVUSUZfRl9JUF9DU1VNIGJ1dCB0YWtlIG91dCBORVRJRl9G
-X0lQVjZfQ1NVTT8NCg0KSSBjaGFuZ2VkIGNvZGUgZnJvbSAobmV0ZGV2LT5od19mZWF0dXJlcyAm
-PSB+TkVUSUZfRl9IV19DU1VNKSB0byANCihuZXRkZXYtPmh3X2ZlYXR1cmVzICY9IH5ORVRJRl9G
-XyBJUFY2X0NTVU0pLiBBbmQgaXQgaXMgbm90IHdvcmtpbmcuIA0KRG9uJ3Qga25vdyB3aHkuIElQ
-VjQgd29ya3Mgd2l0aG91dCBhbnkgY2hhbmdlIGJ1dCBJUHY2IG5lZWRzIEhXX0NTVU0NCkRpc2Fi
-bGVkLg0KICAgIA0KICAgID4gDQogICAgPiBTaWduZWQtb2ZmLWJ5OiBWaWpheSBLaGVta2EgPHZp
-amF5a2hlbWthQGZiLmNvbT4NCiAgICA+IC0tLQ0KICAgID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
-L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA1ICsrKy0tDQogICAgPiAgMSBmaWxlIGNoYW5nZWQsIDMg
-aW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCiAgICA+IA0KICAgID4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jDQogICAgPiBpbmRleCAwMzBmZWQ2NTM5M2UuLjU5
-MWM5NzI1MDAyYiAxMDA2NDQNCiAgICA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFk
-YXkvZnRnbWFjMTAwLmMNCiAgICA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkv
-ZnRnbWFjMTAwLmMNCiAgICA+IEBAIC0xODM5LDggKzE4MzksOSBAQCBzdGF0aWMgaW50IGZ0Z21h
-YzEwMF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KICAgID4gIAlpZiAocHJp
-di0+dXNlX25jc2kpDQogICAgPiAgCQluZXRkZXYtPmh3X2ZlYXR1cmVzIHw9IE5FVElGX0ZfSFdf
-VkxBTl9DVEFHX0ZJTFRFUjsNCiAgICA+ICANCiAgICA+IC0JLyogQVNUMjQwMCAgZG9lc24ndCBo
-YXZlIHdvcmtpbmcgSFcgY2hlY2tzdW0gZ2VuZXJhdGlvbiAqLw0KICAgID4gLQlpZiAobnAgJiYg
-KG9mX2RldmljZV9pc19jb21wYXRpYmxlKG5wLCAiYXNwZWVkLGFzdDI0MDAtbWFjIikpKQ0KICAg
-ID4gKwkvKiBBU1QyNDAwICBhbmQgQVNUMjUwMCBkb2Vzbid0IGhhdmUgd29ya2luZyBIVyBjaGVj
-a3N1bSBnZW5lcmF0aW9uICovDQogICAgPiArCWlmIChucCAmJiAob2ZfZGV2aWNlX2lzX2NvbXBh
-dGlibGUobnAsICJhc3BlZWQsYXN0MjQwMC1tYWMiKSB8fA0KICAgID4gKwkJICAgb2ZfZGV2aWNl
-X2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0MjUwMC1tYWMiKSkpDQogICAgPiAgCQluZXRk
-ZXYtPmh3X2ZlYXR1cmVzICY9IH5ORVRJRl9GX0hXX0NTVU07DQogICAgPiAgCWlmIChucCAmJiBv
-Zl9nZXRfcHJvcGVydHkobnAsICJuby1ody1jaGVja3N1bSIsIE5VTEwpKQ0KICAgID4gIAkJbmV0
-ZGV2LT5od19mZWF0dXJlcyAmPSB+KE5FVElGX0ZfSFdfQ1NVTSB8IE5FVElGX0ZfUlhDU1VNKTsN
-CiAgICA+IA0KICAgIA0KICAgIA0KICAgIC0tIA0KICAgIEZsb3JpYW4NCiAgICANCg0K
+On 9/10/19 5:43 PM, Shannon Nelson wrote:
+
+> On 9/9/19 11:45 AM, Michael Marley wrote:
+>> On 2019-09-09 14:21, Shannon Nelson wrote:
+>>> On 9/6/19 11:13 AM, Michael Marley wrote:
+>>>> (This is also reported at
+>>>> https://bugzilla.kernel.org/show_bug.cgi?id=204551, but it was
+>>>> recommended that I send it to this list as well.)
+>>>>
+>>>> I have a put together a router that routes traffic from several
+>>>> local subnets from a switch attached to an i82599ES card through an
+>>>> IPSec VPN interface set up with StrongSwan. (The VPN is running on
+>>>> an unrelated second interface with a different driver.)  Traffic
+>>>> from the local interfaces to the VPN works as it should and
+>>>> eventually makes it through the VPN server and out to the
+>>>> Internet.  The return traffic makes it back to the router and
+>>>> tcpdump shows it leaving by the i82599, but the traffic never
+>>>> actually makes it onto the wire and I instead get one of
+>>>>
+>>>> enp1s0: ixgbe_ipsec_tx: bad sa_idx=64512 handle=0
+>>>>
+>>>> for each packet that should be transmitted.  (The sa_idx and handle
+>>>> values are always the same.)
+>>>>
+>>>> I realized this was probably related to ixgbe's IPSec offloading
+>>>> feature, so I tried with the motherboard's integrated e1000e device
+>>>> and didn't have the problem.  I tried using ethtool to disable all
+>>>> the IPSec-related offloads (tx-esp-segmentation, esp-hw-offload,
+>>>> esp-tx-csum-hw-offload), but the problem persisted.  I then tried
+>>>> recompiling the kernel with CONFIG_IXGBE_IPSEC=n and that worked
+>>>> around the problem.
+>>>>
+>>>> I was also able to find another instance of the same problem
+>>>> reported in Debian at
+>>>> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=930443. That
+>>>> person seems to be having exactly the same issue as me, down to the
+>>>> sa_idx and handle values being the same.
+>>>>
+>>>> If there are any more details I can provide to make this easier to
+>>>> track down, please let me know.
+>>>>
+>>>> Thanks,
+>>>>
+>>>> Michael Marley
+>>>
+>>> Hi Michael,
+>>>
+>>> Thanks for pointing this out.  The issue this error message is
+>>> complaining about is that the handle given to the driver is a bad
+>>> value.  The handle is what helps the driver find the right encryption
+>>> information, and in this case is an index into an array, one array for
+>>> Rx and one for Tx, each of which have up to 1024 entries.  In order to
+>>> encode them into a single value, 1024 is added to the Tx values to
+>>> make the handle, and 1024 is subtracted to use the handle later.  Note
+>>> that the bad sa_idx is 64512, which happens to also be -1024; if the
+>>> Tx handle given to ixgbe for xmit is 0, we subtract 1024 from that and
+>>> get this bad sa_idx value.
+>>>
+>>> That handle is supposed to be an opaque value only used by the
+>>> driver.  It looks to me like either (a) the driver is not setting up
+>>> the handle correctly when the SA is first set up, or (b) something in
+>>> the upper levels of the ipsec code is clearing the handle value. We
+>>> would need to know more about all the bits in your SA set up to have a
+>>> better idea what parts of the ipsec code are being exercised when this
+>>> problem happens.
+>>>
+>>> I currently don't have access to a good ixgbe setup on which to
+>>> test/debug this, and I haven't been paying much attention lately to
+>>> what's happening in the upper ipsec layers, so my help will be
+>>> somewhat limited.  I'm hoping the the Intel folks can add a little
+>>> help, so I've copied Jeff Kirsher on this (they'll probably point back
+>>> to me since I wrote this chunk :-) ).  I've also copied Stephen
+>>> Klassert for his ipsec thoughts.
+>>>
+>>> In the meantime, can you give more details on the exact ipsec rules
+>>> that are used here, and are there any error messages coming from ixgbe
+>>> regarding the ipsec rule setup that might help us identify what's
+>>> happening?
+>>>
+>>> Thanks,
+>>> sln
+>>
+>> Hi Shannon,
+>>
+>> Thanks for your response!  I apologize, I am a bit of a newbie to
+>> IPSec myself, so I'm not 100% sure what is the best way to provide
+>> the information you need, but here is the (slightly-redacted) output
+>> of swanctl --list-sas first from the server and then from the client:
+>>
+>> <servername>: #24, ESTABLISHED, IKEv2, 3cb75c180ee5dc68_i
+>> cc7dae551b603bb7_r*
+>>   local  '<serverip>' @ <serverip>[4500]
+>>   remote '<clientip>' @ <clientip>[4500]
+>>   AES_GCM_16-256/PRF_HMAC_SHA2_512/ECP_384
+>>   established 174180s ago
+>>   <servername>: #110, reqid 12, INSTALLED, TUNNEL-in-UDP,
+>> ESP:AES_GCM_16-256/ECP_384
+>>     installed 469s ago
+>>     in  c51a0f11 (-|0x00000064), 1548864 bytes, 19575 packets, 6s ago
+>>     out c3bd9741 (-|0x00000064), 23618807 bytes, 22865 packets,    
+>> 7s ago
+>>     local  0.0.0.0/0 ::/0
+>>     remote 0.0.0.0/0 ::/0
+>>
+>> <clientname>: #1, ESTABLISHED, IKEv2, 3cb75c180ee5dc68_i*
+>> cc7dae551b603bb7_r
+>>   local  '<clientip>' @ <clientip>[4500]
+>>   remote '<serverip>' @ <serverip>[4500]
+>>   AES_GCM_16-256/PRF_HMAC_SHA2_512/ECP_384
+>>   established 174013s ago
+>>   <clientname>: #54, reqid 1, INSTALLED, TUNNEL-in-UDP,
+>> ESP:AES_GCM_16-256/ECP_384
+>>     installed 303s ago, rekeying in 2979s, expires in 3657s
+>>     in  c3bd9741 (-|0x00000064), 23178523 bytes, 20725 packets,    
+>> 0s ago
+>>     out c51a0f11 (-|0x00000064), 1429124 bytes, 17719 packets, 0s ago
+>>     local  0.0.0.0/0 ::/0
+>>     remote 0.0.0.0/0 ::/0
+>>
+>> It might also be worth mentioning that I am using an xfrm interface
+>> to do "regular" routing rather than the policy-based routing that
+>> StrongSwan/IPSec normally uses. If there is anything else that would
+>> help more, I would be happy to provide it.
+>>
+>> Just to be clear though, I'm not trying to run IPSec on the ixgbe
+>> interface at all.  The ixgbe adapter is being used to connect the
+>> router to the switch on the LAN side of the network.  IPSec is
+>> running on the WAN interface without any hardware acceleration
+>> (besides AES-NI).  The problem occurs when a computer on the LAN
+>> tries to access the WAN.  The outgoing packets work as expected and
+>> the incoming packets are routed back out through the ixgbe device
+>> toward the LAN client, but the driver drops the packets with the
+>> sa_idx error.
+>>
+>> I hope this helps.
+>>
+>> Thanks,
+>>
+>> Michael
+>
+> I'm not familiar with StrongSwan and its configurations, but I'm
+> guessing that if you didn't expressly enable it, perhaps StrongSwan
+> enabled the ipsec offload capability.  I would suggest turning it off
+> to at least get you passed the immediate issue.  If there isn't an
+> obvious configuration knob in StrongSwan, perhaps you can at least use
+> ethtool to disable the offload, which should be off be default anyway.
+>
+> You can check it with "ethtool -k ethX | grep esp-hw-offload" and see
+> if it is set.  You can disable it with "ethtool -K ethX esp-hw-offload
+> off"
+>
+> Meanwhile, can you please send the output of the following commands:
+> uname -a
+> ip xfrm s
+> ip xfrm p
+> dmesg | grep ixgbe
+>
+> And any other /var/log/syslog or /var/log/messages that look
+> suspicious and might give any more insight to what's happening.
+>
+> Thanks,
+> sln
+>
+StrongSwan has hardware offload disabled by default, and I didn't enable
+it explicitly.  I also already tried turning off all those switches with
+ethtool and it has no effect.  This doesn't surprise me though, because
+as I said, I don't actually have the IPSec connection running over the
+ixgbe device.  The IPSec connection runs over another network adapter
+that doesn't support IPSec offload at all.  The problem comes when
+traffic received over the IPSec interface is then routed back out
+(unencrypted) through the ixgbe device into the local network.
+
+Here is the rest of the data for which you asked:
+
+michael@soapstone:~$ uname -a
+Linux soapstone 5.3.0-10-generic #11-Ubuntu SMP Mon Sep 9 15:12:17 UTC
+2019 x86_64 x86_64 x86_64 GNU/Linux
+michael@soapstone:~$ sudo ip xfrm s
+src <srcip> dst <dstip>
+        proto esp spi 0xcf6f90d3 reqid 1 mode tunnel
+        replay-window 0 flag af-unspec
+        aead rfc4106(gcm(aes))
+0x254c6298b27ad65f61387c39e060698db777a335081d145ca6706d65b6be95770d2622b4
+128
+        encap type espinudp sport 4500 dport 4500 addr 0.0.0.0
+        anti-replay context: seq 0x0, oseq 0xaaac, bitmap 0x00000000
+        if_id 0x64
+src <dstip> dst <srcip>
+        proto esp spi 0xc6e02140 reqid 1 mode tunnel
+        replay-window 32 flag af-unspec
+        aead rfc4106(gcm(aes))
+0x05473bd76e1b7268b54825b019d19c13a360193bc9aa20137204ea566409356da47fc7d7
+128
+        encap type espinudp sport 4500 dport 4500 addr 0.0.0.0
+        anti-replay context: seq 0xab11, oseq 0x0, bitmap 0xffffffff
+        if_id 0x64
+michael@soapstone:~$ sudo ip xfrm p
+src ::/0 dst ::/0
+        dir out priority 399999
+        tmpl src <srcip> dst <dstip>
+                proto esp spi 0xcf6f90d3 reqid 1 mode tunnel
+        if_id 0x64
+src 0.0.0.0/0 dst 0.0.0.0/0
+        dir out priority 399999
+        tmpl src <srcip> dst <dstip>
+                proto esp spi 0xcf6f90d3 reqid 1 mode tunnel
+        if_id 0x64
+src ::/0 dst ::/0
+        dir fwd priority 399999
+        tmpl src <dstip> dst <srcip>
+                proto esp reqid 1 mode tunnel
+        if_id 0x64
+src ::/0 dst ::/0
+        dir in priority 399999
+        tmpl src <dstip> dst <srcip>
+                proto esp reqid 1 mode tunnel
+        if_id 0x64
+src 0.0.0.0/0 dst 0.0.0.0/0
+        dir fwd priority 399999
+        tmpl src <dstip> dst <srcip>
+                proto esp reqid 1 mode tunnel
+        if_id 0x64
+src 0.0.0.0/0 dst 0.0.0.0/0
+        dir in priority 399999
+        tmpl src <dstip> dst <srcip>
+                proto esp reqid 1 mode tunnel
+        if_id 0x64
+src 0.0.0.0/0 dst 0.0.0.0/0
+        socket in priority 0
+src 0.0.0.0/0 dst 0.0.0.0/0
+        socket out priority 0
+src 0.0.0.0/0 dst 0.0.0.0/0
+        socket in priority 0
+src 0.0.0.0/0 dst 0.0.0.0/0
+        socket out priority 0
+src ::/0 dst ::/0
+        socket in priority 0
+src ::/0 dst ::/0
+        socket out priority 0
+src ::/0 dst ::/0
+        socket in priority 0
+src ::/0 dst ::/0
+        socket out priority 0
+michael@soapstone:~$ dmesg | grep -i ixgbe
+[    0.780400] ixgbe: Intel(R) 10 Gigabit PCI Express Network Driver -
+version 5.1.0-k
+[    0.781606] ixgbe: Copyright (c) 1999-2016 Intel Corporation.
+[    0.954093] ixgbe 0000:01:00.0: Multiqueue Enabled: Rx Queue count =
+8, Tx Queue count = 8 XDP Queue count = 0
+[    0.955081] ixgbe 0000:01:00.0: 32.000 Gb/s available PCIe bandwidth
+(5 GT/s x8 link)
+[    0.955860] ixgbe 0000:01:00.0: MAC: 2, PHY: 14, SFP+: 3, PBA No: Unknown
+[    0.956519] ixgbe 0000:01:00.0: 00:1b:21:c0:00:1e
+[    0.958079] ixgbe 0000:01:00.0: Intel(R) 10 Gigabit Network Connection
+[    0.958884] libphy: ixgbe-mdio: probed
+[    0.960220] ixgbe 0000:01:00.0 enp1s0: renamed from eth0
+[    2.788208] ixgbe 0000:01:00.0: registered PHC device on enp1s0
+[    2.966290] ixgbe 0000:01:00.0 enp1s0: detected SFP+: 3
+[    3.110132] ixgbe 0000:01:00.0 enp1s0: NIC Link is Up 10 Gbps, Flow
+Control: RX/TX
+
+Thanks,
+
+Michael
+
+
