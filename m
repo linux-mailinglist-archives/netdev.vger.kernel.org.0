@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82716AE1F6
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3B1AE1F5
 	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 03:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392392AbfIJBfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Sep 2019 21:35:46 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36654 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392380AbfIJBfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 21:35:45 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y19so16740941wrd.3
-        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 18:35:44 -0700 (PDT)
+        id S2392426AbfIJBfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Sep 2019 21:35:50 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:39593 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392413AbfIJBft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Sep 2019 21:35:49 -0400
+Received: by mail-wr1-f65.google.com with SMTP id t16so16730544wra.6
+        for <netdev@vger.kernel.org>; Mon, 09 Sep 2019 18:35:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ear9UHT0guTtaQI0aSXA2Gvj0rxBp0cGN6kLpFUjvLs=;
-        b=BQmzW99gu+KmJxByrTOa0/GgCA3bB7tcA/jE1amPMRzbsHz9IPPcOzJrE5P7nBIl9W
-         qP4IQbrn/fteItUewT2c4e++Xao0KBiVXVG2dwdY0Ah804/jcRjvyCcwpp9mWPyBzi+S
-         mVthZL0VgOIQB7FX5W9k/SbFh5z1AW2jXaF15StXXKvOCqRCAMYvQN7iVsm9GJZYn8to
-         M3uydCTnIbml0NEc8V8sTFcxYFOddzsHrV3m6uwgc8NvMqu4YCEEoLDesZmdbBPPx62M
-         88qcURtDFazxM0bA8M8SSJUookTxzck1gZDTzqevdWCHKqqaBDc9LQnudNKeT3cg8sGA
-         zw4Q==
+        bh=I/JRRVUm+5bXaCVjRvb0CxX0Z7g/lYM9JnioeGlZQO8=;
+        b=RIhuLlex0asTC2dUAbmD4alkPzM0Wa9rM6BFAzgxJs9vXq6w+LM77p6VKjTJpFMVjf
+         nmDIma5oaANdZlT4XDGhK/Ort32qvQfOOEmdaskVbQCQ0pMx4ziTr0wa8wJEiPpw0HJp
+         m6PgjAszfcVmdZ0Zf1PJdSvuS0OM1Xd++000NIsKwn/HmMyZtHF44RCvUFpZ38bMF1oc
+         b3FOGgrC0bMsvFqtK+Tjh3FHvWVePXfW6xpbw5o13qnibfka/kccUen3l2XR1LsyYQ2i
+         gAClYEXQWDowbAsYz0Q/VCJ1GLgGGR1cLic30PYnMQuZNCB7CZZPdgHL/pXuHPePmZIa
+         DZ3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Ear9UHT0guTtaQI0aSXA2Gvj0rxBp0cGN6kLpFUjvLs=;
-        b=P5QeRVELrsCjxB76Yti9IjqqAF9z7mhaFPS7Aams7EcgmOmM06Vs4bAWUNAlwXDRUP
-         zLBvXzC4wcFaX2AE8AUkQk0584RJGz2BLmVfhTZdkmuCody+yaL8+ZlKLTYvHQCo7Yb9
-         oOCWllcYLsqjkXxvvJRnfrWci5gCZ/7jIrUgKFbGrUEcnDubGZEuggPdVN6dbWHa+K5p
-         vs9tzcbpNjIC1CHkLhr2TeppHbnk513tLG0ZlXVcRLTS2oownQ21yzn0T5TQytC8nRgu
-         q3yUanwFUHj9tUaEJNZeRLfSQKFpXC+fCSSgTN+IKtsIHXaoFS97BZZPYLFpaJ5I+Pqj
-         9lxg==
-X-Gm-Message-State: APjAAAWaXofIQI/mQCnORMaAKUf8YJiXtyHrHNhexILlm87WjAPXnlZX
-        5Lr6jVnU/kL4zYF3LPaahQM=
-X-Google-Smtp-Source: APXvYqybmNq+n4uQZPuQaPQRZc+BVYUWkSA6kHUG4r1Ki9oJnUoIz4Na4fAy4yAdV6BWddipuM/HLw==
-X-Received: by 2002:a5d:4ac5:: with SMTP id y5mr16759589wrs.179.1568079343906;
-        Mon, 09 Sep 2019 18:35:43 -0700 (PDT)
+        bh=I/JRRVUm+5bXaCVjRvb0CxX0Z7g/lYM9JnioeGlZQO8=;
+        b=F0gXwWtZ4gisrq6Oe9ZLKhn7uMZdzR6A6UDmv7ck9cUB1rTQVG1KbKUSbAzlNAcZbm
+         f/JMCLLKOYwrPbhdxUJ0gOYTIRof+fqyR/YHGzdsDBPQeSKlMoo/pKcbprlTQvNvMcwU
+         gvc0zxxqymHK16UxAImhjMMnj5q4BXJttliK4UxetKKVqXIlf1EQ/5UymvcniJKqvvjd
+         4W7iZiRlgXS+4g8PTd/pkJoWlx+5gCVr/iXlHyRk9q3MPgOFUq6AyOmoVo32IZyD6adf
+         rTnZykrAMZFtBeZHNXe4OQ2cPai0WJO4FY+GdS2rHDcvQfc+VvyhuDCmnZ0/yaa+CaVF
+         3psw==
+X-Gm-Message-State: APjAAAWGWcGDPQfJQKWHyZgUejjALDwv39JbCWiL5sym3xoZ2531Cryu
+        MCG5OwVu7lgE1vuvaTg+E6E=
+X-Google-Smtp-Source: APXvYqz0i97Mb96TdJubXRozfSOaf81CZXyEex2RoV3S+atPwnV/m9WvXsJ57R/czf7OIRTJ78K79w==
+X-Received: by 2002:adf:e545:: with SMTP id z5mr13287319wrm.263.1568079344822;
+        Mon, 09 Sep 2019 18:35:44 -0700 (PDT)
 Received: from localhost.localdomain ([86.124.196.40])
         by smtp.gmail.com with ESMTPSA id b1sm1254597wmj.4.2019.09.09.18.35.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Sep 2019 18:35:43 -0700 (PDT)
+        Mon, 09 Sep 2019 18:35:44 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, richardcochran@gmail.com
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net-next 6/7] net: dsa: sja1105: Disallow management xmit during switch reset
-Date:   Tue, 10 Sep 2019 04:35:00 +0300
-Message-Id: <20190910013501.3262-7-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 7/7] net: dsa: sja1105: Move PTP data to its own private structure
+Date:   Tue, 10 Sep 2019 04:35:01 +0300
+Message-Id: <20190910013501.3262-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190910013501.3262-1-olteanv@gmail.com>
 References: <20190910013501.3262-1-olteanv@gmail.com>
@@ -58,54 +58,395 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose here is to avoid ptp4l fail due to this condition:
-
-  timed out while polling for tx timestamp
-  increasing tx_timestamp_timeout may correct this issue, but it is likely caused by a driver bug
-  port 1: send peer delay request failed
-
-So either reset the switch before the management frame was sent, or
-after it was timestamped as well, but not in the middle.
-
-The condition may arise either due to a true timeout (i.e. because
-re-uploading the static config takes time), or due to the TX timestamp
-actually getting lost due to reset. For the former we can increase
-tx_timestamp_timeout in userspace, for the latter we need this patch.
-
-Locking all traffic during switch reset does not make sense at all,
-though. Forcing all CPU-originated traffic to potentially block waiting
-for a sleepable context to send > 800 bytes over SPI is not a good idea.
-Flows that are autonomously forwarded by the switch will get dropped
-anyway during switch reset no matter what. So just let all other
-CPU-originated traffic be dropped as well.
+Reduce the size of the sja1105_private structure when
+CONFIG_NET_DSA_SJA1105_PTP is not enabled. Also make the PTP code a
+little bit more self-contained.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/dsa/sja1105/sja1105.h      | 20 +------
+ drivers/net/dsa/sja1105/sja1105_main.c | 12 ++--
+ drivers/net/dsa/sja1105/sja1105_ptp.c  | 81 +++++++++++++++-----------
+ drivers/net/dsa/sja1105/sja1105_ptp.h  | 29 +++++++++
+ 4 files changed, 84 insertions(+), 58 deletions(-)
 
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index c80be59dafbd..3ca0b87aa3e4 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -20,6 +20,8 @@
+  */
+ #define SJA1105_AGEING_TIME_MS(ms)	((ms) / 10)
+ 
++#include "sja1105_ptp.h"
++
+ /* Keeps the different addresses between E/T and P/Q/R/S */
+ struct sja1105_regs {
+ 	u64 device_id;
+@@ -49,17 +51,6 @@ struct sja1105_regs {
+ 	u64 qlevel[SJA1105_NUM_PORTS];
+ };
+ 
+-enum sja1105_ptp_clk_mode {
+-	PTP_ADD_MODE = 1,
+-	PTP_SET_MODE = 0,
+-};
+-
+-struct sja1105_ptp_cmd {
+-	u64 resptp;		/* reset */
+-	u64 corrclk4ts;		/* use the corrected clock for timestamps */
+-	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
+-};
+-
+ struct sja1105_info {
+ 	u64 device_id;
+ 	/* Needed for distinction between P and R, and between Q and S
+@@ -99,20 +90,15 @@ struct sja1105_private {
+ 	struct spi_device *spidev;
+ 	struct dsa_switch *ds;
+ 	struct sja1105_port ports[SJA1105_NUM_PORTS];
+-	struct sja1105_ptp_cmd ptp_cmd;
+-	struct ptp_clock_info ptp_caps;
+-	struct ptp_clock *clock;
+-	/* Serializes all operations on the PTP hardware clock */
+-	struct mutex ptp_lock;
+ 	/* Serializes transmission of management frames so that
+ 	 * the switch doesn't confuse them with one another.
+ 	 */
+ 	struct mutex mgmt_lock;
+ 	struct sja1105_tagger_data tagger_data;
++	struct sja1105_ptp_data ptp_data;
+ };
+ 
+ #include "sja1105_dynamic_config.h"
+-#include "sja1105_ptp.h"
+ 
+ struct sja1105_spi_message {
+ 	u64 access;
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 5a110b40f5f3..68b09ef7aeb2 100644
+index 68b09ef7aeb2..a55d360ba9f5 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1393,6 +1393,8 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
- 	s64 t12, t34;
- 	int rc, i;
- 
-+	mutex_lock(&priv->mgmt_lock);
-+
- 	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
- 
- 	/* Back up the dynamic link speed changed by sja1105_adjust_port_config
-@@ -1449,6 +1451,8 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
- 			goto out;
+@@ -1408,7 +1408,7 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
  	}
+ 
+ 	/* No PTP operations can run right now */
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&priv->ptp_data.lock);
+ 
+ 	ptpclkval = __sja1105_ptp_gettimex(priv, &ptp_sts_before);
+ 
+@@ -1435,7 +1435,7 @@ static int sja1105_static_config_reload(struct sja1105_private *priv)
+ 	__sja1105_ptp_adjtime(priv, ptpclkval);
+ 
+ out_unlock_ptp:
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&priv->ptp_data.lock);
+ 
+ 	/* Configure the CGU (PLLs) for MII and RMII PHYs.
+ 	 * For these interfaces there is no dynamic configuration
+@@ -1881,7 +1881,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
+ 
+ 	skb_shinfo(clone)->tx_flags |= SKBTX_IN_PROGRESS;
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&priv->ptp_data.lock);
+ 
+ 	ticks = sja1105_ptpclkval_read(priv, NULL);
+ 
+@@ -1898,7 +1898,7 @@ static netdev_tx_t sja1105_port_deferred_xmit(struct dsa_switch *ds, int port,
+ 	skb_complete_tx_timestamp(clone, &shwt);
+ 
+ out_unlock_ptp:
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&priv->ptp_data.lock);
  out:
-+	mutex_unlock(&priv->mgmt_lock);
-+
+ 	mutex_unlock(&priv->mgmt_lock);
+ 	return NETDEV_TX_OK;
+@@ -2034,7 +2034,7 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
+ 	struct sk_buff *skb;
+ 	u64 ticks;
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&priv->ptp_data.lock);
+ 
+ 	ticks = sja1105_ptpclkval_read(priv, NULL);
+ 
+@@ -2051,7 +2051,7 @@ static void sja1105_rxtstamp_work(struct work_struct *work)
+ 		netif_rx_ni(skb);
+ 	}
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&priv->ptp_data.lock);
+ }
+ 
+ /* Called from dsa_skb_defer_rx_timestamp */
+diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
+index a7722c0944fb..f85f44bdab31 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ptp.c
++++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
+@@ -34,7 +34,10 @@
+ #define SJA1105_CC_MULT_DEM		15625
+ #define SJA1105_CC_MULT			0x80000000
+ 
+-#define ptp_to_sja1105(d) container_of((d), struct sja1105_private, ptp_caps)
++#define ptp_to_sja1105_data(d) \
++		container_of((d), struct sja1105_ptp_data, caps)
++#define ptp_data_to_sja1105(d) \
++		container_of((d), struct sja1105_private, ptp_data)
+ 
+ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
+ 			struct ethtool_ts_info *info)
+@@ -42,7 +45,7 @@ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
+ 	struct sja1105_private *priv = ds->priv;
+ 
+ 	/* Called during cleanup */
+-	if (!priv->clock)
++	if (!priv->ptp_data.clock)
+ 		return -ENODEV;
+ 
+ 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+@@ -52,7 +55,7 @@ int sja1105_get_ts_info(struct dsa_switch *ds, int port,
+ 			 (1 << HWTSTAMP_TX_ON);
+ 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+ 			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT);
+-	info->phc_index = ptp_clock_index(priv->clock);
++	info->phc_index = ptp_clock_index(priv->ptp_data.clock);
+ 	return 0;
+ }
+ 
+@@ -200,22 +203,23 @@ int sja1105_ptpegr_ts_poll(struct sja1105_private *priv, int port, u64 *ts)
+ 
+ int sja1105_ptp_reset(struct sja1105_private *priv)
+ {
+-	struct sja1105_ptp_cmd cmd = priv->ptp_cmd;
++	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
++	struct sja1105_ptp_cmd cmd = ptp_data->cmd;
+ 	int rc;
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&ptp_data->lock);
+ 
+ 	cmd.resptp = 1;
+ 
+ 	dev_dbg(priv->ds->dev, "Resetting PTP clock\n");
+ 	rc = priv->info->ptp_cmd(priv, &cmd);
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&ptp_data->lock);
+ 
  	return rc;
  }
  
+-/* Caller must hold priv->ptp_lock */
++/* Caller must hold priv->ptp_data.lock */
+ u64 __sja1105_ptp_gettimex(struct sja1105_private *priv,
+ 			   struct ptp_system_timestamp *sts)
+ {
+@@ -230,30 +234,31 @@ static int sja1105_ptp_gettimex(struct ptp_clock_info *ptp,
+ 				struct timespec64 *ts,
+ 				struct ptp_system_timestamp *sts)
+ {
+-	struct sja1105_private *priv = ptp_to_sja1105(ptp);
++	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
++	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&ptp_data->lock);
+ 
+ 	*ts = ns_to_timespec64(__sja1105_ptp_gettimex(priv, sts));
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&ptp_data->lock);
+ 
+ 	return 0;
+ }
+ 
+-/* Caller must hold priv->ptp_lock */
++/* Caller must hold priv->ptp_data.lock */
+ static int sja1105_ptp_mode_set(struct sja1105_private *priv,
+ 				enum sja1105_ptp_clk_mode mode)
+ {
+-	if (priv->ptp_cmd.ptpclkadd == mode)
++	if (priv->ptp_data.cmd.ptpclkadd == mode)
+ 		return 0;
+ 
+-	priv->ptp_cmd.ptpclkadd = mode;
++	priv->ptp_data.cmd.ptpclkadd = mode;
+ 
+-	return priv->info->ptp_cmd(priv, &priv->ptp_cmd);
++	return priv->info->ptp_cmd(priv, &priv->ptp_data.cmd);
+ }
+ 
+-/* Caller must hold priv->ptp_lock */
++/* Caller must hold priv->ptp_data.lock */
+ static int sja1105_ptpclkval_write(struct sja1105_private *priv, u64 val,
+ 				   struct ptp_system_timestamp *ptp_sts)
+ {
+@@ -282,22 +287,24 @@ int __sja1105_ptp_settime(struct sja1105_private *priv, u64 ns,
+ static int sja1105_ptp_settime(struct ptp_clock_info *ptp,
+ 			       const struct timespec64 *ts)
+ {
+-	struct sja1105_private *priv = ptp_to_sja1105(ptp);
++	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
++	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
+ 	u64 ns = timespec64_to_ns(ts);
+ 	int rc;
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&ptp_data->lock);
+ 
+ 	rc = __sja1105_ptp_settime(priv, ns, NULL);
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&ptp_data->lock);
+ 
+ 	return rc;
+ }
+ 
+ static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+-	struct sja1105_private *priv = ptp_to_sja1105(ptp);
++	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
++	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
+ 	const struct sja1105_regs *regs = priv->info->regs;
+ 	s64 clkrate;
+ 	int rc;
+@@ -309,17 +316,17 @@ static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	clkrate = SJA1105_CC_MULT + clkrate;
+ 	clkrate &= GENMASK_ULL(31, 0);
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&priv->ptp_data.lock);
+ 
+ 	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
+ 				  &clkrate, 4, NULL);
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&priv->ptp_data.lock);
+ 
+ 	return rc;
+ }
+ 
+-/* Caller must hold priv->ptp_lock */
++/* Caller must hold priv->ptp_data.lock */
+ u64 sja1105_ptpclkval_read(struct sja1105_private *priv,
+ 			   struct ptp_system_timestamp *sts)
+ {
+@@ -354,23 +361,25 @@ int __sja1105_ptp_adjtime(struct sja1105_private *priv, s64 delta)
+ 
+ static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
+-	struct sja1105_private *priv = ptp_to_sja1105(ptp);
++	struct sja1105_ptp_data *ptp_data = ptp_to_sja1105_data(ptp);
++	struct sja1105_private *priv = ptp_data_to_sja1105(ptp_data);
+ 	int rc;
+ 
+-	mutex_lock(&priv->ptp_lock);
++	mutex_lock(&ptp_data->lock);
+ 
+ 	rc = __sja1105_ptp_adjtime(priv, delta);
+ 
+-	mutex_unlock(&priv->ptp_lock);
++	mutex_unlock(&ptp_data->lock);
+ 
+ 	return rc;
+ }
+ 
+ int sja1105_ptp_clock_register(struct sja1105_private *priv)
+ {
++	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
+ 	struct dsa_switch *ds = priv->ds;
+ 
+-	priv->ptp_caps = (struct ptp_clock_info) {
++	ptp_data->caps = (struct ptp_clock_info) {
+ 		.owner		= THIS_MODULE,
+ 		.name		= "SJA1105 PHC",
+ 		.adjfine	= sja1105_ptp_adjfine,
+@@ -380,23 +389,25 @@ int sja1105_ptp_clock_register(struct sja1105_private *priv)
+ 		.max_adj	= SJA1105_MAX_ADJ_PPB,
+ 	};
+ 
+-	mutex_init(&priv->ptp_lock);
++	mutex_init(&ptp_data->lock);
+ 
+-	priv->clock = ptp_clock_register(&priv->ptp_caps, ds->dev);
+-	if (IS_ERR_OR_NULL(priv->clock))
+-		return PTR_ERR(priv->clock);
++	ptp_data->clock = ptp_clock_register(&ptp_data->caps, ds->dev);
++	if (IS_ERR_OR_NULL(ptp_data->clock))
++		return PTR_ERR(ptp_data->clock);
+ 
+-	priv->ptp_cmd.corrclk4ts = true;
+-	priv->ptp_cmd.ptpclkadd = PTP_SET_MODE;
++	ptp_data->cmd.corrclk4ts = true;
++	ptp_data->cmd.ptpclkadd = PTP_SET_MODE;
+ 
+ 	return sja1105_ptp_reset(priv);
+ }
+ 
+ void sja1105_ptp_clock_unregister(struct sja1105_private *priv)
+ {
+-	if (IS_ERR_OR_NULL(priv->clock))
++	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
++
++	if (IS_ERR_OR_NULL(ptp_data->clock))
+ 		return;
+ 
+-	ptp_clock_unregister(priv->clock);
+-	priv->clock = NULL;
++	ptp_clock_unregister(ptp_data->clock);
++	ptp_data->clock = NULL;
+ }
+diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.h b/drivers/net/dsa/sja1105/sja1105_ptp.h
+index c699611e585d..dfe856200394 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ptp.h
++++ b/drivers/net/dsa/sja1105/sja1105_ptp.h
+@@ -19,8 +19,29 @@ static inline s64 sja1105_ticks_to_ns(s64 ticks)
+ 	return ticks * SJA1105_TICK_NS;
+ }
+ 
++struct sja1105_private;
++
+ #if IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP)
+ 
++enum sja1105_ptp_clk_mode {
++	PTP_ADD_MODE = 1,
++	PTP_SET_MODE = 0,
++};
++
++struct sja1105_ptp_cmd {
++	u64 resptp;		/* reset */
++	u64 corrclk4ts;		/* use the corrected clock for timestamps */
++	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
++};
++
++struct sja1105_ptp_data {
++	struct sja1105_ptp_cmd cmd;
++	struct ptp_clock_info caps;
++	struct ptp_clock *clock;
++	/* Serializes all operations on the PTP hardware clock */
++	struct mutex lock;
++};
++
+ int sja1105_ptp_clock_register(struct sja1105_private *priv);
+ 
+ void sja1105_ptp_clock_unregister(struct sja1105_private *priv);
+@@ -52,6 +73,14 @@ int __sja1105_ptp_adjtime(struct sja1105_private *priv, s64 delta);
+ 
+ #else
+ 
++/* Structures cannot be empty in C. Bah!
++ * Keep the mutex as the only element, which is a bit more difficult to
++ * refactor out of sja1105_main.c anyway.
++ */
++struct sja1105_ptp_data {
++	struct mutex lock;
++};
++
+ static inline int sja1105_ptp_clock_register(struct sja1105_private *priv)
+ {
+ 	return 0;
 -- 
 2.17.1
 
