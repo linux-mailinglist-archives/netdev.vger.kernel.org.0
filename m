@@ -2,100 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7622BAED49
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 16:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6635BAED72
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 16:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730222AbfIJOkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 10:40:45 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43001 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726066AbfIJOkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 10:40:45 -0400
-Received: by mail-ot1-f67.google.com with SMTP id c10so19043828otd.9;
-        Tue, 10 Sep 2019 07:40:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/ieZnycxFN+JerYiY3rxoFtjLzkHguz7iRH/hDZcmIw=;
-        b=d9agNx71wVkpHR2XTIIiwTL0XH2EGudfPc7dYtC1KajHCIqFTXUVoYq1bMB3s4rntp
-         i0LCeyM+gEtprb+7CQJEMcJs2U5EGJPotnQ5fxb12skLyXd7NWJYX/HNOwZy1/TohFeK
-         vBmJRtCgB9dmMLVVavsIZBAr7DoB7hn6uH+eR++EtyctbPQZ3A2EHeRu71gfbszWswDC
-         JtRNdoAzFAJgHM79H7pyblqejEHy3V3bP5JuQt9IE66iP2xABt5GaML+442VeF9mg6FQ
-         P4YwPxQuDiFloO0+UJG1g7kzYcRsg6fx65SJ2BsppR7/580JiCYIVmI2uTS3yRFapIZV
-         AdQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/ieZnycxFN+JerYiY3rxoFtjLzkHguz7iRH/hDZcmIw=;
-        b=ds+xfTl3Va3jhfnt+yFDiEDrkSt6sduVIuX71pw2772zA+MRGQhGTpIno1cvC3nFA+
-         TsITuFxiI5UHQprhw60CvzZD+5xSZxyPDjmLmswl/Vy91SUJlTMUCluXfn+YDkoDDqKL
-         C6EAB7t1i1YQ2zqmeGLylgl+Rk8rTjEZDy9BseLGypqWs4WtqfQQulDPAeoOhMa9Spdb
-         22BuAJDtAxs8aG8qHI1kymHOfkG+3XtuuKBbwPPMGiLupv52jLuRAzK/KZM9//vYwh8M
-         1d5H/OE2G1XClMZS5PkjOv4Q8o3XA1oV8uzA5UNZkbP0RhEN7b4C9mN0tdV7CitjK/Bv
-         mKpw==
-X-Gm-Message-State: APjAAAVuLWgS7zvbk5msLfWIfW5Uzgq6M+lN8Bi8Slwm5SK6HISzVV6X
-        8AzAHxNl6D6zz2MDiSSQ9jRZTPtRo6lguooO+w==
-X-Google-Smtp-Source: APXvYqzkLM0vlrL0Fi3NtmzLQzUZlEbzuQcjjOXQEGD286xMohRCfpSOgOJKC3SNtRcwSNPzq/3jeBi8bsajctzPCns=
-X-Received: by 2002:a05:6830:10c5:: with SMTP id z5mr7849959oto.366.1568126444139;
- Tue, 10 Sep 2019 07:40:44 -0700 (PDT)
+        id S2393262AbfIJOmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 10:42:09 -0400
+Received: from ozlabs.org ([203.11.71.1]:38637 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393023AbfIJOmG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 10:42:06 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 46SSQY2r3lz9s4Y;
+        Wed, 11 Sep 2019 00:41:21 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1568126523;
+        bh=OgL1E3Bn836EI/U9TfNLgjcy9EiqKvLZ4vknVwwsPfE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=QJtFt4FJe9ZV89RhMLsPUEIccr+G9wrvlU5ZTHMDm9G/iJg50qjvIS/SAF+2F8d7G
+         qYnIhgShhNf07dQNvuFku8heFGfZ7gh7tZsJxvzMhdtqusRMaulcw8MyOU5KLEjQgb
+         0S607N0fz3QwuumuwUl3YfwgVcmtsU8IRXAmTN0oxq2nFBNYCOt2JPf2Ee5RertKLn
+         4wI79U0DuEmJzLmAw31DBljOo57JxH0AVgeBdISYMZa2+UPVLNL+Wx0woNzd7yLDVV
+         j8g3J73gCLk4NHGCmQDkAbe2NTCW/SGjQzVR8JS3+cbmVqYi0ytTys6vc14Cg5O3q8
+         YOU7JR+ReQFMw==
+Date:   Wed, 11 Sep 2019 00:41:03 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        The j1939 authors <linux-can@vger.kernel.org>,
+        Bastian Stender <bst@pengutronix.de>,
+        Elenita Hinds <ecathinds@gmail.com>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        kbuild test robot <lkp@intel.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: linux-next: Signed-off-by missing for commit in the net-next tree
+Message-ID: <20190911004103.3480fa40@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20190910131836.114058-1-george.mccollister@gmail.com>
- <20190910131836.114058-2-george.mccollister@gmail.com> <20190910140304.GA4683@lunn.ch>
-In-Reply-To: <20190910140304.GA4683@lunn.ch>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Tue, 10 Sep 2019 09:40:32 -0500
-Message-ID: <CAFSKS=O9nDMk-ytxkFhTuZNT-QDmJ_twDdk2o2u0R4Y_YZ0z8A@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/3] net: dsa: microchip: add KSZ9477 I2C driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marek Vasut <marex@denx.de>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/9Jn59mgO98rup=kQiyX7Z.U";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew,
+--Sig_/9Jn59mgO98rup=kQiyX7Z.U
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 10, 2019 at 9:03 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi George
->
-> > +KSZ_REGMAP_TABLE(ksz9477, not_used, 16, 0, 0);
-> > +
-> > @@ -294,6 +294,8 @@ static inline void ksz_pwrite32(struct ksz_device *dev, int port, int offset,
-> >  #define KSZ_SPI_OP_RD                3
-> >  #define KSZ_SPI_OP_WR                2
-> >
-> > +#define swabnot_used(x)              0
->
-> > +
-> >  #define KSZ_SPI_OP_FLAG_MASK(opcode, swp, regbits, regpad)           \
-> >       swab##swp((opcode) << ((regbits) + (regpad)))
->
-> There seems to be quite a lot of macro magic here which is not
-> obvious. Can this be simplified or made more obvious?
+Hi all,
 
-I thought about this for quite some time. To reduce the "macro magic"
-the SPI specific parts will need to be removed from the common macro
-and arguments for read_flag_mask and write_flag_mask would need to be
-added to both KSZ_REGMAP_TABLE and KSZ_REGMAP_TABLE. That would leave
-us with two macros that have 7 arguments. Not really an improvement
-IMHO. Alternatively we could have different macros for SPI and I2C (or
-not use the macros at all and define the i2c regmaps in ksz9477_i2c.c)
-at the cost of ~20 lines of duplication. I prefer the "macro magic"
-approach, however if you won't let the patch through the way it is
-I'll respect your decision, just let me know which of the three
-proposed approaches you want to go with.
+Commit
 
->
->          Andrew
+  9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 
+is missing a Signed-off-by from its author.
+
+[Not sure if I should complain about this one ...]
+
+--=20
 Cheers,
-George
+Stephen Rothwell
+
+--Sig_/9Jn59mgO98rup=kQiyX7Z.U
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl13tf8ACgkQAVBC80lX
+0Gz1XQgAghJMDzpTB959LAyRnZ2BTcdjC1I1Ql+yI07GFjjckCpckq6nNv+XJQ8V
+8v0zFk21GxHe4iiFr5TENfSfALy1o8hw1lqjfilqQk9q8E6RjkNrVE+j6rnEVG95
+iLE41mafTnm/T6b2sUBdLPQ8hkir6ToIcLeEQp8k3naw1cEqa7dG1D07nRiOFDoU
+OzQREKHCUpFGmbne150OlvNIBzM5tQmicoRALm6dAwGckksLMeGwtES07coQsSqZ
+dMydcYHuHSfMLzrail0URBEN2Llw75EZxKc+Y6XJhNhQLYhuKiERhZ0ZtWykz82i
+cvM+OQfoJINzEz+OyEne3/nLz1azEg==
+=F1hC
+-----END PGP SIGNATURE-----
+
+--Sig_/9Jn59mgO98rup=kQiyX7Z.U--
