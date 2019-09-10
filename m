@@ -2,228 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46E74AF2A8
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 23:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3157AF2A9
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 23:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725932AbfIJVoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 17:44:00 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38577 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbfIJVoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 17:44:00 -0400
-Received: by mail-pf1-f194.google.com with SMTP id h195so12324562pfe.5
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 14:43:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=sQSYyZ6dY5ImBEaJbWxj7q4gRwhQ5FcXdtHgInsLvd8=;
-        b=zGROtehW1J+fcMy4ZoT9psi14mDgU/DKfgpmcchzQI280wFEvvRd2omj74cO4hTn6z
-         WzfDV/xTFlaBf9N5Neg7LfxLv/5aE4JVLOpHyH3SqW6i7niB1b+bnZeDaSf4gGXos9BB
-         MA8fHbjHGCxVN+Wyn9kNMGAVJEJ8h8R5c3qJJhBaLzVaVcHcUFeqYyz/M/myYmsIzo4H
-         hVCkJeMC9PdeKlYQRxnaQ3kVYaa07pXQGY9QWH/VcjCVB50+Vbg/wDrC5I9dw3StDTrE
-         ncwfuZd5OuSHDKZpCEC8BCbOuUOZgxqE82ZyyXMMp9ZX+K7t9/UKevMjiyQAR1SNKUgI
-         TLaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=sQSYyZ6dY5ImBEaJbWxj7q4gRwhQ5FcXdtHgInsLvd8=;
-        b=g10cfDkyJ6+2m8SK+kHZG5qiZ1DDDoBSMvBrrFxtBElzOTppoQ9xa5QN4yGknn6JTZ
-         O8ag60xFVKWWpfAhgjUL+D3KxqFrgsFaFdc+4Fx0zL9pQKiRT3JTHi7lPQGoaC3t65Fi
-         kr4HC/pKzDP1sTpdvauOAoZBZDsp6y6bF57dkNUgCjvjtVjboxF1FCQkuOmdvd6pCWe8
-         3jtTBZhsEaUA3yCFN9qKrFc9oOUUmmbWh6vn+IS7BtTBmoqG8zl87peSSifUJGYlC5uh
-         plPUEoxl6ZFAK7pUXloj87RtC+dUcwYgPHqe/t7nX77ThpsR6WrlyXKrH3FNV0rrPpBf
-         Abdg==
-X-Gm-Message-State: APjAAAVfqiYmfT2cdKJp//wOoCHOG+xRy4fd6+m8m33CoIoDyDuN7l//
-        Lt9Ou1B1i2tOzhRoHe5HM9lJHg==
-X-Google-Smtp-Source: APXvYqz7i+KpcvobiFs3H/mQHFRFdjFU8LomOE6wVF/LVsFtQow/YRVtmKDS6iJT5hPV+HdlPfLnwg==
-X-Received: by 2002:a17:90a:a604:: with SMTP id c4mr1789664pjq.16.1568151838988;
-        Tue, 10 Sep 2019 14:43:58 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id j9sm19895527pfi.128.2019.09.10.14.43.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Sep 2019 14:43:58 -0700 (PDT)
-Subject: Re: ixgbe: driver drops packets routed from an IPSec interface with a
- "bad sa_idx" error
-To:     Michael Marley <michael@michaelmarley.com>
-Cc:     netdev@vger.kernel.org, Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        steffen.klassert@secunet.com
-References: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
- <4caa4fb7-9963-99ab-318f-d8ada4f19205@pensando.io>
- <fb63dec226170199e9b0fd1b356d2314@michaelmarley.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <90dd9f8c-57fa-14c7-5d09-207b84ec3292@pensando.io>
-Date:   Tue, 10 Sep 2019 22:43:54 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <fb63dec226170199e9b0fd1b356d2314@michaelmarley.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        id S1726043AbfIJVqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 17:46:02 -0400
+Received: from mail-eopbgr60054.outbound.protection.outlook.com ([40.107.6.54]:37381
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725942AbfIJVqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 17:46:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G8CZQPwZ3tzmGQh/qv+EQ8xVCcTa2CDH1Gj3NgcpHhIyC3/evQ9lBgGh8qrbyFFUOhZG8JBzo57xyfm8szSRwc6rIHOMJzHRAjpaW06uAdbwTXhVqu8W2HBqyjwuN7Gc/MUaXpWtkf5DDYYhvXL9UQMpy2jes8Q8jVkVTXDgjilFOTT3wkJARwdL5gY5GvX4fVPyt5Ods8kw86VQrBnW4HCrfIJNI+e5DNPcBfidfud3KzUltjpxBKR/RS7QKZOsbQkQKuKw70nf1N9GlGag0FIfd0UayYFGVOrNuVepkO7l+Nbo8nQ5M+gVGtr2gdu3S+sQuP0VmrGBaCf2fAm7iQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BYlx+opC0i8Ao7GyTutxgnptUY1Ee0DxykuM6rTF3iw=;
+ b=EmzLlqBOaQaS/68hOIwed6i8uvr/0Kf/RLeJzAEavuONS1FeCmOukP1uvopWbKG9jibWqR1D65WnW9bKtWQIWiSIjuZl4gy/iEsuZsu/8h8vnJC+V5kUTxSAhCwQpmfand5vuM1beTARzlpnXjv3TIwWsh0MRT1AAQxpwVhijr582jzAaaV1sbVrmsJvuQEGUH9ZYiefBRRU4imvtH35hZaK6hTVmRn6TiLHho6hc89zlMLDuGCz1ZhCuc5EwHRI1EJZSXfokVDQj4uSnbrDFRCJgseBBcduo4qqII6Y6gDg6n/VNOe4IpmMFTUqgcaBgPQ36zKTPMN+N8f0dRIe6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BYlx+opC0i8Ao7GyTutxgnptUY1Ee0DxykuM6rTF3iw=;
+ b=Q0dOiIDLjanzkxO8lhhno6KjnB1nhGLI9AmdGHeqid2sE9JzZzrnWVXk30f0tV4dOgNvqF2b5AxNORSdkDS5Bmr9w+CY8raNl/iodotDINlWbOmelhnFOh06QSFJz4t7AEngzoFrCI+3D8JW56bFjqhhjf2tpceLkAFNc9WXQDA=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2598.eurprd05.prod.outlook.com (10.168.77.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.18; Tue, 10 Sep 2019 21:45:57 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::f839:378:4972:3e43]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::f839:378:4972:3e43%12]) with mapi id 15.20.2241.018; Tue, 10 Sep 2019
+ 21:45:57 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 0/3] Mellanox, mlx5 build cleanup 2019-09-10
+Thread-Topic: [pull request][net-next 0/3] Mellanox, mlx5 build cleanup
+ 2019-09-10
+Thread-Index: AQHVaCEhO9yAKSm+dEu/1qKabkFc7g==
+Date:   Tue, 10 Sep 2019 21:45:57 +0000
+Message-ID: <20190910214542.8433-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR06CA0058.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::35) To DB6PR0501MB2759.eurprd05.prod.outlook.com
+ (2603:10a6:4:84::7)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a2c37a7d-fc12-4a8a-2db1-08d736384374
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2598;
+x-ms-traffictypediagnostic: DB6PR0501MB2598:|DB6PR0501MB2598:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR0501MB25988AF244B94FBBCD26E780BEB60@DB6PR0501MB2598.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 01565FED4C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(39860400002)(376002)(346002)(189003)(199004)(81166006)(102836004)(6916009)(5660300002)(8936002)(5024004)(256004)(6486002)(50226002)(6116002)(7736002)(99286004)(14454004)(36756003)(305945005)(4326008)(52116002)(6436002)(3846002)(107886003)(6506007)(386003)(8676002)(476003)(66066001)(53936002)(6512007)(2616005)(478600001)(64756008)(81156014)(486006)(1076003)(26005)(25786009)(86362001)(66946007)(66476007)(71190400001)(316002)(66556008)(54906003)(71200400001)(2906002)(66446008)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2598;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 8wgfmzE4IeC/QCillD7HSZH7IZoR8PDaO31RlaTZcH8SIjddZwl64XhQ6jaus1eluLpyP8n/x8B1blgQ+lDdzXrRRKkAZEmOozzn9j6xcCYjOkSyOn9VAjP2fkjWXs2LLhwzKyya+p7b1XFrYnn81Wp0F5l9M0+jD1pJVllYzmeWubkRHhC5Yoa3R9YyqpbGBQNJ0SlVBnObj6dGdC64+pypmHL3F1E2F73/yKzUQfX3N2Y7KZnX4ButRfqdBFmybZxLjsh3CKrziMT5QAh8gr0Q+GasBFFlc5DXskgkaxqseIhwiLf5j6qp8CBLIsR/9EdGvrv5wXzVUdEOdIiQCUCbkvnqdwav/8Ax5INU5xHzDg9ThINFHktHpXI0OxG76DE4BLUO7VA1gK01HoElENOwym+4MH5ZzOXt61f/ULg=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2c37a7d-fc12-4a8a-2db1-08d736384374
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2019 21:45:57.5899
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4ksGhX7GMoD/qW+4rSh3oB0UBi/p6MHpuX8tuxk2ewzzQw0bdJ98baLnPSIvuary5ggEFkf9BUk+ZaFzHrxbMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2598
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/19 11:45 AM, Michael Marley wrote:
-> On 2019-09-09 14:21, Shannon Nelson wrote:
->> On 9/6/19 11:13 AM, Michael Marley wrote:
->>> (This is also reported at 
->>> https://bugzilla.kernel.org/show_bug.cgi?id=204551, but it was 
->>> recommended that I send it to this list as well.)
->>>
->>> I have a put together a router that routes traffic from several 
->>> local subnets from a switch attached to an i82599ES card through an 
->>> IPSec VPN interface set up with StrongSwan. (The VPN is running on 
->>> an unrelated second interface with a different driver.)  Traffic 
->>> from the local interfaces to the VPN works as it should and 
->>> eventually makes it through the VPN server and out to the Internet.  
->>> The return traffic makes it back to the router and tcpdump shows it 
->>> leaving by the i82599, but the traffic never actually makes it onto 
->>> the wire and I instead get one of
->>>
->>> enp1s0: ixgbe_ipsec_tx: bad sa_idx=64512 handle=0
->>>
->>> for each packet that should be transmitted.  (The sa_idx and handle 
->>> values are always the same.)
->>>
->>> I realized this was probably related to ixgbe's IPSec offloading 
->>> feature, so I tried with the motherboard's integrated e1000e device 
->>> and didn't have the problem.  I tried using ethtool to disable all 
->>> the IPSec-related offloads (tx-esp-segmentation, esp-hw-offload, 
->>> esp-tx-csum-hw-offload), but the problem persisted.  I then tried 
->>> recompiling the kernel with CONFIG_IXGBE_IPSEC=n and that worked 
->>> around the problem.
->>>
->>> I was also able to find another instance of the same problem 
->>> reported in Debian at 
->>> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=930443. That 
->>> person seems to be having exactly the same issue as me, down to the 
->>> sa_idx and handle values being the same.
->>>
->>> If there are any more details I can provide to make this easier to 
->>> track down, please let me know.
->>>
->>> Thanks,
->>>
->>> Michael Marley
->>
->> Hi Michael,
->>
->> Thanks for pointing this out.  The issue this error message is
->> complaining about is that the handle given to the driver is a bad
->> value.  The handle is what helps the driver find the right encryption
->> information, and in this case is an index into an array, one array for
->> Rx and one for Tx, each of which have up to 1024 entries.  In order to
->> encode them into a single value, 1024 is added to the Tx values to
->> make the handle, and 1024 is subtracted to use the handle later.  Note
->> that the bad sa_idx is 64512, which happens to also be -1024; if the
->> Tx handle given to ixgbe for xmit is 0, we subtract 1024 from that and
->> get this bad sa_idx value.
->>
->> That handle is supposed to be an opaque value only used by the
->> driver.  It looks to me like either (a) the driver is not setting up
->> the handle correctly when the SA is first set up, or (b) something in
->> the upper levels of the ipsec code is clearing the handle value. We
->> would need to know more about all the bits in your SA set up to have a
->> better idea what parts of the ipsec code are being exercised when this
->> problem happens.
->>
->> I currently don't have access to a good ixgbe setup on which to
->> test/debug this, and I haven't been paying much attention lately to
->> what's happening in the upper ipsec layers, so my help will be
->> somewhat limited.  I'm hoping the the Intel folks can add a little
->> help, so I've copied Jeff Kirsher on this (they'll probably point back
->> to me since I wrote this chunk :-) ).  I've also copied Stephen
->> Klassert for his ipsec thoughts.
->>
->> In the meantime, can you give more details on the exact ipsec rules
->> that are used here, and are there any error messages coming from ixgbe
->> regarding the ipsec rule setup that might help us identify what's
->> happening?
->>
->> Thanks,
->> sln
->
-> Hi Shannon,
->
-> Thanks for your response!  I apologize, I am a bit of a newbie to 
-> IPSec myself, so I'm not 100% sure what is the best way to provide the 
-> information you need, but here is the (slightly-redacted) output of 
-> swanctl --list-sas first from the server and then from the client:
->
-> <servername>: #24, ESTABLISHED, IKEv2, 3cb75c180ee5dc68_i 
-> cc7dae551b603bb7_r*
->   local  '<serverip>' @ <serverip>[4500]
->   remote '<clientip>' @ <clientip>[4500]
->   AES_GCM_16-256/PRF_HMAC_SHA2_512/ECP_384
->   established 174180s ago
->   <servername>: #110, reqid 12, INSTALLED, TUNNEL-in-UDP, 
-> ESP:AES_GCM_16-256/ECP_384
->     installed 469s ago
->     in  c51a0f11 (-|0x00000064), 1548864 bytes, 19575 packets, 6s ago
->     out c3bd9741 (-|0x00000064), 23618807 bytes, 22865 packets,     7s 
-> ago
->     local  0.0.0.0/0 ::/0
->     remote 0.0.0.0/0 ::/0
->
-> <clientname>: #1, ESTABLISHED, IKEv2, 3cb75c180ee5dc68_i* 
-> cc7dae551b603bb7_r
->   local  '<clientip>' @ <clientip>[4500]
->   remote '<serverip>' @ <serverip>[4500]
->   AES_GCM_16-256/PRF_HMAC_SHA2_512/ECP_384
->   established 174013s ago
->   <clientname>: #54, reqid 1, INSTALLED, TUNNEL-in-UDP, 
-> ESP:AES_GCM_16-256/ECP_384
->     installed 303s ago, rekeying in 2979s, expires in 3657s
->     in  c3bd9741 (-|0x00000064), 23178523 bytes, 20725 packets,     0s 
-> ago
->     out c51a0f11 (-|0x00000064), 1429124 bytes, 17719 packets, 0s ago
->     local  0.0.0.0/0 ::/0
->     remote 0.0.0.0/0 ::/0
->
-> It might also be worth mentioning that I am using an xfrm interface to 
-> do "regular" routing rather than the policy-based routing that 
-> StrongSwan/IPSec normally uses. If there is anything else that would 
-> help more, I would be happy to provide it.
->
-> Just to be clear though, I'm not trying to run IPSec on the ixgbe 
-> interface at all.  The ixgbe adapter is being used to connect the 
-> router to the switch on the LAN side of the network.  IPSec is running 
-> on the WAN interface without any hardware acceleration (besides 
-> AES-NI).  The problem occurs when a computer on the LAN tries to 
-> access the WAN.  The outgoing packets work as expected and the 
-> incoming packets are routed back out through the ixgbe device toward 
-> the LAN client, but the driver drops the packets with the sa_idx error.
->
-> I hope this helps.
->
-> Thanks,
->
-> Michael
+Hi Dave,
 
-I'm not familiar with StrongSwan and its configurations, but I'm 
-guessing that if you didn't expressly enable it, perhaps StrongSwan 
-enabled the ipsec offload capability.  I would suggest turning it off to 
-at least get you passed the immediate issue.  If there isn't an obvious 
-configuration knob in StrongSwan, perhaps you can at least use ethtool 
-to disable the offload, which should be off be default anyway.
+This series provides three build warnings cleanup patches for mlx5,
+Originally i wanted to wait a bit more and attach more patches to this
+series, but apparently this can't wait since already 3 different patches
+for the same fix were submitted this week :).
 
-You can check it with "ethtool -k ethX | grep esp-hw-offload" and see if 
-it is set.  You can disable it with "ethtool -K ethX esp-hw-offload off"
+For more information please see tag log below.
 
-Meanwhile, can you please send the output of the following commands:
-uname -a
-ip xfrm s
-ip xfrm p
-dmesg | grep ixgbe
-
-And any other /var/log/syslog or /var/log/messages that look suspicious 
-and might give any more insight to what's happening.
+Please pull and let me know if there is any problem.
 
 Thanks,
-sln
+Saeed.
 
+---
+The following changes since commit 074be7fd99a29ff36dcb2c036b3b31a6b670b3cf=
+:
+
+  Merge branch 'nfp-implement-firmware-loading-policy' (2019-09-10 17:29:27=
+ +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2019-09-10
+
+for you to fetch changes up to fa355bb1b0373e7fe087cfc830b1b0b9b6130388:
+
+  net/mlx5: FWTrace, Reduce stack usage (2019-09-10 13:43:27 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2019-09-10
+
+Misc build warnings cleanup for mlx5:
+
+1) Reduce stack usage in FW trace
+2) Fix addr's type in mlx5dr_icm_dm
+3) Fix rt's type in dr_action_create_reformat_action
+
+----------------------------------------------------------------
+Nathan Chancellor (2):
+      net/mlx5: Fix rt's type in dr_action_create_reformat_action
+      net/mlx5: Fix addr's type in mlx5dr_icm_dm
+
+Saeed Mahameed (1):
+      net/mlx5: FWTrace, Reduce stack usage
+
+ drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c       | 7 ++++---
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c   | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c | 2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
