@@ -2,129 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06231AF060
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 19:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA199AF064
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 19:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437012AbfIJRTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 13:19:54 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:40836 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387907AbfIJRTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 13:19:53 -0400
-Received: by mail-qt1-f193.google.com with SMTP id g4so21685920qtq.7
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 10:19:53 -0700 (PDT)
+        id S2436845AbfIJRXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 13:23:00 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:45408 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730225AbfIJRXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 13:23:00 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 4so10057362pgm.12
+        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 10:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=m2AsrlPVRrEdvPsHBIyHPjRkG5Nqycp7CXTyHNX1Cxk=;
-        b=BxSfcvrbm8MfhPIWQvEritw+LLM34jqarTnVuBL2eBmrf8OJ0/wlfgY8nPYaWRVMMH
-         B0l6Gy7xlQwr8Sj/F66wd8G6ynPymlOU9iODaQqbJagc+3B2uVuBVeFQEdYIWi7ezfS0
-         YcZngEdO4A0X0ILeBiPMV1qjUosCglTz3+nuzXwjw4VrUcMWHaLaUb2SdUhFkqaNlXlp
-         ZwCVf5TNRu4zJv++f9bPrQEPVCVRBzyDKB424QYwTBqg3P+E8eVjuBOgQM+IeNM7VMpq
-         xMdRvW/qzwIYLmjxrlZIpfK+1PLWRzCm3hJ6Kpp06PxbsMsE5z35n4u7isnnXhADxzbe
-         PolQ==
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WytUsbUCueuTaHp+R3kiieTTsIcIBaJbRPUzOY9zmMs=;
+        b=g8eBFeJURPLmM7K80XMyv6QCx9j8YlqaXas7oh2yW8WK40QJIDwACb+8Fed1j4td8M
+         rDgIx0hMCLUGE2ZLv0+DhqEU6GEAD9EgjaTcKC2f7slxN9qUxOR3H7UikEyiSWfyziwL
+         lzkvnZGQUh93SlN+8AXzBgLvJqZ2UCH0Zeycm3EFae21/p/tcstsMHN7DgvmMYWoSa/E
+         xEz6R5wNLvHQWPJ3Bb6JtYorQKBqOqedQneR/BXDcedQqQEDA50N8N9h36EL9837Y5G0
+         WlDnCjhRt6OajXG+J5ay44IycrumkvdYDUnesB54fFvPe3v8pBv4tcVLn8H/X/zSOSne
+         RDzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=m2AsrlPVRrEdvPsHBIyHPjRkG5Nqycp7CXTyHNX1Cxk=;
-        b=AIrwlDksFWmUo8pMaQlhqYZ2c+TbfCcUKkgFzJh3TAga+IR4Xcwwmb/F/HJj31OaDV
-         9558zNT+pHMLwI5eEnTQgcqkjVYTP3JF5axpSEwzBCROjvYQUUTmbZS29yjrhKJg1/hF
-         X08m8nzDYwtwWREgQuza2mWBCMbZ8kfglh397Nef/NleOJ57F5rTJM5vuTm6VwyE/Fsl
-         jeHpzoOQnBNkFH984ZaM2MIUIngFKBIv0DSr1CKLUe4idvFUA3RJeD2ajVl16Tz2jlra
-         QrMSO/BGHI+lR0gr+DPK2AUmeaDG783BReQuda2eSfUAgTk7ehrOBc+AF1eCHpplED1v
-         /rvQ==
-X-Gm-Message-State: APjAAAXB03zsrfUn16aDXXARKyMJNQofGcvIxaco4jF2mRl0E/zGoP6i
-        Y/GqmWRYtLbt/xAJLUP6X9k=
-X-Google-Smtp-Source: APXvYqz2oBQeKPDtA94Ds8nwx7mFfSgs2/HVaAUrACmcb67l7/XrY8Zpzn2UsKKfT8KEdlgwgSpNNw==
-X-Received: by 2002:ac8:5548:: with SMTP id o8mr28007536qtr.163.1568135992971;
-        Tue, 10 Sep 2019 10:19:52 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id o124sm8864343qke.66.2019.09.10.10.19.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WytUsbUCueuTaHp+R3kiieTTsIcIBaJbRPUzOY9zmMs=;
+        b=lVLx6YbOWUu/Z/XsXSmd1uBsZ8PlFxA+6BW6qcMnAr4+K5oH2hVtDJDWp49CCr4nem
+         ZBmppsDcO4H/poeC8n8cYF6cDrSmWTVjt+g2q4rPhPB0V/ET6tekefG+JwE2XxNfT8r5
+         U3L5pRhBFKLGTEkoNLFkXMu0Rx6pLaZv7LO+edZixIQmXozuB2G7EHnpn1e6IjuDhpYo
+         BwubYQY1u+QiNGYd7Pp9vZg18xrwWkR/pFHc0nZdVsmT30vcTs8hDNXvSRnTQPlvU36M
+         xDSym+ORPQ6muhuTiLXe2vLlMlH/4NXSLtF/i3PneQhwdDMoFlPwgPuz59Pc9u5ZPFud
+         8nHg==
+X-Gm-Message-State: APjAAAU13rx+COwOskVowfMDtMh4NXqcX2jJENNL/imaHY9Y/yIknTOd
+        pBjZBhdx4eVSEEMvlh/Hp/Zlcg==
+X-Google-Smtp-Source: APXvYqxmkQCQc3l3UoT5KLzpgDQQV9we+Pmo9WXUarV5tvLUbmr6ZHi67Bb91kphtkBUZgPj7hoTOg==
+X-Received: by 2002:a63:dd0c:: with SMTP id t12mr27742480pgg.82.1568136178740;
+        Tue, 10 Sep 2019 10:22:58 -0700 (PDT)
+Received: from google.com ([2620:15c:201:2:ce90:ab18:83b0:619])
+        by smtp.gmail.com with ESMTPSA id j2sm19138413pfe.130.2019.09.10.10.22.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 10:19:52 -0700 (PDT)
-Date:   Tue, 10 Sep 2019 13:19:51 -0400
-Message-ID: <20190910131951.GM32337@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Robert Beckett <bob.beckett@collabora.com>
-Cc:     netdev@vger.kernel.org, Robert Beckett <bob.beckett@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
- storms
-In-Reply-To: <20190910154238.9155-1-bob.beckett@collabora.com>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
+        Tue, 10 Sep 2019 10:22:58 -0700 (PDT)
+Date:   Tue, 10 Sep 2019 10:22:53 -0700
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kees Cook <keescook@chromium.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
+Message-ID: <20190910172253.GA164966@google.com>
+References: <20190909223236.157099-1-samitolvanen@google.com>
+ <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Robert,
+On Tue, Sep 10, 2019 at 08:37:19AM +0000, Yonghong Song wrote:
+> You did not mention BPF_BINARY_HEADER_MAGIC and added member
+> of `magic` in bpf_binary_header. Could you add some details
+> on what is the purpose for this `magic` member?
 
-On Tue, 10 Sep 2019 16:41:46 +0100, Robert Beckett <bob.beckett@collabora.com> wrote:
-> This patch-set adds support for some features of the Marvell switch
-> chips that can be used to handle packet storms.
-> 
-> The rationale for this was a setup that requires the ability to receive
-> traffic from one port, while a packet storm is occuring on another port
-> (via an external switch with a deliberate loop). This is needed to
-> ensure vital data delivery from a specific port, while mitigating any
-> loops or DoS that a user may introduce on another port (can't guarantee
-> sensible users).
-> 
-> [patch 1/7] configures auto negotiation for CPU ports connected with
-> phys to enable pause frame propogation.
-> 
-> [patch 2/7] allows setting of port's default output queue priority for
-> any ingressing packets on that port.
-> 
-> [patch 3/7] dt-bindings for patch 2.
-> 
-> [patch 4/7] allows setting of a port's queue scheduling so that it can
-> prioritise egress of traffic routed from high priority ports.
-> 
-> [patch 5/7] dt-bindings for patch 4.
-> 
-> [patch 6/7] allows ports to rate limit their egress. This can be used to
-> stop the host CPU from becoming swamped by packet delivery and exhasting
-> descriptors.
-> 
-> [patch 7/7] dt-bindings for patch 6.
-> 
-> 
-> Robert Beckett (7):
->   net/dsa: configure autoneg for CPU port
->   net: dsa: mv88e6xxx: add ability to set default queue priorities per
->     port
->   dt-bindings: mv88e6xxx: add ability to set default queue priorities
->     per port
->   net: dsa: mv88e6xxx: add ability to set queue scheduling
->   dt-bindings: mv88e6xxx: add ability to set queue scheduling
->   net: dsa: mv88e6xxx: add egress rate limiting
->   dt-bindings: mv88e6xxx: add egress rate limiting
-> 
->  .../devicetree/bindings/net/dsa/marvell.txt   |  38 +++++
->  drivers/net/dsa/mv88e6xxx/chip.c              | 122 ++++++++++++---
->  drivers/net/dsa/mv88e6xxx/chip.h              |   5 +-
->  drivers/net/dsa/mv88e6xxx/port.c              | 140 +++++++++++++++++-
->  drivers/net/dsa/mv88e6xxx/port.h              |  24 ++-
->  include/dt-bindings/net/dsa-mv88e6xxx.h       |  22 +++
->  net/dsa/port.c                                |  10 ++
->  7 files changed, 327 insertions(+), 34 deletions(-)
->  create mode 100644 include/dt-bindings/net/dsa-mv88e6xxx.h
+Sure, I'll add a description to the next version.
 
-Feature series targeting netdev must be prefixed "PATCH net-next". As
-this approach was a PoC, sending it as "RFC net-next" would be even more
-appropriate.
+The magic is a random number used to identify bpf_binary_header in
+memory. The purpose of this patch is to limit the possible call
+targets for the function pointer and checking for the magic helps
+ensure we are jumping to a page that contains a jited function,
+instead of allowing calls to arbitrary targets.
 
+This is particularly useful when combined with the compiler-based
+Control-Flow Integrity (CFI) mitigation, which Google started shipping
+in Pixel kernels last year. The compiler injects checks to all
+indirect calls, but cannot obviously validate jumps to dynamically
+generated code.
 
-Thank you,
+> > +unsigned int bpf_call_func(const struct bpf_prog *prog, const void *ctx)
+> > +{
+> > +	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
+> > +
+> > +	if (!IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) && !prog->jited)
+> > +		return prog->bpf_func(ctx, prog->insnsi);
+> > +
+> > +	if (unlikely(hdr->magic != BPF_BINARY_HEADER_MAGIC ||
+> > +		     !arch_bpf_jit_check_func(prog))) {
+> > +		WARN(1, "attempt to jump to an invalid address");
+> > +		return 0;
+> > +	}
+> > +
+> > +	return prog->bpf_func(ctx, prog->insnsi);
+> > +}
 
-	Vivien
+> The above can be rewritten as
+> 	if (IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) || prog->jited ||
+> 	    hdr->magic != BPF_BINARY_HEADER_MAGIC ||
+> 	    !arch_bpf_jit_check_func(prog))) {
+> 		WARN(1, "attempt to jump to an invalid address");
+> 		return 0;
+> 	}
+
+That doesn't look quite equivalent, but yes, this can be rewritten as a
+single if statement like this:
+
+	if ((IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) ||
+	     prog->jited) &&
+	    (hdr->magic != BPF_BINARY_HEADER_MAGIC ||
+	     !arch_bpf_jit_check_func(prog)))
+
+I think splitting the interpreter and JIT paths would be more readable,
+but I can certainly change this if you prefer.
+
+> BPF_PROG_RUN() will be called during xdp fast path.
+> Have you measured how much slowdown the above change could
+> cost for the performance?
+
+I have not measured the overhead, but it shouldn't be significant. Is
+there a particular benchmark you'd like me to run?
+
+Sami
