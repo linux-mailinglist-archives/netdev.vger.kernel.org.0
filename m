@@ -2,110 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0202DAEE10
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 17:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3B4AEEA4
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 17:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392145AbfIJPDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 11:03:48 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34016 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729982AbfIJPDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 11:03:48 -0400
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8EC0F83F4C
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 15:03:47 +0000 (UTC)
-Received: by mail-wm1-f71.google.com with SMTP id f10so1468760wmh.8
-        for <netdev@vger.kernel.org>; Tue, 10 Sep 2019 08:03:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qCwewHaMmc38EVrNjRk76O0070069OuiqOT8Str/oAw=;
-        b=eh+AN8lsYdg9HSv60Izp0EoXJKg7it6p3GJoZgzVhL4MhYno3kwqW3sXcYFAQhjj6I
-         Hu0uXCkajtA23J8zebEnPz+kVl/Z4+/KIV84n3OPhfjOl1c/GsQdITiBqXTQnDRjggPa
-         2OZzTDV8Yc1jbEW7LaZ179jlR/NdsqY8Qio3Nkp2DQS9jRzeX4Lgpq3wbAi4NPHh9Q3N
-         8BA6t9PhgvW0KZ914zb6h/JMSS0altlUh2XWKbXvpB6eK2TB+sB4yihb/5J/jgFTnOZM
-         Vvmx6BJYDBoM0MxP3AuL+lNTVcQQgbyafb/lyvE783hIrtkCgZU8AKRRzqBN0Y5b4tDD
-         rYzw==
-X-Gm-Message-State: APjAAAWxP5U/Ur0WKh36zZhHJvOFgNrBTa47KCTDM4oHmwKLCuFG3CLD
-        tm+k2NFBu1DtHGCxdugomZyWy1qtlR8i6bC5QJvCe149XAQKNIJQq3T0u568rGoANELhA58Hjb5
-        ej6D7QoR9xpRdMkSu
-X-Received: by 2002:a5d:4a81:: with SMTP id o1mr14560415wrq.328.1568127826363;
-        Tue, 10 Sep 2019 08:03:46 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqympUHA32VsMnMK6Ca3MLUHnLmNFCdeNI1+1pDF2+GQLSLtbpAHr5Yp0GhGPVACHlubsFB70Q==
-X-Received: by 2002:a5d:4a81:: with SMTP id o1mr14560399wrq.328.1568127826192;
-        Tue, 10 Sep 2019 08:03:46 -0700 (PDT)
-Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
-        by smtp.gmail.com with ESMTPSA id a15sm3084792wmj.25.2019.09.10.08.03.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 08:03:45 -0700 (PDT)
-Date:   Tue, 10 Sep 2019 17:03:43 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, Julian Anastasov <ja@ssi.bg>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv6: Don't use dst gateway directly in
- ip6_confirm_neigh()
-Message-ID: <20190910150343.GC21550@linux.home>
-References: <938b711c35ce3fa2b6f057cc23919e897a1e5c2b.1568061608.git.sbrivio@redhat.com>
+        id S2393966AbfIJPib (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 11:38:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:26923 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730875AbfIJPia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 11:38:30 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-165-ivUePp4GPIuX29LloUIPJQ-1; Tue, 10 Sep 2019 16:38:28 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 10 Sep 2019 16:38:27 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 10 Sep 2019 16:38:27 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Arnd Bergmann' <arnd@arndb.de>,
+        Saeed Mahameed <saeedm@mellanox.com>
+CC:     "cai@lca.pw" <cai@lca.pw>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Feras Daoud <ferasda@mellanox.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Eran Ben Elisha" <eranbe@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Erez Shitrit <erezsh@mellanox.com>
+Subject: RE: [PATCH] net/mlx5: reduce stack usage in FW tracer
+Thread-Topic: [PATCH] net/mlx5: reduce stack usage in FW tracer
+Thread-Index: AQHVZ6/gotndlflYLEiLmwBbeCyLo6clCo3w
+Date:   Tue, 10 Sep 2019 15:38:27 +0000
+Message-ID: <d50f78334e64476bad033862035c734c@AcuMS.aculab.com>
+References: <20190906151123.1088455-1-arnd@arndb.de>
+ <383db08b6001503ac45c2e12ac514208dc5a4bba.camel@mellanox.com>
+ <CAK8P3a0_VhZ9hYmc6P3Qx+Z6WSHh3PVZ7JZh7Tr=R1CAKvqWmA@mail.gmail.com>
+ <5abccf6452a9d4efa2a1593c0af6d41703d4f16f.camel@mellanox.com>
+ <CAK8P3a3q4NqiU-OydMqU3J=gT-8eBmsiL5tPsyJb1PNgR+48hA@mail.gmail.com>
+In-Reply-To: <CAK8P3a3q4NqiU-OydMqU3J=gT-8eBmsiL5tPsyJb1PNgR+48hA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <938b711c35ce3fa2b6f057cc23919e897a1e5c2b.1568061608.git.sbrivio@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: ivUePp4GPIuX29LloUIPJQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 09, 2019 at 10:44:06PM +0200, Stefano Brivio wrote:
-> This is the equivalent of commit 2c6b55f45d53 ("ipv6: fix neighbour
-> resolution with raw socket") for ip6_confirm_neigh(): we can send a
-> packet with MSG_CONFIRM on a raw socket for a connected route, so the
-> gateway would be :: here, and we should pick the next hop using
-> rt6_nexthop() instead.
-> 
-> This was found by code review and, to the best of my knowledge, doesn't
-> actually fix a practical issue: the destination address from the packet
-> is not considered while confirming a neighbour, as ip6_confirm_neigh()
-> calls choose_neigh_daddr() without passing the packet, so there are no
-> similar issues as the one fixed by said commit.
-> 
-> A possible source of issues with the existing implementation might come
-> from the fact that, if we have a cached dst, we won't consider it,
-> while rt6_nexthop() takes care of that. I might just not be creative
-> enough to find a practical problem here: the only way to affect this
-> with cached routes is to have one coming from an ICMPv6 redirect, but
-> if the next hop is a directly connected host, there should be no
-> topology for which a redirect applies here, and tests with redirected
-> routes show no differences for MSG_CONFIRM (and MSG_PROBE) packets on
-> raw sockets destined to a directly connected host.
-> 
-> However, directly using the dst gateway here is not consistent anymore
-> with neighbour resolution, and, in general, as we want the next hop,
-> using rt6_nexthop() looks like the only sane way to fetch it.
-> 
-> Reported-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-> ---
->  net/ipv6/route.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 7a5d331cdefa..874641d4d2a1 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -227,7 +227,7 @@ static void ip6_confirm_neigh(const struct dst_entry *dst, const void *daddr)
->  	struct net_device *dev = dst->dev;
->  	struct rt6_info *rt = (struct rt6_info *)dst;
->  
-> -	daddr = choose_neigh_daddr(&rt->rt6i_gateway, NULL, daddr);
-> +	daddr = choose_neigh_daddr(rt6_nexthop(rt, &in6addr_any), NULL, daddr);
->  	if (!daddr)
->  		return;
->  	if (dev->flags & (IFF_NOARP | IFF_LOOPBACK))
-> 
-Acked-by: Guillaume Nault <gnault@redhat.com>
+RnJvbTogQXJuZCBCZXJnbWFubg0KPiBTZW50OiAxMCBTZXB0ZW1iZXIgMjAxOSAwOToxNQ0KLi4u
+DQo+ID4gSSBhbSBub3Qgc3VyZSBob3cgdGhpcyB3b3VsZCB3b3JrLCBzaW5jZSB0aGUgZm9ybWF0
+IHBhcmFtZXRlcnMgY2FuDQo+ID4gY2hhbmdlcyBkZXBlbmRpbmcgb24gdGhlIEZXIHN0cmluZyBh
+bmQgdGhlIHNwZWNpZmljIHRyYWNlcy4NCj4gDQo+IEFoLCBzbyB0aGUgZm9ybWF0IHN0cmluZyBj
+b21lcyBmcm9tIHRoZSBmaXJtd2FyZT8gSSBkaWRuJ3QgbG9vaw0KPiBhdCB0aGUgY29kZSBpbiBl
+bm91Z2ggZGV0YWlsIHRvIHVuZGVyc3RhbmQgd2h5IGl0J3MgZG9uZSBsaWtlIHRoaXMsDQo+IG9u
+bHkgZW5vdWdoIHRvIG5vdGljZSB0aGF0IGl0J3MgcmF0aGVyIHVudXN1YWwuDQoNCklmIHRoZSBm
+b3JtYXQgc3RyaW5nIGNvbWVzIGZyb20gdGhlIGZpcm13YXJlIHlvdSByZWFsbHkgc2hvdWxkbid0
+DQpwYXNzIGl0IHRvIGFueSBzdGFuZGFyZCBwcmludGYgZnVuY3Rpb24uDQpZb3UgbXVzdCBlbnN1
+cmUgdGhhdCBpdCBkb2Vzbid0IGNvbnRhaW4gYW55IGZvcm1hdCBlZmZlY3RvcnMNCnRoYXQgbWln
+aHQgZGVyZWZlcmVuY2UgcGFyYW1ldGVycy4NCihUaGUgY29kZSBtaWdodCB0cnkgdG8gZG8gdGhh
+dC4pDQoNCkdpdmVuIHRoYXQgJ3BvaW50ZXInIGZvcm1hdCBlZmZlY3RvcnMgY2FuJ3QgYmUgdXNl
+ZCwgdGhlIGZpcm13YXJlDQptdXN0IGFsc28gc3VwcGx5IHRoZSByZWxldmFudCBpbnRlZ2VyIG9u
+ZXM/DQpUaGlzIHNob3VsZCBtZWFuIHRoYXQgYWxsIHRoZSBwcm9jZXNzaW5nIGlzIGRlZmVycmFi
+bGUgdW50aWwgdGhlDQp0cmFjZSByZWNvcmQgaXMgcmVhZC4NCg0KJ25vaW5saW5lJyBqdXN0IHBh
+cGVycyBvdmVyIHRoZSBjcmFja3MuDQpFc3BlY2lhbGx5IHNpbmNlIHZhc3ByaW50ZigpIGlzIGxp
+a2VseSB0byB1c2UgYSBsb3Qgb2Ygc3RhY2suDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFk
+ZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywg
+TUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+
