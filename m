@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7B9AEB51
+	by mail.lfdr.de (Postfix) with ESMTP id 87EAAAEB52
 	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 15:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732035AbfIJNTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 09:19:20 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:37948 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731895AbfIJNTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 09:19:16 -0400
-Received: by mail-io1-f68.google.com with SMTP id k5so12093591iol.5;
-        Tue, 10 Sep 2019 06:19:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=849o91yGt5jrZZIi8LC13Ut3Cl2Y81Etzv/w6RPtCGk=;
-        b=ImGQIRy5R3E58ARwHYy3bxOVecENV/vSe4RImjtdCR0ryWMfS6ZzsmkETb5QTxV0Kc
-         kpD6QMj2HVdzmGVBiZcDXRcIQc/c7y9OjB9EBR3hKaCLq2uayXXiR+zqDYvdt63Eyn1j
-         2ODvnm152zwm9ieGJClpPGqc19id6xQcmpiIGMlpxB72GnILVmq19PsrSzH0W+hQ4BNG
-         b3EtpVc5r2uLCqEgYgLzT1v8BHpAovLRAxSpMlpzzry6Gt9Lxup8j2c7uLc/Wx9D8/Ok
-         DHkfJnI9DYUW4E39JS7yKzQxuONrRBB4s9wL+5fhpgjz4DgUhhTAn6QQxRAy5azMEQgh
-         qzhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=849o91yGt5jrZZIi8LC13Ut3Cl2Y81Etzv/w6RPtCGk=;
-        b=WgoUkOoDoVzJSgXGKlckuJhmzm1MzMvpEPexRvZcymZZydx5qcmApWe6+AyILFtXZV
-         DFClAIZvFMSJOO2y57KHBqEhHVYNuLE0Anir+4TVIrSVg/oerBb6IgvnUBGrkOsHMZ1h
-         pEz2x1VgqyD1TtI8OKv6TDHqifATfDoC3CqgfC79qLodJdv2tvafYhKGk8F1VP8BrZBw
-         laH0MxpHdDIN4XGZXDmVjjsQmySeTPAkY7/Ta3fGaGQFBDzA0ZFfn6pVLNXE3M+4YPWT
-         RisnKjCAIyw9QZt0aK+EehYzaWFLOZH9jsBQ2H8Onmq9hN81RtBZS/cDFcwYEP5ewdjL
-         g55Q==
-X-Gm-Message-State: APjAAAXF96ypo+3MZHLEy88MNhgiRi/ELiXpyvf3qbSkpZdNOo5JjrE5
-        hF3hPGrSSTaN89G2OG0vmYjL8FUO4w==
-X-Google-Smtp-Source: APXvYqxbeW4rhJKhkXroWYNTN5OxXBvOBf4ysg2Oh8hocFuWn+MqfXtn5mARzADizM/0QyFrtu7GLQ==
-X-Received: by 2002:a6b:ec18:: with SMTP id c24mr34124578ioh.72.1568121555004;
-        Tue, 10 Sep 2019 06:19:15 -0700 (PDT)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id f7sm13642740ioc.31.2019.09.10.06.19.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Sep 2019 06:19:14 -0700 (PDT)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marek Vasut <marex@denx.de>, linux-kernel@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next v2 3/3] net: dsa: microchip: remove NET_DSA_TAG_KSZ_COMMON
-Date:   Tue, 10 Sep 2019 08:18:36 -0500
-Message-Id: <20190910131836.114058-4-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190910131836.114058-1-george.mccollister@gmail.com>
-References: <20190910131836.114058-1-george.mccollister@gmail.com>
+        id S1732101AbfIJNT0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Sep 2019 09:19:26 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:23347 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725935AbfIJNTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 09:19:25 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-123-QuiXHtS5M4SMgtHxCJ9lwg-1; Tue, 10 Sep 2019 14:19:21 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 10 Sep 2019 14:19:21 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 10 Sep 2019 14:19:21 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Xin Long' <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>
+CC:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct
+ sctp_paddrthlds
+Thread-Topic: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct
+ sctp_paddrthlds
+Thread-Index: AQHVZuRCrtt5derbnkaX0GdcwfdxAKck5i9w
+Date:   Tue, 10 Sep 2019 13:19:21 +0000
+Message-ID: <9fc7ca1598e641cda3914840a4416aab@AcuMS.aculab.com>
+References: <cover.1568015756.git.lucien.xin@gmail.com>
+ <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
+In-Reply-To: <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: QuiXHtS5M4SMgtHxCJ9lwg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the superfluous NET_DSA_TAG_KSZ_COMMON and just use the existing
-NET_DSA_TAG_KSZ. Update the description to mention the three switch
-families it supports. No functional change.
+From: Xin Long
+> Sent: 09 September 2019 08:57
+> Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
+> Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
+> added to allow a user to change ps_retrans per sock/asoc/transport, as
+> other 2 paddrthlds: pf_retrans, pathmaxrxt.
+> 
+> Note that ps_retrans is not allowed to be greater than pf_retrans.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/uapi/linux/sctp.h |  1 +
+>  net/sctp/socket.c         | 10 ++++++++++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+> index a15cc28..dfd81e1 100644
+> --- a/include/uapi/linux/sctp.h
+> +++ b/include/uapi/linux/sctp.h
+> @@ -1069,6 +1069,7 @@ struct sctp_paddrthlds {
+>  	struct sockaddr_storage spt_address;
+>  	__u16 spt_pathmaxrxt;
+>  	__u16 spt_pathpfthld;
+> +	__u16 spt_pathcpthld;
+>  };
+> 
+>  /*
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 5e2098b..5b9774d 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -3954,6 +3954,9 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
-Reviewed-by: Marek Vasut <marex@denx.de>
----
+This code does:
+	if (optlen < sizeof(struct sctp_paddrthlds))
+		return -EINVAL;
 
-Changes since v1:
-	- Added Reviewed-by.
+So adding an extra field breaks existing application binaries
+that use this option.
 
- net/dsa/Kconfig  | 9 ++-------
- net/dsa/Makefile | 2 +-
- 2 files changed, 3 insertions(+), 8 deletions(-)
+I've not checked the other patches or similar fubar.
 
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 2f69d4b53d46..29e2bd5cc5af 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -73,16 +73,11 @@ config NET_DSA_TAG_MTK
- 	  Say Y or M if you want to enable support for tagging frames for
- 	  Mediatek switches.
- 
--config NET_DSA_TAG_KSZ_COMMON
--	tristate
--	default n
+	David
+
 -
- config NET_DSA_TAG_KSZ
--	tristate "Tag driver for Microchip 9893 family of switches"
--	select NET_DSA_TAG_KSZ_COMMON
-+	tristate "Tag driver for Microchip 8795/9477/9893 families of switches"
- 	help
- 	  Say Y if you want to enable support for tagging frames for the
--	  Microchip 9893 family of switches.
-+	  Microchip 8795/9477/9893 families of switches.
- 
- config NET_DSA_TAG_QCA
- 	tristate "Tag driver for Qualcomm Atheros QCA8K switches"
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index c342f54715ba..2c6d286f0511 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -9,7 +9,7 @@ obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
- obj-$(CONFIG_NET_DSA_TAG_DSA) += tag_dsa.o
- obj-$(CONFIG_NET_DSA_TAG_EDSA) += tag_edsa.o
- obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
--obj-$(CONFIG_NET_DSA_TAG_KSZ_COMMON) += tag_ksz.o
-+obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
- obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
- obj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
--- 
-2.11.0
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
