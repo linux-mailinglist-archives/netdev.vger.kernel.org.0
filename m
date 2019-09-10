@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C05AE6E5
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9946AAE6A4
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731442AbfIJJ1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 05:27:39 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40429 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbfIJJ1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Sep 2019 05:27:39 -0400
-Received: by mail-pl1-f195.google.com with SMTP id y10so8283209pll.7;
-        Tue, 10 Sep 2019 02:27:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=3I/RwDNyR0c5I8Mzz7CZb34k+5TRodcyDN5J9yOyCXE=;
-        b=SiDG9nvjNzi0fPg0DDKoqEXUP2gPz23dm1mJWP5Mz/FIdMA1Xpwo+P/ZbwXureAaM1
-         U0QhNAcKvliifokLQsrURc30rUGlQ6TjGuGc5cmgd0j0+mRGEmRzXE5O1A0SV5BhnzBU
-         wvPpQyshUktQHKwZUlTh5NLAVh9mVapbBVdr9rr2KZC2BPs4amn+vY16W6q2996pttxQ
-         4LMMNNyjfL0CmD708OZX9aZYtwfQvm63inrXpLCqfDf/xEHaudP3C0164n4lAt8aoe5k
-         mksh9fDqXIlBcGzT2gcHM/p/0sIq6+Nvv3V/myjwjDSkX7at5CcBXk28hJFBvf3JIyEb
-         bw0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=3I/RwDNyR0c5I8Mzz7CZb34k+5TRodcyDN5J9yOyCXE=;
-        b=r2roY8ljo/X9T8x6YtdMWyWXRKd8icjdrjigoWj+7/X3s+qo20J0etPBhTc/jTCq/o
-         cosQe85lZJYw8y4sRUYp+awqmU/uYBR/FT+fYNUl6deHVLsNAVpuxgFc5pVUMgfulClA
-         tOLIcI+sAvNLwtzz9ZfZ4cUNRww/QNd9Z889Yeb5h17CY84PdB+lthH37NzeBg32zqcS
-         WNL7z+EGIoKyBAb+XxSkYzHESQkImcKoqlZJCZ/0lJlu74ku4usx+F1IdV7E89kXJFJy
-         LJ33bWiuFjCHL97tQaXzpTK5wNKXwrssLX0GMlQ2jfYap7j+wTcwbchnsTDOUUtt3oI2
-         N//Q==
-X-Gm-Message-State: APjAAAWqOIQdKbkOcJ3PDrNCswh9HJ5rpOlZ/Q94LFjNiq1rE94wxzXl
-        /oDapYOqd87PT4QivHhxNys=
-X-Google-Smtp-Source: APXvYqwzF/G7K8Q482wfDKwY0BEHlU4ukFMULym2qfUCvsJjMbmPGafbQntqaDb8HAKjNh3waQTEsw==
-X-Received: by 2002:a17:902:76c2:: with SMTP id j2mr30004606plt.305.1568107657101;
-        Tue, 10 Sep 2019 02:27:37 -0700 (PDT)
-Received: from LGEARND20B15 ([27.122.242.75])
-        by smtp.gmail.com with ESMTPSA id y15sm21142300pfp.111.2019.09.10.02.27.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Sep 2019 02:27:36 -0700 (PDT)
-Date:   Tue, 10 Sep 2019 18:27:31 +0900
-From:   Austin Kim <austindh.kim@gmail.com>
-To:     saeedm@mellanox.com, leon@kernel.org
-Cc:     davem@davemloft.net, valex@mellanox.com, erezsh@mellanox.com,
-        markb@mellanox.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        austindh.kim@gmail.com
-Subject: [PATCH] net/mlx5: Declare 'rt' as corresponding enum type
-Message-ID: <20190910092731.GA173476@LGEARND20B15>
+        id S2389548AbfIJJTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 05:19:52 -0400
+Received: from smtp2.goneo.de ([85.220.129.33]:33154 "EHLO smtp2.goneo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729360AbfIJJTv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 05:19:51 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.goneo.de (Postfix) with ESMTP id 66E5823F688;
+        Tue, 10 Sep 2019 11:19:49 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -3.111
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.111 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.211, BAYES_00=-1.9] autolearn=ham
+Received: from smtp2.goneo.de ([127.0.0.1])
+        by localhost (smtp2.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mHjNSwEED_oc; Tue, 10 Sep 2019 11:19:48 +0200 (CEST)
+Received: from lem-wkst-02.lemonage.de. (hq.lemonage.de [87.138.178.34])
+        by smtp2.goneo.de (Postfix) with ESMTPA id BE12323F063;
+        Tue, 10 Sep 2019 11:19:47 +0200 (CEST)
+From:   Lars Poeschel <poeschel@lemonage.de>
+To:     Kate Stewart <kstewart@linuxfoundation.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kees Cook <keescook@chromium.org>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lars Poeschel <poeschel@lemonage.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Steve Winslow <swinslow@gmail.com>,
+        netdev@vger.kernel.org (open list:NFC SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     Johan Hovold <johan@kernel.org>
+Subject: [PATCH v7 3/7] nfc: pn533: Add dev_up/dev_down hooks to phy_ops
+Date:   Tue, 10 Sep 2019 11:33:09 +0200
+Message-Id: <20190910093312.1981-1-poeschel@lemonage.de>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building kernel with clang, we can observe below warning message:
+This adds hooks for dev_up and dev_down to the phy_ops. They are
+optional.
+The idea is to inform the phy driver when the nfc chip is really going
+to be used. When it is not used, the phy driver can suspend it's
+interface to the nfc chip to save some power. The nfc chip is considered
+not in use before dev_up and after dev_down.
 
-drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1080:9:
-warning: implicit conversion from enumeration type 'enum mlx5_reformat_ctx_type'
-to different enumeration type 'enum mlx5dr_action_type' [-   Wenum-conversion]
-	rt = MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL;
-       			  ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1082:9:
-warning: implicit conversion from enumeration type 'enum mlx5_reformat_ctx_type'
-to different enumeration type 'enum mlx5dr_action_type' [-   Wenum-conversion]
-	rt = MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL;
-        ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1084:51:
-warning: implicit conversion from enumeration type 'enum mlx5dr_action_type'
-to different enumeration type 'enum mlx5_reformat_ctx_type' [-  Wenum-conversion]
-	ret = mlx5dr_cmd_create_reformat_ctx(dmn->mdev, rt, data_sz, data,
-         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~            ^~
-
-Declare 'rt' as corresponding enum mlx5_reformat_ctx_type type.
-
-Signed-off-by: Austin Kim <austindh.kim@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>
+Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v6:
+- Rebased the patch series on v5.3-rc5
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index a02f87f..7d81a77 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -1074,7 +1074,7 @@ dr_action_create_reformat_action(struct mlx5dr_domain *dmn,
- 	case DR_ACTION_TYP_L2_TO_TNL_L2:
- 	case DR_ACTION_TYP_L2_TO_TNL_L3:
- 	{
--		enum mlx5dr_action_type rt;
-+		enum mlx5_reformat_ctx_type rt;
+Changes in v5:
+- (dev->phy_ops->dev_up) instead (dev->phy_ops)
+
+Changes in v4:
+- This patch is new in v4
+
+ drivers/nfc/pn533/pn533.c | 12 +++++++++++-
+ drivers/nfc/pn533/pn533.h |  9 +++++++++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+index a172a32aa9d9..64836c727aee 100644
+--- a/drivers/nfc/pn533/pn533.c
++++ b/drivers/nfc/pn533/pn533.c
+@@ -2458,6 +2458,9 @@ static int pn533_dev_up(struct nfc_dev *nfc_dev)
+ {
+ 	struct pn533 *dev = nfc_get_drvdata(nfc_dev);
  
- 		if (action->action_type == DR_ACTION_TYP_L2_TO_TNL_L2)
- 			rt = MLX5_REFORMAT_TYPE_L2_TO_L2_TUNNEL;
++	if (dev->phy_ops->dev_up)
++		dev->phy_ops->dev_up(dev);
++
+ 	if (dev->device_type == PN533_DEVICE_PN532) {
+ 		int rc = pn532_sam_configuration(nfc_dev);
+ 
+@@ -2470,7 +2473,14 @@ static int pn533_dev_up(struct nfc_dev *nfc_dev)
+ 
+ static int pn533_dev_down(struct nfc_dev *nfc_dev)
+ {
+-	return pn533_rf_field(nfc_dev, 0);
++	struct pn533 *dev = nfc_get_drvdata(nfc_dev);
++	int ret;
++
++	ret = pn533_rf_field(nfc_dev, 0);
++	if (dev->phy_ops->dev_down && !ret)
++		dev->phy_ops->dev_down(dev);
++
++	return ret;
+ }
+ 
+ static struct nfc_ops pn533_nfc_ops = {
+diff --git a/drivers/nfc/pn533/pn533.h b/drivers/nfc/pn533/pn533.h
+index 8bf9d6ece0f5..570ee0a3e832 100644
+--- a/drivers/nfc/pn533/pn533.h
++++ b/drivers/nfc/pn533/pn533.h
+@@ -207,6 +207,15 @@ struct pn533_phy_ops {
+ 			  struct sk_buff *out);
+ 	int (*send_ack)(struct pn533 *dev, gfp_t flags);
+ 	void (*abort_cmd)(struct pn533 *priv, gfp_t flags);
++	/*
++	 * dev_up and dev_down are optional.
++	 * They are used to inform the phy layer that the nfc chip
++	 * is going to be really used very soon. The phy layer can then
++	 * bring up it's interface to the chip and have it suspended for power
++	 * saving reasons otherwise.
++	 */
++	void (*dev_up)(struct pn533 *priv);
++	void (*dev_down)(struct pn533 *priv);
+ };
+ 
+ 
 -- 
-2.6.2
+2.23.0
 
