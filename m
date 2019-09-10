@@ -2,71 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F10C9AE6B9
-	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5927DAE6FB
+	for <lists+netdev@lfdr.de>; Tue, 10 Sep 2019 11:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389682AbfIJJVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 05:21:10 -0400
-Received: from smtp1.goneo.de ([85.220.129.30]:55654 "EHLO smtp1.goneo.de"
+        id S2387928AbfIJJac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Sep 2019 05:30:32 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40776 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727254AbfIJJVJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Sep 2019 05:21:09 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by smtp1.goneo.de (Postfix) with ESMTP id D640523FBA0;
-        Tue, 10 Sep 2019 11:21:06 +0200 (CEST)
-X-Virus-Scanned: by goneo
-X-Spam-Flag: NO
-X-Spam-Score: -3.083
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.083 tagged_above=-999 tests=[ALL_TRUSTED=-1,
-        AWL=-0.183, BAYES_00=-1.9] autolearn=ham
-Received: from smtp1.goneo.de ([127.0.0.1])
-        by localhost (smtp1.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9xf1MQ0D5aTr; Tue, 10 Sep 2019 11:21:05 +0200 (CEST)
-Received: from lem-wkst-02.lemonage.de. (hq.lemonage.de [87.138.178.34])
-        by smtp1.goneo.de (Postfix) with ESMTPA id C639E23F2C2;
-        Tue, 10 Sep 2019 11:21:04 +0200 (CEST)
-From:   Lars Poeschel <poeschel@lemonage.de>
-To:     "GitAuthor: Lars Poeschel" <poeschel@lemonage.de>,
-        netdev@vger.kernel.org (open list:NFC SUBSYSTEM),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     Johan Hovold <johan@kernel.org>
-Subject: [PATCH v7 7/7] nfc: pn532_uart: Make use of pn532 autopoll
-Date:   Tue, 10 Sep 2019 11:34:27 +0200
-Message-Id: <20190910093431.2268-1-poeschel@lemonage.de>
-X-Mailer: git-send-email 2.23.0
+        id S1726060AbfIJJab (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 05:30:31 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 28F8F3090FF4;
+        Tue, 10 Sep 2019 09:30:31 +0000 (UTC)
+Received: from dhcp-12-139.nay.redhat.com (dhcp-12-139.nay.redhat.com [10.66.12.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D5BB41001B01;
+        Tue, 10 Sep 2019 09:30:25 +0000 (UTC)
+Date:   Tue, 10 Sep 2019 17:30:22 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     Greg KH <greg@kroah.com>
+Cc:     CKI Project <cki-project@redhat.com>,
+        Linux Stable maillist <stable@vger.kernel.org>,
+        netdev@vger.kernel.org, Jan Stancek <jstancek@redhat.com>,
+        Xiumei Mu <xmu@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org, Sasha Levin <sashal@kernel.org>
+Subject: Re: =?utf-8?B?4p2MIEZBSUw=?= =?utf-8?Q?=3A?= Stable queue: queue-5.2
+Message-ID: <20190910093021.GK22496@dhcp-12-139.nay.redhat.com>
+References: <cki.77A5953448.UY7ROQ6BKT@redhat.com>
+ <20190910081956.GG22496@dhcp-12-139.nay.redhat.com>
+ <20190910085810.GA3593@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190910085810.GA3593@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 10 Sep 2019 09:30:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This switches the pn532 UART phy driver from manually polling to the new
-autopoll mechanism.
+On Tue, Sep 10, 2019 at 09:58:10AM +0100, Greg KH wrote:
+> On Tue, Sep 10, 2019 at 04:19:56PM +0800, Hangbin Liu wrote:
+> > On Wed, Aug 28, 2019 at 08:36:14AM -0400, CKI Project wrote:
+> > > 
+> > > Hello,
+> > > 
+> > > We ran automated tests on a patchset that was proposed for merging into this
+> > > kernel tree. The patches were applied to:
+> > > 
+> > >        Kernel repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+> > >             Commit: f7d5b3dc4792 - Linux 5.2.10
+> > > 
+> > > The results of these automated tests are provided below.
+> > > 
+> > >     Overall result: FAILED (see details below)
+> > >              Merge: OK
+> > >            Compile: OK
+> > >              Tests: FAILED
+> > > 
+> > > All kernel binaries, config files, and logs are available for download here:
+> > > 
+> > >   https://artifacts.cki-project.org/pipelines/128519
+> > > 
+> > > 
+> > > 
+> > > One or more kernel tests failed:
+> > > 
+> > >   x86_64:
+> > >     ❌ Networking socket: fuzz
+> > 
+> > Sorry, maybe the info is a little late, I just found the call traces for this
+> > failure.
+> 
+> And this is no longer failing?
 
-Cc: Johan Hovold <johan@kernel.org>
-Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
----
-Changes in v6:
-- Rebased the patch series on v5.3-rc5
+I haven't seen this issue later. But you know, this was triggered by a fuzz test,
+not sure if the bad code still exists.
+> 
+> What is the "fuzz" test?
 
- drivers/nfc/pn533/uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It's just a socket test that create all kinds of domains/types/protocols and do
+some {set,get}sockopt for TCP/UDP/SCTP
+https://github.com/CKI-project/tests-beaker/blob/master/networking/socket/fuzz/socket.c#L155
 
-diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
-index cce8f29eda8b..deb553017d82 100644
---- a/drivers/nfc/pn533/uart.c
-+++ b/drivers/nfc/pn533/uart.c
-@@ -262,7 +262,7 @@ static int pn532_uart_probe(struct serdev_device *serdev)
- 	serdev_device_set_flow_control(serdev, false);
- 	pn532->send_wakeup = PN532_SEND_WAKEUP;
- 	timer_setup(&pn532->cmd_timeout, pn532_cmd_timeout, 0);
--	priv = pn53x_common_init(PN533_DEVICE_PN532,
-+	priv = pn53x_common_init(PN533_DEVICE_PN532_AUTOPOLL,
- 				     PN533_PROTO_REQ_ACK_RESP,
- 				     pn532, &uart_phy_ops, NULL,
- 				     &pn532->serdev->dev);
--- 
-2.23.0
+Xiumei Mu also forwarded me a mail. It looks Sasha has fixed something.
+But I don't know the details.
 
+----- Forwarded Message -----
+> From: "Sasha Levin" <sashal@kernel.org>
+> To: "Greg KH" <greg@kroah.com>
+> Cc: "Major Hayden" <major@mhtx.net>, "CKI Project" <cki-project@redhat.com>, "Linux Stable maillist"
+> <stable@vger.kernel.org>, "Yi Zhang" <yi.zhang@redhat.com>, "Xiumei Mu" <xmu@redhat.com>, "Hangbin Liu"
+> <haliu@redhat.com>, "Ying Xu" <yinxu@redhat.com>
+> Sent: Wednesday, August 28, 2019 2:25:36 AM
+> Subject: Re: ❌ FAIL: Test report for kernel 5.2.11-rc1-9f63171.cki (stable)
+>
+> On Tue, Aug 27, 2019 at 07:05:18PM +0200, Greg KH wrote:
+> >On Tue, Aug 27, 2019 at 09:35:30AM -0500, Major Hayden wrote:
+> >> On 8/27/19 7:31 AM, CKI Project wrote:
+> >> >   x86_64:
+> >> >       Host 2:
+> >> >          ❌ Networking socket: fuzz [9]
+> >> >          ❌ Networking sctp-auth: sockopts test [10]
+> >>
+> >> It looks like there was an oops when these tests ran on 5.2.11-rc1 and the
+> >> last set of patches in stable-queue:
+> >
+> >Can you bisect?
+>
+> I think I've fixed it, let's see what happens next run.
+>
+> --
+> Thanks,
+> Sasha
