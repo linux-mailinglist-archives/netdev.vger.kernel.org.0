@@ -2,103 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8932DAFB09
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 13:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79884AFB16
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 13:08:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727562AbfIKLCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 07:02:20 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:38382 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbfIKLCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 07:02:20 -0400
-Received: by mail-lj1-f194.google.com with SMTP id y23so19211468ljn.5
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 04:02:18 -0700 (PDT)
+        id S1727576AbfIKLIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 07:08:46 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35745 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726735AbfIKLIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 07:08:46 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d26so20433987qkk.2
+        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 04:08:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=UnTxdulsUUoW4MpbjOz0YKEvbNh2+pBrrEt0pc1iTEY=;
-        b=Ob2WcKnDVzkZwjpLgbluTx3iqYajdJ2DODeTyESW1TZpIwQOdUyjdsE56rYtwFwt2o
-         vBHbj91NUsX2nOIrtjuQFtM5PvLBFXFOuX1qow3GG0qSqk48qu90ef+ZdRUE0SEODX+j
-         4A5l8K0SW7YGwUIBaZ2T3+eF8n20cTVGmnJvXrWCez7G8/aw/Q4JeC2DD1qck35C0wvV
-         sG/9ovLmpbqikwoeV9Bp6YBNBeZLVWS1Ol7sSgShU808PXkCBpas1n+Rq25ehBoz58Gq
-         TYBRJNVkl9PPBhK1CBlnXOFsyw+qu08HMpMM/J8a9R27bRvxwAQ9yttZQ6YgmKsM0HG+
-         SxOA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=q4c4lKRlk2OQV8SSUUIL1vTg4Ar7L9OdpgREaMynTUY=;
+        b=bwVnj6mMqwZ0Gi4L8ncoXRMLOl5uPVnr6LGBPCwz+M5dexVnEFzcxkluDnjyCTcN3a
+         13vEsdgf2uYd8s227AKzMXdcWIQap+Av86kVqR5K6LUbM4AKOmUIXKkOlNDFqjjfNJhm
+         0t21hPa92XhFaiQqx+W6/HGZTJeXYErKjb3YvuIpLDoRJllitJKCtcPovnS8BfeAAsaa
+         CPLGcIk/Oa314qRvd12ZtiaZUHLud1TdDSzNsnqoWCFOpqpfqSslY59gEsS0opKgMTKh
+         PO9JLgy+4HzMNOLiMe4ns7wxvqa/fmZQUogfzN7pqRLzT17iSPUqhybpAwN4D1dqxUWt
+         0cLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UnTxdulsUUoW4MpbjOz0YKEvbNh2+pBrrEt0pc1iTEY=;
-        b=fMcs99N/rPw/kVxd9frcYaQZFWHRkX2qMEEYk0FN0VIlW+pSaVRgq19tUJjlGkZqER
-         aB4C2pMcW8K7QObfU1eL/8PFBrJrWcK5HTzs5ZgqQqo3XtoTbtL4HV374/HmTd4EKZ43
-         R7lQMky4OzVENhM0Sl9632U4vTmydUScRHbtvsfyRSMhbVj8DOzqE7F6WjefQk5xSqNV
-         vzTIUcEAh2dBbe10WCY0cW7c111HokOW3IdXNnqFtFFT/H0KKFu4xKGI019DvTrUc3t2
-         NLsTm3899d/fRaeSpPMnkczrxXa7lyGDHpjHTJgnRoCFD/tkREsnUwt0LE67vSedbNke
-         6BAQ==
-X-Gm-Message-State: APjAAAVIMeZCSNVCfzWcTMBcAoEK0E0zNR4DGcvvsWaiHusKKsdn+guL
-        JCNEDbsFHWfhk/Vw6Juq5yQkjg==
-X-Google-Smtp-Source: APXvYqzrabH5jqIXFRRKoZkb0A3Gq2y2775Mog1g0hbWCWbCyy1Z3PbubQS3H6F+3FkRG2x9faJgfQ==
-X-Received: by 2002:a2e:a303:: with SMTP id l3mr22113052lje.124.1568199738009;
-        Wed, 11 Sep 2019 04:02:18 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:8e6:86de:79c0:860e:c175:7d39? ([2a00:1fa0:8e6:86de:79c0:860e:c175:7d39])
-        by smtp.gmail.com with ESMTPSA id b9sm4570882ljd.52.2019.09.11.04.02.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=q4c4lKRlk2OQV8SSUUIL1vTg4Ar7L9OdpgREaMynTUY=;
+        b=FjEHEiVsJMo2TFFNAYrHp0/hXj22Vib0S3hVrdUizfZptmzscblarnXK/vNjfxKl8l
+         iNyEZxf1CttLdB4WQzHr70Y17RUT8mCGGNRQFldK3JkNOA7qMCyYZDxGv8aF3U9G8rxF
+         M3IU6WKoVjX5uP0s63Kty7BNtxFTu99A18kJA9rRImPGsuIlN8uwGulfuIvY2nTIupRn
+         H3/qbHfATEXqvUjTYwPx+GzrZ9eazucD6px1gIps1VFzdhECO41gamBWc4EqQJHGeaQE
+         QuELfP6xqufYoMdxAi7u/l03GXj6md61+LcXvbyKQnTFNTVzz12lVDWxFqTqQkl+wVar
+         E0Gw==
+X-Gm-Message-State: APjAAAXNoq3d8pIba7Vka1zZmWY55G/ZNQX9iFuPm3wBZrpfu6LSRmjm
+        HvSLVJtLIkiqJNsOyr3lvwi7i9CxtJrG7g==
+X-Google-Smtp-Source: APXvYqy4v+VIlgeTAAgOO45X408I3ix+GloMwF6HgA6Xv89qPxjl6j+2KWZYD5hkYidWTcwr/cNoPw==
+X-Received: by 2002:ae9:ef4c:: with SMTP id d73mr33751950qkg.57.1568200125545;
+        Wed, 11 Sep 2019 04:08:45 -0700 (PDT)
+Received: from penelope.pa.netronome.com ([148.69.85.38])
+        by smtp.gmail.com with ESMTPSA id a190sm10232501qkf.118.2019.09.11.04.08.43
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Sep 2019 04:02:17 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 01/11] samples: bpf: makefile: fix HDR_PROBE
- "echo"
-To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <20190910103830.20794-1-ivan.khoronzhuk@linaro.org>
- <20190910103830.20794-2-ivan.khoronzhuk@linaro.org>
- <55803f7e-a971-d71a-fcc2-76ae1cf813bf@cogentembedded.com>
- <20190910145359.GD3053@khorivan>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <4251fe86-ccc7-f1ce-e954-2d488d2a95a9@cogentembedded.com>
-Date:   Wed, 11 Sep 2019 14:02:11 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20190910145359.GD3053@khorivan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Wed, 11 Sep 2019 04:08:44 -0700 (PDT)
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net-next 0/2] devlink: add unknown 'fw_load_policy' value
+Date:   Wed, 11 Sep 2019 12:08:31 +0100
+Message-Id: <20190911110833.9005-1-simon.horman@netronome.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.09.2019 17:54, Ivan Khoronzhuk wrote:
+Dirk says:
 
->> Hello!
->>
->> On 10.09.2019 13:38, Ivan Khoronzhuk wrote:
->>
->>> echo should be replaced on echo -e to handle \n correctly, but instead,
->>
->>  s/on/with/?
-> s/echo/printf/ instead of s/echo/echo -e/
+Recently we added an unknown value for the 'reset_dev_on_drv_probe' devlink
+parameter. Extend the 'fw_load_policy' parameter in the same way.
 
-    I only pointed that 'on' is incorrect there. You replace something /with/ 
-something other...
+The only driver that uses this right now is the nfp driver.
 
-> 
-> printf looks better.
-> 
->>
->>> replace it on printf as some systems can't handle echo -e.
->>
->>   Likewise?
+Dirk van der Merwe (2):
+  devlink: add unknown 'fw_load_policy' value
+  nfp: devlink: set unknown fw_load_policy
 
-    Same grammatical mistake.
+ drivers/net/ethernet/netronome/nfp/devlink_param.c | 3 ++-
+ include/uapi/linux/devlink.h                       | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-> I can guess its Mac vs Linux, but it does mean nothing if it's defined as
-> implementation dependent, can be any.
- >
->>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> [...]
+-- 
+2.11.0
 
-MBR, Sergei
