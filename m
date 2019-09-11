@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 041BDAF741
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 09:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 774AEAF744
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 09:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfIKHw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 03:52:28 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38595 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727167AbfIKHw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 03:52:26 -0400
-Received: by mail-pf1-f196.google.com with SMTP id h195so13156976pfe.5;
-        Wed, 11 Sep 2019 00:52:25 -0700 (PDT)
+        id S1727378AbfIKHwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 03:52:54 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37247 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727137AbfIKHw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 03:52:28 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y5so10402198pfo.4;
+        Wed, 11 Sep 2019 00:52:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=h88MG2l81eiTdjzgkHJX15BXFcOh2ckomfV8YTYTFjU=;
-        b=kMBQ3dMrsESr7TwZqim8jjaa2hJp3u+maVECjThf5KhPmfb7HZ0562mIg/dkSgsVxB
-         3zrz+6cT+bL8lNKexFDcv2CaCY0wdX3vkNNsRx0n4ZA5wy1kbIQA4fGgOB9LoYC2qePn
-         7WAX7Bypv/lPCEDSe1GjQUDCz8hgB6NeWoK7+SUS6c9rC/QgmVqb6uVbTZ9ot0DNS8xB
-         3K71OrksDrXb/BQLz72jnm8oD17ZgqzsD7lnxAl1rEBPMG4EwWyidqWv2IpquIsoDpUK
-         gdc6qbMTi7Ea3Qx3M2opHAnaOBUYjZcnVwdj93ugzTXBHL3J9TBb3GyCzr9YdyNFI/2A
-         TOTw==
+        bh=yydq7IrTbJ5Mn0GrNsXPbRYtxDVN0KgTjTrtKFntf60=;
+        b=Ltqu+TEU7FSI/hPzl0RFyfurKjjUX7afeGm4MW6ahotv5YVbss5YxfaWejIRWegIKu
+         KWWeLuiI+Gen0ZNJtVVneZyvpHIfHe3odmMl07oGmzQ5RHaJNPY39Cs2mUziex+prmCo
+         1Wr/haK3bk62QfEzx7Oxr6yx3qr7auEUzMcd2Rdh3HvNpNJy/uoCExLvO8h9Xy5ZKywv
+         XI8K/D8WZoGdC5x+1/NXmOsDuZH3FNsNRpvbNsbxC8D3+moGkSXCr6ux96kwxfg23fPz
+         SD6uUUu9lU6Q4lkiDDF6X3ZCgRlskWBypIwgRR+5ab3E2KygnCbpTuUDKkHfjCez+s8R
+         9whw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h88MG2l81eiTdjzgkHJX15BXFcOh2ckomfV8YTYTFjU=;
-        b=imN6+G68ryW8N/vCInbN/6PJQEpzSnZ7axeu46/Wzb4/cELt6P+iMX5WkfAO9nhl1C
-         Qwn7ykTGLrOJ6BMiG8wF8XDuJ90hh6F5a9dfm7w0a6nPJsd1Wurk05tMxW8SYVahClnB
-         mTl1JJ87jAvubd4O6P2CXKc/1nAhlfRzphcysJE1bygH5alcas5qTGnCONRyEuLtaWAy
-         twM2hAvpA5Q/tfXWXJFnYXFpfsTQkQnUislEKRd35YgoxlCBnhbXc4FqPvpmE2TD0wT/
-         X0vUYzdsblEKkBEw7ub44lEO3Mp3B7UkFqCiQ1R/RvLJ/SIc71jfjEOoNTicKzbyh4jo
-         6ZVg==
-X-Gm-Message-State: APjAAAV38PXueuqMZoGSCTff40aRfe5etwaP0w626qeU07ckNLB9xD0d
-        YUj7RJs6HAg0p1jAXJUuvA0=
-X-Google-Smtp-Source: APXvYqwONOjWAlEXKobnYjYWQs5FrHnxNtmzqbN8TPKlC8jUIXa+3WVHFQ4DniPtIjcy4gPeDdwkIg==
-X-Received: by 2002:a17:90a:b63:: with SMTP id 90mr3979456pjq.96.1568188345092;
-        Wed, 11 Sep 2019 00:52:25 -0700 (PDT)
+        bh=yydq7IrTbJ5Mn0GrNsXPbRYtxDVN0KgTjTrtKFntf60=;
+        b=rzSF5/AUlEiB1K+I+ajDwWzOFg52HKRlb/j0U+iJpnxQyuLEfq+InTTNcFwpUjMub5
+         pAzwr9B6eTI7ESHXWTIaEUDWOnoKbRQ+lhAjiYF+RkW33UFC2Al+SAJIlbrXaGbKFz8W
+         GzxtKwW/nWk4TV7n75R3BCTwQlJKNk+3mF6u8hSMSrmuv9U3PapL1R5f3BsYLzIZP4B7
+         6iXfmC8P/WoSpF0BDs/8/QTOb1+tg4ym363OZhblEB0H4I/oN46RqvzsAy0kNL11Ehhc
+         vAPNXKIm/Kf+oirm8S9FPd5rTkXYX08BYA3YHUt0JjIiY13EPLoZ7ObzR8vVSs80Vi1b
+         tbWg==
+X-Gm-Message-State: APjAAAWzFdkdHpfCFyQXCwrzWMVe76LBGJQeBYCOGlTRPFwe+14tm7G3
+        0lWzhwpuSlie9MelT1cyUqA=
+X-Google-Smtp-Source: APXvYqwg8K8Fw8ARsm6u5ykMqv/AVVwSEyOJ3Pa+I0iHWUcUVNmu1qHGqcn83BJVPOwR5bPFitOqNw==
+X-Received: by 2002:a65:438a:: with SMTP id m10mr1087350pgp.43.1568188346234;
+        Wed, 11 Sep 2019 00:52:26 -0700 (PDT)
 Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id u2sm8582445pgp.66.2019.09.11.00.52.23
+        by smtp.gmail.com with ESMTPSA id u2sm8582445pgp.66.2019.09.11.00.52.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2019 00:52:23 -0700 (PDT)
+        Wed, 11 Sep 2019 00:52:25 -0700 (PDT)
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -52,11 +52,10 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
-Subject: [PATCH 04/11] net: phylink: switch to using fwnode_gpiod_get_index()
-Date:   Wed, 11 Sep 2019 00:52:08 -0700
-Message-Id: <20190911075215.78047-5-dmitry.torokhov@gmail.com>
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH 05/11] net: mdio: switch to using fwnode_gpiod_get_index()
+Date:   Wed, 11 Sep 2019 00:52:09 -0700
+Message-Id: <20190911075215.78047-6-dmitry.torokhov@gmail.com>
 X-Mailer: git-send-email 2.23.0.162.g0b9fbb3734-goog
 In-Reply-To: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
 References: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
@@ -74,24 +73,24 @@ works with arbitrary firmware node.
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
 
- drivers/net/phy/phylink.c | 4 ++--
+ drivers/net/phy/mdio_bus.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index a45c5de96ab1..14b608991445 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -168,8 +168,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
- 			pl->link_config.pause |= MLO_PAUSE_ASYM;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index ce940871331e..9ca51d678123 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -46,8 +46,8 @@ static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
  
- 		if (ret == 0) {
--			desc = fwnode_get_named_gpiod(fixed_node, "link-gpios",
--						      0, GPIOD_IN, "?");
-+			desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
-+						      GPIOD_IN, "?");
- 
- 			if (!IS_ERR(desc))
- 				pl->link_gpio = desc;
+ 	/* Deassert the optional reset signal */
+ 	if (mdiodev->dev.of_node)
+-		gpiod = fwnode_get_named_gpiod(&mdiodev->dev.of_node->fwnode,
+-					       "reset-gpios", 0, GPIOD_OUT_LOW,
++		gpiod = fwnode_gpiod_get_index(&mdiodev->dev.of_node->fwnode,
++					       "reset", 0, GPIOD_OUT_LOW,
+ 					       "PHY reset");
+ 	if (IS_ERR(gpiod)) {
+ 		if (PTR_ERR(gpiod) == -ENOENT || PTR_ERR(gpiod) == -ENOSYS)
 -- 
 2.23.0.162.g0b9fbb3734-goog
 
