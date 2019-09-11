@@ -2,178 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E77B02C4
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A808DB02DC
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:45:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729675AbfIKRg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 13:36:58 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:33848 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729349AbfIKRg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 13:36:58 -0400
-Received: by mail-pl1-f195.google.com with SMTP id d3so10501983plr.1
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 10:36:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ve4B7Xa9EmF4SP+XPGJsIOYpbQhJ/xQj4E3/FabbKAQ=;
-        b=Ma1ydwHgKoEuZyVJM5s5WhRmZjOQMPKoQmQfOR0RDiNA8JYyVJbsxDcJZjQQr4jP4i
-         ah9GG5MsszaqO1fGPxpDJPxRfkF2SfEpmZjn/N0r0EOsiDPtGr5R7G8n3VCuUUOp7NYK
-         xIF8uwcuCiOkdVgkVJig0n3lIl2FDtxLxmGQF1fMUGOFxLtFQ/F95bMeaOWqniEH4iMj
-         TyDiZiGaL0sh0op5L0XdwdLv/5G8R+uvAjWJnDOvBaO/vzmjlg4daLuPOJu0uhDc71/F
-         NPz6MUUHNayYAd1lPeIyQQ9vpMIhQhrEXVwYk7MmeEPeefKForDSgoHxeLsMiRzTaeYD
-         +yrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ve4B7Xa9EmF4SP+XPGJsIOYpbQhJ/xQj4E3/FabbKAQ=;
-        b=l767wrXP4efadhSxD1yc1tLXhUwvetd5VCbWjgen0wQnSY0Uzo/yBflREJojaZqNzL
-         Ohnv78w8Rpdmp5z5UsSh3ztDREqnghupMGj3T4daA0lRdH1muktrahVKcKpz3b8w4TDb
-         GlYvHWDSyQDf1+lDqkSHL8mPtHT4584Ep5zLVF0FFSIVNMxDH5PpDUQIYuzz7wJvKFqM
-         F3aSRv0MeKqm2O+gAiM+6sXppvyIchacbndXCCSNFLMT1Jjeai7Iuz+EGw8aGyHoUiHO
-         BEfJ7iFtx9+JaPPzM5En4LJl1HHlQk5zossQtbfgs6UrdE6fpe5sCrWFGp5wRYd1L6hg
-         wxxw==
-X-Gm-Message-State: APjAAAWb3gsDWk/sW/w4v4uv1AiYyx27kHnvRSsPo2sySzo2o8Wg7ifn
-        XRYT8+6qO1MRpinB9wPJa+EwiBRW0JSK4TNCY6w=
-X-Google-Smtp-Source: APXvYqzs9dp/BGaBdu+3g8Rlv0efssKW/i6lpW2HucH4ZhlTRXiG990YIchWlFCosAHAbcPYpGXSy7w+JE4nHtqL54A=
-X-Received: by 2002:a17:902:a983:: with SMTP id bh3mr38037652plb.311.1568223416435;
- Wed, 11 Sep 2019 10:36:56 -0700 (PDT)
+        id S1729663AbfIKRpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 13:45:22 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54298 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729349AbfIKRpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 13:45:22 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8BHeVCl001307;
+        Wed, 11 Sep 2019 10:44:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
+ b=qOB0qxHgErT1QbC1hZribwilhYf8cFXjOIXSXEGIpOOTxyuR2G6II5JSYnbvsLmSNZC1
+ Vl8RQ/u8n0vBU33iO8GSTE9fBxwBQ6U4/BRjMXMbXHmYecASNTQo+8HMsFJmBeKdcVO7
+ IHbd5vQ3lDkcOOQhjygk/fIA5EiAGtMCdLg= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2uxv0p2nak-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 11 Sep 2019 10:44:11 -0700
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 11 Sep 2019 10:44:07 -0700
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Wed, 11 Sep 2019 10:44:07 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Wed, 11 Sep 2019 10:44:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HmgR5m/QKkXNaxZwHeUjIJvqjn2qmhTFj5dfBtNYTPE+4uDvKJpfWLtLap9NPDzB4W+PdEOc31d02kT0e/e1hAackMfuJ4MpPovA3YjzZxtPUO6OYkcQF2g6VwaHhANS+xiALyW7AoTeP/FV/evOPDWJoqUhWbT+fckB7qxN29k7aDrkxO6w/F7GENHBj1VgsF6qXgJjucfewIX+qKg1+9vYdDfgaRebVkt+jpX7TsX/Tfdms36l2KJx9CORpgmBb9X+fuLw2Q7KXaM8ECSBOsTsU1NKnxXr/3S7kpILxqJT9bM2slvld/RiKznAAs1GGC+ALvydDjUQRF54rhzFEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
+ b=Lu6nypCOKLBw7aT/5h3Gfi/qS9Cp0PNZTIqn+cjtYPBjXnW8CNtZkoy7jBUj1wmlmawIuLG2VUKAgX7B1IMvxNirkt32v4Phdaa6Y6QINpupuzOZzXM1I8k9aELRYy1Hs/RBrhf2HDQyZmZGtuiLZqr5wruX7yYAjm1QBys6w+gw81QOgNXQmhhmp99p6DJzvSXUgwnKEkGqnZSpcxKELVgNoeWzAU+uF6GKCNb0ZDF+ts1NrOtc5nGq7hemsLdmiTqCWlPJLoe2Sfm4lEHP4uMizF+8edJwaY3R6gkDy5WxXAZ92VJp7LncHpA15urf4VJr98DWqBEbmS2huAeYUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
+ b=KXTJAO9cCZfIHA/U2g54LkX+C0eBGxQSPyI80yqisD/gumfY4t8vY8vMyikhxjbg+cbVckQSpAlkQ080uc3CTBy/mALrR5wDY+q2hdnmOvcxp+P5FQTf5hM8WMmT9uLqWJXmcvlf0sv6tKUEmi52f4yyuRG0Vo2093DFw2Mkzb0=
+Received: from CY4PR15MB1269.namprd15.prod.outlook.com (10.172.177.11) by
+ CY4PR15MB1432.namprd15.prod.outlook.com (10.172.161.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.14; Wed, 11 Sep 2019 17:44:05 +0000
+Received: from CY4PR15MB1269.namprd15.prod.outlook.com
+ ([fe80::38b1:336:13e6:b02b]) by CY4PR15MB1269.namprd15.prod.outlook.com
+ ([fe80::38b1:336:13e6:b02b%7]) with mapi id 15.20.2241.018; Wed, 11 Sep 2019
+ 17:44:05 +0000
+From:   Vijay Khemka <vijaykhemka@fb.com>
+To:     Joel Stanley <joel@jms.id.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Sai Dasari <sdasari@fb.com>
+Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
+Thread-Topic: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
+Thread-Index: AQHVaCL3HHZ/0IxjZ0GB2KAMVKzdAqcld28AgAEYWwD//7uYAA==
+Date:   Wed, 11 Sep 2019 17:44:05 +0000
+Message-ID: <A15F2B7E-3AC6-4C24-8AF3-9E47635FDC7F@fb.com>
+References: <20190910213734.3112330-1-vijaykhemka@fb.com>
+ <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
+ <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
+In-Reply-To: <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2620:10d:c090:200::1:a2f5]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 17bcb530-1e56-4d91-f4fb-08d736dfa420
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CY4PR15MB1432;
+x-ms-traffictypediagnostic: CY4PR15MB1432:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CY4PR15MB143260F22068945BA4E56F36DDB10@CY4PR15MB1432.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0157DEB61B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(396003)(136003)(346002)(189003)(199004)(64756008)(8676002)(4326008)(2906002)(66946007)(91956017)(54906003)(66476007)(110136005)(316002)(66556008)(81166006)(186003)(6506007)(102836004)(99286004)(256004)(6116002)(76116006)(66446008)(5660300002)(71190400001)(71200400001)(11346002)(7416002)(2616005)(46003)(486006)(446003)(53546011)(476003)(33656002)(36756003)(229853002)(76176011)(81156014)(6486002)(53936002)(8936002)(6436002)(305945005)(478600001)(14454004)(7736002)(6246003)(25786009)(6512007)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR15MB1432;H:CY4PR15MB1269.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: qvCVoZVIj+wuyIRO4CAmQQqcoZgNA00LB2XBcGFeDEB4M7ThW3ekQLpQLYSXeSKexscuAyqSmXBxhRZrGiLe3lzy2+kdX4z+iba+KMiHnwYs9wKRptUsiolRxyaDdE4Q2ylFXCbaG4JwNfPBED5tL0VkS32LS/YsiH2QXAPCexEtUfm3TG4PAHvrvzkU9SCIC53Kbrshe5LQAyuXhRt5iP//FVWiv6t+zLJYUtPGcg6TjDlv4GzngmGWGj4kGtsbxXWfu9Nk8kemO2J3PEMkGT0xe1HVE7I9+6g0V9GBrcPH8ILlvWwAx7gIwBfwjDyNNCLYZIikpXNn+3WyQJgwZIrXAMmvTSOMlZQtchzmXp11ckuYEYi3KbgeGositc6yddJtzj8ZeSheIV34ZczJcA/uBoZJ8+wBPNPCwkOE/M4=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <687EF9F737F9564E8FB7C3725A80B3F8@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20190826161915.81676-1-edumazet@google.com>
-In-Reply-To: <20190826161915.81676-1-edumazet@google.com>
-From:   Christoph Paasch <christoph.paasch@gmail.com>
-Date:   Wed, 11 Sep 2019 10:36:45 -0700
-Message-ID: <CALMXkpZfufqWhvd9F4kbtC18bFYCgNWrkEvL7Tw976i24f1EFw@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: remove empty skb from write queue in error cases
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Vladimir Rutsky <rutsky@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17bcb530-1e56-4d91-f4fb-08d736dfa420
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2019 17:44:05.4585
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2vi6bb8ZNpHOEQx1FvRTVrG8WFRTZKh+ErKIKrDsAzcGIQeIr6GD98U5ab6IYCfHfwuHtyM/VcD1pf/y67n6eA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1432
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-11_08:2019-09-11,2019-09-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 impostorscore=0
+ adultscore=0 malwarescore=0 bulkscore=0 mlxscore=0 priorityscore=1501
+ spamscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1909110163
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Mon, Aug 26, 2019 at 11:04 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> Vladimir Rutsky reported stuck TCP sessions after memory pressure
-> events. Edge Trigger epoll() user would never receive an EPOLLOUT
-> notification allowing them to retry a sendmsg().
->
-> Jason tested the case of sk_stream_alloc_skb() returning NULL,
-> but there are other paths that could lead both sendmsg() and sendpage()
-> to return -1 (EAGAIN), with an empty skb queued on the write queue.
->
-> This patch makes sure we remove this empty skb so that
-> Jason code can detect that the queue is empty, and
-> call sk->sk_write_space(sk) accordingly.
->
-> Fixes: ce5ec440994b ("tcp: ensure epoll edge trigger wakeup when write queue is empty")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jason Baron <jbaron@akamai.com>
-> Reported-by: Vladimir Rutsky <rutsky@google.com>
-> Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> ---
->  net/ipv4/tcp.c | 30 ++++++++++++++++++++----------
->  1 file changed, 20 insertions(+), 10 deletions(-)
-
-I got syzkaller complaining now on 4.14.143 with the following reproducer:
-
-# {Threaded:true Collide:true Repeat:true RepeatTimes:0 Procs:1
-Sandbox: Fault:false FaultCall:-1 FaultNth:0 EnableTun:false
-UseTmpDir:false EnableCgroups:false EnableNetdev:false ResetNet:false
-HandleSegv:false Repro:false Trace:false}
-r0 = socket$inet_tcp(0x2, 0x1, 0x0)
-setsockopt$inet_tcp_TCP_REPAIR(r0, 0x6, 0x13, &(0x7f0000000040)=0x1, 0x4)
-setsockopt$inet_tcp_TCP_REPAIR_QUEUE(r0, 0x6, 0x14, &(0x7f00000012c0)=0x2, 0x4)
-setsockopt$inet_tcp_int(r0, 0x6, 0x19, &(0x7f0000000000)=0x9, 0x4)
-setsockopt$inet_tcp_TCP_MD5SIG(r0, 0x6, 0xe,
-&(0x7f00000001c0)={@in={{0x2, 0x0, @empty}}, 0x0, 0x2, 0x0,
-"c157cf4809151e5e89cfd6d934fbe981ec8ff6afc252ccf486c325c7ff3d35f3a89412a5cb6430e169092617df2ba65bf0ab844572e4e7dd4ece8ec1de5ac1ccd870067b018cb3b1f05f2391d872b67d"},
-0xd8)
-connect$inet(r0, &(0x7f0000000080)={0x2, 0x0, @dev={0xac, 0x14, 0x14,
-0x1d}}, 0x10)
-sendto(r0, 0x0, 0x87, 0x0, 0x0, 0x391)
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] SMP KASAN PTI
-Dumping ftrace buffer:
-   (ftrace buffer empty)
-Modules linked in:
-CPU: 1 PID: 2529 Comm: syz-executor709 Not tainted 4.14.143 #5
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 0.5.1 01/01/2011
-task: ffff8880677fdc00 task.stack: ffff8880642b0000
-RIP: 0010:tcp_sendmsg_locked+0x6b4/0x4390 net/ipv4/tcp.c:1350
-RSP: 0018:ffff8880642bf718 EFLAGS: 00010206
-RAX: 0000000000000014 RBX: 0000000000000087 RCX: ffff88806a794f50
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000000a0
-RBP: ffff8880642bfaa8 R08: 0000000000000006 R09: ffff8880677fe3a0
-R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff88806a794f50 R14: ffff88806a794d00 R15: 0000000000000087
-FS:  00007f644b697700(0000) GS:ffff88806cf00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcd37370b0 CR3: 00000000679f2006 CR4: 00000000003606e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tcp_sendmsg+0x2a/0x40 net/ipv4/tcp.c:1533
- inet_sendmsg+0x173/0x4e0 net/ipv4/af_inet.c:784
- sock_sendmsg_nosec net/socket.c:646 [inline]
- sock_sendmsg+0xc3/0x100 net/socket.c:656
- SYSC_sendto+0x35d/0x5e0 net/socket.c:1766
- do_syscall_64+0x241/0x680 arch/x86/entry/common.c:292
- entry_SYSCALL_64_after_hwframe+0x42/0xb7
-RIP: 0033:0x7f644afc6469
-RSP: 002b:00007f644b696f28 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000602130 RCX: 00007f644afc6469
-RDX: 0000000000000087 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000602138 R08: 0000000000000000 R09: 0000000000000391
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000060213c
-R13: 00007ffcd373700f R14: 00007f644b677000 R15: 0000000000000003
-Code: 74 08 3c 03 0f 8e f1 32 00 00 8b 85 98 fd ff ff 89 85 60 fd ff
-ff 48 8b 85 70 fd ff ff 48 8d b8 a0 00 00 00 48 89 f8 48 c1 e8 03 <42>
-0f b6 04 20 84 c0 74 06 0f 8e d2 32 00 00 4c 8b bd 70 fd ff
-RIP: tcp_sendmsg_locked+0x6b4/0x4390 net/ipv4/tcp.c:1350 RSP: ffff8880642bf718
----[ end trace 70f07f242cd3b9d8 ]---
-
-
-It's because skb is NULL in tcp_sendmsg_locked at:
-                  skb = tcp_write_queue_tail(sk);
-                  if (tcp_send_head(sk)) {
-                          if (skb->ip_summed == CHECKSUM_NONE)
-
-
-I think we need this here on pre-rb-tree kernels :
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 5ce069ce2a97..efe767e20d01 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -924,8 +924,7 @@ static void tcp_remove_empty_skb(struct sock *sk,
-struct sk_buff *skb)
- {
-  if (skb && !skb->len) {
-  tcp_unlink_write_queue(skb, sk);
-- if (tcp_write_queue_empty(sk))
-- tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
-+ tcp_check_send_head(sk, skb);
-  sk_wmem_free_skb(sk, skb);
-  }
- }
-
-Does that look good?
-
-
-Thanks,
-Christoph
+DQoNCu+7v09uIDkvMTEvMTksIDc6NDkgQU0sICJKb2VsIFN0YW5sZXkiIDxqb2VsQGptcy5pZC5h
+dT4gd3JvdGU6DQoNCiAgICBIaSBCZW4sDQogICAgDQogICAgT24gVHVlLCAxMCBTZXAgMjAxOSBh
+dCAyMjowNSwgRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+IHdyb3RlOg0K
+ICAgID4NCiAgICA+IE9uIDkvMTAvMTkgMjozNyBQTSwgVmlqYXkgS2hlbWthIHdyb3RlOg0KICAg
+ID4gPiBIVyBjaGVja3N1bSBnZW5lcmF0aW9uIGlzIG5vdCB3b3JraW5nIGZvciBBU1QyNTAwLCBz
+cGVjaWFsbHkgd2l0aCBJUFY2DQogICAgPiA+IG92ZXIgTkNTSS4gQWxsIFRDUCBwYWNrZXRzIHdp
+dGggSVB2NiBnZXQgZHJvcHBlZC4gQnkgZGlzYWJsaW5nIHRoaXMNCiAgICA+ID4gaXQgd29ya3Mg
+cGVyZmVjdGx5IGZpbmUgd2l0aCBJUFY2Lg0KICAgID4gPg0KICAgID4gPiBWZXJpZmllZCB3aXRo
+IElQVjYgZW5hYmxlZCBhbmQgY2FuIGRvIHNzaC4NCiAgICA+DQogICAgPiBIb3cgYWJvdXQgSVB2
+NCwgZG8gdGhlc2UgcGFja2V0cyBoYXZlIHByb2JsZW0/IElmIG5vdCwgY2FuIHlvdSBjb250aW51
+ZQ0KICAgID4gYWR2ZXJ0aXNpbmcgTkVUSUZfRl9JUF9DU1VNIGJ1dCB0YWtlIG91dCBORVRJRl9G
+X0lQVjZfQ1NVTT8NCiAgICA+DQogICAgPiA+DQogICAgPiA+IFNpZ25lZC1vZmYtYnk6IFZpamF5
+IEtoZW1rYSA8dmlqYXlraGVta2FAZmIuY29tPg0KICAgID4gPiAtLS0NCiAgICA+ID4gIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA1ICsrKy0tDQogICAgPiA+ICAx
+IGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KICAgID4gPg0K
+ICAgID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
+MDAuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCiAgICA+ID4g
+aW5kZXggMDMwZmVkNjUzOTNlLi41OTFjOTcyNTAwMmIgMTAwNjQ0DQogICAgPiA+IC0tLSBhL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCiAgICA+ID4gKysrIGIvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYw0KICAgID4gPiBAQCAtMTgzOSw4
+ICsxODM5LDkgQEAgc3RhdGljIGludCBmdGdtYWMxMDBfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rl
+dmljZSAqcGRldikNCiAgICA+ID4gICAgICAgaWYgKHByaXYtPnVzZV9uY3NpKQ0KICAgID4gPiAg
+ICAgICAgICAgICAgIG5ldGRldi0+aHdfZmVhdHVyZXMgfD0gTkVUSUZfRl9IV19WTEFOX0NUQUdf
+RklMVEVSOw0KICAgID4gPg0KICAgID4gPiAtICAgICAvKiBBU1QyNDAwICBkb2Vzbid0IGhhdmUg
+d29ya2luZyBIVyBjaGVja3N1bSBnZW5lcmF0aW9uICovDQogICAgPiA+IC0gICAgIGlmIChucCAm
+JiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0MjQwMC1tYWMiKSkpDQog
+ICAgPiA+ICsgICAgIC8qIEFTVDI0MDAgIGFuZCBBU1QyNTAwIGRvZXNuJ3QgaGF2ZSB3b3JraW5n
+IEhXIGNoZWNrc3VtIGdlbmVyYXRpb24gKi8NCiAgICA+ID4gKyAgICAgaWYgKG5wICYmIChvZl9k
+ZXZpY2VfaXNfY29tcGF0aWJsZShucCwgImFzcGVlZCxhc3QyNDAwLW1hYyIpIHx8DQogICAgPiA+
+ICsgICAgICAgICAgICAgICAgb2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0
+MjUwMC1tYWMiKSkpDQogICAgDQogICAgRG8geW91IHJlY2FsbCB1bmRlciB3aGF0IGNpcmN1bXN0
+YW5jZXMgd2UgbmVlZCB0byBkaXNhYmxlIGhhcmR3YXJlIGNoZWNrc3VtbWluZz8NCk1haW5seSwg
+VENQIHBhY2tldHMgb3ZlciBJUFY2IGdldHRpbmcgZHJvcHBlZC4gQWZ0ZXIgZGlzYWJsaW5nIGl0
+IHdhcyB3b3JraW5nLg0KICAgIA0KICAgIENoZWVycywNCiAgICANCiAgICBKb2VsDQogICAgDQog
+ICAgPiA+ICAgICAgICAgICAgICAgbmV0ZGV2LT5od19mZWF0dXJlcyAmPSB+TkVUSUZfRl9IV19D
+U1VNOw0KICAgID4gPiAgICAgICBpZiAobnAgJiYgb2ZfZ2V0X3Byb3BlcnR5KG5wLCAibm8taHct
+Y2hlY2tzdW0iLCBOVUxMKSkNCiAgICA+ID4gICAgICAgICAgICAgICBuZXRkZXYtPmh3X2ZlYXR1
+cmVzICY9IH4oTkVUSUZfRl9IV19DU1VNIHwgTkVUSUZfRl9SWENTVU0pOw0KICAgID4gPg0KICAg
+ID4NCiAgICA+DQogICAgPiAtLQ0KICAgID4gRmxvcmlhbg0KICAgIA0KDQo=
