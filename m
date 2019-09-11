@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C97AFF52
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0CB0AFFA5
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 17:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbfIKO4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 10:56:36 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50602 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728182AbfIKO4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:56:36 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c10so3865634wmc.0
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 07:56:33 -0700 (PDT)
+        id S1728543AbfIKPJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 11:09:36 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:42308 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728381AbfIKPJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 11:09:36 -0400
+Received: by mail-io1-f65.google.com with SMTP id n197so46611408iod.9;
+        Wed, 11 Sep 2019 08:09:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=B1IBhoHj9hZ06FtSxR59qwb+57T/p2xiDr0Ol4HSfNA=;
-        b=vTsBLfxMVYW8DdwNpQfIMqFZXljeRn4xF6fzaBKk0GP6FN1597iq+scX99nuR9/Q+A
-         513SbeRbUqro7uKKI6KpAaXKcn1ScUBg2MrqvUeNFMy03DpAXiSDev8MTfyOXVAdb8DD
-         ZdA/Q7cezEdo8ltBPdmKX/VvHpcE4fQJvwddoCDSe77hx/tlkhhg6wz8VHLzi2MUV4mM
-         I+Tc155QLpnLFYI6IGRJK7skaqtHuL7opQsAk2tZvUYUJDBvLAzg6LUIxy9hgPWYJSz+
-         miMprwWxiERBZQOQY84RokHeQ22z2XXNV4ZxUZIidqmyOBYiPmwNOd4Hd6QChoiT8TdS
-         3frg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=zpSTnZWLfU+mtdlAh42xs+GSxup7aA/377MpA3ZModA=;
+        b=VuKDYc2rxs+4jUZdpQuHBjBqjoG+/X87aXFRR84EAstHq2b/sHIjhulnX8LfXX0Z5v
+         J6TQg8wudBS4xNr73cEkMUG8ZFNK+vMMVQhkBlN6VMEkCPew+eviVICq9ijf6jxzHmHN
+         Pf2EjKsicklY9we2tu1vWq+xXE9AltcEKK3POWlkJsOZUXLWPXMIWZ+mWKdlOX2f9mDX
+         qSJi/OC1wFLCsVgyKETD+aILLb3YaR6u1HL9vfN6+yBm87CLyE0CiWI6MZItdXiGZaSg
+         lV+1g29SOCWtBfrkRC3uwca2wdcti0rZUro55vCHYyW63y5DHNZuCpBc3UjdPtPJn7w+
+         nLdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=B1IBhoHj9hZ06FtSxR59qwb+57T/p2xiDr0Ol4HSfNA=;
-        b=RQ/3ZO41HJAEZL3z92AdczudT+wRhFsR44x2CekL8oSFS70qNvCbOxP9kdvEoozrcO
-         Oe/fApY84jkQynmSwsyOLWHTAV+o3RAxsr1c375TqBZKdu+xNySSR3d8E5hUPhHPD6bZ
-         /2wRvFzEgquz/AqCZCPMFdnkedXHbvQ2PeD2x06O0qM79m1wP3nY8XRn/Ifpox8PhYQ2
-         /IkO85Zb6zqjx/q0H9hUmwFIbegYV9eXAYSHrMc4LzNTGYuJHoknIdtxb+3c0ZM8JsWM
-         OMsTp6YawhGErJhI02t8zzaBpyd4DxLMrRJtrGr1N4JsAgobCzriswjzqPJ7SIYanvlg
-         4tog==
-X-Gm-Message-State: APjAAAVX+3G46ZIAkjIKy0vIqBSQIjcXs3vT1xjPCm6O5VAM8T80oNEn
-        C8ibwTKpPek+emOe9HEC9pAj0Q==
-X-Google-Smtp-Source: APXvYqyq8vw7NxKjQ3dQZ3FJIK3exX8oSp1p+37lf/wuem1hlJRb7if+rD4/aTBylj0DQP8NGzuxMQ==
-X-Received: by 2002:a1c:ef09:: with SMTP id n9mr4078675wmh.23.1568213792740;
-        Wed, 11 Sep 2019 07:56:32 -0700 (PDT)
-Received: from penelope.horms.nl ([148.69.85.38])
-        by smtp.gmail.com with ESMTPSA id n8sm5031137wma.7.2019.09.11.07.56.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Sep 2019 07:56:31 -0700 (PDT)
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH iproute2-next] devlink: unknown 'fw_load_policy' string validation
-Date:   Wed, 11 Sep 2019 15:56:29 +0100
-Message-Id: <20190911145629.28259-1-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.11.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=zpSTnZWLfU+mtdlAh42xs+GSxup7aA/377MpA3ZModA=;
+        b=CPY2Qw2GleOc+tyeQcDB5JKddrf/cRvM8cuJ++rfAFYnl9N2hKM2YIhERJHLyBIbWw
+         2rJ0aZhrWnpyvrsr9LJT9dVlYqUC/+GYDBMlZ9Uk+7P1hrz/QNnOQekXN3IX4/aMWl52
+         +fc1NJrWqEx2HZNqLqfGrX3M8T+5ME26p43kqt0DOjDLzEwH4afm2SJkN4jsRqpdPEtV
+         L1opu0Lj8DJnrAonntEO/AUyfjta4FeCzarP3o4z+XlbT5jx7eDjy0ZGIxkGGJT1YyuH
+         atlipRAdOIbo7Hdpw6oWojiR46/M4wHZH/aMzRJILBUftvbYNqab0RSvgHhmROiu4EB7
+         tMzg==
+X-Gm-Message-State: APjAAAVDeNA++dBDtiE+R5xioSxbbbkfb5Wc2PQxl6DcEe7ZGS+epmdm
+        ql+S/dGcpDXbqO0T9gBKWORZsuLkhyM=
+X-Google-Smtp-Source: APXvYqweuexRIh7nhhjMSs2ZGpMcndP/A8OxHHeXjgoKEcTuRqDBStiAqy7TcKpsUYCqtH+xbhjnkQ==
+X-Received: by 2002:a6b:c810:: with SMTP id y16mr43703681iof.75.1568214575179;
+        Wed, 11 Sep 2019 08:09:35 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id c4sm16670135ioa.76.2019.09.11.08.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Sep 2019 08:09:34 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     davem@davemloft.net
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: qrtr: fix memort leak in qrtr_tun_write_iter
+Date:   Wed, 11 Sep 2019 10:09:02 -0500
+Message-Id: <20190911150907.18251-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190911.101320.682967997452798874.davem@davemloft.net>
+References: <20190911.101320.682967997452798874.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+In qrtr_tun_write_iter the allocated kbuf should be release in case of
+error or success return.
 
-The 'fw_load_policy' devlink parameter now supports an unknown value.
+v2 Update: Thanks to David Miller for pointing out the release on success
+path as well.
 
-Suggested-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 ---
+ net/qrtr/tun.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Sorry about these depenendencies, some related changes came through
-in separate patch-sets.
-
-1. Depends on iproute2-next patch sent earlier today:
-   [PATCH iproute2-next] devlink: add 'reset_dev_on_drv_probe' devlink param
-
-2. Depends on devlink.h changes present in net-next commit:
-   64f658ded48e ("devlink: add unknown 'fw_load_policy' value")
-
-   Which in turn depends on other devlink.h changes present in net-next commit:
-   5bbd21df5a07 ("devlink: add 'reset_dev_on_drv_probe' param")
----
- devlink/devlink.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 15877a04f5d6..e4b494eb3e5d 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -2259,6 +2259,11 @@ static const struct param_val_conv param_val_conv[] = {
- 		.vuint = DEVLINK_PARAM_RESET_DEV_ON_DRV_PROBE_VALUE_UNKNOWN,
- 	},
- 	{
-+		.name = "fw_load_policy",
-+		.vstr = "unknown",
-+		.vuint = DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_UNKNOWN,
-+	},
-+	{
- 		.name = "reset_dev_on_drv_probe",
- 		.vstr = "always",
- 		.vuint = DEVLINK_PARAM_RESET_DEV_ON_DRV_PROBE_VALUE_ALWAYS,
+diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
+index ccff1e544c21..e35869e81766 100644
+--- a/net/qrtr/tun.c
++++ b/net/qrtr/tun.c
+@@ -84,11 +84,14 @@ static ssize_t qrtr_tun_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	if (!kbuf)
+ 		return -ENOMEM;
+ 
+-	if (!copy_from_iter_full(kbuf, len, from))
++	if (!copy_from_iter_full(kbuf, len, from)) {
++		kfree(kbuf);
+ 		return -EFAULT;
++	}
+ 
+ 	ret = qrtr_endpoint_post(&tun->ep, kbuf, len);
+ 
++	kfree(kbuf);
+ 	return ret < 0 ? ret : len;
+ }
+ 
 -- 
-2.11.0
+2.17.1
 
