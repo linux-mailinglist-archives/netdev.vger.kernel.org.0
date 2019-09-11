@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CFAAFF22
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C97AFF52
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728236AbfIKOuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 10:50:19 -0400
-Received: from 2098.x.rootbsd.net ([208.79.82.66]:38824 "EHLO pilot.trilug.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727627AbfIKOuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 10:50:19 -0400
-Received: by pilot.trilug.org (Postfix, from userid 8)
-        id D6DAF169753; Wed, 11 Sep 2019 10:50:18 -0400 (EDT)
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on pilot.trilug.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable version=3.3.2
-Received: from michaelmarley.com (cpe-2606-A000-BFC0-90-509-B1D3-C76D-19C7.dyn6.twc.com [IPv6:2606:a000:bfc0:90:509:b1d3:c76d:19c7])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pilot.trilug.org (Postfix) with ESMTPSA id 5FE9A169748;
-        Wed, 11 Sep 2019 10:50:17 -0400 (EDT)
-Received: from michaelmarley.com (localhost [127.0.0.1])
-        by michaelmarley.com (Postfix) with ESMTP id 63BF218160F;
-        Wed, 11 Sep 2019 10:50:16 -0400 (EDT)
-Received: from michaelmarley.com ([::1])
-        by michaelmarley.com with ESMTPA
-        id wR4xGKgJeV3IggEAnAHMIA
-        (envelope-from <michael@michaelmarley.com>); Wed, 11 Sep 2019 10:50:16 -0400
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Wed, 11 Sep 2019 10:50:16 -0400
-From:   Michael Marley <michael@michaelmarley.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: Re: ixgbe: driver drops packets routed from an IPSec interface with a
- "bad sa_idx" error
-In-Reply-To: <20190911061547.GR2879@gauss3.secunet.de>
-References: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
- <4caa4fb7-9963-99ab-318f-d8ada4f19205@pensando.io>
- <fb63dec226170199e9b0fd1b356d2314@michaelmarley.com>
- <90dd9f8c-57fa-14c7-5d09-207b84ec3292@pensando.io>
- <6ab15854-154a-2c7c-b429-7ba6dfe785ae@michaelmarley.com>
- <20190911061547.GR2879@gauss3.secunet.de>
-User-Agent: Roundcube Webmail/1.4-rc1
-Message-ID: <12d6d2313eeb61a51731a2ba9b1fa9bf@michaelmarley.com>
-X-Sender: michael@michaelmarley.com
+        id S1728289AbfIKO4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 10:56:36 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50602 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728182AbfIKO4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:56:36 -0400
+Received: by mail-wm1-f68.google.com with SMTP id c10so3865634wmc.0
+        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 07:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=B1IBhoHj9hZ06FtSxR59qwb+57T/p2xiDr0Ol4HSfNA=;
+        b=vTsBLfxMVYW8DdwNpQfIMqFZXljeRn4xF6fzaBKk0GP6FN1597iq+scX99nuR9/Q+A
+         513SbeRbUqro7uKKI6KpAaXKcn1ScUBg2MrqvUeNFMy03DpAXiSDev8MTfyOXVAdb8DD
+         ZdA/Q7cezEdo8ltBPdmKX/VvHpcE4fQJvwddoCDSe77hx/tlkhhg6wz8VHLzi2MUV4mM
+         I+Tc155QLpnLFYI6IGRJK7skaqtHuL7opQsAk2tZvUYUJDBvLAzg6LUIxy9hgPWYJSz+
+         miMprwWxiERBZQOQY84RokHeQ22z2XXNV4ZxUZIidqmyOBYiPmwNOd4Hd6QChoiT8TdS
+         3frg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=B1IBhoHj9hZ06FtSxR59qwb+57T/p2xiDr0Ol4HSfNA=;
+        b=RQ/3ZO41HJAEZL3z92AdczudT+wRhFsR44x2CekL8oSFS70qNvCbOxP9kdvEoozrcO
+         Oe/fApY84jkQynmSwsyOLWHTAV+o3RAxsr1c375TqBZKdu+xNySSR3d8E5hUPhHPD6bZ
+         /2wRvFzEgquz/AqCZCPMFdnkedXHbvQ2PeD2x06O0qM79m1wP3nY8XRn/Ifpox8PhYQ2
+         /IkO85Zb6zqjx/q0H9hUmwFIbegYV9eXAYSHrMc4LzNTGYuJHoknIdtxb+3c0ZM8JsWM
+         OMsTp6YawhGErJhI02t8zzaBpyd4DxLMrRJtrGr1N4JsAgobCzriswjzqPJ7SIYanvlg
+         4tog==
+X-Gm-Message-State: APjAAAVX+3G46ZIAkjIKy0vIqBSQIjcXs3vT1xjPCm6O5VAM8T80oNEn
+        C8ibwTKpPek+emOe9HEC9pAj0Q==
+X-Google-Smtp-Source: APXvYqyq8vw7NxKjQ3dQZ3FJIK3exX8oSp1p+37lf/wuem1hlJRb7if+rD4/aTBylj0DQP8NGzuxMQ==
+X-Received: by 2002:a1c:ef09:: with SMTP id n9mr4078675wmh.23.1568213792740;
+        Wed, 11 Sep 2019 07:56:32 -0700 (PDT)
+Received: from penelope.horms.nl ([148.69.85.38])
+        by smtp.gmail.com with ESMTPSA id n8sm5031137wma.7.2019.09.11.07.56.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 11 Sep 2019 07:56:31 -0700 (PDT)
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH iproute2-next] devlink: unknown 'fw_load_policy' string validation
+Date:   Wed, 11 Sep 2019 15:56:29 +0100
+Message-Id: <20190911145629.28259-1-simon.horman@netronome.com>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-09-11 02:15, Steffen Klassert wrote:
-> On Tue, Sep 10, 2019 at 06:53:30PM -0400, Michael Marley wrote:
->> 
->> StrongSwan has hardware offload disabled by default, and I didn't 
->> enable
->> it explicitly.  I also already tried turning off all those switches 
->> with
->> ethtool and it has no effect.  This doesn't surprise me though, 
->> because
->> as I said, I don't actually have the IPSec connection running over the
->> ixgbe device.  The IPSec connection runs over another network adapter
->> that doesn't support IPSec offload at all.  The problem comes when
->> traffic received over the IPSec interface is then routed back out
->> (unencrypted) through the ixgbe device into the local network.
-> 
-> 
-> Seems like the ixgbe driver tries to use the sec_path
-> from RX to setup an offload at the TX side.
-> 
-> Can you please try this (completely untested) patch?
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 9bcae44e9883..ae31bd57127c 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -36,6 +36,7 @@
->  #include <net/vxlan.h>
->  #include <net/mpls.h>
->  #include <net/xdp_sock.h>
-> +#include <net/xfrm.h>
-> 
->  #include "ixgbe.h"
->  #include "ixgbe_common.h"
-> @@ -8696,7 +8697,7 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff 
-> *skb,
->  #endif /* IXGBE_FCOE */
-> 
->  #ifdef CONFIG_IXGBE_IPSEC
-> -	if (secpath_exists(skb) &&
-> +	if (xfrm_offload(skb) &&
->  	    !ixgbe_ipsec_tx(tx_ring, first, &ipsec_tx))
->  		goto out_drop;
->  #endif
-With the patch, the problem is gone.  Thanks!
+From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 
-Michael
+The 'fw_load_policy' devlink parameter now supports an unknown value.
+
+Suggested-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
+---
+
+Sorry about these depenendencies, some related changes came through
+in separate patch-sets.
+
+1. Depends on iproute2-next patch sent earlier today:
+   [PATCH iproute2-next] devlink: add 'reset_dev_on_drv_probe' devlink param
+
+2. Depends on devlink.h changes present in net-next commit:
+   64f658ded48e ("devlink: add unknown 'fw_load_policy' value")
+
+   Which in turn depends on other devlink.h changes present in net-next commit:
+   5bbd21df5a07 ("devlink: add 'reset_dev_on_drv_probe' param")
+---
+ devlink/devlink.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 15877a04f5d6..e4b494eb3e5d 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -2259,6 +2259,11 @@ static const struct param_val_conv param_val_conv[] = {
+ 		.vuint = DEVLINK_PARAM_RESET_DEV_ON_DRV_PROBE_VALUE_UNKNOWN,
+ 	},
+ 	{
++		.name = "fw_load_policy",
++		.vstr = "unknown",
++		.vuint = DEVLINK_PARAM_FW_LOAD_POLICY_VALUE_UNKNOWN,
++	},
++	{
+ 		.name = "reset_dev_on_drv_probe",
+ 		.vstr = "always",
+ 		.vuint = DEVLINK_PARAM_RESET_DEV_ON_DRV_PROBE_VALUE_ALWAYS,
+-- 
+2.11.0
+
