@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C79B3AF470
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 04:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114B9AF468
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 04:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbfIKCne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Sep 2019 22:43:34 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51192 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726643AbfIKCnH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726785AbfIKCnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 10 Sep 2019 22:43:07 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:51152 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726561AbfIKCnG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Sep 2019 22:43:06 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 75AF4E31CF980A529815;
+        by Forcepoint Email with ESMTP id 70FF120AF84EA8F6B56B;
         Wed, 11 Sep 2019 10:43:05 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>
-Subject: [PATCH V2 net-next 1/7] net: hns3: add ethtool_ops.set_channels support for HNS3 VF driver
-Date:   Wed, 11 Sep 2019 10:40:33 +0800
-Message-ID: <1568169639-43658-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 2/7] net: hns3: revert to old channel when setting new channel num fail
+Date:   Wed, 11 Sep 2019 10:40:34 +0800
+Message-ID: <1568169639-43658-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1568169639-43658-1-git-send-email-tanhuazhong@huawei.com>
 References: <1568169639-43658-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,162 +37,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Peng Li <lipeng321@huawei.com>
 
-This patch adds ethtool_ops.set_channels support for HNS3 VF driver,
-and updates related TQP information and RSS information, to support
-modification of VF TQP number, and uses current rss_size instead of
-max_rss_size to initialize RSS.
+After setting new channel num, it needs free old ring memory and
+allocate new ring memory. If there is no enough memory and allocate
+new ring memory fail, the ring may initialize fail. To make sure
+the network interface can work normally, driver should revert the
+channel to the old configuration.
 
-Also, fixes a format error in hclgevf_get_rss().
-
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  1 +
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 83 ++++++++++++++++++++--
- 2 files changed, 79 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 51 ++++++++++++++++++-------
+ 1 file changed, 37 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index aa692b1..f5a681d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1397,6 +1397,7 @@ static const struct ethtool_ops hns3vf_ethtool_ops = {
- 	.set_rxfh = hns3_set_rss,
- 	.get_link_ksettings = hns3_get_link_ksettings,
- 	.get_channels = hns3_get_channels,
-+	.set_channels = hns3_set_channels,
- 	.get_coalesce = hns3_get_coalesce,
- 	.set_coalesce = hns3_set_coalesce,
- 	.get_regs_len = hns3_get_regs_len,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 594cae8..e3090b3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -743,7 +743,7 @@ static int hclgevf_get_rss(struct hnae3_handle *handle, u32 *indir, u8 *key,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 9f3f8e3..8dbaf36 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -4410,6 +4410,30 @@ static int hns3_reset_notify(struct hnae3_handle *handle,
+ 	return ret;
  }
  
- static int hclgevf_set_rss(struct hnae3_handle *handle, const u32 *indir,
--			   const  u8 *key, const  u8 hfunc)
-+			   const u8 *key, const u8 hfunc)
- {
- 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
- 	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
-@@ -2060,9 +2060,10 @@ static int hclgevf_config_gro(struct hclgevf_dev *hdev, bool en)
- static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
- {
- 	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
--	int i, ret;
-+	int ret;
-+	u32 i;
- 
--	rss_cfg->rss_size = hdev->rss_size_max;
-+	rss_cfg->rss_size = hdev->nic.kinfo.rss_size;
- 
- 	if (hdev->pdev->revision >= 0x21) {
- 		rss_cfg->hash_algo = HCLGEVF_RSS_HASH_ALGO_SIMPLE;
-@@ -2099,13 +2100,13 @@ static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
- 
- 	/* Initialize RSS indirect table */
- 	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
--		rss_cfg->rss_indirection_tbl[i] = i % hdev->rss_size_max;
-+		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
- 
- 	ret = hclgevf_set_rss_indir_table(hdev);
- 	if (ret)
- 		return ret;
- 
--	return hclgevf_set_rss_tc_mode(hdev, hdev->rss_size_max);
-+	return hclgevf_set_rss_tc_mode(hdev, rss_cfg->rss_size);
- }
- 
- static int hclgevf_init_vlan_config(struct hclgevf_dev *hdev)
-@@ -2835,6 +2836,77 @@ static void hclgevf_get_tqps_and_rss_info(struct hnae3_handle *handle,
- 	*max_rss_size = hdev->rss_size_max;
- }
- 
-+static void hclgevf_update_rss_size(struct hnae3_handle *handle,
-+				    u32 new_tqps_num)
-+{
-+	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
-+	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
-+	u16 max_rss_size;
-+
-+	kinfo->req_rss_size = new_tqps_num;
-+
-+	max_rss_size = min_t(u16, hdev->rss_size_max,
-+			     hdev->num_tqps / kinfo->num_tc);
-+
-+	/* Use the user's configuration when it is not larger than
-+	 * max_rss_size, otherwise, use the maximum specification value.
-+	 */
-+	if (kinfo->req_rss_size != kinfo->rss_size && kinfo->req_rss_size &&
-+	    kinfo->req_rss_size <= max_rss_size)
-+		kinfo->rss_size = kinfo->req_rss_size;
-+	else if (kinfo->rss_size > max_rss_size ||
-+		 (!kinfo->req_rss_size && kinfo->rss_size < max_rss_size))
-+		kinfo->rss_size = max_rss_size;
-+
-+	kinfo->num_tqps = kinfo->num_tc * kinfo->rss_size;
-+}
-+
-+static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
++static int hns3_change_channels(struct hnae3_handle *handle, u32 new_tqp_num,
 +				bool rxfh_configured)
 +{
-+	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
-+	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
-+	u16 cur_rss_size = kinfo->rss_size;
-+	u16 cur_tqps = kinfo->num_tqps;
-+	u32 *rss_indir;
-+	unsigned int i;
 +	int ret;
 +
-+	hclgevf_update_rss_size(handle, new_tqps_num);
++	ret = handle->ae_algo->ops->set_channels(handle, new_tqp_num,
++						 rxfh_configured);
++	if (ret) {
++		dev_err(&handle->pdev->dev,
++			"Change tqp num(%u) fail.\n", new_tqp_num);
++		return ret;
++	}
 +
-+	ret = hclgevf_set_rss_tc_mode(hdev, kinfo->rss_size);
++	ret = hns3_reset_notify(handle, HNAE3_INIT_CLIENT);
 +	if (ret)
 +		return ret;
 +
-+	/* RSS indirection table has been configuared by user */
-+	if (rxfh_configured)
-+		goto out;
-+
-+	/* Reinitializes the rss indirect table according to the new RSS size */
-+	rss_indir = kcalloc(HCLGEVF_RSS_IND_TBL_SIZE, sizeof(u32), GFP_KERNEL);
-+	if (!rss_indir)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
-+		rss_indir[i] = i % kinfo->rss_size;
-+
-+	ret = hclgevf_set_rss(handle, rss_indir, NULL, 0);
++	ret =  hns3_reset_notify(handle, HNAE3_UP_CLIENT);
 +	if (ret)
-+		dev_err(&hdev->pdev->dev, "set rss indir table fail, ret=%d\n",
-+			ret);
-+
-+	kfree(rss_indir);
-+
-+out:
-+	if (!ret)
-+		dev_info(&hdev->pdev->dev,
-+			 "Channels changed, rss_size from %u to %u, tqps from %u to %u",
-+			 cur_rss_size, kinfo->rss_size,
-+			 cur_tqps, kinfo->rss_size * kinfo->num_tc);
++		hns3_reset_notify(handle, HNAE3_UNINIT_CLIENT);
 +
 +	return ret;
 +}
 +
- static int hclgevf_get_status(struct hnae3_handle *handle)
+ int hns3_set_channels(struct net_device *netdev,
+ 		      struct ethtool_channels *ch)
  {
- 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
-@@ -3042,6 +3114,7 @@ static const struct hnae3_ae_ops hclgevf_ops = {
- 	.enable_hw_strip_rxvtag = hclgevf_en_hw_strip_rxvtag,
- 	.reset_event = hclgevf_reset_event,
- 	.set_default_reset_request = hclgevf_set_def_reset_request,
-+	.set_channels = hclgevf_set_channels,
- 	.get_channels = hclgevf_get_channels,
- 	.get_tqps_and_rss_info = hclgevf_get_tqps_and_rss_info,
- 	.get_regs_len = hclgevf_get_regs_len,
+@@ -4450,24 +4474,23 @@ int hns3_set_channels(struct net_device *netdev,
+ 		return ret;
+ 
+ 	org_tqp_num = h->kinfo.num_tqps;
+-	ret = h->ae_algo->ops->set_channels(h, new_tqp_num, rxfh_configured);
++	ret = hns3_change_channels(h, new_tqp_num, rxfh_configured);
+ 	if (ret) {
+-		ret = h->ae_algo->ops->set_channels(h, org_tqp_num,
+-						    rxfh_configured);
+-		if (ret) {
+-			/* If revert to old tqp failed, fatal error occurred */
+-			dev_err(&netdev->dev,
+-				"Revert to old tqp num fail, ret=%d", ret);
+-			return ret;
++		int ret1;
++
++		netdev_warn(netdev,
++			    "Change channels fail, revert to old value\n");
++		ret1 = hns3_change_channels(h, org_tqp_num, rxfh_configured);
++		if (ret1) {
++			netdev_err(netdev,
++				   "revert to old channel fail\n");
++			return ret1;
+ 		}
+-		dev_info(&netdev->dev,
+-			 "Change tqp num fail, Revert to old tqp num");
+-	}
+-	ret = hns3_reset_notify(h, HNAE3_INIT_CLIENT);
+-	if (ret)
++
+ 		return ret;
++	}
+ 
+-	return hns3_reset_notify(h, HNAE3_UP_CLIENT);
++	return 0;
+ }
+ 
+ static const struct hns3_hw_error_info hns3_hw_err[] = {
 -- 
 2.7.4
 
