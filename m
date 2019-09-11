@@ -2,95 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3D0AF994
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 11:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9562EAF997
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 11:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbfIKJyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 05:54:17 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:53858 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726793AbfIKJyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 05:54:17 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 0F35528D80F
-Message-ID: <6e73ba7cf18f06b39b6a999d09ad71c1aeff2d5b.camel@collabora.com>
-Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Wed, 11 Sep 2019 10:54:13 +0100
-In-Reply-To: <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
-         <20190910154238.9155-2-bob.beckett@collabora.com>
-         <20190910182635.GA9761@lunn.ch>
-         <aa0459e0-64ee-de84-fc38-3c9364301275@gmail.com>
-         <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
-Organization: Collabora
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1727307AbfIKJzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 05:55:15 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33524 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726702AbfIKJzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 05:55:15 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so13350898pfl.0;
+        Wed, 11 Sep 2019 02:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=EYAdW6e1HjgiO7iOA9knRWup6ouX3NvawvaBsn5XypY=;
+        b=uadrbg0nOLNfbytsdr/sMmmtNrDUkeUPXVSZuu51dsCCjTuuJIQ70gXTSFF9T/2Mod
+         9WuGH7pzgyBVz7CUH169M1T2ORrSB93tEzRcOnFlgAlr5aPoxrbP++8WhYuUP+Y+TFBS
+         QGAqm0aqS7VP/0Zp6tN64XH/sgtS0puMtywdEnQWylQa12lnCjhM/28pV43vv5qsiuAo
+         +0x5Q6A57plY+1ZEWAPJusNjnYGnNvM0UGCxpWY9Eiuq70zzjEt6IcD0TFze6vB96iUt
+         mHapZ2Z1zdbob9Oq0EZiiSFhN6JkgJpNt5po04BFPnTWW8d8mCRHdS6tIDwKvoLkRCgK
+         CpvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=EYAdW6e1HjgiO7iOA9knRWup6ouX3NvawvaBsn5XypY=;
+        b=sptcehjBkkuOEff8cqXpLIQKmYnpTaUUG+JYv3EiiaowBoR9ZdlBjbmlXd0RKNGklr
+         meH+GY1ZyKj/oWYsC3dtm3p9XgBakvtHGtXaC6rBzRCfKtwxFZMab4qib6yOQQFsWLVX
+         ERWxKNf+dienNlNvyPniHyU13bT+ESyB6+9BDx2CdlWnzpX5BffQEOY+5/gyzRXIF7xa
+         xW/FMxaCM8kuKXxrsXPEedZQfaYo761LH3r5+N3C1NnWImtWotJMT4irjAnha95lUvfD
+         wxVS3hapkVUFFXzNu+i9cKKbdKpfgtr7ecE1wCeCCvZOTRjIM6yCIPQ/D7dWBFl0O8Ap
+         qOYw==
+X-Gm-Message-State: APjAAAWbu3VMHtMJBuA9pCUYB8QNvqmrAmGRmoG8Jyd4uq18fyUVTenM
+        Jznugw9smIQZIJ/d8jv72esQcoQZlkE=
+X-Google-Smtp-Source: APXvYqz8/DQvRH8+c009V9c0kMz3Cs9wV2T2oQJUOaot7e5CWOEkxzbY8jQ1Kv48S4dhqFwZvUdIFw==
+X-Received: by 2002:a17:90a:a014:: with SMTP id q20mr4591336pjp.113.1568195714294;
+        Wed, 11 Sep 2019 02:55:14 -0700 (PDT)
+Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id j2sm21388338pfe.130.2019.09.11.02.55.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Sep 2019 02:55:13 -0700 (PDT)
+Date:   Wed, 11 Sep 2019 02:55:11 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 04/11] net: phylink: switch to using
+ fwnode_gpiod_get_index()
+Message-ID: <20190911095511.GB108334@dtor-ws>
+References: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
+ <20190911075215.78047-5-dmitry.torokhov@gmail.com>
+ <20190911092514.GM2680@smile.fi.intel.com>
+ <20190911093914.GT13294@shell.armlinux.org.uk>
+ <20190911094619.GN2680@smile.fi.intel.com>
+ <20190911094929.GV13294@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190911094929.GV13294@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-09-11 at 10:16 +0100, Robert Beckett wrote:
-> On Tue, 2019-09-10 at 11:29 -0700, Florian Fainelli wrote:
-> > On 9/10/19 11:26 AM, Andrew Lunn wrote:
-> > > On Tue, Sep 10, 2019 at 04:41:47PM +0100, Robert Beckett wrote:
-> > > > This enables us to negoatiate pause frame transmission to
-> > > > prioritise
-> > > > packet delivery over throughput.
+On Wed, Sep 11, 2019 at 10:49:29AM +0100, Russell King - ARM Linux admin wrote:
+> On Wed, Sep 11, 2019 at 12:46:19PM +0300, Andy Shevchenko wrote:
+> > On Wed, Sep 11, 2019 at 10:39:14AM +0100, Russell King - ARM Linux admin wrote:
+> > > On Wed, Sep 11, 2019 at 12:25:14PM +0300, Andy Shevchenko wrote:
+> > > > On Wed, Sep 11, 2019 at 12:52:08AM -0700, Dmitry Torokhov wrote:
+> > > > > Instead of fwnode_get_named_gpiod() that I plan to hide away, let's use
+> > > > > the new fwnode_gpiod_get_index() that mimics gpiod_get_index(), bit
+> > > > > works with arbitrary firmware node.
+> e > > 
+> > > > I'm wondering if it's possible to step forward and replace
+> > > > fwnode_get_gpiod_index by gpiod_get() / gpiod_get_index() here and
+> > > > in other cases in this series.
 > > > 
-> > > I don't think we can unconditionally enable this. It is a big
-> > > behaviour change, and it is likely to break running systems. It
-> > > has
-> > > affects on QoS, packet prioritisation, etc.
-> > > 
-> > > I think there needs to be a configuration knob. But
-> > > unfortunately,
-> > > i
-> > > don't know of a good place to put this knob. The switch CPU port
-> > > is
-> > > not visible in any way.
+> > > No, those require a struct device, but we have none.  There are network
+> > > drivers where there is a struct device for the network complex, but only
+> > > DT nodes for the individual network interfaces.  So no, gpiod_* really
+> > > doesn't work.
 > > 
-> > Broadcast storm suppression is to be solved at ingress, not on the
-> > CPU
-> > port, once this lands on the CPU port, it's game over already.
+> > In the following patch the node is derived from struct device. So, I believe
+> > some cases can be handled differently.
 > 
-> It is not just for broadcast storm protection. The original issue
-> that
-> made me look in to all of this turned out to be rx descritor ring
-> buffer exhaustion due to the CPU not being able to keep up with
-> packet
-> reception.
+> phylink is not passed a struct device - it has no knowledge what the
+> parent device is.
 > 
-> Although the simple repro case for it is a broadcast storm, this
-> could
-> happen with many legitimate small packets, and the correct way to
-> handle it seems to be pause frames, though I am not traditionally a
-> network programmer, so my knowledge may be incorrect. Please advise
-> if
-> you know of a better way to handle that.
-> 
-> Fundamentally, with a phy to phy CPU connection, the CPU MAC may well
-> wish to enable pause frames for various reasons, so we should strive
-> to
-> handle that I think.
-> 
+> In any case, I do not have "the following patch".
 
-As an aside, do any of you have experience of trying to enable PIRL on
-the Marvell switches? The first thing I tried was configuring it for
-packet number based (rather than byte count based) input rate limiting,
-but it never seemed to have any effect even at extreme values that
-should in theory have greatly limited the number of packets allowed to
-ingress.
+Andy is talking about this one:
 
-After investigating the root cause and finding it was due to the CPU's
-inability to process the received packets quickly enough, pause frames
-and port prioritization seemed like the correct fix anyway.
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index ce940871331e..9ca51d678123 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -46,8 +46,8 @@ static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
 
+        /* Deassert the optional reset signal */
+        if (mdiodev->dev.of_node)
+-               gpiod = fwnode_get_named_gpiod(&mdiodev->dev.of_node->fwnode,
+-                                              "reset-gpios", 0,
+                                               GPIOD_OUT_LOW,
++               gpiod = fwnode_gpiod_get_index(&mdiodev->dev.of_node->fwnode,
++                                              "reset", 0, GPIOD_OUT_LOW,
+                                               "PHY reset");
+Here if we do not care about "PHY reset" label, we could use
+gpiod_get(&mdiodev->dev, "reset", GPIOD_OUT_LOW).
+
+Thanks.
+
+-- 
+Dmitry
