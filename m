@@ -2,75 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64F20B05CA
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 00:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0245B05D1
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 00:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbfIKWyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 18:54:20 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49938 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbfIKWyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 18:54:19 -0400
-Received: from localhost (unknown [88.214.186.163])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9CD7F154FCED5;
-        Wed, 11 Sep 2019 15:54:18 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 00:54:17 +0200 (CEST)
-Message-Id: <20190912.005417.251757766535771790.davem@davemloft.net>
-To:     ncardwell@google.com
-Cc:     netdev@vger.kernel.org, ycheng@google.com, soheil@google.com,
-        edumazet@google.com
-Subject: Re: [PATCH net] tcp: fix tcp_ecn_withdraw_cwr() to clear
- TCP_ECN_QUEUE_CWR
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190909205602.248472-1-ncardwell@google.com>
-References: <20190909205602.248472-1-ncardwell@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Sep 2019 15:54:19 -0700 (PDT)
+        id S1728351AbfIKW6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 18:58:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41370 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728296AbfIKW6r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 18:58:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=bvxvXjzjLd5LLjsg8oouWPltfRv1itXFS43TNK9ObEo=; b=jFlqBi5BtWxDE3cqHraE1h3Zyp
+        kDOZxz3cn3k+U7n8Q1xhVF1SOOZjBG/6wJLlEked8/6nusXEIsK062ihj88Tmk6OzOI3LTfYB30vG
+        UZUvoA8LtRwcbExNJg9Hk8lbapt9wQp/Q0VJ2LKeXjXGlAP80T5j1vhGHDtEUFo/klNQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i8BZR-0001gD-BA; Thu, 12 Sep 2019 00:58:41 +0200
+Date:   Thu, 12 Sep 2019 00:58:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Beckett <bob.beckett@collabora.com>
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
+ storms
+Message-ID: <20190911225841.GB5710@lunn.ch>
+References: <20190910154238.9155-1-bob.beckett@collabora.com>
+ <545d6473-848f-3194-02a6-011b7c89a2ca@gmail.com>
+ <20190911112134.GA20574@splinter>
+ <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neal Cardwell <ncardwell@google.com>
-Date: Mon,  9 Sep 2019 16:56:02 -0400
+> We have a setup as follows:
+> 
+> Marvell 88E6240 switch chip, accepting traffic from 4 ports. Port 1
+> (P1) is critical priority, no dropped packets allowed, all others can
+> be best effort.
+> 
+> CPU port of swtich chip is connected via phy to phy of intel i210 (igb
+> driver).
+> 
+> i210 is connected via pcie switch to imx6.
+> 
+> When too many small packets attempt to be delivered to CPU port (e.g.
+> during broadcast flood) we saw dropped packets.
+> 
+> The packets were being received by i210 in to rx descriptor buffer
+> fine, but the CPU could not keep up with the load. We saw
+> rx_fifo_errors increasing rapidly and ksoftirqd at ~100% CPU.
+> 
+> 
+> With this in mind, I am wondering whether any amount of tc traffic
+> shaping would help?
 
-> Fix tcp_ecn_withdraw_cwr() to clear the correct bit:
-> TCP_ECN_QUEUE_CWR.
-> 
-> Rationale: basically, TCP_ECN_DEMAND_CWR is a bit that is purely about
-> the behavior of data receivers, and deciding whether to reflect
-> incoming IP ECN CE marks as outgoing TCP th->ece marks. The
-> TCP_ECN_QUEUE_CWR bit is purely about the behavior of data senders,
-> and deciding whether to send CWR. The tcp_ecn_withdraw_cwr() function
-> is only called from tcp_undo_cwnd_reduction() by data senders during
-> an undo, so it should zero the sender-side state,
-> TCP_ECN_QUEUE_CWR. It does not make sense to stop the reflection of
-> incoming CE bits on incoming data packets just because outgoing
-> packets were spuriously retransmitted.
-> 
-> The bug has been reproduced with packetdrill to manifest in a scenario
-> with RFC3168 ECN, with an incoming data packet with CE bit set and
-> carrying a TCP timestamp value that causes cwnd undo. Before this fix,
-> the IP CE bit was ignored and not reflected in the TCP ECE header bit,
-> and sender sent a TCP CWR ('W') bit on the next outgoing data packet,
-> even though the cwnd reduction had been undone.  After this fix, the
-> sender properly reflects the CE bit and does not set the W bit.
-> 
-> Note: the bug actually predates 2005 git history; this Fixes footer is
-> chosen to be the oldest SHA1 I have tested (from Sep 2007) for which
-> the patch applies cleanly (since before this commit the code was in a
-> .h file).
-> 
-> Fixes: bdf1ee5d3bd3 ("[TCP]: Move code from tcp_ecn.h to tcp*.c and tcp.h & remove it")
-> Signed-off-by: Neal Cardwell <ncardwell@google.com>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
+Hi Robert
 
-Applied and queued up for -stable, thanks Neal.
+The model in linux is that you start with a software TC filter, and
+then offload it to the hardware. So the user configures TC just as
+normal, and then that is used to program the hardware to do the same
+thing as what would happen in software. This is exactly the same as we
+do with bridging. You create a software bridge and add interfaces to
+the bridge. This then gets offloaded to the hardware and it does the
+bridging for you.
+
+So think about how your can model the Marvell switch capabilities
+using TC, and implement offload support for it.
+
+    Andrew
