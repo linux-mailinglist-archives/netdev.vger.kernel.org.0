@@ -2,73 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EED2AFD62
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 15:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D45EAFD75
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 15:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbfIKNGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 09:06:10 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:39898 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727837AbfIKNGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 09:06:09 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1i82Jw-0007pA-9M; Wed, 11 Sep 2019 15:06:04 +0200
-Message-ID: <d0de07f0918863c8bc9bebccd8c6a7402a2ad173.camel@sipsolutions.net>
-Subject: Re: [PATCH] mac80211: Do not send Layer 2 Update frame before
- authorization
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jouni Malinen <jouni@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, David Miller <davem@davemloft.net>,
+        id S1728064AbfIKNMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 09:12:38 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45572 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727302AbfIKNMi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 09:12:38 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 0B042B687;
+        Wed, 11 Sep 2019 13:12:36 +0000 (UTC)
+Date:   Wed, 11 Sep 2019 15:12:35 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org
-Date:   Wed, 11 Sep 2019 15:06:03 +0200
-In-Reply-To: <20190911130305.23704-1-jouni@codeaurora.org>
-References: <20190911130305.23704-1-jouni@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+Subject: Re: [PATCH v2] vhost: block speculation of translated descriptors
+Message-ID: <20190911131235.GZ4023@dhcp22.suse.cz>
+References: <20190911120908.28410-1-mst@redhat.com>
+ <20190911121628.GT4023@dhcp22.suse.cz>
+ <20190911082236-mutt-send-email-mst@kernel.org>
+ <20190911123316.GX4023@dhcp22.suse.cz>
+ <20190911085807-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190911085807-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-09-11 at 16:03 +0300, Jouni Malinen wrote:
-> The Layer 2 Update frame is used to update bridges when a station roams
-> to another AP even if that STA does not transmit any frames after the
-> reassociation. This behavior was described in IEEE Std 802.11F-2003 as
-> something that would happen based on MLME-ASSOCIATE.indication, i.e.,
-> before completing 4-way handshake. However, this IEEE trial-use
-> recommended practice document was published before RSN (IEEE Std
-> 802.11i-2004) and as such, did not consider RSN use cases. Furthermore,
-> IEEE Std 802.11F-2003 was withdrawn in 2006 and as such, has not been
-> maintained amd should not be used anymore.
+On Wed 11-09-19 09:03:10, Michael S. Tsirkin wrote:
+> On Wed, Sep 11, 2019 at 02:33:16PM +0200, Michal Hocko wrote:
+> > On Wed 11-09-19 08:25:03, Michael S. Tsirkin wrote:
+> > > On Wed, Sep 11, 2019 at 02:16:28PM +0200, Michal Hocko wrote:
+> > > > On Wed 11-09-19 08:10:00, Michael S. Tsirkin wrote:
+> > > > > iovec addresses coming from vhost are assumed to be
+> > > > > pre-validated, but in fact can be speculated to a value
+> > > > > out of range.
+> > > > > 
+> > > > > Userspace address are later validated with array_index_nospec so we can
+> > > > > be sure kernel info does not leak through these addresses, but vhost
+> > > > > must also not leak userspace info outside the allowed memory table to
+> > > > > guests.
+> > > > > 
+> > > > > Following the defence in depth principle, make sure
+> > > > > the address is not validated out of node range.
+> > > > > 
+> > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > > > > Tested-by: Jason Wang <jasowang@redhat.com>
+> > > > 
+> > > > no need to mark fo stable? Other spectre fixes tend to be backported
+> > > > even when the security implications are not really clear. The risk
+> > > > should be low and better to be covered in case.
+> > > 
+> > > This is not really a fix - more a defence in depth thing,
+> > > quite similar to e.g.  commit b3bbfb3fb5d25776b8e3f361d2eedaabb0b496cd
+> > > x86: Introduce __uaccess_begin_nospec() and uaccess_try_nospec
+> > > in scope.
+> > >
+> > > That one doesn't seem to be tagged for stable. Was it queued
+> > > there in practice?
+> > 
+> > not marked for stable but it went in. At least to 4.4.
 > 
-> Sending out the Layer 2 Update frame immediately after association is
-> fine for open networks (and also when using SAE, FT protocol, or FILS
-> authentication when the station is actually authenticated by the time
-> association completes). However, it is not appropriate for cases where
-> RSN is used with PSK or EAP authentication since the station is actually
-> fully authenticated only once the 4-way handshake completes after
-> authentication and attackers might be able to use the unauthenticated
-> triggering of Layer 2 Update frame transmission to disrupt bridge
-> behavior.
-> 
-> Fix this by postponing transmission of the Layer 2 Update frame from
-> station entry addition to the point when the station entry is marked
-> authorized. Similarly, send out the VLAN binding update only if the STA
-> entry has already been authorized.
+> So I guess the answer is I don't know. If you feel it's
+> justified, then sure, feel free to forward.
 
-Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+Well, that obviously depends on you as a maintainer but the point is
+that spectre gatgets are quite hard to find. There is a smack check
+AFAIK but that generates quite some false possitives and it is PITA to
+crawl through those. If you want an interesting (I am not saying
+vulnerable on purpose) gatget then it would be great to mark it for
+stable so all stable consumers (disclaimer: I am not one of those) and
+add that really great feeling of safety ;)
 
-Dave, if you were still planning to send a pull request to Linus before
-he closes the tree on Sunday this would be good to include (and we
-should also backport it to stable later).
-
-If not, I can pick it up afterwards, let me know.
-
-Thanks,
-johannes
-
-
+So take this as my 2c
+-- 
+Michal Hocko
+SUSE Labs
