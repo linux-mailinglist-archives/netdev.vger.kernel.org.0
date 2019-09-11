@@ -2,92 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC53AFDA4
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 15:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 145B4AFDBB
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 15:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbfIKNWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 09:22:02 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42847 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbfIKNWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 09:22:01 -0400
-Received: by mail-lj1-f196.google.com with SMTP id y23so19955131lje.9
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 06:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PCyL2xtvyQdLdW6FJFwSDs6+Mxk/HA5bYPmnFS87ufs=;
-        b=LzrvAgM9OQYbI9TUU3c/HZDniGCL2JHzdTV2dek9I5BeMfC8fagkSditS2/3sSLF15
-         gapZp7Kvj5gPYxhHqMfEeUugXZBIcmPhU8ZG6uq7NMNhdKrtFoebT8k6wftDA+V6Myqy
-         31HyzHH8rPW0ntcQNOG6w8RJaSfugWER2fT5Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PCyL2xtvyQdLdW6FJFwSDs6+Mxk/HA5bYPmnFS87ufs=;
-        b=cCKZ4mfnaLLF6DEsTkQbVF39BOc7ypoJVgvK/0EKz6ApcbKjjdqdDc05EAC1/CLhIy
-         7sCA1gx/+aXbwwNfLYBo7EzBWqdQWStLpIteeKSOY4+5oi7KHUEStvanQi0dW4JsXVub
-         dKUYsDDsbCVCX9M+qoRM7jn6ylI1TfI652wysULwqPQLT2V4oGnb6lpAH+zgVPFZ+Pt1
-         ngZgdh4hc/p+2M/ezrgb3RN1o3eDwuyOF4CwC21PZQtQpApyOm4EYqSnF9gG7fvMe9CP
-         H7KOHIqpEHtRBr0bzz4JwoWJHQ3lP9L4xJAQWGOwJ55T6dnewh8NYaSKKqe1TODonkK0
-         ohZA==
-X-Gm-Message-State: APjAAAVRPvpp4OlMpzklK5/ScvWq/h1Y+BrLbNRbdV68whzizOYOkvpx
-        HtTkyf9F8uoZCK+l4I6a1QlbVp2H/CHAXQ==
-X-Google-Smtp-Source: APXvYqxYIYfhzfg6dFE5978N+b04gyOmC1neOijz59ksRdplb4eP0TLWrMSy2G+FBYu0wzwfgFCwGA==
-X-Received: by 2002:a2e:8910:: with SMTP id d16mr8117666lji.12.1568208117254;
-        Wed, 11 Sep 2019 06:21:57 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id t24sm5062315lfq.13.2019.09.11.06.21.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Sep 2019 06:21:56 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id c195so1565481lfg.9
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 06:21:56 -0700 (PDT)
-X-Received: by 2002:ac2:5c11:: with SMTP id r17mr24534839lfp.61.1568208115902;
- Wed, 11 Sep 2019 06:21:55 -0700 (PDT)
-MIME-Version: 1.0
+        id S1727979AbfIKNbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 09:31:37 -0400
+Received: from mail2.candelatech.com ([208.74.158.173]:58932 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726341AbfIKNbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 09:31:37 -0400
+Received: from [192.168.1.47] (unknown [50.34.216.97])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id DA216104F;
+        Wed, 11 Sep 2019 06:31:35 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com DA216104F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1568208696;
+        bh=YdP3oSrdXhMHhpGVAboAGD7aHS6BEGqjs9AhHf3Di+Q=;
+        h=Subject:To:References:Cc:From:Date:In-Reply-To:From;
+        b=Ys5/jlkyIN75x90bnEJTleorbHVXgGm1upqLv7E6ICwjFoHXeHsnNyhGntRQ3BFAs
+         5ttIW6AXsda1K4EFruw7zzY2PpNspSj0d7QzFVhBjcEpCNq03DZeF1FdB5tQ5NH2Ta
+         x/dhXH6O7WXgW2XWOvlzAhWW4J7lX7r25d6XmVPI=
+Subject: Re: WARNING at net/mac80211/sta_info.c:1057
+ (__sta_info_destroy_part2())
+To:     Linus Torvalds <torvalds@linux-foundation.org>
 References: <CAHk-=wgBuu8PiYpD7uWgxTSY8aUOJj6NJ=ivNQPYjAKO=cRinA@mail.gmail.com>
  <feecebfcceba521703f13c8ee7f5bb9016924cb6.camel@sipsolutions.net>
  <CAHk-=wj_jneK+UYzHhjwsH0XxP0knM+2o2OeFVEz-FjuQ77-ow@mail.gmail.com>
- <30679d3f86731475943856196478677e70a349a9.camel@sipsolutions.net> <2d673d55-eb27-8573-b8ae-a493335723cf@candelatech.com>
-In-Reply-To: <2d673d55-eb27-8573-b8ae-a493335723cf@candelatech.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 11 Sep 2019 14:21:39 +0100
-X-Gmail-Original-Message-ID: <CAHk-=wgAXAw=U_kthB9mG+MBocpawxCzo=6WDrbGgOUr+ac3CA@mail.gmail.com>
-Message-ID: <CAHk-=wgAXAw=U_kthB9mG+MBocpawxCzo=6WDrbGgOUr+ac3CA@mail.gmail.com>
-Subject: Re: WARNING at net/mac80211/sta_info.c:1057 (__sta_info_destroy_part2())
-To:     Ben Greear <greearb@candelatech.com>
+ <30679d3f86731475943856196478677e70a349a9.camel@sipsolutions.net>
+ <2d673d55-eb27-8573-b8ae-a493335723cf@candelatech.com>
+ <CAHk-=wgAXAw=U_kthB9mG+MBocpawxCzo=6WDrbGgOUr+ac3CA@mail.gmail.com>
 Cc:     Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Kalle Valo <kvalo@codeaurora.org>,
         linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
         Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+From:   Ben Greear <greearb@candelatech.com>
+Message-ID: <4f00154a-41f2-b6f2-264f-10b3b6907fd7@candelatech.com>
+Date:   Wed, 11 Sep 2019 06:31:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAHk-=wgAXAw=U_kthB9mG+MBocpawxCzo=6WDrbGgOUr+ac3CA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 2:03 PM Ben Greear <greearb@candelatech.com> wrote:
+
+
+On 09/11/2019 06:21 AM, Linus Torvalds wrote:
+> On Wed, Sep 11, 2019 at 2:03 PM Ben Greear <greearb@candelatech.com> wrote:
+>>
+>> Out of curiosity, I'm interested to know what ath10k NIC chipset this is from.
 >
-> Out of curiosity, I'm interested to know what ath10k NIC chipset this is from.
+> It's a Dell XPS 13 9380, with
+>
+>   02:00.0 Network controller: Qualcomm Atheros QCA6174 802.11ac
+> Wireless Network Adapter (rev 32)
+>         Subsystem: Bigfoot Networks, Inc. Killer 1435 Wireless-AC
+>
+> (numeric PCI ID 168c:003e, subsystem 1a56:143a).
+>
+> The ath10k driver says
+>
+>     qca6174 hw3.2 target 0x05030000 chip_id 0x00340aff sub 1a56:143a
+>     firmware ver WLAN.RM.4.4.1-00140-QCARMSWPZ-1 api 6 features
+> wowlan,ignore-otp,mfp crc32 29eb8ca1
+>     board_file api 2 bmi_id N/A crc32 4ed3569e
+>
+> if that tells you anything more.
 
-It's a Dell XPS 13 9380, with
+That means it is something I have never used nor have firmware for, but
+the WMI logic should be similar to what I described and have experienced
+with other chips.
 
-  02:00.0 Network controller: Qualcomm Atheros QCA6174 802.11ac
-Wireless Network Adapter (rev 32)
-        Subsystem: Bigfoot Networks, Inc. Killer 1435 Wireless-AC
+Thanks,
+Ben
 
-(numeric PCI ID 168c:003e, subsystem 1a56:143a).
-
-The ath10k driver says
-
-    qca6174 hw3.2 target 0x05030000 chip_id 0x00340aff sub 1a56:143a
-    firmware ver WLAN.RM.4.4.1-00140-QCARMSWPZ-1 api 6 features
-wowlan,ignore-otp,mfp crc32 29eb8ca1
-    board_file api 2 bmi_id N/A crc32 4ed3569e
-
-if that tells you anything more.
-
-              Linus
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
