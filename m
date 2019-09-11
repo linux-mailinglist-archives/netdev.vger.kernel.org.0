@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C1BB0375
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 20:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5365B0379
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 20:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729696AbfIKSSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 14:18:55 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36153 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728198AbfIKSSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 14:18:55 -0400
-Received: by mail-pg1-f193.google.com with SMTP id j191so1394421pgd.3
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 11:18:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cbarcenas.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OxH44ra1+gEp9PWWFB00ytYJnw6f4HSrr96GTfwUaLM=;
-        b=uM4ST25kZeMGH3xIGggXJ7qcZByoytX4C0P66Ir1DUdk4x/0nlibaJRPkMlXIGJ0bo
-         cYOls3HSJajX2wheZbMT78Ad5yQ+s4bIloqmb1BYUajusfkorCuj9ds6u4zRMMarZqCs
-         8NFCOsP8yrwIalWoHauNwof+wsznRDcYASlFE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OxH44ra1+gEp9PWWFB00ytYJnw6f4HSrr96GTfwUaLM=;
-        b=PViuBLmpHYu5b/+RQwv1wCtrPkKtKAidSMs8qk1KuZwEO2ENlm/B3+Ywb1V9iKwqu4
-         fO8ks522xwVQAChuEHxfMorUVk+JaspqEtvhx/PettZbkuNhtbu+l6dQrXgJQ2Um9tkJ
-         vd+kaB3zQ3lZ9u3rDaGYp/hGf8mg3LlwkfhyU5nVqcx6D6zEjgzPjU+ih+x38SgWQ3r5
-         cmzKuNcIJ2kDZ752SrgaSH0QYVABgsQve6F1xiMkW5PpGIG8uqrUxBy0oh3UDnBSlavd
-         ffiB9C8Z/l01SAYe8fv0FydkqIhrObMMgTxlvs4y/xXrt0foQmO4ywaX6DIDhOwENjtd
-         nuDw==
-X-Gm-Message-State: APjAAAX0/26m2exz5Jg6BAcDFFttn0lm3tvlOF/+IW1opb31rHFtphIM
-        tjiT9ADN0lv1v0pyUn714uJZXA==
-X-Google-Smtp-Source: APXvYqwDzRSTJ2VvR0WVQbknFfffWNjfYRWGVhAFRabRPFTDbb2EOlQ7wqyR93+J3C96qXZttqYvJg==
-X-Received: by 2002:a63:c013:: with SMTP id h19mr34319325pgg.108.1568225933157;
-        Wed, 11 Sep 2019 11:18:53 -0700 (PDT)
-Received: from localhost.localdomain (70-35-54-238.static.wiline.com. [70.35.54.238])
-        by smtp.gmail.com with ESMTPSA id k14sm19122310pgi.20.2019.09.11.11.18.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 11 Sep 2019 11:18:52 -0700 (PDT)
-From:   Christian Barcenas <christian@cbarcenas.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Christian Barcenas <christian@cbarcenas.com>,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf] bpf: respect CAP_IPC_LOCK in RLIMIT_MEMLOCK check
-Date:   Wed, 11 Sep 2019 11:18:16 -0700
-Message-Id: <20190911181816.89874-1-christian@cbarcenas.com>
-X-Mailer: git-send-email 2.23.0
+        id S1729926AbfIKSTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 14:19:25 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46830 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728198AbfIKSTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 14:19:25 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 33882607C6; Wed, 11 Sep 2019 18:19:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568225964;
+        bh=Cq8dA5RuJNCfEAowmhvZuC5y4iuFy5mhIPmTToluUMs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=D4aSuyuLCh3pJmHnnFpuTZCHcgVPaPoy16SYi1IkAD2LGzeyMkb1mf4M04VdRUEsl
+         deUcjNc05bsek504fYmwIDZbrG6EDW1lu3lpUtBPeCdZqQkJ68cukQl+Hzlsp1p82J
+         wny+cIg6vd2kG6sSC7EPTgNfqTVcbu96E3ggKVSY=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 933CF602BC;
+        Wed, 11 Sep 2019 18:19:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568225963;
+        bh=Cq8dA5RuJNCfEAowmhvZuC5y4iuFy5mhIPmTToluUMs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=oPoyWpwWaYG6gmpB5EbPPo9zZG4bz8pA8hQ3l4p8ZV5bp+GMzxvD0tduXjlV+A/vn
+         4PvOsNNH3umELX67JiyoIbxDx+wsjMi3kYHic0fJIv+3qNnM2tnVsy/YnztgZjQHat
+         egYPG4zlizRYUB9g1n3e9+jHAuwVloSa1avaEzGg=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 933CF602BC
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        ath10k@lists.infradead.org
+Subject: Re: WARNING at net/mac80211/sta_info.c:1057 (__sta_info_destroy_part2())
+References: <CAHk-=wgBuu8PiYpD7uWgxTSY8aUOJj6NJ=ivNQPYjAKO=cRinA@mail.gmail.com>
+        <feecebfcceba521703f13c8ee7f5bb9016924cb6.camel@sipsolutions.net>
+Date:   Wed, 11 Sep 2019 21:19:19 +0300
+In-Reply-To: <feecebfcceba521703f13c8ee7f5bb9016924cb6.camel@sipsolutions.net>
+        (Johannes Berg's message of "Wed, 11 Sep 2019 12:26:32 +0200")
+Message-ID: <87ef0mlmqg.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A process can lock memory addresses into physical RAM explicitly
-(via mlock, mlockall, shmctl, etc.) or implicitly (via VFIO,
-perf ring-buffers, bpf maps, etc.), subject to RLIMIT_MEMLOCK limits.
+Johannes Berg <johannes@sipsolutions.net> writes:
 
-CAP_IPC_LOCK allows a process to exceed these limits, and throughout
-the kernel this capability is checked before allowing/denying an attempt
-to lock memory regions into RAM.
+>>    ath10k_pci 0000:02:00.0: wmi command 16387 timeout, restarting hardware
+>>    ath10k_pci 0000:02:00.0: failed to set 5g txpower 23: -11
+>>    ath10k_pci 0000:02:00.0: failed to setup tx power 23: -11
+>>    ath10k_pci 0000:02:00.0: failed to recalc tx power: -11
+>>    ath10k_pci 0000:02:00.0: failed to set inactivity time for vdev 0: -108
+>>    ath10k_pci 0000:02:00.0: failed to setup powersave: -108
+>> 
+>> That certainly looks like something did try to set a power limit, but
+>> eventually failed.
+>
+> Yeah, that does seem a bit fishy. Kalle would have to comment for
+> ath10k.
+>
+>> Immediately after that:
+>> 
+>>    wlp2s0: deauthenticating from 54:ec:2f:05:70:2c by local choice
+>> (Reason: 3=DEAUTH_LEAVING)
+>
+> I don't _think_ any of the above would be a reason to disconnect, but it
+> clearly looks like the device got stuck at this point, since everything
+> just fails afterwards.
 
-Because bpf locks its programs and maps into RAM, it should respect
-CAP_IPC_LOCK. Previously, bpf would return EPERM when RLIMIT_MEMLOCK was
-exceeded by a privileged process, which is contrary to documented
-RLIMIT_MEMLOCK+CAP_IPC_LOCK behavior.
+Yeah, to me it looks anything ath10k tries to do with the devie fails,
+even resetting the device.
 
-Fixes: aaac3ba95e4c ("bpf: charge user for creation of BPF maps and programs")
-Signed-off-by: Christian Barcenas <christian@cbarcenas.com>
----
- kernel/bpf/syscall.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> Looks like indeed the driver gives the device at least *3 seconds* for
+> every command, see ath10k_wmi_cmd_send(), so most likely this would
+> eventually have finished, but who knows how many firmware commands it
+> would still have attempted to send...
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 272071e9112f..e551961f364b 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -183,8 +183,9 @@ void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr)
- static int bpf_charge_memlock(struct user_struct *user, u32 pages)
- {
- 	unsigned long memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-+	unsigned long locked = atomic_long_add_return(pages, &user->locked_vm);
- 
--	if (atomic_long_add_return(pages, &user->locked_vm) > memlock_limit) {
-+	if (locked > memlock_limit && !capable(CAP_IPC_LOCK)) {
- 		atomic_long_sub(pages, &user->locked_vm);
- 		return -EPERM;
- 	}
-@@ -1231,7 +1232,7 @@ int __bpf_prog_charge(struct user_struct *user, u32 pages)
- 
- 	if (user) {
- 		user_bufs = atomic_long_add_return(pages, &user->locked_vm);
--		if (user_bufs > memlock_limit) {
-+		if (user_bufs > memlock_limit && !capable(CAP_IPC_LOCK)) {
- 			atomic_long_sub(pages, &user->locked_vm);
- 			return -EPERM;
- 		}
+3 seconds is a bit short but in normal cases it should be enough. Of
+course we could increase the delay but I'm skeptic it would help here.
+
+> Perhaps the driver should mark the device as dead and fail quickly once
+> it timed out once, or so, but I'll let Kalle comment on that.
+
+Actually we do try to restart the device when a timeout happens in
+ath10k_wmi_cmd_send():
+
+        if (ret == -EAGAIN) {
+                ath10k_warn(ar, "wmi command %d timeout, restarting hardware\n",
+                            cmd_id);
+                queue_work(ar->workqueue, &ar->restart_work);
+        }
+                        
+
 -- 
-2.23.0
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
