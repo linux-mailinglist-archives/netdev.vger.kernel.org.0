@@ -2,112 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8D2AFF1E
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CFAAFF22
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbfIKOtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 10:49:08 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35675 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727627AbfIKOtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:49:08 -0400
-Received: by mail-qt1-f194.google.com with SMTP id k10so25604375qth.2;
-        Wed, 11 Sep 2019 07:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A5XOn0vC4GPgnCNAb2xJhPh7fm7Qsc3YVcoeu66V0ow=;
-        b=JhSfdGDLWHQchSsKTTbaYL2d3lanGWh1bU6snzqMqlYUsbTmgquu741IO2y4CzLnnn
-         xFF9+5sLDaKVVLzlMzpM5GNJHAe0EdZjfADYanypoGJBIcqS7xQozfjP/J0VtWg1MKnl
-         T/6lk/ytL2NJX3N6br94MvUgja326wcjG36kI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A5XOn0vC4GPgnCNAb2xJhPh7fm7Qsc3YVcoeu66V0ow=;
-        b=ff6sIchsU4uoVZRWEn9qoCOcItZquiEFzjLbiiLqY1L1A1ajNuOuxEULRzvAU92zxW
-         FctkfGNuiTLZDpHbsmFAMGHeuk/BqYs00SOhJQwKuj1g9yie0oIA4PIIgdE5yWH78br4
-         4xQgepGnAnoRyA4SlFOuMu5WmsLYy+Qyk9aezBlsoeY5vExg9lcDCQZCFEGcSQf25OsB
-         8HPRqqO6aD6dB4iuQMUX/UCGMUNw1hIPpxz1HckScm7Kr9xt6JrrtYpTZGnLnL39S5Rh
-         dfFqKlGP0wrLv+MXkeZKWNdcqilAaJDtKy0SmGyemzlkNvHA5/H0x5HcIWcQ+KauG1Ey
-         DP2w==
-X-Gm-Message-State: APjAAAV8OQ0bYPbvnzFdW6yWoMmhY5kANGBpuPvuDRv57vgb+we1fAbm
-        FitCrox00novGB6HqTr+Llw2vl7zeYwVy6dv/Bc=
-X-Google-Smtp-Source: APXvYqwWsmekgnVOZyP3ztRXLVkJUawqY8waZNluPJpoBtGqhHcgvfBOQH1tISxUZoQoAh6xx+1tOYTyMaOU7g5POGA=
-X-Received: by 2002:ac8:2e94:: with SMTP id h20mr36118219qta.234.1568213346860;
- Wed, 11 Sep 2019 07:49:06 -0700 (PDT)
+        id S1728236AbfIKOuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 10:50:19 -0400
+Received: from 2098.x.rootbsd.net ([208.79.82.66]:38824 "EHLO pilot.trilug.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727627AbfIKOuT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 10:50:19 -0400
+Received: by pilot.trilug.org (Postfix, from userid 8)
+        id D6DAF169753; Wed, 11 Sep 2019 10:50:18 -0400 (EDT)
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on pilot.trilug.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable version=3.3.2
+Received: from michaelmarley.com (cpe-2606-A000-BFC0-90-509-B1D3-C76D-19C7.dyn6.twc.com [IPv6:2606:a000:bfc0:90:509:b1d3:c76d:19c7])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pilot.trilug.org (Postfix) with ESMTPSA id 5FE9A169748;
+        Wed, 11 Sep 2019 10:50:17 -0400 (EDT)
+Received: from michaelmarley.com (localhost [127.0.0.1])
+        by michaelmarley.com (Postfix) with ESMTP id 63BF218160F;
+        Wed, 11 Sep 2019 10:50:16 -0400 (EDT)
+Received: from michaelmarley.com ([::1])
+        by michaelmarley.com with ESMTPA
+        id wR4xGKgJeV3IggEAnAHMIA
+        (envelope-from <michael@michaelmarley.com>); Wed, 11 Sep 2019 10:50:16 -0400
 MIME-Version: 1.0
-References: <20190910213734.3112330-1-vijaykhemka@fb.com> <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
-In-Reply-To: <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 11 Sep 2019 14:48:54 +0000
-Message-ID: <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
-Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Vijay Khemka <vijaykhemka@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Wed, 11 Sep 2019 10:50:16 -0400
+From:   Michael Marley <michael@michaelmarley.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: Re: ixgbe: driver drops packets routed from an IPSec interface with a
+ "bad sa_idx" error
+In-Reply-To: <20190911061547.GR2879@gauss3.secunet.de>
+References: <10ba81d178d4ade76741c1a6e1672056@michaelmarley.com>
+ <4caa4fb7-9963-99ab-318f-d8ada4f19205@pensando.io>
+ <fb63dec226170199e9b0fd1b356d2314@michaelmarley.com>
+ <90dd9f8c-57fa-14c7-5d09-207b84ec3292@pensando.io>
+ <6ab15854-154a-2c7c-b429-7ba6dfe785ae@michaelmarley.com>
+ <20190911061547.GR2879@gauss3.secunet.de>
+User-Agent: Roundcube Webmail/1.4-rc1
+Message-ID: <12d6d2313eeb61a51731a2ba9b1fa9bf@michaelmarley.com>
+X-Sender: michael@michaelmarley.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ben,
+On 2019-09-11 02:15, Steffen Klassert wrote:
+> On Tue, Sep 10, 2019 at 06:53:30PM -0400, Michael Marley wrote:
+>> 
+>> StrongSwan has hardware offload disabled by default, and I didn't 
+>> enable
+>> it explicitly.  I also already tried turning off all those switches 
+>> with
+>> ethtool and it has no effect.  This doesn't surprise me though, 
+>> because
+>> as I said, I don't actually have the IPSec connection running over the
+>> ixgbe device.  The IPSec connection runs over another network adapter
+>> that doesn't support IPSec offload at all.  The problem comes when
+>> traffic received over the IPSec interface is then routed back out
+>> (unencrypted) through the ixgbe device into the local network.
+> 
+> 
+> Seems like the ixgbe driver tries to use the sec_path
+> from RX to setup an offload at the TX side.
+> 
+> Can you please try this (completely untested) patch?
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 9bcae44e9883..ae31bd57127c 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -36,6 +36,7 @@
+>  #include <net/vxlan.h>
+>  #include <net/mpls.h>
+>  #include <net/xdp_sock.h>
+> +#include <net/xfrm.h>
+> 
+>  #include "ixgbe.h"
+>  #include "ixgbe_common.h"
+> @@ -8696,7 +8697,7 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff 
+> *skb,
+>  #endif /* IXGBE_FCOE */
+> 
+>  #ifdef CONFIG_IXGBE_IPSEC
+> -	if (secpath_exists(skb) &&
+> +	if (xfrm_offload(skb) &&
+>  	    !ixgbe_ipsec_tx(tx_ring, first, &ipsec_tx))
+>  		goto out_drop;
+>  #endif
+With the patch, the problem is gone.  Thanks!
 
-On Tue, 10 Sep 2019 at 22:05, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 9/10/19 2:37 PM, Vijay Khemka wrote:
-> > HW checksum generation is not working for AST2500, specially with IPV6
-> > over NCSI. All TCP packets with IPv6 get dropped. By disabling this
-> > it works perfectly fine with IPV6.
-> >
-> > Verified with IPV6 enabled and can do ssh.
->
-> How about IPv4, do these packets have problem? If not, can you continue
-> advertising NETIF_F_IP_CSUM but take out NETIF_F_IPV6_CSUM?
->
-> >
-> > Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
-> > ---
-> >  drivers/net/ethernet/faraday/ftgmac100.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-> > index 030fed65393e..591c9725002b 100644
-> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > @@ -1839,8 +1839,9 @@ static int ftgmac100_probe(struct platform_device *pdev)
-> >       if (priv->use_ncsi)
-> >               netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-> >
-> > -     /* AST2400  doesn't have working HW checksum generation */
-> > -     if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
-> > +     /* AST2400  and AST2500 doesn't have working HW checksum generation */
-> > +     if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac") ||
-> > +                of_device_is_compatible(np, "aspeed,ast2500-mac")))
-
-Do you recall under what circumstances we need to disable hardware checksumming?
-
-Cheers,
-
-Joel
-
-> >               netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> >       if (np && of_get_property(np, "no-hw-checksum", NULL))
-> >               netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
-> >
->
->
-> --
-> Florian
+Michael
