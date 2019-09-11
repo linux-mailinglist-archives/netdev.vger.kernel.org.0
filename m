@@ -2,131 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D14AB026E
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C15B02A6
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729516AbfIKROF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 13:14:05 -0400
-Received: from mga04.intel.com ([192.55.52.120]:16174 "EHLO mga04.intel.com"
+        id S1729584AbfIKR0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 13:26:35 -0400
+Received: from mga02.intel.com ([134.134.136.20]:44405 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729450AbfIKROF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 13:14:05 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1728897AbfIKR0f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 13:26:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Sep 2019 10:14:04 -0700
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Sep 2019 10:26:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,489,1559545200"; 
-   d="scan'208";a="336315272"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga004.jf.intel.com with ESMTP; 11 Sep 2019 10:13:58 -0700
-Received: from andy by smile with local (Exim 4.92.1)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1i86Bo-0001zn-Jk; Wed, 11 Sep 2019 20:13:56 +0300
-Date:   Wed, 11 Sep 2019 20:13:56 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Russell King <linux@armlinux.org.uk>,
-        dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/11] Add support for software nodes to gpiolib
-Message-ID: <20190911171356.GV2680@smile.fi.intel.com>
-References: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+   d="scan'208";a="384772689"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.223.65])
+  by fmsmga005.fm.intel.com with ESMTP; 11 Sep 2019 10:26:31 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com
+Cc:     bruce.richardson@intel.com, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, kevin.laatz@intel.com,
+        Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf-next 1/3] i40e: fix xdp handle calculations
+Date:   Wed, 11 Sep 2019 17:24:33 +0000
+Message-Id: <20190911172435.21042-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 12:52:04AM -0700, Dmitry Torokhov wrote:
-> This series attempts to add support for software nodes to gpiolib, using
-> software node references that were introduced recently. This allows us
-> to convert more drivers to the generic device properties and drop
-> support for custom platform data:
-> 
-> static const struct software_node gpio_bank_b_node = {
-> |-------.name = "B",
-> };
-> 
-> static const struct property_entry simone_key_enter_props[] = {
-> |-------PROPERTY_ENTRY_U32("linux,code", KEY_ENTER),
-> |-------PROPERTY_ENTRY_STRING("label", "enter"),
-> |-------PROPERTY_ENTRY_REF("gpios", &gpio_bank_b_node, 123, GPIO_ACTIVE_LOW),
-> |-------{ }
-> };
-> 
-> If we agree in principle, I would like to have the very first 3 patches
-> in an immutable branch off maybe -rc8 so that it can be pulled into
-> individual subsystems so that patches switching various drivers to
-> fwnode_gpiod_get_index() could be applied.
+Commit 4c5d9a7fa149 ("i40e: fix xdp handle calculations") reintroduced
+the addition of the umem headroom to the xdp handle in the i40e_zca_free,
+i40e_alloc_buffer_slow_zc and i40e_alloc_buffer_zc functions. However,
+the headroom is already added to the handle in the function i40_run_xdp_zc.
+This commit removes the latter addition and fixes the case where the
+headroom is non-zero.
 
-FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: 4c5d9a7fa149 ("i40e: fix xdp handle calculations")
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-for patches 1-8 after addressing minor issues.
-I'll review the rest later on.
-
-> 
-> Thanks,
-> Dmitry
-> 
-> Dmitry Torokhov (11):
->   gpiolib: of: add a fallback for wlf,reset GPIO name
->   gpiolib: introduce devm_fwnode_gpiod_get_index()
->   gpiolib: introduce fwnode_gpiod_get_index()
->   net: phylink: switch to using fwnode_gpiod_get_index()
->   net: mdio: switch to using fwnode_gpiod_get_index()
->   drm/bridge: ti-tfp410: switch to using fwnode_gpiod_get_index()
->   gpliolib: make fwnode_get_named_gpiod() static
->   gpiolib: of: tease apart of_find_gpio()
->   gpiolib: of: tease apart acpi_find_gpio()
->   gpiolib: consolidate fwnode GPIO lookups
->   gpiolib: add support for software nodes
-> 
->  drivers/gpio/Makefile              |   1 +
->  drivers/gpio/gpiolib-acpi.c        | 153 ++++++++++++++----------
->  drivers/gpio/gpiolib-acpi.h        |  21 ++--
->  drivers/gpio/gpiolib-devres.c      |  33 ++----
->  drivers/gpio/gpiolib-of.c          | 159 ++++++++++++++-----------
->  drivers/gpio/gpiolib-of.h          |  26 ++--
->  drivers/gpio/gpiolib-swnode.c      |  92 +++++++++++++++
->  drivers/gpio/gpiolib-swnode.h      |  13 ++
->  drivers/gpio/gpiolib.c             | 184 ++++++++++++++++-------------
->  drivers/gpu/drm/bridge/ti-tfp410.c |   4 +-
->  drivers/net/phy/mdio_bus.c         |   4 +-
->  drivers/net/phy/phylink.c          |   4 +-
->  include/linux/gpio/consumer.h      |  53 ++++++---
->  13 files changed, 471 insertions(+), 276 deletions(-)
->  create mode 100644 drivers/gpio/gpiolib-swnode.c
->  create mode 100644 drivers/gpio/gpiolib-swnode.h
-> 
-> -- 
-> 2.23.0.162.g0b9fbb3734-goog
-> 
-
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 0373bc6c7e61..5f285ba1f1f9 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -192,7 +192,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ {
+ 	struct xdp_umem *umem = rx_ring->xsk_umem;
+ 	int err, result = I40E_XDP_PASS;
+-	u64 offset = umem->headroom;
++	u64 offset;
+ 	struct i40e_ring *xdp_ring;
+ 	struct bpf_prog *xdp_prog;
+ 	u32 act;
+@@ -203,7 +203,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+ 	 */
+ 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	act = bpf_prog_run_xdp(xdp_prog, xdp);
+-	offset += xdp->data - xdp->data_hard_start;
++	offset = xdp->data - xdp->data_hard_start;
+ 
+ 	xdp->handle = xsk_umem_adjust_offset(umem, xdp->handle, offset);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
