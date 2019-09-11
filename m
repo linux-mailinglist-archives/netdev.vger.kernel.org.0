@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CB0AFFA5
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 17:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDE3AFFAC
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 17:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728543AbfIKPJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 11:09:36 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:42308 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728381AbfIKPJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 11:09:36 -0400
-Received: by mail-io1-f65.google.com with SMTP id n197so46611408iod.9;
-        Wed, 11 Sep 2019 08:09:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zpSTnZWLfU+mtdlAh42xs+GSxup7aA/377MpA3ZModA=;
-        b=VuKDYc2rxs+4jUZdpQuHBjBqjoG+/X87aXFRR84EAstHq2b/sHIjhulnX8LfXX0Z5v
-         J6TQg8wudBS4xNr73cEkMUG8ZFNK+vMMVQhkBlN6VMEkCPew+eviVICq9ijf6jxzHmHN
-         Pf2EjKsicklY9we2tu1vWq+xXE9AltcEKK3POWlkJsOZUXLWPXMIWZ+mWKdlOX2f9mDX
-         qSJi/OC1wFLCsVgyKETD+aILLb3YaR6u1HL9vfN6+yBm87CLyE0CiWI6MZItdXiGZaSg
-         lV+1g29SOCWtBfrkRC3uwca2wdcti0rZUro55vCHYyW63y5DHNZuCpBc3UjdPtPJn7w+
-         nLdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=zpSTnZWLfU+mtdlAh42xs+GSxup7aA/377MpA3ZModA=;
-        b=CPY2Qw2GleOc+tyeQcDB5JKddrf/cRvM8cuJ++rfAFYnl9N2hKM2YIhERJHLyBIbWw
-         2rJ0aZhrWnpyvrsr9LJT9dVlYqUC/+GYDBMlZ9Uk+7P1hrz/QNnOQekXN3IX4/aMWl52
-         +fc1NJrWqEx2HZNqLqfGrX3M8T+5ME26p43kqt0DOjDLzEwH4afm2SJkN4jsRqpdPEtV
-         L1opu0Lj8DJnrAonntEO/AUyfjta4FeCzarP3o4z+XlbT5jx7eDjy0ZGIxkGGJT1YyuH
-         atlipRAdOIbo7Hdpw6oWojiR46/M4wHZH/aMzRJILBUftvbYNqab0RSvgHhmROiu4EB7
-         tMzg==
-X-Gm-Message-State: APjAAAVDeNA++dBDtiE+R5xioSxbbbkfb5Wc2PQxl6DcEe7ZGS+epmdm
-        ql+S/dGcpDXbqO0T9gBKWORZsuLkhyM=
-X-Google-Smtp-Source: APXvYqweuexRIh7nhhjMSs2ZGpMcndP/A8OxHHeXjgoKEcTuRqDBStiAqy7TcKpsUYCqtH+xbhjnkQ==
-X-Received: by 2002:a6b:c810:: with SMTP id y16mr43703681iof.75.1568214575179;
-        Wed, 11 Sep 2019 08:09:35 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id c4sm16670135ioa.76.2019.09.11.08.09.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2019 08:09:34 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     davem@davemloft.net
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: qrtr: fix memort leak in qrtr_tun_write_iter
-Date:   Wed, 11 Sep 2019 10:09:02 -0500
-Message-Id: <20190911150907.18251-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190911.101320.682967997452798874.davem@davemloft.net>
-References: <20190911.101320.682967997452798874.davem@davemloft.net>
+        id S1728267AbfIKPLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 11:11:05 -0400
+Received: from mx0b-00191d01.pphosted.com ([67.231.157.136]:8748 "EHLO
+        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727873AbfIKPLF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 11:11:05 -0400
+X-Greylist: delayed 10485 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Sep 2019 11:11:04 EDT
+Received: from pps.filterd (m0049462.ppops.net [127.0.0.1])
+        by m0049462.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x8BCFT9v023051;
+        Wed, 11 Sep 2019 08:16:07 -0400
+Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
+        by m0049462.ppops.net-00191d01. with ESMTP id 2uxxd033s7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 Sep 2019 08:16:07 -0400
+Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
+        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x8BCG6NE046046;
+        Wed, 11 Sep 2019 07:16:06 -0500
+Received: from zlp30499.vci.att.com (zlp30499.vci.att.com [135.46.181.149])
+        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x8BCG2DK045960
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Wed, 11 Sep 2019 07:16:02 -0500
+Received: from zlp30499.vci.att.com (zlp30499.vci.att.com [127.0.0.1])
+        by zlp30499.vci.att.com (Service) with ESMTP id 4DD9D4009E75;
+        Wed, 11 Sep 2019 12:16:02 +0000 (GMT)
+Received: from tlpd252.dadc.sbc.com (unknown [135.31.184.157])
+        by zlp30499.vci.att.com (Service) with ESMTP id 3977F4000323;
+        Wed, 11 Sep 2019 12:16:02 +0000 (GMT)
+Received: from dadc.sbc.com (localhost [127.0.0.1])
+        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x8BCG2EX090923;
+        Wed, 11 Sep 2019 07:16:02 -0500
+Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
+        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x8BCFutI090748;
+        Wed, 11 Sep 2019 07:15:56 -0500
+Received: from [10.156.47.86] (unknown [10.156.47.86])
+        by mail.eng.vyatta.net (Postfix) with ESMTPA id AE2B73601B8;
+        Wed, 11 Sep 2019 05:15:55 -0700 (PDT)
+Reply-To: mmanning@vyatta.att-mail.com
+Subject: Re: VRF Issue Since kernel 5
+To:     Gowen <gowen@potatocomputing.co.uk>,
+        David Ahern <dsahern@gmail.com>,
+        Alexis Bauvin <abauvin@online.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <CWLP265MB1554308A1373D9ECE68CB854FDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <9E920DE7-9CC9-493C-A1D2-957FE1AED897@online.net>
+ <CWLP265MB1554B902B7F3B43E6E75FD0DFDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <7CAF2F23-5D88-4BE7-B703-06B71D1EDD11@online.net>
+ <db3f6cd0-aa28-0883-715c-3e1eaeb7fd1e@gmail.com>
+ <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB15544E2F2303FA2D0F76B7F5FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+From:   Mike Manning <mmanning@vyatta.att-mail.com>
+Message-ID: <ef7ca3ad-d85c-01aa-42b6-b08db69399e4@vyatta.att-mail.com>
+Date:   Wed, 11 Sep 2019 13:15:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-11_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=876 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1909110113
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In qrtr_tun_write_iter the allocated kbuf should be release in case of
-error or success return.
+Hi Gareth,
+Could you please also check that all the following are set to 1, I
+appreciate you've confirmed that the one for tcp is set to 1, and by
+default the one for raw is also set to 1:
 
-v2 Update: Thanks to David Miller for pointing out the release on success
-path as well.
+sudo sysctl -a | grep l3mdev
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- net/qrtr/tun.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+If not,
+sudo sysctl net.ipv4.raw_l3mdev_accept=1
+sudo sysctl net.ipv4.udp_l3mdev_accept=1
+sudo sysctl net.ipv4.tcp_l3mdev_accept=1
 
-diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
-index ccff1e544c21..e35869e81766 100644
---- a/net/qrtr/tun.c
-+++ b/net/qrtr/tun.c
-@@ -84,11 +84,14 @@ static ssize_t qrtr_tun_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	if (!kbuf)
- 		return -ENOMEM;
- 
--	if (!copy_from_iter_full(kbuf, len, from))
-+	if (!copy_from_iter_full(kbuf, len, from)) {
-+		kfree(kbuf);
- 		return -EFAULT;
-+	}
- 
- 	ret = qrtr_endpoint_post(&tun->ep, kbuf, len);
- 
-+	kfree(kbuf);
- 	return ret < 0 ? ret : len;
- }
- 
--- 
-2.17.1
+
+Thanks
+Mike
+
+
 
