@@ -2,168 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A808DB02DC
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:45:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D9A4B02E9
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:47:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729663AbfIKRpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 13:45:22 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54298 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729349AbfIKRpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 13:45:22 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8BHeVCl001307;
-        Wed, 11 Sep 2019 10:44:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
- b=qOB0qxHgErT1QbC1hZribwilhYf8cFXjOIXSXEGIpOOTxyuR2G6II5JSYnbvsLmSNZC1
- Vl8RQ/u8n0vBU33iO8GSTE9fBxwBQ6U4/BRjMXMbXHmYecASNTQo+8HMsFJmBeKdcVO7
- IHbd5vQ3lDkcOOQhjygk/fIA5EiAGtMCdLg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uxv0p2nak-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Sep 2019 10:44:11 -0700
-Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 11 Sep 2019 10:44:07 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 11 Sep 2019 10:44:07 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 11 Sep 2019 10:44:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HmgR5m/QKkXNaxZwHeUjIJvqjn2qmhTFj5dfBtNYTPE+4uDvKJpfWLtLap9NPDzB4W+PdEOc31d02kT0e/e1hAackMfuJ4MpPovA3YjzZxtPUO6OYkcQF2g6VwaHhANS+xiALyW7AoTeP/FV/evOPDWJoqUhWbT+fckB7qxN29k7aDrkxO6w/F7GENHBj1VgsF6qXgJjucfewIX+qKg1+9vYdDfgaRebVkt+jpX7TsX/Tfdms36l2KJx9CORpgmBb9X+fuLw2Q7KXaM8ECSBOsTsU1NKnxXr/3S7kpILxqJT9bM2slvld/RiKznAAs1GGC+ALvydDjUQRF54rhzFEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
- b=Lu6nypCOKLBw7aT/5h3Gfi/qS9Cp0PNZTIqn+cjtYPBjXnW8CNtZkoy7jBUj1wmlmawIuLG2VUKAgX7B1IMvxNirkt32v4Phdaa6Y6QINpupuzOZzXM1I8k9aELRYy1Hs/RBrhf2HDQyZmZGtuiLZqr5wruX7yYAjm1QBys6w+gw81QOgNXQmhhmp99p6DJzvSXUgwnKEkGqnZSpcxKELVgNoeWzAU+uF6GKCNb0ZDF+ts1NrOtc5nGq7hemsLdmiTqCWlPJLoe2Sfm4lEHP4uMizF+8edJwaY3R6gkDy5WxXAZ92VJp7LncHpA15urf4VJr98DWqBEbmS2huAeYUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9OxxgqyxwATjBdv57AaRO2tmC6ELEdjpHgw6NAqg2n8=;
- b=KXTJAO9cCZfIHA/U2g54LkX+C0eBGxQSPyI80yqisD/gumfY4t8vY8vMyikhxjbg+cbVckQSpAlkQ080uc3CTBy/mALrR5wDY+q2hdnmOvcxp+P5FQTf5hM8WMmT9uLqWJXmcvlf0sv6tKUEmi52f4yyuRG0Vo2093DFw2Mkzb0=
-Received: from CY4PR15MB1269.namprd15.prod.outlook.com (10.172.177.11) by
- CY4PR15MB1432.namprd15.prod.outlook.com (10.172.161.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.14; Wed, 11 Sep 2019 17:44:05 +0000
-Received: from CY4PR15MB1269.namprd15.prod.outlook.com
- ([fe80::38b1:336:13e6:b02b]) by CY4PR15MB1269.namprd15.prod.outlook.com
- ([fe80::38b1:336:13e6:b02b%7]) with mapi id 15.20.2241.018; Wed, 11 Sep 2019
- 17:44:05 +0000
-From:   Vijay Khemka <vijaykhemka@fb.com>
-To:     Joel Stanley <joel@jms.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Sai Dasari <sdasari@fb.com>
-Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Topic: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
-Thread-Index: AQHVaCL3HHZ/0IxjZ0GB2KAMVKzdAqcld28AgAEYWwD//7uYAA==
-Date:   Wed, 11 Sep 2019 17:44:05 +0000
-Message-ID: <A15F2B7E-3AC6-4C24-8AF3-9E47635FDC7F@fb.com>
-References: <20190910213734.3112330-1-vijaykhemka@fb.com>
- <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
- <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
-In-Reply-To: <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2620:10d:c090:200::1:a2f5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 17bcb530-1e56-4d91-f4fb-08d736dfa420
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CY4PR15MB1432;
-x-ms-traffictypediagnostic: CY4PR15MB1432:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CY4PR15MB143260F22068945BA4E56F36DDB10@CY4PR15MB1432.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 0157DEB61B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(396003)(136003)(346002)(189003)(199004)(64756008)(8676002)(4326008)(2906002)(66946007)(91956017)(54906003)(66476007)(110136005)(316002)(66556008)(81166006)(186003)(6506007)(102836004)(99286004)(256004)(6116002)(76116006)(66446008)(5660300002)(71190400001)(71200400001)(11346002)(7416002)(2616005)(46003)(486006)(446003)(53546011)(476003)(33656002)(36756003)(229853002)(76176011)(81156014)(6486002)(53936002)(8936002)(6436002)(305945005)(478600001)(14454004)(7736002)(6246003)(25786009)(6512007)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR15MB1432;H:CY4PR15MB1269.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: qvCVoZVIj+wuyIRO4CAmQQqcoZgNA00LB2XBcGFeDEB4M7ThW3ekQLpQLYSXeSKexscuAyqSmXBxhRZrGiLe3lzy2+kdX4z+iba+KMiHnwYs9wKRptUsiolRxyaDdE4Q2ylFXCbaG4JwNfPBED5tL0VkS32LS/YsiH2QXAPCexEtUfm3TG4PAHvrvzkU9SCIC53Kbrshe5LQAyuXhRt5iP//FVWiv6t+zLJYUtPGcg6TjDlv4GzngmGWGj4kGtsbxXWfu9Nk8kemO2J3PEMkGT0xe1HVE7I9+6g0V9GBrcPH8ILlvWwAx7gIwBfwjDyNNCLYZIikpXNn+3WyQJgwZIrXAMmvTSOMlZQtchzmXp11ckuYEYi3KbgeGositc6yddJtzj8ZeSheIV34ZczJcA/uBoZJ8+wBPNPCwkOE/M4=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <687EF9F737F9564E8FB7C3725A80B3F8@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729770AbfIKRrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 13:47:23 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34730 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729683AbfIKRrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 13:47:22 -0400
+Received: by mail-wr1-f68.google.com with SMTP id a11so15806594wrx.1;
+        Wed, 11 Sep 2019 10:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=za5dLNsyd8cO0/LWjl+4GZ/KbGfFV7E0+6wSG+4LWkk=;
+        b=iiNPN2Ai9y+GirwE9t7qJoUI//aSPubMbgHAjaoyu311cDmcvJcleIdfrAIGcbFvn7
+         9/MF6u85fcNYE6uSjhTj+6VATv1d90FR/mr2dhFCrX5Pn4xQXjy6twcPxF/fhfExTa4K
+         LYQTecvTYjvIQ44/az3IzkKwj47aTFJfiUyVOk4/fFI+SIYKyPeMN2m6t7vUbqxgFGFh
+         mw3H/OO2fZUmf0tlf4wlmZ/Z7lhc/hz8rIt/6u/NXWEdMkS0wVUfEyponAar9XM7fyE0
+         4kivPefiGnyrahppnTKzWbxXJ1pxxBIwf+/U/gjUrF0LOUqruR0CseQsBVtRJqv1C8wt
+         MvqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=za5dLNsyd8cO0/LWjl+4GZ/KbGfFV7E0+6wSG+4LWkk=;
+        b=ShBE11xQvtwLP3sSab1pqKN22L9QbvuCoDsUrY0DNyDKgms9IeQmydGOmEJBKkvK1+
+         8zwf82B5wMMEYXUOMn5gowOdPDEHavLSKtjUKFVm4KfDof2fZPY00q4vCzLBiE8EUtR/
+         claAh5DEvFWkNgEmCHHrd8QEDDlZCjnl2trfbURIL5+WTSIvU9gUXcUNN32OeAW08C0i
+         DpKdfyrhpxpaCBxGTCtnHGxWa7ucJGCF16jwQKte3VfTI5WeP25Ubo/qcBTwmrizdKka
+         HXtlF4umQ3wjLlEVv3Lgf7D7P8yh14Oo6m/X1nvEC2svwWnT/y2JKfmwa4zJWMaLKAKX
+         vxng==
+X-Gm-Message-State: APjAAAWMZKN7//ylIQij0getmUYTva3hamjEHNK4T5a4mDZj9Cy4Xr52
+        zjm4syr2+jTpAOBh/RE5gcsvOvsq+EdvXuHNA8E=
+X-Google-Smtp-Source: APXvYqxkwdBPzuoHNJ68DYYOxhywTzPsN5U8p7jUqjtEsPzdTDNNUoI6UE3KyActllWj7Mhqsxo60XmSGPYce/3vITE=
+X-Received: by 2002:a5d:628f:: with SMTP id k15mr16507858wru.124.1568224039920;
+ Wed, 11 Sep 2019 10:47:19 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17bcb530-1e56-4d91-f4fb-08d736dfa420
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2019 17:44:05.4585
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2vi6bb8ZNpHOEQx1FvRTVrG8WFRTZKh+ErKIKrDsAzcGIQeIr6GD98U5ab6IYCfHfwuHtyM/VcD1pf/y67n6eA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1432
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-11_08:2019-09-11,2019-09-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- lowpriorityscore=0 suspectscore=0 mlxlogscore=999 impostorscore=0
- adultscore=0 malwarescore=0 bulkscore=0 mlxscore=0 priorityscore=1501
- spamscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1909110163
-X-FB-Internal: deliver
+References: <cover.1568015756.git.lucien.xin@gmail.com> <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
+ <9fc7ca1598e641cda3914840a4416aab@AcuMS.aculab.com> <CADvbK_d_Emw0K2Uq4P9OanRBr52tNjMsAOiJNi0TGsuWt6+81A@mail.gmail.com>
+ <1e5c3163e6c649b09137eeb62d193d87@AcuMS.aculab.com> <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
+ <CADvbK_dqNas+vwP2t3LqWyabNnzRDO=PZPe4p+zE-vQJTnfKpA@mail.gmail.com> <20190911125609.GC3499@localhost.localdomain>
+In-Reply-To: <20190911125609.GC3499@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 12 Sep 2019 01:47:08 +0800
+Message-ID: <CADvbK_e=4Fo7dmM=4QTZHtNDtsrDVe_VtyG2NVqt_3r9z7R=PA@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct sctp_paddrthlds
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDkvMTEvMTksIDc6NDkgQU0sICJKb2VsIFN0YW5sZXkiIDxqb2VsQGptcy5pZC5h
-dT4gd3JvdGU6DQoNCiAgICBIaSBCZW4sDQogICAgDQogICAgT24gVHVlLCAxMCBTZXAgMjAxOSBh
-dCAyMjowNSwgRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+IHdyb3RlOg0K
-ICAgID4NCiAgICA+IE9uIDkvMTAvMTkgMjozNyBQTSwgVmlqYXkgS2hlbWthIHdyb3RlOg0KICAg
-ID4gPiBIVyBjaGVja3N1bSBnZW5lcmF0aW9uIGlzIG5vdCB3b3JraW5nIGZvciBBU1QyNTAwLCBz
-cGVjaWFsbHkgd2l0aCBJUFY2DQogICAgPiA+IG92ZXIgTkNTSS4gQWxsIFRDUCBwYWNrZXRzIHdp
-dGggSVB2NiBnZXQgZHJvcHBlZC4gQnkgZGlzYWJsaW5nIHRoaXMNCiAgICA+ID4gaXQgd29ya3Mg
-cGVyZmVjdGx5IGZpbmUgd2l0aCBJUFY2Lg0KICAgID4gPg0KICAgID4gPiBWZXJpZmllZCB3aXRo
-IElQVjYgZW5hYmxlZCBhbmQgY2FuIGRvIHNzaC4NCiAgICA+DQogICAgPiBIb3cgYWJvdXQgSVB2
-NCwgZG8gdGhlc2UgcGFja2V0cyBoYXZlIHByb2JsZW0/IElmIG5vdCwgY2FuIHlvdSBjb250aW51
-ZQ0KICAgID4gYWR2ZXJ0aXNpbmcgTkVUSUZfRl9JUF9DU1VNIGJ1dCB0YWtlIG91dCBORVRJRl9G
-X0lQVjZfQ1NVTT8NCiAgICA+DQogICAgPiA+DQogICAgPiA+IFNpZ25lZC1vZmYtYnk6IFZpamF5
-IEtoZW1rYSA8dmlqYXlraGVta2FAZmIuY29tPg0KICAgID4gPiAtLS0NCiAgICA+ID4gIGRyaXZl
-cnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA1ICsrKy0tDQogICAgPiA+ICAx
-IGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KICAgID4gPg0K
-ICAgID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
-MDAuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCiAgICA+ID4g
-aW5kZXggMDMwZmVkNjUzOTNlLi41OTFjOTcyNTAwMmIgMTAwNjQ0DQogICAgPiA+IC0tLSBhL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCiAgICA+ID4gKysrIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYw0KICAgID4gPiBAQCAtMTgzOSw4
-ICsxODM5LDkgQEAgc3RhdGljIGludCBmdGdtYWMxMDBfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rl
-dmljZSAqcGRldikNCiAgICA+ID4gICAgICAgaWYgKHByaXYtPnVzZV9uY3NpKQ0KICAgID4gPiAg
-ICAgICAgICAgICAgIG5ldGRldi0+aHdfZmVhdHVyZXMgfD0gTkVUSUZfRl9IV19WTEFOX0NUQUdf
-RklMVEVSOw0KICAgID4gPg0KICAgID4gPiAtICAgICAvKiBBU1QyNDAwICBkb2Vzbid0IGhhdmUg
-d29ya2luZyBIVyBjaGVja3N1bSBnZW5lcmF0aW9uICovDQogICAgPiA+IC0gICAgIGlmIChucCAm
-JiAob2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0MjQwMC1tYWMiKSkpDQog
-ICAgPiA+ICsgICAgIC8qIEFTVDI0MDAgIGFuZCBBU1QyNTAwIGRvZXNuJ3QgaGF2ZSB3b3JraW5n
-IEhXIGNoZWNrc3VtIGdlbmVyYXRpb24gKi8NCiAgICA+ID4gKyAgICAgaWYgKG5wICYmIChvZl9k
-ZXZpY2VfaXNfY29tcGF0aWJsZShucCwgImFzcGVlZCxhc3QyNDAwLW1hYyIpIHx8DQogICAgPiA+
-ICsgICAgICAgICAgICAgICAgb2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUobnAsICJhc3BlZWQsYXN0
-MjUwMC1tYWMiKSkpDQogICAgDQogICAgRG8geW91IHJlY2FsbCB1bmRlciB3aGF0IGNpcmN1bXN0
-YW5jZXMgd2UgbmVlZCB0byBkaXNhYmxlIGhhcmR3YXJlIGNoZWNrc3VtbWluZz8NCk1haW5seSwg
-VENQIHBhY2tldHMgb3ZlciBJUFY2IGdldHRpbmcgZHJvcHBlZC4gQWZ0ZXIgZGlzYWJsaW5nIGl0
-IHdhcyB3b3JraW5nLg0KICAgIA0KICAgIENoZWVycywNCiAgICANCiAgICBKb2VsDQogICAgDQog
-ICAgPiA+ICAgICAgICAgICAgICAgbmV0ZGV2LT5od19mZWF0dXJlcyAmPSB+TkVUSUZfRl9IV19D
-U1VNOw0KICAgID4gPiAgICAgICBpZiAobnAgJiYgb2ZfZ2V0X3Byb3BlcnR5KG5wLCAibm8taHct
-Y2hlY2tzdW0iLCBOVUxMKSkNCiAgICA+ID4gICAgICAgICAgICAgICBuZXRkZXYtPmh3X2ZlYXR1
-cmVzICY9IH4oTkVUSUZfRl9IV19DU1VNIHwgTkVUSUZfRl9SWENTVU0pOw0KICAgID4gPg0KICAg
-ID4NCiAgICA+DQogICAgPiAtLQ0KICAgID4gRmxvcmlhbg0KICAgIA0KDQo=
+On Wed, Sep 11, 2019 at 8:56 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, Sep 11, 2019 at 05:38:33PM +0800, Xin Long wrote:
+> > On Wed, Sep 11, 2019 at 5:21 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > On Wed, Sep 11, 2019 at 5:03 PM David Laight <David.Laight@aculab.com> wrote:
+> > > >
+> > > > From: Xin Long [mailto:lucien.xin@gmail.com]
+> > > > > Sent: 11 September 2019 09:52
+> > > > > On Tue, Sep 10, 2019 at 9:19 PM David Laight <David.Laight@aculab.com> wrote:
+> > > > > >
+> > > > > > From: Xin Long
+> > > > > > > Sent: 09 September 2019 08:57
+> > > > > > > Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
+> > > > > > > Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
+> > > > > > > added to allow a user to change ps_retrans per sock/asoc/transport, as
+> > > > > > > other 2 paddrthlds: pf_retrans, pathmaxrxt.
+> > > > > > >
+> > > > > > > Note that ps_retrans is not allowed to be greater than pf_retrans.
+> > > > > > >
+> > > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > > > > ---
+> > > > > > >  include/uapi/linux/sctp.h |  1 +
+> > > > > > >  net/sctp/socket.c         | 10 ++++++++++
+> > > > > > >  2 files changed, 11 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+> > > > > > > index a15cc28..dfd81e1 100644
+> > > > > > > --- a/include/uapi/linux/sctp.h
+> > > > > > > +++ b/include/uapi/linux/sctp.h
+> > > > > > > @@ -1069,6 +1069,7 @@ struct sctp_paddrthlds {
+> > > > > > >       struct sockaddr_storage spt_address;
+> > > > > > >       __u16 spt_pathmaxrxt;
+> > > > > > >       __u16 spt_pathpfthld;
+> > > > > > > +     __u16 spt_pathcpthld;
+> > > > > > >  };
+> > > > > > >
+> > > > > > >  /*
+> > > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > > > > > > index 5e2098b..5b9774d 100644
+> > > > > > > --- a/net/sctp/socket.c
+> > > > > > > +++ b/net/sctp/socket.c
+> > > > > > > @@ -3954,6 +3954,9 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
+> > > > > >
+> > > > > > This code does:
+> > > > > >         if (optlen < sizeof(struct sctp_paddrthlds))
+> > > > > >                 return -EINVAL;
+> > > > > here will become:
+> > > > >
+> > > > >         if (optlen >= sizeof(struct sctp_paddrthlds)) {
+> > > > >                 optlen = sizeof(struct sctp_paddrthlds);
+> > > > >         } else if (optlen >= ALIGN(offsetof(struct sctp_paddrthlds,
+> > > > >                                             spt_pathcpthld), 4))
+> > > > >                 optlen = ALIGN(offsetof(struct sctp_paddrthlds,
+> > > > >                                         spt_pathcpthld), 4);
+> > > > >                 val.spt_pathcpthld = 0xffff;
+> > > > >         else {
+> > > > >                 return -EINVAL;
+> > > > >         }
+> > > >
+> > > > Hmmm...
+> > > > If the kernel has to default 'val.spt_pathcpthld = 0xffff'
+> > > > then recompiling an existing application with the new uapi
+> > > > header is going to lead to very unexpected behaviour.
+> > > >
+> > > > The best you can hope for is that the application memset the
+> > > > structure to zero.
+> > > > But more likely it is 'random' on-stack data.
+> > > 0xffff is a value to disable the feature 'Primary Path Switchover'.
+> > > you're right that user might set it to zero unexpectly with their
+> > > old application rebuilt.
+> > >
+> > > A safer way is to introduce "sysctl net.sctp.ps_retrans", it won't
+> > > matter if users set spt_pathcpthld properly when they're not aware
+> > > of this feature, like "sysctl net.sctp.pF_retrans". Looks better?
+> > Sorry for confusing,  "sysctl net.sctp.ps_retrans" is already there
+> > (its value is 0xffff by default),
+> > we just need to do this in sctp_setsockopt_paddr_thresholds():
+> >
+> >         if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
+> >                            optlen))
+> >                 return -EFAULT;
+> >
+> >         if (sock_net(sk)->sctp.ps_retrans == 0xffff)
+> >                 val.spt_pathcpthld = 0xffff;
+>
+> I'm confused with the snippets, but if I got them right, this is after
+> dealing with proper len and could leave val.spt_pathcpthld
+> uninitialized if the application used the old format and sysctl is !=
+> 0xffff.
+right, how about this in sctp_setsockopt_paddr_thresholds():
+
+        offset = ALIGN(offsetof(struct sctp_paddrthlds, spt_pathcpthld), 4);
+        if (optlen < offset)
+                return -EINVAL;
+        if (optlen < sizeof(val) || sock_net(sk)->sctp.ps_retrans == 0xffff) {
+                optlen = offset;
+                val.spt_pathcpthld = 0xffff;
+        } else {
+                optlen = sizeof(val);
+        }
+
+        if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
+                           optlen))
+                return -EFAULT;
+
+        if (val.spt_pathpfthld > val.spt_pathcpthld)
+                return -EINVAL;
+
+Which means we will 'skip' spt_pathcpthld if (it's using old format) or
+(ps_retrans is disabled and it's using new format).
+Note that  ps_retrans < pf_retrans is not allowed in rfc7829.
+
+and in sctp_getsockopt_paddr_thresholds():
+
+        offset = ALIGN(offsetof(struct sctp_paddrthlds, spt_pathcpthld), 4);
+        if (len < offset)
+                return -EINVAL;
+        if (len < sizeof(val) || sock_net(sk)->sctp.ps_retrans == 0xffff)
+                len = offset;
+        else
+                len = sizeof(val);
+
+        if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval, len))
+                return -EFAULT;
+
+
+>
+> >
+> >         if (val.spt_pathpfthld > val.spt_pathcpthld)
+> >                 return -EINVAL;
+> >
+> > >
+> > > >
+> > > >         David
+> > > >
+> > > > -
+> > > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > > > Registration No: 1397386 (Wales)
+> >
