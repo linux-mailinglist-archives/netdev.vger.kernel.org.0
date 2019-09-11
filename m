@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6494EAF74B
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 09:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041BDAF741
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 09:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfIKHwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 03:52:21 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:41049 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726696AbfIKHwU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 03:52:20 -0400
-Received: by mail-pf1-f193.google.com with SMTP id b13so13129573pfo.8;
-        Wed, 11 Sep 2019 00:52:20 -0700 (PDT)
+        id S1726911AbfIKHw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 03:52:28 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38595 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727167AbfIKHw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 03:52:26 -0400
+Received: by mail-pf1-f196.google.com with SMTP id h195so13156976pfe.5;
+        Wed, 11 Sep 2019 00:52:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q4c1ESOOpjE2P/uFd/KkrtGxclO2zKfVzjnW7aP5b5c=;
-        b=icWt7W0/ZGxLPm02+gnA/J9j34su+UEYXiIxB1YxkdgQeerLuWIogY5w8f411VOCOq
-         SgN3HpCyUKKt0AHKyEgPID2BBTF3u4+NAuk3B9QNNX/KsAULVe9vssToPV0QF4zjzvr0
-         KKcBVuk0hI5R1cs9G7wNbXYDTEXe4mDCRGFBMbrNiIb2Z+MPOKB/5nd+zOlxhG7ImCxG
-         bQPZ2M+gW9iF9Aikn4j/ghPrWXFh5X+F6gpMOK/20erVWKwkcBiH7ran3LtCKIHxFUnF
-         4jUTN0gHJNHvc/00+XZPU9eLUehHBeQae0yLzl5aTDWL/DklS1NCHKX2o3qv5IO278+C
-         /jmQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=h88MG2l81eiTdjzgkHJX15BXFcOh2ckomfV8YTYTFjU=;
+        b=kMBQ3dMrsESr7TwZqim8jjaa2hJp3u+maVECjThf5KhPmfb7HZ0562mIg/dkSgsVxB
+         3zrz+6cT+bL8lNKexFDcv2CaCY0wdX3vkNNsRx0n4ZA5wy1kbIQA4fGgOB9LoYC2qePn
+         7WAX7Bypv/lPCEDSe1GjQUDCz8hgB6NeWoK7+SUS6c9rC/QgmVqb6uVbTZ9ot0DNS8xB
+         3K71OrksDrXb/BQLz72jnm8oD17ZgqzsD7lnxAl1rEBPMG4EwWyidqWv2IpquIsoDpUK
+         gdc6qbMTi7Ea3Qx3M2opHAnaOBUYjZcnVwdj93ugzTXBHL3J9TBb3GyCzr9YdyNFI/2A
+         TOTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q4c1ESOOpjE2P/uFd/KkrtGxclO2zKfVzjnW7aP5b5c=;
-        b=hVs+MlzzlcOWf6afERJANW73FuqA9/qlcUxEMhazrFhYlDnNh3tLfNt9IcTLf5w8BX
-         V5Jj3Sj4DxXrBidhKtVSWH8OlIX8Q/uxJ5SY4wP9bwmLmmm1Li//xbwNkjgzW+vvkJ5l
-         1tjBL0D6KVsrKei/5+Ec06iwy23krOlgOOxkWD+n0K84p2IbP1QtpiQHXSXVzwvDPt/U
-         FjAhi64ebcVp/w9yeyU1QPpkqiVG07RHQj3/nyeR7aR3O5M6B4Pn4C1S6JR4xt0sroPP
-         /K6Oe5iN9Md+TlAJzOczJHYKS4ob00I36HWOiNQlRs1z6zdzjN0ikwy0zBjL61OrT0Wu
-         Kf1g==
-X-Gm-Message-State: APjAAAX5SHn81kdD08rPok9eR8N3aIHLh5vn9h2D2ck2HbQQLvLCIFyg
-        BrjT3g8SJmd5/y1ulsIMzmsd2BmRBT0=
-X-Google-Smtp-Source: APXvYqyrkl1nQUV0tQy2ao6Qp1atdp6sVcb56rA8O+j9Av28pZKjTEmBQuuMIwaP++GyQIODri9+7A==
-X-Received: by 2002:a62:ee0a:: with SMTP id e10mr41430645pfi.197.1568188339617;
-        Wed, 11 Sep 2019 00:52:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=h88MG2l81eiTdjzgkHJX15BXFcOh2ckomfV8YTYTFjU=;
+        b=imN6+G68ryW8N/vCInbN/6PJQEpzSnZ7axeu46/Wzb4/cELt6P+iMX5WkfAO9nhl1C
+         Qwn7ykTGLrOJ6BMiG8wF8XDuJ90hh6F5a9dfm7w0a6nPJsd1Wurk05tMxW8SYVahClnB
+         mTl1JJ87jAvubd4O6P2CXKc/1nAhlfRzphcysJE1bygH5alcas5qTGnCONRyEuLtaWAy
+         twM2hAvpA5Q/tfXWXJFnYXFpfsTQkQnUislEKRd35YgoxlCBnhbXc4FqPvpmE2TD0wT/
+         X0vUYzdsblEKkBEw7ub44lEO3Mp3B7UkFqCiQ1R/RvLJ/SIc71jfjEOoNTicKzbyh4jo
+         6ZVg==
+X-Gm-Message-State: APjAAAV38PXueuqMZoGSCTff40aRfe5etwaP0w626qeU07ckNLB9xD0d
+        YUj7RJs6HAg0p1jAXJUuvA0=
+X-Google-Smtp-Source: APXvYqwONOjWAlEXKobnYjYWQs5FrHnxNtmzqbN8TPKlC8jUIXa+3WVHFQ4DniPtIjcy4gPeDdwkIg==
+X-Received: by 2002:a17:90a:b63:: with SMTP id 90mr3979456pjq.96.1568188345092;
+        Wed, 11 Sep 2019 00:52:25 -0700 (PDT)
 Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id u2sm8582445pgp.66.2019.09.11.00.52.18
+        by smtp.gmail.com with ESMTPSA id u2sm8582445pgp.66.2019.09.11.00.52.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2019 00:52:19 -0700 (PDT)
+        Wed, 11 Sep 2019 00:52:23 -0700 (PDT)
 From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         Andrew Lunn <andrew@lunn.ch>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
         "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Russell King <linux@armlinux.org.uk>,
-        dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 00/11] Add support for software nodes to gpiolib
-Date:   Wed, 11 Sep 2019 00:52:04 -0700
-Message-Id: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Subject: [PATCH 04/11] net: phylink: switch to using fwnode_gpiod_get_index()
+Date:   Wed, 11 Sep 2019 00:52:08 -0700
+Message-Id: <20190911075215.78047-5-dmitry.torokhov@gmail.com>
 X-Mailer: git-send-email 2.23.0.162.g0b9fbb3734-goog
+In-Reply-To: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
+References: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -75,60 +67,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series attempts to add support for software nodes to gpiolib, using
-software node references that were introduced recently. This allows us
-to convert more drivers to the generic device properties and drop
-support for custom platform data:
+Instead of fwnode_get_named_gpiod() that I plan to hide away, let's use
+the new fwnode_gpiod_get_index() that mimics gpiod_get_index(), bit
+works with arbitrary firmware node.
 
-static const struct software_node gpio_bank_b_node = {
-|-------.name = "B",
-};
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
 
-static const struct property_entry simone_key_enter_props[] = {
-|-------PROPERTY_ENTRY_U32("linux,code", KEY_ENTER),
-|-------PROPERTY_ENTRY_STRING("label", "enter"),
-|-------PROPERTY_ENTRY_REF("gpios", &gpio_bank_b_node, 123, GPIO_ACTIVE_LOW),
-|-------{ }
-};
+ drivers/net/phy/phylink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If we agree in principle, I would like to have the very first 3 patches
-in an immutable branch off maybe -rc8 so that it can be pulled into
-individual subsystems so that patches switching various drivers to
-fwnode_gpiod_get_index() could be applied.
-
-Thanks,
-Dmitry
-
-Dmitry Torokhov (11):
-  gpiolib: of: add a fallback for wlf,reset GPIO name
-  gpiolib: introduce devm_fwnode_gpiod_get_index()
-  gpiolib: introduce fwnode_gpiod_get_index()
-  net: phylink: switch to using fwnode_gpiod_get_index()
-  net: mdio: switch to using fwnode_gpiod_get_index()
-  drm/bridge: ti-tfp410: switch to using fwnode_gpiod_get_index()
-  gpliolib: make fwnode_get_named_gpiod() static
-  gpiolib: of: tease apart of_find_gpio()
-  gpiolib: of: tease apart acpi_find_gpio()
-  gpiolib: consolidate fwnode GPIO lookups
-  gpiolib: add support for software nodes
-
- drivers/gpio/Makefile              |   1 +
- drivers/gpio/gpiolib-acpi.c        | 153 ++++++++++++++----------
- drivers/gpio/gpiolib-acpi.h        |  21 ++--
- drivers/gpio/gpiolib-devres.c      |  33 ++----
- drivers/gpio/gpiolib-of.c          | 159 ++++++++++++++-----------
- drivers/gpio/gpiolib-of.h          |  26 ++--
- drivers/gpio/gpiolib-swnode.c      |  92 +++++++++++++++
- drivers/gpio/gpiolib-swnode.h      |  13 ++
- drivers/gpio/gpiolib.c             | 184 ++++++++++++++++-------------
- drivers/gpu/drm/bridge/ti-tfp410.c |   4 +-
- drivers/net/phy/mdio_bus.c         |   4 +-
- drivers/net/phy/phylink.c          |   4 +-
- include/linux/gpio/consumer.h      |  53 ++++++---
- 13 files changed, 471 insertions(+), 276 deletions(-)
- create mode 100644 drivers/gpio/gpiolib-swnode.c
- create mode 100644 drivers/gpio/gpiolib-swnode.h
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index a45c5de96ab1..14b608991445 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -168,8 +168,8 @@ static int phylink_parse_fixedlink(struct phylink *pl,
+ 			pl->link_config.pause |= MLO_PAUSE_ASYM;
+ 
+ 		if (ret == 0) {
+-			desc = fwnode_get_named_gpiod(fixed_node, "link-gpios",
+-						      0, GPIOD_IN, "?");
++			desc = fwnode_gpiod_get_index(fixed_node, "link", 0,
++						      GPIOD_IN, "?");
+ 
+ 			if (!IS_ERR(desc))
+ 				pl->link_gpio = desc;
 -- 
 2.23.0.162.g0b9fbb3734-goog
 
