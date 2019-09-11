@@ -2,70 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41070AF77B
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 10:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBD8AF77D
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 10:13:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726842AbfIKIMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 04:12:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43608 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726341AbfIKIMt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 04:12:49 -0400
+        id S1727138AbfIKINX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 04:13:23 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39916 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726735AbfIKINX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 04:13:23 -0400
 Received: from localhost (unknown [148.69.85.38])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1ADD721479;
-        Wed, 11 Sep 2019 08:12:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568189568;
-        bh=TuGFTo4yDgBKVIjgEc0gL99p9EO6rgqJJ/wUOuDpG9M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jhSvXh0i97MUQYOtPmukf75XuHBMTkEEI/i01keIXAJ7NIKrwDZyrDL/rijgFqT6p
-         PsgsBXIkwipBpf2/NXq2dW88KpsdSMU6KsUDJv2/H+dOCd6QYvDqwAFMWUSPzcEV48
-         tPQs9EaQ+aTRV1o3EU+pqS3a2Ecd8ce5uXuMMqdE=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Mark Zhang <markz@mellanox.com>, netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Leon Romanovsky <leonro@mellanox.com>
-Subject: [PATCH iproute2-next] rdma: Check comm string before print in print_comm()
-Date:   Wed, 11 Sep 2019 11:12:43 +0300
-Message-Id: <20190911081243.28917-1-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 15CD615565B7D;
+        Wed, 11 Sep 2019 01:13:21 -0700 (PDT)
+Date:   Wed, 11 Sep 2019 10:13:20 +0200 (CEST)
+Message-Id: <20190911.101320.682967997452798874.davem@davemloft.net>
+To:     navid.emamdoost@gmail.com
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: qrtr: fix memort leak in qrtr_tun_write_iter
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190911003748.26841-1-navid.emamdoost@gmail.com>
+References: <20190911003748.26841-1-navid.emamdoost@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Sep 2019 01:13:23 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Zhang <markz@mellanox.com>
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date: Tue, 10 Sep 2019 19:37:45 -0500
 
-Broken kernels (not-upstream) can provide wrong empty "comm" field.
-It causes to segfault while printing in JSON format.
+> In qrtr_tun_write_iter the allocated kbuf should be release in case of
+> error happening.
+> 
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-Fixes: 8ecac46a60ff ("rdma: Add QP resource tracking information")
-Signed-off-by: Mark Zhang <markz@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- rdma/res.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/rdma/res.c b/rdma/res.c
-index 97a7b964..6003006e 100644
---- a/rdma/res.c
-+++ b/rdma/res.c
-@@ -161,6 +161,9 @@ void print_comm(struct rd *rd, const char *str, struct nlattr **nla_line)
- {
- 	char tmp[18];
- 
-+	if (!str)
-+		return;
-+
- 	if (rd->json_output) {
- 		/* Don't beatify output in JSON format */
- 		jsonw_string_field(rd->jw, "comm", str);
--- 
-2.20.1
-
+Shouldn't it also be freed in case of success too?
