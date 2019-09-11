@@ -2,155 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52AB9AF91A
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 11:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAAC1AF91E
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 11:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727307AbfIKJis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 05:38:48 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40549 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726657AbfIKJir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 05:38:47 -0400
-Received: by mail-wm1-f68.google.com with SMTP id t9so2655118wmi.5;
-        Wed, 11 Sep 2019 02:38:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h0VSq6wzpqVphAUFzEFjRzbUISsot67T98l5ng0C/wE=;
-        b=U5KknNKvccQJYVw1LQE4PChuTukeCSmWPnsQljIKSLDmQYYmQZgBZlunmQmqlMWyEw
-         KMoSTCCYhEOt/+6e+cVUdk5q4MtpW4SCFQr5CqFP2++mzKBLmUdDS4EZAbH/L/ce+3bJ
-         LQkQlpSFm9RZQUMdzoo3DkaHWBzcQDBmBTri0Xd4sjdhsiv5xTpWvbghkBn6xzlVwe1l
-         xPmTk37mMxzdhGkn/C+GuLJnpFGCq1Fke4X159Y9k02bWNgIgI0bxlqPt/snuD9o4PZl
-         Erk3ReX0BECbbqT0JmX+I/SDhN9RmI0fdfqCK14OvUDPa3NjO7jMJePajJ50HSvT4sUJ
-         dSwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h0VSq6wzpqVphAUFzEFjRzbUISsot67T98l5ng0C/wE=;
-        b=sQXx7SspZattXfheSSMxuj83KNJY5adkdX89MP0QxC6H0lK0YahtqY3Ft3fNpvJt/r
-         UOE4XsQkhdc0m20IHvR/8yzlNj336Z9eOpmwDnazq30J7VBSpklZaDkdHw0aPwoskN5x
-         Kz0KrGBJ/OGijzuF6tQZithoYb6ta6uk3cmd+Kd3QlJ+8Ik4fpFsjWJHjwuAHb26xN3G
-         V2zroJjt0gxUcJ4on3GRFVfD7Ls00ovcQKSYsuu0VJk8URgLsXozyUQlOMfal+wKDve0
-         NAU+9sLZsdgUCNsV/7rRp9hlBMnOLIhSROy4JfPdO2Q5X3kz8oeZt8SP/jJx/7lO8Ves
-         pZgw==
-X-Gm-Message-State: APjAAAUp4Q1x+1R51Y3ZIjb5e4GlRUXF0xPqT0TsUyQaa3b9hIehXuAi
-        4qxKyTy360Kyk6asF3C95/lN6htpYQ82xZ93ETk=
-X-Google-Smtp-Source: APXvYqyXKK7x+Ht8Y1eaFKpgp6nxeUR1UIrsAGVqupzqtGBh4a3rNdkoc/BslgYbNEF6Pe9qMrtL5UtJceuub+xc13k=
-X-Received: by 2002:a1c:a74f:: with SMTP id q76mr3278586wme.16.1568194724725;
- Wed, 11 Sep 2019 02:38:44 -0700 (PDT)
+        id S1727422AbfIKJj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 05:39:27 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:56436 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726657AbfIKJj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 05:39:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=qH4aLi8vNU39JraY+mjqNDssJCjJu1mgK8p4TLwqn00=; b=uCZyJThrDP5rjKd/qs2xLpGwe
+        9yvVGxNsyY0RQ83xsZXFZT/qjQUbZpp7P4CwojrxlXGV//jGMU6Z8RnYDeEgB4h3WIHRAKBJdJMpW
+        JF3w6dvN+84fIAtnmdMwc7sWqPD2/t+zNaNPV2gatjWVEh7bQbbsU1c8KDg8k8VoPHOVwbRYJXu09
+        ZXnDLhRbcQY6FbqVN4eg4OBbaZGFwYkGY4HYK5yf4RrhZPSwPJq9VpMN+sT+lW3YFOJktRaaWAntb
+        jvXzijNKeiEh8lBEQCE1VqfwvVxxF92UCQ/4i91/Rsj8TL1zQV+MdjYdHd7gGFTMj5MhT85DCeVsl
+        6q9TwrtrQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38164)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1i7z5p-0005VM-K5; Wed, 11 Sep 2019 10:39:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1i7z5m-0003qS-QY; Wed, 11 Sep 2019 10:39:14 +0100
+Date:   Wed, 11 Sep 2019 10:39:14 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 04/11] net: phylink: switch to using
+ fwnode_gpiod_get_index()
+Message-ID: <20190911093914.GT13294@shell.armlinux.org.uk>
+References: <20190911075215.78047-1-dmitry.torokhov@gmail.com>
+ <20190911075215.78047-5-dmitry.torokhov@gmail.com>
+ <20190911092514.GM2680@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <cover.1568015756.git.lucien.xin@gmail.com> <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
- <9fc7ca1598e641cda3914840a4416aab@AcuMS.aculab.com> <CADvbK_d_Emw0K2Uq4P9OanRBr52tNjMsAOiJNi0TGsuWt6+81A@mail.gmail.com>
- <1e5c3163e6c649b09137eeb62d193d87@AcuMS.aculab.com> <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
-In-Reply-To: <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 11 Sep 2019 17:38:33 +0800
-Message-ID: <CADvbK_dqNas+vwP2t3LqWyabNnzRDO=PZPe4p+zE-vQJTnfKpA@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct sctp_paddrthlds
-To:     David Laight <David.Laight@aculab.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190911092514.GM2680@smile.fi.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 5:21 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Wed, Sep 11, 2019 at 5:03 PM David Laight <David.Laight@aculab.com> wrote:
-> >
-> > From: Xin Long [mailto:lucien.xin@gmail.com]
-> > > Sent: 11 September 2019 09:52
-> > > On Tue, Sep 10, 2019 at 9:19 PM David Laight <David.Laight@aculab.com> wrote:
-> > > >
-> > > > From: Xin Long
-> > > > > Sent: 09 September 2019 08:57
-> > > > > Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
-> > > > > Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
-> > > > > added to allow a user to change ps_retrans per sock/asoc/transport, as
-> > > > > other 2 paddrthlds: pf_retrans, pathmaxrxt.
-> > > > >
-> > > > > Note that ps_retrans is not allowed to be greater than pf_retrans.
-> > > > >
-> > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > > > ---
-> > > > >  include/uapi/linux/sctp.h |  1 +
-> > > > >  net/sctp/socket.c         | 10 ++++++++++
-> > > > >  2 files changed, 11 insertions(+)
-> > > > >
-> > > > > diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-> > > > > index a15cc28..dfd81e1 100644
-> > > > > --- a/include/uapi/linux/sctp.h
-> > > > > +++ b/include/uapi/linux/sctp.h
-> > > > > @@ -1069,6 +1069,7 @@ struct sctp_paddrthlds {
-> > > > >       struct sockaddr_storage spt_address;
-> > > > >       __u16 spt_pathmaxrxt;
-> > > > >       __u16 spt_pathpfthld;
-> > > > > +     __u16 spt_pathcpthld;
-> > > > >  };
-> > > > >
-> > > > >  /*
-> > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > > > index 5e2098b..5b9774d 100644
-> > > > > --- a/net/sctp/socket.c
-> > > > > +++ b/net/sctp/socket.c
-> > > > > @@ -3954,6 +3954,9 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
-> > > >
-> > > > This code does:
-> > > >         if (optlen < sizeof(struct sctp_paddrthlds))
-> > > >                 return -EINVAL;
-> > > here will become:
-> > >
-> > >         if (optlen >= sizeof(struct sctp_paddrthlds)) {
-> > >                 optlen = sizeof(struct sctp_paddrthlds);
-> > >         } else if (optlen >= ALIGN(offsetof(struct sctp_paddrthlds,
-> > >                                             spt_pathcpthld), 4))
-> > >                 optlen = ALIGN(offsetof(struct sctp_paddrthlds,
-> > >                                         spt_pathcpthld), 4);
-> > >                 val.spt_pathcpthld = 0xffff;
-> > >         else {
-> > >                 return -EINVAL;
-> > >         }
-> >
-> > Hmmm...
-> > If the kernel has to default 'val.spt_pathcpthld = 0xffff'
-> > then recompiling an existing application with the new uapi
-> > header is going to lead to very unexpected behaviour.
-> >
-> > The best you can hope for is that the application memset the
-> > structure to zero.
-> > But more likely it is 'random' on-stack data.
-> 0xffff is a value to disable the feature 'Primary Path Switchover'.
-> you're right that user might set it to zero unexpectly with their
-> old application rebuilt.
->
-> A safer way is to introduce "sysctl net.sctp.ps_retrans", it won't
-> matter if users set spt_pathcpthld properly when they're not aware
-> of this feature, like "sysctl net.sctp.pF_retrans". Looks better?
-Sorry for confusing,  "sysctl net.sctp.ps_retrans" is already there
-(its value is 0xffff by default),
-we just need to do this in sctp_setsockopt_paddr_thresholds():
+On Wed, Sep 11, 2019 at 12:25:14PM +0300, Andy Shevchenko wrote:
+> On Wed, Sep 11, 2019 at 12:52:08AM -0700, Dmitry Torokhov wrote:
+> > Instead of fwnode_get_named_gpiod() that I plan to hide away, let's use
+> > the new fwnode_gpiod_get_index() that mimics gpiod_get_index(), bit
+> > works with arbitrary firmware node.
+> 
+> I'm wondering if it's possible to step forward and replace
+> fwnode_get_gpiod_index by gpiod_get() / gpiod_get_index() here and
+> in other cases in this series.
 
-        if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
-                           optlen))
-                return -EFAULT;
+No, those require a struct device, but we have none.  There are network
+drivers where there is a struct device for the network complex, but only
+DT nodes for the individual network interfaces.  So no, gpiod_* really
+doesn't work.
 
-        if (sock_net(sk)->sctp.ps_retrans == 0xffff)
-                val.spt_pathcpthld = 0xffff;
-
-        if (val.spt_pathpfthld > val.spt_pathcpthld)
-                return -EINVAL;
-
->
-> >
-> >         David
-> >
-> > -
-> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > Registration No: 1397386 (Wales)
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
