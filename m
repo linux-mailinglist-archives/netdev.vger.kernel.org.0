@@ -2,71 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B950B05C8
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 00:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AA4B05C9
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 00:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbfIKWwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 18:52:49 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49924 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbfIKWwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 18:52:49 -0400
-Received: from localhost (unknown [88.214.186.163])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4EB0C154FCEC8;
-        Wed, 11 Sep 2019 15:52:47 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 00:52:45 +0200 (CEST)
-Message-Id: <20190912.005245.1148477077911617003.davem@davemloft.net>
-To:     sbrivio@redhat.com
-Cc:     gnault@redhat.com, ja@ssi.bg, nicolas.dichtel@6wind.com,
-        dsahern@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] ipv6: Don't use dst gateway directly in
- ip6_confirm_neigh()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <938b711c35ce3fa2b6f057cc23919e897a1e5c2b.1568061608.git.sbrivio@redhat.com>
-References: <938b711c35ce3fa2b6f057cc23919e897a1e5c2b.1568061608.git.sbrivio@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Sep 2019 15:52:48 -0700 (PDT)
+        id S1728265AbfIKWw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 18:52:56 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41348 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726735AbfIKWw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 18:52:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4aVgtI53MkdfEImlYuOkvkEfXNGliuEFpft7wPzwa64=; b=1KeepMQawvtTMpT8q2FWOFribO
+        e5hLVp0W5AkYyh998EujdKRBEEuP4j18Nrdf71FJSDeK8x9nseAlpHFsbFBWofD2xAwaKtZ+4aNJM
+        9T1RZ24vEpTW15wtvCk2kHP+0JZ6hsgvfcyddCLe32yajx9YLSTUTNxi6ZaQITjFLDhs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i8BTo-0001dm-TG; Thu, 12 Sep 2019 00:52:52 +0200
+Date:   Thu, 12 Sep 2019 00:52:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Beckett <bob.beckett@collabora.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
+Message-ID: <20190911225252.GA5710@lunn.ch>
+References: <20190910154238.9155-1-bob.beckett@collabora.com>
+ <20190910154238.9155-2-bob.beckett@collabora.com>
+ <20190910182635.GA9761@lunn.ch>
+ <aa0459e0-64ee-de84-fc38-3c9364301275@gmail.com>
+ <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
-Date: Mon,  9 Sep 2019 22:44:06 +0200
+> It is not just for broadcast storm protection. The original issue that
+> made me look in to all of this turned out to be rx descritor ring
+> buffer exhaustion due to the CPU not being able to keep up with packet
+> reception.
 
-> This is the equivalent of commit 2c6b55f45d53 ("ipv6: fix neighbour
-> resolution with raw socket") for ip6_confirm_neigh(): we can send a
-> packet with MSG_CONFIRM on a raw socket for a connected route, so the
-> gateway would be :: here, and we should pick the next hop using
-> rt6_nexthop() instead.
-> 
-> This was found by code review and, to the best of my knowledge, doesn't
-> actually fix a practical issue: the destination address from the packet
-> is not considered while confirming a neighbour, as ip6_confirm_neigh()
-> calls choose_neigh_daddr() without passing the packet, so there are no
-> similar issues as the one fixed by said commit.
-> 
-> A possible source of issues with the existing implementation might come
-> from the fact that, if we have a cached dst, we won't consider it,
-> while rt6_nexthop() takes care of that. I might just not be creative
-> enough to find a practical problem here: the only way to affect this
-> with cached routes is to have one coming from an ICMPv6 redirect, but
-> if the next hop is a directly connected host, there should be no
-> topology for which a redirect applies here, and tests with redirected
-> routes show no differences for MSG_CONFIRM (and MSG_PROBE) packets on
-> raw sockets destined to a directly connected host.
-> 
-> However, directly using the dst gateway here is not consistent anymore
-> with neighbour resolution, and, in general, as we want the next hop,
-> using rt6_nexthop() looks like the only sane way to fetch it.
-> 
-> Reported-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Pause frames does not really solve this problem. The switch will at
+some point fill its buffers, and start throwing packets away. Or it
+needs to send pause packets it its peers. And then your whole switch
+throughput goes down. Packets will always get thrown away, so you need
+QoS in your network to give the network hints about which frames is
+should throw away first.
 
-Applied.
+..
+
+> Fundamentally, with a phy to phy CPU connection, the CPU MAC may well
+> wish to enable pause frames for various reasons, so we should strive to
+> handle that I think.
+
+It actually has nothing to do with PHY to PHY connections. You can use
+pause frames with direct MAC to MAC connections. PHY auto-negotiation
+is one way to indicate both ends support it, but there are also other
+ways. e.g.
+
+ethtool -A|--pause devname [autoneg on|off] [rx on|off] [tx on|off]
+
+on the SoC you could do
+
+ethtool --pause eth0 autoneg off rx on tx on
+
+to force the SoC to send and process pause frames. Ideally i would
+prefer a solution like this, since it is not a change of behaviour for
+everybody else.
+
+   Andrew
