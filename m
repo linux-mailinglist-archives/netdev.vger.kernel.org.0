@@ -2,204 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9A4B02E9
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 19:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A065B0365
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 20:10:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729770AbfIKRrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 13:47:23 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34730 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729683AbfIKRrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 13:47:22 -0400
-Received: by mail-wr1-f68.google.com with SMTP id a11so15806594wrx.1;
-        Wed, 11 Sep 2019 10:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=za5dLNsyd8cO0/LWjl+4GZ/KbGfFV7E0+6wSG+4LWkk=;
-        b=iiNPN2Ai9y+GirwE9t7qJoUI//aSPubMbgHAjaoyu311cDmcvJcleIdfrAIGcbFvn7
-         9/MF6u85fcNYE6uSjhTj+6VATv1d90FR/mr2dhFCrX5Pn4xQXjy6twcPxF/fhfExTa4K
-         LYQTecvTYjvIQ44/az3IzkKwj47aTFJfiUyVOk4/fFI+SIYKyPeMN2m6t7vUbqxgFGFh
-         mw3H/OO2fZUmf0tlf4wlmZ/Z7lhc/hz8rIt/6u/NXWEdMkS0wVUfEyponAar9XM7fyE0
-         4kivPefiGnyrahppnTKzWbxXJ1pxxBIwf+/U/gjUrF0LOUqruR0CseQsBVtRJqv1C8wt
-         MvqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=za5dLNsyd8cO0/LWjl+4GZ/KbGfFV7E0+6wSG+4LWkk=;
-        b=ShBE11xQvtwLP3sSab1pqKN22L9QbvuCoDsUrY0DNyDKgms9IeQmydGOmEJBKkvK1+
-         8zwf82B5wMMEYXUOMn5gowOdPDEHavLSKtjUKFVm4KfDof2fZPY00q4vCzLBiE8EUtR/
-         claAh5DEvFWkNgEmCHHrd8QEDDlZCjnl2trfbURIL5+WTSIvU9gUXcUNN32OeAW08C0i
-         DpKdfyrhpxpaCBxGTCtnHGxWa7ucJGCF16jwQKte3VfTI5WeP25Ubo/qcBTwmrizdKka
-         HXtlF4umQ3wjLlEVv3Lgf7D7P8yh14Oo6m/X1nvEC2svwWnT/y2JKfmwa4zJWMaLKAKX
-         vxng==
-X-Gm-Message-State: APjAAAWMZKN7//ylIQij0getmUYTva3hamjEHNK4T5a4mDZj9Cy4Xr52
-        zjm4syr2+jTpAOBh/RE5gcsvOvsq+EdvXuHNA8E=
-X-Google-Smtp-Source: APXvYqxkwdBPzuoHNJ68DYYOxhywTzPsN5U8p7jUqjtEsPzdTDNNUoI6UE3KyActllWj7Mhqsxo60XmSGPYce/3vITE=
-X-Received: by 2002:a5d:628f:: with SMTP id k15mr16507858wru.124.1568224039920;
- Wed, 11 Sep 2019 10:47:19 -0700 (PDT)
+        id S1729818AbfIKSKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 14:10:18 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:42450 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729603AbfIKSKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 14:10:18 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7AEC26083E; Wed, 11 Sep 2019 18:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568225417;
+        bh=cth2OToflJTkN3D/O4iZhjJihL/01YTrfPtE4GsgCgo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Y9CJw4+v9XT5TXnfyFAawO9Mpw3Qtkezxm7jhZfPKZc/37GSSbc+cHV0k5gzYrohF
+         erKa33beW9l5sVO7lIANR4cQ0HMSBchNv0WeRbl4w4y/+1c2WVsCHmfPxA0kwHrukL
+         mpOJgP1ynurI/3tRDjPEnq5UDTGtD77dPxQ+B5E8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2562660790;
+        Wed, 11 Sep 2019 18:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568225416;
+        bh=cth2OToflJTkN3D/O4iZhjJihL/01YTrfPtE4GsgCgo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=hMuxXxp35tcUz+Y20r9+iJeSGY4gCb3KvvG3mouExKnNPiuJewGZizo1agn4D68EW
+         xoFmIYgzdTgXMttGUXjHfUOaWope0ATvEuZ/iCEtWuY8oDwk7DBe9zGxI0JaG0K5jG
+         p7MysMxZzVH2ThqosFRpGC5xMCXYpd12jWhd9sRc=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2562660790
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        ath10k@lists.infradead.org
+Subject: Re: WARNING at net/mac80211/sta_info.c:1057 (__sta_info_destroy_part2())
+References: <CAHk-=wgBuu8PiYpD7uWgxTSY8aUOJj6NJ=ivNQPYjAKO=cRinA@mail.gmail.com>
+Date:   Wed, 11 Sep 2019 21:10:12 +0300
+In-Reply-To: <CAHk-=wgBuu8PiYpD7uWgxTSY8aUOJj6NJ=ivNQPYjAKO=cRinA@mail.gmail.com>
+        (Linus Torvalds's message of "Wed, 11 Sep 2019 11:05:46 +0100")
+Message-ID: <87lfuuln5n.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <cover.1568015756.git.lucien.xin@gmail.com> <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
- <9fc7ca1598e641cda3914840a4416aab@AcuMS.aculab.com> <CADvbK_d_Emw0K2Uq4P9OanRBr52tNjMsAOiJNi0TGsuWt6+81A@mail.gmail.com>
- <1e5c3163e6c649b09137eeb62d193d87@AcuMS.aculab.com> <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
- <CADvbK_dqNas+vwP2t3LqWyabNnzRDO=PZPe4p+zE-vQJTnfKpA@mail.gmail.com> <20190911125609.GC3499@localhost.localdomain>
-In-Reply-To: <20190911125609.GC3499@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 12 Sep 2019 01:47:08 +0800
-Message-ID: <CADvbK_e=4Fo7dmM=4QTZHtNDtsrDVe_VtyG2NVqt_3r9z7R=PA@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct sctp_paddrthlds
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 8:56 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
++ ath10k list
+
+Linus Torvalds <torvalds@linux-foundation.org> writes:
+
+> So I'm at LCA, reading email, using my laptop more than I normally do,
+> and with different networking than I normally do.
 >
-> On Wed, Sep 11, 2019 at 05:38:33PM +0800, Xin Long wrote:
-> > On Wed, Sep 11, 2019 at 5:21 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Wed, Sep 11, 2019 at 5:03 PM David Laight <David.Laight@aculab.com> wrote:
-> > > >
-> > > > From: Xin Long [mailto:lucien.xin@gmail.com]
-> > > > > Sent: 11 September 2019 09:52
-> > > > > On Tue, Sep 10, 2019 at 9:19 PM David Laight <David.Laight@aculab.com> wrote:
-> > > > > >
-> > > > > > From: Xin Long
-> > > > > > > Sent: 09 September 2019 08:57
-> > > > > > > Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
-> > > > > > > Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
-> > > > > > > added to allow a user to change ps_retrans per sock/asoc/transport, as
-> > > > > > > other 2 paddrthlds: pf_retrans, pathmaxrxt.
-> > > > > > >
-> > > > > > > Note that ps_retrans is not allowed to be greater than pf_retrans.
-> > > > > > >
-> > > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > > > > > ---
-> > > > > > >  include/uapi/linux/sctp.h |  1 +
-> > > > > > >  net/sctp/socket.c         | 10 ++++++++++
-> > > > > > >  2 files changed, 11 insertions(+)
-> > > > > > >
-> > > > > > > diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-> > > > > > > index a15cc28..dfd81e1 100644
-> > > > > > > --- a/include/uapi/linux/sctp.h
-> > > > > > > +++ b/include/uapi/linux/sctp.h
-> > > > > > > @@ -1069,6 +1069,7 @@ struct sctp_paddrthlds {
-> > > > > > >       struct sockaddr_storage spt_address;
-> > > > > > >       __u16 spt_pathmaxrxt;
-> > > > > > >       __u16 spt_pathpfthld;
-> > > > > > > +     __u16 spt_pathcpthld;
-> > > > > > >  };
-> > > > > > >
-> > > > > > >  /*
-> > > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > > > > > index 5e2098b..5b9774d 100644
-> > > > > > > --- a/net/sctp/socket.c
-> > > > > > > +++ b/net/sctp/socket.c
-> > > > > > > @@ -3954,6 +3954,9 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
-> > > > > >
-> > > > > > This code does:
-> > > > > >         if (optlen < sizeof(struct sctp_paddrthlds))
-> > > > > >                 return -EINVAL;
-> > > > > here will become:
-> > > > >
-> > > > >         if (optlen >= sizeof(struct sctp_paddrthlds)) {
-> > > > >                 optlen = sizeof(struct sctp_paddrthlds);
-> > > > >         } else if (optlen >= ALIGN(offsetof(struct sctp_paddrthlds,
-> > > > >                                             spt_pathcpthld), 4))
-> > > > >                 optlen = ALIGN(offsetof(struct sctp_paddrthlds,
-> > > > >                                         spt_pathcpthld), 4);
-> > > > >                 val.spt_pathcpthld = 0xffff;
-> > > > >         else {
-> > > > >                 return -EINVAL;
-> > > > >         }
-> > > >
-> > > > Hmmm...
-> > > > If the kernel has to default 'val.spt_pathcpthld = 0xffff'
-> > > > then recompiling an existing application with the new uapi
-> > > > header is going to lead to very unexpected behaviour.
-> > > >
-> > > > The best you can hope for is that the application memset the
-> > > > structure to zero.
-> > > > But more likely it is 'random' on-stack data.
-> > > 0xffff is a value to disable the feature 'Primary Path Switchover'.
-> > > you're right that user might set it to zero unexpectly with their
-> > > old application rebuilt.
-> > >
-> > > A safer way is to introduce "sysctl net.sctp.ps_retrans", it won't
-> > > matter if users set spt_pathcpthld properly when they're not aware
-> > > of this feature, like "sysctl net.sctp.pF_retrans". Looks better?
-> > Sorry for confusing,  "sysctl net.sctp.ps_retrans" is already there
-> > (its value is 0xffff by default),
-> > we just need to do this in sctp_setsockopt_paddr_thresholds():
-> >
-> >         if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
-> >                            optlen))
-> >                 return -EFAULT;
-> >
-> >         if (sock_net(sk)->sctp.ps_retrans == 0xffff)
-> >                 val.spt_pathcpthld = 0xffff;
+> And I just had a 802.11 WARN_ON() trigger, followed by essentially a
+> dead machine due to some lock held (maybe rtnl_lock).
 >
-> I'm confused with the snippets, but if I got them right, this is after
-> dealing with proper len and could leave val.spt_pathcpthld
-> uninitialized if the application used the old format and sysctl is !=
-> 0xffff.
-right, how about this in sctp_setsockopt_paddr_thresholds():
+> It's possible that the lock held thing happened before, and is the
+> _reason_ for the delay, I don't know. I had to reboot the machine, but
+> I gathered as much information as made sense and was obvious before I
+> did so. That's appended.
 
-        offset = ALIGN(offsetof(struct sctp_paddrthlds, spt_pathcpthld), 4);
-        if (optlen < offset)
-                return -EINVAL;
-        if (optlen < sizeof(val) || sock_net(sk)->sctp.ps_retrans == 0xffff) {
-                optlen = offset;
-                val.spt_pathcpthld = 0xffff;
-        } else {
-                optlen = sizeof(val);
-        }
+Some notes while investigating this:
 
-        if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
-                           optlen))
-                return -EFAULT;
-
-        if (val.spt_pathpfthld > val.spt_pathcpthld)
-                return -EINVAL;
-
-Which means we will 'skip' spt_pathcpthld if (it's using old format) or
-(ps_retrans is disabled and it's using new format).
-Note that  ps_retrans < pf_retrans is not allowed in rfc7829.
-
-and in sctp_getsockopt_paddr_thresholds():
-
-        offset = ALIGN(offsetof(struct sctp_paddrthlds, spt_pathcpthld), 4);
-        if (len < offset)
-                return -EINVAL;
-        if (len < sizeof(val) || sock_net(sk)->sctp.ps_retrans == 0xffff)
-                len = offset;
-        else
-                len = sizeof(val);
-
-        if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval, len))
-                return -EFAULT;
-
-
+> But wait!
 >
-> >
-> >         if (val.spt_pathpfthld > val.spt_pathcpthld)
-> >                 return -EINVAL;
-> >
-> > >
-> > > >
-> > > >         David
-> > > >
-> > > > -
-> > > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > > > Registration No: 1397386 (Wales)
-> >
+> ... then 10+ minutes later:
+>
+>    ath10k_pci 0000:02:00.0: wmi command 16387 timeout, restarting hardware
+>    ath10k_pci 0000:02:00.0: failed to set 5g txpower 23: -11
+>    ath10k_pci 0000:02:00.0: failed to setup tx power 23: -11
+>    ath10k_pci 0000:02:00.0: failed to recalc tx power: -11
+>    ath10k_pci 0000:02:00.0: failed to set inactivity time for vdev 0: -108
+>    ath10k_pci 0000:02:00.0: failed to setup powersave: -108
+>
+> That certainly looks like something did try to set a power limit, but
+> eventually failed.
+
+I suspect the failing WMI command is called from:
+
+ath10k_bss_info_changed()
+ath10k_mac_txpower_recalc()
+ath10k_mac_txpower_setup()
+ath10k_wmi_pdev_set_param()
+ath10k_wmi_cmd_send()
+ath10k_wmi_cmd_send_nowait()
+ath10k_htc_send()
+
+-11 is -EAGAIN which would mean that the HTC credits have run out some
+ reason for the WMI command:
+
+if (ep->tx_credits < credits) {
+        ath10k_dbg(ar, ATH10K_DBG_HTC,
+                "htc insufficient credits ep %d required %d available %d\n",
+                eid, credits, ep->tx_credits);
+        spin_unlock_bh(&htc->tx_lock);
+        ret = -EAGAIN;
+        goto err_pull;
+}
+
+Credits can run out, for example, if there's a lot of WMI command/event
+activity and are not returned during the 3s wait, firmware crashed or
+problems with the PCI bus. But when the WMI command timeout happens
+ath10k is supposed to restart the firmware and everything should be
+usable again.
+                                             
+> Immediately after that:
+>
+>    wlp2s0: deauthenticating from 54:ec:2f:05:70:2c by local choice
+> (Reason: 3=DEAUTH_LEAVING)
+>    ath10k_pci 0000:02:00.0: failed to read hi_board_data address: -16
+>    ath10k_pci 0000:02:00.0: failed to receive initialized event from
+> target: 00000000
+>    ath10k_pci 0000:02:00.0: failed to receive initialized event from
+> target: 00000000
+>    ath10k_pci 0000:02:00.0: failed to wait for target init: -110
+
+I suspect here ath10k tries to reset the target during stop operation,
+"failed to receive initialized event from target" comes from:
+
+ath10k_pci_hif_stop()
+ath10k_pci_safe_chip_reset()
+ath10k_pci_warm_reset()
+ath10k_pci_wait_for_target_init()
+
+It shouldn't fail like that, which makes me suspect either a low level
+problem or a bug in qca6174 firmware restart code. To check the latter,
+could you please try to force a firmware crash and see if firmware
+restart is working for you?
+
+To crash the firmware you need to write either "hard" or "assert" (I
+forgot which one QCA6174 firmware supports) to
+/sys/kernel/debug/ieee80211/phy*/ath10k/simulate_fw_crash. And what
+should happen is that the firmware crashes, ath10k prints a big pile of
+warnings, restarts it and in few seconds everything resumes to normal
+without user space even noticing it.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
