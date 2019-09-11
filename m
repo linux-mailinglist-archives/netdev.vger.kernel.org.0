@@ -2,46 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FB3AFA97
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 12:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8932DAFB09
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 13:02:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727724AbfIKKjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 06:39:12 -0400
-Received: from mga12.intel.com ([192.55.52.136]:53278 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727307AbfIKKjM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 06:39:12 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Sep 2019 03:39:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,493,1559545200"; 
-   d="scan'208";a="200497189"
-Received: from sroessel-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.38.107])
-  by fmsmga001.fm.intel.com with ESMTP; 11 Sep 2019 03:39:08 -0700
-Subject: Re: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
-To:     Yonghong Song <yhs@fb.com>, Sami Tolvanen <samitolvanen@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kees Cook <keescook@chromium.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-References: <20190909223236.157099-1-samitolvanen@google.com>
- <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com>
- <20190910172253.GA164966@google.com>
- <c7c7668e-6336-0367-42b3-2f6026c466dd@fb.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <fd8b6f04-3902-12e9-eab1-fa85b7e44dd5@intel.com>
-Date:   Wed, 11 Sep 2019 12:39:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727562AbfIKLCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 07:02:20 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:38382 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726735AbfIKLCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 07:02:20 -0400
+Received: by mail-lj1-f194.google.com with SMTP id y23so19211468ljn.5
+        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 04:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=UnTxdulsUUoW4MpbjOz0YKEvbNh2+pBrrEt0pc1iTEY=;
+        b=Ob2WcKnDVzkZwjpLgbluTx3iqYajdJ2DODeTyESW1TZpIwQOdUyjdsE56rYtwFwt2o
+         vBHbj91NUsX2nOIrtjuQFtM5PvLBFXFOuX1qow3GG0qSqk48qu90ef+ZdRUE0SEODX+j
+         4A5l8K0SW7YGwUIBaZ2T3+eF8n20cTVGmnJvXrWCez7G8/aw/Q4JeC2DD1qck35C0wvV
+         sG/9ovLmpbqikwoeV9Bp6YBNBeZLVWS1Ol7sSgShU808PXkCBpas1n+Rq25ehBoz58Gq
+         TYBRJNVkl9PPBhK1CBlnXOFsyw+qu08HMpMM/J8a9R27bRvxwAQ9yttZQ6YgmKsM0HG+
+         SxOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UnTxdulsUUoW4MpbjOz0YKEvbNh2+pBrrEt0pc1iTEY=;
+        b=fMcs99N/rPw/kVxd9frcYaQZFWHRkX2qMEEYk0FN0VIlW+pSaVRgq19tUJjlGkZqER
+         aB4C2pMcW8K7QObfU1eL/8PFBrJrWcK5HTzs5ZgqQqo3XtoTbtL4HV374/HmTd4EKZ43
+         R7lQMky4OzVENhM0Sl9632U4vTmydUScRHbtvsfyRSMhbVj8DOzqE7F6WjefQk5xSqNV
+         vzTIUcEAh2dBbe10WCY0cW7c111HokOW3IdXNnqFtFFT/H0KKFu4xKGI019DvTrUc3t2
+         NLsTm3899d/fRaeSpPMnkczrxXa7lyGDHpjHTJgnRoCFD/tkREsnUwt0LE67vSedbNke
+         6BAQ==
+X-Gm-Message-State: APjAAAVIMeZCSNVCfzWcTMBcAoEK0E0zNR4DGcvvsWaiHusKKsdn+guL
+        JCNEDbsFHWfhk/Vw6Juq5yQkjg==
+X-Google-Smtp-Source: APXvYqzrabH5jqIXFRRKoZkb0A3Gq2y2775Mog1g0hbWCWbCyy1Z3PbubQS3H6F+3FkRG2x9faJgfQ==
+X-Received: by 2002:a2e:a303:: with SMTP id l3mr22113052lje.124.1568199738009;
+        Wed, 11 Sep 2019 04:02:18 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:8e6:86de:79c0:860e:c175:7d39? ([2a00:1fa0:8e6:86de:79c0:860e:c175:7d39])
+        by smtp.gmail.com with ESMTPSA id b9sm4570882ljd.52.2019.09.11.04.02.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 11 Sep 2019 04:02:17 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 01/11] samples: bpf: makefile: fix HDR_PROBE
+ "echo"
+To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+References: <20190910103830.20794-1-ivan.khoronzhuk@linaro.org>
+ <20190910103830.20794-2-ivan.khoronzhuk@linaro.org>
+ <55803f7e-a971-d71a-fcc2-76ae1cf813bf@cogentembedded.com>
+ <20190910145359.GD3053@khorivan>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <4251fe86-ccc7-f1ce-e954-2d488d2a95a9@cogentembedded.com>
+Date:   Wed, 11 Sep 2019 14:02:11 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <c7c7668e-6336-0367-42b3-2f6026c466dd@fb.com>
+In-Reply-To: <20190910145359.GD3053@khorivan>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -50,43 +71,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10.09.2019 17:54, Ivan Khoronzhuk wrote:
 
-On 2019-09-11 09:42, Yonghong Song wrote:
-> I am not an expert in XDP testing. Toke, Björn, could you give some
-> suggestions what to test for XDP performance here?
+>> Hello!
+>>
+>> On 10.09.2019 13:38, Ivan Khoronzhuk wrote:
+>>
+>>> echo should be replaced on echo -e to handle \n correctly, but instead,
+>>
+>>  s/on/with/?
+> s/echo/printf/ instead of s/echo/echo -e/
 
-I ran the "xdp_rxq_info" sample with and without Sami's patch:
+    I only pointed that 'on' is incorrect there. You replace something /with/ 
+something other...
 
-$ sudo ./xdp_rxq_info --dev enp134s0f0 --action XDP_DROP
+> 
+> printf looks better.
+> 
+>>
+>>> replace it on printf as some systems can't handle echo -e.
+>>
+>>   Likewise?
 
-Before:
+    Same grammatical mistake.
 
-Running XDP on dev:enp134s0f0 (ifindex:6) action:XDP_DROP options:no_touch
-XDP stats       CPU     pps         issue-pps
-XDP-RX CPU      20      23923874    0
-XDP-RX CPU      total   23923874
+> I can guess its Mac vs Linux, but it does mean nothing if it's defined as
+> implementation dependent, can be any.
+ >
+>>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> [...]
 
-RXQ stats       RXQ:CPU pps         issue-pps
-rx_queue_index   20:20  23923878    0
-rx_queue_index   20:sum 23923878
-
-After Sami's patch:
-
-Running XDP on dev:enp134s0f0 (ifindex:6) action:XDP_DROP options:no_touch
-XDP stats       CPU     pps         issue-pps
-XDP-RX CPU      20      22998700    0
-XDP-RX CPU      total   22998700
-
-RXQ stats       RXQ:CPU pps         issue-pps
-rx_queue_index   20:20  22998705    0
-rx_queue_index   20:sum 22998705
-
-
-So, roughly ~4% for this somewhat naive scenario.
-
-
-As for XDP performance tests; I guess some of the XDP selftests could be
-used as well!
-
-
-Björn
+MBR, Sergei
