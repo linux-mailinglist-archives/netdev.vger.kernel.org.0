@@ -2,60 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ECD0AFE51
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0DAAFE5A
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbfIKOIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 10:08:22 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:57973 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbfIKOIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:08:21 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1i83I9-0007EX-Ae; Wed, 11 Sep 2019 14:08:17 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Huazhong Tan <tanhuazhong@huawei.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns3: fix spelling mistake "undeflow" -> "underflow"
-Date:   Wed, 11 Sep 2019 15:08:16 +0100
-Message-Id: <20190911140817.20173-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S1727121AbfIKOK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 10:10:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:43782 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726381AbfIKOK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:10:29 -0400
+Received: from localhost (unknown [148.69.85.38])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id ADD8B1500242E;
+        Wed, 11 Sep 2019 07:10:27 -0700 (PDT)
+Date:   Wed, 11 Sep 2019 16:10:26 +0200 (CEST)
+Message-Id: <20190911.161026.1492301520395776176.davem@davemloft.net>
+To:     simon.horman@netronome.com
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, dirk.vandermerwe@netronome.com
+Subject: Re: [PATCH net-next 0/2] devlink: add unknown 'fw_load_policy'
+ value
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190911110833.9005-1-simon.horman@netronome.com>
+References: <20190911110833.9005-1-simon.horman@netronome.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Sep 2019 07:10:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Simon Horman <simon.horman@netronome.com>
+Date: Wed, 11 Sep 2019 12:08:31 +0100
 
-There is a spelling mistake in a .msg literal string. Fix it.
+> Dirk says:
+> 
+> Recently we added an unknown value for the 'reset_dev_on_drv_probe' devlink
+> parameter. Extend the 'fw_load_policy' parameter in the same way.
+> 
+> The only driver that uses this right now is the nfp driver.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index 58c6231aaa00..87dece0e745d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -98,7 +98,7 @@ static const struct hclge_hw_error hclge_igu_egu_tnl_int[] = {
- 	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(1), .msg = "rx_stp_fifo_overflow",
- 	  .reset_level = HNAE3_GLOBAL_RESET },
--	{ .int_msk = BIT(2), .msg = "rx_stp_fifo_undeflow",
-+	{ .int_msk = BIT(2), .msg = "rx_stp_fifo_underflow",
- 	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(3), .msg = "tx_buf_overflow",
- 	  .reset_level = HNAE3_GLOBAL_RESET },
--- 
-2.20.1
-
+Series applied to net-next, thanks.
