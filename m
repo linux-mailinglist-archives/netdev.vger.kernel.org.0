@@ -2,134 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D93EAFEEE
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8D2AFF1E
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 16:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfIKOj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 10:39:29 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40022 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728032AbfIKOj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:39:28 -0400
-Received: by mail-qk1-f194.google.com with SMTP id y144so12962517qkb.7;
-        Wed, 11 Sep 2019 07:39:27 -0700 (PDT)
+        id S1728062AbfIKOtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 10:49:08 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35675 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727627AbfIKOtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 10:49:08 -0400
+Received: by mail-qt1-f194.google.com with SMTP id k10so25604375qth.2;
+        Wed, 11 Sep 2019 07:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TwN6OrjdKt+44ku7KhvZUr2O4KlJSVZ8kmhB6V+j7N8=;
-        b=t12WokXoJJ4K4NUUnEOf7/c8b7WRfEQ6bn7vsO5yCVsQ9XAK4VVGkp9+O8v1rgippv
-         3E0ddwd9nqFUG00UzxFS30O6gPjS9LBm10a+Zm8ipspUkj7Oc5oFkw2uOfPp24PR7tuF
-         oOQY2CtT5G7ia1Sm/h4yz1/MZPIGGeHe6ArOVTBZryVmnIuUpLD7szxh+2ec/T4e3Mw1
-         OoujYt5HBky2ouplU++zanDJ6CrUhhX3FY30dAT9fysCmK0kFyQLucIUvxqCtf0rZ9Hp
-         PXtaD8GdMfehs9dCLuz7cfVqU/wqp/xdGjB+L9hPmo58yIpvgobuCwLCTTLpG7ZmcGEt
-         hBrw==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A5XOn0vC4GPgnCNAb2xJhPh7fm7Qsc3YVcoeu66V0ow=;
+        b=JhSfdGDLWHQchSsKTTbaYL2d3lanGWh1bU6snzqMqlYUsbTmgquu741IO2y4CzLnnn
+         xFF9+5sLDaKVVLzlMzpM5GNJHAe0EdZjfADYanypoGJBIcqS7xQozfjP/J0VtWg1MKnl
+         T/6lk/ytL2NJX3N6br94MvUgja326wcjG36kI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TwN6OrjdKt+44ku7KhvZUr2O4KlJSVZ8kmhB6V+j7N8=;
-        b=oD9UVBQNGsBRuWh9nxOOdsuudHkFIsqtdKbU7s9JpL5Ll/o9+KqoQsWtf+ZbzXIcRs
-         YYmGWNq+95dg1k3neJ0ALN5lcxhlPLiU2sMz8+PAyFgJ8KzpT0avvKyIYAyY2YIvo9iR
-         mrKz6L5ID4n4sGfwvVu5M0BY4zCtgANTyb0xrlsvyMCnhhMFCA97RQ3OXjx92z5oymbP
-         0DUu5FZ+Lmps1TOPM53uN/HAkIgKD8ipIiQPF88FGKdFKHV0/dMBMgruhdwW1fUVvj6W
-         ogq95YBJxJujRK41eIXx87r0/qo5bDnfA7qNFK21HL3IS0bRTOYlGiVWXnqs0nwf02G+
-         hM7w==
-X-Gm-Message-State: APjAAAW3fmiq3RiMiomH/47BGWQQU7JNPPjytvW81UUz+tAbWtYzQZSc
-        49CpNh3UfRr6ELLEKmOKYRg=
-X-Google-Smtp-Source: APXvYqzDyV+SgjNA5WEUzBQAIMOWaP+tdcQzaGUX0YOJ8JPSKoUht7TpayG/vdBITmUBUICF0Fd/pA==
-X-Received: by 2002:ae9:e00a:: with SMTP id m10mr37294490qkk.167.1568212766886;
-        Wed, 11 Sep 2019 07:39:26 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.89])
-        by smtp.gmail.com with ESMTPSA id d45sm12194380qtc.70.2019.09.11.07.39.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2019 07:39:25 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 75378C4A64; Wed, 11 Sep 2019 11:39:23 -0300 (-03)
-Date:   Wed, 11 Sep 2019 11:39:23 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     maowenan <maowenan@huawei.com>, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, davem@davemloft.net,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net 1/2] sctp: remove redundant assignment when call
- sctp_get_port_local
-Message-ID: <20190911143923.GE3499@localhost.localdomain>
-References: <20190910071343.18808-1-maowenan@huawei.com>
- <20190910071343.18808-2-maowenan@huawei.com>
- <20190910185710.GF15977@kadam>
- <20190910192207.GE20699@kadam>
- <53556c87-a351-4314-cbd9-49a39d0b41aa@huawei.com>
- <20190911083038.GF20699@kadam>
- <20190911143008.GD3499@localhost.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A5XOn0vC4GPgnCNAb2xJhPh7fm7Qsc3YVcoeu66V0ow=;
+        b=ff6sIchsU4uoVZRWEn9qoCOcItZquiEFzjLbiiLqY1L1A1ajNuOuxEULRzvAU92zxW
+         FctkfGNuiTLZDpHbsmFAMGHeuk/BqYs00SOhJQwKuj1g9yie0oIA4PIIgdE5yWH78br4
+         4xQgepGnAnoRyA4SlFOuMu5WmsLYy+Qyk9aezBlsoeY5vExg9lcDCQZCFEGcSQf25OsB
+         8HPRqqO6aD6dB4iuQMUX/UCGMUNw1hIPpxz1HckScm7Kr9xt6JrrtYpTZGnLnL39S5Rh
+         dfFqKlGP0wrLv+MXkeZKWNdcqilAaJDtKy0SmGyemzlkNvHA5/H0x5HcIWcQ+KauG1Ey
+         DP2w==
+X-Gm-Message-State: APjAAAV8OQ0bYPbvnzFdW6yWoMmhY5kANGBpuPvuDRv57vgb+we1fAbm
+        FitCrox00novGB6HqTr+Llw2vl7zeYwVy6dv/Bc=
+X-Google-Smtp-Source: APXvYqwWsmekgnVOZyP3ztRXLVkJUawqY8waZNluPJpoBtGqhHcgvfBOQH1tISxUZoQoAh6xx+1tOYTyMaOU7g5POGA=
+X-Received: by 2002:ac8:2e94:: with SMTP id h20mr36118219qta.234.1568213346860;
+ Wed, 11 Sep 2019 07:49:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190911143008.GD3499@localhost.localdomain>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190910213734.3112330-1-vijaykhemka@fb.com> <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
+In-Reply-To: <bd5eab2e-6ba6-9e27-54d4-d9534da9d5f7@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 11 Sep 2019 14:48:54 +0000
+Message-ID: <CACPK8XcS4iKfKigPbPg0BFbmjbT-kdyjiPDXjk1k5XaS5bCdAA@mail.gmail.com>
+Subject: Re: [PATCH] ftgmac100: Disable HW checksum generation on AST2500
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:     Vijay Khemka <vijaykhemka@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "openbmc @ lists . ozlabs . org" <openbmc@lists.ozlabs.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Sai Dasari <sdasari@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 11:30:08AM -0300, Marcelo Ricardo Leitner wrote:
-> On Wed, Sep 11, 2019 at 11:30:38AM +0300, Dan Carpenter wrote:
-> > On Wed, Sep 11, 2019 at 09:30:47AM +0800, maowenan wrote:
-> > > 
-> > > 
-> > > On 2019/9/11 3:22, Dan Carpenter wrote:
-> > > > On Tue, Sep 10, 2019 at 09:57:10PM +0300, Dan Carpenter wrote:
-> > > >> On Tue, Sep 10, 2019 at 03:13:42PM +0800, Mao Wenan wrote:
-> > > >>> There are more parentheses in if clause when call sctp_get_port_local
-> > > >>> in sctp_do_bind, and redundant assignment to 'ret'. This patch is to
-> > > >>> do cleanup.
-> > > >>>
-> > > >>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> > > >>> ---
-> > > >>>  net/sctp/socket.c | 3 +--
-> > > >>>  1 file changed, 1 insertion(+), 2 deletions(-)
-> > > >>>
-> > > >>> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > >>> index 9d1f83b10c0a..766b68b55ebe 100644
-> > > >>> --- a/net/sctp/socket.c
-> > > >>> +++ b/net/sctp/socket.c
-> > > >>> @@ -399,9 +399,8 @@ static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
-> > > >>>  	 * detection.
-> > > >>>  	 */
-> > > >>>  	addr->v4.sin_port = htons(snum);
-> > > >>> -	if ((ret = sctp_get_port_local(sk, addr))) {
-> > > >>> +	if (sctp_get_port_local(sk, addr))
-> > > >>>  		return -EADDRINUSE;
-> > > >>
-> > > >> sctp_get_port_local() returns a long which is either 0,1 or a pointer
-> > > >> casted to long.  It's not documented what it means and neither of the
-> > > >> callers use the return since commit 62208f12451f ("net: sctp: simplify
-> > > >> sctp_get_port").
-> > > > 
-> > > > Actually it was commit 4e54064e0a13 ("sctp: Allow only 1 listening
-> > > > socket with SO_REUSEADDR") from 11 years ago.  That patch fixed a bug,
-> > > > because before the code assumed that a pointer casted to an int was the
-> > > > same as a pointer casted to a long.
-> > > 
-> > > commit 4e54064e0a13 treated non-zero return value as unexpected, so the current
-> > > cleanup is ok?
-> > 
-> > Yeah.  It's fine, I was just confused why we weren't preserving the
-> > error code and then I saw that we didn't return errors at all and got
-> > confused.
-> 
-> But please lets seize the moment and do the change Dean suggested.
+Hi Ben,
 
-*Dan*, sorry.
+On Tue, 10 Sep 2019 at 22:05, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 9/10/19 2:37 PM, Vijay Khemka wrote:
+> > HW checksum generation is not working for AST2500, specially with IPV6
+> > over NCSI. All TCP packets with IPv6 get dropped. By disabling this
+> > it works perfectly fine with IPV6.
+> >
+> > Verified with IPV6 enabled and can do ssh.
+>
+> How about IPv4, do these packets have problem? If not, can you continue
+> advertising NETIF_F_IP_CSUM but take out NETIF_F_IPV6_CSUM?
+>
+> >
+> > Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
+> > ---
+> >  drivers/net/ethernet/faraday/ftgmac100.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> > index 030fed65393e..591c9725002b 100644
+> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> > @@ -1839,8 +1839,9 @@ static int ftgmac100_probe(struct platform_device *pdev)
+> >       if (priv->use_ncsi)
+> >               netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> >
+> > -     /* AST2400  doesn't have working HW checksum generation */
+> > -     if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+> > +     /* AST2400  and AST2500 doesn't have working HW checksum generation */
+> > +     if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac") ||
+> > +                of_device_is_compatible(np, "aspeed,ast2500-mac")))
 
-> This was the last place saving this return value somewhere. It makes
-> sense to cleanup sctp_get_port_local() now and remove that masked
-> pointer return.
-> 
-> Then you may also cleanup:
-> socket.c:       return !!sctp_get_port_local(sk, &addr);
-> as it will be a direct map.
-> 
->   Marcelo
-> 
+Do you recall under what circumstances we need to disable hardware checksumming?
+
+Cheers,
+
+Joel
+
+> >               netdev->hw_features &= ~NETIF_F_HW_CSUM;
+> >       if (np && of_get_property(np, "no-hw-checksum", NULL))
+> >               netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
+> >
+>
+>
+> --
+> Florian
