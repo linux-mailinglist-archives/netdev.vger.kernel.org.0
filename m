@@ -2,118 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F6A9AFFD7
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 17:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2923EB0011
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 17:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbfIKPVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 11:21:49 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35433 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727581AbfIKPVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 11:21:49 -0400
-Received: by mail-wr1-f68.google.com with SMTP id g7so25109921wrx.2
-        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 08:21:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=wM/fE7uLX2CbNn9bWyqVffeZcPFxspNS8yhmNj/vLt8=;
-        b=K6UVDsBqTG1qruaj1mGWDZSDurRAtURtx2LEEB0Tz5AULUKmKVLsJAYqp4pqiygGlP
-         vHLc1mWQXmOUZFB0OcmpO9EGHBPuksH7GFEsbUm7tSvTTeGRSP1WAQlmkjYou0Ls0Qwz
-         h4SL3q45RehUT8w0L7YlU952ZnP+Z3HbAMVhTlmQ5KQn5HJx8JU28Vew/5fHv3wDKLkM
-         Cikd2NK+9PUUIIaxnzfMahr1iMh4pIMsA/7zxXca6G+T4f6q1GHCUgeKGB+OZQoLyaVs
-         MpjREzw8JaL9XtO7qjuV5815uxy72hfS29kpSnTerpOol3K0IemLjJGpMt/Slz43nSXt
-         YbqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wM/fE7uLX2CbNn9bWyqVffeZcPFxspNS8yhmNj/vLt8=;
-        b=oqqFhjevfMWMuZ3ymT/ut3xY27hhVmdNmMfrEJExcFPUgTTKsmx2EQy7Kf/Lhup+sT
-         dUqS+EQfsU/dPUPui36MU8DVXjktV6NP05NksWvIoD/pfy/tfJGAuXMCZ1SLcYdMDjiS
-         uGTyraG0QMX7iWVsHTtyMMzkpZLeEfWzLZMcbWfQ8W+mo16rz5Kua4Y3ZwZF4SHi2Ub0
-         GKBc15Q3AAzV0R6iUaIyqZig31NEthko+8v5BPipIygn6N0EqbEF5j7wivPJycJ+SQYm
-         1l7XI3s0FMYOXm7iuJt7UgvYiyyGXE+SXV6zsyNs0Y/zIAF5Q9L8GmflS29v+qW4/xxe
-         4mKQ==
-X-Gm-Message-State: APjAAAUlEEIFbzsfOiFBTN+VhH73makfrrGEXO2kjM2uSCCsqlxA9bra
-        DHrC7FWKQHlk7NCJe6Tgin1Y5w==
-X-Google-Smtp-Source: APXvYqwzNvxvyDwZCwm3mqyIr/4SGMHQHtFG9Bn0TEREpInH9QB9V8FfT+SR24rZ1j+uDkvgkJIRAQ==
-X-Received: by 2002:a5d:4b46:: with SMTP id w6mr22217828wrs.223.1568215306891;
-        Wed, 11 Sep 2019 08:21:46 -0700 (PDT)
-Received: from penelope.horms.nl ([148.69.85.38])
-        by smtp.gmail.com with ESMTPSA id r17sm20556858wrt.68.2019.09.11.08.21.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Sep 2019 08:21:45 -0700 (PDT)
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net-next] nfp: read chip model from the PluDevice register
-Date:   Wed, 11 Sep 2019 16:21:18 +0100
-Message-Id: <20190911152118.30698-1-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.11.0
+        id S1728574AbfIKPap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 11:30:45 -0400
+Received: from mail-eopbgr20065.outbound.protection.outlook.com ([40.107.2.65]:26315
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728385AbfIKPao (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Sep 2019 11:30:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eujU0MAWH6jiTJT8SozHYPRL8WAZBDbcAfVUdxkBmxqvKKErtmEoihuYov13sSFormOBhjpib0PlmC4O47SkPfAMtjPIiIIgjs3Cdonym5Ki86PQro1jfs8kl2xiC3Fh4v/YWW9yhMOtdSHnGqIrjViCy0NJ0AzDP5wPPAb7KupA5oedGnJZsWRGnafZkB5lbYDjznBj5HhHFbdFLLO5P+mPRzWszA5XpoyDQ6deWrJYvsYUMV19nEqyekAa2uFpFDaO+EO5LBlKre67cZuxLX9Wr5pa7ePGmUL0ZAjqXXDI/+SUDiRbCPuZIeVTw044FEdw0PK58qFjQy0G+EiHGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KQUVO7eImhDYW9CJvxffN3GRPzuT15tU3eJaDPOBYyg=;
+ b=A3o9eOAXv1VUAVJwd7FEKjL+ZVDebE+elE0AxeFP+rlX6AU3pbnHa+ZbejKavo8Z6TeTI155A0FM2mgj1a/WUu4pl8EmJwUM+Zj9Sqd5pZ6W7LaNUwYQteJ6LeowiDkh0z1DxTit9O6ERTWoIIzh2f5XCv5Lu02HM6qsRnJodKu3j1F/5x4BmlBdyPMQSmD905SGdzckr3yWaJWkdKhg1S5ZyyvJADd/YPekTJDvbxVgFtNI387IfTHdcKxZwjy/VlgJGpQCS7TOpepqpJgsbUQCDfRvPgFBG/BCvdxPJeDqjIqLB0tT3jM+KbpNBxKWI6Yhg49zCi6xLhMDDR7lSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KQUVO7eImhDYW9CJvxffN3GRPzuT15tU3eJaDPOBYyg=;
+ b=LX9/70/sChqmTRZaiiC8ba4AOE8EmzmAQLj017F+24OzFeCj0pt5k0ku1jY1kDSqoayvzYp1urAj2TJsH9zEq3S5lcvYJEDu5AJk8dsskFmcnRGzmxMt49QqVC8f78p+auw8MXdsfSlP2SmXXTxAnSwLsBH+APuAI8iUJObRx9k=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5025.eurprd05.prod.outlook.com (52.134.89.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.18; Wed, 11 Sep 2019 15:30:40 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::bc4c:7c4c:d3e2:8b28]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::bc4c:7c4c:d3e2:8b28%6]) with mapi id 15.20.2241.018; Wed, 11 Sep 2019
+ 15:30:40 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v3 0/5] Introduce variable length mdev alias
+Thread-Topic: [PATCH v3 0/5] Introduce variable length mdev alias
+Thread-Index: AQHVYUZdAS6KYIr8SUO1vQ8myuXcNacjy68wgALDGQCAABfpQA==
+Date:   Wed, 11 Sep 2019 15:30:40 +0000
+Message-ID: <AM0PR05MB48668DFF8E816F0D2D3041BFD1B10@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190902042436.23294-1-parav@mellanox.com>
+        <AM0PR05MB4866F76F807409ED887537D7D1B70@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190911145610.453b32ec@x1.home>
+In-Reply-To: <20190911145610.453b32ec@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [208.176.44.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 88583fb9-e32f-42f8-7c14-08d736cd00d0
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB5025;
+x-ms-traffictypediagnostic: AM0PR05MB5025:|AM0PR05MB5025:
+x-ms-exchange-purlcount: 3
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB5025B019B5C92707178ECAC4D1B10@AM0PR05MB5025.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0157DEB61B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(366004)(39860400002)(376002)(54534003)(13464003)(189003)(199004)(2906002)(81166006)(8936002)(81156014)(8676002)(7736002)(74316002)(305945005)(64756008)(5660300002)(66476007)(76116006)(66946007)(7696005)(54906003)(33656002)(71200400001)(71190400001)(99286004)(316002)(6306002)(3846002)(66066001)(6916009)(229853002)(256004)(25786009)(478600001)(66556008)(66446008)(14444005)(6116002)(86362001)(52536014)(76176011)(446003)(11346002)(486006)(9686003)(55016002)(186003)(6436002)(53936002)(6246003)(53376002)(4326008)(6506007)(26005)(53546011)(966005)(102836004)(14454004)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5025;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: feOfqoVgQpT/nXY1fwOJsu9MxwoSbZEyY03on0NO2s/+tSego12puBsQNyLBLbPMfTGuEKhDNnkwhrPk35q+LJNfVKw25QdRbeGFEqP2FIw9f548a2uycru+yIOrfj3iFLOA59ss1PUhEy87Llhc03gpq8z10YYSS6f7AQpzMmTAPeZJun3ST0m594CH2t8O6tNfTMdSCwiiklvqCPLr7PQjZv+qo7/a0ox5VeeOQPB3XAfIKGLDYTLzZtczR/Ly/xT6tld8b/rIBA1Lu7T4sAnhSLUO38J7jxqKwHovHRClbki7ATASlTiJzbuNgPzEemFHJmXDe+yEB2FgtKllALRcXr1CICSct8dmeeYZZ0b+CpRcz5xwTI5tkEJUkHMHNeghevF7EPLLH+CwIBnBhf7xrf+SWaiEwLFUtCKfJCw=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88583fb9-e32f-42f8-7c14-08d736cd00d0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2019 15:30:40.5683
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +4Ueha/UbWAM2PufX4W71oPthIaq62C2NwnvG/U69lgZbYEfNghKHzREYr4YXhbs2WkmnyGCQVwQmxsK6XfgQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5025
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Hi Alex,
 
-The PluDevice register provides the authoritative chip model/revision.
+> -----Original Message-----
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Wednesday, September 11, 2019 8:56 AM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
+> cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
+> kernel@vger.kernel.org; netdev@vger.kernel.org
+> Subject: Re: [PATCH v3 0/5] Introduce variable length mdev alias
+>=20
+> On Mon, 9 Sep 2019 20:42:32 +0000
+> Parav Pandit <parav@mellanox.com> wrote:
+>=20
+> > Hi Alex,
+> >
+> > > -----Original Message-----
+> > > From: Parav Pandit <parav@mellanox.com>
+> > > Sent: Sunday, September 1, 2019 11:25 PM
+> > > To: alex.williamson@redhat.com; Jiri Pirko <jiri@mellanox.com>;
+> > > kwankhede@nvidia.com; cohuck@redhat.com; davem@davemloft.net
+> > > Cc: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > > netdev@vger.kernel.org; Parav Pandit <parav@mellanox.com>
+> > > Subject: [PATCH v3 0/5] Introduce variable length mdev alias
+> > >
+> > > To have consistent naming for the netdevice of a mdev and to have
+> > > consistent naming of the devlink port [1] of a mdev, which is formed
+> > > using phys_port_name of the devlink port, current UUID is not usable
+> > > because UUID is too long.
+> > >
+> > > UUID in string format is 36-characters long and in binary 128-bit.
+> > > Both formats are not able to fit within 15 characters limit of netdev
+> name.
+> > >
+> > > It is desired to have mdev device naming consistent using UUID.
+> > > So that widely used user space framework such as ovs [2] can make
+> > > use of mdev representor in similar way as PCIe SR-IOV VF and PF
+> representors.
+> > >
+> > > Hence,
+> > > (a) mdev alias is created which is derived using sha1 from the mdev
+> name.
+> > > (b) Vendor driver describes how long an alias should be for the
+> > > child mdev created for a given parent.
+> > > (c) Mdev aliases are unique at system level.
+> > > (d) alias is created optionally whenever parent requested.
+> > > This ensures that non networking mdev parents can function without
+> > > alias creation overhead.
+> > >
+> > > This design is discussed at [3].
+> > >
+> > > An example systemd/udev extension will have,
+> > >
+> > > 1. netdev name created using mdev alias available in sysfs.
+> > >
+> > > mdev UUID=3D83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
+> > > mdev 12 character alias=3Dcd5b146a80a5
+> > >
+> > > netdev name of this mdev =3D enmcd5b146a80a5 Here en =3D Ethernet lin=
+k m
+> > > =3D mediated device
+> > >
+> > > 2. devlink port phys_port_name created using mdev alias.
+> > > devlink phys_port_name=3Dpcd5b146a80a5
+> > >
+> > > This patchset enables mdev core to maintain unique alias for a mdev.
+> > >
+> > > Patch-1 Introduces mdev alias using sha1.
+> > > Patch-2 Ensures that mdev alias is unique in a system.
+> > > Patch-3 Exposes mdev alias in a sysfs hirerchy, update Documentation
+> > > Patch-4 Introduces mdev_alias() API.
+> > > Patch-5 Extends mtty driver to optionally provide alias generation.
+> > > This also enables to test UUID based sha1 collision and trigger
+> > > error handling for duplicate sha1 results.
+> > >
+> > > [1] http://man7.org/linux/man-pages/man8/devlink-port.8.html
+> > > [2] https://docs.openstack.org/os-vif/latest/user/plugins/ovs.html
+> > > [3] https://patchwork.kernel.org/cover/11084231/
+> > >
+> > > ---
+> > > Changelog:
+> > > v2->v3:
+> > >  - Addressed comment from Yunsheng Lin
+> > >  - Changed strcmp() =3D=3D0 to !strcmp()
+> > >  - Addressed comment from Cornelia Hunk
+> > >  - Merged sysfs Documentation patch with syfs patch
+> > >  - Added more description for alias return value
+> >
+> > Did you get a chance review this updated series?
+> > I addressed Cornelia's and yours comment.
+> > I do not think allocating alias memory twice, once for comparison and
+> > once for storing is good idea or moving alias generation logic inside
+> > the mdev_list_lock(). So I didn't address that suggestion of Cornelia.
+>=20
+> Sorry, I'm at LPC this week.  I agree, I don't think the double allocatio=
+n is
+> necessary, I thought the comment was sufficient to clarify null'ing the
+> variable.  It's awkward, but seems correct.
+>=20
+> I'm not sure what we do with this patch series though, has the real
+> consumer of this even been proposed?  It feels optimistic to include at t=
+his
+> point.  We've used the sample driver as a placeholder in the past for
+> mdev_uuid(), but we arrived at that via a conversion rather than explicit=
+ly
+> adding the API.  Please let me know where the consumer patches stand,
+> perhaps it would make more sense for them to go in together rather than
+> risk adding an unused API.  Thanks,
+>=20
+Given that consumer patch series is relatively large (around 15+ patches), =
+I was considering to merge this one as pre-series to it.
+Its ok to combine this with consumer patch series.
+But wanted to have it reviewed beforehand, so that churn is less in actual =
+consumer series which is more mlx5_core and devlink/netdev centric.
+So if you can add Review-by, it will be easier to combine with consumer ser=
+ies.
 
-Since the model number is purely used for reporting purposes, follow
-the hardware team convention of subtracting 0x10 from the PluDevice
-register to obtain the chip model/revision number.
-
-Suggested-by: Francois H. Theron <francois.theron@netronome.com>
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpplib.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpplib.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpplib.c
-index 3cfecf105bde..85734c6badf5 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpplib.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpplib.c
-@@ -24,8 +24,9 @@
- /* NFP6000 PL */
- #define NFP_PL_DEVICE_ID			0x00000004
- #define   NFP_PL_DEVICE_ID_MASK			GENMASK(7, 0)
--
--#define NFP6000_ARM_GCSR_SOFTMODEL0		0x00400144
-+#define   NFP_PL_DEVICE_PART_MASK		GENMASK(31, 16)
-+#define NFP_PL_DEVICE_MODEL_MASK		(NFP_PL_DEVICE_PART_MASK | \
-+						 NFP_PL_DEVICE_ID_MASK)
- 
- /**
-  * nfp_cpp_readl() - Read a u32 word from a CPP location
-@@ -120,22 +121,17 @@ int nfp_cpp_writeq(struct nfp_cpp *cpp, u32 cpp_id,
-  */
- int nfp_cpp_model_autodetect(struct nfp_cpp *cpp, u32 *model)
- {
--	const u32 arm_id = NFP_CPP_ID(NFP_CPP_TARGET_ARM, 0, 0);
- 	u32 reg;
- 	int err;
- 
--	err = nfp_cpp_readl(cpp, arm_id, NFP6000_ARM_GCSR_SOFTMODEL0, model);
--	if (err < 0)
--		return err;
--
--	/* The PL's PluDeviceID revision code is authoratative */
--	*model &= ~0xff;
- 	err = nfp_xpb_readl(cpp, NFP_XPB_DEVICE(1, 1, 16) + NFP_PL_DEVICE_ID,
- 			    &reg);
- 	if (err < 0)
- 		return err;
- 
--	*model |= (NFP_PL_DEVICE_ID_MASK & reg) - 0x10;
-+	*model = reg & NFP_PL_DEVICE_MODEL_MASK;
-+	if (*model & NFP_PL_DEVICE_ID_MASK)
-+		*model -= 0x10;
- 
- 	return 0;
- }
--- 
-2.11.0
-
+And if we merge it with consumer series, it will come through Dave Miller's=
+ tree instead of your tree.
+Would that work for you?
