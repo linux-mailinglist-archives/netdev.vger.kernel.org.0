@@ -2,291 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29027AF515
-	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 06:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EABBAAF51A
+	for <lists+netdev@lfdr.de>; Wed, 11 Sep 2019 06:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbfIKEcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 00:32:33 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:39332 "EHLO
+        id S1726387AbfIKEd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 00:33:56 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42277 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfIKEcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 00:32:33 -0400
-Received: by mail-qt1-f193.google.com with SMTP id n7so23655738qtb.6;
-        Tue, 10 Sep 2019 21:32:31 -0700 (PDT)
+        with ESMTP id S1725948AbfIKEd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 00:33:56 -0400
+Received: by mail-qt1-f193.google.com with SMTP id c17so4303207qtv.9;
+        Tue, 10 Sep 2019 21:33:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=RZVyJMzDm7Ro/qZ7rmhXMemXLE9EwV5VPEs9TqdHIE0=;
-        b=IbB/QfmOhXu/8xtENCZHwwHGbFLBciNjBF0Xbfs2Dt68HXndLzau3bx4j4L2+pUHXS
-         nnymotPNgk8M9hZF1JXmX+EBTltkTQtbSgwNq+1an5m1Sez6l1xqJfsz1wzrHJC33/5l
-         9xJ4FxD1Ozh0DhQSOJ3UMSdgf/c5lb6qwBmc/35Ms5B0tV/T1PbGUwkivECAgDWhwgi4
-         yWL/i62vqMRymGvPajeJ7HOfZzFG2IkXeSssJyoXnOr2+DwIJgdlsnQbDE38niABuOUW
-         zcyu1QY9GaT5+UAFcS4+1Zzu2yu1LuWW59WjANfpaHTSkp5KZqWgYzt1ebcq4jUCfPO+
-         qXiQ==
+         :content-disposition:in-reply-to:user-agent;
+        bh=8ya/RkghcFeGChOJ4VF6BjHTJqDe4QSzZMyHbHOCjX8=;
+        b=dNNKowyb/LTs2d8dKJhbbyjh7v/JmT+66fk5vQ2E21NdvRyJGiyDD4q2a2S8Kaf2Bu
+         o+eWWi2NLT+H4CsTrqn5SqQqh5oBESoa2YuiL2v/UnZABCoKsZW6//eaP39GyQlTVian
+         +m8Y4LykN5nnPzNFV/zIbJnSkeAgoKZ4EjtB7AV8vtnggfTd2CxTErwNUHRbyUc6ZucB
+         YQQVRSsVX5UFtG1qbr/NjNtafvtlUPnmFMtz8xEmsE8yiOIa3OuvN3fLYQ68bgJNpg/G
+         KP9oENKP8dJMuCYBQz1Fz8MQKY8fiCqFHc/KSbdpF7RI+fbu3y1pXncd+TjBG0GXe+bX
+         M/Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=RZVyJMzDm7Ro/qZ7rmhXMemXLE9EwV5VPEs9TqdHIE0=;
-        b=PFm0zM/eZjO9aMKTTODFOIQ/cf+AVR7iDIw4mR5ct6YWxNrtG/3XEz4slt1JfHZDAh
-         a9kQ7No4UlYyxuXi2onogW+GUsb9YXLMFin30O0DV9ulLU0r/ymB/LWp2mmle991xA9B
-         1aShI/Bo8GgIzRlDZOUUKY/VDnRRnC7Q9IRlIIDQQKJxmJAL566F/7fkEVMp8fk1pqjC
-         9crBK/nXW+qDwgrghh13Ia2ZylXqIF3qMwiguSItWgI8oFJBQhkS2wpwxcl23v0M8NK2
-         tIWHygKLiUq2DKetP1DsOIecP0iM3p4j+YFYCubixDD+WK9XUj6OZENsNG5yu1HfhESl
-         SbOA==
-X-Gm-Message-State: APjAAAWe+Zpq0zy99yuslDpkeRy58aCtCweWFYaCykG0Gh0Jphg0psdB
-        ZUmQBLJlyk98GDs8DkU/VXc=
-X-Google-Smtp-Source: APXvYqz6ZPpy1ZDvUYSM9ZF32f0dn7w6OrvWGGekgQkXxClHdAld8GmSrZ7l1J36HI82jQ5icb+nag==
-X-Received: by 2002:ac8:3a84:: with SMTP id x4mr30993849qte.334.1568176351188;
-        Tue, 10 Sep 2019 21:32:31 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8ya/RkghcFeGChOJ4VF6BjHTJqDe4QSzZMyHbHOCjX8=;
+        b=RR8EHW11mA/xfQaRfoeIvwSEcnyUfhNInFY1dgmZ+lIYiyeZdC4fmrQAyW5n7+BCvG
+         uRmgKlPy4U34I7FGehtfhB35LDlgs7N8rKDIz2KCLKPba4gtYt9pgc9INwQoYG4KQfep
+         IE+a0iffq9QOVB7TQks5M9AF9ajusHHxTQg0oeMfA8qV3MnyJUuKWJSpBmUbnNZJMTOk
+         TODcqYWr8Al8Jr3EyrdvQQTYsZwUhFzJeX6GsFuW7FR3TwkI3jr36enwKg5+wAfA9WN/
+         rE2SZWtjHSrWgtu3+ArSJKksm23LsV6qUEqiUWsMPHLvkucSNW680aAr9IJG4aNz9JPm
+         DvxA==
+X-Gm-Message-State: APjAAAW0dLReFbT18Bl3/lG6iRen9FkVMlcx+65GAapdZnFRVgAdXwup
+        OQR6n1WA9pfm7lO68GpqYNw=
+X-Google-Smtp-Source: APXvYqxDxiMbTHdu+04GJHqJ3iNePP0bHyGlTBy+m7LMLtmipM6gEkSMP5IcUhbktuzXcODB5TqXbw==
+X-Received: by 2002:ac8:71d9:: with SMTP id i25mr523259qtp.99.1568176434868;
+        Tue, 10 Sep 2019 21:33:54 -0700 (PDT)
 Received: from frodo.byteswizards.com ([190.162.109.190])
-        by smtp.gmail.com with ESMTPSA id m136sm7703396qke.78.2019.09.10.21.32.28
+        by smtp.gmail.com with ESMTPSA id h7sm6699980qto.16.2019.09.10.21.33.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Sep 2019 21:32:30 -0700 (PDT)
-Date:   Wed, 11 Sep 2019 01:32:25 -0300
+        Tue, 10 Sep 2019 21:33:54 -0700 (PDT)
+Date:   Wed, 11 Sep 2019 01:33:50 -0300
 From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
 To:     Yonghong Song <yhs@fb.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "ebiederm@xmission.com" <ebiederm@xmission.com>,
         "brouer@redhat.com" <brouer@redhat.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>
 Subject: Re: [PATCH bpf-next v10 2/4] bpf: new helper to obtain namespace
  data from current task New bpf helper bpf_get_current_pidns_info.
-Message-ID: <20190911043225.GA22183@frodo.byteswizards.com>
+Message-ID: <20190911043350.GB22183@frodo.byteswizards.com>
 References: <20190906150952.23066-1-cneirabustos@gmail.com>
  <20190906150952.23066-3-cneirabustos@gmail.com>
- <20190906152435.GW1131@ZenIV.linux.org.uk>
- <20190906154647.GA19707@ZenIV.linux.org.uk>
- <20190906160020.GX1131@ZenIV.linux.org.uk>
- <c0e67fc7-be66-c4c6-6aad-316cbba18757@fb.com>
- <20190907001056.GA1131@ZenIV.linux.org.uk>
- <7d196a64-cf36-c2d5-7328-154aaeb929eb@fb.com>
- <20190909174522.GA17882@frodo.byteswizards.com>
- <dadf3657-2648-14ef-35ee-e09efb2cdb3e@fb.com>
+ <c5ecd602-8b45-94bd-96e8-2264a88a3c09@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <dadf3657-2648-14ef-35ee-e09efb2cdb3e@fb.com>
+In-Reply-To: <c5ecd602-8b45-94bd-96e8-2264a88a3c09@fb.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 10, 2019 at 10:35:09PM +0000, Yonghong Song wrote:
-Thanks a lot Yonghong.
-I'll include this patch when submitting changes for version 11 of
-this patch. 
+Thanks for reviewing the rest of the code, 
+I'll include these changes in ver 11.
+
+Bests 
+On Tue, Sep 10, 2019 at 10:46:45PM +0000, Yonghong Song wrote:
 > 
-> Carlos,
 > 
-> Discussed with Eric today for what is the best way to get
-> the device number for a namespace. The following patch seems
-> a reasonable start although Eric would like to see
-> how the helper is used in order to decide whether the
-> interface looks right.
-> 
-> commit bb00fc36d5d263047a8bceb3e51e969d7fbce7db (HEAD -> fs2)
-> Author: Yonghong Song <yhs@fb.com>
-> Date:   Mon Sep 9 21:50:51 2019 -0700
-> 
->      nsfs: add an interface function ns_get_inum_dev()
-> 
->      This patch added an interface function
->      ns_get_inum_dev(). Given a ns_common structure,
->      the function returns the inode and device
->      numbers. The function will be used later
->      by a newly added bpf helper.
-> 
->      Signed-off-by: Yonghong Song <yhs@fb.com>
-> 
-> diff --git a/fs/nsfs.c b/fs/nsfs.c
-> index a0431642c6b5..a603c6fc3f54 100644
-> --- a/fs/nsfs.c
-> +++ b/fs/nsfs.c
-> @@ -245,6 +245,14 @@ struct file *proc_ns_fget(int fd)
->          return ERR_PTR(-EINVAL);
->   }
-> 
-> +/* Get the device number for the current task pidns.
-> + */
-> +void ns_get_inum_dev(struct ns_common *ns, u32 *inum, dev_t *dev)
-> +{
-> +       *inum = ns->inum;
-> +       *dev = nsfs_mnt->mnt_sb->s_dev;
-> +}
-> +
->   static int nsfs_show_path(struct seq_file *seq, struct dentry *dentry)
->   {
->          struct inode *inode = d_inode(dentry);
-> diff --git a/include/linux/proc_ns.h b/include/linux/proc_ns.h
-> index d31cb6215905..b8fc680cdf1a 100644
-> --- a/include/linux/proc_ns.h
-> +++ b/include/linux/proc_ns.h
-> @@ -81,6 +81,7 @@ extern void *ns_get_path(struct path *path, struct 
-> task_struct *task,
->   typedef struct ns_common *ns_get_path_helper_t(void *);
->   extern void *ns_get_path_cb(struct path *path, ns_get_path_helper_t 
-> ns_get_cb,
->                              void *private_data);
-> +extern void ns_get_inum_dev(struct ns_common *ns, u32 *inum, dev_t *dev);
-> 
->   extern int ns_get_name(char *buf, size_t size, struct task_struct *task,
->                          const struct proc_ns_operations *ns_ops);
-> 
-> Could you put the above change and patch #1 and then have
-> all your other patches? In your kernel change, please use
-> interface function ns_get_inum_dev() to get pidns inode number
-> and dev number.
-> 
-> On 9/9/19 6:45 PM, Carlos Antonio Neira Bustos wrote:
-> > Thanks a lot, Al Viro and Yonghong for taking the time to review this patch and
-> > provide technical insights needed on this one.
-> > But how do we move this forward?
-> > Al Viro's review is clear that this will not work and we should strip the name
-> > resolution code (thanks for your detailed analysis).
-> > As there is currently only one instance of the nsfs device on the system,
-> > I think we could leave out the retrieval of the pidns device number and address it
-> > when the situation changes.
-> > What do you think?
+> On 9/6/19 4:09 PM, Carlos Neira wrote:
+> > This helper(bpf_get_current_pidns_info) obtains the active namespace from
+> > current and returns pid, tgid, device and namespace id as seen from that
+> > namespace, allowing to instrument a process inside a container.
 > > 
+> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > ---
+> >   include/linux/bpf.h      |  1 +
+> >   include/uapi/linux/bpf.h | 35 +++++++++++++++++++-
+> >   kernel/bpf/core.c        |  1 +
+> >   kernel/bpf/helpers.c     | 86 ++++++++++++++++++++++++++++++++++++++++++++++++
+> >   kernel/trace/bpf_trace.c |  2 ++
+> >   5 files changed, 124 insertions(+), 1 deletion(-)
 > > 
-> > On Sat, Sep 07, 2019 at 06:34:39AM +0000, Yonghong Song wrote:
-> >>
-> >>
-> >> On 9/6/19 5:10 PM, Al Viro wrote:
-> >>> On Fri, Sep 06, 2019 at 11:21:14PM +0000, Yonghong Song wrote:
-> >>>
-> >>>> -bash-4.4$ readlink /proc/self/ns/pid
-> >>>> pid:[4026531836]
-> >>>> -bash-4.4$ stat /proc/self/ns/pid
-> >>>>      File: ‘/proc/self/ns/pid’ -> ‘pid:[4026531836]’
-> >>>>      Size: 0               Blocks: 0          IO Block: 1024   symbolic link
-> >>>> Device: 4h/4d   Inode: 344795989   Links: 1
-> >>>> Access: (0777/lrwxrwxrwx)  Uid: (128203/     yhs)   Gid: (  100/   users)
-> >>>> Context: user_u:base_r:base_t
-> >>>> Access: 2019-09-06 16:06:09.431616380 -0700
-> >>>> Modify: 2019-09-06 16:06:09.431616380 -0700
-> >>>> Change: 2019-09-06 16:06:09.431616380 -0700
-> >>>>     Birth: -
-> >>>> -bash-4.4$
-> >>>>
-> >>>> Based on a discussion with Eric Biederman back in 2019 Linux
-> >>>> Plumbers, Eric suggested that to uniquely identify a
-> >>>> namespace, device id (major/minor) number should also
-> >>>> be included. Although today's kernel implementation
-> >>>> has the same device for all namespace pseudo files,
-> >>>> but from uapi perspective, device id should be included.
-> >>>>
-> >>>> That is the reason why we try to get device id which holds
-> >>>> pid namespace pseudo file.
-> >>>>
-> >>>> Do you have a better suggestion on how to get
-> >>>> the device id for 'current' pid namespace? Or from design, we
-> >>>> really should not care about device id at all?
-> >>>
-> >>> What the hell is "device id for pid namespace"?  This is the
-> >>> first time I've heard about that mystery object, so it's
-> >>> hard to tell where it could be found.
-> >>>
-> >>> I can tell you what device numbers are involved in the areas
-> >>> you seem to be looking in.
-> >>>
-> >>> 1) there's whatever device number that gets assigned to
-> >>> (this) procfs instance.  That, ironically, _is_ per-pidns, but
-> >>> that of the procfs instance, not that of your process (and
-> >>> those can be different).  That's what you get in ->st_dev
-> >>> when doing lstat() of anything in /proc (assuming that
-> >>> procfs is mounted there, in the first place).  NOTE:
-> >>> that's lstat(2), not stat(2).  stat(1) uses lstat(2),
-> >>> unless given -L (in which case it's stat(2) time).  The
-> >>> difference:
-> >>>
-> >>> root@kvm1:~# stat /proc/self/ns/pid
-> >>>     File: /proc/self/ns/pid -> pid:[4026531836]
-> >>>     Size: 0               Blocks: 0          IO Block: 1024   symbolic link
-> >>> Device: 4h/4d   Inode: 17396       Links: 1
-> >>> Access: (0777/lrwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
-> >>> Access: 2019-09-06 19:43:11.871312319 -0400
-> >>> Modify: 2019-09-06 19:43:11.871312319 -0400
-> >>> Change: 2019-09-06 19:43:11.871312319 -0400
-> >>>    Birth: -
-> >>> root@kvm1:~# stat -L /proc/self/ns/pid
-> >>>     File: /proc/self/ns/pid
-> >>>     Size: 0               Blocks: 0          IO Block: 4096   regular empty file
-> >>> Device: 3h/3d   Inode: 4026531836  Links: 1
-> >>> Access: (0444/-r--r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
-> >>> Access: 2019-09-06 19:43:15.955313293 -0400
-> >>> Modify: 2019-09-06 19:43:15.955313293 -0400
-> >>> Change: 2019-09-06 19:43:15.955313293 -0400
-> >>>    Birth: -
-> >>>
-> >>> The former is lstat, the latter - stat.
-> >>>
-> >>> 2) device number of the filesystem where the symlink target lives.
-> >>> In this case, it's nsfs and there's only one instance on the entire
-> >>> system.  _That_ would be obtained by looking at st_dev in stat(2) on
-> >>> /proc/self/ns/pid (0:3 above).
-> >>>
-> >>> 3) device number *OF* the symlink.  That would be st_rdev in lstat(2).
-> >>> There's none - it's a symlink, not a character or block device.  It's
-> >>> always zero and always will be zero.
-> >>>
-> >>> 4) the same for the target; st_rdev in stat(2) results and again,
-> >>> there's no such beast - it's neither character nor block device.
-> >>>
-> >>> Your code is looking at (3).  Please, reread any textbook on Unix
-> >>> in the section that would cover stat(2) and discussion of the
-> >>> difference between st_dev and st_rdev.
-> >>>
-> >>> I have no idea what Eric had been talking about - it's hard to
-> >>> reconstruct by what you said so far.  Making nsfs per-userns,
-> >>> perhaps?  But that makes no sense whatsoever, not that userns
-> >>> ever had...  Cheap shots aside, I really can't guess what that's
-> >>> about.  Sorry.
-> >>
-> >> Thanks for the detailed information. The device number we want
-> >> is nsfs. Indeed, currently, there is only one instance
-> >> on the entire system. But not exactly sure what is the possibility
-> >> to have more than one nsfs device in the future. Maybe per-userns
-> >> or any other criteria?
-> >>
-> >>>
-> >>> In any case, pathname resolution is *NOT* for the situations where
-> >>> you can't block.  Even if it's procfs (and from the same pidns as
-> >>> the process) mounted there, there is no promise that the target
-> >>> of /proc/self has already been looked up and not evicted from
-> >>> memory since then.  And in case of cache miss pathwalk will
-> >>> have to call ->lookup(), which requires locking the directory
-> >>> (rw_sem, shared).  You can't do that in such context.
-> >>>
-> >>> And that doesn't even go into the possibility that process has
-> >>> something very different mounted on /proc.
-> >>>
-> >>> Again, I don't know what it is that you want to get to, but
-> >>> I would strongly recommend finding a way to get to that data
-> >>> that would not involve going anywhere near pathname resolution.
-> >>>
-> >>> How would you expect the userland to work with that value,
-> >>> whatever it might be?  If it's just a 32bit field that will
-> >>> never be read, you might as well store there the same value
-> >>> you store now (0, that is) in much cheaper and safer way ;-)
-> >>
-> >> Suppose inside pid namespace, user can pass the device number,
-> >> say n1, (`stat -L /proc/self/ns/pid`) to bpf program (through map
-> >> or JIT). At runtime, bpf program will try to get device number,
-> >> say n2, for the 'current' process. If n1 is not the same as
-> >> n2, that means they are not in the same namespace. 'current'
-> >> is in the same pid namespace as the user iff
-> >> n1 == n2 and also pidns id is the same for 'current' and
-> >> the one with `lsns -t pid`.
-> >>
-> >> Are you aware of any way to get the pidns device number
-> >> for 'current' without going through the pathname
-> >> lookup?
-> >>
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 5b9d22338606..819cb1c84be0 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> >   extern const struct bpf_func_proto bpf_strtol_proto;
+> >   extern const struct bpf_func_proto bpf_strtoul_proto;
+> >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > +extern const struct bpf_func_proto bpf_get_current_pidns_info_proto;
+> >   
+> >   /* Shared helpers among cBPF and eBPF. */
+> >   void bpf_user_rnd_init_once(void);
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index b5889257cc33..3ec9aa1438b7 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2747,6 +2747,32 @@ union bpf_attr {
+> >    *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> >    *
+> >    *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > + *
+> > + * int bpf_get_current_pidns_info(struct bpf_pidns_info *pidns, u32 size_of_pidns)
+> > + *	Description
+> > + *		Get tgid, pid and namespace id as seen by the current namespace,
+> > + *		and device major/minor numbers from /proc/self/ns/pid. Such
+> > + *		information is stored in *pidns* of size *size*.
+> > + *
+> > + *		This helper is used when pid filtering is needed inside a
+> > + *		container as bpf_get_current_tgid() helper always returns the
+> > + *		pid id as seen by the root namespace.
+> > + *	Return
+> > + *		0 on success
+> > + *
+> > + *		On failure, the returned value is one of the following:
+> > + *
+> > + *		**-EINVAL** if *size_of_pidns* is not valid or unable to get ns, pid
+> > + *		or tgid of the current task.
+> > + *
+> > + *		**-ENOENT** if /proc/self/ns/pid does not exists.
+> > + *
+> > + *		**-ENOENT** if /proc/self/ns does not exists.
+> > + *
+> > + *		**-ENOMEM** if helper internal allocation fails.
+> 
+> -ENOMEM can be removed.
+> 
+> > + *
+> > + *		**-EPERM** if not able to call helper.
+> > + *
+> >    */
+> >   #define __BPF_FUNC_MAPPER(FN)		\
+> >   	FN(unspec),			\
+> > @@ -2859,7 +2885,8 @@ union bpf_attr {
+> >   	FN(sk_storage_get),		\
+> >   	FN(sk_storage_delete),		\
+> >   	FN(send_signal),		\
+> > -	FN(tcp_gen_syncookie),
+> > +	FN(tcp_gen_syncookie),		\
+> > +	FN(get_current_pidns_info),
+> >   
+> >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> >    * function eBPF program intends to call
+> > @@ -3610,4 +3637,10 @@ struct bpf_sockopt {
+> >   	__s32	retval;
+> >   };
+> >   
+> > +struct bpf_pidns_info {
+> > +	__u32 dev;	/* dev_t from /proc/self/ns/pid inode */
+> 
+>     /* dev_t of pid namespace pseudo file (typically /proc/seelf/ns/pid) 
+> after following symbolic link */
+> 
+> > +	__u32 nsid;
+> > +	__u32 tgid;
+> > +	__u32 pid;
+> > +};
+> >   #endif /* _UAPI__LINUX_BPF_H__ */
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 8191a7db2777..3159f2a0188c 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -2038,6 +2038,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > +const struct bpf_func_proto bpf_get_current_pidns_info __weak;
+> >   
+> >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> >   {
+> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > index 5e28718928ca..8dbe6347893c 100644
+> > --- a/kernel/bpf/helpers.c
+> > +++ b/kernel/bpf/helpers.c
+> > @@ -11,6 +11,11 @@
+> >   #include <linux/uidgid.h>
+> >   #include <linux/filter.h>
+> >   #include <linux/ctype.h>
+> > +#include <linux/pid_namespace.h>
+> > +#include <linux/kdev_t.h>
+> > +#include <linux/stat.h>
+> > +#include <linux/namei.h>
+> > +#include <linux/version.h>
+> >   
+> >   #include "../../lib/kstrtox.h"
+> >   
+> > @@ -312,6 +317,87 @@ void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+> >   	preempt_enable();
+> >   }
+> >   
+> > +BPF_CALL_2(bpf_get_current_pidns_info, struct bpf_pidns_info *, pidns_info, u32,
+> > +	 size)
+> > +{
+> > +	const char *pidns_path = "/proc/self/ns/pid";
+> > +	struct pid_namespace *pidns = NULL;
+> > +	struct filename *fname = NULL;
+> > +	struct inode *inode;
+> > +	struct path kp;
+> > +	pid_t tgid = 0;
+> > +	pid_t pid = 0;
+> > +	int ret = -EINVAL;
+> > +	int len;
+> > +
+> > +	if (unlikely(in_interrupt() ||
+> > +			current->flags & (PF_KTHREAD | PF_EXITING)))
+> > +		return -EPERM;
+> > +
+> > +	if (unlikely(size != sizeof(struct bpf_pidns_info)))
+> > +		return -EINVAL;
+> > +
+> > +	pidns = task_active_pid_ns(current);
+> > +	if (unlikely(!pidns))
+> > +		return -ENOENT;
+> > +
+> > +	pidns_info->nsid =  pidns->ns.inum;
+> > +	pid = task_pid_nr_ns(current, pidns);
+> > +	if (unlikely(!pid))
+> > +		goto clear;
+> > +
+> > +	tgid = task_tgid_nr_ns(current, pidns);
+> > +	if (unlikely(!tgid))
+> > +		goto clear;
+> > +
+> > +	pidns_info->tgid = (u32) tgid;
+> > +	pidns_info->pid = (u32) pid;
+> > +
+> [...]
+> > +	fname = kmem_cache_alloc(names_cachep, GFP_ATOMIC);
+> > +	if (unlikely(!fname)) {
+> > +		ret = -ENOMEM;
+> > +		goto clear;
+> > +	}
+> > +	const size_t fnamesize = offsetof(struct filename, iname[1]);
+> > +	struct filename *tmp;
+> > +
+> > +	tmp = kmalloc(fnamesize, GFP_ATOMIC);
+> > +	if (unlikely(!tmp)) {
+> > +		__putname(fname);
+> > +		ret = -ENOMEM;
+> > +		goto clear;
+> > +	}
+> > +
+> > +	tmp->name = (char *)fname;
+> > +	fname = tmp;
+> > +	len = strlen(pidns_path) + 1;
+> > +	memcpy((char *)fname->name, pidns_path, len);
+> > +	fname->uptr = NULL;
+> > +	fname->aname = NULL;
+> > +	fname->refcnt = 1;
+> > +
+> > +	ret = filename_lookup(AT_FDCWD, fname, 0, &kp, NULL);
+> > +	if (ret)
+> > +		goto clear;
+> > +
+> > +	inode = d_backing_inode(kp.dentry);
+> > +	pidns_info->dev = (u32)inode->i_rdev;
+> The above can bee replaced with new nsfs interface function
+> ns_get_inum_dev().
+> > +
+> > +	return 0;
+> > +
+> > +clear:
+> > +	memset((void *)pidns_info, 0, (size_t) size);
+> > +	return ret;
+> > +}
+> > +
+> > +const struct bpf_func_proto bpf_get_current_pidns_info_proto = {
+> > +	.func		= bpf_get_current_pidns_info,
+> > +	.gpl_only	= false,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
+> > +	.arg2_type	= ARG_CONST_SIZE,
+> > +};
+> > +
+> >   #ifdef CONFIG_CGROUPS
+> >   BPF_CALL_0(bpf_get_current_cgroup_id)
+> >   {
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index ca1255d14576..5e1dc22765a5 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -709,6 +709,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   #endif
+> >   	case BPF_FUNC_send_signal:
+> >   		return &bpf_send_signal_proto;
+> > +	case BPF_FUNC_get_current_pidns_info:
+> > +		return &bpf_get_current_pidns_info_proto;
+> >   	default:
+> >   		return NULL;
+> >   	}
+> > 
