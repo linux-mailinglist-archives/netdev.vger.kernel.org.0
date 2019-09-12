@@ -2,85 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA0CB0D73
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 13:01:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B683B0DA2
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 13:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731265AbfILLBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 07:01:48 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:48544 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730680AbfILLBr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 07:01:47 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 97E8420547;
-        Thu, 12 Sep 2019 13:01:45 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 7v5Q3AiaYgAd; Thu, 12 Sep 2019 13:01:45 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S1731205AbfILLPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 07:15:01 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:47571 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730386AbfILLPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 07:15:01 -0400
+Received: from localhost.localdomain (unknown [88.128.80.121])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 1698220422;
-        Thu, 12 Sep 2019 13:01:45 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Sep 2019
- 13:01:45 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id AD5863180394;
- Thu, 12 Sep 2019 13:01:44 +0200 (CEST)
-Date:   Thu, 12 Sep 2019 13:01:44 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>
-CC:     Michael Marley <michael@michaelmarley.com>,
-        Shannon Nelson <snelson@pensando.io>, <netdev@vger.kernel.org>
-Subject: [PATCH] ixgbe: Fix secpath usage for IPsec TX offload.
-Message-ID: <20190912110144.GS2879@gauss3.secunet.de>
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 74CEFC11ED;
+        Thu, 12 Sep 2019 13:14:57 +0200 (CEST)
+Subject: Re: ANNOUNCE: rpld an another RPL implementation for Linux
+To:     Alexander Aring <alex.aring@gmail.com>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Cc:     Michael Richardson <mcr@sandelman.ca>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Robert Kaiser <robert.kaiser@hs-rm.de>,
+        Martin Gergeleit <martin.gergeleit@hs-rm.de>,
+        Kai Beckmann <kai.beckmann@hs-rm.de>, koen@bergzand.net,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        reubenhwk@gmail.com,
+        BlueZ development <linux-bluetooth@vger.kernel.org>,
+        sebastian.meiling@haw-hamburg.de,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Werner Almesberger <werner@almesberger.net>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>
+References: <CAB_54W7h9ca0UJAZtk=ApPX-2ZCvzu4774BTFTaB5mtkobWCtw@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <78e83575-4bae-cb8b-be8c-c108ac488a37@datenfreihafen.org>
+Date:   Thu, 12 Sep 2019 13:14:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <CAB_54W7h9ca0UJAZtk=ApPX-2ZCvzu4774BTFTaB5mtkobWCtw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ixgbe driver currently does IPsec TX offloading
-based on an existing secpath. However, the secpath
-can also come from the RX side, in this case it is
-misinterpreted for TX offload and the packets are
-dropped with a "bad sa_idx" error. Fix this by using
-the xfrm_offload() function to test for TX offload.
+Hello Alex.
 
-Fixes: 592594704761 ("ixgbe: process the Tx ipsec offload")
-Reported-by: Michael Marley <michael@michaelmarley.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 29.08.19 23:57, Alexander Aring wrote:
+> Hi,
+> 
+> I had some free time, I wanted to know how RPL [0] works so I did a
+> implementation. It's _very_ basic as it only gives you a "routable"
+> (is that a word?) thing afterwards in a very constrained setup of RPL
+> messages.
+> 
+> Took ~1 month to implement it and I reused some great code from radvd
+> [1]. I released it under the same license (BSD?). Anyway, I know there
+> exists a lot of memory leaks and the parameters are just crazy as not
+> practical in a real environment BUT it works.
+> 
+> I changed a little bit the dependencies from radvd (because fancy new things):
+> 
+> - lua for config handling
+> - libev for event loop handling
+> - libmnl for netlink handling
+> 
+> The code is available at:
+> 
+> https://github.com/linux-wpan/rpld
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 9bcae44e9883..ae31bd57127c 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -36,6 +36,7 @@
- #include <net/vxlan.h>
- #include <net/mpls.h>
- #include <net/xdp_sock.h>
-+#include <net/xfrm.h>
- 
- #include "ixgbe.h"
- #include "ixgbe_common.h"
-@@ -8696,7 +8697,7 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
- #endif /* IXGBE_FCOE */
- 
- #ifdef CONFIG_IXGBE_IPSEC
--	if (secpath_exists(skb) &&
-+	if (xfrm_offload(skb) &&
- 	    !ixgbe_ipsec_tx(tx_ring, first, &ipsec_tx))
- 		goto out_drop;
- #endif
--- 
-2.17.1
+I finally had a first look at it and played around a little bit.
 
+How do you want to review patches for this? Pull requests on the github
+repo or patches send on the linux-wpan list?
+
+So far just some basic stuff I stumbled over when playing with it. Build
+fixes (SCOPE_ID and different lua pkgconfig namings), leak fixes to
+config.c as well as a travis setup to get building on CI as well as
+submitting to Coverity scan service (the later two are already tested in
+practice with some dev branches I pushed to the github repo, hope you
+don't mind).
+
+regards
+Stefan Schmidt
