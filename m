@@ -2,205 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C5CB0AA4
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 10:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 301F5B0AD5
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 11:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730458AbfILItz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 04:49:55 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35527 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726159AbfILItw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 04:49:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id n10so6605797wmj.0
-        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 01:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WjMvQUpkNfMt20M9QSj9cvMCAWuUDnSuiwIUrNshSeM=;
-        b=uv+Eq2Ndl6MWl59L46D+PWaA1X19XM+CzJYUrn/y0A+qAZ6NNsAWVhORCa3db44nCN
-         rV0022ZyW5nv3pLTuxzta7XhWJaalZOYivmAPxUz9mX3Z+qUlyVBGAMqZ8sZmsSQfiTg
-         FtOSG5d/vMzm0lRh0FyhXt/M8TnKdvthvL11B47mJEK0KeNUjCZyp81ESOlrD4qf0zM9
-         P2w2vygRBqS8b8dWsXa8xQzSOM40ePZEWxQfhHNcQSMJSyfWFCwBJFlYBwYYCv1JJISw
-         bnZvOPb5pltKvvvs9Ah3sPp8vbIWqWX0o5fI1CQRHAoItaZiyMdcOTN1VvNpf699CLWD
-         15Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WjMvQUpkNfMt20M9QSj9cvMCAWuUDnSuiwIUrNshSeM=;
-        b=NS01SdQDi0F8MA8iERNz7ZI/u8EoCRoYfSlZ4X+DoVU8CXAQtEPlncxGdUzdp2OxZL
-         1+DdbUJG0x7LpvyPi/5WBjxKKnY7nVLexJImFKeRsvew6dpcnV6qem0nGJiUwp5/Edme
-         mAqKT8b+AeBSDMIJGusjaypbU1d8XdI+ob4vvu2ADr0Tbr/DFbl8cEg0JXHQq2hN4XP+
-         HScKZrAgqEjB78jUUo5STjUVx3vQlOFPjqGEx371TYdUowD3crUrao27+vWKdrg9VFGV
-         U5GyhTxgLdw9odctp6s7jysPhIW8v46JsxL46DwJRBdzaBcxxr4zfCmx1GfwTgSC6r6z
-         rHHg==
-X-Gm-Message-State: APjAAAU3i5CB9W9KvEZ6dAIz7iH2/g9/La+t0BLsHaEV6gE/uXAXxpm+
-        LrB9XNT+urSvF12Lo0NDXmXxBBP5Pws=
-X-Google-Smtp-Source: APXvYqwSGbsrPONaJ2bQz6cRs/NbhdCMUWPa+1ErXjrwa4rS3Rm9fodf1fYLElupB1dK9kG4W7E4vQ==
-X-Received: by 2002:a7b:cc0a:: with SMTP id f10mr7846705wmh.6.1568278190147;
-        Thu, 12 Sep 2019 01:49:50 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id g15sm4334326wmk.17.2019.09.12.01.49.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Sep 2019 01:49:49 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next v3 3/3] net: devlink: move reload fail indication to devlink core and expose to user
-Date:   Thu, 12 Sep 2019 10:49:46 +0200
-Message-Id: <20190912084946.7468-4-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190912084946.7468-1-jiri@resnulli.us>
-References: <20190912084946.7468-1-jiri@resnulli.us>
+        id S1730489AbfILJDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 05:03:47 -0400
+Received: from mail-eopbgr140070.outbound.protection.outlook.com ([40.107.14.70]:63798
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730175AbfILJDq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 05:03:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dAQjl73BJtLybtqXYbddtQeFOtGcJKcZp7boJp6UekrPlxR4ud+RyWtUx98sWDisEcNOb0lDhuhfikYygiITn3lWhY1JSWzB+Sq3PJ5DfCURbYKyW5ci6M5C+AszaCBFhIf2Xx8jT4MQB4ZQXDanz8ZmLKN+HSJNvk5/4/X279+onWR4ozgo9i8qOW0GqB597VbP1fCIhYb2HuF8fxbSsxwr5dWXTESLXfAs7X1nGwho/mqbALobpFs3gznHVQjadwW/selHiiNxUhOSL8JlvO/V9+5Mca+EsKA3oRfRoIRNtOeUznqEeug91TnxF6oLTTL2YUIgYMeL11Q5Fq5slw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NkV4Ic5xHWAk5r6+2k6x5+dkON2TiAI9xZKC7uYt+J4=;
+ b=c34+PN87Ng4bxaBy9MkS/eTQnL5HaKobN0CZTRbddZPzbTWfZjMgZwr8813yT3MYJUyYa3GyZ98SW30DqDUduxR4MRzo4D9x6R13K0KEV4H7NsPHUUbS7eXxSEfsFD4UaxWeVxU/0u5xuw5tMGfxMmIscEvNKJeGuDhKfICdFr+wvfQaf2qNyOeRJCNAaRbRJ3jSRoSgQ9ecjKMFWdYmc4I2/B4nmq0pMsLPNGu7URIZexoTY5ry/SPMhtLQy95/YGokb5Le2HznNR9H2BGcVXibqjUt3/CErZHNorNndLp63w4nuJy8bkrG4ZklgGqTvlKB7VooKss+bchyazHKhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NkV4Ic5xHWAk5r6+2k6x5+dkON2TiAI9xZKC7uYt+J4=;
+ b=Shk60kXXCXhQi0T9Vf5FtRKloKVyXqW5XTs3zcd3G3E0QycrYU3E2ekHGlqFUJd8Nn6cdomsgnTfynzP316FlwMHR3+l+72/QRQAq4eeC6LBr0ZtqGdjsnIDEEKyqA7NmProxeIWD2LAsugKX25Nfhh9XjkCcaNXipAAAIQLcmg=
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com (20.178.41.21) by
+ DB7PR05MB5737.eurprd05.prod.outlook.com (20.178.105.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.15; Thu, 12 Sep 2019 09:03:42 +0000
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::fb:7161:ff28:1b3b]) by DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::fb:7161:ff28:1b3b%5]) with mapi id 15.20.2241.022; Thu, 12 Sep 2019
+ 09:03:42 +0000
+From:   Ido Schimmel <idosch@mellanox.com>
+To:     Robert Beckett <bob.beckett@collabora.com>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
+ storms
+Thread-Topic: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
+ storms
+Thread-Index: AQHVZ/fFKpiR45rTHECGjkP5vPFNT6cmVjMAgAAHroCAAWQegA==
+Date:   Thu, 12 Sep 2019 09:03:42 +0000
+Message-ID: <20190912090339.GA16311@splinter>
+References: <20190910154238.9155-1-bob.beckett@collabora.com>
+ <545d6473-848f-3194-02a6-011b7c89a2ca@gmail.com>
+ <20190911112134.GA20574@splinter>
+ <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
+In-Reply-To: <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR05CA0001.eurprd05.prod.outlook.com
+ (2603:10a6:208:55::14) To DB7PR05MB5338.eurprd05.prod.outlook.com
+ (2603:10a6:10:64::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=idosch@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2db965bc-76b5-4fda-f294-08d737601bfd
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB7PR05MB5737;
+x-ms-traffictypediagnostic: DB7PR05MB5737:
+x-microsoft-antispam-prvs: <DB7PR05MB573730944B2694533C91041BBFB00@DB7PR05MB5737.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 01583E185C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(376002)(396003)(39860400002)(346002)(136003)(366004)(199004)(189003)(256004)(14444005)(6116002)(446003)(7736002)(76176011)(305945005)(316002)(3846002)(33656002)(229853002)(2906002)(33716001)(66446008)(86362001)(64756008)(486006)(53546011)(71200400001)(71190400001)(386003)(66946007)(66556008)(66476007)(6506007)(476003)(102836004)(14454004)(1076003)(6512007)(478600001)(9686003)(8676002)(6436002)(186003)(81156014)(5660300002)(81166006)(54906003)(26005)(8936002)(6246003)(99286004)(11346002)(6916009)(4326008)(6486002)(53936002)(52116002)(66066001)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR05MB5737;H:DB7PR05MB5338.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: td4K/x+pEJXTKKCsRbDbXx9B+WrIrpxU2UBCXwQu9T1TLXZPtRLYxyQZF4pNwcJ0nYtjYjjClcNXQE21kLTcTcNu51R/on1TIqYBL53pBtV1ziNWTQb/wqgcaWmRqDy4EgZ5go8K8qeDObLmiR/8X42UVmQiXGRsqSG3QF2rvLWAwwSQWHNDCw+GpIJwMoqbiw6eh9T32ZNC/zGsWddR446+6BIgkFVSF5PtF/93xLdvQTlmxaFWDLEPVQditLPNbZs30y1SgewU1VixpbMGfGMZjYTn8GJRdgIzNlWHHxteqqsE9XnGZVlei0gmutUR/GbXLCeBxTA9Ovo+EP7+vTtePWvrwo/iL1Usiy12Hw0v8TBdxnzwsgvgV6NhFeyREUIO38bieVK4cdzE9F3Ly1ARMA+qX1cpA+MpZuPPFQw=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <17300D52DAE84D4CA4B0B79161230A81@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2db965bc-76b5-4fda-f294-08d737601bfd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2019 09:03:42.4209
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5bVQPDj1HOdnJbnjoh6p8pLucjMLfPiLgrWXnbuo+tMI/3mmnsQJ44lTq78GUtcBBbvqt/ClUvnzE/QXYNatBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB5737
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Wed, Sep 11, 2019 at 12:49:03PM +0100, Robert Beckett wrote:
+> On Wed, 2019-09-11 at 11:21 +0000, Ido Schimmel wrote:
+> > On Tue, Sep 10, 2019 at 09:49:46AM -0700, Florian Fainelli wrote:
+> > > +Ido, Jiri,
+> > >=20
+> > > On 9/10/19 8:41 AM, Robert Beckett wrote:
+> > > > This patch-set adds support for some features of the Marvell
+> > > > switch
+> > > > chips that can be used to handle packet storms.
+> > > >=20
+> > > > The rationale for this was a setup that requires the ability to
+> > > > receive
+> > > > traffic from one port, while a packet storm is occuring on
+> > > > another port
+> > > > (via an external switch with a deliberate loop). This is needed
+> > > > to
+> > > > ensure vital data delivery from a specific port, while mitigating
+> > > > any
+> > > > loops or DoS that a user may introduce on another port (can't
+> > > > guarantee
+> > > > sensible users).
+> > >=20
+> > > The use case is reasonable, but the implementation is not really.
+> > > You
+> > > are using Device Tree which is meant to describe hardware as a
+> > > policy
+> > > holder for setting up queue priorities and likewise for queue
+> > > scheduling.
+> > >=20
+> > > The tool that should be used for that purpose is tc and possibly an
+> > > appropriately offloaded queue scheduler in order to map the desired
+> > > scheduling class to what the hardware supports.
+> > >=20
+> > > Jiri, Ido, how do you guys support this with mlxsw?
+> >=20
+> > Hi Florian,
+> >=20
+> > Are you referring to policing traffic towards the CPU using a policer
+> > on
+> > the egress of the CPU port? At least that's what I understand from
+> > the
+> > description of patch 6 below.
+> >=20
+> > If so, mlxsw sets policers for different traffic types during its
+> > initialization sequence. These policers are not exposed to the user
+> > nor
+> > configurable. While the default settings are good for most users, we
+> > do
+> > want to allow users to change these and expose current settings.
+> >=20
+> > I agree that tc seems like the right choice, but the question is
+> > where
+> > are we going to install the filters?
+> >=20
+>=20
+> Before I go too far down the rabbit hole of tc traffic shaping, maybe
+> it would be good to explain in more detail the problem I am trying to
+> solve.
+>=20
+> We have a setup as follows:
+>=20
+> Marvell 88E6240 switch chip, accepting traffic from 4 ports. Port 1
+> (P1) is critical priority, no dropped packets allowed, all others can
+> be best effort.
+>=20
+> CPU port of swtich chip is connected via phy to phy of intel i210 (igb
+> driver).
+>=20
+> i210 is connected via pcie switch to imx6.
+>=20
+> When too many small packets attempt to be delivered to CPU port (e.g.
+> during broadcast flood) we saw dropped packets.
+>=20
+> The packets were being received by i210 in to rx descriptor buffer
+> fine, but the CPU could not keep up with the load. We saw
+> rx_fifo_errors increasing rapidly and ksoftirqd at ~100% CPU.
+>=20
+>=20
+> With this in mind, I am wondering whether any amount of tc traffic
+> shaping would help? Would tc shaping require that the packet reception
+> manages to keep up before it can enact its policies? Does the
+> infrastructure have accelerator offload hooks to be able to apply it
+> via HW? I dont see how it would be able to inspect the packets to apply
+> filtering if they were dropped due to rx descriptor exhaustion. (please
+> bear with me with the basic questions, I am not familiar with this part
+> of the stack).
+>=20
+> Assuming that tc is still the way to go, after a brief look in to the
+> man pages and the documentation at largc.org, it seems like it would
+> need to use the ingress qdisc, with some sort of system to segregate
+> and priortise based on ingress port. Is this possible?
 
-Currently the fact that devlink reload failed is stored in drivers.
-Move this flag into devlink core. Also, expose it to the user.
+Hi Robert,
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v2->v3:
-- make arg of devlink_is_reload_failed const
-v1->v2:
-- s/devlink failed/devlink reload failed/ in description
----
- drivers/net/ethernet/mellanox/mlxsw/core.c | 15 +++++----------
- include/net/devlink.h                      |  3 +++
- include/uapi/linux/devlink.h               |  2 ++
- net/core/devlink.c                         | 21 ++++++++++++++++++++-
- 4 files changed, 30 insertions(+), 11 deletions(-)
+As I see it, you have two problems here:
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index c71a1d9ea17b..3fa96076e8a5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -80,7 +80,6 @@ struct mlxsw_core {
- 	struct mlxsw_thermal *thermal;
- 	struct mlxsw_core_port *ports;
- 	unsigned int max_ports;
--	bool reload_fail;
- 	bool fw_flash_in_progress;
- 	unsigned long driver_priv[0];
- 	/* driver_priv has to be always the last item */
-@@ -1002,15 +1001,11 @@ mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
- 					struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
--	int err;
--
--	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
--					     mlxsw_core->bus,
--					     mlxsw_core->bus_priv, true,
--					     devlink);
--	mlxsw_core->reload_fail = !!err;
- 
--	return err;
-+	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
-+					      mlxsw_core->bus,
-+					      mlxsw_core->bus_priv, true,
-+					      devlink);
- }
- 
- static int mlxsw_devlink_flash_update(struct devlink *devlink,
-@@ -1254,7 +1249,7 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- {
- 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
- 
--	if (mlxsw_core->reload_fail) {
-+	if (devlink_is_reload_failed(devlink)) {
- 		if (!reload)
- 			/* Only the parts that were not de-initialized in the
- 			 * failed reload attempt need to be de-initialized.
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index ab8d56d12ffd..23e4b65ec9df 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -38,6 +38,7 @@ struct devlink {
- 	struct device *dev;
- 	possible_net_t _net;
- 	struct mutex lock;
-+	bool reload_failed;
- 	char priv[0] __aligned(NETDEV_ALIGN);
- };
- 
-@@ -945,6 +946,8 @@ void
- devlink_health_reporter_state_update(struct devlink_health_reporter *reporter,
- 				     enum devlink_health_reporter_state state);
- 
-+bool devlink_is_reload_failed(const struct devlink *devlink);
-+
- void devlink_flash_update_begin_notify(struct devlink *devlink);
- void devlink_flash_update_end_notify(struct devlink *devlink);
- void devlink_flash_update_status_notify(struct devlink *devlink,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 8da5365850cd..580b7a2e40e1 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -419,6 +419,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_TRAP_METADATA,			/* nested */
- 	DEVLINK_ATTR_TRAP_GROUP_NAME,			/* string */
- 
-+	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 9e522639693d..e48680efe54a 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -471,6 +471,8 @@ static int devlink_nl_fill(struct sk_buff *msg, struct devlink *devlink,
- 
- 	if (devlink_nl_put_handle(msg, devlink))
- 		goto nla_put_failure;
-+	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_FAILED, devlink->reload_failed))
-+		goto nla_put_failure;
- 
- 	genlmsg_end(msg, hdr);
- 	return 0;
-@@ -2677,6 +2679,21 @@ static bool devlink_reload_supported(struct devlink *devlink)
- 	return devlink->ops->reload_down && devlink->ops->reload_up;
- }
- 
-+static void devlink_reload_failed_set(struct devlink *devlink,
-+				      bool reload_failed)
-+{
-+	if (devlink->reload_failed == reload_failed)
-+		return;
-+	devlink->reload_failed = reload_failed;
-+	devlink_notify(devlink, DEVLINK_CMD_NEW);
-+}
-+
-+bool devlink_is_reload_failed(const struct devlink *devlink)
-+{
-+	return devlink->reload_failed;
-+}
-+EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
-+
- static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct devlink *devlink = info->user_ptr[0];
-@@ -2693,7 +2710,9 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
- 	err = devlink->ops->reload_down(devlink, info->extack);
- 	if (err)
- 		return err;
--	return devlink->ops->reload_up(devlink, info->extack);
-+	err = devlink->ops->reload_up(devlink, info->extack);
-+	devlink_reload_failed_set(devlink, !!err);
-+	return err;
- }
- 
- static int devlink_nl_flash_update_fill(struct sk_buff *msg,
--- 
-2.21.0
+1. Classification: Based on ingress port in your case
 
+2. Scheduling: How to schedule between the different transmission queues
+
+Where the port from which the packets should egress is the CPU port,
+before they cross the PCI towards the imx6.
+
+Both of these issues can be solved by tc. The main problem is that today
+we do not have a netdev to represent the CPU port and therefore can't
+use existing infra like tc. I believe we need to create one. Besides
+scheduling, we can also use it to permit/deny certain traffic from
+reaching the CPU and perform policing.
+
+Drivers can run the received packets via taps using
+dev_queue_xmit_nit(), so that users will see all the traffic directed at
+the host when running tcpdump on this netdev.
+
+>=20
+>=20
+>=20
+> > >=20
+> > > >=20
+> > > > [patch 1/7] configures auto negotiation for CPU ports connected
+> > > > with
+> > > > phys to enable pause frame propogation.
+> > > >=20
+> > > > [patch 2/7] allows setting of port's default output queue
+> > > > priority for
+> > > > any ingressing packets on that port.
+> > > >=20
+> > > > [patch 3/7] dt-bindings for patch 2.
+> > > >=20
+> > > > [patch 4/7] allows setting of a port's queue scheduling so that
+> > > > it can
+> > > > prioritise egress of traffic routed from high priority ports.
+> > > >=20
+> > > > [patch 5/7] dt-bindings for patch 4.
+> > > >=20
+> > > > [patch 6/7] allows ports to rate limit their egress. This can be
+> > > > used to
+> > > > stop the host CPU from becoming swamped by packet delivery and
+> > > > exhasting
+> > > > descriptors.
+> > > >=20
+> > > > [patch 7/7] dt-bindings for patch 6.
+> > > >=20
+> > > >=20
+> > > > Robert Beckett (7):
+> > > >   net/dsa: configure autoneg for CPU port
+> > > >   net: dsa: mv88e6xxx: add ability to set default queue
+> > > > priorities per
+> > > >     port
+> > > >   dt-bindings: mv88e6xxx: add ability to set default queue
+> > > > priorities
+> > > >     per port
+> > > >   net: dsa: mv88e6xxx: add ability to set queue scheduling
+> > > >   dt-bindings: mv88e6xxx: add ability to set queue scheduling
+> > > >   net: dsa: mv88e6xxx: add egress rate limiting
+> > > >   dt-bindings: mv88e6xxx: add egress rate limiting
+> > > >=20
+> > > >  .../devicetree/bindings/net/dsa/marvell.txt   |  38 +++++
+> > > >  drivers/net/dsa/mv88e6xxx/chip.c              | 122
+> > > > ++++++++++++---
+> > > >  drivers/net/dsa/mv88e6xxx/chip.h              |   5 +-
+> > > >  drivers/net/dsa/mv88e6xxx/port.c              | 140
+> > > > +++++++++++++++++-
+> > > >  drivers/net/dsa/mv88e6xxx/port.h              |  24 ++-
+> > > >  include/dt-bindings/net/dsa-mv88e6xxx.h       |  22 +++
+> > > >  net/dsa/port.c                                |  10 ++
+> > > >  7 files changed, 327 insertions(+), 34 deletions(-)
+> > > >  create mode 100644 include/dt-bindings/net/dsa-mv88e6xxx.h
+> > > >=20
+> > >=20
+> > >=20
+> > > --=20
+> > > Florian
+>=20
