@@ -2,109 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA00B0E69
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 13:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF47B0F19
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 14:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731550AbfILL7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 07:59:48 -0400
-Received: from mail-wm1-f46.google.com ([209.85.128.46]:52666 "EHLO
-        mail-wm1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731490AbfILL7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 07:59:45 -0400
-Received: by mail-wm1-f46.google.com with SMTP id x2so1845916wmj.2
-        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 04:59:44 -0700 (PDT)
+        id S1731743AbfILMt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 08:49:58 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40818 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731685AbfILMt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 08:49:58 -0400
+Received: by mail-lf1-f66.google.com with SMTP id d17so1379408lfa.7
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 05:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SEaU7NG9QQ2XMkNrHm9HuW1AKhNCnbR87jUn+FgEND8=;
-        b=tCsX42kiEGAunJjssZy9Jmdw3Sh/rIBnpRVsDrt3UF8nozuTWzsA1ftDPYOuTy1JCH
-         a6VpXTGRh+rbmfU804nDxwVBWqIxQqoPiRTrQdd8XY/mUcefywpziNLgNs7dIRe9dp0a
-         qkAUwFG4yVHJe0Pw8xTOisogTmbhnS/Q2CqrjI6KJ3lEQe0xlhXnCoE0YIAe1ewFp8gP
-         4EYvo42DNlELibilQgtJqXzpIuxqtMoXfkR72DPc2UqE48tykK45gfV57wQjHl/hjcNP
-         9iBiTqka/ZSVQ3n45Jm3uYFZD8Wzx8L58PWh+9e+qz5Wa+m6eZF/AK/PZYHI4mgizWoH
-         ufHQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5xF/sCJ+NwxwvLnjBbUnuQ502znTrEXd9hdnYUrg4yc=;
+        b=A4QTfzuJi5NQl1Q51mIVj5t7Sn9HOIXNwYige03S4yTX6oc0smlZ0UzD8YXqvat3ZN
+         n3dj+RCEo6ss4zhB7DbVuqg5CDLTaL3uRXpf0KN2Dlhf7OUq1qhx3qESt25ymURGFAQK
+         OhsIy8UqyEYdxk4I54twgErvf5QBRZTegD0tBSw8Udk7vxSnVFHQFdftAK/McFTj7XoN
+         Lb6XwemuNQCoBVUHaD3WS9YzCk/jVMJw2mywDGdzFFFVSfap6jlnHEEx5jgQTiqAqHaB
+         BucbCjrogGDut0G83x51WcUXNIg9uGhbd6i9XA0TyFnzAKhcmLK06z4d53yGXiFAOPYE
+         6Y2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SEaU7NG9QQ2XMkNrHm9HuW1AKhNCnbR87jUn+FgEND8=;
-        b=c70xBJvH9AfZlvmXvU3RuBhBmMnxTlTvHcn2jUU6FFxgF9lXbel0sYFTums4o9q11F
-         9eLuwG9i5R0GR8CAqP/Pjjgcr8xJ6vA/t9sHxXT5zfG8sOOqDrt7FC9PE6YcvH+znHiY
-         HfgrXLYrhjW5L75gdPFyHv/V5Ew6+AHd3AydRr+6MelsZX9pr1hwEzUiFlqbF84iyemy
-         9BT99D1cxlM6sy0Y01yzCZQruZUIgTqt5q0gYxLGEmjE1ECdVgKN0wz6pYJFj+7+6Ze+
-         MyxEDfVNsDGz3SfxjKrqww7bsL1KKtXEJ62Y3kaGjh0iXvl4Mrvyxe6SIiFok492Zsmy
-         /7iA==
-X-Gm-Message-State: APjAAAXfuHxSpgP4sieFhb+rZ5kvlZQoEI7IpM8xLLXP6vF8Pars4Rmc
-        Etv/Q/QmfItGkJTPfB4FA60q1Q==
-X-Google-Smtp-Source: APXvYqzem8nHQZbQJKywnMayO7z7Db/ty1fJSno92eZA2sRFnWvHVjsLJjXkRhRQIR4fS+oZyqecUQ==
-X-Received: by 2002:a1c:7ed7:: with SMTP id z206mr8676920wmc.124.1568289584018;
-        Thu, 12 Sep 2019 04:59:44 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id n12sm4993623wmk.41.2019.09.12.04.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Sep 2019 04:59:43 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 13:59:42 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
-        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        mlxsw <mlxsw@mellanox.com>
-Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
- delete alternative ifnames
-Message-ID: <20190912115942.GC7621@nanopsycho.orion>
-References: <20190826.151819.804077961408964282.davem@davemloft.net>
- <20190827070808.GA2250@nanopsycho>
- <20190827.012242.418276717667374306.davem@davemloft.net>
- <20190827093525.GB2250@nanopsycho>
- <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
- <20190828070711.GE2312@nanopsycho>
- <CAJieiUiipZY3A+04Po=WnvgkonfXZxFX2es=1Q5dq1Km869Obw@mail.gmail.com>
- <20190829052620.GK29594@unicorn.suse.cz>
- <CAJieiUgGY4amm_z1VGgBF-3WZceah+R5OVLEi=O2RS8RGpC9dg@mail.gmail.com>
- <20190830170342.GR2312@nanopsycho>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5xF/sCJ+NwxwvLnjBbUnuQ502znTrEXd9hdnYUrg4yc=;
+        b=T3+AfjvggDRnXqfkbtsNZXjO6/SH3YcbpkLoqt3sRYP3qVDhfuozlLByli7L3Th6oT
+         TxgEVUJTEyGOaU36+JCaUayeIsKSa0fkYyGyBptfeirm916IxMVZX2p298+7EqCqTxKB
+         w6QOvF2nAMrjx8dvgiR+GXxBCeD2NSbzpvI0E2L6GxwxHLXzmXnC51fIBNcGQX6ZzeWD
+         MrYX0GyLcqPHBku6SC+SXy2GXRxuvxcVAYi8pzDWgDkScyssT5uKXdygPIgZo0GXqhc6
+         lIFX2D3JbPbHXNerTdSXF7KxnrvVQP3tOSyc0rWspeAxDyObzfIUr8pemvCI31grLb8j
+         vETw==
+X-Gm-Message-State: APjAAAV7t3/4VT5hJ6q6d0/XYe9YsxDwvuk6FXQJnLhjuY3iN6vlBrhJ
+        QXXOtKqKSZBkAT8Tz9erM1BS+NCAYbCfUnqtIsE=
+X-Google-Smtp-Source: APXvYqxM0BzI7m4uDQ3XxhJjNL+uLbjaU0FzdbazvctIsPFXvtAkH3puhTmI+LdSLmE/uYdAfmK6MLkWpMk0S+93F/s=
+X-Received: by 2002:a19:c191:: with SMTP id r139mr27395866lff.23.1568292596497;
+ Thu, 12 Sep 2019 05:49:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190830170342.GR2312@nanopsycho>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <CAMArcTV-Qvfd7xA0huCh_dbtr7P4LA+cQ7CpnaBBhdq-tq5fZQ@mail.gmail.com>
+ <20190912.113807.52193745382103083.davem@davemloft.net> <CAMArcTWMjTsZB8Ssx+hVMK-3-XozZw7AqVE62-H+zrJ+doC5Lw@mail.gmail.com>
+ <20190912.133717.257813019167130934.davem@davemloft.net>
+In-Reply-To: <20190912.133717.257813019167130934.davem@davemloft.net>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Thu, 12 Sep 2019 21:49:44 +0900
+Message-ID: <CAMArcTVtv=ah=KbzOb=u_Qyx0V+iGts77kz_X9GhJfEHbGPUSQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 01/11] net: core: limit nested device depth
+To:     David Miller <davem@davemloft.net>
+Cc:     Netdev <netdev@vger.kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, Andy Gospodarek <andy@greyhouse.net>,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
+        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 30, 2019 at 07:03:42PM CEST, jiri@resnulli.us wrote:
->Fri, Aug 30, 2019 at 04:35:23PM CEST, roopa@cumulusnetworks.com wrote:
-
-[...]
-
->>
->>so to summarize, i think we have discussed the following options to
->>update a netlink list attribute so far:
->>(a) encode an optional attribute/flag in the list attribute in
->>RTM_SETLINK to indicate if it is a add or del
->>(b) Use a flag in RTM_SETLINK and RTM_DELINK to indicate add/del
->>(close to bridge vlan add/del)
+On Thu, 12 Sep 2019 at 20:37, David Miller <davem@davemloft.net> wrote:
 >
->Nope, bridge vlan add/del is done according to the cmd, not any flag.
+> From: Taehee Yoo <ap420073@gmail.com>
+> Date: Thu, 12 Sep 2019 19:14:37 +0900
 >
+> > On Thu, 12 Sep 2019 at 18:38, David Miller <davem@davemloft.net> wrote:
+> >>
+> >> From: Taehee Yoo <ap420073@gmail.com>
+> >> Date: Thu, 12 Sep 2019 12:56:19 +0900
+> >>
+> >> > I tested with this reproducer commands without lockdep.
+> >> >
+> >> >     ip link add dummy0 type dummy
+> >> >     ip link add link dummy0 name vlan1 type vlan id 1
+> >> >     ip link set vlan1 up
+> >> >
+> >> >     for i in {2..200}
+> >> >     do
+> >> >             let A=$i-1
+> >> >
+> >> >             ip link add name vlan$i link vlan$A type vlan id $i
+> >> >     done
+> >> >     ip link del vlan1 <-- this command is added.
+> >>
+> >> Is there any other device type which allows arbitrary nesting depth
+> >> in this manner other than VLAN?  Perhaps it is the VLAN nesting
+> >> depth that we should limit instead of all of this extra code.
+> >
+> > Below device types have the same problem.
+> > VLAN, BONDING, TEAM, VXLAN, MACVLAN, and MACSEC.
+> > All the below test commands reproduce a panic.
 >
->>(c) introduce a separate generic msg type to add/del to a list
->>attribute (IIUC this does need a separate msg type per subsystem or
->>netlink API)
+> I think then we need to move the traversals over to a iterative
+> rather than recursive algorithm.
 
-Getting back to this, sorry.
+Just to clarify, I have a question.
 
-Thinking about it for some time, a,b,c have all their issues. Why can't
-we have another separate cmd as I originally proposed in this RFC? Does
-anyone have any argument against it? Could you please describe?
+There are two recursive routines in the code.
+a) netdev_walk_all_{lower/upper}_dev() that are used to traversal
+all of their lower or upper devices.
+b) VLAN, BONDING, TEAM, VXLAN, MACVLAN, and MACSEC
+modules internally handle their lower/upper devices recursively
+when an event is received such as unregistering.
 
-Because otherwise, I don't feel comfortable going to any of a,b,c :(
-
-Thanks!
-
+what is the routine that you mentioned?
