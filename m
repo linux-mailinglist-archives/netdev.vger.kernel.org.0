@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C27B0DF7
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 13:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89529B0DF8
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 13:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730907AbfILLh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 07:37:26 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56456 "EHLO
+        id S1731146AbfILLhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 07:37:55 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56474 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbfILLh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 07:37:26 -0400
+        with ESMTP id S1730268AbfILLhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 07:37:55 -0400
 Received: from localhost (unknown [148.69.85.38])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A1E3142387A1;
-        Thu, 12 Sep 2019 04:37:21 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 13:37:17 +0200 (CEST)
-Message-Id: <20190912.133717.257813019167130934.davem@davemloft.net>
-To:     ap420073@gmail.com
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, jiri@resnulli.us, sd@queasysnail.net,
-        roopa@cumulusnetworks.com, saeedm@mellanox.com,
-        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org,
-        hare@suse.de, varun@chelsio.com, ubraun@linux.ibm.com,
-        kgraul@linux.ibm.com, jay.vosburgh@canonical.com
-Subject: Re: [PATCH net v2 01/11] net: core: limit nested device depth
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5C7F3142387A4;
+        Thu, 12 Sep 2019 04:37:54 -0700 (PDT)
+Date:   Thu, 12 Sep 2019 13:37:53 +0200 (CEST)
+Message-Id: <20190912.133753.1473374980190418320.davem@davemloft.net>
+To:     olteanv@gmail.com
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        richardcochran@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 3/7] net: dsa: sja1105: Switch to hardware
+ operations for PTP
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAMArcTWMjTsZB8Ssx+hVMK-3-XozZw7AqVE62-H+zrJ+doC5Lw@mail.gmail.com>
-References: <CAMArcTV-Qvfd7xA0huCh_dbtr7P4LA+cQ7CpnaBBhdq-tq5fZQ@mail.gmail.com>
-        <20190912.113807.52193745382103083.davem@davemloft.net>
-        <CAMArcTWMjTsZB8Ssx+hVMK-3-XozZw7AqVE62-H+zrJ+doC5Lw@mail.gmail.com>
+In-Reply-To: <CA+h21hoBQ=4pSCgwcYWErA7k7BQ02LMun_qZ476-bB4eY6RjjQ@mail.gmail.com>
+References: <20190910013501.3262-4-olteanv@gmail.com>
+        <20190912.121203.1106283271122334199.davem@davemloft.net>
+        <CA+h21hoBQ=4pSCgwcYWErA7k7BQ02LMun_qZ476-bB4eY6RjjQ@mail.gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Sep 2019 04:37:25 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Sep 2019 04:37:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
-Date: Thu, 12 Sep 2019 19:14:37 +0900
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Thu, 12 Sep 2019 11:17:11 +0100
 
-> On Thu, 12 Sep 2019 at 18:38, David Miller <davem@davemloft.net> wrote:
->>
->> From: Taehee Yoo <ap420073@gmail.com>
->> Date: Thu, 12 Sep 2019 12:56:19 +0900
->>
->> > I tested with this reproducer commands without lockdep.
->> >
->> >     ip link add dummy0 type dummy
->> >     ip link add link dummy0 name vlan1 type vlan id 1
->> >     ip link set vlan1 up
->> >
->> >     for i in {2..200}
->> >     do
->> >             let A=$i-1
->> >
->> >             ip link add name vlan$i link vlan$A type vlan id $i
->> >     done
->> >     ip link del vlan1 <-- this command is added.
->>
->> Is there any other device type which allows arbitrary nesting depth
->> in this manner other than VLAN?  Perhaps it is the VLAN nesting
->> depth that we should limit instead of all of this extra code.
+> Hi Dave,
 > 
-> Below device types have the same problem.
-> VLAN, BONDING, TEAM, VXLAN, MACVLAN, and MACSEC.
-> All the below test commands reproduce a panic.
+> On 12/09/2019, David Miller <davem@davemloft.net> wrote:
+>> From: Vladimir Oltean <olteanv@gmail.com>
+>> Date: Tue, 10 Sep 2019 04:34:57 +0300
+>>
+>>>  static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long
+>>> scaled_ppm)
+>>>  {
+>>>  	struct sja1105_private *priv = ptp_to_sja1105(ptp);
+>>> +	const struct sja1105_regs *regs = priv->info->regs;
+>>>  	s64 clkrate;
+>>> +	int rc;
+>>  ..
+>>> -static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>>> -{
+>>> -	struct sja1105_private *priv = ptp_to_sja1105(ptp);
+>>> +	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
+>>> +				  &clkrate, 4);
+>>
+>> You're sending an arbitrary 4 bytes of a 64-bit value.  This works on little
+>> endian
+>> but will not on big endian.
+>>
+>> Please properly copy this clkrate into a "u32" variable and pass that into
+>> sja1105_spi_send_int().
+>>
+>> It also seems to suggest that you want to use abs() to perform that weird
+>> centering around 1 << 31 calculation.
+>>
+>> Thank you.
+>>
+> 
+> It looks 'wrong' but it isn't. The driver uses the 'packing' framework
+> (lib/packing.c) which is endian-agnostic (converts between CPU and
+> peripheral endianness) and operates on u64 as the CPU word size. On
+> the contrary, u32 would not work with the 'packing' API in its current
+> form, but I don't see yet any reasons to extend it (packing64,
+> packing32 etc).
 
-I think then we need to move the traversals over to a iterative
-rather than recursive algorithm.
+That's extremely unintuitive and makes auditing patches next to impossible.
