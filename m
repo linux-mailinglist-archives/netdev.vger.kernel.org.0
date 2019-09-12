@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53BA6B12FC
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 18:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C82DB12F0
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 18:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730254AbfILQpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 12:45:51 -0400
-Received: from mail3.affordablehosting.com ([173.255.168.27]:52800 "EHLO
-        mail3.affordablehosting.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728562AbfILQpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 12:45:51 -0400
-X-Greylist: delayed 760 seconds by postgrey-1.27 at vger.kernel.org; Thu, 12 Sep 2019 12:45:50 EDT
-DKIM-Signature: a=rsa-sha256; t=1568305991; x=1568910791; s=default; d=reliablehosting.com; c=relaxed/relaxed; v=1; bh=oLFL9ECSckkpaxXFEVuBXbydDTc5ymWF4jvMBiMOl1s=; h=From:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:In-Reply-To:References;
-   b=5D20VuvgLa32hqL5mirkdpIzUYxHA/1o5rbhuug+qS8GtnfMt8rWkAtvXgwAERJOivm4qOhLd/HbS7iGJMsKq120ZpoRa3WKnUhlmRD2eg22PoqJXHn0ZRX76Kcr9z4syXQwTxHCLcDLScnZpramJq2HMojNWkhgahw4fcFAPfw=
-Received: from [192.168.1.103] ([74.197.19.145])
-        by mail3.affordablehosting.com (Reliablehosting.com Mail Server) with ASMTP (SSL) id 201909120933111661;
-        Thu, 12 Sep 2019 09:33:11 -0700
-Subject: Re: [PATCH] ixgbe: Fix secpath usage for IPsec TX offload.
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     Michael Marley <michael@michaelmarley.com>,
-        Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org
-References: <20190912110144.GS2879@gauss3.secunet.de>
-From:   Jonathan Tooker <jonathan@reliablehosting.com>
-Message-ID: <9d94bd04-c6fa-d275-97bc-5d589304f038@reliablehosting.com>
-Date:   Thu, 12 Sep 2019 11:33:09 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1733280AbfILQow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 12:44:52 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:52378 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725972AbfILQow (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 12:44:52 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 3EDD97724A098D8E9CEE;
+        Fri, 13 Sep 2019 00:44:40 +0800 (CST)
+Received: from linux-ibm.site (10.175.102.37) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 13 Sep 2019 00:44:33 +0800
+From:   zhong jiang <zhongjiang@huawei.com>
+To:     <kvalo@codeaurora.org>
+CC:     <davem@davemloft.net>, <zhongjiang@huawei.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] wireless: Remove unneeded variable
+Date:   Fri, 13 Sep 2019 00:41:29 +0800
+Message-ID: <1568306492-42998-1-git-send-email-zhongjiang@huawei.com>
+X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
-In-Reply-To: <20190912110144.GS2879@gauss3.secunet.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-Originating-IP: [10.175.102.37]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/12/2019 6:01 AM, Steffen Klassert wrote:
-> The ixgbe driver currently does IPsec TX offloading
-> based on an existing secpath. However, the secpath
-> can also come from the RX side, in this case it is
-> misinterpreted for TX offload and the packets are
-> dropped with a "bad sa_idx" error. Fix this by using
-> the xfrm_offload() function to test for TX offload.
->
-Does this patch also need to be ported to the ixgbevf driver? I can 
-replicate the bad sa_idx error using a VM that's using a VF & the 
-ixgebvf  driver.
+With the help of Coccinelle, I find some place to use redundant
+variable to store the return value, It is unnecessary. Just remove
+it and make the funtion to be void.
+
+zhong jiang (3):
+  brcmsmac: Remove unneeded variable and make function to be void
+  wlegacy: Remove unneeded variable and make function to be void
+  libertas: Remove unneeded variable and make function to be void
+
+ drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c | 5 +----
+ drivers/net/wireless/intel/iwlegacy/4965-mac.c          | 8 ++------
+ drivers/net/wireless/marvell/libertas/cmd.h             | 2 +-
+ drivers/net/wireless/marvell/libertas/cmdresp.c         | 5 +----
+ 4 files changed, 5 insertions(+), 15 deletions(-)
+
+-- 
+1.7.12.4
 
