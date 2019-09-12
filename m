@@ -2,60 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0093BB0D11
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63641B0D1D
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:43:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730580AbfILKjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 06:39:41 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55700 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730023AbfILKjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 06:39:41 -0400
-Received: from localhost (unknown [148.69.85.38])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 91EC5126655B3;
-        Thu, 12 Sep 2019 03:39:39 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 12:39:38 +0200 (CEST)
-Message-Id: <20190912.123938.494358183342867915.davem@davemloft.net>
-To:     george.mccollister@gmail.com
-Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, Tristram.Ha@microchip.com, marex@denx.de,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/3] add ksz9567 with I2C support to
- ksz9477 driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190910131836.114058-1-george.mccollister@gmail.com>
-References: <20190910131836.114058-1-george.mccollister@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Sep 2019 03:39:41 -0700 (PDT)
+        id S1731030AbfILKng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 06:43:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42240 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730807AbfILKng (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 06:43:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=1PvI8WCVXvkl9K9coqaBNo6diovEdo89od2wQvjv+7M=; b=Dh1kZr5AAJlvXSWO87EsY3HQ2m
+        vNMTqlrWlg5LpSURv5m9DfvwCfu6GRLOlSPQEuyhNswshvp4M0leY75ssKunzf6bQTlIukls5L3tW
+        CsXeAMK7SGg2+NP6xqMmULQPuOk8hqtUxPXLVHC/aMZ8n52DIpCzTFw04gyPEF5VVYyg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i8MZZ-0005Ax-Nm; Thu, 12 Sep 2019 12:43:33 +0200
+Date:   Thu, 12 Sep 2019 12:43:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Beckett <bob.beckett@collabora.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, bob.beckett@gmail.com
+Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
+Message-ID: <20190912104333.GE17773@lunn.ch>
+References: <20190910154238.9155-1-bob.beckett@collabora.com>
+ <20190910154238.9155-2-bob.beckett@collabora.com>
+ <20190910182635.GA9761@lunn.ch>
+ <aa0459e0-64ee-de84-fc38-3c9364301275@gmail.com>
+ <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
+ <20190911225252.GA5710@lunn.ch>
+ <8d63d4dbd9d075b5c238fd8933673b95b2fa96e9.camel@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d63d4dbd9d075b5c238fd8933673b95b2fa96e9.camel@collabora.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: George McCollister <george.mccollister@gmail.com>
-Date: Tue, 10 Sep 2019 08:18:33 -0500
-
-> Resurrect KSZ9477 I2C driver support patch originally sent to the list
-> by Tristram Ha and resolve outstanding issues. It now works as similarly to
-> the ksz9477 SPI driver as possible, using the same regmap macros.
+> > It actually has nothing to do with PHY to PHY connections. You can
+> > use
+> > pause frames with direct MAC to MAC connections. PHY auto-negotiation
+> > is one way to indicate both ends support it, but there are also other
+> > ways. e.g.
+> > 
+> > ethtool -A|--pause devname [autoneg on|off] [rx on|off] [tx on|off]
+> > 
+> > on the SoC you could do
+> > 
+> > ethtool --pause eth0 autoneg off rx on tx on
+> > 
+> > to force the SoC to send and process pause frames. Ideally i would
+> > prefer a solution like this, since it is not a change of behaviour
+> > for
+> > everybody else.
 > 
-> Add support for ksz9567 to the ksz9477 driver (tested on a board with
-> ksz9567 connected via I2C).
-> 
-> Remove NET_DSA_TAG_KSZ_COMMON since it's not needed.
-> 
-> Changes since v1:
-> Put ksz9477_i2c.c includes in alphabetical order.
-> Added Reviewed-Bys.
+> Good point, well made.
+> The reason for using autoneg in this series was due to having no netdev
+> to run ethtool against for the CPU port.
 
-Series applied.
+Do you need one? It is the IMX which is the bottle neck. It is the one
+which needs to send pause frames. You have a netdev for that. Have you
+checked if the switch will react on pause frames without your
+change. Play with the command i give above on the master interface. It
+looks like the FEC driver fully supports synchronous pause
+configuration.
 
-Please follow up with Andrew about the macros.
+> However, given that the phy on the marvell switch is capable of
+> autoneg , is it not reasonable to setup the advertisement and let
+> autoneg take care of it if using phy to phy connection?
 
-Thanks.
+Most designs don't use back to back PHYs for the CPU port. They save
+the cost and connect MACs back to back using RGMII, or maybe SERDES.
+If we are going for a method which can configure pause between the CPU
+and the switch, it needs to be generic and work for both setups.
+
+    Andrew
