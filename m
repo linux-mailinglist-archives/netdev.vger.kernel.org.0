@@ -2,126 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3078B0653
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 02:56:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37FC1B0664
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 03:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbfILA4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 20:56:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53034 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726157AbfILA4Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 20:56:25 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 4FCB5C9E52582C95C148;
-        Thu, 12 Sep 2019 08:56:21 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Sep 2019
- 08:56:07 +0800
-Subject: Re: [PATCH V2 net-next 4/7] net: hns3: fix port setting handle for
- fibre port
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>
-References: <1568169639-43658-1-git-send-email-tanhuazhong@huawei.com>
- <1568169639-43658-5-git-send-email-tanhuazhong@huawei.com>
- <7f914173-a2fc-08d8-e2b1-48fa3da4e29c@cogentembedded.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <5dd0fae1-c5ab-8bbd-41db-58570e7b5c5e@huawei.com>
-Date:   Thu, 12 Sep 2019 08:56:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1727601AbfILBKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 21:10:23 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33738 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbfILBKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 21:10:23 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so14822080pfl.0
+        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 18:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=idQ02JeU5b91cS+g4Ftx+18xaLuVeqV/HzOrYNwWuRE=;
+        b=KO4J2h85AQb0ZcNe//CsmR9JRv7sMg1F2uWDmleiLDrErlv4PajEJLnK1upglqvnCK
+         Bb4mkW5QTx74KIzcNms/uDSfTRw2/U05n5xGmq5EMEtw/2YE/nfjMFLV/AfF/fZAv7FW
+         aQ6jRKwzkzfdNq1n42kZ4tXt3w8Irt4y6KUAwrac/vQsiZsrE7vuQJ1smwNgfdqh6djq
+         YR0ibbinbm3zx1Y6bg34cSPCk2lZWZfF8SaVvLECdqmgNkKFn5o6+4zp6zq8RcHxj9bj
+         iNhIjG+2HaTBFKbtkFK2UlziVpmNJkZFB4TCnGkIG946sLMk6iBYm0MQI9a/dftVxeOf
+         mJAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=idQ02JeU5b91cS+g4Ftx+18xaLuVeqV/HzOrYNwWuRE=;
+        b=q1CYlhhIRtVhHRQqgMeWN0XlxG9Bk5YsTqTwfh12l5NYNNaZoVpaRjuQyeBsuIIOEt
+         j5YU+BI4YTP4rR/R885ukln6bcKp4QN4bLxa8VqOphG/exlNaEmpkLwve6g+Ebkt3Pp7
+         HFqP+F8vbsXkkK1PzuMBA3TOdwKP/rWg49jGW1K7D7+fmZL3N6hwYJUOOnE1Gd9J/zbS
+         SRbmiHvDpbxhOJr3GEKCYqf3NtxQOqAv0SDhbK96YnqOhBBek2eDxBhEXyNTnWelzi8w
+         qG78Xnu/4ARMmNuf3disYV0yF//vV+IISm0AZOWeYB7eAmy4xGolaThXdGYT2nuy8GHh
+         RBWg==
+X-Gm-Message-State: APjAAAXytXBLrxjC/xemcqeYdHA+7kNeiF/OAhs7Vf7V0Or48lWf9+se
+        ZpspbJ5xL3TprbRvja4+eAUh2JAvzAXEwqn+ShZURCEB
+X-Google-Smtp-Source: APXvYqwqZ+gGsi9LTkzMybKowcO9B/FN2WIgPhxhtBOrYp7sjBjJkl3dCRRkPPz2xK07sa8vxBVanuFNheJmm7W5X7Y=
+X-Received: by 2002:aa7:9117:: with SMTP id 23mr45368584pfh.94.1568250622350;
+ Wed, 11 Sep 2019 18:10:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <7f914173-a2fc-08d8-e2b1-48fa3da4e29c@cogentembedded.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+References: <20190911183445.32547-1-xiyou.wangcong@gmail.com> <7b5b69a9-7ace-2d21-f187-7a81fb1dae5a@gmail.com>
+In-Reply-To: <7b5b69a9-7ace-2d21-f187-7a81fb1dae5a@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 11 Sep 2019 18:10:10 -0700
+Message-ID: <CAM_iQpVP6qVbWmV+kA8UGXG6r1LJftyV32UjUbqryGrX5Ud8Nw@mail.gmail.com>
+Subject: Re: [Patch net] sch_sfb: fix a crash in sfb_destroy()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+d5870a903591faaca4ae@syzkaller.appspotmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 11, 2019 at 2:36 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> It seems a similar fix would be needed in net/sched/sch_dsmark.c ?
+>
 
+Yeah, or just add a NULL check in dsmark_destroy().
 
-On 2019/9/11 18:16, Sergei Shtylyov wrote:
-> Hello!
-> 
-> On 11.09.2019 5:40, Huazhong Tan wrote:
-> 
->> From: Guangbin Huang <huangguangbin2@huawei.com>
->>
->> For hardware doesn't support use specified speed and duplex
-> 
->     Can't pasre that. "For hardware that does not support using", perhaps?
+Anyway, I will send a separate patch for it.
 
-Yes, thanks. Will check the grammar more carefully next time.
-
-> 
->> to negotiate, it's unnecessary to check and modify the port
->> speed and duplex for fibre port when autoneg is on.
->>
->> Fixes: 22f48e24a23d ("net: hns3: add autoneg and change speed support 
->> for fibre port")
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
->> ---
->>   drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 15 +++++++++++++++
->>   1 file changed, 15 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c 
->> b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
->> index f5a681d..680c350 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
->> @@ -726,6 +726,12 @@ static int hns3_check_ksettings_param(const 
->> struct net_device *netdev,
->>       u8 duplex;
->>       int ret;
->> +    /* hw doesn't support use specified speed and duplex to negotiate,
-> 
->     I can't parse that, did you mean "using"?
-
-yes, thanks.
-
-> 
->> +     * unnecessary to check them when autoneg on.
->> +     */
->> +    if (cmd->base.autoneg)
->> +        return 0;
->> +
->>       if (ops->get_ksettings_an_result) {
->>           ops->get_ksettings_an_result(handle, &autoneg, &speed, 
->> &duplex);
->>           if (cmd->base.autoneg == autoneg && cmd->base.speed == speed &&
->> @@ -787,6 +793,15 @@ static int hns3_set_link_ksettings(struct 
->> net_device *netdev,
->>               return ret;
->>       }
->> +    /* hw doesn't support use specified speed and duplex to negotiate,
-> 
->     Here too...
-> 
-
-
-yes, thanks.
-
->> +     * ignore them when autoneg on.
->> +     */
->> +    if (cmd->base.autoneg) {
->> +        netdev_info(netdev,
->> +                "autoneg is on, ignore the speed and duplex\n");
->> +        return 0;
->> +    }
->> +
->>       if (ops->cfg_mac_speed_dup_h)
->>           ret = ops->cfg_mac_speed_dup_h(handle, cmd->base.speed,
->>                              cmd->base.duplex);
-> 
-> MBR, Sergei
-> 
-> .
-> 
-
+Thanks.
