@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 053DAB1594
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 22:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1536B1598
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 22:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727968AbfILUuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 16:50:08 -0400
+        id S1728031AbfILUuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 16:50:11 -0400
 Received: from mga07.intel.com ([134.134.136.100]:59558 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727931AbfILUuG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 16:50:06 -0400
+        id S1727983AbfILUuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 16:50:10 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Sep 2019 13:50:04 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,492,1559545200"; 
-   d="scan'208";a="197345140"
+   d="scan'208";a="197345144"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga002.jf.intel.com with ESMTP; 12 Sep 2019 13:50:04 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -26,9 +26,9 @@ Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 4/6] ice: Initialize DDP package structures
-Date:   Thu, 12 Sep 2019 13:50:00 -0700
-Message-Id: <20190912205002.12159-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 5/6] ice: Enable DDP package download
+Date:   Thu, 12 Sep 2019 13:50:01 -0700
+Message-Id: <20190912205002.12159-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190912205002.12159-1-jeffrey.t.kirsher@intel.com>
 References: <20190912205002.12159-1-jeffrey.t.kirsher@intel.com>
@@ -41,1063 +41,1352 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Add functions to initialize, parse, and clean structures representing
-the DDP package.
+Attempt to request an optional device-specific DDP package file
+(one with the PCIe Device Serial Number in its name so that different DDP
+package files can be used on different devices). If the optional package
+file exists, download it to the device. If not, download the default
+package file.
 
-Upon completion of package download, read and store the DDP package
-contents to these structures.  This configuration is used to
-identify the default behavior and later used to update the HW table
-entries.
+Log an appropriate message based on whether or not a DDP package
+file exists and the return code from the attempt to download it to the
+device.  If the download fails and there is not already a package file on
+the device, go into "Safe Mode" where some features are not supported.
 
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c   |   5 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 945 +++++++++++++++++-
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |   3 +
- .../net/ethernet/intel/ice/ice_flex_type.h    |   2 +
- 4 files changed, 953 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |  14 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  69 ++
+ drivers/net/ethernet/intel/ice/ice_common.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  42 ++
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  27 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   4 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |   1 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  92 +--
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   1 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 614 ++++++++++++++----
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   6 +
+ 12 files changed, 679 insertions(+), 195 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 3a3e69a2bc5a..45e100666049 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -8,6 +8,7 @@
+ #include <linux/errno.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/firmware.h>
+ #include <linux/netdevice.h>
+ #include <linux/compiler.h>
+ #include <linux/etherdevice.h>
+@@ -307,6 +308,7 @@ enum ice_pf_flags {
+ 	ICE_FLAG_SRIOV_CAPABLE,
+ 	ICE_FLAG_DCB_CAPABLE,
+ 	ICE_FLAG_DCB_ENA,
++	ICE_FLAG_ADV_FEATURES,
+ 	ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA,
+ 	ICE_FLAG_NO_MEDIA,
+ 	ICE_FLAG_FW_LLDP_AGENT,
+@@ -404,6 +406,17 @@ ice_irq_dynamic_ena(struct ice_hw *hw, struct ice_vsi *vsi,
+ 	wr32(hw, GLINT_DYN_CTL(vector), val);
+ }
+ 
++/**
++ * ice_netdev_to_pf - Retrieve the PF struct associated with a netdev
++ * @netdev: pointer to the netdev struct
++ */
++static inline struct ice_pf *ice_netdev_to_pf(struct net_device *netdev)
++{
++	struct ice_netdev_priv *np = netdev_priv(netdev);
++
++	return np->vsi->back;
++}
++
+ /**
+  * ice_get_main_vsi - Get the PF VSI
+  * @pf: PF instance
+@@ -421,6 +434,7 @@ static inline struct ice_vsi *ice_get_main_vsi(struct ice_pf *pf)
+ int ice_vsi_setup_tx_rings(struct ice_vsi *vsi);
+ int ice_vsi_setup_rx_rings(struct ice_vsi *vsi);
+ void ice_set_ethtool_ops(struct net_device *netdev);
++void ice_set_ethtool_safe_mode_ops(struct net_device *netdev);
+ u16 ice_get_avail_txq_count(struct ice_pf *pf);
+ u16 ice_get_avail_rxq_count(struct ice_pf *pf);
+ void ice_update_vsi_stats(struct ice_vsi *vsi);
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 20956643036c..91472e049231 100644
+index 91472e049231..3a6b3950eb0e 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -882,7 +882,9 @@ enum ice_status ice_init_hw(struct ice_hw *hw)
- 
- 	ice_init_flex_flds(hw, ICE_RXDID_FLEX_NIC);
- 	ice_init_flex_flds(hw, ICE_RXDID_FLEX_NIC_2);
--
-+	status = ice_init_hw_tbls(hw);
-+	if (status)
-+		goto err_unroll_fltr_mgmt_struct;
- 	return 0;
- 
- err_unroll_fltr_mgmt_struct:
-@@ -911,6 +913,7 @@ void ice_deinit_hw(struct ice_hw *hw)
- 	ice_sched_cleanup_all(hw);
- 	ice_sched_clear_agg(hw);
- 	ice_free_seg(hw);
-+	ice_free_hw_tbls(hw);
- 
- 	if (hw->port_info) {
- 		devm_kfree(ice_hw_to_dev(hw), hw->port_info);
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 4e965dc5eb93..cc8922bd61b5 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -4,6 +4,33 @@
- #include "ice_common.h"
- #include "ice_flex_pipe.h"
- 
-+static void ice_fill_blk_tbls(struct ice_hw *hw);
-+
-+/**
-+ * ice_pkg_val_buf
-+ * @buf: pointer to the ice buffer
-+ *
-+ * This helper function validates a buffer's header.
-+ */
-+static struct ice_buf_hdr *ice_pkg_val_buf(struct ice_buf *buf)
-+{
-+	struct ice_buf_hdr *hdr;
-+	u16 section_count;
-+	u16 data_end;
-+
-+	hdr = (struct ice_buf_hdr *)buf->buf;
-+	/* verify data */
-+	section_count = le16_to_cpu(hdr->section_count);
-+	if (section_count < ICE_MIN_S_COUNT || section_count > ICE_MAX_S_COUNT)
-+		return NULL;
-+
-+	data_end = le16_to_cpu(hdr->data_end);
-+	if (data_end < ICE_MIN_S_DATA_END || data_end > ICE_MAX_S_DATA_END)
-+		return NULL;
-+
-+	return hdr;
-+}
-+
- /**
-  * ice_find_buf_table
-  * @ice_seg: pointer to the ice segment
-@@ -22,6 +49,117 @@ static struct ice_buf_table *ice_find_buf_table(struct ice_seg *ice_seg)
- 		(nvms->vers + le32_to_cpu(nvms->table_count));
- }
- 
-+/**
-+ * ice_pkg_enum_buf
-+ * @ice_seg: pointer to the ice segment (or NULL on subsequent calls)
-+ * @state: pointer to the enum state
-+ *
-+ * This function will enumerate all the buffers in the ice segment. The first
-+ * call is made with the ice_seg parameter non-NULL; on subsequent calls,
-+ * ice_seg is set to NULL which continues the enumeration. When the function
-+ * returns a NULL pointer, then the end of the buffers has been reached, or an
-+ * unexpected value has been detected (for example an invalid section count or
-+ * an invalid buffer end value).
-+ */
-+static struct ice_buf_hdr *
-+ice_pkg_enum_buf(struct ice_seg *ice_seg, struct ice_pkg_enum *state)
-+{
-+	if (ice_seg) {
-+		state->buf_table = ice_find_buf_table(ice_seg);
-+		if (!state->buf_table)
-+			return NULL;
-+
-+		state->buf_idx = 0;
-+		return ice_pkg_val_buf(state->buf_table->buf_array);
-+	}
-+
-+	if (++state->buf_idx < le32_to_cpu(state->buf_table->buf_count))
-+		return ice_pkg_val_buf(state->buf_table->buf_array +
-+				       state->buf_idx);
-+	else
-+		return NULL;
-+}
-+
-+/**
-+ * ice_pkg_advance_sect
-+ * @ice_seg: pointer to the ice segment (or NULL on subsequent calls)
-+ * @state: pointer to the enum state
-+ *
-+ * This helper function will advance the section within the ice segment,
-+ * also advancing the buffer if needed.
-+ */
-+static bool
-+ice_pkg_advance_sect(struct ice_seg *ice_seg, struct ice_pkg_enum *state)
-+{
-+	if (!ice_seg && !state->buf)
-+		return false;
-+
-+	if (!ice_seg && state->buf)
-+		if (++state->sect_idx < le16_to_cpu(state->buf->section_count))
-+			return true;
-+
-+	state->buf = ice_pkg_enum_buf(ice_seg, state);
-+	if (!state->buf)
-+		return false;
-+
-+	/* start of new buffer, reset section index */
-+	state->sect_idx = 0;
-+	return true;
-+}
-+
-+/**
-+ * ice_pkg_enum_section
-+ * @ice_seg: pointer to the ice segment (or NULL on subsequent calls)
-+ * @state: pointer to the enum state
-+ * @sect_type: section type to enumerate
-+ *
-+ * This function will enumerate all the sections of a particular type in the
-+ * ice segment. The first call is made with the ice_seg parameter non-NULL;
-+ * on subsequent calls, ice_seg is set to NULL which continues the enumeration.
-+ * When the function returns a NULL pointer, then the end of the matching
-+ * sections has been reached.
-+ */
-+static void *
-+ice_pkg_enum_section(struct ice_seg *ice_seg, struct ice_pkg_enum *state,
-+		     u32 sect_type)
-+{
-+	u16 offset, size;
-+
-+	if (ice_seg)
-+		state->type = sect_type;
-+
-+	if (!ice_pkg_advance_sect(ice_seg, state))
-+		return NULL;
-+
-+	/* scan for next matching section */
-+	while (state->buf->section_entry[state->sect_idx].type !=
-+	       cpu_to_le32(state->type))
-+		if (!ice_pkg_advance_sect(NULL, state))
-+			return NULL;
-+
-+	/* validate section */
-+	offset = le16_to_cpu(state->buf->section_entry[state->sect_idx].offset);
-+	if (offset < ICE_MIN_S_OFF || offset > ICE_MAX_S_OFF)
-+		return NULL;
-+
-+	size = le16_to_cpu(state->buf->section_entry[state->sect_idx].size);
-+	if (size < ICE_MIN_S_SZ || size > ICE_MAX_S_SZ)
-+		return NULL;
-+
-+	/* make sure the section fits in the buffer */
-+	if (offset + size > ICE_PKG_BUF_SIZE)
-+		return NULL;
-+
-+	state->sect_type =
-+		le32_to_cpu(state->buf->section_entry[state->sect_idx].type);
-+
-+	/* calc pointer to this section */
-+	state->sect = ((u8 *)state->buf) +
-+		le16_to_cpu(state->buf->section_entry[state->sect_idx].offset);
-+
-+	return state->sect;
-+}
-+
- /**
-  * ice_acquire_global_cfg_lock
-  * @hw: pointer to the HW structure
-@@ -458,6 +596,21 @@ void ice_free_seg(struct ice_hw *hw)
- 	hw->seg = NULL;
- }
- 
-+/**
-+ * ice_init_pkg_regs - initialize additional package registers
-+ * @hw: pointer to the hardware structure
-+ */
-+static void ice_init_pkg_regs(struct ice_hw *hw)
-+{
-+#define ICE_SW_BLK_INP_MASK_L 0xFFFFFFFF
-+#define ICE_SW_BLK_INP_MASK_H 0x0000FFFF
-+#define ICE_SW_BLK_IDX	0
-+
-+	/* setup Switch block input mask, which is 48-bits in two parts */
-+	wr32(hw, GL_PREEXT_L2_PMASK0(ICE_SW_BLK_IDX), ICE_SW_BLK_INP_MASK_L);
-+	wr32(hw, GL_PREEXT_L2_PMASK1(ICE_SW_BLK_IDX), ICE_SW_BLK_INP_MASK_H);
-+}
-+
- /**
-  * ice_chk_pkg_version - check package version for compatibility with driver
-  * @pkg_ver: pointer to a version structure to check
-@@ -554,9 +707,18 @@ enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buf, u32 len)
- 			status = ice_chk_pkg_version(&hw->active_pkg_ver);
- 	}
- 
--	if (status)
-+	if (!status) {
-+		hw->seg = seg;
-+		/* on successful package download update other required
-+		 * registers to support the package and fill HW tables
-+		 * with package content.
-+		 */
-+		ice_init_pkg_regs(hw);
-+		ice_fill_blk_tbls(hw);
-+	} else {
- 		ice_debug(hw, ICE_DBG_INIT, "package load failed, %d\n",
- 			  status);
-+	}
- 
+@@ -1846,6 +1846,75 @@ ice_discover_caps(struct ice_hw *hw, enum ice_adminq_opc opc)
  	return status;
  }
-@@ -606,3 +768,784 @@ enum ice_status ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len)
  
- 	return status;
- }
-+
-+/* PTG Management */
-+
 +/**
-+ * ice_ptg_find_ptype - Search for packet type group using packet type (ptype)
++ * ice_set_safe_mode_caps - Override dev/func capabilities when in safe mode
 + * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @ptype: the ptype to search for
-+ * @ptg: pointer to variable that receives the PTG
-+ *
-+ * This function will search the PTGs for a particular ptype, returning the
-+ * PTG ID that contains it through the PTG parameter, with the value of
-+ * ICE_DEFAULT_PTG (0) meaning it is part the default PTG.
 + */
-+static enum ice_status
-+ice_ptg_find_ptype(struct ice_hw *hw, enum ice_block blk, u16 ptype, u8 *ptg)
++void ice_set_safe_mode_caps(struct ice_hw *hw)
 +{
-+	if (ptype >= ICE_XLT1_CNT || !ptg)
-+		return ICE_ERR_PARAM;
++	struct ice_hw_func_caps *func_caps = &hw->func_caps;
++	struct ice_hw_dev_caps *dev_caps = &hw->dev_caps;
++	u32 valid_func, rxq_first_id, txq_first_id;
++	u32 msix_vector_first_id, max_mtu;
++	u32 num_func = 0;
++	u8 i;
 +
-+	*ptg = hw->blk[blk].xlt1.ptypes[ptype].ptg;
-+	return 0;
++	/* cache some func_caps values that should be restored after memset */
++	valid_func = func_caps->common_cap.valid_functions;
++	txq_first_id = func_caps->common_cap.txq_first_id;
++	rxq_first_id = func_caps->common_cap.rxq_first_id;
++	msix_vector_first_id = func_caps->common_cap.msix_vector_first_id;
++	max_mtu = func_caps->common_cap.max_mtu;
++
++	/* unset func capabilities */
++	memset(func_caps, 0, sizeof(*func_caps));
++
++	/* restore cached values */
++	func_caps->common_cap.valid_functions = valid_func;
++	func_caps->common_cap.txq_first_id = txq_first_id;
++	func_caps->common_cap.rxq_first_id = rxq_first_id;
++	func_caps->common_cap.msix_vector_first_id = msix_vector_first_id;
++	func_caps->common_cap.max_mtu = max_mtu;
++
++	/* one Tx and one Rx queue in safe mode */
++	func_caps->common_cap.num_rxq = 1;
++	func_caps->common_cap.num_txq = 1;
++
++	/* two MSIX vectors, one for traffic and one for misc causes */
++	func_caps->common_cap.num_msix_vectors = 2;
++	func_caps->guar_num_vsi = 1;
++
++	/* cache some dev_caps values that should be restored after memset */
++	valid_func = dev_caps->common_cap.valid_functions;
++	txq_first_id = dev_caps->common_cap.txq_first_id;
++	rxq_first_id = dev_caps->common_cap.rxq_first_id;
++	msix_vector_first_id = dev_caps->common_cap.msix_vector_first_id;
++	max_mtu = dev_caps->common_cap.max_mtu;
++
++	/* unset dev capabilities */
++	memset(dev_caps, 0, sizeof(*dev_caps));
++
++	/* restore cached values */
++	dev_caps->common_cap.valid_functions = valid_func;
++	dev_caps->common_cap.txq_first_id = txq_first_id;
++	dev_caps->common_cap.rxq_first_id = rxq_first_id;
++	dev_caps->common_cap.msix_vector_first_id = msix_vector_first_id;
++	dev_caps->common_cap.max_mtu = max_mtu;
++
++	/* valid_func is a bitmap. get number of functions */
++#define ICE_MAX_FUNCS 8
++	for (i = 0; i < ICE_MAX_FUNCS; i++)
++		if (valid_func & BIT(i))
++			num_func++;
++
++	/* one Tx and one Rx queue per function in safe mode */
++	dev_caps->common_cap.num_rxq = num_func;
++	dev_caps->common_cap.num_txq = num_func;
++
++	/* two MSIX vectors per function */
++	dev_caps->common_cap.num_msix_vectors = 2 * num_func;
 +}
 +
+ /**
+  * ice_get_caps - get info about the HW
+  * @hw: pointer to the hardware structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index ce55f8ae6b52..c3df92f57777 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -42,6 +42,8 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
+ void ice_clear_pxe_mode(struct ice_hw *hw);
+ enum ice_status ice_get_caps(struct ice_hw *hw);
+ 
++void ice_set_safe_mode_caps(struct ice_hw *hw);
++
+ void ice_dev_onetime_setup(struct ice_hw *hw);
+ 
+ enum ice_status
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+index 97c22d4aae1d..dd47869c4ad4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
+@@ -3,6 +3,48 @@
+ 
+ #include "ice_dcb_lib.h"
+ 
 +/**
-+ * ice_ptg_alloc_val - Allocates a new packet type group ID by value
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @ptg: the PTG to allocate
-+ *
-+ * This function allocates a given packet type group ID specified by the PTG
-+ * parameter.
++ * ice_vsi_cfg_netdev_tc - Setup the netdev TC configuration
++ * @vsi: the VSI being configured
++ * @ena_tc: TC map to be enabled
 + */
-+static void ice_ptg_alloc_val(struct ice_hw *hw, enum ice_block blk, u8 ptg)
++void ice_vsi_cfg_netdev_tc(struct ice_vsi *vsi, u8 ena_tc)
 +{
-+	hw->blk[blk].xlt1.ptg_tbl[ptg].in_use = true;
-+}
-+
-+/**
-+ * ice_ptg_remove_ptype - Removes ptype from a particular packet type group
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @ptype: the ptype to remove
-+ * @ptg: the PTG to remove the ptype from
-+ *
-+ * This function will remove the ptype from the specific PTG, and move it to
-+ * the default PTG (ICE_DEFAULT_PTG).
-+ */
-+static enum ice_status
-+ice_ptg_remove_ptype(struct ice_hw *hw, enum ice_block blk, u16 ptype, u8 ptg)
-+{
-+	struct ice_ptg_ptype **ch;
-+	struct ice_ptg_ptype *p;
-+
-+	if (ptype > ICE_XLT1_CNT - 1)
-+		return ICE_ERR_PARAM;
-+
-+	if (!hw->blk[blk].xlt1.ptg_tbl[ptg].in_use)
-+		return ICE_ERR_DOES_NOT_EXIST;
-+
-+	/* Should not happen if .in_use is set, bad config */
-+	if (!hw->blk[blk].xlt1.ptg_tbl[ptg].first_ptype)
-+		return ICE_ERR_CFG;
-+
-+	/* find the ptype within this PTG, and bypass the link over it */
-+	p = hw->blk[blk].xlt1.ptg_tbl[ptg].first_ptype;
-+	ch = &hw->blk[blk].xlt1.ptg_tbl[ptg].first_ptype;
-+	while (p) {
-+		if (ptype == (p - hw->blk[blk].xlt1.ptypes)) {
-+			*ch = p->next_ptype;
-+			break;
-+		}
-+
-+		ch = &p->next_ptype;
-+		p = p->next_ptype;
-+	}
-+
-+	hw->blk[blk].xlt1.ptypes[ptype].ptg = ICE_DEFAULT_PTG;
-+	hw->blk[blk].xlt1.ptypes[ptype].next_ptype = NULL;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_ptg_add_mv_ptype - Adds/moves ptype to a particular packet type group
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @ptype: the ptype to add or move
-+ * @ptg: the PTG to add or move the ptype to
-+ *
-+ * This function will either add or move a ptype to a particular PTG depending
-+ * on if the ptype is already part of another group. Note that using a
-+ * a destination PTG ID of ICE_DEFAULT_PTG (0) will move the ptype to the
-+ * default PTG.
-+ */
-+static enum ice_status
-+ice_ptg_add_mv_ptype(struct ice_hw *hw, enum ice_block blk, u16 ptype, u8 ptg)
-+{
-+	enum ice_status status;
-+	u8 original_ptg;
-+
-+	if (ptype > ICE_XLT1_CNT - 1)
-+		return ICE_ERR_PARAM;
-+
-+	if (!hw->blk[blk].xlt1.ptg_tbl[ptg].in_use && ptg != ICE_DEFAULT_PTG)
-+		return ICE_ERR_DOES_NOT_EXIST;
-+
-+	status = ice_ptg_find_ptype(hw, blk, ptype, &original_ptg);
-+	if (status)
-+		return status;
-+
-+	/* Is ptype already in the correct PTG? */
-+	if (original_ptg == ptg)
-+		return 0;
-+
-+	/* Remove from original PTG and move back to the default PTG */
-+	if (original_ptg != ICE_DEFAULT_PTG)
-+		ice_ptg_remove_ptype(hw, blk, ptype, original_ptg);
-+
-+	/* Moving to default PTG? Then we're done with this request */
-+	if (ptg == ICE_DEFAULT_PTG)
-+		return 0;
-+
-+	/* Add ptype to PTG at beginning of list */
-+	hw->blk[blk].xlt1.ptypes[ptype].next_ptype =
-+		hw->blk[blk].xlt1.ptg_tbl[ptg].first_ptype;
-+	hw->blk[blk].xlt1.ptg_tbl[ptg].first_ptype =
-+		&hw->blk[blk].xlt1.ptypes[ptype];
-+
-+	hw->blk[blk].xlt1.ptypes[ptype].ptg = ptg;
-+	hw->blk[blk].xlt1.t[ptype] = ptg;
-+
-+	return 0;
-+}
-+
-+/* Block / table size info */
-+struct ice_blk_size_details {
-+	u16 xlt1;			/* # XLT1 entries */
-+	u16 xlt2;			/* # XLT2 entries */
-+	u16 prof_tcam;			/* # profile ID TCAM entries */
-+	u16 prof_id;			/* # profile IDs */
-+	u8 prof_cdid_bits;		/* # CDID one-hot bits used in key */
-+	u16 prof_redir;			/* # profile redirection entries */
-+	u16 es;				/* # extraction sequence entries */
-+	u16 fvw;			/* # field vector words */
-+	u8 overwrite;			/* overwrite existing entries allowed */
-+	u8 reverse;			/* reverse FV order */
-+};
-+
-+static const struct ice_blk_size_details blk_sizes[ICE_BLK_COUNT] = {
-+	/**
-+	 * Table Definitions
-+	 * XLT1 - Number of entries in XLT1 table
-+	 * XLT2 - Number of entries in XLT2 table
-+	 * TCAM - Number of entries Profile ID TCAM table
-+	 * CDID - Control Domain ID of the hardware block
-+	 * PRED - Number of entries in the Profile Redirection Table
-+	 * FV   - Number of entries in the Field Vector
-+	 * FVW  - Width (in WORDs) of the Field Vector
-+	 * OVR  - Overwrite existing table entries
-+	 * REV  - Reverse FV
-+	 */
-+	/*          XLT1        , XLT2        ,TCAM, PID,CDID,PRED,   FV, FVW */
-+	/*          Overwrite   , Reverse FV */
-+	/* SW  */ { ICE_XLT1_CNT, ICE_XLT2_CNT, 512, 256,   0,  256, 256,  48,
-+		    false, false },
-+	/* ACL */ { ICE_XLT1_CNT, ICE_XLT2_CNT, 512, 128,   0,  128, 128,  32,
-+		    false, false },
-+	/* FD  */ { ICE_XLT1_CNT, ICE_XLT2_CNT, 512, 128,   0,  128, 128,  24,
-+		    false, true  },
-+	/* RSS */ { ICE_XLT1_CNT, ICE_XLT2_CNT, 512, 128,   0,  128, 128,  24,
-+		    true,  true  },
-+	/* PE  */ { ICE_XLT1_CNT, ICE_XLT2_CNT,  64,  32,   0,   32,  32,  24,
-+		    false, false },
-+};
-+
-+enum ice_sid_all {
-+	ICE_SID_XLT1_OFF = 0,
-+	ICE_SID_XLT2_OFF,
-+	ICE_SID_PR_OFF,
-+	ICE_SID_PR_REDIR_OFF,
-+	ICE_SID_ES_OFF,
-+	ICE_SID_OFF_COUNT,
-+};
-+
-+/* VSIG Management */
-+
-+/**
-+ * ice_vsig_find_vsi - find a VSIG that contains a specified VSI
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @vsi: VSI of interest
-+ * @vsig: pointer to receive the VSI group
-+ *
-+ * This function will lookup the VSI entry in the XLT2 list and return
-+ * the VSI group its associated with.
-+ */
-+static enum ice_status
-+ice_vsig_find_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 *vsig)
-+{
-+	if (!vsig || vsi >= ICE_MAX_VSI)
-+		return ICE_ERR_PARAM;
-+
-+	/* As long as there's a default or valid VSIG associated with the input
-+	 * VSI, the functions returns a success. Any handling of VSIG will be
-+	 * done by the following add, update or remove functions.
-+	 */
-+	*vsig = hw->blk[blk].xlt2.vsis[vsi].vsig;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vsig_alloc_val - allocate a new VSIG by value
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @vsig: the VSIG to allocate
-+ *
-+ * This function will allocate a given VSIG specified by the VSIG parameter.
-+ */
-+static u16 ice_vsig_alloc_val(struct ice_hw *hw, enum ice_block blk, u16 vsig)
-+{
-+	u16 idx = vsig & ICE_VSIG_IDX_M;
-+
-+	if (!hw->blk[blk].xlt2.vsig_tbl[idx].in_use) {
-+		INIT_LIST_HEAD(&hw->blk[blk].xlt2.vsig_tbl[idx].prop_lst);
-+		hw->blk[blk].xlt2.vsig_tbl[idx].in_use = true;
-+	}
-+
-+	return ICE_VSIG_VALUE(idx, hw->pf_id);
-+}
-+
-+/**
-+ * ice_vsig_remove_vsi - remove VSI from VSIG
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @vsi: VSI to remove
-+ * @vsig: VSI group to remove from
-+ *
-+ * The function will remove the input VSI from its VSI group and move it
-+ * to the DEFAULT_VSIG.
-+ */
-+static enum ice_status
-+ice_vsig_remove_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 vsig)
-+{
-+	struct ice_vsig_vsi **vsi_head, *vsi_cur, *vsi_tgt;
-+	u16 idx;
-+
-+	idx = vsig & ICE_VSIG_IDX_M;
-+
-+	if (vsi >= ICE_MAX_VSI || idx >= ICE_MAX_VSIGS)
-+		return ICE_ERR_PARAM;
-+
-+	if (!hw->blk[blk].xlt2.vsig_tbl[idx].in_use)
-+		return ICE_ERR_DOES_NOT_EXIST;
-+
-+	/* entry already in default VSIG, don't have to remove */
-+	if (idx == ICE_DEFAULT_VSIG)
-+		return 0;
-+
-+	vsi_head = &hw->blk[blk].xlt2.vsig_tbl[idx].first_vsi;
-+	if (!(*vsi_head))
-+		return ICE_ERR_CFG;
-+
-+	vsi_tgt = &hw->blk[blk].xlt2.vsis[vsi];
-+	vsi_cur = (*vsi_head);
-+
-+	/* iterate the VSI list, skip over the entry to be removed */
-+	while (vsi_cur) {
-+		if (vsi_tgt == vsi_cur) {
-+			(*vsi_head) = vsi_cur->next_vsi;
-+			break;
-+		}
-+		vsi_head = &vsi_cur->next_vsi;
-+		vsi_cur = vsi_cur->next_vsi;
-+	}
-+
-+	/* verify if VSI was removed from group list */
-+	if (!vsi_cur)
-+		return ICE_ERR_DOES_NOT_EXIST;
-+
-+	vsi_cur->vsig = ICE_DEFAULT_VSIG;
-+	vsi_cur->changed = 1;
-+	vsi_cur->next_vsi = NULL;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_vsig_add_mv_vsi - add or move a VSI to a VSI group
-+ * @hw: pointer to the hardware structure
-+ * @blk: HW block
-+ * @vsi: VSI to move
-+ * @vsig: destination VSI group
-+ *
-+ * This function will move or add the input VSI to the target VSIG.
-+ * The function will find the original VSIG the VSI belongs to and
-+ * move the entry to the DEFAULT_VSIG, update the original VSIG and
-+ * then move entry to the new VSIG.
-+ */
-+static enum ice_status
-+ice_vsig_add_mv_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 vsig)
-+{
-+	struct ice_vsig_vsi *tmp;
-+	enum ice_status status;
-+	u16 orig_vsig, idx;
-+
-+	idx = vsig & ICE_VSIG_IDX_M;
-+
-+	if (vsi >= ICE_MAX_VSI || idx >= ICE_MAX_VSIGS)
-+		return ICE_ERR_PARAM;
-+
-+	/* if VSIG not in use and VSIG is not default type this VSIG
-+	 * doesn't exist.
-+	 */
-+	if (!hw->blk[blk].xlt2.vsig_tbl[idx].in_use &&
-+	    vsig != ICE_DEFAULT_VSIG)
-+		return ICE_ERR_DOES_NOT_EXIST;
-+
-+	status = ice_vsig_find_vsi(hw, blk, vsi, &orig_vsig);
-+	if (status)
-+		return status;
-+
-+	/* no update required if vsigs match */
-+	if (orig_vsig == vsig)
-+		return 0;
-+
-+	if (orig_vsig != ICE_DEFAULT_VSIG) {
-+		/* remove entry from orig_vsig and add to default VSIG */
-+		status = ice_vsig_remove_vsi(hw, blk, vsi, orig_vsig);
-+		if (status)
-+			return status;
-+	}
-+
-+	if (idx == ICE_DEFAULT_VSIG)
-+		return 0;
-+
-+	/* Create VSI entry and add VSIG and prop_mask values */
-+	hw->blk[blk].xlt2.vsis[vsi].vsig = vsig;
-+	hw->blk[blk].xlt2.vsis[vsi].changed = 1;
-+
-+	/* Add new entry to the head of the VSIG list */
-+	tmp = hw->blk[blk].xlt2.vsig_tbl[idx].first_vsi;
-+	hw->blk[blk].xlt2.vsig_tbl[idx].first_vsi =
-+		&hw->blk[blk].xlt2.vsis[vsi];
-+	hw->blk[blk].xlt2.vsis[vsi].next_vsi = tmp;
-+	hw->blk[blk].xlt2.t[vsi] = vsig;
-+
-+	return 0;
-+}
-+
-+/* Block / table section IDs */
-+static const u32 ice_blk_sids[ICE_BLK_COUNT][ICE_SID_OFF_COUNT] = {
-+	/* SWITCH */
-+	{	ICE_SID_XLT1_SW,
-+		ICE_SID_XLT2_SW,
-+		ICE_SID_PROFID_TCAM_SW,
-+		ICE_SID_PROFID_REDIR_SW,
-+		ICE_SID_FLD_VEC_SW
-+	},
-+
-+	/* ACL */
-+	{	ICE_SID_XLT1_ACL,
-+		ICE_SID_XLT2_ACL,
-+		ICE_SID_PROFID_TCAM_ACL,
-+		ICE_SID_PROFID_REDIR_ACL,
-+		ICE_SID_FLD_VEC_ACL
-+	},
-+
-+	/* FD */
-+	{	ICE_SID_XLT1_FD,
-+		ICE_SID_XLT2_FD,
-+		ICE_SID_PROFID_TCAM_FD,
-+		ICE_SID_PROFID_REDIR_FD,
-+		ICE_SID_FLD_VEC_FD
-+	},
-+
-+	/* RSS */
-+	{	ICE_SID_XLT1_RSS,
-+		ICE_SID_XLT2_RSS,
-+		ICE_SID_PROFID_TCAM_RSS,
-+		ICE_SID_PROFID_REDIR_RSS,
-+		ICE_SID_FLD_VEC_RSS
-+	},
-+
-+	/* PE */
-+	{	ICE_SID_XLT1_PE,
-+		ICE_SID_XLT2_PE,
-+		ICE_SID_PROFID_TCAM_PE,
-+		ICE_SID_PROFID_REDIR_PE,
-+		ICE_SID_FLD_VEC_PE
-+	}
-+};
-+
-+/**
-+ * ice_init_sw_xlt1_db - init software XLT1 database from HW tables
-+ * @hw: pointer to the hardware structure
-+ * @blk: the HW block to initialize
-+ */
-+static void ice_init_sw_xlt1_db(struct ice_hw *hw, enum ice_block blk)
-+{
-+	u16 pt;
-+
-+	for (pt = 0; pt < hw->blk[blk].xlt1.count; pt++) {
-+		u8 ptg;
-+
-+		ptg = hw->blk[blk].xlt1.t[pt];
-+		if (ptg != ICE_DEFAULT_PTG) {
-+			ice_ptg_alloc_val(hw, blk, ptg);
-+			ice_ptg_add_mv_ptype(hw, blk, pt, ptg);
-+		}
-+	}
-+}
-+
-+/**
-+ * ice_init_sw_xlt2_db - init software XLT2 database from HW tables
-+ * @hw: pointer to the hardware structure
-+ * @blk: the HW block to initialize
-+ */
-+static void ice_init_sw_xlt2_db(struct ice_hw *hw, enum ice_block blk)
-+{
-+	u16 vsi;
-+
-+	for (vsi = 0; vsi < hw->blk[blk].xlt2.count; vsi++) {
-+		u16 vsig;
-+
-+		vsig = hw->blk[blk].xlt2.t[vsi];
-+		if (vsig) {
-+			ice_vsig_alloc_val(hw, blk, vsig);
-+			ice_vsig_add_mv_vsi(hw, blk, vsi, vsig);
-+			/* no changes at this time, since this has been
-+			 * initialized from the original package
-+			 */
-+			hw->blk[blk].xlt2.vsis[vsi].changed = 0;
-+		}
-+	}
-+}
-+
-+/**
-+ * ice_init_sw_db - init software database from HW tables
-+ * @hw: pointer to the hardware structure
-+ */
-+static void ice_init_sw_db(struct ice_hw *hw)
-+{
-+	u16 i;
-+
-+	for (i = 0; i < ICE_BLK_COUNT; i++) {
-+		ice_init_sw_xlt1_db(hw, (enum ice_block)i);
-+		ice_init_sw_xlt2_db(hw, (enum ice_block)i);
-+	}
-+}
-+
-+/**
-+ * ice_fill_tbl - Reads content of a single table type into database
-+ * @hw: pointer to the hardware structure
-+ * @block_id: Block ID of the table to copy
-+ * @sid: Section ID of the table to copy
-+ *
-+ * Will attempt to read the entire content of a given table of a single block
-+ * into the driver database. We assume that the buffer will always
-+ * be as large or larger than the data contained in the package. If
-+ * this condition is not met, there is most likely an error in the package
-+ * contents.
-+ */
-+static void ice_fill_tbl(struct ice_hw *hw, enum ice_block block_id, u32 sid)
-+{
-+	u32 dst_len, sect_len, offset = 0;
-+	struct ice_prof_redir_section *pr;
-+	struct ice_prof_id_section *pid;
-+	struct ice_xlt1_section *xlt1;
-+	struct ice_xlt2_section *xlt2;
-+	struct ice_sw_fv_section *es;
-+	struct ice_pkg_enum state;
-+	u8 *src, *dst;
-+	void *sect;
-+
-+	/* if the HW segment pointer is null then the first iteration of
-+	 * ice_pkg_enum_section() will fail. In this case the HW tables will
-+	 * not be filled and return success.
-+	 */
-+	if (!hw->seg) {
-+		ice_debug(hw, ICE_DBG_PKG, "hw->seg is NULL, tables are not filled\n");
++	struct net_device *netdev = vsi->netdev;
++	struct ice_pf *pf = vsi->back;
++	struct ice_dcbx_cfg *dcbcfg;
++	u8 netdev_tc;
++	int i;
++
++	if (!netdev)
++		return;
++
++	if (!ena_tc) {
++		netdev_reset_tc(netdev);
 +		return;
 +	}
 +
-+	memset(&state, 0, sizeof(state));
++	if (netdev_set_num_tc(netdev, vsi->tc_cfg.numtc))
++		return;
 +
-+	sect = ice_pkg_enum_section(hw->seg, &state, sid);
++	dcbcfg = &pf->hw.port_info->local_dcbx_cfg;
 +
-+	while (sect) {
-+		switch (sid) {
-+		case ICE_SID_XLT1_SW:
-+		case ICE_SID_XLT1_FD:
-+		case ICE_SID_XLT1_RSS:
-+		case ICE_SID_XLT1_ACL:
-+		case ICE_SID_XLT1_PE:
-+			xlt1 = (struct ice_xlt1_section *)sect;
-+			src = xlt1->value;
-+			sect_len = le16_to_cpu(xlt1->count) *
-+				sizeof(*hw->blk[block_id].xlt1.t);
-+			dst = hw->blk[block_id].xlt1.t;
-+			dst_len = hw->blk[block_id].xlt1.count *
-+				sizeof(*hw->blk[block_id].xlt1.t);
-+			break;
-+		case ICE_SID_XLT2_SW:
-+		case ICE_SID_XLT2_FD:
-+		case ICE_SID_XLT2_RSS:
-+		case ICE_SID_XLT2_ACL:
-+		case ICE_SID_XLT2_PE:
-+			xlt2 = (struct ice_xlt2_section *)sect;
-+			src = (__force u8 *)xlt2->value;
-+			sect_len = le16_to_cpu(xlt2->count) *
-+				sizeof(*hw->blk[block_id].xlt2.t);
-+			dst = (u8 *)hw->blk[block_id].xlt2.t;
-+			dst_len = hw->blk[block_id].xlt2.count *
-+				sizeof(*hw->blk[block_id].xlt2.t);
-+			break;
-+		case ICE_SID_PROFID_TCAM_SW:
-+		case ICE_SID_PROFID_TCAM_FD:
-+		case ICE_SID_PROFID_TCAM_RSS:
-+		case ICE_SID_PROFID_TCAM_ACL:
-+		case ICE_SID_PROFID_TCAM_PE:
-+			pid = (struct ice_prof_id_section *)sect;
-+			src = (u8 *)pid->entry;
-+			sect_len = le16_to_cpu(pid->count) *
-+				sizeof(*hw->blk[block_id].prof.t);
-+			dst = (u8 *)hw->blk[block_id].prof.t;
-+			dst_len = hw->blk[block_id].prof.count *
-+				sizeof(*hw->blk[block_id].prof.t);
-+			break;
-+		case ICE_SID_PROFID_REDIR_SW:
-+		case ICE_SID_PROFID_REDIR_FD:
-+		case ICE_SID_PROFID_REDIR_RSS:
-+		case ICE_SID_PROFID_REDIR_ACL:
-+		case ICE_SID_PROFID_REDIR_PE:
-+			pr = (struct ice_prof_redir_section *)sect;
-+			src = pr->redir_value;
-+			sect_len = le16_to_cpu(pr->count) *
-+				sizeof(*hw->blk[block_id].prof_redir.t);
-+			dst = hw->blk[block_id].prof_redir.t;
-+			dst_len = hw->blk[block_id].prof_redir.count *
-+				sizeof(*hw->blk[block_id].prof_redir.t);
-+			break;
-+		case ICE_SID_FLD_VEC_SW:
-+		case ICE_SID_FLD_VEC_FD:
-+		case ICE_SID_FLD_VEC_RSS:
-+		case ICE_SID_FLD_VEC_ACL:
-+		case ICE_SID_FLD_VEC_PE:
-+			es = (struct ice_sw_fv_section *)sect;
-+			src = (u8 *)es->fv;
-+			sect_len = (u32)(le16_to_cpu(es->count) *
-+					 hw->blk[block_id].es.fvw) *
-+				sizeof(*hw->blk[block_id].es.t);
-+			dst = (u8 *)hw->blk[block_id].es.t;
-+			dst_len = (u32)(hw->blk[block_id].es.count *
-+					hw->blk[block_id].es.fvw) *
-+				sizeof(*hw->blk[block_id].es.t);
-+			break;
-+		default:
-+			return;
-+		}
++	ice_for_each_traffic_class(i)
++		if (vsi->tc_cfg.ena_tc & BIT(i))
++			netdev_set_tc_queue(netdev,
++					    vsi->tc_cfg.tc_info[i].netdev_tc,
++					    vsi->tc_cfg.tc_info[i].qcount_tx,
++					    vsi->tc_cfg.tc_info[i].qoffset);
 +
-+		/* if the section offset exceeds destination length, terminate
-+		 * table fill.
-+		 */
-+		if (offset > dst_len)
-+			return;
++	for (i = 0; i < ICE_MAX_USER_PRIORITY; i++) {
++		u8 ets_tc = dcbcfg->etscfg.prio_table[i];
 +
-+		/* if the sum of section size and offset exceed destination size
-+		 * then we are out of bounds of the HW table size for that PF.
-+		 * Changing section length to fill the remaining table space
-+		 * of that PF.
-+		 */
-+		if ((offset + sect_len) > dst_len)
-+			sect_len = dst_len - offset;
-+
-+		memcpy(dst + offset, src, sect_len);
-+		offset += sect_len;
-+		sect = ice_pkg_enum_section(NULL, &state, sid);
++		/* Get the mapped netdev TC# for the UP */
++		netdev_tc = vsi->tc_cfg.tc_info[ets_tc].netdev_tc;
++		netdev_set_prio_tc_map(netdev, i, netdev_tc);
 +	}
 +}
++
+ /**
+  * ice_dcb_get_ena_tc - return bitmap of enabled TCs
+  * @dcbcfg: DCB config to evaluate for enabled TCs
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
+index 819081053ff5..661a6f7bca64 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
+@@ -22,6 +22,7 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_ring *tx_ring,
+ void
+ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
+ 				    struct ice_rq_event_info *event);
++void ice_vsi_cfg_netdev_tc(struct ice_vsi *vsi, u8 ena_tc);
+ static inline void
+ ice_set_cgd_num(struct ice_tlan_ctx *tlan_ctx, struct ice_ring *ring)
+ {
+@@ -58,5 +59,6 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_ring __always_unused *tx_ring,
+ #define ice_vsi_cfg_dcb_rings(vsi) do {} while (0)
+ #define ice_dcb_process_lldp_set_mib_change(pf, event) do {} while (0)
+ #define ice_set_cgd_num(tlan_ctx, ring) do {} while (0)
++#define ice_vsi_cfg_netdev_tc(vsi, ena_tc) do {} while (0)
+ #endif /* CONFIG_DCB */
+ #endif /* _ICE_DCB_LIB_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index a16b461b46bb..7e23034df955 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -3435,6 +3435,33 @@ static const struct ethtool_ops ice_ethtool_ops = {
+ 	.set_fecparam		= ice_set_fecparam,
+ };
+ 
++static const struct ethtool_ops ice_ethtool_safe_mode_ops = {
++	.get_link_ksettings	= ice_get_link_ksettings,
++	.set_link_ksettings	= ice_set_link_ksettings,
++	.get_drvinfo		= ice_get_drvinfo,
++	.get_regs_len		= ice_get_regs_len,
++	.get_regs		= ice_get_regs,
++	.get_msglevel		= ice_get_msglevel,
++	.set_msglevel		= ice_set_msglevel,
++	.get_eeprom_len		= ice_get_eeprom_len,
++	.get_eeprom		= ice_get_eeprom,
++	.get_strings		= ice_get_strings,
++	.get_ethtool_stats	= ice_get_ethtool_stats,
++	.get_sset_count		= ice_get_sset_count,
++	.get_ringparam		= ice_get_ringparam,
++	.set_ringparam		= ice_set_ringparam,
++	.nway_reset		= ice_nway_reset,
++};
 +
 +/**
-+ * ice_fill_blk_tbls - Read package context for tables
-+ * @hw: pointer to the hardware structure
-+ *
-+ * Reads the current package contents and populates the driver
-+ * database with the data iteratively for all advanced feature
-+ * blocks. Assume that the HW tables have been allocated.
++ * ice_set_ethtool_safe_mode_ops - setup safe mode ethtool ops
++ * @netdev: network interface device structure
 + */
-+static void ice_fill_blk_tbls(struct ice_hw *hw)
++void ice_set_ethtool_safe_mode_ops(struct net_device *netdev)
 +{
-+	u8 i;
-+
-+	for (i = 0; i < ICE_BLK_COUNT; i++) {
-+		enum ice_block blk_id = (enum ice_block)i;
-+
-+		ice_fill_tbl(hw, blk_id, hw->blk[blk_id].xlt1.sid);
-+		ice_fill_tbl(hw, blk_id, hw->blk[blk_id].xlt2.sid);
-+		ice_fill_tbl(hw, blk_id, hw->blk[blk_id].prof.sid);
-+		ice_fill_tbl(hw, blk_id, hw->blk[blk_id].prof_redir.sid);
-+		ice_fill_tbl(hw, blk_id, hw->blk[blk_id].es.sid);
-+	}
-+
-+	ice_init_sw_db(hw);
++	netdev->ethtool_ops = &ice_ethtool_safe_mode_ops;
 +}
 +
-+/**
-+ * ice_free_hw_tbls - free hardware table memory
-+ * @hw: pointer to the hardware structure
-+ */
-+void ice_free_hw_tbls(struct ice_hw *hw)
-+{
-+	u8 i;
-+
-+	for (i = 0; i < ICE_BLK_COUNT; i++) {
-+		hw->blk[i].is_list_init = false;
-+
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt1.ptypes);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt1.ptg_tbl);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt1.t);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt2.t);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt2.vsig_tbl);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].xlt2.vsis);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].prof.t);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].prof_redir.t);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].es.t);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].es.ref_count);
-+		devm_kfree(ice_hw_to_dev(hw), hw->blk[i].es.written);
-+	}
-+
-+	memset(hw->blk, 0, sizeof(hw->blk));
-+}
-+
-+/**
-+ * ice_clear_hw_tbls - clear HW tables and flow profiles
-+ * @hw: pointer to the hardware structure
-+ */
-+void ice_clear_hw_tbls(struct ice_hw *hw)
-+{
-+	u8 i;
-+
-+	for (i = 0; i < ICE_BLK_COUNT; i++) {
-+		struct ice_prof_redir *prof_redir = &hw->blk[i].prof_redir;
-+		struct ice_prof_tcam *prof = &hw->blk[i].prof;
-+		struct ice_xlt1 *xlt1 = &hw->blk[i].xlt1;
-+		struct ice_xlt2 *xlt2 = &hw->blk[i].xlt2;
-+		struct ice_es *es = &hw->blk[i].es;
-+
-+		memset(xlt1->ptypes, 0, xlt1->count * sizeof(*xlt1->ptypes));
-+		memset(xlt1->ptg_tbl, 0,
-+		       ICE_MAX_PTGS * sizeof(*xlt1->ptg_tbl));
-+		memset(xlt1->t, 0, xlt1->count * sizeof(*xlt1->t));
-+
-+		memset(xlt2->vsis, 0, xlt2->count * sizeof(*xlt2->vsis));
-+		memset(xlt2->vsig_tbl, 0,
-+		       xlt2->count * sizeof(*xlt2->vsig_tbl));
-+		memset(xlt2->t, 0, xlt2->count * sizeof(*xlt2->t));
-+
-+		memset(prof->t, 0, prof->count * sizeof(*prof->t));
-+		memset(prof_redir->t, 0,
-+		       prof_redir->count * sizeof(*prof_redir->t));
-+
-+		memset(es->t, 0, es->count * sizeof(*es->t));
-+		memset(es->ref_count, 0, es->count * sizeof(*es->ref_count));
-+		memset(es->written, 0, es->count * sizeof(*es->written));
-+	}
-+}
-+
-+/**
-+ * ice_init_hw_tbls - init hardware table memory
-+ * @hw: pointer to the hardware structure
-+ */
-+enum ice_status ice_init_hw_tbls(struct ice_hw *hw)
-+{
-+	u8 i;
-+
-+	for (i = 0; i < ICE_BLK_COUNT; i++) {
-+		struct ice_prof_redir *prof_redir = &hw->blk[i].prof_redir;
-+		struct ice_prof_tcam *prof = &hw->blk[i].prof;
-+		struct ice_xlt1 *xlt1 = &hw->blk[i].xlt1;
-+		struct ice_xlt2 *xlt2 = &hw->blk[i].xlt2;
-+		struct ice_es *es = &hw->blk[i].es;
-+		u16 j;
-+
-+		if (hw->blk[i].is_list_init)
-+			continue;
-+
-+		hw->blk[i].is_list_init = true;
-+
-+		hw->blk[i].overwrite = blk_sizes[i].overwrite;
-+		es->reverse = blk_sizes[i].reverse;
-+
-+		xlt1->sid = ice_blk_sids[i][ICE_SID_XLT1_OFF];
-+		xlt1->count = blk_sizes[i].xlt1;
-+
-+		xlt1->ptypes = devm_kcalloc(ice_hw_to_dev(hw), xlt1->count,
-+					    sizeof(*xlt1->ptypes), GFP_KERNEL);
-+
-+		if (!xlt1->ptypes)
-+			goto err;
-+
-+		xlt1->ptg_tbl = devm_kcalloc(ice_hw_to_dev(hw), ICE_MAX_PTGS,
-+					     sizeof(*xlt1->ptg_tbl),
-+					     GFP_KERNEL);
-+
-+		if (!xlt1->ptg_tbl)
-+			goto err;
-+
-+		xlt1->t = devm_kcalloc(ice_hw_to_dev(hw), xlt1->count,
-+				       sizeof(*xlt1->t), GFP_KERNEL);
-+		if (!xlt1->t)
-+			goto err;
-+
-+		xlt2->sid = ice_blk_sids[i][ICE_SID_XLT2_OFF];
-+		xlt2->count = blk_sizes[i].xlt2;
-+
-+		xlt2->vsis = devm_kcalloc(ice_hw_to_dev(hw), xlt2->count,
-+					  sizeof(*xlt2->vsis), GFP_KERNEL);
-+
-+		if (!xlt2->vsis)
-+			goto err;
-+
-+		xlt2->vsig_tbl = devm_kcalloc(ice_hw_to_dev(hw), xlt2->count,
-+					      sizeof(*xlt2->vsig_tbl),
-+					      GFP_KERNEL);
-+		if (!xlt2->vsig_tbl)
-+			goto err;
-+
-+		for (j = 0; j < xlt2->count; j++)
-+			INIT_LIST_HEAD(&xlt2->vsig_tbl[j].prop_lst);
-+
-+		xlt2->t = devm_kcalloc(ice_hw_to_dev(hw), xlt2->count,
-+				       sizeof(*xlt2->t), GFP_KERNEL);
-+		if (!xlt2->t)
-+			goto err;
-+
-+		prof->sid = ice_blk_sids[i][ICE_SID_PR_OFF];
-+		prof->count = blk_sizes[i].prof_tcam;
-+		prof->max_prof_id = blk_sizes[i].prof_id;
-+		prof->cdid_bits = blk_sizes[i].prof_cdid_bits;
-+		prof->t = devm_kcalloc(ice_hw_to_dev(hw), prof->count,
-+				       sizeof(*prof->t), GFP_KERNEL);
-+
-+		if (!prof->t)
-+			goto err;
-+
-+		prof_redir->sid = ice_blk_sids[i][ICE_SID_PR_REDIR_OFF];
-+		prof_redir->count = blk_sizes[i].prof_redir;
-+		prof_redir->t = devm_kcalloc(ice_hw_to_dev(hw),
-+					     prof_redir->count,
-+					     sizeof(*prof_redir->t),
-+					     GFP_KERNEL);
-+
-+		if (!prof_redir->t)
-+			goto err;
-+
-+		es->sid = ice_blk_sids[i][ICE_SID_ES_OFF];
-+		es->count = blk_sizes[i].es;
-+		es->fvw = blk_sizes[i].fvw;
-+		es->t = devm_kcalloc(ice_hw_to_dev(hw),
-+				     (u32)(es->count * es->fvw),
-+				     sizeof(*es->t), GFP_KERNEL);
-+		if (!es->t)
-+			goto err;
-+
-+		es->ref_count = devm_kcalloc(ice_hw_to_dev(hw), es->count,
-+					     sizeof(*es->ref_count),
-+					     GFP_KERNEL);
-+
-+		es->written = devm_kcalloc(ice_hw_to_dev(hw), es->count,
-+					   sizeof(*es->written), GFP_KERNEL);
-+		if (!es->ref_count)
-+			goto err;
-+	}
-+	return 0;
-+
-+err:
-+	ice_free_hw_tbls(hw);
-+	return ICE_ERR_NO_MEMORY;
-+}
+ /**
+  * ice_set_ethtool_ops - setup netdev ethtool ops
+  * @netdev: network interface device structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index cc8922bd61b5..cbd53b586c36 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -4,8 +4,6 @@
+ #include "ice_common.h"
+ #include "ice_flex_pipe.h"
+ 
+-static void ice_fill_blk_tbls(struct ice_hw *hw);
+-
+ /**
+  * ice_pkg_val_buf
+  * @buf: pointer to the ice buffer
+@@ -1358,7 +1356,7 @@ static void ice_fill_tbl(struct ice_hw *hw, enum ice_block block_id, u32 sid)
+  * database with the data iteratively for all advanced feature
+  * blocks. Assume that the HW tables have been allocated.
+  */
+-static void ice_fill_blk_tbls(struct ice_hw *hw)
++void ice_fill_blk_tbls(struct ice_hw *hw)
+ {
+ 	u8 i;
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-index 3843c462bc42..9edf1e7589c7 100644
+index 9edf1e7589c7..37eb282742d1 100644
 --- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
 +++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-@@ -21,5 +21,8 @@
- enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buff, u32 len);
- enum ice_status
+@@ -23,6 +23,7 @@ enum ice_status
  ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len);
-+enum ice_status ice_init_hw_tbls(struct ice_hw *hw);
+ enum ice_status ice_init_hw_tbls(struct ice_hw *hw);
  void ice_free_seg(struct ice_hw *hw);
-+void ice_clear_hw_tbls(struct ice_hw *hw);
-+void ice_free_hw_tbls(struct ice_hw *hw);
++void ice_fill_blk_tbls(struct ice_hw *hw);
+ void ice_clear_hw_tbls(struct ice_hw *hw);
+ void ice_free_hw_tbls(struct ice_hw *hw);
  #endif /* _ICE_FLEX_PIPE_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-index b7fb90594faf..5d5a7eaffa30 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-@@ -294,6 +294,7 @@ struct ice_vsig_vsi {
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 9680692bf27c..cc755382df25 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -752,6 +752,17 @@ void ice_vsi_put_qs(struct ice_vsi *vsi)
+ 	mutex_unlock(&pf->avail_q_mutex);
+ }
  
- #define ICE_XLT1_CNT	1024
-+#define ICE_MAX_PTGS	256
++/**
++ * ice_is_safe_mode
++ * @pf: pointer to the PF struct
++ *
++ * returns true if driver is in safe mode, false otherwise
++ */
++bool ice_is_safe_mode(struct ice_pf *pf)
++{
++	return !test_bit(ICE_FLAG_ADV_FEATURES, pf->flags);
++}
++
+ /**
+  * ice_rss_clean - Delete RSS related VSI structures that hold user inputs
+  * @vsi: the VSI being removed
+@@ -2629,15 +2640,17 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
+ 	 * DCB settings in the HW.  Also, if the FW DCBX engine is not running
+ 	 * then Rx LLDP packets need to be redirected up the stack.
+ 	 */
+-	if (vsi->type == ICE_VSI_PF) {
+-		ice_vsi_add_rem_eth_mac(vsi, true);
++	if (!ice_is_safe_mode(pf)) {
++		if (vsi->type == ICE_VSI_PF) {
++			ice_vsi_add_rem_eth_mac(vsi, true);
  
- /* XLT1 Table */
- struct ice_xlt1 {
-@@ -304,6 +305,7 @@ struct ice_xlt1 {
- 	u16 count;
- };
+-		/* Tx LLDP packets */
+-		ice_cfg_sw_lldp(vsi, true, true);
++			/* Tx LLDP packets */
++			ice_cfg_sw_lldp(vsi, true, true);
  
-+#define ICE_XLT2_CNT	768
- #define ICE_MAX_VSIGS	768
+-		/* Rx LLDP packets */
+-		if (!test_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags))
+-			ice_cfg_sw_lldp(vsi, false, true);
++			/* Rx LLDP packets */
++			if (!test_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags))
++				ice_cfg_sw_lldp(vsi, false, true);
++		}
+ 	}
  
- /* VSIG bit layout:
+ 	return vsi;
+@@ -2905,8 +2918,11 @@ void ice_vsi_dis_irq(struct ice_vsi *vsi)
+ 	}
+ 
+ 	/* disable each interrupt */
+-	ice_for_each_q_vector(vsi, i)
++	ice_for_each_q_vector(vsi, i) {
++		if (!vsi->q_vectors[i])
++			continue;
+ 		wr32(hw, GLINT_DYN_CTL(vsi->q_vectors[i]->reg_idx), 0);
++	}
+ 
+ 	ice_flush(hw);
+ 
+@@ -2975,14 +2991,16 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 		pf->num_avail_sw_msix += vsi->num_q_vectors;
+ 	}
+ 
+-	if (vsi->type == ICE_VSI_PF) {
+-		ice_vsi_add_rem_eth_mac(vsi, false);
+-		ice_cfg_sw_lldp(vsi, true, false);
+-		/* The Rx rule will only exist to remove if the LLDP FW
+-		 * engine is currently stopped
+-		 */
+-		if (!test_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags))
+-			ice_cfg_sw_lldp(vsi, false, false);
++	if (!ice_is_safe_mode(pf)) {
++		if (vsi->type == ICE_VSI_PF) {
++			ice_vsi_add_rem_eth_mac(vsi, false);
++			ice_cfg_sw_lldp(vsi, true, false);
++			/* The Rx rule will only exist to remove if the LLDP FW
++			 * engine is currently stopped
++			 */
++			if (!test_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags))
++				ice_cfg_sw_lldp(vsi, false, false);
++		}
+ 	}
+ 
+ 	ice_remove_vsi_fltr(&pf->hw, vsi->idx);
+@@ -3168,48 +3186,6 @@ static void ice_vsi_update_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctx)
+ 	       sizeof(vsi->info.tc_mapping));
+ }
+ 
+-/**
+- * ice_vsi_cfg_netdev_tc - Setup the netdev TC configuration
+- * @vsi: the VSI being configured
+- * @ena_tc: TC map to be enabled
+- */
+-static void ice_vsi_cfg_netdev_tc(struct ice_vsi *vsi, u8 ena_tc)
+-{
+-	struct net_device *netdev = vsi->netdev;
+-	struct ice_pf *pf = vsi->back;
+-	struct ice_dcbx_cfg *dcbcfg;
+-	u8 netdev_tc;
+-	int i;
+-
+-	if (!netdev)
+-		return;
+-
+-	if (!ena_tc) {
+-		netdev_reset_tc(netdev);
+-		return;
+-	}
+-
+-	if (netdev_set_num_tc(netdev, vsi->tc_cfg.numtc))
+-		return;
+-
+-	dcbcfg = &pf->hw.port_info->local_dcbx_cfg;
+-
+-	ice_for_each_traffic_class(i)
+-		if (vsi->tc_cfg.ena_tc & BIT(i))
+-			netdev_set_tc_queue(netdev,
+-					    vsi->tc_cfg.tc_info[i].netdev_tc,
+-					    vsi->tc_cfg.tc_info[i].qcount_tx,
+-					    vsi->tc_cfg.tc_info[i].qoffset);
+-
+-	for (i = 0; i < ICE_MAX_USER_PRIORITY; i++) {
+-		u8 ets_tc = dcbcfg->etscfg.prio_table[i];
+-
+-		/* Get the mapped netdev TC# for the UP */
+-		netdev_tc = vsi->tc_cfg.tc_info[ets_tc].netdev_tc;
+-		netdev_set_prio_tc_map(netdev, i, netdev_tc);
+-	}
+-}
+-
+ /**
+  * ice_vsi_cfg_tc - Configure VSI Tx Sched for given TC map
+  * @vsi: VSI to be configured
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
+index 87f7f5422b46..47bc033fff20 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_lib.h
+@@ -125,4 +125,5 @@ char *ice_nvm_version_str(struct ice_hw *hw);
+ enum ice_status
+ ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
+ 
++bool ice_is_safe_mode(struct ice_pf *pf);
+ #endif /* !_ICE_LIB_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index ff295cb54cfd..a9efc918c625 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -21,10 +21,15 @@ const char ice_drv_ver[] = DRV_VERSION;
+ static const char ice_driver_string[] = DRV_SUMMARY;
+ static const char ice_copyright[] = "Copyright (c) 2018, Intel Corporation.";
+ 
++/* DDP Package file located in firmware search paths (e.g. /lib/firmware/) */
++#define ICE_DDP_PKG_PATH	"intel/ice/ddp/"
++#define ICE_DDP_PKG_FILE	ICE_DDP_PKG_PATH "ice.pkg"
++
+ MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
+ MODULE_DESCRIPTION(DRV_SUMMARY);
+ MODULE_LICENSE("GPL v2");
+ MODULE_VERSION(DRV_VERSION);
++MODULE_FIRMWARE(ICE_DDP_PKG_FILE);
+ 
+ static int debug = -1;
+ module_param(debug, int, 0644);
+@@ -35,9 +40,10 @@ MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
+ #endif /* !CONFIG_DYNAMIC_DEBUG */
+ 
+ static struct workqueue_struct *ice_wq;
++static const struct net_device_ops ice_netdev_safe_mode_ops;
+ static const struct net_device_ops ice_netdev_ops;
+ 
+-static void ice_rebuild(struct ice_pf *pf);
++static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type);
+ 
+ static void ice_vsi_release_all(struct ice_pf *pf);
+ 
+@@ -497,6 +503,8 @@ ice_prepare_for_reset(struct ice_pf *pf)
+ 	for (i = 0; i < pf->num_alloc_vfs; i++)
+ 		ice_set_vf_state_qs_dis(&pf->vf[i]);
+ 
++	/* clear SW filtering DB */
++	ice_clear_hw_tbls(hw);
+ 	/* disable the VSIs and their queues that are not already DOWN */
+ 	ice_pf_dis_all_vsi(pf, false);
+ 
+@@ -542,7 +550,7 @@ static void ice_do_reset(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 	 */
+ 	if (reset_type == ICE_RESET_PFR) {
+ 		pf->pfr_count++;
+-		ice_rebuild(pf);
++		ice_rebuild(pf, reset_type);
+ 		clear_bit(__ICE_PREPARED_FOR_RESET, pf->state);
+ 		clear_bit(__ICE_PFR_REQ, pf->state);
+ 		ice_reset_all_vfs(pf, true);
+@@ -586,7 +594,7 @@ static void ice_reset_subtask(struct ice_pf *pf)
+ 		} else {
+ 			/* done with reset. start rebuild */
+ 			pf->hw.reset_ongoing = false;
+-			ice_rebuild(pf);
++			ice_rebuild(pf, reset_type);
+ 			/* clear bit to resume normal operations, but
+ 			 * ICE_NEEDS_RESTART bit is set in case rebuild failed
+ 			 */
+@@ -1496,13 +1504,19 @@ static void ice_service_task(struct work_struct *work)
+ 		return;
+ 	}
+ 
++	ice_clean_adminq_subtask(pf);
+ 	ice_check_media_subtask(pf);
+ 	ice_check_for_hang_subtask(pf);
+ 	ice_sync_fltr_subtask(pf);
+ 	ice_handle_mdd_event(pf);
+-	ice_process_vflr_event(pf);
+ 	ice_watchdog_subtask(pf);
+-	ice_clean_adminq_subtask(pf);
++
++	if (ice_is_safe_mode(pf)) {
++		ice_service_task_complete(pf);
++		return;
++	}
++
++	ice_process_vflr_event(pf);
+ 	ice_clean_mailboxq_subtask(pf);
+ 
+ 	/* Clear __ICE_SERVICE_SCHED flag to allow scheduling next event */
+@@ -1937,30 +1951,41 @@ static void ice_napi_add(struct ice_vsi *vsi)
+ }
+ 
+ /**
+- * ice_cfg_netdev - Allocate, configure and register a netdev
+- * @vsi: the VSI associated with the new netdev
+- *
+- * Returns 0 on success, negative value on failure
++ * ice_set_ops - set netdev and ethtools ops for the given netdev
++ * @netdev: netdev instance
+  */
+-static int ice_cfg_netdev(struct ice_vsi *vsi)
++static void ice_set_ops(struct net_device *netdev)
+ {
++	struct ice_pf *pf = ice_netdev_to_pf(netdev);
++
++	if (ice_is_safe_mode(pf)) {
++		netdev->netdev_ops = &ice_netdev_safe_mode_ops;
++		ice_set_ethtool_safe_mode_ops(netdev);
++		return;
++	}
++
++	netdev->netdev_ops = &ice_netdev_ops;
++	ice_set_ethtool_ops(netdev);
++}
++
++/**
++ * ice_set_netdev_features - set features for the given netdev
++ * @netdev: netdev instance
++ */
++static void ice_set_netdev_features(struct net_device *netdev)
++{
++	struct ice_pf *pf = ice_netdev_to_pf(netdev);
+ 	netdev_features_t csumo_features;
+ 	netdev_features_t vlano_features;
+ 	netdev_features_t dflt_features;
+ 	netdev_features_t tso_features;
+-	struct ice_netdev_priv *np;
+-	struct net_device *netdev;
+-	u8 mac_addr[ETH_ALEN];
+-	int err;
+-
+-	netdev = alloc_etherdev_mqs(sizeof(*np), vsi->alloc_txq,
+-				    vsi->alloc_rxq);
+-	if (!netdev)
+-		return -ENOMEM;
+ 
+-	vsi->netdev = netdev;
+-	np = netdev_priv(netdev);
+-	np->vsi = vsi;
++	if (ice_is_safe_mode(pf)) {
++		/* safe mode */
++		netdev->features = NETIF_F_SG | NETIF_F_HIGHDMA;
++		netdev->hw_features = netdev->features;
++		return;
++	}
+ 
+ 	dflt_features = NETIF_F_SG	|
+ 			NETIF_F_HIGHDMA	|
+@@ -1988,25 +2013,50 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
+ 				   tso_features;
+ 	netdev->vlan_features |= dflt_features | csumo_features |
+ 				 tso_features;
++}
++
++/**
++ * ice_cfg_netdev - Allocate, configure and register a netdev
++ * @vsi: the VSI associated with the new netdev
++ *
++ * Returns 0 on success, negative value on failure
++ */
++static int ice_cfg_netdev(struct ice_vsi *vsi)
++{
++	struct ice_pf *pf = vsi->back;
++	struct ice_netdev_priv *np;
++	struct net_device *netdev;
++	u8 mac_addr[ETH_ALEN];
++	int err;
++
++	netdev = alloc_etherdev_mqs(sizeof(*np), vsi->alloc_txq,
++				    vsi->alloc_rxq);
++	if (!netdev)
++		return -ENOMEM;
++
++	vsi->netdev = netdev;
++	np = netdev_priv(netdev);
++	np->vsi = vsi;
++
++	ice_set_netdev_features(netdev);
++
++	ice_set_ops(netdev);
+ 
+ 	if (vsi->type == ICE_VSI_PF) {
+-		SET_NETDEV_DEV(netdev, &vsi->back->pdev->dev);
++		SET_NETDEV_DEV(netdev, &pf->pdev->dev);
+ 		ether_addr_copy(mac_addr, vsi->port_info->mac.perm_addr);
+-
+ 		ether_addr_copy(netdev->dev_addr, mac_addr);
+ 		ether_addr_copy(netdev->perm_addr, mac_addr);
+ 	}
+ 
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 
+-	/* assign netdev_ops */
+-	netdev->netdev_ops = &ice_netdev_ops;
++	/* Setup netdev TC information */
++	ice_vsi_cfg_netdev_tc(vsi, vsi->tc_cfg.ena_tc);
+ 
+ 	/* setup watchdog timeout value to be 5 second */
+ 	netdev->watchdog_timeo = 5 * HZ;
+ 
+-	ice_set_ethtool_ops(netdev);
+-
+ 	netdev->min_mtu = ETH_MIN_MTU;
+ 	netdev->max_mtu = ICE_MAX_MTU;
+ 
+@@ -2264,29 +2314,41 @@ static void ice_deinit_pf(struct ice_pf *pf)
+ }
+ 
+ /**
+- * ice_init_pf - Initialize general software structures (struct ice_pf)
+- * @pf: board private structure to initialize
++ * ice_set_pf_caps - set PFs capability flags
++ * @pf: pointer to the PF instance
+  */
+-static int ice_init_pf(struct ice_pf *pf)
++static void ice_set_pf_caps(struct ice_pf *pf)
+ {
+-	bitmap_zero(pf->flags, ICE_PF_FLAGS_NBITS);
+-	if (pf->hw.func_caps.common_cap.dcb)
++	struct ice_hw_func_caps *func_caps = &pf->hw.func_caps;
++
++	clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
++	if (func_caps->common_cap.dcb)
+ 		set_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
+ #ifdef CONFIG_PCI_IOV
+-	if (pf->hw.func_caps.common_cap.sr_iov_1_1) {
+-		struct ice_hw *hw = &pf->hw;
+-
++	clear_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags);
++	if (func_caps->common_cap.sr_iov_1_1) {
+ 		set_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags);
+-		pf->num_vfs_supported = min_t(int, hw->func_caps.num_allocd_vfs,
++		pf->num_vfs_supported = min_t(int, func_caps->num_allocd_vfs,
+ 					      ICE_MAX_VF_COUNT);
+ 	}
+ #endif /* CONFIG_PCI_IOV */
++	clear_bit(ICE_FLAG_RSS_ENA, pf->flags);
++	if (func_caps->common_cap.rss_table_size)
++		set_bit(ICE_FLAG_RSS_ENA, pf->flags);
+ 
+-	mutex_init(&pf->sw_mutex);
+-	mutex_init(&pf->avail_q_mutex);
++	pf->max_pf_txqs = func_caps->common_cap.num_txq;
++	pf->max_pf_rxqs = func_caps->common_cap.num_rxq;
++}
+ 
+-	if (pf->hw.func_caps.common_cap.rss_table_size)
+-		set_bit(ICE_FLAG_RSS_ENA, pf->flags);
++/**
++ * ice_init_pf - Initialize general software structures (struct ice_pf)
++ * @pf: board private structure to initialize
++ */
++static int ice_init_pf(struct ice_pf *pf)
++{
++	ice_set_pf_caps(pf);
++
++	mutex_init(&pf->sw_mutex);
+ 
+ 	/* setup service timer and periodic service task */
+ 	timer_setup(&pf->serv_tmr, ice_service_timer, 0);
+@@ -2294,9 +2356,7 @@ static int ice_init_pf(struct ice_pf *pf)
+ 	INIT_WORK(&pf->serv_task, ice_service_task);
+ 	clear_bit(__ICE_SERVICE_SCHED, pf->state);
+ 
+-	pf->max_pf_txqs = pf->hw.func_caps.common_cap.num_txq;
+-	pf->max_pf_rxqs = pf->hw.func_caps.common_cap.num_rxq;
+-
++	mutex_init(&pf->avail_q_mutex);
+ 	pf->avail_txqs = bitmap_zalloc(pf->max_pf_txqs, GFP_KERNEL);
+ 	if (!pf->avail_txqs)
+ 		return -ENOMEM;
+@@ -2449,6 +2509,163 @@ static int ice_init_interrupt_scheme(struct ice_pf *pf)
+ 	return 0;
+ }
+ 
++/**
++ * ice_log_pkg_init - log result of DDP package load
++ * @hw: pointer to hardware info
++ * @status: status of package load
++ */
++static void
++ice_log_pkg_init(struct ice_hw *hw, enum ice_status *status)
++{
++	struct ice_pf *pf = (struct ice_pf *)hw->back;
++	struct device *dev = &pf->pdev->dev;
++
++	switch (*status) {
++	case ICE_SUCCESS:
++		/* The package download AdminQ command returned success because
++		 * this download succeeded or ICE_ERR_AQ_NO_WORK since there is
++		 * already a package loaded on the device.
++		 */
++		if (hw->pkg_ver.major == hw->active_pkg_ver.major &&
++		    hw->pkg_ver.minor == hw->active_pkg_ver.minor &&
++		    hw->pkg_ver.update == hw->active_pkg_ver.update &&
++		    hw->pkg_ver.draft == hw->active_pkg_ver.draft &&
++		    !memcmp(hw->pkg_name, hw->active_pkg_name,
++			    sizeof(hw->pkg_name))) {
++			if (hw->pkg_dwnld_status == ICE_AQ_RC_EEXIST)
++				dev_info(dev,
++					 "DDP package already present on device: %s version %d.%d.%d.%d\n",
++					 hw->active_pkg_name,
++					 hw->active_pkg_ver.major,
++					 hw->active_pkg_ver.minor,
++					 hw->active_pkg_ver.update,
++					 hw->active_pkg_ver.draft);
++			else
++				dev_info(dev,
++					 "The DDP package was successfully loaded: %s version %d.%d.%d.%d\n",
++					 hw->active_pkg_name,
++					 hw->active_pkg_ver.major,
++					 hw->active_pkg_ver.minor,
++					 hw->active_pkg_ver.update,
++					 hw->active_pkg_ver.draft);
++		} else if (hw->active_pkg_ver.major != ICE_PKG_SUPP_VER_MAJ ||
++			   hw->active_pkg_ver.minor != ICE_PKG_SUPP_VER_MNR) {
++			dev_err(dev,
++				"The device has a DDP package that is not supported by the driver.  The device has package '%s' version %d.%d.x.x.  The driver requires version %d.%d.x.x.  Entering Safe Mode.\n",
++				hw->active_pkg_name,
++				hw->active_pkg_ver.major,
++				hw->active_pkg_ver.minor,
++				ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
++			*status = ICE_ERR_NOT_SUPPORTED;
++		} else if (hw->active_pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
++			   hw->active_pkg_ver.minor == ICE_PKG_SUPP_VER_MNR) {
++			dev_info(dev,
++				 "The driver could not load the DDP package file because a compatible DDP package is already present on the device.  The device has package '%s' version %d.%d.%d.%d.  The package file found by the driver: '%s' version %d.%d.%d.%d.\n",
++				 hw->active_pkg_name,
++				 hw->active_pkg_ver.major,
++				 hw->active_pkg_ver.minor,
++				 hw->active_pkg_ver.update,
++				 hw->active_pkg_ver.draft,
++				 hw->pkg_name,
++				 hw->pkg_ver.major,
++				 hw->pkg_ver.minor,
++				 hw->pkg_ver.update,
++				 hw->pkg_ver.draft);
++		} else {
++			dev_err(dev,
++				"An unknown error occurred when loading the DDP package, please reboot the system.  If the problem persists, update the NVM.  Entering Safe Mode.\n");
++			*status = ICE_ERR_NOT_SUPPORTED;
++		}
++		break;
++	case ICE_ERR_BUF_TOO_SHORT:
++		/* fall-through */
++	case ICE_ERR_CFG:
++		dev_err(dev,
++			"The DDP package file is invalid. Entering Safe Mode.\n");
++		break;
++	case ICE_ERR_NOT_SUPPORTED:
++		/* Package File version not supported */
++		if (hw->pkg_ver.major > ICE_PKG_SUPP_VER_MAJ ||
++		    (hw->pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
++		     hw->pkg_ver.minor > ICE_PKG_SUPP_VER_MNR))
++			dev_err(dev,
++				"The DDP package file version is higher than the driver supports.  Please use an updated driver.  Entering Safe Mode.\n");
++		else if (hw->pkg_ver.major < ICE_PKG_SUPP_VER_MAJ ||
++			 (hw->pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
++			  hw->pkg_ver.minor < ICE_PKG_SUPP_VER_MNR))
++			dev_err(dev,
++				"The DDP package file version is lower than the driver supports.  The driver requires version %d.%d.x.x.  Please use an updated DDP Package file.  Entering Safe Mode.\n",
++				ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
++		break;
++	case ICE_ERR_AQ_ERROR:
++		switch (hw->adminq.sq_last_status) {
++		case ICE_AQ_RC_ENOSEC:
++		case ICE_AQ_RC_EBADSIG:
++			dev_err(dev,
++				"The DDP package could not be loaded because its signature is not valid.  Please use a valid DDP Package.  Entering Safe Mode.\n");
++			return;
++		case ICE_AQ_RC_ESVN:
++			dev_err(dev,
++				"The DDP Package could not be loaded because its security revision is too low.  Please use an updated DDP Package.  Entering Safe Mode.\n");
++			return;
++		case ICE_AQ_RC_EBADMAN:
++		case ICE_AQ_RC_EBADBUF:
++			dev_err(dev,
++				"An error occurred on the device while loading the DDP package.  The device will be reset.\n");
++			return;
++		default:
++			break;
++		}
++		/* fall-through */
++	default:
++		dev_err(dev,
++			"An unknown error (%d) occurred when loading the DDP package.  Entering Safe Mode.\n",
++			*status);
++		break;
++	}
++}
++
++/**
++ * ice_load_pkg - load/reload the DDP Package file
++ * @firmware: firmware structure when firmware requested or NULL for reload
++ * @pf: pointer to the PF instance
++ *
++ * Called on probe and post CORER/GLOBR rebuild to load DDP Package and
++ * initialize HW tables.
++ */
++static void
++ice_load_pkg(const struct firmware *firmware, struct ice_pf *pf)
++{
++	enum ice_status status = ICE_ERR_PARAM;
++	struct device *dev = &pf->pdev->dev;
++	struct ice_hw *hw = &pf->hw;
++
++	/* Load DDP Package */
++	if (firmware && !hw->pkg_copy) {
++		status = ice_copy_and_init_pkg(hw, firmware->data,
++					       firmware->size);
++		ice_log_pkg_init(hw, &status);
++	} else if (!firmware && hw->pkg_copy) {
++		/* Reload package during rebuild after CORER/GLOBR reset */
++		status = ice_init_pkg(hw, hw->pkg_copy, hw->pkg_size);
++		ice_log_pkg_init(hw, &status);
++	} else {
++		dev_err(dev,
++			"The DDP package file failed to load. Entering Safe Mode.\n");
++	}
++
++	if (status) {
++		/* Safe Mode */
++		clear_bit(ICE_FLAG_ADV_FEATURES, pf->flags);
++		return;
++	}
++
++	/* Successful download package is the precondition for advanced
++	 * features, hence setting the ICE_FLAG_ADV_FEATURES flag
++	 */
++	set_bit(ICE_FLAG_ADV_FEATURES, pf->flags);
++}
++
+ /**
+  * ice_verify_cacheline_size - verify driver's assumption of 64 Byte cache lines
+  * @pf: pointer to the PF structure
+@@ -2484,6 +2701,86 @@ static enum ice_status ice_send_version(struct ice_pf *pf)
+ 	return ice_aq_send_driver_ver(&pf->hw, &dv, NULL);
+ }
+ 
++/**
++ * ice_get_opt_fw_name - return optional firmware file name or NULL
++ * @pf: pointer to the PF instance
++ */
++static char *ice_get_opt_fw_name(struct ice_pf *pf)
++{
++	/* Optional firmware name same as default with additional dash
++	 * followed by a EUI-64 identifier (PCIe Device Serial Number)
++	 */
++	struct pci_dev *pdev = pf->pdev;
++	char *opt_fw_filename = NULL;
++	u32 dword;
++	u8 dsn[8];
++	int pos;
++
++	/* Determine the name of the optional file using the DSN (two
++	 * dwords following the start of the DSN Capability).
++	 */
++	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_DSN);
++	if (pos) {
++		opt_fw_filename = kzalloc(NAME_MAX, GFP_KERNEL);
++		if (!opt_fw_filename)
++			return NULL;
++
++		pci_read_config_dword(pdev, pos + 4, &dword);
++		put_unaligned_le32(dword, &dsn[0]);
++		pci_read_config_dword(pdev, pos + 8, &dword);
++		put_unaligned_le32(dword, &dsn[4]);
++		snprintf(opt_fw_filename, NAME_MAX,
++			 "%sice-%02x%02x%02x%02x%02x%02x%02x%02x.pkg",
++			 ICE_DDP_PKG_PATH,
++			 dsn[7], dsn[6], dsn[5], dsn[4],
++			 dsn[3], dsn[2], dsn[1], dsn[0]);
++	}
++
++	return opt_fw_filename;
++}
++
++/**
++ * ice_request_fw - Device initialization routine
++ * @pf: pointer to the PF instance
++ */
++static void ice_request_fw(struct ice_pf *pf)
++{
++	char *opt_fw_filename = ice_get_opt_fw_name(pf);
++	const struct firmware *firmware = NULL;
++	struct device *dev = &pf->pdev->dev;
++	int err = 0;
++
++	/* optional device-specific DDP (if present) overrides the default DDP
++	 * package file. kernel logs a debug message if the file doesn't exist,
++	 * and warning messages for other errors.
++	 */
++	if (opt_fw_filename) {
++		err = firmware_request_nowarn(&firmware, opt_fw_filename, dev);
++		if (err) {
++			kfree(opt_fw_filename);
++			goto dflt_pkg_load;
++		}
++
++		/* request for firmware was successful. Download to device */
++		ice_load_pkg(firmware, pf);
++		kfree(opt_fw_filename);
++		release_firmware(firmware);
++		return;
++	}
++
++dflt_pkg_load:
++	err = request_firmware(&firmware, ICE_DDP_PKG_FILE, dev);
++	if (err) {
++		dev_err(dev,
++			"The DDP package file was not found or could not be read. Entering Safe Mode\n");
++		return;
++	}
++
++	/* request for firmware was successful. Download to device */
++	ice_load_pkg(firmware, pf);
++	release_firmware(firmware);
++}
++
+ /**
+  * ice_probe - Device initialization routine
+  * @pdev: PCI device information struct
+@@ -2563,22 +2860,29 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 		 hw->api_maj_ver, hw->api_min_ver, hw->api_patch,
+ 		 ice_nvm_version_str(hw), hw->fw_build);
+ 
++	ice_request_fw(pf);
++
++	/* if ice_request_fw fails, ICE_FLAG_ADV_FEATURES bit won't be
++	 * set in pf->state, which will cause ice_is_safe_mode to return
++	 * true
++	 */
++	if (ice_is_safe_mode(pf)) {
++		dev_err(dev,
++			"Package download failed. Advanced features disabled - Device now in Safe Mode\n");
++		/* we already got function/device capabilities but these don't
++		 * reflect what the driver needs to do in safe mode. Instead of
++		 * adding conditional logic everywhere to ignore these
++		 * device/function capabilities, override them.
++		 */
++		ice_set_safe_mode_caps(hw);
++	}
++
+ 	err = ice_init_pf(pf);
+ 	if (err) {
+ 		dev_err(dev, "ice_init_pf failed: %d\n", err);
+ 		goto err_init_pf_unroll;
+ 	}
+ 
+-	if (test_bit(ICE_FLAG_DCB_CAPABLE, pf->flags)) {
+-		/* Note: DCB init failure is non-fatal to load */
+-		if (ice_init_pf_dcb(pf, false)) {
+-			clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
+-			clear_bit(ICE_FLAG_DCB_ENA, pf->flags);
+-		} else {
+-			ice_cfg_lldp_mib_change(&pf->hw, true);
+-		}
+-	}
+-
+ 	pf->num_alloc_vsi = hw->func_caps.guar_num_vsi;
+ 	if (!pf->num_alloc_vsi) {
+ 		err = -EIO;
+@@ -2658,6 +2962,20 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 
+ 	ice_verify_cacheline_size(pf);
+ 
++	/* If no DDP driven features have to be setup, return here */
++	if (ice_is_safe_mode(pf))
++		return 0;
++
++	/* initialize DDP driven features */
++
++	/* Note: DCB init failure is non-fatal to load */
++	if (ice_init_pf_dcb(pf, false)) {
++		clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
++		clear_bit(ICE_FLAG_DCB_ENA, pf->flags);
++	} else {
++		ice_cfg_lldp_mib_change(&pf->hw, true);
++	}
++
+ 	return 0;
+ 
+ err_alloc_sw_unroll:
+@@ -3110,6 +3428,13 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 	struct ice_vsi *vsi = np->vsi;
+ 	int ret = 0;
+ 
++	/* Don't set any netdev advanced features with device in Safe Mode */
++	if (ice_is_safe_mode(vsi->back)) {
++		dev_err(&vsi->back->pdev->dev,
++			"Device is in Safe Mode - not enabling advanced netdev features\n");
++		return ret;
++	}
++
+ 	/* Multiple features can be changed in one call so keep features in
+ 	 * separate if/else statements to guarantee each feature is checked
+ 	 */
+@@ -3799,9 +4124,6 @@ static int ice_ena_vsi(struct ice_vsi *vsi, bool locked)
+  */
+ #ifdef CONFIG_DCB
+ int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked)
+-#else
+-static int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked)
+-#endif /* CONFIG_DCB */
+ {
+ 	int v;
+ 
+@@ -3812,94 +4134,107 @@ static int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked)
+ 
+ 	return 0;
+ }
++#endif /* CONFIG_DCB */
+ 
+ /**
+- * ice_vsi_rebuild_all - rebuild all VSIs in PF
+- * @pf: the PF
++ * ice_vsi_rebuild_by_type - Rebuild VSI of a given type
++ * @pf: pointer to the PF instance
++ * @type: VSI type to rebuild
++ *
++ * Iterates through the pf->vsi array and rebuilds VSIs of the requested type
+  */
+-static int ice_vsi_rebuild_all(struct ice_pf *pf)
++static int ice_vsi_rebuild_by_type(struct ice_pf *pf, enum ice_vsi_type type)
+ {
+-	int i;
++	enum ice_status status;
++	int i, err;
+ 
+-	/* loop through pf->vsi array and reinit the VSI if found */
+ 	ice_for_each_vsi(pf, i) {
+ 		struct ice_vsi *vsi = pf->vsi[i];
+-		int err;
+ 
+-		if (!vsi)
++		if (!vsi || vsi->type != type)
+ 			continue;
+ 
++		/* rebuild the VSI */
+ 		err = ice_vsi_rebuild(vsi);
+ 		if (err) {
+ 			dev_err(&pf->pdev->dev,
+-				"VSI at index %d rebuild failed\n",
+-				vsi->idx);
++				"rebuild VSI failed, err %d, VSI index %d, type %d\n",
++				err, vsi->idx, type);
+ 			return err;
+ 		}
+ 
+-		dev_info(&pf->pdev->dev,
+-			 "VSI at index %d rebuilt. vsi_num = 0x%x\n",
+-			 vsi->idx, vsi->vsi_num);
++		/* replay filters for the VSI */
++		status = ice_replay_vsi(&pf->hw, vsi->idx);
++		if (status) {
++			dev_err(&pf->pdev->dev,
++				"replay VSI failed, status %d, VSI index %d, type %d\n",
++				status, vsi->idx, type);
++			return -EIO;
++		}
++
++		/* Re-map HW VSI number, using VSI handle that has been
++		 * previously validated in ice_replay_vsi() call above
++		 */
++		vsi->vsi_num = ice_get_hw_vsi_num(&pf->hw, vsi->idx);
++
++		/* enable the VSI */
++		err = ice_ena_vsi(vsi, false);
++		if (err) {
++			dev_err(&pf->pdev->dev,
++				"enable VSI failed, err %d, VSI index %d, type %d\n",
++				err, vsi->idx, type);
++			return err;
++		}
++
++		dev_info(&pf->pdev->dev, "VSI rebuilt. VSI index %d, type %d\n",
++			 vsi->idx, type);
+ 	}
+ 
+ 	return 0;
+ }
+ 
+ /**
+- * ice_vsi_replay_all - replay all VSIs configuration in the PF
+- * @pf: the PF
++ * ice_update_pf_netdev_link - Update PF netdev link status
++ * @pf: pointer to the PF instance
+  */
+-static int ice_vsi_replay_all(struct ice_pf *pf)
++static void ice_update_pf_netdev_link(struct ice_pf *pf)
+ {
+-	struct ice_hw *hw = &pf->hw;
+-	enum ice_status ret;
++	bool link_up;
+ 	int i;
+ 
+-	/* loop through pf->vsi array and replay the VSI if found */
+ 	ice_for_each_vsi(pf, i) {
+ 		struct ice_vsi *vsi = pf->vsi[i];
+ 
+-		if (!vsi)
+-			continue;
++		if (!vsi || vsi->type != ICE_VSI_PF)
++			return;
+ 
+-		ret = ice_replay_vsi(hw, vsi->idx);
+-		if (ret) {
+-			dev_err(&pf->pdev->dev,
+-				"VSI at index %d replay failed %d\n",
+-				vsi->idx, ret);
+-			return -EIO;
++		ice_get_link_status(pf->vsi[i]->port_info, &link_up);
++		if (link_up) {
++			netif_carrier_on(pf->vsi[i]->netdev);
++			netif_tx_wake_all_queues(pf->vsi[i]->netdev);
++		} else {
++			netif_carrier_off(pf->vsi[i]->netdev);
++			netif_tx_stop_all_queues(pf->vsi[i]->netdev);
+ 		}
+-
+-		/* Re-map HW VSI number, using VSI handle that has been
+-		 * previously validated in ice_replay_vsi() call above
+-		 */
+-		vsi->vsi_num = ice_get_hw_vsi_num(hw, vsi->idx);
+-
+-		dev_info(&pf->pdev->dev,
+-			 "VSI at index %d filter replayed successfully - vsi_num %i\n",
+-			 vsi->idx, vsi->vsi_num);
+ 	}
+-
+-	/* Clean up replay filter after successful re-configuration */
+-	ice_replay_post(hw);
+-	return 0;
+ }
+ 
+ /**
+  * ice_rebuild - rebuild after reset
+  * @pf: PF to rebuild
++ * @reset_type: type of reset
+  */
+-static void ice_rebuild(struct ice_pf *pf)
++static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ {
+ 	struct device *dev = &pf->pdev->dev;
+ 	struct ice_hw *hw = &pf->hw;
+ 	enum ice_status ret;
+-	int err, i;
++	int err;
+ 
+ 	if (test_bit(__ICE_DOWN, pf->state))
+ 		goto clear_recovery;
+ 
+-	dev_dbg(dev, "rebuilding PF\n");
++	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+ 
+ 	ret = ice_init_all_ctrlq(hw);
+ 	if (ret) {
+@@ -3907,6 +4242,16 @@ static void ice_rebuild(struct ice_pf *pf)
+ 		goto err_init_ctrlq;
+ 	}
+ 
++	/* if DDP was previously loaded successfully */
++	if (!ice_is_safe_mode(pf)) {
++		/* reload the SW DB of filter tables */
++		if (reset_type == ICE_RESET_PFR)
++			ice_fill_blk_tbls(hw);
++		else
++			/* Reload DDP Package after CORER/GLOBR reset */
++			ice_load_pkg(NULL, pf);
++	}
++
+ 	ret = ice_clear_pf_cfg(hw);
+ 	if (ret) {
+ 		dev_err(dev, "clear PF configuration failed %d\n", ret);
+@@ -3925,63 +4270,53 @@ static void ice_rebuild(struct ice_pf *pf)
+ 	if (err)
+ 		goto err_sched_init_port;
+ 
+-	ice_dcb_rebuild(pf);
+-
+-	err = ice_vsi_rebuild_all(pf);
+-	if (err) {
+-		dev_err(dev, "ice_vsi_rebuild_all failed\n");
+-		goto err_vsi_rebuild;
+-	}
+-
+ 	err = ice_update_link_info(hw->port_info);
+ 	if (err)
+ 		dev_err(&pf->pdev->dev, "Get link status error %d\n", err);
+ 
+-	/* Replay all VSIs Configuration, including filters after reset */
+-	if (ice_vsi_replay_all(pf)) {
+-		dev_err(&pf->pdev->dev,
+-			"error replaying VSI configurations with switch filter rules\n");
+-		goto err_vsi_rebuild;
+-	}
+-
+ 	/* start misc vector */
+ 	err = ice_req_irq_msix_misc(pf);
+ 	if (err) {
+ 		dev_err(dev, "misc vector setup failed: %d\n", err);
+-		goto err_vsi_rebuild;
++		goto err_sched_init_port;
+ 	}
+ 
+-	/* restart the VSIs that were rebuilt and running before the reset */
+-	err = ice_pf_ena_all_vsi(pf, false);
++	if (test_bit(ICE_FLAG_DCB_ENA, pf->flags))
++		ice_dcb_rebuild(pf);
++
++	/* rebuild PF VSI */
++	err = ice_vsi_rebuild_by_type(pf, ICE_VSI_PF);
+ 	if (err) {
+-		dev_err(&pf->pdev->dev, "error enabling VSIs\n");
+-		/* no need to disable VSIs in tear down path in ice_rebuild()
+-		 * since its already taken care in ice_vsi_open()
+-		 */
++		dev_err(dev, "PF VSI rebuild failed: %d\n", err);
+ 		goto err_vsi_rebuild;
+ 	}
+ 
+-	ice_for_each_vsi(pf, i) {
+-		bool link_up;
+-
+-		if (!pf->vsi[i] || pf->vsi[i]->type != ICE_VSI_PF)
+-			continue;
+-		ice_get_link_status(pf->vsi[i]->port_info, &link_up);
+-		if (link_up) {
+-			netif_carrier_on(pf->vsi[i]->netdev);
+-			netif_tx_wake_all_queues(pf->vsi[i]->netdev);
+-		} else {
+-			netif_carrier_off(pf->vsi[i]->netdev);
+-			netif_tx_stop_all_queues(pf->vsi[i]->netdev);
++	if (test_bit(ICE_FLAG_SRIOV_ENA, pf->flags)) {
++		err = ice_vsi_rebuild_by_type(pf, ICE_VSI_VF);
++		if (err) {
++			dev_err(dev, "VF VSI rebuild failed: %d\n", err);
++			goto err_vsi_rebuild;
+ 		}
+ 	}
+ 
++	ice_update_pf_netdev_link(pf);
++
++	/* tell the firmware we are up */
++	ret = ice_send_version(pf);
++	if (ret) {
++		dev_err(dev,
++			"Rebuild failed due to error sending driver version: %d\n",
++			ret);
++		goto err_vsi_rebuild;
++	}
++
++	ice_replay_post(hw);
++
+ 	/* if we get here, reset flow is successful */
+ 	clear_bit(__ICE_RESET_FAILED, pf->state);
+ 	return;
+ 
+ err_vsi_rebuild:
+-	ice_vsi_release_all(pf);
+ err_sched_init_port:
+ 	ice_sched_cleanup_all(hw);
+ err_init_ctrlq:
+@@ -4508,6 +4843,17 @@ ice_features_check(struct sk_buff *skb,
+ 	return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ }
+ 
++static const struct net_device_ops ice_netdev_safe_mode_ops = {
++	.ndo_open = ice_open,
++	.ndo_stop = ice_stop,
++	.ndo_start_xmit = ice_start_xmit,
++	.ndo_set_mac_address = ice_set_mac_address,
++	.ndo_validate_addr = eth_validate_addr,
++	.ndo_change_mtu = ice_change_mtu,
++	.ndo_get_stats64 = ice_get_stats64,
++	.ndo_tx_timeout = ice_tx_timeout,
++};
++
+ static const struct net_device_ops ice_netdev_ops = {
+ 	.ndo_open = ice_open,
+ 	.ndo_stop = ice_stop,
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 64de05ccbc47..b45797f39b2f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -1443,6 +1443,12 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
+ {
+ 	struct ice_pf *pf = pci_get_drvdata(pdev);
+ 
++	if (ice_is_safe_mode(pf)) {
++		dev_err(&pf->pdev->dev,
++			"SR-IOV cannot be configured - Device is in Safe Mode\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	if (num_vfs)
+ 		return ice_pci_sriov_ena(pf, num_vfs);
+ 
 -- 
 2.21.0
 
