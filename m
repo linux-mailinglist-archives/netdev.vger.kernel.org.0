@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DAA7B1264
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 17:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF374B127D
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 17:57:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733008AbfILPoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 11:44:55 -0400
-Received: from mga04.intel.com ([192.55.52.120]:55653 "EHLO mga04.intel.com"
+        id S1732739AbfILP5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 11:57:46 -0400
+Received: from mga03.intel.com ([134.134.136.65]:25148 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732715AbfILPoz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 11:44:55 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
+        id S1725995AbfILP5q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 11:57:46 -0400
+X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Sep 2019 08:44:54 -0700
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Sep 2019 08:57:45 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,492,1559545200"; 
-   d="scan'208";a="197265840"
-Received: from silpixa00399838.ir.intel.com (HELO silpixa00399838.ger.corp.intel.com) ([10.237.223.140])
-  by orsmga002.jf.intel.com with ESMTP; 12 Sep 2019 08:44:51 -0700
-From:   Kevin Laatz <kevin.laatz@intel.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-Cc:     bruce.richardson@intel.com, ciara.loftus@intel.com,
-        bpf@vger.kernel.org, Kevin Laatz <kevin.laatz@intel.com>
-Subject: [PATCH bpf-next] libbpf: add xsk_umem__adjust_offset
-Date:   Thu, 12 Sep 2019 07:28:40 +0000
-Message-Id: <20190912072840.20947-1-kevin.laatz@intel.com>
-X-Mailer: git-send-email 2.17.1
+X-IronPort-AV: E=Sophos;i="5.64,497,1559545200"; 
+   d="asc'?scan'208";a="215087372"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga002.fm.intel.com with ESMTP; 12 Sep 2019 08:57:44 -0700
+Message-ID: <2783711bae4ed87e2210894bcd980f8a3f052e94.camel@intel.com>
+Subject: Re: [PATCH] ixgbe: Fix secpath usage for IPsec TX offload.
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Reply-To: jeffrey.t.kirsher@intel.com
+To:     David Miller <davem@davemloft.net>, steffen.klassert@secunet.com
+Cc:     intel-wired-lan@lists.osuosl.org, michael@michaelmarley.com,
+        snelson@pensando.io, netdev@vger.kernel.org
+Date:   Thu, 12 Sep 2019 08:57:44 -0700
+In-Reply-To: <20190912.134359.345289288863944180.davem@davemloft.net>
+References: <20190912110144.GS2879@gauss3.secunet.de>
+         <20190912.134359.345289288863944180.davem@davemloft.net>
+Organization: Intel
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-dLlFNIhBGHJp3KGXhmHo"
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, xsk_umem_adjust_offset exists as a kernel internal function.
-This patch adds xsk_umem__adjust_offset to libbpf so that it can be used
-from userspace. This will take the responsibility of properly storing the
-offset away from the application, making it less error prone.
 
-Since xsk_umem__adjust_offset is called on a per-packet basis, we need to
-inline the function to avoid any performance regressions.  In order to
-inline xsk_umem__adjust_offset, we need to add it to xsk.h. Unfortunately
-this means that we can't dereference the xsk_umem_config struct directly
-since it is defined only in xsk.c. We therefore add an extra API to return
-the flags field to the user from the structure, and have the inline
-function use this flags field directly.
+--=-dLlFNIhBGHJp3KGXhmHo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
----
- tools/lib/bpf/libbpf.map |  1 +
- tools/lib/bpf/xsk.c      |  5 +++++
- tools/lib/bpf/xsk.h      | 14 ++++++++++++++
- 3 files changed, 20 insertions(+)
+On Thu, 2019-09-12 at 13:43 +0200, David Miller wrote:
+> From: Steffen Klassert <steffen.klassert@secunet.com>
+> Date: Thu, 12 Sep 2019 13:01:44 +0200
+>=20
+> > The ixgbe driver currently does IPsec TX offloading
+> > based on an existing secpath. However, the secpath
+> > can also come from the RX side, in this case it is
+> > misinterpreted for TX offload and the packets are
+> > dropped with a "bad sa_idx" error. Fix this by using
+> > the xfrm_offload() function to test for TX offload.
+> >=20
+> > Fixes: 592594704761 ("ixgbe: process the Tx ipsec offload")
+> > Reported-by: Michael Marley <michael@michaelmarley.com>
+> > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+>=20
+> I'll apply this directly and queue it up for -stable, thanks.
 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index d04c7cb623ed..760350c9b81c 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -189,4 +189,5 @@ LIBBPF_0.0.4 {
- LIBBPF_0.0.5 {
- 	global:
- 		bpf_btf_get_next_id;
-+		xsk_umem__get_flags;
- } LIBBPF_0.0.4;
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 842c4fd55859..a4250a721ea6 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -84,6 +84,11 @@ int xsk_socket__fd(const struct xsk_socket *xsk)
- 	return xsk ? xsk->fd : -EINVAL;
- }
- 
-+__u32 xsk_umem__get_flags(struct xsk_umem *umem)
-+{
-+	return umem->config.flags;
-+}
-+
- static bool xsk_page_aligned(void *buffer)
- {
- 	unsigned long addr = (unsigned long)buffer;
-diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-index 584f6820a639..bf782facb274 100644
---- a/tools/lib/bpf/xsk.h
-+++ b/tools/lib/bpf/xsk.h
-@@ -183,8 +183,22 @@ static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
- 	return xsk_umem__extract_addr(addr) + xsk_umem__extract_offset(addr);
- }
- 
-+/* Handle the offset appropriately depending on aligned or unaligned mode.
-+ * For unaligned mode, we store the offset in the upper 16-bits of the address.
-+ * For aligned mode, we simply add the offset to the address.
-+ */
-+static inline __u64 xsk_umem__adjust_offset(__u32 umem_flags, __u64 addr,
-+					    __u64 offset)
-+{
-+	if (umem_flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG)
-+		return addr + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
-+	else
-+		return addr + offset;
-+}
-+
- LIBBPF_API int xsk_umem__fd(const struct xsk_umem *umem);
- LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
-+LIBBPF_API __u32 xsk_umem__get_flags(struct xsk_umem *umem);
- 
- #define XSK_RING_CONS__DEFAULT_NUM_DESCS      2048
- #define XSK_RING_PROD__DEFAULT_NUM_DESCS      2048
--- 
-2.17.1
+Thanks Dave!
+
+--=-dLlFNIhBGHJp3KGXhmHo
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl16avgACgkQ5W/vlVpL
+7c4+cg/+OLKEQa8bM0fQ8aiONJonrbUpkWedbvsxBlJuSneMuHM2ilv0kb2God07
+PLdb8W+5GMZCfSDOA7OAYp9EqrWsfamsknqPt6Dva/BhpHU0n7/cfDiC/XIU+JAh
+ZvLOargYmTSgDJ8HSSFzVoVFynz4liACyRaclp3Sb77bff4jNUwd48W/5q0b0PBm
+H0eJnxreGKwc0ClppVsQqj+zjWjaFlzb+Iuj+ciiHx9tpipzQ+6lQHVvwWahAOtE
+i01MvW/MsekbtgJ0PX5gaQnIrsJ3agVl24VFup+smFcZqUSSKwez4JcygrdRkNOR
+hg9LksThjD7muk2HfQVis+PTocN9PVeOQpVrthr497KpiXMLUJ3OMJZ55t51CBr/
+IjEmUkfnC+cSXwFr/1Qdo5YMG2AoplZp+TUFccV+ZF52DcxN7oUgAL2eu4hcOnld
+IY6mhe/9HGv+bKdV+Vh5Rdrt9yGUnRtE/HddjFlChHhLcjpcxSjM2G4ASjVCifme
+oVejEcsig6oD23b5xXdDuKSzbg9OlhAKHHpyrWHYCmsPtezi3qes2t9+xfhWoL7T
+eS+zK256lZ41oKGvhXNduN838dExLXw7b6ED/Q+Umsk079alibZ0jEfo9QdijXya
+nBHo/XjnBPCLuViuRbHcqHpJ9AA5Jo/rSYrrkfKfB218az4wIfQ=
+=1KTM
+-----END PGP SIGNATURE-----
+
+--=-dLlFNIhBGHJp3KGXhmHo--
 
