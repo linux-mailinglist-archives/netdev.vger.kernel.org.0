@@ -2,102 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1485FB0C62
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:14:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB09B0C72
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730971AbfILKOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 06:14:43 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:41880 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730386AbfILKOn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 06:14:43 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 9D23528A6D0
-Message-ID: <8d63d4dbd9d075b5c238fd8933673b95b2fa96e9.camel@collabora.com>
-Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, bob.beckett@gmail.com
-Date:   Thu, 12 Sep 2019 11:14:39 +0100
-In-Reply-To: <20190911225252.GA5710@lunn.ch>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
-         <20190910154238.9155-2-bob.beckett@collabora.com>
-         <20190910182635.GA9761@lunn.ch>
-         <aa0459e0-64ee-de84-fc38-3c9364301275@gmail.com>
-         <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
-         <20190911225252.GA5710@lunn.ch>
-Organization: Collabora
+        id S1731037AbfILKRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 06:17:14 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40771 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730454AbfILKRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 06:17:14 -0400
+Received: by mail-ed1-f67.google.com with SMTP id v38so23438991edm.7
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 03:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=VDfrOSXjwA6flC51oVkPpHkt8cs+wtdOQ+Ylea7Oy8s=;
+        b=owPJyKaQ7J2YN9E7fLTqLY7pNw2eK7XCcBQFXX9QKpbTyU2F8TcGapux1mS4IACWf2
+         wUMfJMmFsHyZpVN8BVX7UhM11H8/FYyGafKc5x5+yjO1jZe8DKk/gM18xEiQdKjGl7wv
+         1aQFst9N/y8rVLEr7EEWlMEny4+mwhw9HDQ7HD8Xny//fyMVxKoOdLa/C/7ZKlt1riWM
+         Z1DlS+7ZRe/Ce10iu5EPMkNypLZBMkRiu4ZG8b8gI7Rr0lbVYuFZ8ec2jY7+Bi5fOcSx
+         cYaMTu9vQveK2ahkc+f1v1WuC6/f+9N4Kylu9OaFwfReTcfslaq8DSPSpfInGUMMp+uH
+         1o5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=VDfrOSXjwA6flC51oVkPpHkt8cs+wtdOQ+Ylea7Oy8s=;
+        b=Us8jRyJTksxYP0R6M4VLBALfge6ZT2NndEL+A14OI+xTkRvpV/mKZF44oZzw48sXVZ
+         G6EHbruwszx+AhBE7arMyWkruL0Wvn8z7u7Z8iuA0/N7DfQD3zChLjrrM15XfBTgVS9G
+         ayTUPZTNjNKwO0H21uFtNKABHHlIeeudDWIXc6BAALzetgAt+SEM0toSpremLTUE6NgO
+         qBlyv0pMsKNoIr3+cw6A3HyOOnR1NYjYjzoUXABs8ma9rPaquPGwxD9aGIFAztq+w9xN
+         GVi6Uct+0jjLDqikyAAKBQUk+KtFkytYrU7B3bp1fE9AeOUCPCcAOPCEk4OurqxA2RvR
+         CMkQ==
+X-Gm-Message-State: APjAAAVwH3FEbh9RMwePc1+Bz80V+3OOfrMnnnDgIGT6JVloL8xJagD5
+        fBLBmO30Ix6qu7qy766cfFW3H2gn/HQUQvCs+VE=
+X-Google-Smtp-Source: APXvYqzfZlxybQVaWU2jNDKQ3S2Z7y0Hfg8cudfKCK1XIbuvnOnwGzitgSofyz/O5jpnHdT9YrW75VZlbdtRtYllVr4=
+X-Received: by 2002:a17:906:7cc7:: with SMTP id h7mr11760699ejp.204.1568283432259;
+ Thu, 12 Sep 2019 03:17:12 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a17:906:e258:0:0:0:0 with HTTP; Thu, 12 Sep 2019 03:17:11
+ -0700 (PDT)
+In-Reply-To: <20190912.121203.1106283271122334199.davem@davemloft.net>
+References: <20190910013501.3262-1-olteanv@gmail.com> <20190910013501.3262-4-olteanv@gmail.com>
+ <20190912.121203.1106283271122334199.davem@davemloft.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 12 Sep 2019 11:17:11 +0100
+Message-ID: <CA+h21hoBQ=4pSCgwcYWErA7k7BQ02LMun_qZ476-bB4eY6RjjQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 3/7] net: dsa: sja1105: Switch to hardware
+ operations for PTP
+To:     David Miller <davem@davemloft.net>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        richardcochran@gmail.com, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-12 at 00:52 +0200, Andrew Lunn wrote:
-> > It is not just for broadcast storm protection. The original issue
-> > that
-> > made me look in to all of this turned out to be rx descritor ring
-> > buffer exhaustion due to the CPU not being able to keep up with
-> > packet
-> > reception.
-> 
-> Pause frames does not really solve this problem. The switch will at
-> some point fill its buffers, and start throwing packets away. Or it
-> needs to send pause packets it its peers. And then your whole switch
-> throughput goes down. Packets will always get thrown away, so you
-> need
-> QoS in your network to give the network hints about which frames is
-> should throw away first.
-> 
+Hi Dave,
 
-Indeed. This is the understanding I was working with.
-This patch series enables pause frames, output queue prriority and
-strict scheduling to egress the high priority queues first.
-This means that when the switch starts dropping frames, it drops from
-the lowest priority as the highest ones are delivered at line speed
-without issue.
+On 12/09/2019, David Miller <davem@davemloft.net> wrote:
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Tue, 10 Sep 2019 04:34:57 +0300
+>
+>>  static int sja1105_ptp_adjfine(struct ptp_clock_info *ptp, long
+>> scaled_ppm)
+>>  {
+>>  	struct sja1105_private *priv = ptp_to_sja1105(ptp);
+>> +	const struct sja1105_regs *regs = priv->info->regs;
+>>  	s64 clkrate;
+>> +	int rc;
+>  ..
+>> -static int sja1105_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+>> -{
+>> -	struct sja1105_private *priv = ptp_to_sja1105(ptp);
+>> +	rc = sja1105_spi_send_int(priv, SPI_WRITE, regs->ptpclkrate,
+>> +				  &clkrate, 4);
+>
+> You're sending an arbitrary 4 bytes of a 64-bit value.  This works on little
+> endian
+> but will not on big endian.
+>
+> Please properly copy this clkrate into a "u32" variable and pass that into
+> sja1105_spi_send_int().
+>
+> It also seems to suggest that you want to use abs() to perform that weird
+> centering around 1 << 31 calculation.
+>
+> Thank you.
+>
 
-> ..
-> 
-> > Fundamentally, with a phy to phy CPU connection, the CPU MAC may
-> > well
-> > wish to enable pause frames for various reasons, so we should
-> > strive to
-> > handle that I think.
-> 
-> It actually has nothing to do with PHY to PHY connections. You can
-> use
-> pause frames with direct MAC to MAC connections. PHY auto-negotiation
-> is one way to indicate both ends support it, but there are also other
-> ways. e.g.
-> 
-> ethtool -A|--pause devname [autoneg on|off] [rx on|off] [tx on|off]
-> 
-> on the SoC you could do
-> 
-> ethtool --pause eth0 autoneg off rx on tx on
-> 
-> to force the SoC to send and process pause frames. Ideally i would
-> prefer a solution like this, since it is not a change of behaviour
-> for
-> everybody else.
+It looks 'wrong' but it isn't. The driver uses the 'packing' framework
+(lib/packing.c) which is endian-agnostic (converts between CPU and
+peripheral endianness) and operates on u64 as the CPU word size. On
+the contrary, u32 would not work with the 'packing' API in its current
+form, but I don't see yet any reasons to extend it (packing64,
+packing32 etc).
 
-Good point, well made.
-The reason for using autoneg in this series was due to having no netdev
-to run ethtool against for the CPU port.
-If we go down the route of creating a netdev for the CPU port, then we
-could indeed force pause frames at both ends.
-
-However, given that the phy on the marvell switch is capable of autoneg
-, is it not reasonable to setup the advertisement and let autoneg take
-care of it if using phy to phy connection?
-
-> 
->    Andrew
-
+Thanks,
+-Vladimir
