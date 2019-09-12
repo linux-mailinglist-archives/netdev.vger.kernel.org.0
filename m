@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A13EB1326
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 19:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B27A6B1322
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 19:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730583AbfILREA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 13:04:00 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42135 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728286AbfILRD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 13:03:59 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z12so2241254pgp.9;
-        Thu, 12 Sep 2019 10:03:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yxeo5HbGYSNnNlmIUmYsnSAfEu60Tsbupk7acpSzF6U=;
-        b=jdWYr4vvW6MczaoNh262ZaSYPcKm4ygJ7xTFoNueOfVJwPk61fugKYK7PvnzPhr7BA
-         Gmm6IQfegGnupzjNt6v3tAuu+/peeMCCQDXZzY3iTUAM098xqxTrffbWltY4DQfMdij8
-         ijCyVRkhm2/AgSz1zjYXXW/4++7NDNfvHFprbuxLEynOBmQ7KcwntEbrqxcGCMXMSbaG
-         130+4uSJTgI4MGwRiCxZLc+bupK49t1C+ytkXlZaWLil2MBPAiDJxBfxn507bj11CCoc
-         /SlAfOilbUvGx7jl+Y3jx/yTEhdA6rjzZkIgZ15F9jUNno1x1+6iO/Fuk5izqAHa4vSU
-         Mlig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yxeo5HbGYSNnNlmIUmYsnSAfEu60Tsbupk7acpSzF6U=;
-        b=K3uqp9rLFjas7oV33JaXG0OqUTg9BL3KmWW4djT7FXUMWs019DEkY2CKA3OnVj7h23
-         IsAc8sdRsgwhKK1bAC1pycYKjMYSmc36s9X6ptdwvgqaxBLh+r86KA0/mgNbcYJUhsY0
-         4yTPO8Reyv+/H1FAZMCEmh6IrMBOOw0PLd02KzPDaPaBcxG/T91+mb7wdS6pezK9jRrI
-         eMptO5IQ0XtHf9lRMfYSAhbp3IreRYV2ltMU/X2zuxkgc4W5lLtFcyYGvd9Zi68amJxE
-         dfVmKzPegPas2jBYKW8vXbJNnqFZp0YMM0dm+aX2dBCyV9uRKA7GnxlG5j+GHPQC92Vu
-         5Xwg==
-X-Gm-Message-State: APjAAAWrDgEsvUZeTOZD70YiaRvagPHSESTylk6i2QDUWQJX/Axy63v2
-        wv9JDI3i6/6SmpennVBzW14=
-X-Google-Smtp-Source: APXvYqyciIA7Z3P3LeG9OsX5mO7OvEzqZCcyWrKVXpE9M8cYnzDkNcnQ36TayyHLK7x/t1hYzptNeA==
-X-Received: by 2002:aa7:97aa:: with SMTP id d10mr50878218pfq.176.1568307372122;
-        Thu, 12 Sep 2019 09:56:12 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id o22sm392845pjq.21.2019.09.12.09.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Sep 2019 09:56:11 -0700 (PDT)
-Date:   Thu, 12 Sep 2019 09:56:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH v4 2/2] PTP: add support for one-shot output
-Message-ID: <20190912165609.GA1439@localhost>
-References: <20190911061622.774006-1-felipe.balbi@linux.intel.com>
- <20190911061622.774006-2-felipe.balbi@linux.intel.com>
+        id S1730941AbfILRCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 13:02:09 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:40150 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730583AbfILRCI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 13:02:08 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 71FFFFE284DD2F055170;
+        Fri, 13 Sep 2019 01:02:05 +0800 (CST)
+Received: from linux-ibm.site (10.175.102.37) by
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 13 Sep 2019 01:02:04 +0800
+From:   zhong jiang <zhongjiang@huawei.com>
+To:     <davem@davemloft.net>, <saeedm@mellanox.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net/mlx5: Remove unneeded variable in mlx5_unload_one
+Date:   Fri, 13 Sep 2019 00:59:02 +0800
+Message-ID: <1568307542-43797-1-git-send-email-zhongjiang@huawei.com>
+X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190911061622.774006-2-felipe.balbi@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.175.102.37]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 09:16:22AM +0300, Felipe Balbi wrote:
-> Some controllers allow for a one-shot output pulse, in contrast to
-> periodic output. Now that we have extensible versions of our IOCTLs, we
-> can finally make use of the 'flags' field to pass a bit telling driver
-> that if we want one-shot pulse output.
-> 
-> Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
-> ---
-> 
-> Changes since v3:
-> 	- Remove bogus bitwise negation
-> 
-> Changes since v2:
-> 	- Add _PEROUT_ to bit macro
-> 
-> Changes since v1:
-> 	- remove comment from .flags field
+mlx5_unload_one do not need local variable to store different value,
+Hence just remove it.
 
-Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-@davem, these two are good to go!
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 9648c22..c39bb37 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1228,8 +1228,6 @@ static int mlx5_load_one(struct mlx5_core_dev *dev, bool boot)
+ 
+ static int mlx5_unload_one(struct mlx5_core_dev *dev, bool cleanup)
+ {
+-	int err = 0;
+-
+ 	if (cleanup) {
+ 		mlx5_unregister_device(dev);
+ 		mlx5_drain_health_wq(dev);
+@@ -1257,7 +1255,7 @@ static int mlx5_unload_one(struct mlx5_core_dev *dev, bool cleanup)
+ 	mlx5_function_teardown(dev, cleanup);
+ out:
+ 	mutex_unlock(&dev->intf_state_mutex);
+-	return err;
++	return 0;
+ }
+ 
+ static int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
+-- 
+1.7.12.4
 
-Thanks,
-Richard
