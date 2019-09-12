@@ -2,92 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B5EB1404
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 19:50:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BE4CB1425
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 19:53:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbfILRut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 13:50:49 -0400
-Received: from 2098.x.rootbsd.net ([208.79.82.66]:60522 "EHLO pilot.trilug.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726317AbfILRut (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 13:50:49 -0400
-Received: by pilot.trilug.org (Postfix, from userid 8)
-        id 7D32B16983E; Thu, 12 Sep 2019 13:50:46 -0400 (EDT)
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on pilot.trilug.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable version=3.3.2
-Received: from michaelmarley.com (cpe-2606-A000-BFC0-90-509-B1D3-C76D-19C7.dyn6.twc.com [IPv6:2606:a000:bfc0:90:509:b1d3:c76d:19c7])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pilot.trilug.org (Postfix) with ESMTPSA id 8CED01697EC;
-        Thu, 12 Sep 2019 13:50:44 -0400 (EDT)
-Received: from michaelmarley.com (localhost [127.0.0.1])
-        by michaelmarley.com (Postfix) with ESMTP id 18E69180170;
-        Thu, 12 Sep 2019 13:50:43 -0400 (EDT)
-Received: from michaelmarley.com ([::1])
-        by michaelmarley.com with ESMTPA
-        id ndTdBXOFel1wLAIAnAHMIA
-        (envelope-from <michael@michaelmarley.com>); Thu, 12 Sep 2019 13:50:43 -0400
+        id S1726804AbfILRxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 13:53:44 -0400
+Received: from mail-yw1-f43.google.com ([209.85.161.43]:44626 "EHLO
+        mail-yw1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726386AbfILRxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 13:53:43 -0400
+Received: by mail-yw1-f43.google.com with SMTP id u187so9440961ywa.11
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 10:53:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KFWJxfXKxkTKECqHHRtYHNb4jz/B5/bqTvBlcHqTjQw=;
+        b=f8PWIutOC3VSA2PobCe8iN/Zda5i9ypl4QufS66jsmsPcT0pv7fMNFLIxXUTpIuaLy
+         LIxefEG8uoOExDPLrOKLL+Ey/0YlxpY9jnfVpYF6WyPMnt2s4da4zUJZzA+IekCn3aez
+         KT/FSW2MCBGKAEPIisJENhjRDZxNDovHS1zG6zGIq+y45gvbUC+PtLFwQpZLeCKvBL4x
+         I1xKpmyEZaD1pxWWQQ7tpRfguyRSUnuxXmweEJ1HnM/7mYne7pijzAuU1b2/wobmBdNL
+         uMe1n7Q91yeEk1y6xmgFPvH79X45M8b69FSqTLPv5VXd943TGjn4ZFAyEQyc4Pd4VVdN
+         6Aow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KFWJxfXKxkTKECqHHRtYHNb4jz/B5/bqTvBlcHqTjQw=;
+        b=P0EhWegJmpI6msDUQNYFgimXRoRyFeg76IkhZzJxTYBfR+iSvMJshMkqm5NhceKmWI
+         3XdNBfBkRmKin2830oR716Va/oWXYSqT1WrTO9ghXN3KWNJaGQS39u2Nn1qm2AGilvE0
+         t4ls8kN9KwM9Anl7qEPLbP3HRUrkU1VNFFZ6J9N5B7esP1GVo6bq/iPlIk3gCqCLiJm3
+         u/tA98jx41SWDGSeQ3QW1fUEIKtNMwC94giBOy6iaPwyaDDwPFtNNF6dlNHdGqjKjJTt
+         392gj3YLUxPpTZ2GmkYG7oZjnr4x6JxyOFBRI+rYX4MTNTa5c8Hy3JtxRAo7rimo4Rye
+         ZfxQ==
+X-Gm-Message-State: APjAAAVyixkRXNcOE8ibF1Zo3J0E70OhMlJHZTePIxZXFBdnNW5b4giw
+        D0f9d5/GMwpRBZTYpHEimxRa6popalPqmzKeRg==
+X-Google-Smtp-Source: APXvYqwf0Zf2hVsplumXPmL/JtGhRtqnP56RSxJQj48fv0k9GajFsG47xh7O5KuqVh765FP9n4xOjZqFVYJrY4vzg6Y=
+X-Received: by 2002:a81:3b09:: with SMTP id i9mr30070703ywa.166.1568310822669;
+ Thu, 12 Sep 2019 10:53:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 12 Sep 2019 13:50:43 -0400
-From:   Michael Marley <michael@michaelmarley.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org
-Subject: Re: [PATCH] ixgbe: Fix secpath usage for IPsec TX offload.
-In-Reply-To: <20190912110144.GS2879@gauss3.secunet.de>
-References: <20190912110144.GS2879@gauss3.secunet.de>
-User-Agent: Roundcube Webmail/1.4-rc1
-Message-ID: <10aeb092a51c85563b37622417de51e3@michaelmarley.com>
-X-Sender: michael@michaelmarley.com
+References: <20190911184807.21770-1-danieltimlee@gmail.com>
+ <20190911184807.21770-2-danieltimlee@gmail.com> <20190912175921.02bcd3b6@carbon>
+In-Reply-To: <20190912175921.02bcd3b6@carbon>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Fri, 13 Sep 2019 02:53:26 +0900
+Message-ID: <CAEKGpzhz2jDdO2W7kaZxKQ-3Dkpvu5=DB=JumfcfxM-Hr7Fp0w@mail.gmail.com>
+Subject: Re: [v2 2/3] samples: pktgen: add helper functions for IP(v4/v6) CIDR parsing
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-09-12 07:01, Steffen Klassert wrote:
-> The ixgbe driver currently does IPsec TX offloading
-> based on an existing secpath. However, the secpath
-> can also come from the RX side, in this case it is
-> misinterpreted for TX offload and the packets are
-> dropped with a "bad sa_idx" error. Fix this by using
-> the xfrm_offload() function to test for TX offload.
-> 
-> Fixes: 592594704761 ("ixgbe: process the Tx ipsec offload")
-> Reported-by: Michael Marley <michael@michaelmarley.com>
-> Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+On Fri, Sep 13, 2019 at 12:59 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Thu, 12 Sep 2019 03:48:06 +0900
+> "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+>
+> > This commit adds CIDR parsing and IP validate helper function to parse
+> > single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
+>
+> One question: You do know that this expansion of the CIDR will also
+> include the CIDR network broadcast IP and "network-address", is that
+> intentional?
+>
 
-Tested-by: Michael Marley <michael@michaelmarley.com>
+Correct.
 
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 9bcae44e9883..ae31bd57127c 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -36,6 +36,7 @@
->  #include <net/vxlan.h>
->  #include <net/mpls.h>
->  #include <net/xdp_sock.h>
-> +#include <net/xfrm.h>
-> 
->  #include "ixgbe.h"
->  #include "ixgbe_common.h"
-> @@ -8696,7 +8697,7 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff 
-> *skb,
->  #endif /* IXGBE_FCOE */
-> 
->  #ifdef CONFIG_IXGBE_IPSEC
-> -	if (secpath_exists(skb) &&
-> +	if (xfrm_offload(skb) &&
->  	    !ixgbe_ipsec_tx(tx_ring, first, &ipsec_tx))
->  		goto out_drop;
->  #endif
+What I was trying to do with this script is,
+I want to test RSS/RPS and it does not
+really matters whether it is broadcast or network address,
+since the n-tuple hashing doesn't matter whether which kind of it.
+
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
