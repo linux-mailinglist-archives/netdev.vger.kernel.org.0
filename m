@@ -2,62 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17508B0B39
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 11:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FC0B0B8E
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 11:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730749AbfILJVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 05:21:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42054 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730175AbfILJVL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 05:21:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=vzY8NH1vk1O2cjHNNYaUeT3K0khzzQXjJAlnFtuoXAg=; b=pIqmPt5xS35JIhbeNCkE2vqCBb
-        n4NCde7uJBe9SrrIKsb1+VUt9JhsshWJPcAZSvlJxPpEjSs/SnJp6IlZj7lYvT5jiTn7TiD6VMlmC
-        L18TjoVx3BTJvxFfFklWjNHVUHGG1GG52QxQRCtosMjTblIyEVhRk+Rymx6RsAl2PLJ0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i8LHn-0004qb-Mx; Thu, 12 Sep 2019 11:21:07 +0200
-Date:   Thu, 12 Sep 2019 11:21:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@mellanox.com>
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
- storms
-Message-ID: <20190912092107.GD17773@lunn.ch>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
- <545d6473-848f-3194-02a6-011b7c89a2ca@gmail.com>
- <20190911112134.GA20574@splinter>
- <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
- <20190912090339.GA16311@splinter>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190912090339.GA16311@splinter>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1730516AbfILJiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 05:38:15 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54984 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730237AbfILJiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 05:38:15 -0400
+Received: from localhost (unknown [148.69.85.38])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 90A2B11F5E99E;
+        Thu, 12 Sep 2019 02:38:11 -0700 (PDT)
+Date:   Thu, 12 Sep 2019 11:38:07 +0200 (CEST)
+Message-Id: <20190912.113807.52193745382103083.davem@davemloft.net>
+To:     ap420073@gmail.com
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, jiri@resnulli.us, sd@queasysnail.net,
+        roopa@cumulusnetworks.com, saeedm@mellanox.com,
+        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, sashal@kernel.org,
+        hare@suse.de, varun@chelsio.com, ubraun@linux.ibm.com,
+        kgraul@linux.ibm.com, jay.vosburgh@canonical.com
+Subject: Re: [PATCH net v2 01/11] net: core: limit nested device depth
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CAMArcTV-Qvfd7xA0huCh_dbtr7P4LA+cQ7CpnaBBhdq-tq5fZQ@mail.gmail.com>
+References: <20190907134532.31975-1-ap420073@gmail.com>
+        <20190912.003209.917226424625610557.davem@davemloft.net>
+        <CAMArcTV-Qvfd7xA0huCh_dbtr7P4LA+cQ7CpnaBBhdq-tq5fZQ@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Sep 2019 02:38:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 2. Scheduling: How to schedule between the different transmission queues
+From: Taehee Yoo <ap420073@gmail.com>
+Date: Thu, 12 Sep 2019 12:56:19 +0900
+
+> I tested with this reproducer commands without lockdep.
 > 
-> Where the port from which the packets should egress is the CPU port,
-> before they cross the PCI towards the imx6.
+>     ip link add dummy0 type dummy
+>     ip link add link dummy0 name vlan1 type vlan id 1
+>     ip link set vlan1 up
+> 
+>     for i in {2..200}
+>     do
+>             let A=$i-1
+> 
+>             ip link add name vlan$i link vlan$A type vlan id $i
+>     done
+>     ip link del vlan1 <-- this command is added.
 
-Hi Ido
-
-This is DSA, so the switch is connected via Ethernet to the IMX6, not
-PCI. Minor detail, but that really is the core of what makes DSA DSA.
-
-     Andrew
+Is there any other device type which allows arbitrary nesting depth
+in this manner other than VLAN?  Perhaps it is the VLAN nesting
+depth that we should limit instead of all of this extra code.
