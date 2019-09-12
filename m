@@ -2,97 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A85B074B
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 05:45:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76D7DB0758
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 05:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729784AbfILDpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Sep 2019 23:45:06 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2267 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727873AbfILDpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Sep 2019 23:45:05 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D6A97EC9127A2D852B99;
-        Thu, 12 Sep 2019 11:45:03 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 12 Sep 2019 11:44:53 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <vyasevich@gmail.com>, <nhorman@tuxdriver.com>,
-        <marcelo.leitner@gmail.com>, <davem@davemloft.net>
-CC:     <linux-sctp@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Mao Wenan <maowenan@huawei.com>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH v2 net 3/3] sctp: destroy bucket if failed to bind addr
-Date:   Thu, 12 Sep 2019 12:02:19 +0800
-Message-ID: <20190912040219.67517-4-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190912040219.67517-1-maowenan@huawei.com>
-References: <7a450679-40ca-8a84-4cba-7a16f22ea3c0@huawei.com>
- <20190912040219.67517-1-maowenan@huawei.com>
+        id S1727576AbfILD4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Sep 2019 23:56:35 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:36286 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbfILD4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Sep 2019 23:56:35 -0400
+Received: by mail-lf1-f67.google.com with SMTP id x80so18119197lff.3
+        for <netdev@vger.kernel.org>; Wed, 11 Sep 2019 20:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yf0lqQpUrw7O1z8BSu0TZC1bKhKxPJ4bnoPRsx9tsko=;
+        b=ENZUFHy3S4Nzz0V/ZcHn1AyQg9ilKgsrM/lA/hgQJWTACropuDzAXYXwMc1nYPmxEa
+         H75/khgKuea+kN6j2ZHFmWEfCafwhHue8XqmI3OtSw9TzOgkI0oZVx6NEJvIdwJhbgHv
+         9FSYBIF/3xhUbN8lHugHHnxkCzQS1zIhsrpKOIyn+od3X2CBjHqMzfR4+ywwbpce7cmq
+         SKNcY//bitOH+bJ/ZXbXA0RLGX2ZwiwWHE238aAH6kAMfq2du6voKGJmO2BRTHhgFi+n
+         ywl3Rff+wwtkE+dtkSvyIu5iCzvuDNOt2WR7RFTUQYAHcGo8zokCiAiZ9OKogK8Eyd2G
+         amDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yf0lqQpUrw7O1z8BSu0TZC1bKhKxPJ4bnoPRsx9tsko=;
+        b=tsJG9oun7Uy4llVJJDFF5+vKLcJxDSH67dc3PJKT+X2yOH/Ox9E26Zj+2kI5B7zMif
+         9OHXp+CIBR5/+synKw+cTo9UOE/qZV4tZjh8bas6NrAFJic4upQPeZDoJhS8mTWPoHaS
+         4ABoWvCgS/IrEPE/67CDrZVCdsxWJlby8g0cHWUB4EWatAyxQz0IKLQX84mco7CysO80
+         uffFAL/HB3HeWYg5y2rM4WB3MjlXYcc9HAa6IIHmRhdRziXue+NgVtj0VEWGAFJbJlkD
+         e9rxqG+ceAb/L4ti9x60pz6cndteaK+saI0J6y+F7fB3qqo+HPPKEZwL2VNefxHwEQD3
+         QvXg==
+X-Gm-Message-State: APjAAAWj3Y3p1Qs4XX0vLV3hQCqvweQ3+zDzAO7MqJ/VsY0SshE8cyPn
+        9vSmGU7jcfL2CBNqm6TYaOYE+HM8xbcGR2IGq8M=
+X-Google-Smtp-Source: APXvYqyCfBYegsLFmkKaDa886fp/Ze85OLJx7Bmhb83kaiXXsVvWowY3Cldb792JnYPJ4EnQmKJAWncyOqkq8aDdXro=
+X-Received: by 2002:a19:641e:: with SMTP id y30mr19742487lfb.148.1568260590773;
+ Wed, 11 Sep 2019 20:56:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+References: <20190907134532.31975-1-ap420073@gmail.com> <20190912.003209.917226424625610557.davem@davemloft.net>
+In-Reply-To: <20190912.003209.917226424625610557.davem@davemloft.net>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Thu, 12 Sep 2019 12:56:19 +0900
+Message-ID: <CAMArcTV-Qvfd7xA0huCh_dbtr7P4LA+cQ7CpnaBBhdq-tq5fZQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 01/11] net: core: limit nested device depth
+To:     David Miller <davem@davemloft.net>
+Cc:     Netdev <netdev@vger.kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, Andy Gospodarek <andy@greyhouse.net>,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
+        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is one memory leak bug report:
-BUG: memory leak
-unreferenced object 0xffff8881dc4c5ec0 (size 40):
-  comm "syz-executor.0", pid 5673, jiffies 4298198457 (age 27.578s)
-  hex dump (first 32 bytes):
-    02 00 00 00 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-    f8 63 3d c1 81 88 ff ff 00 00 00 00 00 00 00 00  .c=.............
-  backtrace:
-    [<0000000072006339>] sctp_get_port_local+0x2a1/0xa00 [sctp]
-    [<00000000c7b379ec>] sctp_do_bind+0x176/0x2c0 [sctp]
-    [<000000005be274a2>] sctp_bind+0x5a/0x80 [sctp]
-    [<00000000b66b4044>] inet6_bind+0x59/0xd0 [ipv6]
-    [<00000000c68c7f42>] __sys_bind+0x120/0x1f0 net/socket.c:1647
-    [<000000004513635b>] __do_sys_bind net/socket.c:1658 [inline]
-    [<000000004513635b>] __se_sys_bind net/socket.c:1656 [inline]
-    [<000000004513635b>] __x64_sys_bind+0x3e/0x50 net/socket.c:1656
-    [<0000000061f2501e>] do_syscall_64+0x72/0x2e0 arch/x86/entry/common.c:296
-    [<0000000003d1e05e>] entry_SYSCALL_64_after_hwframe+0x49/0xbe
+On Thu, 12 Sep 2019 at 07:32, David Miller <davem@davemloft.net> wrote:
+>
 
-This is because in sctp_do_bind, if sctp_get_port_local is to
-create hash bucket successfully, and sctp_add_bind_addr failed
-to bind address, e.g return -ENOMEM, so memory leak found, it
-needs to destroy allocated bucket.
+Hi David
+Thank you for the review!
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
----
- net/sctp/socket.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+> From: Taehee Yoo <ap420073@gmail.com>
+> Date: Sat,  7 Sep 2019 22:45:32 +0900
+>
+> > Current code doesn't limit the number of nested devices.
+> > Nested devices would be handled recursively and this needs huge stack
+> > memory. So, unlimited nested devices could make stack overflow.
+>  ...
+> > Splat looks like:
+> > [  140.483124] BUG: looking up invalid subclass: 8
+> > [  140.483505] turning off the locking correctness validator.
+>
+> The limit here is not stack memory, but a limit in the lockdep
+> validator, which can probably be fixed by other means.
+>
+> This was the feedback I saw given for the previous version of
+> this series as well.
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 2f810078c91d..69ec3b796197 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -412,11 +412,13 @@ static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
- 	ret = sctp_add_bind_addr(bp, addr, af->sockaddr_len,
- 				 SCTP_ADDR_SRC, GFP_ATOMIC);
- 
--	/* Copy back into socket for getsockname() use. */
--	if (!ret) {
--		inet_sk(sk)->inet_sport = htons(inet_sk(sk)->inet_num);
--		sp->pf->to_sk_saddr(addr, sk);
-+	if (ret) {
-+		sctp_put_port(sk);
-+		return ret;
- 	}
-+	/* Copy back into socket for getsockname() use. */
-+	inet_sk(sk)->inet_sport = htons(inet_sk(sk)->inet_num);
-+	sp->pf->to_sk_saddr(addr, sk);
- 
- 	return ret;
- }
--- 
-2.20.1
+I just realized this commit message is not enough for describing the problems.
+It looks like that "invalid subclass" makes panic.
+But this is not.
+The panic is not related to "invalid subclass" lockdep problem.
 
+There are two splats.
+1. [  140.483124] BUG: looking up invalid subclass: 8
+2. [  168.446539] BUG: KASAN: slab-out-of-bounds in __unwind_start+0x71/0x850
+    [  168.794493] Rebooting in 5 seconds..
+
+
+The first message is just a warning message of lockdep because of too deep
+lockdep subclasses and it doesn't make any problem and panic.
+This message can be ignored right now because other patches of
+this patchset avoids this problem using dynamic lockdep key.
+
+The second message is a panic message.
+This is stack overflow and it occurs because of too deep nested devices.
+The goal of this patch is to fix this stack overflow problem.
+
+I tested with this reproducer commands without lockdep.
+
+    ip link add dummy0 type dummy
+    ip link add link dummy0 name vlan1 type vlan id 1
+    ip link set vlan1 up
+
+    for i in {2..200}
+    do
+            let A=$i-1
+
+            ip link add name vlan$i link vlan$A type vlan id $i
+    done
+    ip link del vlan1 <-- this command is added.
+
+Splat looks like:
+[  181.594092] Thread overran stack, or stack corrupted
+[  181.594726] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[  181.595417] CPU: 1 PID: 1402 Comm: ip Not tainted 5.3.0-rc7+ #173
+[  181.596193] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS
+VirtualBox 12/01/2006
+[  181.605986] RIP: 0010:stack_depot_fetch+0x10/0x30
+[  181.606588] Code: 00 75 10 48 8b 73 18 48 89 ef 5b 5d e9 59 bf 89
+ff 0f 0b e8 02 3f 9d ff eb e9 89 f8 c1 ef 110
+[  181.609820] RSP: 0018:ffff8880cbebedd8 EFLAGS: 00010006
+[  181.610485] RAX: 00000000001fffff RBX: ffff8880cbebfc00 RCX: 0000000000000000
+[  181.611394] RDX: 000000000000001d RSI: ffff8880cbebede0 RDI: 0000000000003ff0
+[  181.612297] RBP: ffffea00032fae00 R08: ffffed101b5a3eab R09: ffffed101b5a3eab
+[  181.613222] R10: 0000000000000001 R11: ffffed101b5a3eaa R12: ffff8880d6115e80
+[  181.614148] R13: ffff8880cbebeac0 R14: ffff8880cbebfc00 R15: ffff8880cbebef80
+[  181.615053] FS:  00007f46140510c0(0000) GS:ffff8880dad00000(0000)
+knlGS:0000000000000000
+[  181.616085] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  181.616841] CR2: ffffffffb9a7a0d8 CR3: 00000000bc356003 CR4: 00000000000606e0
+[  181.635748] Call Trace:
+[  181.635996] Modules linked in: 8021q garp stp mrp llc dummy veth
+openvswitch nsh nf_conncount nf_nat nf_conntrs
+[  181.637360] CR2: ffffffffb9a7a0d8
+[  181.637670] ---[ end trace f890ce3e5c51ceb4 ]---
+[  181.638096] RIP: 0010:stack_depot_fetch+0x10/0x30
+[  181.638524] Code: 00 75 10 48 8b 73 18 48 89 ef 5b 5d e9 59 bf 89
+ff 0f 0b e8 02 3f 9d ff eb e9 89 f8 c1 ef 110
+[  181.805441] RSP: 0018:ffff8880cbebedd8 EFLAGS: 00010006
+[  181.900192] RAX: 00000000001fffff RBX: ffff8880cbebfc00 RCX: 0000000000000000
+[  181.901119] RDX: 000000000000001d RSI: ffff8880cbebede0 RDI: 0000000000003ff0
+[  181.902038] RBP: ffffea00032fae00 R08: ffffed101b5a3eab R09: ffffed101b5a3eab
+[  181.902960] R10: 0000000000000001 R11: ffffed101b5a3eaa R12: ffff8880d6115e80
+[  181.903885] R13: ffff8880cbebeac0 R14: ffff8880cbebfc00 R15: ffff8880cbebef80
+[  181.904825] FS:  00007f46140510c0(0000) GS:ffff8880dad00000(0000)
+knlGS:0000000000000000
+[  181.905862] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  181.906604] CR2: ffffffffb9a7a0d8 CR3: 00000000bc356003 CR4: 00000000000606e0
+[  181.907525] Kernel panic - not syncing: Fatal exception
+[  181.908179] Kernel Offset: 0x34000000 from 0xffffffff81000000
+(relocation range: 0xffffffff80000000-0xffffffff)
+[  181.909176] Rebooting in 5 seconds..
