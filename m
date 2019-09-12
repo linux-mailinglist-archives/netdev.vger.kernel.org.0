@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63641B0D1D
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:43:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF142B0D38
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 12:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731030AbfILKng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 06:43:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42240 "EHLO vps0.lunn.ch"
+        id S1731146AbfILKwE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Sep 2019 06:52:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43908 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730807AbfILKng (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 06:43:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=1PvI8WCVXvkl9K9coqaBNo6diovEdo89od2wQvjv+7M=; b=Dh1kZr5AAJlvXSWO87EsY3HQ2m
-        vNMTqlrWlg5LpSURv5m9DfvwCfu6GRLOlSPQEuyhNswshvp4M0leY75ssKunzf6bQTlIukls5L3tW
-        CsXeAMK7SGg2+NP6xqMmULQPuOk8hqtUxPXLVHC/aMZ8n52DIpCzTFw04gyPEF5VVYyg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i8MZZ-0005Ax-Nm; Thu, 12 Sep 2019 12:43:33 +0200
-Date:   Thu, 12 Sep 2019 12:43:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Beckett <bob.beckett@collabora.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, bob.beckett@gmail.com
-Subject: Re: [PATCH 1/7] net/dsa: configure autoneg for CPU port
-Message-ID: <20190912104333.GE17773@lunn.ch>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
- <20190910154238.9155-2-bob.beckett@collabora.com>
- <20190910182635.GA9761@lunn.ch>
- <aa0459e0-64ee-de84-fc38-3c9364301275@gmail.com>
- <ad302835a98ca5abc7ac88b3caad64867e33ee70.camel@collabora.com>
- <20190911225252.GA5710@lunn.ch>
- <8d63d4dbd9d075b5c238fd8933673b95b2fa96e9.camel@collabora.com>
+        id S1730470AbfILKwE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 06:52:04 -0400
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D761C2CD811
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 10:52:03 +0000 (UTC)
+Received: by mail-ed1-f69.google.com with SMTP id y66so14530100ede.16
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 03:52:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=6flBUBjs8VPAbAefuygCBR5yf5XU4QbU0qOIz+By8ZI=;
+        b=XQY164bJ9idIT9Lbrzy20yrawt0baDBjACZPnKWJFRxVH7g462CmbvQ1+VN+QhG/4i
+         0lxEtZRiwls9feXlorxp2JobF82zE3IDMDOSGL/uSEzGQVpl5xoE8oTFvr/ZVkbaCPce
+         439Ir1nL4jGSYKOLYFaXusJH++4aIm0t1pY8Lc2x4yAyI6kq8xQZTEuuXOUO/RUE2iF8
+         JcBnc4IOMiywvjCiXRdtNoETGrOyCx+7JFe0mARKaxJiYlx8bPN0QQCoHDmFVV6CH6uZ
+         cheTdIP30yqDxce8MTv3N7d6FHBmi/EoJsYr9HHBxnTfJmuPgjgaQgUCOTibd2av/sEf
+         J7Jw==
+X-Gm-Message-State: APjAAAUo7kNk6zucHIvI1lqRgriazXqNuyFvIQ/3G20qXFEVZeveJjqd
+        vux3jhJ7HKUoz14jYaYKmPAhcOTzYKesZf0tqmzlAT6w+CB27w2KkmFHm7kVMBRk7oOSUt+8GjF
+        EbOgowT0aPjcpvx/Q
+X-Received: by 2002:a17:907:2065:: with SMTP id qp5mr33221221ejb.151.1568285522641;
+        Thu, 12 Sep 2019 03:52:02 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqx0B4fTUSLQ4Z3x7ogXVND6zxk194V/rQL1i/woELQNZgzJsKoUTobHl7LJ5qZW+w80pa/Csg==
+X-Received: by 2002:a17:907:2065:: with SMTP id qp5mr33221211ejb.151.1568285522444;
+        Thu, 12 Sep 2019 03:52:02 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id u27sm4714326edb.48.2019.09.12.03.52.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Sep 2019 03:52:01 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 8960C180613; Thu, 12 Sep 2019 11:46:39 +0100 (WEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kees Cook <keescook@chromium.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
+In-Reply-To: <CABCJKufCwjXQ6a4oLjywDmxY2apUZ1yop-5+qty82bfwV-QTAA@mail.gmail.com>
+References: <20190909223236.157099-1-samitolvanen@google.com> <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com> <20190910172253.GA164966@google.com> <c7c7668e-6336-0367-42b3-2f6026c466dd@fb.com> <fd8b6f04-3902-12e9-eab1-fa85b7e44dd5@intel.com> <87impzt4pu.fsf@toke.dk> <CABCJKufCwjXQ6a4oLjywDmxY2apUZ1yop-5+qty82bfwV-QTAA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 12 Sep 2019 11:46:39 +0100
+Message-ID: <87sgp1ssfk.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d63d4dbd9d075b5c238fd8933673b95b2fa96e9.camel@collabora.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > It actually has nothing to do with PHY to PHY connections. You can
-> > use
-> > pause frames with direct MAC to MAC connections. PHY auto-negotiation
-> > is one way to indicate both ends support it, but there are also other
-> > ways. e.g.
-> > 
-> > ethtool -A|--pause devname [autoneg on|off] [rx on|off] [tx on|off]
-> > 
-> > on the SoC you could do
-> > 
-> > ethtool --pause eth0 autoneg off rx on tx on
-> > 
-> > to force the SoC to send and process pause frames. Ideally i would
-> > prefer a solution like this, since it is not a change of behaviour
-> > for
-> > everybody else.
-> 
-> Good point, well made.
-> The reason for using autoneg in this series was due to having no netdev
-> to run ethtool against for the CPU port.
+Sami Tolvanen <samitolvanen@google.com> writes:
 
-Do you need one? It is the IMX which is the bottle neck. It is the one
-which needs to send pause frames. You have a netdev for that. Have you
-checked if the switch will react on pause frames without your
-change. Play with the command i give above on the master interface. It
-looks like the FEC driver fully supports synchronous pause
-configuration.
+> On Wed, Sep 11, 2019 at 5:09 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> Björn Töpel <bjorn.topel@intel.com> writes:
+>> > I ran the "xdp_rxq_info" sample with and without Sami's patch:
+>>
+>> Thanks for doing this!
+>
+> Yes, thanks for testing this Björn!
+>
+>> Or (1/22998700 - 1/23923874) * 10**9 == 1.7 nanoseconds of overhead.
+>>
+>> I guess that is not *too* bad; but it's still chipping away at
+>> performance; anything we could do to lower the overhead?
+>
+> The check is already rather minimal, but I could move this to a static
+> inline function to help ensure the compiler doesn't generate an
+> additional function call for this. I'm also fine with gating this
+> behind a separate config option, but I'm not sure if that's worth it.
+> Any thoughts?
 
-> However, given that the phy on the marvell switch is capable of
-> autoneg , is it not reasonable to setup the advertisement and let
-> autoneg take care of it if using phy to phy connection?
+I think it would be good if you do both. I'm a bit worried that XDP
+performance will end up in a "death by a thousand paper cuts" situation,
+so I'd rather push back on even relatively small overheads like this; so
+being able to turn it off in the config would be good.
 
-Most designs don't use back to back PHYs for the CPU port. They save
-the cost and connect MACs back to back using RGMII, or maybe SERDES.
-If we are going for a method which can configure pause between the CPU
-and the switch, it needs to be generic and work for both setups.
+Can you share more details about what the "future CFI checking" is
+likely to look like?
 
-    Andrew
+-Toke
