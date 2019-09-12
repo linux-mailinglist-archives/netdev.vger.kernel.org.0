@@ -2,198 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A2A0B11CF
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 17:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31F73B11E1
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 17:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732817AbfILPIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 11:08:17 -0400
-Received: from mta04.svc.cra.dublin.eircom.net ([159.134.118.171]:47692 "HELO
-        mta04.svc.cra.dublin.eircom.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1732566AbfILPIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 11:08:17 -0400
-Received: (qmail 39848 messnum 22041177 invoked from network[213.94.190.15/avas03.vendorsvc.cra.dublin.eircom.net]); 12 Sep 2019 15:08:11 -0000
-Received: from avas03.vendorsvc.cra.dublin.eircom.net (HELO avas03) (213.94.190.15)
-  by mta04.svc.cra.dublin.eircom.net (qp 39848) with SMTP; 12 Sep 2019 15:08:11 -0000
-Received: from vzmbx18.eircom.net ([86.43.60.98])
-        by Cloudmark Gateway with SMTP
-        id 8QggiAVuSHftS8QggirBrx; Thu, 12 Sep 2019 16:07:10 +0100
-X-Spam-Flag: NO
-X-CNFS-Analysis: v=2.2 cv=bdwbaKHB c=1 sm=1 tr=0
- a=e7gqILOnBbllteVy7xBg4A==:117 a=9cW_t1CCXrUA:10 a=FKkrIqjQGGEA:10
- a=2Ad1L7sHTmAA:10 a=5_IimSLyMIIA:10 a=IkcTkHD0fZMA:10 a=x7bEGLp0ZPQA:10
- a=FMVE419cD_oA:10 a=YIq4gEiiZW0A:10 a=ZZnuYtJkoWoA:10
- a=9bUQUdo6JS71loVLorMA:9 a=QEXdDO2ut3YA:10 a=NCmjSkj-TwUiR8at5sTD:22
-Date:   Thu, 12 Sep 2019 16:07:10 +0100 (IST)
-From:   Mrs Jessica Becker <ok125221@eircom.net>
-Reply-To: jessicakecker@gmail.com
-Message-ID: <2004005581.89995.1568300830167.JavaMail.zimbra@eircom.net>
-Subject: Dear Friend,
+        id S1732931AbfILPN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 11:13:58 -0400
+Received: from rp02.intra2net.com ([62.75.181.28]:56536 "EHLO
+        rp02.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732572AbfILPN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 11:13:58 -0400
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by rp02.intra2net.com (Postfix) with ESMTPS id 984FE100111;
+        Thu, 12 Sep 2019 17:13:55 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id 6E5F964B;
+        Thu, 12 Sep 2019 17:13:55 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.94,VDF=8.16.23.36)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from localhost (storm.m.i2n [172.16.1.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.m.i2n (Postfix) with ESMTPS id 562E25D2;
+        Thu, 12 Sep 2019 17:13:53 +0200 (CEST)
+Date:   Thu, 12 Sep 2019 17:13:53 +0200
+From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
+To:     netdev@vger.kernel.org
+Cc:     Tom Herbert <therbert@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [bisected] UDP / xfrm: NAT-T packets with bad UDP checksum get
+ dropped
+Message-ID: <20190912151353.2w7jakdrqljkfbsq@intra2net.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [212.103.48.115]
-X-Mailer: Zimbra 8.6.0_GA_1242 (ZimbraWebClient - FF69 (Win)/8.6.0_GA_1242)
-Thread-Topic: Dear Friend,
-Thread-Index: S1lvs9OJiu6uSjVQGl4t/YLxCSqKMA==
-X-CMAE-Envelope: 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
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Hello together,
 
-Hello how are you doing? Please, I am still waiting for your reply on the message I sent you yesterday
+after updating many machines already from 3.14 to 4.19.67,
+one site showed a non-working IPSec VPN connection with 4.19.x.
 
-Thanks
-Mrs Jessica Becker.
+This IPSec connection is using UDP NAT traversal on port 4500.
+The tunnel gets established fine, but no data flows.
+Output of "ip xfrm state" looked sane.
+
+The TRACE iptables firewall target showed the UDP packets
+on port 4500 get accepted as expected. Still they didn't appear
+in "ip xfrm monitor" and vanish somewhere in the kernel,
+no error counter in /proc/net/xfrm_state increased at all.
+
+After a few hours of bisecting with a test VM,
+this commit was identified to cause the packet drop:
+
+*******************
+commit 0a80966b1043c3e2dc684140f155a3fded308660
+Author: Tom Herbert <therbert@google.com>
+Date:   Wed May 7 16:52:39 2014 -0700
+
+    net: Verify UDP checksum before handoff to encap
+
+    Moving validation of UDP checksum to be done in UDP not encap layer.
+
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index f2d05d7be743..54ea0a3a48f1 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1495,6 +1495,10 @@ int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+                if (skb->len > sizeof(struct udphdr) && encap_rcv != NULL) {
+                        int ret;
+ 
++                       /* Verify checksum before giving to encap */
++                       if (udp_lib_checksum_complete(skb))
++                               goto csum_error;
++
+                        ret = encap_rcv(sk, skb);
+                        if (ret <= 0) {
+                                UDP_INC_STATS_BH(sock_net(sk),
+..
+*******************
+
+This commit is part of kernel 3.16. Reverting the commit
+brings back the VPN connection using kernel 4.19.67.
+
+I didn't spot the checksum error initially since wireshark and tcpdump
+need to be explicitly told to verify checksums and there's a warning
+about checksum offloading messing with it.
+
+Further tracing showed the UDP packets leave the source
+site with a zero UDP checksum and arrive, after passing
+an unknown home router and a few other routers,
+with a bogus UDP checksum on the destination side.
+
+I've disabled rx and tx checksum offloading on the target test VM
+and also on a router in between, but the packet dumps just
+contain a fixed value as UDP checksum (f.e. 0x91c4).
+
+RFC 3948 specifies how ESP packets should be encapsulated
+using UDP for NAT traveral:
+https://tools.ietf.org/html/rfc3948
+
+*******************
+2.1. UDP-Encapsulated ESP Header Format
+
+the IPv4 UDP Checksum SHOULD be transmitted as a zero value, and
+receivers MUST NOT depend on the UDP checksum being a zero value.
+
+
+3.5.  Tunnel Mode ESP Decapsulation
+
+1.  The UDP header is removed from the packet.
+*******************
+
+I'm wondering how the RFC should be interpreted here
+regarding the UDP checksumming?
+
+As far as I can tell it doesn't mention the UDP checksum
+should be verified before decapsulation, the ESP packets
+will provide proper data authentication anyway.
+
+Cheers,
+Thomas
