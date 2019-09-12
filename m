@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9799DB1302
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 18:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A13EB1326
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 19:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730240AbfILQsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 12:48:50 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45510 "EHLO
+        id S1730583AbfILREA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 13:04:00 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42135 "EHLO
         mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726744AbfILQsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 12:48:50 -0400
-Received: by mail-pg1-f194.google.com with SMTP id 4so13756857pgm.12
-        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 09:48:49 -0700 (PDT)
+        with ESMTP id S1728286AbfILRD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 13:03:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id z12so2241254pgp.9;
+        Thu, 12 Sep 2019 10:03:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kqq7sIjPtw89XN/e42zrVXuxfVziFrFnbqEJAB1wO2I=;
-        b=fxlqjbDVo/FW4gVb0VAB9xPQCzLmQrhSmlTNq50SggJZ86yy5dhMSp37skSSIUs0S0
-         5WnLSzScF69Ry/vzn82UFFGVSDjyQhjAC4QpNd9OTpTk0XzVjgFntEDBHpZ6VtTSi0pB
-         m1KeFyuCRIhD8v11XVzAv1AzbEYruy5NVpnS8dCcngGtyOEi9cUANa8EA4wHREF4GHpV
-         tQa6rPypvQA+JX1tRrsGCRLkZjp8h/U3MyTczsafPFZ8FZ4MQmE4c3gNSZ1y97tBqFRC
-         +LGQ3Qsmqe6hLYPS6EOy+8h2sgnUt/ZjlizekdON/ZZsEMKRalzWcB9Mb3rHQ462we6+
-         mHgg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yxeo5HbGYSNnNlmIUmYsnSAfEu60Tsbupk7acpSzF6U=;
+        b=jdWYr4vvW6MczaoNh262ZaSYPcKm4ygJ7xTFoNueOfVJwPk61fugKYK7PvnzPhr7BA
+         Gmm6IQfegGnupzjNt6v3tAuu+/peeMCCQDXZzY3iTUAM098xqxTrffbWltY4DQfMdij8
+         ijCyVRkhm2/AgSz1zjYXXW/4++7NDNfvHFprbuxLEynOBmQ7KcwntEbrqxcGCMXMSbaG
+         130+4uSJTgI4MGwRiCxZLc+bupK49t1C+ytkXlZaWLil2MBPAiDJxBfxn507bj11CCoc
+         /SlAfOilbUvGx7jl+Y3jx/yTEhdA6rjzZkIgZ15F9jUNno1x1+6iO/Fuk5izqAHa4vSU
+         Mlig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kqq7sIjPtw89XN/e42zrVXuxfVziFrFnbqEJAB1wO2I=;
-        b=OmTR1ssF74QS988r/hpagaaOkI+33ikiPiRCSm1oYCtmk8QAFCqYef6MqKnh9FodUQ
-         sfLY/EWo8mb7jeljJoYngMxLgJboRRMWKzI84PWIITipMSstTht68O42JQ0vEx51if0Q
-         Kg/OWT6XtMaXjxNeZQV946GvHdyWBGjy7FnBFRwaKSIiCX5PYDhTiIOee7Kbh5/QjH/g
-         jBAwQyOmdkLbGlZ0IJPeEFW4ENbAXoNFjqBiAkOAdctJxFjR6dtQVIVDYSsHROzf4Bg/
-         h+PctIQiUrEW7mM88e9pQ2dYAgesNnS/cIBRcOH6rnAZnJDrKLAB7SIAMkY37jlHspEH
-         Xjkw==
-X-Gm-Message-State: APjAAAUfsFiHxgIME0f6aS+MYTDMFGzKi+XBQRXz63KvSqHL+Eioxeya
-        Gr499LNHsKZOlc1VH3Yck6vaqkwtsd/+Nh1/bLY=
-X-Google-Smtp-Source: APXvYqw4rQoBAlfOQCui6gEWUogbB4nVk43Rl7Ubp2UBWkoq0BBR7f2t/bvs9PiJ7xeoCjiDGA4WWGXiZ3xKF4isDYU=
-X-Received: by 2002:a62:4d45:: with SMTP id a66mr47629373pfb.24.1568306929299;
- Thu, 12 Sep 2019 09:48:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yxeo5HbGYSNnNlmIUmYsnSAfEu60Tsbupk7acpSzF6U=;
+        b=K3uqp9rLFjas7oV33JaXG0OqUTg9BL3KmWW4djT7FXUMWs019DEkY2CKA3OnVj7h23
+         IsAc8sdRsgwhKK1bAC1pycYKjMYSmc36s9X6ptdwvgqaxBLh+r86KA0/mgNbcYJUhsY0
+         4yTPO8Reyv+/H1FAZMCEmh6IrMBOOw0PLd02KzPDaPaBcxG/T91+mb7wdS6pezK9jRrI
+         eMptO5IQ0XtHf9lRMfYSAhbp3IreRYV2ltMU/X2zuxkgc4W5lLtFcyYGvd9Zi68amJxE
+         dfVmKzPegPas2jBYKW8vXbJNnqFZp0YMM0dm+aX2dBCyV9uRKA7GnxlG5j+GHPQC92Vu
+         5Xwg==
+X-Gm-Message-State: APjAAAWrDgEsvUZeTOZD70YiaRvagPHSESTylk6i2QDUWQJX/Axy63v2
+        wv9JDI3i6/6SmpennVBzW14=
+X-Google-Smtp-Source: APXvYqyciIA7Z3P3LeG9OsX5mO7OvEzqZCcyWrKVXpE9M8cYnzDkNcnQ36TayyHLK7x/t1hYzptNeA==
+X-Received: by 2002:aa7:97aa:: with SMTP id d10mr50878218pfq.176.1568307372122;
+        Thu, 12 Sep 2019 09:56:12 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id o22sm392845pjq.21.2019.09.12.09.56.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Sep 2019 09:56:11 -0700 (PDT)
+Date:   Thu, 12 Sep 2019 09:56:09 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH v4 2/2] PTP: add support for one-shot output
+Message-ID: <20190912165609.GA1439@localhost>
+References: <20190911061622.774006-1-felipe.balbi@linux.intel.com>
+ <20190911061622.774006-2-felipe.balbi@linux.intel.com>
 MIME-Version: 1.0
-References: <20190911183445.32547-1-xiyou.wangcong@gmail.com>
- <7b5b69a9-7ace-2d21-f187-7a81fb1dae5a@gmail.com> <CAM_iQpVP6qVbWmV+kA8UGXG6r1LJftyV32UjUbqryGrX5Ud8Nw@mail.gmail.com>
- <CAHk-=whO37+O-mohvMODnD57ppCsK3Bcv8oHzSBvmwJbsT54cA@mail.gmail.com>
-In-Reply-To: <CAHk-=whO37+O-mohvMODnD57ppCsK3Bcv8oHzSBvmwJbsT54cA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 12 Sep 2019 09:48:38 -0700
-Message-ID: <CAM_iQpWWSO_RBE-1ja0N88=ZedmCU4J37CyoQ=zME=Q0Fiq_Xg@mail.gmail.com>
-Subject: Re: [Patch net] sch_sfb: fix a crash in sfb_destroy()
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+d5870a903591faaca4ae@syzkaller.appspotmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190911061622.774006-2-felipe.balbi@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 12, 2019 at 3:31 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Thu, Sep 12, 2019 at 2:10 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Wed, Sep 11, 2019 at 2:36 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > >
-> > > It seems a similar fix would be needed in net/sched/sch_dsmark.c ?
-> > >
-> >
-> > Yeah, or just add a NULL check in dsmark_destroy().
->
-> Well, this was why one of my suggestions was to just make
-> "qdisc_put()" be happy with a NULL pointer (or even an ERR_PTR()).
->
-> That would have fixed not just sfb, but also dsmark with a single patch.
+On Wed, Sep 11, 2019 at 09:16:22AM +0300, Felipe Balbi wrote:
+> Some controllers allow for a one-shot output pulse, in contrast to
+> periodic output. Now that we have extensible versions of our IOCTLs, we
+> can finally make use of the 'flags' field to pass a bit telling driver
+> that if we want one-shot pulse output.
+> 
+> Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+> ---
+> 
+> Changes since v3:
+> 	- Remove bogus bitwise negation
+> 
+> Changes since v2:
+> 	- Add _PEROUT_ to bit macro
+> 
+> Changes since v1:
+> 	- remove comment from .flags field
 
-Sure, I don't have any preference here, just want to find a minimum
-fix for -stable.
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
 
-I will send v2.
+@davem, these two are good to go!
 
-Thanks.
+Thanks,
+Richard
