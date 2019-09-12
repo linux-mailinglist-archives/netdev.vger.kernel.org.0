@@ -2,166 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8DEAB0A1D
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 10:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0EE5B0A84
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 10:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730226AbfILIVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 04:21:14 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:60670 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730033AbfILIU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Sep 2019 04:20:59 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CADD68FD58E36A7835F6;
-        Thu, 12 Sep 2019 16:20:54 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Sep 2019
- 16:20:47 +0800
-Subject: Re: [PATCH V2 net-next 1/7] net: hns3: add ethtool_ops.set_channels
- support for HNS3 VF driver
-To:     Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>
-References: <1568169639-43658-1-git-send-email-tanhuazhong@huawei.com>
- <1568169639-43658-2-git-send-email-tanhuazhong@huawei.com>
- <20190912062301.GE24779@unicorn.suse.cz>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <8d51697c-703e-09f2-74e1-c83a31b5f52f@huawei.com>
-Date:   Thu, 12 Sep 2019 16:20:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1730391AbfILImS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 04:42:18 -0400
+Received: from canardo.mork.no ([148.122.252.1]:48937 "EHLO canardo.mork.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730049AbfILImR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Sep 2019 04:42:17 -0400
+Received: from miraculix.mork.no ([IPv6:2a02:2121:340:af89:304b:a5ff:fe41:6a88])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x8C8gAef030205
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 12 Sep 2019 10:42:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1568277734; bh=0kzHipba7JDB2zZdsoc3Tx3P2A5WmFo1FDCKYtkan+E=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        b=Z5sW09IrHUoJUhNI4s/q7m842EFqVE0Mo3Sc/W8GgNqAYkopzj9gbKDn0+1AUkPr1
+         ednlmwfKA+OItkcFd3Sp5oApRxa/o0tIhb6oqaVetHc5zYg5QwCF7vLN816q3YRctD
+         mtkQekz0MNq+on4uWu2TWixdtDGYJ1tQ7uC5pXxU=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@miraculix.mork.no>)
+        id 1i8Kg0-0001fJ-Ev; Thu, 12 Sep 2019 10:42:04 +0200
+From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+To:     netdev@vger.kernel.org
+Cc:     Oliver Neukum <oliver@neukum.org>, linux-usb@vger.kernel.org,
+        Lars Melin <larsm17@gmail.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Subject: [PATCH net,stable] cdc_ether: fix rndis support for Mediatek based smartphones
+Date:   Thu, 12 Sep 2019 10:42:00 +0200
+Message-Id: <20190912084200.6359-1-bjorn@mork.no>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190912062301.GE24779@unicorn.suse.cz>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.101.4 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Michal
+A Mediatek based smartphone owner reports problems with USB
+tethering in Linux.  The verbose USB listing shows a rndis_host
+interface pair (e0/01/03 + 10/00/00), but the driver fails to
+bind with
 
-On 2019/9/12 14:23, Michal Kubecek wrote:
-> On Wed, Sep 11, 2019 at 10:40:33AM +0800, Huazhong Tan wrote:
->> From: Guangbin Huang <huangguangbin2@huawei.com>
->>
->> This patch adds ethtool_ops.set_channels support for HNS3 VF driver,
->> and updates related TQP information and RSS information, to support
->> modification of VF TQP number, and uses current rss_size instead of
->> max_rss_size to initialize RSS.
->>
->> Also, fixes a format error in hclgevf_get_rss().
->>
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
->> ---
->>   drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  1 +
->>   .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 83 ++++++++++++++++++++--
->>   2 files changed, 79 insertions(+), 5 deletions(-)
->>
-> ...
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
->> index 594cae8..e3090b3 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> ...
->> +static void hclgevf_update_rss_size(struct hnae3_handle *handle,
->> +				    u32 new_tqps_num)
->> +{
->> +	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
->> +	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
->> +	u16 max_rss_size;
->> +
->> +	kinfo->req_rss_size = new_tqps_num;
->> +
->> +	max_rss_size = min_t(u16, hdev->rss_size_max,
->> +			     hdev->num_tqps / kinfo->num_tc);
->> +
->> +	/* Use the user's configuration when it is not larger than
->> +	 * max_rss_size, otherwise, use the maximum specification value.
->> +	 */
->> +	if (kinfo->req_rss_size != kinfo->rss_size && kinfo->req_rss_size &&
->> +	    kinfo->req_rss_size <= max_rss_size)
->> +		kinfo->rss_size = kinfo->req_rss_size;
->> +	else if (kinfo->rss_size > max_rss_size ||
->> +		 (!kinfo->req_rss_size && kinfo->rss_size < max_rss_size))
->> +		kinfo->rss_size = max_rss_size;
-> 
-> I don't think requested channel count can be larger than max_rss_size
-> here. In ethtool_set_channels(), we check that requested channel counts
-> do not exceed maximum channel counts as reported by ->get_channels().
-> And hclgevf_get_max_channels() cannot return more than max_rss_size.
-> 
+[  355.960428] usb 1-4: bad CDC descriptors
 
-When we can modify the TC number (which PF has already supported, VF may 
-implement in the future) using lldptool or tc cmd, 
-hclgevf_update_rss_size will be called to update the rss information, 
-which may also change max_rss_size,  so we will use max_rss_size instead 
-if the kinfo->rss_size configured using ethtool is bigger than max_rss_size.
+The problem is a failsafe test intended to filter out ACM serial
+functions using the same 02/02/ff class/subclass/protocol as RNDIS.
+The serial functions are recognized by their non-zero bmCapabilities.
 
->> +
->> +	kinfo->num_tqps = kinfo->num_tc * kinfo->rss_size;
->> +}
->> +
->> +static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
->> +				bool rxfh_configured)
->> +{
->> +	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
->> +	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
->> +	u16 cur_rss_size = kinfo->rss_size;
->> +	u16 cur_tqps = kinfo->num_tqps;
->> +	u32 *rss_indir;
->> +	unsigned int i;
->> +	int ret;
->> +
->> +	hclgevf_update_rss_size(handle, new_tqps_num);
->> +
->> +	ret = hclgevf_set_rss_tc_mode(hdev, kinfo->rss_size);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/* RSS indirection table has been configuared by user */
->> +	if (rxfh_configured)
->> +		goto out;
->> +
->> +	/* Reinitializes the rss indirect table according to the new RSS size */
->> +	rss_indir = kcalloc(HCLGEVF_RSS_IND_TBL_SIZE, sizeof(u32), GFP_KERNEL);
->> +	if (!rss_indir)
->> +		return -ENOMEM;
->> +
->> +	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
->> +		rss_indir[i] = i % kinfo->rss_size;
->> +
->> +	ret = hclgevf_set_rss(handle, rss_indir, NULL, 0);
->> +	if (ret)
->> +		dev_err(&hdev->pdev->dev, "set rss indir table fail, ret=%d\n",
->> +			ret);
->> +
->> +	kfree(rss_indir);
->> +
->> +out:
->> +	if (!ret)
->> +		dev_info(&hdev->pdev->dev,
->> +			 "Channels changed, rss_size from %u to %u, tqps from %u to %u",
->> +			 cur_rss_size, kinfo->rss_size,
->> +			 cur_tqps, kinfo->rss_size * kinfo->num_tc);
->> +
->> +	return ret;
->> +}
-> 
-> IIRC David asked you not to issue this log message in v1 review.
-> 
-> Michal Kubecek
-> 
+No RNDIS function with non-zero bmCapabilities were known at the time
+this failsafe was added. But it turns out that some Wireless class
+RNDIS functions are using the bmCapabilities field. These functions
+are uniquely identified as RNDIS by their class/subclass/protocol, so
+the failing test can safely be disabled.  The same applies to the two
+types of Misc class RNDIS functions.
 
-Sorry for missing this log.
+Applying the failsafe to Communication class functions only retains
+the original functionality, and fixes the problem for the Mediatek based
+smartphone.
 
-Thanks.
+Tow examples of CDC functional descriptors with non-zero bmCapabilities
+from Wireless class RNDIS functions are:
 
-> .
-> 
+0e8d:000a  Mediatek Crosscall Spider X5 3G Phone
+
+      CDC Header:
+        bcdCDC               1.10
+      CDC ACM:
+        bmCapabilities       0x0f
+          connection notifications
+          sends break
+          line coding and serial state
+          get/set/clear comm features
+      CDC Union:
+        bMasterInterface        0
+        bSlaveInterface         1
+      CDC Call Management:
+        bmCapabilities       0x03
+          call management
+          use DataInterface
+        bDataInterface          1
+
+and
+
+19d2:1023  ZTE K4201-z
+
+      CDC Header:
+        bcdCDC               1.10
+      CDC ACM:
+        bmCapabilities       0x02
+          line coding and serial state
+      CDC Call Management:
+        bmCapabilities       0x03
+          call management
+          use DataInterface
+        bDataInterface          1
+      CDC Union:
+        bMasterInterface        0
+        bSlaveInterface         1
+
+The Mediatek example is believed to apply to most smartphones with
+Mediatek firmware.  The ZTE example is most likely also part of a larger
+family of devices/firmwares.
+
+Suggested-by: Lars Melin <larsm17@gmail.com>
+Signed-off-by: Bjørn Mork <bjorn@mork.no>
+---
+ drivers/net/usb/cdc_ether.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 8458e88c18e9..32f53de5b1fe 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -206,7 +206,15 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		goto bad_desc;
+ 	}
+ skip:
+-	if (rndis && header.usb_cdc_acm_descriptor &&
++	/* Communcation class functions with bmCapabilities are not
++	 * RNDIS.  But some Wireless class RNDIS functions use
++	 * bmCapabilities for their own purpose. The failsafe is
++	 * therefore applied only to Communication class RNDIS
++	 * functions.  The rndis test is redundant, but a cheap
++	 * optimization.
++	 */
++	if (rndis && is_rndis(&intf->cur_altsetting->desc) &&
++	    header.usb_cdc_acm_descriptor &&
+ 	    header.usb_cdc_acm_descriptor->bmCapabilities) {
+ 		dev_dbg(&intf->dev,
+ 			"ACM capabilities %02x, not really RNDIS?\n",
+-- 
+2.20.1
 
