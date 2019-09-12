@@ -2,241 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4803FB12FD
-	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 18:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9799DB1302
+	for <lists+netdev@lfdr.de>; Thu, 12 Sep 2019 18:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730528AbfILQqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Sep 2019 12:46:30 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:45714 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728562AbfILQqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 12:46:30 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 32AD328E9D5
-Message-ID: <4943d80defe5458701311a0da03bf44d2a61baac.camel@collabora.com>
-Subject: Re: [PATCH 0/7] net: dsa: mv88e6xxx: features to handle network
- storms
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>, bob.beckett@collabora.com
-Date:   Thu, 12 Sep 2019 17:46:24 +0100
-In-Reply-To: <68676250-17df-b0bb-521a-64877f198647@gmail.com>
-References: <20190910154238.9155-1-bob.beckett@collabora.com>
-         <545d6473-848f-3194-02a6-011b7c89a2ca@gmail.com>
-         <20190911112134.GA20574@splinter>
-         <3f50ee51ec04a2d683a5338a68607824a3f45711.camel@collabora.com>
-         <20190912090339.GA16311@splinter>
-         <68676250-17df-b0bb-521a-64877f198647@gmail.com>
-Organization: Collabora
+        id S1730240AbfILQsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Sep 2019 12:48:50 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45510 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726744AbfILQsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Sep 2019 12:48:50 -0400
+Received: by mail-pg1-f194.google.com with SMTP id 4so13756857pgm.12
+        for <netdev@vger.kernel.org>; Thu, 12 Sep 2019 09:48:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kqq7sIjPtw89XN/e42zrVXuxfVziFrFnbqEJAB1wO2I=;
+        b=fxlqjbDVo/FW4gVb0VAB9xPQCzLmQrhSmlTNq50SggJZ86yy5dhMSp37skSSIUs0S0
+         5WnLSzScF69Ry/vzn82UFFGVSDjyQhjAC4QpNd9OTpTk0XzVjgFntEDBHpZ6VtTSi0pB
+         m1KeFyuCRIhD8v11XVzAv1AzbEYruy5NVpnS8dCcngGtyOEi9cUANa8EA4wHREF4GHpV
+         tQa6rPypvQA+JX1tRrsGCRLkZjp8h/U3MyTczsafPFZ8FZ4MQmE4c3gNSZ1y97tBqFRC
+         +LGQ3Qsmqe6hLYPS6EOy+8h2sgnUt/ZjlizekdON/ZZsEMKRalzWcB9Mb3rHQ462we6+
+         mHgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kqq7sIjPtw89XN/e42zrVXuxfVziFrFnbqEJAB1wO2I=;
+        b=OmTR1ssF74QS988r/hpagaaOkI+33ikiPiRCSm1oYCtmk8QAFCqYef6MqKnh9FodUQ
+         sfLY/EWo8mb7jeljJoYngMxLgJboRRMWKzI84PWIITipMSstTht68O42JQ0vEx51if0Q
+         Kg/OWT6XtMaXjxNeZQV946GvHdyWBGjy7FnBFRwaKSIiCX5PYDhTiIOee7Kbh5/QjH/g
+         jBAwQyOmdkLbGlZ0IJPeEFW4ENbAXoNFjqBiAkOAdctJxFjR6dtQVIVDYSsHROzf4Bg/
+         h+PctIQiUrEW7mM88e9pQ2dYAgesNnS/cIBRcOH6rnAZnJDrKLAB7SIAMkY37jlHspEH
+         Xjkw==
+X-Gm-Message-State: APjAAAUfsFiHxgIME0f6aS+MYTDMFGzKi+XBQRXz63KvSqHL+Eioxeya
+        Gr499LNHsKZOlc1VH3Yck6vaqkwtsd/+Nh1/bLY=
+X-Google-Smtp-Source: APXvYqw4rQoBAlfOQCui6gEWUogbB4nVk43Rl7Ubp2UBWkoq0BBR7f2t/bvs9PiJ7xeoCjiDGA4WWGXiZ3xKF4isDYU=
+X-Received: by 2002:a62:4d45:: with SMTP id a66mr47629373pfb.24.1568306929299;
+ Thu, 12 Sep 2019 09:48:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190911183445.32547-1-xiyou.wangcong@gmail.com>
+ <7b5b69a9-7ace-2d21-f187-7a81fb1dae5a@gmail.com> <CAM_iQpVP6qVbWmV+kA8UGXG6r1LJftyV32UjUbqryGrX5Ud8Nw@mail.gmail.com>
+ <CAHk-=whO37+O-mohvMODnD57ppCsK3Bcv8oHzSBvmwJbsT54cA@mail.gmail.com>
+In-Reply-To: <CAHk-=whO37+O-mohvMODnD57ppCsK3Bcv8oHzSBvmwJbsT54cA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 12 Sep 2019 09:48:38 -0700
+Message-ID: <CAM_iQpWWSO_RBE-1ja0N88=ZedmCU4J37CyoQ=zME=Q0Fiq_Xg@mail.gmail.com>
+Subject: Re: [Patch net] sch_sfb: fix a crash in sfb_destroy()
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+d5870a903591faaca4ae@syzkaller.appspotmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-12 at 09:25 -0700, Florian Fainelli wrote:
-> On 9/12/19 2:03 AM, Ido Schimmel wrote:
-> > On Wed, Sep 11, 2019 at 12:49:03PM +0100, Robert Beckett wrote:
-> > > On Wed, 2019-09-11 at 11:21 +0000, Ido Schimmel wrote:
-> > > > On Tue, Sep 10, 2019 at 09:49:46AM -0700, Florian Fainelli
-> > > > wrote:
-> > > > > +Ido, Jiri,
-> > > > > 
-> > > > > On 9/10/19 8:41 AM, Robert Beckett wrote:
-> > > > > > This patch-set adds support for some features of the
-> > > > > > Marvell
-> > > > > > switch
-> > > > > > chips that can be used to handle packet storms.
-> > > > > > 
-> > > > > > The rationale for this was a setup that requires the
-> > > > > > ability to
-> > > > > > receive
-> > > > > > traffic from one port, while a packet storm is occuring on
-> > > > > > another port
-> > > > > > (via an external switch with a deliberate loop). This is
-> > > > > > needed
-> > > > > > to
-> > > > > > ensure vital data delivery from a specific port, while
-> > > > > > mitigating
-> > > > > > any
-> > > > > > loops or DoS that a user may introduce on another port
-> > > > > > (can't
-> > > > > > guarantee
-> > > > > > sensible users).
-> > > > > 
-> > > > > The use case is reasonable, but the implementation is not
-> > > > > really.
-> > > > > You
-> > > > > are using Device Tree which is meant to describe hardware as
-> > > > > a
-> > > > > policy
-> > > > > holder for setting up queue priorities and likewise for queue
-> > > > > scheduling.
-> > > > > 
-> > > > > The tool that should be used for that purpose is tc and
-> > > > > possibly an
-> > > > > appropriately offloaded queue scheduler in order to map the
-> > > > > desired
-> > > > > scheduling class to what the hardware supports.
-> > > > > 
-> > > > > Jiri, Ido, how do you guys support this with mlxsw?
-> > > > 
-> > > > Hi Florian,
-> > > > 
-> > > > Are you referring to policing traffic towards the CPU using a
-> > > > policer
-> > > > on
-> > > > the egress of the CPU port? At least that's what I understand
-> > > > from
-> > > > the
-> > > > description of patch 6 below.
-> > > > 
-> > > > If so, mlxsw sets policers for different traffic types during
-> > > > its
-> > > > initialization sequence. These policers are not exposed to the
-> > > > user
-> > > > nor
-> > > > configurable. While the default settings are good for most
-> > > > users, we
-> > > > do
-> > > > want to allow users to change these and expose current
-> > > > settings.
-> > > > 
-> > > > I agree that tc seems like the right choice, but the question
-> > > > is
-> > > > where
-> > > > are we going to install the filters?
-> > > > 
-> > > 
-> > > Before I go too far down the rabbit hole of tc traffic shaping,
-> > > maybe
-> > > it would be good to explain in more detail the problem I am
-> > > trying to
-> > > solve.
-> > > 
-> > > We have a setup as follows:
-> > > 
-> > > Marvell 88E6240 switch chip, accepting traffic from 4 ports. Port
-> > > 1
-> > > (P1) is critical priority, no dropped packets allowed, all others
-> > > can
-> > > be best effort.
-> > > 
-> > > CPU port of swtich chip is connected via phy to phy of intel i210
-> > > (igb
-> > > driver).
-> > > 
-> > > i210 is connected via pcie switch to imx6.
-> > > 
-> > > When too many small packets attempt to be delivered to CPU port
-> > > (e.g.
-> > > during broadcast flood) we saw dropped packets.
-> > > 
-> > > The packets were being received by i210 in to rx descriptor
-> > > buffer
-> > > fine, but the CPU could not keep up with the load. We saw
-> > > rx_fifo_errors increasing rapidly and ksoftirqd at ~100% CPU.
-> > > 
-> > > 
-> > > With this in mind, I am wondering whether any amount of tc
-> > > traffic
-> > > shaping would help? Would tc shaping require that the packet
-> > > reception
-> > > manages to keep up before it can enact its policies? Does the
-> > > infrastructure have accelerator offload hooks to be able to apply
-> > > it
-> > > via HW? I dont see how it would be able to inspect the packets to
-> > > apply
-> > > filtering if they were dropped due to rx descriptor exhaustion.
-> > > (please
-> > > bear with me with the basic questions, I am not familiar with
-> > > this part
-> > > of the stack).
-> > > 
-> > > Assuming that tc is still the way to go, after a brief look in to
-> > > the
-> > > man pages and the documentation at largc.org, it seems like it
-> > > would
-> > > need to use the ingress qdisc, with some sort of system to
-> > > segregate
-> > > and priortise based on ingress port. Is this possible?
-> > 
-> > Hi Robert,
-> > 
-> > As I see it, you have two problems here:
-> > 
-> > 1. Classification: Based on ingress port in your case
-> > 
-> > 2. Scheduling: How to schedule between the different transmission
-> > queues
-> > 
-> > Where the port from which the packets should egress is the CPU
-> > port,
-> > before they cross the PCI towards the imx6.
-> > 
-> > Both of these issues can be solved by tc. The main problem is that
-> > today
-> > we do not have a netdev to represent the CPU port and therefore
-> > can't
-> > use existing infra like tc. I believe we need to create one.
-> > Besides
-> > scheduling, we can also use it to permit/deny certain traffic from
-> > reaching the CPU and perform policing.
-> 
-> We do not necessarily have to create a CPU netdev, we can overlay
-> netdev
-> operations onto the DSA master interface (fec in that case), and
-> whenever you configure the DSA master interface, we also call back
-> into
-> the switch side for the CPU port. This is not necessarily the
-> cleanest
-> way to do things, but that is how we support ethtool operations (and
-> some netdev operations incidentally), and it works
+On Thu, Sep 12, 2019 at 3:31 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Thu, Sep 12, 2019 at 2:10 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Wed, Sep 11, 2019 at 2:36 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > > It seems a similar fix would be needed in net/sched/sch_dsmark.c ?
+> > >
+> >
+> > Yeah, or just add a NULL check in dsmark_destroy().
+>
+> Well, this was why one of my suggestions was to just make
+> "qdisc_put()" be happy with a NULL pointer (or even an ERR_PTR()).
+>
+> That would have fixed not just sfb, but also dsmark with a single patch.
 
-After reading up on tc, I am not sure how this would work given the
-semantics of the tool currently.
+Sure, I don't have any preference here, just want to find a minimum
+fix for -stable.
 
-My initial thought was to model the switch's 4 output queues using an
-mqprio qdisc for the CPU port, and then use either iptables's classify
-module on the input ports to set which queue it egresses from on the
-CPU port, or use vlan tagging with id 0 and priority set. (with the
-many detail of how to implement them still left to discover).
+I will send v2.
 
-However, it looks like the mqprio qdisc could only be used for egress,
-so without a netdev representing the CPU port, I dont know how it could
-be used.
-
-Another thing I thought of using was just to use iptable's TOS module
-to set the minimal delay bit and rely on default behaviours, but Ive
-yet to find anything in the Marvell manual that indicates it could set
-that bit on all frames entering a port.
-
-Another option might be to use vlans with their priority bits being
-used to steer to output queues, but I really dont want to introduce
-more virtual interfaces in to the setup, and I cant see how to
-configure an enforce default vlan tag with id 0 and priority bits set
-via linux userland tools.
-
-
-It does look like tc would be quite nice for configuring the egress
-rate limiting assuming we a netdev to target with the rate controls of
-the qdisc.
-
-
-So far, this seems like I am trying to shoe horn this stuff in to tc.
-It seems like tc is meant to configure how the ip stack  configures
-flow within the stack, whereas in a switch chip, the packets go nowhere
-near the CPUs kernel ip stack. I cant help thinking that it would be
-good have a specific utility for configuring switches that operates on
-the port level for manage flow within the chip, or maybe simple sysfs
-attributes to set the ports priority.
-
+Thanks.
