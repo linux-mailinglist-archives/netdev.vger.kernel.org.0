@@ -2,89 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C22B1790
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 06:24:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF55B17BE
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 06:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfIMEXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 00:23:53 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45946 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfIMEXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 00:23:52 -0400
-Received: by mail-io1-f68.google.com with SMTP id f12so60098265iog.12;
-        Thu, 12 Sep 2019 21:23:52 -0700 (PDT)
+        id S1726676AbfIMEcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 00:32:22 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41877 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbfIMEcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 00:32:21 -0400
+Received: by mail-qt1-f194.google.com with SMTP id x4so654174qtq.8;
+        Thu, 12 Sep 2019 21:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=77SoApYkFt3isyCsrY6dkIW1UAAJ7m+Z3V3KK6V4A70=;
-        b=GUvypkaofnmPrAjAlwJgfb58Ko6ovCWLN6QjacOFu3EVClbgTUSWhpCXaM5EcVFzAg
-         BErq8qd7bkhjY7mTPChVqjsDmtC4PB6jxnIkSlhK2JwaNp8AeMjcecEFYCKNzsmRfud5
-         ZylbApopgg3GlcmVF9BgvrSreKyfzHH/QAq2QGFL606b0m47uWEws44Efu9LRchvT3BJ
-         TRq4Xrc3glOHgp0hm+F+7bhr68Js8K23WgpOrK3VenDovjcv/2VZZhTmT6H4TAbYNo6z
-         uevqos7dR0m/q7LZMf06b6vjkC7uHESAh25zI5Z6DVr6qgZe9COXBlfeOIOmRgI9l0Wr
-         HCJQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Yse8g8Q3UwGovp9kmEu/ngI/ZbWCMGb6gH3RV7HcZFA=;
+        b=kC2TX1ensAA3ANidZN+R3xInNoGyBjIrz+f8zg2IfQ1rTGc8sjOw69hQL33RGItTNa
+         TSOGL9ocNapSDLjHpsR+NvAACob8IJw1LbZvKQRsuIgCC8U0eiIE0ZUgJy0VIUJCkzeu
+         BgXHDg+GtdZ6nL1e56QeEyNwrYYLW4drWSrkEHdTkwtTgD9/QYT2guFHmRBqO6ICpUDx
+         Y7C2ocB5rkK9Vp8bAwgOzFKs6b9NkmozdKC8NAlWPIijnMpBwmCqUUgE9mPTF3CofFh6
+         17xcB35IaTqVUNEl0uh2OoAbl9zZVQknrykzpqiQaQQAc7YYIVuxjC8lwP8VSambt9Vt
+         CDwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=77SoApYkFt3isyCsrY6dkIW1UAAJ7m+Z3V3KK6V4A70=;
-        b=RzV+eoeXQmqNBYmaN9LDEGIWtN0CRbXVnzQlfdDUYrRdSys5huH3ff7eocR4rGQJjN
-         k8I6fWyDvGAvTiI8Da+iuoIqpCqw2ygQwAEALJRCCrJBo+lJcXDV7cotY9uy0AFnmAgi
-         34iIn71Dh3iHaA8OSkodTQ7/i3HyrMYSBg3yzMSfQvAsJE3d7hZ544djxcv1j75zjPa2
-         3pgUVVr9zRQGYA2Mqa6mg5bA/cgpkhdyppPnY6ThEs/vc1/s5lADjeRN+sV0cLk2xrPz
-         YravDqjAMvfqMy8W30r5jUaFveUGpr2i/yJhUFZgxWYMcSJvzq4iUstr/+zHVR0iSnot
-         VM7Q==
-X-Gm-Message-State: APjAAAUUBlEKkOqOvs4gB+SqDExo7PuiXZ3GAXCkj53ia4+/H4O9yMx6
-        szmeLZ3ykEzsuGeuM2Ubxng=
-X-Google-Smtp-Source: APXvYqyjtqbjM8GW5BGGtDVrVHCMFNfYy9E21J1r8qxh2yoZM0mKIHECdUHQjAqJo77wkoR4we5xOA==
-X-Received: by 2002:a5d:91c8:: with SMTP id k8mr9465769ior.232.1568348631660;
-        Thu, 12 Sep 2019 21:23:51 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id z11sm23474759ioi.88.2019.09.12.21.23.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Sep 2019 21:23:50 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iwlwifi: dbg_ini: fix memory leak in alloc_sgtable
-Date:   Thu, 12 Sep 2019 23:23:27 -0500
-Message-Id: <20190913042331.27080-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Yse8g8Q3UwGovp9kmEu/ngI/ZbWCMGb6gH3RV7HcZFA=;
+        b=PVaofW66UhcZozSonc5PiRYocNoPj7TM3vQp+cE7v2z46P6W5Y0HEuqab3pT5bTi4E
+         a/AE4dmfOyimgZsCiGSwW0tDqDLTL7yGaSmVUwrds040A7X2sLWQ4UvT26vdvkmR/w/E
+         HIAiNcGDWjEtD5cG/nD2O1X5RdWQDIaO+Q5fWLIvVAJnYZ0zOgFc+g1vVdn8oQVzSHo5
+         OiQijIaUEPrrTxZBbJ6mWwfV7a76+eEfI2PZUFNMLB8XBI3GeSlMEt2/3p1eAYngJDEq
+         hBsenGMeB+YDXxxRymYmmQHADRQaqOtB3yuhLTC88m3+e5aFgtPL34JHA4F0SFc676My
+         3coQ==
+X-Gm-Message-State: APjAAAU5ryVLutvuz9aoyxak2pOUIMyK9Sj/dLh5u3q+q/52A+fsmTSA
+        NjTxEKlOrNUuYA1ps3CL5s/PmCgCRDDu7Tv3Ao2VfSZIe/hzPg==
+X-Google-Smtp-Source: APXvYqyFRo+kMM4H0/cH+ZcHpMFiZE0C1FPWmpFQ8UVQbm/cULX1srRSxjrDyA1OMn3Gib+K6YJhy4XenWKfNkpJpKY=
+X-Received: by 2002:ad4:54e3:: with SMTP id k3mr30475927qvx.9.1568349139276;
+ Thu, 12 Sep 2019 21:32:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190911172435.21042-1-ciara.loftus@intel.com>
+In-Reply-To: <20190911172435.21042-1-ciara.loftus@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 13 Sep 2019 06:32:08 +0200
+Message-ID: <CAJ+HfNiL3AKHYOv42d5oca7CaYLso18dV=+=_oDpBQsKMk7-fw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] i40e: fix xdp handle calculations
+To:     Ciara Loftus <ciara.loftus@intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Kevin Laatz <kevin.laatz@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In alloc_sgtable if alloc_page fails, the alocated table should be
-released.
+On Wed, 11 Sep 2019 at 19:27, Ciara Loftus <ciara.loftus@intel.com> wrote:
+>
+> Commit 4c5d9a7fa149 ("i40e: fix xdp handle calculations") reintroduced
+> the addition of the umem headroom to the xdp handle in the i40e_zca_free,
+> i40e_alloc_buffer_slow_zc and i40e_alloc_buffer_zc functions. However,
+> the headroom is already added to the handle in the function i40_run_xdp_z=
+c.
+> This commit removes the latter addition and fixes the case where the
+> headroom is non-zero.
+>
+> Fixes: 4c5d9a7fa149 ("i40e: fix xdp handle calculations")
+> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/eth=
+ernet/intel/i40e/i40e_xsk.c
+> index 0373bc6c7e61..5f285ba1f1f9 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> @@ -192,7 +192,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring,=
+ struct xdp_buff *xdp)
+>  {
+>         struct xdp_umem *umem =3D rx_ring->xsk_umem;
+>         int err, result =3D I40E_XDP_PASS;
+> -       u64 offset =3D umem->headroom;
+> +       u64 offset;
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 1 +
- 1 file changed, 1 insertion(+)
+Hi Ciara! Thanks for the patch; Small nit: Please sort local variable
+declarations from longest to shortest line.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index 4d81776f576d..db41abb3361d 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -643,6 +643,7 @@ static struct scatterlist *alloc_sgtable(int size)
- 				if (new_page)
- 					__free_page(new_page);
- 			}
-+			kfree(table);
- 			return NULL;
- 		}
- 		alloc_size = min_t(int, size, PAGE_SIZE);
--- 
-2.17.1
 
+Cheers,
+Bj=C3=B6rn
+
+
+>         struct i40e_ring *xdp_ring;
+>         struct bpf_prog *xdp_prog;
+>         u32 act;
+> @@ -203,7 +203,7 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring,=
+ struct xdp_buff *xdp)
+>          */
+>         xdp_prog =3D READ_ONCE(rx_ring->xdp_prog);
+>         act =3D bpf_prog_run_xdp(xdp_prog, xdp);
+> -       offset +=3D xdp->data - xdp->data_hard_start;
+> +       offset =3D xdp->data - xdp->data_hard_start;
+>
+>         xdp->handle =3D xsk_umem_adjust_offset(umem, xdp->handle, offset)=
+;
+>
+> --
+> 2.17.1
+>
