@@ -2,94 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA019B1D84
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 14:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E1EB1DBC
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 14:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388345AbfIMMTj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Sep 2019 08:19:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42628 "EHLO mx1.redhat.com"
+        id S1729704AbfIMMbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 08:31:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:44590 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388309AbfIMMT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Sep 2019 08:19:29 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726771AbfIMMbw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Sep 2019 08:31:52 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2FB2A79704
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 12:19:29 +0000 (UTC)
-Received: by mail-ed1-f70.google.com with SMTP id j8so17037278edl.11
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 05:19:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=FUyOcPi0NHmHBGgNXqP+P7obEs5/r8uMUZC4jE6n+fs=;
-        b=bwVLVLMGjgCNi37HpJEbst440RRi7wZKVshHXROaM6vQggaiwZZQzLDnsLFk7QKC70
-         lfLoa9TzJr22QxYQVLDzwb9yuBR16a7I0l5BPsdrHx6oWNlKJ6Hw4ygEdv8GxUMNOY9q
-         2tLiSVnpfWNQVrXYoBvgwBUJfHxCiHAR87+hK/lpLMncpR6Yt0mIZo4MhQuHu7UInoaM
-         EWtFsab4pWXiR8shpJqLAO9nmz/6fCzcBtoLoJxM3+rRBSDvkMGp7m7oRjzaFCpE/qUY
-         XJLQyZZxuEJRsg1sFm7h00bxBVQKBLyDVR6rmij6tQTxFGrpSJB1yGeMSf0IjkgTcGam
-         reIQ==
-X-Gm-Message-State: APjAAAWreVZCv3oMn0JXmJlrS536DPkrR0d1FzoLhmHE5OnihJ2A/xIp
-        geVZ68Ft7r29ZyRbsImBJtrayXIsEICKHoqISNbn2F7W4Va9Mgzl63lTArQGAy3t8tiXJU8m6WF
-        DwTOaPGGFzr+bbOFq
-X-Received: by 2002:a50:f30c:: with SMTP id p12mr46858205edm.299.1568377168003;
-        Fri, 13 Sep 2019 05:19:28 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyyJlvDFyQWbdgNap7j6wIzmKQY/VrKSgEVURx/1Gzi41LI0cvKYDz9tVgKPwUjHeIr/5xDNA==
-X-Received: by 2002:a50:f30c:: with SMTP id p12mr46858177edm.299.1568377167788;
-        Fri, 13 Sep 2019 05:19:27 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id p11sm5241842edh.77.2019.09.13.05.19.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2019 05:19:26 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 68597180613; Fri, 13 Sep 2019 14:19:26 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kees Cook <keescook@chromium.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] bpf: validate bpf_func when BPF_JIT is enabled
-In-Reply-To: <CABCJKufGy0aRDSUPQEOKYZ9tLjqwQDcDaTW-6im-VfjkB_gUsw@mail.gmail.com>
-References: <20190909223236.157099-1-samitolvanen@google.com> <4f4136f5-db54-f541-2843-ccb35be25ab4@fb.com> <20190910172253.GA164966@google.com> <c7c7668e-6336-0367-42b3-2f6026c466dd@fb.com> <fd8b6f04-3902-12e9-eab1-fa85b7e44dd5@intel.com> <87impzt4pu.fsf@toke.dk> <CABCJKufCwjXQ6a4oLjywDmxY2apUZ1yop-5+qty82bfwV-QTAA@mail.gmail.com> <87sgp1ssfk.fsf@toke.dk> <CABCJKufGy0aRDSUPQEOKYZ9tLjqwQDcDaTW-6im-VfjkB_gUsw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 13 Sep 2019 14:19:26 +0200
-Message-ID: <87h85gs81d.fsf@toke.dk>
+        by mx1.redhat.com (Postfix) with ESMTPS id 3E56810C0922;
+        Fri, 13 Sep 2019 12:31:52 +0000 (UTC)
+Received: from carbon (ovpn-200-36.brq.redhat.com [10.40.200.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8245B5C207;
+        Fri, 13 Sep 2019 12:31:45 +0000 (UTC)
+Date:   Fri, 13 Sep 2019 14:31:44 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        brouer@redhat.com
+Subject: Re: [v2 3/3] samples: pktgen: allow to specify destination IP range
+ (CIDR)
+Message-ID: <20190913143144.2b8c18ed@carbon>
+In-Reply-To: <20190911184807.21770-3-danieltimlee@gmail.com>
+References: <20190911184807.21770-1-danieltimlee@gmail.com>
+        <20190911184807.21770-3-danieltimlee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Fri, 13 Sep 2019 12:31:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sami Tolvanen <samitolvanen@google.com> writes:
+On Thu, 12 Sep 2019 03:48:07 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-> On Thu, Sep 12, 2019 at 3:52 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> I think it would be good if you do both. I'm a bit worried that XDP
->> performance will end up in a "death by a thousand paper cuts" situation,
->> so I'd rather push back on even relatively small overheads like this; so
->> being able to turn it off in the config would be good.
->
-> OK, thanks for the feedback. In that case, I think it's probably
-> better to wait until we have CFI ready for upstreaming and use the
-> same config for this one.
+> diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
+> index 063ec0998906..08995fa70025 100755
+> --- a/samples/pktgen/pktgen_sample01_simple.sh
+> +++ b/samples/pktgen/pktgen_sample01_simple.sh
+> @@ -22,6 +22,7 @@ fi
+>  # Example enforce param "-m" for dst_mac
+>  [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
+>  [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
+> +[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
 
-SGTM, thanks!
+The way the function "parse_addr" is called, in case of errors the
+'err()' function is called inside, but it will not stop the program
+flow.  Instead that function will "only" echo the "ERROR", but program
+flow continues (even-thought 'err()' uses exit $exitcode).
 
->> Can you share more details about what the "future CFI checking" is
->> likely to look like?
->
-> Sure, I posted an overview of CFI and what we're doing in Pixel devices here:
->
-> https://android-developers.googleblog.com/2018/10/control-flow-integrity-in-android-kernel.html
+Maybe it is not solveable to get the exit/$?/status out? (I've tried
+different options, but didn't find a way).
 
-Great, thank you.
+Alternatively we can just add one extra line to validate result:
 
--Toke
+ [ -z "$DST_MIN" ] && err 5 "Stop: Invalid IP${IP6} address input"
+
+As if it fails then $DST_MIN isn't set.
+
+
+>  if [ -n "$DST_PORT" ]; then
+>      read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
+>      validate_ports $UDP_DST_MIN $UDP_DST_MAX
+> @@ -61,7 +62,8 @@ pg_set $DEV "flag NO_TIMESTAMP"
+>  
+>  # Destination
+>  pg_set $DEV "dst_mac $DST_MAC"
+> -pg_set $DEV "dst$IP6 $DEST_IP"
+> +pg_set $DEV "dst${IP6}_min $DST_MIN"
+> +pg_set $DEV "dst${IP6}_max $DST_MAX"
+>  
+>  if [ -n "$DST_PORT" ]; then
+>      # Single destination port or random port range
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
