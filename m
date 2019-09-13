@@ -2,72 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 499CBB1A38
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 10:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC074B1A7B
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387653AbfIMIys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 04:54:48 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:35208 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387402AbfIMIys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 04:54:48 -0400
-Received: by mail-ot1-f68.google.com with SMTP id t6so15517700otp.2
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 01:54:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=LnqH6fH4IV3YRYwgYEiWm4ZbnkOeXuBd75uDDT68uGI=;
-        b=cqL1YUJA+cihDBoiORK+X8oYXnKSDQahZGASYjtAsDgx3IbogpmJ5s+Je+yx8F7hF8
-         8Lshf6dxXzjca0KIx9XrCNvsr5GxKDLFBcKx8ZHXLfz0KgTbJ0+tSruXXm/b6oyQL/1P
-         UKpi5mZPu/Il3u8RU2RKmZJqxg+K7CadEgvkca/Fd/FJmilyxrcw2C6Ukh/V/MzXBwmj
-         s5Zvn5UDIUF51OThoa3JZnBPJ95bZib3hOd6X0wnacWR2RDqCeBuDHXjhBEmz8EuNYnb
-         UBTHSJkL4ZmatD8CwxYGQGGRXgubF2h6tP1d6V0Duh3m5Nq7DBd9O+C0W26pr9/F0iTO
-         5xJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=LnqH6fH4IV3YRYwgYEiWm4ZbnkOeXuBd75uDDT68uGI=;
-        b=aYr1qxv+z5ptahzhnrTIPoQLWB51xAHMQymSCilEqj3STpKqDHYE+zrjhT46BLC7AR
-         S+9L3Y91QYsYgBba7WZxAoMubI3FhoNY5OaJeH0zDGHhk8Rrw1uWKb7/wFXzJiNdDBFQ
-         ufKzrXXNRFcbYy9qaVEto0b3TsX1UCZINrX0yeJfCThMOXeUwRQneEKjSBMwwFQfvDPj
-         uCcj2xJWAlvmolQe4mjOrO0l4KibTzsejrC3mE2fSxte6Ha8Zo23x6PutayHcAJNr3/h
-         wc+oD5n9Hxqqn/aFX3GEh+X5Gba3flUyhDVAEuzhrw8dvAPjI1tbxKKcgdWNOXAtE84i
-         zygQ==
-X-Gm-Message-State: APjAAAUIhJZouWVgbsb3O93c4vwoUuwJcEEFWo0zp8Zd9sloN90e9aFP
-        P28ZQunFVhBXGbkmPOO6VDlFomMmev1CFm2LF9c=
-X-Google-Smtp-Source: APXvYqz4IP2tkUlpe6Ll6ReQgkGxu+gDzVb4v6lURkCrs8gxVVK+3EMb6dvNW9fBzC1AWNy5/W8vWRF30QRh5shEfZk=
-X-Received: by 2002:a9d:404a:: with SMTP id o10mr39791375oti.94.1568364886390;
- Fri, 13 Sep 2019 01:54:46 -0700 (PDT)
+        id S2387846AbfIMJIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 05:08:20 -0400
+Received: from cvk-fw1.cvk.de ([194.39.189.11]:16398 "EHLO cvk-fw1.cvk.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387613AbfIMJIU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Sep 2019 05:08:20 -0400
+X-Greylist: delayed 557 seconds by postgrey-1.27 at vger.kernel.org; Fri, 13 Sep 2019 05:08:19 EDT
+Received: from localhost (cvk-fw1 [127.0.0.1])
+        by cvk-fw1.cvk.de (Postfix) with ESMTP id 46V8h50VJbz4wr6
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 10:59:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cvk.de; h=
+        mime-version:content-transfer-encoding:content-type:content-type
+        :content-language:accept-language:message-id:date:date:subject
+        :subject:from:from; s=mailcvk20190509; t=1568365140; x=
+        1570179541; bh=c2sKHLWdgUNLcYiTpIxgDlpw1ntPeMEwYpWiKBvpsSk=; b=F
+        kGWwrKVR3vb+vT9C+DMZT34o4dqtfOiIgdTUPEiV+8bn9DcL+bIIFDUyHTu+booA
+        UWLhhWODxtax68WlyD1w6p8AgJw+/Rv5AB1DnEHIc/EWxOnF1I1Km3dVPz03/prZ
+        M6aSSGHaP+ZMxFYrOJ/n4MVyNbQUqnfTs0jOm9q2R+8H5TeXE9oI2HKcJl7tKA52
+        N48DsZ6kKKRQKEm+OKwhevBIe3YkgefoHaRPVs+VjEn+3zBlIVjeLzV42RPIE+Oi
+        ZrUWrxxjzzWdFPV/MYw/CFUDFd0QzsTUFx6dgp7tl6VgXwsSElmy1MQzLHkMs7Js
+        aoxJ+B58K23COMM4id4sw==
+X-Virus-Scanned: by amavisd-new at cvk.de
+Received: from cvk-fw1.cvk.de ([127.0.0.1])
+        by localhost (cvk-fw1.cvk.de [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id bX0RhSWI-hXy for <netdev@vger.kernel.org>;
+        Fri, 13 Sep 2019 10:59:00 +0200 (CEST)
+Received: from cvk027.cvk.de (cvk027.cvk.de [10.1.0.22])
+        by cvk-fw1.cvk.de (Postfix) with ESMTP
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 10:59:00 +0200 (CEST)
+Received: from cvk038.intra.cvk.de (cvk038.intra.cvk.de [10.1.0.38])
+        by cvk027.cvk.de (Postfix) with ESMTP id 65CCC84ADE8
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 10:59:01 +0200 (CEST)
+Received: from CVK038.intra.cvk.de ([::1]) by cvk038.intra.cvk.de ([::1]) with
+ mapi id 14.03.0468.000; Fri, 13 Sep 2019 10:59:01 +0200
+From:   "Bartschies, Thomas" <Thomas.Bartschies@cvk.de>
+To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: big ICMP requests get disrupted on IPSec tunnel activation
+Thread-Topic: big ICMP requests get disrupted on IPSec tunnel activation
+Thread-Index: AdVqDuxpNdDfEB5ERA+Q1nyhyK5bhA==
+Date:   Fri, 13 Sep 2019 08:59:00 +0000
+Message-ID: <EB8510AA7A943D43916A72C9B8F4181F629D9741@cvk038.intra.cvk.de>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.11.10.4]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-From:   Mark Smith <markzzzsmith@gmail.com>
-Date:   Fri, 13 Sep 2019 18:54:20 +1000
-Message-ID: <CAO42Z2xH_R1YQBhpyFVziPnHzWwzNV61VqrVT0yMcdEoTd6ZNQ@mail.gmail.com>
-Subject: "[RFC PATCH net-next 2/2] Reduce localhost to 127.0.0.0/16"
-To:     dave.taht@gmail.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-GBS-PROC: 5zoD1qfZ1bhzGU/FjtQuf4EINqGxeuzvToiSDe3zBQ8=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Not subscribed to the ML)
+Hello together,
 
-Hi,
+since kenel 4.20 we're observing a strange behaviour when sending big ICMP =
+packets. An example is a packet size of 3000 bytes.
+The packets should be forwarded by a linux gateway (firewall) having multip=
+le interfaces also acting as a vpn gateway.
 
-I've noticed this patch. I don't think it should be applied, as it
-contradicts RFC 1122, "Requirements for Internet Hosts --
-Communication Layers":
+Test steps:
+1. Disabled all iptables rules
+2. Enabled the VPN IPSec Policies.
+3. Start a ping with packet size (e.g. 3000 bytes) from a client in the DMZ=
+ passing the machine targeting another LAN machine
+4. Ping works
+5. Enable a VPN policy by sending pings from the gateway to a tunnel target=
+. System tries to create the tunnel
+6. Ping from 3. immediately stalls. No error messages. Just stops.
+7. Stop Ping from 3. Start another without packet size parameter. Stalls al=
+so.
 
-"(g)  { 127, <any> }
+Result:
+Connections from the client to other services on the LAN machine still work=
+. Tracepath works. Only ICMP requests do not pass
+the gateway anymore. tcpdump sees them on incoming interface, but not on th=
+e outgoing LAN interface. IMCP requests to any
+other target IP address in LAN still work. Until one uses a bigger packet s=
+ize. Then these alternative connections stall also.
 
-                 Internal host loopback address.  Addresses of this form
-                 MUST NOT appear outside a host."
+Flushing the policy table has no effect. Flushing the conntrack table has n=
+o effect. Setting rp_filter to loose (2) has no effect.
+Flush the route cache has no effect.
 
-RFC 1122 is one of the relatively few Internet Standards, specifically
-Standard Number 3:
+Only a reboot of the gateway restores normal behavior.
 
-https://www.rfc-editor.org/standards
+What can be the cause? Is this a networking bug?
+
+Best regards,
+--
+i. A. Thomas Bartschies=20
+IT Systeme
+
+Cornelsen Verlagskontor GmbH
+Kammerratsheide 66
+33609 Bielefeld
+Telefon: +49 (0)521 9719-310
+Telefax: +49 (0)521 9719-93310
+thomas.bartschies@cvk.de
+http://www.cvk.de
+AG Bielefeld HRB 39324
+Gesch=E4ftsf=FChrer: Thomas Fuchs, Patrick Neiss
 
 
-Regards,
-Mark.
+
