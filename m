@@ -2,229 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DE2B227B
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 16:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3A6B2288
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 16:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388488AbfIMOry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 10:47:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44613 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388244AbfIMOrx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Sep 2019 10:47:53 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8931D307D847;
-        Fri, 13 Sep 2019 14:47:53 +0000 (UTC)
-Received: from ovpn-117-12.ams2.redhat.com (ovpn-117-12.ams2.redhat.com [10.36.117.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A5FC119C78;
-        Fri, 13 Sep 2019 14:47:51 +0000 (UTC)
-Message-ID: <15a5bb03286766b58c952027e91ab2514ea2172d.camel@redhat.com>
-Subject: Re: [PATCH net] udp: correct reuseport selection with connected
- sockets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kraig@google.com,
-        zabele@comcast.net, mark.keaton@raytheon.com,
-        Willem de Bruijn <willemb@google.com>
-Date:   Fri, 13 Sep 2019 16:47:50 +0200
-In-Reply-To: <20190913011639.55895-1-willemdebruijn.kernel@gmail.com>
-References: <20190913011639.55895-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S2388950AbfIMOuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 10:50:17 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35306 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388704AbfIMOuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 10:50:16 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g7so32471537wrx.2
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 07:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UHoUskxisugDZKJAcdaG4bzfDXUH41yuSokAcb+fz2g=;
+        b=g/YiqbAL1kz2748UrRGLKYvMpD7wRSplyF3IUx8ITVqtJpMiTkwXsOgSXpiLwo0B9f
+         AIGP8co47r9Tx52+88Qbw+wdFOPIg9oFyxO9hS7HRDGsKVo39hqD4RH17rhdwYec6faO
+         lDuAsVGVOxV7Z/+FZ1+M/gHZp1hg3KeZ/IZoGD+XeFuLahM6iokihRW75UrkmbfoXdKg
+         /fvTvXtb2phh+DWOQuJ9yLUK8X1p8SYR455l3bxXsbJsbgemA47i+L+RhfEWVif3uJ7S
+         qA4lXbRprGcoxbVjnO7ygz3VaEDpmV5TKQgDeAIkdjsGCcKDOn9K+rT3doWJ2WJ2M/DX
+         r0eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UHoUskxisugDZKJAcdaG4bzfDXUH41yuSokAcb+fz2g=;
+        b=klqAK1+Idb/tL1On0HXSEGNTxGJX0T6iUJHEe8A7LsiuG1GT6qMz5Kl4Z4BLZdZUiC
+         ytkci2a4gsDnC69RoeeXPsPkBEC+IFtX0TtJlLuf3gVcEvSN4thvyInRI5pdKg1C+v8i
+         h2NktRXTbci5M5/csf0v1qdzAsnn6C2BOQIQ4njcpemj8IrCp6nrnNlqEy8InUid5yVu
+         4sIrbMuJINB9ZZUKzjYrZBiFPjF2MQ13gFnAPXlpcxZ1GqKE5VkzwV/FjqM7gv+019DE
+         Q6bNztrTQcp5jQNx+0IzooM71xGp0+9D7NfOXsK6lmE7nKICStv3KKQpC9Dtg4gNdNXc
+         O9Og==
+X-Gm-Message-State: APjAAAURfBBE3ViKN6aWKHh+hGg3doW5r29iiD7ONzUbG60gzwGdw2gW
+        r8VTvHSb6gdnigKuRNJ3ITGUwnuYg4w=
+X-Google-Smtp-Source: APXvYqy4qKv+PL4PBoHn5ObZk1t42F/7ddS9om/bsb/NCNUtV9C+h+heOE4KTNhztWc27aA/qQfFFA==
+X-Received: by 2002:a5d:6846:: with SMTP id o6mr2177577wrw.73.1568386213528;
+        Fri, 13 Sep 2019 07:50:13 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q10sm55022831wrd.39.2019.09.13.07.50.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Sep 2019 07:50:12 -0700 (PDT)
+Date:   Fri, 13 Sep 2019 16:50:12 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+Message-ID: <20190913145012.GB2276@nanopsycho.orion>
+References: <20190827070808.GA2250@nanopsycho>
+ <20190827.012242.418276717667374306.davem@davemloft.net>
+ <20190827093525.GB2250@nanopsycho>
+ <CAJieiUjpE+o-=x2hQcsKQJNxB8O7VLHYw2tSnqzTFRuy_vtOxw@mail.gmail.com>
+ <20190828070711.GE2312@nanopsycho>
+ <CAJieiUiipZY3A+04Po=WnvgkonfXZxFX2es=1Q5dq1Km869Obw@mail.gmail.com>
+ <20190829052620.GK29594@unicorn.suse.cz>
+ <CAJieiUgGY4amm_z1VGgBF-3WZceah+R5OVLEi=O2RS8RGpC9dg@mail.gmail.com>
+ <20190830170342.GR2312@nanopsycho>
+ <20190912115942.GC7621@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 13 Sep 2019 14:47:53 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190912115942.GC7621@nanopsycho.orion>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-12 at 21:16 -0400, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> UDP reuseport groups can hold a mix unconnected and connected sockets.
-> Ensure that connections only receive all traffic to their 4-tuple.
-> 
-> Fast reuseport returns on the first reuseport match on the assumption
-> that all matches are equal. Only if connections are present, return to
-> the previous behavior of scoring all sockets.
-> 
-> Record if connections are present and if so (1) treat such connected
-> sockets as an independent match from the group, (2) only return
-> 2-tuple matches from reuseport and (3) do not return on the first
-> 2-tuple reuseport match to allow for a higher scoring match later.
-> 
-> New field has_conns is set without locks. No other fields in the
-> bitmap are modified at runtime and the field is only ever set
-> unconditionally, so an RMW cannot miss a change.
-> 
-> Fixes: e32ea7e74727 ("soreuseport: fast reuseport UDP socket selection")
-> Link: http://lkml.kernel.org/r/CA+FuTSfRP09aJNYRt04SS6qj22ViiOEWaWmLAwX0psk8-PGNxw@mail.gmail.com
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> 
-> ---
-> 
-> I was unable to compile some older kernels, so the Fixes tag is based
-> on basic analysis, not bisected to by the regression test.
-> ---
->  include/net/sock_reuseport.h | 20 +++++++++++++++++++-
->  net/core/sock_reuseport.c    | 15 +++++++++++++--
->  net/ipv4/datagram.c          |  2 ++
->  net/ipv4/udp.c               |  5 +++--
->  net/ipv6/datagram.c          |  2 ++
->  net/ipv6/udp.c               |  5 +++--
->  6 files changed, 42 insertions(+), 7 deletions(-)
-> 
-> diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> index d9112de85261..43f4a818d88f 100644
-> --- a/include/net/sock_reuseport.h
-> +++ b/include/net/sock_reuseport.h
-> @@ -21,7 +21,8 @@ struct sock_reuseport {
->  	unsigned int		synq_overflow_ts;
->  	/* ID stays the same even after the size of socks[] grows. */
->  	unsigned int		reuseport_id;
-> -	bool			bind_inany;
-> +	unsigned int		bind_inany:1;
-> +	unsigned int		has_conns:1;
->  	struct bpf_prog __rcu	*prog;		/* optional BPF sock selector */
->  	struct sock		*socks[0];	/* array of sock pointers */
->  };
-> @@ -37,6 +38,23 @@ extern struct sock *reuseport_select_sock(struct sock *sk,
->  extern int reuseport_attach_prog(struct sock *sk, struct bpf_prog *prog);
->  extern int reuseport_detach_prog(struct sock *sk);
->  
-> +static inline bool reuseport_has_conns(struct sock *sk, bool set)
-> +{
-> +	struct sock_reuseport *reuse;
-> +	bool ret = false;
-> +
-> +	rcu_read_lock();
-> +	reuse = rcu_dereference(sk->sk_reuseport_cb);
-> +	if (reuse) {
-> +		if (set)
-> +			reuse->has_conns = 1;
-> +		ret = reuse->has_conns;
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	return ret;
-> +}
-> +
->  int reuseport_get_id(struct sock_reuseport *reuse);
->  
->  #endif  /* _SOCK_REUSEPORT_H */
-> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> index 9408f9264d05..f3ceec93f392 100644
-> --- a/net/core/sock_reuseport.c
-> +++ b/net/core/sock_reuseport.c
-> @@ -295,8 +295,19 @@ struct sock *reuseport_select_sock(struct sock *sk,
->  
->  select_by_hash:
->  		/* no bpf or invalid bpf result: fall back to hash usage */
-> -		if (!sk2)
-> -			sk2 = reuse->socks[reciprocal_scale(hash, socks)];
-> +		if (!sk2) {
-> +			int i, j;
-> +
-> +			i = j = reciprocal_scale(hash, socks);
-> +			while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
-> +				i++;
-> +				if (i >= reuse->num_socks)
-> +					i = 0;
-> +				if (i == j)
-> +					goto out;
-> +			}
-> +			sk2 = reuse->socks[i];
-> +		}
->  	}
->  
->  out:
-> diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-> index 7bd29e694603..9a0fe0c2fa02 100644
-> --- a/net/ipv4/datagram.c
-> +++ b/net/ipv4/datagram.c
-> @@ -15,6 +15,7 @@
->  #include <net/sock.h>
->  #include <net/route.h>
->  #include <net/tcp_states.h>
-> +#include <net/sock_reuseport.h>
->  
->  int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
->  {
-> @@ -69,6 +70,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
->  	}
->  	inet->inet_daddr = fl4->daddr;
->  	inet->inet_dport = usin->sin_port;
-> +	reuseport_has_conns(sk, true);
->  	sk->sk_state = TCP_ESTABLISHED;
->  	sk_set_txhash(sk);
->  	inet->inet_id = jiffies;
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index d88821c794fb..16486c8b708b 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -423,12 +423,13 @@ static struct sock *udp4_lib_lookup2(struct net *net,
->  		score = compute_score(sk, net, saddr, sport,
->  				      daddr, hnum, dif, sdif);
->  		if (score > badness) {
-> -			if (sk->sk_reuseport) {
-> +			if (sk->sk_reuseport &&
-> +			    sk->sk_state != TCP_ESTABLISHED) {
->  				hash = udp_ehashfn(net, daddr, hnum,
->  						   saddr, sport);
->  				result = reuseport_select_sock(sk, hash, skb,
->  							sizeof(struct udphdr));
-> -				if (result)
-> +				if (result && !reuseport_has_conns(sk, false))
->  					return result;
->  			}
->  			badness = score;
-> diff --git a/net/ipv6/datagram.c b/net/ipv6/datagram.c
-> index 9ab897ded4df..96f939248d2f 100644
-> --- a/net/ipv6/datagram.c
-> +++ b/net/ipv6/datagram.c
-> @@ -27,6 +27,7 @@
->  #include <net/ip6_route.h>
->  #include <net/tcp_states.h>
->  #include <net/dsfield.h>
-> +#include <net/sock_reuseport.h>
->  
->  #include <linux/errqueue.h>
->  #include <linux/uaccess.h>
-> @@ -254,6 +255,7 @@ int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
->  		goto out;
->  	}
->  
-> +	reuseport_has_conns(sk, true);
->  	sk->sk_state = TCP_ESTABLISHED;
->  	sk_set_txhash(sk);
->  out:
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 827fe7385078..5995fdc99d3f 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -158,13 +158,14 @@ static struct sock *udp6_lib_lookup2(struct net *net,
->  		score = compute_score(sk, net, saddr, sport,
->  				      daddr, hnum, dif, sdif);
->  		if (score > badness) {
-> -			if (sk->sk_reuseport) {
-> +			if (sk->sk_reuseport &&
-> +			    sk->sk_state != TCP_ESTABLISHED) {
->  				hash = udp6_ehashfn(net, daddr, hnum,
->  						    saddr, sport);
->  
->  				result = reuseport_select_sock(sk, hash, skb,
->  							sizeof(struct udphdr));
-> -				if (result)
-> +				if (result && !reuseport_has_conns(sk, false))
->  					return result;
->  			}
->  			result = sk;
+Thu, Sep 12, 2019 at 01:59:42PM CEST, jiri@resnulli.us wrote:
+>Fri, Aug 30, 2019 at 07:03:42PM CEST, jiri@resnulli.us wrote:
+>>Fri, Aug 30, 2019 at 04:35:23PM CEST, roopa@cumulusnetworks.com wrote:
+>
+>[...]
+>
+>>>
+>>>so to summarize, i think we have discussed the following options to
+>>>update a netlink list attribute so far:
+>>>(a) encode an optional attribute/flag in the list attribute in
+>>>RTM_SETLINK to indicate if it is a add or del
+>>>(b) Use a flag in RTM_SETLINK and RTM_DELINK to indicate add/del
+>>>(close to bridge vlan add/del)
+>>
+>>Nope, bridge vlan add/del is done according to the cmd, not any flag.
+>>
+>>
+>>>(c) introduce a separate generic msg type to add/del to a list
+>>>attribute (IIUC this does need a separate msg type per subsystem or
+>>>netlink API)
+>
+>Getting back to this, sorry.
+>
+>Thinking about it for some time, a,b,c have all their issues. Why can't
+>we have another separate cmd as I originally proposed in this RFC? Does
+>anyone have any argument against it? Could you please describe?
+>
+>Because otherwise, I don't feel comfortable going to any of a,b,c :(
 
-The patch LGTM,
+How about this:
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+We have new commands, but we have them for lists of many types. In my
+examples, I'm using "altname" and "color". This is very similar to
+bridge vlan example Roopa pointed out. It scales and does not pollute
+existing setlink/getlink messages. Also, the cmdline is aligned:
+
+
+$ ip link property add eth0 altname someverylongname altname someotherlongname
+
+$ ip link property add eth0 altname someotherveryverylongname color blue
+
+$ ip link property del eth0 altname someverylongname color blue
+
+$ ip link property add eth0 color red
+
+$ ip link property show eth0
+2: eth0: altname someotherlongname altname someotherveryverylongname color red
+
+$ ip -j -p link property show eth0
+[ {
+        "ifindex": 2,
+        "ifname": "eth0",
+        "property": [ "altname": "someotherlongname",
+	              "altname": "someotherveryverylongname",
+	              "color": "red"]
+    } ]
+
+I call this "property" but I'm open to any other naming.
+ 
+
+
+
 
