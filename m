@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B913B235B
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 17:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F223B235C
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 17:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388634AbfIMP2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 11:28:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388392AbfIMP2k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Sep 2019 11:28:40 -0400
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 08BB92089F
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 15:28:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568388520;
-        bh=y6gVoSPeyEbRyda+ibEtbvEXeVxaYpe+xbTa7TiEgYI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bw3x0H7Na1yXZ3aRDDjTO6mTByF+b2Zsv4Iv0tBrc9o8Yq/7GAJtgmF1g7yKYmGfn
-         WS+QZu5v54hdPMmHhDXqsR0Ly1dxNYyzGzBxIWNufJnylsJPFsS3mQwvdSWvlciLsM
-         k5niJI0Vk5LwENzlNFpKFW9KPsxPCg17CgQB7li8=
-Received: by mail-qt1-f181.google.com with SMTP id u9so8396437qtq.2
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 08:28:39 -0700 (PDT)
-X-Gm-Message-State: APjAAAXycEINDvOzQ46ba3JIPLi84pKv7tMa33da2o59sa2CeA5f6xW2
-        c8N1IK1aDL+dl/wyrspGvZu+L2okfes81aNw0iI=
-X-Google-Smtp-Source: APXvYqzZ2LKKLGm7/ohlbW6kF0/Ipz0GRfejg+oJV/YyJWQRZJqu6mgLfaijOoxXd8Fu4NUtRyMX4buHios8TmQvWdE=
-X-Received: by 2002:a0c:9082:: with SMTP id p2mr5914578qvp.197.1568388519162;
- Fri, 13 Sep 2019 08:28:39 -0700 (PDT)
+        id S2389619AbfIMP26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 11:28:58 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35511 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2388392AbfIMP26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 11:28:58 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 13 Sep 2019 18:28:56 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x8DFSuJC018845;
+        Fri, 13 Sep 2019 18:28:56 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next 0/3] More fixes for unlocked cls hardware offload API refactoring
+Date:   Fri, 13 Sep 2019 18:28:38 +0300
+Message-Id: <20190913152841.15755-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190913124727.3277-1-paul.durrant@citrix.com>
-In-Reply-To: <20190913124727.3277-1-paul.durrant@citrix.com>
-From:   Wei Liu <wei.liu@kernel.org>
-Date:   Fri, 13 Sep 2019 16:28:34 +0100
-X-Gmail-Original-Message-ID: <CAHd7Wqw6bQbzR2gvzGM+bBgVQ8HHQPCBJppSWWqHT7S7Dp27qg@mail.gmail.com>
-Message-ID: <CAHd7Wqw6bQbzR2gvzGM+bBgVQ8HHQPCBJppSWWqHT7S7Dp27qg@mail.gmail.com>
-Subject: Re: [PATCH net-next] MAINTAINERS: xen-netback: update my email address
-To:     Paul Durrant <paul.durrant@citrix.com>
-Cc:     netdev@vger.kernel.org, xen-devel@lists.xenproject.org,
-        Wei Liu <wei.liu@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Sep 2019 at 13:47, Paul Durrant <paul.durrant@citrix.com> wrote:
->
-> My Citrix email address will expire shortly.
->
-> Signed-off-by: Paul Durrant <paul.durrant@citrix.com>
+Two fixes for my "Refactor cls hardware offload API to support
+rtnl-independent drivers" series and refactoring patch that implements
+infrastructure necessary for the fixes.
 
-Acked-by: Wei Liu <wl@xen.org>
+Vlad Buslov (3):
+  net: sched: extend flow_action_entry with destructor
+  net: sched: take reference to psample group in flow_action infra
+  net: sched: use get_dev() action API in flow_action infra
+
+ include/net/act_api.h          |  9 +++-
+ include/net/flow_offload.h     |  6 ++-
+ include/net/psample.h          |  1 +
+ include/net/tc_act/tc_sample.h |  6 ---
+ net/psample/psample.c          | 20 +++++---
+ net/sched/act_mirred.c         | 21 +++++----
+ net/sched/act_sample.c         | 27 +++++++++++
+ net/sched/cls_api.c            | 83 ++++++++++++++++++++--------------
+ 8 files changed, 116 insertions(+), 57 deletions(-)
+
+-- 
+2.21.0
+
