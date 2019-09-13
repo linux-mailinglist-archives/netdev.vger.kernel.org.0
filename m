@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2100FB1B11
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:45:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E08B1B1F
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbfIMJp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 05:45:56 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:32836 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727856AbfIMJp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 05:45:56 -0400
-Received: by mail-pl1-f195.google.com with SMTP id t11so13016523plo.0
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 02:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=uXJ9/ls5TBnDekmtSFYRB29+X7xMmTdyo3ReTuj2abw=;
-        b=LHz8cENy3PQ4tEbqOnVcYHeXBap0/hLYZHlwiZ11S/Ww5ug7gwsAO9koeTzc+wvISn
-         XnuqW71Yo5pMI/Z79FHDkIZUwOU42oqXUjtTKUPM41S77yuIB8pFKajVbLIYezVgDIba
-         noeR1oOJ8Gbr5AevIxbmHhW0tvet9Slq+SMw9TLsseicHgey880XgKx2zMsATs+wYBOP
-         06yJ0xwsx826a5aRb9W1QDerHV+HCssOi8tmN26dJ86BwKYrCrIsdC402BGiEsgosvVa
-         V/yth29rfDotn65dsxDCoTBsr9lsjV4JWdJfa6mRXtxfeoVoy/Wc+9L+sDOYbaajFRnd
-         4rvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uXJ9/ls5TBnDekmtSFYRB29+X7xMmTdyo3ReTuj2abw=;
-        b=MyajMW2K4qcv1h0q881C5tiT5I6RYhb9luS09A7udQD0HxX2aywPUv2mg3LMAJnWcd
-         yPAjV9tAprsW+jYgSWaQAvN35mRGLZlDJ5p7Ua7LtDrLM3OOQZrXKA5rDKCjyahIxX0m
-         gfUzZYhK0vIJC0loOYSJ37P46EdAAgJMLJftJCTBYMMR9EsBhafsSGKTNKc24ck+PI0P
-         BitbriPtkuHl6j7gXU3/+HRxhQ0EasQG2A38phyXf0dSsrNf9kbLD/wGvsIfiLapcLb0
-         NogkUBrnaryDvfhop8OoRfchq/4easz5NepgR0Ta1NqN6rGD2lIUQsbDvoWrPrtlaLPF
-         GCXA==
-X-Gm-Message-State: APjAAAWBIhy5DlkwvV5WqnLfVE7V3vgL0cm9XVC6WmSmgSKgqeJ1eesU
-        x3OvB3RKGuI6f7WoiuVQgvC/WiOdbF8=
-X-Google-Smtp-Source: APXvYqxZzkNuyvfP+F7zvqtpIRTdcgGUSzJPQT34Ypydo8J7/n47stFLlrRWFqXhkBXegJp6zwtV8w==
-X-Received: by 2002:a17:902:a586:: with SMTP id az6mr45457228plb.298.1568367955363;
-        Fri, 13 Sep 2019 02:45:55 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p66sm41087578pfg.127.2019.09.13.02.45.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Sep 2019 02:45:54 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, William Tu <u9012063@gmail.com>
-Subject: [PATCH net] ip6_gre: fix a dst leak in ip6erspan_tunnel_xmit
-Date:   Fri, 13 Sep 2019 17:45:47 +0800
-Message-Id: <1bfbf329c5b3649a6c6362350a0d609ff184deba.1568367947.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1728894AbfIMJuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 05:50:44 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:46496 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728767AbfIMJuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 05:50:44 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E309AC585C;
+        Fri, 13 Sep 2019 09:50:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1568368243; bh=VNT0CfKOWFVh9wUN9OsP/Ath/shvOWvuL7ZRZxtlnJs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Un9DyyRCSzZ+BtJTyFzXfYHYaMhQnX66hyzPJ7tJyO3pd2xg9j1D/PHFXEhvO5f5W
+         B5XPmrkD7JgkRHonCx64A4E1kCItZjdmDai34ozetB9McFOfv/UOHJCRe5wxiCJ1fz
+         PpKeWuXqH+z60IL+LxzK8zsh1VvfxPhWFJZZ5D5Iui9abpAXS5zgiXnusKjyiF4Sjg
+         84Fp5+BGF900G5y+WhZPOLS7OkHRfZWZgerfgu+4P/d1Cd/KhrLRIos4rjmgb0Rqtk
+         8WbcA9LfVEII3XRdjhhZZk3wy5rBsx/OqBoLVdwR+68KZTHBV25dUfBKd1f8P+tKRg
+         1V5VWw+vXVoMQ==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id C1E27A0057;
+        Fri, 13 Sep 2019 09:50:40 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Christophe ROULLIER <christophe.roullier@st.com>
+Subject: [PATCH net] net: stmmac: Hold rtnl lock in suspend/resume callbacks
+Date:   Fri, 13 Sep 2019 11:50:32 +0200
+Message-Id: <66b6c1395e4bbc836e80083b89b2189ce7382d7b.1568360548.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ip6erspan_tunnel_xmit(), if the skb will not be sent out, it has to
-be freed on the tx_err path. Otherwise when deleting a netns, it would
-cause dst/dev to leak, and dmesg shows:
+We need to hold rnl lock in suspend and resume callbacks because phylink
+requires it. Otherwise we will get a WARN() in suspend and resume.
 
-  unregister_netdevice: waiting for lo to become free. Usage count = 1
+Also, move phylink start and stop callbacks to inside device's internal
+lock so that we prevent concurrent HW accesses.
 
-Fixes: ef7baf5e083c ("ip6_gre: add ip6 erspan collect_md mode")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
+Reported-by: Christophe ROULLIER <christophe.roullier@st.com>
+Tested-by: Christophe ROULLIER <christophe.roullier@st.com>
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+
 ---
- net/ipv6/ip6_gre.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Christophe ROULLIER <christophe.roullier@st.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index dd2d0b96..d5779d6 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -968,7 +968,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 		if (unlikely(!tun_info ||
- 			     !(tun_info->mode & IP_TUNNEL_INFO_TX) ||
- 			     ip_tunnel_info_af(tun_info) != AF_INET6))
--			return -EINVAL;
-+			goto tx_err;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index fd54c7c87485..b19ab09cb18f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4451,10 +4451,12 @@ int stmmac_suspend(struct device *dev)
+ 	if (!ndev || !netif_running(ndev))
+ 		return 0;
  
- 		key = &tun_info->key;
- 		memset(&fl6, 0, sizeof(fl6));
+-	phylink_stop(priv->phylink);
+-
+ 	mutex_lock(&priv->lock);
+ 
++	rtnl_lock();
++	phylink_stop(priv->phylink);
++	rtnl_unlock();
++
+ 	netif_device_detach(ndev);
+ 	stmmac_stop_all_queues(priv);
+ 
+@@ -4558,9 +4560,11 @@ int stmmac_resume(struct device *dev)
+ 
+ 	stmmac_start_all_queues(priv);
+ 
+-	mutex_unlock(&priv->lock);
+-
++	rtnl_lock();
+ 	phylink_start(priv->phylink);
++	rtnl_unlock();
++
++	mutex_unlock(&priv->lock);
+ 
+ 	return 0;
+ }
 -- 
-2.1.0
+2.7.4
 
