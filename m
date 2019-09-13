@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45116B2731
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 23:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415BAB2756
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 23:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389830AbfIMVZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 17:25:50 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46501 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387637AbfIMVZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 17:25:50 -0400
-Received: by mail-lj1-f196.google.com with SMTP id e17so28383529ljf.13
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 14:25:48 -0700 (PDT)
+        id S2389815AbfIMV3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 17:29:14 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36108 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389780AbfIMV3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 17:29:14 -0400
+Received: by mail-wr1-f68.google.com with SMTP id y19so33390751wrd.3
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 14:29:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SqwwqelpURFmzfGjcJ7oMuOIQ2kIqB4BOKfM3/6ZLAw=;
-        b=WnMuApb47J6Z0Rih0VYsR4YDdRoc78S/yxGZJAvId+d8Yg1MDSWITJwp7ZHrb+BWJV
-         HQb6CVECMx0VXHfotKY+2mVS5HDo5ua/8sNi6JTgrD7fxuehRYGKwiVO568kKzNs5ewW
-         93a2BV+VKPvyw3og+4qjBC5AD/FEOB8lANOlb6ZKcnvp3ia5ouQIgDbBPdoJQ8Fd8BVd
-         TrqxaefOXxrS+sFrw315ejQi9GmrxDFxb54ELx0uI1Xgv9fxrG66XXAw0WTecgnPnvr4
-         yaxlvgFYy6yZHXPtXCVPkBkjSNUc06neLsA73Jr6/8rYwo63cGGSYwRIZWRfeANuO3uE
-         rGAw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3d5qjKGs//+pI/zPgFvwTuhOyl9TdygDvNJJy6z0MJQ=;
+        b=kcGjqp/++sfNgeGqE97KLoYLPwrKc8oFM+FwqCc2Bw0EPffnU7c6GvSMX6BX001O4j
+         BtekP/GLDYfF0r492xI4xWi05SkYayKQGygkXOREdQcW9usFLUHis2tG6QjrCcPVY5at
+         nia2UGy8lGWztJkqkly8EOk1sRbg+KqP36npco2VUO7xr5PyXjtFtBPVhb9Hrfp1m2Ag
+         bf72eboxUGLvlgpjx1F/DiK+EltIM0IcIUbAVDy+xrNrFVKqDgNSpO3Km5c1nwMnIh3n
+         xnzBzvnREjNDS5YDN6LjmXRC1SLYqymsTIydT0bIJYfkSU3tWvyRfmHFdAEQqk83gHtw
+         UAOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=SqwwqelpURFmzfGjcJ7oMuOIQ2kIqB4BOKfM3/6ZLAw=;
-        b=NzPlYFS9YgY4RqOa4YjT7iSAVpN6UA85d4D3soGcZL/50GDO7Y6ztPdFBwXE08WMf3
-         KAsOtgOJv74KOACdYF9jf6D6gfflWizV7ovPGSqKdU2X5s8kbx3xVZj98fiOvTKrPRp+
-         RQslMAvZy8ar2mWkWw+OKhGdE/VhaE9wIlvOYVhDxR9IF7P9FUe6L6vId9FxUHh4jr8x
-         sg6HT+SzxrPGcLZ647XQi9c0Jdb9hETzHJXWQhGaBF0kwDGakkyTPr0t/y67UO6x7VSL
-         d3aOGDicz6zCtkA4wpcANByRaMwAdDwz59+87ePbaAwoQiogo6jgN2zvKrFltzaVQCdE
-         G4sQ==
-X-Gm-Message-State: APjAAAU9lQL4kkbUkR6OMirgmHyWWKkkl20cXVUhw8MfZdxNZVOYtS+B
-        QWPpbcH19s8JIsdtZTcIO2cGag==
-X-Google-Smtp-Source: APXvYqzGOytq6JjzyFTSvv67HdgbwowjWgQmmIFRHLTWAVYagXaSOG/LQY+ywezFZ1zJzyx+H/qbbA==
-X-Received: by 2002:a2e:99c1:: with SMTP id l1mr25527331ljj.8.1568409948002;
-        Fri, 13 Sep 2019 14:25:48 -0700 (PDT)
-Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id y3sm7053303lfh.97.2019.09.13.14.25.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 13 Sep 2019 14:25:47 -0700 (PDT)
-Date:   Sat, 14 Sep 2019 00:25:45 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH bpf-next 02/11] samples: bpf: makefile: fix
- cookie_uid_helper_example obj build
-Message-ID: <20190913212544.GC26724@khorivan>
-Mail-Followup-To: Yonghong Song <yhs@fb.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" <clang-built-linux@googlegroups.com>
-References: <20190910103830.20794-1-ivan.khoronzhuk@linaro.org>
- <20190910103830.20794-3-ivan.khoronzhuk@linaro.org>
- <7f556c1c-abee-41a9-af83-1d72fc33af4b@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3d5qjKGs//+pI/zPgFvwTuhOyl9TdygDvNJJy6z0MJQ=;
+        b=LY4i9mTWiF0p/nOX1IZquSOGB9c4yE+OCZavL72sr1+nJ4NYXBr0pFXMAXXJypaQWm
+         PQm0y4DvT0fn+jJjKeOG9Pu6VArpKeoGZNXzZsNrvW8mS8C99TumV6MVZd87cJ0lEgYM
+         6Rg6r2F5TBbEkqNj29xqqRrgaUKtS0ZmF1dTZpdnLEd03G0QnuTsIe3sB6pn6tSX+Zjb
+         4IZgbaAfiZuyajgw602kP1aMN5MzNaDX8w7u/Rkccl+fA43+Vyj9MCFKmat8qRHEQzXi
+         amDfg5WVeQnBRxn/+VQ9egGMUfoMHYvm9K4lfJyFaPYNWFOQ/vzS2izaBhCj5CRtXt/7
+         p6BA==
+X-Gm-Message-State: APjAAAX13A9ABp6M+txrxbCv/X053nEk08UAzG/YAYyEi2xGIhjj475p
+        Z3x906CcZDnSYO/pBhHae+ZAB/r8Q5W8oy3JMbH2Fw==
+X-Google-Smtp-Source: APXvYqwS0PvT0zpMbN3dlL91wfXWjpYCurT5RK1nV+pU4DK84kPxcQvphQz4HCKBCowCE0VPUIxN2qarSsQgbgB3XFQ=
+X-Received: by 2002:adf:ee05:: with SMTP id y5mr5351983wrn.291.1568410151729;
+ Fri, 13 Sep 2019 14:29:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <7f556c1c-abee-41a9-af83-1d72fc33af4b@fb.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20190913193629.55201-1-tph@fb.com> <20190913193629.55201-2-tph@fb.com>
+ <CADVnQymKS6-jztAbLu_QYWiPYMqoTf5ODzSg3UPJxH+vBt=bmw@mail.gmail.com>
+In-Reply-To: <CADVnQymKS6-jztAbLu_QYWiPYMqoTf5ODzSg3UPJxH+vBt=bmw@mail.gmail.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Fri, 13 Sep 2019 14:28:33 -0700
+Message-ID: <CAK6E8=ddxo+yg2tTiZm5YEbfPkeVkeZOGwB33+Qfb4Qfj4yDJA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] tcp: Add snd_wnd to TCP_INFO
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Thomas Higdon <tph@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dave Jones <dsj@fb.com>, Eric Dumazet <edumazet@google.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 08:48:37PM +0000, Yonghong Song wrote:
+On Fri, Sep 13, 2019 at 2:02 PM Neal Cardwell <ncardwell@google.com> wrote:
 >
+> On Fri, Sep 13, 2019 at 3:36 PM Thomas Higdon <tph@fb.com> wrote:
+> >
+> > Neal Cardwell mentioned that snd_wnd would be useful for diagnosing TCP
+> > performance problems --
+> > > (1) Usually when we're diagnosing TCP performance problems, we do so
+> > > from the sender, since the sender makes most of the
+> > > performance-critical decisions (cwnd, pacing, TSO size, TSQ, etc).
+> > > From the sender-side the thing that would be most useful is to see
+> > > tp->snd_wnd, the receive window that the receiver has advertised to
+> > > the sender.
+> >
+> > This serves the purpose of adding an additional __u32 to avoid the
+> > would-be hole caused by the addition of the tcpi_rcvi_ooopack field.
+> >
+> > Signed-off-by: Thomas Higdon <tph@fb.com>
+> > ---
+> > changes from v3:
+> >  - changed from rcv_wnd to snd_wnd
+> >
+> >  include/uapi/linux/tcp.h | 1 +
+> >  net/ipv4/tcp.c           | 1 +
+> >  2 files changed, 2 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> > index 20237987ccc8..240654f22d98 100644
+> > --- a/include/uapi/linux/tcp.h
+> > +++ b/include/uapi/linux/tcp.h
+> > @@ -272,6 +272,7 @@ struct tcp_info {
+> >         __u32   tcpi_reord_seen;     /* reordering events seen */
+> >
+> >         __u32   tcpi_rcv_ooopack;    /* Out-of-order packets received */
+> > +       __u32   tcpi_snd_wnd;        /* Remote peer's advertised recv window size */
+> >  };
 >
->On 9/10/19 11:38 AM, Ivan Khoronzhuk wrote:
->> Don't list userspace "cookie_uid_helper_example" object in list for
->> bpf objects.
->>
->> per_socket_stats_example-opjs is used to list additional dependencies
+> Thanks for adding this!
 >
->s/opjs/objs
+> My run of ./scripts/checkpatch.pl is showing a warning on this line:
 >
->> for user space binary from hostprogs-y list. Kbuild system creates
->> rules for objects listed this way anyway and no need to worry about
->> this. Despite on it, the samples bpf uses logic that hostporgs-y are
->> build for userspace with includes needed for this, but "always"
->> target, if it's not in hostprog-y list, uses CLANG-bpf rule and is
->> intended to create bpf obj but not arch obj and uses only kernel
->> includes for that. So correct it, as it breaks cross-compiling at
->> least.
+> WARNING: line over 80 characters
+> #19: FILE: include/uapi/linux/tcp.h:273:
+> +       __u32   tcpi_snd_wnd;        /* Remote peer's advertised recv
+> window size */
 >
->The above description is a little tricky to understand.
->Maybe something like:
->    'always' target is for bpf programs.
->    'cookie_uid_helper_example.o' is a user space ELF file, and
->    covered by rule `per_socket_stats_example`.
->    Let us remove `always += cookie_uid_helper_example.o`,
->    which avoids breaking cross compilation due to
->    mismatched includes.
-
-Yes, looks better, thanks.
-
--- 
-Regards,
-Ivan Khoronzhuk
+> What if the comment is shortened up to fit in 80 columns and the units
+> (bytes) are added, something like:
+>
+>         __u32   tcpi_snd_wnd;        /* peer's advertised recv window (bytes) */
+just a thought: will tcpi_peer_rcv_wnd be more self-explanatory?
+>
+> neal
