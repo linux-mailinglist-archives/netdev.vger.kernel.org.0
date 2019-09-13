@@ -2,264 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF4CB28D1
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 01:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B065B28DB
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 01:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403913AbfIMXUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 19:20:00 -0400
-Received: from mail-eopbgr70054.outbound.protection.outlook.com ([40.107.7.54]:9703
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390519AbfIMXUA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Sep 2019 19:20:00 -0400
+        id S2404345AbfIMXXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 19:23:40 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44920 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390498AbfIMXXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 19:23:40 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x8DNKKx9020684;
+        Fri, 13 Sep 2019 16:23:37 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=facebook; bh=Bk8ydwPg36cOB43Kw2b+/lEW6SGWJoytMvbqXPARhJQ=;
+ b=Ny/fp0301IiCtDz+H6XWAncKIMRQYq+z+3JgXTRJns3DXh41btls4weMmvWqsTn2IAAC
+ mESu0WJ8N5YfbhHiK7f4u6KEB8/9DI88Mr8kzMEVF1+GaJTufRbO5fLpETAbnI4UL7q3
+ S3PyXEhCRdEAW1tw94Eoa1KbwHAKq2M751o= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2uytd96awh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 13 Sep 2019 16:23:36 -0700
+Received: from ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) by
+ ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Sep 2019 16:23:35 -0700
+Received: from NAM05-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 13 Sep 2019 16:23:35 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dlGPRIxXYtv+bnqMvG3RLzDuMXshktsofulLvE0wau/k25mMg4l0K7tlDXGvfm5sa38t5m2wAqAOdWl35Fyfvr1OY608yVky4V1dFS/ktFcgCZbLYjWHM4lxEYb5jrlIJv2fmxco/FI04euozR/82s1rTQCQcCP5Ew1SB4VkfF/1FhDfXQ7JyxmtosXw1jodlsulL2kjVY0HXdnzEFNLNqHa/71G03kjcqlsUJGNuteTo3BEB6K/f5deYElLJvT7XE8mVzImisGIAKF8U6FX9HrIFQebtK1jV0JTO9ugF2dPSwn5HDj2Tx7QEnXoZ4Ymo3X7B4oK5WlA7NmsoYg3WA==
+ b=PTmzPX0a4+OsLFWAJacqIaJys0FeNm7d8k1HNeILIZ9LXWQC19XzGHU4LOnZX1xiFXa6Abn44k1LxWoog17LIaxOskzp59Pcon/XDmXLP0sa5OsBzVciWH4gStCaJRa1NrtfrEv6Ta+RkK7CSz7PX8mL2GLVLMxswh+PC/qru+CYG8sABBLKxf4DZwFdUQQJRtLT1T30g5tQm2C2VBdXvsu2ZJNKY2SDg0ZHY2XBbHfmUKuXShnxuFTEBHburyyVWaJvwqi3Op3lxuHYVz+3LuuZ9C9x4zG+4LnK6IYROyuuXBf37lSXFWB9UI+gAAkrqvaGZJdVCYWwHNQ/PSztyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RWEqHmA3xGYeUnRl8EdIElUxK0ERAMDlH/Lc9HCfT/w=;
- b=Aq/pizBtscijmPY71ypeEcILqKLqpdRxZIgd9XvgTGhVDv54gzmDEkEIQolraitP4kWSFvKsZFT2kdVgFUnRNh3Kt8YDv79eaeyA+To0sKSfl82YMVDCtJZJFlg3rwkQXGYSlqB8+iIdnPAMtxxTGxjOVoqqjMylmS3I/zjBrWIIjLD6UysjzCdKLfOVSkM07iGC/aK84wfKICBhGd7H9v2bcc5+xwCKvCVJgXnjge5CupESLyqv2jK/5FxCYbKPmIIDX4Z44Qc2vZDSBWaL3P2hUmNbtryVsYCLBY3Y7b4LkfQ+0FzcNftw2npWzOxNBC+1bqIjwCiJHMYSMbigeA==
+ bh=Bk8ydwPg36cOB43Kw2b+/lEW6SGWJoytMvbqXPARhJQ=;
+ b=TPK7laVU9pQMT72p3RcHewPAlHrY4J1hpDpExMLIqCpJdnBZHImJbjTqgEwBosavHDLbBn5qMo+D5wAkNSyQJTY5qtBLyFLPCKPVIS6LK25sk/Hi8MNqcQsVUpiL4WJbAkxaeGiha9QtsFB9cs/T7c1peXi3NehGzynRa772VS3vczqNOF/0yHhZ+KDNGt3Oat2id+FEPvFv1RcOyAruMUae1SS80lNnZrbEr+Q5XRf2a0Jl93EJavRQKPfjHz6TO2CinbCr/fWvmlhFhZVkjYh7DNnzJ850f/YF22xTBwPPrvWW/wXhIM21GWueeBy0jgDaBnl26l8rDvExMjINEw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RWEqHmA3xGYeUnRl8EdIElUxK0ERAMDlH/Lc9HCfT/w=;
- b=mWw5I1ZHwwu2Qyqcq7BhaF6iPgrvAlv6EMudi1gFow3EvSmFZ3H0KsPMQsRs01gnSkBQrkbSDAoAnCMnuu6QW6Z11goyiISoYg6vSlXl4S/2LcrghK9zWVRA7gcbahncjAZ52N0kauSum4hxb99jkqcVi+0RXGWEmXjrsKyg3yA=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4468.eurprd05.prod.outlook.com (52.134.93.24) with Microsoft SMTP
+ bh=Bk8ydwPg36cOB43Kw2b+/lEW6SGWJoytMvbqXPARhJQ=;
+ b=PAO0bGiANQt+pLEPch7T5lRdjBu/O62ba0tzrEvPJV3p0w2o6bnGpPYg4L+Hic8spzhYbSAvqzOAWlCmbA4u3IVRtWHl1o0HCNewBrLqWSI2EAqPeoAZUKsOFxLEPIntpHVHxANb0+P7RZS0QQNfDnZ7odLd+VvIc8J2PUFDDng=
+Received: from CY4PR15MB1207.namprd15.prod.outlook.com (10.172.180.17) by
+ CY4PR15MB1685.namprd15.prod.outlook.com (10.175.120.148) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2263.21; Fri, 13 Sep 2019 23:19:54 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::bc4c:7c4c:d3e2:8b28]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::bc4c:7c4c:d3e2:8b28%6]) with mapi id 15.20.2263.018; Fri, 13 Sep 2019
- 23:19:54 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v3 0/5] Introduce variable length mdev alias
-Thread-Topic: [PATCH v3 0/5] Introduce variable length mdev alias
-Thread-Index: AQHVYUZdAS6KYIr8SUO1vQ8myuXcNacjy68wgALDGQCAABfpQIAAEvsAgAN5WYCAABvpAA==
-Date:   Fri, 13 Sep 2019 23:19:54 +0000
-Message-ID: <AM0PR05MB4866C8AA4383F264DB0C75DBD1B30@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190902042436.23294-1-parav@mellanox.com>
-        <AM0PR05MB4866F76F807409ED887537D7D1B70@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190911145610.453b32ec@x1.home>
-        <AM0PR05MB48668DFF8E816F0D2D3041BFD1B10@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <AM0PR05MB48667E374853D485788D8159D1B10@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190913153247.0309d016@x1.home>
-In-Reply-To: <20190913153247.0309d016@x1.home>
+ 15.20.2263.21; Fri, 13 Sep 2019 23:23:34 +0000
+Received: from CY4PR15MB1207.namprd15.prod.outlook.com
+ ([fe80::f5a0:2891:cf42:dda3]) by CY4PR15MB1207.namprd15.prod.outlook.com
+ ([fe80::f5a0:2891:cf42:dda3%6]) with mapi id 15.20.2241.025; Fri, 13 Sep 2019
+ 23:23:34 +0000
+From:   Thomas Higdon <tph@fb.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jonathan Lemon <jonathan.lemon@gmail.com>, Dave Jones <dsj@fb.com>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        "Dave Taht" <dave.taht@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        "Soheil Hassas Yeganeh" <soheil@google.com>
+Subject: [PATCH v5 1/2] tcp: Add TCP_INFO counter for packets received
+ out-of-order
+Thread-Topic: [PATCH v5 1/2] tcp: Add TCP_INFO counter for packets received
+ out-of-order
+Thread-Index: AQHVaopDJcZ18s3ro0Kvu9zbXZ4gtA==
+Date:   Fri, 13 Sep 2019 23:23:34 +0000
+Message-ID: <20190913232332.44036-1-tph@fb.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [208.176.44.194]
+x-clientproxiedby: MN2PR10CA0029.namprd10.prod.outlook.com
+ (2603:10b6:208:120::42) To CY4PR15MB1207.namprd15.prod.outlook.com
+ (2603:10b6:903:110::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.16.2
+x-originating-ip: [163.114.130.128]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f1a6dd76-e19d-46b2-66dc-08d738a0e2ad
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4468;
-x-ms-traffictypediagnostic: AM0PR05MB4468:|AM0PR05MB4468:
-x-ms-exchange-purlcount: 4
+x-ms-office365-filtering-correlation-id: dc1e0f1a-98ff-4987-0403-08d738a165e0
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CY4PR15MB1685;
+x-ms-traffictypediagnostic: CY4PR15MB1685:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4468D3BC67118C53B4F6B13CD1B30@AM0PR05MB4468.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-microsoft-antispam-prvs: <CY4PR15MB168518905A72920E515CAD99DDB30@CY4PR15MB1685.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 0159AC2B97
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(136003)(39860400002)(346002)(199004)(189003)(13464003)(54534003)(3846002)(26005)(14444005)(53936002)(186003)(99286004)(53546011)(7696005)(102836004)(76176011)(478600001)(6506007)(53376002)(81156014)(966005)(25786009)(52536014)(476003)(8676002)(11346002)(81166006)(33656002)(66446008)(446003)(54906003)(4326008)(64756008)(66556008)(66476007)(8936002)(14454004)(316002)(86362001)(66946007)(76116006)(66066001)(305945005)(7736002)(486006)(74316002)(5660300002)(6116002)(71200400001)(6246003)(6916009)(2906002)(229853002)(6306002)(6436002)(9686003)(71190400001)(55016002)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4468;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(346002)(366004)(136003)(376002)(189003)(199004)(66446008)(66556008)(64756008)(66946007)(66476007)(2501003)(486006)(3846002)(14454004)(4326008)(6116002)(2351001)(478600001)(7736002)(25786009)(305945005)(6436002)(5640700003)(6486002)(1076003)(53936002)(6512007)(6916009)(54906003)(71200400001)(71190400001)(66066001)(2906002)(5660300002)(86362001)(14444005)(8936002)(36756003)(186003)(52116002)(8676002)(2616005)(6506007)(476003)(1730700003)(81156014)(386003)(81166006)(50226002)(256004)(102836004)(99286004)(26005)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR15MB1685;H:CY4PR15MB1207.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: or+PQ/Gu5LNEWvru4wRD0H1CyIkdpojZGDmz8OOlwM3C49PU2PA3wRdGNjShsCsfONFKBf5TqcD/cLnHff1rSLasgBsWAns2GfBLFNUA0MrsYR/jPnz2KuV0VSGqVtfwH6rD/1ImvTrNZEfGKpCsQdEoavuukQMWALyO8tYm5vLhbnyujrc5HPvkuB+RYiBzMPtmXjFMkuCtYAD4utbZoRMZkGq7SSNJCj8odtT6wLT7VPs77DXPIRVjNGUf9/LVmzshM2d4hFslw7ri3RtP7VCnPrr2nJGEgaeeo17ds5AlwPi/Wcf5wS5uQYZ5l1gSD33/9yFNWIYm/JP/nV7KW5lvuVHdjTloy0GPN9+7lW9TrRsehHoSmDrrDLeuhMjADN+SefpJdHv3UueQ1iXfLT/aMtJ/smOKYuhjMnPlRao=
-Content-Type: text/plain; charset="us-ascii"
+x-microsoft-antispam-message-info: 8Mf7d8rTDhLIY29+fO6HgDN2vR5wuJXDJOf+AeJgFc3JM1IAI5vI/uvyuHFUbY/STF3pVV3HQBryNLTd7T71DwT1BziiIrCPagfoecEvc4f6ciOBGIPbQRQ8638CgGo27jwYYWtUQ+UQYM5PMnUwA4b8P2Br4hhneBFExK1aqaxTFI2oKJbZ9xulZMLcqlOVTArYgIiXEEHzdp6eZ6NKggqUB6TdGBuY5zpLu05bXnXe3y+qCS7Q6HlJMYif5NJL31ufwKVL/jxI+Io/rsobfbsijuSFEBRSD9Z1EhChUZDSn9t0QzMYSbSm3PvvSqObf3HyCoCRIL/qy8gk82eluv4vKzoNiUZRuNQNueFInYiofxjhdYXeher36kLiiXL7Tgmqdw+1hJYjduBdhCxizdfeZAg9mW+9Um9LoJawc/I=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1a6dd76-e19d-46b2-66dc-08d738a0e2ad
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2019 23:19:54.2933
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc1e0f1a-98ff-4987-0403-08d738a165e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2019 23:23:34.8093
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Gl8wZJ6u8iy6D6aYZ08a+w88No2vvFzm7wm6HWZBoOqnMA7ObMJ+iG6TZ7WmuemV9J/1D4cxB9CZUSZGHmmmlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4468
+X-MS-Exchange-CrossTenant-userprincipalname: TnnAeaLLaLbzQDA1LSPLuj1wUr++zsNoyBFq3ZO4vr/4qNM97Xbk0Y773yjglsi4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1685
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-13_11:2019-09-11,2019-09-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 mlxlogscore=581 spamscore=0
+ bulkscore=0 malwarescore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909130227
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
+For receive-heavy cases on the server-side, we want to track the
+connection quality for individual client IPs. This counter, similar to
+the existing system-wide TCPOFOQueue counter in /proc/net/netstat,
+tracks out-of-order packet reception. By providing this counter in
+TCP_INFO, it will allow understanding to what degree receive-heavy
+sockets are experiencing out-of-order delivery and packet drops
+indicating congestion.
 
-> -----Original Message-----
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Friday, September 13, 2019 4:33 PM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
-> cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> kernel@vger.kernel.org; netdev@vger.kernel.org
-> Subject: Re: [PATCH v3 0/5] Introduce variable length mdev alias
->=20
-> On Wed, 11 Sep 2019 16:38:49 +0000
-> Parav Pandit <parav@mellanox.com> wrote:
->=20
-> > > -----Original Message-----
-> > > From: linux-kernel-owner@vger.kernel.org <linux-kernel-
-> > > owner@vger.kernel.org> On Behalf Of Parav Pandit
-> > > Sent: Wednesday, September 11, 2019 10:31 AM
-> > > To: Alex Williamson <alex.williamson@redhat.com>
-> > > Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
-> > > cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org; linux-
-> > > kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > Subject: RE: [PATCH v3 0/5] Introduce variable length mdev alias
-> > >
-> > > Hi Alex,
-> > >
-> > > > -----Original Message-----
-> > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > Sent: Wednesday, September 11, 2019 8:56 AM
-> > > > To: Parav Pandit <parav@mellanox.com>
-> > > > Cc: Jiri Pirko <jiri@mellanox.com>; kwankhede@nvidia.com;
-> > > > cohuck@redhat.com; davem@davemloft.net; kvm@vger.kernel.org;
-> > > > linux- kernel@vger.kernel.org; netdev@vger.kernel.org
-> > > > Subject: Re: [PATCH v3 0/5] Introduce variable length mdev alias
-> > > >
-> > > > On Mon, 9 Sep 2019 20:42:32 +0000
-> > > > Parav Pandit <parav@mellanox.com> wrote:
-> > > >
-> > > > > Hi Alex,
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Parav Pandit <parav@mellanox.com>
-> > > > > > Sent: Sunday, September 1, 2019 11:25 PM
-> > > > > > To: alex.williamson@redhat.com; Jiri Pirko
-> > > > > > <jiri@mellanox.com>; kwankhede@nvidia.com; cohuck@redhat.com;
-> > > > > > davem@davemloft.net
-> > > > > > Cc: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > > > > netdev@vger.kernel.org; Parav Pandit <parav@mellanox.com>
-> > > > > > Subject: [PATCH v3 0/5] Introduce variable length mdev alias
-> > > > > >
-> > > > > > To have consistent naming for the netdevice of a mdev and to
-> > > > > > have consistent naming of the devlink port [1] of a mdev,
-> > > > > > which is formed using phys_port_name of the devlink port,
-> > > > > > current UUID is not usable because UUID is too long.
-> > > > > >
-> > > > > > UUID in string format is 36-characters long and in binary 128-b=
-it.
-> > > > > > Both formats are not able to fit within 15 characters limit of
-> > > > > > netdev
-> > > > name.
-> > > > > >
-> > > > > > It is desired to have mdev device naming consistent using UUID.
-> > > > > > So that widely used user space framework such as ovs [2] can
-> > > > > > make use of mdev representor in similar way as PCIe SR-IOV VF
-> > > > > > and PF
-> > > > representors.
-> > > > > >
-> > > > > > Hence,
-> > > > > > (a) mdev alias is created which is derived using sha1 from the
-> > > > > > mdev
-> > > > name.
-> > > > > > (b) Vendor driver describes how long an alias should be for
-> > > > > > the child mdev created for a given parent.
-> > > > > > (c) Mdev aliases are unique at system level.
-> > > > > > (d) alias is created optionally whenever parent requested.
-> > > > > > This ensures that non networking mdev parents can function
-> > > > > > without alias creation overhead.
-> > > > > >
-> > > > > > This design is discussed at [3].
-> > > > > >
-> > > > > > An example systemd/udev extension will have,
-> > > > > >
-> > > > > > 1. netdev name created using mdev alias available in sysfs.
-> > > > > >
-> > > > > > mdev UUID=3D83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
-> > > > > > mdev 12 character alias=3Dcd5b146a80a5
-> > > > > >
-> > > > > > netdev name of this mdev =3D enmcd5b146a80a5 Here en =3D Ethern=
-et
-> > > > > > link m =3D mediated device
-> > > > > >
-> > > > > > 2. devlink port phys_port_name created using mdev alias.
-> > > > > > devlink phys_port_name=3Dpcd5b146a80a5
-> > > > > >
-> > > > > > This patchset enables mdev core to maintain unique alias for a =
-mdev.
-> > > > > >
-> > > > > > Patch-1 Introduces mdev alias using sha1.
-> > > > > > Patch-2 Ensures that mdev alias is unique in a system.
-> > > > > > Patch-3 Exposes mdev alias in a sysfs hirerchy, update
-> > > > > > Documentation
-> > > > > > Patch-4 Introduces mdev_alias() API.
-> > > > > > Patch-5 Extends mtty driver to optionally provide alias generat=
-ion.
-> > > > > > This also enables to test UUID based sha1 collision and
-> > > > > > trigger error handling for duplicate sha1 results.
-> > > > > >
-> > > > > > [1] http://man7.org/linux/man-pages/man8/devlink-port.8.html
-> > > > > > [2]
-> > > > > > https://docs.openstack.org/os-vif/latest/user/plugins/ovs.html
-> > > > > > [3] https://patchwork.kernel.org/cover/11084231/
-> > > > > >
-> > > > > > ---
-> > > > > > Changelog:
-> > > > > > v2->v3:
-> > > > > >  - Addressed comment from Yunsheng Lin
-> > > > > >  - Changed strcmp() =3D=3D0 to !strcmp()
-> > > > > >  - Addressed comment from Cornelia Hunk
-> > > > > >  - Merged sysfs Documentation patch with syfs patch
-> > > > > >  - Added more description for alias return value
-> > > > >
-> > > > > Did you get a chance review this updated series?
-> > > > > I addressed Cornelia's and yours comment.
-> > > > > I do not think allocating alias memory twice, once for
-> > > > > comparison and once for storing is good idea or moving alias
-> > > > > generation logic inside the mdev_list_lock(). So I didn't
-> > > > > address that suggestion of
-> > > Cornelia.
-> > > >
-> > > > Sorry, I'm at LPC this week.  I agree, I don't think the double
-> > > > allocation is necessary, I thought the comment was sufficient to
-> > > > clarify null'ing the variable.  It's awkward, but seems correct.
-> > > >
-> > > > I'm not sure what we do with this patch series though, has the real
-> > > > consumer of this even been proposed?
-> >
-> > Jiri already acked to use mdev_alias() to generate phys_port_name sever=
-al
-> days back in the discussion we had in [1].
-> > After concluding in the thread [1], I proceed with mdev_alias().
-> > mlx5_core patches are not yet present on netdev mailing list, but we
-> > all agree to use it in mdev_alias() in devlink phys_port_name
-> > generation. So we have collective agreement on how to proceed forward.
-> > I wasn't probably clear enough in previous email reply about it, so
-> > adding link here.
-> >
-> > [1] https://patchwork.kernel.org/cover/11084231/#22838955
->=20
-> Jiri may have agreed to the concept, but without patches on the list prov=
-ing an
-> end to end solution, I think it's too early for us to commit to this by
-> preemptively adding it to our API.  "Acked" and "collective agreement" se=
-em
-> like they overstate something that seems not to have seen the light of da=
-y yet.
-> Instead I'll say, it looks reasonable, come back when the real consumer h=
-as
-> actually been proposed upstream and has more buy-in from the community
-> and we'll see if it still looks like the right approach from an mdev pers=
-pective
-> then.  Thanks,
->=20
-Ok. I will combine these patches with the actual consumer patches of mdev_a=
-lias().
-Thanks.
+Please note that this is similar to the counter in NetBSD TCP_INFO, and
+has the same name.
 
-> Alex
+Also note that we avoid increasing the size of the tcp_sock struct by
+taking advantage of a hole.
+
+Signed-off-by: Thomas Higdon <tph@fb.com>
+---
+changes since v4:
+ - optimize placement of rcv_ooopack to avoid increasing tcp_sock struct
+   size
+
+ include/linux/tcp.h      | 2 ++
+ include/uapi/linux/tcp.h | 2 ++
+ net/ipv4/tcp.c           | 2 ++
+ net/ipv4/tcp_input.c     | 1 +
+ 4 files changed, 7 insertions(+)
+
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index f3a85a7fb4b1..99617e528ea2 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -354,6 +354,8 @@ struct tcp_sock {
+ #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) 0
+ #endif
+=20
++	u32 rcv_ooopack; /* Received out-of-order packets, for tcpinfo */
++
+ /* Receiver side RTT estimation */
+ 	u32 rcv_rtt_last_tsecr;
+ 	struct {
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index b3564f85a762..20237987ccc8 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -270,6 +270,8 @@ struct tcp_info {
+ 	__u64	tcpi_bytes_retrans;  /* RFC4898 tcpEStatsPerfOctetsRetrans */
+ 	__u32	tcpi_dsack_dups;     /* RFC4898 tcpEStatsStackDSACKDups */
+ 	__u32	tcpi_reord_seen;     /* reordering events seen */
++
++	__u32	tcpi_rcv_ooopack;    /* Out-of-order packets received */
+ };
+=20
+ /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 94df48bcecc2..4cf58208270e 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2653,6 +2653,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	tp->rx_opt.saw_tstamp =3D 0;
+ 	tp->rx_opt.dsack =3D 0;
+ 	tp->rx_opt.num_sacks =3D 0;
++	tp->rcv_ooopack =3D 0;
+=20
+=20
+ 	/* Clean up fastopen related fields */
+@@ -3295,6 +3296,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *i=
+nfo)
+ 	info->tcpi_bytes_retrans =3D tp->bytes_retrans;
+ 	info->tcpi_dsack_dups =3D tp->dsack_dups;
+ 	info->tcpi_reord_seen =3D tp->reord_seen;
++	info->tcpi_rcv_ooopack =3D tp->rcv_ooopack;
+ 	unlock_sock_fast(sk, slow);
+ }
+ EXPORT_SYMBOL_GPL(tcp_get_info);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 706cbb3b2986..2ef333354026 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4555,6 +4555,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struc=
+t sk_buff *skb)
+ 	tp->pred_flags =3D 0;
+ 	inet_csk_schedule_ack(sk);
+=20
++	tp->rcv_ooopack +=3D max_t(u16, 1, skb_shinfo(skb)->gso_segs);
+ 	NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOQUEUE);
+ 	seq =3D TCP_SKB_CB(skb)->seq;
+ 	end_seq =3D TCP_SKB_CB(skb)->end_seq;
+--=20
+2.17.1
+
