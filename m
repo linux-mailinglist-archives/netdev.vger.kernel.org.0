@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B48DB2854
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 00:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248E8B287C
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 00:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404040AbfIMW0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 18:26:06 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:37588 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390452AbfIMW0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 18:26:06 -0400
-Received: by mail-lf1-f65.google.com with SMTP id w67so23255368lff.4
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 15:26:02 -0700 (PDT)
+        id S2404083AbfIMWdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 18:33:22 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:37921 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404034AbfIMWdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 18:33:20 -0400
+Received: by mail-lf1-f68.google.com with SMTP id u28so2491193lfc.5
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 15:33:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:mail-followup-to:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=h/ZsG9TiksBOb3vTyStnE+gAds3+4twuqY6gy9FAaAE=;
-        b=YwEtvPh3RfN2iuoD5W2xi2CNk0VxkP1PCuuTkkTl9zPZaT0qrG8G4nUhOi+tNHZfIF
-         K130ha+U6wOI9Mg+XODQApdYgjHsWjZWJU/6P5qz9KUlwHo5qJp1npPR4Rgmu7STUdhN
-         WoAprub/Z0E/Bc9bcU0uZc5mA6ywOcBC580MLuQQYCbDKGxNTFhAA9eFmN6eADWurxzx
-         WCrudN7y+hwBV1BSUQZ4Lz3DMY//io+jQ8XoG4F3GvvmxbkGQQQMwyn+2g5+5L9QwBVU
-         goJ4E0Te/PwieFGsghB7hRGB1ss/k/+ratmzLqwEj6lSZ5mh1JmtnRI/jHzSk+bmPJaa
-         3cjA==
+        bh=ihmb3q/NdECGRR5zzEyyPCuHVNkS8lC17ByG/rKgfTs=;
+        b=yduZq7G9bgba7AT9kCxy32dgPaU1+nS3rrt1SkQVewbNckwKWpgGRfVk3Y0BmZy3T/
+         hc2tkDna8PRu8vNhOjxNByF3gi1YbIztijqkbhAoC0kl/huMcgyMEk7x+UOox7gG5Okn
+         ERaOtSaA+6nr1OQd+i6MuHkecmR0NZ6yG1bytGiA2TZdg814CgUE9pwPlLQmCnF84+sz
+         r4AibbVNdmVlRPAmkkCeAvkdCvvVpjbSUpjQqldGzJ6ayRZmm5g9gO5o4tPxeYdpWy+a
+         BWT6QgDvq860MsINwgU27P5zHGS0QcTdpKsGoyx9agaR7mf2aT5/DB+d+PDfqtbPB3O5
+         NRxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id
          :mail-followup-to:references:mime-version:content-disposition
          :in-reply-to:user-agent;
-        bh=h/ZsG9TiksBOb3vTyStnE+gAds3+4twuqY6gy9FAaAE=;
-        b=D8VRfvluyryCNisF+zRCpf82TbA74Qud0iih9dGdrEH6+LzFPQl3OJEUau+51vPhvU
-         TwiiMPkRDBSFt0oTVIaPvHsYppjFADNvC7oz2ZAatrIpLyMkRU2oqiwSv6WVou00SEq0
-         OC/QjCDuvcDIDhwe6PhgNFSYRuS9dPvY9lM08QT/0V+PRVLHuxb6PHF1hUXnJYL96d61
-         ojEOqpoEkhMZWWt04EhnjmqpUMj+VCOUBOldw5loF3ZsXmonLgYW4MDxkMgOq4q6BNnm
-         4aZKSwNldIwZn1MDN4fS3LRPo1Ruox6wh8zzpQ2XobB5m2oxkVFxnPdBG9MdsXo6l1lw
-         pVeA==
-X-Gm-Message-State: APjAAAUzVuuJMqo8UFYb5UbsAothQ7SEUro7epCV8xLptOpmOeRIjcCm
-        G9zcDzG90cCaoGHCHRJOQSx9gQ==
-X-Google-Smtp-Source: APXvYqxm2rfUnpYjwbFLo7ucVJa6f5H/uMO27jTt2YV4xZKTEUCCuOBiM2qiNHGXqu6UwZahn0HGzA==
-X-Received: by 2002:ac2:5ec1:: with SMTP id d1mr31448979lfq.83.1568413561225;
-        Fri, 13 Sep 2019 15:26:01 -0700 (PDT)
+        bh=ihmb3q/NdECGRR5zzEyyPCuHVNkS8lC17ByG/rKgfTs=;
+        b=YmrTpGa0Bl7As5qFlYXmTrCRwcQ+tW5axisykNggSmC/J3UNBf4bxy7ovDNMR9XrOG
+         mv5/dLGJ0lTBSaqMpL8VKYw0Ocxuik4AUXf0AECIvWXrLN7Ym2HiHZgGzmrPmhk9DN01
+         UZ05QL9t5l36wZhgKe5uULRwww8HkKh7WZm6xSufbnDk1mVSOY5AHfX2lsNu+BPNmAvk
+         LUu7/3c+aUMbfwQFzykahfm6fgUyLorDWT6d4O/wJPdhqQxd7b682BkRfH/1GfF95D79
+         FKKfx6J66eyb5e7lOWrxlxihhW4H1/2naGbwm6hzVAcm2zaIiBASOthKpuHO1mCvMfIO
+         Id2g==
+X-Gm-Message-State: APjAAAX7sEEWiJ6H1XzPA7KRBYuttXeAq73D6XCnIZApPkwwKjl/loZ8
+        GQnZRYbILuYnny1HS0FzRIYitUoWi7A=
+X-Google-Smtp-Source: APXvYqwhyEj6qqlzJGRhzh2nm6Ue6JgbrQHXynRGsrsIq7IeayiUmrTW8RDYxiR2eoWifL/xp/4mAA==
+X-Received: by 2002:a19:d6:: with SMTP id 205mr9338872lfa.144.1568413996212;
+        Fri, 13 Sep 2019 15:33:16 -0700 (PDT)
 Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id r8sm7173068lfm.71.2019.09.13.15.26.00
+        by smtp.gmail.com with ESMTPSA id r19sm6732884ljd.95.2019.09.13.15.33.15
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 13 Sep 2019 15:26:00 -0700 (PDT)
-Date:   Sat, 14 Sep 2019 01:25:58 +0300
+        Fri, 13 Sep 2019 15:33:16 -0700 (PDT)
+Date:   Sat, 14 Sep 2019 01:33:13 +0300
 From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 To:     Yonghong Song <yhs@fb.com>
 Cc:     "ast@kernel.org" <ast@kernel.org>,
@@ -59,9 +59,9 @@ Cc:     "ast@kernel.org" <ast@kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "clang-built-linux@googlegroups.com" 
         <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH bpf-next 08/11] samples: bpf: makefile: base progs build
- on makefile.progs
-Message-ID: <20190913222552.GE26724@khorivan>
+Subject: Re: [PATCH bpf-next 10/11] libbpf: makefile: add C/CXX/LDFLAGS to
+ libbpf.so and test_libpf targets
+Message-ID: <20190913223313.GF26724@khorivan>
 Mail-Followup-To: Yonghong Song <yhs@fb.com>,
         "ast@kernel.org" <ast@kernel.org>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
@@ -74,268 +74,106 @@ Mail-Followup-To: Yonghong Song <yhs@fb.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "clang-built-linux@googlegroups.com" <clang-built-linux@googlegroups.com>
 References: <20190910103830.20794-1-ivan.khoronzhuk@linaro.org>
- <20190910103830.20794-9-ivan.khoronzhuk@linaro.org>
- <dd4cd83f-7e35-ad07-8a53-d34c13c074a5@fb.com>
+ <20190910103830.20794-11-ivan.khoronzhuk@linaro.org>
+ <0ad42019-2614-b70c-f93e-527c136bba83@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <dd4cd83f-7e35-ad07-8a53-d34c13c074a5@fb.com>
+In-Reply-To: <0ad42019-2614-b70c-f93e-527c136bba83@fb.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 09:41:25PM +0000, Yonghong Song wrote:
+On Fri, Sep 13, 2019 at 09:43:22PM +0000, Yonghong Song wrote:
 >
 >
 >On 9/10/19 11:38 AM, Ivan Khoronzhuk wrote:
->> The main reason for that - HOSTCC and CC have different aims.
->> It was tested for arm cross compilation, based on linaro toolchain,
->> but should work for others.
->>
->> In order to split cross compilation (CC) with host build (HOSTCC),
->> lets base bpf samples on Makefile.progs. It allows to cross-compile
->> samples/bpf progs with CC while auxialry tools running on host built
->> with HOSTCC.
->
->I got a compilation failure with the following error
->
->$ make samples/bpf/
->   ...
->   LD  samples/bpf/hbm
->   CC      samples/bpf/syscall_nrs.s
->gcc: error: -pg and -fomit-frame-pointer are incompatible
->make[2]: *** [samples/bpf/syscall_nrs.s] Error 1
->make[1]: *** [samples/bpf/] Error 2
->make: *** [sub-make] Error 2
->
->Could you take a look?
-Yes, sure.
-Ilias also observer this, interesting that on my setup for cross and
-native build on arm and arm64 doesn't have this error. Now I see log
-and know how to proceed, I will fix it, maybe by using another var
-for cflags.
-
-Despite of it, just to be sure in order to avoid smth like this at least
-for native build, I will add one more patch like:
-
-"
-    samples: bpf: makefile: don't use host cflags when cross compile
-
-    While compile natively, the hosts cflags and ldflags are equal to ones
-    used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
-    have own, used for target arch. While verification, for arm, arm64 and
-    x86_64 the following flags were used alsways:
-
-    -Wall
-    -O2
-    -fomit-frame-pointer
-    -Wmissing-prototypes
-    -Wstrict-prototypes
-
-    So, add them as they were verified and used before adding
-    Makefile.progs, but anyway limit it only for cross compile options as
-    for host can be some configurations when another options can be used,
-    So, for host arch samples left all as is, it allows to avoid potential
-    option mistmatches for existent environments.
-"
-
-+ifdef CROSS_COMPILE
-+ccflags-y += -Wall
-+ccflags-y += -O2
-+ccflags-y += -fomit-frame-pointer
-+ccflags-y += -Wmissing-prototypes
-+ccflags-y += -Wstrict-prototypes
-+else
-+ccflags-y += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
-+PROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
-+endif
-
->
+>> In case of LDFLAGS and EXTRA_CC/CXX flags there is no way to pass them
+>> correctly to build command, for instance when --sysroot is used or
+>> external libraries are used, like -lelf, wich can be absent in
+>> toolchain. This is used for samples/bpf cross-compiling allowing to
+>> get elf lib from sysroot.
 >>
 >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 >> ---
->>   samples/bpf/Makefile | 138 +++++++++++++++++++++++--------------------
->>   1 file changed, 73 insertions(+), 65 deletions(-)
+>>   samples/bpf/Makefile   |  8 +++++++-
+>>   tools/lib/bpf/Makefile | 11 ++++++++---
+>>   2 files changed, 15 insertions(+), 4 deletions(-)
+>
+>Could you separate this patch into two?
+>One of libbpf and another for samples.
+>
+>The subject 'libbpf: ...' is not entirely accurate.
+Yes, ofc.
+But there is too many patches already, but better a lot of small
+changes then couple huge.
+
+>
 >>
 >> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->> index f5dbf3d0c5f3..625a71f2e9d2 100644
+>> index 79c9aa41832e..4edc5232cfc1 100644
 >> --- a/samples/bpf/Makefile
 >> +++ b/samples/bpf/Makefile
->> @@ -4,55 +4,53 @@ BPF_SAMPLES_PATH ?= $(abspath $(srctree)/$(src))
->>   TOOLS_PATH := $(BPF_SAMPLES_PATH)/../../tools
+>> @@ -186,6 +186,10 @@ ccflags-y += -I$(srctree)/tools/perf
+>>   ccflags-y += $(D_OPTIONS)
+>>   ccflags-y += -Wall
+>>   ccflags-y += -fomit-frame-pointer
+>> +
+>> +EXTRA_CXXFLAGS := $(ccflags-y)
+>> +
+>> +# options not valid for C++
+>>   ccflags-y += -Wmissing-prototypes
+>>   ccflags-y += -Wstrict-prototypes
 >>
->>   # List of programs to build
->> -hostprogs-y := test_lru_dist
->> -hostprogs-y += sock_example
->> -hostprogs-y += fds_example
->> -hostprogs-y += sockex1
->> -hostprogs-y += sockex2
->> -hostprogs-y += sockex3
->> -hostprogs-y += tracex1
->> -hostprogs-y += tracex2
->> -hostprogs-y += tracex3
->> -hostprogs-y += tracex4
->> -hostprogs-y += tracex5
->> -hostprogs-y += tracex6
->> -hostprogs-y += tracex7
->> -hostprogs-y += test_probe_write_user
->> -hostprogs-y += trace_output
->> -hostprogs-y += lathist
->> -hostprogs-y += offwaketime
->> -hostprogs-y += spintest
->> -hostprogs-y += map_perf_test
->> -hostprogs-y += test_overhead
->> -hostprogs-y += test_cgrp2_array_pin
->> -hostprogs-y += test_cgrp2_attach
->> -hostprogs-y += test_cgrp2_sock
->> -hostprogs-y += test_cgrp2_sock2
->> -hostprogs-y += xdp1
->> -hostprogs-y += xdp2
->> -hostprogs-y += xdp_router_ipv4
->> -hostprogs-y += test_current_task_under_cgroup
->> -hostprogs-y += trace_event
->> -hostprogs-y += sampleip
->> -hostprogs-y += tc_l2_redirect
->> -hostprogs-y += lwt_len_hist
->> -hostprogs-y += xdp_tx_iptunnel
->> -hostprogs-y += test_map_in_map
->> -hostprogs-y += per_socket_stats_example
->> -hostprogs-y += xdp_redirect
->> -hostprogs-y += xdp_redirect_map
->> -hostprogs-y += xdp_redirect_cpu
->> -hostprogs-y += xdp_monitor
->> -hostprogs-y += xdp_rxq_info
->> -hostprogs-y += syscall_tp
->> -hostprogs-y += cpustat
->> -hostprogs-y += xdp_adjust_tail
->> -hostprogs-y += xdpsock
->> -hostprogs-y += xdp_fwd
->> -hostprogs-y += task_fd_query
->> -hostprogs-y += xdp_sample_pkts
->> -hostprogs-y += ibumad
->> -hostprogs-y += hbm
->> +progs-y := test_lru_dist
->> +progs-y += sock_example
->> +progs-y += fds_example
->> +progs-y += sockex1
->> +progs-y += sockex2
->> +progs-y += sockex3
->> +progs-y += tracex1
->> +progs-y += tracex2
->> +progs-y += tracex3
->> +progs-y += tracex4
->> +progs-y += tracex5
->> +progs-y += tracex6
->> +progs-y += tracex7
->> +progs-y += test_probe_write_user
->> +progs-y += trace_output
->> +progs-y += lathist
->> +progs-y += offwaketime
->> +progs-y += spintest
->> +progs-y += map_perf_test
->> +progs-y += test_overhead
->> +progs-y += test_cgrp2_array_pin
->> +progs-y += test_cgrp2_attach
->> +progs-y += test_cgrp2_sock
->> +progs-y += test_cgrp2_sock2
->> +progs-y += xdp1
->> +progs-y += xdp2
->> +progs-y += xdp_router_ipv4
->> +progs-y += test_current_task_under_cgroup
->> +progs-y += trace_event
->> +progs-y += sampleip
->> +progs-y += tc_l2_redirect
->> +progs-y += lwt_len_hist
->> +progs-y += xdp_tx_iptunnel
->> +progs-y += test_map_in_map
->> +progs-y += xdp_redirect_map
->> +progs-y += xdp_redirect_cpu
->> +progs-y += xdp_monitor
->> +progs-y += xdp_rxq_info
->> +progs-y += syscall_tp
->> +progs-y += cpustat
->> +progs-y += xdp_adjust_tail
->> +progs-y += xdpsock
->> +progs-y += xdp_fwd
->> +progs-y += task_fd_query
->> +progs-y += xdp_sample_pkts
->> +progs-y += ibumad
->> +progs-y += hbm
+>> @@ -252,7 +256,9 @@ clean:
 >>
->>   # Libbpf dependencies
->>   LIBBPF = $(TOOLS_PATH)/lib/bpf/libbpf.a
->> @@ -111,7 +109,7 @@ ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
->>   hbm-objs := bpf_load.o hbm.o $(CGROUP_HELPERS)
+>>   $(LIBBPF): FORCE
+>>   # Fix up variables inherited from Kbuild that tools/ build system won't like
+>> -	$(MAKE) -C $(dir $@) RM='rm -rf' LDFLAGS= srctree=$(BPF_SAMPLES_PATH)/../../ O=
+>> +	$(MAKE) -C $(dir $@) RM='rm -rf' EXTRA_CFLAGS="$(PROGS_CFLAGS)" \
+>> +		EXTRA_CXXFLAGS="$(EXTRA_CXXFLAGS)" LDFLAGS=$(PROGS_LDFLAGS) \
+>> +		srctree=$(BPF_SAMPLES_PATH)/../../ O=
 >>
->>   # Tell kbuild to always build the programs
->> -always := $(hostprogs-y)
->> +always := $(progs-y)
->>   always += sockex1_kern.o
->>   always += sockex2_kern.o
->>   always += sockex3_kern.o
->> @@ -170,21 +168,6 @@ always += ibumad_kern.o
->>   always += hbm_out_kern.o
->>   always += hbm_edt_kern.o
->>
->> -KBUILD_HOSTCFLAGS += -I$(objtree)/usr/include
->> -KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/bpf/
->> -KBUILD_HOSTCFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
->> -KBUILD_HOSTCFLAGS += -I$(srctree)/tools/lib/ -I$(srctree)/tools/include
->> -KBUILD_HOSTCFLAGS += -I$(srctree)/tools/perf
->> -
->> -HOSTCFLAGS_bpf_load.o += -Wno-unused-variable
->> -
->> -KBUILD_HOSTLDLIBS		+= $(LIBBPF) -lelf
->> -HOSTLDLIBS_tracex4		+= -lrt
->> -HOSTLDLIBS_trace_output	+= -lrt
->> -HOSTLDLIBS_map_perf_test	+= -lrt
->> -HOSTLDLIBS_test_overhead	+= -lrt
->> -HOSTLDLIBS_xdpsock		+= -pthread
->> -
->>   # Strip all expet -D options needed to handle linux headers
->>   # for arm it's __LINUX_ARM_ARCH__ and potentially others fork vars
->>   D_OPTIONS = $(shell echo "$(KBUILD_CFLAGS) " | sed 's/[[:blank:]]/\n/g' | \
->> @@ -194,6 +177,29 @@ ifeq ($(ARCH), arm)
->>   CLANG_EXTRA_CFLAGS := $(D_OPTIONS)
+>>   $(obj)/syscall_nrs.h:	$(obj)/syscall_nrs.s FORCE
+>>   	$(call filechk,offsets,__SYSCALL_NRS_H__)
+>> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+>> index c6f94cffe06e..bccfa556ef4e 100644
+>> --- a/tools/lib/bpf/Makefile
+>> +++ b/tools/lib/bpf/Makefile
+>> @@ -94,6 +94,10 @@ else
+>>     CFLAGS := -g -Wall
 >>   endif
 >>
->> +ccflags-y += -I$(objtree)/usr/include
->> +ccflags-y += -I$(srctree)/tools/lib/bpf/
->> +ccflags-y += -I$(srctree)/tools/testing/selftests/bpf/
->> +ccflags-y += -I$(srctree)/tools/lib/
->> +ccflags-y += -I$(srctree)/tools/include
->> +ccflags-y += -I$(srctree)/tools/perf
->> +ccflags-y += $(D_OPTIONS)
->> +ccflags-y += -Wall
->> +ccflags-y += -fomit-frame-pointer
->> +ccflags-y += -Wmissing-prototypes
->> +ccflags-y += -Wstrict-prototypes
+>> +ifdef EXTRA_CXXFLAGS
+>> +  CXXFLAGS := $(EXTRA_CXXFLAGS)
+>> +endif
 >> +
->> +PROGS_CFLAGS := $(ccflags-y)
->> +
->> +PROGCFLAGS_bpf_load.o += -Wno-unused-variable
->> +
->> +PROGS_LDLIBS			:= $(LIBBPF) -lelf
->> +PROGLDLIBS_tracex4		+= -lrt
->> +PROGLDLIBS_trace_output		+= -lrt
->> +PROGLDLIBS_map_perf_test	+= -lrt
->> +PROGLDLIBS_test_overhead	+= -lrt
->> +PROGLDLIBS_xdpsock		+= -pthread
->> +
->>   # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
->>   #  make samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
->>   LLC ?= llc
->> @@ -284,6 +290,8 @@ $(obj)/hbm_out_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
->>   $(obj)/hbm.o: $(src)/hbm.h
->>   $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
+>>   ifeq ($(feature-libelf-mmap), 1)
+>>     override CFLAGS += -DHAVE_LIBELF_MMAP_SUPPORT
+>>   endif
+>> @@ -176,8 +180,9 @@ $(BPF_IN): force elfdep bpfdep
+>>   $(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
 >>
->> +-include $(BPF_SAMPLES_PATH)/Makefile.prog
->> +
->>   # asm/sysreg.h - inline assembly used by it is incompatible with llvm.
->>   # But, there is no easy way to fix it, so just exclude it since it is
->>   # useless for BPF samples.
+>>   $(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
+>> -	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
+>> -				    -Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
+>> +	$(QUIET_LINK)$(CC) $(LDFLAGS) \
+>> +		--shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
+>> +		-Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
+>>   	@ln -sf $(@F) $(OUTPUT)libbpf.so
+>>   	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
+>>
+>> @@ -185,7 +190,7 @@ $(OUTPUT)libbpf.a: $(BPF_IN)
+>>   	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
+>>
+>>   $(OUTPUT)test_libbpf: test_libbpf.cpp $(OUTPUT)libbpf.a
+>> -	$(QUIET_LINK)$(CXX) $(INCLUDES) $^ -lelf -o $@
+>> +	$(QUIET_LINK)$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCLUDES) $^ -lelf -o $@
+>>
+>>   $(OUTPUT)libbpf.pc:
+>>   	$(QUIET_GEN)sed -e "s|@PREFIX@|$(prefix)|" \
 >>
 
 -- 
