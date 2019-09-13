@@ -2,109 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD84FB1A9B
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9888AB1B0C
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387731AbfIMJRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 05:17:09 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:45615 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387424AbfIMJRJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 05:17:09 -0400
-Received: by mail-oi1-f194.google.com with SMTP id o205so1549689oib.12
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 02:17:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=W+7OCyU4oIRxDa2T6/OVUqLpWvkhp0z6JtGuxMzwCW8=;
-        b=bM7tF2h1Y++OBliX1bgLh/5Q68tLHskJXjkvlUs583ijAjTeN0Q0R85+I7syjtvo/N
-         kfLU0/9ExX94pSUY9O+1SF2gsE5WYPdLvQfnZ7TOn0HouZiagJzJOuCabtqSjGUKrT2j
-         WgS9qtbi/y7vZ5giBbI9HQ2CJYJrlPxRWEVi9X2hA+GdyUbDhxlhyT+jgLIlA/J1MTaw
-         CPsF2ABDbGPU14PZXPWSNcCXKUawwGK4TDu2zDm1BkntiCq/c7++ILkFtof72vokVAvc
-         V2Q4gg8UKnlu1y18zwSbQtjzTokeSx2oRo7kXJOgJjEtIuiopf9ENCSW+47a/V1T+RYa
-         iStw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=W+7OCyU4oIRxDa2T6/OVUqLpWvkhp0z6JtGuxMzwCW8=;
-        b=rLyceK+v0gm1yHYuC0qzi2ea99lr3eczdwxFsvCidQaClO1Wb0ZFni8hjGthfPGnXP
-         3sY+moLeF/MJziRy2PgGW3e/cteulQFCGysYQans5XJ7QO3+7JcIl033uGsfuVfEkIN9
-         oJYMaK+u9TcsDM8nNiF8DRuhE70HvYe2BICpihMR7A1OskCJHxkIRjq42mnkyzvEJrQe
-         1b+j0oVFQ/7Q5hqUu5QDqs+kKYGNYxkhVtALlPoDmC7OhPwh5KmQte/Eb5SagARAH6Hc
-         sBd5w/a0/snV0pO7I1hVrIOVAuSxB+t/HH92X9xmT4x/HLelj6zzAFN0c7xS548tLYnM
-         9rpQ==
-X-Gm-Message-State: APjAAAXP4ym+3vTjQmBSWPoXEDSydSo6/rVtCDjSX2n1tYTeX4vn/Q3A
-        i4Ot1F1TctkrLb+qDE2HXLV7vMrb7GRxvgl54sU=
-X-Google-Smtp-Source: APXvYqyj/wK5aZIlawog9WHdOQZ6VgqKA6d6bFa3Hy4JaC7IyZfEcu8JoIpVzRJBjYwYoRgNX4k0SLXoKbGyMz5k85E=
-X-Received: by 2002:aca:a9c3:: with SMTP id s186mr2401390oie.60.1568366228106;
- Fri, 13 Sep 2019 02:17:08 -0700 (PDT)
+        id S1728479AbfIMJog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 05:44:36 -0400
+Received: from first.geanix.com ([116.203.34.67]:50662 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726558AbfIMJog (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Sep 2019 05:44:36 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 53BCC6503C;
+        Fri, 13 Sep 2019 09:43:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1568367829; bh=3wWbBizKQzuoPs4Ml3JVzYjHkna3WkG4j9LAsyU+jzM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=QQ6SOKjC4LGCjbjgEXrl/5CY9BzowOHa1w6oai65AAgpJl+n7XG8xhub8mSegVl8H
+         ZzuR0qGCVIkkAUDojR8++vQrDD0XOGmovazoxbqhjkNzSXwKe+t68WzRR6qNAbj2AQ
+         E5fKmIkMPxMNgGBWtZsPX6q7O8gjrJ2PEZO3O4p3AGRiCM4EwqpaVHFE3Slf6kYEeh
+         dSrIxS6RwV2/u22fIyP3MMOdNY9EzKZh/yaWy218E69S/xJwepRXrOAQbjtboQATkJ
+         LI/aT9xI9dGe+/ODxH4bg7TG6Zq8LRx6XG2qUpXTfVnsPyezzixlFwGCOIQVFi6vGG
+         4qvRFbS5cyDtQ==
+Subject: Re: [PATCH] can: flexcan: free error skb if enqueueing failed
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20190715185308.104333-1-martin@geanix.com>
+ <d5f8811e-4b85-776a-668f-33f64ec6ef16@geanix.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <c40b4b92-8768-6d26-7224-03e5096b4237@geanix.com>
+Date:   Fri, 13 Sep 2019 11:44:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-From:   Mark Smith <markzzzsmith@gmail.com>
-Date:   Fri, 13 Sep 2019 19:16:42 +1000
-Message-ID: <CAO42Z2yTw-pnKH01V7nyuXaT2R95y_WZ+7HpDmVCgROzNhEY6w@mail.gmail.com>
-Subject: "[RFC PATCH net-next 1/2] Allow 225/8-231/8 as unicast"
-To:     dave.taht@gmail.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <d5f8811e-4b85-776a-668f-33f64ec6ef16@geanix.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-(Not subscribed to the mailing list)
-
-I've just noticed this patch.
-
-I don't think it should be applied, as 225/8 through 231/8 falls
-within the IANA designated Class D multicast address range.
-(https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml)
-
-Using this address range as unicast addresses would mean that ICMP
-messages would need to be able to use them as a source address.
-
-However, Internet Standard number 3, RFC 1122, "Requirements for
-Internet Hosts -- Communication Layers", prohibits using addresses
-from within the multicast address range from being used as source
-addresses:
-
-"       An ICMP error message MUST NOT be sent as the result of
-         receiving:
-
-         *    an ICMP error message, or
-
-         *    a datagram destined to an IP broadcast or IP multicast
-              address, or
-
-         *    a datagram sent as a link-layer broadcast, or
-
-         *    a non-initial fragment, or
-
-         *    a datagram whose source address does not define a single
-              host -- e.g., a zero address, a loopback address, a
-              broadcast address, a multicast address, or a Class E
-              address."
-
-Please note, IPv6 has and is being widely adopted. Trying to extend
-use of IPv4 should be considered an unnecessary, in particular when it
-violates Internet Standards.
-
-There are more than 75 000 IPv6 routes in the Internet route table.
-Nearly 18 000 BGP Autonomous Systems are announcing at least one IPv6
-prefix.
-
- http://www.cidr-report.org/v6/as2.0/#General_Status
 
 
-A number of countries have exceeded 50% IPv6 capability and preference
-according to APNIC.
+On 01/08/2019 09.59, Martin Hundebøll wrote:
+> On 15/07/2019 20.53, Martin Hundebøll wrote:
+>> If the call to can_rx_offload_queue_sorted() fails, the passed skb isn't
+>> consumed, so the caller must do so.
+>>
+>> Fixes: 30164759db1b ("can: flexcan: make use of rx-offload's 
+>> irq_offload_fifo")
+>> Signed-off-by: Martin Hundebøll <martin@geanix.com>
+> 
+> Ping.
 
-https://stats.labs.apnic.net/ipv6
+Hi Marc
 
+Any problems with this? Besides time ;-)
 
-Globally, Google are receiving more than 25% of their traffic via IPv6:
+We really need this to be back ported to 4.19, soon...
 
-https://www.google.com/intl/en/ipv6/statistics.html
-
-Regards,
-Mark.
+/Sean
