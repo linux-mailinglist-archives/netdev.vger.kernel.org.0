@@ -2,79 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A08B2131
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 15:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 621DCB2134
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 15:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389040AbfIMNi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 09:38:27 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:57298 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387584AbfIMNi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 09:38:27 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 187CC601C3; Fri, 13 Sep 2019 13:38:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568381906;
-        bh=8zCYlualNWwt8I4c0YzwmA3bS57xaqFYOUXdN0Z2JY8=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=otIhPvmT/CkIKYRegdd5jQHFa6MtrIpYXst0vtL8caJ8tl2GNAfl6UGWrI5blJOqi
-         SMogT/zqPxH97TaYUD6HuRVi0Kld9ih52VqOCTex2abccfbjQggj/Nw00NAY/mhEgF
-         vIhaWud1ZvfUhceWonA9DA1JJ8vSaOSxbfkCRSRY=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3D3546013C;
-        Fri, 13 Sep 2019 13:38:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568381905;
-        bh=8zCYlualNWwt8I4c0YzwmA3bS57xaqFYOUXdN0Z2JY8=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=dFp1w25QSplRRswg7lguMThAJPTGvpfoErkH/2cdLU83vXGNRW6/kd2aLzeBKwjSQ
-         FlC/Fz7GBQYn4RMC/70HGlds8kg5KrY8FKqw8oaFd52wGDiguiSLoNWjCK1m4+Vsp8
-         wPJQ85BX4TPmOtjTnPoxRFUNSktauNwAVZiuuyXE=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3D3546013C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2388842AbfIMNkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 09:40:05 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:38161 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388387AbfIMNkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 09:40:05 -0400
+Received: by mail-qt1-f196.google.com with SMTP id j31so7086542qta.5;
+        Fri, 13 Sep 2019 06:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xmI9iPIdJysE5tnfxO8lsWvpznjbaH/zYgd78oe6pMc=;
+        b=K8AxzN7dUoev/3ENnB76BRjOzI9UPZoY8NWtJUtXcG6I/oqyE+QfDfwguNeHJbXYiI
+         hFujhu8T2eIwkgSgDeeaGyJYx2/tguOjKGAZsD/sb4/6GVaw2fIXdpxTttZMEAabaKjW
+         1q47Dosck/ZU1X553U6FF0eGBG00XCrfcRm+F5ojDq8iqfqYGHmqLwN3BaSIwkxMqx/w
+         ixQF0c7XA4rEbIx/ZZJXnBhZR0p/5Aqzh2/e+RUZJJR+lwafaKNCiVmdWuhKlqtN2STE
+         8pnNzAGGyK1arNFzzYe6sZy6DC5jtUn2UKCiQSB1Zg8jb5HbmFtx2VBdI9Dx88SyvvzA
+         ARPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xmI9iPIdJysE5tnfxO8lsWvpznjbaH/zYgd78oe6pMc=;
+        b=I8mN4L/Tz2zobNkduEseojmx3fbuKauLe45AObe1DQiVBTISmTHXEqvDYSDP/SwlnC
+         zvTERHe4mtaF3fsM0qcP2o5PZvqK9oGeiiwOSpcKJd+AdqG34j+VLygDS5H1ACrjMAdk
+         Q5TilGQMf6yH5erewHGBBm3BJdfW51LY9fjh+go1e1MhWjtIREqMiwuTmvMmj5zCjxgZ
+         lOPRlKMnLAYPDEw+WUnQuPj6VseaZKnz4KkGCWq08DrB0kzAkaNhMZutBtMStFz2J0jV
+         hnypBc+XYrgCA1ALvuV7iiOQ2qTbcxITTRpnIw3O7rzgtAFitK6uFWiBFqkrnslWRLQB
+         mKrA==
+X-Gm-Message-State: APjAAAVpN2Svg59vAGe+yUgBz8YqMOTosiWydcYfBZnwBhUO69LVvIi8
+        p5OTS1XaSAmspyWIDZIjb6I=
+X-Google-Smtp-Source: APXvYqzxWaOUC6qZwMBuCHnyzenzRSRzTHSbE0gzNUTOFToej+bows67Ufyy7HBJJk5zXK4cbd1Yww==
+X-Received: by 2002:ac8:3021:: with SMTP id f30mr2952481qte.193.1568382004037;
+        Fri, 13 Sep 2019 06:40:04 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f01c:48c2:8ccf:8b81:8d41:df1e])
+        by smtp.gmail.com with ESMTPSA id h4sm11450080qtn.62.2019.09.13.06.40.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Sep 2019 06:40:03 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id D7FABC4A55; Fri, 13 Sep 2019 10:40:00 -0300 (-03)
+Date:   Fri, 13 Sep 2019 10:40:00 -0300
+From:   'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct
+ sctp_paddrthlds
+Message-ID: <20190913134000.GY3431@localhost.localdomain>
+References: <CADvbK_d_Emw0K2Uq4P9OanRBr52tNjMsAOiJNi0TGsuWt6+81A@mail.gmail.com>
+ <1e5c3163e6c649b09137eeb62d193d87@AcuMS.aculab.com>
+ <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
+ <CADvbK_dqNas+vwP2t3LqWyabNnzRDO=PZPe4p+zE-vQJTnfKpA@mail.gmail.com>
+ <20190911125609.GC3499@localhost.localdomain>
+ <CADvbK_e=4Fo7dmM=4QTZHtNDtsrDVe_VtyG2NVqt_3r9z7R=PA@mail.gmail.com>
+ <20190912225154.GF3499@localhost.localdomain>
+ <bcaba726b7444efea7b14fcd60e4743a@AcuMS.aculab.com>
+ <20190913131954.GX3431@localhost.localdomain>
+ <be14cc8353f6403c82ad81e3e741d8f0@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 3/3] libertas: Remove unneeded variable and make function
- to be void
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1568306492-42998-4-git-send-email-zhongjiang@huawei.com>
-References: <1568306492-42998-4-git-send-email-zhongjiang@huawei.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <davem@davemloft.net>, <zhongjiang@huawei.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190913133826.187CC601C3@smtp.codeaurora.org>
-Date:   Fri, 13 Sep 2019 13:38:26 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be14cc8353f6403c82ad81e3e741d8f0@AcuMS.aculab.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> wrote:
-
-> lbs_process_event  do not need return value to cope with different
-> cases. And change functon return type to void.
+On Fri, Sep 13, 2019 at 01:31:22PM +0000, David Laight wrote:
+> From: 'Marcelo Ricardo Leitner'
+> > Sent: 13 September 2019 14:20
+> ...
+> > Interestingly, we have/had the opposite problem with netlink. Like, it
+> > was allowing too much flexibility, such as silently ignoring unknown
+> > fields (which is what would happen with a new app running on an older
+> > kernel would trigger here) is bad because the app cannot know if it
+> > was actually used or not. Some gymnastics in the app could cut through
+> > the fat here, like probing getsockopt() return size, but then it may
+> > as well probe for the right sockopt to be used.
 > 
-> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+> Yes, it would also work if the kernel checked that all 'unexpected'
+> fields were zero (up to some sanity limit of a few kB).
 
-Same here, I just don't see the benefit.
+Though this would have to be done by older kernels, which are not
+aware of this extra space by definition.
 
-Patch set to Rejected.
+> 
+> Then an application complied with a 'new' header would work with
+> an old kernel provided it didn't try so set any new fields.
+> (And it zeroed the entire structure.)
+> 
+> But you have to start off with that in mind.
+> 
+> Alternatively stop the insanity of setting multiple options
+> with one setsockopt call.
+> If multiple system calls are an issue implement a system call
+> that will set multiple options on the same socket.
+> (Maybe through a CMSG()-like buffer).
+> Then the application can set the ones it wants without having
+> to do the read-modify-write sequence needed for some of the
+> SCTP ones.
 
--- 
-https://patchwork.kernel.org/patch/11143397/
+I'm not sure I get you here. You mean we could have, for example, one
+sockopt for each field on each struct we currently have? That would
+bring other problems to the table, like how to deal with fields that
+need to be updated together.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Anyhow, I'm afraid our hands a bit tied here. That's how the RFCs are
+defining the interface and we shouldn't deviate too much from it.
 
+What would help is that the RFC definited these versioned structs
+itself.  Because as it is, even if we start versioning it, Linux will
+have one versioning and other OSes will have another.
+
+  Marcelo
