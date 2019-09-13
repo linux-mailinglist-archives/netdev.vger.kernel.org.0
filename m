@@ -2,88 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB2BFB1DC8
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 14:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4537FB1DD3
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 14:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729708AbfIMMhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 08:37:53 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:9287 "EHLO mx1.redhat.com"
+        id S1729830AbfIMMnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 08:43:12 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40762 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726771AbfIMMhw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Sep 2019 08:37:52 -0400
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com [209.85.167.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726771AbfIMMnM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Sep 2019 08:43:12 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6BFD2C08E2A1
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 12:37:52 +0000 (UTC)
-Received: by mail-lf1-f70.google.com with SMTP id q3so6201918lfc.5
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 05:37:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=74C0MUNo5cSA21e3pNIqhnNnMlBiYbmaqmQEdGDqJ58=;
-        b=YZe4x2GeWVEELKy/EUxy/no4RZMNRVsI06TxY5b0jyTJHkY+WrigzAEh4o0MKnHfa3
-         ogY5esVKU527C8011gxHrm0gVOkYWeQEFgSqVDR5gR1AvMe79QeV1CYZ+oQE7G04MTL9
-         mgZR3TnSvV/u43cYrhKFD1wMQaRXKCe+06P+7XdmKMWy/j69WLPkXyZBuPnp4ZciASO6
-         Cb1vMDoscD8OLF7OIaV+o5sHMDQ4giuqEWyrbeeN63ZZZUP1PkR6hUI2tPCIuBd7LT7I
-         q07oGXkltKVvA/n9N5cgSNTH+QagoEwk6QNi4uCjq/YyFEIDCF5PPLLSixmlTNx/g5QN
-         mLZA==
-X-Gm-Message-State: APjAAAWxW2keN79VY2vVaWYgiw1cy0pB7woPpWNC3DIv+5maYf2+g5d4
-        0tgZnvSb9ef60DUW/oylgNCoUoP3d60/axfgHnLDSUjEuVh6g8JEBeAuKhAKR/YAdO5IKmbTs3X
-        bzS/rGoi2hwVTwSlk
-X-Received: by 2002:a2e:88d5:: with SMTP id a21mr15045854ljk.17.1568378270834;
-        Fri, 13 Sep 2019 05:37:50 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqybIhqji5YdYuD7MboonLmoCHxAmwO6u65Oku2WrZMp8ZrJ65f22yfgHH1LM9yCL44Q3E7t1Q==
-X-Received: by 2002:a2e:88d5:: with SMTP id a21mr15045848ljk.17.1568378270718;
-        Fri, 13 Sep 2019 05:37:50 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id f19sm6825221ljc.72.2019.09.13.05.37.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2019 05:37:50 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 72C6C180613; Fri, 13 Sep 2019 14:37:49 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Daniel T. Lee" <danieltimlee@gmail.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 3DA6C6128F;
+        Fri, 13 Sep 2019 12:43:12 +0000 (UTC)
+Received: from carbon (ovpn-200-36.brq.redhat.com [10.40.200.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D4C5608AB;
+        Fri, 13 Sep 2019 12:43:06 +0000 (UTC)
+Date:   Fri, 13 Sep 2019 14:43:05 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         brouer@redhat.com
-Subject: Re: [v2 3/3] samples: pktgen: allow to specify destination IP range (CIDR)
-In-Reply-To: <20190913143144.2b8c18ed@carbon>
-References: <20190911184807.21770-1-danieltimlee@gmail.com> <20190911184807.21770-3-danieltimlee@gmail.com> <20190913143144.2b8c18ed@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 13 Sep 2019 14:37:49 +0200
-Message-ID: <87ef0ks76q.fsf@toke.dk>
+Subject: Re: [v2 2/3] samples: pktgen: add helper functions for IP(v4/v6)
+ CIDR parsing
+Message-ID: <20190913144305.4bf38c04@carbon>
+In-Reply-To: <20190911184807.21770-2-danieltimlee@gmail.com>
+References: <20190911184807.21770-1-danieltimlee@gmail.com>
+        <20190911184807.21770-2-danieltimlee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Fri, 13 Sep 2019 12:43:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+On Thu, 12 Sep 2019 03:48:06 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-> On Thu, 12 Sep 2019 03:48:07 +0900
-> "Daniel T. Lee" <danieltimlee@gmail.com> wrote:
->
->> diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
->> index 063ec0998906..08995fa70025 100755
->> --- a/samples/pktgen/pktgen_sample01_simple.sh
->> +++ b/samples/pktgen/pktgen_sample01_simple.sh
->> @@ -22,6 +22,7 @@ fi
->>  # Example enforce param "-m" for dst_mac
->>  [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
->>  [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
->> +[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
->
-> The way the function "parse_addr" is called, in case of errors the
-> 'err()' function is called inside, but it will not stop the program
-> flow.  Instead that function will "only" echo the "ERROR", but program
-> flow continues (even-thought 'err()' uses exit $exitcode).
->
-> Maybe it is not solveable to get the exit/$?/status out? (I've tried
-> different options, but didn't find a way).
+> This commit adds CIDR parsing and IP validate helper function to parse
+> single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
+> 
+> Helpers will be used in prior to set target address in samples/pktgen.
+> 
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> ---
+>  samples/pktgen/functions.sh | 122 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 122 insertions(+)
+> 
+> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+> index 4af4046d71be..8be5a6b6c097 100644
+[...]
 
-`set -o errexit`? :)
+> +# Given a single IP(v4/v6) or CIDR, return minimum and maximum IP addr.
+> +function parse_addr()
+> +{
+> +    # check function is called with (funcname)6
+> +    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
+> +    local bitlen=$[ IP6 ? 128 : 32 ]
+> +    local octet=$[ IP6 ? 16 : 8 ]
+> +
+> +    local addr=$1
+> +    local net prefix
+> +    local min_ip max_ip
+> +
+> +    IFS='/' read net prefix <<< $addr
+> +    [[ $IP6 ]] && net=$(extend_addr6 $net)
+> +    validate_addr$IP6 $net
+> +
+> +    if [[ $prefix -gt $bitlen ]]; then
+> +        err 5 "Invalid prefix: $prefix"
+> +    elif [[ -z $prefix ]]; then
+> +        min_ip=$net
+> +        max_ip=$net
+> +    else
+> +        # defining array for converting Decimal 2 Binary
+> +        # 00000000 00000001 00000010 00000011 00000100 ...
+> +        local d2b='{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}'
+> +        [[ $IP6 ]] && d2b+=$d2b
+> +        eval local D2B=($d2b)
 
--Toke
+I must say this is a rather cool shell/bash trick to use an array for
+converting decimal numbers into binary.
+
+> +
+> +        local shift=$[ bitlen-prefix ]
+
+Using a variable named 'shift' is slightly problematic for shell/bash
+code.  It works, but it is just confusing.
+
+> +        local min_mask max_mask
+> +        local min max
+> +        local ip_bit
+> +        local ip sep
+> +
+> +        # set separator for each IP(v4/v6)
+> +        [[ $IP6 ]] && sep=: || sep=.
+> +        IFS=$sep read -ra ip <<< $net
+> +
+> +        min_mask="$(printf '1%.s' $(seq $prefix))$(printf '0%.s' $(seq $shift))"
+> +        max_mask="$(printf '0%.s' $(seq $prefix))$(printf '1%.s' $(seq $shift))"
+
+Also a surprising shell trick to get binary numbers out of a prefix number.
+
+> +
+> +        # calculate min/max ip with &,| operator
+> +        for i in "${!ip[@]}"; do
+> +            digit=$[ IP6 ? 16#${ip[$i]} : ${ip[$i]} ]
+> +            ip_bit=${D2B[$digit]}
+> +
+> +            idx=$[ octet*i ]
+> +            min[$i]=$[ 2#$ip_bit & 2#${min_mask:$idx:$octet} ]
+> +            max[$i]=$[ 2#$ip_bit | 2#${max_mask:$idx:$octet} ]
+> +            [[ $IP6 ]] && { min[$i]=$(printf '%X' ${min[$i]});
+> +                            max[$i]=$(printf '%X' ${max[$i]}); }
+> +        done
+> +
+> +        min_ip=$(IFS=$sep; echo "${min[*]}")
+> +        max_ip=$(IFS=$sep; echo "${max[*]}")
+> +    fi
+> +
+> +    echo $min_ip $max_ip
+> +}
+
+If you just fix the variable name 'shift' to something else, then I'm
+happy with this patch.
+
+Again, I'm very impressed with your shell/bash skills, I were certainly
+challenged when reviewing this :-)
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
