@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 783C1B1C38
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 13:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC418B1C40
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 13:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388177AbfIMLb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 07:31:29 -0400
-Received: from correo.us.es ([193.147.175.20]:42758 "EHLO mail.us.es"
+        id S2388199AbfIMLbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 07:31:32 -0400
+Received: from correo.us.es ([193.147.175.20]:42764 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388155AbfIMLb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2387758AbfIMLb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 13 Sep 2019 07:31:28 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4CFD44FFE1D
+        by mail.us.es (Postfix) with ESMTP id AD3B14FFE1F
         for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 13:31:24 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3CA7DA7E2A
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A0424A7E0F
         for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 13:31:24 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 312F5A7E1F; Fri, 13 Sep 2019 13:31:24 +0200 (CEST)
+        id 95CA5A7E24; Fri, 13 Sep 2019 13:31:24 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F25E0A7E1F;
-        Fri, 13 Sep 2019 13:31:21 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7CF2BA7E0F;
+        Fri, 13 Sep 2019 13:31:22 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 13 Sep 2019 13:31:21 +0200 (CEST)
+ Fri, 13 Sep 2019 13:31:22 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (sys.soleta.eu [212.170.55.40])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id BD2884265A5A;
-        Fri, 13 Sep 2019 13:31:21 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 4A9D442EE393;
+        Fri, 13 Sep 2019 13:31:22 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 19/27] netfilter: conntrack: use consistent style when defining inline functions
-Date:   Fri, 13 Sep 2019 13:30:54 +0200
-Message-Id: <20190913113102.15776-20-pablo@netfilter.org>
+Subject: [PATCH 20/27] netfilter: replace defined(CONFIG...) || defined(CONFIG...MODULE) with IS_ENABLED(CONFIG...).
+Date:   Fri, 13 Sep 2019 13:30:55 +0200
+Message-Id: <20190913113102.15776-21-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190913113102.15776-1-pablo@netfilter.org>
 References: <20190913113102.15776-1-pablo@netfilter.org>
@@ -52,199 +52,84 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeremy Sowden <jeremy@azazel.net>
 
-The header contains some inline functions defined as:
+A few headers contain instances of:
 
-  static inline f (...)
-  {
-  #ifdef CONFIG_NF_CONNTRACK_EVENTS
-    ...
-  #else
-    ...
-  #endif
-  }
+  #if defined(CONFIG_XXX) or defined(CONFIG_XXX_MODULE)
 
-and a few others as:
+Replace them with:
 
-  #ifdef CONFIG_NF_CONNTRACK_EVENTS
-  static inline f (...)
-  {
-    ...
-  }
-  #else
-  static inline f (...)
-  {
-    ...
-  }
-  #endif
-
-Prefer the former style, which is more numerous.
+  #if IS_ENABLED(CONFIG_XXX)
 
 Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack_ecache.h | 82 ++++++++++++++++++-----------
- 1 file changed, 50 insertions(+), 32 deletions(-)
+ include/linux/netfilter.h                      | 2 +-
+ include/linux/netfilter/ipset/ip_set_getport.h | 2 +-
+ include/net/netfilter/nf_conntrack_extend.h    | 2 +-
+ include/net/netfilter/nf_nat.h                 | 4 ++--
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_ecache.h b/include/net/netfilter/nf_conntrack_ecache.h
-index 0815bfadfefe..eb81f9195e28 100644
---- a/include/net/netfilter/nf_conntrack_ecache.h
-+++ b/include/net/netfilter/nf_conntrack_ecache.h
-@@ -64,6 +64,7 @@ nf_ct_ecache_ext_add(struct nf_conn *ct, u16 ctmask, u16 expmask, gfp_t gfp)
+diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
+index 049aeb40fa35..754995d028e2 100644
+--- a/include/linux/netfilter.h
++++ b/include/linux/netfilter.h
+@@ -422,7 +422,7 @@ nf_nat_decode_session(struct sk_buff *skb, struct flowi *fl, u_int8_t family)
  }
+ #endif /*CONFIG_NETFILTER*/
  
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
-+
- /* This structure is passed to event handler */
- struct nf_ct_event {
- 	struct nf_conn *ct;
-@@ -84,9 +85,26 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct);
- int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
- 				  u32 portid, int report);
+-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
++#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+ #include <linux/netfilter/nf_conntrack_zones_common.h>
  
-+#else
-+
-+static inline void nf_ct_deliver_cached_events(const struct nf_conn *ct)
-+{
-+}
-+
-+static inline int nf_conntrack_eventmask_report(unsigned int eventmask,
-+						struct nf_conn *ct,
-+						u32 portid,
-+						int report)
-+{
-+	return 0;
-+}
-+
-+#endif
-+
- static inline void
- nf_conntrack_event_cache(enum ip_conntrack_events event, struct nf_conn *ct)
+ extern void (*ip_ct_attach)(struct sk_buff *, const struct sk_buff *) __rcu;
+diff --git a/include/linux/netfilter/ipset/ip_set_getport.h b/include/linux/netfilter/ipset/ip_set_getport.h
+index a906df06948b..d74cd112b88a 100644
+--- a/include/linux/netfilter/ipset/ip_set_getport.h
++++ b/include/linux/netfilter/ipset/ip_set_getport.h
+@@ -9,7 +9,7 @@
+ extern bool ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
+ 				__be16 *port, u8 *proto);
+ 
+-#if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
++#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+ extern bool ip_set_get_ip6_port(const struct sk_buff *skb, bool src,
+ 				__be16 *port, u8 *proto);
+ #else
+diff --git a/include/net/netfilter/nf_conntrack_extend.h b/include/net/netfilter/nf_conntrack_extend.h
+index 21f887c5058c..112a6f40dfaf 100644
+--- a/include/net/netfilter/nf_conntrack_extend.h
++++ b/include/net/netfilter/nf_conntrack_extend.h
+@@ -8,7 +8,7 @@
+ 
+ enum nf_ct_ext_id {
+ 	NF_CT_EXT_HELPER,
+-#if defined(CONFIG_NF_NAT) || defined(CONFIG_NF_NAT_MODULE)
++#if IS_ENABLED(CONFIG_NF_NAT)
+ 	NF_CT_EXT_NAT,
+ #endif
+ 	NF_CT_EXT_SEQADJ,
+diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
+index eeb336809679..362ff94fa6b0 100644
+--- a/include/net/netfilter/nf_nat.h
++++ b/include/net/netfilter/nf_nat.h
+@@ -22,7 +22,7 @@ enum nf_nat_manip_type {
+ /* per conntrack: nat application helper private data */
+ union nf_conntrack_nat_help {
+ 	/* insert nat helper private data here */
+-#if defined(CONFIG_NF_NAT_PPTP) || defined(CONFIG_NF_NAT_PPTP_MODULE)
++#if IS_ENABLED(CONFIG_NF_NAT_PPTP)
+ 	struct nf_nat_pptp nat_pptp_info;
+ #endif
+ };
+@@ -47,7 +47,7 @@ struct nf_conn_nat *nf_ct_nat_ext_add(struct nf_conn *ct);
+ 
+ static inline struct nf_conn_nat *nfct_nat(const struct nf_conn *ct)
  {
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
- 	struct net *net = nf_ct_net(ct);
- 	struct nf_conntrack_ecache *e;
- 
-@@ -98,31 +116,42 @@ nf_conntrack_event_cache(enum ip_conntrack_events event, struct nf_conn *ct)
- 		return;
- 
- 	set_bit(event, &e->cache);
-+#endif
- }
- 
- static inline int
- nf_conntrack_event_report(enum ip_conntrack_events event, struct nf_conn *ct,
- 			  u32 portid, int report)
- {
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
- 	const struct net *net = nf_ct_net(ct);
- 
- 	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
- 		return 0;
- 
- 	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
-+#else
-+	return 0;
-+#endif
- }
- 
- static inline int
- nf_conntrack_event(enum ip_conntrack_events event, struct nf_conn *ct)
- {
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
- 	const struct net *net = nf_ct_net(ct);
- 
- 	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
- 		return 0;
- 
- 	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
-+#else
-+	return 0;
-+#endif
- }
- 
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+
- struct nf_exp_event {
- 	struct nf_conntrack_expect *exp;
- 	u32 portid;
-@@ -148,41 +177,18 @@ void nf_conntrack_ecache_pernet_fini(struct net *net);
- int nf_conntrack_ecache_init(void);
- void nf_conntrack_ecache_fini(void);
- 
--static inline void nf_conntrack_ecache_delayed_work(struct net *net)
-+#else /* CONFIG_NF_CONNTRACK_EVENTS */
-+
-+static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
-+					     struct nf_conntrack_expect *exp,
-+					     u32 portid,
-+					     int report)
- {
--	if (!delayed_work_pending(&net->ct.ecache_dwork)) {
--		schedule_delayed_work(&net->ct.ecache_dwork, HZ);
--		net->ct.ecache_dwork_pending = true;
--	}
- }
- 
--static inline void nf_conntrack_ecache_work(struct net *net)
-+static inline void nf_conntrack_ecache_pernet_init(struct net *net)
- {
--	if (net->ct.ecache_dwork_pending) {
--		net->ct.ecache_dwork_pending = false;
--		mod_delayed_work(system_wq, &net->ct.ecache_dwork, 0);
--	}
- }
--#else /* CONFIG_NF_CONNTRACK_EVENTS */
--static inline void nf_conntrack_event_cache(enum ip_conntrack_events event,
--					    struct nf_conn *ct) {}
--static inline int nf_conntrack_eventmask_report(unsigned int eventmask,
--						struct nf_conn *ct,
--						u32 portid,
--						int report) { return 0; }
--static inline int nf_conntrack_event(enum ip_conntrack_events event,
--				     struct nf_conn *ct) { return 0; }
--static inline int nf_conntrack_event_report(enum ip_conntrack_events event,
--					    struct nf_conn *ct,
--					    u32 portid,
--					    int report) { return 0; }
--static inline void nf_ct_deliver_cached_events(const struct nf_conn *ct) {}
--static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
--					     struct nf_conntrack_expect *exp,
-- 					     u32 portid,
-- 					     int report) {}
--
--static inline void nf_conntrack_ecache_pernet_init(struct net *net) {}
- 
- static inline void nf_conntrack_ecache_pernet_fini(struct net *net)
- {
-@@ -197,14 +203,26 @@ static inline void nf_conntrack_ecache_fini(void)
- {
- }
- 
-+#endif /* CONFIG_NF_CONNTRACK_EVENTS */
-+
- static inline void nf_conntrack_ecache_delayed_work(struct net *net)
- {
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	if (!delayed_work_pending(&net->ct.ecache_dwork)) {
-+		schedule_delayed_work(&net->ct.ecache_dwork, HZ);
-+		net->ct.ecache_dwork_pending = true;
-+	}
-+#endif
- }
- 
- static inline void nf_conntrack_ecache_work(struct net *net)
- {
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	if (net->ct.ecache_dwork_pending) {
-+		net->ct.ecache_dwork_pending = false;
-+		mod_delayed_work(system_wq, &net->ct.ecache_dwork, 0);
-+	}
-+#endif
- }
--#endif /* CONFIG_NF_CONNTRACK_EVENTS */
- 
- #endif /*_NF_CONNTRACK_ECACHE_H*/
--
+-#if defined(CONFIG_NF_NAT) || defined(CONFIG_NF_NAT_MODULE)
++#if IS_ENABLED(CONFIG_NF_NAT)
+ 	return nf_ct_ext_find(ct, NF_CT_EXT_NAT);
+ #else
+ 	return NULL;
 -- 
 2.11.0
 
