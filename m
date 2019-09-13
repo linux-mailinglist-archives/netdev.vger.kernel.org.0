@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2629AB1A93
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD84FB1A9B
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 11:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387608AbfIMJPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 05:15:04 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:37894 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387424AbfIMJPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 05:15:04 -0400
-Received: by mail-io1-f65.google.com with SMTP id k5so36257787iol.5
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 02:15:03 -0700 (PDT)
+        id S2387731AbfIMJRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 05:17:09 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:45615 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387424AbfIMJRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 05:17:09 -0400
+Received: by mail-oi1-f194.google.com with SMTP id o205so1549689oib.12
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 02:17:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BZYz4r8LKKZMJckNqySIN78GP3+8nmIk7Tu7AI7j78M=;
-        b=moxbltNFRyTmjMVPWq6qw9NSRngSI5kk9L1i75J8igc30wDUAQ6qPNFnz+jYMRm0sn
-         nxcwknDr4EmmrnthRsr4GN6VN13fU1GI7lj1aMxJJsENOjAVbBUdqfBprAv1bXJQ1Ky8
-         NEyguiIbIx+XR0UEyl4l5PY4lEtCHOXzY+dMkFbpdc9ZVPuT5KMIeIxGPzlPJ+L9Qp5s
-         kh/F1yNOKVR2O2pk5Jo39KIDRc29sgnOXW4JdRF2rmFnvCmuw5m30NAD7yOYHSoC+Ud0
-         1duM5aCqfXRffF1OXYwtpXyR9GUcIIoT/4frV22l8KFPYxhAtGSKrJ0Q1jsBI3iWk5WF
-         ImpQ==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=W+7OCyU4oIRxDa2T6/OVUqLpWvkhp0z6JtGuxMzwCW8=;
+        b=bM7tF2h1Y++OBliX1bgLh/5Q68tLHskJXjkvlUs583ijAjTeN0Q0R85+I7syjtvo/N
+         kfLU0/9ExX94pSUY9O+1SF2gsE5WYPdLvQfnZ7TOn0HouZiagJzJOuCabtqSjGUKrT2j
+         WgS9qtbi/y7vZ5giBbI9HQ2CJYJrlPxRWEVi9X2hA+GdyUbDhxlhyT+jgLIlA/J1MTaw
+         CPsF2ABDbGPU14PZXPWSNcCXKUawwGK4TDu2zDm1BkntiCq/c7++ILkFtof72vokVAvc
+         V2Q4gg8UKnlu1y18zwSbQtjzTokeSx2oRo7kXJOgJjEtIuiopf9ENCSW+47a/V1T+RYa
+         iStw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BZYz4r8LKKZMJckNqySIN78GP3+8nmIk7Tu7AI7j78M=;
-        b=t1lB7814H5IezqXQEXs7LBzTEqOcCbG6vHfNstXLH/xkjNcxCkOQXwjg5JdJxwomWf
-         hVj1vEZV5R7jXNMYw5pv+9ZavZ+Q5WG/wtV0IikhmmJ8zWMhL3mcPjS6W1onx4PCyNUY
-         YGvLzyLMahnzDjvS+j5JLhC66jVJmg0lts07ULRQeAZBsuDOe8ZVGiCJK/P1iaMwOx8D
-         A3WiptMFML5yv8gAflWF7DOJTh5KKqD2XrxuP6HVMnA9Qa91siHZvER20BBnlv483t/0
-         41++S5tJ9WT5IFbmVCZXnGkITlNTQSzrkPXWRFVJRlW2iij7hTfzrCSESntZPY7OOmnA
-         NvWw==
-X-Gm-Message-State: APjAAAVzqI8k+AimqK8/0efulErN4F6HW58F0eKYVB2E9TjC9mQVRptn
-        sIXNVe18rsCLg1hDg3CTExsxfoe526i7z4kcrO3xAkcHCievHg==
-X-Google-Smtp-Source: APXvYqw5MYajYxKjH+PAEU3A+ZfT8QacCpo9Zy3TUgM5TvR78pwZzqQQpJ7ftNDk4Eugl+5pQAW7JNt9FFZXlBkZIhU=
-X-Received: by 2002:a6b:5814:: with SMTP id m20mr4028863iob.249.1568366103204;
- Fri, 13 Sep 2019 02:15:03 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=W+7OCyU4oIRxDa2T6/OVUqLpWvkhp0z6JtGuxMzwCW8=;
+        b=rLyceK+v0gm1yHYuC0qzi2ea99lr3eczdwxFsvCidQaClO1Wb0ZFni8hjGthfPGnXP
+         3sY+moLeF/MJziRy2PgGW3e/cteulQFCGysYQans5XJ7QO3+7JcIl033uGsfuVfEkIN9
+         oJYMaK+u9TcsDM8nNiF8DRuhE70HvYe2BICpihMR7A1OskCJHxkIRjq42mnkyzvEJrQe
+         1b+j0oVFQ/7Q5hqUu5QDqs+kKYGNYxkhVtALlPoDmC7OhPwh5KmQte/Eb5SagARAH6Hc
+         sBd5w/a0/snV0pO7I1hVrIOVAuSxB+t/HH92X9xmT4x/HLelj6zzAFN0c7xS548tLYnM
+         9rpQ==
+X-Gm-Message-State: APjAAAXP4ym+3vTjQmBSWPoXEDSydSo6/rVtCDjSX2n1tYTeX4vn/Q3A
+        i4Ot1F1TctkrLb+qDE2HXLV7vMrb7GRxvgl54sU=
+X-Google-Smtp-Source: APXvYqyj/wK5aZIlawog9WHdOQZ6VgqKA6d6bFa3Hy4JaC7IyZfEcu8JoIpVzRJBjYwYoRgNX4k0SLXoKbGyMz5k85E=
+X-Received: by 2002:aca:a9c3:: with SMTP id s186mr2401390oie.60.1568366228106;
+ Fri, 13 Sep 2019 02:17:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAO42Z2xH_R1YQBhpyFVziPnHzWwzNV61VqrVT0yMcdEoTd6ZNQ@mail.gmail.com>
-In-Reply-To: <CAO42Z2xH_R1YQBhpyFVziPnHzWwzNV61VqrVT0yMcdEoTd6ZNQ@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Fri, 13 Sep 2019 10:14:51 +0100
-Message-ID: <CAA93jw4SC2choBKXvaTD_5j93Op=RZ9ZEeKmyAu31ys_uNhSyA@mail.gmail.com>
-Subject: Re: "[RFC PATCH net-next 2/2] Reduce localhost to 127.0.0.0/16"
-To:     Mark Smith <markzzzsmith@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+From:   Mark Smith <markzzzsmith@gmail.com>
+Date:   Fri, 13 Sep 2019 19:16:42 +1000
+Message-ID: <CAO42Z2yTw-pnKH01V7nyuXaT2R95y_WZ+7HpDmVCgROzNhEY6w@mail.gmail.com>
+Subject: "[RFC PATCH net-next 1/2] Allow 225/8-231/8 as unicast"
+To:     dave.taht@gmail.com, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 9:54 AM Mark Smith <markzzzsmith@gmail.com> wrote:
->
-> (Not subscribed to the ML)
->
-> Hi,
->
-> I've noticed this patch. I don't think it should be applied, as it
-> contradicts RFC 1122, "Requirements for Internet Hosts --
-> Communication Layers":
+Hi,
 
-Yea!  I kicked off a discussion!
+(Not subscribed to the mailing list)
 
-> "(g)  { 127, <any> }
->
->                  Internal host loopback address.  Addresses of this form
->                  MUST NOT appear outside a host."
+I've just noticed this patch.
 
-That 1984 (89) definition of a "host" has been stretched considerably
-in the past few decades. We now have
-a hypervisor, multiple cores, multiple vms, vms stacked within vms,
-and containers with virtual interfaces on them, and a confusing
-plethora of rfc1918 and nat between them and the wire.
+I don't think it should be applied, as 225/8 through 231/8 falls
+within the IANA designated Class D multicast address range.
+(https://www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml)
 
-This RFC-to-netdev's proposed reduction to a /16 was sufficient to
-cover the two main use cases for loopback in Linux,
-127.0.0.1 - loopback
-127.0.1.1 - dns
+Using this address range as unicast addresses would mean that ICMP
+messages would need to be able to use them as a source address.
 
-We'd also seen some usages of things like 127.0.0.53 and so on, and in
-the discussion at linuxconf last week,
-it came out that cumulus and a few others were possibly using high
-values of 127.x for switch chassis addressing, but we haven't got any
-documentation on how that works yet.
+However, Internet Standard number 3, RFC 1122, "Requirements for
+Internet Hosts -- Communication Layers", prohibits using addresses
+from within the multicast address range from being used as source
+addresses:
 
-The 1995 IPv6 standard and later has only one loopback address.
-127.0.0.0/8 is 16m wasted internal to the host addresses.
+"       An ICMP error message MUST NOT be sent as the result of
+         receiving:
 
-> RFC 1122 is one of the relatively few Internet Standards, specifically
-> Standard Number 3:
->
-> https://www.rfc-editor.org/standards
+         *    an ICMP error message, or
 
-We have been exploring the solution space here:
+         *    a datagram destined to an IP broadcast or IP multicast
+              address, or
 
-https://github.com/dtaht/unicast-extensions/blob/master/rfcs/draft-gilmore-=
-taht-v4uniext.txt
+         *    a datagram sent as a link-layer broadcast, or
 
-If you would like to file more comments and bugs - or discuss here!
-that would be great.
+         *    a non-initial fragment, or
 
->
-> Regards,
-> Mark.
+         *    a datagram whose source address does not define a single
+              host -- e.g., a zero address, a loopback address, a
+              broadcast address, a multicast address, or a Class E
+              address."
+
+Please note, IPv6 has and is being widely adopted. Trying to extend
+use of IPv4 should be considered an unnecessary, in particular when it
+violates Internet Standards.
+
+There are more than 75 000 IPv6 routes in the Internet route table.
+Nearly 18 000 BGP Autonomous Systems are announcing at least one IPv6
+prefix.
+
+ http://www.cidr-report.org/v6/as2.0/#General_Status
 
 
+A number of countries have exceeded 50% IPv6 capability and preference
+according to APNIC.
 
---=20
+https://stats.labs.apnic.net/ipv6
 
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-205-9740
+
+Globally, Google are receiving more than 25% of their traffic via IPv6:
+
+https://www.google.com/intl/en/ipv6/statistics.html
+
+Regards,
+Mark.
