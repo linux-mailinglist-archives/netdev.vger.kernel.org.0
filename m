@@ -2,98 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA444B2107
-	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 15:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C76B212E
+	for <lists+netdev@lfdr.de>; Fri, 13 Sep 2019 15:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390985AbfIMNb3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Sep 2019 09:31:29 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:37653 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391723AbfIMNb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 09:31:27 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mtapsc-6-KpIWV1bdPc6qzhcaao16VA-1; Fri, 13 Sep 2019 14:31:23 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 13 Sep 2019 14:31:22 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 13 Sep 2019 14:31:22 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
-CC:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct
- sctp_paddrthlds
-Thread-Topic: [PATCH net-next 5/5] sctp: add spt_pathcpthld in struct
- sctp_paddrthlds
-Thread-Index: AQHVZuRCrtt5derbnkaX0GdcwfdxAKck5i9wgAE3h4CAABM4AIACeq2egAChsYCAAEAEAIAAEcnA
-Date:   Fri, 13 Sep 2019 13:31:22 +0000
-Message-ID: <be14cc8353f6403c82ad81e3e741d8f0@AcuMS.aculab.com>
-References: <604e6ac718c29aa5b1a8c4b164a126b82bc42a2f.1568015756.git.lucien.xin@gmail.com>
- <9fc7ca1598e641cda3914840a4416aab@AcuMS.aculab.com>
- <CADvbK_d_Emw0K2Uq4P9OanRBr52tNjMsAOiJNi0TGsuWt6+81A@mail.gmail.com>
- <1e5c3163e6c649b09137eeb62d193d87@AcuMS.aculab.com>
- <CADvbK_dcGXPmO+wwwCvcsoGYPv+sdpw2b0cGuen-QPuxNcEcpQ@mail.gmail.com>
- <CADvbK_dqNas+vwP2t3LqWyabNnzRDO=PZPe4p+zE-vQJTnfKpA@mail.gmail.com>
- <20190911125609.GC3499@localhost.localdomain>
- <CADvbK_e=4Fo7dmM=4QTZHtNDtsrDVe_VtyG2NVqt_3r9z7R=PA@mail.gmail.com>
- <20190912225154.GF3499@localhost.localdomain>
- <bcaba726b7444efea7b14fcd60e4743a@AcuMS.aculab.com>
- <20190913131954.GX3431@localhost.localdomain>
-In-Reply-To: <20190913131954.GX3431@localhost.localdomain>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2388733AbfIMNhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 09:37:54 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:56944 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387584AbfIMNhx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 09:37:53 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id BDA7760767; Fri, 13 Sep 2019 13:37:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568381872;
+        bh=IISeWQxNAdCObwP9mJjaExic+PQ/4Av37VV7Ya2x/YM=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=FN6AbRaoI/KGMGj0HLNzg2KWAdrlZOGMbfVpz8oxQ+rXbglOwuksxtXfoEv0q6Nhc
+         7rpPE3QyP2y2weTMI5/8at9+VonrFn0IFFVEL21C+K9kpg2S4HDvPymfYVR7xesGqr
+         iH8JNxNG8L8ZFcu/yBcDvXnBStU2sXHu0a/lMIX8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E8686601C3;
+        Fri, 13 Sep 2019 13:37:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568381872;
+        bh=IISeWQxNAdCObwP9mJjaExic+PQ/4Av37VV7Ya2x/YM=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=Kf384DT0b91WwyV904MdaAgk3pq8OvtjEOKdoLdqIf/olHRzwCjgaZBUlJKimrrD5
+         rucfghzCrEjencpdiisW0jbMVZpumk+kwmoNl/YUIPrni3J5n77r9Rtm4lm3cKoH+T
+         sh/Evla47IOLKBw1t1+ocXNjpnhUMQ1z6rIN+CNQ=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E8686601C3
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-MC-Unique: KpIWV1bdPc6qzhcaao16VA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/3] brcmsmac: Remove unneeded variable and make function
+ to be void
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1568306492-42998-2-git-send-email-zhongjiang@huawei.com>
+References: <1568306492-42998-2-git-send-email-zhongjiang@huawei.com>
+To:     zhong jiang <zhongjiang@huawei.com>
+Cc:     <davem@davemloft.net>, <zhongjiang@huawei.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190913133752.BDA7760767@smtp.codeaurora.org>
+Date:   Fri, 13 Sep 2019 13:37:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: 'Marcelo Ricardo Leitner'
-> Sent: 13 September 2019 14:20
-...
-> Interestingly, we have/had the opposite problem with netlink. Like, it
-> was allowing too much flexibility, such as silently ignoring unknown
-> fields (which is what would happen with a new app running on an older
-> kernel would trigger here) is bad because the app cannot know if it
-> was actually used or not. Some gymnastics in the app could cut through
-> the fat here, like probing getsockopt() return size, but then it may
-> as well probe for the right sockopt to be used.
+zhong jiang <zhongjiang@huawei.com> wrote:
 
-Yes, it would also work if the kernel checked that all 'unexpected'
-fields were zero (up to some sanity limit of a few kB).
+> brcms_c_set_mac  do not need return value to cope with different
+> cases. And change functon return type to void.
+> 
+> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
 
-Then an application complied with a 'new' header would work with
-an old kernel provided it didn't try so set any new fields.
-(And it zeroed the entire structure.)
+I just don't see the benefit from changing the function to return void.
+And if we ever add error handling to the function we need to change it
+back to return int again, which is extra work.
 
-But you have to start off with that in mind.
+Patch set to Rejected.
 
-Alternatively stop the insanity of setting multiple options
-with one setsockopt call.
-If multiple system calls are an issue implement a system call
-that will set multiple options on the same socket.
-(Maybe through a CMSG()-like buffer).
-Then the application can set the ones it wants without having
-to do the read-modify-write sequence needed for some of the
-SCTP ones.
+-- 
+https://patchwork.kernel.org/patch/11143403/
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
