@@ -2,98 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 158B0B297C
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 05:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FB0B2988
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 06:02:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390863AbfINDbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 23:31:24 -0400
-Received: from mail-ot1-f54.google.com ([209.85.210.54]:38629 "EHLO
-        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390570AbfINDbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 23:31:24 -0400
-Received: by mail-ot1-f54.google.com with SMTP id h17so27423263otn.5
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 20:31:23 -0700 (PDT)
+        id S1725804AbfINEB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 00:01:57 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43100 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbfINEB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 00:01:57 -0400
+Received: by mail-pg1-f195.google.com with SMTP id u72so16279876pgb.10
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 21:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lBsAnRKcYy8BTJHC5GATAkzX4Y3hoPiMP2geDV+eFmk=;
-        b=g80nVFmGQwMkcel4zmuA9ByA0cVdruDy+oCN6FEjQx/2i0tf44fgX27nz/cPX6ufWP
-         hM6wWaLWoGZytHpqwMlm3bQt9QJQUeIOcbFMiFiYNTmcSNBISIA4RPmKKb2+Jfe4mga9
-         xFrTBoNWw2mDKVpSthLtTtyQdenqWCDk1VpB2sd5h7ngP5jVZNce2lsYNAODTJmlEMus
-         06nEN11pBRYEpbUsr9ZlZytG4HaJ4H03cQBAkWiVtS9TtOTygFY8mOflThpb7qdFqlQp
-         u4HUzTvKtOnCCdQ5NZU2CKJlA3nVKw+W/zm6ivzEHg076VCU5Y2pVwlb6ZKiGOnKoezi
-         rvlQ==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=z8C48pxHbnpxzephm2iJiudOrNDelXO+1+G5iIKs+LU=;
+        b=CabwZyDCMep82ea62tUzDrO0MwOlvUNSMZaDKID9ba4jImQtSBX7E6yVmcNYzNIYPf
+         lImcPXwd0B2wQejRWD7J/MrUdAkquiLz6GahEQfyeNOB5pAmgoADzPnkmA/DrCh8eOMM
+         wEOvvcdNckYx+x8vZg3am4GFEUi9RiY7Nlgm0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lBsAnRKcYy8BTJHC5GATAkzX4Y3hoPiMP2geDV+eFmk=;
-        b=QLvFl1LKxrRjBrwTQOKlrW7+a+NmuyfB4HnwGei0OlFFnd5Qf6hYbgfNromwIIKlrY
-         APE0IiW7ibhEQu5JBT/+/VMynpyMaEZJYp6fyhXKv/PMQnxDfqPlICl7cL8Lf3iWzoAR
-         vuoABNlWbfFnsld17oAS4Y+fS4EhJnK+MfJ0Am05zy/zZJ4LTJwpOC1CHwyW0H+3we2B
-         pLFi23FUAMNK8cxBsUNPeYgKrjQoUwPNJdT7dLxeVrgdRqQZebQ2Iq+9ALBtxTXuE8/V
-         wMEV88BucmbeH2IPgHm4dUQFUw2Ws2sm9/ZRydN9A55ijYFfiQ5cnDDy8L4Tyy5+jXBm
-         myCA==
-X-Gm-Message-State: APjAAAWr6ZmrGwxwABmOODQ2rs0h4eX3nNUwtnVKNJ/hRR2MI4jAQua2
-        XrcXk9Pevrl3LsVXpBZLV4Y=
-X-Google-Smtp-Source: APXvYqzjh1MdwxBqFk6CILCeRSDh2SgcBfmLZfrn1QbBmMeJFaV2K5b7VF4bsEnDiikj2j/8SPuWeA==
-X-Received: by 2002:a9d:6ac5:: with SMTP id m5mr20044264otq.265.1568431882864;
-        Fri, 13 Sep 2019 20:31:22 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id i20sm1349315oie.13.2019.09.13.20.31.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=z8C48pxHbnpxzephm2iJiudOrNDelXO+1+G5iIKs+LU=;
+        b=t0X+p6JjPA6aZVNldWac3q1d1HX9NMt3oX3fhHbnJbTmKXF5Zm91FBQm2xPWsISwBW
+         epwgtSPU+ulcmcWDPHjvhOFWACsHwij0qWSkEO2Ov6ZJlASarzEumkQLRlNLe7VWl8PD
+         o4LTUT4SLMulid7gCkDiJ63ccbYrJA+MM1DsTygrDtzjCYlgtUCRjrIxK5WrdZUAqzE6
+         +QvZHGnIpn0eHSCprAIh+/AjlK4lF+sdAXF+YW0GM77OCDSx8C87SqzQzy1DRaBy/HCT
+         ggGaJWJmZTg2yAqNUfZh2Tw2vtBJqZWnQfNlwCtSYYChwFJMDugzHK10RkISrMAUa5SP
+         OGlQ==
+X-Gm-Message-State: APjAAAUnYsCq+HnlmNBZYLkirYwwmct8Qux1szAGOQJ+MNZ7sJ0cQNYh
+        Esb/15cLC05Iq2x9AHCZhcku6Je6Trc=
+X-Google-Smtp-Source: APXvYqxeS/HNtBV3ot4T6KHL4T64yW8zlbDzAtqlXxAdUTABRrRMuJyZ75uzJoX+hgc4JQzHi8AoXA==
+X-Received: by 2002:a17:90a:d0c4:: with SMTP id y4mr9221094pjw.116.1568433716635;
+        Fri, 13 Sep 2019 21:01:56 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a29sm52363908pfr.152.2019.09.13.21.01.54
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Sep 2019 20:31:21 -0700 (PDT)
-Subject: Re: SFP support with RGMII MAC via RGMII to SERDES/SGMII PHY?
-To:     George McCollister <george.mccollister@gmail.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <CAFSKS=NmM9bPb0R_zoFN+9AuG=x6DUffTNXpLSNRAHuZz4ki-g@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <6cd331e5-4e50-d061-439a-f97417645497@gmail.com>
-Date:   Fri, 13 Sep 2019 20:31:18 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <CAFSKS=NmM9bPb0R_zoFN+9AuG=x6DUffTNXpLSNRAHuZz4ki-g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Fri, 13 Sep 2019 21:01:56 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com
+Subject: [PATCH net-next 0/4] bnxt_en: error recovery follow-up patches.
+Date:   Sat, 14 Sep 2019 00:01:37 -0400
+Message-Id: <1568433701-29000-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Russell, Andrew, Heiner,
+A follow-up patchset for the recently added health and error recovery
+feature.  The first fix is to prevent .ndo_set_rx_mode() from proceeding
+when reset is in progress.  The 2nd fix is for the firmware coredump
+command.  The 3rd and 4th patches update the error recovery process
+slightly to add a state that polls and waits for the firmware to be down.
 
-On 9/13/2019 9:44 AM, George McCollister wrote:
-> Every example of phylink SFP support I've seen is using an Ethernet
-> MAC with native SGMII.
-> Can phylink facilitate support of Fiber and Copper SFP modules
-> connected to an RGMII MAC if all of the following are true?
+Michael Chan (2):
+  bnxt_en: Don't proceed in .ndo_set_rx_mode() when device is not in
+    open state.
+  bnxt_en: Update firmware interface spec. to 1.10.0.100.
 
-I don't think that use case has been presented before, but phylink
-sounds like the tool that should help solve it. From your description
-below, it sounds like all the pieces are there to support it. Is the
-Ethernet MAC driver upstream?
+Vasundhara Volam (2):
+  bnxt_en: Increase timeout for HWRM_DBG_COREDUMP_XX commands
+  bnxt_en: Add a new BNXT_FW_RESET_STATE_POLL_FW_DOWN state.
 
-> 
-> 1) The MAC is connected via RGMII to a transceiver/PHY (such as
-> Marvell 88E1512) which then connects to the SFP via SERDER/SGMII. If
-> you want to see a block diagram it's the first one here:
-> https://www.marvell.com/transceivers/assets/Alaska_88E1512-001_product_brief.pdf
-> 
-> 2) The 1G Ethernet driver has been converted to use phylink.
-> 
-> 3) An I2C controller on the SoC is connected to the SFP cage.
-> 
-> 4) TxFault, LOS and MOD-DEF0 are connected to GPIO on the SoC.
-> 
-> 5) MDIO is connected to the intermediate PHY.
-> 
-> Any thoughts on what might be missing to support this (if anything)
-> would be appreciated-- 
-Florian
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  56 +++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |   4 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h     | 146 +++++++++++++++-------
+ 4 files changed, 156 insertions(+), 52 deletions(-)
+
+-- 
+2.5.1
+
