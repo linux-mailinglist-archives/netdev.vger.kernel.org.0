@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5663EB2A35
+	by mail.lfdr.de (Postfix) with ESMTP id C5699B2A36
 	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 08:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbfING6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 02:58:00 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36076 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726726AbfING6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 02:58:00 -0400
-Received: by mail-wm1-f68.google.com with SMTP id t3so4885496wmj.1
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 23:57:59 -0700 (PDT)
+        id S1726811AbfING6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 02:58:01 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46669 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbfING6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 02:58:01 -0400
+Received: by mail-wr1-f66.google.com with SMTP id o18so2820340wrv.13
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 23:58:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dS0tFBP/UkbnP0+8JOwj2Byib5Nt6uw7QEs0tnjrEN8=;
-        b=znW1JZyelsUOZ8SG2DbOukm4W12Vr2lq1L93X44n5LLpxDeuQu4qsYFOM+q3OZX6VK
-         0nBO8ttIRTdpsE6t0LVA+ZO6SfwkaArnLQ9oMbPynkSFTvrVb1R/RZXr6fsE2Jym07a5
-         X9YRiXFRIBGaZ3yMRQ+TB9p8XeElVrjuxjv+jHRN99dAQ+0uwhyp0dPievtSFyulIrwK
-         kR1JU0+kcabA1VluSVVAGjlp8oNnV7Ai1srh65eHobEPXXt1Qi8pUjt8k1+jCbuMLcNj
-         Q39BVn5ObdjE3t4HS+q+BXfSMldPEH2e2AeNk2YjLz7uDbeVodpkgKgzSA3oZleTlAmC
-         8ErQ==
+        bh=5Ljn3fg1n4bqgy98/FYlaAjhq0nzbilFlGsPQjPh+p0=;
+        b=L/YNptlrTpLSy5NwAs1y1JQsWX0+aUCQhvsavnLwghAAEMSZbwGDMj+1PjO1MOrEnW
+         qp5OoJK3sWaQyHD9e7yboRoxg035tkW6xBdSS2jHyBGIAbm+WOZ99aWzlTVM0aI36UE0
+         cyJi7i72zXvN3krPEhBDDG3GAv3oXl5D98kO3hogLLAVsV0I1oCpwMOidqw8ktrwBc3g
+         TivUEvzh3EpTVFLY7+U5cK9Bxhdyg0yHYEkQiVWjtUhP87/OAU9cq1/Ox0i0zm5DFrM5
+         sAmtpR1xPFRwrgtaNl9P7G8PZPKAaUafgJ97/jEELj7oeUblS3PW1ldilbG6bn+9k2Yh
+         Z+6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dS0tFBP/UkbnP0+8JOwj2Byib5Nt6uw7QEs0tnjrEN8=;
-        b=KRuEjQFFJYhUbIhgoIfwmcLYmN0fYRypMbMt6Clgg1Jm6dgAQ4+2DS5+guK76ynsP5
-         F1SRjHqOSqz742eXRHutV0iJ3BD4oaab8F5HuceCeQR/J2kq1Du1kBtLamj3xLGAnJ2l
-         QaiWwlnCxWTEQXyt8ur3bZN5SVdwteHtIReU8fS6T1qJve2Bk77IVlm1dETbk06Sbe3B
-         QlWNePzGaxDuOJXihjnMPpXJQ20NO0e+ttCz+y7AHYXtWMIh31KVqEPj8p9YnUgSRJan
-         4BLNsgQNhEZkR0J75M7Ar9Q6k4+xx38cBtNH3Vb5m0IKjKvP+Dtc7XHgDKRDarkG+bQP
-         joEA==
-X-Gm-Message-State: APjAAAUYNXJGW/kURPyf0viHmutaiHhbpu0NXJTtZ/6opXCos2mpebk+
-        AhnuFAYpLKLYD/petZwFqhoCmXVkAcU=
-X-Google-Smtp-Source: APXvYqy6DGCahvybfqMqlxsfMvr6mQm4HUucHP4vyTnn9dDDv34RqZy6FBNGr53lPUqK2MaB3SvCAQ==
-X-Received: by 2002:a7b:c08d:: with SMTP id r13mr6035125wmh.39.1568444278438;
-        Fri, 13 Sep 2019 23:57:58 -0700 (PDT)
+        bh=5Ljn3fg1n4bqgy98/FYlaAjhq0nzbilFlGsPQjPh+p0=;
+        b=Ypa163BZqZRJMZDy8P/oINXKHJ/tdHayBJV4gtFHbAPH78QBPKIpnX8sZISxgoCv8i
+         pFWXrBmJYtdxxYcuLIvp0U5URT51UWxDFaCFd+2gsAXG7Qm1HVLHbrmRxyV4DBTVvi2z
+         1rXafcGSkaNwwVPeQtXY5TlqB9PUTZBCcPjEsBcQPO7e4c0cIB5mUGtvvRg3BFep0Wvg
+         HdUhIKbGjyC4TJuWUZJpVu5zqnaTwvSQtTEi6fFAgo1yz3wYtAKegl7/u58Gn64i7QA3
+         muzG9nhijxGVV4vPK6pSAPWODJVpJ3HCiH+Htd3dPPPuxe+ohiPJ8AWoZ/gb5fEFXDww
+         1a0g==
+X-Gm-Message-State: APjAAAU6hvxnZIB29SwdKFLxu2hZ4c6qwVfjmD/QSu1Sa+mFw9zy721O
+        cf/l2E+jH2nqMzyPpUkim34b2eXFoJU=
+X-Google-Smtp-Source: APXvYqx5NDD0PszFhfhZUSuKHXmKmo0RyiuCJXYr9WUNEHKSXjv+tzv5WkQUt3M5KLQVp2RsjKAnfA==
+X-Received: by 2002:a5d:6288:: with SMTP id k8mr41560302wru.209.1568444279291;
+        Fri, 13 Sep 2019 23:57:59 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id i9sm5290241wmf.14.2019.09.13.23.57.57
+        by smtp.gmail.com with ESMTPSA id f18sm6990236wrv.38.2019.09.13.23.57.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2019 23:57:58 -0700 (PDT)
+        Fri, 13 Sep 2019 23:57:59 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, dsahern@gmail.com,
         jakub.kicinski@netronome.com, tariqt@mellanox.com,
         saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         shuah@kernel.org, mlxsw@mellanox.com
-Subject: [patch iproute2-next 1/2] devlink: introduce cmdline option to switch to a different namespace
-Date:   Sat, 14 Sep 2019 08:57:56 +0200
-Message-Id: <20190914065757.27295-1-jiri@resnulli.us>
+Subject: [patch iproute2-next 2/2] devlink: extend reload command to add support for network namespace change
+Date:   Sat, 14 Sep 2019 08:57:57 +0200
+Message-Id: <20190914065757.27295-2-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190914064608.26799-1-jiri@resnulli.us>
 References: <20190914064608.26799-1-jiri@resnulli.us>
@@ -69,76 +69,141 @@ Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v3->v4:
 - rebased on top of trap patches
+- moved netns change to reload command instead of set
 ---
- devlink/devlink.c  | 12 ++++++++++--
- man/man8/devlink.8 |  4 ++++
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ devlink/devlink.c            | 31 +++++++++++++++++++++++++++----
+ include/uapi/linux/devlink.h |  4 ++++
+ man/man8/devlink-dev.8       | 12 ++++++++++++
+ 3 files changed, 43 insertions(+), 4 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index a1be8528c3c9..8020d76dd7f7 100644
+index 8020d76dd7f7..6a28a7aa58a4 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -31,6 +31,7 @@
- #include "mnlg.h"
- #include "json_writer.h"
- #include "utils.h"
-+#include "namespace.h"
+@@ -237,6 +237,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_TRAP_NAME		BIT(29)
+ #define DL_OPT_TRAP_ACTION		BIT(30)
+ #define DL_OPT_TRAP_GROUP_NAME		BIT(31)
++#define DL_OPT_NETNS	BIT(32)
  
- #define ESWITCH_MODE_LEGACY "legacy"
- #define ESWITCH_MODE_SWITCHDEV "switchdev"
-@@ -6748,7 +6749,7 @@ static int cmd_trap(struct dl *dl)
- static void help(void)
- {
- 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
--	       "       devlink [ -f[orce] ] -b[atch] filename\n"
-+	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
- 	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
- 	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
- }
-@@ -6898,6 +6899,7 @@ int main(int argc, char **argv)
- 		{ "pretty",		no_argument,		NULL, 'p' },
- 		{ "verbose",		no_argument,		NULL, 'v' },
- 		{ "statistics",		no_argument,		NULL, 's' },
-+		{ "Netns",		required_argument,	NULL, 'N' },
- 		{ NULL, 0, NULL, 0 }
- 	};
- 	const char *batch_file = NULL;
-@@ -6913,7 +6915,7 @@ int main(int argc, char **argv)
- 		return EXIT_FAILURE;
- 	}
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -276,6 +277,8 @@ struct dl_opts {
+ 	const char *trap_name;
+ 	const char *trap_group_name;
+ 	enum devlink_trap_action trap_action;
++	bool netns_is_pid;
++	uint32_t netns;
+ };
  
--	while ((opt = getopt_long(argc, argv, "Vfb:njpvs",
-+	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:",
- 				  long_options, NULL)) >= 0) {
- 
- 		switch (opt) {
-@@ -6942,6 +6944,12 @@ int main(int argc, char **argv)
- 		case 's':
- 			dl->stats = true;
- 			break;
-+		case 'N':
-+			if (netns_switch(optarg)) {
-+				ret = EXIT_FAILURE;
-+				goto dl_free;
-+			}
-+			break;
- 		default:
- 			pr_err("Unknown option.\n");
- 			help();
-diff --git a/man/man8/devlink.8 b/man/man8/devlink.8
-index 12d489440a3d..7f4eda568081 100644
---- a/man/man8/devlink.8
-+++ b/man/man8/devlink.8
-@@ -55,6 +55,10 @@ Turn on verbose output.
- .BR "\-s" , " --statistics"
- Output statistics.
- 
-+.TP
-+.BR "\-N", " \-Netns " <NETNSNAME>
-+Switches to the specified network namespace.
+ struct dl {
+@@ -1412,6 +1415,22 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_TRAP_ACTION;
++		} else if (dl_argv_match(dl, "netns") &&
++			(o_all & DL_OPT_NETNS)) {
++			const char *netns_str;
 +
- .SS
- .I OBJECT
++			dl_arg_inc(dl);
++			err = dl_argv_str(dl, &netns_str);
++			if (err)
++				return err;
++			opts->netns = netns_get_fd(netns_str);
++			if (opts->netns < 0) {
++				err = dl_argv_uint32_t(dl, &opts->netns);
++				if (err)
++					return err;
++				opts->netns_is_pid = true;
++			}
++			o_found |= DL_OPT_NETNS;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -1534,7 +1553,11 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 	if (opts->present & DL_OPT_TRAP_ACTION)
+ 		mnl_attr_put_u8(nlh, DEVLINK_ATTR_TRAP_ACTION,
+ 				opts->trap_action);
+-
++	if (opts->present & DL_OPT_NETNS)
++		mnl_attr_put_u32(nlh,
++				 opts->netns_is_pid ? DEVLINK_ATTR_NETNS_PID :
++						      DEVLINK_ATTR_NETNS_FD,
++				 opts->netns);
+ }
+ 
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -1595,7 +1618,7 @@ static void cmd_dev_help(void)
+ 	pr_err("       devlink dev eswitch show DEV\n");
+ 	pr_err("       devlink dev param set DEV name PARAMETER value VALUE cmode { permanent | driverinit | runtime }\n");
+ 	pr_err("       devlink dev param show [DEV name PARAMETER]\n");
+-	pr_err("       devlink dev reload DEV\n");
++	pr_err("       devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
+ 	pr_err("       devlink dev info [ DEV ]\n");
+ 	pr_err("       devlink dev flash DEV file PATH [ component NAME ]\n");
+ }
+@@ -2671,7 +2694,7 @@ static int cmd_dev_show(struct dl *dl)
+ 
+ static void cmd_dev_reload_help(void)
+ {
+-	pr_err("Usage: devlink dev reload [ DEV ]\n");
++	pr_err("Usage: devlink dev reload DEV [ netns { PID | NAME | ID } ]\n");
+ }
+ 
+ static int cmd_dev_reload(struct dl *dl)
+@@ -2687,7 +2710,7 @@ static int cmd_dev_reload(struct dl *dl)
+ 	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_RELOAD,
+ 			       NLM_F_REQUEST | NLM_F_ACK);
+ 
+-	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, 0);
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE, DL_OPT_NETNS);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index d63cf9723f57..f2608cfc9706 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -412,6 +412,10 @@ enum devlink_attr {
+ 
+ 	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
+ 
++	DEVLINK_ATTR_NETNS_FD,			/* u32 */
++	DEVLINK_ATTR_NETNS_PID,			/* u32 */
++	DEVLINK_ATTR_NETNS_ID,			/* u32 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
+index 1804463b2321..0e1a5523fa7b 100644
+--- a/man/man8/devlink-dev.8
++++ b/man/man8/devlink-dev.8
+@@ -25,6 +25,13 @@ devlink-dev \- devlink device configuration
+ .ti -8
+ .B devlink dev help
+ 
++.ti -8
++.BR "devlink dev set"
++.IR DEV
++.RI "[ "
++.BI "netns { " PID " | " NAME " | " ID " }
++.RI "]"
++
+ .ti -8
+ .BR "devlink dev eswitch set"
+ .IR DEV
+@@ -92,6 +99,11 @@ Format is:
+ .in +2
+ BUS_NAME/BUS_ADDRESS
+ 
++.SS devlink dev set  - sets devlink device attributes
++
++.TP
++.BI "netns { " PID " | " NAME " | " ID " }
++
+ .SS devlink dev eswitch show - display devlink device eswitch attributes
+ .SS devlink dev eswitch set  - sets devlink device eswitch attributes
  
 -- 
 2.21.0
