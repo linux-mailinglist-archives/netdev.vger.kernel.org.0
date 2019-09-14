@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 352B6B2C01
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 17:46:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8597B2C58
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 19:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfINPpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 11:45:23 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:33729 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbfINPpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 11:45:22 -0400
-Received: by mail-ot1-f67.google.com with SMTP id g25so30842535otl.0
-        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 08:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z6stuyKw6R7aWSyKRkL/ou6qErS4cyd2hvn9L62CTEk=;
-        b=qAlchpt52cOsRSgJgcYxV/tf39eGwEAnb3iHo6xbm24IIHKIB1RNTT2xpah4GQhfcU
-         zsP3ZtYmS+WssgOKkWdKbxGekOjGqBZsxOqJIEXRu8ZAho9u40AxmiKkchU3zAJrjiJ1
-         QyBqp0LQoTPK/jmVzUTkw1PbmprvTYXy4obJEaLEqXQ3cGAgr8LFwyd5FRWp1xCH0eu0
-         ETSRUnz4ZcDh2tB7t+GWULvPGmADz9ZfL8+rO2Km2BYrfZhw9lmjxlmwRRTSSWjPT7+3
-         EISshca5KDZM9W4u50yWRHEudiZ9d5S28xm/VWDBB54lBR3opdidcJh29V3377e3/hUs
-         lVaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z6stuyKw6R7aWSyKRkL/ou6qErS4cyd2hvn9L62CTEk=;
-        b=t0PGMvxfIOgKUuF277mv/sdMNpwQ7EiDjyMT2J9uXCWuPLI+BD9eylFuywCtbkmDJ5
-         n8QbC30kz26IiQweydZnSNhrEfdyoRXfRmrjd4+8NVbkXE7Rp1W6T9W8W8JpTgOQOlW9
-         L+9LgqCJN+2tsxevwqTUBHrea3+9l6f0S51BmSDG0NhXCICuhK4XKTA0109GEcrqc+qD
-         4okEBKCHdaiIM2ANVgIf+D/Hac9cggTtDkqunov/nWHB96SniZ5ONcUpEjh18vIfBvp4
-         /8qUgz74GhBR9XgUSg/QjInlTVwasv18lJxFE2SETtGjmHxSDDUwszaa3D2t5o6hWOK5
-         nlsA==
-X-Gm-Message-State: APjAAAXbuAJNvKrnJb/fVTATjeLm3MVRScpSlMJhkWsVf3yUwwKjsw3m
-        hgY14sJAhka453HsvHdvMQK8h7J5ynzk1V7dnj8cmg==
-X-Google-Smtp-Source: APXvYqxg6wCWYEA6c4okl4WZ4EcpiEkuob3Irawl67OqAjzuTsN2Vnu/ZCSNpRw1pzAZNs00AZ+LdreFCme/V4mmyHU=
-X-Received: by 2002:a9d:5f09:: with SMTP id f9mr2918303oti.341.1568475921476;
- Sat, 14 Sep 2019 08:45:21 -0700 (PDT)
+        id S1728791AbfINRJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 13:09:38 -0400
+Received: from mga11.intel.com ([192.55.52.93]:46516 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728655AbfINRJi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Sep 2019 13:09:38 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Sep 2019 10:09:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,492,1559545200"; 
+   d="scan'208";a="188186220"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga003.jf.intel.com with ESMTP; 14 Sep 2019 10:09:34 -0700
+Received: from andy by smile with local (Exim 4.92.1)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1i9BYD-0005Gw-HZ; Sat, 14 Sep 2019 20:09:33 +0300
+Date:   Sat, 14 Sep 2019 20:09:33 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: mdio: switch to using gpiod_get_optional()
+Message-ID: <20190914170933.GV2680@smile.fi.intel.com>
+References: <20190913225547.GA106494@dtor-ws>
 MIME-Version: 1.0
-References: <20190913232332.44036-1-tph@fb.com> <20190913232332.44036-2-tph@fb.com>
-In-Reply-To: <20190913232332.44036-2-tph@fb.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sat, 14 Sep 2019 11:45:05 -0400
-Message-ID: <CADVnQykBFBU5bFLXRr_aRzxNVpNGQRtELG5kd6viGWqO0uyyng@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] tcp: Add snd_wnd to TCP_INFO
-To:     Thomas Higdon <tph@fb.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dave Jones <dsj@fb.com>, Eric Dumazet <edumazet@google.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190913225547.GA106494@dtor-ws>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 7:23 PM Thomas Higdon <tph@fb.com> wrote:
->
-> Neal Cardwell mentioned that snd_wnd would be useful for diagnosing TCP
-> performance problems --
-> > (1) Usually when we're diagnosing TCP performance problems, we do so
-> > from the sender, since the sender makes most of the
-> > performance-critical decisions (cwnd, pacing, TSO size, TSQ, etc).
-> > From the sender-side the thing that would be most useful is to see
-> > tp->snd_wnd, the receive window that the receiver has advertised to
-> > the sender.
->
-> This serves the purpose of adding an additional __u32 to avoid the
-> would-be hole caused by the addition of the tcpi_rcvi_ooopack field.
->
-> Signed-off-by: Thomas Higdon <tph@fb.com>
+On Fri, Sep 13, 2019 at 03:55:47PM -0700, Dmitry Torokhov wrote:
+> The MDIO device reset line is optional and now that gpiod_get_optional()
+> returns proper value when GPIO support is compiled out, there is no
+> reason to use fwnode_get_named_gpiod() that I plan to hide away.
+> 
+> Let's switch to using more standard gpiod_get_optional() and
+> gpiod_set_consumer_name() to keep the nice "PHY reset" label.
+> 
+> Also there is no reason to only try to fetch the reset GPIO when we have
+> OF node, gpiolib can fetch GPIO data from firmwares as well.
+> 
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+But see comment below.
+
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 > ---
-> changes since v4:
->  - clarify comment
+> 
+> Note this is an update to a patch titled "[PATCH 05/11] net: mdio:
+> switch to using fwnode_gpiod_get_index()" that no longer uses the new
+> proposed API and instead works with already existing ones.
+> 
+>  drivers/net/phy/mdio_bus.c | 22 +++++++++-------------
+>  1 file changed, 9 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index ce940871331e..2e29ab841b4d 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -42,21 +42,17 @@
+>  
+>  static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
+>  {
+> -	struct gpio_desc *gpiod = NULL;
+> +	int error;
+>  
+>  	/* Deassert the optional reset signal */
+> -	if (mdiodev->dev.of_node)
+> -		gpiod = fwnode_get_named_gpiod(&mdiodev->dev.of_node->fwnode,
+> -					       "reset-gpios", 0, GPIOD_OUT_LOW,
+> -					       "PHY reset");
+> -	if (IS_ERR(gpiod)) {
+> -		if (PTR_ERR(gpiod) == -ENOENT || PTR_ERR(gpiod) == -ENOSYS)
+> -			gpiod = NULL;
+> -		else
+> -			return PTR_ERR(gpiod);
+> -	}
+> -
+> -	mdiodev->reset_gpio = gpiod;
+> +	mdiodev->reset_gpio = gpiod_get_optional(&mdiodev->dev,
+> +						 "reset", GPIOD_OUT_LOW);
+> +	error = PTR_ERR_OR_ZERO(mdiodev->reset_gpio);
+> +	if (error)
+> +		return error;
+> +
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
+> +	if (mdiodev->reset_gpio)
 
-Thanks!
+This is redundant check.
 
-neal
+> +		gpiod_set_consumer_name(mdiodev->reset_gpio, "PHY reset");
+
+>  	return 0;
+>  }
+> -- 
+> 2.23.0.237.gc6a4ce50a0-goog
+> 
+> 
+> -- 
+> Dmitry
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
