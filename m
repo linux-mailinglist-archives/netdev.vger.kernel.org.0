@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE77B2BC5
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 17:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D1A4B2BC6
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 17:14:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbfINPOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 11:14:01 -0400
-Received: from mail-pg1-f171.google.com ([209.85.215.171]:42938 "EHLO
-        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbfINPOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 11:14:01 -0400
-Received: by mail-pg1-f171.google.com with SMTP id z12so5312128pgp.9
-        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 08:14:01 -0700 (PDT)
+        id S1726382AbfINPOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 11:14:03 -0400
+Received: from mail-pl1-f175.google.com ([209.85.214.175]:43817 "EHLO
+        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725989AbfINPOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 11:14:03 -0400
+Received: by mail-pl1-f175.google.com with SMTP id 4so14582879pld.10
+        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 08:14:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fmZmV3LEoKBavBhh1/wXQDTwcMfXci2KTIW/ghlrL/I=;
-        b=tfmioC/+6P8L7rAwHZWzqbrIThNrVARMuIOg2Ybk8XneXm7xqOaJzCKQ6DjOBovGVK
-         Xo3qMv4CBxzKUzLV/IOmlUCi4TEUKmOww2zbcGse3cpjFLUZefwi2o80pdJaQqNCfsFW
-         jMtuQz0maEB02O6hmpPbjtYOMe9x6CjnoPNloBImf0ZNJhi7knspCGRttG3xkFRoHtL6
-         pTIz/sU/SCKwcxYPWqVT2Qsnak6MuZSyS9xmV1fdSA93VmNIMhXh2ddxwZZDs+MmdTJL
-         wiWTVHc8RdSghXuJ6Ye5EPxk+6vv7C4675d2Lfdnh2latDXlNG8lUGkbytnm0E+Kh44b
-         Kaqw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wXuGEYaZxkgVu4Q73ooL359B8gvbldJk9cPqByq6HF8=;
+        b=KvkiuqBSSL6yxLJhRVwX4P4pshNorh6lsmFmZklgaoc6MHUXQatcIO9aj64rt0+7H8
+         9nhYEhCpun1e+4f+RESxl0OQv0BoWWm4/oeWDUDV9ce+Nvubg4rg6+kLYBWTg6BXVXs/
+         z9MyTTZGBHmOocXZVL0vpC6jsKkzYa3YE4NfHH8K/TDlXrjBKu2x7FhYvAqSpBNUt4PU
+         7fBDgUg5Fgv1tMzAvC/veiP+EdKPvK+7ogArW1uN0ent7IMVsnD1hUhP3qf4kRz9fmmK
+         sgBnnLO3n1INaOFwDL9AXHBuD+zDCReLk0T/3yHxdEqtsx/r2YGbuDk97KuqCb4aF2mK
+         BvpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fmZmV3LEoKBavBhh1/wXQDTwcMfXci2KTIW/ghlrL/I=;
-        b=bwXlMEsO8ijp6kMW8eLciNtOoBo3IO5LOocornE+7BVPeCgtE8T+Jhn5lzgkgF7Vco
-         7qLd337MWwyC/p1U5+KWdxgnumQE6eYEPz17Zybnbr/98EXmHOl7bndG5kVS3vFzifol
-         C0ivnW2Y8Wn9IjmyxSVoJnMPLbMzSfaU+t8tWTJJXPPeJU3qF4wQ1a8TRqZYplVcGeW5
-         2usSN+t2b3iSwRq/QPbOY8m3s0lvhadVdPJ6rDLIs5/1MLRISH4kfo5jrLsoHKn5rUxh
-         OerIbnHp3h8CbdTZw2CMbfMxaE4DQPV6qVN+Y84D+7hoC5cYAjEO0oF0sgiuUSnK5knj
-         4IzQ==
-X-Gm-Message-State: APjAAAUvjCsYLxW0NEEhVQrfEKHWEe2U/c7TR1k9PKS2C697uYtsnCC4
-        kdYimkBQGdFe0f3ifCcK5ded4g4=
-X-Google-Smtp-Source: APXvYqyS14HcXlSenP9lV1fkK4vvjowdWurYSsgiDeBjiLv3A78QpVbzz7ZZVsIgG1zDEE+OrheRYw==
-X-Received: by 2002:a63:c008:: with SMTP id h8mr49761893pgg.427.1568474040491;
-        Sat, 14 Sep 2019 08:14:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wXuGEYaZxkgVu4Q73ooL359B8gvbldJk9cPqByq6HF8=;
+        b=izsJWQVpxNX99lt+HSrmcdTJu8tgVAN+ndUqdh3A2868rZySdOA6zybw+zYotBapRp
+         PPHhHWs4lxGCKrDz3K7hkqJj53FyqV2f3xcOUFm/OlNlWmN6O1PeEGmpB1BcRiH+7/qP
+         RE9rtTD2uhMGeMBJaXuAm+QgkkcP1GG2YlKKaRtmjh+kFDRMewfIpZa4fsA2j/zXtKm+
+         dR0bSFK23Zb6Ql6kAmq2L8Yv+i98BMpk8WzdJNj1GktsnObOW13AFqHZUHDcLPzQTmR7
+         sSKKuFHS3SO72Pj6zNhbYtdq+zqWW4XycznMKnMIvHuBW7dEDXxWE61VGLCZ3hrFL2Hn
+         YNPQ==
+X-Gm-Message-State: APjAAAVMsLDW5752eEvOols6W4FBOQzXKmobd6yChCq3T9lrPQyHjsrv
+        p2Ojkcvta4tCfecCX5sLLxVR0+Y=
+X-Google-Smtp-Source: APXvYqw/HSvtyr1d9DSXad/Kt9gDjs4JHbI/Dyt/+33CnsRUps1ynKMypH765EBRRwrhlRkgBkH7vQ==
+X-Received: by 2002:a17:902:9d90:: with SMTP id c16mr43782494plq.12.1568474042653;
+        Sat, 14 Sep 2019 08:14:02 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id u69sm28408689pgu.77.2019.09.14.08.13.58
+        by smtp.gmail.com with ESMTPSA id u69sm28408689pgu.77.2019.09.14.08.14.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Sep 2019 08:14:00 -0700 (PDT)
+        Sat, 14 Sep 2019 08:14:02 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Jesper Dangaard Brouer <brouer@redhat.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org
-Subject: [v3 1/3] samples: pktgen: make variable consistent with option
-Date:   Sun, 15 Sep 2019 00:13:51 +0900
-Message-Id: <20190914151353.18054-1-danieltimlee@gmail.com>
+Subject: [v3 2/3] samples: pktgen: add helper functions for IP(v4/v6) CIDR parsing
+Date:   Sun, 15 Sep 2019 00:13:52 +0900
+Message-Id: <20190914151353.18054-2-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190914151353.18054-1-danieltimlee@gmail.com>
+References: <20190914151353.18054-1-danieltimlee@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,292 +61,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit changes variable names that can cause confusion.
+This commit adds CIDR parsing and IP validate helper function to parse
+single IP or range of IP with CIDR. (e.g. 198.18.0.0/15)
 
-For example, variable DST_MIN is quite confusing since the
-keyword 'udp_dst_min' and keyword 'dst_min' is used with pg_ctrl.
-
-On the following commit, 'dst_min' will be used to set destination IP,
-and the existing variable name DST_MIN should be changed.
-
-Variable names are matched to the exact keyword used with pg_ctrl.
+Helpers will be used in prior to set target address in samples/pktgen.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- .../pktgen_bench_xmit_mode_netif_receive.sh      |  8 ++++----
- .../pktgen/pktgen_bench_xmit_mode_queue_xmit.sh  |  8 ++++----
- samples/pktgen/pktgen_sample01_simple.sh         | 16 ++++++++--------
- samples/pktgen/pktgen_sample02_multiqueue.sh     | 16 ++++++++--------
- .../pktgen/pktgen_sample03_burst_single_flow.sh  |  8 ++++----
- samples/pktgen/pktgen_sample04_many_flows.sh     |  8 ++++----
- .../pktgen/pktgen_sample05_flow_per_thread.sh    |  8 ++++----
- ...en_sample06_numa_awared_queue_irq_affinity.sh | 16 ++++++++--------
- 8 files changed, 44 insertions(+), 44 deletions(-)
+Changes since v3:
+ * Set errexit option to stop script execution on error
 
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-index e14b1a9144d9..9b74502c58f7 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-@@ -42,8 +42,8 @@ fi
- [ -z "$BURST" ] && BURST=1024
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
+ samples/pktgen/functions.sh | 124 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 124 insertions(+)
+
+diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+index 4af4046d71be..87ae61701904 100644
+--- a/samples/pktgen/functions.sh
++++ b/samples/pktgen/functions.sh
+@@ -5,6 +5,8 @@
+ # Author: Jesper Dangaaard Brouer
+ # License: GPL
  
- # Base Config
-@@ -76,8 +76,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
++set -o errexit
++
+ ## -- General shell logging cmds --
+ function err() {
+     local exitcode=$1
+@@ -163,6 +165,128 @@ function get_node_cpus()
+ 	echo $node_cpu_list
+ }
  
-     # Inject packet into RX path of stack
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-index 82c3e504e056..0f332555b40d 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-@@ -25,8 +25,8 @@ if [[ -n "$BURST" ]]; then
- fi
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # Base Config
-@@ -59,8 +59,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Inject packet into TX qdisc egress path of stack
-diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
-index d1702fdde8f3..063ec0998906 100755
---- a/samples/pktgen/pktgen_sample01_simple.sh
-+++ b/samples/pktgen/pktgen_sample01_simple.sh
-@@ -23,16 +23,16 @@ fi
- [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
- [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # Base Config
- DELAY="0"        # Zero means max speed
- 
- # Flow variation random source port between min and max
--UDP_MIN=9
--UDP_MAX=109
-+UDP_SRC_MIN=9
-+UDP_SRC_MAX=109
- 
- # General cleanup everything since last run
- # (especially important if other threads were configured by other scripts)
-@@ -66,14 +66,14 @@ pg_set $DEV "dst$IP6 $DEST_IP"
- if [ -n "$DST_PORT" ]; then
-     # Single destination port or random port range
-     pg_set $DEV "flag UDPDST_RND"
--    pg_set $DEV "udp_dst_min $DST_MIN"
--    pg_set $DEV "udp_dst_max $DST_MAX"
-+    pg_set $DEV "udp_dst_min $UDP_DST_MIN"
-+    pg_set $DEV "udp_dst_max $UDP_DST_MAX"
- fi
- 
- # Setup random UDP port src range
- pg_set $DEV "flag UDPSRC_RND"
--pg_set $DEV "udp_src_min $UDP_MIN"
--pg_set $DEV "udp_src_max $UDP_MAX"
-+pg_set $DEV "udp_src_min $UDP_SRC_MIN"
-+pg_set $DEV "udp_src_max $UDP_SRC_MAX"
- 
- # start_run
- echo "Running... ctrl^C to stop" >&2
-diff --git a/samples/pktgen/pktgen_sample02_multiqueue.sh b/samples/pktgen/pktgen_sample02_multiqueue.sh
-index 7f7a9a27548f..a4726fb50197 100755
---- a/samples/pktgen/pktgen_sample02_multiqueue.sh
-+++ b/samples/pktgen/pktgen_sample02_multiqueue.sh
-@@ -21,8 +21,8 @@ DELAY="0"        # Zero means max speed
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- 
- # Flow variation random source port between min and max
--UDP_MIN=9
--UDP_MAX=109
-+UDP_SRC_MIN=9
-+UDP_SRC_MAX=109
- 
- # (example of setting default params in your script)
- if [ -z "$DEST_IP" ]; then
-@@ -30,8 +30,8 @@ if [ -z "$DEST_IP" ]; then
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # General cleanup everything since last run
-@@ -67,14 +67,14 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Setup random UDP port src range
-     pg_set $dev "flag UDPSRC_RND"
--    pg_set $dev "udp_src_min $UDP_MIN"
--    pg_set $dev "udp_src_max $UDP_MAX"
-+    pg_set $dev "udp_src_min $UDP_SRC_MIN"
-+    pg_set $dev "udp_src_max $UDP_SRC_MAX"
- done
- 
- # start_run
-diff --git a/samples/pktgen/pktgen_sample03_burst_single_flow.sh b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-index b520637817ce..dfea91a09ccc 100755
---- a/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-+++ b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-@@ -34,8 +34,8 @@ fi
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0" # No need for clones when bursting
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # Base Config
-@@ -67,8 +67,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Setup burst, for easy testing -b 0 disable bursting
-diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
-index 5b6e9d9cb5b5..7ea9b4a3acf6 100755
---- a/samples/pktgen/pktgen_sample04_many_flows.sh
-+++ b/samples/pktgen/pktgen_sample04_many_flows.sh
-@@ -18,8 +18,8 @@ source ${basedir}/parameters.sh
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # NOTICE:  Script specific settings
-@@ -63,8 +63,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Randomize source IP-addresses
-diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-index 0c06e63fbe97..fbfafe029e11 100755
---- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-+++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-@@ -23,8 +23,8 @@ source ${basedir}/parameters.sh
- [ -z "$BURST" ]     && BURST=32
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # Base Config
-@@ -56,8 +56,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Setup source IP-addresses based on thread number
-diff --git a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-index 97f0266c0356..755e662183f1 100755
---- a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-+++ b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-@@ -20,8 +20,8 @@ DELAY="0"        # Zero means max speed
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- 
- # Flow variation random source port between min and max
--UDP_MIN=9
--UDP_MAX=109
-+UDP_SRC_MIN=9
-+UDP_SRC_MAX=109
- 
- node=`get_iface_node $DEV`
- irq_array=(`get_iface_irqs $DEV`)
-@@ -36,8 +36,8 @@ if [ -z "$DEST_IP" ]; then
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
- if [ -n "$DST_PORT" ]; then
--    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
--    validate_ports $DST_MIN $DST_MAX
-+    read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $UDP_DST_MIN $UDP_DST_MAX
- fi
- 
- # General cleanup everything since last run
-@@ -84,14 +84,14 @@ for ((i = 0; i < $THREADS; i++)); do
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
- 	pg_set $dev "flag UDPDST_RND"
--	pg_set $dev "udp_dst_min $DST_MIN"
--	pg_set $dev "udp_dst_max $DST_MAX"
-+	pg_set $dev "udp_dst_min $UDP_DST_MIN"
-+	pg_set $dev "udp_dst_max $UDP_DST_MAX"
-     fi
- 
-     # Setup random UDP port src range
-     pg_set $dev "flag UDPSRC_RND"
--    pg_set $dev "udp_src_min $UDP_MIN"
--    pg_set $dev "udp_src_max $UDP_MAX"
-+    pg_set $dev "udp_src_min $UDP_SRC_MIN"
-+    pg_set $dev "udp_src_max $UDP_SRC_MAX"
- done
- 
- # start_run
++# Extend shrunken IPv6 address.
++# fe80::42:bcff:fe84:e10a => fe80:0:0:0:42:bcff:fe84:e10a
++function extend_addr6()
++{
++    local addr=$1
++    local sep=: sep2=::
++    local sep_cnt=$(tr -cd $sep <<< $1 | wc -c)
++    local shrink
++
++    # separator count : should be between 2, 7.
++    if [[ $sep_cnt -lt 2 || $sep_cnt -gt 7 ]]; then
++        err 5 "Invalid IP6 address sep: $1"
++    fi
++
++    # if shrink '::' occurs multiple, it's malformed.
++    shrink=( $(egrep -o "$sep{2,}" <<< $addr) )
++    if [[ ${#shrink[@]} -ne 0 ]]; then
++        if [[ ${#shrink[@]} -gt 1 || ( ${shrink[0]} != $sep2 ) ]]; then
++            err 5 "Invalid IP$IP6 address shr: $1"
++        fi
++    fi
++
++    # add 0 at begin & end, and extend addr by adding :0
++    [[ ${addr:0:1} == $sep ]] && addr=0${addr}
++    [[ ${addr: -1} == $sep ]] && addr=${addr}0
++    echo "${addr/$sep2/$(printf ':0%.s' $(seq $[8-sep_cnt])):}"
++}
++
++
++# Given a single IP(v4/v6) address, whether it is valid.
++function validate_addr()
++{
++    # check function is called with (funcname)6
++    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
++    local len=$[ IP6 ? 8 : 4 ]
++    local max=$[ 2**(len*2)-1 ]
++    local addr sep
++
++    # set separator for each IP(v4/v6)
++    [[ $IP6 ]] && sep=: || sep=.
++    IFS=$sep read -a addr <<< $1
++
++    # array length
++    if [[ ${#addr[@]} != $len ]]; then
++        err 5 "Invalid IP$IP6 address: $1"
++    fi
++
++    # check each digit between 0, $max
++    for digit in "${addr[@]}"; do
++        [[ $IP6 ]] && digit=$[ 16#$digit ]
++        if [[ $digit -lt 0 || $digit -gt $max ]]; then
++            err 5 "Invalid IP$IP6 address: $1"
++        fi
++    done
++
++    return 0
++}
++
++function validate_addr6() { validate_addr $@ ; }
++
++# Given a single IP(v4/v6) or CIDR, return minimum and maximum IP addr.
++function parse_addr()
++{
++    # check function is called with (funcname)6
++    [[ ${FUNCNAME[1]: -1} == 6 ]] && local IP6=6
++    local bitlen=$[ IP6 ? 128 : 32 ]
++    local octet=$[ IP6 ? 16 : 8 ]
++
++    local addr=$1
++    local net prefix
++    local min_ip max_ip
++
++    IFS='/' read net prefix <<< $addr
++    [[ $IP6 ]] && net=$(extend_addr6 $net)
++    validate_addr$IP6 $net
++
++    if [[ $prefix -gt $bitlen ]]; then
++        err 5 "Invalid prefix: $prefix"
++    elif [[ -z $prefix ]]; then
++        min_ip=$net
++        max_ip=$net
++    else
++        # defining array for converting Decimal 2 Binary
++        # 00000000 00000001 00000010 00000011 00000100 ...
++        local d2b='{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}{0..1}'
++        [[ $IP6 ]] && d2b+=$d2b
++        eval local D2B=($d2b)
++
++        local remain=$[ bitlen-prefix ]
++        local min_mask max_mask
++        local min max
++        local ip_bit
++        local ip sep
++
++        # set separator for each IP(v4/v6)
++        [[ $IP6 ]] && sep=: || sep=.
++        IFS=$sep read -ra ip <<< $net
++
++        min_mask="$(printf '1%.s' $(seq $prefix))$(printf '0%.s' $(seq $remain))"
++        max_mask="$(printf '0%.s' $(seq $prefix))$(printf '1%.s' $(seq $remain))"
++
++        # calculate min/max ip with &,| operator
++        for i in "${!ip[@]}"; do
++            digit=$[ IP6 ? 16#${ip[$i]} : ${ip[$i]} ]
++            ip_bit=${D2B[$digit]}
++
++            idx=$[ octet*i ]
++            min[$i]=$[ 2#$ip_bit & 2#${min_mask:$idx:$octet} ]
++            max[$i]=$[ 2#$ip_bit | 2#${max_mask:$idx:$octet} ]
++            [[ $IP6 ]] && { min[$i]=$(printf '%X' ${min[$i]});
++                            max[$i]=$(printf '%X' ${max[$i]}); }
++        done
++
++        min_ip=$(IFS=$sep; echo "${min[*]}")
++        max_ip=$(IFS=$sep; echo "${max[*]}")
++    fi
++
++    echo $min_ip $max_ip
++}
++
++function parse_addr6() { parse_addr $@ ; }
++
+ # Given a single or range of port(s), return minimum and maximum port number.
+ function parse_ports()
+ {
 -- 
 2.20.1
 
