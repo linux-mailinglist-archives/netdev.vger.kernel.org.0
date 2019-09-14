@@ -2,85 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F37BB290B
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 02:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3524FB291F
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 02:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390818AbfINAIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 20:08:23 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38748 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390793AbfINAIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 20:08:23 -0400
-Received: by mail-io1-f67.google.com with SMTP id k5so41134655iol.5;
-        Fri, 13 Sep 2019 17:08:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=jwG/Aiknb+UcZynbTQk90VqogFgsnd/QMY7azs6Zupc=;
-        b=H4ki8bM3b9Bmty2ruf5ZSCj1ONr4jsOiep+vLMdBWcjq1+6e8umPfwLlGHYesuoz/Q
-         VF5OFoRIgllqVfRh1O0ob/rthiQm73toq+PTtrX9iKlZ8u3smXrOHJ2yH7252RrvcFpT
-         O3TQVuU3UKw0Am3Efn13+5jVOA3Oh/oH5UC9uNsla1kvJ3F/R6nBoiOSwOMnclPvgRSn
-         vay6xtYVjr5LkBAO60l/e/agltxV8p/eNiUH2xLAV7FcQ7951+WbMmnXr40trn8HDEj4
-         6yl80zQa8B2dbLThm6nFvE462hhCUY3BrldbuGcsFiHG7iW0/cIshuHIso8SieQZdhM+
-         gIzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jwG/Aiknb+UcZynbTQk90VqogFgsnd/QMY7azs6Zupc=;
-        b=sTBiyouiK4UyXL4mE50HQlhIkI9Ns2+bLnk+9IC/vhspdjwj+xTPQI2DtQxLD94ruR
-         EUXt194VEVxAqhmZQJy2MmYkPLsTxt31pXvm59EGf0bFyboMEVIx/BOWcqjS1+pOKH4I
-         PisI3obo+CTL2hsat1wiEc2pMg+ZsZKzwlboyXVB0sL/FjH0xkEqAF1YC39sbegiiU6P
-         PX/iDiNXMRckuIc/hvl5JA+8DFBj6onQYoXyPjRG7Ry122UQPLyu9SCSc2nGtgiv/EqM
-         0YAhTTXDm0FyknKt7MoTbOuMcDqzz/io6uTl6/oMPotLSrKVAe+8u0V/hl9WS8VvitOm
-         U3xw==
-X-Gm-Message-State: APjAAAUnAd+MBw2rCpslu6F+1lT07zH7ui3l7LUI6IDQAbTwKXToMRDT
-        yPjM/YAgsdE/f2RMGo4WmJhx7rwf6+4=
-X-Google-Smtp-Source: APXvYqw7AMJKs0y62zgNzfsmBOSndsvr5y6XtYV+6wx/T/jGH6LPa1JJmCjPhOygc0/qx3csQoLVXA==
-X-Received: by 2002:a6b:5b07:: with SMTP id v7mr3108833ioh.76.1568419702221;
-        Fri, 13 Sep 2019 17:08:22 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id t9sm3973230iop.86.2019.09.13.17.08.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2019 17:08:21 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S2390843AbfINAi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 20:38:28 -0400
+Received: from mga06.intel.com ([134.134.136.31]:62330 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388932AbfINAi2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Sep 2019 20:38:28 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Sep 2019 17:38:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,501,1559545200"; 
+   d="scan'208";a="186613925"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Sep 2019 17:38:27 -0700
+Received: from orsmsx163.amr.corp.intel.com (10.22.240.88) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 13 Sep 2019 17:38:26 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.221]) by
+ ORSMSX163.amr.corp.intel.com ([169.254.9.47]) with mapi id 14.03.0439.000;
+ Fri, 13 Sep 2019 17:38:26 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] rsi: release skb if rsi_prepare_beacon fails
-Date:   Fri, 13 Sep 2019 19:08:11 -0500
-Message-Id: <20190914000812.10188-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2] igb: add rx drop enable attribute
+Thread-Topic: [PATCH v2] igb: add rx drop enable attribute
+Thread-Index: AQHVapS4oMvB58LTRE65obxp5h0E+Q==
+Date:   Sat, 14 Sep 2019 00:38:26 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B971184AF@ORSMSX103.amr.corp.intel.com>
+References: <20190909142117.20186-1-bob.beckett@collabora.com>
+In-Reply-To: <20190909142117.20186-1-bob.beckett@collabora.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rsi_send_beacon, if rsi_prepare_beacon fails the allocated skb should
-be released.
-
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- drivers/net/wireless/rsi/rsi_91x_mgmt.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireless/rsi/rsi_91x_mgmt.c b/drivers/net/wireless/rsi/rsi_91x_mgmt.c
-index 6c7f26ef6476..9cc8a335d519 100644
---- a/drivers/net/wireless/rsi/rsi_91x_mgmt.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_mgmt.c
-@@ -1756,6 +1756,7 @@ static int rsi_send_beacon(struct rsi_common *common)
- 		skb_pull(skb, (64 - dword_align_bytes));
- 	if (rsi_prepare_beacon(common, skb)) {
- 		rsi_dbg(ERR_ZONE, "Failed to prepare beacon\n");
-+		dev_kfree_skb(skb);
- 		return -EINVAL;
- 	}
- 	skb_queue_tail(&common->tx_queue[MGMT_BEACON_Q], skb);
--- 
-2.17.1
-
+T24gTW9uLCAyMDE5LTA5LTA5IGF0IDE1OjIxICswMTAwLCBSb2JlcnQgQmVja2V0dCB3cm90ZToK
+PiBUbyBhbGxvdyB1c2VybGFuZCB0byBlbmFibGUgb3IgZGlzYWJsZSBkcm9wcGluZyBwYWNrZXRz
+IHdoZW4gZGVzY3JpcHRvcgo+IHJpbmcgaXMgZXhoYXVzdGVkLCBhZGQgUlhfRFJPUF9FTiBwcml2
+YXRlIGZsYWcuCj4gCj4gVGhpcyBjYW4gYmUgdXNlZCBpbiBjb25qdW5jdGlvbiB3aXRoIGZsb3cg
+Y29udHJvbCB0byBtaXRpZ2F0ZSBwYWNrZXQgc3Rvcm1zCj4gKGUuZy4gZHVlIHRvIG5ldHdvcmsg
+bG9vcCBvciBEb1MpIGJ5IGZvcmNpbmcgdGhlIG5ldHdvcmsgYWRhcHRlciB0byBzZW5kCj4gcGF1
+c2UgZnJhbWVzIHdoZW5ldmVyIHRoZSByaW5nIGlzIGNsb3NlIHRvIGV4aGF1c3Rpb24uCj4gCj4g
+QnkgZGVmYXVsdCB0aGlzIHdpbGwgbWFpbnRhaW4gcHJldmlvdXMgYmVoYXZpb3VyIG9mIGVuYWJs
+aW5nIGRyb3BwaW5nIG9mCj4gcGFja2V0cyBkdXJpbmcgcmluZyBidWZmZXIgZXhoYXVzdGlvbi4K
+PiBTb21lIHVzZSBjYXNlcyBwcmVmZXIgdG8gbm90IGRyb3AgcGFja2V0cyB1cG9uIGV4aGF1c3Rp
+b24sIGJ1dCBpbnN0ZWFkCj4gdXNlIGZsb3cgY29udHJvbCB0byBsaW1pdCBpbmdyZXNzIHJhdGVz
+IGFuZCBlbnN1cmUgbm8gZHJvcHBlZCBwYWNrZXRzLgo+IFRoaXMgaXMgdXNlZnVsIHdoZW4gdGhl
+IGhvc3QgQ1BVIGNhbm5vdCBrZWVwIHVwIHdpdGggcGFja2V0IGRlbGl2ZXJ5LAo+IGJ1dCBkYXRh
+IGRlbGl2ZXJ5IGlzIG1vcmUgaW1wb3J0YW50IHRoYW4gdGhyb3VnaHB1dCB2aWEgbXVsdGlwbGUg
+cXVldWVzLgo+IAo+IFVzZXJsYW5kIGNhbiBzZXQgdGhpcyBmbGFnIHRvIDAgdmlhIGV0aHRvb2wg
+dG8gZGlzYWJsZSBwYWNrZXQgZHJvcHBpbmcuCj4gCj4gU2lnbmVkLW9mZi1ieTogUm9iZXJ0IEJl
+Y2tldHQgPGJvYi5iZWNrZXR0QGNvbGxhYm9yYS5jb20+Cj4gLS0tCj4gCj4gTm90ZXM6Cj4gICAg
+IENoYW5nZXMgc2luY2UgdjE6IHJlLXdyaXR0ZW4gdG8gdXNlIGV0aHRvb2wgcHJpdiBmbGFncyBp
+bnN0ZWFkIG9mIHN5c2ZzIGF0dHJpYnV0ZQo+IAo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRl
+bC9pZ2IvaWdiLmggICAgICAgICB8ICAxICsKPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwv
+aWdiL2lnYl9ldGh0b29sLmMgfCAgOCArKysrKysrKwo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9p
+bnRlbC9pZ2IvaWdiX21haW4uYyAgICB8IDExICsrKysrKysrKy0tCj4gIDMgZmlsZXMgY2hhbmdl
+ZCwgMTggaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKClRlc3RlZC1ieTogQWFyb24gQnJv
+d24gPGFhcm9uLmYuYnJvd25AaW50ZWwuY29tPgo=
