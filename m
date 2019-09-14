@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A73B2971
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 05:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 158B0B297C
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 05:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730658AbfINC7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Sep 2019 22:59:09 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:38461 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730479AbfINC7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 22:59:09 -0400
-Received: by mail-ot1-f66.google.com with SMTP id h17so27389356otn.5
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 19:59:09 -0700 (PDT)
+        id S2390863AbfINDbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Sep 2019 23:31:24 -0400
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:38629 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390570AbfINDbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Sep 2019 23:31:24 -0400
+Received: by mail-ot1-f54.google.com with SMTP id h17so27423263otn.5
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 20:31:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+        h=subject:to:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/seHVHx61NKB3A5zoct31LN0/TaJypPmdOKNBbiRtQ0=;
-        b=abFzT0VwntmH3ES6sVkhsomAPe7N6H4RuPdBLej+415eyIdVlD74agD/X76hLnlzcF
-         sPwhzZGLvVSb+B4l+Vh7Hacos9j4mpkw1c872Na/FgY6NMeozKEugUPk4KuyikvypKgt
-         wNCzZccK8OsJkPtsGZ2v7BmYPlupy3wvz8nr7uMhPr2NTHACxDD+UdFX50gwz63PE+or
-         2oE84aFxMte+QVqIYMyYsTJBkn5ZTzJRSiEUmqN6GjIQG/ziJKiFOpbcrj7yrJ+IA0Pw
-         7gEAUQoIAEs03Wf5Ye9UdsbeadPcf/R/eolZy8Uqa8rWxCNcjIKGDipfjNJ8g2yp53HM
-         81Hg==
+        bh=lBsAnRKcYy8BTJHC5GATAkzX4Y3hoPiMP2geDV+eFmk=;
+        b=g80nVFmGQwMkcel4zmuA9ByA0cVdruDy+oCN6FEjQx/2i0tf44fgX27nz/cPX6ufWP
+         hM6wWaLWoGZytHpqwMlm3bQt9QJQUeIOcbFMiFiYNTmcSNBISIA4RPmKKb2+Jfe4mga9
+         xFrTBoNWw2mDKVpSthLtTtyQdenqWCDk1VpB2sd5h7ngP5jVZNce2lsYNAODTJmlEMus
+         06nEN11pBRYEpbUsr9ZlZytG4HaJ4H03cQBAkWiVtS9TtOTygFY8mOflThpb7qdFqlQp
+         u4HUzTvKtOnCCdQ5NZU2CKJlA3nVKw+W/zm6ivzEHg076VCU5Y2pVwlb6ZKiGOnKoezi
+         rvlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+        h=x-gm-message-state:subject:to:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/seHVHx61NKB3A5zoct31LN0/TaJypPmdOKNBbiRtQ0=;
-        b=LbiATZu3oOGotnktEJ9FHAuSrCEx+YSrVU1Ive6JgdHZXJyHAYdP0xj0UJeRXV9mId
-         ZNIIqODwGJ2zqBjTbI+l/cbYoQbPbArGqoHdvqTgxe/L5lZCMFwFsfsDIFmNYdpy62Ep
-         T832tTsNwklfw82qyYiAZBWOEy6gSzNBpm3NTPdyuD4za+sHYoL8IC/EUJXp9R3/yupe
-         To4rh2wXm1Fv7L0if7OKlOsfsYfcuB8A3YQCKoAv3MgMhRRs6PF/lN37dJuf6MbzoWIA
-         R8Cf+i7AkhtyO+qd4vSIiYkRCp+bcQx9gsIGZ969Y5mTcFRffPB/cqZhr4dMiaWgoNdW
-         ca7g==
-X-Gm-Message-State: APjAAAWD5mz/FI4JmmxYKCZMJWhYRi4m35G8c9VVLQKH5HnUAKXNVdcX
-        yqOA36Ds6XLAlsXC86MVG78zsnPiiXE=
-X-Google-Smtp-Source: APXvYqxok3Usp4AswpcJ7uJ/TUyinY6eHjm5qTIo0weLF9afzhJXvlu5I1wSYAUpOb7/IP4U4nwRCg==
-X-Received: by 2002:a9d:6a12:: with SMTP id g18mr14193365otn.37.1568429948498;
-        Fri, 13 Sep 2019 19:59:08 -0700 (PDT)
+        bh=lBsAnRKcYy8BTJHC5GATAkzX4Y3hoPiMP2geDV+eFmk=;
+        b=QLvFl1LKxrRjBrwTQOKlrW7+a+NmuyfB4HnwGei0OlFFnd5Qf6hYbgfNromwIIKlrY
+         APE0IiW7ibhEQu5JBT/+/VMynpyMaEZJYp6fyhXKv/PMQnxDfqPlICl7cL8Lf3iWzoAR
+         vuoABNlWbfFnsld17oAS4Y+fS4EhJnK+MfJ0Am05zy/zZJ4LTJwpOC1CHwyW0H+3we2B
+         pLFi23FUAMNK8cxBsUNPeYgKrjQoUwPNJdT7dLxeVrgdRqQZebQ2Iq+9ALBtxTXuE8/V
+         wMEV88BucmbeH2IPgHm4dUQFUw2Ws2sm9/ZRydN9A55ijYFfiQ5cnDDy8L4Tyy5+jXBm
+         myCA==
+X-Gm-Message-State: APjAAAWr6ZmrGwxwABmOODQ2rs0h4eX3nNUwtnVKNJ/hRR2MI4jAQua2
+        XrcXk9Pevrl3LsVXpBZLV4Y=
+X-Google-Smtp-Source: APXvYqzjh1MdwxBqFk6CILCeRSDh2SgcBfmLZfrn1QbBmMeJFaV2K5b7VF4bsEnDiikj2j/8SPuWeA==
+X-Received: by 2002:a9d:6ac5:: with SMTP id m5mr20044264otq.265.1568431882864;
+        Fri, 13 Sep 2019 20:31:22 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id r28sm1427044oij.31.2019.09.13.19.59.06
+        by smtp.gmail.com with ESMTPSA id i20sm1349315oie.13.2019.09.13.20.31.19
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Sep 2019 19:59:07 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 2/7] net: dsa: Pass ndo_setup_tc slave
- callback to drivers
-To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
-        andrew@lunn.ch, davem@davemloft.net, vinicius.gomes@intel.com,
-        vedang.patel@intel.com, richardcochran@gmail.com
-Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        kurt.kanzenbach@linutronix.de, joergen.andreasen@microchip.com,
-        netdev@vger.kernel.org
-References: <20190914011802.1602-1-olteanv@gmail.com>
- <20190914011802.1602-3-olteanv@gmail.com>
+        Fri, 13 Sep 2019 20:31:21 -0700 (PDT)
+Subject: Re: SFP support with RGMII MAC via RGMII to SERDES/SGMII PHY?
+To:     George McCollister <george.mccollister@gmail.com>,
+        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <CAFSKS=NmM9bPb0R_zoFN+9AuG=x6DUffTNXpLSNRAHuZz4ki-g@mail.gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <21fbd0cc-ff1f-5774-a65f-840d844ad2e6@gmail.com>
-Date:   Fri, 13 Sep 2019 19:59:03 -0700
+Message-ID: <6cd331e5-4e50-d061-439a-f97417645497@gmail.com>
+Date:   Fri, 13 Sep 2019 20:31:18 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20190914011802.1602-3-olteanv@gmail.com>
+In-Reply-To: <CAFSKS=NmM9bPb0R_zoFN+9AuG=x6DUffTNXpLSNRAHuZz4ki-g@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
++Russell, Andrew, Heiner,
 
+On 9/13/2019 9:44 AM, George McCollister wrote:
+> Every example of phylink SFP support I've seen is using an Ethernet
+> MAC with native SGMII.
+> Can phylink facilitate support of Fiber and Copper SFP modules
+> connected to an RGMII MAC if all of the following are true?
 
-On 9/13/2019 6:17 PM, Vladimir Oltean wrote:
-> DSA currently handles shared block filters (for the classifier-action
-> qdisc) in the core due to what I believe are simply pragmatic reasons -
-> hiding the complexity from drivers and offerring a simple API for port
-> mirroring.
+I don't think that use case has been presented before, but phylink
+sounds like the tool that should help solve it. From your description
+below, it sounds like all the pieces are there to support it. Is the
+Ethernet MAC driver upstream?
+
 > 
-> Extend the dsa_slave_setup_tc function by passing all other qdisc
-> offloads to the driver layer, where the driver may choose what it
-> implements and how. DSA is simply a pass-through in this case.
+> 1) The MAC is connected via RGMII to a transceiver/PHY (such as
+> Marvell 88E1512) which then connects to the SFP via SERDER/SGMII. If
+> you want to see a block diagram it's the first one here:
+> https://www.marvell.com/transceivers/assets/Alaska_88E1512-001_product_brief.pdf
 > 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Acked-by: Kurt Kanzenbach <kurt@linutronix.de>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
+> 2) The 1G Ethernet driver has been converted to use phylink.
+> 
+> 3) An I2C controller on the SoC is connected to the SFP cage.
+> 
+> 4) TxFault, LOS and MOD-DEF0 are connected to GPIO on the SoC.
+> 
+> 5) MDIO is connected to the intermediate PHY.
+> 
+> Any thoughts on what might be missing to support this (if anything)
+> would be appreciated-- 
 Florian
