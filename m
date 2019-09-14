@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1822CB2A05
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 08:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FF9B2A21
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 08:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726439AbfINGAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 02:00:16 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38764 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726416AbfINGAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 02:00:16 -0400
-Received: by mail-wm1-f68.google.com with SMTP id o184so4782700wme.3
-        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 23:00:14 -0700 (PDT)
+        id S1726685AbfINGpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 02:45:45 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34827 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726410AbfINGpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 02:45:45 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m15so618200qtq.2
+        for <netdev@vger.kernel.org>; Fri, 13 Sep 2019 23:45:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=B5RyNiDOxDsdkwnbKYcqgnkEDpXQGDzSW0CX26WZeWQ=;
-        b=rV/YuXTG1S52o6Wz061TjpLeHZFiXtbXZ5mkn5XW9c+VMXr1BO1lNzW7xptxoaLMku
-         OsYVxcGZgEMV0IqmXvs7Bn+6ufWX/BeaBkuZTio5n6lnVZJWzHthBwB351qcmVaWdfPm
-         D4Yg/1CBO2Unwyk2EMYbEq8sLtTRUfyeWONUsgQe3o7ZOD70X3yCNHvEV7sKidyYo0oN
-         hZeMpmQqwAExULsd9V/K9PPJ73RJwDMFVmGZw18T59TJ8NJBJaxp1QUQ5u7gUWelgLFs
-         /mfxRZROJ5u2kmd8JZfikiez2Bqg2X0VgzeQBkptsX9ZRijXJHY38xKL6wa5U93YqZ6F
-         NSVw==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=7e1TdzFiatHjnWIzrqdUH+5ObA9z+SBV4y7paSr3H3Y=;
+        b=G78N0/GaLonBVIZsE+dpDXufubksg1JZY6XgdgyYn4qkFlX2LL2Tb2Oa5semzfO6z8
+         cF6ZX1tRtFSz41TRy9oE7ynqACuU6/Tg4RTm/yv0bjUgDxYOlWXwSyNIB92QfLKJHwRg
+         CFzx9lS5Tyz6awJ6RiHtVeCDHpkyYxeTXpg60JJzmESRq767kQ4EjyjcH2dtJBnhjllX
+         AfqpOHFj6uRQQFrGrMDgtl8ZnlAQR/4SDX9zkIH1pjVQwBY4ybT2dhil5Ojns1YO0Tsl
+         rLDEfmPBtoZy+AEXjWe33N8dSDbT+pq0rYarZe+UiMlwgTxKIwTix8icUiUeyoM2PvC4
+         3TCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=B5RyNiDOxDsdkwnbKYcqgnkEDpXQGDzSW0CX26WZeWQ=;
-        b=pnJQHppfp0SDjqUoRthbO+nJyvP/aEmgG/Pvu8KkZ7CR1S5UjBXuJLdP/tpu/Ch/+p
-         r5JkTh1hmKmwirZ8dBU4Xr3FP8lhF0Wz5Ev0cvCoRrVWJi+kSurYnmF2SLTEaFQPoc9F
-         X3rydzEeDHrY/3SxCqa4uPdAGAGssjremXAapiSmAfoXYojobRqwW/a0/NKRln2Y11sU
-         xPXFy3rNjV7T0YNpmrJNy14MAAqJze/opV4fZaWZsRXMzCEHGLGMXktJX7Y9aZi81pIQ
-         vj5eE7917lqkDHJK67kvGibCXe8OxO3IWkvAjHygBDUqvlzppyP0aUbK9uS529v77y6P
-         A1YA==
-X-Gm-Message-State: APjAAAXAKv7IzHl8Kovd58PkaCD4Bkkwhk+oZlz4AK+JaHjZ+cvvgq+V
-        6SZ3XYuZYmqgQfB2SpuyyC2OrA==
-X-Google-Smtp-Source: APXvYqxgwEyv4EZkmUS+D2Ymj0OBXnNCXUP6odRcoHkyleai/Cc6FL1H1/qeMIq5f+pcydmTc6/iSw==
-X-Received: by 2002:a1c:cc10:: with SMTP id h16mr6211618wmb.130.1568440814326;
-        Fri, 13 Sep 2019 23:00:14 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id i26sm3793801wmd.37.2019.09.13.23.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2019 23:00:13 -0700 (PDT)
-Date:   Sat, 14 Sep 2019 08:00:12 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com, f.fainelli@gmail.com
-Subject: Re: [patch iproute2-next v4 0/2] devlink: couple forgotten flash
- patches
-Message-ID: <20190914060012.GC2276@nanopsycho.orion>
-References: <20190912112938.2292-1-jiri@resnulli.us>
- <2c201359-2fa4-b1e4-061b-64a53eb30920@gmail.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=7e1TdzFiatHjnWIzrqdUH+5ObA9z+SBV4y7paSr3H3Y=;
+        b=nTWgvfc+FIqI7Fw1d33TCcrIY763f+2mnhYfKXwjwVZxJ5yLYXYBGaJU0NzMJPE/8G
+         uzp/V2EmlMVb+6cpmgYFhO1YD6SYvxrGdz1ro66Uybiov5nVPoUTUqSNMeX22P/SILZ+
+         /RI5LnzuoF+B6PH0DwstDOs+m3aUNvtHqrVwcvmGN/Pz+OPmPcR9tS+14i3x34s3fnwu
+         oDBY9AfVSPiXXMBhilt5aqzlpPoe6zRrqemKPkEXPiOzmiYoyubLk8+XhAZHFmoSoBCv
+         S9SNFmkz3/2OAHVBdAyTSZJTHZ0pEqWm7hj6w6cbRhmO76nw5GAFsc7wS+uk5ghKXk+R
+         c4Eg==
+X-Gm-Message-State: APjAAAXSFpJXVlZ/FHT0v/qaxpsDq3qORyO3ff4ChAh2s/CX7di8YRFC
+        iOqpZJeRb4ANgszLYzn1E3X6vHjDJs1JYtuaFhc=
+X-Google-Smtp-Source: APXvYqxqFDpl61GS5YrPG8EPG6GhWgogekNtiLLLuwrtC5cjT+0Be3+vtTZcZBqdmnU5W+v1v19VroUd4izyFr7a96I=
+X-Received: by 2002:ac8:7b2e:: with SMTP id l14mr7164330qtu.11.1568443125039;
+ Fri, 13 Sep 2019 23:38:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c201359-2fa4-b1e4-061b-64a53eb30920@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Received: by 2002:ac8:36bc:0:0:0:0:0 with HTTP; Fri, 13 Sep 2019 23:38:44
+ -0700 (PDT)
+Reply-To: eddywilliam0003@gmail.com
+From:   eddy william <pagentsif6@gmail.com>
+Date:   Sat, 14 Sep 2019 08:38:44 +0200
+Message-ID: <CAKiDfoV8nyPQE+JXwzxw7a5PFCrW6FWFM=XNHhJ_7AdzHxbTMw@mail.gmail.com>
+Subject: hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Sep 13, 2019 at 07:25:07PM CEST, dsahern@gmail.com wrote:
->On 9/12/19 12:29 PM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> I was under impression they are already merged, but apparently they are
->> not. I just rebased them on top of current iproute2 net-next tree.
->> 
->
->they were not forgotten; they were dropped asking for changes.
->
->thread is here:
->https://lore.kernel.org/netdev/20190604134450.2839-3-jiri@resnulli.us/
+Hallo
 
-Well not really. The path was discussed in the thread. However, that is
-unrelated to the changes these patches do. The flashing itself is
-already there and present. These patches only add status.
+Mein Name ist Eddy William. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte
+Ihnen anbieten
+die n=C3=A4chsten Verwandten zu meinem Klienten. Sie erben die Summe von
+($14,2 Millionen US-Dollar)
+Dollar, die mein Kunde vor seinem Tod in der Bank gelassen hat.
 
-Did I missed something?
+Mein Mandant ist ein Staatsb=C3=BCrger Ihres Landes, der mit seiner Frau
+bei einem Autounfall ums Leben gekommen ist
+und nur Sohn. Ich werde mit 50% des Gesamtfonds berechtigt sein, w=C3=A4hre=
+nd 50%
+sein f=C3=BCr dich.
+Bitte kontaktieren Sie meine private E-Mail hier f=C3=BCr weitere
+Informationen: eddywilliam0003gmail.com
+
+Vielen Dank im Voraus,
+Mr.Eddy William
+
+
+
+
+Hello
+
+My name is Eddy William I am a lawyer by profession. I wish to offer you
+the next of kin to my client. You will inherit the sum of ($14.2 Million)
+dollars my client left in the bank before his death.
+
+My client is a citizen of your country who died in auto crash with his wife
+and only son. I will be entitled with 50% of the total fund while 50% will
+be for you.
+Please contact my private email here for more details:eddywilliam0003gmail.=
+com
+
+Many thanks in advance,
+Mr.Eddy William
