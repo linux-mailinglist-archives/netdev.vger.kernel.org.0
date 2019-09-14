@@ -2,318 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A80EB2BC7
-	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 17:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD9B4B2BD1
+	for <lists+netdev@lfdr.de>; Sat, 14 Sep 2019 17:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726416AbfINPOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 11:14:06 -0400
-Received: from mail-pg1-f180.google.com ([209.85.215.180]:37711 "EHLO
-        mail-pg1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbfINPOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 11:14:05 -0400
-Received: by mail-pg1-f180.google.com with SMTP id c17so9111845pgg.4
-        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 08:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qqh05XsaepBtFk2pPhntNSLhXLxR75PiYXfV1t+zxDA=;
-        b=pj//mBOWO0LV/IvfCI5oodCRHW+5UqJ5xvW/IYhDQT9CEUZljsZPCzaum4Mht8Yxss
-         q0wLIOQZbe84O9sTPTzG4XXgSOielmPAiLWbNY7Eg/N0hh3XA8G385ZCijnomlYnQEKw
-         2LOzv8hVshZREh6O77HHVgCboS6RSJtxavZbR5r4e8Hw0+yLLJRpzvbVS5kCAsde4P8N
-         m9Bdif7x3he4CBVAOl86X0pm/luFWQBjBY8P+xU+TJdAMiPaujx3JydsTkcLbf4o65fQ
-         B6Bi2IaqNns5tG4QsX0yPYcVwY/3SIXMkdLGONpaIWcob7oHdzu04pjZg+KOPOevxthv
-         HGzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qqh05XsaepBtFk2pPhntNSLhXLxR75PiYXfV1t+zxDA=;
-        b=UJlBnFD4XN4BHQOUSkDFSX5QpBnuF8hplKAamxjJGJwKH7WdfaTajF0V10pfnQku1i
-         3nYuV4XdMtoNxF9ihjcll9kdje4f8kjcJn9+/EoaAUa4E5/SuJ6I+aO34RMlxYO9aMU5
-         6HCEQ+p7cyhlU18Y71PTBcJSxVPlAedMwKWqDg4tn72RHZg50qkiTDAhnOPvi3T/bRHK
-         U9684syeSrZTi/zYpY+D4x9cSUvBVl+XfWf+I/7UMf4ZexXdV7tzx5eMaJFLDocF7kor
-         KD6CeVNG9kkHKT+8UjAW4zzH1lrS6GEOe1wvGX72kw/XzSU5m3nS3GMmXhaQV2cW95r8
-         qlRA==
-X-Gm-Message-State: APjAAAWbUIDptwtE5glf0xobXiLAs2ru4S+WSFYJRBma7fL1KiDWOhZW
-        SiiOrme5+pQx90Whovbryg==
-X-Google-Smtp-Source: APXvYqzjqlkAMoxKNZ9U6mSg1tsE+ibSAo6n2+53Oydu8gFuak+DjiW4l/mLCbrBGunLFrFYZ+EVKQ==
-X-Received: by 2002:a63:3182:: with SMTP id x124mr11992675pgx.41.1568474044729;
-        Sat, 14 Sep 2019 08:14:04 -0700 (PDT)
-Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id u69sm28408689pgu.77.2019.09.14.08.14.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Sep 2019 08:14:04 -0700 (PDT)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [v3 3/3] samples: pktgen: allow to specify destination IP range (CIDR)
-Date:   Sun, 15 Sep 2019 00:13:53 +0900
-Message-Id: <20190914151353.18054-3-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190914151353.18054-1-danieltimlee@gmail.com>
-References: <20190914151353.18054-1-danieltimlee@gmail.com>
+        id S1726254AbfINPVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 11:21:00 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:60578 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725920AbfINPU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 11:20:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ulw7BUtdqOkCKwkOVzE9mw1QZfrDfCwkMhljJetlwXU=; b=GUVohJ8LApXoaRNKDEbyBCx5w
+        ajPFbBiIO0BKr6zFyU0HeQD/199w1tqn4HXNAx9LEfhDbq+Pvx6fNj1PR9aNKc71Gg0FhrncdXdJ1
+        dFmp9Ova/FOu5bShOvDe0jOEsBo0+JMH7xurH7B/5KOc7Lf4yEZyV87kp28VbRnPSusDVtuAIVP7I
+        /zcOXG1TqiH+e9ZCDJBmjXIodwFmygdRtLkaJfuFFK5VMVwFxixP18iuU2kpiHO92YSlwgMvSh6RI
+        yscyf8X/e0SmbsYogIjOi2crOgsl3smGrquPJ9uPaIpUOlOx8V7/43faCJ1r4ZNvRoDFBW23Wzr0T
+        5EQ2J2KtQ==;
+Received: from c-73-157-219-8.hsd1.or.comcast.net ([73.157.219.8] helo=[10.0.0.252])
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1i99r8-00013r-Mf; Sat, 14 Sep 2019 15:20:58 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: e1000e: workqueue problem
+Message-ID: <d7094fb6-7cc4-4e79-d74f-27fe078fbba7@infradead.org>
+Date:   Sat, 14 Sep 2019 08:20:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, kernel pktgen has the feature to specify destination
-address range for sending packet. (e.g. pgset "dst_min/dst_max")
+This is 5.30-rc8 on x86_64.
 
-But on samples, each of the scripts doesn't have any option to achieve this.
+I would be happy to hear if this has already been addressed in some of
+your recent patches.
 
-This commit adds the feature to specify the destination address range with CIDR.
+Or:  this could be a PCI-related or workqueue bug, but it only shows up
+when loading the e1000e driver.  And not every time.
 
-    -d : ($DEST_IP)   destination IP. CIDR (e.g. 198.18.0.0/15) is also allowed
 
-    # ./pktgen_sample01_simple.sh -6 -d fe80::20/126 -p 3000 -n 4
-    # tcpdump ip6 and udp
-    05:14:18.082285 IP6 fe80::99.71 > fe80::23.3000: UDP, length 16
-    05:14:18.082564 IP6 fe80::99.43 > fe80::23.3000: UDP, length 16
-    05:14:18.083366 IP6 fe80::99.107 > fe80::22.3000: UDP, length 16
-    05:14:18.083585 IP6 fe80::99.97 > fe80::21.3000: UDP, length 16
 
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
- samples/pktgen/README.rst                             |  2 +-
- samples/pktgen/parameters.sh                          |  2 +-
- .../pktgen/pktgen_bench_xmit_mode_netif_receive.sh    |  4 +++-
- samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh   |  4 +++-
- samples/pktgen/pktgen_sample01_simple.sh              |  4 +++-
- samples/pktgen/pktgen_sample02_multiqueue.sh          |  4 +++-
- samples/pktgen/pktgen_sample03_burst_single_flow.sh   |  4 +++-
- samples/pktgen/pktgen_sample04_many_flows.sh          | 11 ++++++++---
- samples/pktgen/pktgen_sample05_flow_per_thread.sh     |  4 +++-
- .../pktgen_sample06_numa_awared_queue_irq_affinity.sh |  4 +++-
- 10 files changed, 31 insertions(+), 12 deletions(-)
+[  623.410732] calling  e1000_init_module+0x0/0x1000 [e1000e] @ 11258
+[  623.410768] e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+[  623.410792] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[  623.420492] e1000e 0000:00:19.0: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+[  623.529922] e1000e 0000:00:19.0 0000:00:19.0 (uninitialized): registered PHC clock
+[  623.631604] e1000e 0000:00:19.0 eth0: (PCI Express:2.5GT/s:Width x1) e8:9d:87:4a:c2:2d
+[  623.631670] e1000e 0000:00:19.0 eth0: Intel(R) PRO/1000 Network Connection
+[  623.631774] e1000e 0000:00:19.0 eth0: MAC: 10, PHY: 11, PBA No: FFFFFF-0FF
+[  623.632021] probe of 0000:00:19.0 returned 1 after 221138 usecs
+[  623.632520] initcall e1000_init_module+0x0/0x1000 [e1000e] returned 0 after 216532 usecs
+[  623.752736] e1000e 0000:00:19.0 eth0: removed PHC
+[  623.920346] ==================================================================
+[  623.920389] BUG: KASAN: use-after-free in __queue_work+0x98d/0xcb0
+[  623.920414] Read of size 4 at addr ffff8881127b12a8 by task swapper/3/0
 
-diff --git a/samples/pktgen/README.rst b/samples/pktgen/README.rst
-index fd39215db508..3f6483e8b2df 100644
---- a/samples/pktgen/README.rst
-+++ b/samples/pktgen/README.rst
-@@ -18,7 +18,7 @@ across the sample scripts.  Usage example is printed on errors::
-  Usage: ./pktgen_sample01_simple.sh [-vx] -i ethX
-   -i : ($DEV)       output interface/device (required)
-   -s : ($PKT_SIZE)  packet size
--  -d : ($DEST_IP)   destination IP
-+  -d : ($DEST_IP)   destination IP. CIDR (e.g. 198.18.0.0/15) is also allowed
-   -m : ($DST_MAC)   destination MAC-addr
-   -p : ($DST_PORT)  destination PORT range (e.g. 433-444) is also allowed
-   -t : ($THREADS)   threads to start
-diff --git a/samples/pktgen/parameters.sh b/samples/pktgen/parameters.sh
-index a06b00a0c7b6..ff0ed474fee9 100644
---- a/samples/pktgen/parameters.sh
-+++ b/samples/pktgen/parameters.sh
-@@ -8,7 +8,7 @@ function usage() {
-     echo "Usage: $0 [-vx] -i ethX"
-     echo "  -i : (\$DEV)       output interface/device (required)"
-     echo "  -s : (\$PKT_SIZE)  packet size"
--    echo "  -d : (\$DEST_IP)   destination IP"
-+    echo "  -d : (\$DEST_IP)   destination IP. CIDR (e.g. 198.18.0.0/15) is also allowed"
-     echo "  -m : (\$DST_MAC)   destination MAC-addr"
-     echo "  -p : (\$DST_PORT)  destination PORT range (e.g. 433-444) is also allowed"
-     echo "  -t : (\$THREADS)   threads to start"
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-index 9b74502c58f7..da6cb711b7f4 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-@@ -41,6 +41,7 @@ fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
- [ -z "$BURST" ] && BURST=1024
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
-+[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -71,7 +72,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst$IP6 $DEST_IP"
-+    pg_set $dev "dst${IP6}_min $DST_MIN"
-+    pg_set $dev "dst${IP6}_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-index 0f332555b40d..355937787364 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-@@ -24,6 +24,7 @@ if [[ -n "$BURST" ]]; then
-     err 1 "Bursting not supported for this mode"
- fi
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
-+[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -54,7 +55,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst$IP6 $DEST_IP"
-+    pg_set $dev "dst${IP6}_min $DST_MIN"
-+    pg_set $dev "dst${IP6}_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
-index 063ec0998906..08995fa70025 100755
---- a/samples/pktgen/pktgen_sample01_simple.sh
-+++ b/samples/pktgen/pktgen_sample01_simple.sh
-@@ -22,6 +22,7 @@ fi
- # Example enforce param "-m" for dst_mac
- [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
- [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
-+[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -61,7 +62,8 @@ pg_set $DEV "flag NO_TIMESTAMP"
- 
- # Destination
- pg_set $DEV "dst_mac $DST_MAC"
--pg_set $DEV "dst$IP6 $DEST_IP"
-+pg_set $DEV "dst${IP6}_min $DST_MIN"
-+pg_set $DEV "dst${IP6}_max $DST_MAX"
- 
- if [ -n "$DST_PORT" ]; then
-     # Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_sample02_multiqueue.sh b/samples/pktgen/pktgen_sample02_multiqueue.sh
-index a4726fb50197..9b806e41c23a 100755
---- a/samples/pktgen/pktgen_sample02_multiqueue.sh
-+++ b/samples/pktgen/pktgen_sample02_multiqueue.sh
-@@ -29,6 +29,7 @@ if [ -z "$DEST_IP" ]; then
-     [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
-+[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -62,7 +63,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst$IP6 $DEST_IP"
-+    pg_set $dev "dst${IP6}_min $DST_MIN"
-+    pg_set $dev "dst${IP6}_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_sample03_burst_single_flow.sh b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-index dfea91a09ccc..cb067788ceb3 100755
---- a/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-+++ b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-@@ -33,6 +33,7 @@ fi
- [ -z "$BURST" ]     && BURST=32
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0" # No need for clones when bursting
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
-+[ -n "$DEST_IP" ]   && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -62,7 +63,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst$IP6 $DEST_IP"
-+    pg_set $dev "dst${IP6}_min $DST_MIN"
-+    pg_set $dev "dst${IP6}_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
-index 7ea9b4a3acf6..626e33016869 100755
---- a/samples/pktgen/pktgen_sample04_many_flows.sh
-+++ b/samples/pktgen/pktgen_sample04_many_flows.sh
-@@ -17,6 +17,7 @@ source ${basedir}/parameters.sh
- [ -z "$DST_MAC" ]   && DST_MAC="90:e2:ba:ff:ff:ff"
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
-+[ -n "$DEST_IP" ]   && read -r DST_MIN DST_MAX <<< $(parse_addr $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -37,6 +38,9 @@ if [[ -n "$BURST" ]]; then
-     err 1 "Bursting not supported for this mode"
- fi
- 
-+# 198.18.0.0 / 198.19.255.255
-+read -r SRC_MIN SRC_MAX <<< $(parse_addr 198.18.0.0/15)
-+
- # General cleanup everything since last run
- pg_ctrl "reset"
- 
-@@ -58,7 +62,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Single destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst $DEST_IP"
-+    pg_set $dev "dst_min $DST_MIN"
-+    pg_set $dev "dst_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-@@ -69,8 +74,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Randomize source IP-addresses
-     pg_set $dev "flag IPSRC_RND"
--    pg_set $dev "src_min 198.18.0.0"
--    pg_set $dev "src_max 198.19.255.255"
-+    pg_set $dev "src_min $SRC_MIN"
-+    pg_set $dev "src_max $SRC_MAX"
- 
-     # Limit number of flows (max 65535)
-     pg_set $dev "flows $FLOWS"
-diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-index fbfafe029e11..cb79de073e9d 100755
---- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-+++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-@@ -22,6 +22,7 @@ source ${basedir}/parameters.sh
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- [ -z "$BURST" ]     && BURST=32
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
-+[ -n "$DEST_IP" ]   && read -r DST_MIN DST_MAX <<< $(parse_addr $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -51,7 +52,8 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
- 
-     # Single destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst $DEST_IP"
-+    pg_set $dev "dst_min $DST_MIN"
-+    pg_set $dev "dst_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
-diff --git a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-index 755e662183f1..739adcda5b5f 100755
---- a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-+++ b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-@@ -35,6 +35,7 @@ if [ -z "$DEST_IP" ]; then
-     [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
-+[ -n "$DEST_IP" ] && read -r DST_MIN DST_MAX <<< $(parse_addr${IP6} $DEST_IP)
- if [ -n "$DST_PORT" ]; then
-     read -r UDP_DST_MIN UDP_DST_MAX <<< $(parse_ports $DST_PORT)
-     validate_ports $UDP_DST_MIN $UDP_DST_MAX
-@@ -79,7 +80,8 @@ for ((i = 0; i < $THREADS; i++)); do
- 
-     # Destination
-     pg_set $dev "dst_mac $DST_MAC"
--    pg_set $dev "dst$IP6 $DEST_IP"
-+    pg_set $dev "dst${IP6}_min $DST_MIN"
-+    pg_set $dev "dst${IP6}_max $DST_MAX"
- 
-     if [ -n "$DST_PORT" ]; then
- 	# Single destination port or random port range
+[  623.920452] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.3.0-rc8 #2
+[  623.920476] Hardware name: TOSHIBA PORTEGE R835/Portable PC, BIOS Version 4.10   01/08/2013
+[  623.920504] Call Trace:
+[  623.920520]  <IRQ>
+[  623.920538]  dump_stack+0x7b/0xb5
+[  623.920559]  print_address_description+0x6e/0x470
+[  623.920586]  __kasan_report+0x11a/0x198
+[  623.920606]  ? sched_clock_cpu+0x1b/0x1e0
+[  623.920625]  ? __queue_work+0x98d/0xcb0
+[  623.920647]  ? __queue_work+0x98d/0xcb0
+[  623.920668]  kasan_report+0x12/0x20
+[  623.920687]  __asan_report_load4_noabort+0x14/0x20
+[  623.920708]  __queue_work+0x98d/0xcb0
+[  623.920736]  delayed_work_timer_fn+0x58/0x90
+[  623.920759]  call_timer_fn.isra.21+0x19f/0x2e0
+[  623.920778]  ? call_timer_fn.isra.21+0x16c/0x2e0
+[  623.920799]  ? queue_work_node+0x370/0x370
+[  623.920819]  ? del_timer+0xe0/0xe0
+[  623.920844]  ? __kasan_check_read+0x11/0x20
+[  623.920865]  ? do_raw_spin_unlock+0x54/0x220
+[  623.920889]  run_timer_softirq+0x4d9/0xe70
+[  623.920910]  ? lock_acquire+0xd2/0x180
+[  623.920931]  ? queue_work_node+0x370/0x370
+[  623.920952]  ? trigger_dyntick_cpu+0x290/0x290
+[  623.920974]  ? sched_clock+0x9/0x10
+[  623.920992]  ? sched_clock+0x9/0x10
+[  623.921011]  ? sched_clock_cpu+0x1b/0x1e0
+[  623.921031]  ? lapic_next_deadline+0x21/0x30
+[  623.921052]  ? clockevents_program_event+0x264/0x350
+[  623.921082]  __do_softirq+0x1c8/0x623
+[  623.921109]  irq_exit+0x1c8/0x210
+[  623.921128]  smp_apic_timer_interrupt+0xd1/0x130
+[  623.921151]  apic_timer_interrupt+0xf/0x20
+[  623.921170]  </IRQ>
+[  623.921185] RIP: 0010:cpuidle_enter_state+0x11a/0xbb0
+[  623.921207] Code: 80 7d d0 00 8b 4d c8 74 1d 9c 58 66 66 90 66 90 f6 c4 02 0f 85 6d 05 00 00 31 ff 89 4d d0 e8 1d 59 80 fe 8b 4d d0 fb 66 66 90 <66> 66 90 85 c9 79 47 49 8d 7d 10 48 b8 00 00 00 00 00 fc ff df 48
+[  623.921263] RSP: 0018:ffff888107f67cd8 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+[  623.921291] RAX: dffffc0000000000 RBX: ffffffffb4770958 RCX: 0000000000000005
+[  623.921317] RDX: 1ffff110238fef99 RSI: 000000003574540e RDI: ffff88811c7f7cc8
+[  623.921343] RBP: ffff888107f67d38 R08: 0000000000000002 R09: ffffed1020feb691
+[  623.921369] R10: ffff888107f67c70 R11: ffffed1020feb690 R12: ffffffffb4770760
+[  623.921394] R13: ffffe8fffea03158 R14: 0000009144892b23 R15: 00000091447a7ab5
+[  623.921433]  ? cpuidle_enter_state+0xf0/0xbb0
+[  623.921456]  ? menu_enable_device+0x170/0x170
+[  623.921480]  cpuidle_enter+0x4a/0xa0
+[  623.921499]  ? __kasan_check_write+0x14/0x20
+[  623.921521]  call_cpuidle+0x68/0xc0
+[  623.921542]  do_idle+0x31d/0x3e0
+[  623.921559]  ? apic_timer_interrupt+0xa/0x20
+[  623.921582]  ? arch_cpu_idle_exit+0x40/0x40
+[  623.921611]  cpu_startup_entry+0x18/0x20
+[  623.921631]  start_secondary+0x338/0x430
+[  623.921652]  ? set_cpu_sibling_map+0x37e0/0x37e0
+[  623.921686]  secondary_startup_64+0xa4/0xb0
+
+[  623.921730] Allocated by task 11258:
+[  623.921748]  save_stack+0x21/0x90
+[  623.921765]  __kasan_kmalloc.constprop.8+0xa7/0xd0
+[  623.921786]  kasan_kmalloc+0x9/0x10
+[  623.921804]  alloc_workqueue+0x122/0xe30
+[  623.921831]  e1000_probe+0x1c4c/0x4550 [e1000e]
+[  623.921853]  local_pci_probe+0xd9/0x180
+[  623.921872]  pci_device_probe+0x340/0x740
+[  623.921891]  really_probe+0x516/0xb00
+[  623.921909]  driver_probe_device+0xf0/0x3a0
+[  623.921928]  device_driver_attach+0xec/0x120
+[  623.921947]  __driver_attach+0x108/0x270
+[  623.921965]  bus_for_each_dev+0x116/0x1b0
+[  623.921983]  driver_attach+0x38/0x50
+[  623.922001]  bus_add_driver+0x44e/0x6a0
+[  623.922019]  driver_register+0x18e/0x410
+[  623.922037]  __pci_register_driver+0x187/0x240
+[  623.922058]  0xffffffffc029803d
+[  623.922075]  do_one_initcall+0xab/0x2d5
+[  623.922106]  do_init_module+0x1c7/0x582
+[  623.922138]  load_module+0x4efd/0x5f30
+[  623.922170]  __do_sys_finit_module+0x12a/0x1b0
+[  623.922193]  __x64_sys_finit_module+0x6e/0xb0
+[  623.922212]  do_syscall_64+0xaa/0x380
+[  623.922231]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+[  623.922263] Freed by task 0:
+[  623.922279]  save_stack+0x21/0x90
+[  623.922296]  __kasan_slab_free+0x137/0x190
+[  623.922316]  kasan_slab_free+0xe/0x10
+[  623.922333]  kfree+0xb8/0x210
+[  623.922349]  rcu_free_wq+0xd5/0x130
+[  623.922367]  rcu_core+0x478/0xfa0
+[  623.922383]  rcu_core_si+0x9/0x10
+[  623.922400]  __do_softirq+0x1c8/0x623
+
+[  623.922429] The buggy address belongs to the object at ffff8881127b10e8
+                which belongs to the cache kmalloc-512 of size 512
+[  623.922472] The buggy address is located 448 bytes inside of
+                512-byte region [ffff8881127b10e8, ffff8881127b12e8)
+[  623.922511] The buggy address belongs to the page:
+[  623.922532] page:ffffea000449ec00 refcount:1 mapcount:0 mapping:ffff888107c11300 index:0x0 compound_mapcount: 0
+[  623.922567] flags: 0x17ffffc0010200(slab|head)
+[  623.922589] raw: 0017ffffc0010200 ffffea000442c008 ffffea000442da08 ffff888107c11300
+[  623.922617] raw: 0000000000000000 0000000000250025 00000001ffffffff 0000000000000000
+[  623.922644] page dumped because: kasan: bad access detected
+
+[  623.922676] Memory state around the buggy address:
+[  623.922697]  ffff8881127b1180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  623.922723]  ffff8881127b1200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  623.922749] >ffff8881127b1280: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
+[  623.922775]                                   ^
+[  623.922794]  ffff8881127b1300: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  623.922820]  ffff8881127b1380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  623.922845] ==================================================================
+[  623.922870] Disabling lock debugging due to kernel taint
+[  624.029500] e1000e: eth0 NIC Link is Down
+
 -- 
-2.20.1
-
+~Randy
