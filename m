@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F66FB2DA1
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 03:53:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32860B2DA3
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 03:53:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727182AbfIOBxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 21:53:42 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36746 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725825AbfIOBxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 21:53:42 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y19so35467754wrd.3
-        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 18:53:39 -0700 (PDT)
+        id S1727276AbfIOBxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 21:53:46 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54517 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfIOBxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 21:53:46 -0400
+Received: by mail-wm1-f67.google.com with SMTP id p7so6361356wmp.4
+        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 18:53:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=yK5EI9pWNYVGtFZ1I1ATBu57WYrOlRIdlmTNhI8Knwo=;
-        b=IOdjPBY69xkyEyQOm5eVn3CFgDUlYUk9h531Mf7OoKnHeo0B3bchon39oe3USqSsma
-         7Pi7BgSOoMmKTGI10jVl8EJMwszm1m2gJqwOym9QH5pvmuNcJx9//WXrC5uNddomjPDg
-         veFRzi1D+r9AEbVnH99vwuf6Nmzp4kA/f4olObI6sqQOS1cVTALNpNcal5cgALZmsOF4
-         F4txdbFwky2q+mV98+ur0bUr9Xw5C3x9ae3QU7tREK47MQvQ9vErYlPLapTn6I/Fz87k
-         Wx4WOTtIWGmcLqSIPBQNYiHX7is5egPhEJ+YU0+vC6l6/BxL6NxdXR/ZtRyvMIZAbwn3
-         jF3w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6MIYOw5rQV7GBp4XIzaXLLQCtwzhY1PjmBcgXBKbjjA=;
+        b=VRT883M+z7cXLVip6gRnJ0znVJNdWutnPqq2eQv6/UmpL2gcyxDZelVP5nM1HLv7L9
+         x7virm+KifSQGCf5J8Gq5jElLU4m2RjaF1C64v+c5L3Ji9tTtV/qsW8x+RWeiZ89s35V
+         d1lrmtqdUpTxMHCVNnmN2vH+hSWQJpbtNWmOW4uhTH19GIp+rZcXUNqlc9joAwdi8n57
+         SOjFFGAfeXLJkes7n3ofRa7TeFZn1FywJM6uoLy+NB64CjcJ6UqAoSd5pd+hl3Sdj9ef
+         dCAaAdbibQRu6DpMAyLebmQWoE6CN4zvmW0xcQeVmU/O0ezuUQDQce+HHIl2APEPvanu
+         FbzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yK5EI9pWNYVGtFZ1I1ATBu57WYrOlRIdlmTNhI8Knwo=;
-        b=WhdffimZAr5TmkLNU/F/I/FtpQlczxS/b7cPEXNrGFCfetaLj778oSMsOVisEPo5zu
-         ynN+Jf8kbUQ4KtYXab7JTtpXLZxiKBdXr8oTrAmHwOREL1hyyoLevScNj92CDDv9ScKt
-         GUD3OUbaqE6NRBqQprbv/lBmvwC97zpahGwYA/sPcr4Bryu7heGOD3ICTICoYKQZBG2M
-         sC0petmK3LvRke7C6Zf7h1IMwoCBhkwE5ATPMi8LOjt/lIcX+ODHbtoj6+lPpHrfYBoE
-         xAaaif1VBx4JjXelaEF6qdFIw3RONawktzE6j66H/5fD900+bFK+/jRczrIznGcU5yKt
-         +z1w==
-X-Gm-Message-State: APjAAAUXzVzfiTwpKyduzaFu1FB4KBrwQSEN6UM91B72byZhwxBgp2m0
-        dozg8qR3lRQcn/gGLMYklFg=
-X-Google-Smtp-Source: APXvYqxprOz36k9SiD5Hf3xF+Hk61UwYhqol2oD5NxKFceIj+yZ/Qq49p1founKLkDrE1XKXBP9/yw==
-X-Received: by 2002:a5d:4e89:: with SMTP id e9mr1058665wru.48.1568512419032;
-        Sat, 14 Sep 2019 18:53:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6MIYOw5rQV7GBp4XIzaXLLQCtwzhY1PjmBcgXBKbjjA=;
+        b=Az+v4ul4FFgOsgSdjtnBJUB/MKqWuww4Q2zfG81+f96FKLZhsjH2w2tGqr8we6T5mz
+         aS/U9VSsjAjV4HQYbGNI2W7zM8UAkevot/h3PCcPvPD/Vqib6J/7PKkHdide1VWFfuQc
+         6lfJovItYJC7l7uGjMCEiYoIxRCgAy09vYKk3nBAQkoyeZapWLHxI0BffAxy8lH1ERYW
+         twLXuhUS42tA84X0eYVCy7w15p86S8QkIdvy4sLnURliXDu9H2S8Ydv39mNUXYudFdfV
+         92MP9DF1solpKHtIFqQZWSoXZvdqxkaiCMgnrwnIMPGgmViF+AIwlbukY30dvB6ARWOI
+         rg3A==
+X-Gm-Message-State: APjAAAWMF7Vv5w9DkCERfykXcMoqkhaaYtHDflLumCb+kzXUg7jH519N
+        T6Ts9FuBrry9Ig6x6n/fdmw=
+X-Google-Smtp-Source: APXvYqw6uFohNTo7s/GKkpYV0nF5pguEjCn1rj1GH594dB4I30wxiNjX11BMLPnVt7mrKsmpjvfLqA==
+X-Received: by 2002:a7b:cc0e:: with SMTP id f14mr8729311wmh.42.1568512420527;
+        Sat, 14 Sep 2019 18:53:40 -0700 (PDT)
 Received: from localhost.localdomain ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id p19sm5627044wmg.31.2019.09.14.18.53.37
+        by smtp.gmail.com with ESMTPSA id p19sm5627044wmg.31.2019.09.14.18.53.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Sep 2019 18:53:38 -0700 (PDT)
+        Sat, 14 Sep 2019 18:53:40 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net, vinicius.gomes@intel.com,
@@ -51,167 +52,656 @@ Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         kurt.kanzenbach@linutronix.de, joergen.andreasen@microchip.com,
         netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v3 net-next 0/7] tc-taprio offload for SJA1105 DSA
-Date:   Sun, 15 Sep 2019 04:53:07 +0300
-Message-Id: <20190915015314.26605-1-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 1/7] taprio: Add support for hardware offloading
+Date:   Sun, 15 Sep 2019 04:53:08 +0300
+Message-Id: <20190915015314.26605-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190915015314.26605-1-olteanv@gmail.com>
+References: <20190915015314.26605-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the second attempt to submit the tc-taprio offload model for
-inclusion in the net tree. The sja1105 switch driver will provide the
-first implementation of the offload. Only the bare minimum is added:
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-- The offload model and a DSA pass-through
-- The hardware implementation
-- The interaction with the netdev queues in the tagger code
-- Documentation
+This allows taprio to offload the schedule enforcement to capable
+network cards, resulting in more precise windows and less CPU usage.
 
-What has been removed from the first attempt is support for
-PTP-as-clocksource in sja1105.  This will be added as soon as the
-offload model is settled.
+The gate mask acts on traffic classes (groups of queues of same
+priority), as specified in IEEE 802.1Q-2018, and following the existing
+taprio and mqprio semantics.
+It is up to the driver to perform conversion between tc and individual
+netdev queues if for some reason it needs to make that distinction.
 
-Vinicius Costa Gomes (1):
-  taprio: Add support for hardware offloading
+Full offload is requested from the network interface by specifying
+"flags 2" in the tc qdisc creation command, which in turn corresponds to
+the TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD bit.
 
-Vladimir Oltean (6):
-  net: dsa: Pass ndo_setup_tc slave callback to drivers
-  net: dsa: sja1105: Add static config tables for scheduling
-  net: dsa: sja1105: Advertise the 8 TX queues
-  net: dsa: sja1105: Make HOSTPRIO a kernel config
-  net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio
-    offload
-  docs: net: dsa: sja1105: Add info about the time-aware scheduler
+The important detail here is the clockid which is implicitly /dev/ptpN
+for full offload, and hence not configurable.
 
- Documentation/networking/dsa/sja1105.rst      |  90 ++++
- drivers/net/dsa/sja1105/Kconfig               |  17 +
- drivers/net/dsa/sja1105/Makefile              |   4 +
- drivers/net/dsa/sja1105/sja1105.h             |   6 +
- .../net/dsa/sja1105/sja1105_dynamic_config.c  |   8 +
- drivers/net/dsa/sja1105/sja1105_main.c        |  28 +-
- .../net/dsa/sja1105/sja1105_static_config.c   | 167 +++++++
- .../net/dsa/sja1105/sja1105_static_config.h   |  48 +-
- drivers/net/dsa/sja1105/sja1105_tas.c         | 427 ++++++++++++++++++
- drivers/net/dsa/sja1105/sja1105_tas.h         |  42 ++
- include/linux/netdevice.h                     |   1 +
- include/net/dsa.h                             |   2 +
- include/net/pkt_sched.h                       |  23 +
- include/uapi/linux/pkt_sched.h                |   3 +-
- net/dsa/slave.c                               |  12 +-
- net/dsa/tag_sja1105.c                         |   3 +-
- net/sched/sch_taprio.c                        | 409 +++++++++++++++--
- 17 files changed, 1237 insertions(+), 53 deletions(-)
- create mode 100644 drivers/net/dsa/sja1105/sja1105_tas.c
- create mode 100644 drivers/net/dsa/sja1105/sja1105_tas.h
+A reference counting API is added to support the use case where Ethernet
+drivers need to keep the taprio offload structure locally (i.e. they are
+a multi-port switch driver, and configuring a port depends on the
+settings of other ports as well). The refcount_t variable is kept in a
+private structure (__tc_taprio_qopt_offload) and not exposed to drivers.
 
+In the future, the private structure might also be expanded with a
+backpointer to taprio_sched *q, to implement the notification system
+described in the patch (of when admin became oper, or an error occurred,
+etc, so the offload can be monitored with 'tc qdisc show').
+
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ include/linux/netdevice.h      |   1 +
+ include/net/pkt_sched.h        |  23 ++
+ include/uapi/linux/pkt_sched.h |   3 +-
+ net/sched/sch_taprio.c         | 409 +++++++++++++++++++++++++++++----
+ 4 files changed, 392 insertions(+), 44 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index d7d5626002e9..9eda1c31d1f7 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -847,6 +847,7 @@ enum tc_setup_type {
+ 	TC_SETUP_QDISC_ETF,
+ 	TC_SETUP_ROOT_QDISC,
+ 	TC_SETUP_QDISC_GRED,
++	TC_SETUP_QDISC_TAPRIO,
+ };
+ 
+ /* These structures hold the attributes of bpf state that are being passed
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index a16fbe9a2a67..d1632979622e 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -161,4 +161,27 @@ struct tc_etf_qopt_offload {
+ 	s32 queue;
+ };
+ 
++struct tc_taprio_sched_entry {
++	u8 command; /* TC_TAPRIO_CMD_* */
++
++	/* The gate_mask in the offloading side refers to traffic classes */
++	u32 gate_mask;
++	u32 interval;
++};
++
++struct tc_taprio_qopt_offload {
++	u8 enable;
++	ktime_t base_time;
++	u64 cycle_time;
++	u64 cycle_time_extension;
++
++	size_t num_entries;
++	struct tc_taprio_sched_entry entries[0];
++};
++
++/* Reference counting */
++struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
++						  *offload);
++void taprio_offload_free(struct tc_taprio_qopt_offload *offload);
++
+ #endif
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index 18f185299f47..5011259b8f67 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -1160,7 +1160,8 @@ enum {
+  *       [TCA_TAPRIO_ATTR_SCHED_ENTRY_INTERVAL]
+  */
+ 
+-#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST 0x1
++#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	BIT(0)
++#define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	BIT(1)
+ 
+ enum {
+ 	TCA_TAPRIO_ATTR_UNSPEC,
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 84b863e2bdbd..2f7b34205c82 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -29,8 +29,8 @@ static DEFINE_SPINLOCK(taprio_list_lock);
+ 
+ #define TAPRIO_ALL_GATES_OPEN -1
+ 
+-#define FLAGS_VALID(flags) (!((flags) & ~TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST))
+ #define TXTIME_ASSIST_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST)
++#define FULL_OFFLOAD_IS_ENABLED(flags) ((flags) & TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD)
+ 
+ struct sched_entry {
+ 	struct list_head list;
+@@ -75,9 +75,16 @@ struct taprio_sched {
+ 	struct sched_gate_list __rcu *admin_sched;
+ 	struct hrtimer advance_timer;
+ 	struct list_head taprio_list;
++	struct sk_buff *(*dequeue)(struct Qdisc *sch);
++	struct sk_buff *(*peek)(struct Qdisc *sch);
+ 	u32 txtime_delay;
+ };
+ 
++struct __tc_taprio_qopt_offload {
++	refcount_t users;
++	struct tc_taprio_qopt_offload offload;
++};
++
+ static ktime_t sched_base_time(const struct sched_gate_list *sched)
+ {
+ 	if (!sched)
+@@ -268,6 +275,19 @@ static bool is_valid_interval(struct sk_buff *skb, struct Qdisc *sch)
+ 	return entry;
+ }
+ 
++static bool taprio_flags_valid(u32 flags)
++{
++	/* Make sure no other flag bits are set. */
++	if (flags & ~(TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST |
++		      TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD))
++		return false;
++	/* txtime-assist and full offload are mutually exclusive */
++	if ((flags & TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST) &&
++	    (flags & TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD))
++		return false;
++	return true;
++}
++
+ /* This returns the tstamp value set by TCP in terms of the set clock. */
+ static ktime_t get_tcp_tstamp(struct taprio_sched *q, struct sk_buff *skb)
+ {
+@@ -417,7 +437,7 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	return qdisc_enqueue(skb, child, to_free);
+ }
+ 
+-static struct sk_buff *taprio_peek(struct Qdisc *sch)
++static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -461,6 +481,36 @@ static struct sk_buff *taprio_peek(struct Qdisc *sch)
+ 	return NULL;
+ }
+ 
++static struct sk_buff *taprio_peek_offload(struct Qdisc *sch)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++	struct sk_buff *skb;
++	int i;
++
++	for (i = 0; i < dev->num_tx_queues; i++) {
++		struct Qdisc *child = q->qdiscs[i];
++
++		if (unlikely(!child))
++			continue;
++
++		skb = child->ops->peek(child);
++		if (!skb)
++			continue;
++
++		return skb;
++	}
++
++	return NULL;
++}
++
++static struct sk_buff *taprio_peek(struct Qdisc *sch)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++
++	return q->peek(sch);
++}
++
+ static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
+ {
+ 	atomic_set(&entry->budget,
+@@ -468,7 +518,7 @@ static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
+ 			     atomic64_read(&q->picos_per_byte)));
+ }
+ 
+-static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
++static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -550,6 +600,40 @@ static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
+ 	return skb;
+ }
+ 
++static struct sk_buff *taprio_dequeue_offload(struct Qdisc *sch)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++	struct sk_buff *skb;
++	int i;
++
++	for (i = 0; i < dev->num_tx_queues; i++) {
++		struct Qdisc *child = q->qdiscs[i];
++
++		if (unlikely(!child))
++			continue;
++
++		skb = child->ops->dequeue(child);
++		if (unlikely(!skb))
++			continue;
++
++		qdisc_bstats_update(sch, skb);
++		qdisc_qstats_backlog_dec(sch, skb);
++		sch->q.qlen--;
++
++		return skb;
++	}
++
++	return NULL;
++}
++
++static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++
++	return q->dequeue(sch);
++}
++
+ static bool should_restart_cycle(const struct sched_gate_list *oper,
+ 				 const struct sched_entry *entry)
+ {
+@@ -932,6 +1016,9 @@ static void taprio_start_sched(struct Qdisc *sch,
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	ktime_t expires;
+ 
++	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
++		return;
++
+ 	expires = hrtimer_get_expires(&q->advance_timer);
+ 	if (expires == 0)
+ 		expires = KTIME_MAX;
+@@ -1011,6 +1098,254 @@ static void setup_txtime(struct taprio_sched *q,
+ 	}
+ }
+ 
++static struct tc_taprio_qopt_offload *taprio_offload_alloc(int num_entries)
++{
++	size_t size = sizeof(struct tc_taprio_sched_entry) * num_entries +
++		      sizeof(struct __tc_taprio_qopt_offload);
++	struct __tc_taprio_qopt_offload *__offload;
++
++	__offload = kzalloc(size, GFP_KERNEL);
++	if (!__offload)
++		return NULL;
++
++	refcount_set(&__offload->users, 1);
++
++	return &__offload->offload;
++}
++
++struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
++						  *offload)
++{
++	struct __tc_taprio_qopt_offload *__offload;
++
++	__offload = container_of(offload, struct __tc_taprio_qopt_offload,
++				 offload);
++
++	refcount_inc(&__offload->users);
++
++	return offload;
++}
++EXPORT_SYMBOL_GPL(taprio_offload_get);
++
++void taprio_offload_free(struct tc_taprio_qopt_offload *offload)
++{
++	struct __tc_taprio_qopt_offload *__offload;
++
++	__offload = container_of(offload, struct __tc_taprio_qopt_offload,
++				 offload);
++
++	if (!refcount_dec_and_test(&__offload->users))
++		return;
++
++	kfree(__offload);
++}
++EXPORT_SYMBOL_GPL(taprio_offload_free);
++
++/* The function will only serve to keep the pointers to the "oper" and "admin"
++ * schedules valid in relation to their base times, so when calling dump() the
++ * users looks at the right schedules.
++ * When using full offload, the admin configuration is promoted to oper at the
++ * base_time in the PHC time domain.  But because the system time is not
++ * necessarily in sync with that, we can't just trigger a hrtimer to call
++ * switch_schedules at the right hardware time.
++ * At the moment we call this by hand right away from taprio, but in the future
++ * it will be useful to create a mechanism for drivers to notify taprio of the
++ * offload state (PENDING, ACTIVE, INACTIVE) so it can be visible in dump().
++ * This is left as TODO.
++ */
++void taprio_offload_config_changed(struct taprio_sched *q)
++{
++	struct sched_gate_list *oper, *admin;
++
++	spin_lock(&q->current_entry_lock);
++
++	oper = rcu_dereference_protected(q->oper_sched,
++					 lockdep_is_held(&q->current_entry_lock));
++	admin = rcu_dereference_protected(q->admin_sched,
++					  lockdep_is_held(&q->current_entry_lock));
++
++	switch_schedules(q, &admin, &oper);
++
++	spin_unlock(&q->current_entry_lock);
++}
++
++static void taprio_sched_to_offload(struct taprio_sched *q,
++				    struct sched_gate_list *sched,
++				    const struct tc_mqprio_qopt *mqprio,
++				    struct tc_taprio_qopt_offload *offload)
++{
++	struct sched_entry *entry;
++	int i = 0;
++
++	offload->base_time = sched->base_time;
++	offload->cycle_time = sched->cycle_time;
++	offload->cycle_time_extension = sched->cycle_time_extension;
++
++	list_for_each_entry(entry, &sched->entries, list) {
++		struct tc_taprio_sched_entry *e = &offload->entries[i];
++
++		e->command = entry->command;
++		e->interval = entry->interval;
++		e->gate_mask = entry->gate_mask;
++		i++;
++	}
++
++	offload->num_entries = i;
++}
++
++static int taprio_enable_offload(struct net_device *dev,
++				 struct tc_mqprio_qopt *mqprio,
++				 struct taprio_sched *q,
++				 struct sched_gate_list *sched,
++				 struct netlink_ext_ack *extack)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	struct tc_taprio_qopt_offload *offload;
++	int err = 0;
++
++	if (!ops->ndo_setup_tc) {
++		NL_SET_ERR_MSG(extack,
++			       "Device does not support taprio offload");
++		return -EOPNOTSUPP;
++	}
++
++	offload = taprio_offload_alloc(sched->num_entries);
++	if (!offload) {
++		NL_SET_ERR_MSG(extack,
++			       "Not enough memory for enabling offload mode");
++		return -ENOMEM;
++	}
++	offload->enable = 1;
++	taprio_sched_to_offload(q, sched, mqprio, offload);
++
++	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
++	if (err < 0) {
++		NL_SET_ERR_MSG(extack,
++			       "Device failed to setup taprio offload");
++		goto done;
++	}
++
++	taprio_offload_config_changed(q);
++
++done:
++	taprio_offload_free(offload);
++
++	return err;
++}
++
++static int taprio_disable_offload(struct net_device *dev,
++				  struct taprio_sched *q,
++				  struct netlink_ext_ack *extack)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	struct tc_taprio_qopt_offload *offload;
++	int err;
++
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
++		return 0;
++
++	if (!ops->ndo_setup_tc)
++		return -EOPNOTSUPP;
++
++	offload = taprio_offload_alloc(0);
++	if (!offload) {
++		NL_SET_ERR_MSG(extack,
++			       "Not enough memory to disable offload mode");
++		return -ENOMEM;
++	}
++	offload->enable = 0;
++
++	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
++	if (err < 0) {
++		NL_SET_ERR_MSG(extack,
++			       "Device failed to disable offload");
++		goto out;
++	}
++
++out:
++	taprio_offload_free(offload);
++
++	return err;
++}
++
++/* If full offload is enabled, the only possible clockid is the net device's
++ * PHC. For that reason, specifying a clockid through netlink is incorrect.
++ * For txtime-assist, it is implicitly assumed that the device's PHC is kept
++ * in sync with the specified clockid via a user space daemon such as phc2sys.
++ * For both software taprio and txtime-assist, the clockid is used for the
++ * hrtimer that advances the schedule and hence mandatory.
++ */
++static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
++				struct netlink_ext_ack *extack)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++	int err = -EINVAL;
++
++	if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
++		const struct ethtool_ops *ops = dev->ethtool_ops;
++		struct ethtool_ts_info info = {
++			.cmd = ETHTOOL_GET_TS_INFO,
++			.phc_index = -1,
++		};
++
++		if (tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]) {
++			NL_SET_ERR_MSG(extack,
++				       "The 'clockid' cannot be specified for full offload");
++			goto out;
++		}
++
++		if (ops && ops->get_ts_info)
++			err = ops->get_ts_info(dev, &info);
++
++		if (err || info.phc_index < 0) {
++			NL_SET_ERR_MSG(extack,
++				       "Device does not have a PTP clock");
++			err = -ENOTSUPP;
++			goto out;
++		}
++	} else if (tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]) {
++		int clockid = nla_get_s32(tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]);
++
++		/* We only support static clockids and we don't allow
++		 * for it to be modified after the first init.
++		 */
++		if (clockid < 0 ||
++		    (q->clockid != -1 && q->clockid != clockid)) {
++			NL_SET_ERR_MSG(extack,
++				       "Changing the 'clockid' of a running schedule is not supported");
++			err = -ENOTSUPP;
++			goto out;
++		}
++
++		switch (clockid) {
++		case CLOCK_REALTIME:
++			q->tk_offset = TK_OFFS_REAL;
++			break;
++		case CLOCK_MONOTONIC:
++			q->tk_offset = TK_OFFS_MAX;
++			break;
++		case CLOCK_BOOTTIME:
++			q->tk_offset = TK_OFFS_BOOT;
++			break;
++		case CLOCK_TAI:
++			q->tk_offset = TK_OFFS_TAI;
++			break;
++		default:
++			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
++			err = -EINVAL;
++			goto out;
++		}
++
++		q->clockid = clockid;
++	} else {
++		NL_SET_ERR_MSG(extack, "Specifying a 'clockid' is mandatory");
++		goto out;
++	}
++out:
++	return err;
++}
++
+ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 			 struct netlink_ext_ack *extack)
+ {
+@@ -1020,9 +1355,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	struct net_device *dev = qdisc_dev(sch);
+ 	struct tc_mqprio_qopt *mqprio = NULL;
+ 	u32 taprio_flags = 0;
+-	int i, err, clockid;
+ 	unsigned long flags;
+ 	ktime_t start;
++	int i, err;
+ 
+ 	err = nla_parse_nested_deprecated(tb, TCA_TAPRIO_ATTR_MAX, opt,
+ 					  taprio_policy, extack);
+@@ -1038,7 +1373,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		if (q->flags != 0 && q->flags != taprio_flags) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Changing 'flags' of a running schedule is not supported");
+ 			return -EOPNOTSUPP;
+-		} else if (!FLAGS_VALID(taprio_flags)) {
++		} else if (!taprio_flags_valid(taprio_flags)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Specified 'flags' are not valid");
+ 			return -EINVAL;
+ 		}
+@@ -1078,30 +1413,19 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		goto free_sched;
+ 	}
+ 
+-	if (tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]) {
+-		clockid = nla_get_s32(tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]);
+-
+-		/* We only support static clockids and we don't allow
+-		 * for it to be modified after the first init.
+-		 */
+-		if (clockid < 0 ||
+-		    (q->clockid != -1 && q->clockid != clockid)) {
+-			NL_SET_ERR_MSG(extack, "Changing the 'clockid' of a running schedule is not supported");
+-			err = -ENOTSUPP;
+-			goto free_sched;
+-		}
+-
+-		q->clockid = clockid;
+-	}
+-
+-	if (q->clockid == -1 && !tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]) {
+-		NL_SET_ERR_MSG(extack, "Specifying a 'clockid' is mandatory");
+-		err = -EINVAL;
++	err = taprio_parse_clockid(sch, tb, extack);
++	if (err < 0)
+ 		goto free_sched;
+-	}
+ 
+ 	taprio_set_picos_per_byte(dev, q);
+ 
++	if (FULL_OFFLOAD_IS_ENABLED(taprio_flags))
++		err = taprio_enable_offload(dev, mqprio, q, new_admin, extack);
++	else
++		err = taprio_disable_offload(dev, q, extack);
++	if (err)
++		goto free_sched;
++
+ 	/* Protects against enqueue()/dequeue() */
+ 	spin_lock_bh(qdisc_lock(sch));
+ 
+@@ -1116,6 +1440,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	}
+ 
+ 	if (!TXTIME_ASSIST_IS_ENABLED(taprio_flags) &&
++	    !FULL_OFFLOAD_IS_ENABLED(taprio_flags) &&
+ 	    !hrtimer_active(&q->advance_timer)) {
+ 		hrtimer_init(&q->advance_timer, q->clockid, HRTIMER_MODE_ABS);
+ 		q->advance_timer.function = advance_sched;
+@@ -1134,23 +1459,15 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 					       mqprio->prio_tc_map[i]);
+ 	}
+ 
+-	switch (q->clockid) {
+-	case CLOCK_REALTIME:
+-		q->tk_offset = TK_OFFS_REAL;
+-		break;
+-	case CLOCK_MONOTONIC:
+-		q->tk_offset = TK_OFFS_MAX;
+-		break;
+-	case CLOCK_BOOTTIME:
+-		q->tk_offset = TK_OFFS_BOOT;
+-		break;
+-	case CLOCK_TAI:
+-		q->tk_offset = TK_OFFS_TAI;
+-		break;
+-	default:
+-		NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
+-		err = -EINVAL;
+-		goto unlock;
++	if (FULL_OFFLOAD_IS_ENABLED(taprio_flags)) {
++		q->dequeue = taprio_dequeue_offload;
++		q->peek = taprio_peek_offload;
++	} else {
++		/* Be sure to always keep the function pointers
++		 * in a consistent state.
++		 */
++		q->dequeue = taprio_dequeue_soft;
++		q->peek = taprio_peek_soft;
+ 	}
+ 
+ 	err = taprio_get_start_time(sch, new_admin, &start);
+@@ -1212,6 +1529,8 @@ static void taprio_destroy(struct Qdisc *sch)
+ 
+ 	hrtimer_cancel(&q->advance_timer);
+ 
++	taprio_disable_offload(dev, q, NULL);
++
+ 	if (q->qdiscs) {
+ 		for (i = 0; i < dev->num_tx_queues && q->qdiscs[i]; i++)
+ 			qdisc_put(q->qdiscs[i]);
+@@ -1241,6 +1560,9 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	hrtimer_init(&q->advance_timer, CLOCK_TAI, HRTIMER_MODE_ABS);
+ 	q->advance_timer.function = advance_sched;
+ 
++	q->dequeue = taprio_dequeue_soft;
++	q->peek = taprio_peek_soft;
++
+ 	q->root = sch;
+ 
+ 	/* We only support static clockids. Use an invalid value as default
+@@ -1423,7 +1745,8 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	if (nla_put(skb, TCA_TAPRIO_ATTR_PRIOMAP, sizeof(opt), &opt))
+ 		goto options_error;
+ 
+-	if (nla_put_s32(skb, TCA_TAPRIO_ATTR_SCHED_CLOCKID, q->clockid))
++	if (!FULL_OFFLOAD_IS_ENABLED(q->flags) &&
++	    nla_put_s32(skb, TCA_TAPRIO_ATTR_SCHED_CLOCKID, q->clockid))
+ 		goto options_error;
+ 
+ 	if (q->flags && nla_put_u32(skb, TCA_TAPRIO_ATTR_FLAGS, q->flags))
 -- 
-
-For those who want to follow along with the hardware implementation, the
-manual is here:
-https://www.nxp.com/docs/en/user-guide/UM10944.pdf
-
-Notable changes in v2:
-- Made the series independent from PTP (which is temporarily removed)
-- Changed the meaning of the gate_mask - it is now acting on traffic
-  classes even in the view exposed by taprio to drivers.
-- Removed the next_sched hrtimer.
-- Summarized one of the responses given to Vinicius into a new
-  documentation section.
-
-The first version of the net-next patch series can be found here:
-
-https://www.spinics.net/lists/netdev/msg597214.html
-
-Changes in the first version of the net-next series compared to RFC v2:
-- Made "flags 1" and "flags 2" mutually exclusive in the taprio qdisc
-- Moved taprio_enable_offload and taprio_disable_offload out of atomic
-  context - spin_lock_bh(qdisc_lock(sch)). This allows drivers that
-  implement the ndo_setup_tc to sleep and for taprio memory to be
-  allocated with GFP_KERNEL. The only thing that was kept under the
-  spinlock is the assignment of the q->dequeue and q->peek pointers.
-- Finally making proper use of own API - added a taprio_alloc helper to
-  avoid passing stack memory to drivers.
-
-The second version of the RFC is at:
-https://www.spinics.net/lists/netdev/msg596663.html
-
-Changes in v2 of the RFC since v1:
-- Adapted the taprio offload patch to work by specifying "flags 2" to
-  the iproute2-next tc. At the moment I don't clearly understand whether
-  the full offload and the txtime assist ("flags 1") are mutually
-  exclusive or not (i.e. whether a "flags 3" mode should be rejected,
-  which it currently isn't).
-- Added reference counting to the taprio offload structure. Maybe the
-  function names and placement could have been better though. As for the
-  other complaint (cycle time calculation) it got fixed in the taprio
-  parser in the meantime.
-- Converted sja1105 to use the hardware PTP registers, and save/restore
-  the PTP time across resets.
-- Made the DSA callback for ndo_setup_tc a bit more generic, but I don't
-  know whether it fulfills expectations. Drivers still can't do blocking
-  operations in its execution context.
-- Added a state machine for starting/stopping the scheduler based on the
-  last command run on the PTP clock.
-
-The first RFC from July can be seen at:
-https://lists.openwall.net/netdev/2019/07/07/81
-
-Original cover letter:
-
-Using Vinicius Costa Gomes' configuration interface for 802.1Qbv (later
-resent by Voon Weifeng for the stmmac driver), I am submitting for
-review a draft implementation of this offload for a DSA switch.
-
-I don't want to insist too much on the hardware specifics of SJA1105
-which isn't otherwise very compliant to the IEEE spec.
-
-In order to be able to test with Vedang Patel's iproute2 patch for
-taprio offload (https://www.spinics.net/lists/netdev/msg573072.html)
-I had to actually revert the txtime-assist branch as it had changed the
-iproute2 interface.
-
-In terms of impact for DSA drivers, I would like to point out that:
-
-- Maybe somebody should pre-populate qopt->cycle_time in case the user
-  does not provide one. Otherwise each driver needs to iterate over the
-  GCL once, just to set the cycle time (right now stmmac does as well).
-
-- Configuring the switch over SPI cannot apparently be done from this
-  ndo_setup_tc callback because it runs in atomic context. I also have
-  some downstream patches to offload tc clsact matchall with mirred
-  action, but in that case it looks like the atomic context restriction
-  does not apply.
-
-- I had to copy the struct tc_taprio_qopt_offload to driver private
-  memory because a static config needs to be constructed every time a
-  change takes place, and there are up to 4 switch ports that may take a
-  TAS configuration. I have created a private
-  tc_taprio_qopt_offload_copy() helper for this - I don't know whether
-  it's of any help in the general case.
-
-There is more to be done however. The TAS needs to be integrated with
-the PTP driver. This is because with a PTP clock source, the base time
-is written dynamically to the PTPSCHTM (PTP schedule time) register and
-must be a time in the future. Then the "real" base time of each port's
-TAS config can be offset by at most ~50 ms (the DELTA field from the
-Schedule Entry Points Table) relative to PTPSCHTM.
-Because base times in the past are completely ignored by this hardware,
-we need to decide if it's ok behaviorally for a driver to "roll" a past
-base time into the immediate future by incrementally adding the cycle
-time (so the phase doesn't change). If it is, then decide by how long in
-the future it is ok to do so. Or alternatively, is it preferable if the
-driver errors out if the user-supplied base time is in the past and the
-hardware doesn't like it? But even then, there might be fringe cases
-when the base time becomes a past PTP time right as the driver tries to
-apply the config.
-Also applying a tc-taprio offload to a second SJA1105 switch port will
-inevitably need to roll the first port's (now past) base time into an
-equivalent future time.
-All of this is going to be complicated even further by the fact that
-resetting the switch (to apply the tc-taprio offload) makes it reset its
-PTP time.
-
 2.17.1
 
