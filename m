@@ -2,176 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D886BB2DA8
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 03:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77A21B2DAA
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 03:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727428AbfIOBxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Sep 2019 21:53:54 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37977 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727217AbfIOBxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 21:53:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id o184so6443100wme.3
-        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 18:53:49 -0700 (PDT)
+        id S1727498AbfIOBzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Sep 2019 21:55:54 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:33954 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfIOBzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Sep 2019 21:55:54 -0400
+Received: by mail-ed1-f68.google.com with SMTP id c20so21116409eds.1
+        for <netdev@vger.kernel.org>; Sat, 14 Sep 2019 18:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Vyt1BUycDxbtNeB6ICgMD2o3mamJh9TM7X8icRGK/v8=;
-        b=j0zVIV2a1rMqnPCopJji0UfeS0ojDageS74vuhLhi55AKLJW0GFoHCcFSiPsrwVNkm
-         xjOt6yBDaeNHIa8KAv9a08tALvHEhCVweid37vl1DHWiLHc+ntSX9LW0MJ4dT0MWT7Yk
-         i/OdmCULjovHuF73VsBZaV9sNjy7cnhIejPraRHrfIdeRH+1fYrQSeemlhgqi/ZF2T8I
-         c7MGXdlgg3CWMlb4pw+lSiPlHwqNSjeDR9fBsrtiOS9ZaU4EI/eK9K98QOhAxUSCAdVV
-         hIC24fuycaXk//3pwn/06EVqcVEMilbm1+0qYVtiWbr1H8o5qo4t5xy55ORBIV9ORCln
-         0hlg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bT0RywIcAER4RJTcDbbkO636AroK0yYWjovVPaTXKzc=;
+        b=k2jh2P2AW7mDHtSIsxecH1ELnhkNLjoXJ9kiIKFK4Z2bAk5MLOWpuuiC5Yayjk/9QH
+         c8tWyGjkmiTNmPNM8kgw2c7R74AcuCyNJku50QHnddyKMrUzEYLbXv2mbxEEVod4hQy+
+         BUw62lS0Tanmaf+ENkq3na/dphDSDNHZkwU2/BqTWoxtiYdTCkIe3JszotWSbCd4hfks
+         A9g5V1iDYe1zBRoXvfcEN4So1K5SbQxszBjMTbPezpscmQFEobYdZRDtfyNTqLhUZhbD
+         UyYNMWVPitxq1NZ90LmFCt88WGt4VghrMmZGD0kQBo2Dr4oQUWUWWHQf/Z0iRykl3Y3g
+         RbBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Vyt1BUycDxbtNeB6ICgMD2o3mamJh9TM7X8icRGK/v8=;
-        b=bT/XeMqf+02cHuyjr2a3bbcAUVXK+aAekQk5RAN6xiDLkZvrE/IWpHqayOK9hFbAff
-         7F95kqpruKjUqIqv6nhUA9LfuGaW6YEU02fvmEHv1mhnwKGl8QHUFFRZYNXX5aGIo4it
-         NOh6WYWgPhPQfEwr14BJwTNIdP9wJtrewoGRXopRJ/mXNwgCnYjAeIPSYwKRKTyOnUwh
-         NWu47A55G0a0LmVfiaEOlHrLf60+J6HU/764MQDBoKq3jqI/yVYAzY11pOFnR2lB+MDM
-         BGz+O/qpCdvndAPL+CE7qf0IKWnlmDsgiTt36U8crQRb7HW4DQEh9v4Vst8pmXI5uc1b
-         om6w==
-X-Gm-Message-State: APjAAAXuweqOCdr8zXEezzfmEAjvDhFlo7cPjkGRVT+Pf8lPB9uIWrws
-        S6D64IIZMzcvGgYTALdjjoY=
-X-Google-Smtp-Source: APXvYqxgnCphhbfXcBnxvXxnyL7IoS9+WHIaG6OhCpWHwHGXODlXBGcyTi2ZR3zaYMKLKEpsBxaz+Q==
-X-Received: by 2002:a1c:bcd6:: with SMTP id m205mr8454156wmf.129.1568512429060;
-        Sat, 14 Sep 2019 18:53:49 -0700 (PDT)
-Received: from localhost.localdomain ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id p19sm5627044wmg.31.2019.09.14.18.53.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Sep 2019 18:53:48 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net, vinicius.gomes@intel.com,
-        vedang.patel@intel.com, richardcochran@gmail.com
-Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com, ilias.apalodimas@linaro.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        kurt.kanzenbach@linutronix.de, joergen.andreasen@microchip.com,
-        netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v3 net-next 7/7] docs: net: dsa: sja1105: Add info about the time-aware scheduler
-Date:   Sun, 15 Sep 2019 04:53:14 +0300
-Message-Id: <20190915015314.26605-8-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190915015314.26605-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bT0RywIcAER4RJTcDbbkO636AroK0yYWjovVPaTXKzc=;
+        b=TmIV3x6ZiY5w7NzO7xZjGAkQ221S15xNEKMkNesAuraBy0TEvu+RcEuPKTY7ltHjQ5
+         o//A4ZygtM35PiYheg5nwN3TfjI7AUH9ZLyYnHQdRNN7H9jaOnbFj5zjcVRSv5sNr6iw
+         kKXLBa0q55yYQ9IRkohjhGYGfKyt4CAPN5FnRlH68fhXU272o/FZAnEwUjAgwo+Y0WYh
+         vNKBqqKRPDE8Ly3Y3+k539Dt6sDkgBrw25wLw8zWMsw04jZzBH3MQlMve6xV4T+R5dKh
+         Hxe0jzKRfIy17AqqAZwh82WCdcV0zPB/r81rM6PdrgtsD2QytM09DAorBrWCpDx3ibDY
+         y1pQ==
+X-Gm-Message-State: APjAAAX+9tQMKaEXh7cfTPzeKYJnVe6CeEDN2Fc4RUmiy3ClC9xYAfLX
+        GXYNy6TY+vZblruPUnmdF3UjrTD6xOiLm4JiEzA=
+X-Google-Smtp-Source: APXvYqw6he6MV1UXC5P+0yzWpWls3GOGMUXWxpJzc+ncido9r4ryZqLb1HVpgPaid4egX/09u6hJvD+lbZv/hgGgtaw=
+X-Received: by 2002:a05:6402:14da:: with SMTP id f26mr5797293edx.165.1568512551988;
+ Sat, 14 Sep 2019 18:55:51 -0700 (PDT)
+MIME-Version: 1.0
 References: <20190915015314.26605-1-olteanv@gmail.com>
+In-Reply-To: <20190915015314.26605-1-olteanv@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 15 Sep 2019 04:55:41 +0300
+Message-ID: <CA+h21hr1TML7eQPdXEf2KP2Cv_+FCb8QPnATA8HmnMR_9kzGkQ@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 0/7] tc-taprio offload for SJA1105 DSA
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "Patel, Vedang" <vedang.patel@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     "Voon, Weifeng" <weifeng.voon@intel.com>, jiri@mellanox.com,
+        m-karicheri2@ti.com, Jose.Abreu@synopsys.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While not an exhaustive usage tutorial, this describes the details
-needed to build more complex scenarios.
+On Sun, 15 Sep 2019 at 04:53, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> This is the second attempt to submit the tc-taprio offload model for
+> inclusion in the net tree. The sja1105 switch driver will provide the
+> first implementation of the offload. Only the bare minimum is added:
+>
+> - The offload model and a DSA pass-through
+> - The hardware implementation
+> - The interaction with the netdev queues in the tagger code
+> - Documentation
+>
+> What has been removed from the first attempt is support for
+> PTP-as-clocksource in sja1105.  This will be added as soon as the
+> offload model is settled.
+>
+> Vinicius Costa Gomes (1):
+>   taprio: Add support for hardware offloading
+>
+> Vladimir Oltean (6):
+>   net: dsa: Pass ndo_setup_tc slave callback to drivers
+>   net: dsa: sja1105: Add static config tables for scheduling
+>   net: dsa: sja1105: Advertise the 8 TX queues
+>   net: dsa: sja1105: Make HOSTPRIO a kernel config
+>   net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio
+>     offload
+>   docs: net: dsa: sja1105: Add info about the time-aware scheduler
+>
+>  Documentation/networking/dsa/sja1105.rst      |  90 ++++
+>  drivers/net/dsa/sja1105/Kconfig               |  17 +
+>  drivers/net/dsa/sja1105/Makefile              |   4 +
+>  drivers/net/dsa/sja1105/sja1105.h             |   6 +
+>  .../net/dsa/sja1105/sja1105_dynamic_config.c  |   8 +
+>  drivers/net/dsa/sja1105/sja1105_main.c        |  28 +-
+>  .../net/dsa/sja1105/sja1105_static_config.c   | 167 +++++++
+>  .../net/dsa/sja1105/sja1105_static_config.h   |  48 +-
+>  drivers/net/dsa/sja1105/sja1105_tas.c         | 427 ++++++++++++++++++
+>  drivers/net/dsa/sja1105/sja1105_tas.h         |  42 ++
+>  include/linux/netdevice.h                     |   1 +
+>  include/net/dsa.h                             |   2 +
+>  include/net/pkt_sched.h                       |  23 +
+>  include/uapi/linux/pkt_sched.h                |   3 +-
+>  net/dsa/slave.c                               |  12 +-
+>  net/dsa/tag_sja1105.c                         |   3 +-
+>  net/sched/sch_taprio.c                        | 409 +++++++++++++++--
+>  17 files changed, 1237 insertions(+), 53 deletions(-)
+>  create mode 100644 drivers/net/dsa/sja1105/sja1105_tas.c
+>  create mode 100644 drivers/net/dsa/sja1105/sja1105_tas.h
+>
+> --
+>
+> For those who want to follow along with the hardware implementation, the
+> manual is here:
+> https://www.nxp.com/docs/en/user-guide/UM10944.pdf
+>
+> Notable changes in v2:
+> - Made the series independent from PTP (which is temporarily removed)
+> - Changed the meaning of the gate_mask - it is now acting on traffic
+>   classes even in the view exposed by taprio to drivers.
+> - Removed the next_sched hrtimer.
+> - Summarized one of the responses given to Vinicius into a new
+>   documentation section.
+>
+> The first version of the net-next patch series can be found here:
+>
+> https://www.spinics.net/lists/netdev/msg597214.html
+>
+> Changes in the first version of the net-next series compared to RFC v2:
+> - Made "flags 1" and "flags 2" mutually exclusive in the taprio qdisc
+> - Moved taprio_enable_offload and taprio_disable_offload out of atomic
+>   context - spin_lock_bh(qdisc_lock(sch)). This allows drivers that
+>   implement the ndo_setup_tc to sleep and for taprio memory to be
+>   allocated with GFP_KERNEL. The only thing that was kept under the
+>   spinlock is the assignment of the q->dequeue and q->peek pointers.
+> - Finally making proper use of own API - added a taprio_alloc helper to
+>   avoid passing stack memory to drivers.
+>
+> The second version of the RFC is at:
+> https://www.spinics.net/lists/netdev/msg596663.html
+>
+> Changes in v2 of the RFC since v1:
+> - Adapted the taprio offload patch to work by specifying "flags 2" to
+>   the iproute2-next tc. At the moment I don't clearly understand whether
+>   the full offload and the txtime assist ("flags 1") are mutually
+>   exclusive or not (i.e. whether a "flags 3" mode should be rejected,
+>   which it currently isn't).
+> - Added reference counting to the taprio offload structure. Maybe the
+>   function names and placement could have been better though. As for the
+>   other complaint (cycle time calculation) it got fixed in the taprio
+>   parser in the meantime.
+> - Converted sja1105 to use the hardware PTP registers, and save/restore
+>   the PTP time across resets.
+> - Made the DSA callback for ndo_setup_tc a bit more generic, but I don't
+>   know whether it fulfills expectations. Drivers still can't do blocking
+>   operations in its execution context.
+> - Added a state machine for starting/stopping the scheduler based on the
+>   last command run on the PTP clock.
+>
+> The first RFC from July can be seen at:
+> https://lists.openwall.net/netdev/2019/07/07/81
+>
+> Original cover letter:
+>
+> Using Vinicius Costa Gomes' configuration interface for 802.1Qbv (later
+> resent by Voon Weifeng for the stmmac driver), I am submitting for
+> review a draft implementation of this offload for a DSA switch.
+>
+> I don't want to insist too much on the hardware specifics of SJA1105
+> which isn't otherwise very compliant to the IEEE spec.
+>
+> In order to be able to test with Vedang Patel's iproute2 patch for
+> taprio offload (https://www.spinics.net/lists/netdev/msg573072.html)
+> I had to actually revert the txtime-assist branch as it had changed the
+> iproute2 interface.
+>
+> In terms of impact for DSA drivers, I would like to point out that:
+>
+> - Maybe somebody should pre-populate qopt->cycle_time in case the user
+>   does not provide one. Otherwise each driver needs to iterate over the
+>   GCL once, just to set the cycle time (right now stmmac does as well).
+>
+> - Configuring the switch over SPI cannot apparently be done from this
+>   ndo_setup_tc callback because it runs in atomic context. I also have
+>   some downstream patches to offload tc clsact matchall with mirred
+>   action, but in that case it looks like the atomic context restriction
+>   does not apply.
+>
+> - I had to copy the struct tc_taprio_qopt_offload to driver private
+>   memory because a static config needs to be constructed every time a
+>   change takes place, and there are up to 4 switch ports that may take a
+>   TAS configuration. I have created a private
+>   tc_taprio_qopt_offload_copy() helper for this - I don't know whether
+>   it's of any help in the general case.
+>
+> There is more to be done however. The TAS needs to be integrated with
+> the PTP driver. This is because with a PTP clock source, the base time
+> is written dynamically to the PTPSCHTM (PTP schedule time) register and
+> must be a time in the future. Then the "real" base time of each port's
+> TAS config can be offset by at most ~50 ms (the DELTA field from the
+> Schedule Entry Points Table) relative to PTPSCHTM.
+> Because base times in the past are completely ignored by this hardware,
+> we need to decide if it's ok behaviorally for a driver to "roll" a past
+> base time into the immediate future by incrementally adding the cycle
+> time (so the phase doesn't change). If it is, then decide by how long in
+> the future it is ok to do so. Or alternatively, is it preferable if the
+> driver errors out if the user-supplied base time is in the past and the
+> hardware doesn't like it? But even then, there might be fringe cases
+> when the base time becomes a past PTP time right as the driver tries to
+> apply the config.
+> Also applying a tc-taprio offload to a second SJA1105 switch port will
+> inevitably need to roll the first port's (now past) base time into an
+> equivalent future time.
+> All of this is going to be complicated even further by the fact that
+> resetting the switch (to apply the tc-taprio offload) makes it reset its
+> PTP time.
+>
+> 2.17.1
+>
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- Documentation/networking/dsa/sja1105.rst | 90 ++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+I'm sorry, please disregard this series, it's not the version I
+intended to send.
 
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index cb2858dece93..2eaa6edf9c5b 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -146,6 +146,96 @@ enslaves eth0 and eth1 (the DSA master of the switch ports). This is because in
- this mode, the switch ports beneath br0 are not capable of regular traffic, and
- are only used as a conduit for switchdev operations.
- 
-+Offloads
-+========
-+
-+Time-aware scheduling
-+---------------------
-+
-+The switch supports a variation of the enhancements for scheduled traffic
-+specified in IEEE 802.1Q-2018 (formerly 802.1Qbv). This means it can be used to
-+ensure deterministic latency for priority traffic that is sent in-band with its
-+gate-open event in the network schedule.
-+
-+This capability can be managed through the tc-taprio offload ('flags 2'). The
-+difference compared to the software implementation of taprio is that the latter
-+would only be able to shape traffic originated from the CPU, but not
-+autonomously forwarded flows.
-+
-+The device has 8 traffic classes, and maps incoming frames to one of them based
-+on the VLAN PCP bits (if no VLAN is present, the port-based default is used).
-+As described in the previous sections, depending on the value of
-+``vlan_filtering``, the EtherType recognized by the switch as being VLAN can
-+either be the typical 0x8100 or a custom value used internally by the driver
-+for tagging. Therefore, the switch ignores the VLAN PCP if used in standalone
-+or bridge mode with ``vlan_filtering=0``, as it will not recognize the 0x8100
-+EtherType. In these modes, injecting into a particular TX queue can only be
-+done by the DSA net devices, which populate the PCP field of the tagging header
-+on egress. Using ``vlan_filtering=1``, the behavior is the other way around:
-+offloaded flows can be steered to TX queues based on the VLAN PCP, but the DSA
-+net devices are no longer able to do that. To inject frames into a hardware TX
-+queue with VLAN awareness active, it is necessary to create a VLAN
-+sub-interface on the DSA master port, and send normal (0x8100) VLAN-tagged
-+towards the switch, with the VLAN PCP bits set appropriately.
-+
-+Management traffic (having DMAC 01-80-C2-xx-xx-xx or 01-19-1B-xx-xx-xx) is the
-+notable exception: the switch always treats it with a fixed priority and
-+disregards any VLAN PCP bits even if present. The traffic class for management
-+traffic is configurable through ``CONFIG_NET_DSA_SJA1105_HOSTPRIO``, which by
-+default has a value of 7 (highest priority).
-+
-+Below is an example of configuring a 500 us cyclic schedule on egress port
-+``swp5``. The traffic class gate for management traffic (7) is open for 100 us,
-+and the gates for all other traffic classes are open for 400 us::
-+
-+  #!/bin/bash
-+
-+  set -e -u -o pipefail
-+
-+  NSEC_PER_SEC="1000000000"
-+
-+  gatemask() {
-+          local tc_list="$1"
-+          local mask=0
-+
-+          for tc in ${tc_list}; do
-+                  mask=$((${mask} | (1 << ${tc})))
-+          done
-+
-+          printf "%02x" ${mask}
-+  }
-+
-+  if ! systemctl is-active --quiet ptp4l; then
-+          echo "Please start the ptp4l service"
-+          exit
-+  fi
-+
-+  now=$(phc_ctl /dev/ptp1 get | gawk '/clock time is/ { print $5; }')
-+  # Phase-align the base time to the start of the next second.
-+  sec=$(echo "${now}" | gawk -F. '{ print $1; }')
-+  base_time="$(((${sec} + 1) * ${NSEC_PER_SEC}))"
-+
-+  tc qdisc add dev swp5 parent root handle 100 taprio \
-+          num_tc 8 \
-+          map 0 1 2 3 5 6 7 \
-+          queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
-+          base-time ${base_time} \
-+          sched-entry S $(gatemask 7) 100000 \
-+          sched-entry S $(gatemask "0 1 2 3 4 5 6") 400000 \
-+          flags 2
-+
-+It is possible to apply the tc-taprio offload on multiple egress ports. There
-+are hardware restrictions related to the fact that no gate event may trigger
-+simultaneously on two ports. The driver checks the consistency of the schedules
-+against this restriction and errors out when appropriate. Schedule analysis is
-+needed to avoid this, which is outside the scope of the document.
-+
-+At the moment, the time-aware scheduler can only be triggered based on a
-+standalone clock and not based on PTP time. This means the base-time argument
-+from tc-taprio is ignored and the schedule starts right away. It also means it
-+is more difficult to phase-align the scheduler with the other devices in the
-+network.
-+
- Device Tree bindings and board design
- =====================================
- 
--- 
-2.17.1
-
+-Vladimir
