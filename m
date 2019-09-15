@@ -2,119 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2661B3209
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 22:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D27B3237
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 23:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727415AbfIOUbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 16:31:33 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:42732 "EHLO
-        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725270AbfIOUbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 16:31:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sirena.org.uk; s=20170815-heliosphere; h=Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=DHTmG2flx5Wbb2G57ya+nWxxfsP7y93jPXl0YK0JzTk=; b=Nz24fm+0BTQFwfOk/jevo5rDx
-        za+kiDHAri1sNXmkQZXlDSvPGv29cZiA5lA6h9fsmcsNuyxplaDhc1n+v5OK3qE7HK/Ivey28ZOcR
-        5pqwavRYho2HnSJzLGtKHCnpdm8+byZF8t1/yvuhblnZOUPAe0VZWrko1+pHu+/L8Cxa0=;
-Received: from ypsilon.sirena.org.uk ([2001:470:1f1d:6b5::7])
-        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <broonie@sirena.co.uk>)
-        id 1i9bBA-0001Fr-T3; Sun, 15 Sep 2019 20:31:28 +0000
-Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 205AF274154D; Sun, 15 Sep 2019 21:31:28 +0100 (BST)
-Date:   Sun, 15 Sep 2019 21:31:28 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: manual merge of the net-next tree with Linus' tree
-Message-ID: <20190915203128.GE4352@sirena.co.uk>
+        id S1728355AbfIOVbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 17:31:41 -0400
+Received: from sonic309-25.consmr.mail.ir2.yahoo.com ([77.238.179.83]:41597
+        "EHLO sonic309-25.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725270AbfIOVbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 17:31:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1568583098; bh=lAh1VSII1GxH1Lprx9ZFG4FPrK3+vs4TTowEGakve2I=; h=Date:From:Reply-To:Subject:From:Subject; b=iI0bd9PBI0TILoLNWsXAUfBL9G97yl5i+Emj/gwGNLxx3GkmbPUDBtP0XXuBvFx2XtqjwPzHqoU0rBGM8HdUmgY/cGYxokQBgkJ+IjqjA879vPMmm9cdzLUC+ykQiejbcsBLIkeX+ThCFx2B0PSvxxjOcUYgsm8O2mgTpHoqepBk6CdqNGoqxrL2Vx46+Qwg1o4bfyn5YfEnHr8RRjbfE2eO5YU218olUOkKwHHHl0O/+lnLtnYOvj3b8rcal21uD0tgSWQ8tL9+jabh/ItZDdcalS55Ub83v/Kll1QxXIig3c/W7u34+5VYD/Dn1LQqf/qtyJ0j1pubpIGj5PbZzA==
+X-YMail-OSG: X9QAg0EVM1kBlaaaFg7TycFJFuQW8o2Ap0LNhzHZU8exZcnbZhpOf0RXAL456vt
+ FL_HhtkY8mk3T1E6DQD8FkjTlXNY43KTwOpUxGI4GwjJxJ.qdrTuSqiVyE7Xnjmuf0OkIEtAMjU2
+ 2uLYXJtFrKGXMoBHy_JAJedD1wafUE9I3hlYsub7oVO4N9qcHBfFhOwE0wFxslstgcDr6Q2Z1Tef
+ 9JHUtd3cpDyq9H9mtNBac5uow26_v30.w1CxsgJ2RjmIn2.oBuXh.sGQ6OS5PqUTnoG8azVrZbzw
+ aXBbWWaE9ZTzacaj8T6zicEDxxNuzdcLgHPquVnFdv2Ak9qGwaHe7TxUrPDYNOdmXNBYXh9ueGFA
+ tLNtbWDI7tIHimRBVzL2i4sC7A5LAgK5vE1kNLxTFf2O20sjcrpbvnWwa8EqNMfu2iZgWZp_yxqB
+ q1.BaJghI4dVOKGfbj4arg7I1HLpc2nqddAXy_7NJ41Rr_Dhke14meY_eAfWeRhQ7gWcyW_2Tc93
+ OFSyFYUGWpic88v7CNWunNVaHLNsNHCOfavwNsM9OYuTDGpnwzeILTvokEk4b.vsJbF9Guak4G6j
+ pvHMYPO2_bzeUp_.nP07qtCHQvFU8mRlbyExjI8s6T_K0In9LSEedW1l_b.oZF_tqJW_NcO1Kij2
+ zTX9Gt4AZThiVjHTkqaCN.aytncGyRCZFM0rfOJ2hFMUwhAkhT3SKPhfUC0wKUU40w1bDZBIgog4
+ rPBlIEHh5ig89Q9QvMRmENIWRqLgSFaYFjEt0dfiiqi.BwgXBzty3I4irUp50iacio2Xtt.tqVtC
+ ltIH7MaM_8iDKuX2FYOGx5xvHs1Uxy14YFfNikRjCPubXEejWwVm6EOxcJliboRfVNxPY3Inq.9F
+ aG49fQC2xdMkeSjtzmyQJnwXWrVgIqpH_Z.iyaCUFxfRzEOyEXrh5cLRPHDGYHUtgYSV.SwCpQo5
+ i48Wtzo7MOCmlNEuPsMdFfNp_yE3ai6Us_kQoeIiZIV4Sx0gkiazv7_ByGLTgnrbm.h40PCv6osX
+ Nkp7VFtHU6cEwjjWow.HoNTOTtGSD..7oHGw_EPhU9US7KSHMHDDWIcAVCsaVnL_tfNTkUP_txxa
+ rD1uxzb3OEs8H9P6Iv3aIk.gPhQldfvU_ANFqUNSIm6At7Izay4fzzrtAAn7eW3c2Ygz2unbxbjw
+ TOUolgwBwRoA_IKaWXSyVGbheDT8pvNv5tsJ9Jlb6_oiMPL.evWPcqZAtUn4JaIcV365xu9jHopN
+ GFkS07PLaUtPYFegJgX8K01v0WixPTFnR
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ir2.yahoo.com with HTTP; Sun, 15 Sep 2019 21:31:38 +0000
+Date:   Sun, 15 Sep 2019 21:31:33 +0000 (UTC)
+From:   "Engr. Issah Ahmed" <officefilelee@gmail.com>
+Reply-To: engrissahahmd@gmail.com
+Message-ID: <778257304.10244717.1568583093864@mail.yahoo.com>
+Subject: INVESTMENT PROPOSAL.
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Dzs2zDY0zgkG72+7"
-Content-Disposition: inline
-X-Cookie: Man and wife make one fool.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Sir,
 
---Dzs2zDY0zgkG72+7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My Name is Engr. Issah Ahmed, I was a top official in the former government of Late Muammar Gaddafi of Libya.
 
-Hi all,
+My late master Muammar Gaddafi, the deposed leader of our country, died on 20 October 2011 during the Battle of Sirte. Gaddafi was found hiding in a culvert west of Sirte and captured by National Transitional Council forces. He was killed shortly afterwards.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+We the official members continued with war till the early year 2017 due to the painful death and forceful removal of our Late Master Muammar Gaddafi, our country was totally destabilized because we refused to another government.
 
-  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+In this year 2019 all we the officials in the former Gaddafi government are being arrested, persecuted and imprisoned by the new wicked government.
 
-between commit:
+Libya is presently not safe at the moment, therefore we all moving our money out of Libya.
 
-  bf280c0387ebbf8ee ("ixgbe: fix double clean of Tx descriptors with xdp")
+I want you to quickly help me receive and keep the sum US $20.5million to your country for safety. I have agreed you take 25% of the said money for your assistance.
 
-=66rom Linus' tree and commit:
+It is very urgent and Please reply me urgently If you can be trustful to help. I will be waiting to hear from you as soon as possible.
 
-  5c129241e2de79f09 ("ixgbe: add support for AF_XDP need_wakeup feature")
-
-=66rom the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
-diff --cc drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index a3b6d8c89127f,ad802a8909e0d..0000000000000
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@@ -682,10 -697,19 +691,17 @@@ bool ixgbe_clean_xdp_tx_irq(struct ixgb
-  	if (xsk_frames)
-  		xsk_umem_complete_tx(umem, xsk_frames);
- =20
-+ 	if (xsk_umem_uses_need_wakeup(tx_ring->xsk_umem)) {
-+ 		if (tx_ring->next_to_clean =3D=3D tx_ring->next_to_use)
-+ 			xsk_set_tx_need_wakeup(tx_ring->xsk_umem);
-+ 		else
-+ 			xsk_clear_tx_need_wakeup(tx_ring->xsk_umem);
-+ 	}
-+=20
- -	xmit_done =3D ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
- -
- -	return budget > 0 && xmit_done;
- +	return ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
-  }
- =20
-- int ixgbe_xsk_async_xmit(struct net_device *dev, u32 qid)
-+ int ixgbe_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
-  {
-  	struct ixgbe_adapter *adapter =3D netdev_priv(dev);
-  	struct ixgbe_ring *ring;
-
---Dzs2zDY0zgkG72+7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1+n58ACgkQJNaLcl1U
-h9DwzQf/aI32IeWsaQisGJxSgnZg4D4nmlJ1QxJewGNBtuW4snQcWR+HkdHA4C1S
-kOC5o/sh62IZOrz/SH/zy7zOzHTxxbcV4kZtPdaW9p+EtK/Bzeo2FSZaQ0M0E9LM
-Ml2pMWy4odAnBuluqc71tdcBhLz1q34GGTKwESpfAysxihHMqQv6gPNQwPTvDuvx
-+l5DjOM6rNqUEhvzelT3AlhsowD++F7p9TogbPjrcEz3KQ7F7et5EWH+qW16Itmy
-aNEUYnx/hidqxNYALmh8qj7GKr/1/i13NSwKrjsOvFr1WSU0K0QQYZbxuPLZ0zcc
-csPcEF6g+EkkwTkw8Ic/e2cjgEJh0A==
-=hX7O
------END PGP SIGNATURE-----
-
---Dzs2zDY0zgkG72+7--
+Regards
+Engr. Issah Ahmed
