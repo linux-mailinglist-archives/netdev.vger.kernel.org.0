@@ -2,109 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30198B2F6F
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 11:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA66BB2F92
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 12:33:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728791AbfIOJo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 05:44:27 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46764 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726246AbfIOJo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 05:44:27 -0400
-Received: by mail-wr1-f68.google.com with SMTP id o18so4717280wrv.13
-        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 02:44:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tQFuSFC8WIHg6KGpDeY0S9591U9gKiscMoCwFGQMaNs=;
-        b=FLnPhicUpYmzgLbre6pXyDONPfaUHh4G7lB5Axddpxoa5HzUj+9HjnF+jZvgjediC8
-         J8KeeH1aIEYeMLnniJgPBQ9uRHwbDuOPPAK501hTKq2vbK8Z8kIk2B7csYAB9HPYrBYL
-         yfBBW6Ot2a/sjIEMxdcRPbjrh+u1i9k5IMMb1InSq0ALt59KUW4ryzrXeYhTE9dSdkua
-         cmKVmMnlnH8YnQIQOh2qCavUICtGsbdu/5T93ODkiaHO+nnxq5C2AtZAv/ElJaeP64nN
-         xDj9uMa984EitPZV6oc/ipWxKB1laohGvJjHtKtERQDpWjFRxkTBFRukPTfOvBSa1m59
-         1EsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tQFuSFC8WIHg6KGpDeY0S9591U9gKiscMoCwFGQMaNs=;
-        b=MwSbifTpKb5oPEV4RVVV9dHnxqrHtoBedfTHHkaLOM1agrKm+Kin2Jyv+V7D/6xACM
-         fkkROXYMRJ84AoLy/CA1BhDGH19wUqL8VfDBDv5BNA5r7qybqSwD5xh3QgjCAEPEZJjl
-         drzeC+8jmNIziFMH6KUPbnmEsIEDvWAcnos9rUKKv3gvUpTGC+5jGS5rPBaTPuHxjkhD
-         02O55pZVLroNxTcPwnHqnqsT5vYNPrUnoPPsPkjvmpNm/2eAmCTgNdA5HgmDbv1mUEXu
-         c3vlULJNgYTR6ZWDROUSVWiWM9ttUkQliz9RFQYSfcl4is4CPj5F4z8hXJejyTYo7i6j
-         SYcQ==
-X-Gm-Message-State: APjAAAUoBEYInD6I85jysj0DvGoEdgL+LhYQ0K3GJRZDw/gnIQT1bRbH
-        R48fiblQ7uu7cWumo6wYIFKxEA==
-X-Google-Smtp-Source: APXvYqzONXeWsUEqTpCi8ZBP0/VgaKjnDeymFYj785Mnc3xhm5jT0oTdpfOaMGA7iJEtSflpnL8eNQ==
-X-Received: by 2002:a5d:5592:: with SMTP id i18mr12835589wrv.316.1568540664914;
-        Sun, 15 Sep 2019 02:44:24 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id e20sm71102589wrc.34.2019.09.15.02.44.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Sep 2019 02:44:24 -0700 (PDT)
-Date:   Sun, 15 Sep 2019 11:44:23 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
-        dsahern@gmail.com, jakub.kicinski@netronome.com,
-        tariqt@mellanox.com, saeedm@mellanox.com, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, shuah@kernel.org, mlxsw@mellanox.com
-Subject: Re: [patch iproute2-next 2/2] devlink: extend reload command to add
- support for network namespace change
-Message-ID: <20190915094423.GE2286@nanopsycho.orion>
-References: <20190914064608.26799-1-jiri@resnulli.us>
- <20190914065757.27295-2-jiri@resnulli.us>
- <20190915071639.GA8776@splinter>
+        id S1728531AbfIOKcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 06:32:55 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:38432 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbfIOKcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 06:32:54 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id C58CD60A50; Sun, 15 Sep 2019 10:32:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568543573;
+        bh=gs/ND/F6K7DLw8cSGbuUu5/eaiv+V+mcgfHLpbSPP1A=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=lV0ChBn56UVenYq8S6XyEFeKwtz/kPmn5TvPMFd5Ip+pVlyq1WeZKMi3xVQVz8mNK
+         wnaBF72PP6ArKzGw/5oydeSvBNTipyeHoU2fnSTtpJ88hyqLZJetpQOFg9j/1GJRiT
+         h8Zozps60lwqQsrzR+8MQkK5AvJx/AVfEVt0oup0=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 22A7C602F8;
+        Sun, 15 Sep 2019 10:32:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568543573;
+        bh=gs/ND/F6K7DLw8cSGbuUu5/eaiv+V+mcgfHLpbSPP1A=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=lV0ChBn56UVenYq8S6XyEFeKwtz/kPmn5TvPMFd5Ip+pVlyq1WeZKMi3xVQVz8mNK
+         wnaBF72PP6ArKzGw/5oydeSvBNTipyeHoU2fnSTtpJ88hyqLZJetpQOFg9j/1GJRiT
+         h8Zozps60lwqQsrzR+8MQkK5AvJx/AVfEVt0oup0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 22A7C602F8
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-next 2019-09-14
+References: <87r24jchgv.fsf@kamboji.qca.qualcomm.com>
+        <20190914.140843.945413345284987204.davem@davemloft.net>
+Date:   Sun, 15 Sep 2019 13:32:49 +0300
+In-Reply-To: <20190914.140843.945413345284987204.davem@davemloft.net> (David
+        Miller's message of "Sat, 14 Sep 2019 14:08:43 +0100 (WEST)")
+Message-ID: <87muf5df3i.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190915071639.GA8776@splinter>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Sep 15, 2019 at 09:16:39AM CEST, idosch@idosch.org wrote:
->On Sat, Sep 14, 2019 at 08:57:57AM +0200, Jiri Pirko wrote:
->> diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
->> index 1804463b2321..0e1a5523fa7b 100644
->> --- a/man/man8/devlink-dev.8
->> +++ b/man/man8/devlink-dev.8
->> @@ -25,6 +25,13 @@ devlink-dev \- devlink device configuration
->>  .ti -8
->>  .B devlink dev help
->>  
->> +.ti -8
->> +.BR "devlink dev set"
->> +.IR DEV
->> +.RI "[ "
->> +.BI "netns { " PID " | " NAME " | " ID " }
->> +.RI "]"
->> +
->>  .ti -8
->>  .BR "devlink dev eswitch set"
->>  .IR DEV
->> @@ -92,6 +99,11 @@ Format is:
->>  .in +2
->>  BUS_NAME/BUS_ADDRESS
->>  
->> +.SS devlink dev set  - sets devlink device attributes
->> +
->> +.TP
->> +.BI "netns { " PID " | " NAME " | " ID " }
->
->This looks like leftover from previous version?
+David Miller <davem@davemloft.net> writes:
 
-Will fix. Thanks!
-
+> From: Kalle Valo <kvalo@codeaurora.org>
+> Date: Sat, 14 Sep 2019 13:14:40 +0300
 >
->> +
->>  .SS devlink dev eswitch show - display devlink device eswitch attributes
->>  .SS devlink dev eswitch set  - sets devlink device eswitch attributes
->>  
->> -- 
->> 2.21.0
->> 
+>> here's a pull request to net-next tree for v5.4, more info below. Please
+>> let me know if there are any problems.
+>
+> Pulled, thanks Kalle.
+
+Thanks for pulling this but I don't see it in net-next, maybe you forgot
+to push? Nothing important, just making sure it didn't get lost.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
