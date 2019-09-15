@@ -2,77 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA66BB2F92
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 12:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CBFB2FAE
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 13:14:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728531AbfIOKcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 06:32:55 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:38432 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbfIOKcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 06:32:54 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C58CD60A50; Sun, 15 Sep 2019 10:32:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568543573;
-        bh=gs/ND/F6K7DLw8cSGbuUu5/eaiv+V+mcgfHLpbSPP1A=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=lV0ChBn56UVenYq8S6XyEFeKwtz/kPmn5TvPMFd5Ip+pVlyq1WeZKMi3xVQVz8mNK
-         wnaBF72PP6ArKzGw/5oydeSvBNTipyeHoU2fnSTtpJ88hyqLZJetpQOFg9j/1GJRiT
-         h8Zozps60lwqQsrzR+8MQkK5AvJx/AVfEVt0oup0=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 22A7C602F8;
-        Sun, 15 Sep 2019 10:32:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568543573;
-        bh=gs/ND/F6K7DLw8cSGbuUu5/eaiv+V+mcgfHLpbSPP1A=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=lV0ChBn56UVenYq8S6XyEFeKwtz/kPmn5TvPMFd5Ip+pVlyq1WeZKMi3xVQVz8mNK
-         wnaBF72PP6ArKzGw/5oydeSvBNTipyeHoU2fnSTtpJ88hyqLZJetpQOFg9j/1GJRiT
-         h8Zozps60lwqQsrzR+8MQkK5AvJx/AVfEVt0oup0=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 22A7C602F8
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-next 2019-09-14
-References: <87r24jchgv.fsf@kamboji.qca.qualcomm.com>
-        <20190914.140843.945413345284987204.davem@davemloft.net>
-Date:   Sun, 15 Sep 2019 13:32:49 +0300
-In-Reply-To: <20190914.140843.945413345284987204.davem@davemloft.net> (David
-        Miller's message of "Sat, 14 Sep 2019 14:08:43 +0100 (WEST)")
-Message-ID: <87muf5df3i.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729570AbfIOLN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 07:13:59 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34981 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbfIOLN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 07:13:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id n4so17692257pgv.2;
+        Sun, 15 Sep 2019 04:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vGC++bKSuV0/ZHeXvOktEZ3piBgJqAASmtSW9gcDz7s=;
+        b=VREF9dGMdMMX6ZJx1pB+O8KiiatL6uIa/VZT40Bvej1Uxn4+9l5TwCceBM8VumPNGw
+         IYwvIX+bR4Kefn3tJkagGe5Umh601Mu2164hRNHeN2YwKkyYufAxkp7Lz0KsDNGux6/h
+         r7sNB9qQDXBK7oqyDiCNOepZf/yeiJHtigS8zLm9B25gsGfwXXZi/TZNLr0CmzjROL+T
+         URTzACd1uGV6/oiT7rRFgiHPEXo/DUAHaZG4+3udlmPyRq+UROkVQ5epJwPxoAJyXSsS
+         pUBFW1TFCjwgpiB0PqGxkCV8Nb3E7neZWclmC6hocMLDz78ALvORvv2iiD4AEeFFb+Vs
+         76kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vGC++bKSuV0/ZHeXvOktEZ3piBgJqAASmtSW9gcDz7s=;
+        b=si0GabHP4nNlE5ulh+8fCaKQmoG4MPOIyUXvWPD9j52scCMFFMa3j6OlSWcJas99u4
+         gcIoIOGoZZqux2UrGdBtcSBzwWqiaAEoXHNZ4LZAhb5Z+YV3gQutX4UCJ/BTXko/ZPmM
+         QEp+LJL1Kq1YbAa3nd2U0Zv0aRQMS/wchZc/rfn3g7L+Lt+DR7qovjxHTl4EWtC3Yh3M
+         JkMuhchka1geqS8G3HYSao4CNoveMHTegASrFfR0q0FXIQrR+wK1iQGtAFZ3EOfX/ze5
+         VrZrU5idGCFMsFvwhDC4trTCcYzjI8qVONUrWdhvhnHgNk/ZTgBz15XaYVueRgpbcS2U
+         4Yeg==
+X-Gm-Message-State: APjAAAU/XHABoxpBryBHA9XW9KZJ4nICtb04I5f85I4COEUEu53cmeHs
+        Zzh4Q3SHzbIG2pqjM6xWwTV5Dc93qfaDLgrlJds=
+X-Google-Smtp-Source: APXvYqyIbP6ZNHGDxbrWlrznhA5vytzdFd4rqRsyaDgTksk3zIWCSt7TuedGEAfBJqPyP8aPmFZbFgaUHJQTX8Qigps=
+X-Received: by 2002:a17:90b:151:: with SMTP id em17mr8116611pjb.132.1568546038301;
+ Sun, 15 Sep 2019 04:13:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20190913225547.GA106494@dtor-ws> <20190914170933.GV2680@smile.fi.intel.com>
+ <20190915060524.GC237523@dtor-ws>
+In-Reply-To: <20190915060524.GC237523@dtor-ws>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 15 Sep 2019 14:13:46 +0300
+Message-ID: <CAHp75VdtnpO6GU8w_cTdc9dM4ob_hDt56aPU9a8iOgVw06uKQg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: mdio: switch to using gpiod_get_optional()
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> writes:
+On Sun, Sep 15, 2019 at 9:26 AM Dmitry Torokhov
+<dmitry.torokhov@gmail.com> wrote:
+> On Sat, Sep 14, 2019 at 08:09:33PM +0300, Andy Shevchenko wrote:
+> > On Fri, Sep 13, 2019 at 03:55:47PM -0700, Dmitry Torokhov wrote:
 
-> From: Kalle Valo <kvalo@codeaurora.org>
-> Date: Sat, 14 Sep 2019 13:14:40 +0300
+> > > +   mdiodev->reset_gpio = gpiod_get_optional(&mdiodev->dev,
+> > > +                                            "reset", GPIOD_OUT_LOW);
+> > > +   error = PTR_ERR_OR_ZERO(mdiodev->reset_gpio);
+> > > +   if (error)
+> > > +           return error;
+
+> > > +   if (mdiodev->reset_gpio)
+> >
+> > This is redundant check.
 >
->> here's a pull request to net-next tree for v5.4, more info below. Please
->> let me know if there are any problems.
->
-> Pulled, thanks Kalle.
+> I see that gpiod_* API handle NULL desc and usually return immediately,
+> but frankly I am not that comfortable with it. I'm OK with functions
+> that free/destroy objects that recognize NULL resources,
 
-Thanks for pulling this but I don't see it in net-next, maybe you forgot
-to push? Nothing important, just making sure it didn't get lost.
+> but it is
+> unusual for other types of APIs.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+CLK, reset, ... frameworks do check for NULL pointer since they
+provide an *_optional() getters. So, it's not unusual.
+--
+With Best Regards,
+Andy Shevchenko
