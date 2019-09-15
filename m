@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A832B2EBA
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 08:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5411B2EF1
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 09:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbfIOGsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 02:48:31 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:52239 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726037AbfIOGsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 02:48:30 -0400
+        id S1727368AbfIOHQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 03:16:47 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:41429 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725773AbfIOHQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 03:16:46 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1CF5221B55;
-        Sun, 15 Sep 2019 02:48:30 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id F09A529BB;
+        Sun, 15 Sep 2019 03:16:44 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 15 Sep 2019 02:48:30 -0400
+  by compute3.internal (MEProxy); Sun, 15 Sep 2019 03:16:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=sBrQ/Lm0gZpn1jIKigKCw4B18lRHEL1+/WH7k8TM7QU=; b=o/0Cmiqj
-        XlWjbI87xh7/1VmMTwD4aWX3V4GbXWc8kJgHxsg74a1/R+fReoRtjko9xqIQBTmA
-        wrR/XMwfHea9G5zY8kupC0JsMb4l3yvuwnjhl+U6ZgKvZzvtPO1i9ujT8IJyiNR9
-        dTaBWhzOR9BHLUXo82cJ6McHNlPEDfv3nVUZwuLJS7at9tujy99NoT1yPS/6N9+g
-        CrjDlZI6TvkAoQXC7hJujBjmxxjbl9cQDM+LXp1b14oRyHa8G4wVlBsRMHoiHqxX
-        EJs68sfEavvCodwE6KEzPA8dl8c//SKeM/MTlyFqdVqmNihYtp9qGVpzFkmqlJCk
-        Mh58GRvdHYjIpQ==
-X-ME-Sender: <xms:vd59XQLYf0OtJR6jfSjuLuKR6eJo896MMxsaHvwZVG4-1863DV4qgQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddtgdduudduucetufdoteggodetrfdotf
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=YMCMpl
+        H0JiWLNiHw65cdXFG1KN+r2CF4IGQzNLb1LiA=; b=JSVM5yYQTipZjLN4qh7DOf
+        OYhTkwhE5nnm4j1907JqQSON2vZFMTbjZT354UH75/dl62yB5wfwplqPHO8/OMns
+        k22JMTCG9/tVyDvTxDfpjYFIkLWJ7mFyanBstETgFVuc1PYHZ3Rxj01Y9jFPbu8o
+        K1BY1BeFIxtPRKTPyfhbLxPDL0c89+xF9OzhQ+OIqPOZ2zrCbNKEROV87/wAXccd
+        l08O7EYunOt0EzsCiPW2O+eqju+xIMRLBGmiFPAZCkof0C84WPXdmDaAjkuq78OC
+        +NjYBQVXOsi+yxRm/40/7G9S4yrwcLbvwkswXfWR2SRd7e06R1nhb/WOvrHpT9ng
+        ==
+X-ME-Sender: <xms:WeV9XR85zryvBifVomKzRWDXxZYcFPfDk5PMrsTxehtZeCUsazN0iw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddtgdduudejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:vd59XYUXIUZ1Tx_MOnq9PRxdwRqXhAjxRKz8aCaAHYgxmCBsoygwyw>
-    <xmx:vd59XYCTHZvgHemQ-XPRxsi6gKolpc5WTXTpcLcr5NdanhHeV6Ty4w>
-    <xmx:vd59XbHzDegd-_cZ2PqX4Y_jupMiYsWTqXovVmRkh_xz57VFZ6d6vQ>
-    <xmx:vt59XXyLyJyvDwROVOQylDSoJOPLExlzSC3qmhlILzHOwMk-fleZuw>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BF67A8006B;
-        Sun, 15 Sep 2019 02:48:27 -0400 (EDT)
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:WeV9Xa1CWL-Zw1htx_M9TEsP2vla9nemfKqpUSf5gh_AGY3kvSTGWw>
+    <xmx:WeV9XWTbqJHMen4yDRPdCftuhy0taGJ1biwyExYY5UZCul7e92SDvg>
+    <xmx:WeV9XdAi36_Su70FgEtfsFemNW2687mlt5YbrX5MOyO68Ld4vvkW3A>
+    <xmx:XOV9Xajg2E7R8vC-JtocYvVRt_gEotyxEumMp6Gqjwzg_u79Kkl9Ng>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3E39880061;
+        Sun, 15 Sep 2019 03:16:41 -0400 (EDT)
+Date:   Sun, 15 Sep 2019 10:16:39 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, nhorman@tuxdriver.com,
-        jakub.kicinski@netronome.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/2] drop_monitor: Better sanitize notified packets
-Date:   Sun, 15 Sep 2019 09:46:36 +0300
-Message-Id: <20190915064636.6884-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190915064636.6884-1-idosch@idosch.org>
-References: <20190915064636.6884-1-idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
+        dsahern@gmail.com, jakub.kicinski@netronome.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, shuah@kernel.org, mlxsw@mellanox.com
+Subject: Re: [patch iproute2-next 2/2] devlink: extend reload command to add
+ support for network namespace change
+Message-ID: <20190915071639.GA8776@splinter>
+References: <20190914064608.26799-1-jiri@resnulli.us>
+ <20190914065757.27295-2-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190914065757.27295-2-jiri@resnulli.us>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Sat, Sep 14, 2019 at 08:57:57AM +0200, Jiri Pirko wrote:
+> diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
+> index 1804463b2321..0e1a5523fa7b 100644
+> --- a/man/man8/devlink-dev.8
+> +++ b/man/man8/devlink-dev.8
+> @@ -25,6 +25,13 @@ devlink-dev \- devlink device configuration
+>  .ti -8
+>  .B devlink dev help
+>  
+> +.ti -8
+> +.BR "devlink dev set"
+> +.IR DEV
+> +.RI "[ "
+> +.BI "netns { " PID " | " NAME " | " ID " }
+> +.RI "]"
+> +
+>  .ti -8
+>  .BR "devlink dev eswitch set"
+>  .IR DEV
+> @@ -92,6 +99,11 @@ Format is:
+>  .in +2
+>  BUS_NAME/BUS_ADDRESS
+>  
+> +.SS devlink dev set  - sets devlink device attributes
+> +
+> +.TP
+> +.BI "netns { " PID " | " NAME " | " ID " }
 
-When working in 'packet' mode, drop monitor generates a notification
-with a potentially truncated payload of the dropped packet. The payload
-is copied from the MAC header, but I forgot to check that the MAC header
-was set, so do it now.
+This looks like leftover from previous version?
 
-Fixes: ca30707dee2b ("drop_monitor: Add packet alert mode")
-Fixes: 5e58109b1ea4 ("drop_monitor: Add support for packet alert mode for hardware drops")
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- net/core/drop_monitor.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index cc60cc22e2db..536e032d95c8 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -487,6 +487,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- 	struct sk_buff *nskb;
- 	unsigned long flags;
- 
-+	if (!skb_mac_header_was_set(skb))
-+		return;
-+
- 	nskb = skb_clone(skb, GFP_ATOMIC);
- 	if (!nskb)
- 		return;
-@@ -900,6 +903,9 @@ net_dm_hw_packet_probe(struct sk_buff *skb,
- 	struct sk_buff *nskb;
- 	unsigned long flags;
- 
-+	if (!skb_mac_header_was_set(skb))
-+		return;
-+
- 	nskb = skb_clone(skb, GFP_ATOMIC);
- 	if (!nskb)
- 		return;
--- 
-2.21.0
-
+> +
+>  .SS devlink dev eswitch show - display devlink device eswitch attributes
+>  .SS devlink dev eswitch set  - sets devlink device eswitch attributes
+>  
+> -- 
+> 2.21.0
+> 
