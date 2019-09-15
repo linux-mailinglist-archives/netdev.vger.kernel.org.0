@@ -2,109 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9670FB2E8D
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 08:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C4BB2E97
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 08:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfIOGF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 02:05:29 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45045 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfIOGF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 02:05:29 -0400
-Received: by mail-pl1-f196.google.com with SMTP id k1so15092327pls.11;
-        Sat, 14 Sep 2019 23:05:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OJ6q0tq8p00CvC/WL6ngIjiVDkJbPFjkP/CpoIw0kT8=;
-        b=qs5ea2mYlu6e60ZcbpGc0IPc28QvGarsfgphl8OX5wpevQ3Vt3UsLJRYAQKaq+Hm0Z
-         BobdSvY5see2jK8+6KjwLNQueni73vm6orBb0zbqmgiZ5p/6gWF6xUG7JIdBOR+4vu6N
-         adzt3UVkcmD5TqzOsHWmpZ9S7nFbCx0eUAQQxkqe/5PhpublRWAu3WbPr/Un/ra2EWUb
-         WD8/1KdaM9fr4LhREg+RU7FKxgbWidNO5HJSpCXfuO4EJ330V9ZDxbDGbhchmVhwBhr7
-         fRwykRp9AZBendjdSYJ7sQIazpD65jBNjJj5uw05ed99w15K1qv/yjop5Xgjtya/rXIE
-         Nteg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OJ6q0tq8p00CvC/WL6ngIjiVDkJbPFjkP/CpoIw0kT8=;
-        b=I95EzKGCnDgG7odEYTIbkW6duEyI6ySzKJ2Eym27DhIOffc0Lq+81Ol8WmPAjaL2x5
-         Rsa3JbMeFU/7pL9mGeueODEXhWUb6I7g73YTR5s/C6TkBz6xZ+5qi70xUcf6/QmNqkeC
-         W5OM2szF+SIfjyTTVnvtRxnIjg8X/sAZTRUdmhhe/ovbbzT8uqye0yPYP/6pQunZ00Mp
-         jRohTc0ml/l/joy7xFq2rhoy7LvJ3LU7VYLNpaTgFvVB2QLjL/lfsC2KCSe5HBNzb06A
-         /LYgYShvxS/D75jsD2tCJtzQRRN9yys0bKi2QCfdpZGQlJOvX4490zfTbGNcz5nAzOpO
-         Z6NQ==
-X-Gm-Message-State: APjAAAX5ulSkr8YenIC2p1WMW8VKC61S/s9op0OxtRZu7Y8BrHA0sRLZ
-        dmYdKhL/HJ14z0XXu4TcdsM=
-X-Google-Smtp-Source: APXvYqyGwUo79ROqsKFNRwJySkK2wLiNei2cfNNevV8YbrMfbdfqZXPruglZWuyvLd5wrs60JbEWhg==
-X-Received: by 2002:a17:902:7c88:: with SMTP id y8mr57612161pll.306.1568527528225;
-        Sat, 14 Sep 2019 23:05:28 -0700 (PDT)
-Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id j4sm547133pfn.29.2019.09.14.23.05.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Sep 2019 23:05:26 -0700 (PDT)
-Date:   Sat, 14 Sep 2019 23:05:24 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1726309AbfIOGPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 02:15:54 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2560 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726167AbfIOGPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 02:15:54 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8F6AE6i000891;
+        Sat, 14 Sep 2019 23:15:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=a9BHm7LQ7D86DcssRjdBO23bqjxkbSCbFSzbzZJKYqU=;
+ b=FQQhywHXIQ6G1STEDTU/8YNtOXXCFj7raeRAGKudeiFNWa4f0gw3GZRVcRwxOmGHoJM8
+ FHKheCu5rEw1REG6owenTXYQDfwv4+hVI/ZvmXX1WvtPz650QZuOREsSdS4rXfA30AGu
+ 7l0EAqrjqfcn67fCiBypqSdlBbL9W6qpjb0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2v0v8atrx9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 14 Sep 2019 23:15:33 -0700
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 14 Sep 2019 23:15:32 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sat, 14 Sep 2019 23:15:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BcGoTj8lD9sYLwFkHKnnNNaNTwVgABtgWubrLB8spdiEKMklwrIw+lI1Z/kGFZFNJoxxLJ+JzNMJpzqlJM2PZqsuaya2pr1mTqUFokNPZX9JF9y2pVyhNLa16wqYymLXGMsHBTq3eQyhMqXRHt+BAvn+po3WDYimSI76ticDy/bZWOCpm/3iY8m88XIlHtr+gjkIDoymGwT7OTe2o6lWmrqU9k7aDpjYV8bknaIaAVipvmA0Fb+/AN6NKGShEmLY447S/VTqmhaO/5Z3/I9ATiPUfcdfPKa7cfhhB1O3lyJGLk1bX11HANdLY9lgrP0MPBEmgY5jgKyDkxWK9Zzb6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9BHm7LQ7D86DcssRjdBO23bqjxkbSCbFSzbzZJKYqU=;
+ b=I6BOZ3fzQA35beH+i+QjnkEV8jDGw/w2VteGaZV1qN17EXKgYU18Prch3h4ghvmtbUNERp3hJGCdN3xO2p++pDxZXhXZNGiQAY2f9ygSiU3nd1s85/Lwdb99A9D+oXe/LwzWznEf8SG/G0rfJeFUzOYhvJ0qkL3sZnwvag7q9/oJFv099XyNGJ6wD+BrIHg9+Tds90BNi6JAoKuhZG4jTQh3kKlGrWysdgHavRcRGyA9PVdJPoYgJwwdre4gL1jmfY1EpBQh8FaNH0TIUOh3+VL5GWmeljJCoIEYTdOhDBQ6wqkmc70r87Rn0w7I3JKttFwhIQscFapZ0gMGi7kFhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9BHm7LQ7D86DcssRjdBO23bqjxkbSCbFSzbzZJKYqU=;
+ b=TtUiShQd+vUkMilC9bHEImwJuFsq0fh6d7NIGRSBHGawmstMFsyUGbQ/lrFAgfeQcwv7gMBC3hOBZ2WUihKlSOm7QR26fe82P6rPPmioVTsB0p+P28wCGyn2O6/1b5+/kW7PCjTDurA14ffMWPEBUBDk84boOUvmp12xiFGrbPI=
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com (10.175.2.17) by
+ MWHPR15MB1806.namprd15.prod.outlook.com (10.174.255.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2263.15; Sun, 15 Sep 2019 06:15:30 +0000
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2980:5c7f:8dde:174a]) by MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2980:5c7f:8dde:174a%9]) with mapi id 15.20.2263.021; Sun, 15 Sep 2019
+ 06:15:30 +0000
+From:   Tao Ren <taoren@fb.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: mdio: switch to using gpiod_get_optional()
-Message-ID: <20190915060524.GC237523@dtor-ws>
-References: <20190913225547.GA106494@dtor-ws>
- <20190914170933.GV2680@smile.fi.intel.com>
+        "David S . Miller" <davem@davemloft.net>,
+        "Vladimir Oltean" <olteanv@gmail.com>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
+Subject: Re: [PATCH net-next v8 2/3] net: phy: add support for clause 37
+ auto-negotiation
+Thread-Topic: [PATCH net-next v8 2/3] net: phy: add support for clause 37
+ auto-negotiation
+Thread-Index: AQHVZ1Bi3JE3p3zeEkCydFApWQwsCKcrP8IAgAELiYA=
+Date:   Sun, 15 Sep 2019 06:15:30 +0000
+Message-ID: <f18aece7-f554-751a-dcfb-f897a196a732@fb.com>
+References: <20190909204906.2191290-1-taoren@fb.com>
+ <20190914141752.GC27922@lunn.ch>
+In-Reply-To: <20190914141752.GC27922@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR03CA0004.namprd03.prod.outlook.com
+ (2603:10b6:300:117::14) To MWHPR15MB1216.namprd15.prod.outlook.com
+ (2603:10b6:320:22::17)
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::7bb3]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0f36ccd1-b0a8-44a5-70c4-08d739a41beb
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1806;
+x-ms-traffictypediagnostic: MWHPR15MB1806:
+x-microsoft-antispam-prvs: <MWHPR15MB1806FABFD02E0967EA96049DB28D0@MWHPR15MB1806.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:785;
+x-forefront-prvs: 01613DFDC8
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(136003)(396003)(346002)(199004)(189003)(65956001)(65806001)(64756008)(66476007)(66446008)(66556008)(4744005)(66946007)(5660300002)(71190400001)(256004)(6436002)(6486002)(2616005)(71200400001)(52116002)(305945005)(7416002)(478600001)(58126008)(14454004)(102836004)(186003)(7736002)(386003)(229853002)(6506007)(76176011)(46003)(316002)(53546011)(54906003)(446003)(4326008)(31696002)(6116002)(476003)(99286004)(2906002)(11346002)(31686004)(6246003)(6916009)(36756003)(8676002)(6512007)(8936002)(486006)(81166006)(81156014)(86362001)(53936002)(25786009);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1806;H:MWHPR15MB1216.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 1J7/ZGyWThGBjjjOyPbdc2RaSZUuS/ZO7FQSQe1UNm6IlLTj61l9I+Q2DEXUDljBu7YOgv5dwZ8Vh87oGdaY9U9ywnaLFHd2t1elbiVQsj4kJkg7WAfOxxQWb2/6dXHoSLzsxn4HZFgd1H6C3O+C5P18PBEG5Dp0gSBYZneO6HnQuZrFoJP4aEA6aAPGyJwHLySjsbPFUt5933Eb6/SGZfCdC5V6NapH1L6HjkV0+nOvKH3WQkcN1lZiL2Q/iDldUnkXeQSwkIcs1nA1B0Rxhf3eFckR/Sgkwb4RObNWU3wBVXhjpI7GEBeCoLLJ2QYBThB+X9TxZ9dNtt09Z7Ur2s9K2+K+enG/dOtV5duQ9YwMQ4M+NTNv3GmFad93h+12VPZGktCaFF/KEA51bb/U4QsijGSTO1acpL5wdPsv2PY=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <19698D688129664786101BD59921B40C@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190914170933.GV2680@smile.fi.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f36ccd1-b0a8-44a5-70c4-08d739a41beb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2019 06:15:30.5257
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: A/YjFhRQRV0+Y2EFAq/XtjHiJ+NBVHA8rLeG7g1zfDuU2ZR1mAK5Py3BcGpvfMbC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1806
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-15_03:2019-09-11,2019-09-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ adultscore=0 mlxlogscore=832 priorityscore=1501 malwarescore=0 bulkscore=0
+ spamscore=0 clxscore=1011 suspectscore=0 phishscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909150067
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 14, 2019 at 08:09:33PM +0300, Andy Shevchenko wrote:
-> On Fri, Sep 13, 2019 at 03:55:47PM -0700, Dmitry Torokhov wrote:
-> > The MDIO device reset line is optional and now that gpiod_get_optional()
-> > returns proper value when GPIO support is compiled out, there is no
-> > reason to use fwnode_get_named_gpiod() that I plan to hide away.
-> > 
-> > Let's switch to using more standard gpiod_get_optional() and
-> > gpiod_set_consumer_name() to keep the nice "PHY reset" label.
-> > 
-> > Also there is no reason to only try to fetch the reset GPIO when we have
-> > OF node, gpiolib can fetch GPIO data from firmwares as well.
-> > 
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Thanks Andy.
-
-> 
-> But see comment below.
-> 
-
-> > +	mdiodev->reset_gpio = gpiod_get_optional(&mdiodev->dev,
-> > +						 "reset", GPIOD_OUT_LOW);
-> > +	error = PTR_ERR_OR_ZERO(mdiodev->reset_gpio);
-> > +	if (error)
-> > +		return error;
-> > +
-> 
-> > +	if (mdiodev->reset_gpio)
-> 
-> This is redundant check.
-
-I see that gpiod_* API handle NULL desc and usually return immediately,
-but frankly I am not that comfortable with it. I'm OK with functions
-that free/destroy objects that recognize NULL resources, but it is
-unusual for other types of APIs.
-
-Thanks.
-
--- 
-Dmitry
+T24gOS8xNC8xOSA3OjE3IEFNLCBBbmRyZXcgTHVubiB3cm90ZToNCj4gT24gTW9uLCBTZXAgMDks
+IDIwMTkgYXQgMDE6NDk6MDZQTSAtMDcwMCwgVGFvIFJlbiB3cm90ZToNCj4+IEZyb206IEhlaW5l
+ciBLYWxsd2VpdCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+DQo+Pg0KPj4gVGhpcyBwYXRjaCBhZGRz
+IHN1cHBvcnQgZm9yIGNsYXVzZSAzNyAxMDAwQmFzZS1YIGF1dG8tbmVnb3RpYXRpb24uDQo+Pg0K
+Pj4gU2lnbmVkLW9mZi1ieTogSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4N
+Cj4+IFNpZ25lZC1vZmYtYnk6IFRhbyBSZW4gPHRhb3JlbkBmYi5jb20+DQo+PiBUZXN0ZWQtYnk6
+IFJlbsOpIHZhbiBEb3JzdCA8b3BlbnNvdXJjZUB2ZG9yc3QuY29tPg0KPiANCj4gUmV2aWV3ZWQt
+Ynk6IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4NCj4gDQo+ICAgICBBbmRyZXcNCg0KVGhh
+bmtzIGEgbG90LCBBbmRyZXcuDQoNCg0KQ2hlZXJzLA0KDQpUYW8NCg==
