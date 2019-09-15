@@ -2,102 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AA0B3084
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 16:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72CDBB30A1
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 17:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731687AbfIOO3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 10:29:54 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:48700 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726278AbfIOO3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 10:29:53 -0400
+        id S1730809AbfIOPIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 11:08:51 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:39797 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726246AbfIOPIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 11:08:51 -0400
+Received: by mail-ot1-f66.google.com with SMTP id n7so33472682otk.6;
+        Sun, 15 Sep 2019 08:08:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1568557792; x=1600093792;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=Wzzi6esTUmqId8YNbXwEtWtASUgtx/C/B2/zDPECedk=;
-  b=uU6Iga+lreOO86M85MYq2izTh7zfIgvS+95sN2snPxvp7vnPd1JuzHD3
-   4nb/W6VpRDqVvJUdzC5QBRh20vAERd0Ps+WfXWX5oxP9UaX0huQNnKvxN
-   SsMS1XE18sglLe8d85OYvdnwIczq9gG8xv5dT/vBH1KIr5enMHi6x/Y+E
-   4=;
-X-IronPort-AV: E=Sophos;i="5.64,509,1559520000"; 
-   d="scan'208";a="832163756"
-Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2b-81e76b79.us-west-2.amazon.com) ([10.47.22.34])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 15 Sep 2019 14:29:51 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-81e76b79.us-west-2.amazon.com (Postfix) with ESMTPS id BF9E9A1CB1;
-        Sun, 15 Sep 2019 14:29:50 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.96) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 15 Sep 2019 14:29:49 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 15 Sep 2019 14:29:49 +0000
-Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.90) by
- mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Sun, 15 Sep 2019 14:29:46 +0000
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V1 net] net: ena: don't wake up tx queue when down
-Date:   Sun, 15 Sep 2019 17:29:44 +0300
-Message-ID: <20190915142944.7572-1-sameehj@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=C6EkUSBGxn1R7oOH+qnMGCqOv8DTwH83uwm3gCMUPek=;
+        b=QYQT3Yfoiek3WOafMrUzEHG9mCwIXDfsSsvNHrmuA7pRI5NxstrJtjyARcui1TKN3U
+         3CkBFFXJt3QEgsZK8jpUC7jpwSusZCNYjbVw4gV/Av3mJuB6k7o+n2b1mETBOu2ahkF5
+         hOnDDMwyp5fTabqleQ56+lpvr8JyWwnCTraAb7sRbtkbw6M36qfZTQde3/QbzQbMXDov
+         kIRUS0qsuFzLJ+9TNdC8AakgoMLMijAmNmXLkwnQzaB+PVC+8eZYD79gdr2MQ1f0VqQv
+         sgHUo4fcO63fFkubiOPeYe844nmU+fs3ZNVJlaXNmrqT11hOhccymXyeQhrCLYb8WQxG
+         JEEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=C6EkUSBGxn1R7oOH+qnMGCqOv8DTwH83uwm3gCMUPek=;
+        b=QESUxS+DCfk4c4eZ0GSZQUD/u6L0UIwYnuB7wPxffOetfcj6vKWCv54HoBfAlB5UKr
+         THvem/DP4A6QSlF2XC/Clb6G7Y9T72V4Hug2OMquheVIbcWFOWATulYLbgXuBkyqLpj9
+         LKkVPIhRBM0ZFsDWkecuY5JSXNciK33oAcXnAjaoPEiITPnzdnM3zuNZENU4WmIzH+ah
+         LUcRipvRK212R+HyvXu0MTFOqKzPm9jAhlbYNgdPn/bmRtGLPAerKUADOb7Z/B8+us+6
+         R+1hfNMM6TBQIEYdP4dnJZpmqGiL+QxsblHCXVlGIT0ahQ66X4/yzLxPvuHM8pkuBxIH
+         5bzQ==
+X-Gm-Message-State: APjAAAUCQ6jrVcl/QzvAegddocVBKPGcA1E8EbuZD2jpNM454Ia6C+ik
+        52xdJdf6z820EQolM6xmnpKHvg+PsDY=
+X-Google-Smtp-Source: APXvYqxNK/G4wvb1N6PsJVqrzZkYqUcIz0TOc2yzecmrjXP879iKpc385XO5a5BBPTYV/DRkMMbWgg==
+X-Received: by 2002:a9d:5e07:: with SMTP id d7mr5434316oti.88.1568560130295;
+        Sun, 15 Sep 2019 08:08:50 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id y137sm3073723oie.53.2019.09.15.08.08.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 15 Sep 2019 08:08:49 -0700 (PDT)
+Subject: Re: [PATCH v4 1/2] ethtool: implement Energy Detect Powerdown support
+ via phy-tunable
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        hkallweit1@gmail.com, andrew@lunn.ch, mkubecek@suse.cz
+References: <20190912162812.402-1-alexandru.ardelean@analog.com>
+ <20190912162812.402-2-alexandru.ardelean@analog.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <3d8855e9-4ca5-d17e-0a66-6c2e0f20fedb@gmail.com>
+Date:   Sun, 15 Sep 2019 08:08:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20190912162812.402-2-alexandru.ardelean@analog.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
 
-There is a race condition that can occur when calling ena_down().
-The ena_clean_tx_irq() - which is a part of the napi handler -
-function might wake up the tx queue when the queue is supposed
-to be down (during recovery or changing the size of the queues
-for example) This causes the ena_start_xmit() function to trigger
-and possibly try to access the destroyed queues.
 
-The race is illustrated below:
+On 9/12/2019 9:28 AM, Alexandru Ardelean wrote:
+> The `phy_tunable_id` has been named `ETHTOOL_PHY_EDPD` since it looks like
+> this feature is common across other PHYs (like EEE), and defining
+> `ETHTOOL_PHY_ENERGY_DETECT_POWER_DOWN` seems too long.
+> 
+> The way EDPD works, is that the RX block is put to a lower power mode,
+> except for link-pulse detection circuits. The TX block is also put to low
+> power mode, but the PHY wakes-up periodically to send link pulses, to avoid
+> lock-ups in case the other side is also in EDPD mode.
+> 
+> Currently, there are 2 PHY drivers that look like they could use this new
+> PHY tunable feature: the `adin` && `micrel` PHYs.
+> 
+> The ADIN's datasheet mentions that TX pulses are at intervals of 1 second
+> default each, and they can be disabled. For the Micrel KSZ9031 PHY, the
+> datasheet does not mention whether they can be disabled, but mentions that
+> they can modified.
+> 
+> The way this change is structured, is similar to the PHY tunable downshift
+> control:
+> * a `ETHTOOL_PHY_EDPD_DFLT_TX_MSECS` value is exposed to cover a default
+>   TX interval; some PHYs could specify a certain value that makes sense
+> * `ETHTOOL_PHY_EDPD_NO_TX` would disable TX when EDPD is enabled
+> * `ETHTOOL_PHY_EDPD_DISABLE` will disable EDPD
+> 
+> As noted by the `ETHTOOL_PHY_EDPD_DFLT_TX_MSECS` the interval unit is 1
+> millisecond, which should cover a reasonable range of intervals:
+>  - from 1 millisecond, which does not sound like much of a power-saver
+>  - to ~65 seconds which is quite a lot to wait for a link to come up when
+>    plugging a cable
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Flow A:                                       Flow B(napi handler)
-ena_down()
-   netif_carrier_off()
-   netif_tx_disable()
-                                                      ena_clean_tx_irq()
-                                                         netif_tx_wake_queue()
-   ena_napi_disable_all()
-   ena_destroy_all_io_queues()
-
-After these flows the tx queue is active and ena_start_xmit() accesses
-the destroyed queue which leads to a kernel panic.
-
-fixes: 1738cd3ed342 (net: ena: Add a driver for Amazon Elastic Network Adapters (ENA))
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 664e3ed97..d118ed4c5 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -823,7 +823,8 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
- 		above_thresh =
- 			ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
- 						     ENA_TX_WAKEUP_THRESH);
--		if (netif_tx_queue_stopped(txq) && above_thresh) {
-+		if (netif_tx_queue_stopped(txq) && above_thresh &&
-+		    test_bit(ENA_FLAG_DEV_UP, &tx_ring->adapter->flags)) {
- 			netif_tx_wake_queue(txq);
- 			u64_stats_update_begin(&tx_ring->syncp);
- 			tx_ring->tx_stats.queue_wakeup++;
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
