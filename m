@@ -2,100 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27A0BB30A7
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 17:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 845D1B30B0
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 17:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730809AbfIOPPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 11:15:17 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:33243 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726268AbfIOPPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 11:15:17 -0400
-Received: by mail-oi1-f196.google.com with SMTP id e18so2112837oii.0
-        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 08:15:15 -0700 (PDT)
+        id S1731856AbfIOP1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 11:27:54 -0400
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:64319 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731547AbfIOP1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 11:27:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Qu+PNHiXDwy/d4EcGEIIWHtlh5arXnrneX+sTnLEBjQ=;
-        b=D3ZVp0W6JDDYg227RScHddmNKaHqHTJY3x9mdU1Qqg/AqFnduQ7NoIksvYFp4hv/5J
-         PJF5yqlNHRkI1qX32HISo6qe5sp324ZYE7xs95Xh+r2XQW2uw3SG+oM4LSUxre76IOCV
-         OPH/yQn8gnv+P5G6c3RBO7VMN/WhmB7bg/EcDY6iAyZ0iQ/rDuvymuRSJq4ADbnQNC8S
-         HLasOUYi57Ziq/EA2sQf4tKU8gumX6mW3A4VeNSZEWzx0zig4lG5AAVI4eM59jv4pBHg
-         kuZaLOt72VMTEZL93IzF+SAHMSg9PnfkFUk28Klhc32CiHL2LRvlbSLQDhiasCEpo40M
-         nGhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Qu+PNHiXDwy/d4EcGEIIWHtlh5arXnrneX+sTnLEBjQ=;
-        b=nXazaXsA/DRqKqivOaYsw3g8bPcVkS3jOMoFRTtf53KqL4nJ73dIj1q/ghoeOmiknq
-         gUyFi+g62VT8bZWLJLTuf4BGNldU3N9abtaQNJugso0e+KITtTyBc0bzwSGj5MlnJYQ4
-         tyJe72wixCRgUrjGyk0FcvZDi5SPJ2+xWyl6i7UkrlukPq7IsYpy5HH3ZGhApvftqcnp
-         mAhGArYHGJNCoa6/w/li+oOAHtYsogT0YBPClaCJ50GxJuaJeu0fRFkJOEsr/JG1Rnuc
-         OFOJsUfdDmpkPFcXQFqoUpUe4Wi+G47+jQvOZyBSY+XfTHAbG5za5aWHoh/+tiaNVmqR
-         njYQ==
-X-Gm-Message-State: APjAAAWSQV8JF3JrWn+4YRQLXWWJXNV+ol94bVi7w/8ZHX1Tgn7Lxbaq
-        jFrDf45l7ubF69rw5BdfXXBbFVae4Bo=
-X-Google-Smtp-Source: APXvYqwfmJ27xMlWPOQRVV4q15VChL2Jri6wTKHlz8MI0r5y5XLk5p9QabJYsm6eouBMlKNHtf/3CQ==
-X-Received: by 2002:a54:4e8c:: with SMTP id c12mr10949919oiy.162.1568560514568;
-        Sun, 15 Sep 2019 08:15:14 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id r187sm2969339oie.17.2019.09.15.08.15.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Sep 2019 08:15:13 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 4/6] net: dsa: sja1105: Advertise the 8 TX
- queues
-To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
-        andrew@lunn.ch, davem@davemloft.net, vinicius.gomes@intel.com,
-        vedang.patel@intel.com, richardcochran@gmail.com
-Cc:     weifeng.voon@intel.com, jiri@mellanox.com, m-karicheri2@ti.com,
-        jose.abreu@synopsys.com, ilias.apalodimas@linaro.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        kurt.kanzenbach@linutronix.de, joergen.andreasen@microchip.com,
-        netdev@vger.kernel.org
-References: <20190915020003.27926-1-olteanv@gmail.com>
- <20190915020003.27926-5-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <05136e2f-b56d-03a1-e1de-e27bc4472048@gmail.com>
-Date:   Sun, 15 Sep 2019 08:15:12 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1568561273; x=1600097273;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=TFgYf5eeUltLTT//HydivqRNXlV9tmdNrO+wCXCqwCY=;
+  b=I1cpUdj89lXgQ/so/b67n253aqrI1JVmxKw1TAR89+YJVJHLlZI7Zum6
+   mrjv08ozdnYLr4ohbC6FFM3KouLOWf8eO+bpv90LViWrPbHAzaoXjsY8O
+   o4rrV2RrXSkkk2X/MnN6lsVHglPMhnK/g+mY/T0U5mmyMmHx2I7AUI1MP
+   k=;
+X-IronPort-AV: E=Sophos;i="5.64,509,1559520000"; 
+   d="scan'208";a="702489166"
+Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1e-62350142.us-east-1.amazon.com) ([10.47.22.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 15 Sep 2019 15:27:38 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-62350142.us-east-1.amazon.com (Postfix) with ESMTPS id 4AC20A0730;
+        Sun, 15 Sep 2019 15:27:30 +0000 (UTC)
+Received: from EX13d09UWC002.ant.amazon.com (10.43.162.102) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 15 Sep 2019 15:27:30 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13d09UWC002.ant.amazon.com (10.43.162.102) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 15 Sep 2019 15:27:30 +0000
+Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.90) by
+ mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Sun, 15 Sep 2019 15:27:26 +0000
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>
+Subject: [PATCH V1 net-next 0/5] Introduce ethtool's set_channels
+Date:   Sun, 15 Sep 2019 18:27:17 +0300
+Message-ID: <20190915152722.8240-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20190915020003.27926-5-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Sameeh Jubran <sameehj@amazon.com>
 
+This patch series introduces the support of "ethtool --set-channels/-L"
+command to the ena driver.
 
-On 9/14/2019 7:00 PM, Vladimir Oltean wrote:
-> This is a preparation patch for the tc-taprio offload (and potentially
-> for other future offloads such as tc-mqprio).
-> 
-> Instead of looking directly at skb->priority during xmit, let's get the
-> netdev queue and the queue-to-traffic-class mapping, and put the
-> resulting traffic class into the dsa_8021q PCP field. The switch is
-> configured with a 1-to-1 PCP-to-ingress-queue-to-egress-queue mapping
-> (see vlan_pmap in sja1105_main.c), so the effect is that we can inject
-> into a front-panel's egress traffic class through VLAN tagging from
-> Linux, completely transparently.
-> 
-> Unfortunately the switch doesn't look at the VLAN PCP in the case of
-> management traffic to/from the CPU (link-local frames at
-> 01-80-C2-xx-xx-xx or 01-1B-19-xx-xx-xx) so we can't alter the
-> transmission queue of this type of traffic on a frame-by-frame basis. It
-> is only selected through the "hostprio" setting which ATM is harcoded in
-> the driver to 7.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+This series is also a preparation for the upcoming xdp support in the ena
+driver.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This patch series has been rebased over the series:
+"net: ena: implement adaptive interrupt moderation using dim"
+
+Sameeh Jubran (5):
+  net: ena: change num_queues to num_io_queues for clarity and
+    consistency
+  net: ena: multiple queue creation related cleanups
+  make ethtool -l show correct max number of queues
+  net: ena:remove redundant print of number of queues and placement
+    policy
+  net: ena: ethtool: support set_channels callback
+
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  37 +++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 173 ++++++++++--------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  14 +-
+ 3 files changed, 128 insertions(+), 96 deletions(-)
+
 -- 
-Florian
+2.17.1
+
