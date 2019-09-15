@@ -2,57 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7FDB315E
-	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 20:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0699DB3166
+	for <lists+netdev@lfdr.de>; Sun, 15 Sep 2019 20:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbfIOSdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Sep 2019 14:33:12 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:39930 "EHLO
+        id S1726590AbfIOShH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Sep 2019 14:37:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39946 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726136AbfIOSdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 14:33:12 -0400
+        with ESMTP id S1726246AbfIOShH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Sep 2019 14:37:07 -0400
 Received: from localhost (93-63-141-166.ip28.fastwebnet.it [93.63.141.166])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9E2C8153E75E7;
-        Sun, 15 Sep 2019 11:33:04 -0700 (PDT)
-Date:   Sun, 15 Sep 2019 19:32:41 +0100 (WEST)
-Message-Id: <20190915.193241.878202512573492759.davem@davemloft.net>
-To:     akiyano@amazon.com
-Cc:     netdev@vger.kernel.org, dwmw@amazon.com, zorik@amazon.com,
-        matua@amazon.com, saeedb@amazon.com, msw@amazon.com,
-        aliguori@amazon.com, nafea@amazon.com, gtzalik@amazon.com,
-        netanel@amazon.com, alisaidi@amazon.com, benh@amazon.com,
-        sameehj@amazon.com, ndagan@amazon.com
-Subject: Re: [PATCH V1 net-next 01/11] net: ena: add intr_moder_rx_interval
- to struct ena_com_dev and use it
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EC76A153E7601;
+        Sun, 15 Sep 2019 11:37:05 -0700 (PDT)
+Date:   Sun, 15 Sep 2019 19:37:04 +0100 (WEST)
+Message-Id: <20190915.193704.1404390645611004194.davem@davemloft.net>
+To:     pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, dcaratti@redhat.com, shuali@redhat.com
+Subject: Re: [PATCH net] net/sched: fix race between deactivation and
+ dequeue for NOLOCK qdisc
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1568326128-4057-2-git-send-email-akiyano@amazon.com>
-References: <1568326128-4057-1-git-send-email-akiyano@amazon.com>
-        <1568326128-4057-2-git-send-email-akiyano@amazon.com>
+In-Reply-To: <80e0c9577218090cada29e4adc9ec116f591cb6f.1568113414.git.pabeni@redhat.com>
+References: <80e0c9577218090cada29e4adc9ec116f591cb6f.1568113414.git.pabeni@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 15 Sep 2019 11:33:07 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 15 Sep 2019 11:37:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: <akiyano@amazon.com>
-Date: Fri, 13 Sep 2019 01:08:38 +0300
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Thu, 12 Sep 2019 12:02:42 +0200
 
-> @@ -1307,8 +1304,8 @@ static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
->  	ena_dev->intr_delay_resolution = intr_delay_resolution;
->  
->  	/* update Rx */
-> -	for (i = 0; i < ENA_INTR_MAX_NUM_OF_LEVELS; i++)
-> -		intr_moder_tbl[i].intr_moder_interval /= intr_delay_resolution;
-> +	ena_dev->intr_moder_rx_interval /= intr_delay_resolution;
-> +
->  
->  	/* update Tx */
+> The test implemented by some_qdisc_is_busy() is somewhat loosy for
+> NOLOCK qdisc, as we may hit the following scenario:
+> 
+> CPU1						CPU2
+> // in net_tx_action()
+> clear_bit(__QDISC_STATE_SCHED...);
+> 						// in some_qdisc_is_busy()
+> 						val = (qdisc_is_running(q) ||
+> 						       test_bit(__QDISC_STATE_SCHED,
+> 								&q->state));
+> 						// here val is 0 but...
+> qdisc_run(q)
+> // ... CPU1 is going to run the qdisc next
+> 
+> As a conseguence qdisc_run() in net_tx_action() can race with qdisc_reset()
+> in dev_qdisc_reset(). Such race is not possible for !NOLOCK qdisc as
+> both the above bit operations are under the root qdisc lock().
+> 
+> After commit 021a17ed796b ("pfifo_fast: drop unneeded additional lock on dequeue") 
+> the race can cause use after free and/or null ptr dereference, but the root 
+> cause is likely older.
+> 
+> This patch addresses the issue explicitly checking for deactivation under
+> the seqlock for NOLOCK qdisc, so that the qdisc_run() in the critical
+> scenario becomes a no-op.
+> 
+> Note that the enqueue() op can still execute concurrently with dev_qdisc_reset(),
+> but that is safe due to the skb_array() locking, and we can't avoid that
+> for NOLOCK qdiscs.
+> 
+> Fixes: 021a17ed796b ("pfifo_fast: drop unneeded additional lock on dequeue")
+> Reported-by: Li Shuang <shuali@redhat.com>
+> Reported-and-tested-by: Davide Caratti <dcaratti@redhat.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Now there are two empty lines here, please remove one of them.
+Applied and queued up for -stable, thanks.
