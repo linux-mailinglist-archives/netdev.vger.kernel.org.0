@@ -2,48 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB0EB37D8
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130AEB37DD
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfIPKOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 06:14:21 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53116 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726173AbfIPKOV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 06:14:21 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E869EB650;
-        Mon, 16 Sep 2019 10:14:19 +0000 (UTC)
-From:   Andreas Schwab <schwab@suse.de>
-To:     <Claudiu.Beznea@microchip.com>
-Cc:     <Nicolas.Ferre@microchip.com>, <netdev@vger.kernel.org>
-Subject: Re: macb: inconsistent Rx descriptor chain after OOM
-References: <mvm4l1chemx.fsf@suse.de>
-        <51458d2e-69a5-2a30-2167-7f47a43d9a2f@microchip.com>
-X-Yow:  HERE!!  Put THIS on!!  I'm in CHARGE!!
-Date:   Mon, 16 Sep 2019 12:14:11 +0200
-In-Reply-To: <51458d2e-69a5-2a30-2167-7f47a43d9a2f@microchip.com> (Claudiu
-        Beznea's message of "Mon, 16 Sep 2019 10:00:27 +0000")
-Message-ID: <mvmmuf4fszw.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728659AbfIPKPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 06:15:39 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:1982 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727945AbfIPKPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 06:15:39 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 42D14419DC;
+        Mon, 16 Sep 2019 18:15:35 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net/sched: cls_api: Fix nooffloaddevcnt counter in indr block call success
+Date:   Mon, 16 Sep 2019 18:15:34 +0800
+Message-Id: <1568628934-32085-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVJQ0pCQkJDSU1PSEpJTFlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6ORw6Ejo4Gjg0TCsRCBZRFRZJ
+        Cg0KFEhVSlVKTk1DTUlDQkhOSENJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUhCSE83Bg++
+X-HM-Tid: 0a6d39920a772086kuqy42d14419dc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sep 16 2019, <Claudiu.Beznea@microchip.com> wrote:
+From: wenxu <wenxu@ucloud.cn>
 
-> I will have a look on it. It would be good if you could give me some
-> details about the steps to reproduce it.
+When a block bind with a dev which support indr block call(vxlan/gretap
+device). It can bind success but with nooffloaddevcnt++. It will fail
+when replace the hw filter in tc_setup_cb_call with skip_sw mode for
+checkout the nooffloaddevcnt and skip_sw.
 
-You need to trigger OOM.
+if (block->nooffloaddevcnt && err_stop)
+	return -EOPNOTSUPP;
 
-Andreas.
+So with this patch, if the indr block call success, it will not modify
+the nooffloaddevcnt counter.
 
+Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ net/sched/cls_api.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index efd3cfb..8a1e3a5 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -766,10 +766,10 @@ void tc_indr_block_cb_unregister(struct net_device *dev,
+ }
+ EXPORT_SYMBOL_GPL(tc_indr_block_cb_unregister);
+ 
+-static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+-			       struct tcf_block_ext_info *ei,
+-			       enum flow_block_command command,
+-			       struct netlink_ext_ack *extack)
++static int tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
++			      struct tcf_block_ext_info *ei,
++			      enum flow_block_command command,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct tc_indr_block_cb *indr_block_cb;
+ 	struct tc_indr_block_dev *indr_dev;
+@@ -785,7 +785,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+ 
+ 	indr_dev = tc_indr_block_dev_lookup(dev);
+ 	if (!indr_dev)
+-		return;
++		return -ENOENT;
+ 
+ 	indr_dev->block = command == FLOW_BLOCK_BIND ? block : NULL;
+ 
+@@ -793,7 +793,10 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
+ 		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
+ 				  &bo);
+ 
+-	tcf_block_setup(block, &bo);
++	if (list_empty(&bo.cb_list))
++		return -EOPNOTSUPP;
++
++	return tcf_block_setup(block, &bo);
+ }
+ 
+ static bool tcf_block_offload_in_use(struct tcf_block *block)
+@@ -849,14 +852,14 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+ 	if (err)
+ 		return err;
+ 
+-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+ 	return 0;
+ 
+ no_offload_dev_inc:
+ 	if (tcf_block_offload_in_use(block))
+ 		return -EOPNOTSUPP;
+-	block->nooffloaddevcnt++;
+-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
++	err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
++	if (err)
++		block->nooffloaddevcnt++;
+ 	return 0;
+ }
+ 
+@@ -866,8 +869,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+ 	struct net_device *dev = q->dev_queue->dev;
+ 	int err;
+ 
+-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+-
+ 	if (!dev->netdev_ops->ndo_setup_tc)
+ 		goto no_offload_dev_dec;
+ 	err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+@@ -876,7 +877,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+ 	return;
+ 
+ no_offload_dev_dec:
+-	WARN_ON(block->nooffloaddevcnt-- == 0);
++	err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
++	if (err)
++		WARN_ON(block->nooffloaddevcnt-- == 0);
+ }
+ 
+ static int
 -- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+1.8.3.1
+
