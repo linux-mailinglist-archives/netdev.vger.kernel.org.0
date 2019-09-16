@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D39ACB4133
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 21:38:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCECB413F
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 21:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728127AbfIPTgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 15:36:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50512 "EHLO
+        id S2388137AbfIPTks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 15:40:48 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50546 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfIPTgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 15:36:39 -0400
+        with ESMTP id S1728209AbfIPTks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 15:40:48 -0400
 Received: from localhost (80-167-222-154-cable.dk.customer.tdc.net [80.167.222.154])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E9793153E6F43;
-        Mon, 16 Sep 2019 12:36:33 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 21:36:27 +0200 (CEST)
-Message-Id: <20190916.213627.1150593408219168339.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        vinicius.gomes@intel.com, vedang.patel@intel.com,
-        richardcochran@gmail.com, weifeng.voon@intel.com,
-        jiri@mellanox.com, m-karicheri2@ti.com, jose.abreu@synopsys.com,
-        ilias.apalodimas@linaro.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, kurt.kanzenbach@linutronix.de,
-        joergen.andreasen@microchip.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 0/6] tc-taprio offload for SJA1105 DSA
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 13734153F343F;
+        Mon, 16 Sep 2019 12:40:45 -0700 (PDT)
+Date:   Mon, 16 Sep 2019 21:40:44 +0200 (CEST)
+Message-Id: <20190916.214044.322531867002002116.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, nhorman@tuxdriver.com,
+        jakub.kicinski@netronome.com, mlxsw@mellanox.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/2] drop_monitor: Better sanitize notified
+ packets
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190915020003.27926-1-olteanv@gmail.com>
-References: <20190915020003.27926-1-olteanv@gmail.com>
+In-Reply-To: <20190915064636.6884-1-idosch@idosch.org>
+References: <20190915064636.6884-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Sep 2019 12:36:38 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Sep 2019 12:40:47 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Sun, 15 Sep 2019 04:59:57 +0300
+From: Ido Schimmel <idosch@idosch.org>
+Date: Sun, 15 Sep 2019 09:46:34 +0300
 
-> This is the third attempt to submit the tc-taprio offload model for
-> inclusion in the networking tree. The sja1105 switch driver will provide
-> the first implementation of the offload. Only the bare minimum is added:
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> - The offload model and a DSA pass-through
-> - The hardware implementation
-> - The interaction with the netdev queues in the tagger code
-> - Documentation
+> When working in 'packet' mode, drop monitor generates a notification
+> with a potentially truncated payload of the dropped packet. The payload
+> is copied from the MAC header, but I forgot to check that the MAC header
+> was set, so do it now.
 > 
-> What has been removed from previous attempts is support for
-> PTP-as-clocksource in sja1105, as well as configuring the traffic class
-> for management traffic.  These will be added as soon as the offload
-> model is settled.
+> Patch #1 sets the offsets to the various protocol layers in netdevsim,
+> so that it will continue to work after the MAC header check is added to
+> drop monitor in patch #2.
 
-Series applied, thanks.
+Series applied.
