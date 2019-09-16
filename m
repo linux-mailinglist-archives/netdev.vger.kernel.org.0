@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F33B3958
+	by mail.lfdr.de (Postfix) with ESMTP id A2DACB3959
 	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 13:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbfIPLcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 07:32:10 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:9889 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731431AbfIPLcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 07:32:10 -0400
+        id S1731514AbfIPLcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 07:32:12 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:58084 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731431AbfIPLcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 07:32:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1568633528; x=1600169528;
+  t=1568633530; x=1600169530;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=3NUsmoknub72PrhO1cTpYeGAtXXUE+3HnufiEej7DvA=;
-  b=WgB0EsgvQx7LRipaOuCoagQ3Ld/V8EojFMOT2Kpwb8h9KCvSneOkRmy4
-   PAUba8qCxEpoTP4uAJT9vOLOD0CwDBAwZMKjCQ9KUOO65r+Y9J/QlOn1X
-   hAxP29gyKMmoRJOFKzqamK9Tvz9wkSYVIYOdVNLaLs8z18gSRv8foNbyZ
-   U=;
+  bh=IFxRopRyj+2Bnhl5+sHfrifwjD9OF0GqSU6BY1iNqlw=;
+  b=EYfc5Zc++m5+HRBFV2E+RD0/+8WDgWfass1HhXJFPmgb0tDhWBiR6Mid
+   kZ/IUJdvLQiYHnCnf9rjHII5/9tZ68uiU5xPUyGQO9HFpsT2tnMwVV8fD
+   hwQWWuttN/J3MUnof8me8yJq826O/W7V3/X4Z4LQJ8AEk0/x5lSQWlaDS
+   Y=;
 X-IronPort-AV: E=Sophos;i="5.64,512,1559520000"; 
-   d="scan'208";a="785141919"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 16 Sep 2019 11:32:06 +0000
+   d="scan'208";a="415450156"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 16 Sep 2019 11:32:08 +0000
 Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 51ACCA2163;
-        Mon, 16 Sep 2019 11:32:06 +0000 (UTC)
-Received: from EX13D08UEE004.ant.amazon.com (10.43.62.182) by
+        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 8C17FA2365;
+        Mon, 16 Sep 2019 11:32:08 +0000 (UTC)
+Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
  EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 16 Sep 2019 11:31:51 +0000
+ id 15.0.1367.3; Mon, 16 Sep 2019 11:31:55 +0000
 Received: from EX13MTAUEE001.ant.amazon.com (10.43.62.200) by
- EX13D08UEE004.ant.amazon.com (10.43.62.182) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 16 Sep 2019 11:31:51 +0000
+ EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 16 Sep 2019 11:31:54 +0000
 Received: from HFA15-G63729NC.hfa16.amazon.com (10.218.52.89) by
  mail-relay.amazon.com (10.43.62.226) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Mon, 16 Sep 2019 11:31:48 +0000
+ 15.0.1367.3 via Frontend Transport; Mon, 16 Sep 2019 11:31:52 +0000
 From:   <akiyano@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
@@ -44,9 +44,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net-next 03/11] net: ena: reimplement set/get_coalesce()
-Date:   Mon, 16 Sep 2019 14:31:28 +0300
-Message-ID: <1568633496-4143-4-git-send-email-akiyano@amazon.com>
+Subject: [PATCH V2 net-next 04/11] net: ena: enable the interrupt_moderation in driver_supported_features
+Date:   Mon, 16 Sep 2019 14:31:29 +0300
+Message-ID: <1568633496-4143-5-git-send-email-akiyano@amazon.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1568633496-4143-1-git-send-email-akiyano@amazon.com>
 References: <1568633496-4143-1-git-send-email-akiyano@amazon.com>
@@ -59,155 +59,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-1. Remove old adaptive interrupt moderation code from set/get_coalesce()
-2. Add ena_update_rx_rings_intr_moderation() function for updating
-   nonadaptive interrupt moderation intervals similarly to
-   ena_update_tx_rings_intr_moderation().
-3. Remove checks of multiple unsupported received interrupt coalescing
-   parameters. This makes code cleaner and cancels the need to update
-   it every time a new coalescing parameter is invented.
+Add driver_supported_features to host_host info which is a new API used to
+communicate to the device which features are supported by the driver.
+
+Add the interrupt_moderation bit to host_info->driver_supported_features
+and enable it to signal the device that this driver supports interrupt
+moderation properly.
+
+Reserved bits are for features implemented in the future
 
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 84 ++++++-------------
- 1 file changed, 26 insertions(+), 58 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_admin_defs.h | 8 ++++++++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c     | 3 +++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index b997c3ce9e2b..0f90e2296630 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -305,7 +305,6 @@ static int ena_get_coalesce(struct net_device *net_dev,
- {
- 	struct ena_adapter *adapter = netdev_priv(net_dev);
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
--	struct ena_intr_moder_entry intr_moder_entry;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+index d19f2ecf8e84..8baf847e8622 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
++++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+@@ -808,6 +808,12 @@ struct ena_admin_host_info {
+ 	u16 num_cpus;
  
- 	if (!ena_com_interrupt_moderation_supported(ena_dev)) {
- 		/* the devie doesn't support interrupt moderation */
-@@ -314,23 +313,12 @@ static int ena_get_coalesce(struct net_device *net_dev,
- 	coalesce->tx_coalesce_usecs =
- 		ena_com_get_nonadaptive_moderation_interval_tx(ena_dev) /
- 			ena_dev->intr_delay_resolution;
--	if (!ena_com_get_adaptive_moderation_enabled(ena_dev)) {
+ 	u16 reserved;
 +
-+	if (!ena_com_get_adaptive_moderation_enabled(ena_dev))
- 		coalesce->rx_coalesce_usecs =
- 			ena_com_get_nonadaptive_moderation_interval_rx(ena_dev)
- 			/ ena_dev->intr_delay_resolution;
--	} else {
--		ena_com_get_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_LOWEST, &intr_moder_entry);
--		coalesce->rx_coalesce_usecs_low = intr_moder_entry.intr_moder_interval;
--		coalesce->rx_max_coalesced_frames_low = intr_moder_entry.pkts_per_interval;
--
--		ena_com_get_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_MID, &intr_moder_entry);
--		coalesce->rx_coalesce_usecs = intr_moder_entry.intr_moder_interval;
--		coalesce->rx_max_coalesced_frames = intr_moder_entry.pkts_per_interval;
--
--		ena_com_get_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_HIGHEST, &intr_moder_entry);
--		coalesce->rx_coalesce_usecs_high = intr_moder_entry.intr_moder_interval;
--		coalesce->rx_max_coalesced_frames_high = intr_moder_entry.pkts_per_interval;
--	}
++	/* 1 :0 : reserved
++	 * 2 : interrupt_moderation
++	 * 31:3 : reserved
++	 */
++	u32 driver_supported_features;
+ };
+ 
+ struct ena_admin_rss_ind_table_entry {
+@@ -1110,6 +1116,8 @@ struct ena_admin_ena_mmio_req_read_less_resp {
+ #define ENA_ADMIN_HOST_INFO_DEVICE_MASK                     GENMASK(7, 3)
+ #define ENA_ADMIN_HOST_INFO_BUS_SHIFT                       8
+ #define ENA_ADMIN_HOST_INFO_BUS_MASK                        GENMASK(15, 8)
++#define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_SHIFT      2
++#define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK       BIT(2)
+ 
+ /* aenq_common_desc */
+ #define ENA_ADMIN_AENQ_COMMON_DESC_PHASE_MASK               BIT(0)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index cdcc169b87fa..f19736493c01 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -2438,6 +2438,9 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev,
+ 		("K"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
+ 	host_info->num_cpus = num_online_cpus();
+ 
++	host_info->driver_supported_features =
++		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK;
 +
- 	coalesce->use_adaptive_rx_coalesce =
- 		ena_com_get_adaptive_moderation_enabled(ena_dev);
- 
-@@ -348,12 +336,22 @@ static void ena_update_tx_rings_intr_moderation(struct ena_adapter *adapter)
- 		adapter->tx_ring[i].smoothed_interval = val;
- }
- 
-+static void ena_update_rx_rings_intr_moderation(struct ena_adapter *adapter)
-+{
-+	unsigned int val;
-+	int i;
-+
-+	val = ena_com_get_nonadaptive_moderation_interval_rx(adapter->ena_dev);
-+
-+	for (i = 0; i < adapter->num_queues; i++)
-+		adapter->rx_ring[i].smoothed_interval = val;
-+}
-+
- static int ena_set_coalesce(struct net_device *net_dev,
- 			    struct ethtool_coalesce *coalesce)
- {
- 	struct ena_adapter *adapter = netdev_priv(net_dev);
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
--	struct ena_intr_moder_entry intr_moder_entry;
- 	int rc;
- 
- 	if (!ena_com_interrupt_moderation_supported(ena_dev)) {
-@@ -361,22 +359,6 @@ static int ena_set_coalesce(struct net_device *net_dev,
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (coalesce->rx_coalesce_usecs_irq ||
--	    coalesce->rx_max_coalesced_frames_irq ||
--	    coalesce->tx_coalesce_usecs_irq ||
--	    coalesce->tx_max_coalesced_frames ||
--	    coalesce->tx_max_coalesced_frames_irq ||
--	    coalesce->stats_block_coalesce_usecs ||
--	    coalesce->use_adaptive_tx_coalesce ||
--	    coalesce->pkt_rate_low ||
--	    coalesce->tx_coalesce_usecs_low ||
--	    coalesce->tx_max_coalesced_frames_low ||
--	    coalesce->pkt_rate_high ||
--	    coalesce->tx_coalesce_usecs_high ||
--	    coalesce->tx_max_coalesced_frames_high ||
--	    coalesce->rate_sample_interval)
--		return -EINVAL;
--
- 	rc = ena_com_update_nonadaptive_moderation_interval_tx(ena_dev,
- 							       coalesce->tx_coalesce_usecs);
- 	if (rc)
-@@ -384,37 +366,23 @@ static int ena_set_coalesce(struct net_device *net_dev,
- 
- 	ena_update_tx_rings_intr_moderation(adapter);
- 
--	if (ena_com_get_adaptive_moderation_enabled(ena_dev)) {
--		if (!coalesce->use_adaptive_rx_coalesce) {
--			ena_com_disable_adaptive_moderation(ena_dev);
--			rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
--									       coalesce->rx_coalesce_usecs);
--			return rc;
--		}
--	} else { /* was in non-adaptive mode */
--		if (coalesce->use_adaptive_rx_coalesce) {
-+	if (coalesce->use_adaptive_rx_coalesce) {
-+		if (!ena_com_get_adaptive_moderation_enabled(ena_dev))
- 			ena_com_enable_adaptive_moderation(ena_dev);
--		} else {
--			rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
--									       coalesce->rx_coalesce_usecs);
--			return rc;
--		}
-+		return 0;
- 	}
- 
--	intr_moder_entry.intr_moder_interval = coalesce->rx_coalesce_usecs_low;
--	intr_moder_entry.pkts_per_interval = coalesce->rx_max_coalesced_frames_low;
--	intr_moder_entry.bytes_per_interval = ENA_INTR_BYTE_COUNT_NOT_SUPPORTED;
--	ena_com_init_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_LOWEST, &intr_moder_entry);
-+	rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
-+							       coalesce->rx_coalesce_usecs);
-+	if (rc)
-+		return rc;
- 
--	intr_moder_entry.intr_moder_interval = coalesce->rx_coalesce_usecs;
--	intr_moder_entry.pkts_per_interval = coalesce->rx_max_coalesced_frames;
--	intr_moder_entry.bytes_per_interval = ENA_INTR_BYTE_COUNT_NOT_SUPPORTED;
--	ena_com_init_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_MID, &intr_moder_entry);
-+	ena_update_rx_rings_intr_moderation(adapter);
- 
--	intr_moder_entry.intr_moder_interval = coalesce->rx_coalesce_usecs_high;
--	intr_moder_entry.pkts_per_interval = coalesce->rx_max_coalesced_frames_high;
--	intr_moder_entry.bytes_per_interval = ENA_INTR_BYTE_COUNT_NOT_SUPPORTED;
--	ena_com_init_intr_moderation_entry(adapter->ena_dev, ENA_INTR_MODER_HIGHEST, &intr_moder_entry);
-+	if (!coalesce->use_adaptive_rx_coalesce) {
-+		if (ena_com_get_adaptive_moderation_enabled(ena_dev))
-+			ena_com_disable_adaptive_moderation(ena_dev);
-+	}
- 
- 	return 0;
- }
+ 	rc = ena_com_set_host_attributes(ena_dev);
+ 	if (rc) {
+ 		if (rc == -EOPNOTSUPP)
 -- 
 2.17.2
 
