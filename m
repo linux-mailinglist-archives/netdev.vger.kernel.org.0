@@ -2,60 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28461B345D
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:25:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97784B346B
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbfIPFZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 01:25:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726128AbfIPFZN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 01:25:13 -0400
-Received: from localhost (unknown [77.137.89.37])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 28ADC2067B;
-        Mon, 16 Sep 2019 05:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568611512;
-        bh=bMnnzbxvuUKVBM8vJFYd8fDbtu3J2YV/zSzFCzqY7yM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DrvivrYSqn2xdiRLRKTT0Yvy2+lNeEH5RC5MQaRD9MlAFgiA3FYsdmJVE6pkJsrFQ
-         //7e3Q8HAT0HahsrRdTczyJoO7TYjsZM01TzGrhbiqwdsygaF1HTO0BfxsGbXzZ7gL
-         21ZHfHc1Hw+/uE4xvW/btWRQOjyHI2sot7lTE9vw=
-Date:   Mon, 16 Sep 2019 08:25:07 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        id S1729101AbfIPFbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 01:31:38 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:39641 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbfIPFbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 01:31:37 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r3so7250057wrj.6
+        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 22:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qmVvFLqP1/Iy0U40o4z3uyLQYpbfmd+krJn4gZmoZjc=;
+        b=WdkIaYyQ4mMTt8hyv+GfqhYgGmJfqu5RMEE+wT12FRwu4gHmQraqcXpz8YFKrskkZ0
+         KSbX3F+BjM16REeVaA4RJqkT2RKe9SjDpmvpRUVeQ3St2QXzmufQkGH7TQLHhecUpEoa
+         /bLU1pXEDGo2STZAZAWwi9Q59bksM1mOmxviO26TG6W+yI5iblDZGZlMs9tSFV4hPkQk
+         98EhxcCd/wL20Ei75uzpwxe4affWhV1ehV7CvzA61A0H5FVeylT8/Gj3ben+ywGrvMRm
+         20h1Br1qlklXl3KDSlEdvNk+8ZqspN+E7iPaN5Pwlj2iLe1Q3C5gMEjFfaHtvnqyXZuV
+         ChKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qmVvFLqP1/Iy0U40o4z3uyLQYpbfmd+krJn4gZmoZjc=;
+        b=kYyYZkM29E5ac4V/hjjjsHtiMtdaqieSFL0ZAImu/NDum0ZkFK4ZNy1kAKCAWFrbcC
+         hC3Q1cRc/sAVPEdCEpFP1mr6g4Vj3HFjt3eHShZXe0uVxaX0+Du9lTl8zxvj+Y13FMBm
+         3BCF8pMPe3BJMotRnqiA+SMk/yzw+EGkze/VRJUZ8Ugp0WIglgaSXcGSfQRa07Tt7r7X
+         j0I5bqJZ7KP7ZmUOhuIaQq97St3nmbk3oOJXmVydewmuj2QdWUxngbUeicU5O3U6Do24
+         daHTu7E+5dSUQMeVBWiqqT99rNAGvWWgtw/eATEmuJ9wfNSKgTZ8IP3gY7n/II+DJjjg
+         btrA==
+X-Gm-Message-State: APjAAAWEc0EG/bTo1GgsgIRk3eiqlGdu33ik1U4fWMU4eQ7TmCfexv4+
+        0ptDayevCchZS/L4D1KI0T2A8w==
+X-Google-Smtp-Source: APXvYqyc31ky7y5rVl2RtqNSgEfZmWfiwP2nQ4nPApVOaI7SeRMU3N70u8JMW2wUoJ0UP+Fw783whQ==
+X-Received: by 2002:adf:cd86:: with SMTP id q6mr17761907wrj.44.1568611895554;
+        Sun, 15 Sep 2019 22:31:35 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id o188sm17755925wma.14.2019.09.15.22.31.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Sep 2019 22:31:35 -0700 (PDT)
+Date:   Mon, 16 Sep 2019 07:31:34 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
 To:     David Ahern <dsahern@gmail.com>
-Cc:     Mark Zhang <markz@mellanox.com>, netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH iproute2-next] rdma: Check comm string before print in
- print_comm()
-Message-ID: <20190916052507.GA18203@unreal>
-References: <20190911081243.28917-1-leon@kernel.org>
- <241c3bdf-53bf-a828-c57a-034b16f4839a@gmail.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com,
+        mlxsw@mellanox.com, f.fainelli@gmail.com
+Subject: Re: [patch iproute2-next v4 0/2] devlink: couple forgotten flash
+ patches
+Message-ID: <20190916053134.GF2286@nanopsycho.orion>
+References: <20190912112938.2292-1-jiri@resnulli.us>
+ <2c201359-2fa4-b1e4-061b-64a53eb30920@gmail.com>
+ <20190914060012.GC2276@nanopsycho.orion>
+ <7f32dc69-7cc1-4488-a1b6-94db64748630@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <241c3bdf-53bf-a828-c57a-034b16f4839a@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <7f32dc69-7cc1-4488-a1b6-94db64748630@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 15, 2019 at 11:47:19AM -0600, David Ahern wrote:
-> On 9/11/19 2:12 AM, Leon Romanovsky wrote:
-> > From: Mark Zhang <markz@mellanox.com>
-> >
-> > Broken kernels (not-upstream) can provide wrong empty "comm" field.
-> > It causes to segfault while printing in JSON format.
-> >
-> > Fixes: 8ecac46a60ff ("rdma: Add QP resource tracking information")
+Sun, Sep 15, 2019 at 07:58:33PM CEST, dsahern@gmail.com wrote:
+>On 9/14/19 12:00 AM, Jiri Pirko wrote:
+>> Fri, Sep 13, 2019 at 07:25:07PM CEST, dsahern@gmail.com wrote:
+>>> On 9/12/19 12:29 PM, Jiri Pirko wrote:
+>>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>>
+>>>> I was under impression they are already merged, but apparently they are
+>>>> not. I just rebased them on top of current iproute2 net-next tree.
+>>>>
+>>>
+>>> they were not forgotten; they were dropped asking for changes.
+>>>
+>>> thread is here:
+>>> https://lore.kernel.org/netdev/20190604134450.2839-3-jiri@resnulli.us/
+>> 
+>> Well not really. The path was discussed in the thread. However, that is
+>> unrelated to the changes these patches do. The flashing itself is
+>> already there and present. These patches only add status.
+>> 
+>> Did I missed something?
+>> 
 >
-> that commit is from 2018, so this should go to master; re-assigned in
-> patchwork.
+>you are thinking like a kernel developer and not a user.
+>
+>The second patch has a man page change that should state that firmware
+>files are expected to be in /lib/firmware and that path is added by the
+>kernel so the path passed on the command line needs to drop that part.
 
-This is exactly why I sent it to -next, it is not urgent :)
-
-Thanks
+ok
