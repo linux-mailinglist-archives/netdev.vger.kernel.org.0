@@ -2,147 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 590A1B3767
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 11:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4849B3793
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 11:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732124AbfIPJoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 05:44:54 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38060 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729400AbfIPJow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 05:44:52 -0400
-Received: by mail-wm1-f67.google.com with SMTP id o184so9449081wme.3
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 02:44:50 -0700 (PDT)
+        id S1726321AbfIPJyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 05:54:05 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:39301 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbfIPJyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 05:54:05 -0400
+Received: by mail-ed1-f67.google.com with SMTP id g12so6815948eds.6
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 02:54:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w7ESs9uHM5VkRGACxzxAD9xhB/p6zmuVD2+nKgCKkDo=;
-        b=tc8zxyCOhCElfLt7GvnO3HQMfVDzYLslOMuZ3ehiLfgwbWuOvYL2yZJNHU570WKn9Q
-         rmXoB6HiKpkOphGUOQhntDGwlmqxhuwotmMScjdmUNTd2rg5v5jG3qAtvpE/uVMcXT6G
-         l9lOy+dZXah4+uL0O2pA8tgrnWyGilos9YVuW8AKlgAQBlaeAOaXnr0tBAhX6yjTvR69
-         26gR8uteo9zGOII3q2asZNeu30ICuWHcHI6EfumRhpoRQ+0y0DlQ5dfAEGUoxKGCosdG
-         0YW58561AyFx/g8tYSo0XNajgBRcRHB2lD2jDCWQLkTPPxCnxvtWc2AXwboBSnOhaNSj
-         cERQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ehb7mlVPZOVuSiyeAn4SloRvILxa7FnK3e9ARXERlwk=;
+        b=WkOF+vipIw//1u2USiWk8sJqpKc/CyueAcNGhWrRQeHr0CSUU+aX0p+cFK03Vh9xhq
+         thrC4hYUu9cn5BfCzjYsjWUnYpfozZ8iHwojRtligcEul7AhErRzcQOT0BeZE5Qwya6c
+         9xby5O4rUja7UtPG5Xc3bYI1XdaIh3lq0JBW03WM1OBAL55VCc2dm4nmJNArqsBQz6H5
+         jWs0GLIpN8fFkmOcYHrh7waqIwvqI+pj6KFgRfuUvwrAvmRZYAFZPVWn2ICqWWpowGpy
+         3sS4ldsFIsj9Pb5P6QhYCi+xrf86sKzRPsnXr3vI5H55YNkO9DpZcQAEAZJFZtidRMBA
+         jOiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w7ESs9uHM5VkRGACxzxAD9xhB/p6zmuVD2+nKgCKkDo=;
-        b=lFL+iQbiaAP1gwsPyB+7uZj1Rm6bWPBsQiLru4o6zsnBlOtBWDtaao5MlqdnX4dzGy
-         wcK98hdzMikBgHWn1h9a7HcjipKnaB5jzlnIMqnBxbD75CXR9hck4kim08h0TkgpaFDV
-         bhZxCCdnPjN5AQMjZOkN9utM5qw81jU0ps5hBT4cbX+nuLiv1rIYxuUUqeZ18yDyUwZo
-         6tsaxbBXr7daByaA6DxwP0WQopf2koyQkO6UGrWHieW5bwu1phcltSubXZHWc8EeU+zH
-         Gsn0/+rDpxbcifIC3jr1oAubqbSflsmysaSrcvPMYSrN9cN10y6Xs40PjhU4yv4achGh
-         Lx+g==
-X-Gm-Message-State: APjAAAXroUhtms4oKPl+aMqRk120vFwFixr7qPfrn/8P0s1xInR0AGPC
-        c9JCTjBMhh3ihVvnbvNFd275DeCCm2E=
-X-Google-Smtp-Source: APXvYqxsIuqVqARvNoKOKwXBnHCD9hJbke/RMTb2dXbWmqS0CTMEs7o/Fv9HjXYnSEXOQSyPFmBvnw==
-X-Received: by 2002:a7b:c744:: with SMTP id w4mr4113840wmk.11.1568627089455;
-        Mon, 16 Sep 2019 02:44:49 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a4sm4052731wmj.29.2019.09.16.02.44.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 02:44:49 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        mlxsw@mellanox.com
-Subject: [patch iproute2-next v2] devlink: add reload failed indication
-Date:   Mon, 16 Sep 2019 11:44:48 +0200
-Message-Id: <20190916094448.26072-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ehb7mlVPZOVuSiyeAn4SloRvILxa7FnK3e9ARXERlwk=;
+        b=lSAovuCUgAXCgyYGryjIpt0AAhLL9L5hHMMtA2dY+YeCJdzaSz9N7ErSjdUV/mTwok
+         uEEDHCsNT+IyCjRrPBWbnIssyvatndEFq9bUeWIUyw0R+atzBzhmc4p0byJr4XNLUGoo
+         I3Akgyb6xQPMvKCtS+5k/fzEXIGo1SsJTlK1QqN5ysfeHxBzGOOwawrqNRRaEVJWRzjN
+         8+qX+A7Y3xIgO78D45N4cavD4C/q/Cr1d4ZhqSI9ZdIxrpLRwjEKafJynhExTyCR2Sae
+         W0SoHwAbHPk738qJSKTSGv5GLKhg9uMDUWMToyYUOV1YH635EWdtW3ZfLNo/ISASdvx1
+         e60A==
+X-Gm-Message-State: APjAAAX2DDAkF1cSXU9+0jihOZDxX+tdgb1duT/RSlpCWotliuUfThgN
+        B9iRGP6nHhhqPbsQsh8UbJsyQZwnUVWmHQZJAdY=
+X-Google-Smtp-Source: APXvYqz8f4tErvvEGiOKdM+htiGHQh8cjPvBz0FARqdE7Zr2Uk3QuIf+tmHQvZ0DvGsQZynN2OZww98ncNbEClnZSE4=
+X-Received: by 2002:a05:6402:14da:: with SMTP id f26mr11523468edx.165.1568627643544;
+ Mon, 16 Sep 2019 02:54:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190914011802.1602-1-olteanv@gmail.com> <20190914011802.1602-3-olteanv@gmail.com>
+ <20190916093108.GA28448@apalos.home>
+In-Reply-To: <20190916093108.GA28448@apalos.home>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 16 Sep 2019 12:53:52 +0300
+Message-ID: <CA+h21hq1Mhsrub-8VEq9N1vcXEoWhfHQ1c09u+Pk=gKf=89PxQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 2/7] net: dsa: Pass ndo_setup_tc slave
+ callback to drivers
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "Patel, Vedang" <vedang.patel@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>, jiri@mellanox.com,
+        m-karicheri2@ti.com, Jose Abreu <Jose.Abreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Hi Ilias,
 
-Add indication about previous failed devlink reload.
+On Mon, 16 Sep 2019 at 12:31, Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+>
+> Hi Vladimir,
+>
+> Yes fixes my request on the initial RFC. Sorry for the delayed response.
+>
+> On Sat, Sep 14, 2019 at 04:17:57AM +0300, Vladimir Oltean wrote:
+> > DSA currently handles shared block filters (for the classifier-action
+> > qdisc) in the core due to what I believe are simply pragmatic reasons -
+> > hiding the complexity from drivers and offerring a simple API for port
+> > mirroring.
+> >
+> > Extend the dsa_slave_setup_tc function by passing all other qdisc
+> > offloads to the driver layer, where the driver may choose what it
+> > implements and how. DSA is simply a pass-through in this case.
+> >
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> > Acked-by: Kurt Kanzenbach <kurt@linutronix.de>
+> > ---
+> > Changes since v1:
+> > - Added Kurt Kanzenbach's Acked-by.
+> >
+> > Changes since RFC:
+> > - Removed the unused declaration of struct tc_taprio_qopt_offload.
+> >
+> >  include/net/dsa.h |  2 ++
+> >  net/dsa/slave.c   | 12 ++++++++----
+> >  2 files changed, 10 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/dsa.h b/include/net/dsa.h
+> > index 96acb14ec1a8..541fb514e31d 100644
+> > --- a/include/net/dsa.h
+> > +++ b/include/net/dsa.h
+> > @@ -515,6 +515,8 @@ struct dsa_switch_ops {
+> >                                  bool ingress);
+> >       void    (*port_mirror_del)(struct dsa_switch *ds, int port,
+> >                                  struct dsa_mall_mirror_tc_entry *mirror);
+> > +     int     (*port_setup_tc)(struct dsa_switch *ds, int port,
+> > +                              enum tc_setup_type type, void *type_data);
+> >
+> >       /*
+> >        * Cross-chip operations
+> > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> > index 9a88035517a6..75d58229a4bd 100644
+> > --- a/net/dsa/slave.c
+> > +++ b/net/dsa/slave.c
+> > @@ -1035,12 +1035,16 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
+> >  static int dsa_slave_setup_tc(struct net_device *dev, enum tc_setup_type type,
+> >                             void *type_data)
+> >  {
+> > -     switch (type) {
+> > -     case TC_SETUP_BLOCK:
+> > +     struct dsa_port *dp = dsa_slave_to_port(dev);
+> > +     struct dsa_switch *ds = dp->ds;
+> > +
+> > +     if (type == TC_SETUP_BLOCK)
+> >               return dsa_slave_setup_tc_block(dev, type_data);
+> > -     default:
+> > +
+> > +     if (!ds->ops->port_setup_tc)
+> >               return -EOPNOTSUPP;
+> > -     }
+> > +
+> > +     return ds->ops->port_setup_tc(ds, dp->index, type, type_data);
+> >  }
+> >
+> >  static void dsa_slave_get_stats64(struct net_device *dev,
+> > --
+> > 2.17.1
+> >
+>
+> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-Example outputs:
+Thanks. Could you add this Acked-by to the v4 email, just so we keep
+the discussion on the latest submitted version?
 
-$ devlink dev
-netdevsim/netdevsim10: reload_failed true
-$ devlink dev -j -p
-{
-    "dev": {
-        "netdevsim/netdevsim10": {
-            "reload_failed": true
-        }
-    }
-}
-
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v1->v2:
-- added patch description including example
----
- devlink/devlink.c | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 15877a04f5d6..da62c144d5d5 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -450,6 +450,7 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_TRAP_GENERIC] = MNL_TYPE_FLAG,
- 	[DEVLINK_ATTR_TRAP_METADATA] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_TRAP_GROUP_NAME] = MNL_TYPE_STRING,
-+	[DEVLINK_ATTR_RELOAD_FAILED] = MNL_TYPE_U8,
- };
- 
- static const enum mnl_attr_data_type
-@@ -1949,11 +1950,6 @@ static void pr_out_region_chunk(struct dl *dl, uint8_t *data, uint32_t len,
- 	pr_out_region_chunk_end(dl);
- }
- 
--static void pr_out_dev(struct dl *dl, struct nlattr **tb)
--{
--	pr_out_handle(dl, tb);
--}
--
- static void pr_out_section_start(struct dl *dl, const char *name)
- {
- 	if (dl->json_output) {
-@@ -2649,11 +2645,23 @@ static int cmd_dev_show_cb(const struct nlmsghdr *nlh, void *data)
- 	struct dl *dl = data;
- 	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
- 	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	uint8_t reload_failed = 0;
- 
- 	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
- 	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME])
- 		return MNL_CB_ERROR;
--	pr_out_dev(dl, tb);
-+
-+	if (tb[DEVLINK_ATTR_RELOAD_FAILED])
-+		reload_failed = mnl_attr_get_u8(tb[DEVLINK_ATTR_RELOAD_FAILED]);
-+
-+	if (reload_failed) {
-+		__pr_out_handle_start(dl, tb, true, false);
-+		pr_out_bool(dl, "reload_failed", true);
-+		pr_out_handle_end(dl);
-+	} else {
-+		pr_out_handle(dl, tb);
-+	}
-+
- 	return MNL_CB_OK;
- }
- 
-@@ -3991,7 +3999,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME])
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
--		pr_out_dev(dl, tb);
-+		pr_out_handle(dl, tb);
- 		break;
- 	case DEVLINK_CMD_PORT_GET: /* fall through */
- 	case DEVLINK_CMD_PORT_SET: /* fall through */
--- 
-2.21.0
-
+-Vladimir
