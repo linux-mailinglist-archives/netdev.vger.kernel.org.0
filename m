@@ -2,116 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74C13B3A4F
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 14:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22241B3A50
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 14:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732448AbfIPM05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 08:26:57 -0400
-Received: from mtax.cdmx.gob.mx ([187.141.35.197]:8446 "EHLO mtaw.cdmx.gob.mx"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727783AbfIPM04 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 08:26:56 -0400
-X-NAI-Header: Modified by McAfee Email Gateway (4500)
+        id S1732509AbfIPM1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 08:27:04 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:45259 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732452AbfIPM1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 08:27:04 -0400
+Received: by mail-qk1-f196.google.com with SMTP id z67so36011403qkb.12
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 05:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cdmx.gob.mx; s=72359050-3965-11E6-920A-0192F7A2F08E;
-        t=1568627616; h=X-Virus-Scanned:Content-Type:
-         MIME-Version:Content-Transfer-Encoding:Content-Description:
-         Subject:To:From:Date:Reply-To:Message-Id:X-AnalysisOut:
-         X-AnalysisOut:X-AnalysisOut:X-AnalysisOut:
-         X-AnalysisOut:X-AnalysisOut:X-AnalysisOut:
-         X-SAAS-TrackingID:X-NAIMIME-Disclaimer:X-NAIMIME-Modified:
-         X-NAI-Spam-Flag:X-NAI-Spam-Threshold:X-NAI-Spam-Score:
-         X-NAI-Spam-Rules:X-NAI-Spam-Version; bh=6
-        /pZmFQC6AfQtx64WCm5mpv4OcL2DRwqn08dcLKFTI
-        w=; b=yMoq21oQheYsNkTOt4Q6Ht1RBaQqMnhoi46s3bmowG1K
-        p1HUkMNlnEsWZQOiODgLzTknBro8aLXJojSftPvF90WIyPbLJf
-        MceAFu7KlkAiP5+SXdSkaJqLM2y1N9Y1ERPi3bam08tfoP0Mzc
-        NAZ59ydz3++9J9te4ffW96XMQ+M=
-Received: from correo.seciti.cdmx.gob.mx (gdf-correo.cdmx.gob.mx [10.250.102.17]) by mtaw.cdmx.gob.mx with smtp
-         id 0258_35f9_6093a369_6135_4dc6_8199_e06836df6553;
-        Mon, 16 Sep 2019 04:53:35 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by gdf-correo.df.gob.mx (Postfix) with ESMTP id BEE8631B4;
-        Mon, 16 Sep 2019 04:53:33 -0500 (CDT)
-Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
-        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id OQpPfzS5mz7o; Mon, 16 Sep 2019 04:53:33 -0500 (CDT)
-Received: from localhost (localhost [127.0.0.1])
-        by gdf-correo.df.gob.mx (Postfix) with ESMTP id B77583117;
-        Mon, 16 Sep 2019 04:51:46 -0500 (CDT)
-X-Virus-Scanned: amavisd-new at gdf-correo.df.gob.mx
-Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
-        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id L3SeWMKfBNXA; Mon, 16 Sep 2019 04:51:46 -0500 (CDT)
-Received: from [100.88.209.140] (8ta-250-4-63.telkomadsl.co.za [102.250.4.63])
-        by gdf-correo.df.gob.mx (Postfix) with ESMTPSA id 22382382F;
-        Mon, 16 Sep 2019 04:49:42 -0500 (CDT)
-Content-Type: text/plain;
-  charset="utf-8"
+        d=cumulusnetworks.com; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HxW+wVKO86+KUc5PYwM54DxVNGsW87ney6IUuy8Vkc=;
+        b=UFDRLGBofwXhAXjbyk9Inj4PDPmYqgMWUffL9OdoVaLhaLZhDXQudl0oevipsA1z4q
+         m/hYEq6heNLFCkoqupOHophWzOzlCsJGK4wuKUQD76sPavYGeUGZGgnS/txQAmCi0Db8
+         pLRLZ66r3DSaJmA2EODRHv7ZmGHgRkyahZyB0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HxW+wVKO86+KUc5PYwM54DxVNGsW87ney6IUuy8Vkc=;
+        b=iIX+F8jTSGPcEjvIQV/TXsOzoL1IQxxYEmjtJ6H4C29p+90DkyrvxV0HxW/0/PIuXR
+         +qtI1HoUa27ycpgI8D0oXH+DIVkPgpaYiWemXHZc1hrijGIdJI9TPvbcnKKep4TPgwrt
+         EkXz0woGZ9ssIcfNwvAxdGE0vd1pUAG4FYBGJiHjbn+/LKtCdwp/EMUN1NtRRYhwhgBa
+         DrXrGJS4NFKgqoM6MNzg/EcM/2VP5gLP271a82t7U3rlGiqdhdM5I2wSmah810VoF35q
+         wdmLPnWmUGSKnC/AbWEO2yPCF5razAziA2BoxvIuoCkWzQ5oXEdp/Dgfzpga9E7jnMY3
+         F9Jw==
+X-Gm-Message-State: APjAAAVPUlZb8w1znKV4nlP4GWNs2T0k5KuaFTUS45K967FNJf/99k3T
+        HhtS/Gu2/nHQvSvJ2xU8wn5hD/jLcNo=
+X-Google-Smtp-Source: APXvYqztyzZpO52uHk6fO+YgA4+QG2CatRlNN5yD+pb0S6dW7Nh7I5SAJFwX/FF5WBz9MBcvKwEXqw==
+X-Received: by 2002:a37:2c44:: with SMTP id s65mr45272820qkh.303.1568636822997;
+        Mon, 16 Sep 2019 05:27:02 -0700 (PDT)
+Received: from robot.nc.rr.com (cpe-2606-A000-111D-8179-B743-207D-F4F9-B992.dyn6.twc.com. [2606:a000:111d:8179:b743:207d:f4f9:b992])
+        by smtp.googlemail.com with ESMTPSA id z8sm4935043qkf.37.2019.09.16.05.27.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Sep 2019 05:27:02 -0700 (PDT)
+From:   Donald Sharp <sharpd@cumulusnetworks.com>
+To:     netdev@vger.kernel.org, dsahern@kernel.org
+Subject: [PATCH] selftests: Add test cases for `ip nexthop flush proto XX`
+Date:   Mon, 16 Sep 2019 08:26:50 -0400
+Message-Id: <20190916122650.24124-1-sharpd@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Description: Mail message body
-Subject: Spende von 5 Millionen Euro
-To:     Recipients <mramirezg@mexicocity.gob.mx>
-From:   "Shane Missler" <mramirezg@mexicocity.gob.mx>
-Date:   Mon, 16 Sep 2019 11:49:23 +0200
-Reply-To: shanemissler.spende1@gmail.com
-Message-Id: <20190916094943.22382382F@gdf-correo.df.gob.mx>
-X-AnalysisOut: [v=2.2 cv=crfrqxwi c=1 sm=1 tr=0 p=NAessOE28N0A:10 p=01NpVV]
-X-AnalysisOut: [4txKbuBquBCNIA:9 p=OPvaR162FBY78wYZ:21 p=wwp16yEzG9Fj4K8O:]
-X-AnalysisOut: [21 p=09-KjHS_CW8A:10 p=bEr4i4eggGkA:10 p=-7VjjQDN59lQbO9Es]
-X-AnalysisOut: [jZ6:22 p=Lyqu6MUUigPyaOuRX7ce:22 a=KsSCQl7LcZej77FuluUcQw=]
-X-AnalysisOut: [=:117 a=XbdjHrFpJLAoAGD2hiQkuQ==:17 a=8nJEP1OIZ-IA:10 a=x7]
-X-AnalysisOut: [bEGLp0ZPQA:10 a=J70Eh1EUuV4A:10 a=pGLkceISAAAA:8 a=wPNLvfG]
-X-AnalysisOut: [TeEIA:10]
-X-SAAS-TrackingID: 0ab5f7d5.0.78243423.00-2360.131743526.s12p02m015.mxlogic.net
-X-NAIMIME-Disclaimer: 1
-X-NAIMIME-Modified: 1
-X-NAI-Spam-Flag: NO
-X-NAI-Spam-Threshold: 3
-X-NAI-Spam-Score: -5000
-X-NAI-Spam-Rules: 1 Rules triggered
-        WHITELISTED=-5000
-X-NAI-Spam-Version: 2.3.0.9418 : core <6634> : inlines <7140> : streams
- <1832911> : uri <2904409>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGllcyBpc3QgZWluZSBwZXJzw7ZubGljaGUgTWFpbCwgZGllIGljaCBhbiBTaWUgYWRyZXNzaWVy
-ZS4gSWNoIGJpbiBTSEFORSBNSVNTTEVSIGF1cyBGbG9yaWRhLCBVU0EuIFdpZSBTaWUgYmVyZWl0
-cyB3aXNzZW4sIGhhYmUgaWNoIGVpbmVuIExvdHRvLUphY2twb3QgaW4gSMO2aGUgdm9uIDQ1MSBN
-aW8uIFVTRCAoMzMwIE1pby4gR0JQKSBnZXdvbm5lbiB1bmQgZGFzIEdlbGQgaGF0IG1laW4gTGVi
-ZW4gdW5kIG1laW4gRmFtaWxpZW5sZWJlbiB2ZXLDpG5kZXJ0LCBhYmVyIGVzIHdpcmQgbWVpbiBI
-ZXJ6IG5pY2h0IHZlcsOkbmRlcm4sIHdpZSBpY2ggYW4gZGVtIFRhZyBzYWd0ZSwgYW4gZGVtIGlj
-aCBtZWluIEdlbGQgaGFiZSwgZGFzIGljaCB2ZXJ3ZW5kZW4gd2VyZGUgRGllc2VzIEdlbGQgZsO8
-ciBkaWUgSGlsZmUgZGVyIE1lbnNjaGhlaXQuIEljaCBoYWJlIGJlc2NobG9zc2VuLCBJaG5lbiB1
-bmQgSWhyZXIgR2VtZWluZGUgZWluZW4gQmV0cmFnIHZvbiA1IE1pbGxpb25lbiBFdXJvIHp1IHNw
-ZW5kZW4sIHVtIGRpZXNlIFNwZW5kZSBhbnp1Zm9yZGVybi4gRS1NYWlsOiAoc2hhbmVtaXNzbGVy
-MEBnbWFpbC5jb20pCgoKCgoKCgoKCgpMYSBpbmZvcm1hY2lvbiBjb250ZW5pZGEgZW4gZXN0ZSBj
-b3JyZW8sIGFzaSBjb21vIGxhIGNvbnRlbmlkYSBlbiBsb3MgZG9jdW1lbnRvcyBhbmV4b3MsIHB1
-ZWRlIGNvbnRlbmVyIGRhdG9zIHBlcnNvbmFsZXMsIHBvciBsbyBxdWUgc3UgZGlmdXNpb24gZXMg
-cmVzcG9uc2FiaWxpZGFkIGRlIHF1aWVuIGxvcyB0cmFuc21pdGUgeSBxdWllbiBsb3MgcmVjaWJl
-LCBlbiB0w6lybWlub3MgZGUgbG8gZGlzcHVlc3RvIHBvciBsYXMgZnJhY2Npb25lcyBJSSB5IFZJ
-SSBkZWwgYXJ0aWN1bG8gNCwgdWx0aW1vIHBhcnJhZm8gZGVsIGFydGljdWxvIDgsIGFydGljdWxv
-IDM2IHBhcnJhZm8gSUksIDM4IGZyYWNjaW9uIEkgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxhIExl
-eSBkZSBUcmFuc3BhcmVuY2lhIHkgQWNjZXNvIGEgbGEgSW5mb3JtYWNpb24gUHVibGljYSBkZWwg
-RGlzdHJpdG8gRmVkZXJhbC4NCkxvcyBEYXRvcyBQZXJzb25hbGVzIHNlIGVuY3VlbnRyYW4gcHJv
-dGVnaWRvcyBwb3IgbGEgTGV5IGRlIFByb3RlY2Npb24gZGUgRGF0b3MgUGVyc29uYWxlcyBkZWwg
-RGlzdHJpdG8gRmVkZXJhbCwgcG9yIGxvIHF1ZSBzdSBkaWZ1c2lvbiBzZSBlbmN1ZW50cmEgdHV0
-ZWxhZGEgZW4gc3VzIGFydGljdWxvcyAyLCA1LCAxNiwgMjEsIDQxIHkgZGVtYXMgcmVsYXRpdm9z
-IHkgYXBsaWNhYmxlcywgZGViaWVuZG8gc3VqZXRhcnNlIGVuIHN1IGNhc28sIGEgbGFzIGRpc3Bv
-c2ljaW9uZXMgcmVsYXRpdmFzIGEgbGEgY3JlYWNpb24sIG1vZGlmaWNhY2lvbiBvIHN1cHJlc2lv
-biBkZSBkYXRvcyBwZXJzb25hbGVzIHByZXZpc3Rvcy4gQXNpbWlzbW8sIGRlYmVyYSBlc3RhcnNl
-IGEgbG8gc2XDsWFsYWRvIGVuIGxvcyBudW1lcmFsZXMgMSAsIDMsIDEyLCAxOCwgMTksIDIwLCAy
-MSwgMjMsIDI0LCAyOSwgMzUgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxvcyBMaW5lYW1pZW50b3Mg
-cGFyYSBsYSBQcm90ZWNjaW9uIGRlIERhdG9zIFBlcnNvbmFsZXMgZW4gZWwgRGlzdHJpdG8gRmVk
-ZXJhbC4NCkVuIGVsIHVzbyBkZSBsYXMgdGVjbm9sb2dpYXMgZGUgbGEgaW5mb3JtYWNpb24geSBj
-b211bmljYWNpb25lcyBkZWwgR29iaWVybm8gZGVsIERpc3RyaXRvIEZlZGVyYWwsIGRlYmVyYSBv
-YnNlcnZhcnNlIHB1bnR1YWxtZW50ZSBsbyBkaXNwdWVzdG8gcG9yIGxhIExleSBHb2JpZXJubyBF
-bGVjdHJvbmljbyBkZWwgRGlzdHJpdG8gRmVkZXJhbCwgbGEgbGV5IHBhcmEgaGFjZXIgZGUgbGEg
-Q2l1ZGFkIGRlIE1leGljbyB1bmEgQ2l1ZGFkIE1hcyBBYmllcnRhLCBlbCBhcGFydGFkbyAxMCBk
-ZSBsYSBDaXJjdWxhciBVbm8gdmlnZW50ZSB5IGxhcyBOb3JtYXMgR2VuZXJhbGVzIHF1ZSBkZWJl
-cmFuIG9ic2VydmFyc2UgZW4gbWF0ZXJpYSBkZSBTZWd1cmlkYWQgZGUgbGEgSW5mb3JtYWNpb24g
-ZW4gbGEgQWRtaW5pc3RyYWNpb24gUHVibGljYSBkZWwgRGlzdHJpdG8gRmVkZXJhbC4K
+Add some test cases to allow the fib_nexthops.sh test code
+to test the flushing of nexthops based upon the proto passed
+in upon creation of the nexthop group.
+
+Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
+---
+ tools/testing/selftests/net/fib_nexthops.sh | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index f9ebeac1e6f2..796670ebc65b 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -940,6 +940,20 @@ basic()
+ 	run_cmd "$IP nexthop add id 104 group 1 dev veth1"
+ 	log_test $? 2 "Nexthop group and device"
+ 
++	# Tests to ensure that flushing works as expected.
++	run_cmd "$IP nexthop add id 105 blackhole proto 99"
++	run_cmd "$IP nexthop add id 106 blackhole proto 100"
++	run_cmd "$IP nexthop add id 107 blackhole proto 99"
++	run_cmd "$IP nexthop flush proto 99"
++	check_nexthop "id 105" ""
++	check_nexthop "id 106" "id 106 blackhole proto 100"
++	check_nexthop "id 107" ""
++	run_cmd "$IP nexthop flush proto 100"
++	check_nexthop "id 106" ""
++
++	run_cmd "$IP nexthop flush proto 100"
++	log_test $? 0 "Test proto flush"
++
+ 	run_cmd "$IP nexthop add id 104 group 1 blackhole"
+ 	log_test $? 2 "Nexthop group and blackhole"
+ 
+-- 
+2.21.0
+
