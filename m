@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF62B348A
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66585B34A5
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 08:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729344AbfIPFxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 01:53:53 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:48860 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725270AbfIPFxx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 01:53:53 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id CB8CDB3E637D25ED0F96;
-        Mon, 16 Sep 2019 13:53:48 +0800 (CST)
-Received: from [127.0.0.1] (10.177.29.68) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Mon, 16 Sep 2019
- 13:53:47 +0800
-Message-ID: <5D7F236B.3070409@huawei.com>
-Date:   Mon, 16 Sep 2019 13:53:47 +0800
-From:   zhong jiang <zhongjiang@huawei.com>
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20120428 Thunderbird/12.0.1
+        id S1729732AbfIPGSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 02:18:47 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:60859 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729398AbfIPGSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 02:18:46 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8DB4622040;
+        Mon, 16 Sep 2019 02:18:45 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 16 Sep 2019 02:18:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=rjyzSI5EEU/9COBVj
+        Us6HQkoh+IlcYSvLUv59gEzvr4=; b=uzNW7TnTfYGqItdIv1CWoRTeSmxAuHYNk
+        b7xjH/i0XGSMS5MUNrYm5Noz9Ni4hVLpiNjlOaKVfoxhLi53DqroLEZ0MU/btlvI
+        7toStepm50sSV77KKjvZnePCbWvOzS+zW0b1E1Z18e466iOEKKQMgBcq/KoD5ClR
+        dJqP+5inpH36BO+oMQHCMKn4HdUZ5UZmjUmzkWRBxr1GOZpeBSutqY9+0Vxna8+N
+        YrSDTrR8X/21JUnQm2pkxJj8ARNnd/NDkDoTCV0NQLKyDgXAkArD1SrGQCe2kPhE
+        jtKWe7mWbZVKhbjWpK7F7S0jMlf5bI+wP6GmZaHGOwLnnkL3fRuBw==
+X-ME-Sender: <xms:RSl_XdWgIX37hyACbj8uwHaHECFF1O4bmbQ5bZARDqEW26kigIMGrA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddvgddutdekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:RSl_XS3iK4fapm3YnQy222ynFZuaafW0hM9bXv8aKUUXQlNR7taefQ>
+    <xmx:RSl_XbFa81qgran36Wd-s6NgFiQY8KuO7Wj1npqhHWcVRiMnbL03tg>
+    <xmx:RSl_XYiZjaoyRoOUm5JwAojc24dewWmJAXq1J9h9ytL6ZJrXnOtpGA>
+    <xmx:RSl_XRZgiV_wbyk6CYxJSQ9XMU3wLahAEpH2I5FCSuegXHaHQyfgvg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B0AB480066;
+        Mon, 16 Sep 2019 02:18:43 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 0/3] mlxsw: spectrum_buffers: Add the ability to query the CPU port's shared buffer
+Date:   Mon, 16 Sep 2019 09:17:47 +0300
+Message-Id: <20190916061750.26207-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-To:     Kalle Valo <kvalo@codeaurora.org>
-CC:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] wlegacy: Remove unneeded variable and make function
- to be void
-References: <1568306492-42998-1-git-send-email-zhongjiang@huawei.com> <1568306492-42998-3-git-send-email-zhongjiang@huawei.com> <87h85hh0hb.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <87h85hh0hb.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.29.68]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/9/13 1:45, Kalle Valo wrote:
-> zhong jiang <zhongjiang@huawei.com> writes:
->
->> il4965_set_tkip_dynamic_key_info  do not need return value to
->> cope with different ases. And change functon return type to void.
->>
->> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
->> ---
->>  drivers/net/wireless/intel/iwlegacy/4965-mac.c | 8 ++------
->>  1 file changed, 2 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/wireless/intel/iwlegacy/4965-mac.c b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
->> index ffb705b..a7bbfe2 100644
->> --- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
->> +++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
->> @@ -3326,12 +3326,11 @@ struct il_mod_params il4965_mod_params = {
->>  	return il_send_add_sta(il, &sta_cmd, CMD_SYNC);
->>  }
->>  
->> -static int
->> +static void
->>  il4965_set_tkip_dynamic_key_info(struct il_priv *il,
->>  				 struct ieee80211_key_conf *keyconf, u8 sta_id)
->>  {
->>  	unsigned long flags;
->> -	int ret = 0;
->>  	__le16 key_flags = 0;
->>  
->>  	key_flags |= (STA_KEY_FLG_TKIP | STA_KEY_FLG_MAP_KEY_MSK);
->> @@ -3367,8 +3366,6 @@ struct il_mod_params il4965_mod_params = {
->>  	memcpy(il->stations[sta_id].sta.key.key, keyconf->key, 16);
->>  
->>  	spin_unlock_irqrestore(&il->sta_lock, flags);
->> -
->> -	return ret;
->>  }
->>  
->>  void
->> @@ -3483,8 +3480,7 @@ struct il_mod_params il4965_mod_params = {
->>  		    il4965_set_ccmp_dynamic_key_info(il, keyconf, sta_id);
->>  		break;
->>  	case WLAN_CIPHER_SUITE_TKIP:
->> -		ret =
->> -		    il4965_set_tkip_dynamic_key_info(il, keyconf, sta_id);
->> +		il4965_set_tkip_dynamic_key_info(il, keyconf, sta_id);
->>  		break;
->>  	case WLAN_CIPHER_SUITE_WEP40:
->>  	case WLAN_CIPHER_SUITE_WEP104:
-> To me this looks inconsistent with the rest of the cases in the switch
-> statement. And won't we then return the ret variable uninitalised?
-Yep,  I miss that.   please ignore the patch.  Thanks,
+From: Ido Schimmel <idosch@mellanox.com>
 
-Sincerely,
-zhong jiang
+Shalom says:
+
+While debugging packet loss towards the CPU, it is useful to be able to
+query the CPU port's shared buffer quotas and occupancy.
+
+Patch #1 prevents changing the CPU port's threshold and binding.
+
+Patch #2 registers the CPU port with devlink.
+
+Patch #3 adds the ability to query the CPU port's shared buffer quotas and
+occupancy.
+
+v2:
+
+Patch #1:
+* s/0/MLXSW_PORT_CPU_PORT/
+* Assign "mlxsw_sp->ports[MLXSW_PORT_CPU_PORT" at the end of
+  mlxsw_sp_cpu_port_create() to avoid NULL assignment on error path
+* Add common functions for mlxsw_core_port_init/fini()
+
+Patch #2:
+* Move "changing CPU port's threshold and binding" check to a separate
+  patch
+
+Shalom Toledo (3):
+  mlxsw: spectrum_buffers: Prevent changing CPU port's configuration
+  mlxsw: spectrum: Register CPU port with devlink
+  mlxsw: spectrum_buffers: Add the ability to query the CPU port's
+    shared buffer
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 65 ++++++++++++++++---
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  5 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 46 +++++++++++++
+ .../mellanox/mlxsw/spectrum_buffers.c         | 51 ++++++++++++---
+ 4 files changed, 150 insertions(+), 17 deletions(-)
+
+-- 
+2.21.0
 
