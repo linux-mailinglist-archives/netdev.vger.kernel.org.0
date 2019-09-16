@@ -2,174 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E683B3813
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85867B3818
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728560AbfIPK2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 06:28:13 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51048 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727039AbfIPK2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 06:28:13 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 5so3652089wmg.0
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 03:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1qzYi1w8wyFuLri9Ne0tJio3IDHOd1W51/ZEG8qZ3FA=;
-        b=Mj/sLNimoS2MVFMjoZkfFD+FdXaTWoOhV/mt9lpqpIVk1WIpFV2GjvGbqt5M4to0d8
-         p+ch2KToozsuP24g7Ncyr6UEbCQABQO949lR7OF7VXT5N+Iy6dOfkuiXyjcdHvUrjsnc
-         NCl/HSiEnW0vkt+uB9svd0ySC1iy61wKY2iKEdhNYu7U88mInPPc8JNubW6F6HVnjcGW
-         W45ZUZllC9Rgg9EFNy8FzlGg3RwW6ez8Mx+cyFZcBA13mfAXn1c0a23yyKasAeR04tom
-         KsEL2NoL6mXNNtYAdPWLePB2wA2wsASSd2NZaicd0HtbEP0t99yTkKcTZgza4q23gEq8
-         AU3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1qzYi1w8wyFuLri9Ne0tJio3IDHOd1W51/ZEG8qZ3FA=;
-        b=khc/A4opbsGF2FTNS8iGVqLC3mbmze50NGHIf9k3bxaxpIUyrMEzeo487/WS7JFGzh
-         zG8nopeIsWoVsFbZWv+Pdqj9c26G8hrnzMTLDoK+lmEeeZomJtierAxMaM8iVrl2Cv9m
-         7Y6YwyRgUQmHvmjVt84VnunBC5WUSGOnBCQyuiHe88UunHNmD1cEPs1eTCuFpRrWUnbC
-         Uam/+UbA3BpPSDHTWJ7D29XyH1PkYQRYbKWguAtSGaVh9iJZPfgohArrDYmfHmCeCp+S
-         Vqt6L5bW0hynOMAz99N47NRBjqrWx0qA78Lw94KxYseCvpRq9eAm9A9eR9W0fNhHEko9
-         2YDA==
-X-Gm-Message-State: APjAAAVYcxNwEBI0W1TYXrTDviarGMSsSNPerAlnK0KbVOS9WAxgrw05
-        utGx5btes4QzHRw38VsKuVI0oRbJvLE=
-X-Google-Smtp-Source: APXvYqwH/AggRaNzkGonbK9RyiJ5Bj96LCeisdW+yyxoxNhWVhHa7o4nhyUZt55cpYk8LaMptNT0Yw==
-X-Received: by 2002:a1c:a552:: with SMTP id o79mr13323037wme.91.1568629691506;
-        Mon, 16 Sep 2019 03:28:11 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 33sm46979933wra.41.2019.09.16.03.28.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 03:28:11 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 12:28:10 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     wenxu@ucloud.cn
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net/sched: cls_api: Fix nooffloaddevcnt counter in
- indr block call success
-Message-ID: <20190916102810.GN2286@nanopsycho.orion>
-References: <1568628934-32085-1-git-send-email-wenxu@ucloud.cn>
+        id S1729069AbfIPKdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 06:33:10 -0400
+Received: from mout.web.de ([212.227.15.4]:41303 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725826AbfIPKdK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Sep 2019 06:33:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1568629975;
+        bh=MmG0AFh9t9sKeZ3P1EE1tiYnOTRXVWpq3OKi4adZ0Uk=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=sGlkxWvliLUF3ExjJFGr561AFjo7QSGcfQDqA3lx45RMkYM0b2BhvAfNGQkTGq2aQ
+         tKwO14im7rLhfpZbz22qwuh4mKHJ4IGmdjXPfwsjLL0w76MVzgsrZzQzo8aQEyk1JZ
+         UObROWvaj4Gk7SEDOthn6prPKutxtrI4XHukPOMU=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.131.32.36]) by smtp.web.de (mrweb003
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MEEdU-1huP310fpw-00FU89; Mon, 16
+ Sep 2019 12:32:55 +0200
+Subject: Re: ss: Checking selected network ports
+To:     David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     Josh Hunt <johunt@akamai.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <1556674718-5081-1-git-send-email-johunt@akamai.com>
+ <3d1c67c8-7dfe-905b-4548-dae23592edc5@web.de>
+ <20190601.164838.1496580524715275443.davem@davemloft.net>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <9153b2b5-7988-92b4-e357-b5acfe19318e@web.de>
+Date:   Mon, 16 Sep 2019 12:32:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1568628934-32085-1-git-send-email-wenxu@ucloud.cn>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190601.164838.1496580524715275443.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-Provags-ID: V03:K1:wo+/1s09x7gDgWKENRFkSVAAPFzGSg0cw+VKmlbNbUjF0ezOQFZ
+ 343G8mm410NSRVw9gV49mIezLEQklvK3t4KUYE3EaQdwC5gQBizxhUqWR2+4/2SMpedhFnf
+ rw8s4rkA4GU+MdFIQPGzqb+X4OUqxN2QGSdSPKo17cWERSqNEIiMaa8TM1LGoRo1jPLqrEF
+ HrhT35vhUpY7eelwhO5lw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pixmFXdhl9k=:I6PxJ3yc3xWDtcNm0BFppW
+ GdXmi51fiNqsmyvn61SyHYtwTUnV1nPMa3Tpdpy8hcYCcws04tFRfVZmm8vSUnhZ1qx4Edc5w
+ KFPRPaDtDNeKVqNJragVjl44uSEy85iODuFP1kVCA7LanbWFwH3YWMGD4fBiAvYo90TlTR+fm
+ PKAUHhR7K0Q4TEi149VvE0lrQvkqsFqXqUI3SsCq7vTPnfZSFcHF9YmDrKFlL0qXZdZTWUxO3
+ YcV/sYKxqWv1djyjPpS2r3LY4xqIoaqkV6MBXpOfC+Oxp78tVJZ59yiAlIYQcLD2rSJiXJAb7
+ uDm18OiDkEF4etYDYzM0ZTqEckIP/qsepOS788Y8Rfksqt7ZDkk3wTHlKK1swBvh+bN9Axd4f
+ Al0H2mTaL1n/yJ3zE2IRyBAqRFSX3YoJhxU7Jyxnzoo4NjmYBfIUlH2vGwg830uj1twtf5gET
+ Z1LyTkI77K5LgzC0Yys4UURTQPIlhG7YbRPER4HzYV8ABgiNpGknd362g4ekvgtr5weJ8Eh4V
+ FKEhbnoHzlAxpIuj3efDKldseho2No1nz/ZZ4eATn2NgLvBQGnfxR8QCBDJcrDs+swXwgwlv7
+ 7GDpoFcNFoodh7wC4mF1mG+EQ9vhHRfWsWHL9wlRx39L5FX8w5zcol6wuLGOJbjwrMnSxhUCb
+ OU2UU3VwYwWqyT6X5VMTFaZYX4Jliv+lbKcCjeHmPNc15WbeUjY0WC0uvsS7jvSsQoOl3u11V
+ 3dbxRaRvIxJaZFHiC7t2wl9aBeyYZ10PRcZgD/0iv+5QSxQScdkDrCozxC3Lji3SQAKvhvhYE
+ UVKF2fB5SiWQ8X3H/cchnCioxx8aRH11xU3UZh1BwqnJEfIdq5MmSzhdKEZDz8toAKo8HtFN8
+ iN0532VXS4Nt6aZgzO9T0Yu367VaXU/bhahACBdqwIU7+8kXHawjlcPMNFZrslu7dz/qDPHY5
+ iw34B1K+7DD3NOO0s0sQkZ6FiuAFcX8hqe/c7blb3Kuf3YAyIqobxwAw+B35sHvACH7XqUbo1
+ 1+kfDWrxp5MHXPkCrwSrU4cDcF1CjxnB8PJ1xu8KwGnODtRxl0bbndwQBR1gKy+s1D+KPNkAX
+ vnBu7gWPDpPhyelrnzMGqu/yYx20VRFJuyxaKSsurf5kKYeHbAN5nsCu1o2BdrWrF7EM7krem
+ ncZLiI60frvuA1cpH9hUajqCMcEJ96CBokjiJWcs0HmjMgQJbWkub8PHjOjfjcxwNwaWg370O
+ guuQDS7tTrIJ9yJnDCEjvcNO/8oYzq/yhrPHYon26x8R+f85OtSlDcg24588=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please use get_maintainers script to get list of ccs.
+> If you use netlink operations directly, you can have the kernel filter
+> on various criteria and only get the socket entries you are interested in.
 
-Mon, Sep 16, 2019 at 12:15:34PM CEST, wenxu@ucloud.cn wrote:
->From: wenxu <wenxu@ucloud.cn>
->
->When a block bind with a dev which support indr block call(vxlan/gretap
->device). It can bind success but with nooffloaddevcnt++. It will fail
->when replace the hw filter in tc_setup_cb_call with skip_sw mode for
->checkout the nooffloaddevcnt and skip_sw.
-
-I read this paragraph 5 times, I still don't understand :( Could you
-please re-phrase?
+I suggest to take another look at software design options.
 
 
->
->if (block->nooffloaddevcnt && err_stop)
->	return -EOPNOTSUPP;
->
->So with this patch, if the indr block call success, it will not modify
->the nooffloaddevcnt counter.
->
->Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
->Signed-off-by: wenxu <wenxu@ucloud.cn>
->---
-> net/sched/cls_api.c | 27 +++++++++++++++------------
-> 1 file changed, 15 insertions(+), 12 deletions(-)
->
->diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->index efd3cfb..8a1e3a5 100644
->--- a/net/sched/cls_api.c
->+++ b/net/sched/cls_api.c
->@@ -766,10 +766,10 @@ void tc_indr_block_cb_unregister(struct net_device *dev,
-> }
-> EXPORT_SYMBOL_GPL(tc_indr_block_cb_unregister);
-> 
->-static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
->-			       struct tcf_block_ext_info *ei,
->-			       enum flow_block_command command,
->-			       struct netlink_ext_ack *extack)
->+static int tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
->+			      struct tcf_block_ext_info *ei,
->+			      enum flow_block_command command,
->+			      struct netlink_ext_ack *extack)
-> {
-> 	struct tc_indr_block_cb *indr_block_cb;
-> 	struct tc_indr_block_dev *indr_dev;
->@@ -785,7 +785,7 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
-> 
-> 	indr_dev = tc_indr_block_dev_lookup(dev);
-> 	if (!indr_dev)
->-		return;
->+		return -ENOENT;
-> 
-> 	indr_dev->block = command == FLOW_BLOCK_BIND ? block : NULL;
-> 
->@@ -793,7 +793,10 @@ static void tc_indr_block_call(struct tcf_block *block, struct net_device *dev,
-> 		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
-> 				  &bo);
-> 
->-	tcf_block_setup(block, &bo);
->+	if (list_empty(&bo.cb_list))
->+		return -EOPNOTSUPP;
+> This whole discussion has zero to do with what text format 'ss' outputs.
 
-How is this part related to the rest of the patch?
+Is there a need to improve the software documentation any further?
 
->+
->+	return tcf_block_setup(block, &bo);
-> }
-> 
-> static bool tcf_block_offload_in_use(struct tcf_block *block)
->@@ -849,14 +852,14 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
-> 	if (err)
-> 		return err;
-> 
->-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
-> 	return 0;
-> 
-> no_offload_dev_inc:
-> 	if (tcf_block_offload_in_use(block))
-> 		return -EOPNOTSUPP;
->-	block->nooffloaddevcnt++;
->-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
->+	err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
->+	if (err)
->+		block->nooffloaddevcnt++;
-> 	return 0;
-> }
-> 
->@@ -866,8 +869,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
-> 	struct net_device *dev = q->dev_queue->dev;
-> 	int err;
-> 
->-	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
->-
-> 	if (!dev->netdev_ops->ndo_setup_tc)
-> 		goto no_offload_dev_dec;
-> 	err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
->@@ -876,7 +877,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
-> 	return;
-> 
-> no_offload_dev_dec:
->-	WARN_ON(block->nooffloaddevcnt-- == 0);
->+	err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
->+	if (err)
->+		WARN_ON(block->nooffloaddevcnt-- == 0);
-> }
-> 
-> static int
->-- 
->1.8.3.1
->
+Which programming interface should be used to check the receive queue
+for a single port (without retrieving more network data before)?
+
+Regards,
+Markus
