@@ -2,130 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31811B37E0
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8C9B37EA
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 12:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729229AbfIPKQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 06:16:34 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:25301 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729112AbfIPKQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 06:16:34 -0400
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Claudiu.Beznea@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="Claudiu.Beznea@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Claudiu.Beznea@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: hlzQydlFOdNWFpZp16vKarKOadfVBh+isseXB0ZasB8u9v7zPuDiU1wYwkbBXraF1zb1a9Olqw
- oOVQlSeLEH+Rs5JHJUGoXtJbip88hxFLBGztB46xRKIL15u+5Q/y6P/UqcNNgULWL+08RwfLA3
- 8ztAHHfQYyWuG2xBAmgdVEpBEVBb9oHmnToh9Kre8nwU5aQin9+RG/uuuvaxmD+Klg/ujAqgsW
- 0UearMBXunWI/xJwGAtBFr3LE2DmolrafxOSuC84pkwMRIZgXnonXBaUQWpUY6szwo7v8v0sOc
- Gl0=
-X-IronPort-AV: E=Sophos;i="5.64,512,1559545200"; 
-   d="scan'208";a="50601964"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2019 03:16:32 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 16 Sep 2019 03:16:32 -0700
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
- Transport; Mon, 16 Sep 2019 03:16:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P2ARQ251Rvbdwn7kda+u0eDKIcQC65aK6LIbAyeaQvcnVUMw5gLcaQu+mJIorV9w5Stwe4+hZvTHkop/qSl3A0/9s8u2JY4MTtbVgMRGnUn+8OSYQ7D8oH0mkgOTXYy3h7RlZF5IFheaEpS8OqSKGC4s7fb8dQ2MbMjm3hcDgF1jCqQNbica8il99bf6RH3YF//15xN7Ftk+HlA3gvoLGF+MRcvlXS+KOa98fLkzTfUQAGOUaXqCVmJVGiRyqKvcdfDUwHEVfkoQv2ATUM77L4akH/T3LOuEGPpDFW3t6shkRoidDyR71MJAZkZtc8DEMNZtHayyjbX6dAcdXlObtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HCi9X0wNeVwrNjSBnQxXbaLuYlrBN9ofyLAKBC5hgZ8=;
- b=nSY2C3L9uQzdLcaVsiQbF5dyjUgNrhyBPhV32VXhl+9giLf+0qWwDG8oYh6F8bgxuETJw3dWXZ7ZJ6f6T1K5gcYc5aROP5bojBFtsXLwt2pveTGKjw+XCwuPlcg2VELLkcYgHuXLHS4vWqbUG347Q2pCFhFPAKCHu3CEh5D8f9Vu20A7NnLVTOk7tmqYrBV7mbpmTH6dMk0xyti+eqJWmhjCtWEjQ7p495rquxIrOei9421D/7ZzFNjENSBUV/zU6XJkDaBKXfdl5QF2gMXH/1nOd/urUvvKi3ruhQ7wH0CBHb1NIp/G2ozcO43D1CpveFw9pXj+ufiXTXIGxmHTbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HCi9X0wNeVwrNjSBnQxXbaLuYlrBN9ofyLAKBC5hgZ8=;
- b=PHnZGReNRHkFLgunXjD2nopu9V/hM6R+jAjh2x1HNAEQRWn8sqDTOiGO/1463xVgz7josJv5owfjkHCqcGKO8cUEaHkQqO6cgFTCeT5SNyaMouT7lAu1ubRfZOpFnB+sv6iXzS+D0VRwutc2czmxBZ79DWL++s+eGaDRFn9tk94=
-Received: from MWHPR11MB1549.namprd11.prod.outlook.com (10.172.54.17) by
- MWHPR11MB1981.namprd11.prod.outlook.com (10.175.54.144) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2263.17; Mon, 16 Sep 2019 10:16:31 +0000
-Received: from MWHPR11MB1549.namprd11.prod.outlook.com
- ([fe80::e1f5:745f:84b4:7c7c]) by MWHPR11MB1549.namprd11.prod.outlook.com
- ([fe80::e1f5:745f:84b4:7c7c%12]) with mapi id 15.20.2263.023; Mon, 16 Sep
- 2019 10:16:31 +0000
-From:   <Claudiu.Beznea@microchip.com>
-To:     <schwab@suse.de>
-CC:     <Nicolas.Ferre@microchip.com>, <netdev@vger.kernel.org>
-Subject: Re: macb: inconsistent Rx descriptor chain after OOM
-Thread-Topic: macb: inconsistent Rx descriptor chain after OOM
-Thread-Index: AQHVbGIsZPEARKNyhE2It7RNJ/kTNqcuElQAgAAECKOAAABzAA==
-Date:   Mon, 16 Sep 2019 10:16:31 +0000
-Message-ID: <379c59d0-e31b-96c1-8a5e-416b98583da0@microchip.com>
-References: <mvm4l1chemx.fsf@suse.de>
- <51458d2e-69a5-2a30-2167-7f47a43d9a2f@microchip.com>
- <mvmmuf4fszw.fsf@suse.de>
-In-Reply-To: <mvmmuf4fszw.fsf@suse.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: VI1PR0302CA0006.eurprd03.prod.outlook.com
- (2603:10a6:800:e9::16) To MWHPR11MB1549.namprd11.prod.outlook.com
- (2603:10b6:301:c::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-tagtoolbar-keys: D20190916131622096
-x-originating-ip: [86.120.236.72]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b21fc85b-e9ea-45f3-bdc8-08d73a8ef1b5
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:MWHPR11MB1981;
-x-ms-traffictypediagnostic: MWHPR11MB1981:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1981C0EFE12802DD118D4D2E878C0@MWHPR11MB1981.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
-x-forefront-prvs: 0162ACCC24
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(396003)(136003)(376002)(39860400002)(366004)(346002)(189003)(199004)(36756003)(6436002)(86362001)(26005)(6916009)(71200400001)(8676002)(53546011)(386003)(6506007)(558084003)(186003)(4326008)(76176011)(31696002)(256004)(14444005)(486006)(5660300002)(52116002)(446003)(11346002)(71190400001)(14454004)(102836004)(25786009)(2616005)(7736002)(305945005)(476003)(478600001)(66476007)(64756008)(66446008)(6246003)(6116002)(66556008)(66946007)(66066001)(81166006)(81156014)(99286004)(2906002)(8936002)(6486002)(54906003)(53936002)(6512007)(31686004)(229853002)(316002)(3846002)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1981;H:MWHPR11MB1549.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: +5TnXqZDeMcJ7R9ar1cjshKmGzoljkhZfr8+m/paFYEBN8ZRrOWpDiT2gWdRZtUFWBiLLNUXC9b5C+TEhoFnsBkb4dF911fvflk/hChEFosyOvzCw+Q2yat/5l5/tvjWVFgUX+m3SkaUUm1IvXFUHKAnRe91oBwxoujUONfkKyASs2iCWC/Y0fxwfLUIv5h5x5aAsw+1cNVM/8bHVtOnh2fF3plLDzB/xE2GbsRqmFU5Ay1P4mlr+1zKTPc33EQjXBuoCmFWg6s3Nq3g07enTxRTig7xJsfm6cCrKlYolBsy5GUcaQMhO00wBW3Sx4HUhUSJK3ecIQioCqjAxCBO1gi+8LFKQLZy5i4coiaTA0Eu8LO0IVlEwoLHLYAiocPg4Qvd6X8lPzAwVkaCAGL8/wDk64g22UoE1IJnkQ0KlgY=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FAC18E295E593346BA81BAD9D7F60A3C@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728426AbfIPKTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 06:19:08 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33187 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729331AbfIPKTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 06:19:08 -0400
+Received: by mail-io1-f71.google.com with SMTP id g15so684187ioc.0
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 03:19:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mAdUAM8YzOu9I1hdJOoj7a4Ffw1Bx1p0uX0fb4DD1J0=;
+        b=ahJy4SYMTDYRKUV/6bGMACRV+Wq8EfLtC7T6BT88m7Y+v2nFq636zKUQlQcH64aZxl
+         m1UTAzU2sCRVnZdI/kS1+huTbZ6BIV+GxcXhxUAh59Rz9CyEtGbpoHNV/cDSRtGxfidE
+         F/Yl/Vo6EAqgv32EuJWjIG27HQlFLqR5V1LBCKSFiUVqFrQGzITCpTZOWcEAcdwdApfA
+         Msr1TFvL8F/6PjHirSlviiJHbSlGNJ33RT1+FytcUB2pz1w3gmItZxISgi9Kk1ZvA21z
+         hgBaTfIXrf/aUp7tsUN9loN9oaTdPNgPffbCTlCIscRPkBf3Ew/CA72p6mxJ2zC1pQcE
+         fOEQ==
+X-Gm-Message-State: APjAAAUIUYUkDdQYIpOGkpCcCTX3iY6pqrdf0vzNu2aq6JzpjbcG4hXj
+        tjdYAzcvAftsVFqMGrhMbZa9mZchhtAiUhSjOxr8LrkdQWko
+X-Google-Smtp-Source: APXvYqxaPk58ytdK63Zl+NR3Gjyqkc2VpDqzOgb9QEUfLW+h1dZo/dS1M5kQp+QkzpuP278DUi2cPthIFyKvnsn542dew8CORI72
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b21fc85b-e9ea-45f3-bdc8-08d73a8ef1b5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2019 10:16:31.2790
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dc3L9Tu7Q/o0gR6QHiUs0Pk4UrpQTqu7bUA3Uo0+YCynbXm9ycusC7KRhqMfxF1V/mnU1sQswyV0I8wXlbBuHay2iNGj9Kv53El6f18qe8M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1981
+X-Received: by 2002:a02:712b:: with SMTP id n43mr38481268jac.2.1568629146713;
+ Mon, 16 Sep 2019 03:19:06 -0700 (PDT)
+Date:   Mon, 16 Sep 2019 03:19:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001348750592a8ef50@google.com>
+Subject: INFO: task hung in cancel_delayed_work_sync
+From:   syzbot <syzbot+f39ab8494f6015e62360@syzkaller.appspotmail.com>
+To:     ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
+        davem@davemloft.net, ilyal@mellanox.com,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        kafai@fb.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDE2LjA5LjIwMTkgMTM6MTQsIEFuZHJlYXMgU2Nod2FiIHdyb3RlOg0KPiBFeHRlcm5h
-bCBFLU1haWwNCj4gDQo+IA0KPiBPbiBTZXAgMTYgMjAxOSwgPENsYXVkaXUuQmV6bmVhQG1pY3Jv
-Y2hpcC5jb20+IHdyb3RlOg0KPiANCj4+IEkgd2lsbCBoYXZlIGEgbG9vayBvbiBpdC4gSXQgd291
-bGQgYmUgZ29vZCBpZiB5b3UgY291bGQgZ2l2ZSBtZSBzb21lDQo+PiBkZXRhaWxzIGFib3V0IHRo
-ZSBzdGVwcyB0byByZXByb2R1Y2UgaXQuDQo+IA0KPiBZb3UgbmVlZCB0byB0cmlnZ2VyIE9PTS4N
-Cg0KT2ssIHRoYW5rIHlvdSENCg0KPiANCj4gQW5kcmVhcy4NCj4gDQo=
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    f4b752a6 mlx4: fix spelling mistake "veify" -> "verify"
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1183c7fa600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b89bb446a3faaba4
+dashboard link: https://syzkaller.appspot.com/bug?extid=f39ab8494f6015e62360
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14426d85600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=110c1af1600000
+
+The bug was bisected to:
+
+commit 3c4d7559159bfe1e3b94df3a657b2cda3a34e218
+Author: Dave Watson <davejwatson@fb.com>
+Date:   Wed Jun 14 18:37:39 2017 +0000
+
+     tls: kernel TLS support
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=144a4ffa600000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=164a4ffa600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=124a4ffa600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+f39ab8494f6015e62360@syzkaller.appspotmail.com
+Fixes: 3c4d7559159b ("tls: kernel TLS support")
+
+INFO: task syz-executor279:9995 blocked for more than 143 seconds.
+       Not tainted 5.3.0-rc7+ #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+syz-executor279 D24264  9995   9994 0x00000000
+Call Trace:
+  context_switch kernel/sched/core.c:3254 [inline]
+  __schedule+0x755/0x1580 kernel/sched/core.c:3880
+  schedule+0xd9/0x260 kernel/sched/core.c:3947
+  schedule_timeout+0x717/0xc50 kernel/time/timer.c:1783
+  do_wait_for_common kernel/sched/completion.c:83 [inline]
+  __wait_for_common kernel/sched/completion.c:104 [inline]
+  wait_for_common kernel/sched/completion.c:115 [inline]
+  wait_for_completion+0x29c/0x440 kernel/sched/completion.c:136
+  __flush_work+0x508/0xa50 kernel/workqueue.c:3040
+  __cancel_work_timer+0x3d9/0x540 kernel/workqueue.c:3127
+  cancel_delayed_work_sync+0x1b/0x20 kernel/workqueue.c:3259
+  tls_sw_cancel_work_tx+0x68/0x80 net/tls/tls_sw.c:2063
+  tls_sk_proto_close+0x4ac/0x990 net/tls/tls_main.c:299
+  inet_release+0xed/0x200 net/ipv4/af_inet.c:427
+  inet6_release+0x53/0x80 net/ipv6/af_inet6.c:470
+  __sock_release+0xce/0x280 net/socket.c:590
+  sock_close+0x1e/0x30 net/socket.c:1268
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:163
+  prepare_exit_to_usermode arch/x86/entry/common.c:194 [inline]
+  syscall_return_slowpath arch/x86/entry/common.c:274 [inline]
+  do_syscall_64+0x5a9/0x6a0 arch/x86/entry/common.c:299
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x401f40
+Code: ff ff ff 25 62 63 20 00 68 08 00 00 00 e9 60 ff ff ff ff 25 5a 63 20  
+00 68 09 00 00 00 e9 50 ff ff ff ff 25 52 63 20 00 68 0a <00> 00 00 e9 40  
+ff ff ff ff 25 4a 63 20 00 68 0b 00 00 00 e9 30 ff
+RSP: 002b:00007fffd8200d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000401f40
+RDX: ffffffffffffffc1 RSI: 1201000000003618 RDI: 0000000000000004
+RBP: 00007fffd8200d70 R08: 0000000000000000 R09: 1201000000003618
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000403170 R14: 0000000000000000 R15: 0000000000000000
+INFO: lockdep is turned off.
+NMI backtrace for cpu 1
+CPU: 1 PID: 1057 Comm: khungtaskd Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  nmi_cpu_backtrace.cold+0x70/0xb2 lib/nmi_backtrace.c:101
+  nmi_trigger_cpumask_backtrace+0x23b/0x28b lib/nmi_backtrace.c:62
+  arch_trigger_cpumask_backtrace+0x14/0x20 arch/x86/kernel/apic/hw_nmi.c:38
+  trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+  check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
+  watchdog+0x9d0/0xef0 kernel/hung_task.c:289
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0 skipped: idling at native_safe_halt+0xe/0x10  
+arch/x86/include/asm/irqflags.h:60
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
