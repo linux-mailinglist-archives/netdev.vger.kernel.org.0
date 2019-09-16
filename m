@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D3DB3614
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 10:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E28DB362B
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 10:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730786AbfIPIBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 04:01:01 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39942 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbfIPIBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 04:01:01 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l3so15040547wru.7
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 01:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/AXLuIRIEGPsxuGlfn5VhZuUQ7zJhCDOgRYeFm54iQE=;
-        b=kL57Dcid1UQv5psKgzYo9EuinVXjAmHqV8d5IcNRcCykPCxDAz0hpoh7etBowFNKZu
-         0JC7MWNTs+sQoj8OS1TwXaEIWaqMVITjuHV8cs103PKrHdcPnHT1hNQ0IIrSk5qhE38y
-         B46Kej+qez7X3h3Ektp7wtcBtDu7VyDsn3kFV3dfW8ZirpN2viaSj8hRT7Hql8M3dzjj
-         wrb+vjJRrSjgtG05QIDX9h+VmlEiJS2Dws47JlpNEFhhXLxOiZ9jS4nzEVvwiy7KpGcS
-         ZppY+qdef+K2ka/2/iYMdZBlksfdGMbJMVZrQq/c2eAutISSbLQeVHOOZdxTZD2F+zCn
-         4fvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/AXLuIRIEGPsxuGlfn5VhZuUQ7zJhCDOgRYeFm54iQE=;
-        b=K9easBXGzy/ak2OGPAP/Mp8uT4SBzdvKEoXMQB1jY/PnndtxIcxBzrqSjnVgcNwNTp
-         YR0PDdNJurKeKxN5LyHQdSaDJrBV2aeqkiPUABEXQcWXSkTbS+/cFpPr/Vhw7Mws1WhI
-         DVHdN4ObUK3I8gjf3lEimyoLMtOJeQB9h65JM9sM3ce73jn0iDAiVnWEiL9EHQtd/fc0
-         hgtq2npbUbVYnMr/gA2PHed1lpjUVKzwtCEBv9nB9UXTIaFd8Rz8dpB9XHnpYRQV/CkD
-         cEluxXbRXX1r5yc6KDsZSN78xGlQzNX1zvmETrTD9uishd0YHSlmyDL6kisCOKT50XnN
-         ETGA==
-X-Gm-Message-State: APjAAAV1d9A2TbCemgd3ghOZrAmk6I7VO4cKIUxbpxBKx5OgppZ5GWbl
-        iBwFQIjHXZe4/eSAo5tK8LJOZg==
-X-Google-Smtp-Source: APXvYqzOFnK5BH48yf4C1qQMmbc/ryMH5BkQqI/NSTlbAm/kV+cMC5Ika2bfRL4MGYNoAppXMOIXUQ==
-X-Received: by 2002:a5d:434f:: with SMTP id u15mr49418851wrr.16.1568620859169;
-        Mon, 16 Sep 2019 01:00:59 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a10sm10492415wrm.52.2019.09.16.01.00.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 01:00:58 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 10:00:57 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        shalomt@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 3/3] mlxsw: spectrum_buffers: Add the ability
- to query the CPU port's shared buffer
-Message-ID: <20190916080057.GL2286@nanopsycho.orion>
-References: <20190916061750.26207-1-idosch@idosch.org>
- <20190916061750.26207-4-idosch@idosch.org>
+        id S1730858AbfIPIIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 04:08:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41816 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727374AbfIPIIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 04:08:22 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i9m3U-0007bw-I3; Mon, 16 Sep 2019 10:08:16 +0200
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i9m3U-0006Yc-AD; Mon, 16 Sep 2019 10:08:16 +0200
+Subject: Re: [PATCH] libbpf: Don't error out if getsockopt() fails for
+ XDP_OPTIONS
+To:     Yonghong Song <yhs@fb.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "maximmi@mellanox.com" <maximmi@mellanox.com>
+References: <20190909174619.1735-1-toke@redhat.com>
+ <8e909219-a225-b242-aaa5-bee1180aed48@fb.com> <87lfuxul2b.fsf@toke.dk>
+ <60651b4b-c185-1e17-1664-88957537e3f1@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9271a44f-1bbf-1305-bff9-8cbb8bae9098@iogearbox.net>
+Date:   Mon, 16 Sep 2019 10:08:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190916061750.26207-4-idosch@idosch.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <60651b4b-c185-1e17-1664-88957537e3f1@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25573/Sun Sep 15 10:22:02 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 16, 2019 at 08:17:50AM CEST, idosch@idosch.org wrote:
->From: Shalom Toledo <shalomt@mellanox.com>
->
->While debugging packet loss towards the CPU, it is useful to be able to
->query the CPU port's shared buffer quotas and occupancy.
->
->Since the CPU port has no ingress buffers, all the shared buffers ingress
->information will be cleared.
->
->Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+On 9/13/19 8:53 PM, Yonghong Song wrote:
+> On 9/10/19 12:06 AM, Toke Høiland-Jørgensen wrote:
+>> Yonghong Song <yhs@fb.com> writes:
+>>> On 9/9/19 10:46 AM, Toke Høiland-Jørgensen wrote:
+>>>> The xsk_socket__create() function fails and returns an error if it cannot
+>>>> get the XDP_OPTIONS through getsockopt(). However, support for XDP_OPTIONS
+>>>> was not added until kernel 5.3, so this means that creating XSK sockets
+>>>> always fails on older kernels.
+>>>>
+>>>> Since the option is just used to set the zero-copy flag in the xsk struct,
+>>>> there really is no need to error out if the getsockopt() call fails.
+>>>>
+>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>>>> ---
+>>>>     tools/lib/bpf/xsk.c | 8 ++------
+>>>>     1 file changed, 2 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+>>>> index 680e63066cf3..598e487d9ce8 100644
+>>>> --- a/tools/lib/bpf/xsk.c
+>>>> +++ b/tools/lib/bpf/xsk.c
+>>>> @@ -603,12 +603,8 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+>>>>     
+>>>>     	optlen = sizeof(opts);
+>>>>     	err = getsockopt(xsk->fd, SOL_XDP, XDP_OPTIONS, &opts, &optlen);
+>>>> -	if (err) {
+>>>> -		err = -errno;
+>>>> -		goto out_mmap_tx;
+>>>> -	}
+>>>> -
+>>>> -	xsk->zc = opts.flags & XDP_OPTIONS_ZEROCOPY;
+>>>> +	if (!err)
+>>>> +		xsk->zc = opts.flags & XDP_OPTIONS_ZEROCOPY;
+>>>>     
+>>>>     	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+>>>>     		err = xsk_setup_xdp_prog(xsk);
+>>>
+>>> Since 'zc' is not used by anybody, maybe all codes 'zc' related can be
+>>> removed? It can be added back back once there is an interface to use
+>>> 'zc'?
+>>
+>> Fine with me; up to the maintainers what they prefer, I guess? :)
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Given this is not exposed to applications at this point and we don't do anything
+useful with it, lets just remove the zc cruft until there is a proper interface
+added to libbpf. Toke, please respin with the suggested removal, thanks!
