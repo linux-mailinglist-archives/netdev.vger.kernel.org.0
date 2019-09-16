@@ -2,71 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF82EB39D3
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 13:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C13B3A4F
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 14:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731709AbfIPL5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 07:57:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48254 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727309AbfIPL5d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 07:57:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=4UEBmSW/CBCAG5QIZKu21BsfI/TdK0ur9EAw4ov1WC0=; b=MnS880/Oh+ouDAg0CzMdK2Yd+k
-        oiyBTGdngetVphZYVVNqOSa6zu50VBLkwu4hArnslqb7BbUfVR3r+cmrw52ZXCptTb0Ebrc+HlL91
-        sHoySAfa6u85292mXOo9oQuRlZ+SP7F1JvYcBmx3x3Xw5H5bbo1AwCudRbUhFqWUrpvE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i9pdG-0001Zy-DD; Mon, 16 Sep 2019 13:57:26 +0200
-Date:   Mon, 16 Sep 2019 13:57:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, mkubecek@suse.cz
-Subject: Re: [PATCH v5 2/2] net: phy: adin: implement Energy Detect Powerdown
- mode via phy-tunable
-Message-ID: <20190916115726.GA5552@lunn.ch>
-References: <20190916073526.24711-1-alexandru.ardelean@analog.com>
- <20190916073526.24711-3-alexandru.ardelean@analog.com>
+        id S1732448AbfIPM05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 08:26:57 -0400
+Received: from mtax.cdmx.gob.mx ([187.141.35.197]:8446 "EHLO mtaw.cdmx.gob.mx"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727783AbfIPM04 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Sep 2019 08:26:56 -0400
+X-NAI-Header: Modified by McAfee Email Gateway (4500)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cdmx.gob.mx; s=72359050-3965-11E6-920A-0192F7A2F08E;
+        t=1568627616; h=X-Virus-Scanned:Content-Type:
+         MIME-Version:Content-Transfer-Encoding:Content-Description:
+         Subject:To:From:Date:Reply-To:Message-Id:X-AnalysisOut:
+         X-AnalysisOut:X-AnalysisOut:X-AnalysisOut:
+         X-AnalysisOut:X-AnalysisOut:X-AnalysisOut:
+         X-SAAS-TrackingID:X-NAIMIME-Disclaimer:X-NAIMIME-Modified:
+         X-NAI-Spam-Flag:X-NAI-Spam-Threshold:X-NAI-Spam-Score:
+         X-NAI-Spam-Rules:X-NAI-Spam-Version; bh=6
+        /pZmFQC6AfQtx64WCm5mpv4OcL2DRwqn08dcLKFTI
+        w=; b=yMoq21oQheYsNkTOt4Q6Ht1RBaQqMnhoi46s3bmowG1K
+        p1HUkMNlnEsWZQOiODgLzTknBro8aLXJojSftPvF90WIyPbLJf
+        MceAFu7KlkAiP5+SXdSkaJqLM2y1N9Y1ERPi3bam08tfoP0Mzc
+        NAZ59ydz3++9J9te4ffW96XMQ+M=
+Received: from correo.seciti.cdmx.gob.mx (gdf-correo.cdmx.gob.mx [10.250.102.17]) by mtaw.cdmx.gob.mx with smtp
+         id 0258_35f9_6093a369_6135_4dc6_8199_e06836df6553;
+        Mon, 16 Sep 2019 04:53:35 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTP id BEE8631B4;
+        Mon, 16 Sep 2019 04:53:33 -0500 (CDT)
+Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
+        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id OQpPfzS5mz7o; Mon, 16 Sep 2019 04:53:33 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTP id B77583117;
+        Mon, 16 Sep 2019 04:51:46 -0500 (CDT)
+X-Virus-Scanned: amavisd-new at gdf-correo.df.gob.mx
+Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
+        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id L3SeWMKfBNXA; Mon, 16 Sep 2019 04:51:46 -0500 (CDT)
+Received: from [100.88.209.140] (8ta-250-4-63.telkomadsl.co.za [102.250.4.63])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTPSA id 22382382F;
+        Mon, 16 Sep 2019 04:49:42 -0500 (CDT)
+Content-Type: text/plain;
+  charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190916073526.24711-3-alexandru.ardelean@analog.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: base64
+Content-Description: Mail message body
+Subject: Spende von 5 Millionen Euro
+To:     Recipients <mramirezg@mexicocity.gob.mx>
+From:   "Shane Missler" <mramirezg@mexicocity.gob.mx>
+Date:   Mon, 16 Sep 2019 11:49:23 +0200
+Reply-To: shanemissler.spende1@gmail.com
+Message-Id: <20190916094943.22382382F@gdf-correo.df.gob.mx>
+X-AnalysisOut: [v=2.2 cv=crfrqxwi c=1 sm=1 tr=0 p=NAessOE28N0A:10 p=01NpVV]
+X-AnalysisOut: [4txKbuBquBCNIA:9 p=OPvaR162FBY78wYZ:21 p=wwp16yEzG9Fj4K8O:]
+X-AnalysisOut: [21 p=09-KjHS_CW8A:10 p=bEr4i4eggGkA:10 p=-7VjjQDN59lQbO9Es]
+X-AnalysisOut: [jZ6:22 p=Lyqu6MUUigPyaOuRX7ce:22 a=KsSCQl7LcZej77FuluUcQw=]
+X-AnalysisOut: [=:117 a=XbdjHrFpJLAoAGD2hiQkuQ==:17 a=8nJEP1OIZ-IA:10 a=x7]
+X-AnalysisOut: [bEGLp0ZPQA:10 a=J70Eh1EUuV4A:10 a=pGLkceISAAAA:8 a=wPNLvfG]
+X-AnalysisOut: [TeEIA:10]
+X-SAAS-TrackingID: 0ab5f7d5.0.78243423.00-2360.131743526.s12p02m015.mxlogic.net
+X-NAIMIME-Disclaimer: 1
+X-NAIMIME-Modified: 1
+X-NAI-Spam-Flag: NO
+X-NAI-Spam-Threshold: 3
+X-NAI-Spam-Score: -5000
+X-NAI-Spam-Rules: 1 Rules triggered
+        WHITELISTED=-5000
+X-NAI-Spam-Version: 2.3.0.9418 : core <6634> : inlines <7140> : streams
+ <1832911> : uri <2904409>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 16, 2019 at 10:35:26AM +0300, Alexandru Ardelean wrote:
-> This driver becomes the first user of the kernel's `ETHTOOL_PHY_EDPD`
-> phy-tunable feature.
-> EDPD is also enabled by default on PHY config_init, but can be disabled via
-> the phy-tunable control.
-> 
-> When enabling EDPD, it's also a good idea (for the ADIN PHYs) to enable TX
-> periodic pulses, so that in case the other PHY is also on EDPD mode, there
-> is no lock-up situation where both sides are waiting for the other to
-> transmit.
-> 
-> Via the phy-tunable control, TX pulses can be disabled if specifying 0
-> `tx-interval` via ethtool.
-> 
-> The ADIN PHY supports only fixed 1 second intervals; they cannot be
-> configured. That is why the acceptable values are 1,
-> ETHTOOL_PHY_EDPD_DFLT_TX_MSECS and ETHTOOL_PHY_EDPD_NO_TX (which disables
-> TX pulses).
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+RGllcyBpc3QgZWluZSBwZXJzw7ZubGljaGUgTWFpbCwgZGllIGljaCBhbiBTaWUgYWRyZXNzaWVy
+ZS4gSWNoIGJpbiBTSEFORSBNSVNTTEVSIGF1cyBGbG9yaWRhLCBVU0EuIFdpZSBTaWUgYmVyZWl0
+cyB3aXNzZW4sIGhhYmUgaWNoIGVpbmVuIExvdHRvLUphY2twb3QgaW4gSMO2aGUgdm9uIDQ1MSBN
+aW8uIFVTRCAoMzMwIE1pby4gR0JQKSBnZXdvbm5lbiB1bmQgZGFzIEdlbGQgaGF0IG1laW4gTGVi
+ZW4gdW5kIG1laW4gRmFtaWxpZW5sZWJlbiB2ZXLDpG5kZXJ0LCBhYmVyIGVzIHdpcmQgbWVpbiBI
+ZXJ6IG5pY2h0IHZlcsOkbmRlcm4sIHdpZSBpY2ggYW4gZGVtIFRhZyBzYWd0ZSwgYW4gZGVtIGlj
+aCBtZWluIEdlbGQgaGFiZSwgZGFzIGljaCB2ZXJ3ZW5kZW4gd2VyZGUgRGllc2VzIEdlbGQgZsO8
+ciBkaWUgSGlsZmUgZGVyIE1lbnNjaGhlaXQuIEljaCBoYWJlIGJlc2NobG9zc2VuLCBJaG5lbiB1
+bmQgSWhyZXIgR2VtZWluZGUgZWluZW4gQmV0cmFnIHZvbiA1IE1pbGxpb25lbiBFdXJvIHp1IHNw
+ZW5kZW4sIHVtIGRpZXNlIFNwZW5kZSBhbnp1Zm9yZGVybi4gRS1NYWlsOiAoc2hhbmVtaXNzbGVy
+MEBnbWFpbC5jb20pCgoKCgoKCgoKCgpMYSBpbmZvcm1hY2lvbiBjb250ZW5pZGEgZW4gZXN0ZSBj
+b3JyZW8sIGFzaSBjb21vIGxhIGNvbnRlbmlkYSBlbiBsb3MgZG9jdW1lbnRvcyBhbmV4b3MsIHB1
+ZWRlIGNvbnRlbmVyIGRhdG9zIHBlcnNvbmFsZXMsIHBvciBsbyBxdWUgc3UgZGlmdXNpb24gZXMg
+cmVzcG9uc2FiaWxpZGFkIGRlIHF1aWVuIGxvcyB0cmFuc21pdGUgeSBxdWllbiBsb3MgcmVjaWJl
+LCBlbiB0w6lybWlub3MgZGUgbG8gZGlzcHVlc3RvIHBvciBsYXMgZnJhY2Npb25lcyBJSSB5IFZJ
+SSBkZWwgYXJ0aWN1bG8gNCwgdWx0aW1vIHBhcnJhZm8gZGVsIGFydGljdWxvIDgsIGFydGljdWxv
+IDM2IHBhcnJhZm8gSUksIDM4IGZyYWNjaW9uIEkgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxhIExl
+eSBkZSBUcmFuc3BhcmVuY2lhIHkgQWNjZXNvIGEgbGEgSW5mb3JtYWNpb24gUHVibGljYSBkZWwg
+RGlzdHJpdG8gRmVkZXJhbC4NCkxvcyBEYXRvcyBQZXJzb25hbGVzIHNlIGVuY3VlbnRyYW4gcHJv
+dGVnaWRvcyBwb3IgbGEgTGV5IGRlIFByb3RlY2Npb24gZGUgRGF0b3MgUGVyc29uYWxlcyBkZWwg
+RGlzdHJpdG8gRmVkZXJhbCwgcG9yIGxvIHF1ZSBzdSBkaWZ1c2lvbiBzZSBlbmN1ZW50cmEgdHV0
+ZWxhZGEgZW4gc3VzIGFydGljdWxvcyAyLCA1LCAxNiwgMjEsIDQxIHkgZGVtYXMgcmVsYXRpdm9z
+IHkgYXBsaWNhYmxlcywgZGViaWVuZG8gc3VqZXRhcnNlIGVuIHN1IGNhc28sIGEgbGFzIGRpc3Bv
+c2ljaW9uZXMgcmVsYXRpdmFzIGEgbGEgY3JlYWNpb24sIG1vZGlmaWNhY2lvbiBvIHN1cHJlc2lv
+biBkZSBkYXRvcyBwZXJzb25hbGVzIHByZXZpc3Rvcy4gQXNpbWlzbW8sIGRlYmVyYSBlc3RhcnNl
+IGEgbG8gc2XDsWFsYWRvIGVuIGxvcyBudW1lcmFsZXMgMSAsIDMsIDEyLCAxOCwgMTksIDIwLCAy
+MSwgMjMsIDI0LCAyOSwgMzUgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxvcyBMaW5lYW1pZW50b3Mg
+cGFyYSBsYSBQcm90ZWNjaW9uIGRlIERhdG9zIFBlcnNvbmFsZXMgZW4gZWwgRGlzdHJpdG8gRmVk
+ZXJhbC4NCkVuIGVsIHVzbyBkZSBsYXMgdGVjbm9sb2dpYXMgZGUgbGEgaW5mb3JtYWNpb24geSBj
+b211bmljYWNpb25lcyBkZWwgR29iaWVybm8gZGVsIERpc3RyaXRvIEZlZGVyYWwsIGRlYmVyYSBv
+YnNlcnZhcnNlIHB1bnR1YWxtZW50ZSBsbyBkaXNwdWVzdG8gcG9yIGxhIExleSBHb2JpZXJubyBF
+bGVjdHJvbmljbyBkZWwgRGlzdHJpdG8gRmVkZXJhbCwgbGEgbGV5IHBhcmEgaGFjZXIgZGUgbGEg
+Q2l1ZGFkIGRlIE1leGljbyB1bmEgQ2l1ZGFkIE1hcyBBYmllcnRhLCBlbCBhcGFydGFkbyAxMCBk
+ZSBsYSBDaXJjdWxhciBVbm8gdmlnZW50ZSB5IGxhcyBOb3JtYXMgR2VuZXJhbGVzIHF1ZSBkZWJl
+cmFuIG9ic2VydmFyc2UgZW4gbWF0ZXJpYSBkZSBTZWd1cmlkYWQgZGUgbGEgSW5mb3JtYWNpb24g
+ZW4gbGEgQWRtaW5pc3RyYWNpb24gUHVibGljYSBkZWwgRGlzdHJpdG8gRmVkZXJhbC4K
