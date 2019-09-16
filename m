@@ -2,64 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86124B3D5A
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 17:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3820B3D93
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 17:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728503AbfIPPNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 11:13:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48778 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728230AbfIPPNU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 11:13:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=qslw6kOw2Be8j7nCTauCKrs1ny5oQCdTuGpIO3utnSA=; b=XzPSsFA56UbCxXztwk8Nd0e199
-        xiuwFcr0XHc6gjj4SBp3xoX3CFlM364jhcnHL0E0YqDwNBQiuZQGb5eYvXiD6RLl9+Zeo5cR2K6v/
-        FBB9RwtRdt3Y3vSTbNtcq7gVU2CxN9RSsCNvgh8brm6RMBbB6JB++xO0jpHRDaBRWQI8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i9sgm-00032O-O4; Mon, 16 Sep 2019 17:13:16 +0200
-Date:   Mon, 16 Sep 2019 17:13:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Paul Thomas <pthomas8589@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: net: phy: micrel KSZ9031 ifdown ifup issue
-Message-ID: <20190916151316.GA8144@lunn.ch>
-References: <CAD56B7fEGm439yn_MaWxbyfMUEtfjbijH8as99Xh2N+6bUQEGQ@mail.gmail.com>
- <20190914145443.GE27922@lunn.ch>
- <CAD56B7dF9Dqf1wwu=w60z0q+hkE5-noZRS4uuUfF4PhyNSa4Kw@mail.gmail.com>
+        id S2389085AbfIPPVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 11:21:54 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:48630 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388625AbfIPPVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 11:21:53 -0400
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x8GFFOZc096063
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 11:21:52 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2v2a1m7sgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 11:21:50 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x8GFKH7k017340
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 15:21:49 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01wdc.us.ibm.com with ESMTP id 2v0sw4sang-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 15:21:49 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x8GFLmw138535470
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Sep 2019 15:21:48 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9232CAC059;
+        Mon, 16 Sep 2019 15:21:48 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4D318AC064;
+        Mon, 16 Sep 2019 15:21:48 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.85.220.176])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 16 Sep 2019 15:21:48 +0000 (GMT)
+Subject: Re: [PATCH net] ibmvnic: Warn unknown speed message only when carrier
+ is present
+To:     Murilo Fossa Vicentini <muvic@linux.ibm.com>,
+        netdev@vger.kernel.org
+Cc:     muvic@br.ibm.com, abdhalee@linux.vnet.ibm.com
+References: <20190916145037.77376-1-muvic@linux.ibm.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <de449a43-0313-f231-c6cc-40b6f4966a5a@linux.ibm.com>
+Date:   Mon, 16 Sep 2019 10:21:47 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD56B7dF9Dqf1wwu=w60z0q+hkE5-noZRS4uuUfF4PhyNSa4Kw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190916145037.77376-1-muvic@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-16_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1909160156
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> When it is in the good state I see that reg 0x01 is 0x796d where bit
-> 1.2 reports 'Link is up' and bit 1.5 reports 'Auto-negotiation process
-> complete'. However, once I get to the bad state (it may take several
-> tries of ifdown, ifup to get there) then reg 0x01 is 0x7649 reporting
-> 'Link is down' and 'Auto-negotiation process not completed'. This can
-> be fixed by resetting the phy './phytool write eth0/3/0 0x9140'
-> 
-> So, I guess that means the driver is doing what it is supposed to?
-> Could we add quirk or something to reset the phy again from the driver
-> if auto-negotiation doesn't complete with x seconds?
+On 9/16/19 9:50 AM, Murilo Fossa Vicentini wrote:
+> With commit 0655f9943df2 ("net/ibmvnic: Update carrier state after link
+> state change") we are now able to detect when the carrier is properly
+> present in the device, so only report an unexpected unknown speed when it
+> is properly detected. Unknown speed is expected to be seen by the device
+> in case the backing device has no link detected.
+>
+> Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+> Tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+> Signed-off-by: Murilo Fossa Vicentini <muvic@linux.ibm.com>
+> ---
 
-Hi Paul
+Thanks, Murilo!
 
-Adding a timeout would make sense. But please try to hide all this
-inside the PHY driver. Since it is being polled, the read_status()
-should be called once per second, so you should be able to handle all
-this inside that driver callback.
+Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-     Andrew
+>   drivers/net/ethernet/ibm/ibmvnic.c | 7 ++++---
+>   1 file changed, 4 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+> index 5cb55ea671e3..3a6725daf7dc 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -4312,13 +4312,14 @@ static int handle_query_phys_parms_rsp(union ibmvnic_crq *crq,
+>   {
+>   	struct net_device *netdev = adapter->netdev;
+>   	int rc;
+> +	__be32 rspeed = cpu_to_be32(crq->query_phys_parms_rsp.speed);
+>   
+>   	rc = crq->query_phys_parms_rsp.rc.code;
+>   	if (rc) {
+>   		netdev_err(netdev, "Error %d in QUERY_PHYS_PARMS\n", rc);
+>   		return rc;
+>   	}
+> -	switch (cpu_to_be32(crq->query_phys_parms_rsp.speed)) {
+> +	switch (rspeed) {
+>   	case IBMVNIC_10MBPS:
+>   		adapter->speed = SPEED_10;
+>   		break;
+> @@ -4344,8 +4345,8 @@ static int handle_query_phys_parms_rsp(union ibmvnic_crq *crq,
+>   		adapter->speed = SPEED_100000;
+>   		break;
+>   	default:
+> -		netdev_warn(netdev, "Unknown speed 0x%08x\n",
+> -			    cpu_to_be32(crq->query_phys_parms_rsp.speed));
+> +		if (netif_carrier_ok(netdev))
+> +			netdev_warn(netdev, "Unknown speed 0x%08x\n", rspeed);
+>   		adapter->speed = SPEED_UNKNOWN;
+>   	}
+>   	if (crq->query_phys_parms_rsp.flags1 & IBMVNIC_FULL_DUPLEX)
