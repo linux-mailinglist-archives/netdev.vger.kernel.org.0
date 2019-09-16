@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD4DB3D3F
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 17:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C701B3D40
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 17:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388932AbfIPPEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 11:04:50 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57135 "EHLO
+        id S2388940AbfIPPEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 11:04:53 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50559 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730609AbfIPPEt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 11:04:49 -0400
+        by vger.kernel.org with ESMTP id S1730609AbfIPPEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 11:04:52 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0BF5622087;
-        Mon, 16 Sep 2019 11:04:49 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 2AA7121F7D;
+        Mon, 16 Sep 2019 11:04:51 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 16 Sep 2019 11:04:49 -0400
+  by compute3.internal (MEProxy); Mon, 16 Sep 2019 11:04:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=AS7b8aMIkPNK5MkhgGXvfvQtbFgZWdFIbnPsoZCiU2I=; b=YUK+x3az
-        8zXKXa9+OjZAplBOJ08GQFStcTNO9ZA7T28b99bwL0f4nkY4h2du8UpivhkHuZQu
-        Qi7Fh1CK2kz5C77z3sjg+UDWa2/GgEW/xdB8zsNN1qdwHzl0BpiLvbzB38F7iyPZ
-        ONfHuP7GTLVkJeQyu/fR7V2g0cumX7unCWDTG7MmRh7ZUglVI03fl7nrJuJVZpuc
-        Qj/s8iguwdnbSXMSKCis+/cLzeh6lMD1Cu8MMf19LvjZK/UzjSy6KPh4m5oJ830P
-        xIANazCAxZ+TefDrlXzyTd7CoLwePJy5Z14PCYo60ekecodGcuVEH7D1UKVSys+P
-        OvCDaIDVmHs2Ww==
-X-ME-Sender: <xms:kKR_XdJPQWkgVSB9Toc-LDGi-IAx4ER2OuMSFwEO4lpZlg-kCYVGyA>
+        fm3; bh=0WSfDcaxTDaYKAM0rYPAE1enyWcug7GFb1K9Ed4SmZM=; b=teqb3KJW
+        TCeAobiPw+sQE7itN37FQtsI+RfRf/mgppaES7C7/v/m7CdM9hJz1acvxTmthtpm
+        jh/wJWcgbcEY2PK2YF7Y9MDThpI+AWeYzfrvLQoynlZ/H3jg0XV2gGsmIVisCJ5t
+        PhzYIedemAZXzpcOHs1qFq3BhI1v3e3jogk6jjA5iykIHLbrvr8u2EKJ5QJmxchL
+        9NcXULl2JAak9tJvZYA63uVMo+vlOA05VEEo6X/TLDZY4YQeHBWWi7RNnWyJfKbU
+        qVP/29oDnRiUPyqbQ44pdFlZYOlqwLefVwXCFawHkkrU7Z/SSkRVWfHq0X9+cpTY
+        Kb58rKukM3PtKg==
+X-ME-Sender: <xms:kqR_XWJEQClN4RVBBD6OIXCtLkPaJqdbPpzK0QWXaSoo2L5-slfKxw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudefgdekgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:kKR_XRcC7wI7_pnNu0_D9D8SExYNF2DZpKdRjQ1qbhQd0jIWVuLr5g>
-    <xmx:kKR_Xb0xu0UkvGDZmEC8PqZTnoPWmt_B0mF_zGuQbsw8cJA51TSw6Q>
-    <xmx:kKR_Xbgl8IDOou75vrKpxCXyBwKaZBH9qopQonkVRqV1FvcSHp1NWQ>
-    <xmx:kaR_XbcE3FLgAm4KoWwimkFF-4EwNbRh28RENSsUH7aMPp64bmJRyQ>
+    ihiivgepvd
+X-ME-Proxy: <xmx:kqR_XedXAo8LdWrHBcplPvvc02n6g17IAVtfgPnyCPLs69J_N_sEhw>
+    <xmx:kqR_XeXad1cTA-weujIis_3ufyEBXUhQwA1F44z06KDQEJjv-N7XJA>
+    <xmx:kqR_XWCj_xchH8so6zAKO1mxQNLU-AkenrHJwkQ91r6JDZt4WCkRWA>
+    <xmx:k6R_XTpSEQoBR6dBFESVj3K67TBFDpok6oGa2BTRkO3MTRRjB7FcnA>
 Received: from localhost.localdomain (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6213B80065;
-        Mon, 16 Sep 2019 11:04:47 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0B47880069;
+        Mon, 16 Sep 2019 11:04:48 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v3 2/3] mlxsw: spectrum: Register CPU port with devlink
-Date:   Mon, 16 Sep 2019 18:04:21 +0300
-Message-Id: <20190916150422.28947-3-idosch@idosch.org>
+Subject: [PATCH net-next v3 3/3] mlxsw: spectrum_buffers: Add the ability to query the CPU port's shared buffer
+Date:   Mon, 16 Sep 2019 18:04:22 +0300
+Message-Id: <20190916150422.28947-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190916150422.28947-1-idosch@idosch.org>
 References: <20190916150422.28947-1-idosch@idosch.org>
@@ -61,208 +61,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shalom Toledo <shalomt@mellanox.com>
 
-Register CPU port with devlink.
+While debugging packet loss towards the CPU, it is useful to be able to
+query the CPU port's shared buffer quotas and occupancy.
+
+Since the CPU port has no ingress buffers, all the shared buffers ingress
+information will be cleared.
 
 Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c    | 63 ++++++++++++++++---
- drivers/net/ethernet/mellanox/mlxsw/core.h    |  5 ++
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 46 ++++++++++++++
- 3 files changed, 105 insertions(+), 9 deletions(-)
+ .../mellanox/mlxsw/spectrum_buffers.c         | 41 +++++++++++++++----
+ 1 file changed, 33 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 3fa96076e8a5..14dcc786926d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1864,11 +1864,12 @@ u64 mlxsw_core_res_get(struct mlxsw_core *mlxsw_core,
- }
- EXPORT_SYMBOL(mlxsw_core_res_get);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+index f1dbde73fa78..b9eeae37a4dc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+@@ -250,6 +250,10 @@ static int mlxsw_sp_sb_pm_occ_clear(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 		&mlxsw_sp->sb_vals->pool_dess[pool_index];
+ 	char sbpm_pl[MLXSW_REG_SBPM_LEN];
  
--int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
--			 u32 port_number, bool split,
--			 u32 split_port_subnumber,
--			 const unsigned char *switch_id,
--			 unsigned char switch_id_len)
-+static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
-+				  enum devlink_port_flavour flavour,
-+				  u32 port_number, bool split,
-+				  u32 split_port_subnumber,
-+				  const unsigned char *switch_id,
-+				  unsigned char switch_id_len)
- {
- 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
- 	struct mlxsw_core_port *mlxsw_core_port =
-@@ -1877,17 +1878,16 @@ int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
++	if (local_port == MLXSW_PORT_CPU_PORT &&
++	    des->dir == MLXSW_REG_SBXX_DIR_INGRESS)
++		return 0;
++
+ 	mlxsw_reg_sbpm_pack(sbpm_pl, local_port, des->pool, des->dir,
+ 			    true, 0, 0);
+ 	return mlxsw_reg_trans_query(mlxsw_sp->core, MLXSW_REG(sbpm), sbpm_pl,
+@@ -273,6 +277,10 @@ static int mlxsw_sp_sb_pm_occ_query(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 	char sbpm_pl[MLXSW_REG_SBPM_LEN];
+ 	struct mlxsw_sp_sb_pm *pm;
+ 
++	if (local_port == MLXSW_PORT_CPU_PORT &&
++	    des->dir == MLXSW_REG_SBXX_DIR_INGRESS)
++		return 0;
++
+ 	pm = mlxsw_sp_sb_pm_get(mlxsw_sp, local_port, pool_index);
+ 	mlxsw_reg_sbpm_pack(sbpm_pl, local_port, des->pool, des->dir,
+ 			    false, 0, 0);
+@@ -1197,6 +1205,11 @@ static void mlxsw_sp_sb_sr_occ_query_cb(struct mlxsw_core *mlxsw_core,
+ 	     local_port < mlxsw_core_max_ports(mlxsw_core); local_port++) {
+ 		if (!mlxsw_sp->ports[local_port])
+ 			continue;
++		if (local_port == MLXSW_PORT_CPU_PORT) {
++			/* Ingress quotas are not supported for the CPU port */
++			masked_count++;
++			continue;
++		}
+ 		for (i = 0; i < MLXSW_SP_SB_ING_TC_COUNT; i++) {
+ 			cm = mlxsw_sp_sb_cm_get(mlxsw_sp, local_port, i,
+ 						MLXSW_REG_SBXX_DIR_INGRESS);
+@@ -1232,7 +1245,7 @@ int mlxsw_sp_sb_occ_snapshot(struct mlxsw_core *mlxsw_core,
+ 	char *sbsr_pl;
+ 	u8 masked_count;
+ 	u8 local_port_1;
+-	u8 local_port = 0;
++	u8 local_port;
+ 	int i;
  	int err;
+ 	int err2;
+@@ -1241,8 +1254,8 @@ int mlxsw_sp_sb_occ_snapshot(struct mlxsw_core *mlxsw_core,
+ 	if (!sbsr_pl)
+ 		return -ENOMEM;
  
- 	mlxsw_core_port->local_port = local_port;
--	devlink_port_attrs_set(devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
--			       port_number, split, split_port_subnumber,
-+	devlink_port_attrs_set(devlink_port, flavour, port_number,
-+			       split, split_port_subnumber,
- 			       switch_id, switch_id_len);
- 	err = devlink_port_register(devlink, devlink_port, local_port);
++	local_port = MLXSW_PORT_CPU_PORT;
+ next_batch:
+-	local_port++;
+ 	local_port_1 = local_port;
+ 	masked_count = 0;
+ 	mlxsw_reg_sbsr_pack(sbsr_pl, false);
+@@ -1253,7 +1266,11 @@ int mlxsw_sp_sb_occ_snapshot(struct mlxsw_core *mlxsw_core,
+ 	for (; local_port < mlxsw_core_max_ports(mlxsw_core); local_port++) {
+ 		if (!mlxsw_sp->ports[local_port])
+ 			continue;
+-		mlxsw_reg_sbsr_ingress_port_mask_set(sbsr_pl, local_port, 1);
++		if (local_port != MLXSW_PORT_CPU_PORT) {
++			/* Ingress quotas are not supported for the CPU port */
++			mlxsw_reg_sbsr_ingress_port_mask_set(sbsr_pl,
++							     local_port, 1);
++		}
+ 		mlxsw_reg_sbsr_egress_port_mask_set(sbsr_pl, local_port, 1);
+ 		for (i = 0; i < mlxsw_sp->sb_vals->pool_count; i++) {
+ 			err = mlxsw_sp_sb_pm_occ_query(mlxsw_sp, local_port, i,
+@@ -1274,8 +1291,10 @@ int mlxsw_sp_sb_occ_snapshot(struct mlxsw_core *mlxsw_core,
+ 				    cb_priv);
  	if (err)
- 		memset(mlxsw_core_port, 0, sizeof(*mlxsw_core_port));
- 	return err;
- }
--EXPORT_SYMBOL(mlxsw_core_port_init);
- 
--void mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port)
-+static void __mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port)
- {
- 	struct mlxsw_core_port *mlxsw_core_port =
- 					&mlxsw_core->ports[local_port];
-@@ -1896,8 +1896,53 @@ void mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port)
- 	devlink_port_unregister(devlink_port);
- 	memset(mlxsw_core_port, 0, sizeof(*mlxsw_core_port));
- }
-+
-+int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
-+			 u32 port_number, bool split,
-+			 u32 split_port_subnumber,
-+			 const unsigned char *switch_id,
-+			 unsigned char switch_id_len)
-+{
-+	return __mlxsw_core_port_init(mlxsw_core, local_port,
-+				      DEVLINK_PORT_FLAVOUR_PHYSICAL,
-+				      port_number, split, split_port_subnumber,
-+				      switch_id, switch_id_len);
-+}
-+EXPORT_SYMBOL(mlxsw_core_port_init);
-+
-+void mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port)
-+{
-+	__mlxsw_core_port_fini(mlxsw_core, local_port);
-+}
- EXPORT_SYMBOL(mlxsw_core_port_fini);
- 
-+int mlxsw_core_cpu_port_init(struct mlxsw_core *mlxsw_core,
-+			     void *port_driver_priv,
-+			     const unsigned char *switch_id,
-+			     unsigned char switch_id_len)
-+{
-+	struct mlxsw_core_port *mlxsw_core_port =
-+				&mlxsw_core->ports[MLXSW_PORT_CPU_PORT];
-+	int err;
-+
-+	err = __mlxsw_core_port_init(mlxsw_core, MLXSW_PORT_CPU_PORT,
-+				     DEVLINK_PORT_FLAVOUR_CPU,
-+				     0, false, 0,
-+				     switch_id, switch_id_len);
-+	if (err)
-+		return err;
-+
-+	mlxsw_core_port->port_driver_priv = port_driver_priv;
-+	return 0;
-+}
-+EXPORT_SYMBOL(mlxsw_core_cpu_port_init);
-+
-+void mlxsw_core_cpu_port_fini(struct mlxsw_core *mlxsw_core)
-+{
-+	__mlxsw_core_port_fini(mlxsw_core, MLXSW_PORT_CPU_PORT);
-+}
-+EXPORT_SYMBOL(mlxsw_core_cpu_port_fini);
-+
- void mlxsw_core_port_eth_set(struct mlxsw_core *mlxsw_core, u8 local_port,
- 			     void *port_driver_priv, struct net_device *dev)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index b65a17d49e43..5d7d2ab6d155 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -177,6 +177,11 @@ int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
- 			 const unsigned char *switch_id,
- 			 unsigned char switch_id_len);
- void mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port);
-+int mlxsw_core_cpu_port_init(struct mlxsw_core *mlxsw_core,
-+			     void *port_driver_priv,
-+			     const unsigned char *switch_id,
-+			     unsigned char switch_id_len);
-+void mlxsw_core_cpu_port_fini(struct mlxsw_core *mlxsw_core);
- void mlxsw_core_port_eth_set(struct mlxsw_core *mlxsw_core, u8 local_port,
- 			     void *port_driver_priv, struct net_device *dev);
- void mlxsw_core_port_ib_set(struct mlxsw_core *mlxsw_core, u8 local_port,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 91e4792bb7e7..dd234cf7b39d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3872,6 +3872,45 @@ static void mlxsw_sp_port_remove(struct mlxsw_sp *mlxsw_sp, u8 local_port)
- 	mlxsw_core_port_fini(mlxsw_sp->core, local_port);
- }
- 
-+static int mlxsw_sp_cpu_port_create(struct mlxsw_sp *mlxsw_sp)
-+{
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	int err;
-+
-+	mlxsw_sp_port = kzalloc(sizeof(*mlxsw_sp_port), GFP_KERNEL);
-+	if (!mlxsw_sp_port)
-+		return -ENOMEM;
-+
-+	mlxsw_sp_port->mlxsw_sp = mlxsw_sp;
-+	mlxsw_sp_port->local_port = MLXSW_PORT_CPU_PORT;
-+
-+	err = mlxsw_core_cpu_port_init(mlxsw_sp->core,
-+				       mlxsw_sp_port,
-+				       mlxsw_sp->base_mac,
-+				       sizeof(mlxsw_sp->base_mac));
-+	if (err) {
-+		dev_err(mlxsw_sp->bus_info->dev, "Failed to initialize core CPU port\n");
-+		goto err_core_cpu_port_init;
+ 		goto out;
+-	if (local_port < mlxsw_core_max_ports(mlxsw_core))
++	if (local_port < mlxsw_core_max_ports(mlxsw_core)) {
++		local_port++;
+ 		goto next_batch;
 +	}
-+
-+	mlxsw_sp->ports[MLXSW_PORT_CPU_PORT] = mlxsw_sp_port;
-+	return 0;
-+
-+err_core_cpu_port_init:
-+	kfree(mlxsw_sp_port);
-+	return err;
-+}
-+
-+static void mlxsw_sp_cpu_port_remove(struct mlxsw_sp *mlxsw_sp)
-+{
-+	struct mlxsw_sp_port *mlxsw_sp_port =
-+				mlxsw_sp->ports[MLXSW_PORT_CPU_PORT];
-+
-+	mlxsw_core_cpu_port_fini(mlxsw_sp->core);
-+	mlxsw_sp->ports[MLXSW_PORT_CPU_PORT] = NULL;
-+	kfree(mlxsw_sp_port);
-+}
-+
- static bool mlxsw_sp_port_created(struct mlxsw_sp *mlxsw_sp, u8 local_port)
- {
- 	return mlxsw_sp->ports[local_port] != NULL;
-@@ -3884,6 +3923,7 @@ static void mlxsw_sp_ports_remove(struct mlxsw_sp *mlxsw_sp)
- 	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sp->core); i++)
- 		if (mlxsw_sp_port_created(mlxsw_sp, i))
- 			mlxsw_sp_port_remove(mlxsw_sp, i);
-+	mlxsw_sp_cpu_port_remove(mlxsw_sp);
- 	kfree(mlxsw_sp->port_to_module);
- 	kfree(mlxsw_sp->ports);
- }
-@@ -3908,6 +3948,10 @@ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
- 		goto err_port_to_module_alloc;
- 	}
  
-+	err = mlxsw_sp_cpu_port_create(mlxsw_sp);
-+	if (err)
-+		goto err_cpu_port_create;
-+
- 	for (i = 1; i < max_ports; i++) {
- 		/* Mark as invalid */
- 		mlxsw_sp->port_to_module[i] = -1;
-@@ -3931,6 +3975,8 @@ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
- 	for (i--; i >= 1; i--)
- 		if (mlxsw_sp_port_created(mlxsw_sp, i))
- 			mlxsw_sp_port_remove(mlxsw_sp, i);
-+	mlxsw_sp_cpu_port_remove(mlxsw_sp);
-+err_cpu_port_create:
- 	kfree(mlxsw_sp->port_to_module);
- err_port_to_module_alloc:
- 	kfree(mlxsw_sp->ports);
+ out:
+ 	err2 = mlxsw_reg_trans_bulk_wait(&bulk_list);
+@@ -1292,7 +1311,7 @@ int mlxsw_sp_sb_occ_max_clear(struct mlxsw_core *mlxsw_core,
+ 	LIST_HEAD(bulk_list);
+ 	char *sbsr_pl;
+ 	unsigned int masked_count;
+-	u8 local_port = 0;
++	u8 local_port;
+ 	int i;
+ 	int err;
+ 	int err2;
+@@ -1301,8 +1320,8 @@ int mlxsw_sp_sb_occ_max_clear(struct mlxsw_core *mlxsw_core,
+ 	if (!sbsr_pl)
+ 		return -ENOMEM;
+ 
++	local_port = MLXSW_PORT_CPU_PORT;
+ next_batch:
+-	local_port++;
+ 	masked_count = 0;
+ 	mlxsw_reg_sbsr_pack(sbsr_pl, true);
+ 	for (i = 0; i < MLXSW_SP_SB_ING_TC_COUNT; i++)
+@@ -1312,7 +1331,11 @@ int mlxsw_sp_sb_occ_max_clear(struct mlxsw_core *mlxsw_core,
+ 	for (; local_port < mlxsw_core_max_ports(mlxsw_core); local_port++) {
+ 		if (!mlxsw_sp->ports[local_port])
+ 			continue;
+-		mlxsw_reg_sbsr_ingress_port_mask_set(sbsr_pl, local_port, 1);
++		if (local_port != MLXSW_PORT_CPU_PORT) {
++			/* Ingress quotas are not supported for the CPU port */
++			mlxsw_reg_sbsr_ingress_port_mask_set(sbsr_pl,
++							     local_port, 1);
++		}
+ 		mlxsw_reg_sbsr_egress_port_mask_set(sbsr_pl, local_port, 1);
+ 		for (i = 0; i < mlxsw_sp->sb_vals->pool_count; i++) {
+ 			err = mlxsw_sp_sb_pm_occ_clear(mlxsw_sp, local_port, i,
+@@ -1329,8 +1352,10 @@ int mlxsw_sp_sb_occ_max_clear(struct mlxsw_core *mlxsw_core,
+ 				    &bulk_list, NULL, 0);
+ 	if (err)
+ 		goto out;
+-	if (local_port < mlxsw_core_max_ports(mlxsw_core))
++	if (local_port < mlxsw_core_max_ports(mlxsw_core)) {
++		local_port++;
+ 		goto next_batch;
++	}
+ 
+ out:
+ 	err2 = mlxsw_reg_trans_bulk_wait(&bulk_list);
 -- 
 2.21.0
 
