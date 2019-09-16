@@ -2,72 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10312B3523
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 09:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0958BB3525
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 09:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730216AbfIPHJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 03:09:47 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53057 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726927AbfIPHJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 03:09:46 -0400
-Received: by mail-wm1-f66.google.com with SMTP id x2so8764102wmj.2
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 00:09:44 -0700 (PDT)
+        id S1730404AbfIPHKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 03:10:30 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:45023 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726927AbfIPHKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 03:10:30 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q21so22411685pfn.11
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 00:10:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hvpFLhqdaCaAF/r11JiP3g8pogElLtVZ3kN8AgCd8Jw=;
-        b=11lUCFxp1utTW+ILg2qWeL1auFTkEa+Pv5vcUz/nlwaV83pXtGhmLd3aHASuRKCfIQ
-         tyRv58EJhOHkI1juVBU0QAOJi7sLBelcYf7hCIz2yO74MUHdicBfXBIZ3yg1/hJ6/0DX
-         EvRb4/orYOrNdMGOaf0CQ9N4cGWDYdgjGi8yMyljVt5HZnACQBP0tqIzB6oxIPrWUAox
-         kEO1fzdptjrjcOI0N8g4a8QuDxtHFC3SevA3EWjQZghYyoYPpShxUMk973Lf4yKT3QNV
-         xWvvSNcI6BxAKJ/v/cKH9S9vOtlwmd0Y8LeAT3znH4CgIxKR/aUs67MeQEhKyjlXluww
-         7W1w==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=o3XIi9DXgd4LD2pExhDGPxp98Z+4PuuIDlbpCDFeAXg=;
+        b=IzhTEFNUnJlKF1HvlvOJ5S366tDykv8A/QyBPs/QEukcysRbpA60IXTNLIoqjUDB37
+         BV58Lg+AcJYa+SgM9ceFUWr/dGGw/Z1Cjy/UjghwvEaTT3JObJaEA3DLT9UYKhgs0UDd
+         dn6BXqgdQE4nJwZd+G4vrApeZozlZINnvlqlEnN9oia8v+ANw57aqex1q70YpvmHR7/G
+         7MaK7ni5rFvYhQNcRqPLBo8LswrR6+tosTd3kai8ajNM57Zg1GLNhOXkpKGy/NFctWxq
+         tnFjB6ktiSI17BAOhEbrNJiR/J4tG73AtNr5HQi57QAw4qolDwNaRNhJf8YdPFiGV9+d
+         C+oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hvpFLhqdaCaAF/r11JiP3g8pogElLtVZ3kN8AgCd8Jw=;
-        b=FIjaV2+HNo7B5MLTsPEtCZ+lE19Nz/Xzu2nDFJNaQbeppQHrsetXX4PRoV5uppCIKb
-         zxtFqPqQWZlOCh/D271rJeUqf8W1T382780QB3LfiBhO8xVw0KwO2lNaGKjr7UFSG4LO
-         tuBebIR0UTtMyIZbAy/UgZ1pvT9kOlbsY4Enp0lCEikGsePv33iWZr1QZNbbLQgS6mhB
-         +VSICGLdb4nsStsIY6FpVCu219FQM/C2q+AvETVgj142NEVYVKQA6/bN8JIxSXnGIliM
-         ZTZp+gmUUGdRGpExGte6+EgsQ/zBS3W5WLPOh6saZEPgYDJAui1FJajHX/sx6XRo5AoM
-         PyyQ==
-X-Gm-Message-State: APjAAAUN3ozi6CpRF+z22/aDGz8DczhfTw0aHhYGXW09k8sYxhSdC6e5
-        oUQ5Ps12cYnUvKj0x3SriWVLIA==
-X-Google-Smtp-Source: APXvYqyw20ARMYI1tLNJdWAx7UJX2AlCDS7R1Ge9vSMpGgDkQPosuiNaFxMv1/wltenXBdW3lSDtmA==
-X-Received: by 2002:a05:600c:290c:: with SMTP id i12mr8128638wmd.77.1568617784171;
-        Mon, 16 Sep 2019 00:09:44 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id x6sm17061562wmf.38.2019.09.16.00.09.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 00:09:43 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 09:09:43 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, idosch@mellanox.com, dsahern@gmail.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        shuah@kernel.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next 00/15] devlink: allow devlink instances to
- change network namespace
-Message-ID: <20190916070943.GK2286@nanopsycho.orion>
-References: <20190914064608.26799-1-jiri@resnulli.us>
- <20190916.090111.605211597512563157.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190916.090111.605211597512563157.davem@davemloft.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=o3XIi9DXgd4LD2pExhDGPxp98Z+4PuuIDlbpCDFeAXg=;
+        b=pA7kIxaV5zypJZ7PljOuXWeWqS40X3L5emxsesM2AEzf21fMcRGaYk+UkgsPS/REGO
+         lDmaV/F3rok1+cAkFoyOX6qYvKms3qMH+blpS79xsDNlD6ybDHoJlByBFaYvV/17nMdw
+         qtQbz99M6ThjR2bn8kMYtb/KOJn4Fo/x5/dTwGLipNn9i6FXL8txp+2iOW5o1wx2ALtH
+         TbIcQcxDN+m/owAjIJxPdO4qeVJ5rsEWDDtcghpw9c3/V2Vx1+yavCkHqKFfsAkLtMgL
+         vfajNMqIkUERqfMY8IKMLO5fKUq08ii5KEf2dgrVUnkIDkpJeEAMQDqfoIju5U5VhBiD
+         Gcdg==
+X-Gm-Message-State: APjAAAV+e5Q6OUsNGtdjHM611XA0rxUT+Pve5OFSFGD0HyKU2cJaNZDD
+        5CG0OrkXcIzN70+X+9DsNya4rjzgiuQ=
+X-Google-Smtp-Source: APXvYqxzZcYG5WULT5GvsxZcya+FQ5XKralAQhRU5gMBMDLey3GR4qqUH8eGXHYA1o2UK8ZRnB1cFA==
+X-Received: by 2002:a65:4505:: with SMTP id n5mr49471500pgq.301.1568617828830;
+        Mon, 16 Sep 2019 00:10:28 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a12sm12900486pfn.95.2019.09.16.00.10.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Sep 2019 00:10:28 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, Jiri Benc <jbenc@redhat.com>,
+        Thomas Graf <tgraf@suug.ch>, u9012063@gmail.com
+Subject: [PATCH net-next 0/6] net: add support for ip_tun_info options setting
+Date:   Mon, 16 Sep 2019 15:10:14 +0800
+Message-Id: <cover.1568617721.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 16, 2019 at 09:01:11AM CEST, davem@davemloft.net wrote:
->
->Jiri, this has to wait until the next merge window sorry.
+With this patchset, users can configure options with LWTUNNEL_IP(6)_OPTS
+by ip route encap for ersapn or vxlan lwtunnel. Note that in kernel part
+it won't parse the option details but do some check and memcpy only, and
+the options will be parsed by iproute in userspace.
 
-Sure, no worries :)
+We also improve the vxlan and erspan options processing in this patchset.
+
+As an example I also wrote a patch for iproute2 that I will reply on this
+mail, with it we can add options for erspan lwtunnel like:
+
+   # ip net a a; ip net a b
+   # ip -n a l a eth0 type veth peer name eth0 netns b
+   # ip -n a l s eth0 up; ip -n b link set eth0 up
+   # ip -n a a a 10.1.0.1/24 dev eth0; ip -n b a a 10.1.0.2/24 dev eth0
+   # ip -n b l a erspan1 type erspan key 1 seq erspan 123 \
+        local 10.1.0.2 remote 10.1.0.1
+   # ip -n b a a 1.1.1.1/24 dev erspan1; ip -n b l s erspan1 up
+   # ip -n b r a 2.1.1.0/24 dev erspan1
+   # ip -n a l a erspan1 type erspan key 1 seq local 10.1.0.1 external
+   # ip -n a a a 2.1.1.1/24 dev erspan1; ip -n a l s erspan1 up
+   # ip -n a r a 1.1.1.0/24 encap ip id 1 erspan ver 1 idx 123 \
+        dst 10.1.0.2 dev erspan1
+   # ip -n a r s; ip net exec a ping 1.1.1.1 -c 1
+
+Xin Long (6):
+  lwtunnel: add options process for arp request
+  lwtunnel: add LWTUNNEL_IP_OPTS support for lwtunnel_ip
+  lwtunnel: add LWTUNNEL_IP6_OPTS support for lwtunnel_ip6
+  vxlan: check tun_info options_len properly
+  erspan: fix the tun_info options_len check
+  erspan: make md work without TUNNEL_ERSPAN_OPT set
+
+ drivers/net/vxlan.c           |  6 +++--
+ include/uapi/linux/lwtunnel.h |  2 ++
+ net/ipv4/ip_gre.c             | 31 ++++++++++-------------
+ net/ipv4/ip_tunnel_core.c     | 59 +++++++++++++++++++++++++++++++++----------
+ net/ipv6/ip6_gre.c            | 35 +++++++++++++------------
+ 5 files changed, 84 insertions(+), 49 deletions(-)
+
+-- 
+2.1.0
+
