@@ -2,149 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B55B3475
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF62B348A
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:53:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729144AbfIPFiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 01:38:05 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55877 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727664AbfIPFiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 01:38:05 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g207so8508197wmg.5
-        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 22:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NYdi4GX237KM+O+EVypoAMLBZrFvfW0XoqlJBdznIcI=;
-        b=iT7vNN1fcqnI4KLfsjeEy5vZ8SYMZkVvogxYGCOR2foGArCXrZa1XmxUit6iwbIJX6
-         5vT0yxU+Y21wQ7bK1sibnvfQ7IVyZYx5bV5ImMnwRy+2J23TikwYqy3SSHariJKKmf46
-         AYKTLc8OsPLpF+NsLOD8LWY5cq8y29VsTTsorTx/0ZZL2SjNTmgPG9+k+Pm+RX1QRGiN
-         9BGs1CeGhbgfeEyaUvYuLyIqVizFZ3FNvNYbt29Z7idw5/gQ8hd9ahMCMbCdHTyMActm
-         hi8y13fpMxKE8W7kttN5jjZdE6utfBN+hNUzQV2KdxHuziYUHGu7ZvVz9cE984sBTcO3
-         Ssbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NYdi4GX237KM+O+EVypoAMLBZrFvfW0XoqlJBdznIcI=;
-        b=tFJkc9haFjp30UeTduCycsRuq2HOJg673ovLZS8bapuS8R3wygNBvLmN/LDcBSK+1q
-         ZB69XxCYoGOWC9UPRv398XKF7lkvuojcTMKUXPkVBGVH+XCaxwGyIkluqVmSZJseeY35
-         QmdfkYuZB0zq88tmHIXbksuD0KWT6oSWpAroo0qXx6BDojYBytQ0+Umufh0kMiYtS1OV
-         erF0TaIf4DJONKuH1yWqf81nKiA1PoAvK3zwETAhC2Ixwy4hPq8WW7fuMGzjekaBljVc
-         wTtb+Di2XCpLWMbm+fZyTtgAdmpkmD033lgS2iDcqQhWihXQtPxfTooxDmWI+KvUmKwJ
-         Bnvw==
-X-Gm-Message-State: APjAAAWjYglg0pOkO1PrRZ1Ns3/zl28bzIiImRCsDO8/JbMRTokpyCdE
-        NdFIQBafotzc+PkLdLQga5XJmw==
-X-Google-Smtp-Source: APXvYqwF/OAxBtQy2mHia1O+s8XWWu1hneo0sMwEe9f0MzXTdyNcVIbgSNnKfF30zBBEjAWC/2YYZg==
-X-Received: by 2002:a1c:c14a:: with SMTP id r71mr7371149wmf.46.1568612282780;
-        Sun, 15 Sep 2019 22:38:02 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id v7sm33741203wru.87.2019.09.15.22.38.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Sep 2019 22:38:01 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 07:38:01 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        shuah@kernel.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next 02/15] net: fib_notifier: make FIB notifier
- per-netns
-Message-ID: <20190916053801.GG2286@nanopsycho.orion>
-References: <20190914064608.26799-1-jiri@resnulli.us>
- <20190914064608.26799-3-jiri@resnulli.us>
- <87139e84-4310-6632-c5d5-64610d4cc56e@gmail.com>
+        id S1729344AbfIPFxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 01:53:53 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:48860 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725270AbfIPFxx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Sep 2019 01:53:53 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id CB8CDB3E637D25ED0F96;
+        Mon, 16 Sep 2019 13:53:48 +0800 (CST)
+Received: from [127.0.0.1] (10.177.29.68) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Mon, 16 Sep 2019
+ 13:53:47 +0800
+Message-ID: <5D7F236B.3070409@huawei.com>
+Date:   Mon, 16 Sep 2019 13:53:47 +0800
+From:   zhong jiang <zhongjiang@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20120428 Thunderbird/12.0.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87139e84-4310-6632-c5d5-64610d4cc56e@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+To:     Kalle Valo <kvalo@codeaurora.org>
+CC:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] wlegacy: Remove unneeded variable and make function
+ to be void
+References: <1568306492-42998-1-git-send-email-zhongjiang@huawei.com> <1568306492-42998-3-git-send-email-zhongjiang@huawei.com> <87h85hh0hb.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87h85hh0hb.fsf@kamboji.qca.qualcomm.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.29.68]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Sep 15, 2019 at 10:05:47PM CEST, dsahern@gmail.com wrote:
->On 9/14/19 12:45 AM, Jiri Pirko wrote:
->>  #define FIB_DUMP_MAX_RETRIES 5
->> -int register_fib_notifier(struct notifier_block *nb,
->> +int register_fib_notifier(struct net *net, struct notifier_block *nb,
->>  			  void (*cb)(struct notifier_block *nb))
->>  {
->>  	int retries = 0;
->>  	int err;
->>  
->>  	do {
->> -		unsigned int fib_seq = fib_seq_sum();
->> -		struct net *net;
->> -
->> -		rcu_read_lock();
->> -		for_each_net_rcu(net) {
->> -			err = fib_net_dump(net, nb);
->> -			if (err)
->> -				goto err_fib_net_dump;
->> -		}
->> -		rcu_read_unlock();
->> -
->> -		if (fib_dump_is_consistent(nb, cb, fib_seq))
->> +		unsigned int fib_seq = fib_seq_sum(net);
->> +
->> +		err = fib_net_dump(net, nb);
->> +		if (err)
->> +			return err;
->> +
->> +		if (fib_dump_is_consistent(net, nb, cb, fib_seq))
->>  			return 0;
->>  	} while (++retries < FIB_DUMP_MAX_RETRIES);
+On 2019/9/13 1:45, Kalle Valo wrote:
+> zhong jiang <zhongjiang@huawei.com> writes:
 >
->This is still more complicated than it needs to be. Why lump all
->fib_notifier_ops into 1 dump when they are separate databases with
->separate seq numbers? Just dump them 1 at a time and retry that 1
->database as needed.
-
-Well I think that what you describe is out of scope of this patch. It is
-another optimization of fib_notifier. The aim of this patchset is not
-optimization of fib_notifier, but devlink netns change. This patchset is
-just a dependency.
-
-Can't we do optimization in another patchset? I already struggled to
-keep this one within 15-patch limit.
-
-Thanks
-
->
->ie., This:
->    list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
->should be in register_fib_notifier and not fib_net_dump.
->
->as it stands you are potentially replaying way more than is needed when
->a dump is inconsistent.
->
->
->>  
->>  	return -EBUSY;
->> -
->> -err_fib_net_dump:
->> -	rcu_read_unlock();
->> -	return err;
+>> il4965_set_tkip_dynamic_key_info  do not need return value to
+>> cope with different ases. And change functon return type to void.
+>>
+>> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+>> ---
+>>  drivers/net/wireless/intel/iwlegacy/4965-mac.c | 8 ++------
+>>  1 file changed, 2 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/intel/iwlegacy/4965-mac.c b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+>> index ffb705b..a7bbfe2 100644
+>> --- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+>> +++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+>> @@ -3326,12 +3326,11 @@ struct il_mod_params il4965_mod_params = {
+>>  	return il_send_add_sta(il, &sta_cmd, CMD_SYNC);
 >>  }
->>  EXPORT_SYMBOL(register_fib_notifier);
 >>  
->> -int unregister_fib_notifier(struct notifier_block *nb)
->> +int unregister_fib_notifier(struct net *net, struct notifier_block *nb)
+>> -static int
+>> +static void
+>>  il4965_set_tkip_dynamic_key_info(struct il_priv *il,
+>>  				 struct ieee80211_key_conf *keyconf, u8 sta_id)
 >>  {
->> -	return atomic_notifier_chain_unregister(&fib_chain, nb);
->> +	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
->> +
->> +	return atomic_notifier_chain_unregister(&fn_net->fib_chain, nb);
->>  }
->>  EXPORT_SYMBOL(unregister_fib_notifier);
+>>  	unsigned long flags;
+>> -	int ret = 0;
+>>  	__le16 key_flags = 0;
 >>  
->
->
->
->
->
+>>  	key_flags |= (STA_KEY_FLG_TKIP | STA_KEY_FLG_MAP_KEY_MSK);
+>> @@ -3367,8 +3366,6 @@ struct il_mod_params il4965_mod_params = {
+>>  	memcpy(il->stations[sta_id].sta.key.key, keyconf->key, 16);
+>>  
+>>  	spin_unlock_irqrestore(&il->sta_lock, flags);
+>> -
+>> -	return ret;
+>>  }
+>>  
+>>  void
+>> @@ -3483,8 +3480,7 @@ struct il_mod_params il4965_mod_params = {
+>>  		    il4965_set_ccmp_dynamic_key_info(il, keyconf, sta_id);
+>>  		break;
+>>  	case WLAN_CIPHER_SUITE_TKIP:
+>> -		ret =
+>> -		    il4965_set_tkip_dynamic_key_info(il, keyconf, sta_id);
+>> +		il4965_set_tkip_dynamic_key_info(il, keyconf, sta_id);
+>>  		break;
+>>  	case WLAN_CIPHER_SUITE_WEP40:
+>>  	case WLAN_CIPHER_SUITE_WEP104:
+> To me this looks inconsistent with the rest of the cases in the switch
+> statement. And won't we then return the ret variable uninitalised?
+Yep,  I miss that.   please ignore the patch.  Thanks,
+
+Sincerely,
+zhong jiang
+
