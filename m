@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BD87B3B59
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 15:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C18C5B3B63
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 15:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733241AbfIPN3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 09:29:13 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:52882 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733221AbfIPN3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 09:29:11 -0400
-Received: by mail-io1-f69.google.com with SMTP id g8so5840648iop.19
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 06:29:09 -0700 (PDT)
+        id S2387435AbfIPN3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 09:29:48 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:42285 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733202AbfIPN3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 09:29:10 -0400
+Received: by mail-io1-f70.google.com with SMTP id x9so50722282ior.9
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 06:29:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Is+d6dqD59UDWyRn9HoG+eKzIMsqRNy0LD3MnVyhGVI=;
-        b=KOncstS/mkY4laYXmdIShikQBGnNXdDwLa7oEOtTU3RmqjHb6pHzIWfNRUsINFnKU5
-         ouDgOwnDEzTNVbei+Itap+NuaJGovgfkwnClcT1D4eGModvOvO8WokJmWRQcocbiVJ23
-         74b5OHRv/hNcu8kvfeDHISlBj0j6+ZWFL/PQvjkbmnivtHov2l0APjC6ikik1WETD9Pb
-         gdpHP8MSk3WaTXld9dGbkv/Mz1C3jkM4qcOUwtHZzs54cDpcFXWhSqbtoiY1T2VOFpJu
-         PVqE5Sj4Ux0lJggmPeDUYvnjxqAuYlxkcrg2PB1N0vSxQ9v0aUok8+5llOWEywn20xMy
-         YN2g==
-X-Gm-Message-State: APjAAAWVnuTXVJigexbzOnnl0xNq4m3un9qVuBoKugzsrj/r23xIzM4I
-        q+3BTg4n0G0wO7hPs4ZD8ooMAYoJiwLuJdz0ciDjt1uZYRR5
-X-Google-Smtp-Source: APXvYqyLzrn6iiZVIWcm8eZceVi2PWZgTGKMtrYR8hDkGckeZGGAiakb+t1cexOZtT1aVd0Pc+k6T4mPfu7iBujPeYOMDpVBs75b
+        bh=gp6BXS02784Q+j2978rR4itbmOMNyVWAv6mkP8abJDw=;
+        b=ED/Yq7EsMh8nq643DgNgSQeGbod28Y5gVRUyx5r3bZeibeUpnrPThXmiV74JQVsss0
+         SB8jqMlKF4HignFSWk9MRcDhd1JJa4iFs5NdGhvd+vLjWV8TXkAmJxBk0wsEdgHeOw0I
+         DBexqK8z9ABvHbBViepoyI4c8DGn+hGVHx1oRadZjKrNFtXq3431y6TNVS/RcQFCxcAI
+         Y78jaspuI+zBW+YLr/6O0PPbXT9Z+4mN1Rv/wn6EJZWIPHOuN3OgWg5yBcA+3+AMBBk2
+         bfqpGqZ5qsdqiQOJ4MtJe9AaACk+n88wbZL8jNfpICe9V4Ju7+vdlW2kGkuEG4lK6MoB
+         AfFQ==
+X-Gm-Message-State: APjAAAURtbJSO2tAMDr9ii2BOkeIIYo+qsX/4SW57uK09crjAl0afsYR
+        KNH3X6rqbrO85zrPuXUGgvKN4iKGUuyliYBwLI7pPfcKjXi5
+X-Google-Smtp-Source: APXvYqx+rVlIWw2hxHib6XC5TZW5VKRXtZgbn/3IX4WajUqBN1xeCeJh8U6x5o8NikRLN1zg6EtYVXk8imvRjDpfT+ttB7fbMZqW
 MIME-Version: 1.0
-X-Received: by 2002:a02:c8cd:: with SMTP id q13mr402813jao.133.1568640549268;
+X-Received: by 2002:a02:a909:: with SMTP id n9mr24183092jam.57.1568640549596;
  Mon, 16 Sep 2019 06:29:09 -0700 (PDT)
 Date:   Mon, 16 Sep 2019 06:29:09 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b83b550592ab965b@google.com>
-Subject: divide error in usbnet_update_max_qlen
-From:   syzbot <syzbot+6102c120be558c885f04@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, oneukum@suse.com,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000bd36db0592ab9652@google.com>
+Subject: BUG: unable to handle kernel NULL pointer dereference in rds_bind
+From:   syzbot <syzbot+fae39afd2101a17ec624@syzkaller.appspotmail.com>
+To:     arvid.brodin@alten.se, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        santosh.shilimkar@oracle.com, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,72 +50,86 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    f0df5c1b usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=117659fa600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5c6633fa4ed00be5
-dashboard link: https://syzkaller.appspot.com/bug?extid=6102c120be558c885f04
+HEAD commit:    f4b752a6 mlx4: fix spelling mistake "veify" -> "verify"
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=16cbebe6600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b89bb446a3faaba4
+dashboard link: https://syzkaller.appspot.com/bug?extid=fae39afd2101a17ec624
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12107ba9600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=146014e6600000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10753bc1600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=111dfc11600000
+
+The bug was bisected to:
+
+commit b9a1e627405d68d475a3c1f35e685ccfb5bbe668
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jul 4 00:21:13 2019 +0000
+
+     hsr: implement dellink to clean up resources
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11005fc1600000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=13005fc1600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15005fc1600000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6102c120be558c885f04@syzkaller.appspotmail.com
+Reported-by: syzbot+fae39afd2101a17ec624@syzkaller.appspotmail.com
+Fixes: b9a1e627405d ("hsr: implement dellink to clean up resources")
 
-usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-cdc_ncm 1-1:1.0: MAC-Address: 42:42:42:42:42:42
-cdc_ncm 1-1:1.0: dwNtbInMaxSize=0 is too small. Using 2048
-cdc_ncm 1-1:1.0: setting rx_max = 2048
-divide error: 0000 [#1] SMP KASAN
-CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.3.0-rc7+ #0
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 9fef0067 P4D 9fef0067 PUD 9060d067 PMD 0
+Oops: 0010 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 9884 Comm: syz-executor453 Not tainted 5.3.0-rc7+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:usbnet_update_max_qlen drivers/net/usb/usbnet.c:344 [inline]
-RIP: 0010:usbnet_update_max_qlen+0x231/0x370 drivers/net/usb/usbnet.c:338
-Code: 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 46 01  
-00 00 48 8d bb f4 00 00 00 31 d2 b8 c8 63 01 00 48 89 f9 <48> f7 b3 a8 01  
-00 00 48 ba 00 00 00 00 00 fc ff df 48 c1 e9 03 0f
-RSP: 0018:ffff8881da20f010 EFLAGS: 00010246
-RAX: 00000000000163c8 RBX: ffff8881d5ad8ac0 RCX: ffff8881d5ad8bb4
-RDX: 0000000000000000 RSI: ffffffff8344ecde RDI: ffff8881d5ad8bb4
-RBP: 0000000000000003 R08: ffff8881da1f9800 R09: ffffed103ab5b00a
-R10: ffffed103ab5b009 R11: ffff8881d5ad804f R12: 0000000000000000
-R13: ffff8881d5ad8c38 R14: ffff8881d5ad8ac0 R15: ffff8881d2820c80
-FS:  0000000000000000(0000) GS:ffff8881db200000(0000) knlGS:0000000000000000
+RIP: 0010:0x0
+Code: Bad RIP value.
+RSP: 0018:ffff8880a7c6fcd8 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffffffff8992bfe0 RCX: ffffffff86b9b636
+RDX: 0000000000000000 RSI: ffff8880a7c6fd40 RDI: ffffffff897830c0
+RBP: ffff8880a7c6fda8 R08: ffff888093150558 R09: 0000000000000000
+R10: fffffbfff134af9f R11: ffff88809a008040 R12: ffff888093150080
+R13: ffffffff897830c0 R14: 0000000000000000 R15: ffff8880a7c6fd40
+FS:  000055555738a880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f26d0180000 CR3: 00000001d38dd000 CR4: 00000000001406f0
+CR2: ffffffffffffffd6 CR3: 000000008f04a000 CR4: 00000000001406e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  cdc_ncm_update_rxtx_max+0x8e9/0xef0 drivers/net/usb/cdc_ncm.c:440
-  cdc_ncm_setup drivers/net/usb/cdc_ncm.c:667 [inline]
-  cdc_ncm_bind_common+0x1005/0x2570 drivers/net/usb/cdc_ncm.c:924
-  cdc_ncm_bind+0x7c/0x1c0 drivers/net/usb/cdc_ncm.c:1038
-  usbnet_probe+0xb43/0x23cf drivers/net/usb/usbnet.c:1722
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
-  device_add+0xae6/0x16f0 drivers/base/core.c:2165
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
-  hub_port_connect drivers/usb/core/hub.c:5098 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
-  port_event drivers/usb/core/hub.c:5359 [inline]
-  hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
+  rds_bind+0x420/0x800 net/rds/bind.c:247
+  __sys_bind+0x239/0x290 net/socket.c:1647
+  __do_sys_bind net/socket.c:1658 [inline]
+  __se_sys_bind net/socket.c:1656 [inline]
+  __x64_sys_bind+0x73/0xb0 net/socket.c:1656
+  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4412b9
+Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc7c28b228 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
+RDX: 0000000000000010 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 00000000006cb018 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000402030
+R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace b47a1983319ea52a ]---
+RIP: 0010:0x0
+Code: Bad RIP value.
+RSP: 0018:ffff8880a7c6fcd8 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffffffff8992bfe0 RCX: ffffffff86b9b636
+RDX: 0000000000000000 RSI: ffff8880a7c6fd40 RDI: ffffffff897830c0
+RBP: ffff8880a7c6fda8 R08: ffff888093150558 R09: 0000000000000000
+R10: fffffbfff134af9f R11: ffff88809a008040 R12: ffff888093150080
+R13: ffffffff897830c0 R14: 0000000000000000 R15: ffff8880a7c6fd40
+FS:  000055555738a880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004bf788 CR3: 000000008f04a000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
@@ -124,5 +139,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
