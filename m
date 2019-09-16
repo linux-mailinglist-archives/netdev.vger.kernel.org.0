@@ -2,97 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97784B346B
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B55B3475
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 07:38:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbfIPFbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 01:31:38 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39641 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbfIPFbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 01:31:37 -0400
-Received: by mail-wr1-f65.google.com with SMTP id r3so7250057wrj.6
-        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 22:31:36 -0700 (PDT)
+        id S1729144AbfIPFiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 01:38:05 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:55877 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727664AbfIPFiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 01:38:05 -0400
+Received: by mail-wm1-f66.google.com with SMTP id g207so8508197wmg.5
+        for <netdev@vger.kernel.org>; Sun, 15 Sep 2019 22:38:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=qmVvFLqP1/Iy0U40o4z3uyLQYpbfmd+krJn4gZmoZjc=;
-        b=WdkIaYyQ4mMTt8hyv+GfqhYgGmJfqu5RMEE+wT12FRwu4gHmQraqcXpz8YFKrskkZ0
-         KSbX3F+BjM16REeVaA4RJqkT2RKe9SjDpmvpRUVeQ3St2QXzmufQkGH7TQLHhecUpEoa
-         /bLU1pXEDGo2STZAZAWwi9Q59bksM1mOmxviO26TG6W+yI5iblDZGZlMs9tSFV4hPkQk
-         98EhxcCd/wL20Ei75uzpwxe4affWhV1ehV7CvzA61A0H5FVeylT8/Gj3ben+ywGrvMRm
-         20h1Br1qlklXl3KDSlEdvNk+8ZqspN+E7iPaN5Pwlj2iLe1Q3C5gMEjFfaHtvnqyXZuV
-         ChKw==
+        bh=NYdi4GX237KM+O+EVypoAMLBZrFvfW0XoqlJBdznIcI=;
+        b=iT7vNN1fcqnI4KLfsjeEy5vZ8SYMZkVvogxYGCOR2foGArCXrZa1XmxUit6iwbIJX6
+         5vT0yxU+Y21wQ7bK1sibnvfQ7IVyZYx5bV5ImMnwRy+2J23TikwYqy3SSHariJKKmf46
+         AYKTLc8OsPLpF+NsLOD8LWY5cq8y29VsTTsorTx/0ZZL2SjNTmgPG9+k+Pm+RX1QRGiN
+         9BGs1CeGhbgfeEyaUvYuLyIqVizFZ3FNvNYbt29Z7idw5/gQ8hd9ahMCMbCdHTyMActm
+         hi8y13fpMxKE8W7kttN5jjZdE6utfBN+hNUzQV2KdxHuziYUHGu7ZvVz9cE984sBTcO3
+         Ssbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qmVvFLqP1/Iy0U40o4z3uyLQYpbfmd+krJn4gZmoZjc=;
-        b=kYyYZkM29E5ac4V/hjjjsHtiMtdaqieSFL0ZAImu/NDum0ZkFK4ZNy1kAKCAWFrbcC
-         hC3Q1cRc/sAVPEdCEpFP1mr6g4Vj3HFjt3eHShZXe0uVxaX0+Du9lTl8zxvj+Y13FMBm
-         3BCF8pMPe3BJMotRnqiA+SMk/yzw+EGkze/VRJUZ8Ugp0WIglgaSXcGSfQRa07Tt7r7X
-         j0I5bqJZ7KP7ZmUOhuIaQq97St3nmbk3oOJXmVydewmuj2QdWUxngbUeicU5O3U6Do24
-         daHTu7E+5dSUQMeVBWiqqT99rNAGvWWgtw/eATEmuJ9wfNSKgTZ8IP3gY7n/II+DJjjg
-         btrA==
-X-Gm-Message-State: APjAAAWEc0EG/bTo1GgsgIRk3eiqlGdu33ik1U4fWMU4eQ7TmCfexv4+
-        0ptDayevCchZS/L4D1KI0T2A8w==
-X-Google-Smtp-Source: APXvYqyc31ky7y5rVl2RtqNSgEfZmWfiwP2nQ4nPApVOaI7SeRMU3N70u8JMW2wUoJ0UP+Fw783whQ==
-X-Received: by 2002:adf:cd86:: with SMTP id q6mr17761907wrj.44.1568611895554;
-        Sun, 15 Sep 2019 22:31:35 -0700 (PDT)
+        bh=NYdi4GX237KM+O+EVypoAMLBZrFvfW0XoqlJBdznIcI=;
+        b=tFJkc9haFjp30UeTduCycsRuq2HOJg673ovLZS8bapuS8R3wygNBvLmN/LDcBSK+1q
+         ZB69XxCYoGOWC9UPRv398XKF7lkvuojcTMKUXPkVBGVH+XCaxwGyIkluqVmSZJseeY35
+         QmdfkYuZB0zq88tmHIXbksuD0KWT6oSWpAroo0qXx6BDojYBytQ0+Umufh0kMiYtS1OV
+         erF0TaIf4DJONKuH1yWqf81nKiA1PoAvK3zwETAhC2Ixwy4hPq8WW7fuMGzjekaBljVc
+         wTtb+Di2XCpLWMbm+fZyTtgAdmpkmD033lgS2iDcqQhWihXQtPxfTooxDmWI+KvUmKwJ
+         Bnvw==
+X-Gm-Message-State: APjAAAWjYglg0pOkO1PrRZ1Ns3/zl28bzIiImRCsDO8/JbMRTokpyCdE
+        NdFIQBafotzc+PkLdLQga5XJmw==
+X-Google-Smtp-Source: APXvYqwF/OAxBtQy2mHia1O+s8XWWu1hneo0sMwEe9f0MzXTdyNcVIbgSNnKfF30zBBEjAWC/2YYZg==
+X-Received: by 2002:a1c:c14a:: with SMTP id r71mr7371149wmf.46.1568612282780;
+        Sun, 15 Sep 2019 22:38:02 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id o188sm17755925wma.14.2019.09.15.22.31.34
+        by smtp.gmail.com with ESMTPSA id v7sm33741203wru.87.2019.09.15.22.38.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Sep 2019 22:31:35 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 07:31:34 +0200
+        Sun, 15 Sep 2019 22:38:01 -0700 (PDT)
+Date:   Mon, 16 Sep 2019 07:38:01 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com, f.fainelli@gmail.com
-Subject: Re: [patch iproute2-next v4 0/2] devlink: couple forgotten flash
- patches
-Message-ID: <20190916053134.GF2286@nanopsycho.orion>
-References: <20190912112938.2292-1-jiri@resnulli.us>
- <2c201359-2fa4-b1e4-061b-64a53eb30920@gmail.com>
- <20190914060012.GC2276@nanopsycho.orion>
- <7f32dc69-7cc1-4488-a1b6-94db64748630@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, tariqt@mellanox.com,
+        saeedm@mellanox.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        shuah@kernel.org, mlxsw@mellanox.com
+Subject: Re: [patch net-next 02/15] net: fib_notifier: make FIB notifier
+ per-netns
+Message-ID: <20190916053801.GG2286@nanopsycho.orion>
+References: <20190914064608.26799-1-jiri@resnulli.us>
+ <20190914064608.26799-3-jiri@resnulli.us>
+ <87139e84-4310-6632-c5d5-64610d4cc56e@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7f32dc69-7cc1-4488-a1b6-94db64748630@gmail.com>
+In-Reply-To: <87139e84-4310-6632-c5d5-64610d4cc56e@gmail.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Sep 15, 2019 at 07:58:33PM CEST, dsahern@gmail.com wrote:
->On 9/14/19 12:00 AM, Jiri Pirko wrote:
->> Fri, Sep 13, 2019 at 07:25:07PM CEST, dsahern@gmail.com wrote:
->>> On 9/12/19 12:29 PM, Jiri Pirko wrote:
->>>> From: Jiri Pirko <jiri@mellanox.com>
->>>>
->>>> I was under impression they are already merged, but apparently they are
->>>> not. I just rebased them on top of current iproute2 net-next tree.
->>>>
->>>
->>> they were not forgotten; they were dropped asking for changes.
->>>
->>> thread is here:
->>> https://lore.kernel.org/netdev/20190604134450.2839-3-jiri@resnulli.us/
->> 
->> Well not really. The path was discussed in the thread. However, that is
->> unrelated to the changes these patches do. The flashing itself is
->> already there and present. These patches only add status.
->> 
->> Did I missed something?
->> 
+Sun, Sep 15, 2019 at 10:05:47PM CEST, dsahern@gmail.com wrote:
+>On 9/14/19 12:45 AM, Jiri Pirko wrote:
+>>  #define FIB_DUMP_MAX_RETRIES 5
+>> -int register_fib_notifier(struct notifier_block *nb,
+>> +int register_fib_notifier(struct net *net, struct notifier_block *nb,
+>>  			  void (*cb)(struct notifier_block *nb))
+>>  {
+>>  	int retries = 0;
+>>  	int err;
+>>  
+>>  	do {
+>> -		unsigned int fib_seq = fib_seq_sum();
+>> -		struct net *net;
+>> -
+>> -		rcu_read_lock();
+>> -		for_each_net_rcu(net) {
+>> -			err = fib_net_dump(net, nb);
+>> -			if (err)
+>> -				goto err_fib_net_dump;
+>> -		}
+>> -		rcu_read_unlock();
+>> -
+>> -		if (fib_dump_is_consistent(nb, cb, fib_seq))
+>> +		unsigned int fib_seq = fib_seq_sum(net);
+>> +
+>> +		err = fib_net_dump(net, nb);
+>> +		if (err)
+>> +			return err;
+>> +
+>> +		if (fib_dump_is_consistent(net, nb, cb, fib_seq))
+>>  			return 0;
+>>  	} while (++retries < FIB_DUMP_MAX_RETRIES);
 >
->you are thinking like a kernel developer and not a user.
->
->The second patch has a man page change that should state that firmware
->files are expected to be in /lib/firmware and that path is added by the
->kernel so the path passed on the command line needs to drop that part.
+>This is still more complicated than it needs to be. Why lump all
+>fib_notifier_ops into 1 dump when they are separate databases with
+>separate seq numbers? Just dump them 1 at a time and retry that 1
+>database as needed.
 
-ok
+Well I think that what you describe is out of scope of this patch. It is
+another optimization of fib_notifier. The aim of this patchset is not
+optimization of fib_notifier, but devlink netns change. This patchset is
+just a dependency.
+
+Can't we do optimization in another patchset? I already struggled to
+keep this one within 15-patch limit.
+
+Thanks
+
+>
+>ie., This:
+>    list_for_each_entry_rcu(ops, &net->fib_notifier_ops, list) {
+>should be in register_fib_notifier and not fib_net_dump.
+>
+>as it stands you are potentially replaying way more than is needed when
+>a dump is inconsistent.
+>
+>
+>>  
+>>  	return -EBUSY;
+>> -
+>> -err_fib_net_dump:
+>> -	rcu_read_unlock();
+>> -	return err;
+>>  }
+>>  EXPORT_SYMBOL(register_fib_notifier);
+>>  
+>> -int unregister_fib_notifier(struct notifier_block *nb)
+>> +int unregister_fib_notifier(struct net *net, struct notifier_block *nb)
+>>  {
+>> -	return atomic_notifier_chain_unregister(&fib_chain, nb);
+>> +	struct fib_notifier_net *fn_net = net_generic(net, fib_notifier_net_id);
+>> +
+>> +	return atomic_notifier_chain_unregister(&fn_net->fib_chain, nb);
+>>  }
+>>  EXPORT_SYMBOL(unregister_fib_notifier);
+>>  
+>
+>
+>
+>
+>
