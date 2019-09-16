@@ -2,84 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D12ACB3CDA
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 16:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0F8B3CDC
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 16:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729943AbfIPOtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 10:49:16 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43137 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726690AbfIPOtP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 10:49:15 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a2so21176pfo.10
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 07:49:15 -0700 (PDT)
+        id S1730419AbfIPOte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 10:49:34 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:37832 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726690AbfIPOte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 10:49:34 -0400
+Received: by mail-wm1-f68.google.com with SMTP id r195so115967wme.2
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 07:49:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SQCmufhP1zEnyRjTQEvgJOrGjugSs2/vBykGIrI66+Q=;
-        b=nIh3F4zg+oH5PkM6upEXlGYEghSckIgZrWxHNFz3EcsZgklyvaDPEaL0rw1UEzBTnx
-         Kk88HJRkUYR5h1VKZQBnehRqc0QlGTJ+MPUpzwzhXkl+S21CdNcRtYKM2YqbWaRzU0pt
-         rtFVgQhwZq9bv4tDsbTxGZCbWno2RfNiURt2Z7yiUleT9Rv7FK90JjOk7ZJ0wdIzmFSq
-         CZu8I7BONB9b1GBwQ0Vt6KR0RJmTkLIAtwcfW9d7YXpeIWDCrs1Km8ksZ/pFKvb6nnpk
-         gtRrakBJQ7rt/4at5cvqDb1YAEeogmkEwL92dr7+HVXKObTSncMxlnEfca/nNiq862A+
-         bkWQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rSFC5tgZdhyQC9Mn7OVdOTOje+K81UX01c8JE+lQt3E=;
+        b=LC9BAkpJlODq8nD/4nDYstazbiAuSaD+aw1xYmLFEC33i0sRUiRIuX96JA4p/9R5C6
+         Z5LObW1/95/Ec9MM21j2cu6gN2xJQrTqdMGqTQSZvRfQAJckvVNZD+iorayGuZAKW+71
+         xktdfEG+55ELri0KaIePmG9w84m2ViwqkrmZzBm//A+V2NtkqyJ9+D64T7KlTj7AubGf
+         xjNBOchz+N2KM6I2o+bqB8UMpxxum/6GqEAl1Ob6f46xFsv4o4s6GHeCxWXCvECKnEIs
+         cudRceZO26MiUhspD2FcJivApBcBjlM0hxn/30uFYdWwyQKdKfPqiIcDH1rJrTwT7Bgv
+         Pb6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SQCmufhP1zEnyRjTQEvgJOrGjugSs2/vBykGIrI66+Q=;
-        b=Gt0S/zTfNJzCkXlQzI9tu0B3nDHGypA4feY5RGs40SfOjvmI8kYCtHuDVfDlFPcwT8
-         cGjdlbB7l3fStM0AfaIISMDkbvCrs8aJFywcDOX5JNK1NQiYu2OmKcnbYXA3+tWeaPDQ
-         1yfmCGN1MtqSlg4Zngh1h1PiN9TlltW13xVVc3by0ZtdYoXmVgs1AVIAkJTZGv2NqiCL
-         zR+l14xAe9xOL/y7sAEPqWMtfsDfZlY2qpgRjkIqRCthVpYgihdJGcUUFgmY/msoE0GQ
-         tRy0Hm9y61W3NnKNJATtkOaph5+DCo+iJoTws9UZeCuPoEAUiDQWsx9BDY7I6WeFZdQ0
-         nMjQ==
-X-Gm-Message-State: APjAAAUKPsYVxqCMt6aoLHaaS50k6EaVSt8aoWML4SszqBfBcLvp+RVV
-        mYPSdosKbjg8nhFIK3FWxco=
-X-Google-Smtp-Source: APXvYqzfjot9q/5sr38cd/kQWC4MR+lGpGhNiFanCOxN7DxlDlg8p7BPzXtHV+np2NIbGGGjvAA/VA==
-X-Received: by 2002:aa7:8e59:: with SMTP id d25mr7050853pfr.89.1568645355193;
-        Mon, 16 Sep 2019 07:49:15 -0700 (PDT)
-Received: from [172.27.227.245] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id 127sm64189551pfy.56.2019.09.16.07.49.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 Sep 2019 07:49:13 -0700 (PDT)
-Subject: Re: [patch iproute2-next v4 0/2] devlink: couple forgotten flash
- patches
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com,
-        mlxsw@mellanox.com, f.fainelli@gmail.com
-References: <20190912112938.2292-1-jiri@resnulli.us>
- <2c201359-2fa4-b1e4-061b-64a53eb30920@gmail.com>
- <20190914060012.GC2276@nanopsycho.orion>
- <7f32dc69-7cc1-4488-a1b6-94db64748630@gmail.com>
- <20190916100924.GM2286@nanopsycho.orion>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7d3ad854-deba-45e2-fb10-b5a9c9587a04@gmail.com>
-Date:   Mon, 16 Sep 2019 08:49:11 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rSFC5tgZdhyQC9Mn7OVdOTOje+K81UX01c8JE+lQt3E=;
+        b=ktU4FEYVno0yqBu7gyv/FeFVqoTgWj1GLLrPG5YqDOIkV+1dLacE+xi3pE0wlwkLqP
+         a0O6m5zVhPfOzxpsTeCpvMdBGjXs1N9LUV7/O5CQhsNkS/0gjM7zF6tNttmmDgxRqhXC
+         A4oxzbl3vVkU0DRezx/BZaNtHrQChOHSjPlvM4ga0ArLGxOMZNebIM8X59s7UKITtl5O
+         B21Fpqd/cnztbRPoDDSyiJHcfiKQDvrh4IWXRR4KZ8yFRCaqBegviS4hlYKAMZPQdol9
+         R46U9Qm3dg3/Vr+rMxLxEpxVBJ6t7K2XMNKdgRSYS1BGLXPIzfI5CizKfULUFzS9gKxD
+         RwLQ==
+X-Gm-Message-State: APjAAAWsfqGRvtghUQlVNYLjvAghsCvq3M2zZNQKx37GfLfY/t1IoCJf
+        1JV7EeUN0CrbNhxgYcbQ3Sbl4Q==
+X-Google-Smtp-Source: APXvYqzPBLEVLmVXJ9YsBh+DVut8B8TIBt64ZH4dxP+2xgA2IZEWFw7JVRc9PZqOWVMLlsQFSoEgVw==
+X-Received: by 2002:a1c:9d15:: with SMTP id g21mr90324wme.96.1568645371280;
+        Mon, 16 Sep 2019 07:49:31 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q192sm58449wme.23.2019.09.16.07.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Sep 2019 07:49:30 -0700 (PDT)
+Date:   Mon, 16 Sep 2019 16:49:30 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, sd@queasysnail.net,
+        roopa@cumulusnetworks.com, saeedm@mellanox.com,
+        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        jay.vosburgh@canonical.com
+Subject: Re: [PATCH net v3 03/11] bonding: fix unexpected IFF_BONDING bit
+ unset
+Message-ID: <20190916144930.GO2286@nanopsycho.orion>
+References: <20190916134802.8252-1-ap420073@gmail.com>
+ <20190916134802.8252-4-ap420073@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190916100924.GM2286@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190916134802.8252-4-ap420073@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/19 4:09 AM, Jiri Pirko wrote:
-> The fact that the file is expected to be in /lib/firmware is in the
-> devlink flash description right above:
-> 
-> 
->    devlink dev flash - write device's non-volatile memory.
->        DEV - specifies the devlink device to write to.
-> 
->        file PATH - Path to the file which will be written into device's flash. The path needs to be relative to one of the directories
->        searched by the kernel firmware loaded, such as /lib/firmware. 
+Mon, Sep 16, 2019 at 03:47:54PM CEST, ap420073@gmail.com wrote:
+>The IFF_BONDING means bonding master or bonding slave device.
+>->ndo_add_slave() sets IFF_BONDING flag and ->ndo_del_slave() unsets
+>IFF_BONDING flag.
+>
+>bond0<--bond1
+>
+>Both bond0 and bond1 are bonding device and these should keep having
+>IFF_BONDING flag until they are removed.
+>But bond1 would lose IFF_BONDING at ->ndo_del_slave() because that routine
+>do not check whether the slave device is the bonding type or not.
+>This patch adds the interface type check routine before removing
+>IFF_BONDING flag.
+>
+>Test commands:
+>    ip link add bond0 type bond
+>    ip link add bond1 type bond
+>    ip link set bond1 master bond0
+>    ip link set bond1 nomaster
+>    ip link del bond1 type bond
+>    ip link add bond1 type bond
 
-fine. applied both to iproute2-next.
+Interesting. I wonder why bond-in-bond is not forbidden...
