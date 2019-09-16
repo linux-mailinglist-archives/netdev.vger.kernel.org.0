@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E2CB4154
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 21:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB394B4161
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 21:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388468AbfIPTrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 15:47:11 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50622 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727920AbfIPTrL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 15:47:11 -0400
-Received: from localhost (80-167-222-154-cable.dk.customer.tdc.net [80.167.222.154])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 70FB6153F26F6;
-        Mon, 16 Sep 2019 12:47:09 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 21:47:07 +0200 (CEST)
-Message-Id: <20190916.214707.1312089672859838604.davem@davemloft.net>
-To:     dongli.zhang@oracle.com
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        boris.ostrovsky@oracle.com, jgross@suse.com,
-        sstabellini@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] xen-netfront: do not assume sk_buff_head list is
- empty in error handling
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1568605619-22219-1-git-send-email-dongli.zhang@oracle.com>
-References: <1568605619-22219-1-git-send-email-dongli.zhang@oracle.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Sep 2019 12:47:11 -0700 (PDT)
+        id S2391003AbfIPTwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 15:52:50 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37093 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732536AbfIPTws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 15:52:48 -0400
+Received: by mail-ed1-f66.google.com with SMTP id r4so1179857edy.4
+        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 12:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lf+sPRYo4A3Rir/R44WZZ7uF4mOF9gb7qApe7xAh12s=;
+        b=oQTnCkJUdsDRDwCADqSTidoJMdad6k/AefioGdRLuA+TWiE+Eo6qKYGdIiHp9rlw+z
+         6T2EbtFe7RAIQcMt3ZlWNQo6gCmPnbjCz+bgRByuA++smQrRZjD+klpUtCfJ5uNp/QLK
+         3hcxRot3o8CzHilBxfThngyWvEkeNjn04DXMnKzGljNHHScZsrvD2j+685rQkci2LSgx
+         WBbUhh2rZ3zNYwAONkukIB4Ta5tI5Q4vysuOmAyKJPPg2sq1afwhEyNWj1GvD960B0nC
+         QwapwtTBZOmztiRPtePZ5ObkPiUjwNzGCCkTuzsIwA5BGi5sNfLRRR7mJ3Ci391/eUAN
+         JTDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lf+sPRYo4A3Rir/R44WZZ7uF4mOF9gb7qApe7xAh12s=;
+        b=GvW14heLVkxho0RQXz1oUdZYCtY1MmxLiX6Vrlehj8x6zSUOXCrrfZ+dB2eDzjNt/g
+         p12rd5li/mR5/xx53QgZD5VOgXSshYgtJL8gC1+SfmgQ1jy6kjSQu19WjILbOMwMGent
+         gKUAq4XrOXDe3LQo39vNxh6Va62sSsfPKhv3tE7jq4vHX5PD4N1FPkGEEq6p/75z4Kyb
+         roMKlCcpBr8HGAmi0rXHzAMbjQBPawnH8SJoPTsCnJ7YpBhrkdKSBq2gQ7kt+4glftW6
+         //+3kPoDMBZpxGI7BI8jfXYznQJDQx8zxgXGQaRmp+DGLUBy7f26GGnRQjieYSyR76oa
+         otMA==
+X-Gm-Message-State: APjAAAU3PjGmWx4dIodCMtNU7dVEfTk9vV73SB8z2sbeTQJsiqK5kWe4
+        sif0dVgWi3eQanfECL+9ipRZHa/NniWHqwLXCNA=
+X-Google-Smtp-Source: APXvYqyupa85MAyO0x3JIqRlQe1ps8Y7/bW1Rcjv7Ko2//VRELo80d04VWptjUTvgC2ARyYllyilsvqFaoNNP3k5jvQ=
+X-Received: by 2002:a50:ef12:: with SMTP id m18mr1061981eds.18.1568663566156;
+ Mon, 16 Sep 2019 12:52:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190915020003.27926-1-olteanv@gmail.com> <20190916.213627.1150593408219168339.davem@davemloft.net>
+In-Reply-To: <20190916.213627.1150593408219168339.davem@davemloft.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 16 Sep 2019 22:52:34 +0300
+Message-ID: <CA+h21ho1QoEFWz=JV5BXGe0BXN3tQ72jjt30oQHQvbWRaQ-e6g@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 0/6] tc-taprio offload for SJA1105 DSA
+To:     David Miller <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "Patel, Vedang" <vedang.patel@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>, jiri@mellanox.com,
+        m-karicheri2@ti.com, jose.abreu@synopsys.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongli Zhang <dongli.zhang@oracle.com>
-Date: Mon, 16 Sep 2019 11:46:59 +0800
+On Mon, 16 Sep 2019 at 22:36, David Miller <davem@davemloft.net> wrote:
+>
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Sun, 15 Sep 2019 04:59:57 +0300
+>
+> > This is the third attempt to submit the tc-taprio offload model for
+> > inclusion in the networking tree. The sja1105 switch driver will provide
+> > the first implementation of the offload. Only the bare minimum is added:
+> >
+> > - The offload model and a DSA pass-through
+> > - The hardware implementation
+> > - The interaction with the netdev queues in the tagger code
+> > - Documentation
+> >
+> > What has been removed from previous attempts is support for
+> > PTP-as-clocksource in sja1105, as well as configuring the traffic class
+> > for management traffic.  These will be added as soon as the offload
+> > model is settled.
+>
+> Series applied, thanks.
 
-> When skb_shinfo(skb) is not able to cache extra fragment (that is,
-> skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS), xennet_fill_frags() assumes
-> the sk_buff_head list is already empty. As a result, cons is increased only
-> by 1 and returns to error handling path in xennet_poll().
-> 
-> However, if the sk_buff_head list is not empty, queue->rx.rsp_cons may be
-> set incorrectly. That is, queue->rx.rsp_cons would point to the rx ring
-> buffer entries whose queue->rx_skbs[i] and queue->grant_rx_ref[i] are
-> already cleared to NULL. This leads to NULL pointer access in the next
-> iteration to process rx ring buffer entries.
-> 
-> Below is how xennet_poll() does error handling. All remaining entries in
-> tmpq are accounted to queue->rx.rsp_cons without assuming how many
-> outstanding skbs are remained in the list.
-> 
->  985 static int xennet_poll(struct napi_struct *napi, int budget)
-> ... ...
-> 1032           if (unlikely(xennet_set_skb_gso(skb, gso))) {
-> 1033                   __skb_queue_head(&tmpq, skb);
-> 1034                   queue->rx.rsp_cons += skb_queue_len(&tmpq);
-> 1035                   goto err;
-> 1036           }
-> 
-> It is better to always have the error handling in the same way.
-> 
-> Fixes: ad4f15dc2c70 ("xen/netfront: don't bug in case of too many frags")
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Thanks a lot, that's what I call cutting it close!
 
-Applied and queued up for -stable.
+-Vladimir
