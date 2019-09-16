@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71747B4198
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 22:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6015B41AB
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 22:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733024AbfIPUNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 16:13:36 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:41987 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732909AbfIPUNg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 16:13:36 -0400
-Received: by mail-qt1-f195.google.com with SMTP id g16so1421844qto.9;
-        Mon, 16 Sep 2019 13:13:35 -0700 (PDT)
+        id S2391310AbfIPUS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 16:18:27 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34170 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728003AbfIPUS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 16:18:26 -0400
+Received: by mail-qt1-f194.google.com with SMTP id j1so1528809qth.1;
+        Mon, 16 Sep 2019 13:18:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EQieAOVOLhTB9NEpVxq8Psmz1z1YFHo6DuhpKMUCRdo=;
-        b=LRwz7uV8K4RxNPFBVi0eieRgWlVOgGyvMJhZOkQB+MF8KKUORN8uEab+0FD2qqW21D
-         AWJ8LjFaphwggHF4mEMtP9ZuDLG+PCQQao6821QgSwJbPXR0a70k89v0jTA3GzsyBsuF
-         lkMwDvlS7x6WM+JnT8J7YzbQxtB+gecQcYeX++xLMGz2SYCcFVVu+N24upDcXuLXaA46
-         NfBDICxlLX2LqWXv36wUP1SkDBbotnNXWOr1wbSdjZPumchaqY2H2xlVOYDbuJ6XT1br
-         18Mnx2SweaZzlRaSjyGqt2k0vmfff9fgNWrkCdAADlL+Wpe13OJ825uALoQBGw16hYzx
-         VbCw==
+        bh=QEfTUH7Dj5bEKXTFuGOQc+OAP+VdIgkp+YMXyKatLYY=;
+        b=RZ6erArdcAZdtjv3JOmWbrX4/G0vjwHOK8U+bo+sFvT5YFuZGgjV6AOft9NjTWc2zF
+         gYYrQLCUNQqxHmDMF9osHnUVsKnGJJfEQvBZ6KLby8w2wqExy4QoXDHO9gDnZxQ5GxRc
+         VBI+3ejWmrJnYjI5YAv78mq2nvYJ9x9f6G1h9ZoRgW99rH03H63kuZ7PG1Lsoeaqehbm
+         GET0TL50doQoESLtm2vTNs1EU3+9Sg2blvTaoI91O/w5BoMKFwoi7uTzsI/LxC2V2bR1
+         /DYrMEqoeiAx+s48lIsCkGJlXAyG4BHNFyDC/2T/JjmsBQLe0Bhor1thC8+e6koCprSp
+         +GUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EQieAOVOLhTB9NEpVxq8Psmz1z1YFHo6DuhpKMUCRdo=;
-        b=I2KrR3SGXOWS1K1uDV1dj5G4Mde67d1DJPFVoDmMbGKUcdBaHzAeUPY5mQVcIGEOrS
-         hZXiydH2ZWqASwU2wOmSUY5NC++1cw8vM8qiiTLsLZVtWa8jY+mT0NDz4g478NSFqoyo
-         dOofqKR+khymttld05vG/ptv9lP/5/SM+CMxRWHLuEq/5a41BawOoC3fiKzvLLt4YfcM
-         2JxPHkcLt/tGDyEPIIg2OD/Sl6C/a3iFV4l/1+yaBU/js4zdAwRQBzYRVX4qTKuBUVh8
-         Swj0VqOqcF1ZHgaUIXfH4QSOWOiqdiRfBv8PnzsUtewbJwBooDaiau3hDdBqMa1mdykP
-         1axw==
-X-Gm-Message-State: APjAAAUG9aRn3JPBo3h5Vzjle4m/AHPSrNmeaRhJ1LzE0TU95Or8ItHj
-        ThZC16W0E1omN6LJTKsWqjpn6OLkoXuG5a+Mp3Y=
-X-Google-Smtp-Source: APXvYqy55J2qV/pLKyAHT18uBJJPB/CqoqSRNilFgZD/c0LOc1OPxIYx5lu+xFQLZrnxYuNio03D9QrZms1EOaqHr+g=
-X-Received: by 2002:a0c:e48b:: with SMTP id n11mr122806qvl.38.1568664815003;
- Mon, 16 Sep 2019 13:13:35 -0700 (PDT)
+        bh=QEfTUH7Dj5bEKXTFuGOQc+OAP+VdIgkp+YMXyKatLYY=;
+        b=ujQOjsnXJblsoYVz3BZbawAymykwWKwgb9/8IL8pSuQ9SDVa/39/CJ/1KoH+6xAYgP
+         yiogsQYl8Xtto8Oh/Z5S1Vzp3TK02rmOU8U/6kV0na7i/rzmrkEDWIiwfbU4Zf9D5t3V
+         pcN6XEJfACN6elWFKwBp1dBVW4il04wdyW9TZSBfwHOMfAzIr/bIxJ7I8QDE7KiubUyy
+         B4CK4baAcC5eGPiqLZMwuXxPW41I2ZsyRIG6O3Y3MFhs+Ls6uUgEY9DrGUtnt3XWAIDy
+         G6pW5X4wG8CBnzuKolHDrGhyH9GZWLqUxs16TLYHSTiTPLLGxvERmKa6GJqqEKP+0m9U
+         YOgg==
+X-Gm-Message-State: APjAAAVEziO7HMLFq5yB0nWvBH4Nh2xfkYiJfIO5jo7MWh5XJ1YXPGuk
+        BMi8iSDQ0ADQaIcoaMohK96vT5KhcGxX8A2RdgE=
+X-Google-Smtp-Source: APXvYqw+ZHsh8RU8noqA0dDMyf1yC2xpqfVnOyJozeB+kygnh9xNGYRtDLhJvEiqe/XplH2JsgoBVdgIFTixu/com0A=
+X-Received: by 2002:aed:2726:: with SMTP id n35mr188114qtd.171.1568665105443;
+ Mon, 16 Sep 2019 13:18:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org> <20190916105433.11404-2-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190916105433.11404-2-ivan.khoronzhuk@linaro.org>
+References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org> <20190916105433.11404-3-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190916105433.11404-3-ivan.khoronzhuk@linaro.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 16 Sep 2019 13:13:23 -0700
-Message-ID: <CAEf4BzZVTjCybmDgM0VBzv_L-LHtF8LcDyyKSWJm0ZA4jtJKcw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 01/14] samples: bpf: makefile: fix HDR_PROBE "echo"
+Date:   Mon, 16 Sep 2019 13:18:14 -0700
+Message-ID: <CAEf4Bzbsud6HPdOCswB6JyMNiQPCAhog3Qqe4-2oKZrA8btgvQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 02/14] samples: bpf: makefile: fix
+ cookie_uid_helper_example obj build
 To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -68,32 +69,35 @@ X-Mailing-List: netdev@vger.kernel.org
 On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
 <ivan.khoronzhuk@linaro.org> wrote:
 >
-> echo should be replaced with echo -e to handle '\n' correctly, but
-> instead, replace it with printf as some systems can't handle echo -e.
+> Don't list userspace "cookie_uid_helper_example" object in list for
+> bpf objects.
+>
+> 'always' target is used for listing bpf programs, but
+> 'cookie_uid_helper_example.o' is a user space ELF file, and covered
+> by rule `per_socket_stats_example`, so shouldn't be in 'always'.
+> Let us remove `always += cookie_uid_helper_example.o`, which avoids
+> breaking cross compilation due to mismatched includes.
 >
 > Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 > ---
->  samples/bpf/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  samples/bpf/Makefile | 1 -
+>  1 file changed, 1 deletion(-)
 >
 > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 1d9be26b4edd..f50ca852c2a8 100644
+> index f50ca852c2a8..43dee90dffa4 100644
 > --- a/samples/bpf/Makefile
 > +++ b/samples/bpf/Makefile
-> @@ -201,7 +201,7 @@ endif
->
->  # Don't evaluate probes and warnings if we need to run make recursively
->  ifneq ($(src),)
-> -HDR_PROBE := $(shell echo "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
-> +HDR_PROBE := $(shell printf "\#include <linux/types.h>\n struct list_head { int a; }; int main() { return 0; }" | \
-
-printf change is fine, but I'm confused about \# at the beginning of
-the string. Not sure what was the intent, but it seems like it should
-work with just #include at the beginning.
-
->         $(HOSTCC) $(KBUILD_HOSTCFLAGS) -x c - -o /dev/null 2>/dev/null && \
->         echo okay)
->
+> @@ -145,7 +145,6 @@ always += sampleip_kern.o
+>  always += lwt_len_hist_kern.o
+>  always += xdp_tx_iptunnel_kern.o
+>  always += test_map_in_map_kern.o
+> -always += cookie_uid_helper_example.o
+>  always += tcp_synrto_kern.o
+>  always += tcp_rwnd_kern.o
+>  always += tcp_bufs_kern.o
 > --
 > 2.17.1
 >
