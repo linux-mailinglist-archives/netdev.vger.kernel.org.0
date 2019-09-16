@@ -2,145 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF38B3966
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 13:33:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D20CB3990
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 13:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732139AbfIPLdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 07:33:11 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:37095 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731539AbfIPLdK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 07:33:10 -0400
+        id S1731632AbfIPLju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 07:39:50 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:34423 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731110AbfIPLju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 07:39:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1568633589; x=1600169589;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=EbhW/2qd3ZAZAO57MtDkSSObM4GtRXBafDCSXd6Fm+w=;
-  b=FbKC5aqKEM+xqgr9IcAXfQIwN2QuYTanQIgNG065siLiN4uEI5ObPgEQ
-   OT3qS3ns5nQGk5C6qbfIejDPo5vw2ZhSAN4AdWPfkJKJY5U6GO4M6STHr
-   qjR6u4Q57pd4fFGhRrrYHn0fQgw9klYgImdKPqrVSCY5lg8aRnhmZTTxy
-   0=;
+  t=1568633989; x=1600169989;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=LOU9QT7eDpBxlxQCzu4phRmo6ckEBAuZgSulb903qOQ=;
+  b=EMPDi0PGBkaTk3pNXshM5vW9Fm8+oDlO3tH8PD72leh42xT9YRl4qNO+
+   bcDRlWG5jlMfQeizN4k6yoMRqa/jhaQtse7UCcZmpoGhSyP1/WJ+L53Cu
+   Q4/eu//CwAJWx1FvLB3f3oGXIUHaH7B36nH+dad8CdiFkD66cA3v8EVHT
+   c=;
 X-IronPort-AV: E=Sophos;i="5.64,512,1559520000"; 
-   d="scan'208";a="702600996"
-Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com) ([10.47.22.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 16 Sep 2019 11:32:55 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-e34f1ddc.us-east-1.amazon.com (Postfix) with ESMTPS id 345C5A21C3;
-        Mon, 16 Sep 2019 11:32:39 +0000 (UTC)
-Received: from EX13D08UEE004.ant.amazon.com (10.43.62.182) by
+   d="scan'208";a="415451041"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 16 Sep 2019 11:39:48 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com (Postfix) with ESMTPS id F34B8A17E2;
+        Mon, 16 Sep 2019 11:39:46 +0000 (UTC)
+Received: from EX13D04EUA001.ant.amazon.com (10.43.165.136) by
  EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 16 Sep 2019 11:32:18 +0000
-Received: from EX13MTAUEE001.ant.amazon.com (10.43.62.200) by
- EX13D08UEE004.ant.amazon.com (10.43.62.182) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 16 Sep 2019 11:32:18 +0000
-Received: from HFA15-G63729NC.hfa16.amazon.com (10.218.52.89) by
- mail-relay.amazon.com (10.43.62.226) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Mon, 16 Sep 2019 11:32:15 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net-next 11/11] net: ena: fix incorrect update of intr_delay_resolution
-Date:   Mon, 16 Sep 2019 14:31:36 +0300
-Message-ID: <1568633496-4143-12-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1568633496-4143-1-git-send-email-akiyano@amazon.com>
-References: <1568633496-4143-1-git-send-email-akiyano@amazon.com>
+ id 15.0.1367.3; Mon, 16 Sep 2019 11:39:46 +0000
+Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
+ EX13D04EUA001.ant.amazon.com (10.43.165.136) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 16 Sep 2019 11:39:45 +0000
+Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
+ EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1367.000;
+ Mon, 16 Sep 2019 11:39:45 +0000
+From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+Subject: RE: [PATCH V1 net-next 01/11] net: ena: add intr_moder_rx_interval to
+ struct ena_com_dev and use it
+Thread-Topic: [PATCH V1 net-next 01/11] net: ena: add intr_moder_rx_interval
+ to struct ena_com_dev and use it
+Thread-Index: AQHVaba3tinElGdX106WUGXswoL1n6ctFHyAgAEeZmA=
+Date:   Mon, 16 Sep 2019 11:39:39 +0000
+Deferred-Delivery: Mon, 16 Sep 2019 11:39:14 +0000
+Message-ID: <681f96d217b24b9f929da7ac61019e72@EX13D22EUA004.ant.amazon.com>
+References: <1568326128-4057-1-git-send-email-akiyano@amazon.com>
+        <1568326128-4057-2-git-send-email-akiyano@amazon.com>
+ <20190915.193241.878202512573492759.davem@davemloft.net>
+In-Reply-To: <20190915.193241.878202512573492759.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.55]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Sunday, September 15, 2019 9:33 PM
+> To: Kiyanovski, Arthur <akiyano@amazon.com>
+> Cc: netdev@vger.kernel.org; Woodhouse, David <dwmw@amazon.co.uk>;
+> Machulsky, Zorik <zorik@amazon.com>; Matushevsky, Alexander
+> <matua@amazon.com>; Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt
+> <msw@amazon.com>; Liguori, Anthony <aliguori@amazon.com>; Bshara,
+> Nafea <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal,
+> Netanel <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>;
+> Herrenschmidt, Benjamin <benh@amazon.com>; Jubran, Samih
+> <sameehj@amazon.com>; Dagan, Noam <ndagan@amazon.com>
+> Subject: Re: [PATCH V1 net-next 01/11] net: ena: add intr_moder_rx_interv=
+al to
+> struct ena_com_dev and use it
+>=20
+> From: <akiyano@amazon.com>
+> Date: Fri, 13 Sep 2019 01:08:38 +0300
+>=20
+> > @@ -1307,8 +1304,8 @@ static void
+> ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
+> >  	ena_dev->intr_delay_resolution =3D intr_delay_resolution;
+> >
+> >  	/* update Rx */
+> > -	for (i =3D 0; i < ENA_INTR_MAX_NUM_OF_LEVELS; i++)
+> > -		intr_moder_tbl[i].intr_moder_interval /=3D intr_delay_resolution;
+> > +	ena_dev->intr_moder_rx_interval /=3D intr_delay_resolution;
+> > +
+> >
+> >  	/* update Tx */
+>=20
+> Now there are two empty lines here, please remove one of them.
 
-ena_dev->intr_moder_rx/tx_interval save the intervals received from the
-user after dividing them by ena_dev->intr_delay_resolution. Therefore
-when intr_delay_resolution changes, the code needs to first mutiply
-intr_moder_rx/tx_interval by the previous intr_delay_resolution to get
-the value originally given by the user, and only then divide it by the
-new intr_delay_resolution.
-
-Current code does not first multiply intr_moder_rx/tx_interval by the old
-intr_delay_resolution. This commit fixes it.
-
-Also initialize ena_dev->intr_delay_resolution to be 1.
-
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_com.c    | 21 ++++++++++++++++----
- drivers/net/ethernet/amazon/ena/ena_com.h    |  1 +
- drivers/net/ethernet/amazon/ena/ena_netdev.c |  1 +
- 3 files changed, 19 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 621b747f062b..ea62604fdf8c 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -1281,17 +1281,30 @@ static int ena_com_ind_tbl_convert_from_device(struct ena_com_dev *ena_dev)
- static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
- 						 u16 intr_delay_resolution)
- {
-+	/* Initial value of intr_delay_resolution might be 0 */
-+	u16 prev_intr_delay_resolution =
-+		ena_dev->intr_delay_resolution ?
-+		ena_dev->intr_delay_resolution :
-+		ENA_DEFAULT_INTR_DELAY_RESOLUTION;
-+
- 	if (!intr_delay_resolution) {
- 		pr_err("Illegal intr_delay_resolution provided. Going to use default 1 usec resolution\n");
--		intr_delay_resolution = 1;
-+		intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
- 	}
--	ena_dev->intr_delay_resolution = intr_delay_resolution;
- 
- 	/* update Rx */
--	ena_dev->intr_moder_rx_interval /= intr_delay_resolution;
-+	ena_dev->intr_moder_rx_interval =
-+		ena_dev->intr_moder_rx_interval *
-+		prev_intr_delay_resolution /
-+		intr_delay_resolution;
- 
- 	/* update Tx */
--	ena_dev->intr_moder_tx_interval /= intr_delay_resolution;
-+	ena_dev->intr_moder_tx_interval =
-+		ena_dev->intr_moder_tx_interval *
-+		prev_intr_delay_resolution /
-+		intr_delay_resolution;
-+
-+	ena_dev->intr_delay_resolution = intr_delay_resolution;
- }
- 
- /*****************************************************************************/
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index ddc2a8c50333..7c941eba0bc9 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -74,6 +74,7 @@
- 
- #define ENA_INTR_INITIAL_TX_INTERVAL_USECS		196
- #define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
-+#define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
- 
- #define ENA_HW_HINTS_NO_TIMEOUT				0xFFFF
- 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 54539e57aa73..e4bf7a4af87a 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3500,6 +3500,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	*/
- 	ena_dev->intr_moder_tx_interval = ENA_INTR_INITIAL_TX_INTERVAL_USECS;
- 	ena_dev->intr_moder_rx_interval = ENA_INTR_INITIAL_RX_INTERVAL_USECS;
-+	ena_dev->intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
- 	io_queue_num = ena_calc_io_queue_num(pdev, ena_dev, &get_feat_ctx);
- 	rc = ena_calc_queue_size(&calc_queue_ctx);
- 	if (rc || io_queue_num <= 0) {
--- 
-2.17.2
-
+Thanks.
+For some reason checkpatch did not catch this and also another such extra s=
+pace.
+Sent out V2 of the patchset.
