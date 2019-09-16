@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27246B3F99
-	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 19:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BED4B3FA9
+	for <lists+netdev@lfdr.de>; Mon, 16 Sep 2019 19:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729638AbfIPR3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 13:29:18 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:41601 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727719AbfIPR3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 13:29:18 -0400
-Received: by mail-io1-f66.google.com with SMTP id r26so890555ioh.8
-        for <netdev@vger.kernel.org>; Mon, 16 Sep 2019 10:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arroyo.io; s=google;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version;
-        bh=rgE4dv/gJos5cwZ/zqdO92VrJ60CPHzI/hDFA5WdUM8=;
-        b=OIHcbtALhsuox+WPdGy9vqli1CbDIXjxZ7JVb8TiQ1xZXfvz0/OQv27zbRbV/chUaY
-         CtZqQBMa1LApzEWAM0yW0WmIeKauvhcxNgUqekAraT1RUDM2sBrIn/LfQSi1lVPUAgl9
-         WQVbgPvSPhkeZB6ubxfxbvFXoiXkUruqc9ifeWA71i6hdF68DAR3sYRp1xgRcgDu6Q55
-         hixKwHvyroo9nkGTDkyZtzhzZd8VMe/cV8NTyYUYTaqgfuHMCbYEduXMsc3nrhJeCmr0
-         fTQR4W5+BFqRaqalvyAhV9ivueg7alS+VJWJ5F76tDsOgo7DMkgoxCu8mJcWrj8twA/L
-         8zGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version;
-        bh=rgE4dv/gJos5cwZ/zqdO92VrJ60CPHzI/hDFA5WdUM8=;
-        b=Lfd24oisqKkKschK+51mf+Yji1SQQpkDmUfjLYu8DokFfyFswGwzdyfMPHDoMARNji
-         +hGC3evFXNzmbgA3ENHbIdSqLeMA7ZlFfSWooME2Vrp8/Vt+NEgzFv4aSaYhPx6Hbyyt
-         Nbc5vap7kcD4fealw9G8/slAME/gYr0IhXNjr+6f2PDP/wLRdObvQpVXhaWXRNvukPXv
-         j4HjdD8Z5XeXhJHscIHVYxcnNbzePsrCvlPM7HdJb7LaqSsILBbycIC0CbTKTKkr5B6I
-         qONSvWIH8kNnbvTILrM9isBnkZ508CDCqwPY5DTBRftDFLthpm3V32HSpthJXo1pnw/W
-         uEZQ==
-X-Gm-Message-State: APjAAAUIXaKV1qs9oRWrFEBw+hWpLQ5W7+txg4QFfX/xO8udrDs5B4Kj
-        E66ZId35LwwlTYkyAry1i3itWMd2gqf2OveGKzwHq5o8pMukJ5kjrbJOlMUUByLoS452i9y1FFD
-        edrTqOj+aCA==
-X-Google-Smtp-Source: APXvYqzwJRGWkRcnXEX5Cs3mFnpZUDXmlXUQLUkSPGA1DFg8SSxc6sDPFHmO0bXdDO2716ab9J1sHQ==
-X-Received: by 2002:a5d:951a:: with SMTP id d26mr12043iom.31.1568654954342;
-        Mon, 16 Sep 2019 10:29:14 -0700 (PDT)
-Received: from glacier.localdomain (047-006-040-041.res.spectrum.com. [47.6.40.41])
-        by smtp.gmail.com with ESMTPSA id q74sm53711664iod.72.2019.09.16.10.29.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 10:29:14 -0700 (PDT)
-Date:   Mon, 16 Sep 2019 13:29:11 -0400
-From:   Matt Ellison <matt@arroyo.io>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        dsahern@gmail.com, julien.floret@6wind.com
-Subject: Re: [PATCH iproute2] link_xfrm: don't forcce to set phydev
-Message-ID: <20190916132911.162b2817@glacier.localdomain>
-In-Reply-To: <20190916153627.19458-1-nicolas.dichtel@6wind.com>
-References: <20190916153627.19458-1-nicolas.dichtel@6wind.com>
+        id S1732204AbfIPRki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 13:40:38 -0400
+Received: from a6-195.smtp-out.eu-west-1.amazonses.com ([54.240.6.195]:60580
+        "EHLO a6-195.smtp-out.eu-west-1.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732173AbfIPRki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Sep 2019 13:40:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=awgt3ic55kqhwizgro5hhdlz56bi7lbf; d=origamienergy.com;
+        t=1568655635;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=GrvEXTmiY/Gfi5MF+9iwIL+fbGjhdyuMrvV+oMG4KZs=;
+        b=RPn3QRXMj1MrNNESOGC6uwarzj3mr3jK0mV7/VWrxzE2UZCVTUGBPzs/ivTsK+ks
+        blSxHjBEA9yyp1Tj+/ahzjqsYaXKgZt6qiTWlL0trvsjBvbuuU39gxzSVKEC0h/7xXm
+        49armJ44uKiAJrA+g9e/bB3SasNavM72fx7GM4b4=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=ihchhvubuqgjsxyuhssfvqohv7z3u4hn; d=amazonses.com; t=1568655635;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+        bh=GrvEXTmiY/Gfi5MF+9iwIL+fbGjhdyuMrvV+oMG4KZs=;
+        b=csROk06bIMVv5gn79rp/6gppI0PKR1qdMvnOomWzxpTLbZPdLmp/erBkFgOEkXrj
+        6GZ19XGnbPFBmXcGJhcrO60JzgM8uJ9CHVewbTSnqYCJShPKA4GK3Y6mDpnZU2FRf7/
+        pt6xD25UOuchhQo6hkDqAtvvhUGc4HI5G5dL+n7g=
+Subject: Re: [PATCH] dt-bindings: net: Correct the documentation of KSZ9021
+ skew values
+To:     David Miller <davem@davemloft.net>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <0102016d2b84f180-bd396cb9-16cf-4472-b718-7a4d2d8d8017-000000@eu-west-1.amazonses.com>
+ <20190916.161455.1015414751228915954.davem@davemloft.net>
+From:   James Byrne <james.byrne@origamienergy.com>
+Message-ID: <0102016d3b297538-fcca5199-6ad1-4625-b11c-3ad3919a0c48-000000@eu-west-1.amazonses.com>
+Date:   Mon, 16 Sep 2019 17:40:35 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+In-Reply-To: <20190916.161455.1015414751228915954.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SES-Outgoing: 2019.09.16-54.240.6.195
+Feedback-ID: 1.eu-west-1.sQ65CuNSNkrvjFrT7j7oeWmhxZgivYoP5c3BHSC7Qc8=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Acked-by: Matt Ellison <matt@arroyo.io>
+On 16/09/2019 15:14, David Miller wrote:
+> From: James Byrne <james.byrne@origamienergy.com>
+> Date: Fri, 13 Sep 2019 16:46:35 +0000
+> 
+>> The documentation of skew values for the KSZ9021 PHY was misleading
+>> because the driver implementation followed the erroneous information
+>> given in the original KSZ9021 datasheet before it was corrected in
+>> revision 1.2 (Feb 2014). It is probably too late to correct the driver
+>> now because of the many existing device trees, so instead this just
+>> corrects the documentation to explain that what you actually get is not
+>> what you might think when looking at the device tree.
+>>
+>> Signed-off-by: James Byrne <james.byrne@origamienergy.com>
+> 
+> What tree should this go into?
 
--- 
+I believe this should go into the 'net' tree, but please let me know if 
+I have submitted this patch incorrectly in some way.
 
-
-
-Please be advised that this email may contain confidential information. 
-If you are not the intended recipient, please notify us by email by 
-replying to the sender and delete this message. The sender disclaims that 
-the content of this email constitutes an offer to enter into, or the 
-acceptance of, any agreement; provided that the foregoing does not 
-invalidate the binding effect of any digital or other electronic 
-reproduction of a manual signature that is included in any attachment.
-
-
- 
-<https://twitter.com/arroyo_networks>   
-<https://www.linkedin.com/company/arroyo-networks>   
-<https://www.github.com/ArroyoNetworks>
+James
