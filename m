@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E573B45D1
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 05:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 358E8B45F5
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 05:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403931AbfIQDIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Sep 2019 23:08:04 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2277 "EHLO huawei.com"
+        id S1732678AbfIQDUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Sep 2019 23:20:04 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2227 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727097AbfIQDID (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Sep 2019 23:08:03 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id E698E82D8048DD8737DE;
-        Tue, 17 Sep 2019 11:08:01 +0800 (CST)
-Received: from [127.0.0.1] (10.177.29.68) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.439.0; Tue, 17 Sep 2019
- 11:07:58 +0800
-Message-ID: <5D804E0D.2070707@huawei.com>
-Date:   Tue, 17 Sep 2019 11:07:57 +0800
+        id S1727097AbfIQDUD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Sep 2019 23:20:03 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 84CB24867C721C163196;
+        Tue, 17 Sep 2019 11:20:01 +0800 (CST)
+Received: from [127.0.0.1] (10.177.29.68) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Tue, 17 Sep 2019
+ 11:19:57 +0800
+Message-ID: <5D8050DC.4010909@huawei.com>
+Date:   Tue, 17 Sep 2019 11:19:56 +0800
 From:   zhong jiang <zhongjiang@huawei.com>
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20120428 Thunderbird/12.0.1
 MIME-Version: 1.0
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     <davem@davemloft.net>, <kvalo@codeaurora.org>,
-        <pkshih@realtek.com>, <netdev@vger.kernel.org>,
+CC:     <davem@davemloft.net>, <anna.schumaker@netapp.com>,
+        <trond.myklebust@hammerspace.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] nfp: Drop unnecessary continue in nfp_net_pf_alloc_vnics
-References: <1567568784-9669-1-git-send-email-zhongjiang@huawei.com> <1567568784-9669-3-git-send-email-zhongjiang@huawei.com> <20190916194502.0c014667@cakuba.netronome.com>
-In-Reply-To: <20190916194502.0c014667@cakuba.netronome.com>
+Subject: Re: [PATCH 1/3] ixgbe: Use kzfree() rather than its implementation.
+References: <1567564752-6430-1-git-send-email-zhongjiang@huawei.com> <1567564752-6430-2-git-send-email-zhongjiang@huawei.com> <20190916194319.712d81cc@cakuba.netronome.com>
+In-Reply-To: <20190916194319.712d81cc@cakuba.netronome.com>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.177.29.68]
@@ -38,41 +38,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/9/17 10:45, Jakub Kicinski wrote:
-> On Wed, 4 Sep 2019 11:46:23 +0800, zhong jiang wrote:
->> Continue is not needed at the bottom of a loop.
+On 2019/9/17 10:43, Jakub Kicinski wrote:
+> On Wed, 4 Sep 2019 10:39:10 +0800, zhong jiang wrote:
+>> Use kzfree() instead of memset() + kfree().
 >>
 >> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
 >> ---
->>  drivers/net/ethernet/netronome/nfp/nfp_net_main.c | 4 +---
->>  1 file changed, 1 insertion(+), 3 deletions(-)
+>>  drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 9 +++------
+>>  1 file changed, 3 insertions(+), 6 deletions(-)
 >>
->> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
->> index 986464d..68db47d 100644
->> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
->> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
->> @@ -205,10 +205,8 @@ static void nfp_net_pf_free_vnics(struct nfp_pf *pf)
->>  		ctrl_bar += NFP_PF_CSR_SLICE_SIZE;
+>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+>> index 31629fc..113f608 100644
+>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+>> @@ -960,11 +960,9 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+>>  	return 0;
 >>  
->>  		/* Kill the vNIC if app init marked it as invalid */
->> -		if (nn->port && nn->port->type == NFP_PORT_INVALID) {
->> +		if (nn->port && nn->port->type == NFP_PORT_INVALID)
->>  			nfp_net_pf_free_vnic(pf, nn);
->> -			continue;
->> -		}
-> Ugh, I already nack at least one patch like this, this continue makes
-> the _intent_ of the code more clear, the compiler will ignore it anyway.
-Thanks,   I miss that information you object to above modification.  
+>>  err_aead:
+>> -	memset(xs->aead, 0, sizeof(*xs->aead));
+>> -	kfree(xs->aead);
+>> +	kzfree(xs->aead);
+>>  err_xs:
+>> -	memset(xs, 0, sizeof(*xs));
+>> -	kfree(xs);
+>> +	kzfree(xs);
+>>  err_out:
+>>  	msgbuf[1] = err;
+>>  	return err;
+>> @@ -1049,8 +1047,7 @@ int ixgbe_ipsec_vf_del_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+>>  	ixgbe_ipsec_del_sa(xs);
+>>  
+>>  	/* remove the xs that was made-up in the add request */
+>> -	memset(xs, 0, sizeof(*xs));
+>> -	kfree(xs);
+>> +	kzfree(xs);
+>>  
+>>  	return 0;
+>>  }
+> All the crypto cases should really be converted to memzero_explicit().
+It's better to do that.  I will repost it in v2.
 
-Sincerely,
+Thanks,
 zhong jiang
-> I guess there's no use in fighting the bots..
->
->>  	}
->>  
->>  	if (list_empty(&pf->vnics))
->
-> .
->
-
 
