@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E20D9B4F40
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 15:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5147B4F46
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 15:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728479AbfIQNbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 09:31:38 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:57951 "EHLO
+        id S1728639AbfIQNbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 09:31:49 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:60105 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728372AbfIQNbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 09:31:36 -0400
+        by vger.kernel.org with ESMTP id S1726230AbfIQNbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 09:31:37 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D45D939E6;
-        Tue, 17 Sep 2019 09:31:33 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 45CB32E12;
+        Tue, 17 Sep 2019 09:31:35 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 17 Sep 2019 09:31:33 -0400
+  by compute4.internal (MEProxy); Tue, 17 Sep 2019 09:31:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm1; bh=ZwW7fkRd9gZh9
-        tDNNySIyBWq5uzvW1saTrgDMoAFOvk=; b=d4Y1LE9+5YPArtmdXmpgmcn92BecV
-        iW9bhbWlVueDg+ZpgLeZro1c+F60+qDGdiARBYl4u9S++9iJ8nU4Nqqq064Q0qHB
-        hzrb6hRtYV90cOrtmwLP0oEaObY6dJUjXvwoZV9qJ6OW8KD7IPUJFLDIKcYBWbGz
-        qS/nWVnaOHCXbNTLmY1HytRTPTVJWyebRrJeDlLbQRykpiLugaX/1c/ruE9tFzNU
-        cO1Axz9/EBE8xACXsjUCHdYXQFFf9per2bU+xgciEJA4ylLKRnGAvho+b0Pcfpe1
-        2jmZslJX3wEjLUziZaNwgB/i7D6ZiS5NEFmHBx5rzkNcW2jUzy5HTJn6g==
+        :mime-version:content-transfer-encoding; s=fm1; bh=wVxLkASr4WgjE
+        Vi71vH9ixp5KrWmhI1orhWokzEt9X8=; b=zKcskGT4h6RF+C7xpW8WTiVytDeNa
+        HGE6RrXYCxRA7F5ZB9rbVrqJzDS/zKZ8pvE10YxmWFgPO0C8FCdGln2Vp0oH1+Hq
+        IQGkBz+WA2z20HxxcRBYokrANIwXhpi/9sIyV3BN0lXq95U5rJnX7eZEKqVBaj4X
+        5H0N6p7oiuKdDFV2Pmz12AnBfK6xvPGA8XE3f5hxT/m3TomaE5zJniPWElw17rxE
+        HsfpjOTzWgAszKmpIpDSiLTdRJCavv8YqHRtkAisZOQ7hBsSSGMF7NuQPkVxSvZf
+        U4g9bhJkeQZKYRzyemYsxDCI+BHHCYWrqSqfh+0YNApVgNmq6zDNIkkHQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=ZwW7fkRd9gZh9tDNNySIyBWq5uzvW1saTrgDMoAFOvk=; b=xxhskt1q
-        hKcaUOxS7BV7J52wmR/pHhQhsNFvOHH9f6MLetOtLWD4aAJ2428PS/CI0K3fo2aZ
-        MCobfzbCSmPOHcGE9v6Eo5236oqOYFIzFos87+TTp4nk3gWnjLX2gTseSGRL+R48
-        7MoOfMPP9rHrnv1TKZTn41MGsHd0t29YUa+MdbMJ7ZAYd8RcMEQXVpjKm1Fx14bY
-        gAltumB2wprDROmM69TF2ZNkanp/NELcVPdA8LtxZlcVLKiQ+jv0Pai5QlJd0vvK
-        8kyb8ZZyjDSjjd0vMfqBj9lxEBODaOjs/s1co9U5ZkwAi2P7BBQMRQwYdKu3cTTa
-        Ex2CLHooN9+kOQ==
-X-ME-Sender: <xms:NeCAXdpbreVkFXAerqoEj-FOe2YWO636Zopgl38gEeSEyegrUV3QNw>
+        fm3; bh=wVxLkASr4WgjEVi71vH9ixp5KrWmhI1orhWokzEt9X8=; b=gYIH4hII
+        Fji6sdX4JYHLkBMS56gs0v1KPOgaoY42JrmbY7lOe1Rv5VRWh/21BVAeilocaLLL
+        GFWzO7xjux+blhkfxUbury5D0OWi6v2V/WdXBxruXfm3I/c0PnjN3VzwUnydqi98
+        LZ6LXim9JjlnP0AjzbQwoYxRSI6Eq3v0Wl+DdUFAqqCROp9JlY2Rd1KMqtv95ESD
+        zqYjMqF1p2FOYEAfjK0tlyl+oQ+mmsGQom8iUS59QrRKuwK7i2NYbXyuiz8PEeXw
+        Z7ILDRCazM9WBIF7FZ7/9JPwSK8/+drFkStSC+kVVd6FfJdLxGDVunmsst5fDBnP
+        b9sFP+mHySGcEg==
+X-ME-Sender: <xms:N-CAXZ9-DJkucie8eaNvqi0-vxksMd_ZZAb2VZyGWlNJ566gTuknmA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudeigdefkecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephffvuf
+    uegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephffvuf
     ffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpeffrghnihgvlhcuighuuceougig
     uhesugiguhhuuhdrgiihiieqnecukfhppeduleelrddvtddurdeiiedrtdenucfrrghrrg
     hmpehmrghilhhfrhhomhepugiguhesugiguhhuuhdrgiihiienucevlhhushhtvghrufhi
     iigvpedu
-X-ME-Proxy: <xmx:NeCAXVIX7Y5s-xzrzGPWDzZUBjyxRA679fSVE5YzKLrjEHbBITy4_Q>
-    <xmx:NeCAXSgxmds41XRXftuYkr_5C2Y9WeDI1YZr80al--kqOYVilqLXuA>
-    <xmx:NeCAXW-d-r7wq-m0ZuUZ164WJKF6YZzb6lC2SeUTwnBqolMax0kz7g>
-    <xmx:NeCAXUGNZ8bMhweRGEb93l3dl8H9MV1qh3xA-lhY9-rhd0l1d65uC9qvvDw>
+X-ME-Proxy: <xmx:N-CAXXw2AwBjxrcJBTHnje3-5PPHyK21AUr71WMvfmeaPMz3qyZMsQ>
+    <xmx:N-CAXWG23QpagREGjBmZM9z50Fl9nplFMRs8bDyM7KGS5ZC_-GveNg>
+    <xmx:N-CAXVlAGceIfzeq4-DHzDYXQh3cHSm2tCUkCveEqVrayTM7v8oeaA>
+    <xmx:N-CAXcMf8y7_SHDLy9mDZZE-6dbJtLTzApEQMzII01Y-08FG9j2RwMBtWz8>
 Received: from dlxu-fedora-R90QNFJV.thefacebook.com (unknown [199.201.66.0])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 771A5D6005B;
-        Tue, 17 Sep 2019 09:31:32 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id D4DBED6005D;
+        Tue, 17 Sep 2019 09:31:33 -0400 (EDT)
 From:   Daniel Xu <dxu@dxuuu.xyz>
 To:     bpf@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
         andriin@fb.com, peterz@infradead.org, mingo@redhat.com,
@@ -59,9 +59,9 @@ Cc:     Daniel Xu <dxu@dxuuu.xyz>, ast@fb.com,
         alexander.shishkin@linux.intel.com, jolsa@redhat.com,
         namhyung@kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH bpf-next 3/5] libbpf: Add helpers to extract perf fd from bpf_link
-Date:   Tue, 17 Sep 2019 06:30:54 -0700
-Message-Id: <20190917133056.5545-4-dxu@dxuuu.xyz>
+Subject: [PATCH bpf-next 4/5] libbpf: Set read_format PERF_FORMAT_LOST on kprobe perf fds
+Date:   Tue, 17 Sep 2019 06:30:55 -0700
+Message-Id: <20190917133056.5545-5-dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190917133056.5545-1-dxu@dxuuu.xyz>
 References: <20190917133056.5545-1-dxu@dxuuu.xyz>
@@ -72,113 +72,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is sometimes necessary to perform operations on the underlying perf fd.
-There is not currently a way to extract the fd given a bpf_link, so add a
-a pair of casting and getting helpers.
+There is no way to get the nmissed count from kprobes that are created
+using the perf API. The previous commits added read_format support for
+this count. Enable it in this commit.
 
-The casting and getting helpers are nice because they let us define
-broad categories of links that makes it clear to users what they can
-expect to extract from what type of link.
-
-Acked-by: Song Liu <songliubraving@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- tools/lib/bpf/libbpf.c   | 21 +++++++++++++++++++++
- tools/lib/bpf/libbpf.h   | 13 +++++++++++++
- tools/lib/bpf/libbpf.map |  3 +++
- 3 files changed, 37 insertions(+)
+ tools/lib/bpf/libbpf.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index e0276520171b..1ca0acd1d823 100644
+index 1ca0acd1d823..43f45f6d914d 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -4875,6 +4875,7 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
- 
- struct bpf_link {
- 	int (*destroy)(struct bpf_link *link);
-+	enum bpf_link_type type;
- };
- 
- int bpf_link__destroy(struct bpf_link *link)
-@@ -4908,6 +4909,24 @@ static int bpf_link__destroy_perf_event(struct bpf_link *link)
- 	return err;
+@@ -5031,7 +5031,7 @@ static int determine_uprobe_retprobe_bit(void)
  }
  
-+const struct bpf_link_fd *bpf_link__as_fd(const struct bpf_link *link)
-+{
-+	if (link->type != LIBBPF_LINK_FD)
-+		return NULL;
-+
-+	return (struct bpf_link_fd *)link;
-+}
-+
-+enum bpf_link_type bpf_link__type(const struct bpf_link *link)
-+{
-+	return link->type;
-+}
-+
-+int bpf_link_fd__fd(const struct bpf_link_fd *link)
-+{
-+	return link->fd;
-+}
-+
- struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
- 						int pfd)
+ static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+-				 uint64_t offset, int pid)
++				 uint64_t offset, int pid, uint64_t read_format)
  {
-@@ -4931,6 +4950,7 @@ struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
- 	if (!link)
- 		return ERR_PTR(-ENOMEM);
- 	link->link.destroy = &bpf_link__destroy_perf_event;
-+	link->link.type = LIBBPF_LINK_FD;
- 	link->fd = pfd;
+ 	struct perf_event_attr attr = {};
+ 	char errmsg[STRERR_BUFSIZE];
+@@ -5060,6 +5060,7 @@ static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+ 	}
+ 	attr.size = sizeof(attr);
+ 	attr.type = type;
++	attr.read_format = read_format;
+ 	attr.config1 = ptr_to_u64(name); /* kprobe_func or uprobe_path */
+ 	attr.config2 = offset;		 /* kprobe_addr or probe_offset */
  
- 	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, prog_fd) < 0) {
-@@ -5224,6 +5244,7 @@ struct bpf_link *bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
- 	link = malloc(sizeof(*link));
- 	if (!link)
- 		return ERR_PTR(-ENOMEM);
-+	link->link.type = LIBBPF_LINK_FD;
- 	link->link.destroy = &bpf_link__destroy_fd;
+@@ -5087,7 +5088,8 @@ struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
+ 	int pfd, err;
  
- 	pfd = bpf_raw_tracepoint_open(tp_name, prog_fd);
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index e8f70977d137..2ddef5315ff9 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -166,7 +166,20 @@ LIBBPF_API int bpf_program__pin(struct bpf_program *prog, const char *path);
- LIBBPF_API int bpf_program__unpin(struct bpf_program *prog, const char *path);
- LIBBPF_API void bpf_program__unload(struct bpf_program *prog);
+ 	pfd = perf_event_open_probe(false /* uprobe */, retprobe, func_name,
+-				    0 /* offset */, -1 /* pid */);
++				    0 /* offset */, -1 /* pid */,
++				    PERF_FORMAT_LOST /* read_format */);
+ 	if (pfd < 0) {
+ 		pr_warning("program '%s': failed to create %s '%s' perf event: %s\n",
+ 			   bpf_program__title(prog, false),
+@@ -5118,7 +5120,8 @@ struct bpf_link *bpf_program__attach_uprobe(struct bpf_program *prog,
+ 	int pfd, err;
  
-+enum bpf_link_type {
-+	LIBBPF_LINK_FD,
-+};
-+
- struct bpf_link;
-+struct bpf_link_fd;
-+
-+/* casting APIs */
-+LIBBPF_API const struct bpf_link_fd *
-+bpf_link__as_fd(const struct bpf_link *link);
-+
-+/* getters APIs */
-+LIBBPF_API enum bpf_link_type bpf_link__type(const struct bpf_link *link);
-+LIBBPF_API int bpf_link_fd__fd(const struct bpf_link_fd *link);
- 
- LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
- 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index d04c7cb623ed..216713b9eef6 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -189,4 +189,7 @@ LIBBPF_0.0.4 {
- LIBBPF_0.0.5 {
- 	global:
- 		bpf_btf_get_next_id;
-+		bpf_link__type;
-+		bpf_link__as_fd;
-+		bpf_link_fd__fd;
- } LIBBPF_0.0.4;
+ 	pfd = perf_event_open_probe(true /* uprobe */, retprobe,
+-				    binary_path, func_offset, pid);
++				    binary_path, func_offset, pid,
++				    0 /* read_format */);
+ 	if (pfd < 0) {
+ 		pr_warning("program '%s': failed to create %s '%s:0x%zx' perf event: %s\n",
+ 			   bpf_program__title(prog, false),
 -- 
 2.21.0
 
