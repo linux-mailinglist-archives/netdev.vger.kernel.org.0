@@ -2,147 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BBCB4BB4
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D64CB4BBA
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727474AbfIQKOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 06:14:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43944 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726688AbfIQKOF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Sep 2019 06:14:05 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2BA7E307D8BE;
-        Tue, 17 Sep 2019 10:14:04 +0000 (UTC)
-Received: from gondolin (dhcp-192-230.str.redhat.com [10.33.192.230])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E471619C4F;
-        Tue, 17 Sep 2019 10:13:59 +0000 (UTC)
-Date:   Tue, 17 Sep 2019 12:13:57 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     alex.williamson@redhat.com, jiri@mellanox.com,
-        kwankhede@nvidia.com, davem@davemloft.net, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 0/5] Introduce variable length mdev alias
-Message-ID: <20190917121357.02480c09.cohuck@redhat.com>
-In-Reply-To: <20190902042436.23294-1-parav@mellanox.com>
-References: <20190826204119.54386-1-parav@mellanox.com>
-        <20190902042436.23294-1-parav@mellanox.com>
-Organization: Red Hat GmbH
+        id S1727550AbfIQKON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 06:14:13 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45143 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727516AbfIQKON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 06:14:13 -0400
+Received: by mail-lf1-f66.google.com with SMTP id r134so2361370lff.12
+        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 03:14:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kjxnCGfbE9oG4rXA0UnyUIJoUg+5vOPeXFD1JNJ7Bxk=;
+        b=lqyHqJ/6gSch6A2/7HyTmfxCiK9D0zeoHcv9Tj5I3x0qrpoZPRsfNfQzp/aXNC1l7Q
+         Y06UseY2279S/LZ6lv6HUmgNl/5AxWVmSxiV6TtnRtUulOVSVYTZFw1r2o7qCxTqxgPb
+         WpVlm5hsDSPKKEnSMr73cR9hAnU91GECatNFtO+6PGCPsbboLcSbvDu8mIY8t8mPX8mE
+         rfxkpHrgjVpBmONgNMYYEu1RlnULSSG2Js7yFjyuv2wrO3hGdzXLBEOybIaL9NlN6rO/
+         OI4cdWaMWlO2meZYkVWRQlurxnIkTKyzQqBUCV1JXvJ67cyds4D3ERR/yx9v5MwfWM/H
+         NDsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kjxnCGfbE9oG4rXA0UnyUIJoUg+5vOPeXFD1JNJ7Bxk=;
+        b=JvnAQ6anhmT9aCfGLBff1489jWXrjlnfkrbO2B8qfHabRYyU8cVlANEBSmPAyj3QRf
+         9GAcqjpVtA7TjDTsvqWqh7uywP8KVR9aTzABJOpb7YXKQheKB00meYq6a7sLg/3jzN21
+         Ma1tcQB5T3JbhuYBWOzb5BelvlUfXaXy3LfJ61Zv3BLJhEZHwUaRzmntgV3KZT8QbrP8
+         AVbmlKjv4kf5+d8AJ+J6vvhc0rjQ0SQQueCKF7H1KJZCgUhDmqu59hg3Y/wLFCYQpbtw
+         ar7kPbXq+m4Wu0fxxSpdFYIxNDwn7VDEnP1Rh1Ernz8VA5l+yxSOZZdVMTUBw5ECcS1t
+         fnKQ==
+X-Gm-Message-State: APjAAAWJkV37/eaZZxtBRz05tDZU6aShNCGmiUqVJgrwsZlM4Bm1h4rl
+        gFyINzizE1oJ3onvEODe5B2WHw==
+X-Google-Smtp-Source: APXvYqxMulznp1P+TSTYERRDeow5/xshl3zawrDJQaWFw5QNipvGHHXAI/dtj9usHhJMT0GMjt5zeg==
+X-Received: by 2002:a19:2207:: with SMTP id i7mr1644977lfi.185.1568715250889;
+        Tue, 17 Sep 2019 03:14:10 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:6e6:a4e9:5101:fe11:ada5:769e? ([2a00:1fa0:6e6:a4e9:5101:fe11:ada5:769e])
+        by smtp.gmail.com with ESMTPSA id g5sm221169ljk.22.2019.09.17.03.14.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Sep 2019 03:14:10 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
+ but not host when cross compile
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
+ <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <b9b802b5-3d86-31ed-6929-209c50530b3b@cogentembedded.com>
+Date:   Tue, 17 Sep 2019 13:14:06 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Tue, 17 Sep 2019 10:14:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  1 Sep 2019 23:24:31 -0500
-Parav Pandit <parav@mellanox.com> wrote:
+Hello!
 
-> To have consistent naming for the netdevice of a mdev and to have
-> consistent naming of the devlink port [1] of a mdev, which is formed using
-> phys_port_name of the devlink port, current UUID is not usable because
-> UUID is too long.
-> 
-> UUID in string format is 36-characters long and in binary 128-bit.
-> Both formats are not able to fit within 15 characters limit of netdev
-> name.
-> 
-> It is desired to have mdev device naming consistent using UUID.
-> So that widely used user space framework such as ovs [2] can make use
-> of mdev representor in similar way as PCIe SR-IOV VF and PF representors.
-> 
-> Hence,
-> (a) mdev alias is created which is derived using sha1 from the mdev name.
-> (b) Vendor driver describes how long an alias should be for the child mdev
-> created for a given parent.
-> (c) Mdev aliases are unique at system level.
-> (d) alias is created optionally whenever parent requested.
-> This ensures that non networking mdev parents can function without alias
-> creation overhead.
-> 
-> This design is discussed at [3].
-> 
-> An example systemd/udev extension will have,
-> 
-> 1. netdev name created using mdev alias available in sysfs.
-> 
-> mdev UUID=83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
-> mdev 12 character alias=cd5b146a80a5
-> 
-> netdev name of this mdev = enmcd5b146a80a5
-> Here en = Ethernet link
-> m = mediated device
-> 
-> 2. devlink port phys_port_name created using mdev alias.
-> devlink phys_port_name=pcd5b146a80a5
-> 
-> This patchset enables mdev core to maintain unique alias for a mdev.
-> 
-> Patch-1 Introduces mdev alias using sha1.
-> Patch-2 Ensures that mdev alias is unique in a system.
-> Patch-3 Exposes mdev alias in a sysfs hirerchy, update Documentation
-> Patch-4 Introduces mdev_alias() API.
-> Patch-5 Extends mtty driver to optionally provide alias generation.
-> This also enables to test UUID based sha1 collision and trigger
-> error handling for duplicate sha1 results.
-> 
-> [1] http://man7.org/linux/man-pages/man8/devlink-port.8.html
-> [2] https://docs.openstack.org/os-vif/latest/user/plugins/ovs.html
-> [3] https://patchwork.kernel.org/cover/11084231/
-> 
-> ---
-> Changelog:
-> v2->v3:
->  - Addressed comment from Yunsheng Lin
->  - Changed strcmp() ==0 to !strcmp()
->  - Addressed comment from Cornelia Hunk
->  - Merged sysfs Documentation patch with syfs patch
->  - Added more description for alias return value
-> v1->v2:
->  - Corrected a typo from 'and' to 'an'
->  - Addressed comments from Alex Williamson
->  - Kept mdev_device naturally aligned
->  - Added error checking for crypt_*() calls
->  - Moved alias NULL check at beginning
->  - Added mdev_alias() API
->  - Updated mtty driver to show example mdev_alias() usage
->  - Changed return type of generate_alias() from int to char*
-> v0->v1:
->  - Addressed comments from Alex Williamson, Cornelia Hunk and Mark Bloch
->  - Moved alias length check outside of the parent lock
->  - Moved alias and digest allocation from kvzalloc to kzalloc
->  - &alias[0] changed to alias
->  - alias_length check is nested under get_alias_length callback check
->  - Changed comments to start with an empty line
->  - Added comment where alias memory ownership is handed over to mdev device
->  - Fixed cleaunup of hash if mdev_bus_register() fails
->  - Updated documentation for new sysfs alias file
->  - Improved commit logs to make description more clear
->  - Fixed inclusiong of alias for NULL check
->  - Added ratelimited debug print for sha1 hash collision error
-> 
-> Parav Pandit (5):
->   mdev: Introduce sha1 based mdev alias
->   mdev: Make mdev alias unique among all mdevs
->   mdev: Expose mdev alias in sysfs tree
->   mdev: Introduce an API mdev_alias
->   mtty: Optionally support mtty alias
-> 
->  .../driver-api/vfio-mediated-device.rst       |   9 ++
->  drivers/vfio/mdev/mdev_core.c                 | 142 +++++++++++++++++-
->  drivers/vfio/mdev/mdev_private.h              |   5 +-
->  drivers/vfio/mdev/mdev_sysfs.c                |  26 +++-
->  include/linux/mdev.h                          |   5 +
->  samples/vfio-mdev/mtty.c                      |  13 ++
->  6 files changed, 190 insertions(+), 10 deletions(-)
-> 
+On 16.09.2019 13:54, Ivan Khoronzhuk wrote:
 
-The patches on their own look sane (and I gave my R-b), but the
-consumer of this new API should be ready before this is merged, as
-already discussed below.
+> While compile natively, the hosts cflags and ldflags are equal to ones
+
+   Compiling. Host's.
+
+> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
+> have own, used for target arch. While verification, for arm, arm64 and
+> x86_64 the following flags were used alsways:
+> 
+> -Wall
+> -O2
+> -fomit-frame-pointer
+> -Wmissing-prototypes
+> -Wstrict-prototypes
+> 
+> So, add them as they were verified and used before adding
+> Makefile.target, but anyway limit it only for cross compile options as
+> for host can be some configurations when another options can be used,
+> So, for host arch samples left all as is, it allows to avoid potential
+> option mistmatches for existent environments.
+
+    Mismatches.
+
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+[...]
+
+MBR, Sergei
