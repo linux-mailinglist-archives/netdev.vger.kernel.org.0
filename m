@@ -2,58 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D17DB4C4F
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6554BB4C54
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727273AbfIQKzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 06:55:04 -0400
-Received: from mga17.intel.com ([192.55.52.151]:38760 "EHLO mga17.intel.com"
+        id S1727464AbfIQKzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 06:55:25 -0400
+Received: from smtp2.goneo.de ([85.220.129.33]:43380 "EHLO smtp2.goneo.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbfIQKzE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Sep 2019 06:55:04 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Sep 2019 03:55:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,516,1559545200"; 
-   d="scan'208";a="191360143"
-Received: from gkarolko-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.40.172])
-  by orsmga006.jf.intel.com with ESMTP; 17 Sep 2019 03:54:59 -0700
-Subject: Re: [PATCH bpf-next] i40e: fix xdp handle calculations
-To:     Maxim Mikityanskiy <maxtram95@gmail.com>,
-        Kevin Laatz <kevin.laatz@intel.com>
-Cc:     maximmi@mellanox.com, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, bpf@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-References: <20190905011144.3513-1-kevin.laatz@intel.com>
- <CAKErNvpe3htU-ETe0y0XQ=SwY047qc3Z3=aHN6g2BbkoGHNNUQ@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <b1d2a07d-20cc-7410-a296-d5245a2ffe54@intel.com>
-Date:   Tue, 17 Sep 2019 12:54:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726141AbfIQKzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 06:55:25 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.goneo.de (Postfix) with ESMTP id E38D423F6EC;
+        Tue, 17 Sep 2019 12:55:22 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -3.106
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.106 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.206, BAYES_00=-1.9] autolearn=ham
+Received: from smtp2.goneo.de ([127.0.0.1])
+        by localhost (smtp2.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id dKXicsz0i760; Tue, 17 Sep 2019 12:55:22 +0200 (CEST)
+Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
+        by smtp2.goneo.de (Postfix) with ESMTPSA id 6D69524013D;
+        Tue, 17 Sep 2019 12:55:21 +0200 (CEST)
+Date:   Tue, 17 Sep 2019 12:55:19 +0200
+From:   Lars Poeschel <poeschel@lemonage.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     allison@lohutok.net, keescook@chromium.org, opensource@jilayne.com,
+        swinslow@gmail.com, gregkh@linuxfoundation.org,
+        gustavo@embeddedor.com, tglx@linutronix.de,
+        kstewart@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, johan@kernel.org
+Subject: Re: [PATCH v7 6/7] nfc: pn533: Add autopoll capability
+Message-ID: <20190917105519.GB18936@lem-wkst-02.lemonage>
+References: <20190910093415.2186-1-poeschel@lemonage.de>
+ <20190911.101759.1557703938346599792.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <CAKErNvpe3htU-ETe0y0XQ=SwY047qc3Z3=aHN6g2BbkoGHNNUQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190911.101759.1557703938346599792.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-09-17 12:48, Maxim Mikityanskiy wrote:
-> Hi, it looks to me that headroom is still broken after this commit.
-> i40e_run_xdp_zc adds it a second time, i.e.:
+On Wed, Sep 11, 2019 at 10:17:59AM +0200, David Miller wrote:
+> From: Lars Poeschel <poeschel@lemonage.de>
+> Date: Tue, 10 Sep 2019 11:34:12 +0200
+> 
+> > +static int pn533_autopoll_complete(struct pn533 *dev, void *arg,
+> > +			       struct sk_buff *resp)
+> > +{
+> > +	u8 nbtg;
+> > +	int rc;
+> > +	struct pn532_autopoll_resp *apr;
+> > +	struct nfc_target nfc_tgt;
+> 
+> Need reverse christmas tree here.
 
-Indeed, but Ciara fixed that in this series [1]. Thanks for reviewing
-the patch!
+See below.
 
-Cheers,
-Björn
+> > @@ -1534,6 +1655,7 @@ static int pn533_start_poll(struct nfc_dev *nfc_dev,
+> >  	struct pn533_poll_modulations *cur_mod;
+> >  	u8 rand_mod;
+> >  	int rc;
+> > +	struct sk_buff *skb;
+> 
+> Likewise.
 
-[1] 
-https://lore.kernel.org/bpf/20190913103948.32053-1-ciara.loftus@intel.com/
+I will do a v8 with these changes soon.
