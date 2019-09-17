@@ -2,145 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A96CB47E8
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 09:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0F5B47FB
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 09:16:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404437AbfIQHM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 03:12:28 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44520 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387879AbfIQHM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 03:12:27 -0400
-Received: from mail-wr1-f71.google.com ([209.85.221.71])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <marcelo.cerri@canonical.com>)
-        id 1iA7ez-0008Ho-Ls
-        for netdev@vger.kernel.org; Tue, 17 Sep 2019 07:12:25 +0000
-Received: by mail-wr1-f71.google.com with SMTP id v18so933803wro.16
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 00:12:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3mJ7H9Vd/KYYHK2hKEza3o32eBLR4dUC6S3+MRraUY0=;
-        b=ARWFZrcH3DAnOZlMd5hVRIZS5u6LmzMVxUOfO5a3ETD4sJB2x/mGyd1+L7V15i2Z8Q
-         tjTEgnAYJlRntTZ74aJvmNxD79laKY1KrU9U8RPmVaamDQ5MmUYsbLLIRAyW96qXcafr
-         yqW4Z3qRbEOJ7IxnhFFVPA5zqSMiT6Vkst/ls5sTWxP9UG3YzYVFiR/nJpZavGeS3zU2
-         2FPp4KafgN0ulTS74iomWUSIz9rnghVvMhnGhMgllCXOB1A3too2Bm0oJtQ97/91nt9R
-         IaqkHhs/98YEisRyzeA9x2ry/YGSPycX/3aC117pNuAgUwOVBA5yGBJumngRApesYy9W
-         L3tA==
-X-Gm-Message-State: APjAAAXObCHXiHni9kHlkRCZ2whbE2MDXkjRliSoogCVQSGau1r/K00n
-        nuoyYtxGfnoWhFPEr7blXldZaXHECxxAVnMsLgjekvRfHQFK92rCrcQ72QUpuDV1fwFqTrgQ9YS
-        q6dlcVv2vQxDXXfY+c8mmcT4J9AOCEJk5
-X-Received: by 2002:a05:6000:110f:: with SMTP id z15mr1536461wrw.328.1568704345357;
-        Tue, 17 Sep 2019 00:12:25 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzNNylg8z2QXdHZ6GX64UAW0YItRdOYiMPBiABGeWFNQO1sX9E5y78KYLlTPB8RardpZerdyQ==
-X-Received: by 2002:a05:6000:110f:: with SMTP id z15mr1536441wrw.328.1568704345031;
-        Tue, 17 Sep 2019 00:12:25 -0700 (PDT)
-Received: from gallifrey (static-dcd-cqq-121001.business.bouyguestelecom.com. [212.194.121.1])
-        by smtp.gmail.com with ESMTPSA id l13sm1267363wmj.25.2019.09.17.00.12.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Sep 2019 00:12:23 -0700 (PDT)
-Date:   Tue, 17 Sep 2019 04:12:22 -0300
-From:   Marcelo Henrique Cerri <marcelo.cerri@canonical.com>
-To:     shuah <shuah@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests/net: replace AF_MAX with INT_MAX in socket.c
-Message-ID: <20190917071222.6nfzmcxt4kxzgpki@gallifrey>
-References: <20190916150337.18049-1-marcelo.cerri@canonical.com>
- <212adcf8-566e-e06d-529f-f0ac18bd6a35@kernel.org>
+        id S2392507AbfIQHQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 03:16:33 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:58364 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727126AbfIQHQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 03:16:33 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 1BAF96016D; Tue, 17 Sep 2019 07:16:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568704592;
+        bh=GZZTS5JwXBklyWYN0ChgnYdm/WVY6X3Z75O2fGgHcPY=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=IOP0AzwiWqB9Mtz2BrXRrc2WVU2k136JFRamBfmUyznbHTxHVo6mb12LuH6WZ7OwS
+         UjbhOSmn+kU/2K7EE9NCMylc9ZvQQC3L/J9ad3xoiOZtRlfZ2jewZem451ROkZzSrG
+         w+WQokvqX3zyXlGJSxkh+jMccv2scxg/cjhpdaQo=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7FD2061528;
+        Tue, 17 Sep 2019 07:16:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568704591;
+        bh=GZZTS5JwXBklyWYN0ChgnYdm/WVY6X3Z75O2fGgHcPY=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=nTIpmkiW0DG6OSrf5w0qyOszg7275rTei1E0UhXDgjZr061oGKA3Xjt0+29qubP0P
+         8df+N9z6tNnYataWv5KHc7DCn3ZJJs1XCqI5+JJeC8aZrPt0fNSxz/4O0QAHietuEd
+         wTxxZUVljrHn1BNNyUxbBtvWTquoZ/em852YM46w=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7FD2061528
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sjt5zxil7puotrgx"
-Content-Disposition: inline
-In-Reply-To: <212adcf8-566e-e06d-529f-f0ac18bd6a35@kernel.org>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: Use ARRAY_SIZE instead of dividing sizeof array
+ with sizeof an element
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1567582878-18739-1-git-send-email-zhongjiang@huawei.com>
+References: <1567582878-18739-1-git-send-email-zhongjiang@huawei.com>
+To:     zhong jiang <zhongjiang@huawei.com>
+Cc:     <davem@davemloft.net>, <ath10k@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <zhongjiang@huawei.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190917071632.1BAF96016D@smtp.codeaurora.org>
+Date:   Tue, 17 Sep 2019 07:16:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+zhong jiang <zhongjiang@huawei.com> wrote:
 
---sjt5zxil7puotrgx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> With the help of Coccinelle, ARRAY_SIZE can be replaced in ath10k_snoc_wlan_enable.
+> 
+> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
 
-So the problem arises because the headers we have in userspace might
-be older and not match what we have in the kernel. In that case, the
-actual value of AF_MAX in the userspace headers might be a valid
-protocol family in the new kernel.
+I already got an identical patch so dropping this one.
 
-That happens relatively often for us because we support different
-kernel versions at the same time in a given Ubuntu series.
+error: patch failed: drivers/net/wireless/ath/ath10k/snoc.c:976
+error: drivers/net/wireless/ath/ath10k/snoc.c: patch does not apply
+stg import: Diff does not apply cleanly
 
-An alternative is to use the headers we have in the kernel tree, but I
-believe that might cause other issues.
+-- 
+https://patchwork.kernel.org/patch/11129531/
 
-On Mon, Sep 16, 2019 at 10:09:13AM -0600, shuah wrote:
-> On 9/16/19 9:03 AM, Marcelo Henrique Cerri wrote:
-> > Use INT_MAX instead of AF_MAX, since libc might have a smaller value
-> > of AF_MAX than the kernel, what causes the test to fail.
-> >=20
-> > Signed-off-by: Marcelo Henrique Cerri <marcelo.cerri@canonical.com>
-> > ---
-> >   tools/testing/selftests/net/socket.c | 6 +++++-
-> >   1 file changed, 5 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/tools/testing/selftests/net/socket.c b/tools/testing/selft=
-ests/net/socket.c
-> > index afca1ead677f..10e75ba90124 100644
-> > --- a/tools/testing/selftests/net/socket.c
-> > +++ b/tools/testing/selftests/net/socket.c
-> > @@ -6,6 +6,7 @@
-> >   #include <sys/types.h>
-> >   #include <sys/socket.h>
-> >   #include <netinet/in.h>
-> > +#include <limits.h>
-> >   struct socket_testcase {
-> >   	int	domain;
-> > @@ -24,7 +25,10 @@ struct socket_testcase {
-> >   };
-> >   static struct socket_testcase tests[] =3D {
-> > -	{ AF_MAX,  0,           0,           -EAFNOSUPPORT,    0 },
-> > +	/* libc might have a smaller value of AF_MAX than the kernel
-> > +	 * actually supports, so use INT_MAX instead.
-> > +	 */
-> > +	{ INT_MAX, 0,           0,           -EAFNOSUPPORT,    0  },
-> >   	{ AF_INET, SOCK_STREAM, IPPROTO_TCP, 0,                1  },
-> >   	{ AF_INET, SOCK_DGRAM,  IPPROTO_TCP, -EPROTONOSUPPORT, 1  },
-> >   	{ AF_INET, SOCK_DGRAM,  IPPROTO_UDP, 0,                1  },
-> >=20
->=20
-> What failure are you seeing? It sounds arbitrary to use INT_MAX
-> instead of AF_MAX. I think it is important to understand the
-> failure first.
->=20
-> Please note that AF_MAX is widely used in the kernel.
->=20
-> thanks,
-> -- Shuah
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
---=20
-Regards,
-Marcelo
-
-
---sjt5zxil7puotrgx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDWI6S4SUeUOX/xHQzxpLxzTV7UcFAl2Ah1YACgkQzxpLxzTV
-7Ufo+gf8DIFj52cwhgSs/1wvN9sW40b15Wsaj2kzqF0UVueUb5nzGg5z8CYnW1wX
-z+GLzbXJrts8i4PLO1UTcgPPTUXb3CJOyT5jZRehx1fN0fmMHr3DLmHhbRtz+m4G
-IIHrcJxCk5vrH9LmXMFSUK42C7olzihTBDATk9sQ0drHvf7LV0cpRtqlY0i4tEwm
-KnMVdTfjQLjCYcaAmvXr5X5EcdY9C1JsFnTjlrHbGSEiSp3Wrvxlal2FdMHRFXfe
-sbYKKu2CCfob6EIFMyX6v6+DGdghrhNcx65DYgzPCXWX4TmPANGDqiPrEl/1sQow
-nwCqqWSH0dNbaJyyAGtmfgZOLPGzyw==
-=ikQl
------END PGP SIGNATURE-----
-
---sjt5zxil7puotrgx--
