@@ -2,98 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E319B479D
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 08:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B7CB47AE
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 08:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391304AbfIQGlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 02:41:02 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:44614 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729443AbfIQGlB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 02:41:01 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id E72E0613A8; Tue, 17 Sep 2019 06:41:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568702460;
-        bh=PsCESTKuaXVgX05Dw2TtqzRSs+kJpkOmCLBNa9gPZ/A=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=gBGxvFFdwMyz9SenL8v+jRpIhZs4yhoSIQDyP2FopVEb0teLoaN6zwMtLVy7cqjeE
-         D8p9I3RG11cFWfxX/gprvZGRHRJclyY0+8Gm8vEInlsQi6xgtzXh2vKzZi+k0inKUH
-         miwzF0LV3inSAu9U9xklGOSKO+zTmp5hKbfa1BuY=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E37316016D;
-        Tue, 17 Sep 2019 06:40:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568702458;
-        bh=PsCESTKuaXVgX05Dw2TtqzRSs+kJpkOmCLBNa9gPZ/A=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=E3LHzA9Kc4Fw8KCwHSIuM9cRLB+PqftD8jDQh5mbyX8ELcF2PwTX1F9o4ZWMnU0r1
-         EZej7yALG3ngrOnu4pSibrfTaIV5tghGg9WQGGpbBLb40G8jAh/ZMBu4Gk9z+X5e6T
-         jxLug6oIpzTyzx4hJi8Xeivm+K3IJCGC1B4XFb9I=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E37316016D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2404346AbfIQGux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 02:50:53 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38653 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728003AbfIQGux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 02:50:53 -0400
+Received: by mail-pg1-f193.google.com with SMTP id x10so1467549pgi.5;
+        Mon, 16 Sep 2019 23:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=A09ebAA08AUXlIM7rfJAlfeNFb0/R3dzB4utBep7g5k=;
+        b=NFR60qqidHaph1jwlnhZRW3ByDD9bHtGwZnAvitu0gchqdLaQ8TJRpdntardshvLP/
+         HXCsWoPL1e53p9YJnxS3UUcfnZrd3Ns9Lf/dSdJzhWBQ8W2lCXDoOGuCwmNGtPfFRzU1
+         3dlWUxKDAL7faO5GMgwsxngt5VoYp/+9HzEVvag9C0HtrTUdOhtV7M253apWJEpnG/Eu
+         qdtoxDC/u/SycTF8h7KlrOStdgpGfxVLb7lrFutIVK2S1ByJJ9XtCZn+juDgdUmrmkfX
+         kzxs8Rco/90ISXEQ1mqrTGOgMe5IaOdiDMRRNOjD5AjQmf3N4MVUVDGzK6vTKGyzUPMj
+         NNFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=A09ebAA08AUXlIM7rfJAlfeNFb0/R3dzB4utBep7g5k=;
+        b=n5MrHH1M/EI9riGHgmm8dygwEp3gbN6MKJvreAuIIwdgEMusfO1vJ2tuyNjXkzIXHZ
+         qK00unwqFZ4GgNmETHma5zC7JaJoRnXEfnKx16hHb2tzfCL8ARXjUz0djhyFETJI2ijD
+         NlEe/ax1VAyt4Hr+XO83PyDOdLZ57Z8IapHDP3SO59ivoD1Rd0zcRBdXM9AFosPEArUg
+         SUHvBlzgY4vxQVj6OkRkXXQYQCiStXaec2Tb/archdcr4Ej0V3mXB+GlL0kGZDtcU5Kb
+         +Xw34M/SsGbqgtdvC7Xc5w67cn6Ur82TZ3OpaS50xczAUo/RbnwI6RjK/KQi7Kiz13/p
+         cNiw==
+X-Gm-Message-State: APjAAAVd4UVKyVN7/g7rXzSAR3PBvahSbj2aHrR1+KqtrAggeVsxgbBa
+        elSQrqg9V1blw8+0arP23Ic=
+X-Google-Smtp-Source: APXvYqzwM1TmdOu8NcHkAeG+Pl6QsEYbNbIdHu1NSxPw+dSxhz1ml+UvP48URsmAGWL44BJIuj1eyg==
+X-Received: by 2002:a62:8c10:: with SMTP id m16mr2487881pfd.58.1568703050638;
+        Mon, 16 Sep 2019 23:50:50 -0700 (PDT)
+Received: from LGEARND20B15 ([27.122.242.75])
+        by smtp.gmail.com with ESMTPSA id f62sm1500038pfg.74.2019.09.16.23.50.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Sep 2019 23:50:50 -0700 (PDT)
+Date:   Tue, 17 Sep 2019 15:50:44 +0900
+From:   Austin Kim <austindh.kim@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, austindh.kim@gmail.com
+Subject: [PATCH] rtlwifi: rtl8723ae: Remove unused 'rtstatus' variable
+Message-ID: <20190917065044.GA173797@LGEARND20B15>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath9k: remove unneeded variable
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1568109312-13175-1-git-send-email-dingxiang@cmss.chinamobile.com>
-References: <1568109312-13175-1-git-send-email-dingxiang@cmss.chinamobile.com>
-To:     Ding Xiang <dingxiang@cmss.chinamobile.com>
-Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190917064100.E72E0613A8@smtp.codeaurora.org>
-Date:   Tue, 17 Sep 2019 06:41:00 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ding Xiang <dingxiang@cmss.chinamobile.com> wrote:
+'rtstatus' local variable is not used,
+so remove it for clean-up.
 
-> "len" is unneeded,just return 0
-> 
-> Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
+Signed-off-by: Austin Kim <austindh.kim@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-ALWAYS build check your patches! I admit that ATH_DUMP_BTCOEX() is an
-evil macro as it uses len variable in secret, but if you had compiled
-your patch you would have noticed this immeadiately.
-
-In file included from drivers/net/wireless/ath/ath9k/gpio.c:17:
-drivers/net/wireless/ath/ath9k/gpio.c: In function 'ath9k_dump_legacy_btcoex':
-drivers/net/wireless/ath/ath9k/ath9k.h:763:3: error: 'len' undeclared (first use in this function); did you mean '_end'?
-   len += scnprintf(buf + len, size - len,  \
-   ^~~
-drivers/net/wireless/ath/ath9k/gpio.c:502:2: note: in expansion of macro 'ATH_DUMP_BTCOEX'
-  ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
-  ^~~~~~~~~~~~~~~
-drivers/net/wireless/ath/ath9k/ath9k.h:763:3: note: each undeclared identifier is reported only once for each function it appears in
-   len += scnprintf(buf + len, size - len,  \
-   ^~~
-drivers/net/wireless/ath/ath9k/gpio.c:502:2: note: in expansion of macro 'ATH_DUMP_BTCOEX'
-  ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
-  ^~~~~~~~~~~~~~~
-make[5]: *** [drivers/net/wireless/ath/ath9k/gpio.o] Error 1
-make[4]: *** [drivers/net/wireless/ath/ath9k] Error 2
-make[3]: *** [drivers/net/wireless/ath] Error 2
-make[2]: *** [drivers/net/wireless] Error 2
-make[1]: *** [drivers/net] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [drivers] Error 2
-
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.c
+index 54a3aec..22441dd 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.c
+@@ -485,15 +485,12 @@ bool rtl8723e_phy_config_rf_with_headerfile(struct ieee80211_hw *hw,
+ 					    enum radio_path rfpath)
+ {
+ 	int i;
+-	bool rtstatus = true;
+ 	u32 *radioa_array_table;
+ 	u16 radioa_arraylen;
+ 
+ 	radioa_arraylen = RTL8723ERADIOA_1TARRAYLENGTH;
+ 	radioa_array_table = RTL8723E_RADIOA_1TARRAY;
+ 
+-	rtstatus = true;
+-
+ 	switch (rfpath) {
+ 	case RF90_PATH_A:
+ 		for (i = 0; i < radioa_arraylen; i = i + 2) {
 -- 
-https://patchwork.kernel.org/patch/11139147/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.6.2
 
