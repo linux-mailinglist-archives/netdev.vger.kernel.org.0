@@ -2,110 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82458B58B1
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 01:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4163B58BA
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 01:42:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfIQXkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 19:40:17 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:38420 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfIQXkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 19:40:16 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x10so2854083pgi.5
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 16:40:16 -0700 (PDT)
+        id S1728756AbfIQXmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 19:42:19 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:42452 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727437AbfIQXmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 19:42:18 -0400
+Received: by mail-qt1-f196.google.com with SMTP id g16so6619198qto.9;
+        Tue, 17 Sep 2019 16:42:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=+Hy1zYT45CoUKVQY5bAeFzJ87DLdn4Gay+OsZiEpRs4=;
-        b=mtru1eNwIQSV3dlGNRC28k+zRHRvu+HdIye1SYOiL3AVNziG45WSOwh1/iCHUjO+D6
-         G1+DUZGcTRXZBvz6yYvqOOUKCVq3eCmd5EAZewQcmDxIqtXWldmjXNiDonDkVRd0gPde
-         j1DhMOMcorIfaaLKn8Uh8kCM7aC1nMDl6vYe9nQWaUqZbLEdwW6St+y6sAXRb4Y/joc7
-         lmOJjvyAhWO7F0mspD7WwEjz51fWbbDFutUH6+XSsGNpgP+YQ5QYdRfJt+aqhWFnXxz6
-         sS1Ym2+P4ezW9Cy4aEgtZC25ZQ5xN515be3xrChpDsDHwXCIBm7LiUtn0dz9fNwYxxEx
-         6gHw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BegyS4bOdhV/4W363nuBMo/MR31JnI7T3ixbji8LT0k=;
+        b=vMk1upZOsmLe++G9kBDDj9CahrV2tNdF/nBj/Sm8wZzpdEurdvhYJ5J9ixKghaKpoe
+         Cabrh+OuWLIlOL8RKUBb5jFHtQb1xdQFeP0HSY5tUS40GSQMc/d4paYdK+u6g/Yr3bsN
+         6joSSp0Y0CGRaUTCcNJvsHVSlzZqO0cPTY86eZbFHDEOvnqp+RjGcdWDcelGje3coVJ8
+         I7Z/w7Yely9GyEovAfl0SQ6k8tjJd/NdJcl9i59BmGBOpTmRjOYlePwLpac2ocUn0GQ4
+         px4HlmsNfTsrEh9cgAI0XrjTx8lSfmL8E2I9wAxcrBLDGTu2tQwc2dvhwx/ojX/ZO+Mu
+         /5TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=+Hy1zYT45CoUKVQY5bAeFzJ87DLdn4Gay+OsZiEpRs4=;
-        b=C9Bt3d/io8nu0vsEZYaLIyepD2DtgHGgNPoOItVnKqH8vHIwR1NPFkocT33nuH4JRU
-         fwAFje3BSh8QZOSN2/U/cLPF1nALxZexFhN/7I9ag3QeFe88Bhncm5i3bYzXFzs97VEK
-         lsj6I3IpdvkRCEyyxpWPczQDFEFpy0xjJ2tUu0yD+Cttuta+/UwSlmtuzXWV6gJgml+x
-         d8ULB1B8zy12tuTLYDJBQ7kXpiHS2iqhnEG1ucr7Nhtl+aH7erY30VidLlU8zgDdKIBJ
-         OxIMohZi0JectNe/jKOzW3xZsUWo3AK0y8vjbG7pL6QbrkQe6S7Pp3v4RVfSL/JWWkJE
-         dJdA==
-X-Gm-Message-State: APjAAAV+K0EI0EH8RnMTHB11+C7LVdXvsVwD9NR2uhVDM090T7TIOrGU
-        cfqnt9nWM7B+qhXxarGN4uLneQ==
-X-Google-Smtp-Source: APXvYqxhMR7uBI/khZV54DZoj3pvTNTGeFw/f1zb5YFRj3Fq2qEQxNa+fCNNC/6DQtF4q9oDvPNl0Q==
-X-Received: by 2002:aa7:8189:: with SMTP id g9mr1024631pfi.78.1568763616104;
-        Tue, 17 Sep 2019 16:40:16 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id s21sm243905pjr.24.2019.09.17.16.40.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Sep 2019 16:40:15 -0700 (PDT)
-Subject: Re: [PATCH] ionic: Remove unnecessary ternary operator in
- ionic_debugfs_add_ident
-To:     Nathan Chancellor <natechancellor@gmail.com>,
-        Pensando Drivers <drivers@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20190917232616.125261-1-natechancellor@gmail.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <53a991df-fe1e-29b2-4af5-c1702e5dc626@pensando.io>
-Date:   Tue, 17 Sep 2019 16:40:13 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BegyS4bOdhV/4W363nuBMo/MR31JnI7T3ixbji8LT0k=;
+        b=YnsgEJ5js/tuoWKJQmoaFbKybu1/VeGCVjBTI7U2e7ncZWWQrM4e1KRG3fjYeP5JaP
+         QuaZRSY6XRu2LR32JFYUgcMs2AgNPnYwyS73EsqpZczPi/C7gSzZWzAXHMCu4ABxON8Y
+         9H7uBVDjG5qHeeS+UUiLkQcp/VcCUBSyyVyesdioDBzvr7pA4bk+HGm3/aRZMZMq4kJm
+         hdTt1/v9mdl9+R+g2Iznicu5uycPMXar/30l2aCxpilYHq8o86czHSwM0SCrMPZ0YGUE
+         xl5G3YFI5/A48HbB/scHwzDJLrkMziXqXPqpGWv4hF27US6I0e/ADRauP8p0KIKA5uRP
+         WqFA==
+X-Gm-Message-State: APjAAAUH4o5dhBY3JcsVWhQJhQxIG2vj2d5HLWRncaJO+DotT5Bt2FcJ
+        C6SatMKd55tZ0I0SoLpBGO8NZ1ypw6P3XrBSYV4=
+X-Google-Smtp-Source: APXvYqyqTOB5IEnz+7Pn65a64zh20YjJFL47Y3+R+LAoPucpHJlNyWRxfkqLGYegHWdmGs0Tu4e8upaaXuzL1yVMXa0=
+X-Received: by 2002:a0c:88f0:: with SMTP id 45mr1124543qvo.78.1568763737848;
+ Tue, 17 Sep 2019 16:42:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190917232616.125261-1-natechancellor@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org> <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 17 Sep 2019 16:42:07 -0700
+Message-ID: <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
+ but not host when cross compile
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com,
+        sergei.shtylyov@cogentembedded.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 9/17/19 4:26 PM, Nathan Chancellor wrote:
-> clang warns:
+On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
 >
-> ../drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:60:37: warning:
-> expression result unused [-Wunused-value]
->                              ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
->                                                           ^~~~~~~~~~~
-> 1 warning generated.
+> While compile natively, the hosts cflags and ldflags are equal to ones
+> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
+> have own, used for target arch. While verification, for arm, arm64 and
+> x86_64 the following flags were used alsways:
 >
-> The return value of debugfs_create_file does not need to be checked [1]
-> and the function returns void so get rid of the ternary operator, it is
-> unnecessary.
+> -Wall
+> -O2
+> -fomit-frame-pointer
+> -Wmissing-prototypes
+> -Wstrict-prototypes
 >
-> [1]: https://lore.kernel.org/linux-mm/20150815160730.GB25186@kroah.com/
+> So, add them as they were verified and used before adding
+> Makefile.target, but anyway limit it only for cross compile options as
+> for host can be some configurations when another options can be used,
+> So, for host arch samples left all as is, it allows to avoid potential
+> option mistmatches for existent environments.
 >
-> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/658
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-
-Acked-by: Shannon Nelson <snelson@pensando.io>
-
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 > ---
->   drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  samples/bpf/Makefile | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 >
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> index 7afc4a365b75..bc03cecf80cc 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> @@ -57,7 +57,7 @@ DEFINE_SHOW_ATTRIBUTE(identity);
->   void ionic_debugfs_add_ident(struct ionic *ionic)
->   {
->   	debugfs_create_file("identity", 0400, ionic->dentry,
-> -			    ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
-> +			    ionic, &identity_fops);
->   }
->   
->   void ionic_debugfs_add_sizes(struct ionic *ionic)
+> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> index 1579cc16a1c2..b5c87a8b8b51 100644
+> --- a/samples/bpf/Makefile
+> +++ b/samples/bpf/Makefile
+> @@ -178,8 +178,17 @@ CLANG_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
+>  TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
+>  endif
+>
+> +ifdef CROSS_COMPILE
+> +TPROGS_CFLAGS += -Wall
+> +TPROGS_CFLAGS += -O2
 
+Specifying one arg per line seems like overkill, put them in one line?
+
+> +TPROGS_CFLAGS += -fomit-frame-pointer
+
+Why this one?
+
+> +TPROGS_CFLAGS += -Wmissing-prototypes
+> +TPROGS_CFLAGS += -Wstrict-prototypes
+
+Are these in some way special that we want them in cross-compile mode only?
+
+All of those flags seem useful regardless of cross-compilation or not,
+shouldn't they be common? I'm a bit lost about the intent here...
+
+> +else
+>  TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
+>  TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
+> +endif
+> +
+>  TPROGS_CFLAGS += -I$(objtree)/usr/include
+>  TPROGS_CFLAGS += -I$(srctree)/tools/lib/bpf/
+>  TPROGS_CFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
+> --
+> 2.17.1
+>
