@@ -2,77 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BF5B5002
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E370B5010
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:11:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727241AbfIQOJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 10:09:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50184 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726726AbfIQOJt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Sep 2019 10:09:49 -0400
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727394AbfIQOLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 10:11:39 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:50526 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726307AbfIQOLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 10:11:39 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 840AD61418; Tue, 17 Sep 2019 14:11:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568729498;
+        bh=Ib/FvgQ2ADDvprAwRsFZqAQkW3IWp5fSPoW7OmmKSnU=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=jD4E16+BkVqM5IcIZlvyCCN7ZNf07d2/5wCgyMthRAVjhsV2hCaihdV/snWPFRD4Q
+         +smS/OF/mA5oL2JTyXAJ21334QjKuNqGUsRhAqx4d6fKwdyB3PFN6lC2l+OBl2jZlK
+         7HZy/plHOMrrW5YwWPCdAmX74XrP4h7Ffak/X0c4=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A41D206C2;
-        Tue, 17 Sep 2019 14:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568729388;
-        bh=KFwph7a3NLAqJ2SmDpmG/ijd2kzcKrqWVg3/D/v5zMg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=gBWa9t46COVeM8W9Fm//z3KOlRGJXJX0JfFItum33ty5Nwpo70PVSms1rMriQ+aqI
-         nSuFZ18C7sL7jpZqrtXSFF7AYwBjktC4moA+ToyjF57OoNBv44HonkFxas/tNTW/Sc
-         uMShTXMt7KHGNm0DHKWvaJGZERSTxzML7g32JFKA=
-Subject: Re: [PATCH] selftests/net: replace AF_MAX with INT_MAX in socket.c
-To:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shuah <shuah@kernel.org>
-References: <20190916150337.18049-1-marcelo.cerri@canonical.com>
- <212adcf8-566e-e06d-529f-f0ac18bd6a35@kernel.org>
- <20190917071222.6nfzmcxt4kxzgpki@gallifrey>
-From:   shuah <shuah@kernel.org>
-Message-ID: <2a2f3436-4e10-5c7c-3e69-a46491b10960@kernel.org>
-Date:   Tue, 17 Sep 2019 08:09:36 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 54BAE6133A;
+        Tue, 17 Sep 2019 14:11:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568729498;
+        bh=Ib/FvgQ2ADDvprAwRsFZqAQkW3IWp5fSPoW7OmmKSnU=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=JhGTzmD9Ycd2rsNEvNriEf+tda2DZrO1vItX7RTj20lrjJ1mEhTjMRlRb9KmCvEwx
+         Nk/X2iEucNcxMpDDj3ksuRJypTpr/zYR8TwxffkC4ogB4rqzVyFNafaI/NNLhsU53O
+         5okBnKZ6j5/XQmXd5npqeLg3O9DNqbuVKXz+weSo=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 54BAE6133A
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20190917071222.6nfzmcxt4kxzgpki@gallifrey>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: add cleanup in ath10k_sta_state()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1565903072-3948-1-git-send-email-wenwen@cs.uga.edu>
+References: <1565903072-3948-1-git-send-email-wenwen@cs.uga.edu>
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+Cc:     Wenwen Wang <wenwen@cs.uga.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        ath10k@lists.infradead.org (open list:QUALCOMM ATHEROS ATH10K WIRELESS
+        DRIVER),
+        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190917141138.840AD61418@smtp.codeaurora.org>
+Date:   Tue, 17 Sep 2019 14:11:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/19 1:12 AM, Marcelo Henrique Cerri wrote:
-> So the problem arises because the headers we have in userspace might
-> be older and not match what we have in the kernel. In that case, the
-> actual value of AF_MAX in the userspace headers might be a valid
-> protocol family in the new kernel.
+Wenwen Wang <wenwen@cs.uga.edu> wrote:
+
+> If 'sta->tdls' is false, no cleanup is executed, leading to memory/resource
+> leaks, e.g., 'arsta->tx_stats'. To fix this issue, perform cleanup before
+> go to the 'exit' label.
 > 
-> That happens relatively often for us because we support different
-> kernel versions at the same time in a given Ubuntu series.
-> 
+> Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Right. This is an evolving use-case for kselftest to make it easier to
-run on distribution kernels.
+Patch applied to ath-next branch of ath.git, thanks.
 
-> An alternative is to use the headers we have in the kernel tree, but I
-> believe that might cause other issues.
-> 
+334f5b61a6f2 ath10k: add cleanup in ath10k_sta_state()
 
-Kselftest is tied to the kernel in such as way that you do need to use
-the kernel headers to compile.
+-- 
+https://patchwork.kernel.org/patch/11096481/
 
-Do you run newer tests on older kernels? Where do you build them? What
-I would like to see is fixing the test to run on older kernels and not
-changing the tests to suit older kernel needs.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-This definitely isn't a change that is good to make. We have to come
-with a better way to solve this. Could you please send me the errors
-you are seeing so I can help you find a better solution.
-
-thanks,
--- Shuah
