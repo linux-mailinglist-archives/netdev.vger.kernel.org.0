@@ -2,99 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAB91B4B6E
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097E2B4B74
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 12:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbfIQKCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 06:02:50 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38850 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbfIQKCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 06:02:49 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l11so2456930wrx.5
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 03:02:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=JugQhyARoBEh6axn1GkenUD1F8NS4zAnUz5g+2UjW9Y=;
-        b=q/Lr9BOq/L69g4WCoKZCQ9TczATMdKu2UawnxeFAE+hhNHZC76GVOZJCaSxtRLRMi4
-         hkww4gqPUO130c9uk0yzzLEpRWXquoI4YYvL1Z8XV4HfAgn45Zjk2Yb+ogUj2fbaj4js
-         BtYrJMb6vHZyh/cZTduvyN8X2er9+XHOVcfOg+z/VJMtfts6WzKUdX5FPAvNW3OATEFU
-         Yt5ad+VCWxlEuhQRRKjESvaqIOFBGf1TI1VfoMA9PBmo9Q6INw9uFPjKAv98Gclwv0IB
-         Q6G3JXvEiT8BaNzZBYDDifwAndqQ4Fz7SMDkuA+DbQ2glFx7Aag70O2VNnVHdkA1ib+6
-         RmwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=JugQhyARoBEh6axn1GkenUD1F8NS4zAnUz5g+2UjW9Y=;
-        b=pFJzL7DPoBLoqCAKwH8L4YFFXo+KxusXMpDxb15gL5rb+BDJrS/v+2NeJiEILYKMUw
-         2gz75xeKDCmIcj+zeP1ACXt63e2X0t2+IcD5t66opbeFfgD9sdxv9DNyxl78+fvSshuQ
-         CUGWQT+ck7ztbUuEiGjKofpyR8A2GCeBj7kOfys/GQf+Z++KDvC1kdMEW7ejJ79FC66U
-         gpev+hpb2XsPRZzwlRIjcN+5Cqr6IdsPLNrget0jBT2oBATZYsBpT3MVj//UCxN1VK65
-         9p/Dcc+zxcd3YjQYwO05SZRJVq5Ao2b5ydL/YFGVAkZSJKD21DxlHHfQgFr8HeFKr4u6
-         +8lw==
-X-Gm-Message-State: APjAAAVrj8K+y2wYC1mIu8OHxYrQqkqzZeb2qMu3F32fBDx6rThhqlgS
-        N6K9dYTzLjUmhqK4er01KzEUiA==
-X-Google-Smtp-Source: APXvYqzvMSwZS6tqlEUY4Ih4eSot5R1sNRe66bMyvpYWdYsCrq4qlgih6+Z/KU8adcjHmpU7LoqqgQ==
-X-Received: by 2002:a5d:6951:: with SMTP id r17mr2232769wrw.208.1568714567756;
-        Tue, 17 Sep 2019 03:02:47 -0700 (PDT)
-Received: from loys-ubuntu-BY1835A49200471.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id x129sm1606696wmg.8.2019.09.17.03.02.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Sep 2019 03:02:46 -0700 (PDT)
-From:   Loys Ollivier <lollivier@baylibre.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Loys Ollivier <lollivier@baylibre.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: Fix ASSERT_RTNL() warning on suspend/resume
-Date:   Tue, 17 Sep 2019 12:02:36 +0200
-Message-Id: <1568714556-25024-1-git-send-email-lollivier@baylibre.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726619AbfIQKDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 06:03:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42418 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726482AbfIQKDk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 06:03:40 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 71B2583F3C;
+        Tue, 17 Sep 2019 10:03:39 +0000 (UTC)
+Received: from gondolin (dhcp-192-230.str.redhat.com [10.33.192.230])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 77FB660923;
+        Tue, 17 Sep 2019 10:03:35 +0000 (UTC)
+Date:   Tue, 17 Sep 2019 12:03:33 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     alex.williamson@redhat.com, jiri@mellanox.com,
+        kwankhede@nvidia.com, davem@davemloft.net, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/5] mdev: Introduce sha1 based mdev alias
+Message-ID: <20190917120333.3449f62e.cohuck@redhat.com>
+In-Reply-To: <20190902042436.23294-2-parav@mellanox.com>
+References: <20190826204119.54386-1-parav@mellanox.com>
+        <20190902042436.23294-1-parav@mellanox.com>
+        <20190902042436.23294-2-parav@mellanox.com>
+Organization: Red Hat GmbH
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Tue, 17 Sep 2019 10:03:39 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtnl_lock needs to be taken before calling phylink_start/stop to lock the
-network stack.
-Fix ASSERT_RTNL() warnings by protecting such calls with lock/unlock.
+On Sun,  1 Sep 2019 23:24:32 -0500
+Parav Pandit <parav@mellanox.com> wrote:
 
-Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
-Signed-off-by: Loys Ollivier <lollivier@baylibre.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> Some vendor drivers want an identifier for an mdev device that is
+> shorter than the UUID, due to length restrictions in the consumers of
+> that identifier.
+> 
+> Add a callback that allows a vendor driver to request an alias of a
+> specified length to be generated for an mdev device. If generated,
+> that alias is checked for collisions.
+> 
+> It is an optional attribute.
+> mdev alias is generated using sha1 from the mdev name.
+> 
+> Signed-off-by: Parav Pandit <parav@mellanox.com>
+> 
+> ---
+> Changelog:
+> v1->v2:
+>  - Kept mdev_device naturally aligned
+>  - Added error checking for crypt_*() calls
+>  - Corrected a typo from 'and' to 'an'
+>  - Changed return type of generate_alias() from int to char*
+> v0->v1:
+>  - Moved alias length check outside of the parent lock
+>  - Moved alias and digest allocation from kvzalloc to kzalloc
+>  - &alias[0] changed to alias
+>  - alias_length check is nested under get_alias_length callback check
+>  - Changed comments to start with an empty line
+>  - Fixed cleaunup of hash if mdev_bus_register() fails
+>  - Added comment where alias memory ownership is handed over to mdev device
+>  - Updated commit log to indicate motivation for this feature
+> ---
+>  drivers/vfio/mdev/mdev_core.c    | 123 ++++++++++++++++++++++++++++++-
+>  drivers/vfio/mdev/mdev_private.h |   5 +-
+>  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
+>  include/linux/mdev.h             |   4 +
+>  4 files changed, 135 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index fd54c7c87485..485f33f57b43 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4451,7 +4451,9 @@ int stmmac_suspend(struct device *dev)
- 	if (!ndev || !netif_running(ndev))
- 		return 0;
- 
-+	rtnl_lock();
- 	phylink_stop(priv->phylink);
-+	rtnl_unlock();
- 
- 	mutex_lock(&priv->lock);
- 
-@@ -4560,7 +4562,9 @@ int stmmac_resume(struct device *dev)
- 
- 	mutex_unlock(&priv->lock);
- 
-+	rtnl_lock();
- 	phylink_start(priv->phylink);
-+	rtnl_unlock();
- 
- 	return 0;
- }
--- 
-2.7.4
+(...)
 
+> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+> index 0ce30ca78db0..f036fe9854ee 100644
+> --- a/include/linux/mdev.h
+> +++ b/include/linux/mdev.h
+> @@ -72,6 +72,9 @@ struct device *mdev_get_iommu_device(struct device *dev);
+>   * @mmap:		mmap callback
+>   *			@mdev: mediated device structure
+>   *			@vma: vma structure
+> + * @get_alias_length:	Generate alias for the mdevs of this parent based on the
+> + *			mdev device name when it returns non zero alias length.
+
+"Optional: If a non-zero alias length is returned, generate an alias
+for this parent's mdevs based upon the mdev device name."
+
+?
+
+> + *			It is optional.
+>   * Parent device that support mediated device should be registered with mdev
+>   * module with mdev_parent_ops structure.
+>   **/
+> @@ -92,6 +95,7 @@ struct mdev_parent_ops {
+>  	long	(*ioctl)(struct mdev_device *mdev, unsigned int cmd,
+>  			 unsigned long arg);
+>  	int	(*mmap)(struct mdev_device *mdev, struct vm_area_struct *vma);
+> +	unsigned int (*get_alias_length)(void);
+>  };
+>  
+>  /* interface for exporting mdev supported type attributes */
+
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
