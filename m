@@ -2,159 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C18B5B50F2
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 17:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14C48B5131
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 17:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728943AbfIQPEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 11:04:00 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17004 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728933AbfIQPEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 11:04:00 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x8HEuNOD085107;
-        Tue, 17 Sep 2019 11:03:51 -0400
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2v315han28-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 Sep 2019 11:03:50 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x8HEjHpD028165;
-        Tue, 17 Sep 2019 15:03:49 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma03dal.us.ibm.com with ESMTP id 2v0svqqy7w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 Sep 2019 15:03:49 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x8HF3m9d52822422
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 17 Sep 2019 15:03:48 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 44D14124054;
-        Tue, 17 Sep 2019 15:03:48 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5606124058;
-        Tue, 17 Sep 2019 15:03:47 +0000 (GMT)
-Received: from ltcfleet2-lp9.aus.stglabs.ibm.com (unknown [9.40.195.116])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 17 Sep 2019 15:03:47 +0000 (GMT)
-From:   Juliet Kim <julietk@linux.vnet.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     julietk@linux.vnet.ibm.com, tlfalcon@linux.vnet.ibm.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2 2/2] net/ibmvnic: prevent more than one thread from running in reset
-Date:   Tue, 17 Sep 2019 10:52:49 -0400
-Message-Id: <20190917145249.15334-3-julietk@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20190917145249.15334-1-julietk@linux.vnet.ibm.com>
-References: <20190917145249.15334-1-julietk@linux.vnet.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-17_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1909170144
+        id S1728849AbfIQPPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 11:15:02 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:55861 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727437AbfIQPPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 11:15:02 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 18F711E4F;
+        Tue, 17 Sep 2019 11:15:01 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 17 Sep 2019 11:15:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
+        content-transfer-encoding:content-type:date:from:to:cc:subject
+        :message-id; s=fm1; bh=obiRstHvVhOQWl+S1fahFk3c9lGmtlq3gpWfhkuZP
+        4A=; b=OvjRjDwcNAy5zVydT0Vu7hs90GroEHS1L09ShjMVerYe/oGrtntzGHXOs
+        N0RqIZBVLBUUKDDCR5ZL5n6RvWhMR1eDAA7uzrtGznZUU2nFhfF34zJvK/IVHQpk
+        PqYpl32ucp5AdFMi4SNk7jz2IqAnKJcCEg9dyLY0PlNGd6u64krhuXOdrxgQf+vF
+        Zfw1oq5jSi1Ed63F9thKHWs+0eIpWcCewqb7Jo2wYIiuMIt6jno8OgBys8BYxpjR
+        DEdEmobArRlJF64T+mwovAZhYGFVwWZCEeXPirZp/nhkVFShVfW4ne+90U8pjeDq
+        1EKxf2bR5UuZaF5UZamPuLgTXt3Lg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:message-id:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=obiRstHvVhOQWl+S1
+        fahFk3c9lGmtlq3gpWfhkuZP4A=; b=MsQ+58ItArbjMDjKnd9OQmJBh0DFBZ4mf
+        R2LcfCDmN5qSI9o1hSiI9yV6qugLwPvjYZyQBYMx0LsY29TC0wNslWTB4LWWxblw
+        seOChHFdHr7WLgXk8SG/UqZNzqWo01w3Or/iZLrPi46CwzyT8hSnSopPH3IiPRK6
+        C+gmxyc3fYfOcps6FOrdA+nktS+ELB6BvuMZUhmNZSibXDtmpLXxFEaO9gIDiRHL
+        tfdRHwRjXKQTL5ee9T1M9qzu/xvPhVUV3V1toHrZpVrG/7MDsBkJYJcho3IW1Poa
+        idry+lM39l5YRoaQ8jvAURoXqfbyyUH3hJCHXU6rb2VOJoFIJsZtQ==
+X-ME-Sender: <xms:c_iAXcKS-FRsC2NmKNT1aEOSrAzo11SBD5vQXuuuq6AHz89nd1Cu8g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudeigdehlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhepgfgtff
+    fhvffukfesthhqredttddtjeenucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihu
+    segugihuuhhurdighiiiqeenucfkphepudelledrvddtuddrieeirddtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiiinecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:c_iAXRsoPLzGqx6-xPWx9ZtxzADCsnx-dn97oaEFutrW6TquYvEXow>
+    <xmx:c_iAXWTd2qh3cswSzDDQRkeL_T0m3Xhhkfi8TYFJ5lqL0waW2jnJ7w>
+    <xmx:c_iAXaRZzjc1dVfnMlrE8lLGxmHAAuLIDgYOOTy0srJzqYDtaDBsdQ>
+    <xmx:dfiAXYGCcfhsMS6sNSrBxHZaCu-bv2z98ChKqMQ-VJ8h0EtjgQ2GEzBVmLU>
+Received: from localhost (unknown [199.201.66.0])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 11CADD6005E;
+        Tue, 17 Sep 2019 11:14:57 -0400 (EDT)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 17 Sep 2019 08:14:57 -0700
+From:   "Daniel Xu" <dxu@dxuuu.xyz>
+To:     "kbuild test robot" <lkp@intel.com>
+Cc:     <kbuild-all@01.org>, <bpf@vger.kernel.org>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <andriin@fb.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        "Daniel Xu" <dxu@dxuuu.xyz>, <ast@fb.com>,
+        <alexander.shishkin@linux.intel.com>, <jolsa@redhat.com>,
+        <namhyung@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 1/5] perf/core: Add PERF_FORMAT_LOST
+ read_format
+Message-Id: <BX2DJJRW6PA5.3GUFKIRSVLU15@dlxu-fedora-R90QNFJV>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current code allows more than one thread to run in reset. This can 
-corrupt struct adapter data. Check adapter->resetting before performing 
-a reset, if there is another reset running delay (100 msec) before trying 
-again.
+On Tue Sep 17, 2019 at 10:32 PM kbuild test robot wrote:
+> All errors (new ones prefixed by >>):
+>=20
+>    kernel/events/core.c: In function 'perf_event_lost':
+> >> kernel/events/core.c:4753:11: error: implicit declaration of function =
+'perf_kprobe_missed'; did you mean 'perf_release'? [-Werror=3Dimplicit-func=
+tion-declaration]
+>       lost +=3D perf_kprobe_missed(event);
+>               ^~~~~~~~~~~~~~~~~~
+>               perf_release
+>    cc1: some warnings being treated as errors
+>=20
 
-Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 23 ++++++++++++++++++++++-
- drivers/net/ethernet/ibm/ibmvnic.h |  3 +++
- 2 files changed, 25 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index fc760c1eb0b0..d3ebf4caa09c 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2054,6 +2054,13 @@ static void __ibmvnic_reset(struct work_struct *work)
- 
- 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
- 
-+	if (adapter->resetting) {
-+		schedule_delayed_work(&adapter->ibmvnic_delayed_reset,
-+				      IBMVNIC_RESET_DELAY);
-+		return;
-+	}
-+
-+	adapter->resetting = true;
- 	reset_state = adapter->state;
- 
- 	rwi = get_next_rwi(adapter);
-@@ -2094,6 +2101,10 @@ static void __ibmvnic_reset(struct work_struct *work)
- 			break;
- 
- 		rwi = get_next_rwi(adapter);
-+
-+		if (rwi && (rwi->reset_reason == VNIC_RESET_FAILOVER ||
-+			    rwi->reset_reason == VNIC_RESET_MOBILITY))
-+			adapter->force_reset_recovery = true;
- 	}
- 
- 	if (adapter->wait_for_reset) {
-@@ -2109,6 +2120,15 @@ static void __ibmvnic_reset(struct work_struct *work)
- 	adapter->resetting = false;
- }
- 
-+static void __ibmvnic_delayed_reset(struct work_struct *work)
-+{
-+	struct ibmvnic_adapter *adapter;
-+
-+	adapter = container_of(work, struct ibmvnic_adapter,
-+			       ibmvnic_delayed_reset.work);
-+	__ibmvnic_reset(&adapter->ibmvnic_reset);
-+}
-+
- static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 			 enum ibmvnic_reset_reason reason)
- {
-@@ -2161,7 +2181,6 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	rwi->reset_reason = reason;
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
- 	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
--	adapter->resetting = true;
- 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %d)\n", reason);
- 	schedule_work(&adapter->ibmvnic_reset);
- 
-@@ -4932,6 +4951,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	spin_lock_init(&adapter->stats_lock);
- 
- 	INIT_WORK(&adapter->ibmvnic_reset, __ibmvnic_reset);
-+	INIT_DELAYED_WORK(&adapter->ibmvnic_delayed_reset,
-+			  __ibmvnic_delayed_reset);
- 	INIT_LIST_HEAD(&adapter->rwi_list);
- 	spin_lock_init(&adapter->rwi_lock);
- 	init_completion(&adapter->init_done);
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 9d3d35cc91d6..4f4651d92cc1 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -39,6 +39,8 @@
- #define IBMVNIC_MAX_LTB_SIZE ((1 << (MAX_ORDER - 1)) * PAGE_SIZE)
- #define IBMVNIC_BUFFER_HLEN 500
- 
-+#define IBMVNIC_RESET_DELAY 100
-+
- static const char ibmvnic_priv_flags[][ETH_GSTRING_LEN] = {
- #define IBMVNIC_USE_SERVER_MAXES 0x1
- 	"use-server-maxes"
-@@ -1077,6 +1079,7 @@ struct ibmvnic_adapter {
- 	spinlock_t rwi_lock;
- 	struct list_head rwi_list;
- 	struct work_struct ibmvnic_reset;
-+	struct delayed_work ibmvnic_delayed_reset;
- 	bool resetting;
- 	bool napi_enabled, from_passive_init;
- 
--- 
-2.16.4
-
+Ah forgot the #ifdef for CONFIG_KPROBE_EVENTS. I've applied the fix and
+will send it in the next version.
