@@ -2,87 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06774B538B
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 19:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4031B538F
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 19:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728863AbfIQRDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 13:03:20 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37801 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728702AbfIQRDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 13:03:20 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y5so2524068pfo.4;
-        Tue, 17 Sep 2019 10:03:19 -0700 (PDT)
+        id S1730690AbfIQRE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 13:04:27 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44063 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730669AbfIQRE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 13:04:27 -0400
+Received: by mail-pl1-f194.google.com with SMTP id k24so961012pll.11
+        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 10:04:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=udsY9Bp2m5z8jBkGZjMz6n586Nv18MrVRKTMzJRSlKA=;
-        b=CMfL2Vfnz3ZUzfb5OufroCe8otqbnUCzQBGWSEK6wSWNEws46Tn6kFYCRDPtnlcHcd
-         1w6/zP80PObrKMLwR8PlPDlechU4Ts4mF2Rm+CFJG7BZ09eW4q+kDioqZv00s1QQHSpP
-         y+cNhlzLntpw5nE6aD8XlECxOXffte59k9CUDW/OK1O/AcwT6KyVYCGG9HwLz3MeLsTe
-         rnmb+6x5pP7ARDU4jlIUVEzIloU+i5BBdW7SCS4LkMiaD00im3YoLJcDLDKuvmE3u98r
-         I6va5e7HltFUMjshivgWm10veXELJ8sAYDypEuQ/OAUDDHq6exHq2HjXOwkdMj+JmXG1
-         dZqg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=eanHY5Y79pgIFXwzxP/gAKsWmLBvXzaYiWTipf08VNQ=;
+        b=BpSMLhaKdzVGH13Sb4R9NfcSkSsv7ldAqou9AhjCh0f0+qtlyB0ivd7D+qEffNNDTy
+         md8O6MhB5RChU4YBg2IlWEdVjxGXjjBwGIEAY61kzK4pm4g8IEA4PkNr3pdTd809249m
+         nLmNW71SFBqLElBqumq+E12amWQbpgjoP1DxzHzjVl6zru9TQV8h0mujRwb6znEykw5N
+         bL0RikH5xcWNYbZVIL5xgxY9Xrx/GFrNcWLldiXCvOyYanf/+MpPteAPQg4KaOpbYBEI
+         QQU8Q/lsQv9B2lnhsLWpXkEdBD3g0AYO8ZqIm6gAg+BU5wgaa0i45UvGX1KWeSgiU5Wg
+         ysPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=udsY9Bp2m5z8jBkGZjMz6n586Nv18MrVRKTMzJRSlKA=;
-        b=XAzQ2WYV7OrHI9IJEwNpTESKLyK42V0Vk8NXunkP+4KzE2Kgj1oWGvuueXxw1kFvCM
-         y2ukrnb/doMwd9C9/8ml8KAS3P2b7LtZJBoX+xqKQdeZtLEGzBMF8JhuZjpbDSIKvTZL
-         uFTvaPnxPZViq0gjtZLJQxFOaWkx9ogaCvOGgvkvXtKlqDJxeGlnx19xeju25D6FzsSv
-         Cd/RE4roePF9tUxj8SuwVAmXyZHhN+6a5EMEpzyqBJCAoMHkdGqZMOBeJugnVbUEKFlZ
-         I+cB5mjrQeJNmTYnJ9fbMJkkD7uBQ7izuJe/diUiXCRP8T2RTsF98+Oh6UnX7Vhzqf4J
-         XvgQ==
-X-Gm-Message-State: APjAAAUIZuKJBoZoxCwqYxCJQkbei2VDTnPIl3W0fm5Tn1ZwG81sfuxj
-        ko7jS2GJ4lEUnSOZ/6yO/7RybkxLHCdiF+FUZos=
-X-Google-Smtp-Source: APXvYqxFEK77plJKGGIiq4+gona03laNJSu63v6wIesm1gEXhgNCvux0i1jX7XWB1P/D70jDYQXrsYTGzbNrBYSpd+M=
-X-Received: by 2002:a17:90b:294:: with SMTP id az20mr1869546pjb.16.1568739799399;
- Tue, 17 Sep 2019 10:03:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eanHY5Y79pgIFXwzxP/gAKsWmLBvXzaYiWTipf08VNQ=;
+        b=gxAhX8uRqTWnIObVy/j2j5YYIW26ld0PqR9C5QMkqZ5EEqxo57gJu/wRBDhsFrqZHx
+         88KvLG6e+q7dqaY8uZ9bmf5oz6b0Pu/M63PJj4AVDZuFuNPN/c7QfI4bKeuw6Ne9RDRs
+         TuU9FY5uPeE72ymVIDu5hJPtsBUO5EtfEYquXbbeiwK1PSkW2vm2KvQTrbB1imiXt3/M
+         CCE5yxLSgOeHde56YeBfTj26nb9h4BPwPPzL1QrOu9e8ZUp42ymGSXEwMj7WpGIImdtu
+         gnZKSdGnbNzVDYZq9qe3/9zmRkkQHoIj63i0eCSOdmcwE24QJF4ebsVJWuPWI/o9h6w5
+         oSIw==
+X-Gm-Message-State: APjAAAXYU1NYJ5hsphm49dbsw2efoW96rr+ctfGk6S32qNCByn+FO31l
+        dGe+bRvRlbSrPHXC60CFrdE=
+X-Google-Smtp-Source: APXvYqx9yni2A5YIt0nR17agdF5oZ1JhC4d/GZupOpNuXLQNMI1oobGjuoBKkLl0U69Vocl/MtK9jA==
+X-Received: by 2002:a17:902:7c15:: with SMTP id x21mr4612739pll.181.1568739866714;
+        Tue, 17 Sep 2019 10:04:26 -0700 (PDT)
+Received: from [172.27.227.235] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id 8sm10573417pjt.14.2019.09.17.10.04.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Sep 2019 10:04:26 -0700 (PDT)
+Subject: Re: [PATCH] selftests: Add test cases for `ip nexthop flush proto XX`
+To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org,
+        dsahern@kernel.org
+References: <20190916122650.24124-1-sharpd@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a02207e3-99b7-2803-e93d-7943b755769d@gmail.com>
+Date:   Tue, 17 Sep 2019 11:04:24 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <00000000000029a3a00592b41c48@google.com> <CAM_iQpX0FAvhcZgKjRd=3Rbp8cbfYiUqkF2KnmF9Pd0U4EkSDw@mail.gmail.com>
- <vbfk1a7cooq.fsf@mellanox.com>
-In-Reply-To: <vbfk1a7cooq.fsf@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 17 Sep 2019 10:03:08 -0700
-Message-ID: <CAM_iQpWNSdx59iTTNO6GdyZ6NBAMD8=wON6Q7dvnhiX50pwEvQ@mail.gmail.com>
-Subject: Re: BUG: sleeping function called from invalid context in tcf_chain0_head_change_cb_del
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     syzbot <syzbot+ac54455281db908c581e@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        "yhs@fb.com" <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190916122650.24124-1-sharpd@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 17, 2019 at 1:27 AM Vlad Buslov <vladbu@mellanox.com> wrote:
-> Hi Cong,
->
-> Don't see why we would need qdisc tree lock while releasing the
-> reference to (or destroying) previous Qdisc. I've skimmed through other
-> scheds and it looks like sch_multiq, sch_htb and sch_tbf are also
-> affected. Do you want me to send patches?
+On 9/16/19 6:26 AM, Donald Sharp wrote:
+> Add some test cases to allow the fib_nexthops.sh test code
+> to test the flushing of nexthops based upon the proto passed
+> in upon creation of the nexthop group.
+> 
+> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
+> ---
+>  tools/testing/selftests/net/fib_nexthops.sh | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
 
-Yes, please do.
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
+
