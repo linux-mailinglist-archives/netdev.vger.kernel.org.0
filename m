@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC66EB54F2
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 20:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 341F8B5542
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 20:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728555AbfIQSLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 14:11:11 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:40059 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728284AbfIQSLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 14:11:11 -0400
-Received: by mail-pg1-f196.google.com with SMTP id w10so2423448pgj.7
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 11:11:10 -0700 (PDT)
+        id S1729139AbfIQSYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 14:24:10 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:38622 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727746AbfIQSYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 14:24:09 -0400
+Received: by mail-oi1-f196.google.com with SMTP id 7so3741278oip.5
+        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 11:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=7eMuc3DFVGqc5wIBgnpyU0/P0KHdVF14u6P2PX1Ul64=;
-        b=z5+Ft6n6ABuSaQkYPk7fZaV68A9BmoGF503VR9JiuGmhx5TT61pkYojxRyTHyXgAIK
-         AEsMeti3pBVoHG4tzft71gWPQBd8ooS3L1ilWbwI9fkSGcMhG19Zb8YnuJSRw1K/wCCm
-         EXol5FElqpiq+e1/qBfn3BEcqRpQPzmoUvzdylVLNi6cFLt3T4N5DEEnmfT6oF8NUHUa
-         UE52pbJWiQ+YHVIQwIlQe0/MBiUqsB5zlTR6AZCCatfWesGD6zLuz+HcIvpbAI8h4lfd
-         +4+IJ9oErbrEt4VP0tzPnaamIU3VPjv87amm5IXs/fEj7Xnv7vOj9nIZai1j0rBsnacZ
-         FANA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3vUiG+ffNcy8bb488Ep6eZ03iaA8AMf08GzSTmiqRAo=;
+        b=nTCxx3qA3AIYbW+mjgC9GrtI74ltp84aPgAi16N626bmzJn7IwmjtMtku7aT28OpFY
+         CtqF9frARd9jWCZwM87mdFbap0Okkm+MP6psxug/Y7GBs1U6/m4oFjWNVhhX1p64gkrT
+         M8s2dHbxy3+gsVCthDSgcW8yjzGPRHvUK54/16EeFgpoRmXT0tBgSmTplKKfKlOM/kal
+         IR8Yd251IvGX58cHVGkpN6778FwsAAnDmUbWeNGTbM+XHXAJZeN5HwXK1Gnm9sZnfRMy
+         YsVwm4Tk4CFgM/U4fkpfnWX8+opKJSXOj0yUP3AwMgrEn7rLdMk/9HkxEFgt7ZUcPcjB
+         SZwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=7eMuc3DFVGqc5wIBgnpyU0/P0KHdVF14u6P2PX1Ul64=;
-        b=YrIkIeQNrrOtbg8RZYe1Rth8HYi6V6jWJaySFaEnqkQa3VpVGqp91So5LipXCs7INw
-         iBaTQ8/CfcvqTuY/uGL2LJHi+1jIDbsENdKuBUZLwd7A+O2UAngVWdaCEs+5BTRE7b3v
-         T9krtLa7tJ8WtGnfkW2XZ5HIBd5JjbCUKTU/tKdPMVQWMUbkLbTNo+abHaYJc66TXDne
-         qwPdOE1V8qLSOzQkLoLtdETb/ZDEJNwudRP1f9eq9Th1AeYWMsjgNcy3T+XGBA9voFbs
-         7KC9ertdxD7Ew6HyqWcqDcflHbKyjyhfxR3yMzJ6c1JdebRAMcj4iLxv2fL4LpVG/WRy
-         aheQ==
-X-Gm-Message-State: APjAAAWlcOp7XXShHDT4w4BomTrpSiUGT9PamoMqj2q5MNGSacBOfEG/
-        SFfOeZ5X8BdLuTKUOpoG9Tp9LXsA/AI=
-X-Google-Smtp-Source: APXvYqwwLfWjlNuYTBxRz1Vvl3AXA0dIQfCn8ze4R9VpcBJIlbAqohtw1BmZ3/IMHzOywOdhjUkEcg==
-X-Received: by 2002:a62:7c14:: with SMTP id x20mr5724989pfc.228.1568743870494;
-        Tue, 17 Sep 2019 11:11:10 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i16sm1339960pfa.184.2019.09.17.11.11.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Sep 2019 11:11:10 -0700 (PDT)
-Date:   Tue, 17 Sep 2019 11:11:07 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <davem@davemloft.net>, <anna.schumaker@netapp.com>,
-        <trond.myklebust@hammerspace.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RESENT PATCH v2] ixgbe: Use memzero_explicit directly in
- crypto cases
-Message-ID: <20190917111107.307295c6@cakuba.netronome.com>
-In-Reply-To: <1568731462-46758-1-git-send-email-zhongjiang@huawei.com>
-References: <1568731462-46758-1-git-send-email-zhongjiang@huawei.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3vUiG+ffNcy8bb488Ep6eZ03iaA8AMf08GzSTmiqRAo=;
+        b=AU27klLQtztY43iIuqQOtl6ZOUlxofpqIifQnMNtQo3zt1Lbo/+D0cBAU9QvD56hCK
+         ZtX+NSwjxk+OW1Ql5p1AjQF/mYxxUg0ACRAYCj0pRe6LvgLYhcrQ0Ua4cCqWDBVpD74l
+         pnuNhtbQpPptOQ5/USF/0k3SNLWIpyYSF7xVFdepUjUhx8jtMub0OMOJQ1lfbqpy+whq
+         2QYXy3XI/buMfjFZ2PliGvbBjE+2XR+wp9RpThEDB6O8VNKgZ4SZOwf6EgjN0vvQ9aIF
+         +e3A+8tAhWJQWYRxv0Z1aUxVOaJHYW02XltT/yzp7xMo0b/uR3OIaSmGosky/S1ypATJ
+         9LAQ==
+X-Gm-Message-State: APjAAAV15XP7EWXYoCTtyKlwADBoQ17gzJH4loqbJJWM+0RZRBcyz+Tf
+        T621gJPh2/qhoOJf1YBb3qNo/FSH+Y9/CqjiTlovYQ==
+X-Google-Smtp-Source: APXvYqxUun7iEdS+NASsCLWgkgR7EvtM6zpRQ1sZWhI8nrsWWjZWP3IVeoQ+y9e8uaeL2HrhQbdlw5bG+o33Vbr8LGA=
+X-Received: by 2002:a54:478d:: with SMTP id o13mr4989359oic.95.1568744648540;
+ Tue, 17 Sep 2019 11:24:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190910201128.3967163-1-tph@fb.com> <CANn89iKCSae880bS3MTwrm=MeTyPsntyXfkhJS7CfgtpiEpOsQ@mail.gmail.com>
+ <2c6a44fd-3b7e-9fd9-4773-34796b64928f@akamai.com> <CANn89iKJdMGD6kdKrQJk_sHO4ec=Ko3iAiBy_oDzU2UPGtvJNg@mail.gmail.com>
+In-Reply-To: <CANn89iKJdMGD6kdKrQJk_sHO4ec=Ko3iAiBy_oDzU2UPGtvJNg@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Tue, 17 Sep 2019 14:23:52 -0400
+Message-ID: <CADVnQyknrHTOZ7bFCwkzTX6e1aK7EA1haxDSSws2jNJebATHwQ@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: Add TCP_INFO counter for packets received out-of-order
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jason Baron <jbaron@akamai.com>, Thomas Higdon <tph@fb.com>,
+        netdev <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dave Jones <dsj@fb.com>, Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Sep 2019 22:44:22 +0800, zhong jiang wrote:
-> It's better to use memzero_explicit() to replace memset() in crypto cases.
-> 
-> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+On Tue, Sep 17, 2019 at 1:22 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+>  Tue, Sep 17, 2019 at 10:13 AM Jason Baron <jbaron@akamai.com> wrote:
+> >
+> >
+> > Hi,
+> >
+> > I was interested in adding a field to tcp_info around the TFO state of a
+> > socket. So for the server side it would indicate if TFO was used to
+> > create the socket and on the client side it would report whether TFO
+> > worked and if not that it failed with maybe some additional states
+> > around why it failed. I'm thinking it would be maybe 3 bits.
 
-Thank you for the follow up! Your previous patch to use kzfree() 
-has been applied on its own merit, could you rebase this one on top 
-of current net-next/master?
+BTW, one aspect of that "did TFO work" info is available already in
+tcp_info in the tcpi_options field.
 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-> index 31629fc..7e4f32f 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-> @@ -960,10 +960,10 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
->  	return 0;
->  
->  err_aead:
-> -	memset(xs->aead, 0, sizeof(*xs->aead));
-> +	memzero_explicit(xs->aead, sizeof(*xs->aead));
->  	kfree(xs->aead);
->  err_xs:
-> -	memset(xs, 0, sizeof(*xs));
-> +	memzero_explicit(xs, sizeof(*xs));
->  	kfree(xs);
->  err_out:
->  	msgbuf[1] = err;
-> @@ -1049,7 +1049,7 @@ int ixgbe_ipsec_vf_del_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
->  	ixgbe_ipsec_del_sa(xs);
->  
->  	/* remove the xs that was made-up in the add request */
-> -	memset(xs, 0, sizeof(*xs));
-> +	memzero_explicit(xs, sizeof(*xs));
->  	kfree(xs);
->  
->  	return 0;
+Kernel side is:
+  if (tp->syn_data_acked)
+        info->tcpi_options |= TCPI_OPT_SYN_DATA;
 
+We use this bit in packetdrill tests on client and server side to
+check that the TFO data-in-SYN succeeded:
+   +0 %{ assert (tcpi_options & TCPI_OPT_SYN_DATA) != 0, tcpi_options }%
+
+These TFO bits were added much later than the other bits, so IMHO it
+would be OK to add more bits somewhere unused in tcp_info to indicate
+reasons for TFO failure. Especially if, as you suggest, "0" as a code
+point could indicate that the code point is undefined, and all
+meaningful code points were non-zero.
+
+neal
+
+> > My question is whether its reasonable to use the unused bits of
+> > __u8    tcpi_delivery_rate_app_limited:1;. Or is this not good because
+> > the size hasn't changed? What if I avoided using 0 for the new field to
+> > avoid the possibility of not knowing if 0 because its the old kernel or
+> > 0 because that's now its a TFO state? IE the new field could always be >
+> > 0 for the new kernel.
+> >
+>
+> I guess that storing the 'why it has failed' would need more bits.
+>
+> I suggest maybe using an event for this, instead of TCP_INFO ?
+>
+> As of using the bits, maybe the monitoring application does not really care
+> if running on an old kernel where the bits would be zero.
+>
+> Commit eb8329e0a04db0061f714f033b4454326ba147f4 reserved a single
+> bit and did not bother about making sure the monitoring would detect if this
+> runs on an old kernel.
