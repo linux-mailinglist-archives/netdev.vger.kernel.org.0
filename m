@@ -2,118 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B340B5242
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 18:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8B9B534C
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 18:46:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbfIQQBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 12:01:12 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42097 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726215AbfIQQBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 12:01:12 -0400
-Received: by mail-pl1-f196.google.com with SMTP id e5so1709521pls.9
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 09:01:12 -0700 (PDT)
+        id S1729506AbfIQQqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 12:46:35 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33379 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725847AbfIQQqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 12:46:35 -0400
+Received: by mail-pg1-f196.google.com with SMTP id n190so2336379pgn.0
+        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 09:46:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/23YK+iwNZhnsWrJZgUA8e8wVGgRXkGE3IhM6DmqMsI=;
-        b=n+r49PwL2S6A4SMiJMOSrMzDWz9h3hrUYuDriYfE7384T+SjrNAJV1zAmSLXiW2zKu
-         LDxgaWaGtRmZ5Y1SSsouXLkKINMGZqZ/6s/Et5eNpRCmJZceAw2L1EJWsvIOtoF+/O/u
-         Mrh3e5lIReU75i1q7ZI8sxvM6Aa35kmsGWPBP6mPqwbb4jtX2hmXFqNIJH2/bwOKmZTi
-         jvFWdIIr89ooutmm1Vx9VOU70chQU63Yi9cRCyIbJGOBQ8DuG1k1F+snC/vlYb8vKZh/
-         pnlR1aXE9vVHTO/NZjljGzrz05wMZPQfeDv2Hn1SfeFSUCg+KFIjFllmimLUXuXApVx5
-         q5IA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XmEDVfnPZ7Sw0RlJrwyJ1pnBVmjpwPxNFh9MEavYqXY=;
+        b=cmhhUs856V3a6keV5jDCX9Fvp8r8hLOt0Z5paN+eogCOpoiMEktYCdoJbrw0m8PAu8
+         pI6+VKdj2O2Yanc8u//Wf8gJNoqUFNlXazwpolbiO6ZjzYvKk4iDq3aqZ0OZNmLEFg/s
+         T6VsPKq66n5LFFPx0tiCULoisu6zF2O88guZESca6atmTBbTBE4vYZHrICkByNNFQgIw
+         w4ZLWgWhmsGU1fKaJT8oFF+WXG9XTR69l7qaIWXC/CfAlc+zrJXg5A7pPELzaumMF9qJ
+         Ny7O8Bp514rinEOo6x5gyTx4sanfmQ28zoJlPryx2vmhgMAwD7Yp2riqots4flay1RiJ
+         lZLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/23YK+iwNZhnsWrJZgUA8e8wVGgRXkGE3IhM6DmqMsI=;
-        b=YVsy3HyjxqUyVr0A8pnkT9/OxoJuQrcPXjbo/A3QxenRqEmaBLy+f9b94d2qDPO0kP
-         bGDLsEPa1Scn2oz0EzheLM2/kJXG8cEd4LQD/uMJARgbtkL3gmJfSALxlz6SbVo1KbJ0
-         dEW18ZXrXlfVQAlqjP28X0/FciMYr/jj04MPZkj1g8bMPUoeRQXqjISle1Wn3NdaN/C4
-         T1H45Ca6CJnokjsPSLP0lUlPrkpRxs1+kftM41dCFGthN++hbaUeA0pFJgPmZYpI/BNS
-         7UlwACjm8h5FRAUTJpedPKe6TwUo67eAZQmJHehuY4Jw58W9HYrKslYHXmUtBax4T3uc
-         X/LQ==
-X-Gm-Message-State: APjAAAW3Dq0PcOF+Aq+QcarI001UEOyWyidk6pjE4yolaLHotrUVa5MD
-        EE3JNB4JEXPNukYpKpEbLji4aYdMh6PZMPnIfSV3nw==
-X-Google-Smtp-Source: APXvYqz8dyKSNtQP0vAs4KMUBdn0O75gBbiQdluvYEFK4rH7QBocrrUA3plnVMmHs0TF1P6FT2TnB0PAcoKwlUC6vkk=
-X-Received: by 2002:a17:902:d891:: with SMTP id b17mr4243631plz.119.1568736071167;
- Tue, 17 Sep 2019 09:01:11 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XmEDVfnPZ7Sw0RlJrwyJ1pnBVmjpwPxNFh9MEavYqXY=;
+        b=bFq0hh7IC5UlLQ2PcFz1UQs4g7J5sgbrJZLfTIqDBz9SbLDdJluoqWnI7to1JK9+xb
+         BqbAPPd5m6jivOZ7C9mcFWlcqQlKpYNMlD2+iL9fm4OamS9i0GH+sHNFaypc0VM2sL8k
+         6MT4Dy49DG6zZ2QYeb1KTaVAHl3VzDG+eClQ7Z0jjz6vcReKtrNr3HLn2MS7Fqi8g5wF
+         tBuleYfdZht77M+d11g5F8TDlwUHMzYi5YLmVhNazvuciP8Cd/2iGX7eVR2aEHeieSek
+         Zq9n9OkvvrIBLAgb6J69FNLnY/unF+d7OCRt65dAFNk/IJrSlwUteoxaglCHLKJUam49
+         QlcA==
+X-Gm-Message-State: APjAAAVEyV6sQS8MfN2sj9FNC+qX4dXZBX6WN7MpqlavjF90FTK4j5EM
+        mpYP+8wyN0NvTJtv0Tm+6go=
+X-Google-Smtp-Source: APXvYqzEGjYBsphTLatZmiYclmCz+xkW1Ni0YA8vKyYlvkjT7A+uGfew6FsEh9fSMklwtRVFMYq8cg==
+X-Received: by 2002:a63:d643:: with SMTP id d3mr4106529pgj.249.1568738794357;
+        Tue, 17 Sep 2019 09:46:34 -0700 (PDT)
+Received: from [172.27.227.235] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id w5sm2736701pfn.96.2019.09.17.09.46.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Sep 2019 09:46:33 -0700 (PDT)
+Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, tariqt@mellanox.com,
+        mlxsw@mellanox.com
+References: <20190916094448.26072-1-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
+Date:   Tue, 17 Sep 2019 10:46:31 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190917073232.GA14291@archlinux-threadripper>
- <BN8PR12MB3266AFAFF3FAAA9C10FB1C1FD38F0@BN8PR12MB3266.namprd12.prod.outlook.com>
- <510d777024554eab846ef93d05998b63@AcuMS.aculab.com> <BN8PR12MB32662378E844E6ECBA3FE8D7D38F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-In-Reply-To: <BN8PR12MB32662378E844E6ECBA3FE8D7D38F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 17 Sep 2019 09:00:59 -0700
-Message-ID: <CAKwvOdkr0=gdTUG9_2ACBY-WxEerzcK60WHBsmy+hz7rD-yZNA@mail.gmail.com>
-Subject: Re: -Wsizeof-array-div warnings in ethernet drivers
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilie Halip <ilie.halip@gmail.com>,
-        David Bolvansky <david.bolvansky@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190916094448.26072-1-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 17, 2019 at 6:27 AM Jose Abreu <Jose.Abreu@synopsys.com> wrote:
->
-> From: David Laight <David.Laight@ACULAB.COM>
-> Date: Sep/17/2019, 11:36:21 (UTC+00:00)
->
-> > From: Jose Abreu
-> > > Sent: 17 September 2019 08:59
-> > > From: Nathan Chancellor <natechancellor@gmail.com>
-> > > Date: Sep/17/2019, 08:32:32 (UTC+00:00)
-> > >
-> > > > Hi all,
-> > > >
-> > > > Clang recently added a new diagnostic in r371605, -Wsizeof-array-div,
-> > > > that tries to warn when sizeof(X) / sizeof(Y) does not compute the
-> > > > number of elements in an array X (i.e., sizeof(Y) is wrong). See that
-> > > > commit for more details:
-> > ...
-> > > > ../drivers/net/ethernet/amd/xgbe/xgbe-dev.c:361:49: warning: expression
-> > > > does not compute the number of elements in this array; element type is
-> > > > 'u8' (aka 'unsigned char'), not 'u32' (aka 'unsigned int')
-> > > > [-Wsizeof-array-div]
-> > > >         unsigned int key_regs = sizeof(pdata->rss_key) / sizeof(u32);
-> > > >                                        ~~~~~~~~~~~~~~  ^
-> > ...
-> > > > What is the reasoning behind having the key being an array of u8s but
-> > > > seemlingly converting it into an array of u32s? It's not immediately
-> > > > apparent from reading over the code but I am not familiar with it so I
-> > > > might be making a mistake. I assume this is intentional? If so, the
-> > > > warning can be silenced and we'll send patches to do so but we want to
-> > > > make sure we aren't actually papering over a mistake.
-> > >
-> > > This is because we write 32 bits at a time to the reg but internally the
-> > > driver uses 8 bits to store the array. If you look at
-> > > dwxgmac2_rss_configure() you'll see that cfg->key is casted to u32 which
-> > > is the value we use in HW writes. Then the for loop just does the math
-> > > to check how many u32's has to write.
-> >
-> > That stinks of a possible misaligned data access.....
->
-> It's possible to happen only if structure field is not aligned. I guess
-> I can either change all to u32 or just __align the field of the struct
+On 9/16/19 3:44 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
+> 
+> Add indication about previous failed devlink reload.
+> 
+> Example outputs:
+> 
+> $ devlink dev
+> netdevsim/netdevsim10: reload_failed true
 
-Would __aligning the struct still produce the warning?  It's good to
-know that this case is intentional, but I would like to consider other
-instances of it before we seriously consider turning it off.  If the
-driver can be rewritten to just make use of u32, I would find that
-preferrable.
--- 
-Thanks,
-~Nick Desaulniers
+odd output to user. Why not just "reload failed"?
