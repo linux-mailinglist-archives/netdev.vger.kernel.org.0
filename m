@@ -2,66 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7398DB4D9F
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 14:16:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE7EB4DFF
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 14:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727700AbfIQMQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 08:16:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50364 "EHLO vps0.lunn.ch"
+        id S1728108AbfIQMkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 08:40:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52220 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725270AbfIQMQU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Sep 2019 08:16:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ADXk7BUTTbRa9A15VJSZOrJdf/FO/6k6e4fXv/Zd394=; b=3LIyXQdt7vEOFjx7ucERC09019
-        EO8Kr/0BxsdtL08agtf5QrudntQQPUENr788r/8oHDc2PLMUZWbhY71iV7yOc+e1nXBfoO1el8ZQ2
-        s0/TsOtUs/LF1E4Iiq77sN6vr51T6ZZVY3DdSLOvkekmol8fnyr7UEM1VLE+7nSbyaFk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iACOy-0000dm-9O; Tue, 17 Sep 2019 14:16:12 +0200
-Date:   Tue, 17 Sep 2019 14:16:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] net: mdio: switch to using gpiod_get_optional()
-Message-ID: <20190917121612.GC20778@lunn.ch>
-References: <20190917000933.GA254663@dtor-ws>
+        id S1727776AbfIQMkW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 08:40:22 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E0B501056FB1;
+        Tue, 17 Sep 2019 12:40:21 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 12B0D5C21E;
+        Tue, 17 Sep 2019 12:40:20 +0000 (UTC)
+Date:   Tue, 17 Sep 2019 14:40:19 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH ipsec-next v2 6/6] xfrm: add espintcp (RFC 8229)
+Message-ID: <20190917124019.GA91878@bistromath.localdomain>
+References: <cover.1568192824.git.sd@queasysnail.net>
+ <ce5eb26c12fa07e905b9d83ef8c07485c5516ffe.1568192824.git.sd@queasysnail.net>
+ <20190917112649.GE2879@gauss3.secunet.de>
+ <20190917115743.GA89567@bistromath.localdomain>
+ <20190917120413.GF2879@gauss3.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190917000933.GA254663@dtor-ws>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190917120413.GF2879@gauss3.secunet.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Tue, 17 Sep 2019 12:40:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 16, 2019 at 05:09:33PM -0700, Dmitry Torokhov wrote:
-> The MDIO device reset line is optional and now that gpiod_get_optional()
-> returns proper value when GPIO support is compiled out, there is no
-> reason to use fwnode_get_named_gpiod() that I plan to hide away.
+2019-09-17, 14:04:13 +0200, Steffen Klassert wrote:
+> On Tue, Sep 17, 2019 at 01:57:43PM +0200, Sabrina Dubroca wrote:
+> > 2019-09-17, 13:26:49 +0200, Steffen Klassert wrote:
+> > > On Wed, Sep 11, 2019 at 04:13:07PM +0200, Sabrina Dubroca wrote:
+> > > ...
+> > > > diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
+> > > > index 51bb6018f3bf..e67044527fb7 100644
+> > > > --- a/net/xfrm/Kconfig
+> > > > +++ b/net/xfrm/Kconfig
+> > > > @@ -73,6 +73,16 @@ config XFRM_IPCOMP
+> > > >  	select CRYPTO
+> > > >  	select CRYPTO_DEFLATE
+> > > >  
+> > > > +config XFRM_ESPINTCP
+> > > > +	bool "ESP in TCP encapsulation (RFC 8229)"
+> > > > +	depends on XFRM && INET_ESP
+> > > > +	select STREAM_PARSER
+> > > > +	select NET_SOCK_MSG
+> > > > +	help
+> > > > +	  Support for RFC 8229 encapsulation of ESP and IKE over TCP sockets.
+> > > > +
+> > > > +	  If unsure, say N.
+> > > > +
+> > > 
+> > > One nitpick: This is IPv4 only, so please move this below the ESP
+> > > section in net/ipv4/Kconfig and use the naming convention there.
+> > > I.e. bool "IP: ESP in TCP encapsulation (RFC 8229)"
+> > 
+> > That's temporary, though, the next step will be to make it work for
+> > both IPv4 and IPv6. Do you prefer I move it to net/ipv4/Kconfig for
+> > now, and then back to net/xfrm/Kconfig when I add IPv6 support?
 > 
-> Let's switch to using more standard gpiod_get_optional() and
-> gpiod_set_consumer_name() to keep the nice "PHY reset" label.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> We have separate config options for ESP4 and ESP6, so we should
+> also have separate config options for 'ESP in TCP' for IPv4 and IPv6.
+> So this should go to net/ipv4/Kconfig. When you add IPv6 support
+> place it in net/ipv6/Kconfig.
 
-Hi Dmitry
+Ok, I'll do that, and rename the config entry to CONFIG_INET_ESPINTCP.
 
-What path into mainline do you expect this to take? Via DaveM?
-net-next is closed now, so i guess you will need to repost in two
-weeks time.
+Thanks.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+-- 
+Sabrina
