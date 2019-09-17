@@ -2,99 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6379B4D21
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 13:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1989B4D4C
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 13:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbfIQLpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 07:45:39 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:34698 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbfIQLpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 07:45:39 -0400
-Received: by mail-io1-f65.google.com with SMTP id q1so6879280ion.1
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 04:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I8zI7qhOq721x2msbZwKNbqsXGV4rHGFyA4/znvpOwU=;
-        b=lw47oWfmX859ky8ieWEMx1ECPJlegr4xNnPaB+1Dhh9Kax2lMnsDkqoN0omoVJeMDe
-         q3/jjNrHzAywr36GxTlIkfkgq8zHBt1bzBWPusQ6iho+KkvFCM33DuhcjWdPcLVpojT8
-         zAKC/vky2D71LV/jfqOh4lY1fOnoPaEp/pWqLOIT526TRm5lDYsQB8gJmFYPzhrBhSJN
-         xPuwulCGbO0QR0ToeYtVk08+7ELcvqL/4roKxaCcAliuEW7uDOOm0rCB/XvHooBxc7Qy
-         6aUjctEpMmWjaOil4gNkXRUwHfFTFcOT0qz5+Bt91VhTanz2zigjF7oWzBUChqiL8XQW
-         QN/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I8zI7qhOq721x2msbZwKNbqsXGV4rHGFyA4/znvpOwU=;
-        b=r+0oFb7skTgCptA6VELXjPaq4OTYK0xWZiFMZSKQdSm1v9hmkCvIZzgQYoxE4rh0M/
-         lLDIxCblQ/On9kub+LbJUinSM8w/QjGjVna1lfqd6cWYidznElC/VtEGt8tqEg5TLbbS
-         oB/Igz8HreZYoIKN91WblU2ixJ68KBTrWfGG1b/5PfOCi1S4m0K1VEUyJ4vKWJx4qGG4
-         9guEsHo3TIas3upxTODctg+jBY2k3WlCJ5+liReHZIYrT5qeOezEFTBYI7kj1E+rReF5
-         /CAM4lYxea7FRAzsJxpQt5pTocRvVYVynxtlZuOoIC5wIOyZVxnzOETu4edh80oKZmG0
-         nZFA==
-X-Gm-Message-State: APjAAAUwvv1A3MzgxtrCQPp75WaZh6QQ/sgcLnSyJJ5GIum41y5jfrZe
-        MeKQML7En/74/tVpuOfZx9h0ZSANVYqChCyfy9Y=
-X-Google-Smtp-Source: APXvYqw2ZpvJHWt7OSKNWmV/hJdUXqiz4Z41j1KL2om2H0FdC3xXpwpAfdcPDdgbxDQAp2zCWdIWHMqu8GnbyjmAz8E=
-X-Received: by 2002:a05:6638:1f5:: with SMTP id t21mr3383875jaq.119.1568720738495;
- Tue, 17 Sep 2019 04:45:38 -0700 (PDT)
+        id S1726931AbfIQL5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 07:57:47 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:61698 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726106AbfIQL5q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 07:57:46 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 131653018FC5;
+        Tue, 17 Sep 2019 11:57:46 +0000 (UTC)
+Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D1E275B6A5;
+        Tue, 17 Sep 2019 11:57:44 +0000 (UTC)
+Date:   Tue, 17 Sep 2019 13:57:43 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH ipsec-next v2 6/6] xfrm: add espintcp (RFC 8229)
+Message-ID: <20190917115743.GA89567@bistromath.localdomain>
+References: <cover.1568192824.git.sd@queasysnail.net>
+ <ce5eb26c12fa07e905b9d83ef8c07485c5516ffe.1568192824.git.sd@queasysnail.net>
+ <20190917112649.GE2879@gauss3.secunet.de>
 MIME-Version: 1.0
-References: <c359067b4a84342ff24c6a3d089171de68489fcd.1568709449.git.dcaratti@redhat.com>
-In-Reply-To: <c359067b4a84342ff24c6a3d089171de68489fcd.1568709449.git.dcaratti@redhat.com>
-From:   yotam gigi <yotam.gi@gmail.com>
-Date:   Tue, 17 Sep 2019 14:45:27 +0300
-Message-ID: <CANnrxJjndjiBaJgqbxkO9Uomkj0VbF08OHsYTKUJK8q3hG9MKw@mail.gmail.com>
-Subject: Re: [PATCH net] net/sched: act_sample: don't push mac header on
- ip6gre ingress
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Yotam Gigi <yotamg@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190917112649.GE2879@gauss3.secunet.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 17 Sep 2019 11:57:46 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 17, 2019 at 1:02 PM Davide Caratti <dcaratti@redhat.com> wrote:
->
-> current 'sample' action doesn't push the mac header of ingress packets if
-> they are received by a layer 3 tunnel (like gre or sit); but it forgot to
-> check for gre over ipv6, so the following script:
->
->  # tc q a dev $d clsact
->  # tc f a dev $d ingress protocol ip flower ip_proto icmp action sample \
->  > group 100 rate 1
->  # psample -v -g 100
->
-> dumps everything, including outer header and mac, when $d is a gre tunnel
-> over ipv6. Fix this adding a missing label for ARPHRD_IP6GRE devices.
->
-> Fixes: 5c5670fae430 ("net/sched: Introduce sample tc action")
+2019-09-17, 13:26:49 +0200, Steffen Klassert wrote:
+> On Wed, Sep 11, 2019 at 04:13:07PM +0200, Sabrina Dubroca wrote:
+> ...
+> > diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
+> > index 51bb6018f3bf..e67044527fb7 100644
+> > --- a/net/xfrm/Kconfig
+> > +++ b/net/xfrm/Kconfig
+> > @@ -73,6 +73,16 @@ config XFRM_IPCOMP
+> >  	select CRYPTO
+> >  	select CRYPTO_DEFLATE
+> >  
+> > +config XFRM_ESPINTCP
+> > +	bool "ESP in TCP encapsulation (RFC 8229)"
+> > +	depends on XFRM && INET_ESP
+> > +	select STREAM_PARSER
+> > +	select NET_SOCK_MSG
+> > +	help
+> > +	  Support for RFC 8229 encapsulation of ESP and IKE over TCP sockets.
+> > +
+> > +	  If unsure, say N.
+> > +
+> 
+> One nitpick: This is IPv4 only, so please move this below the ESP
+> section in net/ipv4/Kconfig and use the naming convention there.
+> I.e. bool "IP: ESP in TCP encapsulation (RFC 8229)"
 
-Reviewed-by: Yotam Gigi <yotam.gi@gmail.com>
+That's temporary, though, the next step will be to make it work for
+both IPv4 and IPv6. Do you prefer I move it to net/ipv4/Kconfig for
+now, and then back to net/xfrm/Kconfig when I add IPv6 support?
 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  net/sched/act_sample.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/sched/act_sample.c b/net/sched/act_sample.c
-> index 10229124a992..86344fd2ff1f 100644
-> --- a/net/sched/act_sample.c
-> +++ b/net/sched/act_sample.c
-> @@ -146,6 +146,7 @@ static bool tcf_sample_dev_ok_push(struct net_device *dev)
->         case ARPHRD_TUNNEL6:
->         case ARPHRD_SIT:
->         case ARPHRD_IPGRE:
-> +       case ARPHRD_IP6GRE:
->         case ARPHRD_VOID:
->         case ARPHRD_NONE:
->                 return false;
-> --
-> 2.21.0
->
+> Everything else looks very good!
+
+Thanks!
+
+-- 
+Sabrina
