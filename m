@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3389B4FD5
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:03:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054A5B4FDE
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbfIQODo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 10:03:44 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:45750 "EHLO
+        id S1726621AbfIQOEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 10:04:47 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46396 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726467AbfIQODo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 10:03:44 -0400
+        with ESMTP id S1726467AbfIQOEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 10:04:46 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id D11AF61576; Tue, 17 Sep 2019 14:03:41 +0000 (UTC)
+        id 702E36021C; Tue, 17 Sep 2019 14:04:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568729023;
-        bh=z5NkcZ1ALVg0VMSVQaQZtgQ5NF7xi3wRIZFmstI/iR0=;
+        s=default; t=1568729085;
+        bh=rAaMYvqbeLheWv8CIxiDyX/e12oeMdBVoUmnUwywv5Q=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=lHZdxjg2FqLYr6alImg+/DyYa6PRazOBXVd/8JUhbltu+hxDRZIDzy/L5XXjqo97I
-         ehmzC1bvtwQkd6m6qlTre41CXB2Fa87HR+abQI40+FYNnQMnMUp1ROdsAtqcBnH+Ye
-         uEoHvOjy5PO5xAHcDNrJm38qrDsYnLb/3yHzVIEA=
+        b=nV2umR6R289up963IQf51z4elD/8hSfUfS7xrdnSVc8eic0ZFzWYNRHiHiC1zVyno
+         i9iXTtZEOsP45lU5RnXEhyhq5pMNIIW/uxBtWWNvzoqsomYIkZVxX6d1Fvfa8bqOaR
+         LHBMs0BVnAgGxRARt6Vdh4c53Jwxm30DPn/hdccc=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,35 +30,34 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1075061544;
-        Tue, 17 Sep 2019 14:03:37 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 24BF36016D;
+        Tue, 17 Sep 2019 14:04:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568729020;
-        bh=z5NkcZ1ALVg0VMSVQaQZtgQ5NF7xi3wRIZFmstI/iR0=;
+        s=default; t=1568729084;
+        bh=rAaMYvqbeLheWv8CIxiDyX/e12oeMdBVoUmnUwywv5Q=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=jeJJCXHihlrr3GhJk2NSJZIDcKcDp/aKDu/n/iGSyjRoQBvdz5fOMU5maZZ+Muqdd
-         jwWtd3qtswR3UwRjeSWJaFTM/inXnIsU5ssyiVPHpn3dFcIOi8BBaROieQMr4fPxi6
-         qlI1rSaOgDVs04aGiRmipWdauCiGkPTHZsIYggC8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1075061544
+        b=HXDHo5T2HJtx2ogcRKuCOwqk+wlVKzcov6Qhn/RIBADhCetuRZIt2f8kOYCBGWsFy
+         FhKPiZcsSsRMJTti+2r6vWZYRkLOGYHiK03XQvksaTVvclmN2vxtjTncFjF2jCoj71
+         qYCeRk2Wcljgm7Pyx2QtZq1kBDDoZJRAsbD8ckvI=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 24BF36016D
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: Fix HOST capability QMI incompatibility
+Subject: Re: [PATCH 1/3] ath10k: snoc: skip regulator operations
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190725063108.15790-1-bjorn.andersson@linaro.org>
-References: <20190725063108.15790-1-bjorn.andersson@linaro.org>
+In-Reply-To: <20190725174755.23432-2-bjorn.andersson@linaro.org>
+References: <20190725174755.23432-2-bjorn.andersson@linaro.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, stable@vger.kernel.org
+Cc:     Govind Singh <govinds@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190917140342.D11AF61576@smtp.codeaurora.org>
-Date:   Tue, 17 Sep 2019 14:03:41 +0000 (UTC)
+Message-Id: <20190917140445.702E36021C@smtp.codeaurora.org>
+Date:   Tue, 17 Sep 2019 14:04:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -66,33 +65,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
 
-> The introduction of 768ec4c012ac ("ath10k: update HOST capability QMI
-> message") served the purpose of supporting the new and extended HOST
-> capability QMI message.
+> The regulator operations is trying to set a voltage to a fixed value, by
+> giving some wiggle room. But some board designs specifies regulator
+> voltages outside this limited range. One such example is the Lenovo Yoga
+> C630, with vdd-3.3-ch0 in particular specified at 3.1V.
 > 
-> But while the new message adds a slew of optional members it changes the
-> data type of the "daemon_support" member, which means that older
-> versions of the firmware will fail to decode the incoming request
-> message.
+> But consumers with fixed voltage requirements should just rely on the
+> board configuration to provide the power at the required level, so this
+> code should be removed.
 > 
-> There is no way to detect this breakage from Linux and there's no way to
-> recover from sending the wrong message (i.e. we can't just try one
-> format and then fallback to the other), so a quirk is introduced in
-> DeviceTree to indicate to the driver that the firmware requires the 8bit
-> version of this message.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 768ec4c012ac ("ath10k: update HOST capability qmi message")
 > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Patch applied to ath-next branch of ath.git, thanks.
+3 patches applied to ath-next branch of ath.git, thanks.
 
-7165ef890a4c ath10k: Fix HOST capability QMI incompatibility
+b003e7f1974e ath10k: snoc: skip regulator operations
+c56c7f24d7f8 ath10k: Use standard regulator bulk API in snoc
+f93bcf0ce6a1 ath10k: Use standard bulk clock API in snoc
 
 -- 
-https://patchwork.kernel.org/patch/11058005/
+https://patchwork.kernel.org/patch/11059507/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
