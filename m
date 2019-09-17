@@ -2,129 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4163B58BA
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 01:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4132DB58BD
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 01:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728756AbfIQXmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 19:42:19 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:42452 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727437AbfIQXmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 19:42:18 -0400
-Received: by mail-qt1-f196.google.com with SMTP id g16so6619198qto.9;
-        Tue, 17 Sep 2019 16:42:18 -0700 (PDT)
+        id S1726215AbfIQXqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 19:46:17 -0400
+Received: from mail-pl1-f181.google.com ([209.85.214.181]:44898 "EHLO
+        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbfIQXqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 19:46:17 -0400
+Received: by mail-pl1-f181.google.com with SMTP id k24so1384959pll.11
+        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 16:46:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BegyS4bOdhV/4W363nuBMo/MR31JnI7T3ixbji8LT0k=;
-        b=vMk1upZOsmLe++G9kBDDj9CahrV2tNdF/nBj/Sm8wZzpdEurdvhYJ5J9ixKghaKpoe
-         Cabrh+OuWLIlOL8RKUBb5jFHtQb1xdQFeP0HSY5tUS40GSQMc/d4paYdK+u6g/Yr3bsN
-         6joSSp0Y0CGRaUTCcNJvsHVSlzZqO0cPTY86eZbFHDEOvnqp+RjGcdWDcelGje3coVJ8
-         I7Z/w7Yely9GyEovAfl0SQ6k8tjJd/NdJcl9i59BmGBOpTmRjOYlePwLpac2ocUn0GQ4
-         px4HlmsNfTsrEh9cgAI0XrjTx8lSfmL8E2I9wAxcrBLDGTu2tQwc2dvhwx/ojX/ZO+Mu
-         /5TQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yghpdtVNxa+bjt+D03KJvZeH2tG/CagNHCWfxTbiNJ0=;
+        b=Y7WdcIuzXlTabL/6c2ehO5HeYOBMPz0/Plzi3k9bDvFKoHn8cHu8OBZzpAaWFNtqxZ
+         UQLRCmonG2lLv1ZMG6HhVKG2pj+G1myk0PHgWEqBqOHkKUbMRD5gIsY9NtKeRedQQ/6b
+         SoSYwTGOTLVQ+A/gD7Rpnzg1I7hD4EO13bTZrnKPzYojkIpSkLRDQb0AuHciQdPGvMPi
+         IZnZZTF78PTmKphGbhtHZsfRDS1jso5/uCmSAvjVDWal+FNWlj1XWAp3w0tGedc5XyS8
+         qkaWsNbjaqo8xguda+DZT5HRxuZ4anKo8a6WqBekI06EPmz04zlGl+HjBO8xamFHr6jm
+         I+8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BegyS4bOdhV/4W363nuBMo/MR31JnI7T3ixbji8LT0k=;
-        b=YnsgEJ5js/tuoWKJQmoaFbKybu1/VeGCVjBTI7U2e7ncZWWQrM4e1KRG3fjYeP5JaP
-         QuaZRSY6XRu2LR32JFYUgcMs2AgNPnYwyS73EsqpZczPi/C7gSzZWzAXHMCu4ABxON8Y
-         9H7uBVDjG5qHeeS+UUiLkQcp/VcCUBSyyVyesdioDBzvr7pA4bk+HGm3/aRZMZMq4kJm
-         hdTt1/v9mdl9+R+g2Iznicu5uycPMXar/30l2aCxpilYHq8o86czHSwM0SCrMPZ0YGUE
-         xl5G3YFI5/A48HbB/scHwzDJLrkMziXqXPqpGWv4hF27US6I0e/ADRauP8p0KIKA5uRP
-         WqFA==
-X-Gm-Message-State: APjAAAUH4o5dhBY3JcsVWhQJhQxIG2vj2d5HLWRncaJO+DotT5Bt2FcJ
-        C6SatMKd55tZ0I0SoLpBGO8NZ1ypw6P3XrBSYV4=
-X-Google-Smtp-Source: APXvYqyqTOB5IEnz+7Pn65a64zh20YjJFL47Y3+R+LAoPucpHJlNyWRxfkqLGYegHWdmGs0Tu4e8upaaXuzL1yVMXa0=
-X-Received: by 2002:a0c:88f0:: with SMTP id 45mr1124543qvo.78.1568763737848;
- Tue, 17 Sep 2019 16:42:17 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yghpdtVNxa+bjt+D03KJvZeH2tG/CagNHCWfxTbiNJ0=;
+        b=EOJVE4SSpJAO+WzNyBVz4JuvRARZHiWIwA4nrgEfsSMpcqXZ0kPRvcgeE+GGs8xrub
+         7OKQtmLzf/jcfvSBlcMKT5ou86rw2CRq9rD86KgEeD7t8bxEuPjFYOSSVBgNGTVuo095
+         yahQ6s5NsWEAV9C+gmEuebU+14s06WDwEkRddAc2oj5UzFDzrXU+41nuVel7rbIH9vsP
+         UN0liD6hEKPGO/n0Zs6yZ17HHAiyTLB5IYajgh3a6sd91mPUGMIZB20oOm3suhkz4dJ0
+         GHPMB9qEbK1rS1FPT1f9+fcGtXBhRreC0YUb6jnsnBDee/eVqg0zGXW3Pbq4HH/9n6VN
+         I++Q==
+X-Gm-Message-State: APjAAAVaybUIwNHw/QcDSmQcBBF5MJALrohvHfHyOy9/4Hb18VjJfJFE
+        L6k2fehDznhlwGzsLXfffIw=
+X-Google-Smtp-Source: APXvYqwZP16QPZRp74GhveZ2sqv5S6XKGXXEgjl9CsxUtYcKhRWoGqBEepoSqLrJtuVft5YOF8NcpA==
+X-Received: by 2002:a17:902:b617:: with SMTP id b23mr1292205pls.184.1568763976726;
+        Tue, 17 Sep 2019 16:46:16 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:891:77d6:e233:a77c])
+        by smtp.googlemail.com with ESMTPSA id ep10sm11429596pjb.2.2019.09.17.16.46.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Sep 2019 16:46:15 -0700 (PDT)
+Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        tariqt@mellanox.com, mlxsw@mellanox.com
+References: <20190916094448.26072-1-jiri@resnulli.us>
+ <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
+ <20190917183629.GP2286@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
+Date:   Tue, 17 Sep 2019 17:46:13 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org> <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 17 Sep 2019 16:42:07 -0700
-Message-ID: <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
- but not host when cross compile
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        sergei.shtylyov@cogentembedded.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190917183629.GP2286@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
-<ivan.khoronzhuk@linaro.org> wrote:
->
-> While compile natively, the hosts cflags and ldflags are equal to ones
-> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
-> have own, used for target arch. While verification, for arm, arm64 and
-> x86_64 the following flags were used alsways:
->
-> -Wall
-> -O2
-> -fomit-frame-pointer
-> -Wmissing-prototypes
-> -Wstrict-prototypes
->
-> So, add them as they were verified and used before adding
-> Makefile.target, but anyway limit it only for cross compile options as
-> for host can be some configurations when another options can be used,
-> So, for host arch samples left all as is, it allows to avoid potential
-> option mistmatches for existent environments.
->
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
->  samples/bpf/Makefile | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 1579cc16a1c2..b5c87a8b8b51 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -178,8 +178,17 @@ CLANG_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
->  TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
->  endif
->
-> +ifdef CROSS_COMPILE
-> +TPROGS_CFLAGS += -Wall
-> +TPROGS_CFLAGS += -O2
+On 9/17/19 12:36 PM, Jiri Pirko wrote:
+> Tue, Sep 17, 2019 at 06:46:31PM CEST, dsahern@gmail.com wrote:
+>> On 9/16/19 3:44 AM, Jiri Pirko wrote:
+>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>
+>>> Add indication about previous failed devlink reload.
+>>>
+>>> Example outputs:
+>>>
+>>> $ devlink dev
+>>> netdevsim/netdevsim10: reload_failed true
+>>
+>> odd output to user. Why not just "reload failed"?
+> 
+> Well it is common to have "name value". The extra space would seem
+> confusing for the reader..
+> Also it is common to have "_" instead of space for the output in cases
+> like this.
+> 
 
-Specifying one arg per line seems like overkill, put them in one line?
+I am not understanding your point.
 
-> +TPROGS_CFLAGS += -fomit-frame-pointer
-
-Why this one?
-
-> +TPROGS_CFLAGS += -Wmissing-prototypes
-> +TPROGS_CFLAGS += -Wstrict-prototypes
-
-Are these in some way special that we want them in cross-compile mode only?
-
-All of those flags seem useful regardless of cross-compilation or not,
-shouldn't they be common? I'm a bit lost about the intent here...
-
-> +else
->  TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
->  TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
-> +endif
-> +
->  TPROGS_CFLAGS += -I$(objtree)/usr/include
->  TPROGS_CFLAGS += -I$(srctree)/tools/lib/bpf/
->  TPROGS_CFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
-> --
-> 2.17.1
->
+"reload failed" is still a name/value pair. It is short and to the point
+as to what it indicates. There is no need for the name in the uapi (ie.,
+the name of the netlink attribute) to be dumped here.
