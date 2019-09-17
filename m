@@ -2,180 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D97DB55A1
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 20:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 052A8B55A5
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 20:50:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728856AbfIQStK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 14:49:10 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:33693 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728862AbfIQStJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 14:49:09 -0400
-Received: by mail-io1-f70.google.com with SMTP id g15so7232484ioc.0
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 11:49:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=NwVpGkNHgsmoaBSsh3mYYG8q0xqBQTXg+ZIgnqs4C80=;
-        b=BVm7fo10wbdX1NxcAtOYNKHvqx1msv2Nv9ovq2iB0GsFlc9uIfN6Vzxxas6Vo0Wgug
-         rkivZxxD14pSussqAU8Qj+T6kWU5SNQRxnErKeNojhbq7xGITyQpjRS4lbuxPL7J9O+d
-         n+LRxSNycFMXa9gEFqvHwXMneL1+VTB+ru5pUu4ocUmwYxc5Y26R0VKtxu4l+LAmRuUP
-         DehWJavtcEvLcqzw09SlRBj/AxmGZbNvD7Mt36hsynlT+faKRWBM450KSosYk7Bjr5Vu
-         Nln7sEzQy9oNkEEnBUXpdHMtGuzxhMt7S6vOAu/03aIQc6/K0h0bgHe6ktip8eaNzrNk
-         jUHg==
-X-Gm-Message-State: APjAAAXfBTfU1voiABnUYUxJYiVBgT4UKnOAzug/F0o2e8cR5x8QPL1c
-        B+CktbpDPIEkZQ5nXGUTqIIT+cQ548KTB+YPepVUONmc8QhT
-X-Google-Smtp-Source: APXvYqzsAS0Pl7r7pEqtH8I83JX6lJEg1mRzZST37KlCqUop1Eo1ndA/srmM39ERBKIJibHr2ZgJi5S+Xu59xduJ6ApYCPrWNg9H
+        id S1727205AbfIQSuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 14:50:40 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:59752 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725865AbfIQSuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 14:50:40 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id x8HIoOT9003283;
+        Tue, 17 Sep 2019 21:50:24 +0300
+Date:   Tue, 17 Sep 2019 21:50:24 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     David Ahern <dsahern@kernel.org>
+cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net] ipv4: Revert removal of rt_uses_gateway
+In-Reply-To: <20190917173949.19982-1-dsahern@kernel.org>
+Message-ID: <alpine.LFD.2.21.1909172148220.2649@ja.home.ssi.bg>
+References: <20190917173949.19982-1-dsahern@kernel.org>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1d6:: with SMTP id w22mr249979iot.144.1568746146283;
- Tue, 17 Sep 2019 11:49:06 -0700 (PDT)
-Date:   Tue, 17 Sep 2019 11:49:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cacc7e0592c42ce3@google.com>
-Subject: KASAN: slab-out-of-bounds Read in bpf_prog_create
-From:   syzbot <syzbot+eb853b51b10f1befa0b7@syzkaller.appspotmail.com>
-To:     arnd@arndb.de, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        kafai@fb.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-ppp@vger.kernel.org,
-        netdev@vger.kernel.org, paulus@samba.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
+	Hello,
 
-HEAD commit:    2015a28f Add linux-next specific files for 20190915
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11880d69600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=110691c2286b679a
-dashboard link: https://syzkaller.appspot.com/bug?extid=eb853b51b10f1befa0b7
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=127c3481600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1150a70d600000
+On Tue, 17 Sep 2019, David Ahern wrote:
 
-The bug was bisected to:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> Julian noted that rt_uses_gateway has a more subtle use than 'is gateway
+> set':
+>     https://lore.kernel.org/netdev/alpine.LFD.2.21.1909151104060.2546@ja.home.ssi.bg/
+> 
+> Revert that part of the commit referenced in the Fixes tag.
+> 
+> Currently, there are no u8 holes in 'struct rtable'. There is a 4-byte hole
+> in the second cacheline which contains the gateway declaration. So move
+> rt_gw_family down to the gateway declarations since they are always used
+> together, and then re-use that u8 for rt_uses_gateway. End result is that
+> rtable size is unchanged.
+> 
+> Fixes: 1550c171935d ("ipv4: Prepare rtable for IPv6 gateway")
+> Reported-by: Julian Anastasov <ja@ssi.bg>
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
-commit 2f4fa2db75e26995709043c8d3de4632ebed5c4b
-Author: Al Viro <viro@zeniv.linux.org.uk>
-Date:   Thu Apr 18 03:48:01 2019 +0000
+	Looks good to me, thanks!
 
-     compat_ioctl: unify copy-in of ppp filters
+Reviewed-by: Julian Anastasov <ja@ssi.bg>
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=145eee1d600000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=165eee1d600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=125eee1d600000
+> ---
+>  drivers/infiniband/core/addr.c  |  2 +-
+>  include/net/route.h             |  3 ++-
+>  net/ipv4/inet_connection_sock.c |  4 ++--
+>  net/ipv4/ip_forward.c           |  2 +-
+>  net/ipv4/ip_output.c            |  2 +-
+>  net/ipv4/route.c                | 36 +++++++++++++++++++++---------------
+>  net/ipv4/xfrm4_policy.c         |  1 +
+>  7 files changed, 29 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/infiniband/core/addr.c b/drivers/infiniband/core/addr.c
+> index 9b76a8fcdd24..bf539c34ccd3 100644
+> --- a/drivers/infiniband/core/addr.c
+> +++ b/drivers/infiniband/core/addr.c
+> @@ -352,7 +352,7 @@ static bool has_gateway(const struct dst_entry *dst, sa_family_t family)
+>  
+>  	if (family == AF_INET) {
+>  		rt = container_of(dst, struct rtable, dst);
+> -		return rt->rt_gw_family == AF_INET;
+> +		return rt->rt_uses_gateway;
+>  	}
+>  
+>  	rt6 = container_of(dst, struct rt6_info, dst);
+> diff --git a/include/net/route.h b/include/net/route.h
+> index dfce19c9fa96..6c516840380d 100644
+> --- a/include/net/route.h
+> +++ b/include/net/route.h
+> @@ -53,10 +53,11 @@ struct rtable {
+>  	unsigned int		rt_flags;
+>  	__u16			rt_type;
+>  	__u8			rt_is_input;
+> -	u8			rt_gw_family;
+> +	__u8			rt_uses_gateway;
+>  
+>  	int			rt_iif;
+>  
+> +	u8			rt_gw_family;
+>  	/* Info on neighbour */
+>  	union {
+>  		__be32		rt_gw4;
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index f5c163d4771b..a9183543ca30 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -560,7 +560,7 @@ struct dst_entry *inet_csk_route_req(const struct sock *sk,
+>  	rt = ip_route_output_flow(net, fl4, sk);
+>  	if (IS_ERR(rt))
+>  		goto no_route;
+> -	if (opt && opt->opt.is_strictroute && rt->rt_gw_family)
+> +	if (opt && opt->opt.is_strictroute && rt->rt_uses_gateway)
+>  		goto route_err;
+>  	rcu_read_unlock();
+>  	return &rt->dst;
+> @@ -598,7 +598,7 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+>  	rt = ip_route_output_flow(net, fl4, sk);
+>  	if (IS_ERR(rt))
+>  		goto no_route;
+> -	if (opt && opt->opt.is_strictroute && rt->rt_gw_family)
+> +	if (opt && opt->opt.is_strictroute && rt->rt_uses_gateway)
+>  		goto route_err;
+>  	return &rt->dst;
+>  
+> diff --git a/net/ipv4/ip_forward.c b/net/ipv4/ip_forward.c
+> index 06f6f280b9ff..00ec819f949b 100644
+> --- a/net/ipv4/ip_forward.c
+> +++ b/net/ipv4/ip_forward.c
+> @@ -123,7 +123,7 @@ int ip_forward(struct sk_buff *skb)
+>  
+>  	rt = skb_rtable(skb);
+>  
+> -	if (opt->is_strictroute && rt->rt_gw_family)
+> +	if (opt->is_strictroute && rt->rt_uses_gateway)
+>  		goto sr_failed;
+>  
+>  	IPCB(skb)->flags |= IPSKB_FORWARDED;
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index cc7ef0d05bbd..da521790cd63 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -499,7 +499,7 @@ int __ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl,
+>  	skb_dst_set_noref(skb, &rt->dst);
+>  
+>  packet_routed:
+> -	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_gw_family)
+> +	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_uses_gateway)
+>  		goto no_route;
+>  
+>  	/* OK, we know where to send it, allocate and build IP header. */
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index b6a6f18c3dd1..7dcce724c78b 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -635,6 +635,7 @@ static void fill_route_from_fnhe(struct rtable *rt, struct fib_nh_exception *fnh
+>  
+>  	if (fnhe->fnhe_gw) {
+>  		rt->rt_flags |= RTCF_REDIRECTED;
+> +		rt->rt_uses_gateway = 1;
+>  		rt->rt_gw_family = AF_INET;
+>  		rt->rt_gw4 = fnhe->fnhe_gw;
+>  	}
+> @@ -1313,7 +1314,7 @@ static unsigned int ipv4_mtu(const struct dst_entry *dst)
+>  	mtu = READ_ONCE(dst->dev->mtu);
+>  
+>  	if (unlikely(ip_mtu_locked(dst))) {
+> -		if (rt->rt_gw_family && mtu > 576)
+> +		if (rt->rt_uses_gateway && mtu > 576)
+>  			mtu = 576;
+>  	}
+>  
+> @@ -1569,6 +1570,7 @@ static void rt_set_nexthop(struct rtable *rt, __be32 daddr,
+>  		struct fib_nh_common *nhc = FIB_RES_NHC(*res);
+>  
+>  		if (nhc->nhc_gw_family && nhc->nhc_scope == RT_SCOPE_LINK) {
+> +			rt->rt_uses_gateway = 1;
+>  			rt->rt_gw_family = nhc->nhc_gw_family;
+>  			/* only INET and INET6 are supported */
+>  			if (likely(nhc->nhc_gw_family == AF_INET))
+> @@ -1634,6 +1636,7 @@ struct rtable *rt_dst_alloc(struct net_device *dev,
+>  		rt->rt_iif = 0;
+>  		rt->rt_pmtu = 0;
+>  		rt->rt_mtu_locked = 0;
+> +		rt->rt_uses_gateway = 0;
+>  		rt->rt_gw_family = 0;
+>  		rt->rt_gw4 = 0;
+>  		INIT_LIST_HEAD(&rt->rt_uncached);
+> @@ -2694,6 +2697,7 @@ struct dst_entry *ipv4_blackhole_route(struct net *net, struct dst_entry *dst_or
+>  		rt->rt_genid = rt_genid_ipv4(net);
+>  		rt->rt_flags = ort->rt_flags;
+>  		rt->rt_type = ort->rt_type;
+> +		rt->rt_uses_gateway = ort->rt_uses_gateway;
+>  		rt->rt_gw_family = ort->rt_gw_family;
+>  		if (rt->rt_gw_family == AF_INET)
+>  			rt->rt_gw4 = ort->rt_gw4;
+> @@ -2778,21 +2782,23 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+>  		if (nla_put_in_addr(skb, RTA_PREFSRC, fl4->saddr))
+>  			goto nla_put_failure;
+>  	}
+> -	if (rt->rt_gw_family == AF_INET &&
+> -	    nla_put_in_addr(skb, RTA_GATEWAY, rt->rt_gw4)) {
+> -		goto nla_put_failure;
+> -	} else if (rt->rt_gw_family == AF_INET6) {
+> -		int alen = sizeof(struct in6_addr);
+> -		struct nlattr *nla;
+> -		struct rtvia *via;
+> -
+> -		nla = nla_reserve(skb, RTA_VIA, alen + 2);
+> -		if (!nla)
+> +	if (rt->rt_uses_gateway) {
+> +		if (rt->rt_gw_family == AF_INET &&
+> +		    nla_put_in_addr(skb, RTA_GATEWAY, rt->rt_gw4)) {
+>  			goto nla_put_failure;
+> -
+> -		via = nla_data(nla);
+> -		via->rtvia_family = AF_INET6;
+> -		memcpy(via->rtvia_addr, &rt->rt_gw6, alen);
+> +		} else if (rt->rt_gw_family == AF_INET6) {
+> +			int alen = sizeof(struct in6_addr);
+> +			struct nlattr *nla;
+> +			struct rtvia *via;
+> +
+> +			nla = nla_reserve(skb, RTA_VIA, alen + 2);
+> +			if (!nla)
+> +				goto nla_put_failure;
+> +
+> +			via = nla_data(nla);
+> +			via->rtvia_family = AF_INET6;
+> +			memcpy(via->rtvia_addr, &rt->rt_gw6, alen);
+> +		}
+>  	}
+>  
+>  	expires = rt->dst.expires;
+> diff --git a/net/ipv4/xfrm4_policy.c b/net/ipv4/xfrm4_policy.c
+> index cdef8f9a3b01..35b84b52b702 100644
+> --- a/net/ipv4/xfrm4_policy.c
+> +++ b/net/ipv4/xfrm4_policy.c
+> @@ -85,6 +85,7 @@ static int xfrm4_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
+>  	xdst->u.rt.rt_flags = rt->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST |
+>  					      RTCF_LOCAL);
+>  	xdst->u.rt.rt_type = rt->rt_type;
+> +	xdst->u.rt.rt_uses_gateway = rt->rt_uses_gateway;
+>  	xdst->u.rt.rt_gw_family = rt->rt_gw_family;
+>  	if (rt->rt_gw_family == AF_INET)
+>  		xdst->u.rt.rt_gw4 = rt->rt_gw4;
+> -- 
+> 2.11.0
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+eb853b51b10f1befa0b7@syzkaller.appspotmail.com
-Fixes: 2f4fa2db75e2 ("compat_ioctl: unify copy-in of ppp filters")
+Regards
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in memcpy include/linux/string.h:404 [inline]
-BUG: KASAN: slab-out-of-bounds in bpf_prog_create+0xe9/0x250  
-net/core/filter.c:1351
-Read of size 32768 at addr ffff88809cf74000 by task syz-executor183/8575
-
-CPU: 0 PID: 8575 Comm: syz-executor183 Not tainted 5.3.0-rc8-next-20190915  
-#0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:634
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  memcpy+0x24/0x50 mm/kasan/common.c:122
-  memcpy include/linux/string.h:404 [inline]
-  bpf_prog_create+0xe9/0x250 net/core/filter.c:1351
-  get_filter.isra.0+0x108/0x1a0 drivers/net/ppp/ppp_generic.c:572
-  ppp_get_filter drivers/net/ppp/ppp_generic.c:584 [inline]
-  ppp_ioctl+0x129d/0x2590 drivers/net/ppp/ppp_generic.c:801
-  vfs_ioctl fs/ioctl.c:47 [inline]
-  file_ioctl fs/ioctl.c:539 [inline]
-  do_vfs_ioctl+0xdb6/0x13e0 fs/ioctl.c:726
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:743
-  __do_sys_ioctl fs/ioctl.c:750 [inline]
-  __se_sys_ioctl fs/ioctl.c:748 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:748
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4401a9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffebb37d0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401a9
-RDX: 00000000200000c0 RSI: 0000000040107447 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a30
-R13: 0000000000401ac0 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task 8575:
-  save_stack+0x23/0x90 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc mm/kasan/common.c:510 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
-  __do_kmalloc mm/slab.c:3655 [inline]
-  __kmalloc_track_caller+0x15f/0x760 mm/slab.c:3670
-  memdup_user+0x26/0xb0 mm/util.c:172
-  get_filter.isra.0+0xd7/0x1a0 drivers/net/ppp/ppp_generic.c:568
-  ppp_get_filter drivers/net/ppp/ppp_generic.c:584 [inline]
-  ppp_ioctl+0x129d/0x2590 drivers/net/ppp/ppp_generic.c:801
-  vfs_ioctl fs/ioctl.c:47 [inline]
-  file_ioctl fs/ioctl.c:539 [inline]
-  do_vfs_ioctl+0xdb6/0x13e0 fs/ioctl.c:726
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:743
-  __do_sys_ioctl fs/ioctl.c:750 [inline]
-  __se_sys_ioctl fs/ioctl.c:748 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:748
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff88809cf74000
-  which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 0 bytes inside of
-  4096-byte region [ffff88809cf74000, ffff88809cf75000)
-The buggy address belongs to the page:
-page:ffffea000273dd00 refcount:1 mapcount:0 mapping:ffff8880aa402000  
-index:0x0 compound_mapcount: 0
-flags: 0x1fffc0000010200(slab|head)
-raw: 01fffc0000010200 ffffea0002672988 ffffea00027e7788 ffff8880aa402000
-raw: 0000000000000000 ffff88809cf74000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88809cf74f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  ffff88809cf74f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> ffff88809cf75000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                    ^
-  ffff88809cf75080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff88809cf75100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+--
+Julian Anastasov <ja@ssi.bg>
