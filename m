@@ -2,79 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DC2CB5000
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15BF5B5002
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 16:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727172AbfIQOJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 10:09:32 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:49054 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726545AbfIQOJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 10:09:31 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 11D9260790; Tue, 17 Sep 2019 14:09:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568729370;
-        bh=gBMlUc2ziFwwtkVc/AsmGn1pJDa0q/Stf70aBdLPBd0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=ENoPz9V/EUR9xMEjpu5jhWFcAZGMhHzu3OF6NNmlH5IGWVOIneDSHxmwDdjvMJaG/
-         2I8SdG6j/A/b5QMFo3OeY9k3JwNIsMtf38s8oFO0fEVbRo+iqJBXsDvpT+eTk9sWhM
-         AznzzYSSwMCudu+CL1F0g444vWBAnYJncH7u9mX0=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727241AbfIQOJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 10:09:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50184 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726726AbfIQOJt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 10:09:49 -0400
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6339E60790;
-        Tue, 17 Sep 2019 14:09:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568729369;
-        bh=gBMlUc2ziFwwtkVc/AsmGn1pJDa0q/Stf70aBdLPBd0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=nkafxI/YQMTakw7G3IJW0qA5pVwufvAyGJj3sqmfN3g0p9mNpKnCaX+sQJOpBxCHh
-         fuG7TZCBTTjEY7XUxjGU3d6l4w3ZP9/IaBK6OafIqSRKQ+FdULbcLDB3i7HDuYh+GV
-         oEZpN6arv8Zy23eEAQvZk7Pi1FA16FBEDVmc9s3I=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6339E60790
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mail.kernel.org (Postfix) with ESMTPSA id 6A41D206C2;
+        Tue, 17 Sep 2019 14:09:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568729388;
+        bh=KFwph7a3NLAqJ2SmDpmG/ijd2kzcKrqWVg3/D/v5zMg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=gBWa9t46COVeM8W9Fm//z3KOlRGJXJX0JfFItum33ty5Nwpo70PVSms1rMriQ+aqI
+         nSuFZ18C7sL7jpZqrtXSFF7AYwBjktC4moA+ToyjF57OoNBv44HonkFxas/tNTW/Sc
+         uMShTXMt7KHGNm0DHKWvaJGZERSTxzML7g32JFKA=
+Subject: Re: [PATCH] selftests/net: replace AF_MAX with INT_MAX in socket.c
+To:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shuah <shuah@kernel.org>
+References: <20190916150337.18049-1-marcelo.cerri@canonical.com>
+ <212adcf8-566e-e06d-529f-f0ac18bd6a35@kernel.org>
+ <20190917071222.6nfzmcxt4kxzgpki@gallifrey>
+From:   shuah <shuah@kernel.org>
+Message-ID: <2a2f3436-4e10-5c7c-3e69-a46491b10960@kernel.org>
+Date:   Tue, 17 Sep 2019 08:09:36 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190917071222.6nfzmcxt4kxzgpki@gallifrey>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: Use ARRAY_SIZE
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190718203032.15528-1-gomonovych@gmail.com>
-References: <20190718203032.15528-1-gomonovych@gmail.com>
-To:     Vasyl Gomonovych <gomonovych@gmail.com>
-Cc:     davem@davemloft.net, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org,
-        Vasyl Gomonovych <gomonovych@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190917140930.11D9260790@smtp.codeaurora.org>
-Date:   Tue, 17 Sep 2019 14:09:29 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vasyl Gomonovych <gomonovych@gmail.com> wrote:
-
-> fix coccinelle warning, use ARRAY_SIZE
+On 9/17/19 1:12 AM, Marcelo Henrique Cerri wrote:
+> So the problem arises because the headers we have in userspace might
+> be older and not match what we have in the kernel. In that case, the
+> actual value of AF_MAX in the userspace headers might be a valid
+> protocol family in the new kernel.
 > 
-> Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> That happens relatively often for us because we support different
+> kernel versions at the same time in a given Ubuntu series.
+> 
 
-Patch applied to ath-next branch of ath.git, thanks.
+Right. This is an evolving use-case for kselftest to make it easier to
+run on distribution kernels.
 
-7921ae091907 ath10k: Use ARRAY_SIZE
+> An alternative is to use the headers we have in the kernel tree, but I
+> believe that might cause other issues.
+> 
 
--- 
-https://patchwork.kernel.org/patch/11049553/
+Kselftest is tied to the kernel in such as way that you do need to use
+the kernel headers to compile.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Do you run newer tests on older kernels? Where do you build them? What
+I would like to see is fixing the test to run on older kernels and not
+changing the tests to suit older kernel needs.
 
+This definitely isn't a change that is good to make. We have to come
+with a better way to solve this. Could you please send me the errors
+you are seeing so I can help you find a better solution.
+
+thanks,
+-- Shuah
