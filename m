@@ -2,86 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEE7EB4DFF
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 14:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75E1B4E10
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 14:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728108AbfIQMkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 08:40:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52220 "EHLO mx1.redhat.com"
+        id S1728275AbfIQMlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 08:41:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50418 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727776AbfIQMkW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Sep 2019 08:40:22 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E0B501056FB1;
-        Tue, 17 Sep 2019 12:40:21 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-116-43.ams2.redhat.com [10.36.116.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 12B0D5C21E;
-        Tue, 17 Sep 2019 12:40:20 +0000 (UTC)
-Date:   Tue, 17 Sep 2019 14:40:19 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH ipsec-next v2 6/6] xfrm: add espintcp (RFC 8229)
-Message-ID: <20190917124019.GA91878@bistromath.localdomain>
-References: <cover.1568192824.git.sd@queasysnail.net>
- <ce5eb26c12fa07e905b9d83ef8c07485c5516ffe.1568192824.git.sd@queasysnail.net>
- <20190917112649.GE2879@gauss3.secunet.de>
- <20190917115743.GA89567@bistromath.localdomain>
- <20190917120413.GF2879@gauss3.secunet.de>
+        id S1727308AbfIQMlf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Sep 2019 08:41:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=aar7K5K/y+RCGtVDqbMIWYGQlHMubJp2qZUhMT+Yq2U=; b=wNC1+U47xMrKyi+qAQ5IimJMH1
+        5xcJGLxIgE8f9ipXN7rraucv2L0755fMrasd4vsArbJpd5ToHnBooG95Uaz4Blbwv3nEz2Vgvde79
+        17gJ8Kt4MQiW0JQt/mX//D8ouxZYy8WI+leEUt5cQOkTKE6cZL1gJL1o9Yf9xdJgjqD0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iACnU-0000rT-KO; Tue, 17 Sep 2019 14:41:32 +0200
+Date:   Tue, 17 Sep 2019 14:41:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        robh+dt@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, f.fainelli@gmail.com
+Subject: Re: [PATCH] dt-bindings: net: dwmac: fix 'mac-mode' type
+Message-ID: <20190917124132.GG20778@lunn.ch>
+References: <20190917103052.13456-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190917120413.GF2879@gauss3.secunet.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Tue, 17 Sep 2019 12:40:22 +0000 (UTC)
+In-Reply-To: <20190917103052.13456-1-alexandru.ardelean@analog.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-09-17, 14:04:13 +0200, Steffen Klassert wrote:
-> On Tue, Sep 17, 2019 at 01:57:43PM +0200, Sabrina Dubroca wrote:
-> > 2019-09-17, 13:26:49 +0200, Steffen Klassert wrote:
-> > > On Wed, Sep 11, 2019 at 04:13:07PM +0200, Sabrina Dubroca wrote:
-> > > ...
-> > > > diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-> > > > index 51bb6018f3bf..e67044527fb7 100644
-> > > > --- a/net/xfrm/Kconfig
-> > > > +++ b/net/xfrm/Kconfig
-> > > > @@ -73,6 +73,16 @@ config XFRM_IPCOMP
-> > > >  	select CRYPTO
-> > > >  	select CRYPTO_DEFLATE
-> > > >  
-> > > > +config XFRM_ESPINTCP
-> > > > +	bool "ESP in TCP encapsulation (RFC 8229)"
-> > > > +	depends on XFRM && INET_ESP
-> > > > +	select STREAM_PARSER
-> > > > +	select NET_SOCK_MSG
-> > > > +	help
-> > > > +	  Support for RFC 8229 encapsulation of ESP and IKE over TCP sockets.
-> > > > +
-> > > > +	  If unsure, say N.
-> > > > +
-> > > 
-> > > One nitpick: This is IPv4 only, so please move this below the ESP
-> > > section in net/ipv4/Kconfig and use the naming convention there.
-> > > I.e. bool "IP: ESP in TCP encapsulation (RFC 8229)"
-> > 
-> > That's temporary, though, the next step will be to make it work for
-> > both IPv4 and IPv6. Do you prefer I move it to net/ipv4/Kconfig for
-> > now, and then back to net/xfrm/Kconfig when I add IPv6 support?
+On Tue, Sep 17, 2019 at 01:30:52PM +0300, Alexandru Ardelean wrote:
+> The 'mac-mode' property is similar to 'phy-mode' and 'phy-connection-type',
+> which are enums of mode strings.
 > 
-> We have separate config options for ESP4 and ESP6, so we should
-> also have separate config options for 'ESP in TCP' for IPv4 and IPv6.
-> So this should go to net/ipv4/Kconfig. When you add IPv6 support
-> place it in net/ipv6/Kconfig.
+> The 'dwmac' driver supports almost all modes declared in the 'phy-mode'
+> enum (except for 1 or 2). But in general, there may be a case where
+> 'mac-mode' becomes more generic and is moved as part of phylib or netdev.
+> 
+> In any case, the 'mac-mode' field should be made an enum, and it also makes
+> sense to just reference the 'phy-connection-type' from
+> 'ethernet-controller.yaml'. That will also make it more future-proof for new
+> modes.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Ok, I'll do that, and rename the config entry to CONFIG_INET_ESPINTCP.
+Hi Alexandru
 
-Thanks.
+Adding a Fixes: tag would be good. Just reply in this thread, and
+patchwork will do magic to append it to the patch.
 
--- 
-Sabrina
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
