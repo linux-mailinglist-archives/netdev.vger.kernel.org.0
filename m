@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8B9B534C
-	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 18:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06774B538B
+	for <lists+netdev@lfdr.de>; Tue, 17 Sep 2019 19:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729506AbfIQQqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 12:46:35 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33379 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbfIQQqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 12:46:35 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n190so2336379pgn.0
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 09:46:34 -0700 (PDT)
+        id S1728863AbfIQRDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 13:03:20 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37801 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728702AbfIQRDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 13:03:20 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y5so2524068pfo.4;
+        Tue, 17 Sep 2019 10:03:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XmEDVfnPZ7Sw0RlJrwyJ1pnBVmjpwPxNFh9MEavYqXY=;
-        b=cmhhUs856V3a6keV5jDCX9Fvp8r8hLOt0Z5paN+eogCOpoiMEktYCdoJbrw0m8PAu8
-         pI6+VKdj2O2Yanc8u//Wf8gJNoqUFNlXazwpolbiO6ZjzYvKk4iDq3aqZ0OZNmLEFg/s
-         T6VsPKq66n5LFFPx0tiCULoisu6zF2O88guZESca6atmTBbTBE4vYZHrICkByNNFQgIw
-         w4ZLWgWhmsGU1fKaJT8oFF+WXG9XTR69l7qaIWXC/CfAlc+zrJXg5A7pPELzaumMF9qJ
-         Ny7O8Bp514rinEOo6x5gyTx4sanfmQ28zoJlPryx2vmhgMAwD7Yp2riqots4flay1RiJ
-         lZLQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=udsY9Bp2m5z8jBkGZjMz6n586Nv18MrVRKTMzJRSlKA=;
+        b=CMfL2Vfnz3ZUzfb5OufroCe8otqbnUCzQBGWSEK6wSWNEws46Tn6kFYCRDPtnlcHcd
+         1w6/zP80PObrKMLwR8PlPDlechU4Ts4mF2Rm+CFJG7BZ09eW4q+kDioqZv00s1QQHSpP
+         y+cNhlzLntpw5nE6aD8XlECxOXffte59k9CUDW/OK1O/AcwT6KyVYCGG9HwLz3MeLsTe
+         rnmb+6x5pP7ARDU4jlIUVEzIloU+i5BBdW7SCS4LkMiaD00im3YoLJcDLDKuvmE3u98r
+         I6va5e7HltFUMjshivgWm10veXELJ8sAYDypEuQ/OAUDDHq6exHq2HjXOwkdMj+JmXG1
+         dZqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XmEDVfnPZ7Sw0RlJrwyJ1pnBVmjpwPxNFh9MEavYqXY=;
-        b=bFq0hh7IC5UlLQ2PcFz1UQs4g7J5sgbrJZLfTIqDBz9SbLDdJluoqWnI7to1JK9+xb
-         BqbAPPd5m6jivOZ7C9mcFWlcqQlKpYNMlD2+iL9fm4OamS9i0GH+sHNFaypc0VM2sL8k
-         6MT4Dy49DG6zZ2QYeb1KTaVAHl3VzDG+eClQ7Z0jjz6vcReKtrNr3HLn2MS7Fqi8g5wF
-         tBuleYfdZht77M+d11g5F8TDlwUHMzYi5YLmVhNazvuciP8Cd/2iGX7eVR2aEHeieSek
-         Zq9n9OkvvrIBLAgb6J69FNLnY/unF+d7OCRt65dAFNk/IJrSlwUteoxaglCHLKJUam49
-         QlcA==
-X-Gm-Message-State: APjAAAVEyV6sQS8MfN2sj9FNC+qX4dXZBX6WN7MpqlavjF90FTK4j5EM
-        mpYP+8wyN0NvTJtv0Tm+6go=
-X-Google-Smtp-Source: APXvYqzEGjYBsphTLatZmiYclmCz+xkW1Ni0YA8vKyYlvkjT7A+uGfew6FsEh9fSMklwtRVFMYq8cg==
-X-Received: by 2002:a63:d643:: with SMTP id d3mr4106529pgj.249.1568738794357;
-        Tue, 17 Sep 2019 09:46:34 -0700 (PDT)
-Received: from [172.27.227.235] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id w5sm2736701pfn.96.2019.09.17.09.46.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Sep 2019 09:46:33 -0700 (PDT)
-Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, tariqt@mellanox.com,
-        mlxsw@mellanox.com
-References: <20190916094448.26072-1-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
-Date:   Tue, 17 Sep 2019 10:46:31 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=udsY9Bp2m5z8jBkGZjMz6n586Nv18MrVRKTMzJRSlKA=;
+        b=XAzQ2WYV7OrHI9IJEwNpTESKLyK42V0Vk8NXunkP+4KzE2Kgj1oWGvuueXxw1kFvCM
+         y2ukrnb/doMwd9C9/8ml8KAS3P2b7LtZJBoX+xqKQdeZtLEGzBMF8JhuZjpbDSIKvTZL
+         uFTvaPnxPZViq0gjtZLJQxFOaWkx9ogaCvOGgvkvXtKlqDJxeGlnx19xeju25D6FzsSv
+         Cd/RE4roePF9tUxj8SuwVAmXyZHhN+6a5EMEpzyqBJCAoMHkdGqZMOBeJugnVbUEKFlZ
+         I+cB5mjrQeJNmTYnJ9fbMJkkD7uBQ7izuJe/diUiXCRP8T2RTsF98+Oh6UnX7Vhzqf4J
+         XvgQ==
+X-Gm-Message-State: APjAAAUIZuKJBoZoxCwqYxCJQkbei2VDTnPIl3W0fm5Tn1ZwG81sfuxj
+        ko7jS2GJ4lEUnSOZ/6yO/7RybkxLHCdiF+FUZos=
+X-Google-Smtp-Source: APXvYqxFEK77plJKGGIiq4+gona03laNJSu63v6wIesm1gEXhgNCvux0i1jX7XWB1P/D70jDYQXrsYTGzbNrBYSpd+M=
+X-Received: by 2002:a17:90b:294:: with SMTP id az20mr1869546pjb.16.1568739799399;
+ Tue, 17 Sep 2019 10:03:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190916094448.26072-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <00000000000029a3a00592b41c48@google.com> <CAM_iQpX0FAvhcZgKjRd=3Rbp8cbfYiUqkF2KnmF9Pd0U4EkSDw@mail.gmail.com>
+ <vbfk1a7cooq.fsf@mellanox.com>
+In-Reply-To: <vbfk1a7cooq.fsf@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 17 Sep 2019 10:03:08 -0700
+Message-ID: <CAM_iQpWNSdx59iTTNO6GdyZ6NBAMD8=wON6Q7dvnhiX50pwEvQ@mail.gmail.com>
+Subject: Re: BUG: sleeping function called from invalid context in tcf_chain0_head_change_cb_del
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     syzbot <syzbot+ac54455281db908c581e@syzkaller.appspotmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        "yhs@fb.com" <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/19 3:44 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Add indication about previous failed devlink reload.
-> 
-> Example outputs:
-> 
-> $ devlink dev
-> netdevsim/netdevsim10: reload_failed true
+On Tue, Sep 17, 2019 at 1:27 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+> Hi Cong,
+>
+> Don't see why we would need qdisc tree lock while releasing the
+> reference to (or destroying) previous Qdisc. I've skimmed through other
+> scheds and it looks like sch_multiq, sch_htb and sch_tbf are also
+> affected. Do you want me to send patches?
 
-odd output to user. Why not just "reload failed"?
+Yes, please do.
