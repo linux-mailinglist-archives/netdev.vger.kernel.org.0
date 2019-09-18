@@ -2,184 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE718B69C5
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 19:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73902B6A24
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 20:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbfIRRmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 13:42:03 -0400
-Received: from mail-pl1-f177.google.com ([209.85.214.177]:41425 "EHLO
-        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbfIRRmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 13:42:02 -0400
-Received: by mail-pl1-f177.google.com with SMTP id t10so286715plr.8
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 10:42:01 -0700 (PDT)
+        id S1728523AbfIRSAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 14:00:33 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:33111 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727000AbfIRSAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 14:00:33 -0400
+Received: by mail-qk1-f195.google.com with SMTP id x134so423919qkb.0;
+        Wed, 18 Sep 2019 11:00:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=60rjazuWkoToYTI62Tdcj2SuQgWpDfVCt6caztphxmI=;
-        b=OjRXDjh1aHJ+9SOWKz69V9FycB1r+/xfYFxS9giAEIBW1Ewr7WvDFSsB2CHbjQ6l0g
-         qIQUcZwTpAei4mah50MhL30wCLbc5S4D1kddgOpuxwXSm8HKKrIJK3cRevS3f0u+0/t9
-         rX0KnZPizGOCJvev9Bg/DIMpe9ftXass8HJ/Tj6152FYq6RD/X31EcthLoMhrP8E33Pt
-         FiVHgOZN0YyQQJncwK+QTcoRhqLwE8okUTiy9WBqZHpoQ1u6pnMZTRbUcJfq792LpvIT
-         wY5K5tPOeTfw3+yO9TUavuKxlNleKuQa5mRPSAS+7PWpoz2wyc53/T/qtegRvHUPaeb7
-         YcxA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zhpRNFtQm1yjXMTnb8bMm5OpYtvJMh0HlV2y5blDtEM=;
+        b=ZEzcoZSUtpui/fhDhrN54rdTpTGKwoZ6uX0rTdIss6sbb/VIX1/E3tDib1Y+PPgo0f
+         +M45qjpffMJ9SDg7TBJvfEoRcg9khUYEOoX0gpmI8OEPdJqbXbKDLmuj8feSs7I662Sw
+         7/OJamOMaeTLNO2iXh6OC+n+9w8APFjosyEOPYFd7H+4SxMWkPbIq7zOcSnpkXGOiVXe
+         eKA5nufYabrQV+5KPb9ONV6rliJTUzP3xGdG4OwpoSM+sCeyiATQ6WvyJF70dHj+t/N5
+         veCkCeeYDzPL4MG1q9Q/qNJGdn2x0R7bT5F79D5HpCiBaKz4jBss6jPAgZFH+Z8LyDkG
+         uqKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=60rjazuWkoToYTI62Tdcj2SuQgWpDfVCt6caztphxmI=;
-        b=G5PJdgM011X7lXN7lz4mn/EGGs1kBYhTgKu+Y2F0ax/oD01cdFMBrXGrV9zvOw7g88
-         J2XVb2xYsURX+WhJ7u0+3dMTvgWzuWrwi6Ed6/I7rubi8PBE+0aVvT2i+mY5vwjkpBhb
-         gDp3HDvjBjPd024J34lwXsmQh5yR1uu23RZ4W3HdgJd6ebOjPuuymyYO0xCQXefgjF26
-         +4UEMsUcC/xus4jElnvaq26cF8hRhYJ9/E5gPgSx4LWukzyWfWS/ugoPKyQF0TS/65Ay
-         0rfq1NgMFQIxBFWWVrcZbCLgTRIJeo1K0VtN2Y9ZJZjveUebPLF/dBq21S+Gsu2ZhR0X
-         sBbQ==
-X-Gm-Message-State: APjAAAVveBhfO7S1PSAORGZwjON6m0ve7N+5mYcayNZtjnTm99I/mHUi
-        kY33NKMdZhuJzMxP4Xk17PmmqbZuqsU=
-X-Google-Smtp-Source: APXvYqxrSNaY/+FU31qUq3pYs6iY8QdkEAtaVa6pBtdHqzec032dnDUELtHN2RwmWx+YHTaIVM3evg==
-X-Received: by 2002:a17:902:6946:: with SMTP id k6mr43147plt.26.1568828521307;
-        Wed, 18 Sep 2019 10:42:01 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 69sm8334824pfb.145.2019.09.18.10.42.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Sep 2019 10:42:00 -0700 (PDT)
-Subject: Re: dsa traffic priorization
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        kernel@pengutronix.de
-References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
- <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
-Date:   Wed, 18 Sep 2019 10:41:58 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zhpRNFtQm1yjXMTnb8bMm5OpYtvJMh0HlV2y5blDtEM=;
+        b=N8shhbcZtON+6iDb2XMcCy1mU5rwhIJ7xxPtkT8VtV+M6K+YGW8j23MDnNuLEl6RBa
+         k6aTOUFCwuWaJG1PebvgmwUb7cXZeyu+Y5YXZdcGwr0v/Ce58wTvpFTO/BjCqa58sBsz
+         zh9uzlFMVy50N+h7UFAEbtXhzyep0v8qwViQPAPjhZTqcUdLaQZMQuszzVSmKFmnMiee
+         hsDu4/sbB5KEusCD4Sgr9C29A5hYAg2WPHEYaKr3pBPAuUW6i8Brb39HXHsfeRUtqh4m
+         5HteKeY7+YDAoKQVDA0QUFyEZPh5J8q2bBgBNiE3o9n6ZlCSJ4P0tb4m7cg5eCyaucK5
+         2OJg==
+X-Gm-Message-State: APjAAAUXALQXO4oszvzRRF0daCpIM3STL1atjqXpYIae5wU/M22fK0YY
+        b5fAKPqYcLjlKZooRsmLGDEWocvdx3DKCCVkU8k=
+X-Google-Smtp-Source: APXvYqyRjCfA/ckV6HS+0hfw515lkee38RTR3Ac9WQVztopTWGkRDkhy7exZbrWRAiEYWHh9OnpQc+CZoKbe/bdvOz8=
+X-Received: by 2002:a37:4e55:: with SMTP id c82mr5515904qkb.437.1568829631963;
+ Wed, 18 Sep 2019 11:00:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20190911190218.22628-1-danieltimlee@gmail.com>
+ <CAEf4Bza7tFdDP0=Nk4UVtWn68Kr7oYZziUodN40a=ZKne4-dEQ@mail.gmail.com> <CAEKGpzjUu7Qr0PbU6Es=7J6KAsyr9K1qZvFoWxZ-dhPsD0_8Kg@mail.gmail.com>
+In-Reply-To: <CAEKGpzjUu7Qr0PbU6Es=7J6KAsyr9K1qZvFoWxZ-dhPsD0_8Kg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 18 Sep 2019 11:00:20 -0700
+Message-ID: <CAEf4BzY_EAf9pH7YvL9XAXPUr9+g5Q7N_n45XBufdxkfDbf3aQ@mail.gmail.com>
+Subject: Re: [bpf-next,v3] samples: bpf: add max_pckt_size option at xdp_adjust_tail
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/18/19 7:36 AM, Vladimir Oltean wrote:
-> Hi Sascha,
-> 
-> On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
->>
->> Hi All,
->>
->> We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
->> regular network traffic on another port. The customer wants to configure two things
->> on the switch: First Ethercat traffic shall be priorized over other network traffic
->> (effectively prioritizing traffic based on port). Second the ethernet controller
->> in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
->> port shall be rate limited.
->>
-> 
-> You probably already know this, but egress shaping will not drop
-> frames, just let them accumulate in the egress queue until something
-> else happens (e.g. queue occupancy threshold triggers pause frames, or
-> tail dropping is enabled, etc). Is this what you want? It sounds a bit
-> strange to me to configure egress shaping on the CPU port of a DSA
-> switch. That literally means you are buffering frames inside the
-> system. What about ingress policing?
+On Wed, Sep 18, 2019 at 10:37 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+>
+> On Tue, Sep 17, 2019 at 1:04 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Sep 11, 2019 at 2:33 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> > >
+> > > Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
+> > > to 600. To make this size flexible, a new map 'pcktsz' is added.
+> > >
+> > > By updating new packet size to this map from the userland,
+> > > xdp_adjust_tail_kern.o will use this value as a new max_pckt_size.
+> > >
+> > > If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
+> > > will be 600 as a default.
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > >
+> > > ---
+> > > Changes in v2:
+> > >     - Change the helper to fetch map from 'bpf_map__next' to
+> > >     'bpf_object__find_map_fd_by_name'.
+> > >
+> > >  samples/bpf/xdp_adjust_tail_kern.c | 23 +++++++++++++++++++----
+> > >  samples/bpf/xdp_adjust_tail_user.c | 28 ++++++++++++++++++++++------
+> > >  2 files changed, 41 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
+> > > index 411fdb21f8bc..d6d84ffe6a7a 100644
+> > > --- a/samples/bpf/xdp_adjust_tail_kern.c
+> > > +++ b/samples/bpf/xdp_adjust_tail_kern.c
+> > > @@ -25,6 +25,13 @@
+> > >  #define ICMP_TOOBIG_SIZE 98
+> > >  #define ICMP_TOOBIG_PAYLOAD_SIZE 92
+> > >
+> > > +struct bpf_map_def SEC("maps") pcktsz = {
+> > > +       .type = BPF_MAP_TYPE_ARRAY,
+> > > +       .key_size = sizeof(__u32),
+> > > +       .value_size = sizeof(__u32),
+> > > +       .max_entries = 1,
+> > > +};
+> > > +
+> >
+> > Hey Daniel,
+> >
+> > This looks like an ideal use case for global variables on BPF side. I
+> > think it's much cleaner and will make BPF side of things simpler.
+> > Would you mind giving global data a spin instead of adding this map?
+> >
+>
+> Sure thing!
+> But, I'm not sure there is global variables for BPF?
+> AFAIK, there aren't any support for global variables yet in BPF
+> program (_kern.c).
+>
+>     # when defining global variable at _kern.c
+>     libbpf: bpf: relocation: not yet supported relo for non-static
+> global '<var>' variable found in insns[39].code 0x18
 
-Indeed, but I suppose that depending on the switch architecture and/or
-nomenclature, configuring egress shaping amounts to determining ingress
-for the ports where the frame is going to be forwarded to.
+just what it says: use static global variable (also volatile to
+prevent compiler optimizations) :)
 
-For instance Broadcom switches rarely if at all mention ingress because
-the frames have to originate from somewhere and be forwarded to other
-port(s), therefore, they will egress their original port (which for all
-practical purposes is the direct continuation of the ingress stage),
-where shaping happens, which immediately influences the ingress shaping
-of the destination port, which will egress the frame eventually because
-packets have to be delivered to the final port's egress queue anyway.
+static volatile __u32 pcktsz; /* this should work */
 
-> 
->> For reference the patch below configures the switch to their needs. Now the question
->> is how this can be implemented in a way suitable for mainline. It looks like the per
->> port priority mapping for VLAN tagged packets could be done via ip link add link ...
->> ingress-qos-map QOS-MAP. How the default priority would be set is unclear to me.
->>
-> 
-> Technically, configuring a match-all rxnfc rule with ethtool would
-> count as 'default priority' - I have proposed that before. Now I'm not
-> entirely sure how intuitive it is, but I'm also interested in being
-> able to configure this.
-
-That does not sound too crazy from my perspective.
-
-> 
->> The other part of the problem seems to be that the CPU port has no network device
->> representation in Linux, so there's no interface to configure the egress limits via tc.
->> This has been discussed before, but it seems there hasn't been any consensous regarding how
->> we want to proceed?
-
-You have the DSA master network device which is on the other side of the
-switch,
---
-Florian
+>
+> By the way, thanks for the review.
+>
+> Thanks,
+> Daniel
+>
+>
+> > >  struct bpf_map_def SEC("maps") icmpcnt = {
+> > >         .type = BPF_MAP_TYPE_ARRAY,
+> > >         .key_size = sizeof(__u32),
+> > > @@ -64,7 +71,8 @@ static __always_inline void ipv4_csum(void *data_start, int data_size,
+> > >         *csum = csum_fold_helper(*csum);
+> > >  }
+> > >
+> >
+> > [...]
