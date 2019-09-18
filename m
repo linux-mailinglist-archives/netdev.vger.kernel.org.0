@@ -2,193 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CA2BB5F85
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 10:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 497DEB5FC0
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 11:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730636AbfIRIs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 04:48:58 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:41706 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730522AbfIRIsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 04:48:47 -0400
-Received: from static-dcd-cqq-121001.business.bouyguestelecom.com ([212.194.121.1] helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1iAVdg-0004BF-Ba; Wed, 18 Sep 2019 08:48:40 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     keescook@chromium.org, luto@amacapital.net
-Cc:     jannh@google.com, wad@chromium.org, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Tyler Hicks <tyhicks@canonical.com>, stable@vger.kernel.org
-Subject: [PATCH 4/4] seccomp: test SECCOMP_RET_USER_NOTIF_ALLOW
-Date:   Wed, 18 Sep 2019 10:48:33 +0200
-Message-Id: <20190918084833.9369-5-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190918084833.9369-1-christian.brauner@ubuntu.com>
-References: <20190918084833.9369-1-christian.brauner@ubuntu.com>
+        id S1730784AbfIRJCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 05:02:33 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:44076 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727518AbfIRJCc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 05:02:32 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 95ADCC1B10D767F6B8F0;
+        Wed, 18 Sep 2019 17:02:30 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Sep 2019
+ 17:02:28 +0800
+Subject: Re: [PATCH stable 4.4 net] net: rds: Fix NULL ptr use in
+ rds_tcp_kill_sock
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <chien.yen@oracle.com>, <davem@davemloft.net>,
+        <stable@vger.kernel.org>, <rds-devel@oss.oracle.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+References: <20190918083733.50266-1-maowenan@huawei.com>
+ <20190918083253.GA1862222@kroah.com>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <c8953355-2b98-c4d0-2af2-4a69ad3e2d2d@huawei.com>
+Date:   Wed, 18 Sep 2019 17:02:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190918083253.GA1862222@kroah.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test whether a syscall can be performed after having been intercepted by
-the seccomp notifier. The test uses dup() and kcmp() since it allows us to
-nicely test whether the dup() syscall actually succeeded by comparing whether
-the fd refers to the same underlying struct file.
 
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Will Drewry <wad@chromium.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Tycho Andersen <tycho@tycho.ws>
-CC: Tyler Hicks <tyhicks@canonical.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: stable@vger.kernel.org
-Cc: linux-kselftest@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
----
- tools/testing/selftests/seccomp/seccomp_bpf.c | 99 +++++++++++++++++++
- 1 file changed, 99 insertions(+)
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 921f0e26f835..788d7e9007d5 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -44,6 +44,7 @@
- #include <sys/times.h>
- #include <sys/socket.h>
- #include <sys/ioctl.h>
-+#include <linux/kcmp.h>
- 
- #include <unistd.h>
- #include <sys/syscall.h>
-@@ -175,6 +176,10 @@ struct seccomp_metadata {
- 
- #define SECCOMP_RET_USER_NOTIF 0x7fc00000U
- 
-+#ifndef SECCOMP_RET_USER_NOTIF_ALLOW
-+#define SECCOMP_RET_USER_NOTIF_ALLOW 0x00000001
-+#endif
-+
- #define SECCOMP_IOC_MAGIC		'!'
- #define SECCOMP_IO(nr)			_IO(SECCOMP_IOC_MAGIC, nr)
- #define SECCOMP_IOR(nr, type)		_IOR(SECCOMP_IOC_MAGIC, nr, type)
-@@ -3489,6 +3494,100 @@ TEST(seccomp_get_notif_sizes)
- 	EXPECT_EQ(sizes.seccomp_notif_resp, sizeof(struct seccomp_notif_resp));
- }
- 
-+static int filecmp(pid_t pid1, pid_t pid2, int fd1, int fd2)
+On 2019/9/18 16:32, Greg KH wrote:
+> On Wed, Sep 18, 2019 at 04:37:33PM +0800, Mao Wenan wrote:
+>> After the commit c4e97b06cfdc ("net: rds: force to destroy
+>> connection if t_sock is NULL in rds_tcp_kill_sock()."),
+>> it introduced null-ptr-deref in rds_tcp_kill_sock as below:
+>>
+>> BUG: KASAN: null-ptr-deref on address 0000000000000020
+>> Read of size 8 by task kworker/u16:10/910
+>> CPU: 3 PID: 910 Comm: kworker/u16:10 Not tainted 4.4.178+ #3
+>> Hardware name: linux,dummy-virt (DT)
+>> Workqueue: netns cleanup_net
+>> Call trace:
+>> [<ffffff90080abb50>] dump_backtrace+0x0/0x618
+>> [<ffffff90080ac1a0>] show_stack+0x38/0x60
+>> [<ffffff9008c42b78>] dump_stack+0x1a8/0x230
+>> [<ffffff90085d469c>] kasan_report_error+0xc8c/0xfc0
+>> [<ffffff90085d54a4>] kasan_report+0x94/0xd8
+>> [<ffffff90085d1b28>] __asan_load8+0x88/0x150
+>> [<ffffff9009c9cc2c>] rds_tcp_dev_event+0x734/0xb48
+>> [<ffffff90081eacb0>] raw_notifier_call_chain+0x150/0x1e8
+>> [<ffffff900973fec0>] call_netdevice_notifiers_info+0x90/0x110
+>> [<ffffff9009764874>] netdev_run_todo+0x2f4/0xb08
+>> [<ffffff9009796d34>] rtnl_unlock+0x2c/0x48
+>> [<ffffff9009756484>] default_device_exit_batch+0x444/0x528
+>> [<ffffff9009720498>] ops_exit_list+0x1c0/0x240
+>> [<ffffff9009724a80>] cleanup_net+0x738/0xbf8
+>> [<ffffff90081ca6cc>] process_one_work+0x96c/0x13e0
+>> [<ffffff90081cf370>] worker_thread+0x7e0/0x1910
+>> [<ffffff90081e7174>] kthread+0x304/0x390
+>> [<ffffff9008094280>] ret_from_fork+0x10/0x50
+>>
+>> If the first loop add the tc->t_sock = NULL to the tmp_list,
+>> 1). list_for_each_entry_safe(tc, _tc, &rds_tcp_conn_list, t_tcp_node)
+>>
+>> then the second loop is to find connections to destroy, tc->t_sock
+>> might equal NULL, and tc->t_sock->sk happens null-ptr-deref.
+>> 2). list_for_each_entry_safe(tc, _tc, &tmp_list, t_tcp_node)
+>>
+>> Fixes: c4e97b06cfdc ("net: rds: force to destroy connection if t_sock is NULL in rds_tcp_kill_sock().")
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+>> ---
+>>  net/rds/tcp.c | 8 +++++---
+>>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> Why is this not needed upstream as well?
+Upstream does not use tc->t_sock in the second loop after below two patches.
+afb4164d91c7 ("RDS: TCP: Refactor connection destruction to handle multiple paths") and
+2d746c93b6e5 ("rds: tcp: remove redundant function rds_tcp_conn_paths_destroy()")
+
+> 
+> 4.9.y?  4.14.y?  anything else?
+4.19.y and 4.14.y exist rds_tcp_conn_paths_destroy()
+to guarantee that.
++static void rds_tcp_conn_paths_destroy(struct rds_connection *conn)
 +{
-+#ifdef __NR_kcmp
-+	return syscall(__NR_kcmp, pid1, pid2, KCMP_FILE, fd1, fd2);
-+#else
-+	errno = ENOSYS;
-+	return -1;
-+#endif
++       struct rds_conn_path *cp;
++       struct rds_tcp_connection *tc;
++       int i;
++       struct sock *sk;
++
++       for (i = 0; i < RDS_MPATH_WORKERS; i++) {
++               cp = &conn->c_path[i];
++               tc = cp->cp_transport_data;
++               if (!tc->t_sock)
++                       continue;
++               sk = tc->t_sock->sk;
++               sk->sk_prot->disconnect(sk, 0);
++               tcp_done(sk);
++       }
 +}
 +
-+TEST(user_notification_continue)
-+{
-+	pid_t pid;
-+	long ret;
-+	int status, listener;
-+	struct seccomp_notif req = {};
-+	struct seccomp_notif_resp resp = {};
-+	struct pollfd pollfd;
-+
-+	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-+	ASSERT_EQ(0, ret) {
-+		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
-+	}
-+
-+	listener = user_trap_syscall(__NR_dup, SECCOMP_FILTER_FLAG_NEW_LISTENER);
-+	ASSERT_GE(listener, 0);
-+
-+	pid = fork();
-+	ASSERT_GE(pid, 0);
-+
-+	if (pid == 0) {
-+		int dup_fd, pipe_fds[2];
-+		pid_t self;
-+
-+		ret = pipe(pipe_fds);
-+		if (ret < 0)
-+			exit(EXIT_FAILURE);
-+
-+		dup_fd = dup(pipe_fds[0]);
-+		if (dup_fd < 0)
-+			exit(EXIT_FAILURE);
-+
-+		self = getpid();
-+
-+		ret = filecmp(self, self, pipe_fds[0], dup_fd);
-+		if (ret)
-+			exit(EXIT_FAILURE);
-+
-+		exit(EXIT_SUCCESS);
-+	}
-+
-+	pollfd.fd = listener;
-+	pollfd.events = POLLIN | POLLOUT;
-+
-+	EXPECT_GT(poll(&pollfd, 1, -1), 0);
-+	EXPECT_EQ(pollfd.revents, POLLIN);
-+
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-+
-+	pollfd.fd = listener;
-+	pollfd.events = POLLIN | POLLOUT;
-+
-+	EXPECT_GT(poll(&pollfd, 1, -1), 0);
-+	EXPECT_EQ(pollfd.revents, POLLOUT);
-+
-+	EXPECT_EQ(req.data.nr, __NR_dup);
-+
-+	resp.id = req.id;
-+	resp.flags = SECCOMP_RET_USER_NOTIF_ALLOW;
-+
-+	/* check that if (flags & SECCOMP_RET_USER_NOTIF_ALLOW) the rest is 0 */
-+	resp.error = 0;
-+	resp.val = USER_NOTIF_MAGIC;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	resp.error = USER_NOTIF_MAGIC;
-+	resp.val = 0;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	resp.error = 0;
-+	resp.val = 0;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0) {
-+		if (errno == EINVAL)
-+			XFAIL(goto skip, "Kernel does not support SECCOMP_RET_USER_NOTIF_ALLOW");
-+	}
-+
-+skip:
-+	EXPECT_EQ(waitpid(pid, &status, 0), pid);
-+	EXPECT_EQ(true, WIFEXITED(status));
-+	EXPECT_EQ(0, WEXITSTATUS(status));
-+}
-+
- /*
-  * TODO:
-  * - add microbenchmarks
--- 
-2.23.0
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
+> .
+> 
 
