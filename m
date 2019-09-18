@@ -2,94 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4132DB58BD
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 01:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78573B58D2
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 02:00:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbfIQXqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Sep 2019 19:46:17 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:44898 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbfIQXqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 19:46:17 -0400
-Received: by mail-pl1-f181.google.com with SMTP id k24so1384959pll.11
-        for <netdev@vger.kernel.org>; Tue, 17 Sep 2019 16:46:17 -0700 (PDT)
+        id S1727845AbfIRAA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Sep 2019 20:00:27 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:36719 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726593AbfIRAA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Sep 2019 20:00:26 -0400
+Received: by mail-io1-f65.google.com with SMTP id b136so11948018iof.3;
+        Tue, 17 Sep 2019 17:00:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yghpdtVNxa+bjt+D03KJvZeH2tG/CagNHCWfxTbiNJ0=;
-        b=Y7WdcIuzXlTabL/6c2ehO5HeYOBMPz0/Plzi3k9bDvFKoHn8cHu8OBZzpAaWFNtqxZ
-         UQLRCmonG2lLv1ZMG6HhVKG2pj+G1myk0PHgWEqBqOHkKUbMRD5gIsY9NtKeRedQQ/6b
-         SoSYwTGOTLVQ+A/gD7Rpnzg1I7hD4EO13bTZrnKPzYojkIpSkLRDQb0AuHciQdPGvMPi
-         IZnZZTF78PTmKphGbhtHZsfRDS1jso5/uCmSAvjVDWal+FNWlj1XWAp3w0tGedc5XyS8
-         qkaWsNbjaqo8xguda+DZT5HRxuZ4anKo8a6WqBekI06EPmz04zlGl+HjBO8xamFHr6jm
-         I+8A==
+        h=from:to:cc:subject:date:message-id;
+        bh=MdJOyIaAxsqTTOGBVhPPqQpQxjpwNJs1HcQFYx3Zzjg=;
+        b=jWw9DjXC8X0srUG5iRljpsbgeveN9bipAp40ZauDfDI5ciDtXBTSOl6zx/ERQq/stC
+         dxax2laU4flVGPyPiO9aL0aqHg5cHPGP5L5NbFg+Sk6dRinavy+eqiQ+KPaQFwketJUd
+         BiJTeeJRxxBXZe4nEdEy52LoTKz9DsQ4rQMSarNvkTp5AxXUvD3lLZ/yOQy9VO30Zlfv
+         0IFSl8r5WN29vLItvLteSkSOwiYj00ELuOJpYeJrSXrz/IJfJ9fRnBnUPwITsq4U64VX
+         uCGWSrxhxfcCeihZ1PN9BZjDxxdjrS3+O50Zk3TGk53SONW2Bt/dbhGbDfYOCgdqm5TK
+         lfAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yghpdtVNxa+bjt+D03KJvZeH2tG/CagNHCWfxTbiNJ0=;
-        b=EOJVE4SSpJAO+WzNyBVz4JuvRARZHiWIwA4nrgEfsSMpcqXZ0kPRvcgeE+GGs8xrub
-         7OKQtmLzf/jcfvSBlcMKT5ou86rw2CRq9rD86KgEeD7t8bxEuPjFYOSSVBgNGTVuo095
-         yahQ6s5NsWEAV9C+gmEuebU+14s06WDwEkRddAc2oj5UzFDzrXU+41nuVel7rbIH9vsP
-         UN0liD6hEKPGO/n0Zs6yZ17HHAiyTLB5IYajgh3a6sd91mPUGMIZB20oOm3suhkz4dJ0
-         GHPMB9qEbK1rS1FPT1f9+fcGtXBhRreC0YUb6jnsnBDee/eVqg0zGXW3Pbq4HH/9n6VN
-         I++Q==
-X-Gm-Message-State: APjAAAVaybUIwNHw/QcDSmQcBBF5MJALrohvHfHyOy9/4Hb18VjJfJFE
-        L6k2fehDznhlwGzsLXfffIw=
-X-Google-Smtp-Source: APXvYqwZP16QPZRp74GhveZ2sqv5S6XKGXXEgjl9CsxUtYcKhRWoGqBEepoSqLrJtuVft5YOF8NcpA==
-X-Received: by 2002:a17:902:b617:: with SMTP id b23mr1292205pls.184.1568763976726;
-        Tue, 17 Sep 2019 16:46:16 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:891:77d6:e233:a77c])
-        by smtp.googlemail.com with ESMTPSA id ep10sm11429596pjb.2.2019.09.17.16.46.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Sep 2019 16:46:15 -0700 (PDT)
-Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        idosch@mellanox.com, jakub.kicinski@netronome.com,
-        tariqt@mellanox.com, mlxsw@mellanox.com
-References: <20190916094448.26072-1-jiri@resnulli.us>
- <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
- <20190917183629.GP2286@nanopsycho.orion>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
-Date:   Tue, 17 Sep 2019 17:46:13 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20190917183629.GP2286@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MdJOyIaAxsqTTOGBVhPPqQpQxjpwNJs1HcQFYx3Zzjg=;
+        b=H+bX+TPSGL4NT4yma03T/Ts+JNP4G33fGChqaCAvnaYul5GPR4oyNYGk5DqRZzyCnL
+         kHzGk5Eeb8VNUL8YNxcfE3I86kglPPZ7FGIA84vh0Fjx991UHvz7ugH+nUhu4LxWR8jD
+         zLLuqpTvMXv3X8Fu/swlYwl5eRRuUIJcxcZCBjWudmHotBD/mNNV/bCOy05ptZFN56Gx
+         QamPb1evKUQNLZSwKeJcH/r7CxoUTogRbRGDhCwsCB2Los9682hfFqJyoXcOnrKc6Zrk
+         wMwO3WWcT8QVBwdv7wF8SjZx9K2IxSO25tXUbKNC13KkqaKxaNyo+2fXnetha56jrgCY
+         4pHQ==
+X-Gm-Message-State: APjAAAVquua5KPxgK20n+dVtoEr9wL5xCrqoxKtIUyWTZnFeieZBxSmv
+        GGhOY5sI38YdKRtDeT9bBx8=
+X-Google-Smtp-Source: APXvYqzmiswsCyeFthfzjufcIIgZlOT29bJ0N0k7YjBWC3ZXRNMFWqSFzUBIIbggvt7Sob9yutzjnA==
+X-Received: by 2002:a6b:c409:: with SMTP id y9mr1823814ioa.155.1568764825846;
+        Tue, 17 Sep 2019 17:00:25 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id x2sm2815969iob.74.2019.09.17.17.00.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Sep 2019 17:00:25 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ethernet/intel:  release the local packet buffer
+Date:   Tue, 17 Sep 2019 19:00:12 -0500
+Message-Id: <20190918000013.32083-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/19 12:36 PM, Jiri Pirko wrote:
-> Tue, Sep 17, 2019 at 06:46:31PM CEST, dsahern@gmail.com wrote:
->> On 9/16/19 3:44 AM, Jiri Pirko wrote:
->>> From: Jiri Pirko <jiri@mellanox.com>
->>>
->>> Add indication about previous failed devlink reload.
->>>
->>> Example outputs:
->>>
->>> $ devlink dev
->>> netdevsim/netdevsim10: reload_failed true
->>
->> odd output to user. Why not just "reload failed"?
-> 
-> Well it is common to have "name value". The extra space would seem
-> confusing for the reader..
-> Also it is common to have "_" instead of space for the output in cases
-> like this.
-> 
+In e100_loopback_test the buffer allocated for the local packet needs to
+be released.
 
-I am not understanding your point.
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/ethernet/intel/e100.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-"reload failed" is still a name/value pair. It is short and to the point
-as to what it indicates. There is no need for the name in the uapi (ie.,
-the name of the netlink attribute) to be dumped here.
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index a65d5a9ba7db..4de7dca341fc 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -2394,6 +2394,7 @@ static int e100_loopback_test(struct nic *nic, enum loopback loopback_mode)
+ 	e100_hw_reset(nic);
+ err_clean_rx:
+ 	e100_rx_clean_list(nic);
++	dev_kfree_skb(skb);
+ 	return err;
+ }
+ 
+-- 
+2.17.1
+
