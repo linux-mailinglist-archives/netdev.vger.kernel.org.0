@@ -2,172 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1331B615C
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 12:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FBAB6180
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 12:35:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729785AbfIRKXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 06:23:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30922 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728507AbfIRKXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 06:23:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1568802233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PzJJIzaT+H0i65urk/DowU+Nu1kZ2zWoYZTl/vMnWsA=;
-        b=NBkUq176kVQSB9vtvsFK2KbuEdUGO/D6ecCpIunhu82G0jzJrck64DsaduzznUKbWzDhwU
-        8eAFdHBni7jK1MVlmentoyiTGEslp4iHuc+R8VZoGy42x6OdjNifUK7+5D2JHjoFjpQwhK
-        Ny9T2LxyAXpzD/wAGi6RkHcLm50mRVo=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-315-fuF-A7hJN4q1N9JbOwlmPA-1; Wed, 18 Sep 2019 06:23:50 -0400
-Received: by mail-wr1-f70.google.com with SMTP id a4so2183648wrg.8
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 03:23:50 -0700 (PDT)
+        id S1729391AbfIRKfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 06:35:18 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45161 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727697AbfIRKfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 06:35:16 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r134so5259883lff.12
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 03:35:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5IKevHxYE8kJAT6rh5UWN+J7usw4VjwCKVPryNseZJE=;
+        b=WO9H67nVw2fT4Z2j/RPZzKh1muXV7mcGA8J1lk2RWGs2FHPWhOPkyl1I1sCSpysElI
+         Ktq8U63s20pJSpRtGo7OAL2AeKJZJoOPcq5cj8K3VgFbFnZTUXN9N0V0x3Bk2LcTA7ux
+         UFDOVVCgrhdUR0gYw1X80XO+Vf2YOSoRce39mhb0indSnYQ7dd5T/RfIutn5iXyqqsuA
+         AU1pwvN86k0TXLLx1hTjvdx9HKGYUw+/ToZFyPCDd2/dk9vGOYYROCSxkK1RNWczW9pm
+         eR5+0UrUO/AmkDcbiPYVDy0Il64EmQXeE+g5poMQtgiVyMyzJ1pU78Y0vs9R/ywO3cYh
+         1Zbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/BXfx7jonw/Kdws8cuIdF1uOWxKnVxEGGX2roqyV5/g=;
-        b=ITYB5/MYMxh9d2itU50zljNCYKBHCbuXe4iUVd7DwWz6329P2apL5U3BBNdm3dUtwK
-         P5+ZpK+ZzL4mHm7F9HOLYEGd9jH58CRCij1fKH8vydgniw1jLzutfoVQkpYzAWiu9GDN
-         fMWZDUXwlddvi5sJJWUL5gnVOSpuWJst8thBS9RjvqhrcRUWNuvqtn4wHNXFf62M2SK4
-         6AYM114LwV9ltVCy7i/sihL2zHCF300akSESVdFaWWUZu8L9UWWeezLZD2oCK7y4IGCU
-         RoTGdQxMFXiwx0j5R6M9phMtiSs3K3LEwtKz8LyLODF0Kly9jZ8RvIq4E+3a5Uc4K0U6
-         5zwg==
-X-Gm-Message-State: APjAAAX8Ws58voGKRUvSycwMgNWlFRJohoittoXIAehHswHdxYjoCXxR
-        jOa4F1a2Gu5h/IPw3trCww7KA3bRgR9psdkbxYxvG95pd+i7LFnPelBiGRBwVnHfBJud/DzOHwv
-        KWjB1C7j3j8Vi9HMj
-X-Received: by 2002:adf:e443:: with SMTP id t3mr2384763wrm.181.1568802229667;
-        Wed, 18 Sep 2019 03:23:49 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwfxmTc5Fm4ZBlmRxUIGfYmFyau7KO9p53RPlq/ZJeTwvrFxtmEzKYq4y8POaEPkTSmkwUKyg==
-X-Received: by 2002:adf:e443:: with SMTP id t3mr2384734wrm.181.1568802229356;
-        Wed, 18 Sep 2019 03:23:49 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:c46c:2acb:d8d2:21d8? ([2001:b07:6468:f312:c46c:2acb:d8d2:21d8])
-        by smtp.gmail.com with ESMTPSA id h125sm2260481wmf.31.2019.09.18.03.23.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Sep 2019 03:23:48 -0700 (PDT)
-Subject: Re: [RFC PATCH v3 4/6] psci: Add hvc call service for ptp_kvm.
-To:     "Jianyong Wu (Arm Technology China)" <Jianyong.Wu@arm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Will Deacon <Will.Deacon@arm.com>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        "Kaly Xin (Arm Technology China)" <Kaly.Xin@arm.com>,
-        "Justin He (Arm Technology China)" <Justin.He@arm.com>,
-        nd <nd@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20190918080716.64242-1-jianyong.wu@arm.com>
- <20190918080716.64242-5-jianyong.wu@arm.com>
- <83ed7fac-277f-a31e-af37-8ec134f39d26@redhat.com>
- <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <629538ea-13fb-e666-8df6-8ad23f114755@redhat.com>
-Date:   Wed, 18 Sep 2019 12:23:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=5IKevHxYE8kJAT6rh5UWN+J7usw4VjwCKVPryNseZJE=;
+        b=Oz+CZvPsFAe5RSZChLBLLVsW2pC4mJqiSAbFw4Dl1bdHAbxGvZPdY5GzBOZAtPnAaY
+         2m42ixMTH2xCDifTgMF/7nO6ltAHxRIe4JV0yQHRKOxb2Y1/VLDaWk2oI+cokM36lDpb
+         bpNRizqO2olpq9X0OVRqcoZQDQO1rXdMDEpvbUVTZqdrTrjx/5wz+Rw714wY6D12kwmr
+         9k+MHFo9EPqsnVJYW7+iLe5zT0RqSC/t5IdBcr2PsV1odCyTjzCEInrLmlWL+XYY7sYW
+         FoSFmx5h1LVyMkXnzMXnfMO9uBs0TzQzqlbVUgqOH/0TvDTDwqMxILkO02Ob/kAXEDER
+         N2ZA==
+X-Gm-Message-State: APjAAAWNHDWP+B7Zeh8/G4yBFEQkvj3AZSjHzuaGHCqeT2aNX9uw6H6a
+        7zJv+gXrJc4lEm5SvvMuZ/0pOQ==
+X-Google-Smtp-Source: APXvYqyL7ppVAzsU/nQPvrrwKm85aNB1UxdDF5l/HMW6KLOQWEly82ds/7WozGXkgR1luXbXHPwaMw==
+X-Received: by 2002:a19:6a09:: with SMTP id u9mr1673963lfu.91.1568802912601;
+        Wed, 18 Sep 2019 03:35:12 -0700 (PDT)
+Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
+        by smtp.gmail.com with ESMTPSA id p9sm955453lji.107.2019.09.18.03.35.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 18 Sep 2019 03:35:11 -0700 (PDT)
+Date:   Wed, 18 Sep 2019 13:35:09 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com,
+        sergei.shtylyov@cogentembedded.com
+Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
+ but not host when cross compile
+Message-ID: <20190918103508.GC2908@khorivan>
+Mail-Followup-To: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com,
+        sergei.shtylyov@cogentembedded.com
+References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
+ <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
+ <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <HE1PR0801MB1676F57B317AE85E3B934B32F48E0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
-Content-Language: en-US
-X-MC-Unique: fuF-A7hJN4q1N9JbOwlmPA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/19 11:57, Jianyong Wu (Arm Technology China) wrote:
-> Hi Paolo,
->=20
->> On 18/09/19 10:07, Jianyong Wu wrote:
->>> +=09case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
->>> +=09=09getnstimeofday(ts);
+On Tue, Sep 17, 2019 at 04:42:07PM -0700, Andrii Nakryiko wrote:
+>On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
+><ivan.khoronzhuk@linaro.org> wrote:
 >>
->> This is not Y2038-safe.  Please use ktime_get_real_ts64 instead, and spl=
-it the
->> 64-bit seconds value between val[0] and val[1].
+>> While compile natively, the hosts cflags and ldflags are equal to ones
+>> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
+>> have own, used for target arch. While verification, for arm, arm64 and
+>> x86_64 the following flags were used alsways:
 >>
-> As far as I know, y2038-safe will only affect signed 32-bit integer,
-> how does it affect 64-bit integer?
-> And why split 64-bit number into two blocks is necessary?
-
-val is an u32, not an u64.  (And val[0], where you store the seconds, is
-best treated as signed, since val[0] =3D=3D -1 is returned for
-SMCCC_RET_NOT_SUPPORTED).
-
->> However, it seems to me that the new function is not needed and you can
->> just use ktime_get_snapshot.  You'll get the time in systime_snapshot->r=
-eal
->> and the cycles value in systime_snapshot->cycles.
->=20
-> See patch 5/6, I need both counter cycle and clocksource, ktime_get_snaps=
-hot seems only offer cycles.
-
-No, patch 5/6 only needs the current clock (ptp_sc.cycles is never
-accessed).  So you could just use READ_ONCE(tk->tkr_mono.clock).
-
-However, even then I don't think it is correct to use ptp_sc.cs blindly
-in patch 5.  I think there is a misunderstanding on the meaning of
-system_counterval.cs as passed to get_device_system_crosststamp.
-system_counterval.cs is not the active clocksource; it's the clocksource
-on which system_counterval.cycles is based.
-
-Hypothetically, the clocksource could be one for which ptp_sc.cycles is
-_not_ a cycle value.  If you set system_counterval.cs to the system
-clocksource, get_device_system_crosststamp will return a bogus value.
-So system_counterval.cs should be set to something like
-&clocksource_counter (from drivers/clocksource/arm_arch_timer.c).
-Perhaps the right place to define kvm_arch_ptp_get_clock_fn is in that file=
-?
-
->>> +=09=09get_current_counterval(&sc);
->>> +=09=09val[0] =3D ts->tv_sec;
->>> +=09=09val[1] =3D ts->tv_nsec;
->>> +=09=09val[2] =3D sc.cycles;
->>> +=09=09val[3] =3D 0;
->>> +=09=09break;
+>> -Wall
+>> -O2
+>> -fomit-frame-pointer
+>> -Wmissing-prototypes
+>> -Wstrict-prototypes
 >>
->> This should return a guest-cycles value.  If the cycles values always th=
-e same
->> between the host and the guest on ARM, then okay.  If not, you have to
->> apply whatever offset exists.
+>> So, add them as they were verified and used before adding
+>> Makefile.target, but anyway limit it only for cross compile options as
+>> for host can be some configurations when another options can be used,
+>> So, for host arch samples left all as is, it allows to avoid potential
+>> option mistmatches for existent environments.
 >>
-> In my opinion, when use ptp_kvm as clock sources to sync time
-> between host and guest, user should promise the guest and host has no
-> clock offset.
+>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> ---
+>>  samples/bpf/Makefile | 9 +++++++++
+>>  1 file changed, 9 insertions(+)
+>>
+>> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+>> index 1579cc16a1c2..b5c87a8b8b51 100644
+>> --- a/samples/bpf/Makefile
+>> +++ b/samples/bpf/Makefile
+>> @@ -178,8 +178,17 @@ CLANG_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
+>>  TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
+>>  endif
+>>
+>> +ifdef CROSS_COMPILE
+>> +TPROGS_CFLAGS += -Wall
+>> +TPROGS_CFLAGS += -O2
+>
+>Specifying one arg per line seems like overkill, put them in one line?
+Will combine.
 
-What would be the adverse effect of having a fixed offset between guest
-and host?  If there were one, you'd have to check that and fail the
-hypercall if there is an offset.  But again, I think it's enough to
-subtract vcpu_vtimer(vcpu)->cntvoff or something like that.
+>
+>> +TPROGS_CFLAGS += -fomit-frame-pointer
+>
+>Why this one?
+I've explained in commit msg. The logic is to have as much as close options
+to have smiliar binaries. As those options are used before for hosts and kinda
+cross builds - better follow same way.
 
-You also have to check here that the clocksource is based on the ARM
-architectural timer.  Again, maybe you could place the implementation in
-drivers/clocksource/arm_arch_timer.c, and make it return -ENODEV if the
-active clocksource is not clocksource_counter.  Then KVM can look for
-errors and return SMCCC_RET_NOT_SUPPORTED in that case.
+>
+>> +TPROGS_CFLAGS += -Wmissing-prototypes
+>> +TPROGS_CFLAGS += -Wstrict-prototypes
+>
+>Are these in some way special that we want them in cross-compile mode only?
+>
+>All of those flags seem useful regardless of cross-compilation or not,
+>shouldn't they be common? I'm a bit lost about the intent here...
+They are common but split is needed to expose it at least. Also host for
+different arches can have some own opts already used that shouldn't be present
+for cross, better not mix it for safety.
 
-Thanks,
+>
+>> +else
+>>  TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
+>>  TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
+>> +endif
+>> +
+>>  TPROGS_CFLAGS += -I$(objtree)/usr/include
+>>  TPROGS_CFLAGS += -I$(srctree)/tools/lib/bpf/
+>>  TPROGS_CFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
+>> --
+>> 2.17.1
+>>
 
-Paolo
-
-> So we can be sure that the cycle between guest and
-> host should be keep consistent. But I need check it.
-> I think host cycle should be returned to guest as we should promise
-> we get clock and counter in the same time.
-
+-- 
+Regards,
+Ivan Khoronzhuk
