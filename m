@@ -2,135 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D72B5E1B
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:32:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C96E7B5E32
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729224AbfIRHcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 03:32:22 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:49575 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728478AbfIRHcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 03:32:20 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 18 Sep 2019 10:32:16 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x8I7WGCL021192;
-        Wed, 18 Sep 2019 10:32:16 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>,
-        syzbot+ac54455281db908c581e@syzkaller.appspotmail.com
-Subject: [PATCH net 3/3] net: sched: sch_sfb: don't call qdisc_put() while holding tree lock
-Date:   Wed, 18 Sep 2019 10:32:01 +0300
-Message-Id: <20190918073201.2320-4-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190918073201.2320-1-vladbu@mellanox.com>
-References: <20190918073201.2320-1-vladbu@mellanox.com>
+        id S1727399AbfIRHhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 03:37:45 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37919 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbfIRHhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 03:37:45 -0400
+Received: by mail-wm1-f67.google.com with SMTP id o184so1247565wme.3
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 00:37:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=MrmhxBcYMyUVjBKvbdf/BUl2INjTBV57O/XrLw/1WQg=;
+        b=btAs+mijCru+k3sXXFSrS67KYeBTkWmL6TC1S1hM/j/KU+1NYhAB8Qsk3a/yfZjFeu
+         srB3m2RhC8eCm2BH82FpRXffST7mGM697oGX70ZO65laDrg1+XHr9CIzBXO8Gf66TZlJ
+         e9Axyj58+TM0tfTNsUTTVf45BIDrcJ1C3DFHpBezq7FbqUkDiRlz8h3oNGJGR7cPYvKo
+         +YnV7DUDwD0psmVNaz5f/kqJBZoOZ0W0waTuKE2IIkThpG0i7k3yN0LFmfCHXBF1wasv
+         ZE6FkmDVWh7WkMnom/Lg9ekWhBg/v5kkk5ukLIEPeKAvz53+fAjKPxKgBwACUV3f/Ubx
+         nZtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=MrmhxBcYMyUVjBKvbdf/BUl2INjTBV57O/XrLw/1WQg=;
+        b=JAWWXJxAP0mz+AL7Ws+s7Rn2VaN3XEM3jBPpd57UY0IRqyGu242YD/1mbobE3nyd4g
+         1929aG5EtrTgVhcJ+Zqj+OcAZ2EbwSwb1HuflgtVPgKWces85KPIyqy/opO5eGkpfcER
+         KCcdBQ64UOp/Q8LtsdQ05o4xHKU9jDws7wciSEHZ0LcKtb51J9iAezMeshstsHfbRwUw
+         2VvUdr+Zn2H2dJecFbUdEwjIUB0pwI4HSQJitSFfPljlbFbfubSsxE+p2DWidF4TWVts
+         q49hnAYq/5UIXm3um7tPduwBA8Us+wZ+ppivKe6Bl/Ccn39AOo+pJj5PvIF0TI7JGGeo
+         u52g==
+X-Gm-Message-State: APjAAAU/jBCqLDdZnyOIAhiXJt3Kgyhcsl+b/9bUVGP9BOaYIWlVkvSZ
+        VDuwmEnZtZfdz5Jy4YA70yfWTA==
+X-Google-Smtp-Source: APXvYqxVqaDne/gpNHzxP9rP9+0nsUY+kuYU2D9qowfOv1vd/T60YnGqREtcHrD3zAsAYo379KDBug==
+X-Received: by 2002:a1c:cf05:: with SMTP id f5mr1554685wmg.131.1568792261934;
+        Wed, 18 Sep 2019 00:37:41 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id q22sm1131669wmj.5.2019.09.18.00.37.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 00:37:41 -0700 (PDT)
+Date:   Wed, 18 Sep 2019 09:37:38 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        tariqt@mellanox.com, mlxsw@mellanox.com
+Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
+Message-ID: <20190918073738.GA2543@nanopsycho>
+References: <20190916094448.26072-1-jiri@resnulli.us>
+ <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
+ <20190917183629.GP2286@nanopsycho.orion>
+ <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent changes that removed rtnl dependency from rules update path of tc
-also made tcf_block_put() function sleeping. This function is called from
-ops->destroy() of several Qdisc implementations, which in turn is called by
-qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinlock,
-which results sleeping-while-atomic BUG.
+Wed, Sep 18, 2019 at 01:46:13AM CEST, dsahern@gmail.com wrote:
+>On 9/17/19 12:36 PM, Jiri Pirko wrote:
+>> Tue, Sep 17, 2019 at 06:46:31PM CEST, dsahern@gmail.com wrote:
+>>> On 9/16/19 3:44 AM, Jiri Pirko wrote:
+>>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>>
+>>>> Add indication about previous failed devlink reload.
+>>>>
+>>>> Example outputs:
+>>>>
+>>>> $ devlink dev
+>>>> netdevsim/netdevsim10: reload_failed true
+>>>
+>>> odd output to user. Why not just "reload failed"?
+>> 
+>> Well it is common to have "name value". The extra space would seem
+>> confusing for the reader..
+>> Also it is common to have "_" instead of space for the output in cases
+>> like this.
+>> 
+>
+>I am not understanding your point.
+>
+>"reload failed" is still a name/value pair. It is short and to the point
+>as to what it indicates. There is no need for the name in the uapi (ie.,
+>the name of the netlink attribute) to be dumped here.
 
-Steps to reproduce for sfb:
-
-tc qdisc add dev ens1f0 handle 1: root sfb
-tc qdisc add dev ens1f0 parent 1:10 handle 50: sfq perturb 10
-tc qdisc change dev ens1f0 root handle 1: sfb
-
-Resulting dmesg:
-
-[ 7265.938717] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:909
-[ 7265.940152] in_atomic(): 1, irqs_disabled(): 0, pid: 28579, name: tc
-[ 7265.941455] INFO: lockdep is turned off.
-[ 7265.942744] CPU: 11 PID: 28579 Comm: tc Tainted: G        W         5.3.0-rc8+ #721
-[ 7265.944065] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[ 7265.945396] Call Trace:
-[ 7265.946709]  dump_stack+0x85/0xc0
-[ 7265.947994]  ___might_sleep.cold+0xac/0xbc
-[ 7265.949282]  __mutex_lock+0x5b/0x960
-[ 7265.950543]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.951803]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.953022]  tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.954248]  tcf_block_put_ext.part.0+0x21/0x50
-[ 7265.955478]  tcf_block_put+0x50/0x70
-[ 7265.956694]  sfq_destroy+0x15/0x50 [sch_sfq]
-[ 7265.957898]  qdisc_destroy+0x5f/0x160
-[ 7265.959099]  sfb_change+0x175/0x330 [sch_sfb]
-[ 7265.960304]  tc_modify_qdisc+0x324/0x840
-[ 7265.961503]  rtnetlink_rcv_msg+0x170/0x4b0
-[ 7265.962692]  ? netlink_deliver_tap+0x95/0x400
-[ 7265.963876]  ? rtnl_dellink+0x2d0/0x2d0
-[ 7265.965064]  netlink_rcv_skb+0x49/0x110
-[ 7265.966251]  netlink_unicast+0x171/0x200
-[ 7265.967427]  netlink_sendmsg+0x224/0x3f0
-[ 7265.968595]  sock_sendmsg+0x5e/0x60
-[ 7265.969753]  ___sys_sendmsg+0x2ae/0x330
-[ 7265.970916]  ? ___sys_recvmsg+0x159/0x1f0
-[ 7265.972074]  ? do_wp_page+0x9c/0x790
-[ 7265.973233]  ? __handle_mm_fault+0xcd3/0x19e0
-[ 7265.974407]  __sys_sendmsg+0x59/0xa0
-[ 7265.975591]  do_syscall_64+0x5c/0xb0
-[ 7265.976753]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 7265.977938] RIP: 0033:0x7f229069f7b8
-[ 7265.979117] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 5
-4
-[ 7265.981681] RSP: 002b:00007ffd7ed2d158 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[ 7265.983001] RAX: ffffffffffffffda RBX: 000000005d813ca1 RCX: 00007f229069f7b8
-[ 7265.984336] RDX: 0000000000000000 RSI: 00007ffd7ed2d1c0 RDI: 0000000000000003
-[ 7265.985682] RBP: 0000000000000000 R08: 0000000000000001 R09: 000000000165c9a0
-[ 7265.987021] R10: 0000000000404eda R11: 0000000000000246 R12: 0000000000000001
-[ 7265.988309] R13: 000000000047f640 R14: 0000000000000000 R15: 0000000000000000
-
-Save Qdisc that is being removed to temporary local variable and call
-qdisc_put() with it after sch tree lock is released.
-
-Reported-by: syzbot+ac54455281db908c581e@syzkaller.appspotmail.com
-Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- net/sched/sch_sfb.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 1dff8506a715..802a34afece0 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -488,7 +488,7 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 		      struct netlink_ext_ack *extack)
- {
- 	struct sfb_sched_data *q = qdisc_priv(sch);
--	struct Qdisc *child;
-+	struct Qdisc *child, *old;
- 	struct nlattr *tb[TCA_SFB_MAX + 1];
- 	const struct tc_sfb_qopt *ctl = &sfb_default_ops;
- 	u32 limit;
-@@ -519,7 +519,7 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 	sch_tree_lock(sch);
- 
- 	qdisc_tree_flush_backlog(q->qdisc);
--	qdisc_put(q->qdisc);
-+	old = q->qdisc;
- 	q->qdisc = child;
- 
- 	q->rehash_interval = msecs_to_jiffies(ctl->rehash_interval);
-@@ -542,6 +542,7 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 	sfb_init_perturbation(1, q);
- 
- 	sch_tree_unlock(sch);
-+	qdisc_put(old);
- 
- 	return 0;
- }
--- 
-2.21.0
+Ah, got it. Well it is a bool value, that means it is "true" or "false".
+In json output, it is True of False. App processing json would have to
+handle this case in a special way.
 
