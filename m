@@ -2,151 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 706DFB6CC1
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84BA6B6D00
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731649AbfIRTjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 15:39:17 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36927 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727648AbfIRTjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:39:17 -0400
-Received: by mail-ed1-f67.google.com with SMTP id r4so1055173edy.4
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 12:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WGySUKR094neLH0dhcIHKGeeELXGFfeoUamFliR5rvk=;
-        b=cyeD7sDvQxTGtvTufpMlXi1k8pq+VnUukTj/0ZJuJy3x0oYcBa/qwofTWuGOj+a0ek
-         O79FjUm1D1i613YbFFfHd8rSTZE3ojsQQSIdsNSAprgMQ4PVXVycoDI7Dl7oLlOn9cbw
-         pRxJqCzyONUPSRgR5xSZy3AVIxwZ27uuRRrnTpDalUngJ49B/Z2W5agifCTUlum9eerP
-         b7s0NNLJQFN9jZwhqRMAIsa/22uPDMOVYtaBo0lP772ALYGhWpUEu9YZ2uBW6N5/RZiF
-         fRb1jWcFHmmoCq0dUgkEPE2P0WzF+w0+i8Cx0fMvSH2N5nCr7/a+lIVKV2ULQySuR5cZ
-         vK3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WGySUKR094neLH0dhcIHKGeeELXGFfeoUamFliR5rvk=;
-        b=Lmb2BQrhVOgJEuJuoPbBY+mNzZsknaLxw02oNCiLuL9BBLmB7yjmDDEZBGNJfGg+he
-         MtVU4L+abreNorj3G3m0bo8VP/L9zAD1NRFvkwfMhSquQbut36y66fyel8Fcfx/rGjRF
-         MGugGlGXjwb7Xi+r62PX2HLL8HOVJ7wosWFWeCWdLbmr18OeI8q9mKkgYWIfcJW4wt0E
-         eAX9/HSZ/vNBJGJ60yTr5BFYApxPgV6FOALUf+4UL4bTcENB47ZV7onwSbIlgH2p/K2/
-         Bu4SNED0Ii+vxGKfRnvzBpoPGc4Ko3gZbkNnh+pHHx5kh/4Q1YyIrOBA7oglqlzXQmzZ
-         WiAQ==
-X-Gm-Message-State: APjAAAW1oEg7aPPGJ7Ax0i0bOvgr0KeNpRG3w9CZyHexV3z7QVXIO3U5
-        PbZC+M+yeHIeuUvIP9jUrzElepfj9cuHFc1z2dI=
-X-Google-Smtp-Source: APXvYqyaPraPvlpOlA2g7f7uGf9b9oEM11ufYm0augTgx1G2klZ5Sb37G4jYoplrYTaK5p0FxOFJF8NCgDi7cE8MQtw=
-X-Received: by 2002:a17:906:5fc4:: with SMTP id k4mr11163804ejv.300.1568835554545;
- Wed, 18 Sep 2019 12:39:14 -0700 (PDT)
+        id S2387531AbfIRTzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 15:55:19 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:58037 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731843AbfIRTzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:55:19 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1N7iT4-1i5hwp41fW-014hEP; Wed, 18 Sep 2019 21:54:58 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] stmmac: selftest: avoid large stack usage
+Date:   Wed, 18 Sep 2019 21:54:34 +0200
+Message-Id: <20190918195454.2056139-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
- <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com> <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
-In-Reply-To: <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 18 Sep 2019 22:39:03 +0300
-Message-ID: <CA+h21hrgODP1VrBrJG6Hy9AE3EqqmzPVtjkBAiNjkm+KkwZLHw@mail.gmail.com>
-Subject: Re: dsa traffic priorization
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        kernel@pengutronix.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:N+l+qvP4iTKMClOZ10+3hqtOBzBcBQK6eoFXevu/u6P8UCjKnvn
+ c+9RDnKQFkt60Yhr/1wdrGXs/h/qCzzQXDCSJhjlsU6+bEk+wiqjs8z/5yU3GcgyEGtC2mO
+ 3SD5GPJx4Fpy/j1i29G7oBOMQ2+OoTir7lMG6/ltVEOii1JDkWm0JQtO4aQGYz1M2Yb6zNv
+ WFkT8hq38bCA3FJMEVH3A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1HosKkSRfoU=:b7Y0A535j0pAWaby1IDo4m
+ kOy6Bd+X63LxUX6r1gVlDqzAoHO1wmOf7fMp67ntknUvwuoKWDI08ticRc1et/NxH2Pz3Ztc1
+ azFGSYUV9W2A0RmNsI8CrjOIFuCQjsYs5oxyMB3GiEA6r+KyrxozwvqF+aHKVIGXX28XpPOEL
+ TWF1EiXNAYCuJbPSOqPT7ccBt8fmRIHoMYurJLI/gf1nooBvgdwHWRNZZaOcAsgG1e2gFBK9a
+ EfXBj0faIys9EuiWJJkgXT1INDk4x0hQfhnZJnLkmCcKePpkNyXlN7044PeIv8PTX/9NNlsNa
+ 4cTMTe/nUdhNLrlxc8c8GQsSvmMOtwff2oU5ZrKdWndUcRZ5GykriAHfu9BehqQZTYg6B1OQt
+ b9MHoOJQlZ/s7DnSsf92cdC2+CYPCzDtUMBLxWNrU/qC0JF12ujfFYwLvl5kO7PxkytkPWY6f
+ M3ljbyQUADlh0k1885oDO/KTU6iq4qyxcUnKqf4QEX9ZvjYDhTwdcDZf7SP7Ia2JYJ0XWZosp
+ x4TCOrGE0GEThjwnhpICjDW0g4tjH/sxSTe7Vo0R0gqT+UhSR9sWJjQJoFFwqY4SEqe8Jw6HR
+ LTZknHBNdHlgSPQSUUzmswGM+6zPm1aVVKLjnblgSzyhikNVkbnaLoHHS32Uo2QbYYCeTDeEt
+ QEhv2bWATOmmB0Y3EMN11m9Ttmx+pnRMfXgfRJxTGcOZKjSoB6VpR2VOZqfTFXyQaedt026l3
+ ZAqFvnENGhDBaE7vmydfRrLyrFWoeJXfXasA2E//AqyRdXcSZx+VnW6pHNIy/+JELjpYo/hmz
+ fqwMdRRp7V2LR3gthNtA8F66fblYzFc5smxmXTTNykbmXE0H+DPsiyKpcAxKb0Ml99kYiQSyQ
+ iPKy6AN1lEFHH2mS8u2A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+Putting a struct stmmac_rss object on the stack is a bad idea,
+as it exceeds the warning limit for a stack frame on 32-bit architectures:
 
-On Wed, 18 Sep 2019 at 20:42, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 9/18/19 7:36 AM, Vladimir Oltean wrote:
-> > Hi Sascha,
-> >
-> > On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
-> >>
-> >> Hi All,
-> >>
-> >> We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
-> >> regular network traffic on another port. The customer wants to configure two things
-> >> on the switch: First Ethercat traffic shall be priorized over other network traffic
-> >> (effectively prioritizing traffic based on port). Second the ethernet controller
-> >> in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
-> >> port shall be rate limited.
-> >>
-> >
-> > You probably already know this, but egress shaping will not drop
-> > frames, just let them accumulate in the egress queue until something
-> > else happens (e.g. queue occupancy threshold triggers pause frames, or
-> > tail dropping is enabled, etc). Is this what you want? It sounds a bit
-> > strange to me to configure egress shaping on the CPU port of a DSA
-> > switch. That literally means you are buffering frames inside the
-> > system. What about ingress policing?
->
-> Indeed, but I suppose that depending on the switch architecture and/or
-> nomenclature, configuring egress shaping amounts to determining ingress
-> for the ports where the frame is going to be forwarded to.
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1221:12: error: stack frame size of 1208 bytes in function '__stmmac_test_l3filt' [-Werror,-Wframe-larger-than=]
+drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1338:12: error: stack frame size of 1208 bytes in function '__stmmac_test_l4filt' [-Werror,-Wframe-larger-than=]
 
-Egress shaping in the switches I've played with has nothing to do with
-the ingress port, unless that is used as a key for some sort for QoS
-classification (aka selector for a traffic class).
-Furthermore, shaping means queuing (which furthermore means delaying,
-but not dropping except in extreme cases which are outside the scope
-of shaping itself), while policing by definition means early dropping
-(admission control). Like Dave Taht pointed out too, dropping might be
-better for the system's overall latency.
+As the object is the trivial empty case, change the called function
+to accept a NULL pointer to mean the same thing and remove the
+large variable in the two callers.
 
->
-> For instance Broadcom switches rarely if at all mention ingress because
-> the frames have to originate from somewhere and be forwarded to other
-> port(s), therefore, they will egress their original port (which for all
-> practical purposes is the direct continuation of the ingress stage),
-> where shaping happens, which immediately influences the ingress shaping
-> of the destination port, which will egress the frame eventually because
-> packets have to be delivered to the final port's egress queue anyway.
->
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c   | 15 +++++++++++----
+ .../ethernet/stmicro/stmmac/stmmac_selftests.c    | 14 ++++----------
+ 2 files changed, 15 insertions(+), 14 deletions(-)
 
-You lost me.
-I have never heard of any shaping done inside the guts of a switch, so
-'egress of an ingress port' and 'ingress of an egress port' makes no
-sense to me.
-I was talking about ingress policing at the front panel ports, for
-their best-effort traffic. I think that is actually preferable to
-egress shaping at the CPU port, since I don't think they would want
-the EtherCAT traffic getting delayed.
-Alternatively, maybe the DSA master port supports per-stream hardware
-policing, although that is more exotic.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index d5173dd02a71..c2f648062049 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -523,25 +523,32 @@ static int dwxgmac2_rss_configure(struct mac_device_info *hw,
+ 				  struct stmmac_rss *cfg, u32 num_rxq)
+ {
+ 	void __iomem *ioaddr = hw->pcsr;
+-	u32 *key = (u32 *)cfg->key;
+ 	int i, ret;
+ 	u32 value;
+ 
+ 	value = readl(ioaddr + XGMAC_RSS_CTRL);
+-	if (!cfg->enable) {
++	if (!cfg || !cfg->enable) {
+ 		value &= ~XGMAC_RSSE;
+ 		writel(value, ioaddr + XGMAC_RSS_CTRL);
+ 		return 0;
+ 	}
+ 
+ 	for (i = 0; i < (sizeof(cfg->key) / sizeof(u32)); i++) {
+-		ret = dwxgmac2_rss_write_reg(ioaddr, true, i, *key++);
++		if (cfg)
++			ret = dwxgmac2_rss_write_reg(ioaddr, true, i, cfg->key[i]);
++		else
++			ret = dwxgmac2_rss_write_reg(ioaddr, true, i, 0);
++
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(cfg->table); i++) {
+-		ret = dwxgmac2_rss_write_reg(ioaddr, false, i, cfg->table[i]);
++		if (cfg)
++			ret = dwxgmac2_rss_write_reg(ioaddr, false, i, cfg->table[i]);
++		else
++			ret = dwxgmac2_rss_write_reg(ioaddr, false, i, 0);
++
+ 		if (ret)
+ 			return ret;
+ 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index c56e89e1ae56..9c8d210b2d6a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1233,12 +1233,9 @@ static int __stmmac_test_l3filt(struct stmmac_priv *priv, u32 dst, u32 src,
+ 		return -EOPNOTSUPP;
+ 	if (!priv->dma_cap.l3l4fnum)
+ 		return -EOPNOTSUPP;
+-	if (priv->rss.enable) {
+-		struct stmmac_rss rss = { .enable = false, };
+-
+-		stmmac_rss_configure(priv, priv->hw, &rss,
++	if (priv->rss.enable)
++		stmmac_rss_configure(priv, priv->hw, NULL,
+ 				     priv->plat->rx_queues_to_use);
+-	}
+ 
+ 	dissector = kzalloc(sizeof(*dissector), GFP_KERNEL);
+ 	if (!dissector) {
+@@ -1357,12 +1354,9 @@ static int __stmmac_test_l4filt(struct stmmac_priv *priv, u32 dst, u32 src,
+ 		return -EOPNOTSUPP;
+ 	if (!priv->dma_cap.l3l4fnum)
+ 		return -EOPNOTSUPP;
+-	if (priv->rss.enable) {
+-		struct stmmac_rss rss = { .enable = false, };
+-
+-		stmmac_rss_configure(priv, priv->hw, &rss,
++	if (priv->rss.enable)
++		stmmac_rss_configure(priv, priv->hw, NULL,
+ 				     priv->plat->rx_queues_to_use);
+-	}
+ 
+ 	dissector = kzalloc(sizeof(*dissector), GFP_KERNEL);
+ 	if (!dissector) {
+-- 
+2.20.0
 
-> >
-> >> For reference the patch below configures the switch to their needs. Now the question
-> >> is how this can be implemented in a way suitable for mainline. It looks like the per
-> >> port priority mapping for VLAN tagged packets could be done via ip link add link ...
-> >> ingress-qos-map QOS-MAP. How the default priority would be set is unclear to me.
-> >>
-> >
-> > Technically, configuring a match-all rxnfc rule with ethtool would
-> > count as 'default priority' - I have proposed that before. Now I'm not
-> > entirely sure how intuitive it is, but I'm also interested in being
-> > able to configure this.
->
-> That does not sound too crazy from my perspective.
->
-
-Ok, well at least that requires no user space modification, then.
-
-> >
-> >> The other part of the problem seems to be that the CPU port has no network device
-> >> representation in Linux, so there's no interface to configure the egress limits via tc.
-> >> This has been discussed before, but it seems there hasn't been any consensous regarding how
-> >> we want to proceed?
->
-> You have the DSA master network device which is on the other side of the
-> switch,
-> --
-> Florian
-
-Thanks,
--Vladimir
