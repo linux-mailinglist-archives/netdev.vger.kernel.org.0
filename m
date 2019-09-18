@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 727A1B66B2
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 17:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A38B6710
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 17:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387431AbfIRPFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 11:05:46 -0400
-Received: from mail-vk1-f202.google.com ([209.85.221.202]:53025 "EHLO
-        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387415AbfIRPFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 11:05:45 -0400
-Received: by mail-vk1-f202.google.com with SMTP id 70so2842676vki.19
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 08:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=vr/WPWxecgGUfZrJyYPYEX36URySWJETzMluxrCqB+Q=;
-        b=RyL90NOnELV6QFXimftl5i2+3VMUeYkTo3I5KQHigz1ezBXGedJerss3+yT88DcwsZ
-         RzmUAHR9gpphGUvhjn5/OnOiVJ8JlGvAHABxj1itNIg/j+GSKQM5vGTqPhvPmpeiIOOJ
-         u7sPBFr1JfS8x4VepB1hAa8INmVUF88zd32l3cBYjgcEmgsDu0RKUy/BdeR2oWsPGyS5
-         J3TdSCEoIs4GCx9G7YgVRYI1x6ORHYSonwFgQ8DtG3hScNZhTLMeYbPZbfBVHdqeejdL
-         5ZwjyxNwwQFPt350CwLkIfyOFbEq5sv4Zzaw78uu682puYijWkVnZ6xSavw8qCeiYtx2
-         0yZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=vr/WPWxecgGUfZrJyYPYEX36URySWJETzMluxrCqB+Q=;
-        b=D7XATqJ01n9GF2Q6PdBgK1HkvMg8YKuAd30SnAVB3U2F+jmoPRu8NVb5hETtBDVAX3
-         Ve/6yXv800nasv2b8VOI3VeX9TivhaL9E+vH4d7WDbEtpkoG/vRKjetL2ujOjp4wj399
-         5pzuhtoWWPI/3QMmvG3DqunkqUF9jrz3Hsw//rhQGfk7fE1NTB7HCM+sF1IORKu8+0qm
-         /2xHIwvA48ImWeodayYEQinWUwtPReohtoaFb1TUciysZVle/CdYJS6k9aHlJNH8pyme
-         zhzaxWmVF0OE/OOySjF4MXKZyCJr7HCKabdmZlCfJ3q6KvKfWe3l60+3nmvNxB0eLsBl
-         Ts/A==
-X-Gm-Message-State: APjAAAXJ6jmkCXWdNaGdnlh9bbmxwxhO1wPLYzxyu6qDSqB6A210LQrZ
-        Mcp24Nv1f8O2BtAUI4KKRJLsdvgXGH2rsA==
-X-Google-Smtp-Source: APXvYqz0Oz6uMHpyB/t0JH6tekaGVKNFmSVEI+OfhgMz61yA/4XKWi3/8NObVhPaaMQqlEF+u8zTunoWme0wcA==
-X-Received: by 2002:a67:1405:: with SMTP id 5mr2518480vsu.38.1568819144421;
- Wed, 18 Sep 2019 08:05:44 -0700 (PDT)
-Date:   Wed, 18 Sep 2019 08:05:39 -0700
-Message-Id: <20190918150539.135042-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.237.gc6a4ce50a0-goog
-Subject: [PATCH net] sch_netem: fix a divide by zero in tabledist()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2387473AbfIRP0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 11:26:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53102 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387466AbfIRP0s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 11:26:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=rMO0GB74u208w0s9L1VnSEFBd3xoiYe5Pq/uI+rk3S0=; b=FDHL+zPdkSSTK1yefcMu++bUaV
+        2MEPOKNDY4FiLOA7T1fZyniUXD93BrNkcWXoL++GKNKvn9DZbveT17bWjpEJibQD9t2ArathPRpKc
+        N1AHEsHKVG0T8hJzFnrdauCIhyg+Rjm8PsmxFw3Ls01MV+zzEtm3A2TnmYi0Vk0pc82w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iAbqw-0008UG-WA; Wed, 18 Sep 2019 17:26:46 +0200
+Date:   Wed, 18 Sep 2019 17:26:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Peter Mamonov <pmamonov@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] net/phy: fix DP83865 10 Mbps HDX loopback disable
+ function
+Message-ID: <20190918152646.GL9591@lunn.ch>
+References: <20190918141931.GK9591@lunn.ch>
+ <20190918144825.23285-1-pmamonov@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190918144825.23285-1-pmamonov@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot managed to crash the kernel in tabledist() loading
-an empty distribution table.
+On Wed, Sep 18, 2019 at 05:48:25PM +0300, Peter Mamonov wrote:
+> According to the DP83865 datasheet "The 10 Mbps HDX loopback can be
+> disabled in the expanded memory register 0x1C0.1." The driver erroneously
+> used bit 0 instead of bit 1.
 
-	t = dist->table[rnd % dist->size];
+Hi Peter
 
-Simply return an error when such load is attempted.
+This is version 2, not 1. Or if you want to start counting from 0, it
+would be good to put v0 in your first patch :-)
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/sch_netem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It is also normal to put in the commit message what changed from the
+previous version.
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index b17f2ed970e296adc57bed458ec3cced4fc6705b..f5cb35e550f8df557f2e444cc2fd142cab97789b 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -777,7 +777,7 @@ static int get_dist_table(struct Qdisc *sch, struct disttable **tbl,
- 	struct disttable *d;
- 	int i;
- 
--	if (n > NETEM_DIST_MAX)
-+	if (!n || n > NETEM_DIST_MAX)
- 		return -EINVAL;
- 
- 	d = kvmalloc(sizeof(struct disttable) + n * sizeof(s16), GFP_KERNEL);
--- 
-2.23.0.237.gc6a4ce50a0-goog
+This is a fix. So please add a Fixes: tag, with the hash of the commit
+which introduced the problem.
 
+And since this is a fix, it should be against DaveM net tree, and you
+indicate this in the subject line with [PATCH net v3].
+
+Thanks
+	Andrew
+
+> 
+> Signed-off-by: Peter Mamonov <pmamonov@gmail.com>
+> ---
+>  drivers/net/phy/national.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/national.c b/drivers/net/phy/national.c
+> index 2addf1d3f619..3aa910b3dc89 100644
+> --- a/drivers/net/phy/national.c
+> +++ b/drivers/net/phy/national.c
+> @@ -110,14 +110,17 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
+>  
+>  static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
+>  {
+> +	u16 lb_dis = BIT(1);
+> +
+>  	if (disable)
+> -		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
+> +		ns_exp_write(phydev, 0x1c0,
+> +			     ns_exp_read(phydev, 0x1c0) | lb_dis);
+>  	else
+>  		ns_exp_write(phydev, 0x1c0,
+> -			     ns_exp_read(phydev, 0x1c0) & 0xfffe);
+> +			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
+>  
+>  	pr_debug("10BASE-T HDX loopback %s\n",
+> -		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
+> +		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
+>  }
+>  
+>  static int ns_config_init(struct phy_device *phydev)
+> -- 
+> 2.23.0
+> 
