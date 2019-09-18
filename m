@@ -2,67 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 063C7B62C6
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD99B62F4
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730707AbfIRMIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 08:08:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36280 "EHLO mail.kernel.org"
+        id S1730898AbfIRMRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 08:17:49 -0400
+Received: from canardo.mork.no ([148.122.252.1]:46379 "EHLO canardo.mork.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727095AbfIRMIL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 08:08:11 -0400
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 429AA21920;
-        Wed, 18 Sep 2019 12:08:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568808490;
-        bh=io5r9Ksy4K18+QAOFeKorNG/e6Tl5MhtFX2ESMaUcjI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=xPx/RbJqde40pOyMsrLbq5/GLCZc/SpYT/SH8y3u3TcJyeEUm+STj8btF4iOQNhYQ
-         S8rnw+ccnylINWtj3wmDIqFtRiO14odBzb+3tHV8R+3+kIqWHpkJj1dARN+Mskgn9y
-         LjCcJzhxD020htqTz9zkNciu0XtmTUnnztLX3xSA=
-Received: by mail-qk1-f169.google.com with SMTP id u184so7748314qkd.4;
-        Wed, 18 Sep 2019 05:08:10 -0700 (PDT)
-X-Gm-Message-State: APjAAAXnuRHGYvUzuvRSOlaF1Nl+IWIsBa8aMqcMuV8ugr+akUPm2OO1
-        UwoEr9VIkRHRDi1nyuH5SY0Hgy8yx7kK2nzbyw==
-X-Google-Smtp-Source: APXvYqzJEOXiGujx2Z3QRuY4qEmct5ht+GAeA7lZFd+lkleCoNwVE0JJzqxtmmkacsTEeyPnububE9E+QPAvvvX5zk4=
-X-Received: by 2002:a05:620a:12d5:: with SMTP id e21mr707446qkl.152.1568808489461;
- Wed, 18 Sep 2019 05:08:09 -0700 (PDT)
+        id S1727193AbfIRMRt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 08:17:49 -0400
+Received: from miraculix.mork.no ([IPv6:2a02:2121:345:8091:90c6:3fae:14f0:3126])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x8ICHjRe018136
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Wed, 18 Sep 2019 14:17:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1568809066; bh=6ReCdLpKToI7PCsGayRZb9MxdpELm+zou9tl9ZWV5QY=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        b=HfPE3yew4RDxJsPjfUUTUZh8oipCKZeF2dZXdIvPriK/AucWka3J0vPdDTESnOHdk
+         NgFWNLFAhgtOcUhsqs7j0yVx4DLiMbRmZhWG92ZwuCUa1LkN4z1W+q9v4mORqoNCfv
+         x4JW50FkS29FhRIOu9G/Ikq4BU2qB3MjOROIZyRg=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@miraculix.mork.no>)
+        id 1iAYtw-0001f0-25; Wed, 18 Sep 2019 14:17:40 +0200
+From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+To:     netdev@vger.kernel.org
+Cc:     linux-usb@vger.kernel.org, Oliver Neukum <oliver@neukum.org>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Subject: [PATCH net,stable] usbnet: ignore endpoints with invalid wMaxPacketSize
+Date:   Wed, 18 Sep 2019 14:17:38 +0200
+Message-Id: <20190918121738.6343-1-bjorn@mork.no>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190918111447.3084-1-alexandru.ardelean@analog.com>
-In-Reply-To: <20190918111447.3084-1-alexandru.ardelean@analog.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 18 Sep 2019 07:07:57 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLFUnafJkuc1XDMKd-j2SPR2=SpcDXbEOC7tW=hT9pxjA@mail.gmail.com>
-Message-ID: <CAL_JsqLFUnafJkuc1XDMKd-j2SPR2=SpcDXbEOC7tW=hT9pxjA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: remove un-implemented property
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.101.4 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 3:15 AM Alexandru Ardelean
-<alexandru.ardelean@analog.com> wrote:
->
-> The `adi,disable-energy-detect` property was implemented in an initial
-> version of the `adin` driver series, but after a review it was discarded in
-> favor of implementing the ETHTOOL_PHY_EDPD phy-tunable option.
->
-> With the ETHTOOL_PHY_EDPD control, it's possible to disable/enable
-> Energy-Detect-Power-Down for the `adin` PHY, so this device-tree is not
-> needed.
->
-> Fixes: 767078132ff9 ("dt-bindings: net: add bindings for ADIN PHY driver")
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> ---
->  Documentation/devicetree/bindings/net/adi,adin.yaml | 7 -------
->  1 file changed, 7 deletions(-)
+Endpoints with zero wMaxPacketSize are not usable for transferring
+data. Ignore such endpoints when looking for valid in, out and
+status pipes, to make the drivers more robust against invalid and
+meaningless descriptors.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+The wMaxPacketSize of these endpoints are used for memory allocations
+and as divisors in many usbnet minidrivers. Avoiding zero is therefore
+critical.
+
+Signed-off-by: Bjørn Mork <bjorn@mork.no>
+---
+ drivers/net/usb/usbnet.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 58952a79b05f..dbea2136d901 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -100,6 +100,11 @@ int usbnet_get_endpoints(struct usbnet *dev, struct usb_interface *intf)
+ 			int				intr = 0;
+ 
+ 			e = alt->endpoint + ep;
++
++			/* ignore endpoints which cannot transfer data */
++			if (!usb_endpoint_maxp(&e->desc))
++				continue;
++
+ 			switch (e->desc.bmAttributes) {
+ 			case USB_ENDPOINT_XFER_INT:
+ 				if (!usb_endpoint_dir_in(&e->desc))
+-- 
+2.20.1
+
