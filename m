@@ -2,109 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4AAB6CA3
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:31:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 706DFB6CC1
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731344AbfIRTb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 15:31:28 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:41018 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfIRTb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:31:28 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 490C561515; Wed, 18 Sep 2019 19:31:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568835087;
-        bh=GQ9PWHWoNFmoNwP5Ff8xmLoLlYzHhmoeyH7kt5bWxlY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DoW2evWrM0ixe8eQE/GaN1BFm/PidoR0huH+O7qc4Lj5IMlgEWMHMo/4Wv9WxGfbm
-         fGOEFRRmiZ0yQ3gZbym1bqhzJZplIJixNTaELwRKcE1L2pWNEMMIlroDrqkjcFwU/V
-         F+dTsgb8idv1zjnWwSKt2OK47hdGL9Czqdp3cUr0=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id 4E00B602F2;
-        Wed, 18 Sep 2019 19:31:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1568835086;
-        bh=GQ9PWHWoNFmoNwP5Ff8xmLoLlYzHhmoeyH7kt5bWxlY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IhwungRmSNTm2D8wKL2dj3iY5z1JBPtqZB9ktJRU4rDAwhzKzEUTnbIVupngRlHMM
-         LPQVvw8Vd+1tnUtWdvi7gMnDTq0eTTV3HK88tYL1wzvi4NQZIPGkbOrRxuK9fP0Vcx
-         ljb9bwEoms7IHgrfCRS0Yu0RE1CNoqsx+7wJ8Sac=
+        id S1731649AbfIRTjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 15:39:17 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:36927 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727648AbfIRTjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:39:17 -0400
+Received: by mail-ed1-f67.google.com with SMTP id r4so1055173edy.4
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 12:39:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WGySUKR094neLH0dhcIHKGeeELXGFfeoUamFliR5rvk=;
+        b=cyeD7sDvQxTGtvTufpMlXi1k8pq+VnUukTj/0ZJuJy3x0oYcBa/qwofTWuGOj+a0ek
+         O79FjUm1D1i613YbFFfHd8rSTZE3ojsQQSIdsNSAprgMQ4PVXVycoDI7Dl7oLlOn9cbw
+         pRxJqCzyONUPSRgR5xSZy3AVIxwZ27uuRRrnTpDalUngJ49B/Z2W5agifCTUlum9eerP
+         b7s0NNLJQFN9jZwhqRMAIsa/22uPDMOVYtaBo0lP772ALYGhWpUEu9YZ2uBW6N5/RZiF
+         fRb1jWcFHmmoCq0dUgkEPE2P0WzF+w0+i8Cx0fMvSH2N5nCr7/a+lIVKV2ULQySuR5cZ
+         vK3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WGySUKR094neLH0dhcIHKGeeELXGFfeoUamFliR5rvk=;
+        b=Lmb2BQrhVOgJEuJuoPbBY+mNzZsknaLxw02oNCiLuL9BBLmB7yjmDDEZBGNJfGg+he
+         MtVU4L+abreNorj3G3m0bo8VP/L9zAD1NRFvkwfMhSquQbut36y66fyel8Fcfx/rGjRF
+         MGugGlGXjwb7Xi+r62PX2HLL8HOVJ7wosWFWeCWdLbmr18OeI8q9mKkgYWIfcJW4wt0E
+         eAX9/HSZ/vNBJGJ60yTr5BFYApxPgV6FOALUf+4UL4bTcENB47ZV7onwSbIlgH2p/K2/
+         Bu4SNED0Ii+vxGKfRnvzBpoPGc4Ko3gZbkNnh+pHHx5kh/4Q1YyIrOBA7oglqlzXQmzZ
+         WiAQ==
+X-Gm-Message-State: APjAAAW1oEg7aPPGJ7Ax0i0bOvgr0KeNpRG3w9CZyHexV3z7QVXIO3U5
+        PbZC+M+yeHIeuUvIP9jUrzElepfj9cuHFc1z2dI=
+X-Google-Smtp-Source: APXvYqyaPraPvlpOlA2g7f7uGf9b9oEM11ufYm0augTgx1G2klZ5Sb37G4jYoplrYTaK5p0FxOFJF8NCgDi7cE8MQtw=
+X-Received: by 2002:a17:906:5fc4:: with SMTP id k4mr11163804ejv.300.1568835554545;
+ Wed, 18 Sep 2019 12:39:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 18 Sep 2019 13:31:26 -0600
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
-In-Reply-To: <20190918165817.GA3431@localhost.localdomain>
-References: <20190918072517.16037-1-steffen.klassert@secunet.com>
- <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
- <20190918165817.GA3431@localhost.localdomain>
-Message-ID: <621219c0a965d6ccc05b80081218ff7e@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
+References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
+ <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com> <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
+In-Reply-To: <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 18 Sep 2019 22:39:03 +0300
+Message-ID: <CA+h21hrgODP1VrBrJG6Hy9AE3EqqmzPVtjkBAiNjkm+KkwZLHw@mail.gmail.com>
+Subject: Re: dsa traffic priorization
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        kernel@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-09-18 10:58, Marcelo Ricardo Leitner wrote:
-> On Wed, Sep 18, 2019 at 12:17:08PM -0400, Willem de Bruijn wrote:
->> On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
->> <steffen.klassert@secunet.com> wrote:
->> >
->> > This patchset adds support to do GRO/GSO by chaining packets
->> > of the same flow at the SKB frag_list pointer. This avoids
->> > the overhead to merge payloads into one big packet, and
->> > on the other end, if GSO is needed it avoids the overhead
->> > of splitting the big packet back to the native form.
->> >
->> > Patch 1 Enables UDP GRO by default.
->> >
->> > Patch 2 adds a netdev feature flag to enable listifyed GRO,
->> > this implements one of the configuration options discussed
->> > at netconf 2019.
->> >
->> > Patch 3 adds a netdev software feature set that defaults to off
->> > and assigns the new listifyed GRO feature flag to it.
->> >
->> > Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
->> >
->> > Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
->> > GRO supported socket is found.
->> 
->> Very nice feature, Steffen. Aside from questions around performance,
->> my only question is really how this relates to GSO_BY_FRAGS.
-> 
-> They do the exact same thing AFAICT: they GSO according to a
-> pre-formatted list of fragments/packets, and not to a specific size
-> (such as MSS).
-> 
->> 
->> More specifically, whether we can remove that in favor of using your
->> new skb_segment_list. That would actually be a big first step in
->> simplifying skb_segment back to something manageable.
-> 
-> The main issue (that I know) on obsoleting GSO_BY_FRAGS is that
-> dealing with frags instead of frag_list was considered easier to be
-> offloaded, if ever attempted.  So this would be a step back on that
-> aspect.  Other than this, it should be doable.
+Hi Florian,
 
-Is there an existing userspace interface for GSO_BY_FRAGS for UDP?
-Per my understanding, the current UDP_GSO CMSG option only allows
-for a specific GSO_SIZE segmentation.
+On Wed, 18 Sep 2019 at 20:42, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 9/18/19 7:36 AM, Vladimir Oltean wrote:
+> > Hi Sascha,
+> >
+> > On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> >>
+> >> Hi All,
+> >>
+> >> We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
+> >> regular network traffic on another port. The customer wants to configure two things
+> >> on the switch: First Ethercat traffic shall be priorized over other network traffic
+> >> (effectively prioritizing traffic based on port). Second the ethernet controller
+> >> in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
+> >> port shall be rate limited.
+> >>
+> >
+> > You probably already know this, but egress shaping will not drop
+> > frames, just let them accumulate in the egress queue until something
+> > else happens (e.g. queue occupancy threshold triggers pause frames, or
+> > tail dropping is enabled, etc). Is this what you want? It sounds a bit
+> > strange to me to configure egress shaping on the CPU port of a DSA
+> > switch. That literally means you are buffering frames inside the
+> > system. What about ingress policing?
+>
+> Indeed, but I suppose that depending on the switch architecture and/or
+> nomenclature, configuring egress shaping amounts to determining ingress
+> for the ports where the frame is going to be forwarded to.
 
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Egress shaping in the switches I've played with has nothing to do with
+the ingress port, unless that is used as a key for some sort for QoS
+classification (aka selector for a traffic class).
+Furthermore, shaping means queuing (which furthermore means delaying,
+but not dropping except in extreme cases which are outside the scope
+of shaping itself), while policing by definition means early dropping
+(admission control). Like Dave Taht pointed out too, dropping might be
+better for the system's overall latency.
+
+>
+> For instance Broadcom switches rarely if at all mention ingress because
+> the frames have to originate from somewhere and be forwarded to other
+> port(s), therefore, they will egress their original port (which for all
+> practical purposes is the direct continuation of the ingress stage),
+> where shaping happens, which immediately influences the ingress shaping
+> of the destination port, which will egress the frame eventually because
+> packets have to be delivered to the final port's egress queue anyway.
+>
+
+You lost me.
+I have never heard of any shaping done inside the guts of a switch, so
+'egress of an ingress port' and 'ingress of an egress port' makes no
+sense to me.
+I was talking about ingress policing at the front panel ports, for
+their best-effort traffic. I think that is actually preferable to
+egress shaping at the CPU port, since I don't think they would want
+the EtherCAT traffic getting delayed.
+Alternatively, maybe the DSA master port supports per-stream hardware
+policing, although that is more exotic.
+
+> >
+> >> For reference the patch below configures the switch to their needs. Now the question
+> >> is how this can be implemented in a way suitable for mainline. It looks like the per
+> >> port priority mapping for VLAN tagged packets could be done via ip link add link ...
+> >> ingress-qos-map QOS-MAP. How the default priority would be set is unclear to me.
+> >>
+> >
+> > Technically, configuring a match-all rxnfc rule with ethtool would
+> > count as 'default priority' - I have proposed that before. Now I'm not
+> > entirely sure how intuitive it is, but I'm also interested in being
+> > able to configure this.
+>
+> That does not sound too crazy from my perspective.
+>
+
+Ok, well at least that requires no user space modification, then.
+
+> >
+> >> The other part of the problem seems to be that the CPU port has no network device
+> >> representation in Linux, so there's no interface to configure the egress limits via tc.
+> >> This has been discussed before, but it seems there hasn't been any consensous regarding how
+> >> we want to proceed?
+>
+> You have the DSA master network device which is on the other side of the
+> switch,
+> --
+> Florian
+
+Thanks,
+-Vladimir
