@@ -2,99 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 408CAB683E
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 18:35:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDACB688E
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 18:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732013AbfIRQfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 12:35:30 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:57564 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728713AbfIRQfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 12:35:30 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8IGNYVA178534;
-        Wed, 18 Sep 2019 16:35:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2019-08-05;
- bh=NjiZCOg5xFo4Z5niVDbJDHIcUX3lm7EmZSt0FVk2UN4=;
- b=TLSqxsCQV4cK9e8hGbsLr0Nt1u+CPKN0Murs67RcrbtobtmvuF7K/rAkUW0YlFILD+91
- OJbBQlQKJ4eNb2gT7wKVr9qpkXqob/XEG0V2eWbwEssn81r2Epjyn8W7F7EmggwO/UlA
- 87Q+h4eDFV8/3Cax0pphixSF99s0gQQm6pAKZ3GKBysFj8n9SOu9zpNSMxLN/8bKdKWv
- OQbJi8EbiS2cm/Ky6WZIlNhB9D6nG3HJBEvY/ESz5xH65iqFSE9+lvL54adC/fJasIPF
- ecJ2/jdg3M1UZGDeQD/dSO6QaFueYj2NbZHHatHvlqSkm97kfmcQroZa0MVXN4Hb6DuG uA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 2v385e54nt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 Sep 2019 16:35:22 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8IGNLQr048332;
-        Wed, 18 Sep 2019 16:35:21 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2v37masp0e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 Sep 2019 16:35:21 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x8IGZK6D012500;
-        Wed, 18 Sep 2019 16:35:20 GMT
-Received: from x250.idc.oracle.com (/10.191.241.104)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 18 Sep 2019 09:35:14 -0700
-From:   Allen Pais <allen.pais@oracle.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kvalo@codeaurora.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] libertas: fix a potential NULL pointer dereference
-Date:   Wed, 18 Sep 2019 22:05:00 +0530
-Message-Id: <1568824500-4243-1-git-send-email-allen.pais@oracle.com>
-X-Mailer: git-send-email 1.9.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9384 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1909180156
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9384 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1909180156
+        id S1732052AbfIRQ6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 12:58:23 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35339 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731251AbfIRQ6X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 12:58:23 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m15so619008qtq.2
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 09:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=pijQu6eKSGmfswoNeqLzyr9j9vooWK4CRXZzJARiJQM=;
+        b=ucGmsqQz9k0u/5Bjca6VbjLky8OK6vADef5dzOzIBYdnQaDwFDDtltyzx8gd/Cj7Ya
+         H1ybW7RtXmdg1B8gKXXU7KwG2SOD6523jCCzt4sRtS27pycoPLgYGH5yKJbvAkmxqpgi
+         m2qFpYam+UcYEnCLqm+XjrzPZWevD2htV2fpatQCjew7JDEYLP06K8uRFEFI7cevnQxL
+         O3Ir5kmgSoe6NsOfvJ+mA1Wb09w3ry+OBbMPhGfbSEN0E58hqhi4P3wv6EUHY4Mjjutg
+         PNgDoFWjy2om4g7Cy5UJU+CBmntCBcCbcG11NP2DaYa4VvtM9yjfCQOgrWOrMm4EEAi+
+         dZDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pijQu6eKSGmfswoNeqLzyr9j9vooWK4CRXZzJARiJQM=;
+        b=Q7VUrHt3/zMl6LoFju3nY1XE2jcf6TdhQz7DiS9pj0FKiNwy23PMgJVni3J40kx8tu
+         te6FN4+3PlAaXMnaf85mkrCFYnxeSOhkJqTAqH8PnmARBLyqNnmneGepPGHQL5yd1fX9
+         b7cbumrbyJzJzPEVBytFP0r3RUSfaVCWbQdl1h02K3LzhSLh1twrcBiIw4Fuw0uq3+Q9
+         L79umBH5rF402miqm3HrBOjRIElbFdA2WVBmwjHtLynvlDod8Xc8tPo98ii+LNiVMAOx
+         1FdFRSbFsaNd4v4+yETKoclSH8Gp8mBswAoZ56X685SXoSDJ4VSq29EX+Ozrxk7kxhE8
+         58EQ==
+X-Gm-Message-State: APjAAAWnuNbk9Lckr7feLOcBQ/Onc0nl3bvhILcItenkOMGFmYhA+hhn
+        WKZ8gqx6IDpwnyL+/Su7re9zTCCfL20=
+X-Google-Smtp-Source: APXvYqx1J/GD8FGmbXfzw1WnN8Cm2kUJYJ3TuM97xVl/Ox+SCe8TqOZipJ1jziRG8jDtnKI3QK7x2g==
+X-Received: by 2002:ac8:65c9:: with SMTP id t9mr4841010qto.312.1568825902066;
+        Wed, 18 Sep 2019 09:58:22 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.215])
+        by smtp.gmail.com with ESMTPSA id e4sm2631142qkl.135.2019.09.18.09.58.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 09:58:20 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id BFF18C4A54; Wed, 18 Sep 2019 13:58:17 -0300 (-03)
+Date:   Wed, 18 Sep 2019 13:58:17 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
+Message-ID: <20190918165817.GA3431@localhost.localdomain>
+References: <20190918072517.16037-1-steffen.klassert@secunet.com>
+ <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-alloc_workqueue is not checked for errors and as a result,
-a potential NULL dereference could occur.
+On Wed, Sep 18, 2019 at 12:17:08PM -0400, Willem de Bruijn wrote:
+> On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >
+> > This patchset adds support to do GRO/GSO by chaining packets
+> > of the same flow at the SKB frag_list pointer. This avoids
+> > the overhead to merge payloads into one big packet, and
+> > on the other end, if GSO is needed it avoids the overhead
+> > of splitting the big packet back to the native form.
+> >
+> > Patch 1 Enables UDP GRO by default.
+> >
+> > Patch 2 adds a netdev feature flag to enable listifyed GRO,
+> > this implements one of the configuration options discussed
+> > at netconf 2019.
+> >
+> > Patch 3 adds a netdev software feature set that defaults to off
+> > and assigns the new listifyed GRO feature flag to it.
+> >
+> > Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
+> >
+> > Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
+> > GRO supported socket is found.
+> 
+> Very nice feature, Steffen. Aside from questions around performance,
+> my only question is really how this relates to GSO_BY_FRAGS.
 
-Signed-off-by: Allen Pais <allen.pais@oracle.com>
----
- drivers/net/wireless/marvell/libertas/if_sdio.c | 5 +++++
- 1 file changed, 5 insertions(+)
+They do the exact same thing AFAICT: they GSO according to a
+pre-formatted list of fragments/packets, and not to a specific size
+(such as MSS).
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_sdio.c b/drivers/net/wireless/marvell/libertas/if_sdio.c
-index 242d884..30f1025 100644
---- a/drivers/net/wireless/marvell/libertas/if_sdio.c
-+++ b/drivers/net/wireless/marvell/libertas/if_sdio.c
-@@ -1179,6 +1179,10 @@ static int if_sdio_probe(struct sdio_func *func,
- 
- 	spin_lock_init(&card->lock);
- 	card->workqueue = alloc_workqueue("libertas_sdio", WQ_MEM_RECLAIM, 0);
-+	if (unlikely(!card->workqueue)) {
-+		ret = -ENOMEM;
-+		goto err_queue;
-+	}
- 	INIT_WORK(&card->packet_worker, if_sdio_host_to_card_worker);
- 	init_waitqueue_head(&card->pwron_waitq);
- 
-@@ -1230,6 +1234,7 @@ static int if_sdio_probe(struct sdio_func *func,
- 	lbs_remove_card(priv);
- free:
- 	destroy_workqueue(card->workqueue);
-+err_queue:
- 	while (card->packets) {
- 		packet = card->packets;
- 		card->packets = card->packets->next;
--- 
-1.9.1
+> 
+> More specifically, whether we can remove that in favor of using your
+> new skb_segment_list. That would actually be a big first step in
+> simplifying skb_segment back to something manageable.
 
+The main issue (that I know) on obsoleting GSO_BY_FRAGS is that
+dealing with frags instead of frag_list was considered easier to be
+offloaded, if ever attempted.  So this would be a step back on that
+aspect.  Other than this, it should be doable.
