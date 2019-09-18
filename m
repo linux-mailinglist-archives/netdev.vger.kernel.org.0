@@ -2,139 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73902B6A24
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 20:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DD6B6A32
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 20:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728523AbfIRSAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 14:00:33 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33111 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727000AbfIRSAd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 14:00:33 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x134so423919qkb.0;
-        Wed, 18 Sep 2019 11:00:32 -0700 (PDT)
+        id S1729373AbfIRSEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 14:04:51 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34180 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbfIRSEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 14:04:51 -0400
+Received: by mail-io1-f67.google.com with SMTP id q1so1421185ion.1;
+        Wed, 18 Sep 2019 11:04:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zhpRNFtQm1yjXMTnb8bMm5OpYtvJMh0HlV2y5blDtEM=;
-        b=ZEzcoZSUtpui/fhDhrN54rdTpTGKwoZ6uX0rTdIss6sbb/VIX1/E3tDib1Y+PPgo0f
-         +M45qjpffMJ9SDg7TBJvfEoRcg9khUYEOoX0gpmI8OEPdJqbXbKDLmuj8feSs7I662Sw
-         7/OJamOMaeTLNO2iXh6OC+n+9w8APFjosyEOPYFd7H+4SxMWkPbIq7zOcSnpkXGOiVXe
-         eKA5nufYabrQV+5KPb9ONV6rliJTUzP3xGdG4OwpoSM+sCeyiATQ6WvyJF70dHj+t/N5
-         veCkCeeYDzPL4MG1q9Q/qNJGdn2x0R7bT5F79D5HpCiBaKz4jBss6jPAgZFH+Z8LyDkG
-         uqKw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=upqoC8c2rSOEKiJW1ZDEjgjfH9qm+uaVc0P9OeAP7Hc=;
+        b=HMJ/Xs+F/Jz81h1wXx16MJIjcONMtaLJl29Wci2Qi/GJPzK/I+rAXs/+B9YVaHUdjZ
+         5/fF7OyepHwhNpnaiDkR/Pc1Adts0SnIrZVhdcPsAFvK3U/d5EVQee6e/Ma3AsQTwNI5
+         SD2Rz7W4Qi012mc4eDiyBeMKcaQNDa4R7nDjjSnbgakvBCVLO8J7o5J0SMiEZi+2zArs
+         XM0QKCip2qg5AA/D4S4gKHhir4UwW+hNlRGEv5MdNTmQ7GzBqmJCJ7feSRUxVyFAC3/t
+         eDJfQPs37rpL7Fp8lqJAIcyzvMTSuaVQtg9RIJXNa850jrwpYH56JeUYKwpihg2d8QrH
+         xxww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zhpRNFtQm1yjXMTnb8bMm5OpYtvJMh0HlV2y5blDtEM=;
-        b=N8shhbcZtON+6iDb2XMcCy1mU5rwhIJ7xxPtkT8VtV+M6K+YGW8j23MDnNuLEl6RBa
-         k6aTOUFCwuWaJG1PebvgmwUb7cXZeyu+Y5YXZdcGwr0v/Ce58wTvpFTO/BjCqa58sBsz
-         zh9uzlFMVy50N+h7UFAEbtXhzyep0v8qwViQPAPjhZTqcUdLaQZMQuszzVSmKFmnMiee
-         hsDu4/sbB5KEusCD4Sgr9C29A5hYAg2WPHEYaKr3pBPAuUW6i8Brb39HXHsfeRUtqh4m
-         5HteKeY7+YDAoKQVDA0QUFyEZPh5J8q2bBgBNiE3o9n6ZlCSJ4P0tb4m7cg5eCyaucK5
-         2OJg==
-X-Gm-Message-State: APjAAAUXALQXO4oszvzRRF0daCpIM3STL1atjqXpYIae5wU/M22fK0YY
-        b5fAKPqYcLjlKZooRsmLGDEWocvdx3DKCCVkU8k=
-X-Google-Smtp-Source: APXvYqyRjCfA/ckV6HS+0hfw515lkee38RTR3Ac9WQVztopTWGkRDkhy7exZbrWRAiEYWHh9OnpQc+CZoKbe/bdvOz8=
-X-Received: by 2002:a37:4e55:: with SMTP id c82mr5515904qkb.437.1568829631963;
- Wed, 18 Sep 2019 11:00:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190911190218.22628-1-danieltimlee@gmail.com>
- <CAEf4Bza7tFdDP0=Nk4UVtWn68Kr7oYZziUodN40a=ZKne4-dEQ@mail.gmail.com> <CAEKGpzjUu7Qr0PbU6Es=7J6KAsyr9K1qZvFoWxZ-dhPsD0_8Kg@mail.gmail.com>
-In-Reply-To: <CAEKGpzjUu7Qr0PbU6Es=7J6KAsyr9K1qZvFoWxZ-dhPsD0_8Kg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 18 Sep 2019 11:00:20 -0700
-Message-ID: <CAEf4BzY_EAf9pH7YvL9XAXPUr9+g5Q7N_n45XBufdxkfDbf3aQ@mail.gmail.com>
-Subject: Re: [bpf-next,v3] samples: bpf: add max_pckt_size option at xdp_adjust_tail
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=upqoC8c2rSOEKiJW1ZDEjgjfH9qm+uaVc0P9OeAP7Hc=;
+        b=XpEaJpO2SDTt0kilP4b4bXRPGn+tKdama3n3KQef8dD6CXkULflUBbY8RBS50kcRbM
+         db1wPCu0ZpM4ArBCePvl3Z4SxlSg7W2v7ueFKe2ZyoDY1awKKjG4caksiq98VvtAMJPk
+         Q8s/JcVQmGmOqqghgziQu84cUmLg4jT2U/rbs3AfHWlUWvQg7hyat+6ttE/5k6KP8DBe
+         qXyaWA/kaUGSpUAy1tdgqmXHCfHIy+yjnRhz1qfMcSOY/30PHWIwOVBYdJpDFy0MNWmo
+         ot4dxcTLHgQnOk8QrvfXMrQvXuYMJ4eeBhiDeJg3cqSegwVYu1OKkggqnOuQtddu8eSK
+         8mIA==
+X-Gm-Message-State: APjAAAWIbGciqo1seYPFgme5VXA8/0zysT8E9bwCFWFoyMwjBBKk1pQE
+        rY+TWzdFefPVGc357bP9Twr44KTZiL8=
+X-Google-Smtp-Source: APXvYqwHs7c0OLT+gaaqTz2saOmiZoGr8G5n1g5ahrJeKQJo+RfAJ5OskK9SLwyF9bQhwlmMk3puuA==
+X-Received: by 2002:a5d:8415:: with SMTP id i21mr6605162ion.86.1568829888964;
+        Wed, 18 Sep 2019 11:04:48 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id s5sm4931032iol.71.2019.09.18.11.04.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 11:04:48 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     andrew@lunn.ch
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2] net: dsa: sja1105: prevent leaking memory
+Date:   Wed, 18 Sep 2019 13:04:38 -0500
+Message-Id: <20190918180439.12441-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190918172106.GN9591@lunn.ch>
+References: <20190918172106.GN9591@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 10:37 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> On Tue, Sep 17, 2019 at 1:04 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Sep 11, 2019 at 2:33 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> > >
-> > > Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
-> > > to 600. To make this size flexible, a new map 'pcktsz' is added.
-> > >
-> > > By updating new packet size to this map from the userland,
-> > > xdp_adjust_tail_kern.o will use this value as a new max_pckt_size.
-> > >
-> > > If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
-> > > will be 600 as a default.
-> > >
-> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > >
-> > > ---
-> > > Changes in v2:
-> > >     - Change the helper to fetch map from 'bpf_map__next' to
-> > >     'bpf_object__find_map_fd_by_name'.
-> > >
-> > >  samples/bpf/xdp_adjust_tail_kern.c | 23 +++++++++++++++++++----
-> > >  samples/bpf/xdp_adjust_tail_user.c | 28 ++++++++++++++++++++++------
-> > >  2 files changed, 41 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
-> > > index 411fdb21f8bc..d6d84ffe6a7a 100644
-> > > --- a/samples/bpf/xdp_adjust_tail_kern.c
-> > > +++ b/samples/bpf/xdp_adjust_tail_kern.c
-> > > @@ -25,6 +25,13 @@
-> > >  #define ICMP_TOOBIG_SIZE 98
-> > >  #define ICMP_TOOBIG_PAYLOAD_SIZE 92
-> > >
-> > > +struct bpf_map_def SEC("maps") pcktsz = {
-> > > +       .type = BPF_MAP_TYPE_ARRAY,
-> > > +       .key_size = sizeof(__u32),
-> > > +       .value_size = sizeof(__u32),
-> > > +       .max_entries = 1,
-> > > +};
-> > > +
-> >
-> > Hey Daniel,
-> >
-> > This looks like an ideal use case for global variables on BPF side. I
-> > think it's much cleaner and will make BPF side of things simpler.
-> > Would you mind giving global data a spin instead of adding this map?
-> >
->
-> Sure thing!
-> But, I'm not sure there is global variables for BPF?
-> AFAIK, there aren't any support for global variables yet in BPF
-> program (_kern.c).
->
->     # when defining global variable at _kern.c
->     libbpf: bpf: relocation: not yet supported relo for non-static
-> global '<var>' variable found in insns[39].code 0x18
+In sja1105_static_config_upload, in two cases memory is leaked: when
+static_config_buf_prepare_for_upload fails and when sja1105_inhibit_tx
+fails. In both cases config_buf should be released.
 
-just what it says: use static global variable (also volatile to
-prevent compiler optimizations) :)
+Fixes: 8aa9ebccae876 (avoid leaking config_buf)
+Fixes: 1a4c69406cc1c (avoid leaking config_buf)
 
-static volatile __u32 pcktsz; /* this should work */
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/dsa/sja1105/sja1105_spi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
->
-> By the way, thanks for the review.
->
-> Thanks,
-> Daniel
->
->
-> > >  struct bpf_map_def SEC("maps") icmpcnt = {
-> > >         .type = BPF_MAP_TYPE_ARRAY,
-> > >         .key_size = sizeof(__u32),
-> > > @@ -64,7 +71,8 @@ static __always_inline void ipv4_csum(void *data_start, int data_size,
-> > >         *csum = csum_fold_helper(*csum);
-> > >  }
-> > >
-> >
-> > [...]
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 84dc603138cf..58dd37ecde17 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -409,7 +409,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
+ 	rc = static_config_buf_prepare_for_upload(priv, config_buf, buf_len);
+ 	if (rc < 0) {
+ 		dev_err(dev, "Invalid config, cannot upload\n");
+-		return -EINVAL;
++		rc = -EINVAL;
++		goto out;
+ 	}
+ 	/* Prevent PHY jabbering during switch reset by inhibiting
+ 	 * Tx on all ports and waiting for current packet to drain.
+@@ -418,7 +419,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
+ 	rc = sja1105_inhibit_tx(priv, port_bitmap, true);
+ 	if (rc < 0) {
+ 		dev_err(dev, "Failed to inhibit Tx on ports\n");
+-		return -ENXIO;
++		rc = -ENXIO;
++		goto out;
+ 	}
+ 	/* Wait for an eventual egress packet to finish transmission
+ 	 * (reach IFG). It is guaranteed that a second one will not
+-- 
+2.17.1
+
