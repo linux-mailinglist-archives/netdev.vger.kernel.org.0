@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C903B6352
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:35:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E67FB6400
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 15:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731142AbfIRMfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 08:35:03 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:44648 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbfIRMfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 08:35:03 -0400
-Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id C1C8B25AF19;
-        Wed, 18 Sep 2019 22:35:00 +1000 (AEST)
-Received: by reginn.horms.nl (Postfix, from userid 7100)
-        id EBCA9942C13; Wed, 18 Sep 2019 14:34:57 +0200 (CEST)
-Date:   Wed, 18 Sep 2019 14:34:57 +0200
-From:   Simon Horman <horms@verge.net.au>
-To:     Lars Poeschel <poeschel@lemonage.de>
-Cc:     Allison Randal <allison@lohutok.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jilayne Lovejoy <opensource@jilayne.com>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v7 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
-Message-ID: <20190918123457.wg6mtygr6cboqsp6@verge.net.au>
-References: <20190910093129.1844-1-poeschel@lemonage.de>
+        id S1729247AbfIRNFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 09:05:52 -0400
+Received: from forward102j.mail.yandex.net ([5.45.198.243]:57852 "EHLO
+        forward102j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727001AbfIRNFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 09:05:52 -0400
+Received: from forward103q.mail.yandex.net (forward103q.mail.yandex.net [IPv6:2a02:6b8:c0e:50:0:640:b21c:d009])
+        by forward102j.mail.yandex.net (Yandex) with ESMTP id 645C9F2016B
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 16:05:50 +0300 (MSK)
+Received: from mxback12q.mail.yandex.net (mxback12q.mail.yandex.net [IPv6:2a02:6b8:c0e:1b3:0:640:3818:d096])
+        by forward103q.mail.yandex.net (Yandex) with ESMTP id 5DD7C61E0013
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 16:05:50 +0300 (MSK)
+Received: from vla5-b45cc32a2812.qloud-c.yandex.net (vla5-b45cc32a2812.qloud-c.yandex.net [2a02:6b8:c18:3508:0:640:b45c:c32a])
+        by mxback12q.mail.yandex.net (nwsmtp/Yandex) with ESMTP id B24Ss4pkEF-5opiLSEx;
+        Wed, 18 Sep 2019 16:05:50 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1568811950;
+        bh=wY/RXOWng3m8ygV9MzH4gHBZGXDSgeDF6yaCzxUfoVQ=;
+        h=Subject:To:From:Date:Message-ID;
+        b=Xtw3I4+KX1XvMv+OvPtgT4Ho7xoz6vLSNDOmWhOTHWRdLnAvTnUKGB/K6pEomUKA8
+         MtX32QePnaNJ66w3ooxXDkQXWoWfVsvITMSleMWjQq1R+HV3hf54UYIjT6HGRo0pH2
+         LUbhgXAY+EWYBvsyve1wS1LLghcuaKtU2zv5eqpA=
+Authentication-Results: mxback12q.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by vla5-b45cc32a2812.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id w6ktzRrrfw-5nqqVKKI;
+        Wed, 18 Sep 2019 16:05:49 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Date:   Wed, 18 Sep 2019 16:05:45 +0300
+From:   Aleksei Zakharov <zaharov@selectel.ru>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] bonding/802.3ad: fix slave initialization states race
+Message-ID: <20190918130545.GA11133@yandex.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190910093129.1844-1-poeschel@lemonage.de>
-Organisation: Horms Solutions BV
-User-Agent: NeoMutt/20170113 (1.7.2)
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 10, 2019 at 11:31:21AM +0200, Lars Poeschel wrote:
-> It is favourable to have one unified compatible string for devices that
-> have multiple interfaces. So this adds simply "pn532" as the devicetree
-> binding compatible string and makes a note that the old ones are
-> deprecated.
+Once a while, one of 802.3ad slaves fails to initialize and hangs in
+BOND_LINK_FAIL state. Commit 334031219a84 ("bonding/802.3ad: fix slave
+link initialization transition states") checks slave->last_link_up. But
+link can still hang in weird state.
+After physical link comes up it sends first two LACPDU messages and
+doesn't work properly after that. It doesn't send or receive LACPDU.
+Once it happens, the only message in dmesg is:
+bond1: link status up again after 0 ms for interface eth2
 
-Do you also need to update
-Documentation/devicetree/bindings/net/nfc/pn533-i2c.txt
-to both document the new compat string and deprecate the old ones?
+This behavior can be reproduced (not every time):
+1. Set slave link down
+2. Wait for 1-3 seconds
+3. Set slave link up
 
-> Cc: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
-> ---
-> Changes in v6:
-> - Rebased the patch series on v5.3-rc5
-> 
-> Changes in v3:
-> - This patch is new in v3
-> 
->  drivers/nfc/pn533/i2c.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
-> index 1832cd921ea7..1abd40398a5a 100644
-> --- a/drivers/nfc/pn533/i2c.c
-> +++ b/drivers/nfc/pn533/i2c.c
-> @@ -245,6 +245,11 @@ static int pn533_i2c_remove(struct i2c_client *client)
->  }
->  
->  static const struct of_device_id of_pn533_i2c_match[] = {
-> +	{ .compatible = "nxp,pn532", },
-> +	/*
-> +	 * NOTE: The use of the compatibles with the trailing "...-i2c" is
-> +	 * deprecated and will be removed.
-> +	 */
->  	{ .compatible = "nxp,pn533-i2c", },
->  	{ .compatible = "nxp,pn532-i2c", },
->  	{},
-> -- 
-> 2.23.0
-> 
+The fix is to check slave->link before setting it to BOND_LINK_FAIL or
+BOND_LINK_DOWN state. If got invalid Speed/Dupex values and link is in
+BOND_LINK_UP state, mark it as BOND_LINK_FAIL; otherwise mark it as
+BOND_LINK_DOWN.
+
+Fixes: 334031219a84 ("bonding/802.3ad: fix slave link initialization
+transition states")
+Signed-off-by: Aleksei Zakharov <zakharov.a.g@yandex.ru>
+---
+ drivers/net/bonding/bond_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 931d9d935686..a28776d8f33f 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3135,7 +3135,7 @@ static int bond_slave_netdev_event(unsigned long event,
+ 		 */
+ 		if (bond_update_speed_duplex(slave) &&
+ 		    BOND_MODE(bond) == BOND_MODE_8023AD) {
+-			if (slave->last_link_up)
++			if (slave->link == BOND_LINK_UP)
+ 				slave->link = BOND_LINK_FAIL;
+ 			else
+ 				slave->link = BOND_LINK_DOWN;
+-- 
+2.17.1
+
