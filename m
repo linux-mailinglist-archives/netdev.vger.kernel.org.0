@@ -2,119 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A6FB5AF0
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 07:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 110ACB5B37
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 07:51:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbfIRFeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 01:34:04 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:37598 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727152AbfIRFeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 01:34:03 -0400
-Received: by mail-qk1-f195.google.com with SMTP id u184so6760971qkd.4;
-        Tue, 17 Sep 2019 22:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P2KTni67QeY65KHrP8GaDvnakNrehjhBO4czvpB338c=;
-        b=B7CIqFuM8ETsZhGVqNQ1XsZXtm3fq3qmbF59nybqfWLI0FHkTtCdYNcsiU/l05Qt8S
-         zOMGPMXWOILvyxb+Us0Zv6uZc+YOo+k1oeG2N4OViCmEjMeIu9SGmcbC2M9mXnCG4pxL
-         Kny1RH+pr5PTZi+01X+xr/tR/nWHqnAoT+P5d8euEpLPPwEB2o2tuFSDM0OgVQ7rWBJ1
-         aAUTwoBca0mOuu5Rt29zTw1hhYEcs7P+Lku0yIuEsLI2fHAkRCCdZI77N4b8LmKUPdm0
-         M2Pwv/yjBODbibtiElZrsGWeerNf0LXDk2uUuXeNeRuTHmoEa9NRYHcnxEgiRIh3xUHA
-         P3EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P2KTni67QeY65KHrP8GaDvnakNrehjhBO4czvpB338c=;
-        b=mGMRaCGmz0TO2Oa1oLPExRrwf+T0qAJEnxRZhQbFH0aTqQHrIH4I+0SOwjg0kjts6E
-         4NGY1KPdpiHJkWQRl3iZrbi3kYpdySCTItZm0m3kMdLLiQkMBfIgZ54JYejVo9J9E354
-         ICFWRe7uveRQ3ffb+uNFUu8yps7LsAY5ja/e3neWfX34PLuoGb7/blmxuOaG6xto72nt
-         LQe7MApNu8+rflMbnEGbIBYjym6YUpBqfxMAhNcSwn+n8Z2jjbLi1koHoxkiQ0EDh2Bh
-         gnUXSJPrD2XqPZNNDjBY2B6zKImsWDfI4MDlagAhzaVTD9CkjXkWnEXFBsHfpYZlIzQL
-         NXvw==
-X-Gm-Message-State: APjAAAXsCuH2UyYErXpkIM8nT/JckAH2G9Ykvb9K5qN43ML4z7DKYqZy
-        ZAY95MmWc+KLy0CUGlKja425NozMxx7teX2eL7c=
-X-Google-Smtp-Source: APXvYqxng9krzF0F82a4JSVaYVRwft2L4XAMet0T5vGr6cKWUXmgMUSthsucqalRfBASWbpPHSv4KlcK9XTrLPOhJbs=
-X-Received: by 2002:a37:4e55:: with SMTP id c82mr2257626qkb.437.1568784842596;
- Tue, 17 Sep 2019 22:34:02 -0700 (PDT)
+        id S1728639AbfIRFvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 01:51:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59050 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727632AbfIRFvf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 01:51:35 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 08FEA30821AE;
+        Wed, 18 Sep 2019 05:51:35 +0000 (UTC)
+Received: from [10.72.12.111] (ovpn-12-111.pek2.redhat.com [10.72.12.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A7285D6A5;
+        Wed, 18 Sep 2019 05:51:23 +0000 (UTC)
+Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+References: <20190917010204.30376-1-tiwei.bie@intel.com>
+ <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
+ <20190917105801.GA24855@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
+Date:   Wed, 18 Sep 2019 13:51:21 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 17 Sep 2019 22:33:51 -0700
-Message-ID: <CAEf4BzbdAuns7RKfPTbc2+WQF=vz4FMaZWQ0JjE1u_CsGACHxg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 00/14] samples: bpf: improve/fix cross-compilation
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        sergei.shtylyov@cogentembedded.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190917105801.GA24855@___>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 18 Sep 2019 05:51:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 16, 2019 at 4:02 AM Ivan Khoronzhuk
-<ivan.khoronzhuk@linaro.org> wrote:
+
+On 2019/9/17 下午6:58, Tiwei Bie wrote:
+> On Tue, Sep 17, 2019 at 11:32:03AM +0800, Jason Wang wrote:
+>> On 2019/9/17 上午9:02, Tiwei Bie wrote:
+>>> This RFC is to demonstrate below ideas,
+>>>
+>>> a) Build vhost-mdev on top of the same abstraction defined in
+>>>      the virtio-mdev series [1];
+>>>
+>>> b) Introduce /dev/vhost-mdev to do vhost ioctls and support
+>>>      setting mdev device as backend;
+>>>
+>>> Now the userspace API looks like this:
+>>>
+>>> - Userspace generates a compatible mdev device;
+>>>
+>>> - Userspace opens this mdev device with VFIO API (including
+>>>     doing IOMMU programming for this mdev device with VFIO's
+>>>     container/group based interface);
+>>>
+>>> - Userspace opens /dev/vhost-mdev and gets vhost fd;
+>>>
+>>> - Userspace uses vhost ioctls to setup vhost (userspace should
+>>>     do VHOST_MDEV_SET_BACKEND ioctl with VFIO group fd and device
+>>>     fd first before doing other vhost ioctls);
+>>>
+>>> Only compile test has been done for this series for now.
+>>
+>> Have a hard thought on the architecture:
+> Thanks a lot! Do appreciate it!
 >
+>> 1) Create a vhost char device and pass vfio mdev device fd to it as a
+>> backend and translate vhost-mdev ioctl to virtio mdev transport (e.g
+>> read/write). DMA was done through the VFIO DMA mapping on the container that
+>> is attached.
+> Yeah, that's what we are doing in this series.
+>
+>> We have two more choices:
+>>
+>> 2) Use vfio-mdev but do not create vhost-mdev device, instead, just
+>> implement vhost ioctl on vfio_device_ops, and translate them into
+>> virtio-mdev transport or just pass ioctl to parent.
+> Yeah. Instead of introducing /dev/vhost-mdev char device, do
+> vhost ioctls on VFIO device fd directly. That's what we did
+> in RFC v3.
+>
+>> 3) Don't use vfio-mdev, create a new vhost-mdev driver, during probe still
+>> try to add dev to vfio group and talk to parent with device specific ops
+> If my understanding is correct, this means we need to introduce
+> a new VFIO device driver to replace the existing vfio-mdev driver
+> in our case. Below is a quick draft just to show my understanding:
+>
+> #include <linux/init.h>
+> #include <linux/module.h>
+> #include <linux/device.h>
+> #include <linux/kernel.h>
+> #include <linux/slab.h>
+> #include <linux/vfio.h>
+> #include <linux/mdev.h>
+>
+> #include "mdev_private.h"
+>
+> /* XXX: we need a proper way to include below vhost header. */
+> #include "../../vhost/vhost.h"
+>
+> static int vfio_vhost_mdev_open(void *device_data)
+> {
+> 	if (!try_module_get(THIS_MODULE))
+> 		return -ENODEV;
+>
+> 	/* ... */
+> 	vhost_dev_init(...);
+>
+> 	return 0;
+> }
+>
+> static void vfio_vhost_mdev_release(void *device_data)
+> {
+> 	/* ... */
+> 	module_put(THIS_MODULE);
+> }
+>
+> static long vfio_vhost_mdev_unlocked_ioctl(void *device_data,
+> 					   unsigned int cmd, unsigned long arg)
+> {
+> 	struct mdev_device *mdev = device_data;
+> 	struct mdev_parent *parent = mdev->parent;
+>
+> 	/*
+> 	 * Use vhost ioctls.
+> 	 *
+> 	 * We will have a different parent_ops design.
+> 	 * And potentially, we can share the same parent_ops
+> 	 * with virtio_mdev.
+> 	 */
+> 	switch (cmd) {
+> 	case VHOST_GET_FEATURES:
+> 		parent->ops->get_features(mdev, ...);
+> 		break;
+> 	/* ... */
+> 	}
+>
+> 	return 0;
+> }
+>
+> static ssize_t vfio_vhost_mdev_read(void *device_data, char __user *buf,
+> 				    size_t count, loff_t *ppos)
+> {
+> 	/* ... */
+> 	return 0;
+> }
+>
+> static ssize_t vfio_vhost_mdev_write(void *device_data, const char __user *buf,
+> 				     size_t count, loff_t *ppos)
+> {
+> 	/* ... */
+> 	return 0;
+> }
+>
+> static int vfio_vhost_mdev_mmap(void *device_data, struct vm_area_struct *vma)
+> {
+> 	/* ... */
+> 	return 0;
+> }
+>
+> static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+> 	.name		= "vfio-vhost-mdev",
+> 	.open		= vfio_vhost_mdev_open,
+> 	.release	= vfio_vhost_mdev_release,
+> 	.ioctl		= vfio_vhost_mdev_unlocked_ioctl,
+> 	.read		= vfio_vhost_mdev_read,
+> 	.write		= vfio_vhost_mdev_write,
+> 	.mmap		= vfio_vhost_mdev_mmap,
+> };
+>
+> static int vfio_vhost_mdev_probe(struct device *dev)
+> {
+> 	struct mdev_device *mdev = to_mdev_device(dev);
+>
+> 	/* ... */
+> 	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
+> }
+>
+> static void vfio_vhost_mdev_remove(struct device *dev)
+> {
+> 	/* ... */
+> 	vfio_del_group_dev(dev);
+> }
+>
+> static struct mdev_driver vfio_vhost_mdev_driver = {
+> 	.name	= "vfio_vhost_mdev",
+> 	.probe	= vfio_vhost_mdev_probe,
+> 	.remove	= vfio_vhost_mdev_remove,
+> };
+>
+> static int __init vfio_vhost_mdev_init(void)
+> {
+> 	return mdev_register_driver(&vfio_vhost_mdev_driver, THIS_MODULE);
+> }
+> module_init(vfio_vhost_mdev_init)
+>
+> static void __exit vfio_vhost_mdev_exit(void)
+> {
+> 	mdev_unregister_driver(&vfio_vhost_mdev_driver);
+> }
+> module_exit(vfio_vhost_mdev_exit)
 
-Thanks for these changes, they look good overall. It would be great if
-someone else could test and validate that cross-compilation works not
-just in your environment and generated binaries successfully run on
-target machines, though...
 
-[...]
+Yes, something like this basically.
+
+
+>> So I have some questions:
+>>
+>> 1) Compared to method 2, what's the advantage of creating a new vhost char
+>> device? I guess it's for keep the API compatibility?
+> One benefit is that we can avoid doing vhost ioctls on
+> VFIO device fd.
+
+
+Yes, but any benefit from doing this?
 
 
 >
-> Ivan Khoronzhuk (14):
->   samples: bpf: makefile: fix HDR_PROBE "echo"
->   samples: bpf: makefile: fix cookie_uid_helper_example obj build
->   samples: bpf: makefile: use --target from cross-compile
->   samples: bpf: use own EXTRA_CFLAGS for clang commands
->   samples: bpf: makefile: use __LINUX_ARM_ARCH__ selector for arm
->   samples: bpf: makefile: drop unnecessarily inclusion for bpf_load
->   samples: bpf: add makefile.target for separate CC target build
->   samples: bpf: makefile: base target programs rules on Makefile.target
->   samples: bpf: makefile: use own flags but not host when cross compile
->   samples: bpf: makefile: use target CC environment for HDR_PROBE
->   libbpf: makefile: add C/CXX/LDFLAGS to libbpf.so and test_libpf
->     targets
->   samples: bpf: makefile: provide C/CXX/LD flags to libbpf
->   samples: bpf: makefile: add sysroot support
->   samples: bpf: README: add preparation steps and sysroot info
+>> 2) For method 2, is there any easy way for user/admin to distinguish e.g
+>> ordinary vfio-mdev for vhost from ordinary vfio-mdev?
+> I think device-api could be a choice.
+
+
+Ok.
+
+
 >
-
-Prefixes like "samples: bpf: makefile: " are very verbose without
-adding much value. We've been converging to essentially this set of
-prefixes:
-
-- "libbpf:" for libbpf changes
-- "bpftool:" for bpftool changes
-- "selftests/bpf:" for bpf selftests
-- "samples/bpf:" for bpf samples
-
-There is no need to prefix with "makefile: " either. Please update
-your patch subjects in the next version. Thanks!
-
->  samples/bpf/Makefile        | 179 +++++++++++++++++++++---------------
->  samples/bpf/Makefile.target |  75 +++++++++++++++
->  samples/bpf/README.rst      |  41 ++++++++-
->  tools/lib/bpf/Makefile      |  11 ++-
->  4 files changed, 225 insertions(+), 81 deletions(-)
->  create mode 100644 samples/bpf/Makefile.target
+>> I saw you introduce
+>> ops matching helper but it's not friendly to management.
+> The ops matching helper is just to check whether a given
+> vfio-device is based on a mdev device.
 >
-> --
-> 2.17.1
+>> 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
+>> assumes the parameter comes from userspace, it prevents support kernel
+>> virtio drivers.
+>>
+>> 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
+>> we can use device specific ops instead of VFIO ones, then we can have a
+>> common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
+> As the above draft shows, this requires introducing a new
+> VFIO device driver. I think Alex's opinion matters here.
+
+
+Yes, it is.
+
+Thanks
+
+
+> Thanks,
+> Tiwei
 >
+>> What's your thoughts?
+>>
+>> Thanks
+>>
+>>
+>>> RFCv3: https://patchwork.kernel.org/patch/11117785/
+>>>
+>>> [1] https://lkml.org/lkml/2019/9/10/135
+>>>
+>>> Tiwei Bie (3):
+>>>     vfio: support getting vfio device from device fd
+>>>     vfio: support checking vfio driver by device ops
+>>>     vhost: introduce mdev based hardware backend
+>>>
+>>>    drivers/vfio/mdev/vfio_mdev.c    |   3 +-
+>>>    drivers/vfio/vfio.c              |  32 +++
+>>>    drivers/vhost/Kconfig            |   9 +
+>>>    drivers/vhost/Makefile           |   3 +
+>>>    drivers/vhost/mdev.c             | 462 +++++++++++++++++++++++++++++++
+>>>    drivers/vhost/vhost.c            |  39 ++-
+>>>    drivers/vhost/vhost.h            |   6 +
+>>>    include/linux/vfio.h             |  11 +
+>>>    include/uapi/linux/vhost.h       |  10 +
+>>>    include/uapi/linux/vhost_types.h |   5 +
+>>>    10 files changed, 573 insertions(+), 7 deletions(-)
+>>>    create mode 100644 drivers/vhost/mdev.c
+>>>
