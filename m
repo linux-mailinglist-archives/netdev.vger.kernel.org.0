@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8664CB5DFA
+	by mail.lfdr.de (Postfix) with ESMTP id F045BB5DFB
 	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728870AbfIRHZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 03:25:43 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:60576 "EHLO a.mx.secunet.com"
+        id S1728882AbfIRHZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 03:25:44 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:60590 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728599AbfIRHZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726077AbfIRHZl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 18 Sep 2019 03:25:41 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id CD6EB20569;
-        Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 5FDEB205B5;
+        Wed, 18 Sep 2019 09:25:39 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id aHTvaL7FX_Nz; Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
+        with ESMTP id uVjPs_3IHLsX; Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 85E412056D;
-        Wed, 18 Sep 2019 09:25:37 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 100E320422;
+        Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Sep 2019
  09:25:36 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 3C8973180022;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 43D2C3180024;
  Wed, 18 Sep 2019 09:25:37 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     <netdev@vger.kernel.org>
 CC:     Steffen Klassert <steffen.klassert@secunet.com>,
         Willem de Bruijn <willemb@google.com>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH RFC v3 4/5] net: Support GRO/GSO fraglist chaining.
-Date:   Wed, 18 Sep 2019 09:25:16 +0200
-Message-ID: <20190918072517.16037-5-steffen.klassert@secunet.com>
+Subject: [PATCH RFC v3 5/5] udp: Support UDP fraglist GRO/GSO.
+Date:   Wed, 18 Sep 2019 09:25:17 +0200
+Message-ID: <20190918072517.16037-6-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190918072517.16037-1-steffen.klassert@secunet.com>
 References: <20190918072517.16037-1-steffen.klassert@secunet.com>
@@ -47,194 +47,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the core functions to chain/unchain
-GSO skbs at the frag_list pointer. This also adds
-a new GSO type SKB_GSO_FRAGLIST and a is_flist
-flag to napi_gro_cb which indicates that this
-flow will be GROed by fraglist chaining.
+This patch extends UDP GRO to support fraglist GRO/GSO
+by using the previously introduced infrastructure.
+All UDP packets that are not targeted to a GRO capable
+UDP sockets are going to fraglist GRO now (local input
+and forward).
 
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/linux/netdevice.h |   4 +-
- include/linux/skbuff.h    |   4 ++
- net/core/dev.c            |   2 +-
- net/core/skbuff.c         | 106 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 114 insertions(+), 2 deletions(-)
+ net/ipv4/udp_offload.c | 61 +++++++++++++++++++++++++++++++++++++-----
+ net/ipv6/udp_offload.c |  9 +++++++
+ 2 files changed, 64 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index d7d5626002e9..e97ca3e51466 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2306,7 +2306,8 @@ struct napi_gro_cb {
- 	/* Number of gro_receive callbacks this packet already went through */
- 	u8 recursion_counter:4;
- 
--	/* 1 bit hole */
-+	/* GRO is done by frag_list pointer chaining. */
-+	u8	is_flist:1;
- 
- 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
- 	__wsum	csum;
-@@ -2656,6 +2657,7 @@ struct net_device *dev_get_by_napi_id(unsigned int napi_id);
- int netdev_get_name(struct net *net, char *name, int ifindex);
- int dev_restart(struct net_device *dev);
- int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
-+int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb);
- 
- static inline unsigned int skb_gro_offset(const struct sk_buff *skb)
- {
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 028e684fa974..3d5fd0a0eea7 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -595,6 +595,8 @@ enum {
- 	SKB_GSO_UDP = 1 << 16,
- 
- 	SKB_GSO_UDP_L4 = 1 << 17,
-+
-+	SKB_GSO_FRAGLIST = 1 << 18,
- };
- 
- #if BITS_PER_LONG > 32
-@@ -3509,6 +3511,8 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet);
- bool skb_gso_validate_network_len(const struct sk_buff *skb, unsigned int mtu);
- bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len);
- struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
-+struct sk_buff *skb_segment_list(struct sk_buff *skb, netdev_features_t features,
-+				 unsigned int offset);
- struct sk_buff *skb_vlan_untag(struct sk_buff *skb);
- int skb_ensure_writable(struct sk_buff *skb, int write_len);
- int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index cc0bbec0f1d7..f2a66198154d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3109,7 +3109,7 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
- 
- 	segs = skb_mac_gso_segment(skb, features);
- 
--	if (unlikely(skb_needs_check(skb, tx_path) && !IS_ERR(segs)))
-+	if (segs != skb && unlikely(skb_needs_check(skb, tx_path) && !IS_ERR(segs)))
- 		skb_warn_bad_offload(skb);
- 
- 	return segs;
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 2b40b5a9425b..3ff56677a6fb 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3638,6 +3638,112 @@ static inline skb_frag_t skb_head_frag_to_page_desc(struct sk_buff *frag_skb)
- 	return head_frag;
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index e0b835890507..37daafb06d4c 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -184,6 +184,20 @@ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
  }
+ EXPORT_SYMBOL(skb_udp_tunnel_segment);
  
-+struct sk_buff *skb_segment_list(struct sk_buff *skb,
-+				 netdev_features_t features,
-+				 unsigned int offset)
++static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
++					      netdev_features_t features)
 +{
-+	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
-+	unsigned int tnl_hlen = skb_tnl_header_len(skb);
-+	unsigned int delta_truesize = 0;
-+	unsigned int delta_len = 0;
-+	struct sk_buff *tail = NULL;
-+	struct sk_buff *nskb;
++	unsigned int mss = skb_shinfo(skb)->gso_size;
 +
-+	skb_push(skb, -skb_network_offset(skb) + offset);
++	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
++	if (IS_ERR(skb))
++		return skb;
 +
-+	skb_shinfo(skb)->frag_list = NULL;
-+
-+	do {
-+		nskb = list_skb;
-+		list_skb = list_skb->next;
-+
-+		if (!tail)
-+			skb->next = nskb;
-+		else
-+			tail->next = nskb;
-+
-+		tail = nskb;
-+
-+		delta_len += nskb->len;
-+		delta_truesize += nskb->truesize;
-+
-+		skb_push(nskb, -skb_network_offset(nskb) + offset);
-+
-+		if (!secpath_exists(nskb))
-+			__skb_ext_copy(nskb, skb);
-+
-+		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
-+
-+		nskb->ip_summed = skb->ip_summed;
-+		nskb->csum_valid = skb->csum_valid;
-+		nskb->tstamp = skb->tstamp;
-+		nskb->dev = skb->dev;
-+		nskb->queue_mapping = skb->queue_mapping;
-+
-+		nskb->mac_len = skb->mac_len;
-+		nskb->mac_header = skb->mac_header;
-+		nskb->transport_header = skb->transport_header;
-+		nskb->network_header = skb->network_header;
-+		skb_dst_copy(nskb, skb);
-+
-+		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
-+						 nskb->data - tnl_hlen,
-+						 offset + tnl_hlen);
-+
-+		if (skb_needs_linearize(nskb, features) &&
-+		    __skb_linearize(nskb))
-+			goto err_linearize;
-+
-+	} while (list_skb);
-+
-+	skb->truesize = skb->truesize - delta_truesize;
-+	skb->data_len = skb->data_len - delta_len;
-+	skb->len = skb->len - delta_len;
-+
-+	skb_gso_reset(skb);
-+
-+	skb->prev = tail;
-+
-+	if (skb_needs_linearize(skb, features) &&
-+	    __skb_linearize(skb))
-+		goto err_linearize;
-+
-+	skb_get(skb);
++	udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
 +
 +	return skb;
-+
-+err_linearize:
-+	kfree_skb_list(skb->next);
-+	skb->next = NULL;
-+	return ERR_PTR(-ENOMEM);
 +}
-+EXPORT_SYMBOL_GPL(skb_segment_list);
 +
-+int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
-+{
-+	if (unlikely(p->len + skb->len >= 65536))
-+		return -E2BIG;
+ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+ 				  netdev_features_t features)
+ {
+@@ -196,6 +210,9 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+ 	__sum16 check;
+ 	__be16 newlen;
+ 
++	if (skb_shinfo(gso_skb)->gso_type & SKB_GSO_FRAGLIST)
++		return __udp_gso_segment_list(gso_skb, features);
 +
-+	if (NAPI_GRO_CB(p)->last == p)
-+		skb_shinfo(p)->frag_list = skb;
-+	else
-+		NAPI_GRO_CB(p)->last->next = skb;
+ 	mss = skb_shinfo(gso_skb)->gso_size;
+ 	if (gso_skb->len <= sizeof(*uh) + mss)
+ 		return ERR_PTR(-EINVAL);
+@@ -354,6 +371,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 	struct udphdr *uh2;
+ 	struct sk_buff *p;
+ 	unsigned int ulen;
++	int ret = 0;
+ 
+ 	/* requires non zero csum, for symmetry with GSO */
+ 	if (!uh->check) {
+@@ -369,7 +387,6 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 	}
+ 	/* pull encapsulating udp header */
+ 	skb_gro_pull(skb, sizeof(struct udphdr));
+-	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+ 
+ 	list_for_each_entry(p, head, list) {
+ 		if (!NAPI_GRO_CB(p)->same_flow)
+@@ -383,14 +400,35 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 			continue;
+ 		}
+ 
++		if (NAPI_GRO_CB(skb)->is_flist != NAPI_GRO_CB(p)->is_flist) {
++			NAPI_GRO_CB(skb)->flush = 1;
++			return p;
++		}
 +
-+	skb_pull(skb, skb_gro_offset(skb));
+ 		/* Terminate the flow on len mismatch or if it grow "too much".
+ 		 * Under small packet flood GRO count could elsewhere grow a lot
+ 		 * leading to excessive truesize values.
+ 		 * On len mismatch merge the first packet shorter than gso_size,
+ 		 * otherwise complete the GRO packet.
+ 		 */
+-		if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
+-		    ulen != ntohs(uh2->len) ||
++		if (ulen > ntohs(uh2->len)) {
++			pp = p;
++		} else {
++			if (NAPI_GRO_CB(skb)->is_flist) {
++				if (!pskb_may_pull(skb, skb_gro_offset(skb))) {
++					NAPI_GRO_CB(skb)->flush = 1;
++					return NULL;
++				}
++				ret = skb_gro_receive_list(p, skb);
++			} else {
++				skb_gro_postpull_rcsum(skb, uh,
++						       sizeof(struct udphdr));
 +
-+	NAPI_GRO_CB(p)->last = skb;
-+	NAPI_GRO_CB(p)->count++;
-+	p->data_len += skb->len;
-+	p->truesize += skb->truesize;
-+	p->len += skb->len;
++				ret = skb_gro_receive(p, skb);
++			}
++		}
 +
-+	NAPI_GRO_CB(skb)->same_flow = 1;
++		if (ret || ulen != ntohs(uh2->len) ||
+ 		    NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
+ 			pp = p;
+ 
+@@ -411,6 +449,9 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	int flush = 1;
+ 
+ 	if (!sk || !udp_sk(sk)->gro_receive) {
++		if (skb->dev->features & NETIF_F_GRO_LIST)
++			NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(skb_gro_receive_list);
+ 		pp = call_gro_receive(udp_gro_receive_segment, head, skb);
+ 		return pp;
+ 	}
+@@ -419,7 +460,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	    (skb->ip_summed != CHECKSUM_PARTIAL &&
+ 	     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+ 	     !NAPI_GRO_CB(skb)->csum_valid))
+-		goto out_unlock;
++		goto out;
+ 
+ 	/* mark that this skb passed once through the tunnel gro layer */
+ 	NAPI_GRO_CB(skb)->encap_mark = 1;
+@@ -446,8 +487,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+ 	pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
+ 
+-out_unlock:
+-	rcu_read_unlock();
++out:
+ 	skb_gro_flush_final(skb, pp, flush);
+ 	return pp;
+ }
+@@ -539,6 +579,15 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+ 	const struct iphdr *iph = ip_hdr(skb);
+ 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+ 
++	if (NAPI_GRO_CB(skb)->is_flist) {
++		uh->len = htons(skb->len - nhoff);
 +
- /**
-  *	skb_segment - Perform protocol segmentation on skb.
-  *	@head_skb: buffer to segment
++		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
++		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
++
++		return 0;
++	}
++
+ 	if (uh->check)
+ 		uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
+ 					  iph->daddr, 0);
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 47a3b1348371..e503b5cf9023 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -150,6 +150,15 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+ 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+ 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+ 
++	if (NAPI_GRO_CB(skb)->is_flist) {
++		uh->len = htons(skb->len - nhoff);
++
++		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
++		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
++
++		return 0;
++	}
++
+ 	if (uh->check)
+ 		uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
+ 					  &ipv6h->daddr, 0);
 -- 
 2.17.1
 
