@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 647E1B67D2
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 18:14:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCDBBB67DB
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 18:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387551AbfIRQOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 12:14:07 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:40157 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387520AbfIRQOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 12:14:07 -0400
-Received: by mail-yw1-f67.google.com with SMTP id e205so141028ywc.7
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 09:14:05 -0700 (PDT)
+        id S2387564AbfIRQRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 12:17:52 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:35887 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387555AbfIRQRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 12:17:51 -0400
+Received: by mail-yw1-f65.google.com with SMTP id x64so158237ywg.3
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 09:17:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iu6BzlSLNxYmh+knfX9QBmKNYdjeUDSew9kI0JrERHg=;
-        b=nENCCsrLX2NJWm6vqDs3/x+bDVgmkBgwb5nj3carM2z/aAPuvsPPNDTpIbJNHaDD6i
-         zJfrpXPIaJo2++2pSJa9TPrzJJp4H5O2w05Wnq6iA+dXsW4P8JNWdWZ/hogu0J6Ducio
-         QWrfR0eduuaEV+kpjMZUDjnsaJN2jvvJhzgdEZvRvbNJ7HNl5jOvJT+LfPbFqyjVCYnC
-         lP332/1+FReEXFekrubspBXSMPQiq4J+LqQbmkILi346GMicZdr9KBSxlr69jlpjydfv
-         /8E08c9nQJ8WEwaUPR4p/z2tAK5HBkrw/C90CRBsMkF0VxIgoc4lM6MK+ziEucar02hI
-         1IXg==
+        bh=6QlbipEnPFwX9muuIKHe5PLCoSBx9xZIwzLdN8C3uE8=;
+        b=D+/255qrQrYQOXxAmv4LlylvlDjqUa0vVFqYf7FYQfiAGkEL5c/8YCmk5dZLJaAFDa
+         8YGySDWZXiqN0HpKw/rT7Ae7FA6y3BC1GyCfYfDCRt0OmdwBuUG0aqkmSfoi4lyh658y
+         P2OP5Nj1SgJFvGc1hun2EXfJhVuZyRwcCdtETzooZI+u72jGgXe8hR5jlvq4x2PWe5hd
+         NIpI+UYbE/5+8plsgweSUIAJDjT4QSKj7ovvVQwKMo/6oIu9pRYdpO80tPALRqaNDqvy
+         CY87BS+gutx6Jz7iKeQ8auU+K9XSkjsTY/eHDBUege1zPul1ilvT5/SKbALcEp7OkQGz
+         QpRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iu6BzlSLNxYmh+knfX9QBmKNYdjeUDSew9kI0JrERHg=;
-        b=a26Y5l6msqxYkVwUdIRdZmpKkqia5JmjPg4jsetAUbb6JmdQPMIO0FVe4ePGgyDAJb
-         yKPNffOUZ9aiBnLTneU9rsIZ51EM+jXd1eXZMxBQFotSUQDofm5iKjAPY3XoiRrmze6m
-         HXpIRDW9TF6JvmasEhgxYBvBFFOI7PoXADzQu/W8ukira2cEOS2vDmAelpnzCBboOEDN
-         dNHtkMIkUTBUnypebscaQiF3YUvR7GF2kx1KVUSJFfe1KOGlRgis2VQQXsTlOFkchmQs
-         geP3FYG5IgnSqiVJwKRBYy/Bh33wKqivbmv57kPyEhxdP6CtJTA+iA2sx0WTAvdX5SeQ
-         X01A==
-X-Gm-Message-State: APjAAAUpVHhJvJSXM2hI6ym2VI9/qdTxRHaiPRR+jO04wXuDtBF4hy6v
-        kR8Gwn7L1tIMjrs+NDJj9NlLkCmr
-X-Google-Smtp-Source: APXvYqzPAKJUPg6FVDcep1e/e/03xK/C8qxuoMfLi61BQVNYW/tPNsEwAwodYscORvJp8mZfzPsyew==
-X-Received: by 2002:a0d:ca03:: with SMTP id m3mr3854977ywd.209.1568823244940;
-        Wed, 18 Sep 2019 09:14:04 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id 83sm1223089ywd.51.2019.09.18.09.14.03
+        bh=6QlbipEnPFwX9muuIKHe5PLCoSBx9xZIwzLdN8C3uE8=;
+        b=Zaj/Vs+lndADsNbgMs/ftHZr0x2gAEo5zPd72pEhbBELUI8iT9KTFRbKSIEYSOJ/M1
+         Pyqkb8ewIE7kQVOdX4sOH6xVYnTCA/rrf6FgUhXWcf4nMF9HYrOYKHKEvbE9efdTv1Or
+         YDWLjQubgGCCyPbYC+176BiWnbThv0gxNNssOest365HXvcD9u+DfCSVTMcn9vFH0Pn8
+         l8YYIvTXnHhGf2m3leBd19wiFLR6UVp2HgROHyC1g6JFe+pJtEexhYfVkgmVOTS5VtaV
+         NWYz+v0gYO9psmPBe7pWK4RU2Dx9YcpVHSgH5Ln+x+xLAZSfcgAgbas0b6LFnSen6tzU
+         yXBA==
+X-Gm-Message-State: APjAAAV5L/6OufX+N4NEwU33vxO1U4HjNELiotgYqlIObMrhPNKM7c4S
+        Gg58HJlLXzPborcA9S8DtiSzcZxU
+X-Google-Smtp-Source: APXvYqyKgMcIbMJfAZLozWKDpKIta51REMJ1n9uMjniIVDiw4UelaXKfzVtzR45pDnj+2+53HJFVEA==
+X-Received: by 2002:a0d:cb51:: with SMTP id n78mr4165270ywd.401.1568823470548;
+        Wed, 18 Sep 2019 09:17:50 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id v204sm1298320ywb.23.2019.09.18.09.17.50
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Sep 2019 09:14:04 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id f1so20442ybq.11
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 09:14:03 -0700 (PDT)
-X-Received: by 2002:a25:6dc3:: with SMTP id i186mr1968126ybc.125.1568823243492;
- Wed, 18 Sep 2019 09:14:03 -0700 (PDT)
+        Wed, 18 Sep 2019 09:17:50 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id t15so215257ybg.7
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 09:17:50 -0700 (PDT)
+X-Received: by 2002:a25:774d:: with SMTP id s74mr3472088ybc.473.1568823465067;
+ Wed, 18 Sep 2019 09:17:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190918072517.16037-1-steffen.klassert@secunet.com> <20190918072517.16037-6-steffen.klassert@secunet.com>
-In-Reply-To: <20190918072517.16037-6-steffen.klassert@secunet.com>
+References: <20190918072517.16037-1-steffen.klassert@secunet.com>
+In-Reply-To: <20190918072517.16037-1-steffen.klassert@secunet.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 18 Sep 2019 12:13:26 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfSpzHCCpDRD2s0fP3u2oyKVKQPOVAp0LLPMPV+W3kFtw@mail.gmail.com>
-Message-ID: <CA+FuTSfSpzHCCpDRD2s0fP3u2oyKVKQPOVAp0LLPMPV+W3kFtw@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 5/5] udp: Support UDP fraglist GRO/GSO.
+Date:   Wed, 18 Sep 2019 12:17:08 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+Message-ID: <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>, marcelo.leitner@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -69,33 +69,29 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
 <steffen.klassert@secunet.com> wrote:
 >
-> This patch extends UDP GRO to support fraglist GRO/GSO
-> by using the previously introduced infrastructure.
-> All UDP packets that are not targeted to a GRO capable
-> UDP sockets are going to fraglist GRO now (local input
-> and forward).
+> This patchset adds support to do GRO/GSO by chaining packets
+> of the same flow at the SKB frag_list pointer. This avoids
+> the overhead to merge payloads into one big packet, and
+> on the other end, if GSO is needed it avoids the overhead
+> of splitting the big packet back to the native form.
 >
-> Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-
-
-> @@ -419,7 +460,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
->             (skb->ip_summed != CHECKSUM_PARTIAL &&
->              NAPI_GRO_CB(skb)->csum_cnt == 0 &&
->              !NAPI_GRO_CB(skb)->csum_valid))
-> -               goto out_unlock;
-> +               goto out;
+> Patch 1 Enables UDP GRO by default.
 >
->         /* mark that this skb passed once through the tunnel gro layer */
->         NAPI_GRO_CB(skb)->encap_mark = 1;
-> @@ -446,8 +487,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
->         skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
->         pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
+> Patch 2 adds a netdev feature flag to enable listifyed GRO,
+> this implements one of the configuration options discussed
+> at netconf 2019.
 >
-> -out_unlock:
-> -       rcu_read_unlock();
-> +out:
->         skb_gro_flush_final(skb, pp, flush);
->         return pp;
->  }
+> Patch 3 adds a netdev software feature set that defaults to off
+> and assigns the new listifyed GRO feature flag to it.
+>
+> Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
+>
+> Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
+> GRO supported socket is found.
 
-This probably belongs in patch 1?
+Very nice feature, Steffen. Aside from questions around performance,
+my only question is really how this relates to GSO_BY_FRAGS.
+
+More specifically, whether we can remove that in favor of using your
+new skb_segment_list. That would actually be a big first step in
+simplifying skb_segment back to something manageable.
