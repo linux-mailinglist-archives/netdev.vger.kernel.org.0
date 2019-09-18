@@ -2,114 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 413BBB6B00
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 20:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4AAB6CA3
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388873AbfIRSwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 14:52:24 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36733 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387645AbfIRSwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 14:52:24 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y22so595309pfr.3
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 11:52:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=Okiu/elfIgaQjLf/NcyUs2b0iC336LxObVGspA2lzqA=;
-        b=edyaNwt+eE1B1lgdsf/YGnTJT7plTJ12j36UTrWUO/FNne2Cz4e3Jsmk0R1p+1RuKI
-         wxis/VxbSyAsbRssjpJ8QEihlf90LcB+Eol37VpQzbP4CzHi7fjm0o4HFYGnT/NS3sth
-         M5x4sS9d9PtxDr7DSNWf6FftE21sx5C2KZ3I0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Okiu/elfIgaQjLf/NcyUs2b0iC336LxObVGspA2lzqA=;
-        b=QLTE2nI/FKTDR4UWLyYuNMRu9L5dCf2np09LgxCiS5Xw2OE4YD57SExwrvXxlZo8WS
-         3uc7wSchPLb7J1qGBl7gKZGFzK8mmk80dYStxsG+gLlbN5bmfvSjpIkD8xiJlc0AEMhw
-         11gugaiXN6aR3WqtHt8cml9GH90Z/g09HaMDe1cHf9XCBkb/vW8+78Lt/aQF7q5Jw/ml
-         /WIXmr51YjyYFz56BgVFAiuL13x2Vg6Hhk3iTLAC0IocVBuMtx7jL/p5NNl23LavDRqr
-         em7VwRNheqMVRZsG0VjphLDEC2nedAKfk/YDJBfS3mjohj1cIRCBYjdviLk6Y6a5h/WG
-         COfQ==
-X-Gm-Message-State: APjAAAXw1Az1OxgIE5bAW6+qyoFc3A40N0jEwzdhQdD+rveO/iKkzSNH
-        KsnU2vYRL2gdTO+lT8P7f9pOBQ==
-X-Google-Smtp-Source: APXvYqzEryEbvffH4fIUESAvKGyMWpAjiAWue/Z8tPbRhL3fkmz6diIJu/4RxieSqZDIvsTOUIGGJQ==
-X-Received: by 2002:aa7:9835:: with SMTP id q21mr5970232pfl.122.1568832742624;
-        Wed, 18 Sep 2019 11:52:22 -0700 (PDT)
-Received: from shitalt.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id o42sm3745010pjo.32.2019.09.18.11.52.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 18 Sep 2019 11:52:22 -0700 (PDT)
-From:   Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-To:     Jiri Pirko <jiri@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Vikram Prakash <vikram.prakash@broadcom.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Subject: [PATCH] devlink: add devlink notification for recovery
-Date:   Thu, 19 Sep 2019 00:22:21 +0530
-Message-Id: <1568832741-20850-1-git-send-email-sheetal.tigadoli@broadcom.com>
-X-Mailer: git-send-email 1.9.1
+        id S1731344AbfIRTb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 15:31:28 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:41018 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726676AbfIRTb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:31:28 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 490C561515; Wed, 18 Sep 2019 19:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568835087;
+        bh=GQ9PWHWoNFmoNwP5Ff8xmLoLlYzHhmoeyH7kt5bWxlY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DoW2evWrM0ixe8eQE/GaN1BFm/PidoR0huH+O7qc4Lj5IMlgEWMHMo/4Wv9WxGfbm
+         fGOEFRRmiZ0yQ3gZbym1bqhzJZplIJixNTaELwRKcE1L2pWNEMMIlroDrqkjcFwU/V
+         F+dTsgb8idv1zjnWwSKt2OK47hdGL9Czqdp3cUr0=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 4E00B602F2;
+        Wed, 18 Sep 2019 19:31:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1568835086;
+        bh=GQ9PWHWoNFmoNwP5Ff8xmLoLlYzHhmoeyH7kt5bWxlY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IhwungRmSNTm2D8wKL2dj3iY5z1JBPtqZB9ktJRU4rDAwhzKzEUTnbIVupngRlHMM
+         LPQVvw8Vd+1tnUtWdvi7gMnDTq0eTTV3HK88tYL1wzvi4NQZIPGkbOrRxuK9fP0Vcx
+         ljb9bwEoms7IHgrfCRS0Yu0RE1CNoqsx+7wJ8Sac=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 18 Sep 2019 13:31:26 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
+In-Reply-To: <20190918165817.GA3431@localhost.localdomain>
+References: <20190918072517.16037-1-steffen.klassert@secunet.com>
+ <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+ <20190918165817.GA3431@localhost.localdomain>
+Message-ID: <621219c0a965d6ccc05b80081218ff7e@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+On 2019-09-18 10:58, Marcelo Ricardo Leitner wrote:
+> On Wed, Sep 18, 2019 at 12:17:08PM -0400, Willem de Bruijn wrote:
+>> On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
+>> <steffen.klassert@secunet.com> wrote:
+>> >
+>> > This patchset adds support to do GRO/GSO by chaining packets
+>> > of the same flow at the SKB frag_list pointer. This avoids
+>> > the overhead to merge payloads into one big packet, and
+>> > on the other end, if GSO is needed it avoids the overhead
+>> > of splitting the big packet back to the native form.
+>> >
+>> > Patch 1 Enables UDP GRO by default.
+>> >
+>> > Patch 2 adds a netdev feature flag to enable listifyed GRO,
+>> > this implements one of the configuration options discussed
+>> > at netconf 2019.
+>> >
+>> > Patch 3 adds a netdev software feature set that defaults to off
+>> > and assigns the new listifyed GRO feature flag to it.
+>> >
+>> > Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
+>> >
+>> > Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
+>> > GRO supported socket is found.
+>> 
+>> Very nice feature, Steffen. Aside from questions around performance,
+>> my only question is really how this relates to GSO_BY_FRAGS.
+> 
+> They do the exact same thing AFAICT: they GSO according to a
+> pre-formatted list of fragments/packets, and not to a specific size
+> (such as MSS).
+> 
+>> 
+>> More specifically, whether we can remove that in favor of using your
+>> new skb_segment_list. That would actually be a big first step in
+>> simplifying skb_segment back to something manageable.
+> 
+> The main issue (that I know) on obsoleting GSO_BY_FRAGS is that
+> dealing with frags instead of frag_list was considered easier to be
+> offloaded, if ever attempted.  So this would be a step back on that
+> aspect.  Other than this, it should be doable.
 
-Add a devlink notification for reporter recovery
+Is there an existing userspace interface for GSO_BY_FRAGS for UDP?
+Per my understanding, the current UDP_GSO CMSG option only allows
+for a specific GSO_SIZE segmentation.
 
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
----
- net/core/devlink.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e48680e..42909fb 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4730,6 +4730,28 @@ struct devlink_health_reporter *
- }
- EXPORT_SYMBOL_GPL(devlink_health_reporter_state_update);
- 
-+static void __devlink_recover_notify(struct devlink *devlink,
-+				     enum devlink_command cmd)
-+{
-+	struct sk_buff *msg;
-+	int err;
-+
-+	WARN_ON(cmd != DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return;
-+
-+	err = devlink_nl_fill(msg, devlink, cmd, 0, 0, 0);
-+	if (err) {
-+		nlmsg_free(msg);
-+		return;
-+	}
-+
-+	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
-+				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
-+}
-+
- static int
- devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
- 				void *priv_ctx)
-@@ -4747,6 +4769,9 @@ struct devlink_health_reporter *
- 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
- 	reporter->last_recovery_ts = jiffies;
- 
-+	__devlink_recover_notify(reporter->devlink,
-+				 DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
-+
- 	return 0;
- }
- 
 -- 
-1.9.1
-
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
