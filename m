@@ -2,77 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B495B5BAF
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 08:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F00C6B5DC6
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726462AbfIRGMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 02:12:41 -0400
-Received: from ozlabs.org ([203.11.71.1]:53747 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726081AbfIRGMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 02:12:41 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46Y8lq3kqtz9sCJ;
-        Wed, 18 Sep 2019 16:12:39 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-        s=201909; t=1568787159;
-        bh=rKbION4BRPZJT2pVRWztj3dezrjkCwmBEIqMY9p6PwM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=QY/9K8+m/yJdqnZ3LNdZBaa+TpfQPC3Ev3jRfcmfiOogz72qFx1Ge0VppqA0ik4sf
-         /pT+hFIbHBUlB/4gKA52zNc6pW83UbJE9nESuNFU8ayoAKY5s5LZJGFDAMYCbsilFE
-         N/R0TbJb+RcLzLfDL4O45/bepv7BWhiq0DdbuqVupmIVIBtoqVWLi8vAiErAAea6uK
-         ZvFEstiXYCGM8PnvqtiBktJ8PdbhoIZySgWJr+Wg91mhVnIXobZNcSoE4yUjPwg8O5
-         3yJTH9fmEeruNdQVGGdclsxHlqhm7lEDO6YhU4qocUNRvNUcS1FXhv9gqTHzk+KPyY
-         JjBuIDdR8qmCw==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Juliet Kim <julietk@linux.vnet.ibm.com>, netdev@vger.kernel.org
-Cc:     julietk@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org,
-        tlfalcon@linux.vnet.ibm.com
-Subject: Re: [PATCH v3 2/2] net/ibmvnic: prevent more than one thread from running in reset
-In-Reply-To: <20190917171552.32498-3-julietk@linux.vnet.ibm.com>
-References: <20190917171552.32498-1-julietk@linux.vnet.ibm.com> <20190917171552.32498-3-julietk@linux.vnet.ibm.com>
-Date:   Wed, 18 Sep 2019 16:12:39 +1000
-Message-ID: <87ef0ew2so.fsf@mpe.ellerman.id.au>
+        id S1728301AbfIRHIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 03:08:00 -0400
+Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:46592
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725834AbfIRHIA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 03:08:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RDNj3UA/zv1XX++Caf10tdwJm2UZVkayJjHHRxdfNWz4dFej7n/hxRy8Kv5nWao2dDJl/e+rYBys8sRfHo/mEF5QivDjpo/TWrykkl5AjRrMnWc657LfOgM9frk8zbzVvWz9xOcewyehnAX66PcbplbuR3SZsGjbK34cFii/2nZHlqge/LZC9rXf4DOXZ/yTmHC2xRJi+gM4jCtJ1Kkq2XLHhTBV+vVvcfcuchRStovsry0Sc/9RtL2dMbEAPn7gFRN4+eZnX1olcbFY1NU6HRSiMMPETBQMW2gvIHUvywyyYGaJh15v+bPuSIFgTMPfv6MGSHFEjNL9jmwGtrxqnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bDY52+yFOhGH2DJc7GfkMMUBjjkj6tNWxQiNOSPFND0=;
+ b=be14zGLQyJcQzY/c0iYf+8C7Jd0AZvPkes6RJKvIv9yGN2zCkyBDCeDwsDGJlc3d8nuN4LcKx/tOq/mXtI4xHnXAPrMFErx7T0FcXoSHaUOeOIHiujWQhVMzLRynFOlAc7EHghxpgTpzY6saYwtNdBLt/fGGVVV+E1XxEhHGGLSGCOP4kAUNe3RDeT4dpKBM14irrCZckSGmLfwuSTrhOXSWCpK3d21B9YM4rWwIMYLPFeI/RtWYPWF7PZpOIBXulNcM61RlOHPRgxUpnPqfK2MNUpAQSOCPKTeXmh2Yd3GwKX2EPtcfATh2/EnR4XDdY+RrXP4xykXi8En3gJf33Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bDY52+yFOhGH2DJc7GfkMMUBjjkj6tNWxQiNOSPFND0=;
+ b=qakgGVVl/Z1DLkuIir3ZJbDxXg6pdrh3Lmr2j9JhUKnb8ExSmeDmydRvm4B5Uih+uBSBJ8hlPtsGRJa2EEEi3e9sHEigN7fYZDS2uVU8trwTdTXnyp5QsV6Sl1EJ+uCJT2kow02nXrPoliM374AIpcQCZAUX1Gvf2sn9ntgfNF0=
+Received: from DBBPR05MB6299.eurprd05.prod.outlook.com (20.179.44.85) by
+ DBBPR05MB6444.eurprd05.prod.outlook.com (20.179.44.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2263.15; Wed, 18 Sep 2019 07:07:56 +0000
+Received: from DBBPR05MB6299.eurprd05.prod.outlook.com
+ ([fe80::9084:6136:31bf:9811]) by DBBPR05MB6299.eurprd05.prod.outlook.com
+ ([fe80::9084:6136:31bf:9811%3]) with mapi id 15.20.2284.009; Wed, 18 Sep 2019
+ 07:07:56 +0000
+From:   Aya Levin <ayal@mellanox.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+CC:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH iproute2 4/4] devlink: Fix devlink health set command
+Thread-Topic: [PATCH iproute2 4/4] devlink: Fix devlink health set command
+Thread-Index: AQHVY+eMfukqZgiJxU+Ik+hqGe/hKacwEAmAgAEHugA=
+Date:   Wed, 18 Sep 2019 07:07:55 +0000
+Message-ID: <3052d758-4c3c-7b07-7fa2-e46c45210719@mellanox.com>
+References: <1567687387-12993-1-git-send-email-tariqt@mellanox.com>
+ <1567687387-12993-5-git-send-email-tariqt@mellanox.com>
+ <20190917172357.5c70c3b9@xps13.home>
+In-Reply-To: <20190917172357.5c70c3b9@xps13.home>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR10CA0005.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:17c::15) To DBBPR05MB6299.eurprd05.prod.outlook.com
+ (2603:10a6:10:d1::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ayal@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8f0da4bd-6a3e-4540-6ed9-08d73c06ee11
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6444;
+x-ms-traffictypediagnostic: DBBPR05MB6444:|DBBPR05MB6444:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR05MB644490C578E7DB296EDF25B8B08E0@DBBPR05MB6444.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-forefront-prvs: 01644DCF4A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(189003)(199004)(14454004)(2616005)(476003)(8676002)(316002)(6506007)(54906003)(486006)(102836004)(110136005)(26005)(81166006)(478600001)(6116002)(81156014)(66066001)(186003)(2906002)(386003)(99286004)(11346002)(71190400001)(53546011)(71200400001)(3846002)(52116002)(107886003)(6486002)(6246003)(86362001)(256004)(36756003)(4744005)(31696002)(25786009)(76176011)(6636002)(5660300002)(7736002)(305945005)(66476007)(66446008)(64756008)(66556008)(6436002)(446003)(8936002)(6512007)(31686004)(229853002)(4326008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6444;H:DBBPR05MB6299.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: GZUPMIfp6xagXr6MJSMU5Z+EhBxBVlj72JORcusXaF0La+DgDyCYDyafb8ZGgFtSiTUknCDzU9pUS5Yhs0ULEFYqc4zyEKHZlV7mLhWj7pHiUV0wfxLiErOByUZCj696/IuMo+0RlIk01ciAFZCy9SvnMofApqFh5TCFhlEzjJZqxGAQs6nVXZr9iNwam0biU1inO4l7naRJYSFpY38l0mxY+MHEtIJVz7+CN1LP5X01wNOKCjqUQDfAapbabzAzwpJ4Etm+3UNcDUnrOV3GU+ZI3/EFTSU8Xmgy7KrDuXtyy6LuhQumQNKjE+KWWF2kXPTx8ivG6UX6R8sDN97wjw9H+cLvODwHNpURRTiQ7SP8gu2W24KQ7J205mmItHhp/Z4jFBCWUY56yNF4nYjUViW0mCjc7HKwxNtU3bB882c=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <35E0F488C4AF4C418934EC113F2B061E@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f0da4bd-6a3e-4540-6ed9-08d73c06ee11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2019 07:07:56.0053
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fhgdm3zDqaiH5SeG7a8gSI6WUp6/yuj7lQ6BtN3d6FJ1g/t96rEglVdr8xAlHMta1uzl5g3mO4Zv9SUglQo7tA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6444
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Juliet,
-
-Juliet Kim <julietk@linux.vnet.ibm.com> writes:
-> Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
-> ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 23 ++++++++++++++++++++++-
->  drivers/net/ethernet/ibm/ibmvnic.h |  3 +++
->  2 files changed, 25 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index ba340aaff1b3..f344ccd68ad9 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2054,6 +2054,13 @@ static void __ibmvnic_reset(struct work_struct *work)
->  
->  	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
->  
-> +	if (adapter->resetting) {
-> +		schedule_delayed_work(&adapter->ibmvnic_delayed_reset,
-> +				      IBMVNIC_RESET_DELAY);
-> +		return;
-> +	}
-> +
-> +	adapter->resetting = true;
->  	reset_state = adapter->state;
-
-Is there some locking/serialisation around this?
-
-Otherwise that looks very racy. ie. two CPUs could both see
-adapter->resetting == false, then both set it to true, and then continue
-executing and stomp on each other.
-
-cheers
+DQoNCk9uIDkvMTcvMjAxOSA2OjIzIFBNLCBTdGVwaGVuIEhlbW1pbmdlciB3cm90ZToNCj4gT24g
+VGh1LCAgNSBTZXAgMjAxOSAxNTo0MzowNyArMDMwMA0KPiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBt
+ZWxsYW5veC5jb20+IHdyb3RlOg0KPiANCj4+IEZyb206IEF5YSBMZXZpbiA8YXlhbEBtZWxsYW5v
+eC5jb20+DQo+Pg0KPj4gUHJpb3IgdG8gdGhpcyBwYXRjaCBib3RoIHRoZSByZXBvcnRlcidzIG5h
+bWUgYW5kIHRoZSBncmFjZSBwZXJpb2QNCj4+IGF0dHJpYnV0ZXMgc2hhcmVkIHRoZSBzYW1lIGJp
+dC4gVGhpcyBjYXVzZWQgemVyb2luZyBncmFjZSBwZXJpb2Qgd2hlbg0KPj4gc2V0dGluZyBhdXRv
+IHJlY292ZXJ5LiBMZXQgZWFjaCBwYXJhbWV0ZXIgaGFzIGl0cyBvd24gYml0Lg0KPj4NCj4+IEZp
+eGVzOiBiMThkODkxOTViMTYgKCJkZXZsaW5rOiBBZGQgZGV2bGluayBoZWFsdGggc2V0IGNvbW1h
+bmQiKQ0KPj4gU2lnbmVkLW9mZi1ieTogQXlhIExldmluIDxheWFsQG1lbGxhbm94LmNvbT4NCj4+
+IEFja2VkLWJ5OiBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT4NCj4+IFNpZ25lZC1vZmYt
+Ynk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gDQo+IERvZXMgbm90IGFw
+cGx5IHRvIGN1cnJlbnQgaXByb3V0ZTIuDQpUaGlzIHBhdGNoIGlzIHJlZHVuZGFudCBkdWUgdG8g
+cGF0Y2ggZnJvbSBBbmRyZWEgQ2xhdWRpIA0KNGZiOThmMDg5NTZmZjQ4MTAzNTRkNzVhZmE5YjA0
+Y2I2ZjgwMTFiYw0KUGxlYXNlIHJlamVjdCBpdC4NCk90aGVyIHBhdGNoZXMgdGhhdCB3ZXJlIHN1
+Ym1pdHRlZCB3aXRoLCBhcmUgdmFsaWQuDQo+IA0K
