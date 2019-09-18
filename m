@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A3EB62D8
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9C8B632A
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730829AbfIRMLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 08:11:22 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2294 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727637AbfIRMLW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 08:11:22 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B1F1F36D3DD6EFEAC91F;
-        Wed, 18 Sep 2019 20:11:16 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 18 Sep 2019 20:11:07 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <johannes.berg@intel.com>, <emmanuel.grumbach@intel.com>,
-        <luciano.coelho@intel.com>, <linuxwifi@intel.com>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH net] iwlwifi: add dependency of THERMAL with IWLMVM
-Date:   Wed, 18 Sep 2019 20:28:15 +0800
-Message-ID: <20190918122815.155657-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1731097AbfIRM0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 08:26:01 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:45129 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728539AbfIRM0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 08:26:01 -0400
+Received: by mail-io1-f72.google.com with SMTP id o11so10796136iop.12
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 05:26:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=yq57rTS7tT8k+xdJeb2CfUd2j81GNTcLfOruVvSsEeQ=;
+        b=Qzz8Zke8MhZ4JrBgtzghvX2eZ0AaX97/R+DR8kw3xo5UVtwUujPNREwtq1FEUfeGWY
+         D7XDLmGg72QeoJz7TbrGj1iAQABFWg/w9M366LDrLezMoa7yDJLMgiK5v7gCsx+1PhnU
+         sA/t6IhftoU1r2NJqt+2U+X4haNxuBBKjIe4zdgc9gruO7/scxqFF6AX6v3AHuOEb98i
+         nwaXHO39Ni24XW4Sr0b/+FA5J9pzp3SwlmE2sMkhuiTfxJ2liPNvaSWFbC1VkuwGE4pF
+         sy8Dr5vYCEXuAqtLxh7DC2LS/QPjawqauPzUyyDHwslvZseKAGBZq49Sk+lBFb34NjBZ
+         dlhQ==
+X-Gm-Message-State: APjAAAU4ZL+INHgec6G4w4CGt6X0Gx2/gGBraOJmZprCPKjWDPktbsxd
+        76yutMdOhWr6gI9D+NdpWuDu4K2pHpLvoKaMF+xy8l1zcrey
+X-Google-Smtp-Source: APXvYqx7fUN6ZZEHiu5creHYMFYei5Rfmu0F99U5no3hBFuFzr5yISH1tIhZ7tEhBcV9+P8+J/ecUAojRnyBPEli5iMDgNaYWH0l
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a6b:c88e:: with SMTP id y136mr4267690iof.68.1568809560710;
+ Wed, 18 Sep 2019 05:26:00 -0700 (PDT)
+Date:   Wed, 18 Sep 2019 05:26:00 -0700
+In-Reply-To: <20190918120147.4520-1-bjorn@mork.no>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000096290a0592d2f05a@google.com>
+Subject: Re: divide error in cdc_ncm_update_rxtx_max
+From:   syzbot <syzbot+ce366e2b8296e25d84f5@syzkaller.appspotmail.com>
+To:     bjorn@mork.no, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        oliver@neukum.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_IWLMVM=y, CONFIG_THERMAL=n, below error can be found:
-drivers/net/wireless/intel/iwlwifi/mvm/fw.o: In function `iwl_mvm_up':
-fw.c:(.text+0x2c26): undefined reference to `iwl_mvm_send_temp_report_ths_cmd'
-make: *** [vmlinux] Error 1
+Hello,
 
-After commit 242d9c8b9a93 ("iwlwifi: mvm: use FW thermal
-monitoring regardless of CONFIG_THERMAL"), iwl_mvm_up()
-calls iwl_mvm_send_temp_report_ths_cmd(), but this function
-is under CONFIG_THERMAL, which is depended on CONFIG_THERMAL.
+syzbot has tested the proposed patch and the reproducer did not trigger  
+crash:
 
-Fixes: 242d9c8b9a93 ("iwlwifi: mvm: use FW thermal monitoring regardless of CONFIG_THERMAL")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/net/wireless/intel/iwlwifi/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Reported-and-tested-by:  
+syzbot+ce366e2b8296e25d84f5@syzkaller.appspotmail.com
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
-index 7dbc0d3..801aa0f 100644
---- a/drivers/net/wireless/intel/iwlwifi/Kconfig
-+++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
-@@ -65,6 +65,7 @@ config IWLMVM
- 	tristate "Intel Wireless WiFi MVM Firmware support"
- 	select WANT_DEV_COREDUMP
- 	depends on MAC80211
-+	depends on THERMAL
- 	help
- 	  This is the driver that supports the MVM firmware. The list
- 	  of the devices that use this firmware is available here:
--- 
-2.7.4
+Tested on:
 
+commit:         f0df5c1b usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5c6633fa4ed00be5
+dashboard link: https://syzkaller.appspot.com/bug?extid=ce366e2b8296e25d84f5
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=114971b5600000
+
+Note: testing is done by a robot and is best-effort only.
