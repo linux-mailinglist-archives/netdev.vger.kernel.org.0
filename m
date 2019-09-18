@@ -2,100 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45819B6665
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 16:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 374D3B66A3
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 17:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731333AbfIROtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 10:49:04 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40790 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731111AbfIROtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 10:49:03 -0400
-Received: by mail-wm1-f68.google.com with SMTP id b24so366224wmj.5;
-        Wed, 18 Sep 2019 07:49:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=A0d08PO1mbBAQV27/6jcUxiyHxWp50nHFe2WMLWAri8=;
-        b=dlPzyTteJ6zHFjoC6R7dU6FygFyfOMpFCsAjTjpR8alw1LhvrKeTarp2lDiyU2z7xi
-         vM2pPiUUs4eAVTgkUe1euTLflbgX6KOTYZ18uipIy2yAB/UVWMaWxNafnCnHHdDHPz4h
-         uqKATpAKzmqOPgxTPUJFkTwHW509jlnJwBm5q1zlEBadZCXRMvJgWfzbv10d5sRhqg5c
-         ad/PNgaYKwWjv8ImbOPObInM4MB5A9NIvMBPr5GMK5XF0mIqGCDp8v0qcgZMZBL3qkOL
-         N1mSTB1yxUrXwsIKZkUV200KAf5AAC3K5Zi/sLg3x//VqxTvLnW8dDLxdQQQD6f/nU1/
-         A49w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=A0d08PO1mbBAQV27/6jcUxiyHxWp50nHFe2WMLWAri8=;
-        b=plj9ud8rxiI2CduquQcfc04BD2U5DDc1vu8y2UcxWUu21oIdEPYQIGi5+Ee2UMZm+Q
-         oITDazac1QHe6+GG5E0gtRwUyTztepRr58uz9dGcmzA9+EBkIWyvtpfQvQqSk7gwHjP7
-         AbfqHKNl503+mJ9qch3AHXthRdMHmm02eJnLmPqSAZrXuDxde1ao1aOGQnWJYEzq1g61
-         25g2dxCp9MHrfzmrr4mgUlYvQGgczzvmVKMZ9bI4AOl/ph+NTkVA72cUFV6yyL7VK95Z
-         kV7oTZOUOu+up15Mn7BaFk5JcdooNpkpx92HJAi1nu8trk2sZdHsPrqkT6ujXXB8XFK2
-         QruQ==
-X-Gm-Message-State: APjAAAUxOySpDKdZWy6A8DEFHfIJz3VUASf+HlJCi8gwmE4GnZgbzo5h
-        RxgC4aF8kG2L4r3CsyWyQA070eYyTLM=
-X-Google-Smtp-Source: APXvYqyf3LNriMKfasPngh5OIUAdXGxnH1DhEb6bjDuXB562oIJFdbfU58+20+r9ShjHzt8DLQlb9g==
-X-Received: by 2002:a1c:9dc1:: with SMTP id g184mr3155278wme.77.1568818142182;
-        Wed, 18 Sep 2019 07:49:02 -0700 (PDT)
-Received: from bfk-3-vm8-e4.cs.niisi.ras.ru (t109.niisi.ras.ru. [193.232.173.109])
-        by smtp.gmail.com with ESMTPSA id 33sm9592203wra.41.2019.09.18.07.49.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Sep 2019 07:49:01 -0700 (PDT)
-From:   Peter Mamonov <pmamonov@gmail.com>
-To:     andrew@lunn.ch
-Cc:     Peter Mamonov <pmamonov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1] net/phy: fix DP83865 10 Mbps HDX loopback disable function
-Date:   Wed, 18 Sep 2019 17:48:25 +0300
-Message-Id: <20190918144825.23285-1-pmamonov@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190918141931.GK9591@lunn.ch>
-References: <20190918141931.GK9591@lunn.ch>
+        id S1731446AbfIRPAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 11:00:14 -0400
+Received: from esa3.mentor.iphmx.com ([68.232.137.180]:31097 "EHLO
+        esa3.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731141AbfIRPAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 11:00:14 -0400
+IronPort-SDR: bVAzho8b90J+5FSYZtqpX0IKD4cOMUk67Yof2HZMn0bh4kNay8p9JGJjDxshnG6RRR8T3efhIZ
+ JmEWfiWpaDKlJ4RaGeBmTzGBilGTg/EE1DHR3YTNbsTdn1PywK9/xZ4OBUQR4/+cbFbTTcL4R5
+ tBvnw9Y9e+HY7TfQLYiBYj0j5fFU7eWF30Tu7bqYzfcC0S6XXd0DsDNAoGqLsTiqSFVcJ5XnUe
+ 7Qk7xoEv8SpSs2UHmko8DWz8do3Kst6WDdqeJw2xyeDoB5box/JBwrMYnGzgOVvNxZ7PZOvXRP
+ IMI=
+X-IronPort-AV: E=Sophos;i="5.64,520,1559548800"; 
+   d="scan'208";a="41469783"
+Received: from orw-gwy-02-in.mentorg.com ([192.94.38.167])
+  by esa3.mentor.iphmx.com with ESMTP; 18 Sep 2019 07:00:13 -0800
+IronPort-SDR: yaHjxxDXef728Zx9ob8/veTKYmyXI0/S3s3wjFXiESVvLv7KVTry0vRfDIX0TwXgHYDnv1Xew8
+ LhMBw0e1IBp1l+O7UFY0yytVo/IMB685TseMk3FePgGDeunGG8N7TlF0/otHEbXFwMLy/qrAdM
+ 9MkMGA+Vsz5XXYL1IvklB7BONrtc8VurcFpMlC1TYj2c7+VJmYB/t92I8+xNtrntOrdLRfyc+/
+ jSn3g+OSj14FVRAel1j1AbJKjQSSQbQTHxW6h52Wn9FARXgc57f8jKQpagkYEZybs/aI9aKQdu
+ IKA=
+Date:   Wed, 18 Sep 2019 11:00:09 -0400
+From:   "George G. Davis" <george_davis@mentor.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+CC:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: sysctl: cleanup net_sysctl_init error exit paths
+Message-ID: <20190918150009.GD15686@mam-gdavis-lt>
+References: <1558020189-16843-1-git-send-email-george_davis@mentor.com>
+ <20190516.142744.1107545161556108780.davem@davemloft.net>
+ <20190517144345.GA16926@mam-gdavis-lt>
+ <20190708224732.GA8009@mam-gdavis-lt>
+ <20190917155354.GA15686@mam-gdavis-lt>
+ <14606764-a026-c171-ba71-bf242a930e7e@6wind.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <14606764-a026-c171-ba71-bf242a930e7e@6wind.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-ClientProxiedBy: svr-orw-mbx-03.mgc.mentorg.com (147.34.90.203) To
+ svr-orw-mbx-01.mgc.mentorg.com (147.34.90.201)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to the DP83865 datasheet "The 10 Mbps HDX loopback can be
-disabled in the expanded memory register 0x1C0.1." The driver erroneously
-used bit 0 instead of bit 1.
+Hello Nicolas,
 
-Signed-off-by: Peter Mamonov <pmamonov@gmail.com>
----
- drivers/net/phy/national.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+On Wed, Sep 18, 2019 at 11:44:55AM +0200, Nicolas Dichtel wrote:
+> Le 17/09/2019 à 17:53, George G. Davis a écrit :
+> [snip]
+> > Ping, "Linux 5.3" kernel has been released [1] and it appears that the
+> > 5.4 merge window is open. The patch [2] remains unchanged since my initial
+> > post. Please consider applying it.
+> 
+> net-next is closed:
+> http://vger.kernel.org/~davem/net-next.html
+> 
+> You will have to resend the patch when net-next opens.
 
-diff --git a/drivers/net/phy/national.c b/drivers/net/phy/national.c
-index 2addf1d3f619..3aa910b3dc89 100644
---- a/drivers/net/phy/national.c
-+++ b/drivers/net/phy/national.c
-@@ -110,14 +110,17 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
- 
- static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
- {
-+	u16 lb_dis = BIT(1);
-+
- 	if (disable)
--		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
-+		ns_exp_write(phydev, 0x1c0,
-+			     ns_exp_read(phydev, 0x1c0) | lb_dis);
- 	else
- 		ns_exp_write(phydev, 0x1c0,
--			     ns_exp_read(phydev, 0x1c0) & 0xfffe);
-+			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
- 
- 	pr_debug("10BASE-T HDX loopback %s\n",
--		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
-+		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
- }
- 
- static int ns_config_init(struct phy_device *phydev)
+Thanks! I'll watch for the "net-next is OPEN" announcment and resubmit then.
+
 -- 
-2.23.0
-
+Regards,
+George
