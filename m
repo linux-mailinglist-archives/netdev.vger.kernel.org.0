@@ -2,77 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD99B62F4
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:17:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8A3EB62D8
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730898AbfIRMRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 08:17:49 -0400
-Received: from canardo.mork.no ([148.122.252.1]:46379 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727193AbfIRMRt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 08:17:49 -0400
-Received: from miraculix.mork.no ([IPv6:2a02:2121:345:8091:90c6:3fae:14f0:3126])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x8ICHjRe018136
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 18 Sep 2019 14:17:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1568809066; bh=6ReCdLpKToI7PCsGayRZb9MxdpELm+zou9tl9ZWV5QY=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        b=HfPE3yew4RDxJsPjfUUTUZh8oipCKZeF2dZXdIvPriK/AucWka3J0vPdDTESnOHdk
-         NgFWNLFAhgtOcUhsqs7j0yVx4DLiMbRmZhWG92ZwuCUa1LkN4z1W+q9v4mORqoNCfv
-         x4JW50FkS29FhRIOu9G/Ikq4BU2qB3MjOROIZyRg=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@miraculix.mork.no>)
-        id 1iAYtw-0001f0-25; Wed, 18 Sep 2019 14:17:40 +0200
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, Oliver Neukum <oliver@neukum.org>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH net,stable] usbnet: ignore endpoints with invalid wMaxPacketSize
-Date:   Wed, 18 Sep 2019 14:17:38 +0200
-Message-Id: <20190918121738.6343-1-bjorn@mork.no>
+        id S1730829AbfIRMLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 08:11:22 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2294 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727637AbfIRMLW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 08:11:22 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id B1F1F36D3DD6EFEAC91F;
+        Wed, 18 Sep 2019 20:11:16 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 18 Sep 2019 20:11:07 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <johannes.berg@intel.com>, <emmanuel.grumbach@intel.com>,
+        <luciano.coelho@intel.com>, <linuxwifi@intel.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH net] iwlwifi: add dependency of THERMAL with IWLMVM
+Date:   Wed, 18 Sep 2019 20:28:15 +0800
+Message-ID: <20190918122815.155657-1-maowenan@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.101.4 at canardo
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Endpoints with zero wMaxPacketSize are not usable for transferring
-data. Ignore such endpoints when looking for valid in, out and
-status pipes, to make the drivers more robust against invalid and
-meaningless descriptors.
+If CONFIG_IWLMVM=y, CONFIG_THERMAL=n, below error can be found:
+drivers/net/wireless/intel/iwlwifi/mvm/fw.o: In function `iwl_mvm_up':
+fw.c:(.text+0x2c26): undefined reference to `iwl_mvm_send_temp_report_ths_cmd'
+make: *** [vmlinux] Error 1
 
-The wMaxPacketSize of these endpoints are used for memory allocations
-and as divisors in many usbnet minidrivers. Avoiding zero is therefore
-critical.
+After commit 242d9c8b9a93 ("iwlwifi: mvm: use FW thermal
+monitoring regardless of CONFIG_THERMAL"), iwl_mvm_up()
+calls iwl_mvm_send_temp_report_ths_cmd(), but this function
+is under CONFIG_THERMAL, which is depended on CONFIG_THERMAL.
 
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
+Fixes: 242d9c8b9a93 ("iwlwifi: mvm: use FW thermal monitoring regardless of CONFIG_THERMAL")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
 ---
- drivers/net/usb/usbnet.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 58952a79b05f..dbea2136d901 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -100,6 +100,11 @@ int usbnet_get_endpoints(struct usbnet *dev, struct usb_interface *intf)
- 			int				intr = 0;
- 
- 			e = alt->endpoint + ep;
-+
-+			/* ignore endpoints which cannot transfer data */
-+			if (!usb_endpoint_maxp(&e->desc))
-+				continue;
-+
- 			switch (e->desc.bmAttributes) {
- 			case USB_ENDPOINT_XFER_INT:
- 				if (!usb_endpoint_dir_in(&e->desc))
+diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
+index 7dbc0d3..801aa0f 100644
+--- a/drivers/net/wireless/intel/iwlwifi/Kconfig
++++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
+@@ -65,6 +65,7 @@ config IWLMVM
+ 	tristate "Intel Wireless WiFi MVM Firmware support"
+ 	select WANT_DEV_COREDUMP
+ 	depends on MAC80211
++	depends on THERMAL
+ 	help
+ 	  This is the driver that supports the MVM firmware. The list
+ 	  of the devices that use this firmware is available here:
 -- 
-2.20.1
+2.7.4
 
