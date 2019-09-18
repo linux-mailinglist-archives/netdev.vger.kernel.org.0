@@ -2,110 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F00C6B5DC6
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4043B5DE3
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbfIRHIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 03:08:00 -0400
-Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:46592
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725834AbfIRHIA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 03:08:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RDNj3UA/zv1XX++Caf10tdwJm2UZVkayJjHHRxdfNWz4dFej7n/hxRy8Kv5nWao2dDJl/e+rYBys8sRfHo/mEF5QivDjpo/TWrykkl5AjRrMnWc657LfOgM9frk8zbzVvWz9xOcewyehnAX66PcbplbuR3SZsGjbK34cFii/2nZHlqge/LZC9rXf4DOXZ/yTmHC2xRJi+gM4jCtJ1Kkq2XLHhTBV+vVvcfcuchRStovsry0Sc/9RtL2dMbEAPn7gFRN4+eZnX1olcbFY1NU6HRSiMMPETBQMW2gvIHUvywyyYGaJh15v+bPuSIFgTMPfv6MGSHFEjNL9jmwGtrxqnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bDY52+yFOhGH2DJc7GfkMMUBjjkj6tNWxQiNOSPFND0=;
- b=be14zGLQyJcQzY/c0iYf+8C7Jd0AZvPkes6RJKvIv9yGN2zCkyBDCeDwsDGJlc3d8nuN4LcKx/tOq/mXtI4xHnXAPrMFErx7T0FcXoSHaUOeOIHiujWQhVMzLRynFOlAc7EHghxpgTpzY6saYwtNdBLt/fGGVVV+E1XxEhHGGLSGCOP4kAUNe3RDeT4dpKBM14irrCZckSGmLfwuSTrhOXSWCpK3d21B9YM4rWwIMYLPFeI/RtWYPWF7PZpOIBXulNcM61RlOHPRgxUpnPqfK2MNUpAQSOCPKTeXmh2Yd3GwKX2EPtcfATh2/EnR4XDdY+RrXP4xykXi8En3gJf33Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bDY52+yFOhGH2DJc7GfkMMUBjjkj6tNWxQiNOSPFND0=;
- b=qakgGVVl/Z1DLkuIir3ZJbDxXg6pdrh3Lmr2j9JhUKnb8ExSmeDmydRvm4B5Uih+uBSBJ8hlPtsGRJa2EEEi3e9sHEigN7fYZDS2uVU8trwTdTXnyp5QsV6Sl1EJ+uCJT2kow02nXrPoliM374AIpcQCZAUX1Gvf2sn9ntgfNF0=
-Received: from DBBPR05MB6299.eurprd05.prod.outlook.com (20.179.44.85) by
- DBBPR05MB6444.eurprd05.prod.outlook.com (20.179.44.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2263.15; Wed, 18 Sep 2019 07:07:56 +0000
-Received: from DBBPR05MB6299.eurprd05.prod.outlook.com
- ([fe80::9084:6136:31bf:9811]) by DBBPR05MB6299.eurprd05.prod.outlook.com
- ([fe80::9084:6136:31bf:9811%3]) with mapi id 15.20.2284.009; Wed, 18 Sep 2019
- 07:07:56 +0000
-From:   Aya Levin <ayal@mellanox.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-CC:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH iproute2 4/4] devlink: Fix devlink health set command
-Thread-Topic: [PATCH iproute2 4/4] devlink: Fix devlink health set command
-Thread-Index: AQHVY+eMfukqZgiJxU+Ik+hqGe/hKacwEAmAgAEHugA=
-Date:   Wed, 18 Sep 2019 07:07:55 +0000
-Message-ID: <3052d758-4c3c-7b07-7fa2-e46c45210719@mellanox.com>
-References: <1567687387-12993-1-git-send-email-tariqt@mellanox.com>
- <1567687387-12993-5-git-send-email-tariqt@mellanox.com>
- <20190917172357.5c70c3b9@xps13.home>
-In-Reply-To: <20190917172357.5c70c3b9@xps13.home>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR10CA0005.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:17c::15) To DBBPR05MB6299.eurprd05.prod.outlook.com
- (2603:10a6:10:d1::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ayal@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8f0da4bd-6a3e-4540-6ed9-08d73c06ee11
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6444;
-x-ms-traffictypediagnostic: DBBPR05MB6444:|DBBPR05MB6444:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBBPR05MB644490C578E7DB296EDF25B8B08E0@DBBPR05MB6444.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 01644DCF4A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(189003)(199004)(14454004)(2616005)(476003)(8676002)(316002)(6506007)(54906003)(486006)(102836004)(110136005)(26005)(81166006)(478600001)(6116002)(81156014)(66066001)(186003)(2906002)(386003)(99286004)(11346002)(71190400001)(53546011)(71200400001)(3846002)(52116002)(107886003)(6486002)(6246003)(86362001)(256004)(36756003)(4744005)(31696002)(25786009)(76176011)(6636002)(5660300002)(7736002)(305945005)(66476007)(66446008)(64756008)(66556008)(6436002)(446003)(8936002)(6512007)(31686004)(229853002)(4326008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6444;H:DBBPR05MB6299.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: GZUPMIfp6xagXr6MJSMU5Z+EhBxBVlj72JORcusXaF0La+DgDyCYDyafb8ZGgFtSiTUknCDzU9pUS5Yhs0ULEFYqc4zyEKHZlV7mLhWj7pHiUV0wfxLiErOByUZCj696/IuMo+0RlIk01ciAFZCy9SvnMofApqFh5TCFhlEzjJZqxGAQs6nVXZr9iNwam0biU1inO4l7naRJYSFpY38l0mxY+MHEtIJVz7+CN1LP5X01wNOKCjqUQDfAapbabzAzwpJ4Etm+3UNcDUnrOV3GU+ZI3/EFTSU8Xmgy7KrDuXtyy6LuhQumQNKjE+KWWF2kXPTx8ivG6UX6R8sDN97wjw9H+cLvODwHNpURRTiQ7SP8gu2W24KQ7J205mmItHhp/Z4jFBCWUY56yNF4nYjUViW0mCjc7HKwxNtU3bB882c=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <35E0F488C4AF4C418934EC113F2B061E@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726556AbfIRHTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 03:19:43 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:38256 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbfIRHTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 03:19:43 -0400
+Received: by mail-lf1-f68.google.com with SMTP id u28so4869671lfc.5
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 00:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=5aZvP9zW+sTs7eMZiiwGXw+XJ9q5mHHR1varQPHz6to=;
+        b=WX/9vm7TNvTQV0czT6z39Jr6eGUdnbw1M4RkMMe268bfFq7ZoV2f15rJQY4ZfykvMv
+         F8pXB5EQHhoz18I8u+hSqXpIMEbNZMQ6S2DAV1HcwE2dkIZMlNVTyDoFVv1q/6wvpN3S
+         fHndGUevGnoJKeMpgaHz5fvNG43yhxzFiw8meGBD5kmYefj14LBnFtWxanMt5kSI3AuC
+         44rHw+egw0XeEDQ8fwa+ku3hKupT4LRCCjITuE5hdvXCAfnDstYNYIP05WPBk6IA8RpX
+         RLhiFoeHWrL/vNOCdsxqFNd3E1bSsCqND3irTjABEI+L1arrzBu3WoiEn8RJjXEqLqZs
+         gc/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=5aZvP9zW+sTs7eMZiiwGXw+XJ9q5mHHR1varQPHz6to=;
+        b=YXPpSLayY8chg++faiE3cnKNx807EU17jnetnX82ajBYXkLbhxiLz80BsSG5aD8MLV
+         QRpEpUy+chepRc9jU9U4OfeY3S3WRcagGbZ4VHwM/s1Y13q/TcrCm0Cx6NcNG71ID3CS
+         92J99P68rtR5gbUzFpwOAJ50HD9KJh8ck3oo90ywgdcHUN21HuTLv9+LZjRYlegCt8E7
+         SJOKZl4vif1eWplxqICSvlDp7qxu+RSCuAhYuVAPqDjsNIGmJ8O4HgPphigfWwmPhXPp
+         DiwBfqLBvuc1WBvYLIslH0iAKuL3nM9vuKmvF8buP+UGSFCsVCC6oGtyxYKxj+FyT/b7
+         A7DQ==
+X-Gm-Message-State: APjAAAUHN6XnzX4K2LFw06Bbz4J/+eP7S3eFbi7uQNtL61mol3LxAdzI
+        8rZGm0OkUnETKkQD7xI0xPeBMcTd9LekW2n3ew4=
+X-Google-Smtp-Source: APXvYqy2jZp3riMzNJER0/Nrh8+sLCW8e88lBkQ+DW4CGVHAYlJUtzgKtJMJ8NygiXoyPdL5+6hVY9ocvMgAOoLT8MA=
+X-Received: by 2002:a19:c695:: with SMTP id w143mr1216429lff.162.1568791181130;
+ Wed, 18 Sep 2019 00:19:41 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f0da4bd-6a3e-4540-6ed9-08d73c06ee11
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Sep 2019 07:07:56.0053
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fhgdm3zDqaiH5SeG7a8gSI6WUp6/yuj7lQ6BtN3d6FJ1g/t96rEglVdr8xAlHMta1uzl5g3mO4Zv9SUglQo7tA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6444
+Received: by 2002:ab3:24d:0:0:0:0:0 with HTTP; Wed, 18 Sep 2019 00:19:40 -0700 (PDT)
+Reply-To: marinaadams08@gmail.com
+From:   Marina Adams <jamwood450@gmail.com>
+Date:   Wed, 18 Sep 2019 02:19:40 -0500
+Message-ID: <CAGXjVibcGU5BCAF8RdHF=-_a5cCfLw8MSg4VH16CQ2LPUr5jmQ@mail.gmail.com>
+Subject: I AM CONTACTING YOU FOR CHARITY PROJECT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDkvMTcvMjAxOSA2OjIzIFBNLCBTdGVwaGVuIEhlbW1pbmdlciB3cm90ZToNCj4gT24g
-VGh1LCAgNSBTZXAgMjAxOSAxNTo0MzowNyArMDMwMA0KPiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBt
-ZWxsYW5veC5jb20+IHdyb3RlOg0KPiANCj4+IEZyb206IEF5YSBMZXZpbiA8YXlhbEBtZWxsYW5v
-eC5jb20+DQo+Pg0KPj4gUHJpb3IgdG8gdGhpcyBwYXRjaCBib3RoIHRoZSByZXBvcnRlcidzIG5h
-bWUgYW5kIHRoZSBncmFjZSBwZXJpb2QNCj4+IGF0dHJpYnV0ZXMgc2hhcmVkIHRoZSBzYW1lIGJp
-dC4gVGhpcyBjYXVzZWQgemVyb2luZyBncmFjZSBwZXJpb2Qgd2hlbg0KPj4gc2V0dGluZyBhdXRv
-IHJlY292ZXJ5LiBMZXQgZWFjaCBwYXJhbWV0ZXIgaGFzIGl0cyBvd24gYml0Lg0KPj4NCj4+IEZp
-eGVzOiBiMThkODkxOTViMTYgKCJkZXZsaW5rOiBBZGQgZGV2bGluayBoZWFsdGggc2V0IGNvbW1h
-bmQiKQ0KPj4gU2lnbmVkLW9mZi1ieTogQXlhIExldmluIDxheWFsQG1lbGxhbm94LmNvbT4NCj4+
-IEFja2VkLWJ5OiBKaXJpIFBpcmtvIDxqaXJpQG1lbGxhbm94LmNvbT4NCj4+IFNpZ25lZC1vZmYt
-Ynk6IFRhcmlxIFRvdWthbiA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gDQo+IERvZXMgbm90IGFw
-cGx5IHRvIGN1cnJlbnQgaXByb3V0ZTIuDQpUaGlzIHBhdGNoIGlzIHJlZHVuZGFudCBkdWUgdG8g
-cGF0Y2ggZnJvbSBBbmRyZWEgQ2xhdWRpIA0KNGZiOThmMDg5NTZmZjQ4MTAzNTRkNzVhZmE5YjA0
-Y2I2ZjgwMTFiYw0KUGxlYXNlIHJlamVjdCBpdC4NCk90aGVyIHBhdGNoZXMgdGhhdCB3ZXJlIHN1
-Ym1pdHRlZCB3aXRoLCBhcmUgdmFsaWQuDQo+IA0K
+Good day Dear God's Chosen,
+
+Calvary Greetings in the name of the LORD Almighty and Our LORD JESUS
+CHRIST the giver of every good thing. Good day, i know this letter
+will definitely come to you as a huge surprise, but I implore you to
+take the time to go through it carefully as the decision you make will
+go off a long way to determine my future and continued existence. I am
+Mrs. Marina Adams aging widow of 79 years old suffering from long time
+illness Cancer. I have some funds I inherited from my late husband,
+The sum of (US$8.5 Million Dollars) and I needed a very honest and God
+fearing who can withdraw this money then use the funds for Charity
+works. I WISH TO GIVE THIS FUNDS TO YOU FOR CHARITY WORKS. I found
+your contact after a honest prayers to the LORD to bring me a helper
+and i decided to contact you if you may be willing and interested to
+handle these trust funds in good faith before anything happens to me.
+
+I accept this decision because I do not have any child who will
+inherit this money after I die. I want your urgent reply to me so that
+I will give you the deposit receipt which the COMPANY issued to me as
+next of king for immediate transfer of the money to your account in
+your country, to start the good work of God, I want you to use the
+40/percent of the total amount to help yourself in doing the project.
+
+I am desperately in keen need of assistance and I have summoned up
+courage to contact you for this task, you must not fail me and the
+millions of the poor people in our today=E2=80=99s WORLD. This is not stole=
+n
+money and there are no dangers involved,100% RISK FREE with full legal
+proof. Please if you would be able to use the funds for the Charity
+works kindly let me know immediately. I will appreciate your utmost
+confidentiality and trust in this matter to accomplish my heart
+desire, as I don't want anything that will jeopardize my last wish. I
+want you to take 40 percent of the total money for your personal use
+while 60% of the money will go to charity. I will appreciate your
+utmost confidentiality and trust in this matter to accomplish my heart
+desire, as I don't want anything that will jeopardize my last wish.
+
+Thanks and God bless you.
+
+Mrs.Marina Adams
