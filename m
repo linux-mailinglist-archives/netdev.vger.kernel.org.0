@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 724BFB6D25
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 22:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BB7B6D30
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 22:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389314AbfIRUAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 16:00:25 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38388 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387622AbfIRUAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 16:00:25 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l11so689350wrx.5;
-        Wed, 18 Sep 2019 13:00:23 -0700 (PDT)
+        id S2389494AbfIRUBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 16:01:36 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39621 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389487AbfIRUBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 16:01:35 -0400
+Received: by mail-pg1-f195.google.com with SMTP id u17so466824pgi.6
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 13:01:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TOU4ZuWvUzuxQNBU0z7noCr4TSQPsaqCOjm5rWDSQ8g=;
-        b=uPvJw2mL4p5ugyLfGDeQxqJzC+rQSmiHWuVTRqGVDz9OzjdMEwE3yyXeg/F2wLAkn+
-         4M3Ne7uijtBzWQFLDo7qY/cH4xRG5WEJFWERlnoa8Pym3uCs0rqkkAvOhL44sQQPb6xJ
-         zaiFXCeo9GNGOQdYksFtiwRfczEP8mxrcyYSNc/7BKK1YuTxe1HGl6FSaVxDUG5gOtbS
-         wbfHfeQPutIeuCfvqvXIox2ycWgV1a6OeM4gDT/tI5JIjq1v83c34vIQf6Vkfy87avhk
-         p5RP0J3YFRKxAl6lirtU4mspl7ZuBo9xb7ig+aGEpUV15JnU5TszYKSWt2rRMbzzoymS
-         /Siw==
+        bh=T2cZKpMSiaOABnpshvoFa2tthoHcJeWejWF2Jem4urQ=;
+        b=qtp+wE6fuFQn+C1DKlRr/1BfR+nv0cduIRzDWPZinreeap0AA5i8LmxE6h115hj/fN
+         proTYY2zrP6hO11c2VW0XoMMputqdLbJdaahXYJcKnpS7NXrJSQWQ5yJ8iktaotg65ag
+         NhLNknnubYsWuT0/3LR1i6zhM/6mqwUpySskuAbt6jZnTe1VrsGI6UDUyFiswvjAo1uz
+         a4SoU70LLtlGDqeA4rr/OVeTuxahX6c00boJt9ymbEVxuVvHfVwZUZk8xIFl6JgG65f8
+         F8ZYNjTKN9x+v+mxHVIcYplqMrGFJUo1rwwtF/TRnt/cu5fi8I3fp5xE3SDXgwPPRFaY
+         5TXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=TOU4ZuWvUzuxQNBU0z7noCr4TSQPsaqCOjm5rWDSQ8g=;
-        b=b8OMIF3g9mJVaZUVM0+zOUBmgPnUxxnXe9OKjq2Mk56/YYT1Ecc9cnURQDUYByQpIY
-         8rmL1RRNa2c3WwgXFvZ/gTL9n0vahqQ6oJ/ZcX/Y9HOojvoFC0rUvG/WT+S7rCM0c/jJ
-         JTpHFOQu3WUxqHMocIXhETyaca2pdeR010Y51uSTpQtaxSd8zNdsJb2mZ1Xi2k+3UtMM
-         aFD6tqx7yiB/LjCjTVjCXtaO6zCMsB2bIr2H6hK12AiqKRjPZejJhJYGVhT2ManvsQYo
-         rtX4a/HD50fFcdzI2Ez3Sfc+k9XBn618ONDXYoKC6yR7/zPmV4l6cb14MloTWycLndBT
-         d7Gg==
-X-Gm-Message-State: APjAAAVI29JVqvFX68oYE8RtTnCRLdgKXEdpaNO3IKSczp/DMbEZanbl
-        rcbpHKbckkDNMkctjY11YunPoTKX
-X-Google-Smtp-Source: APXvYqwSInRuFWaitMmA9bfwrjFHcX/wSggG+aJ9Nj2YP6nJKGsFOpLNmYYNOIwMWskIMs4pdby+fg==
-X-Received: by 2002:a5d:4ac8:: with SMTP id y8mr4525515wrs.98.1568836822579;
-        Wed, 18 Sep 2019 13:00:22 -0700 (PDT)
-Received: from [192.168.1.2] ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id d193sm5352237wmd.0.2019.09.18.13.00.20
+        bh=T2cZKpMSiaOABnpshvoFa2tthoHcJeWejWF2Jem4urQ=;
+        b=kc1K7uMpssdM8m8oQ3/3kGM8PeOBAu71xPrj8vRbHcEirmRrR7WvuOX7cJ6Rt+R2RO
+         +aEIYNfl9zN088TnuAli7A+3dcXz5MDNXEYnZmP6uX6UfGBSJkjC0+BXefi3L4UUOCYx
+         3M6Iub6ILtw/kopRGlc+EPDqjZ+C1Eyx7sLyaZK2iRJx4z0XUj0qY9v6LkMIKtW9Xkao
+         qzSbsbAosinIpNiHtA3UHEv9ltzPv2NNc31mcakAfpK5/4zlGjFjettR2e1cMfClJ8Ps
+         5dr2FgBsbqBbGEZ5PHc3AQqJEaB4oIj6TwFKqYMa/rzDio8lq6qIXZHd9ZJ+JnTdDLrb
+         xFCA==
+X-Gm-Message-State: APjAAAUrMaNJZhYpEj8uk7p1KVCnacRkiM2gJYcZyiz2o1bWN157bYDu
+        y8FJjsoWcsoSzHUopIBwnRk=
+X-Google-Smtp-Source: APXvYqwoQzOa59Csy7GkhZTu19Ded1jjLPWyvs2SiKRYTD/+FtQ4PE9UaV6G/D03Gp3anIXh6O47oA==
+X-Received: by 2002:a17:90a:9743:: with SMTP id i3mr80750pjw.9.1568836894470;
+        Wed, 18 Sep 2019 13:01:34 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:5d8f:d810:4b26:617b])
+        by smtp.googlemail.com with ESMTPSA id e15sm3156847pjt.3.2019.09.18.13.01.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Sep 2019 13:00:21 -0700 (PDT)
-Subject: Re: [PATCH v2] net: dsa: sja1105: prevent leaking memory
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>, andrew@lunn.ch
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20190918172106.GN9591@lunn.ch>
- <20190918180439.12441-1-navid.emamdoost@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Message-ID: <8d6f6c54-1758-7d98-c9b5-5c16b171c885@gmail.com>
-Date:   Wed, 18 Sep 2019 23:00:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Wed, 18 Sep 2019 13:01:33 -0700 (PDT)
+Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        tariqt@mellanox.com, mlxsw@mellanox.com
+References: <20190916094448.26072-1-jiri@resnulli.us>
+ <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
+ <20190917183629.GP2286@nanopsycho.orion>
+ <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
+ <20190918073738.GA2543@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <13688c37-3f27-bdb4-973b-dd73031fa230@gmail.com>
+Date:   Wed, 18 Sep 2019 14:01:31 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20190918180439.12441-1-navid.emamdoost@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190918073738.GA2543@nanopsycho>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,67 +70,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Navid,
-
-Thanks for the patch.
-
-On 9/18/19 9:04 PM, Navid Emamdoost wrote:
-> In sja1105_static_config_upload, in two cases memory is leaked: when
-> static_config_buf_prepare_for_upload fails and when sja1105_inhibit_tx
-> fails. In both cases config_buf should be released.
+On 9/18/19 1:37 AM, Jiri Pirko wrote:
+> Wed, Sep 18, 2019 at 01:46:13AM CEST, dsahern@gmail.com wrote:
+>> On 9/17/19 12:36 PM, Jiri Pirko wrote:
+>>> Tue, Sep 17, 2019 at 06:46:31PM CEST, dsahern@gmail.com wrote:
+>>>> On 9/16/19 3:44 AM, Jiri Pirko wrote:
+>>>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>>>
+>>>>> Add indication about previous failed devlink reload.
+>>>>>
+>>>>> Example outputs:
+>>>>>
+>>>>> $ devlink dev
+>>>>> netdevsim/netdevsim10: reload_failed true
+>>>>
+>>>> odd output to user. Why not just "reload failed"?
+>>>
+>>> Well it is common to have "name value". The extra space would seem
+>>> confusing for the reader..
+>>> Also it is common to have "_" instead of space for the output in cases
+>>> like this.
+>>>
+>>
+>> I am not understanding your point.
+>>
+>> "reload failed" is still a name/value pair. It is short and to the point
+>> as to what it indicates. There is no need for the name in the uapi (ie.,
+>> the name of the netlink attribute) to be dumped here.
 > 
-> Fixes: 8aa9ebccae876 (avoid leaking config_buf)
-> Fixes: 1a4c69406cc1c (avoid leaking config_buf)
-> 
-
-You're not supposed to add a short description of the patch here, but 
-rather the commit message of the patch you're fixing.
-Add this to your ~/.gitconfig:
-
-[pretty]
-	fixes = Fixes: %h (\"%s\")
-
-And then run:
-git show --pretty=fixes 8aa9ebccae87621d997707e4f25e53fddd7e30e4
-
-Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port 
-L2 switch")
-
-git show --pretty=fixes 1a4c69406cc1c3c42bb7391c8eb544e93fe9b320
-
-Fixes: 1a4c69406cc1 ("net: dsa: sja1105: Prevent PHY jabbering during 
-switch reset")
-
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> ---
->   drivers/net/dsa/sja1105/sja1105_spi.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-> index 84dc603138cf..58dd37ecde17 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_spi.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-> @@ -409,7 +409,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
->   	rc = static_config_buf_prepare_for_upload(priv, config_buf, buf_len);
->   	if (rc < 0) {
->   		dev_err(dev, "Invalid config, cannot upload\n");
-> -		return -EINVAL;
-> +		rc = -EINVAL;
-> +		goto out;
->   	}
->   	/* Prevent PHY jabbering during switch reset by inhibiting
->   	 * Tx on all ports and waiting for current packet to drain.
-> @@ -418,7 +419,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
->   	rc = sja1105_inhibit_tx(priv, port_bitmap, true);
->   	if (rc < 0) {
->   		dev_err(dev, "Failed to inhibit Tx on ports\n");
-> -		return -ENXIO;
-> +		rc = -ENXIO;
-> +		goto out;
->   	}
->   	/* Wait for an eventual egress packet to finish transmission
->   	 * (reach IFG). It is guaranteed that a second one will not
+> Ah, got it. Well it is a bool value, that means it is "true" or "false".
+> In json output, it is True of False. App processing json would have to
+> handle this case in a special way.
 > 
 
-Regards,
--Vladimir
+Technically it is a u8. But really I do not understand why it is
+RELOAD_FAILED and not RELOAD_STATUS which is more generic and re-usable.
+e.g,. 'none', 'failed', 'success'.
