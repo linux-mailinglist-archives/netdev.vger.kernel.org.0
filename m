@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AF55B5E00
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8664CB5DFA
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 09:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728728AbfIRHZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 03:25:39 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:60564 "EHLO a.mx.secunet.com"
+        id S1728870AbfIRHZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 03:25:43 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:60576 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728481AbfIRHZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 03:25:39 -0400
+        id S1728599AbfIRHZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 03:25:41 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 5D1E0200A0;
+        by a.mx.secunet.com (Postfix) with ESMTP id CD6EB20569;
         Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id v8JVJYuVLhXt; Wed, 18 Sep 2019 09:25:37 +0200 (CEST)
+        with ESMTP id aHTvaL7FX_Nz; Wed, 18 Sep 2019 09:25:38 +0200 (CEST)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 84B8E20569;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 85E412056D;
         Wed, 18 Sep 2019 09:25:37 +0200 (CEST)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Sep 2019
  09:25:36 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 369513180020;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 3C8973180022;
  Wed, 18 Sep 2019 09:25:37 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     <netdev@vger.kernel.org>
 CC:     Steffen Klassert <steffen.klassert@secunet.com>,
         Willem de Bruijn <willemb@google.com>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH RFC v3 3/5] net: Add a netdev software feature set that defaults to off.
-Date:   Wed, 18 Sep 2019 09:25:15 +0200
-Message-ID: <20190918072517.16037-4-steffen.klassert@secunet.com>
+Subject: [PATCH RFC v3 4/5] net: Support GRO/GSO fraglist chaining.
+Date:   Wed, 18 Sep 2019 09:25:16 +0200
+Message-ID: <20190918072517.16037-5-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190918072517.16037-1-steffen.klassert@secunet.com>
 References: <20190918072517.16037-1-steffen.klassert@secunet.com>
@@ -47,44 +47,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous patch added the NETIF_F_GRO_LIST feature.
-This is a software feature that should default to off.
-Current software features default to on, so add a new
-feature set that defaults to off.
+This patch adds the core functions to chain/unchain
+GSO skbs at the frag_list pointer. This also adds
+a new GSO type SKB_GSO_FRAGLIST and a is_flist
+flag to napi_gro_cb which indicates that this
+flow will be GROed by fraglist chaining.
 
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/linux/netdev_features.h | 3 +++
- net/core/dev.c                  | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |   4 +-
+ include/linux/skbuff.h    |   4 ++
+ net/core/dev.c            |   2 +-
+ net/core/skbuff.c         | 106 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 114 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 1b6baa1b6fe9..e8b3c943d835 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -228,6 +228,9 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- /* changeable features with no special hardware requirements */
- #define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index d7d5626002e9..e97ca3e51466 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2306,7 +2306,8 @@ struct napi_gro_cb {
+ 	/* Number of gro_receive callbacks this packet already went through */
+ 	u8 recursion_counter:4;
  
-+/* Changeable features with no special hardware requirements that defaults to off. */
-+#define NETIF_F_SOFT_FEATURES_OFF	NETIF_F_GRO_LIST
+-	/* 1 bit hole */
++	/* GRO is done by frag_list pointer chaining. */
++	u8	is_flist:1;
+ 
+ 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
+ 	__wsum	csum;
+@@ -2656,6 +2657,7 @@ struct net_device *dev_get_by_napi_id(unsigned int napi_id);
+ int netdev_get_name(struct net *net, char *name, int ifindex);
+ int dev_restart(struct net_device *dev);
+ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
++int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb);
+ 
+ static inline unsigned int skb_gro_offset(const struct sk_buff *skb)
+ {
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 028e684fa974..3d5fd0a0eea7 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -595,6 +595,8 @@ enum {
+ 	SKB_GSO_UDP = 1 << 16,
+ 
+ 	SKB_GSO_UDP_L4 = 1 << 17,
 +
- #define NETIF_F_VLAN_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
- 				 NETIF_F_HW_VLAN_CTAG_RX | \
- 				 NETIF_F_HW_VLAN_CTAG_TX | \
++	SKB_GSO_FRAGLIST = 1 << 18,
+ };
+ 
+ #if BITS_PER_LONG > 32
+@@ -3509,6 +3511,8 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet);
+ bool skb_gso_validate_network_len(const struct sk_buff *skb, unsigned int mtu);
+ bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len);
+ struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
++struct sk_buff *skb_segment_list(struct sk_buff *skb, netdev_features_t features,
++				 unsigned int offset);
+ struct sk_buff *skb_vlan_untag(struct sk_buff *skb);
+ int skb_ensure_writable(struct sk_buff *skb, int write_len);
+ int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
 diff --git a/net/core/dev.c b/net/core/dev.c
-index b1afafee3e2a..cc0bbec0f1d7 100644
+index cc0bbec0f1d7..f2a66198154d 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -8730,7 +8730,7 @@ int register_netdevice(struct net_device *dev)
- 	/* Transfer changeable features to wanted_features and enable
- 	 * software offloads (GSO and GRO).
- 	 */
--	dev->hw_features |= NETIF_F_SOFT_FEATURES;
-+	dev->hw_features |= (NETIF_F_SOFT_FEATURES | NETIF_F_SOFT_FEATURES_OFF);
- 	dev->features |= NETIF_F_SOFT_FEATURES;
+@@ -3109,7 +3109,7 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
  
- 	if (dev->netdev_ops->ndo_udp_tunnel_add) {
+ 	segs = skb_mac_gso_segment(skb, features);
+ 
+-	if (unlikely(skb_needs_check(skb, tx_path) && !IS_ERR(segs)))
++	if (segs != skb && unlikely(skb_needs_check(skb, tx_path) && !IS_ERR(segs)))
+ 		skb_warn_bad_offload(skb);
+ 
+ 	return segs;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 2b40b5a9425b..3ff56677a6fb 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3638,6 +3638,112 @@ static inline skb_frag_t skb_head_frag_to_page_desc(struct sk_buff *frag_skb)
+ 	return head_frag;
+ }
+ 
++struct sk_buff *skb_segment_list(struct sk_buff *skb,
++				 netdev_features_t features,
++				 unsigned int offset)
++{
++	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
++	unsigned int tnl_hlen = skb_tnl_header_len(skb);
++	unsigned int delta_truesize = 0;
++	unsigned int delta_len = 0;
++	struct sk_buff *tail = NULL;
++	struct sk_buff *nskb;
++
++	skb_push(skb, -skb_network_offset(skb) + offset);
++
++	skb_shinfo(skb)->frag_list = NULL;
++
++	do {
++		nskb = list_skb;
++		list_skb = list_skb->next;
++
++		if (!tail)
++			skb->next = nskb;
++		else
++			tail->next = nskb;
++
++		tail = nskb;
++
++		delta_len += nskb->len;
++		delta_truesize += nskb->truesize;
++
++		skb_push(nskb, -skb_network_offset(nskb) + offset);
++
++		if (!secpath_exists(nskb))
++			__skb_ext_copy(nskb, skb);
++
++		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
++
++		nskb->ip_summed = skb->ip_summed;
++		nskb->csum_valid = skb->csum_valid;
++		nskb->tstamp = skb->tstamp;
++		nskb->dev = skb->dev;
++		nskb->queue_mapping = skb->queue_mapping;
++
++		nskb->mac_len = skb->mac_len;
++		nskb->mac_header = skb->mac_header;
++		nskb->transport_header = skb->transport_header;
++		nskb->network_header = skb->network_header;
++		skb_dst_copy(nskb, skb);
++
++		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
++		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
++						 nskb->data - tnl_hlen,
++						 offset + tnl_hlen);
++
++		if (skb_needs_linearize(nskb, features) &&
++		    __skb_linearize(nskb))
++			goto err_linearize;
++
++	} while (list_skb);
++
++	skb->truesize = skb->truesize - delta_truesize;
++	skb->data_len = skb->data_len - delta_len;
++	skb->len = skb->len - delta_len;
++
++	skb_gso_reset(skb);
++
++	skb->prev = tail;
++
++	if (skb_needs_linearize(skb, features) &&
++	    __skb_linearize(skb))
++		goto err_linearize;
++
++	skb_get(skb);
++
++	return skb;
++
++err_linearize:
++	kfree_skb_list(skb->next);
++	skb->next = NULL;
++	return ERR_PTR(-ENOMEM);
++}
++EXPORT_SYMBOL_GPL(skb_segment_list);
++
++int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
++{
++	if (unlikely(p->len + skb->len >= 65536))
++		return -E2BIG;
++
++	if (NAPI_GRO_CB(p)->last == p)
++		skb_shinfo(p)->frag_list = skb;
++	else
++		NAPI_GRO_CB(p)->last->next = skb;
++
++	skb_pull(skb, skb_gro_offset(skb));
++
++	NAPI_GRO_CB(p)->last = skb;
++	NAPI_GRO_CB(p)->count++;
++	p->data_len += skb->len;
++	p->truesize += skb->truesize;
++	p->len += skb->len;
++
++	NAPI_GRO_CB(skb)->same_flow = 1;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(skb_gro_receive_list);
++
+ /**
+  *	skb_segment - Perform protocol segmentation on skb.
+  *	@head_skb: buffer to segment
 -- 
 2.17.1
 
