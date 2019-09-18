@@ -2,100 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A38B6710
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 17:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3BA1B673C
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 17:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387473AbfIRP0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 11:26:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53102 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387466AbfIRP0s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 11:26:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rMO0GB74u208w0s9L1VnSEFBd3xoiYe5Pq/uI+rk3S0=; b=FDHL+zPdkSSTK1yefcMu++bUaV
-        2MEPOKNDY4FiLOA7T1fZyniUXD93BrNkcWXoL++GKNKvn9DZbveT17bWjpEJibQD9t2ArathPRpKc
-        N1AHEsHKVG0T8hJzFnrdauCIhyg+Rjm8PsmxFw3Ls01MV+zzEtm3A2TnmYi0Vk0pc82w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iAbqw-0008UG-WA; Wed, 18 Sep 2019 17:26:46 +0200
-Date:   Wed, 18 Sep 2019 17:26:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Peter Mamonov <pmamonov@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] net/phy: fix DP83865 10 Mbps HDX loopback disable
- function
-Message-ID: <20190918152646.GL9591@lunn.ch>
-References: <20190918141931.GK9591@lunn.ch>
- <20190918144825.23285-1-pmamonov@gmail.com>
+        id S1731686AbfIRPgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 11:36:17 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:46510 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731031AbfIRPgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 11:36:16 -0400
+Received: by mail-yb1-f195.google.com with SMTP id t2so151112ybo.13
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 08:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zd3nsnTHdLth2JkAShLfNLris+aBYyaQr1Y14HuBHbw=;
+        b=p7yUw7Xh1ghVHX2jqsJ6PfjtlD3IRYSc9TkPHIHUHK6Om9EXbCdjfLfAnqFdHe1cD4
+         JgGE4hqiA+DAaogjAWkBSHtuU0PV2P7TlfEIfwfuvQbPnLCCC4R2gdNO+AN/9ZTPtdXf
+         TDhbByiLjNq82Ufqwb9ykPU8g/Li3YBJfOjEawbyuoetaT/h+zkd8T92nNUdejEF5lFr
+         bFhpvsxgkAiuYExhHglXthsx+9Lle/TfDz4M6o/ahdSVQ/8O2AoKE2vIaJ/hBu1wQmyF
+         nbRnpRI/ayAX0ac1tvFyCzhifGNePFhnAFJfLzvt7pTs1kRVW4HJUNUn0H76J3E0IzhS
+         0vTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zd3nsnTHdLth2JkAShLfNLris+aBYyaQr1Y14HuBHbw=;
+        b=QB63lUDwOIS0ier242fbA6W9HQlqsV9GhvRxAASAiNwyWE/Df05hspf/Z5O3zwl9Iw
+         En/n/enlRpfFECgpaaLSY4sZI/WeGJfEFROFtwHo0uuJx1kyZ0mO3+2GiRjuNNESPkgs
+         G2C9Kg/tMJPhVd+Lx2sdfLimYRrMw4vXqxSg4D4lHrqQQUN+3pTxbAKlBDH/fbJptZ1X
+         4lrHS9fSe93Rqzkmwost+pQYr3aKWe76h4tpznxXG9M2ZFjIceqQbPxozFZs7E4r6a1z
+         aKZkkgH3vfFarBMtvMwC2oKgrDjcY3pDq9nydhtIy8F0y6z3Jsn8zbe/YCx04AjhxZ05
+         vJzw==
+X-Gm-Message-State: APjAAAWFB/IEl1bSbCRwu4G/6StKd6IKrSKTabejEOBq5d2nvJs/1Ozf
+        T0Qb20Sscxz4fCZv3BRaV0JW5FaC
+X-Google-Smtp-Source: APXvYqxwKmcXEZ+deQrps9UwWaD6PJcMPX+gWPk+efqIK1Qt4VA3OZEL73tTvF87LiUCiRsfyY/Qqw==
+X-Received: by 2002:a25:df91:: with SMTP id w139mr3003589ybg.161.1568820974881;
+        Wed, 18 Sep 2019 08:36:14 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id o11sm1206312ywc.42.2019.09.18.08.36.12
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Sep 2019 08:36:13 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id t15so164967ybg.7
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 08:36:12 -0700 (PDT)
+X-Received: by 2002:a25:774d:: with SMTP id s74mr3313586ybc.473.1568820972393;
+ Wed, 18 Sep 2019 08:36:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190918144825.23285-1-pmamonov@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <ce01f024-268d-a44e-8093-91be97f1e8b0@akamai.com>
+In-Reply-To: <ce01f024-268d-a44e-8093-91be97f1e8b0@akamai.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 18 Sep 2019 11:35:35 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc3O4XQAmtyY5Fwy96nL17ewdCouvwAJ=6DeMUcQUiz8A@mail.gmail.com>
+Message-ID: <CA+FuTSc3O4XQAmtyY5Fwy96nL17ewdCouvwAJ=6DeMUcQUiz8A@mail.gmail.com>
+Subject: Re: udp sendmsg ENOBUFS clarification
+To:     Josh Hunt <johunt@akamai.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 05:48:25PM +0300, Peter Mamonov wrote:
-> According to the DP83865 datasheet "The 10 Mbps HDX loopback can be
-> disabled in the expanded memory register 0x1C0.1." The driver erroneously
-> used bit 0 instead of bit 1.
+On Tue, Sep 17, 2019 at 4:20 PM Josh Hunt <johunt@akamai.com> wrote:
+>
+> I was running some tests recently with the udpgso_bench_tx benchmark in
+> selftests and noticed that in some configurations it reported sending
+> more than line rate! Looking into it more I found that I was overflowing
+> the qdisc queue and so it was sending back NET_XMIT_DROP however this
+> error did not propagate back up to the application and so it assumed
+> whatever it sent was done successfully. That's when I learned about
+> IP_RECVERR and saw that the benchmark isn't using that socket option.
+>
+> That's all fairly straightforward, but what I was hoping to get
+> clarification on is where is the line drawn on when or when not to send
+> ENOBUFS back to the application if IP_RECVERR is *not* set? My guess
+> based on going through the code is that as long as the packet leaves the
+> stack (in this case sent to the qdisc) that's where we stop reporting
+> ENOBUFS back to the application, but can someone confirm?
 
-Hi Peter
+Once a packet is queued the system call may return, so any subsequent
+drops after dequeue are not propagated back. The relevant rc is set in
+__dev_xmit_skb on q->enqueue. On setups with multiple devices, such as
+a tunnel or bonding path, enqueue on the lower device is similar not
+propagated.
 
-This is version 2, not 1. Or if you want to start counting from 0, it
-would be good to put v0 in your first patch :-)
+> For example, we sanitize the error in udp_send_skb():
+> send:
+>          err = ip_send_skb(sock_net(sk), skb);
+>          if (err) {
+>                  if (err == -ENOBUFS && !inet->recverr) {
+>                          UDP_INC_STATS(sock_net(sk),
+>                                        UDP_MIB_SNDBUFERRORS, is_udplite);
+>                          err = 0;
+>                  }
+>          } else
+>
+>
+> but in udp_sendmsg() we don't:
+>
+>          if (err == -ENOBUFS || test_bit(SOCK_NOSPACE,
+> &sk->sk_socket->flags)) {
+>                  UDP_INC_STATS(sock_net(sk),
+>                                UDP_MIB_SNDBUFERRORS, is_udplite);
+>          }
+>          return err;
 
-It is also normal to put in the commit message what changed from the
-previous version.
+That's interesting. My --incorrect-- understanding until now had been
+that IP_RECVERR does nothing but enable optional extra detailed error
+reporting on top of system call error codes.
 
-This is a fix. So please add a Fixes: tag, with the hash of the commit
-which introduced the problem.
+But indeed it enables backpressure being reported as a system call
+error that is suppressed otherwise. I don't know why. The behavior
+precedes git history.
 
-And since this is a fix, it should be against DaveM net tree, and you
-indicate this in the subject line with [PATCH net v3].
+> In the case above it looks like we may only get ENOBUFS for allocation
+> failures inside of the stack in udp_sendmsg() and so that's why we
+> propagate the error back up to the application?
 
-Thanks
-	Andrew
+Both the udp lockless fast path and the slow corked path go through
+udp_send_skb, so the backpressure is suppressed consistently across
+both cases.
 
-> 
-> Signed-off-by: Peter Mamonov <pmamonov@gmail.com>
-> ---
->  drivers/net/phy/national.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/phy/national.c b/drivers/net/phy/national.c
-> index 2addf1d3f619..3aa910b3dc89 100644
-> --- a/drivers/net/phy/national.c
-> +++ b/drivers/net/phy/national.c
-> @@ -110,14 +110,17 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
->  
->  static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
->  {
-> +	u16 lb_dis = BIT(1);
-> +
->  	if (disable)
-> -		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
-> +		ns_exp_write(phydev, 0x1c0,
-> +			     ns_exp_read(phydev, 0x1c0) | lb_dis);
->  	else
->  		ns_exp_write(phydev, 0x1c0,
-> -			     ns_exp_read(phydev, 0x1c0) & 0xfffe);
-> +			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
->  
->  	pr_debug("10BASE-T HDX loopback %s\n",
-> -		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
-> +		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
->  }
->  
->  static int ns_config_init(struct phy_device *phydev)
-> -- 
-> 2.23.0
-> 
+Indeed the error handling in udp_sendmsg then is not related to
+backpressure, but to other causes of ENOBUF, i.e., allocation failure.
