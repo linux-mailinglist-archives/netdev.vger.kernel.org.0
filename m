@@ -2,205 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8C7B6EC6
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 23:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1640BB6ED5
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 23:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732157AbfIRVZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 17:25:56 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45841 "EHLO
+        id S1732231AbfIRVaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 17:30:06 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:41939 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726908AbfIRVZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 17:25:55 -0400
-Received: by mail-qt1-f193.google.com with SMTP id c21so1513127qtj.12
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 14:25:55 -0700 (PDT)
+        with ESMTP id S1727737AbfIRVaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 17:30:05 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x4so1560233qtq.8;
+        Wed, 18 Sep 2019 14:30:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ArMO30PH+mSH2dhRCbXmrRrTpgNt9sC2TybpQRz1MIQ=;
-        b=dJfiQAAG2jIYQzTr9Gr7M57tEPwe122wkpyHdEMED5eApJzZfsiQfBV25EsvwZrlqh
-         AqucE2LTJ2QpzT0Ia2yd65+cNG0ZGpT569GDOgj1MUFvKL2gerSqPid/rptSujv+4ad1
-         Alis/P1+OoARkReiQ4levtP74mSssvKAzswLeQmmVZ1Bin8Je4Tyl2NAcODu1YjTjcHa
-         BxvRAo8Mm2z3EuRuWswQtMEw90/LJSwNwOH3Ls0uJB91sdOd6G/9gh8Xzfob11zb0PqO
-         ukASH7/1KfegnMrmSj+wDxgTXpaR2iXOWYwvg3sKy/vPA+EFzLvsrOu1fMfvqSHLY2kZ
-         cN1w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lGoxk8Izv5KBiBWqzGeBm7lOkOJH17/zAEAijmUsBFU=;
+        b=kIbLTEk7J344Et4yMH6eYIH/16VIY8PwEwBjYpZ42xfhepqcT34BKVHZo2xqxoP7Hi
+         oIcWjAoeIlhVr0Jp7D2nBJ0dPUkaf8p4MD63ikQt8h6o3asuGyhdn+iJLSRKhCEKYbQY
+         skb9o2E5TqHgU4I94Q70i/UKz3twW3rR7yU1KbCcbTfYG/6zq5bUIolPZhuEEkV5On9s
+         yUUK/IQsvdMexB61rf7lAPKuq0nUkqAqjpYE1mHpWCw7eLZ83FCSdHx5GfTYmuiusV1R
+         HVtWwmtHSdlLxkyLWs+L0n7OPD3mLSvBOboTP5aT9mhPOFY68ceetPNN66bwgq39euiO
+         V7Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ArMO30PH+mSH2dhRCbXmrRrTpgNt9sC2TybpQRz1MIQ=;
-        b=fyvQJif2FbVrn52OqrtWFiYFKN9ywxV0ZPpT3Nj7Hgy/lRuhr1FLJsCEHO/szGt84/
-         +cH+NNMAlT1w6+9lwHe1eR7hpa81LeCtvXs7reIZWwRz8/6iGdMPio6ko92NgyzmA+UW
-         xivvWlROYqwlzsJWw75b288XX0/zfPozXZsjc0xBjzObiWyBexArCqAxuhKk4bHhfwMv
-         dWQKrL2jYpuJ3iSnR9H0r12fxHm1D5XzXQ/BR/TiCdKQX2bRzrp7YAPn7+agQIGcOZ82
-         HgrjCuo/bU3ScHAxGvdSt2a7CFUxDahGtxS1MucsZNM2gXOYmoX7oY0mXtJnyGZq9gPf
-         yOQg==
-X-Gm-Message-State: APjAAAX8lPzZpvDzdD2EY8j7kJhjR6QP8u1uyTeupu3SXLLM19aiVH6I
-        6v2faqTb4eUdKwAC53Tb4v60Ew==
-X-Google-Smtp-Source: APXvYqzi0DQOjcSiG50v9itsISTDtUGzOc7+KKOI7pigsc4kB1yFODuUlepEf9i1jNZFzd9bXuLaMQ==
-X-Received: by 2002:ac8:108b:: with SMTP id a11mr6309829qtj.380.1568841954499;
-        Wed, 18 Sep 2019 14:25:54 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e7sm3732995qtb.94.2019.09.18.14.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Sep 2019 14:25:54 -0700 (PDT)
-Date:   Wed, 18 Sep 2019 14:25:49 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pooja Trivedi <poojatrivedi@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
-        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
-        Mallesham Jatharakonda <mallesh537@gmail.com>
-Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
- caused by a race condition in tls_tx_records
-Message-ID: <20190918142549.69bfa285@cakuba.netronome.com>
-In-Reply-To: <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
-References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
-        <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lGoxk8Izv5KBiBWqzGeBm7lOkOJH17/zAEAijmUsBFU=;
+        b=gNQLUNixYMqOWZemeMwScSK0Lyu7eJvbC+bHxseOR32F95qtMTNVSjD53n1jf5VBFc
+         em9lVIRh2t77XFytHPOxx3tskhYdgk0tG1grI+DUvcA2mgW6Vq4oy6BwMNJgTrQNmgaE
+         08wxzjfMxlqP6WzfuzDSvG4lHR7NGt04XEyevofeobGSrhcOfAlnikBCGWqg03Ijfp8R
+         Q1QMg0ltdNP4z51o/GtwXdc8P0VH9NxP7H1P8SRPa++nxHcP9fgmhl1Bpvrmkw0rO8wY
+         AbsDPsUwR38g93HkLehFzLm36lsMElZZGNe82PLUS6STQaRZ7ZImFDZyCHrZdIpdv61G
+         AtHQ==
+X-Gm-Message-State: APjAAAXtXlGcb6kXGN4l8oW9gYi6KuZdxwJZ/lYHrhtz1s6y0AzOAjys
+        Mc3CXJu04EzZFAvOwydToBmcfl4CAkb1OuwGOL0=
+X-Google-Smtp-Source: APXvYqwPE8EM+Qpw3Tu4Ktol2H+k7PeVKQUh8iasB/FwUsXBNEy0xfBZYN+0sw+PiKADyhz6BlmDOtWOwvFTaoYz1rM=
+X-Received: by 2002:ac8:5147:: with SMTP id h7mr6398594qtn.117.1568842204628;
+ Wed, 18 Sep 2019 14:30:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
+ <20190916105433.11404-10-ivan.khoronzhuk@linaro.org> <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
+ <20190918103508.GC2908@khorivan>
+In-Reply-To: <20190918103508.GC2908@khorivan>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 18 Sep 2019 14:29:53 -0700
+Message-ID: <CAEf4BzYCNrkaMf-LFHYDi78m9jgMDOswh8VYXGcbttJV-3D21w@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
+ but not host when cross compile
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com,
+        sergei.shtylyov@cogentembedded.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Sep 2019 21:13:56 +0000, Pooja Trivedi wrote:
-> From: Pooja Trivedi <pooja.trivedi@stackpath.com>
+On Wed, Sep 18, 2019 at 3:35 AM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> On Tue, Sep 17, 2019 at 04:42:07PM -0700, Andrii Nakryiko wrote:
+> >On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
+> ><ivan.khoronzhuk@linaro.org> wrote:
+> >>
+> >> While compile natively, the hosts cflags and ldflags are equal to ones
+> >> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
+> >> have own, used for target arch. While verification, for arm, arm64 and
+> >> x86_64 the following flags were used alsways:
+> >>
+> >> -Wall
+> >> -O2
+> >> -fomit-frame-pointer
+> >> -Wmissing-prototypes
+> >> -Wstrict-prototypes
+> >>
+> >> So, add them as they were verified and used before adding
+> >> Makefile.target, but anyway limit it only for cross compile options as
+> >> for host can be some configurations when another options can be used,
+> >> So, for host arch samples left all as is, it allows to avoid potential
+> >> option mistmatches for existent environments.
+> >>
+> >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> >> ---
+> >>  samples/bpf/Makefile | 9 +++++++++
+> >>  1 file changed, 9 insertions(+)
+> >>
+> >> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> >> index 1579cc16a1c2..b5c87a8b8b51 100644
+> >> --- a/samples/bpf/Makefile
+> >> +++ b/samples/bpf/Makefile
+> >> @@ -178,8 +178,17 @@ CLANG_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
+> >>  TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
+> >>  endif
+> >>
+> >> +ifdef CROSS_COMPILE
+> >> +TPROGS_CFLAGS += -Wall
+> >> +TPROGS_CFLAGS += -O2
+> >
+> >Specifying one arg per line seems like overkill, put them in one line?
+> Will combine.
+>
+> >
+> >> +TPROGS_CFLAGS += -fomit-frame-pointer
+> >
+> >Why this one?
+> I've explained in commit msg. The logic is to have as much as close options
+> to have smiliar binaries. As those options are used before for hosts and kinda
+> cross builds - better follow same way.
 
-Ugh the same problem was diagnosed recently by Mallesham but I just
-realized he took the conversation off list so you can't see it.
+I'm just asking why omit frame pointers and make it harder to do stuff
+like profiling? What performance benefits are we seeking for in BPF
+samples?
 
-> Enclosing tls_tx_records within lock_sock/release_sock pair to ensure
-> write-synchronization is not sufficient because socket lock gets released
-> under memory pressure situation by sk_wait_event while it sleeps waiting
-> for memory, allowing another writer into tls_tx_records. This causes a
-> race condition with record deletion post transmission.
-> 
-> To fix this bug, use a flag set in tx_bitmask field of TLS context to
-> ensure single writer in tls_tx_records at a time
+>
+> >
+> >> +TPROGS_CFLAGS += -Wmissing-prototypes
+> >> +TPROGS_CFLAGS += -Wstrict-prototypes
+> >
+> >Are these in some way special that we want them in cross-compile mode only?
+> >
+> >All of those flags seem useful regardless of cross-compilation or not,
+> >shouldn't they be common? I'm a bit lost about the intent here...
+> They are common but split is needed to expose it at least. Also host for
+> different arches can have some own opts already used that shouldn't be present
+> for cross, better not mix it for safety.
 
-Could you point me to the place where socket lock gets released in/under
-tls_tx_records()? I thought it's only done in tls_sw_do_sendpage()/
-tls_sw_do_sendmsg().
+We want -Wmissing-prototypes and -Wstrict-prototypes for cross-compile
+and non-cross-compile cases, right? So let's specify them as common
+set of options, instead of relying on KBUILD_HOSTCFLAGS or
+HOST_EXTRACFLAGS to have them. Otherwise we'll be getting extra
+warnings for just cross-compile case, which is not good. If you are
+worrying about having duplicate -W flags, seems like it's handled by
+GCC already, so shouldn't be a problem.
 
-FWIW this was my answer to Mallesham:
-
-If I understand you correctly after we release and re-acquire socket
-lock msg_pl may be pointing to already freed message? Could we perhaps
-reload the pointer from the context/record? Something like:
-
-	if (ret) {
-		rec = ctx->open_rec;
-		if (rec)
-			tls_trim_both_msgs(sk, &rec->msg_plaintext.sg.size);
-		goto sendpage_end;
-	}
-
-I'm not 100% sure if that makes sense, perhaps John will find time to
-look or you could experiment?
-
-We could try to add some state like we have ctx->in_tcp_sendpages to
-let the async processing know it's not needed since there's still a
-writer present, but I get a feeling that'd end up being more complex.
-
-> The bug resulted in the following crash:
-> 
-> [  270.888952] ------------[ cut here ]------------
-> [  270.890450] list_del corruption, ffff91cc3753a800->prev is
-> LIST_POISON2 (dead000000000122)
-> [  270.891194] WARNING: CPU: 1 PID: 7387 at lib/list_debug.c:50
-> __list_del_entry_valid+0x62/0x90
-> [  270.892037] Modules linked in: n5pf(OE) netconsole tls(OE) bonding
-> intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm iTCO_wdt iTCO_vendor_support
-> irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel
-> aesni_intel crypto_simd mei_me cryptd glue_helper ipmi_si sg mei
-> lpc_ich pcspkr joydev ioatdma i2c_i801 ipmi_devintf ipmi_msghandler
-> wmi ip_tables xfs libcrc32c sd_mod mgag200 drm_vram_helper ttm
-> drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm isci
-> libsas ahci scsi_transport_sas libahci crc32c_intel serio_raw igb
-> libata ptp pps_core dca i2c_algo_bit dm_mirror dm_region_hash dm_log
-> dm_mod [last unloaded: nitrox_drv]
-> [  270.896836] CPU: 1 PID: 7387 Comm: uperf Kdump: loaded Tainted: G
->         OE     5.3.0-rc4 #1
-> [  270.897711] Hardware name: Supermicro SYS-1027R-N3RF/X9DRW, BIOS
-> 3.0c 03/24/2014
-> [  270.898597] RIP: 0010:__list_del_entry_valid+0x62/0x90
-> [  270.899478] Code: 00 00 00 c3 48 89 fe 48 89 c2 48 c7 c7 e0 f9 ee
-> 8d e8 b2 cf c8 ff 0f 0b 31 c0 c3 48 89 fe 48 c7 c7 18 fa ee 8d e8 9e
-> cf c8 ff <0f> 0b 31 c0 c3 48 89 f2 48 89 fe 48 c7 c7 50 fa ee 8d e8 87
-> cf c8
-> [  270.901321] RSP: 0018:ffffb6ea86eb7c20 EFLAGS: 00010282
-> [  270.902240] RAX: 0000000000000000 RBX: ffff91cc3753c000 RCX: 0000000000000000
-> [  270.903157] RDX: ffff91bc3f867080 RSI: ffff91bc3f857738 RDI: ffff91bc3f857738
-> [  270.904074] RBP: ffff91bc36020940 R08: 0000000000000560 R09: 0000000000000000
-> [  270.904988] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> [  270.905902] R13: ffff91cc3753a800 R14: ffff91cc37cc6400 R15: ffff91cc3753a800
-> [  270.906809] FS:  00007f454a88d700(0000) GS:ffff91bc3f840000(0000)
-> knlGS:0000000000000000
-> [  270.907715] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  270.908606] CR2: 00007f453c00292c CR3: 000000103554e003 CR4: 00000000001606e0
-> [  270.909490] Call Trace:
-> [  270.910373]  tls_tx_records+0x138/0x1c0 [tls]
-> [  270.911262]  tls_sw_sendpage+0x3e0/0x420 [tls]
-> [  270.912154]  inet_sendpage+0x52/0x90
-> [  270.913045]  ? direct_splice_actor+0x40/0x40
-> [  270.913941]  kernel_sendpage+0x1a/0x30
-> [  270.914831]  sock_sendpage+0x20/0x30
-> [  270.915714]  pipe_to_sendpage+0x62/0x90
-> [  270.916592]  __splice_from_pipe+0x80/0x180
-> [  270.917461]  ? direct_splice_actor+0x40/0x40
-> [  270.918334]  splice_from_pipe+0x5d/0x90
-> [  270.919208]  direct_splice_actor+0x35/0x40
-> [  270.920086]  splice_direct_to_actor+0x103/0x230
-> [  270.920966]  ? generic_pipe_buf_nosteal+0x10/0x10
-> [  270.921850]  do_splice_direct+0x9a/0xd0
-> [  270.922733]  do_sendfile+0x1c9/0x3d0
-> [  270.923612]  __x64_sys_sendfile64+0x5c/0xc0
-> 
-> Signed-off-by: Pooja Trivedi <pooja.trivedi@stackpath.com>
-> ---
->  include/net/tls.h | 1 +
->  net/tls/tls_sw.c  | 7 +++++++
->  2 files changed, 8 insertions(+)
-> 
-> diff --git a/include/net/tls.h b/include/net/tls.h
-> index 41b2d41..f346a54 100644
-> --- a/include/net/tls.h
-> +++ b/include/net/tls.h
-> @@ -161,6 +161,7 @@ struct tls_sw_context_tx {
->  
->  #define BIT_TX_SCHEDULED	0
->  #define BIT_TX_CLOSING		1
-> +#define BIT_TX_IN_PROGRESS	2
->  	unsigned long tx_bitmask;
->  };
->  
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 91d21b0..6e99c61 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -367,6 +367,10 @@ int tls_tx_records(struct sock *sk, int flags)
->  	struct sk_msg *msg_en;
->  	int tx_flags, rc = 0;
->  
-> +	/* If another writer is already in tls_tx_records, backoff and leave */
-> +	if (test_and_set_bit(BIT_TX_IN_PROGRESS, &ctx->tx_bitmask))
-> +		return 0;
-> +
->  	if (tls_is_partially_sent_record(tls_ctx)) {
->  		rec = list_first_entry(&ctx->tx_list,
->  				       struct tls_rec, list);
-> @@ -415,6 +419,9 @@ int tls_tx_records(struct sock *sk, int flags)
->  	if (rc < 0 && rc != -EAGAIN)
->  		tls_err_abort(sk, EBADMSG);
->  
-> +	/* clear the bit so another writer can get into tls_tx_records */
-> +	clear_bit(BIT_TX_IN_PROGRESS, &ctx->tx_bitmask);
-> +
->  	return rc;
->  }
->  
-
+>
+> >
+> >> +else
+> >>  TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
+> >>  TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
+> >> +endif
+> >> +
+> >>  TPROGS_CFLAGS += -I$(objtree)/usr/include
+> >>  TPROGS_CFLAGS += -I$(srctree)/tools/lib/bpf/
+> >>  TPROGS_CFLAGS += -I$(srctree)/tools/testing/selftests/bpf/
+> >> --
+> >> 2.17.1
+> >>
+>
+> --
+> Regards,
+> Ivan Khoronzhuk
