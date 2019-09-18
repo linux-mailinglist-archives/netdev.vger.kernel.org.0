@@ -2,81 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19671B6D15
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 21:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 724BFB6D25
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 22:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387447AbfIRT5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 15:57:54 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:38151 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732201AbfIRT5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 15:57:53 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MBUZr-1iMWhv1hy3-00CwcX; Wed, 18 Sep 2019 21:57:48 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH] ionic: remove useless return code
-Date:   Wed, 18 Sep 2019 21:57:35 +0200
-Message-Id: <20190918195745.2158829-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S2389314AbfIRUAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 16:00:25 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38388 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387622AbfIRUAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 16:00:25 -0400
+Received: by mail-wr1-f65.google.com with SMTP id l11so689350wrx.5;
+        Wed, 18 Sep 2019 13:00:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TOU4ZuWvUzuxQNBU0z7noCr4TSQPsaqCOjm5rWDSQ8g=;
+        b=uPvJw2mL4p5ugyLfGDeQxqJzC+rQSmiHWuVTRqGVDz9OzjdMEwE3yyXeg/F2wLAkn+
+         4M3Ne7uijtBzWQFLDo7qY/cH4xRG5WEJFWERlnoa8Pym3uCs0rqkkAvOhL44sQQPb6xJ
+         zaiFXCeo9GNGOQdYksFtiwRfczEP8mxrcyYSNc/7BKK1YuTxe1HGl6FSaVxDUG5gOtbS
+         wbfHfeQPutIeuCfvqvXIox2ycWgV1a6OeM4gDT/tI5JIjq1v83c34vIQf6Vkfy87avhk
+         p5RP0J3YFRKxAl6lirtU4mspl7ZuBo9xb7ig+aGEpUV15JnU5TszYKSWt2rRMbzzoymS
+         /Siw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TOU4ZuWvUzuxQNBU0z7noCr4TSQPsaqCOjm5rWDSQ8g=;
+        b=b8OMIF3g9mJVaZUVM0+zOUBmgPnUxxnXe9OKjq2Mk56/YYT1Ecc9cnURQDUYByQpIY
+         8rmL1RRNa2c3WwgXFvZ/gTL9n0vahqQ6oJ/ZcX/Y9HOojvoFC0rUvG/WT+S7rCM0c/jJ
+         JTpHFOQu3WUxqHMocIXhETyaca2pdeR010Y51uSTpQtaxSd8zNdsJb2mZ1Xi2k+3UtMM
+         aFD6tqx7yiB/LjCjTVjCXtaO6zCMsB2bIr2H6hK12AiqKRjPZejJhJYGVhT2ManvsQYo
+         rtX4a/HD50fFcdzI2Ez3Sfc+k9XBn618ONDXYoKC6yR7/zPmV4l6cb14MloTWycLndBT
+         d7Gg==
+X-Gm-Message-State: APjAAAVI29JVqvFX68oYE8RtTnCRLdgKXEdpaNO3IKSczp/DMbEZanbl
+        rcbpHKbckkDNMkctjY11YunPoTKX
+X-Google-Smtp-Source: APXvYqwSInRuFWaitMmA9bfwrjFHcX/wSggG+aJ9Nj2YP6nJKGsFOpLNmYYNOIwMWskIMs4pdby+fg==
+X-Received: by 2002:a5d:4ac8:: with SMTP id y8mr4525515wrs.98.1568836822579;
+        Wed, 18 Sep 2019 13:00:22 -0700 (PDT)
+Received: from [192.168.1.2] ([86.124.196.40])
+        by smtp.gmail.com with ESMTPSA id d193sm5352237wmd.0.2019.09.18.13.00.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 Sep 2019 13:00:21 -0700 (PDT)
+Subject: Re: [PATCH v2] net: dsa: sja1105: prevent leaking memory
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>, andrew@lunn.ch
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20190918172106.GN9591@lunn.ch>
+ <20190918180439.12441-1-navid.emamdoost@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Message-ID: <8d6f6c54-1758-7d98-c9b5-5c16b171c885@gmail.com>
+Date:   Wed, 18 Sep 2019 23:00:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:tGFs0j53Jb1jMYkS2hCvPmKoxnLZMVIP3N3je8VWvQ5S2zgKuOG
- eRLzmZZRrnOViO/Nb+KEwoZQfjnNaRv4CBfx6fajZLUXaHleqA/VqQfmdYphluD3TZYl9z5
- Yfm3r1ze9i5irbHYscYwYmHHInCXbyzQgM92NJz4YuwaYdvF/K+aKiOG2LMYsKheRJCPHa2
- qNGClUNe8K3p3SkrFcxzg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:luKqPByHVkE=:opdo+VkX6Q+A/eJ1A6bg2i
- HKHF/nTEQZgnlDKLcYSraBMPoydxMYmpSm9xXpCxAecESwcR68I1YakaJbZI/mTqg+97ixphp
- PDsicnKNxxMDqFFRHrJDOf89sDZ+LqKSswowLtLLX72FIY/rDNUe8QbwHKqc65IPgVCh+BAhW
- DhP4FYOSQeuQgLg71++ec6edSlFuLpO5Tle6oDOVwhh9B1jwdf7eB2B3r6mCTZ2daguflSY0B
- 17yyXEZgwENwt/tE9zRsYZK1ivcmOd6gOa/o9eIhSOZI12VOpQ1mqdYFi6BB3VIrWm2TRo9Xy
- PfrXkBcCvi0u0jeV6xcf4RWsI6zdW9s/D663ohUgBEM1I745TCg8g4pBnlNZRfIcdg3FYcs3g
- e/bvTpQOtYnOGcBI34gVeb/GBhkYukpkx6l/OkduA2Tg3BmzCj/+Ma7wdPMRCqzZ/8RCXi04K
- f0bPh4E1DS/Ez5FXjMst0BAHjs0Hm6FLbsDDrR9NlkjglTFpuN2s28PbD/z+0IFBDVd9R/leD
- 4NO5K3AdbGqBUYPz18992nkrGUIRWzhFGeBiwXpxEwomjPqjwzy/V4o9IX0MfnttMtP+LzrmO
- yr4lGtB/atE68UviXuZb7MMX5CC0RkL3bKDFXOjjCM3g59MSAjvH5M5tDDukuY6mUm/BEUAll
- t4pxdss4cRaPApB7zdTp/21CGS+8uyhxeF8uhbDr7Q/LfmHMsjzdQyNJZDJNqZkBmoZTt2kRk
- YDTx9YcZxeo/AC+pBOu3dl+JSiyi2OFtTcGTv1AaFgiSg0ztB+67SRpBGB70TWAMFq3t3KCWT
- 3iBUWKgxmDrWQGqjrKuqdGJzeSV15u7i7K2cq4bCw7urLEItHvqrtNmp4yEyRMVhdLJ8YmKxn
- Hq1f+6loHFbXxxloKZsg==
+In-Reply-To: <20190918180439.12441-1-navid.emamdoost@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The debugfs function was apparently changed from returning an error code
-to a void return, but the return code left in place, causing a warning
-from clang:
+Hi Navid,
 
-drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:60:37: error: expression result unused [-Werror,-Wunused-value]
-                            ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
-                                                         ^~~~~~~~~~~
+Thanks for the patch.
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 9/18/19 9:04 PM, Navid Emamdoost wrote:
+> In sja1105_static_config_upload, in two cases memory is leaked: when
+> static_config_buf_prepare_for_upload fails and when sja1105_inhibit_tx
+> fails. In both cases config_buf should be released.
+> 
+> Fixes: 8aa9ebccae876 (avoid leaking config_buf)
+> Fixes: 1a4c69406cc1c (avoid leaking config_buf)
+> 
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-index 7afc4a365b75..bc03cecf80cc 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-@@ -57,7 +57,7 @@ DEFINE_SHOW_ATTRIBUTE(identity);
- void ionic_debugfs_add_ident(struct ionic *ionic)
- {
- 	debugfs_create_file("identity", 0400, ionic->dentry,
--			    ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
-+			    ionic, &identity_fops);
- }
- 
- void ionic_debugfs_add_sizes(struct ionic *ionic)
--- 
-2.20.0
+You're not supposed to add a short description of the patch here, but 
+rather the commit message of the patch you're fixing.
+Add this to your ~/.gitconfig:
 
+[pretty]
+	fixes = Fixes: %h (\"%s\")
+
+And then run:
+git show --pretty=fixes 8aa9ebccae87621d997707e4f25e53fddd7e30e4
+
+Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port 
+L2 switch")
+
+git show --pretty=fixes 1a4c69406cc1c3c42bb7391c8eb544e93fe9b320
+
+Fixes: 1a4c69406cc1 ("net: dsa: sja1105: Prevent PHY jabbering during 
+switch reset")
+
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+>   drivers/net/dsa/sja1105/sja1105_spi.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+> index 84dc603138cf..58dd37ecde17 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_spi.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+> @@ -409,7 +409,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
+>   	rc = static_config_buf_prepare_for_upload(priv, config_buf, buf_len);
+>   	if (rc < 0) {
+>   		dev_err(dev, "Invalid config, cannot upload\n");
+> -		return -EINVAL;
+> +		rc = -EINVAL;
+> +		goto out;
+>   	}
+>   	/* Prevent PHY jabbering during switch reset by inhibiting
+>   	 * Tx on all ports and waiting for current packet to drain.
+> @@ -418,7 +419,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
+>   	rc = sja1105_inhibit_tx(priv, port_bitmap, true);
+>   	if (rc < 0) {
+>   		dev_err(dev, "Failed to inhibit Tx on ports\n");
+> -		return -ENXIO;
+> +		rc = -ENXIO;
+> +		goto out;
+>   	}
+>   	/* Wait for an eventual egress packet to finish transmission
+>   	 * (reach IFG). It is guaranteed that a second one will not
+> 
+
+Regards,
+-Vladimir
