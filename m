@@ -2,126 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 497DEB5FC0
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 11:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D057AB5FCC
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 11:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730784AbfIRJCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 05:02:33 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:44076 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727518AbfIRJCc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 05:02:32 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 95ADCC1B10D767F6B8F0;
-        Wed, 18 Sep 2019 17:02:30 +0800 (CST)
-Received: from [127.0.0.1] (10.177.96.96) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Sep 2019
- 17:02:28 +0800
-Subject: Re: [PATCH stable 4.4 net] net: rds: Fix NULL ptr use in
- rds_tcp_kill_sock
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <chien.yen@oracle.com>, <davem@davemloft.net>,
-        <stable@vger.kernel.org>, <rds-devel@oss.oracle.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-References: <20190918083733.50266-1-maowenan@huawei.com>
- <20190918083253.GA1862222@kroah.com>
-From:   maowenan <maowenan@huawei.com>
-Message-ID: <c8953355-2b98-c4d0-2af2-4a69ad3e2d2d@huawei.com>
-Date:   Wed, 18 Sep 2019 17:02:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
+        id S1728331AbfIRJFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 05:05:51 -0400
+Received: from foss.arm.com ([217.140.110.172]:37806 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725909AbfIRJFv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 05:05:51 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 75E90337;
+        Wed, 18 Sep 2019 02:05:50 -0700 (PDT)
+Received: from localhost (unknown [10.37.6.20])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E06CF3F59C;
+        Wed, 18 Sep 2019 02:05:49 -0700 (PDT)
+Date:   Wed, 18 Sep 2019 10:05:48 +0100
+From:   Andrew Murray <andrew.murray@arm.com>
+To:     Denis Efremov <efremov@linux.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v3 13/26] e1000: Use PCI_STD_NUM_BARS
+Message-ID: <20190918090547.GZ9720@e119886-lin.cambridge.arm.com>
+References: <20190916204158.6889-1-efremov@linux.com>
+ <20190916204158.6889-14-efremov@linux.com>
 MIME-Version: 1.0
-In-Reply-To: <20190918083253.GA1862222@kroah.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.177.96.96]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190916204158.6889-14-efremov@linux.com>
+User-Agent: Mutt/1.10.1+81 (426a6c1) (2018-08-26)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 16, 2019 at 11:41:45PM +0300, Denis Efremov wrote:
+> To iterate through all possible BARs, loop conditions refactored to the
+> *number* of BARs "i < PCI_STD_NUM_BARS", instead of the index of the last
+> valid BAR "i <= BAR_5". This is more idiomatic C style and allows to avoid
+> the fencepost error.
+> 
+> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+>  drivers/net/ethernet/intel/e1000/e1000.h      | 1 -
+>  drivers/net/ethernet/intel/e1000/e1000_main.c | 2 +-
+>  2 files changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000/e1000.h b/drivers/net/ethernet/intel/e1000/e1000.h
+> index c40729b2c184..7fad2f24dcad 100644
+> --- a/drivers/net/ethernet/intel/e1000/e1000.h
+> +++ b/drivers/net/ethernet/intel/e1000/e1000.h
+> @@ -45,7 +45,6 @@
+>  
+>  #define BAR_0		0
+>  #define BAR_1		1
+> -#define BAR_5		5
 
+No issue with this patch. However I noticed that at least 5 of the network
+drivers have these same definitions, which are identical to the pci_barno enum
+of include/linux/pci-epf.h. There are mostly used with pci_ioremap_bar and
+pci_resource_** macros. I wonder if this is an indicator that these defintions
+should live in the core.
 
-On 2019/9/18 16:32, Greg KH wrote:
-> On Wed, Sep 18, 2019 at 04:37:33PM +0800, Mao Wenan wrote:
->> After the commit c4e97b06cfdc ("net: rds: force to destroy
->> connection if t_sock is NULL in rds_tcp_kill_sock()."),
->> it introduced null-ptr-deref in rds_tcp_kill_sock as below:
->>
->> BUG: KASAN: null-ptr-deref on address 0000000000000020
->> Read of size 8 by task kworker/u16:10/910
->> CPU: 3 PID: 910 Comm: kworker/u16:10 Not tainted 4.4.178+ #3
->> Hardware name: linux,dummy-virt (DT)
->> Workqueue: netns cleanup_net
->> Call trace:
->> [<ffffff90080abb50>] dump_backtrace+0x0/0x618
->> [<ffffff90080ac1a0>] show_stack+0x38/0x60
->> [<ffffff9008c42b78>] dump_stack+0x1a8/0x230
->> [<ffffff90085d469c>] kasan_report_error+0xc8c/0xfc0
->> [<ffffff90085d54a4>] kasan_report+0x94/0xd8
->> [<ffffff90085d1b28>] __asan_load8+0x88/0x150
->> [<ffffff9009c9cc2c>] rds_tcp_dev_event+0x734/0xb48
->> [<ffffff90081eacb0>] raw_notifier_call_chain+0x150/0x1e8
->> [<ffffff900973fec0>] call_netdevice_notifiers_info+0x90/0x110
->> [<ffffff9009764874>] netdev_run_todo+0x2f4/0xb08
->> [<ffffff9009796d34>] rtnl_unlock+0x2c/0x48
->> [<ffffff9009756484>] default_device_exit_batch+0x444/0x528
->> [<ffffff9009720498>] ops_exit_list+0x1c0/0x240
->> [<ffffff9009724a80>] cleanup_net+0x738/0xbf8
->> [<ffffff90081ca6cc>] process_one_work+0x96c/0x13e0
->> [<ffffff90081cf370>] worker_thread+0x7e0/0x1910
->> [<ffffff90081e7174>] kthread+0x304/0x390
->> [<ffffff9008094280>] ret_from_fork+0x10/0x50
->>
->> If the first loop add the tc->t_sock = NULL to the tmp_list,
->> 1). list_for_each_entry_safe(tc, _tc, &rds_tcp_conn_list, t_tcp_node)
->>
->> then the second loop is to find connections to destroy, tc->t_sock
->> might equal NULL, and tc->t_sock->sk happens null-ptr-deref.
->> 2). list_for_each_entry_safe(tc, _tc, &tmp_list, t_tcp_node)
->>
->> Fixes: c4e97b06cfdc ("net: rds: force to destroy connection if t_sock is NULL in rds_tcp_kill_sock().")
->> Signed-off-by: Mao Wenan <maowenan@huawei.com>
->> ---
->>  net/rds/tcp.c | 8 +++++---
->>  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> Why is this not needed upstream as well?
-Upstream does not use tc->t_sock in the second loop after below two patches.
-afb4164d91c7 ("RDS: TCP: Refactor connection destruction to handle multiple paths") and
-2d746c93b6e5 ("rds: tcp: remove redundant function rds_tcp_conn_paths_destroy()")
+Thanks,
 
-> 
-> 4.9.y?  4.14.y?  anything else?
-4.19.y and 4.14.y exist rds_tcp_conn_paths_destroy()
-to guarantee that.
-+static void rds_tcp_conn_paths_destroy(struct rds_connection *conn)
-+{
-+       struct rds_conn_path *cp;
-+       struct rds_tcp_connection *tc;
-+       int i;
-+       struct sock *sk;
-+
-+       for (i = 0; i < RDS_MPATH_WORKERS; i++) {
-+               cp = &conn->c_path[i];
-+               tc = cp->cp_transport_data;
-+               if (!tc->t_sock)
-+                       continue;
-+               sk = tc->t_sock->sk;
-+               sk->sk_prot->disconnect(sk, 0);
-+               tcp_done(sk);
-+       }
-+}
-+
+Andrew Murray
 
+>  
+>  #define INTEL_E1000_ETHERNET_DEVICE(device_id) {\
+>  	PCI_DEVICE(PCI_VENDOR_ID_INTEL, device_id)}
+> diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+> index f703fa58458e..db4fd82036af 100644
+> --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
+> +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+> @@ -977,7 +977,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		goto err_ioremap;
+>  
+>  	if (adapter->need_ioport) {
+> -		for (i = BAR_1; i <= BAR_5; i++) {
+> +		for (i = BAR_1; i < PCI_STD_NUM_BARS; i++) {
+>  			if (pci_resource_len(pdev, i) == 0)
+>  				continue;
+>  			if (pci_resource_flags(pdev, i) & IORESOURCE_IO) {
+> -- 
+> 2.21.0
 > 
-> thanks,
-> 
-> greg k-h
-> 
-> .
-> 
-
