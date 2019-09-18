@@ -2,291 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 110ACB5B37
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 07:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01D0BB5B6C
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 07:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728639AbfIRFvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 01:51:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59050 "EHLO mx1.redhat.com"
+        id S1726311AbfIRF42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 01:56:28 -0400
+Received: from mout.gmx.net ([212.227.17.22]:39969 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727632AbfIRFvf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 01:51:35 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 08FEA30821AE;
-        Wed, 18 Sep 2019 05:51:35 +0000 (UTC)
-Received: from [10.72.12.111] (ovpn-12-111.pek2.redhat.com [10.72.12.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A7285D6A5;
-        Wed, 18 Sep 2019 05:51:23 +0000 (UTC)
-Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-References: <20190917010204.30376-1-tiwei.bie@intel.com>
- <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
- <20190917105801.GA24855@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
-Date:   Wed, 18 Sep 2019 13:51:21 +0800
+        id S1725834AbfIRF42 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 01:56:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1568786178;
+        bh=SHBAQgusYN/vNsT27Odt5tNHlK3DKd8bLnTHS8Z/b1g=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=RpNR00vngsRoFC/fHSs+2cL8WVZJvS8PuseExG10I30QXNU0SQWZ3wN+dkTGuWxU6
+         y4s0PML7b4VvXQfHr8Ph+IwYq+jyY4PwkGb0tyPuwtrjT+rXLuJLi+rbDWKFl+708E
+         w/ATsyr6W/1dApDa18BwYcktQCoPlBZNVqGNVMuw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.159.39]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1McH9Y-1heR3O16xo-00cgGm; Wed, 18
+ Sep 2019 07:56:18 +0200
+Subject: Re: Bug report (with fix) for DEC Tulip driver (de2104x.c)
+To:     John David Anglin <dave.anglin@bell.net>,
+        Arlie Davis <arlied@google.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org
+References: <CAK-9enMxA68mRYFG=2zD02guvCqe-aa3NO0YZuJcTdBWn5MPqg@mail.gmail.com>
+ <20190917212844.GJ9591@lunn.ch>
+ <CAK-9enOx8xt_+t6-rpCGEL0j-HJGm=sFXYq9-pgHQ26AwrGm5Q@mail.gmail.com>
+ <df0f961d-2d53-63e3-8087-6f0b09e14317@bell.net>
+From:   Helge Deller <deller@gmx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=deller@gmx.de; keydata=
+ xsBNBFDPIPYBCAC6PdtagIE06GASPWQJtfXiIzvpBaaNbAGgmd3Iv7x+3g039EV7/zJ1do/a
+ y9jNEDn29j0/jyd0A9zMzWEmNO4JRwkMd5Z0h6APvlm2D8XhI94r/8stwroXOQ8yBpBcP0yX
+ +sqRm2UXgoYWL0KEGbL4XwzpDCCapt+kmarND12oFj30M1xhTjuFe0hkhyNHkLe8g6MC0xNg
+ KW3x7B74Rk829TTAtj03KP7oA+dqsp5hPlt/hZO0Lr0kSAxf3kxtaNA7+Z0LLiBqZ1nUerBh
+ OdiCasCF82vQ4/y8rUaKotXqdhGwD76YZry9AQ9p6ccqKaYEzWis078Wsj7p0UtHoYDbABEB
+ AAHNHEhlbGdlIERlbGxlciA8ZGVsbGVyQGdteC5kZT7CwJIEEwECADwCGwMGCwkIBwMCBhUI
+ AgkKCwQWAgMBAh4BAheAFiEE9M/0wAvkPPtRU6Boh8nBUbUeOGQFAlrHzIICGQEACgkQh8nB
+ UbUeOGT1GAgAt+EeoHB4DbAx+pZoGbBYp6ZY8L6211n8fSi7wiwgM5VppucJ+C+wILoPkqiU
+ +ZHKlcWRbttER2oBUvKOt0+yDfAGcoZwHS0P+iO3HtxR81h3bosOCwek+TofDXl+TH/WSQJa
+ iaitof6iiPZLygzUmmW+aLSSeIAHBunpBetRpFiep1e5zujCglKagsW78Pq0DnzbWugGe26A
+ 288JcK2W939bT1lZc22D9NhXXRHfX2QdDdrCQY7UsI6g/dAm1d2ldeFlGleqPMdaaQMcv5+E
+ vDOur20qjTlenjnR/TFm9tA1zV+K7ePh+JfwKc6BSbELK4EHv8J8WQJjfTphakYLVM7ATQRQ
+ zyD2AQgA2SJJapaLvCKdz83MHiTMbyk8yj2AHsuuXdmB30LzEQXjT3JEqj1mpvcEjXrX1B3h
+ +0nLUHPI2Q4XWRazrzsseNMGYqfVIhLsK6zT3URPkEAp7R1JxoSiLoh4qOBdJH6AJHex4CWu
+ UaSXX5HLqxKl1sq1tO8rq2+hFxY63zbWINvgT0FUEME27Uik9A5t8l9/dmF0CdxKdmrOvGMw
+ T770cTt76xUryzM3fAyjtOEVEglkFtVQNM/BN/dnq4jDE5fikLLs8eaJwsWG9k9wQUMtmLpL
+ gRXeFPRRK+IT48xuG8rK0g2NOD8aW5ThTkF4apznZe74M7OWr/VbuZbYW443QQARAQABwsBf
+ BBgBAgAJBQJQzyD2AhsMAAoJEIfJwVG1HjhkNTgH/idWz2WjLE8DvTi7LvfybzvnXyx6rWUs
+ 91tXUdCzLuOtjqWVsqBtSaZynfhAjlbqRlrFZQ8i8jRyJY1IwqgvHP6PO9s+rIxKlfFQtqhl
+ kR1KUdhNGtiI90sTpi4aeXVsOyG3572KV3dKeFe47ALU6xE5ZL5U2LGhgQkbjr44I3EhPWc/
+ lJ/MgLOPkfIUgjRXt0ZcZEN6pAMPU95+u1N52hmqAOQZvyoyUOJFH1siBMAFRbhgWyv+YE2Y
+ ZkAyVDL2WxAedQgD/YCCJ+16yXlGYGNAKlvp07SimS6vBEIXk/3h5Vq4Hwgg0Z8+FRGtYZyD
+ KrhlU0uMP9QTB5WAUvxvGy8=
+Message-ID: <f71e9773-5cfb-f20b-956f-d98b11a5d4a7@gmx.de>
+Date:   Wed, 18 Sep 2019 07:56:16 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190917105801.GA24855@___>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <df0f961d-2d53-63e3-8087-6f0b09e14317@bell.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 18 Sep 2019 05:51:35 +0000 (UTC)
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:FGW6B9MpITsDqYOxyWnfqO/hHy926LVRbpRp1EVpuTcLmG9fhKi
+ J1O/uSy/xjY8Vk+8BIEtgMxD3cR51cNqUvIUzMN/g4fKN7nQ8n+fl7gk7JXxOi8HL+Qok0/
+ StgilzrnE5+F0/QGrBoz8XppcfS5rCA7/LA2DB+ldfGTi7zJGdbfTYprd6PPWM1axIV6Msy
+ alvOh+S0aMX714pkGP/PA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TKTfynUr/uc=:qCyxZMqfjfuMkBh0OxcIT8
+ wXqagBhoDpuchjjfdBiRe6k+70w3DUKpYoU8ZP9faO/JkxGEVzROR5hwftzqmZaSDmaRcp2Lv
+ PhIOOPSA83ovsERcdsZRrnkIxRivzVE6ztVGMCdBcaefznnBRGYAHzGfFV2PfkLqnOJYXjY75
+ l4RGaF3kxRu7wwKE7hk60swEp7NJsTbqmc6yEDj6bE7DsmpX0FYTu0zkeUL97WHF5Fh3AMibi
+ e7ehvAK+3pp03GDfvzKEN/1cdeRonmSMwDteD+5vdtcuZmR6BF1KA5tn+EfXBVVMrUUT/CRzM
+ cY6lWcfm+Alp7PbzTsQgRSUhOx0WjbaWRK0kIprM9fxlrrcGwWUepjK0r+iJ6BbKLX8TII5UG
+ 50GvM/NJftm3FuLuoz9dRHS2+iwOEQdkRzpWXfF92hR/l5hG6wq2T9a3nrMmjgJiLoAPRkabx
+ Q0j4bxZaEV/nwJH/0gYl2mEqwqLG9N6F2kRsPmHscTeYlRo1xPGltDWASgLKPs7PmWfU7X9+n
+ kjx7FeGrk8pX5nY/IZpbSuB/PjX9D8Zl+hKNkJKmW5YlyNuzfcHbB4zOD+4/A5vi2lLoSu096
+ K8epa4N24SU/4xRGygdZcAxC1uNmagaD/g9Qb02jcV7ZYfWBC2hVufWlZsD6RHB9vCrkNXqdj
+ BCAYJJznF8LMaWHktnzhshNznEt+/8rxvmHX+pKR9dWrXiNg/3fN8pVsQq81Gp70i4KBHKwS0
+ BLFWbgFL61ilnkU4t8/mj1Gath19ds+xiMiap31QQa7f3eBqMD9xbnrd4MuM/DxYgBLV8D4uN
+ fWffexjuSCUoRJ8P3MYckL378952PrzDaUJzHbPAcmHe0VYZu2tNb4yLkFPDxBIgHGKGc0gCN
+ m+jBIMsvRT/zJiaI36UUQx20NnX1Ie+I6uLrZQRmfEf7nKGiiN76r/mlVNfFULHiogq1AOH88
+ 0OBjKPmXf2blgOLgSFgNAvYWT1YEUjtDv1ObIC9Z/f5W8bB3GaDLAsc0QdXv4XOfjQyRbBaSG
+ 0JHkFCYTKOT9jlPWougQ9Km/pbhCZGHr24hRPAyKait9WgE4ulpxHwKvfgwGxcp4hLlxD1/q/
+ sIOTofTtSlveQa66wQlgnVNd1d70qs5cFSvLOaQ2vMPTw0t89rB3AUKSvglpx8NT8ZcBs2RlC
+ 0UoXFmg+bveI0mqyHWCpUHB+x+A3EpDSsHQ3S0rfJ9qPQaBip1jrDhMUMWCJZhpvPUCsrQ1wP
+ yWm/Wzq21kpLBtCyiHS6MZOfYBC1lI9Lyq2WuvzXzMqXtdVb8QJZKrZQtOVk=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 18.09.19 00:51, John David Anglin wrote:
+> On 2019-09-17 5:36 p.m., Arlie Davis wrote:
+>> Likewise, I'm at a loss for testing with real hardware. It's hard to
+>> find such things, now.
+> How does de2104x compare to ds2142/43?=C2=A0 I have a c3750 with ds2142/=
+43 tulip.=C2=A0 Helge
+> or some others might have a machine with a de2104x.
 
-On 2019/9/17 下午6:58, Tiwei Bie wrote:
-> On Tue, Sep 17, 2019 at 11:32:03AM +0800, Jason Wang wrote:
->> On 2019/9/17 上午9:02, Tiwei Bie wrote:
->>> This RFC is to demonstrate below ideas,
->>>
->>> a) Build vhost-mdev on top of the same abstraction defined in
->>>      the virtio-mdev series [1];
->>>
->>> b) Introduce /dev/vhost-mdev to do vhost ioctls and support
->>>      setting mdev device as backend;
->>>
->>> Now the userspace API looks like this:
->>>
->>> - Userspace generates a compatible mdev device;
->>>
->>> - Userspace opens this mdev device with VFIO API (including
->>>     doing IOMMU programming for this mdev device with VFIO's
->>>     container/group based interface);
->>>
->>> - Userspace opens /dev/vhost-mdev and gets vhost fd;
->>>
->>> - Userspace uses vhost ioctls to setup vhost (userspace should
->>>     do VHOST_MDEV_SET_BACKEND ioctl with VFIO group fd and device
->>>     fd first before doing other vhost ioctls);
->>>
->>> Only compile test has been done for this series for now.
->>
->> Have a hard thought on the architecture:
-> Thanks a lot! Do appreciate it!
->
->> 1) Create a vhost char device and pass vfio mdev device fd to it as a
->> backend and translate vhost-mdev ioctl to virtio mdev transport (e.g
->> read/write). DMA was done through the VFIO DMA mapping on the container that
->> is attached.
-> Yeah, that's what we are doing in this series.
->
->> We have two more choices:
->>
->> 2) Use vfio-mdev but do not create vhost-mdev device, instead, just
->> implement vhost ioctl on vfio_device_ops, and translate them into
->> virtio-mdev transport or just pass ioctl to parent.
-> Yeah. Instead of introducing /dev/vhost-mdev char device, do
-> vhost ioctls on VFIO device fd directly. That's what we did
-> in RFC v3.
->
->> 3) Don't use vfio-mdev, create a new vhost-mdev driver, during probe still
->> try to add dev to vfio group and talk to parent with device specific ops
-> If my understanding is correct, this means we need to introduce
-> a new VFIO device driver to replace the existing vfio-mdev driver
-> in our case. Below is a quick draft just to show my understanding:
->
-> #include <linux/init.h>
-> #include <linux/module.h>
-> #include <linux/device.h>
-> #include <linux/kernel.h>
-> #include <linux/slab.h>
-> #include <linux/vfio.h>
-> #include <linux/mdev.h>
->
-> #include "mdev_private.h"
->
-> /* XXX: we need a proper way to include below vhost header. */
-> #include "../../vhost/vhost.h"
->
-> static int vfio_vhost_mdev_open(void *device_data)
-> {
-> 	if (!try_module_get(THIS_MODULE))
-> 		return -ENODEV;
->
-> 	/* ... */
-> 	vhost_dev_init(...);
->
-> 	return 0;
-> }
->
-> static void vfio_vhost_mdev_release(void *device_data)
-> {
-> 	/* ... */
-> 	module_put(THIS_MODULE);
-> }
->
-> static long vfio_vhost_mdev_unlocked_ioctl(void *device_data,
-> 					   unsigned int cmd, unsigned long arg)
-> {
-> 	struct mdev_device *mdev = device_data;
-> 	struct mdev_parent *parent = mdev->parent;
->
-> 	/*
-> 	 * Use vhost ioctls.
-> 	 *
-> 	 * We will have a different parent_ops design.
-> 	 * And potentially, we can share the same parent_ops
-> 	 * with virtio_mdev.
-> 	 */
-> 	switch (cmd) {
-> 	case VHOST_GET_FEATURES:
-> 		parent->ops->get_features(mdev, ...);
-> 		break;
-> 	/* ... */
-> 	}
->
-> 	return 0;
-> }
->
-> static ssize_t vfio_vhost_mdev_read(void *device_data, char __user *buf,
-> 				    size_t count, loff_t *ppos)
-> {
-> 	/* ... */
-> 	return 0;
-> }
->
-> static ssize_t vfio_vhost_mdev_write(void *device_data, const char __user *buf,
-> 				     size_t count, loff_t *ppos)
-> {
-> 	/* ... */
-> 	return 0;
-> }
->
-> static int vfio_vhost_mdev_mmap(void *device_data, struct vm_area_struct *vma)
-> {
-> 	/* ... */
-> 	return 0;
-> }
->
-> static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
-> 	.name		= "vfio-vhost-mdev",
-> 	.open		= vfio_vhost_mdev_open,
-> 	.release	= vfio_vhost_mdev_release,
-> 	.ioctl		= vfio_vhost_mdev_unlocked_ioctl,
-> 	.read		= vfio_vhost_mdev_read,
-> 	.write		= vfio_vhost_mdev_write,
-> 	.mmap		= vfio_vhost_mdev_mmap,
-> };
->
-> static int vfio_vhost_mdev_probe(struct device *dev)
-> {
-> 	struct mdev_device *mdev = to_mdev_device(dev);
->
-> 	/* ... */
-> 	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
-> }
->
-> static void vfio_vhost_mdev_remove(struct device *dev)
-> {
-> 	/* ... */
-> 	vfio_del_group_dev(dev);
-> }
->
-> static struct mdev_driver vfio_vhost_mdev_driver = {
-> 	.name	= "vfio_vhost_mdev",
-> 	.probe	= vfio_vhost_mdev_probe,
-> 	.remove	= vfio_vhost_mdev_remove,
-> };
->
-> static int __init vfio_vhost_mdev_init(void)
-> {
-> 	return mdev_register_driver(&vfio_vhost_mdev_driver, THIS_MODULE);
-> }
-> module_init(vfio_vhost_mdev_init)
->
-> static void __exit vfio_vhost_mdev_exit(void)
-> {
-> 	mdev_unregister_driver(&vfio_vhost_mdev_driver);
-> }
-> module_exit(vfio_vhost_mdev_exit)
+The machines we could test are
+* a C240 with a DS21140 tulip chip (Sven has one),
+* a C3000 or similiar with DS21142 and/or DS21143 (me).
 
+If the patch does not show any regressions, I'd suggest to
+apply it upstream.
 
-Yes, something like this basically.
-
-
->> So I have some questions:
->>
->> 1) Compared to method 2, what's the advantage of creating a new vhost char
->> device? I guess it's for keep the API compatibility?
-> One benefit is that we can avoid doing vhost ioctls on
-> VFIO device fd.
-
-
-Yes, but any benefit from doing this?
-
-
->
->> 2) For method 2, is there any easy way for user/admin to distinguish e.g
->> ordinary vfio-mdev for vhost from ordinary vfio-mdev?
-> I think device-api could be a choice.
-
-
-Ok.
-
-
->
->> I saw you introduce
->> ops matching helper but it's not friendly to management.
-> The ops matching helper is just to check whether a given
-> vfio-device is based on a mdev device.
->
->> 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
->> assumes the parameter comes from userspace, it prevents support kernel
->> virtio drivers.
->>
->> 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
->> we can use device specific ops instead of VFIO ones, then we can have a
->> common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
-> As the above draft shows, this requires introducing a new
-> VFIO device driver. I think Alex's opinion matters here.
-
-
-Yes, it is.
-
-Thanks
-
-
-> Thanks,
-> Tiwei
->
->> What's your thoughts?
->>
->> Thanks
->>
->>
->>> RFCv3: https://patchwork.kernel.org/patch/11117785/
->>>
->>> [1] https://lkml.org/lkml/2019/9/10/135
->>>
->>> Tiwei Bie (3):
->>>     vfio: support getting vfio device from device fd
->>>     vfio: support checking vfio driver by device ops
->>>     vhost: introduce mdev based hardware backend
->>>
->>>    drivers/vfio/mdev/vfio_mdev.c    |   3 +-
->>>    drivers/vfio/vfio.c              |  32 +++
->>>    drivers/vhost/Kconfig            |   9 +
->>>    drivers/vhost/Makefile           |   3 +
->>>    drivers/vhost/mdev.c             | 462 +++++++++++++++++++++++++++++++
->>>    drivers/vhost/vhost.c            |  39 ++-
->>>    drivers/vhost/vhost.h            |   6 +
->>>    include/linux/vfio.h             |  11 +
->>>    include/uapi/linux/vhost.h       |  10 +
->>>    include/uapi/linux/vhost_types.h |   5 +
->>>    10 files changed, 573 insertions(+), 7 deletions(-)
->>>    create mode 100644 drivers/vhost/mdev.c
->>>
+Helge
