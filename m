@@ -2,110 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B986B6DF8
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 22:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83432B6E4B
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 22:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731676AbfIRUlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 16:41:12 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:37271 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727565AbfIRUlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 16:41:12 -0400
-Received: by mail-ed1-f67.google.com with SMTP id r4so1197210edy.4;
-        Wed, 18 Sep 2019 13:41:11 -0700 (PDT)
+        id S1731698AbfIRUqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 16:46:38 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41101 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727565AbfIRUqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 16:46:38 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q7so747888pfh.8
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 13:46:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RZ7DKIGHFm80s3ARjnKuzOsZg23fCSETwrVjMRDlLxg=;
-        b=fenbI0zJZu4Yt614qPx6VxFUjQdIlQtFPp3l3/fFEIX5fGiTNDSH2IIwGv6DubGgg1
-         HnYCusZcSbV8Kw7CT9ZXriZWIr8nTWiylDIKpPuglifFt8h7RDqvzphBn/grvdKCEIn8
-         GcI7z9Z9pM/aWr5xN9f+9mDo/Ryp1+Hvkw9naRjEtGyyn9LHVKrA+57J0LYN8nRsHbKB
-         OVeZ9UPEY9QdgcvWRLbKBjqTHoJ6RdLQwzpafRn5cpuo5PnDzXEAKWClIb5aPtnJIBQ7
-         kv1Z+3j3YpaDXu3qIvyJaZcT4/it4/r6rWGLUnVZQDPuNwiIFObRSpFl8VQ1HE+4ra52
-         Jp4g==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=WcFSQhyzT5+TpPTmaqxANm1q7R7Sdxzaz+lcQw14DuE=;
+        b=vy/XpBtVnFVt9dNjuf3Z8i9pWr4rAANU7kvTq3YIkVlcSy3BB7KDLrfKUFNdDifbUW
+         MbGhoxUnfP2DvynYXc8nTDQTsJvGci3pbvNKICSJ3H2wJNkI27Ck/0+hvFbS3THB7D6R
+         5oh+jCv9LYUcqZ1u9KU94yJzAu0bjepw5n6ICLZ/ASZ6KYubluw4rS3KRpTWyJeKmF0B
+         rUtVGBI+TmNHX7R8qBLG3jT11e+lytIR6xUmuiCFtl9rfOuuGwwLSq5cUIpfyKebPJHQ
+         Abhir+NOa+WSQtBWz6DBxhGyRKz+Gu9+3Ts0RAdfSGnY96gOn+tPPEf1VRFayd9kb4yO
+         8+cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RZ7DKIGHFm80s3ARjnKuzOsZg23fCSETwrVjMRDlLxg=;
-        b=deEMroO9AhH7J1PX+MkhO9sneBUzNt+e5+d1Kgo+8T7dCLnKaVqnR2zDhrfq0/R7+N
-         vIaM0RFVyVB4P8qWdnz+824umNettRAN+jAk5TZ7X4hiXS4ocpWYgEe8Zzd/DzbJyo+v
-         7cWiicU5pXCSyBwQVabdJNWbW0mnlV9AWAcPZpL26w99JI9WvSLDV7EizHQaG4pvwCMC
-         KN0aAcpsqhU9gHcuXEiOfqGowzvyIxGyXBwiVJyirtCqdLlerPDFMy75hQGDXKsR+64D
-         L/pYxfyQkWaHC9MUcgBPaJ0gSRSAbV4jLHCPBKeNcqY8FvyTivUhIWiQWRUxQAG1JQCc
-         MQbw==
-X-Gm-Message-State: APjAAAUgLkDltOP7K8mIOibGe35wxbUsbzSDg/2ICM+VizHCvDG2w4wA
-        aHcyr9xN9UlkCdjA9OhskXVSMEUbhyJHQS4V/Xs=
-X-Google-Smtp-Source: APXvYqxp61F1SCtTmix7V21uQiAP4xfPpWa/Mhst+rFL5TjzmjgaTb8GNbnY8IHhfQ+QwBMTCPVbjJeC1CWT8GnVWzc=
-X-Received: by 2002:a05:6402:14da:: with SMTP id f26mr12452758edx.165.1568839270328;
- Wed, 18 Sep 2019 13:41:10 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=WcFSQhyzT5+TpPTmaqxANm1q7R7Sdxzaz+lcQw14DuE=;
+        b=tNFdRfjuaLjjog76aD5m8aa/PyfZbBOInkh5evPYxTqjepCu/iQVVnITbwISXAh0oH
+         uyQ5dUQLpRfy7SVsPI2eZylsMvLOcA15P1Tbb3Vr/etd3bn+vrkefVoh1w9NTi8lwdiL
+         XyWzklKTbTthoU9Eg+ye4c3pohrA8UlWVtWM/RF491mYh5hXrziP0+FsEvDoM+wPr29j
+         C2Z0kR4mtPS/HCM0oQdCvM8k6Wj6rfcEDBgfpqcqI5KdcMrGfKzGQqK2Ht5JT6RATwDB
+         h0QlDhOx+HrHiJ6Gnw8kDmu+d/9fICZz8AqewPlNlYkKIw5aeWXvi87NmqGCiDEJUyII
+         aoAQ==
+X-Gm-Message-State: APjAAAUWXiB7crs7d1JROiHCVUq8TiIh0PWK4FFfauJeLiNy4DNbGv4f
+        K5Rthnm3y8CHDdgFCEVSXcw/3w==
+X-Google-Smtp-Source: APXvYqwBbnAdmulUv+EnLgF6a+92aHRslz+sZEZ5FZPeHdhG6J6tgDfsN/VyIdDue6tbbZlvPme4fQ==
+X-Received: by 2002:a62:3893:: with SMTP id f141mr6099018pfa.221.1568839597633;
+        Wed, 18 Sep 2019 13:46:37 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id z23sm5605135pgi.78.2019.09.18.13.46.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 Sep 2019 13:46:36 -0700 (PDT)
+Subject: Re: [PATCH] ionic: remove useless return code
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+References: <20190918195745.2158829-1-arnd@arndb.de>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <6cdb1e21-44d9-bba9-1931-78f7109bff2b@pensando.io>
+Date:   Wed, 18 Sep 2019 13:46:34 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <8d6f6c54-1758-7d98-c9b5-5c16b171c885@gmail.com> <20190918203407.23826-1-navid.emamdoost@gmail.com>
-In-Reply-To: <20190918203407.23826-1-navid.emamdoost@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 18 Sep 2019 23:40:59 +0300
-Message-ID: <CA+h21ho_pibJNnYkyYrJGACmwU16Qk3ZZ=BJEqQjBbK3CW+Gog@mail.gmail.com>
-Subject: Re: [PATCH v3] net: dsa: sja1105: prevent leaking memory
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     Navid Emamdoost <emamd001@umn.edu>,
-        Stephen McCamant <smccaman@umn.edu>, kjlu@umn.edu,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190918195745.2158829-1-arnd@arndb.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Sep 2019 at 23:34, Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
+On 9/18/19 12:57 PM, Arnd Bergmann wrote:
+> The debugfs function was apparently changed from returning an error code
+> to a void return, but the return code left in place, causing a warning
+> from clang:
 >
-> In sja1105_static_config_upload, in two cases memory is leaked: when
-> static_config_buf_prepare_for_upload fails and when sja1105_inhibit_tx
-> fails. In both cases config_buf should be released.
+> drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:60:37: error: expression result unused [-Werror,-Wunused-value]
+>                              ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
+>                                                           ^~~~~~~~~~~
 >
-> Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105 5-port
-> L2 switch")
->
-> Fixes: 1a4c69406cc1 ("net: dsa: sja1105: Prevent PHY jabbering during
-> switch reset")
->
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-
->  drivers/net/dsa/sja1105/sja1105_spi.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>   drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-> index 84dc603138cf..58dd37ecde17 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_spi.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-> @@ -409,7 +409,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
->         rc = static_config_buf_prepare_for_upload(priv, config_buf, buf_len);
->         if (rc < 0) {
->                 dev_err(dev, "Invalid config, cannot upload\n");
-> -               return -EINVAL;
-> +               rc = -EINVAL;
-> +               goto out;
->         }
->         /* Prevent PHY jabbering during switch reset by inhibiting
->          * Tx on all ports and waiting for current packet to drain.
-> @@ -418,7 +419,8 @@ int sja1105_static_config_upload(struct sja1105_private *priv)
->         rc = sja1105_inhibit_tx(priv, port_bitmap, true);
->         if (rc < 0) {
->                 dev_err(dev, "Failed to inhibit Tx on ports\n");
-> -               return -ENXIO;
-> +               rc = -ENXIO;
-> +               goto out;
->         }
->         /* Wait for an eventual egress packet to finish transmission
->          * (reach IFG). It is guaranteed that a second one will not
-> --
-> 2.17.1
->
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> index 7afc4a365b75..bc03cecf80cc 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> @@ -57,7 +57,7 @@ DEFINE_SHOW_ATTRIBUTE(identity);
+>   void ionic_debugfs_add_ident(struct ionic *ionic)
+>   {
+>   	debugfs_create_file("identity", 0400, ionic->dentry,
+> -			    ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
+> +			    ionic, &identity_fops);
+>   }
+>   
+>   void ionic_debugfs_add_sizes(struct ionic *ionic)
+
+This has just recently been addressed by Nathan Chancellor 
+<natechancellor@gmail.com>
+
+Either way,
+
+Acked-by: Shannon Nelson <snelson@pensando.io>
+
+sln
+
