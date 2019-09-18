@@ -2,64 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9C8B632A
-	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C903B6352
+	for <lists+netdev@lfdr.de>; Wed, 18 Sep 2019 14:35:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731097AbfIRM0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 08:26:01 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:45129 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728539AbfIRM0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 08:26:01 -0400
-Received: by mail-io1-f72.google.com with SMTP id o11so10796136iop.12
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 05:26:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=yq57rTS7tT8k+xdJeb2CfUd2j81GNTcLfOruVvSsEeQ=;
-        b=Qzz8Zke8MhZ4JrBgtzghvX2eZ0AaX97/R+DR8kw3xo5UVtwUujPNREwtq1FEUfeGWY
-         D7XDLmGg72QeoJz7TbrGj1iAQABFWg/w9M366LDrLezMoa7yDJLMgiK5v7gCsx+1PhnU
-         sA/t6IhftoU1r2NJqt+2U+X4haNxuBBKjIe4zdgc9gruO7/scxqFF6AX6v3AHuOEb98i
-         nwaXHO39Ni24XW4Sr0b/+FA5J9pzp3SwlmE2sMkhuiTfxJ2liPNvaSWFbC1VkuwGE4pF
-         sy8Dr5vYCEXuAqtLxh7DC2LS/QPjawqauPzUyyDHwslvZseKAGBZq49Sk+lBFb34NjBZ
-         dlhQ==
-X-Gm-Message-State: APjAAAU4ZL+INHgec6G4w4CGt6X0Gx2/gGBraOJmZprCPKjWDPktbsxd
-        76yutMdOhWr6gI9D+NdpWuDu4K2pHpLvoKaMF+xy8l1zcrey
-X-Google-Smtp-Source: APXvYqx7fUN6ZZEHiu5creHYMFYei5Rfmu0F99U5no3hBFuFzr5yISH1tIhZ7tEhBcV9+P8+J/ecUAojRnyBPEli5iMDgNaYWH0l
+        id S1731142AbfIRMfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 08:35:03 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:44648 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725902AbfIRMfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 08:35:03 -0400
+Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id C1C8B25AF19;
+        Wed, 18 Sep 2019 22:35:00 +1000 (AEST)
+Received: by reginn.horms.nl (Postfix, from userid 7100)
+        id EBCA9942C13; Wed, 18 Sep 2019 14:34:57 +0200 (CEST)
+Date:   Wed, 18 Sep 2019 14:34:57 +0200
+From:   Simon Horman <horms@verge.net.au>
+To:     Lars Poeschel <poeschel@lemonage.de>
+Cc:     Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v7 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
+Message-ID: <20190918123457.wg6mtygr6cboqsp6@verge.net.au>
+References: <20190910093129.1844-1-poeschel@lemonage.de>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:c88e:: with SMTP id y136mr4267690iof.68.1568809560710;
- Wed, 18 Sep 2019 05:26:00 -0700 (PDT)
-Date:   Wed, 18 Sep 2019 05:26:00 -0700
-In-Reply-To: <20190918120147.4520-1-bjorn@mork.no>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000096290a0592d2f05a@google.com>
-Subject: Re: divide error in cdc_ncm_update_rxtx_max
-From:   syzbot <syzbot+ce366e2b8296e25d84f5@syzkaller.appspotmail.com>
-To:     bjorn@mork.no, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        oliver@neukum.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190910093129.1844-1-poeschel@lemonage.de>
+Organisation: Horms Solutions BV
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Sep 10, 2019 at 11:31:21AM +0200, Lars Poeschel wrote:
+> It is favourable to have one unified compatible string for devices that
+> have multiple interfaces. So this adds simply "pn532" as the devicetree
+> binding compatible string and makes a note that the old ones are
+> deprecated.
 
-syzbot has tested the proposed patch and the reproducer did not trigger  
-crash:
+Do you also need to update
+Documentation/devicetree/bindings/net/nfc/pn533-i2c.txt
+to both document the new compat string and deprecate the old ones?
 
-Reported-and-tested-by:  
-syzbot+ce366e2b8296e25d84f5@syzkaller.appspotmail.com
-
-Tested on:
-
-commit:         f0df5c1b usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5c6633fa4ed00be5
-dashboard link: https://syzkaller.appspot.com/bug?extid=ce366e2b8296e25d84f5
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=114971b5600000
-
-Note: testing is done by a robot and is best-effort only.
+> Cc: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+> ---
+> Changes in v6:
+> - Rebased the patch series on v5.3-rc5
+> 
+> Changes in v3:
+> - This patch is new in v3
+> 
+>  drivers/nfc/pn533/i2c.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+> index 1832cd921ea7..1abd40398a5a 100644
+> --- a/drivers/nfc/pn533/i2c.c
+> +++ b/drivers/nfc/pn533/i2c.c
+> @@ -245,6 +245,11 @@ static int pn533_i2c_remove(struct i2c_client *client)
+>  }
+>  
+>  static const struct of_device_id of_pn533_i2c_match[] = {
+> +	{ .compatible = "nxp,pn532", },
+> +	/*
+> +	 * NOTE: The use of the compatibles with the trailing "...-i2c" is
+> +	 * deprecated and will be removed.
+> +	 */
+>  	{ .compatible = "nxp,pn533-i2c", },
+>  	{ .compatible = "nxp,pn532-i2c", },
+>  	{},
+> -- 
+> 2.23.0
+> 
