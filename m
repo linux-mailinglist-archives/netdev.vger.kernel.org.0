@@ -2,87 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E17B879A
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 00:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 664F8B880D
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 01:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405507AbfISWtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 18:49:47 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41356 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393807AbfISWtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 18:49:47 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q7so3218089pfh.8
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 15:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mkRfhk4kogjc5mixE4IKVRJwLntrCBrUYtEKBXpZRRQ=;
-        b=OjU70/g+vU9pRpMt4otXVXgpAQSF1q5grQPhY+xI0Oie1wySrexapNx/36pnFOBYmx
-         2mlLkffngtmer8aFvf3cKI+dNbZrJ6V1IJk0bnXftr0fb+QRTDlNg4scHfzE2+ebzPjv
-         OSaFwG5pQr/NCuPrLiPgFfDfjZBnsjcZCfS4rGUo/9eaIGrry/opK92yIC/Dnf6Lv6Wz
-         9qbbEC6VtWv5tiHuOXxH5wBHFqXzbJDTuYenpihzD4400qETo40TA+iH6XpGKhpRMpOl
-         I77eXy7Ipq/N/9S2d88mgEOr37hgVE+1s9BNHje1/BLFMZjufBH0LYprbHoNIM8zFqWy
-         ag5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mkRfhk4kogjc5mixE4IKVRJwLntrCBrUYtEKBXpZRRQ=;
-        b=h9LH6EaSS5j92cRETn4RfqwYUUCVMCAhk+5j+0gFKECiUJgmS6JZxfV1cBRf5+K4Hh
-         S1c47pNzM1mLPQBygU+ZpXc8EWEZItSq3M0DzL7gRmheVKx0vz4T1VfQIL0uWjLf4Ym6
-         xtUMv5I8EWvBtxqM3Xvaf92hlDBlBZXjHU/OzEUvB1nM6RC0EAKf3h7Z/+hZRQlbLJ6G
-         VI8BdbviJ27bHLauUUUc4/rpXXMPbZZQ0yqzpeWrglF1iLHZaQMEO7w1nZ1sQRQhTJAP
-         Mj1g5iAQfLRP0Dgnd9DmYVY2pv2Dnm9byV7Dua862KzbSzLq+Umy1BNLCqAP2kx9uF0S
-         QpsQ==
-X-Gm-Message-State: APjAAAXtG/iPTiNcH5+LQzJ+BlxPk/uB4PwHWTLZLdgI+XWdigpLh6mE
-        bsCPcYe/umnYUBFAFVVjcsQ=
-X-Google-Smtp-Source: APXvYqyd7M4HG2QehODhYGm6h58avGnx3P+LYnTuaAXx/RugSbLdVb6Pcp+gDeksuqOSJmSe+rdESQ==
-X-Received: by 2002:a65:5543:: with SMTP id t3mr11478866pgr.242.1568933385990;
-        Thu, 19 Sep 2019 15:49:45 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id 30sm31138pjk.25.2019.09.19.15.49.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Sep 2019 15:49:45 -0700 (PDT)
-Subject: Re: [PATCH net v2 1/3] net: sched: sch_htb: don't call qdisc_put()
- while holding tree lock
-To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net
-References: <20190919201438.2383-1-vladbu@mellanox.com>
- <20190919201438.2383-2-vladbu@mellanox.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <66e68933-a553-e078-b92b-6f629c740328@gmail.com>
-Date:   Thu, 19 Sep 2019 15:49:44 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389611AbfISXZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 19:25:17 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54568 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388331AbfISXZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 19:25:16 -0400
+Received: from [178.197.248.15] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iB5nW-00084S-9N; Fri, 20 Sep 2019 01:25:14 +0200
+Date:   Fri, 20 Sep 2019 01:25:13 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Joe Stringer <joe@wand.net.nz>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2 master] bpf: Fix race condition with map pinning
+Message-ID: <20190919232513.GA7765@pc-63.home>
+References: <20190919220733.31206-1-joe@wand.net.nz>
 MIME-Version: 1.0
-In-Reply-To: <20190919201438.2383-2-vladbu@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190919220733.31206-1-joe@wand.net.nz>
+"User-Agent: Mutt/1.12.1 with l2md"
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25577/Thu Sep 19 10:20:13 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/19/19 1:14 PM, Vlad Buslov wrote:
-> Recent changes that removed rtnl dependency from rules update path of tc
-> also made tcf_block_put() function sleeping. This function is called from
-> ops->destroy() of several Qdisc implementations, which in turn is called by
-> qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinlock,
-> which results sleeping-while-atomic BUG.
+On Thu, Sep 19, 2019 at 03:07:33PM -0700, Joe Stringer wrote:
+> If two processes attempt to invoke bpf_map_attach() at the same time,
+> then they will both create maps, then the first will successfully pin
+> the map to the filesystem and the second will not pin the map, but will
+> continue operating with a reference to its own copy of the map. As a
+> result, the sharing of the same map will be broken from the two programs
+> that were concurrently loaded via loaders using this library.
 > 
+> Fix this by adding a retry in the case where the pinning fails because
+> the map already exists on the filesystem. In that case, re-attempt
+> opening a fd to the map on the filesystem as it shows that another
+> program already created and pinned a map at that location.
+> 
+> Signed-off-by: Joe Stringer <joe@wand.net.nz>
 
-
-Note that calling qdisc_put() while holding sch tree lock can also
-trigger deadlocks.
-
-For example sch_pie.c has a del_timer_sync() in pie_destroy(),
-while the pie_timer() timer handler acquires the root_lock.
-
-(there are other cases like that, SFQ for example)
-
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
