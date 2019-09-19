@@ -2,111 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 446E6B71A2
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 04:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03540B71A8
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 04:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388313AbfISCls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 22:41:48 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:40010 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388284AbfISClr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 22:41:47 -0400
-Received: by mail-pl1-f196.google.com with SMTP id d22so858656pll.7
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 19:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WMTS9AboLcRoehZDUcNLaIdyp+1u6YWwRLg1uLK5kzg=;
-        b=eGdZxch9++CWNFokf5kAaajnT2HGibGj4OjWtsG+UV/sbhfmBeS805xzxwknsF4Kr7
-         xNl2k7zlETv1trqVfl78W2mB5xqvRCgxx8BPVogHiGjOOGf5F7vwQCLwBwvrWCYuUzb6
-         GJoEXvYq3kTfVmP+W/Ol8O/m25dQPifijgolZ6pO8gYV2P4xbvR9jH0eHg0g476plqUp
-         EIk91ymrqVh+JJxtLNeE05e2XnJTInNfHKAkIrFnrjZnNwud5bMTvJGkH1yVssyG2za3
-         ycLmkrM2juLUSDO6Dda8Ax2hrNpriVN3XIOnYP4jgKFTkpMrMopDISXsVzF3m3F/OOJ5
-         yJqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WMTS9AboLcRoehZDUcNLaIdyp+1u6YWwRLg1uLK5kzg=;
-        b=TqlVG+kRs/ONGRT8ev0qEu70pltqQXoYwjX0R4qCQzYYoVqDYomZyQHinDftiorn+1
-         r7svxjOrw7jim6Cys/A5V+Q2F7ausWV90fc6KShPXAhek1MOUO/nYO1k9bYpw9IZ6vxg
-         kopsAZqpsORt9l5YhoYRedRGoRUQSnSJA5qa46aLTe3iFh6hoOkPesKxkFN3uMRt/Yig
-         Il2Sy6nBGqU1goV7oTlqbX2WSPMEs93mMI6zPFeI/JBJZ0ZHXk1glnsBMTbWqJGKxINs
-         v1GTZOIF/CYM5SG/AV+3cBnepxWfkhsdU0oXCYIRXZuZLIvqIrDYSzMSigd8VUqRW2/M
-         3frA==
-X-Gm-Message-State: APjAAAWDjGbGl6QlszLGLdYGhNyeqF9Qli4F6+iolBK0lsxw0FWVU/CD
-        QTekh+YiOS7yUR/+MSKDoyM=
-X-Google-Smtp-Source: APXvYqxJXtFKNYo6LOwsoDJ8fAsnkymGLx5/gapfsNwEwVcfYG4iZSnblVPNvCctZCp26W/qZblPpg==
-X-Received: by 2002:a17:902:aa92:: with SMTP id d18mr1856434plr.58.1568860905908;
-        Wed, 18 Sep 2019 19:41:45 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:5d8f:d810:4b26:617b])
-        by smtp.googlemail.com with ESMTPSA id 21sm2033196pgx.49.2019.09.18.19.41.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Sep 2019 19:41:44 -0700 (PDT)
-Subject: Re: [Patch net] net_sched: add max len check for TCA_KIND
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20190918232412.16718-1-xiyou.wangcong@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <36471b0d-cc83-40aa-3ded-39e864dcceb0@gmail.com>
-Date:   Wed, 18 Sep 2019 20:41:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        id S2388426AbfISCuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 22:50:19 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54132 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727324AbfISCuT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 22:50:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=SOt6fitAuRZcRmpDfmMRTm1rrq+84NUpxW5B9Ow0huo=; b=h7ij+hoc0z+F4jZxXJuvQ0tiAg
+        2DM/0nV7LmfjIhAmGXpmOemVUGudE2gfkcAr2UQP3uDQH6ou4Fv7NY2rzLnoxgRE7CdN0D5cvkahH
+        ScJXFJYRI733pFEYIwjTJHMPaPDu00tAUx7CmubXtx1NfgUEgFRd1HCP6uZA0IpxcT9Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iAmWO-0003QV-RE; Thu, 19 Sep 2019 04:50:16 +0200
+Date:   Thu, 19 Sep 2019 04:50:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Peter Mamonov <pmamonov@gmail.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] net/phy: fix Marvell PHYs probe failure when HWMON
+ and THERMAL_OF are enabled
+Message-ID: <20190919025016.GA12785@lunn.ch>
+References: <20190918213837.24585-1-pmamonov@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190918232412.16718-1-xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190918213837.24585-1-pmamonov@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/18/19 5:24 PM, Cong Wang wrote:
-> The TCA_KIND attribute is of NLA_STRING which does not check
-> the NUL char. KMSAN reported an uninit-value of TCA_KIND which
-> is likely caused by the lack of NUL.
+On Thu, Sep 19, 2019 at 12:38:37AM +0300, Peter Mamonov wrote:
+> Hello,
 > 
-> Change it to NLA_NUL_STRING and add a max len too.
-> 
-> Fixes: 8b4c3cdd9dd8 ("net: sched: Add policy validation for tc attributes")
+> Some time ago I've discovered that probe functions of certain Marvell PHYs 
+> fail if both HWMON and THERMAL_OF config options are enabled.
 
-The commit referenced here did not introduce the ability to go beyond
-memory boundaries with string comparisons. Rather, it was not complete
-solution for attribute validation. I say that wrt to the fix getting
-propagated to the correct stable releases.
+Hi Peter
 
-> Reported-and-tested-by: syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com
+It probably affects more then Marvell PHYs.
 
-What is the actual sysbot report?
+> The root 
+> cause of this problem is a lack of an OF node for a PHY's built-in 
+> temperature sensor.  However I consider adding this OF node to be a bit 
+> excessive solution. Am I wrong? Below you will find a one line patch which 
+> fixes the problem.
 
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> ---
->  net/sched/sch_api.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> index 1047825d9f48..81d58b280612 100644
-> --- a/net/sched/sch_api.c
-> +++ b/net/sched/sch_api.c
-> @@ -1390,7 +1390,8 @@ check_loop_fn(struct Qdisc *q, unsigned long cl, struct qdisc_walker *w)
->  }
->  
->  const struct nla_policy rtm_tca_policy[TCA_MAX + 1] = {
-> -	[TCA_KIND]		= { .type = NLA_STRING },
-> +	[TCA_KIND]		= { .type = NLA_NUL_STRING,
-> +				    .len = IFNAMSIZ - 1 },
->  	[TCA_RATE]		= { .type = NLA_BINARY,
->  				    .len = sizeof(struct tc_estimator) },
->  	[TCA_STAB]		= { .type = NLA_NESTED },
-> 
+Your patch look sensible to me.
 
-This is a better policy so for that:
-Reviewed-by: David Ahern <dsahern@gmail.com>
+> I've sent it to the releveant maintainers three weeks 
+> ago without any feedback yet.
+
+Could you point me at the relevant mailing list archive?
+
+      Thanks
+	Andrew
