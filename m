@@ -2,118 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F36B7B95
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FAFB7B96
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388447AbfISOF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 10:05:56 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:47351 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388331AbfISOFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:05:55 -0400
+        id S2388590AbfISOF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 10:05:57 -0400
+Received: from mail-yw1-f50.google.com ([209.85.161.50]:37543 "EHLO
+        mail-yw1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388331AbfISOF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:05:57 -0400
+Received: by mail-yw1-f50.google.com with SMTP id u65so1268342ywe.4
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:05:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1568901954; x=1600437954;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=hmapruwZyNdRQkvjbciWnTNKBVCrKNJeWbwPC0wwJsw=;
-  b=W5q6Anj4g4RLCYcTP6SsAEAaaDWsacNJxLL2+WA0dGJKVpfqEiFFZqwT
-   qmGYP639q4Krjkbky+uwcnb2d6q/mSKfKX1uEKx9A+C2+qCgH8mv2FMVv
-   qKNee3hTJq1QRdWsRdHTxvG9tQtKnkMPxkRpMfpPv/ZkpTshyKV/1NozY
-   I=;
-X-IronPort-AV: E=Sophos;i="5.64,523,1559520000"; 
-   d="scan'208";a="834526043"
-Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-2a-69849ee2.us-west-2.amazon.com) ([10.47.22.34])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 19 Sep 2019 14:05:35 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-69849ee2.us-west-2.amazon.com (Postfix) with ESMTPS id BB9B7A1D6D;
-        Thu, 19 Sep 2019 14:05:34 +0000 (UTC)
-Received: from EX13D08EUB002.ant.amazon.com (10.43.166.232) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 19 Sep 2019 14:05:34 +0000
-Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
- EX13D08EUB002.ant.amazon.com (10.43.166.232) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 19 Sep 2019 14:05:33 +0000
-Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
- EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1367.000;
- Thu, 19 Sep 2019 14:05:33 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>
-Subject: RE: [PATCH V1 net-next 2/5] net: ena: multiple queue creation related
- cleanups
-Thread-Topic: [PATCH V1 net-next 2/5] net: ena: multiple queue creation
- related cleanups
-Thread-Index: AQHVa9ocPyQgd6KkfkmwaolqL/2rKKcutqQAgARX1bA=
-Date:   Thu, 19 Sep 2019 14:05:32 +0000
-Message-ID: <ffbbb841d147426bb76a6c4e77d4c1f9@EX13D11EUB003.ant.amazon.com>
-References: <20190915152722.8240-1-sameehj@amazon.com>
-        <20190915152722.8240-3-sameehj@amazon.com>
- <20190916.214438.647698482843698023.davem@davemloft.net>
-In-Reply-To: <20190916.214438.647698482843698023.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.196]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=JZPv3jG+XlPrOTjewHyQ0ssMtO4G5mbxB4JHojADKFM=;
+        b=TehwRmBY1MMWldQQlRo239kMPpR2q0ej6PO84UVEYY0+aHI+zTEadOOA/DzZiKQk3r
+         SRA5Y//v0OKHEz1lK+TyTZnd9bW1onyQXh46O8XV2ETqDXXtxNfMuBcRSa1qY1PQDC02
+         fwi97l6Q1Z97XR/dd7Y1DxzZZQuapf7z/6d9L9h17ngqAUrqYFu3vDSrVDfjKFL2iIZO
+         STe1ZXAyxP0VmuKFZaVPz2QlcQJBPqkxyQvDRmG6Emz5oF2IfvfPSYMBxheWqE2ZZs/y
+         ju5UPFEKL8Beb4Oi/8ueeypBqoVSZ1FxcOhIRPN4zvUR7dEj9KbBnkmBzzpwF69+Qtrq
+         KbpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=JZPv3jG+XlPrOTjewHyQ0ssMtO4G5mbxB4JHojADKFM=;
+        b=kouS+ANNBU+vfD9G3bJR7MzHln1mFB4+9+M0HlC/58wSruETUIX/HelNhoPCTsCKdS
+         +x/FBbv8nWohtgg2qQVAVO8c60mJsk6K5qFPcye4CFK8nbefwVuPwjjxd6f3R6G44e8N
+         5buxyO4VwKEIx63ewLb1AaKC26w/pfdCd2yjDePmxT4z+t5KXw1YBZMsOVUofbkIJCgT
+         ZAo60vKe9GKBrF2id9Iz0xODz541vog5HnX6/PZELP8DUj4XyDfVIHR0rKvhxcIqf/bI
+         cgezx+KDETq5FFWY2KVr0P1bn4NOnqVfi95u+BY0RR3/hVaKln5kp3yp5/vPgZodaaQ/
+         9B8Q==
+X-Gm-Message-State: APjAAAVbs5xQ5fO+p7dAJmCs1BRc2fwSjFsKBrjabYhLtL0PsuQnUkQ7
+        F54LHzKjrFoTDa6zTgFryIB3TryAr/17iAanjLM=
+X-Google-Smtp-Source: APXvYqw8egP5C/WoeEqtF9EuxT4W6NU661kTcmlwLNJ+o1OHArA5LZXVI6o8tUUJjSdvuUd53CZELpt3sc+l2V1FNco=
+X-Received: by 2002:a81:4602:: with SMTP id t2mr8354885ywa.391.1568901956583;
+ Thu, 19 Sep 2019 07:05:56 -0700 (PDT)
 MIME-Version: 1.0
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Thu, 19 Sep 2019 17:05:45 +0300
+Message-ID: <CAJ3xEMhzGs=8Vuw6aT=wCnQ24Qif89CUDxvbM0jWCgKjNNdbpA@mail.gmail.com>
+Subject: ELOed stable kernels
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Greg,
 
+If this is RTFM could you please point me to the Emm
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Monday, September 16, 2019 10:45 PM
-> To: Jubran, Samih <sameehj@amazon.com>
-> Cc: netdev@vger.kernel.org; Woodhouse, David <dwmw@amazon.co.uk>;
-> Machulsky, Zorik <zorik@amazon.com>; Matushevsky, Alexander
-> <matua@amazon.com>; Bshara, Saeed <saeedb@amazon.com>; Wilson,
-> Matt <msw@amazon.com>; Liguori, Anthony <aliguori@amazon.com>;
-> Bshara, Nafea <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>;
-> Belgazal, Netanel <netanel@amazon.com>; Saidi, Ali
-> <alisaidi@amazon.com>; Herrenschmidt, Benjamin <benh@amazon.com>;
-> Kiyanovski, Arthur <akiyano@amazon.com>
-> Subject: Re: [PATCH V1 net-next 2/5] net: ena: multiple queue creation
-> related cleanups
->=20
-> From: <sameehj@amazon.com>
-> Date: Sun, 15 Sep 2019 18:27:19 +0300
->=20
-> > @@ -1885,6 +1885,13 @@ static int ena_up(struct ena_adapter *adapter)
-> >  	if (rc)
-> >  		goto err_req_irq;
-> >
-> > +	netif_info(adapter, ifup, adapter->netdev, "creating %d io queues.
-> rx queue size: %d tx queue size. %d LLQ is %s\n",
-> > +		   adapter->num_io_queues,
-> > +		   adapter->requested_rx_ring_size,
-> > +		   adapter->requested_tx_ring_size,
-> > +		   (adapter->ena_dev->tx_mem_queue_type =3D=3D
-> ENA_ADMIN_PLACEMENT_POLICY_DEV) ?
-> > +		   "ENABLED" : "DISABLED");
->=20
-> Please don't clog up the kernel log with stuff like this.
->=20
-> Maybe netif_debug() at best, but I'd rather you remove this entirely.  It=
-'s so
-> easy to make a device go up and down repeatedly multiple times in one
-> second.
-Dropped in v2.
+AFAIR if a stable kernel is not listed at kernel.org than it is EOL by now.
+
+Is this correct?
+
+thanks,
+
+Or.
