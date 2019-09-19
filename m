@@ -2,150 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E30B7E7B
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 17:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF79B7E78
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 17:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391397AbfISPsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 11:48:40 -0400
-Received: from mga17.intel.com ([192.55.52.151]:46951 "EHLO mga17.intel.com"
+        id S2390049AbfISPsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 11:48:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57060 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388700AbfISPsj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 11:48:39 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Sep 2019 08:48:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,524,1559545200"; 
-   d="scan'208";a="362555450"
-Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.71])
-  by orsmga005.jf.intel.com with ESMTP; 19 Sep 2019 08:48:36 -0700
-Date:   Thu, 19 Sep 2019 23:45:52 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
-Message-ID: <20190919154552.GA27657@___>
-References: <20190917010204.30376-1-tiwei.bie@intel.com>
- <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
- <20190917105801.GA24855@___>
- <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
- <20190918102923-mutt-send-email-mst@kernel.org>
- <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S2388805AbfISPsN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 11:48:13 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 74C21208C0;
+        Thu, 19 Sep 2019 15:48:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568908092;
+        bh=4P4FwhJLYODe8QdVNpLynxMKcSlo0/LKh0hAB/5PEHg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Kkcg9ikv0FAV0ciXNIJD6gZECbI2fkgG6tjdHbfLFi/ohRkctWEfIkGkMG9EpWjQS
+         QHmMNg4L0XQFkgEYSgF/tRrS0JoRnsw/s+SjJfz4K8Ja3LU4sTGuTxMFkgFfxLjWja
+         g3mAojlxai5YD/NWv+2qARjbjWjqHq+j2/AxhkLU=
+From:   David Ahern <dsahern@kernel.org>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH iproute2-next] ip vrf: Add json support for show command
+Date:   Thu, 19 Sep 2019 08:51:36 -0700
+Message-Id: <20190919155136.23758-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 09:08:11PM +0800, Jason Wang wrote:
-> On 2019/9/18 下午10:32, Michael S. Tsirkin wrote:
-> > > > > So I have some questions:
-> > > > > 
-> > > > > 1) Compared to method 2, what's the advantage of creating a new vhost char
-> > > > > device? I guess it's for keep the API compatibility?
-> > > > One benefit is that we can avoid doing vhost ioctls on
-> > > > VFIO device fd.
-> > > Yes, but any benefit from doing this?
-> > It does seem a bit more modular, but it's certainly not a big deal.
-> 
-> Ok, if we go this way, it could be as simple as provide some callback to
-> vhost, then vhost can just forward the ioctl through parent_ops.
-> 
-> > 
-> > > > > 2) For method 2, is there any easy way for user/admin to distinguish e.g
-> > > > > ordinary vfio-mdev for vhost from ordinary vfio-mdev?
-> > > > I think device-api could be a choice.
-> > > Ok.
-> > > 
-> > > 
-> > > > > I saw you introduce
-> > > > > ops matching helper but it's not friendly to management.
-> > > > The ops matching helper is just to check whether a given
-> > > > vfio-device is based on a mdev device.
-> > > > 
-> > > > > 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
-> > > > > assumes the parameter comes from userspace, it prevents support kernel
-> > > > > virtio drivers.
-> > > > > 
-> > > > > 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
-> > > > > we can use device specific ops instead of VFIO ones, then we can have a
-> > > > > common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
-> > > > As the above draft shows, this requires introducing a new
-> > > > VFIO device driver. I think Alex's opinion matters here.
-> 
-> Just to clarify, a new type of mdev driver but provides dummy
-> vfio_device_ops for VFIO to make container DMA ioctl work.
+From: David Ahern <dsahern@gmail.com>
 
-I see. Thanks! IIUC, you mean we can provide a very tiny
-VFIO device driver in drivers/vhost/mdev.c, e.g.:
+Add json support to 'ip vrf sh':
+$ ip -j -p vrf ls
+[ {
+        "name": "mgmt",
+        "table": 1001
+    } ]
 
-static int vfio_vhost_mdev_open(void *device_data)
-{
-	if (!try_module_get(THIS_MODULE))
-		return -ENODEV;
-	return 0;
-}
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ ip/ipvrf.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-static void vfio_vhost_mdev_release(void *device_data)
-{
-	module_put(THIS_MODULE);
-}
+diff --git a/ip/ipvrf.c b/ip/ipvrf.c
+index 43366f6e25f0..b9a43675cbd6 100644
+--- a/ip/ipvrf.c
++++ b/ip/ipvrf.c
+@@ -566,9 +566,12 @@ static int ipvrf_print(struct nlmsghdr *n)
+ 		return 0;
+ 	}
+ 
+-	printf("%-16s %5u", name, tb_id);
++	open_json_object(NULL);
++	print_string(PRINT_ANY, "name", "%-16s", name);
++	print_uint(PRINT_ANY, "table", " %5u", tb_id);
++	print_string(PRINT_FP, NULL, "%s", "\n");
++	close_json_object();
+ 
+-	printf("\n");
+ 	return 1;
+ }
+ 
+@@ -597,15 +600,21 @@ static int ipvrf_show(int argc, char **argv)
+ 	if (ip_link_list(ipvrf_filter_req, &linfo) == 0) {
+ 		struct nlmsg_list *l;
+ 		unsigned nvrf = 0;
+-		int n;
+ 
+-		n = printf("%-16s  %5s\n", "Name", "Table");
+-		printf("%.*s\n", n-1, "-----------------------");
++		new_json_obj(json);
++
++		print_string(PRINT_FP, NULL, "%-16s", "Name");
++		print_string(PRINT_FP, NULL, "  %5s\n", "Table");
++		print_string(PRINT_FP, NULL, "%s\n",
++			     "-----------------------");
++
+ 		for (l = linfo.head; l; l = l->next)
+ 			nvrf += ipvrf_print(&l->h);
+ 
+ 		if (!nvrf)
+-			printf("No VRF has been configured\n");
++			print_string(PRINT_FP, NULL, "%s\n",
++				     "No VRF has been configured");
++		delete_json_obj();
+ 	} else
+ 		rc = 1;
+ 
+-- 
+2.11.0
 
-static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
-	.name		= "vfio-vhost-mdev",
-	.open		= vfio_vhost_mdev_open,
-	.release	= vfio_vhost_mdev_release,
-};
-
-static int vhost_mdev_probe(struct device *dev)
-{
-	struct mdev_device *mdev = to_mdev_device(dev);
-
-	... Check the mdev device_id proposed in ...
-	... https://lkml.org/lkml/2019/9/12/151 ...
-
-	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
-}
-
-static void vhost_mdev_remove(struct device *dev)
-{
-	vfio_del_group_dev(dev);
-}
-
-static struct mdev_driver vhost_mdev_driver = {
-	.name	= "vhost_mdev",
-	.probe	= vhost_mdev_probe,
-	.remove	= vhost_mdev_remove,
-};
-
-So we can bind above mdev driver to the virtio-mdev compatible
-mdev devices when we want to use vhost-mdev.
-
-After binding above driver to the mdev device, we can setup IOMMU
-via VFIO and get VFIO device fd of this mdev device, and pass it
-to vhost fd (/dev/vhost-mdev) with a SET_BACKEND ioctl.
-
-Thanks,
-Tiwei
-
-> 
-> Thanks
-> 
-> 
-> > > Yes, it is.
-> > > 
-> > > Thanks
-> > > 
-> > > 
