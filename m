@@ -2,202 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17384B76E7
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 12:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC82B772A
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 12:10:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389135AbfISJ75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 05:59:57 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56308 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388940AbfISJ74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 05:59:56 -0400
-Received: from static-dcd-cqq-121001.business.bouyguestelecom.com ([212.194.121.1] helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1iAtE4-0004bo-Fj; Thu, 19 Sep 2019 09:59:48 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     keescook@chromium.org, luto@amacapital.net
-Cc:     jannh@google.com, wad@chromium.org, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Tyler Hicks <tyhicks@canonical.com>, stable@vger.kernel.org
-Subject: [PATCH v1 3/3] seccomp: test SECCOMP_USER_NOTIF_FLAG_CONTINUE
-Date:   Thu, 19 Sep 2019 11:59:03 +0200
-Message-Id: <20190919095903.19370-4-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190919095903.19370-1-christian.brauner@ubuntu.com>
-References: <20190919095903.19370-1-christian.brauner@ubuntu.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2389061AbfISKKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 06:10:02 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:36818 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388939AbfISKKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 06:10:01 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 123DDC03AD;
+        Thu, 19 Sep 2019 10:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1568887800; bh=n7F8/d0PuPnpo/lcKpsjJCLtm00c/AoLt+k4nMNl6wM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fAvZVP+G/vn3I53BBX+eN5FpcVTyArg/2NvhAtz9h+s7hqaiviQeZFv1XbEoiHZRe
+         Z9DD+7GmlTqWeKZ3gDw0I4UXhfcODZR6sDarXw7Txut4pLUI1GZyIu0t6DBRDl+bz7
+         ZXGrrRAd74xQCI03BicosFe+B2ZaaNcLigkMu9jjZyECvFJYGozP068i62ax/MyWIh
+         mJDrcW3xbpgftL0ncnWZlR+rHmIgrMtNyWhcwBaJqLtEiHTdI/74Zx3PWOe3ciFgGw
+         fALdoxX0xgFONP5ItVQFDf/FTLScUXwyNIG4pn+7yNQgz6tgWqKniboeYAXWJPkgTC
+         TW0QlPzPfuE6w==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 4CE25A0080;
+        Thu, 19 Sep 2019 10:09:55 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: stmmac: selftests: Flow Control test can also run with ASYM Pause
+Date:   Thu, 19 Sep 2019 12:09:49 +0200
+Message-Id: <f35fa5a51f52fc1ef17a0a9ecd470e2a6792b3f8.1568887745.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test whether a syscall can be performed after having been intercepted by
-the seccomp notifier. The test uses dup() and kcmp() since it allows us to
-nicely test whether the dup() syscall actually succeeded by comparing whether
-the fds refer to the same underlying struct file.
+The Flow Control selftest is also available with ASYM Pause. Lets add
+this check to the test and fix eventual false positive failures.
 
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Will Drewry <wad@chromium.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Tycho Andersen <tycho@tycho.ws>
-CC: Tyler Hicks <tyhicks@canonical.com>
-Cc: stable@vger.kernel.org
-Cc: linux-kselftest@vger.kernel.org
+Fixes: 091810dbded9 ("net: stmmac: Introduce selftests support")
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
 Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
 ---
-/* v1 */
-- Christian Brauner <christian.brauner@ubuntu.com>:
-  - adapt to new flag name SECCOMP_USER_NOTIF_FLAG_CONTINUE
+ drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-/* v0 */
-Link: https://lore.kernel.org/r/20190918084833.9369-5-christian.brauner@ubuntu.com
----
- tools/testing/selftests/seccomp/seccomp_bpf.c | 102 ++++++++++++++++++
- 1 file changed, 102 insertions(+)
-
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index e996d7b7fd6e..b0966599acb5 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -44,6 +44,7 @@
- #include <sys/times.h>
- #include <sys/socket.h>
- #include <sys/ioctl.h>
-+#include <linux/kcmp.h>
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index c56e89e1ae56..4b4b03245f6e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -670,7 +670,7 @@ static int stmmac_test_flowctrl(struct stmmac_priv *priv)
+ 	unsigned int pkt_count;
+ 	int i, ret = 0;
  
- #include <unistd.h>
- #include <sys/syscall.h>
-@@ -167,6 +168,10 @@ struct seccomp_metadata {
+-	if (!phydev || !phydev->pause)
++	if (!phydev || (!phydev->pause && !phydev->asym_pause))
+ 		return -EOPNOTSUPP;
  
- #define SECCOMP_RET_USER_NOTIF 0x7fc00000U
- 
-+#ifndef SECCOMP_USER_NOTIF_FLAG_CONTINUE
-+#define SECCOMP_USER_NOTIF_FLAG_CONTINUE 0x00000001
-+#endif
-+
- #define SECCOMP_IOC_MAGIC		'!'
- #define SECCOMP_IO(nr)			_IO(SECCOMP_IOC_MAGIC, nr)
- #define SECCOMP_IOR(nr, type)		_IOR(SECCOMP_IOC_MAGIC, nr, type)
-@@ -3481,6 +3486,103 @@ TEST(seccomp_get_notif_sizes)
- 	EXPECT_EQ(sizes.seccomp_notif_resp, sizeof(struct seccomp_notif_resp));
- }
- 
-+static int filecmp(pid_t pid1, pid_t pid2, int fd1, int fd2)
-+{
-+#ifdef __NR_kcmp
-+	return syscall(__NR_kcmp, pid1, pid2, KCMP_FILE, fd1, fd2);
-+#else
-+	errno = ENOSYS;
-+	return -1;
-+#endif
-+}
-+
-+TEST(user_notification_continue)
-+{
-+	pid_t pid;
-+	long ret;
-+	int status, listener;
-+	struct seccomp_notif req = {};
-+	struct seccomp_notif_resp resp = {};
-+	struct pollfd pollfd;
-+
-+	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-+	ASSERT_EQ(0, ret) {
-+		TH_LOG("Kernel does not support PR_SET_NO_NEW_PRIVS!");
-+	}
-+
-+	listener = user_trap_syscall(__NR_dup, SECCOMP_FILTER_FLAG_NEW_LISTENER);
-+	ASSERT_GE(listener, 0);
-+
-+	pid = fork();
-+	ASSERT_GE(pid, 0);
-+
-+	if (pid == 0) {
-+		int dup_fd, pipe_fds[2];
-+		pid_t self;
-+
-+		ret = pipe(pipe_fds);
-+		if (ret < 0)
-+			exit(EXIT_FAILURE);
-+
-+		dup_fd = dup(pipe_fds[0]);
-+		if (dup_fd < 0)
-+			exit(EXIT_FAILURE);
-+
-+		self = getpid();
-+
-+		ret = filecmp(self, self, pipe_fds[0], dup_fd);
-+		if (ret)
-+			exit(EXIT_FAILURE);
-+
-+		exit(EXIT_SUCCESS);
-+	}
-+
-+	pollfd.fd = listener;
-+	pollfd.events = POLLIN | POLLOUT;
-+
-+	EXPECT_GT(poll(&pollfd, 1, -1), 0);
-+	EXPECT_EQ(pollfd.revents, POLLIN);
-+
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_RECV, &req), 0);
-+
-+	pollfd.fd = listener;
-+	pollfd.events = POLLIN | POLLOUT;
-+
-+	EXPECT_GT(poll(&pollfd, 1, -1), 0);
-+	EXPECT_EQ(pollfd.revents, POLLOUT);
-+
-+	EXPECT_EQ(req.data.nr, __NR_dup);
-+
-+	resp.id = req.id;
-+	resp.flags = SECCOMP_USER_NOTIF_FLAG_CONTINUE;
-+
-+	/*
-+	 * Verify that setting SECCOMP_USER_NOTIF_FLAG_CONTINUE enforces other
-+	 * args be set to 0.
-+	 */
-+	resp.error = 0;
-+	resp.val = USER_NOTIF_MAGIC;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	resp.error = USER_NOTIF_MAGIC;
-+	resp.val = 0;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), -1);
-+	EXPECT_EQ(errno, EINVAL);
-+
-+	resp.error = 0;
-+	resp.val = 0;
-+	EXPECT_EQ(ioctl(listener, SECCOMP_IOCTL_NOTIF_SEND, &resp), 0) {
-+		if (errno == EINVAL)
-+			XFAIL(goto skip, "Kernel does not support SECCOMP_USER_NOTIF_FLAG_CONTINUE");
-+	}
-+
-+skip:
-+	EXPECT_EQ(waitpid(pid, &status, 0), pid);
-+	EXPECT_EQ(true, WIFEXITED(status));
-+	EXPECT_EQ(0, WEXITSTATUS(status));
-+}
-+
- /*
-  * TODO:
-  * - add microbenchmarks
+ 	tpriv = kzalloc(sizeof(*tpriv), GFP_KERNEL);
 -- 
-2.23.0
+2.7.4
 
