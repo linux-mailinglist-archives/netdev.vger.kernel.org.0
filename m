@@ -2,151 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23A75B824D
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 22:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A07B8253
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 22:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404597AbfISUOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 16:14:51 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58145 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2404536AbfISUOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 16:14:51 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 19 Sep 2019 23:14:47 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x8JKEkHw031361;
-        Thu, 19 Sep 2019 23:14:47 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>,
-        syzbot+ac54455281db908c581e@syzkaller.appspotmail.com
-Subject: [PATCH net v2 3/3] net: sched: sch_sfb: don't call qdisc_put() while holding tree lock
-Date:   Thu, 19 Sep 2019 23:14:38 +0300
-Message-Id: <20190919201438.2383-4-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190919201438.2383-1-vladbu@mellanox.com>
-References: <20190919201438.2383-1-vladbu@mellanox.com>
+        id S2392502AbfISUSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 16:18:07 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43328 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390609AbfISUSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 16:18:06 -0400
+Received: by mail-pf1-f196.google.com with SMTP id a2so3005535pfo.10;
+        Thu, 19 Sep 2019 13:18:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cAVjhmhu7pSgMbcHXRJCmEJ83viZzHQPrEDfxtrY4Mc=;
+        b=P8JUOP4eCpFg/p5sEtBFNScWnlt0gjJGJzsuv5iFBoy83vohKUjU2AvWEtULdr3G1r
+         42VYRzHz7aCzMQlcS3FTYezDDmD8t9A7A1XnSEjmUvvSuX+dGD70VtekbvZcT0fK/1pi
+         7VkTmpFYdqsI5yVYpfKYb6E4a5phHC4nOu54IQe81uYEmmCOBvaDSK4q553+5YcyRU5g
+         izvraefWolXIMfUMUDZ3zn/6A9CqisZTH453FpoQ7YqgGQFEVJBc9TAHSpSertIrdUYx
+         799wr/920xxj3c6WranFPbj6zTh0sKpQ4aggxlPJ4i35lCSVeK0F8+63hWnK9LTMeopT
+         XGiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cAVjhmhu7pSgMbcHXRJCmEJ83viZzHQPrEDfxtrY4Mc=;
+        b=Kl7X07esKY9cRKc/qdFlHwfQrMT9CCbiMRS7Me8D7a7VBUTdEXSIlnUT7BYxFjzi8/
+         shZPCjcRSNE++0KxjapuyEu7ZOL2yTyh5L6lFltJhUp0NqCy9T3+byBcIjLJbYyY309b
+         gee01mrHsn0dloNM7AVXmMOmelitJNWX6jT0Y/ZXqISv9GqfSj+yvZXzm53M2P88tCui
+         Td0sBNbJZ89XuuI3UkncNJFW5/20FR9DW+MNKjGRLRV/mdCSY9wfpGw+L8GzqgpmBjPu
+         HA8FJXQXY5lo644OcDoUI6tyoz25l5gLFFzrtihMBZV/68RUsyhZbYT5ICmGRB7vW7Pr
+         EUgg==
+X-Gm-Message-State: APjAAAXmOXcd0O/osPPSEzMJZ64UHssZTz+zcJ7QvgQj/wxb8hWb9TcN
+        1B+gWkNuk63F79x4LuKNcUDh2l/nb4BOIvM/xkU=
+X-Google-Smtp-Source: APXvYqy7oIVtYNtx9EJmxLTe7zL4Vmlhgv2BhBQsQrwloJEK/bDaIs3hAKBYyA49LULxDhfCJhkgJqKpgErOHpDjbZo=
+X-Received: by 2002:a17:90b:d91:: with SMTP id bg17mr5621130pjb.79.1568924286060;
+ Thu, 19 Sep 2019 13:18:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190913200819.32686-1-cpaasch@apple.com> <CALMXkpbL+P8ZM+Z8NHg644X7++opx2He5256D7ZLncntQp+8vw@mail.gmail.com>
+ <20190919200726.GA252076@kroah.com>
+In-Reply-To: <20190919200726.GA252076@kroah.com>
+From:   Christoph Paasch <christoph.paasch@gmail.com>
+Date:   Thu, 19 Sep 2019 13:17:54 -0700
+Message-ID: <CALMXkpaRjcFdm+O6Dr6yiJQH=eKso+g5ZSYE3SA6gGQLHD9RZA@mail.gmail.com>
+Subject: Re: [PATCH v4.14-stable 0/2] Fixes to commit fdfc5c8594c2 (tcp:
+ remove empty skb from write queue in error cases)
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent changes that removed rtnl dependency from rules update path of tc
-also made tcf_block_put() function sleeping. This function is called from
-ops->destroy() of several Qdisc implementations, which in turn is called by
-qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinlock,
-which results sleeping-while-atomic BUG.
+On Thu, Sep 19, 2019 at 1:07 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Sep 19, 2019 at 08:21:43AM -0700, Christoph Paasch wrote:
+> > Hello Greg & Sasha,
+> >
+> > On Sat, Sep 14, 2019 at 12:20 AM Christoph Paasch <cpaasch@apple.com> wrote:
+> > >
+> > >
+> > > The above referenced commit has problems on older non-rbTree kernels.
+> > >
+> > > AFAICS, the commit has only been backported to 4.14 up to now, but the
+> > > commit that fdfc5c8594c2 is fixing (namely ce5ec440994b ("tcp: ensure epoll
+> > > edge trigger wakeup when write queue is empty"), is in v4.2.
+> > >
+> > > Christoph Paasch (2):
+> > >   tcp: Reset send_head when removing skb from write-queue
+> > >   tcp: Don't dequeue SYN/FIN-segments from write-queue
+> >
+> > I'm checking in on these two patches for the 4.14 stable-queue.
+> > Especially the panic fixed by patch 2 is pretty easy to trigger :-/
+>
+> Dude, it's been less than a week.  And it's the middle of the merge
+> window.  And it's the week after Plumbers and Maintainer's summit.
+>
+> Relax...
 
-Steps to reproduce for sfb:
+Sorry!
 
-tc qdisc add dev ens1f0 handle 1: root sfb
-tc qdisc add dev ens1f0 parent 1:10 handle 50: sfq perturb 10
-tc qdisc change dev ens1f0 root handle 1: sfb
+> I'll go queue these up now, but I am worried about them, given this
+> total mess the backports seem to have caused.
+>
+> Why isn't this needed in 4.9.y and 4.4.y also?
 
-Resulting dmesg:
+From what I see, commit fdfc5c8594c2 has not been backported to 4.9
+and older. But I can imagine that eventually it will have to be
+backported (I guess Eric can confirm or deny).
+If it gets backported to 4.9 and 4.4, my 2 patches will have to come with them.
 
-[ 7265.938717] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:909
-[ 7265.940152] in_atomic(): 1, irqs_disabled(): 0, pid: 28579, name: tc
-[ 7265.941455] INFO: lockdep is turned off.
-[ 7265.942744] CPU: 11 PID: 28579 Comm: tc Tainted: G        W         5.3.0-rc8+ #721
-[ 7265.944065] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[ 7265.945396] Call Trace:
-[ 7265.946709]  dump_stack+0x85/0xc0
-[ 7265.947994]  ___might_sleep.cold+0xac/0xbc
-[ 7265.949282]  __mutex_lock+0x5b/0x960
-[ 7265.950543]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.951803]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.953022]  tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 7265.954248]  tcf_block_put_ext.part.0+0x21/0x50
-[ 7265.955478]  tcf_block_put+0x50/0x70
-[ 7265.956694]  sfq_destroy+0x15/0x50 [sch_sfq]
-[ 7265.957898]  qdisc_destroy+0x5f/0x160
-[ 7265.959099]  sfb_change+0x175/0x330 [sch_sfb]
-[ 7265.960304]  tc_modify_qdisc+0x324/0x840
-[ 7265.961503]  rtnetlink_rcv_msg+0x170/0x4b0
-[ 7265.962692]  ? netlink_deliver_tap+0x95/0x400
-[ 7265.963876]  ? rtnl_dellink+0x2d0/0x2d0
-[ 7265.965064]  netlink_rcv_skb+0x49/0x110
-[ 7265.966251]  netlink_unicast+0x171/0x200
-[ 7265.967427]  netlink_sendmsg+0x224/0x3f0
-[ 7265.968595]  sock_sendmsg+0x5e/0x60
-[ 7265.969753]  ___sys_sendmsg+0x2ae/0x330
-[ 7265.970916]  ? ___sys_recvmsg+0x159/0x1f0
-[ 7265.972074]  ? do_wp_page+0x9c/0x790
-[ 7265.973233]  ? __handle_mm_fault+0xcd3/0x19e0
-[ 7265.974407]  __sys_sendmsg+0x59/0xa0
-[ 7265.975591]  do_syscall_64+0x5c/0xb0
-[ 7265.976753]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 7265.977938] RIP: 0033:0x7f229069f7b8
-[ 7265.979117] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 5
-4
-[ 7265.981681] RSP: 002b:00007ffd7ed2d158 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[ 7265.983001] RAX: ffffffffffffffda RBX: 000000005d813ca1 RCX: 00007f229069f7b8
-[ 7265.984336] RDX: 0000000000000000 RSI: 00007ffd7ed2d1c0 RDI: 0000000000000003
-[ 7265.985682] RBP: 0000000000000000 R08: 0000000000000001 R09: 000000000165c9a0
-[ 7265.987021] R10: 0000000000404eda R11: 0000000000000246 R12: 0000000000000001
-[ 7265.988309] R13: 000000000047f640 R14: 0000000000000000 R15: 0000000000000000
 
-In sfb_change() function use qdisc_purge_queue() instead of
-qdisc_tree_flush_backlog() to properly reset old child Qdisc and save
-pointer to it into local temporary variable. Put reference to Qdisc after
-sch tree lock is released in order not to call potentially sleeping cls API
-in atomic section. This is safe to do because Qdisc has already been reset
-by qdisc_purge_queue() inside sch tree lock critical section.
-
-Reported-by: syzbot+ac54455281db908c581e@syzkaller.appspotmail.com
-Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
-
-Notes:
-    Changes V1 -> V2:
-    
-    - Use qdisc_purge_queue() instead of qdisc_tree_flush_backlog() to properly
-      reset Qdiscs inside sch tree lock critical section.
-    
-    - Call qdisc_put_empty() instead of regular qdisc_put() after sch tree lock
-      is released.
-
- net/sched/sch_sfb.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 1dff8506a715..23b2e492c587 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -488,7 +488,7 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 		      struct netlink_ext_ack *extack)
- {
- 	struct sfb_sched_data *q = qdisc_priv(sch);
--	struct Qdisc *child;
-+	struct Qdisc *child, *old;
- 	struct nlattr *tb[TCA_SFB_MAX + 1];
- 	const struct tc_sfb_qopt *ctl = &sfb_default_ops;
- 	u32 limit;
-@@ -518,8 +518,8 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 		qdisc_hash_add(child, true);
- 	sch_tree_lock(sch);
- 
--	qdisc_tree_flush_backlog(q->qdisc);
--	qdisc_put(q->qdisc);
-+	qdisc_purge_queue(q->qdisc);
-+	old = q->qdisc;
- 	q->qdisc = child;
- 
- 	q->rehash_interval = msecs_to_jiffies(ctl->rehash_interval);
-@@ -542,6 +542,7 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt,
- 	sfb_init_perturbation(1, q);
- 
- 	sch_tree_unlock(sch);
-+	qdisc_put_empty(old);
- 
- 	return 0;
- }
--- 
-2.21.0
-
+Christoph
