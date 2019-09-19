@@ -2,190 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20FA0B7BFC
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98523B7CC7
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389519AbfISOS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 10:18:57 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41219 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389504AbfISOS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:18:56 -0400
-Received: by mail-lf1-f65.google.com with SMTP id r2so2495099lfn.8
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:18:55 -0700 (PDT)
+        id S1730959AbfISOZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 10:25:41 -0400
+Received: from mail-eopbgr780041.outbound.protection.outlook.com ([40.107.78.41]:35720
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728423AbfISOZk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 10:25:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z2tLEnPziQK6Fda/13VQUzHbOs1KURuPK4P6SVQxiwxL7Kfoyq1ALfbvM8WZL3IfVR85b/mJbpwfDL+4Z0Jn/3UJwQ3/Qf4skTsX42XjUn//EQCUc4WLl5N4IwyfOtqF6vkb/vChC2zlgISYn8IaN7MvqdBUz0PakXE2AzobOJlFbTc8PKPiHtf/9yiLwfWvbvtdwZiRd6lj2R1rBaVr+xBk5mzb0zsWoDQZWj638mKIHteXD8KEn/i5jaEMhVSK683zZTJILbKHDZ0RC7uIjlwVWb6yVyZJoR2xBZ7SuUzdrmg/VAuXPvKDILXBRZPOzzaQvZQXToYQfq8lsWI5bQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mrMAxLeH44wsc1ipniv3KSDptUYOWCXIf2YeBFo/Ufg=;
+ b=NOr0LN/vh2XUWppdnLX9jQ4yGNYuJ5u5kZYiBC52VFIE0ttGuIIUDM2hQAP1RS3mtDecjEzBpyWB34Dum3aY4b+aeAtOCIbePEzd1Uxtjr+N1dhGDDL5MzqVXmJw7go2abAq3XF7iGnyhpXX1N29tywtaeUd16tW0UqGrPfpQIBmv4281j4IBoaf9qOI61k2SEM/M/pEypgvgOQSEbxfRYx+GO2Gq8kV5Ff/U8fdhaqbHoCsLu4XbqDpePkxDpeDkZAzGmgjj5l/C3JXXnr1STUsC6XvGWsf5vcpviCZQYhyxQKECTSiMunA5e2e5T8YYMU94N4a5jYoiW9icqfAhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VJcWMgQlBXCDJq+mIxTwVnwKjmA/FYBDYBWzdA4+waM=;
-        b=Ue2ocIOyWscRCt7ZzCTi01c0gL7F7vMVAGP9yIEGYKpEYohfx/PwMKCvSdrtlzdPYK
-         BUht9dlkdUgnz/lwVucsdrAvl5byjMtVldpfPt9guguIxcbNz4SFJOHcYVK+1BiYwvNe
-         7DuwgnRk82njueUCROP8jC8sMCF0EJrc49hkHVFvhTE4Bp3o+Q85DuhPxSlM/vTG26Nu
-         CQ6tS1ewupHReyrLiQCexCiPBVGy5oIcGB/rLj/GtSYvVxZkjonoQgHZA1zmA7kWgQO1
-         tBGOWhOzQKBPw8V7d9iQI2UgQVnQN7Osy+Chy72rqp+xsMyXSmOKfZvFWJ1OpljK4fFB
-         95mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=VJcWMgQlBXCDJq+mIxTwVnwKjmA/FYBDYBWzdA4+waM=;
-        b=EEaAl8XDyKH3wvyBYByq2yxzHGlzl4p/wpRWKU5fVWRaQfj8huCbI2Pc7rbIiOnh5i
-         KOrEPBOiCYcA/kgldaHetV5GSRy19SxahWXe6WlQBRdgKx2O4xlFVC19L0PRPeSYCEBl
-         6SUlsTtBKNXburdD2p/HUl4r6WaInuHnElAHMZ+f3iz95bkHf9qYn7i9A5+l9barqOzi
-         38yqc0t/AEDXNNti+9HaBPnPBuHl3Dzxu8DBLLs99eJukjjt7shZbb45qG7r+xSXgRUo
-         wGUquUnIb/l+CT45Hor5Xa9P1hDYDmiJMrrkw6gs2ZLmmEicGBZH8I4h0NA5qeynyUFo
-         bEdw==
-X-Gm-Message-State: APjAAAVemJGEtdmOFNprzqivQ8l6lh9Y+o/DN1JKk3CuoQtCTMzapSWa
-        rbDC98+vH8AufkHw9qlJWiILdQ==
-X-Google-Smtp-Source: APXvYqxRTZr3llIsZI+fWfYF0ZscJkUyk92xFy/A2Pm6OM2f9WsqMwr+jw4KsPtNY/3pk4jduAvUPw==
-X-Received: by 2002:a19:d6:: with SMTP id 205mr5444406lfa.144.1568902734233;
-        Thu, 19 Sep 2019 07:18:54 -0700 (PDT)
-Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id d25sm1582984lfj.15.2019.09.19.07.18.52
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 19 Sep 2019 07:18:53 -0700 (PDT)
-Date:   Thu, 19 Sep 2019 17:18:50 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        sergei.shtylyov@cogentembedded.com
-Subject: Re: [PATCH v3 bpf-next 09/14] samples: bpf: makefile: use own flags
- but not host when cross compile
-Message-ID: <20190919141848.GA8870@khorivan>
-Mail-Followup-To: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        sergei.shtylyov@cogentembedded.com
-References: <20190916105433.11404-1-ivan.khoronzhuk@linaro.org>
- <20190916105433.11404-10-ivan.khoronzhuk@linaro.org>
- <CAEf4BzbuPnxAs0A=w60q0jTCy5pb2R-h0uEuT2tmvjsaj4DH4A@mail.gmail.com>
- <20190918103508.GC2908@khorivan>
- <CAEf4BzYCNrkaMf-LFHYDi78m9jgMDOswh8VYXGcbttJV-3D21w@mail.gmail.com>
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mrMAxLeH44wsc1ipniv3KSDptUYOWCXIf2YeBFo/Ufg=;
+ b=LUus651NHY4xK/7DeABYdYjHbcjc6ALK1fFixeiYGJW5sKThPbSYy5NaFii6/az/Nwy2RhGwhbFDHHcdg7HqGRTLw18q89OGcQNHBIbWBii2JXrETC1ZbMr3Vg1Z9kuNb2/uFF4nuFzhrZN14laNK6fPjVnYNCLwiA62hK2eaE4=
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com (20.179.149.217) by
+ MN2PR11MB4207.namprd11.prod.outlook.com (52.135.37.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2263.24; Thu, 19 Sep 2019 14:25:36 +0000
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::45dc:e073:4446:4bf8]) by MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::45dc:e073:4446:4bf8%3]) with mapi id 15.20.2263.023; Thu, 19 Sep 2019
+ 14:25:36 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Le Goff <David.Legoff@silabs.com>,
+        Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Subject: [PATCH v3 00/20] Add support for Silicon Labs WiFi chip WF200 and
+ further
+Thread-Topic: [PATCH v3 00/20] Add support for Silicon Labs WiFi chip WF200
+ and further
+Thread-Index: AQHVbvYaVMseyOoAZk6B2geifQVszw==
+Date:   Thu, 19 Sep 2019 14:25:36 +0000
+Message-ID: <20190919142527.31797-1-Jerome.Pouiller@silabs.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Jerome.Pouiller@silabs.com; 
+x-originating-ip: [37.71.187.125]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 89cf2286-935a-4d75-6f1b-08d73d0d3d07
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR11MB4207;
+x-ms-traffictypediagnostic: MN2PR11MB4207:
+x-ms-exchange-purlcount: 2
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR11MB4207D20B377BBEFFEF7796BF93890@MN2PR11MB4207.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-forefront-prvs: 016572D96D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(6029001)(346002)(376002)(39850400004)(366004)(396003)(136003)(199004)(189003)(53754006)(2501003)(71200400001)(71190400001)(99286004)(4326008)(478600001)(25786009)(6512007)(6306002)(107886003)(3846002)(6116002)(14444005)(14454004)(256004)(6486002)(2906002)(1076003)(966005)(86362001)(6436002)(66574012)(2616005)(476003)(26005)(316002)(36756003)(8676002)(81166006)(81156014)(54906003)(110136005)(8936002)(102836004)(186003)(5660300002)(7736002)(305945005)(91956017)(66066001)(66946007)(6506007)(486006)(76116006)(66476007)(66446008)(64756008)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB4207;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: silabs.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Wu5rMKC9mf+eKfjoe/5u7eaa+65KctIups8lhWsfxUPecKUui9DMUPUM8Dki2QNzSlkUba7mDLryqjoILZAhMOYqp3kj7FhbqW0+ktpDM85+1VH+CAbeWhiuYYwtJ+n5vD5C7urlU4RenHcal6mI2KOVQUQkFc0yE/LMcdf//+kYy6VEvv5pAjwawgv4NCD5sDQnheClpkffM2GNm7y0dRxQ/aAkws1FOeHW+SA9zq9gKPNskcq8oP0Qcy4ToAsgA2f50r5sOFNu6oz2MmGqixAtI2o95ShIBSqbQeJYXG2ZQ3gRz0MeA/F/HQTgElibquHT7kub8W/OTWVYg7973xA3ffPw+DN57BeUI7n7Av2wuEXGmL+P9x3owhhtHjMVJXmnwiiHfn8eOa+jP70389UeMzaTY1oOpNzZX3P6YeA=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6966CA64D6350A46BC61593A4062DE39@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYCNrkaMf-LFHYDi78m9jgMDOswh8VYXGcbttJV-3D21w@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89cf2286-935a-4d75-6f1b-08d73d0d3d07
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Sep 2019 14:25:36.1642
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8PEyc0pQMJfmCRcMQCFi5if3qGhz0a1iuDyeluljmpLf+m7Glqzy5ctPXz2cGZpjYaW9EzVBtwjPKoVgVBTM0g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4207
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 02:29:53PM -0700, Andrii Nakryiko wrote:
->On Wed, Sep 18, 2019 at 3:35 AM Ivan Khoronzhuk
-><ivan.khoronzhuk@linaro.org> wrote:
->>
->> On Tue, Sep 17, 2019 at 04:42:07PM -0700, Andrii Nakryiko wrote:
->> >On Mon, Sep 16, 2019 at 3:59 AM Ivan Khoronzhuk
->> ><ivan.khoronzhuk@linaro.org> wrote:
->> >>
->> >> While compile natively, the hosts cflags and ldflags are equal to ones
->> >> used from HOSTCFLAGS and HOSTLDFLAGS. When cross compiling it should
->> >> have own, used for target arch. While verification, for arm, arm64 and
->> >> x86_64 the following flags were used alsways:
->> >>
->> >> -Wall
->> >> -O2
->> >> -fomit-frame-pointer
->> >> -Wmissing-prototypes
->> >> -Wstrict-prototypes
->> >>
->> >> So, add them as they were verified and used before adding
->> >> Makefile.target, but anyway limit it only for cross compile options as
->> >> for host can be some configurations when another options can be used,
->> >> So, for host arch samples left all as is, it allows to avoid potential
->> >> option mistmatches for existent environments.
->> >>
->> >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> >> ---
->> >>  samples/bpf/Makefile | 9 +++++++++
->> >>  1 file changed, 9 insertions(+)
->> >>
->> >> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->> >> index 1579cc16a1c2..b5c87a8b8b51 100644
->> >> --- a/samples/bpf/Makefile
->> >> +++ b/samples/bpf/Makefile
->> >> @@ -178,8 +178,17 @@ CLANG_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
->> >>  TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
->> >>  endif
->> >>
->> >> +ifdef CROSS_COMPILE
->> >> +TPROGS_CFLAGS += -Wall
->> >> +TPROGS_CFLAGS += -O2
->> >
->> >Specifying one arg per line seems like overkill, put them in one line?
->> Will combine.
->>
->> >
->> >> +TPROGS_CFLAGS += -fomit-frame-pointer
->> >
->> >Why this one?
->> I've explained in commit msg. The logic is to have as much as close options
->> to have smiliar binaries. As those options are used before for hosts and kinda
->> cross builds - better follow same way.
->
->I'm just asking why omit frame pointers and make it harder to do stuff
->like profiling? What performance benefits are we seeking for in BPF
->samples?
->
->>
->> >
->> >> +TPROGS_CFLAGS += -Wmissing-prototypes
->> >> +TPROGS_CFLAGS += -Wstrict-prototypes
->> >
->> >Are these in some way special that we want them in cross-compile mode only?
->> >
->> >All of those flags seem useful regardless of cross-compilation or not,
->> >shouldn't they be common? I'm a bit lost about the intent here...
->> They are common but split is needed to expose it at least. Also host for
->> different arches can have some own opts already used that shouldn't be present
->> for cross, better not mix it for safety.
->
->We want -Wmissing-prototypes and -Wstrict-prototypes for cross-compile
->and non-cross-compile cases, right? So let's specify them as common
->set of options, instead of relying on KBUILD_HOSTCFLAGS or
->HOST_EXTRACFLAGS to have them. Otherwise we'll be getting extra
->warnings for just cross-compile case, which is not good. If you are
->worrying about having duplicate -W flags, seems like it's handled by
->GCC already, so shouldn't be a problem.
-
-Ok, lets drop omit-frame-pointer.
-
-But then, lets do more radical step and drop
-KBUILD_HOSTCFLAGS & HOST_EXTRACFLAG in this patch:
-
--ifdef CROSS_COMPILE
-+TPROGS_CFLAGS += -Wall -O2
-+TPROGS_CFLAGS += -Wmissing-prototypes
-+TPROGS_CFLAGS += -Wstrict-prototypes
--else
--TPROGS_LDLIBS := $(KBUILD_HOSTLDLIBS)
--TPROGS_CFLAGS += $(KBUILD_HOSTCFLAGS) $(HOST_EXTRACFLAGS)
--endif
-
-At least it allows to use same options always for both, native and cross.
-
-I verified on native x86_64, arm64 and arm and cross for arm and arm64,
-but should work for others, at least it can be tuned explicitly and
-no need to depend on KBUILD and use "cross" fork here.
-
--- 
-Regards,
-Ivan Khoronzhuk
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPg0KDQpI
+ZWxsbyBhbGwsDQoNClRoaXMgc2VyaWVzIGFkZCBzdXBwb3J0IGZvciBTaWxpY29uIExhYnMgV2lG
+aSBjaGlwIFdGMjAwIGFuZCBmdXJ0aGVyOg0KDQogICBodHRwczovL3d3dy5zaWxhYnMuY29tL2Rv
+Y3VtZW50cy9wdWJsaWMvZGF0YS1zaGVldHMvd2YyMDAtZGF0YXNoZWV0LnBkZg0KDQpUaGlzIGRy
+aXZlciBpcyBhbiBleHBvcnQgZnJvbToNCg0KICAgaHR0cHM6Ly9naXRodWIuY29tL1NpbGljb25M
+YWJzL3dmeC1saW51eC1kcml2ZXIvDQogICANCkkgc3F1YXNoZWQgYWxsIGNvbW1pdHMgZnJvbSBn
+aXRodWIgKGl0IGRlZmluaXRlbHkgZG9lcyBub3QgbWFrZSBzZW5zZSB0bw0KaW1wb3J0IGhpc3Rv
+cnkpLiBUaGVuIEkgc3BsaXQgaXQgaW4gY29tcHJlaGVuc2libGUgKGF0IGxlYXN0IHRyeSB0byBi
+ZSkNCmNvbW1pdHMuIEkgaG9wZSBpdCB3aWxsIGhlbHAgcmVhZGVycyB0byB1bmRlcnN0YW5kIGRy
+aXZlciBhcmNoaXRlY3R1cmUuDQpJTUhPLCBmaXJzdHMgY29tbWl0cyBhcmUgY2xlYW4gZW5vdWdo
+IHRvIGJlIHJldmlld2VkLiBUaGluZ3MgZ2V0IG1vcmUNCmRpZmZpY3VsdCB3aGVuIEkgaW50cm9k
+dWNlIG1hYzgwMTEgQVBJLiBJIHRyaWVkIHRvIGV4dHJhY3QgaW1wb3J0YW50DQpwYXJ0cyBsaWtl
+IFJ4L1R4IHByb2Nlc3MgYnV0LCBiaWcgYW5kIGNvbXBsZXggcGF0Y2hlcyBzZWVtIHVuYXZvaWRh
+YmxlDQppbiB0aGlzIHBhcnQuDQoNCkFyY2hpdGVjdHVyZSBpdHNlbGYgaXMgZGVzY3JpYmVkIGlu
+IGNvbW1pdCBtZXNzYWdlcy4NCg0KVGhlIHNlcmllcyBiZWxvdyBpcyBhbGlnbmVkIG9uIHZlcnNp
+b24gMi4zLjEgb24gZ2l0aHViLiBJZiBjb21wYXJlIHRoaXMNCnNlcmllcyB3aXRoIGdpdGh1Yiwg
+eW91IHdpbGwgZmluZCB0cmFkaXRpb25hbCBkaWZmZXJlbmNlcyBiZXR3ZWVuDQpleHRlcm5hbCBh
+bmQgYSBpbi10cmVlIGRyaXZlcjogRG9jdW1lbnRhdGlvbiwgYnVpbGQgaW5mcmFzdHJ1Y3R1cmUs
+DQpjb21wYXRpYmlsaXR5IHdpdGggb2xkZXIga2VybmVsIHJldmlzaW9ucywgZXRjLi4uIEluIGFk
+ZCwgSSBkcm9wcGVkIGFsbA0KY29kZSBpbiBDT05GSUdfV0ZYX1NFQ1VSRV9MSU5LLiBJbmRlZWQs
+ICJTZWN1cmUgTGluayIgZmVhdHVyZSBkZXBlbmRzDQpvbiBtYmVkdGxzIGFuZCBJIGRvbid0IHRo
+aW5rIHRvIHB1bGwgbWJlZHRscyBpbiBrZXJuZWwgaXMgYW4gb3B0aW9uDQooc2VlICJUT0RPIiBm
+aWxlIGluIGZpcnN0IGNvbW1pdCkuDQoNCnYzOg0KICAtIEZpbGwgY29tbWl0IGxvZyBvZiBwYXRj
+aGVzIDE4LCAxOSBhbmQgMjANCg0KdjI6DQogIC0gQWRkIFRPRE8gZmlsZSAoYW5kIGRyb3BwZWQg
+dG9kbyBsaXN0IGZyb20gY292ZXIgbGV0dGVyKQ0KICAtIERyb3AgY29kZSByZWxhdGl2ZSB0byBj
+b21wYXRpYmlsaXR5IHdpdGggb2xkZXIga2VybmVscw0KDQpKw6lyw7RtZSBQb3VpbGxlciAoMjAp
+Og0KICBzdGFnaW5nOiB3Zng6IGFkZCBpbmZyYXN0cnVjdHVyZSBmb3IgbmV3IGRyaXZlcg0KICBz
+dGFnaW5nOiB3Zng6IGFkZCBzdXBwb3J0IGZvciBJL08gYWNjZXNzDQogIHN0YWdpbmc6IHdmeDog
+YWRkIEkvTyBBUEkNCiAgc3RhZ2luZzogd2Z4OiBhZGQgdHJhY2Vwb2ludHMgZm9yIEkvTyBhY2Nl
+c3MNCiAgc3RhZ2luZzogd2Z4OiBsb2FkIGZpcm13YXJlDQogIHN0YWdpbmc6IHdmeDogaW1wb3J0
+IEhJRiBBUEkgaGVhZGVycw0KICBzdGFnaW5nOiB3Zng6IGFkZCBJUlEgaGFuZGxpbmcNCiAgc3Rh
+Z2luZzogd2Z4OiBhZGQgdHJhY2Vwb2ludHMgZm9yIEhJRg0KICBzdGFnaW5nOiB3Zng6IGFkZCBz
+dXBwb3J0IGZvciBzdGFydC11cCBpbmRpY2F0aW9uDQogIHN0YWdpbmc6IHdmeDogaW5zdGFudGlh
+dGUgbWFjODAyMTEgZGF0YQ0KICBzdGFnaW5nOiB3Zng6IGFsbG93IHRvIHNlbmQgY29tbWFuZHMg
+dG8gY2hpcA0KICBzdGFnaW5nOiB3Zng6IGFkZCBISUYgY29tbWFuZHMgaGVscGVycw0KICBzdGFn
+aW5nOiB3Zng6IGludHJvZHVjZSAic2VjdXJlIGxpbmsiDQogIHN0YWdpbmc6IHdmeDogc2V0dXAg
+aW5pdGlhbCBjaGlwIGNvbmZpZ3VyYXRpb24NCiAgc3RhZ2luZzogd2Z4OiBhZGQgZGVidWcgZmls
+ZXMgYW5kIHRyYWNlIGRlYnVnIGV2ZW50cw0KICBzdGFnaW5nOiB3Zng6IGFsbG93IHRvIHNlbmQg
+ODAyLjExIGZyYW1lcw0KICBzdGFnaW5nOiB3Zng6IGFsbG93IHRvIHJlY2VpdmUgODAyLjExIGZy
+YW1lcw0KICBzdGFnaW5nOiB3Zng6IGFsbG93IHRvIHNjYW4gbmV0d29ya3MNCiAgc3RhZ2luZzog
+d2Z4OiBpbXBsZW1lbnQgODAyLjExIGtleSBoYW5kbGluZw0KICBzdGFnaW5nOiB3Zng6IGltcGxl
+bWVudCB0aGUgcmVzdCBvZiBtYWM4MDIxMSBBUEkNCg0KIE1BSU5UQUlORVJTICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICB8ICAgIDUgKw0KIGRyaXZlcnMvc3RhZ2luZy9LY29uZmln
+ICAgICAgICAgICAgICAgICAgICAgICB8ICAgIDIgKw0KIGRyaXZlcnMvc3RhZ2luZy9NYWtlZmls
+ZSAgICAgICAgICAgICAgICAgICAgICB8ICAgIDEgKw0KIC4uLi9iaW5kaW5ncy9uZXQvd2lyZWxl
+c3Mvc2lsaWFicyx3ZngudHh0ICAgICB8ICAgOTcgKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvS2Nv
+bmZpZyAgICAgICAgICAgICAgICAgICB8ICAgIDcgKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvTWFr
+ZWZpbGUgICAgICAgICAgICAgICAgICB8ICAgMjQgKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvVE9E
+TyAgICAgICAgICAgICAgICAgICAgICB8ICAgMjAgKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvYmgu
+YyAgICAgICAgICAgICAgICAgICAgICB8ICAzMTYgKysrKw0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+YmguaCAgICAgICAgICAgICAgICAgICAgICB8ICAgMzIgKw0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+YnVzLmggICAgICAgICAgICAgICAgICAgICB8ICAgMzQgKw0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+YnVzX3NkaW8uYyAgICAgICAgICAgICAgICB8ICAyNjggKysrDQogZHJpdmVycy9zdGFnaW5nL3dm
+eC9idXNfc3BpLmMgICAgICAgICAgICAgICAgIHwgIDI2NCArKysNCiBkcml2ZXJzL3N0YWdpbmcv
+d2Z4L2RhdGFfcnguYyAgICAgICAgICAgICAgICAgfCAgMjA4ICsrKw0KIGRyaXZlcnMvc3RhZ2lu
+Zy93ZngvZGF0YV9yeC5oICAgICAgICAgICAgICAgICB8ICAgMTggKw0KIGRyaXZlcnMvc3RhZ2lu
+Zy93ZngvZGF0YV90eC5jICAgICAgICAgICAgICAgICB8ICA3OTkgKysrKysrKysNCiBkcml2ZXJz
+L3N0YWdpbmcvd2Z4L2RhdGFfdHguaCAgICAgICAgICAgICAgICAgfCAgIDkzICsNCiBkcml2ZXJz
+L3N0YWdpbmcvd2Z4L2RlYnVnLmMgICAgICAgICAgICAgICAgICAgfCAgMzA1ICsrKw0KIGRyaXZl
+cnMvc3RhZ2luZy93ZngvZGVidWcuaCAgICAgICAgICAgICAgICAgICB8ICAgMTkgKw0KIGRyaXZl
+cnMvc3RhZ2luZy93ZngvZndpby5jICAgICAgICAgICAgICAgICAgICB8ICAzODcgKysrKw0KIGRy
+aXZlcnMvc3RhZ2luZy93ZngvZndpby5oICAgICAgICAgICAgICAgICAgICB8ICAgMTUgKw0KIGRy
+aXZlcnMvc3RhZ2luZy93ZngvaGlmX2FwaV9jbWQuaCAgICAgICAgICAgICB8ICA2ODEgKysrKysr
+Kw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX2FwaV9nZW5lcmFsLmggICAgICAgICB8ICA0Mzcg
+KysrKysNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl9hcGlfbWliLmggICAgICAgICAgICAgfCAg
+NTU4ICsrKysrKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3J4LmMgICAgICAgICAgICAgICAg
+ICB8ICAzMzYgKysrKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3J4LmggICAgICAgICAgICAg
+ICAgICB8ICAgMTggKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmMgICAgICAgICAgICAg
+ICAgICB8ICA0NzAgKysrKysNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eC5oICAgICAgICAg
+ICAgICAgICAgfCAgIDY3ICsNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9taWIuaCAgICAg
+ICAgICAgICAgfCAgMjgxICsrKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaHdpby5jICAgICAgICAg
+ICAgICAgICAgICB8ICAzMzggKysrKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaHdpby5oICAgICAg
+ICAgICAgICAgICAgICB8ICAgNzUgKw0KIGRyaXZlcnMvc3RhZ2luZy93Zngva2V5LmMgICAgICAg
+ICAgICAgICAgICAgICB8ICAyNTggKysrDQogZHJpdmVycy9zdGFnaW5nL3dmeC9rZXkuaCAgICAg
+ICAgICAgICAgICAgICAgIHwgICAyMiArDQogZHJpdmVycy9zdGFnaW5nL3dmeC9tYWluLmMgICAg
+ICAgICAgICAgICAgICAgIHwgIDUwMCArKysrKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvbWFpbi5o
+ICAgICAgICAgICAgICAgICAgICB8ICAgNDggKw0KIGRyaXZlcnMvc3RhZ2luZy93ZngvcXVldWUu
+YyAgICAgICAgICAgICAgICAgICB8ICA2MDYgKysrKysrDQogZHJpdmVycy9zdGFnaW5nL3dmeC9x
+dWV1ZS5oICAgICAgICAgICAgICAgICAgIHwgICA1OSArDQogZHJpdmVycy9zdGFnaW5nL3dmeC9z
+Y2FuLmMgICAgICAgICAgICAgICAgICAgIHwgIDI4OSArKysNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L3NjYW4uaCAgICAgICAgICAgICAgICAgICAgfCAgIDQyICsNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L3NlY3VyZV9saW5rLmggICAgICAgICAgICAgfCAgIDQ2ICsNCiBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L3N0YS5jICAgICAgICAgICAgICAgICAgICAgfCAxNjQzICsrKysrKysrKysrKysrKysrDQogZHJp
+dmVycy9zdGFnaW5nL3dmeC9zdGEuaCAgICAgICAgICAgICAgICAgICAgIHwgIDEwMSArDQogZHJp
+dmVycy9zdGFnaW5nL3dmeC90cmFjZXMuaCAgICAgICAgICAgICAgICAgIHwgIDQzNCArKysrKw0K
+IGRyaXZlcnMvc3RhZ2luZy93Zngvd2Z4LmggICAgICAgICAgICAgICAgICAgICB8ICAyMDQgKysN
+CiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3dmeF92ZXJzaW9uLmggICAgICAgICAgICAgfCAgICAzICsN
+CiA0NCBmaWxlcyBjaGFuZ2VkLCAxMDQzMCBpbnNlcnRpb25zKCspDQogY3JlYXRlIG1vZGUgMTAw
+NjQ0IGRyaXZlcnMvc3RhZ2luZy93ZngvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L25ldC93aXJlbGVzcy9zaWxpYWJzLHdmeC50eHQNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVy
+cy9zdGFnaW5nL3dmeC9LY29uZmlnDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc3RhZ2lu
+Zy93ZngvTWFrZWZpbGUNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9U
+T0RPDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc3RhZ2luZy93ZngvYmguYw0KIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L2JoLmgNCiBjcmVhdGUgbW9kZSAxMDA2
+NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9idXMuaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJz
+L3N0YWdpbmcvd2Z4L2J1c19zZGlvLmMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFn
+aW5nL3dmeC9idXNfc3BpLmMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dm
+eC9kYXRhX3J4LmMNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRh
+X3J4LmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4LmMN
+CiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4LmgNCiBjcmVh
+dGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9kZWJ1Zy5jDQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IGRyaXZlcnMvc3RhZ2luZy93ZngvZGVidWcuaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBk
+cml2ZXJzL3N0YWdpbmcvd2Z4L2Z3aW8uYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0
+YWdpbmcvd2Z4L2Z3aW8uaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L2hpZl9hcGlfY21kLmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9o
+aWZfYXBpX2dlbmVyYWwuaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L2hpZl9hcGlfbWliLmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9o
+aWZfcnguYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl9yeC5o
+DQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmMNCiBjcmVh
+dGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHguaA0KIGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9taWIuaA0KIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L2h3aW8uYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2
+ZXJzL3N0YWdpbmcvd2Z4L2h3aW8uaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdp
+bmcvd2Z4L2tleS5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc3RhZ2luZy93Zngva2V5
+LmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9tYWluLmMNCiBjcmVh
+dGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9tYWluLmgNCiBjcmVhdGUgbW9kZSAx
+MDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9xdWV1ZS5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRy
+aXZlcnMvc3RhZ2luZy93ZngvcXVldWUuaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0
+YWdpbmcvd2Z4L3NjYW4uYw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4
+L3NjYW4uaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NlY3VyZV9s
+aW5rLmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9zdGEuYw0KIGNy
+ZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvd2Z4L3N0YS5oDQogY3JlYXRlIG1vZGUg
+MTAwNjQ0IGRyaXZlcnMvc3RhZ2luZy93ZngvdHJhY2VzLmgNCiBjcmVhdGUgbW9kZSAxMDA2NDQg
+ZHJpdmVycy9zdGFnaW5nL3dmeC93ZnguaA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0
+YWdpbmcvd2Z4L3dmeF92ZXJzaW9uLmgNCg0KLS0gDQoyLjIwLjENCg==
