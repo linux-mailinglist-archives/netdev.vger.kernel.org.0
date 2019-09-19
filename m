@@ -2,135 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B67DDB8141
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 21:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0FBB817C
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 21:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391256AbfISTQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 15:16:48 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38673 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391048AbfISTQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 15:16:47 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y23so4737482ljn.5
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 12:16:45 -0700 (PDT)
+        id S2392363AbfISThf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 15:37:35 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:44615 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392352AbfISThe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 15:37:34 -0400
+Received: by mail-oi1-f194.google.com with SMTP id w6so3718488oie.11
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 12:37:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=F99+xglppSjJ9ARBPGZ7ZznveOe2KEccNLfvWqDwU9s=;
-        b=P2+POT6fuFfcntFoPnHXlcKoY2we4JUb/8fjPGd63i777rd1ANCnUM436b9N5v7TMV
-         1UeA67WEoETgHIjlIYxDgtpUvITdcc1luwevyqgvrrJJ0RUxKoJYl0qk00cd7tICMIgk
-         8Yep5+z+r9JzGPeSjBlbSKB4vgS7qcSQjLUlnMKBDzaaiNB/+AzOb+p9xeEQB89VlsXW
-         22gBlOVl72odl3Qj254YdwBNHa0tnjtLGnWUvv/FNz5pZyFpK4lPNQMRrmbTZx/7sFRw
-         JQnzBQToBJDmoTVxXbb8ItREhQ8YMhIbD1pdHTvzMbLVnREiNRlomk5Tr4DR6cZlsN3W
-         qN+w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w2WRb88oKnAQnCwV6qMbloqtA0/uxdTgIFA2BEXO/b8=;
+        b=hlvcYUkMXTARwnNUtE0WGKuXfVgTodWHpwcYZicRoUCIi9QbGC5JsDfNQZ4gvxKcT/
+         CGMmJ6sx12a5ZJdq6bpPkSeLUvQ5RYPJGTiZZMQadiVCSiq1lLaVHuIFsoUHdZuz7sll
+         GDK07RqGbBI4Oj2H8jdnBH0c6GKOidGwjGt8/hc/PzKDJlV/zVJjuMMhJj2JjcwnW3Rn
+         ldHRCEeGGDEWC4UQ2GMhsRqeKfrr8NJ2UvMgLHgdsal96mj6SBRbMkddm0uNgBRRHK1u
+         IzUHE+TPYIhZ/uoD2KuZunl/JpnYSqdNfk1nluCur7PMbYfqcepX6lENPIuRO8g1y2+5
+         UWfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=F99+xglppSjJ9ARBPGZ7ZznveOe2KEccNLfvWqDwU9s=;
-        b=DMmLaeZA6RcBB2ZUPl/3oNMoCTUHIdmpfZtfAatvhMQKJnd022wXsCDQ988iMUphOF
-         t7rB4HYjPsg/aS1uChlFJ963IgAOkm9YSe+owmyyW5fcNhK0Li6YAsypWz3e0iz42pau
-         R88XW63aQ1Hx4/EMCLVRMDyTLhaB2TK+KNpJcmiktgIfJOsKLGXbhazyMO9Gwpq3Vv2q
-         N78ujDqgvw26mlVNrFH60u5ThfNnBQQCpfJWVwiYjX8D3k+6mK9nlLXxHkrq7jq8hSQh
-         Al6NRSaDvYafrgGcXn96v+Qh6s3UOUiAhJFJuDc9Mssdf4ruIOdxabZvqHPBRmTAQLHv
-         b0IQ==
-X-Gm-Message-State: APjAAAVdEvioyuE0HtJBeS0yavfMe7s2dc2DnqaNEwfYIkTYikDSVBea
-        V12VVGO6K0qUBglyJrjycutxZmfjtUsHd0UAKyU=
-X-Google-Smtp-Source: APXvYqzKzNqG1rlDyDrhCs+rOkwRj8XyoaXdmAWeqezVxcJO4aIPnNJIQEiyu7MCa8xqlaaw0Ua04T6lbLC3JfpDdd8=
-X-Received: by 2002:a2e:3902:: with SMTP id g2mr6355756lja.196.1568920604973;
- Thu, 19 Sep 2019 12:16:44 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w2WRb88oKnAQnCwV6qMbloqtA0/uxdTgIFA2BEXO/b8=;
+        b=ea1fm+oleK9ZabTXQ+LGGu6vmkXHV12ZThp9fzDTvU2Za34CWL/ty5s7ckenpSlYmK
+         rSKwSmzoRC23UwEUwJp2OkvlWA3sZxZ9P9t79c2UsXJ8Xe9st3nhsf5T9yQQ1WdCeN/f
+         lUNCcPcb04KnyldkHygRXSsU9E7l+UOslgcds6Ghdo+kKnB+aYGpfsg7rcXUSagE7DZW
+         k9sXoBwyWWga198c0m8yTQ+f8Q3+01fIh1hWUR0uZy+DNTgl4xTpTXAg6WTuzq+GLqn/
+         L3Wl1NSspLF08e39oR1PsbMJnXRhyLBT6MU53mgSdNoEXTDPyVVTLuQhYwYs2hfYhLeH
+         4Atg==
+X-Gm-Message-State: APjAAAXKNzT1MpWpULcLd06JhjqWGPia20NaqVDFGd952nfV8f7QGQ4v
+        cMB9I4Up9iEkOBwOP/A1y3AoJQbO6DHc0PvlDo2ePQ==
+X-Google-Smtp-Source: APXvYqwjrdh9lXpuBqRhfnH/q8f/TDJskWYrW/HZD6RipzJl9Yt1bLU+UMWBsAqC15hCJfUrBoHFXCqKGsDQYbE0U5E=
+X-Received: by 2002:aca:ed52:: with SMTP id l79mr3551222oih.47.1568921853200;
+ Thu, 19 Sep 2019 12:37:33 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6512:c4:0:0:0:0 with HTTP; Thu, 19 Sep 2019 12:16:44
- -0700 (PDT)
-Reply-To: mrrsohailahmed@gmail.com
-From:   "Mr. Sohail Ahmed " <www.fbiofficefbioffice@gmail.com>
-Date:   Thu, 19 Sep 2019 19:16:44 +0000
-Message-ID: <CAKL2ngt80UTG6UkyCzoAriewLpurkXGdH_sxdDQmLAfXQbFofQ@mail.gmail.com>
-Subject: Re. Greetings My Dear Friend ,
-To:     undisclosed-recipients:;
+References: <20190919095903.19370-1-christian.brauner@ubuntu.com> <20190919095903.19370-2-christian.brauner@ubuntu.com>
+In-Reply-To: <20190919095903.19370-2-christian.brauner@ubuntu.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Thu, 19 Sep 2019 21:37:06 +0200
+Message-ID: <CAG48ez1QkJAMgTpqv4EqbDmYPPpxuB8cR=XhUAr1fHZOBY_DHg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] seccomp: add SECCOMP_USER_NOTIF_FLAG_CONTINUE
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
+        Song Liu <songliubraving@fb.com>, yhs@fb.com,
+        kernel list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Tycho Andersen <tycho@tycho.ws>,
+        Tyler Hicks <tyhicks@canonical.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings My Dear Friend ,
+On Thu, Sep 19, 2019 at 11:59 AM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+> This allows the seccomp notifier to continue a syscall.
+[...]
+> Recently we landed seccomp support for SECCOMP_RET_USER_NOTIF (cf. [4])
+> which enables a process (watchee) to retrieve an fd for its seccomp
+> filter. This fd can then be handed to another (usually more privileged)
+> process (watcher). The watcher will then be able to receive seccomp
+> messages about the syscalls having been performed by the watchee.
+[...]
+> This can be solved by
+> telling seccomp to resume the syscall.
+[...]
+> @@ -780,8 +783,14 @@ static void seccomp_do_user_notification(int this_syscall,
+>                 list_del(&n.list);
+>  out:
+>         mutex_unlock(&match->notify_lock);
+> +
+> +       /* Userspace requests to continue the syscall. */
+> +       if (flags & SECCOMP_USER_NOTIF_FLAG_CONTINUE)
+> +               return 0;
+> +
+>         syscall_set_return_value(current, task_pt_regs(current),
+>                                  err, ret);
+> +       return -1;
+>  }
 
-before I introduce myself, I wish to inform you  that this letter is
-not a hoax mail and I urge
-you to treat it serious.
+Seccomp currently expects the various seccomp return values to be
+fully ordered based on how much action the kernel should take against
+the requested syscall. Currently, the range of return values is
+basically divided into three regions: "block syscall in some way"
+(from SECCOMP_RET_KILL_PROCESS to SECCOMP_RET_USER_NOTIF), "let ptrace
+decide" (SECCOMP_RET_TRACE) and "allow" (SECCOMP_RET_LOG and
+SECCOMP_RET_ALLOW). If SECCOMP_RET_USER_NOTIF becomes able to allow
+syscalls, it will be able to override a negative decision from
+SECCOMP_RET_TRACE.
 
-This letter must come to you as a big surprise, but I believe it is
-only a day that people meet   and become great friends and business
-partners. Please I want you to read this letter very  carefully and I
-must apologize for barging this message into your mail box without any
- formal  introduction due to the urgency and confidentiality of this
-business and I know that this message will come to you as a  surprise.
+In practice, that's probably not a big deal, since I'm not aware of
+anyone actually using SECCOMP_RET_TRACE for security purposes, and on
+top of that, you'd have to allow ioctl(..., SECCOMP_IOCTL_NOTIF_SEND,
+...) and seccomp() with SECCOMP_FILTER_FLAG_NEW_LISTENER in your
+seccomp policy for this to work.
 
-Please this is not a joke and I will not like you to  joke with it ok,
-with due respect to your
-person and much sincerity of purpose, I make this  contact with you as
-I believe that you can be of great assistance to me. My name is MR.
-SOHAIL  AHMED, from, West Africa. I work in ECOBANK as telex manager,
-please see this as a confidential message and  do not reveal it to
-another person and let me know whether you can be of assistance
-regarding my proposal below because it is top secret.
+More interestingly, what about the case where two
+SECCOMP_RET_USER_NOTIF filters are installed? The most recently
+installed filter takes precedence if the return values's action parts
+are the same (and this is also documented in the manpage); so if a
+container engine installs a filter that always intercepts sys_foobar()
+(and never uses SECCOMP_USER_NOTIF_FLAG_CONTINUE), and then something
+inside the container also installs a filter that always intercepts
+sys_foobar() (and always uses SECCOMP_USER_NOTIF_FLAG_CONTINUE), the
+container engine's filter will become ineffective.
 
-I am about to retire from active Banking service to  start a new life
-but I am skeptical to
-reveal this particular secret to a stranger. You must assure me that
-everything will be handled confidentially because we are not going to
-suffer again in life. It has  been 10 years now that most of the
-greedy African Politicians used our bank to launder money overseas
-through the help  of their Political  advisers. Most of the funds
-which they transferred out of the shores of  Africa were gold and oil
-money that was supposed to have been used  to develop the continent.
+With my tendency to overcomplicate things, I'm thinking that maybe it
+might be a good idea to:
+ - collect a list of all filters that returned SECCOMP_RET_USER_NOTIF,
+as well as the highest-precedence return value that was less strict
+than SECCOMP_RET_USER_NOTIF
+ - sequentially send notifications to all of the
+SECCOMP_RET_USER_NOTIF filters until one doesn't return
+SECCOMP_USER_NOTIF_FLAG_CONTINUE
+ - if all returned SECCOMP_USER_NOTIF_FLAG_CONTINUE, go with the
+highest-precedence return value that was less strict than
+SECCOMP_RET_USER_NOTIF, or allow if no such return value was
+encountered
 
-Their Political advisers always inflated the amounts before
-transferring to foreign accounts,  so I also used  the opportunity to
-divert part of the funds hence I am aware that there is no  official
-trace of how much was transferred as all the accounts used for such
-transfers were being closed after transfer.
-
-I acted  as the Bank Officer to most of the politicians and when I
-discovered that they were  using me to succeed in their greedy act; I
-also cleaned some of their banking records from the Bank files and no
-one cared to ask me because the money was too much for them to
-control.
-
-They laundered over $5 billion Dollars during the process. Before I
-send this message to you, I  have already diverted ($18 million
-Dollars) to an escrow account belonging to no one in the bank. The
-bank is anxious now to know who the beneficiary to the funds is
-because they have  made a lot of profits with the funds. It is more
-than Eight years now and most of the  politicians are no longer using
-our bank to transfer funds overseas. The ($18 million Dollars) has
-been laying  waste in our bank and I don't want to retire from the
-bank without transferring the funds to a foreign account to enable me
-share the proceeds with the receiver  (a foreigner). The money will be
-shared 60% for me and 40% for you.
-
-There is no one coming to  ask you about  the funds because I secured
-everything. I only want you to assist me by providing a reliable bank
-account where the funds can be transferred. You are not to face any
-difficulties or legal implications as I am going to handle the
-transfer  personally. If you are capable of receiving the funds, do
-let me know immediately to enable me  give you a detailed information
-on what to do. For me, I have not stolen the money from anyone because
-the other people that took the whole money did not face any problems.
-
-This is my chance to grab my own life opportunity but you must keep
-the funds secret to avoid any leakages as no one in the bank knows
-about my plans.Please get  back to me if you are interested and
-capable to handle this project, I shall intimate you on what to do
-when I hear from your confirmation and acceptance.
-
-If you are capable of being my trusted associate,  do declare your
-consent to me I am looking  forward to hear from you immediately for
-further information please contact me at my E-mail;
-ovlivialogan100@gmail.com
-
-Thanks with my best regards.
-
-MR.SOHAIL AHMED ,
-Telex Manager
+But perhaps, for now, it would also be enough to just expand the big
+fat warning note and tell people that if they allow the use of
+SECCOMP_IOCTL_NOTIF_SEND and SECCOMP_FILTER_FLAG_NEW_LISTENER in their
+filter, SECCOMP_RET_USER_NOTIF is bypassable. And if someone actually
+has a usecase where SECCOMP_RET_USER_NOTIF should be secure and nested
+SECCOMP_RET_USER_NOTIF support is needed, that more complicated logic
+could be added later?
