@@ -2,104 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D70B7337
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 08:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01A10B734C
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 08:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388004AbfISGgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 02:36:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725320AbfISGgS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 02:36:18 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 840D0218AF;
-        Thu, 19 Sep 2019 06:36:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568874978;
-        bh=kLqycoBe8uV8E2knqmFJ1o58JmJlygAiwWJwYCZe3u4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MBj1OhUSqRr3IZoLYSeHbj1Qf6DNpVP0GFMSepJmowWR/fpbYu+KDjGnM8GDDFTwT
-         C2wlqJBLS12ZilvPdqSYpw/TpurkUrYrG9oTs+V1gQ691DjUUdUPbQSBM+ZbNzA0NC
-         3jOV/vXTS9pdhd4wf6ILs7cuvS20g5fiiHPm20xw=
-Date:   Thu, 19 Sep 2019 08:36:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xiaoming Ni <nixiaoming@huawei.com>
-Cc:     akpm@linux-foundation.org, vvs@virtuozzo.com,
-        torvalds@linux-foundation.org, adobriyan@gmail.com,
-        anna.schumaker@netapp.com, arjan@linux.intel.com,
-        bfields@fieldses.org, chuck.lever@oracle.com, davem@davemloft.net,
-        jlayton@kernel.org, luto@kernel.org, mingo@kernel.org,
-        Nadia.Derbey@bull.net, paulmck@linux.vnet.ibm.com,
-        semen.protsenko@linaro.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, trond.myklebust@hammerspace.com,
-        viresh.kumar@linaro.org, stable@kernel.org,
-        dylix.dailei@huawei.com, yuehaibing@huawei.com,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] kernel/notifier.c: intercepting duplicate
- registrations to avoid infinite loops
-Message-ID: <20190919063615.GA2069346@kroah.com>
-References: <1568861888-34045-1-git-send-email-nixiaoming@huawei.com>
- <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
+        id S2388434AbfISGku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 02:40:50 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40254 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725320AbfISGku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 02:40:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id b24so2505653wmj.5
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 23:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vmF/BjnLbLv9XJa6yVtqTqqJhycrQDU3hXNQWth3Sjc=;
+        b=1gbw7HsuprH8/pRfQqhCk8v3Hvzd1VkJogplFKAXbKW0dR4cjHvX1R80mDbWNXJiVP
+         t1SWT3/gipngL3Gan7ysUe3FyDB3MoNuyNB/TFOehmONjq+zp+4RIIks4BD5wVamBJMl
+         pAwcwx+w2Llfl4pArxV36jvc5oK40zTqJbFcPdtMfMjn1W2Dll73VFPPTHFy/au6oBfI
+         1Dd87147YVBZ2FQabzXycu3d6lXDOFgNd+Yw0laUo4zbp1ge2iDBvI3npMjuLkLUKdrj
+         HizFboWAQUyGmwNm28rT+7uHOWis/Z2Ubowdurn+QD9Dy1H6X7I/vOhy89rrBvcQU8Ot
+         Zm9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vmF/BjnLbLv9XJa6yVtqTqqJhycrQDU3hXNQWth3Sjc=;
+        b=cKTGKogxzRt6R5rOh2BHOyVQKn2W9YTVg6oVf9KUZwv5y6uTn2HTJfgcTzWBeBLNtm
+         Z84zKJUg7ca/hD4N/PNY9tG6sTRlDpzIa5pwOivzDcR5qXR+A08EU1pDvx0fSfuil35o
+         D3QjV1XGAVYY9G+5YxAFrABQ3HOLbgVxyUjuQ+2oDt4/mwaLUv5hMcbyGTGx7zJQnQJ1
+         QpDNfI14dBtBzvuUWbYZ7/2QAAN4G/rstfVThapzVb0vqeR0TEMZSElKpxlhz0tzmKZR
+         4dHf/oN5KaAhmFkqezUEuwl7D4Cl2QRHXR4TdMVK6R6ScMTXw/uvgXbsy7tWl7Xwddsd
+         2AnQ==
+X-Gm-Message-State: APjAAAWHyc5yQUg6muTPuhl2lmXYhJB8RC8MYWcwOBP2URKU+vsOpTkc
+        D8AwkO4SS33o2qcE/bxuavxv/A==
+X-Google-Smtp-Source: APXvYqy82DrX61uMHEW8Ty9qtq5GJrpMtNiIIj6VFcQTHwY2T4Nr5oqYrTx7TFDwbnuQFg1tJzKSQw==
+X-Received: by 2002:a7b:cc91:: with SMTP id p17mr1283987wma.43.1568875247515;
+        Wed, 18 Sep 2019 23:40:47 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id s12sm8979369wrn.90.2019.09.18.23.40.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 23:40:47 -0700 (PDT)
+Date:   Thu, 19 Sep 2019 08:40:46 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com,
+        David Ahern <dsahern@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Re: [Patch net] net_sched: add max len check for TCA_KIND
+Message-ID: <20190919064046.GC2187@nanopsycho>
+References: <20190918232412.16718-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190918232412.16718-1-xiyou.wangcong@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 10:58:06AM +0800, Xiaoming Ni wrote:
-> Registering the same notifier to a hook repeatedly can cause the hook
-> list to form a ring or lose other members of the list.
-> 
-> case1: An infinite loop in notifier_chain_register() can cause soft lockup
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test2);
-> 
-> case2: An infinite loop in notifier_chain_register() can cause soft lockup
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_call_chain(&test_notifier_list, 0, NULL);
-> 
-> case3: lose other hook test2
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
->         atomic_notifier_chain_register(&test_notifier_list, &test2);
->         atomic_notifier_chain_register(&test_notifier_list, &test1);
-> 
-> case4: Unregister returns 0, but the hook is still in the linked list,
->         and it is not really registered. If you call notifier_call_chain
->         after ko is unloaded, it will trigger oops.
-> 
-> If the system is configured with softlockup_panic and the same
-> hook is repeatedly registered on the panic_notifier_list, it
-> will cause a loop panic.
-> 
-> Add a check in notifier_chain_register(),
-> Intercepting duplicate registrations to avoid infinite loops
-> 
-> Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
-> Reviewed-by: Vasily Averin <vvs@virtuozzo.com>
-> ---
->  kernel/notifier.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+Thu, Sep 19, 2019 at 01:24:12AM CEST, xiyou.wangcong@gmail.com wrote:
+>The TCA_KIND attribute is of NLA_STRING which does not check
+>the NUL char. KMSAN reported an uninit-value of TCA_KIND which
+>is likely caused by the lack of NUL.
+>
+>Change it to NLA_NUL_STRING and add a max len too.
+>
+>Fixes: 8b4c3cdd9dd8 ("net: sched: Add policy validation for tc attributes")
+>Reported-and-tested-by: syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com
 
-<formletter>
-
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
-
-</formletter>
-
-Same thing goes for all of the patches in this series.
-
-thanks,
-
-greg k-h
+Acked-by: Jiri Pirko <jiri@mellanox.com>
