@@ -2,133 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8E3B7584
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD93B75AC
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 11:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388111AbfISI4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 04:56:47 -0400
-Received: from mail-eopbgr150041.outbound.protection.outlook.com ([40.107.15.41]:49286
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725887AbfISI4q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 04:56:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bqe6RgRZmHhkFYL3RZVQAIDs8HqZhZstvUcJIc/t+nexqPyRUZK1RDDLCbu/0RGdIaDiuU922e+w44wM74N0p5BuZBYNXkqH3o+07krkFe4YjJafNqgj2qzyBh5ce7vWau4d27IjIRIxhIaPnv1J7O1T2AmA8LBnjojicGnXwR9dbkVOLWfz8rXEdoO7m6oBzyi2n1mn1G3tsJehrz/D2TVxZ/iNabJilvCbU9WNh8tXX8dKGKwmMCa5MIBfc8Xr74xZPohBk4xy9kfs5VC7YisBNEefBLJYEhL5Idq1oOU+0mNDreVl/xYTTXQn++Cj59Z4GwsU+HFWWSoedAmpYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yrXReV7uKCEzSlbnyMYpKr+re2ybvlTfNYcIoms4K9I=;
- b=flGuY6rE5X9WbOnTip3iObAPWCZVAjhZFbiHGL68CxtsJPhljciTdS0YzkqIFBRjfSqS1AsVRVnApm3hGY3kH+TaMttRHVDKe9L31MNfZSq43WMULSnf+jOB0/J0ESTbyoaS2c+6Ar6H6/q3XMoSwnuv+xRUbQsaIGpTRT6MZd56bQeCYoN++FjKJrC74weL/X7NY2s03v+XcGgB6QG/jLjZAMtbdI0hft1gudxDex1YHe0Ra9Up2reK/OIvgsyl/ATQ8XM9AJT7WVEN2s998WTSegENvdFvTmkA89eCk59yLa7rScb2W6cpVhcFeUDfAKXJurfY86Tv9r9vAIvVDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yrXReV7uKCEzSlbnyMYpKr+re2ybvlTfNYcIoms4K9I=;
- b=R17LQrHHt6GGu9m+pQHJYFcmZi3MdCSxCIGP28gUqbsAxOitHYIGmfF+VRc7kqak6AVIzsj3WRq34isMmVbaZvzAFt1RGgwDubzJMWH/ihLBJai4CmuvcSD6Fx8eK4u9eLIZ4ADQ656ucSk4PM6pWu32KnbAJ/PhGG7Yc+/vLyo=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB3456.eurprd05.prod.outlook.com (10.170.239.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.21; Thu, 19 Sep 2019 08:56:43 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d%6]) with mapi id 15.20.2284.009; Thu, 19 Sep 2019
- 08:56:43 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net 2/3] net: sched: multiq: don't call qdisc_put() while
- holding tree lock
-Thread-Topic: [PATCH net 2/3] net: sched: multiq: don't call qdisc_put() while
- holding tree lock
-Thread-Index: AQHVbfM2tAIeTAg96EO1D2Fq4LV40acyDL4AgACnqQA=
-Date:   Thu, 19 Sep 2019 08:56:42 +0000
-Message-ID: <vbfwoe4k6k7.fsf@mellanox.com>
-References: <20190918073201.2320-1-vladbu@mellanox.com>
- <20190918073201.2320-3-vladbu@mellanox.com>
- <CAM_iQpV75h9npv2TbBMoRAMf+riPqJhAY2LaiVX-mrVGaUN-Kw@mail.gmail.com>
-In-Reply-To: <CAM_iQpV75h9npv2TbBMoRAMf+riPqJhAY2LaiVX-mrVGaUN-Kw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0082.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:18::22) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [185.149.254.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b855b89e-fb6c-4d75-f073-08d73cdf4ae6
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB3456;
-x-ms-traffictypediagnostic: VI1PR05MB3456:|VI1PR05MB3456:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3456DDBCD406CC11F196EC22AD890@VI1PR05MB3456.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 016572D96D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(189003)(199004)(446003)(476003)(11346002)(486006)(2616005)(4326008)(71200400001)(66476007)(64756008)(66556008)(6246003)(316002)(54906003)(66446008)(5660300002)(81166006)(81156014)(8676002)(256004)(14444005)(6436002)(6512007)(71190400001)(86362001)(6486002)(229853002)(8936002)(36756003)(66066001)(478600001)(99286004)(305945005)(7736002)(3846002)(6116002)(2906002)(14454004)(102836004)(53546011)(6506007)(386003)(66946007)(186003)(26005)(6916009)(52116002)(25786009)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3456;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 9fy+cCK4BSzbh1xg+Rx5esJ053MpW21yAEKyAkru0HEP54xwq/ntd2ZqXHRg1WtKRNn7s9Ke3+R/b1uJxXBFbRZ07/32TILm1QGz0qRrwCQd70ZL1n1KJtlxR+hHh+pyRztDScFownMq3G++fp1hNrTsU1VnBoAq4N7j5kfG/qBiGRnBUtz5V/UyrnpZpJgLFGmY6UCtP+Vqy6Ux+4G6ACljsLK1V2kGWhd7KGBTGX/qATXZ1eIs2pYiPmMrIO68rU3e+uEkKbQnMq3AV2QhV9DbVrqgMF+xEgg87qpL+r1SyXpIYWEaeRv+M2SEKfUmXwS7lkdtHzu50heeecKSdrnAJUIimw5cDvvRqvq+Rh7wILfe+lT3Tjb9RhW4EqxG40WpmzZ/T+J1SLL/e2Csb5h/+TpJTohlFpi4VPDL11M=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2388404AbfISJGM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Sep 2019 05:06:12 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:46885 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388194AbfISJGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 05:06:12 -0400
+Received: by mail-ot1-f65.google.com with SMTP id f21so2369902otl.13;
+        Thu, 19 Sep 2019 02:06:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wDQS67j3lG7TwomTYu6phRtQVo+Lq0+3xuq57RPV6D8=;
+        b=i1wJ+zoQWcdeFJPKz4EmDzW6m0EliuvcQPuUNzIcZtgWhqgeLwuxiR68NdnizJJDgG
+         IHPXTyhCEax+zzvWHGjCxIvtqGgU9BCCvdqAtXiFQa/z3j/HEtvgt3K6ly6YVkfP02p7
+         XG/IHq2mXhiRezcDi9JSkPbq5e5LgtF4OiaORJRbq8jpFfZotrNbLkF2dyEzAGF8PQoo
+         k+IxIBy8F3Nl+cGMv3kM9jUafBhQ5We1vZW05zedARE9kUEdpg9BfMuUAMgECwfcWJIz
+         Vy8q8ZQS+AbvbTEqiI4yKqKYeiMseEVTmIOHWGK8GXrN7Zvv88+u0nWNCAJ4hrUJRq2r
+         8q/g==
+X-Gm-Message-State: APjAAAVxtZsBodgZQtPUOAh0zuEHBpjmUNADTTEx2ABlB1FrqBAU3SMe
+        xDUY7bonLGG7/oGrjuzKMsKZlpmdcBgdfGvM1bc=
+X-Google-Smtp-Source: APXvYqzkCVuzCTBNypl4Lg61PDxEIAb1NQVdXkZR4+Hm131qcRPrUobeyAbVKE3pL8YI02rUdNiF6OshW6FylYOc9ac=
+X-Received: by 2002:a9d:4d0d:: with SMTP id n13mr5907611otf.297.1568883971244;
+ Thu, 19 Sep 2019 02:06:11 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b855b89e-fb6c-4d75-f073-08d73cdf4ae6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Sep 2019 08:56:42.9815
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FPSeiAtQ27W6SH6I/SJ8kt1YTvjJSDG7qKxve5sTLUDH2lWh6oW3oF3ESaGWnD7p50Jkl3+9I2HJ2a5+r9mE5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3456
+References: <20190731.094150.851749535529247096.davem@davemloft.net>
+ <20190731185023.20954-1-natechancellor@gmail.com> <b3444283-7a77-ece8-7ac6-41756aa7dc60@infradead.org>
+ <64f7ef68-c373-5ff5-ff6d-8a7ce0e30798@infradead.org>
+In-Reply-To: <64f7ef68-c373-5ff5-ff6d-8a7ce0e30798@infradead.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 19 Sep 2019 11:06:00 +0200
+Message-ID: <CAMuHMdXya55UJttU1xvX5+-N658Xqfa0k8sSKTGbtdBHgPEFcg@mail.gmail.com>
+Subject: Re: [PATCH] net: mdio-octeon: Fix build error and Kconfig warning
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kbuild test robot <lkp@intel.com>,
+        kernel-build-reports@lists.linaro.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Linux-Next <linux-next@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu 19 Sep 2019 at 01:56, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> On Wed, Sep 18, 2019 at 12:32 AM Vlad Buslov <vladbu@mellanox.com> wrote:
->> diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
->> index e1087746f6a2..4cfa9a7bd29e 100644
->> --- a/net/sched/sch_multiq.c
->> +++ b/net/sched/sch_multiq.c
->> @@ -187,18 +187,21 @@ static int multiq_tune(struct Qdisc *sch, struct n=
-lattr *opt,
->>
->>         sch_tree_lock(sch);
->>         q->bands =3D qopt->bands;
->> +       sch_tree_unlock(sch);
->> +
->>         for (i =3D q->bands; i < q->max_bands; i++) {
->>                 if (q->queues[i] !=3D &noop_qdisc) {
->>                         struct Qdisc *child =3D q->queues[i];
->>
->> +                       sch_tree_lock(sch);
->>                         q->queues[i] =3D &noop_qdisc;
->>                         qdisc_tree_flush_backlog(child);
->> +                       sch_tree_unlock(sch);
->> +
->>                         qdisc_put(child);
->>                 }
->>         }
+On Thu, Aug 1, 2019 at 1:52 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+> However, there are lots of type/cast warnings in both mdio-octeon and mdio-cavium:
 >
-> Repeatedly acquiring and releasing a spinlock in a loop
-> does not seem to be a good idea. Is it possible to save
-> those qdisc pointers to an array or something similar?
->
-> Thanks.
+> ../drivers/net/phy/mdio-octeon.c: In function ‘octeon_mdiobus_probe’:
+> ../drivers/net/phy/mdio-octeon.c:48:3: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>    (u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
+>    ^
 
-Sure. I implemented it the way I did because following loop in
-multiq_tune() is implemented in exactly the same way: it repeatedly
-acquires and releases sch tree lock for each new default Qdisc that it
-creates.
+cavium_mdiobus.register_base should be "void __iomem *" instead of "u64",
+and the cast should be dropped.
+
+> In file included from ../drivers/net/phy/mdio-octeon.c:14:0:
+> ../drivers/net/phy/mdio-cavium.h:113:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+>  #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
+>                                                 ^
+
+... which allows to drop this cast as well.
+
+Casts are evil, and usually a sign that you're doing something wrong.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
