@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6CB1B741D
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 09:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23513B7448
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 09:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388037AbfISHdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 03:33:47 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38946 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387987AbfISHdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 03:33:46 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v17so2669557wml.4
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 00:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qHgNnRKppp7Nno+XhfV/vg8wXKHdm3+lSJQO2Vd0hsI=;
-        b=llQsO+2dI7wLmrVoXfFo+AkKBv0rTH4ZrM5bHWiiysaj7LP7VutijQqIU6YDwWOs8I
-         rdMGaN0ZpNvx6VNXOw2ycAK93nnbNqRZiEgy3ofUCH/Pr6jEGzUO7hUm6QheLqTqFjCx
-         S431FBoQm8VNfTn8wmkIw+64Maaff7m/mObkQb0wgogDU4WBSsMyuS/jcYH3YCKKKbkc
-         r/g9oivtH+zxr2ve/UYuwFRqULm62WtWnRJxUclok4n/UoTxqg827XQDrb28G6ESF6wu
-         M1wCcMUSOHKk0PTpvk/3g8HsPwbHPbpdllTSEOwcOeoavpkQOw3LCyxAScM4ira+vnRh
-         vRLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qHgNnRKppp7Nno+XhfV/vg8wXKHdm3+lSJQO2Vd0hsI=;
-        b=RThQli/wipjwDbJKfCq5AhD0VfNcjZ305yENIT7+ppk3yWy4tB7GP7Be3kx0jHtq0B
-         fiz8Ddj93VU7/ayOotm2HHMU9M/S1+QciXGg25HgbIl5jNKafqFQ8tpbW21VVT3CzhxH
-         OSB9FGOPs+bONVTxMNRsm+flWoHGxyn4bsA7K5W7AZAOJ1ONCbcpALcDqsTKQQQ5qmcF
-         3LUERMoozL7hYeJ6Xxsybg1If2hPnmLTAgtEvnIYlrVFp2wYXtPKRS6tJ1ALn+toIWus
-         OUjGZapTKNys6kukdkRwaHPK2GiAjpNu64cR2f4ev992fMhK3GcpvRlPRAnCuZ9o5RX4
-         zqnA==
-X-Gm-Message-State: APjAAAXROihYbLEPkHpcXyi1Nt0+EB8ulZ9CAtzEriFJXRzaXG4vDiAP
-        NLnQfl3FWOIAPYkVS9XU4BQuNg==
-X-Google-Smtp-Source: APXvYqz1OhLjN6MxwCn6C3A6R+3dPAjwyQnY9PcpY2EcaF+YIUl568ZkPO5ItYsk9T7tvtVo5NRypw==
-X-Received: by 2002:a7b:c758:: with SMTP id w24mr1402349wmk.148.1568878424885;
-        Thu, 19 Sep 2019 00:33:44 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id v2sm9307567wmf.18.2019.09.19.00.33.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Sep 2019 00:33:44 -0700 (PDT)
-Date:   Thu, 19 Sep 2019 09:33:43 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [Patch net] net_sched: add policy validation for action
- attributes
-Message-ID: <20190919073343.GA2240@nanopsycho>
-References: <20190919014443.32581-1-xiyou.wangcong@gmail.com>
+        id S1729384AbfISHgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 03:36:52 -0400
+Received: from smtp3.goneo.de ([85.220.129.37]:60700 "EHLO smtp3.goneo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726566AbfISHgv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 03:36:51 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by smtp3.goneo.de (Postfix) with ESMTP id BCF6723F7E9;
+        Thu, 19 Sep 2019 09:36:48 +0200 (CEST)
+X-Virus-Scanned: by goneo
+X-Spam-Flag: NO
+X-Spam-Score: -3.028
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.028 tagged_above=-999 tests=[ALL_TRUSTED=-1,
+        AWL=-0.128, BAYES_00=-1.9] autolearn=ham
+Received: from smtp3.goneo.de ([127.0.0.1])
+        by localhost (smtp3.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id PLrzwm4_few9; Thu, 19 Sep 2019 09:36:47 +0200 (CEST)
+Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
+        by smtp3.goneo.de (Postfix) with ESMTPSA id C971823F86D;
+        Thu, 19 Sep 2019 09:36:46 +0200 (CEST)
+Date:   Thu, 19 Sep 2019 09:36:40 +0200
+From:   Lars Poeschel <poeschel@lemonage.de>
+To:     Simon Horman <horms@verge.net.au>
+Cc:     Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v7 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
+Message-ID: <20190919073639.GA26517@lem-wkst-02.lemonage>
+References: <20190910093129.1844-1-poeschel@lemonage.de>
+ <20190918123457.wg6mtygr6cboqsp6@verge.net.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190919014443.32581-1-xiyou.wangcong@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190918123457.wg6mtygr6cboqsp6@verge.net.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Sep 19, 2019 at 03:44:43AM CEST, xiyou.wangcong@gmail.com wrote:
->Similar to commit 8b4c3cdd9dd8
->("net: sched: Add policy validation for tc attributes"), we need
->to add proper policy validation for TC action attributes too.
->
->Cc: David Ahern <dsahern@gmail.com>
->Cc: Jamal Hadi Salim <jhs@mojatatu.com>
->Cc: Jiri Pirko <jiri@resnulli.us>
->Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+On Wed, Sep 18, 2019 at 02:34:57PM +0200, Simon Horman wrote:
+> On Tue, Sep 10, 2019 at 11:31:21AM +0200, Lars Poeschel wrote:
+> > It is favourable to have one unified compatible string for devices that
+> > have multiple interfaces. So this adds simply "pn532" as the devicetree
+> > binding compatible string and makes a note that the old ones are
+> > deprecated.
+> 
+> Do you also need to update
+> Documentation/devicetree/bindings/net/nfc/pn533-i2c.txt
+> to both document the new compat string and deprecate the old ones?
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Simon, thank you for this hint.
+The patch 2/7 adds a seperate binding doc, that contains the info about
+the deprecated compat strings. But I think this is not the way to go. I
+will change the patch 2/7 to update the info
+Documentation/devicetree/bindings/net/nfc/pn533-i2c.txt
+instead, rename it to pn532.txt and do not add a new binding doc.
+
