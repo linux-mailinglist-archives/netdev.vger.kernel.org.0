@@ -2,186 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF7DB79BE
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9501B79E0
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390362AbfISMua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 08:50:30 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:34745 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389506AbfISMua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 08:50:30 -0400
-Received: by mail-yw1-f68.google.com with SMTP id h73so1186906ywa.1
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 05:50:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LSx7cABvGZFiRI8GmWboDT4XbAPUCI3fmgM7DcCBUds=;
-        b=GHNWGgtAn848gWfLuFD/LJ2Oe2erMqYJtAXw82FMUtDTA2SyRQ+6v7MDx1e1CMnPSR
-         ss8uAjumrQeNL5cxSHiSwlaES6uSWl4yN5ru0iVxhOHjGTFelPhAKuQyrvpuMCoOQDMf
-         GOETEdLWNAJ/caQ9j+DaPfXi2fs5qVEVwQvDO/88bitdgZJrSnskONJQBRlstR6txDnp
-         EytNZTBsrtRkGJ14mUSKkIM+/oyGBmMl85wPrXa7vi15mfDkPuXhp2SABjaST0zbUhTK
-         8P9Vv+b0F6TBn5qC9x6Mh0H8f8qafJ7Dr41uQPheO7iBt8b8hpq3AfwCKHi7QUllnMAq
-         wjFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LSx7cABvGZFiRI8GmWboDT4XbAPUCI3fmgM7DcCBUds=;
-        b=aUrhxBrGpaApSVd9uAygHF193HA2lDZBJpTGP/JaaLWL/6hmkXeYnZPUJgTkOvXT5y
-         0NDprv2CYiIEo7x0PvlvCZYB7S6uUbrPFQR9GQx7TwutuFFLMUVlspxHgaWOZfuVIXC6
-         8WB01JHBDCcSQI/I6Qyrug2DC6FTcl7V+gFSzvi+QV7pAKdRE+Jvc+AjaRktGCEHYhCB
-         EjWg3fX3GGvql8A/mnJF2W9zz7eZk2uKXEHPti5GVktQV3w7txhVfCJVYQBzKvznrAcc
-         d9JfUdr4MxXpmeI2UVFEEIV0H/HA4h7a+CGguEszMnwvhCgXyLE/OWBjgvM14W820xWn
-         fQYA==
-X-Gm-Message-State: APjAAAVVOY9EI6zC61H4yKTWoGLSWq7JZO7ULVc/ppSyNBLk3bJj3Biy
-        3g8ri6aSuuZ1+0FZe/HUfgl2LwFyH+hsC9EtCtk=
-X-Google-Smtp-Source: APXvYqwFlJ0mrGPB3oz8TXcF8e0uNjQjLHSeKOlnzVmM2Ll1e06Etr071/ZPxzwQc9deeB1u8YTSVA5PrGFsQS7UaZs=
-X-Received: by 2002:a81:81c6:: with SMTP id r189mr7903885ywf.147.1568897428917;
- Thu, 19 Sep 2019 05:50:28 -0700 (PDT)
+        id S2390416AbfISMz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 08:55:29 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2739 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2389212AbfISMz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 08:55:28 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 91770C78C476D9935686;
+        Thu, 19 Sep 2019 20:55:25 +0800 (CST)
+Received: from [127.0.0.1] (10.57.88.168) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Sep 2019
+ 20:55:19 +0800
+Subject: Re: [PATCH v4 1/3] kernel/notifier.c: intercepting duplicate
+ registrations to avoid infinite loops
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <akpm@linux-foundation.org>, <vvs@virtuozzo.com>,
+        <torvalds@linux-foundation.org>, <adobriyan@gmail.com>,
+        <anna.schumaker@netapp.com>, <arjan@linux.intel.com>,
+        <bfields@fieldses.org>, <chuck.lever@oracle.com>,
+        <davem@davemloft.net>, <jlayton@kernel.org>, <luto@kernel.org>,
+        <mingo@kernel.org>, <Nadia.Derbey@bull.net>,
+        <paulmck@linux.vnet.ibm.com>, <semen.protsenko@linaro.org>,
+        <stern@rowland.harvard.edu>, <tglx@linutronix.de>,
+        <trond.myklebust@hammerspace.com>, <viresh.kumar@linaro.org>,
+        <stable@kernel.org>, <dylix.dailei@huawei.com>,
+        <yuehaibing@huawei.com>, <linux-kernel@vger.kernel.org>,
+        <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <1568861888-34045-1-git-send-email-nixiaoming@huawei.com>
+ <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
+ <20190919063615.GA2069346@kroah.com>
+From:   Xiaoming Ni <nixiaoming@huawei.com>
+Message-ID: <b37575b1-2ea4-d813-c262-b52b322652c1@huawei.com>
+Date:   Thu, 19 Sep 2019 20:55:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <1568882232-12847-1-git-send-email-wenxu@ucloud.cn>
-In-Reply-To: <1568882232-12847-1-git-send-email-wenxu@ucloud.cn>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 19 Sep 2019 15:50:17 +0300
-Message-ID: <CAJ3xEMhQTr=HPsMs-j3_V6XRKHa0Jo7iYVY+R4U8etoEu9R7jw@mail.gmail.com>
-Subject: Re: [PATCH net v3] net/sched: cls_api: Fix nooffloaddevcnt counter
- when indr block call success
-To:     wenxu@ucloud.cn,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Oz Shlomo <ozsh@mellanox.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Roi Dayan <roid@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190919063615.GA2069346@kroah.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.57.88.168]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 11:39 AM <wenxu@ucloud.cn> wrote:
->
-> From: wenxu <wenxu@ucloud.cn>
->
-> A vxlan or gretap device offload through indr block methord. If the device
+On 2019/9/19 14:36, Greg KH wrote:
+> On Thu, Sep 19, 2019 at 10:58:06AM +0800, Xiaoming Ni wrote:
+>> Registering the same notifier to a hook repeatedly can cause the hook
+>> list to form a ring or lose other members of the list.
+>>
+>> case1: An infinite loop in notifier_chain_register() can cause soft lockup
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>         atomic_notifier_chain_register(&test_notifier_list, &test2);
+>>
+>> case2: An infinite loop in notifier_chain_register() can cause soft lockup
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>         atomic_notifier_call_chain(&test_notifier_list, 0, NULL);
+>>
+>> case3: lose other hook test2
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>         atomic_notifier_chain_register(&test_notifier_list, &test2);
+>>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>>
+>> case4: Unregister returns 0, but the hook is still in the linked list,
+>>         and it is not really registered. If you call notifier_call_chain
+>>         after ko is unloaded, it will trigger oops.
+>>
+>> If the system is configured with softlockup_panic and the same
+>> hook is repeatedly registered on the panic_notifier_list, it
+>> will cause a loop panic.
+>>
+>> Add a check in notifier_chain_register(),
+>> Intercepting duplicate registrations to avoid infinite loops
+>>
+>> Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
+>> Reviewed-by: Vasily Averin <vvs@virtuozzo.com>
+>> ---
+>>  kernel/notifier.c | 5 ++++-
+>>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
+>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
+> 
+thanks for your guidance
+I thought that as long as the code exists in the stable branch, it should be copied to stable@kernel.org
+it is my mistake,
 
-nit: method --> method
+These patches are intended to be sent to the main line.
+Should I resend it again?
 
-> successfully bind with a real hw through indr block call, It also add
-> nooffloadcnt counter. This counter will lead the rule add failed in
-> fl_hw_replace_filter-->tc_setup_cb_call with skip_sw flags.
+> </formletter>
+> 
+> Same thing goes for all of the patches in this series.
+> 
+> thanks,
+> 
+> greg k-h
+> 
+> .
+> 
 
-wait.. indirect tc callbacks are typically used to do hw offloading
-for decap rules (tunnel key unset action) set on SW devices (gretap, vxlan).
+thanks
 
-However, AFAIK, it's been couple of years since the kernel doesn't support
-skip_sw for such rules. Did we enable it again? when? I am somehow
-far from the details, so copied some folks..
+Xiaoming Ni
 
-Or.
-
-
->
-> In the tc_setup_cb_call will check the nooffloaddevcnt and skip_sw flags
-> as following:
-> if (block->nooffloaddevcnt && err_stop)
->         return -EOPNOTSUPP;
->
-> So with this patch, if the indr block call success, it will not modify
-> the nooffloaddevcnt counter.
->
-> Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> v3: rebase to the net
->
->  net/sched/cls_api.c | 30 +++++++++++++++++-------------
->  1 file changed, 17 insertions(+), 13 deletions(-)
->
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 32577c2..c980127 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -607,11 +607,11 @@ static void tc_indr_block_get_and_ing_cmd(struct net_device *dev,
->         tc_indr_block_ing_cmd(dev, block, cb, cb_priv, command);
->  }
->
-> -static void tc_indr_block_call(struct tcf_block *block,
-> -                              struct net_device *dev,
-> -                              struct tcf_block_ext_info *ei,
-> -                              enum flow_block_command command,
-> -                              struct netlink_ext_ack *extack)
-> +static int tc_indr_block_call(struct tcf_block *block,
-> +                             struct net_device *dev,
-> +                             struct tcf_block_ext_info *ei,
-> +                             enum flow_block_command command,
-> +                             struct netlink_ext_ack *extack)
->  {
->         struct flow_block_offload bo = {
->                 .command        = command,
-> @@ -621,10 +621,15 @@ static void tc_indr_block_call(struct tcf_block *block,
->                 .block_shared   = tcf_block_shared(block),
->                 .extack         = extack,
->         };
-> +
->         INIT_LIST_HEAD(&bo.cb_list);
->
->         flow_indr_block_call(dev, &bo, command);
-> -       tcf_block_setup(block, &bo);
-> +
-> +       if (list_empty(&bo.cb_list))
-> +               return -EOPNOTSUPP;
-> +
-> +       return tcf_block_setup(block, &bo);
->  }
->
->  static bool tcf_block_offload_in_use(struct tcf_block *block)
-> @@ -681,8 +686,6 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
->                 goto no_offload_dev_inc;
->         if (err)
->                 goto err_unlock;
-> -
-> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
->         up_write(&block->cb_lock);
->         return 0;
->
-> @@ -691,9 +694,10 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
->                 err = -EOPNOTSUPP;
->                 goto err_unlock;
->         }
-> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
-> +       if (err)
-> +               block->nooffloaddevcnt++;
->         err = 0;
-> -       block->nooffloaddevcnt++;
-> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
->  err_unlock:
->         up_write(&block->cb_lock);
->         return err;
-> @@ -706,8 +710,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
->         int err;
->
->         down_write(&block->cb_lock);
-> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> -
->         if (!dev->netdev_ops->ndo_setup_tc)
->                 goto no_offload_dev_dec;
->         err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> @@ -717,7 +719,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
->         return;
->
->  no_offload_dev_dec:
-> -       WARN_ON(block->nooffloaddevcnt-- == 0);
-> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> +       if (err)
-> +               WARN_ON(block->nooffloaddevcnt-- == 0);
->         up_write(&block->cb_lock);
->  }
->
-> --
-> 1.8.3.1
->
