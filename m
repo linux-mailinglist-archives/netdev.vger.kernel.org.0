@@ -2,63 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FAFB7B96
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26830B7BE7
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388590AbfISOF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 10:05:57 -0400
-Received: from mail-yw1-f50.google.com ([209.85.161.50]:37543 "EHLO
-        mail-yw1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388331AbfISOF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:05:57 -0400
-Received: by mail-yw1-f50.google.com with SMTP id u65so1268342ywe.4
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=JZPv3jG+XlPrOTjewHyQ0ssMtO4G5mbxB4JHojADKFM=;
-        b=TehwRmBY1MMWldQQlRo239kMPpR2q0ej6PO84UVEYY0+aHI+zTEadOOA/DzZiKQk3r
-         SRA5Y//v0OKHEz1lK+TyTZnd9bW1onyQXh46O8XV2ETqDXXtxNfMuBcRSa1qY1PQDC02
-         fwi97l6Q1Z97XR/dd7Y1DxzZZQuapf7z/6d9L9h17ngqAUrqYFu3vDSrVDfjKFL2iIZO
-         STe1ZXAyxP0VmuKFZaVPz2QlcQJBPqkxyQvDRmG6Emz5oF2IfvfPSYMBxheWqE2ZZs/y
-         ju5UPFEKL8Beb4Oi/8ueeypBqoVSZ1FxcOhIRPN4zvUR7dEj9KbBnkmBzzpwF69+Qtrq
-         KbpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=JZPv3jG+XlPrOTjewHyQ0ssMtO4G5mbxB4JHojADKFM=;
-        b=kouS+ANNBU+vfD9G3bJR7MzHln1mFB4+9+M0HlC/58wSruETUIX/HelNhoPCTsCKdS
-         +x/FBbv8nWohtgg2qQVAVO8c60mJsk6K5qFPcye4CFK8nbefwVuPwjjxd6f3R6G44e8N
-         5buxyO4VwKEIx63ewLb1AaKC26w/pfdCd2yjDePmxT4z+t5KXw1YBZMsOVUofbkIJCgT
-         ZAo60vKe9GKBrF2id9Iz0xODz541vog5HnX6/PZELP8DUj4XyDfVIHR0rKvhxcIqf/bI
-         cgezx+KDETq5FFWY2KVr0P1bn4NOnqVfi95u+BY0RR3/hVaKln5kp3yp5/vPgZodaaQ/
-         9B8Q==
-X-Gm-Message-State: APjAAAVbs5xQ5fO+p7dAJmCs1BRc2fwSjFsKBrjabYhLtL0PsuQnUkQ7
-        F54LHzKjrFoTDa6zTgFryIB3TryAr/17iAanjLM=
-X-Google-Smtp-Source: APXvYqw8egP5C/WoeEqtF9EuxT4W6NU661kTcmlwLNJ+o1OHArA5LZXVI6o8tUUJjSdvuUd53CZELpt3sc+l2V1FNco=
-X-Received: by 2002:a81:4602:: with SMTP id t2mr8354885ywa.391.1568901956583;
- Thu, 19 Sep 2019 07:05:56 -0700 (PDT)
-MIME-Version: 1.0
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 19 Sep 2019 17:05:45 +0300
-Message-ID: <CAJ3xEMhzGs=8Vuw6aT=wCnQ24Qif89CUDxvbM0jWCgKjNNdbpA@mail.gmail.com>
-Subject: ELOed stable kernels
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        id S1732470AbfISONv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 10:13:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50508 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732259AbfISONv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 10:13:51 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C49DF205F4;
+        Thu, 19 Sep 2019 14:13:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568902430;
+        bh=BdD80pmj8OEiXdds3pAcVPXZA1SBMt0ccW7USJtJk/M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YLBbFv3hQPAC0oolCWy6NtzkSlSli7U0fJJIE2+9HhstuNZXa543Q406hpVAqOriz
+         uMZ/TrHQeg22k82SUMYpPdEJo6FpsJS4kPskCeGMqa+HnZBFgJEMcHD8a4JRC9RjGo
+         sXZwTCaNd7mIVfQlK0RSVusjNRVWY1tAdS0AATZY=
+Date:   Thu, 19 Sep 2019 16:13:47 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
 Cc:     Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: ELOed stable kernels
+Message-ID: <20190919141347.GA3869723@kroah.com>
+References: <CAJ3xEMhzGs=8Vuw6aT=wCnQ24Qif89CUDxvbM0jWCgKjNNdbpA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ3xEMhzGs=8Vuw6aT=wCnQ24Qif89CUDxvbM0jWCgKjNNdbpA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+On Thu, Sep 19, 2019 at 05:05:45PM +0300, Or Gerlitz wrote:
+> Hi Greg,
+> 
+> If this is RTFM could you please point me to the Emm
 
-If this is RTFM could you please point me to the Emm
+https://www.kernel.org/category/releases.html
 
-AFAIR if a stable kernel is not listed at kernel.org than it is EOL by now.
+> AFAIR if a stable kernel is not listed at kernel.org than it is EOL by now.
+> 
+> Is this correct?
 
-Is this correct?
+Yes.
 
 thanks,
 
-Or.
+greg k-h
