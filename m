@@ -2,153 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A00B71BC
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 04:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06465B7287
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 07:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388542AbfISC7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 22:59:09 -0400
-Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:51132 "EHLO
-        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727305AbfISC7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 22:59:09 -0400
-Received: from pps.filterd (m0050102.ppops.net [127.0.0.1])
-        by m0050102.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x8J2qKIc004046;
-        Thu, 19 Sep 2019 03:59:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=HIVIULjw1/etjO3zGk7JusMUdnE4D7X3OW6P2Jfp7es=;
- b=InLqWs1kvMa2udnSldQtptRIF9SlNFTAd0Jp0HGy9HIFAOQqn0e9GwtzZmdQf+7TIU3F
- 3npkLZhfpWfKp5zYiweE1eNzZCRSuVCZ6RpMgBzNojKqpXxqeynAw9gUY7bhlbdedegN
- Q5h4AZNwe9D5t3ZqbxSQkaO2KxFPAjiyKFPjOV8P8zOZD//f3I/O7TvKXXCZkF0wDtSx
- ITlo8pB0CRexkYq9IRnJzE59j+U26khZizbvGd1wmkzPrOkAe2XaxyNiFq2H1NtT2dCt
- W9wFuQ3RfyYBIXWkzhZDfDHn5PnHYVi9MD9vYc7nYCL7gc6KDYLU4qrBkHUAEqDoWgBa /A== 
-Received: from prod-mail-ppoint5 (prod-mail-ppoint5.akamai.com [184.51.33.60] (may be forged))
-        by m0050102.ppops.net-00190b01. with ESMTP id 2v3vaw12dt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Sep 2019 03:59:05 +0100
-Received: from pps.filterd (prod-mail-ppoint5.akamai.com [127.0.0.1])
-        by prod-mail-ppoint5.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x8J2nu7X021071;
-        Wed, 18 Sep 2019 19:59:04 -0700
-Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint5.akamai.com with ESMTP id 2v3vefgh21-1;
-        Wed, 18 Sep 2019 19:59:04 -0700
-Received: from [0.0.0.0] (caldecot.sanmateo.corp.akamai.com [172.22.187.166])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 8EED71FC6B;
-        Thu, 19 Sep 2019 02:59:03 +0000 (GMT)
-Subject: Re: udp sendmsg ENOBUFS clarification
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>
-References: <ce01f024-268d-a44e-8093-91be97f1e8b0@akamai.com>
- <CA+FuTSc3O4XQAmtyY5Fwy96nL17ewdCouvwAJ=6DeMUcQUiz8A@mail.gmail.com>
-From:   Josh Hunt <johunt@akamai.com>
-Message-ID: <ef67fdfc-d5f1-79af-064d-997c13adbea7@akamai.com>
-Date:   Wed, 18 Sep 2019 19:59:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2387921AbfISFPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 01:15:36 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33395 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387504AbfISFPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 01:15:36 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t11so1063671plo.0
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 22:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Vq0a8WD9gtmgvUFWz21hWJGSxYjJkuzimTo692aaBM=;
+        b=WVTcMwoOr0q0/p/t7JCM3HguUI5rE4tITkzmNedtWweeeBNBd5GO/hkeQaEUJv73Yb
+         a75pwVuz3yU76mN4TbQc6j4wrocNVVXCqEFZl/PzPyt/1i0golJ2W5Y7edi2kdDaS30o
+         hNQK/6whe2khKP2FyKBGGW366imP2ieFk4QdWabAQDZuOyH2qW5QVducnOrM9kXzb4mv
+         uS2P4ssBS5RNQwR9SCiqvAiP8H8HTEyqjIpSCt6PvejX5u5BRXkzjOOLfhILMBNgOpgS
+         wFvv+1U2U7BWCeG3IpMOIcLGrfFu8BOK61oNtumtL1jTB5ti1N21R9seHrATrDJut0a9
+         xYbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Vq0a8WD9gtmgvUFWz21hWJGSxYjJkuzimTo692aaBM=;
+        b=MJ2prnwN2GH5/eh5YLR9yFq1bqv+wKese0ChyG+GVEZgMBIe9aknlhjYg1QHl4oCtC
+         ey6Z7R3cHpsVCMM//M1DdldcQwF45fRFOl8gvpQztemfmj5SPbxl1cvMV/a/dZYpiP/F
+         f6F0EGQdks8LkkapdI4Skmg5ocLsQqCPI0wE4zNciS8EFd69KvecCKYfcQr+w8Y4ZHhn
+         7qrQpJx7n+P2/3++dTX4OTkGHvhJcUMZtlIJ4N+mbaHv9sz/XtYm3mfwvfsGUebWvwqC
+         +Lu7xdOLyx3U99zsjrxNuoAQax7NgblBu6pQQdcE9iM71mh6tqOA3oGkN2DC4zd43yog
+         QmxQ==
+X-Gm-Message-State: APjAAAUopukkrF9RvGUYSAFzMtVC0Jj0IRPPPPd4+LZOdxKvJIxFeYTJ
+        r1ZCxmPiUrG7fd7VVfEJud9bnP4TuehVJHlsIXY=
+X-Google-Smtp-Source: APXvYqwldsmi45wanIHMRsVTCmcYzSdiger0GTGMjMuK4IYvXYdXzx87JlcRJd3veb9LhoWinxkj6FGQgWfLmsKEvxE=
+X-Received: by 2002:a17:902:a5c5:: with SMTP id t5mr7687181plq.316.1568870135200;
+ Wed, 18 Sep 2019 22:15:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSc3O4XQAmtyY5Fwy96nL17ewdCouvwAJ=6DeMUcQUiz8A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-19_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=877
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1909190023
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-19_01:2019-09-18,2019-09-19 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 priorityscore=1501
- suspectscore=0 mlxscore=0 phishscore=0 adultscore=0 impostorscore=0
- spamscore=0 malwarescore=0 lowpriorityscore=0 mlxlogscore=895 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
- definitions=main-1909190024
+References: <20190918232412.16718-1-xiyou.wangcong@gmail.com> <36471b0d-cc83-40aa-3ded-39e864dcceb0@gmail.com>
+In-Reply-To: <36471b0d-cc83-40aa-3ded-39e864dcceb0@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 18 Sep 2019 22:15:24 -0700
+Message-ID: <CAM_iQpXa=Kru2tXKwrErM9VsO40coBf9gKLRfwC3e8owKZG+0w@mail.gmail.com>
+Subject: Re: [Patch net] net_sched: add max len check for TCA_KIND
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/18/19 8:35 AM, Willem de Bruijn wrote:
-> On Tue, Sep 17, 2019 at 4:20 PM Josh Hunt <johunt@akamai.com> wrote:
->>
->> I was running some tests recently with the udpgso_bench_tx benchmark in
->> selftests and noticed that in some configurations it reported sending
->> more than line rate! Looking into it more I found that I was overflowing
->> the qdisc queue and so it was sending back NET_XMIT_DROP however this
->> error did not propagate back up to the application and so it assumed
->> whatever it sent was done successfully. That's when I learned about
->> IP_RECVERR and saw that the benchmark isn't using that socket option.
->>
->> That's all fairly straightforward, but what I was hoping to get
->> clarification on is where is the line drawn on when or when not to send
->> ENOBUFS back to the application if IP_RECVERR is *not* set? My guess
->> based on going through the code is that as long as the packet leaves the
->> stack (in this case sent to the qdisc) that's where we stop reporting
->> ENOBUFS back to the application, but can someone confirm?
-> 
-> Once a packet is queued the system call may return, so any subsequent
-> drops after dequeue are not propagated back. The relevant rc is set in
-> __dev_xmit_skb on q->enqueue. On setups with multiple devices, such as
-> a tunnel or bonding path, enqueue on the lower device is similar not
-> propagated.
+On Wed, Sep 18, 2019 at 7:41 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 9/18/19 5:24 PM, Cong Wang wrote:
+> > The TCA_KIND attribute is of NLA_STRING which does not check
+> > the NUL char. KMSAN reported an uninit-value of TCA_KIND which
+> > is likely caused by the lack of NUL.
+> >
+> > Change it to NLA_NUL_STRING and add a max len too.
+> >
+> > Fixes: 8b4c3cdd9dd8 ("net: sched: Add policy validation for tc attributes")
+>
+> The commit referenced here did not introduce the ability to go beyond
+> memory boundaries with string comparisons. Rather, it was not complete
+> solution for attribute validation. I say that wrt to the fix getting
+> propagated to the correct stable releases.
 
-Yeah that makes total sense. Once it's enqueued you'd expect it to not 
-be able to return an error, but in this particular case we get an error 
-on enqueue so was surprised when it did not get back to the application.
+I think this patch should be backported to wherever commit 8b4c3cdd9dd8
+goes, this is why I picked it as Fixes.
 
-> 
->> For example, we sanitize the error in udp_send_skb():
->> send:
->>           err = ip_send_skb(sock_net(sk), skb);
->>           if (err) {
->>                   if (err == -ENOBUFS && !inet->recverr) {
->>                           UDP_INC_STATS(sock_net(sk),
->>                                         UDP_MIB_SNDBUFERRORS, is_udplite);
->>                           err = 0;
->>                   }
->>           } else
->>
->>
->> but in udp_sendmsg() we don't:
->>
->>           if (err == -ENOBUFS || test_bit(SOCK_NOSPACE,
->> &sk->sk_socket->flags)) {
->>                   UDP_INC_STATS(sock_net(sk),
->>                                 UDP_MIB_SNDBUFERRORS, is_udplite);
->>           }
->>           return err;
-> 
-> That's interesting. My --incorrect-- understanding until now had been
-> that IP_RECVERR does nothing but enable optional extra detailed error
-> reporting on top of system call error codes.
-> 
-> But indeed it enables backpressure being reported as a system call
-> error that is suppressed otherwise. I don't know why. The behavior
-> precedes git history.
+>
+> > Reported-and-tested-by: syzbot+618aacd49e8c8b8486bd@syzkaller.appspotmail.com
+>
+> What is the actual sysbot report?
 
-Yeah it's interesting. I wasn't able to find any documentation or 
-discussion on it either which is why I figured I'd ask the question on 
-netdev in case others know.
-
-> 
->> In the case above it looks like we may only get ENOBUFS for allocation
->> failures inside of the stack in udp_sendmsg() and so that's why we
->> propagate the error back up to the application?
-> 
-> Both the udp lockless fast path and the slow corked path go through
-> udp_send_skb, so the backpressure is suppressed consistently across
-> both cases.
-> 
-> Indeed the error handling in udp_sendmsg then is not related to
-> backpressure, but to other causes of ENOBUF, i.e., allocation failure.
-> 
-
-Yep. Thanks for going through this. We'll see if others have any 
-comments. I will likely send a patch for the man page adding that you 
-can get ENOBUFS on Linux but need to set IP_RECVERR as Eric pointed out 
-in the patch I linked to previously.
-
-Josh
+https://marc.info/?l=linux-kernel&m=156862916112881&w=2
