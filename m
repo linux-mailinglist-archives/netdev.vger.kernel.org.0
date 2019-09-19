@@ -2,131 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB65B74F4
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0D7B74FF
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731259AbfISISh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 04:18:37 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:46117 "EHLO
+        id S2388079AbfISIUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 04:20:17 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:36020 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728879AbfISISh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 04:18:37 -0400
-Received: by mail-ed1-f66.google.com with SMTP id t3so2315863edw.13
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 01:18:36 -0700 (PDT)
+        with ESMTP id S2387581AbfISIUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 04:20:17 -0400
+Received: by mail-ed1-f66.google.com with SMTP id h2so2387789edn.3;
+        Thu, 19 Sep 2019 01:20:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lb4isSJ9swSEwMr0ORO9sLPJF9v0a3ozkaiOYGCDe+E=;
-        b=H+nHZiNT2emLqCBkAznOh9dTnY043w0FbcxvN142w5U/nKTgRjgV80tbn7cMosIBST
-         YPPsOOErkwK9H1vKM+wIeJH9fPjqVGninAnnWDQccbH2Id4kq4/V9yP2KBW9D78z5jAC
-         bn1R67+nUS6hdv3NURASCFdqaRbZuuQrpN71iggG0XUaO21mXLQEW6AG723illjLYueI
-         eESrpV1Jvg6K5KTQFOcsXGLSgMBKAvZNHIN9tkcv9Gx13xDm7qgbjQUH3AQvrDxmRsCz
-         lEwQaQmG9wwk516Jww2gHx0W+obJtI5Z+XVJ4sqdGUD11cPPrF5T0JF3l7/hJ456p4Ps
-         DSpw==
+        bh=DIjC86Ii4KsbkS8eTIPnEq2D8sVnXy/7hZpoMJXse74=;
+        b=XspEhnDiZYjUHScXvRrQYaOoqkttp3WHmWMbRGRag+fbX8nHQSaKs7mQoSk9TwAPuH
+         C+p7LH7/Dax1N2ydNhPL1R0IweJrVCRjjHBPMV95d+Yggk6zliEGKS0dCLsPN8Lnnxqe
+         mcnrBURdJzbN99YTdOxu3X9ZuRshelOBAEpQ6kbj9h2AzUbbxQY0pG73cNIQYs24G9Eu
+         WJGEWDpm5/7m6t6IH0o5E8PygdUWJEw+F7sy40aNWw+ZKLSYeUeCWUzTuDUVVcOG/Smn
+         3JdcZq/6Zgofre8ATzIkXX9LWkpA8ysfNEbZjfwZ5mPQoD2volG3yR0K7BY9diQ3/VO5
+         YuVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lb4isSJ9swSEwMr0ORO9sLPJF9v0a3ozkaiOYGCDe+E=;
-        b=lJFsy2C3ZADdSzRqL1zaIzZnVKSC7uuAaEktbVdS7Y6Nb9YsyL2wC6FAO2ETGX+4Hj
-         tR2bHNhUmOY0Gm9+3JcY5jnf1CN3vp1wurKFSEMiNZkEIkzVuuHnIshilJ18tyvNRuOt
-         62QkUNSyPaznYf886lDILx2vx4zqQBZ1zp0h1GXQmUWAzfR76QEatbrukKr1OxbCKeJk
-         c/e4jjBw4+5RVRwFNuxhoAATs8orz6RXAENcWEjQUDHtpUYu8LlPNcKMxw2wMPiJz9x0
-         vmpv1uKXsidQJNTTjtNka4ptnqliWgHBCRiK2CGi+peIrpKTzZLGzi44P5hx5Efl3RcV
-         /uqw==
-X-Gm-Message-State: APjAAAVmR/oXuaJ9c2UUO0Ixwxcp90lnD/M1CBgjEtqiqlcnqVZxgoEf
-        clpLQWmYscy7ZteE2nTCRey5/7PwzutblG0LqFDtlQ==
-X-Google-Smtp-Source: APXvYqyaaVUmc6sgTrKbAEY2ofcyoQ+bJpUr9z7WY6mZgC0XuxcH6QykDjxrPL4Gzjwr2nnNjV16YrUCEjIwS11TEXk=
-X-Received: by 2002:a17:906:e297:: with SMTP id gg23mr210633ejb.47.1568881115287;
- Thu, 19 Sep 2019 01:18:35 -0700 (PDT)
+        bh=DIjC86Ii4KsbkS8eTIPnEq2D8sVnXy/7hZpoMJXse74=;
+        b=AhczJwEx2WEXYtuQ8nLDdE9l2OAzyTlRU6oogXQo0k+STO2sEk4DVi4akL5yTLVCu8
+         YAJTSGeT3MgkFQ8Ksrw/k1ma7RnklWs/lFLrM7cvV4ocDNlwaFWuUDV5SwNn1No2El5s
+         socO3M1H+PrfdHNd69g2VxOC1lZhcDGxX5IAXlyn8/j632JYZ9tAvo4VhUhueyAajeUH
+         5IHWch24ND0M7bTlKLh45qnw4DKUP8MnQii0ia6p7AGjuIUjGv8TSMKRVZgZcYqFSJWb
+         K6sQnfaH25kWoheSDtQ8ic8Dm0VfPThbLRj5tn3wFpfM6/I9mwq1RThj4qqBjfaIt5XL
+         9ImA==
+X-Gm-Message-State: APjAAAV9AszetHAdi3AVdNPFYaURDbfXRZEEDgHUPByLf9PaNCKKlCaR
+        knmeUAfJ3XKzmb/eO1UPWx5IHfh017u4ames+WA=
+X-Google-Smtp-Source: APXvYqzLEjmwjFGA0fOI8+ymfYiL1C3PMql4lxAa4Log1CCWsdwRJD9Y8Zci3lVmWs5UWc1aZXnEOMVUhcXmMOH1PT4=
+X-Received: by 2002:a17:906:400c:: with SMTP id v12mr12911025ejj.15.1568881215131;
+ Thu, 19 Sep 2019 01:20:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
- <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com> <20190919080051.mr3cszpyypwqjwu4@pengutronix.de>
-In-Reply-To: <20190919080051.mr3cszpyypwqjwu4@pengutronix.de>
+References: <20190918172106.GN9591@lunn.ch> <20190918180439.12441-1-navid.emamdoost@gmail.com>
+ <8d6f6c54-1758-7d98-c9b5-5c16b171c885@gmail.com> <20190919.101059.1330167782179062709.davem@davemloft.net>
+In-Reply-To: <20190919.101059.1330167782179062709.davem@davemloft.net>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 19 Sep 2019 11:18:24 +0300
-Message-ID: <CA+h21hqibrGksG=k7TkjiToDFZ-putaonO+tCb_=nxs1ig0djA@mail.gmail.com>
-Subject: Re: dsa traffic priorization
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+Date:   Thu, 19 Sep 2019 11:20:04 +0300
+Message-ID: <CA+h21hpDAkJw1qs6pkb1hz3pej8XbEkpEueCbjBEOLZ3bDkLDA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: dsa: sja1105: prevent leaking memory
+To:     David Miller <davem@davemloft.net>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Navid Emamdoost <emamd001@umn.edu>,
+        Stephen McCamant <smccaman@umn.edu>, kjlu@umn.edu,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Sep 2019 at 11:00, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+On Thu, 19 Sep 2019 at 11:11, David Miller <davem@davemloft.net> wrote:
 >
-> Hi Vladimir,
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Wed, 18 Sep 2019 23:00:20 +0300
 >
-> On Wed, Sep 18, 2019 at 05:36:08PM +0300, Vladimir Oltean wrote:
-> > Hi Sascha,
+> > Hi Navid,
 > >
-> > On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
-> > >
-> > > Hi All,
-> > >
-> > > We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
-> > > regular network traffic on another port. The customer wants to configure two things
-> > > on the switch: First Ethercat traffic shall be priorized over other network traffic
-> > > (effectively prioritizing traffic based on port). Second the ethernet controller
-> > > in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
-> > > port shall be rate limited.
-> > >
+> > Thanks for the patch.
 > >
-> > You probably already know this, but egress shaping will not drop
-> > frames, just let them accumulate in the egress queue until something
-> > else happens (e.g. queue occupancy threshold triggers pause frames, or
-> > tail dropping is enabled, etc). Is this what you want?
+> > On 9/18/19 9:04 PM, Navid Emamdoost wrote:
+> >> In sja1105_static_config_upload, in two cases memory is leaked: when
+> >> static_config_buf_prepare_for_upload fails and when sja1105_inhibit_tx
+> >> fails. In both cases config_buf should be released.
+> >> Fixes: 8aa9ebccae876 (avoid leaking config_buf)
+> >> Fixes: 1a4c69406cc1c (avoid leaking config_buf)
+> >>
+> >
+> > You're not supposed to add a short description of the patch here, but
+> > rather the commit message of the patch you're fixing.
+> > Add this to your ~/.gitconfig:
+> >
+> > [pretty]
+> >       fixes = Fixes: %h (\"%s\")
+> >
+> > And then run:
+> > git show --pretty=fixes 8aa9ebccae87621d997707e4f25e53fddd7e30e4
+> >
+> > Fixes: 8aa9ebccae87 ("net: dsa: Introduce driver for NXP SJA1105
+> > 5-port L2 switch")
+> >
+> > git show --pretty=fixes 1a4c69406cc1c3c42bb7391c8eb544e93fe9b320
+> >
+> > Fixes: 1a4c69406cc1 ("net: dsa: sja1105: Prevent PHY jabbering during
+> > switch reset")
 >
-> If I understand correctly then the switch has multiple output queues per
-> port. The Ethercat traffic will go to a higher priority queue and on
-> congestion on other queues, frames designated for that queue will be
-> dropped. I just talked to our customer and he verified that their
-> Ethercat traffic still goes through even when the ports with the general
-> traffic are jammed with packets. So yes, I think this is what I want.
->
+> However the Fixes: line should not be broken up like this with newlines.
 
-Yes, but I mean the egress shaper is per port, so when it goes out of
-credits it goes out of credits, right? Meaning that even if EtherCAT
-has higher strict priority, it will still experience latency caused by
-the best-effort traffic consuming the port's global token bucket
-credits. Sure, it may not be so bad as to actually cause tail drop,
-but did you measure this?
+Sorry, my mail client did that automatically.
 
-> > It sounds a bit
-> > strange to me to configure egress shaping on the CPU port of a DSA
-> > switch. That literally means you are buffering frames inside the
-> > system. What about ingress policing?
->
-> The bottleneck here is in the CPU interface. The SoC simply can't handle
-> all frames coming into a fully occupied link, so we indeed have to limit
-> the number of packets coming into the SoC which speaks for egress rate
-> limiting. We could of course limit the ingress packets on the other
-> ports, but that would mean we have to rate limit each port to the total
-> desired rate divided by the number of ports to be safe, not very
-> optimal.
->
-
-Not very optimal, but may offer better guarantees for the
-high-priority traffic, and there is already a model for doing that,
-unlike for egress shaping on the CPU port.
-What about a software tc-police action on the DSA net device's ingress
-qdisc? Is that still too high-pressure for the CPU?
-Is there any flow steering rule on the CPU for processing EtherCAT
-with higher priority (or affining it to a separate core)? I'm trying
-to understand where the bottleneck really is.
-
-> Sascha
->
-> --
-> Pengutronix e.K.                           |                             |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-> Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
-Thanks,
 -Vladimir
