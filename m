@@ -2,153 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B010BB7482
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 09:59:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F02B7499
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387955AbfISH6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 03:58:55 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:40422 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727033AbfISH6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 03:58:55 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23CFEC016D;
-        Thu, 19 Sep 2019 07:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1568879934; bh=7ZGib0D6tQJI8IyzmFat7Pl5E7J1svJZvRVe4/3leF0=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=c4bkFuuVe4rfNIiU3CM7u6shL9nbIdCHB/PGghjwoRwQ9zuZ/xoB4cLwFlHHAGlaY
-         JFbePRkgSzHF541Jv2mVn/OZsEpJBNsIqSfeyNkEm1EIGGqYPPjG7ioRaLqhkGnFP9
-         7f/cLtjvNQChufNtqYiNk/Dk3gCKzxa3SuFTwv56VdkabATBtrAM/njrJMTKr0BxZj
-         /D0B04Qzv1DUR7wBcp01iByfNsrYIWWPhnYxInXCtE3+1SKy+A+v6HjwtAh10Bjo2p
-         n3m9UgGC2s0KnNwcn8VDv7B9nG1N3MtxCdRljvjxkwlU977DUsbGKrzdkxI7xWJfbq
-         Bdy6gthc7OkSw==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id BFB16A0079;
-        Thu, 19 Sep 2019 07:58:52 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 19 Sep 2019 00:58:51 -0700
-Received: from NAM01-BY2-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Thu, 19 Sep 2019 00:58:51 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DOyiOi4bUWLUR4Kcb7pJXHkb2FumuJoIfNaCtOFSA1OSXU0c+4b06Tlfm5PS12Mgc399CbdOaO0CN2PbxBTJhF+gOOiARv14bcowaXoXuXi68FCkbho2dq80iueJw1qtQLpXZfP+iyfUlhbyGHYh9Wq868N2pGtvju4GNH0j6uNGDb0Zn0mDxzplahVWoc5h7m/Df4NCY+OckskBiY3zKl/cH+AwuSraq2q6S4x8ayihpnHrJLOWdgA3ckOXWPPAn0TtdUVGRO5/iz45Oy4+aXcYLNKOg0xQzfg9AXtZpM75PHJfCDDDW/l8ghrtsqMknyG/e0FCkjeQZYOc8GVDOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AAiZj6E/4uUxoV0CfK9XKfh4VlJGHU1UExUKSlc6wXk=;
- b=M+1Mo6N9yu0O4xHtAoq+uU7VaEpBhHQtQKTeTD0CJ55Q5zyOM+lufpVs162oFdNcSCxLmRPMRW5wVQ7WT5HH1tfgjVFfVl6VxnvYgJLL+/IEqJ9CiKlctYTWZW0oSzOd9wG/b9jVJeAagg3SE9Xh9L+otsjprhRo/L/SOCOp7AzfrV3a+0PVr9o7bJoe64q7ascwSakLqWf6nqzc//snkdJeII4/B3H4OKOlgH7fkv6jB2SE9FGUdZHWOLLmxDMJFq1y3yDGVWWydlA4Yu8/Xv2+v+Jar5IlbBF2v7TgVoX3kbedXGcTcgzflq/wPSihNlRgMuTYi+cz7v4SlwoDog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AAiZj6E/4uUxoV0CfK9XKfh4VlJGHU1UExUKSlc6wXk=;
- b=Yjib9lZjkwy1oxYPzaxGqxEF//jJ2TxnBfGgiHmk7pEsNQJP+m/F+3lHvuzq51jPpC2mHqvcpDPjaMiVLUo7gjMa62OPViE5Xma62AxHaYraRQ4Fs0c2zMJWibD7aNBRZmgeybHNs3KD8eTchTKsuUwGyE29AK48G2Dc0ftFaQc=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB2947.namprd12.prod.outlook.com (20.179.67.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.21; Thu, 19 Sep 2019 07:58:50 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2263.023; Thu, 19 Sep 2019
- 07:58:50 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] stmmac: selftest: avoid large stack usage
-Thread-Topic: [PATCH] stmmac: selftest: avoid large stack usage
-Thread-Index: AQHVblsKA5f8SYRfDU6spEieG1UuDacyof5w
-Date:   Thu, 19 Sep 2019 07:58:50 +0000
-Message-ID: <BN8PR12MB3266E044DDF00F227B9B191CD3890@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20190918195454.2056139-1-arnd@arndb.de>
-In-Reply-To: <20190918195454.2056139-1-arnd@arndb.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [198.182.37.200]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 963955c0-40e0-4e63-e081-08d73cd73548
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR12MB2947;
-x-ms-traffictypediagnostic: BN8PR12MB2947:
-x-microsoft-antispam-prvs: <BN8PR12MB29475914B34EF6102BD8070AD3890@BN8PR12MB2947.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:773;
-x-forefront-prvs: 016572D96D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(396003)(376002)(346002)(136003)(189003)(199004)(11346002)(446003)(486006)(476003)(4326008)(71200400001)(66476007)(64756008)(66556008)(6246003)(316002)(71190400001)(110136005)(54906003)(66446008)(5660300002)(81166006)(81156014)(8676002)(4744005)(256004)(6436002)(55016002)(9686003)(52536014)(86362001)(229853002)(8936002)(478600001)(66066001)(99286004)(33656002)(305945005)(7736002)(3846002)(6116002)(74316002)(14454004)(2906002)(76116006)(102836004)(6506007)(66946007)(186003)(26005)(7696005)(25786009)(76176011);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB2947;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: L1tzPgt02GhDOi7hwMEfUsdgXJqOHy4r5KxqkvdPijflMgYIBFaDvu/FqTxU5wtwRvU9JQb0Fn0foyvh7KphH5Zu215dPVGPwOViG+wjY+ebTbYO2Ls4zRo12PgAyTbtHWXLI3nYvtN5Thhjr/FL6+kC/7Jym1kkTIWyIkeG65y4k5xbFB27SWLgXkOHEYyhL6xYTRdzfddDiui33qalWoLT5O3VEjv7srAuJ2Ct9YoxKS6QiLAOeIm9D+tzNYLiXJ1WBPfqNaEfab+xoSNDpkZw0AUQD3fhQZG3FTWnsH00g+blm9yMuu9AJNBZXZbmI2MdRp0FziD48UpXqFZXf/m6Mb+aF71im8s8Ldtm3VYRdCFs1Q7wpCQ9Xpi+nTi3AODdWwubSMeUXf0oRC2fkleW1b3LDzBPuLEaxJ4eSRU=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2388315AbfISIAj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Sep 2019 04:00:39 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:51001 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387523AbfISIAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 04:00:39 -0400
+Received: from static-dcd-cqq-121001.business.bouyguestelecom.com ([212.194.121.1] helo=nyx.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1iArMi-0001Hh-8X; Thu, 19 Sep 2019 08:00:36 +0000
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id 2D03324010F; Thu, 19 Sep 2019 10:00:36 +0200 (CEST)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id 26DF7289C51;
+        Thu, 19 Sep 2019 10:00:36 +0200 (CEST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0JfQsNGF0LDRgNC+0LI?=
+         =?us-ascii?Q?=3D=3F=3D?= <zaharov@selectel.ru>
+cc:     netdev@vger.kernel.org
+Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
+In-reply-to: <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
+References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx> <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com> <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
+Comments: In-reply-to =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0?=
+ =?us-ascii?Q?JfQsNGF0LDRgNC+0LI=3D=3F=3D?= <zaharov@selectel.ru>
+   message dated "Wed, 18 Sep 2019 21:27:05 +0300."
+X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 963955c0-40e0-4e63-e081-08d73cd73548
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Sep 2019 07:58:50.4808
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XsYVCUGVKfufyGrw50SAxyg5TXB72mrdURze05f8e74+4/SLe/YawNP9qyZed8ZndSR8ZE16iVh+AJnTaXH4OQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2947
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Date:   Thu, 19 Sep 2019 10:00:36 +0200
+Message-ID: <9357.1568880036@nyx>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Sep/18/2019, 20:54:34 (UTC+00:00)
+Алексей Захаров wrote:
 
-> +	if (!cfg || !cfg->enable) {
->  		value &=3D ~XGMAC_RSSE;
->  		writel(value, ioaddr + XGMAC_RSS_CTRL);
->  		return 0;
->  	}
-> =20
->  	for (i =3D 0; i < (sizeof(cfg->key) / sizeof(u32)); i++) {
-> -		ret =3D dwxgmac2_rss_write_reg(ioaddr, true, i, *key++);
-> +		if (cfg)
-> +			ret =3D dwxgmac2_rss_write_reg(ioaddr, true, i, cfg->key[i]);
-> +		else
-> +			ret =3D dwxgmac2_rss_write_reg(ioaddr, true, i, 0);
-> +
->  		if (ret)
->  			return ret;
->  	}
-> =20
->  	for (i =3D 0; i < ARRAY_SIZE(cfg->table); i++) {
-> -		ret =3D dwxgmac2_rss_write_reg(ioaddr, false, i, cfg->table[i]);
-> +		if (cfg)
-> +			ret =3D dwxgmac2_rss_write_reg(ioaddr, false, i, cfg->table[i]);
-> +		else
-> +			ret =3D dwxgmac2_rss_write_reg(ioaddr, false, i, 0);
-> +
+>> >Once a while, one of 802.3ad slaves fails to initialize and hangs in
+>> >BOND_LINK_FAIL state. Commit 334031219a84 ("bonding/802.3ad: fix slave
+>> >link initialization transition states") checks slave->last_link_up. But
+>> >link can still hang in weird state.
+>> >After physical link comes up it sends first two LACPDU messages and
+>> >doesn't work properly after that. It doesn't send or receive LACPDU.
+>> >Once it happens, the only message in dmesg is:
+>> >bond1: link status up again after 0 ms for interface eth2
+>>
+>>         I believe this message indicates that the slave entered
+>> BOND_LINK_FAIL state, but downdelay was not set.  The _FAIL state is
+>> really for managing the downdelay expiration, and a slave should not be
+>> in that state (outside of a brief transition entirely within
+>> bond_miimon_inspect) if downdelay is 0.
+>That's true, downdelay was set to 0, we only use updelay 500.
+>Does it mean, that the bonding driver shouldn't set slave to FAIL
+>state in this case?
 
-I don't get these "if (cfg)" checks. You already check earlier if cfg is=20
-NULL and return if so. I don't think you need these extra checks.
+	It really shouldn't change the slave->link outside of the
+monitoring functions at all, because there are side effects that are not
+happening (user space notifications, updelay / downdelay, etc).
 
-Also, your subject line should be something like: "net: stmmac:=20
-selftests: ..."
+>> >This behavior can be reproduced (not every time):
+>> >1. Set slave link down
+>> >2. Wait for 1-3 seconds
+>> >3. Set slave link up
+>> >
+>> >The fix is to check slave->link before setting it to BOND_LINK_FAIL or
+>> >BOND_LINK_DOWN state. If got invalid Speed/Dupex values and link is in
+>> >BOND_LINK_UP state, mark it as BOND_LINK_FAIL; otherwise mark it as
+>> >BOND_LINK_DOWN.
+>> >
+>> >Fixes: 334031219a84 ("bonding/802.3ad: fix slave link initialization
+>> >transition states")
+>> >Signed-off-by: Aleksei Zakharov <zakharov.a.g@yandex.ru>
+>> >---
+>> > drivers/net/bonding/bond_main.c | 2 +-
+>> > 1 file changed, 1 insertion(+), 1 deletion(-)
+>> >
+>> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> >index 931d9d935686..a28776d8f33f 100644
+>> >--- a/drivers/net/bonding/bond_main.c
+>> >+++ b/drivers/net/bonding/bond_main.c
+>> >@@ -3135,7 +3135,7 @@ static int bond_slave_netdev_event(unsigned long event,
+>> >                */
+>> >               if (bond_update_speed_duplex(slave) &&
+>> >                   BOND_MODE(bond) == BOND_MODE_8023AD) {
+>> >-                      if (slave->last_link_up)
+>> >+                      if (slave->link == BOND_LINK_UP)
+>> >                               slave->link = BOND_LINK_FAIL;
+>> >                       else
+>> >                               slave->link = BOND_LINK_DOWN;
+>>
+>>         Is the core problem here that slaves are reporting link up, but
+>> returning invalid values for speed and/or duplex?  If so, what network
+>> device are you testing with that is exhibiting this behavior?
+>That's true, because link becomes FAIL right in this block of code.
+>We use Mellanox ConnectX-3 Pro nic.
+>
+>>
+>>         If I'm not mistaken, there have been several iterations of
+>> hackery on this block of code to work around this same problem, and each
+>> time there's some corner case that still doesn't work.
+>As i can see, commit 4d2c0cda0744 ("bonding: speed/duplex update at
+>NETDEV_UP event")
+>introduced BOND_LINK_DOWN state if update speed/duplex failed.
+>
+>Commit ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
+>changed DOWN state to FAIL.
+>
+>Commit 334031219a84 ("bonding/802.3ad: fix slave link initialization
+>transition states")
+>implemented different new state for different current states, but it
+>was based on slave->last_link_up.
+>In our case slave->last_link_up !=0 when this code runs. But, slave is
+>not in UP state at the moment. It becomes
+>FAIL and hangs in this state.
+>So, it looks like checking if slave is in UP mode is more appropriate
+>here. At least it works in our case.
+>
+>There was one more commit 12185dfe4436 ("bonding: Force slave speed
+>check after link state recovery for 802.3ad")
+>but it doesn't help in our case.
+>
+>>
+>>         As Davem asked last time around, is the real problem that device
+>> drivers report carrier up but supply invalid speed and duplex state?
+>Probably, but I'm not quite sure right now. We didn't face this issue
+>before 4d2c0cda0744 and ea53abfab960
+>commits.
+
+	My concern here is that we keep adding special cases to this
+code apparently without really understanding the root cause of the
+failures.  4d2c0cda0744 asserts that there is a problem that drivers are
+not supplying speed and duplex information at NETDEV_UP time, but is not
+specific as to the details (hardware information).  Before we add
+another change, I would like to understand what the actual underlying
+cause of the failure is, and if yours is somehow different from what
+4d2c0cda0744 or ea53abfab960 were fixing (or trying to fix).
+
+	Would it be possible for you to instrument the code here to dump
+out the duplex/speed failure information and carrier state of the slave
+device at this point when it fails in your testing?  Something like the
+following (which I have not compile tested):
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 931d9d935686..758af8c2b9e1 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -378,15 +378,22 @@ static int bond_update_speed_duplex(struct slave *slave)
+ 	slave->duplex = DUPLEX_UNKNOWN;
+ 
+ 	res = __ethtool_get_link_ksettings(slave_dev, &ecmd);
+-	if (res < 0)
++	if (res < 0) {
++		pr_err("DBG ksettings res %d slave %s\n", res, slave_dev->name);
+ 		return 1;
+-	if (ecmd.base.speed == 0 || ecmd.base.speed == ((__u32)-1))
++	}
++	if (ecmd.base.speed == 0 || ecmd.base.speed == ((__u32)-1)) {
++		pr_err("DBG speed %u slave %s\n", ecmd.base.speed,
++		       slave_dev->name);
+ 		return 1;
++	}
+ 	switch (ecmd.base.duplex) {
+ 	case DUPLEX_FULL:
+ 	case DUPLEX_HALF:
+ 		break;
+ 	default:
++		pr_err("DBG duplex %u slave %s\n", ecmd.base.duplex,
++		       slave_dev->name);
+ 		return 1;
+ 	}
+ 
+@@ -3135,6 +3142,9 @@ static int bond_slave_netdev_event(unsigned long event,
+ 		 */
+ 		if (bond_update_speed_duplex(slave) &&
+ 		    BOND_MODE(bond) == BOND_MODE_8023AD) {
++			pr_err("DBG slave %s event %d carrier %d\n",
++			       slave->dev->name, event,
++			       netif_carrier_ok(slave->dev));
+ 			if (slave->last_link_up)
+ 				slave->link = BOND_LINK_FAIL;
+ 			else
+
+	Thanks,
+
+	-J
 
 ---
-Thanks,
-Jose Miguel Abreu
+	-Jay Vosburgh, jay.vosburgh@canonical.com
