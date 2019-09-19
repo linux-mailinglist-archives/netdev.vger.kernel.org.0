@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B06CB70D0
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CAEFB70DC
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387906AbfISB0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 21:26:48 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49254 "EHLO mx1.redhat.com"
+        id S2387928AbfISB06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 21:26:58 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48960 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387882AbfISB0q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 21:26:46 -0400
+        id S1730815AbfISB05 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Sep 2019 21:26:57 -0400
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3CBEA302C080;
-        Thu, 19 Sep 2019 01:26:42 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5ADC28553F;
+        Thu, 19 Sep 2019 01:26:56 +0000 (UTC)
 Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6F5760C18;
-        Thu, 19 Sep 2019 01:26:36 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C40460C80;
+        Thu, 19 Sep 2019 01:26:42 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -29,175 +29,131 @@ Cc:     Paul Moore <paul@paul-moore.com>, sgrubb@redhat.com,
         eparis@parisplace.org, serge@hallyn.com, ebiederm@xmission.com,
         nhorman@tuxdriver.com, dwalsh@redhat.com, mpatel@redhat.com,
         Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH ghak90 V7 15/21] sched: pull task_is_descendant into kernel/sched/core.c
-Date:   Wed, 18 Sep 2019 21:22:32 -0400
-Message-Id: <ff8a73c7841ef788c60f13f90d036b321af0e431.1568834524.git.rgb@redhat.com>
+Subject: [PATCH ghak90 V7 16/21] audit: add support for contid set/get by netlink
+Date:   Wed, 18 Sep 2019 21:22:33 -0400
+Message-Id: <ea4e8352fd1671f91d1b015a15abee785ea17136.1568834525.git.rgb@redhat.com>
 In-Reply-To: <cover.1568834524.git.rgb@redhat.com>
 References: <cover.1568834524.git.rgb@redhat.com>
 In-Reply-To: <cover.1568834524.git.rgb@redhat.com>
 References: <cover.1568834524.git.rgb@redhat.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 19 Sep 2019 01:26:46 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Thu, 19 Sep 2019 01:26:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the task_is_descendant() function is used in YAMA and in audit,
-pull the function into kernel/core/sched.c
+Add the ability to get and set the audit container identifier using an
+audit netlink message using message types AUDIT_SET_CONTID 1023 and
+AUDIT_GET_CONTID 1022 in addition to using the proc filesystem.  The
+message format includes the data structure:
+
+struct audit_contid_status {
+       pid_t   pid;
+       u64     id;
+};
 
 Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
 ---
- include/linux/sched.h    |  3 +++
- kernel/audit.c           | 33 ---------------------------------
- kernel/sched/core.c      | 33 +++++++++++++++++++++++++++++++++
- security/yama/yama_lsm.c | 33 ---------------------------------
- 4 files changed, 36 insertions(+), 66 deletions(-)
+ include/uapi/linux/audit.h |  2 ++
+ kernel/audit.c             | 40 ++++++++++++++++++++++++++++++++++++++++
+ kernel/audit.h             |  5 +++++
+ 3 files changed, 47 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index a936d162513a..b251f018f4db 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1988,4 +1988,7 @@ static inline void rseq_syscall(struct pt_regs *regs)
+diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+index f34108759e8f..e26729fc9943 100644
+--- a/include/uapi/linux/audit.h
++++ b/include/uapi/linux/audit.h
+@@ -73,6 +73,8 @@
+ #define AUDIT_GET_FEATURE	1019	/* Get which features are enabled */
+ #define AUDIT_CONTAINER_OP	1020	/* Define the container id and info */
+ #define AUDIT_SIGNAL_INFO2	1021	/* Get info auditd signal sender */
++#define AUDIT_GET_CONTID	1022	/* Get contid of a task */
++#define AUDIT_SET_CONTID	1023	/* Set contid of a task */
  
- const struct cpumask *sched_trace_rd_span(struct root_domain *rd);
- 
-+extern int task_is_descendant(struct task_struct *parent,
-+			      struct task_struct *child);
-+
- #endif
+ #define AUDIT_FIRST_USER_MSG	1100	/* Userspace messages mostly uninteresting to kernel */
+ #define AUDIT_USER_AVC		1107	/* We filter this differently */
 diff --git a/kernel/audit.c b/kernel/audit.c
-index 69fe1e9af7cb..4fe7678304dd 100644
+index 4fe7678304dd..df92de20ed73 100644
 --- a/kernel/audit.c
 +++ b/kernel/audit.c
-@@ -2560,39 +2560,6 @@ static struct task_struct *audit_cont_owner(struct task_struct *tsk)
+@@ -1216,6 +1216,8 @@ static int audit_netlink_ok(struct sk_buff *skb, u16 msg_type)
+ 	case AUDIT_TTY_SET:
+ 	case AUDIT_TRIM:
+ 	case AUDIT_MAKE_EQUIV:
++	case AUDIT_GET_CONTID:
++	case AUDIT_SET_CONTID:
+ 		/* Only support auditd and auditctl in initial pid namespace
+ 		 * for now. */
+ 		if (task_active_pid_ns(current) != &init_pid_ns)
+@@ -1273,6 +1275,23 @@ static int audit_get_feature(struct sk_buff *skb)
+ 	return 0;
  }
  
- /*
-- * task_is_descendant - walk up a process family tree looking for a match
-- * @parent: the process to compare against while walking up from child
-- * @child: the process to start from while looking upwards for parent
-- *
-- * Returns 1 if child is a descendant of parent, 0 if not.
-- */
--static int task_is_descendant(struct task_struct *parent,
--			      struct task_struct *child)
--{
--	int rc = 0;
--	struct task_struct *walker = child;
--
--	if (!parent || !child)
--		return 0;
--
--	rcu_read_lock();
--	if (!thread_group_leader(parent))
--		parent = rcu_dereference(parent->group_leader);
--	while (walker->pid > 0) {
--		if (!thread_group_leader(walker))
--			walker = rcu_dereference(walker->group_leader);
--		if (walker == parent) {
--			rc = 1;
--			break;
--		}
--		walker = rcu_dereference(walker->real_parent);
--	}
--	rcu_read_unlock();
--
--	return rc;
--}
--
--/*
-  * audit_set_contid - set current task's audit contid
-  * @task: target task
-  * @contid: contid value
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 2b037f195473..7ba9e07381fa 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -7509,6 +7509,39 @@ void dump_cpu_task(int cpu)
- }
- 
- /*
-+ * task_is_descendant - walk up a process family tree looking for a match
-+ * @parent: the process to compare against while walking up from child
-+ * @child: the process to start from while looking upwards for parent
-+ *
-+ * Returns 1 if child is a descendant of parent, 0 if not.
-+ */
-+int task_is_descendant(struct task_struct *parent,
-+			      struct task_struct *child)
++static int audit_get_contid_status(struct sk_buff *skb)
 +{
-+	int rc = 0;
-+	struct task_struct *walker = child;
++	struct nlmsghdr *nlh = nlmsg_hdr(skb);
++	u32 seq = nlh->nlmsg_seq;
++	void *data = nlmsg_data(nlh);
++	struct audit_contid_status cs;
 +
-+	if (!parent || !child)
-+		return 0;
-+
++	cs.pid = ((struct audit_contid_status *)data)->pid;
++	if (!cs.pid)
++		cs.pid = task_tgid_nr(current);
 +	rcu_read_lock();
-+	if (!thread_group_leader(parent))
-+		parent = rcu_dereference(parent->group_leader);
-+	while (walker->pid > 0) {
-+		if (!thread_group_leader(walker))
-+			walker = rcu_dereference(walker->group_leader);
-+		if (walker == parent) {
-+			rc = 1;
-+			break;
-+		}
-+		walker = rcu_dereference(walker->real_parent);
-+	}
++	cs.id = audit_get_contid(find_task_by_vpid(cs.pid));
 +	rcu_read_unlock();
-+
-+	return rc;
++	audit_send_reply(skb, seq, AUDIT_GET_CONTID, 0, 0, &cs, sizeof(cs));
++	return 0;
 +}
 +
-+/*
-  * Nice levels are multiplicative, with a gentle 10% change for every
-  * nice level changed. I.e. when a CPU-bound task goes from nice 0 to
-  * nice 1, it will get ~10% less CPU time than another CPU-bound task
-diff --git a/security/yama/yama_lsm.c b/security/yama/yama_lsm.c
-index 94dc346370b1..25eae205eae8 100644
---- a/security/yama/yama_lsm.c
-+++ b/security/yama/yama_lsm.c
-@@ -263,39 +263,6 @@ static int yama_task_prctl(int option, unsigned long arg2, unsigned long arg3,
- }
+ static void audit_log_feature_change(int which, u32 old_feature, u32 new_feature,
+ 				     u32 old_lock, u32 new_lock, int res)
+ {
+@@ -1700,6 +1719,27 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+ 		audit_log_end(ab);
+ 		break;
+ 	}
++	case AUDIT_SET_CONTID: {
++		struct audit_contid_status *s = data;
++		struct task_struct *tsk;
++
++		/* check if new data is valid */
++		if (nlmsg_len(nlh) < sizeof(*s))
++			return -EINVAL;
++		tsk = find_get_task_by_vpid(s->pid);
++		if (!tsk)
++			return -EINVAL;
++
++		err = audit_set_contid(tsk, s->id);
++		put_task_struct(tsk);
++		return err;
++		break;
++	}
++	case AUDIT_GET_CONTID:
++		err = audit_get_contid_status(skb);
++		if (err)
++			return err;
++		break;
+ 	default:
+ 		err = -EINVAL;
+ 		break;
+diff --git a/kernel/audit.h b/kernel/audit.h
+index c9b73abfd6a0..25732fbc47a4 100644
+--- a/kernel/audit.h
++++ b/kernel/audit.h
+@@ -224,6 +224,11 @@ static inline int audit_hash_contid(u64 contid)
  
- /**
-- * task_is_descendant - walk up a process family tree looking for a match
-- * @parent: the process to compare against while walking up from child
-- * @child: the process to start from while looking upwards for parent
-- *
-- * Returns 1 if child is a descendant of parent, 0 if not.
-- */
--static int task_is_descendant(struct task_struct *parent,
--			      struct task_struct *child)
--{
--	int rc = 0;
--	struct task_struct *walker = child;
--
--	if (!parent || !child)
--		return 0;
--
--	rcu_read_lock();
--	if (!thread_group_leader(parent))
--		parent = rcu_dereference(parent->group_leader);
--	while (walker->pid > 0) {
--		if (!thread_group_leader(walker))
--			walker = rcu_dereference(walker->group_leader);
--		if (walker == parent) {
--			rc = 1;
--			break;
--		}
--		walker = rcu_dereference(walker->real_parent);
--	}
--	rcu_read_unlock();
--
--	return rc;
--}
--
--/**
-  * ptracer_exception_found - tracer registered as exception for this tracee
-  * @tracer: the task_struct of the process attempting ptrace
-  * @tracee: the task_struct of the process to be ptraced
+ #define AUDIT_CONTID_COUNT	1 << 16
+ 
++struct audit_contid_status {
++	pid_t	pid;
++	u64	id;
++};
++
+ /* Indicates that audit should log the full pathname. */
+ #define AUDIT_NAME_FULL -1
+ 
 -- 
 1.8.3.1
 
