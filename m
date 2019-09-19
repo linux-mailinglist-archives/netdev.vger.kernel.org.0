@@ -2,196 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F02B7499
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D782B749E
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 10:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388315AbfISIAj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Sep 2019 04:00:39 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51001 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387523AbfISIAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 04:00:39 -0400
-Received: from static-dcd-cqq-121001.business.bouyguestelecom.com ([212.194.121.1] helo=nyx.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iArMi-0001Hh-8X; Thu, 19 Sep 2019 08:00:36 +0000
-Received: by nyx.localdomain (Postfix, from userid 1000)
-        id 2D03324010F; Thu, 19 Sep 2019 10:00:36 +0200 (CEST)
-Received: from nyx (localhost [127.0.0.1])
-        by nyx.localdomain (Postfix) with ESMTP id 26DF7289C51;
-        Thu, 19 Sep 2019 10:00:36 +0200 (CEST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0JfQsNGF0LDRgNC+0LI?=
-         =?us-ascii?Q?=3D=3F=3D?= <zaharov@selectel.ru>
-cc:     netdev@vger.kernel.org
-Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
-In-reply-to: <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
-References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx> <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com> <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
-Comments: In-reply-to =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0?=
- =?us-ascii?Q?JfQsNGF0LDRgNC+0LI=3D=3F=3D?= <zaharov@selectel.ru>
-   message dated "Wed, 18 Sep 2019 21:27:05 +0300."
-X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
+        id S2388367AbfISIAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 04:00:55 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:39029 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387523AbfISIAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 04:00:54 -0400
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1iArMy-0004ke-Sh; Thu, 19 Sep 2019 10:00:52 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <sha@pengutronix.de>)
+        id 1iArMx-0000S5-SC; Thu, 19 Sep 2019 10:00:51 +0200
+Date:   Thu, 19 Sep 2019 10:00:51 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+Subject: Re: dsa traffic priorization
+Message-ID: <20190919080051.mr3cszpyypwqjwu4@pengutronix.de>
+References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
+ <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Date:   Thu, 19 Sep 2019 10:00:36 +0200
-Message-ID: <9357.1568880036@nyx>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 09:38:06 up 73 days, 13:48, 76 users,  load average: 0.01, 0.07,
+ 0.08
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Алексей Захаров wrote:
+Hi Vladimir,
 
->> >Once a while, one of 802.3ad slaves fails to initialize and hangs in
->> >BOND_LINK_FAIL state. Commit 334031219a84 ("bonding/802.3ad: fix slave
->> >link initialization transition states") checks slave->last_link_up. But
->> >link can still hang in weird state.
->> >After physical link comes up it sends first two LACPDU messages and
->> >doesn't work properly after that. It doesn't send or receive LACPDU.
->> >Once it happens, the only message in dmesg is:
->> >bond1: link status up again after 0 ms for interface eth2
->>
->>         I believe this message indicates that the slave entered
->> BOND_LINK_FAIL state, but downdelay was not set.  The _FAIL state is
->> really for managing the downdelay expiration, and a slave should not be
->> in that state (outside of a brief transition entirely within
->> bond_miimon_inspect) if downdelay is 0.
->That's true, downdelay was set to 0, we only use updelay 500.
->Does it mean, that the bonding driver shouldn't set slave to FAIL
->state in this case?
+On Wed, Sep 18, 2019 at 05:36:08PM +0300, Vladimir Oltean wrote:
+> Hi Sascha,
+> 
+> On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> >
+> > Hi All,
+> >
+> > We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
+> > regular network traffic on another port. The customer wants to configure two things
+> > on the switch: First Ethercat traffic shall be priorized over other network traffic
+> > (effectively prioritizing traffic based on port). Second the ethernet controller
+> > in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
+> > port shall be rate limited.
+> >
+> 
+> You probably already know this, but egress shaping will not drop
+> frames, just let them accumulate in the egress queue until something
+> else happens (e.g. queue occupancy threshold triggers pause frames, or
+> tail dropping is enabled, etc). Is this what you want?
 
-	It really shouldn't change the slave->link outside of the
-monitoring functions at all, because there are side effects that are not
-happening (user space notifications, updelay / downdelay, etc).
+If I understand correctly then the switch has multiple output queues per
+port. The Ethercat traffic will go to a higher priority queue and on
+congestion on other queues, frames designated for that queue will be
+dropped. I just talked to our customer and he verified that their
+Ethercat traffic still goes through even when the ports with the general
+traffic are jammed with packets. So yes, I think this is what I want.
 
->> >This behavior can be reproduced (not every time):
->> >1. Set slave link down
->> >2. Wait for 1-3 seconds
->> >3. Set slave link up
->> >
->> >The fix is to check slave->link before setting it to BOND_LINK_FAIL or
->> >BOND_LINK_DOWN state. If got invalid Speed/Dupex values and link is in
->> >BOND_LINK_UP state, mark it as BOND_LINK_FAIL; otherwise mark it as
->> >BOND_LINK_DOWN.
->> >
->> >Fixes: 334031219a84 ("bonding/802.3ad: fix slave link initialization
->> >transition states")
->> >Signed-off-by: Aleksei Zakharov <zakharov.a.g@yandex.ru>
->> >---
->> > drivers/net/bonding/bond_main.c | 2 +-
->> > 1 file changed, 1 insertion(+), 1 deletion(-)
->> >
->> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> >index 931d9d935686..a28776d8f33f 100644
->> >--- a/drivers/net/bonding/bond_main.c
->> >+++ b/drivers/net/bonding/bond_main.c
->> >@@ -3135,7 +3135,7 @@ static int bond_slave_netdev_event(unsigned long event,
->> >                */
->> >               if (bond_update_speed_duplex(slave) &&
->> >                   BOND_MODE(bond) == BOND_MODE_8023AD) {
->> >-                      if (slave->last_link_up)
->> >+                      if (slave->link == BOND_LINK_UP)
->> >                               slave->link = BOND_LINK_FAIL;
->> >                       else
->> >                               slave->link = BOND_LINK_DOWN;
->>
->>         Is the core problem here that slaves are reporting link up, but
->> returning invalid values for speed and/or duplex?  If so, what network
->> device are you testing with that is exhibiting this behavior?
->That's true, because link becomes FAIL right in this block of code.
->We use Mellanox ConnectX-3 Pro nic.
->
->>
->>         If I'm not mistaken, there have been several iterations of
->> hackery on this block of code to work around this same problem, and each
->> time there's some corner case that still doesn't work.
->As i can see, commit 4d2c0cda0744 ("bonding: speed/duplex update at
->NETDEV_UP event")
->introduced BOND_LINK_DOWN state if update speed/duplex failed.
->
->Commit ea53abfab960 ("bonding/802.3ad: fix link_failure_count tracking")
->changed DOWN state to FAIL.
->
->Commit 334031219a84 ("bonding/802.3ad: fix slave link initialization
->transition states")
->implemented different new state for different current states, but it
->was based on slave->last_link_up.
->In our case slave->last_link_up !=0 when this code runs. But, slave is
->not in UP state at the moment. It becomes
->FAIL and hangs in this state.
->So, it looks like checking if slave is in UP mode is more appropriate
->here. At least it works in our case.
->
->There was one more commit 12185dfe4436 ("bonding: Force slave speed
->check after link state recovery for 802.3ad")
->but it doesn't help in our case.
->
->>
->>         As Davem asked last time around, is the real problem that device
->> drivers report carrier up but supply invalid speed and duplex state?
->Probably, but I'm not quite sure right now. We didn't face this issue
->before 4d2c0cda0744 and ea53abfab960
->commits.
+> It sounds a bit
+> strange to me to configure egress shaping on the CPU port of a DSA
+> switch. That literally means you are buffering frames inside the
+> system. What about ingress policing?
 
-	My concern here is that we keep adding special cases to this
-code apparently without really understanding the root cause of the
-failures.  4d2c0cda0744 asserts that there is a problem that drivers are
-not supplying speed and duplex information at NETDEV_UP time, but is not
-specific as to the details (hardware information).  Before we add
-another change, I would like to understand what the actual underlying
-cause of the failure is, and if yours is somehow different from what
-4d2c0cda0744 or ea53abfab960 were fixing (or trying to fix).
+The bottleneck here is in the CPU interface. The SoC simply can't handle
+all frames coming into a fully occupied link, so we indeed have to limit
+the number of packets coming into the SoC which speaks for egress rate
+limiting. We could of course limit the ingress packets on the other
+ports, but that would mean we have to rate limit each port to the total
+desired rate divided by the number of ports to be safe, not very
+optimal.
 
-	Would it be possible for you to instrument the code here to dump
-out the duplex/speed failure information and carrier state of the slave
-device at this point when it fails in your testing?  Something like the
-following (which I have not compile tested):
+Sascha
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 931d9d935686..758af8c2b9e1 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -378,15 +378,22 @@ static int bond_update_speed_duplex(struct slave *slave)
- 	slave->duplex = DUPLEX_UNKNOWN;
- 
- 	res = __ethtool_get_link_ksettings(slave_dev, &ecmd);
--	if (res < 0)
-+	if (res < 0) {
-+		pr_err("DBG ksettings res %d slave %s\n", res, slave_dev->name);
- 		return 1;
--	if (ecmd.base.speed == 0 || ecmd.base.speed == ((__u32)-1))
-+	}
-+	if (ecmd.base.speed == 0 || ecmd.base.speed == ((__u32)-1)) {
-+		pr_err("DBG speed %u slave %s\n", ecmd.base.speed,
-+		       slave_dev->name);
- 		return 1;
-+	}
- 	switch (ecmd.base.duplex) {
- 	case DUPLEX_FULL:
- 	case DUPLEX_HALF:
- 		break;
- 	default:
-+		pr_err("DBG duplex %u slave %s\n", ecmd.base.duplex,
-+		       slave_dev->name);
- 		return 1;
- 	}
- 
-@@ -3135,6 +3142,9 @@ static int bond_slave_netdev_event(unsigned long event,
- 		 */
- 		if (bond_update_speed_duplex(slave) &&
- 		    BOND_MODE(bond) == BOND_MODE_8023AD) {
-+			pr_err("DBG slave %s event %d carrier %d\n",
-+			       slave->dev->name, event,
-+			       netif_carrier_ok(slave->dev));
- 			if (slave->last_link_up)
- 				slave->link = BOND_LINK_FAIL;
- 			else
-
-	Thanks,
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
