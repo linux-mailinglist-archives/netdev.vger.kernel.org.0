@@ -2,118 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9501B79E0
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C722B79E3
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390416AbfISMz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 08:55:29 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2739 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389212AbfISMz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 08:55:28 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 91770C78C476D9935686;
-        Thu, 19 Sep 2019 20:55:25 +0800 (CST)
-Received: from [127.0.0.1] (10.57.88.168) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Sep 2019
- 20:55:19 +0800
-Subject: Re: [PATCH v4 1/3] kernel/notifier.c: intercepting duplicate
- registrations to avoid infinite loops
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <akpm@linux-foundation.org>, <vvs@virtuozzo.com>,
-        <torvalds@linux-foundation.org>, <adobriyan@gmail.com>,
-        <anna.schumaker@netapp.com>, <arjan@linux.intel.com>,
-        <bfields@fieldses.org>, <chuck.lever@oracle.com>,
-        <davem@davemloft.net>, <jlayton@kernel.org>, <luto@kernel.org>,
-        <mingo@kernel.org>, <Nadia.Derbey@bull.net>,
-        <paulmck@linux.vnet.ibm.com>, <semen.protsenko@linaro.org>,
-        <stern@rowland.harvard.edu>, <tglx@linutronix.de>,
-        <trond.myklebust@hammerspace.com>, <viresh.kumar@linaro.org>,
-        <stable@kernel.org>, <dylix.dailei@huawei.com>,
-        <yuehaibing@huawei.com>, <linux-kernel@vger.kernel.org>,
-        <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <1568861888-34045-1-git-send-email-nixiaoming@huawei.com>
- <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
- <20190919063615.GA2069346@kroah.com>
-From:   Xiaoming Ni <nixiaoming@huawei.com>
-Message-ID: <b37575b1-2ea4-d813-c262-b52b322652c1@huawei.com>
-Date:   Thu, 19 Sep 2019 20:55:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2390443AbfISM4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 08:56:03 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:35990 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390440AbfISM4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 08:56:03 -0400
+Received: by mail-yb1-f195.google.com with SMTP id p23so1289760yba.3
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 05:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RMhKFFhgfwYx83zY6Jd0u64gOJvt2kr6rD9TDcH0gmY=;
+        b=Lg4abc2POwrfTKw98vsQapqmpZQI3JlrjDUErzmJddO/Hi7ElbcjqHA6eO3GjMn7+u
+         4MQ8VHUuFrrLLByuVCiy12y3UJMtoer3enYgMN18zdvnFX9POlVDwshgXzrBULj2/lOv
+         0ehK4jvp6MkrgQm+qbAcoWsIqD3nr8YMveZkEiMfHv8fMRMy/L4bG8lZ2MAJat34QVKr
+         mPPKX48aO5fqO4EEEEOG09ny+yGyBQmujG94h7Q+bm0NggiiMq3guJhflEuCROnqJFKU
+         Z/U3NGWP1qYFX4Jg51mJ+lNfBfbyJQ8q5t9bc3YeNZguXcW+delUnsDpBaq4uN6s29BF
+         BtKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RMhKFFhgfwYx83zY6Jd0u64gOJvt2kr6rD9TDcH0gmY=;
+        b=lB+3LMes9FTLE04UOyxXNHVRLvy34GPNgRza8hYUyB9iLZy9u0cuJEXP7Zwnjmzdyz
+         t/Ok34ZWwk3Z2lPlD59pAkGITeUYRWFSbMHN5KgMqloh2lgQWEmOvQxp6ize2Cag3Zcd
+         NRp+RUzIWMN4wsq26beWfkGz824+VLgjsR4f8B1982y4q1wSqgqBD93Cz6K9BdC0p4vm
+         be2RcgNgJ8yXXP0JO7KgqbnSqWg89U7EvboHUb+W3khfMqo+AGYQGyg3GuNSRzowRqJM
+         3qf+AQGomQke6DU9odn6Wnn8EugaAdPQE1Jt0TS+bsKn3x4mwAI0NPMu2A84l/TIrDpS
+         2QJg==
+X-Gm-Message-State: APjAAAXccZ5WsmuQDqjPjTC41wcK365tFP8VPj3FHqmTziFr8Cocx/m8
+        sp92v8SQj6M3j/ULYFhJYsbaGavs
+X-Google-Smtp-Source: APXvYqwgdr1AXQpogyUq30vVv2wFQbzpqcvXgXUha1RRlHoC8SCg0UPVHxxvFhSMhGL4l/g02t5IDw==
+X-Received: by 2002:a25:902:: with SMTP id 2mr6114618ybj.99.1568897760626;
+        Thu, 19 Sep 2019 05:56:00 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id o11sm1844264ywc.42.2019.09.19.05.55.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Sep 2019 05:55:59 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id y6so1267975ybq.12
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 05:55:59 -0700 (PDT)
+X-Received: by 2002:a25:a1c2:: with SMTP id a60mr5752520ybi.46.1568897759162;
+ Thu, 19 Sep 2019 05:55:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190919063615.GA2069346@kroah.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.57.88.168]
-X-CFilter-Loop: Reflected
+References: <20190918072517.16037-1-steffen.klassert@secunet.com>
+ <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com> <20190918165817.GA3431@localhost.localdomain>
+In-Reply-To: <20190918165817.GA3431@localhost.localdomain>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 19 Sep 2019 08:55:22 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf0N9uhOM3r8xvXiVj0xhx0KqL6-rV9EGhBJ=d8oGaxyg@mail.gmail.com>
+Message-ID: <CA+FuTSf0N9uhOM3r8xvXiVj0xhx0KqL6-rV9EGhBJ=d8oGaxyg@mail.gmail.com>
+Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/9/19 14:36, Greg KH wrote:
-> On Thu, Sep 19, 2019 at 10:58:06AM +0800, Xiaoming Ni wrote:
->> Registering the same notifier to a hook repeatedly can cause the hook
->> list to form a ring or lose other members of the list.
->>
->> case1: An infinite loop in notifier_chain_register() can cause soft lockup
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>         atomic_notifier_chain_register(&test_notifier_list, &test2);
->>
->> case2: An infinite loop in notifier_chain_register() can cause soft lockup
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>         atomic_notifier_call_chain(&test_notifier_list, 0, NULL);
->>
->> case3: lose other hook test2
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>         atomic_notifier_chain_register(&test_notifier_list, &test2);
->>         atomic_notifier_chain_register(&test_notifier_list, &test1);
->>
->> case4: Unregister returns 0, but the hook is still in the linked list,
->>         and it is not really registered. If you call notifier_call_chain
->>         after ko is unloaded, it will trigger oops.
->>
->> If the system is configured with softlockup_panic and the same
->> hook is repeatedly registered on the panic_notifier_list, it
->> will cause a loop panic.
->>
->> Add a check in notifier_chain_register(),
->> Intercepting duplicate registrations to avoid infinite loops
->>
->> Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
->> Reviewed-by: Vasily Averin <vvs@virtuozzo.com>
->> ---
->>  kernel/notifier.c | 5 ++++-
->>  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> <formletter>
-> 
-> This is not the correct way to submit patches for inclusion in the
-> stable kernel tree.  Please read:
->     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-> for how to do this properly.
-> 
-thanks for your guidance
-I thought that as long as the code exists in the stable branch, it should be copied to stable@kernel.org
-it is my mistake,
+On Wed, Sep 18, 2019 at 12:58 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Wed, Sep 18, 2019 at 12:17:08PM -0400, Willem de Bruijn wrote:
+> > On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
+> > <steffen.klassert@secunet.com> wrote:
+> > >
+> > > This patchset adds support to do GRO/GSO by chaining packets
+> > > of the same flow at the SKB frag_list pointer. This avoids
+> > > the overhead to merge payloads into one big packet, and
+> > > on the other end, if GSO is needed it avoids the overhead
+> > > of splitting the big packet back to the native form.
+> > >
+> > > Patch 1 Enables UDP GRO by default.
+> > >
+> > > Patch 2 adds a netdev feature flag to enable listifyed GRO,
+> > > this implements one of the configuration options discussed
+> > > at netconf 2019.
+> > >
+> > > Patch 3 adds a netdev software feature set that defaults to off
+> > > and assigns the new listifyed GRO feature flag to it.
+> > >
+> > > Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
+> > >
+> > > Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
+> > > GRO supported socket is found.
+> >
+> > Very nice feature, Steffen. Aside from questions around performance,
+> > my only question is really how this relates to GSO_BY_FRAGS.
+>
+> They do the exact same thing AFAICT: they GSO according to a
+> pre-formatted list of fragments/packets, and not to a specific size
+> (such as MSS).
+>
+> >
+> > More specifically, whether we can remove that in favor of using your
+> > new skb_segment_list. That would actually be a big first step in
+> > simplifying skb_segment back to something manageable.
+>
+> The main issue (that I know) on obsoleting GSO_BY_FRAGS is that
+> dealing with frags instead of frag_list was considered easier to be
+> offloaded, if ever attempted.  So this would be a step back on that
+> aspect.  Other than this, it should be doable.
 
-These patches are intended to be sent to the main line.
-Should I resend it again?
+But GSO_BY_FRAGS also uses frag_list, not frags?
 
-> </formletter>
-> 
-> Same thing goes for all of the patches in this series.
-> 
-> thanks,
-> 
-> greg k-h
-> 
-> .
-> 
-
-thanks
-
-Xiaoming Ni
-
+And list_skb->len for mss.
