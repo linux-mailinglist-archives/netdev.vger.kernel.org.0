@@ -2,75 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18679B712B
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:44:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EE4B712C
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387665AbfISBos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 21:44:48 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43788 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387395AbfISBos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 21:44:48 -0400
-Received: by mail-qk1-f196.google.com with SMTP id h126so1605621qke.10
-        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 18:44:46 -0700 (PDT)
+        id S2387738AbfISBpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 21:45:05 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:44427 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387561AbfISBpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 21:45:05 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q21so1136255pfn.11
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 18:45:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xkMdRwP7dRIQntiL1DI00+cj3iNG/NEsiFgJ+PEO0gw=;
-        b=Zw96cAcTE35uIKpBFAL0KSlDTqm4ScDPL9alYcLDS9Yf31Du08TU0vNhHURemYdcNO
-         WOR53PoEvW6D4qCckjtUXvNzBZjuBkzv1aX7U9cbUNy03Z5ikhlBo2lNC/aq+xEbI/59
-         eaIPkRgctTX/RVDoYCg9+XXiwnjLwZWrUntRrXgDnqA84Qxs5H45d5ZdDpntIV3debwA
-         Yi7rxtrMCRUi9yEAxsXAF76t6P1TelPu96uB+UUnyF10SY9/fjYlueLgI9vnl/0D2azL
-         bBFgmy/zlcPuMeeNWvztNnnnSsxuBwqMDaXJ0yuqvTz6ZV8TZzMqqAhNFQvG3cqI3Kou
-         b82g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=glrVZTGv8aYQUd2jDJTvxAIRlmb/V80278CbSfWIIrs=;
+        b=W2wIkBau+twpf1v68kLs1GMtZLZ5vmwDFmiu2oKZ4Ds/WfySy+Asm7AdpdHFY8S8g2
+         EiCIdnLn09LMr61gZ0gH0WQdwmzSx92/WEEImyNbAxSOLCnb/KHFeE6EsxYThzwibs6g
+         1owaHV+uSOzqRY7s+6bslmVoWe7BHi9+kb1uuRBbv5YMOUuatFQ0BoU6CyPQJLCE6qmA
+         l2bCCIikr9MSreEQTjMlw3ZA3weTX81bNdj1q/fjQneYCEkUhW8LCp83S94OOrGPKUJc
+         x5H5+tnJJykND3nQApgblqIUOYlKIxf8fmFgRVc6CKPhBmxO/1kTA6cETcIBV9uRB4+T
+         BrXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xkMdRwP7dRIQntiL1DI00+cj3iNG/NEsiFgJ+PEO0gw=;
-        b=frWrBaUYZfmY88gSRSec70ZTw0ZYpFo91kWVpQmYDKkRqUNS9F6HCmMg1fpqbTEFlp
-         J2nGURQdrP9zOWVKWVXh6fixpV0Ehl6IEcvADnOgZkgMw7YylytxqXS+ntsdq+L7KoZ3
-         GmwGuVHDAStMWwLy15ICstO517ZBTrz37MnZy0M+Ij4kpoO6wPcPPUn/djY8+oC9N/8j
-         kthyweXqpCEXwzSqsfi+ECsqeR8jaqJ561nI6BYEj2CwWtcJc/mLjyGyBU1BstluSNqj
-         7Gde1V+Y65e+BfvLFVOIEYbna3lOK4ex0/Cgv5otp7y+WN3tAbXFUruO8LOr5r0gh3y+
-         YrnQ==
-X-Gm-Message-State: APjAAAV2w0uO7xWmekPzE73xUwKCCCDDRj/XlLBLtDIv7oFKUNMOqWSh
-        xvaJ64Nn9akBfJU9BI28nXZMKWzi+4FeC3Yeye8AZg==
-X-Google-Smtp-Source: APXvYqw3xhDJsC4KO6DBCGEOvw+KkzJfCRl9QjdJwDEkRsdKxsqZl3tYPpV1cMRJHB+rn+bVsMMar0AqTbD5Bnon6EM=
-X-Received: by 2002:a37:b16:: with SMTP id 22mr498473qkl.220.1568857485567;
- Wed, 18 Sep 2019 18:44:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=glrVZTGv8aYQUd2jDJTvxAIRlmb/V80278CbSfWIIrs=;
+        b=uiFMF2iTsug1kDpieW6zTJ8Ub50ZtaZWQ1OCJJlVe5r2uJNPi+2u/vDmLLTHXcsoBP
+         UYIofX/tTueGVdnmr42r+fgATir6uoZ0VRiU78X/k2k6/vIulzL8vR+qEVLm3QY8HX0h
+         K+GEaXssTDN+RirEK4AsM+m6aZP9RFiWfmkDoS16iFAo//5CubPaJ7zZpqUHibjLsLvd
+         WTYvd87DCYLDKKYTk75KgUXxHiDpeVirjTyowcF7NTeyhcFev738efSCXtdbr/wL5Q96
+         rfqWsOz2E0tsSuFCcWeztC3CDDuqwcHARN6dp3YD0BXUiOLh4DqDYLAmK9qWoYVqiu41
+         rfNQ==
+X-Gm-Message-State: APjAAAWRySTzPTkj/uHIEdiLxBGR96j/alT6K/dBO0uZ58UlTa63kvfT
+        Or/jMAR9vGTv2+j9oCBtNgCkGQzW
+X-Google-Smtp-Source: APXvYqxaZWkPlFoHl0G3kkkVuJTibze7LPrd7g+l9UEHZrqkAg7QkaFoxGB5h9rbYuq2uxZOWPPYvQ==
+X-Received: by 2002:a17:90a:24a1:: with SMTP id i30mr996176pje.128.1568857503974;
+        Wed, 18 Sep 2019 18:45:03 -0700 (PDT)
+Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
+        by smtp.gmail.com with ESMTPSA id q13sm5585098pjq.0.2019.09.18.18.45.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 18:45:03 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [Patch net] net_sched: add policy validation for action attributes
+Date:   Wed, 18 Sep 2019 18:44:43 -0700
+Message-Id: <20190919014443.32581-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190911025045.20918-1-chiu@endlessm.com>
-In-Reply-To: <20190911025045.20918-1-chiu@endlessm.com>
-From:   Chris Chiu <chiu@endlessm.com>
-Date:   Thu, 19 Sep 2019 09:44:34 +0800
-Message-ID: <CAB4CAwcs4zn4Sg0AkFnSUE-tbkdrHE=3yYeF8g+-ak5NyPBkuQ@mail.gmail.com>
-Subject: Re: [PATCH v2] rtl8xxxu: add bluetooth co-existence support for
- single antenna
-To:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 11, 2019 at 10:50 AM Chris Chiu <chiu@endlessm.com> wrote:
->
->
-> Notes:
->   v2:
->    - Add helper functions to replace bunch of tdma settings
->    - Reformat some lines to meet kernel coding style
->
->
+Similar to commit 8b4c3cdd9dd8
+("net: sched: Add policy validation for tc attributes"), we need
+to add proper policy validation for TC action attributes too.
 
-Gentle ping. Any suggestions would be appreciated. Thanks.
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/act_api.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
-Chris
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 835adde28a7e..da99667589f8 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -831,6 +831,15 @@ static struct tc_cookie *nla_memdup_cookie(struct nlattr **tb)
+ 	return c;
+ }
+ 
++static const struct nla_policy tcf_action_policy[TCA_ACT_MAX + 1] = {
++	[TCA_ACT_KIND]		= { .type = NLA_NUL_STRING,
++				    .len = IFNAMSIZ - 1 },
++	[TCA_ACT_INDEX]		= { .type = NLA_U32 },
++	[TCA_ACT_COOKIE]	= { .type = NLA_BINARY,
++				    .len = TC_COOKIE_MAX_SIZE },
++	[TCA_ACT_OPTIONS]	= { .type = NLA_NESTED },
++};
++
+ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 				    struct nlattr *nla, struct nlattr *est,
+ 				    char *name, int ovr, int bind,
+@@ -846,8 +855,8 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 	int err;
+ 
+ 	if (name == NULL) {
+-		err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla, NULL,
+-						  extack);
++		err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla,
++						  tcf_action_policy, extack);
+ 		if (err < 0)
+ 			goto err_out;
+ 		err = -EINVAL;
+@@ -856,18 +865,9 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 			NL_SET_ERR_MSG(extack, "TC action kind must be specified");
+ 			goto err_out;
+ 		}
+-		if (nla_strlcpy(act_name, kind, IFNAMSIZ) >= IFNAMSIZ) {
+-			NL_SET_ERR_MSG(extack, "TC action name too long");
+-			goto err_out;
+-		}
+-		if (tb[TCA_ACT_COOKIE]) {
+-			int cklen = nla_len(tb[TCA_ACT_COOKIE]);
+-
+-			if (cklen > TC_COOKIE_MAX_SIZE) {
+-				NL_SET_ERR_MSG(extack, "TC cookie size above the maximum");
+-				goto err_out;
+-			}
++		nla_strlcpy(act_name, kind, IFNAMSIZ);
+ 
++		if (tb[TCA_ACT_COOKIE]) {
+ 			cookie = nla_memdup_cookie(tb);
+ 			if (!cookie) {
+ 				NL_SET_ERR_MSG(extack, "No memory to generate TC cookie");
+@@ -1097,7 +1097,8 @@ static struct tc_action *tcf_action_get_1(struct net *net, struct nlattr *nla,
+ 	int index;
+ 	int err;
+ 
+-	err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla, NULL, extack);
++	err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla,
++					  tcf_action_policy, extack);
+ 	if (err < 0)
+ 		goto err_out;
+ 
+@@ -1151,7 +1152,8 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
+ 
+ 	b = skb_tail_pointer(skb);
+ 
+-	err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla, NULL, extack);
++	err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX, nla,
++					  tcf_action_policy, extack);
+ 	if (err < 0)
+ 		goto err_out;
+ 
+@@ -1439,7 +1441,7 @@ static struct nlattr *find_dump_kind(struct nlattr **nla)
+ 
+ 	if (tb[1] == NULL)
+ 		return NULL;
+-	if (nla_parse_nested_deprecated(tb2, TCA_ACT_MAX, tb[1], NULL, NULL) < 0)
++	if (nla_parse_nested_deprecated(tb2, TCA_ACT_MAX, tb[1], tcf_action_policy, NULL) < 0)
+ 		return NULL;
+ 	kind = tb2[TCA_ACT_KIND];
+ 
+-- 
+2.21.0
+
