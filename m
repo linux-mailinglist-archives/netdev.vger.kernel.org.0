@@ -2,90 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77780B78D2
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:02:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7877FB7906
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388765AbfISMCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 08:02:17 -0400
-Received: from werkudoro.jatengprov.go.id ([103.9.227.34]:60780 "EHLO
-        werkudoro.jatengprov.go.id" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387757AbfISMCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 08:02:17 -0400
-X-Greylist: delayed 2442 seconds by postgrey-1.27 at vger.kernel.org; Thu, 19 Sep 2019 08:02:16 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=jatengprov.go.id; s=default; h=Message-ID:Reply-To:To:From:Date:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:Sender:Subject:Cc:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=IlrCxIBWvxOzPALn47D3+2101Gu2SIzn6UIt1KekVro=; b=Li2RRAcckS2MLGhl3DNOHfOty
-        TXGWlNJvrxoBp4kydHAFwH4+MjzEUIpmZZux9OVHmnaXU92JwELe0hu1+heAoMyX0WaU8jl9q1/D2
-        voFXPn/nmh/4TcYTv8LDTTHwP0dqnFqNQmqaNNxBcVcN5xzuyS64deuHlfDmaNAq7M4aFCvyaMZJH
-        YqGadvY2eS7z0iTBo8camPkYoQ1H/KYtsnAs5DvrKBZ7PHsoJe+J9MmOQwH9en/zD9ivtbSmoCnRJ
-        4bx5bCfHd3Mw4m64BMIky25aYYSeOXTMwGtYUGHmlN01kpzAJqq7b2nfsG1GGkZfu+7G9NKRKCRtX
-        ARPJpEt4w==;
-Received: from localhost ([127.0.0.1]:47554 helo=werkudoro.jatengprov.go.id)
-        by werkudoro.jatengprov.go.id with esmtpa (Exim 4.92)
-        (envelope-from <bpsdmd@jatengprov.go.id>)
-        id 1iAuTo-0002LK-7X; Thu, 19 Sep 2019 18:20:13 +0700
+        id S2390192AbfISMNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 08:13:00 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44585 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388792AbfISMNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 08:13:00 -0400
+Received: by mail-lf1-f65.google.com with SMTP id q11so2160228lfc.11;
+        Thu, 19 Sep 2019 05:12:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AAGhvqwd75jlWoyN7RtLuLmQlBabVo3K+eJUc/Gzlw8=;
+        b=I+fWSqLXskt+W9JCVUaVDdgxCjnHs9SngDhZ6ddtTpEHqRqALggs0Pzu9DGLeyUmlU
+         s5SntY7fIS15FYNNcS7Bgu8ZuXvdbUE1C0isqFYgjIdHMvI52zPc5si6SWtWbUHvPKI0
+         b0EXSvCx5+4/5aIMXUlky8wKD8nv3geoGMhf7Rn80LlcWTxVb8k/MBvu4ogIrQmTa1Bu
+         RXvZRgQqaMzIlwFvA+fueRmaT3PU3dgwXup/5ot7kwAgPgVQ4xDRgMJw8sWgHsPrEdkd
+         80Wbqpnjqske0K4nPjpA1l5wJdekIJV9rSXiSAbbXl6hJjXX+k/ZuhilCnnflRgBv2Tp
+         dhCw==
+X-Gm-Message-State: APjAAAUmCei2Y1na09s+VmqxpF5e9VLOhhYNyCng+upbeCL3Q/4uaBPK
+        qTO3LCZFmWVgzivdkTgT4Lzgac3/
+X-Google-Smtp-Source: APXvYqxkxMhx6AXLEzlWI2uF4kvz8bcFVDoGXg87MGyIpnW1DMdRhVl7Zz7XRH8wHiKEdibwpDoJ3Q==
+X-Received: by 2002:a05:6512:251:: with SMTP id b17mr5172700lfo.35.1568895177514;
+        Thu, 19 Sep 2019 05:12:57 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id x76sm1859097ljb.81.2019.09.19.05.12.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 19 Sep 2019 05:12:56 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.2)
+        (envelope-from <johan@xi.terra>)
+        id 1iAvIu-0007yb-AS; Thu, 19 Sep 2019 14:12:57 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andreyknvl@google.com,
+        syzkaller-bugs@googlegroups.com, Johan Hovold <johan@kernel.org>,
+        stable <stable@vger.kernel.org>,
+        syzbot+f4509a9138a1472e7e80@syzkaller.appspotmail.com
+Subject: [PATCH] ieee802154: atusb: fix use-after-free at disconnect
+Date:   Thu, 19 Sep 2019 14:12:34 +0200
+Message-Id: <20190919121234.30620-1-johan@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
 Content-Transfer-Encoding: 8bit
-Date:   Thu, 19 Sep 2019 18:20:08 +0700
-From:   =?UTF-8?Q?=D0=B0=D0=B4=D0=BC=D0=B8=D0=BD=D0=B8=D1=81=D1=82=D1=80?=
-         =?UTF-8?Q?=D0=B0=D1=82=D0=BE=D1=80?= <bpsdmd@jatengprov.go.id>
-To:     undisclosed-recipients:;
-Reply-To: mailsss@mail2world.com
-Mail-Reply-To: mailsss@mail2world.com
-Message-ID: <6887b423e0a8c4faf930a01eeab94d73@jatengprov.go.id>
-X-Sender: bpsdmd@jatengprov.go.id
-User-Agent: Roundcube Webmail/1.3.8
-X-OutGoing-Spam-Status: No, score=3.3
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - werkudoro.jatengprov.go.id
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - jatengprov.go.id
-X-Get-Message-Sender-Via: werkudoro.jatengprov.go.id: authenticated_id: bpsdmd@jatengprov.go.id
-X-Authenticated-Sender: werkudoro.jatengprov.go.id: bpsdmd@jatengprov.go.id
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The disconnect callback was accessing the hardware-descriptor private
+data after having having freed it.
 
+Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
+Cc: stable <stable@vger.kernel.org>     # 4.2
+Cc: Alexander Aring <alex.aring@gmail.com>
+Reported-by: syzbot+f4509a9138a1472e7e80@syzkaller.appspotmail.com
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
 
+#syz test: https://github.com/google/kasan.git f0df5c1b
+
+ drivers/net/ieee802154/atusb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index ceddb424f887..0dd0ba915ab9 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -1137,10 +1137,11 @@ static void atusb_disconnect(struct usb_interface *interface)
+ 
+ 	ieee802154_unregister_hw(atusb->hw);
+ 
++	usb_put_dev(atusb->usb_dev);
++
+ 	ieee802154_free_hw(atusb->hw);
+ 
+ 	usb_set_intfdata(interface, NULL);
+-	usb_put_dev(atusb->usb_dev);
+ 
+ 	pr_debug("%s done\n", __func__);
+ }
 -- 
-ВНИМАНИЕ;
+2.23.0
 
-В вашем почтовом ящике превышен лимит
-хранилища, который составляет 5 ГБ, как
-определено администратором, который в
-настоящее время работает на 10,9 ГБ.
-Возможно, вы не сможете отправлять или
-получать новую почту, пока вы не
-подтвердите свою почту. Чтобы
-подтвердить свой почтовый ящик,
-отправьте следующую информацию ниже:
-
-название:
-Имя пользователя:
-пароль:
-Подтвердите Пароль:
-Эл. адрес:
-Телефон:
-
-Если вы не сможете подтвердить свой
-почтовый ящик, ваш почтовый ящик будет
-отключен!
-
-Приносим извинения за неудобства.
-Код подтверждения: en: 006,524.RU
-Техническая поддержка почты © 2019
-
-благодарю вас
-Системный администратор.
