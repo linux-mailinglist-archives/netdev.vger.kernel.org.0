@@ -2,140 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0FBB817C
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 21:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C064FB8218
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 22:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392363AbfISThf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 15:37:35 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:44615 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392352AbfISThe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 15:37:34 -0400
-Received: by mail-oi1-f194.google.com with SMTP id w6so3718488oie.11
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 12:37:33 -0700 (PDT)
+        id S2404564AbfISUCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 16:02:53 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:37015 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404554AbfISUCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 16:02:52 -0400
+Received: by mail-qk1-f196.google.com with SMTP id u184so4769393qkd.4;
+        Thu, 19 Sep 2019 13:02:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=w2WRb88oKnAQnCwV6qMbloqtA0/uxdTgIFA2BEXO/b8=;
-        b=hlvcYUkMXTARwnNUtE0WGKuXfVgTodWHpwcYZicRoUCIi9QbGC5JsDfNQZ4gvxKcT/
-         CGMmJ6sx12a5ZJdq6bpPkSeLUvQ5RYPJGTiZZMQadiVCSiq1lLaVHuIFsoUHdZuz7sll
-         GDK07RqGbBI4Oj2H8jdnBH0c6GKOidGwjGt8/hc/PzKDJlV/zVJjuMMhJj2JjcwnW3Rn
-         ldHRCEeGGDEWC4UQ2GMhsRqeKfrr8NJ2UvMgLHgdsal96mj6SBRbMkddm0uNgBRRHK1u
-         IzUHE+TPYIhZ/uoD2KuZunl/JpnYSqdNfk1nluCur7PMbYfqcepX6lENPIuRO8g1y2+5
-         UWfw==
+        bh=8tiLUzdYi4ITB45WucLNW+ND66QoXoPlA91lr3mWY0I=;
+        b=sbqDMqvcvX3x6cU1Bdz+6qPbXVu92Hlw7FpYhWcmNu2nb76PWtUJQnkwE98baOLrmI
+         0MY5otAgmrOc07A8Yw0QDg6TYwqi+mvnIXIpvyl6ZrblMCiJXvmVj9lbRaDSVNV+QHG4
+         67cVb+vU6c/ZsY1HTtHGdmiK6rFizS7IbGORW4k/+nBbjcSQiGBXcGYtSYOW62F56AGF
+         KTtEt9mAPo7t9Y4oJBowYtKY56XThUbC2h6tYPXdFXFriLnIeZRzsQoKFno5YPPTQq/7
+         CElIzcWjG2FWQf2DczVSoq2MHQxMYDCoemtFPqe2+IrN1xGdhKayesdkq08nUYx3ZwOQ
+         WysA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=w2WRb88oKnAQnCwV6qMbloqtA0/uxdTgIFA2BEXO/b8=;
-        b=ea1fm+oleK9ZabTXQ+LGGu6vmkXHV12ZThp9fzDTvU2Za34CWL/ty5s7ckenpSlYmK
-         rSKwSmzoRC23UwEUwJp2OkvlWA3sZxZ9P9t79c2UsXJ8Xe9st3nhsf5T9yQQ1WdCeN/f
-         lUNCcPcb04KnyldkHygRXSsU9E7l+UOslgcds6Ghdo+kKnB+aYGpfsg7rcXUSagE7DZW
-         k9sXoBwyWWga198c0m8yTQ+f8Q3+01fIh1hWUR0uZy+DNTgl4xTpTXAg6WTuzq+GLqn/
-         L3Wl1NSspLF08e39oR1PsbMJnXRhyLBT6MU53mgSdNoEXTDPyVVTLuQhYwYs2hfYhLeH
-         4Atg==
-X-Gm-Message-State: APjAAAXKNzT1MpWpULcLd06JhjqWGPia20NaqVDFGd952nfV8f7QGQ4v
-        cMB9I4Up9iEkOBwOP/A1y3AoJQbO6DHc0PvlDo2ePQ==
-X-Google-Smtp-Source: APXvYqwjrdh9lXpuBqRhfnH/q8f/TDJskWYrW/HZD6RipzJl9Yt1bLU+UMWBsAqC15hCJfUrBoHFXCqKGsDQYbE0U5E=
-X-Received: by 2002:aca:ed52:: with SMTP id l79mr3551222oih.47.1568921853200;
- Thu, 19 Sep 2019 12:37:33 -0700 (PDT)
+        bh=8tiLUzdYi4ITB45WucLNW+ND66QoXoPlA91lr3mWY0I=;
+        b=lhHDaapT72xnTD1PFTZvH6rcMz/4SQ6Bb4sZLixz/vDTHUqzbImYkB17pXYFMJXBzy
+         zcKqv7KqFM69FWIKxbWuYY9O4WjXd1JO25HtGEZF/xEFAE6ZkTjTYM6gPJH8ahzVj26m
+         H7mFeva/pCmzUEnTVnrwnnZyXsgpTLwAQCcjnTq7qv/FEpkwz1RotZywGv/CTTkXKFxF
+         eevnZjIR3OuAqNOdRYhUjEgd4B396ND9DhpPziG5Gd0gcT3u4NenjB2hHrbn7zJf3dLH
+         c/mZ4RG++oFUsW9XgJia50rzpsZdMpYkHqj447NmYMWzz+F4ZefFqDIvb1Wk3hNwvGwM
+         1KRA==
+X-Gm-Message-State: APjAAAWap6OViTOZDrOKTCeSr6gXXkiXY0toFNPWoevLXQkwC6ogFrfK
+        8zg5E/Wx1wTAT6RlE7xYqh11denF3pgATfNdfes=
+X-Google-Smtp-Source: APXvYqwvmENtZwqOUjQyedETgKcY0/COJMPAGFK2CXOq7iyOjkYW6yMxk6opBKWcdNrSSEZYulbmcSZPLeNxXGPRIvE=
+X-Received: by 2002:a05:620a:119a:: with SMTP id b26mr4913032qkk.39.1568923371419;
+ Thu, 19 Sep 2019 13:02:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190919095903.19370-1-christian.brauner@ubuntu.com> <20190919095903.19370-2-christian.brauner@ubuntu.com>
-In-Reply-To: <20190919095903.19370-2-christian.brauner@ubuntu.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Thu, 19 Sep 2019 21:37:06 +0200
-Message-ID: <CAG48ez1QkJAMgTpqv4EqbDmYPPpxuB8cR=XhUAr1fHZOBY_DHg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] seccomp: add SECCOMP_USER_NOTIF_FLAG_CONTINUE
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
-        Song Liu <songliubraving@fb.com>, yhs@fb.com,
-        kernel list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org, Tycho Andersen <tycho@tycho.ws>,
-        Tyler Hicks <tyhicks@canonical.com>
+References: <20190919160518.25901-1-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190919160518.25901-1-ivan.khoronzhuk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 19 Sep 2019 13:02:40 -0700
+Message-ID: <CAEf4BzbCjCYr5NMPctDkUggwpehnqZPVBSqZOsd9MvSq6WmnZQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix version identification on busybox
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 11:59 AM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
-> This allows the seccomp notifier to continue a syscall.
-[...]
-> Recently we landed seccomp support for SECCOMP_RET_USER_NOTIF (cf. [4])
-> which enables a process (watchee) to retrieve an fd for its seccomp
-> filter. This fd can then be handed to another (usually more privileged)
-> process (watcher). The watcher will then be able to receive seccomp
-> messages about the syscalls having been performed by the watchee.
-[...]
-> This can be solved by
-> telling seccomp to resume the syscall.
-[...]
-> @@ -780,8 +783,14 @@ static void seccomp_do_user_notification(int this_syscall,
->                 list_del(&n.list);
->  out:
->         mutex_unlock(&match->notify_lock);
-> +
-> +       /* Userspace requests to continue the syscall. */
-> +       if (flags & SECCOMP_USER_NOTIF_FLAG_CONTINUE)
-> +               return 0;
-> +
->         syscall_set_return_value(current, task_pt_regs(current),
->                                  err, ret);
-> +       return -1;
->  }
+On Thu, Sep 19, 2019 at 11:22 AM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> It's very often for embedded to have stripped version of sort in
+> busybox, when no -V option present. It breaks build natively on target
+> board causing recursive loop.
+>
+> BusyBox v1.24.1 (2019-04-06 04:09:16 UTC) multi-call binary. \
+> Usage: sort [-nrugMcszbdfimSTokt] [-o FILE] [-k \
+> start[.offset][opts][,end[.offset][opts]] [-t CHAR] [FILE]...
+>
+> Lets modify command a little to avoid -V option.
+>
+> Fixes: dadb81d0afe732 ("libbpf: make libbpf.map source of truth for libbpf version")
+>
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>
+> Based on bpf/master
+>
+>  tools/lib/bpf/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index c6f94cffe06e..a12490ad6215 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -3,7 +3,7 @@
+>
+>  LIBBPF_VERSION := $(shell \
+>         grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
+> -       sort -rV | head -n1 | cut -d'_' -f2)
+> +       cut -d'_' -f2 | sort -r | head -n1)
 
-Seccomp currently expects the various seccomp return values to be
-fully ordered based on how much action the kernel should take against
-the requested syscall. Currently, the range of return values is
-basically divided into three regions: "block syscall in some way"
-(from SECCOMP_RET_KILL_PROCESS to SECCOMP_RET_USER_NOTIF), "let ptrace
-decide" (SECCOMP_RET_TRACE) and "allow" (SECCOMP_RET_LOG and
-SECCOMP_RET_ALLOW). If SECCOMP_RET_USER_NOTIF becomes able to allow
-syscalls, it will be able to override a negative decision from
-SECCOMP_RET_TRACE.
+You can't just sort alphabetically, because:
 
-In practice, that's probably not a big deal, since I'm not aware of
-anyone actually using SECCOMP_RET_TRACE for security purposes, and on
-top of that, you'd have to allow ioctl(..., SECCOMP_IOCTL_NOTIF_SEND,
-...) and seccomp() with SECCOMP_FILTER_FLAG_NEW_LISTENER in your
-seccomp policy for this to work.
+1.2
+1.11
 
-More interestingly, what about the case where two
-SECCOMP_RET_USER_NOTIF filters are installed? The most recently
-installed filter takes precedence if the return values's action parts
-are the same (and this is also documented in the manpage); so if a
-container engine installs a filter that always intercepts sys_foobar()
-(and never uses SECCOMP_USER_NOTIF_FLAG_CONTINUE), and then something
-inside the container also installs a filter that always intercepts
-sys_foobar() (and always uses SECCOMP_USER_NOTIF_FLAG_CONTINUE), the
-container engine's filter will become ineffective.
+should be in that order. See discussion on mailing thread for original commit.
 
-With my tendency to overcomplicate things, I'm thinking that maybe it
-might be a good idea to:
- - collect a list of all filters that returned SECCOMP_RET_USER_NOTIF,
-as well as the highest-precedence return value that was less strict
-than SECCOMP_RET_USER_NOTIF
- - sequentially send notifications to all of the
-SECCOMP_RET_USER_NOTIF filters until one doesn't return
-SECCOMP_USER_NOTIF_FLAG_CONTINUE
- - if all returned SECCOMP_USER_NOTIF_FLAG_CONTINUE, go with the
-highest-precedence return value that was less strict than
-SECCOMP_RET_USER_NOTIF, or allow if no such return value was
-encountered
-
-But perhaps, for now, it would also be enough to just expand the big
-fat warning note and tell people that if they allow the use of
-SECCOMP_IOCTL_NOTIF_SEND and SECCOMP_FILTER_FLAG_NEW_LISTENER in their
-filter, SECCOMP_RET_USER_NOTIF is bypassable. And if someone actually
-has a usecase where SECCOMP_RET_USER_NOTIF should be secure and nested
-SECCOMP_RET_USER_NOTIF support is needed, that more complicated logic
-could be added later?
+>  LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
+>
+>  MAKEFLAGS += --no-print-directory
+> --
+> 2.17.1
+>
