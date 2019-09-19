@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9ECB7D2D
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C69D9B7D33
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390016AbfISOsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 10:48:53 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:40027 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389041AbfISOsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:48:53 -0400
-Received: by mail-pg1-f193.google.com with SMTP id w10so2035613pgj.7
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:48:53 -0700 (PDT)
+        id S2390236AbfISOtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 10:49:45 -0400
+Received: from mail-pl1-f173.google.com ([209.85.214.173]:35516 "EHLO
+        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389041AbfISOtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:49:45 -0400
+Received: by mail-pl1-f173.google.com with SMTP id y10so425686plp.2
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:49:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=m5gv6uKX7NjWmYUmexgGWoYBeU37IqxxkUfBqoUrZeE=;
-        b=LXRfS2kfbQyn3dVUy2NvrVA2XQxxcgnNItJkf1tIsCyNblAdjEto80/mdNm9kmYXw4
-         GT+6LPffS0XsgtRLyjTGYHfCGAunNdvM4A8qoG9gG7z3ft6zkvoeWRSpvwaSRDBhhKcJ
-         /oA5CpgcqswaRwm2KtH3hPFkcAytWbGCqFnMvxoAyKubdNdwyvDxPTTBJiPCxQN23THb
-         0gC/br6RtdI1jEoA/RzUkySYNw5MfldGEcwcwmhhhm0xYUsh21erE99mFDaJRyvI2JYZ
-         gHzFPWqKoxeWPlS1RtWFFXhTq9a6JbpP21UT8ZeE3dLjFGELngCu8gfb1K4krJ1/T7V1
-         Pe0w==
+        bh=FnkxA6cT5rhpzcVuSxW3+7y7Cd49DuupKHsORawHxbc=;
+        b=sRZz+5FWgLwCg1A6KMz/VBSBLUnIaQAU+DbQPajNrt3U3tFaa8t56diyxVklPb4SRJ
+         oa1dUbTOMFK2YiScFHVJCR56VxYZDfzirDVwQB7wIUibzmZZ94w6DKCcrtfJ4jkt9kSf
+         yOIP5yz3FD4z3X/ADwunSD0B0V0XnqKn61GjRRIW0n9M04FuPI92TaHBdTB2Q52/oljD
+         dEtwgl+qs7E9+Ol9yiDSfCnuSmjt2pj0tdbSxr81H1T4O5PYdgYsa8YkPkI64w5wQU9B
+         C9CZ02GjYO3BRQrJviKSxGncC+WPCZ6+2WdoZkqsjyYG8NuS02dqEBpQvLGpjv0P0Li8
+         NjKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=m5gv6uKX7NjWmYUmexgGWoYBeU37IqxxkUfBqoUrZeE=;
-        b=NeMpMeZC8VCQBzONHaLV3xaY7P0u+cV10Nn1Y4q6cgAGfYty+M3WjjmPBfyePlwZT4
-         Mp6QNaR++muzrBs3PichXL+RvYiddZuYWDMgST8iacl8MV8p/+KIlkobPdxTF4rx0A+r
-         YeGRG1bDAJCthpag4aQRgEr+u4KrQig5pmnjqY0SCQqmCU0aU6zWKJePHRbzKgpIcCND
-         5XXSOZtlXFntGDTyboe4k0tynPd2bRyzkrA0sQXP+40ucTRxKqexS4j/hIfcoAI7m6LB
-         qS/lqN3x1Mq7pc12COwgcNeuvmNJJaohnBX0TzMOjotGaQgrRhxzodZieYZ+WahliBuN
-         9inA==
-X-Gm-Message-State: APjAAAXegXAil5RRnOEJ+CHyZqa5OZaOM9LnJsmZVpeBljHbZOjRT7OD
-        mnKoKq1CczHp1lNNZOlBFHU=
-X-Google-Smtp-Source: APXvYqyrvU7NjWZbDnNdgCFW9lNfate09Anz5JPS7NSNcTAhqBLxwBW6JgT+8WBMGX1CTknVl7JdPw==
-X-Received: by 2002:a63:e05:: with SMTP id d5mr1015381pgl.230.1568904532739;
-        Thu, 19 Sep 2019 07:48:52 -0700 (PDT)
+        bh=FnkxA6cT5rhpzcVuSxW3+7y7Cd49DuupKHsORawHxbc=;
+        b=PWARdyzztz5hXBUcKAfkjmqFIyqJ0kQJzRl+3ga488oQAgwZjaKuN2fo1duBEhT938
+         Yf6BdeA+VpbcqyyZuVGTlp4lAa4JnaNCTnso+70ATpmrYaD3ih+hRwsQ4n6QgbJRZ6gy
+         6ZTpXnD+fEyRYH2WEXDCDEWx4yhIUH0QfMGH9oy3/6R3CvtDw1wXk9+nSfshkSm6fCSV
+         Rr4Fws5DBTgLClHrwrm8EjiBaLE3SpbC4PIf5BWs9DthCVkmprCJBDrmcxxsVhYhrRLi
+         QhMlJV1UUy3ybhmzJIPpVMAKfTDg61UYzkY2i08fMrRUl9I4Lcnnnm0/n9BhpnE3Cxj5
+         B+1Q==
+X-Gm-Message-State: APjAAAWEL7R81se3FHSDB/ztNOcQxMXl/C+BHV9GXVv/3szC9e7Eo6jX
+        G9LAZEnD82GpT1WNosOP/PE=
+X-Google-Smtp-Source: APXvYqxwyAfiRa48B3cPGSgbwZ7WadKHkB1nu4zyuZhQ4rAv+Yb+DXsOc1OhUN3OAumZhH0WKY2idg==
+X-Received: by 2002:a17:902:690b:: with SMTP id j11mr10656345plk.35.1568904584584;
+        Thu, 19 Sep 2019 07:49:44 -0700 (PDT)
 Received: from [172.27.227.189] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id b14sm495896pfi.95.2019.09.19.07.48.51
+        by smtp.googlemail.com with ESMTPSA id e184sm16942375pfa.87.2019.09.19.07.49.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Sep 2019 07:48:51 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] bpf: replace snprintf with asprintf when
- dealing with long buffers
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-References: <c25efdff9a67ed4bc23862d0ef4ff8073de69c4e.1568638725.git.aclaudi@redhat.com>
+        Thu, 19 Sep 2019 07:49:43 -0700 (PDT)
+Subject: Re: [patch iproute2-next v2] devlink: add reload failed indication
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        tariqt@mellanox.com, mlxsw@mellanox.com
+References: <20190916094448.26072-1-jiri@resnulli.us>
+ <c9b57141-2caf-71c6-7590-a4783796e037@gmail.com>
+ <20190917183629.GP2286@nanopsycho.orion>
+ <12070e36-64e3-9a92-7dd5-0cbce87522db@gmail.com>
+ <20190918073738.GA2543@nanopsycho>
+ <13688c37-3f27-bdb4-973b-dd73031fa230@gmail.com>
+ <20190918202350.GA2187@nanopsycho>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bea3013b-376e-64a5-6ec8-ab54957018d9@gmail.com>
-Date:   Thu, 19 Sep 2019 08:48:50 -0600
+Message-ID: <5d0ae672-0fa5-a215-3159-564acdc40567@gmail.com>
+Date:   Thu, 19 Sep 2019 08:49:42 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <c25efdff9a67ed4bc23862d0ef4ff8073de69c4e.1568638725.git.aclaudi@redhat.com>
+In-Reply-To: <20190918202350.GA2187@nanopsycho>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/19 7:00 AM, Andrea Claudi wrote:
-> This reduces stack usage, as asprintf allocates memory on the heap.
+On 9/18/19 2:23 PM, Jiri Pirko wrote:
+> Wed, Sep 18, 2019 at 10:01:31PM CEST, dsahern@gmail.com wrote:
+>> On 9/18/19 1:37 AM, Jiri Pirko wrote:
+>>> Wed, Sep 18, 2019 at 01:46:13AM CEST, dsahern@gmail.com wrote:
+>>>> On 9/17/19 12:36 PM, Jiri Pirko wrote:
+>>>>> Tue, Sep 17, 2019 at 06:46:31PM CEST, dsahern@gmail.com wrote:
+>>>>>> On 9/16/19 3:44 AM, Jiri Pirko wrote:
+>>>>>>> From: Jiri Pirko <jiri@mellanox.com>
+>>>>>>>
+>>>>>>> Add indication about previous failed devlink reload.
+>>>>>>>
+>>>>>>> Example outputs:
+>>>>>>>
+>>>>>>> $ devlink dev
+>>>>>>> netdevsim/netdevsim10: reload_failed true
+>>>>>>
+>>>>>> odd output to user. Why not just "reload failed"?
+>>>>>
+>>>>> Well it is common to have "name value". The extra space would seem
+>>>>> confusing for the reader..
+>>>>> Also it is common to have "_" instead of space for the output in cases
+>>>>> like this.
+>>>>>
+>>>>
+>>>> I am not understanding your point.
+>>>>
+>>>> "reload failed" is still a name/value pair. It is short and to the point
+>>>> as to what it indicates. There is no need for the name in the uapi (ie.,
+>>>> the name of the netlink attribute) to be dumped here.
+>>>
+>>> Ah, got it. Well it is a bool value, that means it is "true" or "false".
+>>> In json output, it is True of False. App processing json would have to
+>>> handle this case in a special way.
+>>>
+>>
+>> Technically it is a u8. But really I do not understand why it is
+>> RELOAD_FAILED and not RELOAD_STATUS which is more generic and re-usable.
+>> e.g,. 'none', 'failed', 'success'.
 > 
-> This indirectly fixes a snprintf truncation warning (from gcc v9.2.1):
-> 
-> bpf.c: In function ‘bpf_get_work_dir’:
-> bpf.c:784:49: warning: ‘snprintf’ output may be truncated before the last format character [-Wformat-truncation=]
->   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
->       |                                                 ^
-> bpf.c:784:2: note: ‘snprintf’ output between 2 and 4097 bytes into a destination of size 4096
->   784 |  snprintf(bpf_wrk_dir, sizeof(bpf_wrk_dir), "%s/", mnt);
->       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Fixes: e42256699cac ("bpf: make tc's bpf loader generic and move into lib")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  lib/bpf.c | 155 ++++++++++++++++++++++++++++++++++++++++--------------
->  1 file changed, 116 insertions(+), 39 deletions(-)
+> I was thinking about that. But I was not able to figure out any other
+> possible values. So it is bool. For indication of some other status,
+> there would have to be independent bool/othertype anyway.
 > 
 
-applied to iproute2-next. Thanks
-
-
+applied to iproute2-next, but I think this API is reactionary and not
+very good from a user perspective.
