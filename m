@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F25F3B80D3
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 20:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33050B80DA
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 20:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392030AbfISS3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 14:29:22 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:35495 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391610AbfISS3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 14:29:21 -0400
-Received: by mail-io1-f66.google.com with SMTP id q10so10182321iop.2
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 11:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=8HHYrvip9dbw3v13stbVmkdYha6VbN9XyUflHm6vtpM=;
-        b=YuFP0xV5iFC0YDBPA0QXBIVTZ2546kj24ypWSXInFBdaHTFcOwRFDFCbU7DPG/FBJP
-         N3QMKzvZHWoMNCKaYMSacGU/LZW5Dnf+xyT9UXii1nkzFrnO9TTlU8itEzbV+JjYsKZV
-         hO0YEl7F6Vo10qeLTAKSZuJ1013CIdzmhJcAafnGXv6VZQRTy9VXkg7b+SJ3DH2yRvQx
-         //1PYsFrsVzjM8SKTIVBLJ/09DSdWc2d/xFlQZxNi4R0+Y/ePasS5aR1ERmXFQdxNEJi
-         3oKjWTVmwjfHv6ag1AKbBFGGaZsgJ9sez0fnIOim7dI+B2iRmcw3TGpUd8EUPMffRqy2
-         O3sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=8HHYrvip9dbw3v13stbVmkdYha6VbN9XyUflHm6vtpM=;
-        b=eeBzfkfoRIvAaiQlCD/xTekLfYy1MD2qDmtjtUwGBpsiPUkMJ/QQNnpihJZ/Ck/H0x
-         n5+PqV+GkiWEk+u1v8QdhePgx1xX8JuVzzjSKVBNceCWCIw7oG+Lk3+xIeXPAM1WUXoG
-         HPp2xpJ0lA6U7rHAH0+dpFV3jcvMYSv3kRFML6KO5aWv51h8nnFckTADFIC7xDl8FCTD
-         w2LaOIEs0teWcQLcqGBLMxLf1B6tmqMVEGLpaR5LDR5zsdMUCLriSd1yVuzxqO3SueXo
-         VgkFJaaeUww/fRM9TgvmMaKI9SnA8TjJellZ5IL+2NWjehM9wQyjxs/AaYzOMldLh0x5
-         L/Wg==
-X-Gm-Message-State: APjAAAUVu5PdIAjcMJx/HyBsOpBWegQjMqaK6ZpYrA8GIB1kJ64QYoyP
-        loSJz+1Twfj/BY7G2T3gRtOOvy++mAKYOQlsuK0=
-X-Google-Smtp-Source: APXvYqyZvM2TBwF+/d7G+CaT+kLUwrFHcrHtGrZBww1f7PgGjl6E7+J3Ka1yUVKc85LIO/l8QpD3B3yr75Yy0Er6QdU=
-X-Received: by 2002:a6b:c88e:: with SMTP id y136mr11877670iof.68.1568917760730;
- Thu, 19 Sep 2019 11:29:20 -0700 (PDT)
+        id S2392057AbfISSaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 14:30:19 -0400
+Received: from vmicros1.altlinux.org ([194.107.17.57]:37874 "EHLO
+        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392032AbfISSaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 14:30:19 -0400
+Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 99AB672CCE7;
+        Thu, 19 Sep 2019 21:30:17 +0300 (MSK)
+Received: by mua.local.altlinux.org (Postfix, from userid 508)
+        id 8541B7CCB47; Thu, 19 Sep 2019 21:30:17 +0300 (MSK)
+Date:   Thu, 19 Sep 2019 21:30:17 +0300
+From:   "Dmitry V. Levin" <ldv@altlinux.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Tyler Hicks <tyhicks@canonical.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        luto@amacapital.net, jannh@google.com, wad@chromium.org,
+        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Tycho Andersen <tycho@tycho.ws>, stable@vger.kernel.org
+Subject: Re: [PATCH 2/4] seccomp: add two missing ptrace ifdefines
+Message-ID: <20190919183017.GD22257@altlinux.org>
+References: <20190918084833.9369-1-christian.brauner@ubuntu.com>
+ <20190918084833.9369-3-christian.brauner@ubuntu.com>
+ <20190918091512.GA5088@elm>
+ <201909181031.1EE73B4@keescook>
+ <20190919104251.GA16834@altlinux.org>
+ <201909190918.443D6BC7@keescook>
 MIME-Version: 1.0
-Received: by 2002:a02:6644:0:0:0:0:0 with HTTP; Thu, 19 Sep 2019 11:29:19
- -0700 (PDT)
-Reply-To: hadelissa29@gmail.com
-From:   Hadel Issa <hadelissa818@gmail.com>
-Date:   Thu, 19 Sep 2019 19:29:19 +0100
-Message-ID: <CAL3KpKrB-9jfMWPc1x0xfW+QjQKT3aE13Y32UaOKySSL5HbH1A@mail.gmail.com>
-Subject: INVESTMENT PROPOSAL.
-To:     hadelissa29@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <201909190918.443D6BC7@keescook>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It=E2=80=99s my pleasure to contact you through this media because I need a=
-n
-investment assistance in your country. However I have a profitable
-investment proposal with  good interest to share with you, amounted
-the sum of (Twenty Eight Million Four Hundred Thousand United State
-Dollar ($28.400.000.00). If you  are willing to handle this project
-kindly reply urgent to enable me provide you more information about
-the investment funds and the project.
+On Thu, Sep 19, 2019 at 09:55:30AM -0700, Kees Cook wrote:
+> On Thu, Sep 19, 2019 at 01:42:51PM +0300, Dmitry V. Levin wrote:
+> > On Wed, Sep 18, 2019 at 10:33:09AM -0700, Kees Cook wrote:
+> > > This is actually fixed in -next already (and, yes, with the Fixes line
+> > > Tyler has mentioned):
+> > > 
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/commit/?h=next&id=69b2d3c5924273a0ae968d3818210fc57a1b9d07
+> > 
+> > Excuse me, does it mean that you expect each selftest to be self-hosted?
+> > I was (and still is) under impression that selftests should be built
+> > with headers installed from the tree. Is it the case, or is it not?
+> 
+> As you know (but to give others some context) there is a long-standing
+> bug in the selftest build environment that causes these problems (it
+> isn't including the uAPI headers) which you'd proposed to be fixed
+> recently[1]. Did that ever get sent as a "real" patch? I don't see it
+> in Shuah's tree; can you send it to Shuah?
+> 
+> [1] https://lore.kernel.org/lkml/20190805094719.GA1693@altlinux.org/
 
-I am waiting to hear from you through this my private
-email(hadelissa29@gmail.com) so we can proceed further.
+The [1] was an idea rather than a patch, it didn't take arch uapi headers
+into account.  OK, I'll try to come up with a proper fix then.
 
-Best Regards.
-Mr. Hadel Issa
+
+-- 
+ldv
