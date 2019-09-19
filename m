@@ -2,91 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD93B75AC
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 11:06:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C93B1B75F7
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 11:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388404AbfISJGM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Sep 2019 05:06:12 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:46885 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388194AbfISJGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 05:06:12 -0400
-Received: by mail-ot1-f65.google.com with SMTP id f21so2369902otl.13;
-        Thu, 19 Sep 2019 02:06:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wDQS67j3lG7TwomTYu6phRtQVo+Lq0+3xuq57RPV6D8=;
-        b=i1wJ+zoQWcdeFJPKz4EmDzW6m0EliuvcQPuUNzIcZtgWhqgeLwuxiR68NdnizJJDgG
-         IHPXTyhCEax+zzvWHGjCxIvtqGgU9BCCvdqAtXiFQa/z3j/HEtvgt3K6ly6YVkfP02p7
-         XG/IHq2mXhiRezcDi9JSkPbq5e5LgtF4OiaORJRbq8jpFfZotrNbLkF2dyEzAGF8PQoo
-         k+IxIBy8F3Nl+cGMv3kM9jUafBhQ5We1vZW05zedARE9kUEdpg9BfMuUAMgECwfcWJIz
-         Vy8q8ZQS+AbvbTEqiI4yKqKYeiMseEVTmIOHWGK8GXrN7Zvv88+u0nWNCAJ4hrUJRq2r
-         8q/g==
-X-Gm-Message-State: APjAAAVxtZsBodgZQtPUOAh0zuEHBpjmUNADTTEx2ABlB1FrqBAU3SMe
-        xDUY7bonLGG7/oGrjuzKMsKZlpmdcBgdfGvM1bc=
-X-Google-Smtp-Source: APXvYqzkCVuzCTBNypl4Lg61PDxEIAb1NQVdXkZR4+Hm131qcRPrUobeyAbVKE3pL8YI02rUdNiF6OshW6FylYOc9ac=
-X-Received: by 2002:a9d:4d0d:: with SMTP id n13mr5907611otf.297.1568883971244;
- Thu, 19 Sep 2019 02:06:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731.094150.851749535529247096.davem@davemloft.net>
- <20190731185023.20954-1-natechancellor@gmail.com> <b3444283-7a77-ece8-7ac6-41756aa7dc60@infradead.org>
- <64f7ef68-c373-5ff5-ff6d-8a7ce0e30798@infradead.org>
-In-Reply-To: <64f7ef68-c373-5ff5-ff6d-8a7ce0e30798@infradead.org>
+        id S2388260AbfISJPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 05:15:37 -0400
+Received: from andre.telenet-ops.be ([195.130.132.53]:58702 "EHLO
+        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730506AbfISJPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 05:15:36 -0400
+Received: from ramsan ([84.194.98.4])
+        by andre.telenet-ops.be with bizsmtp
+        id 3MFa2100505gfCL01MFaUC; Thu, 19 Sep 2019 11:15:35 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iAsXG-0003n1-0Q; Thu, 19 Sep 2019 11:15:34 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iAsXF-0006VB-Un; Thu, 19 Sep 2019 11:15:33 +0200
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 19 Sep 2019 11:06:00 +0200
-Message-ID: <CAMuHMdXya55UJttU1xvX5+-N658Xqfa0k8sSKTGbtdBHgPEFcg@mail.gmail.com>
-Subject: Re: [PATCH] net: mdio-octeon: Fix build error and Kconfig warning
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        kbuild test robot <lkp@intel.com>,
-        kernel-build-reports@lists.linaro.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linux-Next <linux-next@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+To:     "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH -net] zd1211rw: zd_usb: Use "%zu" to format size_t
+Date:   Thu, 19 Sep 2019 11:15:32 +0200
+Message-Id: <20190919091532.24951-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 1:52 AM Randy Dunlap <rdunlap@infradead.org> wrote:
-> However, there are lots of type/cast warnings in both mdio-octeon and mdio-cavium:
->
-> ../drivers/net/phy/mdio-octeon.c: In function ‘octeon_mdiobus_probe’:
-> ../drivers/net/phy/mdio-octeon.c:48:3: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
->    (u64)devm_ioremap(&pdev->dev, mdio_phys, regsize);
->    ^
+On 32-bit:
 
-cavium_mdiobus.register_base should be "void __iomem *" instead of "u64",
-and the cast should be dropped.
+    drivers/net/wireless/zydas/zd1211rw/zd_usb.c: In function ‘check_read_regs’:
+    drivers/net/wireless/zydas/zd1211rw/zd_def.h:18:25: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 6 has type ‘size_t’ {aka ‘unsigned int’} [-Wformat=]
+      dev_printk(level, dev, "%s() " fmt, __func__, ##args)
+			     ^~~~~~~
+    drivers/net/wireless/zydas/zd1211rw/zd_def.h:22:4: note: in expansion of macro ‘dev_printk_f’
+	dev_printk_f(KERN_DEBUG, dev, fmt, ## args)
+	^~~~~~~~~~~~
+    drivers/net/wireless/zydas/zd1211rw/zd_usb.c:1635:3: note: in expansion of macro ‘dev_dbg_f’
+       dev_dbg_f(zd_usb_dev(usb),
+       ^~~~~~~~~
+    drivers/net/wireless/zydas/zd1211rw/zd_usb.c:1636:51: note: format string is defined here
+	 "error: actual length %d less than expected %ld\n",
+						     ~~^
+						     %d
 
-> In file included from ../drivers/net/phy/mdio-octeon.c:14:0:
-> ../drivers/net/phy/mdio-cavium.h:113:48: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
->  #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
->                                                 ^
+Fixes: 84b0b66352470e64 ("zd1211rw: zd_usb: Use struct_size() helper")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/net/wireless/zydas/zd1211rw/zd_usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-... which allows to drop this cast as well.
-
-Casts are evil, and usually a sign that you're doing something wrong.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+index 4e44ea8c652d65aa..7b5c2fe5bd4d9cde 100644
+--- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
++++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
+@@ -1633,7 +1633,7 @@ static bool check_read_regs(struct zd_usb *usb, struct usb_req_read_regs *req,
+ 	 */
+ 	if (rr->length < struct_size(regs, regs, count)) {
+ 		dev_dbg_f(zd_usb_dev(usb),
+-			 "error: actual length %d less than expected %ld\n",
++			 "error: actual length %d less than expected %zu\n",
+ 			 rr->length, struct_size(regs, regs, count));
+ 		return false;
+ 	}
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.17.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
