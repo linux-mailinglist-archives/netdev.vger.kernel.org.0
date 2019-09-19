@@ -2,53 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF43B7884
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 13:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF61B788B
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 13:36:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389895AbfISLcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 07:32:55 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55150 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388181AbfISLcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 07:32:55 -0400
-Received: from localhost (unknown [86.58.254.34])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AB563154FB2DF;
-        Thu, 19 Sep 2019 04:32:52 -0700 (PDT)
-Date:   Thu, 19 Sep 2019 13:32:50 +0200 (CEST)
-Message-Id: <20190919.133250.1851009450153650293.davem@davemloft.net>
-To:     poeschel@lemonage.de
-Cc:     swinslow@gmail.com, tglx@linutronix.de,
-        kstewart@linuxfoundation.org, allison@lohutok.net,
-        opensource@jilayne.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, johan@kernel.org, horms@verge.net.au
-Subject: Re: [PATCH v8 1/7] nfc: pn533: i2c: "pn532" as dt compatible string
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190919091645.16439-1-poeschel@lemonage.de>
-References: <20190919091645.16439-1-poeschel@lemonage.de>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 19 Sep 2019 04:32:55 -0700 (PDT)
+        id S2389937AbfISLgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 07:36:43 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:57724 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389926AbfISLgn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 07:36:43 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 1BC86205B2;
+        Thu, 19 Sep 2019 13:36:41 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bo43BjrrLMSX; Thu, 19 Sep 2019 13:36:40 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id AE839201AE;
+        Thu, 19 Sep 2019 13:36:40 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Sep 2019
+ 13:36:38 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 614B5318022F;
+ Thu, 19 Sep 2019 13:36:40 +0200 (CEST)
+Date:   Thu, 19 Sep 2019 13:36:40 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <marcelo.leitner@gmail.com>, <willemdebruijn.kernel@gmail.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH RFC v3 0/5] Support fraglist GRO/GSO
+Message-ID: <20190919113640.GO2879@gauss3.secunet.de>
+References: <CA+FuTSdVFguDHXYPJBRrLhzPWBaykd+7PRqEmGf_eOFC3iHpAg@mail.gmail.com>
+ <20190918165817.GA3431@localhost.localdomain>
+ <20190919110125.GN2879@gauss3.secunet.de>
+ <20190919.131816.1861650130627229336.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190919.131816.1861650130627229336.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 19, 2019 at 01:18:16PM +0200, David Miller wrote:
+> From: Steffen Klassert <steffen.klassert@secunet.com>
+> Date: Thu, 19 Sep 2019 13:01:25 +0200
+> 
+> > If the packet data of all the fraglist GRO skbs are backed by a
+> > page fragment then we could just do the same by iterating with
+> > skb_walk_frags(). I'm not a driver expert and might be misstaken,
+> > but it looks like that could be done with existing hardware that
+> > supports segmentation offload.
+> 
+> Having to add frag list as well as page frag iterating in a driver is
+> quite a bit of logic, and added complexity.
+> 
+> If the frag list SKBs are indeed backed by a page, you could just as
+> easily coalesce everything into the page frag array of the first SKB.
 
-As we are in the merge window, the net-next tree is closed, as shown
-also at:
-
-	http://vger.kernel.org/~davem/net-next.html
-
-Please resubmit this after the merge window when the net-next tree opens
-back up.
-
-Please also provide an appropriate "[PATCH 0/N]" header posting
-explaining what the patch series is doing, how it is doing it, and
-why it is doing it that way.
-
-Thank you.
+That is true indeed. Fraglist GRO is more optimized to the case
+where we still need the skb arround the packet data. I.e. if it 
+can't be offloaded.
