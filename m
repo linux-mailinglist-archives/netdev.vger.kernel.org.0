@@ -2,68 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D030EB7F37
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 18:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D802BB7F3B
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 18:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404378AbfISQef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 12:34:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55842 "EHLO vps0.lunn.ch"
+        id S2404408AbfISQfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 12:35:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387693AbfISQef (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 12:34:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=zk34/WaepEZ6aVZJpiWjUS8UF7iUIRACXnV7zV0EX8U=; b=hwQPpg2MxAEK2mGXABpo2ESLzO
-        SpXQrfoXC3ABRO1fNZowoBlu28Gf6eyfYSiciZS6nDtdLwjh1wUdRMuxSwHVLlK/AZ27MN96GGHmA
-        8kttrhaKx2z4ENgRhGdAGKkdzaguSPi9+iX2Y9UmHHrJVKMKtVucLIwKNyg/2Wq5dYIA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iAzO1-0007gl-It; Thu, 19 Sep 2019 18:34:29 +0200
-Date:   Thu, 19 Sep 2019 18:34:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Le Goff <David.Legoff@silabs.com>
-Subject: Re: [PATCH 02/20] staging: wfx: add support for I/O access
-Message-ID: <20190919163429.GB27277@lunn.ch>
-References: <20190919105153.15285-1-Jerome.Pouiller@silabs.com>
- <20190919105153.15285-3-Jerome.Pouiller@silabs.com>
+        id S2404404AbfISQe7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 12:34:59 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4188B218AF;
+        Thu, 19 Sep 2019 16:34:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568910898;
+        bh=hdieCwqtpGBeub+UETbr22sG52WgH80MHKyAiqvy6U0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wxeym8nU4VDC43DiPzkGlX/bi97VoQU0o0FF0f6SsffaRDfGvNOt7fR10Kq1vFEeA
+         1raGc1t7o8AKh2AbyJ3saKjTCBh1rSP27FAvYDWpO7xp2vxCnQgB7282vm39yYlYkj
+         t076+Ger+5VUTVNA6dGNLzdXRUgwG2DlAjspAuk0=
+Date:   Thu, 19 Sep 2019 18:34:56 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Matthias May <matthias.may@neratec.com>
+Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Subject: Re: ELOed stable kernels
+Message-ID: <20190919163456.GA4037101@kroah.com>
+References: <CAJ3xEMhzGs=8Vuw6aT=wCnQ24Qif89CUDxvbM0jWCgKjNNdbpA@mail.gmail.com>
+ <e8cf18ee-d238-8d6f-e25f-9f59b28569d2@neratec.com>
+ <20190919144426.GA3998200@kroah.com>
+ <5381116f-caae-531d-adf3-1c7e07118b69@neratec.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190919105153.15285-3-Jerome.Pouiller@silabs.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <5381116f-caae-531d-adf3-1c7e07118b69@neratec.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 10:52:35AM +0000, Jerome Pouiller wrote:
-> +static int wfx_sdio_copy_from_io(void *priv, unsigned int reg_id,
-> +				 void *dst, size_t count)
-> +{
-> +	struct wfx_sdio_priv *bus = priv;
-> +	unsigned int sdio_addr = reg_id << 2;
-> +	int ret;
-> +
-> +	BUG_ON(reg_id > 7);
+On Thu, Sep 19, 2019 at 05:00:09PM +0200, Matthias May wrote:
+> On 19/09/2019 16:44, Greg Kroah-Hartman wrote:
+> > On Thu, Sep 19, 2019 at 04:39:28PM +0200, Matthias May wrote:
+> >> On 19/09/2019 16:05, Or Gerlitz wrote:
+> >>> Hi Greg,
+> >>>
+> >>> If this is RTFM could you please point me to the Emm
+> >>>
+> >>> AFAIR if a stable kernel is not listed at kernel.org than it is EOL by now.
+> >>>
+> >>> Is this correct?
+> >>>
+> >>> thanks,
+> >>>
+> >>> Or.
+> >>>
+> >>
+> >> You can also look at the wikipedia page at
+> >> https://en.wikipedia.org/wiki/Linux_kernel#Maintenance_and_long-term_support
+> >>
+> >> I do the updates of the entries for each release once the release-announcement has been sent to the list.
+> >> At least since I'm doing this (last ~5 years), the last release-announcement of a branch always contains a notice that
+> >> this release is now EOL.
+> >> I reference all these messages for each version.
+> > 
+> > Very nice, I never noticed that!
+> > 
+> > Also, you might want to use lore.kernel.org for the email archives,
+> > don't know who runs those other sites you link to :)
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > 
+> 
+> In the past I used to link to https://lkml.org/ .
+> However this archive is... unreliable.
+> Often the messages would not show up for days, and there are some
+> messages which are missing completely.
+> 
+> Currently I'm using lkml.iu.edu which is run by the Indiana
+> University.
+> 
+> Thank you for pointing to lore.kernel.org Seems better to have a
+> reference which is run by kernel.org itself.
+> 
+> Do you happen to know what the update interval of this archive is?  At
+> lkml.iu.edu, when the new version is announced, it often takes quite
+> some time until it shows up in the archive.
 
-Hi Jerome
+An email posted to the mailing list should show up in the public side of
+lore.kernel.org in the archives within minutes.
 
-BUG_ON should only be used when the system is corrupted, and there is
-no alternative than to stop the machine, so it does not further
-corrupt itself. Accessing a register which does not exist is not a
-reason the kill the machine. A WARN() and a return of -EINVAL would be
-better.
+Look at this thread as an example, you should see this message there
+already :)
 
-	Andrew
+thanks,
+
+greg k-h
