@@ -2,137 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6EEBB70F8
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18679B712B
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 03:44:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388055AbfISB1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Sep 2019 21:27:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50522 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387591AbfISB1m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Sep 2019 21:27:42 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 066FE3084295;
-        Thu, 19 Sep 2019 01:27:42 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 31F5B6B49C;
-        Thu, 19 Sep 2019 01:27:33 +0000 (UTC)
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Cc:     Paul Moore <paul@paul-moore.com>, sgrubb@redhat.com,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        eparis@parisplace.org, serge@hallyn.com, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, dwalsh@redhat.com, mpatel@redhat.com,
-        Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH ghak90 V7 21/21] audit: add proc interface for capcontid
-Date:   Wed, 18 Sep 2019 21:22:38 -0400
-Message-Id: <67a482f9dcde6362bbca2a2facb24a3d68e0c07a.1568834525.git.rgb@redhat.com>
-In-Reply-To: <cover.1568834524.git.rgb@redhat.com>
-References: <cover.1568834524.git.rgb@redhat.com>
-In-Reply-To: <cover.1568834524.git.rgb@redhat.com>
-References: <cover.1568834524.git.rgb@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Thu, 19 Sep 2019 01:27:42 +0000 (UTC)
+        id S2387665AbfISBos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Sep 2019 21:44:48 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:43788 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387395AbfISBos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Sep 2019 21:44:48 -0400
+Received: by mail-qk1-f196.google.com with SMTP id h126so1605621qke.10
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 18:44:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xkMdRwP7dRIQntiL1DI00+cj3iNG/NEsiFgJ+PEO0gw=;
+        b=Zw96cAcTE35uIKpBFAL0KSlDTqm4ScDPL9alYcLDS9Yf31Du08TU0vNhHURemYdcNO
+         WOR53PoEvW6D4qCckjtUXvNzBZjuBkzv1aX7U9cbUNy03Z5ikhlBo2lNC/aq+xEbI/59
+         eaIPkRgctTX/RVDoYCg9+XXiwnjLwZWrUntRrXgDnqA84Qxs5H45d5ZdDpntIV3debwA
+         Yi7rxtrMCRUi9yEAxsXAF76t6P1TelPu96uB+UUnyF10SY9/fjYlueLgI9vnl/0D2azL
+         bBFgmy/zlcPuMeeNWvztNnnnSsxuBwqMDaXJ0yuqvTz6ZV8TZzMqqAhNFQvG3cqI3Kou
+         b82g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xkMdRwP7dRIQntiL1DI00+cj3iNG/NEsiFgJ+PEO0gw=;
+        b=frWrBaUYZfmY88gSRSec70ZTw0ZYpFo91kWVpQmYDKkRqUNS9F6HCmMg1fpqbTEFlp
+         J2nGURQdrP9zOWVKWVXh6fixpV0Ehl6IEcvADnOgZkgMw7YylytxqXS+ntsdq+L7KoZ3
+         GmwGuVHDAStMWwLy15ICstO517ZBTrz37MnZy0M+Ij4kpoO6wPcPPUn/djY8+oC9N/8j
+         kthyweXqpCEXwzSqsfi+ECsqeR8jaqJ561nI6BYEj2CwWtcJc/mLjyGyBU1BstluSNqj
+         7Gde1V+Y65e+BfvLFVOIEYbna3lOK4ex0/Cgv5otp7y+WN3tAbXFUruO8LOr5r0gh3y+
+         YrnQ==
+X-Gm-Message-State: APjAAAV2w0uO7xWmekPzE73xUwKCCCDDRj/XlLBLtDIv7oFKUNMOqWSh
+        xvaJ64Nn9akBfJU9BI28nXZMKWzi+4FeC3Yeye8AZg==
+X-Google-Smtp-Source: APXvYqw3xhDJsC4KO6DBCGEOvw+KkzJfCRl9QjdJwDEkRsdKxsqZl3tYPpV1cMRJHB+rn+bVsMMar0AqTbD5Bnon6EM=
+X-Received: by 2002:a37:b16:: with SMTP id 22mr498473qkl.220.1568857485567;
+ Wed, 18 Sep 2019 18:44:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190911025045.20918-1-chiu@endlessm.com>
+In-Reply-To: <20190911025045.20918-1-chiu@endlessm.com>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Thu, 19 Sep 2019 09:44:34 +0800
+Message-ID: <CAB4CAwcs4zn4Sg0AkFnSUE-tbkdrHE=3yYeF8g+-ak5NyPBkuQ@mail.gmail.com>
+Subject: Re: [PATCH v2] rtl8xxxu: add bluetooth co-existence support for
+ single antenna
+To:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a /proc interface to capcontid for testing purposes.  This isn't
-intended to be merged upstream.  Container orchestrators/engines are
-expected to link to libaudit to use the functions audit_set_capcontid()
-and audit_get_capcontid.
+On Wed, Sep 11, 2019 at 10:50 AM Chris Chiu <chiu@endlessm.com> wrote:
+>
+>
+> Notes:
+>   v2:
+>    - Add helper functions to replace bunch of tdma settings
+>    - Reformat some lines to meet kernel coding style
+>
+>
 
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
----
- fs/proc/base.c | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+Gentle ping. Any suggestions would be appreciated. Thanks.
 
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 26091800180c..283ef8e006e7 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -1360,6 +1360,59 @@ static ssize_t proc_contid_write(struct file *file, const char __user *buf,
- 	.write		= proc_contid_write,
- 	.llseek		= generic_file_llseek,
- };
-+
-+static ssize_t proc_capcontid_read(struct file *file, char __user *buf,
-+				  size_t count, loff_t *ppos)
-+{
-+	struct inode *inode = file_inode(file);
-+	struct task_struct *task = get_proc_task(inode);
-+	ssize_t length;
-+	char tmpbuf[TMPBUFLEN];
-+
-+	if (!task)
-+		return -ESRCH;
-+	/* if we don't have caps, reject */
-+	if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
-+		return -EPERM;
-+	length = scnprintf(tmpbuf, TMPBUFLEN, "%u", audit_get_capcontid(task));
-+	put_task_struct(task);
-+	return simple_read_from_buffer(buf, count, ppos, tmpbuf, length);
-+}
-+
-+static ssize_t proc_capcontid_write(struct file *file, const char __user *buf,
-+				   size_t count, loff_t *ppos)
-+{
-+	struct inode *inode = file_inode(file);
-+	u32 capcontid;
-+	int rv;
-+	struct task_struct *task = get_proc_task(inode);
-+
-+	if (!task)
-+		return -ESRCH;
-+	if (*ppos != 0) {
-+		/* No partial writes. */
-+		put_task_struct(task);
-+		return -EINVAL;
-+	}
-+
-+	rv = kstrtou32_from_user(buf, count, 10, &capcontid);
-+	if (rv < 0) {
-+		put_task_struct(task);
-+		return rv;
-+	}
-+
-+	rv = audit_set_capcontid(task, capcontid);
-+	put_task_struct(task);
-+	if (rv < 0)
-+		return rv;
-+	return count;
-+}
-+
-+static const struct file_operations proc_capcontid_operations = {
-+	.read		= proc_capcontid_read,
-+	.write		= proc_capcontid_write,
-+	.llseek		= generic_file_llseek,
-+};
- #endif
- 
- #ifdef CONFIG_FAULT_INJECTION
-@@ -3121,6 +3174,7 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
- 	REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),
- 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
- 	REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
-+	REG("audit_capcontainerid", S_IWUSR|S_IRUSR|S_IRUSR, proc_capcontid_operations),
- #endif
- #ifdef CONFIG_FAULT_INJECTION
- 	REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
-@@ -3522,6 +3576,7 @@ static int proc_tid_comm_permission(struct inode *inode, int mask)
- 	REG("loginuid",  S_IWUSR|S_IRUGO, proc_loginuid_operations),
- 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
- 	REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
-+	REG("audit_capcontainerid", S_IWUSR|S_IRUSR|S_IRUSR, proc_capcontid_operations),
- #endif
- #ifdef CONFIG_FAULT_INJECTION
- 	REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
--- 
-1.8.3.1
-
+Chris
