@@ -2,68 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 774D7B78C5
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 13:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77780B78D2
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 14:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390071AbfISL6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 07:58:45 -0400
-Received: from paleale.coelho.fi ([176.9.41.70]:43654 "EHLO
-        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388639AbfISL6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 07:58:44 -0400
-Received: from [91.156.6.193] (helo=redipa)
-        by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92)
-        (envelope-from <luca@coelho.fi>)
-        id 1iAv53-0000co-2M; Thu, 19 Sep 2019 14:58:38 +0300
-Message-ID: <a008903b8fe4f687c75c7d864582888b74fb1709.camel@coelho.fi>
-From:   Luca Coelho <luca@coelho.fi>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 19 Sep 2019 14:58:35 +0300
-In-Reply-To: <20190919115612.1924937-1-arnd@arndb.de>
-References: <20190919115612.1924937-1-arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S2388765AbfISMCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 08:02:17 -0400
+Received: from werkudoro.jatengprov.go.id ([103.9.227.34]:60780 "EHLO
+        werkudoro.jatengprov.go.id" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387757AbfISMCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 08:02:17 -0400
+X-Greylist: delayed 2442 seconds by postgrey-1.27 at vger.kernel.org; Thu, 19 Sep 2019 08:02:16 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=jatengprov.go.id; s=default; h=Message-ID:Reply-To:To:From:Date:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:Sender:Subject:Cc:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IlrCxIBWvxOzPALn47D3+2101Gu2SIzn6UIt1KekVro=; b=Li2RRAcckS2MLGhl3DNOHfOty
+        TXGWlNJvrxoBp4kydHAFwH4+MjzEUIpmZZux9OVHmnaXU92JwELe0hu1+heAoMyX0WaU8jl9q1/D2
+        voFXPn/nmh/4TcYTv8LDTTHwP0dqnFqNQmqaNNxBcVcN5xzuyS64deuHlfDmaNAq7M4aFCvyaMZJH
+        YqGadvY2eS7z0iTBo8camPkYoQ1H/KYtsnAs5DvrKBZ7PHsoJe+J9MmOQwH9en/zD9ivtbSmoCnRJ
+        4bx5bCfHd3Mw4m64BMIky25aYYSeOXTMwGtYUGHmlN01kpzAJqq7b2nfsG1GGkZfu+7G9NKRKCRtX
+        ARPJpEt4w==;
+Received: from localhost ([127.0.0.1]:47554 helo=werkudoro.jatengprov.go.id)
+        by werkudoro.jatengprov.go.id with esmtpa (Exim 4.92)
+        (envelope-from <bpsdmd@jatengprov.go.id>)
+        id 1iAuTo-0002LK-7X; Thu, 19 Sep 2019 18:20:13 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on farmhouse.coelho.fi
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.2
-Subject: Re: [PATCH] iwlwifi: fix building without CONFIG_THERMAL
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 19 Sep 2019 18:20:08 +0700
+From:   =?UTF-8?Q?=D0=B0=D0=B4=D0=BC=D0=B8=D0=BD=D0=B8=D1=81=D1=82=D1=80?=
+         =?UTF-8?Q?=D0=B0=D1=82=D0=BE=D1=80?= <bpsdmd@jatengprov.go.id>
+To:     undisclosed-recipients:;
+Reply-To: mailsss@mail2world.com
+Mail-Reply-To: mailsss@mail2world.com
+Message-ID: <6887b423e0a8c4faf930a01eeab94d73@jatengprov.go.id>
+X-Sender: bpsdmd@jatengprov.go.id
+User-Agent: Roundcube Webmail/1.3.8
+X-OutGoing-Spam-Status: No, score=3.3
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - werkudoro.jatengprov.go.id
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - jatengprov.go.id
+X-Get-Message-Sender-Via: werkudoro.jatengprov.go.id: authenticated_id: bpsdmd@jatengprov.go.id
+X-Authenticated-Sender: werkudoro.jatengprov.go.id: bpsdmd@jatengprov.go.id
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-19 at 13:55 +0200, Arnd Bergmann wrote:
-> The iwl_mvm_send_temp_report_ths_cmd() function is now called without
-> CONFIG_THERMAL, but not defined:
-> 
-> ERROR: "iwl_mvm_send_temp_report_ths_cmd" [drivers/net/wireless/intel/iwlwifi/mvm/iwlmvm.ko] undefined!
-> 
-> Move that function out of the #ifdef as well and change it so
-> that empty data gets sent even if no thermal device was
-> registered.
-> 
-> Fixes: 242d9c8b9a93 ("iwlwifi: mvm: use FW thermal monitoring regardless of CONFIG_THERMAL")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> No idea if this does what was intended in the commit that introduced
-> the link failure, please see for youself.
 
-Thanks for the fix, Arnd! We already sent a fix for this though[1] and
-Kalle has already queued it for v5.3.
 
-[1] https://patchwork.kernel.org/patch/11150431/
+-- 
+ВНИМАНИЕ;
 
---
-Cheers,
-Luca.
+В вашем почтовом ящике превышен лимит
+хранилища, который составляет 5 ГБ, как
+определено администратором, который в
+настоящее время работает на 10,9 ГБ.
+Возможно, вы не сможете отправлять или
+получать новую почту, пока вы не
+подтвердите свою почту. Чтобы
+подтвердить свой почтовый ящик,
+отправьте следующую информацию ниже:
 
+название:
+Имя пользователя:
+пароль:
+Подтвердите Пароль:
+Эл. адрес:
+Телефон:
+
+Если вы не сможете подтвердить свой
+почтовый ящик, ваш почтовый ящик будет
+отключен!
+
+Приносим извинения за неудобства.
+Код подтверждения: en: 006,524.RU
+Техническая поддержка почты © 2019
+
+благодарю вас
+Системный администратор.
