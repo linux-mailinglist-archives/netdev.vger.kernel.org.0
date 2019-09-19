@@ -2,69 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C924DB731E
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 08:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D70B7337
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 08:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387832AbfISGVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 02:21:24 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:2681 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728230AbfISGVY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 02:21:24 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 0E1C4D25D45C7A3AE125;
-        Thu, 19 Sep 2019 14:21:22 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 19 Sep 2019 14:21:13 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <olteanv@gmail.com>, <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH net] net: dsa: sja1105: Add dependency for NET_DSA_SJA1105_TAS
-Date:   Thu, 19 Sep 2019 14:38:19 +0800
-Message-ID: <20190919063819.164826-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S2388004AbfISGgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 02:36:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35370 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725320AbfISGgS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 02:36:18 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 840D0218AF;
+        Thu, 19 Sep 2019 06:36:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568874978;
+        bh=kLqycoBe8uV8E2knqmFJ1o58JmJlygAiwWJwYCZe3u4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MBj1OhUSqRr3IZoLYSeHbj1Qf6DNpVP0GFMSepJmowWR/fpbYu+KDjGnM8GDDFTwT
+         C2wlqJBLS12ZilvPdqSYpw/TpurkUrYrG9oTs+V1gQ691DjUUdUPbQSBM+ZbNzA0NC
+         3jOV/vXTS9pdhd4wf6ILs7cuvS20g5fiiHPm20xw=
+Date:   Thu, 19 Sep 2019 08:36:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Xiaoming Ni <nixiaoming@huawei.com>
+Cc:     akpm@linux-foundation.org, vvs@virtuozzo.com,
+        torvalds@linux-foundation.org, adobriyan@gmail.com,
+        anna.schumaker@netapp.com, arjan@linux.intel.com,
+        bfields@fieldses.org, chuck.lever@oracle.com, davem@davemloft.net,
+        jlayton@kernel.org, luto@kernel.org, mingo@kernel.org,
+        Nadia.Derbey@bull.net, paulmck@linux.vnet.ibm.com,
+        semen.protsenko@linaro.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, trond.myklebust@hammerspace.com,
+        viresh.kumar@linaro.org, stable@kernel.org,
+        dylix.dailei@huawei.com, yuehaibing@huawei.com,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] kernel/notifier.c: intercepting duplicate
+ registrations to avoid infinite loops
+Message-ID: <20190919063615.GA2069346@kroah.com>
+References: <1568861888-34045-1-git-send-email-nixiaoming@huawei.com>
+ <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1568861888-34045-2-git-send-email-nixiaoming@huawei.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_NET_DSA_SJA1105_TAS=y and CONFIG_NET_SCH_TAPRIO=n,
-below error can be found:
-drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_setup_tc_taprio':
-sja1105_tas.c:(.text+0x318): undefined reference to `taprio_offload_free'
-sja1105_tas.c:(.text+0x590): undefined reference to `taprio_offload_get'
-drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_tas_teardown':
-sja1105_tas.c:(.text+0x610): undefined reference to `taprio_offload_free'
-make: *** [vmlinux] Error 1
+On Thu, Sep 19, 2019 at 10:58:06AM +0800, Xiaoming Ni wrote:
+> Registering the same notifier to a hook repeatedly can cause the hook
+> list to form a ring or lose other members of the list.
+> 
+> case1: An infinite loop in notifier_chain_register() can cause soft lockup
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>         atomic_notifier_chain_register(&test_notifier_list, &test2);
+> 
+> case2: An infinite loop in notifier_chain_register() can cause soft lockup
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>         atomic_notifier_call_chain(&test_notifier_list, 0, NULL);
+> 
+> case3: lose other hook test2
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+>         atomic_notifier_chain_register(&test_notifier_list, &test2);
+>         atomic_notifier_chain_register(&test_notifier_list, &test1);
+> 
+> case4: Unregister returns 0, but the hook is still in the linked list,
+>         and it is not really registered. If you call notifier_call_chain
+>         after ko is unloaded, it will trigger oops.
+> 
+> If the system is configured with softlockup_panic and the same
+> hook is repeatedly registered on the panic_notifier_list, it
+> will cause a loop panic.
+> 
+> Add a check in notifier_chain_register(),
+> Intercepting duplicate registrations to avoid infinite loops
+> 
+> Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
+> Reviewed-by: Vasily Averin <vvs@virtuozzo.com>
+> ---
+>  kernel/notifier.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 
-sja1105_tas needs tc-taprio, so this patch add the dependency for it.
+<formletter>
 
-Fixes: 317ab5b86c8e ("net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio offload")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/net/dsa/sja1105/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-index 55424f3..f40b248 100644
---- a/drivers/net/dsa/sja1105/Kconfig
-+++ b/drivers/net/dsa/sja1105/Kconfig
-@@ -27,6 +27,7 @@ config NET_DSA_SJA1105_PTP
- config NET_DSA_SJA1105_TAS
- 	bool "Support for the Time-Aware Scheduler on NXP SJA1105"
- 	depends on NET_DSA_SJA1105
-+	depends on NET_SCH_TAPRIO
- 	help
- 	  This enables support for the TTEthernet-based egress scheduling
- 	  engine in the SJA1105 DSA driver, which is controlled using a
--- 
-2.7.4
+</formletter>
 
+Same thing goes for all of the patches in this series.
+
+thanks,
+
+greg k-h
