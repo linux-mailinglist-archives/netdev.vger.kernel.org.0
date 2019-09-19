@@ -2,98 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7DA7B7B2C
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 15:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E58B7B63
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 15:59:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390354AbfISNyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 09:54:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55262 "EHLO vps0.lunn.ch"
+        id S1732346AbfISN7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 09:59:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403799AbfISNwp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 09:52:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=uHqAZszAl3o6WeCOPg4z0LfW+cCmWq3xrdVjUD6u4cc=; b=m9hhE2xoRKR2YYB7uf0VifEQnX
-        aOZ0+fdp520LdgMzOTKjsIrHpbX0evpx6kfQuWT22DK/3rghtJNe64JnjP8nhoJ/XbyXznacocWFv
-        YLb/dZdilLMACdcvabHVVRHVu5iokUFqOcyB2N8WUNJeACxQTC/BINx6ur5ejiNCfYek=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iAwrT-0006Js-9C; Thu, 19 Sep 2019 15:52:43 +0200
-Date:   Thu, 19 Sep 2019 15:52:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Peter Mamonov <pmamonov@gmail.com>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC] net/phy: fix Marvell PHYs probe failure when HWMON
- and THERMAL_OF are enabled
-Message-ID: <20190919135243.GB22556@lunn.ch>
-References: <20190918213837.24585-1-pmamonov@gmail.com>
- <20190919025016.GA12785@lunn.ch>
- <20190919081055.GD9025@chr>
+        id S1732329AbfISN7V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 09:59:21 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F1E8A20665;
+        Thu, 19 Sep 2019 13:59:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568901560;
+        bh=I8osdBr5rK8/FGiX5xKVgPYs/R2ZYcecd+s4/UF9w7E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f8OD1gi3nEkTcNUJXlI6jOI0AXpXmj5vr0wFr4lUW9cV/3FEkMLfxB1hYO9dPEKHm
+         gem2FmhUVREnBHtoUT44ZUBnM2Khz7+40EO3x1jDJCu1W6YYQLVYOdOd92xjzNuT/u
+         1xPPixqNnXvMfZv8eLmwekOhdmVU7OIqADqoj3MU=
+Date:   Thu, 19 Sep 2019 15:59:18 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Le Goff <David.Legoff@silabs.com>
+Subject: Re: [PATCH v2 20/20] staging: wfx: implement the rest of mac80211 API
+Message-ID: <20190919135918.GA3853501@kroah.com>
+References: <20190919135220.30663-1-Jerome.Pouiller@silabs.com>
+ <20190919135220.30663-21-Jerome.Pouiller@silabs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190919081055.GD9025@chr>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190919135220.30663-21-Jerome.Pouiller@silabs.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 11:10:56AM +0300, Peter Mamonov wrote:
-> Hi, Andrew,
+On Thu, Sep 19, 2019 at 01:52:42PM +0000, Jerome Pouiller wrote:
+> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
 > 
-> On Thu, Sep 19, 2019 at 04:50:16AM +0200, Andrew Lunn wrote:
-> > On Thu, Sep 19, 2019 at 12:38:37AM +0300, Peter Mamonov wrote:
-> > > Hello,
-> > > 
-> > > Some time ago I've discovered that probe functions of certain Marvell PHYs 
-> > > fail if both HWMON and THERMAL_OF config options are enabled.
-> > 
-> > Hi Peter
-> > 
-> > It probably affects more then Marvell PHYs.
-> > 
-> > > The root 
-> > > cause of this problem is a lack of an OF node for a PHY's built-in 
-> > > temperature sensor.  However I consider adding this OF node to be a bit 
-> > > excessive solution. Am I wrong? Below you will find a one line patch which 
-> > > fixes the problem.
-> > 
-> > Your patch look sensible to me.
-> > 
-> > > I've sent it to the releveant maintainers three weeks 
-> > > ago without any feedback yet.
-> > 
-> > Could you point me at the relevant mailing list archive?
-> 
-> Here it is: https://marc.info/?l=linux-pm&m=156691695616377&w=2
+> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
 
-Hi Peter
+I can not take patches without any changelog text :(
 
-O.K. Thanks.
 
-We should not take this patch via netdev, since it is outside of
-netdev, even if it does break netdev. So lets polish the patch a bit,
-and then repost it to linux-pm and its maintainers.
-
-Please could you add a Fixes: tag. Can you figure out which commit
-broke it, or has it always been broken?
-
-Add a stable: tag, indicating it needs to be back ported. For netdev,
-you would not do this, but for linux-pm, i guess it is needed.
-
-Change the subject a little. thermal: Fix broken registration if sensor OF node missing.
-
-Add
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-When you post it, please Cc: me, netdev, davem, but make the To: the
-three thermal maintainers.
-
-Thanks
-      Andrew
