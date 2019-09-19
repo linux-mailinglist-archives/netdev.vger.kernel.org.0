@@ -2,132 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 795E0B7A95
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 15:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5EAAB7A97
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 15:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390470AbfISNdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 09:33:15 -0400
-Received: from mail-ed1-f50.google.com ([209.85.208.50]:45159 "EHLO
-        mail-ed1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388898AbfISNdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 09:33:15 -0400
-Received: by mail-ed1-f50.google.com with SMTP id h33so3178376edh.12
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 06:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=S3UwS/TmvhYeR3SY0Vup236nL18uDULwNvU5vmC4ufQ=;
-        b=hnLUzS9iekx+5sR2VNOC7y2ZL5t8bfT2eoA8UClBbx9b2Ufd5gi0OPvDFVnDvx4z3f
-         CFud1JSlwgfqBf0t6s/kbdP4YJ5fODR3BCCpeXa12rn5fh3zhZIcJhxYzMyJ9kXszfa2
-         z0R1TP7drZTAslIkbBqsSMbHM6BWd35sBJUsBqRES07MKcE7VJWC8uMhTO5mzUKPXx2G
-         mdp8igAIi5cFykB7elX8lyjpnjf6MU+RO6vCSupASpQaRuLsSux36HtQVzN+XqcojiC9
-         MKUeo8jhQXQNhmIo2YfenNMKI5vzkXqtxuUTfM77Ikq24s7YIHjX/oXrTiiYRaFj44cB
-         J5vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S3UwS/TmvhYeR3SY0Vup236nL18uDULwNvU5vmC4ufQ=;
-        b=s8SM7eZmKJGeUdL886YX4qainCtSNWJ5AHBymWdi+EYqJZVGx/fwqQ/dy44yQ0hVMZ
-         eE2RZIxaDmWOZaxcBYltEUKQkCoPWUpVvX2/edSEbhdAIypTdojmOUNeKudMMil4PI5C
-         4TZlljUsZcF0KbjTDDK3LbOVNusvHZS32cF22TOfl6MLVcMjbqFelZvWxQHiFCehcF+s
-         +XwpOtOlmqbnFsD5amVP32WWQbFv9u3zS3qD2sO97ARBd9xz1StcRu+CY85vqamYCJB6
-         6c5O9x4W2QbSl9YBExYnyr77KcNU2tKzXTbxgH7z7gsbW0LOR1lQs47kNw3nkuTo2TZg
-         Vs+Q==
-X-Gm-Message-State: APjAAAXy59n3nIXcA98ngR5hLrms/UkYn/cR7kws8c4f+p6VTjCnkXYj
-        iX/TJgGesjsVP5nqq4lL5QkKQeg6A1rpHtsIZv2YpCZ5
-X-Google-Smtp-Source: APXvYqxQdVHdPV56dMF7N0ro4Zat1zfos/dpFzfXkn+9mv86MD1yROZeOcciEkl/723vAwzouG9SIurATtjYQ70xDsE=
-X-Received: by 2002:a50:e701:: with SMTP id a1mr16415204edn.108.1568899992100;
- Thu, 19 Sep 2019 06:33:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
- <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
- <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com> <06d2ca7441c899b4da8475f82dc706351edd0976.camel@pengutronix.de>
-In-Reply-To: <06d2ca7441c899b4da8475f82dc706351edd0976.camel@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 19 Sep 2019 16:33:00 +0300
-Message-ID: <CA+h21hoNAMVb8HQxHcGxU8vn3TACAZ=jim5wSL4NS21inHSMMQ@mail.gmail.com>
-Subject: Re: dsa traffic priorization
-To:     =?UTF-8?Q?Jan_L=C3=BCbbe?= <jlu@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
+        id S2390197AbfISNeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 09:34:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55226 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388898AbfISNeN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 09:34:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CHA1o9QHSaj0gdYXnG4ciDjlyuqP5uOfjD5O4CFDhCE=; b=iMV3YdH5qzr/hDvbMXnzNEVEzE
+        sh28BNFGe4dWrkFMtV5XgTcCH47jVUHPibbEDnZaw9K7Fa2MzVi31DzATE+n2kihkvfJw6K+xqcBb
+        clbf0vi+Z766KgMMqshZpDd+FkBgdlNefU7wgQOsexQrKrK4zW2dkpC4OnDIvqrnBfmg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iAwZX-00065Y-Qu; Thu, 19 Sep 2019 15:34:11 +0200
+Date:   Thu, 19 Sep 2019 15:34:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
         netdev <netdev@vger.kernel.org>,
         Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        kernel@pengutronix.de, Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+Subject: Re: dsa traffic priorization
+Message-ID: <20190919133411.GA22556@lunn.ch>
+References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
+ <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
+ <20190919080051.mr3cszpyypwqjwu4@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190919080051.mr3cszpyypwqjwu4@pengutronix.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jan,
+On Thu, Sep 19, 2019 at 10:00:51AM +0200, Sascha Hauer wrote:
+> Hi Vladimir,
+> 
+> On Wed, Sep 18, 2019 at 05:36:08PM +0300, Vladimir Oltean wrote:
+> > Hi Sascha,
+> > 
+> > On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> > >
+> > > Hi All,
+> > >
+> > > We have a customer using a Marvell 88e6240 switch with Ethercat on one port and
+> > > regular network traffic on another port. The customer wants to configure two things
+> > > on the switch: First Ethercat traffic shall be priorized over other network traffic
+> > > (effectively prioritizing traffic based on port). Second the ethernet controller
+> > > in the CPU is not able to handle full bandwidth traffic, so the traffic to the CPU
+> > > port shall be rate limited.
+> > >
+> > 
+> > You probably already know this, but egress shaping will not drop
+> > frames, just let them accumulate in the egress queue until something
+> > else happens (e.g. queue occupancy threshold triggers pause frames, or
+> > tail dropping is enabled, etc). Is this what you want?
+> 
+> If I understand correctly then the switch has multiple output queues per
+> port.
 
-On Thu, 19 Sep 2019 at 16:21, Jan L=C3=BCbbe <jlu@pengutronix.de> wrote:
->
-> Hi,
->
-> On Wed, 2019-09-18 at 10:41 -0700, Florian Fainelli wrote:
-> > > Technically, configuring a match-all rxnfc rule with ethtool would
-> > > count as 'default priority' - I have proposed that before. Now I'm no=
-t
-> > > entirely sure how intuitive it is, but I'm also interested in being
-> > > able to configure this.
-> >
-> > That does not sound too crazy from my perspective.
->
-> Sascha and myself aren't that familiar with that part of ethtool.
-> You're talking about using ethtool --config-nfc/--config-ntuple on the
-> (external) sw1p1, sw1p2 ports? Something like this (completely untested
-> from the manpage):
-> ethtool --config-nfc sw1p1 flow-type ether queue 2 # high prio queue for =
-ethercat
-> ethtool --config-nfc sw1p2 flow-type ether queue 1 # normal for rest
->
+There are 4 egress queues per port.
 
-Yes, something like that.
+> The Ethercat traffic will go to a higher priority queue and on
+> congestion on other queues, frames designated for that queue will be
+> dropped.
 
-> Currently, there seems to be no "match-all" option.
->
+On ingress, there are various ways to add a priority to a frame, which
+then determines which egress queue it lands in. This can be static,
+all frames which ingress port X have priority Y. It can look at the
+802.1p header and map the l2 priority to an queue priority. It can
+look at the IPv4 TOS/DSCP value and map it to a queue priority. And
+you can also use the TCAM, when it matches on a frame, it can specify
+the frame priority.
 
-Well, some keys for flow steering can be masked. See:
+If the egress queue, as selected by the queue priority is full, the
+frame will be dropped.
 
-           src xx:yy:zz:aa:bb:cc [m xx:yy:zz:aa:bb:cc]
-                  Includes the source MAC address, specified as 6
-bytes in hexadecimal separated by colons, along with an optional mask.
-Valid only for flow-type ether.
+> I just talked to our customer and he verified that their
+> Ethercat traffic still goes through even when the ports with the general
+> traffic are jammed with packets. So yes, I think this is what I want.
 
-           dst xx:yy:zz:aa:bb:cc [m xx:yy:zz:aa:bb:cc]
-                  Includes the destination MAC address, specified as 6
-bytes in hexadecimal separated by colons, along with an optional mask.
-Valid only for flow-type ether.
+Taking frames out of the port egress queues and passing them out the
+interface is then determined by the scheduler. There are two different
+configurations which can be used
 
-           proto N [m N]
-                  Includes the Ethernet protocol number (ethertype)
-and an optional mask.  Valid only for flow-type ether.
+1) Strict priority. Frames are taken from the highest priority queue,
+until it is empty. If the highest priority queue is empty, frames are
+taken from the second highest priority queue. And if the second
+priority is empty, the third priority queue is used, etc. This can
+lead to starvation, when the lower priority queue never get serviced
+because the higher priority queue have sufficient frames to keep the
+line busy.
 
-The idea is that any rule with e.g. src 00:00:00:00:00:00 and m
-00:00:00:00:00:00 is an implicit match-all, because any (SMAC & m) =3D=3D
-src.
-The issue I see (and why I said it's not intuitive) is that there is
-more than 1 way to express the same thing, and that it raises sanity
-questions about rule ordering (if the rule is first, should all
-subsequent flow steering rules be ignored?). Also, the driver would
-have to open-code the "matchall" condition in order to detect it and
-configure the default qpri.
+2) Weighted round robin. It takes up to 8 frames from the highest
+priority queue, then up to 4 frames from the second highest priority
+queue, then up to 2 frames from the 3rd highest priority queue, and
+then 1 frame from the lower priority frame. And then it starts the
+cycle again. This scheduler ensure there is no starvation of the
+queues, but you do loose more high priority frames when congested.
 
-It appears that there is a way to do this with tc-flower (or any other
-classifier) as well, by specifying any null key with a mask of zero.
+> The bottleneck here is in the CPU interface. The SoC simply can't handle
+> all frames coming into a fully occupied link, so we indeed have to limit
+> the number of packets coming into the SoC which speaks for egress rate
+> limiting. We could of course limit the ingress packets on the other
+> ports, but that would mean we have to rate limit each port to the total
+> desired rate divided by the number of ports to be safe, not very
+> optimal.
 
-I don't know enough either to understand what is preferable.
+Pause frames then start playing a role, maybe instead of, or in
+combination with, egress traffic shaping.
 
-> Alternatives to "queue X" might be "action" or "context", but I don't
-> know enough about the details to prefer one above the other.
->
-> Regards,
-> Jan
->
+If the SoC is overloaded, it can send a pause frame. The Switch will
+then pause the scheduler. No packets are sent to the SoC, until it
+unpauses. What i don't know is if the switch itself will send out
+pause frames downstream, when egress queues are getting full. That
+could have bad effects on overall network bandwidth, for frames which
+are not destined for the SoC.
 
-Thanks,
--Vladimir
+If you use egress shaping, you have to make a guess at how many bits
+per second the SoC can handle, and configure the egress shaping to
+that. The scheduler will then take frames from the queues at that
+rate. At least for the older generation of switches, egress shaping
+was rather course grained at the higher speed. Something like 500Mbps,
+256Mbps, 128Mbps, 64Mbps, etc. So it might not do what you want. And
+older generation switches, ingress shaping is very course grained,
+mostly designed to limit broadcast storms.
+
+There are lots of options here, how you solve your problem. But you
+cannot look at just the SoC and switch combination. You need to look
+at your whole network design. If you are using 802.1p, who is setting
+the priority bits? If you are using TOS/DSCP, who is setting those
+bits? Is there policing going on in the network edge to ensure other
+traffic in the network is using the lower priority settings? Do you
+really want Ethercat to take the highest priority? I would put it at
+second priority, and make my SSH and SNMP client/server use the
+highest priority, so when it all goes wrong, i can login and take a
+look around to see what happened.
+
+Once you have a network design, and know what you want the SoC/switch
+combination to do, we can then figure out the correct API to configure
+this. It might be TC with offloads, it might be ethtool with offloads,
+etc.
+
+	Andrew
