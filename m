@@ -2,93 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B97DB72DE
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 07:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC20FB730A
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 08:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729163AbfISFuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 01:50:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47864 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727642AbfISFuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 01:50:19 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 497EB218AF;
-        Thu, 19 Sep 2019 05:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568872218;
-        bh=t+Hw9afisbolBB4SeoGHn41oKq3OIlYIXSWFg2LYd2g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XVJuI2xPTQVMUY6x+7MFXnPL9hnz1CKq7r2pb8kTa2yqKT5uVIwnkz4xMNYJdpq55
-         vr40UtwWnUbkdV8joSFXhWDR2PdYcV1Dt1nPmIUqR8/SbqrdWSItoJd4iPifhezerD
-         1jbbnhfK1Bwhjii/adw0waLAbz+0w5kJVvtM2n/k=
-Date:   Wed, 18 Sep 2019 22:50:16 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     syzbot <syzbot+f39ab8494f6015e62360@syzkaller.appspotmail.com>,
-        ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
-        davem@davemloft.net, ilyal@mellanox.com,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        kafai@fb.com, linux-crypto@vger.kernel.org,
+        id S2387549AbfISGLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 02:11:37 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43364 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725887AbfISGLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 02:11:36 -0400
+Received: by mail-wr1-f66.google.com with SMTP id q17so1671981wrx.10
+        for <netdev@vger.kernel.org>; Wed, 18 Sep 2019 23:11:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+kJRnH/bobkHHD8pbQwbBalV5RlXRs7lsi398MM0g98=;
+        b=hitoYH0qrf7DoRJ7kw5xIyrIwuyKYlJi3HR62Ok2KWtUmi4lbhSrw7TfTdFUjH9G3n
+         25ECHYJKD/ybkvDAO7PIIxXI/aPTs+14edqpbMNlnppeXQKFLf3kEUYM+PsNmyZXgZm6
+         MxqTrCuKBJqKKawXRNQFX0dq9j7Iac0bZOV4BF8Y3oI+mZkg0S2IGolU2RWe9HcLFNJ2
+         /XKjdQxBBSm25hEVP5r2YwBourumDWz9wae4xxYw4Q/7shT+pr6IAWbx0wd413JIIYOQ
+         qKk61FiVPfj26eJw9ZLpmp4avSiZ/C/nwRBeApiETDFOXvm5gIJZRzaaavltkbYXgG/g
+         vpOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+kJRnH/bobkHHD8pbQwbBalV5RlXRs7lsi398MM0g98=;
+        b=YtRuPI9/+jXq4LhtzWcwqHchI9dbdLjO49ypOYWsYbg4LmoFPSxLhj4dK4nZPjcyX+
+         FFa21p3x/kz12RtefA0ScWsyAHkcFwNoX8fbvT/qktrx9gU6KE7SA5sRnm35eUFSQwMr
+         nwVcXkCoKmz8KLTCJ6lS06DWSo9M06xy9YF/YkN3Ttoe4eMMr5aRjTdwvLBzdJr37fG1
+         wa2Zh/Nuv+c9CGoHoN4asfOFWlYSL5rnWv5B+6kDG6f0m/2koMskOZ/3dOR/YksQIN7a
+         tBJZaRF6Spez2KiT1n1ocqDM+DKU0x8Ni3zUzX9kPRUGBM1MSZZnYTWJyHzLdnkqIcFI
+         M1LQ==
+X-Gm-Message-State: APjAAAUbTDNDoFFHjeAWBiSYzCQxNnv4AsSUBm4/UEe/tfVDxfn+tVhh
+        JSSWiKiYL4cDv1AFYWVqd7y1tg==
+X-Google-Smtp-Source: APXvYqyteUZGKccctX+0pmHumUNlCkzksd2Swwvkb2aXq671ZL0GC7B1FQDuLPvJ69igKEpQRzAiQw==
+X-Received: by 2002:a5d:4803:: with SMTP id l3mr5750322wrq.301.1568873494305;
+        Wed, 18 Sep 2019 23:11:34 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id j26sm13832561wrd.2.2019.09.18.23.11.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Sep 2019 23:11:33 -0700 (PDT)
+Date:   Thu, 19 Sep 2019 08:11:33 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Vikram Prakash <vikram.prakash@broadcom.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Subject: Re: INFO: task hung in cancel_delayed_work_sync
-Message-ID: <20190919055016.GF666@sol.localdomain>
-Mail-Followup-To: Steffen Klassert <steffen.klassert@secunet.com>,
-        syzbot <syzbot+f39ab8494f6015e62360@syzkaller.appspotmail.com>,
-        ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
-        davem@davemloft.net, ilyal@mellanox.com,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        kafai@fb.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000001348750592a8ef50@google.com>
- <20190919051545.GB666@sol.localdomain>
- <20190919053620.GG2879@gauss3.secunet.de>
+        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: Re: [PATCH] devlink: add devlink notification for recovery
+Message-ID: <20190919061133.GB2187@nanopsycho>
+References: <1568832741-20850-1-git-send-email-sheetal.tigadoli@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190919053620.GG2879@gauss3.secunet.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <1568832741-20850-1-git-send-email-sheetal.tigadoli@broadcom.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 07:36:20AM +0200, Steffen Klassert wrote:
-> On Wed, Sep 18, 2019 at 10:15:45PM -0700, Eric Biggers wrote:
-> > 
-> > Reproducer involves pcrypt, so probably the pcrypt deadlock again...
-> > https://lkml.kernel.org/linux-crypto/20190817054743.GE8209@sol.localdomain/
+Wed, Sep 18, 2019 at 08:52:21PM CEST, sheetal.tigadoli@broadcom.com wrote:
+>From: Vikas Gupta <vikas.gupta@broadcom.com>
+>
+>Add a devlink notification for reporter recovery
+>
+>Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+>Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+>---
+> net/core/devlink.c | 25 +++++++++++++++++++++++++
+> 1 file changed, 25 insertions(+)
+>
+>diff --git a/net/core/devlink.c b/net/core/devlink.c
+>index e48680e..42909fb 100644
+>--- a/net/core/devlink.c
+>+++ b/net/core/devlink.c
+>@@ -4730,6 +4730,28 @@ struct devlink_health_reporter *
+> }
+> EXPORT_SYMBOL_GPL(devlink_health_reporter_state_update);
 > 
-> I'll submit the patch I proposed here in case noone has a better idea
-> how to fix this now:
+>+static void __devlink_recover_notify(struct devlink *devlink,
+>+				     enum devlink_command cmd)
+>+{
+>+	struct sk_buff *msg;
+>+	int err;
+>+
+>+	WARN_ON(cmd != DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+>+
+>+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+>+	if (!msg)
+>+		return;
+>+
+>+	err = devlink_nl_fill(msg, devlink, cmd, 0, 0, 0);
+>+	if (err) {
+>+		nlmsg_free(msg);
+>+		return;
+>+	}
+>+
+>+	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
+>+				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+>+}
+>+
+> static int
+> devlink_health_reporter_recover(struct devlink_health_reporter *reporter,
+> 				void *priv_ctx)
+>@@ -4747,6 +4769,9 @@ struct devlink_health_reporter *
+> 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_HEALTHY;
+> 	reporter->last_recovery_ts = jiffies;
 > 
-> https://lkml.kernel.org/linux-crypto/20190821063704.GM2879@gauss3.secunet.de/
-> 
-> The original patch is from you, I did some modifications to forbid
-> pcrypt if an underlying algorithm needs a fallback.
-> 
-> May I leave your 'Signed off' on this patch, or just
-> quote that the initial version is from you?
-> 
+>+	__devlink_recover_notify(reporter->devlink,
+>+				 DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
+>+
+> 	return 0;
+> }
 
-Keeping my Signed-off-by is fine, but please leave a note about what you
-changed, like:
+To follow the rest of the code The notification should be done upon
+any reported change, using devlink_nl_health_reporter_fill() to prepare
+the message.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-[SK: also require that the underlying algorithm doesn't need a fallback]
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-
-Also, a nit: in the commit message,
-
-> Fix this by making pcrypt forbid instantiation if pcrypt appears in the
-> underlying ->cra_driver_name and if an underlying algorithm needs a
-> fallback.
-
-... the word "and" should be "or".
-
-- Eric
+Also, this is net-next patch net-next is closed now.
+>
