@@ -2,85 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6589B7E4C
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 17:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E30B7E7B
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 17:48:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389838AbfISPg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 11:36:27 -0400
-Received: from mail-ed1-f49.google.com ([209.85.208.49]:32997 "EHLO
-        mail-ed1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728720AbfISPg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 11:36:26 -0400
-Received: by mail-ed1-f49.google.com with SMTP id c4so3652174edl.0
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 08:36:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=c5fDiX3zbTamI1qqbp2re4XV73zDzkQMbszKWk9pl4w=;
-        b=UZD5fiwToYxZl5/F/FwodVJDfE12HuG0qNJ3h2jGh1oeX4Dapo/EN/cW207V8UquCq
-         cjaw/NXmntmkt525++Ae/NckmCbIMNAT8r0wluTqpYHObKcU2Hlxo+Oc5pz5lN96jECg
-         rifYHuSrxQ/gWhAOhkYklITwBGOLXF+gqXkR1J/in4fia04egF73j5UGeX6ESUjO9WqS
-         WYkWsKedcIe/dooLIOxtDjeKcMIVI1BTYPozloW27FIpi8a1yN2+fm2L/w1x2300hwYR
-         G99hXWqA8CenBCyDFEqx8ORfLPN5Jo1lx6NTeiNN5ns01EhhNMo15gJO3d+1znU59AoD
-         m75A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=c5fDiX3zbTamI1qqbp2re4XV73zDzkQMbszKWk9pl4w=;
-        b=oyy5/8o+HRA1tPBfMroCeyhjlBdAre217VPGCxNH5/CI6kntsE5Q28YLjzoaJKK66K
-         ag9yNQf2h+2Gye5icaSraEVDB5oAMrGAcH+6IT8s7A3OgyNnpVPSmGRBxT0+nIOFvG/b
-         vnNPOqjSkBL6uIzaDWLiD1N1dqYjhaH2m9+YUEvww1JWht49thJh7GJ7zSLg1dUOmJ9r
-         53Ball717bRVb/zGPPRLJGGCbWbcqhC51AfugZ0+jd+Xt9u+ZdFInChCIlGXm9ivEmGk
-         WBIfUXOXLI++O+BiUEpBERaf2fn7Mvp+iFDPZuWOJvsaewpHGAkpYVeNeQzSY8sSrul8
-         7nPw==
-X-Gm-Message-State: APjAAAVCmMhOBhANwJr8619mODrE9TRP3/KNmBqm2k3aZDCOD2eaIrB+
-        okpEM8tarreGIqqWKPqCEVDkpiC6/w0DLVfXDKo=
-X-Google-Smtp-Source: APXvYqybASots/ejGJt6UT/gJMx8mmTVOiY1GKntItOZLnsGi7VmK7OSqTlT4NZgYz4ExVGajtRgwMYoWWpNmLaEl+M=
-X-Received: by 2002:a17:906:9451:: with SMTP id z17mr14907293ejx.90.1568907383917;
- Thu, 19 Sep 2019 08:36:23 -0700 (PDT)
+        id S2391397AbfISPsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 11:48:40 -0400
+Received: from mga17.intel.com ([192.55.52.151]:46951 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388700AbfISPsj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 11:48:39 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Sep 2019 08:48:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,524,1559545200"; 
+   d="scan'208";a="362555450"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.71])
+  by orsmga005.jf.intel.com with ESMTP; 19 Sep 2019 08:48:36 -0700
+Date:   Thu, 19 Sep 2019 23:45:52 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
+Message-ID: <20190919154552.GA27657@___>
+References: <20190917010204.30376-1-tiwei.bie@intel.com>
+ <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
+ <20190917105801.GA24855@___>
+ <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
+ <20190918102923-mutt-send-email-mst@kernel.org>
+ <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
 MIME-Version: 1.0
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 19 Sep 2019 18:36:12 +0300
-Message-ID: <CA+h21hq1O=hKbcFkNVHEBd_tTPL3o00ZhAFq5JHvSJx=+RyfFw@mail.gmail.com>
-Subject: Segregating L2 forwarding domains with ocelot
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex, Joergen, Allan,
+On Thu, Sep 19, 2019 at 09:08:11PM +0800, Jason Wang wrote:
+> On 2019/9/18 下午10:32, Michael S. Tsirkin wrote:
+> > > > > So I have some questions:
+> > > > > 
+> > > > > 1) Compared to method 2, what's the advantage of creating a new vhost char
+> > > > > device? I guess it's for keep the API compatibility?
+> > > > One benefit is that we can avoid doing vhost ioctls on
+> > > > VFIO device fd.
+> > > Yes, but any benefit from doing this?
+> > It does seem a bit more modular, but it's certainly not a big deal.
+> 
+> Ok, if we go this way, it could be as simple as provide some callback to
+> vhost, then vhost can just forward the ioctl through parent_ops.
+> 
+> > 
+> > > > > 2) For method 2, is there any easy way for user/admin to distinguish e.g
+> > > > > ordinary vfio-mdev for vhost from ordinary vfio-mdev?
+> > > > I think device-api could be a choice.
+> > > Ok.
+> > > 
+> > > 
+> > > > > I saw you introduce
+> > > > > ops matching helper but it's not friendly to management.
+> > > > The ops matching helper is just to check whether a given
+> > > > vfio-device is based on a mdev device.
+> > > > 
+> > > > > 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
+> > > > > assumes the parameter comes from userspace, it prevents support kernel
+> > > > > virtio drivers.
+> > > > > 
+> > > > > 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
+> > > > > we can use device specific ops instead of VFIO ones, then we can have a
+> > > > > common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
+> > > > As the above draft shows, this requires introducing a new
+> > > > VFIO device driver. I think Alex's opinion matters here.
+> 
+> Just to clarify, a new type of mdev driver but provides dummy
+> vfio_device_ops for VFIO to make container DMA ioctl work.
 
-Currently the ocelot driver rejects enslaving switch ports to more
-than one bridge:
+I see. Thanks! IIUC, you mean we can provide a very tiny
+VFIO device driver in drivers/vhost/mdev.c, e.g.:
 
-static int ocelot_port_bridge_join(struct ocelot_port *ocelot_port,
-                   struct net_device *bridge)
+static int vfio_vhost_mdev_open(void *device_data)
 {
-    struct ocelot *ocelot = ocelot_port->ocelot;
-
-    if (!ocelot->bridge_mask) {
-        ocelot->hw_bridge_dev = bridge;
-    } else {
-        if (ocelot->hw_bridge_dev != bridge)
-            /* This is adding the port to a second bridge, this is
-             * unsupported */
-            return -ENODEV;
-    }
-
-    ocelot->bridge_mask |= BIT(ocelot_port->chip_port);
-
-    return 0;
+	if (!try_module_get(THIS_MODULE))
+		return -ENODEV;
+	return 0;
 }
 
-I am wondering why the ocelot driver is writing the same
-bridge_fwd_mask to all PGID_SRC[port] registers? Judging from the
-reference manual description of PGID_SRC, the hardware should be able
-of managing a forwarding matrix and not just a forwarding array?
+static void vfio_vhost_mdev_release(void *device_data)
+{
+	module_put(THIS_MODULE);
+}
 
-Regards,
--Vladimir
+static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+	.name		= "vfio-vhost-mdev",
+	.open		= vfio_vhost_mdev_open,
+	.release	= vfio_vhost_mdev_release,
+};
+
+static int vhost_mdev_probe(struct device *dev)
+{
+	struct mdev_device *mdev = to_mdev_device(dev);
+
+	... Check the mdev device_id proposed in ...
+	... https://lkml.org/lkml/2019/9/12/151 ...
+
+	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
+}
+
+static void vhost_mdev_remove(struct device *dev)
+{
+	vfio_del_group_dev(dev);
+}
+
+static struct mdev_driver vhost_mdev_driver = {
+	.name	= "vhost_mdev",
+	.probe	= vhost_mdev_probe,
+	.remove	= vhost_mdev_remove,
+};
+
+So we can bind above mdev driver to the virtio-mdev compatible
+mdev devices when we want to use vhost-mdev.
+
+After binding above driver to the mdev device, we can setup IOMMU
+via VFIO and get VFIO device fd of this mdev device, and pass it
+to vhost fd (/dev/vhost-mdev) with a SET_BACKEND ioctl.
+
+Thanks,
+Tiwei
+
+> 
+> Thanks
+> 
+> 
+> > > Yes, it is.
+> > > 
+> > > Thanks
+> > > 
+> > > 
