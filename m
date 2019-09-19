@@ -2,80 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FF6B7630
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 11:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1478DB7634
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 11:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388581AbfISJYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 05:24:51 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:50668 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387637AbfISJYu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 05:24:50 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id CE2362054D;
-        Thu, 19 Sep 2019 11:24:48 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YS69durkIpOQ; Thu, 19 Sep 2019 11:24:48 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5C12220082;
-        Thu, 19 Sep 2019 11:24:48 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Sep 2019
- 11:24:47 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id E340B318022F;
- Thu, 19 Sep 2019 11:24:47 +0200 (CEST)
-Date:   Thu, 19 Sep 2019 11:24:47 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH RFC v3 2/5] net: Add NETIF_F_GRO_LIST feature
-Message-ID: <20190919092447.GJ2879@gauss3.secunet.de>
-References: <20190918072517.16037-1-steffen.klassert@secunet.com>
- <20190918072517.16037-3-steffen.klassert@secunet.com>
- <CA+FuTSeBmGY4_2X3Ydhf60G=An9g9iikDBQMDji=XptN_jBqiw@mail.gmail.com>
+        id S2388682AbfISJZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 05:25:35 -0400
+Received: from baptiste.telenet-ops.be ([195.130.132.51]:50690 "EHLO
+        baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388592AbfISJZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 05:25:34 -0400
+Received: from ramsan ([84.194.98.4])
+        by baptiste.telenet-ops.be with bizsmtp
+        id 3MRT2100F05gfCL01MRTpJ; Thu, 19 Sep 2019 11:25:32 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iAsgp-0003ph-6D; Thu, 19 Sep 2019 11:25:27 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iAsgp-0007BK-3i; Thu, 19 Sep 2019 11:25:27 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Matthew Wilcox <willy@infradead.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH -net] staging: octeon: se "(uintptr_t)" to cast from pointer to int
+Date:   Thu, 19 Sep 2019 11:25:26 +0200
+Message-Id: <20190919092526.27564-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSeBmGY4_2X3Ydhf60G=An9g9iikDBQMDji=XptN_jBqiw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 12:10:31PM -0400, Willem de Bruijn wrote:
-> On Wed, Sep 18, 2019 at 3:25 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
-> >
-> > This adds a new NETIF_F_GRO_LIST feature flag. I will be used
-> > to configure listfyed GRO what will be implemented with some
-> > followup paches.
-> 
-> This should probably simultaneously introduce SKB_GSO_FRAGLIST as well
-> as a BUILD_BUG_ON in net_gso_ok.
+On 32-bit:
 
-Yes, good point. I'll also rename NETIF_F_GRO_LIST to NETIF_F_GRO_FRAGLIST
-and add NETIF_F_GSO_FRAGLIST what is currently missing.
+    In file included from drivers/staging/octeon/octeon-ethernet.h:41,
+		     from drivers/staging/octeon/ethernet-tx.c:25:
+    drivers/staging/octeon/octeon-stubs.h: In function ‘cvmx_phys_to_ptr’:
+    drivers/staging/octeon/octeon-stubs.h:1205:9: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+      return (void *)(physical_address);
+	     ^
+    drivers/staging/octeon/ethernet-tx.c: In function ‘cvm_oct_xmit’:
+    drivers/staging/octeon/ethernet-tx.c:264:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+       hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
+					 ^
+    drivers/staging/octeon/octeon-stubs.h:2:30: note: in definition of macro ‘XKPHYS_TO_PHYS’
+     #define XKPHYS_TO_PHYS(p)   (p)
+				  ^
+    drivers/staging/octeon/ethernet-tx.c:268:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+       hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
+					 ^
+    drivers/staging/octeon/octeon-stubs.h:2:30: note: in definition of macro ‘XKPHYS_TO_PHYS’
+     #define XKPHYS_TO_PHYS(p)   (p)
+				  ^
+    drivers/staging/octeon/ethernet-tx.c:276:20: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+	 XKPHYS_TO_PHYS((u64)skb_frag_address(fs));
+			^
+    drivers/staging/octeon/octeon-stubs.h:2:30: note: in definition of macro ‘XKPHYS_TO_PHYS’
+     #define XKPHYS_TO_PHYS(p)   (p)
+				  ^
+    drivers/staging/octeon/ethernet-tx.c:280:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+       hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)CVM_OCT_SKB_CB(skb));
+					 ^
+    drivers/staging/octeon/octeon-stubs.h:2:30: note: in definition of macro ‘XKPHYS_TO_PHYS’
+     #define XKPHYS_TO_PHYS(p)   (p)
+				  ^
 
-> 
-> Please also in the commit describe the constraints of skbs that have
-> this type. If I'm not mistaken, an skb with either gso_size linear
-> data or one gso_sized frag, followed by a frag_list of the same. With
-> the exception of the last frag_list member, whose mss may be less than
-> gso_size. This will help when reasoning about all the types of skbs we
-> may see at segmentation, as we recently had to do [1]
+Fix this by replacing casts to "u64" by casts to "uintptr_t", which is
+either 32-bit or 64-bit, and adding an intermediate cast to "uintptr_t"
+where needed.
 
-We don't use skb_segment(), so I think we don't have this constraint.
+Exposed by commit 171a9bae68c72f2d ("staging/octeon: Allow test build on
+!MIPS").
 
-> 
-> Minor nit: I think it's listified, not listifyed.
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/staging/octeon/ethernet-tx.c  | 9 +++++----
+ drivers/staging/octeon/octeon-stubs.h | 2 +-
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-I think neither of both words really exist :)
-I'll rename it to fraglist GRO.
+diff --git a/drivers/staging/octeon/ethernet-tx.c b/drivers/staging/octeon/ethernet-tx.c
+index c64728fc21f229d8..7021ff07ba2a0b70 100644
+--- a/drivers/staging/octeon/ethernet-tx.c
++++ b/drivers/staging/octeon/ethernet-tx.c
+@@ -261,11 +261,11 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* Build the PKO buffer pointer */
+ 	hw_buffer.u64 = 0;
+ 	if (skb_shinfo(skb)->nr_frags == 0) {
+-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
++		hw_buffer.s.addr = XKPHYS_TO_PHYS((uintptr_t)skb->data);
+ 		hw_buffer.s.pool = 0;
+ 		hw_buffer.s.size = skb->len;
+ 	} else {
+-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)skb->data);
++		hw_buffer.s.addr = XKPHYS_TO_PHYS((uintptr_t)skb->data);
+ 		hw_buffer.s.pool = 0;
+ 		hw_buffer.s.size = skb_headlen(skb);
+ 		CVM_OCT_SKB_CB(skb)[0] = hw_buffer.u64;
+@@ -273,11 +273,12 @@ int cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			skb_frag_t *fs = skb_shinfo(skb)->frags + i;
+ 
+ 			hw_buffer.s.addr =
+-				XKPHYS_TO_PHYS((u64)skb_frag_address(fs));
++				XKPHYS_TO_PHYS((uintptr_t)skb_frag_address(fs));
+ 			hw_buffer.s.size = skb_frag_size(fs);
+ 			CVM_OCT_SKB_CB(skb)[i + 1] = hw_buffer.u64;
+ 		}
+-		hw_buffer.s.addr = XKPHYS_TO_PHYS((u64)CVM_OCT_SKB_CB(skb));
++		hw_buffer.s.addr =
++			XKPHYS_TO_PHYS((uintptr_t)CVM_OCT_SKB_CB(skb));
+ 		hw_buffer.s.size = skb_shinfo(skb)->nr_frags + 1;
+ 		pko_command.s.segs = skb_shinfo(skb)->nr_frags + 1;
+ 		pko_command.s.gather = 1;
+diff --git a/drivers/staging/octeon/octeon-stubs.h b/drivers/staging/octeon/octeon-stubs.h
+index a4ac3bfb62a85e65..b78ce9eaab85d310 100644
+--- a/drivers/staging/octeon/octeon-stubs.h
++++ b/drivers/staging/octeon/octeon-stubs.h
+@@ -1202,7 +1202,7 @@ static inline int cvmx_wqe_get_grp(cvmx_wqe_t *work)
+ 
+ static inline void *cvmx_phys_to_ptr(uint64_t physical_address)
+ {
+-	return (void *)(physical_address);
++	return (void *)(uintptr_t)(physical_address);
+ }
+ 
+ static inline uint64_t cvmx_ptr_to_phys(void *ptr)
+-- 
+2.17.1
 
