@@ -2,87 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 626BAB7B6A
-	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A9C8B7B6F
+	for <lists+netdev@lfdr.de>; Thu, 19 Sep 2019 16:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732283AbfISOBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 10:01:13 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:41714 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732085AbfISOBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:01:13 -0400
-Received: by mail-yw1-f67.google.com with SMTP id 129so1252989ywb.8
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 07:01:11 -0700 (PDT)
+        id S1732303AbfISOCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 10:02:34 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:32637 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732249AbfISOCe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 10:02:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TfOfZxjCjN6kZ5xk5Slh33llSv4LFwzSXiIYdtXV/GM=;
-        b=TynmgXVEcqHHexOrxMEt4TpCQAPBZkbcqYcdBYZuar7BP5uWu6o23kcB8On2zweH4L
-         O/KwnFc58b0hNNT/lBGQGa0oDj8N4SFDlNCoonP+j47WsefI2bBxDvC4pKaa854bBOSu
-         JbbZBUl9M74H2Xdh+HYhbZYKd5Vs1q97Q2YnO55zaILEZpbHypKe7i5x7jD7a5a8ikHn
-         lZ8xoNqfBb7IJ1YT2m/P2qKpNGo5bF98+oOCT+bUY1iPS18V2sLZdXmopcSJIM577C97
-         kiG7+bcVEIlQwO0gnHQ03pMcrCzLpzq6vTvaju0fs/oKt54JTEYdor9GYFfWAfNEyMGg
-         3mRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TfOfZxjCjN6kZ5xk5Slh33llSv4LFwzSXiIYdtXV/GM=;
-        b=s0Oqa23sF92aR3/i5A/AucPAsDCdzu0LzDxLYq/O8j61xaJBegLS1qfwJUvLC1dHUH
-         25J8BTQOrNMPldZFqwlcl3a5/FvMWGgpS3HC7/jOY5oO7sMI8GQeM9LcqKB6AvLxLVco
-         7+BAtiwd78hdmbCvrQzjvmNNy5cf6zbP8Yflr6F8s7TNHsNqKp8l1Nqn/kUjarGQ9sA4
-         10DjFANYtIqk4+sWfGc3pyBQ9UR3PqpKDwPCexODuorIEQnmGGrLxufC4MOxH9TI1iKt
-         rFPe5I7FEX5KGGlbQLSYAJvneEQ4FQ4rYLRt2E8CZeVaozYurPy17WEiVH/eb+wkuliI
-         Qy3g==
-X-Gm-Message-State: APjAAAWcYo4MHYkFg7PS+Jyo0XVwa6iC3qM6gheyZ+lq3SebU7QjGB+Q
-        rL88yFeVE7qTGbL+u8+VSmUoFdeAvAYbOG2EBheUJCoa
-X-Google-Smtp-Source: APXvYqwqi1UZzGAXVUtH0cI5P4o5iptt7BKirKEAxxxJ00aiJ17erdm8YE26DSdRErcSLMrPeBHmJ3BXpuQqLkGDzyE=
-X-Received: by 2002:a0d:db92:: with SMTP id d140mr8463040ywe.73.1568901670731;
- Thu, 19 Sep 2019 07:01:10 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1568901753; x=1600437753;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=fpUFx92h4TkBz8v2tT0VFnqLFrMcCHcFFfF3oA07g+I=;
+  b=N4LIIQy1CaojhFKu5If6EdqbeShTlVhwkd+oFQ6vFlZ7LVbuFphyncNN
+   aFRpk27pjDCXDMT84PqDfhPQY1KlIQVN+a3naOXD9B8S3zx8Sx8+166Gj
+   M5BVev9M2smCGruFp9hvOKOR3IEwoUGDA/rVdHeEDoifde7pdf1894+qa
+   k=;
+X-IronPort-AV: E=Sophos;i="5.64,523,1559520000"; 
+   d="scan'208";a="422033315"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 19 Sep 2019 14:02:32 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id 1EC1CA2DB7;
+        Thu, 19 Sep 2019 14:02:31 +0000 (UTC)
+Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 19 Sep 2019 14:02:31 +0000
+Received: from EX13MTAUEE001.ant.amazon.com (10.43.62.200) by
+ EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 19 Sep 2019 14:02:31 +0000
+Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.90) by
+ mail-relay.amazon.com (10.43.62.226) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Thu, 19 Sep 2019 14:02:28 +0000
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>
+Subject: [PATCH V2 net-next 0/5] Introduce ethtool's set_channels
+Date:   Thu, 19 Sep 2019 17:02:19 +0300
+Message-ID: <20190919140224.9137-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20190910214928.220727-1-edumazet@google.com> <CAJ3xEMhh=Ow-fZqnPtxUyZsCN89dRmy=NcaO+iK+iZZYBdZbqA@mail.gmail.com>
- <cd1cce3d-faf5-d35b-7fd4-a831561eea14@gmail.com>
-In-Reply-To: <cd1cce3d-faf5-d35b-7fd4-a831561eea14@gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 19 Sep 2019 17:00:59 +0300
-Message-ID: <CAJ3xEMgqvFEF1YvL4cV7UEpijki1QXGf+ZqVT5EO8SvYwkHaqA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: force a PSH flag on TSO packets
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tariq Toukan <tariqt@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 4:46 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> On 9/19/19 5:17 AM, Or Gerlitz wrote:
-> > On Wed, Sep 11, 2019 at 12:54 AM Eric Dumazet <edumazet@google.com> wrote:
-> >> When tcp sends a TSO packet, adding a PSH flag on it
-> >> reduces the sojourn time of GRO packet in GRO receivers.
-> >>
-> >> This is particularly the case under pressure, since RX queues
-> >> receive packets for many concurrent flows.
-> >>
-> >> A sender can give a hint to GRO engines when it is
-> >> appropriate to flush a super-packet, especially when pacing
+From: Sameeh Jubran <sameehj@amazon.com>
 
-> > Is this correct that we add here the push flag for the tcp header template
-> > from which all the tcp headers for SW GSO packets will be generated?
-> > Wouldn't that cause a too early flush on GRO engines at the receiver side?
+Difference from v1:
+* Dropped the print from patch 0002 - "net: ena: multiple queue creation
+  related cleanups" as requested by David Miller
 
-> If a TSO engine is buggy enough to add the PSH on all the segments, it needs
-> to be fixed urgently :)
+Sameeh Jubran (5):
+  net: ena: change num_queues to num_io_queues for clarity and
+    consistency
+  net: ena: multiple queue creation related cleanups
+  net: ena: make ethtool -l show correct max number of queues
+  net: ena: remove redundant print of number of queues
+  net: ena: ethtool: support set_channels callback
 
-yeah, but I guess you were not able to test this over all the TSO HWs
-out there..
-so I guess if someone complains we will have to add a quirk to disable
-that, lets see..
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  37 ++--
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 160 ++++++++++--------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  14 +-
+ 3 files changed, 121 insertions(+), 90 deletions(-)
+
+-- 
+2.17.1
+
