@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7889EB888F
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 02:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406DFB8898
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 02:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391488AbfITA3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 20:29:30 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:55352 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388479AbfITA33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 20:29:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=niNEa8hioPBRHKHXeP0WJHipV7HxoFz3VIrUjzU8XzE=; b=rNe71Abp9l2eYmu9it6Gyx8Sd
-        y2ZGomB329CnP9aTUz68QO4+Qjgo7+RrLuZSq4nSk9zLJRRNIxPvnquGebBfQktTt5UlbmjOeNyqu
-        RhmRJNugIsD7Yo0RqUJJ2lwCk5irdoBZFWwvt+ST4UkAhPRf8N+ftiZ83gjzAX52vao389l8pOKJ5
-        U6L7uKBE/dp0ixgaf4Q4MYI6DjpXg4CrSqxBVUcio9zpYb6EuDpCLBZ5rEMi5D52zX+oIcTbuaem1
-        krhBMun8HT3ESxYUFE9nO0MK6ezowSzQiCHkdIPSbyFcpttSwLF9Fhs0prjQafVZlrhEPkMp2kvs0
-        vcra7LPGw==;
-Received: from [2601:1c0:6280:3f0::9a1f]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
-        id 1iB6ng-0001Gm-Uk; Fri, 20 Sep 2019 00:29:28 +0000
-Subject: Re: ionic build issues?
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-References: <20190919172739.0c6b4bc4@cakuba.netronome.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <a99cf2d8-2479-2003-ac0b-10d44363c872@infradead.org>
-Date:   Thu, 19 Sep 2019 17:29:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2393155AbfITAiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 20:38:02 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40744 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390299AbfITAiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 20:38:02 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x5so6653729qtr.7
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 17:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=CN7jg6OOuzm2zBD9WcFz76HJfo92xCps7bkvCZHXEwo=;
+        b=GNZLKsHruEqz9+MCYy7iLHiodTGYi5xgfgHle3VyEGqAmbvcSfwblet85KZ9t57S3x
+         V1AmjQyi1ig6zquy/0YjnGAt2DI1fXPqbNTjmbJeKKa93vvAyLn3ZoJU9ED3K/mGKtTP
+         S+iDWYlJAS2/kay+Hf2CPceCt+kevLATsP1a9sjeQT+/sTBNkgNZJNzEr3PMBA+xBhJm
+         Qb5D7JDxHkB/i2wrI0D/DALNGpowJszHYCR1PLobFxbLx1wF35YSW7BTF59JvjTc4F9q
+         HC4X7h7uDlzwwjy6K3VZfYtt8FxlIcTcNVelaLSNWY76e/p3zvgAJVAV6pviIs+aIEA1
+         mrQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=CN7jg6OOuzm2zBD9WcFz76HJfo92xCps7bkvCZHXEwo=;
+        b=ArtnE+sIbGFpyagVhXR/0dYgwVa6/eY/HeFwikZo/iqyHvIWJ5KG9A/lSwxXNsdyyr
+         ywZ6BZSRNYR4TI6BIoUxeu9gvdLgLLIalgL+HTMnOeGujTU76bCTWXn55nX8Ibp5Q7yi
+         og/MS+P6UVcwwYY6Rzm9G95kL2c668zZizUteBgi8hnLYGT4j2JrRJ7XgNwrx//NL2kg
+         byXPdOtLawUQlDD2QHQUhU4BLoP0TkgCOaaRap+KFT9w2tA9ZlbXoKHIr0Y4m3aQUaoC
+         wZ4BoRZl5G32XrOxsoAGkbbNMNb6LsAaqrfjCLWuwCwvgckHQ82CnJMkoO/mmY/ZItpy
+         6IvQ==
+X-Gm-Message-State: APjAAAUuX1HjLDZwRScQtgpaq1UuAHup+KYSmKCqIAud44nIbYDHzkPi
+        PrildAWUrtt/AYIaV7F4YGKibw==
+X-Google-Smtp-Source: APXvYqwSnublFYl2uW/GnoB2+Q7KUfNbKnCul0+EO0UDQ+pfYdBIwCKkb84J3c+zzyqGAHp5jXyzFw==
+X-Received: by 2002:ac8:124c:: with SMTP id g12mr86619qtj.81.1568939881082;
+        Thu, 19 Sep 2019 17:38:01 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id l14sm131844qtp.8.2019.09.19.17.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Sep 2019 17:38:01 -0700 (PDT)
+Date:   Thu, 19 Sep 2019 17:37:57 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Murilo Fossa Vicentini <muvic@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, tlfalcon@linux.ibm.com, muvic@br.ibm.com,
+        abdhalee@linux.vnet.ibm.com
+Subject: Re: [PATCH net] ibmvnic: Warn unknown speed message only when
+ carrier is present
+Message-ID: <20190919173757.0a6b1194@cakuba.netronome.com>
+In-Reply-To: <20190916145037.77376-1-muvic@linux.ibm.com>
+References: <20190916145037.77376-1-muvic@linux.ibm.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190919172739.0c6b4bc4@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/19/19 5:27 PM, Jakub Kicinski wrote:
-> Hi Shannon!
+On Mon, 16 Sep 2019 11:50:37 -0300, Murilo Fossa Vicentini wrote:
+> With commit 0655f9943df2 ("net/ibmvnic: Update carrier state after link
+> state change") we are now able to detect when the carrier is properly
+> present in the device, so only report an unexpected unknown speed when it
+> is properly detected. Unknown speed is expected to be seen by the device
+> in case the backing device has no link detected.
 > 
-> I've enabled ionic to do some build testing before pushing patches
-> today, and with my tree which I build with W=1 C=1 I run into this:
-> 
-> ../drivers/net/ethernet/pensando/ionic/ionic_main.c: In function ‘ionic_adminq_cb’:
-> ../drivers/net/ethernet/pensando/ionic/ionic_main.c:229:2: error: implicit declaration of function ‘dynamic_hex_dump’ [-Werror=implicit-function-declaration]
->   229 |  dynamic_hex_dump("comp ", DUMP_PREFIX_OFFSET, 16, 1,
->       |  ^~~~~~~~~~~~~~~~
-> ../drivers/net/ethernet/pensando/ionic/ionic_lif.c: In function ‘ionic_notifyq_service’:
-> ../drivers/net/ethernet/pensando/ionic/ionic_lif.c:673:2: error: implicit declaration of function ‘dynamic_hex_dump’ [-Werror=implicit-function-declaration]
->   673 |  dynamic_hex_dump("event ", DUMP_PREFIX_OFFSET, 16, 1,
->       |  ^~~~~~~~~~~~~~~~
-> cc1: some warnings being treated as errors
-> 
-> Config attached, could you please take a look?
-> 
+> Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+> Tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+> Signed-off-by: Murilo Fossa Vicentini <muvic@linux.ibm.com>
 
-Patch is already posted.
-See https://lore.kernel.org/netdev/20190918195607.2080036-1-arnd@arndb.de/
-
--- 
-~Randy
+Applied, thanks!
