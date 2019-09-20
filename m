@@ -2,155 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 051F0B88C3
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 02:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B056BB88D0
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 03:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394530AbfITA7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 20:59:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43612 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389293AbfITA7q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Sep 2019 20:59:46 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2C55B81DE7;
-        Fri, 20 Sep 2019 00:59:46 +0000 (UTC)
-Received: from [10.72.12.88] (ovpn-12-88.pek2.redhat.com [10.72.12.88])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F6D75D9CD;
-        Fri, 20 Sep 2019 00:59:34 +0000 (UTC)
-Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-References: <20190917010204.30376-1-tiwei.bie@intel.com>
- <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
- <20190917105801.GA24855@___>
- <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
- <20190918102923-mutt-send-email-mst@kernel.org>
- <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
- <20190919154552.GA27657@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <11bc30a9-1cf5-4a5f-109a-f307d70c35fa@redhat.com>
-Date:   Fri, 20 Sep 2019 08:59:32 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2403915AbfITBFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 21:05:39 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33419 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389293AbfITBFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 21:05:38 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q10so3425384pfl.0
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 18:05:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HQDqVmbcAXZN+2Zdc9W+E5scvkeq1ZzF9slV6LakCOs=;
+        b=Z0Xe1v6d4NALdvCSHd5wZJNcipg9Cs7akCpm/Go1OlRnqOko/rFmdXEqO2W+9F9JCD
+         IIKnMHFIq5A3ZYBY+Yh/3iZH7f5os6SL19ZXJZ7Hl4V3+0RbOdADG3nPTfT2Oma0kbFa
+         wrB9MHvNtu7DXmp50eVdRXVIyG0Ef7WZj3dkRntgPiWSaRHG+beiJE+ToTHTh4bLBZ7X
+         BzLZ16tel4DoU7+T1WavMcdDjTF2wXWC4X+SAqUnqWWLusVOf59WyXhVnkDQTcR7BzdL
+         puy/GutJpvIPxLm6MqvXFgHS5Iu6r4pen9p6l2MbecAQgWJq6CfakiOwfP/Rvv4VI077
+         0KEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HQDqVmbcAXZN+2Zdc9W+E5scvkeq1ZzF9slV6LakCOs=;
+        b=e0lCb/YEA3vXuqPGddHd5HwD/vH8KeH3G8/DwzMsOCd7Op/7ZUK9BL7Hwu+d+8mp+4
+         UwwV88a+ZJax0aev51Uz414U7B0j7f5I6yhCtncB7vKTJUpqMPP34k6C+TvSWMZes6OS
+         bGo3MVmrs3Tl/U7f1cZBMeziDJ+1GpKdRLiERSpESiFvY6FMBELisieJgHgQCoyG5C5Q
+         7a11qNpMz0ijT3Quw7FnbUHxP/KYorC+JRuGkFtde+o7+X9942rlZ2hpP6jFWYw2bf09
+         E4q8c4QZ9EKLqSNVJ4WYa7IZEDfThTagG6zBq7TCStqIlATUKEe/2yRF6V+QMQfvTpxe
+         5aKQ==
+X-Gm-Message-State: APjAAAUR/VvvPlcfeIAaoJgIAbeCSpmK/l7E8oBuRWrklGA5Y1EXjvG9
+        cRGtYxkQCE+T/ysYGK1IjZKy8fAWrgVsRta7p10=
+X-Google-Smtp-Source: APXvYqwsaAfBHvuV6/wbofiy+sFBmtOT6QZD0QdFYSbh4DTQpQEGay+JUho6A1pPp7uUt5PzYjOB5v4RiN9zvtLYEPI=
+X-Received: by 2002:a65:404b:: with SMTP id h11mr12030375pgp.237.1568941537880;
+ Thu, 19 Sep 2019 18:05:37 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190919154552.GA27657@___>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Fri, 20 Sep 2019 00:59:46 +0000 (UTC)
+References: <20190919201438.2383-1-vladbu@mellanox.com> <20190919201438.2383-2-vladbu@mellanox.com>
+In-Reply-To: <20190919201438.2383-2-vladbu@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 19 Sep 2019 18:05:26 -0700
+Message-ID: <CAM_iQpWREfLQX6VSqLw_xTm8WkNBZ8_adGWE5PpTnVQVDBWPvw@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/3] net: sched: sch_htb: don't call qdisc_put()
+ while holding tree lock
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 19, 2019 at 1:14 PM Vlad Buslov <vladbu@mellanox.com> wrote:
+> Notes:
+>     Changes V1 -> V2:
+>
+>     - Extend sch API with new qdisc_put_empty() function that has same
+>       implementation as regular qdisc_put() but skips parts that reset qdisc
+>       and free all packet buffers from gso_skb and skb_bad_txq queues.
 
-On 2019/9/19 下午11:45, Tiwei Bie wrote:
-> On Thu, Sep 19, 2019 at 09:08:11PM +0800, Jason Wang wrote:
->> On 2019/9/18 下午10:32, Michael S. Tsirkin wrote:
->>>>>> So I have some questions:
->>>>>>
->>>>>> 1) Compared to method 2, what's the advantage of creating a new vhost char
->>>>>> device? I guess it's for keep the API compatibility?
->>>>> One benefit is that we can avoid doing vhost ioctls on
->>>>> VFIO device fd.
->>>> Yes, but any benefit from doing this?
->>> It does seem a bit more modular, but it's certainly not a big deal.
->> Ok, if we go this way, it could be as simple as provide some callback to
->> vhost, then vhost can just forward the ioctl through parent_ops.
->>
->>>>>> 2) For method 2, is there any easy way for user/admin to distinguish e.g
->>>>>> ordinary vfio-mdev for vhost from ordinary vfio-mdev?
->>>>> I think device-api could be a choice.
->>>> Ok.
->>>>
->>>>
->>>>>> I saw you introduce
->>>>>> ops matching helper but it's not friendly to management.
->>>>> The ops matching helper is just to check whether a given
->>>>> vfio-device is based on a mdev device.
->>>>>
->>>>>> 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
->>>>>> assumes the parameter comes from userspace, it prevents support kernel
->>>>>> virtio drivers.
->>>>>>
->>>>>> 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
->>>>>> we can use device specific ops instead of VFIO ones, then we can have a
->>>>>> common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
->>>>> As the above draft shows, this requires introducing a new
->>>>> VFIO device driver. I think Alex's opinion matters here.
->> Just to clarify, a new type of mdev driver but provides dummy
->> vfio_device_ops for VFIO to make container DMA ioctl work.
-> I see. Thanks! IIUC, you mean we can provide a very tiny
-> VFIO device driver in drivers/vhost/mdev.c, e.g.:
->
-> static int vfio_vhost_mdev_open(void *device_data)
-> {
-> 	if (!try_module_get(THIS_MODULE))
-> 		return -ENODEV;
-> 	return 0;
-> }
->
-> static void vfio_vhost_mdev_release(void *device_data)
-> {
-> 	module_put(THIS_MODULE);
-> }
->
-> static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
-> 	.name		= "vfio-vhost-mdev",
-> 	.open		= vfio_vhost_mdev_open,
-> 	.release	= vfio_vhost_mdev_release,
-> };
->
-> static int vhost_mdev_probe(struct device *dev)
-> {
-> 	struct mdev_device *mdev = to_mdev_device(dev);
->
-> 	... Check the mdev device_id proposed in ...
-> 	... https://lkml.org/lkml/2019/9/12/151 ...
->
-> 	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
-> }
->
-> static void vhost_mdev_remove(struct device *dev)
-> {
-> 	vfio_del_group_dev(dev);
-> }
->
-> static struct mdev_driver vhost_mdev_driver = {
-> 	.name	= "vhost_mdev",
-> 	.probe	= vhost_mdev_probe,
-> 	.remove	= vhost_mdev_remove,
-> };
->
-> So we can bind above mdev driver to the virtio-mdev compatible
-> mdev devices when we want to use vhost-mdev.
->
-> After binding above driver to the mdev device, we can setup IOMMU
-> via VFIO and get VFIO device fd of this mdev device, and pass it
-> to vhost fd (/dev/vhost-mdev) with a SET_BACKEND ioctl.
->
-> Thanks,
-> Tiwei
-
-
-Yes, something like this.
-
-Thanks
-
-
->> Thanks
->>
->>
->>>> Yes, it is.
->>>>
->>>> Thanks
->>>>
->>>>
+I don't understand why you need a new API here, as long as qdisc_reset()
+gets called before releasing sch tree lock, the ->reset() inside qdisc_put(),
+after releasing sch tree lock, should be a nop, right?
