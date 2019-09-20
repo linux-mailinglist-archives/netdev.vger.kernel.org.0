@@ -2,34 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 495B1B977C
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 21:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A682CB9783
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 21:03:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406690AbfITTAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 15:00:37 -0400
-Received: from mout.web.de ([212.227.15.3]:39253 "EHLO mout.web.de"
+        id S2393258AbfITTC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 15:02:56 -0400
+Received: from mout.web.de ([212.227.15.3]:43639 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405208AbfITTAg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 15:00:36 -0400
+        id S2391415AbfITTC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 15:02:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1569006024;
-        bh=5xwqHg64byu80G0cmgQ325jH+mwYDqd5Pno/t33K0b0=;
-        h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
-        b=UuwzX0ciddejRM+QGvTLg+Klc4rxjgYJARAWNP2feTT0WJ9a4Yg2keaedm1BoRtF5
-         Mnkdrz3QLxT0pHECcIOmvgGrxGuBPdecpM4VHieAFQ8rey5r17R1okzq8hOqFmS1jQ
-         uqHPtkLRTCWh40+AeN9fb8YzghqtAkquo2MZkq8Y=
+        s=dbaedf251592; t=1569006162;
+        bh=+xzRLQql5so0uF+9GF2myh5Z49YfJh7o8/sXYr6G2C8=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
+        b=KrNwgjt+O+h0wK7/rF8GsqKwWGwR4TGZhDrn2EfrGaGmtcRQkbxUe7JQcAkkEUIzH
+         dgOJg21b7kmPOW61ID2VS9/F9X5o8cwm8IqFfNy0Xhmk5g+QP6pj7RdW+MpaymKz5G
+         F3bW+Z6Me5ZHKOtFZuGJUmsBpPo/iNFRU1aJa4fw=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MRl2f-1idkli46ED-00SyeI; Fri, 20
- Sep 2019 21:00:24 +0200
+Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LcUIo-1hkXx948F4-00jrA4; Fri, 20
+ Sep 2019 21:02:42 +0200
+Subject: [PATCH 1/2] net/phy/mdio-mscc-miim: Use
+ devm_platform_ioremap_resource() in mscc_miim_probe()
+From:   Markus Elfring <Markus.Elfring@web.de>
 To:     netdev@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Subject: [PATCH 0/2] net/phy/mdio-mscc-miim: Adjustments for mscc_miim_probe()
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+References: <189ccfc3-d5a6-79fd-29b8-1f7140e9639a@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
  +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -73,59 +77,103 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Message-ID: <189ccfc3-d5a6-79fd-29b8-1f7140e9639a@web.de>
-Date:   Fri, 20 Sep 2019 21:00:13 +0200
+Message-ID: <506889a6-4148-89f9-302e-4be069595bb4@web.de>
+Date:   Fri, 20 Sep 2019 21:02:40 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
+In-Reply-To: <189ccfc3-d5a6-79fd-29b8-1f7140e9639a@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xRnoPAo7xEhIJ5ZcmH2qZ4WOjEpYAkWC26S+oyaFya8XLbMupQl
- NUMASdQ6kluJZpqpO6c3O9HH9P98V6oBDh7/peBRLVcG22QXOIE4xnm3GHHYbYOanUsSL1x
- 2b+JcKUTa8k9eJuHPAJWc5ljI0L6kN6UwSERJFgic8AQQRk0xGYUDQu90fWYaiuTu0F+g3O
- V3xh6PSimqPHGJuyd0cXA==
+X-Provags-ID: V03:K1:IZ4s53M5EcVgufSPdpFXU97/i9BwcjQgdYEYOulM/9mFA4OqkdL
+ ySNnASGdI5gctzlgt2OqyQhlyTQfvzMQwHliwWF3Ggn3kZTmQEEga6o76rbLmRzAKpWH2tW
+ TX0rzOTsMcyBupn97YCN5SBu3KtcD/qjTtB6kB0wKPENVizrEiwXvqaf+ibCiYkmIdknMx4
+ Es8AYNLTxEuQCZ1YcC2lg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tJIycuQYSkY=:8y84WTmFB4xEG8VXX0QfUQ
- 0oFbxsNkdhrdIXG5HsXjCjBWVGYsCVxGKO07Hgzz4xcyxk0jn8PmY6Z06jpULq5QI5I/5E95e
- X07RqwVc3yDydCJUAea/4jnsxM/+XKDg8Td/k6ktLpiL9mUcrCaoQmOm1MHd10xrUhBNfEXHe
- v0qxNELgxOpY4WKgnLFXS6iEqBaTR7liYH9KmEGdIeCQ8haVn42QODr3jpQKWsQoKQ7ee/G7U
- CEXlGFRbRNei++hkJCZyjRIwSh37dX+iarT0oRDofk3popWKGg1oQQ7XXtuKlBijMOdouqEq6
- 9Kaj9ZuHPhhH7/rMcVZa2Kvp+E22flxWO1XyIidNWnf6yG8V6V6IieZ9+v8BgP3QD6EgpayWx
- k38oTOPi7/jDaFB5ZzA3wQCP+T7E0tyWX10WUpb7Ez2QxzV1Y39MPzTVLFVBxzy1OfVYOmJtW
- /ztKQLlessCUycfDr4r0ckVNbZ+pWD4dru0lB9ccX1vEhD6+joOBimHTQ8GzP5VtxSbPw3IGC
- ctL4Y8l+cBtXGc3C6PuvOVDk394xyLu+7wFWmQ0BCYg9NjElribNAA6t1GceX/1qlSPhUOltZ
- jDwWuFPOKcvGEzS0mkSJh/WfkFhZXDhyqd+1C16Wh8oXzvfBZYkuZN4LgfjBupvTJdh1PO4t8
- 5zvfu/Jp+q+X+jIYHDfIiLnF3IvGQd7WsKUxLSOH/da2zzZXeJYbBDFH8uTk1EglPMfGvC1SU
- dhxmxfqTa16gMXCbhSco66TOG8DG8iqbfuErZ3D4EIzWXiRrffgr/p9fhn5Shv4Mjq5qVoSsu
- ZR4eKyVd7CMMyF6+nfkxuTUmcoCKG7Co6zlgOqpRAg75EmrBCIx3hPmkLv3soPPncG1avPSRj
- vy6W3EvcyXQLlYzRKqVfZfhxZ4AM6C+qxOWQxYIvsIJN+adLPlRalU63XV4tg30ieJjXjVsId
- 1jfXNs949DGqPsZPBWhw6QRLK59Rm5TkUVAVtmYijZyPb7PEVYMpfTfdhMZvgsicfeh8IaQfB
- X2Jpj7KjNJuMsXBl5Z0CoPwoGKPZAg7o42rHKMExy/H9o2aHLga+DxRwrRCmCC1s3jGXC+pVF
- EXVkU9YotS0kY9UlNa2xtEs59nT/bcv2RQ7ebqsOeNHl32LAQ/M8TZV5cjTfBh32I5KcWtkc+
- giHDoi5WcYqaj3k38/ESfmpuVJ449unVwqc3JSjHsNVmY4kOmP58CHWCVdYEGdpFnOGu1W/g0
- drHZ3Wjtluw2WHm6phb4lMYclP4jM0GhkpJpbvHfZ7gHc6/niQ80QE9RnhPk=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:wptcITCQ8Pw=:Wvzlmq5cmEMCsCCSdXBzXO
+ mepu5J8kiSrT0GvxriDMfgWuQeOIEY1fCl41jDb6OVUVBc6ikJAh7/iiaL0KmjapEzTw0pUYS
+ APxEjQdpVe5FxHmWE4ifW9F5YukI7uMNPqujDH/jbSKGyZt9jeSZSdg69dzXVW6LA0mqaSGSa
+ L7DmhzNkmMTTOfjV74UKMdaOnI2HhYx/OmsKOaXjc5bjKcatiqP7Ao6H7HydrdMw33vk/PxlN
+ 5z/asVW4LCGUi6AH3Yi0cHO3re8Oz3wXQmQ0fvln+QJPaFp2l0wuj5KWj7faLJa2c2lOhFFpL
+ 6Eoxn01z4hTCp1Ncvnl20G1BHpnoCTRV4zhVojo1xVRqoEYI3VzBI4FIVXwAvZgp88efR3zBE
+ ROCbKpaMgcTYEIXtf/ttROia2e9V2PTW8od1AwlLvUK9DM02ML3wQCN6U7Oea3X+MkKqv6uW6
+ +ya0FYCnubscfKmC6EAtf+tzD1rfg3DEsJZYyp3q5lUa5moN4JzxCJoAmhRqGIl+Zhu2d1SmU
+ 5oBy7IMtAsXo+Z2Ys+dbtwsiPX7TnwkGP7rfzn6cs+UEoMFQMrX3FVgcHpIddh3uJAfCD916w
+ 2rW+dnfCYTSbOMu0meDdCRtmXMhjfuuApPVZ7u7PiPcFTXbC/nxT/wRju03sPSrw6n1Qcvv3O
+ yMpw3bGH2mhAPguqYaND3E7vMm/Pj3rKHfwNrPXH6ckR5XkUl3c99HjpYS8Us2APxaXhxkX6r
+ RJMuZRv3+D8nU/k8apsJTJNGGHeHwl5qIroGfwjNsdv84h1ih5YsbsfcRW/ceal/Q0Pz9jnKu
+ HH0n34QpW4cK4maNE9EGkCdJnj2x+Czp3qVmTWh/EVLP9YKpgm8x3hduDuGOrMHoblWA5YFa+
+ e1FCzsdWJn8MrsDZgxPJzCgqTO1R7qDM+v9wRaTA2QAh63iSAB0kdZM6SD6heFNyDwtTnUBX0
+ JWcFNvvuT8Hk2IJK1VjdZFhqt3g3cnGSV4e0697cne/eA3BAvT/wlq2KCPqBWTMrvqFERmAoP
+ Qwc8bz36pwYl16XCVVQNP4liMGaXdcdTXIOYgjal2y3ZSx5dSQdJrPUUcVHAmba3wLGwli2Gi
+ CWClGMxtJjdMl/fNG6kAKGGC3SwuN/JEOnc16VrfNPkstnQGNmPU1QcnCe0kbHNum5e48DCIu
+ tE/3P3Cwy6ASwj4+SRZLE/Gqthjah4Gf7s0qiWhUJB6sDm2u1Dv3m4NXY0AxQJpfmU8MyKNEU
+ 62OoV1Q6cwdepgpHxFFtP8BDdUmMurjgo7eAk51Wl1Bj7VPjw5XQRbRS3KwA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 20 Sep 2019 20:52:25 +0200
+Date: Fri, 20 Sep 2019 20:20:34 +0200
 
-Two update suggestions were taken into account
+Simplify this function implementation by using a known wrapper function.
 
-from static source code analysis.
+This issue was detected by using the Coccinelle software.
 
-Markus Elfring (2):
-  Use devm_platform_ioremap_resource()
-  Move the setting of mii_bus structure members
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/net/phy/mdio-mscc-miim.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
- drivers/net/phy/mdio-mscc-miim.c | 31 +++++++++++--------------------
- 1 file changed, 11 insertions(+), 20 deletions(-)
+diff --git a/drivers/net/phy/mdio-mscc-miim.c b/drivers/net/phy/mdio-mscc-=
+miim.c
+index badbc99bedd3..b36fe81b6e6d 100644
+=2D-- a/drivers/net/phy/mdio-mscc-miim.c
++++ b/drivers/net/phy/mdio-mscc-miim.c
+@@ -115,15 +115,10 @@ static int mscc_miim_reset(struct mii_bus *bus)
 
+ static int mscc_miim_probe(struct platform_device *pdev)
+ {
+-	struct resource *res;
+ 	struct mii_bus *bus;
+ 	struct mscc_miim_dev *dev;
+ 	int ret;
+
+-	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+ 	bus =3D devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
+ 	if (!bus)
+ 		return -ENOMEM;
+@@ -136,19 +131,16 @@ static int mscc_miim_probe(struct platform_device *p=
+dev)
+ 	bus->parent =3D &pdev->dev;
+
+ 	dev =3D bus->priv;
+-	dev->regs =3D devm_ioremap_resource(&pdev->dev, res);
++	dev->regs =3D devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(dev->regs)) {
+ 		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
+ 		return PTR_ERR(dev->regs);
+ 	}
+
+-	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (res) {
+-		dev->phy_regs =3D devm_ioremap_resource(&pdev->dev, res);
+-		if (IS_ERR(dev->phy_regs)) {
+-			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
+-			return PTR_ERR(dev->phy_regs);
+-		}
++	dev->phy_regs =3D devm_platform_ioremap_resource(pdev, 1);
++	if (IS_ERR(dev->phy_regs)) {
++		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
++		return PTR_ERR(dev->phy_regs);
+ 	}
+
+ 	ret =3D of_mdiobus_register(bus, pdev->dev.of_node);
 =2D-
 2.23.0
 
