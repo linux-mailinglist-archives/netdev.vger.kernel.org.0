@@ -2,124 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 209AFB8B24
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 08:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4B0B8B30
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 08:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394924AbfITGec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 02:34:32 -0400
-Received: from mail-eopbgr150078.outbound.protection.outlook.com ([40.107.15.78]:50818
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2394916AbfITGeb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 02:34:31 -0400
+        id S2437327AbfITGkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 02:40:15 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:47442 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2437279AbfITGkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 02:40:14 -0400
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8K6bxAS022209;
+        Fri, 20 Sep 2019 02:39:25 -0400
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2050.outbound.protection.outlook.com [104.47.36.50])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2v3vb5v70b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Sep 2019 02:39:24 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JxV5WPWi00wPjap6Tpdi+R74u4GflT3kosSSVps8+d6x8xGB0iyCcKzC/zh5DqG5I0My3YXTzbRO7G+/D6A+V6VmmTGI/erltbXc2IurJmh6Pdxr2orp6OpJtRHyTAXiJzE0NjbR4rvrLfNTnsOKOqVP1ulD8tVIcY7xHdn0FISB5tlkl9n15dXVuH4vp49/fsLay/hkU8WoFP2o+0CZPFQH5K2FJiyl05dnrEm6a8YHdex3LW/HOBnwQKMcQiujycPFtex9dO/WtS/PjbmHucM46aQsKGOD/f5b21THflb6C5Bw6Pt2dTqrAkOOxAJijXZkPyUw3i21ZjAXlJgOkw==
+ b=dT0yYqKzh0CG/78E9g2TLzeJ4PagGVHy4x6HE5/C/4f6m74AGzeDno4FXHBrIlXCAmTYufFCcjWLHVMoqLrwxgsbrol44lxEla+DlyeeLrgfHuvvkhDZkNpNFrpWDzic7mVaKFBAD6h8oa5LdZMINv+lVC3Bl8OFk7uMnoDbd0kdptfAwqZNNr/87aCDOUwjpJZOBc5Jx2ApoMVMZBuIQfKcBiRyqu3711YFnd5msF1Aa7NCSCFOvk5dzGw+Z/olsOvOGflH6GQM3qZSRxKCtDCq3M+YbH3vXv1o6Yhyau97NEStGMHqwpAA6XBRfexSAC4+3MOia56KH+qCdC8RVA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VqfPkmKBsOo86V14ogn5xAijq4th6OGcyXsTEEVAanA=;
- b=VFfy8wPj10bXktk16b2iGwY1gPleTmYNd4LNoT9VZR3d3Fyv5B7pvH1mE7JqrHW5QUY6oGBhGAfcpdH3J62Npb9AgPdugXKr8/+0+VnGmfSEuI1Lq8191jETQg4W4oZD5IGF7iZ9ZYEXZIfVnFy3Su2RrtljcgwPjU56KF5M2Cuh4WlboYB2Rh38C7Ab38Wm4g1ZNZsfUXxWFyusXKgDsM2m9Fx1FIwQ6E85JvY+P7JqHfS0gJoLJiumO6gQa3NbRjK7VAqD+a+ttijWV8sUm3UK8TRH/0nuX+eUH6AQupsgYPihY62soDI0/lVsUcarkHmrWj+6DhoLbeJDGf/vcw==
+ bh=PQaftXl4d6EKPHFo0+ThOXmDYfT8cz0Erp6yesMIu7I=;
+ b=KYkQBIt3XgbngpcRe427s2nMdV7//dWzjg/lhzv28s0y1sQngfli+tbvQXUj6qoqIhAUAZjISaDix45uOFp34WStKzykHdAQRttdMJE2fDT9shdJRQgrQrEAZkBlJjQrS0GvjrBQXazpwE2asum0HxqDiYfRXu12lP/hBbD0UFlf6vp4OFuSwFd/Ug04xcgn/WM6g+x2G5jXitpenTjgFstvcUah0xWvy6KlwkFYxVvm8eYm4CiSxvU28lyArrPmLX/b/z7glrz2FK0ZCQHH54dMENsyDXtt25rqNXZsuCtH1mNjvbT0XxZfYXyiX11lf4nDS05gRPyAUro6q3W7Aw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VqfPkmKBsOo86V14ogn5xAijq4th6OGcyXsTEEVAanA=;
- b=mvOiap4vlRDCm8Icz41sTYpkhd3PxF7Z1kIuYuBq6HSOjUC9BF2KhK99a01wuRiFr3JEb/aAYqAQ3AAAg3doJ+yZptconH8Hp8kRrtZe15FVylI/MFw3Ck9kCKf2GE2DKssE/bFt6EFsGCiOWaoAndl79F0Rj/T6JoP8gcrBiyA=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB5581.eurprd05.prod.outlook.com (20.177.202.217) with Microsoft SMTP
+ bh=PQaftXl4d6EKPHFo0+ThOXmDYfT8cz0Erp6yesMIu7I=;
+ b=HxhrJZ15rZA9VCpdZm8MDeunR4E8bcmRV81d7X7amtXkVDz2kY7cie/0ukQxr22IBaimENYeFSai89P4OEV3egDwy1cs5S6ufiXnL02NpffUPKGFPcl0zu23QtQZoUJBo3tJBwXT/HxxCc25jcRhOJRVoBOlGX8TQvMml5i5n9Y=
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
+ CH2PR03MB5318.namprd03.prod.outlook.com (20.180.15.201) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.20; Fri, 20 Sep 2019 06:34:28 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::f910:e7e:8717:f59d%6]) with mapi id 15.20.2284.009; Fri, 20 Sep 2019
- 06:34:28 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH net v2 1/3] net: sched: sch_htb: don't call qdisc_put()
- while holding tree lock
-Thread-Topic: [PATCH net v2 1/3] net: sched: sch_htb: don't call qdisc_put()
- while holding tree lock
-Thread-Index: AQHVbybmLrkbH92keUamoXeL+bDx06czmsEAgACB1YA=
-Date:   Fri, 20 Sep 2019 06:34:28 +0000
-Message-ID: <vbfsgorzdam.fsf@mellanox.com>
-References: <20190919201438.2383-1-vladbu@mellanox.com>
- <20190919201438.2383-2-vladbu@mellanox.com>
- <66e68933-a553-e078-b92b-6f629c740328@gmail.com>
-In-Reply-To: <66e68933-a553-e078-b92b-6f629c740328@gmail.com>
+ 15.20.2284.18; Fri, 20 Sep 2019 06:39:22 +0000
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::344d:7f50:49a3:db1b]) by CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::344d:7f50:49a3:db1b%3]) with mapi id 15.20.2284.009; Fri, 20 Sep 2019
+ 06:39:22 +0000
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linville@tuxdriver.com" <linville@tuxdriver.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: Re: [PATCH 2/2][ethtool] ethtool: implement support for Energy Detect
+ Power Down
+Thread-Topic: [PATCH 2/2][ethtool] ethtool: implement support for Energy
+ Detect Power Down
+Thread-Index: AQHVbrkabB9cLWWF40mbNZ5JSD7OmqczB7mAgAFJYAA=
+Date:   Fri, 20 Sep 2019 06:39:21 +0000
+Message-ID: <79abfbff321f0d87c9c2e4df2b4c46a3f874c2ee.camel@analog.com>
+References: <20190919100833.6208-1-alexandru.ardelean@analog.com>
+         <20190919100833.6208-2-alexandru.ardelean@analog.com>
+         <20190919140025.GC22556@lunn.ch>
+In-Reply-To: <20190919140025.GC22556@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0102.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:c::18) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
+x-originating-ip: [137.71.226.54]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 26996a11-8203-4327-15b6-08d73d949626
+x-ms-office365-filtering-correlation-id: 75c241c6-4679-4915-06bb-08d73d95458f
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB5581;
-x-ms-traffictypediagnostic: VI1PR05MB5581:|VI1PR05MB5581:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5581A901C3CA1E926FCBC775AD880@VI1PR05MB5581.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:CH2PR03MB5318;
+x-ms-traffictypediagnostic: CH2PR03MB5318:
+x-microsoft-antispam-prvs: <CH2PR03MB5318470C2CAD888E51746F16F9880@CH2PR03MB5318.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-forefront-prvs: 0166B75B74
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(346002)(136003)(366004)(376002)(189003)(199004)(486006)(36756003)(11346002)(446003)(229853002)(3846002)(6436002)(6116002)(476003)(2616005)(86362001)(478600001)(8676002)(54906003)(7736002)(2906002)(66446008)(66946007)(305945005)(66066001)(66476007)(66556008)(64756008)(81156014)(14444005)(81166006)(256004)(71200400001)(71190400001)(25786009)(4326008)(6916009)(316002)(26005)(186003)(6486002)(52116002)(102836004)(76176011)(5660300002)(53546011)(6512007)(6506007)(99286004)(386003)(8936002)(14454004)(6246003)(4226003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5581;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(39860400002)(396003)(366004)(136003)(346002)(199004)(189003)(99286004)(2351001)(478600001)(6436002)(6486002)(6512007)(14454004)(5640700003)(36756003)(2906002)(86362001)(229853002)(3846002)(66066001)(11346002)(446003)(6116002)(6916009)(305945005)(7736002)(25786009)(6506007)(4326008)(71190400001)(2616005)(2501003)(186003)(26005)(102836004)(118296001)(81156014)(1730700003)(8676002)(486006)(6246003)(316002)(54906003)(256004)(81166006)(8936002)(71200400001)(5660300002)(66946007)(66556008)(66446008)(76116006)(64756008)(66476007)(76176011)(476003)(461764006);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5318;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: analog.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: E2dgkzyj9p4E3BSZ0q8SleepgztMNBlsiNM0MgyV1iSchPaSRIc/9DyJgfxRLyfxrJ07jPkMrZJ6NDTjSPHtiFBHeW88NPm5RmU0I1A6A3v+2XlZ95bsfbQv1vr4EbVmSVd1wyRz7WY5ikrbY2DnR9YTmA8uOMqte3xM3myEloqvUhNKJx/nDAqR4JdM6aYer89g3HrQa+U8H3u0OkIFt3HQ2QjdZh+vr8dPl3uDZ4A+mp+02JJLsFx92+/bBPRaJXVicDqstEYAm09WydBWDCfNS9uQZNI2u/L3583VkEtLmcvcoE47AsspX6z/YXy5RosWLnfP0zBm4I+xRKq4yMF50aLZ8ah9TjVID8whlP/fzKzfcPGGxndzYePIy5tVsfcOsNt7IeC3cDA5Okmqgbe8WQArTb4WoAFy7U2cYG4=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: wiOTLwVba9yA/mRT+ZkY5F9NSWDJpmsdaYzQpaooqGSqlVoX455g5a4ol+P3vc/rtEjjDiqvxvkwcRZ3O8zZmsgsQ3UcNTDd6S+s5P5hD6zZ+in8gNsh5pPdeQ5qD3chG8nmGnwZI9g5uGjj+moi5Bz5U4CjAyWziAthCJUidJrSK1eR/zRmaEenj3T3JRw6a2xn+vBiJF8sL/3YgqgpebtQ0+qkXfDJq2bSig/3iRFkG9pcmpYom4tdbfFUPCniBhIKM3TqQWwvVI31iBIj8knA79fydCd8708BcWVsXhHmmUtoTaK2I5kIzeKlYCFqq/JP6cLI4H2P06uE+i/Tw3ae6b/nUfX4BcJ2JOtcBeEbYEv6NQWRR/hG1PTn96ZSJDSTVjk5BEoB+ybgPZMa2/sNddKMQ1T5r0EZhsRzqLI=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2766EC6ACB2AB844ABCF105AD6705CA0@namprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26996a11-8203-4327-15b6-08d73d949626
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2019 06:34:28.3244
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75c241c6-4679-4915-06bb-08d73d95458f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2019 06:39:21.9784
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GyrNMpjYJkKr/ZSxi8cZkVlcLvqQz/92wt8yMzXXCVojGGnOh4+6lV9RxhuXCjd2+EDUEyAx2Q9WqNUIda0EbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5581
+X-MS-Exchange-CrossTenant-userprincipalname: MEA9/wZbM2AyloYVx6STRWHNvaojr9qU3GWuUdyZdL6kh7mVczNCjg22nxII5udHlOxvMl4Fs3IrmnGN+AG3G7oMUmUOouwz12VPsXrXqlE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5318
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-20_01:2019-09-19,2019-09-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 mlxscore=0 mlxlogscore=999 spamscore=0
+ phishscore=0 clxscore=1015 lowpriorityscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909200071
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Fri 20 Sep 2019 at 01:49, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> On 9/19/19 1:14 PM, Vlad Buslov wrote:
->> Recent changes that removed rtnl dependency from rules update path of tc
->> also made tcf_block_put() function sleeping. This function is called fro=
-m
->> ops->destroy() of several Qdisc implementations, which in turn is called=
- by
->> qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinloc=
-k,
->> which results sleeping-while-atomic BUG.
->>
->
->
-> Note that calling qdisc_put() while holding sch tree lock can also
-> trigger deadlocks.
->
-> For example sch_pie.c has a del_timer_sync() in pie_destroy(),
-> while the pie_timer() timer handler acquires the root_lock.
->
-> (there are other cases like that, SFQ for example)
-
-These and other examples of sleeping calls in cls APIs used by
-tcf_block_put() that I described in one of my previous emails make me
-think that putting might_sleep() at the beginning of qdisc_put() would
-be a good idea, instead of waiting for syzbot to find correct
-combination to trigger a crash.
+T24gVGh1LCAyMDE5LTA5LTE5IGF0IDE2OjAwICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+W0V4dGVybmFsXQ0KPiANCj4gPiAtc3RhdGljIGludCBwYXJzZV9uYW1lZF91OChzdHJ1Y3QgY21k
+X2NvbnRleHQgKmN0eCwgY29uc3QgY2hhciAqbmFtZSwNCj4gPiB1OCAqdmFsKQ0KPiA+ICtzdGF0
+aWMgaW50IHBhcnNlX25hbWVkX3VpbnQoc3RydWN0IGNtZF9jb250ZXh0ICpjdHgsIGNvbnN0IGNo
+YXIgKm5hbWUsDQo+ID4gKwkJCSAgICB2b2lkICp2YWwsIGVudW0gdHVuYWJsZV90eXBlX2lkIHR5
+cGVfaWQpDQo+ID4gIHsNCj4gPiAgCWlmIChjdHgtPmFyZ2MgPCAyKQ0KPiA+ICAJCXJldHVybiAw
+Ow0KPiA+IEBAIC01MDI2LDcgKzUwNTEsMTYgQEAgc3RhdGljIGludCBwYXJzZV9uYW1lZF91OChz
+dHJ1Y3QgY21kX2NvbnRleHQNCj4gPiAqY3R4LCBjb25zdCBjaGFyICpuYW1lLCB1OCAqdmFsKQ0K
+PiA+ICAJaWYgKHN0cmNtcCgqY3R4LT5hcmdwLCBuYW1lKSkNCj4gPiAgCQlyZXR1cm4gMDsNCj4g
+PiAgDQo+ID4gLQkqdmFsID0gZ2V0X3VpbnRfcmFuZ2UoKihjdHgtPmFyZ3AgKyAxKSwgMCwgMHhm
+Zik7DQo+ID4gKwlzd2l0Y2ggKHR5cGVfaWQpIHsNCj4gPiArCWNhc2UgRVRIVE9PTF9UVU5BQkxF
+X1U4Og0KPiA+ICsJCSoodTggKil2YWwgPSBnZXRfdWludF9yYW5nZSgqKGN0eC0+YXJncCArIDEp
+LCAwLCAweGZmKTsNCj4gPiArCQlicmVhazsNCj4gPiArCWNhc2UgRVRIVE9PTF9UVU5BQkxFX1Ux
+NjoNCj4gPiArCQkqKHUxNiAqKXZhbCA9IGdldF91aW50X3JhbmdlKCooY3R4LT5hcmdwICsgMSks
+IDAsIDB4ZmZmZik7DQo+IA0KPiBJIHBlcnNvbmFsbHkgZG9uJ3QgbGlrZSB0aGVzZSBjYXN0cy4g
+Q291bGQgeW91IHJlZmFjdG9yIHRoaXMgY29kZSBpbg0KPiBzb21lIG90aGVyIHdheSB0byBhdm9p
+ZCB0aGVtLiBNYWtlIHRoZSBwYXJzZV9uYW1lZF91OCgpDQo+IHBhcnNlX25hbWVkX3UxNigpIGEg
+Yml0IGZhdHRlciwgYW5kIHRoZSBzaGFyZWQgY29kZSBhIGJpdCBzbGltbWVyPw0KPiANCg0KU3Vy
+ZSB0aGluZy4NClYyIGNvbWluZyBzaG9ydGx5Lg0KDQo+IFRoYW5rcw0KPiAJQW5kcmV3DQo=
