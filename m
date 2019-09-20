@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E93F7B96AF
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 040DBB96D9
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393747AbfITRlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 13:41:25 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:59510 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393075AbfITRlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 13:41:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=/VvqufFGpmqqg9EwBNt6ZCvzhwzYEFtu/lWXv6sdh+Y=; b=p98/Tel/BkuZReEL/i4p502+7
-        ILUhH8ICRijtv5lldUEayz6vOH59Yn/LPIhtLzZcg3zXLSqhKjoKkJhlU+DnUySVBuM0NlhrMyH6v
-        R1hL0q+HAz+mphljT6U9glCNynjfzKJtUlgXYw46NociyKWhl/5xcXPOpMdtiO6mfyJmG3imcO9ly
-        QFfZ4+YzcEAENmiosO/Sd/AM3qu6yrUzgoCmAHQdIKPCrrbaUbfV0RSctBRzqnf2uJTHUZ8UVNwuU
-        fO7nyUyNUCoSs6R9yKO3VXiyIb9g8HQM6v+dFLqTDBPyufIo0cPgqKkmVP9bBRNNozlBdvrvKgY0C
-        FFubsVghg==;
-Received: from [2601:1c0:6280:3f0::9a1f]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
-        id 1iBMuJ-0001ci-H1; Fri, 20 Sep 2019 17:41:23 +0000
-Subject: Re: [PATCH] dimlib: make DIMLIB a hidden symbol
-To:     Tal Gilboa <talgi@mellanox.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190920133115.12802-1-uwe@kleine-koenig.org>
- <670cc72f-fef0-a8cf-eb03-25fdb608eea8@mellanox.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <89be8d33-ae26-6e46-be11-a653402d3230@infradead.org>
-Date:   Fri, 20 Sep 2019 10:41:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2405585AbfITR4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 13:56:38 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:39904 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392172AbfITR4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 13:56:37 -0400
+Received: by mail-qt1-f194.google.com with SMTP id n7so9648280qtb.6
+        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 10:56:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=xwXwb0VRr0Y5mbIrCdrhW15Qm4cGAzoeDVJ2lEpfOz8=;
+        b=U3SmG6MqU1G3DvKMpMi11blBiYYiRG4IcOO9Awa0gS87SZtXwHxfRAO+oIJ9MK0/EA
+         Y5Nsta25gV6EmMx5g/TCw3dF35cXtaZf4UJQ2ybwL38/fuf5L0gSLWl/pIgkAy/Tr/9W
+         9lOEUdnL6ZM0CekQcwazwaVgejdB3SGe6ZWzCcI24li08Gqx59nLfW91oHIlP8XTnHGZ
+         8rVb6AExkrDnCzj8p+HKIxY250lw4QXE+FgqHm2qbRqX/YbEWhYwnNj0plotZ8P4mjFL
+         YVQUH4FOhow4YLVAXaWBn0aBFQjADYeLIIcVijsmpWz5SUH2FgLmopUo3+6vwdV+rEDp
+         IaDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=xwXwb0VRr0Y5mbIrCdrhW15Qm4cGAzoeDVJ2lEpfOz8=;
+        b=TxbjMWh+q8b9mqnDK1fLpCobBzXdB1HxHH3u5IfE5oV6Ue43KxR8kBtBtxTQy6b2jR
+         KnecBos85EfMGa5oIkPSrCYxL4d7TAVxuDCKSGrlan+8MdbwovQ711BpRB5OsSZzf5mC
+         Jqj1TOEn5LCypHlMLmU7oXFOOszuZrqiKqM6vwNDPKAq0dF88KEyU5tt86akcpkGR3df
+         pBr0QEWZXSDO6hUHv4thF+aamQN0GW/gyhGQr/1XLYCxjiNsLSA80pxifyWKffAQnrMK
+         Cv2N1R1sDo0MREFRYCOHWcwl6syLBbCtocGVfJfJF7raJpAj+BAXXIwErX1XQAdgPx21
+         hsuA==
+X-Gm-Message-State: APjAAAVNTfsfizyomh0UfHo7YpgIOqYl1rNrdz4yHxIt3+7goWmGhr5F
+        fLRrhSAfKohieVsqbI60jTOJ3A==
+X-Google-Smtp-Source: APXvYqzUx+S3hfpDDdk07qdwvak3LptBgH6Z52kWxHyuo6TSEFqvvIY8MMZv6cgKWhdxOKPG8VCRTg==
+X-Received: by 2002:ac8:3fd2:: with SMTP id v18mr4595140qtk.73.1569002197003;
+        Fri, 20 Sep 2019 10:56:37 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e42sm1322992qte.26.2019.09.20.10.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Sep 2019 10:56:36 -0700 (PDT)
+Date:   Fri, 20 Sep 2019 10:56:31 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jouni Malinen <j@w1.fi>,
+        hostap@lists.infradead.org, openwrt-devel@lists.openwrt.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH RFC] cfg80211: add new command for reporting wiphy
+ crashes
+Message-ID: <20190920105631.34f10d79@cakuba.netronome.com>
+In-Reply-To: <20190920133708.15313-1-zajec5@gmail.com>
+References: <20190920133708.15313-1-zajec5@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <670cc72f-fef0-a8cf-eb03-25fdb608eea8@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/19 10:02 AM, Tal Gilboa wrote:
-> On 9/20/2019 4:31 PM, Uwe Kleine-König wrote:
->> According to Tal Gilboa the only benefit from DIM comes from a driver
->> that uses it. So it doesn't make sense to make this symbol user visible,
->> instead all drivers that use it should select it (as is already the case
->> AFAICT).
->>
->> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
->> ---
->>   lib/Kconfig | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/lib/Kconfig b/lib/Kconfig
->> index cc04124ed8f7..9fe8a21fd183 100644
->> --- a/lib/Kconfig
->> +++ b/lib/Kconfig
->> @@ -555,8 +555,7 @@ config SIGNATURE
->>   	  Implementation is done using GnuPG MPI library
->>   
->>   config DIMLIB
->> -	bool "DIM library"
->> -	default y
->> +	bool
->>   	help
->>   	  Dynamic Interrupt Moderation library.
->>   	  Implements an algorithm for dynamically change CQ moderation values
->>
-> There's a pending series using DIM which didn't add the select clause 
-> [1]. Arthur, FYI. Other than that LGTM.
+On Fri, 20 Sep 2019 15:37:08 +0200, Rafa=C5=82 Mi=C5=82ecki wrote:
+> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+>=20
+> Hardware or firmware instability may result in unusable wiphy. In such
+> cases usually a hardware reset is needed. To allow a full recovery
+> kernel has to indicate problem to the user space.
+>=20
+> This new nl80211 command lets user space known wiphy has crashed and has
+> been just recovered. When applicable it should result in supplicant or
+> authenticator reconfiguring all interfaces.
+>=20
+> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> ---
+> I'd like to use this new cfg80211_crash_report() in brcmfmac after a
+> successful recovery from a FullMAC firmware crash.
+>=20
+> Later on I'd like to modify hostapd to reconfigure wiphy using a
+> previously used setup.
+>=20
+> I'm OpenWrt developer & user and I got annoyed by my devices not auto
+> recovering after various failures. There are things I cannot fix (hw
+> failures or closed fw crashes) but I still expect my devices to get
+> back to operational state as soon as possible on their own.
 
-That's easy enough to fix.
+Perhaps a slightly larger point, but I think it should be raised -=20
+is there any chance for reusing debugging, reset and recovery work done
+in devlink originally for complex Ethernet devices?
 
-> [1] https://www.mail-archive.com/netdev@vger.kernel.org/msg314304.html
+WiFi drivers have been dealing with more complex/FW heavy designs for a
+while so maybe you've grow your own interfaces, and maybe they
+necessarily need to be 802.11-centric, but I'm a little surprised that:
 
-for the patch:
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-
--- 
-~Randy
+linux $ git grep devlink -- drivers/net/wireless/
+linux $
