@@ -2,85 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DAE3B951A
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 18:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19307B95D2
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 18:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393245AbfITQSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 12:18:33 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38863 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390271AbfITQSd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 12:18:33 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l11so7352624wrx.5
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 09:18:32 -0700 (PDT)
+        id S2404932AbfITQhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 12:37:02 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43216 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387398AbfITQhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 12:37:02 -0400
+Received: by mail-pl1-f195.google.com with SMTP id 4so3427105pld.10;
+        Fri, 20 Sep 2019 09:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=T2QKJDpIOmawSFf6tca9IpxqBTArSSM0LaBRI17UbHQ=;
-        b=E9LdMVpwlmwx7cdAUDZk6nTukGA3oQW1Xir6xPpnTCYX4PJASDhogdjs/h5OCdrDLP
-         4TGAo/yqqF1iUzOyOElDweJ67dDGNG59DY7Bmoujsf7jG4Ue6BgQi22pBaHbMMP19KIG
-         GcVifkqSe//xWo46KtZEoQw5vCm4m+CgI4uGUCKnR0IC4MriYe0ML6THsoa+1ef+PU5+
-         0NalWo3jY2HiJl7Yi8xgnUWpvVmO7GttLPMMd7I7xNA7Ar8j/sh8casMR3DufJRUuN17
-         ydZvDLgHdXwunlU1WfxOBCQh7MgQiwA41WlgskVVfUqxmwCz20p22EYxbSbZeTGzUQj9
-         e6Vg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kytUK243BodpWOmoCyeWZE1vUiqSLShY8MCbaHpZmRQ=;
+        b=ubHo9GaCWjHiHlskt24MjtWJi81e35GkBfWZVwG2O0ygovoKeNNP6qCCG1EOUt8D2v
+         OP7JjYFvLU12hNvzeP6dwQe3ewpN+wZcNIgR/H+g136cSMSjZZgbYEqiQFxEl3g8U8n3
+         a8icDjCjAeKOPXtkn+ZnOmpI4r/dUlXBJowMyj0TlnS7ArqE41iw5z0Umbc9AC+W5VH7
+         13nAWlg+1LATmrPt8GLA8PXA12dh4jryDnN9tOf8TKevua5P7V2kwHG4bPPZGxNO6r97
+         lOFzUQJ4o7fwLdTXQl6X/gubRas4n3gjF5IpiB8KTtP7GKATzGaRazotuaxDCgOrvy1F
+         jiWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=T2QKJDpIOmawSFf6tca9IpxqBTArSSM0LaBRI17UbHQ=;
-        b=KbTdEhnH9Bmcu1vsQAi+WsNAU5Y01dT2Ch1pGCTcMrwgoQrizKlptPJfUO8hKg1he3
-         tn/Ui4Akzj+pfwrqVmc67o4FHimkAy9uCc7hebD2wL2Iznq48pNQs/sX5p3hQX/xnMXz
-         aKpnRFANF4z3as5WBlstjZVYX6UAUQnhX/E9RKnvTtlmKh6utQWyJrLu1u6vgrj6vnJZ
-         4I202oUH1xpCH2SxR2eR7ZJp8wygLrsAmi4oJ/zwkgZEf+Nbxg2IRPR80s5Y8VZLZYB7
-         9XY4ZP8dMHY6NnshWUIbVMQbjcYENYRcAeXf/Pm+z5f8oNydkUXGFYj6ZBijhwUybOJw
-         TXWg==
-X-Gm-Message-State: APjAAAXsi2IDlQHR50BkbODbZP4bk0Czl4DEN7nwYfqJ0+NRiVW+kdfU
-        W6TI/o4Ma3sUkER7DWLY1Lto7ezQtxqszQ==
-X-Google-Smtp-Source: APXvYqxTs/hGtOwvcx3pUDuX7bFM4xXAhSSEfJtA/vfe3du+HSnfz//2ys5rwJTqphlfCFvDTtq30w==
-X-Received: by 2002:a5d:4c45:: with SMTP id n5mr12368800wrt.100.1568996311650;
-        Fri, 20 Sep 2019 09:18:31 -0700 (PDT)
-Received: from localhost.localdomain (lmontsouris-659-1-22-203.w81-250.abo.wanadoo.fr. [81.250.173.203])
-        by smtp.gmail.com with ESMTPSA id b144sm2536069wmb.3.2019.09.20.09.18.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 09:18:30 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH net] skge: fix checksum byte order
-Date:   Fri, 20 Sep 2019 18:18:26 +0200
-Message-Id: <20190920161826.15942-1-sthemmin@microsoft.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=kytUK243BodpWOmoCyeWZE1vUiqSLShY8MCbaHpZmRQ=;
+        b=LLJfhwyKUt+t41r68ag0yrmqrYvbfDAVlS66tLEaxLMt/m7uuUlVgpFzcOrzW7m6hA
+         9QteLGQofSx3J6bUtO58sZe0clhmUPdOki3EQelZXUg7OYNkPpSiiLSSmtrH0Oz20pMa
+         EOf3S6fgnycmmXr5pNah4se8rzsP+0MepcWXWa9n4XWbJAvlAp1lueaz+Exe3qWNSXwb
+         rW6Q2IRti5TnpxgMnjxqgdebH3d54u4GlFOEAoqmi2iyFazkrePOabNXR5ZRPOHFc9Vz
+         odVwD2WIOU2GJmtYyPf9nSW+HLkWnnw7qdhVtxl+HfJwEN5lNN+Olo1L4OYpUd2RMXxl
+         5KWw==
+X-Gm-Message-State: APjAAAXAYBolj0ImuqKsTcyCaApLoGmujEaQlS7+7siEeAQBkLTPHdw4
+        S+re3UO0GhRjEybeDFkkuhQUpEBrQLg=
+X-Google-Smtp-Source: APXvYqwGh98V0uzQ6kMneUn8Qbt11F4Efx4ZfFXFMj4i3I44luTpdfNkgKelLBkujdLlrWpytdKSOw==
+X-Received: by 2002:a17:902:b94a:: with SMTP id h10mr16639638pls.165.1568997420999;
+        Fri, 20 Sep 2019 09:37:00 -0700 (PDT)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a17sm2762849pfi.178.2019.09.20.09.36.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 20 Sep 2019 09:37:00 -0700 (PDT)
+Subject: Re: [0/2] net: dsa: vsc73xx: Adjustments for vsc73xx_platform_probe()
+To:     Markus Elfring <Markus.Elfring@web.de>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <98fee5f4-1e45-a0c6-2a38-9201b201c6eb@web.de>
+ <20190920150924.GG3530@lunn.ch> <4a220bc4-0340-d54a-70bd-7bea62257b81@web.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <5d068275-796d-7d76-ba33-6eb03fb1d7cc@gmail.com>
+Date:   Fri, 20 Sep 2019 09:36:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <4a220bc4-0340-d54a-70bd-7bea62257b81@web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
+On 9/20/19 8:30 AM, Markus Elfring wrote:
+>> netdev is closed at the moment for patch.
+> 
+> I wonder about this information.
 
-Running old skge driver on PowerPC causes checksum errors
-because hardware reported 1's complement checksum is in little-endian
-byte order.
+This is covered here:
 
-Reported-by: Benoit <benoit.sansoni@gmail.com>
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- drivers/net/ethernet/marvell/skge.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n40
 
-diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
-index 0a2ec387a482..095f6c71b4fa 100644
---- a/drivers/net/ethernet/marvell/skge.c
-+++ b/drivers/net/ethernet/marvell/skge.c
-@@ -3108,7 +3108,7 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
- 	skb_put(skb, len);
- 
- 	if (dev->features & NETIF_F_RXCSUM) {
--		skb->csum = csum;
-+		skb->csum = le16_to_cpu(csum);
- 		skb->ip_summed = CHECKSUM_COMPLETE;
- 	}
- 
+and you can skip the reading and check this URL:
+
+http://vger.kernel.org/~davem/net-next.html
+
+> 
+> 
+>> Please repost once it reopens, in about 2 weeks time.
+> 
+> I hope that the presented change possibilities can be integrated
+> in the near future also without a repetition of this small patch series.
+> https://lore.kernel.org/patchwork/project/lkml/list/?series=411271
+
+You will have to resend it, and unless a bug fix comes in, which would
+be the only reason for your changes not to be "current" anymore, then it
+should apply as-is and you should be fine.
 -- 
-2.17.1
-
+Florian
