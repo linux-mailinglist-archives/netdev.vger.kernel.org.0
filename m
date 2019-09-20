@@ -2,71 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B056BB88D0
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 03:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949C3B88EA
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 03:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403915AbfITBFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 21:05:39 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33419 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389293AbfITBFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 21:05:38 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so3425384pfl.0
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 18:05:38 -0700 (PDT)
+        id S2391358AbfITBaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 21:30:20 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45328 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391404AbfITBaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 21:30:20 -0400
+Received: by mail-qk1-f193.google.com with SMTP id z67so5540673qkb.12
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 18:30:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HQDqVmbcAXZN+2Zdc9W+E5scvkeq1ZzF9slV6LakCOs=;
-        b=Z0Xe1v6d4NALdvCSHd5wZJNcipg9Cs7akCpm/Go1OlRnqOko/rFmdXEqO2W+9F9JCD
-         IIKnMHFIq5A3ZYBY+Yh/3iZH7f5os6SL19ZXJZ7Hl4V3+0RbOdADG3nPTfT2Oma0kbFa
-         wrB9MHvNtu7DXmp50eVdRXVIyG0Ef7WZj3dkRntgPiWSaRHG+beiJE+ToTHTh4bLBZ7X
-         BzLZ16tel4DoU7+T1WavMcdDjTF2wXWC4X+SAqUnqWWLusVOf59WyXhVnkDQTcR7BzdL
-         puy/GutJpvIPxLm6MqvXFgHS5Iu6r4pen9p6l2MbecAQgWJq6CfakiOwfP/Rvv4VI077
-         0KEg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=pbq/7/QcSAKDE85N8IewaNpJ/wXC8N5jY5fORhY96/g=;
+        b=mi/OS9w8nDkLRGap8K95Y4Q3UVAvHFk6qpx2MIAtogN1OjTOuAy74W2qLOQINsdOcX
+         stEDgraN47U691FLBd3PpdfgMHiQ8qHp75NQOC+73RgEdLL/eZv5AEGkwcixZFp9pBK6
+         ibJeHPFPnDijzulKq67heLjYAt+mIXS6FzrXPnGqZ3xz3zdKOLN9ZgFtKMQDsMFAe0Ni
+         lO9zV/mNBRP1johCxPYco67cv+wcoX7EMak5XvF+Er9sllm1aU2HSTHBeUD23wBREK87
+         Vyt+qLM9H4r0W6GbfCQGKs0Ks7zDP3l5mOqqU/q/zvptcL4rNM/xYssAiH+8udCaisu9
+         2tbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HQDqVmbcAXZN+2Zdc9W+E5scvkeq1ZzF9slV6LakCOs=;
-        b=e0lCb/YEA3vXuqPGddHd5HwD/vH8KeH3G8/DwzMsOCd7Op/7ZUK9BL7Hwu+d+8mp+4
-         UwwV88a+ZJax0aev51Uz414U7B0j7f5I6yhCtncB7vKTJUpqMPP34k6C+TvSWMZes6OS
-         bGo3MVmrs3Tl/U7f1cZBMeziDJ+1GpKdRLiERSpESiFvY6FMBELisieJgHgQCoyG5C5Q
-         7a11qNpMz0ijT3Quw7FnbUHxP/KYorC+JRuGkFtde+o7+X9942rlZ2hpP6jFWYw2bf09
-         E4q8c4QZ9EKLqSNVJ4WYa7IZEDfThTagG6zBq7TCStqIlATUKEe/2yRF6V+QMQfvTpxe
-         5aKQ==
-X-Gm-Message-State: APjAAAUR/VvvPlcfeIAaoJgIAbeCSpmK/l7E8oBuRWrklGA5Y1EXjvG9
-        cRGtYxkQCE+T/ysYGK1IjZKy8fAWrgVsRta7p10=
-X-Google-Smtp-Source: APXvYqwsaAfBHvuV6/wbofiy+sFBmtOT6QZD0QdFYSbh4DTQpQEGay+JUho6A1pPp7uUt5PzYjOB5v4RiN9zvtLYEPI=
-X-Received: by 2002:a65:404b:: with SMTP id h11mr12030375pgp.237.1568941537880;
- Thu, 19 Sep 2019 18:05:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=pbq/7/QcSAKDE85N8IewaNpJ/wXC8N5jY5fORhY96/g=;
+        b=O191pfPrE3+TnWZIXGANOkGBKyrZbOj9YdjAdwb/mfBwKGsqWcBPMZAbkHNatRmT3R
+         pq1C5cpk/AfDPgg1qG5U78i2PU3+4JzglkYH3TieDDe9O1+24gz4c/AXKXnAA+9Lp7I4
+         v9EHLjr+2ysNNIp2wQN0eWRCXrkRN11GAqCvMLwdVF2o5ioYuS8PXHW/lnkgWYHBVfFz
+         YIqTjwseV23RHi5OvxamJZBlrJv4jxU+lsPY3NTSpQe+6nRDGN9YM6bI5QnPQYXHEURG
+         3dOh0piVSGL3mwyv4D8EEwqzlJhsYu95CASZYOsqc6/WbYqJg+W0Ex30RKGM/j8zwJEI
+         HL5w==
+X-Gm-Message-State: APjAAAUHkJTQ/tFyOeAp+LQJitVkar5X4Q1OqH8xPb9pWF3eyHTGG0gY
+        hmGJ/mYJz+vINxFlPHqeTl0j4Q==
+X-Google-Smtp-Source: APXvYqzEV7pLpS4ZJFp6x2/XsyH01rtjFPpSbmDempk1NgOXLbB2Awtzion3d/NfONnM8+N7WKBbbg==
+X-Received: by 2002:a37:f70f:: with SMTP id q15mr915241qkj.426.1568943018980;
+        Thu, 19 Sep 2019 18:30:18 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id q47sm373729qtq.95.2019.09.19.18.30.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Sep 2019 18:30:18 -0700 (PDT)
+Date:   Thu, 19 Sep 2019 18:30:15 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     James Byrne <james.byrne@origamienergy.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: net: Correct the documentation of KSZ9021
+ skew values
+Message-ID: <20190919183015.0ea6fb89@cakuba.netronome.com>
+In-Reply-To: <0102016d3b297538-fcca5199-6ad1-4625-b11c-3ad3919a0c48-000000@eu-west-1.amazonses.com>
+References: <0102016d2b84f180-bd396cb9-16cf-4472-b718-7a4d2d8d8017-000000@eu-west-1.amazonses.com>
+        <20190916.161455.1015414751228915954.davem@davemloft.net>
+        <0102016d3b297538-fcca5199-6ad1-4625-b11c-3ad3919a0c48-000000@eu-west-1.amazonses.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190919201438.2383-1-vladbu@mellanox.com> <20190919201438.2383-2-vladbu@mellanox.com>
-In-Reply-To: <20190919201438.2383-2-vladbu@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 19 Sep 2019 18:05:26 -0700
-Message-ID: <CAM_iQpWREfLQX6VSqLw_xTm8WkNBZ8_adGWE5PpTnVQVDBWPvw@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/3] net: sched: sch_htb: don't call qdisc_put()
- while holding tree lock
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 19, 2019 at 1:14 PM Vlad Buslov <vladbu@mellanox.com> wrote:
-> Notes:
->     Changes V1 -> V2:
->
->     - Extend sch API with new qdisc_put_empty() function that has same
->       implementation as regular qdisc_put() but skips parts that reset qdisc
->       and free all packet buffers from gso_skb and skb_bad_txq queues.
+On Mon, 16 Sep 2019 17:40:35 +0000, James Byrne wrote:
+> On 16/09/2019 15:14, David Miller wrote:
+> > From: James Byrne <james.byrne@origamienergy.com>
+> > Date: Fri, 13 Sep 2019 16:46:35 +0000
+> >   
+> >> The documentation of skew values for the KSZ9021 PHY was misleading
+> >> because the driver implementation followed the erroneous information
+> >> given in the original KSZ9021 datasheet before it was corrected in
+> >> revision 1.2 (Feb 2014). It is probably too late to correct the driver
+> >> now because of the many existing device trees, so instead this just
+> >> corrects the documentation to explain that what you actually get is not
+> >> what you might think when looking at the device tree.
+> >>
+> >> Signed-off-by: James Byrne <james.byrne@origamienergy.com>  
+> > 
+> > What tree should this go into?  
+> 
+> I believe this should go into the 'net' tree, but please let me know if 
+> I have submitted this patch incorrectly in some way.
 
-I don't understand why you need a new API here, as long as qdisc_reset()
-gets called before releasing sch tree lock, the ->reset() inside qdisc_put(),
-after releasing sch tree lock, should be a nop, right?
+Okay, applied, thanks.
