@@ -2,139 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5030B89A3
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 05:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E537B89F7
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 06:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437108AbfITDEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 23:04:34 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:35352 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437101AbfITDEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 23:04:33 -0400
-Received: by mail-yb1-f196.google.com with SMTP id b128so2128821ybh.2
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 20:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ByZcZl2BxpmSadnZ4dw+cndjivF+Hz2eMrrFdCO1epc=;
-        b=f9CgsnF30ZumnC3e4WDTExZeJcqOt9oPfCrGTN+9cH0YfleltkPDCYNj/OwjAcvHgF
-         y31xPJ5v7slsp9YOLh22dGiB//7RYOmMgrB6K684jy1JeYMWrEVkP1ZrluFVZSfAHvsL
-         2T8fnQKW/UH4cv4ZUP8MbJczc2okU6fCJxABljyCXvE40s5A+rrHJ3jATryYVCXUgz68
-         d1LrDP03YTqEhESnRsiWgWLO3r8IWKu5r8o7HkT4zAdQtRNG3sRDZGXfEksJX/5R7prM
-         iaeJZPerRkPzdq2wL1QVxmgVexCyLk2Sige+yUPpIPyfY2D/v5rjNm5yk+aIZ5p/AFbo
-         yg9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ByZcZl2BxpmSadnZ4dw+cndjivF+Hz2eMrrFdCO1epc=;
-        b=dtpTXLE/rm8dG6UNDvpJYtsoT7DlEk+Zl/dHS63IXVG2qcUjsPYokKEVBmD5uHqXLk
-         r5mRj/6GEy86KA+ntC2Q5he3aUTyQqB2Y5fUu2a3Q1zmyUweE9iV6bE3eT+UWv/+fNKD
-         G+pd8HQaL6DUZFR/FYN4Q0qh633KPd0teVT+SVquYFRtxED4hz+hHBIgs8lnLdIZf/8+
-         fwxXe0R6175j+ow87y3dm3iTnKHEp3m9J9PzlGdR8q+HYEx2dqokSUScYqDeo1Ok4Fw5
-         /yb+5oPnzIx85vmSbpxAriLm0Mzd11cDTkP9vaFOGrE+zDf0Bznqtt5WE36lvUtddGGA
-         xaXw==
-X-Gm-Message-State: APjAAAW2ojE78pRwOy1ZCkzN6xX0dIi7CNwXojD/UC62tPsEU2nBp2lU
-        UG60jFJ4Os3C5tQQHS9Bgka1931qo1yX8xrJew==
-X-Google-Smtp-Source: APXvYqwPyJL8+qrLIcxHAjTp+M6PQnY6xRK//69Ho703JhQUJCaYrZpxBtp/Jk85A2Cj6rc2U7OTy0h+BZ3cTzkitPc=
-X-Received: by 2002:a25:e714:: with SMTP id e20mr8147248ybh.349.1568948672999;
- Thu, 19 Sep 2019 20:04:32 -0700 (PDT)
+        id S2437164AbfITEY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 00:24:26 -0400
+Received: from mga18.intel.com ([134.134.136.126]:63541 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404405AbfITEYZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 00:24:25 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Sep 2019 21:24:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,527,1559545200"; 
+   d="scan'208";a="199622970"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.71])
+  by orsmga002.jf.intel.com with ESMTP; 19 Sep 2019 21:24:22 -0700
+Date:   Fri, 20 Sep 2019 12:21:38 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [RFC v4 3/3] vhost: introduce mdev based hardware backend
+Message-ID: <20190920042138.GA11868@___>
+References: <20190917010204.30376-1-tiwei.bie@intel.com>
+ <20190917010204.30376-4-tiwei.bie@intel.com>
+ <0b0f74ba-8958-dd7d-3e98-f7a58b1ec5f7@redhat.com>
 MIME-Version: 1.0
-References: <20190914151353.18054-1-danieltimlee@gmail.com>
- <20190914151353.18054-2-danieltimlee@gmail.com> <20190916085317.02e4d985@carbon>
- <87sgowl7xe.fsf@toke.dk>
-In-Reply-To: <87sgowl7xe.fsf@toke.dk>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Fri, 20 Sep 2019 12:04:15 +0900
-Message-ID: <CAEKGpzintX9g5aBsN=qRuV12d3fPMicx+2Y1bKbOzUbw-X_ksg@mail.gmail.com>
-Subject: Re: [v3 2/3] samples: pktgen: add helper functions for IP(v4/v6) CIDR parsing
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0b0f74ba-8958-dd7d-3e98-f7a58b1ec5f7@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the feedback!
+On Tue, Sep 17, 2019 at 03:26:30PM +0800, Jason Wang wrote:
+> On 2019/9/17 上午9:02, Tiwei Bie wrote:
+> > diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
+> > new file mode 100644
+> > index 000000000000..8c6597aff45e
+> > --- /dev/null
+> > +++ b/drivers/vhost/mdev.c
+> > @@ -0,0 +1,462 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright (C) 2018-2019 Intel Corporation.
+> > + */
+> > +
+> > +#include <linux/compat.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/miscdevice.h>
+> > +#include <linux/mdev.h>
+> > +#include <linux/module.h>
+> > +#include <linux/vfio.h>
+> > +#include <linux/vhost.h>
+> > +#include <linux/virtio_mdev.h>
+> > +
+> > +#include "vhost.h"
+> > +
+> > +struct vhost_mdev {
+> > +	struct mutex mutex;
+> > +	struct vhost_dev dev;
+> > +	struct vhost_virtqueue *vqs;
+> > +	int nvqs;
+> > +	u64 state;
+> > +	u64 features;
+> > +	u64 acked_features;
+> > +	struct vfio_group *vfio_group;
+> > +	struct vfio_device *vfio_device;
+> > +	struct mdev_device *mdev;
+> > +};
+> > +
+> > +/*
+> > + * XXX
+> > + * We assume virtio_mdev.ko exposes below symbols for now, as we
+> > + * don't have a proper way to access parent ops directly yet.
+> > + *
+> > + * virtio_mdev_readl()
+> > + * virtio_mdev_writel()
+> > + */
+> > +extern u32 virtio_mdev_readl(struct mdev_device *mdev, loff_t off);
+> > +extern void virtio_mdev_writel(struct mdev_device *mdev, loff_t off, u32 val);
+> 
+> 
+> Need to consider a better approach, I feel we should do it through some kind
+> of mdev driver instead of talk to mdev device directly.
 
-How about just capturing with "Result: OK" except for 'pgctrl'?
-(more details are in the diff below)
+Yeah, a better approach is really needed here.
+Besides, we may want a way to allow accessing the mdev
+device_ops proposed in below series outside the
+drivers/vfio/mdev/ directory.
 
-    ~/git/linux/net$ ag -Q 'Result:'
-    core/pktgen.c
-    702:            seq_printf(seq, "Result: %s\n", pkt_dev->result);
-    704:            seq_puts(seq, "Result: Idle\n");
-    1739:           seq_printf(seq, "\nResult: %s\n", t->result);
-    1741:           seq_puts(seq, "\nResult: NA\n");
+https://lkml.org/lkml/2019/9/12/151
 
-The upper command shows that 'Result: ' string is only printed on
-'pktgen_if' and 'pktgen_thread'. So I thought just changing to below diff
-will solve the problem.
+I.e. allow putting mdev drivers outside above directory.
 
-diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-index 87ae61701904..38cf9f62502f 100644
---- a/samples/pktgen/functions.sh
-+++ b/samples/pktgen/functions.sh
-@@ -60,6 +60,7 @@ function pg_set() {
- function proc_cmd() {
-     local result
-     local proc_file=$1
-+    local status=0
-     # after shift, the remaining args are contained in $@
-     shift
-     local proc_ctrl=${PROC_DIR}/$proc_file
-@@ -75,13 +76,14 @@ function proc_cmd() {
-        echo "cmd: $@ > $proc_ctrl"
-     fi
-     # Quoting of "$@" is important for space expansion
--    echo "$@" > "$proc_ctrl"
--    local status=$?
-+    echo "$@" > "$proc_ctrl" || status=$?
 
--    result=$(grep "Result: OK:" $proc_ctrl)
--    # Due to pgctrl, cannot use exit code $? from grep
--    if [[ "$result" == "" ]]; then
--       grep "Result:" $proc_ctrl >&2
-+    if [[ "$proc_file" != "pgctrl" ]]; then
-+        result=$(grep "Result: OK:" $proc_ctrl) || true
-+        # Due to pgctrl, cannot use exit code $? from grep
-+        if [[ "$result" == "" ]]; then
-+        grep "Result:" $proc_ctrl >&2
-+        fi
-     fi
+> > +
+> > +	for (queue_id = 0; queue_id < m->nvqs; queue_id++) {
+> > +		vq = &m->vqs[queue_id];
+> > +
+> > +		if (!vq->desc || !vq->avail || !vq->used)
+> > +			break;
+> > +
+> > +		virtio_mdev_writel(mdev, VIRTIO_MDEV_QUEUE_NUM, vq->num);
+> > +
+> > +		if (!vhost_translate_ring_addr(vq, (u64)vq->desc,
+> > +					       vhost_get_desc_size(vq, vq->num),
+> > +					       &addr))
+> > +			return -EINVAL;
+> 
+> 
+> Interesting, any reason for doing such kinds of translation to HVA? I
+> believe the add should already an IOVA that has been map by VFIO.
 
-> We actually want to continue, and output what command that failed (and
-> also grep again after "Result:" to provide the kernel reason).
-Since, with 'true', the command won't fail and continue, and on error with
-'pktgen_if' and 'pktgen_thread', It'll grep again after "Result:" to provide
-the kernel reason. [1][2]
-
-> I'd argue that fixing this is the right thing to do... Maybe add set -o
-> nounset as well while we're at it? :)
-Adding nounset option could break working with $IP6. Most of the scripts
-tries to check if $IP6 variable exists whether it is defined or not.
-
-> Even if you somehow "fix" function proc_cmd, then we in general want to
-> catch different error situations by looking at status $?, and output
-> meaning full errors via calling err() function.  IHMO as minimum with
-> errexit you need a 'trap' function that can help/inform the user of
-> what went wrong.
-
-I agree. trap ERR will help with more sophisticated handling of errors, but
-I'm not sure which to elaborate more (about what went wrong) compared
-to current error format? (which is grep again after "Result:" to provide the
-kernel reason.)
-
-I really appreciate your time and effort for the review.
+Currently, in the software based vhost-kernel and vhost-user
+backends, QEMU will pass ring addresses as HVA in SET_VRING_ADDR
+ioctl when iotlb isn't enabled. If it's OK to let QEMU pass GPA
+in vhost-mdev in this case, then this translation won't be needed.
 
 Thanks,
-Daniel
-
-[1]: pktgen_if_show:
-https://elixir.bootlin.com/linux/latest/source/net/core/pktgen.c#L702
-[2]: pktgen_thread_show:
-https://elixir.bootlin.com/linux/latest/source/net/core/pktgen.c#L1739
+Tiwei
