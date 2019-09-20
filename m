@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E77A5B961A
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:00:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75654B961C
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391508AbfITRAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 13:00:41 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55930 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391425AbfITRAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 13:00:41 -0400
-Received: by mail-wm1-f68.google.com with SMTP id a6so3241158wma.5;
-        Fri, 20 Sep 2019 10:00:39 -0700 (PDT)
+        id S2391621AbfITRAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 13:00:43 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:41302 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391506AbfITRAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 13:00:42 -0400
+Received: by mail-wr1-f68.google.com with SMTP id h7so7452142wrw.8;
+        Fri, 20 Sep 2019 10:00:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hfCmgCUb2nNU06GAY9nG/LhP9CbzKqRKM0kPY/lRAeE=;
-        b=qN059aa3GvcPJPqRSUY7RQhs0dXcPMf9HAHpz1q9l/Oc6pmpXDVPlwnmGEs1HWkONm
-         cYgRWzromvRRzowOILDKnAiBqgqY8oB1EnHGTD5MWDJx/d39ov8h5zCsayGg6NVK2zzC
-         gtHtK9sULu0W6N3+L6kSLvLkq2UImSSHGxW1wivj2gSHH6/pdLCVRFXXx4YThtnk3XA9
-         QvOUeQq1DynSPe3yjXU/OjIzOocpMv+Ef00yCjOZ1HSDdNQWZiml54IpwoMthQ521TY/
-         Luw4/y4scNzJTjYtyiSHZbNv6TF+IPlWFFjZpp8a/IBuVzSL2FxQz4UwOrO86qFl1Plz
-         f/3w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
+        b=LyQN9rMXftusXw4XU5bgx8xZjtrXZGdGwiriDtRRBb+NbwDw9oJwjFS4a+jBI8foWq
+         /5BjZL/eLtkw+IOSCHwk0r/VXxw8F/6gf1+ddTo/DhTkgjymFigCh4iLrWNVrbGIRmjm
+         NHOTSqDo8ihWDyHP53CrTAVevpjP35Hr1Hr6dfR87xAUdZ17X6pljXdnevo7zUXo5J1d
+         vKZcA1jbS/ZS1Q4SDX/HVpjuhTJPDq1tzXEqIb7oJ3pMdDoFVuNictfO4DxJLQpKmjYX
+         sJwG70oE6qhEX5ggTvi9/OQ7PHscODPrRgHGatCnhlv7/uzbZ05pVomGVGXwxJdQgyPg
+         mngA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hfCmgCUb2nNU06GAY9nG/LhP9CbzKqRKM0kPY/lRAeE=;
-        b=gP8gyD4t1J1sgKH0FOJphUePKmq1ezs3dehrY55FrvpSCj+YyZRGJBuuNkuVQwwQ4O
-         zxkuhmSECwx3aBV+Q7Ph/2V6UHkmwkTvX/meL3rGOfKDSa7ll1iMmilCQ5bFYBqCkoqk
-         IUJ7Ge4qE280ojJCnRDNk9Wam505HLYiFa5dAar8RxLrdyXZsydJI3PIgnTVBD3BTT2x
-         x/iR06NQlqtkC/JQOjUZmOPkg2H78dwCApVz9by849zzgIvi8v2leAiL8aR5BjL85Hqs
-         8xMTU5bm6og554nDIINkvi6TcvIVTNX1ywHq9XwGmfSD5L4vaVQSB4OLWMnXsiF7rqyl
-         c0wA==
-X-Gm-Message-State: APjAAAV+cjZiM4E7XLJvRMUPm5jV3mo3YpVcL3fyph00D3+O9Rb+b3rA
-        EEPdyFPgy2jpHoNFSjNK0zMNbVXv
-X-Google-Smtp-Source: APXvYqwKQRv5O1b7rOKlY1vgQouISuvaOd1LvtJwxvvxY8DJhDgab9JzfkzCFtOA1px2eOy9K5Meww==
-X-Received: by 2002:a1c:a8cb:: with SMTP id r194mr4202655wme.156.1568998838779;
-        Fri, 20 Sep 2019 10:00:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PYRjHANJ0MWxLPIUwtgxGbxSiQPDnOdCGXrlF6OG6sU=;
+        b=Qzdgkh0XyypTLDG51uJwSjAdrfFhm/89lImMENCq4rxEGowtNefMXhMYoq0/vbTaA3
+         aurLSPq2FmMfkvFL+1dwd0Kd0ooKIRVfPh3gUI+pfuqRzRxDe8/WJj1t6W3Fvhdjx19M
+         n1iX8tSDnK7uefQiqruAioRKbg2VtaXd1xhpJZEv8ESSqoCdYouoD6yHo3PVsaqUXt5l
+         nQbxzcbgVqMhKauEvl8gsOsrTSKtQcri4h8bffKlbFlFq3OuGlS/BuCH0odtaahkbUIL
+         xh38raj8XC/jr+Hf+bjezNwM3epYWQMVtzWKzdf7Ug8WHz5fk+lQAqmnmPJEgVT4XT8b
+         Sdkg==
+X-Gm-Message-State: APjAAAVnnrOvzNjLY01qdI80kT/CZI58gsOgBbXrZmk8gGe77tNSOZ/0
+        U7AykmQQTnbwA8EgJis+Cww=
+X-Google-Smtp-Source: APXvYqwG+IDZfUBwpXjVeS1KW3NuGTdzjIGF/+u7zxEYpfiREVdBPQ/7EEdx3/94+Hk5Gey3cXBvaQ==
+X-Received: by 2002:a5d:62c8:: with SMTP id o8mr12317178wrv.350.1568998840543;
+        Fri, 20 Sep 2019 10:00:40 -0700 (PDT)
 Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
-        by smtp.gmail.com with ESMTPSA id r12sm2216659wrq.88.2019.09.20.10.00.37
+        by smtp.gmail.com with ESMTPSA id y13sm3513601wrg.8.2019.09.20.10.00.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 10:00:37 -0700 (PDT)
+        Fri, 20 Sep 2019 10:00:39 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -53,10 +53,12 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Jon Hunter <jonathanh@nvidia.com>,
         Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
         linux-tegra@vger.kernel.org
-Subject: [PATCH v3 0/2] net: stmmac: Enhanced addressing mode for DWMAC 4.10
-Date:   Fri, 20 Sep 2019 19:00:34 +0200
-Message-Id: <20190920170036.22610-1-thierry.reding@gmail.com>
+Subject: [PATCH v3 1/2] net: stmmac: Only enable enhanced addressing mode when needed
+Date:   Fri, 20 Sep 2019 19:00:35 +0200
+Message-Id: <20190920170036.22610-2-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20190920170036.22610-1-thierry.reding@gmail.com>
+References: <20190920170036.22610-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -66,25 +68,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-The DWMAC 4.10 supports the same enhanced addressing mode as later
-generations. Parse this capability from the hardware feature registers
-and set the EAME (Enhanced Addressing Mode Enable) bit when necessary.
+Enhanced addressing mode is only required when more than 32 bits need to
+be addressed. Add a DMA configuration parameter to enable this mode only
+when needed.
 
-Thierry
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 5 ++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 6 ++++++
+ include/linux/stmmac.h                             | 1 +
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
-Thierry Reding (2):
-  net: stmmac: Only enable enhanced addressing mode when needed
-  net: stmmac: Support enhanced addressing mode for DWMAC 4.10
-
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
- .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  4 ++--
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 22 +++++++++++++++++++
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  3 +++
- .../ethernet/stmicro/stmmac/dwxgmac2_dma.c    |  5 ++++-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  6 +++++
- include/linux/stmmac.h                        |  1 +
- 7 files changed, 39 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index 64956465c030..3e00fd8befcf 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -27,7 +27,10 @@ static void dwxgmac2_dma_init(void __iomem *ioaddr,
+ 	if (dma_cfg->aal)
+ 		value |= XGMAC_AAL;
+ 
+-	writel(value | XGMAC_EAME, ioaddr + XGMAC_DMA_SYSBUS_MODE);
++	if (dma_cfg->eame)
++		value |= XGMAC_EAME;
++
++	writel(value, ioaddr + XGMAC_DMA_SYSBUS_MODE);
+ }
+ 
+ static void dwxgmac2_dma_init_chan(void __iomem *ioaddr,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 06ccd216ae90..ecd461207dbc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4497,6 +4497,12 @@ int stmmac_dvr_probe(struct device *device,
+ 		if (!ret) {
+ 			dev_info(priv->device, "Using %d bits DMA width\n",
+ 				 priv->dma_cap.addr64);
++
++			/*
++			 * If more than 32 bits can be addressed, make sure to
++			 * enable enhanced addressing mode.
++			 */
++			priv->plat->dma_cfg->eame = true;
+ 		} else {
+ 			ret = dma_set_mask_and_coherent(device, DMA_BIT_MASK(32));
+ 			if (ret) {
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 7ad7ae35cf88..d300ac907c76 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -92,6 +92,7 @@ struct stmmac_dma_cfg {
+ 	int fixed_burst;
+ 	int mixed_burst;
+ 	bool aal;
++	bool eame;
+ };
+ 
+ #define AXI_BLEN	7
 -- 
 2.23.0
 
