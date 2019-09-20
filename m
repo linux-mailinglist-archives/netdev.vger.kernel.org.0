@@ -2,110 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD1EB9AB4
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 01:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E70B9ACE
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 01:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404923AbfITXaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 19:30:25 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:38832 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404787AbfITXaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 19:30:25 -0400
-Received: by mail-pf1-f201.google.com with SMTP id o73so5786707pfg.5
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 16:30:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=LJNLWG7qxYqlS4vxPRzBWLNbdp5Nxg08SBYosGNjYvM=;
-        b=I9j8JiW/Y939Qs7zTunJb7AGiK32Ul7LmZ0u0+HTC7x8O4OOHqanSRqoe2LtxWr8pm
-         FF+zwUd3VDy7XLS/F6ZVOhmDxnC9XwoehOTphIls8m351YHSEJuASbaO4sz/zjkCF6hR
-         ZHWcKkidhcICyS2j+dsJlQ/UWxaPjzIwnEf7diBYMgvzuahkYW8oljl2F9eNy8RLCPW3
-         8CR7HPXv5/xL4fIQ2j+rycayMRGmY0/UsQqBulT5usIEF2hF7ezGbTAQSIjDFJ30y/4E
-         ox420ynJgDHTxeM4Zv7ICWG1mqQWwTPnSNjB2YXnFwlpstahr+gTtJQhiJEf4cwR/x5e
-         zAhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=LJNLWG7qxYqlS4vxPRzBWLNbdp5Nxg08SBYosGNjYvM=;
-        b=Jqzbgyx2p3pWYSnEsHHhFiQCTtFbbCDgAjMpP42kv5uBya2yqtj+cg5Dvp2QA8zSOO
-         Gtx2hK0LgqMSxVVYxmlA2b70yeJj+yeyekCa12w6+/DBebexQ2Z8EQf0ZHrQnoN/0T/Y
-         7y1Ea/+2DX+1pq26DEF9EJ+OcSjw/kGD0QuxDxrXhThhiIXvsLTkqDGKEW5DAGQ5b6ls
-         VfV7ajijTWlzg30ML7oB7Mmv/v65YLTEpgxqpsGF5zKNpuzsiISxa8lrK/wwy+cZthLm
-         NEYObYRxEGQRXneaL0uWGFPoVNE/77REY2j/PLjPdk5YxcT8/+BUJAdCPIGbakKzal6V
-         xzIw==
-X-Gm-Message-State: APjAAAUOUH63rEE6Byckv9U1Iy1+h+cZ30FY8ueA985Lc+aFjgIAYV4z
-        rAOSSSQ003CzAsDadjpCTUlZXJ0v/4cW2/65ogqEG8cKzLgg5R6BBBjBQvf7BqWf3y0ahrcA5fN
-        uDDpRUHbKPpfccna2w6K1XvFoc5BLofVvzn+urf5eFRDx+nrSDupfPA==
-X-Google-Smtp-Source: APXvYqxhXCDSVeeIEupzk0OAb4uhhKv2RGkIC/qWrJabw+QjDvsPOWSJb0hRJHF3gvZ0TPbmh13Fl9s=
-X-Received: by 2002:a65:6709:: with SMTP id u9mr18415155pgf.59.1569022222352;
- Fri, 20 Sep 2019 16:30:22 -0700 (PDT)
-Date:   Fri, 20 Sep 2019 16:30:19 -0700
-Message-Id: <20190920233019.187498-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.351.gc4317032e6-goog
-Subject: [PATCH bpf] selftests/bpf: test_progs: fix client/server race in tcp_rtt
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2437334AbfITXkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 19:40:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55974 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437324AbfITXkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 19:40:08 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBSVN-0003sS-Uj; Sat, 21 Sep 2019 01:40:01 +0200
+Received: from [178.197.248.15] (helo=pc-63.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBSVN-000X9e-KG; Sat, 21 Sep 2019 01:40:01 +0200
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        Paul Blakey <paulb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Pravin Shelar <pshelar@ovn.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <20190919.132147.31804711876075453.davem@davemloft.net>
+ <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
+ <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net>
+ <20190920155605.7c81c2af@cakuba.netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a75fdbad-d1e3-d11e-ee13-de023aa38349@iogearbox.net>
+Date:   Sat, 21 Sep 2019 01:40:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20190920155605.7c81c2af@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25578/Fri Sep 20 10:21:28 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the same problem I found earlier in test_sockopt_inherit:
-there is a race between server thread doing accept() and client
-thread doing connect(). Let's explicitly synchronize them via
-pthread conditional variable.
+On 9/21/19 12:56 AM, Jakub Kicinski wrote:
+> On Sat, 21 Sep 2019 00:15:16 +0200, Daniel Borkmann wrote:
+>> On 9/20/19 6:16 PM, Jakub Kicinski wrote:
+>>> On Thu, 19 Sep 2019 15:13:55 +0000, Vlad Buslov wrote:
+>>>> On Thu 19 Sep 2019 at 14:21, David Miller <davem@davemloft.net> wrote:
+>>>>> As Linus pointed out, the Kconfig logic for CONFIG_NET_TC_SKB_EXT
+>>>>> is really not acceptable.
+>>>>>
+>>>>> It should not be enabled by default at all.
+>>>>>
+>>>>> Instead the actual users should turn it on or depend upon it, which in
+>>>>> this case seems to be OVS.
+>>>>>
+>>>>> Please fix this, thank you.
+>>>>
+>>>> Hi David,
+>>>>
+>>>> We are working on it, but Paul is OoO today. Is it okay if we send the
+>>>> fix early next week?
+>>>
+>>> Doesn't really seem like we have too many ways forward here, right?
+>>>
+>>> How about this?
+>>>    
+>>> ------>8-----------------------------------
+>>>
+>>> net: hide NET_TC_SKB_EXT as a config option
+>>>
+>>> Linus points out the NET_TC_SKB_EXT config option looks suspicious.
+>>> Indeed, it should really be selected to ensure correct OvS operation
+>>> if TC offload is used. Hopefully those who care about TC-only and
+>>> OvS-only performance disable the other one at compilation time.
+>>>
+>>> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>>> ---
+>>>    net/openvswitch/Kconfig |  1 +
+>>>    net/sched/Kconfig       | 13 +++----------
+>>>    2 files changed, 4 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/net/openvswitch/Kconfig b/net/openvswitch/Kconfig
+>>> index 22d7d5604b4c..bd407ea7c263 100644
+>>> --- a/net/openvswitch/Kconfig
+>>> +++ b/net/openvswitch/Kconfig
+>>> @@ -15,6 +15,7 @@ config OPENVSWITCH
+>>>    	select NET_MPLS_GSO
+>>>    	select DST_CACHE
+>>>    	select NET_NSH
+>>> +	select NET_TC_SKB_EXT if NET_CLS_ACT
+>>>    	---help---
+>>>    	  Open vSwitch is a multilayer Ethernet switch targeted at virtualized
+>>>    	  environments.  In addition to supporting a variety of features
+>>> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+>>> index b3faafeafab9..f1062ef55098 100644
+>>> --- a/net/sched/Kconfig
+>>> +++ b/net/sched/Kconfig
+>>> @@ -719,6 +719,7 @@ config NET_EMATCH_IPT
+>>>    config NET_CLS_ACT
+>>>    	bool "Actions"
+>>>    	select NET_CLS
+>>> +	select NET_TC_SKB_EXT if OPENVSWITCH
+>>
+>> But how would that make much of a difference :( Distros are still going to
+>> enable all of this blindlessly. Given discussion in [0], could we just get
+>> rid of this tasteless hack altogether which is for such a narrow use case
+>> anyway?
+> 
+> Agreed.  I take it you're opposed to the use of skb extensions here
+> in general?  Distros would have enabled NET_TC_SKB_EXT even when it
+> was a config option.
 
-Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+Yeah, as it stands, motivation for this extension is to tie tc [HW] offload
+and OVS to work together in case of recirculation ... from commit:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-index fdc0b3614a9e..e64058906bcd 100644
---- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-@@ -203,6 +203,9 @@ static int start_server(void)
- 	return fd;
- }
- 
-+static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
-+static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
-+
- static void *server_thread(void *arg)
- {
- 	struct sockaddr_storage addr;
-@@ -215,6 +218,10 @@ static void *server_thread(void *arg)
- 		return NULL;
- 	}
- 
-+	pthread_mutex_lock(&server_started_mtx);
-+	pthread_cond_signal(&server_started);
-+	pthread_mutex_unlock(&server_started_mtx);
-+
- 	client_fd = accept(fd, (struct sockaddr *)&addr, &len);
- 	if (CHECK_FAIL(client_fd < 0)) {
- 		perror("Failed to accept client");
-@@ -248,7 +255,14 @@ void test_tcp_rtt(void)
- 	if (CHECK_FAIL(server_fd < 0))
- 		goto close_cgroup_fd;
- 
--	pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
-+	if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
-+				      (void *)&server_fd)))
-+		goto close_cgroup_fd;
-+
-+	pthread_mutex_lock(&server_started_mtx);
-+	pthread_cond_wait(&server_started, &server_started_mtx);
-+	pthread_mutex_unlock(&server_started_mtx);
-+
- 	CHECK_FAIL(run_test(cgroup_fd, server_fd));
- 	close(server_fd);
- close_cgroup_fd:
--- 
-2.23.0.351.gc4317032e6-goog
+   Received packets will first travel though tc, and if they aren't stolen
+   by it, like in the above rule, they will continue to OvS datapath.
 
+   Since we already did some actions (action ct in this case) which might
+   modify the packets, and updated action stats, we would like to continue
+   the proccessing with the correct recirc_id in OvS (here recirc_id(2))
+   where we left off.
+
+I would perhaps see more of a point in an skb extension if there is rather
+generic use and also out of the SW datapath (and I really doubt anyone is
+seriously using tc + OVS combo for non-HW workloads). Right now this feels
+like duck taping.
+
+Adding new skb extensions should really have a strong justification behind
+it (close but slightly less strict to how we treat adding new members to
+skb itself).
