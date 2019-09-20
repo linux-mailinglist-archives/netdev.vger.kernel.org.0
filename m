@@ -2,81 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 587BEB8E08
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 11:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A907B8E3C
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 12:05:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408585AbfITJtc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Sep 2019 05:49:32 -0400
-Received: from correo.us.es ([193.147.175.20]:45938 "EHLO mail.us.es"
+        id S2405970AbfITKFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 06:05:40 -0400
+Received: from mx.cjr.nz ([51.158.111.142]:56130 "EHLO mx.cjr.nz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405771AbfITJtc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 05:49:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A1A38C32A9
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 11:49:28 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 90764FF2EB
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 11:49:28 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7E300B8019; Fri, 20 Sep 2019 11:49:28 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 64A86B7FF2;
-        Fri, 20 Sep 2019 11:49:26 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 20 Sep 2019 11:49:26 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [5.182.56.138])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 0E27A41E4800;
-        Fri, 20 Sep 2019 11:49:25 +0200 (CEST)
-Date:   Fri, 20 Sep 2019 11:49:25 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jeremy Sowden <jeremy@azazel.net>
-Cc:     Adam Borowski <kilobyte@angband.pl>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] netfilter: bridge: drop a broken include
-Message-ID: <20190920094925.aw7actk4tdnk3rke@salvia>
-References: <20190916000517.45028-1-kilobyte@angband.pl>
- <20190916130811.GA29776@azazel.net>
- <20190917050946.kmzajvqh3kjr4ch5@salvia>
- <20190917145907.GA2241@azazel.net>
+        id S2393354AbfITKFj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 06:05:39 -0400
+Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
+        (Authenticated sender: pc)
+        by mx.cjr.nz (Postfix) with ESMTPSA id 46FA580C01;
+        Fri, 20 Sep 2019 10:05:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
+        t=1568973936;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ins2TSKeYgQuuE+zqzLA/MBqsHxtlvLHMg+kDG21zGY=;
+        b=HQiIlFXvSGJ9bvFAHnEJa5A93NGyhuDVMhBAG1FLanJ9+yKTI0LazbNZFW6ApR3HAAfX9t
+        e3RP4Y8t75bopox2k/lc4kpQyWFS0GvlQbC2vd6c2gq3zzZhLYqgkDQOFGNZCUCXFX70OK
+        gQLQJBI9QH2/gKG8kZOIbKogYT5cie15o3hxgq8RrhTfY1fHH0zIUqCPR9XE01BDZSEq3l
+        hmu5MLN5JiIz2zAD0IcDWU4fbdIkLBV9yF7QOctU+q9L8ihJnYaSxH8IcpR5a8ZCDDg7vD
+        gAbl636P8ZgOIP1i4EPVW7vlR3VTi6iI0eG6qHlTKRgRA642YbvvWMs2s/Obiw==
+From:   Paulo Alcantara <pc@cjr.nz>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Steve French <smfrench@gmail.com>
+Cc:     Aurelien Aptel <aaptel@suse.com>
+Subject: Re: [PATCH v2 1/3] cifs: Add support for root file systems
+In-Reply-To: <20190919152116.27076-1-pc@cjr.nz>
+References: <20190716220452.3382-1-paulo@paulo.ac>
+ <20190919152116.27076-1-pc@cjr.nz>
+Date:   Fri, 20 Sep 2019 07:04:06 -0300
+Message-ID: <8736gr2six.fsf@cjr.nz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20190917145907.GA2241@azazel.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz;
+        s=dkim; t=1568973936; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ins2TSKeYgQuuE+zqzLA/MBqsHxtlvLHMg+kDG21zGY=;
+        b=d5hvI/vrK5+fjiRA3B6UvBReH0gSktp65GgjBG11y05GGTgctQp+sey17Utou6dJmkFG/d
+        LPA52E458xYgbVpnALCwU/kBuj5ZVFHt0KtWqgfjUc0ajgDMqZtczVztP+bB1p+bsKxuOZ
+        fSl9MIqzs8Z4ADD6FCY9KaRevFT6lCEm99fsok46dHzjfhr35R5ZRx42C19Lzw+Z5v/vRz
+        H8lk+e0F64VcgnDFGwBqse1xnwK1d88DIuLzLQgLeWKD0fvdfEm4Fq9DDPIlsD5Ala3UoE
+        6EPfEuznXiCSV2hJNR/Eu831wqsMM5Xl5zLjmy79w7ld5bwwdyvbT2G+6NIdtw==
+ARC-Seal: i=1; s=dkim; d=cjr.nz; t=1568973936; a=rsa-sha256; cv=none;
+        b=eM0lxNtzOEjwskAm5TldDSBc1eqyNpVHMoqait7Y3FeAXIJ3wjcgaDCIFQCgPQEOnXkeAK
+        ZjynmpkDE6c8bGTX6UxxBDacrr7t0zLVPx7atc6e7mGojetcAl+FdKN7QPzc6tpasdFHBC
+        FU8S2DJOiQrnxmYFic/GOqMc8Itgnx5JpBM2snkGsiFCss3bVzJap8ZhT5EtFojIr1dv6j
+        Jv5V6LWBAznuELZuAfQMbsn28WYXmEloXX9KAADuMfBMi0fdhqmaKQz8yMo5DBwy9Fhm/I
+        zEMPPN3wioqU2PtB9Hpr/AmRXGSOb21Z6WLxpU6cflr4gn9Cyhfo8X/hh3y9Jg==
+ARC-Authentication-Results: i=1;
+        mx.cjr.nz;
+        auth=pass smtp.auth=pc smtp.mailfrom=pc@cjr.nz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 17, 2019 at 03:59:08PM +0100, Jeremy Sowden wrote:
-[...]
-> The commit in net-next that fixes it is:
-> 
->   47e640af2e49 ("netfilter: add missing IS_ENABLED(CONFIG_NF_TABLES) check to header-file.")
-> 
-> I applied it to the mainline and compile-tested it to verify that it
-> does indeed fix the build failure.
-> 
-> From my reading of stable-kernel-rules.rst and netdev-FAQ.rst, it
-> appears that the fix should come from the mainline, so I will wait for
-> it to get there.
+"Paulo Alcantara (SUSE)" <pc@cjr.nz> writes:
 
-Thanks, just send this to stable@vger.kernel.org and Cc
-netfilter-devel@vger.kernel.org and me when requesting this.
+> Introduce a new CONFIG_CIFS_ROOT option to handle root file systems
+> over a SMB share.
+>
+> In order to mount the root file system during the init process, make
+> cifs.ko perform non-blocking socket operations while mounting and
+> accessing it.
+>
+> Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+> Signed-off-by: Aurelien Aptel <aaptel@suse.com>
+> ---
+>  Documentation/filesystems/cifs/cifsroot.txt | 97 +++++++++++++++++++++
+>  fs/cifs/Kconfig                             |  8 ++
+>  fs/cifs/Makefile                            |  2 +
+>  fs/cifs/cifsglob.h                          |  2 +
+>  fs/cifs/cifsroot.c                          | 94 ++++++++++++++++++++
+>  fs/cifs/connect.c                           | 17 +++-
+>  include/linux/root_dev.h                    |  1 +
+>  7 files changed, 218 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/filesystems/cifs/cifsroot.txt
+>  create mode 100644 fs/cifs/cifsroot.c
+
+Hi David,
+
+This patch has already been merged into Linus tree. The other two (2/3
+and 3/3) still need to be reviewed.
+
+I'm not sure how this works when series touch multiple subsystems --
+that is, these changes should go through your tree or Steve's?
+
+Please let me you know if you need anything else.
+
+Thanks!
+Paulo
