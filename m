@@ -2,90 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 949C3B88EA
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 03:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A5AB88EB
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 03:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391358AbfITBaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 21:30:20 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45328 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391404AbfITBaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 21:30:20 -0400
-Received: by mail-qk1-f193.google.com with SMTP id z67so5540673qkb.12
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 18:30:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=pbq/7/QcSAKDE85N8IewaNpJ/wXC8N5jY5fORhY96/g=;
-        b=mi/OS9w8nDkLRGap8K95Y4Q3UVAvHFk6qpx2MIAtogN1OjTOuAy74W2qLOQINsdOcX
-         stEDgraN47U691FLBd3PpdfgMHiQ8qHp75NQOC+73RgEdLL/eZv5AEGkwcixZFp9pBK6
-         ibJeHPFPnDijzulKq67heLjYAt+mIXS6FzrXPnGqZ3xz3zdKOLN9ZgFtKMQDsMFAe0Ni
-         lO9zV/mNBRP1johCxPYco67cv+wcoX7EMak5XvF+Er9sllm1aU2HSTHBeUD23wBREK87
-         Vyt+qLM9H4r0W6GbfCQGKs0Ks7zDP3l5mOqqU/q/zvptcL4rNM/xYssAiH+8udCaisu9
-         2tbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pbq/7/QcSAKDE85N8IewaNpJ/wXC8N5jY5fORhY96/g=;
-        b=O191pfPrE3+TnWZIXGANOkGBKyrZbOj9YdjAdwb/mfBwKGsqWcBPMZAbkHNatRmT3R
-         pq1C5cpk/AfDPgg1qG5U78i2PU3+4JzglkYH3TieDDe9O1+24gz4c/AXKXnAA+9Lp7I4
-         v9EHLjr+2ysNNIp2wQN0eWRCXrkRN11GAqCvMLwdVF2o5ioYuS8PXHW/lnkgWYHBVfFz
-         YIqTjwseV23RHi5OvxamJZBlrJv4jxU+lsPY3NTSpQe+6nRDGN9YM6bI5QnPQYXHEURG
-         3dOh0piVSGL3mwyv4D8EEwqzlJhsYu95CASZYOsqc6/WbYqJg+W0Ex30RKGM/j8zwJEI
-         HL5w==
-X-Gm-Message-State: APjAAAUHkJTQ/tFyOeAp+LQJitVkar5X4Q1OqH8xPb9pWF3eyHTGG0gY
-        hmGJ/mYJz+vINxFlPHqeTl0j4Q==
-X-Google-Smtp-Source: APXvYqzEV7pLpS4ZJFp6x2/XsyH01rtjFPpSbmDempk1NgOXLbB2Awtzion3d/NfONnM8+N7WKBbbg==
-X-Received: by 2002:a37:f70f:: with SMTP id q15mr915241qkj.426.1568943018980;
-        Thu, 19 Sep 2019 18:30:18 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q47sm373729qtq.95.2019.09.19.18.30.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Sep 2019 18:30:18 -0700 (PDT)
-Date:   Thu, 19 Sep 2019 18:30:15 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     James Byrne <james.byrne@origamienergy.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: Correct the documentation of KSZ9021
- skew values
-Message-ID: <20190919183015.0ea6fb89@cakuba.netronome.com>
-In-Reply-To: <0102016d3b297538-fcca5199-6ad1-4625-b11c-3ad3919a0c48-000000@eu-west-1.amazonses.com>
-References: <0102016d2b84f180-bd396cb9-16cf-4472-b718-7a4d2d8d8017-000000@eu-west-1.amazonses.com>
-        <20190916.161455.1015414751228915954.davem@davemloft.net>
-        <0102016d3b297538-fcca5199-6ad1-4625-b11c-3ad3919a0c48-000000@eu-west-1.amazonses.com>
-Organization: Netronome Systems, Ltd.
+        id S2394593AbfITBbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 21:31:20 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36790 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391404AbfITBbU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 21:31:20 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CA48B308FB9D;
+        Fri, 20 Sep 2019 01:31:19 +0000 (UTC)
+Received: from [10.72.12.88] (ovpn-12-88.pek2.redhat.com [10.72.12.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5392F100197A;
+        Fri, 20 Sep 2019 01:31:00 +0000 (UTC)
+Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+References: <20190917010204.30376-1-tiwei.bie@intel.com>
+ <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
+ <20190917105801.GA24855@___>
+ <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
+ <20190918102923-mutt-send-email-mst@kernel.org>
+ <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
+ <20190919154552.GA27657@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <43aaf7dc-f08b-8898-3c55-908ff4d68866@redhat.com>
+Date:   Fri, 20 Sep 2019 09:30:58 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190919154552.GA27657@___>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Fri, 20 Sep 2019 01:31:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Sep 2019 17:40:35 +0000, James Byrne wrote:
-> On 16/09/2019 15:14, David Miller wrote:
-> > From: James Byrne <james.byrne@origamienergy.com>
-> > Date: Fri, 13 Sep 2019 16:46:35 +0000
-> >   
-> >> The documentation of skew values for the KSZ9021 PHY was misleading
-> >> because the driver implementation followed the erroneous information
-> >> given in the original KSZ9021 datasheet before it was corrected in
-> >> revision 1.2 (Feb 2014). It is probably too late to correct the driver
-> >> now because of the many existing device trees, so instead this just
-> >> corrects the documentation to explain that what you actually get is not
-> >> what you might think when looking at the device tree.
-> >>
-> >> Signed-off-by: James Byrne <james.byrne@origamienergy.com>  
-> > 
-> > What tree should this go into?  
-> 
-> I believe this should go into the 'net' tree, but please let me know if 
-> I have submitted this patch incorrectly in some way.
 
-Okay, applied, thanks.
+On 2019/9/19 下午11:45, Tiwei Bie wrote:
+> On Thu, Sep 19, 2019 at 09:08:11PM +0800, Jason Wang wrote:
+>> On 2019/9/18 下午10:32, Michael S. Tsirkin wrote:
+>>>>>> So I have some questions:
+>>>>>>
+>>>>>> 1) Compared to method 2, what's the advantage of creating a new vhost char
+>>>>>> device? I guess it's for keep the API compatibility?
+>>>>> One benefit is that we can avoid doing vhost ioctls on
+>>>>> VFIO device fd.
+>>>> Yes, but any benefit from doing this?
+>>> It does seem a bit more modular, but it's certainly not a big deal.
+>> Ok, if we go this way, it could be as simple as provide some callback to
+>> vhost, then vhost can just forward the ioctl through parent_ops.
+>>
+>>>>>> 2) For method 2, is there any easy way for user/admin to distinguish e.g
+>>>>>> ordinary vfio-mdev for vhost from ordinary vfio-mdev?
+>>>>> I think device-api could be a choice.
+>>>> Ok.
+>>>>
+>>>>
+>>>>>> I saw you introduce
+>>>>>> ops matching helper but it's not friendly to management.
+>>>>> The ops matching helper is just to check whether a given
+>>>>> vfio-device is based on a mdev device.
+>>>>>
+>>>>>> 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
+>>>>>> assumes the parameter comes from userspace, it prevents support kernel
+>>>>>> virtio drivers.
+>>>>>>
+>>>>>> 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
+>>>>>> we can use device specific ops instead of VFIO ones, then we can have a
+>>>>>> common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
+>>>>> As the above draft shows, this requires introducing a new
+>>>>> VFIO device driver. I think Alex's opinion matters here.
+>> Just to clarify, a new type of mdev driver but provides dummy
+>> vfio_device_ops for VFIO to make container DMA ioctl work.
+> I see. Thanks! IIUC, you mean we can provide a very tiny
+> VFIO device driver in drivers/vhost/mdev.c, e.g.:
+>
+> static int vfio_vhost_mdev_open(void *device_data)
+> {
+> 	if (!try_module_get(THIS_MODULE))
+> 		return -ENODEV;
+> 	return 0;
+> }
+>
+> static void vfio_vhost_mdev_release(void *device_data)
+> {
+> 	module_put(THIS_MODULE);
+> }
+>
+> static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+> 	.name		= "vfio-vhost-mdev",
+> 	.open		= vfio_vhost_mdev_open,
+> 	.release	= vfio_vhost_mdev_release,
+> };
+>
+> static int vhost_mdev_probe(struct device *dev)
+> {
+> 	struct mdev_device *mdev = to_mdev_device(dev);
+>
+> 	... Check the mdev device_id proposed in ...
+> 	... https://lkml.org/lkml/2019/9/12/151 ...
+
+
+To clarify, this should be done through the id_table fields in 
+vhost_mdev_driver, and it should claim it supports virtio-mdev device only:
+
+
+static struct mdev_class_id id_table[] = {
+     { MDEV_ID_VIRTIO },
+     { 0 },
+};
+
+
+static struct mdev_driver vhost_mdev_driver = {
+     ...
+     .id_table = id_table,
+}
+
+
+>
+> 	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
+
+
+And in vfio_vhost_mdev_ops, all its need is to just implement vhost-net 
+ioctl and translate them to virtio-mdev transport (e.g device_ops I 
+proposed or ioctls other whatever other method) API. And it could have a 
+dummy ops implementation for the other device_ops.
+
+
+> }
+>
+> static void vhost_mdev_remove(struct device *dev)
+> {
+> 	vfio_del_group_dev(dev);
+> }
+>
+> static struct mdev_driver vhost_mdev_driver = {
+> 	.name	= "vhost_mdev",
+> 	.probe	= vhost_mdev_probe,
+> 	.remove	= vhost_mdev_remove,
+> };
+>
+> So we can bind above mdev driver to the virtio-mdev compatible
+> mdev devices when we want to use vhost-mdev.
+>
+> After binding above driver to the mdev device, we can setup IOMMU
+> via VFIO and get VFIO device fd of this mdev device, and pass it
+> to vhost fd (/dev/vhost-mdev) with a SET_BACKEND ioctl.
+
+
+Then what vhost-mdev char device did is just forwarding ioctl back to 
+this vfio device fd which seems a overkill. It's simpler that just do 
+ioctl on the device ops directly.
+
+Thanks
+
+
+>
+> Thanks,
+> Tiwei
+>
+>> Thanks
+>>
+>>
+>>>> Yes, it is.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
