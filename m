@@ -2,194 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9F6B998B
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 00:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AA6B9991
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 00:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726124AbfITWOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 18:14:34 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39516 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726709AbfITWOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 18:14:34 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y3so7092725ljj.6
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 15:14:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=IRz22h3W/afcIJB0BovjnHm3KrpXLfImRjiuM75f0vE=;
-        b=nj6dCKWhmdUQxj5iaCpyF6gklY2n3UMYPwQRJI7eaUvn3ZOJVATTF1m/uWCZktXuBK
-         EXP1s8+6sACOn4WGwErbm+uuBKs58dfMtwRkwDfUAhjW3NPuXwFhkVXgyJTbKKi26pVX
-         wUClQWsT3XolYSWxXhMS1vqwkt/LBd7DI323UTUsm3IcdnJHgZO/RR1X8mmHm3+19EkE
-         XhcvIfV6ncLwpH3w6mf/V/yHGhu0gWQXGzf/qTlB8FGMaUkuAQzCdTAUb61ztfh2c/lB
-         hkR8KQqenaCDUHAnBgK25odGBRZ6vhXKyeLhuF+L8dWU6oS3yp3UsJ3BfBIBO01GGyW1
-         nKAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=IRz22h3W/afcIJB0BovjnHm3KrpXLfImRjiuM75f0vE=;
-        b=G8hmbj21WCXE8PhMujJ1uud4rXiwvvl3aucn6Njxq/3Y91OyCDX6r3s3YOCS8v9PTG
-         3WRPmUQQQifBOWCtGPQTjaqDNHo3sxLdwkdbj+Nh1+TOkI/vy+LThBju0fYa8E4QRLWB
-         M0kBLYnuO44xopoMEherxL8d2oxMA3/ZVUCRqq5KgltwGERq0LvpXAaKd2qbnsMGnMEK
-         XIrlOJjW3ppqaxXse1gfaW8/6YAPWlFat8CBNW8b8WVnkHhgRdXeIvp3qtaJnwaWrywc
-         /dJkhrjra9WQaV1pgu7YMdjJpzRjMieeOjrAjak8no4b1yAD7/bjb+u6pbmsTgu613OD
-         sX5Q==
-X-Gm-Message-State: APjAAAVAmfEYCagHCZuJ83qSTWBbSj8bfaC75u+sFfDaonz3s5PrNY/W
-        cAqiaBDnv0JYnYNV/zsNnIAasA==
-X-Google-Smtp-Source: APXvYqywLy+KgGcp2RAVw5wnQazdFc1mY+zJWDkhGpK52VsS2JLEAu2nWxraOw89TpoyEj69bsbXLw==
-X-Received: by 2002:a2e:3e07:: with SMTP id l7mr10480272lja.180.1569017671610;
-        Fri, 20 Sep 2019 15:14:31 -0700 (PDT)
-Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id c69sm761013ljf.32.2019.09.20.15.14.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 20 Sep 2019 15:14:30 -0700 (PDT)
-Date:   Sat, 21 Sep 2019 01:14:28 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf] libbpf: fix version identification on busybox
-Message-ID: <20190920221427.GD2760@khorivan>
-Mail-Followup-To: Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, Martin Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20190919160518.25901-1-ivan.khoronzhuk@linaro.org>
- <CAEf4BzbCjCYr5NMPctDkUggwpehnqZPVBSqZOsd9MvSq6WmnZQ@mail.gmail.com>
- <20190920082204.GC8870@khorivan>
- <CAEf4BzaVuaN3HhMu8W_i9z4n-2zfjqxBXyOEOaQHexxZq7b3qg@mail.gmail.com>
- <20190920183449.GA2760@khorivan>
- <20190920191941.GB2760@khorivan>
- <CAEf4BzZGeY-WD17mq6FTd7Rae_f26j4kBAWCmuppeu4VjZxvUg@mail.gmail.com>
+        id S2391359AbfITWPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 18:15:22 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37596 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726794AbfITWPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 18:15:22 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBRBN-0004SV-AL; Sat, 21 Sep 2019 00:15:17 +0200
+Received: from [178.197.248.15] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBRBN-000JZi-2t; Sat, 21 Sep 2019 00:15:17 +0200
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Paul Blakey <paulb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Pravin Shelar <pshelar@ovn.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <20190919.132147.31804711876075453.davem@davemloft.net>
+ <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net>
+Date:   Sat, 21 Sep 2019 00:15:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZGeY-WD17mq6FTd7Rae_f26j4kBAWCmuppeu4VjZxvUg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20190920091647.0129e65f@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25578/Fri Sep 20 10:21:28 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 20, 2019 at 02:51:14PM -0700, Andrii Nakryiko wrote:
->On Fri, Sep 20, 2019 at 12:19 PM Ivan Khoronzhuk
-><ivan.khoronzhuk@linaro.org> wrote:
+On 9/20/19 6:16 PM, Jakub Kicinski wrote:
+> On Thu, 19 Sep 2019 15:13:55 +0000, Vlad Buslov wrote:
+>> On Thu 19 Sep 2019 at 14:21, David Miller <davem@davemloft.net> wrote:
+>>> As Linus pointed out, the Kconfig logic for CONFIG_NET_TC_SKB_EXT
+>>> is really not acceptable.
+>>>
+>>> It should not be enabled by default at all.
+>>>
+>>> Instead the actual users should turn it on or depend upon it, which in
+>>> this case seems to be OVS.
+>>>
+>>> Please fix this, thank you.
 >>
->> On Fri, Sep 20, 2019 at 09:34:51PM +0300, Ivan Khoronzhuk wrote:
->> >On Fri, Sep 20, 2019 at 09:41:54AM -0700, Andrii Nakryiko wrote:
->> >>On Fri, Sep 20, 2019 at 1:22 AM Ivan Khoronzhuk
->> >><ivan.khoronzhuk@linaro.org> wrote:
->> >>>
->> >>>On Thu, Sep 19, 2019 at 01:02:40PM -0700, Andrii Nakryiko wrote:
->> >>>>On Thu, Sep 19, 2019 at 11:22 AM Ivan Khoronzhuk
->> >>>><ivan.khoronzhuk@linaro.org> wrote:
->> >>>>>
->> >>>>> It's very often for embedded to have stripped version of sort in
->> >>>>> busybox, when no -V option present. It breaks build natively on target
->> >>>>> board causing recursive loop.
->> >>>>>
->> >>>>> BusyBox v1.24.1 (2019-04-06 04:09:16 UTC) multi-call binary. \
->> >>>>> Usage: sort [-nrugMcszbdfimSTokt] [-o FILE] [-k \
->> >>>>> start[.offset][opts][,end[.offset][opts]] [-t CHAR] [FILE]...
->> >>>>>
->> >>>>> Lets modify command a little to avoid -V option.
->> >>>>>
->> >>>>> Fixes: dadb81d0afe732 ("libbpf: make libbpf.map source of truth for libbpf version")
->> >>>>>
->> >>>>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> >>>>> ---
->> >>>>>
->> >>>>> Based on bpf/master
->> >>>>>
->> >>>>>  tools/lib/bpf/Makefile | 2 +-
->> >>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->> >>>>>
->> >>>>> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
->> >>>>> index c6f94cffe06e..a12490ad6215 100644
->> >>>>> --- a/tools/lib/bpf/Makefile
->> >>>>> +++ b/tools/lib/bpf/Makefile
->> >>>>> @@ -3,7 +3,7 @@
->> >>>>>
->> >>>>>  LIBBPF_VERSION := $(shell \
->> >>>>>         grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
->> >>>>> -       sort -rV | head -n1 | cut -d'_' -f2)
->> >>>>> +       cut -d'_' -f2 | sort -r | head -n1)
->> >>>>
->> >>>>You can't just sort alphabetically, because:
->> >>>>
->> >>>>1.2
->> >>>>1.11
->> >>>>
->> >>>>should be in that order. See discussion on mailing thread for original commit.
->> >>>
->> >>>if X1.X2.X3, where X = {0,1,....99999}
->> >>>Then it can be:
->> >>>
->> >>>-LIBBPF_VERSION := $(shell \
->> >>>-       grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
->> >>>-       sort -rV | head -n1 | cut -d'_' -f2)
->> >>>+_LBPFLIST := $(patsubst %;,%,$(patsubst LIBBPF_%,%,$(filter LIBBPF_%, \
->> >>>+           $(shell cat libbpf.map))))
->> >>>+_LBPFLIST2 := $(foreach v,$(_LBPFLIST), \
->> >>>+               $(subst $() $(),,$(foreach n,$(subst .,$() $(),$(v)), \
->> >>>+                       $(shell printf "%05d" $(n)))))
->> >>>+_LBPF_VER := $(word $(words $(sort $(_LBPFLIST2))), $(sort $(_LBPFLIST2)))
->> >>>+LIBBPF_VERSION := $(patsubst %_$(_LBPF_VER),%,$(filter %_$(_LBPF_VER), \
->> >>>+        $(join $(addsuffix _, $(_LBPFLIST)),$(_LBPFLIST2))))
->> >>>
->> >>>It's bigger but avoids invocations of grep/sort/cut/head, only cat/printf
->> >>>, thus -V option also.
->> >>>
->> >>
->> >>No way, this is way too ugly (and still unreliable, if we ever have
->> >>X.Y.Z.W or something). I'd rather go with my original approach of
->> >Yes, forgot to add
->> >X1,X2,X3,...XN, where X = {0,1,....99999} and N = const for all versions.
->> >But frankly, 1.0.0 looks too far.
+>> Hi David,
 >>
->> It actually works for any numbs of X1.X2...X100
->> but not when you have couple kindof:
->> X1.X2.X3
->> and
->> X1.X2.X3.X4
->>
->> But, no absolutely any problem to extend this solution to handle all cases,
->> by just adding leading 0 to every "transformed version", say limit it to 10
->> possible 'dots' (%5*10d) and it will work as clocks. Advantage - mostly make
->> functions.
->>
->> Here can be couple more solutions with sed, not sure it can look less maniac.
->>
->> >
->> >>fetching the last version in libbpf.map file. See
->> >>https://www.spinics.net/lists/netdev/msg592703.html.
->>
->> Yes it's nice but, no sort, no X1.X2.X3....XN
->>
->> Main is to solve it for a long time.
->
->Thinking a bit more about this, I'm even more convinced that we should
->just go with my original approach: find last section in libbpf.map and
->extract LIBBPF version from that. That will handle whatever crazy
->version format we might decide to use (e.g., 1.2.3-experimental).
->We'll just need to make sure that latest version is the last in
->libbpf.map, which will just happen naturally. So instead of this
->Makefile complexity, please can you port back my original approach?
->Thanks!
+>> We are working on it, but Paul is OoO today. Is it okay if we send the
+>> fix early next week?
+> 
+> Doesn't really seem like we have too many ways forward here, right?
+> 
+> How about this?
+> 
+> ------>8-----------------------------------
+> 
+> net: hide NET_TC_SKB_EXT as a config option
+> 
+> Linus points out the NET_TC_SKB_EXT config option looks suspicious.
+> Indeed, it should really be selected to ensure correct OvS operation
+> if TC offload is used. Hopefully those who care about TC-only and
+> OvS-only performance disable the other one at compilation time.
+> 
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> ---
+>   net/openvswitch/Kconfig |  1 +
+>   net/sched/Kconfig       | 13 +++----------
+>   2 files changed, 4 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/openvswitch/Kconfig b/net/openvswitch/Kconfig
+> index 22d7d5604b4c..bd407ea7c263 100644
+> --- a/net/openvswitch/Kconfig
+> +++ b/net/openvswitch/Kconfig
+> @@ -15,6 +15,7 @@ config OPENVSWITCH
+>   	select NET_MPLS_GSO
+>   	select DST_CACHE
+>   	select NET_NSH
+> +	select NET_TC_SKB_EXT if NET_CLS_ACT
+>   	---help---
+>   	  Open vSwitch is a multilayer Ethernet switch targeted at virtualized
+>   	  environments.  In addition to supporting a variety of features
+> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> index b3faafeafab9..f1062ef55098 100644
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -719,6 +719,7 @@ config NET_EMATCH_IPT
+>   config NET_CLS_ACT
+>   	bool "Actions"
+>   	select NET_CLS
+> +	select NET_TC_SKB_EXT if OPENVSWITCH
 
-I don't insist, placed it for history and to show it can be sorted
-alphabetically, I can live with cross-compilation that I hope goes soon,
-on host no need to worry about this at all. So I better leave this change
-up to you.
+But how would that make much of a difference :( Distros are still going to
+enable all of this blindlessly. Given discussion in [0], could we just get
+rid of this tasteless hack altogether which is for such a narrow use case
+anyway?
 
--- 
-Regards,
-Ivan Khoronzhuk
+I thought idea of stuffing things into skb extensions are only justified if
+it's not enabled by default for everyone. :(
+
+   [0] https://lore.kernel.org/netdev/CAHC9VhSz1_KA1tCJtNjwK26BOkGhKGbPT7v1O82mWPduvWwd4A@mail.gmail.com/T/#u
+
+>   	---help---
+>   	  Say Y here if you want to use traffic control actions. Actions
+>   	  get attached to classifiers and are invoked after a successful
+> @@ -964,18 +965,10 @@ config NET_IFE_SKBTCINDEX
+>           depends on NET_ACT_IFE
+>   
+>   config NET_TC_SKB_EXT
+> -	bool "TC recirculation support"
+> -	depends on NET_CLS_ACT
+> -	default y if NET_CLS_ACT
+> +	bool
+> +	depends on NET_CLS_ACT && OPENVSWITCH
+>   	select SKB_EXTENSIONS
+>   
+> -	help
+> -	  Say Y here to allow tc chain misses to continue in OvS datapath in
+> -	  the correct recirc_id, and hardware chain misses to continue in
+> -	  the correct chain in tc software datapath.
+> -
+> -	  Say N here if you won't be using tc<->ovs offload or tc chains offload.
+> -
+>   endif # NET_SCHED
+>   
+>   config NET_SCH_FIFO
+> 
+
