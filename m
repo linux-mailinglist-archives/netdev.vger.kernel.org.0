@@ -2,26 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 785C8B921B
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 16:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BF9B920A
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 16:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387714AbfITO0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 10:26:08 -0400
-Received: from mout.web.de ([212.227.15.3]:38231 "EHLO mout.web.de"
+        id S2390099AbfITO2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 10:28:15 -0400
+Received: from mout.web.de ([212.227.15.3]:53205 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729007AbfITO0F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 10:26:05 -0400
+        id S2389778AbfITO2J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 10:28:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1568989555;
-        bh=dtegyN4+XNVdQ37ed5eR83MzYQOOvPRpAtDsjkdmr6I=;
-        h=X-UI-Sender-Class:To:Cc:From:Subject:Date;
-        b=Ioacao/pNnbmG4TNqYUXCMwk5lRQEY3T3aozFWs9nVBJAEP679TusgYi9ztrVh7vM
-         hqeLceizbbF3L81e32efGp6quAaG7kXD6c2epCA1BCQJSBjp5gmRFICvfr6EBQjV4c
-         ktv5JYnjWccahYfbPekjby61OOE4Dc6F+xnnEDJg=
+        s=dbaedf251592; t=1568989682;
+        bh=kdzZIwCly4T9zp29vrSfE2M+d5f7xcC9TUVJt32lSys=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
+        b=Rc4bDu/Jv0umTJbDyJZZqeHkEZK7Q70ob2pjYLpMtB/dHeN4aJJUaqTlEav9mcDNM
+         5e+BkGY5tivBSMWV/pWt25KJpAZwh8Ox8Q5eoUQL7CYGLT6W74dgpdjTUSp2yYk8Uh
+         g9S6BKWrzcezmKVyn3PBNEeW4aJTQqFwu1AwtbqY=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LZvrx-1hm8Vi0Kp3-00lkAU; Fri, 20
- Sep 2019 16:25:55 +0200
+Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MVXnr-1ihyDl0pmJ-00Yx3q; Fri, 20
+ Sep 2019 16:28:02 +0200
+Subject: [PATCH 1/2] net: dsa: vsc73xx: Use devm_platform_ioremap_resource()
+ in vsc73xx_platform_probe()
+From:   Markus Elfring <Markus.Elfring@web.de>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -29,9 +32,7 @@ To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         kernel-janitors@vger.kernel.org
-From:   Markus Elfring <Markus.Elfring@web.de>
-Subject: [PATCH 0/2] net: dsa: vsc73xx: Adjustments for
- vsc73xx_platform_probe()
+References: <98fee5f4-1e45-a0c6-2a38-9201b201c6eb@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
  +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -75,57 +76,89 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <98fee5f4-1e45-a0c6-2a38-9201b201c6eb@web.de>
-Date:   Fri, 20 Sep 2019 16:25:53 +0200
+Message-ID: <dbc78014-6ed4-5080-8208-0a5930a3bf6e@web.de>
+Date:   Fri, 20 Sep 2019 16:28:00 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
+In-Reply-To: <98fee5f4-1e45-a0c6-2a38-9201b201c6eb@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:yv/+pV2Pwje3PoBU8IEfLlcUUXTUtCpx23GLADc5Snng0Z4LdJ+
- tRtotViipok3Y2B7qZd28Gg+uuM7bYMKQWvjQLn1rUZwLq1BdACONi0kcoW0S9u7ucD/kaM
- lmAsfkU0KDGfv4iIigzx/C73fJmkWrysZqlJLpQX5QLbpnh/Mb36L3/yUlEz7rAgwfK06wh
- 56F8r1eisISjWOSmKIOaw==
+X-Provags-ID: V03:K1:eaHOMc8N0+305YH/nAoGgTtwujnEWWyNrxbqXIy8TqENwpAxYyC
+ Lyhg7CQIZHa3ZGvjPK7m0yHuyqBBXSQ59+D6aDz8i8oW47ql5JK7Swwni4yRS+Zo9EPrtEH
+ VCkvu9z6JG8/4r3pMxGtV82VjGiHD0TUyg6auYpda90eH1WUV0HwY1FQEb/G+XL4w2FwCOJ
+ 4n07ih3keq6ReQqkeWyAA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:J8S7VHgNnr8=:9qSP6W3cqwXsBAB64YwDm8
- Edjn8KGWO5mHcgR4W7o+K1yBHHhKPv15temHCXY26VvHnBhxEgDpHJTvsjyx6uPaF+CIstF4R
- dNO/TTdCaqwhLbmTBn32ro6Cyg6VPIuvU5h+nG87uzHMu1xpN9jmRcqMyf6XM6kWP7DLDl94K
- GRpOUIxK+TsjL3ZS89sNlc+IQ8d9tPfBUkIr/GO7h3OZat9u8Xj2Y51sP/eZQltjdze4dJ1Px
- 4aRxNc/wnsJ/zo5ysM9NclqzVWPEOYTnMT/AEo9EZ1vp7N2m5clgw3L+RYiz1Tt5V4kmljoqs
- BTqhFJ0ZXdo6NdWifYKTblR74shIeQU8pRB+KrIr+WWXe/Qvgz/uqP/9FKjaUYOyfUIRFHiga
- H194xLUg78Jc9oc8aQTNAw8sdSNnTdSlafdrO7be/+2ENtlv5PEWpojoePbI22JnLk0cJrrlK
- wrkBZYvAUYItnIg87u3hpKD5nJiXYdmencLwg7gclMXsHioOpDt6sOiVdvxkTNwR+qstJDEsX
- nWlfQxwNheOfVlbhCDdzwNac/UvOHhzm9yLZb0CuEVSvQn7yymKRO/kLEDbiRhEXJKwZ7woKX
- NTSAGwPGcccFfbATVoEQclv729UVVEl3E46uBxt5Z0ofu+SW9PalT3aslvlHnbU3NIsm+PQlj
- MD1D5wcN/AIDsTt+Fjk4AShuuIkHWIpDiX9SMJXCkflUfPrflCOJIOP3FMJphX3P9oVioz+2y
- OM4B+8rAZ/EM3xyh+SkNJBpvJQxZU999Phv7HiexITpEVO2q56LSNYI5D9HkyBRDckSp/YWxS
- 7skdp69U54sMWPoWlH+HDiz2aXn3QncBqYVl720UfSohcwwLzCA2Fp619QHCCl8e7BWCg1AsW
- R8r4872Ao+DvsWGYZ0bnF+Yz+qKKx3Q9+1asjMipsvUKIUoYwywlgPIOV4PuU4v0UTbG4NWAm
- sFpqxrg9WB5isR5EHRvymZnjGwpQGcKI0+dqLChub3LE5ciUvxIpMm382/lSQeWo35ZcyDCDL
- Khl0ZCeNmQnsdHj5ox4h0jz3NB91N+2AYHLZvsS7eOVhdeqt1ezfY/rquPW5OmbwAO8RcW0nU
- mYrckPLDzVCoX9JW1rNwyBle1uJjuj2TaoRPxzcBRSzhBgL0Rlsr5zZneTgJqB0edBXiBCTjR
- +ES11Xtqg6M0K1klMU7+Z90/K6Al+DBp2gHnnCPJP1PJ+LrNShHUk59EDuZOxfXbZT6zhiW72
- eMCS7HPopLds4kOMW+wQXva9l3X4xRNcCE7HzET2SDgysJRQkBrHjlUX/ZKU=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:281xM9Molak=:Zf81jyMzl8OKZLMlvl3IPz
+ hMAEFaIklXt6n3ph8dndb01wP+lGSK20kV7UD5PEvMKlmi6I1dJ6sBsZHgx7EtrpvnmhRvKmc
+ 0xla+IrzPEau2ItZXGmR9/q0S9JNJiGxLAUTawgHgTmRs1g5pEU6lJ2a/4ZcOD6dGe6dHM8uw
+ ff8uGPs6kMBG9/EJaWNuZ3TNS9EIkfXWPHLy7nIZYKgkTin7GQUdMg1bw5ktgwe783djL0kte
+ HoNtuZumO6usEn4gilhHUCz9eZk4B0Oyz0p4U4+Bh9SsJgAl+M7+Wr/BLd/wnOv2xyNkdke3D
+ WjCgECLoh2a4KOKAHXsnbRr6HlABNZXLJwJTtZW4x/SdKYicQCmQs7Qe7ls+d4JqcTzM+3S3e
+ qvq/EOdxbwG5Nhl/+y1iutgpG6CKSks6nF9syVsqzAbKou1tY+SsA9vPjtUxx0BZF+akXsErv
+ QafW+uULjDwABqdpuw7RZlWxoV2Wrsze2xjWKYB4POt3QOiFT3KFuqnNuFfTaLQgQAZBvZvnK
+ vjiBnknBGGajnAf05iKe2BjcpUnnemekWs7/dtDSKUDnvdAwWbZUpCJgLxJcXpSIjkThfckn3
+ EA+GXxpQYSJ82nxMZOOD8di5k4ASTy41w8lPsWxrvXRisbYVaZ3s8T8BqPzMPC4GovjbWZKpq
+ m9ajMKo1SVaxbU01iB9NNtP8tXu90sT7EwzC1Oz5ElDfzqOkgW+uO4btC80f7OETwcphwgZm9
+ 911O1NumfzRYAUk9eL7eB/k15R/4DqGNp3P9uSQVKTvbMQpGlXxZSVV9tG1CvQ1jIldPvtMAr
+ Rag7kEzxDLJN/yUuLp6vOy6m9R+mUowjZXaSAT8srVrmlk7szVEjFtqZwXa9EqacUZtJibjUf
+ Hf7BN41chxN20U3dpuGDIvw8hASJQqI8llnkBDBarDoD+XLndzkNaHtQi3VUTzue08ALgtWLb
+ trI2NjJwLgqombKpJDeshNNg5+Rh3QSiXvEffr74fICNBxDkSUE/bQREMf61GFt/ADUIFJ88F
+ /TqqW3uwsxZUo6xkV9OcB1Un1Qq+UpMMgNny3kkBlmfWcKVQmGiXwrr6iIhTvuQFJw9ZHN3FS
+ 2JMGUkP/kPYFxRmZDU9Tyyp1M2VHATukj/d0yRd+UEZZV398SmUJZ4H/yiD7zYqUebFBh8tN6
+ mhHLeAtBrvV/ZMOjFweHc040HmzDiTMWwF2zpta6whzStkNap/+60+A6APdSIHw445xkWIMqk
+ eWwcwT3dK47Qu97hPhtFB9DbJCgwW6INjL5tqUUye76fvuCWEMsjydrdlcTI=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 20 Sep 2019 16:17:18 +0200
+Date: Fri, 20 Sep 2019 15:23:39 +0200
 
-Two update suggestions were taken into account
-from static source code analysis.
+Simplify this function implementation by using a known wrapper function.
 
+This issue was detected by using the Coccinelle software.
 
-Markus Elfring (2):
-  Use devm_platform_ioremap_resource()
-  Return an error code as a constant
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/net/dsa/vitesse-vsc73xx-platform.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
- drivers/net/dsa/vitesse-vsc73xx-platform.c | 16 ++--------------
- 1 file changed, 2 insertions(+), 14 deletions(-)
+diff --git a/drivers/net/dsa/vitesse-vsc73xx-platform.c b/drivers/net/dsa/=
+vitesse-vsc73xx-platform.c
+index 0541785f9fee..a3bbf9bd1bf1 100644
+=2D-- a/drivers/net/dsa/vitesse-vsc73xx-platform.c
++++ b/drivers/net/dsa/vitesse-vsc73xx-platform.c
+@@ -89,7 +89,6 @@ static int vsc73xx_platform_probe(struct platform_device=
+ *pdev)
+ {
+ 	struct device *dev =3D &pdev->dev;
+ 	struct vsc73xx_platform *vsc_platform;
+-	struct resource *res =3D NULL;
+ 	int ret;
 
+ 	vsc_platform =3D devm_kzalloc(dev, sizeof(*vsc_platform), GFP_KERNEL);
+@@ -101,16 +100,7 @@ static int vsc73xx_platform_probe(struct platform_dev=
+ice *pdev)
+ 	vsc_platform->vsc.dev =3D dev;
+ 	vsc_platform->vsc.priv =3D vsc_platform;
+ 	vsc_platform->vsc.ops =3D &vsc73xx_platform_ops;
+-
+-	/* obtain I/O memory space */
+-	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "cannot obtain I/O memory space\n");
+-		ret =3D -ENXIO;
+-		return ret;
+-	}
+-
+-	vsc_platform->base_addr =3D devm_ioremap_resource(&pdev->dev, res);
++	vsc_platform->base_addr =3D devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vsc_platform->base_addr)) {
+ 		dev_err(&pdev->dev, "cannot request I/O memory space\n");
+ 		ret =3D -ENXIO;
 =2D-
 2.23.0
 
