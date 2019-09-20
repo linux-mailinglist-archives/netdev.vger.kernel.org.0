@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDC3B8EB5
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 12:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B73A3B8F02
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 13:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391936AbfITK5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 06:57:13 -0400
-Received: from mout.web.de ([212.227.15.3]:58685 "EHLO mout.web.de"
+        id S2438221AbfITLa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 07:30:57 -0400
+Received: from mout.web.de ([212.227.15.4]:51299 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390701AbfITK5N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 06:57:13 -0400
+        id S2438181AbfITLa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 07:30:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1568977022;
-        bh=I8e3stxS7V1WyGkY8UZNqxelRhUMbfnybkK8wCp4Jlc=;
+        s=dbaedf251592; t=1568979037;
+        bh=6u/lrL0YjFWeNKufdCoJnqJ/iIRy/jFjcRoEoLmbNRg=;
         h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=a5b3TB/87/K8oPhFseUR+7VOUV10ESWzQ1MjnNiIWjy/1G1MvuWdVKRS+aXs2aZiX
-         9rxsRtckf05wwSbJX5VN+RoPp/S03eHKCDqHtVDZddWIYGCPLNy3gZmWC2Qb+OUnX9
-         KEi4gBlqsjPpuMNDO9RfIXNjx59j8ganImfe/YFs=
+        b=bsXxou1FKiQZZOXDYnHT2F3sFl4uBqiUv5k4bjUI2VFQQEsaisZymicPD2v1g21EB
+         tbn79Nlql7TKrJeVUeG4yHm7dMvTmh4dKQPxRNsszBKeBESnOhmJO2g01njMhaLDmN
+         MIRiUfrTgWyzWXcI+jVw1lPrbMJRNCTgqaQ8YvIw=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M6mQO-1hwt0D3MdY-00wUtX; Fri, 20
- Sep 2019 12:57:01 +0200
-Subject: [PATCH v2] ethernet: lantiq_xrx200: Use
- devm_platform_ioremap_resource() in xrx200_probe()
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LnBTZ-1hhh7g28R3-00hKw8; Fri, 20
+ Sep 2019 13:30:37 +0200
+Subject: [PATCH v2] ethernet: axienet: Use devm_platform_ioremap_resource() in
+ axienet_probe()
+To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>,
         Radhey Shyam Pandey <radheys@xilinx.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         kernel-janitors@vger.kernel.org
@@ -75,8 +76,8 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <43bed158-2af9-c518-2f97-a473c2b84eb7@web.de>
-Date:   Fri, 20 Sep 2019 12:57:00 +0200
+Message-ID: <604a6376-0298-ebcd-ee84-435945370374@web.de>
+Date:   Fri, 20 Sep 2019 13:30:35 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
@@ -84,37 +85,37 @@ In-Reply-To: <CH2PR02MB700047AFFFE08FE5FD563541C78E0@CH2PR02MB7000.namprd02.prod
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rcWsVRp4VpVCA9U7CyHwrhvfv9I/+YKNCHDfKQo/Q45+39/oHrq
- s142pnR3wIji4COb6UXeCELnE+MjPfG1WRVlFzptDONAhcrbKLo7J1/ChtrOpfFf0rospWV
- QMwcVM8zMpi2apfs0lBnMWQ1FianCZf4fzzydQWFyIY9nVWzDXwALI2guKMkXLNFB5HKAgI
- SpL6Um8ClhpdBoNZWOH1Q==
+X-Provags-ID: V03:K1:6SRgYF57pdwisiSOfQg1UlbC32Jh8S0JVlx+KF5kzO9pVIQbQ2K
+ iRjI+uMuwp2Dh6DhZKSc9QSQhmgk96hR1spxlpNLq+TUzfYzhB4EjgMoHGWTKwAO4thnf0p
+ S4WbEy8DT62mC5yIO7GvaDBYoSDLgX2svhNSxlA3dvG5V6r0oElMxaCowKGsZZZwIowAmaI
+ 8kwv2IqrC5n/HAqzYkGUw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6UQCvgHc+ZE=:JgBLGAFSTHLyTNKn3qZXt4
- TsdWPmy28j2wIWm19H8eOxAUjLvRMFEPbNjRB92OWWqX0ZMhdhcuwr62/64ZABXsXWb/uNQAY
- 35q9vna+0t7ReZCfCtzgETPcJniqXnOhZeyQwPORQLl1XlzzslL5ruHeZpjwQWbgcj+xhNyzs
- xZKqaLti/+7Rct8puA3IVSUCGJM7GwBby0a6hCIauSdV79EtaRZ/pIXdrIbLuRMfGhXx13rua
- Q+IWbasIIcpIDhjYVqXIXty1N/HskospAujJ1yYBUZRCJEx1iT1OvF2YVskCcnn9kQT/D3c61
- a0a+uYmep41ICkDfmRSjEcaz+/CWNWbc1v9ss0vW8Njwd9u8Lara18ne7htD2FLRzxVQHZKnA
- EDtSZ2EXtGpNwkPxnHQWhVVre+fZcDrHg5CxRLvO7+K+5XBjHhRCl0SZWseXv3Kbi1T0azQU1
- Um3C1dJUhiQVF1hftbB+WF+pLXOrarlHcIs3s5y8WNK9dGaPnzct0fkpPP6XoIOh2X4PYDJCf
- 3rR0oTAaUUqujBM/XAmaJclmnMW/+8OfXUkH1xreCSy1FZjfTUOcDeCjf0cJ3HQVzLcBD76Lw
- +yI76exhHOSrlRauNPfihHxISzoGJ0JnV/vHERTJL5TQWho1tllJpYuJviiH/6z71m6Pg0oJ/
- bzHow/lcZU/VTx2glXqJ5M0Dg5n3eWB1wvLXJP2r9fhabDyYUct2ArHCEdkPxierweFYZDbwn
- DrGaa6YVPu041F/h90z6wOED2pjW3omdb54+kVRQNuuPUpt7QNXy3uyMgQ7gK45XRWVXV4LVK
- lhfIYYZyJnpLDk5om8+bGGHvYckCv1UDyN9qBgipnWb6vhYN5jySL1+LEovTQ/bm+xvp6wWnu
- 9qw6CCGwB48MsIYwH7nVEok17962uuQPt0KA89lYJMVPyNoFtpsleBxzaMEvXM0A2lY/6F6ib
- Cs0Gyd8dMLYxakHSXaVMEL7fa8rHkosz20UXFxwe8Ag+TYNC0DZkKrc+bn24G/fEFVMa3VHH6
- ib71GsBcGXtTgZI4L78P+1N7Jm+mj69JBJOPYHxLnKv9TV99w3bjG+WyCBd4M4Ci+9vgA6UQ3
- S86D9XVQMfDRPcSEMbfdBq5VTEB2BSMoq9/X6y5q2ytorLffhfe7RICk8tiZ4v+5qEB93YnUU
- pAVdpPaV2FnFbvUVZqyUIWxIX1JV/v5U9OtLZnOROqePCQvJjM56WJxMRLtb8+vC74vHMdNR5
- DOAzzDvY6/FE6+a82I3B4pc/dWMJNpzOU9+7xjfLz8eXCimH5pGzuCg5N8rE=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qeu4r5QVVrQ=:yP+b0esX9R5pV6FoUHsJbD
+ 5b4yGkvMRHiG45WlgYxnYfewaZT5f9DkNHWpTJ62I5Yb/X55s+NsebxepbvNVAuWD0pf56obg
+ iFIIJNWDoNtaElbJvySPOp2kL5UkytO0jKkkxEPZwyzQY5+s2wG98WDvl5gIL5vj7j5hIE80m
+ ta7HosB+bLPJ8o0aoX9z2UtU0Tjw56jLFWhxpvmlE90usD6DNxrQrPJdvSt5oEQiPGs5hvBtA
+ evxtiFwv8kV0YRBJr35RdzqqVfhQyzMPYGgoVWPAa6K4qurQhTfYJXGS8h/baUz24Qbx4uf3C
+ GIpuvz+RscL06kHJHcVo7laCFPOr5e3MwYz5jZtR1JMWdBpBUtugEIQJrkGnLfZiIsG+10IBl
+ HAmxT149FTFmZ0JWIwj+TgyK7Xo8bcnhMT0r+VFp6UD1zMfvntHdmK/Lb97tcad5Opos5U3OZ
+ bRHBO9yaCr0RAq89eVFMaYIltua95IXBL3hXhYHONUOX6ckfTqEGgXtq52RE6KTolskMQoT7p
+ S3FMajIeg3Ys7BdZde5InniIaNPtMZ6UMJiAtfUMEzPr2o5HRCv0XiMxAe4eHBMJ5IKXnqjO2
+ TFn101EXT0PaJsJ4y8ty0T6PRrxpVFNkphq3OaH2hpU5ljweCvANAUPvzpflmvrsWaViInBz4
+ 3Y1jXDLrQevanKpOrJXJMkqnlLcIx1kbPFii+pk8VOKQMle9HlTJvCs4gv6wiB+76ZjX8jmr6
+ 2NgFXmefu/aDRvKjqjZNYlltDw+jPYpTZhD84Ezf9ata7kREcQTyBYH+eG25v25l0CuQBfYKJ
+ Rh7EFNFm5hGXfiTLXcjiGlOQWeWDHVZ0PPc631jp68UOcm1eRDEp1ksAKQclz6TzLTTkNXgob
+ 9rTKCNu4JuCJz1QrX/eln19HttnDNv6sUDYliuUif9VKN//nvvM1EOc6DvhhvsWA5ClqIdPa5
+ A70ZMr1cRAUTcSGSF33Htzrr3tk6c84ERnV82t8ESgv32jE5YjUKwmpG1CgeW2Yv8xU7r0PbG
+ akZhmFxsjhIeMxP8Hj/R+2HB2L2vx6K5FOx1C8AXCNzbm6Okjx3EHKyU4ml0/Ie33o9a9oep+
+ hSWjZmBfQPhqOPPamOX689V0COjHw3fTT/s748wW+NLX6PzQ/DYjW/2cuC27f3fucZHQ0IMF5
+ 9tLxeg0u9myVvyKX/iiB+/DJBETdiPrb0sx6EkgI98fSgQloKCgJPgBHTWIjNtW5vCZBYZ5et
+ +jj/4zviV3UETxY/XkZ4ndw7x15L69SXps8UeS90nn7FDhgJHzv19NVyW4P0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 20 Sep 2019 11:48:33 +0200
+Date: Fri, 20 Sep 2019 13:17:01 +0200
 
 Simplify this function implementation by using the wrapper function
 =E2=80=9Cdevm_platform_ioremap_resource=E2=80=9D instead of calling the fu=
@@ -132,54 +133,39 @@ Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 
 v2:
 Further changes were requested by Radhey Shyam Pandey.
-
 https://lore.kernel.org/r/CH2PR02MB700047AFFFE08FE5FD563541C78E0@CH2PR02MB=
 7000.namprd02.prod.outlook.com/
 
-
-
 * Updates for three modules were split into a separate patch for each driv=
 er.
-
 * The commit description was adjusted.
 
 
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-
-
- drivers/net/ethernet/lantiq_xrx200.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/l=
-antiq_xrx200.c
-index 900affbdcc0e..0a7ea45b9e59 100644
-=2D-- a/drivers/net/ethernet/lantiq_xrx200.c
-+++ b/drivers/net/ethernet/lantiq_xrx200.c
-@@ -424,7 +424,6 @@ static int xrx200_probe(struct platform_device *pdev)
- {
- 	struct device *dev =3D &pdev->dev;
- 	struct device_node *np =3D dev->of_node;
--	struct resource *res;
- 	struct xrx200_priv *priv;
- 	struct net_device *net_dev;
- 	const u8 *mac;
-@@ -443,15 +442,7 @@ static int xrx200_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(net_dev, dev);
- 	net_dev->min_mtu =3D ETH_ZLEN;
- 	net_dev->max_mtu =3D XRX200_DMA_DATA_LEN;
--
--	/* load the memory ranges */
--	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res) {
--		dev_err(dev, "failed to get resources\n");
--		return -ENOENT;
--	}
--
--	priv->pmac_reg =3D devm_ioremap_resource(dev, res);
-+	priv->pmac_reg =3D devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->pmac_reg)) {
- 		dev_err(dev, "failed to request and remap io ranges\n");
- 		return PTR_ERR(priv->pmac_reg);
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/n=
+et/ethernet/xilinx/xilinx_axienet_main.c
+index 4fc627fb4d11..92783aaaa0a2 100644
+=2D-- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1787,14 +1787,7 @@ static int axienet_probe(struct platform_device *pd=
+ev)
+ 		of_node_put(np);
+ 		lp->eth_irq =3D platform_get_irq(pdev, 0);
+ 	} else {
+-		/* Check for these resources directly on the Ethernet node. */
+-		struct resource *res =3D platform_get_resource(pdev,
+-							     IORESOURCE_MEM, 1);
+-		if (!res) {
+-			dev_err(&pdev->dev, "unable to get DMA memory resource\n");
+-			goto free_netdev;
+-		}
+-		lp->dma_regs =3D devm_ioremap_resource(&pdev->dev, res);
++		lp->dma_regs =3D devm_platform_ioremap_resource(pdev, 1);
+ 		lp->rx_irq =3D platform_get_irq(pdev, 1);
+ 		lp->tx_irq =3D platform_get_irq(pdev, 0);
+ 		lp->eth_irq =3D platform_get_irq(pdev, 2);
 =2D-
 2.23.0
 
