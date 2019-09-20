@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A682CB9783
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 21:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E52B9789
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 21:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393258AbfITTC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 15:02:56 -0400
-Received: from mout.web.de ([212.227.15.3]:43639 "EHLO mout.web.de"
+        id S2393736AbfITTEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 15:04:10 -0400
+Received: from mout.web.de ([212.227.15.14]:47649 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391415AbfITTC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 15:02:56 -0400
+        id S2393485AbfITTEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 15:04:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1569006162;
-        bh=+xzRLQql5so0uF+9GF2myh5Z49YfJh7o8/sXYr6G2C8=;
+        s=dbaedf251592; t=1569006238;
+        bh=rVyfZ2UYBc5Ewzf10tXDMMKVBD25jdpZOsxrYxMAJGs=;
         h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
-        b=KrNwgjt+O+h0wK7/rF8GsqKwWGwR4TGZhDrn2EfrGaGmtcRQkbxUe7JQcAkkEUIzH
-         dgOJg21b7kmPOW61ID2VS9/F9X5o8cwm8IqFfNy0Xhmk5g+QP6pj7RdW+MpaymKz5G
-         F3bW+Z6Me5ZHKOtFZuGJUmsBpPo/iNFRU1aJa4fw=
+        b=JJF9I/rZTsbaeqZekRxfSN7k8LgWITBPqRykIndAQ8DCU691mu890jeJctpw1QhOK
+         WpE2iD2ArtOtaeiFhnMavEIJqTljOSBNshzBuzN1vHQ06vzOFiPUtJDw+IuDrgf+cv
+         NN6yQZuAtH7xW0dQQROPS4P+hSmdbuLxiVFMRthQ=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LcUIo-1hkXx948F4-00jrA4; Fri, 20
- Sep 2019 21:02:42 +0200
-Subject: [PATCH 1/2] net/phy/mdio-mscc-miim: Use
- devm_platform_ioremap_resource() in mscc_miim_probe()
+Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LaTtv-1hmTqL1vWJ-00mIiX; Fri, 20
+ Sep 2019 21:03:58 +0200
+Subject: [PATCH 2/2] net/phy/mdio-mscc-miim: Move the setting of mii_bus
+ structure members in mscc_miim_probe()
 From:   Markus Elfring <Markus.Elfring@web.de>
 To:     netdev@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
@@ -77,8 +77,8 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <506889a6-4148-89f9-302e-4be069595bb4@web.de>
-Date:   Fri, 20 Sep 2019 21:02:40 +0200
+Message-ID: <fe3ecdd2-a011-e4ed-5ef2-c3a8a02b343c@web.de>
+Date:   Fri, 20 Sep 2019 21:03:57 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.0
 MIME-Version: 1.0
@@ -86,94 +86,84 @@ In-Reply-To: <189ccfc3-d5a6-79fd-29b8-1f7140e9639a@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:IZ4s53M5EcVgufSPdpFXU97/i9BwcjQgdYEYOulM/9mFA4OqkdL
- ySNnASGdI5gctzlgt2OqyQhlyTQfvzMQwHliwWF3Ggn3kZTmQEEga6o76rbLmRzAKpWH2tW
- TX0rzOTsMcyBupn97YCN5SBu3KtcD/qjTtB6kB0wKPENVizrEiwXvqaf+ibCiYkmIdknMx4
- Es8AYNLTxEuQCZ1YcC2lg==
+X-Provags-ID: V03:K1:Yb9zGoxPjM2G34AS5H+A2jM8Epd5wGi3vs0cr1Ys5cxPtFseC5Q
+ +KqgalXy2OhCvkTLTLlkNskta7muWYnKhR1PsSZMVrGl7hsCAD1uIBDqsybrKaoSrWXxLhA
+ FBIoghmqf9jpzi6V2/gOJPdrCowJTU8gl3ESdNpu1yz6spH/AMmA/CZJoV/fIPl0hgRr0yW
+ eQ2W4Hr0tZa70yqnT0fkQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wptcITCQ8Pw=:Wvzlmq5cmEMCsCCSdXBzXO
- mepu5J8kiSrT0GvxriDMfgWuQeOIEY1fCl41jDb6OVUVBc6ikJAh7/iiaL0KmjapEzTw0pUYS
- APxEjQdpVe5FxHmWE4ifW9F5YukI7uMNPqujDH/jbSKGyZt9jeSZSdg69dzXVW6LA0mqaSGSa
- L7DmhzNkmMTTOfjV74UKMdaOnI2HhYx/OmsKOaXjc5bjKcatiqP7Ao6H7HydrdMw33vk/PxlN
- 5z/asVW4LCGUi6AH3Yi0cHO3re8Oz3wXQmQ0fvln+QJPaFp2l0wuj5KWj7faLJa2c2lOhFFpL
- 6Eoxn01z4hTCp1Ncvnl20G1BHpnoCTRV4zhVojo1xVRqoEYI3VzBI4FIVXwAvZgp88efR3zBE
- ROCbKpaMgcTYEIXtf/ttROia2e9V2PTW8od1AwlLvUK9DM02ML3wQCN6U7Oea3X+MkKqv6uW6
- +ya0FYCnubscfKmC6EAtf+tzD1rfg3DEsJZYyp3q5lUa5moN4JzxCJoAmhRqGIl+Zhu2d1SmU
- 5oBy7IMtAsXo+Z2Ys+dbtwsiPX7TnwkGP7rfzn6cs+UEoMFQMrX3FVgcHpIddh3uJAfCD916w
- 2rW+dnfCYTSbOMu0meDdCRtmXMhjfuuApPVZ7u7PiPcFTXbC/nxT/wRju03sPSrw6n1Qcvv3O
- yMpw3bGH2mhAPguqYaND3E7vMm/Pj3rKHfwNrPXH6ckR5XkUl3c99HjpYS8Us2APxaXhxkX6r
- RJMuZRv3+D8nU/k8apsJTJNGGHeHwl5qIroGfwjNsdv84h1ih5YsbsfcRW/ceal/Q0Pz9jnKu
- HH0n34QpW4cK4maNE9EGkCdJnj2x+Czp3qVmTWh/EVLP9YKpgm8x3hduDuGOrMHoblWA5YFa+
- e1FCzsdWJn8MrsDZgxPJzCgqTO1R7qDM+v9wRaTA2QAh63iSAB0kdZM6SD6heFNyDwtTnUBX0
- JWcFNvvuT8Hk2IJK1VjdZFhqt3g3cnGSV4e0697cne/eA3BAvT/wlq2KCPqBWTMrvqFERmAoP
- Qwc8bz36pwYl16XCVVQNP4liMGaXdcdTXIOYgjal2y3ZSx5dSQdJrPUUcVHAmba3wLGwli2Gi
- CWClGMxtJjdMl/fNG6kAKGGC3SwuN/JEOnc16VrfNPkstnQGNmPU1QcnCe0kbHNum5e48DCIu
- tE/3P3Cwy6ASwj4+SRZLE/Gqthjah4Gf7s0qiWhUJB6sDm2u1Dv3m4NXY0AxQJpfmU8MyKNEU
- 62OoV1Q6cwdepgpHxFFtP8BDdUmMurjgo7eAk51Wl1Bj7VPjw5XQRbRS3KwA=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oQQVd5Td7z0=:UC/0RQ8vC2enJUn2luDCd/
+ ffqyYi76Teo/tMiCoqe2UofWwVHJdVHdGoD79Z5FO+5PihgqaNQrqvmkv0SYAiMfmRHJ3jZXL
+ MsSgnxUF1T7Eey2ArmwNsuQTtqB4GCHRA+ImX2r0ynGcq3uoz0C9tQfUBor0GoG1XidcUc2Jx
+ W8+210WFKCbfqztTRjA2niaG5Y3m+IAsHsZDDdronhQ1YBcQ7S2hypHOXCAZMKcSnikRKdczv
+ 5diyOwMz5zJsBki9W+y539bDT7XPegcKCUuLWunPyXc9Ta34WR0ARgovgi2rfzMWv/y0DqYkK
+ HH73MrysBbiYizXxHh5FWwmbrmMPFw/IcLyEmQ/ue53zqdLzBVujdctiArnCAD/3G31BJmkst
+ ariMSZRwzMMLhMa4QHTAf3nJqyEMGDJD2Tyh3D6YG4PZXmfU//4Z19QIPKjdoJE0xSgX2d4dM
+ gjEMnsT9q5QI8yzhc7N2/YiAuXE/Ie+k+QyNXIJbCSG9R0tMQ5RssuMwlncgiD0xxANjrgniB
+ DAr1BMmlIFEZwqbjpgLuRcgX5qK4MFF4RKsN7xAaIDKhJd83QYs/hFQ1r0eXtTh6Jl8/Uorx8
+ eb0/fRmbQw8lD13b7YRJJsxOFW1hY5dE7VUy5o78oTOLb9WQxP2CtBo82sSGf3ufb5Sjq5dtK
+ cnpYhiJ4o3wCV+0f1wYuqshY9zBEroueft9MM2LcMNCopmhmITM31T0c3Nx5cB9Do4k70upRv
+ fPTSuCgZrcJa211Xy8zwIIFpqbwkOC9/ai7uiotyg4M/WCvFVZ5cwn3Hzp4WZHVDlqLR6m1n/
+ wrFp/4szOW0t9DPHRuoAdcZaZIp6wqsjAajL2hinJdw+h9XnSruX/4HW3rkvsdyr2WZw1gbdT
+ Z0CY8dxZU8zOeTY4sVN3LM4a+mvT6/1s/SadSz1kS04G4u2ThwXNpZHHv0GujX8YDJJ+Jhg9r
+ 98RgsRCxXNcnAba1lUyw0NT3Kmx11kWIpi7e3KGIvcH2othfB863sbLsDqGlXxQW1YeV9q00v
+ YWGBnM6wYn76piOH2RRznicjePzWbaC2p6YD+gTXidLCR/rSzdYZBsqDYRsNuw3vHfqc9YqJM
+ 2YrftXqrh5QopDM1PwY2HCCGQ44K2iy2pN82iF18kn/FBkEuwXreQBP4ubaV2BrL++z/71MRw
+ uui87MVqdD+a3TILusuPnMYLhSF4+Qzf3UuywOb/DAUimpfWPnsFdGPphRsfv7+g65ICotaoJ
+ saz2lsXvPLtNhbrit5f2d26nO1cq8jVDF6mSDkXSokZB+Pgs4gjUfGCCA4qw=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 20 Sep 2019 20:20:34 +0200
+Date: Fri, 20 Sep 2019 20:42:42 +0200
 
-Simplify this function implementation by using a known wrapper function.
-
-This issue was detected by using the Coccinelle software.
+Move the modification of some members in the data structure =E2=80=9Cmii_b=
+us=E2=80=9D
+for the local variable =E2=80=9Cbus=E2=80=9D directly before the call of
+the function =E2=80=9Cof_mdiobus_register=E2=80=9D so that this change wil=
+l be performed
+only after previous resource allocations succeeded.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 =2D--
- drivers/net/phy/mdio-mscc-miim.c | 18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ drivers/net/phy/mdio-mscc-miim.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/phy/mdio-mscc-miim.c b/drivers/net/phy/mdio-mscc-=
 miim.c
-index badbc99bedd3..b36fe81b6e6d 100644
+index b36fe81b6e6d..c46e0c78402e 100644
 =2D-- a/drivers/net/phy/mdio-mscc-miim.c
 +++ b/drivers/net/phy/mdio-mscc-miim.c
-@@ -115,15 +115,10 @@ static int mscc_miim_reset(struct mii_bus *bus)
-
- static int mscc_miim_probe(struct platform_device *pdev)
- {
--	struct resource *res;
- 	struct mii_bus *bus;
- 	struct mscc_miim_dev *dev;
- 	int ret;
-
--	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -ENODEV;
--
- 	bus =3D devm_mdiobus_alloc_size(&pdev->dev, sizeof(*dev));
+@@ -123,13 +123,6 @@ static int mscc_miim_probe(struct platform_device *pd=
+ev)
  	if (!bus)
  		return -ENOMEM;
-@@ -136,19 +131,16 @@ static int mscc_miim_probe(struct platform_device *p=
-dev)
- 	bus->parent =3D &pdev->dev;
 
+-	bus->name =3D "mscc_miim";
+-	bus->read =3D mscc_miim_read;
+-	bus->write =3D mscc_miim_write;
+-	bus->reset =3D mscc_miim_reset;
+-	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
+-	bus->parent =3D &pdev->dev;
+-
  	dev =3D bus->priv;
--	dev->regs =3D devm_ioremap_resource(&pdev->dev, res);
-+	dev->regs =3D devm_platform_ioremap_resource(pdev, 0);
+ 	dev->regs =3D devm_platform_ioremap_resource(pdev, 0);
  	if (IS_ERR(dev->regs)) {
- 		dev_err(&pdev->dev, "Unable to map MIIM registers\n");
- 		return PTR_ERR(dev->regs);
+@@ -143,6 +136,12 @@ static int mscc_miim_probe(struct platform_device *pd=
+ev)
+ 		return PTR_ERR(dev->phy_regs);
  	}
 
--	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	if (res) {
--		dev->phy_regs =3D devm_ioremap_resource(&pdev->dev, res);
--		if (IS_ERR(dev->phy_regs)) {
--			dev_err(&pdev->dev, "Unable to map internal phy registers\n");
--			return PTR_ERR(dev->phy_regs);
--		}
-+	dev->phy_regs =3D devm_platform_ioremap_resource(pdev, 1);
-+	if (IS_ERR(dev->phy_regs)) {
-+		dev_err(&pdev->dev, "Unable to map internal phy registers\n");
-+		return PTR_ERR(dev->phy_regs);
- 	}
-
++	bus->name =3D "mscc_miim";
++	bus->read =3D mscc_miim_read;
++	bus->write =3D mscc_miim_write;
++	bus->reset =3D mscc_miim_reset;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
++	bus->parent =3D &pdev->dev;
  	ret =3D of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
 =2D-
 2.23.0
 
