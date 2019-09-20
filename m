@@ -2,60 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71576B9409
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 17:33:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1ED7B9404
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 17:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403989AbfITPdj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Sep 2019 11:33:39 -0400
-Received: from mail-smail-vm20.hanmail.net ([203.133.180.201]:44816 "EHLO
-        mail-smail-vm20.hanmail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2403973AbfITPdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 11:33:39 -0400
-X-Greylist: delayed 304 seconds by postgrey-1.27 at vger.kernel.org; Fri, 20 Sep 2019 11:33:39 EDT
-Received: from mail-hmail-smtp3 ([10.194.31.36])
-        by mail-smail-vm20.hanmail.net (8.13.8/8.9.1) with SMTP id x8KFSTSD022499;
-        Sat, 21 Sep 2019 00:28:29 +0900
-X-Hermes-Message-Id: n8L0Pm7V2164062093
-Message-Id: <201909210025.n8L0Pm7V2164062093@mail-hmail-smtp3>
-X-Originating-IP: 68.168.123.78
-Received: from mail-qpsmtp-vm17 ([10.61.241.164]) by hermes of mail-hmail-smtp3 (10.194.31.36) with ESMTP id n8L0Pm7V2164062093; Sat, 21 Sep 2019 00:25:48 +0900 (KST)
-Received: from [68.168.123.78] (HELO [68.168.123.78]) (68.168.123.78)
- by  (8.12.9/8.9.1) with ESMTPA; Sat, 21 Sep 2019 00:25:48 +0900
-Authentication-Results: mail-qpsmtp-vm17; auth=pass (login) smtp.auth=info.1curt@daum.net
-Content-Type: text/plain; charset="iso-8859-1"
+        id S2403944AbfITPbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 11:31:03 -0400
+Received: from mout.web.de ([212.227.17.11]:39517 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403864AbfITPbC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 11:31:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1568993452;
+        bh=5b/mPa3MrRD8fSpiMfl28l8+pTOGRpoWPGBs5L7KgIQ=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=KyG6ORLd8Z01/37KxUXUw63lAIirTT0/fJTsVhTz4Yco08SlVE8oSh2DPKf/jUNgC
+         XjfzsOLLLHKBuPNs3FxKLFLxbuNvUbHEbdDT9hZKfKe0p4GSLHE94n6Zj9wZ95GIka
+         O0TYyL3TstmievFJR2H+OIa8R6S1Y0g1SY3/jxCY=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.244.117.22]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M25B9-1hwZCp1Sl1-00u53h; Fri, 20
+ Sep 2019 17:30:52 +0200
+Subject: Re: [0/2] net: dsa: vsc73xx: Adjustments for vsc73xx_platform_probe()
+To:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <98fee5f4-1e45-a0c6-2a38-9201b201c6eb@web.de>
+ <20190920150924.GG3530@lunn.ch>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <4a220bc4-0340-d54a-70bd-7bea62257b81@web.de>
+Date:   Fri, 20 Sep 2019 17:30:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Great opportunity my good friend!
-To:     Recipients <info.1curt@daum.net>
-From:   "Curt Launer" <info.1curt@daum.net>
-Date:   Fri, 20 Sep 2019 08:25:29 -0700
-Reply-To: curtlauner@vivaldi.net
-X-HM-UT: pRqdzHCuhtCZTHczwevjNCuhXhUz+ncvHXbIQMbzBSU=
+In-Reply-To: <20190920150924.GG3530@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-Provags-ID: V03:K1:dLCDi7o9FQk8G4jX0Laahb9Yw9uCMao11Khxl20wnlXNhdJ3idi
+ zKEEZeJaBG39wk0q8wr7hrGSSW3Tezx4Cea4imnDg4XjcD5xqHFyQWeSBi0pnOH+RtYGrXx
+ 3CNBXFv/3g6N/9ALlpX0MggUguL1nbLOW0Ro2HwSIXkEtKMoegKj9zIpFMR13Kzk3Fe8Uf8
+ CaRByq/JY+hOQf/pjWnQw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IUuB6xYZo2k=:xk6QFX/T84fN3V4mH70GEZ
+ 9tQ//BSVr0dh17UKAJZJcKlPh43EHmuQXvo3wH5J21j95af8npGKyTq5ahhlx6nNf0Fj67RD2
+ i3plv7cu2/mWp0XtkArhPwJzoZEIuXdq3O3RiTCdJY9Y78zzmdI8BL1VhplZvP6TRP+SEazEy
+ z7S+tOox3QJK6qoSrVIGUIvwdj7xkxyvxy60aldAARK1NwE+jSTTaxWI4A57IQ4QxlIuCefxi
+ geWDc59NGx+BQirMsaDOKvbuhXUslYfhvoYVgDw48FkYWw9vO2TNwENYZTA4Lwy1lxXF+KFgl
+ 0zDeTDGlnvz+LS6wcW5TNiTYorFNh5ITmJdqt+g5JZWVWAlSFRzTCDliaLOzyxbq03TCiw2h/
+ YoZY72EqG9iKH6iVOKk6nNHZLUBwFEQuPDDO/nB3L2gGVBbC4pTjrsTF3fIkvdzG1glBnRIkv
+ ZN0TLPC/rVctGt9dCuYUIdYkySqBHMbts+bGln56WhpGQR8myD+Ul0x7y+zsErhENMrRF9kVA
+ GkBA8uBK7Fq3ISrLgq/LLhsMQmfrs/AtM0yWMBVlFXW2HIoqszrQ1V2CzykNc6u2t0VjJvzV6
+ Q85AonYmm9Lp3JpOkHIYdxzv/qMUsk+nprUbQaA+uTieEgZ5HSNTAT1VLzSastpmChfFVrSbh
+ dsp3X5649SNuHrnJi6sF+IL3lmUTgXW/JI1hnjxPr7x9D3Sx3c49M1/NgHpuzZZNeom7YWVPU
+ mKjCHnx8fag1uy7TKNZ4yDb7Pu+dzXXMe/roRbKwNJh7uALbXnvAUy64mRHmUZZw7XhckBmAn
+ SkCZNtH7gx42PMzkSA+KbEpAsfW/f5UtnguZL0UvuDYCL0M1XHjVOo6BQpsp4gmVu1WI6m5jp
+ pTsaLvJzJlCqKPJ9h7YTMqgoAQdSnbRcjyqbeSMmQJQ1cnVuHkkR8F+9uYKsa+QWzg0kOlWAT
+ 07j4YMJJZznX0t42KcjHVLbkikrsu1+J8grwciYo6JVv/9DYYtTEAL0YlY6O4NlZ3mTazP5xB
+ 6PJBAQCg6GCHa4bV+Say1sU6iiJlrKWCswCrOLmHFqFlmKHmoCEe4JZ9DLbhWIoOvg0KkifuB
+ D4u58ETUPsiDvgTGqxQRRLG1LjeNtit6q4nagxoziHu6aQpAA4ZLKD3H7wLoytgdQrsTPTZ6l
+ NCMDZO/7qTYjAgoK6VfOoHBs97Z8XFiIfldYAgvoCkfFBGJzeEOuHwfodLMzXugz3pUN0D4bC
+ 8RZqbX/KVwryGUzExuZxFCBygMZFtjx7zPOGfuaTmnL2UWeMWTGawqeS2W+A=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attn:
-This message is strictly for this mail ID owner.
+> netdev is closed at the moment for patch.
 
-My name is Curt Launer an Engineer and lives in Toronto, Canada.
-When  I was working  with Australian Worldwide Exploration (AWE) Sydney, Australia my company sent me to Brega Libya during Ghaddafi time.
+I wonder about this information.
 
-We did the exploration and our company was paid part before death Ghedaffi.
-And then there is over invoiced sum of USD6,850,000.00 unpaid at finance company in Alexandria Egypt.
 
-Now I want you to assume as my partner so the finance house can process the payment and transfer to your care.
-Either by persoanl delivery, cash transfer or International Card Settlement system (The best).
+> Please repost once it reopens, in about 2 weeks time.
 
-Then you will be entitled with 45% of the total money.
+I hope that the presented change possibilities can be integrated
+in the near future also without a repetition of this small patch series.
+https://lore.kernel.org/patchwork/project/lkml/list/?series=411271
 
-Please I want your comment to this before I give out further information please.
-
-Please be sincere and hold it to your heart without disclosing it to any person.
-
-Curt Launer
-curtlauner@vivaldi.net
-
-111 Princes' Boulevard, M6K 3C3 Toronto, Canada.
+Regards,
+Markus
