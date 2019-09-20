@@ -2,113 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E573B890E
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 04:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64224B8927
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 04:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394665AbfITCE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 22:04:56 -0400
-Received: from mail-pl1-f173.google.com ([209.85.214.173]:36443 "EHLO
-        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390810AbfITCEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 22:04:55 -0400
-Received: by mail-pl1-f173.google.com with SMTP id f19so2464658plr.3
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 19:04:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cLaiHASkCHFqmZBm9Gq5W/tMKYRNEIwnEvPja5U1W9c=;
-        b=iSlPOoP6B8/pSvdlIg3ikoiRLg3qwG1TTIgypiXriLfXRAT8aObGTrC0uBPCxkOzoD
-         0vZwLGJwCg8AHS3BeLqsTO1G2HgX6slapCWY0ePoFghJoZ4WO7WvfqXuUbtggMnNhGYv
-         6MDXrryxfTop1zQtDfrs1gvkZ7q6WbnPHNBavgs6K7EwmC1e6Zv3i0KzNP/tmBw6aDr+
-         9TImYnKO+r6fnBC2s+0M1DO68GWCFzuzPHZyqrv2lDj3fD8VTeAtTpSl7RQP03oZZnAq
-         TXBozZ+cLMiWRYjHqQGQyVpqkhw5kPqxDq0/1CYzh8Y5roc9SD3WH4O1azlhOnB5wYbR
-         ZehQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=cLaiHASkCHFqmZBm9Gq5W/tMKYRNEIwnEvPja5U1W9c=;
-        b=m1pz6OnMjUk6ODu3B8CHxGCDi099xgb62u0KFHhtGyzZAoHYPxhd20RBoEEIGWYsY0
-         8R1An26tyNQIy+FL6wGAAlLtzS5Xb6PD4aF6poe/ESgdjEVkJrb4tX7q2eHxd1OYXMT8
-         bB7lw7VqA6sswcPtHRhxUCi7rTRfJ21AH9lMtPGNwqkSuJLYekBgC62fzDfU1lN/BTYO
-         +sMlreZM3hadq+S6kqyJicJHmB/m7DHF0ZgUg1dc59qdB7gO3t7PgBJIqfcqe7L4T1X1
-         82on7ptjfINte5nuuXuQ63Gqp5eEZ71NtrJTvNeOBeEUa8BU1KSVfHjWhFEi8OoUBDYT
-         No+A==
-X-Gm-Message-State: APjAAAUjLIQwYUxAjmbAPDQEsw9PQEcsvwk+puM+0iTR8/5x/SN/sIKG
-        QH7Q7yJYKmn4fIfdIAoEomcwrsx7
-X-Google-Smtp-Source: APXvYqzT55nmRpPQg2z1t1kYEmpbVngkI8o0UjQQjs/cP5vUBU5WhjqW9W66Kiso/p7VU5KEudbJ1w==
-X-Received: by 2002:a17:902:76c2:: with SMTP id j2mr13805197plt.304.1568945093697;
-        Thu, 19 Sep 2019 19:04:53 -0700 (PDT)
-Received: from allosaurus.monzoon.net (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
-        by smtp.gmail.com with ESMTPSA id c14sm319821pfm.179.2019.09.19.19.04.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Sep 2019 19:04:52 -0700 (PDT)
-From:   Joe Stringer <joe@wand.net.nz>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net
-Subject: [PATCHv2 iproute2 master] bpf: Fix race condition with map pinning
-Date:   Thu, 19 Sep 2019 19:04:47 -0700
-Message-Id: <20190920020447.29119-1-joe@wand.net.nz>
-X-Mailer: git-send-email 2.20.1
+        id S2437086AbfITCTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 22:19:18 -0400
+Received: from mga11.intel.com ([192.55.52.93]:25069 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2437065AbfITCTS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Sep 2019 22:19:18 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Sep 2019 19:19:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,527,1559545200"; 
+   d="scan'208";a="362711315"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.71])
+  by orsmga005.jf.intel.com with ESMTP; 19 Sep 2019 19:19:14 -0700
+Date:   Fri, 20 Sep 2019 10:16:30 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [RFC v4 0/3] vhost: introduce mdev based hardware backend
+Message-ID: <20190920021630.GA4108@___>
+References: <20190917010204.30376-1-tiwei.bie@intel.com>
+ <993841ed-942e-c90b-8016-8e7dc76bf13a@redhat.com>
+ <20190917105801.GA24855@___>
+ <fa6957f3-19ad-f351-8c43-65bc8342b82e@redhat.com>
+ <20190918102923-mutt-send-email-mst@kernel.org>
+ <d2efe7e4-cf13-437d-e2dc-e2779fac7d2f@redhat.com>
+ <20190919154552.GA27657@___>
+ <43aaf7dc-f08b-8898-3c55-908ff4d68866@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <43aaf7dc-f08b-8898-3c55-908ff4d68866@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If two processes attempt to invoke bpf_map_attach() at the same time,
-then they will both create maps, then the first will successfully pin
-the map to the filesystem and the second will not pin the map, but will
-continue operating with a reference to its own copy of the map. As a
-result, the sharing of the same map will be broken from the two programs
-that were concurrently loaded via loaders using this library.
+On Fri, Sep 20, 2019 at 09:30:58AM +0800, Jason Wang wrote:
+> On 2019/9/19 下午11:45, Tiwei Bie wrote:
+> > On Thu, Sep 19, 2019 at 09:08:11PM +0800, Jason Wang wrote:
+> > > On 2019/9/18 下午10:32, Michael S. Tsirkin wrote:
+> > > > > > > So I have some questions:
+> > > > > > > 
+> > > > > > > 1) Compared to method 2, what's the advantage of creating a new vhost char
+> > > > > > > device? I guess it's for keep the API compatibility?
+> > > > > > One benefit is that we can avoid doing vhost ioctls on
+> > > > > > VFIO device fd.
+> > > > > Yes, but any benefit from doing this?
+> > > > It does seem a bit more modular, but it's certainly not a big deal.
+> > > Ok, if we go this way, it could be as simple as provide some callback to
+> > > vhost, then vhost can just forward the ioctl through parent_ops.
+> > > 
+> > > > > > > 2) For method 2, is there any easy way for user/admin to distinguish e.g
+> > > > > > > ordinary vfio-mdev for vhost from ordinary vfio-mdev?
+> > > > > > I think device-api could be a choice.
+> > > > > Ok.
+> > > > > 
+> > > > > 
+> > > > > > > I saw you introduce
+> > > > > > > ops matching helper but it's not friendly to management.
+> > > > > > The ops matching helper is just to check whether a given
+> > > > > > vfio-device is based on a mdev device.
+> > > > > > 
+> > > > > > > 3) A drawback of 1) and 2) is that it must follow vfio_device_ops that
+> > > > > > > assumes the parameter comes from userspace, it prevents support kernel
+> > > > > > > virtio drivers.
+> > > > > > > 
+> > > > > > > 4) So comes the idea of method 3, since it register a new vhost-mdev driver,
+> > > > > > > we can use device specific ops instead of VFIO ones, then we can have a
+> > > > > > > common API between vDPA parent and vhost-mdev/virtio-mdev drivers.
+> > > > > > As the above draft shows, this requires introducing a new
+> > > > > > VFIO device driver. I think Alex's opinion matters here.
+> > > Just to clarify, a new type of mdev driver but provides dummy
+> > > vfio_device_ops for VFIO to make container DMA ioctl work.
+> > I see. Thanks! IIUC, you mean we can provide a very tiny
+> > VFIO device driver in drivers/vhost/mdev.c, e.g.:
+> > 
+> > static int vfio_vhost_mdev_open(void *device_data)
+> > {
+> > 	if (!try_module_get(THIS_MODULE))
+> > 		return -ENODEV;
+> > 	return 0;
+> > }
+> > 
+> > static void vfio_vhost_mdev_release(void *device_data)
+> > {
+> > 	module_put(THIS_MODULE);
+> > }
+> > 
+> > static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+> > 	.name		= "vfio-vhost-mdev",
+> > 	.open		= vfio_vhost_mdev_open,
+> > 	.release	= vfio_vhost_mdev_release,
+> > };
+> > 
+> > static int vhost_mdev_probe(struct device *dev)
+> > {
+> > 	struct mdev_device *mdev = to_mdev_device(dev);
+> > 
+> > 	... Check the mdev device_id proposed in ...
+> > 	... https://lkml.org/lkml/2019/9/12/151 ...
+> 
+> 
+> To clarify, this should be done through the id_table fields in
+> vhost_mdev_driver, and it should claim it supports virtio-mdev device only:
+> 
+> 
+> static struct mdev_class_id id_table[] = {
+>     { MDEV_ID_VIRTIO },
+>     { 0 },
+> };
+> 
+> 
+> static struct mdev_driver vhost_mdev_driver = {
+>     ...
+>     .id_table = id_table,
+> }
 
-Fix this by adding a retry in the case where the pinning fails because
-the map already exists on the filesystem. In that case, re-attempt
-opening a fd to the map on the filesystem as it shows that another
-program already created and pinned a map at that location.
+In this way, both of virtio-mdev and vhost-mdev will try to
+take this device. We may want a way to let vhost-mdev take this
+device only when users explicitly ask it to do it. Or maybe we
+can have a different MDEV_ID for vhost-mdev but share the device
+ops with virtio-mdev.
 
-Signed-off-by: Joe Stringer <joe@wand.net.nz>
----
-v2: Fix close of created map in the EEXIST case.
-v1: Original patch
----
- lib/bpf.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> 
+> > 
+> > 	return vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, mdev);
+> 
+> 
+> And in vfio_vhost_mdev_ops, all its need is to just implement vhost-net
+> ioctl and translate them to virtio-mdev transport (e.g device_ops I proposed
+> or ioctls other whatever other method) API.
 
-diff --git a/lib/bpf.c b/lib/bpf.c
-index 01152b26e54a..86ab0698660f 100644
---- a/lib/bpf.c
-+++ b/lib/bpf.c
-@@ -1707,7 +1707,9 @@ static int bpf_map_attach(const char *name, struct bpf_elf_ctx *ctx,
- 			  int *have_map_in_map)
- {
- 	int fd, ifindex, ret, map_inner_fd = 0;
-+	bool retried = false;
- 
-+probe:
- 	fd = bpf_probe_pinned(name, ctx, map->pinning);
- 	if (fd > 0) {
- 		ret = bpf_map_selfcheck_pinned(fd, map, ext,
-@@ -1756,10 +1758,14 @@ static int bpf_map_attach(const char *name, struct bpf_elf_ctx *ctx,
- 	}
- 
- 	ret = bpf_place_pinned(fd, name, ctx, map->pinning);
--	if (ret < 0 && errno != EEXIST) {
-+	if (ret < 0) {
-+		close(fd);
-+		if (!retried && errno == EEXIST) {
-+			retried = true;
-+			goto probe;
-+		}
- 		fprintf(stderr, "Could not pin %s map: %s\n", name,
- 			strerror(errno));
--		close(fd);
- 		return ret;
- 	}
- 
--- 
-2.20.1
+I see, so my previous understanding is basically correct:
 
+https://lkml.org/lkml/2019/9/17/332
+
+I.e. we won't have a separate vhost fd and we will do all vhost
+ioctls on the VFIO device fd backed by this new VFIO driver.
+
+> And it could have a dummy ops
+> implementation for the other device_ops.
+> 
+> 
+> > }
+> > 
+> > static void vhost_mdev_remove(struct device *dev)
+> > {
+> > 	vfio_del_group_dev(dev);
+> > }
+> > 
+> > static struct mdev_driver vhost_mdev_driver = {
+> > 	.name	= "vhost_mdev",
+> > 	.probe	= vhost_mdev_probe,
+> > 	.remove	= vhost_mdev_remove,
+> > };
+> > 
+> > So we can bind above mdev driver to the virtio-mdev compatible
+> > mdev devices when we want to use vhost-mdev.
+> > 
+> > After binding above driver to the mdev device, we can setup IOMMU
+> > via VFIO and get VFIO device fd of this mdev device, and pass it
+> > to vhost fd (/dev/vhost-mdev) with a SET_BACKEND ioctl.
+> 
+> 
+> Then what vhost-mdev char device did is just forwarding ioctl back to this
+> vfio device fd which seems a overkill. It's simpler that just do ioctl on
+> the device ops directly.
+
+Yes.
+
+Thanks,
+Tiwei
+
+
+> 
+> Thanks
+> 
+> 
+> > 
+> > Thanks,
+> > Tiwei
+> > 
+> > > Thanks
+> > > 
+> > > 
+> > > > > Yes, it is.
+> > > > > 
+> > > > > Thanks
+> > > > > 
+> > > > > 
