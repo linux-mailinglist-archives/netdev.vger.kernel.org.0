@@ -2,166 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B15C1B90BE
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 15:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22219B90D8
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 15:42:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbfITNhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 09:37:20 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:33039 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727337AbfITNhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 09:37:20 -0400
-Received: by mail-lf1-f65.google.com with SMTP id y127so5115160lfc.0;
-        Fri, 20 Sep 2019 06:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jphzEcSkNncyQXURXy+bMvvSOETA08+BxHJ5z57Bb0M=;
-        b=EfzMViMon0Yh012SQYg8h4xK0JFPuLUGf8hs1IklN8um4D/H4ReoSmHw3ok0fVz8wA
-         ydZvJ9tblvpBVSh29a7WTqMk9IUdC3G8y9/FfinNiNstDyifALTmZzkCRw7WiQEDaBrp
-         tRPJSKJCOj20Ei4e4kXUkdfi2HXwME57FgKE9QNgJHDSK8qBFcZji5mW9Ij/uxtduAZo
-         bGYtLMXFiX6MzgLcHcy3BF2pOpnaIKYVsZO9Jf/uwXkNZLuL5kN4x94Vjyk1r6GTg2c/
-         4U/y8/xo6DFTzBND9j9hKecItPSbnprkm0n3ZA+qqKYjSERd+JQepKHJRit1HW1zH9nA
-         nDiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jphzEcSkNncyQXURXy+bMvvSOETA08+BxHJ5z57Bb0M=;
-        b=iJOCnr5lz1gkSRcRxPmbHH1rDOb0BE9i9cysJIGB/azly/JMkzsnZ5FmbU0r8ug2z9
-         V6FgerQ0cuCgc4Hl6A5oVmLw8p8W8i6ddFHIlkFTBVKOmxiNd4wsTxPtukOReyMvCSPN
-         LNS5JIKSZdGmuO/Vg/FuyfIQPNojcK3yoIGqpp2r4wL/l9w0SGR+MxBHmkoB5pKC3sFg
-         YV+w8ONTVKMzZjyC+Zr5YH8eVpD/D1G7FiyXr1cA+j7pxq3ZVWyycOnNzr1Rflcqjdt9
-         hiA/iWOj2EkbiHICFuD3TwfXSPU0ltfc2nhV2gnxL1PgjQIQ157by/WKR5VfPngzA4mr
-         xUig==
-X-Gm-Message-State: APjAAAWWaFQ/LqJFRHcbOlR0j1El/zTwZH8WQB2xJMI3f5Bay0kvWM8H
-        6Z/ldJ9Drp+r44OXy1awC0w=
-X-Google-Smtp-Source: APXvYqxlzmxdYLzOPpcInVQyKgAS4zc777/kdZlRsQ6Gg/ppqj9M7QdxbhVc99mR+kWGcY6bb23LnQ==
-X-Received: by 2002:a19:4347:: with SMTP id m7mr8570675lfj.146.1568986637463;
-        Fri, 20 Sep 2019 06:37:17 -0700 (PDT)
-Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id b25sm475423ljj.36.2019.09.20.06.37.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 Sep 2019 06:37:15 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jouni Malinen <j@w1.fi>,
-        hostap@lists.infradead.org, openwrt-devel@lists.openwrt.org
-Cc:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RFC] cfg80211: add new command for reporting wiphy crashes
-Date:   Fri, 20 Sep 2019 15:37:08 +0200
-Message-Id: <20190920133708.15313-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728223AbfITNmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 09:42:38 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:34716 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726924AbfITNmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 09:42:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=xBchC21co1zSoAA232XoJcRl/YGG2YtjdTp+sQB4kOU=; b=kWpv/wvvqybuA9gJqkZMShqqR
+        V7SElLbkefrx1lTEaEbPafBqUmi3tODqq71K9VLs6XdoXOtRoUHN7DWRQhWKghSabT9BzWFzcUoAc
+        Ia3zii3x5bTkTcQfkvKXatbAH3JI3i+oFQCud0xT8/IxJg0jOn7JkRoHhb2+d3aMX0b53vW+LFW7w
+        fnWHtKPNKd08uge+YTUIQMtmVXFJKoalOwu6jo65aKYinLJmQPuxyiU8+8LaujWRVsIgBovQsEO25
+        R/rSrdxVH2yZzqmjGRXS2gAksl4YHw6ys+YKuL7Xufywy55womoXyJ3eWaUbbEAjjfKjsR7wLP/tW
+        HnXE8I4gA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:41870)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iBJAz-00048q-TJ; Fri, 20 Sep 2019 14:42:22 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iBJAt-0005ql-Vd; Fri, 20 Sep 2019 14:42:15 +0100
+Date:   Fri, 20 Sep 2019 14:42:15 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     tinywrkb <tinywrkb@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>,
+        Baruch Siach <baruch@tkos.co.il>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        open list <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: imx6dl: SolidRun: add phy node with 100Mb/s
+ max-speed
+Message-ID: <20190920134215.GM25745@shell.armlinux.org.uk>
+References: <20190917124101.GA1200564@arch-dsk-01>
+ <20190917125434.GH20778@lunn.ch>
+ <20190917133253.GA1210141@arch-dsk-01>
+ <20190917133942.GR25745@shell.armlinux.org.uk>
+ <20190917151707.GV25745@shell.armlinux.org.uk>
+ <20190917153027.GW25745@shell.armlinux.org.uk>
+ <20190917163427.GA1475935@arch-dsk-01>
+ <20190917170419.GX25745@shell.armlinux.org.uk>
+ <20190917171913.GY25745@shell.armlinux.org.uk>
+ <20190917214201.GB25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190917214201.GB25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On Tue, Sep 17, 2019 at 10:42:01PM +0100, Russell King - ARM Linux admin wrote:
+> On Tue, Sep 17, 2019 at 06:19:13PM +0100, Russell King - ARM Linux admin wrote:
+> > whether you can get the link to come up at all.  You might need to see
+> > whether wiggling the RJ45 helps (I've had that sort of thing with some
+> > cables.)
+> > 
+> > You might also need "ethtool -s eth0 advertise ffcf" after trying that
+> > if it doesn't work to take the gigabit speeds out of the advertisement.
+> > 
+> > Thanks.
+> > 
+> >  drivers/net/phy/at803x.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> > index b3893347804d..85cf4a4a5e81 100644
+> > --- a/drivers/net/phy/at803x.c
+> > +++ b/drivers/net/phy/at803x.c
+> > @@ -296,6 +296,11 @@ static int at803x_config_init(struct phy_device *phydev)
+> >  	if (ret < 0)
+> >  		return ret;
+> >  
+> > +	/* Disable smartspeed */
+> > +	ret = phy_modify(phydev, 0x14, BIT(5), 0);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> >  	/* The RX and TX delay default is:
+> >  	 *   after HW reset: RX delay enabled and TX delay disabled
+> >  	 *   after SW reset: RX delay enabled, while TX delay retains the
+> 
+> Hi,
+> 
+> Could you try this patch instead - it seems that the PHY needs to be
+> soft-reset for the write to take effect, and _even_ for the clearance
+> of the bit to become visible in the register.
+> 
+> I'm not expecting this on its own to solve anything, but it should at
+> least mean that the at803x doesn't modify the advertisement registers
+> itself.  It may mean that the link doesn't even come up without forcing
+> the advertisement via the ethtool command I mentioned before.
+> 
+> Thanks.
+> 
+>  drivers/net/phy/at803x.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index b3893347804d..69a58c0e6b42 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -296,6 +296,16 @@ static int at803x_config_init(struct phy_device *phydev)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/* Disable smartspeed */
+> +	ret = phy_modify(phydev, 0x14, BIT(5), 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Must soft-reset the PHY for smartspeed disable to take effect */
+> +	ret = genphy_soft_reset(phydev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	/* The RX and TX delay default is:
+>  	 *   after HW reset: RX delay enabled and TX delay disabled
+>  	 *   after SW reset: RX delay enabled, while TX delay retains the
 
-Hardware or firmware instability may result in unusable wiphy. In such
-cases usually a hardware reset is needed. To allow a full recovery
-kernel has to indicate problem to the user space.
+Bad news I'm afraid.  It looks like the AR8035 has a bug in it.
+Disabling the SmartSpeed feature appears to make register 9, the
+1000BASET control register, read-only.
 
-This new nl80211 command lets user space known wiphy has crashed and has
-been just recovered. When applicable it should result in supplicant or
-authenticator reconfiguring all interfaces.
+For example:
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-I'd like to use this new cfg80211_crash_report() in brcmfmac after a
-successful recovery from a FullMAC firmware crash.
+Reading 0x0009=0x0200
+Writing 0x0014=0x082c	<= smartspeed enabled
+Writing 0x0000=0xb100	<= soft reset
+Writing 0x0009=0x0600
+Reading 0x0009=0x0600	<= it took the value
 
-Later on I'd like to modify hostapd to reconfigure wiphy using a
-previously used setup.
+Reading 0x0009=0x0600
+Writing 0x0014=0x080c	<= smartspeed disabled
+Writing 0x0000=0xb100	<= soft reset
+Writing 0x0009=0x0200
+Reading 0x0009=0x0600	<= it ignored the write
 
-I'm OpenWrt developer & user and I got annoyed by my devices not auto
-recovering after various failures. There are things I cannot fix (hw
-failures or closed fw crashes) but I still expect my devices to get
-back to operational state as soon as possible on their own.
----
- include/net/cfg80211.h       |  7 +++++++
- include/uapi/linux/nl80211.h |  2 ++
- net/wireless/nl80211.c       | 29 +++++++++++++++++++++++++++++
- 3 files changed, 38 insertions(+)
+Reading 0x0009=0x0600
+Writing 0x0014=0x082c	<= smartspeed enabled
+Writing 0x0000=0xb100	<= soft reset
+Writing 0x0009=0x0200
+Reading 0x0009=0x0200	<= it took the value
 
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index ff45c3e1abff..668fa27c88cc 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -7437,6 +7437,13 @@ void cfg80211_pmsr_complete(struct wireless_dev *wdev,
- bool cfg80211_iftype_allowed(struct wiphy *wiphy, enum nl80211_iftype iftype,
- 			     bool is_4addr, u8 check_swif);
- 
-+/**
-+ * cfg80211_crash_report - report crashed wiphy that requires a setup
-+ *
-+ * @wiphy: the wiphy
-+ * @gfp: allocation flags
-+ */
-+void cfg80211_crash_report(struct wiphy *wiphy, gfp_t gfp);
- 
- /* Logging, debugging and troubleshooting/diagnostic helpers. */
- 
-diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
-index beee59c831a7..9e17feb03849 100644
---- a/include/uapi/linux/nl80211.h
-+++ b/include/uapi/linux/nl80211.h
-@@ -1325,6 +1325,8 @@ enum nl80211_commands {
- 
- 	NL80211_CMD_PROBE_MESH_LINK,
- 
-+	NL80211_CMD_CRASH_REPORT,
-+
- 	/* add new commands above here */
- 
- 	/* used to define NL80211_CMD_MAX below */
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index d21b1581a665..d29785fb0676 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -16940,6 +16940,35 @@ void cfg80211_update_owe_info_event(struct net_device *netdev,
- }
- EXPORT_SYMBOL(cfg80211_update_owe_info_event);
- 
-+void cfg80211_crash_report(struct wiphy *wiphy, gfp_t gfp)
-+{
-+	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
-+	struct sk_buff *msg;
-+	void *hdr;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, gfp);
-+	if (!msg)
-+		return;
-+
-+	hdr = nl80211hdr_put(msg, 0, 0, 0, NL80211_CMD_CRASH_REPORT);
-+	if (!hdr)
-+		goto nla_put_failure;
-+
-+	if (nla_put_u32(msg, NL80211_ATTR_WIPHY, rdev->wiphy_idx))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	genlmsg_multicast_netns(&nl80211_fam, wiphy_net(&rdev->wiphy), msg, 0,
-+				NL80211_MCGRP_CONFIG, gfp);
-+
-+	return;
-+
-+nla_put_failure:
-+	nlmsg_free(msg);
-+}
-+EXPORT_SYMBOL(cfg80211_crash_report);
-+
- /* initialisation/exit functions */
- 
- int __init nl80211_init(void)
+If it's going to make register 9 read-only when smartspeed is disabled,
+then that's another failure mode and autonegotiation cockup just
+waiting to happen - which I spotted when trying to configure the
+advertisement using ethtool, and finding that it was impossible to stop
+1000baseT/Full being advertised.
+
+I think the only sane approach - at least until we have something more
+reasonable in place - is to base the negotiation result off what is
+actually stored in the PHY registers at the time the link comes up, and
+not on the cached versions of what we should be advertising.
+
+5502b218e001 has caused this regression, and where we are now after
+more than a week of trying to come up with some fix for this
+regression, the only solution that seems to work without introducing
+more failures is to revert that commit.
+
+Adding Heiner (original commit author), Florian, David and netdev.
+
+Thoughts?
+
 -- 
-2.21.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
