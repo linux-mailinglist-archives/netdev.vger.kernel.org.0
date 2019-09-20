@@ -2,105 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F9DB9621
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9CDB9623
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 19:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391863AbfITRBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 13:01:33 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38338 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391591AbfITRBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 13:01:32 -0400
-Received: by mail-wr1-f65.google.com with SMTP id l11so7482316wrx.5;
-        Fri, 20 Sep 2019 10:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HCtYy1oIkkXnCU1sRsRDsgHD2IvigT7Js2Tb5RJ2iT4=;
-        b=T16y3fUOvcmSAfLSXdM9ch9G717GwLX9AWdReeOgRUKZ1Lrwtove8tX7oVg+Jvd2hu
-         55Di6xP7aW6l5DADXPpvaDuQ5/oAlvKC4HbcRuv7xc/awOIWG0ZdbILd7SK6uwWOuge5
-         SzFdyIAyHeRXEx7U+lckprXGxEGTvkZ7Hm2lGZUAIzIdTxcPxNNvCx6++aUyWKH9H6ne
-         I7xuCQAcsXhCt3Pp/N74ta4yFkRKnQ3ywUTUpmJDmJGjz0Qc8JffGnk9K7sPXzX+6WlC
-         5mHy2dPX3JFXxTjAg8ne3ryQbkrU4E4GJg4IuJPV5RqYdN8QwzRmHjKQvZyq5qDUlmSX
-         XdEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HCtYy1oIkkXnCU1sRsRDsgHD2IvigT7Js2Tb5RJ2iT4=;
-        b=kMmAEdD6VwTEImsWG9ZF4lPR0Lp0oABKvb8lFPsW1Q7qYfIHCieoG3UgKAdlld9JGt
-         FfNw7xDjPDSGZLgZjvmSt7kayjEb3PHV3IkFf/AIKGhp6y0zkqbBAUzltyVi0pWrJbbH
-         m1UKS7nzrpsXPoHVYpkL5DgqOAxw4wLQJE8l1ydIqA3vL66c7wHev1ofe/rraI4YcRFF
-         ta7UXtBFtPih132ZC5EuV+wC/S+wJIqZIjdN0UXFdx2/t2YXxaGcCa+0yz0Kn8UHP8Kx
-         /lN6F45zFpQOEuWV4/khjbvN7tWj/x3bW1zZXpgMVuZcNVr+JdKoOHiLd05GJ/TcIp8M
-         MiyA==
-X-Gm-Message-State: APjAAAWTLwC+MOGpgNRMrVw8XRL6CTQ1qG+cb8g0GWac5aOMTspugUcW
-        UvuPdkoEAmwuhsVMtXht5qU=
-X-Google-Smtp-Source: APXvYqzOfxXrLIlVZuo9vljFMoGcdaULkJY0ceMQw96GmUjbrx/99nzMNArs9UWv8X8e+2xRn7zs+Q==
-X-Received: by 2002:adf:dc91:: with SMTP id r17mr12645534wrj.22.1568998889048;
-        Fri, 20 Sep 2019 10:01:29 -0700 (PDT)
-Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
-        by smtp.gmail.com with ESMTPSA id b16sm3397225wrh.5.2019.09.20.10.01.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 10:01:28 -0700 (PDT)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH] net: stmmac: Fix page pool size
-Date:   Fri, 20 Sep 2019 19:01:27 +0200
-Message-Id: <20190920170127.22850-1-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S2405296AbfITRCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 13:02:15 -0400
+Received: from mail-eopbgr40049.outbound.protection.outlook.com ([40.107.4.49]:19870
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2391920AbfITRCO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 13:02:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q21T6wzkeofIUW2bmPxqfTkgrunswYGsR63CEzj/YRW73xR9wKPUsHgdfwF2NRunttrnv+4iQjPYlVHpSrGZwvATGp9M8hMePvMmiwdNJM58EVkiqeBLpxKO0BPMoEEz0Q1U+Pry3dnEOhyx1x7wHOOwGydhsdypmTif482E4ERU1UR/bgcFOq2R8kZCWI58hosNs6SYIDVVYTubrh55omJem1DUnhgdiiza85l0IGzHvD4WEfDJjcQuhNi2ERDLx3EzMAz0Oi+1XQ3IyDKNLc1D9zBdbgKZBrftLtLpbq2/3kk3ZNJ3+BHNyBLY+u+7UA3wYTU7flcwzSuqddYaDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VH/aYCDUWGXe5dkFsWpbZr/Y8E9XJis+iFN4JZgOwo4=;
+ b=eyxFYm8B7VgaKIs+f6m0pIPW0Xy4SKdKVHmpXNv5z/IqIHYzLrZuRI20bEBBd+bT/yd29IMThZnQqr783/ljBqfDnDAg5T1J9rae4bbWy4XnIkxRoe5sVKC7X+LYyLEqAMfn8BiZF+mOQBqCuxR3cvFyM+b3ll1T7dxdOZmsrC8tHo9dNiah/9tFiSdyK6IejQAKz8pC4wYeALNKrAUSexKG02IuE5rhjX0WR4lstHSLTXxWPOchB/gLZaS+wWKRAG9RQhld211PFhEuUR2KKnIBWqqcfRZbef1sW3OHKEAwp7m6xJbGL8naSUz4TDfSyJ5s5JdWVc1PAYQvoYWiIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VH/aYCDUWGXe5dkFsWpbZr/Y8E9XJis+iFN4JZgOwo4=;
+ b=NlRij032XuSvl+pU5X8dhd41XW3nL+JqN7iX/+ixYIctc4Opeq/xIgzYSNSom9h0Ut6s0v3+aK2hjRBPw7XXyQokbBWw3OUAzRfl/8AzKEaAu1QEcz2xG4x40Btwep+WP9R0iPEyi6pde9J154QLpN7guwO0dgc7lHz6pMv2j4E=
+Received: from AM6PR05MB5288.eurprd05.prod.outlook.com (20.177.198.151) by
+ AM6PR05MB6614.eurprd05.prod.outlook.com (20.179.3.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2284.20; Fri, 20 Sep 2019 17:02:11 +0000
+Received: from AM6PR05MB5288.eurprd05.prod.outlook.com
+ ([fe80::255f:e232:1ad8:65fb]) by AM6PR05MB5288.eurprd05.prod.outlook.com
+ ([fe80::255f:e232:1ad8:65fb%5]) with mapi id 15.20.2284.023; Fri, 20 Sep 2019
+ 17:02:11 +0000
+From:   Tal Gilboa <talgi@mellanox.com>
+To:     =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <uwe@kleine-koenig.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] dimlib: make DIMLIB a hidden symbol
+Thread-Topic: [PATCH] dimlib: make DIMLIB a hidden symbol
+Thread-Index: AQHVb7e0M+d87C6r+0SKPdjxpO2J/ac0ytMA
+Date:   Fri, 20 Sep 2019 17:02:10 +0000
+Message-ID: <670cc72f-fef0-a8cf-eb03-25fdb608eea8@mellanox.com>
+References: <20190920133115.12802-1-uwe@kleine-koenig.org>
+In-Reply-To: <20190920133115.12802-1-uwe@kleine-koenig.org>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [89.139.148.16]
+x-clientproxiedby: PR0P264CA0162.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1b::30) To AM6PR05MB5288.eurprd05.prod.outlook.com
+ (2603:10a6:20b:6b::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=talgi@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c9b0a4b7-d0f6-4842-80ad-08d73dec46d9
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB6614;
+x-ms-traffictypediagnostic: AM6PR05MB6614:|AM6PR05MB6614:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB6614CF21D10A3E78D27AA749D2880@AM6PR05MB6614.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0166B75B74
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(376002)(396003)(136003)(189003)(199004)(6436002)(305945005)(14454004)(256004)(14444005)(31686004)(8936002)(81156014)(81166006)(110136005)(316002)(54906003)(66946007)(66446008)(64756008)(66556008)(66476007)(446003)(7736002)(25786009)(476003)(6512007)(4744005)(4326008)(66574012)(6116002)(71190400001)(8676002)(36756003)(66066001)(11346002)(5660300002)(76176011)(386003)(2906002)(966005)(229853002)(486006)(3846002)(6246003)(2616005)(99286004)(53546011)(52116002)(6506007)(6486002)(186003)(478600001)(6306002)(86362001)(102836004)(26005)(71200400001)(31696002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6614;H:AM6PR05MB5288.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: yfl3fIWirQiU9NAY4xSQwq9rUYprpsEbSibnO7R8RfAyWgdM6RTUdsnZrg8ZDTcf6oU0wqgyzHxpsEJkn3O6qkSIMnsNBeKHhj5G2UDFkmT+ALcOpCUzO6DFsCElacu+bY0yykh+Rnfs9kqnIbYtaUc8GX3VPOMUQknrEp8EG0Ajo72+CU5SfuEP9g4ChwDtqYsznMM+myTOOUiBV4M1IXwZbwybW+1NriOCyNCm1XzQdO2s7QbXZ4DAyOwigahh8M9tRg+Ddu6TQpZr/zo85ham3ciAnyMAU0TaK24GPZbgEb+tn7U6436faHJhDTOGspFekJLHDIbpw3DTR7Hinz8kwdAw2/zEw5KJFaCHIk6hoLhL5bn8VMGuC0uNI8wILzuA6/tdZRFH0K6Jklj8QH3yjbu1v5JatIrXtxS8Iwc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <287F364375C271469755202CCF2BD768@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9b0a4b7-d0f6-4842-80ad-08d73dec46d9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2019 17:02:11.0417
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mXhBa14e5VZOh8aPvXfnmWAoNwoctDAWLciGlIB3e8iVWvvhUCKDqewjU+TYpVEbjZpTom9nS7uQu0/lXFwDnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6614
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
-
-The size of individual pages in the page pool in given by an order. The
-order is the binary logarithm of the number of pages that make up one of
-the pages in the pool. However, the driver currently passes the number
-of pages rather than the order, so it ends up wasting quite a bit of
-memory.
-
-Fix this by taking the binary logarithm and passing that in the order
-field.
-
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ecd461207dbc..f8c90dba6db8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1550,13 +1550,15 @@ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
- 	for (queue = 0; queue < rx_count; queue++) {
- 		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
- 		struct page_pool_params pp_params = { 0 };
-+		unsigned int num_pages;
- 
- 		rx_q->queue_index = queue;
- 		rx_q->priv_data = priv;
- 
- 		pp_params.flags = PP_FLAG_DMA_MAP;
- 		pp_params.pool_size = DMA_RX_SIZE;
--		pp_params.order = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-+		num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-+		pp_params.order = ilog2(num_pages);
- 		pp_params.nid = dev_to_node(priv->device);
- 		pp_params.dev = priv->device;
- 		pp_params.dma_dir = DMA_FROM_DEVICE;
--- 
-2.23.0
-
+T24gOS8yMC8yMDE5IDQ6MzEgUE0sIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBBY2NvcmRp
+bmcgdG8gVGFsIEdpbGJvYSB0aGUgb25seSBiZW5lZml0IGZyb20gRElNIGNvbWVzIGZyb20gYSBk
+cml2ZXINCj4gdGhhdCB1c2VzIGl0LiBTbyBpdCBkb2Vzbid0IG1ha2Ugc2Vuc2UgdG8gbWFrZSB0
+aGlzIHN5bWJvbCB1c2VyIHZpc2libGUsDQo+IGluc3RlYWQgYWxsIGRyaXZlcnMgdGhhdCB1c2Ug
+aXQgc2hvdWxkIHNlbGVjdCBpdCAoYXMgaXMgYWxyZWFkeSB0aGUgY2FzZQ0KPiBBRkFJQ1QpLg0K
+PiANCj4gU2lnbmVkLW9mZi1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHV3ZUBrbGVpbmUta29lbmln
+Lm9yZz4NCj4gLS0tDQo+ICAgbGliL0tjb25maWcgfCAzICstLQ0KPiAgIDEgZmlsZSBjaGFuZ2Vk
+LCAxIGluc2VydGlvbigrKSwgMiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9saWIv
+S2NvbmZpZyBiL2xpYi9LY29uZmlnDQo+IGluZGV4IGNjMDQxMjRlZDhmNy4uOWZlOGEyMWZkMTgz
+IDEwMDY0NA0KPiAtLS0gYS9saWIvS2NvbmZpZw0KPiArKysgYi9saWIvS2NvbmZpZw0KPiBAQCAt
+NTU1LDggKzU1NSw3IEBAIGNvbmZpZyBTSUdOQVRVUkUNCj4gICAJICBJbXBsZW1lbnRhdGlvbiBp
+cyBkb25lIHVzaW5nIEdudVBHIE1QSSBsaWJyYXJ5DQo+ICAgDQo+ICAgY29uZmlnIERJTUxJQg0K
+PiAtCWJvb2wgIkRJTSBsaWJyYXJ5Ig0KPiAtCWRlZmF1bHQgeQ0KPiArCWJvb2wNCj4gICAJaGVs
+cA0KPiAgIAkgIER5bmFtaWMgSW50ZXJydXB0IE1vZGVyYXRpb24gbGlicmFyeS4NCj4gICAJICBJ
+bXBsZW1lbnRzIGFuIGFsZ29yaXRobSBmb3IgZHluYW1pY2FsbHkgY2hhbmdlIENRIG1vZGVyYXRp
+b24gdmFsdWVzDQo+DQpUaGVyZSdzIGEgcGVuZGluZyBzZXJpZXMgdXNpbmcgRElNIHdoaWNoIGRp
+ZG4ndCBhZGQgdGhlIHNlbGVjdCBjbGF1c2UgDQpbMV0uIEFydGh1ciwgRllJLiBPdGhlciB0aGFu
+IHRoYXQgTEdUTS4NCg0KWzFdIGh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20vbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZy9tc2czMTQzMDQuaHRtbA0KDQo=
