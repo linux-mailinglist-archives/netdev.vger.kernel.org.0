@@ -2,121 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4B0B8B30
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 08:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFB9B8B37
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 08:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437327AbfITGkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 02:40:15 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:47442 "EHLO
+        id S1726817AbfITGpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 02:45:32 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:30860 "EHLO
         mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437279AbfITGkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 02:40:14 -0400
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8K6bxAS022209;
-        Fri, 20 Sep 2019 02:39:25 -0400
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2050.outbound.protection.outlook.com [104.47.36.50])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2v3vb5v70b-1
+        by vger.kernel.org with ESMTP id S1725993AbfITGpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 02:45:31 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8K6gn0T016436;
+        Fri, 20 Sep 2019 02:44:42 -0400
+Received: from nam05-by2-obe.outbound.protection.outlook.com (mail-by2nam05lp2050.outbound.protection.outlook.com [104.47.50.50])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2v3vb2c80u-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Sep 2019 02:39:24 -0400
+        Fri, 20 Sep 2019 02:44:42 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dT0yYqKzh0CG/78E9g2TLzeJ4PagGVHy4x6HE5/C/4f6m74AGzeDno4FXHBrIlXCAmTYufFCcjWLHVMoqLrwxgsbrol44lxEla+DlyeeLrgfHuvvkhDZkNpNFrpWDzic7mVaKFBAD6h8oa5LdZMINv+lVC3Bl8OFk7uMnoDbd0kdptfAwqZNNr/87aCDOUwjpJZOBc5Jx2ApoMVMZBuIQfKcBiRyqu3711YFnd5msF1Aa7NCSCFOvk5dzGw+Z/olsOvOGflH6GQM3qZSRxKCtDCq3M+YbH3vXv1o6Yhyau97NEStGMHqwpAA6XBRfexSAC4+3MOia56KH+qCdC8RVA==
+ b=W6A7nQ1vH0Fg4q6jR3dWf9l1mgUE3Wp77DX+ZsSdNFwl5ZQhIxaRkBKaJ+re9WKJkyBfwvQS0KvV3NI1rlYh1G07qnIyM4jKmtI0XRQXh4yLnfRlYDiAsvEW3jWKkoStsV/Nw/5Lc0I/nZ9GM5dF6PtJ3GL5QreZpS0vrg9bEYeL3/5FMw4bnTcvfLbWJ+nSV4vPlQkPmYFG2DCzqBXA60P360NYQ45O2vM8+8OwExAMqDwOqx6KpjGpAgGdI0t0Nh1dUKCbnOoYQh2tDOzGpdMWRwFJSC1FwcfduYF4yTQUWlIwec1yGGOw4RefaGs/dUUEM9e4fyJOnV2BgvRNsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PQaftXl4d6EKPHFo0+ThOXmDYfT8cz0Erp6yesMIu7I=;
- b=KYkQBIt3XgbngpcRe427s2nMdV7//dWzjg/lhzv28s0y1sQngfli+tbvQXUj6qoqIhAUAZjISaDix45uOFp34WStKzykHdAQRttdMJE2fDT9shdJRQgrQrEAZkBlJjQrS0GvjrBQXazpwE2asum0HxqDiYfRXu12lP/hBbD0UFlf6vp4OFuSwFd/Ug04xcgn/WM6g+x2G5jXitpenTjgFstvcUah0xWvy6KlwkFYxVvm8eYm4CiSxvU28lyArrPmLX/b/z7glrz2FK0ZCQHH54dMENsyDXtt25rqNXZsuCtH1mNjvbT0XxZfYXyiX11lf4nDS05gRPyAUro6q3W7Aw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
+ bh=7KTKnb4CistQOC1jAEEpjiAHVFGMl6wK+8OsCT+jHN8=;
+ b=nRe2Zt4URF6QsHGsJjIVwPCWQLYpdDYDp6FQvsnfKvfBf4mbOpk9oDRmE5T55NybTs4f7FFk6dESvj2LwPH1/AIN+Iz32nXJO9ooqPOXbU9c8HIW3jYNFanifJ8AVksY8rNNVcv6khKszwmowyVwQtdVLWSLnE/p4DSrSkJpkTrHbqhzRow590OIlimKFaAmUkMfL9hjMDvWu8RTk17BBDbiGFUtouToV3q197FAIyAwDkz/j5sSGOjfJs6KzwBHQg5UsjgI64sqXEgkOd9sj4ETwlnAbFKpxVEaKpAcZrDh8PZLlSHbSSNtwwG51kIP+7iGAyjKeF0G4ENC+YeX9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=tuxdriver.com smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PQaftXl4d6EKPHFo0+ThOXmDYfT8cz0Erp6yesMIu7I=;
- b=HxhrJZ15rZA9VCpdZm8MDeunR4E8bcmRV81d7X7amtXkVDz2kY7cie/0ukQxr22IBaimENYeFSai89P4OEV3egDwy1cs5S6ufiXnL02NpffUPKGFPcl0zu23QtQZoUJBo3tJBwXT/HxxCc25jcRhOJRVoBOlGX8TQvMml5i5n9Y=
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
- CH2PR03MB5318.namprd03.prod.outlook.com (20.180.15.201) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.18; Fri, 20 Sep 2019 06:39:22 +0000
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::344d:7f50:49a3:db1b]) by CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::344d:7f50:49a3:db1b%3]) with mapi id 15.20.2284.009; Fri, 20 Sep 2019
- 06:39:22 +0000
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: Re: [PATCH 2/2][ethtool] ethtool: implement support for Energy Detect
- Power Down
-Thread-Topic: [PATCH 2/2][ethtool] ethtool: implement support for Energy
- Detect Power Down
-Thread-Index: AQHVbrkabB9cLWWF40mbNZ5JSD7OmqczB7mAgAFJYAA=
-Date:   Fri, 20 Sep 2019 06:39:21 +0000
-Message-ID: <79abfbff321f0d87c9c2e4df2b4c46a3f874c2ee.camel@analog.com>
-References: <20190919100833.6208-1-alexandru.ardelean@analog.com>
-         <20190919100833.6208-2-alexandru.ardelean@analog.com>
-         <20190919140025.GC22556@lunn.ch>
-In-Reply-To: <20190919140025.GC22556@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [137.71.226.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 75c241c6-4679-4915-06bb-08d73d95458f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:CH2PR03MB5318;
-x-ms-traffictypediagnostic: CH2PR03MB5318:
-x-microsoft-antispam-prvs: <CH2PR03MB5318470C2CAD888E51746F16F9880@CH2PR03MB5318.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0166B75B74
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(39860400002)(396003)(366004)(136003)(346002)(199004)(189003)(99286004)(2351001)(478600001)(6436002)(6486002)(6512007)(14454004)(5640700003)(36756003)(2906002)(86362001)(229853002)(3846002)(66066001)(11346002)(446003)(6116002)(6916009)(305945005)(7736002)(25786009)(6506007)(4326008)(71190400001)(2616005)(2501003)(186003)(26005)(102836004)(118296001)(81156014)(1730700003)(8676002)(486006)(6246003)(316002)(54906003)(256004)(81166006)(8936002)(71200400001)(5660300002)(66946007)(66556008)(66446008)(76116006)(64756008)(66476007)(76176011)(476003)(461764006);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5318;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: analog.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: wiOTLwVba9yA/mRT+ZkY5F9NSWDJpmsdaYzQpaooqGSqlVoX455g5a4ol+P3vc/rtEjjDiqvxvkwcRZ3O8zZmsgsQ3UcNTDd6S+s5P5hD6zZ+in8gNsh5pPdeQ5qD3chG8nmGnwZI9g5uGjj+moi5Bz5U4CjAyWziAthCJUidJrSK1eR/zRmaEenj3T3JRw6a2xn+vBiJF8sL/3YgqgpebtQ0+qkXfDJq2bSig/3iRFkG9pcmpYom4tdbfFUPCniBhIKM3TqQWwvVI31iBIj8knA79fydCd8708BcWVsXhHmmUtoTaK2I5kIzeKlYCFqq/JP6cLI4H2P06uE+i/Tw3ae6b/nUfX4BcJ2JOtcBeEbYEv6NQWRR/hG1PTn96ZSJDSTVjk5BEoB+ybgPZMa2/sNddKMQ1T5r0EZhsRzqLI=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2766EC6ACB2AB844ABCF105AD6705CA0@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ bh=7KTKnb4CistQOC1jAEEpjiAHVFGMl6wK+8OsCT+jHN8=;
+ b=PVzYh9zybwmb44EadxczT9z/ottv2gNeCxQQpUDx7np8TfgNPLgfuw4wNR1MIYdqjZyDjrD2LR+cdVcPW4ew+CPt8mNqorNPiJi0zX8FUtENloxAw5ryhlNx4WRuaQixp13JRMpU3bzsopGJRr9a9trrgngfOBiNbhcW5HECmo4=
+Received: from BY5PR03CA0023.namprd03.prod.outlook.com (2603:10b6:a03:1e0::33)
+ by BN8PR03MB4945.namprd03.prod.outlook.com (2603:10b6:408:7b::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2284.19; Fri, 20 Sep
+ 2019 06:44:40 +0000
+Received: from CY1NAM02FT005.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::202) by BY5PR03CA0023.outlook.office365.com
+ (2603:10b6:a03:1e0::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2284.20 via Frontend
+ Transport; Fri, 20 Sep 2019 06:44:40 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT005.mail.protection.outlook.com (10.152.74.117) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2284.20
+ via Frontend Transport; Fri, 20 Sep 2019 06:44:38 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x8K6iW9O010387
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Thu, 19 Sep 2019 23:44:32 -0700
+Received: from saturn.ad.analog.com (10.48.65.123) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Fri, 20 Sep 2019 02:44:36 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <netdev@vger.kernel.org>
+CC:     <linville@tuxdriver.com>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 1/2][ethtool] ethtool: sync ethtool-copy.h: adds support for EDPD
+Date:   Fri, 20 Sep 2019 12:44:30 +0300
+Message-ID: <20190920094431.13806-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(376002)(346002)(39860400002)(396003)(54534003)(199004)(189003)(86362001)(2906002)(2870700001)(316002)(36756003)(107886003)(54906003)(4326008)(478600001)(50226002)(8676002)(47776003)(14444005)(5660300002)(6916009)(246002)(19627235002)(70586007)(70206006)(50466002)(8936002)(7636002)(305945005)(426003)(6666004)(486006)(44832011)(356004)(476003)(2616005)(336012)(126002)(48376002)(2351001)(26005)(186003)(106002)(51416003)(7696005)(1076003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR03MB4945;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 75703023-b0d5-45d6-c929-08d73d960262
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);SRVR:BN8PR03MB4945;
+X-MS-TrafficTypeDiagnostic: BN8PR03MB4945:
+X-Microsoft-Antispam-PRVS: <BN8PR03MB494568AEED01F5204B773550F9880@BN8PR03MB4945.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:261;
+X-Forefront-PRVS: 0166B75B74
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: CtsugdeIJO1vWSP1N7g92xihXqW9FYo3BafQ/ZUCTUBRuzmWog3mBwX8V5Q4qpLhfGUDdLkRqlliqeqMWTJItrV2PKXl9Rzr3yNuJ1CkhblEKBHsumlbveCLOr4EsjZPAKFiafdt4FVncpAGmrNn2W/7d02NCZo9GTiWtvI6bmru/go+GXl+wifXsm4rnnJis/5CcCSh4swJFp+WZvAEM54inD3t5wjDmzhh3VqsrRUzPoYT5zduOeC8U8N5rehLHFeEwwhXSmSpbK4XUJjf3ryr+D506dyyFOcunOmVITSbcnxboqm8yoMgYD0oepjvkBpSlUsk/VTavLRE+ju/xT7xGWfuj82IH+0voALqcWSm32HSaRwyikbAhqexX/Qk8m1PKiDXgoaYLC6kIOdATyGqYpAmbNKDsKnALjbLcls=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75c241c6-4679-4915-06bb-08d73d95458f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2019 06:39:21.9784
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2019 06:44:38.9480
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MEA9/wZbM2AyloYVx6STRWHNvaojr9qU3GWuUdyZdL6kh7mVczNCjg22nxII5udHlOxvMl4Fs3IrmnGN+AG3G7oMUmUOouwz12VPsXrXqlE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5318
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75703023-b0d5-45d6-c929-08d73d960262
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB4945
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
  definitions=2019-09-20_01:2019-09-19,2019-09-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- malwarescore=0 adultscore=0 mlxscore=0 mlxlogscore=999 spamscore=0
- phishscore=0 clxscore=1015 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1909200071
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 bulkscore=0 clxscore=1015
+ mlxscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0
+ mlxlogscore=999 suspectscore=1 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1909200072
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA5LTE5IGF0IDE2OjAwICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-W0V4dGVybmFsXQ0KPiANCj4gPiAtc3RhdGljIGludCBwYXJzZV9uYW1lZF91OChzdHJ1Y3QgY21k
-X2NvbnRleHQgKmN0eCwgY29uc3QgY2hhciAqbmFtZSwNCj4gPiB1OCAqdmFsKQ0KPiA+ICtzdGF0
-aWMgaW50IHBhcnNlX25hbWVkX3VpbnQoc3RydWN0IGNtZF9jb250ZXh0ICpjdHgsIGNvbnN0IGNo
-YXIgKm5hbWUsDQo+ID4gKwkJCSAgICB2b2lkICp2YWwsIGVudW0gdHVuYWJsZV90eXBlX2lkIHR5
-cGVfaWQpDQo+ID4gIHsNCj4gPiAgCWlmIChjdHgtPmFyZ2MgPCAyKQ0KPiA+ICAJCXJldHVybiAw
-Ow0KPiA+IEBAIC01MDI2LDcgKzUwNTEsMTYgQEAgc3RhdGljIGludCBwYXJzZV9uYW1lZF91OChz
-dHJ1Y3QgY21kX2NvbnRleHQNCj4gPiAqY3R4LCBjb25zdCBjaGFyICpuYW1lLCB1OCAqdmFsKQ0K
-PiA+ICAJaWYgKHN0cmNtcCgqY3R4LT5hcmdwLCBuYW1lKSkNCj4gPiAgCQlyZXR1cm4gMDsNCj4g
-PiAgDQo+ID4gLQkqdmFsID0gZ2V0X3VpbnRfcmFuZ2UoKihjdHgtPmFyZ3AgKyAxKSwgMCwgMHhm
-Zik7DQo+ID4gKwlzd2l0Y2ggKHR5cGVfaWQpIHsNCj4gPiArCWNhc2UgRVRIVE9PTF9UVU5BQkxF
-X1U4Og0KPiA+ICsJCSoodTggKil2YWwgPSBnZXRfdWludF9yYW5nZSgqKGN0eC0+YXJncCArIDEp
-LCAwLCAweGZmKTsNCj4gPiArCQlicmVhazsNCj4gPiArCWNhc2UgRVRIVE9PTF9UVU5BQkxFX1Ux
-NjoNCj4gPiArCQkqKHUxNiAqKXZhbCA9IGdldF91aW50X3JhbmdlKCooY3R4LT5hcmdwICsgMSks
-IDAsIDB4ZmZmZik7DQo+IA0KPiBJIHBlcnNvbmFsbHkgZG9uJ3QgbGlrZSB0aGVzZSBjYXN0cy4g
-Q291bGQgeW91IHJlZmFjdG9yIHRoaXMgY29kZSBpbg0KPiBzb21lIG90aGVyIHdheSB0byBhdm9p
-ZCB0aGVtLiBNYWtlIHRoZSBwYXJzZV9uYW1lZF91OCgpDQo+IHBhcnNlX25hbWVkX3UxNigpIGEg
-Yml0IGZhdHRlciwgYW5kIHRoZSBzaGFyZWQgY29kZSBhIGJpdCBzbGltbWVyPw0KPiANCg0KU3Vy
-ZSB0aGluZy4NClYyIGNvbWluZyBzaG9ydGx5Lg0KDQo+IFRoYW5rcw0KPiAJQW5kcmV3DQo=
+This change syncs the `ethtool-copy.h` file with Linux net-next to add
+support for Energy Detect Powerdown control via phy tunable.
+
+net-next commit:
+commit 1bab8d4c488be22d57f9dd09968c90a0ddc413bf
+Merge: 990925fad5c2 00b368502d18
+Author: David S. Miller <davem@davemloft.net>
+Date:   Tue Sep 17 23:51:10 2019 +0200
+
+    Merge ra.kernel.org:/pub/scm/linux/kernel/git/netdev/net
+
+    Pull in bug fixes from 'net' tree for the merge window.
+
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+
+Changelog v1 -> v2:
+* reworked the parse_named_uint() function to avoid casting to types based
+  on Andrew's feedback
+
+ ethtool-copy.h | 30 ++++++++++++++++++++++++++----
+ 1 file changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/ethtool-copy.h b/ethtool-copy.h
+index ad16e8f..9afd2e6 100644
+--- a/ethtool-copy.h
++++ b/ethtool-copy.h
+@@ -257,10 +257,32 @@ struct ethtool_tunable {
+ #define ETHTOOL_PHY_FAST_LINK_DOWN_ON	0
+ #define ETHTOOL_PHY_FAST_LINK_DOWN_OFF	0xff
+ 
++/* Energy Detect Power Down (EDPD) is a feature supported by some PHYs, where
++ * the PHY's RX & TX blocks are put into a low-power mode when there is no
++ * link detected (typically cable is un-plugged). For RX, only a minimal
++ * link-detection is available, and for TX the PHY wakes up to send link pulses
++ * to avoid any lock-ups in case the peer PHY may also be running in EDPD mode.
++ *
++ * Some PHYs may support configuration of the wake-up interval for TX pulses,
++ * and some PHYs may support only disabling TX pulses entirely. For the latter
++ * a special value is required (ETHTOOL_PHY_EDPD_NO_TX) so that this can be
++ * configured from userspace (should the user want it).
++ *
++ * The interval units for TX wake-up are in milliseconds, since this should
++ * cover a reasonable range of intervals:
++ *  - from 1 millisecond, which does not sound like much of a power-saver
++ *  - to ~65 seconds which is quite a lot to wait for a link to come up when
++ *    plugging a cable
++ */
++#define ETHTOOL_PHY_EDPD_DFLT_TX_MSECS		0xffff
++#define ETHTOOL_PHY_EDPD_NO_TX			0xfffe
++#define ETHTOOL_PHY_EDPD_DISABLE		0
++
+ enum phy_tunable_id {
+ 	ETHTOOL_PHY_ID_UNSPEC,
+ 	ETHTOOL_PHY_DOWNSHIFT,
+ 	ETHTOOL_PHY_FAST_LINK_DOWN,
++	ETHTOOL_PHY_EDPD,
+ 	/*
+ 	 * Add your fresh new phy tunable attribute above and remember to update
+ 	 * phy_tunable_strings[] in net/core/ethtool.c
+@@ -1481,8 +1503,8 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_200000baseLR4_ER4_FR4_Full_BIT = 64,
+ 	ETHTOOL_LINK_MODE_200000baseDR4_Full_BIT	 = 65,
+ 	ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT	 = 66,
+-	ETHTOOL_LINK_MODE_100baseT1_Full_BIT             = 67,
+-	ETHTOOL_LINK_MODE_1000baseT1_Full_BIT            = 68,
++	ETHTOOL_LINK_MODE_100baseT1_Full_BIT		 = 67,
++	ETHTOOL_LINK_MODE_1000baseT1_Full_BIT		 = 68,
+ 
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+@@ -1712,8 +1734,8 @@ static __inline__ int ethtool_validate_duplex(__u8 duplex)
+ #define ETH_MODULE_SFF_8436		0x4
+ #define ETH_MODULE_SFF_8436_LEN		256
+ 
+-#define ETH_MODULE_SFF_8636_MAX_LEN	640
+-#define ETH_MODULE_SFF_8436_MAX_LEN	640
++#define ETH_MODULE_SFF_8636_MAX_LEN     640
++#define ETH_MODULE_SFF_8436_MAX_LEN     640
+ 
+ /* Reset flags */
+ /* The reset() operation must clear the flags for the components which
+-- 
+2.20.1
+
