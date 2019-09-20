@@ -2,314 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 102F0B94C3
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 18:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 875CFB950F
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 18:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbfITQAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 12:00:30 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39711 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727529AbfITQAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 12:00:30 -0400
-Received: by mail-qt1-f194.google.com with SMTP id n7so9232885qtb.6
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 09:00:29 -0700 (PDT)
+        id S2403806AbfITQQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 12:16:52 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38382 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387644AbfITQQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 12:16:52 -0400
+Received: by mail-pf1-f193.google.com with SMTP id h195so4842771pfe.5
+        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 09:16:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=selectel-ru.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FV9di+tIdVEnUlr5eIwqtD7ohtP9kPAJYGWB6b5Vwsc=;
-        b=vu7Wk646vEv/nHjomvmHoV8mqUjPuMSE3laKAEeTAlRHcZiKaB2fQCZmqkyl5jkocV
-         ixZ4qsFNfbTPEcuIHTEtaywull51zass7MZRBARvWzuFwN6B/G6e+DyOZ3ysTr0kZHFU
-         v5C9+W0Q4TOn2Qwseq7h+0tfitiy8VtiswxJWbvEIUw9i3JlSB45PY5bceMsuDg3IMFp
-         8k6wM5Pecw4udI8VkGqelUnu+8heogZ1YDQSleY27HoP6j7FciJ/aTajGIgnkzrh9tpG
-         DRqKxoP0EHs18OVQN5l8fNQHqRz0NKudDtdxMzEWch8dJPRrhIc8UpTLA/SUvomWFgIm
-         vJ1A==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=zSkjuHRpYctb0k8lAPcEAIoSi3sqg/2iQqIHCOrTV6Y=;
+        b=a5PqEb1gaamzXpm1kAdDIo14WuUjFTOM2URtXPzcZahhO38EYwVE/QM3ZnyHMUjN/0
+         McDJIUHRoNAryE5zLNzHxPvQNmKyGZdcJTg6dZtkRkf1X4Tf+oVLGKNCEN+Oko++tXbi
+         sPBxkE0Dm2bAwju+ohgt3jnBYUcxe8SmPPgYeQWRpdK3Zft117qYgE/vKBhmJnIcsRkf
+         U1hQKaZ3PoJcDkbeu/s17lCm+MjArQqEyFj+cV52Az9LK3qHsTkTFb3lsmFPRB5Q4O4U
+         u8rN4iQ0Q/yP7/v0DEpWp3iRFLndzA/BzwUTYMoxtF1XVEsJKRSJdEE5V3UvhvZsM7Fx
+         8PNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FV9di+tIdVEnUlr5eIwqtD7ohtP9kPAJYGWB6b5Vwsc=;
-        b=gvU7qYSW+It2vd9xJ5DFYatZATl2fCiOnDJwLULRj9NE65qtcRI6qf1Y2n56Gs7Pc2
-         JoF1GbSnWvKGkBsiyCNfsPW56m0uJH6wbVUT4qh/IjAGGq79ayyiCT+tGaXe44HIe8ob
-         BQUgvAGgQQdtopLJfA4pEPPK3dMLKwGh5zWCuEGf0unDewExO4kYBoouNgg8qoZqC9dm
-         OOtRhYDoqT1EjCo33qVOtECXjd8E4t+Zjqr6JbtdMbevomWRhGjItxuKz7EG4MH3lSAl
-         M7thHpKdjiqycWxpwW4qi2L9qFkQfMRE/HQDLfecMKaMlEHyEPZpp7O7CZoCRkhnbvS3
-         ctig==
-X-Gm-Message-State: APjAAAW5PjCw36+ie+LvJpek0lmIQfOKR0bYlXKV6lxGIiF+ofP2yWm3
-        dwXNW+eNn7ZmKTAVby4pqyO3EAnaL7HGEwLpGvctGx3BxOvUWw==
-X-Google-Smtp-Source: APXvYqx2guLMGJK+l5gQGqOUa0xHXgDDsWxsxDVh86OfNcdj6vVQbTVEJz/zgqVPKqqmI+MgkB2sJAe3XOMMTQEVQWI=
-X-Received: by 2002:ac8:6d03:: with SMTP id o3mr3853330qtt.97.1568995228657;
- Fri, 20 Sep 2019 09:00:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=zSkjuHRpYctb0k8lAPcEAIoSi3sqg/2iQqIHCOrTV6Y=;
+        b=MsgaH45zdq9Ko3aV46PBHY/xxVok8YjeBejMudXTj/o9oZuuF9i7c7Ef7XXXjXy1Yu
+         TSD3GaurWbqVHllnwc7/NI8QiwSrX3SI6nP/2Lcw3FlOY19QQUyJCahp5ec41eTznX83
+         NVV09NLq0iHlsy5FUGEDGR2yzO+qY9RcheZnj0AtqXITy19w89WYmLDuzjolmKwXPkHy
+         0LhKPvdyYf0aCu2oOKoyxyPeG559Bhnh8CWClHRsiPFFG6/YGPf+i3gBKiY8iNCuEVDz
+         3tDm3WVmpZQfHPgbeAzZc0t0iBv5xC6dzViZxjB3OyihyNJg3AlGN8iz8CMZuF2h/K25
+         Ll2g==
+X-Gm-Message-State: APjAAAVqcZRSVhQGhG3MXxfHJnwX9VRmefG16VsMqNP1bRcAS+hHopmj
+        pMWSFi0Ae1KtXzXpklODU9ZHRQ==
+X-Google-Smtp-Source: APXvYqxNjYC/c7eSPHt3em2lVyIkLOWrMZy6TeMWbDnNvnWQbX2sHr2JU45PCTsLSl4guV1bztUnmw==
+X-Received: by 2002:a17:90a:bf04:: with SMTP id c4mr5570770pjs.89.1568996211776;
+        Fri, 20 Sep 2019 09:16:51 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::2])
+        by smtp.gmail.com with ESMTPSA id e1sm2262557pgi.42.2019.09.20.09.16.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Sep 2019 09:16:51 -0700 (PDT)
+Date:   Fri, 20 Sep 2019 09:16:47 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Paul Blakey <paulb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Pravin Shelar <pshelar@ovn.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+Message-ID: <20190920091647.0129e65f@cakuba.netronome.com>
+In-Reply-To: <vbfk1a41fr1.fsf@mellanox.com>
+References: <20190919.132147.31804711876075453.davem@davemloft.net>
+        <vbfk1a41fr1.fsf@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx>
- <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com>
- <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
- <9357.1568880036@nyx> <CAJYOGF87z-o9=a20dC2mZRtfMU58uL0yxZkQJ-bxe5skVvi2rA@mail.gmail.com>
- <7236.1568906827@nyx> <7154.1568987531@nyx>
-In-Reply-To: <7154.1568987531@nyx>
-From:   =?UTF-8?B?0JDQu9C10LrRgdC10Lkg0JfQsNGF0LDRgNC+0LI=?= 
-        <zaharov@selectel.ru>
-Date:   Fri, 20 Sep 2019 19:00:17 +0300
-Message-ID: <CAJYOGF-L0bEF_BqbyeKqv4xmLV=e2VKUvo5zPx4rULWdwt8e0Q@mail.gmail.com>
-Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
-> [...]
-> >       In any event, I think I see what the failure is, I'm working up
-> >a patch to test and will post it when I have it ready.
->
->         Aleksei,
->
->         Would you be able to test the following patch and see if it
-> resolves the issue in your testing?  This is against current net-next,
-> but applies to current net as well.  Your kernel appears to be a bit
-> older (as the message formats differ), so hopefully it will apply there
-> as well.  I've tested this a bit (but not the ARP mon portion), and it
-> seems to do the right thing, but I can't reproduce the original issue
-> locally.
-We're testing on ubuntu-bionic 4.15 kernel.
+On Thu, 19 Sep 2019 15:13:55 +0000, Vlad Buslov wrote:
+> On Thu 19 Sep 2019 at 14:21, David Miller <davem@davemloft.net> wrote:
+> > As Linus pointed out, the Kconfig logic for CONFIG_NET_TC_SKB_EXT
+> > is really not acceptable.
+> >
+> > It should not be enabled by default at all.
+> >
+> > Instead the actual users should turn it on or depend upon it, which in
+> > this case seems to be OVS.
+> >
+> > Please fix this, thank you.  
+> 
+> Hi David,
+> 
+> We are working on it, but Paul is OoO today. Is it okay if we send the
+> fix early next week?
 
->
->         Thanks,
->
->         -J
->
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 931d9d935686..38042399717b 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -2086,8 +2086,7 @@ static int bond_miimon_inspect(struct bonding *bond)
->         ignore_updelay = !rcu_dereference(bond->curr_active_slave);
->
->         bond_for_each_slave_rcu(bond, slave, iter) {
-> -               slave->new_link = BOND_LINK_NOCHANGE;
-> -               slave->link_new_state = slave->link;
-> +               bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
->
->                 link_state = bond_check_dev_link(bond, slave->dev, 0);
->
-> @@ -2121,7 +2120,7 @@ static int bond_miimon_inspect(struct bonding *bond)
->                         }
->
->                         if (slave->delay <= 0) {
-> -                               slave->new_link = BOND_LINK_DOWN;
-> +                               bond_propose_link_state(slave, BOND_LINK_DOWN);
->                                 commit++;
->                                 continue;
->                         }
-> @@ -2158,7 +2157,7 @@ static int bond_miimon_inspect(struct bonding *bond)
->                                 slave->delay = 0;
->
->                         if (slave->delay <= 0) {
-> -                               slave->new_link = BOND_LINK_UP;
-> +                               bond_propose_link_state(slave, BOND_LINK_UP);
->                                 commit++;
->                                 ignore_updelay = false;
->                                 continue;
-> @@ -2196,7 +2195,7 @@ static void bond_miimon_commit(struct bonding *bond)
->         struct slave *slave, *primary;
->
->         bond_for_each_slave(bond, slave, iter) {
-> -               switch (slave->new_link) {
-> +               switch (slave->link_new_state) {
->                 case BOND_LINK_NOCHANGE:
->                         /* For 802.3ad mode, check current slave speed and
->                          * duplex again in case its port was disabled after
-> @@ -2268,8 +2267,8 @@ static void bond_miimon_commit(struct bonding *bond)
->
->                 default:
->                         slave_err(bond->dev, slave->dev, "invalid new link %d on slave\n",
-> -                                 slave->new_link);
-> -                       slave->new_link = BOND_LINK_NOCHANGE;
-> +                                 slave->link_new_state);
-> +                       bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
->
->                         continue;
->                 }
-> @@ -2677,13 +2676,13 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
->         bond_for_each_slave_rcu(bond, slave, iter) {
->                 unsigned long trans_start = dev_trans_start(slave->dev);
->
-> -               slave->new_link = BOND_LINK_NOCHANGE;
-> +               bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
->
->                 if (slave->link != BOND_LINK_UP) {
->                         if (bond_time_in_interval(bond, trans_start, 1) &&
->                             bond_time_in_interval(bond, slave->last_rx, 1)) {
->
-> -                               slave->new_link = BOND_LINK_UP;
-> +                               bond_propose_link_state(slave, BOND_LINK_UP);
->                                 slave_state_changed = 1;
->
->                                 /* primary_slave has no meaning in round-robin
-> @@ -2708,7 +2707,7 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
->                         if (!bond_time_in_interval(bond, trans_start, 2) ||
->                             !bond_time_in_interval(bond, slave->last_rx, 2)) {
->
-> -                               slave->new_link = BOND_LINK_DOWN;
-> +                               bond_propose_link_state(slave, BOND_LINK_DOWN);
->                                 slave_state_changed = 1;
->
->                                 if (slave->link_failure_count < UINT_MAX)
-> @@ -2739,8 +2738,8 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
->                         goto re_arm;
->
->                 bond_for_each_slave(bond, slave, iter) {
-> -                       if (slave->new_link != BOND_LINK_NOCHANGE)
-> -                               slave->link = slave->new_link;
-> +                       if (slave->link_new_state != BOND_LINK_NOCHANGE)
-> +                               slave->link = slave->link_new_state;
->                 }
->
->                 if (slave_state_changed) {
-> @@ -2763,9 +2762,9 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
->  }
->
->  /* Called to inspect slaves for active-backup mode ARP monitor link state
-> - * changes.  Sets new_link in slaves to specify what action should take
-> - * place for the slave.  Returns 0 if no changes are found, >0 if changes
-> - * to link states must be committed.
-> + * changes.  Sets proposed link state in slaves to specify what action
-> + * should take place for the slave.  Returns 0 if no changes are found, >0
-> + * if changes to link states must be committed.
->   *
->   * Called with rcu_read_lock held.
->   */
-> @@ -2777,12 +2776,12 @@ static int bond_ab_arp_inspect(struct bonding *bond)
->         int commit = 0;
->
->         bond_for_each_slave_rcu(bond, slave, iter) {
-> -               slave->new_link = BOND_LINK_NOCHANGE;
-> +               bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
->                 last_rx = slave_last_rx(bond, slave);
->
->                 if (slave->link != BOND_LINK_UP) {
->                         if (bond_time_in_interval(bond, last_rx, 1)) {
-> -                               slave->new_link = BOND_LINK_UP;
-> +                               bond_propose_link_state(slave, BOND_LINK_UP);
->                                 commit++;
->                         }
->                         continue;
-> @@ -2810,7 +2809,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
->                 if (!bond_is_active_slave(slave) &&
->                     !rcu_access_pointer(bond->current_arp_slave) &&
->                     !bond_time_in_interval(bond, last_rx, 3)) {
-> -                       slave->new_link = BOND_LINK_DOWN;
-> +                       bond_propose_link_state(slave, BOND_LINK_DOWN);
->                         commit++;
->                 }
->
-> @@ -2823,7 +2822,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
->                 if (bond_is_active_slave(slave) &&
->                     (!bond_time_in_interval(bond, trans_start, 2) ||
->                      !bond_time_in_interval(bond, last_rx, 2))) {
-> -                       slave->new_link = BOND_LINK_DOWN;
-> +                       bond_propose_link_state(slave, BOND_LINK_DOWN);
->                         commit++;
->                 }
->         }
-> @@ -2843,7 +2842,7 @@ static void bond_ab_arp_commit(struct bonding *bond)
->         struct slave *slave;
->
->         bond_for_each_slave(bond, slave, iter) {
-> -               switch (slave->new_link) {
-> +               switch (slave->link_new_state) {
->                 case BOND_LINK_NOCHANGE:
->                         continue;
->
-> @@ -2893,8 +2892,9 @@ static void bond_ab_arp_commit(struct bonding *bond)
->                         continue;
->
->                 default:
-> -                       slave_err(bond->dev, slave->dev, "impossible: new_link %d on slave\n",
-> -                                 slave->new_link);
-> +                       slave_err(bond->dev, slave->dev,
-> +                                 "impossible: link_new_state %d on slave\n",
-> +                                 slave->link_new_state);
->                         continue;
->                 }
->
-> diff --git a/include/net/bonding.h b/include/net/bonding.h
-> index f7fe45689142..d416af72404b 100644
-> --- a/include/net/bonding.h
-> +++ b/include/net/bonding.h
-> @@ -159,7 +159,6 @@ struct slave {
->         unsigned long target_last_arp_rx[BOND_MAX_ARP_TARGETS];
->         s8     link;            /* one of BOND_LINK_XXXX */
->         s8     link_new_state;  /* one of BOND_LINK_XXXX */
-> -       s8     new_link;
->         u8     backup:1,   /* indicates backup slave. Value corresponds with
->                               BOND_STATE_ACTIVE and BOND_STATE_BACKUP */
->                inactive:1, /* indicates inactive slave */
-> @@ -549,7 +548,7 @@ static inline void bond_propose_link_state(struct slave *slave, int state)
->
->  static inline void bond_commit_link_state(struct slave *slave, bool notify)
->  {
-> -       if (slave->link == slave->link_new_state)
-> +       if (slave->link_new_state == BOND_LINK_NOCHANGE)
->                 return;
->
->         slave->link = slave->link_new_state;
->
->
-> ---
->         -Jay Vosburgh, jay.vosburgh@canonical.com
-I had to change slave_err to netdev_err, because there's no slave_err
-macro in 4.15.
-I did some fast testing, things become a bit more weird for me.
-Right after reboot one of the slaves hangs with actor port state 71
-and partner port state 1.
-It doesn't send lacpdu and seems to be broken.
-Setting link down and up again fixes slave state.
-Dmesg after boot:
-[Fri Sep 20 17:56:53 2019] bond-san: Enslaving eth3 as a backup
-interface with an up link
-[Fri Sep 20 17:56:53 2019] bond-san: Enslaving eth2 as a backup
-interface with an up link
-[Fri Sep 20 17:56:54 2019] bond-san: Warning: No 802.3ad response from
-the link partner for any adapters in the bond
-[Fri Sep 20 17:56:54 2019] IPv6: ADDRCONF(NETDEV_UP): bond-san: link
-is not ready
-[Fri Sep 20 17:56:54 2019] 8021q: adding VLAN 0 to HW filter on device bond-san
-[Fri Sep 20 17:56:54 2019] IPv6: ADDRCONF(NETDEV_CHANGE): bond-san:
-link becomes ready
-[Fri Sep 20 17:56:54 2019] bond-san: link status definitely up for
-interface eth3, 10000 Mbps full duplex
-[Fri Sep 20 17:56:54 2019] bond-san: first active interface up!
+Doesn't really seem like we have too many ways forward here, right?
 
-Broken link here is eth2. After set it down and up:
-[Fri Sep 20 18:02:04 2019] mlx4_en: eth2: Link Up
-[Fri Sep 20 18:02:04 2019] bond-san: link status up again after -200
-ms for interface eth2
-[Fri Sep 20 18:02:04 2019] bond-san: link status definitely up for
-interface eth2, 10000 Mbps full duplex
+How about this?
 
-If I'm trying to reproduce previous behavior, I get different messages
-from time to time:
-[Fri Sep 20 18:04:48 2019] mlx4_en: eth2: Link Up
-[Fri Sep 20 18:04:48 2019] bond-san: link status up for interface
-eth2, enabling it in 500 ms
-[Fri Sep 20 18:04:48 2019] bond-san: invalid new link 3 on slave eth2
-[Fri Sep 20 18:04:49 2019] bond-san: link status definitely up for
-interface eth2, 10000 Mbps full duplex
-or:
-[Fri Sep 20 18:05:48 2019] mlx4_en: eth2: Link Up
-[Fri Sep 20 18:05:49 2019] bond-san: link status up again after 0 ms
-for interface eth2
-[Fri Sep 20 18:05:49 2019] bond-san: link status definitely up for
-interface eth2, 10000 Mbps full duplex
+------>8-----------------------------------
 
-In both cases this slave works after up.
+net: hide NET_TC_SKB_EXT as a config option
 
+Linus points out the NET_TC_SKB_EXT config option looks suspicious.
+Indeed, it should really be selected to ensure correct OvS operation
+if TC offload is used. Hopefully those who care about TC-only and
+OvS-only performance disable the other one at compilation time.
+
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ net/openvswitch/Kconfig |  1 +
+ net/sched/Kconfig       | 13 +++----------
+ 2 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/net/openvswitch/Kconfig b/net/openvswitch/Kconfig
+index 22d7d5604b4c..bd407ea7c263 100644
+--- a/net/openvswitch/Kconfig
++++ b/net/openvswitch/Kconfig
+@@ -15,6 +15,7 @@ config OPENVSWITCH
+ 	select NET_MPLS_GSO
+ 	select DST_CACHE
+ 	select NET_NSH
++	select NET_TC_SKB_EXT if NET_CLS_ACT
+ 	---help---
+ 	  Open vSwitch is a multilayer Ethernet switch targeted at virtualized
+ 	  environments.  In addition to supporting a variety of features
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index b3faafeafab9..f1062ef55098 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -719,6 +719,7 @@ config NET_EMATCH_IPT
+ config NET_CLS_ACT
+ 	bool "Actions"
+ 	select NET_CLS
++	select NET_TC_SKB_EXT if OPENVSWITCH
+ 	---help---
+ 	  Say Y here if you want to use traffic control actions. Actions
+ 	  get attached to classifiers and are invoked after a successful
+@@ -964,18 +965,10 @@ config NET_IFE_SKBTCINDEX
+         depends on NET_ACT_IFE
+ 
+ config NET_TC_SKB_EXT
+-	bool "TC recirculation support"
+-	depends on NET_CLS_ACT
+-	default y if NET_CLS_ACT
++	bool
++	depends on NET_CLS_ACT && OPENVSWITCH
+ 	select SKB_EXTENSIONS
+ 
+-	help
+-	  Say Y here to allow tc chain misses to continue in OvS datapath in
+-	  the correct recirc_id, and hardware chain misses to continue in
+-	  the correct chain in tc software datapath.
+-
+-	  Say N here if you won't be using tc<->ovs offload or tc chains offload.
+-
+ endif # NET_SCHED
+ 
+ config NET_SCH_FIFO
 -- 
-Best Regards,
-Aleksei Zakharov
-System administrator
+2.21.0
