@@ -2,134 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E537B89F7
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 06:24:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A17B8A3A
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 06:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437164AbfITEY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 00:24:26 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63541 "EHLO mga18.intel.com"
+        id S1729799AbfITEtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 00:49:18 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:51718 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404405AbfITEYZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 00:24:25 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Sep 2019 21:24:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,527,1559545200"; 
-   d="scan'208";a="199622970"
-Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.71])
-  by orsmga002.jf.intel.com with ESMTP; 19 Sep 2019 21:24:22 -0700
-Date:   Fri, 20 Sep 2019 12:21:38 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-Subject: Re: [RFC v4 3/3] vhost: introduce mdev based hardware backend
-Message-ID: <20190920042138.GA11868@___>
-References: <20190917010204.30376-1-tiwei.bie@intel.com>
- <20190917010204.30376-4-tiwei.bie@intel.com>
- <0b0f74ba-8958-dd7d-3e98-f7a58b1ec5f7@redhat.com>
+        id S2437130AbfITEtR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Sep 2019 00:49:17 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 666F9205A9;
+        Fri, 20 Sep 2019 06:49:15 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id kBNcZKR_q3cx; Fri, 20 Sep 2019 06:49:14 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 37895205E5;
+        Fri, 20 Sep 2019 06:49:13 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Fri, 20 Sep 2019
+ 06:49:13 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id B28C53182607;
+ Fri, 20 Sep 2019 06:49:12 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     <netdev@vger.kernel.org>
+CC:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Subash Abhinov Kasiviswanathan" <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH RFC 0/5] Support fraglist GRO/GSO
+Date:   Fri, 20 Sep 2019 06:49:00 +0200
+Message-ID: <20190920044905.31759-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0b0f74ba-8958-dd7d-3e98-f7a58b1ec5f7@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 17, 2019 at 03:26:30PM +0800, Jason Wang wrote:
-> On 2019/9/17 上午9:02, Tiwei Bie wrote:
-> > diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
-> > new file mode 100644
-> > index 000000000000..8c6597aff45e
-> > --- /dev/null
-> > +++ b/drivers/vhost/mdev.c
-> > @@ -0,0 +1,462 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (C) 2018-2019 Intel Corporation.
-> > + */
-> > +
-> > +#include <linux/compat.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/miscdevice.h>
-> > +#include <linux/mdev.h>
-> > +#include <linux/module.h>
-> > +#include <linux/vfio.h>
-> > +#include <linux/vhost.h>
-> > +#include <linux/virtio_mdev.h>
-> > +
-> > +#include "vhost.h"
-> > +
-> > +struct vhost_mdev {
-> > +	struct mutex mutex;
-> > +	struct vhost_dev dev;
-> > +	struct vhost_virtqueue *vqs;
-> > +	int nvqs;
-> > +	u64 state;
-> > +	u64 features;
-> > +	u64 acked_features;
-> > +	struct vfio_group *vfio_group;
-> > +	struct vfio_device *vfio_device;
-> > +	struct mdev_device *mdev;
-> > +};
-> > +
-> > +/*
-> > + * XXX
-> > + * We assume virtio_mdev.ko exposes below symbols for now, as we
-> > + * don't have a proper way to access parent ops directly yet.
-> > + *
-> > + * virtio_mdev_readl()
-> > + * virtio_mdev_writel()
-> > + */
-> > +extern u32 virtio_mdev_readl(struct mdev_device *mdev, loff_t off);
-> > +extern void virtio_mdev_writel(struct mdev_device *mdev, loff_t off, u32 val);
-> 
-> 
-> Need to consider a better approach, I feel we should do it through some kind
-> of mdev driver instead of talk to mdev device directly.
+This patchset adds support to do GRO/GSO by chaining packets
+of the same flow at the SKB frag_list pointer. This avoids
+the overhead to merge payloads into one big packet, and
+on the other end, if GSO is needed it avoids the overhead
+of splitting the big packet back to the native form.
 
-Yeah, a better approach is really needed here.
-Besides, we may want a way to allow accessing the mdev
-device_ops proposed in below series outside the
-drivers/vfio/mdev/ directory.
+Patch 1 Enables UDP GRO by default.
 
-https://lkml.org/lkml/2019/9/12/151
+Patch 2 adds netdev feature flags to enable listifyed GRO,
+this implements one of the configuration options discussed
+at netconf 2019.
 
-I.e. allow putting mdev drivers outside above directory.
+Patch 3 adds a netdev software feature set that defaults to off
+and assigns the new listifyed GRO feature flag to it.
 
+Patch 4 adds the core infrastructure to do fraglist GRO/GSO.
 
-> > +
-> > +	for (queue_id = 0; queue_id < m->nvqs; queue_id++) {
-> > +		vq = &m->vqs[queue_id];
-> > +
-> > +		if (!vq->desc || !vq->avail || !vq->used)
-> > +			break;
-> > +
-> > +		virtio_mdev_writel(mdev, VIRTIO_MDEV_QUEUE_NUM, vq->num);
-> > +
-> > +		if (!vhost_translate_ring_addr(vq, (u64)vq->desc,
-> > +					       vhost_get_desc_size(vq, vq->num),
-> > +					       &addr))
-> > +			return -EINVAL;
-> 
-> 
-> Interesting, any reason for doing such kinds of translation to HVA? I
-> believe the add should already an IOVA that has been map by VFIO.
+Patch 5 enables UDP to use fraglist GRO/GSO if configured and no
+GRO supported socket is found.
 
-Currently, in the software based vhost-kernel and vhost-user
-backends, QEMU will pass ring addresses as HVA in SET_VRING_ADDR
-ioctl when iotlb isn't enabled. If it's OK to let QEMU pass GPA
-in vhost-mdev in this case, then this translation won't be needed.
+I have only meaningful forwarding performance measurements.
+I did some tests for the local receive path with netperf and iperf,
+but in this case the sender that generates the packets is the
+bottleneck. So the benchmarks are not that meaningful for the
+receive path.
 
-Thanks,
-Tiwei
+Paolo Abeni did some benchmarks of the local receive path for the v2
+version of this pachset, results can be found here:
+
+https://www.spinics.net/lists/netdev/msg551158.html
+
+I used my IPsec forwarding test setup for the performance measurements:
+
+           ------------         ------------
+        -->| router 1 |-------->| router 2 |--
+        |  ------------         ------------  |
+        |                                     |
+        |       --------------------          |
+        --------|Spirent Testcenter|<----------
+                --------------------
+
+net-next (September 7th):
+
+Single stream UDP frame size 1460 Bytes: 1.161.000 fps (13.5 Gbps).
+
+----------------------------------------------------------------------
+
+net-next (September 7th) + standard UDP GRO/GSO:
+
+Single stream UDP frame size 1460 Bytes: 1.801.000 fps (21 Gbps).
+
+----------------------------------------------------------------------
+
+net-next (September 7th) + fraglist UDP GRO/GSO:
+
+Single stream UDP frame size 1460 Bytes: 2.860.000 fps (33.4 Gbps).
+
+-----------------------------------------------------------------------
+
+Changes from v1:
+
+- Add IPv6 support.
+- Split patchset to enable UDP GRO by default before adding
+  fraglist GRO support.
+- Mark fraglist GRO packets as CHECKSUM_NONE.
+- Take a refcount on the first segment skb when doing fraglist
+  segmentation. With this we can use the same error handling
+  path as with standard segmentation.
+
+Changes from v2:
+
+- Add a netdev feature flag to configure listifyed GRO.
+- Fix UDP GRO enabling for IPv6.
+- Fix a rcu_read_lock() imbalance.
+- Fix error path in skb_segment_list().
+
+Changes from v3:
+
+- Rename NETIF_F_GRO_LIST to NETIF_F_GRO_FRAGLIST and add
+  NETIF_F_GSO_FRAGLIST.
+- Move introduction of SKB_GSO_FRAGLIST to patch 2.
+- Use udpv6_encap_needed_key instead of udp_encap_needed_key in IPv6.
+- Move some missplaced code from patch 5 to patch 1 where it belongs to.
+
