@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8738EB8882
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 02:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A257BB8887
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 02:22:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394386AbfITAVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Sep 2019 20:21:42 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:33927 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391427AbfITAVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 20:21:41 -0400
-Received: by mail-qk1-f193.google.com with SMTP id q203so5476003qke.1
-        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 17:21:41 -0700 (PDT)
+        id S2394419AbfITAVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Sep 2019 20:21:53 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:36801 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390178AbfITAVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Sep 2019 20:21:51 -0400
+Received: by mail-qk1-f196.google.com with SMTP id y189so5444623qkc.3
+        for <netdev@vger.kernel.org>; Thu, 19 Sep 2019 17:21:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=YTp5B1qD8E9aflcOxXO4o+LEcSQkbFxZ9MJfYS1B/aY=;
-        b=tAi6KJc1ByzYT5nMutazH/kLr1utqSsJFknFvHpj54XCTbUT2K4+0UOf5BbZe7lzdx
-         h3t+Xz5lVwr9REvW3R7lKKS+FiULp0arjEPvn03l9VEgBxPHuSNlxieDuQgxBu6VgRpR
-         2dwZy6GgWFfQlp47xAywud/3/l3MuMAOJAkl/x4VI3te+AP3LLeCvjyecJ9dsIZN3cfd
-         Up9dmNYCbP+TjBSD9UU7Tnf/3yBuqHdaFVQOAb9igELNb7BKGO7rq/JDrIu+oO3oycNR
-         6/+qWVkpNdO6YFupeqXgHoDnhbIHbGlKwz7OptlNrluWVc+HyGcc07VeupgsMGehnq98
-         z2Wg==
+        bh=pro9C8zmq7NLgMwYhgr/6LGSa3Q7PkAjnibnN9csKE0=;
+        b=p1MWiAA5FV5GBwt2EIlFX7PlfM/JFWtZLute0zB9YM/osQ/11szyWWaic3ZyQ/SZu0
+         OaIeERsRiVOXxjZTRZHLJmQyAxo/c8IFFvCkTRmHb1sdpA+kVVk0KoyaIEVYpyup26K5
+         8aWcL3YrjS5i9AmbE1j0wwip7zSi2eMDhrjRBRU5JdaJTrZYulLsGCtoAINRRy3XjiTV
+         xYwJG57TEFA7gT7L0LxRvT0Ip0F+GdOmEhF5rw4i7vpn/VKhXQdLw6cr98ORRot5912x
+         L429S8bA/t8FHPSd27P3ogpl3W6I76jDOmk+s8tuFL+HlbVTKBANkA+/RDrhrxeN/aOV
+         hpZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=YTp5B1qD8E9aflcOxXO4o+LEcSQkbFxZ9MJfYS1B/aY=;
-        b=jjhWmQr/iF6UpwJN3epkWdQUgrtkmu/+vIiDVBDOS1LaQQZcV2nDXmtGroKu8tN2pW
-         1GIeRb2nftEwfNFi5Mx8GxqLAzxKrB4H+rxgE4hM+Sm+OHzc/yMfuewqUJInRLJhf0FN
-         Tv+71TT/U3isGQK+mwrDImcFNkM04BypvwN5ZL9r6Xqn6pgU9DUAneDCmcnF9Cy865fQ
-         0o3LV4w6VQ2Bfc6DoFTO+E3xprAixXCQ+RUUb1VuCU3tDN/Gm3x+/N4qb1QOJh8Q2Kej
-         D4D8gY0NITdza5Y/zt54GjJMdDtA6gmzwqupNMT3FCUIiDHUxcq1eHQOPV43cfRzGEEJ
-         K2uw==
-X-Gm-Message-State: APjAAAXUHUeRw+86o672eHO16bPtQgmkUgmoMhBygawkfboF8/yNS0U4
-        Yaz27RE8arupo4J+dVUDT8CxIw==
-X-Google-Smtp-Source: APXvYqzoVPYrXP2tRPahgitnuE7bPJdek/u+2/XsD7AKfKbgjvGvtGUxVRqbqsjBylkdRiti0acXDg==
-X-Received: by 2002:a37:591:: with SMTP id 139mr590821qkf.162.1568938900968;
-        Thu, 19 Sep 2019 17:21:40 -0700 (PDT)
+        bh=pro9C8zmq7NLgMwYhgr/6LGSa3Q7PkAjnibnN9csKE0=;
+        b=LUY0lYYmHiwuY61KXztiT2C6gyqwYW17kRVja/YFc4HD4giopdEjbFOBqUXjz8IhN0
+         B4j7KCD4vvOxRJJ0PpKrxvOZeYaXOFHrKEfmoBaTLJg0xXfie9JQ/KmZhczLelY6f2YK
+         EYWRr4UzJTlbniLSg9dZwNlSIkDq6YIfmxVX47iRsyZspm57t+TAzk/WIXcf19fE7kA/
+         r2CSz5BKRTe846DWijBRPT6lvHZGTwnyXRlp7l9tO3IJMTdIbx9/cW2LP/uGFS4nPx2o
+         dT/nADIE/ue5cJiP2UuOeCeNtzLYvcKI2yhJiucxVRScrkssYBF8leXKDFsE0nA386+f
+         JMvg==
+X-Gm-Message-State: APjAAAUacoSd6m0vMMOQWCr4IHDQbpyAOe6QhzAFsgFXCow2T075KDso
+        pis/NZsD7Vs5AEx7bZMwOdIeFg==
+X-Google-Smtp-Source: APXvYqyzA42ktG/dDx6jAshGH/zvVqakR5TOxSDRcxunSBtsZ5MhzkJALycMc3DcCWG56RQKg+CuZw==
+X-Received: by 2002:a37:c441:: with SMTP id h1mr589905qkm.16.1568938909826;
+        Thu, 19 Sep 2019 17:21:49 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c16sm198104qkg.131.2019.09.19.17.21.39
+        by smtp.gmail.com with ESMTPSA id e42sm127840qte.26.2019.09.19.17.21.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Sep 2019 17:21:40 -0700 (PDT)
-Date:   Thu, 19 Sep 2019 17:21:36 -0700
+        Thu, 19 Sep 2019 17:21:49 -0700 (PDT)
+Date:   Thu, 19 Sep 2019 17:21:45 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Shannon Nelson <snelson@pensando.io>,
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         Pensando Drivers <drivers@pensando.io>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] ionic: Remove unnecessary ternary operator in
- ionic_debugfs_add_ident
-Message-ID: <20190919172136.01f0e016@cakuba.netronome.com>
-In-Reply-To: <20190917232616.125261-1-natechancellor@gmail.com>
-References: <20190917232616.125261-1-natechancellor@gmail.com>
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] ionic: remove useless return code
+Message-ID: <20190919172146.47bc95f4@cakuba.netronome.com>
+In-Reply-To: <6cdb1e21-44d9-bba9-1931-78f7109bff2b@pensando.io>
+References: <20190918195745.2158829-1-arnd@arndb.de>
+        <6cdb1e21-44d9-bba9-1931-78f7109bff2b@pensando.io>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,23 +65,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Sep 2019 16:26:16 -0700, Nathan Chancellor wrote:
-> clang warns:
+On Wed, 18 Sep 2019 13:46:34 -0700, Shannon Nelson wrote:
+> On 9/18/19 12:57 PM, Arnd Bergmann wrote:
+> > The debugfs function was apparently changed from returning an error code
+> > to a void return, but the return code left in place, causing a warning
+> > from clang:
+> >
+> > drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:60:37: error: expression result unused [-Werror,-Wunused-value]
+> >                              ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
+> >                                                           ^~~~~~~~~~~
+> >
+> > Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > ---
+> >   drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> > index 7afc4a365b75..bc03cecf80cc 100644
+> > --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> > +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+> > @@ -57,7 +57,7 @@ DEFINE_SHOW_ATTRIBUTE(identity);
+> >   void ionic_debugfs_add_ident(struct ionic *ionic)
+> >   {
+> >   	debugfs_create_file("identity", 0400, ionic->dentry,
+> > -			    ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
+> > +			    ionic, &identity_fops);
+> >   }
+> >   
+> >   void ionic_debugfs_add_sizes(struct ionic *ionic)  
 > 
-> ../drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:60:37: warning:
-> expression result unused [-Wunused-value]
->                             ionic, &identity_fops) ? 0 : -EOPNOTSUPP;
->                                                          ^~~~~~~~~~~
-> 1 warning generated.
-> 
-> The return value of debugfs_create_file does not need to be checked [1]
-> and the function returns void so get rid of the ternary operator, it is
-> unnecessary.
-> 
-> [1]: https://lore.kernel.org/linux-mm/20150815160730.GB25186@kroah.com/
-> 
-> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/658
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> This has just recently been addressed by Nathan Chancellor 
+> <natechancellor@gmail.com>
 
-Applied, thank you!
+Yup, should be in the net tree now.
+
+> Either way,
+> 
+> Acked-by: Shannon Nelson <snelson@pensando.io>
+
+Thanks for quick reviews!
