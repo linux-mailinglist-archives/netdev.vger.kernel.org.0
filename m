@@ -2,119 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 423DEB944B
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 17:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F11B94AD
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 17:57:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404086AbfITPmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 11:42:25 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34512 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393522AbfITPmX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 11:42:23 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2404803AbfITP5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 11:57:23 -0400
+Received: from mail2.candelatech.com ([208.74.158.173]:47804 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404456AbfITP5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 11:57:22 -0400
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8A06D10DCC82;
-        Fri, 20 Sep 2019 15:42:23 +0000 (UTC)
-Received: from asgard.redhat.com (ovpn-112-68.ams2.redhat.com [10.36.112.68])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 099DC19C5B;
-        Fri, 20 Sep 2019 15:42:21 +0000 (UTC)
-Date:   Fri, 20 Sep 2019 17:42:00 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: [PATCH net v2 3/3] uapi, net/smc: provide socket state constants in
- UAPI
-Message-ID: <2be8f9cfd2e031a9217326ea89227e0517248f0f.1568993930.git.esyr@redhat.com>
-References: <cover.1568993930.git.esyr@redhat.com>
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 33FD513C2BA
+        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 08:57:22 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 33FD513C2BA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1568995042;
+        bh=vygwi+t+J8mPPiuvFf/wdtVQBGXCqERQLErn0RKtENs=;
+        h=Subject:From:To:References:Date:In-Reply-To:From;
+        b=bWtq/9sABlPbAyLFyUKbOwdQqhMURQgNlEgnPj76nMHji9iFc5ILclvvxmHTBze4B
+         p+4oNyoD7E1AGkEkP1gxJIo3eTr595VBK563TwOyB29EFGUyFRKu/PeSa2chKeYlnB
+         Dssv17SU2SGkHZTnwt5rFQfXrGLip5S+WNFtiq3g=
+Subject: Re: Strange routing with VRF and 5.2.7+
+From:   Ben Greear <greearb@candelatech.com>
+To:     netdev <netdev@vger.kernel.org>
+References: <91749b17-7800-44c0-d137-5242b8ceb819@candelatech.com>
+ <51aae991-a320-43be-bf73-8b8c0ffcba60@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <7d1de949-5cf0-cb74-6ca3-52315c34a340@candelatech.com>
+Date:   Fri, 20 Sep 2019 08:57:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1568993930.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Fri, 20 Sep 2019 15:42:23 +0000 (UTC)
+In-Reply-To: <51aae991-a320-43be-bf73-8b8c0ffcba60@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As socket state itself is already exposed via sock_diag interface.
+On 9/10/19 6:08 PM, Ben Greear wrote:
+> On 9/10/19 3:17 PM, Ben Greear wrote:
+>> Today we were testing creating 200 virtual station vdevs on ath9k, and using
+>> VRF for the routing.
+> 
+> Looks like the same issue happens w/out VRF, but there I have oodles of routing
+> rules, so it is an area ripe for failure.
+> 
+> Will upgrade to 5.2.14+ and retest, and try 4.20 as well....
 
-Fixes: ac7138746e14 ("smc: establish new socket family")
-Fixes: b38d732477e4 ("smc: socket closing and linkgroup cleanup")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- include/uapi/linux/smc_diag.h | 17 +++++++++++++++++
- net/smc/smc.h                 | 18 +-----------------
- 2 files changed, 18 insertions(+), 17 deletions(-)
+Turns out, this was ipsec (strongswan) inserting a rule that pointed to a table
+that we then used for a vrf w/out realizing the rule was added.
 
-diff --git a/include/uapi/linux/smc_diag.h b/include/uapi/linux/smc_diag.h
-index 8cb3a6f..6798ec0 100644
---- a/include/uapi/linux/smc_diag.h
-+++ b/include/uapi/linux/smc_diag.h
-@@ -31,6 +31,23 @@ struct smc_diag_msg {
- 	__aligned_u64	diag_inode;
- };
- 
-+enum smc_state {		/* possible states of an SMC socket */
-+	SMC_ACTIVE	= 1,
-+	SMC_INIT	= 2,
-+	SMC_CLOSED	= 7,
-+	SMC_LISTEN	= 10,
-+	/* normal close */
-+	SMC_PEERCLOSEWAIT1	= 20,
-+	SMC_PEERCLOSEWAIT2	= 21,
-+	SMC_APPFINCLOSEWAIT	= 24,
-+	SMC_APPCLOSEWAIT1	= 22,
-+	SMC_APPCLOSEWAIT2	= 23,
-+	SMC_PEERFINCLOSEWAIT	= 25,
-+	/* abnormal close */
-+	SMC_PEERABORTWAIT	= 26,
-+	SMC_PROCESSABORT	= 27,
-+};
-+
- /* Mode of a connection */
- enum {
- 	SMC_DIAG_MODE_SMCR,
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index e60effc..7eaef72 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -16,6 +16,7 @@
- #include <linux/compiler.h> /* __aligned */
- #include <net/sock.h>
- #include <linux/smc.h>
-+#include <linux/smc_diag.h>
- 
- #include "smc_ib.h"
- 
-@@ -26,23 +27,6 @@ extern struct proto smc_proto6;
- #define KERNEL_HAS_ATOMIC64
- #endif
- 
--enum smc_state {		/* possible states of an SMC socket */
--	SMC_ACTIVE	= 1,
--	SMC_INIT	= 2,
--	SMC_CLOSED	= 7,
--	SMC_LISTEN	= 10,
--	/* normal close */
--	SMC_PEERCLOSEWAIT1	= 20,
--	SMC_PEERCLOSEWAIT2	= 21,
--	SMC_APPFINCLOSEWAIT	= 24,
--	SMC_APPCLOSEWAIT1	= 22,
--	SMC_APPCLOSEWAIT2	= 23,
--	SMC_PEERFINCLOSEWAIT	= 25,
--	/* abnormal close */
--	SMC_PEERABORTWAIT	= 26,
--	SMC_PROCESSABORT	= 27,
--};
--
- struct smc_link_group;
- 
- struct smc_wr_rx_hdr {	/* common prefix part of LLC and CDC to demultiplex */
+Stopping strongswan and/or reconfiguring how routing tables are assigned
+resolved the issue.
+
+Thanks,
+Ben
+
+> 
+> Thanks,
+> Ben
+> 
+>>
+>> This really slows down the machine in question.
+>>
+>> During the minutes that it takes to bring these up and configure them,
+>> we loose network connectivity on the management port.
+>>
+>> If I do 'ip route show', it just shows the default route out of eth0, and
+>> the subnet route.  But, if I try to ping the gateway, I get an ICMP error
+>> coming back from the gateway of one of the virtual stations (which should be
+>> safely using VRFs and so not in use when I do a plain 'ping' from the shell).
+>>
+>> I tried running tshark on eth0 in the background and running ping, and it captures
+>> no packets leaving eth0.
+>>
+>> After some time (and during this time, my various scripts will be (re)configuring
+>> vrfs and stations and related vrf routing tables and such,
+>> but should *not* be messing with the main routing table, then suddenly
+>> things start working again.
+>>
+>> I am curious if anyone has seen anything similar or has suggestions for more
+>> ways to debug this.  It seems reproducible, but it is a pain to
+>> debug.
+>>
+>> Thanks,
+>> Ben
+>>
+> 
+> 
+
+
 -- 
-2.1.4
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
