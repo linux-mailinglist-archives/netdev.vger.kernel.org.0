@@ -2,78 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B55B9097
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 15:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C285B90AE
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 15:31:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbfITNZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 09:25:28 -0400
-Received: from foss.arm.com ([217.140.110.172]:44720 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726794AbfITNZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 09:25:27 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA67F1570;
-        Fri, 20 Sep 2019 06:25:26 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 68BB93F67D;
-        Fri, 20 Sep 2019 06:25:23 -0700 (PDT)
-Subject: Re: [PATCH] mt7601u: phy: simplify zero check on val
-To:     Colin King <colin.king@canonical.com>,
-        Jakub Kicinski <kubakici@wp.pl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190920125414.15507-1-colin.king@canonical.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2f9ab78a-ea76-0b60-375a-9a22cd2ff0f5@arm.com>
-Date:   Fri, 20 Sep 2019 14:25:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727764AbfITNb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 09:31:27 -0400
+Received: from antares.kleine-koenig.org ([94.130.110.236]:44580 "EHLO
+        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727109AbfITNb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 09:31:27 -0400
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 9E1197BD9EF; Fri, 20 Sep 2019 15:31:25 +0200 (CEST)
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Tal Gilboa <talgi@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] dimlib: make DIMLIB a hidden symbol
+Date:   Fri, 20 Sep 2019 15:31:15 +0200
+Message-Id: <20190920133115.12802-1-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20190920125414.15507-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/09/2019 13:54, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Currently the zero check on val to break out of a loop
-> is a little obscure.  Replace the val is zero and break check
-> with a loop while value is non-zero.
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->   drivers/net/wireless/mediatek/mt7601u/phy.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wireless/mediatek/mt7601u/phy.c
-> index 06f5702ab4bd..4e0e473caae1 100644
-> --- a/drivers/net/wireless/mediatek/mt7601u/phy.c
-> +++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
-> @@ -213,9 +213,7 @@ int mt7601u_wait_bbp_ready(struct mt7601u_dev *dev)
->   
->   	do {
->   		val = mt7601u_bbp_rr(dev, MT_BBP_REG_VERSION);
-> -		if (val && ~val)
-> -			break;
+According to Tal Gilboa the only benefit from DIM comes from a driver
+that uses it. So it doesn't make sense to make this symbol user visible,
+instead all drivers that use it should select it (as is already the case
+AFAICT).
 
-AFAICS, this effectively implements "while (val == 0 || val == 0xff)", 
-which is not at all equivalent to "while(val)"... :/
+Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+---
+ lib/Kconfig | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Robin.
+diff --git a/lib/Kconfig b/lib/Kconfig
+index cc04124ed8f7..9fe8a21fd183 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -555,8 +555,7 @@ config SIGNATURE
+ 	  Implementation is done using GnuPG MPI library
+ 
+ config DIMLIB
+-	bool "DIM library"
+-	default y
++	bool
+ 	help
+ 	  Dynamic Interrupt Moderation library.
+ 	  Implements an algorithm for dynamically change CQ moderation values
+-- 
+2.23.0
 
-> -	} while (--i);
-> +	} while (val && --i);
->   
->   	if (!i) {
->   		dev_err(dev->dev, "Error: BBP is not ready\n");
-> 
