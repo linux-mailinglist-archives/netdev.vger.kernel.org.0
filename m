@@ -2,134 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF75AB9141
-	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 15:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE44B9166
+	for <lists+netdev@lfdr.de>; Fri, 20 Sep 2019 16:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727904AbfITN6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 09:58:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54394 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727941AbfITN6X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Sep 2019 09:58:23 -0400
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C294A87633
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 13:58:22 +0000 (UTC)
-Received: by mail-wm1-f71.google.com with SMTP id h6so1268019wmb.2
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 06:58:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=spCZuDFD0EPU5ozujvfnvvEa34kbUMxIApAez+Dggu8=;
-        b=guqV5OUdFRkNBT38sq+6VXzHCb+98BljBPSkQNTGUCP/de7y0m+wrDRCerb1LCyVD2
-         Bw43iKBsX1G4jdWPkcTxs1Ayf8AGJQeLGIa43EhCPNoBhbhsYzBKNicold8LoZWRIW4h
-         qj4JCLnwK5WB8cE+cuuwuMT/vSH+EGpMH1iGDXqwAR3AddLuIsMvVtkVB+tUf7YUXI+f
-         O9/X1Hh84rP7NzNtvfH/6YWaDMhHF0BD/9BYS4NgSkVWobPH9nW0AAeuAJzZG3pcGoyO
-         KzGx1WfKJc5Z3poWOe5hXjc04oj+nheA6/ILCqlkZHMJx43Q6E3EqaTL8xtoeACRvUwo
-         fvwQ==
-X-Gm-Message-State: APjAAAW1DWyKOPyT/lNtyBg0dV5Pk+DTa4NpRyjUxkINjlLC+PbFojjY
-        11NgxKBpYUCA8BrgxguhePvrCmisQwPeLOwS7IFsQXtWnJVuavXbcpYnnpr7/jqshjAC5uFo9yc
-        c1WjbKwBCxMMZ09tt
-X-Received: by 2002:a05:600c:241:: with SMTP id 1mr3641702wmj.162.1568987901451;
-        Fri, 20 Sep 2019 06:58:21 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxaL42VK6Hbg90QmZTlVy0wuDzSPLddZwEiO+ZOepAYrKU0ro0hZ5/EONlchkImHxvmp3T81A==
-X-Received: by 2002:a05:600c:241:: with SMTP id 1mr3641679wmj.162.1568987901220;
-        Fri, 20 Sep 2019 06:58:21 -0700 (PDT)
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id r6sm1834884wmh.38.2019.09.20.06.58.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 06:58:20 -0700 (PDT)
-Date:   Fri, 20 Sep 2019 15:58:17 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt7601u: phy: simplify zero check on val
-Message-ID: <20190920135817.GC6456@localhost.localdomain>
-References: <20190920125414.15507-1-colin.king@canonical.com>
+        id S2387562AbfITOIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 10:08:34 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54559 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727273AbfITOId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 10:08:33 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iBJaI-0005V1-Fd; Fri, 20 Sep 2019 16:08:30 +0200
+Received: from ukl by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iBJaG-00036I-EW; Fri, 20 Sep 2019 16:08:28 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Laura Abbott <labbott@redhat.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] arcnet: provide a buffer big enough to actually receive packets
+Date:   Fri, 20 Sep 2019 16:08:21 +0200
+Message-Id: <20190920140821.11876-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="i7F3eY7HS/tUJxUd"
-Content-Disposition: inline
-In-Reply-To: <20190920125414.15507-1-colin.king@canonical.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+struct archdr is only big enough to hold the header of various types of
+arcnet packets. So to provide enough space to hold the data read from
+hardware provide a buffer large enough to hold a packet with maximal
+size.
 
---i7F3eY7HS/tUJxUd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The problem was noticed by the stack protector which makes the kernel
+oops.
 
-> From: Colin Ian King <colin.king@canonical.com>
->=20
-> Currently the zero check on val to break out of a loop
-> is a little obscure.  Replace the val is zero and break check
-> with a loop while value is non-zero.
->=20
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/wireless/mediatek/mt7601u/phy.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wi=
-reless/mediatek/mt7601u/phy.c
-> index 06f5702ab4bd..4e0e473caae1 100644
-> --- a/drivers/net/wireless/mediatek/mt7601u/phy.c
-> +++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
-> @@ -213,9 +213,7 @@ int mt7601u_wait_bbp_ready(struct mt7601u_dev *dev)
-> =20
->  	do {
->  		val =3D mt7601u_bbp_rr(dev, MT_BBP_REG_VERSION);
-> -		if (val && ~val)
-> -			break;
+Cc: stable@vger.kernel.org # v2.4.0+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Hello,
 
-I think this is not correct since (not considering the cast) we should break
-=66rom the loop if val !=3D 0 and val !=3D 0xff, so the right approach I gu=
-ess is:
+the problem exists in v2.4.0 already, I didn't look further to identify
+the offending commit.
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wire=
-less/mediatek/mt7601u/phy.c
-index 06f5702ab4bd..d863ab4a66c9 100644
---- a/drivers/net/wireless/mediatek/mt7601u/phy.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
-@@ -213,7 +213,7 @@ int mt7601u_wait_bbp_ready(struct mt7601u_dev *dev)
-=20
- 	do {
- 		val =3D mt7601u_bbp_rr(dev, MT_BBP_REG_VERSION);
--		if (val && ~val)
-+		if (val && val !=3D 0xff)
- 			break;
- 	} while (--i);
+Best regards
+Uwe
+---
+ drivers/net/arcnet/arcnet.c | 31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
-> -	} while (--i);
-> +	} while (val && --i);
-> =20
->  	if (!i) {
->  		dev_err(dev->dev, "Error: BBP is not ready\n");
-> --=20
-> 2.20.1
->=20
+diff --git a/drivers/net/arcnet/arcnet.c b/drivers/net/arcnet/arcnet.c
+index 0efef7aa5b89..2b8cf58e4de0 100644
+--- a/drivers/net/arcnet/arcnet.c
++++ b/drivers/net/arcnet/arcnet.c
+@@ -1063,31 +1063,34 @@ EXPORT_SYMBOL(arcnet_interrupt);
+ static void arcnet_rx(struct net_device *dev, int bufnum)
+ {
+ 	struct arcnet_local *lp = netdev_priv(dev);
+-	struct archdr pkt;
++	union {
++		struct archdr pkt;
++		char buf[512];
++	} rxdata;
+ 	struct arc_rfc1201 *soft;
+ 	int length, ofs;
+ 
+-	soft = &pkt.soft.rfc1201;
++	soft = &rxdata.pkt.soft.rfc1201;
+ 
+-	lp->hw.copy_from_card(dev, bufnum, 0, &pkt, ARC_HDR_SIZE);
+-	if (pkt.hard.offset[0]) {
+-		ofs = pkt.hard.offset[0];
++	lp->hw.copy_from_card(dev, bufnum, 0, &rxdata.pkt, ARC_HDR_SIZE);
++	if (rxdata.pkt.hard.offset[0]) {
++		ofs = rxdata.pkt.hard.offset[0];
+ 		length = 256 - ofs;
+ 	} else {
+-		ofs = pkt.hard.offset[1];
++		ofs = rxdata.pkt.hard.offset[1];
+ 		length = 512 - ofs;
+ 	}
+ 
+ 	/* get the full header, if possible */
+-	if (sizeof(pkt.soft) <= length) {
+-		lp->hw.copy_from_card(dev, bufnum, ofs, soft, sizeof(pkt.soft));
++	if (sizeof(rxdata.pkt.soft) <= length) {
++		lp->hw.copy_from_card(dev, bufnum, ofs, soft, sizeof(rxdata.pkt.soft));
+ 	} else {
+-		memset(&pkt.soft, 0, sizeof(pkt.soft));
++		memset(&rxdata.pkt.soft, 0, sizeof(rxdata.pkt.soft));
+ 		lp->hw.copy_from_card(dev, bufnum, ofs, soft, length);
+ 	}
+ 
+ 	arc_printk(D_DURING, dev, "Buffer #%d: received packet from %02Xh to %02Xh (%d+4 bytes)\n",
+-		   bufnum, pkt.hard.source, pkt.hard.dest, length);
++		   bufnum, rxdata.pkt.hard.source, rxdata.pkt.hard.dest, length);
+ 
+ 	dev->stats.rx_packets++;
+ 	dev->stats.rx_bytes += length + ARC_HDR_SIZE;
+@@ -1096,13 +1099,13 @@ static void arcnet_rx(struct net_device *dev, int bufnum)
+ 	if (arc_proto_map[soft->proto]->is_ip) {
+ 		if (BUGLVL(D_PROTO)) {
+ 			struct ArcProto
+-			*oldp = arc_proto_map[lp->default_proto[pkt.hard.source]],
++			*oldp = arc_proto_map[lp->default_proto[rxdata.pkt.hard.source]],
+ 			*newp = arc_proto_map[soft->proto];
+ 
+ 			if (oldp != newp) {
+ 				arc_printk(D_PROTO, dev,
+ 					   "got protocol %02Xh; encap for host %02Xh is now '%c' (was '%c')\n",
+-					   soft->proto, pkt.hard.source,
++					   soft->proto, rxdata.pkt.hard.source,
+ 					   newp->suffix, oldp->suffix);
+ 			}
+ 		}
+@@ -1111,10 +1114,10 @@ static void arcnet_rx(struct net_device *dev, int bufnum)
+ 		lp->default_proto[0] = soft->proto;
+ 
+ 		/* in striking contrast, the following isn't a hack. */
+-		lp->default_proto[pkt.hard.source] = soft->proto;
++		lp->default_proto[rxdata.pkt.hard.source] = soft->proto;
+ 	}
+ 	/* call the protocol-specific receiver. */
+-	arc_proto_map[soft->proto]->rx(dev, bufnum, &pkt, length);
++	arc_proto_map[soft->proto]->rx(dev, bufnum, &rxdata.pkt, length);
+ }
+ 
+ static void null_rx(struct net_device *dev, int bufnum,
+-- 
+2.23.0
 
---i7F3eY7HS/tUJxUd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXYTa9wAKCRA6cBh0uS2t
-rETyAP42WJmgG0YWFN4dtvNtHUZL2FS46W+Tt/OXQTdrQfEfYQEA6DLVOjMTQzuG
-hmE5irsv5UEh9sDb73OcIUNJYu7aPAg=
-=LFi7
------END PGP SIGNATURE-----
-
---i7F3eY7HS/tUJxUd--
