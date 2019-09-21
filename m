@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E48B9DA8
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 13:39:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CEEB9DB4
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 13:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393973AbfIULjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 07:39:51 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:46337 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388184AbfIULju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 07:39:50 -0400
-Received: by mail-vs1-f67.google.com with SMTP id z14so6412890vsz.13
-        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 04:39:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=3ca8+R1IXCxKYsv0wh29vNB5d8ERgU2rk7dYfiKDaXA=;
-        b=qpGSJ9QQwgy0GRj9/R7tgTQOiZISWYCuTdNCTBkzbJKCzATCWcCKLKvNRHOxIHLJkg
-         UjkNOzOHJWvl5HvbZDvdeK7FO+tIfY+nTRscBRj0fw4uyJBfzncGTwHsyC1BSdcAoJto
-         LyHEjiUb5/6Y09jl7V9usgYzVWKPs8ELrVmlhki0/rufm4BuaYyrH99n08tEeoIEiyiE
-         m3gdW6W3VVpWsW9WZaQqh8ChclSankiIE9zWY9EWBTSYhxGCHqIzg79+WgX+WY/X2tE8
-         MHa9irmp3mnG4CngnJkaQJN0WYO+mMwvZGjw8dHdKatSPhFx8HeZGn7rayIojOUSmCRl
-         GczA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=3ca8+R1IXCxKYsv0wh29vNB5d8ERgU2rk7dYfiKDaXA=;
-        b=nEi/v68ahDQVhlR+YZ8CBsQpwilHmsrrDogXACVLqfFK8d7CckPDeUVMLj142TPbHc
-         bhz09hCak+fFLXm87+BYt4aN3DTvBEWG7NWDZtquLDHkq9gb46zuwmy40aAsmBFJ/8sd
-         CgzGfldVRRB/mZC+xXwInf796qwCZFgxoXefuBljV1P27csKteix8A5DMtS40ksnYXK7
-         qoKjD6Va96FKY9Ob5QjgQlh/a487ycVID27LL7wS8tPMuPZt13lQz0VmIjWdO591dQQk
-         j4YJZwzpba0zucZeWRJSgY/RRKXbdWm/lUconZV5RD75BYKjA2sajqK8IM3fNl3j6y6F
-         +SDw==
-X-Gm-Message-State: APjAAAUMRcz6Jq1p7YJDi2nbz1KFmSJqCQFeyoEHBQTelb8fCf0RrS2D
-        8HLT/J/8nGJMh3M/KP4BAJ7lZdCpB7LiRppmBE4=
-X-Google-Smtp-Source: APXvYqzYeq2d932lw8OsCnDAWFICzG8YYfX+6zodW3PSkCTabrxgtOS6zZLX22A3DMSq9xSHfV2w5AvMpjv6r7760w0=
-X-Received: by 2002:a67:ed47:: with SMTP id m7mr5214091vsp.60.1569065988533;
- Sat, 21 Sep 2019 04:39:48 -0700 (PDT)
+        id S2407581AbfIULwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 07:52:53 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:59247 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405770AbfIULwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 07:52:53 -0400
+Received: from localhost.localdomain (unknown [IPv6:2003:e9:d742:d2ca:2f74:a255:7f82:cac1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 5EE4AC18BE;
+        Sat, 21 Sep 2019 13:52:48 +0200 (CEST)
+Subject: Re: [PATCH] ieee802154: mcr20a: simplify a bit
+ 'mcr20a_handle_rx_read_buf_complete()'
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        liuxuenetmail@gmail.com, alex.aring@gmail.com, davem@davemloft.net
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <388f335a-a9ae-7230-1713-a1ecb682fecf@datenfreihafen.org>
+Date:   Sat, 21 Sep 2019 13:52:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Reply-To: DrtracyWilliam1@gmail.com
-Received: by 2002:a67:c198:0:0:0:0:0 with HTTP; Sat, 21 Sep 2019 04:39:47
- -0700 (PDT)
-From:   Dr Tracy William <ra6277708@gmail.com>
-Date:   Sat, 21 Sep 2019 13:39:47 +0200
-X-Google-Sender-Auth: Sj0v9MuqwVtFngwb4e8HnyMZfN8
-Message-ID: <CAG+9dE1atOTUu6Df1cvcevR2DE+CjE1+amgzuj51gosK2tzf2A@mail.gmail.com>
-Subject: From Dr. Tracy Williams.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+Hello Xue.
 
-How are you today,I hope you are doing great. It is my great pleasure
-to contact you,I want to make a new and special friend,I hope you
-don't mind. My name is Tracy Williams
+On 20.09.19 21:45, Christophe JAILLET wrote:
+> Use a 'skb_put_data()' variant instead of rewritting it.
+> The __skb_put_data variant is safe here. It is obvious that the skb can
+> not overflow. It has just been allocated a few lines above with the same
+> 'len'.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ieee802154/mcr20a.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+> index 17f2300e63ee..8dc04e2590b1 100644
+> --- a/drivers/net/ieee802154/mcr20a.c
+> +++ b/drivers/net/ieee802154/mcr20a.c
+> @@ -800,7 +800,7 @@ mcr20a_handle_rx_read_buf_complete(void *context)
+>  	if (!skb)
+>  		return;
+>  
+> -	memcpy(skb_put(skb, len), lp->rx_buf, len);
+> +	__skb_put_data(skb, lp->rx_buf, len);
+>  	ieee802154_rx_irqsafe(lp->hw, skb, lp->rx_lqi[0]);
+>  
+>  	print_hex_dump_debug("mcr20a rx: ", DUMP_PREFIX_OFFSET, 16, 1,
+> 
 
-from the United States, Am a french and English nationality. I will
-give you pictures and more details about my self as soon as i hear
-from you in my email account bellow,
-Here is my email address; DrtracyWilliam1@gmail.com
+Could you please review and ACK this? If you are happy I will take it
+through my tree.
 
-Please send your reply to my PRIVATE=C2=A0 mail box.
-Thanks,
-
-Dr. Tracy Williams.
+regards
+Stefan Schmidt
