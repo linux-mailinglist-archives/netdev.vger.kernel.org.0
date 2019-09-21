@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B30B9BD9
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 03:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD2EB9BDA
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 03:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730700AbfIUBas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 21:30:48 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:43588 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730662AbfIUBar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 21:30:47 -0400
-Received: by mail-qk1-f193.google.com with SMTP id h126so9200471qke.10
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 18:30:45 -0700 (PDT)
+        id S1730727AbfIUBc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 21:32:26 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42145 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730577AbfIUBc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 21:32:26 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q12so5702958pff.9
+        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 18:32:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nQs4Jz85IPb8Y8s/yPeK+1656cS0v7T8RuxG55hg9ZE=;
-        b=nqyT/aUyJAL+EBgB860KK21k80L5UEYslh6B/1F5CyMiNyA8MbilEMuvDuVRHPcjnW
-         NqvjZqCaoKENTn64REXuOAcgMFzyFGducItf8gDZHNfQUTWMMq38PQbxxShbbP79/xCs
-         hsEYW4+3zD/UzqbEDzm5BLyPormN0fZQ7vdNKHV0vcpE10Q4mqT6N4DQFUVVxoMCwh/p
-         yI8n0PeK6uM4AyOnTm3MPEsCaXwKubU3WjvFybpnlAmbxc+cZ2plfos61TbgXr9vVOSD
-         N9kxY+jHjCbZAZmKGqixVmeEdknlZ18n0kwaM6h8Z76pVrgur3ufrVV4Rm/CBFNQEh5C
-         Kzng==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JHo9M9g3ayOFP0H8C0h/frjLeyoKyqg1lMQyo2UJSPQ=;
+        b=GM2v0nDPn116/2keY8CPd1k+K71qZvyOc13QWRJt0wXlP1GriD5C1pnZ58sMCVhKk+
+         OO+v9sdsPsFD4299pX+XCFKADAtXw5NGbxme2AcdOKZaAXjh5Kmdrbm3pg+dbYC8InPb
+         04y6ldQhblYP/r4rBf28TtxpVOFqGo3cZiMhvKXzEWRMXtl6UB9IqaukIABruq5k9piJ
+         z0R9NNqEgT8ZwSD2CuavUebjB/KywXy8xuhagddl5im1aHdv0syz2PvwT/tBDsbyf4y9
+         J/G8KtN62PzMe/zDkzFE1g58cB5vKt11TXc9SI41MtGKcro+FAnuTMqP8nvkjZ6Av2Eo
+         7dhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nQs4Jz85IPb8Y8s/yPeK+1656cS0v7T8RuxG55hg9ZE=;
-        b=JF/Etvz16zC+M9t8JRopgIfdcLKTKyxzF9WpUBstyo92V9Xg0n2Rpzj+iDztBmMcgM
-         ZN3vj6x7BYE2d9dWrc2MTlCoWda1RGjnDwLKiRf78HlRgH2i4yF/dzFjJQpf27uG2MaQ
-         eEHpIawl3BxjIJEyXccQN+UuADzr59sFAm7syEOoOaDJOB9r6R48+i8wz8SATCL9utgI
-         vWOReW4lSJbTjgqF7+5ny4E3J4uNZdK0Fp8Jg8LPFB0C2h+B5YarKk4mNlJnK3zNe19r
-         6TLIiIX7OG50JSaBdSHhRNhpo5u3MQtjANcske9+bdEPxee0d9hi0jpmLkj1nJWoxJ1f
-         Y3qQ==
-X-Gm-Message-State: APjAAAX5nGg2fKjyfKBZT/1zGzpvlmjS8aLZ/ZleavBhfgBfwB3vjc91
-        iY/lHZ/1iFlUr6EHDiJg4N/WODLQXUw=
-X-Google-Smtp-Source: APXvYqxCJGmKgtECYQ0ePnCqpH67ve/M2MLWvxatFlsr5fGaXe8Gi3Sdcqg5AzlvwoPFnDo/rDU4yg==
-X-Received: by 2002:ae9:ef8c:: with SMTP id d134mr6849912qkg.286.1569029445401;
-        Fri, 20 Sep 2019 18:30:45 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c201sm1788506qke.128.2019.09.20.18.30.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 18:30:45 -0700 (PDT)
-Date:   Fri, 20 Sep 2019 18:30:41 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ja@ssi.bg,
-        David Ahern <dsahern@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JHo9M9g3ayOFP0H8C0h/frjLeyoKyqg1lMQyo2UJSPQ=;
+        b=YP3PdALeH+KmA2drkboGn+E5S52nsmuX4XasN1mfViYoj/EUtr+zxFPBpmItg5VvQh
+         sqPFrbYsplHt7d8Zmow8ki0caLyy510U0nDakkp9+X2TOXKAYMmqdRl/WYdwvskN4wzW
+         S6qcqCHCP0myv8QvA+VEc7CjLP6S0lezy5EqqMWRe2xxtmkusQETJeciIgq/7y3rECRZ
+         vXBIgI9SlwhVfS+WChx+FJmIn/rPu1p+SO4r56nK1h2rh9YY8TtVAVW1qIiFf6a7c17a
+         eC6V+e2P+Qux+xUG74TO9JAxU8L6xwqAzhANP67N6RCUuN6Ez6Frl8+f+lVHRVL3S8Uh
+         09Wg==
+X-Gm-Message-State: APjAAAWNoRZxA9gZigMOxmO59+UdnHp6UU1/VhKGGplTyFN9TO910MIC
+        ENdHULy1CUGauBWDQWCfbp8=
+X-Google-Smtp-Source: APXvYqzFd8b5y19YNQOtynhlRO5YG9v2SOzjWuAtydNOD5FIKmOMYf4hjks+U531tNuqTvGOv7UMHQ==
+X-Received: by 2002:a17:90a:e56:: with SMTP id p22mr7913125pja.133.1569029545271;
+        Fri, 20 Sep 2019 18:32:25 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:bd3e:db6:d703:4870])
+        by smtp.googlemail.com with ESMTPSA id r28sm5480640pfg.62.2019.09.20.18.32.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 20 Sep 2019 18:32:24 -0700 (PDT)
 Subject: Re: [PATCH net] ipv4: Revert removal of rt_uses_gateway
-Message-ID: <20190920183041.7c57b973@cakuba.netronome.com>
-In-Reply-To: <20190917173949.19982-1-dsahern@kernel.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ja@ssi.bg
 References: <20190917173949.19982-1-dsahern@kernel.org>
-Organization: Netronome Systems, Ltd.
+ <20190920183041.7c57b973@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b09ff179-297b-19ce-f467-99b8315ee2d6@gmail.com>
+Date:   Fri, 20 Sep 2019 19:32:22 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190920183041.7c57b973@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Sep 2019 10:39:49 -0700, David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
-> 
-> Julian noted that rt_uses_gateway has a more subtle use than 'is gateway
-> set':
->     https://lore.kernel.org/netdev/alpine.LFD.2.21.1909151104060.2546@ja.home.ssi.bg/
-> 
-> Revert that part of the commit referenced in the Fixes tag.
-> 
-> Currently, there are no u8 holes in 'struct rtable'. There is a 4-byte hole
-> in the second cacheline which contains the gateway declaration. So move
-> rt_gw_family down to the gateway declarations since they are always used
-> together, and then re-use that u8 for rt_uses_gateway. End result is that
-> rtable size is unchanged.
-> 
-> Fixes: 1550c171935d ("ipv4: Prepare rtable for IPv6 gateway")
-> Reported-by: Julian Anastasov <ja@ssi.bg>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+On 9/20/19 7:30 PM, Jakub Kicinski wrote:
+> I'm assuming the mix of u8 and __u8 is intentional, since this is a partial revert :)
 
-I'm assuming the mix of u8 and __u8 is intentional, since this is a partial revert :)
+original patch for rt_uses_gateway used __u8 so yes put that back.
 
-Applied, queued, thanks!
+not sure why I used u8 for the new field, but left it on the move.
