@@ -2,97 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD598B9F1D
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 19:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E540B9F36
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 19:41:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726974AbfIURMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 13:12:44 -0400
-Received: from mail-lj1-f175.google.com ([209.85.208.175]:43788 "EHLO
-        mail-lj1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbfIURMn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 13:12:43 -0400
-Received: by mail-lj1-f175.google.com with SMTP id n14so4884938ljj.10;
-        Sat, 21 Sep 2019 10:12:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=BDyXtpOUervuzaQV6afAdyUIWrNV4O1le4mtASsc0Hc=;
-        b=F+/WC98oxaI5cHve/eoHTftl15Qnett4hL/oKJKm6zQJIPVQDPvBhCwrZ3CJTTDvqz
-         DBGLwdX4higd+YEQv/agaB/TALabBFeG/rRFrZwWu1BULC/KVq3iNfWMpvyG7MfpOuGW
-         Kn3XTPJUNGtlbOpQ75gWSjNWGSWJpIrsYIPQCFtSiVf5Mt0pKqt4OFad4pYGvE0WkzFJ
-         iITMIFsOjf+sdNzAuYTt9Uk8jSY1yV65fpKzuVOhtsez0k18qHNwIcXXoKO+4ws5STKe
-         yGg5QLbD44GHeqAZuyziyah+065p6Lzba245cqFKign/yDlYpnJzb+3DyPNDxgMCul2O
-         BS8g==
+        id S1731423AbfIURlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 13:41:02 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:43725 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731402AbfIURlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 13:41:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id o6so16140232ioh.10
+        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 10:41:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=BDyXtpOUervuzaQV6afAdyUIWrNV4O1le4mtASsc0Hc=;
-        b=kkB6mnTOayFwWAiMxzeY/Ke9b7kdZantX83mZcNtuUnAUFxHxOo4Tlqw2/VM4Mgc4r
-         Ca/eW+u3ZBP8BGs55JN+vqp19xjWIo2rn9dSkes9/DKcK0jhK4s5Mp0x10bAqNkGhLQA
-         l4pjob37ykKfLIfwbe04s7D7aFIYfRoBe4osjI2b6Ta/uSQpgpnCTi8lpTPx/nzvBc4j
-         oPepUqMupew6LzcowiffF0rZhX5r25nZQYAytaGtY3SvuuWNDo3OmGb2SZ6clkeN7Ydq
-         nwy9YCcnIajAARYBrJMgmbPT3EJ+h89sbKKEfP9JF7CQJVoUT9XzPflkLe9TdB11swT9
-         TANw==
-X-Gm-Message-State: APjAAAXBGE79AbgjAqsyV/70+3rXS5iTu+2MhdzloXCvYZ8UvyEDi4zk
-        eTcktCx+hhjEB1x2QpWgOu/Kk6Hl
-X-Google-Smtp-Source: APXvYqwPqJeIPFlIUuMAS8lkSmQCcsW0CT7tC8+IwvsS75HDZeqeCv/OjJ0cU0zxgjFR0dGqzG2gcg==
-X-Received: by 2002:a2e:8802:: with SMTP id x2mr12547028ljh.113.1569085961114;
-        Sat, 21 Sep 2019 10:12:41 -0700 (PDT)
-Received: from [192.168.2.145] ([94.29.45.178])
-        by smtp.googlemail.com with ESMTPSA id k7sm337509lja.19.2019.09.21.10.12.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 21 Sep 2019 10:12:40 -0700 (PDT)
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Alexei Avshalom Lazar <ailizaro@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-From:   Dmitry Osipenko <digetx@gmail.com>
-Subject: [next] regression: WiFi doesn't work after "nl80211: Add support for
- EDMG channels"
-Message-ID: <e82fa5e1-c6a3-e4c4-92b0-64cc8285b825@gmail.com>
-Date:   Sat, 21 Sep 2019 20:12:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Vou0Mi/j/M2Ma5Ajew5/N8RpeWCXouricDj+EREdNZY=;
+        b=bKcjp4TxHTMvU/FKbYzvjsJyj5bJQN+r5ajxzRx2z2icgZ6Pw5twXzQDEZXFxsHaO9
+         G9WfjuyoX8h/rMK5DLAxy8jvK9ViGEJS/G2wL1SwRr6vTd0R/NjH3jKqul/hhUtI6ecm
+         f5RwP6wOKpOdBJweHsxpPLxiX+FfkC0f4edYRed8XyypnuhxakFQsCj0tKXSwn0PW2Bd
+         R0EnzI+nMn6J/9KJfNeriOXVY5hKU1RA3TuoA+YLlZux+qtRi/OGQ2E7fvNHiy9XWFT+
+         smkqnkY/TKJ2MuhJHuKzSMhI/axpOsxbHCIajz9yr7kMG9BNvK321jMdeNuSusVYCKZT
+         xkkQ==
+X-Gm-Message-State: APjAAAUpCRALuAMmVoMhxccMxZ/F7J6AL++wW6KyJhVm+v/u6zOjrq9W
+        v+AN7+c7SU5Fg+bUHl0PObRrU2OXw6eiFb2m5SKEztVIlvA1
+X-Google-Smtp-Source: APXvYqyr/QnaH7gCOgIYf0MJcv1TUeTtRpr75v8rwd0Su2cX1DH7UXwxXu2hOzyHWLdGdlgaclDhr2teY+qtZB+BASzqQhvSpW0K
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a6b:ec07:: with SMTP id c7mr4441481ioh.84.1569087661223;
+ Sat, 21 Sep 2019 10:41:01 -0700 (PDT)
+Date:   Sat, 21 Sep 2019 10:41:01 -0700
+In-Reply-To: <000000000000727bd10590c9cf6c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ab325a059313b071@google.com>
+Subject: Re: KASAN: use-after-free Read in rxrpc_release_call
+From:   syzbot <syzbot+eed305768ece6682bb7f@syzkaller.appspotmail.com>
+To:     MAILER_DAEMON@email.uscc.net, davem@davemloft.net,
+        dhowells@redhat.com, hdanton@sina.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+syzbot has bisected this bug to:
 
-Patch "nl80211: Add support for EDMG channels" broke brcmfmac driver on one of my devices, the newly
-introduced cfg80211_chandef_is_edmg() erroneously returns "true" because chandef->edmg.bw_config !=
-NULL. Apparently this happens because "chandef" is allocated on stack in nl80211.c (and other places),
-the "edmg" field isn't zeroed while it should be. Please fix, thanks in advance.
+commit 2baec2c3f854d1f79c7bb28386484e144e864a14
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed May 24 16:02:32 2017 +0000
 
-WARNING: CPU: 0 PID: 409 at net/wireless/nl80211.c:3118 nl80211_send_chandef+0xd3/0xd8
-Modules linked in:
-CPU: 0 PID: 409 Comm: NetworkManager Tainted: G        W
-5.3.0-next-20190920-00177-g89b36954c24f #2381
-Hardware name: NVIDIA Tegra SoC (Flattened Device Tree)
-(show_stack+0x11/0x14)
-(dump_stack+0x7f/0x8c)
-(__warn+0xc1/0xc4)
-(warn_slowpath_fmt+0x45/0x78)
-(nl80211_send_chandef+0xd3/0xd8)
-(nl80211_send_iface+0x4db/0x6a0)
-(nl80211_get_interface+0x39/0x68)
-(genl_rcv_msg+0x14d/0x33c)
-(netlink_rcv_skb+0x85/0xb8)
-(genl_rcv+0x21/0x30)
-(netlink_unicast+0xf3/0x144)
-(netlink_sendmsg+0x12b/0x27c)
-(sock_sendmsg+0x11/0x1c)
-(___sys_sendmsg+0x1bb/0x1d0)
-(__sys_sendmsg+0x39/0x58)
-(ret_fast_syscall+0x1/0x28)
-Exception stack(0xe1621fa8 to 0xe1621ff0)
-1fa0:                   00000000 bea1b830 00000009 bea1b830 00000000 00000000
-1fc0: 00000000 bea1b830 00000009 00000128 00644084 b6fd6930 00683d30 00645330
-1fe0: 00000128 bea1b808 b6a1b3a5 b6a1c6b6
+     rxrpc: Support network namespacing
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16240b09600000
+start commit:   f97c81dc Merge tag 'armsoc-late' of git://git.kernel.org/p..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15240b09600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11240b09600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=61f948934213449f
+dashboard link: https://syzkaller.appspot.com/bug?extid=eed305768ece6682bb7f
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cf8ea1600000
+
+Reported-by: syzbot+eed305768ece6682bb7f@syzkaller.appspotmail.com
+Fixes: 2baec2c3f854 ("rxrpc: Support network namespacing")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
