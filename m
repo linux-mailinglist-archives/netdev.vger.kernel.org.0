@@ -2,83 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B76B9AFC
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 01:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B44D4B9B00
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 02:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407278AbfITX7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 19:59:48 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:47100 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407171AbfITX7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 19:59:47 -0400
-Received: by mail-qt1-f194.google.com with SMTP id u22so10592185qtq.13
-        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 16:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=MmQoXn1ppUt6tBlun+jsY8GfzDlX1YEW76k+uO1iBX8=;
-        b=A1/nl07UHOqnDdD7baQQLAHk5qJZVugwCfL30htDpi0zArYLmUagVCe2YUrmQDz6xv
-         W6JAum2bCTlevDzim1XBkj2TwXIjTagBxv8ddpWW90nnfNTGEMBTf0ZIhcJapEoVzHME
-         Ms5tLS/ejGf3qWK4WWsUu+oRmeKRWrplsM8cxyIdb6egLcFmuzhD6KKRi/jouZh8rxaC
-         EE0bLysXbkdbtW7V3KddkIuw4mFGYo0eZGdFc8kpUtgOMjUtLE2cgGFLEq/TL08T8flm
-         3CHmervg6nI4kSg2/8R9IjG9pPgz5Ie1ZKSOd5RfeGcJ50KtrFbOqDZTWsq6yyHKHxdn
-         Qu2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=MmQoXn1ppUt6tBlun+jsY8GfzDlX1YEW76k+uO1iBX8=;
-        b=Av5KQlOOovvFYGQ0Uw54HroOuicGLNU5oWfvvds/sKSUecxrHuCJ5YLMxOPFynr+VT
-         iVeGqfc3kGoemiu4UK/gRe9PNVy04BWbhruf3I9oJspz5Jz8fSUEWXMIt1wxiNqojDAX
-         qkZEEngu53UNq/jNCsiQvyO68MmZurt5vBe+45WfFW7YhfyMHxgSoJCeuD6eXw8TDZT1
-         wzn7MMY968z9Rz7YbOwpPMrQiJjBBWPtg2vpw6rvqyCxuHak0hAzMCXNrgmLtjLSjSpj
-         fHvmOJbon+nG2aIvDH20p0kIDsdv+GkFZ7AZnkeuotz7M4Ibk7R5Ip3TByOR3HenKlgM
-         Hg6w==
-X-Gm-Message-State: APjAAAUUErfsj14aTbicVTywpzKyc0AJzrH2NxOC7qxUuaIXWwGgDqW+
-        kvpbKZc01O6eLn+B6YSmniISbw==
-X-Google-Smtp-Source: APXvYqzFy627Qoo8QfGm5ippCGvvEzVdk3qIQJIoTOhITTbKkwT2Gr4YgvB99C7FK1afQnGOAl8AiA==
-X-Received: by 2002:ac8:444e:: with SMTP id m14mr6224826qtn.19.1569023986984;
-        Fri, 20 Sep 2019 16:59:46 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p56sm2304890qtp.81.2019.09.20.16.59.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Sep 2019 16:59:46 -0700 (PDT)
-Date:   Fri, 20 Sep 2019 16:59:42 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, jiri@resnulli.us,
-        sd@queasysnail.net, roopa@cumulusnetworks.com, saeedm@mellanox.com,
-        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
-        haiyangz@microsoft.com, stephen@networkplumber.org,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        jay.vosburgh@canonical.com
-Subject: Re: [PATCH net v3 00/11] net: fix nested device bugs
-Message-ID: <20190920165942.7e0d6235@cakuba.netronome.com>
-In-Reply-To: <20190916134802.8252-1-ap420073@gmail.com>
-References: <20190916134802.8252-1-ap420073@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726295AbfIUAG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 20:06:29 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33342 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbfIUAG3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 20:06:29 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBSuv-0005FJ-D2; Sat, 21 Sep 2019 02:06:25 +0200
+Received: from [178.197.248.15] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iBSuv-000Jrj-3k; Sat, 21 Sep 2019 02:06:25 +0200
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        Paul Blakey <paulb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Pravin Shelar <pshelar@ovn.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <20190919.132147.31804711876075453.davem@davemloft.net>
+ <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
+ <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net>
+ <20190920155605.7c81c2af@cakuba.netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f1983a74-d144-6d21-9b20-59cea9afc366@iogearbox.net>
+Date:   Sat, 21 Sep 2019 02:06:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190920155605.7c81c2af@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25578/Fri Sep 20 10:21:28 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Sep 2019 22:47:51 +0900, Taehee Yoo wrote:
-> This patchset fixes several bugs that are related to nesting
-> device infrastructure.
-> Current nesting infrastructure code doesn't limit the depth level of
-> devices. nested devices could be handled recursively. at that moment,
-> it needs huge memory and stack overflow could occur.
-> Below devices type have same bug.
-> VLAN, BONDING, TEAM, MACSEC, MACVLAN and VXLAN.
+On 9/21/19 12:56 AM, Jakub Kicinski wrote:
+[...]
+>> I thought idea of stuffing things into skb extensions are only justified if
+>> it's not enabled by default for everyone. :(
+>>
+>>     [0] https://lore.kernel.org/netdev/CAHC9VhSz1_KA1tCJtNjwK26BOkGhKGbPT7v1O82mWPduvWwd4A@mail.gmail.com/T/#u
+> 
+> The skb ext allocation is only done with GOTO_CHAIN, which AFAIK only
+> has practical use for offload.  We could perhaps add another static
+> branch there or move the OvS static branch out of the OvS module so
+> there are no linking issues?
+> 
+> I personally have little sympathy for this piece of code, it is perhaps
+> the purest form of a wobbly narrow-use construct pushed into TC for HW
+> offload.
+> 
+> Any suggestions on the way forward? :(
 
-Is this list exhaustive? Looks like qmi_wwan.c perhaps could also have
-similar problem? Or virt_wifi? Perhaps worth CCing the authors of those
-drivers and mentioning that?
+Presumably there are no clean solutions here, but on the top of my head for
+this use case, you'd need to /own/ the underlying datapath anyway, so couldn't
+you program the OVS key->recirc_id based on skb->mark (or alternatively via
+skb->tc_index) which was previously set by tc ingress?
 
-Thank you for working on this!
+Thanks,
+Daniel
