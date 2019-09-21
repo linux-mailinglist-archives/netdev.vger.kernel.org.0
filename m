@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11CEEB9DB4
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 13:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3EDB9DBC
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 13:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407581AbfIULwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 07:52:53 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:59247 "EHLO
+        id S2437795AbfIUL7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 07:59:09 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:59266 "EHLO
         proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405770AbfIULwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 07:52:53 -0400
-Received: from localhost.localdomain (unknown [IPv6:2003:e9:d742:d2ca:2f74:a255:7f82:cac1])
+        with ESMTP id S2405761AbfIUL7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 07:59:09 -0400
+Received: from localhost.localdomain (p200300E9D742D2CA2F74A2557F82CAC1.dip0.t-ipconnect.de [IPv6:2003:e9:d742:d2ca:2f74:a255:7f82:cac1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 5EE4AC18BE;
-        Sat, 21 Sep 2019 13:52:48 +0200 (CEST)
-Subject: Re: [PATCH] ieee802154: mcr20a: simplify a bit
- 'mcr20a_handle_rx_read_buf_complete()'
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        liuxuenetmail@gmail.com, alex.aring@gmail.com, davem@davemloft.net
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
+        by proxima.lasnet.de (Postfix) with ESMTPSA id ED2B6C18BE;
+        Sat, 21 Sep 2019 13:59:06 +0200 (CEST)
+Subject: Re: [PATCH 4/5] ieee802154: enforce CAP_NET_RAW for raw sockets
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Cc:     isdn@linux-pingi.de, jreuter@yaina.de, ralf@linux-mips.org,
+        alex.aring@gmail.com, orinimron123@gmail.com
+References: <20190920073549.517481-1-gregkh@linuxfoundation.org>
+ <20190920073549.517481-5-gregkh@linuxfoundation.org>
 From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <388f335a-a9ae-7230-1713-a1ecb682fecf@datenfreihafen.org>
-Date:   Sat, 21 Sep 2019 13:52:11 +0200
+Message-ID: <5c100446-037a-cdc2-5491-fd10385a98fd@datenfreihafen.org>
+Date:   Sat, 21 Sep 2019 13:58:55 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20190920073549.517481-5-gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -39,36 +39,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Xue.
+Hello.
 
-On 20.09.19 21:45, Christophe JAILLET wrote:
-> Use a 'skb_put_data()' variant instead of rewritting it.
-> The __skb_put_data variant is safe here. It is obvious that the skb can
-> not overflow. It has just been allocated a few lines above with the same
-> 'len'.
+On 20.09.19 09:35, Greg Kroah-Hartman wrote:
+> From: Ori Nimron <orinimron123@gmail.com>
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> When creating a raw AF_IEEE802154 socket, CAP_NET_RAW needs to be
+> checked first.
+> 
+> Signed-off-by: Ori Nimron <orinimron123@gmail.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/net/ieee802154/mcr20a.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  net/ieee802154/socket.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-> index 17f2300e63ee..8dc04e2590b1 100644
-> --- a/drivers/net/ieee802154/mcr20a.c
-> +++ b/drivers/net/ieee802154/mcr20a.c
-> @@ -800,7 +800,7 @@ mcr20a_handle_rx_read_buf_complete(void *context)
->  	if (!skb)
->  		return;
+> diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+> index badc5cfe4dc6..d93d4531aa9b 100644
+> --- a/net/ieee802154/socket.c
+> +++ b/net/ieee802154/socket.c
+> @@ -1008,6 +1008,9 @@ static int ieee802154_create(struct net *net, struct socket *sock,
 >  
-> -	memcpy(skb_put(skb, len), lp->rx_buf, len);
-> +	__skb_put_data(skb, lp->rx_buf, len);
->  	ieee802154_rx_irqsafe(lp->hw, skb, lp->rx_lqi[0]);
->  
->  	print_hex_dump_debug("mcr20a rx: ", DUMP_PREFIX_OFFSET, 16, 1,
+>  	switch (sock->type) {
+>  	case SOCK_RAW:
+> +		rc = -EPERM;
+> +		if (!capable(CAP_NET_RAW))
+> +			goto out;
+>  		proto = &ieee802154_raw_prot;
+>  		ops = &ieee802154_raw_ops;
+>  		break;
 > 
 
-Could you please review and ACK this? If you are happy I will take it
-through my tree.
+I assume this will go as a whole series into net. If you want me to pick
+it up into my tree directly let me know.
+
+Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
 
 regards
 Stefan Schmidt
