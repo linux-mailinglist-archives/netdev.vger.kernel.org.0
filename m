@@ -2,81 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B44D4B9B00
-	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 02:06:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF763B9BC9
+	for <lists+netdev@lfdr.de>; Sat, 21 Sep 2019 03:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbfIUAG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Sep 2019 20:06:29 -0400
-Received: from www62.your-server.de ([213.133.104.62]:33342 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbfIUAG3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 20:06:29 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iBSuv-0005FJ-D2; Sat, 21 Sep 2019 02:06:25 +0200
-Received: from [178.197.248.15] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iBSuv-000Jrj-3k; Sat, 21 Sep 2019 02:06:25 +0200
-Subject: Re: CONFIG_NET_TC_SKB_EXT
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Paul Blakey <paulb@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pravin Shelar <pshelar@ovn.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-References: <20190919.132147.31804711876075453.davem@davemloft.net>
- <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
- <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net>
- <20190920155605.7c81c2af@cakuba.netronome.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f1983a74-d144-6d21-9b20-59cea9afc366@iogearbox.net>
-Date:   Sat, 21 Sep 2019 02:06:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727187AbfIUBKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Sep 2019 21:10:05 -0400
+Received: from mail-qk1-f171.google.com ([209.85.222.171]:42619 "EHLO
+        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726295AbfIUBKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Sep 2019 21:10:04 -0400
+Received: by mail-qk1-f171.google.com with SMTP id f16so9180171qkl.9
+        for <netdev@vger.kernel.org>; Fri, 20 Sep 2019 18:10:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Hyy07HG+pGcEjLNmzKph46y8wb/CPIyVRfwqgNnQpGg=;
+        b=e4FHBAL3zmpUh3RI/y1g4oxiZiidX4HPAgeBmcUIywfF2Rgl/6ZtSyPnpYjF+6S/Ml
+         Hsf7bL9id+1T6BZSo0RwiDUOllrVcAeituJSc2XA1ebbhUkcYjeHlX+1wN3E7sJ4aIRh
+         QLEZPpe+PnIiYpKBjL13zpLGTv36gDYggvyk7JRO8S0hgo/Mue0gAZch9CYkA+9hQGY1
+         98pK/T/pGXL5HVdCw/EpoSl41Qpyi4cfJgwcifH//0wwAZ/QTdN3Dgo0hOdwXu6vR0o/
+         jOmpAHynV+hKN5yVvvNw90D6KQMJBvkXeg7skucNm9lq9FKOj3jgueDpdRuLmnkaHz7p
+         qVcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Hyy07HG+pGcEjLNmzKph46y8wb/CPIyVRfwqgNnQpGg=;
+        b=fdAbBcHlzygz4c350pOFh4SULvfPnpRNGH2tZZKnWaJ7mxwuoejjMEPFt7/edKWa3v
+         grKUxuqJRvGjNtT9UztArrAUXvk2vrudnSjHGaoTgwAXUSyfjSUcuT6/SdS8Kf8VE/Sm
+         taC8RqMIHGzsq0DFW6SNdaj1EqVFnl5KaWPAVMQOFz66bKLllK7PM9gPfoC/3Rr7bWgA
+         Xj5a6cTdYOpxdEO15W96i+2UGp7DhaQRU1sGRMmLwm7LXdyp5S3IIwAjvwRHFq5TjV1o
+         +CXOIIcDI36JGdet6vdWbwyCJeC1Zv2f1/TRjBtPXr2UzdzzaOrkRgpANSA/Zo+OsIFh
+         x7IA==
+X-Gm-Message-State: APjAAAUUMMB7oldkTZXLpXCsdxM7lzRfn3GisaWwi1B4EMOuPxGsjt+F
+        zrKc2YksbK76zedQ9uq5aNpFqQ==
+X-Google-Smtp-Source: APXvYqxsnWu93WvVjpz47680Vag9kL8CcxpwMMUp4ykwxRsBp8NamBMhPEL/ryRWNMi50QRqP7Zx5g==
+X-Received: by 2002:a05:620a:247:: with SMTP id q7mr6765554qkn.267.1569028203860;
+        Fri, 20 Sep 2019 18:10:03 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id j2sm1558262qth.37.2019.09.20.18.10.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Sep 2019 18:10:03 -0700 (PDT)
+Date:   Fri, 20 Sep 2019 18:09:59 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
+        davem@davemloft.net, rds-devel@oss.oracle.com
+Subject: Re: [PATCH net] net/rds: Check laddr_check before calling it
+Message-ID: <20190920180959.7920f2c3@cakuba.netronome.com>
+In-Reply-To: <1568734158-18021-1-git-send-email-ka-cheong.poon@oracle.com>
+References: <1568734158-18021-1-git-send-email-ka-cheong.poon@oracle.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190920155605.7c81c2af@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25578/Fri Sep 20 10:21:28 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/19 12:56 AM, Jakub Kicinski wrote:
-[...]
->> I thought idea of stuffing things into skb extensions are only justified if
->> it's not enabled by default for everyone. :(
->>
->>     [0] https://lore.kernel.org/netdev/CAHC9VhSz1_KA1tCJtNjwK26BOkGhKGbPT7v1O82mWPduvWwd4A@mail.gmail.com/T/#u
+On Tue, 17 Sep 2019 08:29:18 -0700, Ka-Cheong Poon wrote:
+> In rds_bind(), laddr_check is called without checking if it is NULL or
+> not.  And rs_transport should be reset if rds_add_bound() fails.
 > 
-> The skb ext allocation is only done with GOTO_CHAIN, which AFAIK only
-> has practical use for offload.  We could perhaps add another static
-> branch there or move the OvS static branch out of the OvS module so
-> there are no linking issues?
-> 
-> I personally have little sympathy for this piece of code, it is perhaps
-> the purest form of a wobbly narrow-use construct pushed into TC for HW
-> offload.
-> 
-> Any suggestions on the way forward? :(
+> Reported-by: syzbot+fae39afd2101a17ec624@syzkaller.appspotmail.com
+> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
 
-Presumably there are no clean solutions here, but on the top of my head for
-this use case, you'd need to /own/ the underlying datapath anyway, so couldn't
-you program the OVS key->recirc_id based on skb->mark (or alternatively via
-skb->tc_index) which was previously set by tc ingress?
-
-Thanks,
-Daniel
+Looks good, but could you please provide a fixes tag? 
