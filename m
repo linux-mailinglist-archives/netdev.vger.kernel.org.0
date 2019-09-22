@@ -2,98 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F51CBA052
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 05:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8030BA056
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 05:07:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727168AbfIVDGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 23:06:42 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42681 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727076AbfIVDGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 23:06:42 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q12so6943476pff.9
-        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 20:06:42 -0700 (PDT)
+        id S1727385AbfIVDHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 23:07:46 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:40480 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727310AbfIVDHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 23:07:46 -0400
+Received: by mail-pg1-f193.google.com with SMTP id w10so5970498pgj.7
+        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 20:07:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=DcoF8SnI6DaECtY9bhX/OaglfSzgcvjrMi9Ez30k22c=;
-        b=j20B1rh7utJ06pwS/CI39C/1Lgab/aQuLLyD9GV4ZQFbcahq17xzR28Kl6qSz04sbK
-         gni94n3IdjU4zWuPPsoVtQukwm2NDpir2x2pNiDe7rLk7fP4AuvMkNQiwMWWHVuZ6eHt
-         3vkNl0V0Op2RlZHmFV6Nv06s/SA4w/LAzXDjWZrAt17BI6WwRA1wnQCBjHzAWPPy/i6D
-         K5qj0IwHb5jgtCbArxE6QxiitBjfmHaMZ+PjYKvDrQEamfm0Ke6d6JaGqv7Z22ndcIZk
-         HyTS914oc3Yiusw+K6c4QYwrVGGQVSI5iw/+aRBEC5DJw+kX/PY/tPToeTQI2Ny8QcRU
-         XgYw==
+        bh=+hqtxIPOF+sZTV83QO8Kx8GfXMOFqFAUA+8V0ZE+ANg=;
+        b=PnxsGTDplcToYRHyOkbs7IReY50O0iFBh50FWIfgtGYFlX3h1/1GwJvwb31v/YSjbq
+         L5q4X0jVPfEfZtz5YgmePdWf2L5dKEZewSTNrH1rcE4wL/wF4WxwDh9lINZqLJOU9nOW
+         PV67ZVl5AokgCmzu6JZTfRKLIfSzrQm2fs6UAiweCvvZvBvFqghogOV/+EiwPJyv713d
+         E04dW4DMzi2hzAh7XTAWD7QJSMJdu8sMi57XO8EHnrxfUKqPGX2au03up6gTUiM1xZlP
+         EzXX3qUnta4jQ5/nDXheTTOcehl8cV0QIBckQL2JlvvfkpTb17qPjIAJ+XeT0UZ4DNrF
+         wLTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=DcoF8SnI6DaECtY9bhX/OaglfSzgcvjrMi9Ez30k22c=;
-        b=TYo9DlS0PJKpR8UIo02W8DUVp/GhDk1DSls9XEZj8gmRUT5FBKNY3GSkatI3yHaAX8
-         1mbloyfskhQQX5Nggmviw+Tgi3f/llfGmls30vPAE2w0ud/Rk4vHitcrDkDQjJoVpeMn
-         ZUfu5lr57cQ6RgAD2DIteM1vphw3c2eLXmsyFItd2ZLM2VX6LEi34Z2vAMsNUq5761lR
-         jmGi2ffPVuEykRhbs5buNy3tig2lexJyBMbDNcclgPVscATMP4l0XVuvV10q7n4Iwg6h
-         J8mcg3B/4c4gGksXXqP0qxbp4F5gtOtS7GKRGKjFidNRQ/K1zFUIOazj/SyMlhI1JB2y
-         tk2w==
-X-Gm-Message-State: APjAAAU0103rH2om1drc9mkCcsY5YQljx7GOMPPkkCUm34ZiN6g+34Yk
-        GyfZI6sh8GqJZvynffizhugoE3QNtbo=
-X-Google-Smtp-Source: APXvYqynyO4uU5/MurUlqEVn0zeersUq/LYW86lNwgAskydNrIYWvzDFd9kiIsrDhBkYMbmvU7U9PA==
-X-Received: by 2002:a62:64ca:: with SMTP id y193mr26590956pfb.164.1569121601682;
-        Sat, 21 Sep 2019 20:06:41 -0700 (PDT)
+        bh=+hqtxIPOF+sZTV83QO8Kx8GfXMOFqFAUA+8V0ZE+ANg=;
+        b=qLDF5GzjP1Y4f3vzIN8rspiZBurtUm4TyB4VJdW8zqqRzqa8OO2vHdBPFqmAnqtrPv
+         aSpqIYHkimuqoopTOVDJUisdGBEg0yzy4tShVTAn32zY70MQ4CJIQodK7ciDPjS2HQuG
+         DeXdluobTFYN7HU2vrlsTuDurd0wLO0b9wmf+ShkJDHS6hb1c8f58muGgYDhRVxo5qxV
+         puCwq3Sqlb6QuTtr4hbqguDEJedZvj1lnEK6yqk/Eia/Mc61DScm8mfn37vsgQ+1vRLM
+         XHpgsbZ9rgK0TTRtt0d2fi2xIhtXNV64agsRMtCchyxbOBQGotrNuDXL1E7VfOJVGETf
+         uYVw==
+X-Gm-Message-State: APjAAAUwFH/wnRaXO5JVm2kWQTFAJEmIlmSsKdutW9WfFyKPXEwQdSN2
+        0ghqO0FGybWxRmZ7a3v26O/zxg==
+X-Google-Smtp-Source: APXvYqx/D1qo8iYkkLBA9WBqzVmvZ7s4hPuIRi3UELaObvTRIfbYaVT/1L8MrpqY7PNd85MaIjz5VQ==
+X-Received: by 2002:a65:6081:: with SMTP id t1mr21324171pgu.95.1569121664868;
+        Sat, 21 Sep 2019 20:07:44 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id 7sm6499110pfi.91.2019.09.21.20.06.41
+        by smtp.gmail.com with ESMTPSA id t125sm10316640pfc.80.2019.09.21.20.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Sep 2019 20:06:41 -0700 (PDT)
-Date:   Sat, 21 Sep 2019 20:06:38 -0700
+        Sat, 21 Sep 2019 20:07:44 -0700 (PDT)
+Date:   Sat, 21 Sep 2019 20:07:41 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <uwe@kleine-koenig.org>
-Cc:     Tal Gilboa <talgi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] dimlib: make DIMLIB a hidden symbol
-Message-ID: <20190921200638.5baf40a9@cakuba.netronome.com>
-In-Reply-To: <20190920133115.12802-1-uwe@kleine-koenig.org>
-References: <20190920133115.12802-1-uwe@kleine-koenig.org>
+To:     Mao Wenan <maowenan@huawei.com>
+Cc:     <netanel@amazon.com>, <saeedb@amazon.com>, <zorik@amazon.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <uwe@kleine-koenig.org>
+Subject: Re: [PATCH net] net: ena: Add dependency for ENA_ETHERNET
+Message-ID: <20190921200741.1c3289e8@cakuba.netronome.com>
+In-Reply-To: <20190920084405.140750-1-maowenan@huawei.com>
+References: <20190920084405.140750-1-maowenan@huawei.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Sep 2019 15:31:15 +0200, Uwe Kleine-K=C3=B6nig wrote:
-> According to Tal Gilboa the only benefit from DIM comes from a driver
-> that uses it. So it doesn't make sense to make this symbol user visible,
-> instead all drivers that use it should select it (as is already the case
-> AFAICT).
->=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
-> ---
->  lib/Kconfig | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/lib/Kconfig b/lib/Kconfig
-> index cc04124ed8f7..9fe8a21fd183 100644
-> --- a/lib/Kconfig
-> +++ b/lib/Kconfig
-> @@ -555,8 +555,7 @@ config SIGNATURE
->  	  Implementation is done using GnuPG MPI library
-> =20
->  config DIMLIB
-> -	bool "DIM library"
-> -	default y
-> +	bool
->  	help
->  	  Dynamic Interrupt Moderation library.
->  	  Implements an algorithm for dynamically change CQ moderation values
+On Fri, 20 Sep 2019 16:44:05 +0800, Mao Wenan wrote:
+> If CONFIG_ENA_ETHERNET=y and CONFIG_DIMLIB=n,
+> below erros can be found:
+> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_dim_work':
+> ena_netdev.c:(.text+0x21cc): undefined reference to `net_dim_get_rx_moderation'
+> ena_netdev.c:(.text+0x21cc): relocation truncated to
+> fit: R_AARCH64_CALL26 against undefined symbol `net_dim_get_rx_moderation'
+> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_io_poll':
+> ena_netdev.c:(.text+0x7bd4): undefined reference to `net_dim'
+> ena_netdev.c:(.text+0x7bd4): relocation truncated to fit:
+> R_AARCH64_CALL26 against undefined symbol `net_dim'
+> 
+> After commit 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive
+> interrupt moderation"), it introduces dim algorithm, which configured by CONFIG_DIMLIB.
+> 
+> Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
 
-Hi Uwe! Looks like in the net tree there is a spelling mistake and
-moderation is spelled "modertion":
+Thank you Mao, shortly after you posted your patch Uwe proposed to make
+DIMLIB a hidden symbol:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/tree/lib/Kcon=
-fig#n562
+https://lore.kernel.org/netdev/a85be675-ce56-f7ba-29e9-b749073aab6c@kleine-koenig.org/T/#t
 
-I'm not seeing any patch to fix that anywhere, is it possible you have
-some local change in your tree?
+That patch will likely be applied soon, could you please rework your
+patch to use the "select" keyword instead of "depends". That's what
+other users do.
+
+> diff --git a/drivers/net/ethernet/amazon/Kconfig b/drivers/net/ethernet/amazon/Kconfig
+> index 69ca99d..fe46df4 100644
+> --- a/drivers/net/ethernet/amazon/Kconfig
+> +++ b/drivers/net/ethernet/amazon/Kconfig
+> @@ -18,7 +18,7 @@ if NET_VENDOR_AMAZON
+>  
+>  config ENA_ETHERNET
+>  	tristate "Elastic Network Adapter (ENA) support"
+> -	depends on PCI_MSI && !CPU_BIG_ENDIAN
+> +	depends on PCI_MSI && !CPU_BIG_ENDIAN && DIMLIB
+>  	---help---
+>  	  This driver supports Elastic Network Adapter (ENA)"
+>  
+
