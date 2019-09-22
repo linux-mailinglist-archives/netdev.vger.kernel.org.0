@@ -2,82 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5EE7BA05A
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 05:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD5DBA05E
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 05:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727286AbfIVDPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 23:15:06 -0400
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:45597 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbfIVDPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 23:15:06 -0400
-X-Originating-IP: 209.85.217.44
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 693F420007
-        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 03:14:53 +0000 (UTC)
-Received: by mail-vs1-f44.google.com with SMTP id f15so7257108vsq.6
-        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 20:14:53 -0700 (PDT)
-X-Gm-Message-State: APjAAAUeGXVCfn59a9DAgQkMEOqMHeQPfNyoFXEJNRaqLYgE2bNmPh/b
-        YKTaPgYpgq2OByB/bDrF+HCoTyFWNrUHdgBr17k=
-X-Google-Smtp-Source: APXvYqxwjszy7iBNGm0GyqGvavyY9bHKY+AC7Rujl3isjB39R9bsVevbPfxp4q1xm4McxGwZZqxcNwYq6X1os/Onj1E=
-X-Received: by 2002:a67:e447:: with SMTP id n7mr6654305vsm.66.1569122092717;
- Sat, 21 Sep 2019 20:14:52 -0700 (PDT)
+        id S1727410AbfIVDSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 23:18:47 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:38338 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727291AbfIVDSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 23:18:47 -0400
+Received: by mail-pg1-f195.google.com with SMTP id x10so5981175pgi.5
+        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 20:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=TFGjXXhKmjkAZP/tz+ArFN/SlKTThcfB37x7Td165fE=;
+        b=uOa4XPmdMjEBXva+d+0v4ob182ddJrJVWcfSYiJ5oEr8CoojhpLY7lXAnOJWa4EnsL
+         i7c/lJ6mWxzeZpsy/xLNKdUE5EQVOCiyo1Ues8Xri59h6IG+JRkjWTvQmKGQu3330slX
+         EgZOraN56Jy75t2xbGqzfhpb+P3rlqUN+7HeBKnoUgTAwqRd77KhNgEm8Cwb7Dx11bDt
+         n5HZhsporrJrpDiLqE0xb7N4x4AAVC3tGEzt5IE1NQVIiynG7m1ykH+4IVTYKIb1jiCr
+         wytUqzTtWv8dqAoyq2nb4VNl9e3Tte4g/96gnMJp8PsCUuATXg71q+Z44waoulitkZO4
+         DHmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=TFGjXXhKmjkAZP/tz+ArFN/SlKTThcfB37x7Td165fE=;
+        b=rRMH4Ukmra4eqZZI5KUkjis6Y8FEPB28BKxn6VxErOS4lry1R4k/bfXDGGgH3wgMff
+         gzSu5KsZJd1+Uz3lLq8GCFfYCz6VDfKkcDZ3Nrqko0fjhqnrrvGyMG01ZgNGgb/9ciC2
+         GS//VVAixBfXcMtvyaZGFkICcXXfeVrlhR5Qe0zvXq4Q4i2PsGjTUiaYQa2Ljnb7jcBl
+         KVz20xvfNEh9rMducs+pgyR/0XdHTp3MltCCULeSHtoY+Cs4FyYRti6ZoXCHBUdrXlfm
+         Pqvg03kk7KSgfOhch1rkbanqU3PWzdzR1OcMgkoX9DQ2Lr5x4+J3rOykKfJ0vGlxA8pU
+         e0wQ==
+X-Gm-Message-State: APjAAAWfl7Cw3k1+MALoZeIR8JO9tF+0tbRnnAkfq2iwh9ZIjIe0oQUU
+        za2bakgRLZlVckwWScsPo+J9hQ==
+X-Google-Smtp-Source: APXvYqxbBIkVgVFuicYvZV3pC7tph8zkTryWFhQebJpOhb1a4nS5KNsvCOsm8J3i//GSjmtAcRsV3g==
+X-Received: by 2002:a65:6716:: with SMTP id u22mr22794378pgf.192.1569122326740;
+        Sat, 21 Sep 2019 20:18:46 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id o9sm10479549pfp.67.2019.09.21.20.18.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Sep 2019 20:18:46 -0700 (PDT)
+Date:   Sat, 21 Sep 2019 20:18:43 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] qede: qede_fp: simplify a bit 'qede_rx_build_skb()'
+Message-ID: <20190921201843.12d21abf@cakuba.netronome.com>
+In-Reply-To: <20190920045656.3725-1-christophe.jaillet@wanadoo.fr>
+References: <20190920045656.3725-1-christophe.jaillet@wanadoo.fr>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190919.132147.31804711876075453.davem@davemloft.net>
- <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
- <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net> <20190920155605.7c81c2af@cakuba.netronome.com>
- <f1983a74-d144-6d21-9b20-59cea9afc366@iogearbox.net>
-In-Reply-To: <f1983a74-d144-6d21-9b20-59cea9afc366@iogearbox.net>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Sat, 21 Sep 2019 20:18:13 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_Bqhq6cy6QgyEymHaUDk-BN9fkkQ-rzCqWeN35sqiym4w@mail.gmail.com>
-Message-ID: <CAOrHB_Bqhq6cy6QgyEymHaUDk-BN9fkkQ-rzCqWeN35sqiym4w@mail.gmail.com>
-Subject: Re: CONFIG_NET_TC_SKB_EXT
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Paul Blakey <paulb@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 20, 2019 at 5:06 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 9/21/19 12:56 AM, Jakub Kicinski wrote:
-> [...]
-> >> I thought idea of stuffing things into skb extensions are only justified if
-> >> it's not enabled by default for everyone. :(
-> >>
-> >>     [0] https://lore.kernel.org/netdev/CAHC9VhSz1_KA1tCJtNjwK26BOkGhKGbPT7v1O82mWPduvWwd4A@mail.gmail.com/T/#u
-> >
-> > The skb ext allocation is only done with GOTO_CHAIN, which AFAIK only
-> > has practical use for offload.  We could perhaps add another static
-> > branch there or move the OvS static branch out of the OvS module so
-> > there are no linking issues?
-> >
-> > I personally have little sympathy for this piece of code, it is perhaps
-> > the purest form of a wobbly narrow-use construct pushed into TC for HW
-> > offload.
-> >
-> > Any suggestions on the way forward? :(
->
-> Presumably there are no clean solutions here, but on the top of my head for
-> this use case, you'd need to /own/ the underlying datapath anyway, so couldn't
-> you program the OVS key->recirc_id based on skb->mark (or alternatively via
-> skb->tc_index) which was previously set by tc ingress?
->
+On Fri, 20 Sep 2019 06:56:56 +0200, Christophe JAILLET wrote:
+> Use 'skb_put_data()' instead of rewritting it.
+> This improves readability.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-If we are going down this path, tc_index should be used. skb->mark is
-already used in OVS flow match, overloading it for this purpose would
-be complicated.
+Applied, thank you.
