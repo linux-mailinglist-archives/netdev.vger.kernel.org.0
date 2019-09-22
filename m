@@ -2,85 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D312BABC9
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 23:08:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65A6BABE3
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 00:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392836AbfIVVIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 17:08:05 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45440 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388679AbfIVVIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 17:08:05 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 4so6737446pgm.12
-        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=N02DuWV6Ls3abVLlI8h6X8K21ukMEFlJkO/0aLsDK0s=;
-        b=LbRVKPEYYOO6psE0Yw77Hs/lDLbvbwH8YrMPHyagr9mucUEr8xFECka9eq2nyTNqDj
-         a01yizLfeFS4nTPCHzjwVPFNOChkR8WPwpuz83J2MC5xiB5b2DOSHWMlIuH7lUOjQVh6
-         z1W45WY0YU4bYw3QLcti59jEjmLmgof1zWm8FEgvA12KWoVeJO+xw4jKEhK2U67gf98x
-         aREdIF8OzVfEb4hQRkRH1LAwKHRwskSZcaieRFNpofR3iAG9G6hCD4z4jyuc7OnS08es
-         XsE4V/hOPFetMFiq7GLLhuaojYQPvel27pFMUIV8fZsgqpU/95X6LqqeO8tgkRGNoIMf
-         CR0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=N02DuWV6Ls3abVLlI8h6X8K21ukMEFlJkO/0aLsDK0s=;
-        b=PCJpGPXIu81JpeHZ2ZJWU1GHWjC8eLQ41LFNZkkk2kxV/3vgewVqXHymWNHd8tf0H9
-         u/BcMd1KWaIGs3DduwkVQcm6fRkAhm8vvUBTTOcdZ71QYZ2s75jxQXsZ3nNx71difAKk
-         oAdshHzOwONdRdAgfN8+ESiv/u2I/eth/N50yDO8vaEJYVxnWEbhSwvVjqIn0nAPq5qT
-         debeYdWSr0dHdta+/zR49sgYj+aYkP1O/FJOVrcUPxWdcsSVxJzDT8Hl5kyuI2GDbTDm
-         p2kPTo2tB7sa486QijU2BFhFNLKFcc8P7Zwwp+4PYAMmi2CxSVYU703JC8YNXbBJRQFF
-         kk0A==
-X-Gm-Message-State: APjAAAUAVHUu5XIySnNW8hgAOs2vc76tluAw5IxEtASIMZJD6q+E3QlR
-        GixFA8FKWMedtBjEv7hvkzW9iw==
-X-Google-Smtp-Source: APXvYqyx2Ki6Glce3kMT9uI6N/7jpfRnMKxmuPdQQpvOkPKiHMkHWfeObbmKV3AUCYAztvbIE7B33g==
-X-Received: by 2002:a62:3687:: with SMTP id d129mr30557925pfa.199.1569186484473;
-        Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id k95sm9971958pje.10.2019.09.22.14.08.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
-Date:   Sun, 22 Sep 2019 14:08:00 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     <netanel@amazon.com>, <saeedb@amazon.com>, <zorik@amazon.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH v2 net] net: ena: Select DIMLIB for ENA_ETHERNET
-Message-ID: <20190922140800.6b1ed695@cakuba.netronome.com>
-In-Reply-To: <20190922053808.117965-1-maowenan@huawei.com>
-References: <20190921200741.1c3289e8@cakuba.netronome.com>
-        <20190922053808.117965-1-maowenan@huawei.com>
-Organization: Netronome Systems, Ltd.
+        id S1727422AbfIVWQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 18:16:56 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:42864 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbfIVWQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 18:16:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=4Ox0LiSSxDCzfzg5ZFlRuuEXuK/zYnJin9tUTJBVLnk=; b=TOqg2hbLSWuIsMUTR66iabjhW
+        hiTi4HrClnrcp8PfHAVk6D0H63QEBf8POGbD7NPChJohpuMLLM4lQgq7vCQd4FPcxdF7Fc/0sdUt/
+        IILwtDnkWVCCEA4DsbtZHLdWpFIBUy3sWiaURchB7KNA8IEpm5ujrgoALcMptzFtfUKnZLlFMMNXv
+        ZjaFFhP3rrdzkH077XP20bLs8RadIFqen45jwtg00kqC8JGcGMkNIrwQAGJgpZsYerCVrPu5CD2vZ
+        OAkcHELAFGGYPHBUb7pxVMurSkVToa11pNfluePfvZJUt1eItiz0zAa4D32u41WXexf6dhtTJN5HZ
+        Cidbnu9CQ==;
+Received: from shell.armlinux.org.uk ([192.168.0.251]:55526)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iC9Hu-0000Yr-JG
+        for netdev@vger.kernel.org; Sun, 22 Sep 2019 22:20:58 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iC9Hm-00082x-Tp; Sun, 22 Sep 2019 22:20:50 +0100
+Date:   Sun, 22 Sep 2019 22:20:50 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        tinywrkb <tinywrkb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/4] Attempt to fix regression with AR8035 speed downgrade
+Message-ID: <20190922212050.GS25745@shell.armlinux.org.uk>
+References: <20190922105932.GP25745@shell.armlinux.org.uk>
+ <20190922165335.GE27014@lunn.ch>
+ <20190922175246.GR25745@shell.armlinux.org.uk>
+ <268c0ea0-8b77-23eb-26cf-820cec1343e4@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <268c0ea0-8b77-23eb-26cf-820cec1343e4@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Sep 2019 13:38:08 +0800, Mao Wenan wrote:
-> If CONFIG_ENA_ETHERNET=y and CONFIG_DIMLIB=n,
-> below erros can be found:
-> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_dim_work':
-> ena_netdev.c:(.text+0x21cc): undefined reference to `net_dim_get_rx_moderation'
-> ena_netdev.c:(.text+0x21cc): relocation truncated to
-> fit: R_AARCH64_CALL26 against undefined symbol `net_dim_get_rx_moderation'
-> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_io_poll':
-> ena_netdev.c:(.text+0x7bd4): undefined reference to `net_dim'
-> ena_netdev.c:(.text+0x7bd4): relocation truncated to fit:
-> R_AARCH64_CALL26 against undefined symbol `net_dim'
+On Sun, Sep 22, 2019 at 11:02:13AM -0700, Florian Fainelli wrote:
+> On 9/22/2019 10:52 AM, Russell King - ARM Linux admin wrote:
+> > On Sun, Sep 22, 2019 at 06:53:35PM +0200, Andrew Lunn wrote:
+> >> On Sun, Sep 22, 2019 at 11:59:32AM +0100, Russell King - ARM Linux admin wrote:
+> >>> Hi,
+> >>>
+> >>> tinywrkb, please can you test this series to ensure that it fixes
+> >>> your problem - the previous version has turned out to be a non-starter
+> >>> as it introduces more problems, thanks!
+> >>>
+> >>> The following series attempts to address an issue spotted by tinywrkb
+> >>> with the AR8035 on the Cubox-i2 in a situation where the PHY downgrades
+> >>> the negotiated link.
+> >>
+> >> Hi Russell
+> >>
+> >> This all looks sensible.
+> >>
+> >> One things we need to be careful of, is this is for net and so stable.
+> > 
+> > Since the regression was introduced in 5.1, it should be backported
+> > to stable trees.
+> > 
+> >> But only some of the patches have fixes-tags. I don't know if we
+> >> should add fixes tags to all the patches, just to give back porters a
+> >> hint that they are all needed? It won't compile without the patches,
+> >> so at least it fails safe.
+> > 
+> > I only put Fixes: tags on patches that are actually fixing something.
+> > Quoting submitting-patches.rst:
+> > 
+> >   A Fixes: tag indicates that the patch fixes an issue in a previous
+> >   commit.
+> > 
+> > Since the preceding two patches are just preparing for the fix, and
+> > not actually fixing an issue in themselves, it seems wrong to add a
+> > Fixes: tag for them.  However, mentioning it in the commit message
+> > for the patch that does fix the issue is probably worth it.  Thanks.
+> > 
 > 
-> After commit 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive
-> interrupt moderation"), it introduces dim algorithm, which configured by CONFIG_DIMLIB.
-> So, this patch is to select DIMLIB for ENA_ETHERNET.
+> This is not a criticism of your patch series, which is fine.
 > 
-> Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> I believe Andrew's angle is that if you have fixes that rely on
+> non-functional changes, then the fixes cannot be back ported as a
+> standalone patch set towards specific stable trees.
 
-Applied, thank you!
+Right, which makes it pointless adding a Fixes: tag to those changes.
+The amount of change in phylib is quite high at the moment, but
+thankfully the bug was introduced after the ethtool linkmode mask
+conversion.  It looks like v5.2.x should be able to cope with all
+three patches simply applied there.
+
+However, v5.1.x will require a different pre-requisit patch, which
+is probably easier to do as you suggest.
+
+> This means that
+> people who do care about such fixes may have to come up with a slightly
+> different fix for earlier kernels affected by those bugs, such fixes
+> would not rely on patch #2 and #3 in this series and open code
+> phy_resolve_aneg() and genphy_read_lpa() within the at803x.c PHY driver.
+> -- 
+> Florian
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
