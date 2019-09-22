@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 139F7BA2BD
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 14:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89877BA2E7
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 16:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728920AbfIVM4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 08:56:38 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:36860 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728820AbfIVM4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 08:56:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=kXNd4Otf1WXHwIbrWf/Ed5THU+eNYMXWXGBOvSSFAIA=; b=bKBEgWaVVL6JvTnHYJtfS65X2
-        70ZjyqL3sLH8PRn9lslR086dYLyfOI2J6Hz1nuNesaQxJoAr4ZQxyEWsc65DdrpqrpvzfnUvx6k3n
-        G1yI+QRGxHJXUxwFkmsgJrS3+MTtX0usIwyCxaMC6moaqBx4M5bcwYxQcC/R/fzezjH/BD+pP2irH
-        hb6WVywh3S7hV5RZrz4eYE5bvsNGoqbJ+Hj7t3ztdsROvCBaJbQGFF27RLhpooSoxYXLSx5P9Jh7B
-        6J21cnlTf1YdHBIs24a3u/ZywgWjG0mWZQZ2cBQhWnf8Qv9LH3qjRB2XaWC+l1V9NRqEdbrWpyW3e
-        5olFokSdQ==;
-Received: from shell.armlinux.org.uk ([192.168.0.251]:55382)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iC1Pj-00073T-6s
-        for netdev@vger.kernel.org; Sun, 22 Sep 2019 13:56:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iC1Pc-0007kK-M5; Sun, 22 Sep 2019 13:56:24 +0100
-Date:   Sun, 22 Sep 2019 13:56:24 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        tinywrkb <tinywrkb@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/4] Attempt to fix regression with AR8035 speed downgrade
-Message-ID: <20190922125624.GQ25745@shell.armlinux.org.uk>
-References: <20190922105932.GP25745@shell.armlinux.org.uk>
+        id S1729083AbfIVOgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 10:36:14 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40561 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729078AbfIVOgO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 10:36:14 -0400
+Received: by mail-lj1-f196.google.com with SMTP id 7so11234049ljw.7
+        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 07:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uXYxVcVlwAUugYdpyvE9xzuT74SxE0XON9vZMPgW3ls=;
+        b=RjmfUTjVxsXaDUFiGFkAvgEJeIirxIRt1ctQE1IFJSHht9Va5ysgVcfbeafAbkPukL
+         X4Q8MAr6QHqPbkau7DoHnK1dpDW7iznVIBcT2GllHJp31fs1NoYVouzZPlW38avLObqY
+         f1u7/oczxzzLNwVuFK3b1uo5qY/OoDu2pOuSiVHut1+Ab8lO2U4FSM5gg9cNb0zoWkbj
+         pFclTceQM/Zf784f9iFYoCW5Yd0FQor4FfHMFWVR/fkyCymwYHdEuGShqFcCo5glYf9d
+         +gzswPfm1/oHJIrpdWHKSy4uQ74dYUqHGWpLZLPJQMZWJ5CRR68pfuo9S1S7MyhGLCdb
+         8/Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uXYxVcVlwAUugYdpyvE9xzuT74SxE0XON9vZMPgW3ls=;
+        b=bU1x4EG0FkzgUvyhI8DAZz0eioqYGFRw9KOJ75+1E25G/bQhngALLS2G+ylzJ/bLML
+         bj26WGSFhn897Vci3qjNOVgOko+CbqZFCLJ8l7WHTxa0WdKZEN9i5f9Q07P1rBay07ph
+         ANW8tHXxRWavqa1IaOliz6SvKUlH7nzcNWqc0Yx9axPvrk0cdQqspDZ28ur1xknyt9LZ
+         CHDzNgoXBseBRcpfcLrqfxh4YnTR3uQxX3QcIZJCWIN4gcrPPRFfoQkO+8meQYziTcB/
+         sNf+Meih4oBoP4362PDAUemUatMurv4u6a829dD40OgbTJo6TMvUySDqUMCVuSDOzxwp
+         D39Q==
+X-Gm-Message-State: APjAAAXY8h2OQm79+yFUxlT4NEiZrjTM9ABEAYDJmsE2+k6FfcHkKmcR
+        PFMJlApRk2FUzdERuXrbS6XQcIHjmfQc7ObAv+Y=
+X-Google-Smtp-Source: APXvYqxLJdPFrPcx/rJyE/g8qVFiCQl2T1oZZMioJsw9uEIzoY/dACl7ltOIkojiqzQaXYzX5KHSOTCbx/KZDZfpfWo=
+X-Received: by 2002:a2e:9f4f:: with SMTP id v15mr14400801ljk.222.1569162971831;
+ Sun, 22 Sep 2019 07:36:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190922105932.GP25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190916134802.8252-1-ap420073@gmail.com> <20190920165942.7e0d6235@cakuba.netronome.com>
+In-Reply-To: <20190920165942.7e0d6235@cakuba.netronome.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Sun, 22 Sep 2019 23:36:00 +0900
+Message-ID: <CAMArcTUm6opp1J2pAhshhJvUYkqM15REhem_Dw+Fyu9m17rDXA@mail.gmail.com>
+Subject: Re: [PATCH net v3 00/11] net: fix nested device bugs
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, Andy Gospodarek <andy@greyhouse.net>,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
+        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
+        kys@microsoft.com, haiyangz@microsoft.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 22, 2019 at 11:59:32AM +0100, Russell King - ARM Linux admin wrote:
-> Commentary: what is not yet known is whether the AR8035 restores the
->             advertisement register when the link goes down to the
-> 	    previous state.
+On Sat, 21 Sep 2019 at 08:59, Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Mon, 16 Sep 2019 22:47:51 +0900, Taehee Yoo wrote:
+> > This patchset fixes several bugs that are related to nesting
+> > device infrastructure.
+> > Current nesting infrastructure code doesn't limit the depth level of
+> > devices. nested devices could be handled recursively. at that moment,
+> > it needs huge memory and stack overflow could occur.
+> > Below devices type have same bug.
+> > VLAN, BONDING, TEAM, MACSEC, MACVLAN and VXLAN.
+>
+> Is this list exhaustive? Looks like qmi_wwan.c perhaps could also have
+> similar problem? Or virt_wifi? Perhaps worth CCing the authors of those
+> drivers and mentioning that?
+>
+> Thank you for working on this!
 
-I've just found my 2-pair cable, and it appears that the AR8035 does
-indeed restore the advertisement register.
+I couldn't test all interface types.
+So there could be more interface types that have a similar problem.
+I will send a v4 patch and add more authors to the CC list.
 
-Using the 2-pair cable (which takes a while for the link to come up
-at 100mbit) results in register 9 becoming zero:
-
-   1140 796d 004d d072 15e1 c1e1 000d 2001
-   0000 0000 0800 0000 0000 4007 b29a a000
-   0862 7c30 0000 dc20 082c 0000 04e8 0000
-   3200 3000 0000 060d 0000 0005 2d47 8100.
-
-Disconnecting the 2-pair, and connecting a 4-pair cable results in a
-gigabit link with the advertisement restored:
-
-   1140 796d 004d d072 15e1 c1e1 000d 2001
-   0000 0200 2800 0000 0000 4007 b29a a000
-   0862 bc50 0000 dc00 082c 0000 04e8 0000
-   3200 3000 0000 060e 0000 0005 2d47 8100.
-
-Note that register 0x11 bit 5 reports when downshift is active.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Thank you so much for your review again!
