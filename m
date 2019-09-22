@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFA7BA506
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 20:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E16D2BA50E
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 20:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391013AbfIVSyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 14:54:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54174 "EHLO mail.kernel.org"
+        id S2393717AbfIVSyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 14:54:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54538 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394473AbfIVSx6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Sep 2019 14:53:58 -0400
+        id S2393701AbfIVSyJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Sep 2019 14:54:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D95321479;
-        Sun, 22 Sep 2019 18:53:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3882121479;
+        Sun, 22 Sep 2019 18:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569178438;
-        bh=ojZaI59rGscmaBaQB30rUvc3ZhjI8pWc/WzGjg+wLPk=;
+        s=default; t=1569178449;
+        bh=GSS11zVS5sAZCAm/t7b3x4fHnf3ZmTKbpHI1jMi/XZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I8xQ0bP2V5xle2k+wYikun2TL6lmMtoq/KPNYxpzEzq6eNJN8bcc6sVcu3ij9pKtw
-         LEi2jGkgJ2dR6UUIE3sVrP2kFMiVcnKatHKr2zek9R9JtHADk89UJl63PtyhMWii/3
-         TSASzY8rZp+LucZOWsGzTXnbLdbmfkudEMfK/ubg=
+        b=oXlMrOI6CGXh7DhAxkY3+SHYsvMcB3j67BbZ2uBP3IwO9qubeODNMUhroVdNLyN8J
+         bSPS82kr+1YYc8nhg9V8koEIQplDmUizIIjNaLtbk67Zxu+TCmtZVX5/gIjKpQwuHq
+         G8FeRDzgV+a0xwBQtbZcbBByD+BokKPMX0WTG8SY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 172/185] e1000e: add workaround for possible stalled packet
-Date:   Sun, 22 Sep 2019 14:49:10 -0400
-Message-Id: <20190922184924.32534-172-sashal@kernel.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        syzbot+74c65761783d66a9c97c@syzkaller.appspotmail.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 180/185] zd1211rw: remove false assertion from zd_mac_clear()
+Date:   Sun, 22 Sep 2019 14:49:18 -0400
+Message-Id: <20190922184924.32534-180-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190922184924.32534-1-sashal@kernel.org>
 References: <20190922184924.32534-1-sashal@kernel.org>
@@ -44,59 +45,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit e5e9a2ecfe780975820e157b922edee715710b66 ]
+[ Upstream commit 7a2eb7367fdea72e448d1a847aa857f6caf8ea2f ]
 
-This works around a possible stalled packet issue, which may occur due to
-clock recovery from the PCH being too slow, when the LAN is transitioning
-from K1 at 1G link speed.
+The function is called before the lock which is asserted was ever used.
+Just remove it.
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=204057
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Reported-by: syzbot+74c65761783d66a9c97c@syzkaller.appspotmail.com
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c | 10 ++++++++++
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  2 +-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/wireless/zydas/zd1211rw/zd_mac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index cdae0efde8e64..7998a73b6a0fa 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1429,6 +1429,16 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
- 			else
- 				phy_reg |= 0xFA;
- 			e1e_wphy_locked(hw, I217_PLL_CLOCK_GATE_REG, phy_reg);
-+
-+			if (speed == SPEED_1000) {
-+				hw->phy.ops.read_reg_locked(hw, HV_PM_CTRL,
-+							    &phy_reg);
-+
-+				phy_reg |= HV_PM_CTRL_K1_CLK_REQ;
-+
-+				hw->phy.ops.write_reg_locked(hw, HV_PM_CTRL,
-+							     phy_reg);
-+			}
- 		}
- 		hw->phy.ops.release(hw);
+diff --git a/drivers/net/wireless/zydas/zd1211rw/zd_mac.c b/drivers/net/wireless/zydas/zd1211rw/zd_mac.c
+index da7e63fca9f57..a9999d10ae81f 100644
+--- a/drivers/net/wireless/zydas/zd1211rw/zd_mac.c
++++ b/drivers/net/wireless/zydas/zd1211rw/zd_mac.c
+@@ -223,7 +223,6 @@ void zd_mac_clear(struct zd_mac *mac)
+ {
+ 	flush_workqueue(zd_workqueue);
+ 	zd_chip_clear(&mac->chip);
+-	lockdep_assert_held(&mac->lock);
+ 	ZD_MEMCLEAR(mac, sizeof(struct zd_mac));
+ }
  
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-index eb09c755fa172..1502895eb45dd 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-@@ -210,7 +210,7 @@
- 
- /* PHY Power Management Control */
- #define HV_PM_CTRL		PHY_REG(770, 17)
--#define HV_PM_CTRL_PLL_STOP_IN_K1_GIGA	0x100
-+#define HV_PM_CTRL_K1_CLK_REQ		0x200
- #define HV_PM_CTRL_K1_ENABLE		0x4000
- 
- #define I217_PLL_CLOCK_GATE_REG	PHY_REG(772, 28)
 -- 
 2.20.1
 
