@@ -2,244 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A6BBABB4
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 22:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D5FBABC4
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 23:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391307AbfIVUgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 16:36:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46244 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729329AbfIVUgE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Sep 2019 16:36:04 -0400
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A877C36955
-        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 20:36:03 +0000 (UTC)
-Received: by mail-qt1-f198.google.com with SMTP id 59so15203167qtc.5
-        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 13:36:03 -0700 (PDT)
+        id S2392380AbfIVVEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 17:04:07 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:44436 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388636AbfIVVEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 17:04:06 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u40so14862901qth.11;
+        Sun, 22 Sep 2019 14:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oFRwkLtn2Iq4ic5glemRgq9T0csDPXP20ndx8eWwKH0=;
+        b=gF5tS84sfuj26rxAmSD8tXZJzlv6RZCDEVucrdGf8m0OWJKWJ92C2q2hEULVxN//0j
+         pnB0lKgouLiw87AbMdE52dcwgu9lpR2FzQ6/23ADtr0vB2tysPU2UIBGfQKjU4QNEg4h
+         V6x6H8KFXrz1EAtsOpDRtCXOgnWzZ9UOwgGvD5xYU45Cwfa0y22e/LS4VX3/73VJkagA
+         JVXGVCOW/lDhPDi81cnyoDbJlYvDDcL6ot4f8R5V7mS1AzCBmY1ricrZNbN+nNZ9bAcj
+         TzvhQ8qSeOWv+dhuZm0prpbGjUvOwrFi5wNf5i2Jcy1cy6+9IpW1e5uyMSEWThEjKyhK
+         RITA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YSXaA2r9qU9Te2gXXHNcuvMEJHQJhJAAUl9iW1zQXc4=;
-        b=tEtKCTV4RLsqLe5SqsS1Vpzjzf+Sf6v2K9LrNHCFQhkMgDjXRJhs1wOFdsRYdjbPrZ
-         ytB+d0Q8s8IuAdPCvF3VJaCzAZ1MChPwvr12+s7dhi6aL8JyaF1yBu6lAPklCYUDwWhV
-         /tGB8U1vRIH7HTtDmmzEr8BlGnz7VYl1afcdsk6I0c60NzStTkhyHZhJVedSUWRPOhNg
-         8gmbYDkFpnEac8imDATRmGO7JqaSykpmejePhbHddR53K1Yi9eojVUrHWYhucI/3Ut/2
-         A5QofM8zK4ptFjUCbRq6nFk6rmMuFwyODVoT8cx5dTV+Eyw5qKz1EhqfIJgD8dxJng95
-         azRg==
-X-Gm-Message-State: APjAAAWPoGLrDa4xqoZCtlXxWl/A3jtzZNdU4zwBb+TwyPhfEERLendn
-        oME0lxhLpYkR1uu5AcHU+p2+6VUQpqCt8uJF/Hz6MnbI7nicdvq9zgW/rIdNLthuiKPmrDKXSEA
-        E7R21f6QN475CBycM
-X-Received: by 2002:ac8:5143:: with SMTP id h3mr13919777qtn.26.1569184562926;
-        Sun, 22 Sep 2019 13:36:02 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqz5Sp0rHpG3ieulHzbVOe9YMjO68HR9+bn23l2wjHc5HwBB++7sZJ5HX3cDnJ2rF8gF9YEK/Q==
-X-Received: by 2002:ac8:5143:: with SMTP id h3mr13919765qtn.26.1569184562714;
-        Sun, 22 Sep 2019 13:36:02 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
-        by smtp.gmail.com with ESMTPSA id 44sm5107705qtu.45.2019.09.22.13.35.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Sep 2019 13:36:01 -0700 (PDT)
-Date:   Sun, 22 Sep 2019 16:35:54 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Matt Cover <werekraken@gmail.com>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Matthew Cover <matthew.cover@stackpath.com>,
-        mail@timurcelik.de, pabeni@redhat.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        wangli39@baidu.com, lifei.shirley@bytedance.com,
-        tglx@linutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next] tuntap: Fallback to automq on
- TUNSETSTEERINGEBPF prog negative return
-Message-ID: <20190922162546-mutt-send-email-mst@kernel.org>
-References: <20190920185843.4096-1-matthew.cover@stackpath.com>
- <20190922080326-mutt-send-email-mst@kernel.org>
- <CAGyo_hqGbFdt1PoDrmo=S5iTO8TwbrbtOJtbvGT1WrFFMLwk-Q@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oFRwkLtn2Iq4ic5glemRgq9T0csDPXP20ndx8eWwKH0=;
+        b=G1WitvnRrdxT1ybbwim3aGzfH4qpNqwTNWjBR11RKtfB4FqJ9XIYluePwcQG+0FlcY
+         Jc9GJ0BPIv39U+OjExt4MoYAY6xLTdqijcQSfqlldurB0/czDPrl9UEzFOtYwej5t2ZE
+         F3lw5suwPrO26Qb2gkmHb1iBcdh+KXVvRzHnsB70H4UnUAIQeomTyeN49Yky1HmQbR9a
+         TVLn6SsnJFS9sNJVEQmrbTr86ZhxeFKHvGRuwOvx4LYbXnYsltC2g4iz4snBXSGPbAq3
+         SZKx84Io9Wsl5fruqca+e6lbI33EJymleaMwxeWVtFJ0g2lvXVNnEeiecjz8zfLbzOPc
+         ol5w==
+X-Gm-Message-State: APjAAAUhFKkJVM0BoTvvzl70wNjBfeMrTkN6TMZC63L7sauDnDzHeDuk
+        /uMnxhTs2BTHSKsOtmPOM1SYbVENaLDdN4Ktofs=
+X-Google-Smtp-Source: APXvYqyOpM+WkAYatt7DzG/e4cFwk8OrxFjR+ycVMRb4cWpvcmoLJd0M3UQroa0ZOGu4FyW2oIRT3GdU+X0W5vULxJU=
+X-Received: by 2002:ac8:5147:: with SMTP id h7mr14139172qtn.117.1569186245693;
+ Sun, 22 Sep 2019 14:04:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGyo_hqGbFdt1PoDrmo=S5iTO8TwbrbtOJtbvGT1WrFFMLwk-Q@mail.gmail.com>
+References: <20190920233019.187498-1-sdf@google.com>
+In-Reply-To: <20190920233019.187498-1-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sun, 22 Sep 2019 14:03:54 -0700
+Message-ID: <CAEf4BzYFQhPKoDG7kq=_B5caL-0Af2duL_Uz5v3oVw=BKQ430w@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: test_progs: fix client/server race in tcp_rtt
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 22, 2019 at 10:43:19AM -0700, Matt Cover wrote:
-> On Sun, Sep 22, 2019 at 5:37 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Sep 20, 2019 at 11:58:43AM -0700, Matthew Cover wrote:
-> > > Treat a negative return from a TUNSETSTEERINGEBPF bpf prog as a signal
-> > > to fallback to tun_automq_select_queue() for tx queue selection.
-> > >
-> > > Compilation of this exact patch was tested.
-> > >
-> > > For functional testing 3 additional printk()s were added.
-> > >
-> > > Functional testing results (on 2 txq tap device):
-> > >
-> > >   [Fri Sep 20 18:33:27 2019] ========== tun no prog ==========
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '-1'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
-> > >   [Fri Sep 20 18:33:27 2019] ========== tun prog -1 ==========
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '-1'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '-1'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
-> > >   [Fri Sep 20 18:33:27 2019] ========== tun prog 0 ==========
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '0'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '0'
-> > >   [Fri Sep 20 18:33:27 2019] ========== tun prog 1 ==========
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '1'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '1'
-> > >   [Fri Sep 20 18:33:27 2019] ========== tun prog 2 ==========
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '2'
-> > >   [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '0'
-> > >
-> > > Signed-off-by: Matthew Cover <matthew.cover@stackpath.com>
-> >
-> >
-> > Could you add a bit more motivation data here?
-> 
-> Thank you for these questions Michael.
-> 
-> I'll plan on adding the below information to the
-> commit message and submitting a v2 of this patch
-> when net-next reopens. In the meantime, it would
-> be very helpful to know if these answers address
-> some of your concerns.
-> 
-> > 1. why is this a good idea
-> 
-> This change allows TUNSETSTEERINGEBPF progs to
-> do any of the following.
->  1. implement queue selection for a subset of
->     traffic (e.g. special queue selection logic
->     for ipv4, but return negative and use the
->     default automq logic for ipv6)
->  2. determine there isn't sufficient information
->     to do proper queue selection; return
->     negative and use the default automq logic
->     for the unknown
->  3. implement a noop prog (e.g. do
->     bpf_trace_printk() then return negative and
->     use the default automq logic for everything)
-> 
-> > 2. how do we know existing userspace does not rely on existing behaviour
-> 
-> Prior to this change a negative return from a
-> TUNSETSTEERINGEBPF prog would have been cast
-> into a u16 and traversed netdev_cap_txqueue().
-> 
-> In most cases netdev_cap_txqueue() would have
-> found this value to exceed real_num_tx_queues
-> and queue_index would be updated to 0.
-> 
-> It is possible that a TUNSETSTEERINGEBPF prog
-> return a negative value which when cast into a
-> u16 results in a positive queue_index less than
-> real_num_tx_queues. For example, on x86_64, a
-> return value of -65535 results in a queue_index
-> of 1; which is a valid queue for any multiqueue
-> device.
-> 
-> It seems unlikely, however as stated above is
-> unfortunately possible, that existing
-> TUNSETSTEERINGEBPF programs would choose to
-> return a negative value rather than return the
-> positive value which holds the same meaning.
-> 
-> It seems more likely that future
-> TUNSETSTEERINGEBPF programs would leverage a
-> negative return and potentially be loaded into
-> a kernel with the old behavior.
-
-OK if we are returning a special
-value, shouldn't we limit it? How about a special
-value with this meaning?
-If we are changing an ABI let's at least make it
-extensible.
-
-> > 3. why doesn't userspace need a way to figure out whether it runs on a kernel with and
-> >    without this patch
-> 
-> There may be some value in exposing this fact
-> to the ebpf prog loader. What is the standard
-> practice here, a define?
+On Sun, Sep 22, 2019 at 12:10 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> This is the same problem I found earlier in test_sockopt_inherit:
+> there is a race between server thread doing accept() and client
+> thread doing connect(). Let's explicitly synchronize them via
+> pthread conditional variable.
+>
+> Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+> index fdc0b3614a9e..e64058906bcd 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+> @@ -203,6 +203,9 @@ static int start_server(void)
+>         return fd;
+>  }
+>
+> +static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
+> +static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
+> +
+>  static void *server_thread(void *arg)
+>  {
+>         struct sockaddr_storage addr;
+> @@ -215,6 +218,10 @@ static void *server_thread(void *arg)
+>                 return NULL;
+>         }
+>
+> +       pthread_mutex_lock(&server_started_mtx);
+> +       pthread_cond_signal(&server_started);
+> +       pthread_mutex_unlock(&server_started_mtx);
+> +
+>         client_fd = accept(fd, (struct sockaddr *)&addr, &len);
+>         if (CHECK_FAIL(client_fd < 0)) {
+>                 perror("Failed to accept client");
+> @@ -248,7 +255,14 @@ void test_tcp_rtt(void)
+>         if (CHECK_FAIL(server_fd < 0))
+>                 goto close_cgroup_fd;
+>
+> -       pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
+> +       if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
+> +                                     (void *)&server_fd)))
+> +               goto close_cgroup_fd;
+> +
+> +       pthread_mutex_lock(&server_started_mtx);
+> +       pthread_cond_wait(&server_started, &server_started_mtx);
+> +       pthread_mutex_unlock(&server_started_mtx);
 
 
-We'll need something at runtime - people move binaries between kernels
-without rebuilding then. An ioctl is one option.
-A sysfs attribute is another, an ethtool flag yet another.
-A combination of these is possible.
+If the server fails to listen, then we'll never get a signal, right?
+Let's use timedwait instead to avoid test getting stuck forever in
+such cases?
 
-And if we are doing this anyway, maybe let userspace select
-the new behaviour? This way we can stay compatible with old
-userspace...
 
-> >
-> >
-> > thanks,
-> > MST
-> >
-> > > ---
-> > >  drivers/net/tun.c | 20 +++++++++++---------
-> > >  1 file changed, 11 insertions(+), 9 deletions(-)
-> > >
-> > > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > > index aab0be4..173d159 100644
-> > > --- a/drivers/net/tun.c
-> > > +++ b/drivers/net/tun.c
-> > > @@ -583,35 +583,37 @@ static u16 tun_automq_select_queue(struct tun_struct *tun, struct sk_buff *skb)
-> > >       return txq;
-> > >  }
-> > >
-> > > -static u16 tun_ebpf_select_queue(struct tun_struct *tun, struct sk_buff *skb)
-> > > +static int tun_ebpf_select_queue(struct tun_struct *tun, struct sk_buff *skb)
-> > >  {
-> > >       struct tun_prog *prog;
-> > >       u32 numqueues;
-> > > -     u16 ret = 0;
-> > > +     int ret = -1;
-> > >
-> > >       numqueues = READ_ONCE(tun->numqueues);
-> > >       if (!numqueues)
-> > >               return 0;
-> > >
-> > > +     rcu_read_lock();
-> > >       prog = rcu_dereference(tun->steering_prog);
-> > >       if (prog)
-> > >               ret = bpf_prog_run_clear_cb(prog->prog, skb);
-> > > +     rcu_read_unlock();
-> > >
-> > > -     return ret % numqueues;
-> > > +     if (ret >= 0)
-> > > +             ret %= numqueues;
-> > > +
-> > > +     return ret;
-> > >  }
-> > >
-> > >  static u16 tun_select_queue(struct net_device *dev, struct sk_buff *skb,
-> > >                           struct net_device *sb_dev)
-> > >  {
-> > >       struct tun_struct *tun = netdev_priv(dev);
-> > > -     u16 ret;
-> > > +     int ret;
-> > >
-> > > -     rcu_read_lock();
-> > > -     if (rcu_dereference(tun->steering_prog))
-> > > -             ret = tun_ebpf_select_queue(tun, skb);
-> > > -     else
-> > > +     ret = tun_ebpf_select_queue(tun, skb);
-> > > +     if (ret < 0)
-> > >               ret = tun_automq_select_queue(tun, skb);
-> > > -     rcu_read_unlock();
-> > >
-> > >       return ret;
-> > >  }
-> > > --
-> > > 1.8.3.1
+> +
+>         CHECK_FAIL(run_test(cgroup_fd, server_fd));
+>         close(server_fd);
+>  close_cgroup_fd:
+> --
+> 2.23.0.351.gc4317032e6-goog
+>
