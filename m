@@ -2,76 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A87F0BA129
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 07:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B860BA12F
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 07:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbfIVFWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 01:22:14 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:49470 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727501AbfIVFWO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Sep 2019 01:22:14 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 07A87247729FEC1F7A8F;
-        Sun, 22 Sep 2019 13:22:08 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Sun, 22 Sep 2019 13:21:59 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <netanel@amazon.com>, <saeedb@amazon.com>, <zorik@amazon.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH v2 net] net: ena: Select DIMLIB for ENA_ETHERNET
-Date:   Sun, 22 Sep 2019 13:38:08 +0800
-Message-ID: <20190922053808.117965-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190921200741.1c3289e8@cakuba.netronome.com>
-References: <20190921200741.1c3289e8@cakuba.netronome.com>
+        id S1727499AbfIVFrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 01:47:41 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:48823 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727453AbfIVFrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 01:47:41 -0400
+X-Originating-IP: 209.85.221.182
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 22A8EE0002
+        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 05:47:38 +0000 (UTC)
+Received: by mail-vk1-f182.google.com with SMTP id j21so2348846vki.11
+        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 22:47:38 -0700 (PDT)
+X-Gm-Message-State: APjAAAVrjekvhpEylpqhpV+jkl/0ooHh6A20YwtKlVtpDIfIX7duQ4Sd
+        tQIsLqXYQ/TW20vHXrYSCrrvcwfRufEXtvotq4o=
+X-Google-Smtp-Source: APXvYqxvA6pLgeJ19mo8C9CpUmKWpq7h1UaQosIL/p1MzqkkQguDe2iONL+b/wrAsCBemaiIcb0zTCI0iyYSJtB0DE4=
+X-Received: by 2002:ac5:c7bb:: with SMTP id d27mr12521494vkn.19.1569131257787;
+ Sat, 21 Sep 2019 22:47:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+References: <1568734808-42628-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <CAOrHB_DONiJ7Z41xAm5DhkjcrXDrgu6XNpscw1qf592wdMH5bg@mail.gmail.com> <5d86ef21.1c69fb81.d4519.2861SMTPIN_ADDED_MISSING@mx.google.com>
+In-Reply-To: <5d86ef21.1c69fb81.d4519.2861SMTPIN_ADDED_MISSING@mx.google.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Sat, 21 Sep 2019 22:50:58 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_CeDqYw4WR2AmUS5TN93mGptgZN-KNjtNNnHxQa7DqZ-Q@mail.gmail.com>
+Message-ID: <CAOrHB_CeDqYw4WR2AmUS5TN93mGptgZN-KNjtNNnHxQa7DqZ-Q@mail.gmail.com>
+Subject: Re: [PATCH net] net: openvswitch: fix possible memleak on createvport fails
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Greg Rose <gvrose8192@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Taehee Yoo <ap420073@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_ENA_ETHERNET=y and CONFIG_DIMLIB=n,
-below erros can be found:
-drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_dim_work':
-ena_netdev.c:(.text+0x21cc): undefined reference to `net_dim_get_rx_moderation'
-ena_netdev.c:(.text+0x21cc): relocation truncated to
-fit: R_AARCH64_CALL26 against undefined symbol `net_dim_get_rx_moderation'
-drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_io_poll':
-ena_netdev.c:(.text+0x7bd4): undefined reference to `net_dim'
-ena_netdev.c:(.text+0x7bd4): relocation truncated to fit:
-R_AARCH64_CALL26 against undefined symbol `net_dim'
+On Sat, Sep 21, 2019 at 8:48 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Sun, 9 Sep 2019 11:14 from Pravin Shelar <pshelar@ovn.org>
+>
+> >
+>
+> > There is already patch a patch to fix this memory leak.
+>
+> > https://patchwork.ozlabs.org/patch/1144316/
+>
+> > Can you or Hillf post it on netdev list?
+>
+>
+>
+> Was that posted without netdev Cced?
 
-After commit 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive
-interrupt moderation"), it introduces dim algorithm, which configured by CONFIG_DIMLIB.
-So, this patch is to select DIMLIB for ENA_ETHERNET.
-
-Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- v2: change subject of patch, use the "select" keyword instead of "depends".
- drivers/net/ethernet/amazon/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/amazon/Kconfig b/drivers/net/ethernet/amazon/Kconfig
-index 69ca99d8ac26..cca72a75f551 100644
---- a/drivers/net/ethernet/amazon/Kconfig
-+++ b/drivers/net/ethernet/amazon/Kconfig
-@@ -19,6 +19,7 @@ if NET_VENDOR_AMAZON
- config ENA_ETHERNET
- 	tristate "Elastic Network Adapter (ENA) support"
- 	depends on PCI_MSI && !CPU_BIG_ENDIAN
-+	select DIMLIB
- 	---help---
- 	  This driver supports Elastic Network Adapter (ENA)"
- 
--- 
-2.20.1
-
+I do not see your patch on netdev patchwork, repost of the patch would
+put it on netdev patchwork.
