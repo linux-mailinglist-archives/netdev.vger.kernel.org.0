@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C46BABEF
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 00:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAADFBABF1
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 00:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729612AbfIVW0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 18:26:53 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43034 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729448AbfIVW0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 18:26:53 -0400
-Received: by mail-pf1-f195.google.com with SMTP id a2so7856343pfo.10
-        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 15:26:53 -0700 (PDT)
+        id S2387990AbfIVW1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 18:27:10 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41237 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbfIVW1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 18:27:09 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q7so7862370pfh.8
+        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 15:27:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=1sFK61oUgqTUxUpxUiqsl6lQSNHdbhMzERalasfMwlM=;
-        b=Ywwl1SvxcgwtUppOmsgJLh+h2Ktkybgp4Vaz60SiIbKtvB1T1dsQGvBpVTiSPJ4bYa
-         1qGFtfriYz4HlLKI4jr6q3I1ZtohSL9s2jglVQQEgFTTbNyCyq9Rqw7ivrBTRcifK4S/
-         uHO2W2SdD7S27fGbs79iEGknXjYQ/+S/J/2Tjh/EWonGk0Ndnms8xZcEOzgUV4zaUxt/
-         M3J8q589xxu9nDBYUrNfnS5lHECL7smxl0KQ60ErNkiUtUUX4Kt7m2Lb8DgaO1kO/aiB
-         9hgX5TQVYLALaXuhUnQsehHBs+9+GqTykdtjFpY3fj4QsceSspM9FFzJ3uVtnWWNJOh3
-         Pnmw==
+        bh=4122js9VzeoHge4cdqVUvNxYMN8/LRqY7OEquLQFbJQ=;
+        b=gFi6WBCT2RXWKrRM2WOLIRmqm06uTxsTjzM9ZkFHUuOz5wtfUQDFEUjXiaTB1i2YQP
+         yt8wVUq0pvqZ9tuwaNeCBnCBHtEYN5iua9oR7D+rGvqKx7SbmW4hjEvgYa7p4ebKu1TE
+         +JCyq6oCJXJ5rnvPbB+PdoS+zcl/9VGsPaYp06k2rKvV9rYXtCMrOdb2xDY98MiUhvCD
+         lEdSdAJjkaDjDL72MyFSCDXHxJ4+2rZv+3BblS5n5sXm9VD8xbh7OS3WClnDaLMSFz2L
+         qW3fp7zExm6H2WKT8G6wBIRfo75pT/AbrDU2zGH0UN9Kjzf04FGpSeEmK5h0WazJnenp
+         v0EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=1sFK61oUgqTUxUpxUiqsl6lQSNHdbhMzERalasfMwlM=;
-        b=o5Sk/MyXg5dadUzJr+7G37bZYcOj44pTjGtYmAEVimCFyi3+A6AZPxm4D2UkH0DBi9
-         WjPEv/VLo8vWOu9RWLCHguSBbvp+Ii+4BoJx4qxBPORrCMDzVV+SmN49BM0T/Va8Y3qG
-         cDK0M4BRTZig40iIARo4kq52Ia2AluxeOqKjJ/PrbVN7ZJGycxCVciGF3C5b07bDYHK9
-         erXJf1Gp8jBth/pxvNjrO9/Jh5PO0eyXQdI2TMOXKk6dF0tNa+58M4deSvhd4sN+eJ0s
-         Eo9PyvorWFja2UbzG6TbMDbY+N9NXAUM470JYOd7g0NwqIbUtO5aq/pyNXH1/tZ5Hozg
-         En/Q==
-X-Gm-Message-State: APjAAAU5j6fBCCOUXUmRuyKZYRjIYMk0b4Nj0XtTUaIYqJT4mc+Sxtnc
-        WRyVbc/B4ghf4hsTZMvuIDhOrg==
-X-Google-Smtp-Source: APXvYqx3wbLK6wMJ/WfshHZeRj3cjQnRgP7ZB71oVaFz42qy5jeUxtXdRvPoDikZXJxqH1xLOjkVpQ==
-X-Received: by 2002:a17:90a:c212:: with SMTP id e18mr17011375pjt.110.1569191212590;
-        Sun, 22 Sep 2019 15:26:52 -0700 (PDT)
+        bh=4122js9VzeoHge4cdqVUvNxYMN8/LRqY7OEquLQFbJQ=;
+        b=Misz47MFd46Uxn6+ZGPsLtH8dj1Ps7Y/i/PhIMq1VrfMZzixO6HwzKimg79XAc03c6
+         EiJS/hhzKdR3v8EsECJPLWQYOj5w5sSsEACOZa4oOvEO8+yd5AG+t1fKK1R+X5Atl2FF
+         bFGCmxYKgX8iyBajvzepjy9Y075DPXRd5rLdE2UuQEIEMvsht9OgasKeBW/sDAebQiWO
+         588Lw0ZmrszYKYFQTZdzvyWmuyR28j5z2YifWMZu56Hk9sRJLo7K+oCoS89OCWh5+VzY
+         h030xLQM+H0wjwWQupwgyYaFCMxyEc+MeZHckVpmg3/HDm+5R6pqK7INtSYAbqixxDjE
+         SM1g==
+X-Gm-Message-State: APjAAAX/FdqRwy0p8AxuuaOyI166rJ0gD49ZbYjDVe/7fpxag6xB84NI
+        kf54o7wIRyDDQc6rxoW/T+QI7A==
+X-Google-Smtp-Source: APXvYqzyICwgu2nsF0p3uEHmrh0rScEPh1VCeMpKC62Xdw4iwuAiKtc/bOayJ0c7xkb5C7wzKV4toQ==
+X-Received: by 2002:a62:ac02:: with SMTP id v2mr29467462pfe.109.1569191227648;
+        Sun, 22 Sep 2019 15:27:07 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id c125sm11159763pfa.107.2019.09.22.15.26.51
+        by smtp.gmail.com with ESMTPSA id u10sm9477135pfm.71.2019.09.22.15.27.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Sep 2019 15:26:52 -0700 (PDT)
-Date:   Sun, 22 Sep 2019 15:26:49 -0700
+        Sun, 22 Sep 2019 15:27:07 -0700 (PDT)
+Date:   Sun, 22 Sep 2019 15:27:05 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Nishad Kamdar <nishadkamdar@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -56,11 +57,11 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
         <u.kleine-koenig@pengutronix.de>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: b53: Use the correct style for SPDX License
+Subject: Re: [PATCH] net: dsa: Use the correct style for SPDX License
  Identifier
-Message-ID: <20190922152649.1fbe1df9@cakuba.netronome.com>
-In-Reply-To: <20190921133011.GA2994@nishad>
-References: <20190921133011.GA2994@nishad>
+Message-ID: <20190922152705.59b66b0c@cakuba.netronome.com>
+In-Reply-To: <20190921134522.GA3575@nishad>
+References: <20190921134522.GA3575@nishad>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,9 +71,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 Sep 2019 19:00:16 +0530, Nishad Kamdar wrote:
+On Sat, 21 Sep 2019 19:15:25 +0530, Nishad Kamdar wrote:
 > This patch corrects the SPDX License Identifier style
-> in header file for Broadcom BCM53xx managed switch driver.
+> in header file for Distributed Switch Architecture drivers.
 > For C header files Documentation/process/license-rules.rst
 > mandates C-like comments (opposed to C source files where
 > C++ style should be used)
