@@ -2,34 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FF3BA53B
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 20:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0593DBA560
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 20:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438446AbfIVSzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 14:55:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56908 "EHLO mail.kernel.org"
+        id S2394758AbfIVS5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 14:57:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729238AbfIVSzg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Sep 2019 14:55:36 -0400
+        id S2394742AbfIVS5E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Sep 2019 14:57:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 86BB821D7E;
-        Sun, 22 Sep 2019 18:55:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0C4D21907;
+        Sun, 22 Sep 2019 18:57:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569178535;
-        bh=++ww0M8FldhONH/sKfUkcOspcDTMgTrhuVQH5MzsDWA=;
+        s=default; t=1569178623;
+        bh=dHg+UqiT6WV5wD4kJBwsxxJ5umjrfYXlD5jeO2Zj59U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WanaGgpvJBy+DCPYr/giU2co38FLpkskVtaUrmDAcRLJFEIAxv1gffC/yrai/eUkU
-         4I9uCzTdxgfVDu9XGWN1gWhcLpdvyfHASIkhW/bj7AKS6XplDYql16AlLwqZKxMvSV
-         w985dm1tWSf/9N3xgku/Q3CkqsYKOQ3n1gquUWHM=
+        b=bvwey5Zp0mfuxeoLZeep8Fb0qna+V8b4O9D4BBkS8eq7Ae6ZFCsxT113ixqHArjKJ
+         NO8A9GP+SR3uF7f8mw7VHu+jCbNVoHbk2sUYIwETIlgKwxQqdbT+hLPDXwBaShcxul
+         lAagRmJens44svars6TfY5SpiUIGbt+IWyv79ctM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 057/128] net: lpc-enet: fix printk format strings
-Date:   Sun, 22 Sep 2019 14:53:07 -0400
-Message-Id: <20190922185418.2158-57-sashal@kernel.org>
+Cc:     Kevin Easton <kevin@guarana.org>,
+        syzbot+98156c174c5a2cad9f8f@syzkaller.appspotmail.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 121/128] libertas: Add missing sentinel at end of if_usb.c fw_table
+Date:   Sun, 22 Sep 2019 14:54:11 -0400
+Message-Id: <20190922185418.2158-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190922185418.2158-1-sashal@kernel.org>
 References: <20190922185418.2158-1-sashal@kernel.org>
@@ -42,62 +46,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Kevin Easton <kevin@guarana.org>
 
-[ Upstream commit de6f97b2bace0e2eb6c3a86e124d1e652a587b56 ]
+[ Upstream commit 764f3f1ecffc434096e0a2b02f1a6cc964a89df6 ]
 
-compile-testing this driver on other architectures showed
-multiple warnings:
+This sentinel tells the firmware loading process when to stop.
 
-  drivers/net/ethernet/nxp/lpc_eth.c: In function 'lpc_eth_drv_probe':
-  drivers/net/ethernet/nxp/lpc_eth.c:1337:19: warning: format '%d' expects argument of type 'int', but argument 4 has type 'resource_size_t {aka long long unsigned int}' [-Wformat=]
-
-  drivers/net/ethernet/nxp/lpc_eth.c:1342:19: warning: format '%x' expects argument of type 'unsigned int', but argument 4 has type 'dma_addr_t {aka long long unsigned int}' [-Wformat=]
-
-Use format strings that work on all architectures.
-
-Link: https://lore.kernel.org/r/20190809144043.476786-10-arnd@arndb.de
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reported-and-tested-by: syzbot+98156c174c5a2cad9f8f@syzkaller.appspotmail.com
+Signed-off-by: Kevin Easton <kevin@guarana.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/nxp/lpc_eth.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/wireless/marvell/libertas/if_usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
-index 08381ef8bdb48..41d30f55c946b 100644
---- a/drivers/net/ethernet/nxp/lpc_eth.c
-+++ b/drivers/net/ethernet/nxp/lpc_eth.c
-@@ -1371,13 +1371,14 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
- 	pldat->dma_buff_base_p = dma_handle;
+diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
+index 3dbfce972c56b..9e82ec12564bb 100644
+--- a/drivers/net/wireless/marvell/libertas/if_usb.c
++++ b/drivers/net/wireless/marvell/libertas/if_usb.c
+@@ -49,7 +49,8 @@ static const struct lbs_fw_table fw_table[] = {
+ 	{ MODEL_8388, "libertas/usb8388_v5.bin", NULL },
+ 	{ MODEL_8388, "libertas/usb8388.bin", NULL },
+ 	{ MODEL_8388, "usb8388.bin", NULL },
+-	{ MODEL_8682, "libertas/usb8682.bin", NULL }
++	{ MODEL_8682, "libertas/usb8682.bin", NULL },
++	{ 0, NULL, NULL }
+ };
  
- 	netdev_dbg(ndev, "IO address space     :%pR\n", res);
--	netdev_dbg(ndev, "IO address size      :%d\n", resource_size(res));
-+	netdev_dbg(ndev, "IO address size      :%zd\n",
-+			(size_t)resource_size(res));
- 	netdev_dbg(ndev, "IO address (mapped)  :0x%p\n",
- 			pldat->net_base);
- 	netdev_dbg(ndev, "IRQ number           :%d\n", ndev->irq);
--	netdev_dbg(ndev, "DMA buffer size      :%d\n", pldat->dma_buff_size);
--	netdev_dbg(ndev, "DMA buffer P address :0x%08x\n",
--			pldat->dma_buff_base_p);
-+	netdev_dbg(ndev, "DMA buffer size      :%zd\n", pldat->dma_buff_size);
-+	netdev_dbg(ndev, "DMA buffer P address :%pad\n",
-+			&pldat->dma_buff_base_p);
- 	netdev_dbg(ndev, "DMA buffer V address :0x%p\n",
- 			pldat->dma_buff_base_v);
- 
-@@ -1424,8 +1425,8 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_out_unregister_netdev;
- 
--	netdev_info(ndev, "LPC mac at 0x%08x irq %d\n",
--	       res->start, ndev->irq);
-+	netdev_info(ndev, "LPC mac at 0x%08lx irq %d\n",
-+	       (unsigned long)res->start, ndev->irq);
- 
- 	phydev = ndev->phydev;
- 
+ static const struct usb_device_id if_usb_table[] = {
 -- 
 2.20.1
 
