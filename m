@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 672E4BA046
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 04:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A9CBA04D
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 04:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbfIVCnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Sep 2019 22:43:55 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42819 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727198AbfIVCnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 22:43:55 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q12so6930769pff.9
-        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 19:43:55 -0700 (PDT)
+        id S1727349AbfIVCtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Sep 2019 22:49:50 -0400
+Received: from mail-pl1-f182.google.com ([209.85.214.182]:38952 "EHLO
+        mail-pl1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727291AbfIVCtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Sep 2019 22:49:50 -0400
+Received: by mail-pl1-f182.google.com with SMTP id s17so3465998plp.6
+        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 19:49:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=nOgWL+giO3OF7JU77tFkF1HZOgXSLjLGEM4YdmarUy0=;
-        b=n1s3qLO1cyMpCgm3y+dJWEtTk9i10BruwIOR38foEcM2c95wXg9tMS7u1B9rlRcsJB
-         8dhIKe2cgliEmywjeEC9jjFeRpoBGExwBM2BlkRux3QbpLDdt2ZezY05TB7veIUAEQvM
-         jbqAS/oWyP3hjDnkLzt4Bk61PEAUOt4EHRJHDICFPvoNYu6BEgAgynpXJpCw64yjB6q4
-         gF+Le2FuOthRrW3w0HD+vgXgbyWlbNmo23I3cdszqQAUY8vqkW6S/TezBd0Q/BhLcDMk
-         /+DKOVz2ndxD0U5XE0lpNt6yfHWv+ryQuybzb0uu3JwEKY7CLdUyLVyWQ+dzRsOD8h6T
-         CNLw==
+        bh=anDfSlcsinrIuqUyxfiFcZfqVNlRcVIERATNLsETqQY=;
+        b=mfZxy2sq/aDKntUmvOesWWFgM501zlmT0QpE+8Y3+duZ2e9RLwsdz3EzbknN01qRdx
+         /DJM6peKzpH1uE3x7/dOQZhRHneaUKMm5+UU6wBBXZopFmaET2zbcMvrcWFEH8Lcy1MV
+         mHsKbJt/O4aAQLG8QlJ5NtzYWa8/QCeSzo9oMiCbVvSsyajYnvQd5hWIV29MDQWxeTMf
+         6rnN4w9QkstK63hfcmaGs8Ww6Wf4CDRwdH/94iFQ1InHtTPUqSLl55mQ+r8R2G+4rc6m
+         JkiB60FFY2ZFOwyHN7wEgkpBNBIkm7jIrh6HhqdgOUG69IsDm6L4nHXV4BDY+YZsIEfS
+         +w1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=nOgWL+giO3OF7JU77tFkF1HZOgXSLjLGEM4YdmarUy0=;
-        b=SuJwEFuOf9u3gGl3ZHrFZqdbNeLPC1go7er3yXF1Zo8SJyORVM8KtmBBibUX4j4mY4
-         oa+ZqgFrWnGdgmyvaSTBnZbGGUPlv6Yxwjc92hAemAODEHCUfRyeTbLLU7IjUCJ63RAk
-         0YxQpbC1wPpEU9/RScoUUtxMyz9cCTifKas27vx4ZdMwtpWg0MQgBrNJUrDkKBKKWwdh
-         3Q7VxMmkwdhGYcR4ojIpEyaN1gjHz3o6aqVW/or9Il98++kjlC1K7JxEXFvfEFGJ2300
-         U8W4MARtHZC0N8I30Zu1bq1POiwLvY4+VRFQSQ9XN0H+loBNGUWoGKBSWDRft5wY7uyH
-         ZRuA==
-X-Gm-Message-State: APjAAAUprl1ccPSyinD0bniqDybbZMMZOKuSqKnycVFd4CZGotqfkCYl
-        nCTLtyJ551OYrCMnQnGqo84BBg==
-X-Google-Smtp-Source: APXvYqxY6qNtrBC/TZYXlUXV5rKkjJWUqQrurXGhF8XVryWr+VkYxBPxyZfndPMajJMLaHnevVeDYQ==
-X-Received: by 2002:a17:90a:3450:: with SMTP id o74mr13667448pjb.5.1569120234901;
-        Sat, 21 Sep 2019 19:43:54 -0700 (PDT)
+        bh=anDfSlcsinrIuqUyxfiFcZfqVNlRcVIERATNLsETqQY=;
+        b=XWne7vbMdf5Zxy/5X6aPVrIJryQ1Q6Wxmpn7L0fqGasCYN/mhHvxMpBVoD41/NbhqR
+         siNhB6qlWbHYpAexK3ZT9jHcMl5dbuqOBByU8BlCvHxYxaoRFQWX7JleoQ6qmgioPErl
+         bLAX6CVs1WvQnAy8v2xCphXN4eVZsJ3ykwmC/CEbmDu6Mptv9FT4XFS+nu91BVwmSRTz
+         HorDJ8x7vbCiJZokOzjPsH2eZaFJq3Av1bnDJd+xtOb1OISOm5IGZe3iu/GNCPwnZevJ
+         9ZAaIz3IJlydc26bDry59MRAFPesp7p2WWot1WA/QdMiJFQVjaOmTsUq2Ge8QTlRHjFN
+         bb4Q==
+X-Gm-Message-State: APjAAAVPQTSRe82XUBIMR+B6TJQe1U9O2ra9PwRkVWSqcannpOeXfUXJ
+        pZzsWIUvFuP77IFJTfkCfVpC4w==
+X-Google-Smtp-Source: APXvYqw/mTTWbaH79472SmRNTbJG75f7zpe+KuB92ZzGVL55dDHwbFBp4ZPeMaM6FzznylBAqzVZQg==
+X-Received: by 2002:a17:902:d714:: with SMTP id w20mr26240046ply.29.1569120589739;
+        Sat, 21 Sep 2019 19:49:49 -0700 (PDT)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id h1sm6697407pfk.124.2019.09.21.19.43.54
+        by smtp.gmail.com with ESMTPSA id c31sm5709585pgb.24.2019.09.21.19.49.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Sep 2019 19:43:54 -0700 (PDT)
-Date:   Sat, 21 Sep 2019 19:43:52 -0700
+        Sat, 21 Sep 2019 19:49:49 -0700 (PDT)
+Date:   Sat, 21 Sep 2019 19:49:46 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     <olteanv@gmail.com>, <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: sja1105: Add dependency for
- NET_DSA_SJA1105_TAS
-Message-ID: <20190921194352.1500a70d@cakuba.netronome.com>
-In-Reply-To: <20190919063819.164826-1-maowenan@huawei.com>
-References: <20190919063819.164826-1-maowenan@huawei.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [v2] net: stmmac: selftest: avoid large stack usage
+Message-ID: <20190921194946.710bb0f1@cakuba.netronome.com>
+In-Reply-To: <20190919123416.3070938-1-arnd@arndb.de>
+References: <20190919123416.3070938-1-arnd@arndb.de>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -65,19 +67,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Sep 2019 14:38:19 +0800, Mao Wenan wrote:
-> If CONFIG_NET_DSA_SJA1105_TAS=y and CONFIG_NET_SCH_TAPRIO=n,
-> below error can be found:
-> drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_setup_tc_taprio':
-> sja1105_tas.c:(.text+0x318): undefined reference to `taprio_offload_free'
-> sja1105_tas.c:(.text+0x590): undefined reference to `taprio_offload_get'
-> drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_tas_teardown':
-> sja1105_tas.c:(.text+0x610): undefined reference to `taprio_offload_free'
-> make: *** [vmlinux] Error 1
+On Thu, 19 Sep 2019 14:33:43 +0200, Arnd Bergmann wrote:
+> Putting a struct stmmac_rss object on the stack is a bad idea,
+> as it exceeds the warning limit for a stack frame on 32-bit architectures:
 > 
-> sja1105_tas needs tc-taprio, so this patch add the dependency for it.
+> drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1221:12: error: stack frame size of 1208 bytes in function '__stmmac_test_l3filt' [-Werror,-Wframe-larger-than=]
+> drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1338:12: error: stack frame size of 1208 bytes in function '__stmmac_test_l4filt' [-Werror,-Wframe-larger-than=]
 > 
-> Fixes: 317ab5b86c8e ("net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio offload")
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> As the object is the trivial empty case, change the called function
+> to accept a NULL pointer to mean the same thing and remove the
+> large variable in the two callers.
+> 
+> Fixes: 4647e021193d ("net: stmmac: selftests: Add selftest for L3/L4 Filters")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
 Applied, thank you!
