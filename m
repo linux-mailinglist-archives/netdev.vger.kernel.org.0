@@ -2,123 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D5FBABC4
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 23:04:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D312BABC9
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 23:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392380AbfIVVEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 17:04:07 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44436 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388636AbfIVVEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 17:04:06 -0400
-Received: by mail-qt1-f194.google.com with SMTP id u40so14862901qth.11;
-        Sun, 22 Sep 2019 14:04:06 -0700 (PDT)
+        id S2392836AbfIVVIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 17:08:05 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45440 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388679AbfIVVIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 17:08:05 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 4so6737446pgm.12
+        for <netdev@vger.kernel.org>; Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oFRwkLtn2Iq4ic5glemRgq9T0csDPXP20ndx8eWwKH0=;
-        b=gF5tS84sfuj26rxAmSD8tXZJzlv6RZCDEVucrdGf8m0OWJKWJ92C2q2hEULVxN//0j
-         pnB0lKgouLiw87AbMdE52dcwgu9lpR2FzQ6/23ADtr0vB2tysPU2UIBGfQKjU4QNEg4h
-         V6x6H8KFXrz1EAtsOpDRtCXOgnWzZ9UOwgGvD5xYU45Cwfa0y22e/LS4VX3/73VJkagA
-         JVXGVCOW/lDhPDi81cnyoDbJlYvDDcL6ot4f8R5V7mS1AzCBmY1ricrZNbN+nNZ9bAcj
-         TzvhQ8qSeOWv+dhuZm0prpbGjUvOwrFi5wNf5i2Jcy1cy6+9IpW1e5uyMSEWThEjKyhK
-         RITA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=N02DuWV6Ls3abVLlI8h6X8K21ukMEFlJkO/0aLsDK0s=;
+        b=LbRVKPEYYOO6psE0Yw77Hs/lDLbvbwH8YrMPHyagr9mucUEr8xFECka9eq2nyTNqDj
+         a01yizLfeFS4nTPCHzjwVPFNOChkR8WPwpuz83J2MC5xiB5b2DOSHWMlIuH7lUOjQVh6
+         z1W45WY0YU4bYw3QLcti59jEjmLmgof1zWm8FEgvA12KWoVeJO+xw4jKEhK2U67gf98x
+         aREdIF8OzVfEb4hQRkRH1LAwKHRwskSZcaieRFNpofR3iAG9G6hCD4z4jyuc7OnS08es
+         XsE4V/hOPFetMFiq7GLLhuaojYQPvel27pFMUIV8fZsgqpU/95X6LqqeO8tgkRGNoIMf
+         CR0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oFRwkLtn2Iq4ic5glemRgq9T0csDPXP20ndx8eWwKH0=;
-        b=G1WitvnRrdxT1ybbwim3aGzfH4qpNqwTNWjBR11RKtfB4FqJ9XIYluePwcQG+0FlcY
-         Jc9GJ0BPIv39U+OjExt4MoYAY6xLTdqijcQSfqlldurB0/czDPrl9UEzFOtYwej5t2ZE
-         F3lw5suwPrO26Qb2gkmHb1iBcdh+KXVvRzHnsB70H4UnUAIQeomTyeN49Yky1HmQbR9a
-         TVLn6SsnJFS9sNJVEQmrbTr86ZhxeFKHvGRuwOvx4LYbXnYsltC2g4iz4snBXSGPbAq3
-         SZKx84Io9Wsl5fruqca+e6lbI33EJymleaMwxeWVtFJ0g2lvXVNnEeiecjz8zfLbzOPc
-         ol5w==
-X-Gm-Message-State: APjAAAUhFKkJVM0BoTvvzl70wNjBfeMrTkN6TMZC63L7sauDnDzHeDuk
-        /uMnxhTs2BTHSKsOtmPOM1SYbVENaLDdN4Ktofs=
-X-Google-Smtp-Source: APXvYqyOpM+WkAYatt7DzG/e4cFwk8OrxFjR+ycVMRb4cWpvcmoLJd0M3UQroa0ZOGu4FyW2oIRT3GdU+X0W5vULxJU=
-X-Received: by 2002:ac8:5147:: with SMTP id h7mr14139172qtn.117.1569186245693;
- Sun, 22 Sep 2019 14:04:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=N02DuWV6Ls3abVLlI8h6X8K21ukMEFlJkO/0aLsDK0s=;
+        b=PCJpGPXIu81JpeHZ2ZJWU1GHWjC8eLQ41LFNZkkk2kxV/3vgewVqXHymWNHd8tf0H9
+         u/BcMd1KWaIGs3DduwkVQcm6fRkAhm8vvUBTTOcdZ71QYZ2s75jxQXsZ3nNx71difAKk
+         oAdshHzOwONdRdAgfN8+ESiv/u2I/eth/N50yDO8vaEJYVxnWEbhSwvVjqIn0nAPq5qT
+         debeYdWSr0dHdta+/zR49sgYj+aYkP1O/FJOVrcUPxWdcsSVxJzDT8Hl5kyuI2GDbTDm
+         p2kPTo2tB7sa486QijU2BFhFNLKFcc8P7Zwwp+4PYAMmi2CxSVYU703JC8YNXbBJRQFF
+         kk0A==
+X-Gm-Message-State: APjAAAUAVHUu5XIySnNW8hgAOs2vc76tluAw5IxEtASIMZJD6q+E3QlR
+        GixFA8FKWMedtBjEv7hvkzW9iw==
+X-Google-Smtp-Source: APXvYqyx2Ki6Glce3kMT9uI6N/7jpfRnMKxmuPdQQpvOkPKiHMkHWfeObbmKV3AUCYAztvbIE7B33g==
+X-Received: by 2002:a62:3687:: with SMTP id d129mr30557925pfa.199.1569186484473;
+        Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id k95sm9971958pje.10.2019.09.22.14.08.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Sep 2019 14:08:04 -0700 (PDT)
+Date:   Sun, 22 Sep 2019 14:08:00 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Mao Wenan <maowenan@huawei.com>
+Cc:     <netanel@amazon.com>, <saeedb@amazon.com>, <zorik@amazon.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH v2 net] net: ena: Select DIMLIB for ENA_ETHERNET
+Message-ID: <20190922140800.6b1ed695@cakuba.netronome.com>
+In-Reply-To: <20190922053808.117965-1-maowenan@huawei.com>
+References: <20190921200741.1c3289e8@cakuba.netronome.com>
+        <20190922053808.117965-1-maowenan@huawei.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190920233019.187498-1-sdf@google.com>
-In-Reply-To: <20190920233019.187498-1-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 22 Sep 2019 14:03:54 -0700
-Message-ID: <CAEf4BzYFQhPKoDG7kq=_B5caL-0Af2duL_Uz5v3oVw=BKQ430w@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: test_progs: fix client/server race in tcp_rtt
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 22, 2019 at 12:10 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> This is the same problem I found earlier in test_sockopt_inherit:
-> there is a race between server thread doing accept() and client
-> thread doing connect(). Let's explicitly synchronize them via
-> pthread conditional variable.
->
-> Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> index fdc0b3614a9e..e64058906bcd 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> @@ -203,6 +203,9 @@ static int start_server(void)
->         return fd;
->  }
->
-> +static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
-> +static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
-> +
->  static void *server_thread(void *arg)
->  {
->         struct sockaddr_storage addr;
-> @@ -215,6 +218,10 @@ static void *server_thread(void *arg)
->                 return NULL;
->         }
->
-> +       pthread_mutex_lock(&server_started_mtx);
-> +       pthread_cond_signal(&server_started);
-> +       pthread_mutex_unlock(&server_started_mtx);
-> +
->         client_fd = accept(fd, (struct sockaddr *)&addr, &len);
->         if (CHECK_FAIL(client_fd < 0)) {
->                 perror("Failed to accept client");
-> @@ -248,7 +255,14 @@ void test_tcp_rtt(void)
->         if (CHECK_FAIL(server_fd < 0))
->                 goto close_cgroup_fd;
->
-> -       pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
-> +       if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
-> +                                     (void *)&server_fd)))
-> +               goto close_cgroup_fd;
-> +
-> +       pthread_mutex_lock(&server_started_mtx);
-> +       pthread_cond_wait(&server_started, &server_started_mtx);
-> +       pthread_mutex_unlock(&server_started_mtx);
+On Sun, 22 Sep 2019 13:38:08 +0800, Mao Wenan wrote:
+> If CONFIG_ENA_ETHERNET=y and CONFIG_DIMLIB=n,
+> below erros can be found:
+> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_dim_work':
+> ena_netdev.c:(.text+0x21cc): undefined reference to `net_dim_get_rx_moderation'
+> ena_netdev.c:(.text+0x21cc): relocation truncated to
+> fit: R_AARCH64_CALL26 against undefined symbol `net_dim_get_rx_moderation'
+> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_io_poll':
+> ena_netdev.c:(.text+0x7bd4): undefined reference to `net_dim'
+> ena_netdev.c:(.text+0x7bd4): relocation truncated to fit:
+> R_AARCH64_CALL26 against undefined symbol `net_dim'
+> 
+> After commit 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive
+> interrupt moderation"), it introduces dim algorithm, which configured by CONFIG_DIMLIB.
+> So, this patch is to select DIMLIB for ENA_ETHERNET.
+> 
+> Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
 
-
-If the server fails to listen, then we'll never get a signal, right?
-Let's use timedwait instead to avoid test getting stuck forever in
-such cases?
-
-
-> +
->         CHECK_FAIL(run_test(cgroup_fd, server_fd));
->         close(server_fd);
->  close_cgroup_fd:
-> --
-> 2.23.0.351.gc4317032e6-goog
->
+Applied, thank you!
