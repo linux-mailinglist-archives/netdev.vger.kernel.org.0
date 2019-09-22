@@ -2,75 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1EE2BA119
-	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 07:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65778BA11C
+	for <lists+netdev@lfdr.de>; Sun, 22 Sep 2019 07:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbfIVEvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 00:51:37 -0400
-Received: from mail-lj1-f172.google.com ([209.85.208.172]:39294 "EHLO
-        mail-lj1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726733AbfIVEvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 00:51:37 -0400
-Received: by mail-lj1-f172.google.com with SMTP id y3so9191799ljj.6
-        for <netdev@vger.kernel.org>; Sat, 21 Sep 2019 21:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QYMkJvvpfizVUmR54Ubmj8VISMMiodmRo0ArPXrwBsU=;
-        b=hEprYMfP9PPZ7yA/J1LFnXlONyVva1M/XKkhTvIF6ANcf1MkHRXore3Xyii4vCU3rU
-         qJBf2vQ+7aSJlsI+3i09B8N3HGEw4dqaE+HXvZGktfRyn0HeP7TYR/PobSHqD6u8Bldl
-         vlyl9a5nQ5RJ8GWktqa8Ja9AFzZfyg651XcxxM/EosXgEapXFmeHDqQdLUeysfTKByEl
-         ERCR7lRd6x0IM/oFAzK2AJZs23PyyWZQ65TTCDfAljfISeHizs5wvc3sujbBCLx5yxdo
-         IoaGOkr64XNkTCg4Fp/C75QMdOQgZLzhjnF1liobOY6AbqldiYgEuh10LfvaBulOOjhw
-         p55A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QYMkJvvpfizVUmR54Ubmj8VISMMiodmRo0ArPXrwBsU=;
-        b=NF9a1T4FlzQs62jsjPRjv9zvbEhSvTmMXg2RQcSzzdovZ6UsshNeQkQYe+qg9rHxuM
-         9bpfDPeAZBIudqyveFCrdlUaa8WhrI7QwoDHfH7bBzUMnbT9vRD8HQ2fpr7mbvI8F8mV
-         j/M4KONzBXcOunuLRYbKrm/UJ/oTJyrEjP+l+NyB9RO1if4hc1pg27BG2tHuT+ZJtMmm
-         i1EkiSrp2V+R9Z8zHeObIMdm0aoTA69gyNH/g9QcXHgkOLXyaY3QE20nrTnsvFq9FxoX
-         ydrB1LdPxpZHSoU6Tg7USwZ/oDlLe/JAbBX2H1aOWzGTQbwTP91azS4+wjeDP37eGag2
-         G/Ag==
-X-Gm-Message-State: APjAAAVanQWB4W+aaxcFoa7CSYR6yn+sTsJapMQk42cjhnFVsUjEu3vd
-        FrUoANdP6wlcr58yoUgr2wcJEul26bHSm4VAHwA=
-X-Google-Smtp-Source: APXvYqzquJO9HIRD6+XIVXR88wA61c/FexKusYxQIdF5aGzqVSHdsqHv2LwqLAWcLvImamu8EWM7zbpgqh6lr0Ap/H0=
-X-Received: by 2002:a2e:730a:: with SMTP id o10mr11256683ljc.214.1569127895300;
- Sat, 21 Sep 2019 21:51:35 -0700 (PDT)
+        id S1727471AbfIVFJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 01:09:13 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:49778 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726528AbfIVFJM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Sep 2019 01:09:12 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 6BD0CFC1606C4BAC71CC;
+        Sun, 22 Sep 2019 13:09:09 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Sun, 22 Sep 2019
+ 13:09:06 +0800
+Subject: Re: [PATCH net] net: ena: Add dependency for ENA_ETHERNET
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     <netanel@amazon.com>, <saeedb@amazon.com>, <zorik@amazon.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>
+References: <20190920084405.140750-1-maowenan@huawei.com>
+ <20190921200741.1c3289e8@cakuba.netronome.com>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <256c3d2c-e900-8182-48e4-fb1cfcb53a74@huawei.com>
+Date:   Sun, 22 Sep 2019 13:08:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-References: <20190919.132147.31804711876075453.davem@davemloft.net>
- <vbfk1a41fr1.fsf@mellanox.com> <20190920091647.0129e65f@cakuba.netronome.com>
- <0e9a1701-356f-5f94-b88e-a39175dee77a@iogearbox.net> <20190920155605.7c81c2af@cakuba.netronome.com>
- <f1983a74-d144-6d21-9b20-59cea9afc366@iogearbox.net> <CAOrHB_Bqhq6cy6QgyEymHaUDk-BN9fkkQ-rzCqWeN35sqiym4w@mail.gmail.com>
-In-Reply-To: <CAOrHB_Bqhq6cy6QgyEymHaUDk-BN9fkkQ-rzCqWeN35sqiym4w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 21 Sep 2019 21:51:24 -0700
-Message-ID: <CAADnVQJBxsWU8BddxWDBX==y87ZLoEsBdqq0DqhYD7NyEcDLzg@mail.gmail.com>
-Subject: Re: CONFIG_NET_TC_SKB_EXT
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Paul Blakey <paulb@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190921200741.1c3289e8@cakuba.netronome.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 21, 2019 at 8:15 PM Pravin Shelar <pshelar@ovn.org> wrote:
-> > > Any suggestions on the way forward? :(
 
-since there is no clear and agreed by everyone path forward the simple
-revert is the best option.
-Next release cycle you can come up with something that works for everyone.
+
+On 2019/9/22 11:07, Jakub Kicinski wrote:
+> On Fri, 20 Sep 2019 16:44:05 +0800, Mao Wenan wrote:
+>> If CONFIG_ENA_ETHERNET=y and CONFIG_DIMLIB=n,
+>> below erros can be found:
+>> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_dim_work':
+>> ena_netdev.c:(.text+0x21cc): undefined reference to `net_dim_get_rx_moderation'
+>> ena_netdev.c:(.text+0x21cc): relocation truncated to
+>> fit: R_AARCH64_CALL26 against undefined symbol `net_dim_get_rx_moderation'
+>> drivers/net/ethernet/amazon/ena/ena_netdev.o: In function `ena_io_poll':
+>> ena_netdev.c:(.text+0x7bd4): undefined reference to `net_dim'
+>> ena_netdev.c:(.text+0x7bd4): relocation truncated to fit:
+>> R_AARCH64_CALL26 against undefined symbol `net_dim'
+>>
+>> After commit 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive
+>> interrupt moderation"), it introduces dim algorithm, which configured by CONFIG_DIMLIB.
+>>
+>> Fixes: 282faf61a053 ("net: ena: switch to dim algorithm for rx adaptive interrupt moderation")
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> 
+> Thank you Mao, shortly after you posted your patch Uwe proposed to make
+> DIMLIB a hidden symbol:
+> 
+> https://lore.kernel.org/netdev/a85be675-ce56-f7ba-29e9-b749073aab6c@kleine-koenig.org/T/#t
+> 
+> That patch will likely be applied soon, could you please rework your
+> patch to use the "select" keyword instead of "depends". That's what
+> other users do.
+
+Ok, I will send v2.
+> 
+>> diff --git a/drivers/net/ethernet/amazon/Kconfig b/drivers/net/ethernet/amazon/Kconfig
+>> index 69ca99d..fe46df4 100644
+>> --- a/drivers/net/ethernet/amazon/Kconfig
+>> +++ b/drivers/net/ethernet/amazon/Kconfig
+>> @@ -18,7 +18,7 @@ if NET_VENDOR_AMAZON
+>>  
+>>  config ENA_ETHERNET
+>>  	tristate "Elastic Network Adapter (ENA) support"
+>> -	depends on PCI_MSI && !CPU_BIG_ENDIAN
+>> +	depends on PCI_MSI && !CPU_BIG_ENDIAN && DIMLIB
+>>  	---help---
+>>  	  This driver supports Elastic Network Adapter (ENA)"
+>>  
+> 
+> 
+> .
+> 
+
