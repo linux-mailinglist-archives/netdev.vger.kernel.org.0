@@ -2,151 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D39FBB869
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A03BB885
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387658AbfIWPtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 11:49:12 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41052 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728595AbfIWPtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:49:12 -0400
-Received: by mail-io1-f72.google.com with SMTP id q18so1726230ios.8
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 08:49:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
-         :content-transfer-encoding;
-        bh=aTe9vFgxnQSUbqzD1uvP+ahz/Hl3A6XwhKJCZ9nDuOs=;
-        b=EbQiU7gIcnkJ+OXNB9lfxLr7m6y9L7atWTV1hjOD/WkTIhEjat/ZZidGNe3YiYM33T
-         IIycRMBKe6ab9wJnSlSlLxrE9/hQwVW6Tmr74STHTfRTI004mtY9uXAkEdfRwsdy5vop
-         1o9KpbdjVPjyT4WI9/oMzxNkkKDTjmQwitVSCGzR4nx2GOVQ12x0lk4Cl4or9lVMHyLy
-         pxAeAncTRGm7Sk1OJu3k92oNlx/d2bdzT2mgbt0scaWrfvgEz44QQg0JuEkD372Wa9zm
-         xItop/c0/SXeX9XRwCmTUiguDlFfUJA5WnS7zw0c9tFX4M0Cz7ZT9A30RzioMsKaCnwc
-         E4HA==
-X-Gm-Message-State: APjAAAXuozp/U4/v3vx1seVKRDWNqRDHUKxQ1u1psZSzGb1rYpHgAbfn
-        VoH0NbVrjK73qAApeMbNEuSIyMtj1lKxt3UWD5g+uchcx4ul
-X-Google-Smtp-Source: APXvYqxPjdQBB4Fscqb4QFuBDGFKVQVQx/4U6ZEhKpwVw/nNziP7PXssR1WqgphK6lL3xLS8f87kiSF4AJU/MRIDv/RT2Bht86lN
-MIME-Version: 1.0
-X-Received: by 2002:a5d:814f:: with SMTP id f15mr16445345ioo.134.1569253751401;
- Mon, 23 Sep 2019 08:49:11 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 08:49:11 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006a3a2f05933a5c53@google.com>
-Subject: general protection fault in xsk_map_update_elem
-From:   syzbot <syzbot+491c1b7565ba9069ecae@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bjorn.topel@intel.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        jonathan.lemon@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, magnus.karlsson@intel.com,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-Content-Transfer-Encoding: base64
+        id S2388311AbfIWPvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 11:51:14 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42238 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732805AbfIWPvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:51:14 -0400
+Received: from localhost (231-157-167-83.reverse.alphalink.fr [83.167.157.231])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E8DC11425E47B;
+        Mon, 23 Sep 2019 08:51:11 -0700 (PDT)
+Date:   Mon, 23 Sep 2019 17:51:06 +0200 (CEST)
+Message-Id: <20190923.175106.799482393811705736.davem@davemloft.net>
+To:     saeedm@mellanox.com
+Cc:     gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 4.19-stable 0/7] mlx5 checksum fixes for 4.19
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190923123917.16817-1-saeedm@mellanox.com>
+References: <20190923123917.16817-1-saeedm@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Sep 2019 08:51:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCnN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGNyYXNoIG9uOg0KDQpIRUFEIGNv
-bW1pdDogICAgYjQxZGFlMDYgTWVyZ2UgdGFnICd4ZnMtNS40LW1lcmdlLTcnIG9mIGdpdDovL2dp
-dC5rZXJuZWwuby4uDQpnaXQgdHJlZTogICAgICAgbmV0LW5leHQNCmNvbnNvbGUgb3V0cHV0OiBo
-dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L2xvZy50eHQ/eD0xMzBiMjVhZDYwMDAwMA0K
-a2VybmVsIGNvbmZpZzogIGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvLmNvbmZpZz94
-PWRmY2Y1OTJkYjIyYjkxMzINCmRhc2hib2FyZCBsaW5rOiBodHRwczovL3N5emthbGxlci5hcHBz
-cG90LmNvbS9idWc/ZXh0aWQ9NDkxYzFiNzU2NWJhOTA2OWVjYWUNCmNvbXBpbGVyOiAgICAgICBn
-Y2MgKEdDQykgOS4wLjAgMjAxODEyMzEgKGV4cGVyaW1lbnRhbCkNCnN5eiByZXBybzogICAgICBo
-dHRwczovL3N5emthbGxlci5hcHBzcG90LmNvbS94L3JlcHJvLnN5ej94PTE1NWEwYzI5NjAwMDAw
-DQpDIHJlcHJvZHVjZXI6ICAgaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9yZXByby5j
-P3g9MTcyYmY2ZDk2MDAwMDANCg0KVGhlIGJ1ZyB3YXMgYmlzZWN0ZWQgdG86DQoNCmNvbW1pdCAw
-NDAyYWNkNjgzYzY3ODg3NGRmNmJkYmMyMzUzMGNhMDdlYTE5MzUzDQpBdXRob3I6IEJqw7ZybiBU
-w7ZwZWwgPGJqb3JuLnRvcGVsQGludGVsLmNvbT4NCkRhdGU6ICAgVGh1IEF1ZyAxNSAwOTozMDox
-MyAyMDE5ICswMDAwDQoNCiAgICAgeHNrOiByZW1vdmUgQUZfWERQIHNvY2tldCBmcm9tIG1hcCB3
-aGVuIHRoZSBzb2NrZXQgaXMgcmVsZWFzZWQNCg0KYmlzZWN0aW9uIGxvZzogIGh0dHBzOi8vc3l6
-a2FsbGVyLmFwcHNwb3QuY29tL3gvYmlzZWN0LnR4dD94PTEwZDRhODIzNjAwMDAwDQpmaW5hbCBj
-cmFzaDogICAgaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9yZXBvcnQudHh0P3g9MTJk
-NGE4MjM2MDAwMDANCmNvbnNvbGUgb3V0cHV0OiBodHRwczovL3N5emthbGxlci5hcHBzcG90LmNv
-bS94L2xvZy50eHQ/eD0xNGQ0YTgyMzYwMDAwMA0KDQpJTVBPUlRBTlQ6IGlmIHlvdSBmaXggdGhl
-IGJ1ZywgcGxlYXNlIGFkZCB0aGUgZm9sbG93aW5nIHRhZyB0byB0aGUgY29tbWl0Og0KUmVwb3J0
-ZWQtYnk6IHN5emJvdCs0OTFjMWI3NTY1YmE5MDY5ZWNhZUBzeXprYWxsZXIuYXBwc3BvdG1haWwu
-Y29tDQpGaXhlczogMDQwMmFjZDY4M2M2ICgieHNrOiByZW1vdmUgQUZfWERQIHNvY2tldCBmcm9t
-IG1hcCB3aGVuIHRoZSBzb2NrZXQgaXMgIA0KcmVsZWFzZWQiKQ0KDQpSRFg6IDAwMDAwMDAwMDAw
-MDAwMjAgUlNJOiAwMDAwMDAwMDIwMDAwMTAwIFJESTogMDAwMDAwMDAwMDAwMDAwMg0KUkJQOiAw
-MDAwMDAwMDAwMDAwMDA1IFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6IDAwMDA3ZmZlZjQ1MDAw
-MzMNClIxMDogMDAwMDAwMDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAyNDYgUjEyOiAwMDAw
-MDAwMDAwNDAxZmYwDQpSMTM6IDAwMDAwMDAwMDA0MDIwODAgUjE0OiAwMDAwMDAwMDAwMDAwMDAw
-IFIxNTogMDAwMDAwMDAwMDAwMDAwMA0Ka2FzYW46IENPTkZJR19LQVNBTl9JTkxJTkUgZW5hYmxl
-ZA0Ka2FzYW46IEdQRiBjb3VsZCBiZSBjYXVzZWQgYnkgTlVMTC1wdHIgZGVyZWYgb3IgdXNlciBt
-ZW1vcnkgYWNjZXNzDQpnZW5lcmFsIHByb3RlY3Rpb24gZmF1bHQ6IDAwMDAgWyMxXSBQUkVFTVBU
-IFNNUCBLQVNBTg0KQ1BVOiAxIFBJRDogODg3OCBDb21tOiBzeXotZXhlY3V0b3I4MzUgTm90IHRh
-aW50ZWQgNS4zLjArICMwDQpIYXJkd2FyZSBuYW1lOiBHb29nbGUgR29vZ2xlIENvbXB1dGUgRW5n
-aW5lL0dvb2dsZSBDb21wdXRlIEVuZ2luZSwgQklPUyAgDQpHb29nbGUgMDEvMDEvMjAxMQ0KUklQ
-OiAwMDEwOl9fbGlzdF9hZGQgaW5jbHVkZS9saW51eC9saXN0Lmg6NjQgW2lubGluZV0NClJJUDog
-MDAxMDpsaXN0X2FkZF90YWlsIGluY2x1ZGUvbGludXgvbGlzdC5oOjkzIFtpbmxpbmVdDQpSSVA6
-IDAwMTA6eHNrX21hcF9zb2NrX2FkZCBrZXJuZWwvYnBmL3hza21hcC5jOjYyIFtpbmxpbmVdDQpS
-SVA6IDAwMTA6eHNrX21hcF91cGRhdGVfZWxlbSsweDc5Yy8weGFjMCBrZXJuZWwvYnBmL3hza21h
-cC5jOjI2NQ0KQ29kZTogMDAgZmMgZmYgZGYgNDggYzEgZWEgMDMgODAgM2MgMDIgMDAgMGYgODUg
-ZWYgMDIgMDAgMDAgNGMgODkgZTIgNGQgODkgIA0KYTcgZDggMDUgMDAgMDAgNDggYjggMDAgMDAg
-MDAgMDAgMDAgZmMgZmYgZGYgNDggYzEgZWEgMDMgPDgwPiAzYyAwMiAwMCAwZiAgDQo4NSBjMCAw
-MiAwMCAwMCA0OSA4ZCA3YyAyNCAwOCA0OSA4ZCA4NyBkMCAwNSAwMCAwMA0KUlNQOiAwMDE4OmZm
-ZmY4ODgwOWE1MTdiYjggRUZMQUdTOiAwMDAxMDI0Ng0KUkFYOiBkZmZmZmMwMDAwMDAwMDAwIFJC
-WDogZmZmZjg4ODA5Y2NjNDlkMCBSQ1g6IGZmZmZmZmZmODE4NjgwNzANClJEWDogMDAwMDAwMDAw
-MDAwMDAwMCBSU0k6IGZmZmZmZmZmODE4NjgwODUgUkRJOiAwMDAwMDAwMDAwMDAwMDAxDQpSQlA6
-IGZmZmY4ODgwOWE1MTdjNzggUjA4OiBmZmZmODg4MGExMGQyMDAwIFIwOTogZmZmZmVkMTAxMzRh
-MmY2NQ0KUjEwOiBmZmZmZWQxMDEzNGEyZjY0IFIxMTogMDAwMDAwMDAwMDAwMDAwMyBSMTI6IDAw
-MDAwMDAwMDAwMDAwMDANClIxMzogZmZmZjg4ODA5Y2NjNDllMCBSMTQ6IGZmZmY4ODgwODlkYjU1
-ODAgUjE1OiBmZmZmODg4MDljY2M0NDAwDQpGUzogIDAwMDA1NTU1NTVkZjI4ODAoMDAwMCkgR1M6
-ZmZmZjg4ODBhZTkwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpDUzogIDAwMTAg
-RFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpDUjI6IDAwMDAwMDAwMjAw
-MDAwNDAgQ1IzOiAwMDAwMDAwMDk4NWU1MDAwIENSNDogMDAwMDAwMDAwMDE0MDZlMA0KRFIwOiAw
-MDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwMDAwMDAw
-MDANCkRSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBmZjAgRFI3OiAwMDAw
-MDAwMDAwMDAwNDAwDQpDYWxsIFRyYWNlOg0KICBtYXBfdXBkYXRlX2VsZW0rMHhjODIvMHgxMGIw
-IGtlcm5lbC9icGYvc3lzY2FsbC5jOjk2Ng0KICBfX2RvX3N5c19icGYrMHg4YjUvMHgzMzUwIGtl
-cm5lbC9icGYvc3lzY2FsbC5jOjI4NTQNCiAgX19zZV9zeXNfYnBmIGtlcm5lbC9icGYvc3lzY2Fs
-bC5jOjI4MjUgW2lubGluZV0NCiAgX194NjRfc3lzX2JwZisweDczLzB4YjAga2VybmVsL2JwZi9z
-eXNjYWxsLmM6MjgyNQ0KICBkb19zeXNjYWxsXzY0KzB4ZmEvMHg3NjAgYXJjaC94ODYvZW50cnkv
-Y29tbW9uLmM6MjkwDQogIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ5LzB4YmUN
-ClJJUDogMDAzMzoweDQ0MDcwOQ0KQ29kZTogMTggODkgZDAgYzMgNjYgMmUgMGYgMWYgODQgMDAg
-MDAgMDAgMDAgMDAgMGYgMWYgMDAgNDggODkgZjggNDggODkgZjcgIA0KNDggODkgZDYgNDggODkg
-Y2EgNGQgODkgYzIgNGQgODkgYzggNGMgOGIgNGMgMjQgMDggMGYgMDUgPDQ4PiAzZCAwMSBmMCBm
-ZiAgDQpmZiAwZiA4MyA1YiAxNCBmYyBmZiBjMyA2NiAyZSAwZiAxZiA4NCAwMCAwMCAwMCAwMA0K
-UlNQOiAwMDJiOjAwMDA3ZmZlZjQ1MDM0NzggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
-MDAwMDAwMDAwMDE0MQ0KUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDdmZmVmNDUwMzQ4
-MCBSQ1g6IDAwMDAwMDAwMDA0NDA3MDkNClJEWDogMDAwMDAwMDAwMDAwMDAyMCBSU0k6IDAwMDAw
-MDAwMjAwMDAxMDAgUkRJOiAwMDAwMDAwMDAwMDAwMDAyDQpSQlA6IDAwMDAwMDAwMDAwMDAwMDUg
-UjA4OiAwMDAwMDAwMDAwMDAwMDAxIFIwOTogMDAwMDdmZmVmNDUwMDAzMw0KUjEwOiAwMDAwMDAw
-MDAwMDAwMDAwIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDAwMDAwMDA0MDFmZjANClIx
-MzogMDAwMDAwMDAwMDQwMjA4MCBSMTQ6IDAwMDAwMDAwMDAwMDAwMDAgUjE1OiAwMDAwMDAwMDAw
-MDAwMDAwDQpNb2R1bGVzIGxpbmtlZCBpbjoNCi0tLVsgZW5kIHRyYWNlIGE5NWI5YjkyNmY4NTYw
-NzcgXS0tLQ0KUklQOiAwMDEwOl9fbGlzdF9hZGQgaW5jbHVkZS9saW51eC9saXN0Lmg6NjQgW2lu
-bGluZV0NClJJUDogMDAxMDpsaXN0X2FkZF90YWlsIGluY2x1ZGUvbGludXgvbGlzdC5oOjkzIFtp
-bmxpbmVdDQpSSVA6IDAwMTA6eHNrX21hcF9zb2NrX2FkZCBrZXJuZWwvYnBmL3hza21hcC5jOjYy
-IFtpbmxpbmVdDQpSSVA6IDAwMTA6eHNrX21hcF91cGRhdGVfZWxlbSsweDc5Yy8weGFjMCBrZXJu
-ZWwvYnBmL3hza21hcC5jOjI2NQ0KQ29kZTogMDAgZmMgZmYgZGYgNDggYzEgZWEgMDMgODAgM2Mg
-MDIgMDAgMGYgODUgZWYgMDIgMDAgMDAgNGMgODkgZTIgNGQgODkgIA0KYTcgZDggMDUgMDAgMDAg
-NDggYjggMDAgMDAgMDAgMDAgMDAgZmMgZmYgZGYgNDggYzEgZWEgMDMgPDgwPiAzYyAwMiAwMCAw
-ZiAgDQo4NSBjMCAwMiAwMCAwMCA0OSA4ZCA3YyAyNCAwOCA0OSA4ZCA4NyBkMCAwNSAwMCAwMA0K
-UlNQOiAwMDE4OmZmZmY4ODgwOWE1MTdiYjggRUZMQUdTOiAwMDAxMDI0Ng0KUkFYOiBkZmZmZmMw
-MDAwMDAwMDAwIFJCWDogZmZmZjg4ODA5Y2NjNDlkMCBSQ1g6IGZmZmZmZmZmODE4NjgwNzANClJE
-WDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IGZmZmZmZmZmODE4NjgwODUgUkRJOiAwMDAwMDAwMDAw
-MDAwMDAxDQpSQlA6IGZmZmY4ODgwOWE1MTdjNzggUjA4OiBmZmZmODg4MGExMGQyMDAwIFIwOTog
-ZmZmZmVkMTAxMzRhMmY2NQ0KUjEwOiBmZmZmZWQxMDEzNGEyZjY0IFIxMTogMDAwMDAwMDAwMDAw
-MDAwMyBSMTI6IDAwMDAwMDAwMDAwMDAwMDANClIxMzogZmZmZjg4ODA5Y2NjNDllMCBSMTQ6IGZm
-ZmY4ODgwODlkYjU1ODAgUjE1OiBmZmZmODg4MDljY2M0NDAwDQpGUzogIDAwMDA1NTU1NTVkZjI4
-ODAoMDAwMCkgR1M6ZmZmZjg4ODBhZTkwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAw
-DQpDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpDUjI6
-IDAwMDAwMDAwMjAwMDAwNDAgQ1IzOiAwMDAwMDAwMDk4NWU1MDAwIENSNDogMDAwMDAwMDAwMDE0
-MDZlMA0KRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6IDAw
-MDAwMDAwMDAwMDAwMDANCkRSMzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZTBm
-ZjAgRFI3OiAwMDAwMDAwMDAwMDAwNDAwDQoNCg0KLS0tDQpUaGlzIGJ1ZyBpcyBnZW5lcmF0ZWQg
-YnkgYSBib3QuIEl0IG1heSBjb250YWluIGVycm9ycy4NClNlZSBodHRwczovL2dvby5nbC90cHNt
-RUogZm9yIG1vcmUgaW5mb3JtYXRpb24gYWJvdXQgc3l6Ym90Lg0Kc3l6Ym90IGVuZ2luZWVycyBj
-YW4gYmUgcmVhY2hlZCBhdCBzeXprYWxsZXJAZ29vZ2xlZ3JvdXBzLmNvbS4NCg0Kc3l6Ym90IHdp
-bGwga2VlcCB0cmFjayBvZiB0aGlzIGJ1ZyByZXBvcnQuIFNlZToNCmh0dHBzOi8vZ29vLmdsL3Rw
-c21FSiNzdGF0dXMgZm9yIGhvdyB0byBjb21tdW5pY2F0ZSB3aXRoIHN5emJvdC4NCkZvciBpbmZv
-cm1hdGlvbiBhYm91dCBiaXNlY3Rpb24gcHJvY2VzcyBzZWU6IGh0dHBzOi8vZ29vLmdsL3Rwc21F
-SiNiaXNlY3Rpb24NCnN5emJvdCBjYW4gdGVzdCBwYXRjaGVzIGZvciB0aGlzIGJ1ZywgZm9yIGRl
-dGFpbHMgc2VlOg0KaHR0cHM6Ly9nb28uZ2wvdHBzbUVKI3Rlc3RpbmctcGF0Y2hlcw0K
+From: Saeed Mahameed <saeedm@mellanox.com>
+Date: Mon, 23 Sep 2019 12:39:57 +0000
+
+> This series includes some upstream patches aimed to fix multiple checksum
+> issues with mlx5 driver in 4.19-stable kernels.
+> 
+> Since the patches didn't apply cleanly to 4.19 back when they were
+> submitted for the first time around 5.1 kernel release to the netdev
+> mailing list, i couldn't mark them for -stable 4.19, so now as the issue
+> is being reported on 4.19 LTS kernels, I had to do the backporting and
+> this submission myself.
+>  
+> This series required some dependency patches and some manual touches
+> to apply some of them.
+> 
+> Please apply to 4.19-stable and let me know if there's any problem.
+> I tested and the patches apply cleanly and work on top of: v4.19.75
+
+FWIW, I'm fine with this.
