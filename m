@@ -2,147 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F171BB1CF
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 12:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87283BB2AE
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 13:15:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407416AbfIWKAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 06:00:37 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:34425 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407398AbfIWKAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 06:00:37 -0400
-Received: by mail-wr1-f65.google.com with SMTP id a11so13255987wrx.1;
-        Mon, 23 Sep 2019 03:00:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=j8tRv5LN5cGDlR+BGYeNpnRdghT5fZ7v0qVCMJuIcis=;
-        b=ttOl6rD9skAH4cQ3fJ9akjVeiLUbk/tfINW3DnR5B/OcDRCLdWvYeK0kfZW+9GKRKS
-         sKwxFDfErlYyIVzj3xEftliiitOCvyi+5dfirtUETGx5taBGjGZgKr70q8lsrcwkeYRH
-         ZLtLj1G5KmR98mUdCiH4gQ8u8LtX4PX0KpL2lY0R9XkuuEocKJfep1GhpbA5YYcV5tSb
-         Xh6yl0OwbPQPzmhEqUEtF5+U1rBNDh+ouO5CO88GXFLFGbKjvI93Dn54PYCMogQfHSgK
-         EBOwOmgQtaOh28yjT07BTSkovhE1i2WhnrkfKFGjwbPnZark1jvlh8dMrC0qDaabzqUS
-         UFhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=j8tRv5LN5cGDlR+BGYeNpnRdghT5fZ7v0qVCMJuIcis=;
-        b=QJyBkEk7DnV07quUWLwCKv/6iXzXNrU7dCDkPAFLzWk79CKv1AOD5EsOxInL1wq+RZ
-         slg+ek1wbQtOh4dYmtm5T5lCr6JkxeIZRWvySfHJzLZ2nfGM7XbVVkqP/bPpqIOJB2Ld
-         TmjjxvIJdsPiAxAeAosDH2v6mNLhu9qW6aEne4a4+Ds7MFe6A0/GIU8+43TD2jE2gzD8
-         2sWI22tvTxyN3MPfA/iy8lnbkjayzcQ/Ev0noOtC5lWO006wkwSlK5ucSX4ayIduVmfE
-         9L+UYl+d+OXKXngtL3WZ/Yil2HEem1FBwjiJzQ92tlsbjG0MClQ93+OU0pWOMBAl/sOh
-         VBDg==
-X-Gm-Message-State: APjAAAVDwh1gJjrdcf9yM4tnVDIXu/Gg7ifCQAaYdLrLXhT+sGnHEKnP
-        agtMk05NBM8TCQmicYjQcn2k5auz
-X-Google-Smtp-Source: APXvYqwc1wSjOi0WAiGt6dCS/OttrviDY2p5wA7qjCoVYfi8VRRBM0DagaZi2mj2X2qk1iyYCarEXA==
-X-Received: by 2002:adf:f8cf:: with SMTP id f15mr20928599wrq.292.1569232833604;
-        Mon, 23 Sep 2019 03:00:33 -0700 (PDT)
-Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
-        by smtp.gmail.com with ESMTPSA id q3sm10330078wru.33.2019.09.23.03.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Sep 2019 03:00:32 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 12:00:31 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH net-next] net: stmmac: Fix page pool size
-Message-ID: <20190923100031.GB11084@ulmo>
-References: <20190923095915.11588-1-thierry.reding@gmail.com>
+        id S1730116AbfIWLPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 07:15:04 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:59377 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728425AbfIWLPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 07:15:04 -0400
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1iCMJ1-0001Jv-VU; Mon, 23 Sep 2019 13:14:59 +0200
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1iCMJ0-0004hv-Kq; Mon, 23 Sep 2019 13:14:58 +0200
+Date:   Mon, 23 Sep 2019 13:14:58 +0200
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Laura Abbott <labbott@redhat.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] arcnet: provide a buffer big enough to actually receive
+ packets
+Message-ID: <20190923111458.dwmnyiy4nxvgogv2@pengutronix.de>
+References: <20190920140821.11876-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="NMuMz9nt05w80d4+"
+        protocol="application/pgp-signature"; boundary="ayy3pnn6f3ltnwxl"
 Content-Disposition: inline
-In-Reply-To: <20190923095915.11588-1-thierry.reding@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190920140821.11876-1-u.kleine-koenig@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:14:11 up 77 days, 17:24, 91 users,  load average: 0.10, 0.11,
+ 0.14
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---NMuMz9nt05w80d4+
-Content-Type: text/plain; charset=us-ascii
+--ayy3pnn6f3ltnwxl
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 23, 2019 at 11:59:15AM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
+On Fri, Sep 20, 2019 at 04:08:21PM +0200, Uwe Kleine-K=F6nig wrote:
+> struct archdr is only big enough to hold the header of various types of
+> arcnet packets. So to provide enough space to hold the data read from
+> hardware provide a buffer large enough to hold a packet with maximal
+> size.
 >=20
-> The size of individual pages in the page pool in given by an order. The
-> order is the binary logarithm of the number of pages that make up one of
-> the pages in the pool. However, the driver currently passes the number
-> of pages rather than the order, so it ends up wasting quite a bit of
-> memory.
+> The problem was noticed by the stack protector which makes the kernel
+> oops.
 >=20
-> Fix this by taking the binary logarithm and passing that in the order
-> field.
->=20
-> Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> Cc: stable@vger.kernel.org # v2.4.0+
+> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Acked-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+
 > ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-
-I fumbled the git format-patch incantation. This should've been marked
-v2.
-
-Thierry
-
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/=
-net/ethernet/stmicro/stmmac/stmmac_main.c
-> index ecd461207dbc..f8c90dba6db8 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1550,13 +1550,15 @@ static int alloc_dma_rx_desc_resources(struct stm=
-mac_priv *priv)
->  	for (queue =3D 0; queue < rx_count; queue++) {
->  		struct stmmac_rx_queue *rx_q =3D &priv->rx_queue[queue];
->  		struct page_pool_params pp_params =3D { 0 };
-> +		unsigned int num_pages;
+> Hello,
+>=20
+> the problem exists in v2.4.0 already, I didn't look further to identify
+> the offending commit.
+>=20
+> Best regards
+> Uwe
+> ---
+>  drivers/net/arcnet/arcnet.c | 31 +++++++++++++++++--------------
+>  1 file changed, 17 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/net/arcnet/arcnet.c b/drivers/net/arcnet/arcnet.c
+> index 0efef7aa5b89..2b8cf58e4de0 100644
+> --- a/drivers/net/arcnet/arcnet.c
+> +++ b/drivers/net/arcnet/arcnet.c
+> @@ -1063,31 +1063,34 @@ EXPORT_SYMBOL(arcnet_interrupt);
+>  static void arcnet_rx(struct net_device *dev, int bufnum)
+>  {
+>  	struct arcnet_local *lp =3D netdev_priv(dev);
+> -	struct archdr pkt;
+> +	union {
+> +		struct archdr pkt;
+> +		char buf[512];
+> +	} rxdata;
+>  	struct arc_rfc1201 *soft;
+>  	int length, ofs;
 > =20
->  		rx_q->queue_index =3D queue;
->  		rx_q->priv_data =3D priv;
+> -	soft =3D &pkt.soft.rfc1201;
+> +	soft =3D &rxdata.pkt.soft.rfc1201;
 > =20
->  		pp_params.flags =3D PP_FLAG_DMA_MAP;
->  		pp_params.pool_size =3D DMA_RX_SIZE;
-> -		pp_params.order =3D DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-> +		num_pages =3D DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-> +		pp_params.order =3D ilog2(num_pages);
->  		pp_params.nid =3D dev_to_node(priv->device);
->  		pp_params.dev =3D priv->device;
->  		pp_params.dma_dir =3D DMA_FROM_DEVICE;
+> -	lp->hw.copy_from_card(dev, bufnum, 0, &pkt, ARC_HDR_SIZE);
+> -	if (pkt.hard.offset[0]) {
+> -		ofs =3D pkt.hard.offset[0];
+> +	lp->hw.copy_from_card(dev, bufnum, 0, &rxdata.pkt, ARC_HDR_SIZE);
+> +	if (rxdata.pkt.hard.offset[0]) {
+> +		ofs =3D rxdata.pkt.hard.offset[0];
+>  		length =3D 256 - ofs;
+>  	} else {
+> -		ofs =3D pkt.hard.offset[1];
+> +		ofs =3D rxdata.pkt.hard.offset[1];
+>  		length =3D 512 - ofs;
+>  	}
+> =20
+>  	/* get the full header, if possible */
+> -	if (sizeof(pkt.soft) <=3D length) {
+> -		lp->hw.copy_from_card(dev, bufnum, ofs, soft, sizeof(pkt.soft));
+> +	if (sizeof(rxdata.pkt.soft) <=3D length) {
+> +		lp->hw.copy_from_card(dev, bufnum, ofs, soft, sizeof(rxdata.pkt.soft));
+>  	} else {
+> -		memset(&pkt.soft, 0, sizeof(pkt.soft));
+> +		memset(&rxdata.pkt.soft, 0, sizeof(rxdata.pkt.soft));
+>  		lp->hw.copy_from_card(dev, bufnum, ofs, soft, length);
+>  	}
+> =20
+>  	arc_printk(D_DURING, dev, "Buffer #%d: received packet from %02Xh to %0=
+2Xh (%d+4 bytes)\n",
+> -		   bufnum, pkt.hard.source, pkt.hard.dest, length);
+> +		   bufnum, rxdata.pkt.hard.source, rxdata.pkt.hard.dest, length);
+> =20
+>  	dev->stats.rx_packets++;
+>  	dev->stats.rx_bytes +=3D length + ARC_HDR_SIZE;
+> @@ -1096,13 +1099,13 @@ static void arcnet_rx(struct net_device *dev, int=
+ bufnum)
+>  	if (arc_proto_map[soft->proto]->is_ip) {
+>  		if (BUGLVL(D_PROTO)) {
+>  			struct ArcProto
+> -			*oldp =3D arc_proto_map[lp->default_proto[pkt.hard.source]],
+> +			*oldp =3D arc_proto_map[lp->default_proto[rxdata.pkt.hard.source]],
+>  			*newp =3D arc_proto_map[soft->proto];
+> =20
+>  			if (oldp !=3D newp) {
+>  				arc_printk(D_PROTO, dev,
+>  					   "got protocol %02Xh; encap for host %02Xh is now '%c' (was '%c')=
+\n",
+> -					   soft->proto, pkt.hard.source,
+> +					   soft->proto, rxdata.pkt.hard.source,
+>  					   newp->suffix, oldp->suffix);
+>  			}
+>  		}
+> @@ -1111,10 +1114,10 @@ static void arcnet_rx(struct net_device *dev, int=
+ bufnum)
+>  		lp->default_proto[0] =3D soft->proto;
+> =20
+>  		/* in striking contrast, the following isn't a hack. */
+> -		lp->default_proto[pkt.hard.source] =3D soft->proto;
+> +		lp->default_proto[rxdata.pkt.hard.source] =3D soft->proto;
+>  	}
+>  	/* call the protocol-specific receiver. */
+> -	arc_proto_map[soft->proto]->rx(dev, bufnum, &pkt, length);
+> +	arc_proto_map[soft->proto]->rx(dev, bufnum, &rxdata.pkt, length);
+>  }
+> =20
+>  static void null_rx(struct net_device *dev, int bufnum,
 > --=20
 > 2.23.0
 >=20
+>=20
 
---NMuMz9nt05w80d4+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--ayy3pnn6f3ltnwxl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2Il78ACgkQ3SOs138+
-s6FM4Q/9Gd/rzVqwfDtVKsf1YAs1NNO2QuQZ8P5UAKyvmNHygU1fRfmPLc3GcCNj
-z+Xjq6VUeFkeW1Da5m+uwayp2SnmKAz3HtzKX96lKr2401xt4voN1NbDYIGBWErD
-ulusmz8Jz8LA9X7HZevXBOuozJZf0XwnePoYQ2yt3yRq7YMn/dwnasbjTgazP5uY
-gc1cs1gUoUhxxeddWxeq+ODo6mN3B+S7c+f8yJpJfY6GWAPtHPCH/xiyWsMTqiIE
-X9oIcOhUfo3Yyh7IammZSTbv0qItMHLdIQOtsdcfeawir7GEdQIZyWYR1TQjjDXg
-x2J2p7vATq1ns4YG9b1oS+WziiCLVCjvm+5VR8oA2w84xCsJoU0VvnAv4X1G6ojZ
-Bav/lLGMJFfvpOWoTzCmkPZWhrL739i6jUQbQ1QpP/zzgBueigpWpKWIQHHFCHIg
-j7QpcpYVJI9S2jvmzp8bfHTHQdGRYpNdfyBrMClmFpof5vqhUKPtp6mv6FaXUMp4
-fp9J1Cx4hoU25GuB2cKfS9MiDzXyjR9dlr2sdVK9B9lSx3d8QOpYTgbocuzivhkC
-uroqKGwqLC8sl3Sv1TT1vLYLFd/2HbTVsRtlqOGnKLFWpe5PRMxNbiBno6B+yICw
-XmxJOk1Xsm8BRcwl5D06LU+447Ai/5Z0vbaGDLYIyYG33m0zzEY=
-=BgL2
+iQIzBAABCAAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl2IqS8ACgkQC+njFXoe
+LGTvdA/+KZfqsYYDLcjxCnxpxvzHXIdVUkrg5fx5o8dwOTrrKqn2+sQvT5ht+N9w
+8zZ/WJc0s/9gMGRQsFTrMtxr+Ga20Ylh7Me6e3dtGgVsbe/irQL6xPNEytdrds1+
+22+F2NHOavJc8OYDleunth+McgrgFXtbtr2l+l3xe+nCgNQvAq0djyiF8kG2LrRh
+kLIX73PBypMRQ7c7R2m2pBcs+rVA6xNZ76QMGaTMNcD1aLJb1b4Eckq8ZFTrUeCy
+97eSpxuPH9xCgpeYKxtY6bBIidifB/1PqwU+1BsbIViPUdYI5+f/snYNopdF4nF4
+MYUY/cKvPf307Wpy3Oql+ibf1qZOTdj6ocIY+c1SjIBd8Do4VGCl5jaG26y95g+h
+akEs4bP1/0l92LHXHWndQOPyE3N3OegzEiJs0jUMiXwhPNdirLbaLB/D6h+bRwVI
++6V587A0Uv23FiK/1KNWryMPMGE7GqsnE3ytVLhBeKzcLY9mJjAosN280PoPNfUE
+WX5KCXdaMheV1kiH/kZmD0zu3vad24O0348kDhkWsq0dhX179zOBMcxtIxiZjRgc
+solPrpDhjubIe01C11qNMJBm6ZSr/7P0uX6PGdVd4QVuI0XnBtp/tBy3Tj/f7Znz
+V+ilkI8WODp/9md01tH5lB18iInG5mYYkCosbg6Oy0QJe+CRa2o=
+=UhZK
 -----END PGP SIGNATURE-----
 
---NMuMz9nt05w80d4+--
+--ayy3pnn6f3ltnwxl--
