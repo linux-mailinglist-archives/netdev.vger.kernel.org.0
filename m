@@ -2,41 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CA1BBA0A
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 18:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 475CEBBA43
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 19:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502138AbfIWQ4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 12:56:46 -0400
-Received: from mail-eopbgr40063.outbound.protection.outlook.com ([40.107.4.63]:49218
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390939AbfIWQ4q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 12:56:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iIzTKTmHMf6dBo5x0MQ+qnTDE6jBY/d000z//tBR++gLoBszXXpI+ryZZESvRpstjJhxWxeHcUPTYTENgFFfugUqQSue41VmVBURxYiB0pyEr8Lr4QgX8AS08LGDdO+fLYISoaDg3juwZAH5BxT3e1YjO8t3WdM46aP+hCzhFcyxfQjqvAXGEZn91WYN3iyn6FEir2CCf6BI32l7Glg3YuGzsiDBCdlSkLOm00m1s1bqQw53HyJnrrY3dwWeZ1f6C1eUu2i6W9J/clZ7q/bemx0HsYNvqNMuzII3Z/Z6So9y/PHsfkHzHGbAmfl2A5tlbFJoWMEV9NzRQcvL1jcqVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4I/eeV9+q432n8oY/2UJCODgK7ynz0UTCG9hQuSbHho=;
- b=FTA+P8IBlHSyD/KWIlv3FCzBR4eQ3bs+FlIDPI3DfQKQUKTHpjn4EQFZZV6BKfw9QFW1OsXsZNns3p/ChkibawmtNc3mgCBhJ3t6kb5ueSVUOwFied+Zlee3rnYQ5/258YE5v3v7zXPSQJuGR/XHMT2QOjYzSi3xfP7Q5vxGKaKfSeE9VBKqXOnK8lGMrnuunh6ZVfRzc4OkLO7dG/5Gc+YYpu7vP8oc0vc0hOHWNaQBYGYiU7KxLoqsG+aSTcyGhnBm4sluW0LEBtxt294PrF+a3S/iuPcybjJiHdi4Tx0dTI90PTA+TReiCOVdg2fN8sfg1b0XNLL4jZFlWahBUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4I/eeV9+q432n8oY/2UJCODgK7ynz0UTCG9hQuSbHho=;
- b=J6u4Z3oBRcknmcT8n7QtFLlHS68/FCkP0wvEYxxhjwwpNVllwtWEh7AvjiMbPvvrDHY3azsrhJ4zjfYjKIKMOKEteldA2Yo6AgMcZgeTcii4QUjv56ktNksJO1enqJ9YZ6x5+HQpYYf66CpXn3kqlSyuEgcJft1jrZ49usvj/O4=
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
- AM4PR05MB3300.eurprd05.prod.outlook.com (10.171.186.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.25; Mon, 23 Sep 2019 16:56:40 +0000
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::bd07:1f1a:7d30:7a5b]) by AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::bd07:1f1a:7d30:7a5b%7]) with mapi id 15.20.2284.023; Mon, 23 Sep 2019
- 16:56:40 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+        id S2437797AbfIWRSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 13:18:07 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:49058 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2393311AbfIWRSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 13:18:07 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 80F8D700070;
+        Mon, 23 Sep 2019 17:18:05 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 23 Sep
+ 2019 10:17:59 -0700
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+To:     Paul Blakey <paulb@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
 CC:     Pravin Shelar <pshelar@ovn.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Vlad Buslov <vladbu@mellanox.com>,
@@ -47,177 +33,63 @@ CC:     Pravin Shelar <pshelar@ovn.org>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Simon Horman <simon.horman@netronome.com>,
         Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: CONFIG_NET_TC_SKB_EXT
-Thread-Topic: CONFIG_NET_TC_SKB_EXT
-Thread-Index: AQHVbtxxDxq98BXUU0W1ldTc//QoBKczG/uAgAGj5oCAAGQoAIAAC2iAgAATpQCAAcftgIAAGgkAgAB1cACAAKZjgIABQRIA
-Date:   Mon, 23 Sep 2019 16:56:40 +0000
-Message-ID: <68c6668c-f316-2ceb-31b0-8197d22990ae@mellanox.com>
 References: <CAADnVQJBxsWU8BddxWDBX==y87ZLoEsBdqq0DqhYD7NyEcDLzg@mail.gmail.com>
  <1569153104-17875-1-git-send-email-paulb@mellanox.com>
  <20190922144715.37f71fbf@cakuba.netronome.com>
-In-Reply-To: <20190922144715.37f71fbf@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM4PR0902CA0006.eurprd09.prod.outlook.com
- (2603:10a6:200:9b::16) To AM4PR05MB3411.eurprd05.prod.outlook.com
- (2603:10a6:205:b::30)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 748ed34d-70b7-4327-8077-08d74047014f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3300;
-x-ms-traffictypediagnostic: AM4PR05MB3300:|AM4PR05MB3300:
-x-ms-exchange-purlcount: 1
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3300F21B60BBD39B975AD997CF850@AM4PR05MB3300.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0169092318
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(366004)(346002)(396003)(39860400002)(189003)(199004)(66476007)(36756003)(66556008)(305945005)(66946007)(8936002)(7736002)(476003)(81166006)(2616005)(54906003)(6486002)(31686004)(6436002)(31696002)(446003)(11346002)(966005)(256004)(6246003)(3846002)(5024004)(14444005)(7116003)(14454004)(26005)(4326008)(2906002)(102836004)(86362001)(6916009)(52116002)(386003)(6506007)(76176011)(6116002)(25786009)(486006)(5660300002)(7416002)(316002)(6306002)(186003)(66066001)(71200400001)(71190400001)(6512007)(99286004)(53546011)(64756008)(66446008)(81156014)(8676002)(478600001)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3300;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: tRwdcG7Uo0uqlnk1nSVA03U8M03ilmkPqNPagSSFp4RlvMSY0G96v7Kpt/dmePeNlTYcg/1AnegwnpiXp8/DUjum45Ctvf7sG3Spcgi6zbDvpaNPkFgKixu1u7cdhpMORbgyL2BHy8Vhj7V3OZUuNXtcCxQG74LR32nhJAWLKi0Qde08V2DxT7QDdamUuD6es+vd7ZRTajfB+Q20NAQn88Pyhwt9sgtVF0n+CepcC0FXEgVoTua/IyDtlxYo8nIACZyWIhWUINpAFH7OtzJFSBs6LLVDrEEy2e0d+X+8nvEwxDOGrgZtVoEcGzCmtgc+BxuLA00goALxef94rJ6QScVC8i4rIFaUt/OWSD0RkAkn7yebcIukTIYpJy287fjCzYH79lr683YOSr7ilffSsKcIOJ+Jq7HxyjQzimD1KGg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A07D7FDB8B111241BE07D1C7F7653DF7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ <68c6668c-f316-2ceb-31b0-8197d22990ae@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <d6867e6c-2b81-5fcd-1d88-46663bed6e26@solarflare.com>
+Date:   Mon, 23 Sep 2019 18:17:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 748ed34d-70b7-4327-8077-08d74047014f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2019 16:56:40.6826
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: P/895R/bd7kUjBmmY2Gm2nq4PkIQgmz2WWQlbdg+YeXM7n7dEC7XetsEmqjDSYTCMc0VA6sUMyV6DOutEHE0zQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3300
+In-Reply-To: <68c6668c-f316-2ceb-31b0-8197d22990ae@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24928.004
+X-TM-AS-Result: No-9.285500-4.000000-10
+X-TMASE-MatchedRID: vbSD0OnL8/LmLzc6AOD8DfHkpkyUphL9H5K8yhnQ+F7Lkl8e9W70i6RD
+        Y/5zED8rGWtzbrhLRgj/hp1J2K7oH7+Cta6KT8i9BcaL/tyWL2ORAgbvhPsYZnWQkCh22d7hR0h
+        OfMhcLSuooFOXe3T87CZCoAd28/HUUf5Pjz8cHCP1MIl9eZdLb+P6p+9mEWlCT7zqZowzdpK6qD
+        ODPQL97QfLt7fjttmDsS7038O+zLx4pkAgPeEdVp3bt4XlQMWjAf1C358hdK/VBer5AbO6mzj6q
+        uwd84U8kJt/DBitOccT0dgdGmCGjSVYhgUyukZCGUlF/M3Dxp9z5XSaFaJhbG9uoEMoROR6h5cq
+        6HoMtLOOYxUPZ+m5WQ4CPFs4fQZiA0thPpAa7ey7B1QwzOcQD+vcTjVWUqx9pQrupClYLxI/5bo
+        wgIF6xg1BX3gLkAgZX7bicKxRIU2No+PRbWqfRDsAVzN+Ov/sSkEFhJ9xr2XUN6CjPA/QP97gW7
+        6RuO9FkdSEWrGm8Pv4YcR2yeHq0A==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.285500-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24928.004
+X-MDID: 1569259086-7oZaThhpnHsL
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA5LzIzLzIwMTkgMTI6NDcgQU0sIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBTdW4s
-IDIyIFNlcCAyMDE5IDE0OjUxOjQ0ICswMzAwLCBQYXVsIEJsYWtleSB3cm90ZToNCj4+IFRoZSBz
-a2IgZXh0ZW5zaW9uIGlzIGN1cnJlbnRseSB1c2VkIGZvciBtaXNzIHBhdGggb2Ygc29mdHdhcmUg
-b2ZmbG9hZGluZyBPdlMgcnVsZXMgd2l0aCByZWNpcmN1bGF0aW9uIHRvIHRjLg0KPj4gSG93ZXZl
-ciwgd2UgYXJlIGFsc28gcHJlcGFyaW5nIHBhdGNoZXMgdG8gc3VwcG9ydCB0aGUgaGFyZHdhcmUg
-c2lkZSBvZiB0aGluZ3MuDQo+Pg0KPj4gQWZ0ZXIgdGhlIHVzZXJzcGFjZSBPdlMgcGF0Y2hlcyB0
-byBzdXBwb3J0IGNvbm5lY3Rpb24gdHJhY2tpbmcsIHdlJ2xsIGhhdmUgdHdvIHVzZXJzIGZvcg0K
-Pj4gdGMgbXVsdGkgY2hhaW4gcnVsZXMsIG9uZSBmcm9tIHRob3NlIGFjdHVhbGx5IHVzaW5nIHRj
-IGFuZCB0aG9zZSB0cmFuc2xhdGVkIGZyb20gT3ZTIHJ1bGVzLg0KPj4NCj4+IFdpdGggYm90aCBv
-ZiB0aGVzZSB1c2UgY2FzZXMsIHRoZXJlIGlzIHNpbWlsYXIgaXNzdWUgb2YgJ21pc3MnLCBmcm9t
-IGhhcmR3YXJlIHRvIHRjIGFuZCB0YyB0byBPdlMgYW5kIHRoZSBza2INCj4+IGV4dGVuc2lvbiB3
-aWxsIHNlcnZlIHRvIHJlY292ZXIgZnJvbSBib3RoLg0KPj4NCj4+IENvbnNpZGVyLCBmb3IgZXhh
-bXBsZSwgdGhlIGZvbGxvd2luZyBtdWx0aSBjaGFpbiB0YyBydWxlczoNCj4+DQo+PiB0YyBmaWx0
-ZXIgYWRkIGRldjEgLi4uIGNoYWluIDAgZmxvd2VyIGRzdF9tYWMgYWE6YmI6Y2M6ZGQ6ZWU6ZmYg
-YWN0aW9uIHBlZGl0IG11bmdlIGV4IHNldCBtYWMgZHN0IDAyOmEwOjk4OjRlOjhmOmQxIHBpcGUg
-YWN0aW9uIGdvdG8gY2hhaW4gMQ0KPj4gdGMgZmlsdGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAxIGZs
-b3dlciBpcF9kc3QgMS4xLjEuMSBhY3Rpb24gbWlycmVkIGVncmVzcyByZWRpcmVjdCBkZXYyDQo+
-PiB0YyBmaWx0ZXIgYWRkIGRldjEgLi4uIGNoYWluIDEgZmxvd2VyIGlwX2RzdCAyLjIuMi4yIGFj
-dGlvbiBtaXJyZWQgZWdyZXNzIHJlZGlyZWN0IGRldjINCj4+DQo+PiBJdCdzIHBvc3NpYmxlIHdl
-IG9mZmxvYWQgdGhlIGZpcnN0IHR3byBydWxlcywgYnV0IGZhaWwgdG8gb2ZmbG9hZCB0aGUgdGhp
-cmQgcnVsZSwgYmVjYXVzZSBvZiBzb21lIGhhcmR3YXJlIGZhaWx1cmUgKGUuZyB1bnN1cHBvcnRl
-ZCBtYXRjaCBvciBhY3Rpb24pLg0KPj4gSWYgYSBwYWNrZXQgd2l0aCAoZHN0X21hYz1hYTpiYjpj
-YzpkZDplZTpmZikgYW5kIChkc3QgaXA9Mi4yLjIuMikgYXJyaXZlcywNCj4+IHdlIGV4ZWN1dGUg
-dGhlIGdvdG8gY2hhaW4gMSBpbiBoYXJkd2FyZSAoYW5kIHRoZSBwZWRpdCksIGFuZCBjb250aW51
-ZSBpbiBjaGFpbiAxLCB3aGVyZSB3ZSBtaXNzLg0KPj4NCj4+IEN1cnJlbnRseSB3ZSByZS1zdGFy
-dCB0aGUgcHJvY2Vzc2luZyBpbiB0YyBmcm9tIGNoYWluIDAsIGV2ZW4gdGhvdWdoIHdlIGFscmVh
-ZHkgZGlkIHBhcnQgb2YgdGhlIHByb2Nlc3NpbmcgaW4gaGFyZHdhcmUuDQo+PiBUaGUgbWF0Y2gg
-b24gdGhlIGRzdF9tYWMgd2lsbCBmYWlsIGFzIHdlIGFscmVhZHkgbW9kaWZpZWQgaXQsIGFuZCB3
-ZSB3b24ndCBleGVjdXRlIHRoZSB0aGlyZCBydWxlIGFjdGlvbi4NCj4+IEluIGFkZGl0aW9uLCBp
-ZiB3ZSBkaWQgbWFuYWdlIHRvIGV4ZWN1dGUgYW55IHNvZnR3YXJlIHRjIHJ1bGVzLCB0aGUgcGFj
-a2V0IHdpbGwgYmUgY291bnRlZCB0d2ljZS4NCj4+DQo+PiBXZSdsbCByZS11c2UgdGhpcyBleHRl
-bnNpb24gdG8gc29sdmUgdGhpcyBpc3N1ZSB0aGF0IGN1cnJlbnRseSBleGlzdHMgYnkgbGV0dGlu
-ZyBkcml2ZXJzIHRlbGwgdGMgb24gd2hpY2ggY2hhaW4gdG8gc3RhcnQgdGhlIGNsYXNzaWZpY2F0
-aW9uLg0KPj4NCj4+IFJlZ2FyZGluZyB0aGUgY29uZmlnLCB3ZSBzdWdnZXN0IGNoYW5naW5nIHRo
-ZSBkZWZhdWx0IHRvIE4gYW5kIGxldHRpbmcgdXNlcnMgZGVjaWRlIHRvIGVuYWJsZSBpdCwgc2Vl
-IGF0dGFjaGVkIHBhdGNoLg0KPiBQYXJ0aWFsIG9mZmxvYWRzIGFyZSB2ZXJ5IGhhcmQuIENvdWxk
-IHdlIHBvc3NpYmx5IHRha2UgYSBwYWdlIG91dCBvZg0KPiByb3V0aW5nIG9mZmxvYWQncyBib29r
-IGFuZCBkbyBhIGFsbCBvciBub3RoaW5nIG9mZmxvYWQgaW4gcHJlc2VuY2Ugb2YNCj4gbXVsdGlw
-bGUgY2hhaW5zPw0KDQpIaSwNCg0KUm91dGluZyBpcyBhIG5hcnJvdyBzY2VuYXJpbyB3aGljaCB0
-aGlzIGFwcHJvYWNoIG1pZ2h0IHdvcmssIGJ1dCB0aGUgDQpvdGhlciB3YXkgb2Ygb2ZmbG9hZGlu
-ZyBldmVyeXRoaW5nIG9yIG5vdGhpbmcgaGFzIGl0J3MgZGlzYWR2YW50YWdlcyB0b28uDQoNCkV2
-ZW4gZm9sbG93aW5nIHRoaXMgYXBwcm9hY2ggaW4gdGMgb25seSBpcyBjaGFsbGVuZ2luZyBmb3Ig
-c29tZSANCnNjZW5hcmlvcywgY29uc2lkZXIgdGhlIGZvbGxvd2luZyB0YyBydWxlczoNCg0KdGMg
-ZmlsdGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAwIGZsb3dlciA8bWF0Y2gxPiBhY3Rpb24gZ290byBj
-aGFpbiAxDQp0YyBmaWx0ZXIgYWRkIGRldjEgLi4uIGNoYWluIDAgZmxvd2VyIDxtYXRjaDI+IGFj
-dGlvbiBnb3RvIGNoYWluIDENCnRjIGZpbHRlciBhZGQgZGV2MSAuLi4gY2hhaW4gMCBmbG93ZXIg
-PG1hdGNoMz4gYWN0aW9uIGdvdG8gY2hhaW4gMQ0KLi4NCi4uDQp0YyBmaWx0ZXIgYWRkIGRldjEg
-Li4uIGNoYWluIDAgZmxvd2VyIGlwX2RzdCA8bWF0Y2gxMDAwPiBhY3Rpb24gZ290byBjaGFpbiAx
-DQoNCnRjIGZpbHRlciBhZGQgZGV2MSAuLi4gY2hhaW4gMSBmbG93ZXIgaXBfcHJvdG8gdGNwIGFj
-dGlvbiB0dW5uZWxfa2V5IHNldCBkc3RfaXAgOC44LjguOCBhY3Rpb24gbWlycmVkIGVncmVzcyBy
-ZWRpcmVjdCBkZXYyDQoNCg0KTm93LCB5b3UgY291bGQgb2ZmbG9hZCAxMDAwICdtZXJnZWQnIHJ1
-bGVzIHRoYXQgZG8gdGhlIGVxdWl2YWxlbnQgb2Y6DQp0YyBmaWx0ZXIgYWRkIGRldjEgLi4uIGNo
-YWluIDAgZmxvd2VyIDxtYXRjaDE+IGlwX3Byb3RvIHRjcCBhY3Rpb24gdHVubmVsX2tleSBzZXQg
-ZHN0X2lwIDguOC44LjggYWN0aW9uIG1pcnJlZCBlZ3Jlc3MgcmVkaXJlY3QgZGV2Mg0KdGMgZmls
-dGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAwIGZsb3dlciA8bWF0Y2gyPiBpcF9wcm90byB0Y3AgYWN0
-aW9uIHR1bm5lbF9rZXkgc2V0IGRzdF9pcCA4LjguOC44IGFjdGlvbiBtaXJyZWQgZWdyZXNzIHJl
-ZGlyZWN0IGRldjINCi4uLg0KdGMgZmlsdGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAwIGZsb3dlciA8
-bWF0Y2gxMDAwPiBpcF9wcm90byB0Y3AgYWN0aW9uIHR1bm5lbF9rZXkgc2V0IGRzdF9pcCA4Ljgu
-OC44IGFjdGlvbiBtaXJyZWQgZWdyZXNzIHJlZGlyZWN0IGRldjINCg0KQW5kIGVhY2ggb2YgdGhp
-cyBoYXJkd2FyZSBydWxlIHdpbGwgdXBkYXRlIHRoZSBjb3JyZWN0IHNvZnR3YXJlIGFjdGlvbiBj
-b3VudGVyLCBzbyB0aGUgZmlyc3QgaGFyZHdhcmUgcnVsZSB1cGRhdGVzIGJvdGggdGhlIGNoYWlu
-IDEgcnVsZSBjb3VudGVyIGFuZA0KY2hhaW4gMCBtYXRjaDEgcnVsZSBjb3VudGVyLg0KVGhpcyB3
-aWxsIHdvcmssIGJ1dCBub3cgeW91IHRha2UgZGVwZW5kZW5jaWVzIG9uIGVhY2ggb2YgdGhlIGNo
-aWxkcmVuIHJ1bGVzLCBzbyBpZiB5b3UgZGVsZXRlIHRoZSBjaGFpbiAxIHJ1bGUsIHlvdSBuZWVk
-DQp0byBpbnZhbGlkYXRlIGFsbCB0aGUgMTAwMCBoYXJkd2FyZSBydWxlcy4gQW5kIHdoYXQgYWJv
-dXQgcm91dGUgdXBkYXRlcyBvciBuZWlnaCB1cGRhdGVzIGZvciB0aGUgZW5jYXAgaGVhZGVyIGRz
-dF9pcCA4LjguOC44Pw0KQW55IGNoYW5nZSB0byB0aGF0LCBhbmQgeW91IHVwZGF0ZSBhbGwgdGhl
-IDEwMDAgcnVsZXMgd2l0aCB0aGUgbmV3IG1hYyBhZGRyZXNzIChoYXJkd2FyZSBlbmNhcHN1bGF0
-aW9uIG5lZWRzIHRvIHNldCBvdXRlciBtYWMgYWRkcmVzcyBub3Qgc3VwcGxpZWQgYnV0IHR1bm5l
-bCBrZXkpLg0KV2hhdCBpZiB3ZSBoYWQgYSBkZXB0aCBvZiAxMCBjaGFpbnM/DQoNCg0KWW91J2Qg
-YWxzbyBoYXZlIHRvIGtlZXAgdHJhY2sgb2Ygd2hhdCBmaWVsZHMgd2VyZSBvcmlnaW5hbGx5IG9u
-IHRoZSBwYWNrZXQsIGFuZCBub3QgYSBtYXRjaCByZXN1bHRpbmcgZnJvbSBhIG1vZGlmaWNhdGlv
-bnMsDQpTZWUgdGhlIGZvbGxvd2luZyBzZXQgb2YgcnVsZXM6DQp0YyBmaWx0ZXIgYWRkIGRldjEg
-Li4uIGNoYWluIDAgcHJpbyAxIGZsb3dlciBzcmNfbWFjIDxtYWMxPiBhY3Rpb24gcGVkaXQgbXVu
-Z2UgZXggc2V0IGRzdCBtYWMgPG1hYzI+IHBpcGUgYWN0aW9uIGdvdG8gY2hhaW4gMQ0KdGMgZmls
-dGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAwIHByaW8gMiBmbG93ZXIgZHN0X21hYyA8bWFjMj4gYWN0
-aW9uIGdvdG8gY2hhaW4gMQ0KdGMgZmlsdGVyIGFkZCBkZXYxIC4uLiBjaGFpbiAxIHByaW8gMSBm
-bG93ZXIgZHN0X21hYyA8bWFjMz4gYWN0aW9uIDxhY3Rpb24zPg0KdGMgZmlsdGVyIGFkZCBkZXYx
-IC4uLiBjaGFpbiAxIHByaW8gMiBmbG93ZXIgc3JjX21hYyA8bWFjMT4gYWN0aW9uIDxhY3Rpb240
-Pg0KDQoNCkhvdyB3b3VsZCB5b3Ugb2ZmbG9hZCB0aGF0IGF0IHRoZSB0aW1lIG9mIGFkZGluZyB0
-aGlzIHJ1bGVzLCBhbmQgbm90IHRyYWNpbmcgdGhlIGFjdHVhbCBwYWNrZXQgcm91dGU/DQpjYW4g
-eW91IHRlbGwgdGhhdCB0aGUgdGhpcmQgcnVsZSB3b24ndCBiZSBoaXQ/IFdpbGwgeW91IGZsYXR0
-ZW4gYWxsIHBvc3NpYmxlIHJvdXRlcyBhbmQgb2ZmbG9hZCB0aGF0Pw0KDQpOb3cgdGFrZSB3aGF0
-IG90aGVyIGRhdGFwYXRoIChvdnMsIGJyaWRnZXMsIG5ldGZpbHRlcikgYmxvY2tzIGJlc2lkZXMg
-dGMgY2FuIGRvLCBvciBhY3Rpb25zIGxpa2UgY3QgdGhhdCBuZWVkIHNvZnR3YXJlIGJhY2tpbmcg
-KHVubGVzcyB5b3UgbWVyZ2UgdGhlIGN0IHRhYmxlKSBhbmQgYWRkIHRoZW0gdG8gdGhlIG1peC4N
-CkEgc2luZ2xlIHBvaW50IG9mIHVuc3VwcG9ydGVkIG1hdGNoL2FjdGlvbiBiZXR3ZWVuIHRob3Nl
-LCBhbmQgd2Ugd29uJ3QgYmUgYWJsZSB0byBvZmZsb2FkIHRoZSBlbnRpcmUgcGF0aCwgd2UgbWln
-aHQNCmV2ZW4gc3BlbmQgYSBsb3Qgb2YgcmVzb3VyY2VzICh0cnlpbmcgdG8gbWVyZ2UpIGJlZm9y
-ZSB3ZSBldmVuIGtub3cgaXQgY2FuJ3QgYmUgb2ZmbG9hZGVkLCBpbnN0ZWFkIG9mIGRvaW5nIHdo
-YXQgd2UgY2FuIHN1cHBvcnQuDQoNCg0KPj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+Pg0KPj4gU3ViamVjdDogW1BBVENIIG5l
-dC1uZXh0XSBuZXQvc2NoZWQ6IFNldCBkZWZhdWx0IG9mIENPTkZJR19ORVRfVENfU0tCX0VYVCB0
-byBODQo+Pg0KPj4gVGhpcyBhIG5ldyBmZWF0dXJlLCBpdCBpcyBwcmVmZXJlZCB0aGF0IGl0IGRl
-ZmF1bHRzIHRvIE4uDQo+Pg0KPj4gRml4ZXM6IDk1YTcyMzNjNDUyYSAoJ25ldDogb3BlbnZzd2l0
-Y2g6IFNldCBPdlMgcmVjaXJjX2lkIGZyb20gdGMgY2hhaW4gaW5kZXgnKQ0KPj4gU2lnbmVkLW9m
-Zi1ieTogUGF1bCBCbGFrZXk8cGF1bGJAbWVsbGFub3guY29tPg0KPj4gLS0tDQo+PiAgIG5ldC9z
-Y2hlZC9LY29uZmlnIHwgMSAtDQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGRlbGV0aW9uKC0pDQo+
-Pg0KPj4gZGlmZiAtLWdpdCBhL25ldC9zY2hlZC9LY29uZmlnIGIvbmV0L3NjaGVkL0tjb25maWcN
-Cj4+IGluZGV4IGIzZmFhZmUuLjRiYjEwYjcgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvc2NoZWQvS2Nv
-bmZpZw0KPj4gKysrIGIvbmV0L3NjaGVkL0tjb25maWcNCj4+IEBAIC05NjYsNyArOTY2LDYgQEAg
-Y29uZmlnIE5FVF9JRkVfU0tCVENJTkRFWA0KPj4gICBjb25maWcgTkVUX1RDX1NLQl9FWFQNCj4+
-ICAgCWJvb2wgIlRDIHJlY2lyY3VsYXRpb24gc3VwcG9ydCINCj4+ICAgCWRlcGVuZHMgb24gTkVU
-X0NMU19BQ1QNCj4+IC0JZGVmYXVsdCB5IGlmIE5FVF9DTFNfQUNUDQo+PiAgIAlzZWxlY3QgU0tC
-X0VYVEVOU0lPTlMNCj4+ICAgDQo+PiAgIAloZWxwDQo+ICAgLSBMaW51cyBzdWdnZXN0ZWQgd2Ug
-aGlkZSB0aGlzIG9wdGlvbiBmcm9tIHVzZXIgYW5kIGF1dG9zZWxlY3QgaWYNCj4gICAgIHBvc3Np
-YmxlLg0KPiAgIC0gQXMgRGFuaWVsIHNhaWQgYWxsIGRpc3Ryb3Mgd2lsbCBlbmFibGUgdGhpcy4N
-Cj4gICAtIElmIGNvcnJlY3RuZXNzIGlzIHJlYWxseSBvdXIgY29uY2VybiwgZ2l2aW5nIHVzZXJz
-IGFuIG9wdGlvbiB0bw0KPiAgICAgc2VsZWN0IHdoZXRoZXIgdGhleSB3YW50IHNvbWV0aGluZyB0
-byBiZWhhdmUgY29ycmVjdGx5IHNlZW1zIGxpa2UNCj4gICAgIGEgaGFjayBvZiBsb3dlc3Qga2lu
-ZC4gUGVyaGFwcyBpdCdzIHRpbWUgdG8gYWRkIGEgQ09ORklHIGZvciBUQw0KPiAgICAgb2ZmbG9h
-ZCBpbiBnZW5lcmFsPyBUaGF0J3MgYSBtZWFuaW5nZnVsIHNldCBvZiBmdW5jdGlvbmFsaXR5Lg0K
-DQpBcyBJIHVuZGVyc3RhbmQsIExpbnVzIHByZWZlcnMgdGhpcyBuZXcgZmVhdHVyZSB0byBiZSBk
-ZWZhdWx0IE4gYW5kIA0KdGhhdCdzIHRoZSB3aGF0IHRoZSBhdHRhY2hlZCBwYXRjaC4NCg0KVGhl
-IGNoYW5nZXMgdG8gdGhlIE9WUyBkYXRhcGF0aCAoc3RhdGljIGtleSBhbmQgRFBfU0VUIGNvbW1h
-bmQpIHdpdGggdGhlIA0KdXNlcnNwYWNlIHByb2JlIHdpbGwgZW5zdXJlIHRoZSBjb3JyZWN0bmVz
-cyB3aGVuIHRoZSBleHRlbnNpb24gaXMgZGlzYWJsZWQsDQoNCnBhdGNoIHRoYXQgSSd2ZSB5ZXQg
-dG8gc2VuZCBpcyBoZXJlOg0KDQpodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9uZXRkZXYv
-bXNnNTk0MTc1Lmh0bWwNCg0KVGhpcyB3YXMgZ29pbmcgdG8gYmUgYSBwYXJ0IE92UyB1c2Vyc3Bh
-Y2UgY29ubmVjdGlvbiB0cmFja2luZyBvZmZsb2FkIA0KcGF0Y2hlcyB0byBPdlMgdXNlcnNwYWNl
-Lg0KDQpQYXVsLg0KDQo=
+On 23/09/2019 17:56, Paul Blakey wrote:
+> Even following this approach in tc only is challenging for some 
+> scenarios, consider the following tc rules:
+>
+> tc filter add dev1 ... chain 0 flower <match1> action goto chain 1
+> tc filter add dev1 ... chain 0 flower <match2> action goto chain 1
+> tc filter add dev1 ... chain 0 flower <match3> action goto chain 1
+> ..
+> ..
+> tc filter add dev1 ... chain 0 flower ip_dst <match1000> action goto chain 1
+>
+> tc filter add dev1 ... chain 1 flower ip_proto tcp action tunnel_key set dst_ip 8.8.8.8 action mirred egress redirect dev2
+This one is easy, if a packet gets to the end of a chain without matching any rules then it just gets delivered to the uplink (PF), and software TC starts over from the beginning of chain 0.  AFAICT this is the natural hardware behaviour for any design of offload, and it's inherently all-or-nothing.
+
+> You'd also have to keep track of what fields were originally on the packet, and not a match resulting from a modifications,
+> See the following set of rules:
+> tc filter add dev1 ... chain 0 prio 1 flower src_mac <mac1> action pedit munge ex set dst mac <mac2> pipe action goto chain 1
+> tc filter add dev1 ... chain 0 prio 2 flower dst_mac <mac2> action goto chain 1
+> tc filter add dev1 ... chain 1 prio 1 flower dst_mac <mac3> action <action3>
+> tc filter add dev1 ... chain 1 prio 2 flower src_mac <mac1> action <action4>
+This one is slightly harder in that you have to either essentially 'gather up' actions as you go and only 'commit' them at the end of your processing pipeline (in which case you have to deal with the data hazard you cleverly included in your example), or keep a copy of the original packet around.  But I don't see the data-hazard case as having any realistic use-cases (does anyone actually put actions other than ct before a goto chain?) and it's easy enough to detect it in SW at rule-insertion time.
+
+FWIW I think the only way this infra will ever be used is: chain 0 rules match <blah> action ct zone <n> goto chain <m>; chain <m> rules match ct_state +xyz <blah> action <actually do stuff to packet>.  This can be supported with a hardware pipeline with three tables in series in a fairly natural way — and since all the actions that modify the packet (rather than just directing subsequent matching) are at the end, the natural miss behaviour is deliver-unmodified.
+
+I tried to explain this back on your [v3] net: openvswitch: Set OvS recirc_id from tc chain index, but you seemed set on your approach so I didn't persist.  Now it looks like maybe I should have...
