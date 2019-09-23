@@ -2,176 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77640BB609
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 15:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15290BB680
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 16:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437505AbfIWN7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 09:59:53 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58496 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404910AbfIWN7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 09:59:53 -0400
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 142CFC053B26
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 13:59:52 +0000 (UTC)
-Received: by mail-qk1-f197.google.com with SMTP id z128so17703303qke.8
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 06:59:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FtApu15nyFEPJdV270MkGcXi5No4IIGcISN59p+vUsI=;
-        b=C1n1/VzA11jjRsw2h3o5os2Am885t3+jcMAJNBVO1AODVpufuy4yJlZQa8Sv7Ta+2c
-         9s/V82IRzMjt5q7W7RXXalm/AaZ/LoZzweRuvjZglObDdXDgHk6/oPE/2mNJfnmxfTXU
-         HSfXVW+KZDdNZl0q8rp4Xn3i+okUuvv7dt0ZB66MK6Qgbr8Y75EOXq3X4rpE1stZ2joZ
-         zBT/PTE+AYMMOauW6Dca1j1TTBSwLiGjHIilTl+LSlwU+hYfFEruhT+5JbfQNnQmp1GR
-         4hMNXkxmFb6aTysKuc83Pirgv3E6/E6frLwbUx1jI3VjqkE4JRG7dP9l4sM6zHMm5prB
-         uSTQ==
-X-Gm-Message-State: APjAAAWbikd7s100jfBlrWb3tVwqP6WLB6N98UpADRfWOsPmTGpAosHN
-        mEklvCjgqX7lGOMA8NeCDelimS/ao7AJtLfBG4JyZYiY9+TzZN2PUUjVikImoswGI5qzcGprB/9
-        u7IdRdLRNaDOPNqzR
-X-Received: by 2002:a37:a8ce:: with SMTP id r197mr17291087qke.374.1569247191423;
-        Mon, 23 Sep 2019 06:59:51 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyzyB1a60cl+6jXMDuajGY7ZKBy6qBhwd1rCHqj2guL5sYzzKUt4czPqrsZBqxQFgz2+CkCug==
-X-Received: by 2002:a37:a8ce:: with SMTP id r197mr17291071qke.374.1569247191247;
-        Mon, 23 Sep 2019 06:59:51 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
-        by smtp.gmail.com with ESMTPSA id j2sm4848892qki.15.2019.09.23.06.59.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Sep 2019 06:59:50 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 09:59:38 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
-Subject: Re: [PATCH 0/6] mdev based hardware virtio offloading support
-Message-ID: <20190923095820-mutt-send-email-mst@kernel.org>
-References: <20190923130331.29324-1-jasowang@redhat.com>
+        id S2437692AbfIWOTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 10:19:09 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:17453 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437634AbfIWOTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 10:19:08 -0400
+Received: from [192.168.1.5] (unknown [180.157.106.150])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 710DE41A47;
+        Mon, 23 Sep 2019 22:19:04 +0800 (CST)
+Subject: Re: [PATCH net v3] net/sched: cls_api: Fix nooffloaddevcnt counter
+ when indr block call success
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Roi Dayan <roid@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+References: <1568882232-12847-1-git-send-email-wenxu@ucloud.cn>
+ <CAJ3xEMhQTr=HPsMs-j3_V6XRKHa0Jo7iYVY+R4U8etoEu9R7jw@mail.gmail.com>
+ <cc63e5ba-661a-72c3-7531-7bd09694549b@ucloud.cn>
+ <CAK+XE=kJXoWBO=4A2g9p0VTp7p-iN4Eb-FB+Y9Bdr0vJ_NwiYQ@mail.gmail.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <9797258f-0377-daad-e827-67713d3fba9c@ucloud.cn>
+Date:   Mon, 23 Sep 2019 22:18:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190923130331.29324-1-jasowang@redhat.com>
+In-Reply-To: <CAK+XE=kJXoWBO=4A2g9p0VTp7p-iN4Eb-FB+Y9Bdr0vJ_NwiYQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVTU1OS0tLS0NKS01JSElZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MBQ6LRw*FTgzMSgTTzQtDBE8
+        PjMKCkxVSlVKTk1CSU9DSE9PQ0JPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktNVUpOS1lXWQgBWUFDSUlLNwY+
+X-HM-Tid: 0a6d5e7d7ace2086kuqy710de41a47
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 09:03:25PM +0800, Jason Wang wrote:
-> Hi all:
-> 
-> There are hardware that can do virtio datapath offloading while having
-> its own control path. This path tries to implement a mdev based
-> unified API to support using kernel virtio driver to drive those
-> devices. This is done by introducing a new mdev transport for virtio
-> (virtio_mdev) and register itself as a new kind of mdev driver. Then
-> it provides a unified way for kernel virtio driver to talk with mdev
-> device implementation.
-> 
-> Though the series only contains kernel driver support, the goal is to
-> make the transport generic enough to support userspace drivers. This
-> means vhost-mdev[1] could be built on top as well by resuing the
-> transport.
-> 
-> A sample driver is also implemented which simulate a virito-net
-> loopback ethernet device on top of vringh + workqueue. This could be
-> used as a reference implementation for real hardware driver.
-> 
-> Consider mdev framework only support VFIO device and driver right now,
-> this series also extend it to support other types. This is done
-> through introducing class id to the device and pairing it with
-> id_talbe claimed by the driver. On top, this seris also decouple
-> device specific parents ops out of the common ones.
-> 
-> Pktgen test was done with virito-net + mvnet loop back device.
-> 
-> Please review.
-> 
-> [1] https://lkml.org/lkml/2019/9/16/869
-> 
-> Changes from RFC-V2:
-> - silent compile warnings on some specific configuration
-> - use u16 instead u8 for class id
-> - reseve MDEV_ID_VHOST for future vhost-mdev work
-> - introduce "virtio" type for mvnet and make "vhost" type for future
->   work
-> - add entries in MAINTAINER
-> - tweak and typos fixes in commit log
-> 
-> Changes from RFC-V1:
-> 
-> - rename device id to class id
-> - add docs for class id and device specific ops (device_ops)
-> - split device_ops into seperate headers
-> - drop the mdev_set_dma_ops()
-> - use device_ops to implement the transport API, then it's not a part
->   of UAPI any more
-> - use GFP_ATOMIC in mvnet sample device and other tweaks
-> - set_vring_base/get_vring_base support for mvnet device
-> 
-> Jason Wang (6):
->   mdev: class id support
->   mdev: introduce device specific ops
->   mdev: introduce virtio device and its device ops
->   virtio: introduce a mdev based transport
->   vringh: fix copy direction of vringh_iov_push_kern()
->   docs: sample driver to demonstrate how to implement virtio-mdev
->     framework
 
+在 2019/9/23 17:42, John Hurley 写道:
+> On Mon, Sep 23, 2019 at 5:20 AM wenxu <wenxu@ucloud.cn> wrote:
+>> Hi John & Jakub
+>>
+>> There are some limitations for indirect tc callback work with  skip_sw ?
+>>
+> Hi Wenxu,
+> This is not really a limitation.
+> As Or points out, indirect block offload is not supposed to work with skip_sw.
+> Indirect offload allows us to hook onto existing kernel devices (for
+> TC events we may which to offload) that are out of the control of the
+> offload driver and, therefore, should always accept software path
+> rules.
+> For example, the vxlan driver does not implement a setup_tc ndo so it
+> does not expect to run rules in hw - it should always handle
+> associated rules in the software datapath as a minimum.
+> I think accepting skip_sw rules for devices with no in-built concept
+> of hardware offload would be wrong.
+> Do you have a use case that requires skip_sw rules for such devices?
+>
+> John
 
-That's pretty clean, so how about we start by just merging this?
-Alex are you going to handle this through your next tree?
-If yes, pls include:
+When we use ovs to control the tc offload. The ovs kernel already provide the software
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+path rules so maybe user don't want other soft path. And with skip_sw it can be easily 
 
+distinguish offloaded and non-offloaded rules.
 
-
->  .../driver-api/vfio-mediated-device.rst       |  11 +-
->  MAINTAINERS                                   |   3 +
->  drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
->  drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
->  drivers/s390/crypto/vfio_ap_ops.c             |  14 +-
->  drivers/vfio/mdev/Kconfig                     |   7 +
->  drivers/vfio/mdev/Makefile                    |   1 +
->  drivers/vfio/mdev/mdev_core.c                 |  21 +-
->  drivers/vfio/mdev/mdev_driver.c               |  14 +
->  drivers/vfio/mdev/mdev_private.h              |   1 +
->  drivers/vfio/mdev/vfio_mdev.c                 |  37 +-
->  drivers/vfio/mdev/virtio_mdev.c               | 416 +++++++++++
->  drivers/vhost/vringh.c                        |   8 +-
->  include/linux/mdev.h                          |  47 +-
->  include/linux/mod_devicetable.h               |   8 +
->  include/linux/vfio_mdev.h                     |  53 ++
->  include/linux/virtio_mdev.h                   | 144 ++++
->  samples/Kconfig                               |   7 +
->  samples/vfio-mdev/Makefile                    |   1 +
->  samples/vfio-mdev/mbochs.c                    |  19 +-
->  samples/vfio-mdev/mdpy.c                      |  19 +-
->  samples/vfio-mdev/mtty.c                      |  17 +-
->  samples/vfio-mdev/mvnet.c                     | 688 ++++++++++++++++++
->  23 files changed, 1481 insertions(+), 89 deletions(-)
->  create mode 100644 drivers/vfio/mdev/virtio_mdev.c
->  create mode 100644 include/linux/vfio_mdev.h
->  create mode 100644 include/linux/virtio_mdev.h
->  create mode 100644 samples/vfio-mdev/mvnet.c
-> 
-> -- 
-> 2.19.1
+>
+>
+>> BR
+>>
+>> wenxu
+>>
+>> On 9/19/2019 8:50 PM, Or Gerlitz wrote:
+>>>> successfully bind with a real hw through indr block call, It also add
+>>>> nooffloadcnt counter. This counter will lead the rule add failed in
+>>>> fl_hw_replace_filter-->tc_setup_cb_call with skip_sw flags.
+>>> wait.. indirect tc callbacks are typically used to do hw offloading
+>>> for decap rules (tunnel key unset action) set on SW devices (gretap, vxlan).
+>>>
+>>> However, AFAIK, it's been couple of years since the kernel doesn't support
+>>> skip_sw for such rules. Did we enable it again? when? I am somehow
+>>> far from the details, so copied some folks..
+>>>
+>>> Or.
+>>>
+>>>
+>>>> In the tc_setup_cb_call will check the nooffloaddevcnt and skip_sw flags
+>>>> as following:
+>>>> if (block->nooffloaddevcnt && err_stop)
+>>>>         return -EOPNOTSUPP;
+>>>>
+>>>> So with this patch, if the indr block call success, it will not modify
+>>>> the nooffloaddevcnt counter.
+>>>>
+>>>> Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
+>>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>>>> ---
+>>>> v3: rebase to the net
+>>>>
+>>>>  net/sched/cls_api.c | 30 +++++++++++++++++-------------
+>>>>  1 file changed, 17 insertions(+), 13 deletions(-)
+>>>>
+>>>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>>>> index 32577c2..c980127 100644
+>>>> --- a/net/sched/cls_api.c
+>>>> +++ b/net/sched/cls_api.c
+>>>> @@ -607,11 +607,11 @@ static void tc_indr_block_get_and_ing_cmd(struct net_device *dev,
+>>>>         tc_indr_block_ing_cmd(dev, block, cb, cb_priv, command);
+>>>>  }
+>>>>
+>>>> -static void tc_indr_block_call(struct tcf_block *block,
+>>>> -                              struct net_device *dev,
+>>>> -                              struct tcf_block_ext_info *ei,
+>>>> -                              enum flow_block_command command,
+>>>> -                              struct netlink_ext_ack *extack)
+>>>> +static int tc_indr_block_call(struct tcf_block *block,
+>>>> +                             struct net_device *dev,
+>>>> +                             struct tcf_block_ext_info *ei,
+>>>> +                             enum flow_block_command command,
+>>>> +                             struct netlink_ext_ack *extack)
+>>>>  {
+>>>>         struct flow_block_offload bo = {
+>>>>                 .command        = command,
+>>>> @@ -621,10 +621,15 @@ static void tc_indr_block_call(struct tcf_block *block,
+>>>>                 .block_shared   = tcf_block_shared(block),
+>>>>                 .extack         = extack,
+>>>>         };
+>>>> +
+>>>>         INIT_LIST_HEAD(&bo.cb_list);
+>>>>
+>>>>         flow_indr_block_call(dev, &bo, command);
+>>>> -       tcf_block_setup(block, &bo);
+>>>> +
+>>>> +       if (list_empty(&bo.cb_list))
+>>>> +               return -EOPNOTSUPP;
+>>>> +
+>>>> +       return tcf_block_setup(block, &bo);
+>>>>  }
+>>>>
+>>>>  static bool tcf_block_offload_in_use(struct tcf_block *block)
+>>>> @@ -681,8 +686,6 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+>>>>                 goto no_offload_dev_inc;
+>>>>         if (err)
+>>>>                 goto err_unlock;
+>>>> -
+>>>> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+>>>>         up_write(&block->cb_lock);
+>>>>         return 0;
+>>>>
+>>>> @@ -691,9 +694,10 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+>>>>                 err = -EOPNOTSUPP;
+>>>>                 goto err_unlock;
+>>>>         }
+>>>> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+>>>> +       if (err)
+>>>> +               block->nooffloaddevcnt++;
+>>>>         err = 0;
+>>>> -       block->nooffloaddevcnt++;
+>>>> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+>>>>  err_unlock:
+>>>>         up_write(&block->cb_lock);
+>>>>         return err;
+>>>> @@ -706,8 +710,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+>>>>         int err;
+>>>>
+>>>>         down_write(&block->cb_lock);
+>>>> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+>>>> -
+>>>>         if (!dev->netdev_ops->ndo_setup_tc)
+>>>>                 goto no_offload_dev_dec;
+>>>>         err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+>>>> @@ -717,7 +719,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+>>>>         return;
+>>>>
+>>>>  no_offload_dev_dec:
+>>>> -       WARN_ON(block->nooffloaddevcnt-- == 0);
+>>>> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+>>>> +       if (err)
+>>>> +               WARN_ON(block->nooffloaddevcnt-- == 0);
+>>>>         up_write(&block->cb_lock);
+>>>>  }
+>>>>
+>>>> --
+>>>> 1.8.3.1
+>>>>
