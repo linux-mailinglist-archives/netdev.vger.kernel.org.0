@@ -2,335 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 264D9BAD6E
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 07:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7A7BADB3
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 08:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390463AbfIWFQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 01:16:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49614 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389091AbfIWFQH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 01:16:07 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8E16830821A3;
-        Mon, 23 Sep 2019 05:16:06 +0000 (UTC)
-Received: from [10.72.12.37] (ovpn-12-37.pek2.redhat.com [10.72.12.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA8555C1D6;
-        Mon, 23 Sep 2019 05:15:56 +0000 (UTC)
-Subject: Re: [PATCH net-next] tuntap: Fallback to automq on TUNSETSTEERINGEBPF
- prog negative return
-To:     Matt Cover <werekraken@gmail.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com,
-        Eric Dumazet <edumazet@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Matthew Cover <matthew.cover@stackpath.com>,
-        mail@timurcelik.de, pabeni@redhat.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        wangli39@baidu.com, lifei.shirley@bytedance.com,
-        tglx@linutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-References: <20190920185843.4096-1-matthew.cover@stackpath.com>
- <20190922080326-mutt-send-email-mst@kernel.org>
- <CAGyo_hqGbFdt1PoDrmo=S5iTO8TwbrbtOJtbvGT1WrFFMLwk-Q@mail.gmail.com>
- <20190922162546-mutt-send-email-mst@kernel.org>
- <CAGyo_hr+_oSwVSKSqKTXaouaMK-6b8+NVLTxWmZD3vn07GEGWA@mail.gmail.com>
- <f2e5b3d5-f38c-40e7-dda9-e1ed737a0135@redhat.com>
- <CAGyo_hohbFP+=eu3jWL954hrOgqu4upaw6HTH2=1qC9jcENWxQ@mail.gmail.com>
- <7d3abb5d-c5a7-9fbd-f82e-88b4bf717a0b@redhat.com>
- <CAGyo_hondiOXi8GtqZg-YNV3A+COV=5PMHoNKaHbBjnTRTUe9Q@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b96ecf36-8f13-4a52-5355-7d88ec9e4a98@redhat.com>
-Date:   Mon, 23 Sep 2019 13:15:54 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2392813AbfIWGQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 02:16:49 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:38600 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387519AbfIWGQt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 02:16:49 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 89FF75DFB0AB82F2F953;
+        Mon, 23 Sep 2019 14:16:47 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Mon, 23 Sep 2019
+ 14:16:36 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <claudiu.manoil@nxp.com>, <davem@davemloft.net>,
+        <jakub.kicinski@netronome.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net] gianfar: Make reset_gfar static
+Date:   Mon, 23 Sep 2019 14:16:03 +0800
+Message-ID: <20190923061603.37064-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-In-Reply-To: <CAGyo_hondiOXi8GtqZg-YNV3A+COV=5PMHoNKaHbBjnTRTUe9Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Mon, 23 Sep 2019 05:16:06 +0000 (UTC)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix sparse warning:
 
-On 2019/9/23 上午11:18, Matt Cover wrote:
-> On Sun, Sep 22, 2019 at 7:34 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On 2019/9/23 上午9:15, Matt Cover wrote:
->>> On Sun, Sep 22, 2019 at 5:51 PM Jason Wang <jasowang@redhat.com> wrote:
->>>> On 2019/9/23 上午6:30, Matt Cover wrote:
->>>>> On Sun, Sep 22, 2019 at 1:36 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>> On Sun, Sep 22, 2019 at 10:43:19AM -0700, Matt Cover wrote:
->>>>>>> On Sun, Sep 22, 2019 at 5:37 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>>>> On Fri, Sep 20, 2019 at 11:58:43AM -0700, Matthew Cover wrote:
->>>>>>>>> Treat a negative return from a TUNSETSTEERINGEBPF bpf prog as a signal
->>>>>>>>> to fallback to tun_automq_select_queue() for tx queue selection.
->>>>>>>>>
->>>>>>>>> Compilation of this exact patch was tested.
->>>>>>>>>
->>>>>>>>> For functional testing 3 additional printk()s were added.
->>>>>>>>>
->>>>>>>>> Functional testing results (on 2 txq tap device):
->>>>>>>>>
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] ========== tun no prog ==========
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '-1'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] ========== tun prog -1 ==========
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '-1'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '-1'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] ========== tun prog 0 ==========
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '0'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '0'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] ========== tun prog 1 ==========
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '1'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '1'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] ========== tun prog 2 ==========
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() returned '2'
->>>>>>>>>      [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() returned '0'
->>>>>>>>>
->>>>>>>>> Signed-off-by: Matthew Cover <matthew.cover@stackpath.com>
->>>>>>>> Could you add a bit more motivation data here?
->>>>>>> Thank you for these questions Michael.
->>>>>>>
->>>>>>> I'll plan on adding the below information to the
->>>>>>> commit message and submitting a v2 of this patch
->>>>>>> when net-next reopens. In the meantime, it would
->>>>>>> be very helpful to know if these answers address
->>>>>>> some of your concerns.
->>>>>>>
->>>>>>>> 1. why is this a good idea
->>>>>>> This change allows TUNSETSTEERINGEBPF progs to
->>>>>>> do any of the following.
->>>>>>>     1. implement queue selection for a subset of
->>>>>>>        traffic (e.g. special queue selection logic
->>>>>>>        for ipv4, but return negative and use the
->>>>>>>        default automq logic for ipv6)
->>>>>>>     2. determine there isn't sufficient information
->>>>>>>        to do proper queue selection; return
->>>>>>>        negative and use the default automq logic
->>>>>>>        for the unknown
->>>>>>>     3. implement a noop prog (e.g. do
->>>>>>>        bpf_trace_printk() then return negative and
->>>>>>>        use the default automq logic for everything)
->>>>>>>
->>>>>>>> 2. how do we know existing userspace does not rely on existing behaviour
->>>>>>> Prior to this change a negative return from a
->>>>>>> TUNSETSTEERINGEBPF prog would have been cast
->>>>>>> into a u16 and traversed netdev_cap_txqueue().
->>>>>>>
->>>>>>> In most cases netdev_cap_txqueue() would have
->>>>>>> found this value to exceed real_num_tx_queues
->>>>>>> and queue_index would be updated to 0.
->>>>>>>
->>>>>>> It is possible that a TUNSETSTEERINGEBPF prog
->>>>>>> return a negative value which when cast into a
->>>>>>> u16 results in a positive queue_index less than
->>>>>>> real_num_tx_queues. For example, on x86_64, a
->>>>>>> return value of -65535 results in a queue_index
->>>>>>> of 1; which is a valid queue for any multiqueue
->>>>>>> device.
->>>>>>>
->>>>>>> It seems unlikely, however as stated above is
->>>>>>> unfortunately possible, that existing
->>>>>>> TUNSETSTEERINGEBPF programs would choose to
->>>>>>> return a negative value rather than return the
->>>>>>> positive value which holds the same meaning.
->>>>>>>
->>>>>>> It seems more likely that future
->>>>>>> TUNSETSTEERINGEBPF programs would leverage a
->>>>>>> negative return and potentially be loaded into
->>>>>>> a kernel with the old behavior.
->>>>>> OK if we are returning a special
->>>>>> value, shouldn't we limit it? How about a special
->>>>>> value with this meaning?
->>>>>> If we are changing an ABI let's at least make it
->>>>>> extensible.
->>>>>>
->>>>> A special value with this meaning sounds
->>>>> good to me. I'll plan on adding a define
->>>>> set to -1 to cause the fallback to automq.
->>>> Can it really return -1?
->>>>
->>>> I see:
->>>>
->>>> static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
->>>>                                            struct sk_buff *skb)
->>>> ...
->>>>
->>>>
->>>>> The way I was initially viewing the old
->>>>> behavior was that returning negative was
->>>>> undefined; it happened to have the
->>>>> outcomes I walked through, but not
->>>>> necessarily by design.
->>>> Having such fallback may bring extra troubles, it requires the eBPF
->>>> program know the existence of the behavior which is not a part of kernel
->>>> ABI actually. And then some eBPF program may start to rely on that which
->>>> is pretty dangerous. Note, one important consideration is to have
->>>> macvtap support where does not have any stuffs like automq.
->>>>
->>>> Thanks
->>>>
->>> How about we call this TUN_SSE_ABORT
->>> instead of TUN_SSE_DO_AUTOMQ?
->>>
->>> TUN_SSE_ABORT could be documented as
->>> falling back to the default queue
->>> selection method in either space
->>> (presumably macvtap has some queue
->>> selection method when there is no prog).
->>
->> This looks like a more complex API, we don't want userspace to differ
->> macvtap from tap too much.
->>
->> Thanks
->>
-> This is barely more complex and provides
-> similar to what is done in many places.
-> For xdp, an XDP_PASS enacts what the
-> kernel would do if there was no bpf prog.
-> For tc cls in da mode, TC_ACT_OK enacts
-> what the kernel would do if there was
-> no bpf prog. For xt_bpf, false enacts
-> what the kernel would do if there was
-> no bpf prog (as long as negation
-> isn't in play in the rule, I believe).
+drivers/net/ethernet/freescale/gianfar.c:2070:6:
+ warning: symbol 'reset_gfar' was not declared. Should it be static?
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/freescale/gianfar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 24bf7f6..51ad864 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -2067,7 +2067,7 @@ static int gfar_change_mtu(struct net_device *dev, int new_mtu)
+ 	return 0;
+ }
+ 
+-void reset_gfar(struct net_device *ndev)
++static void reset_gfar(struct net_device *ndev)
+ {
+ 	struct gfar_private *priv = netdev_priv(ndev);
+ 
+-- 
+2.7.4
 
 
-I think this is simply because you can't implement e.g 
-XDP_PASS/TC_ACT_OK through eBPF itself which is not the case of steering 
-prog here.
-
-
->
-> I know that this is somewhat of an
-> oversimplification and that each of
-> these also means something else in
-> the respective hookpoint, but I standby
-> seeing value in this change.
->
-> macvtap must have some default (i.e the
-> action which it takes when no prog is
-> loaded), even if that is just use queue
-> 0. We can provide the same TUN_SSE_ABORT
-> in userspace which does the same thing;
-> enacts the default when returned. Any
-> differences left between tap and macvtap
-> would be in what the default is, not in
-> these changes. And that difference already
-> exists today.
-
-
-I think it's better to safe to just drop the packet instead of trying to 
-workaround it.
-
-Thanks
-
-
->
->>>>> In order to keep the new behavior
->>>>> extensible, how should we state that a
->>>>> negative return other than -1 is
->>>>> undefined and therefore subject to
->>>>> change. Is something like this
->>>>> sufficient?
->>>>>
->>>>>      Documentation/networking/tc-actions-env-rules.txt
->>>>>
->>>>> Additionally, what should the new
->>>>> behavior implement when a negative other
->>>>> than -1 is returned? I would like to have
->>>>> it do the same thing as -1 for now, but
->>>>> with the understanding that this behavior
->>>>> is undefined. Does this sound reasonable?
->>>>>
->>>>>>>> 3. why doesn't userspace need a way to figure out whether it runs on a kernel with and
->>>>>>>>       without this patch
->>>>>>> There may be some value in exposing this fact
->>>>>>> to the ebpf prog loader. What is the standard
->>>>>>> practice here, a define?
->>>>>> We'll need something at runtime - people move binaries between kernels
->>>>>> without rebuilding then. An ioctl is one option.
->>>>>> A sysfs attribute is another, an ethtool flag yet another.
->>>>>> A combination of these is possible.
->>>>>>
->>>>>> And if we are doing this anyway, maybe let userspace select
->>>>>> the new behaviour? This way we can stay compatible with old
->>>>>> userspace...
->>>>>>
->>>>> Understood. I'll look into adding an
->>>>> ioctl to activate the new behavior. And
->>>>> perhaps a method of checking which is
->>>>> behavior is currently active (in case we
->>>>> ever want to change the default, say
->>>>> after some suitably long transition
->>>>> period).
->>>>>
->>>>>>>> thanks,
->>>>>>>> MST
->>>>>>>>
->>>>>>>>> ---
->>>>>>>>>     drivers/net/tun.c | 20 +++++++++++---------
->>>>>>>>>     1 file changed, 11 insertions(+), 9 deletions(-)
->>>>>>>>>
->>>>>>>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->>>>>>>>> index aab0be4..173d159 100644
->>>>>>>>> --- a/drivers/net/tun.c
->>>>>>>>> +++ b/drivers/net/tun.c
->>>>>>>>> @@ -583,35 +583,37 @@ static u16 tun_automq_select_queue(struct tun_struct *tun, struct sk_buff *skb)
->>>>>>>>>          return txq;
->>>>>>>>>     }
->>>>>>>>>
->>>>>>>>> -static u16 tun_ebpf_select_queue(struct tun_struct *tun, struct sk_buff *skb)
->>>>>>>>> +static int tun_ebpf_select_queue(struct tun_struct *tun, struct sk_buff *skb)
->>>>>>>>>     {
->>>>>>>>>          struct tun_prog *prog;
->>>>>>>>>          u32 numqueues;
->>>>>>>>> -     u16 ret = 0;
->>>>>>>>> +     int ret = -1;
->>>>>>>>>
->>>>>>>>>          numqueues = READ_ONCE(tun->numqueues);
->>>>>>>>>          if (!numqueues)
->>>>>>>>>                  return 0;
->>>>>>>>>
->>>>>>>>> +     rcu_read_lock();
->>>>>>>>>          prog = rcu_dereference(tun->steering_prog);
->>>>>>>>>          if (prog)
->>>>>>>>>                  ret = bpf_prog_run_clear_cb(prog->prog, skb);
->>>>>>>>> +     rcu_read_unlock();
->>>>>>>>>
->>>>>>>>> -     return ret % numqueues;
->>>>>>>>> +     if (ret >= 0)
->>>>>>>>> +             ret %= numqueues;
->>>>>>>>> +
->>>>>>>>> +     return ret;
->>>>>>>>>     }
->>>>>>>>>
->>>>>>>>>     static u16 tun_select_queue(struct net_device *dev, struct sk_buff *skb,
->>>>>>>>>                              struct net_device *sb_dev)
->>>>>>>>>     {
->>>>>>>>>          struct tun_struct *tun = netdev_priv(dev);
->>>>>>>>> -     u16 ret;
->>>>>>>>> +     int ret;
->>>>>>>>>
->>>>>>>>> -     rcu_read_lock();
->>>>>>>>> -     if (rcu_dereference(tun->steering_prog))
->>>>>>>>> -             ret = tun_ebpf_select_queue(tun, skb);
->>>>>>>>> -     else
->>>>>>>>> +     ret = tun_ebpf_select_queue(tun, skb);
->>>>>>>>> +     if (ret < 0)
->>>>>>>>>                  ret = tun_automq_select_queue(tun, skb);
->>>>>>>>> -     rcu_read_unlock();
->>>>>>>>>
->>>>>>>>>          return ret;
->>>>>>>>>     }
->>>>>>>>> --
->>>>>>>>> 1.8.3.1
