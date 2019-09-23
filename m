@@ -2,93 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF08BB8B7
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645CCBB8DD
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 18:01:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732882AbfIWPy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 11:54:59 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:36395 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728464AbfIWPy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:54:58 -0400
-Received: by mail-yw1-f67.google.com with SMTP id x64so5407991ywg.3
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 08:54:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RR7moPibWHQl/a2ZxtkV0CY6zuLeYSN1MB4BNnQQ5v4=;
-        b=MXvvRdC8Hk9t2MkbTsCiksQOFgfNERZ7su326YIjHkMm5IV5iIq3Pn4iuu8z5sL2CA
-         w8pI5QQu3XAZPh+usJhAZJ56nhdaKJfdq34NkIj69xbKdOTnzQPPmpiZ0rOkK0khKOYh
-         XCOG0KHUQVdNy4oHFDcetq63fimIXNt9sM0Ure26fcNLSGtREf3zLxIl4qG1osA+PbTr
-         pl/7PJIWugylxBvJ9F9WY2olK0i4tgRZmbVBvm9T/bBuasiddML4FZL3G36fLtE2DqAH
-         RqQtpCYkJxBrte2At6bayzuTguvsiHV/atM9U3iFGR2b+M9lF+4/951wZZFe5+uP1Lhc
-         eFAw==
+        id S2387819AbfIWQA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 12:00:56 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53456 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732887AbfIWQAz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 12:00:55 -0400
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 98AE880F91
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 16:00:54 +0000 (UTC)
+Received: by mail-qt1-f200.google.com with SMTP id w9so17869978qto.9
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 09:00:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RR7moPibWHQl/a2ZxtkV0CY6zuLeYSN1MB4BNnQQ5v4=;
-        b=r/Krvd31rsUG2EPIpbMfksynxrFRni8tp3TW6hRrCh13YM2GCWYcQpPzCqqFUgeM5O
-         kVW6OjuImoZthIQXZ1VvHodkbmt3dc+Z2/hDPTMYanLy4yVC8fUStLhMu+3oXGct0+HS
-         ame4VlghaLGCzx0lCUns6S5VaH+AvYmbmN4tH5CLXBippgvZ/WkhAKpQBJ13N+KpWwrL
-         RL5EUUcQ2sFre6etXp9J0vkexDCMV17BAS1YhXUVbKzqkVXEe8BOdgbtDs6KxaN+4J6m
-         EaM4B3ruqvEPd8epjh/QMexKriPXReApolxagky6tjDubxnKj+OeUybhEv8G/LMyxIDO
-         AuBw==
-X-Gm-Message-State: APjAAAVfQdRfkcieMa0999XhWMeLbenvoLyqIsAIZwZBwNG3uRQJMXNS
-        FtzPRgvBOfcP2WLtgQWvVEter/MMiRvx9z8pjkCzxQ==
-X-Google-Smtp-Source: APXvYqwtvlSuQWct9HJNph8TUlhX3NcWhcbqF7PbMXgYQMHQTuLvnZMrmFd1yTtk2xCqlppxSeYzQbp3Iax8Nvsf2Y4=
-X-Received: by 2002:a81:f20a:: with SMTP id i10mr120405ywm.424.1569254097492;
- Mon, 23 Sep 2019 08:54:57 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FnrZlG9onHbzoUOas395WBpQBkqdPWiXJrz3kgJAMNs=;
+        b=DIGjaRIGlf+Ua5lMnA4Bbneb67eSPkvljB87cxCigAqZ1rKsA5QmLVHpxf6LP0ckhp
+         qNyA9iD36Rp4OCuOgm+4/941KcXOjXE+CqKJ5uMz7ioYI+ZeHoN9ZtVECygQ+m2DUHYV
+         U8HVDf47r07cwI3D+LOMUjV5xku9F3+fxiUNMcLFDdH4lwMT2KHgSVJOD6s8YV/9ZErE
+         Du1yC8V++4BPcRRvD04ZAo0/X1+yFMBYjmy/jj715txnPFPxAkXDwnMb3LLzvd1j5bCf
+         vGYSi9oB1UhKfVFusnsY2vAxQd9ygye0dL9hV7oieomwlAgmU51HsPdnaAMHlRupjRZB
+         wMIg==
+X-Gm-Message-State: APjAAAUadFUuqsS6v29Fkcri8NxbepqUtFeTIKszD1/6QAxA2quExf3e
+        BOR2t7wiM/+39r1cMsUIq2yy35pj+WFFO4jCqVyrRp0NxCB9erIsI7t1wA3wAZC5k+T2eYkBGCz
+        ch5TszmPyvmCK4WUY
+X-Received: by 2002:a0c:e48b:: with SMTP id n11mr25662869qvl.38.1569254453754;
+        Mon, 23 Sep 2019 09:00:53 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzeS0qH7VWztyzQkjfFK33LHuBL/0r9aVYJeACu8zWG4i5I+VaFWBP3hOAewtn9oF8WJysLNw==
+X-Received: by 2002:a0c:e48b:: with SMTP id n11mr25662820qvl.38.1569254453463;
+        Mon, 23 Sep 2019 09:00:53 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
+        by smtp.gmail.com with ESMTPSA id m125sm5840827qkd.3.2019.09.23.09.00.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Sep 2019 09:00:52 -0700 (PDT)
+Date:   Mon, 23 Sep 2019 12:00:41 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        tiwei.bie@intel.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, cohuck@redhat.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
+Subject: Re: [PATCH 5/6] vringh: fix copy direction of vringh_iov_push_kern()
+Message-ID: <20190923115930-mutt-send-email-mst@kernel.org>
+References: <20190923130331.29324-1-jasowang@redhat.com>
+ <20190923130331.29324-6-jasowang@redhat.com>
+ <20190923094559.765da494@x1.home>
 MIME-Version: 1.0
-References: <20190918150539.135042-1-edumazet@google.com> <20190920191516.073d88b6@cakuba.netronome.com>
- <722331f3-55f8-868f-0f52-60e17e28e862@gmail.com>
-In-Reply-To: <722331f3-55f8-868f-0f52-60e17e28e862@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 23 Sep 2019 08:54:45 -0700
-Message-ID: <CANn89iJqrYxufcj=mCQmqYty0F9DAokBR=4jcjQEZdsNrU_Y2w@mail.gmail.com>
-Subject: Re: [PATCH net] sch_netem: fix a divide by zero in tabledist()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190923094559.765da494@x1.home>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 8:53 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 9/20/19 7:15 PM, Jakub Kicinski wrote:
-> > On Wed, 18 Sep 2019 08:05:39 -0700, Eric Dumazet wrote:
-> >> syzbot managed to crash the kernel in tabledist() loading
-> >> an empty distribution table.
-> >>
-> >>      t = dist->table[rnd % dist->size];
-> >>
-> >> Simply return an error when such load is attempted.
-> >>
-> >> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> >> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> >> Reported-by: syzbot <syzkaller@googlegroups.com>
-> >
-> > Applied, queued, thank you!
-> >
->
-> Note that another divide by zero seems possible in the same function,
-> if sigma = 0x8000000
+On Mon, Sep 23, 2019 at 09:45:59AM -0600, Alex Williamson wrote:
+> On Mon, 23 Sep 2019 21:03:30 +0800
+> Jason Wang <jasowang@redhat.com> wrote:
+> 
+> > We want to copy from iov to buf, so the direction was wrong.
+> > 
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> >  drivers/vhost/vringh.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> 
+> Why is this included in the series?  Seems like an unrelated fix being
+> held up within a proposal for a new feature.  Thanks,
+> 
+> Alex
 
-I meant 0x80000000  here (aka 2^31 )
+It's better to have it as patch 1/6, but it's a dependency of the
+example driver in the series. I can reorder when I apply.
 
->
->
-> 2*sigma becomes zero, and we have yet another issue in :
->
-> if (dist == NULL)
->    return ((rnd % (2 * sigma)) + mu) - sigma;
->
->
+
+> > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > index 08ad0d1f0476..a0a2d74967ef 100644
+> > --- a/drivers/vhost/vringh.c
+> > +++ b/drivers/vhost/vringh.c
+> > @@ -852,6 +852,12 @@ static inline int xfer_kern(void *src, void *dst, size_t len)
+> >  	return 0;
+> >  }
+> >  
+> > +static inline int kern_xfer(void *dst, void *src, size_t len)
+> > +{
+> > +	memcpy(dst, src, len);
+> > +	return 0;
+> > +}
+> > +
+> >  /**
+> >   * vringh_init_kern - initialize a vringh for a kernelspace vring.
+> >   * @vrh: the vringh to initialize.
+> > @@ -958,7 +964,7 @@ EXPORT_SYMBOL(vringh_iov_pull_kern);
+> >  ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
+> >  			     const void *src, size_t len)
+> >  {
+> > -	return vringh_iov_xfer(wiov, (void *)src, len, xfer_kern);
+> > +	return vringh_iov_xfer(wiov, (void *)src, len, kern_xfer);
+> >  }
+> >  EXPORT_SYMBOL(vringh_iov_push_kern);
+> >  
