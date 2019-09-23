@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 651CBBAF94
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 10:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D137ABAFA2
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 10:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406178AbfIWIam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 04:30:42 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:59192 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404824AbfIWIaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 04:30:39 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C8F5360850; Mon, 23 Sep 2019 08:30:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569227438;
-        bh=HnVJwJj5gHPia0BvUBaqff8A/iNw+l5vst68Tr3N/wc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=kiAR8ZIHao1pQs13hKha1x/JKGbQjIH1jPav2rr2uOwx+O3dRvuRxe4pENeyeoszX
-         3QT6Et+F4jpSZDqLparwjzFWJM9OYODtT/8CtJlxJ/LSTnMK7WSdNas/o5an3nqWAZ
-         lVAvT1DBYttVy/BTHQhBlxrmRjYW141yM3Jtn4BI=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ED8E66034D;
-        Mon, 23 Sep 2019 08:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569227438;
-        bh=HnVJwJj5gHPia0BvUBaqff8A/iNw+l5vst68Tr3N/wc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=jOn1C3cwpkY5l/Q8GPPzdvehHy/RTXK8Eh/7pzSYj3BnRI0IbqEQcSk1gRC528yjN
-         o7Dk+uuuKQMbqGBDU+ri+4EDNOP6pbznwHhO3eVe4CKYVGte4DxjoDeMepHFSroUS5
-         Nz+WFL6FQU7XVqX7ZKYWWSyxZ8llGG0ajGe1oYGs=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ED8E66034D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2406580AbfIWIeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 04:34:07 -0400
+Received: from mail-eopbgr690060.outbound.protection.outlook.com ([40.107.69.60]:59267
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2405465AbfIWIeH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 04:34:07 -0400
+Received: from DM6PR02CA0047.namprd02.prod.outlook.com (2603:10b6:5:177::24)
+ by BY5PR02MB6418.namprd02.prod.outlook.com (2603:10b6:a03:1f7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2284.25; Mon, 23 Sep
+ 2019 08:34:03 +0000
+Received: from CY1NAM02FT061.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::204) by DM6PR02CA0047.outlook.office365.com
+ (2603:10b6:5:177::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2178.19 via Frontend
+ Transport; Mon, 23 Sep 2019 08:34:03 +0000
+Authentication-Results: spf=softfail (sender IP is 149.199.60.83)
+ smtp.mailfrom=gmail.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=fail action=none header.from=gmail.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ gmail.com discourages use of 149.199.60.83 as permitted sender)
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ CY1NAM02FT061.mail.protection.outlook.com (10.152.75.30) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2284.25
+ via Frontend Transport; Mon, 23 Sep 2019 08:34:03 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1iCJnF-0000I5-EN; Mon, 23 Sep 2019 01:34:01 -0700
+Received: from localhost ([127.0.0.1] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1iCJnA-0001Nx-A0; Mon, 23 Sep 2019 01:33:56 -0700
+Received: from [10.140.6.59] (helo=xhdshubhraj40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1iCJn9-0001NG-Cm; Mon, 23 Sep 2019 01:33:55 -0700
+From:   shubhrajyoti.datta@gmail.com
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     nicolas.ferre@microchip.com, shubhrajyoti.datta@gmail.com,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Subject: [PATCHv1] net: macb: Remove dead code
+Date:   Mon, 23 Sep 2019 14:03:51 +0530
+Message-Id: <1569227631-32617-1-git-send-email-shubhrajyoti.datta@gmail.com>
+X-Mailer: git-send-email 2.1.1
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-Result: No--1.529-7.0-31-1
+X-imss-scan-details: No--1.529-7.0-31-1;No--1.529-5.0-31-1
+X-TM-AS-User-Approved-Sender: No;No
+X-TM-AS-Result-Xfilter: Match text exemption rules:No
+X-EOPAttributedMessage: 0
+X-Matching-Connectors: 132137012434589400;(f9e945fa-a09a-4caa-7158-08d2eb1d8c44);()
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(39860400002)(396003)(136003)(346002)(189003)(199004)(8676002)(2616005)(126002)(476003)(48376002)(50226002)(50466002)(61266001)(426003)(9686003)(107886003)(76482006)(16586007)(498600001)(47776003)(486006)(82202003)(73392003)(26005)(336012)(86362001)(55446002)(8936002)(305945005)(4326008)(316002)(9786002)(51416003)(2906002)(70206006)(356004)(36756003)(70586007)(5660300002)(81166006)(81156014)(6666004);DIR:OUT;SFP:1101;SCL:1;SRVR:BY5PR02MB6418;H:xsj-pvapsmtpgw01;FPR:;SPF:SoftFail;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: fix memory leak
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190920013632.30796-1-navid.emamdoost@gmail.com>
-References: <20190920013632.30796-1-navid.emamdoost@gmail.com>
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input) emamd001@umn.edu,
-        smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)emamd001@umn.edu
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190923083038.C8F5360850@smtp.codeaurora.org>
-Date:   Mon, 23 Sep 2019 08:30:38 +0000 (UTC)
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3cad15e1-a298-480c-db2b-08d74000ca47
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(5600167)(711020)(4605104)(1401327)(2017052603328);SRVR:BY5PR02MB6418;
+X-MS-TrafficTypeDiagnostic: BY5PR02MB6418:
+X-Microsoft-Antispam-PRVS: <BY5PR02MB6418B3F3108F035F1ADC675287850@BY5PR02MB6418.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-Forefront-PRVS: 0169092318
+X-Microsoft-Antispam-Message-Info: nsd46ajBS8WWbuKAoRy6QIpOcX7RVQmwLBN8S2lqBnB8T74pB6xfEzVNMD0+2iV2t/Jo5OXWbkuj07wTdV9QK0e0pVi+s/zFD0w/KL0aLZmEwCXtCdivh2LkdCX0Dgt70o4Bks+TS1TDOIR2pOvejnTRljWUMQgYmwBZu7bUxgbwpzf4IlJaX0PZez4W2AOZ/oOeSrmZH6TVYRYLpyXFZM2sEcDCuNS/mxupiXVICpcIJiG3PYeXn7cBPeb4XdFzIoo0B0e3BT7nzjYOsmrd6Y4capA2RTJsiE5E/9lzgu4Ig9qrvBVhkl69uh1uML0GqE84/qrlP3dlx6G9Dfz3K+VeR/1E1krluR3lmHWgEbLJ0kF6gsKEQv6syJKKrjHzba2K4BTjqUOdYrCZuOJtVyaAh7Mfrkm7ROYRCOIBXeA=
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2019 08:34:03.2707
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3cad15e1-a298-480c-db2b-08d74000ca47
+X-MS-Exchange-CrossTenant-Id: 5afe0b00-7697-4969-b663-5eab37d5f47e
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5afe0b00-7697-4969-b663-5eab37d5f47e;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6418
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
+From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-> In ath10k_usb_hif_tx_sg the allocated urb should be released if
-> usb_submit_urb fails.
-> 
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+macb_64b_desc is always called when HW_DMA_CAP_64B is defined.
+So the return NULL can never be reached. Remove the dead code.
 
-Patch applied to ath-next branch of ath.git, thanks.
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-b8d17e7d93d2 ath10k: fix memory leak
-
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 35b59b5..8e8d557 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -165,9 +165,8 @@ static unsigned int macb_adj_dma_desc_idx(struct macb *bp, unsigned int desc_idx
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ static struct macb_dma_desc_64 *macb_64b_desc(struct macb *bp, struct macb_dma_desc *desc)
+ {
+-	if (bp->hw_dma_cap & HW_DMA_CAP_64B)
+-		return (struct macb_dma_desc_64 *)((void *)desc + sizeof(struct macb_dma_desc));
+-	return NULL;
++	return (struct macb_dma_desc_64 *)((void *)desc
++		+ sizeof(struct macb_dma_desc));
+ }
+ #endif
+ 
 -- 
-https://patchwork.kernel.org/patch/11153699/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.1.1
 
