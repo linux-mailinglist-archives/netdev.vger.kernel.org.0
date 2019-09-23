@@ -2,112 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2A9BB489
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 14:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C08BB494
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 14:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502114AbfIWM4O convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 23 Sep 2019 08:56:14 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:59745 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437615AbfIWM4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 08:56:13 -0400
-Received: from [2001:67c:670:100:79a6:a514:42de:7079] (helo=rettich)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <jlu@pengutronix.de>)
-        id 1iCNsw-000354-Qt; Mon, 23 Sep 2019 14:56:10 +0200
-Received: from jlu by rettich with local (Exim 4.92)
-        (envelope-from <jlu@pengutronix.de>)
-        id 1iCNsu-00065l-Ix; Mon, 23 Sep 2019 14:56:08 +0200
-Message-ID: <bc0acd2803c4f513babe6bcc006b95a6297484bc.camel@pengutronix.de>
-Subject: Re: dsa traffic priorization
-From:   Jan =?ISO-8859-1?Q?L=FCbbe?= <jlu@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        kernel@pengutronix.de, Andrew Lunn <andrew@lunn.ch>
-Date:   Mon, 23 Sep 2019 14:56:08 +0200
-In-Reply-To: <bc70ddd1-0360-5c09-f03d-3560a0948f52@gmail.com>
-References: <20190918140225.imqchybuf3cnknob@pengutronix.de>
-         <CA+h21hpG52R6ScGpGX86Q7MuRHCgGNY-TxzaQGu2wZR8EtPtbA@mail.gmail.com>
-         <1b80f9ed-7a62-99c4-10bc-bc1887f80867@gmail.com>
-         <20190919084416.33ifxohtgkofrleb@pengutronix.de>
-         <bc70ddd1-0360-5c09-f03d-3560a0948f52@gmail.com>
-Organization: Pengutronix
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.30.5-1.1 
+        id S2394551AbfIWM5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 08:57:45 -0400
+Received: from mail-eopbgr50078.outbound.protection.outlook.com ([40.107.5.78]:31750
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2394080AbfIWM5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 08:57:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AZqffRmbozv4ModMDCVi7d0LvKbaV7Wgz3q0YJTWwoutPVKRL5OS8qzLLiGctKl5ilIf3DvtjrwaZLZDwjtDj/j2BlxLngHZu1OEGEmgppp2txNM4Zc7GQk3EQ7RamFs8NoU8rUWpwbNSYnNXoG+kl9YhiYOTyCAt16bByUu+ne1cCmh67QbZ2iNjPcaM/9gE25nMzUYfiz8pHtwHAXb9+Tji4sOlByVDDhgQLvg/lGHlda0xmIAZY6LhEPFUMDwizsCAldw4MNCH6o0Y/j/1PFyykbNcgUxNh0JuDnQ8BvD1tdN1kwell2xsnHC70qB7TkJMtGIPffxlNvYEj595g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Yd6zugMcbrcZESMCy+bQJahhscfBkUtdqMKDtGP3JM=;
+ b=G2jK80zKgRCQxsu+lu5qNfXjhVvFex+UnkcWNq6u1MfbOPqRJOkmRzLhmnYuzEChfDdOmmu8XTgEurfFqLoVm4oS7G+JiWTu0Sr8VIsAuwCA/ulxE5mW35UZq7oP5ONcNtKvLojFf4/vazr5BBZRNH+xQvI3zwUEAYT+sEITsP9aNXcVmdkKGS8PwHEp0XYAReoVdeg9A7CfHjs3ICB3w+LFbyPDm5BhTuYetjKIvKlL7B4mUy57/ut1J60/oYXSNgqvByBymoM4uvJEHIKzZtMw+z103QnLY5NVxzRXbBnYsaYEzsqla5HYG4eTsnlzXsmsow2hddJwbGzmE9dLOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5Yd6zugMcbrcZESMCy+bQJahhscfBkUtdqMKDtGP3JM=;
+ b=CeDGnWXggS3ScfWTnWme4908BzOSSn2y3RqlAjAU4FV5vNulSnZr/GNhiC4SsbzEZy6aWR//oYn7V3uYoOAo0H9M6hgmJiLmqLPL4ERUQvERmHet2QWrpN2inIvVMagDVaPfHyfSg1QkqN42i0iihHTSq/n+5oxw4D+XmkMs6nE=
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
+ AM4PR0501MB2212.eurprd05.prod.outlook.com (10.168.37.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2284.25; Mon, 23 Sep 2019 12:57:41 +0000
+Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::dd87:8e2c:f7ed:e29b]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
+ ([fe80::dd87:8e2c:f7ed:e29b%9]) with mapi id 15.20.2284.023; Mon, 23 Sep 2019
+ 12:57:41 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "zhongjiang@huawei.com" <zhongjiang@huawei.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/mlx5: Remove unneeded variable in mlx5_unload_one
+Thread-Topic: [PATCH] net/mlx5: Remove unneeded variable in mlx5_unload_one
+Thread-Index: AQHVaYvRsuIrAOzWrkqFyb9MhUmdeactGrYAgAwvIoA=
+Date:   Mon, 23 Sep 2019 12:57:41 +0000
+Message-ID: <e5e341e9d89cd8d278e651ce2ee6a5a84636813a.camel@mellanox.com>
+References: <1568307542-43797-1-git-send-email-zhongjiang@huawei.com>
+         <20190915.195346.491621328476847786.davem@davemloft.net>
+In-Reply-To: <20190915.195346.491621328476847786.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [89.138.141.98]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5fad7fbd-77e0-4e4b-5ced-08d740259e6b
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2212;
+x-ms-traffictypediagnostic: AM4PR0501MB2212:
+x-microsoft-antispam-prvs: <AM4PR0501MB2212BFFD26FB8AF3F7AA73FFBE850@AM4PR0501MB2212.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1468;
+x-forefront-prvs: 0169092318
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(396003)(376002)(39860400002)(366004)(199004)(189003)(76176011)(110136005)(4326008)(14454004)(476003)(305945005)(256004)(91956017)(66556008)(66476007)(66446008)(64756008)(66946007)(76116006)(102836004)(2501003)(86362001)(478600001)(4744005)(8936002)(25786009)(229853002)(6246003)(486006)(2616005)(99286004)(6436002)(3846002)(6506007)(36756003)(8676002)(81156014)(81166006)(71200400001)(7736002)(118296001)(66066001)(316002)(26005)(11346002)(6116002)(186003)(446003)(5660300002)(58126008)(71190400001)(2906002)(6486002)(6512007)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2212;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: um1+aWPoR8ZWztp7zBMZYHzhRPV0Fi2DB7Pt0rQv+QZVnIN3LDUawgfBr+VEZvC++73n7csXwiKsluQ5oe5xHkrZBoJWByCRQkuFbcLiPFa8Q4Cghod7arCih6NhBgwtDQnDKxkVfxabIFenf+56LzWR7ydNC6YcAMNQ2nrPmxWAlkMelBnsXEWG/5F1YcZInjbKLYKqQALKNFolJ9sJPY8Nfexc7R9dYuJ1OO4Orh07R3Rma5LanEaBRYJuUqDN9m239rPBbnBwAJvJKdyak4YweYtJjd5d4xcOJhwpmi8XMSBxFqjKkNjU9BOd6m1SP0CxsL1xaanQ+PFWmVdF6gCCkPqh8h0Pv1Jb46o748LWT0jkn1NAiZmKfdiusuwfL+BIDrO5pTeu0PmPAebGp3p+LHVLttz6AfclwVHz9+M=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <405074789A0FDA4CBD7C529F6BB9DF68@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:79a6:a514:42de:7079
-X-SA-Exim-Mail-From: jlu@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fad7fbd-77e0-4e4b-5ced-08d740259e6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2019 12:57:41.1108
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bUsE+yXQNHY8Jx68IflG6As+mfcgeH+yheU3UFRF4LsWaGfJKTB67d+l6/DSxp7/cMUn/2kFVMaStzX9ZR1aRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2212
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding TC maintainers... (we're trying to find a mainline-acceptable
-way to configure and offload strict port-based priorities in the
-context of DSA/switchdev).
-
-On Thu, 2019-09-19 at 10:12 -0700, Florian Fainelli wrote:
-> On 9/19/19 1:44 AM, Sascha Hauer wrote:
-> > On Wed, Sep 18, 2019 at 10:41:58AM -0700, Florian Fainelli wrote:
-> > > On 9/18/19 7:36 AM, Vladimir Oltean wrote:
-> > > > On Wed, 18 Sep 2019 at 17:03, Sascha Hauer <s.hauer@pengutronix.de> wrote:
-> > > > > The other part of the problem seems to be that the CPU port
-> > > > > has no network device representation in Linux, so there's no
-> > > > > interface to configure the egress limits via tc.
-> > > > > This has been discussed before, but it seems there hasn't
-> > > > > been any consensous regarding how we want to proceed?
-> > > 
-> > > You have the DSA master network device which is on the other side of the
-> > > switch,
-> > 
-> > You mean the (in my case) i.MX FEC? Everything I do on this device ends
-> > up in the FEC itself and not on the switch, right?
-> 
-> Yes, we have a way to overload specific netdevice_ops and ethtool_ops
-> operations in order to use the i.MX FEC network device as configuration
-> entry point, say eth0, but have it operate on the switch, because when
-> the DSA switch got attached to the DSA master, we replaced some of that
-> network device's operations with ones that piggy back into the switch.
-> See net/dsa/master.c for details.
-
-Currently, it overrides
-for ethtool:
-        ops->get_sset_count = dsa_master_get_sset_count;
-        ops->get_ethtool_stats = dsa_master_get_ethtool_stats;
-        ops->get_strings = dsa_master_get_strings;
-        ops->get_ethtool_phy_stats = dsa_master_get_ethtool_phy_stats;
-for ndo:
-        ops->ndo_get_phys_port_name = dsa_master_get_phys_port_name;
-
-In dsa/slave.c we have for ndo:
-        .ndo_setup_tc           = dsa_slave_setup_tc,
-
-So we would override ndo_setup_tc from dsa as well, maybe falling back
-to the original ndo_setup_tc provided by the ethernet driver if we the
-switch HW cannot handle a TC configuration?
-
-That would allow us to configure and offload a CPU-port-specific TC
-policy under the control of DSA. Is this interface reasonable?
-
-Im not sure if the existing TC filters and qdiscs can match on bridge-
-specific information (like the ingress port) yet, so this might require
-extensions to TC filters as well...
-
-Regards,
-Jan
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
+T24gU3VuLCAyMDE5LTA5LTE1IGF0IDE5OjUzICswMTAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
+IEZyb206IHpob25nIGppYW5nIDx6aG9uZ2ppYW5nQGh1YXdlaS5jb20+DQo+IERhdGU6IEZyaSwg
+MTMgU2VwIDIwMTkgMDA6NTk6MDIgKzA4MDANCj4gDQo+ID4gbWx4NV91bmxvYWRfb25lIGRvIG5v
+dCBuZWVkIGxvY2FsIHZhcmlhYmxlIHRvIHN0b3JlIGRpZmZlcmVudA0KPiB2YWx1ZSwNCj4gPiBI
+ZW5jZSBqdXN0IHJlbW92ZSBpdC4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiB6aG9uZyBqaWFu
+ZyA8emhvbmdqaWFuZ0BodWF3ZWkuY29tPg0KPiANCj4gU2FlZWQsIGp1c3QgdGFrZSB0aGlzIGRp
+cmVjdGx5IHZpYSBvbmUgb2YgeW91ciB0cmVlcy4NCj4gDQoNCkFwcGxpZWQgdG8gbmV0LW5leHQt
+bWx4NS4NCg0KVGhhbmtzLA0KU2FlZWQuDQoNCg==
