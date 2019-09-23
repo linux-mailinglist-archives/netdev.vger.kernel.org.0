@@ -2,144 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DD8BAC50
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 03:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B8A4BAC59
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 03:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389934AbfIWBHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Sep 2019 21:07:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54896 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388986AbfIWBHB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Sep 2019 21:07:01 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 90431C051688;
-        Mon, 23 Sep 2019 01:06:59 +0000 (UTC)
-Received: from [10.72.12.112] (ovpn-12-112.pek2.redhat.com [10.72.12.112])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A96FC6092F;
-        Mon, 23 Sep 2019 01:06:38 +0000 (UTC)
-Subject: Re: [RFC PATCH V2 0/6] mdev based hardware virtio offloading support
-To:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        pmorel@linux.ibm.com, freude@linux.ibm.com, lingshan.zhu@intel.com,
-        idos@mellanox.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com
-References: <20190920082050.19352-1-jasowang@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0cea96a3-f941-3181-d320-7c15b33ad552@redhat.com>
-Date:   Mon, 23 Sep 2019 09:06:36 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2390685AbfIWBPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Sep 2019 21:15:22 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:39478 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388216AbfIWBPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Sep 2019 21:15:22 -0400
+Received: by mail-vs1-f65.google.com with SMTP id f15so8338879vsq.6;
+        Sun, 22 Sep 2019 18:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mjWndcryqOX85+Cl/ZBhZksAs81/4i5F7cy9Sy/VIEA=;
+        b=r1f/hW1FopkZ9TKvw+vnXPGV3Fh0TzYRgcbFSflJkOWCunh0FU2AX3jOmVzsl9DEdm
+         tjZa2cAMCyifh316xrjjSnmJBzkSsaIv35SbXj9I4bNS06VKVdr3qilaQdLW/fBasPf5
+         hMxftAjFho8oZIhriGI1R51biipkv9Yz5pdkKpbhoh/u1zfpAynje29s+l4TqAjvfz92
+         at2zmLKWIU9e4fMFw4/oXS7M3xDUO11e0oPl5pU9sMQMrQpnpGvE8UG3SonsX0b2ichz
+         erGPMdkR6Kb1j7g+l7DUDobI0PfmXYve7VIPAYf2DmvJbiEHYXdZ0KTmFJv6HDk5b1xq
+         O6uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mjWndcryqOX85+Cl/ZBhZksAs81/4i5F7cy9Sy/VIEA=;
+        b=Yz6fK4z7qE0WK6NTre5XaLnjWlamWuxdH3Dv6iMDqeNlSNe/p5A2lNV9mDYE3nEZRW
+         Erq2AQ40tYTh9XiNcnBwODTK/F8YguPOQ6Rk1e7HbxYj7idiwl7r0CfgYUtbG6nKiDdN
+         p1YgOcro2IMpAo6afqrFoV8KCPn91By8KeaCVi7lhAbarqiSTmIeNGWKFRsJKHYI5oMf
+         b8ymnumgtyjv0ep8hKyMZGIrKILmuRx69YmRNJEyyd25V5UHGzYz3rmb+lqaRbAZ72mO
+         lq8mHOcl3NvV9VL+TkJuwVgID66nJyAVcuzNDwdBY4E7qPoeZJp77tAczwcS49PL+/8s
+         y+XA==
+X-Gm-Message-State: APjAAAVUN0uOylOaHUH1oLlWqnzM9UKaE/zmIVW46oeMBQhFou9zvHeD
+        DL/FPV6GGBK48rLd+GEO8p5YdYTR2z8ds34ejxk=
+X-Google-Smtp-Source: APXvYqz2oPjar9wR5sV2t9u7L5MQM82VFumZLQLW5vXsAWemw7XCIi6O2tTtyZTB9nj9FijIOsoArggujfdRWdVHOHc=
+X-Received: by 2002:a67:4306:: with SMTP id q6mr8804202vsa.36.1569201320583;
+ Sun, 22 Sep 2019 18:15:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190920082050.19352-1-jasowang@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Mon, 23 Sep 2019 01:07:00 +0000 (UTC)
+References: <20190920185843.4096-1-matthew.cover@stackpath.com>
+ <20190922080326-mutt-send-email-mst@kernel.org> <CAGyo_hqGbFdt1PoDrmo=S5iTO8TwbrbtOJtbvGT1WrFFMLwk-Q@mail.gmail.com>
+ <20190922162546-mutt-send-email-mst@kernel.org> <CAGyo_hr+_oSwVSKSqKTXaouaMK-6b8+NVLTxWmZD3vn07GEGWA@mail.gmail.com>
+ <f2e5b3d5-f38c-40e7-dda9-e1ed737a0135@redhat.com>
+In-Reply-To: <f2e5b3d5-f38c-40e7-dda9-e1ed737a0135@redhat.com>
+From:   Matt Cover <werekraken@gmail.com>
+Date:   Sun, 22 Sep 2019 18:15:08 -0700
+Message-ID: <CAGyo_hohbFP+=eu3jWL954hrOgqu4upaw6HTH2=1qC9jcENWxQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] tuntap: Fallback to automq on TUNSETSTEERINGEBPF
+ prog negative return
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com,
+        Eric Dumazet <edumazet@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Matthew Cover <matthew.cover@stackpath.com>,
+        mail@timurcelik.de, pabeni@redhat.com,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        wangli39@baidu.com, lifei.shirley@bytedance.com,
+        tglx@linutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Sep 22, 2019 at 5:51 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2019/9/23 =E4=B8=8A=E5=8D=886:30, Matt Cover wrote:
+> > On Sun, Sep 22, 2019 at 1:36 PM Michael S. Tsirkin <mst@redhat.com> wro=
+te:
+> >> On Sun, Sep 22, 2019 at 10:43:19AM -0700, Matt Cover wrote:
+> >>> On Sun, Sep 22, 2019 at 5:37 AM Michael S. Tsirkin <mst@redhat.com> w=
+rote:
+> >>>> On Fri, Sep 20, 2019 at 11:58:43AM -0700, Matthew Cover wrote:
+> >>>>> Treat a negative return from a TUNSETSTEERINGEBPF bpf prog as a sig=
+nal
+> >>>>> to fallback to tun_automq_select_queue() for tx queue selection.
+> >>>>>
+> >>>>> Compilation of this exact patch was tested.
+> >>>>>
+> >>>>> For functional testing 3 additional printk()s were added.
+> >>>>>
+> >>>>> Functional testing results (on 2 txq tap device):
+> >>>>>
+> >>>>>    [Fri Sep 20 18:33:27 2019] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D tun no=
+ prog =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() retur=
+ned '-1'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
+> >>>>>    [Fri Sep 20 18:33:27 2019] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D tun pr=
+og -1 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() retur=
+ned '-1'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() retur=
+ned '-1'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_automq_select_queue() ran
+> >>>>>    [Fri Sep 20 18:33:27 2019] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D tun pr=
+og 0 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() retur=
+ned '0'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() retur=
+ned '0'
+> >>>>>    [Fri Sep 20 18:33:27 2019] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D tun pr=
+og 1 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() retur=
+ned '1'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() retur=
+ned '1'
+> >>>>>    [Fri Sep 20 18:33:27 2019] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D tun pr=
+og 2 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: bpf_prog_run_clear_cb() retur=
+ned '2'
+> >>>>>    [Fri Sep 20 18:33:27 2019] tuntap: tun_ebpf_select_queue() retur=
+ned '0'
+> >>>>>
+> >>>>> Signed-off-by: Matthew Cover <matthew.cover@stackpath.com>
+> >>>>
+> >>>> Could you add a bit more motivation data here?
+> >>> Thank you for these questions Michael.
+> >>>
+> >>> I'll plan on adding the below information to the
+> >>> commit message and submitting a v2 of this patch
+> >>> when net-next reopens. In the meantime, it would
+> >>> be very helpful to know if these answers address
+> >>> some of your concerns.
+> >>>
+> >>>> 1. why is this a good idea
+> >>> This change allows TUNSETSTEERINGEBPF progs to
+> >>> do any of the following.
+> >>>   1. implement queue selection for a subset of
+> >>>      traffic (e.g. special queue selection logic
+> >>>      for ipv4, but return negative and use the
+> >>>      default automq logic for ipv6)
+> >>>   2. determine there isn't sufficient information
+> >>>      to do proper queue selection; return
+> >>>      negative and use the default automq logic
+> >>>      for the unknown
+> >>>   3. implement a noop prog (e.g. do
+> >>>      bpf_trace_printk() then return negative and
+> >>>      use the default automq logic for everything)
+> >>>
+> >>>> 2. how do we know existing userspace does not rely on existing behav=
+iour
+> >>> Prior to this change a negative return from a
+> >>> TUNSETSTEERINGEBPF prog would have been cast
+> >>> into a u16 and traversed netdev_cap_txqueue().
+> >>>
+> >>> In most cases netdev_cap_txqueue() would have
+> >>> found this value to exceed real_num_tx_queues
+> >>> and queue_index would be updated to 0.
+> >>>
+> >>> It is possible that a TUNSETSTEERINGEBPF prog
+> >>> return a negative value which when cast into a
+> >>> u16 results in a positive queue_index less than
+> >>> real_num_tx_queues. For example, on x86_64, a
+> >>> return value of -65535 results in a queue_index
+> >>> of 1; which is a valid queue for any multiqueue
+> >>> device.
+> >>>
+> >>> It seems unlikely, however as stated above is
+> >>> unfortunately possible, that existing
+> >>> TUNSETSTEERINGEBPF programs would choose to
+> >>> return a negative value rather than return the
+> >>> positive value which holds the same meaning.
+> >>>
+> >>> It seems more likely that future
+> >>> TUNSETSTEERINGEBPF programs would leverage a
+> >>> negative return and potentially be loaded into
+> >>> a kernel with the old behavior.
+> >> OK if we are returning a special
+> >> value, shouldn't we limit it? How about a special
+> >> value with this meaning?
+> >> If we are changing an ABI let's at least make it
+> >> extensible.
+> >>
+> > A special value with this meaning sounds
+> > good to me. I'll plan on adding a define
+> > set to -1 to cause the fallback to automq.
+>
+>
+> Can it really return -1?
+>
+> I see:
+>
+> static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
+>                                          struct sk_buff *skb)
+> ...
+>
+>
+> >
+> > The way I was initially viewing the old
+> > behavior was that returning negative was
+> > undefined; it happened to have the
+> > outcomes I walked through, but not
+> > necessarily by design.
+>
+>
+> Having such fallback may bring extra troubles, it requires the eBPF
+> program know the existence of the behavior which is not a part of kernel
+> ABI actually. And then some eBPF program may start to rely on that which
+> is pretty dangerous. Note, one important consideration is to have
+> macvtap support where does not have any stuffs like automq.
+>
+> Thanks
+>
 
-On 2019/9/20 下午4:20, Jason Wang wrote:
-> Hi all:
->
-> There are hardware that can do virtio datapath offloading while having
-> its own control path. This path tries to implement a mdev based
-> unified API to support using kernel virtio driver to drive those
-> devices. This is done by introducing a new mdev transport for virtio
-> (virtio_mdev) and register itself as a new kind of mdev driver. Then
-> it provides a unified way for kernel virtio driver to talk with mdev
-> device implementation.
->
-> Though the series only contain kernel driver support, the goal is to
-> make the transport generic enough to support userspace drivers. This
-> means vhost-mdev[1] could be built on top as well by resuing the
-> transport.
->
-> A sample driver is also implemented which simulate a virito-net
-> loopback ethernet device on top of vringh + workqueue. This could be
-> used as a reference implementation for real hardware driver.
->
-> Consider mdev framework only support VFIO device and driver right now,
-> this series also extend it to support other types. This is done
-> through introducing class id to the device and pairing it with
-> id_talbe claimed by the driver. On top, this seris also decouple
-> device specific parents ops out of the common ones.
->
-> Pktgen test was done with virito-net + mvnet loop back device.
->
-> Please review.
+How about we call this TUN_SSE_ABORT
+instead of TUN_SSE_DO_AUTOMQ?
 
-
-CC Parav.
-
-Thanks
-
+TUN_SSE_ABORT could be documented as
+falling back to the default queue
+selection method in either space
+(presumably macvtap has some queue
+selection method when there is no prog).
 
 >
-> Changes from V1:
->
-> - rename device id to class id
-> - add docs for class id and device specific ops (device_ops)
-> - split device_ops into seperate headers
-> - drop the mdev_set_dma_ops()
-> - use device_ops to implement the transport API, then it's not a part
->    of UAPI any more
-> - use GFP_ATOMIC in mvnet sample device and other tweaks
-> - set_vring_base/get_vring_base support for mvnet device
->
-> Jason Wang (6):
->    mdev: class id support
->    mdev: introduce device specific ops
->    mdev: introduce virtio device and its device ops
->    virtio: introudce a mdev based transport
->    vringh: fix copy direction of vringh_iov_push_kern()
->    docs: Sample driver to demonstrate how to implement virtio-mdev
->      framework
->
->   .../driver-api/vfio-mediated-device.rst       |  11 +-
->   drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
->   drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
->   drivers/s390/crypto/vfio_ap_ops.c             |  14 +-
->   drivers/vfio/mdev/Kconfig                     |   7 +
->   drivers/vfio/mdev/Makefile                    |   1 +
->   drivers/vfio/mdev/mdev_core.c                 |  21 +-
->   drivers/vfio/mdev/mdev_driver.c               |  14 +
->   drivers/vfio/mdev/mdev_private.h              |   1 +
->   drivers/vfio/mdev/vfio_mdev.c                 |  37 +-
->   drivers/vfio/mdev/virtio_mdev.c               | 418 +++++++++++
->   drivers/vhost/vringh.c                        |   8 +-
->   include/linux/mdev.h                          |  46 +-
->   include/linux/mod_devicetable.h               |   8 +
->   include/linux/vfio_mdev.h                     |  50 ++
->   include/linux/virtio_mdev.h                   | 141 ++++
->   samples/Kconfig                               |   7 +
->   samples/vfio-mdev/Makefile                    |   1 +
->   samples/vfio-mdev/mbochs.c                    |  19 +-
->   samples/vfio-mdev/mdpy.c                      |  19 +-
->   samples/vfio-mdev/mtty.c                      |  17 +-
->   samples/vfio-mdev/mvnet.c                     | 688 ++++++++++++++++++
->   22 files changed, 1473 insertions(+), 89 deletions(-)
->   create mode 100644 drivers/vfio/mdev/virtio_mdev.c
->   create mode 100644 include/linux/vfio_mdev.h
->   create mode 100644 include/linux/virtio_mdev.h
->   create mode 100644 samples/vfio-mdev/mvnet.c
->
+> >
+> > In order to keep the new behavior
+> > extensible, how should we state that a
+> > negative return other than -1 is
+> > undefined and therefore subject to
+> > change. Is something like this
+> > sufficient?
+> >
+> >    Documentation/networking/tc-actions-env-rules.txt
+> >
+> > Additionally, what should the new
+> > behavior implement when a negative other
+> > than -1 is returned? I would like to have
+> > it do the same thing as -1 for now, but
+> > with the understanding that this behavior
+> > is undefined. Does this sound reasonable?
+> >
+> >>>> 3. why doesn't userspace need a way to figure out whether it runs on=
+ a kernel with and
+> >>>>     without this patch
+> >>> There may be some value in exposing this fact
+> >>> to the ebpf prog loader. What is the standard
+> >>> practice here, a define?
+> >>
+> >> We'll need something at runtime - people move binaries between kernels
+> >> without rebuilding then. An ioctl is one option.
+> >> A sysfs attribute is another, an ethtool flag yet another.
+> >> A combination of these is possible.
+> >>
+> >> And if we are doing this anyway, maybe let userspace select
+> >> the new behaviour? This way we can stay compatible with old
+> >> userspace...
+> >>
+> > Understood. I'll look into adding an
+> > ioctl to activate the new behavior. And
+> > perhaps a method of checking which is
+> > behavior is currently active (in case we
+> > ever want to change the default, say
+> > after some suitably long transition
+> > period).
+> >
+> >>>>
+> >>>> thanks,
+> >>>> MST
+> >>>>
+> >>>>> ---
+> >>>>>   drivers/net/tun.c | 20 +++++++++++---------
+> >>>>>   1 file changed, 11 insertions(+), 9 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> >>>>> index aab0be4..173d159 100644
+> >>>>> --- a/drivers/net/tun.c
+> >>>>> +++ b/drivers/net/tun.c
+> >>>>> @@ -583,35 +583,37 @@ static u16 tun_automq_select_queue(struct tun=
+_struct *tun, struct sk_buff *skb)
+> >>>>>        return txq;
+> >>>>>   }
+> >>>>>
+> >>>>> -static u16 tun_ebpf_select_queue(struct tun_struct *tun, struct sk=
+_buff *skb)
+> >>>>> +static int tun_ebpf_select_queue(struct tun_struct *tun, struct sk=
+_buff *skb)
+> >>>>>   {
+> >>>>>        struct tun_prog *prog;
+> >>>>>        u32 numqueues;
+> >>>>> -     u16 ret =3D 0;
+> >>>>> +     int ret =3D -1;
+> >>>>>
+> >>>>>        numqueues =3D READ_ONCE(tun->numqueues);
+> >>>>>        if (!numqueues)
+> >>>>>                return 0;
+> >>>>>
+> >>>>> +     rcu_read_lock();
+> >>>>>        prog =3D rcu_dereference(tun->steering_prog);
+> >>>>>        if (prog)
+> >>>>>                ret =3D bpf_prog_run_clear_cb(prog->prog, skb);
+> >>>>> +     rcu_read_unlock();
+> >>>>>
+> >>>>> -     return ret % numqueues;
+> >>>>> +     if (ret >=3D 0)
+> >>>>> +             ret %=3D numqueues;
+> >>>>> +
+> >>>>> +     return ret;
+> >>>>>   }
+> >>>>>
+> >>>>>   static u16 tun_select_queue(struct net_device *dev, struct sk_buf=
+f *skb,
+> >>>>>                            struct net_device *sb_dev)
+> >>>>>   {
+> >>>>>        struct tun_struct *tun =3D netdev_priv(dev);
+> >>>>> -     u16 ret;
+> >>>>> +     int ret;
+> >>>>>
+> >>>>> -     rcu_read_lock();
+> >>>>> -     if (rcu_dereference(tun->steering_prog))
+> >>>>> -             ret =3D tun_ebpf_select_queue(tun, skb);
+> >>>>> -     else
+> >>>>> +     ret =3D tun_ebpf_select_queue(tun, skb);
+> >>>>> +     if (ret < 0)
+> >>>>>                ret =3D tun_automq_select_queue(tun, skb);
+> >>>>> -     rcu_read_unlock();
+> >>>>>
+> >>>>>        return ret;
+> >>>>>   }
+> >>>>> --
+> >>>>> 1.8.3.1
