@@ -2,143 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CF9BB122
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 11:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A86BB193
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 11:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403959AbfIWJMm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 23 Sep 2019 05:12:42 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2424 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726363AbfIWJMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 05:12:41 -0400
-Received: from DGGEML403-HUB.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id 9660478361A972C7BF5D;
-        Mon, 23 Sep 2019 17:12:39 +0800 (CST)
-Received: from DGGEML422-HUB.china.huawei.com (10.1.199.39) by
- DGGEML403-HUB.china.huawei.com (10.3.17.33) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 23 Sep 2019 17:12:39 +0800
-Received: from DGGEML525-MBX.china.huawei.com ([169.254.1.34]) by
- dggeml422-hub.china.huawei.com ([10.1.199.39]) with mapi id 14.03.0439.000;
- Mon, 23 Sep 2019 17:12:37 +0800
-From:   "wangxu (AE)" <wangxu72@huawei.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     "jasowang@redhat.com" <jasowang@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] vhost: It's better to use size_t for the 3rd parameter
- of vhost_exceeds_weight()
-Thread-Topic: [PATCH] vhost: It's better to use size_t for the 3rd parameter
- of vhost_exceeds_weight()
-Thread-Index: AQHVceXpZDJBVC0FwEyvtYFrPdoIc6c49ACA
-Date:   Mon, 23 Sep 2019 09:12:36 +0000
-Message-ID: <FCFCADD62FC0CA4FAEA05F13220975B01717A091@dggeml525-mbx.china.huawei.com>
-References: <1569224801-101248-1-git-send-email-wangxu72@huawei.com>
- <20190923040518-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20190923040518-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.61.27.74]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2392221AbfIWJnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 05:43:02 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:44247 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387666AbfIWJnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 05:43:02 -0400
+Received: by mail-io1-f66.google.com with SMTP id j4so31740248iog.11
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 02:43:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rBryJp5wOkHZTqAucRvKJjub57kC1uuRec2f+TsNXZA=;
+        b=Pf0PNUYXIq07cOq8PzMH1MgocBjNK76uI4dB+7L2aw01NeRgmGhgPlfznbQUrhicy+
+         XRpfY+6JWs7BWFgN2A0oWBWz7qkZCFfzLSlVPVWw9eRuo18AnbyUnII7zIA72qXjlOj0
+         ObjfuJTl3nBpvSO1GsbjXjAj5YgLabxB+SerEhRsezzeI9nIW3mLYIG3o0NBHNXX5rwt
+         Eix96NH2aOaSW+lZqQji1JH/GzAvmQbnjpp21sJVzU5IqmaFxI6j2tXwgX+2a9xte/bE
+         aVtqSedZG0tbQnDE/PhV4jTXArHbt3hxjETeG0y5zE2mVrFbx9cU8Gbbnq2MkQmVPbHi
+         /RBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rBryJp5wOkHZTqAucRvKJjub57kC1uuRec2f+TsNXZA=;
+        b=to3tdENr9hOnw0nBdUvw3x+mbM42pNSKTuq7dZFqJQlcduCODomS6Gw4b3sDctU1sv
+         tfgzCds/jLQ+9rsIDBtdT8V3oV3frO0nZ4OE4hn7NKW/QAbRWP41YCR/yquXps+Nyp6A
+         Rz07i9gkgXKYyO9Nx1wA+TZWw2t4vhz2OUxRPhQDnbfFCQ34q1g57ALgnSIb7KMxeBXp
+         KUgRhsHzEqNcSc0BXGOZaFRYUB9Yvzq4oBeKBoE1Gc24/M/nnmT8toseVwr70TX04eQK
+         C9dKCjDLGDzFf0s7Hik5sBiFX4FT1Zr7/p11vUJxr0Ikiyk83Xi55GbtbIyfjcckBOsA
+         mTTw==
+X-Gm-Message-State: APjAAAWAXRNo33+MJLjE2yqBc+rc/Z3kxgRVL4gy9Ipvi+WT8dS8I8q2
+        zVc446iSwSVmPu5E8yyfYXOXIrXCSo1q5LO1plILMg==
+X-Google-Smtp-Source: APXvYqxfI2d3ASqYmB+TDGQMQDg4HkPD9eQT/vS4woTY29QcY7jZ70NGeEz3O+r+kBV08CcCgCtjYgSqK+/b4S4+vho=
+X-Received: by 2002:a5e:8c15:: with SMTP id n21mr21360843ioj.246.1569231781397;
+ Mon, 23 Sep 2019 02:43:01 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <1568882232-12847-1-git-send-email-wenxu@ucloud.cn>
+ <CAJ3xEMhQTr=HPsMs-j3_V6XRKHa0Jo7iYVY+R4U8etoEu9R7jw@mail.gmail.com> <cc63e5ba-661a-72c3-7531-7bd09694549b@ucloud.cn>
+In-Reply-To: <cc63e5ba-661a-72c3-7531-7bd09694549b@ucloud.cn>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Mon, 23 Sep 2019 10:42:50 +0100
+Message-ID: <CAK+XE=kJXoWBO=4A2g9p0VTp7p-iN4Eb-FB+Y9Bdr0vJ_NwiYQ@mail.gmail.com>
+Subject: Re: [PATCH net v3] net/sched: cls_api: Fix nooffloaddevcnt counter
+ when indr block call success
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Roi Dayan <roid@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael
+On Mon, Sep 23, 2019 at 5:20 AM wenxu <wenxu@ucloud.cn> wrote:
+>
+> Hi John & Jakub
+>
+> There are some limitations for indirect tc callback work with  skip_sw ?
+>
 
-	Thanks for your fast reply.
+Hi Wenxu,
+This is not really a limitation.
+As Or points out, indirect block offload is not supposed to work with skip_sw.
+Indirect offload allows us to hook onto existing kernel devices (for
+TC events we may which to offload) that are out of the control of the
+offload driver and, therefore, should always accept software path
+rules.
+For example, the vxlan driver does not implement a setup_tc ndo so it
+does not expect to run rules in hw - it should always handle
+associated rules in the software datapath as a minimum.
+I think accepting skip_sw rules for devices with no in-built concept
+of hardware offload would be wrong.
+Do you have a use case that requires skip_sw rules for such devices?
 
-	As the following code, the 2nd branch of iov_iter_advance() does not check if i->count < size, when this happens, i->count -= size may cause len exceed INT_MAX, and then total_len exceed INT_MAX.
-
-	handle_tx_copy() ->
-		get_tx_bufs(..., &len, ...) ->
-			init_iov_iter() ->
-				iov_iter_advance(iter, ...) 	// has 3 branches: 
-					pipe_advance() 	 	// has checked the size: if (unlikely(i->count < size)) size = i->count;
-					iov_iter_is_discard() ... 	// no check.
-					iterate_and_advance() 	//has checked: if (unlikely(i->count < n)) n = i->count;
-				return iov_iter_count(iter);
-
------Original Message-----
-From: Michael S. Tsirkin [mailto:mst@redhat.com] 
-Sent: Monday, September 23, 2019 4:07 PM
-To: wangxu (AE) <wangxu72@huawei.com>
-Cc: jasowang@redhat.com; kvm@vger.kernel.org; virtualization@lists.linux-foundation.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost: It's better to use size_t for the 3rd parameter of vhost_exceeds_weight()
-
-On Mon, Sep 23, 2019 at 03:46:41PM +0800, wangxu wrote:
-> From: Wang Xu <wangxu72@huawei.com>
-> 
-> Caller of vhost_exceeds_weight(..., total_len) in drivers/vhost/net.c 
-> usually pass size_t total_len, which may be affected by rx/tx package.
-> 
-> Signed-off-by: Wang Xu <wangxu72@huawei.com>
+John
 
 
-Puts a bit more pressure on the register file ...
-why do we care? Is there some way that it can exceed INT_MAX?
-
-> ---
->  drivers/vhost/vhost.c | 4 ++--
->  drivers/vhost/vhost.h | 7 ++++---
->  2 files changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c index 
-> 36ca2cf..159223a 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -412,7 +412,7 @@ static void vhost_dev_free_iovecs(struct vhost_dev 
-> *dev)  }
->  
->  bool vhost_exceeds_weight(struct vhost_virtqueue *vq,
-> -			  int pkts, int total_len)
-> +			  int pkts, size_t total_len)
->  {
->  	struct vhost_dev *dev = vq->dev;
->  
-> @@ -454,7 +454,7 @@ static size_t vhost_get_desc_size(struct 
-> vhost_virtqueue *vq,
->  
->  void vhost_dev_init(struct vhost_dev *dev,
->  		    struct vhost_virtqueue **vqs, int nvqs,
-> -		    int iov_limit, int weight, int byte_weight)
-> +		    int iov_limit, int weight, size_t byte_weight)
->  {
->  	struct vhost_virtqueue *vq;
->  	int i;
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h index 
-> e9ed272..8d80389d 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -172,12 +172,13 @@ struct vhost_dev {
->  	wait_queue_head_t wait;
->  	int iov_limit;
->  	int weight;
-> -	int byte_weight;
-> +	size_t byte_weight;
->  };
->  
-
-
-This just costs extra memory, and value is never large, so I don't think this matters.
-
-> -bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int 
-> total_len);
-> +bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts,
-> +			  size_t total_len);
->  void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
-> -		    int nvqs, int iov_limit, int weight, int byte_weight);
-> +		    int nvqs, int iov_limit, int weight, size_t byte_weight);
->  long vhost_dev_set_owner(struct vhost_dev *dev);  bool 
-> vhost_dev_has_owner(struct vhost_dev *dev);  long 
-> vhost_dev_check_owner(struct vhost_dev *);
-> --
-> 1.8.5.6
+>
+> BR
+>
+> wenxu
+>
+> On 9/19/2019 8:50 PM, Or Gerlitz wrote:
+> >
+> >> successfully bind with a real hw through indr block call, It also add
+> >> nooffloadcnt counter. This counter will lead the rule add failed in
+> >> fl_hw_replace_filter-->tc_setup_cb_call with skip_sw flags.
+> > wait.. indirect tc callbacks are typically used to do hw offloading
+> > for decap rules (tunnel key unset action) set on SW devices (gretap, vxlan).
+> >
+> > However, AFAIK, it's been couple of years since the kernel doesn't support
+> > skip_sw for such rules. Did we enable it again? when? I am somehow
+> > far from the details, so copied some folks..
+> >
+> > Or.
+> >
+> >
+> >> In the tc_setup_cb_call will check the nooffloaddevcnt and skip_sw flags
+> >> as following:
+> >> if (block->nooffloaddevcnt && err_stop)
+> >>         return -EOPNOTSUPP;
+> >>
+> >> So with this patch, if the indr block call success, it will not modify
+> >> the nooffloaddevcnt counter.
+> >>
+> >> Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
+> >> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> >> ---
+> >> v3: rebase to the net
+> >>
+> >>  net/sched/cls_api.c | 30 +++++++++++++++++-------------
+> >>  1 file changed, 17 insertions(+), 13 deletions(-)
+> >>
+> >> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> >> index 32577c2..c980127 100644
+> >> --- a/net/sched/cls_api.c
+> >> +++ b/net/sched/cls_api.c
+> >> @@ -607,11 +607,11 @@ static void tc_indr_block_get_and_ing_cmd(struct net_device *dev,
+> >>         tc_indr_block_ing_cmd(dev, block, cb, cb_priv, command);
+> >>  }
+> >>
+> >> -static void tc_indr_block_call(struct tcf_block *block,
+> >> -                              struct net_device *dev,
+> >> -                              struct tcf_block_ext_info *ei,
+> >> -                              enum flow_block_command command,
+> >> -                              struct netlink_ext_ack *extack)
+> >> +static int tc_indr_block_call(struct tcf_block *block,
+> >> +                             struct net_device *dev,
+> >> +                             struct tcf_block_ext_info *ei,
+> >> +                             enum flow_block_command command,
+> >> +                             struct netlink_ext_ack *extack)
+> >>  {
+> >>         struct flow_block_offload bo = {
+> >>                 .command        = command,
+> >> @@ -621,10 +621,15 @@ static void tc_indr_block_call(struct tcf_block *block,
+> >>                 .block_shared   = tcf_block_shared(block),
+> >>                 .extack         = extack,
+> >>         };
+> >> +
+> >>         INIT_LIST_HEAD(&bo.cb_list);
+> >>
+> >>         flow_indr_block_call(dev, &bo, command);
+> >> -       tcf_block_setup(block, &bo);
+> >> +
+> >> +       if (list_empty(&bo.cb_list))
+> >> +               return -EOPNOTSUPP;
+> >> +
+> >> +       return tcf_block_setup(block, &bo);
+> >>  }
+> >>
+> >>  static bool tcf_block_offload_in_use(struct tcf_block *block)
+> >> @@ -681,8 +686,6 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+> >>                 goto no_offload_dev_inc;
+> >>         if (err)
+> >>                 goto err_unlock;
+> >> -
+> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+> >>         up_write(&block->cb_lock);
+> >>         return 0;
+> >>
+> >> @@ -691,9 +694,10 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+> >>                 err = -EOPNOTSUPP;
+> >>                 goto err_unlock;
+> >>         }
+> >> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+> >> +       if (err)
+> >> +               block->nooffloaddevcnt++;
+> >>         err = 0;
+> >> -       block->nooffloaddevcnt++;
+> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+> >>  err_unlock:
+> >>         up_write(&block->cb_lock);
+> >>         return err;
+> >> @@ -706,8 +710,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+> >>         int err;
+> >>
+> >>         down_write(&block->cb_lock);
+> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+> >> -
+> >>         if (!dev->netdev_ops->ndo_setup_tc)
+> >>                 goto no_offload_dev_dec;
+> >>         err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+> >> @@ -717,7 +719,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+> >>         return;
+> >>
+> >>  no_offload_dev_dec:
+> >> -       WARN_ON(block->nooffloaddevcnt-- == 0);
+> >> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+> >> +       if (err)
+> >> +               WARN_ON(block->nooffloaddevcnt-- == 0);
+> >>         up_write(&block->cb_lock);
+> >>  }
+> >>
+> >> --
+> >> 1.8.3.1
+> >>
