@@ -2,143 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D77EBB820
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B305BB828
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732214AbfIWPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 11:38:22 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35840 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727883AbfIWPiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:38:22 -0400
-Received: by mail-pl1-f194.google.com with SMTP id f19so6672385plr.3
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 08:38:21 -0700 (PDT)
+        id S1728252AbfIWPkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 11:40:37 -0400
+Received: from mtax.cdmx.gob.mx ([187.141.35.197]:14557 "EHLO mtaw.cdmx.gob.mx"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727236AbfIWPkh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 11:40:37 -0400
+X-NAI-Header: Modified by McAfee Email Gateway (4500)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=M/PMh4r97tv7nGSf4Rke5Y5OiYt7ZTJmWzGerKhb1gY=;
-        b=RwY7dq9n7GbzC73yE6fHmE/aQUXzDH2sOFHkeOPM/+YWb//8H6SaSJLL9gxgd4kfFM
-         eFApB+kysf61LLta+9m1CIZpG9smzamplACVnREr/gmMH6vaCF9UgAsoEyPwqsK/uZ+A
-         79PQ8DckIm3V8I/v1L60KIbl/W2dpRRLMFeBfuHrXXdwzyuN58AjMbVQvhuV0u8rz/nG
-         I2PPdR/F4+qCKuDvK4alH7rFOM6liO0cpj8aVudv5mnijQ9SIKHMk5mzVVH3YF/+FuMW
-         quspNDLnD3gRj5CyNcDl9ebryddGZo9FyuLBVKqdzAXJ5uBKKS6Pdc2u+sCgsKJLBYgo
-         q+4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=M/PMh4r97tv7nGSf4Rke5Y5OiYt7ZTJmWzGerKhb1gY=;
-        b=MP9tOJhuPNjFke8qgz6ZJe4yY8y6MG1jEFH2Rl4qm9T/GVQvBjmDKw4XYy0ArZWtxO
-         /wWnQ9vr5I7NTU4HC/L3wicXU84zQ7Ik7JIYPH81L3jQ1nuPUgOT2PXZKRhS89C4L3gH
-         GwHk3Xg1zcnqulHWJg861lpw/JT2lmrJ7Ic5jz/J1OyHa2EQaQy3AnGboSiy/ksaVqlb
-         8QvQSdClhWHKXlenCycxDxvSO42tQFZvxjhZ6XQhL5Xt0oM3WBhwNF7iqOFsC4/ov6mT
-         8Vo3CBYxMcjbz6v3xsoUVN+5rCJAXShZQ7sOp4w7E670B6htavRrw2lR2DEGrDsXt0+g
-         OlkQ==
-X-Gm-Message-State: APjAAAVcHbVYYuTGrUN7ghuiSbryplkkgt7xtjtetVtd9nUhATZXy34m
-        nqFcEYrEYSlEKiCDpSdKgHh2yw==
-X-Google-Smtp-Source: APXvYqzs9ASBw3DusM2g13xJf9ooEmKRG6t7dzWdPpIv7Y9FcVG6jm8BnPklKFEo8ruXldMBOBVQYQ==
-X-Received: by 2002:a17:902:b902:: with SMTP id bf2mr425171plb.56.1569253101493;
-        Mon, 23 Sep 2019 08:38:21 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id fa24sm6409690pjb.13.2019.09.23.08.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Sep 2019 08:38:20 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 08:38:19 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf] selftests/bpf: test_progs: fix client/server race in
- tcp_rtt
-Message-ID: <20190923153819.GA21441@mini-arch>
-References: <20190920233019.187498-1-sdf@google.com>
- <CAEf4BzYFQhPKoDG7kq=_B5caL-0Af2duL_Uz5v3oVw=BKQ430w@mail.gmail.com>
+        d=cdmx.gob.mx; s=72359050-3965-11E6-920A-0192F7A2F08E;
+        t=1569253015; h=X-Virus-Scanned:Content-Type:
+         MIME-Version:Content-Transfer-Encoding:Content-Description:
+         Subject:To:From:Date:Reply-To:Message-Id:X-AnalysisOut:
+         X-AnalysisOut:X-AnalysisOut:X-AnalysisOut:
+         X-AnalysisOut:X-AnalysisOut:X-SAAS-TrackingID:
+         X-NAIMIME-Disclaimer:X-NAIMIME-Modified:X-NAI-Spam-Flag:
+         X-NAI-Spam-Threshold:X-NAI-Spam-Score:X-NAI-Spam-Rules:
+         X-NAI-Spam-Version; bh=YEoI7TbAIVEIEVpVA8
+        ocBbi/eOBwvgqX3xU3MZxpOBM=; b=UDFtz11gkoTAXDv3rD3A
+        Q49L6BddUv8LJ864zOZR5uBrmehP4y/x6gdlaj1GezIf17ns7F
+        Xk71Hfy0CtjRd/OM+/x6LevUMHdA+4q8HnyVWtFmBPLCwf2QKo
+        JtICWOILJGPI/70hTqIS+zNAQW9xGCKRgCT2e+u07SvkVZMrub
+        4=
+Received: from correo.seciti.cdmx.gob.mx (gdf-correo.cdmx.gob.mx [10.250.102.17]) by mtaw.cdmx.gob.mx with smtp
+         id 3d88_590e_5ece906b_1875_45a3_b9d0_7fec54ca061d;
+        Mon, 23 Sep 2019 10:36:55 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTP id A5929E4CA;
+        Mon, 23 Sep 2019 08:49:34 -0500 (CDT)
+Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
+        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id nzpEZBPzKat1; Mon, 23 Sep 2019 08:49:34 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTP id 5607B96D5;
+        Mon, 23 Sep 2019 07:09:42 -0500 (CDT)
+X-Virus-Scanned: amavisd-new at gdf-correo.df.gob.mx
+Received: from correo.seciti.cdmx.gob.mx ([127.0.0.1])
+        by localhost (gdf-correo.df.gob.mx [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id sWcfMvuWhCS7; Mon, 23 Sep 2019 07:09:42 -0500 (CDT)
+Received: from [51.89.105.227] (ip227.ip-51-89-105.eu [51.89.105.227])
+        by gdf-correo.df.gob.mx (Postfix) with ESMTPSA id E6FCBAD4B;
+        Mon, 23 Sep 2019 06:08:37 -0500 (CDT)
+Content-Type: text/plain;
+  charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYFQhPKoDG7kq=_B5caL-0Af2duL_Uz5v3oVw=BKQ430w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: base64
+Content-Description: Mail message body
+Subject: =?utf-8?b?UmU6IOKCrCAyLDAwMCwwMDAtMDAgRVVS?=
+To:     Recipients <dir.general.odu@vcarranza.cdmx.gob.mx>
+From:   "Herr Richard Wahl" <dir.general.odu@vcarranza.cdmx.gob.mx>
+Date:   Mon, 23 Sep 2019 04:08:32 -0700
+Reply-To: liezlnatashavanessa@gmail.com
+Message-Id: <20190923110838.E6FCBAD4B@gdf-correo.df.gob.mx>
+X-AnalysisOut: [v=2.2 cv=TNY1cxta c=1 sm=1 tr=0 p=2OI1PNnC8JhL0FsIPBYA:9 p]
+X-AnalysisOut: [=_N-xJts-NSoA:10 p=lGgLjOrbpN2RxnAZ7M7O:22 a=KsSCQl7LcZej7]
+X-AnalysisOut: [7FuluUcQw==:117 a=vLITcJQlLBtmuSUEdzrZzA==:17 a=RwXDzVytnx]
+X-AnalysisOut: [sA:10 a=IkcTkHD0fZMA:10 a=x7bEGLp0ZPQA:10 a=J70Eh1EUuV4A:1]
+X-AnalysisOut: [0 a=vnREMb7VAAAA:8 a=pGLkceISAAAA:8 a=QEXdDO2ut3YA:10 a=RY]
+X-AnalysisOut: [i3TiWdedcA:10 a=zjFIccoYYKb6Fu6_iNvC:22]
+X-SAAS-TrackingID: 796e88d5.0.93020198.00-2319.156619500.s12p02m016.mxlogic.net
+X-NAIMIME-Disclaimer: 1
+X-NAIMIME-Modified: 1
+X-NAI-Spam-Flag: NO
+X-NAI-Spam-Threshold: 3
+X-NAI-Spam-Score: -5000
+X-NAI-Spam-Rules: 1 Rules triggered
+        WHITELISTED=-5000
+X-NAI-Spam-Version: 2.3.0.9418 : core <6640> : inlines <7145> : streams
+ <1833603> : uri <2909285>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/22, Andrii Nakryiko wrote:
-> On Sun, Sep 22, 2019 at 12:10 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > This is the same problem I found earlier in test_sockopt_inherit:
-> > there is a race between server thread doing accept() and client
-> > thread doing connect(). Let's explicitly synchronize them via
-> > pthread conditional variable.
-> >
-> > Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 16 +++++++++++++++-
-> >  1 file changed, 15 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > index fdc0b3614a9e..e64058906bcd 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > @@ -203,6 +203,9 @@ static int start_server(void)
-> >         return fd;
-> >  }
-> >
-> > +static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
-> > +static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
-> > +
-> >  static void *server_thread(void *arg)
-> >  {
-> >         struct sockaddr_storage addr;
-> > @@ -215,6 +218,10 @@ static void *server_thread(void *arg)
-> >                 return NULL;
-> >         }
-> >
-> > +       pthread_mutex_lock(&server_started_mtx);
-> > +       pthread_cond_signal(&server_started);
-> > +       pthread_mutex_unlock(&server_started_mtx);
-> > +
-> >         client_fd = accept(fd, (struct sockaddr *)&addr, &len);
-> >         if (CHECK_FAIL(client_fd < 0)) {
-> >                 perror("Failed to accept client");
-> > @@ -248,7 +255,14 @@ void test_tcp_rtt(void)
-> >         if (CHECK_FAIL(server_fd < 0))
-> >                 goto close_cgroup_fd;
-> >
-> > -       pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
-> > +       if (CHECK_FAIL(pthread_create(&tid, NULL, server_thread,
-> > +                                     (void *)&server_fd)))
-> > +               goto close_cgroup_fd;
-> > +
-> > +       pthread_mutex_lock(&server_started_mtx);
-> > +       pthread_cond_wait(&server_started, &server_started_mtx);
-> > +       pthread_mutex_unlock(&server_started_mtx);
-> 
-> 
-> If the server fails to listen, then we'll never get a signal, right?
-> Let's use timedwait instead to avoid test getting stuck forever in
-> such cases?
-Good point. How about I do the same thing I do in sockopt_inherit tests:
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/prog_tests/sockopt_inherit.c#n73
-
-	err = listen()
-	pthread_cond_signal()
-	if (CHECK_FAIL(err)) {
-		return;
-	}
-
-Should fix the problem of getting stuck forever without any timeouts.
-I'll send a v2 later today.
-
-> > +
-> >         CHECK_FAIL(run_test(cgroup_fd, server_fd));
-> >         close(server_fd);
-> >  close_cgroup_fd:
-> > --
-> > 2.23.0.351.gc4317032e6-goog
-> >
+TGllYmVyIEZyZXVuZCwKCkljaCBiaW4gSGVyciBSaWNoYXJkIFdhaGwgZGVyIE1lZ2EtR2V3aW5u
+ZXIgdm9uICQgNTMzTSBJbiBNZWdhIE1pbGxpb25zIEphY2twb3Qgc3BlbmRlIGljaCBhbiA1IHp1
+ZsOkbGxpZ2UgUGVyc29uZW4sIHdlbm4gU2llIGRpZXNlIEUtTWFpbCBlcmhhbHRlbiwgZGFubiB3
+dXJkZSBJaHJlIEUtTWFpbCBuYWNoIGVpbmVtIFNwaW5iYWxsIGF1c2dld8OkaGx0LiBJY2ggaGFi
+ZSBkZW4gZ3LDtsOfdGVuIFRlaWwgbWVpbmVzIFZlcm3DtmdlbnMgYXVmIGVpbmUgUmVpaGUgdm9u
+IFdvaGx0w6R0aWdrZWl0c29yZ2FuaXNhdGlvbmVuIHVuZCBPcmdhbmlzYXRpb25lbiB2ZXJ0ZWls
+dC4gSWNoIGhhYmUgbWljaCBmcmVpd2lsbGlnIGRhenUgZW50c2NoaWVkZW4sIElobmVuIGRlbiBC
+ZXRyYWcgdm9uIOKCrCAyLjAwMC4wMDAsMDAgenUgc3BlbmRlbiBlaW5lIGRlciBhdXNnZXfDpGhs
+dGVuIDUsIHVtIG1laW5lIEdld2lubmUgenUgw7xiZXJwcsO8ZmVuLCBmaW5kZW4gU2llIGF1ZiBt
+ZWluZXIgWW91IFR1YmUgU2VpdGUgdW50ZW4uCgpVSFIgTUlDSCBISUVSOiBodHRwczovL3d3dy55
+b3V0dWJlLmNvbS93YXRjaD92PXRuZTAyRXhORHJ3CgpEYXMgaXN0IGRlaW4gU3BlbmRlbmNvZGU6
+IFtERjAwNDMwMzQyMDE4XQoKQW50d29ydGVuIFNpZSBtaXQgZGVtIFNwZW5kZW5jb2RlIGF1ZiBk
+aWVzZSBFLU1haWw6IGxpZXpsbmF0YXNoYXZhbmVzc2FAZ21haWwuY29tCgpJY2ggaG9mZmUsIFNp
+ZSB1bmQgSWhyZSBGYW1pbGllIGdsw7xja2xpY2ggenUgbWFjaGVuLgoKR3LDvMOfZQoKSGVyciBS
+aWNoYXJkIFdhaGwKCgpMYSBpbmZvcm1hY2lvbiBjb250ZW5pZGEgZW4gZXN0ZSBjb3JyZW8sIGFz
+aSBjb21vIGxhIGNvbnRlbmlkYSBlbiBsb3MgZG9jdW1lbnRvcyBhbmV4b3MsIHB1ZWRlIGNvbnRl
+bmVyIGRhdG9zIHBlcnNvbmFsZXMsIHBvciBsbyBxdWUgc3UgZGlmdXNpb24gZXMgcmVzcG9uc2Fi
+aWxpZGFkIGRlIHF1aWVuIGxvcyB0cmFuc21pdGUgeSBxdWllbiBsb3MgcmVjaWJlLCBlbiB0w6ly
+bWlub3MgZGUgbG8gZGlzcHVlc3RvIHBvciBsYXMgZnJhY2Npb25lcyBJSSB5IFZJSSBkZWwgYXJ0
+aWN1bG8gNCwgdWx0aW1vIHBhcnJhZm8gZGVsIGFydGljdWxvIDgsIGFydGljdWxvIDM2IHBhcnJh
+Zm8gSUksIDM4IGZyYWNjaW9uIEkgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxhIExleSBkZSBUcmFu
+c3BhcmVuY2lhIHkgQWNjZXNvIGEgbGEgSW5mb3JtYWNpb24gUHVibGljYSBkZWwgRGlzdHJpdG8g
+RmVkZXJhbC4NCkxvcyBEYXRvcyBQZXJzb25hbGVzIHNlIGVuY3VlbnRyYW4gcHJvdGVnaWRvcyBw
+b3IgbGEgTGV5IGRlIFByb3RlY2Npb24gZGUgRGF0b3MgUGVyc29uYWxlcyBkZWwgRGlzdHJpdG8g
+RmVkZXJhbCwgcG9yIGxvIHF1ZSBzdSBkaWZ1c2lvbiBzZSBlbmN1ZW50cmEgdHV0ZWxhZGEgZW4g
+c3VzIGFydGljdWxvcyAyLCA1LCAxNiwgMjEsIDQxIHkgZGVtYXMgcmVsYXRpdm9zIHkgYXBsaWNh
+YmxlcywgZGViaWVuZG8gc3VqZXRhcnNlIGVuIHN1IGNhc28sIGEgbGFzIGRpc3Bvc2ljaW9uZXMg
+cmVsYXRpdmFzIGEgbGEgY3JlYWNpb24sIG1vZGlmaWNhY2lvbiBvIHN1cHJlc2lvbiBkZSBkYXRv
+cyBwZXJzb25hbGVzIHByZXZpc3Rvcy4gQXNpbWlzbW8sIGRlYmVyYSBlc3RhcnNlIGEgbG8gc2XD
+sWFsYWRvIGVuIGxvcyBudW1lcmFsZXMgMSAsIDMsIDEyLCAxOCwgMTksIDIwLCAyMSwgMjMsIDI0
+LCAyOSwgMzUgeSBkZW1hcyBhcGxpY2FibGVzIGRlIGxvcyBMaW5lYW1pZW50b3MgcGFyYSBsYSBQ
+cm90ZWNjaW9uIGRlIERhdG9zIFBlcnNvbmFsZXMgZW4gZWwgRGlzdHJpdG8gRmVkZXJhbC4NCkVu
+IGVsIHVzbyBkZSBsYXMgdGVjbm9sb2dpYXMgZGUgbGEgaW5mb3JtYWNpb24geSBjb211bmljYWNp
+b25lcyBkZWwgR29iaWVybm8gZGVsIERpc3RyaXRvIEZlZGVyYWwsIGRlYmVyYSBvYnNlcnZhcnNl
+IHB1bnR1YWxtZW50ZSBsbyBkaXNwdWVzdG8gcG9yIGxhIExleSBHb2JpZXJubyBFbGVjdHJvbmlj
+byBkZWwgRGlzdHJpdG8gRmVkZXJhbCwgbGEgbGV5IHBhcmEgaGFjZXIgZGUgbGEgQ2l1ZGFkIGRl
+IE1leGljbyB1bmEgQ2l1ZGFkIE1hcyBBYmllcnRhLCBlbCBhcGFydGFkbyAxMCBkZSBsYSBDaXJj
+dWxhciBVbm8gdmlnZW50ZSB5IGxhcyBOb3JtYXMgR2VuZXJhbGVzIHF1ZSBkZWJlcmFuIG9ic2Vy
+dmFyc2UgZW4gbWF0ZXJpYSBkZSBTZWd1cmlkYWQgZGUgbGEgSW5mb3JtYWNpb24gZW4gbGEgQWRt
+aW5pc3RyYWNpb24gUHVibGljYSBkZWwgRGlzdHJpdG8gRmVkZXJhbC4K
