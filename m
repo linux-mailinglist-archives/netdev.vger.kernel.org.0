@@ -2,210 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A86BB193
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 11:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57605BB1C9
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 11:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392221AbfIWJnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 05:43:02 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:44247 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387666AbfIWJnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 05:43:02 -0400
-Received: by mail-io1-f66.google.com with SMTP id j4so31740248iog.11
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 02:43:01 -0700 (PDT)
+        id S2407465AbfIWJ7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 05:59:21 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40224 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405009AbfIWJ7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 05:59:21 -0400
+Received: by mail-wm1-f65.google.com with SMTP id b24so8557448wmj.5;
+        Mon, 23 Sep 2019 02:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rBryJp5wOkHZTqAucRvKJjub57kC1uuRec2f+TsNXZA=;
-        b=Pf0PNUYXIq07cOq8PzMH1MgocBjNK76uI4dB+7L2aw01NeRgmGhgPlfznbQUrhicy+
-         XRpfY+6JWs7BWFgN2A0oWBWz7qkZCFfzLSlVPVWw9eRuo18AnbyUnII7zIA72qXjlOj0
-         ObjfuJTl3nBpvSO1GsbjXjAj5YgLabxB+SerEhRsezzeI9nIW3mLYIG3o0NBHNXX5rwt
-         Eix96NH2aOaSW+lZqQji1JH/GzAvmQbnjpp21sJVzU5IqmaFxI6j2tXwgX+2a9xte/bE
-         aVtqSedZG0tbQnDE/PhV4jTXArHbt3hxjETeG0y5zE2mVrFbx9cU8Gbbnq2MkQmVPbHi
-         /RBg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pZat5lUolRKbSmxaPbyGXxDk1B7dZYPUSUq5sLmm1BQ=;
+        b=hUWQSES5Ny2aMoCeHoPOJHTls6VRirtd7g83AFcCswq6McQ4GLtm6ywiCqRvvJF8X8
+         kV6LcSvdKlYrUMSI/jFc5rrl82uenzGimh1grCiYylU+o00XZtRmirsQgdw5cJuELQd8
+         vXT7yqit1bfLPeqqB7OrKO5gLD5El39KoRsdIJJt+ZX07Z61pjYSKxOcm+6AefhGrIXN
+         fGzgELM4FVEc7XI9X4CyAiVodX60G3sTOC8GKexpCcIf7kerP3ZhWcz8QhhfG8LE0RpB
+         4I3VgwJWUmzlhJJgupK1WSHslnu4mqww8C8BYy5KxO5h+op8L6zJijngR1pR6f7+fR6t
+         2wgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rBryJp5wOkHZTqAucRvKJjub57kC1uuRec2f+TsNXZA=;
-        b=to3tdENr9hOnw0nBdUvw3x+mbM42pNSKTuq7dZFqJQlcduCODomS6Gw4b3sDctU1sv
-         tfgzCds/jLQ+9rsIDBtdT8V3oV3frO0nZ4OE4hn7NKW/QAbRWP41YCR/yquXps+Nyp6A
-         Rz07i9gkgXKYyO9Nx1wA+TZWw2t4vhz2OUxRPhQDnbfFCQ34q1g57ALgnSIb7KMxeBXp
-         KUgRhsHzEqNcSc0BXGOZaFRYUB9Yvzq4oBeKBoE1Gc24/M/nnmT8toseVwr70TX04eQK
-         C9dKCjDLGDzFf0s7Hik5sBiFX4FT1Zr7/p11vUJxr0Ikiyk83Xi55GbtbIyfjcckBOsA
-         mTTw==
-X-Gm-Message-State: APjAAAWAXRNo33+MJLjE2yqBc+rc/Z3kxgRVL4gy9Ipvi+WT8dS8I8q2
-        zVc446iSwSVmPu5E8yyfYXOXIrXCSo1q5LO1plILMg==
-X-Google-Smtp-Source: APXvYqxfI2d3ASqYmB+TDGQMQDg4HkPD9eQT/vS4woTY29QcY7jZ70NGeEz3O+r+kBV08CcCgCtjYgSqK+/b4S4+vho=
-X-Received: by 2002:a5e:8c15:: with SMTP id n21mr21360843ioj.246.1569231781397;
- Mon, 23 Sep 2019 02:43:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <1568882232-12847-1-git-send-email-wenxu@ucloud.cn>
- <CAJ3xEMhQTr=HPsMs-j3_V6XRKHa0Jo7iYVY+R4U8etoEu9R7jw@mail.gmail.com> <cc63e5ba-661a-72c3-7531-7bd09694549b@ucloud.cn>
-In-Reply-To: <cc63e5ba-661a-72c3-7531-7bd09694549b@ucloud.cn>
-From:   John Hurley <john.hurley@netronome.com>
-Date:   Mon, 23 Sep 2019 10:42:50 +0100
-Message-ID: <CAK+XE=kJXoWBO=4A2g9p0VTp7p-iN4Eb-FB+Y9Bdr0vJ_NwiYQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net/sched: cls_api: Fix nooffloaddevcnt counter
- when indr block call success
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pZat5lUolRKbSmxaPbyGXxDk1B7dZYPUSUq5sLmm1BQ=;
+        b=H+AIf8pJ+8vmp/GtrLEhpeylhywo4GFPrhDbssnPxHuO8fp667zd20hPlrM7jSTgXp
+         65kKtM4/nnCutm9D5X97M8IS6QEL4Y2/d5+jxI51vQ0LO6kH70Rt1Nf6z/t1AOvhGylp
+         or7urRehvqZPMXhtfkz44rOCo1lsIoHNRkcgOQ66gdRUi6y03phcJ+9VGqyNUkyL4wM3
+         SD1uaUiZuGiGUut2m3MQ3YAs+Ze7TO/ddkTf9iHIGLISSnEmBGl979RLpkJywIEKHONb
+         ec5Z7Mwn/7WjkDyPeipc250xYF28hhS6eztAB4rR8lIYwQngzBxiSNpnUXg+bjCqmSlx
+         LIeA==
+X-Gm-Message-State: APjAAAU+CbUQcEExnQ3VSLClP3NSX5PHtYfgqbTU0hSry7RKGFX+a/zm
+        1h3PsCy8nkAy+z/mM2SDn3s=
+X-Google-Smtp-Source: APXvYqxxCZUafviZ7h5BmtmdIFCNc6ycWGOFv3lEZWRlsrhIUMvFD8zg/JW4je9birbP9Sc/TmdMCg==
+X-Received: by 2002:a1c:7418:: with SMTP id p24mr12409366wmc.132.1569232757976;
+        Mon, 23 Sep 2019 02:59:17 -0700 (PDT)
+Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
+        by smtp.gmail.com with ESMTPSA id t6sm16422059wmf.8.2019.09.23.02.59.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Sep 2019 02:59:16 -0700 (PDT)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Roi Dayan <roid@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jon Hunter <jonathanh@nvidia.com>,
+        Bitan Biswas <bbiswas@nvidia.com>, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH net-next] net: stmmac: Fix page pool size
+Date:   Mon, 23 Sep 2019 11:59:15 +0200
+Message-Id: <20190923095915.11588-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 5:20 AM wenxu <wenxu@ucloud.cn> wrote:
->
-> Hi John & Jakub
->
-> There are some limitations for indirect tc callback work with  skip_sw ?
->
+From: Thierry Reding <treding@nvidia.com>
 
-Hi Wenxu,
-This is not really a limitation.
-As Or points out, indirect block offload is not supposed to work with skip_sw.
-Indirect offload allows us to hook onto existing kernel devices (for
-TC events we may which to offload) that are out of the control of the
-offload driver and, therefore, should always accept software path
-rules.
-For example, the vxlan driver does not implement a setup_tc ndo so it
-does not expect to run rules in hw - it should always handle
-associated rules in the software datapath as a minimum.
-I think accepting skip_sw rules for devices with no in-built concept
-of hardware offload would be wrong.
-Do you have a use case that requires skip_sw rules for such devices?
+The size of individual pages in the page pool in given by an order. The
+order is the binary logarithm of the number of pages that make up one of
+the pages in the pool. However, the driver currently passes the number
+of pages rather than the order, so it ends up wasting quite a bit of
+memory.
 
-John
+Fix this by taking the binary logarithm and passing that in the order
+field.
 
+Fixes: 2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->
-> BR
->
-> wenxu
->
-> On 9/19/2019 8:50 PM, Or Gerlitz wrote:
-> >
-> >> successfully bind with a real hw through indr block call, It also add
-> >> nooffloadcnt counter. This counter will lead the rule add failed in
-> >> fl_hw_replace_filter-->tc_setup_cb_call with skip_sw flags.
-> > wait.. indirect tc callbacks are typically used to do hw offloading
-> > for decap rules (tunnel key unset action) set on SW devices (gretap, vxlan).
-> >
-> > However, AFAIK, it's been couple of years since the kernel doesn't support
-> > skip_sw for such rules. Did we enable it again? when? I am somehow
-> > far from the details, so copied some folks..
-> >
-> > Or.
-> >
-> >
-> >> In the tc_setup_cb_call will check the nooffloaddevcnt and skip_sw flags
-> >> as following:
-> >> if (block->nooffloaddevcnt && err_stop)
-> >>         return -EOPNOTSUPP;
-> >>
-> >> So with this patch, if the indr block call success, it will not modify
-> >> the nooffloaddevcnt counter.
-> >>
-> >> Fixes: 7f76fa36754b ("net: sched: register callbacks for indirect tc block binds")
-> >> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> >> ---
-> >> v3: rebase to the net
-> >>
-> >>  net/sched/cls_api.c | 30 +++++++++++++++++-------------
-> >>  1 file changed, 17 insertions(+), 13 deletions(-)
-> >>
-> >> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> >> index 32577c2..c980127 100644
-> >> --- a/net/sched/cls_api.c
-> >> +++ b/net/sched/cls_api.c
-> >> @@ -607,11 +607,11 @@ static void tc_indr_block_get_and_ing_cmd(struct net_device *dev,
-> >>         tc_indr_block_ing_cmd(dev, block, cb, cb_priv, command);
-> >>  }
-> >>
-> >> -static void tc_indr_block_call(struct tcf_block *block,
-> >> -                              struct net_device *dev,
-> >> -                              struct tcf_block_ext_info *ei,
-> >> -                              enum flow_block_command command,
-> >> -                              struct netlink_ext_ack *extack)
-> >> +static int tc_indr_block_call(struct tcf_block *block,
-> >> +                             struct net_device *dev,
-> >> +                             struct tcf_block_ext_info *ei,
-> >> +                             enum flow_block_command command,
-> >> +                             struct netlink_ext_ack *extack)
-> >>  {
-> >>         struct flow_block_offload bo = {
-> >>                 .command        = command,
-> >> @@ -621,10 +621,15 @@ static void tc_indr_block_call(struct tcf_block *block,
-> >>                 .block_shared   = tcf_block_shared(block),
-> >>                 .extack         = extack,
-> >>         };
-> >> +
-> >>         INIT_LIST_HEAD(&bo.cb_list);
-> >>
-> >>         flow_indr_block_call(dev, &bo, command);
-> >> -       tcf_block_setup(block, &bo);
-> >> +
-> >> +       if (list_empty(&bo.cb_list))
-> >> +               return -EOPNOTSUPP;
-> >> +
-> >> +       return tcf_block_setup(block, &bo);
-> >>  }
-> >>
-> >>  static bool tcf_block_offload_in_use(struct tcf_block *block)
-> >> @@ -681,8 +686,6 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
-> >>                 goto no_offload_dev_inc;
-> >>         if (err)
-> >>                 goto err_unlock;
-> >> -
-> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
-> >>         up_write(&block->cb_lock);
-> >>         return 0;
-> >>
-> >> @@ -691,9 +694,10 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
-> >>                 err = -EOPNOTSUPP;
-> >>                 goto err_unlock;
-> >>         }
-> >> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
-> >> +       if (err)
-> >> +               block->nooffloaddevcnt++;
-> >>         err = 0;
-> >> -       block->nooffloaddevcnt++;
-> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
-> >>  err_unlock:
-> >>         up_write(&block->cb_lock);
-> >>         return err;
-> >> @@ -706,8 +710,6 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
-> >>         int err;
-> >>
-> >>         down_write(&block->cb_lock);
-> >> -       tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> >> -
-> >>         if (!dev->netdev_ops->ndo_setup_tc)
-> >>                 goto no_offload_dev_dec;
-> >>         err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> >> @@ -717,7 +719,9 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
-> >>         return;
-> >>
-> >>  no_offload_dev_dec:
-> >> -       WARN_ON(block->nooffloaddevcnt-- == 0);
-> >> +       err = tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
-> >> +       if (err)
-> >> +               WARN_ON(block->nooffloaddevcnt-- == 0);
-> >>         up_write(&block->cb_lock);
-> >>  }
-> >>
-> >> --
-> >> 1.8.3.1
-> >>
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index ecd461207dbc..f8c90dba6db8 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1550,13 +1550,15 @@ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
+ 	for (queue = 0; queue < rx_count; queue++) {
+ 		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+ 		struct page_pool_params pp_params = { 0 };
++		unsigned int num_pages;
+ 
+ 		rx_q->queue_index = queue;
+ 		rx_q->priv_data = priv;
+ 
+ 		pp_params.flags = PP_FLAG_DMA_MAP;
+ 		pp_params.pool_size = DMA_RX_SIZE;
+-		pp_params.order = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
++		num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
++		pp_params.order = ilog2(num_pages);
+ 		pp_params.nid = dev_to_node(priv->device);
+ 		pp_params.dev = priv->device;
+ 		pp_params.dma_dir = DMA_FROM_DEVICE;
+-- 
+2.23.0
+
