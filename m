@@ -2,89 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E57BB54C
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 15:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6717BB556
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 15:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407970AbfIWNcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 09:32:14 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35300 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404581AbfIWNcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 09:32:14 -0400
-Received: by mail-io1-f65.google.com with SMTP id q10so33472293iop.2
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 06:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=tZJDRalZ5M8NTfZheuXRY6cu0G2NEfkwOo4qdeVaeMM=;
-        b=G20fzvkeGDwMEDBpRT19iBy2AcLC68SPWA2BVcJ6RkDSFzeGaTib8QLFUoOGVSwwE6
-         acHPQYHHwmgKkDc3q5Ol7ydgdQ/Y5DRCj6xPaNK2+9SJzPJgfhd6EeLVC8l5LcL7bSCo
-         ymuALG/gbdEUE79mBLJvf/K7UbFDVThIHNsU0g5ON1lhzI+nV62W/y9ZX01jIKHacSQR
-         6JCElt67Zjqv4ZjRSpl+vhVlLsucxRwmBGBNH1oEE0gz2a1WJd6cfWoXHFNKobqdugbx
-         rhj/SO9FKZvLac7HCdYAoFQeDYoJ0jVOHvJIPv7KtiZXfVubFJCL413tXZ3dVMrDGwZw
-         ahtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=tZJDRalZ5M8NTfZheuXRY6cu0G2NEfkwOo4qdeVaeMM=;
-        b=tSdnFemxBsdCLNgSUuFB147kHsVrSpjfFqEZD/Pu6rXXuAylQ57oj+eG8q0vo2Qdtf
-         BmH2f1T5JZuvzwl12oJLqZPh83O9Tzxa97xpuqLtpn4YUypwFeOQq3qB2Ei18R5u5WW/
-         3X3mLrtyDNcdLoNJ9UVW5wuwtCyLb05Dmnq7YODd/zML7WBQpzYKU1mq1xMexDelWoO5
-         xqYf0kCdwZQglNFLA+4AYIxymEIQCKKDc+6OuxCfhtcpTJU2JRnbCTpEIYhmyytcsAvc
-         YfIxXD4Dj9gcny6TIbpchIloldTl+eYE+RGpcUkdkWbCIYZ1NU1SeDT4KGTHO/1L1nSx
-         9VGA==
-X-Gm-Message-State: APjAAAXINvJ5GYKQiR3Q+zze7igQN0q/9olKu02lzA5Fo8ESz7+Z+4B+
-        yMwhlCxJb8FB0vR00WEb7rTawjXcuEjsbrSq+1U=
-X-Google-Smtp-Source: APXvYqyU6GfcYhL6PkqfcylJaI08v6A5aRgmLWm4Jaaxqt8I35Cv7/+pra5se7daiXdEEcg1mZXjuWBAaxFfWfVeQ8A=
-X-Received: by 2002:a6b:e01a:: with SMTP id z26mr1643167iog.260.1569245533892;
- Mon, 23 Sep 2019 06:32:13 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ac0:bc02:0:0:0:0:0 with HTTP; Mon, 23 Sep 2019 06:32:13
- -0700 (PDT)
-Reply-To: mr.norhizamhashim@outlook.com
-From:   "Mr. Nor Hizam Hashim" <maurinejustin2@gmail.com>
-Date:   Tue, 24 Sep 2019 00:32:13 +1100
-Message-ID: <CAK-w1dOSt1Q0GCdCehxYAmnohV4iUCPca-XkifKWmh=BTk__6g@mail.gmail.com>
-Subject: Waiting for your urgent reply,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S2408002AbfIWNdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 09:33:01 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:62425 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2404581AbfIWNdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 09:33:00 -0400
+X-IronPort-AV: E=Sophos;i="5.64,540,1559487600"; 
+   d="scan'208";a="27257867"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 23 Sep 2019 22:32:58 +0900
+Received: from be1yocto.ree.adwin.renesas.com (unknown [172.29.43.62])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id DB7BC40065BF;
+        Mon, 23 Sep 2019 22:32:55 +0900 (JST)
+From:   Biju Das <biju.das@bp.renesas.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Biju Das <biju.das@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, Simon Horman <horms@verge.net.au>,
+        Chris Paterson <Chris.Paterson2@renesas.com>
+Subject: [PATCH net-next] dt-bindings: net: ravb: Add support for r8a774b1 SoC
+Date:   Mon, 23 Sep 2019 14:32:46 +0100
+Message-Id: <1569245566-9987-1-git-send-email-biju.das@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir/ Madam,
-Please forgive me if my request is not acceptable by your kind person.
+Document RZ/G2N (R8A774B1) SoC bindings.
 
-I am Mr. Nor Hizam Hashim, Working at MAYBANK (Malaysia) as the
-Independent Non-Executive Director & Audit Committee. During our last
-banking Audits we discovered an abandoned account belongs to one of
-our Foreign Deceased Customer, Late Mr. Wang Jian, The Co-founder and
-Co-chairman of HNA Group, a Chinese conglomerate with significant real
-estate ownerships across the U.S., died in an accident while on a
-business trip in France on Tuesday.
+Signed-off-by: Biju Das <biju.das@bp.renesas.com>
+---
+ Documentation/devicetree/bindings/net/renesas,ravb.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Please go through this link:
-https://observer.com/2018/07/wang-jian-hna-founder-dies-tragic-fall/
+diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+index 7ad3621..5df4aa7 100644
+--- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
++++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+@@ -18,6 +18,7 @@ Required properties:
+ 		R-Car Gen2 and RZ/G1 devices.
+ 
+       - "renesas,etheravb-r8a774a1" for the R8A774A1 SoC.
++      - "renesas,etheravb-r8a774b1" for the R8A774B1 SoC.
+       - "renesas,etheravb-r8a774c0" for the R8A774C0 SoC.
+       - "renesas,etheravb-r8a7795" for the R8A7795 SoC.
+       - "renesas,etheravb-r8a7796" for the R8A7796 SoC.
+-- 
+2.7.4
 
- I am writing to request your assistance in transferring the sum of
-$15.000.000.00 (Fifteen Million United States Dollars) into your
-account as the Late Mr. Wang Jian Foreign Business Partner. Meanwhile,
-before I contacted you I have done personal investigation in locating
-any of Late Mr. Wang Jian relatives who knows about the account, but I
-came out unsuccessful.
-
-I will like to bring to your notice that I have made all the necessary
-arrangements with my colleagues to transfer the funds into your
-nominated bank account without any problem.  Upon your consideration
-and acceptance of this offer, I am willing to offer you 40% for your
-assistant, while 60% for me which I am planning to invest into a
-profitable business venture in your country.
-
- More details information will be forwarded to you to breakdown
-explaining comprehensively what require of you.
-
-Waiting for your urgent reply,
-Best Regards
-Mr. Nor Hizam Hashim.
