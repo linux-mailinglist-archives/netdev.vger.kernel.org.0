@@ -2,123 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 645CCBB8DD
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 18:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34444BB902
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 18:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387819AbfIWQA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 12:00:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53456 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732887AbfIWQAz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 12:00:55 -0400
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 98AE880F91
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 16:00:54 +0000 (UTC)
-Received: by mail-qt1-f200.google.com with SMTP id w9so17869978qto.9
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 09:00:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FnrZlG9onHbzoUOas395WBpQBkqdPWiXJrz3kgJAMNs=;
-        b=DIGjaRIGlf+Ua5lMnA4Bbneb67eSPkvljB87cxCigAqZ1rKsA5QmLVHpxf6LP0ckhp
-         qNyA9iD36Rp4OCuOgm+4/941KcXOjXE+CqKJ5uMz7ioYI+ZeHoN9ZtVECygQ+m2DUHYV
-         U8HVDf47r07cwI3D+LOMUjV5xku9F3+fxiUNMcLFDdH4lwMT2KHgSVJOD6s8YV/9ZErE
-         Du1yC8V++4BPcRRvD04ZAo0/X1+yFMBYjmy/jj715txnPFPxAkXDwnMb3LLzvd1j5bCf
-         vGYSi9oB1UhKfVFusnsY2vAxQd9ygye0dL9hV7oieomwlAgmU51HsPdnaAMHlRupjRZB
-         wMIg==
-X-Gm-Message-State: APjAAAUadFUuqsS6v29Fkcri8NxbepqUtFeTIKszD1/6QAxA2quExf3e
-        BOR2t7wiM/+39r1cMsUIq2yy35pj+WFFO4jCqVyrRp0NxCB9erIsI7t1wA3wAZC5k+T2eYkBGCz
-        ch5TszmPyvmCK4WUY
-X-Received: by 2002:a0c:e48b:: with SMTP id n11mr25662869qvl.38.1569254453754;
-        Mon, 23 Sep 2019 09:00:53 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzeS0qH7VWztyzQkjfFK33LHuBL/0r9aVYJeACu8zWG4i5I+VaFWBP3hOAewtn9oF8WJysLNw==
-X-Received: by 2002:a0c:e48b:: with SMTP id n11mr25662820qvl.38.1569254453463;
-        Mon, 23 Sep 2019 09:00:53 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
-        by smtp.gmail.com with ESMTPSA id m125sm5840827qkd.3.2019.09.23.09.00.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Sep 2019 09:00:52 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 12:00:41 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        tiwei.bie@intel.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, cohuck@redhat.com,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
-Subject: Re: [PATCH 5/6] vringh: fix copy direction of vringh_iov_push_kern()
-Message-ID: <20190923115930-mutt-send-email-mst@kernel.org>
-References: <20190923130331.29324-1-jasowang@redhat.com>
- <20190923130331.29324-6-jasowang@redhat.com>
- <20190923094559.765da494@x1.home>
+        id S1732701AbfIWQFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 12:05:11 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:39200 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728211AbfIWQFK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 12:05:10 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8NFxEot156139;
+        Mon, 23 Sep 2019 16:05:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=Ag6eGs6p7AYJ/7Lz8wwYRNXQo+SM6fu7j8fqxf23W1o=;
+ b=loB5UiydHbWh8uj4yi0YKTjdb+AnTv7PblK30VdqOnmg6iLkt6UWdZDazWoJCzfUtfz9
+ ERPvMLcCnWoCGsyoD+VjdJ8sKc8IfqMnmiD9a0T8M0Nap5OwBI5nYRlFW98x/0umycEX
+ lztM5G9kxV1xUj2NN1PEDV9trrnYBax6Is8xIfTFpYl2orJnevZZVPrfP0Gr5ytfPsd1
+ si2x65eTBCAk+zl8I0E2I4iM+eFHiTKR23wxL/+YCVEqP8SZFyG0PnOfsdEoWJXXHmm+
+ ZwuMFIofbF5NSOqg8g4cDetA6so4Oy8pa+PiqVlD1X70mAGQsLI9hSlawm6MZhFJTuAd Ig== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2v5btpr0p8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Sep 2019 16:05:02 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8NG4cqF071633;
+        Mon, 23 Sep 2019 16:05:02 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2v6yvpmx4r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Sep 2019 16:05:01 +0000
+Received: from abhmp0022.oracle.com (abhmp0022.oracle.com [141.146.116.28])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x8NG4xQd004101;
+        Mon, 23 Sep 2019 16:04:59 GMT
+Received: from [10.191.241.21] (/10.191.241.21)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 23 Sep 2019 09:04:59 -0700
+Subject: Re: [PATCH] drivers/net/fjes: fix a potential NULL pointer
+ dereference
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+References: <1568824395-4162-1-git-send-email-allen.pais@oracle.com>
+ <20190921184009.32edfa43@cakuba.netronome.com>
+From:   Allen <allen.pais@oracle.com>
+Message-ID: <12b96a9f-27c7-86b4-af90-cad594240bf8@oracle.com>
+Date:   Mon, 23 Sep 2019 21:34:50 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190923094559.765da494@x1.home>
+In-Reply-To: <20190921184009.32edfa43@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9389 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1909230152
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9389 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1909230152
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 09:45:59AM -0600, Alex Williamson wrote:
-> On Mon, 23 Sep 2019 21:03:30 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
-> 
-> > We want to copy from iov to buf, so the direction was wrong.
-> > 
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  drivers/vhost/vringh.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> 
-> Why is this included in the series?  Seems like an unrelated fix being
-> held up within a proposal for a new feature.  Thanks,
-> 
-> Alex
 
-It's better to have it as patch 1/6, but it's a dependency of the
-example driver in the series. I can reorder when I apply.
+> 
+> If I'm looking at this right you are jumping to err_free_netdev without
+> setting the err variable. It must had been set to 0 from the return of
+> fjes_sw_init(). This means we will free the netdev, and return 0. This
+> means probe will not fail and driver's remove function will be run
+> at some point. fjes_remove it will try to free the netdev again.
+
+  Good catch. Here's a quick diff what I should have done,
+
+--- a/drivers/net/fjes/fjes_main.c
++++ b/drivers/net/fjes/fjes_main.c
+@@ -1236,9 +1236,21 @@ static int fjes_probe(struct platform_device 
+*plat_dev)
+         adapter->force_reset = false;
+         adapter->open_guard = false;
+
++       /* Re-initialize err to -ENOMEM to handle workqueue allocation 
+failures,
++          and we don't return 0 on failure.
++       */
++       err = -ENOMEM;
++
+         adapter->txrx_wq = alloc_workqueue(DRV_NAME "/txrx", 
+WQ_MEM_RECLAIM, 0);
++       if (unlikely(!adapter->txrx_wq))
++               goto err_free_netdev;
++
+         adapter->control_wq = alloc_workqueue(DRV_NAME "/control",
+                                               WQ_MEM_RECLAIM, 0);
++       if (unlikely(!adapter->control_wq)) {
++               destroy_workqueue(adapter->txrx_wq);
++               goto err_free_netdev;
++       }
 
 
-> > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> > index 08ad0d1f0476..a0a2d74967ef 100644
-> > --- a/drivers/vhost/vringh.c
-> > +++ b/drivers/vhost/vringh.c
-> > @@ -852,6 +852,12 @@ static inline int xfer_kern(void *src, void *dst, size_t len)
-> >  	return 0;
-> >  }
-> >  
-> > +static inline int kern_xfer(void *dst, void *src, size_t len)
-> > +{
-> > +	memcpy(dst, src, len);
-> > +	return 0;
-> > +}
-> > +
-> >  /**
-> >   * vringh_init_kern - initialize a vringh for a kernelspace vring.
-> >   * @vrh: the vringh to initialize.
-> > @@ -958,7 +964,7 @@ EXPORT_SYMBOL(vringh_iov_pull_kern);
-> >  ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
-> >  			     const void *src, size_t len)
-> >  {
-> > -	return vringh_iov_xfer(wiov, (void *)src, len, xfer_kern);
-> > +	return vringh_iov_xfer(wiov, (void *)src, len, kern_xfer);
-> >  }
-> >  EXPORT_SYMBOL(vringh_iov_push_kern);
-> >  
+> Looks like there's another existing bug here in that the work queues
+> are not free when something fails in fjes_probe, just the netdev.
+
+I shall look into it and send out a separate fix.
+
+> Once you untangle that, and before you post a v2, could you please try
+> to identify which commit introduced the regression and provide an
+> appropriate "Fixes" tag?
+> 
+
+Fixes: f2edc4e1b078("net: fjes: fjes_main: Remove create_workqueue")
+
+- Allen
