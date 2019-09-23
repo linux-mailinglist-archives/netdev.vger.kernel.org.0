@@ -2,89 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9577BB729
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 16:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D7BBB77A
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:06:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440104AbfIWOvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 10:51:21 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39713 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438432AbfIWOvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 10:51:20 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y3so12612551ljj.6
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 07:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MQ4XbRgxjoEcCAjRwxYj5iKXRQA5+W0NTLg9YBBvdGI=;
-        b=IXQLULuLsbPbLFWMq6Ie4banwTScWjy+pSKd4Qy+5ymoqoWaV6eub7WhWe85lDpPcU
-         jSe0nJxumwD4bR6T7haqW9dXH9tys0++t8H2N9QAV802x3PL88fINk9T8xGcmzT9PjJg
-         jXigXFvUUzULkphdKGpqt1OFcGMRIIbLZ5lNFuQgNHuB8QzmJ8c4c1ZPk+e4PaS7mg+N
-         hPQcZo8+V5DZC38aaUFHeUErGcej2qIhTOOCWFrg6tnfk79WLC/0qdZvQLxQSkBzt2uz
-         bu/x1PzfnEfcxu9hrQi99LC3344iajS8llOOJkMWxUiRF5eTh4gcl/WeF3h2R9S6Mw5Z
-         QnnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=MQ4XbRgxjoEcCAjRwxYj5iKXRQA5+W0NTLg9YBBvdGI=;
-        b=O5f0lHO2f0ABTXv9O9u8h1FaldhJyq4SH/OON3ruGxdz2p0gNW65jE24juxg/d9Oq/
-         7oAo8WEGXKSWl2JDI8+YL9bBMCTX8ygrDtpJINwNpAXaYVBC9n5V8se1EWfE+Stsru6F
-         VjcSCl0vrX7QRZyKOGWDgrlffojcy0MvFcWSzxg/TbHSKhdxnp6jOrdg2EmGFuwHu7hZ
-         /JurtlAtOqc38jPJhb0c2qc84Jd3EWdtQEJeue5w9YXwvYxUIx+11OJ83jelMPY9ReSz
-         1Kjbz86sR8mEj+voFJ0eO1MwQOrHX572htYdvmq00RXNdzdzoM0fiOd9qk5unEhD8pfe
-         HLqw==
-X-Gm-Message-State: APjAAAXZWgIAKsQKZry8wxgvy2e+vNBwfNNkKNauEfhklN8WLfHxtgQ7
-        m666CC5Wce/W1CgTOPGB1fE6kg==
-X-Google-Smtp-Source: APXvYqzHY+eorjAgAhVP4Dl132IGdafJHK1OCK78zDk5TAnUZtisFjquV948ZxqaCuNWJMbopv3JLA==
-X-Received: by 2002:a2e:2b09:: with SMTP id q9mr11287191lje.144.1569250278977;
-        Mon, 23 Sep 2019 07:51:18 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:4481:eac4:b23a:41bd:5284:723c])
-        by smtp.gmail.com with ESMTPSA id z72sm2374697ljb.98.2019.09.23.07.51.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 23 Sep 2019 07:51:16 -0700 (PDT)
-Subject: Re: [PATCH net-next] dt-bindings: net: ravb: Add support for r8a774b1
- SoC
-To:     Biju Das <biju.das@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, Simon Horman <horms@verge.net.au>,
-        Chris Paterson <Chris.Paterson2@renesas.com>
-References: <1569245566-9987-1-git-send-email-biju.das@bp.renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <7b0cc452-6aee-7790-ac1b-853a0763cac2@cogentembedded.com>
-Date:   Mon, 23 Sep 2019 17:51:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        id S1726379AbfIWPGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 11:06:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41730 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726135AbfIWPGG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 11:06:06 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 95048ACD7;
+        Mon, 23 Sep 2019 15:06:02 +0000 (UTC)
+Date:   Mon, 23 Sep 2019 17:06:01 +0200
+From:   Petr Vorel <pvorel@suse.cz>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] ipv6: Properly check reference count flag before taking
+ reference
+Message-ID: <20190923150600.GA27191@dell5510>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <20190923144612.29668-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-In-Reply-To: <1569245566-9987-1-git-send-email-biju.das@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190923144612.29668-1-Jason@zx2c4.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi,
 
-On 09/23/2019 04:32 PM, Biju Das wrote:
+> People are reporting that WireGuard experiences erratic crashes on 5.3,
+> and bisected it down to 7d30a7f6424e. Casually flipping through that
+> commit I noticed that a flag is checked using `|` instead of `&`, which in
+> this current case, means that a reference is never incremented, which
+> would result in the use-after-free users are seeing. This commit changes
+> the `|` to the proper `&` test.
 
-> Document RZ/G2N (R8A774B1) SoC bindings.
-> 
-> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 7d30a7f6424e ("Merge branch 'ipv6-avoid-taking-refcnt-on-dst-during-route-lookup'")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Reviewed-by: Petr Vorel <pvorel@suse.cz>
 
-[...]
+NOTE: this change was added in d64a1f574a29 ("ipv6: honor RT6_LOOKUP_F_DST_NOREF in rule lookup logic")
 
-MBR, Sergei
+Kind regards,
+Petr
+
+> ---
+>  net/ipv6/ip6_fib.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+> index 87f47bc55c5e..6e2af411cd9c 100644
+> --- a/net/ipv6/ip6_fib.c
+> +++ b/net/ipv6/ip6_fib.c
+> @@ -318,7 +318,7 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
+>  	if (rt->dst.error == -EAGAIN) {
+>  		ip6_rt_put_flags(rt, flags);
+>  		rt = net->ipv6.ip6_null_entry;
+> -		if (!(flags | RT6_LOOKUP_F_DST_NOREF))
+> +		if (!(flags & RT6_LOOKUP_F_DST_NOREF))
+>  			dst_hold(&rt->dst);
+>  	}
