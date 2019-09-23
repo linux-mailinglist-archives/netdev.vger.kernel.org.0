@@ -2,130 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4639BBAE6
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 20:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C00EEBBB42
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 20:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440295AbfIWSFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 14:05:53 -0400
-Received: from dvalin.narfation.org ([213.160.73.56]:38386 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390851AbfIWSFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 14:05:53 -0400
-X-Greylist: delayed 572 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Sep 2019 14:05:50 EDT
-Received: from sven-edge.localnet (unknown [IPv6:2a00:1ca0:1480:f9fc::4065])
-        by dvalin.narfation.org (Postfix) with ESMTPSA id D9AF31FFAB;
-        Mon, 23 Sep 2019 17:26:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1569259611;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JUegENmeIHHiT+O9uIIOxc1zWJHPwvIxI2SvuwGf54A=;
-        b=dVWTU2YRhbvNTjzU5zWqJuZwGuXdr2Y5i4h8fAIbmfcxuBJK1ZG+fGo/W/YblVDINcKj0n
-        B670FTOeqbkbbqdtvLu3HbF2eoleJzXw6Dgnm1/VfifonzNleM7VytHWdyYL6G301L3qIC
-        tdTHwh8/l2Z9JQUVmzRFgWWvKZS3wUo=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     b.a.t.m.a.n@lists.open-mesh.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jiri Kosina <trivial@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        lvs-devel@vger.kernel.org, rds-devel@oss.oracle.com
-Subject: Re: [PATCH trivial 1/2] net: Fix Kconfig indentation
-Date:   Mon, 23 Sep 2019 19:56:12 +0200
-Message-ID: <2354684.0ZvKvX0iQ3@sven-edge>
-In-Reply-To: <20190923155243.6997-1-krzk@kernel.org>
-References: <20190923155243.6997-1-krzk@kernel.org>
+        id S1732985AbfIWS0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 14:26:12 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:39867 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732962AbfIWS0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 14:26:12 -0400
+Received: by mail-io1-f69.google.com with SMTP id f9so11385951ioh.6
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 11:26:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Wp+WOxmIS7xEA02hFIkA48OyPRBkMcKVWO+Q59/ep3w=;
+        b=BbvhVTuJd8wW6Wij1wgftNxEKtuilO6LD8P9dQwQZ7tuCRGN4B0XjIo/kPSi8PSmSL
+         FQaIPrTqDNllNrpqaM8duJ6XFNOoENPx+f1lzmdhCc5BX62TNXwj4d6QnYyObw+02hdi
+         g/UZh4rO8dA9llgZX+Jeo3AaKWeI7Lyyy8ZWOaMdUOmToCSFHKbSaURpC2v686PMalbI
+         yRBqEluXzobURrZuDtcPFWeuLWRBf2hoNz7zdGrZT0zwp7UYeq0Nti89D3HH3NpYaqtY
+         j8fjET/jSmzAI3zuN3oUgQljhpD+WwDbNuO6IZiZ9X52oSbFff6bZNrkQt6eVFvLaEM3
+         6r2w==
+X-Gm-Message-State: APjAAAXLpMLa3zIf5eVU+JQg3Lbt4OJRTNHS6BAxfcOpDl3kV4UuX5XT
+        /akHIwU6yMGzI9MobyAtnpCDt6mweQcVo/3UrmAOShqZbWbm
+X-Google-Smtp-Source: APXvYqxXKvyI6gkF2fxEbgVSBMSnm/K5sNn1xNC4xSjPHJP1Zu+7ehuPVelloZn8PCtalDMPhbxYLmpW2im/PNrqrRraa3dXqS0B
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2306317.z6aVZVsvuq"; micalg="pgp-sha512"; protocol="application/pgp-signature"
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1569259612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JUegENmeIHHiT+O9uIIOxc1zWJHPwvIxI2SvuwGf54A=;
-        b=x1TVkKv99+ozAK7NGhKJppOQTZ3rt6BG5uCQ9jX1Cu6VwaJ1Z9e2XjHeZoi0ylFmE0Qgv2
-        uPumTYEhEqN0pwscCMrxg05p8YgwwZxS95AE3BnKHxJCx8DfTCCPdTAyKbC6OzxnJqzLC+
-        xMuRoeIhRMuvm0RcjlgRZSLiQKlXzBQ=
-ARC-Seal: i=1; s=20121; d=narfation.org; t=1569259612; a=rsa-sha256;
-        cv=none;
-        b=sC+Bw4VcxyWYjzxCJPweIGNX+Yyrk334W9KKcHzvmcS/hWk8OQo5sJew0irtt83lHu620y
-        GR1yOu+K+tFNotiu7Ji8FKdtPcJdPj6tP5KcJpiNcjdVnKzc1GUdEDf7J4u+rCReuDLD9y
-        a6G6B/KjsDql8SBNK00XkdLiqUmNeNQ=
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=sven smtp.mailfrom=sven@narfation.org
+X-Received: by 2002:a5e:8c17:: with SMTP id n23mr818164ioj.46.1569263171386;
+ Mon, 23 Sep 2019 11:26:11 -0700 (PDT)
+Date:   Mon, 23 Sep 2019 11:26:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e3c7de05933c8d39@google.com>
+Subject: general protection fault in finish_writeback_work
+From:   syzbot <syzbot+828abc56e48ada4b0195@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart2306317.z6aVZVsvuq
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Hello,
 
-On Monday, 23 September 2019 17:52:42 CEST Krzysztof Kozlowski wrote:
-> --- a/net/batman-adv/Kconfig
-> +++ b/net/batman-adv/Kconfig
-> @@ -12,11 +12,11 @@ config BATMAN_ADV
->         depends on NET
->         select LIBCRC32C
->         help
-> -          B.A.T.M.A.N. (better approach to mobile ad-hoc networking) is
-> -          a routing protocol for multi-hop ad-hoc mesh networks. The
-> -          networks may be wired or wireless. See
-> -          https://www.open-mesh.org/ for more information and user space
-> -          tools.
-> +         B.A.T.M.A.N. (better approach to mobile ad-hoc networking) is
-> +         a routing protocol for multi-hop ad-hoc mesh networks. The
-> +         networks may be wired or wireless. See
-> +         https://www.open-mesh.org/ for more information and user space
-> +         tools.
->  
->  config BATMAN_ADV_BATMAN_V
->         bool "B.A.T.M.A.N. V protocol"
+syzbot found the following crash on:
 
-Acked-by: Sven Eckelmann <sven@narfation.org>
+HEAD commit:    24ccb0ab qede: qede_fp: simplify a bit 'qede_rx_build_skb()'
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=11a5b229600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dfcf592db22b9132
+dashboard link: https://syzkaller.appspot.com/bug?extid=828abc56e48ada4b0195
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Kind regards,
-	Sven
+Unfortunately, I don't have any reproducer for this crash yet.
 
---nextPart2306317.z6aVZVsvuq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+828abc56e48ada4b0195@syzkaller.appspotmail.com
 
------BEGIN PGP SIGNATURE-----
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 8777 Comm: kworker/u4:5 Not tainted 5.3.0+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: writeback wb_workfn (flush-8:0)
+RIP: 0010:__lock_acquire+0x1265/0x4e70 kernel/locking/lockdep.c:3828
+Code: 00 0f 85 0e 26 00 00 48 81 c4 e8 00 00 00 5b 41 5c 41 5d 41 5e 41 5f  
+5d c3 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f  
+85 dd 2a 00 00 49 81 3e a0 25 06 8a 0f 84 4e ee ff
+RSP: 0018:ffff88806930f938 EFLAGS: 00010007
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 03fffe22022b47e2 RSI: 0000000000000000 RDI: 0000000000000001
+RBP: ffff88806930fa48 R08: 0000000000000001 R09: 0000000000000001
+R10: fffffbfff138cf90 R11: ffff8880693002c0 R12: 1ffff110115a3f15
+R13: 0000000000000000 R14: 1ffff110115a3f15 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2136820ea0 CR3: 000000008ab86000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4487
+  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+  _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
+  __wake_up_common_lock+0xc8/0x150 kernel/sched/wait.c:122
+  __wake_up+0xe/0x10 kernel/sched/wait.c:142
+  finish_writeback_work.isra.0+0xf6/0x120 fs/fs-writeback.c:168
+  wb_do_writeback fs/fs-writeback.c:2030 [inline]
+  wb_workfn+0x34f/0x11e0 fs/fs-writeback.c:2070
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Modules linked in:
+---[ end trace b7a1091622454beb ]---
+RIP: 0010:__lock_acquire+0x1265/0x4e70 kernel/locking/lockdep.c:3828
+Code: 00 0f 85 0e 26 00 00 48 81 c4 e8 00 00 00 5b 41 5c 41 5d 41 5e 41 5f  
+5d c3 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 <80> 3c 02 00 0f  
+85 dd 2a 00 00 49 81 3e a0 25 06 8a 0f 84 4e ee ff
+RSP: 0018:ffff88806930f938 EFLAGS: 00010007
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 03fffe22022b47e2 RSI: 0000000000000000 RDI: 0000000000000001
+RBP: ffff88806930fa48 R08: 0000000000000001 R09: 0000000000000001
+R10: fffffbfff138cf90 R11: ffff8880693002c0 R12: 1ffff110115a3f15
+R13: 0000000000000000 R14: 1ffff110115a3f15 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2136820ea0 CR3: 000000008ab86000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl2JBzwACgkQXYcKB8Em
-e0YTVg/+PgtfvbyO8UPeEG3nkvaRcMywQsGWWB2nkRfHXA+QnFghJNXsvPHonkd+
-QQ1E5I3loiK90VFbdRR8R0o5G57WPTFAivY334UAL1m5qOZT1bMKwI971dT0GCny
-a9+BhZEjt729e7WlSOvkT/v7BHo8lxyHH5+x33dxMJF0oSD5UDdH8VZX9PCBTJ1g
-4+O3e18WyQdsXFi3G2N75DcT+OhRle2P7T6yfgD0Ro5ViMqeTigsdmw+kpq8x8IK
-fyUN3oo5vqFnH3sEEXFshmxAqAVjPjzzoRYTFTupTw8yDOTL2REIgU75HZ0WP2w6
-eQ03/+7hKhujukr4V/bwVPMf6WJ1mi9+cz88Op8BkY/UgFgAYJSUhnfeoLo1pK6q
-ewEwagQfFibXUqtebAoam3z20Mb7rnrUmQJbUvPLQatL76qUaonJp3yxUMnrOWo+
-GmDWR4zgHgwatjOBeGCPBuF3PBMPWe1NBrA0EF7+33gZu6pttf3Z6XLNUWCw3unx
-xQCR1dn7VzUA+/FdFZfVoUlGBPeqWzqdyp3Os2ymDHJRp6jZWTd2gX6KvldvWTDR
-dU2SmyvoOovNLFWyBd7rC7vud0aWMJUHypD2IlEMCPprnu+m33Lhqx8nrbF/goZL
-drH0F1BJDs5jlWehfTwnnaNdqZEuzamWT8GEJAUBj8Iq5R6+35s=
-=OS2O
------END PGP SIGNATURE-----
 
---nextPart2306317.z6aVZVsvuq--
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
