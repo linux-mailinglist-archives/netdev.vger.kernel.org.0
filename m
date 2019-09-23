@@ -2,110 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F977BBD9E
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 23:10:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6A8DBBDF7
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 23:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502668AbfIWVKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 17:10:50 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:32881 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388866AbfIWVKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 17:10:50 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so9937730pfl.0
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 14:10:48 -0700 (PDT)
+        id S2503114AbfIWVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 17:31:09 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:39029 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729120AbfIWVbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 17:31:08 -0400
+Received: by mail-pf1-f196.google.com with SMTP id v4so5331494pff.6;
+        Mon, 23 Sep 2019 14:31:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NkgH7US4bX0rlHhcB4W65YFLpV3dVVt3h8lBPJrKqEA=;
-        b=h6HAdNso0DEPgZD5dNEKUuXqjCMvwzboAkeqSnX7lUOStFkXPIVP80QtcHm2rxRB47
-         DafDZGMFwXKYL1xMrzRjPJ3jpk6GBYEhT5AJOPpbD5793EvNvUheH3Q6MU2XPUbgXBVY
-         jNNQDLpXAhzzlxUVspIavW59VfNr9UcGZZKAjaGQ5JfIDqE3K6Dmt2GbkuBmQJOkYMMI
-         Esbfv8w73iMYMZfQLoA/hkBm5AaglZKOmLn2orZknVFbtHjFxHlooThvO/fHl5DnKAfO
-         fZkesVwlonlKxRJOp3lZsJ0j5EKhy6dwgK6ZpC4MAsgJBvFqDQhTNCoww2ururLS4VSp
-         GPdA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M2IFVrWJfMOAbZ8zA9rzidNehYbIVV/clhh3kKcrw9E=;
+        b=o8Q/uBGSu8ZdsYS0hUd/MewIisiM0eWQnwEplzkf+gYm/+TEQ0x7wO5DVHWHHVe/1B
+         0R0x1l1ZgAZL2svOvsBblBhkx5ehvs33a2hc77H9E6JVDuHr4xO8nflmbNTSSO5jD9iQ
+         h4hdHieLDX+zxUZwtq2k28rij1Zk4LOQEoC4vll4zH/9+V+z8ZHdrlLNkJ9veJHtkxnt
+         PLv3/AUQxmm8hLJdIYeGw2crjNLORwJVUzqMuxBVVf9cgcI4a5WWmlBYmZKVDoesuY+l
+         kJhKM/vSQcJ9fjG9cZDQzi+wF15QqnJHsXhg3AnAD4+JcbXEzmxJwwEhbqD4zA/IVwoE
+         TxiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NkgH7US4bX0rlHhcB4W65YFLpV3dVVt3h8lBPJrKqEA=;
-        b=WM1rciD/ip6OhQoklzniBEQuyDjlCofGOOxe0SySitc4Pum6vTbO4nucvzsmVa/csN
-         zhj71dBDs6XZne7aqlxVnBc86o7GsJtM8qsHZwY9glx6XieSnNfRq71+npRnOH6CCuTj
-         GPGAEIiYmbSpH1azz5ZhEsQbPnk+7ckzVs1uSvrTGciYLlSNTqrsT9XLTzDYBomfPwU9
-         GT8ZzIAAhHZM+quiHDibCDt4IeL+I4+o9gNmvPgEsE8XmImeWjaxYg2kWMHIJl5GcQNu
-         FxuypyHArVxc72+ttpmYjSrk7pdlpsChJZ12TvsCabeVrzwM0YeRE9RpyOPnQ6f5s1FP
-         cs2Q==
-X-Gm-Message-State: APjAAAXVw0F6bWam8m6a/FheRiQk+nEU1IVNadqPIasK1wcWw/7+FLTb
-        xI/ihM5MKpdTJ0wHKw/4Fn/3x6tZmyNnxWlva58=
-X-Google-Smtp-Source: APXvYqyREQOTwrUzx5xH7n60+d1zx8Zqai9kTWw6tkv9yuLagcmIfxjpLJCV6ajJ5YTUVZLTKGURKSxnabztpxw5a60=
-X-Received: by 2002:a17:90a:ad8f:: with SMTP id s15mr1577781pjq.50.1569273047848;
- Mon, 23 Sep 2019 14:10:47 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M2IFVrWJfMOAbZ8zA9rzidNehYbIVV/clhh3kKcrw9E=;
+        b=o9ZOte/izGDEaX426hAhp0oZlnRj9vetu0m2ce6mteC2OjvhqX/Oucp+S3JyKOtlQZ
+         d+uHIsZns5E8zMOIdtuzwbYLEJ0Lk4P/A4ZWLR9zR4t7kGDtn6MODbENmokM50kgtcpd
+         dcf2mjgtKznOzoaIJCmXCRL//aT0sI4qnL2Kt53foyyEsoghLtCKA942fp9V/j936DIN
+         32mjHvTe2xT1AsKhMuG6vdnKsHua70JCiHqjCHmsZgCSg3iCdoh9fMh0SoCd+INoMyMr
+         G9RPG6q7puGjSg9Iva/OdNXrZezaEIQr4LQw1Ioaq09q+pBzrHbewKm2RqXjI4iOhSl8
+         dlDA==
+X-Gm-Message-State: APjAAAWa6Pzdpd1qYL2W9Lm3tsF/otwWmuBrAGBTqRqbgUmxCssItAyu
+        rF65gMwOZWT+iTI/SowUTNLuUUoK
+X-Google-Smtp-Source: APXvYqz11dgh3msJRTJFiRiQ3k2P7vA2ePQWKiABBwCaAzm+nc2axjz7y3bjzbHGSmKtH1j4Z0C4gg==
+X-Received: by 2002:a17:90a:8d13:: with SMTP id c19mr1716231pjo.142.1569274267670;
+        Mon, 23 Sep 2019 14:31:07 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id z22sm12576337pgf.10.2019.09.23.14.31.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Sep 2019 14:31:06 -0700 (PDT)
+Subject: Re: [PATCH] kcm: use BPF_PROG_RUN
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tom Herbert <tom@herbertland.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190905211528.97828-1-samitolvanen@google.com>
+ <0f77cc31-4df5-a74f-5b64-a1e3fc439c6d@fb.com>
+ <CAADnVQJxrPDZtKAik4VEzvw=TwY6PoWytfp7HcQt5Jsaja7mxw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <048e82f4-5b31-f9f4-5bf7-82dfbf7ec8f3@gmail.com>
+Date:   Mon, 23 Sep 2019 14:31:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190918195704.218413-1-edumazet@google.com> <CAM_iQpVyJDeScQDL6vHNAN9gu5a3c0forQ2Ko7eQihawRO_Sdw@mail.gmail.com>
- <20190921190800.3f19fe23@cakuba.netronome.com> <4e2ff069-e1f5-492f-14eb-5348e2cab907@gmail.com>
-In-Reply-To: <4e2ff069-e1f5-492f-14eb-5348e2cab907@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 23 Sep 2019 14:10:36 -0700
-Message-ID: <CAM_iQpXJzqy2uQ2gq4AmPRyPjtWE6f+6duHo_0yRyoB-4imnEg@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: fix possible crash in tcf_action_destroy()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAADnVQJxrPDZtKAik4VEzvw=TwY6PoWytfp7HcQt5Jsaja7mxw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 8:44 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 9/21/19 7:08 PM, Jakub Kicinski wrote:
-> > On Wed, 18 Sep 2019 14:37:21 -0700, Cong Wang wrote:
-> >> On Wed, Sep 18, 2019 at 12:57 PM 'Eric Dumazet' via syzkaller
-> >> <syzkaller@googlegroups.com> wrote:
-> >>>
-> >>> If the allocation done in tcf_exts_init() failed,
-> >>> we end up with a NULL pointer in exts->actions.
-> >> ...
-> >>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> >>> index efd3cfb80a2ad775dc8ab3c4900bd73d52c7aaad..9aef93300f1c11791acbb9262dfe77996872eafe 100644
-> >>> --- a/net/sched/cls_api.c
-> >>> +++ b/net/sched/cls_api.c
-> >>> @@ -3027,8 +3027,10 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
-> >>>  void tcf_exts_destroy(struct tcf_exts *exts)
-> >>>  {
-> >>>  #ifdef CONFIG_NET_CLS_ACT
-> >>> -       tcf_action_destroy(exts->actions, TCA_ACT_UNBIND);
-> >>> -       kfree(exts->actions);
-> >>> +       if (exts->actions) {
-> >>
-> >> I think it is _slightly_ better to check exts->nr_actions!=0 here,
-> >> as it would help exts->actions!=NULL&& exts->nr_actions==0
-> >> cases too.
-> >>
-> >> What do you think?
-> >
-> > Alternatively, since tcf_exts_destroy() now takes NULL, and so
-> > obviously does kfree() - perhaps tcf_action_destroy() should
-> > return early if actions are NULL?
-> >
->
-> I do not have any preference really, this is slow path and was trying to
-> fix a crash.
->
-> tcf_action_destroy() makes me nervous, since it seems to be able to break its loop
-> in case __tcf_idr_release() returns an error. This means that some actions will
-> never be release.
 
-Good point. Seems we can just continue the loop even when
--EPERM is returned, there is in fact no harm to leave those still
-bound to filters there until the filers release them. Not sure if we
-should still propagate -EPERM to users in this partially failure
-case.
+
+On 9/6/19 10:06 AM, Alexei Starovoitov wrote:
+> On Fri, Sep 6, 2019 at 3:03 AM Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>>
+>> On 9/5/19 2:15 PM, Sami Tolvanen wrote:
+>>> Instead of invoking struct bpf_prog::bpf_func directly, use the
+>>> BPF_PROG_RUN macro.
+>>>
+>>> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+>>
+>> Acked-by: Yonghong Song <yhs@fb.com>
+> 
+> Applied. Thanks
+> 
+
+Then we probably need this as well, what do you think ?
+
+diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+index 8f12f5c6ab875ebaa6c59c6268c337919fb43bb9..6508e88efdaf57f206b84307f5ad5915a2ed21f7 100644
+--- a/net/kcm/kcmsock.c
++++ b/net/kcm/kcmsock.c
+@@ -378,8 +378,13 @@ static int kcm_parse_func_strparser(struct strparser *strp, struct sk_buff *skb)
+ {
+        struct kcm_psock *psock = container_of(strp, struct kcm_psock, strp);
+        struct bpf_prog *prog = psock->bpf_prog;
++       int res;
+ 
+-       return BPF_PROG_RUN(prog, skb);
++       preempt_disable();
++       res = BPF_PROG_RUN(prog, skb);
++       preempt_enable();
++
++       return res;
+ }
+ 
+ static int kcm_read_sock_done(struct strparser *strp, int err)
