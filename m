@@ -2,114 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A06A0BB843
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844E3BB84D
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732362AbfIWPo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 11:44:56 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38474 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728184AbfIWPoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:44:55 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w10so6676113plq.5
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 08:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6WQvZ96QMHa45rm4YUC3oe55G/TNndnRARtZftwP4nc=;
-        b=qUvfK7tPx1/Gl2Dg1Ise18Y1EL2u8rZFT1EZALHKJTFGbH/xYs3LMeSzR2qPimPf9r
-         Dq5DHHcKR7kaV72EWmFV5Rpv5ah1sSwQLsvf07HNy3+1BnudJi4p1NHZhOavEhyeyUqY
-         YO7Fn5nKkIoaF4zb6vDXyZA1AZhl3e9Whp8XPqXAcxuet8zpw/Snz6mZHwLzVOJOcKiN
-         CgIn9BY0+CmWlEfq0+9Po7ZTiN8ePeTAlWbxSDaWk0lEs4G98McIcLH5dpKqa8yuY5Pj
-         2ac3NztaSot5Oe56iyM5nizatcFgG8klTM8+vScju/QkuinGZE6Rl0rzv7NtyLk4AfPD
-         ling==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6WQvZ96QMHa45rm4YUC3oe55G/TNndnRARtZftwP4nc=;
-        b=L/Ocmif3tJvd+zCsmkRaNakrqfswrZ+H9whyGA5X2OIoRNBOTpci5CmXT3uvvNhXFG
-         D2x9PQM0NiISJNK6fFm3ewz/WEnwif1Lk+64albYrbEH95ICRJX2SE4325sLawGAA6FW
-         vAMuyLNFUzle4pPvoGX04GV2WCJFhBWrh3JpDeyK74v+zXRrBBEkE3amfYQNhYbTIjcz
-         ZCuQs4trBXpX0sWS+8vvIa9HgQwr/+rl/Jtg7SJHeQmWmPGAXX4axAMHusZFczv/8ku3
-         rdw+0u8vNSE/Wp6tb69a8yxkprSNvlNt0/nu/ZKIeKAxfDMPLkcLeZDJd+Et1uue0HAc
-         M6ZQ==
-X-Gm-Message-State: APjAAAWfIyp1MhF9nItroNC94Os3vNLnG2esHm4Qkgh4QUGJIhhT5VVO
-        7xLyNGYVkTUTs/bOn3/qhSA=
-X-Google-Smtp-Source: APXvYqyciiMyWk3xtXn+VeQgvVutMkSmCTtHWd3h7Wn/QIarRg5+qc+ykwhySkVAdrjsrEsw5fuWRg==
-X-Received: by 2002:a17:902:690c:: with SMTP id j12mr390687plk.83.1569253494685;
-        Mon, 23 Sep 2019 08:44:54 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id a8sm22503866pfa.182.2019.09.23.08.44.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Sep 2019 08:44:53 -0700 (PDT)
-Subject: Re: [PATCH net] net: sched: fix possible crash in
- tcf_action_destroy()
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-References: <20190918195704.218413-1-edumazet@google.com>
- <CAM_iQpVyJDeScQDL6vHNAN9gu5a3c0forQ2Ko7eQihawRO_Sdw@mail.gmail.com>
- <20190921190800.3f19fe23@cakuba.netronome.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <4e2ff069-e1f5-492f-14eb-5348e2cab907@gmail.com>
-Date:   Mon, 23 Sep 2019 08:44:52 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1732681AbfIWPqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 11:46:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:23695 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726401AbfIWPqD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Sep 2019 11:46:03 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EFBF636961;
+        Mon, 23 Sep 2019 15:46:02 +0000 (UTC)
+Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D8CD5C21E;
+        Mon, 23 Sep 2019 15:46:00 +0000 (UTC)
+Date:   Mon, 23 Sep 2019 09:45:59 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
+Subject: Re: [PATCH 5/6] vringh: fix copy direction of
+ vringh_iov_push_kern()
+Message-ID: <20190923094559.765da494@x1.home>
+In-Reply-To: <20190923130331.29324-6-jasowang@redhat.com>
+References: <20190923130331.29324-1-jasowang@redhat.com>
+        <20190923130331.29324-6-jasowang@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <20190921190800.3f19fe23@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Mon, 23 Sep 2019 15:46:03 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 23 Sep 2019 21:03:30 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-
-On 9/21/19 7:08 PM, Jakub Kicinski wrote:
-> On Wed, 18 Sep 2019 14:37:21 -0700, Cong Wang wrote:
->> On Wed, Sep 18, 2019 at 12:57 PM 'Eric Dumazet' via syzkaller
->> <syzkaller@googlegroups.com> wrote:
->>>
->>> If the allocation done in tcf_exts_init() failed,
->>> we end up with a NULL pointer in exts->actions.  
->> ...
->>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->>> index efd3cfb80a2ad775dc8ab3c4900bd73d52c7aaad..9aef93300f1c11791acbb9262dfe77996872eafe 100644
->>> --- a/net/sched/cls_api.c
->>> +++ b/net/sched/cls_api.c
->>> @@ -3027,8 +3027,10 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
->>>  void tcf_exts_destroy(struct tcf_exts *exts)
->>>  {
->>>  #ifdef CONFIG_NET_CLS_ACT
->>> -       tcf_action_destroy(exts->actions, TCA_ACT_UNBIND);
->>> -       kfree(exts->actions);
->>> +       if (exts->actions) {  
->>
->> I think it is _slightly_ better to check exts->nr_actions!=0 here,
->> as it would help exts->actions!=NULL&& exts->nr_actions==0
->> cases too.
->>
->> What do you think?
+> We want to copy from iov to buf, so the direction was wrong.
 > 
-> Alternatively, since tcf_exts_destroy() now takes NULL, and so
-> obviously does kfree() - perhaps tcf_action_destroy() should 
-> return early if actions are NULL?
-> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/vhost/vringh.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 
-I do not have any preference really, this is slow path and was trying to
-fix a crash.
 
-tcf_action_destroy() makes me nervous, since it seems to be able to break its loop
-in case __tcf_idr_release() returns an error. This means that some actions will
-never be release.
+Why is this included in the series?  Seems like an unrelated fix being
+held up within a proposal for a new feature.  Thanks,
+
+Alex
+ 
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index 08ad0d1f0476..a0a2d74967ef 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -852,6 +852,12 @@ static inline int xfer_kern(void *src, void *dst, size_t len)
+>  	return 0;
+>  }
+>  
+> +static inline int kern_xfer(void *dst, void *src, size_t len)
+> +{
+> +	memcpy(dst, src, len);
+> +	return 0;
+> +}
+> +
+>  /**
+>   * vringh_init_kern - initialize a vringh for a kernelspace vring.
+>   * @vrh: the vringh to initialize.
+> @@ -958,7 +964,7 @@ EXPORT_SYMBOL(vringh_iov_pull_kern);
+>  ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
+>  			     const void *src, size_t len)
+>  {
+> -	return vringh_iov_xfer(wiov, (void *)src, len, xfer_kern);
+> +	return vringh_iov_xfer(wiov, (void *)src, len, kern_xfer);
+>  }
+>  EXPORT_SYMBOL(vringh_iov_push_kern);
+>  
+
