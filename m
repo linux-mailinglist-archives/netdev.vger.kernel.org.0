@@ -2,134 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A3FBB7D9
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C699BB7DC
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 17:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727577AbfIWP0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 11:26:03 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50652 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725951AbfIWP0C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 11:26:02 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 2EBD1AB98;
-        Mon, 23 Sep 2019 15:26:00 +0000 (UTC)
-Date:   Mon, 23 Sep 2019 17:25:58 +0200
-From:   Petr Vorel <pvorel@suse.cz>
-To:     linux-s390@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: s390 EAGAIN on send{msg,to}()/recvmsg() on small MTU and big packet
- size
-Message-ID: <20190923152558.GA31182@dell5510>
-Reply-To: Petr Vorel <pvorel@suse.cz>
+        id S1727720AbfIWP12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 11:27:28 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:40140 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725951AbfIWP11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 11:27:27 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x8NFRAHW058846
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 11:27:26 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2v6yqxjqm5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 11:27:24 -0400
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <ubraun@linux.ibm.com>;
+        Mon, 23 Sep 2019 16:27:21 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 23 Sep 2019 16:27:18 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x8NFRHW143712550
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Sep 2019 15:27:17 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3124A11C058;
+        Mon, 23 Sep 2019 15:27:17 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E613511C050;
+        Mon, 23 Sep 2019 15:27:16 +0000 (GMT)
+Received: from oc5311105230.ibm.com (unknown [9.145.92.229])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 23 Sep 2019 15:27:16 +0000 (GMT)
+Subject: Re: [PATCH net v2 0/3] net/smc: move some definitions to UAPI
+To:     Eugene Syromiatnikov <esyr@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Karsten Graul <kgraul@linux.ibm.com>
+References: <cover.1568993930.git.esyr@redhat.com>
+From:   Ursula Braun <ubraun@linux.ibm.com>
+Openpgp: preference=signencrypt
+Date:   Mon, 23 Sep 2019 17:27:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <cover.1568993930.git.esyr@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 19092315-0008-0000-0000-00000319FD4F
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19092315-0009-0000-0000-00004A388D8B
+Message-Id: <c5d4a6d4-cb91-1add-5ed8-8b08a56c70d5@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-23_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1909230146
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-I've found a bug on s390 on small MTU combined with big packet size, using ping
-(of course both within valid ranges, e.g. MTU 552 and packet size 61245).
 
-Below is full reproducer on netns.
+On 9/20/19 5:41 PM, Eugene Syromiatnikov wrote:
+> Hello.
+> 
+> As of now, it's a bit difficult to use SMC protocol, as significant part
+> of definitions related to it are defined in private headers and are not
+> part of UAPI. The following commits move some definitions to UAPI,
+> making them readily available to the user space.
+> 
+> Changes since v1[1]:
+>  * Patch "provide fallback diagnostic codes in UAPI" is updated
+>    in accordance with the updated set of diagnostic codes.
+> 
+> [1] https://lkml.org/lkml/2018/10/7/177
+> 
 
-I tested it on vanilla: v5.3-rc8 and v4.16.
-I reproduced it on current iputils master which uses sendto()/recvmsg() and on
-older version which uses sendmsg()/recvmsg().
+Thanks Eugene, your patches look good. They will be part of our next SMC
+patch submission for the net-next tree.
 
-As I'm not aware of any s390 specific socket code in kernel I suspect big endian or something else.
+Regards, Ursula
 
-This bug was find with LTP/if-mtu-change.sh.
+> Eugene Syromiatnikov (3):
+>   uapi, net/smc: move protocol constant definitions to UAPI
+>   uapi, net/smc: provide fallback diagnostic codes in UAPI
+>   uapi, net/smc: provide socket state constants in UAPI
+> 
+>  include/uapi/linux/smc.h      | 32 +++++++++++++++++++++++++++++++-
+>  include/uapi/linux/smc_diag.h | 17 +++++++++++++++++
+>  net/smc/smc.h                 | 22 ++--------------------
+>  net/smc/smc_clc.h             | 22 ----------------------
+>  4 files changed, 50 insertions(+), 43 deletions(-)
+> 
 
-REPRODUCER:
-LTP_NS="ip netns exec ltp_ns"
-ip net add ltp_ns
-ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
-ip li set dev ltp_ns_veth1 netns ltp_ns
-$LTP_NS ip li set lo up
-
-ip xfrm policy flush
-ip xfrm state flush
-ip link set ltp_ns_veth2 down
-ip route flush dev ltp_ns_veth2
-ip addr flush dev ltp_ns_veth2
-ip link set ltp_ns_veth2 up
-ip addr add 10.0.0.2/24 dev ltp_ns_veth2
-
-$LTP_NS ip xfrm policy flush
-$LTP_NS ip xfrm state flush
-$LTP_NS ip link set ltp_ns_veth1 down
-$LTP_NS ip route flush dev ltp_ns_veth1
-$LTP_NS ip addr flush dev ltp_ns_veth1
-$LTP_NS ip link set ltp_ns_veth1 up
-$LTP_NS ip addr add 10.0.0.1/24 dev ltp_ns_veth1
-
-i=552; ip link set dev ltp_ns_veth2 mtu $i; $LTP_NS ip link set dev ltp_ns_veth1 mtu $i # it's enough to set just one of them
-
-ping -I 10.0.0.2 -c 1 10.0.0.1 -s 61245 # fail
-ping -I 10.0.0.2 -c 1 10.0.0.1 -s 61244 # ok
-
-FAIL (iputils-s20121221 from package, using sendmsg())
-ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
-ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
-sendmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"\10\0\253_\241\373\0\1\0\0\0\0]wf\330\0\0\0\0\0\6\375\201\20\21\22\23\24\25\26\27"..., 61253}], msg_controllen=0, msg_flags=0}, 0) = 61253
-setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3fff887b588, 0)            = -1 EINTR (Interrupted system call)
---- SIGALRM {si_signo=SIGALRM, si_code=SI_KERNEL} ---
-sigreturn({mask=[]})                    = -1 EINTR (Interrupted system call)
-
-OK (iputils-s20121221 from package, using sendmsg())
-ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
-ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
-sendmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"\10\0\3u\242\266\0\1\0\0\0\0]wgd\0\0\0\0\0\6\340%\20\21\22\23\24\25\26\27"..., 61252}], msg_controllen=0, msg_flags=0}, 0) = 61252
-setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
-recvmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"E\0\357X2\277\0\0@\1D\343\n\0\0\1\n\0\0\2\0\0\vu\242\266\0\1\0\0\0\0"..., 61380}], msg_controllen=32, [{cmsg_len=32, cmsg_level=SOL_SOCKET, cmsg_type=0x1d /*
-SCM_??? */, ...}], msg_flags=0}, 0) = 61272
-write(1, "61252 bytes from 10.0.0.1: icmp_"..., 5961252 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.442 ms
-) = 59
-
-FAIL (current iputils master, using sendto())
-ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
-ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
-sendto(3, "\10\0\2=\313\315\0\1\0\0\0\0]vH;\0\0\0\0\0\7\233o\20\21\22\23\24\25\26\27"..., 61253, 0, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, 16) = 61253
-setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
-recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EINTR (Interrupted system call)
---- SIGALRM {si_signo=SIGALRM, si_code=SI_KERNEL} ---
-sigreturn({mask=[]})                    = -1 EINTR (Interrupted system call)
-
-OK (current iputils master, using sendto())
-ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
-ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
-sendto(3, "\10\0y\4\313\365\0\1\0\0\0\0]vHw\0\0\0\0\0\4`G\20\21\22\23\24\25\26\27"..., 61252, 0, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, 16) = 61252
-setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
-recvmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"E\0\357Xc$\0\0@\1\24~\n\0\0\1\n\0\0\2\0\0\201\4\313\365\0\1\0\0\0\0"..., 61380}], msg_controllen=32, [{cmsg_len=32, cmsg_level=SOL_SOCKET, cmsg_type=0x1d /*
-SCM_??? */, ...}], msg_flags=0}, 0) = 61272
-write(1, "61252 bytes from 10.0.0.1: icmp_"..., 59) = 59
-
-Kind regards,
-Petr
