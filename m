@@ -2,129 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A99ACBAEE6
-	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 10:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 035E3BAEEA
+	for <lists+netdev@lfdr.de>; Mon, 23 Sep 2019 10:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437054AbfIWIHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 04:07:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:38752 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405519AbfIWIHW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Sep 2019 04:07:22 -0400
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2405073AbfIWIJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 04:09:32 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:46776 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388770AbfIWIJc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 04:09:32 -0400
+Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1DAF83D94D
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 08:07:22 +0000 (UTC)
-Received: by mail-qt1-f197.google.com with SMTP id o34so16352971qtf.22
-        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 01:07:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GtkVLxajS9qecd1iiLjWKYP8KasxkZAd70jCNiNzvoI=;
-        b=CqrT9QajVG10+l9458G++KgJuQKi5Oya8fRHbP+pxUIT980KSvUf+A2eu1latR3FnQ
-         l5ANIC5OxPyxn4CQirO/CO7M2T8eAPfcA4yipp0LioHg6JjHq5JtNbwuU0Wl7ctDWc7h
-         HinQ8f5nEYyUo0qy6orVRFD0cHOo+MapAkIRwwL/HqGtwVDarO4RBQwjEcjCwb25Bfhg
-         9perSZqfc8NjFJEBzcGfhS2umyo5cpKBwabtP6Zy8VkKTI7c5dVL2xJy6/u8zZTnzNwn
-         TszjjLjo2Z8Z4s1SSrZnE1URxBkK8lM84IbyRqqGw3reAU5T0SZ4YLyD0lIGxauHBiv7
-         1K7w==
-X-Gm-Message-State: APjAAAWuNiOv//x2cU00eWW9rNIG9E2Ajf+OhY2JrWOqSgZe7B30eoPi
-        zhFaVCMf7Sv+pYORlZLQHdhUovYy/N9PE3qUv3d3Gji+ltYiq1jJbJ722uEPCMZ0BCrxZAQrZXC
-        iUjJc1P+9+1ZU9SPm
-X-Received: by 2002:ac8:1767:: with SMTP id u36mr15795732qtk.152.1569226041433;
-        Mon, 23 Sep 2019 01:07:21 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxTFCDVmbYMZjvOnYtH+mE9geB7di4826uJa+jSeyr2GrwRD/VkW9bYWy7gYlmWOdfHPTBHMg==
-X-Received: by 2002:ac8:1767:: with SMTP id u36mr15795722qtk.152.1569226041292;
-        Mon, 23 Sep 2019 01:07:21 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
-        by smtp.gmail.com with ESMTPSA id 60sm5445508qta.77.2019.09.23.01.07.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Sep 2019 01:07:20 -0700 (PDT)
-Date:   Mon, 23 Sep 2019 04:07:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     wangxu <wangxu72@huawei.com>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost: It's better to use size_t for the 3rd parameter
- of vhost_exceeds_weight()
-Message-ID: <20190923040518-mutt-send-email-mst@kernel.org>
-References: <1569224801-101248-1-git-send-email-wangxu72@huawei.com>
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C1B22C015A;
+        Mon, 23 Sep 2019 08:09:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1569226172; bh=gMQoXZAjeMul1SWCVJjbqxdJZii3yeUGcjfBbcduJJ4=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=gcZV2UOPmG7KkMW7ucEPMUgRjeP5cgsCeVopWWiLJdDAxH4+ziLKOcdndbsGP7Mvy
+         iKTHMv/5ZNqgLx91OPtlMaoFpk/WXrMu77STjDstk5cMpODfb4FuVimTkx1aVQH1cA
+         pUQirFv64B6VtLIAK0zZ+/7Tvx5i47YDzeAWjVrx4O7+cEiUJbME1t2MhKW+a18H3S
+         8ERJXaevGQPrh0xeZqH1DcSNYv4vu/UR0bshvJAnkRLx0Pqg7xzieSOuLF0LTsvcSY
+         VQw5v9BtXuRpJU+Gpo+q2K1CHoRXvkRfIGxt9ZMLZyUttHilJnVERZYH4pG7iYklRO
+         9K6kG2fkSII4g==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 9620AA006B;
+        Mon, 23 Sep 2019 08:09:29 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 23 Sep 2019 01:09:29 -0700
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (10.13.134.195)
+ by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Mon, 23 Sep 2019 01:09:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B+nGZFU0Z0Sz4dIUmw30g0lnwWd+p/q37cAgRpBWGh9q3LIP8lgkKi8LKG8aCqO7rD9Uw2ebFlg8V8klMLF0aHbSTiWf8R9ut1sNqbw3Pvlw5w2AyA+7ok7/TjzO9HLWj4SKhoksUV0gNzqFsnf96Vu8IHhT2VwbwcjP4N1QvZeigxC2Ey9uf/sMufwv11dNCnaWz9ME8U6gfXcZyw6DRX0C9/ig14RY2T2SNcqxyuKkbxA9ihIcFrgis27A3jviAM3PQkSLHdECRM5jiQ3xfV3/vLBUrAUputuTqq7gUXfMV8QAwB+McoP2IuFKzrel+59Ras2PhZACY45fFCDTuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gMQoXZAjeMul1SWCVJjbqxdJZii3yeUGcjfBbcduJJ4=;
+ b=boqK2vLjpTKPipW+cDcZlqBTq/XzoSvIlP3gOceszbA20G/x+Q7j0WCCUMYDhgMyFx1+wuXcvbwR1UKondePMptUDaXmYbnYIu0m1O0Fc6pIt1FzXQV7V4usvgv3iTNKcJRKURvi71OY5Y0yRAnCXFoRtIiWPUHL13XV37GegTe1wpC9zRRu9mAOYr6z1ZFUfRTsqgOWN5D4boGncUeUgXFNUZ1f0FImtE0d6Vv+Gb/EM6BCIROfXMK7kwjeENK7Qn6+mzEGflMduc+o2XFzGBXu8Zwu9KjMPQk/6Ox0aud7t/218rfxy5jHt0CtF70WYuXXlolMrpY2CZXr1YCM9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gMQoXZAjeMul1SWCVJjbqxdJZii3yeUGcjfBbcduJJ4=;
+ b=EI/hTkvj2EB9OHZybT6+N7bpr17GQRVxi4EXhmw3IMXTTb1haumo28uHE98mjW2okwy3/vrASTs3aQ3YT3obFLrtRRcXd0TD1u3TQ+cndhZ88nCl89nLpZucyDuCmywcSkUMZwCE7AsKoTPQI9DNja1386wBY2bEM8fqQjFuE5k=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB2963.namprd12.prod.outlook.com (20.178.208.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2284.26; Mon, 23 Sep 2019 08:09:27 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2284.023; Mon, 23 Sep 2019
+ 08:09:27 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Thierry Reding <thierry.reding@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Bitan Biswas <bbiswas@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH] net: stmmac: Fix page pool size
+Thread-Topic: [PATCH] net: stmmac: Fix page pool size
+Thread-Index: AQHVb9UhqaJ1MxlM1UWEgbnFElZS1ac4S00AgAChIQA=
+Date:   Mon, 23 Sep 2019 08:09:27 +0000
+Message-ID: <BN8PR12MB32664D3109952EF5303464EFD3850@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20190920170127.22850-1-thierry.reding@gmail.com>
+ <20190922153132.0c328fe7@cakuba.netronome.com>
+In-Reply-To: <20190922153132.0c328fe7@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8edac5e4-7de4-45e9-e462-08d73ffd5a76
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR12MB2963;
+x-ms-traffictypediagnostic: BN8PR12MB2963:
+x-microsoft-antispam-prvs: <BN8PR12MB2963536387BF393E8D86982DD3850@BN8PR12MB2963.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0169092318
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(39860400002)(346002)(366004)(396003)(136003)(199004)(189003)(476003)(446003)(486006)(11346002)(54906003)(33656002)(316002)(9686003)(81156014)(86362001)(81166006)(229853002)(4326008)(55016002)(4744005)(76116006)(305945005)(7416002)(8936002)(74316002)(66446008)(64756008)(66946007)(66556008)(110136005)(66476007)(25786009)(6436002)(66066001)(8676002)(5660300002)(256004)(14444005)(186003)(6506007)(6116002)(26005)(102836004)(3846002)(2906002)(6246003)(14454004)(7736002)(52536014)(478600001)(71200400001)(71190400001)(99286004)(76176011)(7696005);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB2963;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 8ZoPTu8k2RHvBtIwT/aCjdy4PkmPjD1x2rCeU77LeNguR73E/gVfkotISJL8BwVh3kYBo0jh5+UcQlUl9Yi02CNefVQ0no1CIfZsN4iVs5L9AFzMAgsdoHjQUxxiLqkGcdJF+wIlTJf2VQmkFdhp+7niw8cEo3EBajSbnYr30seFp6yjEmhsZNdFR7dZeENiFDQ4GCv1zArKZUqyZKrZz6S/KKASOrPmd5kvL1KxKgFzROZq7ozOlNwDp+EYRCXyM2Vyn5xX3wxmr9yzS8vYBEpWp6ch7BGA7U5DYwn6Arntqn5ykHJqEY0FQpeSjOGARzA+6sH1z4/zWbWrw6lbhdcYr8AunkzMNdzWrQgoCgsyP2tEAQULz/nFNgHaTPTzAq8kOndiPwwmwq3wSD/lbfVGfBSS12kk4CSqai2NsZk=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1569224801-101248-1-git-send-email-wangxu72@huawei.com>
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8edac5e4-7de4-45e9-e462-08d73ffd5a76
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2019 08:09:27.1152
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kqA60izWfQNeT0AxcLlVPOOE+x62+Px1nTpB3Oc0eOGfJsT9EyE8I+VxFR8gULv7AQdKPy6CCx5Zf1P65xRRLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2963
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 03:46:41PM +0800, wangxu wrote:
-> From: Wang Xu <wangxu72@huawei.com>
-> 
-> Caller of vhost_exceeds_weight(..., total_len) in drivers/vhost/net.c
-> usually pass size_t total_len, which may be affected by rx/tx package.
-> 
-> Signed-off-by: Wang Xu <wangxu72@huawei.com>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Sep/22/2019, 23:31:32 (UTC+00:00)
 
+> On Fri, 20 Sep 2019 19:01:27 +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > The size of individual pages in the page pool in given by an order. The
+> > order is the binary logarithm of the number of pages that make up one o=
+f
+> > the pages in the pool. However, the driver currently passes the number
+> > of pages rather than the order, so it ends up wasting quite a bit of
+> > memory.
+> >=20
+> > Fix this by taking the binary logarithm and passing that in the order
+> > field.
+> >=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+>=20
+> Since this is a fix could we get a Fixes tag pointing to the commit
+> which introduced the regression?
 
-Puts a bit more pressure on the register file ...
-why do we care? Is there some way that it can
-exceed INT_MAX?
+This would be:
 
-> ---
->  drivers/vhost/vhost.c | 4 ++--
->  drivers/vhost/vhost.h | 7 ++++---
->  2 files changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 36ca2cf..159223a 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -412,7 +412,7 @@ static void vhost_dev_free_iovecs(struct vhost_dev *dev)
->  }
->  
->  bool vhost_exceeds_weight(struct vhost_virtqueue *vq,
-> -			  int pkts, int total_len)
-> +			  int pkts, size_t total_len)
->  {
->  	struct vhost_dev *dev = vq->dev;
->  
-> @@ -454,7 +454,7 @@ static size_t vhost_get_desc_size(struct vhost_virtqueue *vq,
->  
->  void vhost_dev_init(struct vhost_dev *dev,
->  		    struct vhost_virtqueue **vqs, int nvqs,
-> -		    int iov_limit, int weight, int byte_weight)
-> +		    int iov_limit, int weight, size_t byte_weight)
->  {
->  	struct vhost_virtqueue *vq;
->  	int i;
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index e9ed272..8d80389d 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -172,12 +172,13 @@ struct vhost_dev {
->  	wait_queue_head_t wait;
->  	int iov_limit;
->  	int weight;
-> -	int byte_weight;
-> +	size_t byte_weight;
->  };
->  
+2af6106ae949 ("net: stmmac: Introducing support for Page Pool")
 
+Can you please resubmit Thierry ?
 
-This just costs extra memory, and value is never large,
-so I don't think this matters.
-
-> -bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
-> +bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts,
-> +			  size_t total_len);
->  void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
-> -		    int nvqs, int iov_limit, int weight, int byte_weight);
-> +		    int nvqs, int iov_limit, int weight, size_t byte_weight);
->  long vhost_dev_set_owner(struct vhost_dev *dev);
->  bool vhost_dev_has_owner(struct vhost_dev *dev);
->  long vhost_dev_check_owner(struct vhost_dev *);
-> -- 
-> 1.8.5.6
+---
+Thanks,
+Jose Miguel Abreu
