@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC85BD1FD
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 20:45:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C5CBD204
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 20:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439649AbfIXSpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 14:45:53 -0400
+        id S2441631AbfIXSqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 14:46:09 -0400
 Received: from mail-eopbgr150119.outbound.protection.outlook.com ([40.107.15.119]:15758
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390679AbfIXSpw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 14:45:52 -0400
+        id S2438841AbfIXSqI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 14:46:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ax9ICqbnFDbCoHHwuSVA4p5WNd6L37xaKGC9w3OGaezwsoeOblFYFNpQDheYP70xMgm5Kpj3rPeF2Ids8OcsQAquizdX5WcbiSM8GNNZcdcRjNYH90ddLuxm1wY6kbk8mQgasbkS06DEmsv6hSmhVB5PZ0V6cGCU9nGwgLSi72mx0ZfwrbTYyg0aFQwOpGUnu/tvnBtY9e/pi9GjdvaplDIdnVWqL9e+O+E7sy5TbS8bQ/qEcQIwzH4Jxqna5TPRHSt6bKIdo/zlJlM0XbOvPiaTdTFzoyd6VVUF5iwTN8uZXO/hUjKJ+q/9hbfiqUMkKE61BJ42b75yHPtXff6OrA==
+ b=M8uqt4lmu8UCHlKTYGC7gQ9kqDBBmmVA7hoMW+0377iKVMNc9kdFslisEiQmWUpfaV5F3tVS+yZgq0HW3klWtzzQOI4Ji9dckWZT0Ox63GeKQREA8Laoh/2ecAkTp1DZBGg7RdZl7VmpMb71bwzaXL2LGadhDeeizbYQxpMHOrvSMsUvhX6UEzmOYav62l8C0eYKYQ1KAEEtigbzGPtTzVp/kKso9pMR7OypYk8N87JZM0F0i6Hrg2MDv1tGMp4yVmFv9SZ4lgIqvKfMvSdnmMmdaa1trVbuifqqCqJJrfec/VcF8qfULS+5GAPCD57PMxEM7OJ7tuanIjwvEVbXuA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FS4Yw15mtcqmbfmXdmqO646TxDyPxapbaIW+G2z1APM=;
- b=eqLb89cTQhwCd8G7f9RVgKXiHGXCz99RzamN8DSRLp3kLPaP+Q9klg2Lk6G8qEtqwBDn2j1nH7N/XlEiJSITMPXdxlyfgO1aogh21jRtQ5b1yw8gJXhWO+JyzcoCBOlRMTbTYcFGFnwMvdd3/k2tFYF9Rr17laSRqIhnoe1A7NZ3Q9RNTku6wV4uTNHGq3vYoA6c/BHtAIT2pmeiHKjkitQcgP2w1eJc43atkW6JiWy01O8yNMRmdabnEnEG3Rt6wv61TqKLTjaE/eJswbZLp+3ZlxldYN2F9fJrpuWGD+sHe7h2qzvppJjrQDxQ3ODRau4IocVdr8+rkNFJAj2NgA==
+ bh=ay8uZKdvyAWA2yEwRqovSSeeUlTIE1bp6vfO9iJc8yA=;
+ b=lUp7iLewTluGbJsYuo0viG+LifbDYb/BsLGSCiLb7z6xrSJiiSMJ2k9agAHAPahMWj2Jm4/RTEDmt3HNvERrrDQeFWpdeyNOUYbeOd47YmAEJyzRTzf0tdRPm8Ql0XjdN/5u2IUDIhTLqkL9L4rm4MrfPraY0/Ng5pHz0x/83nwTITqiCR4dZ/j1hZrIVRVAT0J1dRfbm3sBlRsS88IcxIDscxlqKTXgzuO2OafcJa/4QLLcPHfaw2QorV63EtY0APimmAIYfipIHCU6thWze4LY5bBTPxDcDXw9YS4UxVxO/5gQyCpWgqMgoEm8WGLYM89bK6t7NKbiiD8qNjMdZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=victronenergy.com; dmarc=pass action=none
  header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FS4Yw15mtcqmbfmXdmqO646TxDyPxapbaIW+G2z1APM=;
- b=lwHkotIw74q+ZbCVsWG1bXa83rcuVHcpnqz0eLKRwSxFF1nfk8AcJcEgx75Shk8Deil+sjdu1vndf87w7HFa3UKlF+uGf5sQIR44h8w43rWFpM76pMIuHPSXYNeJEbtmxlnOb5Q/v92dzE9cBGoUrkGaVdRip244xEXbPm00TmQ=
+ bh=ay8uZKdvyAWA2yEwRqovSSeeUlTIE1bp6vfO9iJc8yA=;
+ b=KpPuKxny0IWfQdETS5sy17zQekeBzVwFMs1mj1T6WOSEbH8AOiC9tc5OoQZ/rsya7+4VKvZjU8eQbXCDoUHFMaHDSWiCRfEo7E/XcWoV352wp6B/V0q0b1bx2FIcRY89nao7jb7qIigUIQW943a+UTNipllOVZvkNzlsMedQ2II=
 Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com (10.173.82.19) by
  VI1PR0701MB2847.eurprd07.prod.outlook.com (10.173.70.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.15; Tue, 24 Sep 2019 18:45:49 +0000
+ 15.20.2305.15; Tue, 24 Sep 2019 18:45:52 +0000
 Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com
  ([fe80::dc92:2e0d:561a:fbb1]) by VI1PR0701MB2623.eurprd07.prod.outlook.com
  ([fe80::dc92:2e0d:561a:fbb1%8]) with mapi id 15.20.2305.013; Tue, 24 Sep 2019
- 18:45:49 +0000
+ 18:45:52 +0000
 From:   Jeroen Hofstee <jhofstee@victronenergy.com>
 To:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
 CC:     Jeroen Hofstee <jhofstee@victronenergy.com>,
@@ -43,11 +43,11 @@ CC:     Jeroen Hofstee <jhofstee@victronenergy.com>,
         "David S. Miller" <davem@davemloft.net>,
         "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/7] can: ti_hecc: release the mailbox a bit earlier
-Thread-Topic: [PATCH 2/7] can: ti_hecc: release the mailbox a bit earlier
-Thread-Index: AQHVcwhIi0E+EPtTwEyHCREMstQTEA==
-Date:   Tue, 24 Sep 2019 18:45:49 +0000
-Message-ID: <20190924184437.10607-3-jhofstee@victronenergy.com>
+Subject: [PATCH 3/7] can: ti_hecc: stop the CPK on down
+Thread-Topic: [PATCH 3/7] can: ti_hecc: stop the CPK on down
+Thread-Index: AQHVcwhKSTaOtxlyTEmNsu2EZ2EwhQ==
+Date:   Tue, 24 Sep 2019 18:45:52 +0000
+Message-ID: <20190924184437.10607-4-jhofstee@victronenergy.com>
 References: <20190924184437.10607-1-jhofstee@victronenergy.com>
 In-Reply-To: <20190924184437.10607-1-jhofstee@victronenergy.com>
 Accept-Language: en-US
@@ -55,87 +55,78 @@ Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-originating-ip: [2001:1c01:3bc5:4e00:c415:8ca2:43df:451e]
-x-clientproxiedby: AM0PR05CA0065.eurprd05.prod.outlook.com
- (2603:10a6:208:be::42) To VI1PR0701MB2623.eurprd07.prod.outlook.com
+x-clientproxiedby: AM3PR03CA0065.eurprd03.prod.outlook.com
+ (2603:10a6:207:5::23) To VI1PR0701MB2623.eurprd07.prod.outlook.com
  (2603:10a6:801:b::19)
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=jhofstee@victronenergy.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-mailer: git-send-email 2.17.1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7bcd1559-54da-4a98-9ca8-08d7411f6ae7
+x-ms-office365-filtering-correlation-id: dcf5587c-d3ec-4d05-649d-08d7411f6cef
 x-ms-traffictypediagnostic: VI1PR0701MB2847:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0701MB28470D562EA575DBCE1538D6C0840@VI1PR0701MB2847.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-microsoft-antispam-prvs: <VI1PR0701MB28475A4310B3B14A99EEF9EDC0840@VI1PR0701MB2847.eurprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
 x-forefront-prvs: 0170DAF08C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(366004)(39850400004)(346002)(136003)(396003)(189003)(199004)(81156014)(86362001)(2906002)(2351001)(14454004)(305945005)(478600001)(8676002)(2501003)(15650500001)(36756003)(7736002)(6116002)(25786009)(8936002)(50226002)(81166006)(46003)(76176011)(11346002)(66476007)(6506007)(6916009)(446003)(102836004)(186003)(2616005)(1076003)(6486002)(66946007)(64756008)(486006)(476003)(66556008)(66446008)(5660300002)(54906003)(71200400001)(71190400001)(14444005)(5640700003)(6436002)(52116002)(386003)(4326008)(256004)(316002)(99286004)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0701MB2847;H:VI1PR0701MB2623.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(366004)(39850400004)(346002)(136003)(396003)(189003)(199004)(81156014)(86362001)(2906002)(2351001)(14454004)(305945005)(478600001)(8676002)(2501003)(36756003)(7736002)(6116002)(25786009)(8936002)(50226002)(81166006)(46003)(76176011)(11346002)(66476007)(6506007)(6916009)(446003)(102836004)(186003)(2616005)(1076003)(6486002)(66946007)(64756008)(486006)(476003)(66556008)(66446008)(5660300002)(54906003)(71200400001)(71190400001)(14444005)(5640700003)(6436002)(52116002)(386003)(4326008)(256004)(316002)(99286004)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0701MB2847;H:VI1PR0701MB2623.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: victronenergy.com does not
  designate permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: IQnt8eCSmHvjbci9J7wh6YJz/qR4OwgWMe+j/1TIpEWsDlaGddGV+sBHPQqzRVXZEopFIUEtpcvPXWYQAdRWfUGcywCD42XiE0lh0cmb34vhoLNGEM/WUzP2e4IVCt2tl1vPh0AN2bok7sP7v/yehaZTghjAKO02eGBK4AnPoIC9xYGQmlgp4iKoQk7T433aHogZR622AyzXfygivei4xvTBVsNIy88Fu8m0cI0ehbSSQiEDKydrBw0eJ7G8a6KpfcM9hUPipqliD2Yfymr47FVjdsi7KZBFd7FeSYNQI2BNub7vSJQw0I1FrNY6sA9f3ysCob8t6ygSR8U6AblIclzIFWnHrbN4qUyd53kShNirdjn77MW2ra37KoJV38EgaiteJfJEoLOSO+U/ILoC3MZIcZF73+mqZvaON09UqUY=
+x-microsoft-antispam-message-info: K7/ka9yfZNL6hfmTCbJjSMSov2sWwAZrSgB/JZn+jdr6Yw/dvb+5wiqfTbkYT3Oa7CR92fu1Ljpomh33Qcy+57jpiL1G1QJM9FexANtcRDGT10Z4UCM/7g8+qw7CxpaITFEhWu8JliW9JPiB9UYOMXHKIgOwsXDOvOeIFfA8XBJ21xWEYcMy2cJ5zCqNFDNoCXV4N1eIfdi2gbFDnv1bPZF1+c/dvhQBjbTC3iqmpjTcgkP1Rt7KBnVYOF4i/r0astBuFAdD1ieCx+VnyDjvAVHZsBhlU0DrRtoBvh3zCZ8edGCgXGEN0PsA7tJUqDSSTqK+pQpw+/4nBdZi3QdkvQnBhGikN4eexQX3kKXTSVWN70zVun4LW55cpZaj7cqXGDc3i/npEcui08KMrTgYOe2Cy8njrRwJ1tjm7QaLi+E=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: victronenergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7bcd1559-54da-4a98-9ca8-08d7411f6ae7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Sep 2019 18:45:49.1519
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcf5587c-d3ec-4d05-649d-08d7411f6cef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Sep 2019 18:45:52.5443
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 60b95f08-3558-4e94-b0f8-d690c498e225
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XYs9SmFABiml7OJDZZNxctt3r13U9y4Cqfx1OqHADngMRunt+JVMfqeSeMm2bcOyQYHLIsDRg8in21GIGheC9Cma61zWp1zhWCz7Gmt7pEU=
+X-MS-Exchange-CrossTenant-userprincipalname: fafLRV/GsYYkNBqadqzRWmwc4codiE7l5OjPdkdQ5Ri9N+XHgU+A1yc2EYals1FMXRs+gOzNDodJ504OR6frcvzFSI1NqLgQZzVqYqCFsSc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0701MB2847
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Release the mailbox after reading it, so it can be reused a bit earlier.
-Since "can: rx-offload: continue on error" all pending message bits are
-cleared directly, so remove clearing them in ti_hecc.
+When the interface goes down, the CPK should no longer take an active
+part in the CAN-bus communication, like sending acks and error frames.
+So enable configuration mode in ti_hecc_stop, so the CPK is no longer
+active.
 
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+When a transceiver switch is present the acks and errors don't make it
+to the bus, but disabling the CPK then does prevent oddities, like
+ti_hecc_reset failing, since the CPK can become bus-off and starts
+counting the 11 bit recessive bits, which seems to block the reset. It
+can also cause invalid interrupts and disrupt the CAN-bus, since
+transmission can be stopped in the middle of a message, by disabling
+the tranceiver while the CPK is sending.
+
+Since the CPK is disabled after normal power on, it is typically only
+seen when the interface is restarted.
+
 Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
 ---
- drivers/net/can/ti_hecc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/can/ti_hecc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
-index f8b19eef5d26..461c28ab6d66 100644
+index 461c28ab6d66..b82c011ddbec 100644
 --- a/drivers/net/can/ti_hecc.c
 +++ b/drivers/net/can/ti_hecc.c
-@@ -526,8 +526,9 @@ static unsigned int ti_hecc_mailbox_read(struct can_rx_=
-offload *offload,
- 					 u32 *timestamp, unsigned int mbxno)
+@@ -400,6 +400,9 @@ static void ti_hecc_stop(struct net_device *ndev)
  {
- 	struct ti_hecc_priv *priv =3D rx_offload_to_priv(offload);
--	u32 data;
-+	u32 data, mbx_mask;
+ 	struct ti_hecc_priv *priv =3D netdev_priv(ndev);
 =20
-+	mbx_mask =3D BIT(mbxno);
- 	data =3D hecc_read_mbx(priv, mbxno, HECC_CANMID);
- 	if (data & HECC_CANMID_IDE)
- 		cf->can_id =3D (data & CAN_EFF_MASK) | CAN_EFF_FLAG;
-@@ -547,6 +548,7 @@ static unsigned int ti_hecc_mailbox_read(struct can_rx_=
-offload *offload,
- 	}
-=20
- 	*timestamp =3D hecc_read_stamp(priv, mbxno);
-+	hecc_write(priv, HECC_CANRMP, mbx_mask);
-=20
- 	return 1;
- }
-@@ -695,7 +697,6 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev=
-_id)
- 		while ((rx_pending =3D hecc_read(priv, HECC_CANRMP))) {
- 			can_rx_offload_irq_offload_timestamp(&priv->offload,
- 							     rx_pending);
--			hecc_write(priv, HECC_CANRMP, rx_pending);
- 		}
- 	}
-=20
++	/* Disable the CPK; stop sending, erroring and acking */
++	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
++
+ 	/* Disable interrupts and disable mailboxes */
+ 	hecc_write(priv, HECC_CANGIM, 0);
+ 	hecc_write(priv, HECC_CANMIM, 0);
 --=20
 2.17.1
 
