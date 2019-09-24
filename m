@@ -2,116 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D35D7BC9A0
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 905A9BC9B7
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405753AbfIXOBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 10:01:36 -0400
-Received: from frisell.zx2c4.com ([192.95.5.64]:54159 "EHLO frisell.zx2c4.com"
+        id S2395495AbfIXOEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 10:04:23 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52070 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725855AbfIXOBg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 10:01:36 -0400
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 631b8b0a;
-        Tue, 24 Sep 2019 13:15:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=Ni0hMWlCiFMnaQshc8kXJTh4/
-        bA=; b=H7wz64VDaOrxEUv3s1Ld0Cxy5fxjQ7KDf3qDpuwvJWYtNDFt3ZOoJrMbC
-        +VqSW6VXZG/sGw36U8i5a1LZBEVod3YhBIIuKOT7fuWAbe+YoF0Ii/mkuyUXPpLb
-        bKeiyEWoUlR4gxE5yTTcO2TNE4bjON9h/pVWs+ax0xr7Z+3pSEffUBsmRtm7zZ5k
-        5tnqb0NDzl44j7+o1E3TBKCgCNUi8x9QVr45dtJAcagJnUkPDsR5GsA1RxW2dhu4
-        Rz2TkKCiQCYihPKYSNCFbY788kGurMsV9BXZ1trgo6IZkm2xMDPzgPTUar8MQ4t8
-        CfZQsAJPoOoJGIJSgO/oyZvKmlizA==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 44093bc1 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Tue, 24 Sep 2019 13:15:56 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, weiwan@google.com
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org
-Subject: [PATCH v2] ipv6: do not free rt if FIB_LOOKUP_NOREF is set on suppress rule
-Date:   Tue, 24 Sep 2019 16:01:28 +0200
-Message-Id: <20190924140128.19394-1-Jason@zx2c4.com>
-In-Reply-To: <20190924.145257.2013712373872209531.davem@davemloft.net>
-References: <20190924.145257.2013712373872209531.davem@davemloft.net>
+        id S2392022AbfIXOEX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 10:04:23 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5A2E420F0;
+        Tue, 24 Sep 2019 14:04:22 +0000 (UTC)
+Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C6E5960C5E;
+        Tue, 24 Sep 2019 14:04:13 +0000 (UTC)
+Date:   Tue, 24 Sep 2019 08:04:13 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        tiwei.bie@intel.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, cohuck@redhat.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
+Subject: Re: [PATCH 5/6] vringh: fix copy direction of
+ vringh_iov_push_kern()
+Message-ID: <20190924080413.0cc875c5@x1.home>
+In-Reply-To: <20190923115930-mutt-send-email-mst@kernel.org>
+References: <20190923130331.29324-1-jasowang@redhat.com>
+        <20190923130331.29324-6-jasowang@redhat.com>
+        <20190923094559.765da494@x1.home>
+        <20190923115930-mutt-send-email-mst@kernel.org>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Tue, 24 Sep 2019 14:04:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7d9e5f422150 removed references from certain dsts, but accounting
-for this never translated down into the fib6 suppression code. This bug
-was triggered by WireGuard users who use wg-quick(8), which uses the
-"suppress-prefix" directive to ip-rule(8) for routing all of their
-internet traffic without routing loops. The test case added here
-causes the reference underflow by causing packets to evaluate a suppress
-rule.
+On Mon, 23 Sep 2019 12:00:41 -0400
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-Cc: stable@vger.kernel.org
-Fixes: 7d9e5f422150 ("ipv6: convert major tx path to use RT6_LOOKUP_F_DST_NOREF")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- net/ipv6/fib6_rules.c                    |  3 ++-
- tools/testing/selftests/net/fib_tests.sh | 17 ++++++++++++++++-
- 2 files changed, 18 insertions(+), 2 deletions(-)
+> On Mon, Sep 23, 2019 at 09:45:59AM -0600, Alex Williamson wrote:
+> > On Mon, 23 Sep 2019 21:03:30 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> >   
+> > > We want to copy from iov to buf, so the direction was wrong.
+> > > 
+> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > ---
+> > >  drivers/vhost/vringh.c | 8 +++++++-
+> > >  1 file changed, 7 insertions(+), 1 deletion(-)  
+> > 
+> > 
+> > Why is this included in the series?  Seems like an unrelated fix being
+> > held up within a proposal for a new feature.  Thanks,
+> > 
+> > Alex  
+> 
+> It's better to have it as patch 1/6, but it's a dependency of the
+> example driver in the series. I can reorder when I apply.
 
-diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
-index d22b6c140f23..f9e8fe3ff0c5 100644
---- a/net/ipv6/fib6_rules.c
-+++ b/net/ipv6/fib6_rules.c
-@@ -287,7 +287,8 @@ static bool fib6_rule_suppress(struct fib_rule *rule, struct fib_lookup_arg *arg
- 	return false;
- 
- suppress_route:
--	ip6_rt_put(rt);
-+	if (!(arg->flags & FIB_LOOKUP_NOREF))
-+		ip6_rt_put(rt);
- 	return true;
- }
- 
-diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
-index 4465fc2dae14..c2c5f2bf0f95 100755
---- a/tools/testing/selftests/net/fib_tests.sh
-+++ b/tools/testing/selftests/net/fib_tests.sh
-@@ -9,7 +9,7 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--TESTS="unregister down carrier nexthop ipv6_rt ipv4_rt ipv6_addr_metric ipv4_addr_metric ipv6_route_metrics ipv4_route_metrics ipv4_route_v6_gw rp_filter"
-+TESTS="unregister down carrier nexthop suppress ipv6_rt ipv4_rt ipv6_addr_metric ipv4_addr_metric ipv6_route_metrics ipv4_route_metrics ipv4_route_v6_gw rp_filter"
- 
- VERBOSE=0
- PAUSE_ON_FAIL=no
-@@ -614,6 +614,20 @@ fib_nexthop_test()
- 	cleanup
- }
- 
-+fib_suppress_test()
-+{
-+	$IP link add dummy1 type dummy
-+	$IP link set dummy1 up
-+	$IP -6 route add default dev dummy1
-+	$IP -6 rule add table main suppress_prefixlength 0
-+	ping -f -c 1000 -W 1 1234::1 || true
-+	$IP -6 rule del table main suppress_prefixlength 0
-+	$IP link del dummy1
-+
-+	# If we got here without crashing, we're good.
-+	return 0
-+}
-+
- ################################################################################
- # Tests on route add and replace
- 
-@@ -1591,6 +1605,7 @@ do
- 	fib_carrier_test|carrier)	fib_carrier_test;;
- 	fib_rp_filter_test|rp_filter)	fib_rp_filter_test;;
- 	fib_nexthop_test|nexthop)	fib_nexthop_test;;
-+	fib_suppress_test|suppress)	fib_suppress_test;;
- 	ipv6_route_test|ipv6_rt)	ipv6_route_test;;
- 	ipv4_route_test|ipv4_rt)	ipv4_route_test;;
- 	ipv6_addr_metric)		ipv6_addr_metric_test;;
--- 
-2.21.0
+It's a fix, please submit it separately through virtio/vhost channels,
+then it will already be in the base kernel we use for the rest of the
+series.  The remainder of the series certainly suggests a workflow
+through the vfio tree rather than virtio/vhost.  Thanks,
+
+Alex
+
+> > > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > > index 08ad0d1f0476..a0a2d74967ef 100644
+> > > --- a/drivers/vhost/vringh.c
+> > > +++ b/drivers/vhost/vringh.c
+> > > @@ -852,6 +852,12 @@ static inline int xfer_kern(void *src, void *dst, size_t len)
+> > >  	return 0;
+> > >  }
+> > >  
+> > > +static inline int kern_xfer(void *dst, void *src, size_t len)
+> > > +{
+> > > +	memcpy(dst, src, len);
+> > > +	return 0;
+> > > +}
+> > > +
+> > >  /**
+> > >   * vringh_init_kern - initialize a vringh for a kernelspace vring.
+> > >   * @vrh: the vringh to initialize.
+> > > @@ -958,7 +964,7 @@ EXPORT_SYMBOL(vringh_iov_pull_kern);
+> > >  ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
+> > >  			     const void *src, size_t len)
+> > >  {
+> > > -	return vringh_iov_xfer(wiov, (void *)src, len, xfer_kern);
+> > > +	return vringh_iov_xfer(wiov, (void *)src, len, kern_xfer);
+> > >  }
+> > >  EXPORT_SYMBOL(vringh_iov_push_kern);
+> > >    
 
