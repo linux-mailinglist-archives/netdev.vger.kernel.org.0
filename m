@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE69BCBE7
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F889BCBF3
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437989AbfIXPw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 11:52:59 -0400
-Received: from foss.arm.com ([217.140.110.172]:33110 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437833AbfIXPw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 11:52:59 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB71C142F;
-        Tue, 24 Sep 2019 08:52:58 -0700 (PDT)
-Received: from [10.1.197.50] (e120937-lin.cambridge.arm.com [10.1.197.50])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AB7783F59C;
-        Tue, 24 Sep 2019 08:52:57 -0700 (PDT)
-Subject: Re: Linux 5.4 - bpf test build fails
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
-From:   Cristian Marussi <cristian.marussi@arm.com>
-Message-ID: <1d1bbc01-5cf4-72e6-76b3-754d23366c8f@arm.com>
-Date:   Tue, 24 Sep 2019 16:52:56 +0100
+        id S2390477AbfIXP6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 11:58:20 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:42510 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388572AbfIXP6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:58:20 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8OFmnRj145255;
+        Tue, 24 Sep 2019 15:58:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=Bi6yhKEkRPnQu6adPrGafYo0isUF5tahIL8mwIDkCHE=;
+ b=RUwj368vzNNc1GO1FiS2l0FdyL+OnxseANXVgD7LHwMf8pXf2eGy1quB9Ac0b7T/PDBa
+ Kf3wxKmqWGGNE4xX6PfRhkZTz5cKaNf1yq98I4YGvW9UwtjJ9d/IDhaSGHEZfcnf7MTm
+ avNcXuaMw1+vnjQWPds70RSOQYHp4DCwTynqjyb8Axci3Zl4e5YThcSquwPaYit3X1Xz
+ nhc+uNSURD/qUwGAKo1WQEbVo+jq6CoWCtnk+a8kLErvrYtR0MhbXdFiMwQVsC+9NNYh
+ 3JmvrHBoPNi7qxEBZ8GL+jmVoyetHZ8dh9VG88kk0VzFxNgnZIYX0iMMQdoAtJKcTBPx yg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 2v5btpy4rf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Sep 2019 15:58:13 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8OFlfQQ018523;
+        Tue, 24 Sep 2019 15:58:13 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2v6yvksq8b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 24 Sep 2019 15:58:13 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x8OFwCNL051205;
+        Tue, 24 Sep 2019 15:58:12 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2v6yvksq7a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Sep 2019 15:58:12 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8OFwBum012884;
+        Tue, 24 Sep 2019 15:58:11 GMT
+Received: from [10.159.211.29] (/10.159.211.29)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 24 Sep 2019 08:58:11 -0700
+Subject: Re: [PATCH net] net/rds: Check laddr_check before calling it
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
+        davem@davemloft.net, rds-devel@oss.oracle.com
+References: <1568734158-18021-1-git-send-email-ka-cheong.poon@oracle.com>
+ <20190920180959.7920f2c3@cakuba.netronome.com>
+From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <9f6506cf-87e1-0ef2-f7d6-28291e71c753@oracle.com>
+Date:   Tue, 24 Sep 2019 23:58:03 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190920180959.7920f2c3@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9390 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1909240147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shuah
-
-On 24/09/2019 16:26, Shuah Khan wrote:
-> Hi Alexei and Daniel,
+On 9/21/19 9:09 AM, Jakub Kicinski wrote:
+> On Tue, 17 Sep 2019 08:29:18 -0700, Ka-Cheong Poon wrote:
+>> In rds_bind(), laddr_check is called without checking if it is NULL or
+>> not.  And rs_transport should be reset if rds_add_bound() fails.
+>>
+>> Reported-by: syzbot+fae39afd2101a17ec624@syzkaller.appspotmail.com
+>> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
 > 
-> bpf test doesn't build on Linux 5.4 mainline. Do you know what's
-> happening here.
-> 
-> 
-> make -C tools/testing/selftests/bpf/
+> Looks good, but could you please provide a fixes tag?
 
-side question, since I'm writing arm64/ tests.
 
-my "build-testcases" following the KSFT docs are:
+Done.  Thanks.
 
-make kselftest
-make TARGETS=arm64 kselftest
-make -C tools/testing/selftests/ 
-make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
-make TARGETS=arm64 -C tools/testing/selftests/ 
-make TARGETS=arm64 -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
-./kselftest_install.sh <install-path>
 
-(and related clean targets...)
+-- 
+K. Poon
+ka-cheong.poon@oracle.com
 
-but definitely NOT
-
-make -C tools/testing/selftests/arm64
-
-(for simplicity....due to the subdirs structure under tools/testing/selftests/arm64/)
-
-am I wrong ?
-
-Thanks
-
-Cristian
-
-> 
-> -c progs/test_core_reloc_ptr_as_arr.c -o - || echo "clang failed") | \
-> llc -march=bpf -mcpu=generic  -filetype=obj -o 
-> /mnt/data/lkml/linux_5.4/tools/testing/selftests/bpf/test_core_reloc_ptr_as_arr.o
-> progs/test_core_reloc_ptr_as_arr.c:25:6: error: use of unknown builtin
->        '__builtin_preserve_access_index' [-Wimplicit-function-declaration]
->          if (BPF_CORE_READ(&out->a, &in[2].a))
->              ^
-> ./bpf_helpers.h:533:10: note: expanded from macro 'BPF_CORE_READ'
->                         __builtin_preserve_access_index(src))
->                         ^
-> progs/test_core_reloc_ptr_as_arr.c:25:6: warning: incompatible integer to
->        pointer conversion passing 'int' to parameter of type 'const void *'
->        [-Wint-conversion]
->          if (BPF_CORE_READ(&out->a, &in[2].a))
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> ./bpf_helpers.h:533:10: note: expanded from macro 'BPF_CORE_READ'
->                         __builtin_preserve_access_index(src))
->                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 1 warning and 1 error generated.
-> llc: error: llc: <stdin>:1:1: error: expected top-level entity
-> clang failed
-> 
-> Also
-> 
-> make TARGETS=bpf kselftest fails as well. Dependency between
-> tools/lib/bpf and the test. How can we avoid this type of
-> dependency or resolve it in a way it doesn't result in build
-> failures?
-> 
-> thanks,
-> -- Shuah
-> 
 
