@@ -2,74 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC77BCC06
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 18:03:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7D8BCC0A
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 18:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391571AbfIXQDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 12:03:05 -0400
-Received: from antares.kleine-koenig.org ([94.130.110.236]:52290 "EHLO
-        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389811AbfIXQDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 12:03:05 -0400
-Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
-        id A44CF7C76AC; Tue, 24 Sep 2019 18:03:03 +0200 (CEST)
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-To:     Tal Gilboa <talgi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2] dimlib: make DIMLIB a hidden symbol
-Date:   Tue, 24 Sep 2019 18:02:59 +0200
-Message-Id: <20190924160259.10987-1-uwe@kleine-koenig.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190924.164528.724219923520816886.davem@davemloft.net>
-References: <20190924.164528.724219923520816886.davem@davemloft.net>
+        id S2404659AbfIXQDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 12:03:45 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39174 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391683AbfIXQDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 12:03:44 -0400
+Received: by mail-io1-f67.google.com with SMTP id a1so5756773ioc.6
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 09:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I9jUqbdYIbBE4dwhsKs4qvKQ+ti2oooQwrMVU8YnBUI=;
+        b=JpMJ0TGImCC1ItVY6WQ0/EM8wu1WWa9myRStS9+oXdRuOQjo+K4SodAjDHk0uRqkKq
+         zrlcejfYvaFnleJWg4UL0ChY0uKOUa2BTr7I4zQg+Xt5Q/iFwOb7QPuyh2ipUz6Gx+iR
+         C5adrufXvqrPp6JvZVxRQTgUoc/A33qXSspdg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I9jUqbdYIbBE4dwhsKs4qvKQ+ti2oooQwrMVU8YnBUI=;
+        b=JVan5zV1EsRFOjbLKGYbgHKjKkBsh+utgs4qxje7hXfrMIyO3G0Me8V9/Ai2kglIR2
+         IQt3YvJIxirnzrsmJwe1+OKXiLbkT+8TFJORoq8CZ3UOAUuwgSlnly7rDUIPgSufztVH
+         nkWxMZSfHDVKkP2EZmo9jPe9yg8+HLFZvtkfJjpW4D2qWps8dvX7xeEsk2Cmz55r67VZ
+         Q9Vb3M164MA930Yumgf4a/0ujTJF40/ygKoO+ErXEpyRMJrZVnO3qXWb9xsrU9ctgrGI
+         XIDuHHBfLC20CeYIlxmiHlSFdc74hihsuO/AHVN7SEEMtNcLIJTmpRafgeY3y/axOELY
+         dgig==
+X-Gm-Message-State: APjAAAV1/DigM8SAQclAn7iHGNv/k6ooASTqpm2XQBtMnfR1JKd72c2X
+        blO3dZQMJhwpkGrrnyjNIJjItQ==
+X-Google-Smtp-Source: APXvYqz5S6BfXdFe3fcM5AWwi16BT694HZWPRmo9VAiQilUd6B6g+F/ieItoygTR3chEVw6UXXWYYA==
+X-Received: by 2002:a02:ac82:: with SMTP id x2mr4489306jan.18.1569341023584;
+        Tue, 24 Sep 2019 09:03:43 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id r141sm4356434ior.53.2019.09.24.09.03.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Sep 2019 09:03:42 -0700 (PDT)
+Subject: Re: Linux 5.4 - bpf test build fails
+To:     Cristian Marussi <cristian.marussi@arm.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "skh >> Shuah Khan" <skhan@linuxfoundation.org>
+References: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
+ <1d1bbc01-5cf4-72e6-76b3-754d23366c8f@arm.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <34a9bd63-a251-0b4f-73b6-06b9bbf9d3fa@linuxfoundation.org>
+Date:   Tue, 24 Sep 2019 10:03:41 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1d1bbc01-5cf4-72e6-76b3-754d23366c8f@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to Tal Gilboa the only benefit from DIM comes from a driver
-that uses it. So it doesn't make sense to make this symbol user visible,
-instead all drivers that use it should select it (as is already the case
-AFAICT).
+On 9/24/19 9:52 AM, Cristian Marussi wrote:
+> Hi Shuah
+> 
+> On 24/09/2019 16:26, Shuah Khan wrote:
+>> Hi Alexei and Daniel,
+>>
+>> bpf test doesn't build on Linux 5.4 mainline. Do you know what's
+>> happening here.
+>>
+>>
+>> make -C tools/testing/selftests/bpf/
+> 
+> side question, since I'm writing arm64/ tests.
+> 
+> my "build-testcases" following the KSFT docs are:
+> 
+> make kselftest
+> make TARGETS=arm64 kselftest
+> make -C tools/testing/selftests/
+> make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
+> make TARGETS=arm64 -C tools/testing/selftests/
+> make TARGETS=arm64 -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
+> ./kselftest_install.sh <install-path>
+> 
+> (and related clean targets...)
+> 
+> but definitely NOT
+> 
+> make -C tools/testing/selftests/arm64
+> 
+> (for simplicity....due to the subdirs structure under tools/testing/selftests/arm64/)
+> 
 
-Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
----
-Hello David,
+Some people like to build their tests using:
 
-On Tue, Sep 24, 2019 at 04:45:28PM +0200, David Miller wrote:
-> Since this doesn't apply due to the moderation typo being elsewhere, I'd
-> really like you to fix up this submission to properly be against 'net'.
+make -C tools/testing/selftests/<testdir>
 
-I thought it would be possible to git-apply my patch with the -3 option.
-I even tested that, but obviously it only applies to my tree that has
-the git object with the typo fixed. Sorry for the extra effort I'm
-forcing on you. This patch applies to your public tree from just now.
+I have been continuing to support it for that reason.
 
-Best regads
-Uwe
+Tests with subdirs can handle this case. Pleas see android and futex
+tests.
 
- lib/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+thanks,
+-- Shuah
 
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 4e6b1c3e4c98..d7fc9eb33b9b 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -555,8 +555,7 @@ config SIGNATURE
- 	  Implementation is done using GnuPG MPI library
- 
- config DIMLIB
--	bool "DIM library"
--	default y
-+	bool
- 	help
- 	  Dynamic Interrupt Moderation library.
- 	  Implements an algorithm for dynamically change CQ modertion values
--- 
-2.23.0
+
 
