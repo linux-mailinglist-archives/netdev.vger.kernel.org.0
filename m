@@ -2,62 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE828BBFA9
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 03:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E6EBC050
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 04:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392439AbfIXBWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 21:22:10 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:51659 "EHLO
+        id S2408001AbfIXCrw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 23 Sep 2019 22:47:52 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:36172 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388676AbfIXBWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 21:22:10 -0400
+        with ESMTP id S1728992AbfIXCrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 22:47:52 -0400
 Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x8O1Luxj008608, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x8O1Luxj008608
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Sep 2019 09:21:56 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Tue, 24 Sep
- 2019 09:21:56 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Austin Kim <austindh.kim@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x8O2lmp1013586, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x8O2lmp1013586
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Tue, 24 Sep 2019 10:47:48 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Tue, 24 Sep
+ 2019 10:47:47 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Prashant Malani <pmalani@chromium.org>
+CC:     "grundler@chromium.org" <grundler@chromium.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rtlwifi: rtl8723ae: Remove unused 'rtstatus' variable
-Thread-Topic: [PATCH] rtlwifi: rtl8723ae: Remove unused 'rtstatus' variable
-Thread-Index: AQHVbSQ/IoCU1aThcEGdzSMbu8vWrqc4xuaAgAFKO8A=
-Date:   Tue, 24 Sep 2019 01:21:55 +0000
-Message-ID: <5B2DA6FDDF928F4E855344EE0A5C39D1D5C7088F@RTITMBSVM04.realtek.com.tw>
-References: <20190917065044.GA173797@LGEARND20B15>
- <CADLLry5b1RDjXX8Dbc4ebbZOFFaAd0wc3rDCaD-V9RBwrpNyMA@mail.gmail.com>
-In-Reply-To: <CADLLry5b1RDjXX8Dbc4ebbZOFFaAd0wc3rDCaD-V9RBwrpNyMA@mail.gmail.com>
-Accept-Language: en-US, zh-TW
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH] r8152: Use guard clause and fix comment typos
+Thread-Topic: [PATCH] r8152: Use guard clause and fix comment typos
+Thread-Index: AQHVcl4Je97jOVw1OE2mv82gmv1qzac6GP4A
+Date:   Tue, 24 Sep 2019 02:47:47 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18E1587@RTITMBSVM03.realtek.com.tw>
+References: <20190923222657.253628-1-pmalani@chromium.org>
+In-Reply-To: <20190923222657.253628-1-pmalani@chromium.org>
+Accept-Language: zh-TW, en-US
 Content-Language: zh-TW
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.95]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEF1c3RpbiBLaW0gW21haWx0
-bzphdXN0aW5kaC5raW1AZ21haWwuY29tXQ0KPiBTZW50OiBNb25kYXksIFNlcHRlbWJlciAyMywg
-MjAxOSA5OjM1IFBNDQo+IFRvOiBQa3NoaWg7IGt2YWxvQGNvZGVhdXJvcmEub3JnOyBkYXZlbUBk
-YXZlbWxvZnQubmV0DQo+IENjOiBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmc7IG5ldGRl
-dkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVj
-dDogUmU6IFtQQVRDSF0gcnRsd2lmaTogcnRsODcyM2FlOiBSZW1vdmUgdW51c2VkICdydHN0YXR1
-cycgdmFyaWFibGUNCj4gDQo+IEhlbGxvLCBNYWludGFpbmVycy4uLg0KPiBXb3VsZCB5b3UgcGxl
-YXNlIHJldmlldyBhYm92ZSBwYXRjaCBpZiB5b3UgYXJlIGF2YWlsYWJsZT8NCj4gDQoNCllvdSBj
-YW4gY2hlY2sgc3RhdHVzIG9mIHlvdXIgcGF0Y2ggaGVyZQ0KaHR0cHM6Ly9wYXRjaHdvcmsua2Vy
-bmVsLm9yZy9wcm9qZWN0L2xpbnV4LXdpcmVsZXNzL2xpc3QvP3Nlcmllcz0xNzQ4NTkNCklmIHlv
-dXIgcGF0Y2ggaXMgZXhpc3RpbmcgaW4gcGF0Y2h3b3JrLCBtYWludGFpbmVyIGRvZXNuJ3QgZm9y
-Z2V0IGl0Lg0KDQpBbm90aGVyIHRoaW5nIGlzIHRvIGF2b2lkIHRvcCBwb3N0aW5nIHRoYXQgbWFr
-ZXMgbWFpbnRhaW5lciBoYXJkIHRvIHJlYWQgbWFpbC4NCg0KLS0tDQpQSw0KDQo=
+Prashant Malani [mailto:pmalani@chromium.org]
+> Sent: Tuesday, September 24, 2019 6:27 AM
+> To: Hayes Wang
+[...]
+> -	do {
+> +	while (1) {
+>  		struct tx_agg *agg;
+> +		struct net_device *netdev = tp->netdev;
+> 
+>  		if (skb_queue_empty(&tp->tx_queue))
+>  			break;
+> @@ -2188,26 +2189,25 @@ static void tx_bottom(struct r8152 *tp)
+>  			break;
+> 
+>  		res = r8152_tx_agg_fill(tp, agg);
+> -		if (res) {
+> -			struct net_device *netdev = tp->netdev;
+> +		if (!res)
+> +			break;
+
+I let the loop run continually until an error occurs or the queue is empty.
+However, you stop the loop when r8152_tx_agg_fill() is successful.
+If an error occurs continually, the loop may not be broken.
+
+> -			if (res == -ENODEV) {
+> -				rtl_set_unplug(tp);
+> -				netif_device_detach(netdev);
+> -			} else {
+> -				struct net_device_stats *stats = &netdev->stats;
+> -				unsigned long flags;
+> +		if (res == -ENODEV) {
+> +			rtl_set_unplug(tp);
+> +			netif_device_detach(netdev);
+> +		} else {
+> +			struct net_device_stats *stats = &netdev->stats;
+> +			unsigned long flags;
+> 
+> -				netif_warn(tp, tx_err, netdev,
+> -					   "failed tx_urb %d\n", res);
+> -				stats->tx_dropped += agg->skb_num;
+> +			netif_warn(tp, tx_err, netdev,
+> +				   "failed tx_urb %d\n", res);
+> +			stats->tx_dropped += agg->skb_num;
+> 
+> -				spin_lock_irqsave(&tp->tx_lock, flags);
+> -				list_add_tail(&agg->list, &tp->tx_free);
+> -				spin_unlock_irqrestore(&tp->tx_lock, flags);
+> -			}
+> +			spin_lock_irqsave(&tp->tx_lock, flags);
+> +			list_add_tail(&agg->list, &tp->tx_free);
+> +			spin_unlock_irqrestore(&tp->tx_lock, flags);
+>  		}
+> -	} while (res == 0);
+> +	}
+
+I think the behavior is different from the current one.
+
+Best Regards,
+Hayes
+
