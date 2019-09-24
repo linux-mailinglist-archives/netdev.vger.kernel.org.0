@@ -2,143 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5642BCAD8
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5AF2BCB08
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:20:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730511AbfIXPGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 11:06:35 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37448 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727834AbfIXPGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:06:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1569337593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=47F98g0cYtJSkRl55B62bcc/hNiWgNt8iRsrYRSVUp8=;
-        b=aEbhOxRgJ16EI2XOIzqkbEVPixkWBJlLWI3dPC5yi+z3H2rYp4vg9995pRmz3z7tHNUNok
-        mTCMReiNT1baKGDdBtinj52z4IXdb1hQktZ9vW+8K76sy2ITJYGdPLnz7u/hPuN6VlF6RG
-        mn9Iz15BDRWM2OBurgHaUbn9qaMZMpA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-361-seKgwc1SPwqFsGND13iZwQ-1; Tue, 24 Sep 2019 11:06:30 -0400
-Received: by mail-wm1-f71.google.com with SMTP id o8so177795wmc.2
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 08:06:30 -0700 (PDT)
+        id S1732217AbfIXPUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 11:20:25 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40573 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730625AbfIXPUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:20:24 -0400
+Received: by mail-qt1-f194.google.com with SMTP id x5so2589217qtr.7;
+        Tue, 24 Sep 2019 08:20:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4U97q1bgjdbURb8h+PgZk5MdNvAp2ndyyMyBYTipIow=;
+        b=E89Qo7f7HT0oo9JNq+WFjU8B7cfZ+SqrwKYdGG6QyzLD5j6LSPFvevqy1742DNWwDW
+         dCePoG0hqAypLxPQDKIpLrAmxnj781NfEUAIcSvXyomSh4OQFbmS3x+4OeQsTKOCxaLC
+         poFKk3zvvM8fDzmVmIpTDCuWT3DYhpW1XsdcqI7RIn0z1fLiVN7zvP36snyAqW6I9zlV
+         CFpeSbKzsF4eTLTPzQ5qwcIbqyoow9/nbkNE/eIz+Y8v0TKyTr3NhRZbjJOphHmkgQpc
+         U78bDRipYsCnSnNGVntaBSiG3ulBC4hgf/L1TMHfuhA4W5a+/+JJOO5+mUaimBy0+bel
+         1WKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lgUgNKjOg0oAOIDAqUbRojeHb+E5NGemROCfJhsOPsw=;
-        b=XtgUoBTN7xNdzjgD38HZuurPYfQkkzQBmvrspgjh/phxF/z/EbrUo93NPxnHf48/V/
-         RzcO4EfWSV+e2LUzYNvLREmcYPlQGIDSOdZyVfgcHL9vXz4rcwsQyYszO/j775qJpqNr
-         NuF48DXFDII2pHFx5ZbfWHc2avgVdQZGyttuglLJoaJQ0l1V+2+dzadjDz7+qTM89p1h
-         koAuglJdV8pulAWBHQpQKnXMc6mNCKIZdGywmiFIqDlt3PplhZnG9nSNrlhaW7edLfi/
-         yO2RlzfPEsH3JRXDepNZrPP7X0NFCWzxTrFDT2yqexFe1mdtfhdr8MKUDJgh7MrjlUq8
-         n6/g==
-X-Gm-Message-State: APjAAAUsamhAkktCe5KYKb8q3BoL8JLeYiFZhbX3A7Nf9+H5jPNDrPQO
-        xZa/Ky7GkfDz78GguYBA1pNHLpVBOQoUTzSzfnJjRt1FionOFFsdxJgr13skdmgXcBxTiyDVVmK
-        yIXWrufRhuwGoT8yq
-X-Received: by 2002:a7b:c758:: with SMTP id w24mr514087wmk.148.1569337589058;
-        Tue, 24 Sep 2019 08:06:29 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxvIcJwg1iUpLLeSRbP3U6VFzm/5MMEzYXCC0tEALgjQLBhkCfgzYUhccJOWD4mzVDSZHdAow==
-X-Received: by 2002:a7b:c758:: with SMTP id w24mr514065wmk.148.1569337588812;
-        Tue, 24 Sep 2019 08:06:28 -0700 (PDT)
-Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
-        by smtp.gmail.com with ESMTPSA id z4sm2240342wrh.93.2019.09.24.08.06.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4U97q1bgjdbURb8h+PgZk5MdNvAp2ndyyMyBYTipIow=;
+        b=rF5ttMC1mnA3VMw4a63AdK18/QV5DPXz1xt3as559HwXvlCjk05XzGSnV5ju1Bkn/3
+         slSxWCLx0FSdEQUF8qM2bkw7cCYwP/cyCCt9Y3LY80iZQvNfP5+/mvC8HO8u/5gu69CX
+         r4wEVTGIi/M94GGPxhEoupSDYDZlAvDMhF6fK26B+6SZgMIaCg6XU9ibHUAyf1ysk4H6
+         174XeaJgEeq2hM19zV6+rtDfH9Rvr16/Enl6UGmnNZX/AL9wz9tPRU33eMqxwqg5moAA
+         UZuU4GXxSXaQ+lFASDMjNPZAW6NtbwIQyRuz9+/hWnjbKKU7HMjd9LAi1P8xjZzPYpsv
+         7q6g==
+X-Gm-Message-State: APjAAAXGJCjxbl3Uea/1tn2JgJhVPaajgvfreAkZ0V05fJpMnSL3KsyP
+        aukeUXtpSInx6wzvyTd/kzLalz0TY84=
+X-Google-Smtp-Source: APXvYqyanrUeAZ9+FfQLaPgYTsPYcGvqiZuQERjbGdr4vvZQc9KZgKPMl7jLUqFStBebQLK/cfGO6w==
+X-Received: by 2002:a0c:cc14:: with SMTP id r20mr2946453qvk.61.1569338423299;
+        Tue, 24 Sep 2019 08:20:23 -0700 (PDT)
+Received: from ebpf00.byteswizards.com ([190.162.109.190])
+        by smtp.googlemail.com with ESMTPSA id h68sm1073533qkd.35.2019.09.24.08.20.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Sep 2019 08:06:28 -0700 (PDT)
-Date:   Tue, 24 Sep 2019 17:06:26 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Takeshi Misawa <jeliantsurux@gmail.com>
-Cc:     Paul Mackerras <paulus@samba.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] ppp: Fix memory leak in ppp_write
-Message-ID: <20190924150626.GA12337@linux.home>
-References: <20190922074531.GA1450@DESKTOP>
+        Tue, 24 Sep 2019 08:20:22 -0700 (PDT)
+From:   Carlos Neira <cneirabustos@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
+        bpf@vger.kernel.org, cneirabustos@gmail.com
+Subject: [PATCH V11 0/4] BPF: New helper to obtain namespace data from current task 
+Date:   Tue, 24 Sep 2019 12:20:01 -0300
+Message-Id: <20190924152005.4659-1-cneirabustos@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190922074531.GA1450@DESKTOP>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-MC-Unique: seKgwc1SPwqFsGND13iZwQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 22, 2019 at 04:45:31PM +0900, Takeshi Misawa wrote:
-> When ppp is closing, __ppp_xmit_process() failed to enqueue skb
-> and skb allocated in ppp_write() is leaked.
->=20
-> syzbot reported :
-> BUG: memory leak
-> unreferenced object 0xffff88812a17bc00 (size 224):
->   comm "syz-executor673", pid 6952, jiffies 4294942888 (age 13.040s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000d110fff9>] kmemleak_alloc_recursive include/linux/kmemleak.=
-h:43 [inline]
->     [<00000000d110fff9>] slab_post_alloc_hook mm/slab.h:522 [inline]
->     [<00000000d110fff9>] slab_alloc_node mm/slab.c:3262 [inline]
->     [<00000000d110fff9>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
->     [<000000002d616113>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
->     [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
->     [<000000000167fc45>] ppp_write+0x48/0x120 drivers/net/ppp/ppp_generic=
-.c:502
->     [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
->     [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
->     [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
->     [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
->     [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
->     [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
->     [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
->     [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c=
-:296
->     [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->=20
-> Fix this by freeing skb, if ppp is closing.
->=20
-> Fixes: 6d066734e9f0 ("ppp: avoid loop in xmit recursion detection code")
-> Reported-and-tested-by: syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail=
-.com
-> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
-> ---
-> Dear Guillaume Nault, Paul Mackerras
->=20
-> syzbot reported memory leak in net/ppp.
-> - memory leak in ppp_write
->=20
-> I send a patch that passed syzbot reproducer test.
-> Please consider this memory leak and patch.
->=20
-> Regards.
-> ---
->  drivers/net/ppp/ppp_generic.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.=
-c
-> index a30e41a56085..9a1b006904a7 100644
-> --- a/drivers/net/ppp/ppp_generic.c
-> +++ b/drivers/net/ppp/ppp_generic.c
-> @@ -1415,6 +1415,8 @@ static void __ppp_xmit_process(struct ppp *ppp, str=
-uct sk_buff *skb)
->  =09=09=09netif_wake_queue(ppp->dev);
->  =09=09else
->  =09=09=09netif_stop_queue(ppp->dev);
-> +=09} else {
-> +=09=09kfree_skb(skb);
->  =09}
->  =09ppp_xmit_unlock(ppp);
->  }
+Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
+scripts but this helper returns the pid as seen by the root namespace which is
+fine when a bcc script is not executed inside a container.
+When the process of interest is inside a container, pid filtering will not work
+if bpf_get_current_pid_tgid() is used.
+This helper addresses this limitation returning the pid as it's seen by the current
+namespace where the script is executing.
 
-Thanks a lot Takeshi!
+In the future different pid_ns files may belong to different devices, according to the
+discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
+To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
+This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
+used to do pid filtering even inside a container.
 
-Reviewed-by: Guillaume Nault <gnault@redhat.com>
-Tested-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+
+Carlos Neira (4):
+  fs/nsfs.c: added ns_match
+  bpf: added new helper bpf_get_ns_current_pid_tgid
+  tools: Added bpf_get_ns_current_pid_tgid helper
+  tools/testing/selftests/bpf: Add self-tests for new helper. self tests
+    added for new helper
+
+ fs/nsfs.c                                     |   8 +
+ include/linux/bpf.h                           |   1 +
+ include/linux/proc_ns.h                       |   2 +
+ include/uapi/linux/bpf.h                      |  18 ++-
+ kernel/bpf/core.c                             |   1 +
+ kernel/bpf/helpers.c                          |  32 ++++
+ kernel/trace/bpf_trace.c                      |   2 +
+ tools/include/uapi/linux/bpf.h                |  18 ++-
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+ .../selftests/bpf/progs/test_pidns_kern.c     |  71 ++++++++
+ tools/testing/selftests/bpf/test_pidns.c      | 152 ++++++++++++++++++
+ 12 files changed, 307 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_pidns_kern.c
+ create mode 100644 tools/testing/selftests/bpf/test_pidns.c
+
+-- 
+2.20.1
 
