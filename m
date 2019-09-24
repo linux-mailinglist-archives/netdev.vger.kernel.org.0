@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3712CBC987
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 15:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A108BC992
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 15:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2632764AbfIXN45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 09:56:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36922 "EHLO mx1.redhat.com"
+        id S1730491AbfIXN5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 09:57:23 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48288 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2395188AbfIXN45 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 09:56:57 -0400
+        id S1726257AbfIXN5X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 09:57:23 -0400
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 148BE3064FD2;
-        Tue, 24 Sep 2019 13:56:56 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 63D9720F6;
+        Tue, 24 Sep 2019 13:57:22 +0000 (UTC)
 Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-44.pek2.redhat.com [10.72.12.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 759D55B6A5;
-        Tue, 24 Sep 2019 13:56:32 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9DE3261559;
+        Tue, 24 Sep 2019 13:56:56 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -40,488 +40,776 @@ Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
         christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
         Jason Wang <jasowang@redhat.com>
-Subject: [PATCH V2 7/8] virtio: introduce a mdev based transport
-Date:   Tue, 24 Sep 2019 21:53:31 +0800
-Message-Id: <20190924135332.14160-8-jasowang@redhat.com>
+Subject: [PATCH V2 8/8] docs: sample driver to demonstrate how to implement virtio-mdev framework
+Date:   Tue, 24 Sep 2019 21:53:32 +0800
+Message-Id: <20190924135332.14160-9-jasowang@redhat.com>
 In-Reply-To: <20190924135332.14160-1-jasowang@redhat.com>
 References: <20190924135332.14160-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 24 Sep 2019 13:56:56 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Tue, 24 Sep 2019 13:57:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces a new mdev transport for virtio. This is used to
-use kernel virtio driver to drive the mediated device that is capable
-of populating virtqueue directly.
+This sample driver creates mdev device that simulate virtio net device
+over virtio mdev transport. The device is implemented through vringh
+and workqueue. A device specific dma ops is to make sure HVA is used
+directly as the IOVA. This should be sufficient for kernel virtio
+driver to work.
 
-A new virtio-mdev driver will be registered to the mdev bus, when a
-new virtio-mdev device is probed, it will register the device with
-mdev based config ops. This means it is a software transport between
-mdev driver and mdev device. The transport was implemented through
-device specific opswhich is a part of mdev_parent_ops now.
+Only 'virtio' type is supported right now. I plan to add 'vhost' type
+on top which requires some virtual IOMMU implemented in this sample
+driver.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/Kconfig       |   7 +
- drivers/virtio/Makefile      |   1 +
- drivers/virtio/virtio_mdev.c | 417 +++++++++++++++++++++++++++++++++++
- 3 files changed, 425 insertions(+)
- create mode 100644 drivers/virtio/virtio_mdev.c
+ MAINTAINERS                |   1 +
+ samples/Kconfig            |   7 +
+ samples/vfio-mdev/Makefile |   1 +
+ samples/vfio-mdev/mvnet.c  | 692 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 701 insertions(+)
+ create mode 100644 samples/vfio-mdev/mvnet.c
 
-diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
-index 078615cf2afc..8d18722ab572 100644
---- a/drivers/virtio/Kconfig
-+++ b/drivers/virtio/Kconfig
-@@ -43,6 +43,13 @@ config VIRTIO_PCI_LEGACY
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 89832b316500..347dc64cdc23 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17202,6 +17202,7 @@ F:	include/linux/virtio*.h
+ F:	include/uapi/linux/virtio_*.h
+ F:	drivers/crypto/virtio/
+ F:	mm/balloon_compaction.c
++F:	samples/vfio-mdev/mvnet.c
  
- 	  If unsure, say Y.
+ VIRTIO BLOCK AND SCSI DRIVERS
+ M:	"Michael S. Tsirkin" <mst@redhat.com>
+diff --git a/samples/Kconfig b/samples/Kconfig
+index c8dacb4dda80..a1a1ca2c00b7 100644
+--- a/samples/Kconfig
++++ b/samples/Kconfig
+@@ -131,6 +131,13 @@ config SAMPLE_VFIO_MDEV_MDPY
+ 	  mediated device.  It is a simple framebuffer and supports
+ 	  the region display interface (VFIO_GFX_PLANE_TYPE_REGION).
  
-+config VIRTIO_MDEV_DEVICE
-+	tristate "VIRTIO driver for Mediated devices"
-+	depends on VFIO_MDEV && VIRTIO
-+	default n
++config SAMPLE_VIRTIO_MDEV_NET
++        tristate "Build virtio mdev net example mediated device sample code -- loadable modules only"
++	depends on VIRTIO_MDEV_DEVICE && VHOST_RING && m
 +	help
-+	  VIRTIO based driver for Mediated devices.
++	  Build a networking sample device for use as a virtio
++	  mediated device.
 +
- config VIRTIO_PMEM
- 	tristate "Support for virtio pmem driver"
- 	depends on VIRTIO
-diff --git a/drivers/virtio/Makefile b/drivers/virtio/Makefile
-index 3a2b5c5dcf46..ebc7fa15ae82 100644
---- a/drivers/virtio/Makefile
-+++ b/drivers/virtio/Makefile
-@@ -6,3 +6,4 @@ virtio_pci-y := virtio_pci_modern.o virtio_pci_common.o
- virtio_pci-$(CONFIG_VIRTIO_PCI_LEGACY) += virtio_pci_legacy.o
- obj-$(CONFIG_VIRTIO_BALLOON) += virtio_balloon.o
- obj-$(CONFIG_VIRTIO_INPUT) += virtio_input.o
-+obj-$(CONFIG_VIRTIO_MDEV_DEVICE) += virtio_mdev.o
-diff --git a/drivers/virtio/virtio_mdev.c b/drivers/virtio/virtio_mdev.c
+ config SAMPLE_VFIO_MDEV_MDPY_FB
+ 	tristate "Build VFIO mdpy example guest fbdev driver -- loadable module only"
+ 	depends on FB && m
+diff --git a/samples/vfio-mdev/Makefile b/samples/vfio-mdev/Makefile
+index 10d179c4fdeb..f34af90ed0a0 100644
+--- a/samples/vfio-mdev/Makefile
++++ b/samples/vfio-mdev/Makefile
+@@ -3,3 +3,4 @@ obj-$(CONFIG_SAMPLE_VFIO_MDEV_MTTY) += mtty.o
+ obj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY) += mdpy.o
+ obj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB) += mdpy-fb.o
+ obj-$(CONFIG_SAMPLE_VFIO_MDEV_MBOCHS) += mbochs.o
++obj-$(CONFIG_SAMPLE_VIRTIO_MDEV_NET) += mvnet.o
+diff --git a/samples/vfio-mdev/mvnet.c b/samples/vfio-mdev/mvnet.c
 new file mode 100644
-index 000000000000..c2f3cb2738bd
+index 000000000000..53a39f0f3460
 --- /dev/null
-+++ b/drivers/virtio/virtio_mdev.c
-@@ -0,0 +1,417 @@
++++ b/samples/vfio-mdev/mvnet.c
+@@ -0,0 +1,692 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * VIRTIO based driver for Mediated device
++ * Mediated virtual virtio-net device driver.
 + *
-+ * Copyright (c) 2019, Red Hat. All rights reserved.
++ * Copyright (c) 2019, Red Hat Inc. All rights reserved.
 + *     Author: Jason Wang <jasowang@redhat.com>
 + *
++ * Sample driver that creates mdev device that simulates ethernet loopback
++ * device.
++ *
++ * Usage:
++ *
++ * # modprobe virtio_mdev
++ * # modprobe mvnet
++ * # cd /sys/devices/virtual/mvnet/mvnet/mdev_supported_types/mvnet-virtio
++ * # echo "83b8f4f2-509f-382f-3c1e-e6bfe0fa1001" > ./create
++ * # cd devices/83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
++ * # ls -d virtio0
++ * virtio0
 + */
 +
 +#include <linux/init.h>
 +#include <linux/module.h>
 +#include <linux/device.h>
 +#include <linux/kernel.h>
++#include <linux/fs.h>
++#include <linux/poll.h>
 +#include <linux/slab.h>
++#include <linux/sched.h>
++#include <linux/wait.h>
 +#include <linux/uuid.h>
++#include <linux/iommu.h>
++#include <linux/sysfs.h>
++#include <linux/file.h>
++#include <linux/etherdevice.h>
 +#include <linux/mdev.h>
++#include <linux/vringh.h>
 +#include <linux/virtio_mdev.h>
-+#include <linux/virtio.h>
-+#include <linux/virtio_config.h>
-+#include <linux/virtio_ring.h>
++#include <uapi/linux/virtio_config.h>
++#include <uapi/linux/virtio_net.h>
 +
-+#define DRIVER_VERSION  "0.1"
++#define VERSION_STRING  "0.1"
 +#define DRIVER_AUTHOR   "Red Hat Corporation"
-+#define DRIVER_DESC     "VIRTIO based driver for Mediated device"
 +
-+#define to_virtio_mdev_device(dev) \
-+	container_of(dev, struct virtio_mdev_device, vdev)
++#define MVNET_CLASS_NAME "mvnet"
++#define MVNET_NAME       "mvnet"
 +
-+struct virtio_mdev_device {
-+	struct virtio_device vdev;
-+	struct mdev_device *mdev;
-+	unsigned long version;
++/*
++ * Global Structures
++ */
 +
-+	struct virtqueue **vqs;
-+	/* The lock to protect virtqueue list */
++static struct mvnet_dev {
++	struct class	*vd_class;
++	struct idr	vd_idr;
++	struct device	dev;
++} mvnet_dev;
++
++struct mvnet_virtqueue {
++	struct vringh vring;
++	struct vringh_kiov iov;
++	unsigned short head;
++	bool ready;
++	u64 desc_addr;
++	u64 device_addr;
++	u64 driver_addr;
++	u32 num;
++	void *private;
++	irqreturn_t (*cb)(void *data);
++};
++
++#define MVNET_QUEUE_ALIGN PAGE_SIZE
++#define MVNET_QUEUE_MAX 256
++#define MVNET_DEVICE_ID 0x1
++#define MVNET_VENDOR_ID 0
++
++u64 mvnet_features = (1ULL << VIRTIO_F_ANY_LAYOUT) |
++		     (1ULL << VIRTIO_F_VERSION_1) |
++		     (1ULL << VIRTIO_F_IOMMU_PLATFORM);
++
++/* State of each mdev device */
++struct mvnet_state {
++	struct mvnet_virtqueue vqs[2];
++	struct work_struct work;
 +	spinlock_t lock;
-+	struct list_head virtqueues;
++	struct mdev_device *mdev;
++	struct virtio_net_config config;
++	void *buffer;
++	u32 status;
++	u32 generation;
++	u64 features;
++	struct list_head next;
 +};
 +
-+struct virtio_mdev_vq_info {
-+	/* the actual virtqueue */
-+	struct virtqueue *vq;
++static struct mutex mdev_list_lock;
++static struct list_head mdev_devices_list;
 +
-+	/* the list node for the virtqueues list */
-+	struct list_head node;
-+};
-+
-+static struct mdev_device *vm_get_mdev(struct virtio_device *vdev)
++static void mvnet_queue_ready(struct mvnet_state *mvnet, unsigned int idx)
 +{
-+	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
-+	struct mdev_device *mdev = vm_dev->mdev;
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++	int ret;
 +
-+	return mdev;
++	ret = vringh_init_kern(&vq->vring, mvnet_features, MVNET_QUEUE_MAX,
++			       false, (struct vring_desc *)vq->desc_addr,
++			       (struct vring_avail *)vq->driver_addr,
++			       (struct vring_used *)vq->device_addr);
 +}
 +
-+static void virtio_mdev_get(struct virtio_device *vdev, unsigned offset,
-+			    void *buf, unsigned len)
++static void mvnet_vq_reset(struct mvnet_virtqueue *vq)
 +{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	ops->get_config(mdev, offset, buf, len);
++	vq->ready = 0;
++	vq->desc_addr = 0;
++	vq->driver_addr = 0;
++	vq->device_addr = 0;
++	vq->cb = NULL;
++	vq->private = NULL;
++	vringh_init_kern(&vq->vring, mvnet_features, MVNET_QUEUE_MAX,
++			false, 0, 0, 0);
 +}
 +
-+static void virtio_mdev_set(struct virtio_device *vdev, unsigned offset,
-+			    const void *buf, unsigned len)
++static void mvnet_reset(struct mvnet_state *mvnet)
 +{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
++	int i;
 +
-+	ops->set_config(mdev, offset, buf, len);
++	for (i = 0; i < 2; i++)
++		mvnet_vq_reset(&mvnet->vqs[i]);
++
++	mvnet->features = 0;
++	mvnet->status = 0;
++	++mvnet->generation;
 +}
 +
-+static u32 virtio_mdev_generation(struct virtio_device *vdev)
++static void mvnet_work(struct work_struct *work)
 +{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	return ops->get_generation(mdev);
-+}
-+
-+static u8 virtio_mdev_get_status(struct virtio_device *vdev)
-+{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	return ops->get_status(mdev);
-+}
-+
-+static void virtio_mdev_set_status(struct virtio_device *vdev, u8 status)
-+{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	return ops->set_status(mdev, status);
-+}
-+
-+static void virtio_mdev_reset(struct virtio_device *vdev)
-+{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	return ops->set_status(mdev, 0);
-+}
-+
-+static bool virtio_mdev_notify(struct virtqueue *vq)
-+{
-+	struct mdev_device *mdev = vm_get_mdev(vq->vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+
-+	ops->kick_vq(mdev, vq->index);
-+
-+	return true;
-+}
-+
-+static irqreturn_t virtio_mdev_config_cb(void *private)
-+{
-+	struct virtio_mdev_device *vm_dev = private;
-+
-+	virtio_config_changed(&vm_dev->vdev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t virtio_mdev_virtqueue_cb(void *private)
-+{
-+	struct virtio_mdev_vq_info *info = private;
-+
-+	return vring_interrupt(0, info->vq);
-+}
-+
-+static struct virtqueue *
-+virtio_mdev_setup_vq(struct virtio_device *vdev, unsigned index,
-+		     void (*callback)(struct virtqueue *vq),
-+		     const char *name, bool ctx)
-+{
-+	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+	struct virtio_mdev_vq_info *info;
-+	struct virtio_mdev_callback cb;
-+	struct virtqueue *vq;
-+	u64 desc_addr, driver_addr, device_addr;
-+	unsigned long flags;
-+	u32 align, num;
++	struct mvnet_state *mvnet = container_of(work, struct
++						 mvnet_state, work);
++	struct mvnet_virtqueue *txq = &mvnet->vqs[1];
++	struct mvnet_virtqueue *rxq = &mvnet->vqs[0];
++	size_t read, write, total_write;
 +	int err;
++	int pkts = 0;
 +
-+	if (!name)
-+		return NULL;
++	spin_lock(&mvnet->lock);
 +
-+	/* Queue shouldn't already be set up. */
-+	if (ops->get_vq_ready(mdev, index))
-+		return ERR_PTR(-ENOENT);
++	if (!txq->ready || !rxq->ready)
++		goto out;
 +
-+	/* Allocate and fill out our active queue description */
-+	info = kmalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
++	while (true) {
++		total_write = 0;
++		err = vringh_getdesc_kern(&txq->vring, &txq->iov, NULL,
++					  &txq->head, GFP_ATOMIC);
++		if (err <= 0)
++			break;
 +
-+	num = ops->get_queue_max(mdev);
-+	if (num == 0) {
-+		err = -ENOENT;
-+		goto error_new_virtqueue;
++		err = vringh_getdesc_kern(&rxq->vring, NULL, &rxq->iov,
++					  &rxq->head, GFP_ATOMIC);
++		if (err <= 0) {
++			vringh_complete_kern(&txq->vring, txq->head, 0);
++			break;
++		}
++
++		while (true) {
++			read = vringh_iov_pull_kern(&txq->iov, mvnet->buffer,
++						    PAGE_SIZE);
++			if (read <= 0)
++				break;
++
++			write = vringh_iov_push_kern(&rxq->iov, mvnet->buffer,
++						     read);
++			if (write <= 0)
++				break;
++
++			total_write += write;
++		}
++
++		/* Make sure data is wrote before advancing index */
++		smp_wmb();
++
++		vringh_complete_kern(&txq->vring, txq->head, 0);
++		vringh_complete_kern(&rxq->vring, rxq->head, total_write);
++
++		/* Make sure used is visible before rasing the interrupt. */
++		smp_wmb();
++
++		local_bh_disable();
++		if (txq->cb)
++			txq->cb(txq->private);
++		if (rxq->cb)
++			rxq->cb(rxq->private);
++		local_bh_enable();
++
++		if (++pkts > 4) {
++			schedule_work(&mvnet->work);
++			goto out;
++		}
 +	}
 +
-+	/* Create the vring */
-+	align = ops->get_vq_align(mdev);
-+	vq = vring_create_virtqueue(index, num, align, vdev,
-+				    true, true, ctx,
-+				    virtio_mdev_notify, callback, name);
-+	if (!vq) {
-+		err = -ENOMEM;
-+		goto error_new_virtqueue;
-+	}
-+
-+	/* Setup virtqueue callback */
-+	cb.callback = virtio_mdev_virtqueue_cb;
-+	cb.private = info;
-+	ops->set_vq_cb(mdev, index, &cb);
-+	ops->set_vq_num(mdev, index, virtqueue_get_vring_size(vq));
-+
-+	desc_addr = virtqueue_get_desc_addr(vq);
-+	driver_addr = virtqueue_get_avail_addr(vq);
-+	device_addr = virtqueue_get_used_addr(vq);
-+
-+	if (ops->set_vq_address(mdev, index,
-+				desc_addr, driver_addr,
-+				device_addr)) {
-+		err = -EINVAL;
-+		goto err_vq;
-+	}
-+
-+	ops->set_vq_ready(mdev, index, 1);
-+
-+	vq->priv = info;
-+	info->vq = vq;
-+
-+	spin_lock_irqsave(&vm_dev->lock, flags);
-+	list_add(&info->node, &vm_dev->virtqueues);
-+	spin_unlock_irqrestore(&vm_dev->lock, flags);
-+
-+	return vq;
-+
-+err_vq:
-+	vring_del_virtqueue(vq);
-+error_new_virtqueue:
-+	ops->set_vq_ready(mdev, index, 0);
-+	WARN_ON(ops->get_vq_ready(mdev, index));
-+	kfree(info);
-+	return ERR_PTR(err);
-+
++out:
++	spin_unlock(&mvnet->lock);
 +}
 +
-+static void virtio_mdev_del_vq(struct virtqueue *vq)
++static dma_addr_t mvnet_map_page(struct device *dev, struct page *page,
++				 unsigned long offset, size_t size,
++				 enum dma_data_direction dir,
++				 unsigned long attrs)
 +{
-+	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vq->vdev);
-+	struct mdev_device *mdev = vm_dev->mdev;
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+	struct virtio_mdev_vq_info *info = vq->priv;
-+	unsigned int index = vq->index;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&vm_dev->lock, flags);
-+	list_del(&info->node);
-+	spin_unlock_irqrestore(&vm_dev->lock, flags);
-+
-+	/* Select and deactivate the queue */
-+	ops->set_vq_ready(mdev, index, 0);
-+	WARN_ON(ops->get_vq_ready(mdev, index));
-+
-+	vring_del_virtqueue(vq);
-+
-+	kfree(info);
++	/* Vringh can only use HVA */
++	return (dma_addr_t)(page_address(page) + offset);
 +}
 +
-+static void virtio_mdev_del_vqs(struct virtio_device *vdev)
++static void mvnet_unmap_page(struct device *dev, dma_addr_t dma_addr,
++			     size_t size, enum dma_data_direction dir,
++			     unsigned long attrs)
 +{
-+	struct virtqueue *vq, *n;
-+
-+	list_for_each_entry_safe(vq, n, &vdev->vqs, list)
-+		virtio_mdev_del_vq(vq);
 +}
 +
-+static int virtio_mdev_find_vqs(struct virtio_device *vdev, unsigned nvqs,
-+				struct virtqueue *vqs[],
-+				vq_callback_t *callbacks[],
-+				const char * const names[],
-+				const bool *ctx,
-+				struct irq_affinity *desc)
++static void *mvnet_alloc_coherent(struct device *dev, size_t size,
++				  dma_addr_t *dma_addr, gfp_t flag,
++				  unsigned long attrs)
 +{
-+	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+	struct virtio_mdev_callback cb;
-+	int i, err, queue_idx = 0;
++	void *addr = kmalloc(size, flag);
 +
-+	vm_dev->vqs = kmalloc_array(queue_idx, sizeof(*vm_dev->vqs),
-+				    GFP_KERNEL);
-+	if (!vm_dev->vqs)
++	if (addr == NULL)
++		*dma_addr = DMA_MAPPING_ERROR;
++	else
++		*dma_addr = (dma_addr_t) addr;
++
++	return addr;
++}
++
++static void mvnet_free_coherent(struct device *dev, size_t size,
++				void *vaddr, dma_addr_t dma_addr,
++				unsigned long attrs)
++{
++	kfree((void *)dma_addr);
++}
++
++static const struct dma_map_ops mvnet_dma_ops = {
++	.map_page = mvnet_map_page,
++	.unmap_page = mvnet_unmap_page,
++	.alloc = mvnet_alloc_coherent,
++	.free = mvnet_free_coherent,
++};
++
++static const struct virtio_mdev_device_ops virtio_mdev_ops;
++
++static int mvnet_create(struct kobject *kobj, struct mdev_device *mdev)
++{
++	struct mvnet_state *mvnet;
++	struct virtio_net_config *config;
++	struct device *dev = mdev_dev(mdev);
++
++	if (!mdev)
++		return -EINVAL;
++
++	mvnet = kzalloc(sizeof(struct mvnet_state), GFP_KERNEL);
++	if (mvnet == NULL)
 +		return -ENOMEM;
 +
-+	for (i = 0; i < nvqs; ++i) {
-+		if (!names[i]) {
-+			vqs[i] = NULL;
-+			continue;
-+		}
-+
-+		vqs[i] = virtio_mdev_setup_vq(vdev, queue_idx++,
-+					      callbacks[i], names[i], ctx ?
-+					      ctx[i] : false);
-+		if (IS_ERR(vqs[i])) {
-+			err = PTR_ERR(vqs[i]);
-+			goto err_setup_vq;
-+		}
++	mvnet->buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
++	if (!mvnet->buffer) {
++		kfree(mvnet);
++		return -ENOMEM;
 +	}
 +
-+	cb.callback = virtio_mdev_config_cb;
-+	cb.private = vm_dev;
-+	ops->set_config_cb(mdev, &cb);
++	config = &mvnet->config;
++	config->mtu = 1500;
++	config->status = VIRTIO_NET_S_LINK_UP;
++	eth_random_addr(config->mac);
++
++	INIT_WORK(&mvnet->work, mvnet_work);
++
++	spin_lock_init(&mvnet->lock);
++	mvnet->mdev = mdev;
++	mdev_set_drvdata(mdev, mvnet);
++
++	mutex_lock(&mdev_list_lock);
++	list_add(&mvnet->next, &mdev_devices_list);
++	mutex_unlock(&mdev_list_lock);
++
++	dev->coherent_dma_mask = DMA_BIT_MASK(64);
++	set_dma_ops(dev, &mvnet_dma_ops);
++
++	mdev_set_class_id(mdev, MDEV_ID_VIRTIO);
++	mdev_set_dev_ops(mdev, &virtio_mdev_ops);
 +
 +	return 0;
-+
-+err_setup_vq:
-+	kfree(vm_dev->vqs);
-+	virtio_mdev_del_vqs(vdev);
-+	return err;
 +}
 +
-+static u64 virtio_mdev_get_features(struct virtio_device *vdev)
++static int mvnet_remove(struct mdev_device *mdev)
 +{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
++	struct mvnet_state *mds, *tmp_mds;
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	int ret = -EINVAL;
 +
-+	return ops->get_features(mdev);
++	mutex_lock(&mdev_list_lock);
++	list_for_each_entry_safe(mds, tmp_mds, &mdev_devices_list, next) {
++		if (mvnet == mds) {
++			list_del(&mvnet->next);
++			mdev_set_drvdata(mdev, NULL);
++			kfree(mvnet->buffer);
++			kfree(mvnet);
++			ret = 0;
++			break;
++		}
++	}
++	mutex_unlock(&mdev_list_lock);
++
++	return ret;
 +}
 +
-+static int virtio_mdev_finalize_features(struct virtio_device *vdev)
++static ssize_t
++sample_mvnet_dev_show(struct device *dev, struct device_attribute *attr,
++		     char *buf)
 +{
-+	struct mdev_device *mdev = vm_get_mdev(vdev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
++	if (mdev_from_dev(dev))
++		return sprintf(buf, "This is MDEV %s\n", dev_name(dev));
 +
-+	/* Give virtio_ring a chance to accept features. */
-+	vring_transport_features(vdev);
-+
-+	return ops->set_features(mdev, vdev->features);
++	return sprintf(buf, "\n");
 +}
 +
-+static const char *virtio_mdev_bus_name(struct virtio_device *vdev)
-+{
-+	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
-+	struct mdev_device *mdev = vm_dev->mdev;
++static DEVICE_ATTR_RO(sample_mvnet_dev);
 +
-+	return dev_name(mdev_dev(mdev));
-+}
-+
-+static const struct virtio_config_ops virtio_mdev_config_ops = {
-+	.get		= virtio_mdev_get,
-+	.set		= virtio_mdev_set,
-+	.generation	= virtio_mdev_generation,
-+	.get_status	= virtio_mdev_get_status,
-+	.set_status	= virtio_mdev_set_status,
-+	.reset		= virtio_mdev_reset,
-+	.find_vqs	= virtio_mdev_find_vqs,
-+	.del_vqs	= virtio_mdev_del_vqs,
-+	.get_features	= virtio_mdev_get_features,
-+	.finalize_features = virtio_mdev_finalize_features,
-+	.bus_name	= virtio_mdev_bus_name,
++static struct attribute *mvnet_dev_attrs[] = {
++	&dev_attr_sample_mvnet_dev.attr,
++	NULL,
 +};
 +
-+static void virtio_mdev_release_dev(struct device *_d)
-+{
-+	struct virtio_device *vdev =
-+	       container_of(_d, struct virtio_device, dev);
-+	struct virtio_mdev_device *vm_dev =
-+	       container_of(vdev, struct virtio_mdev_device, vdev);
++static const struct attribute_group mvnet_dev_group = {
++	.name  = "mvnet_dev",
++	.attrs = mvnet_dev_attrs,
++};
 +
-+	devm_kfree(_d, vm_dev);
++static const struct attribute_group *mvnet_dev_groups[] = {
++	&mvnet_dev_group,
++	NULL,
++};
++
++static ssize_t
++sample_mdev_dev_show(struct device *dev, struct device_attribute *attr,
++		     char *buf)
++{
++	if (mdev_from_dev(dev))
++		return sprintf(buf, "This is MDEV %s\n", dev_name(dev));
++
++	return sprintf(buf, "\n");
 +}
 +
-+static int virtio_mdev_probe(struct device *dev)
++static DEVICE_ATTR_RO(sample_mdev_dev);
++
++static struct attribute *mdev_dev_attrs[] = {
++	&dev_attr_sample_mdev_dev.attr,
++	NULL,
++};
++
++static const struct attribute_group mdev_dev_group = {
++	.name  = "vendor",
++	.attrs = mdev_dev_attrs,
++};
++
++static const struct attribute_group *mdev_dev_groups[] = {
++	&mdev_dev_group,
++	NULL,
++};
++
++#define MVNET_STRING_LEN 16
++
++static ssize_t
++name_show(struct kobject *kobj, struct device *dev, char *buf)
 +{
-+	struct mdev_device *mdev = mdev_from_dev(dev);
-+	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
-+	struct virtio_mdev_device *vm_dev;
-+	int rc;
++	char name[MVNET_STRING_LEN];
++	const char *name_str = "virtio-net";
 +
-+	vm_dev = devm_kzalloc(dev, sizeof(*vm_dev), GFP_KERNEL);
-+	if (!vm_dev)
-+		return -ENOMEM;
++	snprintf(name, MVNET_STRING_LEN, "%s", dev_driver_string(dev));
++	if (!strcmp(kobj->name, name))
++		return sprintf(buf, "%s\n", name_str);
 +
-+	vm_dev->vdev.dev.parent = dev;
-+	vm_dev->vdev.dev.release = virtio_mdev_release_dev;
-+	vm_dev->vdev.config = &virtio_mdev_config_ops;
-+	vm_dev->mdev = mdev;
-+	vm_dev->vqs = NULL;
-+	INIT_LIST_HEAD(&vm_dev->virtqueues);
-+	spin_lock_init(&vm_dev->lock);
++	return -EINVAL;
++}
 +
-+	vm_dev->version = ops->get_version(mdev);
-+	if (vm_dev->version != 1) {
-+		dev_err(dev, "Version %ld not supported!\n",
-+			vm_dev->version);
-+		return -ENXIO;
++static MDEV_TYPE_ATTR_RO(name);
++
++static ssize_t
++available_instances_show(struct kobject *kobj, struct device *dev, char *buf)
++{
++	return sprintf(buf, "%d\n", INT_MAX);
++}
++
++static MDEV_TYPE_ATTR_RO(available_instances);
++
++static ssize_t device_api_show(struct kobject *kobj, struct device *dev,
++			       char *buf)
++{
++	return sprintf(buf, "%s\n", VIRTIO_MDEV_DEVICE_API_STRING);
++}
++
++static MDEV_TYPE_ATTR_RO(device_api);
++
++static struct attribute *mdev_types_attrs[] = {
++	&mdev_type_attr_name.attr,
++	&mdev_type_attr_device_api.attr,
++	&mdev_type_attr_available_instances.attr,
++	NULL,
++};
++
++static struct attribute_group mdev_type_group = {
++	.name  = "virtio",
++	.attrs = mdev_types_attrs,
++};
++
++/* TBD: "vhost" type */
++
++static struct attribute_group *mdev_type_groups[] = {
++	&mdev_type_group,
++	NULL,
++};
++
++static int mvnet_set_vq_address(struct mdev_device *mdev, u16 idx,
++				u64 desc_area, u64 driver_area, u64 device_area)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	vq->desc_addr = desc_area;
++	vq->driver_addr = driver_area;
++	vq->device_addr = device_area;
++
++	return 0;
++}
++
++static void mvnet_set_vq_num(struct mdev_device *mdev, u16 idx, u32 num)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	vq->num = num;
++}
++
++static void mvnet_kick_vq(struct mdev_device *mdev, u16 idx)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	if (vq->ready)
++		schedule_work(&mvnet->work);
++}
++
++static void mvnet_set_vq_cb(struct mdev_device *mdev, u16 idx,
++			    struct virtio_mdev_callback *cb)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	vq->cb = cb->callback;
++	vq->private = cb->private;
++}
++
++static void mvnet_set_vq_ready(struct mdev_device *mdev, u16 idx, bool ready)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	spin_lock(&mvnet->lock);
++	vq->ready = ready;
++	if (vq->ready)
++		mvnet_queue_ready(mvnet, idx);
++	spin_unlock(&mvnet->lock);
++}
++
++static bool mvnet_get_vq_ready(struct mdev_device *mdev, u16 idx)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++
++	return vq->ready;
++}
++
++static int mvnet_set_vq_state(struct mdev_device *mdev, u16 idx, u64 state)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++	struct vringh *vrh = &vq->vring;
++
++	spin_lock(&mvnet->lock);
++	vrh->last_avail_idx = state;
++	spin_unlock(&mvnet->lock);
++
++	return 0;
++}
++
++static u64 mvnet_get_vq_state(struct mdev_device *mdev, u16 idx)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++	struct mvnet_virtqueue *vq = &mvnet->vqs[idx];
++	struct vringh *vrh = &vq->vring;
++
++	return vrh->last_avail_idx;
++}
++
++static u16 mvnet_get_vq_align(struct mdev_device *mdev)
++{
++	return MVNET_QUEUE_ALIGN;
++}
++
++static u64 mvnet_get_features(struct mdev_device *mdev)
++{
++	return mvnet_features;
++}
++
++static int mvnet_set_features(struct mdev_device *mdev, u64 features)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++
++	/* DMA mapping must be done by driver */
++	if (!(features & (1ULL << VIRTIO_F_IOMMU_PLATFORM)))
++		return -EINVAL;
++
++	mvnet->features = features & mvnet_features;
++
++	return 0;
++}
++
++static void mvnet_set_config_cb(struct mdev_device *mdev,
++				struct virtio_mdev_callback *cb)
++{
++	/* We don't support config interrupt */
++}
++
++static u16 mvnet_get_queue_max(struct mdev_device *mdev)
++{
++	return MVNET_QUEUE_MAX;
++}
++
++static u32 mvnet_get_device_id(struct mdev_device *mdev)
++{
++	return MVNET_DEVICE_ID;
++}
++
++static u32 mvnet_get_vendor_id(struct mdev_device *mdev)
++{
++	return MVNET_VENDOR_ID;
++}
++
++static u8 mvnet_get_status(struct mdev_device *mdev)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++
++	return mvnet->status;
++}
++
++static void mvnet_set_status(struct mdev_device *mdev, u8 status)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++
++	mvnet->status = status;
++
++	if (status == 0) {
++		spin_lock(&mvnet->lock);
++		mvnet_reset(mvnet);
++		spin_unlock(&mvnet->lock);
++	}
++}
++
++static void mvnet_get_config(struct mdev_device *mdev, unsigned int offset,
++			     void *buf, unsigned int len)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++
++	if (offset + len < sizeof(struct virtio_net_config))
++		memcpy(buf, &mvnet->config + offset, len);
++}
++
++static void mvnet_set_config(struct mdev_device *mdev, unsigned int offset,
++			     const void *buf, unsigned int len)
++{
++	/* No writable config supportted by mvnet */
++}
++
++static int mvnet_get_version(struct mdev_device *mdev)
++{
++	return 0x1;
++}
++
++static u32 mvnet_get_generation(struct mdev_device *mdev)
++{
++	struct mvnet_state *mvnet = mdev_get_drvdata(mdev);
++
++	return mvnet->generation;
++}
++
++static const struct virtio_mdev_device_ops virtio_mdev_ops = {
++	.set_vq_address         = mvnet_set_vq_address,
++	.set_vq_num             = mvnet_set_vq_num,
++	.kick_vq                = mvnet_kick_vq,
++	.set_vq_cb              = mvnet_set_vq_cb,
++	.set_vq_ready           = mvnet_set_vq_ready,
++	.get_vq_ready           = mvnet_get_vq_ready,
++	.set_vq_state           = mvnet_set_vq_state,
++	.get_vq_state           = mvnet_get_vq_state,
++	.get_vq_align           = mvnet_get_vq_align,
++	.get_features           = mvnet_get_features,
++	.set_features           = mvnet_set_features,
++	.set_config_cb          = mvnet_set_config_cb,
++	.get_queue_max          = mvnet_get_queue_max,
++	.get_device_id          = mvnet_get_device_id,
++	.get_vendor_id          = mvnet_get_vendor_id,
++	.get_status             = mvnet_get_status,
++	.set_status             = mvnet_set_status,
++	.get_config             = mvnet_get_config,
++	.set_config             = mvnet_set_config,
++	.get_version            = mvnet_get_version,
++	.get_generation         = mvnet_get_generation,
++};
++
++static const struct mdev_parent_ops mdev_fops = {
++	.owner                  = THIS_MODULE,
++	.dev_attr_groups        = mvnet_dev_groups,
++	.mdev_attr_groups       = mdev_dev_groups,
++	.supported_type_groups  = mdev_type_groups,
++	.create                 = mvnet_create,
++	.remove			= mvnet_remove,
++};
++
++static void mvnet_device_release(struct device *dev)
++{
++	dev_dbg(dev, "mvnet: released\n");
++}
++
++static int __init mvnet_dev_init(void)
++{
++	int ret = 0;
++
++	pr_info("mvnet_dev: %s\n", __func__);
++
++	memset(&mvnet_dev, 0, sizeof(mvnet_dev));
++
++	idr_init(&mvnet_dev.vd_idr);
++
++	mvnet_dev.vd_class = class_create(THIS_MODULE, MVNET_CLASS_NAME);
++
++	if (IS_ERR(mvnet_dev.vd_class)) {
++		pr_err("Error: failed to register mvnet_dev class\n");
++		ret = PTR_ERR(mvnet_dev.vd_class);
++		goto failed1;
 +	}
 +
-+	vm_dev->vdev.id.device = ops->get_device_id(mdev);
-+	if (vm_dev->vdev.id.device == 0)
-+		return -ENODEV;
++	mvnet_dev.dev.class = mvnet_dev.vd_class;
++	mvnet_dev.dev.release = mvnet_device_release;
++	dev_set_name(&mvnet_dev.dev, "%s", MVNET_NAME);
 +
-+	vm_dev->vdev.id.vendor = ops->get_vendor_id(mdev);
-+	rc = register_virtio_device(&vm_dev->vdev);
-+	if (rc)
-+		put_device(dev);
-+	else
-+		dev_set_drvdata(dev, vm_dev);
++	ret = device_register(&mvnet_dev.dev);
++	if (ret)
++		goto failed2;
 +
-+	return rc;
++	ret = mdev_register_device(&mvnet_dev.dev, &mdev_fops);
++	if (ret)
++		goto failed3;
++
++	mutex_init(&mdev_list_lock);
++	INIT_LIST_HEAD(&mdev_devices_list);
++
++	goto all_done;
++
++failed3:
++
++	device_unregister(&mvnet_dev.dev);
++failed2:
++	class_destroy(mvnet_dev.vd_class);
++
++failed1:
++all_done:
++	return ret;
 +}
 +
-+static void virtio_mdev_remove(struct device *dev)
++static void __exit mvnet_dev_exit(void)
 +{
-+	struct virtio_mdev_device *vm_dev = dev_get_drvdata(dev);
++	mvnet_dev.dev.bus = NULL;
++	mdev_unregister_device(&mvnet_dev.dev);
 +
-+	unregister_virtio_device(&vm_dev->vdev);
++	device_unregister(&mvnet_dev.dev);
++	idr_destroy(&mvnet_dev.vd_idr);
++	class_destroy(mvnet_dev.vd_class);
++	mvnet_dev.vd_class = NULL;
++	pr_info("mvnet_dev: Unloaded!\n");
 +}
 +
-+static struct mdev_class_id id_table[] = {
-+	{ MDEV_ID_VIRTIO },
-+	{ 0 },
-+};
++module_init(mvnet_dev_init)
++module_exit(mvnet_dev_exit)
 +
-+MODULE_DEVICE_TABLE(mdev, id_table);
-+
-+static struct mdev_driver virtio_mdev_driver = {
-+	.name	= "virtio_mdev",
-+	.probe	= virtio_mdev_probe,
-+	.remove = virtio_mdev_remove,
-+	.id_table = id_table,
-+};
-+
-+static int __init virtio_mdev_init(void)
-+{
-+	return mdev_register_driver(&virtio_mdev_driver, THIS_MODULE);
-+}
-+
-+static void __exit virtio_mdev_exit(void)
-+{
-+	mdev_unregister_driver(&virtio_mdev_driver);
-+}
-+
-+module_init(virtio_mdev_init)
-+module_exit(virtio_mdev_exit)
-+
-+MODULE_VERSION(DRIVER_VERSION);
 +MODULE_LICENSE("GPL v2");
++MODULE_INFO(supported, "Simulate loopback ethernet device over mdev");
++MODULE_VERSION(VERSION_STRING);
 +MODULE_AUTHOR(DRIVER_AUTHOR);
-+MODULE_DESCRIPTION(DRIVER_DESC);
 -- 
 2.19.1
 
