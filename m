@@ -2,167 +2,625 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CF5BC6CD
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 13:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A391FBC6DC
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 13:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440829AbfIXL12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 07:27:28 -0400
-Received: from uho.ysoft.cz ([81.19.3.130]:45922 "EHLO uho.ysoft.cz"
+        id S2504704AbfIXLab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 07:30:31 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45786 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409639AbfIXL11 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 07:27:27 -0400
-Received: from [10.1.8.111] (unknown [10.1.8.111])
-        by uho.ysoft.cz (Postfix) with ESMTP id CF2A1A2351;
-        Tue, 24 Sep 2019 13:27:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
-        s=20160406-ysoft-com; t=1569324444;
-        bh=ESpTiDM864ZCjcXMU8+jIKSR4Oj0UPekYe+Vfo0v6P0=;
-        h=To:From:Subject:Cc:Date:From;
-        b=XZ7gSXsgVeilplrDRnzXyIwe+9C/py3dfSA845Vc9urY4AiU10SLDx1UEqxR6y3/X
-         Mf9A6zl9UqTbgjhA1sDx15VMorD1aLAjB9taT7LpRjx3P3y5zVw33U+w5rYKzxKxwX
-         kSzXASaVDCcxy/xSGXwFUr2Myjr78iG+7txhEyoU=
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Subject: [BUG] Unable to handle kernel NULL pointer dereference in
- phy_support_asym_pause
-Cc:     "David S. Miller" <davem@davemloft.net>
-Message-ID: <573ffa6a-f29a-84d9-5895-b3d6cc389619@ysoft.com>
-Date:   Tue, 24 Sep 2019 13:27:24 +0200
+        id S2389832AbfIXLaa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 07:30:30 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 70CE410DCC8E;
+        Tue, 24 Sep 2019 11:30:29 +0000 (UTC)
+Received: from [10.72.12.44] (ovpn-12-44.pek2.redhat.com [10.72.12.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2E34F608C0;
+        Tue, 24 Sep 2019 11:30:05 +0000 (UTC)
+Subject: Re: [PATCH 4/6] virtio: introduce a mdev based transport
+To:     Parav Pandit <parav@mellanox.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "tiwei.bie@intel.com" <tiwei.bie@intel.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "cunming.liang@intel.com" <cunming.liang@intel.com>,
+        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
+        "zhi.a.wang@intel.com" <zhi.a.wang@intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "rodrigo.vivi@intel.com" <rodrigo.vivi@intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "farman@linux.ibm.com" <farman@linux.ibm.com>,
+        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+        "sebott@linux.ibm.com" <sebott@linux.ibm.com>,
+        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
+        "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>,
+        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
+        "freude@linux.ibm.com" <freude@linux.ibm.com>,
+        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
+        Ido Shamay <idos@mellanox.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>
+References: <20190923130331.29324-1-jasowang@redhat.com>
+ <20190923130331.29324-5-jasowang@redhat.com>
+ <AM0PR05MB4866178BECC3C96DA7046590D1850@AM0PR05MB4866.eurprd05.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <eadc013a-a7dd-73f6-c82e-4c9a34c35468@redhat.com>
+Date:   Tue, 24 Sep 2019 19:30:04 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <AM0PR05MB4866178BECC3C96DA7046590D1850@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Tue, 24 Sep 2019 11:30:29 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-just tried booting latest next-20190920 on our imx6dl-yapp4-hydra platform
-with QCA8334 switch and got this:
+On 2019/9/24 上午6:28, Parav Pandit wrote:
+>
+>> -----Original Message-----
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Monday, September 23, 2019 8:03 AM
+>> To: kvm@vger.kernel.org; linux-s390@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; dri-devel@lists.freedesktop.org; intel-
+>> gfx@lists.freedesktop.org; intel-gvt-dev@lists.freedesktop.org;
+>> kwankhede@nvidia.com; alex.williamson@redhat.com; mst@redhat.com;
+>> tiwei.bie@intel.com
+>> Cc: virtualization@lists.linux-foundation.org; netdev@vger.kernel.org;
+>> cohuck@redhat.com; maxime.coquelin@redhat.com;
+>> cunming.liang@intel.com; zhihong.wang@intel.com;
+>> rob.miller@broadcom.com; xiao.w.wang@intel.com;
+>> haotian.wang@sifive.com; zhenyuw@linux.intel.com; zhi.a.wang@intel.com;
+>> jani.nikula@linux.intel.com; joonas.lahtinen@linux.intel.com;
+>> rodrigo.vivi@intel.com; airlied@linux.ie; daniel@ffwll.ch;
+>> farman@linux.ibm.com; pasic@linux.ibm.com; sebott@linux.ibm.com;
+>> oberpar@linux.ibm.com; heiko.carstens@de.ibm.com; gor@linux.ibm.com;
+>> borntraeger@de.ibm.com; akrowiak@linux.ibm.com; freude@linux.ibm.com;
+>> lingshan.zhu@intel.com; Ido Shamay <idos@mellanox.com>;
+>> eperezma@redhat.com; lulu@redhat.com; Parav Pandit
+>> <parav@mellanox.com>; Jason Wang <jasowang@redhat.com>
+>> Subject: [PATCH 4/6] virtio: introduce a mdev based transport
+>>
+>> This patch introduces a new mdev transport for virtio. This is used to use kernel
+>> virtio driver to drive the mediated device that is capable of populating
+>> virtqueue directly.
+>>
+>> A new virtio-mdev driver will be registered to the mdev bus, when a new virtio-
+>> mdev device is probed, it will register the device with mdev based config ops.
+>> This means it is a software transport between mdev driver and mdev device.
+>> The transport was implemented through device specific opswhich is a part of
+>> mdev_parent_ops now.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>  MAINTAINERS                     |   1 +
+>>  drivers/vfio/mdev/Kconfig       |   7 +
+>>  drivers/vfio/mdev/Makefile      |   1 +
+>>  drivers/vfio/mdev/virtio_mdev.c | 416 ++++++++++++++++++++++++++++++++
+>>  4 files changed, 425 insertions(+)
+>>  create mode 100644 drivers/vfio/mdev/virtio_mdev.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 89832b316500..820ec250cc52 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -17202,6 +17202,7 @@ F:	include/linux/virtio*.h
+>>  F:	include/uapi/linux/virtio_*.h
+>>  F:	drivers/crypto/virtio/
+>>  F:	mm/balloon_compaction.c
+>> +F:	drivers/vfio/mdev/virtio_mdev.c
+>>
+>>  VIRTIO BLOCK AND SCSI DRIVERS
+>>  M:	"Michael S. Tsirkin" <mst@redhat.com>
+>> diff --git a/drivers/vfio/mdev/Kconfig b/drivers/vfio/mdev/Kconfig index
+>> 5da27f2100f9..c488c31fc137 100644
+>> --- a/drivers/vfio/mdev/Kconfig
+>> +++ b/drivers/vfio/mdev/Kconfig
+>> @@ -16,3 +16,10 @@ config VFIO_MDEV_DEVICE
+>>  	default n
+>>  	help
+>>  	  VFIO based driver for Mediated devices.
+>> +
+>> +config VIRTIO_MDEV_DEVICE
+>> +	tristate "VIRTIO driver for Mediated devices"
+>> +	depends on VFIO_MDEV && VIRTIO
+>> +	default n
+>> +	help
+>> +	  VIRTIO based driver for Mediated devices.
+>> diff --git a/drivers/vfio/mdev/Makefile b/drivers/vfio/mdev/Makefile index
+>> 101516fdf375..99d31e29c23e 100644
+>> --- a/drivers/vfio/mdev/Makefile
+>> +++ b/drivers/vfio/mdev/Makefile
+>> @@ -4,3 +4,4 @@ mdev-y := mdev_core.o mdev_sysfs.o mdev_driver.o
+>>
+>>  obj-$(CONFIG_VFIO_MDEV) += mdev.o
+>>  obj-$(CONFIG_VFIO_MDEV_DEVICE) += vfio_mdev.o
+>> +obj-$(CONFIG_VIRTIO_MDEV_DEVICE) += virtio_mdev.o
+>> diff --git a/drivers/vfio/mdev/virtio_mdev.c b/drivers/vfio/mdev/virtio_mdev.c
+>> new file mode 100644 index 000000000000..919a082adc9c
+>> --- /dev/null
+>> +++ b/drivers/vfio/mdev/virtio_mdev.c
+>> @@ -0,0 +1,416 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * VIRTIO based driver for Mediated device
+>> + *
+>> + * Copyright (c) 2019, Red Hat. All rights reserved.
+>> + *     Author: Jason Wang <jasowang@redhat.com>
+>> + *
+>> + */
+>> +
+>> +#include <linux/init.h>
+>> +#include <linux/module.h>
+>> +#include <linux/device.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/uuid.h>
+>> +#include <linux/mdev.h>
+>> +#include <linux/virtio_mdev.h>
+>> +#include <linux/virtio.h>
+>> +#include <linux/virtio_config.h>
+>> +#include <linux/virtio_ring.h>
+>> +#include "mdev_private.h"
+>> +
+>> +#define DRIVER_VERSION  "0.1"
+>> +#define DRIVER_AUTHOR   "Red Hat Corporation"
+>> +#define DRIVER_DESC     "VIRTIO based driver for Mediated device"
+>> +
+>> +#define to_virtio_mdev_device(dev) \
+>> +	container_of(dev, struct virtio_mdev_device, vdev)
+>> +
+>> +struct virtio_mdev_device {
+>> +	struct virtio_device vdev;
+>> +	struct mdev_device *mdev;
+>> +	unsigned long version;
+>> +
+>> +	struct virtqueue **vqs;
+> Every lock must need a comment to describe what it locks.
+> I don't see this lock is used in this patch. Please introduce in the patch that uses it.
 
-[    6.957822] 8<--- cut here ---
-[    6.963550] Unable to handle kernel NULL pointer dereference at virtual address 00000264
-[    6.974342] pgd = (ptrval)
-[    6.979751] [00000264] *pgd=00000000
-[    6.986005] Internal error: Oops: 5 [#1] SMP ARM
-[    6.993318] CPU: 0 PID: 21 Comm: kworker/0:1 Not tainted 5.3.0-rc5-00985-g0394a63acfe2 #7
-[    7.004196] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[    7.013467] Workqueue: events deferred_probe_work_func
-[    7.021339] PC is at phy_support_asym_pause+0x14/0x44
-[    7.029149] LR is at qca8k_port_enable+0x40/0x48
-[    7.036485] pc : [<806840f4>]    lr : [<80686724>]    psr: 60000013
-[    7.045489] sp : e821bca0  ip : e821bcb0  fp : e821bcac
-[    7.053456] r10: 00000000  r9 : e8241f00  r8 : e812d040
-[    7.061431] r7 : 00000000  r6 : 00000000  r5 : e8931640  r4 : 00000002
-[    7.070702] r3 : 00000001  r2 : 00000000  r1 : 00000000  r0 : 00000000
-[    7.079947] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-[    7.089825] Control: 10c5387d  Table: 1000404a  DAC: 00000051
-[    7.098382] Process kworker/0:1 (pid: 21, stack limit = 0x(ptrval))
-[    7.107431] Stack: (0xe821bca0 to 0xe821c000)
-[    7.114607] bca0: e821bccc e821bcb0 80686724 806840ec e812d090 e812d090 e88a02cc 00000000
-[    7.125637] bcc0: e821bce4 e821bcd0 80a74134 806866f0 e812d090 e812d0cc e821bd7c e821bce8
-[    7.136666] bce0: 80a730bc 80a74104 00000000 e88a02cc 00000004 e821bd00 e88a02e0 80cc95f8
-[    7.147725] bd00: e88a02e0 e88a02c0 e812d090 e812d090 81006548 e88a02e4 e812d040 e88a02c0
-[    7.158791] bd20: 00000003 e812d040 e8830c00 00000000 e821bd5c e821bd40 806243b8 80623abc
-[    7.169887] bd40: e8931640 00000000 00000000 5303fd08 e821bd7c e8931640 e8830c00 e8931680
-[    7.181000] bd60: 00000000 81077adc 00000004 00000000 e821bd9c e821bd80 806864f8 80a72930
-[    7.192107] bd80: 81077adc e8830c00 81123b24 00000000 e821bdb4 e821bda0 806856c8 80686354
-[    7.203216] bda0: 81123a18 e8830c00 e821bde4 e821bdb8 8061f944 80685694 00000000 e8830c00
-[    7.214318] bdc0: 81077adc e8830c00 81006548 00000001 810c07f0 00000000 e821be1c e821bde8
-[    7.225434] bde0: 8061ff68 8061f850 e821be04 e821bdf8 81077adc e821be74 81077adc e821be74
-[    7.236589] be00: e8830c00 81006548 00000001 810c07f0 e821be3c e821be20 80620178 8061ff04
-[    7.247788] be20: 00000000 e821be74 806200dc 81006548 e821be6c e821be40 8061e160 806200e8
-[    7.258982] be40: e821be6c e836d96c e86acdb8 5303fd08 e8830c00 81006548 e8830c44 81071194
-[    7.270217] be60: e821bea4 e821be70 8061fd80 8061e104 8061b58c e8830c00 00000001 5303fd08
-[    7.281470] be80: 00000000 e8830c00 81077998 e8830c00 81071194 00000000 e821beb4 e821bea8
-[    7.292770] bea0: 80620220 8061fcac e821bed4 e821beb8 8061e360 80620210 e8830c00 81071180
-[    7.304105] bec0: 81071180 81071194 e821bef4 e821bed8 8061f144 8061e2d8 810711b8 e81f5080
-[    7.315494] bee0: eada5f40 eada7100 e821bf34 e821bef8 80142e2c 8061f0dc e8200d00 ffffe000
-[    7.326890] bf00: e821bf1c e821bf10 8014234c e81f5080 eada5f40 e81f5094 eada5f58 ffffe000
-[    7.338312] bf20: 00000008 81003d00 e821bf74 e821bf38 801433f4 80142c14 ffffe000 80e1264c
-[    7.349778] bf40: 810c00c7 eada5f40 80148afc e81f76c0 e81f7680 00000000 e821a000 e81f5080
-[    7.361246] bf60: 80143130 e8143e74 e821bfac e821bf78 80148e2c 8014313c e81f76dc e81f76dc
-[    7.372758] bf80: e821bfac e81f7680 80148cc4 00000000 00000000 00000000 00000000 00000000
-[    7.384313] bfa0: 00000000 e821bfb0 801010e8 80148cd0 00000000 00000000 00000000 00000000
-[    7.395858] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[    7.407363] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-[    7.418856] Backtrace:
-[    7.424620] [<806840e0>] (phy_support_asym_pause) from [<80686724>] (qca8k_port_enable+0x40/0x48)
-[    7.436911] [<806866e4>] (qca8k_port_enable) from [<80a74134>] (dsa_port_enable+0x3c/0x6c)
-[    7.448629]  r7:00000000 r6:e88a02cc r5:e812d090 r4:e812d090
-[    7.457708] [<80a740f8>] (dsa_port_enable) from [<80a730bc>] (dsa_register_switch+0x798/0xacc)
-[    7.469833]  r5:e812d0cc r4:e812d090
-[    7.476909] [<80a72924>] (dsa_register_switch) from [<806864f8>] (qca8k_sw_probe+0x1b0/0x1c4)
-[    7.489008]  r10:00000000 r9:00000004 r8:81077adc r7:00000000 r6:e8931680 r5:e8830c00
-[    7.500419]  r4:e8931640
-[    7.506528] [<80686348>] (qca8k_sw_probe) from [<806856c8>] (mdio_probe+0x40/0x64)
-[    7.517774]  r7:00000000 r6:81123b24 r5:e8830c00 r4:81077adc
-[    7.527048] [<80685688>] (mdio_probe) from [<8061f944>] (really_probe+0x100/0x2d8)
-[    7.538284]  r5:e8830c00 r4:81123a18
-[    7.545528] [<8061f844>] (really_probe) from [<8061ff68>] (driver_probe_device+0x70/0x180)
-[    7.557539]  r10:00000000 r9:810c07f0 r8:00000001 r7:81006548 r6:e8830c00 r5:81077adc
-[    7.569129]  r4:e8830c00 r3:00000000
-[    7.576439] [<8061fef8>] (driver_probe_device) from [<80620178>] (__device_attach_driver+0x9c/0xc8)
-[    7.589338]  r9:810c07f0 r8:00000001 r7:81006548 r6:e8830c00 r5:e821be74 r4:81077adc
-[    7.600949] [<806200dc>] (__device_attach_driver) from [<8061e160>] (bus_for_each_drv+0x68/0xc8)
-[    7.613617]  r7:81006548 r6:806200dc r5:e821be74 r4:00000000
-[    7.623099] [<8061e0f8>] (bus_for_each_drv) from [<8061fd80>] (__device_attach+0xe0/0x14c)
-[    7.635235]  r7:81071194 r6:e8830c44 r5:81006548 r4:e8830c00
-[    7.644681] [<8061fca0>] (__device_attach) from [<80620220>] (device_initial_probe+0x1c/0x20)
-[    7.657036]  r8:00000000 r7:81071194 r6:e8830c00 r5:81077998 r4:e8830c00
-[    7.667551] [<80620204>] (device_initial_probe) from [<8061e360>] (bus_probe_device+0x94/0x9c)
-[    7.680054] [<8061e2cc>] (bus_probe_device) from [<8061f144>] (deferred_probe_work_func+0x74/0xa0)
-[    7.692914]  r7:81071194 r6:81071180 r5:81071180 r4:e8830c00
-[    7.702440] [<8061f0d0>] (deferred_probe_work_func) from [<80142e2c>] (process_one_work+0x224/0x528)
-[    7.715483]  r7:eada7100 r6:eada5f40 r5:e81f5080 r4:810711b8
-[    7.725046] [<80142c08>] (process_one_work) from [<801433f4>] (worker_thread+0x2c4/0x5e4)
-[    7.737175]  r10:81003d00 r9:00000008 r8:ffffe000 r7:eada5f58 r6:e81f5094 r5:eada5f40
-[    7.748949]  r4:e81f5080
-[    7.755402] [<80143130>] (worker_thread) from [<80148e2c>] (kthread+0x168/0x170)
-[    7.766823]  r10:e8143e74 r9:80143130 r8:e81f5080 r7:e821a000 r6:00000000 r5:e81f7680
-[    7.778636]  r4:e81f76c0
-[    7.785159] [<80148cc4>] (kthread) from [<801010e8>] (ret_from_fork+0x14/0x2c)
-[    7.796457] Exception stack(0xe821bfb0 to 0xe821bff8)
-[    7.805543] bfa0:                                     00000000 00000000 00000000 00000000
-[    7.817805] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[    7.830047] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[    7.840688]  r10:00000000 r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:80148cc4
-[    7.852535]  r4:e81f7680
-[    7.859061] Code: e92dd800 e24cb004 e52de004 e8bd4000 (e5902264)
-[    7.869239] ---[ end trace 1b5559d3dc3f80a4 ]---
 
-Bisecting the dsa code changes since v5.3 brought me to this commit:
+Actually, it is used to sync the virtqueue list add and remove, but the
+logic is missed in this patch.
 
-0394a63acfe2a6e1c08af0eb1a9133ee8650d7bd is the first bad commit
-commit 0394a63acfe2a6e1c08af0eb1a9133ee8650d7bd
-Author: Vivien Didelot <vivien.didelot@gmail.com>
-Date:   Mon Aug 19 16:00:50 2019 -0400
+Will fix it in next version.
 
-     net: dsa: enable and disable all ports
-     
-     Call the .port_enable and .port_disable functions for all ports,
-     not only the user ports, so that drivers may optimize the power
-     consumption of all ports after a successful setup.
-     
-     Unused ports are now disabled on setup. CPU and DSA ports are now
-     enabled on setup and disabled on teardown. User ports were already
-     enabled at slave creation and disabled at slave destruction.
-     
-     Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-     Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-:040000 040000 0462b53f03ece23b4af955c3b8a48dce05d90970 34e5df083585e6cce35600698a757508b539e508 M	net
+>> +	spinlock_t lock;
+>> +};
+>> +
+>> +struct virtio_mdev_vq_info {
+>> +	/* the actual virtqueue */
+>> +	struct virtqueue *vq;
+>> +
+>> +	/* the list node for the virtqueues list */
+>> +	struct list_head node;
+>> +};
+>> +
+>> +static struct mdev_device *vm_get_mdev(struct virtio_device *vdev) {
+>> +	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
+>> +	struct mdev_device *mdev = vm_dev->mdev;
+>> +
+>> +	return mdev;
+>> +}
+>> +
+>> +static const struct virtio_mdev_parent_ops *mdev_get_parent_ops(struct
+>> +mdev_device *mdev) {
+>> +	struct mdev_parent *parent = mdev->parent;
+>> +
+>> +	return parent->ops->device_ops;
+>> +}
+>> +
+>> +static void virtio_mdev_get(struct virtio_device *vdev, unsigned offset,
+>> +			    void *buf, unsigned len)
+>> +{
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	ops->get_config(mdev, offset, buf, len); }
+>> +
+>> +static void virtio_mdev_set(struct virtio_device *vdev, unsigned offset,
+>> +			    const void *buf, unsigned len)
+>> +{
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	ops->set_config(mdev, offset, buf, len); }
+>> +
+>> +static u32 virtio_mdev_generation(struct virtio_device *vdev) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	return ops->get_generation(mdev);
+>> +}
+>> +
+>> +static u8 virtio_mdev_get_status(struct virtio_device *vdev) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	return ops->get_status(mdev);
+>> +}
+>> +
+>> +static void virtio_mdev_set_status(struct virtio_device *vdev, u8
+>> +status) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	return ops->set_status(mdev, status);
+>> +}
+>> +
+>> +static void virtio_mdev_reset(struct virtio_device *vdev) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	return ops->set_status(mdev, 0);
+>> +}
+>> +
+>> +static bool virtio_mdev_notify(struct virtqueue *vq) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vq->vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	ops->kick_vq(mdev, vq->index);
+>> +
+>> +	return true;
+>> +}
+>> +
+>> +static irqreturn_t virtio_mdev_config_cb(void *private) {
+>> +	struct virtio_mdev_device *vm_dev = private;
+>> +
+>> +	virtio_config_changed(&vm_dev->vdev);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static irqreturn_t virtio_mdev_virtqueue_cb(void *private) {
+>> +	struct virtio_mdev_vq_info *info = private;
+>> +
+>> +	return vring_interrupt(0, info->vq);
+>> +}
+>> +
+>> +static struct virtqueue *
+>> +virtio_mdev_setup_vq(struct virtio_device *vdev, unsigned index,
+>> +		     void (*callback)(struct virtqueue *vq),
+>> +		     const char *name, bool ctx)
+>> +{
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +	struct virtio_mdev_vq_info *info;
+>> +	struct virtio_mdev_callback cb;
+>> +	struct virtqueue *vq;
+>> +	u32 align, num;
+>> +	u64 desc_addr, driver_addr, device_addr;
+>> +	int err;
+>> +
+>> +	if (!name)
+>> +		return NULL;
+>> +
+>> +	/* Queue shouldn't already be set up. */
+>> +	if (ops->get_vq_ready(mdev, index)) {
+>> +		err = -ENOENT;
+>> +		goto error_available;
+>> +	}
+>> +
+> No need for a goto, to single return done later.
+> Just do 
+> 	if (ops->get_vq_ready(mdev, index))
+> 		return -ENOENT;
 
-Any ideas what might be wrong?
-Thank you!
 
-Michal
+Ok, will fix.
 
+
+>
+>> +	/* Allocate and fill out our active queue description */
+>> +	info = kmalloc(sizeof(*info), GFP_KERNEL);
+>> +	if (!info) {
+>> +		err = -ENOMEM;
+>> +		goto error_kmalloc;
+>> +	}
+>> +
+> Similar to above one.
+
+
+Ok.
+
+
+>
+>> +	num = ops->get_queue_max(mdev);
+>> +	if (num == 0) {
+>> +		err = -ENOENT;
+>> +		goto error_new_virtqueue;
+>> +	}
+>> +
+>> +	/* Create the vring */
+>> +	align = ops->get_vq_align(mdev);
+>> +	vq = vring_create_virtqueue(index, num, align, vdev,
+>> +				    true, true, ctx,
+>> +				    virtio_mdev_notify, callback, name);
+>> +	if (!vq) {
+>> +		err = -ENOMEM;
+>> +		goto error_new_virtqueue;
+>> +	}
+>> +
+>> +	/* Setup virtqueue callback */
+>> +	cb.callback = virtio_mdev_virtqueue_cb;
+>> +	cb.private = info;
+>> +	ops->set_vq_cb(mdev, index, &cb);
+>> +	ops->set_vq_num(mdev, index, virtqueue_get_vring_size(vq));
+>> +
+>> +	desc_addr = virtqueue_get_desc_addr(vq);
+>> +	driver_addr = virtqueue_get_avail_addr(vq);
+>> +	device_addr = virtqueue_get_used_addr(vq);
+>> +
+>> +	if (ops->set_vq_address(mdev, index,
+>> +				desc_addr, driver_addr,
+>> +				device_addr)) {
+>> +		err = -EINVAL;
+>> +		goto err_vq;
+>> +	}
+>> +
+>> +	ops->set_vq_ready(mdev, index, 1);
+>> +
+>> +	vq->priv = info;
+>> +	info->vq = vq;
+>> +
+>> +	return vq;
+>> +
+>> +err_vq:
+>> +	vring_del_virtqueue(vq);
+>> +error_new_virtqueue:
+>> +	ops->set_vq_ready(mdev, index, 0);
+>> +	WARN_ON(ops->get_vq_ready(mdev, index));
+>> +	kfree(info);
+>> +error_kmalloc:
+>> +error_available:
+>> +	return ERR_PTR(err);
+>> +
+>> +}
+>> +
+>> +static void virtio_mdev_del_vq(struct virtqueue *vq) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vq->vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +	struct virtio_mdev_vq_info *info = vq->priv;
+>> +	unsigned int index = vq->index;
+>> +
+>> +	/* Select and deactivate the queue */
+>> +	ops->set_vq_ready(mdev, index, 0);
+>> +	WARN_ON(ops->get_vq_ready(mdev, index));
+>> +
+>> +	vring_del_virtqueue(vq);
+>> +
+>> +	kfree(info);
+>> +}
+>> +
+>> +static void virtio_mdev_del_vqs(struct virtio_device *vdev) {
+>> +	struct virtqueue *vq, *n;
+>> +
+>> +	list_for_each_entry_safe(vq, n, &vdev->vqs, list)
+>> +		virtio_mdev_del_vq(vq);
+>> +}
+>> +
+>> +static int virtio_mdev_find_vqs(struct virtio_device *vdev, unsigned nvqs,
+>> +				struct virtqueue *vqs[],
+>> +				vq_callback_t *callbacks[],
+>> +				const char * const names[],
+>> +				const bool *ctx,
+>> +				struct irq_affinity *desc)
+>> +{
+>> +	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +	struct virtio_mdev_callback cb;
+>> +	int i, err, queue_idx = 0;
+>> +
+>> +	vm_dev->vqs = kmalloc_array(queue_idx, sizeof(*vm_dev->vqs),
+>> +				    GFP_KERNEL);
+>> +	if (!vm_dev->vqs)
+>> +		return -ENOMEM;
+>> +
+>> +	for (i = 0; i < nvqs; ++i) {
+>> +		if (!names[i]) {
+>> +			vqs[i] = NULL;
+>> +			continue;
+>> +		}
+>> +
+>> +		vqs[i] = virtio_mdev_setup_vq(vdev, queue_idx++,
+>> +					      callbacks[i], names[i], ctx ?
+>> +					      ctx[i] : false);
+>> +		if (IS_ERR(vqs[i])) {
+>> +			err = PTR_ERR(vqs[i]);
+>> +			goto err_setup_vq;
+>> +		}
+>> +	}
+>> +
+>> +	cb.callback = virtio_mdev_config_cb;
+>> +	cb.private = vm_dev;
+>> +	ops->set_config_cb(mdev, &cb);
+>> +
+>> +	return 0;
+>> +
+>> +err_setup_vq:
+>> +	kfree(vm_dev->vqs);
+>> +	virtio_mdev_del_vqs(vdev);
+>> +	return err;
+>> +}
+>> +
+>> +static u64 virtio_mdev_get_features(struct virtio_device *vdev) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	return ops->get_features(mdev);
+>> +}
+>> +
+>> +static int virtio_mdev_finalize_features(struct virtio_device *vdev) {
+>> +	struct mdev_device *mdev = vm_get_mdev(vdev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +
+>> +	/* Give virtio_ring a chance to accept features. */
+>> +	vring_transport_features(vdev);
+>> +
+>> +	return ops->set_features(mdev, vdev->features); }
+>> +
+>> +static const char *virtio_mdev_bus_name(struct virtio_device *vdev) {
+>> +	struct virtio_mdev_device *vm_dev = to_virtio_mdev_device(vdev);
+>> +	struct mdev_device *mdev = vm_dev->mdev;
+>> +
+>> +	return dev_name(&mdev->dev);
+>> +}
+>> +
+>> +static const struct virtio_config_ops virtio_mdev_config_ops = {
+>> +	.get		= virtio_mdev_get,
+>> +	.set		= virtio_mdev_set,
+>> +	.generation	= virtio_mdev_generation,
+>> +	.get_status	= virtio_mdev_get_status,
+>> +	.set_status	= virtio_mdev_set_status,
+>> +	.reset		= virtio_mdev_reset,
+>> +	.find_vqs	= virtio_mdev_find_vqs,
+>> +	.del_vqs	= virtio_mdev_del_vqs,
+>> +	.get_features	= virtio_mdev_get_features,
+>> +	.finalize_features = virtio_mdev_finalize_features,
+>> +	.bus_name	= virtio_mdev_bus_name,
+>> +};
+>> +
+>> +static void virtio_mdev_release_dev(struct device *_d) {
+>> +	struct virtio_device *vdev =
+>> +	       container_of(_d, struct virtio_device, dev);
+>> +	struct virtio_mdev_device *vm_dev =
+>> +	       container_of(vdev, struct virtio_mdev_device, vdev);
+>> +
+>> +	devm_kfree(_d, vm_dev);
+>> +}
+>> +
+>> +static int virtio_mdev_probe(struct device *dev) {
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +	const struct virtio_mdev_parent_ops *ops =
+>> mdev_get_parent_ops(mdev);
+>> +	struct virtio_mdev_device *vm_dev;
+>> +	int rc;
+>> +
+>> +	vm_dev = devm_kzalloc(dev, sizeof(*vm_dev), GFP_KERNEL);
+>> +	if (!vm_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	vm_dev->vdev.dev.parent = dev;
+>> +	vm_dev->vdev.dev.release = virtio_mdev_release_dev;
+>> +	vm_dev->vdev.config = &virtio_mdev_config_ops;
+>> +	vm_dev->mdev = mdev;
+>> +	vm_dev->vqs = NULL;
+>> +	spin_lock_init(&vm_dev->lock);
+>> +
+>> +	vm_dev->version = ops->get_version(mdev);
+>> +	if (vm_dev->version != 1) {
+>> +		dev_err(dev, "Version %ld not supported!\n",
+>> +			vm_dev->version);
+>> +		return -ENXIO;
+>> +	}
+>> +
+>> +	vm_dev->vdev.id.device = ops->get_device_id(mdev);
+>> +	if (vm_dev->vdev.id.device == 0)
+>> +		return -ENODEV;
+>> +
+>> +	vm_dev->vdev.id.vendor = ops->get_vendor_id(mdev);
+>> +	rc = register_virtio_device(&vm_dev->vdev);
+>> +	if (rc)
+>> +		put_device(dev);
+>> +
+>> +	dev_set_drvdata(dev, vm_dev);
+> No need to set drvdata when there is error returned from register_virtio_device().
+>
+
+Fixed in V2.
+
+
+>> +
+>> +	return rc;
+>> +
+> Extra line not needed.
+>> +}
+
+
+Fixed.
+
+
+>> +
+>> +static void virtio_mdev_remove(struct device *dev) {
+>> +	struct virtio_mdev_device *vm_dev = dev_get_drvdata(dev);
+>> +
+>> +	unregister_virtio_device(&vm_dev->vdev);
+>> +}
+>> +
+>> +static struct mdev_class_id id_table[] = {
+>> +	{ MDEV_ID_VIRTIO },
+>> +	{ 0 },
+>> +};
+>> +
+>> +static struct mdev_driver virtio_mdev_driver = {
+>> +	.name	= "virtio_mdev",
+>> +	.probe	= virtio_mdev_probe,
+>> +	.remove	= virtio_mdev_remove,
+> No need for tab, just do single white space.
+
+
+Yes, fixed.
+
+Thanks
+
+
+>> +	.id_table = id_table,
+>> +};
+>> +
+>> +static int __init virtio_mdev_init(void) {
+>> +	return mdev_register_driver(&virtio_mdev_driver, THIS_MODULE); }
+>> +
+>> +static void __exit virtio_mdev_exit(void) {
+>> +	mdev_unregister_driver(&virtio_mdev_driver);
+>> +}
+>> +
+>> +module_init(virtio_mdev_init)
+>> +module_exit(virtio_mdev_exit)
+>> +
+>> +MODULE_VERSION(DRIVER_VERSION);
+>> +MODULE_LICENSE("GPL v2");
+>> +MODULE_AUTHOR(DRIVER_AUTHOR);
+>> +MODULE_DESCRIPTION(DRIVER_DESC);
+>> --
+>> 2.19.1
