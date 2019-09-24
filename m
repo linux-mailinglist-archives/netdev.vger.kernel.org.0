@@ -2,95 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9E4BD1A7
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 20:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EEB8BD1CC
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 20:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730598AbfIXSOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 14:14:38 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:39428 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729196AbfIXSOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 14:14:38 -0400
-Received: by mail-qt1-f193.google.com with SMTP id n7so3286371qtb.6;
-        Tue, 24 Sep 2019 11:14:37 -0700 (PDT)
+        id S2392161AbfIXSXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 14:23:14 -0400
+Received: from mail-io1-f45.google.com ([209.85.166.45]:44866 "EHLO
+        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbfIXSXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 14:23:14 -0400
+Received: by mail-io1-f45.google.com with SMTP id j4so6791553iog.11
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 11:23:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=RcUKsFSZkEdQBo12ekbBu60UBvh1CtoCu7znnaFFJ4M=;
-        b=D+rPs3o9AfrpKdYtVdB51asXfqczByPAX38t1seHNBVkD4tlL/s6E/BDutvrweoDnY
-         GhUPOAQCdbKE8T2SvHlTfWUst8gw1BlcyVu8p1Ct/rAl4cpIBHCx2IQUa1mDoVhVVAJK
-         WkPaCMQEb235GpGLG0e8U/B/vklu+Sf0CilLVyeK0VX4BTGcezOuXLvTQu47Q2PJCmKB
-         olUMLdgcuTS22/EQ9K+bgvSikuqcGp2VendnIDi4O930XUxSyqRI2kw3Gy16j4vxbXXu
-         w8MrAtsbzEj6cNX4ZqbxyrDXSIk2kJYX4dqDVLWtEy/YMassBWQE5uZNLEqfYKXzTRK2
-         ceMg==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JCRwRvIn5WnSIjJ8UCyA8yQaqy8F1gjAcRkVOQB7q9I=;
+        b=Ep9nbVOXt43g2GclKMujhZBtqpVD24/fugjF20R07gEhpQOmpgtpTnMiipYTlVRUsh
+         x0q1dnIC70qIcrWtw7LA9CSHAIi0jLFwtDGGedygehl5k1u3uvQec64chGwkXexJ7E70
+         aHb8Qxu2dI/iGt/P03nuAL0MHi1aovz5lzpuU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RcUKsFSZkEdQBo12ekbBu60UBvh1CtoCu7znnaFFJ4M=;
-        b=IuCdrTT+kmsuOh3F1z0ts042uQ1pfLq739v84UOXASmJ4PNLpV9W+/rHLaEoCnzDzx
-         lozCPMYgBREKxqoGfY9Sd8J72DOekQIg9Vd4Zgcb/uBOJpv6kRzqy1hKmfolUUb3r0Z7
-         cn3HIV8MYWNyldNTUitz7526kwFyHowD1q+X7hsNTNgD7aMHfrj9xXaKWOXV31ZmqJ2Y
-         7aJrEzV5aNA/yBdqQUx7uQFiiGSOTY5qAZQpLM2iCTp/NGMchkUReYDwx7L9HDrkmuh5
-         Oucam2jgSHT6OBQhshvXfV1e5Udk7SEmPp8AOYBtUVILQIDi3yTsjJidvSHUsJRAPGN/
-         aWaA==
-X-Gm-Message-State: APjAAAWhaRWsDuMkZPnxwZLXnGULBa7PhDX5+I4BAYa/48jKU8XuxG0P
-        yA9CrYw4AlcR9V/0T83WpGA=
-X-Google-Smtp-Source: APXvYqxVvxrFt/nMAY2g7HJDXxiSDfMEo680754cFvkYDa3DqZQvdv7Vwbchac+RMzo3X/GZyE8ruQ==
-X-Received: by 2002:ac8:75ce:: with SMTP id z14mr4374333qtq.295.1569348877162;
-        Tue, 24 Sep 2019 11:14:37 -0700 (PDT)
-Received: from frodo.byteswizards.com ([190.162.109.190])
-        by smtp.gmail.com with ESMTPSA id c185sm1404656qkf.122.2019.09.24.11.14.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Sep 2019 11:14:36 -0700 (PDT)
-Date:   Tue, 24 Sep 2019 15:14:32 -0300
-From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, yhs@fb.com, ebiederm@xmission.com,
-        brouer@redhat.com, bpf@vger.kernel.org
-Subject: Re: [PATCH V11 0/4] BPF: New helper to obtain namespace data from
- current task
-Message-ID: <20190924181432.GA9944@frodo.byteswizards.com>
-References: <20190924152005.4659-1-cneirabustos@gmail.com>
- <20190924180117.GA5889@pc-63.home>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JCRwRvIn5WnSIjJ8UCyA8yQaqy8F1gjAcRkVOQB7q9I=;
+        b=VM3CuZsUQjYwCVnYoLf9DgJ9JFKOLx7S29N/fRANQ3sdjgXcedUL9mTxpSmE7u5QeV
+         BxtCddQIHaQUCihmCyNsRT/ZxNsBoMYKNctl++SyXkJTy5kK4kf6Uj9fdayyJfGDggqk
+         /tcZyLF/gzE6m/9dX3gthNBQfEPSKznvjtVIsLqc0Heaf7ffDlsCK1hjDBnaJsD7SoFJ
+         rgnTCuDK0C0o5fdyxJwQGaHrcB1JjryFIUJOF5P+vBSA8MEo6S0dkm0sxh5hNKo2lArT
+         BfZM8z+RAvBDi8n3OgBgDGRWGi6LtnrbeJQ08dZQdo4cXc/pCyBzQhWSwaQk92/MH03a
+         ErWg==
+X-Gm-Message-State: APjAAAVqa/k/wB7MqfB1E2o5mhGWydWjuQnA3EUX9ZNbxbyEcCdw9Ymp
+        +2P+jlmvhPB8/POHu+xEIYWIyw==
+X-Google-Smtp-Source: APXvYqxK0F4oMWpvW+erHciK5obgRJA5cW6Px156FnlU93cw6O2tYswirK5NqitWoQDlIgoeKiloJw==
+X-Received: by 2002:a02:246:: with SMTP id 67mr106308jau.121.1569349393695;
+        Tue, 24 Sep 2019 11:23:13 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id f26sm1242052ion.4.2019.09.24.11.23.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Sep 2019 11:23:13 -0700 (PDT)
+Subject: Re: Linux 5.4 - bpf test build fails
+To:     Tim.Bird@sony.com, cristian.marussi@arm.com,
+        alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        "skh >> Shuah Khan" <skhan@linuxfoundation.org>
+References: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
+ <1d1bbc01-5cf4-72e6-76b3-754d23366c8f@arm.com>
+ <34a9bd63-a251-0b4f-73b6-06b9bbf9d3fa@linuxfoundation.org>
+ <a603ee8e-b0af-6506-0667-77269b0951b2@linuxfoundation.org>
+ <c3dda8d0-1794-ffd1-4d76-690ac2be8b8f@arm.com>
+ <ECADFF3FD767C149AD96A924E7EA6EAF977BCBF5@USCULXMSG01.am.sony.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <d4c916ec-14a5-1076-7b84-3ca42026dd19@linuxfoundation.org>
+Date:   Tue, 24 Sep 2019 12:23:12 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190924180117.GA5889@pc-63.home>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <ECADFF3FD767C149AD96A924E7EA6EAF977BCBF5@USCULXMSG01.am.sony.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 24, 2019 at 08:01:17PM +0200, Daniel Borkmann wrote:
-> On Tue, Sep 24, 2019 at 12:20:01PM -0300, Carlos Neira wrote:
-> > Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
-> > scripts but this helper returns the pid as seen by the root namespace which is
-> > fine when a bcc script is not executed inside a container.
-> > When the process of interest is inside a container, pid filtering will not work
-> > if bpf_get_current_pid_tgid() is used.
-> > This helper addresses this limitation returning the pid as it's seen by the current
-> > namespace where the script is executing.
-> > 
-> > In the future different pid_ns files may belong to different devices, according to the
-> > discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
-> > To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
-> > This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
-> > used to do pid filtering even inside a container.
-> > 
-> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> > 
-> > Carlos Neira (4):
-> >   fs/nsfs.c: added ns_match
-> >   bpf: added new helper bpf_get_ns_current_pid_tgid
-> >   tools: Added bpf_get_ns_current_pid_tgid helper
-> >   tools/testing/selftests/bpf: Add self-tests for new helper. self tests
-> >     added for new helper
+On 9/24/19 12:07 PM, Tim.Bird@sony.com wrote:
 > 
-> bpf-next is currently closed due to merge window. Please resubmit once back open, thanks.
+> 
+>> -----Original Message-----
+>> From: Cristian Marussi on Tuesday, September 24, 2019 7:30 AM
+>>
+>> Hi Shuah
+>>
+>> On 24/09/2019 17:39, Shuah Khan wrote:
+>>> On 9/24/19 10:03 AM, Shuah Khan wrote:
+>>>> On 9/24/19 9:52 AM, Cristian Marussi wrote:
+>>>>> Hi Shuah
+>>>>>
+>>>>> On 24/09/2019 16:26, Shuah Khan wrote:
+>>>>>> Hi Alexei and Daniel,
+>>>>>>
+>>>>>> bpf test doesn't build on Linux 5.4 mainline. Do you know what's
+>>>>>> happening here.
+>>>>>>
+>>>>>>
+>>>>>> make -C tools/testing/selftests/bpf/
+>>>>>
+>>>>> side question, since I'm writing arm64/ tests.
+>>>>>
+>>>>> my "build-testcases" following the KSFT docs are:
+>>>>>
+>>>>> make kselftest
+>>>>> make TARGETS=arm64 kselftest
+>>>>> make -C tools/testing/selftests/
+>>>>> make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
+>>>>> make TARGETS=arm64 -C tools/testing/selftests/
+>>>>> make TARGETS=arm64 -C tools/testing/selftests/
+>>>>> INSTALL_PATH=<install-path> install
+>>>>> ./kselftest_install.sh <install-path>
+>>>
+>>> Cristian,
+>>>
+>>> That being said, I definitely want to see this list limited to
+>>> a few options.
+>>>
+>>> One problem is that if somebody wants to do just a build, there
+>>> is no option from the main makefile. I have sent support for that
+>>> a few months ago and the patch didn't got lost it appears. I am
+>>> working on resending those patches. The same is true for install.
+>>> I sent in a patch for that a while back and I am going to resend.
+>>> These will make it easier for users.
+>>>
+>>> I would really want to get to supporting only these options:
+>>>
+>>> These are supported now:
+>>>
+>>> make kselftest
+>>> make TARGETS=arm64 kselftest (one or more targets)
+>>>
+>>> Replace the following:
+>>>
+>>> make -C tools/testing/selftests/ with
+>>>
+>>> make kselftes_build option from main makefile
+>>>
+>>> Replace this:
+>>> make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
+>>>
+>>> with
+>>> make kselftest_install
+>>
+>> Yes these top level options would be absolutely useful to avoid multiplication
+>> of build targets to support and test.
+>>
+>> Moreover, currently, since there was a lot of test growing into arm64/
+>> inside subdirs like arm64/signal, I support (still under review in fact) in the
+>> arm64/
+>> toplevel makefile the possibility of building/installing by subdirs only, in order
+>> to be able to limit what you want to build/install of a TARGET (resulting in
+>> quicker devel),
+>> issuing something like:
+>>
+>> make TARGETS=arm64 SUBTARGETS=signal -C tools/testing/selftests/
+>>
+>> if possible, that would be useful if kept functional even in the
+>> new schema. I mean being able to still issue:
+>>
+>> make TARGETS=arm64 SUBTARGETS=signal kselftes_build
+> 
+>  From a user perspective, instead of adding a new SUBTARGETS variable,
+> I would prefer something like the following:
+> 
+> make TARGET=arm64/signal kselftest_build
+> 
+> If you just add a single flat subsidiary namespace, then it doesn't support further
+> increasing the directory depth in the future.
+> 
 
-Thanks, Daniel, I'll do so.
+TARGETS is make variable. Adding sub-targets might not be easy without
+cluttering the selftests main Makefile. I will have to look into it.
 
-Bests.
+thanks,
+-- Shuah
+
