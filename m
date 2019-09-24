@@ -2,55 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9E5BCAA4
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA13CBCAAD
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390024AbfIXOwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 10:52:44 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52662 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfIXOwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 10:52:44 -0400
-Received: from localhost (231-157-167-83.reverse.alphalink.fr [83.167.157.231])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8436F152804B3;
-        Tue, 24 Sep 2019 07:52:42 -0700 (PDT)
-Date:   Tue, 24 Sep 2019 16:52:40 +0200 (CEST)
-Message-Id: <20190924.165240.1617972512581218831.davem@davemloft.net>
-To:     esyr@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com
-Subject: Re: [PATCH net v2 0/3] net/smc: move some definitions to UAPI
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1568993930.git.esyr@redhat.com>
-References: <cover.1568993930.git.esyr@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Sep 2019 07:52:43 -0700 (PDT)
+        id S2441233AbfIXOz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 10:55:29 -0400
+Received: from mail.itouring.de ([188.40.134.68]:53686 "EHLO mail.itouring.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729134AbfIXOz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 10:55:29 -0400
+Received: from tux.wizards.de (pD9EBF359.dip0.t-ipconnect.de [217.235.243.89])
+        by mail.itouring.de (Postfix) with ESMTPSA id 65F60416A471;
+        Tue, 24 Sep 2019 16:55:27 +0200 (CEST)
+Received: from [192.168.100.223] (ragnarok.applied-asynchrony.com [192.168.100.223])
+        by tux.wizards.de (Postfix) with ESMTP id 33BB8F01602;
+        Tue, 24 Sep 2019 16:55:27 +0200 (CEST)
+Subject: Re: atlantic: weird hwmon temperature readings with AQC107 NIC
+ (kernel 5.2/5.3)
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <0db14339-1b69-8fa4-21fd-6d436037c945@applied-asynchrony.com>
+ <4faf7584-860e-6f52-95ab-ea96438af394@applied-asynchrony.com>
+ <c26f4a9d-df14-c8af-4c99-5a670099e8bc@aquantia.com>
+From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+Organization: Applied Asynchrony, Inc.
+Message-ID: <01dc687a-f61e-2ca9-4117-83cb91454848@applied-asynchrony.com>
+Date:   Tue, 24 Sep 2019 16:55:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <c26f4a9d-df14-c8af-4c99-5a670099e8bc@aquantia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eugene Syromiatnikov <esyr@redhat.com>
-Date: Fri, 20 Sep 2019 17:41:47 +0200
-
-> As of now, it's a bit difficult to use SMC protocol, as significant part
-> of definitions related to it are defined in private headers and are not
-> part of UAPI. The following commits move some definitions to UAPI,
-> making them readily available to the user space.
+On 9/24/19 4:32 PM, Igor Russkikh wrote:
+> We've recently found out that as well, could you try applying the following patch:
 > 
-> Changes since v1[1]:
->  * Patch "provide fallback diagnostic codes in UAPI" is updated
->    in accordance with the updated set of diagnostic codes.
+> diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+> b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+> index da726489e3c8..08b026b41571 100644
+> --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+> +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+> @@ -337,7 +337,7 @@ static int aq_fw2x_get_phy_temp(struct aq_hw_s *self, int *temp)
+>          /* Convert PHY temperature from 1/256 degree Celsius
+>           * to 1/1000 degree Celsius.
+>           */
+> -       *temp = temp_res  * 1000 / 256;
+> +       *temp = (temp_res & 0xFFFF)  * 1000 / 256;
 > 
-> [1] https://lkml.org/lkml/2018/10/7/177
+>          return 0;
+>   }
 
-Isn't it way too late for this?
+Well, what do you know!
 
-These definitions will now be duplicates for userland code that
-defines the values on their own.
+eth0-pci-0600
+Adapter: PCI adapter
+PHY Temperature:  +63.5°C
+
+This looks like it aligns with reality. :-)
+
+> Funny thing is that this value gets readout from HW memory, all the readouts are
+> done by full dwords, but the value is only word width. High word of that dword
+
+I suspected upper-word-garbage but of course don't know internals.
+
+> is estimated cable length. On short cables we use it is often zero ;)
+
+:D
+
+When you send the proper patch feel free to add:
+Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+
+Thanks again for the quick help!
+
+Holger
