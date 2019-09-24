@@ -2,645 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FDB0BC6C7
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 13:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CF5BC6CD
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 13:27:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440813AbfIXL0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 07:26:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39702 "EHLO mx1.redhat.com"
+        id S2440829AbfIXL12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 07:27:28 -0400
+Received: from uho.ysoft.cz ([81.19.3.130]:45922 "EHLO uho.ysoft.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388764AbfIXL0t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 07:26:49 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5EDD818C4285;
-        Tue, 24 Sep 2019 11:26:48 +0000 (UTC)
-Received: from [10.72.12.44] (ovpn-12-44.pek2.redhat.com [10.72.12.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 53CEF5D713;
-        Tue, 24 Sep 2019 11:26:26 +0000 (UTC)
-Subject: Re: [PATCH 2/6] mdev: introduce device specific ops
-To:     Parav Pandit <parav@mellanox.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
-        "zhi.a.wang@intel.com" <zhi.a.wang@intel.com>,
-        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
-        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
-        "rodrigo.vivi@intel.com" <rodrigo.vivi@intel.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "farman@linux.ibm.com" <farman@linux.ibm.com>,
-        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
-        "sebott@linux.ibm.com" <sebott@linux.ibm.com>,
-        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
-        "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>,
-        "gor@linux.ibm.com" <gor@linux.ibm.com>,
-        "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>,
-        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
-        "freude@linux.ibm.com" <freude@linux.ibm.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        Ido Shamay <idos@mellanox.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>
-References: <20190923130331.29324-1-jasowang@redhat.com>
- <20190923130331.29324-3-jasowang@redhat.com>
- <AM0PR05MB4866D870687C7EA7190A91B2D1850@AM0PR05MB4866.eurprd05.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <bafa05d8-b7b9-b744-c516-3e79b97e0ecf@redhat.com>
-Date:   Tue, 24 Sep 2019 19:26:24 +0800
+        id S2409639AbfIXL11 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 07:27:27 -0400
+Received: from [10.1.8.111] (unknown [10.1.8.111])
+        by uho.ysoft.cz (Postfix) with ESMTP id CF2A1A2351;
+        Tue, 24 Sep 2019 13:27:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
+        s=20160406-ysoft-com; t=1569324444;
+        bh=ESpTiDM864ZCjcXMU8+jIKSR4Oj0UPekYe+Vfo0v6P0=;
+        h=To:From:Subject:Cc:Date:From;
+        b=XZ7gSXsgVeilplrDRnzXyIwe+9C/py3dfSA845Vc9urY4AiU10SLDx1UEqxR6y3/X
+         Mf9A6zl9UqTbgjhA1sDx15VMorD1aLAjB9taT7LpRjx3P3y5zVw33U+w5rYKzxKxwX
+         kSzXASaVDCcxy/xSGXwFUr2Myjr78iG+7txhEyoU=
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Subject: [BUG] Unable to handle kernel NULL pointer dereference in
+ phy_support_asym_pause
+Cc:     "David S. Miller" <davem@davemloft.net>
+Message-ID: <573ffa6a-f29a-84d9-5895-b3d6cc389619@ysoft.com>
+Date:   Tue, 24 Sep 2019 13:27:24 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <AM0PR05MB4866D870687C7EA7190A91B2D1850@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.62]); Tue, 24 Sep 2019 11:26:48 +0000 (UTC)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 2019/9/24 上午6:59, Parav Pandit wrote:
->
->> -----Original Message-----
->> From: Jason Wang <jasowang@redhat.com>
->> Sent: Monday, September 23, 2019 8:03 AM
->> To: kvm@vger.kernel.org; linux-s390@vger.kernel.org; linux-
->> kernel@vger.kernel.org; dri-devel@lists.freedesktop.org; intel-
->> gfx@lists.freedesktop.org; intel-gvt-dev@lists.freedesktop.org;
->> kwankhede@nvidia.com; alex.williamson@redhat.com; mst@redhat.com;
->> tiwei.bie@intel.com
->> Cc: virtualization@lists.linux-foundation.org; netdev@vger.kernel.org;
->> cohuck@redhat.com; maxime.coquelin@redhat.com;
->> cunming.liang@intel.com; zhihong.wang@intel.com;
->> rob.miller@broadcom.com; xiao.w.wang@intel.com;
->> haotian.wang@sifive.com; zhenyuw@linux.intel.com; zhi.a.wang@intel.com;
->> jani.nikula@linux.intel.com; joonas.lahtinen@linux.intel.com;
->> rodrigo.vivi@intel.com; airlied@linux.ie; daniel@ffwll.ch;
->> farman@linux.ibm.com; pasic@linux.ibm.com; sebott@linux.ibm.com;
->> oberpar@linux.ibm.com; heiko.carstens@de.ibm.com; gor@linux.ibm.com;
->> borntraeger@de.ibm.com; akrowiak@linux.ibm.com; freude@linux.ibm.com;
->> lingshan.zhu@intel.com; Ido Shamay <idos@mellanox.com>;
->> eperezma@redhat.com; lulu@redhat.com; Parav Pandit
->> <parav@mellanox.com>; Jason Wang <jasowang@redhat.com>
->> Subject: [PATCH 2/6] mdev: introduce device specific ops
->>
->> Currently, except for the create and remove. The rest of mdev_parent_ops is
->> designed for vfio-mdev driver only and may not help for kernel mdev driver.
->> Follow the class id support by previous patch, this patch introduces device
->> specific ops pointer inside parent ops which points to device specific ops (e.g
->> vfio ops). This allows the future drivers like virtio-mdev to implement its own
->> device specific ops.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>  .../driver-api/vfio-mediated-device.rst       |  4 +-
->>  MAINTAINERS                                   |  1 +
->>  drivers/gpu/drm/i915/gvt/kvmgt.c              | 15 +++---
->>  drivers/s390/cio/vfio_ccw_ops.c               | 15 ++++--
->>  drivers/s390/crypto/vfio_ap_ops.c             | 11 ++--
->>  drivers/vfio/mdev/vfio_mdev.c                 | 31 ++++++-----
->>  include/linux/mdev.h                          | 36 ++-----------
->>  include/linux/vfio_mdev.h                     | 53 +++++++++++++++++++
->>  samples/vfio-mdev/mbochs.c                    | 17 +++---
->>  samples/vfio-mdev/mdpy.c                      | 17 +++---
->>  samples/vfio-mdev/mtty.c                      | 15 ++++--
->>  11 files changed, 138 insertions(+), 77 deletions(-)  create mode 100644
->> include/linux/vfio_mdev.h
->>
->> diff --git a/Documentation/driver-api/vfio-mediated-device.rst
->> b/Documentation/driver-api/vfio-mediated-device.rst
->> index 0e052072e1d8..3ab00e48212f 100644
->> --- a/Documentation/driver-api/vfio-mediated-device.rst
->> +++ b/Documentation/driver-api/vfio-mediated-device.rst
->> @@ -152,7 +152,9 @@ callbacks per mdev parent device, per mdev type, or
->> any other categorization.
->>  Vendor drivers are expected to be fully asynchronous in this respect or
->> provide their own internal resource protection.)
->>
->> -The callbacks in the mdev_parent_ops structure are as follows:
->> +The device specific callbacks are referred through device_ops pointer
->> +in mdev_parent_ops. For vfio-mdev device, its callbacks in device_ops
->> +are as follows:
->>
->>  * open: open callback of mediated device
->>  * close: close callback of mediated device diff --git a/MAINTAINERS
->> b/MAINTAINERS index b2326dece28e..89832b316500 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -17075,6 +17075,7 @@ S:	Maintained
->>  F:	Documentation/driver-api/vfio-mediated-device.rst
->>  F:	drivers/vfio/mdev/
->>  F:	include/linux/mdev.h
->> +F:	include/linux/vfio_mdev.h
->>  F:	samples/vfio-mdev/
->>
->>  VFIO PLATFORM DRIVER
->> diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c
->> b/drivers/gpu/drm/i915/gvt/kvmgt.c
->> index 19d51a35f019..8ea86b1e69f1 100644
->> --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
->> +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
->> @@ -42,6 +42,7 @@
->>  #include <linux/kvm_host.h>
->>  #include <linux/vfio.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/debugfs.h>
->>
->>  #include <linux/nospec.h>
->> @@ -1600,20 +1601,22 @@ static const struct attribute_group
->> *intel_vgpu_groups[] = {
->>  	NULL,
->>  };
->>
->> -static struct mdev_parent_ops intel_vgpu_ops = {
->> -	.mdev_attr_groups       = intel_vgpu_groups,
->> -	.create			= intel_vgpu_create,
->> -	.remove			= intel_vgpu_remove,
->> -
->> +static struct vfio_mdev_parent_ops intel_vfio_vgpu_ops = {
-> Naming it with _dev prefix as intel_vfio_vgpu_dev_ops is better to differentiate with parent_ops.
+just tried booting latest next-20190920 on our imx6dl-yapp4-hydra platform
+with QCA8334 switch and got this:
 
+[    6.957822] 8<--- cut here ---
+[    6.963550] Unable to handle kernel NULL pointer dereference at virtual address 00000264
+[    6.974342] pgd = (ptrval)
+[    6.979751] [00000264] *pgd=00000000
+[    6.986005] Internal error: Oops: 5 [#1] SMP ARM
+[    6.993318] CPU: 0 PID: 21 Comm: kworker/0:1 Not tainted 5.3.0-rc5-00985-g0394a63acfe2 #7
+[    7.004196] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[    7.013467] Workqueue: events deferred_probe_work_func
+[    7.021339] PC is at phy_support_asym_pause+0x14/0x44
+[    7.029149] LR is at qca8k_port_enable+0x40/0x48
+[    7.036485] pc : [<806840f4>]    lr : [<80686724>]    psr: 60000013
+[    7.045489] sp : e821bca0  ip : e821bcb0  fp : e821bcac
+[    7.053456] r10: 00000000  r9 : e8241f00  r8 : e812d040
+[    7.061431] r7 : 00000000  r6 : 00000000  r5 : e8931640  r4 : 00000002
+[    7.070702] r3 : 00000001  r2 : 00000000  r1 : 00000000  r0 : 00000000
+[    7.079947] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+[    7.089825] Control: 10c5387d  Table: 1000404a  DAC: 00000051
+[    7.098382] Process kworker/0:1 (pid: 21, stack limit = 0x(ptrval))
+[    7.107431] Stack: (0xe821bca0 to 0xe821c000)
+[    7.114607] bca0: e821bccc e821bcb0 80686724 806840ec e812d090 e812d090 e88a02cc 00000000
+[    7.125637] bcc0: e821bce4 e821bcd0 80a74134 806866f0 e812d090 e812d0cc e821bd7c e821bce8
+[    7.136666] bce0: 80a730bc 80a74104 00000000 e88a02cc 00000004 e821bd00 e88a02e0 80cc95f8
+[    7.147725] bd00: e88a02e0 e88a02c0 e812d090 e812d090 81006548 e88a02e4 e812d040 e88a02c0
+[    7.158791] bd20: 00000003 e812d040 e8830c00 00000000 e821bd5c e821bd40 806243b8 80623abc
+[    7.169887] bd40: e8931640 00000000 00000000 5303fd08 e821bd7c e8931640 e8830c00 e8931680
+[    7.181000] bd60: 00000000 81077adc 00000004 00000000 e821bd9c e821bd80 806864f8 80a72930
+[    7.192107] bd80: 81077adc e8830c00 81123b24 00000000 e821bdb4 e821bda0 806856c8 80686354
+[    7.203216] bda0: 81123a18 e8830c00 e821bde4 e821bdb8 8061f944 80685694 00000000 e8830c00
+[    7.214318] bdc0: 81077adc e8830c00 81006548 00000001 810c07f0 00000000 e821be1c e821bde8
+[    7.225434] bde0: 8061ff68 8061f850 e821be04 e821bdf8 81077adc e821be74 81077adc e821be74
+[    7.236589] be00: e8830c00 81006548 00000001 810c07f0 e821be3c e821be20 80620178 8061ff04
+[    7.247788] be20: 00000000 e821be74 806200dc 81006548 e821be6c e821be40 8061e160 806200e8
+[    7.258982] be40: e821be6c e836d96c e86acdb8 5303fd08 e8830c00 81006548 e8830c44 81071194
+[    7.270217] be60: e821bea4 e821be70 8061fd80 8061e104 8061b58c e8830c00 00000001 5303fd08
+[    7.281470] be80: 00000000 e8830c00 81077998 e8830c00 81071194 00000000 e821beb4 e821bea8
+[    7.292770] bea0: 80620220 8061fcac e821bed4 e821beb8 8061e360 80620210 e8830c00 81071180
+[    7.304105] bec0: 81071180 81071194 e821bef4 e821bed8 8061f144 8061e2d8 810711b8 e81f5080
+[    7.315494] bee0: eada5f40 eada7100 e821bf34 e821bef8 80142e2c 8061f0dc e8200d00 ffffe000
+[    7.326890] bf00: e821bf1c e821bf10 8014234c e81f5080 eada5f40 e81f5094 eada5f58 ffffe000
+[    7.338312] bf20: 00000008 81003d00 e821bf74 e821bf38 801433f4 80142c14 ffffe000 80e1264c
+[    7.349778] bf40: 810c00c7 eada5f40 80148afc e81f76c0 e81f7680 00000000 e821a000 e81f5080
+[    7.361246] bf60: 80143130 e8143e74 e821bfac e821bf78 80148e2c 8014313c e81f76dc e81f76dc
+[    7.372758] bf80: e821bfac e81f7680 80148cc4 00000000 00000000 00000000 00000000 00000000
+[    7.384313] bfa0: 00000000 e821bfb0 801010e8 80148cd0 00000000 00000000 00000000 00000000
+[    7.395858] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    7.407363] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+[    7.418856] Backtrace:
+[    7.424620] [<806840e0>] (phy_support_asym_pause) from [<80686724>] (qca8k_port_enable+0x40/0x48)
+[    7.436911] [<806866e4>] (qca8k_port_enable) from [<80a74134>] (dsa_port_enable+0x3c/0x6c)
+[    7.448629]  r7:00000000 r6:e88a02cc r5:e812d090 r4:e812d090
+[    7.457708] [<80a740f8>] (dsa_port_enable) from [<80a730bc>] (dsa_register_switch+0x798/0xacc)
+[    7.469833]  r5:e812d0cc r4:e812d090
+[    7.476909] [<80a72924>] (dsa_register_switch) from [<806864f8>] (qca8k_sw_probe+0x1b0/0x1c4)
+[    7.489008]  r10:00000000 r9:00000004 r8:81077adc r7:00000000 r6:e8931680 r5:e8830c00
+[    7.500419]  r4:e8931640
+[    7.506528] [<80686348>] (qca8k_sw_probe) from [<806856c8>] (mdio_probe+0x40/0x64)
+[    7.517774]  r7:00000000 r6:81123b24 r5:e8830c00 r4:81077adc
+[    7.527048] [<80685688>] (mdio_probe) from [<8061f944>] (really_probe+0x100/0x2d8)
+[    7.538284]  r5:e8830c00 r4:81123a18
+[    7.545528] [<8061f844>] (really_probe) from [<8061ff68>] (driver_probe_device+0x70/0x180)
+[    7.557539]  r10:00000000 r9:810c07f0 r8:00000001 r7:81006548 r6:e8830c00 r5:81077adc
+[    7.569129]  r4:e8830c00 r3:00000000
+[    7.576439] [<8061fef8>] (driver_probe_device) from [<80620178>] (__device_attach_driver+0x9c/0xc8)
+[    7.589338]  r9:810c07f0 r8:00000001 r7:81006548 r6:e8830c00 r5:e821be74 r4:81077adc
+[    7.600949] [<806200dc>] (__device_attach_driver) from [<8061e160>] (bus_for_each_drv+0x68/0xc8)
+[    7.613617]  r7:81006548 r6:806200dc r5:e821be74 r4:00000000
+[    7.623099] [<8061e0f8>] (bus_for_each_drv) from [<8061fd80>] (__device_attach+0xe0/0x14c)
+[    7.635235]  r7:81071194 r6:e8830c44 r5:81006548 r4:e8830c00
+[    7.644681] [<8061fca0>] (__device_attach) from [<80620220>] (device_initial_probe+0x1c/0x20)
+[    7.657036]  r8:00000000 r7:81071194 r6:e8830c00 r5:81077998 r4:e8830c00
+[    7.667551] [<80620204>] (device_initial_probe) from [<8061e360>] (bus_probe_device+0x94/0x9c)
+[    7.680054] [<8061e2cc>] (bus_probe_device) from [<8061f144>] (deferred_probe_work_func+0x74/0xa0)
+[    7.692914]  r7:81071194 r6:81071180 r5:81071180 r4:e8830c00
+[    7.702440] [<8061f0d0>] (deferred_probe_work_func) from [<80142e2c>] (process_one_work+0x224/0x528)
+[    7.715483]  r7:eada7100 r6:eada5f40 r5:e81f5080 r4:810711b8
+[    7.725046] [<80142c08>] (process_one_work) from [<801433f4>] (worker_thread+0x2c4/0x5e4)
+[    7.737175]  r10:81003d00 r9:00000008 r8:ffffe000 r7:eada5f58 r6:e81f5094 r5:eada5f40
+[    7.748949]  r4:e81f5080
+[    7.755402] [<80143130>] (worker_thread) from [<80148e2c>] (kthread+0x168/0x170)
+[    7.766823]  r10:e8143e74 r9:80143130 r8:e81f5080 r7:e821a000 r6:00000000 r5:e81f7680
+[    7.778636]  r4:e81f76c0
+[    7.785159] [<80148cc4>] (kthread) from [<801010e8>] (ret_from_fork+0x14/0x2c)
+[    7.796457] Exception stack(0xe821bfb0 to 0xe821bff8)
+[    7.805543] bfa0:                                     00000000 00000000 00000000 00000000
+[    7.817805] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    7.830047] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    7.840688]  r10:00000000 r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:80148cc4
+[    7.852535]  r4:e81f7680
+[    7.859061] Code: e92dd800 e24cb004 e52de004 e8bd4000 (e5902264)
+[    7.869239] ---[ end trace 1b5559d3dc3f80a4 ]---
 
-Ok.
+Bisecting the dsa code changes since v5.3 brought me to this commit:
 
+0394a63acfe2a6e1c08af0eb1a9133ee8650d7bd is the first bad commit
+commit 0394a63acfe2a6e1c08af0eb1a9133ee8650d7bd
+Author: Vivien Didelot <vivien.didelot@gmail.com>
+Date:   Mon Aug 19 16:00:50 2019 -0400
 
->>  	.open			= intel_vgpu_open,
->>  	.release		= intel_vgpu_release,
->> -
->>  	.read			= intel_vgpu_read,
->>  	.write			= intel_vgpu_write,
->>  	.mmap			= intel_vgpu_mmap,
->>  	.ioctl			= intel_vgpu_ioctl,
->>  };
->>
->> +static struct mdev_parent_ops intel_vgpu_ops = {
->> +	.mdev_attr_groups       = intel_vgpu_groups,
->> +	.create			= intel_vgpu_create,
->> +	.remove			= intel_vgpu_remove,
->> +	.device_ops	        = &intel_vfio_vgpu_ops,
->> +};
->> +
->>  static int kvmgt_host_init(struct device *dev, void *gvt, const void *ops)  {
->>  	struct attribute **kvm_type_attrs;
->> diff --git a/drivers/s390/cio/vfio_ccw_ops.c b/drivers/s390/cio/vfio_ccw_ops.c
->> index 246ff0f80944..02122bbc213e 100644
->> --- a/drivers/s390/cio/vfio_ccw_ops.c
->> +++ b/drivers/s390/cio/vfio_ccw_ops.c
->> @@ -12,6 +12,7 @@
->>
->>  #include <linux/vfio.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/nospec.h>
->>  #include <linux/slab.h>
->>
->> @@ -574,11 +575,7 @@ static ssize_t vfio_ccw_mdev_ioctl(struct
->> mdev_device *mdev,
->>  	}
->>  }
->>
->> -static const struct mdev_parent_ops vfio_ccw_mdev_ops = {
->> -	.owner			= THIS_MODULE,
->> -	.supported_type_groups  = mdev_type_groups,
->> -	.create			= vfio_ccw_mdev_create,
->> -	.remove			= vfio_ccw_mdev_remove,
->> +static const struct vfio_mdev_parent_ops vfio_mdev_ops = {
->>  	.open			= vfio_ccw_mdev_open,
->>  	.release		= vfio_ccw_mdev_release,
->>  	.read			= vfio_ccw_mdev_read,
->> @@ -586,6 +583,14 @@ static const struct mdev_parent_ops
->> vfio_ccw_mdev_ops = {
->>  	.ioctl			= vfio_ccw_mdev_ioctl,
->>  };
->>
->> +static const struct mdev_parent_ops vfio_ccw_mdev_ops = {
->> +	.owner			= THIS_MODULE,
->> +	.supported_type_groups  = mdev_type_groups,
->> +	.create			= vfio_ccw_mdev_create,
->> +	.remove			= vfio_ccw_mdev_remove,
->> +	.device_ops		= &vfio_mdev_ops,
->> +};
->> +
->>  int vfio_ccw_mdev_reg(struct subchannel *sch)  {
->>  	return mdev_register_vfio_device(&sch->dev, &vfio_ccw_mdev_ops);
->> diff --git a/drivers/s390/crypto/vfio_ap_ops.c
->> b/drivers/s390/crypto/vfio_ap_ops.c
->> index 7487fc39d2c5..4251becc7a6d 100644
->> --- a/drivers/s390/crypto/vfio_ap_ops.c
->> +++ b/drivers/s390/crypto/vfio_ap_ops.c
->> @@ -16,6 +16,7 @@
->>  #include <linux/bitops.h>
->>  #include <linux/kvm_host.h>
->>  #include <linux/module.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <asm/kvm.h>
->>  #include <asm/zcrypt.h>
->>
->> @@ -1280,15 +1281,19 @@ static ssize_t vfio_ap_mdev_ioctl(struct
->> mdev_device *mdev,
->>  	return ret;
->>  }
->>
->> +static const struct vfio_mdev_parent_ops vfio_mdev_ops = {
->> +	.open			= vfio_ap_mdev_open,
->> +	.release		= vfio_ap_mdev_release,
->> +	.ioctl			= vfio_ap_mdev_ioctl,
->> +};
->> +
->>  static const struct mdev_parent_ops vfio_ap_matrix_ops = {
->>  	.owner			= THIS_MODULE,
->>  	.supported_type_groups	= vfio_ap_mdev_type_groups,
->>  	.mdev_attr_groups	= vfio_ap_mdev_attr_groups,
->>  	.create			= vfio_ap_mdev_create,
->>  	.remove			= vfio_ap_mdev_remove,
->> -	.open			= vfio_ap_mdev_open,
->> -	.release		= vfio_ap_mdev_release,
->> -	.ioctl			= vfio_ap_mdev_ioctl,
->> +	.device_ops		= &vfio_mdev_ops,
->>  };
->>
->>  int vfio_ap_mdev_register(void)
->> diff --git a/drivers/vfio/mdev/vfio_mdev.c b/drivers/vfio/mdev/vfio_mdev.c
->> index fd2a4d9a3f26..d23c9f58c84f 100644
->> --- a/drivers/vfio/mdev/vfio_mdev.c
->> +++ b/drivers/vfio/mdev/vfio_mdev.c
->> @@ -14,6 +14,7 @@
->>  #include <linux/slab.h>
->>  #include <linux/vfio.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>
->>  #include "mdev_private.h"
->>
->> @@ -25,15 +26,16 @@ static int vfio_mdev_open(void *device_data)  {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>  	int ret;
->>
->> -	if (unlikely(!parent->ops->open))
->> +	if (unlikely(!ops->open))
->>  		return -EINVAL;
->>
-> device_ops is optional and can be NULL for mdev devices which are not required to be mapped via vfio.
-> So please change to,
->
-> If (!ops || !ops->open)
-> 	return -EINVAL;
->
-> and rest of the below places.
+     net: dsa: enable and disable all ports
+     
+     Call the .port_enable and .port_disable functions for all ports,
+     not only the user ports, so that drivers may optimize the power
+     consumption of all ports after a successful setup.
+     
+     Unused ports are now disabled on setup. CPU and DSA ports are now
+     enabled on setup and disabled on teardown. User ports were already
+     enabled at slave creation and disabled at slave destruction.
+     
+     Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+     Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+     Signed-off-by: David S. Miller <davem@davemloft.net>
 
+:040000 040000 0462b53f03ece23b4af955c3b8a48dce05d90970 34e5df083585e6cce35600698a757508b539e508 M	net
 
-My understanding is vfio_mdev can not talk to non vfio mdev device with
-the help of class id.
+Any ideas what might be wrong?
+Thank you!
 
-Thanks
+Michal
 
-
->
->>  	if (!try_module_get(THIS_MODULE))
->>  		return -ENODEV;
->>
->> -	ret = parent->ops->open(mdev);
->> +	ret = ops->open(mdev);
->>  	if (ret)
->>  		module_put(THIS_MODULE);
->>
->> @@ -44,9 +46,10 @@ static void vfio_mdev_release(void *device_data)  {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>
->> -	if (likely(parent->ops->release))
->> -		parent->ops->release(mdev);
->> +	if (likely(ops->release))
->> +		ops->release(mdev);
->>
->>  	module_put(THIS_MODULE);
->>  }
->> @@ -56,11 +59,12 @@ static long vfio_mdev_unlocked_ioctl(void
->> *device_data,  {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>
->> -	if (unlikely(!parent->ops->ioctl))
->> +	if (unlikely(!ops->ioctl))
->>  		return -EINVAL;
->>
->> -	return parent->ops->ioctl(mdev, cmd, arg);
->> +	return ops->ioctl(mdev, cmd, arg);
->>  }
->>
->>  static ssize_t vfio_mdev_read(void *device_data, char __user *buf, @@ -68,11
->> +72,12 @@ static ssize_t vfio_mdev_read(void *device_data, char __user *buf,
->> {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>
->> -	if (unlikely(!parent->ops->read))
->> +	if (unlikely(!ops->read))
->>  		return -EINVAL;
->>
->> -	return parent->ops->read(mdev, buf, count, ppos);
->> +	return ops->read(mdev, buf, count, ppos);
->>  }
->>
->>  static ssize_t vfio_mdev_write(void *device_data, const char __user *buf, @@
->> -80,22 +85,24 @@ static ssize_t vfio_mdev_write(void *device_data, const char
->> __user *buf,  {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>
->> -	if (unlikely(!parent->ops->write))
->> +	if (unlikely(!ops->write))
->>  		return -EINVAL;
->>
->> -	return parent->ops->write(mdev, buf, count, ppos);
->> +	return ops->write(mdev, buf, count, ppos);
->>  }
->>
->>  static int vfio_mdev_mmap(void *device_data, struct vm_area_struct *vma)  {
->>  	struct mdev_device *mdev = device_data;
->>  	struct mdev_parent *parent = mdev->parent;
->> +	const struct vfio_mdev_parent_ops *ops = parent->ops->device_ops;
->>
->> -	if (unlikely(!parent->ops->mmap))
->> +	if (unlikely(!ops->mmap))
->>  		return -EINVAL;
->>
->> -	return parent->ops->mmap(mdev, vma);
->> +	return ops->mmap(mdev, vma);
->>  }
->>
->>  static const struct vfio_device_ops vfio_mdev_dev_ops = { diff --git
->> a/include/linux/mdev.h b/include/linux/mdev.h index
->> 3ebae310f599..fa167bcb81e1 100644
->> --- a/include/linux/mdev.h
->> +++ b/include/linux/mdev.h
->> @@ -48,30 +48,8 @@ struct device *mdev_get_iommu_device(struct device
->> *dev);
->>   *			@mdev: mdev_device device structure which is being
->>   *			       destroyed
->>   *			Returns integer: success (0) or error (< 0)
->> - * @open:		Open mediated device.
->> - *			@mdev: mediated device.
->> - *			Returns integer: success (0) or error (< 0)
->> - * @release:		release mediated device
->> - *			@mdev: mediated device.
->> - * @read:		Read emulation callback
->> - *			@mdev: mediated device structure
->> - *			@buf: read buffer
->> - *			@count: number of bytes to read
->> - *			@ppos: address.
->> - *			Retuns number on bytes read on success or error.
->> - * @write:		Write emulation callback
->> - *			@mdev: mediated device structure
->> - *			@buf: write buffer
->> - *			@count: number of bytes to be written
->> - *			@ppos: address.
->> - *			Retuns number on bytes written on success or error.
->> - * @ioctl:		IOCTL callback
->> - *			@mdev: mediated device structure
->> - *			@cmd: ioctl command
->> - *			@arg: arguments to ioctl
->> - * @mmap:		mmap callback
->> - *			@mdev: mediated device structure
->> - *			@vma: vma structure
->> + * @device_ops:         Device specific emulation callback.
->> + *
->>   * Parent device that support mediated device should be registered with mdev
->>   * module with mdev_parent_ops structure.
->>   **/
->> @@ -83,15 +61,7 @@ struct mdev_parent_ops {
->>
->>  	int     (*create)(struct kobject *kobj, struct mdev_device *mdev);
->>  	int     (*remove)(struct mdev_device *mdev);
->> -	int     (*open)(struct mdev_device *mdev);
->> -	void    (*release)(struct mdev_device *mdev);
->> -	ssize_t (*read)(struct mdev_device *mdev, char __user *buf,
->> -			size_t count, loff_t *ppos);
->> -	ssize_t (*write)(struct mdev_device *mdev, const char __user *buf,
->> -			 size_t count, loff_t *ppos);
->> -	long	(*ioctl)(struct mdev_device *mdev, unsigned int cmd,
->> -			 unsigned long arg);
->> -	int	(*mmap)(struct mdev_device *mdev, struct vm_area_struct
->> *vma);
->> +	const void *device_ops;
->>  };
->>
->>  /* interface for exporting mdev supported type attributes */ diff --git
->> a/include/linux/vfio_mdev.h b/include/linux/vfio_mdev.h new file mode
->> 100644 index 000000000000..0c1b34f98f5d
->> --- /dev/null
->> +++ b/include/linux/vfio_mdev.h
->> @@ -0,0 +1,53 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * VFIO Mediated device definition
->> + */
->> +
->> +#ifndef VFIO_MDEV_H
->> +#define VFIO_MDEV_H
->> +
->> +#include <linux/types.h>
->> +#include <linux/mdev.h>
->> +
->> +/**
->> + * struct vfio_mdev_parent_ops - Structure to be registered for each
->> + * parent device to register the device to vfio-mdev module.
->> + *
->> + * @open:		Open mediated device.
->> + *			@mdev: mediated device.
->> + *			Returns integer: success (0) or error (< 0)
->> + * @release:		release mediated device
->> + *			@mdev: mediated device.
->> + * @read:		Read emulation callback
->> + *			@mdev: mediated device structure
->> + *			@buf: read buffer
->> + *			@count: number of bytes to read
->> + *			@ppos: address.
->> + *			Retuns number on bytes read on success or error.
->> + * @write:		Write emulation callback
->> + *			@mdev: mediated device structure
->> + *			@buf: write buffer
->> + *			@count: number of bytes to be written
->> + *			@ppos: address.
->> + *			Retuns number on bytes written on success or error.
->> + * @ioctl:		IOCTL callback
->> + *			@mdev: mediated device structure
->> + *			@cmd: ioctl command
->> + *			@arg: arguments to ioctl
->> + * @mmap:		mmap callback
->> + *			@mdev: mediated device structure
->> + *			@vma: vma structure
->> + */
->> +struct vfio_mdev_parent_ops {
->> +	int     (*open)(struct mdev_device *mdev);
->> +	void    (*release)(struct mdev_device *mdev);
->> +	ssize_t (*read)(struct mdev_device *mdev, char __user *buf,
->> +			size_t count, loff_t *ppos);
->> +	ssize_t (*write)(struct mdev_device *mdev, const char __user *buf,
->> +			 size_t count, loff_t *ppos);
->> +	long	(*ioctl)(struct mdev_device *mdev, unsigned int cmd,
->> +			 unsigned long arg);
->> +	int	(*mmap)(struct mdev_device *mdev, struct vm_area_struct
->> *vma);
->> +};
->> +
->> +#endif
->> diff --git a/samples/vfio-mdev/mbochs.c b/samples/vfio-mdev/mbochs.c index
->> 71a4469be85d..107cc30d0f45 100644
->> --- a/samples/vfio-mdev/mbochs.c
->> +++ b/samples/vfio-mdev/mbochs.c
->> @@ -30,6 +30,7 @@
->>  #include <linux/iommu.h>
->>  #include <linux/sysfs.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/pci.h>
->>  #include <linux/dma-buf.h>
->>  #include <linux/highmem.h>
->> @@ -1418,12 +1419,7 @@ static struct attribute_group *mdev_type_groups[]
->> = {
->>  	NULL,
->>  };
->>
->> -static const struct mdev_parent_ops mdev_fops = {
->> -	.owner			= THIS_MODULE,
->> -	.mdev_attr_groups	= mdev_dev_groups,
->> -	.supported_type_groups	= mdev_type_groups,
->> -	.create			= mbochs_create,
->> -	.remove			= mbochs_remove,
->> +static const struct vfio_mdev_parent_ops vfio_mdev_ops = {
->>  	.open			= mbochs_open,
->>  	.release		= mbochs_close,
->>  	.read			= mbochs_read,
->> @@ -1432,6 +1428,15 @@ static const struct mdev_parent_ops mdev_fops = {
->>  	.mmap			= mbochs_mmap,
->>  };
->>
->> +static const struct mdev_parent_ops mdev_fops = {
->> +	.owner			= THIS_MODULE,
->> +	.mdev_attr_groups	= mdev_dev_groups,
->> +	.supported_type_groups	= mdev_type_groups,
->> +	.create			= mbochs_create,
->> +	.remove			= mbochs_remove,
->> +	.device_ops		= &vfio_mdev_ops,
->> +};
->> +
->>  static const struct file_operations vd_fops = {
->>  	.owner		= THIS_MODULE,
->>  };
->> diff --git a/samples/vfio-mdev/mdpy.c b/samples/vfio-mdev/mdpy.c index
->> d3029dd27d91..2cd2018a53f9 100644
->> --- a/samples/vfio-mdev/mdpy.c
->> +++ b/samples/vfio-mdev/mdpy.c
->> @@ -26,6 +26,7 @@
->>  #include <linux/iommu.h>
->>  #include <linux/sysfs.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/pci.h>
->>  #include <drm/drm_fourcc.h>
->>  #include "mdpy-defs.h"
->> @@ -725,12 +726,7 @@ static struct attribute_group *mdev_type_groups[] = {
->>  	NULL,
->>  };
->>
->> -static const struct mdev_parent_ops mdev_fops = {
->> -	.owner			= THIS_MODULE,
->> -	.mdev_attr_groups	= mdev_dev_groups,
->> -	.supported_type_groups	= mdev_type_groups,
->> -	.create			= mdpy_create,
->> -	.remove			= mdpy_remove,
->> +static const struct vfio_mdev_parent_ops vfio_mdev_ops = {
->>  	.open			= mdpy_open,
->>  	.release		= mdpy_close,
->>  	.read			= mdpy_read,
->> @@ -739,6 +735,15 @@ static const struct mdev_parent_ops mdev_fops = {
->>  	.mmap			= mdpy_mmap,
->>  };
->>
->> +static const struct mdev_parent_ops mdev_fops = {
->> +	.owner			= THIS_MODULE,
->> +	.mdev_attr_groups	= mdev_dev_groups,
->> +	.supported_type_groups	= mdev_type_groups,
->> +	.create			= mdpy_create,
->> +	.remove			= mdpy_remove,
->> +	.device_ops		= &vfio_mdev_ops,
->> +};
->> +
->>  static const struct file_operations vd_fops = {
->>  	.owner		= THIS_MODULE,
->>  };
->> diff --git a/samples/vfio-mdev/mtty.c b/samples/vfio-mdev/mtty.c index
->> 744c88a6b22c..e427425b5daf 100644
->> --- a/samples/vfio-mdev/mtty.c
->> +++ b/samples/vfio-mdev/mtty.c
->> @@ -27,6 +27,7 @@
->>  #include <linux/ctype.h>
->>  #include <linux/file.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/pci.h>
->>  #include <linux/serial.h>
->>  #include <uapi/linux/serial_reg.h>
->> @@ -1410,6 +1411,14 @@ static struct attribute_group *mdev_type_groups[]
->> = {
->>  	NULL,
->>  };
->>
->> +static const struct vfio_mdev_parent_ops vfio_mdev_ops = {
->> +	.open                   = mtty_open,
->> +	.release                = mtty_close,
->> +	.read                   = mtty_read,
->> +	.write                  = mtty_write,
->> +	.ioctl		        = mtty_ioctl,
->> +};
->> +
->>  static const struct mdev_parent_ops mdev_fops = {
->>  	.owner                  = THIS_MODULE,
->>  	.dev_attr_groups        = mtty_dev_groups,
->> @@ -1417,11 +1426,7 @@ static const struct mdev_parent_ops mdev_fops = {
->>  	.supported_type_groups  = mdev_type_groups,
->>  	.create                 = mtty_create,
->>  	.remove			= mtty_remove,
->> -	.open                   = mtty_open,
->> -	.release                = mtty_close,
->> -	.read                   = mtty_read,
->> -	.write                  = mtty_write,
->> -	.ioctl		        = mtty_ioctl,
->> +	.device_ops             = &vfio_mdev_ops,
->>  };
->>
->>  static void mtty_device_release(struct device *dev)
->> --
->> 2.19.1
