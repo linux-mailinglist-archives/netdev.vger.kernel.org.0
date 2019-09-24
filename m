@@ -2,116 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 905A9BC9B7
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E56FBC9DD
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 16:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395495AbfIXOEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 10:04:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52070 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392022AbfIXOEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 10:04:23 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5A2E420F0;
-        Tue, 24 Sep 2019 14:04:22 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C6E5960C5E;
-        Tue, 24 Sep 2019 14:04:13 +0000 (UTC)
-Date:   Tue, 24 Sep 2019 08:04:13 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        tiwei.bie@intel.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, cohuck@redhat.com,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com
-Subject: Re: [PATCH 5/6] vringh: fix copy direction of
- vringh_iov_push_kern()
-Message-ID: <20190924080413.0cc875c5@x1.home>
-In-Reply-To: <20190923115930-mutt-send-email-mst@kernel.org>
-References: <20190923130331.29324-1-jasowang@redhat.com>
-        <20190923130331.29324-6-jasowang@redhat.com>
-        <20190923094559.765da494@x1.home>
-        <20190923115930-mutt-send-email-mst@kernel.org>
-Organization: Red Hat
+        id S2436866AbfIXOKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 10:10:30 -0400
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:40029 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729970AbfIXOKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 10:10:30 -0400
+Received: by mail-wr1-f44.google.com with SMTP id l3so2130755wru.7
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 07:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=CD8NXjWHXI1PHdT+Yt5q2iCIoHrQv0Ncx4K7iwz1VKY=;
+        b=zBxpjFaP7l2EinUCWp0CpW2Sg1KTXXAkWldWE1wejALSHl3jp0sFDuHfH9Gi2HC2Au
+         kzQ8eNjBepwuBE+WbnhNaJeaA2YgNuzXB5kwhQzzLXinKPvQCT716XwpcJ0OQwEW4Q1k
+         mYBZVNfAVOI9FS3MUBcZFqmEz8BMf5scqsMrQSYS7a0Jda+62JkKZCi45L2ODbr/7ITr
+         EoZCg4hKA2dNdppOt/WLSZcVso9BHBuKo+dAoQSrK79NYYuSijPjb9/ZAnfpmak9bhlW
+         Khimacswau6lOgHXL5Nurct25X6UOV0+d8wHpX6mo9I/A7DTGUsuFceEWn1DJa/iOWon
+         b9dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=CD8NXjWHXI1PHdT+Yt5q2iCIoHrQv0Ncx4K7iwz1VKY=;
+        b=cOCldxzKcOzgemhL4c8R5vvUQYlBu0ip1Kk9hsyeHM8l1l1SIf6NvTHN2doFbGFPAf
+         t7Ijk/UmxMQr7XqhZ6znVnca/D0JptyRBK5Dk0TUImO95dC6KAVRrHsI/Zy98CHMGEtw
+         24A//hW3EC/CyBf4rB17cmHgpVOt2cZmjuI1YE9FvXV9ry9i0Xvg5r2FHUzTdAZ7VNIi
+         cnOSv/ApkXlm4XNfjFl9lyU+a7nb2Af9TmBczb/QLCUkkkHv1lAXBAmkiL9aVxwhP9ek
+         /aVzVDvXBraRyE5hRZBowFz2kJggjXA0QqJapxPXfYRVRGUkUw2Nz3R5OkoBIw/QnZJd
+         5m4Q==
+X-Gm-Message-State: APjAAAX/SBpqHP8djKWn71qJYJRqPGnIEDJ8r1QIqvLoOheweEcRflEk
+        6guzYVhGcBjFoors2qeArXj7DQ==
+X-Google-Smtp-Source: APXvYqyxcFFWxlfEByHp+UI2Ozbsm+7ZlCpzeuoY03TS06zxKMIrzCq38xzQB0qK8eF54jJ/spcLAg==
+X-Received: by 2002:adf:e7ca:: with SMTP id e10mr2442564wrn.234.1569334227683;
+        Tue, 24 Sep 2019 07:10:27 -0700 (PDT)
+Received: from localhost (uluru.liltaz.com. [163.172.81.188])
+        by smtp.gmail.com with ESMTPSA id f83sm61195wmf.43.2019.09.24.07.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Sep 2019 07:10:26 -0700 (PDT)
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Ankur Tyagi <Ankur.Tyagi@gallagher.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     "linux-clk\@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Tero Kristo <t-kristo@ti.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-amlogic\@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>,
+        "linux-arm-msm\@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-rockchip\@lists.infradead.org" 
+        <linux-rockchip@lists.infradead.org>,
+        "linux-omap\@vger.kernel.org" <linux-omap@vger.kernel.org>
+Subject: RE: [PATCH 2/3] clk: let init callback return an error code
+In-Reply-To: <ME2PR01MB4738B127557AE20F6315AA7FE5840@ME2PR01MB4738.ausprd01.prod.outlook.com>
+References: <20190924123954.31561-1-jbrunet@baylibre.com> <20190924123954.31561-3-jbrunet@baylibre.com> <ME2PR01MB4738B127557AE20F6315AA7FE5840@ME2PR01MB4738.ausprd01.prod.outlook.com>
+Date:   Tue, 24 Sep 2019 16:10:25 +0200
+Message-ID: <1jv9thlr8u.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Tue, 24 Sep 2019 14:04:22 +0000 (UTC)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Sep 2019 12:00:41 -0400
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Tue 24 Sep 2019 at 13:38, Ankur Tyagi <Ankur.Tyagi@gallagher.com> wrote:
 
-> On Mon, Sep 23, 2019 at 09:45:59AM -0600, Alex Williamson wrote:
-> > On Mon, 23 Sep 2019 21:03:30 +0800
-> > Jason Wang <jasowang@redhat.com> wrote:
-> >   
-> > > We want to copy from iov to buf, so the direction was wrong.
-> > > 
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > >  drivers/vhost/vringh.c | 8 +++++++-
-> > >  1 file changed, 7 insertions(+), 1 deletion(-)  
-> > 
-> > 
-> > Why is this included in the series?  Seems like an unrelated fix being
-> > held up within a proposal for a new feature.  Thanks,
-> > 
-> > Alex  
-> 
-> It's better to have it as patch 1/6, but it's a dependency of the
-> example driver in the series. I can reorder when I apply.
+> Hi,
+>
+> I am no expert here but just looked at the patch and found few
+> discrepancy that I have mentioned inline.
+>
 
-It's a fix, please submit it separately through virtio/vhost channels,
-then it will already be in the base kernel we use for the rest of the
-series.  The remainder of the series certainly suggests a workflow
-through the vfio tree rather than virtio/vhost.  Thanks,
+[...]
 
-Alex
+>
+> Aren't all functions returning 0 always?
+>
 
-> > > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> > > index 08ad0d1f0476..a0a2d74967ef 100644
-> > > --- a/drivers/vhost/vringh.c
-> > > +++ b/drivers/vhost/vringh.c
-> > > @@ -852,6 +852,12 @@ static inline int xfer_kern(void *src, void *dst, size_t len)
-> > >  	return 0;
-> > >  }
-> > >  
-> > > +static inline int kern_xfer(void *dst, void *src, size_t len)
-> > > +{
-> > > +	memcpy(dst, src, len);
-> > > +	return 0;
-> > > +}
-> > > +
-> > >  /**
-> > >   * vringh_init_kern - initialize a vringh for a kernelspace vring.
-> > >   * @vrh: the vringh to initialize.
-> > > @@ -958,7 +964,7 @@ EXPORT_SYMBOL(vringh_iov_pull_kern);
-> > >  ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
-> > >  			     const void *src, size_t len)
-> > >  {
-> > > -	return vringh_iov_xfer(wiov, (void *)src, len, xfer_kern);
-> > > +	return vringh_iov_xfer(wiov, (void *)src, len, kern_xfer);
-> > >  }
-> > >  EXPORT_SYMBOL(vringh_iov_push_kern);
-> > >    
+Yes, on purpose. This patch is an API conversion to let the init()
+callback of the clock ops return an error code or 0.
 
+The patch is not meant to change anything in the prior behavior of the
+clock drivers which is why every exit path return 0 with this change.
+
+IOW, yes there are all returning 0 for now, but it will eventually
+change.
+
+
+>>   *
+>>   * @debug_init:Set up type-specific debugfs entries for this clock.  This
+>>   *is called once, after the debugfs directory entry for this
+>> @@ -243,7 +247,7 @@ struct clk_ops {
+>>    struct clk_duty *duty);
+>>  int(*set_duty_cycle)(struct clk_hw *hw,
+>>    struct clk_duty *duty);
+>> -void(*init)(struct clk_hw *hw);
+>> +int(*init)(struct clk_hw *hw);
+>>  void(*debug_init)(struct clk_hw *hw, struct dentry *dentry);
+>>  };
+>>
+>> --
+>> 2.21.0
+>
+> ________________________________
+>  This email is confidential and may contain information subject to legal privilege. If you are not the intended recipient please advise us of our error by return e-mail then delete this email and any attached files. You may not copy, disclose or use the contents in any way. The views expressed in this email may not be those of Gallagher Group Ltd or subsidiary companies thereof.
+> ________________________________
