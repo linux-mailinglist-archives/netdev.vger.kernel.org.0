@@ -2,188 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8492BD302
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 21:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC99ABD358
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 22:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437379AbfIXTs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 15:48:26 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34201 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726829AbfIXTsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 15:48:25 -0400
-Received: by mail-io1-f67.google.com with SMTP id q1so7509531ion.1
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 12:48:25 -0700 (PDT)
+        id S1731642AbfIXULa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 16:11:30 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:42982 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726254AbfIXULa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 16:11:30 -0400
+Received: by mail-pf1-f201.google.com with SMTP id w16so2266949pfj.9
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 13:11:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WLFw2SVVX0kQvrxHzIlzDBhL2m2rkHI2fm2b3O8cq3o=;
-        b=FB5uHKExMXckVE07EJAbyDE07WgfHdvZYgI5iDxv2gf7ygNUl7sY+skMZCgt9b31OD
-         tD7jPzJfU70wuoj/JP+x0jx9jldNZlsdbdrzc2e1g/HGDqY4cYFjmG/jwD/YS+3DoLBn
-         7hcCn57Y0JrrCbjBLJnIk4Q1KitF5cx/XtL0M=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=EAxk/vpTW85+fdEn51w+V/fox+dGr1e3pjgJ/YxuSEo=;
+        b=SlKokI/QTB1WoxyQDuWodVHOyuFht+W5MCd/oOoHLnUXtiHSjdTmjqWHmpR+AFt/uL
+         QemmZlZgHI8R4F1AwXP0tvwsx76MxOi+gYCjwEzE9hGBRdBB0AZiixy9jUPjYtqv6UJk
+         8bWIe+tQAyuwnJcdITK3415Lm8aTvYSFi7LD6X3OlkYgWP0jXHH+zEXR9tzDlWXcFLXL
+         GekyaI88uwxbOX7KfXMMGIqXVKBCi8QwuuuMOFDv8y6q/8qbR8k9bmgZOyToNSRmM6Fx
+         HEfKjF0WSZ8hl8eHPUpip4i6523ZoLKPUmaiQaDpHRZjJjmkizzlj/9tww4sQ8oJipR7
+         rXKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WLFw2SVVX0kQvrxHzIlzDBhL2m2rkHI2fm2b3O8cq3o=;
-        b=l5iieQ0EA3YW//KF0cokuHPrYJGF5nhCoyXW5GJkZlSzxzjI3Y50ph/opDCC6By3iC
-         P0C6kQYwO9bahdAJgP/hXL1DsjOQOFtCaohAkjLL2/NYRZQLFab5fbNbkncM9uLhU5WA
-         xshGD/scK0gexh7k9ylsavQZ5baJO9WO4xMXWKCwEJdGTlVhFal55NDS2UxDZEoslQ/q
-         iBnkPTdpH1fAg4lr49FTbGQBrb+cT1uVDwBBnGwuJ03a5fumyMAkgbiNvSssInzLcAH/
-         W9B0UtF+mMxns96VS4FSB4QQiIUEeY7UGPA3QFQwo8c7g5lka6ASAF8HfgggwTKMJSN3
-         lI+Q==
-X-Gm-Message-State: APjAAAXLrTFGEjY48QcZhwSIe1iewFyGUsDFCd8W8id8vPUH+0vWWa/Z
-        eTYnVbG6UNqbECH9cvh74XMePA==
-X-Google-Smtp-Source: APXvYqzBjOqn1deXR9hEiioeq7EqwoEbVRynYUN+BLzNZLOVNSRF26ydZVcgKMz2qP7M+ixvUyoU5w==
-X-Received: by 2002:a6b:5a1a:: with SMTP id o26mr5123757iob.65.1569354504637;
-        Tue, 24 Sep 2019 12:48:24 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id a14sm2990902ioo.85.2019.09.24.12.48.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Sep 2019 12:48:24 -0700 (PDT)
-Subject: Re: Linux 5.4 - bpf test build fails
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "skh >> Shuah Khan" <skhan@linuxfoundation.org>
-References: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
- <0a5bf608-bb15-c116-8e58-7224b6c3b62f@fb.com>
- <05b7830c-1fa8-b613-0535-1f5f5a40a25a@linuxfoundation.org>
- <20190924184946.GB5889@pc-63.home>
- <edb38c06-a75f-89df-60cd-d9d2de1879d6@linuxfoundation.org>
- <20190924191957.GD5889@pc-63.home>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7c3cb2ff-e19c-6b2c-652a-870e73534099@linuxfoundation.org>
-Date:   Tue, 24 Sep 2019 13:48:23 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190924191957.GD5889@pc-63.home>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=EAxk/vpTW85+fdEn51w+V/fox+dGr1e3pjgJ/YxuSEo=;
+        b=jeb0OtIJbF1vPTwHw9XWsmQ2cscxo0GmnZrhERVJ76aJqcvxRZGhAsrRLwQr9dVW9X
+         3mn0if3+xd6eSzvsDJ5JJZuUd0H9WNmUexnpGO1+a8GTjLYjDu8C15m2hqtH19A1+zah
+         Lenq4TTd0o4xUl/EvXVR6QTLyrfXVtclC24VYEtrH2Y+3Txh2BaF8fpYUGfbwfg7QllJ
+         V0BShCzTnK0qH5BdfrgBKwjtAbkcCZ6scwVLr43H/CdU+dfSFImT21/L0o15TlCONNrD
+         bW6W8VlTfIJAmX1MjdoKpUdwUW4vipexejfaeqx36ChqYKlwltbcVvBIBYKehFM7x+mv
+         kIuQ==
+X-Gm-Message-State: APjAAAWeIZHiFfBzu4DuxC4UWjT46jGCtHOtP7Vs5YTyMyIlzz/6NfAm
+        /ws89Eceq3A6UmfOKz6YMrlYtjS5WypOjQ==
+X-Google-Smtp-Source: APXvYqy1jG3gL34cpdFkJcZFz6Mki/b9oTUDCgzgtRZy7Rozw0rGdEfr1LWI3IuMvJd7foUr0z4dvLJUeXxQRg==
+X-Received: by 2002:a63:121c:: with SMTP id h28mr4777390pgl.336.1569355889601;
+ Tue, 24 Sep 2019 13:11:29 -0700 (PDT)
+Date:   Tue, 24 Sep 2019 13:11:26 -0700
+Message-Id: <20190924201126.77301-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.351.gc4317032e6-goog
+Subject: [PATCH net] sch_netem: fix rcu splat in netem_enqueue()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/24/19 1:19 PM, Daniel Borkmann wrote:
-> On Tue, Sep 24, 2019 at 12:56:53PM -0600, Shuah Khan wrote:
->> On 9/24/19 12:49 PM, Daniel Borkmann wrote:
->>> On Tue, Sep 24, 2019 at 09:48:35AM -0600, Shuah Khan wrote:
->>>> On 9/24/19 9:43 AM, Yonghong Song wrote:
->>>>> On 9/24/19 8:26 AM, Shuah Khan wrote:
->>>>>> Hi Alexei and Daniel,
->>>>>>
->>>>>> bpf test doesn't build on Linux 5.4 mainline. Do you know what's
->>>>>> happening here.
->>>>>>
->>>>>> make -C tools/testing/selftests/bpf/
->>>>>>
->>>>>> -c progs/test_core_reloc_ptr_as_arr.c -o - || echo "clang failed") | \
->>>>>> llc -march=bpf -mcpu=generic  -filetype=obj -o
->>>>>> /mnt/data/lkml/linux_5.4/tools/testing/selftests/bpf/test_core_reloc_ptr_as_arr.o
->>>>>>
->>>>>> progs/test_core_reloc_ptr_as_arr.c:25:6: error: use of unknown builtin
->>>>>>           '__builtin_preserve_access_index' [-Wimplicit-function-declaration]
->>>>>>             if (BPF_CORE_READ(&out->a, &in[2].a))
->>>>>>                 ^
->>>>>> ./bpf_helpers.h:533:10: note: expanded from macro 'BPF_CORE_READ'
->>>>>>                            __builtin_preserve_access_index(src))
->>>>>>                            ^
->>>>>> progs/test_core_reloc_ptr_as_arr.c:25:6: warning: incompatible integer to
->>>>>>           pointer conversion passing 'int' to parameter of type 'const void *'
->>>>>>           [-Wint-conversion]
->>>>>>             if (BPF_CORE_READ(&out->a, &in[2].a))
->>>>>>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>>>> ./bpf_helpers.h:533:10: note: expanded from macro 'BPF_CORE_READ'
->>>>>>                            __builtin_preserve_access_index(src))
->>>>>>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>>>> 1 warning and 1 error generated.
->>>>>> llc: error: llc: <stdin>:1:1: error: expected top-level entity
->>>>>> clang failed
->>>>>>
->>>>>> Also
->>>>>>
->>>>>> make TARGETS=bpf kselftest fails as well. Dependency between
->>>>>> tools/lib/bpf and the test. How can we avoid this type of
->>>>>> dependency or resolve it in a way it doesn't result in build
->>>>>> failures?
->>>>>
->>>>> Thanks, Shuah.
->>>>>
->>>>> The clang __builtin_preserve_access_index() intrinsic is
->>>>> introduced in LLVM9 (which just released last week) and
->>>>> the builtin and other CO-RE features are only supported
->>>>> in LLVM10 (current development branch) with more bug fixes
->>>>> and added features.
->>>>>
->>>>> I think we should do a feature test for llvm version and only
->>>>> enable these tests when llvm version >= 10.
->>>>
->>>> Yes. If new tests depend on a particular llvm revision, the failing
->>>> the build is a regression. I would like to see older tests that don't
->>>> have dependency build and run.
->>>
->>> So far we haven't made it a requirement as majority of BPF contributors
->>> that would run/add tests in here are also on bleeding edge LLVM anyway
->>> and other CIs like 0-day bot have simply upgraded their LLVM version
->>> from git whenever there was a failure similar to the one here so its
->>> ensured that really /all/ test cases are running and nothing would be
->>> skipped. There is worry to some degree that CIs just keep sticking to
->>> an old compiler since tests "just" pass and regressions wouldn't be
->>> caught on new releases for those that are skipped. >
->>
->> Sure. Bleeding edge is developer mode. We still have to be concerned
->> about users that might not upgrade quickly.
->>
->>> That said, for the C based tests, it should actually be straight forward
->>> to categorize them based on built-in macros like ...
->>>
->>> $ echo | clang -dM -E -
->>> [...]
->>> #define __clang_major__ 10
->>> #define __clang_minor__ 0
->>> [...]
->>
->> What would nice running the tests you can run and then say some tests
->> aren't going to run. Is this something you can support?
-> 
-> Once there is such infra in place, should be possible.
+qdisc_root() use from netem_enqueue() triggers a lockdep warning.
 
-Can't you do it in bpf run-time or during build for dependency?
-You should be able to handle this as a dependency and let users
-know at least.
+__dev_queue_xmit() uses rcu_read_lock_bh() which is
+not equivalent to rcu_read_lock() + local_bh_disable_bh as far
+as lockdep is concerned.
 
-> 
->>> ... given there is now also bpf-gcc, the test matrix gets bigger anyway,
->>> so it might be worth rethinking to run the suite multiple times with
->>> different major llvm{,gcc} versions at some point to make sure their
->>> generated BPF bytecode keeps passing the verifier, and yell loudly if
->>> newer features had to be skipped due to lack of recent compiler version.
->>> This would be a super set of /just/ skipping tests and improve coverage
->>> at the same time.
->>
->> Probably. Reality is most users will just quit and add bpf to "hard to
->> run category" of tests.
-> 
-> I don't really worry too much about such users at this point, more important
-> is that we have a way to test bpf-gcc and llvm behavior side by side to
-> make sure behavior is consistent and to have some sort of automated CI
-> integration that runs BPF kselftests before we even stare at a patch for
-> review. These are right now the two highest prio items from BPF testing
-> side where we need to get to.
-> 
+WARNING: suspicious RCU usage
+5.3.0-rc7+ #0 Not tainted
+-----------------------------
+include/net/sch_generic.h:492 suspicious rcu_dereference_check() usage!
 
-What happens if CI's can't upgrade quickly and newer versions aren't
-supported on test machines that are in their test rings?
+other info that might help us debug this:
 
-thanks,
--- Shuah
+rcu_scheduler_active = 2, debug_locks = 1
+3 locks held by syz-executor427/8855:
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: ip_finish_output2+0x2dc/0x2570 net/ipv4/ip_output.c:214
+ #1: 00000000b5525c01 (rcu_read_lock_bh){....}, at: __dev_queue_xmit+0x20a/0x3650 net/core/dev.c:3804
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_xmit_skb net/core/dev.c:3502 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_queue_xmit+0x14b8/0x3650 net/core/dev.c:3838
+
+stack backtrace:
+CPU: 0 PID: 8855 Comm: syz-executor427 Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ lockdep_rcu_suspicious+0x153/0x15d kernel/locking/lockdep.c:5357
+ qdisc_root include/net/sch_generic.h:492 [inline]
+ netem_enqueue+0x1cfb/0x2d80 net/sched/sch_netem.c:479
+ __dev_xmit_skb net/core/dev.c:3527 [inline]
+ __dev_queue_xmit+0x15d2/0x3650 net/core/dev.c:3838
+ dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
+ neigh_hh_output include/net/neighbour.h:500 [inline]
+ neigh_output include/net/neighbour.h:509 [inline]
+ ip_finish_output2+0x1726/0x2570 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x5fc/0xb90 net/ipv4/ip_output.c:290
+ ip_finish_output+0x38/0x1f0 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_mc_output+0x292/0xf40 net/ipv4/ip_output.c:417
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0xbb/0x190 net/ipv4/ip_output.c:125
+ ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1555
+ udp_send_skb.isra.0+0x6b2/0x1160 net/ipv4/udp.c:887
+ udp_sendmsg+0x1e96/0x2820 net/ipv4/udp.c:1174
+ inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:657
+ ___sys_sendmsg+0x3e2/0x920 net/socket.c:2311
+ __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2439
+ do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ include/net/sch_generic.h | 5 +++++
+ net/sched/sch_netem.c     | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 43f5b7ed02bdbad6f5dba54ba79b8f1b9d144d16..637548d54b3ee9bdb0edd10a1667e81a40a6ef74 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -494,6 +494,11 @@ static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
+ 	return q;
+ }
+ 
++static inline struct Qdisc *qdisc_root_bh(const struct Qdisc *qdisc)
++{
++	return rcu_dereference_bh(qdisc->dev_queue->qdisc);
++}
++
+ static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdisc)
+ {
+ 	return qdisc->dev_queue->qdisc_sleeping;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index f5cb35e550f8df557f2e444cc2fd142cab97789b..0e44039e729c72be52d0bf65568b3641e7f910d8 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -476,7 +476,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	 * skb will be queued.
+ 	 */
+ 	if (count > 1 && (skb2 = skb_clone(skb, GFP_ATOMIC)) != NULL) {
+-		struct Qdisc *rootq = qdisc_root(sch);
++		struct Qdisc *rootq = qdisc_root_bh(sch);
+ 		u32 dupsave = q->duplicate; /* prevent duplicating a dup... */
+ 
+ 		q->duplicate = 0;
+-- 
+2.23.0.351.gc4317032e6-goog
 
