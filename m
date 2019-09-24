@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA080BBF51
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 02:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DC6BBF5A
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 02:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391527AbfIXATF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Sep 2019 20:19:05 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:40430 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729276AbfIXATF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 20:19:05 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8O047WW193144;
-        Tue, 24 Sep 2019 00:18:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=CYnernZqxWUzUsnsA+ryrZNCCZdIPViU9+VB3OeyCag=;
- b=egZhZal+XCur2Gx8ugLu5eQkb80AVHe/EFGCeaH3n5L4JUoBpU8u2+VXNPdDmu1c7d2n
- ZHvoo2G46k20tXpJSVbgbZ6pLeEzATdKYjZU5ZKfgqPS91dByk2kHkPeGl17wEAPRmjO
- 8/klkfIV7JS33yTO5CT0zqwogc6CDoMdKW56Vh7RQfzCAGg8rdT7KJyebgdzDxXHSeD+
- uhBLH/UO12TqldyR7QitubAnT7tRJHmQxg1i9p6SK1+Gk+2+Zf/1FLP+CF/Vfh7n40Ms
- wzlHYHRrqBq/KrqlpgfVEESREhHKtEScPfMLz2VyAhADYsGV6fW72CzxUSJ7DKrkhQ+k cw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2v5cgqt5qt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 Sep 2019 00:18:53 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8O093nm152425;
-        Tue, 24 Sep 2019 00:18:53 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2v6yvhvg0m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 Sep 2019 00:18:53 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8O0IniH023008;
-        Tue, 24 Sep 2019 00:18:49 GMT
-Received: from [10.182.71.192] (/10.182.71.192)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 23 Sep 2019 17:18:48 -0700
-Subject: Re: [PATCH 1/1] MAINTAINERS: add Yanjun to FORCEDETH maintainers list
-To:     rain.1986.08.12@gmail.com, mchehab+samsung@kernel.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org, robh@kernel.org,
-        linus.walleij@linaro.org, nicolas.ferre@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20190923143746.4310-1-rain.1986.08.12@gmail.com>
-From:   Zhu Yanjun <yanjun.zhu@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <b227d9ea-d393-23f3-51c2-9de28678943f@oracle.com>
-Date:   Tue, 24 Sep 2019 08:23:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2503627AbfIXA2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Sep 2019 20:28:19 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46841 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503623AbfIXA2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Sep 2019 20:28:18 -0400
+Received: by mail-qt1-f194.google.com with SMTP id u22so75582qtq.13
+        for <netdev@vger.kernel.org>; Mon, 23 Sep 2019 17:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=IFV5JGbWyg2zPREceyybvOhU+xMZWne8JX/BmrpWMao=;
+        b=Lt5fO+xHKdk6Rumcp3Ca59JjZb4Mh5/xiACIkBKhXN6n6P6VfIwKoGta0Xd/zXzy9r
+         RDp7FX6sVT5pWMHfP+MQ7FOH4ffVX68O7eI7//1DfPZ7sf24dn4dYyZ5o+UDOKaD81pK
+         UH9tU3qg+A96yw9cg43luxu/OnfgRnyKX4WMhiQCwQZ6XbzLi7BIq+0QkzidnIs73IbT
+         c9SXkmjY08XmS4CrB4/RAFjE1AyRu5KmeUDglidC5fXwhsGxjvrOyE9A/0IwxXd0nNqj
+         TuiDYYO0nvFvXIM/A6L4VbHClOyGdGLFuI7iEgqqXphBJmLrxVp2HZVyF9YaaoGftErt
+         S8ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=IFV5JGbWyg2zPREceyybvOhU+xMZWne8JX/BmrpWMao=;
+        b=Numt48yOQ+Si57pZsxXGhn/XyL+/kcRXEfwHxicKfjjfajXn4A+IQO4Ll3nRBRJbva
+         foYcjnQOTVqYL4f8tvStOOsMe7Ql3fAFdUeHLsKk5TQKgI25Q+E4PAnLZGP/IPB8ICpS
+         BgWZw3lLW8etNa0gi8JDwR25UH67SzdyFwFiEIbTkoU5IjY0pec8sI6Vn8k2B+dTKg7V
+         YY2gz4ZvvIDGBu7iFfHb3hPo1k3h9w0jQ+CUngRPpCue5Hhm3W3I+hgjbHVwiRbYTkWQ
+         u2A3hNObMoagoAy3vsE2a4fsMYNJ5ek2gO1WXpyXXnNXVPhvUT8dVTtfRYGIWbgV6nnB
+         byvw==
+X-Gm-Message-State: APjAAAV+ZhGRgWDV3LhIv3X7wHTceKR6yqCbRj10kIBsUpSFATRgosfL
+        wpvkOZNRB+P2mfg/GHUAtJpsRA==
+X-Google-Smtp-Source: APXvYqxjLopYoeVFs4OEBD/cLnj52KbJZQxxnrdS+UHdCvPFJ57Gcy07E6hbhWauDmiBMDK9XvN1qg==
+X-Received: by 2002:a0c:e2c9:: with SMTP id t9mr287664qvl.22.1569284897616;
+        Mon, 23 Sep 2019 17:28:17 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x59sm26602qte.20.2019.09.23.17.28.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Sep 2019 17:28:17 -0700 (PDT)
+Date:   Mon, 23 Sep 2019 17:28:11 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pooja Trivedi <poojatrivedi@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
+        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
+        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
+        Mallesham Jatharakonda <mallesh537@gmail.com>
+Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
+ caused by a race condition in tls_tx_records
+Message-ID: <20190923172811.1f620803@cakuba.netronome.com>
+In-Reply-To: <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
+References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
+        <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
+        <20190918142549.69bfa285@cakuba.netronome.com>
+        <CAOrEds=DqexwYUOfWQ7_yOxre8ojUTqF3wjxY0SC10CbY8KD0w@mail.gmail.com>
+        <20190918144528.57a5cb50@cakuba.netronome.com>
+        <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190923143746.4310-1-rain.1986.08.12@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9389 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1909230207
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9389 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1909230207
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 21 Sep 2019 23:19:20 -0400, Pooja Trivedi wrote:
+> On Wed, Sep 18, 2019 at 5:45 PM Jakub Kicinski wrote:
+> > On Wed, 18 Sep 2019 17:37:44 -0400, Pooja Trivedi wrote:  
+> > > Hi Jakub,
+> > >
+> > > I have explained one potential way for the race to happen in my
+> > > original message to the netdev mailing list here:
+> > > https://marc.info/?l=linux-netdev&m=156805120229554&w=2
+> > >
+> > > Here is the part out of there that's relevant to your question:
+> > >
+> > > -----------------------------------------
+> > >
+> > > One potential way for race condition to appear:
+> > >
+> > > When under tcp memory pressure, Thread 1 takes the following code path:
+> > > do_sendfile ---> ... ---> .... ---> tls_sw_sendpage --->
+> > > tls_sw_do_sendpage ---> tls_tx_records ---> tls_push_sg --->
+> > > do_tcp_sendpages ---> sk_stream_wait_memory ---> sk_wait_event  
+> >
+> > Ugh, so do_tcp_sendpages() can also release the lock :/
+> >
+> > Since the problem occurs in tls_sw_do_sendpage() and
+> > tls_sw_do_sendmsg() as well, should we perhaps fix it at that level?  
+> 
+> That won't do because tls_tx_records also gets called when completion
+> callbacks schedule delayed work. That was the code path that caused
+> the crash for my test. Cavium's nitrox crypto offload driver calling
+> tls_encrypt_done, which calls schedule_delayed_work. Delayed work that
+> was scheduled would then be processed by tx_work_handler.
+> Notice in my previous reply,
+> "Thread 2 code path:
+> tx_work_handler ---> tls_tx_records"
+> 
+> "Thread 2 code path:
+> tx_work_handler ---> tls_tx_records"
 
-On 2019/9/23 22:37, rain.1986.08.12@gmail.com wrote:
-> From: Rain River <rain.1986.08.12@gmail.com>
->
-> Yanjun has been spending quite a lot of time fixing bugs
-> in FORCEDETH source code. I'd like to add Yanjun to maintainers
-> list.
->
-> Signed-off-by: Rain River <rain.1986.08.12@gmail.com>
+Right, the work handler would obviously also have to obey the exclusion
+mechanism of choice.
 
-Acked-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-
-Thanks a lot.
-
-Zhu Yanjun
-
-> ---
->   MAINTAINERS | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a400af0501c9..336ad8fe8b60 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -643,6 +643,7 @@ F:	drivers/net/ethernet/alacritech/*
->   
->   FORCEDETH GIGABIT ETHERNET DRIVER
->   M:	Rain River <rain.1986.08.12@gmail.com>
-> +M:	Zhu Yanjun <yanjun.zhu@oracle.com>
->   L:	netdev@vger.kernel.org
->   S:	Maintained
->   F:	drivers/net/ethernet/nvidia/*
+Having said that this really does feel like we are trying to lock code,
+not data here :(
