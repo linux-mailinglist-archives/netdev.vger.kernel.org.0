@@ -2,170 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42DD1BCAC1
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5642BCAD8
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403795AbfIXPBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 11:01:39 -0400
-Received: from mail-qt1-f202.google.com ([209.85.160.202]:42795 "EHLO
-        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388811AbfIXPBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:01:39 -0400
-Received: by mail-qt1-f202.google.com with SMTP id w9so2253442qto.9
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 08:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=6lhNUnzlY9YS7mlEkYDHRyFhi9aNMXD3vn90zGYaf64=;
-        b=j4b6K8AUB27bcdNNvp5qacOQ0puaXh4AZ6oTXYEnZzJ4pauqPta7RaFlivkb0FX790
-         30gZNs6SNeuopr7Rq5x3T53gpc1/Cjlu8oP7oFLgempAhNZOrXCDI/ExqSva3PaebR7w
-         mENB+TRZfa+Ym4+XixWVvU+LI/zOeNXoxAJZ9i1tsXp1Cpk8V8B7i/82j/iv4gAn52VY
-         nQngMJhZpvM0mMZTvocrGC15IWvkyfN2U6uOPBD2CIGZ/f3qn4GY5ScBwp2okueZ6VtE
-         dIn4TpUhxRaxe0yJ7iMxiMNDAkWkGhPCuajRK040bADQojO7NNM6TNWP0L2XXzPD08rW
-         rYLQ==
+        id S1730511AbfIXPGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 11:06:35 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37448 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727834AbfIXPGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:06:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1569337593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=47F98g0cYtJSkRl55B62bcc/hNiWgNt8iRsrYRSVUp8=;
+        b=aEbhOxRgJ16EI2XOIzqkbEVPixkWBJlLWI3dPC5yi+z3H2rYp4vg9995pRmz3z7tHNUNok
+        mTCMReiNT1baKGDdBtinj52z4IXdb1hQktZ9vW+8K76sy2ITJYGdPLnz7u/hPuN6VlF6RG
+        mn9Iz15BDRWM2OBurgHaUbn9qaMZMpA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-seKgwc1SPwqFsGND13iZwQ-1; Tue, 24 Sep 2019 11:06:30 -0400
+Received: by mail-wm1-f71.google.com with SMTP id o8so177795wmc.2
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 08:06:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=6lhNUnzlY9YS7mlEkYDHRyFhi9aNMXD3vn90zGYaf64=;
-        b=n8iwqAH2ytcIF9CjKiHHnTjcsOSaXiSFk8WjtfRk4nJhUKwQaAjbIFjqi9T7tnhdqf
-         leJP9lKRvGGy+PLtYlv0R/CrrhD8y6pjySmp3z+ebKG0AYGR37LxjB9TYmiEXTD/YJO+
-         Qp0yvwFwwTmgpL6Y52qjg+cIwpBE9R1LAszeLfu+nEqShGDZrlSQjhxtGY41k7TMT/Vw
-         5eGsWhkBNut/s3T143bZSUVVNV1OD7fhk9E4uH/YmBYsws/oKel3AuN5nR811aHSd+2J
-         qhGlUrq/WOB0KBPfxMnb1v3XM+rQ9u8B8VepjMddNlfai/8GCKlxOyyCmgiuxO2JZhOn
-         ombA==
-X-Gm-Message-State: APjAAAVd/2cVXRvKTuBdC70MyQ0XsBXIQka6FQV9ytqSb23JjrbiiOHn
-        G1djp8yl1SEVwf9vd79ot2Omm/b7GJL6dg==
-X-Google-Smtp-Source: APXvYqwSzWLyTI70f+lxbmzyopLJWchpffSX62UtjKeQ2Vt3Z47C7UVS/PXQmdQIpLvACqd/R+JKrZzy+Hsvmg==
-X-Received: by 2002:aed:21a3:: with SMTP id l32mr3294197qtc.339.1569337297763;
- Tue, 24 Sep 2019 08:01:37 -0700 (PDT)
-Date:   Tue, 24 Sep 2019 08:01:16 -0700
-In-Reply-To: <20190924150116.199028-1-edumazet@google.com>
-Message-Id: <20190924150116.199028-4-edumazet@google.com>
-Mime-Version: 1.0
-References: <20190924150116.199028-1-edumazet@google.com>
-X-Mailer: git-send-email 2.23.0.351.gc4317032e6-goog
-Subject: [PATCH net 3/3] tcp: honor SO_PRIORITY in TIME_WAIT state
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lgUgNKjOg0oAOIDAqUbRojeHb+E5NGemROCfJhsOPsw=;
+        b=XtgUoBTN7xNdzjgD38HZuurPYfQkkzQBmvrspgjh/phxF/z/EbrUo93NPxnHf48/V/
+         RzcO4EfWSV+e2LUzYNvLREmcYPlQGIDSOdZyVfgcHL9vXz4rcwsQyYszO/j775qJpqNr
+         NuF48DXFDII2pHFx5ZbfWHc2avgVdQZGyttuglLJoaJQ0l1V+2+dzadjDz7+qTM89p1h
+         koAuglJdV8pulAWBHQpQKnXMc6mNCKIZdGywmiFIqDlt3PplhZnG9nSNrlhaW7edLfi/
+         yO2RlzfPEsH3JRXDepNZrPP7X0NFCWzxTrFDT2yqexFe1mdtfhdr8MKUDJgh7MrjlUq8
+         n6/g==
+X-Gm-Message-State: APjAAAUsamhAkktCe5KYKb8q3BoL8JLeYiFZhbX3A7Nf9+H5jPNDrPQO
+        xZa/Ky7GkfDz78GguYBA1pNHLpVBOQoUTzSzfnJjRt1FionOFFsdxJgr13skdmgXcBxTiyDVVmK
+        yIXWrufRhuwGoT8yq
+X-Received: by 2002:a7b:c758:: with SMTP id w24mr514087wmk.148.1569337589058;
+        Tue, 24 Sep 2019 08:06:29 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxvIcJwg1iUpLLeSRbP3U6VFzm/5MMEzYXCC0tEALgjQLBhkCfgzYUhccJOWD4mzVDSZHdAow==
+X-Received: by 2002:a7b:c758:: with SMTP id w24mr514065wmk.148.1569337588812;
+        Tue, 24 Sep 2019 08:06:28 -0700 (PDT)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id z4sm2240342wrh.93.2019.09.24.08.06.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Sep 2019 08:06:28 -0700 (PDT)
+Date:   Tue, 24 Sep 2019 17:06:26 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Takeshi Misawa <jeliantsurux@gmail.com>
+Cc:     Paul Mackerras <paulus@samba.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] ppp: Fix memory leak in ppp_write
+Message-ID: <20190924150626.GA12337@linux.home>
+References: <20190922074531.GA1450@DESKTOP>
+MIME-Version: 1.0
+In-Reply-To: <20190922074531.GA1450@DESKTOP>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: seKgwc1SPwqFsGND13iZwQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ctl packets sent on behalf of TIME_WAIT sockets currently
-have a zero skb->priority, which can cause various problems.
+On Sun, Sep 22, 2019 at 04:45:31PM +0900, Takeshi Misawa wrote:
+> When ppp is closing, __ppp_xmit_process() failed to enqueue skb
+> and skb allocated in ppp_write() is leaked.
+>=20
+> syzbot reported :
+> BUG: memory leak
+> unreferenced object 0xffff88812a17bc00 (size 224):
+>   comm "syz-executor673", pid 6952, jiffies 4294942888 (age 13.040s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000d110fff9>] kmemleak_alloc_recursive include/linux/kmemleak.=
+h:43 [inline]
+>     [<00000000d110fff9>] slab_post_alloc_hook mm/slab.h:522 [inline]
+>     [<00000000d110fff9>] slab_alloc_node mm/slab.c:3262 [inline]
+>     [<00000000d110fff9>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
+>     [<000000002d616113>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
+>     [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
+>     [<000000000167fc45>] ppp_write+0x48/0x120 drivers/net/ppp/ppp_generic=
+.c:502
+>     [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
+>     [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
+>     [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
+>     [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
+>     [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
+>     [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
+>     [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
+>     [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c=
+:296
+>     [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>=20
+> Fix this by freeing skb, if ppp is closing.
+>=20
+> Fixes: 6d066734e9f0 ("ppp: avoid loop in xmit recursion detection code")
+> Reported-and-tested-by: syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail=
+.com
+> Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+> ---
+> Dear Guillaume Nault, Paul Mackerras
+>=20
+> syzbot reported memory leak in net/ppp.
+> - memory leak in ppp_write
+>=20
+> I send a patch that passed syzbot reproducer test.
+> Please consider this memory leak and patch.
+>=20
+> Regards.
+> ---
+>  drivers/net/ppp/ppp_generic.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.=
+c
+> index a30e41a56085..9a1b006904a7 100644
+> --- a/drivers/net/ppp/ppp_generic.c
+> +++ b/drivers/net/ppp/ppp_generic.c
+> @@ -1415,6 +1415,8 @@ static void __ppp_xmit_process(struct ppp *ppp, str=
+uct sk_buff *skb)
+>  =09=09=09netif_wake_queue(ppp->dev);
+>  =09=09else
+>  =09=09=09netif_stop_queue(ppp->dev);
+> +=09} else {
+> +=09=09kfree_skb(skb);
+>  =09}
+>  =09ppp_xmit_unlock(ppp);
+>  }
 
-In this patch we :
+Thanks a lot Takeshi!
 
-- add a tw_priority field in struct inet_timewait_sock.
-
-- populate it from sk->sk_priority when a TIME_WAIT is created.
-
-- For IPv4, change ip_send_unicast_reply() and its two
-  callers to propagate tw_priority correctly.
-  ip_send_unicast_reply() no longer changes sk->sk_priority.
-
-- For IPv6, make sure TIME_WAIT sockets pass their tw_priority
-  field to tcp_v6_send_response() and tcp_v6_send_ack().
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/inet_timewait_sock.h | 1 +
- net/ipv4/ip_output.c             | 1 -
- net/ipv4/tcp_ipv4.c              | 4 ++++
- net/ipv4/tcp_minisocks.c         | 1 +
- net/ipv6/tcp_ipv6.c              | 6 ++++--
- 5 files changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
-index aef38c140014600dbf88b1d664bad1b0adf63668..dfd919b3119e8efcbc436a67e3e6fbd02091db10 100644
---- a/include/net/inet_timewait_sock.h
-+++ b/include/net/inet_timewait_sock.h
-@@ -71,6 +71,7 @@ struct inet_timewait_sock {
- 				tw_pad		: 2,	/* 2 bits hole */
- 				tw_tos		: 8;
- 	u32			tw_txhash;
-+	u32			tw_priority;
- 	struct timer_list	tw_timer;
- 	struct inet_bind_bucket	*tw_tb;
- };
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index a77c3a4c24de40ff6bf3fa9da9a018457139e2b5..28fca408812c5576fc4ea957c1c4dec97ec8faf3 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1694,7 +1694,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
- 
- 	inet_sk(sk)->tos = arg->tos;
- 
--	sk->sk_priority = skb->priority;
- 	sk->sk_protocol = ip_hdr(skb)->protocol;
- 	sk->sk_bound_dev_if = arg->bound_dev_if;
- 	sk->sk_sndbuf = sysctl_wmem_default;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index fd394ad179a008085b4e87215290f243ea1993b6..2ee45e3755e92e60b5e1810e2f68205221b8308d 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -771,6 +771,8 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	if (sk) {
- 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
- 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
-+		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
-+				   inet_twsk(sk)->tw_priority : sk->sk_priority;
- 		transmit_time = tcp_transmit_time(sk);
- 	}
- 	ip_send_unicast_reply(ctl_sk,
-@@ -866,6 +868,8 @@ static void tcp_v4_send_ack(const struct sock *sk,
- 	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
- 	ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
- 			   inet_twsk(sk)->tw_mark : sk->sk_mark;
-+	ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
-+			   inet_twsk(sk)->tw_priority : sk->sk_priority;
- 	transmit_time = tcp_transmit_time(sk);
- 	ip_send_unicast_reply(ctl_sk,
- 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 8bcaf2586b6892b52fc3b25545017ec21afb0bde..bb140a5db8c066e57f1018fd47bccd4628def642 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -266,6 +266,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 
- 		tw->tw_transparent	= inet->transparent;
- 		tw->tw_mark		= sk->sk_mark;
-+		tw->tw_priority		= sk->sk_priority;
- 		tw->tw_rcv_wscale	= tp->rx_opt.rcv_wscale;
- 		tcptw->tw_rcv_nxt	= tp->rcv_nxt;
- 		tcptw->tw_snd_nxt	= tp->snd_nxt;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 5f557bf27da2ba6bcc74034a53a3f76a99fdf9f4..e3d9f4559c99f252eba448845cce434bc53f3fd8 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -995,8 +995,10 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 				label = ip6_flowlabel(ipv6h);
- 			priority = sk->sk_priority;
- 		}
--		if (sk->sk_state == TCP_TIME_WAIT)
-+		if (sk->sk_state == TCP_TIME_WAIT) {
- 			label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
-+			priority = inet_twsk(sk)->tw_priority;
-+		}
- 	} else {
- 		if (net->ipv6.sysctl.flowlabel_reflect & FLOWLABEL_REFLECT_TCP_RESET)
- 			label = ip6_flowlabel(ipv6h);
-@@ -1029,7 +1031,7 @@ static void tcp_v6_timewait_ack(struct sock *sk, struct sk_buff *skb)
- 			tcptw->tw_rcv_wnd >> tw->tw_rcv_wscale,
- 			tcp_time_stamp_raw() + tcptw->tw_ts_offset,
- 			tcptw->tw_ts_recent, tw->tw_bound_dev_if, tcp_twsk_md5_key(tcptw),
--			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel), 0);
-+			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel), tw->tw_priority);
- 
- 	inet_twsk_put(tw);
- }
--- 
-2.23.0.351.gc4317032e6-goog
+Reviewed-by: Guillaume Nault <gnault@redhat.com>
+Tested-by: Guillaume Nault <gnault@redhat.com>
 
