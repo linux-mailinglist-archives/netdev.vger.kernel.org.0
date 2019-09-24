@@ -2,136 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E9EFBCF84
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 19:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36002BCEF2
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 19:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411047AbfIXQ5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 12:57:46 -0400
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:43128 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730532AbfIXQsj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 12:48:39 -0400
-Received: by mail-ua1-f65.google.com with SMTP id k24so788133uag.10
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 09:48:38 -0700 (PDT)
+        id S2410594AbfIXQtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 12:49:36 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40325 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2410581AbfIXQtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 12:49:35 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w10so1627541pgj.7
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 09:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q1SPmjuHbe3bqxJi1ss7QmTYjm+8aawCYM2ft2q//xI=;
-        b=VQr5Zsem/YX7LLuuHUnf8Vk7+9R/WLpGgSWhsaygnJl8pkY4xacZ1mdn4RLb0qFB2K
-         mjUxWuZzOjuT5oWIAILXUZG6Aqtt8EVPaUYHCUk04qUmPgU/FLZuzUmOoqWEHU3GqQ9t
-         mickaxqpwzb9Ghnq6RnM77ngdXvg8MvCvuYa6HBAIg22GRp6mT1CnFmWFyzLPpxt/28v
-         NbjTeHLBQ2ZoHJarziW6VJfHjF5mTLYFak2pH9sFBVWuHiyA0NpgRMn1fOP0S3Sw52is
-         SePT3xuyhHCx+znZl8/ONIa03dhQA0fecCRhsSgKz5eEuhXwUeWTLWuSWIqgSm35xOEC
-         /c9g==
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HfHHPFy5TIfOyyAePJcqdA2sncQT3IFDWHrPp7ge82g=;
+        b=VZ1AIGjtQsZ3wm6pI9RuoM48t1flw55JTJepbJFlXfi/sUIIsh+CwIVwB2ZvWs3nHQ
+         7YAjwCf82p1o0ddw5xXAxGZ9GT4PUsv9oj/1Y9+5RxOexT50HnArAo+G/elyPq6V7k6G
+         Sn6LMg0XPA6FfZy34drKTnxz2bMH4t8hgz7Qgo7krH40wp7JSvO+ioF1Jv9bESyeA4Jb
+         s1IV0oKwSPcqXUcxykoeucintNXq1gsLn9KaSsnE97F9gO+CF7FzF5nyR5tGfvBUGHrN
+         65SL7Vwd9FJSGxWcm3dG/yIlv/R8sT6iZ9ThmKjYVC3dvQhdi/jkgrG+G1xlw6TkvsQF
+         eDGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q1SPmjuHbe3bqxJi1ss7QmTYjm+8aawCYM2ft2q//xI=;
-        b=H1iuhuB/Gcr2ibG747Yq+EySCj5+x8NOLN69h4+EtDXjFD3OVoI109WSmIx9cqthdz
-         /CbO0hQiPjUUd06ZQL3PEYO8dyAqxBggAT2o+5W+HkdHNDKxqxgs+5gDe+CctbHrtDS8
-         AmaohMChw4Cf/484LFgfeYtCBVyQ8L03W7rAkySgQI2+IwMEIqM9w6QzWlnJg46jPJoH
-         TMp2MXDHbFSZUVWV2n4XuNhOCT+2ne4fOaMTIkCU3UjX2jApxpVLeiUqy5qDWuH0Lv+h
-         +X/GSNEU+jZy7WDQIG2l/B/NWHU314RNJlfT7LiUA/wRVcyVEz2bADN2jYufgGhPc1VE
-         meKw==
-X-Gm-Message-State: APjAAAVEegpdQ49jvxkBPTgFqx+dJV3YZNf+TpV8My0bropGQZ75K7zN
-        5sqgmXCago6c66fr/IQAQ6rtAiXeePeN7XZ2N00=
-X-Google-Smtp-Source: APXvYqyyhhXbZaE6hJ4Rj+csCLB+vDx/M/GJu1EkOngBPpFgNU0d1fyIOpCG4LoBbu6ywBGar4CzIvuwkq5vbzk7k4A=
-X-Received: by 2002:a9f:366a:: with SMTP id s39mr346165uad.91.1569343717862;
- Tue, 24 Sep 2019 09:48:37 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=HfHHPFy5TIfOyyAePJcqdA2sncQT3IFDWHrPp7ge82g=;
+        b=LY0orkCPUFmyQ/2tunFc2G7HvXe66FuvcEpPAJZ56/sSEXljiqeDR+BFOxehLks2X0
+         VBGj4coOHzN4Z0/gBrt3ej2v+IDy+Cv3ZeZSgukCOeox/CYhrRBPCHCyP+1e9NPWZFCl
+         rAxvckeUVA6xD4juyumxZ0OeseMZcELSRJotI33lLghzzPr6xfcZEmGkjeSNM2HHBiPt
+         j3MGuB80KXW4PkRbC9tnXmiJUaKQzXVtQKT+VNOM/6fVbu68uO2n4qHfkEyHu10OUtfv
+         nnhSpbhsVRWztnOqVZxBXFvpZRhlKgcWZf2KJP9yaPOBNeVryfPhNVkDP63REf8T5eB+
+         7jLA==
+X-Gm-Message-State: APjAAAVf/NaL3wUcDhNb9QTEOe4QSNj2IT7OneLtSC/h5jbfdxfIxmAJ
+        Qpp86aKX1QSXXj+cd2TLtmNpZF7c
+X-Google-Smtp-Source: APXvYqy0mmI6spSLCwlwRsw6qhdbJ9SpgvH2Wvp747z1K1LVghQWhIJNr/J4DXfa/hg+/3095YPziA==
+X-Received: by 2002:a63:1216:: with SMTP id h22mr3890790pgl.3.1569343774028;
+        Tue, 24 Sep 2019 09:49:34 -0700 (PDT)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ep10sm5266177pjb.2.2019.09.24.09.49.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Sep 2019 09:49:33 -0700 (PDT)
+Subject: Re: [PATCH net] skge: fix checksum byte order
+To:     Stephen Hemminger <stephen@networkplumber.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20190920161826.15942-1-sthemmin@microsoft.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <4e4a5bc4-a027-8585-4e16-39fd2aeb066a@gmail.com>
+Date:   Tue, 24 Sep 2019 09:49:32 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
- <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
- <20190918142549.69bfa285@cakuba.netronome.com> <CAOrEds=DqexwYUOfWQ7_yOxre8ojUTqF3wjxY0SC10CbY8KD0w@mail.gmail.com>
- <20190918144528.57a5cb50@cakuba.netronome.com> <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
- <20190923172811.1f620803@cakuba.netronome.com>
-In-Reply-To: <20190923172811.1f620803@cakuba.netronome.com>
-From:   Pooja Trivedi <poojatrivedi@gmail.com>
-Date:   Tue, 24 Sep 2019 12:48:26 -0400
-Message-ID: <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
-Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
- caused by a race condition in tls_tx_records
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
-        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
-        Mallesham Jatharakonda <mallesh537@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190920161826.15942-1-sthemmin@microsoft.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 8:28 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Sat, 21 Sep 2019 23:19:20 -0400, Pooja Trivedi wrote:
-> > On Wed, Sep 18, 2019 at 5:45 PM Jakub Kicinski wrote:
-> > > On Wed, 18 Sep 2019 17:37:44 -0400, Pooja Trivedi wrote:
-> > > > Hi Jakub,
-> > > >
-> > > > I have explained one potential way for the race to happen in my
-> > > > original message to the netdev mailing list here:
-> > > > https://marc.info/?l=linux-netdev&m=156805120229554&w=2
-> > > >
-> > > > Here is the part out of there that's relevant to your question:
-> > > >
-> > > > -----------------------------------------
-> > > >
-> > > > One potential way for race condition to appear:
-> > > >
-> > > > When under tcp memory pressure, Thread 1 takes the following code path:
-> > > > do_sendfile ---> ... ---> .... ---> tls_sw_sendpage --->
-> > > > tls_sw_do_sendpage ---> tls_tx_records ---> tls_push_sg --->
-> > > > do_tcp_sendpages ---> sk_stream_wait_memory ---> sk_wait_event
-> > >
-> > > Ugh, so do_tcp_sendpages() can also release the lock :/
-> > >
-> > > Since the problem occurs in tls_sw_do_sendpage() and
-> > > tls_sw_do_sendmsg() as well, should we perhaps fix it at that level?
-> >
-> > That won't do because tls_tx_records also gets called when completion
-> > callbacks schedule delayed work. That was the code path that caused
-> > the crash for my test. Cavium's nitrox crypto offload driver calling
-> > tls_encrypt_done, which calls schedule_delayed_work. Delayed work that
-> > was scheduled would then be processed by tx_work_handler.
-> > Notice in my previous reply,
-> > "Thread 2 code path:
-> > tx_work_handler ---> tls_tx_records"
-> >
-> > "Thread 2 code path:
-> > tx_work_handler ---> tls_tx_records"
->
-> Right, the work handler would obviously also have to obey the exclusion
-> mechanism of choice.
->
-> Having said that this really does feel like we are trying to lock code,
-> not data here :(
+On 9/20/19 9:18 AM, Stephen Hemminger wrote:
+> From: Stephen Hemminger <stephen@networkplumber.org>
+> 
+> Running old skge driver on PowerPC causes checksum errors
+> because hardware reported 1's complement checksum is in little-endian
+> byte order.
+> 
+> Reported-by: Benoit <benoit.sansoni@gmail.com>
+> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+
+Fixes: 383181ac7e59 ("[PATCH] skge: check length from PHY")
+
+> ---
+>  drivers/net/ethernet/marvell/skge.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
+> index 0a2ec387a482..095f6c71b4fa 100644
+> --- a/drivers/net/ethernet/marvell/skge.c
+> +++ b/drivers/net/ethernet/marvell/skge.c
+> @@ -3108,7 +3108,7 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
+>  	skb_put(skb, len);
+>  
+>  	if (dev->features & NETIF_F_RXCSUM) {
+> -		skb->csum = csum;
+> +		skb->csum = le16_to_cpu(csum);
+>  		skb->ip_summed = CHECKSUM_COMPLETE;
+>  	}
+>  
+> 
 
 
-Agree with you and exactly the thought process I went through. So what
-are some other options?
-
-1) A lock member inside of ctx to protect tx_list
-We are load testing ktls offload with nitrox and the performance was
-quite adversely affected by this. This approach can be explored more,
-but the original design of using socket lock didn't follow this model
-either.
-2) Allow tagging of individual record inside of tx_list to indicate if
-it has been 'processed'
-This approach would likely protect the data without compromising
-performance. It will allow Thread 2 to proceed with the TX portion of
-tls_tx_records while Thread 1 sleeps waiting for memory. There will
-need to be careful cleanup and backtracking after the thread wakes up
-to ensure a consistent state of tx_list and record transmission.
-The approach has several problems, however -- (a) It could cause
-out-of-order record tx (b) If Thread 1 is waiting for memory, Thread 2
-most likely will (c) Again, socket lock wasn't designed to follow this
-model to begin with
-
-
-Given that socket lock essentially was working as a code protector --
-as an exclusion mechanism to allow only a single writer through
-tls_tx_records at a time -- what other clean ways do we have to fix
-the race without a significant refactor of the design and code?
+-- 
+Florian
