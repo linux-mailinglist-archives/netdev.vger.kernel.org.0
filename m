@@ -2,62 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85EECBC78C
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 14:07:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6D1BC7DE
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 14:31:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729627AbfIXMHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 08:07:33 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45420 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729485AbfIXMHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 08:07:33 -0400
-Received: by mail-ed1-f68.google.com with SMTP id h33so1573650edh.12
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 05:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=VmP4t6Nkr9v/B1z1zla8wNSvSBHiglNNEGF3yF1dQs4=;
-        b=WrsuDpiOvTwuLOPoADgZo8GbIGFsZEsSrbfSRuZup7a2SHgfYb2Fd5fN6dGlya7N5u
-         PeW5ugKOSYURN4rCh3oF5Uin/Z1bBUbDAODz5b+PNat1noNWdFOy30O7KsGvRbeBJk2M
-         GFbKabJgmf+y/yhREovrfpNqYOuC5lk74JYrtRtsT0YGyylUSaQs/33q0Tyo3nzJGQZw
-         mP3FpgFOG0h+ioPOtksMu5nfQDqoq26jBoHrjgSR/CIKJfxsXfvOL18lpGezF+BU1hhT
-         V/1jAGxkFbtC4fJTbT5P00RkIJ6Wm05SjdJ/6FACOHQBLpej6m9RBAqN3tUf1SuPIU7G
-         rYkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=VmP4t6Nkr9v/B1z1zla8wNSvSBHiglNNEGF3yF1dQs4=;
-        b=k0IlGQMXFv8UEwZEynG8E7i9QJMv474NW7CAZuhHOLb1A1Y33baFfxFnguqCvQyEsU
-         j5iXuaecwePFPOerQSVylYHrkPOZSTUJdoic9lbodFGffJacQzgSZBFW0dN07MyfZNhP
-         lVfJhDGgarF8xtIIJxGSLTJ1GiKdrExpKhGpVRk/4RPg8aJA4iI5Kvo8rOzAMoaLaRnL
-         kPNT7eIU7uOOn+C1vwFoz7nC1fDQkEgnYl7A6GQZFJHtJAlWaz+shPVrLFFizpvO4evn
-         eQo8n1wRt4dpHFxFHnToEejoNy8lZURaW2Uv+JGWZmUGislQv/Gu4Zw1qsN+pnzU6pt8
-         iM/g==
-X-Gm-Message-State: APjAAAU/Jm0xdOdvi6tnroMtWEWyph3zSofDTIL83tjt/M89Oc4+V9nd
-        ncklys+PYgdGg/FYhaJGvEeR50u2+zmOXTD15Qg=
-X-Google-Smtp-Source: APXvYqz0x/5OtxQ+vA75OZHk56cPFRjlrUAnoJo3J2EV8o/YjTXNGOyV3MLcY+Pq11fqCcrXmIJ4Ny30gPjxVllcjVY=
-X-Received: by 2002:a17:906:4cc3:: with SMTP id q3mr2100655ejt.127.1569326851385;
- Tue, 24 Sep 2019 05:07:31 -0700 (PDT)
+        id S2440880AbfIXMbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 08:31:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34468 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2395274AbfIXMbb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 08:31:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=pc6TTZ5cVNiYrtnu/TOBn6xj1asel6LNNNrlQf6OXy0=; b=jU9Af4UMsKcdOy/XrNka9wvtsp
+        MujgFqUmo6D/SILxZ5r7sQbiiILsiXn8gKmHXJFOQj2ojAgZenLPtezcVbzviCgDC6X6geO7kEo5g
+        ryLFGv9UNeUP2b++CoQAaTCZFiTwDV6ab3GnTxfdf61BLnz7nt/eEtmDimDJ+XoOz/Js=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iCjyY-0004E6-J7; Tue, 24 Sep 2019 14:31:26 +0200
+Date:   Tue, 24 Sep 2019 14:31:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [BUG] Unable to handle kernel NULL pointer dereference in
+ phy_support_asym_pause
+Message-ID: <20190924123126.GE14477@lunn.ch>
+References: <573ffa6a-f29a-84d9-5895-b3d6cc389619@ysoft.com>
 MIME-Version: 1.0
-Received: by 2002:a17:907:444c:0:0:0:0 with HTTP; Tue, 24 Sep 2019 05:07:31
- -0700 (PDT)
-Reply-To: edithbrown0257@gmail.com
-From:   Edith Brown <tinnaevan26@gmail.com>
-Date:   Tue, 24 Sep 2019 13:07:31 +0100
-Message-ID: <CALa62PrjjRTBbY4t7xpoHz-ru-tiTmTPM_Zk=6zpRmCYu2c-ew@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <573ffa6a-f29a-84d9-5895-b3d6cc389619@ysoft.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello dear
-how are you?
-my name is Edith Brown
-i am a U.S military woman
-is my pleasure meeting you here
-best regards
+On Tue, Sep 24, 2019 at 01:27:24PM +0200, Michal Vokáč wrote:
+> Hi,
+> 
+> just tried booting latest next-20190920 on our imx6dl-yapp4-hydra platform
+> with QCA8334 switch and got this:
+> 
+> [    7.424620] [<806840e0>] (phy_support_asym_pause) from [<80686724>] (qca8k_port_enable+0x40/0x48)
+> [    7.436911] [<806866e4>] (qca8k_port_enable) from [<80a74134>] (dsa_port_enable+0x3c/0x6c)
+> [    7.448629]  r7:00000000 r6:e88a02cc r5:e812d090 r4:e812d090
+> [    7.457708] [<80a740f8>] (dsa_port_enable) from [<80a730bc>] (dsa_register_switch+0x798/0xacc)
+> [    7.469833]  r5:e812d0cc r4:e812d090
+
+Hi Michal
+
+Please could you add a printk to verify it is the CPU port, and that
+in qca8k_port_enable() phy is a NULL pointer.
+
+I think the fix is going to look something like:
+
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 16f15c93a102..86c80a873e30 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -939,7 +939,8 @@ qca8k_port_enable(struct dsa_switch *ds, int port,
+        qca8k_port_set_status(priv, port, 1);
+        priv->port_sts[port].enabled = 1;
+ 
+-       phy_support_asym_pause(phy);
++       if (phy)
++               phy_support_asym_pause(phy);
+ 
+        return 0;
+ }
+
+But i want to take a closer look at what priv->port_sts[port].enabled
+= 1; does. Also, if there are any other port_enable() functions which
+always assume a valid phy device.
+
+       Andrew
