@@ -2,165 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB86BD4AB
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 23:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D04D2BD4F3
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 00:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441445AbfIXVxk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Sep 2019 17:53:40 -0400
-Received: from mga07.intel.com ([134.134.136.100]:33767 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728183AbfIXVxk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 17:53:40 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Sep 2019 14:53:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,545,1559545200"; 
-   d="scan'208";a="364139355"
-Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
-  by orsmga005.jf.intel.com with ESMTP; 24 Sep 2019 14:53:38 -0700
-Received: from orsmsx114.amr.corp.intel.com (10.22.240.10) by
- ORSMSX107.amr.corp.intel.com (10.22.240.5) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 24 Sep 2019 14:53:38 -0700
-Received: from orsmsx121.amr.corp.intel.com ([169.254.10.190]) by
- ORSMSX114.amr.corp.intel.com ([169.254.8.55]) with mapi id 14.03.0439.000;
- Tue, 24 Sep 2019 14:53:37 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     "Hall, Christopher S" <christopher.s.hall@intel.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v4 2/2] PTP: add support for one-shot output
-Thread-Topic: [PATCH v4 2/2] PTP: add support for one-shot output
-Thread-Index: AQHVaGiJVAygg13ZgEaRBcEK9JTjfKc7SaLQgACGwQD//6LxwA==
-Date:   Tue, 24 Sep 2019 21:53:37 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB58968D3795@ORSMSX121.amr.corp.intel.com>
-References: <20190911061622.774006-1-felipe.balbi@linux.intel.com>
- <20190911061622.774006-2-felipe.balbi@linux.intel.com>
- <02874ECE860811409154E81DA85FBB58968D24E2@ORSMSX121.amr.corp.intel.com>
- <B79D786B7111A34A8CF09F833429C493BCA528D5@ORSMSX109.amr.corp.intel.com>
-In-Reply-To: <B79D786B7111A34A8CF09F833429C493BCA528D5@ORSMSX109.amr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiZmUxYjIwMWItZTAwMi00NGQ4LTg0M2MtYWFlMDhiZTRkOWIzIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiTDl3bG1FXC9uNXkxXC80eGlpeDd1QUxGKytyRVlkcW40allxdTVEUTVENTh6WGdhRktcL21cL1hWNHZvTGh2QVlOcTEifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2410516AbfIXWdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 18:33:10 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43551 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389629AbfIXWdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 18:33:09 -0400
+Received: by mail-wr1-f65.google.com with SMTP id q17so3868800wrx.10
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 15:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F9W9Sf9x09mCcY56UsI7MWAgHYX1InqA2G+AXTijS0I=;
+        b=K6l4pZFNEFo1pwJATU+fxUyse7xlniDO2MGR1frrYNdUpYg14YiNrh2OEcuzHw81IY
+         PtQYIbYj/HAbwpy0SSJuqKH4T7e2mRD26WoCmpll8qmHwXrRdZQ+ZY+y2xoEpVdgCMaD
+         StLWDvHr9oN5Jwx8u25S+CnHZdUUoGS1rqxFI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F9W9Sf9x09mCcY56UsI7MWAgHYX1InqA2G+AXTijS0I=;
+        b=nSaA9caf+GMxt2p6AZ6Llk/FES7cT3faH12hJjX3tNvA5cDmi7RSmJOhHr04ivmdxE
+         m3nBzdawoORGbSuAFMKsqh0wveUaMpysE95DLU0gJVrEicaSBDozpnHwIJDYeYTWYBAu
+         OSEIEI7jE9UMlry8Z9mF6BAxYB22WWs44GAwlXI5UfkYDw3FfEUmRi8qz54u0AWwrDcC
+         Fu+AX6KV8LxvBG76u/G1qqnqs59iM1qUQjepPocCyTUo5lPBbbawwbUGgszFatAP7Mgx
+         CL5bX3A1yQyNfVPK9Ij10wKZ8ZgHSo0TsGDif6uIHtGzMn3yPRnirc3+2q+S6xzLILYv
+         pBpw==
+X-Gm-Message-State: APjAAAWKDCOvyxioyf4wAcNXnJl/PEB5bUpvdH6H88O+xcr7bo2kN04F
+        sl/i7BzPC1KC0BbLaHNSp0j8EmUoyMC77So=
+X-Google-Smtp-Source: APXvYqzipFB0UVC+ZQV6tb9MrCK6/V7a9ysRucVPK2r1Y17dxq8ThzBLHySFMzNf+bj8s+dKc26uGw==
+X-Received: by 2002:adf:9029:: with SMTP id h38mr4974265wrh.155.1569364387549;
+        Tue, 24 Sep 2019 15:33:07 -0700 (PDT)
+Received: from localhost.localdomain (ip-213-127-82-26.ip.prioritytelecom.net. [213.127.82.26])
+        by smtp.googlemail.com with ESMTPSA id x6sm1548991wmf.35.2019.09.24.15.33.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 24 Sep 2019 15:33:06 -0700 (PDT)
+From:   Julien Fortin <julien@cumulusnetworks.com>
+X-Google-Original-From: Julien Fortin
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com,
+        Julien Fortin <julien@cumulusnetworks.com>
+Subject: [PATCH iproute2(-next) 1/1] ip: fix ip route show json output for multipath nexthops
+Date:   Wed, 25 Sep 2019 00:32:56 +0200
+Message-Id: <20190924223256.74017-1-julien@cumulusnetworks.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Julien Fortin <julien@cumulusnetworks.com>
 
+print_rta_multipath doesn't support JSON output:
 
-> -----Original Message-----
-> From: Hall, Christopher S
-> Sent: Tuesday, September 24, 2019 1:24 PM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>; Felipe Balbi
-> <felipe.balbi@linux.intel.com>; Richard Cochran <richardcochran@gmail.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: RE: [PATCH v4 2/2] PTP: add support for one-shot output
-> 
-> > -----Original Message-----
-> > From: Keller, Jacob E
-> > Sent: Tuesday, September 24, 2019 12:23 PM
-> > To: Felipe Balbi <felipe.balbi@linux.intel.com>; Richard Cochran
-> > <richardcochran@gmail.com>
-> > Cc: Hall, Christopher S <christopher.s.hall@intel.com>;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: RE: [PATCH v4 2/2] PTP: add support for one-shot output
-> >
-> >
-> >
-> > > -----Original Message-----
-> > > From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org]
-> > On
-> > > Behalf Of Felipe Balbi
-> > > Sent: Tuesday, September 10, 2019 11:16 PM
-> > > To: Richard Cochran <richardcochran@gmail.com>
-> > > Cc: Hall, Christopher S <christopher.s.hall@intel.com>;
-> > netdev@vger.kernel.org;
-> > > linux-kernel@vger.kernel.org; Felipe Balbi
-> > <felipe.balbi@linux.intel.com>
-> > > Subject: [PATCH v4 2/2] PTP: add support for one-shot output
-> > >
-> > > Some controllers allow for a one-shot output pulse, in contrast to
-> > > periodic output. Now that we have extensible versions of our IOCTLs, we
-> > > can finally make use of the 'flags' field to pass a bit telling driver
-> > > that if we want one-shot pulse output.
-> > >
-> > > Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
-> > > ---
-> > >
-> > > Changes since v3:
-> > > 	- Remove bogus bitwise negation
-> > >
-> > > Changes since v2:
-> > > 	- Add _PEROUT_ to bit macro
-> > >
-> > > Changes since v1:
-> > > 	- remove comment from .flags field
-> > >
-> > >  include/uapi/linux/ptp_clock.h | 6 +++---
-> > >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/include/uapi/linux/ptp_clock.h
-> > b/include/uapi/linux/ptp_clock.h
-> > > index 9a0af3511b68..f16301015949 100644
-> > > --- a/include/uapi/linux/ptp_clock.h
-> > > +++ b/include/uapi/linux/ptp_clock.h
-> > > @@ -38,8 +38,8 @@
-> > >  /*
-> > >   * Bits of the ptp_perout_request.flags field:
-> > >   */
-> > > -#define PTP_PEROUT_VALID_FLAGS (0)
-> > > -
-> > > +#define PTP_PEROUT_ONE_SHOT (1<<0)
-> > > +#define PTP_PEROUT_VALID_FLAGS	(PTP_PEROUT_ONE_SHOT)
-> > >  /*
-> > >   * struct ptp_clock_time - represents a time value
-> > >   *
-> > > @@ -77,7 +77,7 @@ struct ptp_perout_request {
-> > >  	struct ptp_clock_time start;  /* Absolute start time. */
-> > >  	struct ptp_clock_time period; /* Desired period, zero means disable.
-> > */
-> > >  	unsigned int index;           /* Which channel to configure. */
-> > > -	unsigned int flags;           /* Reserved for future use. */
-> > > +	unsigned int flags;
-> > >  	unsigned int rsv[4];          /* Reserved for future use. */
-> > >  };
-> > >
-> > > --
-> > > 2.23.0
-> >
-> > Hi Felipe,
-> >
-> > Do you have any examples for how you envision using this? I don't see any
-> > drivers or other code on the list for doing so.
-> >
-> > Additionally, it seems weird because we do not have support for specifying
-> > the pulse width. I guess you leave that up to driver choice?
-> >
-> > Thanks,
-> > Jake
-> 
+{
+    "dst":"27.0.0.13",
+    "protocol":"bgp",
+    "metric":20,
+    "flags":[],
+    "gateway":"169.254.0.1"dev uplink-1 weight 1 ,
+    "flags":["onlink"],
+    "gateway":"169.254.0.1"dev uplink-2 weight 1 ,
+    "flags":["onlink"]
+},
 
-Also a quick note/question:
+since RTA_MULTIPATH has nested objects we should print them
+in a json array.
 
-Is there a spot where flags are explicitly checked and rejected? I don't see any driver which would reject this as "not an acceptable configuration".
+With the path we have the following output:
 
-I.e. if a function calls the PEROUT_REQUEST2 ioctl, they will pass the flag through, and drivers today don't seem to bother checking flags at all.
+{
+    "flags": [],
+    "dst": "36.0.0.13",
+    "protocol": "bgp",
+    "metric": 20,
+    "nexthops": [
+        {
+	    "weight": 1,
+	    "flags": [
+	        "onlink"
+	    ],
+	    "gateway": "169.254.0.1",
+	    "dev": "uplink-1"
+        },
+	{
+	    "weight": 1,
+	    "flags": [
+	        "onlink"
+            ],
+	    "gateway": "169.254.0.1",
+	    "dev": "uplink-2"
+        }
+    ]
+}
 
-I think we also need a patch so that all drivers are updated to reject non-zero flags, ensuring that they do not attempt to configure a request incorrectly.
+Fixes: 663c3cb23103f4 ("iproute: implement JSON and color output")
 
-Thanks,
-Jake
+Signed-off-by: Julien Fortin <julien@cumulusnetworks.com>
+---
+ ip/iproute.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/ip/iproute.c b/ip/iproute.c
+index a4533851..5d5f1551 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -649,23 +649,27 @@ static void print_rta_multipath(FILE *fp, const struct rtmsg *r,
+ 	int len = RTA_PAYLOAD(rta);
+ 	int first = 1;
+ 
++	open_json_array(PRINT_JSON, "nexthops");
++
+ 	while (len >= sizeof(*nh)) {
+ 		struct rtattr *tb[RTA_MAX + 1];
+ 
+ 		if (nh->rtnh_len > len)
+ 			break;
+ 
++		open_json_object(NULL);
++
+ 		if (!is_json_context()) {
+ 			if ((r->rtm_flags & RTM_F_CLONED) &&
+ 			    r->rtm_type == RTN_MULTICAST) {
+ 				if (first) {
+-					fprintf(fp, "Oifs: ");
++					print_string(PRINT_FP, NULL, "Oifs: ", NULL);
+ 					first = 0;
+ 				} else {
+-					fprintf(fp, " ");
++					print_string(PRINT_FP, NULL, " ", NULL);
+ 				}
+ 			} else
+-				fprintf(fp, "%s\tnexthop ", _SL_);
++				print_string(PRINT_FP, NULL, "%s\tnexthop ", _SL_);
+ 		}
+ 
+ 		if (nh->rtnh_len > sizeof(*nh)) {
+@@ -689,22 +693,30 @@ static void print_rta_multipath(FILE *fp, const struct rtmsg *r,
+ 
+ 		if ((r->rtm_flags & RTM_F_CLONED) &&
+ 		    r->rtm_type == RTN_MULTICAST) {
+-			fprintf(fp, "%s", ll_index_to_name(nh->rtnh_ifindex));
++			print_string(PRINT_ANY, "dev",
++				     "%s", ll_index_to_name(nh->rtnh_ifindex));
++
+ 			if (nh->rtnh_hops != 1)
+-				fprintf(fp, "(ttl>%d)", nh->rtnh_hops);
+-			fprintf(fp, " ");
++				print_int(PRINT_ANY, "ttl", "(ttl>%d)", nh->rtnh_hops);
++
++			print_string(PRINT_FP, NULL, " ", NULL);
+ 		} else {
+-			fprintf(fp, "dev %s ", ll_index_to_name(nh->rtnh_ifindex));
++			print_string(PRINT_ANY, "dev",
++				     "dev %s ", ll_index_to_name(nh->rtnh_ifindex));
++
+ 			if (r->rtm_family != AF_MPLS)
+-				fprintf(fp, "weight %d ",
+-					nh->rtnh_hops+1);
++				print_int(PRINT_ANY, "weight",
++					  "weight %d ", nh->rtnh_hops + 1);
+ 		}
+ 
+ 		print_rt_flags(fp, nh->rtnh_flags);
+ 
+ 		len -= NLMSG_ALIGN(nh->rtnh_len);
+ 		nh = RTNH_NEXT(nh);
++
++		close_json_object();
+ 	}
++	close_json_array(PRINT_JSON, NULL);
+ }
+ 
+ int print_route(struct nlmsghdr *n, void *arg)
+-- 
+2.23.0
+
