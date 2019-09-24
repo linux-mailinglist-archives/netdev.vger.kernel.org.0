@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9A0DBD28F
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 21:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8437BD2A6
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 21:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439111AbfIXTX2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Sep 2019 15:23:28 -0400
-Received: from mga12.intel.com ([192.55.52.136]:11584 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407325AbfIXTX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Sep 2019 15:23:27 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Sep 2019 12:23:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,545,1559545200"; 
-   d="scan'208";a="201006599"
-Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
-  by orsmga002.jf.intel.com with ESMTP; 24 Sep 2019 12:23:26 -0700
-Received: from orsmsx121.amr.corp.intel.com ([169.254.10.190]) by
- ORSMSX102.amr.corp.intel.com ([169.254.3.63]) with mapi id 14.03.0439.000;
- Tue, 24 Sep 2019 12:23:26 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-CC:     "Hall, Christopher S" <christopher.s.hall@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v4 2/2] PTP: add support for one-shot output
-Thread-Topic: [PATCH v4 2/2] PTP: add support for one-shot output
-Thread-Index: AQHVaGiJVAygg13ZgEaRBcEK9JTjfKc7SaLQ
-Date:   Tue, 24 Sep 2019 19:23:26 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB58968D24E2@ORSMSX121.amr.corp.intel.com>
-References: <20190911061622.774006-1-felipe.balbi@linux.intel.com>
- <20190911061622.774006-2-felipe.balbi@linux.intel.com>
-In-Reply-To: <20190911061622.774006-2-felipe.balbi@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYzBiMDY1MDEtNGJhZi00NDg3LThmN2MtOTMzZGViYTZhYmZhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiUGJZdkpiMHJIU3lXTmx5dTZSRlByRHVsMzRja1RLWU1mNXhvQnROcnd0V2hvajBcL1pxN0NTQnlTeENoYkt2UGQifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S2410043AbfIXT3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 15:29:40 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:53454 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2409758AbfIXT3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 15:29:39 -0400
+Received: by mail-pl1-f202.google.com with SMTP id g13so390792plq.20
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 12:29:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=9lyd/OGRWu2T77jL2o1qpzkNA2DEbU24ACMy4vbRMkM=;
+        b=qAtKieAyjiy0/ITUORlc7X5E3vX3I6LprV/ie2BaDLS8An9mA9Z97mpxj/1CUWDG/e
+         yKnB1WmzsZYWSxI3r/sdcSodFbApZezCXkl052K8JYWDhz4kk6aGcD7gdbDfUPUHmZDl
+         4r1R4PAQwuTVuuK+2NJ/WXtGAIlbZeYlWbK4Y4UTx9rgzhu6U9RMWT2cqGT3Bj7ZUfJa
+         nEliVnyW3rwGkarshZ0bSeN9rTtdSNsWaz2LjaiMufqxWVt9THLHJhDNgCJQlUhPkKKV
+         zQUZXmeD231OTGQLdLQp1ja0za9Wqs9hbsV/PQOMjOMgil7ZiQ605VXTvwlu7RIakPZP
+         /zIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=9lyd/OGRWu2T77jL2o1qpzkNA2DEbU24ACMy4vbRMkM=;
+        b=kMxLgwd89DjidoxFc0RJivxMlAUbWJDIge6TSBtfqx+2fq3PRxdmzVN58GFGyrlrIW
+         +yDvCBo3dWCxnTkB+kWmGajsUFhzaXHMCuB2Z4sj86GQZm84RKYrB5LlSZt3kZFqLL2Z
+         h2EbHmvkZoATx52+hmeS6lnglmkjEOiX7Na1TxOkFikDxjIhg5fKgiAaDMoj5TttkvOt
+         0B1aU1AHRu/OnLw+ma8IfHloiAvD4ar2VAu473hVzTRUrxFu92yN2Uez4/zlQ2/7Odh4
+         4Q6HPp6S3oWLl1laknX368v0+Xk4ybAN2z1bbxt9d9UPg3HCGmMBDrpWs3QQliQHmnrm
+         NhMA==
+X-Gm-Message-State: APjAAAWzd4cdnhCncJwjLWvR7lyu8BEP1fmaPGTTjfL9Pvl6rKE6CjBS
+        sZ8bYREmYYDHQpY2kN60mIwQn9GVpFilRg==
+X-Google-Smtp-Source: APXvYqy+3zt4YD+h79yUKZTq1m937Ee+d8ln0Im3iGvQ1K3KdMQsXTpWNFrCCy3XvMVeSveLTbKcM8Qa04n0Tw==
+X-Received: by 2002:a65:66c4:: with SMTP id c4mr4695732pgw.246.1569353378542;
+ Tue, 24 Sep 2019 12:29:38 -0700 (PDT)
+Date:   Tue, 24 Sep 2019 12:29:34 -0700
+Message-Id: <20190924192934.212317-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.351.gc4317032e6-goog
+Subject: [PATCH net] kcm: disable preemption in kcm_parse_func_strparser()
+From:   Eric Dumazet <edumazet@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+After commit a2c11b034142 ("kcm: use BPF_PROG_RUN")
+syzbot easily triggers the warning in cant_sleep().
 
+As explained in commit 6cab5e90ab2b ("bpf: run bpf programs
+with preemption disabled") we need to disable preemption before
+running bpf programs.
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org [mailto:netdev-owner@vger.kernel.org] On
-> Behalf Of Felipe Balbi
-> Sent: Tuesday, September 10, 2019 11:16 PM
-> To: Richard Cochran <richardcochran@gmail.com>
-> Cc: Hall, Christopher S <christopher.s.hall@intel.com>; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Felipe Balbi <felipe.balbi@linux.intel.com>
-> Subject: [PATCH v4 2/2] PTP: add support for one-shot output
-> 
-> Some controllers allow for a one-shot output pulse, in contrast to
-> periodic output. Now that we have extensible versions of our IOCTLs, we
-> can finally make use of the 'flags' field to pass a bit telling driver
-> that if we want one-shot pulse output.
-> 
-> Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
-> ---
-> 
-> Changes since v3:
-> 	- Remove bogus bitwise negation
-> 
-> Changes since v2:
-> 	- Add _PEROUT_ to bit macro
-> 
-> Changes since v1:
-> 	- remove comment from .flags field
-> 
->  include/uapi/linux/ptp_clock.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-> index 9a0af3511b68..f16301015949 100644
-> --- a/include/uapi/linux/ptp_clock.h
-> +++ b/include/uapi/linux/ptp_clock.h
-> @@ -38,8 +38,8 @@
->  /*
->   * Bits of the ptp_perout_request.flags field:
->   */
-> -#define PTP_PEROUT_VALID_FLAGS (0)
-> -
-> +#define PTP_PEROUT_ONE_SHOT (1<<0)
-> +#define PTP_PEROUT_VALID_FLAGS	(PTP_PEROUT_ONE_SHOT)
->  /*
->   * struct ptp_clock_time - represents a time value
->   *
-> @@ -77,7 +77,7 @@ struct ptp_perout_request {
->  	struct ptp_clock_time start;  /* Absolute start time. */
->  	struct ptp_clock_time period; /* Desired period, zero means disable. */
->  	unsigned int index;           /* Which channel to configure. */
-> -	unsigned int flags;           /* Reserved for future use. */
-> +	unsigned int flags;
->  	unsigned int rsv[4];          /* Reserved for future use. */
->  };
-> 
-> --
-> 2.23.0
+BUG: assuming atomic context at net/kcm/kcmsock.c:382
+in_atomic(): 0, irqs_disabled(): 0, pid: 7, name: kworker/u4:0
+3 locks held by kworker/u4:0/7:
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: __write_once_size include/linux/compiler.h:226 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: atomic64_set include/asm-generic/atomic-instrumented.h:855 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: atomic_long_set include/asm-generic/atomic-long.h:40 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: set_work_data kernel/workqueue.c:620 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: set_work_pool_and_clear_pending kernel/workqueue.c:647 [inline]
+ #0: ffff888216726128 ((wq_completion)kstrp){+.+.}, at: process_one_work+0x88b/0x1740 kernel/workqueue.c:2240
+ #1: ffff8880a989fdc0 ((work_completion)(&strp->work)){+.+.}, at: process_one_work+0x8c1/0x1740 kernel/workqueue.c:2244
+ #2: ffff888098998d10 (sk_lock-AF_INET){+.+.}, at: lock_sock include/net/sock.h:1522 [inline]
+ #2: ffff888098998d10 (sk_lock-AF_INET){+.+.}, at: strp_sock_lock+0x2e/0x40 net/strparser/strparser.c:440
+CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.3.0+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: kstrp strp_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ __cant_sleep kernel/sched/core.c:6826 [inline]
+ __cant_sleep.cold+0xa4/0xbc kernel/sched/core.c:6803
+ kcm_parse_func_strparser+0x54/0x200 net/kcm/kcmsock.c:382
+ __strp_recv+0x5dc/0x1b20 net/strparser/strparser.c:221
+ strp_recv+0xcf/0x10b net/strparser/strparser.c:343
+ tcp_read_sock+0x285/0xa00 net/ipv4/tcp.c:1639
+ strp_read_sock+0x14d/0x200 net/strparser/strparser.c:366
+ do_strp_work net/strparser/strparser.c:414 [inline]
+ strp_work+0xe3/0x130 net/strparser/strparser.c:423
+ process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
 
-Hi Felipe,
+Fixes: a2c11b034142 ("kcm: use BPF_PROG_RUN")
+Fixes: 6cab5e90ab2b ("bpf: run bpf programs with preemption disabled")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/kcm/kcmsock.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Do you have any examples for how you envision using this? I don't see any drivers or other code on the list for doing so.
+diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+index 8f12f5c6ab875ebaa6c59c6268c337919fb43bb9..ea9e73428ed9c8b7bb3441947151c41f0c099185 100644
+--- a/net/kcm/kcmsock.c
++++ b/net/kcm/kcmsock.c
+@@ -378,8 +378,12 @@ static int kcm_parse_func_strparser(struct strparser *strp, struct sk_buff *skb)
+ {
+ 	struct kcm_psock *psock = container_of(strp, struct kcm_psock, strp);
+ 	struct bpf_prog *prog = psock->bpf_prog;
++	int res;
+ 
+-	return BPF_PROG_RUN(prog, skb);
++	preempt_disable();
++	res = BPF_PROG_RUN(prog, skb);
++	preempt_enable();
++	return res;
+ }
+ 
+ static int kcm_read_sock_done(struct strparser *strp, int err)
+-- 
+2.23.0.351.gc4317032e6-goog
 
-Additionally, it seems weird because we do not have support for specifying the pulse width. I guess you leave that up to driver choice?
-
-Thanks,
-Jake
