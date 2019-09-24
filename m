@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6C4BCAC0
-	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42DD1BCAC1
+	for <lists+netdev@lfdr.de>; Tue, 24 Sep 2019 17:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389160AbfIXPBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 11:01:36 -0400
-Received: from mail-ua1-f73.google.com ([209.85.222.73]:46655 "EHLO
-        mail-ua1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388811AbfIXPBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:01:36 -0400
-Received: by mail-ua1-f73.google.com with SMTP id q34so480388uad.13
-        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 08:01:35 -0700 (PDT)
+        id S2403795AbfIXPBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 11:01:39 -0400
+Received: from mail-qt1-f202.google.com ([209.85.160.202]:42795 "EHLO
+        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388811AbfIXPBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 11:01:39 -0400
+Received: by mail-qt1-f202.google.com with SMTP id w9so2253442qto.9
+        for <netdev@vger.kernel.org>; Tue, 24 Sep 2019 08:01:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=G02TaopAHL3sQvyO0fGLq1rgSwiaFNmUqfxQCNkHNss=;
-        b=jztcPF3avuePZVFCBP90DnyWpDliOh2JRygc8REWLqBsIFkFm3h1Ce6kbpQG4monj8
-         OmMSCAslwPJ5hBfhi4UGPtTka8/YyCou+tYrUEBnyavgmgAs/AlLyqz8PS9vSN1yNTOb
-         Ps6zkxoER2ihIYJRah00qGJ1lCQ+cn3hQ0mr1y0+hEUAogUtF1RC9q1BtybLWEqfMueT
-         IbvUj/7ViWPh6an9hy6KDXOzZFikNCXtAIaIvSbuCVaQ0QRhsuiB1cz1iEPIqLXTLSV3
-         THER3XUN04BU/1w49DOHnD7iMsnODofgMBarU7z/jQJhO1TWVrvVAMG2GkCzcGb6aoq0
-         gi+g==
+        bh=6lhNUnzlY9YS7mlEkYDHRyFhi9aNMXD3vn90zGYaf64=;
+        b=j4b6K8AUB27bcdNNvp5qacOQ0puaXh4AZ6oTXYEnZzJ4pauqPta7RaFlivkb0FX790
+         30gZNs6SNeuopr7Rq5x3T53gpc1/Cjlu8oP7oFLgempAhNZOrXCDI/ExqSva3PaebR7w
+         mENB+TRZfa+Ym4+XixWVvU+LI/zOeNXoxAJZ9i1tsXp1Cpk8V8B7i/82j/iv4gAn52VY
+         nQngMJhZpvM0mMZTvocrGC15IWvkyfN2U6uOPBD2CIGZ/f3qn4GY5ScBwp2okueZ6VtE
+         dIn4TpUhxRaxe0yJ7iMxiMNDAkWkGhPCuajRK040bADQojO7NNM6TNWP0L2XXzPD08rW
+         rYLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=G02TaopAHL3sQvyO0fGLq1rgSwiaFNmUqfxQCNkHNss=;
-        b=NtqXOLGb5KoeDokrsJPL//G95F2LLTCHQc5Mzweb3bpyV23F4ixhTgz4TN5wGfMFDx
-         BQ0Y5ASiN3tl7hXiseJcOrLtf5oprZxgf1/ORHXCeIcgBaTceksG2zvcnXOk4nPZU1nn
-         YUEp+VBhhWtGrjar/pinjmc5NgGkMmcNrDO+2pUlXVssku1dobRiIqEvAt/TerKU7pFy
-         2XfP/pw62y6HqZ4ODqeCQpya7a6Qh4NyUzS8Cotb9alXHDKT5rxOc2+LPlWaPxAyp9C1
-         z6pSm57r+L3+0OyUtWelxyzYmziyIhlcPYxxoOsuAIvgZKcmmDJFZktglFnQZDssUIRV
-         pFhw==
-X-Gm-Message-State: APjAAAWK3GqKrubetxyUhPpvFMth2uAx08Ws2DZBitMEMmFrVY4biEHc
-        ZeCkPToSqfTv/ZS5lCZkJqoShuvsVUHUhw==
-X-Google-Smtp-Source: APXvYqy5228LVCESghHlyEwUQX75JqYdDzIqU0BddYn9LK0c8tdPFVCBB9X3xouItHr+lFQDBMF5gGW2tEyZbA==
-X-Received: by 2002:a1f:f445:: with SMTP id s66mr1722614vkh.62.1569337294466;
- Tue, 24 Sep 2019 08:01:34 -0700 (PDT)
-Date:   Tue, 24 Sep 2019 08:01:15 -0700
+        bh=6lhNUnzlY9YS7mlEkYDHRyFhi9aNMXD3vn90zGYaf64=;
+        b=n8iwqAH2ytcIF9CjKiHHnTjcsOSaXiSFk8WjtfRk4nJhUKwQaAjbIFjqi9T7tnhdqf
+         leJP9lKRvGGy+PLtYlv0R/CrrhD8y6pjySmp3z+ebKG0AYGR37LxjB9TYmiEXTD/YJO+
+         Qp0yvwFwwTmgpL6Y52qjg+cIwpBE9R1LAszeLfu+nEqShGDZrlSQjhxtGY41k7TMT/Vw
+         5eGsWhkBNut/s3T143bZSUVVNV1OD7fhk9E4uH/YmBYsws/oKel3AuN5nR811aHSd+2J
+         qhGlUrq/WOB0KBPfxMnb1v3XM+rQ9u8B8VepjMddNlfai/8GCKlxOyyCmgiuxO2JZhOn
+         ombA==
+X-Gm-Message-State: APjAAAVd/2cVXRvKTuBdC70MyQ0XsBXIQka6FQV9ytqSb23JjrbiiOHn
+        G1djp8yl1SEVwf9vd79ot2Omm/b7GJL6dg==
+X-Google-Smtp-Source: APXvYqwSzWLyTI70f+lxbmzyopLJWchpffSX62UtjKeQ2Vt3Z47C7UVS/PXQmdQIpLvACqd/R+JKrZzy+Hsvmg==
+X-Received: by 2002:aed:21a3:: with SMTP id l32mr3294197qtc.339.1569337297763;
+ Tue, 24 Sep 2019 08:01:37 -0700 (PDT)
+Date:   Tue, 24 Sep 2019 08:01:16 -0700
 In-Reply-To: <20190924150116.199028-1-edumazet@google.com>
-Message-Id: <20190924150116.199028-3-edumazet@google.com>
+Message-Id: <20190924150116.199028-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20190924150116.199028-1-edumazet@google.com>
 X-Mailer: git-send-email 2.23.0.351.gc4317032e6-goog
-Subject: [PATCH net 2/3] ipv6: tcp: provide sk->sk_priority to ctl packets
+Subject: [PATCH net 3/3] tcp: honor SO_PRIORITY in TIME_WAIT state
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -58,92 +58,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can populate skb->priority for some ctl packets
-instead of always using zero.
+ctl packets sent on behalf of TIME_WAIT sockets currently
+have a zero skb->priority, which can cause various problems.
+
+In this patch we :
+
+- add a tw_priority field in struct inet_timewait_sock.
+
+- populate it from sk->sk_priority when a TIME_WAIT is created.
+
+- For IPv4, change ip_send_unicast_reply() and its two
+  callers to propagate tw_priority correctly.
+  ip_send_unicast_reply() no longer changes sk->sk_priority.
+
+- For IPv6, make sure TIME_WAIT sockets pass their tw_priority
+  field to tcp_v6_send_response() and tcp_v6_send_ack().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv6/tcp_ipv6.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ include/net/inet_timewait_sock.h | 1 +
+ net/ipv4/ip_output.c             | 1 -
+ net/ipv4/tcp_ipv4.c              | 4 ++++
+ net/ipv4/tcp_minisocks.c         | 1 +
+ net/ipv6/tcp_ipv6.c              | 6 ++++--
+ 5 files changed, 10 insertions(+), 3 deletions(-)
 
+diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
+index aef38c140014600dbf88b1d664bad1b0adf63668..dfd919b3119e8efcbc436a67e3e6fbd02091db10 100644
+--- a/include/net/inet_timewait_sock.h
++++ b/include/net/inet_timewait_sock.h
+@@ -71,6 +71,7 @@ struct inet_timewait_sock {
+ 				tw_pad		: 2,	/* 2 bits hole */
+ 				tw_tos		: 8;
+ 	u32			tw_txhash;
++	u32			tw_priority;
+ 	struct timer_list	tw_timer;
+ 	struct inet_bind_bucket	*tw_tb;
+ };
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index a77c3a4c24de40ff6bf3fa9da9a018457139e2b5..28fca408812c5576fc4ea957c1c4dec97ec8faf3 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1694,7 +1694,6 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 
+ 	inet_sk(sk)->tos = arg->tos;
+ 
+-	sk->sk_priority = skb->priority;
+ 	sk->sk_protocol = ip_hdr(skb)->protocol;
+ 	sk->sk_bound_dev_if = arg->bound_dev_if;
+ 	sk->sk_sndbuf = sysctl_wmem_default;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fd394ad179a008085b4e87215290f243ea1993b6..2ee45e3755e92e60b5e1810e2f68205221b8308d 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -771,6 +771,8 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 	if (sk) {
+ 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
++		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
++				   inet_twsk(sk)->tw_priority : sk->sk_priority;
+ 		transmit_time = tcp_transmit_time(sk);
+ 	}
+ 	ip_send_unicast_reply(ctl_sk,
+@@ -866,6 +868,8 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
+ 	ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 			   inet_twsk(sk)->tw_mark : sk->sk_mark;
++	ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
++			   inet_twsk(sk)->tw_priority : sk->sk_priority;
+ 	transmit_time = tcp_transmit_time(sk);
+ 	ip_send_unicast_reply(ctl_sk,
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 8bcaf2586b6892b52fc3b25545017ec21afb0bde..bb140a5db8c066e57f1018fd47bccd4628def642 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -266,6 +266,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
+ 
+ 		tw->tw_transparent	= inet->transparent;
+ 		tw->tw_mark		= sk->sk_mark;
++		tw->tw_priority		= sk->sk_priority;
+ 		tw->tw_rcv_wscale	= tp->rx_opt.rcv_wscale;
+ 		tcptw->tw_rcv_nxt	= tp->rcv_nxt;
+ 		tcptw->tw_snd_nxt	= tp->snd_nxt;
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 806064c2886777ad37a1f0b8406aa8bee7945723..5f557bf27da2ba6bcc74034a53a3f76a99fdf9f4 100644
+index 5f557bf27da2ba6bcc74034a53a3f76a99fdf9f4..e3d9f4559c99f252eba448845cce434bc53f3fd8 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -804,7 +804,7 @@ static const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
- static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32 seq,
- 				 u32 ack, u32 win, u32 tsval, u32 tsecr,
- 				 int oif, struct tcp_md5sig_key *key, int rst,
--				 u8 tclass, __be32 label)
-+				 u8 tclass, __be32 label, u32 priority)
- {
- 	const struct tcphdr *th = tcp_hdr(skb);
- 	struct tcphdr *t1;
-@@ -909,7 +909,7 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
- 	if (!IS_ERR(dst)) {
- 		skb_dst_set(buff, dst);
- 		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL, tclass,
--			 0);
-+			 priority);
- 		TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
- 		if (rst)
- 			TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
-@@ -932,6 +932,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	struct sock *sk1 = NULL;
- #endif
- 	__be32 label = 0;
-+	u32 priority = 0;
- 	struct net *net;
- 	int oif = 0;
- 
-@@ -992,6 +993,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 			trace_tcp_send_reset(sk, skb);
- 			if (np->repflow)
+@@ -995,8 +995,10 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
  				label = ip6_flowlabel(ipv6h);
-+			priority = sk->sk_priority;
+ 			priority = sk->sk_priority;
  		}
- 		if (sk->sk_state == TCP_TIME_WAIT)
+-		if (sk->sk_state == TCP_TIME_WAIT)
++		if (sk->sk_state == TCP_TIME_WAIT) {
  			label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
-@@ -1001,7 +1003,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	}
- 
- 	tcp_v6_send_response(sk, skb, seq, ack_seq, 0, 0, 0, oif, key, 1, 0,
--			     label);
-+			     label, priority);
- 
- #ifdef CONFIG_TCP_MD5SIG
- out:
-@@ -1012,10 +1014,10 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- static void tcp_v6_send_ack(const struct sock *sk, struct sk_buff *skb, u32 seq,
- 			    u32 ack, u32 win, u32 tsval, u32 tsecr, int oif,
- 			    struct tcp_md5sig_key *key, u8 tclass,
--			    __be32 label)
-+			    __be32 label, u32 priority)
- {
- 	tcp_v6_send_response(sk, skb, seq, ack, win, tsval, tsecr, oif, key, 0,
--			     tclass, label);
-+			     tclass, label, priority);
- }
- 
- static void tcp_v6_timewait_ack(struct sock *sk, struct sk_buff *skb)
-@@ -1027,7 +1029,7 @@ static void tcp_v6_timewait_ack(struct sock *sk, struct sk_buff *skb)
++			priority = inet_twsk(sk)->tw_priority;
++		}
+ 	} else {
+ 		if (net->ipv6.sysctl.flowlabel_reflect & FLOWLABEL_REFLECT_TCP_RESET)
+ 			label = ip6_flowlabel(ipv6h);
+@@ -1029,7 +1031,7 @@ static void tcp_v6_timewait_ack(struct sock *sk, struct sk_buff *skb)
  			tcptw->tw_rcv_wnd >> tw->tw_rcv_wscale,
  			tcp_time_stamp_raw() + tcptw->tw_ts_offset,
  			tcptw->tw_ts_recent, tw->tw_bound_dev_if, tcp_twsk_md5_key(tcptw),
--			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel));
-+			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel), 0);
+-			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel), 0);
++			tw->tw_tclass, cpu_to_be32(tw->tw_flowlabel), tw->tw_priority);
  
  	inet_twsk_put(tw);
  }
-@@ -1050,7 +1052,7 @@ static void tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
- 			tcp_time_stamp_raw() + tcp_rsk(req)->ts_off,
- 			req->ts_recent, sk->sk_bound_dev_if,
- 			tcp_v6_md5_do_lookup(sk, &ipv6_hdr(skb)->saddr),
--			0, 0);
-+			0, 0, sk->sk_priority);
- }
- 
- 
 -- 
 2.23.0.351.gc4317032e6-goog
 
