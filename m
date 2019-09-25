@@ -2,131 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE8EBDD9C
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 060FABDDB7
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405246AbfIYMB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 08:01:58 -0400
-Received: from mail-eopbgr800083.outbound.protection.outlook.com ([40.107.80.83]:53095
-        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727829AbfIYMB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 08:01:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HG+HZ8a0pj3/t9oddYIGrS6WmNIbajnaDvoW4LF9Jn6LcQw+PjWYgZQ8zBFs266H3i2LYSUNgO/yJbI2Qir7QdcZmN+EFWwjXBOgTJ5rD//LrMglnLIXdH/kVC497JlWl1KFGVtqGkqQqHdEZ735i1psYx12PlHvXt3yMlT81VVq14NN7h43bp+KbEN3s0j+JOF3twLc8e5XCkce4uuKeHwas6GmtwJH7Y4LbRtg4yTOlHblj2ZbZCQDiqkphrifrI5IyxiS2AW06Gj5MOP6AhX0DVN2BCYRxTcpx0oSF3V0kLsrKNn/1jsQJiC8JqTHxL5/rN2t3Swc1p3tKdyoog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3ZUgDGohGlbkzjdA/WQfGQZMwmUyPgO6/6Aj8MxWaSM=;
- b=WPuH7VHQ/P9smCcW2Q8yMlN8+Z/3pv4n2Y0ZCYwcWe0hmWHzAh4S147qQvaHgP6VTHo6W4iay+fOqaXyzCL/uT4vSY+NVsx/HfqW8c9nkZWcOnTGheL+DjgxLonBc4cXu++ykTGxSn3Tn6sQTBmxkArHNSv5NqtdGSeJDOoZFvn186E4DaYeP46eHteK5QJrDI9LPoklCtxAZcwxWEkWXRp8xdYQTLXxKVMrlemzCfqYT0qymQYDr04WYmKgHGwLnAcQUJ8Xo6UC+7u5v1wn5fPs3/0M9I0lxyJ71w8bGNVwO99uxLVnaM4r37bxjUgSWfTCPepj/SykMeK6Js2kzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3ZUgDGohGlbkzjdA/WQfGQZMwmUyPgO6/6Aj8MxWaSM=;
- b=i6bEIY3ars02kCooqyl7nofCd2Tiuc4q8Y0sNRJxbFkfuewUFVPEZ0SFtXG06NhEa0/brh8in/OiIoxShA69icqqCMM0+GEHft+bBftx0IiGdo3GcOSWYjceCoUNCUdCJt2kjhNZKZmMaW2JbazJI0hxlFFEuQdi5Y1cWQwvmNE=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6582.namprd02.prod.outlook.com (20.180.16.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.20; Wed, 25 Sep 2019 12:01:54 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::3515:e3a7:8799:73bd]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::3515:e3a7:8799:73bd%2]) with mapi id 15.20.2284.023; Wed, 25 Sep 2019
- 12:01:54 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "Alvaro G. M" <alvaro.gamez@hazent.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: RE: [PATCH net] net: axienet: fix a signedness bug in probe
-Thread-Topic: [PATCH net] net: axienet: fix a signedness bug in probe
-Thread-Index: AQHVc5BUuzLTI9AvlEK4NG8QqGY9j6c8SdyA
-Date:   Wed, 25 Sep 2019 12:01:54 +0000
-Message-ID: <CH2PR02MB700081E7F84C502F36E6FBEFC7870@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20190925105911.GI3264@mwanda>
-In-Reply-To: <20190925105911.GI3264@mwanda>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [149.199.50.133]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a93abca0-6f71-4a18-bb4e-08d741b028ad
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:CH2PR02MB6582;
-x-ms-traffictypediagnostic: CH2PR02MB6582:|CH2PR02MB6582:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB6582F66C01AE31DE1508743EC7870@CH2PR02MB6582.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 01713B2841
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(189003)(199004)(13464003)(110136005)(229853002)(6436002)(86362001)(76176011)(14454004)(478600001)(7696005)(71190400001)(9686003)(25786009)(71200400001)(99286004)(66066001)(186003)(14444005)(486006)(256004)(446003)(11346002)(476003)(6506007)(53546011)(55016002)(76116006)(33656002)(64756008)(66446008)(66476007)(66556008)(66946007)(4326008)(102836004)(6246003)(81166006)(81156014)(26005)(8676002)(2906002)(54906003)(74316002)(6116002)(8936002)(3846002)(305945005)(52536014)(316002)(5660300002)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6582;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: CVssfJpfdop3xzs7IcGzz7gaOtynGw+UlF3P0l5UzltYydaMoFwcFIG1PdypF4AwWY2RC2DScqvw+Ej50QevChLpEt9JVWelhtll0rGE8C2kCJwZ0IZTaRODDCKFVgQDXSBualWG2bDhLKhzHRuFCfTVnUq2+WH4gzNoeHGZWNNhRgjzeiXiE8+dF1mrCSwSdNZNGM6KR3xWUYeGeeGH3F4hZS+PS8IFf1bOxWVajgMfwTLU5foPw76wiSV4qSuFM89UhDd8IbqOgX3x5AIm5qrfEkb+sEj+XOaOBir/k40ThV6L9tQawx6WTkxlfAfSHLYIfJ75pj3h+WgGBi8ZGYgAeJyUu18KZMFm2vark3NzrZ4yroFp/nuYHTWQkng2rlR7PNxMP4hOQHErsHCQuyDt9BUae9V4U1L5lOMzmVQ=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2405367AbfIYMGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 08:06:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37630 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405340AbfIYMGt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 08:06:49 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7ECDA18CB8E7;
+        Wed, 25 Sep 2019 12:06:47 +0000 (UTC)
+Received: from [10.72.12.148] (ovpn-12-148.pek2.redhat.com [10.72.12.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B2103608C0;
+        Wed, 25 Sep 2019 12:05:00 +0000 (UTC)
+Subject: Re: [PATCH V2 5/8] mdev: introduce device specific ops
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
+References: <20190924135332.14160-1-jasowang@redhat.com>
+ <20190924135332.14160-6-jasowang@redhat.com>
+ <20190924170638.064d85f7@x1.home>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <27a9a71f-5a10-77be-2f54-5af52a406a00@redhat.com>
+Date:   Wed, 25 Sep 2019 20:04:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a93abca0-6f71-4a18-bb4e-08d741b028ad
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2019 12:01:54.7707
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DaC/BiFVxPRMI9Y2rW8sTv67kBuXB0g/tEFD5qRqSWNUl2CLWZ75s0BFx7INTakRRHjykPYiNu7IvPnwSgWFiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6582
+In-Reply-To: <20190924170638.064d85f7@x1.home>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Wed, 25 Sep 2019 12:06:48 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Dan Carpenter <dan.carpenter@oracle.com>
-> Sent: Wednesday, September 25, 2019 4:29 PM
-> To: Radhey Shyam Pandey <radheys@xilinx.com>; Alvaro G. M
-> <alvaro.gamez@hazent.com>
-> Cc: David S. Miller <davem@davemloft.net>; Michal Simek
-> <michals@xilinx.com>; Russell King <linux@armlinux.org.uk>;
-> netdev@vger.kernel.org; kernel-janitors@vger.kernel.org
-> Subject: [PATCH net] net: axienet: fix a signedness bug in probe
->=20
-> The "lp->phy_mode" is an enum but in this context GCC treats it as an
-> unsigned int so the error handling is never triggered.
->=20
-> Fixes: ee06b1728b95 ("net: axienet: add support for standard phy-mode
-> binding")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+On 2019/9/25 上午7:06, Alex Williamson wrote:
+> On Tue, 24 Sep 2019 21:53:29 +0800
+> Jason Wang <jasowang@redhat.com> wrote:
+>
+>> Currently, except for the create and remove, the rest of
+>> mdev_parent_ops is designed for vfio-mdev driver only and may not help
+>> for kernel mdev driver. With the help of class id, this patch
+>> introduces device specific callbacks inside mdev_device
+>> structure. This allows different set of callback to be used by
+>> vfio-mdev and virtio-mdev.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>  .../driver-api/vfio-mediated-device.rst       |  4 +-
+>>  MAINTAINERS                                   |  1 +
+>>  drivers/gpu/drm/i915/gvt/kvmgt.c              | 17 +++---
+>>  drivers/s390/cio/vfio_ccw_ops.c               | 17 ++++--
+>>  drivers/s390/crypto/vfio_ap_ops.c             | 13 +++--
+>>  drivers/vfio/mdev/mdev_core.c                 | 12 +++++
+>>  drivers/vfio/mdev/mdev_private.h              |  1 +
+>>  drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
+>>  include/linux/mdev.h                          | 42 ++++-----------
+>>  include/linux/vfio_mdev.h                     | 52 +++++++++++++++++++
+>>  samples/vfio-mdev/mbochs.c                    | 19 ++++---
+>>  samples/vfio-mdev/mdpy.c                      | 19 ++++---
+>>  samples/vfio-mdev/mtty.c                      | 17 ++++--
+>>  13 files changed, 168 insertions(+), 83 deletions(-)
+>>  create mode 100644 include/linux/vfio_mdev.h
+>>
+>> diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
+>> index a5bdc60d62a1..d50425b368bb 100644
+>> --- a/Documentation/driver-api/vfio-mediated-device.rst
+>> +++ b/Documentation/driver-api/vfio-mediated-device.rst
+>> @@ -152,7 +152,9 @@ callbacks per mdev parent device, per mdev type, or any other categorization.
+>>  Vendor drivers are expected to be fully asynchronous in this respect or
+>>  provide their own internal resource protection.)
+>>  
+>> -The callbacks in the mdev_parent_ops structure are as follows:
+>> +The device specific callbacks are referred through device_ops pointer
+>> +in mdev_parent_ops. For vfio-mdev device, its callbacks in device_ops
+>> +are as follows:
+> This is not accurate.  device_ops is now on the mdev_device and is an
+> mdev bus driver specific structure of callbacks that must be registered
+> for each mdev device by the parent driver during the create callback.
+> There's a one to one mapping of class_id to mdev_device_ops callbacks.
 
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index 4fc627fb4d11..676006f32f91 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -1762,7 +1762,7 @@ static int axienet_probe(struct platform_device
-> *pdev)
->  		}
->  	} else {
->  		lp->phy_mode =3D of_get_phy_mode(pdev->dev.of_node);
-> -		if (lp->phy_mode < 0) {
-> +		if ((int)lp->phy_mode < 0) {
->  			ret =3D -EINVAL;
->  			goto free_netdev;
->  		}
-> --
-> 2.20.1
+
+Yes.
+
+
+>
+> That also suggests to me that we could be more clever in registering
+> both of these with mdev-core.  Can we embed the class_id in the ops
+> structure in a common way so that the core can extract it and the bus
+> drivers can access their specific callbacks?
+
+
+That seems much cleaner, let me try to do that in V3.
+
+
+>
+>>  * open: open callback of mediated device
+>>  * close: close callback of mediated device
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index b2326dece28e..89832b316500 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -17075,6 +17075,7 @@ S:	Maintained
+>>  F:	Documentation/driver-api/vfio-mediated-device.rst
+>>  F:	drivers/vfio/mdev/
+>>  F:	include/linux/mdev.h
+>> +F:	include/linux/vfio_mdev.h
+>>  F:	samples/vfio-mdev/
+>>  
+>>  VFIO PLATFORM DRIVER
+>> diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
+>> index f793252a3d2a..b274f5ee481f 100644
+>> --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
+>> +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
+>> @@ -42,6 +42,7 @@
+>>  #include <linux/kvm_host.h>
+>>  #include <linux/vfio.h>
+>>  #include <linux/mdev.h>
+>> +#include <linux/vfio_mdev.h>
+>>  #include <linux/debugfs.h>
+>>  
+>>  #include <linux/nospec.h>
+>> @@ -643,6 +644,8 @@ static void kvmgt_put_vfio_device(void *vgpu)
+>>  	vfio_device_put(((struct intel_vgpu *)vgpu)->vdev.vfio_device);
+>>  }
+>>  
+>> +static struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops;
+>> +
+>>  static int intel_vgpu_create(struct kobject *kobj, struct mdev_device *mdev)
+>>  {
+>>  	struct intel_vgpu *vgpu = NULL;
+>> @@ -679,6 +682,7 @@ static int intel_vgpu_create(struct kobject *kobj, struct mdev_device *mdev)
+>>  	ret = 0;
+>>  
+>>  	mdev_set_class_id(mdev, MDEV_ID_VFIO);
+>> +	mdev_set_dev_ops(mdev, &intel_vfio_vgpu_dev_ops);
+> This seems rather unrefined.  We're registering interdependent data in
+> separate calls.  All drivers need to make both of these calls.  I'm not
+> sure if this is a good idea, but what if we had:
+>
+> static const struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops = {
+> 	.id			= MDEV_ID_VFIO,
+>  	.open			= intel_vgpu_open,
+>  	.release		= intel_vgpu_release,
+>         ...
+>
+> And the set function passed &intel_vfio_vgpu_dev_ops.id and the mdev
+> bus drivers used container_of to get to their callbacks?
+
+
+Yes, with the check of mdev_device_create() if nothing is set by the device.
+
+
+>
+>>  out:
+>>  	return ret;
+>>  }
+>> @@ -1601,20 +1605,21 @@ static const struct attribute_group *intel_vgpu_groups[] = {
+>>  	NULL,
+>>  };
+>>  
+>> -static struct mdev_parent_ops intel_vgpu_ops = {
+>> -	.mdev_attr_groups       = intel_vgpu_groups,
+>> -	.create			= intel_vgpu_create,
+>> -	.remove			= intel_vgpu_remove,
+>> -
+>> +static struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops = {
+>>  	.open			= intel_vgpu_open,
+>>  	.release		= intel_vgpu_release,
+>> -
+>>  	.read			= intel_vgpu_read,
+>>  	.write			= intel_vgpu_write,
+>>  	.mmap			= intel_vgpu_mmap,
+>>  	.ioctl			= intel_vgpu_ioctl,
+>>  };
+>>  
+>> +static struct mdev_parent_ops intel_vgpu_ops = {
+> These could maybe be made const at the same time.  Thanks,
+>
+> Alex
+
+
+Ok, let me fix.
+
+Thanks
+
 
