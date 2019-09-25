@@ -2,92 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA0BBD846
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 08:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6802BBD8B7
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 09:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411883AbfIYGZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 02:25:38 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:47358 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404570AbfIYGZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 02:25:38 -0400
-Received: from localhost.localdomain (p200300E9D742D21B26FCBF88D1F65952.dip0.t-ipconnect.de [IPv6:2003:e9:d742:d21b:26fc:bf88:d1f6:5952])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 4C630C1B1A;
-        Wed, 25 Sep 2019 08:25:35 +0200 (CEST)
-Subject: Re: [PATCH] ieee802154: mcr20a: simplify a bit
- 'mcr20a_handle_rx_read_buf_complete()'
-To:     Xue Liu <liuxuenetmail@gmail.com>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "alex. aring" <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
- <388f335a-a9ae-7230-1713-a1ecb682fecf@datenfreihafen.org>
- <CAJuUDwtWJgo7PHJR4kBpQ9mGamTMEaPZBNOZcL3mWFwwZ-zOmw@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <7d131e76-d487-ead3-1780-6a9a7d7877a4@datenfreihafen.org>
-Date:   Wed, 25 Sep 2019 08:25:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S2442452AbfIYHGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 03:06:36 -0400
+Received: from uho.ysoft.cz ([81.19.3.130]:58912 "EHLO uho.ysoft.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2442434AbfIYHGg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 03:06:36 -0400
+Received: from [10.1.8.111] (unknown [10.1.8.111])
+        by uho.ysoft.cz (Postfix) with ESMTP id 60D91A31B2;
+        Wed, 25 Sep 2019 09:06:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
+        s=20160406-ysoft-com; t=1569395194;
+        bh=dS5lPxtAdxU5y/gQ3JdHbXiblfvxxhhR3vW+A8OnSGM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=OXLEKZqHr8iEg+GId40bcJ0xK3EKXFePb6+zZI/l+koXMnX1ASIBi5p3mvdJP6SF8
+         9n84T0rjGlKG0oyNV7DdBZGJ1yCdpKoTEpgd0kaWg15C/t/q7ARsCUK/utuZjcavAN
+         zKWdtaG9PnBk4vefjC8g2mz7dNhhSLMxgRTP1Edc=
+Subject: Re: [PATCH net] net: dsa: qca8k: Fix port enable for CPU port
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20190925004707.1799-1-andrew@lunn.ch>
+From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Message-ID: <2009a5fe-6c9c-4326-1161-b6c0b7cc586c@ysoft.com>
+Date:   Wed, 25 Sep 2019 09:06:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <CAJuUDwtWJgo7PHJR4kBpQ9mGamTMEaPZBNOZcL3mWFwwZ-zOmw@mail.gmail.com>
+In-Reply-To: <20190925004707.1799-1-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 24.09.19 23:40, Xue Liu wrote:
-> On Sat, 21 Sep 2019 at 13:52, Stefan Schmidt <stefan@datenfreihafen.org> wrote:
->>
->> Hello Xue.
->>
->> On 20.09.19 21:45, Christophe JAILLET wrote:
->>> Use a 'skb_put_data()' variant instead of rewritting it.
->>> The __skb_put_data variant is safe here. It is obvious that the skb can
->>> not overflow. It has just been allocated a few lines above with the same
->>> 'len'.
->>>
->>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->>> ---
->>>   drivers/net/ieee802154/mcr20a.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
->>> index 17f2300e63ee..8dc04e2590b1 100644
->>> --- a/drivers/net/ieee802154/mcr20a.c
->>> +++ b/drivers/net/ieee802154/mcr20a.c
->>> @@ -800,7 +800,7 @@ mcr20a_handle_rx_read_buf_complete(void *context)
->>>        if (!skb)
->>>                return;
->>>
->>> -     memcpy(skb_put(skb, len), lp->rx_buf, len);
->>> +     __skb_put_data(skb, lp->rx_buf, len);
->>>        ieee802154_rx_irqsafe(lp->hw, skb, lp->rx_lqi[0]);
->>>
->>>        print_hex_dump_debug("mcr20a rx: ", DUMP_PREFIX_OFFSET, 16, 1,
->>>
->>
->> Could you please review and ACK this? If you are happy I will take it
->> through my tree.
->>
->> regards
->> Stefan Schmidt
+On 25. 09. 19 2:47, Andrew Lunn wrote:
+> The CPU port does not have a PHY connected to it. So calling
+> phy_support_asym_pause() results in an Opps. As with other DSA
+> drivers, add a guard that the port is a user port.
 > 
-> Acked-by: Xue Liu <liuxuenetmail@gmail.com>
+> Reported-by: Michal Vokáč <michal.vokac@ysoft.com>
 
+Thank you for the prompt fix Andrew!
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+Tested-by: Michal Vokáč <michal.vokac@ysoft.com>
 
-regards
-Stefan Schmidt
+> Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>   drivers/net/dsa/qca8k.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 16f15c93a102..684aa51684db 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -936,6 +936,9 @@ qca8k_port_enable(struct dsa_switch *ds, int port,
+>   {
+>   	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+>   
+> +	if (!dsa_is_user_port(ds, port))
+> +		return 0;
+> +
+>   	qca8k_port_set_status(priv, port, 1);
+>   	priv->port_sts[port].enabled = 1;
+>   
+> 
+
