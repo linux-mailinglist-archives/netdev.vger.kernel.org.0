@@ -2,94 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5372BD973
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E67FDBD9C1
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442670AbfIYIAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 04:00:04 -0400
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:9106 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2442663AbfIYIAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 04:00:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1569398402; x=1600934402;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Shfvyo0ImXjLBdc3+R5WUqFtxA+yMdf8SQNuUzdMxRA=;
-  b=oP7md3jiBIeRTQJHSKVnFor+cM+g/A+jYbbt5X1RWTi94W7aQp+nZ2n2
-   ztpEdTUO9ehJfbCMUotNTQZT7spxXqxk1xcyb7CCRClgYQPI1mxbqkOWQ
-   O4BkyBv43p4C1T5LrbTsPIXd1/D62WJ89/tOlZ/bVa3j1MzEV0GqqVWpw
-   k=;
-X-IronPort-AV: E=Sophos;i="5.64,547,1559520000"; 
-   d="scan'208";a="787240915"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-98acfc19.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 25 Sep 2019 08:00:00 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-98acfc19.us-east-1.amazon.com (Postfix) with ESMTPS id 760A0A05E7;
-        Wed, 25 Sep 2019 07:59:59 +0000 (UTC)
-Received: from EX13D22EUA002.ant.amazon.com (10.43.165.125) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 25 Sep 2019 07:59:58 +0000
-Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
- EX13D22EUA002.ant.amazon.com (10.43.165.125) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 25 Sep 2019 07:59:57 +0000
-Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
- EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1367.000;
- Wed, 25 Sep 2019 07:59:57 +0000
-From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
-To:     Tal Gilboa <talgi@mellanox.com>,
-        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <uwe@kleine-koenig.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] dimlib: make DIMLIB a hidden symbol
-Thread-Topic: [PATCH] dimlib: make DIMLIB a hidden symbol
-Thread-Index: AQHVb7e0M+d87C6r+0SKPdjxpO2J/ac0ytMAgAdDX9A=
-Date:   Wed, 25 Sep 2019 07:59:33 +0000
-Deferred-Delivery: Wed, 25 Sep 2019 07:59:15 +0000
-Message-ID: <228c9ba04ceb4b728c83adeb379fb564@EX13D22EUA004.ant.amazon.com>
-References: <20190920133115.12802-1-uwe@kleine-koenig.org>
- <670cc72f-fef0-a8cf-eb03-25fdb608eea8@mellanox.com>
-In-Reply-To: <670cc72f-fef0-a8cf-eb03-25fdb608eea8@mellanox.com>
+        id S2442725AbfIYIYp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Sep 2019 04:24:45 -0400
+Received: from mga11.intel.com ([192.55.52.93]:32480 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405820AbfIYIYp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 04:24:45 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Sep 2019 01:24:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,547,1559545200"; 
+   d="scan'208";a="364256679"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by orsmga005.jf.intel.com with ESMTP; 25 Sep 2019 01:24:42 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 25 Sep 2019 01:24:42 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 25 Sep 2019 01:24:41 -0700
+Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 25 Sep 2019 01:24:41 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.32]) by
+ SHSMSX101.ccr.corp.intel.com ([169.254.1.92]) with mapi id 14.03.0439.000;
+ Wed, 25 Sep 2019 16:24:38 +0800
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "farman@linux.ibm.com" <farman@linux.ibm.com>,
+        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+        "sebott@linux.ibm.com" <sebott@linux.ibm.com>,
+        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
+        "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>,
+        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
+        "freude@linux.ibm.com" <freude@linux.ibm.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "idos@mellanox.com" <idos@mellanox.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "christophe.de.dinechin@gmail.com" <christophe.de.dinechin@gmail.com>
+Subject: RE: [PATCH V2 0/8] mdev based hardware virtio offloading support
+Thread-Topic: [PATCH V2 0/8] mdev based hardware virtio offloading support
+Thread-Index: AQHVct+eQdtHh3CM1kSintZ5w217Z6c8D0tg
+Date:   Wed, 25 Sep 2019 08:24:38 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F68D@SHSMSX104.ccr.corp.intel.com>
+References: <20190924135332.14160-1-jasowang@redhat.com>
+In-Reply-To: <20190924135332.14160-1-jasowang@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.11]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYzNlNTRhOTItZmM2My00ZDE0LWI1MjgtY2VmOWFlNDZkMWJhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaERhd1cxSkkrS1Y5NEZRdThqNm9jSFJJNHZmRU1SUStsRnp4WnpwMkYzVU5RNGducjNJTThkRHhlUkpXMng4bCJ9
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBUYWwgR2lsYm9hIDx0YWxnaUBt
-ZWxsYW5veC5jb20+DQo+IFNlbnQ6IEZyaWRheSwgU2VwdGVtYmVyIDIwLCAyMDE5IDg6MDIgUE0N
-Cj4gVG86IFV3ZSBLbGVpbmUtS8O2bmlnIDx1d2VAa2xlaW5lLWtvZW5pZy5vcmc+OyBTYWVlZCBN
-YWhhbWVlZA0KPiA8c2FlZWRtQG1lbGxhbm94LmNvbT47IEtpeWFub3Zza2ksIEFydGh1ciA8YWtp
-eWFub0BhbWF6b24uY29tPg0KPiBDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBkaW1saWI6IG1ha2Ug
-RElNTElCIGEgaGlkZGVuIHN5bWJvbA0KPiANCj4gT24gOS8yMC8yMDE5IDQ6MzEgUE0sIFV3ZSBL
-bGVpbmUtS8O2bmlnIHdyb3RlOg0KPiA+IEFjY29yZGluZyB0byBUYWwgR2lsYm9hIHRoZSBvbmx5
-IGJlbmVmaXQgZnJvbSBESU0gY29tZXMgZnJvbSBhIGRyaXZlcg0KPiA+IHRoYXQgdXNlcyBpdC4g
-U28gaXQgZG9lc24ndCBtYWtlIHNlbnNlIHRvIG1ha2UgdGhpcyBzeW1ib2wgdXNlciB2aXNpYmxl
-LA0KPiA+IGluc3RlYWQgYWxsIGRyaXZlcnMgdGhhdCB1c2UgaXQgc2hvdWxkIHNlbGVjdCBpdCAo
-YXMgaXMgYWxyZWFkeSB0aGUgY2FzZQ0KPiA+IEFGQUlDVCkuDQo+ID4NCj4gPiBTaWduZWQtb2Zm
-LWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dXdlQGtsZWluZS1rb2VuaWcub3JnPg0KPiA+IC0tLQ0K
-PiA+ICAgbGliL0tjb25maWcgfCAzICstLQ0KPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0
-aW9uKCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2xpYi9LY29uZmln
-IGIvbGliL0tjb25maWcNCj4gPiBpbmRleCBjYzA0MTI0ZWQ4ZjcuLjlmZThhMjFmZDE4MyAxMDA2
-NDQNCj4gPiAtLS0gYS9saWIvS2NvbmZpZw0KPiA+ICsrKyBiL2xpYi9LY29uZmlnDQo+ID4gQEAg
-LTU1NSw4ICs1NTUsNyBAQCBjb25maWcgU0lHTkFUVVJFDQo+ID4gICAJICBJbXBsZW1lbnRhdGlv
-biBpcyBkb25lIHVzaW5nIEdudVBHIE1QSSBsaWJyYXJ5DQo+ID4NCj4gPiAgIGNvbmZpZyBESU1M
-SUINCj4gPiAtCWJvb2wgIkRJTSBsaWJyYXJ5Ig0KPiA+IC0JZGVmYXVsdCB5DQo+ID4gKwlib29s
-DQo+ID4gICAJaGVscA0KPiA+ICAgCSAgRHluYW1pYyBJbnRlcnJ1cHQgTW9kZXJhdGlvbiBsaWJy
-YXJ5Lg0KPiA+ICAgCSAgSW1wbGVtZW50cyBhbiBhbGdvcml0aG0gZm9yIGR5bmFtaWNhbGx5IGNo
-YW5nZSBDUSBtb2RlcmF0aW9uDQo+IHZhbHVlcw0KPiA+DQo+IFRoZXJlJ3MgYSBwZW5kaW5nIHNl
-cmllcyB1c2luZyBESU0gd2hpY2ggZGlkbid0IGFkZCB0aGUgc2VsZWN0IGNsYXVzZQ0KPiBbMV0u
-IEFydGh1ciwgRllJLiBPdGhlciB0aGFuIHRoYXQgTEdUTS4NCj4gDQo+IFsxXSBodHRwczovL3d3
-dy5tYWlsLWFyY2hpdmUuY29tL25ldGRldkB2Z2VyLmtlcm5lbC5vcmcvbXNnMzE0MzA0Lmh0bWwN
-Cg0KVGhhbmtzIFRhbCwgSSBtaXNzZWQgdGhhdC4NCg==
+> From: Jason Wang [mailto:jasowang@redhat.com]
+> Sent: Tuesday, September 24, 2019 9:53 PM
+> 
+> Hi all:
+> 
+> There are hardware that can do virtio datapath offloading while having
+> its own control path. This path tries to implement a mdev based
+> unified API to support using kernel virtio driver to drive those
+> devices. This is done by introducing a new mdev transport for virtio
+> (virtio_mdev) and register itself as a new kind of mdev driver. Then
+> it provides a unified way for kernel virtio driver to talk with mdev
+> device implementation.
+> 
+> Though the series only contains kernel driver support, the goal is to
+> make the transport generic enough to support userspace drivers. This
+> means vhost-mdev[1] could be built on top as well by resuing the
+> transport.
+> 
+> A sample driver is also implemented which simulate a virito-net
+> loopback ethernet device on top of vringh + workqueue. This could be
+> used as a reference implementation for real hardware driver.
+> 
+> Consider mdev framework only support VFIO device and driver right now,
+> this series also extend it to support other types. This is done
+> through introducing class id to the device and pairing it with
+> id_talbe claimed by the driver. On top, this seris also decouple
+
+id_table claimed ... this series ...
+
+> device specific parents ops out of the common ones.
+> 
+> Pktgen test was done with virito-net + mvnet loop back device.
+> 
+> Please review.
+> 
+> [1] https://lkml.org/lkml/2019/9/16/869
+> 
+> Changes from V1:
+> 
+> - move virtio_mdev.c to drivers/virtio
+> - store class_id in mdev_device instead of mdev_parent
+> - store device_ops in mdev_device instead of mdev_parent
+> - reorder the patch, vringh fix comes first
+> - really silent compiling warnings
+> - really switch to use u16 for class_id
+> - uevent and modpost support for mdev class_id
+> - vraious tweaks per comments from Parav
+> 
+> Changes from RFC-V2:
+> 
+> - silent compile warnings on some specific configuration
+> - use u16 instead u8 for class id
+> - reseve MDEV_ID_VHOST for future vhost-mdev work
+> - introduce "virtio" type for mvnet and make "vhost" type for future
+>   work
+> - add entries in MAINTAINER
+> - tweak and typos fixes in commit log
+> 
+> Changes from RFC-V1:
+> 
+> - rename device id to class id
+> - add docs for class id and device specific ops (device_ops)
+> - split device_ops into seperate headers
+> - drop the mdev_set_dma_ops()
+> - use device_ops to implement the transport API, then it's not a part
+>   of UAPI any more
+> - use GFP_ATOMIC in mvnet sample device and other tweaks
+> - set_vring_base/get_vring_base support for mvnet device
+> 
+> Jason Wang (8):
+>   vringh: fix copy direction of vringh_iov_push_kern()
+>   mdev: class id support
+>   mdev: bus uevent support
+>   modpost: add support for mdev class id
+>   mdev: introduce device specific ops
+>   mdev: introduce virtio device and its device ops
+>   virtio: introduce a mdev based transport
+>   docs: sample driver to demonstrate how to implement virtio-mdev
+>     framework
+> 
+>  .../driver-api/vfio-mediated-device.rst       |   7 +-
+>  MAINTAINERS                                   |   2 +
+>  drivers/gpu/drm/i915/gvt/kvmgt.c              |  18 +-
+>  drivers/s390/cio/vfio_ccw_ops.c               |  18 +-
+>  drivers/s390/crypto/vfio_ap_ops.c             |  14 +-
+>  drivers/vfio/mdev/mdev_core.c                 |  19 +
+>  drivers/vfio/mdev/mdev_driver.c               |  22 +
+>  drivers/vfio/mdev/mdev_private.h              |   2 +
+>  drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
+>  drivers/vhost/vringh.c                        |   8 +-
+>  drivers/virtio/Kconfig                        |   7 +
+>  drivers/virtio/Makefile                       |   1 +
+>  drivers/virtio/virtio_mdev.c                  | 417 +++++++++++
+>  include/linux/mdev.h                          |  52 +-
+>  include/linux/mod_devicetable.h               |   8 +
+>  include/linux/vfio_mdev.h                     |  52 ++
+>  include/linux/virtio_mdev.h                   | 145 ++++
+>  samples/Kconfig                               |   7 +
+>  samples/vfio-mdev/Makefile                    |   1 +
+>  samples/vfio-mdev/mbochs.c                    |  20 +-
+>  samples/vfio-mdev/mdpy.c                      |  20 +-
+>  samples/vfio-mdev/mtty.c                      |  18 +-
+>  samples/vfio-mdev/mvnet.c                     | 692 ++++++++++++++++++
+>  scripts/mod/devicetable-offsets.c             |   3 +
+>  scripts/mod/file2alias.c                      |  10 +
+>  25 files changed, 1524 insertions(+), 84 deletions(-)
+>  create mode 100644 drivers/virtio/virtio_mdev.c
+>  create mode 100644 include/linux/vfio_mdev.h
+>  create mode 100644 include/linux/virtio_mdev.h
+>  create mode 100644 samples/vfio-mdev/mvnet.c
+> 
+> --
+> 2.19.1
+
