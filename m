@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6164BD9E2
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4ADBDA25
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:46:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442752AbfIYIaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 04:30:00 -0400
-Received: from frisell.zx2c4.com ([192.95.5.64]:36941 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2442734AbfIYI37 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 04:29:59 -0400
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id f04a7c82;
-        Wed, 25 Sep 2019 07:44:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :from:date:message-id:subject:to:content-type; s=mail; bh=F1x6e+
-        cCGG/zD2EMOllsVE7y05c=; b=uFLcSUjcfehMSQaYeALWaBn4jNxO+wgx8fX7h0
-        FcPxVROU1FWNhQqgVP3Y2Wzpdsk3riWgZHyoVC5J5TWJfGEX7V1/FcrBhjxsETS/
-        TF2T8T/lcbgsmxElLSK6D1ULFg2ggjEm9uzcdWFVIBY1xrn2QptvD1H0PNVKOjeZ
-        l1G93XobpNjHPRUR1e7jalUVGKpSQH6nxMjAnvLz6Tulr6hbTFxsMXdGTBVUh8/J
-        dzSN9eQ2s2WbG4NQU8wn9F+uPVT74v5kFhPhZ3yOTYvyZH/qX2dvBTrlu6+99GLw
-        ZDuGwpmEo309sBG+lhwVd1cRv0/HgTP+hK46WgzDst/3yS+w==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a9f835e9 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Wed, 25 Sep 2019 07:44:14 +0000 (UTC)
-Received: by mail-oi1-f169.google.com with SMTP id k20so4168533oih.3;
-        Wed, 25 Sep 2019 01:29:57 -0700 (PDT)
-X-Gm-Message-State: APjAAAX5vOoLino9OV/hOQ10LIPZ8F/g9SVMMi8+J7Hfs6EuUuudnsev
-        69dVWixZoM7BtkmESZgLbxOdU+ZBCGIsNYw5Mns=
-X-Google-Smtp-Source: APXvYqwNXLHiOGCKCubwzVxRj/ec4LjQJFZ7Aw+gylPjxUUmM/jS8eL6FGpbNGuX9OzHxhRru7lSKTbuxmkXFmEDZYQ=
-X-Received: by 2002:aca:f555:: with SMTP id t82mr3519613oih.66.1569400196781;
- Wed, 25 Sep 2019 01:29:56 -0700 (PDT)
+        id S2442906AbfIYIqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 04:46:18 -0400
+Received: from mail-qt1-f178.google.com ([209.85.160.178]:45909 "EHLO
+        mail-qt1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2442828AbfIYIqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 04:46:16 -0400
+Received: by mail-qt1-f178.google.com with SMTP id c21so5573662qtj.12
+        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 01:46:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=MbfeX/GMfh5hA7rH8kpzu5Epqbv27eBo89xQdba1k4I=;
+        b=xVy0D3aTi6XWzdkR977ldVA2e9uT2CQ21onmz6h1FJFHDptBfAachZZ9gW19BnMeRf
+         ITtnS+UFMKGNeE/lryxLLtZwoUYL0roOL/tQZRHNc0q0z4fuIoUePxEM7pIV+5XQnUp0
+         8ca2u10tUlaAlv56W4+hVrhZBS/UXT42il+TU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=MbfeX/GMfh5hA7rH8kpzu5Epqbv27eBo89xQdba1k4I=;
+        b=T90f8+zqq4sWrQDvMj9wjpLqyHMH0N51xiPcRJaIkq3Hro0gnuW3JTCeUcc0ek3wY8
+         R8BMu+LCyacQPZOn48DuFvPVMbmqTbp4i21f6uPYnsk6mAIWGinmL6DUaBScaPVib7o0
+         uDJLZqx7K8AuYu5JfW0qbzQLKsEZExIy2lcO0+WSDnHAMtQaK1pgZWut4P4N6EjWtty9
+         gYnVkpLHnJg6DUjelC3KCWbMLDwWiNVJJlcGN/hJT+q6aJFSZ8A1vT4QHMaMl2WS0+RO
+         byCeDzBbSbaHmZl0GJcj/pB+j0+ta4fJGs+5zeJOuUJZQjXg4kH0X45snQntwMJTyXJw
+         ye8Q==
+X-Gm-Message-State: APjAAAXFMfDHy6NkPBf0zY53MhZY1ORbXYAQcFlGY53ACfEKU+huu/gS
+        TsOp9JIQMX4vIJ/RDV8WKXC4imstrx+QThJto9HWeSBK2wvzocwK
+X-Google-Smtp-Source: APXvYqz4EN+9yMEkD+b9dSoRxlY1VyefqfOedjRrILZarwvEs5sJ0AuIuTWcoYAgSxLMH32fJi01knxSHZGohLQnYj4=
+X-Received: by 2002:ac8:7646:: with SMTP id i6mr7681296qtr.50.1569401175041;
+ Wed, 25 Sep 2019 01:46:15 -0700 (PDT)
 MIME-Version: 1.0
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 25 Sep 2019 10:29:45 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
-Message-ID: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
-Subject: WireGuard to port to existing Crypto API
-To:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 25 Sep 2019 10:46:03 +0200
+Message-ID: <CAJPywTL0PiesEwiRWHdJr0Te_rqZ62TXbgOtuz7NTYmQksE_7w@mail.gmail.com>
+Subject: TCP_USER_TIMEOUT, SYN-SENT and tcp_syn_retries
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
+Hello my favorite mailing list!
 
-I'm at the Kernel Recipes conference now and got a chance to talk with
-DaveM a bit about WireGuard upstreaming. His viewpoint has recently
-solidified: in order to go upstream, WireGuard must port to the
-existing crypto API, and handle the Zinc project separately. As DaveM
-is the upstream network tree maintainer, his opinion is quite
-instructive.
+Recently I've been looking into TCP_USER_TIMEOUT and noticed some
+strange behaviour on fresh sockets in SYN-SENT state. Full writeup:
+https://blog.cloudflare.com/when-tcp-sockets-refuse-to-die/
 
-I've long resisted the idea of porting to the existing crypto API,
-because I think there are serious problems with it, in terms of
-primitives, API, performance, and overall safety. I didn't want to
-ship WireGuard in a form that I thought was sub-optimal from a
-security perspective, since WireGuard is a security-focused project.
+Here's a reproducer. It does a simple thing: sets TCP_USER_TIMEOUT and
+does connect() to a blackholed IP:
 
-But it seems like with or without us, WireGuard will get ported to the
-existing crypto API. So it's probably better that we just fully
-embrace it, and afterwards work evolutionarily to get Zinc into Linux
-piecemeal. I've ported WireGuard already several times as a PoC to the
-API and have a decent idea of the ways it can go wrong and generally
-how to do it in the least-bad way.
+$ wget https://gist.githubusercontent.com/majek/b4ad53c5795b226d62fad1fa4a87151a/raw/cbb928cb99cd6c5aa9f73ba2d3bc0aef22fbc2bf/user-timeout-and-syn.py
 
-I realize this kind of compromise might come as a disappointment for
-some folks. But it's probably better that as a project we remain
-intimately involved with our Linux kernel users and the security of
-the implementation, rather than slinking away in protest because we
-couldn't get it all in at once. So we'll work with upstream, port to
-the crypto API, and get the process moving again. We'll pick up the
-Zinc work after that's done.
+$ sudo python3 user-timeout-and-syn.py
+00:00.000000 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:01.007053 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:03.023051 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:05.007096 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:05.015037 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:05.023020 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
+00:05.034983 IP 192.1.1.1.52974 > 244.0.0.1.1234: Flags [S]
 
-I also understand there might be interested folks out there who enjoy
-working with the crypto API quite a bit and would be happy to work on
-the WireGuard port. Please do get in touch if you'd like to
-collaborate.
+The connect() times out with ETIMEDOUT after 5 seconds - as intended.
+But Linux (5.3.0-rc3) does something weird on the network - it sends
+remaining tcp_syn_retries packets aligned to the 5s mark.
 
-Jason
+In other words: with TCP_USER_TIMEOUT we are sending spurious SYN
+packets on a timeout.
+
+For the record, the man page doesn't define what TCP_USER_TIMEOUT does
+on SYN-SENT state.
+
+Cheers,
+Marek
