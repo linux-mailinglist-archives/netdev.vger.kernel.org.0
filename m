@@ -2,109 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E9EBE4AA
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 20:35:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8903EBE4B1
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 20:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2443203AbfIYSfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 14:35:06 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34879 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437947AbfIYSfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 14:35:06 -0400
-Received: by mail-io1-f66.google.com with SMTP id q10so1457929iop.2;
-        Wed, 25 Sep 2019 11:35:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=v3DzaPxPuk/uVGB+4m0xoPcXgoLZaM/MWTm8Lgl62ag=;
-        b=aJxL4fMpDIM7jgZ2K/qGuVvA5sWslCPjnVJc/5+EtvVKXOPJ01cveWWY2415BRxAQX
-         lR2FKU3c2xmEF2jlzGUtvI5Polpbal+IrYiia1qGJ/x5Yd9NoTOK3Lhwyvi0dbcPX0vu
-         O851qKOgLq44HPt0Uagm5j5OneFStMYFAUme6QCm55woKogXozd9GCoZC/vN/6Widryu
-         6dDDDbRFDzs60kxVzO5AYcrF/x1/tcFqjSOi5PGYY8nyDCWxstTYhOVWJrpinwoVjsUl
-         GkVICdtoM4FXLBQx0fYtZ8Ag4xaTZiOwqFppP3Ty4Mqzv+viY4VJXb5ZJu7KB6nuYOYQ
-         S2Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=v3DzaPxPuk/uVGB+4m0xoPcXgoLZaM/MWTm8Lgl62ag=;
-        b=H0akTTtCJjIPsJ+ORFUff3O/P/V8qSY1PKcT0Ws7+oBELxHqixTH3RZHBymIqF7d/v
-         +yekjVUvOn3D4xY3Zo3gBx+gHHVwgYzbWUnjITrxTs08ErGLgbIuK3ZnR+LLKQxPKx+v
-         z6XvI64AxHc9NKuSz9PGUtq6wsKw2SCgKlkYN89EqbxM1WLNt/YmBeUBlV8hsX0nxImj
-         X6zsiV2BBf1++wFJG60koKhACIkmJw3z/g62L/VREo/ByTn0iHXH9zeT6UGqegYvMmbC
-         Eh6wNnLV1WXtRgEox5FpQZ+VR2mRw8SSxKV5E3m96TjRww1aH4KEddGTinK2Yz0wsWh1
-         /vVA==
-X-Gm-Message-State: APjAAAUWiBZxShRHd6QlwlzwDS93G9ntrRFxsREK6dxNH5LU1Gi/HKPN
-        LRf4QN802bTAdAXxNOMC4k8=
-X-Google-Smtp-Source: APXvYqwQoB8gfyzeqzfIhdMNfNYKCtxpPHu38RGSqgT11KRqp/QGd/dafditqifhCVFBYt7sd1nJZw==
-X-Received: by 2002:a6b:3705:: with SMTP id e5mr759624ioa.213.1569436505411;
-        Wed, 25 Sep 2019 11:35:05 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id w68sm340159ili.59.2019.09.25.11.35.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Sep 2019 11:35:04 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: flow_offload: fix memory leak in nfp_abm_u32_knode_replace
-Date:   Wed, 25 Sep 2019 13:34:46 -0500
-Message-Id: <20190925183457.32695-1-navid.emamdoost@gmail.com>
+        id S2443199AbfIYSgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 14:36:20 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61414 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2437947AbfIYSgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 14:36:20 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8PIWMES014458
+        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 11:36:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=Ear7GfKILach6yoGbb72lYTgVj5pCczuKiQlm5U2re4=;
+ b=DNb1HrRzzairRl+htUL/TX+tJX6oNJbZTTosZJ63vNWeQ/Vk81zTi7hzmZzwytBhyHYW
+ IPIvQRFCAvgMI53e7EBCqO/v2laSdHpc2evmh9yQwYRhrvLpuB3d6z2NTLaiBZ0U7B5i
+ 3uEulAUu85rOV3hHg0tifPjtiLO3yAY8BnI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2v8abh94b5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 11:36:19 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 25 Sep 2019 11:36:18 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 103E68619CB; Wed, 25 Sep 2019 11:36:17 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf] selftests/bpf: delete unused variables in test_sysctl
+Date:   Wed, 25 Sep 2019 11:36:14 -0700
+Message-ID: <20190925183614.2775293-1-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-09-25_08:2019-09-25,2019-09-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
+ suspectscore=8 lowpriorityscore=0 priorityscore=1501 mlxscore=0
+ phishscore=0 malwarescore=0 clxscore=1015 mlxlogscore=563 adultscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909250158
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In nfp_abm_u32_knode_replace if the allocation for match fails it should
-go to the error handling instead of returning.
+Remove no longer used variables and avoid compiler warnings.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/netronome/nfp/abm/cls.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/test_sysctl.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-index 23ebddfb9532..32eaab99d96c 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
-+++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-@@ -174,7 +174,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 	struct nfp_abm_u32_match *match = NULL, *iter;
- 	unsigned int tos_off;
- 	u8 mask, val;
--	int err;
-+	int err, ret = -EOPNOTSUPP;
+diff --git a/tools/testing/selftests/bpf/test_sysctl.c b/tools/testing/selftests/bpf/test_sysctl.c
+index 4f8ec1f10a80..a320e3844b17 100644
+--- a/tools/testing/selftests/bpf/test_sysctl.c
++++ b/tools/testing/selftests/bpf/test_sysctl.c
+@@ -1385,7 +1385,6 @@ static int fixup_sysctl_value(const char *buf, size_t buf_len,
+ 		uint8_t raw[sizeof(uint64_t)];
+ 		uint64_t num;
+ 	} value = {};
+-	uint8_t c, i;
  
- 	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack))
- 		goto err_delete;
-@@ -204,8 +204,11 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 
- 	if (!match) {
- 		match = kzalloc(sizeof(*match), GFP_KERNEL);
--		if (!match)
--			return -ENOMEM;
-+		if (!match) {
-+			ret = -ENOMEM;
-+			goto err_delete;
-+		}
-+
- 		list_add(&match->list, &alink->dscp_map);
- 	}
- 	match->handle = knode->handle;
-@@ -221,7 +224,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 
- err_delete:
- 	nfp_abm_u32_knode_delete(alink, knode);
--	return -EOPNOTSUPP;
-+	return ret;
- }
- 
- static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
+ 	if (buf_len > sizeof(value)) {
+ 		log_err("Value is too big (%zd) to use in fixup", buf_len);
 -- 
 2.17.1
 
