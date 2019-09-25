@@ -2,290 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70BD5BD5BF
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 02:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1A6BD5C7
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 02:44:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389533AbfIYAbO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Sep 2019 20:31:14 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43584 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388529AbfIYAbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 20:31:14 -0400
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iCvD2-0004CG-WA; Wed, 25 Sep 2019 00:31:09 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 7A49E67BB3; Tue, 24 Sep 2019 17:31:07 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 73FC8A9BF8;
-        Tue, 24 Sep 2019 17:31:07 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0JfQsNGF0LDRgNC+0LI?=
-         =?us-ascii?Q?=3D=3F=3D?= <zaharov@selectel.ru>
-cc:     netdev@vger.kernel.org, "zhangsha (A)" <zhangsha.zhang@huawei.com>
-Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
-In-reply-to: <CAJYOGF_XStpFRkp0jN0um9d9WR1bqGpK2V=UgdnnX2m4YC=5pw@mail.gmail.com>
-References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx> <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com> <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com> <9357.1568880036@nyx> <CAJYOGF87z-o9=a20dC2mZRtfMU58uL0yxZkQJ-bxe5skVvi2rA@mail.gmail.com> <7236.1568906827@nyx> <7154.1568987531@nyx> <CAJYOGF-L0bEF_BqbyeKqv4xmLV=e2VKUvo5zPx4rULWdwt8e0Q@mail.gmail.com> <10497.1569049560@nyx> <CAJYOGF_XStpFRkp0jN0um9d9WR1bqGpK2V=UgdnnX2m4YC=5pw@mail.gmail.com>
-Comments: In-reply-to =?us-ascii?Q?=3D=3FUTF-8=3FB=3F0JDQu9C10LrRgdC10Lkg0?=
- =?us-ascii?Q?JfQsNGF0LDRgNC+0LI=3D=3F=3D?= <zaharov@selectel.ru>
-   message dated "Sat, 21 Sep 2019 14:17:57 +0300."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S2390197AbfIYAom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Sep 2019 20:44:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35650 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389492AbfIYAom (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Sep 2019 20:44:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=cizScs+SXW+pOXrDDka/m3BoXhHDRTYnhi/xtiL0ii4=; b=BAvfgTI+pKQpZk16ITFXgvgIlJ
+        Qbi0MTHeq1uHBjDmBX6EVDzD80t33o0k52X8Nvbhx2uvhAqad0EAyXD+yF1LV2j/VoPGt1oICwLCJ
+        rzgesyVHRp4QeCOP4ETd73Oci3hMem6azpc/l74aPxU+6PjtvCmtnbkA90OTTQ6YVuIA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iCvQ5-0000Qq-MU; Wed, 25 Sep 2019 02:44:37 +0200
+Date:   Wed, 25 Sep 2019 02:44:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [BUG] Unable to handle kernel NULL pointer dereference in
+ phy_support_asym_pause
+Message-ID: <20190925004437.GA1253@lunn.ch>
+References: <573ffa6a-f29a-84d9-5895-b3d6cc389619@ysoft.com>
+ <20190924123126.GE14477@lunn.ch>
+ <e7bffa36-f218-d71e-c416-38aff73d35dd@ysoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 24 Sep 2019 17:31:07 -0700
-Message-ID: <16538.1569371467@famine>
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e7bffa36-f218-d71e-c416-38aff73d35dd@ysoft.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Алексей Захаров wrote:
-[...]
->Right after reboot one of the slaves hangs with actor port state 71
->and partner port state 1.
->It doesn't send lacpdu and seems to be broken.
->Setting link down and up again fixes slave state.
-[...]
+On Tue, Sep 24, 2019 at 03:10:44PM +0200, Michal Vokáč wrote:
+> On 24. 09. 19 14:31, Andrew Lunn wrote:
+> I added the printk and the above fix and can confirm that it is the CPU
+> port and the phy is NULL pointer:
+> 
+> [    6.976366] qca8k 2188000.ethernet-1:0a: Using legacy PHYLIB callbacks. Please migrate to PHYLINK!
+> [    6.992021] qca8k 2188000.ethernet-1:0a: port: 0, phy: 0
+> [    7.001323] qca8k 2188000.ethernet-1:0a eth2 (uninitialized): PHY [2188000.ethernet-1:01] driver [Generic PHY]
+> [    7.014221] qca8k 2188000.ethernet-1:0a eth2 (uninitialized): phy: setting supported 00,00000000,000062ef advertising 00,00000000,000062ef
+> [    7.030598] qca8k 2188000.ethernet-1:0a eth1 (uninitialized): PHY [2188000.ethernet-1:02] driver [Generic PHY]
+> [    7.043500] qca8k 2188000.ethernet-1:0a eth1 (uninitialized): phy: setting supported 00,00000000,000062ef advertising 00,00000000,000062ef
+> [    7.063335] DSA: tree 0 setup
+> 
+> Now the device boots but there is a problem with the CPU port configuration:
 
-	I think I see what failed in the first patch, could you test the
-following patch?  This one is for net-next, so you'd need to again swap
-slave_err / netdev_err for the Ubuntu 4.15 kernel.
+Hi Michal
 
-	Thanks,
+Thanks for testing. I will post a different fix very soon.
 
-	-J
+> root@hydraco:~# ifconfig eth0 up
+> [  255.256047] Generic PHY fixed-0:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=fixed-0:00, irq=POLL)
+> [  255.272449] fec 2188000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
+> [  255.286539] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> root@hydraco:~# ifconfig eth1 up
+> [  268.350078] qca8k 2188000.ethernet-1:0a: port: 3, phy: -393143296
+> [  268.364442] qca8k 2188000.ethernet-1:0a eth1: configuring for phy/ link mode
+> [  268.375400] qca8k 2188000.ethernet-1:0a eth1: phylink_mac_config: mode=phy//Unknown/Unknown adv=00,00000000,000062ef pause=10 link=0 an=1
+> [  268.393901] qca8k 2188000.ethernet-1:0a eth1: phy link up /1Gbps/Full
+> [  268.404849] qca8k 2188000.ethernet-1:0a eth1: phylink_mac_config: mode=phy//1Gbps/Full adv=00,00000000,00000000 pause=0e link=1 an=0
+> [  268.420740] qca8k 2188000.ethernet-1:0a eth1: Link is Up - 1Gbps/Full - flow control rx/tx
+> [  268.432995] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+> root@hydraco:~# udhcpc -i eth1
+> udhcpc (v1.23.2) started
+> Sending discover...
+> Sending discover...
+> Sending discover...
 
+This i think is something different. What looks odd is
+imx6dl-yapp4-common.dtsi
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 931d9d935686..5e248588259a 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1617,6 +1617,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 	if (bond->params.miimon) {
- 		if (bond_check_dev_link(bond, slave_dev, 0) == BMSR_LSTATUS) {
- 			if (bond->params.updelay) {
-+/*XXX*/slave_info(bond_dev, slave_dev, "BOND_LINK_BACK initial state\n");
- 				bond_set_slave_link_state(new_slave,
- 							  BOND_LINK_BACK,
- 							  BOND_SLAVE_NOTIFY_NOW);
-@@ -2086,8 +2087,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 	ignore_updelay = !rcu_dereference(bond->curr_active_slave);
- 
- 	bond_for_each_slave_rcu(bond, slave, iter) {
--		slave->new_link = BOND_LINK_NOCHANGE;
--		slave->link_new_state = slave->link;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 		link_state = bond_check_dev_link(bond, slave->dev, 0);
- 
-@@ -2096,8 +2096,6 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			if (link_state)
- 				continue;
- 
--			bond_propose_link_state(slave, BOND_LINK_FAIL);
--			commit++;
- 			slave->delay = bond->params.downdelay;
- 			if (slave->delay) {
- 				slave_info(bond->dev, slave->dev, "link status down for %sinterface, disabling it in %d ms\n",
-@@ -2106,6 +2104,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 					    (bond_is_active_slave(slave) ?
- 					     "active " : "backup ") : "",
- 					   bond->params.downdelay * bond->params.miimon);
-+				slave->link = BOND_LINK_FAIL;
- 			}
- 			/*FALLTHRU*/
- 		case BOND_LINK_FAIL:
-@@ -2121,7 +2120,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			}
- 
- 			if (slave->delay <= 0) {
--				slave->new_link = BOND_LINK_DOWN;
-+				bond_propose_link_state(slave, BOND_LINK_DOWN);
- 				commit++;
- 				continue;
- 			}
-@@ -2133,15 +2132,13 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			if (!link_state)
- 				continue;
- 
--			bond_propose_link_state(slave, BOND_LINK_BACK);
--			commit++;
- 			slave->delay = bond->params.updelay;
--
- 			if (slave->delay) {
- 				slave_info(bond->dev, slave->dev, "link status up, enabling it in %d ms\n",
- 					   ignore_updelay ? 0 :
- 					   bond->params.updelay *
- 					   bond->params.miimon);
-+				slave->link = BOND_LINK_BACK;
- 			}
- 			/*FALLTHRU*/
- 		case BOND_LINK_BACK:
-@@ -2158,7 +2155,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 				slave->delay = 0;
- 
- 			if (slave->delay <= 0) {
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				commit++;
- 				ignore_updelay = false;
- 				continue;
-@@ -2196,7 +2193,7 @@ static void bond_miimon_commit(struct bonding *bond)
- 	struct slave *slave, *primary;
- 
- 	bond_for_each_slave(bond, slave, iter) {
--		switch (slave->new_link) {
-+		switch (slave->link_new_state) {
- 		case BOND_LINK_NOCHANGE:
- 			/* For 802.3ad mode, check current slave speed and
- 			 * duplex again in case its port was disabled after
-@@ -2268,8 +2265,8 @@ static void bond_miimon_commit(struct bonding *bond)
- 
- 		default:
- 			slave_err(bond->dev, slave->dev, "invalid new link %d on slave\n",
--				  slave->new_link);
--			slave->new_link = BOND_LINK_NOCHANGE;
-+				  slave->link_new_state);
-+			bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 			continue;
- 		}
-@@ -2677,13 +2674,13 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 	bond_for_each_slave_rcu(bond, slave, iter) {
- 		unsigned long trans_start = dev_trans_start(slave->dev);
- 
--		slave->new_link = BOND_LINK_NOCHANGE;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 		if (slave->link != BOND_LINK_UP) {
- 			if (bond_time_in_interval(bond, trans_start, 1) &&
- 			    bond_time_in_interval(bond, slave->last_rx, 1)) {
- 
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				slave_state_changed = 1;
- 
- 				/* primary_slave has no meaning in round-robin
-@@ -2708,7 +2705,7 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 			if (!bond_time_in_interval(bond, trans_start, 2) ||
- 			    !bond_time_in_interval(bond, slave->last_rx, 2)) {
- 
--				slave->new_link = BOND_LINK_DOWN;
-+				bond_propose_link_state(slave, BOND_LINK_DOWN);
- 				slave_state_changed = 1;
- 
- 				if (slave->link_failure_count < UINT_MAX)
-@@ -2739,8 +2736,8 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 			goto re_arm;
- 
- 		bond_for_each_slave(bond, slave, iter) {
--			if (slave->new_link != BOND_LINK_NOCHANGE)
--				slave->link = slave->new_link;
-+			if (slave->link_new_state != BOND_LINK_NOCHANGE)
-+				slave->link = slave->link_new_state;
- 		}
- 
- 		if (slave_state_changed) {
-@@ -2763,9 +2760,9 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- }
- 
- /* Called to inspect slaves for active-backup mode ARP monitor link state
-- * changes.  Sets new_link in slaves to specify what action should take
-- * place for the slave.  Returns 0 if no changes are found, >0 if changes
-- * to link states must be committed.
-+ * changes.  Sets proposed link state in slaves to specify what action
-+ * should take place for the slave.  Returns 0 if no changes are found, >0
-+ * if changes to link states must be committed.
-  *
-  * Called with rcu_read_lock held.
-  */
-@@ -2777,12 +2774,12 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 	int commit = 0;
- 
- 	bond_for_each_slave_rcu(bond, slave, iter) {
--		slave->new_link = BOND_LINK_NOCHANGE;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 		last_rx = slave_last_rx(bond, slave);
- 
- 		if (slave->link != BOND_LINK_UP) {
- 			if (bond_time_in_interval(bond, last_rx, 1)) {
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				commit++;
- 			}
- 			continue;
-@@ -2810,7 +2807,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 		if (!bond_is_active_slave(slave) &&
- 		    !rcu_access_pointer(bond->current_arp_slave) &&
- 		    !bond_time_in_interval(bond, last_rx, 3)) {
--			slave->new_link = BOND_LINK_DOWN;
-+			bond_propose_link_state(slave, BOND_LINK_DOWN);
- 			commit++;
- 		}
- 
-@@ -2823,7 +2820,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 		if (bond_is_active_slave(slave) &&
- 		    (!bond_time_in_interval(bond, trans_start, 2) ||
- 		     !bond_time_in_interval(bond, last_rx, 2))) {
--			slave->new_link = BOND_LINK_DOWN;
-+			bond_propose_link_state(slave, BOND_LINK_DOWN);
- 			commit++;
- 		}
- 	}
-@@ -2843,7 +2840,7 @@ static void bond_ab_arp_commit(struct bonding *bond)
- 	struct slave *slave;
- 
- 	bond_for_each_slave(bond, slave, iter) {
--		switch (slave->new_link) {
-+		switch (slave->link_new_state) {
- 		case BOND_LINK_NOCHANGE:
- 			continue;
- 
-@@ -2893,8 +2890,9 @@ static void bond_ab_arp_commit(struct bonding *bond)
- 			continue;
- 
- 		default:
--			slave_err(bond->dev, slave->dev, "impossible: new_link %d on slave\n",
--				  slave->new_link);
-+			slave_err(bond->dev, slave->dev,
-+				  "impossible: link_new_state %d on slave\n",
-+				  slave->link_new_state);
- 			continue;
- 		}
- 
-@@ -3133,6 +3131,7 @@ static int bond_slave_netdev_event(unsigned long event,
- 		 * let link-monitoring (miimon) set it right when correct
- 		 * speeds/duplex are available.
- 		 */
-+/*XXX*/slave_info(bond_dev, slave_dev, "EVENT %lu llu %lu\n", event, slave->last_link_up);
- 		if (bond_update_speed_duplex(slave) &&
- 		    BOND_MODE(bond) == BOND_MODE_8023AD) {
- 			if (slave->last_link_up)
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index f7fe45689142..d416af72404b 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -159,7 +159,6 @@ struct slave {
- 	unsigned long target_last_arp_rx[BOND_MAX_ARP_TARGETS];
- 	s8     link;		/* one of BOND_LINK_XXXX */
- 	s8     link_new_state;	/* one of BOND_LINK_XXXX */
--	s8     new_link;
- 	u8     backup:1,   /* indicates backup slave. Value corresponds with
- 			      BOND_STATE_ACTIVE and BOND_STATE_BACKUP */
- 	       inactive:1, /* indicates inactive slave */
-@@ -549,7 +548,7 @@ static inline void bond_propose_link_state(struct slave *slave, int state)
- 
- static inline void bond_commit_link_state(struct slave *slave, bool notify)
- {
--	if (slave->link == slave->link_new_state)
-+	if (slave->link_new_state == BOND_LINK_NOCHANGE)
- 		return;
- 
- 	slave->link = slave->link_new_state;
+&fec {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_enet>;
+        phy-mode = "rgmii-id";
+        phy-reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+        phy-reset-duration = <20>;
+        phy-supply = <&sw2_reg>;
+        phy-handle = <&ethphy0>;
+        status = "okay";
 
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+	mdio {
+
+               switch@10 {
+                        compatible = "qca,qca8334";
+                        reg = <10>;
+
+                        switch_ports: ports {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+
+                                ethphy0: port@0 {
+                                        reg = <0>;
+                                        label = "cpu";
+                                        phy-mode = "rgmii-id";
+                                        ethernet = <&fec>;
+
+Both the FEC and the CPU port are set to use rgmii-id". So we are
+getting double delays.
+
+Try changing one of these to plain rgmii.
+
+    Andrew
