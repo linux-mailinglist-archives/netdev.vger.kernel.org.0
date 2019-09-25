@@ -2,88 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F1FBBE361
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 19:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26194BE48D
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 20:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442924AbfIYRbL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Sep 2019 13:31:11 -0400
-Received: from mga12.intel.com ([192.55.52.136]:5238 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725955AbfIYRbL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 13:31:11 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Sep 2019 10:31:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,548,1559545200"; 
-   d="scan'208";a="390293772"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 25 Sep 2019 10:31:10 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     "Guedes\, Andre" <andre.guedes@intel.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri\@resnulli.us" <jiri@resnulli.us>,
-        "davem\@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH net v3] net/sched: cbs: Fix not adding cbs instance to list
-In-Reply-To: <99755D97-F59A-4E68-87AE-6CE88EDE66A3@intel.com>
-References: <20190924050458.14223-1-vinicius.gomes@intel.com> <99755D97-F59A-4E68-87AE-6CE88EDE66A3@intel.com>
-Date:   Wed, 25 Sep 2019 10:31:45 -0700
-Message-ID: <87d0fo8epq.fsf@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+        id S2443167AbfIYSYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 14:24:15 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:41189 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2408520AbfIYSYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 14:24:15 -0400
+Received: by mail-io1-f67.google.com with SMTP id r26so1264213ioh.8;
+        Wed, 25 Sep 2019 11:24:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6xjol+n/30NhNrorA1nuQM26Ppj6oKqSnjtWLX2XseA=;
+        b=CJBIqnUij2EVW5e23A7nSjpCnt1SNL0X/3euzdTJ/z9TUR3gImi+QltSfURY/pxSby
+         Wg7kQV1LnchSeJl2ak/EBCScicYBJB/GnNj+ZOC3TBrs22gzdklX6DICoD3Xg61kD21+
+         k8cTBNqMRZ+Tzr35lTTsQWK+AaD9GhyIdqUv9n0CDdo2tyjcYg6twfdHWfusvAWeiaC/
+         TjOaNSmgWaD0zAiYXvdwKeWSc0MfSFlfC73Pmsr0rhX0KRpJgrn//XnSktpTykEXSUry
+         PeMeVKxQskUGP7FZb2+Sd6l4hzusEaXdoG5aKbSLFH7YyLhDKbg2kPWgSiMwyxd1o0at
+         Dn8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6xjol+n/30NhNrorA1nuQM26Ppj6oKqSnjtWLX2XseA=;
+        b=mWh41TgoTzIxSmuGQytNyRoOtlmY11GmwHF/kmH05VQauj59zor/fMx+eOBIijYKkE
+         Ts28dEj0kaGINFm8Tda/TIq8WsQWCsTxFfe3o/0LLVIcK4amywcB7IT2+kzDC2p2KSaC
+         mwyVN4tcB7wxtyUuLY52AVhhKGbZaLytk2hleqYxfIQkkPkOX/yzprpMeR6Aavf+KgqN
+         cfPlLuNRgPRzVjl70dCugrHQPOQ/rSb8ZdEJztuim0/W3dzwMiVEu20afygH0vjSj/jY
+         jOqHlMJZjmbi3Kdt0J4GOJOzLx67Q6Hk9bw9f0LlRtM8qwdiYTP5GzkB92nLgGWUWA5u
+         MMLA==
+X-Gm-Message-State: APjAAAXyRfsDwMKwfcKjk30Ix+N77ABLTomRmNIUJVdVhQTiCQYCYLvy
+        VMQyEffw+vbzpHPIAE1MEF8=
+X-Google-Smtp-Source: APXvYqyD8Fs8XfvHAB0lOgHz7Vqb4KWU5w97yNmLZM6eggM6pL8Ngc3IGo3Uw3oeq9v2rhw4tTgxTg==
+X-Received: by 2002:a5d:8911:: with SMTP id b17mr779988ion.287.1569435853982;
+        Wed, 25 Sep 2019 11:24:13 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id f7sm185591ioj.66.2019.09.25.11.24.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Sep 2019 11:24:13 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Fred Lotter <frederik.lotter@netronome.com>,
+        oss-drivers@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] nfp: flower: prevent memory leak in nfp_flower_spawn_phy_reprs
+Date:   Wed, 25 Sep 2019 13:24:02 -0500
+Message-Id: <20190925182405.31287-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andre,
+In nfp_flower_spawn_phy_reprs, in the for loop over eth_tbl if any of
+intermediate allocations or initializations fail memory is leaked.
+requiered releases are added.
 
-"Guedes, Andre" <andre.guedes@intel.com> writes:
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/ethernet/netronome/nfp/flower/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> Hi Vinicius,
->
->> On Sep 23, 2019, at 10:04 PM, Vinicius Costa Gomes <vinicius.gomes@intel.com> wrote:
->> 
->> The problem happens because that when offloading is enabled, the cbs
->> instance is not added to the list.
->> 
->> Also, the current code doesn't handle correctly the case when offload
->> is disabled without removing the qdisc: if the link speed changes the
->> credit calculations will be wrong. When we create the cbs instance
->> with offloading enabled, it's not added to the notification list, when
->> later we disable offloading, it's not in the list, so link speed
->> changes will not affect it.
->> 
->> The solution for both issues is the same, add the cbs instance being
->> created unconditionally to the global list, even if the link state
->> notification isn't useful "right now".
->
-> I believe we could fix both issues described above and still don’t
-> notify the qdisc about link state if we handled the list
-> insertion/removal in cbs_change() instead.
->
-> Reading the cbs code more carefully, it seems it would be beneficial
-> to refactor the offload handling. For example, we currently init the
-> qdisc_watchdog even if it’s not useful when offload is enabled. Now,
-> we’re going to notify the qdisc even if it’s not useful too.
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index 7a20447cca19..91a47899220f 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -515,6 +515,7 @@ nfp_flower_spawn_phy_reprs(struct nfp_app *app, struct nfp_flower_priv *priv)
+ 		repr_priv = kzalloc(sizeof(*repr_priv), GFP_KERNEL);
+ 		if (!repr_priv) {
+ 			err = -ENOMEM;
++			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+ 		}
+ 
+@@ -525,11 +526,13 @@ nfp_flower_spawn_phy_reprs(struct nfp_app *app, struct nfp_flower_priv *priv)
+ 		port = nfp_port_alloc(app, NFP_PORT_PHYS_PORT, repr);
+ 		if (IS_ERR(port)) {
+ 			err = PTR_ERR(port);
++			kfree(repr_priv);
+ 			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+ 		}
+ 		err = nfp_port_init_phy_port(app->pf, app, port, i);
+ 		if (err) {
++			kfree(repr_priv);
+ 			nfp_port_free(port);
+ 			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+@@ -542,6 +545,7 @@ nfp_flower_spawn_phy_reprs(struct nfp_app *app, struct nfp_flower_priv *priv)
+ 		err = nfp_repr_init(app, repr,
+ 				    cmsg_port_id, port, priv->nn->dp.netdev);
+ 		if (err) {
++			kfree(repr_priv);
+ 			nfp_port_free(port);
+ 			nfp_repr_free(repr);
+ 			goto err_reprs_clean;
+-- 
+2.17.1
 
-I like your idea, but even after reading your email and the code a
-couple of times, I couldn't come up with anything quickly that wouldn't
-complicate things (i.e. add more code), I would need to experiment a
-bit. (btw, qdisc_watchdog_init() is just initializing some fields in a
-struct, and the notification part should be quite rare in practice).
-
-So my suggestion is to keep this patch as is, as it solves a real crash
-that a colleague faced. Later, we can try and simplify things even more.
-
-Cheers,
---
-Vinicius
-
-P.S.: I think I am still a bit traumatized but getting the init() and
-destroy() right were the hardest parts when we were trying to uptream
-this. That's why I am hesitant about adding more code to those flows.
