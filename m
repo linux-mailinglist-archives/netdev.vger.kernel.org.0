@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5C0BDBD4
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 12:05:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B45DBDBEE
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 12:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388203AbfIYKFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 06:05:55 -0400
-Received: from mail-yw1-f46.google.com ([209.85.161.46]:39686 "EHLO
-        mail-yw1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733114AbfIYKFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 06:05:55 -0400
-Received: by mail-yw1-f46.google.com with SMTP id n11so1790643ywn.6
-        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 03:05:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jOt+I5bYjovGTz/mGGHwppT9Wxd8+A5YxewlwM18KWU=;
-        b=bcbB3L5rDGsdM1Ate9CcM8nTflyajit2Z575A0+Eb/KHhx5MQvdPgAB1jw6vdnpowP
-         KXDSy/+PNj2/nscd0SURCWgCQM1UynMHMPtnEw/aO9VqtPNgm9MwiEqPIQft4chjs604
-         Om6H686Us7apQTnyaD3DTv/kX8oiQAofsi5X+iagrJrKMMKg1Wo0qy628ID09eAG+gHu
-         F7rmbdVZodaOwgBkQLaqJe0r4lxWHVsd24aQpDK7s/+qJVkFkEypL6WgJrGJ77sxm0pT
-         TbaAB8pNBNmV+ZHOq0uxyvsnLrS/MGIaaVH9/DizzvPcFx5lyeR9bd8DywjYIWBtugxl
-         wN9A==
-X-Gm-Message-State: APjAAAW3d0PmiNj08LPBJDi1Pw73v8XB00MQT8xZ0NkS/iUIwkpnxtYo
-        NuVURdwKEQvWqM+dcK91SAvRKZTeT6ylefnLPjoS3u1W
-X-Google-Smtp-Source: APXvYqyxlaa2Fp7pqgojh8jLKrgckEVwkGrzjq3HT+QZfBw2Ct8Mdv4YaVSc5KH4hquaXLA3y9vKCsjQOfnFdbVM2Mk=
-X-Received: by 2002:a81:a34c:: with SMTP id a73mr5000568ywh.51.1569405954175;
- Wed, 25 Sep 2019 03:05:54 -0700 (PDT)
+        id S2388511AbfIYKOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 06:14:54 -0400
+Received: from frisell.zx2c4.com ([192.95.5.64]:57273 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726276AbfIYKOx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 06:14:53 -0400
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 7b9fc82c;
+        Wed, 25 Sep 2019 09:29:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=KNimhQJi7rFc4+5jJt/B0zxPOp0=; b=ckS4tF
+        jiEQrFzzfeM3TBVYfHogw01x1l+JqeLjPB9nw+I4mioVZf4xRqSwJtBcc54o9lXY
+        kdiiMLTcTAXIej3G7wRMLDtO6GL9UJL34ZZX4pqOiDXyTfupkm+TkFfYyNu/ID/x
+        +TrMtvby594BgAbhLP+CHhfz/D4BTPOQPqjh9zNsj5ncAN/vw0p3Q9CwMF98+8Hf
+        JGpBiTON5f78EmA6lpAg3XhfLYCwAcwIkq2zzPPgjhepOgOLYZMTnjgBCPa1hmxi
+        0avS3o3ETY5/COeRsqUjBpRn6USczws/T5jw/7SUYYucRQHVOrGBYz9hTweYNhEM
+        sPxMfJxTOXcHUy0Q==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cd4a1943 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Wed, 25 Sep 2019 09:29:08 +0000 (UTC)
+Received: by mail-ot1-f54.google.com with SMTP id e11so4290947otl.5;
+        Wed, 25 Sep 2019 03:14:52 -0700 (PDT)
+X-Gm-Message-State: APjAAAU+pM/3GHQCABv5QGFa0p05c4drH9DCQPuLYPenAd3V+of7BPca
+        g3j6S3Pns3GTXmMUqk8uZzn/k3HRa3MiNCvI8jc=
+X-Google-Smtp-Source: APXvYqxXoFZZqOOGNm3SkWkHUEygxEwZrVu1GAlDCqmZfXb80ErX+pGyKR30T3QiTIHzoNYfeSdnYkAOzrvYBFFVkfI=
+X-Received: by 2002:a9d:3476:: with SMTP id v109mr5721549otb.179.1569406491412;
+ Wed, 25 Sep 2019 03:14:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <mvm4l1chemx.fsf@suse.de> <51458d2e-69a5-2a30-2167-7f47a43d9a2f@microchip.com>
- <mvmmuf4fszw.fsf@suse.de> <379c59d0-e31b-96c1-8a5e-416b98583da0@microchip.com>
-In-Reply-To: <379c59d0-e31b-96c1-8a5e-416b98583da0@microchip.com>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Wed, 25 Sep 2019 15:35:43 +0530
-Message-ID: <CAFcVECLwo64yduOQo21WQde_QLEw=H7iO+MWYvy2djAu=iT1fw@mail.gmail.com>
-Subject: Re: macb: inconsistent Rx descriptor chain after OOM
-To:     Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Cc:     schwab@suse.de, Nicolas Ferre <Nicolas.Ferre@microchip.com>,
-        netdev@vger.kernel.org
+References: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
+ <20190925.113928.2046484827308019751.davem@davemloft.net>
+In-Reply-To: <20190925.113928.2046484827308019751.davem@davemloft.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 25 Sep 2019 12:14:40 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qK2RWPLWWZGcmtVEHz+vUaVRBNtjv3GutkzWccdogF0w@mail.gmail.com>
+Message-ID: <CAHmME9qK2RWPLWWZGcmtVEHz+vUaVRBNtjv3GutkzWccdogF0w@mail.gmail.com>
+Subject: Re: WireGuard to port to existing Crypto API
+To:     David Miller <davem@davemloft.net>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andreas,
+Hi Dave,
 
-On Mon, Sep 16, 2019 at 4:25 PM <Claudiu.Beznea@microchip.com> wrote:
->
->
->
-> On 16.09.2019 13:14, Andreas Schwab wrote:
-> > External E-Mail
-> >
-> >
-> > On Sep 16 2019, <Claudiu.Beznea@microchip.com> wrote:
-> >
-> >> I will have a look on it. It would be good if you could give me some
-> >> details about the steps to reproduce it.
-> >
-> > You need to trigger OOM.
->
-> Ok, thank you!
->
-> >
-> > Andreas.
+On Wed, Sep 25, 2019 at 12:03 PM David Miller <davem@davemloft.net> wrote:
+> I didn't say "must" anything, I suggested this as a more smoothe
+> and efficient way forward.
 
-Can you please try incrementing the rx_prepared_head after skb
-allocation as follows?
+s/must/should/g? However it's characterized, I think your jugements
+and opinions are generally sound, and I intend to put them into
+action.
 
-@@ -920,7 +920,6 @@ static void gem_rx_refill(struct macb_queue *queue)
-  /* Make hw descriptor updates visible to CPU */
-  rmb();
+> I'm also a bit disappointed that you felt the need to so quickly
+> make such an explosive posting to the mailing list when we've
 
-- queue->rx_prepared_head++;
-  desc = macb_rx_desc(queue, entry);
+Explosive? That's certainly not the intent here. The project is
+changing direction in a big way. Collaborating with others on the
+crypto API will be an important part of that. Announcing the change in
+direction, those intentions, a rationale on why it will be okay, and
+inviting collaboration is a responsible thing to do at the earliest
+opportunity. Better to announce intent early rather than surprise
+people or deter potential collaborators by keeping plans secret.
 
-  if (!queue->rx_skbuff[entry]) {
-@@ -959,6 +958,7 @@ static void gem_rx_refill(struct macb_queue *queue)
-  dma_wmb();
-  desc->addr &= ~MACB_BIT(RX_USED);
-  }
-+ queue->rx_prepared_head++;
-  }
-
-  /* Make descriptor updates visible to hardware */
-
-Without this, head will increase even when skb allocation fails. It is a valid
-fix anyway and I'll patch it. But I recall a *similar* issue with inconsistent
-RX BD chain that was solved by this.
-
-Regards,
-Harini
+Jason
