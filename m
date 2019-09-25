@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 060FABDDB7
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D80ABDDBE
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405367AbfIYMGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 08:06:49 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37630 "EHLO mx1.redhat.com"
+        id S2405053AbfIYMHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 08:07:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54630 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405340AbfIYMGt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 08:06:49 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1727829AbfIYMHL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 08:07:11 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7ECDA18CB8E7;
-        Wed, 25 Sep 2019 12:06:47 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id AF4B33082131;
+        Wed, 25 Sep 2019 12:07:09 +0000 (UTC)
 Received: from [10.72.12.148] (ovpn-12-148.pek2.redhat.com [10.72.12.148])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B2103608C0;
-        Wed, 25 Sep 2019 12:05:00 +0000 (UTC)
-Subject: Re: [PATCH V2 5/8] mdev: introduce device specific ops
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B716F6012E;
+        Wed, 25 Sep 2019 12:06:30 +0000 (UTC)
+Subject: Re: [PATCH V2 6/8] mdev: introduce virtio device and its device ops
 To:     Alex Williamson <alex.williamson@redhat.com>
 Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
@@ -41,20 +41,20 @@ Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
         eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
         christophe.de.dinechin@gmail.com, kevin.tian@intel.com
 References: <20190924135332.14160-1-jasowang@redhat.com>
- <20190924135332.14160-6-jasowang@redhat.com>
- <20190924170638.064d85f7@x1.home>
+ <20190924135332.14160-7-jasowang@redhat.com>
+ <20190924170640.1da03bae@x1.home>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <27a9a71f-5a10-77be-2f54-5af52a406a00@redhat.com>
-Date:   Wed, 25 Sep 2019 20:04:54 +0800
+Message-ID: <3bb42d7c-b8d7-87d0-a2e0-52998f502efb@redhat.com>
+Date:   Wed, 25 Sep 2019 20:06:21 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190924170638.064d85f7@x1.home>
+In-Reply-To: <20190924170640.1da03bae@x1.home>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Wed, 25 Sep 2019 12:06:48 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Wed, 25 Sep 2019 12:07:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -62,154 +62,199 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 2019/9/25 上午7:06, Alex Williamson wrote:
-> On Tue, 24 Sep 2019 21:53:29 +0800
+> On Tue, 24 Sep 2019 21:53:30 +0800
 > Jason Wang <jasowang@redhat.com> wrote:
 >
->> Currently, except for the create and remove, the rest of
->> mdev_parent_ops is designed for vfio-mdev driver only and may not help
->> for kernel mdev driver. With the help of class id, this patch
->> introduces device specific callbacks inside mdev_device
->> structure. This allows different set of callback to be used by
->> vfio-mdev and virtio-mdev.
+>> This patch implements basic support for mdev driver that supports
+>> virtio transport for kernel virtio driver.
 >>
 >> Signed-off-by: Jason Wang <jasowang@redhat.com>
 >> ---
->>  .../driver-api/vfio-mediated-device.rst       |  4 +-
->>  MAINTAINERS                                   |  1 +
->>  drivers/gpu/drm/i915/gvt/kvmgt.c              | 17 +++---
->>  drivers/s390/cio/vfio_ccw_ops.c               | 17 ++++--
->>  drivers/s390/crypto/vfio_ap_ops.c             | 13 +++--
->>  drivers/vfio/mdev/mdev_core.c                 | 12 +++++
->>  drivers/vfio/mdev/mdev_private.h              |  1 +
->>  drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
->>  include/linux/mdev.h                          | 42 ++++-----------
->>  include/linux/vfio_mdev.h                     | 52 +++++++++++++++++++
->>  samples/vfio-mdev/mbochs.c                    | 19 ++++---
->>  samples/vfio-mdev/mdpy.c                      | 19 ++++---
->>  samples/vfio-mdev/mtty.c                      | 17 ++++--
->>  13 files changed, 168 insertions(+), 83 deletions(-)
->>  create mode 100644 include/linux/vfio_mdev.h
+>>  include/linux/mdev.h        |   2 +
+>>  include/linux/virtio_mdev.h | 145 ++++++++++++++++++++++++++++++++++++
+>>  2 files changed, 147 insertions(+)
+>>  create mode 100644 include/linux/virtio_mdev.h
 >>
->> diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
->> index a5bdc60d62a1..d50425b368bb 100644
->> --- a/Documentation/driver-api/vfio-mediated-device.rst
->> +++ b/Documentation/driver-api/vfio-mediated-device.rst
->> @@ -152,7 +152,9 @@ callbacks per mdev parent device, per mdev type, or any other categorization.
->>  Vendor drivers are expected to be fully asynchronous in this respect or
->>  provide their own internal resource protection.)
+>> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+>> index 3414307311f1..73ac27b3b868 100644
+>> --- a/include/linux/mdev.h
+>> +++ b/include/linux/mdev.h
+>> @@ -126,6 +126,8 @@ struct mdev_device *mdev_from_dev(struct device *dev);
 >>  
->> -The callbacks in the mdev_parent_ops structure are as follows:
->> +The device specific callbacks are referred through device_ops pointer
->> +in mdev_parent_ops. For vfio-mdev device, its callbacks in device_ops
->> +are as follows:
-> This is not accurate.  device_ops is now on the mdev_device and is an
-> mdev bus driver specific structure of callbacks that must be registered
-> for each mdev device by the parent driver during the create callback.
-> There's a one to one mapping of class_id to mdev_device_ops callbacks.
+>>  enum {
+>>  	MDEV_ID_VFIO = 1,
+>> +	MDEV_ID_VIRTIO = 2,
+>> +	MDEV_ID_VHOST = 3,
+> MDEV_ID_VHOST isn't used yet here. 
 
 
-Yes.
+Yes, just want to reserve one but it look too early to do that.
 
 
->
-> That also suggests to me that we could be more clever in registering
-> both of these with mdev-core.  Can we embed the class_id in the ops
-> structure in a common way so that the core can extract it and the bus
-> drivers can access their specific callbacks?
-
-
-That seems much cleaner, let me try to do that in V3.
-
-
->
->>  * open: open callback of mediated device
->>  * close: close callback of mediated device
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index b2326dece28e..89832b316500 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -17075,6 +17075,7 @@ S:	Maintained
->>  F:	Documentation/driver-api/vfio-mediated-device.rst
->>  F:	drivers/vfio/mdev/
->>  F:	include/linux/mdev.h
->> +F:	include/linux/vfio_mdev.h
->>  F:	samples/vfio-mdev/
->>  
->>  VFIO PLATFORM DRIVER
->> diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
->> index f793252a3d2a..b274f5ee481f 100644
->> --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
->> +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
->> @@ -42,6 +42,7 @@
->>  #include <linux/kvm_host.h>
->>  #include <linux/vfio.h>
->>  #include <linux/mdev.h>
->> +#include <linux/vfio_mdev.h>
->>  #include <linux/debugfs.h>
->>  
->>  #include <linux/nospec.h>
->> @@ -643,6 +644,8 @@ static void kvmgt_put_vfio_device(void *vgpu)
->>  	vfio_device_put(((struct intel_vgpu *)vgpu)->vdev.vfio_device);
->>  }
->>  
->> +static struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops;
->> +
->>  static int intel_vgpu_create(struct kobject *kobj, struct mdev_device *mdev)
->>  {
->>  	struct intel_vgpu *vgpu = NULL;
->> @@ -679,6 +682,7 @@ static int intel_vgpu_create(struct kobject *kobj, struct mdev_device *mdev)
->>  	ret = 0;
->>  
->>  	mdev_set_class_id(mdev, MDEV_ID_VFIO);
->> +	mdev_set_dev_ops(mdev, &intel_vfio_vgpu_dev_ops);
-> This seems rather unrefined.  We're registering interdependent data in
-> separate calls.  All drivers need to make both of these calls.  I'm not
-> sure if this is a good idea, but what if we had:
->
-> static const struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops = {
-> 	.id			= MDEV_ID_VFIO,
->  	.open			= intel_vgpu_open,
->  	.release		= intel_vgpu_release,
->         ...
->
-> And the set function passed &intel_vfio_vgpu_dev_ops.id and the mdev
-> bus drivers used container_of to get to their callbacks?
-
-
-Yes, with the check of mdev_device_create() if nothing is set by the device.
-
-
->
->>  out:
->>  	return ret;
->>  }
->> @@ -1601,20 +1605,21 @@ static const struct attribute_group *intel_vgpu_groups[] = {
->>  	NULL,
->>  };
->>  
->> -static struct mdev_parent_ops intel_vgpu_ops = {
->> -	.mdev_attr_groups       = intel_vgpu_groups,
->> -	.create			= intel_vgpu_create,
->> -	.remove			= intel_vgpu_remove,
->> -
->> +static struct vfio_mdev_device_ops intel_vfio_vgpu_dev_ops = {
->>  	.open			= intel_vgpu_open,
->>  	.release		= intel_vgpu_release,
->> -
->>  	.read			= intel_vgpu_read,
->>  	.write			= intel_vgpu_write,
->>  	.mmap			= intel_vgpu_mmap,
->>  	.ioctl			= intel_vgpu_ioctl,
->>  };
->>  
->> +static struct mdev_parent_ops intel_vgpu_ops = {
-> These could maybe be made const at the same time.  Thanks,
+>  Also, given the strong
+> interdependence between the class_id and the ops structure, we might
+> wand to define them in the same place.  Thanks,
 >
 > Alex
 
 
-Ok, let me fix.
+Yes, as you suggest in patch 5/8.
 
 Thanks
 
 
+>
+>>  	/* New entries must be added here */
+>>  };
+>>  
+>> diff --git a/include/linux/virtio_mdev.h b/include/linux/virtio_mdev.h
+>> new file mode 100644
+>> index 000000000000..d1a40a739266
+>> --- /dev/null
+>> +++ b/include/linux/virtio_mdev.h
+>> @@ -0,0 +1,145 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Virtio mediated device driver
+>> + *
+>> + * Copyright 2019, Red Hat Corp.
+>> + *     Author: Jason Wang <jasowang@redhat.com>
+>> + */
+>> +#ifndef _LINUX_VIRTIO_MDEV_H
+>> +#define _LINUX_VIRTIO_MDEV_H
+>> +
+>> +#include <linux/interrupt.h>
+>> +#include <linux/mdev.h>
+>> +#include <uapi/linux/vhost.h>
+>> +
+>> +#define VIRTIO_MDEV_DEVICE_API_STRING		"virtio-mdev"
+>> +#define VIRTIO_MDEV_VERSION 0x1
+>> +
+>> +struct virtio_mdev_callback {
+>> +	irqreturn_t (*callback)(void *data);
+>> +	void *private;
+>> +};
+>> +
+>> +/**
+>> + * struct vfio_mdev_device_ops - Structure to be registered for each
+>> + * mdev device to register the device to virtio-mdev module.
+>> + *
+>> + * @set_vq_address:		Set the address of virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				@desc_area: address of desc area
+>> + *				@driver_area: address of driver area
+>> + *				@device_area: address of device area
+>> + *				Returns integer: success (0) or error (< 0)
+>> + * @set_vq_num:		Set the size of virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				@num: the size of virtqueue
+>> + * @kick_vq:			Kick the virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + * @set_vq_cb:			Set the interrut calback function for
+>> + *				a virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				@cb: virtio-mdev interrupt callback structure
+>> + * @set_vq_ready:		Set ready status for a virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				@ready: ready (true) not ready(false)
+>> + * @get_vq_ready:		Get ready status for a virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				Returns boolean: ready (true) or not (false)
+>> + * @set_vq_state:		Set the state for a virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				@state: virtqueue state (last_avail_idx)
+>> + *				Returns integer: success (0) or error (< 0)
+>> + * @get_vq_state:		Get the state for a virtqueue
+>> + *				@mdev: mediated device
+>> + *				@idx: virtqueue index
+>> + *				Returns virtqueue state (last_avail_idx)
+>> + * @get_vq_align:		Get the virtqueue align requirement
+>> + *				for the device
+>> + *				@mdev: mediated device
+>> + *				Returns virtqueue algin requirement
+>> + * @get_features:		Get virtio features supported by the device
+>> + *				@mdev: mediated device
+>> + *				Returns the features support by the
+>> + *				device
+>> + * @get_features:		Set virtio features supported by the driver
+>> + *				@mdev: mediated device
+>> + *				@features: feature support by the driver
+>> + *				Returns integer: success (0) or error (< 0)
+>> + * @set_config_cb:		Set the config interrupt callback
+>> + *				@mdev: mediated device
+>> + *				@cb: virtio-mdev interrupt callback structure
+>> + * @get_device_id:		Get virtio device id
+>> + *				@mdev: mediated device
+>> + *				Returns u32: virtio device id
+>> + * @get_vendor_id:		Get virtio vendor id
+>> + *				@mdev: mediated device
+>> + *				Returns u32: virtio vendor id
+>> + * @get_status:		Get the device status
+>> + *				@mdev: mediated device
+>> + *				Returns u8: virtio device status
+>> + * @set_status:		Set the device status
+>> + *				@mdev: mediated device
+>> + *				@status: virtio device status
+>> + * @get_config:		Read from device specific confiugration space
+>> + *				@mdev: mediated device
+>> + *				@offset: offset from the beginning of
+>> + *				configuration space
+>> + *				@buf: buffer used to read to
+>> + *				@len: the length to read from
+>> + *				configration space
+>> + * @set_config:		Write to device specific confiugration space
+>> + *				@mdev: mediated device
+>> + *				@offset: offset from the beginning of
+>> + *				configuration space
+>> + *				@buf: buffer used to write from
+>> + *				@len: the length to write to
+>> + *				configration space
+>> + * @get_version:		Get the version of virtio mdev device
+>> + *				@mdev: mediated device
+>> + *				Returns integer: version of the device
+>> + * @get_generation:		Get device generaton
+>> + *				@mdev: mediated device
+>> + *				Returns u32: device generation
+>> + */
+>> +struct virtio_mdev_device_ops {
+>> +	/* Virtqueue ops */
+>> +	int (*set_vq_address)(struct mdev_device *mdev,
+>> +			      u16 idx, u64 desc_area, u64 driver_area,
+>> +			      u64 device_area);
+>> +	void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
+>> +	void (*kick_vq)(struct mdev_device *mdev, u16 idx);
+>> +	void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
+>> +			  struct virtio_mdev_callback *cb);
+>> +	void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready);
+>> +	bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
+>> +	int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
+>> +	u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
+>> +
+>> +	/* Device ops */
+>> +	u16 (*get_vq_align)(struct mdev_device *mdev);
+>> +	u64 (*get_features)(struct mdev_device *mdev);
+>> +	int (*set_features)(struct mdev_device *mdev, u64 features);
+>> +	void (*set_config_cb)(struct mdev_device *mdev,
+>> +			      struct virtio_mdev_callback *cb);
+>> +	u16 (*get_queue_max)(struct mdev_device *mdev);
+>> +	u32 (*get_device_id)(struct mdev_device *mdev);
+>> +	u32 (*get_vendor_id)(struct mdev_device *mdev);
+>> +	u8 (*get_status)(struct mdev_device *mdev);
+>> +	void (*set_status)(struct mdev_device *mdev, u8 status);
+>> +	void (*get_config)(struct mdev_device *mdev, unsigned int offset,
+>> +			   void *buf, unsigned int len);
+>> +	void (*set_config)(struct mdev_device *mdev, unsigned int offset,
+>> +			   const void *buf, unsigned int len);
+>> +	int (*get_version)(struct mdev_device *mdev);
+>> +	u32 (*get_generation)(struct mdev_device *mdev);
+>> +};
+>> +
+>> +#endif
+>> +
