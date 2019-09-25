@@ -2,106 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F98BDDCC
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD93BBDDED
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405422AbfIYMKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 08:10:12 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:20696 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2404622AbfIYMKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 08:10:12 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x8PC8Prq145034
-        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 08:10:11 -0400
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2v87txrghu-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 08:10:10 -0400
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <ubraun@linux.ibm.com>;
-        Wed, 25 Sep 2019 13:10:09 +0100
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 25 Sep 2019 13:10:06 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x8PCA5ki19333178
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 25 Sep 2019 12:10:05 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 77F694C05A;
-        Wed, 25 Sep 2019 12:10:05 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 42FF44C04E;
-        Wed, 25 Sep 2019 12:10:05 +0000 (GMT)
-Received: from oc5311105230.ibm.com (unknown [9.152.224.222])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 25 Sep 2019 12:10:05 +0000 (GMT)
-Subject: Re: [PATCH net v2 0/3] net/smc: move some definitions to UAPI
-To:     David Miller <davem@davemloft.net>, esyr@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kgraul@linux.ibm.com
-References: <cover.1568993930.git.esyr@redhat.com>
- <20190924.165240.1617972512581218831.davem@davemloft.net>
-From:   Ursula Braun <ubraun@linux.ibm.com>
-Openpgp: preference=signencrypt
-Date:   Wed, 25 Sep 2019 14:10:05 +0200
+        id S2405515AbfIYMOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 08:14:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52538 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405211AbfIYMOG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 08:14:06 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 552FF796EB;
+        Wed, 25 Sep 2019 12:14:05 +0000 (UTC)
+Received: from [10.72.12.148] (ovpn-12-148.pek2.redhat.com [10.72.12.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AADA91001938;
+        Wed, 25 Sep 2019 12:13:35 +0000 (UTC)
+Subject: Re: [PATCH V2 0/8] mdev based hardware virtio offloading support
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "farman@linux.ibm.com" <farman@linux.ibm.com>,
+        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+        "sebott@linux.ibm.com" <sebott@linux.ibm.com>,
+        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
+        "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>,
+        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
+        "freude@linux.ibm.com" <freude@linux.ibm.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "idos@mellanox.com" <idos@mellanox.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "christophe.de.dinechin@gmail.com" <christophe.de.dinechin@gmail.com>
+References: <20190924135332.14160-1-jasowang@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D58F68D@SHSMSX104.ccr.corp.intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a0466f84-0b45-a3d3-dc1d-83c9d07d6d9a@redhat.com>
+Date:   Wed, 25 Sep 2019 20:13:29 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190924.165240.1617972512581218831.davem@davemloft.net>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F68D@SHSMSX104.ccr.corp.intel.com>
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 19092512-0016-0000-0000-000002B0701F
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19092512-0017-0000-0000-0000331137E4
-Message-Id: <20af78a4-ded5-57ca-bd77-303cc7a59cf5@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-25_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1909250125
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Wed, 25 Sep 2019 12:14:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 2019/9/25 下午4:24, Tian, Kevin wrote:
+>> From: Jason Wang [mailto:jasowang@redhat.com]
+>> Sent: Tuesday, September 24, 2019 9:53 PM
+>>
+>> Hi all:
+>>
+>> There are hardware that can do virtio datapath offloading while having
+>> its own control path. This path tries to implement a mdev based
+>> unified API to support using kernel virtio driver to drive those
+>> devices. This is done by introducing a new mdev transport for virtio
+>> (virtio_mdev) and register itself as a new kind of mdev driver. Then
+>> it provides a unified way for kernel virtio driver to talk with mdev
+>> device implementation.
+>>
+>> Though the series only contains kernel driver support, the goal is to
+>> make the transport generic enough to support userspace drivers. This
+>> means vhost-mdev[1] could be built on top as well by resuing the
+>> transport.
+>>
+>> A sample driver is also implemented which simulate a virito-net
+>> loopback ethernet device on top of vringh + workqueue. This could be
+>> used as a reference implementation for real hardware driver.
+>>
+>> Consider mdev framework only support VFIO device and driver right now,
+>> this series also extend it to support other types. This is done
+>> through introducing class id to the device and pairing it with
+>> id_talbe claimed by the driver. On top, this seris also decouple
+> id_table claimed ... this series ...
 
-On 9/24/19 4:52 PM, David Miller wrote:
-> From: Eugene Syromiatnikov <esyr@redhat.com>
-> Date: Fri, 20 Sep 2019 17:41:47 +0200
-> 
->> As of now, it's a bit difficult to use SMC protocol, as significant part
->> of definitions related to it are defined in private headers and are not
->> part of UAPI. The following commits move some definitions to UAPI,
->> making them readily available to the user space.
->>
->> Changes since v1[1]:
->>  * Patch "provide fallback diagnostic codes in UAPI" is updated
->>    in accordance with the updated set of diagnostic codes.
->>
->> [1] https://lkml.org/lkml/2018/10/7/177
-> 
-> Isn't it way too late for this?
-> 
-> These definitions will now be duplicates for userland code that
-> defines the values on their own.
+
+Let me fix in V3.
+
+Thanks
+
+
 >
-
-Dave,
-we have to admit that it is already late for these patches. Nevertheless
-we think it is better to come up with them now than never. We doubt there
-exists already much userland code for it - except our own IBM-provided
-package smc-tools. Thus we appreciate acceptance of these patches.
-
-Kind regards, Ursula
-
- 
-
+>> device specific parents ops out of the common ones.
+>>
+>> Pktgen test was done with virito-net + mvnet loop back device.
+>>
+>> Please review.
+>>
+>> [1] https://lkml.org/lkml/2019/9/16/869
+>>
+>> Changes from V1:
+>>
+>> - move virtio_mdev.c to drivers/virtio
+>> - store class_id in mdev_device instead of mdev_parent
+>> - store device_ops in mdev_device instead of mdev_parent
+>> - reorder the patch, vringh fix comes first
+>> - really silent compiling warnings
+>> - really switch to use u16 for class_id
+>> - uevent and modpost support for mdev class_id
+>> - vraious tweaks per comments from Parav
+>>
+>> Changes from RFC-V2:
+>>
+>> - silent compile warnings on some specific configuration
+>> - use u16 instead u8 for class id
+>> - reseve MDEV_ID_VHOST for future vhost-mdev work
+>> - introduce "virtio" type for mvnet and make "vhost" type for future
+>>   work
+>> - add entries in MAINTAINER
+>> - tweak and typos fixes in commit log
+>>
+>> Changes from RFC-V1:
+>>
+>> - rename device id to class id
+>> - add docs for class id and device specific ops (device_ops)
+>> - split device_ops into seperate headers
+>> - drop the mdev_set_dma_ops()
+>> - use device_ops to implement the transport API, then it's not a part
+>>   of UAPI any more
+>> - use GFP_ATOMIC in mvnet sample device and other tweaks
+>> - set_vring_base/get_vring_base support for mvnet device
+>>
+>> Jason Wang (8):
+>>   vringh: fix copy direction of vringh_iov_push_kern()
+>>   mdev: class id support
+>>   mdev: bus uevent support
+>>   modpost: add support for mdev class id
+>>   mdev: introduce device specific ops
+>>   mdev: introduce virtio device and its device ops
+>>   virtio: introduce a mdev based transport
+>>   docs: sample driver to demonstrate how to implement virtio-mdev
+>>     framework
+>>
+>>  .../driver-api/vfio-mediated-device.rst       |   7 +-
+>>  MAINTAINERS                                   |   2 +
+>>  drivers/gpu/drm/i915/gvt/kvmgt.c              |  18 +-
+>>  drivers/s390/cio/vfio_ccw_ops.c               |  18 +-
+>>  drivers/s390/crypto/vfio_ap_ops.c             |  14 +-
+>>  drivers/vfio/mdev/mdev_core.c                 |  19 +
+>>  drivers/vfio/mdev/mdev_driver.c               |  22 +
+>>  drivers/vfio/mdev/mdev_private.h              |   2 +
+>>  drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
+>>  drivers/vhost/vringh.c                        |   8 +-
+>>  drivers/virtio/Kconfig                        |   7 +
+>>  drivers/virtio/Makefile                       |   1 +
+>>  drivers/virtio/virtio_mdev.c                  | 417 +++++++++++
+>>  include/linux/mdev.h                          |  52 +-
+>>  include/linux/mod_devicetable.h               |   8 +
+>>  include/linux/vfio_mdev.h                     |  52 ++
+>>  include/linux/virtio_mdev.h                   | 145 ++++
+>>  samples/Kconfig                               |   7 +
+>>  samples/vfio-mdev/Makefile                    |   1 +
+>>  samples/vfio-mdev/mbochs.c                    |  20 +-
+>>  samples/vfio-mdev/mdpy.c                      |  20 +-
+>>  samples/vfio-mdev/mtty.c                      |  18 +-
+>>  samples/vfio-mdev/mvnet.c                     | 692 ++++++++++++++++++
+>>  scripts/mod/devicetable-offsets.c             |   3 +
+>>  scripts/mod/file2alias.c                      |  10 +
+>>  25 files changed, 1524 insertions(+), 84 deletions(-)
+>>  create mode 100644 drivers/virtio/virtio_mdev.c
+>>  create mode 100644 include/linux/vfio_mdev.h
+>>  create mode 100644 include/linux/virtio_mdev.h
+>>  create mode 100644 samples/vfio-mdev/mvnet.c
+>>
+>> --
+>> 2.19.1
