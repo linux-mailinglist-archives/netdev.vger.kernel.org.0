@@ -2,164 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E87BDA43
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66445BDA56
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393455AbfIYIwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 04:52:24 -0400
-Received: from foss.arm.com ([217.140.110.172]:44498 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731047AbfIYIwF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 04:52:05 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8C1E142F;
-        Wed, 25 Sep 2019 01:51:57 -0700 (PDT)
-Received: from [10.37.10.85] (unknown [10.37.10.85])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD2CA3F59C;
-        Wed, 25 Sep 2019 01:51:55 -0700 (PDT)
-Subject: Re: Linux 5.4 - bpf test build fails
-To:     Shuah Khan <skhan@linuxfoundation.org>, Tim.Bird@sony.com,
-        alexei.starovoitov@gmail.com, daniel@iogearbox.net
-Cc:     linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net
-References: <742ecabe-45ce-cf6e-2540-25d6dc23c45f@linuxfoundation.org>
- <1d1bbc01-5cf4-72e6-76b3-754d23366c8f@arm.com>
- <34a9bd63-a251-0b4f-73b6-06b9bbf9d3fa@linuxfoundation.org>
- <a603ee8e-b0af-6506-0667-77269b0951b2@linuxfoundation.org>
- <c3dda8d0-1794-ffd1-4d76-690ac2be8b8f@arm.com>
- <ECADFF3FD767C149AD96A924E7EA6EAF977BCBF5@USCULXMSG01.am.sony.com>
- <d4c916ec-14a5-1076-7b84-3ca42026dd19@linuxfoundation.org>
-From:   Cristian Marussi <cristian.marussi@arm.com>
-Message-ID: <44411794-cd4a-704b-c1c6-d77183240b34@arm.com>
-Date:   Wed, 25 Sep 2019 09:52:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <d4c916ec-14a5-1076-7b84-3ca42026dd19@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1732047AbfIYI67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 04:58:59 -0400
+Received: from mail-eopbgr20117.outbound.protection.outlook.com ([40.107.2.117]:46101
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730048AbfIYI6u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 04:58:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mLJIkwBCAPJ7HVsjmxGn0Z19hzBUpXqaaz2heBSm08xQG//pqhmQL4UlyjCNu/7xAXJLv3VqS0HfIUm3/5TTWgY8zgGPCsA978tyxm8FoHS9MA3sb/XUDBhN/bodGbVwA+pafN+keIYzIFZJcB/bnCFpD29HZwBcW01APfn+Z6/VIq7dUlAiB1xVtoWeVAFhD7IO5inqNBJ521sjMuAU+Lmsvy28eB6NNKJeEclgeRaPcYkb6wFKAczZizpRttPi9Ay2Gc0vEddrdOckF1IGuY5LUEj6hYBIicvwVPJi8JYMamc5TQawAaESZ/wZwfMvII9WzUhEhmX7JMY+LC4z+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=joJMWMYl6OickdL6ydA4gp8/4e8Gr7ixcgLiqvj646c=;
+ b=MrHI22tQbuk6bbk7jGwpfbLg7N/z3TxVv0Ub2UKkYJQGallPIb336WQDtcY+ijMSH3Nd6Id0g2szVIO1yVQXb+R58ddpFyw0rX1RtjhPEZxlY6K24gQzRIi5db0JAHVpfW2UDtg6YNN8HO63PQJc7BYEIU3haxfBrYLPM/HVA53baYxX1HdeOS6DwHs15tUSHtMBzCwa/u88l/IOnrZx2mKEv4f9OJR8Ww9jZAXJnojyAPadjnGx3vROw6pESIqmEXjU/bnpIxEC7hxqLxgr6Pcp81gQMnnGVVpVnouISW2Swt+QW+8bU2GmjQQnMW5G5Mygdmg7R57IjhsYBoKmpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=victronenergy.com; dmarc=pass action=none
+ header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=joJMWMYl6OickdL6ydA4gp8/4e8Gr7ixcgLiqvj646c=;
+ b=LYi9R2q0LK+cOoIuls7dmMRytfo0Cq2RWNMZnDiH+Y+Z7IVP4sSaWm6uiivf2MUwjfVXxhIpmtYSBSGQU80qqFrt/xhF6fLgZDqeGuaDhA1bgdVwG3yhmcPMe1nCKgvsTpisGGCATF8mA05wpcKk8BzLHAE3HrNC6FEt7KtDxLo=
+Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com (10.173.82.19) by
+ VI1PR0701MB2095.eurprd07.prod.outlook.com (10.169.131.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.15; Wed, 25 Sep 2019 08:58:45 +0000
+Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com
+ ([fe80::dc92:2e0d:561a:fbb1]) by VI1PR0701MB2623.eurprd07.prod.outlook.com
+ ([fe80::dc92:2e0d:561a:fbb1%8]) with mapi id 15.20.2305.013; Wed, 25 Sep 2019
+ 08:58:45 +0000
+From:   Jeroen Hofstee <jhofstee@victronenergy.com>
+To:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Stephane Grosjean <s.grosjean@peak-system.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] can: peakcan: report bus recovery as well
+Thread-Topic: [PATCH] can: peakcan: report bus recovery as well
+Thread-Index: AQHVc39v0tTWHby5B0usrbVxGOnW3Q==
+Date:   Wed, 25 Sep 2019 08:58:45 +0000
+Message-ID: <20190925085824.4708-1-jhofstee@victronenergy.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [213.126.8.10]
+x-clientproxiedby: AM4PR05CA0017.eurprd05.prod.outlook.com (2603:10a6:205::30)
+ To VI1PR0701MB2623.eurprd07.prod.outlook.com (2603:10a6:801:b::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jhofstee@victronenergy.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a9bd05d1-0421-426a-0ee6-08d74196923b
+x-ms-traffictypediagnostic: VI1PR0701MB2095:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0701MB2095938EB9C47D7B2F5F2003C0870@VI1PR0701MB2095.eurprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-forefront-prvs: 01713B2841
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(366004)(396003)(39850400004)(346002)(376002)(189003)(199004)(6486002)(3846002)(2501003)(316002)(71200400001)(8676002)(66476007)(66446008)(386003)(71190400001)(6506007)(8936002)(2351001)(66946007)(36756003)(2906002)(81166006)(64756008)(26005)(52116002)(25786009)(7416002)(50226002)(7736002)(186003)(86362001)(66556008)(66066001)(4326008)(5660300002)(81156014)(478600001)(6916009)(2616005)(476003)(5640700003)(54906003)(305945005)(102836004)(99286004)(256004)(6512007)(14454004)(14444005)(486006)(1076003)(6116002)(6436002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0701MB2095;H:VI1PR0701MB2623.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: victronenergy.com does not
+ designate permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5WwiJFfoY91coQWmyHXbG3Y2ltBdvR76TNUgn7PSDZ6fBaoBRjb/2mWZEmx+CWGDO6L9+LEho9BY2khoFxeV5ITtaa5PQGEodEL/VGjCUeaXfhswoJJ80an/v6/Mo03XDhRtI7bQEjrdPwXeCSRcYrI/uHVwJkanc8/5VWkUraNP17oO7bq48JkKRfGDEVJ/erTpDjsJNvOyNrBhRAQ5u/iANWuomMzIIxaI+Cok/FiEzEqsNeOZvjhMUje7ooJ2kK6Btp42IS+bonD1kOyxoKvRychoxhwn1SkFpMQrR2EGtpaCaK5SXdliKsclfuRVsbFfEIPwNgagCOrggS6anaq1aki4CDDhvuhxLnzEnpRh3xyqkAC4CrNi0QkEBIGScjW3rT/78Zl92hoZkUbEJTDlsktfmCUxKJbapyk8DrU=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: victronenergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9bd05d1-0421-426a-0ee6-08d74196923b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2019 08:58:45.2837
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 60b95f08-3558-4e94-b0f8-d690c498e225
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sN+I546nx7q3rU/9hiNhfI4y8rEMmKsCv1N4Yt3fYz0xZSsc3RSAhXFKw2zcRJt/cexsR/dVSmjFz4Eddr/q01HZY2i9PmROhFay51HB1cE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0701MB2095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shuah, Tim
+While the state changes are reported when the error counters increase
+and decrease, there is no event when the bus recovers and the error
+counters decrease again. So add those as well.
 
-On 9/24/19 7:23 PM, Shuah Khan wrote:
-> On 9/24/19 12:07 PM, Tim.Bird@sony.com wrote:
->>
->>
->>> -----Original Message-----
->>> From: Cristian Marussi on Tuesday, September 24, 2019 7:30 AM
->>>
->>> Hi Shuah
->>>
->>> On 24/09/2019 17:39, Shuah Khan wrote:
->>>> On 9/24/19 10:03 AM, Shuah Khan wrote:
->>>>> On 9/24/19 9:52 AM, Cristian Marussi wrote:
->>>>>> Hi Shuah
->>>>>>
->>>>>> On 24/09/2019 16:26, Shuah Khan wrote:
->>>>>>> Hi Alexei and Daniel,
->>>>>>>
->>>>>>> bpf test doesn't build on Linux 5.4 mainline. Do you know what's
->>>>>>> happening here.
->>>>>>>
->>>>>>>
->>>>>>> make -C tools/testing/selftests/bpf/
->>>>>>
->>>>>> side question, since I'm writing arm64/ tests.
->>>>>>
->>>>>> my "build-testcases" following the KSFT docs are:
->>>>>>
->>>>>> make kselftest
->>>>>> make TARGETS=arm64 kselftest
->>>>>> make -C tools/testing/selftests/
->>>>>> make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
->>>>>> make TARGETS=arm64 -C tools/testing/selftests/
->>>>>> make TARGETS=arm64 -C tools/testing/selftests/
->>>>>> INSTALL_PATH=<install-path> install
->>>>>> ./kselftest_install.sh <install-path>
->>>>
->>>> Cristian,
->>>>
->>>> That being said, I definitely want to see this list limited to
->>>> a few options.
->>>>
->>>> One problem is that if somebody wants to do just a build, there
->>>> is no option from the main makefile. I have sent support for that
->>>> a few months ago and the patch didn't got lost it appears. I am
->>>> working on resending those patches. The same is true for install.
->>>> I sent in a patch for that a while back and I am going to resend.
->>>> These will make it easier for users.
->>>>
->>>> I would really want to get to supporting only these options:
->>>>
->>>> These are supported now:
->>>>
->>>> make kselftest
->>>> make TARGETS=arm64 kselftest (one or more targets)
->>>>
->>>> Replace the following:
->>>>
->>>> make -C tools/testing/selftests/ with
->>>>
->>>> make kselftes_build option from main makefile
->>>>
->>>> Replace this:
->>>> make -C tools/testing/selftests/ INSTALL_PATH=<install-path> install
->>>>
->>>> with
->>>> make kselftest_install
->>>
->>> Yes these top level options would be absolutely useful to avoid multiplication
->>> of build targets to support and test.
->>>
->>> Moreover, currently, since there was a lot of test growing into arm64/
->>> inside subdirs like arm64/signal, I support (still under review in fact) in the
->>> arm64/
->>> toplevel makefile the possibility of building/installing by subdirs only, in order
->>> to be able to limit what you want to build/install of a TARGET (resulting in
->>> quicker devel),
->>> issuing something like:
->>>
->>> make TARGETS=arm64 SUBTARGETS=signal -C tools/testing/selftests/
->>>
->>> if possible, that would be useful if kept functional even in the
->>> new schema. I mean being able to still issue:
->>>
->>> make TARGETS=arm64 SUBTARGETS=signal kselftes_build
->>
->>  From a user perspective, instead of adding a new SUBTARGETS variable,
->> I would prefer something like the following:
->>
->> make TARGET=arm64/signal kselftest_build
->>
->> If you just add a single flat subsidiary namespace, then it doesn't support further
->> increasing the directory depth in the future.
->>
-> 
-> TARGETS is make variable. Adding sub-targets might not be easy without
-> cluttering the selftests main Makefile. I will have to look into it.
-> 
+Change the state going downward to be ERROR_PASSIVE -> ERROR_WARNING ->
+ERROR_ACTIVE instead of directly to ERROR_ACTIVE again.
 
-I was NOT proposing in fact to introduce handling of SUBTARGETS at the toplevel kselftest
-Makefile, just not to kill the possibility for interested subsystems to handle it as they
-wish in their own toplevel subsystem Makefile like in arm64/Makefile in:
+Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
+Cc: Stephane Grosjean <s.grosjean@peak-system.com>
+---
+ drivers/net/can/usb/peak_usb/pcan_usb.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-https://lore.kernel.org/linux-kselftest/20190910123111.33478-2-cristian.marussi@arm.com/
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/=
+peak_usb/pcan_usb.c
+index 617da295b6c1..dd2a7f529012 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
+@@ -436,8 +436,8 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_co=
+ntext *mc, u8 n,
+ 		}
+ 		if ((n & PCAN_USB_ERROR_BUS_LIGHT) =3D=3D 0) {
+ 			/* no error (back to active state) */
+-			mc->pdev->dev.can.state =3D CAN_STATE_ERROR_ACTIVE;
+-			return 0;
++			new_state =3D CAN_STATE_ERROR_ACTIVE;
++			break;
+ 		}
+ 		break;
+=20
+@@ -460,9 +460,9 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_co=
+ntext *mc, u8 n,
+ 		}
+=20
+ 		if ((n & PCAN_USB_ERROR_BUS_HEAVY) =3D=3D 0) {
+-			/* no error (back to active state) */
+-			mc->pdev->dev.can.state =3D CAN_STATE_ERROR_ACTIVE;
+-			return 0;
++			/* no error (back to warning state) */
++			new_state =3D CAN_STATE_ERROR_WARNING;
++			break;
+ 		}
+ 		break;
+=20
+@@ -501,6 +501,11 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_c=
+ontext *mc, u8 n,
+ 		mc->pdev->dev.can.can_stats.error_warning++;
+ 		break;
+=20
++	case CAN_STATE_ERROR_ACTIVE:
++		cf->can_id |=3D CAN_ERR_CRTL;
++		cf->data[1] =3D CAN_ERR_CRTL_ACTIVE;
++		break;
++
+ 	default:
+ 		/* CAN_STATE_MAX (trick to handle other errors) */
+ 		cf->can_id |=3D CAN_ERR_CRTL;
+--=20
+2.17.1
 
-(probably better renaming SUBTARGETS->ARM64_SUBTARGETS in the next v7 to avoid name clashing)
-
-Because it's painful from the development perspective not having the possibility to selectively
-build/install only a subset/subdir of the chosen TARGETS; but it's a very subsystem specific issue
-and not everybody need it, so I'd let the respective TARGETS subsystems handle it if they want/need.
-
-Thanks
-
-Cristian
-
-> thanks,
-> -- Shuah
-> 
