@@ -2,155 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66445BDA56
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 10:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECB6BDA95
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 11:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732047AbfIYI67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 04:58:59 -0400
-Received: from mail-eopbgr20117.outbound.protection.outlook.com ([40.107.2.117]:46101
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730048AbfIYI6u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 04:58:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mLJIkwBCAPJ7HVsjmxGn0Z19hzBUpXqaaz2heBSm08xQG//pqhmQL4UlyjCNu/7xAXJLv3VqS0HfIUm3/5TTWgY8zgGPCsA978tyxm8FoHS9MA3sb/XUDBhN/bodGbVwA+pafN+keIYzIFZJcB/bnCFpD29HZwBcW01APfn+Z6/VIq7dUlAiB1xVtoWeVAFhD7IO5inqNBJ521sjMuAU+Lmsvy28eB6NNKJeEclgeRaPcYkb6wFKAczZizpRttPi9Ay2Gc0vEddrdOckF1IGuY5LUEj6hYBIicvwVPJi8JYMamc5TQawAaESZ/wZwfMvII9WzUhEhmX7JMY+LC4z+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=joJMWMYl6OickdL6ydA4gp8/4e8Gr7ixcgLiqvj646c=;
- b=MrHI22tQbuk6bbk7jGwpfbLg7N/z3TxVv0Ub2UKkYJQGallPIb336WQDtcY+ijMSH3Nd6Id0g2szVIO1yVQXb+R58ddpFyw0rX1RtjhPEZxlY6K24gQzRIi5db0JAHVpfW2UDtg6YNN8HO63PQJc7BYEIU3haxfBrYLPM/HVA53baYxX1HdeOS6DwHs15tUSHtMBzCwa/u88l/IOnrZx2mKEv4f9OJR8Ww9jZAXJnojyAPadjnGx3vROw6pESIqmEXjU/bnpIxEC7hxqLxgr6Pcp81gQMnnGVVpVnouISW2Swt+QW+8bU2GmjQQnMW5G5Mygdmg7R57IjhsYBoKmpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=victronenergy.com; dmarc=pass action=none
- header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=joJMWMYl6OickdL6ydA4gp8/4e8Gr7ixcgLiqvj646c=;
- b=LYi9R2q0LK+cOoIuls7dmMRytfo0Cq2RWNMZnDiH+Y+Z7IVP4sSaWm6uiivf2MUwjfVXxhIpmtYSBSGQU80qqFrt/xhF6fLgZDqeGuaDhA1bgdVwG3yhmcPMe1nCKgvsTpisGGCATF8mA05wpcKk8BzLHAE3HrNC6FEt7KtDxLo=
-Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com (10.173.82.19) by
- VI1PR0701MB2095.eurprd07.prod.outlook.com (10.169.131.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.15; Wed, 25 Sep 2019 08:58:45 +0000
-Received: from VI1PR0701MB2623.eurprd07.prod.outlook.com
- ([fe80::dc92:2e0d:561a:fbb1]) by VI1PR0701MB2623.eurprd07.prod.outlook.com
- ([fe80::dc92:2e0d:561a:fbb1%8]) with mapi id 15.20.2305.013; Wed, 25 Sep 2019
- 08:58:45 +0000
-From:   Jeroen Hofstee <jhofstee@victronenergy.com>
-To:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] can: peakcan: report bus recovery as well
-Thread-Topic: [PATCH] can: peakcan: report bus recovery as well
-Thread-Index: AQHVc39v0tTWHby5B0usrbVxGOnW3Q==
-Date:   Wed, 25 Sep 2019 08:58:45 +0000
-Message-ID: <20190925085824.4708-1-jhofstee@victronenergy.com>
+        id S1730048AbfIYJJe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Sep 2019 05:09:34 -0400
+Received: from mga05.intel.com ([192.55.52.43]:38724 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728608AbfIYJJd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 05:09:33 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Sep 2019 02:09:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,547,1559545200"; 
+   d="scan'208";a="191280732"
+Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
+  by orsmga003.jf.intel.com with ESMTP; 25 Sep 2019 02:09:29 -0700
+Received: from fmsmsx151.amr.corp.intel.com (10.18.125.4) by
+ FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 25 Sep 2019 02:09:29 -0700
+Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
+ FMSMSX151.amr.corp.intel.com (10.18.125.4) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 25 Sep 2019 02:09:23 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.32]) by
+ SHSMSX101.ccr.corp.intel.com ([169.254.1.92]) with mapi id 14.03.0439.000;
+ Wed, 25 Sep 2019 17:09:20 +0800
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
+        "Liang, Cunming" <cunming.liang@intel.com>,
+        "Wang, Zhihong" <zhihong.wang@intel.com>,
+        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
+        "Wang, Xiao W" <xiao.w.wang@intel.com>,
+        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
+        "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "farman@linux.ibm.com" <farman@linux.ibm.com>,
+        "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
+        "sebott@linux.ibm.com" <sebott@linux.ibm.com>,
+        "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
+        "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>,
+        "akrowiak@linux.ibm.com" <akrowiak@linux.ibm.com>,
+        "freude@linux.ibm.com" <freude@linux.ibm.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "idos@mellanox.com" <idos@mellanox.com>,
+        "eperezma@redhat.com" <eperezma@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "christophe.de.dinechin@gmail.com" <christophe.de.dinechin@gmail.com>
+Subject: RE: [PATCH V2 6/8] mdev: introduce virtio device and its device ops
+Thread-Topic: [PATCH V2 6/8] mdev: introduce virtio device and its device ops
+Thread-Index: AQHVct/nWfANpdabEEm3hvDI5WX0fqc8F18A
+Date:   Wed, 25 Sep 2019 09:09:19 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F7DA@SHSMSX104.ccr.corp.intel.com>
+References: <20190924135332.14160-1-jasowang@redhat.com>
+ <20190924135332.14160-7-jasowang@redhat.com>
+In-Reply-To: <20190924135332.14160-7-jasowang@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [213.126.8.10]
-x-clientproxiedby: AM4PR05CA0017.eurprd05.prod.outlook.com (2603:10a6:205::30)
- To VI1PR0701MB2623.eurprd07.prod.outlook.com (2603:10a6:801:b::19)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jhofstee@victronenergy.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a9bd05d1-0421-426a-0ee6-08d74196923b
-x-ms-traffictypediagnostic: VI1PR0701MB2095:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0701MB2095938EB9C47D7B2F5F2003C0870@VI1PR0701MB2095.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 01713B2841
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(366004)(396003)(39850400004)(346002)(376002)(189003)(199004)(6486002)(3846002)(2501003)(316002)(71200400001)(8676002)(66476007)(66446008)(386003)(71190400001)(6506007)(8936002)(2351001)(66946007)(36756003)(2906002)(81166006)(64756008)(26005)(52116002)(25786009)(7416002)(50226002)(7736002)(186003)(86362001)(66556008)(66066001)(4326008)(5660300002)(81156014)(478600001)(6916009)(2616005)(476003)(5640700003)(54906003)(305945005)(102836004)(99286004)(256004)(6512007)(14454004)(14444005)(486006)(1076003)(6116002)(6436002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0701MB2095;H:VI1PR0701MB2623.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: victronenergy.com does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5WwiJFfoY91coQWmyHXbG3Y2ltBdvR76TNUgn7PSDZ6fBaoBRjb/2mWZEmx+CWGDO6L9+LEho9BY2khoFxeV5ITtaa5PQGEodEL/VGjCUeaXfhswoJJ80an/v6/Mo03XDhRtI7bQEjrdPwXeCSRcYrI/uHVwJkanc8/5VWkUraNP17oO7bq48JkKRfGDEVJ/erTpDjsJNvOyNrBhRAQ5u/iANWuomMzIIxaI+Cok/FiEzEqsNeOZvjhMUje7ooJ2kK6Btp42IS+bonD1kOyxoKvRychoxhwn1SkFpMQrR2EGtpaCaK5SXdliKsclfuRVsbFfEIPwNgagCOrggS6anaq1aki4CDDhvuhxLnzEnpRh3xyqkAC4CrNi0QkEBIGScjW3rT/78Zl92hoZkUbEJTDlsktfmCUxKJbapyk8DrU=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNjZkMjkzMjAtZTRmMy00NjZlLTg4NGQtMjk0MGE1YTdhNjhlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQStldm53XC92NkNoYndOZTZYXC9Fc1FPZEtpb3ZESVdKME9ZQ003eUw4U2tOZXl6THpyWFFoRWVkenNzc3BWclBQIn0=
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-OriginatorOrg: victronenergy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9bd05d1-0421-426a-0ee6-08d74196923b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2019 08:58:45.2837
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 60b95f08-3558-4e94-b0f8-d690c498e225
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sN+I546nx7q3rU/9hiNhfI4y8rEMmKsCv1N4Yt3fYz0xZSsc3RSAhXFKw2zcRJt/cexsR/dVSmjFz4Eddr/q01HZY2i9PmROhFay51HB1cE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0701MB2095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While the state changes are reported when the error counters increase
-and decrease, there is no event when the bus recovers and the error
-counters decrease again. So add those as well.
+> From: Jason Wang [mailto:jasowang@redhat.com]
+> Sent: Tuesday, September 24, 2019 9:54 PM
+> 
+> This patch implements basic support for mdev driver that supports
+> virtio transport for kernel virtio driver.
+> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  include/linux/mdev.h        |   2 +
+>  include/linux/virtio_mdev.h | 145
+> ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 147 insertions(+)
+>  create mode 100644 include/linux/virtio_mdev.h
+> 
+> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+> index 3414307311f1..73ac27b3b868 100644
+> --- a/include/linux/mdev.h
+> +++ b/include/linux/mdev.h
+> @@ -126,6 +126,8 @@ struct mdev_device *mdev_from_dev(struct device
+> *dev);
+> 
+>  enum {
+>  	MDEV_ID_VFIO = 1,
+> +	MDEV_ID_VIRTIO = 2,
+> +	MDEV_ID_VHOST = 3,
+>  	/* New entries must be added here */
+>  };
+> 
+> diff --git a/include/linux/virtio_mdev.h b/include/linux/virtio_mdev.h
+> new file mode 100644
+> index 000000000000..d1a40a739266
+> --- /dev/null
+> +++ b/include/linux/virtio_mdev.h
+> @@ -0,0 +1,145 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Virtio mediated device driver
+> + *
+> + * Copyright 2019, Red Hat Corp.
+> + *     Author: Jason Wang <jasowang@redhat.com>
+> + */
+> +#ifndef _LINUX_VIRTIO_MDEV_H
+> +#define _LINUX_VIRTIO_MDEV_H
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/mdev.h>
+> +#include <uapi/linux/vhost.h>
+> +
+> +#define VIRTIO_MDEV_DEVICE_API_STRING		"virtio-mdev"
+> +#define VIRTIO_MDEV_VERSION 0x1
 
-Change the state going downward to be ERROR_PASSIVE -> ERROR_WARNING ->
-ERROR_ACTIVE instead of directly to ERROR_ACTIVE again.
+Just be curious. is this version identical to virtio spec version that below
+callbacks are created for, or just irrelevant?
 
-Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
-Cc: Stephane Grosjean <s.grosjean@peak-system.com>
----
- drivers/net/can/usb/peak_usb/pcan_usb.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+> +
+> +struct virtio_mdev_callback {
+> +	irqreturn_t (*callback)(void *data);
+> +	void *private;
+> +};
+> +
+> +/**
+> + * struct vfio_mdev_device_ops - Structure to be registered for each
+> + * mdev device to register the device to virtio-mdev module.
+> + *
+> + * @set_vq_address:		Set the address of virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@desc_area: address of desc area
+> + *				@driver_area: address of driver area
+> + *				@device_area: address of device area
+> + *				Returns integer: success (0) or error (< 0)
+> + * @set_vq_num:		Set the size of virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@num: the size of virtqueue
+> + * @kick_vq:			Kick the virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + * @set_vq_cb:			Set the interrut calback function for
+> + *				a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@cb: virtio-mdev interrupt callback
+> structure
+> + * @set_vq_ready:		Set ready status for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@ready: ready (true) not ready(false)
+> + * @get_vq_ready:		Get ready status for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				Returns boolean: ready (true) or not (false)
+> + * @set_vq_state:		Set the state for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				@state: virtqueue state (last_avail_idx)
+> + *				Returns integer: success (0) or error (< 0)
+> + * @get_vq_state:		Get the state for a virtqueue
+> + *				@mdev: mediated device
+> + *				@idx: virtqueue index
+> + *				Returns virtqueue state (last_avail_idx)
+> + * @get_vq_align:		Get the virtqueue align requirement
+> + *				for the device
+> + *				@mdev: mediated device
+> + *				Returns virtqueue algin requirement
+> + * @get_features:		Get virtio features supported by the device
+> + *				@mdev: mediated device
+> + *				Returns the features support by the
+> + *				device
+> + * @get_features:		Set virtio features supported by the driver
+> + *				@mdev: mediated device
+> + *				@features: feature support by the driver
+> + *				Returns integer: success (0) or error (< 0)
+> + * @set_config_cb:		Set the config interrupt callback
+> + *				@mdev: mediated device
+> + *				@cb: virtio-mdev interrupt callback
+> structure
+> + * @get_device_id:		Get virtio device id
+> + *				@mdev: mediated device
+> + *				Returns u32: virtio device id
+> + * @get_vendor_id:		Get virtio vendor id
+> + *				@mdev: mediated device
+> + *				Returns u32: virtio vendor id
+> + * @get_status:		Get the device status
+> + *				@mdev: mediated device
+> + *				Returns u8: virtio device status
+> + * @set_status:		Set the device status
+> + *				@mdev: mediated device
+> + *				@status: virtio device status
+> + * @get_config:		Read from device specific confiugration
+> space
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/=
-peak_usb/pcan_usb.c
-index 617da295b6c1..dd2a7f529012 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -436,8 +436,8 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_co=
-ntext *mc, u8 n,
- 		}
- 		if ((n & PCAN_USB_ERROR_BUS_LIGHT) =3D=3D 0) {
- 			/* no error (back to active state) */
--			mc->pdev->dev.can.state =3D CAN_STATE_ERROR_ACTIVE;
--			return 0;
-+			new_state =3D CAN_STATE_ERROR_ACTIVE;
-+			break;
- 		}
- 		break;
-=20
-@@ -460,9 +460,9 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_co=
-ntext *mc, u8 n,
- 		}
-=20
- 		if ((n & PCAN_USB_ERROR_BUS_HEAVY) =3D=3D 0) {
--			/* no error (back to active state) */
--			mc->pdev->dev.can.state =3D CAN_STATE_ERROR_ACTIVE;
--			return 0;
-+			/* no error (back to warning state) */
-+			new_state =3D CAN_STATE_ERROR_WARNING;
-+			break;
- 		}
- 		break;
-=20
-@@ -501,6 +501,11 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_c=
-ontext *mc, u8 n,
- 		mc->pdev->dev.can.can_stats.error_warning++;
- 		break;
-=20
-+	case CAN_STATE_ERROR_ACTIVE:
-+		cf->can_id |=3D CAN_ERR_CRTL;
-+		cf->data[1] =3D CAN_ERR_CRTL_ACTIVE;
-+		break;
-+
- 	default:
- 		/* CAN_STATE_MAX (trick to handle other errors) */
- 		cf->can_id |=3D CAN_ERR_CRTL;
---=20
-2.17.1
+configuration (and similar typos downward)
+
+> + *				@mdev: mediated device
+> + *				@offset: offset from the beginning of
+> + *				configuration space
+> + *				@buf: buffer used to read to
+> + *				@len: the length to read from
+> + *				configration space
+> + * @set_config:		Write to device specific confiugration space
+> + *				@mdev: mediated device
+> + *				@offset: offset from the beginning of
+> + *				configuration space
+> + *				@buf: buffer used to write from
+> + *				@len: the length to write to
+> + *				configration space
+> + * @get_version:		Get the version of virtio mdev device
+> + *				@mdev: mediated device
+> + *				Returns integer: version of the device
+> + * @get_generation:		Get device generaton
+> + *				@mdev: mediated device
+> + *				Returns u32: device generation
+> + */
+> +struct virtio_mdev_device_ops {
+> +	/* Virtqueue ops */
+> +	int (*set_vq_address)(struct mdev_device *mdev,
+> +			      u16 idx, u64 desc_area, u64 driver_area,
+> +			      u64 device_area);
+> +	void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
+> +	void (*kick_vq)(struct mdev_device *mdev, u16 idx);
+> +	void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
+> +			  struct virtio_mdev_callback *cb);
+> +	void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool
+> ready);
+> +	bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
+> +	int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
+> +	u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
+> +
+> +	/* Device ops */
+> +	u16 (*get_vq_align)(struct mdev_device *mdev);
+> +	u64 (*get_features)(struct mdev_device *mdev);
+> +	int (*set_features)(struct mdev_device *mdev, u64 features);
+> +	void (*set_config_cb)(struct mdev_device *mdev,
+> +			      struct virtio_mdev_callback *cb);
+> +	u16 (*get_queue_max)(struct mdev_device *mdev);
+> +	u32 (*get_device_id)(struct mdev_device *mdev);
+> +	u32 (*get_vendor_id)(struct mdev_device *mdev);
+> +	u8 (*get_status)(struct mdev_device *mdev);
+> +	void (*set_status)(struct mdev_device *mdev, u8 status);
+> +	void (*get_config)(struct mdev_device *mdev, unsigned int offset,
+> +			   void *buf, unsigned int len);
+> +	void (*set_config)(struct mdev_device *mdev, unsigned int offset,
+> +			   const void *buf, unsigned int len);
+> +	int (*get_version)(struct mdev_device *mdev);
+> +	u32 (*get_generation)(struct mdev_device *mdev);
+> +};
+
+I'm not sure how stable above ops are. Does it make sense if defining
+just two callbacks here, e.g. vq_ctrl and device_ctrl, and then let the
+vendor driver to handle specific ops in each category (similar to how
+ioctl works)?
+
+Thanks
+Kevin
 
