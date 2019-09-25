@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 640C5BDB39
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 11:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E51BDB41
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 11:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbfIYJjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 05:39:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33496 "EHLO
+        id S1726937AbfIYJke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 05:40:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33514 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfIYJjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 05:39:35 -0400
+        with ESMTP id S1726816AbfIYJke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 05:40:34 -0400
 Received: from localhost (unknown [65.39.69.237])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 76B5A15492860;
-        Wed, 25 Sep 2019 02:39:34 -0700 (PDT)
-Date:   Wed, 25 Sep 2019 11:39:28 +0200 (CEST)
-Message-Id: <20190925.113928.2046484827308019751.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0E0731549287F;
+        Wed, 25 Sep 2019 02:40:32 -0700 (PDT)
+Date:   Wed, 25 Sep 2019 11:40:31 +0200 (CEST)
+Message-Id: <20190925.114031.379108392028630817.davem@davemloft.net>
+To:     bruno@wolff.to
+Cc:     Jason@zx2c4.com, wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: WireGuard to port to existing Crypto API
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
+In-Reply-To: <20190925091700.GA9970@wolff.to>
 References: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
+        <20190925091700.GA9970@wolff.to>
 X-Mailer: Mew version 6.8 on Emacs 26.2
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 25 Sep 2019 02:39:35 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 25 Sep 2019 02:40:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Wed, 25 Sep 2019 10:29:45 +0200
+From: Bruno Wolff III <bruno@wolff.to>
+Date: Wed, 25 Sep 2019 04:17:00 -0500
 
-> His viewpoint has recently solidified: in order to go upstream,
-> WireGuard must port to the existing crypto API, and handle the Zinc
-> project separately.
+> Are there going to be two branches, one for using the current API and
+> one using Zinc?
 
-I didn't say "must" anything, I suggested this as a more smoothe
-and efficient way forward.
+This is inapproprate to even discuss at this point.
 
-I'm also a bit disappointed that you felt the need to so quickly
-make such an explosive posting to the mailing list when we've
-just spoken about this amongst ourselves only 20 minutes ago.
-
-Please proceed in a more smoothe and considerate manner for all
-parties involved.
+Let's see what the crypto based stuff looks like, evaluate it,
+and then decide how to proceed forward.
 
 Thank you.
