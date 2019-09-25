@@ -2,73 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE594BE133
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 17:25:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAB4BE19A
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 17:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727313AbfIYPZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 11:25:16 -0400
-Received: from mail-qk1-f178.google.com ([209.85.222.178]:39172 "EHLO
-        mail-qk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727138AbfIYPZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 11:25:15 -0400
-Received: by mail-qk1-f178.google.com with SMTP id 4so5617877qki.6
-        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 08:25:15 -0700 (PDT)
+        id S2391665AbfIYPsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 11:48:42 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:35907 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387474AbfIYPsm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 11:48:42 -0400
+Received: by mail-io1-f65.google.com with SMTP id b136so48871iof.3;
+        Wed, 25 Sep 2019 08:48:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=bsIBGBh4bWr442ac07k3ZiQva49Ja5zr8Or7EVTHrIQ=;
-        b=vPeg5oEYNlgeXlUTNNQfkom5YxnLpa0Ni/Eu+JWFIPyuwJ2m//Yt/40AgkrKXKGb7U
-         bihnSkneH5Odvbur4iiaCXNbXFAV7v3SJ2mfzmTZjfsEgLz7SZq1uLsoJIsdUrlorOT3
-         wtwpMQCU9cnWS2dfk6uJOiJG1c8Q1IUr/T4wQMmmGAofhPzEkcdE5dj15UeF8M7aG5FF
-         rrMPXFwyMoXQfpdiU1SLMmxpyuvl+DrMegoPCnEujqdrBPo7aBCmp8tS0Vc2NP8Z7258
-         cqF5k3vNYISGtNbVdW2xA1xT+LyspKkqWsm3UABevoI4flwRUIRBKmn0pCvld4Y3SIMw
-         2O4Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=0qNPhmzg0s6OFq2ccQPYykHxxawuEd3L1JQLHES3r0g=;
+        b=cHf6huUlTWlzSqUYeFN7nGGNH5PJP3fVdkz3pnOy9JHNHUhc+QFH9H5e1xYZuFqdRh
+         ebdJm+U2KFIp6ezUQpy/YeMH/OY/KaDEjkVY+jnbiV9Z8xIFoP4oyvl0U8bfUgm5UZ8e
+         nncdukJygpJBBLssXuUymb4O30H1SzDB/693ikWJ8mNgssw6R6pG4Vo7Ci4WniCtVpo1
+         YOZ0tdewOquYyIldUDHqWAz08ja84xrGBPzVNJ66KOMoyD8HGfLXrcQFfimxD58O0H79
+         0Kjeqr8OCXpCU8UbHWyMBOym9EozF7rJOqy20JOKXyYW0hIbCt/8jFgBF6J4LJMogM/C
+         K5xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=bsIBGBh4bWr442ac07k3ZiQva49Ja5zr8Or7EVTHrIQ=;
-        b=G4w5grhFck1B6/aA1S2Jg6VQVMMxZnXWhrPJrx6PiodaBi4QTgpYL7sy+w8K4YouAt
-         Agli4WhSWE4vVOirl2g3DvQhouprXiuW57k4lGlXE3XW6PZsehAYhOtegUbPSeNBMnuG
-         qftZND8yObL6Ee9HYlwcywRGpbnmBiCQRqv/ibVZJSU1frzEE8qNmNwradtg+wetwLUG
-         XsqQyOlG0KlMsBHw+ig1bflSBB0FFiPU7L+FcvlTQDlS5UApPtwqGorccdoOWHl+ThtC
-         scJbWbj2jzs8UDTiAqJ0ZyZg+TPd1mi1fjJMw0NViBzGloNLpaPNAD0QHkANvUVhVolW
-         DJkg==
-X-Gm-Message-State: APjAAAUro6UiCpVK0mPLqH7e2OW7vBo3DeIRvaikwZzzdEhkP8dFHxB3
-        wbfTe8P1PPeWO0eu9Ox1mrP9dglWodWTdbcnwU0XExM7Hmk=
-X-Google-Smtp-Source: APXvYqwq5kGLdHAlbPsxvjANEONQ1XdPAJVKBMwnIcQrgoodgbEf4Djgyq3u6iZfcXtcCkmCbPqq/oki4SZMPejd/6o=
-X-Received: by 2002:ae9:c110:: with SMTP id z16mr4269740qki.352.1569425113946;
- Wed, 25 Sep 2019 08:25:13 -0700 (PDT)
-MIME-Version: 1.0
-From:   Levente <leventelist@gmail.com>
-Date:   Wed, 25 Sep 2019 17:25:02 +0200
-Message-ID: <CACwWb3BE7msW6=XADuG2Di4xYnoJq5qScc4Wsu4xOS=ycYPDww@mail.gmail.com>
-Subject: IPv6 issue
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=0qNPhmzg0s6OFq2ccQPYykHxxawuEd3L1JQLHES3r0g=;
+        b=ktj2y5TQxrUdHOdOflIGG3EQJNSujMksQybLaOlCpNeECFtfpOW1evvIZnhwFpS1s+
+         zF/ynseRyDrBAWLxIXV0fBvx1TsGhFX4rdE6X909Y38sguyX8VcGQTOOKJj8+W8UF4Si
+         YyWlbtHt8arPv387Ht0DuNzjmftbL0fwXos/E75hwN4SfvTspS9sebvKg0cNdUL8nDUi
+         beT0CoidzznvJBuMnJ//Yf5t8rU7wUr8/ouVSRjozs5frQ6gS1nGldKYnNtFTLdnogYK
+         l35agW5SNImoeacHrLKdRgHbVEzuwY4GmhBdEKUNU8ml1iE1F8tE+HEDTqbwvmBDSTRD
+         W03w==
+X-Gm-Message-State: APjAAAVbKkE8kab5a2QiXX6mLbJyDIvxSNqnJh3C6yFlrQRwPlSDHeY1
+        NMhG4Q1U9nBtQf6lchaq/lQ=
+X-Google-Smtp-Source: APXvYqwJa//G1r4JosGXA6Zumx9x1lKwX8oaD3AKo4F/VYtA+SHvy+v2iygM8W2pIilz3wF1N6m6OA==
+X-Received: by 2002:a5e:aa09:: with SMTP id s9mr49347ioe.22.1569426521711;
+        Wed, 25 Sep 2019 08:48:41 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id i67sm263019ilf.84.2019.09.25.08.48.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Sep 2019 08:48:41 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] i40e: prevent memory leak in i40e_setup_macvlans
+Date:   Wed, 25 Sep 2019 10:48:30 -0500
+Message-Id: <20190925154831.19044-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear all,
+In i40e_setup_macvlans if i40e_setup_channel fails the allocated memory
+for ch should be released.
 
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I don't know if this is the right place to ask, so please be gentle.
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 6031223eafab..7d4a14c3fe58 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -7168,6 +7168,7 @@ static int i40e_setup_macvlans(struct i40e_vsi *vsi, u16 macvlan_cnt, u16 qcnt,
+ 		ch->num_queue_pairs = qcnt;
+ 		if (!i40e_setup_channel(pf, vsi, ch)) {
+ 			ret = -EINVAL;
++			kfree(ch);
+ 			goto err_free;
+ 		}
+ 		ch->parent_vsi = vsi;
+-- 
+2.17.1
 
-I have a router running OpenWRT, and it fails the some test cases
-defined by the IPv6 forum.
-
-https://www.ipv6ready.org/docs/Core_Conformance_Latest.pdf
-
-It fails 1.2.3 / 1.2.4 / 1.2.5 / 1.2.8 test cases.
-
-My question is if there's any particular settings (either compile or
-running time) in the kernel that affects the outcome of these test
-cases?
-
-Other question is that is there any open source test program to test
-the kernel's IPv6 stack against this test specifications?
-
-
-Thanks,
-Levente
