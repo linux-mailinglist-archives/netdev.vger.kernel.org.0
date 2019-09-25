@@ -2,79 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD39BD82B
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 08:13:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA0BBD846
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 08:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404810AbfIYGNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 02:13:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60796 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404606AbfIYGNx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 02:13:53 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id ECF45AF10;
-        Wed, 25 Sep 2019 06:01:09 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 71B64E03CE; Wed, 25 Sep 2019 08:01:09 +0200 (CEST)
-Date:   Wed, 25 Sep 2019 08:01:09 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: Fw: [Bug 204903] New: unable to create vrf interface when
- ipv6.disable=1
-Message-ID: <20190925060109.GG22507@unicorn.suse.cz>
-References: <20190919104628.05d9f5ff@xps13>
- <a15f9952-e5ed-8358-e28d-6325bf4d5801@gmail.com>
+        id S2411883AbfIYGZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 02:25:38 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:47358 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404570AbfIYGZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 02:25:38 -0400
+Received: from localhost.localdomain (p200300E9D742D21B26FCBF88D1F65952.dip0.t-ipconnect.de [IPv6:2003:e9:d742:d21b:26fc:bf88:d1f6:5952])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 4C630C1B1A;
+        Wed, 25 Sep 2019 08:25:35 +0200 (CEST)
+Subject: Re: [PATCH] ieee802154: mcr20a: simplify a bit
+ 'mcr20a_handle_rx_read_buf_complete()'
+To:     Xue Liu <liuxuenetmail@gmail.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "alex. aring" <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <20190920194533.5886-1-christophe.jaillet@wanadoo.fr>
+ <388f335a-a9ae-7230-1713-a1ecb682fecf@datenfreihafen.org>
+ <CAJuUDwtWJgo7PHJR4kBpQ9mGamTMEaPZBNOZcL3mWFwwZ-zOmw@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <7d131e76-d487-ead3-1780-6a9a7d7877a4@datenfreihafen.org>
+Date:   Wed, 25 Sep 2019 08:25:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a15f9952-e5ed-8358-e28d-6325bf4d5801@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAJuUDwtWJgo7PHJR4kBpQ9mGamTMEaPZBNOZcL3mWFwwZ-zOmw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 24, 2019 at 08:28:52PM -0600, David Ahern wrote:
-> On 9/19/19 2:46 AM, Stephen Hemminger wrote:
-> > 
-> > 
-> > Begin forwarded message:
-> > 
-> > Date: Wed, 18 Sep 2019 15:15:42 +0000
-> > From: bugzilla-daemon@bugzilla.kernel.org
-> > To: stephen@networkplumber.org
-> > Subject: [Bug 204903] New: unable to create vrf interface when ipv6.disable=1
-> > 
-> > 
-> > https://bugzilla.kernel.org/show_bug.cgi?id=204903
-> > 
-> >             Bug ID: 204903
-> >            Summary: unable to create vrf interface when ipv6.disable=1
-> >            Product: Networking
-> >            Version: 2.5
-> >     Kernel Version: 5.2.14
-> >           Hardware: All
-> >                 OS: Linux
-> >               Tree: Mainline
-> >             Status: NEW
-> >           Severity: normal
-> >           Priority: P1
-> >          Component: Other
-> >           Assignee: stephen@networkplumber.org
-> >           Reporter: zhangyoufu@gmail.com
-> >         Regression: No
-> > 
-> > `ip link add vrf0 type vrf table 100` fails with EAFNOSUPPORT when boot with
-> > `ipv6.disable=1`. There must be somewhere inside `vrf_newlink` trying to use
-> > IPv6 without checking availablity. Maybe `vrf_add_fib_rules` I guess.
-> > 
+Hello.
+
+On 24.09.19 23:40, Xue Liu wrote:
+> On Sat, 21 Sep 2019 at 13:52, Stefan Schmidt <stefan@datenfreihafen.org> wrote:
+>>
+>> Hello Xue.
+>>
+>> On 20.09.19 21:45, Christophe JAILLET wrote:
+>>> Use a 'skb_put_data()' variant instead of rewritting it.
+>>> The __skb_put_data variant is safe here. It is obvious that the skb can
+>>> not overflow. It has just been allocated a few lines above with the same
+>>> 'len'.
+>>>
+>>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>>> ---
+>>>   drivers/net/ieee802154/mcr20a.c | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+>>> index 17f2300e63ee..8dc04e2590b1 100644
+>>> --- a/drivers/net/ieee802154/mcr20a.c
+>>> +++ b/drivers/net/ieee802154/mcr20a.c
+>>> @@ -800,7 +800,7 @@ mcr20a_handle_rx_read_buf_complete(void *context)
+>>>        if (!skb)
+>>>                return;
+>>>
+>>> -     memcpy(skb_put(skb, len), lp->rx_buf, len);
+>>> +     __skb_put_data(skb, lp->rx_buf, len);
+>>>        ieee802154_rx_irqsafe(lp->hw, skb, lp->rx_lqi[0]);
+>>>
+>>>        print_hex_dump_debug("mcr20a rx: ", DUMP_PREFIX_OFFSET, 16, 1,
+>>>
+>>
+>> Could you please review and ACK this? If you are happy I will take it
+>> through my tree.
+>>
+>> regards
+>> Stefan Schmidt
 > 
-> ack. I'll take a look when I get a chance. Should be a simple fix.
+> Acked-by: Xue Liu <liuxuenetmail@gmail.com>
 
-Not sure if it's the only problem but vrf_fib_rule() checks
-ipv6_mod_enabled() for AF_INET6 but not for RTNL_FAMILY_IP6MR.
 
-Michal
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
+
+regards
+Stefan Schmidt
