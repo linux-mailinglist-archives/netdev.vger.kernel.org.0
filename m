@@ -2,170 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE3EBD6B1
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 05:27:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF44BD6E6
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 06:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411510AbfIYD1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Sep 2019 23:27:11 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19474 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2404095AbfIYD1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Sep 2019 23:27:11 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x8P3JDfG005503;
-        Tue, 24 Sep 2019 20:27:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=7krzVMmLIxQzEV+/fgplYO4UDEDBeLpzSR+sngDsylo=;
- b=XKA8PRyHEsPFSMqR7OjQ/Z2TX6/jWSHFzW31i4FwmzjJDp4/E0lLyGhmfaZYUg0rhSPN
- 4D/cka0u7YyvBkZlkdmTFQBUIfahi1yrW8SKZZHGdRljdProY9v0y98E27gimzwpc+BJ
- opCMUKvS87WyqyL0oUTn7REVf3g0/8qwI4s= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2v752ky8hp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 24 Sep 2019 20:27:06 -0700
-Received: from prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 24 Sep 2019 20:27:05 -0700
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 24 Sep 2019 20:27:05 -0700
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 24 Sep 2019 20:27:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fr5qayZ+/ng1ovucVHzPf5D7Zugl/+l3N0Tw4sfSoxaOAGyzGDFdRO5v1pSDLginazhQdgsj6mQ0vCXze/jWx8wNbVNyOjDfm5umHGa/zeaqCOJ/uQKoz2oYfa6lrtze925QHCShuxbWrbIM5F6pgUuBrV0n6/cbkUoo5NcoPcCxQ8O0gRhmaXWjAfuJJybGX9Srg2dAEARaS590/V4UrxJiE/I1zEugo8Etf273fGJVAmdQOOUsEXkyv697CG2URIgTsg3dFqk5dfIeJApmhqhBRhgYHjfQNow1D/5rGNcK0jtySyJjVjQFA7xT3xzucKTihW3cdNW3wenmTmgi6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7krzVMmLIxQzEV+/fgplYO4UDEDBeLpzSR+sngDsylo=;
- b=k+l4gmvYlQoczj0FSWN3WU1rSwywHk3YwWKBnCo9CgBoXnS/BujimKNZFveKh2p80VJGrLGi4elNzIgl+xaMlk8CLbKKhmKW0gell7EnUyrZiwi8XLA7EFocGHLTpB6D7nxaX8IP2mre41lAz7ObfbHFmnSB7udmugNSGgDcJ9/NDb4DhfGNi8xwJZca+kVV8VNCoe4J3QXzUz+VAXkig2R5M9IZi0YmLwD67XrEXTf7T9mZLoeQHgKC00DoYBeiA4NYvSIEkQZFyGlnmp8SC3MudUGnPjZNzP2suOlzjMJLxCq210NmEOowTRgw1vdRZ72WdnvOcqNYOoqofBZsOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7krzVMmLIxQzEV+/fgplYO4UDEDBeLpzSR+sngDsylo=;
- b=IFi3BsANy44thTQGSbo924torTGU4ELR9Icwfv+nDFUy78bVNBl38rmJPBFIENSsmWRP551vjXhh6bMzvNhtX/UpepI53e5+OoVsvKJYV6pSRAbmZJbTxDY9La3QWeQk1CwZPh/UAab5LLV4wE6UzAvmYIecAOXJU0Oirg2GVg4=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.60.27) by
- BYAPR15MB3127.namprd15.prod.outlook.com (20.178.239.158) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.18; Wed, 25 Sep 2019 03:27:04 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::95ab:61a0:29f4:e07e]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::95ab:61a0:29f4:e07e%6]) with mapi id 15.20.2284.023; Wed, 25 Sep 2019
- 03:27:04 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Carlos Neira <cneirabustos@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v11 3/4] tools: Added bpf_get_ns_current_pid_tgid
- helper
-Thread-Topic: [PATCH bpf-next v11 3/4] tools: Added
- bpf_get_ns_current_pid_tgid helper
-Thread-Index: AQHVcuudAWYjTW0730uz3NXi0PzFQ6c7vFcA
-Date:   Wed, 25 Sep 2019 03:27:03 +0000
-Message-ID: <756e3fd4-28a2-3d7e-694d-ef9b54b491f3@fb.com>
-References: <20190924152005.4659-1-cneirabustos@gmail.com>
- <20190924152005.4659-4-cneirabustos@gmail.com>
-In-Reply-To: <20190924152005.4659-4-cneirabustos@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0088.namprd04.prod.outlook.com
- (2603:10b6:104:6::14) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:112::27)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::8fa7]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5f047d5f-41e9-448b-3499-08d741683c21
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3127;
-x-ms-traffictypediagnostic: BYAPR15MB3127:
-x-microsoft-antispam-prvs: <BYAPR15MB312764D792E0C2224BC78112D3870@BYAPR15MB3127.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:227;
-x-forefront-prvs: 01713B2841
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(366004)(396003)(346002)(199004)(189003)(486006)(6246003)(71190400001)(31686004)(71200400001)(81166006)(14444005)(229853002)(6486002)(6116002)(2616005)(2906002)(81156014)(14454004)(46003)(186003)(6436002)(256004)(476003)(8936002)(99286004)(4326008)(446003)(36756003)(76176011)(52116002)(66946007)(31696002)(2501003)(305945005)(6512007)(66476007)(66446008)(54906003)(316002)(66556008)(8676002)(7736002)(64756008)(25786009)(53546011)(86362001)(386003)(478600001)(5660300002)(102836004)(6506007)(110136005)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3127;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 2TW9NCrGJczEJvK02QWZK3dGvW1qkptPdKRCyJ1hitwIgq5/56MJvR8GeQSwJ3v9z5m60ni1xcu9TMnHwDDEP7crtFTs/RCR8O/+Ud4QPypPrwXhj9cMwxL5YjlC757mNDEgCn16cWnUT2VdeJTEdMIE8N7fhsftGnn/WMnJOcCdsMBO+peKrdCEEcyA65Vji2ZiYyLCre0AvZ6KeoXyglBV+EsN5GyR1IRhY7lAYDRlP4lhNzVkMWYwp2cTYVlNSVujdd9ETTLLb6aQ2JVVxUxvtsXRmILjXpsbhImRcUL+NctwqEebPB3Ags6mMetUmMWnZAt4IuwCSUuPgQOR2/hX+xNEMeeQxtgDzmeG/dGGMcouy/pz/iY4WAYTSyQwKsyART7YiFwekiAdmkB5/r+SPwAHvq9sC6ksVihFnQc=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B25999AA34053542BDE720FB5A90DD58@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726179AbfIYEAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 00:00:05 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42374 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725784AbfIYEAE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 00:00:04 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 02DB23DFD7;
+        Wed, 25 Sep 2019 04:00:04 +0000 (UTC)
+Received: from [10.72.12.148] (ovpn-12-148.pek2.redhat.com [10.72.12.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 83E855C21F;
+        Wed, 25 Sep 2019 03:59:58 +0000 (UTC)
+Subject: Re: [PATCH] vhost: It's better to use size_t for the 3rd parameter of
+ vhost_exceeds_weight()
+To:     "wangxu (AE)" <wangxu72@huawei.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1569224801-101248-1-git-send-email-wangxu72@huawei.com>
+ <20190923040518-mutt-send-email-mst@kernel.org>
+ <FCFCADD62FC0CA4FAEA05F13220975B01717A091@dggeml525-mbx.china.huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fc06afd5-0e2d-c3ae-c118-3292e16db186@redhat.com>
+Date:   Wed, 25 Sep 2019 11:59:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f047d5f-41e9-448b-3499-08d741683c21
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Sep 2019 03:27:04.0885
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Iw2B5qSIldo7S/n5g1cIjP3DqsXG9abQAibFGTjkKh2IN5LhnFCYvtc8mMSOkuW4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3127
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-09-25_02:2019-09-23,2019-09-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 phishscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 clxscore=1015 malwarescore=0 bulkscore=0
- mlxlogscore=999 suspectscore=0 mlxscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-1908290000
- definitions=main-1909250031
-X-FB-Internal: deliver
+In-Reply-To: <FCFCADD62FC0CA4FAEA05F13220975B01717A091@dggeml525-mbx.china.huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Wed, 25 Sep 2019 04:00:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDkvMjQvMTkgODoyMCBBTSwgQ2FybG9zIE5laXJhIHdyb3RlOg0KPiBTaWduZWQtb2Zm
-LWJ5OiBDYXJsb3MgTmVpcmEgPGNuZWlyYWJ1c3Rvc0BnbWFpbC5jb20+DQoNClBsZWFzZSBkbyBh
-ZGQgc29tZSBjb21taXQgbWVzc2FnZS4gQSBjb3VwbGUgb2YgZXhhbXBsZXMsDQoNCmNvbW1pdCAw
-ZmMyZTBiODRiYTcyNWM1ZTZlZTY2MDU5OTM2NjM4Mzg5ZTY3YzgwDQpBdXRob3I6IEFsZXhlaSBT
-dGFyb3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+DQpEYXRlOiAgIFRodSBBdWcgMjIgMjI6NTI6MTMg
-MjAxOSAtMDcwMA0KDQogICAgIHRvb2xzL2JwZjogc3luYyBicGYuaA0KDQogICAgIHN5bmMgYnBm
-LmggZnJvbSBrZXJuZWwvIHRvIHRvb2xzLw0KDQogICAgIFNpZ25lZC1vZmYtYnk6IEFsZXhlaSBT
-dGFyb3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+DQogICAgIEFja2VkLWJ5OiBTb25nIExpdSA8c29u
-Z2xpdWJyYXZpbmdAZmIuY29tPg0KICAgICBTaWduZWQtb2ZmLWJ5OiBEYW5pZWwgQm9ya21hbm4g
-PGRhbmllbEBpb2dlYXJib3gubmV0Pg0KDQpjb21taXQgMWY4OTE5YjE3MDMxOGU3ZTEzZTMwM2Vl
-ZGFjMzYzZDQ0MDU3OTk1Zg0KQXV0aG9yOiBQZXRlciBXdSA8cGV0ZXJAbGVrZW5zdGV5bi5ubD4N
-CkRhdGU6ICAgV2VkIEF1ZyAyMSAwMDowOTowMCAyMDE5ICswMTAwDQoNCiAgICAgYnBmOiBzeW5j
-IGJwZi5oIHRvIHRvb2xzLw0KDQogICAgIEZpeCBhICdzdHJ1Y3QgcHRfcmVnJyB0eXBvIGFuZCBj
-bGFyaWZ5IHdoZW4gYnBmX3RyYWNlX3ByaW50ayBkaXNjYXJkcw0KICAgICBsaW5lcy4gQWZmZWN0
-cyBkb2N1bWVudGF0aW9uIG9ubHkuDQoNCiAgICAgU2lnbmVkLW9mZi1ieTogUGV0ZXIgV3UgPHBl
-dGVyQGxla2Vuc3RleW4ubmw+DQogICAgIFNpZ25lZC1vZmYtYnk6IEFsZXhlaSBTdGFyb3ZvaXRv
-diA8YXN0QGtlcm5lbC5vcmc+DQoNCj4gLS0tDQo+ICAgdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4
-L2JwZi5oIHwgMTggKysrKysrKysrKysrKysrKystDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDE3IGlu
-c2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS90b29scy9pbmNs
-dWRlL3VhcGkvbGludXgvYnBmLmggYi90b29scy9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmgNCj4g
-aW5kZXggNzdjNmJlOTZkNjc2Li45MjcyZGM4ZmIwOGMgMTAwNjQ0DQo+IC0tLSBhL3Rvb2xzL2lu
-Y2x1ZGUvdWFwaS9saW51eC9icGYuaA0KPiArKysgYi90b29scy9pbmNsdWRlL3VhcGkvbGludXgv
-YnBmLmgNCj4gQEAgLTI3NTAsNiArMjc1MCwyMSBAQCB1bmlvbiBicGZfYXR0ciB7DQo+ICAgICoJ
-CSoqLUVPUE5PVFNVUFAqKiBrZXJuZWwgY29uZmlndXJhdGlvbiBkb2VzIG5vdCBlbmFibGUgU1lO
-IGNvb2tpZXMNCj4gICAgKg0KPiAgICAqCQkqKi1FUFJPVE9OT1NVUFBPUlQqKiBJUCBwYWNrZXQg
-dmVyc2lvbiBpcyBub3QgNCBvciA2DQo+ICsgKg0KPiArICogaW50IGJwZl9nZXRfbnNfY3VycmVu
-dF9waWRfdGdpZCh1MzIgZGV2LCB1NjQgaW51bSkNCj4gKyAqCVJldHVybg0KPiArICoJCUEgNjQt
-Yml0IGludGVnZXIgY29udGFpbmluZyB0aGUgY3VycmVudCB0Z2lkIGFuZCBwaWQgZnJvbSBjdXJy
-ZW50IHRhc2sNCj4gKyAqICAgICAgICAgICAgICB3aGljaCBuYW1lc3BhY2UgaW5vZGUgYW5kIGRl
-dl90IG1hdGNoZXMgLCBhbmQgaXMgY3JlYXRlIGFzIHN1Y2g6DQo+ICsgKgkJKmN1cnJlbnRfdGFz
-aypcICoqLT50Z2lkIDw8IDMyIFx8KioNCj4gKyAqCQkqY3VycmVudF90YXNrKlwgKiotPnBpZCoq
-Lg0KPiArICoNCj4gKyAqCQlPbiBmYWlsdXJlLCB0aGUgcmV0dXJuZWQgdmFsdWUgaXMgb25lIG9m
-IHRoZSBmb2xsb3dpbmc6DQo+ICsgKg0KPiArICoJCSoqLUVJTlZBTCoqIGlmIGRldiBhbmQgaW51
-bSBzdXBwbGllZCBkb24ndCBtYXRjaCBkZXZfdCBhbmQgaW5vZGUgbnVtYmVyDQo+ICsgKiAgICAg
-ICAgICAgICAgd2l0aCBuc2ZzIG9mIGN1cnJlbnQgdGFzay4NCj4gKyAqDQo+ICsgKgkJKiotRU5P
-RU5UKiogaWYgL3Byb2Mvc2VsZi9ucyBkb2VzIG5vdCBleGlzdHMuDQo+ICsgKg0KPiAgICAqLw0K
-PiAgICNkZWZpbmUgX19CUEZfRlVOQ19NQVBQRVIoRk4pCQlcDQo+ICAgCUZOKHVuc3BlYyksCQkJ
-XA0KPiBAQCAtMjg2Miw3ICsyODc3LDggQEAgdW5pb24gYnBmX2F0dHIgew0KPiAgIAlGTihza19z
-dG9yYWdlX2dldCksCQlcDQo+ICAgCUZOKHNrX3N0b3JhZ2VfZGVsZXRlKSwJCVwNCj4gICAJRk4o
-c2VuZF9zaWduYWwpLAkJXA0KPiAtCUZOKHRjcF9nZW5fc3luY29va2llKSwNCj4gKwlGTih0Y3Bf
-Z2VuX3N5bmNvb2tpZSksICAgICAgICAgIFwNCj4gKwlGTihnZXRfbnNfY3VycmVudF9waWRfdGdp
-ZCksDQo+ICAgDQo+ICAgLyogaW50ZWdlciB2YWx1ZSBpbiAnaW1tJyBmaWVsZCBvZiBCUEZfQ0FM
-TCBpbnN0cnVjdGlvbiBzZWxlY3RzIHdoaWNoIGhlbHBlcg0KPiAgICAqIGZ1bmN0aW9uIGVCUEYg
-cHJvZ3JhbSBpbnRlbmRzIHRvIGNhbGwNCj4gDQo=
+
+On 2019/9/23 下午5:12, wangxu (AE) wrote:
+> Hi Michael
+>
+> 	Thanks for your fast reply.
+>
+> 	As the following code, the 2nd branch of iov_iter_advance() does not check if i->count < size, when this happens, i->count -= size may cause len exceed INT_MAX, and then total_len exceed INT_MAX.
+>
+> 	handle_tx_copy() ->
+> 		get_tx_bufs(..., &len, ...) ->
+> 			init_iov_iter() ->
+> 				iov_iter_advance(iter, ...) 	// has 3 branches:
+> 					pipe_advance() 	 	// has checked the size: if (unlikely(i->count < size)) size = i->count;
+> 					iov_iter_is_discard() ... 	// no check.
+
+
+Yes, but I don't think we use ITER_DISCARD.
+
+Thanks
+
+
+> 					iterate_and_advance() 	//has checked: if (unlikely(i->count < n)) n = i->count;
+> 				return iov_iter_count(iter);
+>
+> -----Original Message-----
+> From: Michael S. Tsirkin [mailto:mst@redhat.com]
+> Sent: Monday, September 23, 2019 4:07 PM
+> To: wangxu (AE) <wangxu72@huawei.com>
+> Cc: jasowang@redhat.com; kvm@vger.kernel.org; virtualization@lists.linux-foundation.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH] vhost: It's better to use size_t for the 3rd parameter of vhost_exceeds_weight()
+>
+> On Mon, Sep 23, 2019 at 03:46:41PM +0800, wangxu wrote:
+>> From: Wang Xu <wangxu72@huawei.com>
+>>
+>> Caller of vhost_exceeds_weight(..., total_len) in drivers/vhost/net.c
+>> usually pass size_t total_len, which may be affected by rx/tx package.
+>>
+>> Signed-off-by: Wang Xu <wangxu72@huawei.com>
+>
+> Puts a bit more pressure on the register file ...
+> why do we care? Is there some way that it can exceed INT_MAX?
+>
+>> ---
+>>   drivers/vhost/vhost.c | 4 ++--
+>>   drivers/vhost/vhost.h | 7 ++++---
+>>   2 files changed, 6 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c index
+>> 36ca2cf..159223a 100644
+>> --- a/drivers/vhost/vhost.c
+>> +++ b/drivers/vhost/vhost.c
+>> @@ -412,7 +412,7 @@ static void vhost_dev_free_iovecs(struct vhost_dev
+>> *dev)  }
+>>   
+>>   bool vhost_exceeds_weight(struct vhost_virtqueue *vq,
+>> -			  int pkts, int total_len)
+>> +			  int pkts, size_t total_len)
+>>   {
+>>   	struct vhost_dev *dev = vq->dev;
+>>   
+>> @@ -454,7 +454,7 @@ static size_t vhost_get_desc_size(struct
+>> vhost_virtqueue *vq,
+>>   
+>>   void vhost_dev_init(struct vhost_dev *dev,
+>>   		    struct vhost_virtqueue **vqs, int nvqs,
+>> -		    int iov_limit, int weight, int byte_weight)
+>> +		    int iov_limit, int weight, size_t byte_weight)
+>>   {
+>>   	struct vhost_virtqueue *vq;
+>>   	int i;
+>> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h index
+>> e9ed272..8d80389d 100644
+>> --- a/drivers/vhost/vhost.h
+>> +++ b/drivers/vhost/vhost.h
+>> @@ -172,12 +172,13 @@ struct vhost_dev {
+>>   	wait_queue_head_t wait;
+>>   	int iov_limit;
+>>   	int weight;
+>> -	int byte_weight;
+>> +	size_t byte_weight;
+>>   };
+>>   
+>
+> This just costs extra memory, and value is never large, so I don't think this matters.
+>
+>> -bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int
+>> total_len);
+>> +bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts,
+>> +			  size_t total_len);
+>>   void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
+>> -		    int nvqs, int iov_limit, int weight, int byte_weight);
+>> +		    int nvqs, int iov_limit, int weight, size_t byte_weight);
+>>   long vhost_dev_set_owner(struct vhost_dev *dev);  bool
+>> vhost_dev_has_owner(struct vhost_dev *dev);  long
+>> vhost_dev_check_owner(struct vhost_dev *);
+>> --
+>> 1.8.5.6
