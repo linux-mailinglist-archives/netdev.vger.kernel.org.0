@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C05F4BDDF4
-	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59809BDE08
+	for <lists+netdev@lfdr.de>; Wed, 25 Sep 2019 14:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405613AbfIYMOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 08:14:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36584 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405600AbfIYMOV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 08:14:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Mc0hUP8ePWslLla0cU6JmvO8WPLp+8dYd7zpy7w9PjI=; b=2DFsg264J4DTy0ewkg55FjMZWk
-        /oX5gfIZ1G7fOKY2HrMeGg8Nau8Ri4UuNxZd7VXz7Mwg8v3L+iCJx+gZxoz6pEMhpBwzo7CpgKTR5
-        wtAsTsU3XrsYUsoP0TUqQ7X2tdxfzt4P4D1Qlm0y5uQUiUI0UIDJuLfdo27VYb6ms5jA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iD6BK-0004BH-Uw; Wed, 25 Sep 2019 14:14:06 +0200
-Date:   Wed, 25 Sep 2019 14:14:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     alvaro.gamez@hazent.com, dan.carpenter@oracle.com,
-        radhey.shyam.pandey@xilinx.com, michal.simek@xilinx.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: axienet: fix a signedness bug in probe
-Message-ID: <20190925121406.GA1864@lunn.ch>
-References: <20190925105911.GI3264@mwanda>
- <20190925110542.GA21923@salem.gmr.ssr.upm.es>
- <20190925.133507.2083224833639646147.davem@davemloft.net>
+        id S2388199AbfIYMZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 08:25:07 -0400
+Received: from www62.your-server.de ([213.133.104.62]:50252 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730253AbfIYMZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 08:25:06 -0400
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iD6Lt-0004Bo-Q1; Wed, 25 Sep 2019 14:25:01 +0200
+Date:   Wed, 25 Sep 2019 14:25:01 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     xiaolinkui <xiaolinkui@kylinos.cn>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: use unlikely for dql_avail case
+Message-ID: <20190925122501.GA27720@pc-66.home>
+References: <20190925024043.31030-1-xiaolinkui@kylinos.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190925.133507.2083224833639646147.davem@davemloft.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190925024043.31030-1-xiaolinkui@kylinos.cn>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25583/Wed Sep 25 10:27:51 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 25, 2019 at 01:35:07PM +0200, David Miller wrote:
-> From: "Alvaro G. M" <alvaro.gamez@hazent.com>
-> Date: Wed, 25 Sep 2019 13:05:43 +0200
+On Wed, Sep 25, 2019 at 10:40:43AM +0800, xiaolinkui wrote:
+> This is an unlikely case, use unlikely() on it seems logical.
 > 
-> > Hi, Dan
-> > 
-> > On Wed, Sep 25, 2019 at 01:59:11PM +0300, Dan Carpenter wrote:
-> >> The "lp->phy_mode" is an enum but in this context GCC treats it as an
-> >> unsigned int so the error handling is never triggered.
-> >> 
-> >>  		lp->phy_mode = of_get_phy_mode(pdev->dev.of_node);
-> >> -		if (lp->phy_mode < 0) {
-> >> +		if ((int)lp->phy_mode < 0) {
-> > 
-> > This (almost) exact code appears in a lot of different drivers too,
-> > so maybe it'd be nice to review them all and apply the same cast if needed?
+> Signed-off-by: xiaolinkui <xiaolinkui@kylinos.cn>
+
+It's already here [0], but should probably rather get reverted instead
+due to lack of a more elaborate reasoning on why it needs to be done
+this way instead of letting compiler do it's job in this case. "Seems
+logical" is never a good technical explanation. Do you have any better
+analysis you performed prior to submitting the patch (twice by now)?
+
+Thanks,
+Daniel
+
+  [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f3acd33d840d3ea3e1233d234605c85cbbf26054
+
+> ---
+>  include/linux/netdevice.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Or make the thing an int if negative values are never valid 32-bit phy_mode
-> values anyways.
-
-Maybe we should change the API
-
-int of_get_phy_mode(struct device_node *np, phy_interface_t *phy_mode);
-
-Separate the error from the value we are getting.
-
-	 Andrew
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 88292953aa6f..005f3da1b13d 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3270,7 +3270,7 @@ static inline void netdev_tx_completed_queue(struct netdev_queue *dev_queue,
+>  	 */
+>  	smp_mb();
+>  
+> -	if (dql_avail(&dev_queue->dql) < 0)
+> +	if (unlikely(dql_avail(&dev_queue->dql) < 0))
+>  		return;
+>  
+>  	if (test_and_clear_bit(__QUEUE_STATE_STACK_XOFF, &dev_queue->state))
+> -- 
+> 2.17.1
+> 
+> 
+> 
