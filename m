@@ -2,169 +2,556 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 633BCBED4D
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 10:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD474BED82
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 10:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727528AbfIZIWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 04:22:33 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:54538 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726558AbfIZIWd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 04:22:33 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1728888AbfIZIf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 04:35:27 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59498 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727178AbfIZIf1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 04:35:27 -0400
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 6A575C0487;
-        Thu, 26 Sep 2019 08:22:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1569486152; bh=fIlfkGsWB7MdK0KAVV7hX2roAUc0zb0oHDHdMIvMkaM=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=iIBFxW/RXIO7caeaKPAa9ibJAIBrx0gI84Uc888rLv34OsCkP7n9nmpoj2iQ9ogJ6
-         7OcET9Tz424MwikXepRmcUSgWgvn/kaBxyPRNih7KB/dz4E0hi/jEsAExYiANS4CHR
-         R9T4sRcnuqQEpBBJtN58YvpdUjGeUyh0tNnRHGZXg4KtthMr04J6I1om/O+6TfGiQ/
-         2xPjKdSLhzQ1dkryPuqaSoCSBUshAmPlX5vqg1FP9szW43GqeVIE8r2ncgeZR7vZhW
-         3gM6tVEZ5P6XdmbHVZkIvfqAlXlcw4iPo/bRBgErc36Jgzl90IvZ1S+iX9zc/9rymZ
-         LkVy6e+SKqDbg==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id D6262A0069;
-        Thu, 26 Sep 2019 08:22:31 +0000 (UTC)
-Received: from US01WEHTC2.internal.synopsys.com (10.12.239.237) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 26 Sep 2019 01:22:27 -0700
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC2.internal.synopsys.com (10.12.239.237) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 26 Sep 2019 01:22:27 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Thu, 26 Sep 2019 01:22:27 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c3RF6+DVh9rfz2wIfjHet7qATlA9RvzgDg9/5OiSlsN0a+b4URqD0E8teKBPIgmxjeUc9L2D7c8KWhEUPAf/HDGWsfDk78EkzPq/q2vTzryc2h08GnXvM6RYOL8jfiv4xdM4hnRPdCReAH4jx7q025TU+LXwMicBYRXvpo2w6680w8d+DC5Uqq2W+V3zFP9Bqt4vNbl19PMNviaoHxxd1KN5+/1r2ZFtW6BKu5e9HOLrnAPYUaOU67mjeidpKhhGLgQCXvisQKq1VNIfsUdLjEjH1Un7NVwTlUlAUUPVxe1liN0zPqD2rRhCmA3g5lsUreLB3uCcTD+X32C50Ro41A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4q5AI4J4o/DM8WQpb5oI7i0pPFmYoSFXiIdc+p4lGEQ=;
- b=dcy1aYGtdKywDd/cNLduNu+RZ+grnxekU38WU1HZdrtR7UulKdZqZsdk+wTZJaTXsTZljOyL50Wa4XsTFHX292NsDZttm9QwlHD0+Rzdjoy6mxICamF9YId+1PLjcPVEubG3hEnioV7uyWnwO5LkLujlQjuOtg1qifAEgJriSu/S0T2lgOlxHyon5+jTYmVXS+vlou6RCMGp4FvB6TOs9C5YYb/2qsz+KiS1Vyhx3rmXCCFY8MG6yYII/DUTGVbqMBJOssvwUvM6XNLngD0a437VDrncq1lKCah9zIEpsXneSSiyA+xJL9j0tos97dNYqAKK7SIekn6lT9cjfyhpmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4q5AI4J4o/DM8WQpb5oI7i0pPFmYoSFXiIdc+p4lGEQ=;
- b=GZqBdCf8oXirZHIbkl90pw2qmh3tRNm/SLR6cLQYj1V3Gl2gG3zWCLeJCfHev1dQoXX/prhEbFk5B7hQPm6XgrYu/uhuf3noGfYVpWKg+XYJFkBTmmWe7p8gk5ITFCj6iwLlZYSIS9Jo8XB84CMeBjLvbh7Dr8tqS3EKwfm0MCY=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3252.namprd12.prod.outlook.com (20.179.66.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2284.20; Thu, 26 Sep 2019 08:22:25 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2305.017; Thu, 26 Sep 2019
- 08:22:25 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        David Miller <davem@davemloft.net>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
-        "bbiswas@nvidia.com" <bbiswas@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: RE: [PATCH v3 0/2] net: stmmac: Enhanced addressing mode for DWMAC
- 4.10
-Thread-Topic: [PATCH v3 0/2] net: stmmac: Enhanced addressing mode for DWMAC
- 4.10
-Thread-Index: AQHVb9UIZvUBuIRUTEGi7mSYMt4cT6c7QXkAgAD6QdCAAA7TgIAAAZPAgAAAnpCAAGGlgIAAWAsAgACgRRA=
-Date:   Thu, 26 Sep 2019 08:22:25 +0000
-Message-ID: <BN8PR12MB32669DDC64861CE11CA66474D3860@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20190920170036.22610-1-thierry.reding@gmail.com>
- <20190924.214508.1949579574079200671.davem@davemloft.net>
- <BN8PR12MB3266F851B071629898BB775AD3870@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20190925.133353.1445361137776125638.davem@davemloft.net>
- <BN8PR12MB3266A2F1F5F3F18F3A80BFC1D3870@BN8PR12MB3266.namprd12.prod.outlook.com>
- <BN8PR12MB32667F9FDDB2161E9B63C1AFD3870@BN8PR12MB3266.namprd12.prod.outlook.com>
- <9f0e2386-c4b1-52b0-6881-e72093eb1b05@gmail.com>
- <20190925224620.GA8115@mithrandir>
-In-Reply-To: <20190925224620.GA8115@mithrandir>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3fe9bc3b-32ff-403b-5b59-08d7425aa9af
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:BN8PR12MB3252;
-x-ms-traffictypediagnostic: BN8PR12MB3252:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB325247066F2A6A5585445302D3860@BN8PR12MB3252.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0172F0EF77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(136003)(346002)(39860400002)(366004)(199004)(189003)(25786009)(4326008)(81166006)(66066001)(8936002)(66556008)(81156014)(55016002)(52536014)(71190400001)(86362001)(110136005)(71200400001)(256004)(2906002)(186003)(102836004)(54906003)(6116002)(66446008)(3846002)(64756008)(9686003)(6506007)(66476007)(66946007)(7736002)(33656002)(74316002)(305945005)(316002)(476003)(6246003)(486006)(14454004)(478600001)(76116006)(11346002)(5660300002)(8676002)(76176011)(6436002)(7696005)(229853002)(26005)(99286004)(446003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3252;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: jmzg0qD6rloJqyUBYcQlQISbvKydBGPpFp1NhQ+q2fRtZvEVgnM7IbLBSdPuat7f3tmx73NPiwxoUJpyXkl0g7vInWYVGMZqNE0TGzIXx1VZrJk0Z2ddWftMYCv4yVL5fMGBxlaIr1AD6RkC7oVsOZW9sVdFNReVRyOGR2Bxxl2xjlXjia+ImQRQYYtBIC5ukM0ChYxZLb/5pFzD06ZBJwjystUd1otaJjTsBT6oe9HAd+DknY8xMuk8r6XdlmCnoh60qghWQ/uVi3TU7lB6HePJbShLRGA0wXOFwW/VR2eF0FEFtLKo+Q2WruYmqaBbfK2aG1WiFcSbxkglUj/m6F0Oy0wi9kJKKcaqaybhyDHcicdOyUoB3puFC8xLWw3uXhg9t/EizY4P3OrJVLNpfgZTii4hdWDa1VHcS2nc/58=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        by mx1.redhat.com (Postfix) with ESMTPS id 4B64C19D335
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 08:35:27 +0000 (UTC)
+Received: by mail-qt1-f199.google.com with SMTP id x25so1664940qtq.2
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 01:35:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q8/GcQR5ni68P/nfPOzl/IY40Wa2hMRW33NF9DmZFkU=;
+        b=p1aYiIpxG21QYzH4IxlW/edyiFmoIdlxdjFB52CnREndLqaotGrp1FLtpwsmvW/yMv
+         L+3KOD6FmTL/RcFxYydfqfJIi3emlrAy+vcVifv+xOe81xZjz6sZLt6yQ5RUjnrvGeXz
+         9ZU7MJZMkLTScbp/HjxjDJ7Mwx6jqba5zho9DSt54kLKW8avUgr8hGOiC1WD5LyzJ81D
+         d9jmbUntvqIabVypAclMCrQ76jyvmJIfJsl9WPie4M/hfI7KuKX/SBzo7WayoHYH/PjR
+         wjxKItpLGmSaa84RfqIn4qUnmI6wuMeuFhJ3IfuDw5g9gqpLq0vuylUibjhB65u1Zg+K
+         pNeQ==
+X-Gm-Message-State: APjAAAUqlsTFfw8vdi0OFQth7jaMURJnjuiDSXah6HTZATiABKouxAdN
+        qSD9YoZxG1VN5NEEcNm/+a2F4hud4Rth+qObCvaasVlvS0p779El/OBJ69WXW8vbuX/25d5r/vO
+        nhAIcOHi0yPWDen02
+X-Received: by 2002:ac8:e8d:: with SMTP id v13mr2540528qti.96.1569486926508;
+        Thu, 26 Sep 2019 01:35:26 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqw4sLJYbiq3BD4u4tZxQGZMP3TBfMXfSwYJbBr31HNrjhr3+HDckGOLnXErJgFXopV5nklRug==
+X-Received: by 2002:ac8:e8d:: with SMTP id v13mr2540506qti.96.1569486926229;
+        Thu, 26 Sep 2019 01:35:26 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-40-226.red.bezeqint.net. [79.176.40.226])
+        by smtp.gmail.com with ESMTPSA id c26sm834048qtk.93.2019.09.26.01.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Sep 2019 01:35:25 -0700 (PDT)
+Date:   Thu, 26 Sep 2019 04:35:18 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     jasowang@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [PATCH] vhost: introduce mdev based hardware backend
+Message-ID: <20190926042156-mutt-send-email-mst@kernel.org>
+References: <20190926045427.4973-1-tiwei.bie@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fe9bc3b-32ff-403b-5b59-08d7425aa9af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2019 08:22:25.7256
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: m3CsC+Xe4w62BRTUcvrl+y8HkYqKj2lUBQ2ixMCSiPdwvHASL80fS7phjN/F/iMnfOK4LV9WvoFHiS+Yg2sAAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3252
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190926045427.4973-1-tiwei.bie@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <thierry.reding@gmail.com>
-Date: Sep/25/2019, 23:46:20 (UTC+00:00)
+On Thu, Sep 26, 2019 at 12:54:27PM +0800, Tiwei Bie wrote:
+> This patch introduces a mdev based hardware vhost backend.
+> This backend is built on top of the same abstraction used
+> in virtio-mdev and provides a generic vhost interface for
+> userspace to accelerate the virtio devices in guest.
+> 
+> This backend is implemented as a mdev device driver on top
+> of the same mdev device ops used in virtio-mdev but using
+> a different mdev class id, and it will register the device
+> as a VFIO device for userspace to use. Userspace can setup
+> the IOMMU with the existing VFIO container/group APIs and
+> then get the device fd with the device name. After getting
+> the device fd of this device, userspace can use vhost ioctls
+> to setup the backend.
+> 
+> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> ---
+> This patch depends on below series:
+> https://lkml.org/lkml/2019/9/24/357
+> 
+> RFC v4 -> v1:
+> - Implement vhost-mdev as a mdev device driver directly and
+>   connect it to VFIO container/group. (Jason);
+> - Pass ring addresses as GPAs/IOVAs in vhost-mdev to avoid
+>   meaningless HVA->GPA translations (Jason);
+> 
+> RFC v3 -> RFC v4:
+> - Build vhost-mdev on top of the same abstraction used by
+>   virtio-mdev (Jason);
+> - Introduce vhost fd and pass VFIO fd via SET_BACKEND ioctl (MST);
+> 
+> RFC v2 -> RFC v3:
+> - Reuse vhost's ioctls instead of inventing a VFIO regions/irqs
+>   based vhost protocol on top of vfio-mdev (Jason);
+> 
+> RFC v1 -> RFC v2:
+> - Introduce a new VFIO device type to build a vhost protocol
+>   on top of vfio-mdev;
+> 
+>  drivers/vhost/Kconfig      |   9 +
+>  drivers/vhost/Makefile     |   3 +
+>  drivers/vhost/mdev.c       | 381 +++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vhost.h |   8 +
+>  4 files changed, 401 insertions(+)
+>  create mode 100644 drivers/vhost/mdev.c
+> 
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index 3d03ccbd1adc..decf0be8efe9 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -34,6 +34,15 @@ config VHOST_VSOCK
+>  	To compile this driver as a module, choose M here: the module will be called
+>  	vhost_vsock.
+>  
+> +config VHOST_MDEV
+> +	tristate "Vhost driver for Mediated devices"
+> +	depends on EVENTFD && VFIO && VFIO_MDEV
+> +	select VHOST
+> +	default n
+> +	---help---
+> +	Say M here to enable the vhost_mdev module for use with
+> +	the mediated device based hardware vhost accelerators
+> +
+>  config VHOST
+>  	tristate
+>  	---help---
+> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+> index 6c6df24f770c..ad9c0f8c6d8c 100644
+> --- a/drivers/vhost/Makefile
+> +++ b/drivers/vhost/Makefile
+> @@ -10,4 +10,7 @@ vhost_vsock-y := vsock.o
+>  
+>  obj-$(CONFIG_VHOST_RING) += vringh.o
+>  
+> +obj-$(CONFIG_VHOST_MDEV) += vhost_mdev.o
+> +vhost_mdev-y := mdev.o
+> +
+>  obj-$(CONFIG_VHOST)	+= vhost.o
+> diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
+> new file mode 100644
+> index 000000000000..1c12a25b86a2
+> --- /dev/null
+> +++ b/drivers/vhost/mdev.c
+> @@ -0,0 +1,381 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + */
+> +
+> +#include <linux/compat.h>
+> +#include <linux/kernel.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/mdev.h>
+> +#include <linux/module.h>
+> +#include <linux/vfio.h>
+> +#include <linux/vhost.h>
+> +#include <linux/virtio_mdev.h>
+> +
+> +#include "vhost.h"
+> +
+> +struct vhost_mdev {
+> +	/* The lock is to protect this structure. */
+> +	struct mutex mutex;
+> +	struct vhost_dev dev;
+> +	struct vhost_virtqueue *vqs;
+> +	int nvqs;
+> +	u64 state;
+> +	u64 features;
+> +	u64 acked_features;
+> +	bool opened;
+> +	struct mdev_device *mdev;
+> +};
+> +
+> +static u8 mdev_get_status(struct mdev_device *mdev)
+> +{
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+> +
+> +	return ops->get_status(mdev);
+> +}
+> +
+> +static void mdev_set_status(struct mdev_device *mdev, u8 status)
+> +{
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+> +
+> +	return ops->set_status(mdev, status);
+> +}
+> +
+> +static void mdev_add_status(struct mdev_device *mdev, u8 status)
+> +{
+> +	status |= mdev_get_status(mdev);
+> +	mdev_set_status(mdev, status);
+> +}
+> +
+> +static void mdev_reset(struct mdev_device *mdev)
+> +{
+> +	mdev_set_status(mdev, 0);
+> +}
+> +
+> +static void handle_vq_kick(struct vhost_work *work)
+> +{
+> +	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
+> +						  poll.work);
+> +	struct vhost_mdev *m = container_of(vq->dev, struct vhost_mdev, dev);
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
+> +
+> +	ops->kick_vq(m->mdev, vq - m->vqs);
+> +}
+> +
+> +static irqreturn_t vhost_mdev_virtqueue_cb(void *private)
+> +{
+> +	struct vhost_virtqueue *vq = private;
+> +	struct eventfd_ctx *call_ctx = vq->call_ctx;
+> +
+> +	if (call_ctx)
+> +		eventfd_signal(call_ctx, 1);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static long vhost_mdev_reset(struct vhost_mdev *m)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +
+> +	mdev_reset(mdev);
+> +	mdev_add_status(mdev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> +	mdev_add_status(mdev, VIRTIO_CONFIG_S_DRIVER);
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_start(struct vhost_mdev *m)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+> +	struct virtio_mdev_callback cb;
+> +	struct vhost_virtqueue *vq;
+> +	int idx;
+> +
+> +	ops->set_features(mdev, m->acked_features);
+> +
+> +	mdev_add_status(mdev, VIRTIO_CONFIG_S_FEATURES_OK);
+> +	if (!(mdev_get_status(mdev) & VIRTIO_CONFIG_S_FEATURES_OK))
+> +		goto reset;
+> +
+> +	for (idx = 0; idx < m->nvqs; idx++) {
+> +		vq = &m->vqs[idx];
+> +
+> +		if (!vq->desc || !vq->avail || !vq->used)
+> +			break;
+> +
+> +		if (ops->set_vq_state(mdev, idx, vq->last_avail_idx))
+> +			goto reset;
+> +
+> +		/*
+> +		 * In vhost-mdev, userspace should pass ring addresses
+> +		 * in guest physical addresses when IOMMU is disabled or
+> +		 * IOVAs when IOMMU is enabled.
+> +		 */
+> +		if (ops->set_vq_address(mdev, idx, (u64)vq->desc,
+> +					(u64)vq->avail, (u64)vq->used))
+> +			goto reset;
+> +
+> +		ops->set_vq_num(mdev, idx, vq->num);
+> +
+> +		cb.callback = vhost_mdev_virtqueue_cb;
+> +		cb.private = vq;
+> +		ops->set_vq_cb(mdev, idx, &cb);
+> +
+> +		ops->set_vq_ready(mdev, idx, 1);
+> +	}
+> +
+> +	mdev_add_status(mdev, VIRTIO_CONFIG_S_DRIVER_OK);
+> +	if (mdev_get_status(mdev) & VIRTIO_CONFIG_S_NEEDS_RESET)
+> +		goto reset;
+> +	return 0;
+> +
+> +reset:
+> +	vhost_mdev_reset(m);
+> +	return -ENODEV;
+> +}
+> +
+> +static long vhost_set_state(struct vhost_mdev *m, u64 __user *statep)
+> +{
+> +	u64 state;
+> +	long r;
+> +
+> +	if (copy_from_user(&state, statep, sizeof(state)))
+> +		return -EFAULT;
+> +
+> +	if (state >= VHOST_MDEV_S_MAX)
+> +		return -EINVAL;
+> +
+> +	if (m->state == state)
+> +		return 0;
+> +
+> +	m->state = state;
+> +
+> +	switch (m->state) {
+> +	case VHOST_MDEV_S_RUNNING:
+> +		r = vhost_mdev_start(m);
+> +		break;
+> +	case VHOST_MDEV_S_STOPPED:
+> +		r = vhost_mdev_reset(m);
+> +		break;
+> +	default:
+> +		r = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	return r;
+> +}
+> +
+> +static long vhost_get_features(struct vhost_mdev *m, u64 __user *featurep)
+> +{
+> +	if (copy_to_user(featurep, &m->features, sizeof(m->features)))
+> +		return -EFAULT;
+> +	return 0;
+> +}
+> +
+> +static long vhost_set_features(struct vhost_mdev *m, u64 __user *featurep)
+> +{
+> +	u64 features;
+> +
+> +	if (copy_from_user(&features, featurep, sizeof(features)))
+> +		return -EFAULT;
+> +
+> +	if (features & ~m->features)
+> +		return -EINVAL;
+> +
+> +	m->acked_features = features;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_get_vring_base(struct vhost_mdev *m, void __user *argp)
+> +{
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(m->mdev);
+> +	struct vhost_virtqueue *vq;
+> +	u32 idx;
+> +	long r;
+> +
+> +	r = get_user(idx, (u32 __user *)argp);
+> +	if (r < 0)
+> +		return r;
+> +	if (idx >= m->nvqs)
+> +		return -ENOBUFS;
+> +
+> +	vq = &m->vqs[idx];
+> +	vq->last_avail_idx = ops->get_vq_state(m->mdev, idx);
+> +
+> +	return vhost_vring_ioctl(&m->dev, VHOST_GET_VRING_BASE, argp);
+> +}
+> +
+> +static int vhost_mdev_open(void *device_data)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +	struct vhost_dev *dev;
+> +	struct vhost_virtqueue **vqs;
+> +	int nvqs, i, r;
+> +
+> +	if (!try_module_get(THIS_MODULE))
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&m->mutex);
+> +
+> +	if (m->opened) {
+> +		r = -EBUSY;
+> +		goto err;
+> +	}
+> +
+> +	nvqs = m->nvqs;
+> +	vhost_mdev_reset(m);
+> +
+> +	memset(&m->dev, 0, sizeof(m->dev));
+> +	memset(m->vqs, 0, nvqs * sizeof(struct vhost_virtqueue));
+> +
+> +	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
+> +	if (!vqs) {
+> +		r = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	dev = &m->dev;
+> +	for (i = 0; i < nvqs; i++) {
+> +		vqs[i] = &m->vqs[i];
+> +		vqs[i]->handle_kick = handle_vq_kick;
+> +	}
+> +	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0);
+> +	m->opened = true;
+> +	mutex_unlock(&m->mutex);
+> +
+> +	return 0;
+> +
+> +err:
+> +	mutex_unlock(&m->mutex);
+> +	module_put(THIS_MODULE);
+> +	return r;
+> +}
+> +
+> +static void vhost_mdev_release(void *device_data)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +
+> +	mutex_lock(&m->mutex);
+> +	vhost_mdev_reset(m);
+> +	vhost_dev_stop(&m->dev);
+> +	vhost_dev_cleanup(&m->dev);
+> +
+> +	kfree(m->dev.vqs);
+> +	m->opened = false;
+> +	mutex_unlock(&m->mutex);
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static long vhost_mdev_unlocked_ioctl(void *device_data,
+> +				      unsigned int cmd, unsigned long arg)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +	void __user *argp = (void __user *)arg;
+> +	long r;
+> +
+> +	mutex_lock(&m->mutex);
+> +
+> +	switch (cmd) {
+> +	case VHOST_MDEV_SET_STATE:
+> +		r = vhost_set_state(m, argp);
+> +		break;
+> +	case VHOST_GET_FEATURES:
+> +		r = vhost_get_features(m, argp);
+> +		break;
+> +	case VHOST_SET_FEATURES:
+> +		r = vhost_set_features(m, argp);
+> +		break;
+> +	case VHOST_GET_VRING_BASE:
+> +		r = vhost_get_vring_base(m, argp);
+> +		break;
+> +	default:
+> +		r = vhost_dev_ioctl(&m->dev, cmd, argp);
+> +		if (r == -ENOIOCTLCMD)
+> +			r = vhost_vring_ioctl(&m->dev, cmd, argp);
+> +	}
+> +
+> +	mutex_unlock(&m->mutex);
+> +	return r;
+> +}
+> +
+> +static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+> +	.name		= "vfio-vhost-mdev",
+> +	.open		= vhost_mdev_open,
+> +	.release	= vhost_mdev_release,
+> +	.ioctl		= vhost_mdev_unlocked_ioctl,
+> +};
+> +
+> +static int vhost_mdev_probe(struct device *dev)
+> +{
+> +	struct mdev_device *mdev = mdev_from_dev(dev);
+> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+> +	struct vhost_mdev *m;
+> +	int nvqs, r;
+> +
+> +	m = kzalloc(sizeof(*m), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+> +	if (!m)
+> +		return -ENOMEM;
+> +
+> +	mutex_init(&m->mutex);
+> +
+> +	nvqs = ops->get_queue_max(mdev);
+> +	m->nvqs = nvqs;
+> +
+> +	m->vqs = kmalloc_array(nvqs, sizeof(struct vhost_virtqueue),
+> +			       GFP_KERNEL);
+> +	if (!m->vqs) {
+> +		r = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	r = vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, m);
+> +	if (r)
+> +		goto err;
+> +
+> +	m->features = ops->get_features(mdev);
+> +	m->mdev = mdev;
+> +	return 0;
+> +
+> +err:
+> +	kfree(m->vqs);
+> +	kfree(m);
+> +	return r;
+> +}
+> +
+> +static void vhost_mdev_remove(struct device *dev)
+> +{
+> +	struct vhost_mdev *m;
+> +
+> +	m = vfio_del_group_dev(dev);
+> +	mutex_destroy(&m->mutex);
+> +	kfree(m->vqs);
+> +	kfree(m);
+> +}
+> +
+> +static struct mdev_class_id id_table[] = {
+> +	{ MDEV_ID_VHOST },
+> +	{ 0 },
+> +};
+> +
+> +static struct mdev_driver vhost_mdev_driver = {
+> +	.name	= "vhost_mdev",
+> +	.probe	= vhost_mdev_probe,
+> +	.remove	= vhost_mdev_remove,
+> +	.id_table = id_table,
+> +};
+> +
+> +static int __init vhost_mdev_init(void)
+> +{
+> +	return mdev_register_driver(&vhost_mdev_driver, THIS_MODULE);
+> +}
+> +module_init(vhost_mdev_init);
+> +
+> +static void __exit vhost_mdev_exit(void)
+> +{
+> +	mdev_unregister_driver(&vhost_mdev_driver);
+> +}
+> +module_exit(vhost_mdev_exit);
+> +
+> +MODULE_VERSION("0.0.1");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("Mediated device based accelerator for virtio");
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index 40d028eed645..5afbc2f08fa3 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -116,4 +116,12 @@
+>  #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>  #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>  
+> +/* VHOST_MDEV specific defines */
+> +
+> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
+> +
+> +#define VHOST_MDEV_S_STOPPED	0
+> +#define VHOST_MDEV_S_RUNNING	1
+> +#define VHOST_MDEV_S_MAX	2
+> +
+>  #endif
 
-> On Wed, Sep 25, 2019 at 10:31:13AM -0700, Florian Fainelli wrote:
-> > The way I would approach it (as done in bcmgenet.c) is that if the
-> > platform both has CONFIG_PHYS_ADDR_T_64BIT=3Dy and supports > 32-bits
-> > addresses, then you write the upper 32-bits otherwise, you do not. Give=
-n
-> > you indicate that the registers are safe to write regardless, then mayb=
-e
-> > just the check on CONFIG_PHYS_ADDR_T_64BIT is enough for your case. The
-> > rationale in my case is that register writes to on-chip descriptors are
-> > fairly expensive (~200ns per operation) and get in the hot-path.
-> >=20
-> > The CONFIG_PHYS_ADDR_T_64BIT check addresses both native 64-bit
-> > platforms (e.g.: ARM64) and those that do support LPAE (ARM LPAE for
-> > instance).
->=20
-> I think we actually want CONFIG_DMA_ADDR_T_64BIT here because we're
-> dealing with addresses returned from the DMA API here.
->=20
-> I can add an additional condition for the upper 32-bit register writes,
-> something like:
->=20
-> 	if (IS_ENABLED(CONFIG_DMA_ADDR_T_64BIT) && priv->dma_cfg->eame)
-> 		...
->=20
-> The compiler should be able to eliminate that as dead code on platforms
-> that don't support 64-bit DMA addresses, but the code should still be
-> compiler regardless of the setting, thus increasing the compile
-> coverage.
+So assuming we have an underlying device that behaves like virtio:
 
-I'm fine with this. Some notes:
-a) Do not try to enable dma_cfg->eame if CONFIG_DMA_ADDR_T_64BIT is not=20
-enabled;
-b) You can even add a likely() around priv->dma_cfg->eame check because=20
-if a given SoC supports 64 bit addressing then its highly probable that=20
-the IP will also support EAME.
+1. Should we use SET_STATUS maybe?
+2. Do we want a reset ioctl?
+3. Do we want ability to enable rings individually?
+4. Does device need to limit max ring size?
+5. Does device need to limit max number of queues?
 
----
-Thanks,
-Jose Miguel Abreu
+-- 
+MST
