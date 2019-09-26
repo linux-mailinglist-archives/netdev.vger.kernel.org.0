@@ -2,174 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 331C6BF503
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 16:25:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 024A3BF506
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 16:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbfIZOZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 10:25:49 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41978 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726500AbfIZOZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 10:25:49 -0400
-Received: by mail-qt1-f196.google.com with SMTP id n1so3066109qtp.8
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 07:25:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=selectel-ru.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qqTNtAjoZumTGtKkhzYoF1SY4vhdNRooc6DB9HFFkmE=;
-        b=aSncYJVn9NYEDNBhyn4Mr8l5xJKTdjagE5h8TO3rSwUBdK3NWzF6znxWkUVMF3mUYe
-         HilTXg3OI1nLFq/RXzey0pSCapIaOlhYZeRCOztFtOY+8Sn3eMtpmpmXa7mOOdvYY/ly
-         gCLbxD2rv0ejq1dVGcbcV1Cjs8C+/ojcwbYrDKAzp1allqhyrI+kbcaGPuLqCLwcEZJt
-         KoTXw0ssuQnnGiMoEUkOak6oUm4qe3LLSngkthranwn4vbc9JmLGhqFZlycqNEBr9/vD
-         fjstTxd+BiPn4RaBsXNbWOFJSpt6V+uonAJ4Q4mV+wF0Kb7hAt96UufpZ/KbltAQWuEP
-         B8/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qqTNtAjoZumTGtKkhzYoF1SY4vhdNRooc6DB9HFFkmE=;
-        b=se6Joszx3HK2EWQ9tz2VzR6bRbSrbWVOf2xvnJR10DBEO0BLgQMDFHtrQ+mnkpRJKT
-         f9EmcPm2O3PnqeyChHYow5I5BiXKebeNqVR4hoHZ0IQmPPhrx9+ZnO3J2IUkm4sZLaID
-         Guocw5wWo7hHtZn0mOendu3US/cDl4ZuWykhlVZbAkGaUTXMRppfmTG2LDR8l5zrh/4s
-         7OTDYUa45LTRcmsouGn9vAHTjSteFFge0TFcrN5sqf02MUThd6GfpdKjUW04ZQiAIjxO
-         P4MFgHJS9W+ZFrAaGJC45jVTJu7ggq7BP4kdPlPNPxZtwXlcdCpnhX3dSw2PXieI5Acc
-         eAlA==
-X-Gm-Message-State: APjAAAUVDIuppO1BV2jOdYbJH9XbiRHeI0BWqKUKt9MBbpNe8WdZRzJC
-        jNUm5x4MMY3Vtvo3coBCfmr3WqpsviR3MaMTOq/xmg==
-X-Google-Smtp-Source: APXvYqw92NztJF9tHhI2B2hrwlfuo/unHDTtjehrCUw/3flSvFGyKgfupc2WsYehXayqVeFge7uUPj1YwcyMxYZNAko=
-X-Received: by 2002:ac8:e09:: with SMTP id a9mr4160975qti.88.1569507947736;
- Thu, 26 Sep 2019 07:25:47 -0700 (PDT)
+        id S1727189AbfIZO0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 10:26:31 -0400
+Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:35968 "EHLO
+        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727068AbfIZO0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 10:26:31 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 30699B40056;
+        Thu, 26 Sep 2019 14:26:29 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 26 Sep
+ 2019 07:26:09 -0700
+Subject: Re: CONFIG_NET_TC_SKB_EXT
+To:     Paul Blakey <paulb@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Pravin Shelar <pshelar@ovn.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+References: <CAADnVQJBxsWU8BddxWDBX==y87ZLoEsBdqq0DqhYD7NyEcDLzg@mail.gmail.com>
+ <1569153104-17875-1-git-send-email-paulb@mellanox.com>
+ <20190922144715.37f71fbf@cakuba.netronome.com>
+ <68c6668c-f316-2ceb-31b0-8197d22990ae@mellanox.com>
+ <d6867e6c-2b81-5fcd-1d88-46663bed6e26@solarflare.com>
+ <4f99e2b6-0f09-9d2c-6300-dfc884d501a8@mellanox.com>
+ <3c09871f-a367-56ca-0d25-f0699a7b79d0@solarflare.com>
+ <541fde6d-01ce-edf3-84e4-153756aba00f@mellanox.com>
+ <08f58572-26ed-e947-5b0c-73732ef7eb35@solarflare.com>
+ <ecfb7918-7660-91f0-035e-56f58a41dc17@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <3aff5059-c28c-f194-72f0-69edddf89f84@solarflare.com>
+Date:   Thu, 26 Sep 2019 15:26:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx>
- <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com>
- <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com>
- <9357.1568880036@nyx> <CAJYOGF87z-o9=a20dC2mZRtfMU58uL0yxZkQJ-bxe5skVvi2rA@mail.gmail.com>
- <7236.1568906827@nyx> <7154.1568987531@nyx> <CAJYOGF-L0bEF_BqbyeKqv4xmLV=e2VKUvo5zPx4rULWdwt8e0Q@mail.gmail.com>
- <10497.1569049560@nyx> <CAJYOGF_XStpFRkp0jN0um9d9WR1bqGpK2V=UgdnnX2m4YC=5pw@mail.gmail.com>
- <16538.1569371467@famine> <CAJYOGF9TY8WtUscsfJ=qduAw7_1BwU+4iE+eL6cidM=LBL9w+A@mail.gmail.com>
- <15507.1569472734@nyx>
-In-Reply-To: <15507.1569472734@nyx>
-From:   Aleksei Zakharov <zaharov@selectel.ru>
-Date:   Thu, 26 Sep 2019 17:25:36 +0300
-Message-ID: <CAJYOGF-84BfK8DvAnam9+tgfo4=oBs04zF-ETWRfhz7CE_9oBA@mail.gmail.com>
-Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org, "zhangsha (A)" <zhangsha.zhang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <ecfb7918-7660-91f0-035e-56f58a41dc17@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24934.005
+X-TM-AS-Result: No-8.489400-4.000000-10
+X-TMASE-MatchedRID: Jm7Yxmmj9OnmLzc6AOD8DfHkpkyUphL9Y8ipJLwHMqHVU2WiOk7jaPf9
+        5jG0giQwhL51VcQsjLNibFMXO8aJ79oA6mgeU1rtfDrjzXCwK0KWGk93C/VnSk3hJDbXzhXf64b
+        NpTYv99LXMBcv3R4pcoDH02jiwWT8T09fC9Tx660TF1LtYW9la6a83Mq89i9dWoQBC/aPk1tVds
+        3zwgq4tHmX776TUspq++EeQgqoy14vKbWkeTMxcoA7SSmAp7NElzlaNFD3vRQKawseZ6xdsTPqf
+        jabMGZqdsHCDX3Hk45hwxcuUkADDm2VJqCRBdqh/ccgt/EtX/2wqLgRdvwAirobGHR5ejtr5wxI
+        yyhRieMbkKUBXyytFeE6dTjJ5eoVbKQR9AbhCu/stdmnk4+gs32K69afcnwqFb73eKpG9fun+Dt
+        AMiWC3aTXq8CAzkn17uiIyPP00OurrSkYGEOTNRlJKXOepS1tELbqrOgWzyekXmvMFAHUOjuzT+
+        42naSwbvKbDDavj3aABhmXQhuiGL9ZdlL8eonaRjjVhf+j/wpKdDgyPBo71yq2rl3dzGQ1hH05f
+        N5bubBmL8kBav/KgkTCcso1LKwHqGQa5dcwM646s2kyA7ZEKA==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.489400-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24934.005
+X-MDID: 1569507990-8dKCloKJsZnt
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=D1=87=D1=82, 26 =D1=81=D0=B5=D0=BD=D1=82. 2019 =D0=B3. =D0=B2 07:38, Jay V=
-osburgh <jay.vosburgh@canonical.com>:
->
-> Aleksei Zakharov <zaharov@selectel.ru> wrote:
->
-> >=D1=81=D1=80, 25 =D1=81=D0=B5=D0=BD=D1=82. 2019 =D0=B3. =D0=B2 03:31, Ja=
-y Vosburgh <jay.vosburgh@canonical.com>:
-> >>
-> >> =D0=90=D0=BB=D0=B5=D0=BA=D1=81=D0=B5=D0=B9 =D0=97=D0=B0=D1=85=D0=B0=D1=
-=80=D0=BE=D0=B2 wrote:
-> >> [...]
-> >> >Right after reboot one of the slaves hangs with actor port state 71
-> >> >and partner port state 1.
-> >> >It doesn't send lacpdu and seems to be broken.
-> >> >Setting link down and up again fixes slave state.
-> >> [...]
-> >>
-> >>         I think I see what failed in the first patch, could you test t=
-he
-> >> following patch?  This one is for net-next, so you'd need to again swa=
-p
-> >> slave_err / netdev_err for the Ubuntu 4.15 kernel.
-> >>
-> >I've tested new patch. It seems to work. I can't reproduce the bug
-> >with this patch.
-> >There are two types of messages when link becomes up:
-> >First:
-> >bond-san: EVENT 1 llu 4294895911 slave eth2
-> >8021q: adding VLAN 0 to HW filter on device eth2
-> >bond-san: link status definitely down for interface eth2, disabling it
-> >mlx4_en: eth2: Link Up
-> >bond-san: EVENT 4 llu 4294895911 slave eth2
-> >bond-san: link status up for interface eth2, enabling it in 500 ms
-> >bond-san: invalid new link 3 on slave eth2
-> >bond-san: link status definitely up for interface eth2, 10000 Mbps full =
-duplex
-> >Second:
-> >bond-san: EVENT 1 llu 4295147594 slave eth2
-> >8021q: adding VLAN 0 to HW filter on device eth2
-> >mlx4_en: eth2: Link Up
-> >bond-san: EVENT 4 llu 4295147594 slave eth2
-> >bond-san: link status up again after 0 ms for interface eth2
-> >bond-san: link status definitely up for interface eth2, 10000 Mbps full =
-duplex
-> > [...]
->
->         The "invalid new link" is appearing because bond_miimon_commit
-> is being asked to commit a new state that isn't UP or DOWN (3 is
-> BOND_LINK_BACK).  I looked through the patched code today, and I don't
-> see a way to get to that message with the new link set to 3, so I'll add
-> some instrumentation and send out another patch to figure out what's
-> going on, as that shouldn't happen.
->
->         I don't see the "invalid" message testing locally, I think
-> because my network device doesn't transition to carrier up as quickly as
-> yours.  I thought you were getting BOND_LINK_BACK passed through from
-> bond_enslave (which calls bond_set_slave_link_state, which will set
-> link_new_link to BOND_LINK_BACK and leave it there), but the
-> link_new_link is reset first thing in bond_miimon_inspect, so I'm not
-> sure how it gets into bond_miimon_commit (I'm thinking perhaps a
-> concurrent commit triggered by another slave, which then picks up this
-> proposed link state change by happenstance).
-I assume that "invalid new link" happens in this way:
-Interface goes up
-NETDEV_CHANGE event occurs
-bond_update_speed_duplex fails
-and slave->last_link_up returns true
-slave->link becomes BOND_LINK_FAIL
-bond_check_dev_link returns 0
-miimon proposes slave->link_new_state BOND_LINK_DOWN
-NETDEV_UP event occurs
-miimon sets commit++
-miimon proposes slave->link_new_state BOND_LINK_BACK
-miimon sets slave->link to BOND_LINK_BACK
-we have updelay configured, so it doesn't set BOND_LINK_UP in the next
-case section
-miimon says "Invalid new link" and sets link state UP during next
-inspection(after updelay, i suppose)
+On 26/09/2019 14:56, Paul Blakey wrote:
+>>> In nat scenarios the packet will be modified, and then there can be a miss:
+>>>
+>>>              -trk .... CT(zone X, Restore NAT),goto chain 1
+>>>
+>>>              +trk+est, match on ipv4, CT(zone Y), goto chain 2
+>>>
+>>>              +trk+est, output..
+>> I'm confused, I thought the usual nat scenario looked more like
+>>      0: -trk ... action ct(zone x), goto chain 1
+>>      1: +trk+new ... action ct(commit, nat=foo) # sw only
+>>      1: +trk+est ... action ct(nat), mirred eth1
+>> i.e. the NAT only happens after conntrack has matched (and thus provided
+>>   the saved NAT metadata), at the end of the pipe.  I don't see how you
+>>   can NAT a -trk packet.
+> Both are valid, Nat in the first hop, executes the nat stored on the 
+> connection if available (configured by commit).
+This still isn't making sense to me.
+Until you've done a conntrack lookup and found the connection, you can't
+ use NAT information that's stored in the connection.
+So the NAT can only happen after a conntrack match is found.
 
-For the second type of messages it looks like this:
-Interface goes up
-NETDEV_CHANGE event occurs
-bond_update_speed_duplex fails
-and slave->last_link_up returns true
-slave->link becomes BOND_LINK_FAIL
-NETDEV_UP event occurs
-bond_check_dev_link returns 1
-miimon proposes slave->link_new_state BOND_LINK_UP and says "link
-status up again"
+And all the rest of your stuff (like doing conntrack twice, in different
+ zones X and Y) is 'weird' inasmuch as it's beyond the basic minimum
+ functionality for a useful offload, and inherently doesn't map to a
+ fixed-layout (non-loopy) HW pipeline.  You may want to support it in
+ your driver, you may be able to support it in your hardware, but it's
+ not true that "even nat needs that" (the nat scenario I described above
+ is entirely reasonable and is perfectly workable in an all-or-nothing
+ offload world), so if your changes are causing problems, they should be
+ reverted for this cycle.
 
-My first patch changed slave->last_link_up check to (slave->link =3D=3D
-BOND_LINK_UP).
-This check looks more consistent for me, but I might be wrong here.
-As a result if link was in BOND_LINK_FAIL or BOND_LINK_BACK when
-CHANGE or UP event,
-it became BOND_LINK_DOWN.
-But if it was initially UP and bond_update_speed_duplex was unable to
-get speed/duplex,
-link became BOND_LINK_FAIL.
+>> AFAICT only 'deliverish' actions (i.e. mirred and drop) in TC have stats.
+>> So stats are unlikely to be a problem unless you've got (say) a mirred
+>>   mirror before you send to ct and goto chain, in which case the extra
+>>   copy of the packet is a rather bigger problem for idempotency than mere
+>>   stats ;-)
+> All tc actions have software stats, and at least one (goto, mirred, 
+> drop) per OvS generated rule will have hardware stats.
+Ooh, goto has hardware stats?  That's something I hadn't spotted *re-
+ draws hardware design slightly*
 
-I don't understand a few things here:
-How could a link be in a different state from time to time during the
-first NETDEV_* event?
-And why slave->last_link_up is set when the first NETDEV event occurs?
-
-I hope I didn't messed things up too much here.
-
---=20
-Best Regards,
-Aleksei Zakharov
+> All OvS datapath rules have stats, and in turn the translated TC rules 
+> all have stats. OvS ages each rule independently.
+TC rules do not have stats.  Only TC actions have stats.  (The offload
+ API currently gets confused about this and it's really annoyed me...)
