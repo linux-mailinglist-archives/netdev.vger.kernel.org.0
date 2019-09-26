@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F154BF206
+	by mail.lfdr.de (Postfix) with ESMTP id B7EB0BF207
 	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 13:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726195AbfIZLoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 07:44:22 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:53163 "EHLO
+        id S1726840AbfIZLoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 07:44:24 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:50653 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726184AbfIZLoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 07:44:22 -0400
+        by vger.kernel.org with ESMTP id S1726184AbfIZLoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 07:44:24 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 34A8322011;
-        Thu, 26 Sep 2019 07:44:21 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 84BEC21B8B;
+        Thu, 26 Sep 2019 07:44:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 26 Sep 2019 07:44:21 -0400
+  by compute3.internal (MEProxy); Thu, 26 Sep 2019 07:44:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=Bw00mA3EPKIQ/W17Qj2/VGNzXb48FFdkIOPVMV0Ail4=; b=hNFGKV4q
-        i5vdyW1MJ1bjfKmvvGDrS1rCddvQzuZeIzmNwA4uTwuWilqm4Ea6IgYNAQxJ5sOC
-        kMNYbj6WZEjiMQUEdhYmqBulpY3KN9uApmb/mOKva/F11DyK8EazL6qSgjhOFrt9
-        a/p7P6nbT9Hr3yfWw1TNAc7RhuVhB11zNK4y5TzlHCEf5dIT44wlJMNSnuoevRox
-        pB1u8ai6ay4j+qknAjr7cYD1GsD5f82H4SEb3lysqGDIhaRLXhEP3PkmrIis6rYo
-        ou5a+Xx5sQyJqoC7T/OJAj2mUk8HcVUj9nwyvhrkgcOytLR3ysa9fb46GRyoJT6N
-        Ta2/UxZHirgBpg==
-X-ME-Sender: <xms:lKSMXXKnVx3GJnjhyDI_WxHnaw_HaSHXVQMoYxVjeMwexCkAS9Hlew>
+        fm3; bh=HQkMv389+W0vaHyRgQj+Lu+Gov3yBhv0Ji6dsPWgGWE=; b=GXexsKFu
+        gfRs2Mpc0q8bjZPcyLMaviOPUjNgJJhsCXvPJANDeBJcQTVphy7rkAfUfdbE4PFI
+        Ws8oTetoeKuCwUDKAx+hN7bUaRs7T0oEWC5EQQ6fcUt5qkCx63CGFuLZcMLjeZS4
+        gyXxGEdRPNIdzs/N07Zp7RHZtIMG7Kc9v1ThbpFf9WMt3Vsn6bU+WWFhVlNq9iGd
+        BLMIwFtpkC+psyP4mzEUJmOMSupAWIlR64MCOZlRrYXpruhHRhKYEOK8Q0cFUBED
+        RoODNaP1RF4BrXJHnUOO7KKWvu5GPCNs011S6oLRV8e4QLvFEQm7ad9RQToBhzri
+        CjJ0cpx/iwRbXA==
+X-ME-Sender: <xms:l6SMXbSjT_gxRNqz4lmcpCPf_R7-FeVQ8rcve6oiYvt2F969mvvfBQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrfeeggdegfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgeptd
-X-ME-Proxy: <xmx:lKSMXfas_xh--Mh4cYM1CYyYtuqGQKht70dGmQIFfjuNFmI50oJGCQ>
-    <xmx:lKSMXauVtOISGPh1T4EhaBSdfW9w2b2Ebt3gLtuj0OZOw_eAJiBdVw>
-    <xmx:lKSMXUtl_hdTd4jZR9TWYcE6oVe-39WLXAGQJTt5LLKuVTKvJsc8tw>
-    <xmx:laSMXaqdCK-G96JgUSiTOYS4bnb33xHmrWLgFVR8CJnKJvPw0Oj4uw>
+    ihiivgepud
+X-ME-Proxy: <xmx:l6SMXRBhEepHPEIdo4Uf142A6Mtk1SUtjSsI-5BsI53O_s1Ya9n1Ow>
+    <xmx:l6SMXb2gBWMUSLndXQWpGzFdyU6OC4sGVhtRUBUte9T7E8_OMu19nw>
+    <xmx:l6SMXfVHClt_BBw6GYVHQwrtEvoxhMd7IUQdJvfQzb7MbTE1s1qAhg>
+    <xmx:l6SMXZRr6g2roF8xuHc0kPe1uwxqg0rtzd5YqSqQ-c0KtKvnd-R1QQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2B5758005B;
-        Thu, 26 Sep 2019 07:44:19 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 27FE680063;
+        Thu, 26 Sep 2019 07:44:20 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, alexanderk@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 1/3] mlxsw: spectrum: Clear VLAN filters during port initialization
-Date:   Thu, 26 Sep 2019 14:43:38 +0300
-Message-Id: <20190926114340.9483-2-idosch@idosch.org>
+Subject: [PATCH net 2/3] Documentation: Clarify trap's description
+Date:   Thu, 26 Sep 2019 14:43:39 +0300
+Message-Id: <20190926114340.9483-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190926114340.9483-1-idosch@idosch.org>
 References: <20190926114340.9483-1-idosch@idosch.org>
@@ -61,79 +61,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-When a port is created, its VLAN filters are not cleared by the
-firmware. This causes tagged packets to be later dropped by the ingress
-STP filters, which default to DISCARD state.
+Alex noted that the below description might not be obvious to all users.
+Clarify it by adding an example.
 
-The above did not matter much until commit b5ce611fd96e ("mlxsw:
-spectrum: Add devlink-trap support") where we exposed the drop reason to
-users.
-
-Without this patch, the drop reason users will see is not consistent. If
-a port is enslaved to a VLAN-aware bridge and a packet with an invalid
-VLAN tries to ingress the bridge, it will be dropped due to ingress STP
-filter. If the VLAN is later enabled and then disabled, the packet will
-be dropped by the ingress VLAN filter despite the above being a
-seemingly NOP operation.
-
-Fix this by clearing all the VLAN filters during port initialization.
-Adjust the test accordingly.
-
-Fixes: b5ce611fd96e ("mlxsw: spectrum: Add devlink-trap support")
+Fixes: f3047ca01f12 ("Documentation: Add devlink-trap documentation")
 Reported-by: Alex Kushnarov <alexanderk@mellanox.com>
-Tested-by: Alex Kushnarov <alexanderk@mellanox.com>
+Reviewed-by: Alex Kushnarov <alexanderk@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c           | 9 +++++++++
- .../selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh | 7 -------
- 2 files changed, 9 insertions(+), 7 deletions(-)
+ Documentation/networking/devlink-trap.rst | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index dd234cf7b39d..dcf9562bce8a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3771,6 +3771,14 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
- 		goto err_port_qdiscs_init;
- 	}
- 
-+	err = mlxsw_sp_port_vlan_set(mlxsw_sp_port, 0, VLAN_N_VID - 1, false,
-+				     false);
-+	if (err) {
-+		dev_err(mlxsw_sp->bus_info->dev, "Port %d: Failed to clear VLAN filter\n",
-+			mlxsw_sp_port->local_port);
-+		goto err_port_vlan_clear;
-+	}
-+
- 	err = mlxsw_sp_port_nve_init(mlxsw_sp_port);
- 	if (err) {
- 		dev_err(mlxsw_sp->bus_info->dev, "Port %d: Failed to initialize NVE\n",
-@@ -3818,6 +3826,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
- err_port_pvid_set:
- 	mlxsw_sp_port_nve_fini(mlxsw_sp_port);
- err_port_nve_init:
-+err_port_vlan_clear:
- 	mlxsw_sp_tc_qdisc_fini(mlxsw_sp_port);
- err_port_qdiscs_init:
- 	mlxsw_sp_port_fids_fini(mlxsw_sp_port);
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh
-index 5dcdfa20fc6c..126caf28b529 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh
-@@ -224,13 +224,6 @@ ingress_vlan_filter_test()
- 	local vid=10
- 
- 	bridge vlan add vid $vid dev $swp2 master
--	# During initialization the firmware enables all the VLAN filters and
--	# the driver does not turn them off since the traffic will be discarded
--	# by the STP filter whose default is DISCARD state. Add the VID on the
--	# ingress bridge port and then remove it to make sure it is not member
--	# in the VLAN.
--	bridge vlan add vid $vid dev $swp1 master
--	bridge vlan del vid $vid dev $swp1 master
- 
- 	RET=0
- 
+diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
+index c20c7c483664..8e90a85f3bd5 100644
+--- a/Documentation/networking/devlink-trap.rst
++++ b/Documentation/networking/devlink-trap.rst
+@@ -143,7 +143,8 @@ be added to the following table:
+    * - ``port_list_is_empty``
+      - ``drop``
+      - Traps packets that the device decided to drop in case they need to be
+-       flooded and the flood list is empty
++       flooded (e.g., unknown unicast, unregistered multicast) and there are
++       no ports the packets should be flooded to
+    * - ``port_loopback_filter``
+      - ``drop``
+      - Traps packets that the device decided to drop in case after layer 2
 -- 
 2.21.0
 
