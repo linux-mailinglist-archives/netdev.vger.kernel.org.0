@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F5BBEAD5
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 05:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F763BEAEC
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 05:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733229AbfIZDSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 23:18:09 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38248 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733200AbfIZDSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 23:18:09 -0400
-Received: by mail-pg1-f194.google.com with SMTP id x10so651621pgi.5;
-        Wed, 25 Sep 2019 20:18:08 -0700 (PDT)
+        id S2391674AbfIZDnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 23:43:49 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44289 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391561AbfIZDns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 23:43:48 -0400
+Received: by mail-wr1-f67.google.com with SMTP id i18so618063wru.11
+        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 20:43:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/e01aipRWHPH7X0tss/E5RuVEwEXJJ206Sxj1NvR6mo=;
-        b=i6us6Pmj3kI9zdy2DYLFPekTIdHNvPoZghPOTg64by8XXWLfR7xlZDZqYQGFNKsZMy
-         GEKBUNpV+SDbJvEsBRgfTpQXgBeKmwf5qZVN8xFjAJrYwMrijzEKoXD26aesEpGQwzl1
-         5EUaB6AAp2nVwRHi1+68b/dA81dsOCuo1fVSTBmvbEN6QQ7fwJKIFXXjUjvugxfQ3iDX
-         +Yjxd6IieZZ+u5DeLPIu5oInzWK81hR/sErRtU4ZVhAtmw624IIfwS6gZWaBTbRh5KTh
-         CFaghoGUIMDrmbYsje72y1J+aZuW1yXWSda/Pdurc3ZC2KgXqQpzHvV6bp3gZ5kmlskI
-         C6pA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ti6ccZ5Qof3JA4rRR42TrR5os1w1D6TdLIcCGOCIc0c=;
+        b=lMvHh5GXU0LjxIbnPzlXKiXgX0tSKAhNWfxswOASGPoCSuAS+8s4atAKNMxReJptGi
+         YXn9yhk1+E1Zuy6FiEOI8mb6AvkqaInMqSEe2Fa7lMTjUzM1xmb+lTf1jRypWxd3HwAp
+         55GCS4Z1/mfo3sk0/jVab83kc3+6O6b9D4B25jKKaujksseuoUZ4yrnLryHfHmPEbnXh
+         2YDmD+U4yFvhJhWAL0kFrkvHmV5r/lvRP5QOjP1pUi9a13nunLBKyr1i/dRywmKkQlN/
+         +1sVnpiQ3VsnZ7sHmefj16eS6bZmCpY87fgC4wrjOLXIA2/xjwDKvXKDkkcNhj6Wq6dY
+         3+Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/e01aipRWHPH7X0tss/E5RuVEwEXJJ206Sxj1NvR6mo=;
-        b=bp8Mcg8EIN5CR1L3bPe+x2mA1qeNxLJrIyGjrEMOTl08uyImsZ8cSN3/t+tSryos7z
-         aILgn7jdzDZF6RAbt/SIipa/2FKbUPWZfZ3q61Hx5EuDls4yh3LtYaq21f68IXDUDCi0
-         roTnRaZvC7lmtMsp5kfXCyU2Sum1oJrfGTNp/9ceDyvJNs0zPb1DeY9qUGn9PBT0kgz3
-         pEauJNWvOCxuyyx+yU9deSE4Tnfwb37fudIM0/qjC8BZOec/wBrOAuAE6fALT/EZlh6y
-         Nc+su5tdCMiD6FwM72P90SAkqSDoJvqKArsYB89F03t6P79Kfh5fnKULQogG+/+eiWBw
-         bQTA==
-X-Gm-Message-State: APjAAAVBWOpxAITN8H/LJqf3Hs5cqxSAbhSnmVf6dx5Buq9DNQEyvNYP
-        qCIHRYvRRs8ta+8EEvMUZhNmfuRW
-X-Google-Smtp-Source: APXvYqwIl1HA42M4pxILH2MueMe16Kg8BIZOkv+wNehRZAFzCMbM3304ZmeqwJEZCeq39jqryCcBIA==
-X-Received: by 2002:aa7:870a:: with SMTP id b10mr1182400pfo.5.1569467887898;
-        Wed, 25 Sep 2019 20:18:07 -0700 (PDT)
-Received: from [10.230.28.130] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b20sm488058pff.158.2019.09.25.20.18.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Sep 2019 20:18:07 -0700 (PDT)
-Subject: Re: [PATCH net] net: broadcom/bcmsysport: Fix signedness in
- bcm_sysport_probe()
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <20190925105604.GD3264@mwanda>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <2424620c-7e8f-43ad-498f-966f26dc7e9f@gmail.com>
-Date:   Wed, 25 Sep 2019 20:18:05 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ti6ccZ5Qof3JA4rRR42TrR5os1w1D6TdLIcCGOCIc0c=;
+        b=t8bffpWjos5i+5msrKjSW29ol1UTosJOd4LreRY9tJCJPo5ht/11/Is1MPU6j7Uu8a
+         yi7Qa5aCj/SHjIrexymB0D0ii/10z4mAxKtYFGRGjoLgE/Cv1f43WO8OQTxw8E2OqssO
+         XVmPP/OTcl3saYV61Tthir6vVX35O9OgmxnTsD2vYVF/JVbZrFTK9Twu/GVqIUnSUemK
+         4YUtH/vhQCvG5TicYjQH6cVfOCDThhCLMuzsrhJoC7aOY/SvJfHvio2Vk4dkryDyPWVP
+         8aG3jvwi/tHAJ/1nvfoHU2N30LjmwM9xeSH9B8g2uaGESceyEXcwkKCvYnNBB7SQdVQ2
+         3F7A==
+X-Gm-Message-State: APjAAAWNBGCbdNQQh4dnPL5B/1TTJh9X1e1nvd8evfHvXutv5sWdbIkD
+        Bm5B1S6336VUuWoq9LSzGPm+HL3e
+X-Google-Smtp-Source: APXvYqw0dsSjwy/YZsst2nmgxdBMSQIH/ZgIeJfb9jkDef1B5C+/IboSFkZOI1EOZibzQ/tjGRoslA==
+X-Received: by 2002:adf:f404:: with SMTP id g4mr975991wro.353.1569469426940;
+        Wed, 25 Sep 2019 20:43:46 -0700 (PDT)
+Received: from localhost (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
+        by smtp.gmail.com with ESMTPSA id c132sm850734wme.27.2019.09.25.20.43.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Sep 2019 20:43:46 -0700 (PDT)
+Date:   Wed, 25 Sep 2019 20:43:44 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org,
+        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
+        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Christopher Hall <christopher.s.hall@intel.com>
+Subject: Re: [net-next v2 1/2] ptp: correctly disable flags on old ioctls
+Message-ID: <20190926034344.GA21883@localhost>
+References: <20190926022820.7900-1-jacob.e.keller@intel.com>
+ <20190926022820.7900-2-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190925105604.GD3264@mwanda>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190926022820.7900-2-jacob.e.keller@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 25, 2019 at 07:28:19PM -0700, Jacob Keller wrote:
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index 9c18476d8d10..67d0199840fd 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -155,7 +155,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  			err = -EINVAL;
+>  			break;
+>  		} else if (cmd == PTP_EXTTS_REQUEST) {
+> -			req.extts.flags &= ~PTP_EXTTS_VALID_FLAGS;
+> +			req.extts.flags &= PTP_EXTTS_V1_VALID_FLAGS;
 
+Duh, the bit wise negation was not the intention.  Thanks for catching
+this, and introducing the "V1" set of flags makes sense.
 
-On 9/25/2019 3:56 AM, Dan Carpenter wrote:
-> The "priv->phy_interface" variable is an enum and in this context GCC
-> will treat it as unsigned so the error handling will never be
-> triggered.
-> 
-> Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+@davem Please merge this patch as a bug fix.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Acked-by: Richard Cochran <richardcochran@gmail.com>
