@@ -2,148 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4656EBF787
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 19:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B9C0BF79C
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 19:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727689AbfIZRYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 13:24:40 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:44307 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727502AbfIZRYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 13:24:40 -0400
-Received: by mail-pl1-f193.google.com with SMTP id q15so1321135pll.11
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 10:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JO1szATWTVq6P9jByV19nI8Azzc/AOfERPTUa2HW7h8=;
-        b=TN4mLTdKOigcC2W4r+0p2bV5BNegu7A7meKCqiMIqiMfi4xf15MCrhEFsFqpoIjU6a
-         PAtrsdvQmMAYsmwbf2ANmPpSPI+jQJArt+1uzEoHEdDR9Dq8+jJnb+d0HX33n+QGtJJf
-         9SxJVlJcBOxXN1co3YTvNm2x+bY54Cekw9FvGR4afVYKenz1aMPvYOE0E8DNLeO9i0O2
-         hM3jY/0SO+pRtEo0i3J3GQizCfuLIhOuIJYkgjN16eNH8g2GQtLRMTarlCmnyf7/DWir
-         GZLbrPLjbEJOfr3RffJ0Qk6cYTkr8S0bSuoHvpi5On7D3aHgIUP4CRZSvM9l/9LdQb9N
-         +H/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JO1szATWTVq6P9jByV19nI8Azzc/AOfERPTUa2HW7h8=;
-        b=n5SxcU89c4LtpEfIqaabmHTrx+5sTONjS47daaKExYo4nkzALLluYR/ZPbwCclOgRM
-         yO2cz88r61WIZo2Yvb5L7dQeHZRSRo4mR2QtZY7gRB3p+a6+5oF+dTxGPb21PcFHMhGv
-         K3RE5bTHGYmtelxExTeriHgSZmdYu4ocu7UETx0Jyv3VQylGrRzeNQU3vS1H5+xz9qC6
-         5E+XZQtqFBjCXTtnGV0PQsIsKQQXgN6w6Ow1rYbPyE74eXzM5VyoRY3qzAtvZJOfffvr
-         bVUYrQsgZkN6C5UbrEn4YkehbQg0sjN0zsU8nPX7fFFTVjWAs+iqOTe0Kib+n2q9EZjY
-         9P/A==
-X-Gm-Message-State: APjAAAXGS11Wyo3gXIyDLVZZtxjAgyZOlInPyI9uKEIfaY4lM7W1Alg3
-        A5Z4vAzdtU6SyGlzS192/PY=
-X-Google-Smtp-Source: APXvYqwFo3lGV1dc53G+wF6SNm7L0485ZwWVo1jbV1c8ZjImHXqgbdDAGkXBa9jkAkyqKKcYWME0Ag==
-X-Received: by 2002:a17:902:7001:: with SMTP id y1mr4966493plk.49.1569518679665;
-        Thu, 26 Sep 2019 10:24:39 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id 18sm3066328pfp.100.2019.09.26.10.24.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Sep 2019 10:24:38 -0700 (PDT)
-Subject: Re: [PATCH net] sk_buff: drop all skb extensions on free and skb
- scrubbing
-To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com, paulb@mellanox.com,
-        vladbu@mellanox.com
-References: <20190926141840.31952-1-fw@strlen.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <76c10ba7-5fc8-e9e8-769f-fc4d5cada7a2@gmail.com>
-Date:   Thu, 26 Sep 2019 10:24:37 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727718AbfIZRaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 13:30:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727502AbfIZRaw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 13:30:52 -0400
+Received: from localhost (unknown [77.137.89.37])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 166F3222C3;
+        Thu, 26 Sep 2019 17:30:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1569519050;
+        bh=VwP2kBjbEOi8h2i1GPYvMLlTvvzbXQOV5p6AjraPfTg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=foNOLmEZ0Tmv8XceGJDCCOdaTxSGA8qw5tMunjHkfWp6iUNCgG9t7fYBVM/qF6gpC
+         vo1H7lfkeCaTwQg3mVNyCMB93Vu9pIs8twYXaeV4Ta9adwzWzpMjusdTYhMYOsDGHu
+         uE5fVsBP53iRDqMnj1J5YmH1EbWl1Coy4nnFaaI8=
+Date:   Thu, 26 Sep 2019 20:30:46 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     dledford@redhat.com, jgg@mellanox.com, gregkh@linuxfoundation.org,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Shiraz Saleem <shiraz.saleem@intel.com>
+Subject: Re: [RFC 04/20] RDMA/irdma: Add driver framework definitions
+Message-ID: <20190926173046.GB14368@unreal>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-5-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190926141840.31952-1-fw@strlen.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190926164519.10471-5-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/26/19 7:18 AM, Florian Westphal wrote:
-> Now that we have a 3rd extension, add a new helper that drops the
-> extension space and use it when we need to scrub an sk_buff.
-> 
-> At this time, scrubbing clears secpath and bridge netfilter data, but
-> retains the tc skb extension, after this patch all three get cleared.
-> 
-> NAPI reuse/free assumes we can only have a secpath attached to skb, but
-> it seems better to clear all extensions there as well.
-> 
-> Fixes: 95a7233c452a ("net: openvswitch: Set OvS recirc_id from tc chain index")
-> Signed-off-by: Florian Westphal <fw@strlen.de>
+On Thu, Sep 26, 2019 at 09:45:03AM -0700, Jeff Kirsher wrote:
+> From: Mustafa Ismail <mustafa.ismail@intel.com>
+>
+> Register irdma as a platform driver capable of supporting platform
+> devices from multi-generation RDMA capable Intel HW. Establish the
+> interface with all supported netdev peer devices and initialize HW.
+>
+> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 > ---
->  include/linux/skbuff.h | 9 +++++++++
->  net/core/dev.c         | 4 ++--
->  net/core/skbuff.c      | 2 +-
->  3 files changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 907209c0794e..4debdd58a0ce 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -4144,8 +4144,17 @@ static inline void *skb_ext_find(const struct sk_buff *skb, enum skb_ext_id id)
->  
->  	return NULL;
->  }
+>  drivers/infiniband/hw/irdma/i40iw_if.c | 270 +++++++++++
+>  drivers/infiniband/hw/irdma/irdma_if.c | 436 +++++++++++++++++
+>  drivers/infiniband/hw/irdma/main.c     | 531 ++++++++++++++++++++
+>  drivers/infiniband/hw/irdma/main.h     | 639 +++++++++++++++++++++++++
+>  4 files changed, 1876 insertions(+)
+>  create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
+>  create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
+>  create mode 100644 drivers/infiniband/hw/irdma/main.c
+>  create mode 100644 drivers/infiniband/hw/irdma/main.h
+>
+> diff --git a/drivers/infiniband/hw/irdma/i40iw_if.c b/drivers/infiniband/hw/irdma/i40iw_if.c
+> new file mode 100644
+> index 000000000000..3cddb091acfb
+> --- /dev/null
+> +++ b/drivers/infiniband/hw/irdma/i40iw_if.c
+> @@ -0,0 +1,270 @@
+> +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
+> +/* Copyright (c) 2019, Intel Corporation. */
 > +
-> +static inline void skb_ext_reset(struct sk_buff *skb)
+> +#include <linux/module.h>
+> +#include <linux/moduleparam.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/etherdevice.h>
+> +#include <net/addrconf.h>
+> +#include "main.h"
+> +#include "i40iw_hw.h"
+> +#include <linux/net/intel/i40e_client.h>
+> +
+> +/**
+> + * i40iw_request_reset - Request a reset
+> + * @rf: RDMA PCI function
+> + *
+> + */
+> +void i40iw_request_reset(struct irdma_pci_f *rf)
 > +{
-> +	if (skb->active_extensions) {
-
-This deserves an unlikely(skb->active_extensions) hint here ?
-
-> +		__skb_ext_put(skb->extensions);
-> +		skb->active_extensions = 0;
-> +	}
+> +	struct i40e_info *ldev = (struct i40e_info *)rf->ldev.if_ldev;
+> +
+> +	ldev->ops->request_reset(ldev, rf->ldev.if_client, 1);
 > +}
->  #else
->  static inline void skb_ext_put(struct sk_buff *skb) {}
-> +static inline void skb_ext_reset(struct sk_buff *skb) {}
->  static inline void skb_ext_del(struct sk_buff *skb, int unused) {}
->  static inline void __skb_ext_copy(struct sk_buff *d, const struct sk_buff *s) {}
->  static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buff *s) {}
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 71b18e80389f..bf3ed413abaf 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5666,7 +5666,7 @@ EXPORT_SYMBOL(gro_find_complete_by_type);
->  static void napi_skb_free_stolen_head(struct sk_buff *skb)
->  {
->  	skb_dst_drop(skb);
-> -	secpath_reset(skb);
-> +	skb_ext_put(skb);
->  	kmem_cache_free(skbuff_head_cache, skb);
->  }
->  
-> @@ -5733,7 +5733,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
->  	skb->encapsulation = 0;
->  	skb_shinfo(skb)->gso_type = 0;
->  	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
-> -	secpath_reset(skb);
-> +	skb_ext_reset(skb);
->  
->  	napi->skb = skb;
->  }
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index f12e8a050edb..01d65206f4fb 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -5119,7 +5119,7 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
->  	skb->skb_iif = 0;
->  	skb->ignore_df = 0;
->  	skb_dst_drop(skb);
-> -	secpath_reset(skb);
-> +	skb_ext_reset(skb);
->  	nf_reset(skb);
->  	nf_reset_trace(skb);
->  
-> 
+> +
+> +/**
+> + * i40iw_open - client interface operation open for iwarp/uda device
+> + * @ldev: LAN device information
+> + * @client: iwarp client information, provided during registration
+> + *
+> + * Called by the LAN driver during the processing of client register
+> + * Create device resources, set up queues, pble and hmc objects and
+> + * register the device with the ib verbs interface
+> + * Return 0 if successful, otherwise return error
+> + */
+> +static int i40iw_open(struct i40e_info *ldev, struct i40e_client *client)
+> +{
+> +	struct irdma_l2params l2params = {};
+> +	struct irdma_device *iwdev = NULL;
+> +	struct irdma_handler *hdl = NULL;
+> +	struct irdma_priv_ldev *pldev;
+> +	u16 last_qset = IRDMA_NO_QSET;
+> +	struct irdma_sc_dev *dev;
+> +	struct irdma_pci_f *rf;
+> +	int err_code = -EIO;
+> +	u16 qset;
+> +	int i;
+> +
+> +	hdl = irdma_find_handler(ldev->pcidev);
+> +	if (hdl)
+> +		return 0;
+> +
+> +	hdl = kzalloc((sizeof(*hdl) + sizeof(*iwdev)), GFP_KERNEL);
+> +	if (!hdl)
+> +		return -ENOMEM;
+> +
+> +	iwdev = (struct irdma_device *)((u8 *)hdl + sizeof(*hdl));
+> +
+> +	iwdev->param_wq = alloc_ordered_workqueue("l2params", WQ_MEM_RECLAIM);
+> +	if (!iwdev->param_wq)
+> +		goto error;
+> +
+> +	rf = &hdl->rf;
+> +	rf->hdl = hdl;
+> +	dev = &rf->sc_dev;
+> +	dev->back_dev = rf;
+> +	rf->rdma_ver = IRDMA_GEN_1;
+> +	hdl->platform_dev = ldev->platform_dev;
+> +	irdma_init_rf_config_params(rf);
+> +	rf->init_hw = i40iw_init_hw;
+> +	rf->hw.hw_addr = ldev->hw_addr;
+> +	rf->pdev = ldev->pcidev;
+> +	rf->netdev = ldev->netdev;
+> +	dev->pci_rev = rf->pdev->revision;
+> +	iwdev->rf = rf;
+> +	iwdev->hdl = hdl;
+> +	iwdev->ldev = &rf->ldev;
+> +	iwdev->init_state = INITIAL_STATE;
+> +	iwdev->rcv_wnd = IRDMA_CM_DEFAULT_RCV_WND_SCALED;
+> +	iwdev->rcv_wscale = IRDMA_CM_DEFAULT_RCV_WND_SCALE;
+> +	iwdev->netdev = ldev->netdev;
+> +	iwdev->create_ilq = true;
+> +	iwdev->vsi_num = 0;
+> +
+> +	pldev = &rf->ldev;
+> +	hdl->ldev = pldev;
+> +	pldev->if_client = client;
+> +	pldev->if_ldev = ldev;
+> +	pldev->fn_num = ldev->fid;
+> +	pldev->ftype = ldev->ftype;
+> +	pldev->pf_vsi_num = 0;
+> +	pldev->msix_count = ldev->msix_count;
+> +	pldev->msix_entries = ldev->msix_entries;
+> +
+> +	if (irdma_ctrl_init_hw(rf))
+> +		goto error;
+> +
+> +	l2params.mtu =
+> +		(ldev->params.mtu) ? ldev->params.mtu : IRDMA_DEFAULT_MTU;
+> +	for (i = 0; i < I40E_CLIENT_MAX_USER_PRIORITY; i++) {
+> +		qset = ldev->params.qos.prio_qos[i].qs_handle;
+> +		l2params.up2tc[i] = ldev->params.qos.prio_qos[i].tc;
+> +		l2params.qs_handle_list[i] = qset;
+> +		if (last_qset == IRDMA_NO_QSET)
+> +			last_qset = qset;
+> +		else if ((qset != last_qset) && (qset != IRDMA_NO_QSET))
+> +			iwdev->dcb = true;
+> +	}
+> +
+> +	if (irdma_rt_init_hw(rf, iwdev, &l2params)) {
+> +		irdma_deinit_ctrl_hw(rf);
+> +		goto error;
+> +	}
+> +
+> +	irdma_add_handler(hdl);
+> +	return 0;
+> +error:
+> +	kfree(hdl);
+> +	return err_code;
+> +}
+> +
+> +/**
+> + * i40iw_l2params_worker - worker for l2 params change
+> + * @work: work pointer for l2 params
+> + */
+> +static void i40iw_l2params_worker(struct work_struct *work)
+> +{
+> +	struct l2params_work *dwork =
+> +		container_of(work, struct l2params_work, work);
+> +	struct irdma_device *iwdev = dwork->iwdev;
+> +
+> +	irdma_change_l2params(&iwdev->vsi, &dwork->l2params);
+> +	atomic_dec(&iwdev->params_busy);
+> +	kfree(work);
+> +}
+> +
+> +/**
+> + * i40iw_l2param_change - handle qs handles for QoS and MSS change
+> + * @ldev: LAN device information
+> + * @client: client for parameter change
+> + * @params: new parameters from L2
+> + */
+> +static void i40iw_l2param_change(struct i40e_info *ldev,
+> +				 struct i40e_client *client,
+> +				 struct i40e_params *params)
+> +{
+> +	struct irdma_l2params *l2params;
+> +	struct l2params_work *work;
+> +	struct irdma_device *iwdev;
+> +	struct irdma_handler *hdl;
+> +	int i;
+> +
+> +	hdl = irdma_find_handler(ldev->pcidev);
+> +	if (!hdl)
+> +		return;
+> +
+> +	iwdev = (struct irdma_device *)((u8 *)hdl + sizeof(*hdl));
+> +
+> +	if (atomic_read(&iwdev->params_busy))
+> +		return;
+> +	work = kzalloc(sizeof(*work), GFP_KERNEL);
+> +	if (!work)
+> +		return;
+> +
+> +	atomic_inc(&iwdev->params_busy);
+
+Changing parameters through workqueue and perform locking with atomic_t, exciting.
+Please do proper locking scheme and better to avoid workqueue at all.
+
+<...>
+
+> +/* client interface functions */
+> +static const struct i40e_client_ops i40e_ops = {
+> +	.open = i40iw_open,
+> +	.close = i40iw_close,
+> +	.l2_param_change = i40iw_l2param_change
+> +};
+> +
+> +static struct i40e_client i40iw_client = {
+> +	.name = "irdma",
+> +	.ops = &i40e_ops,
+> +	.version.major = I40E_CLIENT_VERSION_MAJOR,
+> +	.version.minor = I40E_CLIENT_VERSION_MINOR,
+> +	.version.build = I40E_CLIENT_VERSION_BUILD,
+> +	.type = I40E_CLIENT_IWARP,
+> +};
+> +
+> +int i40iw_probe(struct platform_device *pdev)
+> +{
+> +	struct i40e_peer_dev_platform_data *pdata =
+> +		dev_get_platdata(&pdev->dev);
+> +	struct i40e_info *ldev;
+> +
+> +	if (!pdata)
+> +		return -EINVAL;
+> +
+> +	ldev = pdata->ldev;
+> +
+> +	if (ldev->version.major != I40E_CLIENT_VERSION_MAJOR ||
+> +	    ldev->version.minor != I40E_CLIENT_VERSION_MINOR) {
+> +		pr_err("version mismatch:\n");
+> +		pr_err("expected major ver %d, caller specified major ver %d\n",
+> +		       I40E_CLIENT_VERSION_MAJOR, ldev->version.major);
+> +		pr_err("expected minor ver %d, caller specified minor ver %d\n",
+> +		       I40E_CLIENT_VERSION_MINOR, ldev->version.minor);
+> +		return -EINVAL;
+> +	}
+
+This is can't be in upstream code, we don't support out-of-tree modules,
+everything else will have proper versions.
+
+Thanks
