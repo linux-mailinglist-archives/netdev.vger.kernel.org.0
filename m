@@ -2,109 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F85EBF930
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 20:30:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 671CFBF940
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 20:35:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbfIZSaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 14:30:03 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:46984 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726029AbfIZSaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 14:30:03 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1iDYWf-0005G8-GW; Thu, 26 Sep 2019 20:30:01 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     steffen.klassert@secunet.com, paulb@mellanox.com,
-        vladbu@mellanox.com, Florian Westphal <fw@strlen.de>
-Subject: [PATCH v2 net] sk_buff: drop all skb extensions on free and skb scrubbing
-Date:   Thu, 26 Sep 2019 20:37:05 +0200
-Message-Id: <20190926183705.16951-1-fw@strlen.de>
-X-Mailer: git-send-email 2.21.0
+        id S1728445AbfIZSfr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Sep 2019 14:35:47 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41625 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728387AbfIZSfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 14:35:47 -0400
+Received: from [206.169.234.110] (helo=nyx.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1iDYcD-0001J1-1X; Thu, 26 Sep 2019 18:35:45 +0000
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id 5E38C2400D8; Thu, 26 Sep 2019 11:35:43 -0700 (PDT)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id 5826A289C51;
+        Thu, 26 Sep 2019 11:35:43 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Madhavi Joshi <madhavi@arrcus.com>
+cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        lalit-arrcus <notifications@github.com>
+Subject: Re: Question on LACP Bypass feature
+In-reply-to: <6390BF88-7D04-41CC-8D57-844FC6A742FE@arrcus.com>
+References: <EC009050-F472-4D97-AC9B-F60BE5876176@arrcus.com> <6390BF88-7D04-41CC-8D57-844FC6A742FE@arrcus.com>
+Comments: In-reply-to Madhavi Joshi <madhavi@arrcus.com>
+   message dated "Thu, 26 Sep 2019 17:32:45 -0000."
+X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Date:   Thu, 26 Sep 2019 11:35:43 -0700
+Message-ID: <21633.1569522943@nyx>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a 3rd extension, add a new helper that drops the
-extension space and use it when we need to scrub an sk_buff.
+Madhavi Joshi <madhavi@arrcus.com> wrote:
 
-At this time, scrubbing clears secpath and bridge netfilter data, but
-retains the tc skb extension, after this patch all three get cleared.
+>  We have a question regarding LACP Bypass feature . It appears that by default, this feature is enabled in the kernel (we are on 4.1.1274 version kernel). 
+>Having said that, we do not see any sysctl or directory on the lines of /sys/class/net/<bond>/bonding/lacp_bypass.
+> 
+>Really appreciate your help with this.
 
-NAPI reuse/free assumes we can only have a secpath attached to skb, but
-it seems better to clear all extensions there as well.
+	I do not recall having ever heard of a "lacp_bypass" feature in
+bonding, and do not see it as present in the kernel sources I have
+handy.  I presume this is a feature added by a third party, but I don't
+know who, or what it does.
 
-v2: add unlikely hint (Eric Dumazet)
+	-J
 
-Fixes: 95a7233c452a ("net: openvswitch: Set OvS recirc_id from tc chain index")
-Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- include/linux/skbuff.h | 9 +++++++++
- net/core/dev.c         | 4 ++--
- net/core/skbuff.c      | 2 +-
- 3 files changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 907209c0794e..e7d3b1a513ef 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4144,8 +4144,17 @@ static inline void *skb_ext_find(const struct sk_buff *skb, enum skb_ext_id id)
- 
- 	return NULL;
- }
-+
-+static inline void skb_ext_reset(struct sk_buff *skb)
-+{
-+	if (unlikely(skb->active_extensions)) {
-+		__skb_ext_put(skb->extensions);
-+		skb->active_extensions = 0;
-+	}
-+}
- #else
- static inline void skb_ext_put(struct sk_buff *skb) {}
-+static inline void skb_ext_reset(struct sk_buff *skb) {}
- static inline void skb_ext_del(struct sk_buff *skb, int unused) {}
- static inline void __skb_ext_copy(struct sk_buff *d, const struct sk_buff *s) {}
- static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buff *s) {}
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 71b18e80389f..bf3ed413abaf 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5666,7 +5666,7 @@ EXPORT_SYMBOL(gro_find_complete_by_type);
- static void napi_skb_free_stolen_head(struct sk_buff *skb)
- {
- 	skb_dst_drop(skb);
--	secpath_reset(skb);
-+	skb_ext_put(skb);
- 	kmem_cache_free(skbuff_head_cache, skb);
- }
- 
-@@ -5733,7 +5733,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
- 	skb->encapsulation = 0;
- 	skb_shinfo(skb)->gso_type = 0;
- 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
--	secpath_reset(skb);
-+	skb_ext_reset(skb);
- 
- 	napi->skb = skb;
- }
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index f12e8a050edb..01d65206f4fb 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5119,7 +5119,7 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
- 	skb->skb_iif = 0;
- 	skb->ignore_df = 0;
- 	skb_dst_drop(skb);
--	secpath_reset(skb);
-+	skb_ext_reset(skb);
- 	nf_reset(skb);
- 	nf_reset_trace(skb);
- 
--- 
-2.21.0
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
