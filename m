@@ -2,90 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF6BBEDF2
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 10:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB84BEE85
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 11:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730001AbfIZI7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 04:59:42 -0400
-Received: from uho.ysoft.cz ([81.19.3.130]:33270 "EHLO uho.ysoft.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728506AbfIZI7l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Sep 2019 04:59:41 -0400
-Received: from iota-build.ysoft.local (unknown [10.1.5.151])
-        by uho.ysoft.cz (Postfix) with ESMTP id 83C1CA45FC;
-        Thu, 26 Sep 2019 10:59:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
-        s=20160406-ysoft-com; t=1569488379;
-        bh=S+zR6hT69uMuvtLUzS5eVjfUv4JCt+CS0cXeaaqRO1w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Fe0DtrL6V6h2VapmNghlv7JdhcyF4p+Gg0QjoPcZTzi/uqa0CN/OB1DNiftMbzxgL
-         n1m26wj1eobVRfoRujC1C+YMR+84R61XhbQ0UNqTxcxW/WGxJY7F69oLtonDqzLq/0
-         VvykzCe1RLiIBQiQ7aCdSzvDRxIiguUw1IR4iFHY=
-From:   =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-Subject: [PATCH net] net: dsa: qca8k: Use up to 7 ports for all operations
-Date:   Thu, 26 Sep 2019 10:59:17 +0200
-Message-Id: <1569488357-31415-1-git-send-email-michal.vokac@ysoft.com>
-X-Mailer: git-send-email 2.1.4
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726293AbfIZJgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 05:36:55 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:39053 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbfIZJgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 05:36:54 -0400
+Received: by mail-pl1-f195.google.com with SMTP id s17so1094506plp.6
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 02:36:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=GGk9sguynL1KTQpVTMXRwXS1clhzSNAeBjYGrIwDEOg=;
+        b=R0/G8vTJyh0P37bMVY92LLUbxMTUQWxkgYBwAie5F7VcJO0LQs9YncYASAs52coPBP
+         splftTNeVP5F2erAJPBYvXWdSd0R5t3orWwjxaZE+kkPtZK8wENznzN4V8MhfQGnrs45
+         DjWd+ZqnGQDcaMOf4c/mHLMwUDWrbDPLTkLTA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=GGk9sguynL1KTQpVTMXRwXS1clhzSNAeBjYGrIwDEOg=;
+        b=r+y3xA9P0refMKMsWNT0dhxjUuPRUv3vpMlDMi2vJyiw1xXM13a6mfaN93QmpD2HVM
+         /dIoKN4zK2dYTFnoaW4haYz0L32VzYNyWnrhqAOKE3jaeuMKxlk6iBP+InnrhHS/lNxE
+         4dTu44cHXsywn/f2SZ4abj7l/NGJi9sMt3hITEWt6+7xGBMUzLDw1NtnWKnEE9iwsUv+
+         NAZ7wOXn2cNAd/4Z/PfPd7by4rszMVxRC1j1dEceJjY4OiXWDn0A4yEDto7UVjNrQU8O
+         xPSgWkgp7t5M5sJC1iMGv8niT5lrEZnyvncJzKWvWZgI63ehVTBfBXtf3DkEOMXJRP8w
+         Buzw==
+X-Gm-Message-State: APjAAAU3y20EyEOwUC1o/ygFOSpY8HpNzwS6IVrxz14f2GkUghVts1Yr
+        1xCSqzWXk9GG7OygRwk4a/N4Tw==
+X-Google-Smtp-Source: APXvYqyWi4R7OLYSGjliAgeIlhQu+gdlA8bc2J8XpsAeL5t0lhOeORKytnYfTp3/kjpn508vMuuXUQ==
+X-Received: by 2002:a17:902:b613:: with SMTP id b19mr2759547pls.225.1569490613963;
+        Thu, 26 Sep 2019 02:36:53 -0700 (PDT)
+Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id d10sm1972417pfh.8.2019.09.26.02.36.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Sep 2019 02:36:53 -0700 (PDT)
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: [PATCH net] devlink: Fix error handling in param and info_get dumpit cb
+Date:   Thu, 26 Sep 2019 15:05:54 +0530
+Message-Id: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The QCA8K family supports up to 7 ports. So use the existing
-QCA8K_NUM_PORTS define to allocate the switch structure and limit all
-operations with the switch ports.
+If any of the param or info_get op returns error, dumpit cb is
+skipping to dump remaining params or info_get ops for all the
+drivers.
 
-This was not an issue until commit 0394a63acfe2 ("net: dsa: enable and
-disable all ports") disabled all unused ports. Since the unused ports 7-11
-are outside of the correct register range on this switch some registers
-were rewritten with invalid content.
+Instead skip only for the param/info_get op which returned error
+and continue to dump remaining information, except if the return
+code is EMSGSIZE.
 
-Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
-Fixes: a0c02161ecfc ("net: dsa: variable number of ports")
-Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
-Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 ---
-I am not sure which of the fixes tags should be used but this definetelly
-fixes something..
+ net/core/devlink.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-IMHO the 0394a63acfe2 ("net: dsa: enable and disable all ports") did not
-cause the issue but made it visible.
-
- drivers/net/dsa/qca8k.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 16f15c93a102..bbeeb8618c80 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -705,7 +705,7 @@ qca8k_setup(struct dsa_switch *ds)
- 		    BIT(0) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
- 
- 	/* Setup connection between CPU port & user ports */
--	for (i = 0; i < DSA_MAX_PORTS; i++) {
-+	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
- 		/* CPU port gets connected to all user ports of the switch */
- 		if (dsa_is_cpu_port(ds, i)) {
- 			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
-@@ -1074,7 +1074,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 	if (id != QCA8K_ID_QCA8337)
- 		return -ENODEV;
- 
--	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
-+	priv->ds = dsa_switch_alloc(&mdiodev->dev, QCA8K_NUM_PORTS);
- 	if (!priv->ds)
- 		return -ENOMEM;
- 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index e48680e..a1dd1b8 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -3172,7 +3172,7 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
+ 						    NETLINK_CB(cb->skb).portid,
+ 						    cb->nlh->nlmsg_seq,
+ 						    NLM_F_MULTI);
+-			if (err) {
++			if (err == -EMSGSIZE) {
+ 				mutex_unlock(&devlink->lock);
+ 				goto out;
+ 			}
+@@ -3432,7 +3432,7 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
+ 						NETLINK_CB(cb->skb).portid,
+ 						cb->nlh->nlmsg_seq,
+ 						NLM_F_MULTI);
+-				if (err) {
++				if (err == -EMSGSIZE) {
+ 					mutex_unlock(&devlink->lock);
+ 					goto out;
+ 				}
+@@ -4088,7 +4088,7 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
+ 					   cb->nlh->nlmsg_seq, NLM_F_MULTI,
+ 					   cb->extack);
+ 		mutex_unlock(&devlink->lock);
+-		if (err)
++		if (err == -EMSGSIZE)
+ 			break;
+ 		idx++;
+ 	}
 -- 
-2.1.4
+1.8.3.1
 
