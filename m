@@ -2,84 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7B62BF26F
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85390BF28E
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726376AbfIZME7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 08:04:59 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:51726 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbfIZME7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 08:04:59 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iDSVx-0000lJ-AK; Thu, 26 Sep 2019 14:04:53 +0200
-Message-ID: <8b36a751a3498415a6474940ed904dbd40e1f26b.camel@sipsolutions.net>
-Subject: Re: [PATCH RFC] cfg80211: add new command for reporting wiphy
- crashes
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Jouni Malinen <j@w1.fi>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hostap@lists.infradead.org,
-        openwrt-devel@lists.openwrt.org
-Date:   Thu, 26 Sep 2019 14:04:52 +0200
-In-Reply-To: <09503390-91f0-3789-496a-6e9891156c5e@gmail.com> (sfid-20190926_140042_451511_E87E7FE4)
-References: <20190920133708.15313-1-zajec5@gmail.com>
-         <20190920140143.GA30514@w1.fi>
-         <4f6f37e5-802c-4504-3dcb-c4a640d138bd@milecki.pl>
-         <9ece533700be8237699881312a99cc91c6a71d36.camel@sipsolutions.net>
-         <09503390-91f0-3789-496a-6e9891156c5e@gmail.com>
-         (sfid-20190926_140042_451511_E87E7FE4)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1726307AbfIZMJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 08:09:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38892 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725886AbfIZMJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 08:09:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=FR/mHngE5HbT/uqxBpiJEJEzHfI2HKsFHQ7kEhbaacM=; b=kFx6jlD/Le6t10WNuUy2btsrhO
+        QSt14kXkqJJxuw54aksMcTrXiv3EZpC1gRnB1/T8WWVnpw5Ud8FTh+ZPtfF70xZleMDh5GMqE9d7G
+        ZVbi2lEbMUKc7J0hR7N390WRn2tgKiwLe8JTV58okEU9X+48gzZ/rV3YExFCLl9xoZto=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iDSaI-0001oU-SL; Thu, 26 Sep 2019 14:09:22 +0200
+Date:   Thu, 26 Sep 2019 14:09:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hans Andersson <haan@cellavision.se>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        antoine.tenart@bootlin.com,
+        Hans Andersson <hans.andersson@cellavision.se>
+Subject: Re: [PATCH] net: phy: micrel: add Asym Pause workaround for KSZ9021
+Message-ID: <20190926120922.GD1864@lunn.ch>
+References: <20190926075437.18088-1-haan@cellavision.se>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190926075437.18088-1-haan@cellavision.se>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-26 at 14:00 +0200, Rafał Miłecki wrote:
-
-> > You can't seriously be suggesting that the driver doesn't *have* enough
-> > information - everything passed through it :)
+On Thu, Sep 26, 2019 at 09:54:37AM +0200, Hans Andersson wrote:
+> From: Hans Andersson <hans.andersson@cellavision.se>
 > 
-> Precisely: it doesn't store (cache) enough info.
-
-But nothing stops it (the driver) from doing so!
-
-> In brcmfmac on .add_virtual_intf() we:
-> 1) Send request to the FullMAC firmware
-> 2) Wait for a reply
-> 3) On success we create interface
-> 4) We wake up .add_virtual_intf() handler
+> The Micrel KSZ9031 PHY may fail to establish a link when the Asymmetric
+> Pause capability is set. This issue is described in a Silicon Errata
+> (DS80000691D or DS80000692D), which advises to always disable the
+> capability.
 > 
-> I'll need to find a way to skip step 3 in recovery path since interface
-> on host side already exists.
+> Micrel KSZ9021 has no errata, but has the same issue with Asymmetric Pause.
+> This patch apply the same workaround as the one for KSZ9031.
+> 
+> Signed-off-by: Hans Andersson <hans.andersson@cellavision.se>
 
-Sure, we skip lots of things in all drivers, look at iwlwifi for example
-with IWL_MVM_STATUS_IN_HW_RESTART.
+Fixes: 3aed3e2a143c ("net: phy: micrel: add Asym Pause workaround")
 
-> OK, so basically I need to work on caching setup data. Should I try
-> doing that at my selected driver level (brcmfmac)? Or should I focus on
-> generic solution (cfg80211) and consider offloading mac80211 if
-> possible?
+This is not the best fixes: tag, since it was not that change which
+broke it. But going further back will be hard.
 
-I think doing it generically will not work well, you have different code
-paths and different formats, different data that you need etc.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Sometimes there's information cfg80211 doesn't even *have*, because the
-driver is responsible for things (e.g. elements). I guess you can try,
-but my gut feeling is that it'd simpler in the driver.
-
-Now you can argue that everything passes through cfg80211 so it must
-have enough data too (just like I'm arguing the driver certainly has
-enough data), but ... it seems to me the cfg80211 is usually more
-action-based, where the restore flow needs to keep the *state*, not
-replay the series of actions that happened.
-
-johannes
-
+    Andrew
