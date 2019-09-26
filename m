@@ -2,125 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B8BEBF749
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 19:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4656EBF787
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 19:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727561AbfIZRCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 13:02:35 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:42778 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727443AbfIZRCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 13:02:34 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2C8C9340081;
-        Thu, 26 Sep 2019 17:02:32 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 26 Sep
- 2019 10:02:27 -0700
-Subject: Re: CONFIG_NET_TC_SKB_EXT
-To:     Paul Blakey <paulb@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Pravin Shelar <pshelar@ovn.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-References: <CAADnVQJBxsWU8BddxWDBX==y87ZLoEsBdqq0DqhYD7NyEcDLzg@mail.gmail.com>
- <1569153104-17875-1-git-send-email-paulb@mellanox.com>
- <20190922144715.37f71fbf@cakuba.netronome.com>
- <68c6668c-f316-2ceb-31b0-8197d22990ae@mellanox.com>
- <d6867e6c-2b81-5fcd-1d88-46663bed6e26@solarflare.com>
- <4f99e2b6-0f09-9d2c-6300-dfc884d501a8@mellanox.com>
- <3c09871f-a367-56ca-0d25-f0699a7b79d0@solarflare.com>
- <541fde6d-01ce-edf3-84e4-153756aba00f@mellanox.com>
- <08f58572-26ed-e947-5b0c-73732ef7eb35@solarflare.com>
- <ecfb7918-7660-91f0-035e-56f58a41dc17@mellanox.com>
- <3aff5059-c28c-f194-72f0-69edddf89f84@solarflare.com>
- <5ae6ca73-3683-b907-85fd-3d09bed9b68e@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <6211913e-739e-77ac-e63d-e6ac3af901e7@solarflare.com>
-Date:   Thu, 26 Sep 2019 18:02:25 +0100
+        id S1727689AbfIZRYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 13:24:40 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44307 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727502AbfIZRYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 13:24:40 -0400
+Received: by mail-pl1-f193.google.com with SMTP id q15so1321135pll.11
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 10:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JO1szATWTVq6P9jByV19nI8Azzc/AOfERPTUa2HW7h8=;
+        b=TN4mLTdKOigcC2W4r+0p2bV5BNegu7A7meKCqiMIqiMfi4xf15MCrhEFsFqpoIjU6a
+         PAtrsdvQmMAYsmwbf2ANmPpSPI+jQJArt+1uzEoHEdDR9Dq8+jJnb+d0HX33n+QGtJJf
+         9SxJVlJcBOxXN1co3YTvNm2x+bY54Cekw9FvGR4afVYKenz1aMPvYOE0E8DNLeO9i0O2
+         hM3jY/0SO+pRtEo0i3J3GQizCfuLIhOuIJYkgjN16eNH8g2GQtLRMTarlCmnyf7/DWir
+         GZLbrPLjbEJOfr3RffJ0Qk6cYTkr8S0bSuoHvpi5On7D3aHgIUP4CRZSvM9l/9LdQb9N
+         +H/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JO1szATWTVq6P9jByV19nI8Azzc/AOfERPTUa2HW7h8=;
+        b=n5SxcU89c4LtpEfIqaabmHTrx+5sTONjS47daaKExYo4nkzALLluYR/ZPbwCclOgRM
+         yO2cz88r61WIZo2Yvb5L7dQeHZRSRo4mR2QtZY7gRB3p+a6+5oF+dTxGPb21PcFHMhGv
+         K3RE5bTHGYmtelxExTeriHgSZmdYu4ocu7UETx0Jyv3VQylGrRzeNQU3vS1H5+xz9qC6
+         5E+XZQtqFBjCXTtnGV0PQsIsKQQXgN6w6Ow1rYbPyE74eXzM5VyoRY3qzAtvZJOfffvr
+         bVUYrQsgZkN6C5UbrEn4YkehbQg0sjN0zsU8nPX7fFFTVjWAs+iqOTe0Kib+n2q9EZjY
+         9P/A==
+X-Gm-Message-State: APjAAAXGS11Wyo3gXIyDLVZZtxjAgyZOlInPyI9uKEIfaY4lM7W1Alg3
+        A5Z4vAzdtU6SyGlzS192/PY=
+X-Google-Smtp-Source: APXvYqwFo3lGV1dc53G+wF6SNm7L0485ZwWVo1jbV1c8ZjImHXqgbdDAGkXBa9jkAkyqKKcYWME0Ag==
+X-Received: by 2002:a17:902:7001:: with SMTP id y1mr4966493plk.49.1569518679665;
+        Thu, 26 Sep 2019 10:24:39 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id 18sm3066328pfp.100.2019.09.26.10.24.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Sep 2019 10:24:38 -0700 (PDT)
+Subject: Re: [PATCH net] sk_buff: drop all skb extensions on free and skb
+ scrubbing
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     steffen.klassert@secunet.com, paulb@mellanox.com,
+        vladbu@mellanox.com
+References: <20190926141840.31952-1-fw@strlen.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <76c10ba7-5fc8-e9e8-769f-fc4d5cada7a2@gmail.com>
+Date:   Thu, 26 Sep 2019 10:24:37 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <5ae6ca73-3683-b907-85fd-3d09bed9b68e@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24934.005
-X-TM-AS-Result: No-4.087300-4.000000-10
-X-TMASE-MatchedRID: gjZGo2H/wj/mLzc6AOD8DfHkpkyUphL9Y8ipJLwHMqHVU2WiOk7jaPf9
-        5jG0giQwhL51VcQsjLNibFMXO8aJ79oA6mgeU1rtfDrjzXCwK0KWGk93C/VnSk3hJDbXzhXf64b
-        NpTYv99LXMBcv3R4pcoDH02jiwWT8T09fC9Tx660TF1LtYW9la6a83Mq89i9dWoQBC/aPk1tVds
-        3zwgq4tHmX776TUspq++EeQgqoy14+oSWIq9TCHLRjNHAQ1DONNACXtweanwZVCTrtVIPWukdIT
-        nzIXC0rM/bMSwa+JiaoopjLD0sPPTiULkq/3BRubRZGrsoeW/gZSo6PM4Lsil4PeqT5cXCSiMhu
-        xJgbFV0B1yfHlSIChb6Asf18V7tNcB7/IGzaDP4SaNOldpR03uqhuTPUDQDt+frbXg+Uc4XUoby
-        HIcIzrjdJ8QfbChLF2SdFMmtXAB2oGSK7rXzPTUV3YrpGUAoBwyHj5gB7sg97eGs179ltWYstNW
-        RuMmhqTAGkGOzdOEoN59c8+PodVDcpdZ3fQiLdgxsfzkNRlfLaf1N18C+ZAhe9CQaLe2PPjoczm
-        uoPCq1JDy4UEI2WZGc++YYLQnMODjbR0dS01ohAFYSErQN8g83ZD/jg9Bl+oed+SvBN2uKysETr
-        LPCQyfnn5aRHJOe4o207Lf7eejji+fTMx9KaNitss6PUa4/cD6GAt+UbooSj1CO4X0Eqed8x3qz
-        oMNxx
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.087300-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24934.005
-X-MDID: 1569517353-92i4mbEKSyZ8
+In-Reply-To: <20190926141840.31952-1-fw@strlen.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/09/2019 16:14, Paul Blakey wrote:
-> On 9/26/2019 5:26 PM, Edward Cree wrote:
->> On 26/09/2019 14:56, Paul Blakey wrote:
->>>>> In nat scenarios the packet will be modified, and then there can be a miss:
->>>>>
->>>>>               -trk .... CT(zone X, Restore NAT),goto chain 1
->>>>>
->>>>>               +trk+est, match on ipv4, CT(zone Y), goto chain 2
->>>>>
->>>>>               +trk+est, output..
->>>> I'm confused, I thought the usual nat scenario looked more like
->>>>       0: -trk ... action ct(zone x), goto chain 1
->>>>       1: +trk+new ... action ct(commit, nat=foo) # sw only
->>>>       1: +trk+est ... action ct(nat), mirred eth1
->>>> i.e. the NAT only happens after conntrack has matched (and thus provided
->>>>    the saved NAT metadata), at the end of the pipe.  I don't see how you
->>>>    can NAT a -trk packet.
->>> Both are valid, Nat in the first hop, executes the nat stored on the
->>> connection if available (configured by commit).
->> This still isn't making sense to me.
->> Until you've done a conntrack lookup and found the connection, you can't
->>   use NAT information that's stored in the connection.
->> So the NAT can only happen after a conntrack match is found.
-> That's how it works, CT action restores the metadata (nf_conn on the 
-> SKB), you can then, if needed,  execute the nat,
-Yes, and 'setting metadata' is idempotent (or reversible, if you prefer)
- so it doesn't matter if HW does it and then says "oops, can't do this"
- and software path starts from chain 0.
-Problems only appear if you have _more matching_ after executing the NAT,
- in which case you're not a "simple NAT use-case" any more but rather the
- more complicated thing.
 
-> The change didn't cause any problem
-I mean, this whole thread is here because it *did* cause a problem:
- skb-extensions being turned on when not really needed.
 
-> As we are discussing the config default, I've sent a patch to set the
-> config to N.
-As others have pointed out upthread, distros will just enable it anyway,
- regardless of the default.  As Daniel said,
-> Adding new skb extensions should really have a strong justification behind
-> it (close but slightly less strict to how we treat adding new members to
-> skb itself). 
-I'd also like to see a clear explanation of why you need extra out-of-skb
- storage space for this and can't use skb->tc_index as suggested by Pravin.
+On 9/26/19 7:18 AM, Florian Westphal wrote:
+> Now that we have a 3rd extension, add a new helper that drops the
+> extension space and use it when we need to scrub an sk_buff.
+> 
+> At this time, scrubbing clears secpath and bridge netfilter data, but
+> retains the tc skb extension, after this patch all three get cleared.
+> 
+> NAPI reuse/free assumes we can only have a secpath attached to skb, but
+> it seems better to clear all extensions there as well.
+> 
+> Fixes: 95a7233c452a ("net: openvswitch: Set OvS recirc_id from tc chain index")
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  include/linux/skbuff.h | 9 +++++++++
+>  net/core/dev.c         | 4 ++--
+>  net/core/skbuff.c      | 2 +-
+>  3 files changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 907209c0794e..4debdd58a0ce 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -4144,8 +4144,17 @@ static inline void *skb_ext_find(const struct sk_buff *skb, enum skb_ext_id id)
+>  
+>  	return NULL;
+>  }
+> +
+> +static inline void skb_ext_reset(struct sk_buff *skb)
+> +{
+> +	if (skb->active_extensions) {
+
+This deserves an unlikely(skb->active_extensions) hint here ?
+
+> +		__skb_ext_put(skb->extensions);
+> +		skb->active_extensions = 0;
+> +	}
+> +}
+>  #else
+>  static inline void skb_ext_put(struct sk_buff *skb) {}
+> +static inline void skb_ext_reset(struct sk_buff *skb) {}
+>  static inline void skb_ext_del(struct sk_buff *skb, int unused) {}
+>  static inline void __skb_ext_copy(struct sk_buff *d, const struct sk_buff *s) {}
+>  static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buff *s) {}
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 71b18e80389f..bf3ed413abaf 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -5666,7 +5666,7 @@ EXPORT_SYMBOL(gro_find_complete_by_type);
+>  static void napi_skb_free_stolen_head(struct sk_buff *skb)
+>  {
+>  	skb_dst_drop(skb);
+> -	secpath_reset(skb);
+> +	skb_ext_put(skb);
+>  	kmem_cache_free(skbuff_head_cache, skb);
+>  }
+>  
+> @@ -5733,7 +5733,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+>  	skb->encapsulation = 0;
+>  	skb_shinfo(skb)->gso_type = 0;
+>  	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+> -	secpath_reset(skb);
+> +	skb_ext_reset(skb);
+>  
+>  	napi->skb = skb;
+>  }
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index f12e8a050edb..01d65206f4fb 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -5119,7 +5119,7 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
+>  	skb->skb_iif = 0;
+>  	skb->ignore_df = 0;
+>  	skb_dst_drop(skb);
+> -	secpath_reset(skb);
+> +	skb_ext_reset(skb);
+>  	nf_reset(skb);
+>  	nf_reset_trace(skb);
+>  
+> 
