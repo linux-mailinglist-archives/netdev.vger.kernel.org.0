@@ -2,136 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D7DBF3BD
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91357BF3AD
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfIZNId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 09:08:33 -0400
-Received: from 3.mo68.mail-out.ovh.net ([46.105.58.60]:60745 "EHLO
-        3.mo68.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726094AbfIZNId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 09:08:33 -0400
-X-Greylist: delayed 4204 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Sep 2019 09:08:32 EDT
-Received: from player688.ha.ovh.net (unknown [10.109.159.136])
-        by mo68.mail-out.ovh.net (Postfix) with ESMTP id BD6511436D2
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 13:52:17 +0200 (CEST)
-Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player688.ha.ovh.net (Postfix) with ESMTPSA id 1EFA2A2EC583;
-        Thu, 26 Sep 2019 11:52:07 +0000 (UTC)
-Subject: Re: [PATCH RFC] cfg80211: add new command for reporting wiphy crashes
-To:     Jouni Malinen <j@w1.fi>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hostap@lists.infradead.org,
-        openwrt-devel@lists.openwrt.org
-References: <20190920133708.15313-1-zajec5@gmail.com>
- <20190920140143.GA30514@w1.fi>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Message-ID: <4f6f37e5-802c-4504-3dcb-c4a640d138bd@milecki.pl>
-Date:   Thu, 26 Sep 2019 13:52:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.2
+        id S1726678AbfIZNGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 09:06:17 -0400
+Received: from foss.arm.com ([217.140.110.172]:49152 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725877AbfIZNGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 09:06:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 58226142F;
+        Thu, 26 Sep 2019 06:06:16 -0700 (PDT)
+Received: from dawn-kernel.cambridge.arm.com (unknown [10.1.197.116])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B6E63F763;
+        Thu, 26 Sep 2019 06:06:14 -0700 (PDT)
+Subject: Re: [RFC PATCH v4 2/5] ptp: Reorganize ptp_kvm modules to make it
+ arch-independent.
+To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        maz@kernel.org, richardcochran@gmail.com, Mark.Rutland@arm.com,
+        Will.Deacon@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
+        nd@arm.com
+References: <20190926114212.5322-1-jianyong.wu@arm.com>
+ <20190926114212.5322-3-jianyong.wu@arm.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+Message-ID: <2f338b57-b0b2-e439-6089-72e5f5e4f017@arm.com>
+Date:   Thu, 26 Sep 2019 14:06:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-In-Reply-To: <20190920140143.GA30514@w1.fi>
+In-Reply-To: <20190926114212.5322-3-jianyong.wu@arm.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11993367286735539761
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedufedrfeeggdeggecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.09.2019 16:01, Jouni Malinen wrote:
-> On Fri, Sep 20, 2019 at 03:37:08PM +0200, Rafał Miłecki wrote:
->> Hardware or firmware instability may result in unusable wiphy. In such
->> cases usually a hardware reset is needed. To allow a full recovery
->> kernel has to indicate problem to the user space.
+Hi Jianyong,
+
+On 26/09/2019 12:42, Jianyong Wu wrote:
+> Currently, ptp_kvm modules implementation is only for x86 which includs
+> large part of arch-specific code.  This patch move all of those code
+> into new arch related file in the same directory.
 > 
-> Why? Shouldn't the driver be able to handle this on its own since all
-> the previous configuration was done through the driver anyway. As far as
-> I know, there are drivers that do indeed try to do this and handle it
-> successfully at least for station mode. AP mode may be more complex, but
-> for that one, I guess it would be fine to drop all associations (and
-> provide indication of that to user space) and just restart the BSS.
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>   drivers/ptp/Makefile                 |  1 +
+>   drivers/ptp/{ptp_kvm.c => kvm_ptp.c} | 77 ++++++------------------
+>   drivers/ptp/ptp_kvm_x86.c            | 87 ++++++++++++++++++++++++++++
+>   include/asm-generic/ptp_kvm.h        | 12 ++++
+>   4 files changed, 118 insertions(+), 59 deletions(-)
+>   rename drivers/ptp/{ptp_kvm.c => kvm_ptp.c} (63%)
 
-Indeed my main concert is AP mode. I'm afraid that cfg80211 doesn't
-cache all settings, consider e.g. nl80211_start_ap(). It builds
-struct cfg80211_ap_settings using info from nl80211 message and
-passes it to the driver (rdev_start_ap()). Once it's done it
-caches only a small subset of all setup data.
+minor nit: Could we not skip renaming the file ? Given
+you are following the ptp_kvm_* for the arch specific
+files and the header files, wouldn't it be good to
+keep ptp_kvm.c ?
 
-In other words driver doesn't have enough info to recover interfaces
-setup.
+Rest looks fine.
 
-
->> This new nl80211 command lets user space known wiphy has crashed and has
->> been just recovered. When applicable it should result in supplicant or
->> authenticator reconfiguring all interfaces.
-> 
-> For me, that is not really "recovered" if some additional
-> reconfiguration steps are needed.. I'd like to get a more detailed view
-> on what exactly might need to be reconfigured and how would user space
-> know what exactly to do. Or would the plan here be that the driver would
-> not even indicate this crash if it is actually able to internally
-> recover fully from the firmware restart?
-
-I meant that hardware has been recovered & is operational again (driver
-can talk to it). I expected user space to reconfigure all interfaces
-using the same settings that were used on previous run.
-
-If driver were able to recover interfaces setup on its own (with a help
-of cfg80211) then user space wouldn't need to be involved.
-
-
->> I'd like to use this new cfg80211_crash_report() in brcmfmac after a
->> successful recovery from a FullMAC firmware crash.
->>
->> Later on I'd like to modify hostapd to reconfigure wiphy using a
->> previously used setup.
-> 
-> So this implies that at least something would need to happen in AP mode.
-> Do you have a list of items that the driver cannot do on its own and why
-> it would be better to do them from user space?
-
-First of all I was wondering how to handle interfaces creation. After a
-firmware crash we have:
-1) Interfaces created in Linux
-2) No corresponsing interfaces in firmware
-
-Syncing that (re-creating in-firmware firmwares) may be a bit tricky
-depending on a driver and hardware. For some cases it could be easier to
-delete all interfaces and ask user space to setup wiphy (create required
-interfaces) again. I'm not sure if that's acceptable though?
-
-If we agree interfaces should stay and driver simply should configure
-firmware properly, then we need all data as explained earlier. struct
-cfg80211_ap_settings is not available during runtime. How should we
-handle that problem?
-
-
->> I'm OpenWrt developer & user and I got annoyed by my devices not auto
->> recovering after various failures. There are things I cannot fix (hw
->> failures or closed fw crashes) but I still expect my devices to get
->> back to operational state as soon as possible on their own.
-> 
-> I fully agree with the auto recovery being important thing to cover for
-> this, but I'm not yet convinced that this needs user space action. Or if
-> it does, there would need to be more detailed way of indicating what
-> exactly is needed for user space to do. The proposed change here is just
-> saying "hey, I crashed and did something to get the hardware/firmware
-> responding again" which does not really tell much to user space other
-> than potentially requiring full disable + re-enable for the related
-> interfaces. And that is something that should not actually be done in
-> all cases of firmware crashes since there are drivers that handle
-> recovery in a manner that is in practice completely transparent to user
-> space.
-
-I was aiming for a brutal force solution: just make user space
-interfaces need a full setup just at they were just created.
+Cheers
+Suzuki
