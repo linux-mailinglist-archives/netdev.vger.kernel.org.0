@@ -2,116 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B36BFB90
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32C2BFB95
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728937AbfIZWwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 18:52:33 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:33701 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727966AbfIZWwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:52:33 -0400
-Received: by mail-pl1-f196.google.com with SMTP id d22so267972pls.0
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 15:52:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mJ2Y/xqT3QijZlcvXzcn2MrjQdezEdi4Y2cZC7NA26c=;
-        b=eZzCRzKgaRT6nneCc5zFWIHIaxWQBtP5CDMcxIDvwjrGaWXHQr/oDbiT3/7/xtsWLI
-         DLT5R7N/cIu2UrvtPNM4B6yXy+vU1883iujfMm8fBqIyaXLAY+vgruQwsdSHvcLZfC5B
-         QeEWGDMdnflh5PYpLPdNJNUiUCzfkrHl0EqCOA77WJFhU4maUU24Ze2Bqdngynlw91f/
-         CkygP/fMtYpmWR0B7aewJHlxs4rVF/NiQbqScsm078ofTHqLMMyCA6riVfCkoLrvQCSR
-         sGnlwfn8rAhhM/a51uL84lwLYY1w/hB1BiudOh1s1wnLX6GvH6kZhfUr7rDKH1ooSkmy
-         3vrA==
+        id S1728358AbfIZW4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 18:56:18 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39096 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725943AbfIZW4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:56:17 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v17so4177714wml.4;
+        Thu, 26 Sep 2019 15:56:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mJ2Y/xqT3QijZlcvXzcn2MrjQdezEdi4Y2cZC7NA26c=;
-        b=l9xdPyq1J+H95vzsJXcNlXoVdPpnzYZ1gB+uCQGYAl/c9CUEhEpQ7fFG9LXF8KyF6U
-         wG5AjRvsDv9d2wzYgTAaYasSNSq1TQO2DNJ3abfRro+VtVMa2OC93moXRNi9Yi5MyOUk
-         orKSs+vpEINwqw7MQCvpb8qP5xAs+U65N1ldw0SbrHaJAlg03I0uSAN8SH1cJ9hPhccZ
-         BjxkUAa4Cuhh1AcwiZlGqXRXhUekfZae4yXKHCg5HlV+cCrpm8LAlCYzda5nP10wIbR3
-         IIMEH+uJOS2fB7RTr0lcsWRVa0GWOhRw2Bn5ochVOksV2Sxo/sn0Q1DScpZwAs9IC7SO
-         1WTg==
-X-Gm-Message-State: APjAAAXrDlVC9KUZ9I/BIFKh0tAVHsFTWXKJ3RX4HSe/yKh6jOJ2IVmH
-        7rv4BhDpq65OYBeGxu4CUt4UcnX6
-X-Google-Smtp-Source: APXvYqwO5fCzeFenmeGZyisloQ3SFOTfRQ+73JZyhNv6yf9eImhLBI7lkC2Fci1OCEDyS9pRZpSXUQ==
-X-Received: by 2002:a17:902:654a:: with SMTP id d10mr1057964pln.199.1569538352269;
-        Thu, 26 Sep 2019 15:52:32 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id b20sm306334pff.158.2019.09.26.15.52.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Sep 2019 15:52:31 -0700 (PDT)
-Subject: Re: [PATCH] net: use unlikely for dql_avail case
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        xiaolinkui <xiaolinkui@kylinos.cn>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-References: <20190925024043.31030-1-xiaolinkui@kylinos.cn>
- <20190925122501.GA27720@pc-66.home>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d5225e3a-717e-c836-f94c-6df4f29e43ca@gmail.com>
-Date:   Thu, 26 Sep 2019 15:52:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        bh=q3J4HBnNW4Hl+Gjxw0HAbYQSV7ljaMhCOnbd8J0BKfw=;
+        b=OGcVLqNDzgAxc2ptvHjEJc0ZnwDU+dw0zjb3h1aCQBF9EI5cq/LjPDZNYcm8rVYcB3
+         yWUVna7KCPCAomjPQVODfwf2sBswGjY3TYOxR6o2BZ06XNQHTCLYinXTfDrDXwvsVJBW
+         NKQBR/jf7Itslea+zewbR842C8+FDa/rPHIT9dqYDJCjR71WO53XPlZMNUfTyJwkKpVr
+         NzgSobk/sbtPj6Lpwsjp8xAx6AkaVAtHx5B3lLFULed6HdOfoRwCQ6eEKo8Jbn7SUC81
+         xoCTp2AubiWE+YmzLRFgXGxALTme01kpIocxZ2x80dkidGoFp6X5kUjdemN0pTPT67Xt
+         iTzw==
+X-Gm-Message-State: APjAAAV6zLbTVlt/pc6MvSipCKYaXTaoYxJPMTZxthHBBq3mNP+5J12p
+        C0M6K4tFSA7eyjqroyjOzfo=
+X-Google-Smtp-Source: APXvYqxrKsKE3nBWyY+NBDRt5sgGhpX8jpg+uUmLH1ydlfeiF9neM0okf0pfLaVTq7mi5G3PAWSx4w==
+X-Received: by 2002:a1c:a516:: with SMTP id o22mr5117224wme.116.1569538575651;
+        Thu, 26 Sep 2019 15:56:15 -0700 (PDT)
+Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.googlemail.com with ESMTPSA id f17sm668350wru.29.2019.09.26.15.56.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Sep 2019 15:56:14 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+Cc:     Denis Efremov <efremov@linux.com>, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rajkumar Manoharan <rmanohar@qca.qualcomm.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org
+Subject: [PATCH] ath9k_hw: fix uninitialized variable data
+Date:   Fri, 27 Sep 2019 01:56:04 +0300
+Message-Id: <20190926225604.9342-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190925122501.GA27720@pc-66.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently, data variable in ar9003_hw_thermo_cal_apply() could be
+uninitialized if ar9300_otp_read_word() will fail to read the value.
+Initialize data variable with 0 to prevent an undefined behavior. This
+will be enough to handle error case when ar9300_otp_read_word() fails.
 
+Fixes: 80fe43f2bbd5 ("ath9k_hw: Read and configure thermocal for AR9462")
+Cc: Rajkumar Manoharan <rmanohar@qca.qualcomm.com>
+Cc: John W. Linville <linville@tuxdriver.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+ drivers/net/wireless/ath/ath9k/ar9003_eeprom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 9/25/19 5:25 AM, Daniel Borkmann wrote:
-> On Wed, Sep 25, 2019 at 10:40:43AM +0800, xiaolinkui wrote:
->> This is an unlikely case, use unlikely() on it seems logical.
->>
->> Signed-off-by: xiaolinkui <xiaolinkui@kylinos.cn>
-> 
-> It's already here [0], but should probably rather get reverted instead
-> due to lack of a more elaborate reasoning on why it needs to be done
-> this way instead of letting compiler do it's job in this case. "Seems
-> logical" is never a good technical explanation. Do you have any better
-> analysis you performed prior to submitting the patch (twice by now)?
->
-
-Yes, we need more details here.
-
-We could probably save more cpu cycles checking if we can move
-the smb_mb() after the dql_avail() check :)
-
-
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+index 2b29bf4730f6..b4885a700296 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+@@ -4183,7 +4183,7 @@ static void ar9003_hw_thermometer_apply(struct ath_hw *ah)
  
-> Thanks,
-> Daniel
-> 
->   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f3acd33d840d3ea3e1233d234605c85cbbf26054
-> 
->> ---
->>  include/linux/netdevice.h | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->> index 88292953aa6f..005f3da1b13d 100644
->> --- a/include/linux/netdevice.h
->> +++ b/include/linux/netdevice.h
->> @@ -3270,7 +3270,7 @@ static inline void netdev_tx_completed_queue(struct netdev_queue *dev_queue,
->>  	 */
->>  	smp_mb();
->>  
->> -	if (dql_avail(&dev_queue->dql) < 0)
->> +	if (unlikely(dql_avail(&dev_queue->dql) < 0))
->>  		return;
->>  
->>  	if (test_and_clear_bit(__QUEUE_STATE_STACK_XOFF, &dev_queue->state))
->> -- 
->> 2.17.1
->>
->>
->>
+ static void ar9003_hw_thermo_cal_apply(struct ath_hw *ah)
+ {
+-	u32 data, ko, kg;
++	u32 data = 0, ko, kg;
+ 
+ 	if (!AR_SREV_9462_20_OR_LATER(ah))
+ 		return;
+-- 
+2.21.0
+
