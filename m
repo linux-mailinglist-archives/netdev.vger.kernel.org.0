@@ -2,108 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85502BF3EE
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EDF5BF3FC
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbfIZNS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 09:18:58 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:51854 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbfIZNS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 09:18:58 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8QDE9HW020149;
-        Thu, 26 Sep 2019 13:18:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=5JHjfX/ClfVQeV1xv35C0i2HfLD5Mcn+A2KlqPYkbdM=;
- b=ZH365Uagnno+L42TFiGn0s/sd3cK/xTPKhSiVbsvtSxo2J7Z0IGYOpakHb/xhVSnCo7G
- Wv+qBnhwM/Zm/gFdS3YXnewtvF/P5tC7C6+n4Tk9kyNK07OGTrRlnIP4sMJYJcB1BV8t
- rELpqGpPoed5NGqAQf2TK9XqnwsT2RU/8Bv0ChMH++rg+FNjOxttQjxM1+5iY6KNOaam
- XVMcn0lYWmuhA8AVqChFZLuA1L5+ANlHBLQCi/PlMpduhZ85t3sAUaRyvzwQ3ujgYIun
- j+T9lTE6yA9OIDLs92vBcxpzEW/tcJvD3AHGMi3OMk9SXY8mN8Mpr4j7eKewufpWrtQN CQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 2v5b9u3q7q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 26 Sep 2019 13:18:34 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8QDIOlO134358;
-        Thu, 26 Sep 2019 13:18:34 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 2v8rvt7a4a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 26 Sep 2019 13:18:34 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8QDIKdF032457;
-        Thu, 26 Sep 2019 13:18:21 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 26 Sep 2019 06:18:20 -0700
-Date:   Thu, 26 Sep 2019 16:18:11 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "Alvaro G. M" <alvaro.gamez@hazent.com>
-Cc:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net] net: axienet: fix a signedness bug in probe
-Message-ID: <20190926131811.GG29696@kadam>
-References: <20190925105911.GI3264@mwanda>
- <20190925110542.GA21923@salem.gmr.ssr.upm.es>
+        id S1726948AbfIZNYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 09:24:02 -0400
+Received: from mail-qt1-f174.google.com ([209.85.160.174]:41541 "EHLO
+        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbfIZNYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 09:24:02 -0400
+Received: by mail-qt1-f174.google.com with SMTP id n1so2799013qtp.8
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 06:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sTV4CXZngTqGG28A7smp6xFmdShWMtdBruXA2FOLpQE=;
+        b=bR8VduJQMM1m13Ky7X7I1KlUNwFnCMXilqYSRcBHFjGV3TV6+vsbhlDBMKtx0Nc3ED
+         CzbWeOUM8X0n/n6PnfYW7d/nASltwmY4/yBYwl3L9zfz37+q0yl4u4VVDGiO/bGD54VW
+         16Lh9gwG8U3DEWj9l5c+XJvvUxQbnNdwZdZR3K/h/aUBbypTOTFfnLyFOyUkNLEQhLeh
+         bDerKiqG+CHFkHrcJsM+R6CQWA3mAIlADn0/8fSk3UY2z63GQg8EilJWG/2h2nFP6uvx
+         kzKr87gRBLWzkrUCmp/LQ9tr6u3NALyZ9Hd22GKgcX59kxkapHolGUsaJPWGojwlKftP
+         gglg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sTV4CXZngTqGG28A7smp6xFmdShWMtdBruXA2FOLpQE=;
+        b=eWyOfAu8McN+4Cz07+nKo1uEsF1iwQPJoTBl4NB6Nrh7b9rf06r/5gUa0S0FPP+V8i
+         +9FSQ/obFmXHyF92MgZK49j8VHywyAEQJkERgAKZmyEPnJD+zlu8RYoNSKSTrbuKXrTr
+         4cw/eXXtivrmGVurOHxttVJSdrd5Ug5gFadeMYDDJt0JGAlaUerFSCFi/RBL5weLFohz
+         FtcfwAmzNgeXNR+DRaYi7+sL7WEJkgRardo3srrK5ZqGKpFIqcgznu41wk0SI7eSL9TV
+         25WdeWh5iELsasmGwzu5anyT/H5a/XxucdpFGOxvGD2/tYSoZfDdiJKOasI8fk6UmUM6
+         xbTw==
+X-Gm-Message-State: APjAAAWaPQp57U04izSO1ue93H17bCEvKZwpMZH1rCuUudLkizuzuvCQ
+        MWXGb9qGiiuy6z671/1UaeITNfvMJeRyM0yXFjoBqk0W/Mc=
+X-Google-Smtp-Source: APXvYqyobb9tCXQumadFHBpxJZAtzZilNpCQdTWjrvTs+tPadKylcYVgREq3HUvnJhlJ7iTBS0eCclDQ78qaJvQf3QI=
+X-Received: by 2002:ac8:e82:: with SMTP id v2mr3861125qti.78.1569504241233;
+ Thu, 26 Sep 2019 06:24:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190925110542.GA21923@salem.gmr.ssr.upm.es>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9391 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1909260125
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9391 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1909260125
+References: <CAGAf8LzeyrMSHCYMxn1FNtMQVyhhLYbJaczhe2AMj+7T_nBt7Q@mail.gmail.com>
+ <20190923191713.GB28770@lunn.ch>
+In-Reply-To: <20190923191713.GB28770@lunn.ch>
+From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
+Date:   Thu, 26 Sep 2019 15:23:48 +0200
+Message-ID: <CAGAf8LyQpi_R-A2Zx72bJhSBqnFo-r=KCnfVCTD9N8cNNtbhrQ@mail.gmail.com>
+Subject: Re: DSA driver kernel extension for dsa mv88e6190 switch
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 25, 2019 at 01:05:43PM +0200, Alvaro G. M wrote:
-> Hi, Dan
-> 
-> On Wed, Sep 25, 2019 at 01:59:11PM +0300, Dan Carpenter wrote:
-> > The "lp->phy_mode" is an enum but in this context GCC treats it as an
-> > unsigned int so the error handling is never triggered.
-> > 
-> >  		lp->phy_mode = of_get_phy_mode(pdev->dev.of_node);
-> > -		if (lp->phy_mode < 0) {
-> > +		if ((int)lp->phy_mode < 0) {
-> 
-> This (almost) exact code appears in a lot of different drivers too,
-> so maybe it'd be nice to review them all and apply the same cast if needed?
-> 
+Hello Andrew,
 
-This is a new warning in Smatch.  I did send patches for the whole
-kernel.  We won't get these bugs in the future because people run Smatch
-on the kernel and will find the bugs.  All the bugs were from 2017 or
-later which suggests that someone cleared these out two years ago but
-soon the 0-day bot will warn about issues so they will get fixed
-quicker.
+I would like to thank you for the reply.
 
-I'm sort of out of it today...
+I do not know if this is the right place to post such the questions,
+but my best guess is: yes.
 
-The get_phy_mode() function seem like they lend themselves to creating
-these bugs.  The ->phy_mode variables tend to be declared in the driver
-so it would require quite a few patches to make them all int and I'm not
-sure that's more beautiful.  Andrew Lunn's idea to update the API would
-probably be a good idea.
+Since till now I did not make any success to make (using DSA driver)
+make mv88e6190 single switch to work with any kernel.org. :-(
 
-I'm going back to bed for now and I'll think about this some more.
+I did ugly workaround as kernel dsa patch, which allowed me to
+introduce TXC and RXC clock skews between I.MX6 and mv88e6190 (MAC to
+MAC layer over rgmii).
 
-regards,
-dan carpenter
+And, yes, switch is working in dummy state (as you correctly described
+it), passing traffic everywhere (flooding).
+
+i.MX6 has a silicon bug, which does not allow skew configuration on
+its side. PCB is out of consideration, so this ugly patch makes switch
+to apply these two delays.Then, in dummy state, everything works.
+_______
+
+My DTS mv88e6190 configuration, which I adopted for the custom board I
+am working on, could be seen here:
+https://pastebin.com/xpXQYNRX
+
+But on another note... I am wondering if I am setting correct kernel
+configuration for it?!
+
+Here is the part of the configuration I made while going through maze
+of posts from google search results:
+
+      Switch (and switch-ish) device support @ Networking
+support->Networking options
+      Distributed Switch Architecture @ Networking support->Networking options
+      Tag driver for Marvell switches using DSA headers @ Networking
+support->Networking options->Distributed Switch Architecture
+      Tag driver for Marvell switches using EtherType DSA headers @
+Networking support->Networking options->Distributed Switch
+Architecture
+      Marvell 88E6xxx Ethernet switch fabric support @ Device
+Drivers->Network device support->Distributed Switch Architecture
+drivers
+      Switch Global 2 Registers support @ Device Drivers->Network
+device support->Distributed Switch Architecture drivers->Marvell
+88E6xxx Ethernet switch fabric support
+      Freescale devices @ Device Drivers->Network device
+support->Ethernet driver support
+      FEC ethernet controller (of ColdFire and some i.MX CPUs) @
+Device Drivers->Network device support->Ethernet driver
+support->Freescale devices
+      Marvell devices @ Device Drivers->Network device
+support->Ethernet driver support
+      Marvell MDIO interface support @ Device Drivers->Network device
+support->Ethernet driver support->Marvell devices
+      MDIO Bus/PHY emulation with fixed speed/link PHYs @ Device
+Drivers->Network device support->PHY Device support and infrastructure
+
+(Do we need Marvell PHYs option as =y ? I do not think so - should be:
+is not set)
+
+What possibly I made wrong here (this does not work - I could not get
+through the switch, and seems that MDIO works (from the logic
+analyzer), but addresses some 0x1B/0x1C ports, which should NOT be
+addressed, according to the the DTS configuration shown)?
+
+Thank you,
+Zoran
+_______
+
+On Thu, Sep 26, 2019 at 1:10 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > We have the configuration problem with the Marvell 88E6190 switch.
+> > What the our problem is... Is the switch is NOT configured with the
+> > EEPROM (24C512), which does not exist on the board.
+>
+> That is pretty normal. If there is a EEPROM, i generally recommend it
+> is left empty. We want Linux to configure the switch, and if it finds
+> it already partially configured, things can get confused.
+>
+> > It is put in autoconfig by HW straps (NOCPU mode).
+>
+> So dumb switch mode. All ports are switched between each other.
+>
+> > Once the MDIO command, issued to
+> > probe the switch and read the make of it, the switch jumps out of the
+> > autoconfig mode.
+>
+> Correct. Dumb switch mode is dangerous. There is no STP, etc.
+> Depending on what you have in device tree, the ports are either
+> configured down, or separated.
+>
+> > There are some commands issued from the DSA to
+> > configure the switch (to apply to switch TXC and RXC RGMII delays -
+> > RGMII-ID mode), but this is not enough to make it work properly.
+>
+> Define 'work properly'. How are you configuring the interfaces?  Do
+> you remember to bring the master interface up? Are you adding the
+> interfaces to a bridge?
+>
+>    Andrew
