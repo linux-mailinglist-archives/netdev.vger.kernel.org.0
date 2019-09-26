@@ -2,171 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3B1BFA5D
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 22:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D005BFB62
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbfIZUCA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Sep 2019 16:02:00 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43267 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727764AbfIZUCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 16:02:00 -0400
-Received: from [206.169.234.110] (helo=nyx.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iDZxc-0007FD-Kj; Thu, 26 Sep 2019 20:01:56 +0000
-Received: by nyx.localdomain (Postfix, from userid 1000)
-        id 086B3240611; Thu, 26 Sep 2019 13:01:55 -0700 (PDT)
-Received: from nyx (localhost [127.0.0.1])
-        by nyx.localdomain (Postfix) with ESMTP id 01A0E289C50;
-        Thu, 26 Sep 2019 13:01:55 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Aleksei Zakharov <zaharov@selectel.ru>
-cc:     netdev@vger.kernel.org, "zhangsha (A)" <zhangsha.zhang@huawei.com>
-Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
-In-reply-to: <CAJYOGF-84BfK8DvAnam9+tgfo4=oBs04zF-ETWRfhz7CE_9oBA@mail.gmail.com>
-References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx> <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com> <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com> <9357.1568880036@nyx> <CAJYOGF87z-o9=a20dC2mZRtfMU58uL0yxZkQJ-bxe5skVvi2rA@mail.gmail.com> <7236.1568906827@nyx> <7154.1568987531@nyx> <CAJYOGF-L0bEF_BqbyeKqv4xmLV=e2VKUvo5zPx4rULWdwt8e0Q@mail.gmail.com> <10497.1569049560@nyx> <CAJYOGF_XStpFRkp0jN0um9d9WR1bqGpK2V=UgdnnX2m4YC=5pw@mail.gmail.com> <16538.1569371467@famine> <CAJYOGF9TY8WtUscsfJ=qduAw7_1BwU+4iE+eL6cidM=LBL9w+A@mail.gmail.com> <15507.1569472734@nyx> <CAJYOGF-84BfK8DvAnam9+tgfo4=oBs04zF-ETWRfhz7CE_9oBA@mail.gmail.com>
-Comments: In-reply-to Aleksei Zakharov <zaharov@selectel.ru>
-   message dated "Thu, 26 Sep 2019 17:25:36 +0300."
-X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Date:   Thu, 26 Sep 2019 13:01:54 -0700
-Message-ID: <23353.1569528114@nyx>
+        id S1727970AbfIZWmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 18:42:55 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:41575 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726084AbfIZWmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:42:55 -0400
+Received: by mail-pl1-f201.google.com with SMTP id b23so424923pls.8
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 15:42:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=TsaviIDrHTxUAn8Z2DV/c6ydppwjLAK7iiY+WvZWu7s=;
+        b=U45D1HDHuoO/3313mI/lL6e4UOiSmhf6fvw+IUkAC62QpCxGA5763AhvScYgGB/VQO
+         P4e/Ed8IEVNdbxPzBthHnlKDUUyvptJaaP8sDdq04mrOKqMJyMe1d/Nki8IQfM/asQzD
+         fc45G8vKAAU11Gnf+YslQaMzfB8DQHkFG6MkSfbiy2T6//mlX6+HRjOimd11aaBLOk5b
+         HZ7mlvmhftXrBEk6UTWKjnnV7XaFOetSViIe6xn0PCfcAcoCl0r7wP57ubDmU9Pvbxgf
+         uZdIX4rYS10HLIqfJKjnpasQDf5RHIkrF4QyyifqTicGyMEhkjnHwzzCod+Sh0d2+ewG
+         /ajQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=TsaviIDrHTxUAn8Z2DV/c6ydppwjLAK7iiY+WvZWu7s=;
+        b=X2m+oJ2zSrrBvTvE3gHVtaDAbAJDtam7wg2YR/ChOIFx284iTmGd2bsUIhlBHN+qOE
+         HGnfWgvmR3w9D2NSzOdUdesXd7elXzUo6y1U40sH7Uq4o5220KYvm8YlYI1pn07W89DT
+         V7r/OM1fjWqLklScZb4Gi7Ttm6obaWey/4ZrpHVIL90TuYn2rlxCS7dUqj42anxZOspP
+         ipI/PmvxtTbBG3aBojybre9NBMUSRk0ZXHjXzBrlBl7VLvBUNcltT2njGqjJJCnCVtWV
+         DZJ7+Dbc1aT2GtdHCN4dK5D1ASDnY7i0a+YUMN8KreElB5DnjJFC9Z7GqXUHPcDp7Z3J
+         ve6A==
+X-Gm-Message-State: APjAAAUA/bB4nHfS4n9oi/v7E1iUhNC9yfPQztM+iWQVUawndj99LECp
+        U4j9DQzqZbWwZzE9VAXjCLUN1O6goWhUTA==
+X-Google-Smtp-Source: APXvYqyCrT9abAZkBaSp/UOgYIKGSVCvLd3Vf0Q/D2U3DCaNAblm8WI8ue8eE7E7a/MIo2WBmgotK6OClWNRgg==
+X-Received: by 2002:a63:ff18:: with SMTP id k24mr5995648pgi.427.1569537774428;
+ Thu, 26 Sep 2019 15:42:54 -0700 (PDT)
+Date:   Thu, 26 Sep 2019 15:42:51 -0700
+Message-Id: <20190926224251.249797-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
+Subject: [PATCH net] tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Jon Maxwell <jmaxwell37@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aleksei Zakharov <zaharov@selectel.ru> wrote:
+Yuchung Cheng and Marek Majkowski independently reported a weird
+behavior of TCP_USER_TIMEOUT option when used at connect() time.
 
->чт, 26 сент. 2019 г. в 07:38, Jay Vosburgh <jay.vosburgh@canonical.com>:
->>
->> Aleksei Zakharov <zaharov@selectel.ru> wrote:
->>
->> >ср, 25 сент. 2019 г. в 03:31, Jay Vosburgh <jay.vosburgh@canonical.com>:
->> >>
->> >> Алексей Захаров wrote:
->> >> [...]
->> >> >Right after reboot one of the slaves hangs with actor port state 71
->> >> >and partner port state 1.
->> >> >It doesn't send lacpdu and seems to be broken.
->> >> >Setting link down and up again fixes slave state.
->> >> [...]
->> >>
->> >>         I think I see what failed in the first patch, could you test the
->> >> following patch?  This one is for net-next, so you'd need to again swap
->> >> slave_err / netdev_err for the Ubuntu 4.15 kernel.
->> >>
->> >I've tested new patch. It seems to work. I can't reproduce the bug
->> >with this patch.
->> >There are two types of messages when link becomes up:
->> >First:
->> >bond-san: EVENT 1 llu 4294895911 slave eth2
->> >8021q: adding VLAN 0 to HW filter on device eth2
->> >bond-san: link status definitely down for interface eth2, disabling it
->> >mlx4_en: eth2: Link Up
->> >bond-san: EVENT 4 llu 4294895911 slave eth2
->> >bond-san: link status up for interface eth2, enabling it in 500 ms
->> >bond-san: invalid new link 3 on slave eth2
->> >bond-san: link status definitely up for interface eth2, 10000 Mbps full duplex
->> >Second:
->> >bond-san: EVENT 1 llu 4295147594 slave eth2
->> >8021q: adding VLAN 0 to HW filter on device eth2
->> >mlx4_en: eth2: Link Up
->> >bond-san: EVENT 4 llu 4295147594 slave eth2
->> >bond-san: link status up again after 0 ms for interface eth2
->> >bond-san: link status definitely up for interface eth2, 10000 Mbps full duplex
->> > [...]
->>
->>         The "invalid new link" is appearing because bond_miimon_commit
->> is being asked to commit a new state that isn't UP or DOWN (3 is
->> BOND_LINK_BACK).  I looked through the patched code today, and I don't
->> see a way to get to that message with the new link set to 3, so I'll add
->> some instrumentation and send out another patch to figure out what's
->> going on, as that shouldn't happen.
->>
->>         I don't see the "invalid" message testing locally, I think
->> because my network device doesn't transition to carrier up as quickly as
->> yours.  I thought you were getting BOND_LINK_BACK passed through from
->> bond_enslave (which calls bond_set_slave_link_state, which will set
->> link_new_link to BOND_LINK_BACK and leave it there), but the
->> link_new_link is reset first thing in bond_miimon_inspect, so I'm not
->> sure how it gets into bond_miimon_commit (I'm thinking perhaps a
->> concurrent commit triggered by another slave, which then picks up this
->> proposed link state change by happenstance).
->I assume that "invalid new link" happens in this way:
->Interface goes up
->NETDEV_CHANGE event occurs
->bond_update_speed_duplex fails
->and slave->last_link_up returns true
->slave->link becomes BOND_LINK_FAIL
->bond_check_dev_link returns 0
->miimon proposes slave->link_new_state BOND_LINK_DOWN
->NETDEV_UP event occurs
->miimon sets commit++
->miimon proposes slave->link_new_state BOND_LINK_BACK
->miimon sets slave->link to BOND_LINK_BACK
+When the TCP_USER_TIMEOUT is reached, tcp_write_timeout()
+believes the flow should live, and the following condition
+in tcp_clamp_rto_to_user_timeout() programs one jiffie timers :
 
-	I removed the "proposes link_new_state BOND_LINK_BACK" from the
-second test patch and replaced it with the slave->link = BOND_LINK_BACK.
-This particular place in the code also does not do commit++.  If you
-have both of those in the code you're running, then perhaps you have a
-merge error or some such.
+    remaining = icsk->icsk_user_timeout - elapsed;
+    if (remaining <= 0)
+        return 1; /* user timeout has passed; fire ASAP */
 
-	In the second test patch, the only place that could set
-link_new_state to BOND_LINK_BACK is in bond_enslave, which calls
-bond_set_slave_link_state if the slave is carrier up and updelay is
-configured.  If that were to happen, there should be a "BOND_LINK_BACK
-initial state" debug message, and the link_new_state should be replaced
-with NOCHANGE at the first pass through bond_miimon_inspect.
+This silly situation ends when the max syn rtx count is reached.
 
-	So, I'm unclear how the link_new_state can be BOND_LINK_BACK
-from the message log you provided based on the second test patch code.
+This patch makes sure we honor both TCP_SYNCNT and TCP_USER_TIMEOUT,
+avoiding these spurious SYN packets.
 
->we have updelay configured, so it doesn't set BOND_LINK_UP in the next
->case section
->miimon says "Invalid new link" and sets link state UP during next
->inspection(after updelay, i suppose)
->
->For the second type of messages it looks like this:
->Interface goes up
->NETDEV_CHANGE event occurs
->bond_update_speed_duplex fails
->and slave->last_link_up returns true
->slave->link becomes BOND_LINK_FAIL
->NETDEV_UP event occurs
->bond_check_dev_link returns 1
->miimon proposes slave->link_new_state BOND_LINK_UP and says "link
->status up again"
->
->My first patch changed slave->last_link_up check to (slave->link ==
->BOND_LINK_UP).
->This check looks more consistent for me, but I might be wrong here.
->As a result if link was in BOND_LINK_FAIL or BOND_LINK_BACK when
->CHANGE or UP event,
->it became BOND_LINK_DOWN.
->But if it was initially UP and bond_update_speed_duplex was unable to
->get speed/duplex,
->link became BOND_LINK_FAIL.
->
->I don't understand a few things here:
->How could a link be in a different state from time to time during the
->first NETDEV_* event?
-
-	I'm not sure; possibly a race between the events in the kernel
-and how long it takes for the hardware to establish Ethernet link up.
-
->And why slave->last_link_up is set when the first NETDEV event occurs?
-
-	slave->last_link_up can be set at enslave time if the carrier
-state of the slave (and thus the initial slave->link) is in a not-down
-state.  There are some paths as well for modes that have an "active"
-slave, but 802.3ad is not one of those.
-
-	-J
-
+Fixes: b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout() helper to improve accuracy")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Yuchung Cheng <ycheng@google.com>
+Reported-by: Marek Majkowski <marek@cloudflare.com>
+Cc: Jon Maxwell <jmaxwell37@gmail.com>
+Link: https://marc.info/?l=linux-netdev&m=156940118307949&w=2
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ net/ipv4/tcp_timer.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index dbd9d2d0ee63aa46ad2dda417da6ec9409442b77..40de2d2364a1eca14c259d77ebed361d17829eb9 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -210,7 +210,7 @@ static int tcp_write_timeout(struct sock *sk)
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct net *net = sock_net(sk);
+-	bool expired, do_reset;
++	bool expired = false, do_reset;
+ 	int retry_until;
+ 
+ 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
+@@ -242,9 +242,10 @@ static int tcp_write_timeout(struct sock *sk)
+ 			if (tcp_out_of_resources(sk, do_reset))
+ 				return 1;
+ 		}
++	}
++	if (!expired)
+ 		expired = retransmits_timed_out(sk, retry_until,
+ 						icsk->icsk_user_timeout);
+-	}
+ 	tcp_fastopen_active_detect_blackhole(sk, expired);
+ 
+ 	if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTO_CB_FLAG))
+-- 
+2.23.0.444.g18eeb5a265-goog
+
