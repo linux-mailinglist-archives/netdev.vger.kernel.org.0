@@ -2,95 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B09BF132
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 13:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71BB6BF1D8
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 13:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726069AbfIZLXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 07:23:44 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54322 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725787AbfIZLXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 07:23:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1569497023;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RNd7iyl5zD3WAVj2sWBbz2iZKaZZld288UAKSsgCxlk=;
-        b=X1H9+C//O/1CF96zaHry/DpH9FWP1bKg6QAj8b+nJIF5dziMC7j03AJZeIf2JadbrQlgp2
-        j4Ng05yxG+0zLEAczTLb7mWlEK3SC5kEC1dm1734nPboukCHR4Oc9I/u1Eplo605bOldkD
-        UHALr98efN0jiCn/t5MseuO/l+x4Sek=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-115-ILZlbPAOMUmJ5yl85tMS4w-1; Thu, 26 Sep 2019 07:23:42 -0400
-Received: by mail-ed1-f72.google.com with SMTP id l5so1134159edr.10
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 04:23:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=RNd7iyl5zD3WAVj2sWBbz2iZKaZZld288UAKSsgCxlk=;
-        b=LmVXOBqhzWVdcQNzqNoYhhTpfrNWIoR032PI0AyeU6zIrcMvvWArdbDIYimudRs+Tc
-         HySvs9iPnTp9O1VapwMWRw06KUrSUMuS4FO/pRPtXizhvZcj+yRmwK/1G4lXDd/9j+/q
-         /UPqBNgtdF15P8WfmhTOBmUSAS9MEJ6R4q/WHC9nm41scQHH7ewUuJeEBAUUlscoclE7
-         DkU2oWQxqdIXlxjZDl9zS0JtgxfR8lc++9XzNVXT7gcxIzLFQ0umb4LaAmC17/6rewVZ
-         IRnYAjXRSlJmO1kpQLJcGg/VIi1JUyM5eq74VhPESueAxCH0g4Uz9dcYXbyPvptOOk8P
-         NkAw==
-X-Gm-Message-State: APjAAAWs/9F2KCZDwvcAIJ6eaTakhycHeg4Qozf2AZCKxaU1HC8Cgnxq
-        pfoIDQzQI9IMgdCbrhXgVtWvnGrJuNhND0/EnMdgIYUkOJFB7Xv6vWCJ9WrTUKUx5uYH4oKhFXr
-        UKbCZy/0dWzhkCfh0
-X-Received: by 2002:a17:906:1941:: with SMTP id b1mr2499496eje.141.1569497020682;
-        Thu, 26 Sep 2019 04:23:40 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwnmHU7Pe4fZknsumAAwCS9kWPgsn7D6xQuxdKuOxWv9QofZpL15PlmzctUYEylYBPT1hFFYg==
-X-Received: by 2002:a17:906:1941:: with SMTP id b1mr2499484eje.141.1569497020443;
-        Thu, 26 Sep 2019 04:23:40 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id g15sm414861edp.0.2019.09.26.04.23.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Sep 2019 04:23:39 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D09B818063D; Thu, 26 Sep 2019 13:23:38 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Are BPF tail calls only supposed to work with pinned maps?
+        id S1726001AbfIZLil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 07:38:41 -0400
+Received: from mail.toke.dk ([52.28.52.200]:38031 "EHLO mail.toke.dk"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725768AbfIZLil (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 07:38:41 -0400
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1569497917; bh=2ozAWmHQqzsPDD0WmdG2auChc9T1w49xSlDI6ZfDT7o=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=E7B4xf/sxTyXBeJoIGW4nq+Nma+qA/w0+mvTe4vhnAMnXOMwoNqN3gDE5hVdmdNzh
+         /cy8vHjKBAT2ogyoiI6miZ76hx67WQMVHN6a2BVqXmNEVEsuXo+5o7swBUAPCBWqHv
+         VMmzaEdMsV2Uv19vqCGkyzwg2EJEb01nOVmOnVhCTdWd4ObjWDaCmz3mtvmwvX1xkx
+         N27rxXs/S8RzJjikh/vluQgPD3Jx6octJQQJEEF38ED/mcB5ByakvsgPj4OAYlok2R
+         So9Nhhgnw01AwyOqMWr8VQnGQ5pUR3ZKQGpfV25KDOG2KIbUNkX5Z+F9X+p9L2Xo7C
+         n9nJBQm/HWwGw==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Pascal Van Leeuwen <pvanleeuwen@verimatrix.com>
+Cc:     Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Samuel Neves <sneves@dei.uc.pt>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Willy Tarreau <w@1wt.eu>, Netdev <netdev@vger.kernel.org>,
+        Dave Taht <dave.taht@gmail.com>
+Subject: Re: chapoly acceleration hardware [Was: Re: [RFC PATCH 00/18] crypto: wireguard using the existing crypto API]
+In-Reply-To: <CAHmME9r5m7D-oMU6Lv_ZhEyWmrNscMr5HokzdK0wg2Ayzzbeow@mail.gmail.com>
+References: <20190925161255.1871-1-ard.biesheuvel@linaro.org> <CAHmME9oDhnv7aX77oEERof0TGihk4mDe9B_A3AntaTTVsg9aoA@mail.gmail.com> <MN2PR20MB29733663686FB38153BAE7EACA860@MN2PR20MB2973.namprd20.prod.outlook.com> <CAHmME9r5m7D-oMU6Lv_ZhEyWmrNscMr5HokzdK0wg2Ayzzbeow@mail.gmail.com>
+Date:   Thu, 26 Sep 2019 13:38:36 +0200
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 26 Sep 2019 13:23:38 +0200
-Message-ID: <874l0z2tdx.fsf@toke.dk>
+Message-ID: <8736gj2soz.fsf@toke.dk>
 MIME-Version: 1.0
-X-MC-Unique: ILZlbPAOMUmJ5yl85tMS4w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-While working on a prototype of the XDP chain call feature, I ran into
-some strange behaviour with tail calls: If I create a userspace program
-that loads two XDP programs, one of which tail calls the other, the tail
-call map would appear to be empty even though the userspace program
-populates it as part of the program loading.
+> [CC +willy, toke, dave, netdev]
+>
+> Hi Pascal
+>
+> On Thu, Sep 26, 2019 at 12:19 PM Pascal Van Leeuwen
+> <pvanleeuwen@verimatrix.com> wrote:
+>> Actually, that assumption is factually wrong. I don't know if anything
+>> is *publicly* available, but I can assure you the silicon is running in
+>> labs already. And something will be publicly available early next year
+>> at the latest. Which could nicely coincide with having Wireguard support
+>> in the kernel (which I would also like to see happen BTW) ...
+>>
+>> Not "at some point". It will. Very soon. Maybe not in consumer or server
+>> CPUs, but definitely in the embedded (networking) space.
+>> And it *will* be much faster than the embedded CPU next to it, so it will
+>> be worth using it for something like bulk packet encryption.
+>
+> Super! I was wondering if you could speak a bit more about the
+> interface. My biggest questions surround latency. Will it be
+> synchronous or asynchronous? If the latter, why? What will its
+> latencies be? How deep will its buffers be? The reason I ask is that a
+> lot of crypto acceleration hardware of the past has been fast and
+> having very deep buffers, but at great expense of latency. In the
+> networking context, keeping latency low is pretty important. Already
+> WireGuard is multi-threaded which isn't super great all the time for
+> latency (improvements are a work in progress). If you're involved with
+> the design of the hardware, perhaps this is something you can help
+> ensure winds up working well? For example, AES-NI is straightforward
+> and good, but Intel can do that because they are the CPU. It sounds
+> like your silicon will be adjacent. How do you envision this working
+> in a low latency environment?
 
-I eventually tracked this down to this commit:
-c9da161c6517 ("bpf: fix clearing on persistent program array maps")
+Being asynchronous doesn't *necessarily* have to hurt latency; you just
+need the right queue back-pressure.
 
-Which clears PROG_ARRAY maps whenever the last uref to it disappears
-(which it does when my loader exits after attaching the XDP program).
 
-This effectively means that tail calls only work if the PROG_ARRAY map
-is pinned (or the process creating it keeps running). And as far as I
-can tell, the inner_map reference in bpf_map_fd_get_ptr() doesn't bump
-the uref either, so presumably if one were to create a map-in-map
-construct with tail call pointer in the inner map(s), each inner map
-would also need to be pinned (haven't tested this case)?
+We already have multiple queues in the stack. With an async crypto
+engine we would go from something like:
 
-Is this really how things are supposed to work? From an XDP use case PoV
-this seems somewhat surprising...
+stack -> [qdisc] -> wg if -> [wireguard buffer] -> netdev driver ->
+device -> [device buffer] -> wire
 
-Or am I missing something obvious here?
+to
+
+stack -> [qdisc] -> wg if -> [wireguard buffer] -> crypto stack ->
+crypto device -> [crypto device buffer] -> wg post-crypto -> netdev
+driver -> device -> [device buffer] -> wire
+
+(where everything in [] is a packet queue).
+
+The wireguard buffer is the source of the latency you're alluding to
+above (the comment about multi-threaded behaviour), so we probably need
+to fix that anyway. For the device buffer we have BQL to keep it at a
+minimum. So that leaves the buffering in the crypto offload device. If
+we add something like BQL to the crypto offload drivers, we could
+conceivably avoid having that add a significant amount of latency. In
+fact, doing so may benefit other users of crypto offloads as well, no?
+Presumably ipsec has this same issue?
+
+
+Caveat: I am fairly ignorant about the inner workings of the crypto
+subsystem, so please excuse any inaccuracies in the above; the diagrams
+are solely for illustrative purposes... :)
 
 -Toke
-
