@@ -2,99 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87611BF2C5
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE0DBF2EE
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbfIZMR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 08:17:58 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:16532 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbfIZMR5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 08:17:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1569500276; x=1601036276;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=My9iW0ZYZXMJ01JS7LXIoYyI2Pxn/CJO9L+IqUSg2aY=;
-  b=gcSB2dB3rM/7rHcTGHUuJN6DYFdUSLe9mdUwRu/aBiupgmzxXIvbFe4y
-   SDQbPyvzFrXzsN90eEYAAa5TG7xSk5sUcQ+7TaOwNwDhudqkZ+G6YJ4wY
-   ORxcmAHSuVk65EWWpZQWrmMRa3hW9tYmSRZFdjBoyJFnTtpWI7uORydU3
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.64,551,1559520000"; 
-   d="scan'208";a="423773963"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 26 Sep 2019 12:17:54 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id C9A7AA2461;
-        Thu, 26 Sep 2019 12:17:53 +0000 (UTC)
-Received: from EX13D10EUA001.ant.amazon.com (10.43.165.242) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.82) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 26 Sep 2019 12:17:52 +0000
-Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
- EX13D10EUA001.ant.amazon.com (10.43.165.242) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 26 Sep 2019 12:17:51 +0000
-Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
- EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1367.000;
- Thu, 26 Sep 2019 12:17:51 +0000
-From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
-To:     Colin King <colin.king@canonical.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: ena: clean up indentation issue
-Thread-Topic: [PATCH] net: ena: clean up indentation issue
-Thread-Index: AQHVdFzcGzusACwMIUKNmXCucf2dHqc93yZA
-Date:   Thu, 26 Sep 2019 12:17:22 +0000
-Deferred-Delivery: Thu, 26 Sep 2019 12:16:52 +0000
-Message-ID: <4ed1ded9cc7f40e496f02007e05b61eb@EX13D22EUA004.ant.amazon.com>
-References: <20190926112252.21498-1-colin.king@canonical.com>
-In-Reply-To: <20190926112252.21498-1-colin.king@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.166.48]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726211AbfIZM13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 08:27:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38924 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725836AbfIZM13 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 08:27:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=StYoawpBSbowJCICSKSTHJRHOTgYg6lhzDHkVcITLOQ=; b=flV6L3rvm23uCGI/xJSMLLu7Ty
+        SFiHK5VBNgb4okWasHsInphvUyEJYmWsxewpywpmHIZtDQVGT7CTFtottSxjT0ngNPXtDVyZN1PEy
+        JzEchwbg+eRzHmSBh8kq1hjbywMo8682rn6Tt7hLH1nbZDbffWVdTAVWcT+rEk7VOcaQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iDSrm-00029O-NX; Thu, 26 Sep 2019 14:27:26 +0200
+Date:   Thu, 26 Sep 2019 14:27:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH net] devlink: Fix error handling in param and info_get
+ dumpit cb
+Message-ID: <20190926122726.GE1864@lunn.ch>
+References: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBDb2xpbiBLaW5nIDxjb2xpbi5r
-aW5nQGNhbm9uaWNhbC5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBTZXB0ZW1iZXIgMjYsIDIwMTkg
-MjoyMyBQTQ0KPiBUbzogQmVsZ2F6YWwsIE5ldGFuZWwgPG5ldGFuZWxAYW1hem9uLmNvbT47IEJz
-aGFyYSwgU2FlZWQNCj4gPHNhZWVkYkBhbWF6b24uY29tPjsgTWFjaHVsc2t5LCBab3JpayA8em9y
-aWtAYW1hem9uLmNvbT47IERhdmlkIFMgLg0KPiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+
-OyBLaXlhbm92c2tpLCBBcnRodXIgPGFraXlhbm9AYW1hem9uLmNvbT47DQo+IEp1YnJhbiwgU2Ft
-aWggPHNhbWVlaGpAYW1hem9uLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGtl
-cm5lbC1qYW5pdG9yc0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmcNCj4gU3ViamVjdDogW1BBVENIXSBuZXQ6IGVuYTogY2xlYW4gdXAgaW5kZW50YXRpb24gaXNz
-dWUNCj4gDQo+IEZyb206IENvbGluIElhbiBLaW5nIDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+
-DQo+IA0KPiBUaGVyZSBtZW1zZXQgaXMgaW5kZW50ZWQgaW5jb3JyZWN0bHksIHJlbW92ZSB0aGUg
-ZXh0cmFuZW91cyB0YWJzLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNv
-bGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9h
-bWF6b24vZW5hL2VuYV9ldGhfY29tLmMgfCA0ICsrLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGlu
-c2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfZXRoX2NvbS5jDQo+IGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvYW1hem9uL2VuYS9lbmFfZXRoX2NvbS5jDQo+IGluZGV4IDM4MDQ2YmYwZmY0NC4uMjg0
-NWFjMjc3NzI0IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9hbWF6b24vZW5h
-L2VuYV9ldGhfY29tLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9l
-bmFfZXRoX2NvbS5jDQo+IEBAIC0yMTEsOCArMjExLDggQEAgc3RhdGljIGludCBlbmFfY29tX3Nx
-X3VwZGF0ZV9sbHFfdGFpbChzdHJ1Y3QNCj4gZW5hX2NvbV9pb19zcSAqaW9fc3EpDQo+IA0KPiAg
-CQlwa3RfY3RybC0+Y3Vycl9ib3VuY2VfYnVmID0NCj4gIAkJCWVuYV9jb21fZ2V0X25leHRfYm91
-bmNlX2J1ZmZlcigmaW9fc3EtDQo+ID5ib3VuY2VfYnVmX2N0cmwpOw0KPiAtCQkJbWVtc2V0KGlv
-X3NxLT5sbHFfYnVmX2N0cmwuY3Vycl9ib3VuY2VfYnVmLA0KPiAtCQkJICAgICAgIDB4MCwgbGxx
-X2luZm8tPmRlc2NfbGlzdF9lbnRyeV9zaXplKTsNCj4gKwkJbWVtc2V0KGlvX3NxLT5sbHFfYnVm
-X2N0cmwuY3Vycl9ib3VuY2VfYnVmLA0KPiArCQkgICAgICAgMHgwLCBsbHFfaW5mby0+ZGVzY19s
-aXN0X2VudHJ5X3NpemUpOw0KPiANCj4gIAkJcGt0X2N0cmwtPmlkeCA9IDA7DQo+ICAJCWlmICh1
-bmxpa2VseShsbHFfaW5mby0+ZGVzY19zdHJpZGVfY3RybCA9PQ0KPiBFTkFfQURNSU5fU0lOR0xF
-X0RFU0NfUEVSX0VOVFJZKSkNCj4gLS0NCj4gMi4yMC4xDQoNCkxHVE0gVGhhbmtzISANCg==
+On Thu, Sep 26, 2019 at 03:05:54PM +0530, Vasundhara Volam wrote:
+> If any of the param or info_get op returns error, dumpit cb is
+> skipping to dump remaining params or info_get ops for all the
+> drivers.
+> 
+> Instead skip only for the param/info_get op which returned error
+> and continue to dump remaining information, except if the return
+> code is EMSGSIZE.
+
+Hi Vasundhara
+
+How do we get to see something did fail? If it failed, it failed for a
+reason, and we want to know.
+
+What is your real use case here? What is failing, and why are you
+O.K. to skip this failure?
+
+     Andrew
