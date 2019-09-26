@@ -2,241 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1FDBEA95
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 04:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C8FBEAB8
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 04:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388922AbfIZC21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 22:28:27 -0400
-Received: from mga04.intel.com ([192.55.52.120]:4884 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733043AbfIZC20 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Sep 2019 22:28:26 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Sep 2019 19:28:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,550,1559545200"; 
-   d="scan'208";a="183469403"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
-  by orsmga008.jf.intel.com with ESMTP; 25 Sep 2019 19:28:24 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Christopher Hall <christopher.s.hall@intel.com>
-Subject: [net-next v2 2/2] net: reject ptp requests with unsupported flags
-Date:   Wed, 25 Sep 2019 19:28:20 -0700
-Message-Id: <20190926022820.7900-3-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.23.0.245.gf157bbb9169d
-In-Reply-To: <20190926022820.7900-1-jacob.e.keller@intel.com>
-References: <20190926022820.7900-1-jacob.e.keller@intel.com>
+        id S1726773AbfIZCrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 22:47:25 -0400
+Received: from out02.mta.xmission.com ([166.70.13.232]:43938 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725768AbfIZCrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 22:47:24 -0400
+X-Greylist: delayed 6453 seconds by postgrey-1.27 at vger.kernel.org; Wed, 25 Sep 2019 22:47:24 EDT
+Received: from in01.mta.xmission.com ([166.70.13.51])
+        by out02.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1iDI8M-0007Sc-CO; Wed, 25 Sep 2019 18:59:50 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1iDI8L-0000kj-M1; Wed, 25 Sep 2019 18:59:50 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     netdev@vger.kernel.org, yhs@fb.com, brouer@redhat.com,
+        bpf@vger.kernel.org
+References: <20190924152005.4659-1-cneirabustos@gmail.com>
+Date:   Wed, 25 Sep 2019 19:59:20 -0500
+In-Reply-To: <20190924152005.4659-1-cneirabustos@gmail.com> (Carlos Neira's
+        message of "Tue, 24 Sep 2019 12:20:01 -0300")
+Message-ID: <87ef033maf.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1iDI8L-0000kj-M1;;;mid=<87ef033maf.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18iPrb45ynyeSpkvVPFOD8DdZHUateqSWc=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa02.xmission.com
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=8.0 tests=ALL_TRUSTED,BAYES_50,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMSubLong autolearn=disabled
+        version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4989]
+        *  0.7 XMSubLong Long Subject
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa02 1397; Body=1 Fuz1=1 Fuz2=1]
+X-Spam-DCC: XMission; sa02 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ;Carlos Neira <cneirabustos@gmail.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 340 ms - load_scoreonly_sql: 0.03 (0.0%),
+        signal_user_changed: 2.5 (0.7%), b_tie_ro: 1.76 (0.5%), parse: 0.62
+        (0.2%), extract_message_metadata: 2.7 (0.8%), get_uri_detail_list:
+        1.31 (0.4%), tests_pri_-1000: 3.0 (0.9%), tests_pri_-950: 1.08 (0.3%),
+        tests_pri_-900: 0.88 (0.3%), tests_pri_-90: 21 (6.1%), check_bayes: 19
+        (5.7%), b_tokenize: 6 (1.7%), b_tok_get_all: 7 (2.1%), b_comp_prob:
+        1.64 (0.5%), b_tok_touch_all: 2.9 (0.9%), b_finish: 0.64 (0.2%),
+        tests_pri_0: 294 (86.5%), check_dkim_signature: 0.42 (0.1%),
+        check_dkim_adsp: 2.4 (0.7%), poll_dns_idle: 1.03 (0.3%), tests_pri_10:
+        1.69 (0.5%), tests_pri_500: 4.7 (1.4%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH V11 0/4] BPF: New helper to obtain namespace data from current task
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix all of the drivers which implement support for the periodic output
-or external timestamp requests to reject unsupported flags.
+Carlos Neira <cneirabustos@gmail.com> writes:
 
-This is important for forward compatibility: if a new flag is
-introduced, the driver should reject requests to enable the flag until
-it has been modified to actually support the flag in question.
+> Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
+> scripts but this helper returns the pid as seen by the root namespace which is
+> fine when a bcc script is not executed inside a container.
+> When the process of interest is inside a container, pid filtering will not work
+> if bpf_get_current_pid_tgid() is used.
+> This helper addresses this limitation returning the pid as it's seen by the current
+> namespace where the script is executing.
+>
+> In the future different pid_ns files may belong to different devices, according to the
+> discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
+> To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
+> This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
+> used to do pid filtering even inside a container.
 
-This patch may not be correct for individual drivers, especially
-regarding the rising vs falling edge flags. I interpreted the default
-behavior to be to timestamp the rising edge of a pin transition.
+I think I may have asked this before.  If I am repeating old gound
+please excuse me.
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Cc: Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Christopher Hall <christopher.s.hall@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- drivers/net/dsa/mv88e6xxx/ptp.c                     |  5 +++++
- drivers/net/ethernet/broadcom/tg3.c                 |  4 ++++
- drivers/net/ethernet/intel/igb/igb_ptp.c            |  8 ++++++++
- drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c | 10 ++++++++++
- drivers/net/ethernet/microchip/lan743x_ptp.c        |  4 ++++
- drivers/net/ethernet/renesas/ravb_ptp.c             |  9 +++++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c    |  4 ++++
- drivers/net/phy/dp83640.c                           |  8 ++++++++
- 8 files changed, 52 insertions(+)
+Am I correct in understanding these new helpers are designed to be used
+when programs running in ``conainers'' call it inside pid namespaces
+register bpf programs for tracing?
 
-diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-index 073cbd0bb91b..2364b6b67a7b 100644
---- a/drivers/net/dsa/mv88e6xxx/ptp.c
-+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-@@ -273,6 +273,11 @@ static int mv88e6352_ptp_enable_extts(struct mv88e6xxx_chip *chip,
- 	int pin;
- 	int err;
- 
-+	/* Reject requests with unsupported flags */
-+	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+				PTP_RISING_EDGE))
-+		return -EOPNOTSUPP;
-+
- 	pin = ptp_find_pin(chip->ptp_clock, PTP_PF_EXTTS, rq->extts.index);
- 
- 	if (pin < 0)
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index 77f3511b97de..ca3aa1250dd1 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -6280,6 +6280,10 @@ static int tg3_ptp_enable(struct ptp_clock_info *ptp,
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_PEROUT:
-+		/* Reject requests with unsupported flags */
-+		if (rq->perout.flags)
-+			return -EOPNOTSUPP;
-+
- 		if (rq->perout.index != 0)
- 			return -EINVAL;
- 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
-index fd3071f55bd3..2867a2581a36 100644
---- a/drivers/net/ethernet/intel/igb/igb_ptp.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
-@@ -521,6 +521,10 @@ static int igb_ptp_feature_enable_i210(struct ptp_clock_info *ptp,
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_EXTTS:
-+		/* Reject requests with unsupported flags */
-+		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE | PTP_RISING_EDGE))
-+			return -EOPNOTSUPP;
-+
- 		if (on) {
- 			pin = ptp_find_pin(igb->ptp_clock, PTP_PF_EXTTS,
- 					   rq->extts.index);
-@@ -551,6 +555,10 @@ static int igb_ptp_feature_enable_i210(struct ptp_clock_info *ptp,
- 		return 0;
- 
- 	case PTP_CLK_REQ_PEROUT:
-+		/* Reject requests with unsupported flags */
-+		if (rq->perout.flags)
-+			return -EOPNOTSUPP;
-+
- 		if (on) {
- 			pin = ptp_find_pin(igb->ptp_clock, PTP_PF_PEROUT,
- 					   rq->perout.index);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-index 0059b290e095..9a40f24e3193 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-@@ -236,6 +236,12 @@ static int mlx5_extts_configure(struct ptp_clock_info *ptp,
- 	if (!MLX5_PPS_CAP(mdev))
- 		return -EOPNOTSUPP;
- 
-+	/* Reject requests with unsupported flags */
-+	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+				PTP_RISING_EDGE |
-+				PTP_FALLING_EDGE))
-+		return -EOPNOTSUPP;
-+
- 	if (rq->extts.index >= clock->ptp_info.n_pins)
- 		return -EINVAL;
- 
-@@ -290,6 +296,10 @@ static int mlx5_perout_configure(struct ptp_clock_info *ptp,
- 	if (!MLX5_PPS_CAP(mdev))
- 		return -EOPNOTSUPP;
- 
-+	/* Reject requests with unsupported flags */
-+	if (rq->perout.flags)
-+		return -EOPNOTSUPP;
-+
- 	if (rq->perout.index >= clock->ptp_info.n_pins)
- 		return -EINVAL;
- 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 57b26c2acf87..e8fe9a90fe4f 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -429,6 +429,10 @@ static int lan743x_ptp_perout(struct lan743x_adapter *adapter, int on,
- 	int pulse_width = 0;
- 	int perout_bit = 0;
- 
-+	/* Reject requests with unsupported flags */
-+	if (perout->flags)
-+		return -EOPNOTSUPP;
-+
- 	if (!on) {
- 		lan743x_ptp_perout_off(adapter);
- 		return 0;
-diff --git a/drivers/net/ethernet/renesas/ravb_ptp.c b/drivers/net/ethernet/renesas/ravb_ptp.c
-index 9a42580693cb..fe66697aafec 100644
---- a/drivers/net/ethernet/renesas/ravb_ptp.c
-+++ b/drivers/net/ethernet/renesas/ravb_ptp.c
-@@ -182,6 +182,11 @@ static int ravb_ptp_extts(struct ptp_clock_info *ptp,
- 	struct net_device *ndev = priv->ndev;
- 	unsigned long flags;
- 
-+	/* Reject requests with unsupported flags */
-+	if (req->flags & ~(PTP_ENABLE_FEATURE |
-+			   PTP_RISING_EDGE))
-+		return -EOPNOTSUPP;
-+
- 	if (req->index)
- 		return -EINVAL;
- 
-@@ -211,6 +216,10 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
- 	unsigned long flags;
- 	int error = 0;
- 
-+	/* Reject requests with unsupported flags */
-+	if (req->flags)
-+		return -EOPNOTSUPP;
-+
- 	if (req->index)
- 		return -EINVAL;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index 173493db038c..352dc4c68625 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -140,6 +140,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_PEROUT:
-+		/* Reject requests with unsupported flags */
-+		if (rq->perout.flags)
-+			return -EOPNOTSUPP;
-+
- 		cfg = &priv->pps[rq->perout.index];
- 
- 		cfg->start.tv_sec = rq->perout.start.sec;
-diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
-index 6580094161a9..2781b0e2d947 100644
---- a/drivers/net/phy/dp83640.c
-+++ b/drivers/net/phy/dp83640.c
-@@ -469,6 +469,11 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_EXTTS:
-+		/* Reject requests with unsupported flags */
-+		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+					PTP_RISING_EDGE |
-+					PTP_FALLING_EDGE))
-+			return -EOPNOTSUPP;
- 		index = rq->extts.index;
- 		if (index >= N_EXT_TS)
- 			return -EINVAL;
-@@ -491,6 +496,9 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
- 		return 0;
- 
- 	case PTP_CLK_REQ_PEROUT:
-+		/* Reject requests with unsupported flags */
-+		if (rq->perout.flags)
-+			return -EOPNOTSUPP;
- 		if (rq->perout.index >= N_PER_OUT)
- 			return -EINVAL;
- 		return periodic_output(clock, rq, on, rq->perout.index);
--- 
-2.23.0.245.gf157bbb9169d
+If so would it be possible to change how the existing bpf opcodes
+operate when they are used in the context of a pid namespace?
 
+That later would seem to allow just moving an existing application into
+a pid namespace with no modifications.   If we can do this with trivial
+cost at bpf compile time and with no userspace changes that would seem
+a better approach.
+
+If not can someone point me to why we can't do that?  What am I missing?
+
+Eric
+
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+>
+> Carlos Neira (4):
+>   fs/nsfs.c: added ns_match
+>   bpf: added new helper bpf_get_ns_current_pid_tgid
+>   tools: Added bpf_get_ns_current_pid_tgid helper
+>   tools/testing/selftests/bpf: Add self-tests for new helper. self tests
+>     added for new helper
+>
+>  fs/nsfs.c                                     |   8 +
+>  include/linux/bpf.h                           |   1 +
+>  include/linux/proc_ns.h                       |   2 +
+>  include/uapi/linux/bpf.h                      |  18 ++-
+>  kernel/bpf/core.c                             |   1 +
+>  kernel/bpf/helpers.c                          |  32 ++++
+>  kernel/trace/bpf_trace.c                      |   2 +
+>  tools/include/uapi/linux/bpf.h                |  18 ++-
+>  tools/testing/selftests/bpf/Makefile          |   2 +-
+>  tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+>  .../selftests/bpf/progs/test_pidns_kern.c     |  71 ++++++++
+>  tools/testing/selftests/bpf/test_pidns.c      | 152 ++++++++++++++++++
+>  12 files changed, 307 insertions(+), 3 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pidns_kern.c
+>  create mode 100644 tools/testing/selftests/bpf/test_pidns.c
