@@ -2,112 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D005BFB62
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CCBFBFB67
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727970AbfIZWmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 18:42:55 -0400
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:41575 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726084AbfIZWmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:42:55 -0400
-Received: by mail-pl1-f201.google.com with SMTP id b23so424923pls.8
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 15:42:55 -0700 (PDT)
+        id S1726968AbfIZWr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 18:47:29 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37338 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbfIZWr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:47:29 -0400
+Received: by mail-qt1-f196.google.com with SMTP id l3so4957558qtr.4
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 15:47:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=TsaviIDrHTxUAn8Z2DV/c6ydppwjLAK7iiY+WvZWu7s=;
-        b=U45D1HDHuoO/3313mI/lL6e4UOiSmhf6fvw+IUkAC62QpCxGA5763AhvScYgGB/VQO
-         P4e/Ed8IEVNdbxPzBthHnlKDUUyvptJaaP8sDdq04mrOKqMJyMe1d/Nki8IQfM/asQzD
-         fc45G8vKAAU11Gnf+YslQaMzfB8DQHkFG6MkSfbiy2T6//mlX6+HRjOimd11aaBLOk5b
-         HZ7mlvmhftXrBEk6UTWKjnnV7XaFOetSViIe6xn0PCfcAcoCl0r7wP57ubDmU9Pvbxgf
-         uZdIX4rYS10HLIqfJKjnpasQDf5RHIkrF4QyyifqTicGyMEhkjnHwzzCod+Sh0d2+ewG
-         /ajQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=SYDe/o2kLFR5SneKG6UQbh/y8tn28Z982DDnMOJdbek=;
+        b=mlrCBvUOrlKqAzldrnB/bm30cDnNznI4nYgb+Kxyk+nhts4qaRjdCIK88d3kK0tks7
+         9GmIWZ7zNMf/jpG7cruBS8VC6I4UewCaQEk4Ax7zlSOIYWES2xe5wbAneHuAyHypHh/B
+         mBSulXPxoCZzkkEoj+Ve1eSZhJXSJNxh2cRmSOA7v84gbtsO2tr4xYsOMwfuYTX6DeDZ
+         ENbytWggHdbVj8eh4QHquj741T9lK1gXsSCievOJuXBAK4pZrIgPkcxueKsgSHfepWxb
+         Ez6L2p+lUynes77n7sEd5BImBQsAwmJoj5xYKOupCvr4UM/7ghkhq8N5GLTluxj9ZpJV
+         AINA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=TsaviIDrHTxUAn8Z2DV/c6ydppwjLAK7iiY+WvZWu7s=;
-        b=X2m+oJ2zSrrBvTvE3gHVtaDAbAJDtam7wg2YR/ChOIFx284iTmGd2bsUIhlBHN+qOE
-         HGnfWgvmR3w9D2NSzOdUdesXd7elXzUo6y1U40sH7Uq4o5220KYvm8YlYI1pn07W89DT
-         V7r/OM1fjWqLklScZb4Gi7Ttm6obaWey/4ZrpHVIL90TuYn2rlxCS7dUqj42anxZOspP
-         ipI/PmvxtTbBG3aBojybre9NBMUSRk0ZXHjXzBrlBl7VLvBUNcltT2njGqjJJCnCVtWV
-         DZJ7+Dbc1aT2GtdHCN4dK5D1ASDnY7i0a+YUMN8KreElB5DnjJFC9Z7GqXUHPcDp7Z3J
-         ve6A==
-X-Gm-Message-State: APjAAAUA/bB4nHfS4n9oi/v7E1iUhNC9yfPQztM+iWQVUawndj99LECp
-        U4j9DQzqZbWwZzE9VAXjCLUN1O6goWhUTA==
-X-Google-Smtp-Source: APXvYqyCrT9abAZkBaSp/UOgYIKGSVCvLd3Vf0Q/D2U3DCaNAblm8WI8ue8eE7E7a/MIo2WBmgotK6OClWNRgg==
-X-Received: by 2002:a63:ff18:: with SMTP id k24mr5995648pgi.427.1569537774428;
- Thu, 26 Sep 2019 15:42:54 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 15:42:51 -0700
-Message-Id: <20190926224251.249797-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
-Subject: [PATCH net] tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Jon Maxwell <jmaxwell37@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=SYDe/o2kLFR5SneKG6UQbh/y8tn28Z982DDnMOJdbek=;
+        b=FF01Ec+9Qj5gc1Oqi1h5l2LuKNiiX0Ny+vS166dE7Tv0rTuS8khMh2rV2VwSGbIrfr
+         YRwdkTpMo4JUhM0pt/Cks1jyoqZ9Li8w4xrAyYJue3Ms6kbj/PgUxjRlZ6Y9Av5VYtRP
+         IGsl6exkDVmdTeDssBVNhS76ld3XshjjRFuW3sHJPFe1iH3PtB8vTIQDV4wKT1ZO43pr
+         XgY/BkbmE4uU24tIicJy/qbl8wnYTDwwA2NbTTUc6piMjNPfKAsEAdYoNID/j8yNQyUH
+         rV+aoOooxthbplhuViC/sLfRYnOrfd999IJgNW6Dd7DwHMLCgBTh9Y32UlDNY2fd4x/y
+         vzeA==
+X-Gm-Message-State: APjAAAW2xDjKo4XRFTtrTdGozdtOAEQO3owy2Vk1mnEao9M3JxLqs5lh
+        0ilJYrRNSG8lW2KN9XNsWZVSiQ==
+X-Google-Smtp-Source: APXvYqy1Y/XIttcdtZ3Wy5MYgHOKxq0uC8vN990QVXqdJlgTICSWdAf37n8LWS1SWgE0rxHPiXmPsA==
+X-Received: by 2002:a0c:9846:: with SMTP id e6mr5221088qvd.114.1569538048482;
+        Thu, 26 Sep 2019 15:47:28 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a11sm322826qkc.123.2019.09.26.15.47.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Sep 2019 15:47:28 -0700 (PDT)
+Date:   Thu, 26 Sep 2019 15:47:21 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Pascal Van Leeuwen <pvanleeuwen@verimatrix.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Samuel Neves <sneves@dei.uc.pt>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Willy Tarreau <w@1wt.eu>, Netdev <netdev@vger.kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
+        Dave Taht <dave.taht@gmail.com>
+Subject: Re: chapoly acceleration hardware [Was: Re: [RFC PATCH 00/18]
+ crypto: wireguard using the existing crypto API]
+Message-ID: <20190926154721.094139b0@cakuba.netronome.com>
+In-Reply-To: <CAHmME9r5m7D-oMU6Lv_ZhEyWmrNscMr5HokzdK0wg2Ayzzbeow@mail.gmail.com>
+References: <20190925161255.1871-1-ard.biesheuvel@linaro.org>
+        <CAHmME9oDhnv7aX77oEERof0TGihk4mDe9B_A3AntaTTVsg9aoA@mail.gmail.com>
+        <MN2PR20MB29733663686FB38153BAE7EACA860@MN2PR20MB2973.namprd20.prod.outlook.com>
+        <CAHmME9r5m7D-oMU6Lv_ZhEyWmrNscMr5HokzdK0wg2Ayzzbeow@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yuchung Cheng and Marek Majkowski independently reported a weird
-behavior of TCP_USER_TIMEOUT option when used at connect() time.
+On Thu, 26 Sep 2019 13:06:51 +0200, Jason A. Donenfeld wrote:
+> On Thu, Sep 26, 2019 at 12:19 PM Pascal Van Leeuwen wrote:
+> > Actually, that assumption is factually wrong. I don't know if anything
+> > is *publicly* available, but I can assure you the silicon is running in
+> > labs already. And something will be publicly available early next year
+> > at the latest. Which could nicely coincide with having Wireguard support
+> > in the kernel (which I would also like to see happen BTW) ...
+> >
+> > Not "at some point". It will. Very soon. Maybe not in consumer or server
+> > CPUs, but definitely in the embedded (networking) space.
+> > And it *will* be much faster than the embedded CPU next to it, so it will
+> > be worth using it for something like bulk packet encryption.  
+> 
+> Super! I was wondering if you could speak a bit more about the
+> interface. My biggest questions surround latency. Will it be
+> synchronous or asynchronous? If the latter, why? What will its
+> latencies be? How deep will its buffers be? The reason I ask is that a
+> lot of crypto acceleration hardware of the past has been fast and
+> having very deep buffers, but at great expense of latency. In the
+> networking context, keeping latency low is pretty important.
 
-When the TCP_USER_TIMEOUT is reached, tcp_write_timeout()
-believes the flow should live, and the following condition
-in tcp_clamp_rto_to_user_timeout() programs one jiffie timers :
+FWIW are you familiar with existing kTLS, and IPsec offloads in the
+networking stack? They offload the crypto into the NIC, inline, which
+helps with the latency, and processing overhead.
 
-    remaining = icsk->icsk_user_timeout - elapsed;
-    if (remaining <= 0)
-        return 1; /* user timeout has passed; fire ASAP */
-
-This silly situation ends when the max syn rtx count is reached.
-
-This patch makes sure we honor both TCP_SYNCNT and TCP_USER_TIMEOUT,
-avoiding these spurious SYN packets.
-
-Fixes: b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout() helper to improve accuracy")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Yuchung Cheng <ycheng@google.com>
-Reported-by: Marek Majkowski <marek@cloudflare.com>
-Cc: Jon Maxwell <jmaxwell37@gmail.com>
-Link: https://marc.info/?l=linux-netdev&m=156940118307949&w=2
----
- net/ipv4/tcp_timer.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index dbd9d2d0ee63aa46ad2dda417da6ec9409442b77..40de2d2364a1eca14c259d77ebed361d17829eb9 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -210,7 +210,7 @@ static int tcp_write_timeout(struct sock *sk)
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct net *net = sock_net(sk);
--	bool expired, do_reset;
-+	bool expired = false, do_reset;
- 	int retry_until;
- 
- 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
-@@ -242,9 +242,10 @@ static int tcp_write_timeout(struct sock *sk)
- 			if (tcp_out_of_resources(sk, do_reset))
- 				return 1;
- 		}
-+	}
-+	if (!expired)
- 		expired = retransmits_timed_out(sk, retry_until,
- 						icsk->icsk_user_timeout);
--	}
- 	tcp_fastopen_active_detect_blackhole(sk, expired);
- 
- 	if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTO_CB_FLAG))
--- 
-2.23.0.444.g18eeb5a265-goog
-
+There are also NIC silicon which can do some ChaCha/Poly, although 
+I'm not familiar enough with WireGuard to know if offload to existing
+silicon will be possible.
