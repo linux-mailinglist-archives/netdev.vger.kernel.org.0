@@ -2,97 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4527EBF693
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 18:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECEC6BF6BB
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 18:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727465AbfIZQVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 12:21:05 -0400
-Received: from mail-io1-f44.google.com ([209.85.166.44]:32992 "EHLO
-        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfIZQVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 12:21:05 -0400
-Received: by mail-io1-f44.google.com with SMTP id z19so8198546ior.0;
-        Thu, 26 Sep 2019 09:21:04 -0700 (PDT)
+        id S1727503AbfIZQaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 12:30:02 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43069 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727394AbfIZQaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 12:30:01 -0400
+Received: by mail-pl1-f195.google.com with SMTP id f21so1266638plj.10
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 09:30:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=QJ4hddZZaCwzQ+urngLpzSBE5Lf+YMOX+zDksoDMMVc=;
-        b=p3Ef7gDVoD0fgo0Sf4pwFv3Q0EAo/Q1dAmBcMiTosyfrETgIyoGlcxBs5nOGrhd36p
-         uoSNZJmj1brKW4FuwI8i+ZXe90LL3O41GZVRV4Dq7XguvehC9wzdjWaCmBtOrP1HzIDE
-         Q/NgzMYEmrespkFCIVQdBUd3q6AzEYe6S03hwkCrYo82w/tkbgjIlGQNKxLErGWE+mn2
-         QKdJfMebk6r5P36VjKbhJG30kK4WJPRPZWQH7XrJ3CaZwwucebIzhTMbwWlg4fVATu8B
-         OQhWZ+UXcFYmfFPvOZ6PEQ/ThRF75tgiKLBTw3Y9tCQMcxfeLC3jeO8LvcK3ZMoUirjb
-         p6fg==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=iUBOjyHfuR7bXfhhUiHsxfKRvIQzrO86xTAr8Ifre0Q=;
+        b=y3h5OT0UmQqXJi0n0rBvqkcTo+13EdxQBhESuHKUhhUdt4HIIcVQewbszw7316Jbj3
+         B26hOzlkXv8XsgeN5pGs7wsfUu35kRVDjdfbd80Cz2QkLIg0M3MsvsJVJdd9QD5RXeiy
+         6UEhQ9sxyZ6zQojKZM8g8YSAiU0HmfS6EeGLmm2G3M5zDUXby8glVotg/+s3ve95UAlT
+         DAQ0U/ntgxEnEPfGxe+68Qz99D7tUdj8cjDtGb+44i81+8OKBcckxrd+3wvZeL0MsCVS
+         GUydrXVlNXeNeT9yD3EB7dKB2lMU1zF3uY6+lKZ9hv2ld2NLoMT31L6wdQwnvoc03z5L
+         JHDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=QJ4hddZZaCwzQ+urngLpzSBE5Lf+YMOX+zDksoDMMVc=;
-        b=ZzuRtflI96IGIW3GS6EZvCazrgjEoBgGKa/U3VMYTu8juqDS1+PWg6/5cNxZxkbHNM
-         NSBbYzaiV8KGj6B0v9BnmjUWML5K1efHZw+QH4r1vAptbyo6Sy0vU34h3A9jmW6ErG34
-         loVHN2yGuLB/xpWEnf0wcZPh+k5L/rx/AQd8Y/fy5LOrGJIvh65rTbdCwc9mmVG2WCtY
-         n8ipGOUcsag8tJDJjLEVLxe9PvxKc6EtJwGqBD4LUPX11x6EG6IGjRlUdrfeOCvgTsI9
-         7SB0RrK9bjpiPVfCk/BOavvaluD/f8JFkH17b0PMZt42N3yScCTd+hs6cJkRWjHwcc8e
-         akdQ==
-X-Gm-Message-State: APjAAAVQkYvRtfYx9dQZZn6ce3HS775wvqkLu54ugAbtDGlarDt5ipf1
-        qd3ski3RcLaWLjC14L6eTjc=
-X-Google-Smtp-Source: APXvYqz6t1kCxh8lTNZOhE7J7L3/nqpQXJlXfCPWyk91LwCf3w3QZAZ+J/Ep52xFAx5bjyPdXi1bVQ==
-X-Received: by 2002:a5d:8b12:: with SMTP id k18mr3750297ion.93.1569514864037;
-        Thu, 26 Sep 2019 09:21:04 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id t17sm1127473ioc.18.2019.09.26.09.21.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Sep 2019 09:21:03 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 09:20:56 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Allan Zhang <allanzhang@google.com>, daniel@iogearbox.net,
-        songliubraving@fb.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Allan Zhang <allanzhang@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Message-ID: <5d8ce5686ef9f_34102b0cab5805c4b6@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190925234312.94063-2-allanzhang@google.com>
-References: <20190925234312.94063-1-allanzhang@google.com>
- <20190925234312.94063-2-allanzhang@google.com>
-Subject: RE: [PATCH 1/1] bpf: Fix bpf_event_output re-entry issue
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=iUBOjyHfuR7bXfhhUiHsxfKRvIQzrO86xTAr8Ifre0Q=;
+        b=Cfj5JyLVbrjjXtrPaPuaqeqSZQSqYANIlNOFCAkP+64llWkS63PcvUWxPiv/Rt8263
+         2EGYlZnBSiwlxEZ5MubAhFT/8q+TKkVd1OdUYOB6jNelk8533K58v2NmUQ/Edls7m/2X
+         TVHqEZQgSLW928zS7rnAfOlLpwyQslZe27uK3CXqXwiWemuZGBepqheVZU9qmD840gL6
+         x45yFfG/pGi98RuFLuNF7lXU5HrGaIpi8anGTpTjK4lUa0Gp6qugJLuCOTalZm62mgMy
+         kPS4shFa/5jzzKzAs3MiGylvZxf1DJKltpeGj0abqQeEUQ3QKopmQnnEYLPLJwkoyZhW
+         7jXw==
+X-Gm-Message-State: APjAAAVJ4sn8uFMXwXZzGKA7BfU07upzliqSuVF3mExwdJgdSuPRFaDv
+        vdnwn1PgNcigaYQQzm2LAqMPjg==
+X-Google-Smtp-Source: APXvYqzWSovEndvhpUlPPG2KWsLiHc/5J0wB0jU8KW7kk3lkOzlRWdHFYbFHIpUg2H8EkpfjsR5P5g==
+X-Received: by 2002:a17:902:8a88:: with SMTP id p8mr4822043plo.152.1569515400373;
+        Thu, 26 Sep 2019 09:30:00 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id e127sm3547209pfe.37.2019.09.26.09.29.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Sep 2019 09:29:59 -0700 (PDT)
+Subject: Re: [PATCH 1/3] docs: fix some broken references
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        corbet@lwn.net
+Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pensando Drivers <drivers@pensando.io>,
+        Steve French <sfrench@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-riscv@lists.infradead.org
+References: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <81dc41d5-606a-7638-1d11-4fe53e9c2a7f@pensando.io>
+Date:   Thu, 26 Sep 2019 09:29:56 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <b87385b2ac6ce6c75df82062fce2976149bbaa6b.1569330078.git.mchehab+samsung@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allan Zhang wrote:
-> BPF_PROG_TYPE_SOCK_OPS program can reenter bpf_event_output because it can
-> be called from atomic and non-atomic contexts since we don't have
-> bpf_prog_active to prevent it happen.
-> 
-> This patch enables 3 level of nesting to support normal, irq and nmi
-> context.
-> 
-> We can easily reproduce the issue by running neper crr mode with 100 flows
-> and 10 threads from neper client side.
-> 
-> Here is the whole stack dump:
-> 
-> [  515.228898] WARNING: CPU: 20 PID: 14686 at kernel/trace/bpf_trace.c:549 bpf_event_output+0x1f9/0x220
-> [  515.228903] CPU: 20 PID: 14686 Comm: tcp_crr Tainted: G        W        4.15.0-smp-fixpanic #44
-> [  515.228904] Hardware name: Intel TBG,ICH10/Ikaria_QC_1b, BIOS 1.22.0 06/04/2018
-> [  515.228905] RIP: 0010:bpf_event_output+0x1f9/0x220
+On 9/24/19 6:01 AM, Mauro Carvalho Chehab wrote:
+> There are a number of documentation files that got moved or
+> renamed. update their references.
+>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 
-[...]
- 
-> Fixes: a5a3a828cd00 ("bpf: add perf event notificaton support for sock_ops")
-> 
-> Effort: BPF
-> Signed-off-by: Allan Zhang <allanzhang@google.com>
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
-> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_if.h            | 4 ++--
 
-LGTM thanks.
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
