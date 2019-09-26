@@ -2,121 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C73FBF513
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 16:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE28BF533
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 16:43:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727175AbfIZOaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 10:30:08 -0400
-Received: from mail-qt1-f201.google.com ([209.85.160.201]:34213 "EHLO
-        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726984AbfIZOaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 10:30:08 -0400
-Received: by mail-qt1-f201.google.com with SMTP id y10so2511845qti.1
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 07:30:07 -0700 (PDT)
+        id S1726234AbfIZOnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 10:43:52 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46666 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbfIZOnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 10:43:52 -0400
+Received: by mail-pg1-f196.google.com with SMTP id a3so1661807pgm.13;
+        Thu, 26 Sep 2019 07:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=JtDSdiJIqNLtOWP26GaNgqVmHbxGnp05V+SB40UMfls=;
-        b=UHINjKLQI7wQnF7Tj687eSC1R8hFJvUtpRV6UwdmOwI9ZSq8oebro+t69cwK8SGhfB
-         K6p8goSJd2XdyvBXxmXnYh2IB5VX26owIbDTt1A+6X9K8sjsN1nO09L41n4FTgLw8Oup
-         1MClGg2Cz4zmo1DhsoSdw0F1wDgc0gU7dv7Qgp+cmNgCrwiELBwh/WS7TXHVOWW+xgLR
-         oyKcjfwlL/eNSU/jIs9L4PzVvEWn6nhejvsjelLxQU6pXx7wyRCf6wDy1Bd7LDbCO8f0
-         JvPfWS6hUw1g1vExIAsvDoM10FLEUa+3KxQWpon9R6xmOwC3FSNeYF56evpHuTP8PmJN
-         oydQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jNdgPZH4pEjhG+dTnjeGV8hSbsj0xVEU/isgoWCCkII=;
+        b=dQW1+e7VzNNFdh1fXvomKhMTUOjvWawf0uQGeUnUtKJb6HbpQF7MflsS7b6N4Xj0ZN
+         EI1eoz8OzxEOCTQQ645XK7Im9AakdQuZyq5dffRMT70IWT0jhjWwafKOAnnGWOCCHKzb
+         poIldBKbn6Cx23JIqMvK8ZW78+YWmauMPQjeu7gOr6nHK2NUgC8eYCgTZ6sMeGkfF17z
+         Kw4uRxOeH/9qm/xcixg4jGvsquhXovfTPJYyS3GBVY2xSteKKo9M+5VfLZ3DNWnDVOK3
+         GC7nGuxt2zeQSwDd30W113r7wqISl/eNS7hRgf8ZbXi0RKA2aMoid6ToImjSvZG3ntxD
+         CHLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=JtDSdiJIqNLtOWP26GaNgqVmHbxGnp05V+SB40UMfls=;
-        b=PdmF9+xHHi8d/V70bJhgDRR2ndLffDDxuQtyK76y0IF79e9N/8q1nGf8VUL+tOTlqR
-         XZZk5h9ObNWuCr03pyppj/xOf2QGfqGRPxNHiGKO6dJpGfTp3O3Qd1rGD4CVRMTtW9D7
-         NNz/Ycq0r6UN7F62U9GFa0lYI7ng0C4fGEmeJsK0vYiV4R95+C7tmMyha9ZHiVPuU9JQ
-         lmZCZAPkoA5sd3tPzm4PYJrjKlCqaTnA8qnsnzlfLL1p3EaG0IlOSKqSYiEHOCrcqlkb
-         h+63GGp22VQha7fGHcDgKDveZDuboiWlSlGgYg/zRXFmGgghMTBASAXCte88y8mIMaTz
-         C/aA==
-X-Gm-Message-State: APjAAAVlVWEx11GK1u83mFWr8YqnaZ6IDUrxqhl2YS8Pp6W2hhV0PUoz
-        gRUKtQljE/gwMSCC5JmwFlQwsbo=
-X-Google-Smtp-Source: APXvYqwabqgUN7IPHB7upNxNbrBMppdVmQHZgvvG5MVAxiBN5PTvOZR6Mw4bNwQhfut6+W7pvfO3Kdo=
-X-Received: by 2002:ac8:44c9:: with SMTP id b9mr4138750qto.175.1569508206816;
- Thu, 26 Sep 2019 07:30:06 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 10:30:05 -0400
-Message-Id: <20190926143005.106045-1-yyd@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
-Subject: [PATCH net] tcp_bbr: fix quantization code to not raise cwnd if not
- probing bandwidth
-From:   "Kevin(Yudong) Yang" <yyd@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, "Kevin(Yudong) Yang" <yyd@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Priyaranjan Jha <priyarjha@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jNdgPZH4pEjhG+dTnjeGV8hSbsj0xVEU/isgoWCCkII=;
+        b=kM9TfisvBtrYohj23jLDpkHUJYXqvRckoPo+pmw7ZSKAbO70CkQKwKffttafdHaCWr
+         5yKGYkbLJsWVFZS18rBW4d6urLWQnQ2CtR6cvhCFWHFxRxG3zOq8Sx326o+Z6IhQZBIo
+         wtxsW75olE0C7JAHNb5geDK07nzHB3FEIcgqNic1TUR0TTct0cU2eL16gwjWT5Vk3ukL
+         WQUUk0mAvA1vwcSw1z9lDbWjvarNxL28tlF/L0EvQ1iXIASTMM9To30yRBkDltRBSOlS
+         0X8yJ1+4mdyvdQvTiPXCmB8Li7mgl/5JoR4m6FZS7HXdlSryMnMiHBm/y5Jevt4l3Dig
+         MLmQ==
+X-Gm-Message-State: APjAAAWiHXcBuDvr0UuXx9hF/ogy9vWVl2eeCY6bJs5Vimmjyn4jIbOf
+        xiOY3wdj/qDUt1gxGG8cl9Wj5+STuaU=
+X-Google-Smtp-Source: APXvYqyNjb36i3ndCum2uolyoO0lv4ZL9MLFFRzDxCbrHgcWQ9EciECYsZ6GFrTBVdgaRCNUVAN/sg==
+X-Received: by 2002:a65:4782:: with SMTP id e2mr3491673pgs.402.1569509031156;
+        Thu, 26 Sep 2019 07:43:51 -0700 (PDT)
+Received: from [172.27.227.146] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id 16sm2761383pfn.35.2019.09.26.07.43.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Sep 2019 07:43:50 -0700 (PDT)
+Subject: Re: [PATCH v2] ipv6: do not free rt if FIB_LOOKUP_NOREF is set on
+ suppress rule
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        weiwan@google.com
+Cc:     stable@vger.kernel.org
+References: <20190924.145257.2013712373872209531.davem@davemloft.net>
+ <20190924140128.19394-1-Jason@zx2c4.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <22ee9da6-6bc4-7f6f-d19d-1d492bfe8e7e@gmail.com>
+Date:   Thu, 26 Sep 2019 08:43:47 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <20190924140128.19394-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There was a bug in the previous logic that attempted to ensure gain cycling
-gets inflight above BDP even for small BDPs. This code correctly raised and
-lowered target inflight values during the gain cycle. And this code
-correctly ensured that cwnd was raised when probing bandwidth. However, it
-did not correspondingly ensure that cwnd was *not* raised in this way when
-*not* probing for bandwidth. The result was that small-BDP flows that were
-always cwnd-bound could go for many cycles with a fixed cwnd, and not probe
-or yield bandwidth at all. This meant that multiple small-BDP flows could
-fail to converge in their bandwidth allocations.
+On 9/24/19 8:01 AM, Jason A. Donenfeld wrote:
+> Commit 7d9e5f422150 removed references from certain dsts, but accounting
+> for this never translated down into the fib6 suppression code. This bug
+> was triggered by WireGuard users who use wg-quick(8), which uses the
+> "suppress-prefix" directive to ip-rule(8) for routing all of their
+> internet traffic without routing loops. The test case added here
+> causes the reference underflow by causing packets to evaluate a suppress
+> rule.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 7d9e5f422150 ("ipv6: convert major tx path to use RT6_LOOKUP_F_DST_NOREF")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  net/ipv6/fib6_rules.c                    |  3 ++-
+>  tools/testing/selftests/net/fib_tests.sh | 17 ++++++++++++++++-
+>  2 files changed, 18 insertions(+), 2 deletions(-)
 
-Fixes: 383d470 ("tcp_bbr: fix bw probing to raise in-flight data for very small BDPs")
-Signed-off-by: Kevin(Yudong) Yang <yyd@google.com>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Acked-by: Priyaranjan Jha <priyarjha@google.com>
----
- net/ipv4/tcp_bbr.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Thanks for adding the test case.
 
-diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-index 95b59540eee1..32772d6ded4e 100644
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -388,7 +388,7 @@ static u32 bbr_bdp(struct sock *sk, u32 bw, int gain)
-  * which allows 2 outstanding 2-packet sequences, to try to keep pipe
-  * full even with ACK-every-other-packet delayed ACKs.
-  */
--static u32 bbr_quantization_budget(struct sock *sk, u32 cwnd, int gain)
-+static u32 bbr_quantization_budget(struct sock *sk, u32 cwnd)
- {
- 	struct bbr *bbr = inet_csk_ca(sk);
- 
-@@ -399,7 +399,7 @@ static u32 bbr_quantization_budget(struct sock *sk, u32 cwnd, int gain)
- 	cwnd = (cwnd + 1) & ~1U;
- 
- 	/* Ensure gain cycling gets inflight above BDP even for small BDPs. */
--	if (bbr->mode == BBR_PROBE_BW && gain > BBR_UNIT)
-+	if (bbr->mode == BBR_PROBE_BW && bbr->cycle_idx == 0)
- 		cwnd += 2;
- 
- 	return cwnd;
-@@ -411,7 +411,7 @@ static u32 bbr_inflight(struct sock *sk, u32 bw, int gain)
- 	u32 inflight;
- 
- 	inflight = bbr_bdp(sk, bw, gain);
--	inflight = bbr_quantization_budget(sk, inflight, gain);
-+	inflight = bbr_quantization_budget(sk, inflight);
- 
- 	return inflight;
- }
-@@ -531,7 +531,7 @@ static void bbr_set_cwnd(struct sock *sk, const struct rate_sample *rs,
- 	 * due to aggregation (of data and/or ACKs) visible in the ACK stream.
- 	 */
- 	target_cwnd += bbr_ack_aggregation_cwnd(sk);
--	target_cwnd = bbr_quantization_budget(sk, target_cwnd, gain);
-+	target_cwnd = bbr_quantization_budget(sk, target_cwnd);
- 
- 	/* If we're below target cwnd, slow start cwnd toward target cwnd. */
- 	if (bbr_full_bw_reached(sk))  /* only cut cwnd if we filled the pipe */
--- 
-2.23.0.444.g18eeb5a265-goog
-
+Reviewed-by: David Ahern <dsahern@gmail.com>
