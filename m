@@ -2,137 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A37EBF391
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D7DBF3BD
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbfIZM5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 08:57:38 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:42540 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbfIZM5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 08:57:38 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 2FB196013C; Thu, 26 Sep 2019 12:57:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569502657;
-        bh=XWJZ29qmhxdNsiEDSm4SmSSi0jFoSNnwAiHHPXLLh2Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mLB6ESXn5HOGoQJpWnkUNKljeiPsPpPl3NccJNM/AzT+s3HiWv6rLKb6SW7bOkS/y
-         7phhZGnQTWOBIDMnfZuEch3ctdHzjkquzSpvpdujKdKjt/CuXYEIMSlJgftGWOaDa7
-         UUiH3QeRFAppqn+8sfcWE8ua3k+aWHv7XFpSYwEA=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8BCEA6016D;
-        Thu, 26 Sep 2019 12:57:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569502656;
-        bh=XWJZ29qmhxdNsiEDSm4SmSSi0jFoSNnwAiHHPXLLh2Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=D9NbvxsSKCAUttzEPFtiHP/pDAp13i96vTF4YoqbpiefOXmOlUVy5B2N8GFsnbtG3
-         8QxL3fDQ99lzgCCNEcVdZCFHVen9+bWeslAV53BKLcD44oz6bNSdtxq24yP9JmdEEM
-         wC7YiqglQ+nktugLTWVmPWcerDsEqTnAW3sWj0LA=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8BCEA6016D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: pull-request: wireless-drivers 2019-09-26
-Date:   Thu, 26 Sep 2019 15:57:33 +0300
-Message-ID: <8736gj5i6a.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726498AbfIZNId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 09:08:33 -0400
+Received: from 3.mo68.mail-out.ovh.net ([46.105.58.60]:60745 "EHLO
+        3.mo68.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbfIZNId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 09:08:33 -0400
+X-Greylist: delayed 4204 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Sep 2019 09:08:32 EDT
+Received: from player688.ha.ovh.net (unknown [10.109.159.136])
+        by mo68.mail-out.ovh.net (Postfix) with ESMTP id BD6511436D2
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 13:52:17 +0200 (CEST)
+Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player688.ha.ovh.net (Postfix) with ESMTPSA id 1EFA2A2EC583;
+        Thu, 26 Sep 2019 11:52:07 +0000 (UTC)
+Subject: Re: [PATCH RFC] cfg80211: add new command for reporting wiphy crashes
+To:     Jouni Malinen <j@w1.fi>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hostap@lists.infradead.org,
+        openwrt-devel@lists.openwrt.org
+References: <20190920133708.15313-1-zajec5@gmail.com>
+ <20190920140143.GA30514@w1.fi>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Message-ID: <4f6f37e5-802c-4504-3dcb-c4a640d138bd@milecki.pl>
+Date:   Thu, 26 Sep 2019 13:52:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20190920140143.GA30514@w1.fi>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11993367286735539761
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedufedrfeeggdeggecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+On 20.09.2019 16:01, Jouni Malinen wrote:
+> On Fri, Sep 20, 2019 at 03:37:08PM +0200, Rafał Miłecki wrote:
+>> Hardware or firmware instability may result in unusable wiphy. In such
+>> cases usually a hardware reset is needed. To allow a full recovery
+>> kernel has to indicate problem to the user space.
+> 
+> Why? Shouldn't the driver be able to handle this on its own since all
+> the previous configuration was done through the driver anyway. As far as
+> I know, there are drivers that do indeed try to do this and handle it
+> successfully at least for station mode. AP mode may be more complex, but
+> for that one, I guess it would be fine to drop all associations (and
+> provide indication of that to user space) and just restart the BSS.
 
-here's a pull request to net tree for v5.4. Please let me know if there
-are any problems.
+Indeed my main concert is AP mode. I'm afraid that cfg80211 doesn't
+cache all settings, consider e.g. nl80211_start_ap(). It builds
+struct cfg80211_ap_settings using info from nl80211 message and
+passes it to the driver (rdev_start_ap()). Once it's done it
+caches only a small subset of all setup data.
 
-Kalle
+In other words driver doesn't have enough info to recover interfaces
+setup.
 
 
-The following changes since commit 280ceaed79f18db930c0cc8bb21f6493490bf29c:
+>> This new nl80211 command lets user space known wiphy has crashed and has
+>> been just recovered. When applicable it should result in supplicant or
+>> authenticator reconfiguring all interfaces.
+> 
+> For me, that is not really "recovered" if some additional
+> reconfiguration steps are needed.. I'd like to get a more detailed view
+> on what exactly might need to be reconfigured and how would user space
+> know what exactly to do. Or would the plan here be that the driver would
+> not even indicate this crash if it is actually able to internally
+> recover fully from the firmware restart?
 
-  usbnet: sanity checking of packet sizes and device mtu (2019-09-19 13:27:11 +0200)
+I meant that hardware has been recovered & is operational again (driver
+can talk to it). I expected user space to reconfigure all interfaces
+using the same settings that were used on previous run.
 
-are available in the git repository at:
+If driver were able to recover interfaces setup on its own (with a help
+of cfg80211) then user space wouldn't need to be involved.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-for-davem-2019-09-26
 
-for you to fetch changes up to 2b481835cf4e7384b80d7762074b32a45b792d99:
+>> I'd like to use this new cfg80211_crash_report() in brcmfmac after a
+>> successful recovery from a FullMAC firmware crash.
+>>
+>> Later on I'd like to modify hostapd to reconfigure wiphy using a
+>> previously used setup.
+> 
+> So this implies that at least something would need to happen in AP mode.
+> Do you have a list of items that the driver cannot do on its own and why
+> it would be better to do them from user space?
 
-  wil6210: use after free in wil_netif_rx_any() (2019-09-25 09:12:20 +0300)
+First of all I was wondering how to handle interfaces creation. After a
+firmware crash we have:
+1) Interfaces created in Linux
+2) No corresponsing interfaces in firmware
 
-----------------------------------------------------------------
-wireless-drivers fixes for 5.4
+Syncing that (re-creating in-firmware firmwares) may be a bit tricky
+depending on a driver and hardware. For some cases it could be easier to
+delete all interfaces and ask user space to setup wiphy (create required
+interfaces) again. I'm not sure if that's acceptable though?
 
-First set of fixes for 5.4 sent during the merge window. Most are
-regressions fixes but the mt7615 problem has been since it was merged.
+If we agree interfaces should stay and driver simply should configure
+firmware properly, then we need all data as explained earlier. struct
+cfg80211_ap_settings is not available during runtime. How should we
+handle that problem?
 
-iwlwifi
 
-* fix a build regression related CONFIG_THERMAL
+>> I'm OpenWrt developer & user and I got annoyed by my devices not auto
+>> recovering after various failures. There are things I cannot fix (hw
+>> failures or closed fw crashes) but I still expect my devices to get
+>> back to operational state as soon as possible on their own.
+> 
+> I fully agree with the auto recovery being important thing to cover for
+> this, but I'm not yet convinced that this needs user space action. Or if
+> it does, there would need to be more detailed way of indicating what
+> exactly is needed for user space to do. The proposed change here is just
+> saying "hey, I crashed and did something to get the hardware/firmware
+> responding again" which does not really tell much to user space other
+> than potentially requiring full disable + re-enable for the related
+> interfaces. And that is something that should not actually be done in
+> all cases of firmware crashes since there are drivers that handle
+> recovery in a manner that is in practice completely transparent to user
+> space.
 
-* avoid using GEO_TX_POWER_LIMIT command on certain firmware versions
-
-rtw88
-
-* fixes for skb leaks
-
-zd1211rw
-
-* fix a compiler warning on 32 bit
-
-mt76
-
-* fix the firmware paths for mt7615 to match with linux-firmware
-
-wil6210
-
-* fix use of skb after free
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      wil6210: use after free in wil_netif_rx_any()
-
-Geert Uytterhoeven (1):
-      zd1211rw: zd_usb: Use "%zu" to format size_t
-
-Johannes Berg (1):
-      iwlwifi: mvm: fix build w/o CONFIG_THERMAL
-
-Lorenzo Bianconi (1):
-      mt76: mt7615: fix mt7615 firmware path definitions
-
-Luca Coelho (1):
-      iwlwifi: fw: don't send GEO_TX_POWER_LIMIT command to FW version 36
-
-Yan-Hsuan Chuang (3):
-      rtw88: pci: extract skbs free routine for trx rings
-      rtw88: pci: release tx skbs DMAed when stop
-      rtw88: configure firmware after HCI started
-
- drivers/net/wireless/ath/wil6210/txrx.c            |  2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |  8 ++--
- drivers/net/wireless/intel/iwlwifi/mvm/tt.c        |  9 +++-
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c    | 11 ++---
- drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h |  6 +--
- drivers/net/wireless/realtek/rtw88/mac.c           |  3 --
- drivers/net/wireless/realtek/rtw88/main.c          |  4 ++
- drivers/net/wireless/realtek/rtw88/pci.c           | 48 +++++++++++++++++-----
- drivers/net/wireless/zydas/zd1211rw/zd_usb.c       |  2 +-
- 9 files changed, 63 insertions(+), 30 deletions(-)
+I was aiming for a brutal force solution: just make user space
+interfaces need a full setup just at they were just created.
