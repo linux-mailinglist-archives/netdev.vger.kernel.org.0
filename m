@@ -2,62 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE0DBF2EE
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B0E7BF323
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 14:39:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbfIZM13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 08:27:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38924 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbfIZM13 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Sep 2019 08:27:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=StYoawpBSbowJCICSKSTHJRHOTgYg6lhzDHkVcITLOQ=; b=flV6L3rvm23uCGI/xJSMLLu7Ty
-        SFiHK5VBNgb4okWasHsInphvUyEJYmWsxewpywpmHIZtDQVGT7CTFtottSxjT0ngNPXtDVyZN1PEy
-        JzEchwbg+eRzHmSBh8kq1hjbywMo8682rn6Tt7hLH1nbZDbffWVdTAVWcT+rEk7VOcaQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iDSrm-00029O-NX; Thu, 26 Sep 2019 14:27:26 +0200
-Date:   Thu, 26 Sep 2019 14:27:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH net] devlink: Fix error handling in param and info_get
- dumpit cb
-Message-ID: <20190926122726.GE1864@lunn.ch>
-References: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        id S1726455AbfIZMjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 08:39:14 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39247 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726170AbfIZMjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 08:39:14 -0400
+Received: by mail-ot1-f65.google.com with SMTP id s22so1834152otr.6;
+        Thu, 26 Sep 2019 05:39:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LcuQ7ub3xc1lC6Iue/J07x04j8viK4+G6DgvRDSpx8E=;
+        b=InI/oD8FAT63DMulNKOsFdjG0ifNgBSAZwlyxhacNBANJDsWoyTnj8B1JrGPFP0IQT
+         Fta/PdpKHZNu2sczNHbXBbEljlQuenx+zzCUqegDeem04fQJWGSCJ5AYXiVwOEbYi8hq
+         GenD6NvAI5iMPPjlsEB8yS57tWwueSFGfL8O/JSaseCPn4n5+ejn187mhYV6ZF/l0aOc
+         vkaA8s/ci9lVpZEpuitiE+IEyKMR8q6BWF4C+cZJAG4QeHRtpHIzJ++CHh1OZhyMxDF9
+         XzVD9JmIfkBtZhEIR0Zn6XSDZ4/A9UvpjWBrAwvXBnCt4TA0GDvGr7hvl90Dwg8iJKl5
+         37dg==
+X-Gm-Message-State: APjAAAUkG3dMD6OQ3jmYBejeYTeOjBw8uxZOuSLphHv/YbLUSF+PmdOb
+        QRu3fnvDfH2eqvyDNjhdAaqcQ8/zwnEQq772qiI=
+X-Google-Smtp-Source: APXvYqwK+L6qOfhnJCpMB+bC2PvjDDWopzyHhl8rU0KuiwBH1/byEkZFYMgUUoydnLf4GTtbLX3oU4i1oWzm0rKoKrc=
+X-Received: by 2002:a9d:730d:: with SMTP id e13mr2407068otk.145.1569501553062;
+ Thu, 26 Sep 2019 05:39:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <1569245566-9987-1-git-send-email-biju.das@bp.renesas.com>
+In-Reply-To: <1569245566-9987-1-git-send-email-biju.das@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 26 Sep 2019 14:39:01 +0200
+Message-ID: <CAMuHMdUZievmwuWD6Tqzbj4AOewH9Qo=Drgm6OfF_zyoxv4QEw@mail.gmail.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: ravb: Add support for r8a774b1 SoC
+To:     Biju Das <biju.das@bp.renesas.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Simon Horman <horms@verge.net.au>,
+        Chris Paterson <Chris.Paterson2@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 03:05:54PM +0530, Vasundhara Volam wrote:
-> If any of the param or info_get op returns error, dumpit cb is
-> skipping to dump remaining params or info_get ops for all the
-> drivers.
-> 
-> Instead skip only for the param/info_get op which returned error
-> and continue to dump remaining information, except if the return
-> code is EMSGSIZE.
+On Mon, Sep 23, 2019 at 3:33 PM Biju Das <biju.das@bp.renesas.com> wrote:
+> Document RZ/G2N (R8A774B1) SoC bindings.
+>
+> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
 
-Hi Vasundhara
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-How do we get to see something did fail? If it failed, it failed for a
-reason, and we want to know.
+Gr{oetje,eeting}s,
 
-What is your real use case here? What is failing, and why are you
-O.K. to skip this failure?
+                        Geert
 
-     Andrew
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
