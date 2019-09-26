@@ -2,158 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EDF5BF3FC
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA8FFBF400
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 15:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbfIZNYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 09:24:02 -0400
-Received: from mail-qt1-f174.google.com ([209.85.160.174]:41541 "EHLO
-        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbfIZNYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 09:24:02 -0400
-Received: by mail-qt1-f174.google.com with SMTP id n1so2799013qtp.8
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 06:24:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sTV4CXZngTqGG28A7smp6xFmdShWMtdBruXA2FOLpQE=;
-        b=bR8VduJQMM1m13Ky7X7I1KlUNwFnCMXilqYSRcBHFjGV3TV6+vsbhlDBMKtx0Nc3ED
-         CzbWeOUM8X0n/n6PnfYW7d/nASltwmY4/yBYwl3L9zfz37+q0yl4u4VVDGiO/bGD54VW
-         16Lh9gwG8U3DEWj9l5c+XJvvUxQbnNdwZdZR3K/h/aUBbypTOTFfnLyFOyUkNLEQhLeh
-         bDerKiqG+CHFkHrcJsM+R6CQWA3mAIlADn0/8fSk3UY2z63GQg8EilJWG/2h2nFP6uvx
-         kzKr87gRBLWzkrUCmp/LQ9tr6u3NALyZ9Hd22GKgcX59kxkapHolGUsaJPWGojwlKftP
-         gglg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sTV4CXZngTqGG28A7smp6xFmdShWMtdBruXA2FOLpQE=;
-        b=eWyOfAu8McN+4Cz07+nKo1uEsF1iwQPJoTBl4NB6Nrh7b9rf06r/5gUa0S0FPP+V8i
-         +9FSQ/obFmXHyF92MgZK49j8VHywyAEQJkERgAKZmyEPnJD+zlu8RYoNSKSTrbuKXrTr
-         4cw/eXXtivrmGVurOHxttVJSdrd5Ug5gFadeMYDDJt0JGAlaUerFSCFi/RBL5weLFohz
-         FtcfwAmzNgeXNR+DRaYi7+sL7WEJkgRardo3srrK5ZqGKpFIqcgznu41wk0SI7eSL9TV
-         25WdeWh5iELsasmGwzu5anyT/H5a/XxucdpFGOxvGD2/tYSoZfDdiJKOasI8fk6UmUM6
-         xbTw==
-X-Gm-Message-State: APjAAAWaPQp57U04izSO1ue93H17bCEvKZwpMZH1rCuUudLkizuzuvCQ
-        MWXGb9qGiiuy6z671/1UaeITNfvMJeRyM0yXFjoBqk0W/Mc=
-X-Google-Smtp-Source: APXvYqyobb9tCXQumadFHBpxJZAtzZilNpCQdTWjrvTs+tPadKylcYVgREq3HUvnJhlJ7iTBS0eCclDQ78qaJvQf3QI=
-X-Received: by 2002:ac8:e82:: with SMTP id v2mr3861125qti.78.1569504241233;
- Thu, 26 Sep 2019 06:24:01 -0700 (PDT)
+        id S1726828AbfIZNZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 09:25:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39036 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726152AbfIZNZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 09:25:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=68EUeIcqzm0IDdui4uPgc7+UzIGgJxLM3+5RWzrkNwE=; b=YK1CmwZfwg6eeemCn2ElCGJgdY
+        NozcH3EE6/qRLVUs7Fg4CqJ8T+F51fxwBpYzogSQ2sxDV0GQla5QvtMecFwQYLymANLdEn2dXrmyD
+        0k4vScol/2OBcc/fTNVEA6r7rYIde5/4xCYZ6VCcU+RuiGygWlvGfg/s+l+rc2qxtTfc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iDTlS-0002X1-92; Thu, 26 Sep 2019 15:24:58 +0200
+Date:   Thu, 26 Sep 2019 15:24:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "Alvaro G. M" <alvaro.gamez@hazent.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: axienet: fix a signedness bug in probe
+Message-ID: <20190926132458.GC20927@lunn.ch>
+References: <20190925105911.GI3264@mwanda>
+ <20190925110542.GA21923@salem.gmr.ssr.upm.es>
+ <20190926131811.GG29696@kadam>
 MIME-Version: 1.0
-References: <CAGAf8LzeyrMSHCYMxn1FNtMQVyhhLYbJaczhe2AMj+7T_nBt7Q@mail.gmail.com>
- <20190923191713.GB28770@lunn.ch>
-In-Reply-To: <20190923191713.GB28770@lunn.ch>
-From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
-Date:   Thu, 26 Sep 2019 15:23:48 +0200
-Message-ID: <CAGAf8LyQpi_R-A2Zx72bJhSBqnFo-r=KCnfVCTD9N8cNNtbhrQ@mail.gmail.com>
-Subject: Re: DSA driver kernel extension for dsa mv88e6190 switch
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190926131811.GG29696@kadam>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew,
+> The get_phy_mode() function seem like they lend themselves to creating
+> these bugs.  The ->phy_mode variables tend to be declared in the driver
+> so it would require quite a few patches to make them all int and I'm not
+> sure that's more beautiful.  Andrew Lunn's idea to update the API would
+> probably be a good idea.
 
-I would like to thank you for the reply.
+Hi Dan
 
-I do not know if this is the right place to post such the questions,
-but my best guess is: yes.
+I started on it. Once net-next has opened, and 0-day has compile
+tested my changes, i will post the code for review.
 
-Since till now I did not make any success to make (using DSA driver)
-make mv88e6190 single switch to work with any kernel.org. :-(
-
-I did ugly workaround as kernel dsa patch, which allowed me to
-introduce TXC and RXC clock skews between I.MX6 and mv88e6190 (MAC to
-MAC layer over rgmii).
-
-And, yes, switch is working in dummy state (as you correctly described
-it), passing traffic everywhere (flooding).
-
-i.MX6 has a silicon bug, which does not allow skew configuration on
-its side. PCB is out of consideration, so this ugly patch makes switch
-to apply these two delays.Then, in dummy state, everything works.
-_______
-
-My DTS mv88e6190 configuration, which I adopted for the custom board I
-am working on, could be seen here:
-https://pastebin.com/xpXQYNRX
-
-But on another note... I am wondering if I am setting correct kernel
-configuration for it?!
-
-Here is the part of the configuration I made while going through maze
-of posts from google search results:
-
-      Switch (and switch-ish) device support @ Networking
-support->Networking options
-      Distributed Switch Architecture @ Networking support->Networking options
-      Tag driver for Marvell switches using DSA headers @ Networking
-support->Networking options->Distributed Switch Architecture
-      Tag driver for Marvell switches using EtherType DSA headers @
-Networking support->Networking options->Distributed Switch
-Architecture
-      Marvell 88E6xxx Ethernet switch fabric support @ Device
-Drivers->Network device support->Distributed Switch Architecture
-drivers
-      Switch Global 2 Registers support @ Device Drivers->Network
-device support->Distributed Switch Architecture drivers->Marvell
-88E6xxx Ethernet switch fabric support
-      Freescale devices @ Device Drivers->Network device
-support->Ethernet driver support
-      FEC ethernet controller (of ColdFire and some i.MX CPUs) @
-Device Drivers->Network device support->Ethernet driver
-support->Freescale devices
-      Marvell devices @ Device Drivers->Network device
-support->Ethernet driver support
-      Marvell MDIO interface support @ Device Drivers->Network device
-support->Ethernet driver support->Marvell devices
-      MDIO Bus/PHY emulation with fixed speed/link PHYs @ Device
-Drivers->Network device support->PHY Device support and infrastructure
-
-(Do we need Marvell PHYs option as =y ? I do not think so - should be:
-is not set)
-
-What possibly I made wrong here (this does not work - I could not get
-through the switch, and seems that MDIO works (from the logic
-analyzer), but addresses some 0x1B/0x1C ports, which should NOT be
-addressed, according to the the DTS configuration shown)?
-
-Thank you,
-Zoran
-_______
-
-On Thu, Sep 26, 2019 at 1:10 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > We have the configuration problem with the Marvell 88E6190 switch.
-> > What the our problem is... Is the switch is NOT configured with the
-> > EEPROM (24C512), which does not exist on the board.
->
-> That is pretty normal. If there is a EEPROM, i generally recommend it
-> is left empty. We want Linux to configure the switch, and if it finds
-> it already partially configured, things can get confused.
->
-> > It is put in autoconfig by HW straps (NOCPU mode).
->
-> So dumb switch mode. All ports are switched between each other.
->
-> > Once the MDIO command, issued to
-> > probe the switch and read the make of it, the switch jumps out of the
-> > autoconfig mode.
->
-> Correct. Dumb switch mode is dangerous. There is no STP, etc.
-> Depending on what you have in device tree, the ports are either
-> configured down, or separated.
->
-> > There are some commands issued from the DSA to
-> > configure the switch (to apply to switch TXC and RXC RGMII delays -
-> > RGMII-ID mode), but this is not enough to make it work properly.
->
-> Define 'work properly'. How are you configuring the interfaces?  Do
-> you remember to bring the master interface up? Are you adding the
-> interfaces to a bridge?
->
->    Andrew
+       Andrew
