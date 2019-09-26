@@ -2,100 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4A8BE95A
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 02:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDA09BE96B
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 02:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387679AbfIZAHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 20:07:00 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:43381 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387632AbfIZAHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 20:07:00 -0400
-Received: by mail-oi1-f196.google.com with SMTP id t84so506914oih.10;
-        Wed, 25 Sep 2019 17:06:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=z4X9jDl/gogPQ/X6hgep747Xt9DUFKrCuAetppUGPN4=;
-        b=Sa4noR+qX70kJICtZoLObZ4fIzvQCb6HEw6UMjkZSPdTmrcTGqB9h1m97ultMmGkmO
-         toqdNZTI7IEuIStvMY8e9ztuiflfhejBO8q9MYHDFbD8Aa9FV9AiNc6vs6KNqBR6CUZW
-         /5N6whQdgYkAHsAJXTYly5WvnUFGKI+HgVQTi01vLhy3E6E8ekc0cRXT3+jT7dra8hsk
-         o0aGHUnii605Vt8Z4zaHZs47nKMiB5RFkpw/nM6FpT42KL70EViWjZw8S1qYYi0xaxCf
-         oUPwS3+Jkf/sd3zrb8yMu2N3GFjbDgVdJPlojxGEl72/aHeSi2G+fWoCoOQzeWEM9YgZ
-         ezYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=z4X9jDl/gogPQ/X6hgep747Xt9DUFKrCuAetppUGPN4=;
-        b=dlOyjx/1ez++kIgUMArwM08iYSBz1KeN9IZvjsEHJG3jXG80sNvy3OC2EUpy/nqdmq
-         hfeJS6H1yc6k044NijCqVuRdtUSYNw01hMjsqOI4kQRg6Qc6Xw5sF09LdWGzMEtduomW
-         VhtA7qJYnZkAq4GjpwRPdj69QQPtRBVPN3hW8dCgmaYrS6wU9JiI8xkq5BmwYt/PmhBr
-         ZTI6mkDVyI4yfijHoZmnwkzEtjhzcKWMogtm5GhKbVIEqAdLAGB1vAP+YPopfVWSIfi3
-         xnEoS1jaQeCz/ab/khHgXnfR9jcl0dn8YWdGbPrRkyTZ+JiRDzY3lMvqcAiIoxy749xh
-         7Rag==
-X-Gm-Message-State: APjAAAUUJZIIGUk0LMaWa/tWsAsGwaIsa5aryTl2+fxWedMXVnJyc5CP
-        nVSvmzAYMpnORhYypgHfMYDAu4j4
-X-Google-Smtp-Source: APXvYqwGZsQ2HLY28D+3a3L5fHSQpp6Yt59KkPvnFaLe/DHbgYXzecmnpExSVTmeRIymcv1UaJwAJA==
-X-Received: by 2002:aca:af11:: with SMTP id y17mr545931oie.76.1569456419205;
-        Wed, 25 Sep 2019 17:06:59 -0700 (PDT)
-Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id e61sm117171ote.24.2019.09.25.17.06.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Sep 2019 17:06:58 -0700 (PDT)
-Subject: Re: [PATCH] rtlwifi: Remove excessive check in _rtl_ps_inactive_ps()
-To:     Denis Efremov <efremov@linux.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190925205858.30216-1-efremov@linux.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <bf0e64a5-5072-9706-98d2-cc226ad70380@lwfinger.net>
-Date:   Wed, 25 Sep 2019 19:06:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S2387815AbfIZASq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 20:18:46 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:52542 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387802AbfIZASp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 20:18:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=lrbC+Xl/MubhNlELr1KrZaP5CEBCrFK63dZxZb/R6VI=; b=TezixmWo5ebCVN86WH3eKc39c
+        sGt+jGo0zSnGticJxdym5sm3kYOz1+OA9dPQliAOiTFe7RiRBFvjFew81RUqHlvntUXhpOPSWA49V
+        hjzWZrPQfx9dpRaHGHOCpToMkPZpwx9g3cek1YehdHFrXJju2coyNZmshRQXA3xXXd26rQm4FQCVq
+        vAHujAOx5YuoydRNtbkGx1KXCUuNu5Zc8ZTQzquwtMPRiDIN0xJdvQRU707x1GOnLPY06cARrzjlC
+        ugvX1pSarSjBksziyP3LjYu9JOD/INbjmgEYwll0p2TG77/BeXVCNMmR16uJIQrrFWndOTzhNYrIs
+        g635Kx/eg==;
+Received: from [2601:1c0:6280:3f0::9a1f]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1iDHUa-0003wx-5i; Thu, 26 Sep 2019 00:18:44 +0000
+Subject: Re: [PATCH v2] dimlib: make DIMLIB a hidden symbol
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>,
+        Tal Gilboa <talgi@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20190924.164528.724219923520816886.davem@davemloft.net>
+ <20190924160259.10987-1-uwe@kleine-koenig.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <979eebb6-1cd5-2d11-3797-b47700c5d454@infradead.org>
+Date:   Wed, 25 Sep 2019 17:18:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190925205858.30216-1-efremov@linux.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190924160259.10987-1-uwe@kleine-koenig.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/25/19 3:58 PM, Denis Efremov wrote:
-> There is no need to check "rtlhal->interface == INTF_PCI" twice in
-> _rtl_ps_inactive_ps(). The nested check is always true. Thus, the
-> expression can be simplified.
+On 9/24/19 9:02 AM, Uwe Kleine-König wrote:
+> According to Tal Gilboa the only benefit from DIM comes from a driver
+> that uses it. So it doesn't make sense to make this symbol user visible,
+> instead all drivers that use it should select it (as is already the case
+> AFAICT).
 > 
-> Signed-off-by: Denis Efremov <efremov@linux.com>
+> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Thanks.
+
 > ---
->   drivers/net/wireless/realtek/rtlwifi/ps.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
+> Hello David,
 > 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
-> index 70f04c2f5b17..6a8127539ea7 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/ps.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
-> @@ -161,8 +161,7 @@ static void _rtl_ps_inactive_ps(struct ieee80211_hw *hw)
->   	if (ppsc->inactive_pwrstate == ERFON &&
->   	    rtlhal->interface == INTF_PCI) {
->   		if ((ppsc->reg_rfps_level & RT_RF_OFF_LEVL_ASPM) &&
-> -		    RT_IN_PS_LEVEL(ppsc, RT_PS_LEVEL_ASPM) &&
-> -		    rtlhal->interface == INTF_PCI) {
-> +		    RT_IN_PS_LEVEL(ppsc, RT_PS_LEVEL_ASPM)) {
->   			rtlpriv->intf_ops->disable_aspm(hw);
->   			RT_CLEAR_PS_LEVEL(ppsc, RT_PS_LEVEL_ASPM);
->   		}
+> On Tue, Sep 24, 2019 at 04:45:28PM +0200, David Miller wrote:
+>> Since this doesn't apply due to the moderation typo being elsewhere, I'd
+>> really like you to fix up this submission to properly be against 'net'.
 > 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+> I thought it would be possible to git-apply my patch with the -3 option.
+> I even tested that, but obviously it only applies to my tree that has
+> the git object with the typo fixed. Sorry for the extra effort I'm
+> forcing on you. This patch applies to your public tree from just now.
+> 
+> Best regads
+> Uwe
+> 
+>  lib/Kconfig | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/lib/Kconfig b/lib/Kconfig
+> index 4e6b1c3e4c98..d7fc9eb33b9b 100644
+> --- a/lib/Kconfig
+> +++ b/lib/Kconfig
+> @@ -555,8 +555,7 @@ config SIGNATURE
+>  	  Implementation is done using GnuPG MPI library
+>  
+>  config DIMLIB
+> -	bool "DIM library"
+> -	default y
+> +	bool
+>  	help
+>  	  Dynamic Interrupt Moderation library.
+>  	  Implements an algorithm for dynamically change CQ modertion values
+> 
 
-Thanks,
 
-Larry
-
+-- 
+~Randy
