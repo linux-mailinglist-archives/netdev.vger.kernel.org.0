@@ -2,137 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E837BBF91C
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 20:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F85EBF930
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 20:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728378AbfIZSYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 14:24:01 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35802 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728344AbfIZSYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 14:24:01 -0400
-Received: by mail-wm1-f67.google.com with SMTP id y21so3624667wmi.0;
-        Thu, 26 Sep 2019 11:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wFzdQhWIvc4o013rKOjzXnkI0hw4CN3pNRalveb6WiY=;
-        b=mlp9FZYjOcggNH5ah+Qu7XKJxpriLOVjPbYSJUxzDQE8StmLy/n03BoLkT0LvUWjja
-         e5tEkQoSBIZSG+LRNf2ZwwauoeqWgj1ej4+saLQORMZ/cUaMprLri8l9hro+6lK48We2
-         0X27RKQomTIS4EI7rP9ZRw7nbZ+DscF2TqUY3402NDsR3nJPeMC3M4qfEos7bSQ2fQMe
-         kWBPIELUdz2FEmQWBzI7PUxGCMld6sqKBPWf/P7pQ3ybgW0mL3SItSsOMhlNGgBcjEkG
-         dFxwGjUZKZy4cLc8687J0pjtKJCc3j0YNLzVrewtKir/+eC/FtcwTQ14mBa+63qhAkbS
-         jGrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wFzdQhWIvc4o013rKOjzXnkI0hw4CN3pNRalveb6WiY=;
-        b=lJi49zV9u6O2a35dDSJjO+/WNb+MqqNfhRFVNir54o4DsqfII9Za+dsFkwMY3/4o+j
-         fKOIFpZIzw9MXyNJg+llCFlnVr1QsQOGcsnHahNkRu8Il0aCS83bErvtEO2KXmokX7Z7
-         cFJE4k7wGHfuyyJE/TTi8W+SgnE3ahPKaHH77HMIc0pa1ZG/J3QwGkagFs0rlOq/cGBq
-         o4+Fdnimznt/p8Nd6Miu7FBObfJd+HWznZaI9IvMlWXRBBdjnQax0pZwA4rC2I2Tyu0v
-         gaI30CzOok7EtsjzMkn7A48NPyXL1EKGX8H/gyMCDIVMPcNzYj1L2yNTPKzCCJIOuveV
-         A54g==
-X-Gm-Message-State: APjAAAXNckww9Xl36peVe5YQnywWYTQ0f6VVkcs5l5KHBud85qGEkVM0
-        qQ4mIM73C7Q7g0o+1UTGMbM=
-X-Google-Smtp-Source: APXvYqy32luIXUjI1tWlLHkiv6GgGQPfBm9QTxPNQ0lhqDsuVqOaSF3mmVMHuM4QQNFD40ARFyIDag==
-X-Received: by 2002:a7b:c10b:: with SMTP id w11mr3932165wmi.108.1569522238802;
-        Thu, 26 Sep 2019 11:23:58 -0700 (PDT)
-Received: from scw-93ddc8.cloud.online.net ([2001:bc8:4400:2400::302d])
-        by smtp.googlemail.com with ESMTPSA id t13sm4890wra.70.2019.09.26.11.23.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 26 Sep 2019 11:23:57 -0700 (PDT)
-From:   Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
-To:     stefanha@redhat.com
-Cc:     davem@davemloft.net, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, matiasevara@gmail.com,
-        sgarzare@redhat.com
-Subject: [PATCH] vsock/virtio: add support for MSG_PEEK
-Date:   Thu, 26 Sep 2019 18:23:34 +0000
-Message-Id: <1569522214-28223-1-git-send-email-matiasevara@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728300AbfIZSaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 14:30:03 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:46984 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726029AbfIZSaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 14:30:03 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1iDYWf-0005G8-GW; Thu, 26 Sep 2019 20:30:01 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     steffen.klassert@secunet.com, paulb@mellanox.com,
+        vladbu@mellanox.com, Florian Westphal <fw@strlen.de>
+Subject: [PATCH v2 net] sk_buff: drop all skb extensions on free and skb scrubbing
+Date:   Thu, 26 Sep 2019 20:37:05 +0200
+Message-Id: <20190926183705.16951-1-fw@strlen.de>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for MSG_PEEK. In such a case, packets are not
-removed from the rx_queue and credit updates are not sent.
+Now that we have a 3rd extension, add a new helper that drops the
+extension space and use it when we need to scrub an sk_buff.
 
-Signed-off-by: Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
+At this time, scrubbing clears secpath and bridge netfilter data, but
+retains the tc skb extension, after this patch all three get cleared.
+
+NAPI reuse/free assumes we can only have a secpath attached to skb, but
+it seems better to clear all extensions there as well.
+
+v2: add unlikely hint (Eric Dumazet)
+
+Fixes: 95a7233c452a ("net: openvswitch: Set OvS recirc_id from tc chain index")
+Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/vmw_vsock/virtio_transport_common.c | 50 +++++++++++++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h | 9 +++++++++
+ net/core/dev.c         | 4 ++--
+ net/core/skbuff.c      | 2 +-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 94cc0fa..938f2ed 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -264,6 +264,50 @@ static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 907209c0794e..e7d3b1a513ef 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4144,8 +4144,17 @@ static inline void *skb_ext_find(const struct sk_buff *skb, enum skb_ext_id id)
+ 
+ 	return NULL;
+ }
++
++static inline void skb_ext_reset(struct sk_buff *skb)
++{
++	if (unlikely(skb->active_extensions)) {
++		__skb_ext_put(skb->extensions);
++		skb->active_extensions = 0;
++	}
++}
+ #else
+ static inline void skb_ext_put(struct sk_buff *skb) {}
++static inline void skb_ext_reset(struct sk_buff *skb) {}
+ static inline void skb_ext_del(struct sk_buff *skb, int unused) {}
+ static inline void __skb_ext_copy(struct sk_buff *d, const struct sk_buff *s) {}
+ static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buff *s) {}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 71b18e80389f..bf3ed413abaf 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5666,7 +5666,7 @@ EXPORT_SYMBOL(gro_find_complete_by_type);
+ static void napi_skb_free_stolen_head(struct sk_buff *skb)
+ {
+ 	skb_dst_drop(skb);
+-	secpath_reset(skb);
++	skb_ext_put(skb);
+ 	kmem_cache_free(skbuff_head_cache, skb);
  }
  
- static ssize_t
-+virtio_transport_stream_do_peek(struct vsock_sock *vsk,
-+				struct msghdr *msg,
-+				size_t len)
-+{
-+	struct virtio_vsock_sock *vvs = vsk->trans;
-+	struct virtio_vsock_pkt *pkt;
-+	size_t bytes, total = 0;
-+	int err = -EFAULT;
-+
-+	spin_lock_bh(&vvs->rx_lock);
-+
-+	list_for_each_entry(pkt, &vvs->rx_queue, list) {
-+		if (total == len)
-+			break;
-+
-+		bytes = len - total;
-+		if (bytes > pkt->len - pkt->off)
-+			bytes = pkt->len - pkt->off;
-+
-+		/* sk_lock is held by caller so no one else can dequeue.
-+		 * Unlock rx_lock since memcpy_to_msg() may sleep.
-+		 */
-+		spin_unlock_bh(&vvs->rx_lock);
-+
-+		err = memcpy_to_msg(msg, pkt->buf + pkt->off, bytes);
-+		if (err)
-+			goto out;
-+
-+		spin_lock_bh(&vvs->rx_lock);
-+
-+		total += bytes;
-+	}
-+
-+	spin_unlock_bh(&vvs->rx_lock);
-+
-+	return total;
-+
-+out:
-+	if (total)
-+		err = total;
-+	return err;
-+}
-+
-+static ssize_t
- virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 				   struct msghdr *msg,
- 				   size_t len)
-@@ -330,9 +374,9 @@ virtio_transport_stream_dequeue(struct vsock_sock *vsk,
- 				size_t len, int flags)
- {
- 	if (flags & MSG_PEEK)
--		return -EOPNOTSUPP;
--
--	return virtio_transport_stream_do_dequeue(vsk, msg, len);
-+		return virtio_transport_stream_do_peek(vsk, msg, len);
-+	else
-+		return virtio_transport_stream_do_dequeue(vsk, msg, len);
+@@ -5733,7 +5733,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+ 	skb->encapsulation = 0;
+ 	skb_shinfo(skb)->gso_type = 0;
+ 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+-	secpath_reset(skb);
++	skb_ext_reset(skb);
+ 
+ 	napi->skb = skb;
  }
- EXPORT_SYMBOL_GPL(virtio_transport_stream_dequeue);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index f12e8a050edb..01d65206f4fb 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5119,7 +5119,7 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
+ 	skb->skb_iif = 0;
+ 	skb->ignore_df = 0;
+ 	skb_dst_drop(skb);
+-	secpath_reset(skb);
++	skb_ext_reset(skb);
+ 	nf_reset(skb);
+ 	nf_reset_trace(skb);
  
 -- 
-2.7.4
+2.21.0
 
