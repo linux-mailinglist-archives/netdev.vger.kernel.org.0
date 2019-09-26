@@ -2,90 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BD2BF9EB
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 21:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6489ABFA21
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 21:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728559AbfIZTQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 15:16:17 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:36372 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727707AbfIZTQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 15:16:17 -0400
-Received: by mail-pl1-f194.google.com with SMTP id f19so49719plr.3
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 12:16:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1iAiQX+JCpioikSZCLlXhF0q1kO+MQOLvWTNDhhvXOw=;
-        b=G0tyGJLxvoNU0uff/AE/pc2f2y7lD/pgF98dr7B5xQdiSensW6c02qNlAuniSTkA/i
-         7x41v/Cy9OGNHu36w5USU40pLEOtiquHcrAWJeZ1RKcnektyfAKbqlDE6Iv7TAgubVnw
-         aQXo3EbJe6kJRLWaKKFiOUiV1UBpstr4RGBY3fmmOhXUO5bLW1Y95kNOghfJvpIRF+ri
-         cX7Xw8E1sFmQsaAJO9wGHy56e2EjRVkXuUORNm7v3Gxbn+y9hVTHoy+lds6yubgjc0vF
-         /cpZPAL/Pu8VYmHWsCAtPjE+A2a00HSXOJO2TxRHLslVxH7/VArZpjvkJG8gXY+Qf25r
-         fhTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1iAiQX+JCpioikSZCLlXhF0q1kO+MQOLvWTNDhhvXOw=;
-        b=CfWXyV2itKUSkzZTU6oZvf133KDI7yT6DVM8oOBVWr/U8aeWq/TPm1otXcsASL4I19
-         22ogp/mqJT+i9E05os1p1PeF+a+h4NkvLS3Z8ytyaRXjkH4Sk/N3AZs+FplYZnzRwIw+
-         XOP3N5qwOMfnESan2hDHJA9r14DEOGk/tiWIumnWvnmCaReYY07lLl66DPOtHwt5SlTz
-         mqzS3yAKhbliK7959aWCN5WEGvDaQZC5RqXXidwHABhnGBetwCmlPY1Riydifps7IIzl
-         I75RaKv43ahbnzScGDQvK6Vx8adEelKz7cN5mStjZyn9FHA9fIjk/5+TOiDLI4si+DDw
-         gcSQ==
-X-Gm-Message-State: APjAAAUK0zw8QrZwHdy+CP3t1Nwer7/5VWPK9GEd6fge7WoCTU6sKtZ9
-        WcSb8X1pHy7AT/XyL3klx+M=
-X-Google-Smtp-Source: APXvYqyvDP6VKI4l369V2i9/SYhPSgPJf+NeO2YU8iVVxR/QwVYTZhRveSkBsXyDtr29KXq9mHajig==
-X-Received: by 2002:a17:902:8bca:: with SMTP id r10mr133395plo.233.1569525376487;
-        Thu, 26 Sep 2019 12:16:16 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id b9sm43395pfo.105.2019.09.26.12.16.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Sep 2019 12:16:15 -0700 (PDT)
-Subject: Re: [PATCH v2 net] sk_buff: drop all skb extensions on free and skb
- scrubbing
-To:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, steffen.klassert@secunet.com,
-        paulb@mellanox.com, vladbu@mellanox.com
-References: <20190926183705.16951-1-fw@strlen.de>
- <1ad4b9f0-c9d4-954b-eafe-8652ea6ce409@gmail.com>
- <20190926190920.GC9938@breakpoint.cc>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <fce20607-baa3-eecf-6330-08a66d9097dc@gmail.com>
-Date:   Thu, 26 Sep 2019 12:16:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728729AbfIZTcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 15:32:43 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:54795 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728454AbfIZTcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 15:32:42 -0400
+X-Originating-IP: 83.56.35.30
+Received: from localhost (30.red-83-56-35.staticip.rima-tde.net [83.56.35.30])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 4895240003;
+        Thu, 26 Sep 2019 19:32:40 +0000 (UTC)
+Date:   Thu, 26 Sep 2019 21:32:39 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [1/2] net/phy/mdio-mscc-miim: Use
+ devm_platform_ioremap_resource() in mscc_miim_probe()
+Message-ID: <20190926193239.GC6825@piout.net>
+References: <189ccfc3-d5a6-79fd-29b8-1f7140e9639a@web.de>
+ <506889a6-4148-89f9-302e-4be069595bb4@web.de>
+ <20190920190908.GH3530@lunn.ch>
+ <121e75c5-4d45-9df2-a471-6997a1fb3218@web.de>
+ <20190926161825.GB6825@piout.net>
+ <0a1f4dbf-4cc6-8530-a38e-31c3369e6db6@web.de>
 MIME-Version: 1.0
-In-Reply-To: <20190926190920.GC9938@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0a1f4dbf-4cc6-8530-a38e-31c3369e6db6@web.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/26/19 12:09 PM, Florian Westphal wrote:
-> Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>> -	secpath_reset(skb);
->>> +	skb_ext_reset(skb);
->>>  	nf_reset(skb);
->>>  	nf_reset_trace(skb);
->>
->>
->> It is unfortunate nf_reset(skb) will call skb_ext_del(skb, SKB_EXT_BRIDGE_NF),
->> which is useless after skb_ext_reset(skb) 
->>
->> Maybe time for a nf_ct_reset() helper only dealing with nfct.
+On 26/09/2019 20:52:38+0200, Markus Elfring wrote:
+> >> Does this feedback indicate also an agreement for the detail
+> >> if the mapping of internal phy registers would be a required operation?
+> >> (Would such a resource allocation eventually be optional?)
+> >
+> > It is optional.
 > 
-> Agree, but that seems more like -next material?
+> Would you like to integrate an other patch variant then?
+> 
 
-Sure.
+You have to ensure it stays optional. Also, adjust the subject so it
+uses the correct prefix.
 
 
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
