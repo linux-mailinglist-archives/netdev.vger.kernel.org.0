@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F2BBF1F8
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 13:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7EABF205
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 13:44:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbfIZLmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 07:42:50 -0400
-Received: from foss.arm.com ([217.140.110.172]:47178 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726710AbfIZLmt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Sep 2019 07:42:49 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9D9BF142F;
-        Thu, 26 Sep 2019 04:42:48 -0700 (PDT)
-Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EC5613F67D;
-        Thu, 26 Sep 2019 04:42:43 -0700 (PDT)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com,
-        Will.Deacon@arm.com, suzuki.poulose@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        jianyong.wu@arm.com, nd@arm.com
-Subject: [RFC PATCH v4 5/5] kvm: arm64: Add capability check extension for ptp_kvm
-Date:   Thu, 26 Sep 2019 19:42:12 +0800
-Message-Id: <20190926114212.5322-6-jianyong.wu@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190926114212.5322-1-jianyong.wu@arm.com>
-References: <20190926114212.5322-1-jianyong.wu@arm.com>
+        id S1726290AbfIZLoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 07:44:20 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:48817 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726195AbfIZLoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 07:44:20 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 695C721FC5;
+        Thu, 26 Sep 2019 07:44:19 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 26 Sep 2019 07:44:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=kK2x/WkQf9bFe85P2
+        JUoPv0Wl/am5NJTR4JRm/TTCsU=; b=ckBLiIKtOe2InZ/INSEiBWa3LMpKIsCCt
+        aWTfNsLZMMq9XDYBgd2NbwZDOVtyR003AeqfSyfKyA9mt7uYmkaefy813fc2tc5b
+        qYKULTaGP/ablEgNHxib485zncD0H1pvRQ5H+EnKrMEPQNYKFR7RAUfLUOBbup3K
+        Xx7QxD27pHyc/TZV2NMlU2KFx/xGx4+3KnsSgobFBr8/8R/T4gIble5cWU43Sm4R
+        guruiThuL60wg1cgkuuK7qXrCGZWi2f8dVIMoOBaEY3olrFyMka72yR+lCe1OuQI
+        t9mkJqs4U52s4YDsIZ5vj4yWv2u8m2sXiH3SNMIKlUg0ydbSiDojw==
+X-ME-Sender: <xms:k6SMXYrB6Mo1LPp0JNQzLhaakFWSW731e51c5EJljB-AyalUKML8Ng>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrfeeggdegfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:k6SMXdloXy7RqbdSVbxc9ED6QHRRs33OktsseaMlCrxacTsYU3ClRA>
+    <xmx:k6SMXZQNiYBbHpR6s73l8VHUxkAl05TbKFjpnBVK2Uk07XljI2wkcA>
+    <xmx:k6SMXTYw4RnGvSfjzwYQFkSMDyrJzfxIQUTCWuJwpIXN6ibeoVAcsA>
+    <xmx:k6SMXVosyxZen4IuwMnilhDWgyn4nKLECEMt-XQmwvx7pWfA-vK5Dg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A35D380060;
+        Thu, 26 Sep 2019 07:44:16 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, alexanderk@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/3] mlxsw: Various fixes
+Date:   Thu, 26 Sep 2019 14:43:37 +0300
+Message-Id: <20190926114340.9483-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let userspace check if there is kvm ptp service in host.
-before VMs migrate to a another host, VMM may check if this
-cap is available to determine the migration behaviour.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Suggested-by: Marc Zyngier <maz@kernel.org>
----
- include/uapi/linux/kvm.h | 1 +
- virt/kvm/arm/arm.c       | 1 +
- 2 files changed, 2 insertions(+)
+This patchset includes two small fixes for the mlxsw driver and one
+patch which clarifies recently introduced devlink-trap documentation.
 
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 2fe12b40d503..a0bff6002bd9 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -993,6 +993,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_ARM_SVE 170
- #define KVM_CAP_ARM_PTRAUTH_ADDRESS 171
- #define KVM_CAP_ARM_PTRAUTH_GENERIC 172
-+#define KVM_CAP_ARM_KVM_PTP 173
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
-index bd5c55916d0d..80999985160b 100644
---- a/virt/kvm/arm/arm.c
-+++ b/virt/kvm/arm/arm.c
-@@ -201,6 +201,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_MP_STATE:
- 	case KVM_CAP_IMMEDIATE_EXIT:
- 	case KVM_CAP_VCPU_EVENTS:
-+	case KVM_CAP_ARM_KVM_PTP:
- 		r = 1;
- 		break;
- 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
+Patch #1 clears the port's VLAN filters during port initialization. This
+ensures that the drop reason reported to the user is consistent. The
+problem is explained in detail in the commit message.
+
+Patch #2 clarifies the description of one of the traps exposed via
+devlink-trap.
+
+Patch #3 from Danielle forbids the installation of a tc filter with
+multiple mirror actions since this is not supported by the device. The
+failure is communicated to the user via extack.
+
+Danielle Ratson (1):
+  mlxsw: spectrum_flower: Fail in case user specifies multiple mirror
+    actions
+
+Ido Schimmel (2):
+  mlxsw: spectrum: Clear VLAN filters during port initialization
+  Documentation: Clarify trap's description
+
+ Documentation/networking/devlink-trap.rst                | 3 ++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c           | 9 +++++++++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c    | 6 ++++++
+ .../selftests/drivers/net/mlxsw/devlink_trap_l2_drops.sh | 7 -------
+ 4 files changed, 17 insertions(+), 8 deletions(-)
+
 -- 
-2.17.1
+2.21.0
 
