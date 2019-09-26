@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B2C5BEA90
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 04:23:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA15BEA94
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 04:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388033AbfIZCWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Sep 2019 22:22:51 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:44714 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbfIZCWv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Sep 2019 22:22:51 -0400
-Received: by mail-io1-f68.google.com with SMTP id j4so2260341iog.11;
-        Wed, 25 Sep 2019 19:22:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=10vX59mQYy8Tc+NqURfA0R9aLlqGAxMNJFo5UFdLhy0=;
-        b=USpebXJ5TmoF0i/bedzYqndBE0M8zV7hyc+yKaKRu+BI6GqqkI6DwWxcLdolnqYMBn
-         XuZkxRpLqIxzuN02lvjeP8x4RFe3qIxmBN8whFaJLyeQv8k/5wdwoc+vyx8mYog+J2vj
-         PEHy3alG5ZH1QdIAsNgUnQ+piFp2UL7cohi+hJ8HNkql35D92FqenrJBuitMOqMbQTNC
-         VtckhBSpK/nMZSgyqOy+n2g0r+pdiZ5W8xiqtG0yXIerqSjqZjVj0kjwR0UY87/vL8gp
-         sadvJplQdgAnc8OgwBRK9tZ+Jm6R9htObSciSmJHJYLbx56NxrTYwb9iHkZU8Vx/GtMH
-         7gDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=10vX59mQYy8Tc+NqURfA0R9aLlqGAxMNJFo5UFdLhy0=;
-        b=RZqz4wPuZZOBkn7ksSWJt/0C+0EzpHHsdi5AGPkLirkJ8AFMDXJHvB2EM6jgvgcbNK
-         IRwg5A4MQ7hno2jPqItx5Nuuk90TYwKWQIWbHWpfBjsjS3q6R2aXTTVao2QZqE95114G
-         PE7Aw06b7pYpxOSSrJKfZM6/FNyVuXpbd4v2v5Pta9OKmzCSBtz/kQNaX+6n/EIL2Lxk
-         zi1JSAbwXIIBKnclp4wW/NSbQMhRCYqW3IuwTa6UypsvDUri4WU1r/BjgjcTiuredCvN
-         aPD4dSk+yyJyW11SbfzStcG23InCZFpljKv+NmZnRHVoKRV5zK9V6pMNrKPJUkr2jIGS
-         AyWw==
-X-Gm-Message-State: APjAAAXjmtMKs0cWb0S/+vrBxItBA/h7tDtrncgYe4TzA5m2fhKGG9h6
-        ZlvdeUu+Vh+IMH0nhmfkiK0=
-X-Google-Smtp-Source: APXvYqxk4jfTvZGF+NDfvRCfmcUwC9fIu2oKQKHFrzHueaDapX647rr23TS3TzS0Dh3phKSLEylXRw==
-X-Received: by 2002:a5d:9714:: with SMTP id h20mr1293081iol.294.1569464570634;
-        Wed, 25 Sep 2019 19:22:50 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id o16sm199578ilf.80.2019.09.25.19.22.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Sep 2019 19:22:49 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     jakub.kicinski@netronome.com
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        John Hurley <john.hurley@netronome.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: flow_offload: fix memory leak in nfp_abm_u32_knode_replace
-Date:   Wed, 25 Sep 2019 21:22:35 -0500
-Message-Id: <20190926022240.3789-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190925182846.69a261e8@cakuba.netronome.com>
-References: <20190925182846.69a261e8@cakuba.netronome.com>
+        id S2388706AbfIZC2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Sep 2019 22:28:25 -0400
+Received: from mga04.intel.com ([192.55.52.120]:4884 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731812AbfIZC2Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Sep 2019 22:28:25 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Sep 2019 19:28:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,550,1559545200"; 
+   d="scan'208";a="183469400"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
+  by orsmga008.jf.intel.com with ESMTP; 25 Sep 2019 19:28:24 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
+        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Christopher Hall <christopher.s.hall@intel.com>
+Subject: [net-next v2 0/2] new PTP ioctl fixes
+Date:   Wed, 25 Sep 2019 19:28:18 -0700
+Message-Id: <20190926022820.7900-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.23.0.245.gf157bbb9169d
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In nfp_abm_u32_knode_replace if the allocation for match fails it should
-go to the error handling instead of returning.
+I noticed recently that Filip added new versions of the PTP ioctls which
+correctly honor the reserved fields (making it so that we can safely extend
+them in the future).
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
-Changes in v2:
-	- Reused err variable for erorr value returning.
----
- drivers/net/ethernet/netronome/nfp/abm/cls.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Unfortunately, this breaks the old ioctls for a couple of reasons. First,
+the flags for the old ioctls get cleared. This means that the external
+timestamp request can never be enabled. Further, it means future new flags
+will *not* be cleared, and thus old ioctl will potentially send non-zero
+data and be mis-interpreted.
 
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-index 23ebddfb9532..b0cb9d201f7d 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
-+++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-@@ -198,14 +198,18 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 		if ((iter->val & cmask) == (val & cmask) &&
- 		    iter->band != knode->res->classid) {
- 			NL_SET_ERR_MSG_MOD(extack, "conflict with already offloaded filter");
-+			err = -EOPNOTSUPP;
- 			goto err_delete;
- 		}
- 	}
- 
- 	if (!match) {
- 		match = kzalloc(sizeof(*match), GFP_KERNEL);
--		if (!match)
--			return -ENOMEM;
-+		if (!match) {
-+			err = -ENOMEM;
-+			goto err_delete;
-+		}
-+
- 		list_add(&match->list, &alink->dscp_map);
- 	}
- 	match->handle = knode->handle;
-@@ -221,7 +225,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 
- err_delete:
- 	nfp_abm_u32_knode_delete(alink, knode);
--	return -EOPNOTSUPP;
-+	return err;
- }
- 
- static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
+Additionally, new flags are not protected against in-driver, because no
+current driver verifies that the flags are only one of the supported ones.
+This means new flags will be mis-interpreted by the drivers.
+
+This series provides patches to fix drivers to verify and reject unsupported
+flags, as well as to fix the ioctls to clear flags on the old version of the
+ioctl properly.
+
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Christopher Hall <christopher.s.hall@intel.com>
+
+Range-diff from v1:
+1:  c317dc1cc7eb = 1:  c317dc1cc7eb ptp: correctly disable flags on old ioctls
+2:  08ce725c7f2a ! 2:  5537762fb9cc net: reject ptp requests with unsupported flags
+    @@ drivers/net/phy/dp83640.c: static int ptp_dp83640_enable(struct ptp_clock_info *
+      	switch (rq->type) {
+      	case PTP_CLK_REQ_EXTTS:
+     +		/* Reject requests with unsupported flags */
+    -+		if (rq->extts.flags & ~(PTP_FEATURE_ENABLE |
+    ++		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
+     +					PTP_RISING_EDGE |
+     +					PTP_FALLING_EDGE))
+     +			return -EOPNOTSUPP;
+
+Jacob Keller (2):
+  ptp: correctly disable flags on old ioctls
+  net: reject ptp requests with unsupported flags
+
+ drivers/net/dsa/mv88e6xxx/ptp.c               |  5 +++++
+ drivers/net/ethernet/broadcom/tg3.c           |  4 ++++
+ drivers/net/ethernet/intel/igb/igb_ptp.c      |  8 +++++++
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 10 +++++++++
+ drivers/net/ethernet/microchip/lan743x_ptp.c  |  4 ++++
+ drivers/net/ethernet/renesas/ravb_ptp.c       |  9 ++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  4 ++++
+ drivers/net/phy/dp83640.c                     |  8 +++++++
+ drivers/ptp/ptp_chardev.c                     |  4 ++--
+ include/uapi/linux/ptp_clock.h                | 22 +++++++++++++++++++
+ 10 files changed, 76 insertions(+), 2 deletions(-)
+
 -- 
-2.17.1
+2.23.0.245.gf157bbb9169d
 
