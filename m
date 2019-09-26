@@ -2,86 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D32C2BFB95
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 00:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B58BFB9E
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 01:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728358AbfIZW4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 18:56:18 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39096 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725943AbfIZW4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 18:56:17 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v17so4177714wml.4;
-        Thu, 26 Sep 2019 15:56:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=q3J4HBnNW4Hl+Gjxw0HAbYQSV7ljaMhCOnbd8J0BKfw=;
-        b=OGcVLqNDzgAxc2ptvHjEJc0ZnwDU+dw0zjb3h1aCQBF9EI5cq/LjPDZNYcm8rVYcB3
-         yWUVna7KCPCAomjPQVODfwf2sBswGjY3TYOxR6o2BZ06XNQHTCLYinXTfDrDXwvsVJBW
-         NKQBR/jf7Itslea+zewbR842C8+FDa/rPHIT9dqYDJCjR71WO53XPlZMNUfTyJwkKpVr
-         NzgSobk/sbtPj6Lpwsjp8xAx6AkaVAtHx5B3lLFULed6HdOfoRwCQ6eEKo8Jbn7SUC81
-         xoCTp2AubiWE+YmzLRFgXGxALTme01kpIocxZ2x80dkidGoFp6X5kUjdemN0pTPT67Xt
-         iTzw==
-X-Gm-Message-State: APjAAAV6zLbTVlt/pc6MvSipCKYaXTaoYxJPMTZxthHBBq3mNP+5J12p
-        C0M6K4tFSA7eyjqroyjOzfo=
-X-Google-Smtp-Source: APXvYqxrKsKE3nBWyY+NBDRt5sgGhpX8jpg+uUmLH1ydlfeiF9neM0okf0pfLaVTq7mi5G3PAWSx4w==
-X-Received: by 2002:a1c:a516:: with SMTP id o22mr5117224wme.116.1569538575651;
-        Thu, 26 Sep 2019 15:56:15 -0700 (PDT)
-Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
-        by smtp.googlemail.com with ESMTPSA id f17sm668350wru.29.2019.09.26.15.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Sep 2019 15:56:14 -0700 (PDT)
-From:   Denis Efremov <efremov@linux.com>
-Cc:     Denis Efremov <efremov@linux.com>, ath9k-devel@qca.qualcomm.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Rajkumar Manoharan <rmanohar@qca.qualcomm.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org
-Subject: [PATCH] ath9k_hw: fix uninitialized variable data
-Date:   Fri, 27 Sep 2019 01:56:04 +0300
-Message-Id: <20190926225604.9342-1-efremov@linux.com>
-X-Mailer: git-send-email 2.21.0
+        id S1728564AbfIZXCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 19:02:11 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39106 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727869AbfIZXCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 19:02:11 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8QMs5ih029253
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 16:02:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=bYw3lyB1mldE+JJKpmjaVaKwzoTKIJgZbzyWoKd+PXo=;
+ b=Hymelu4It4KEZpxqu1sCfCD9tvHrAfFi9oDQeS6EuRfOjNhNY6+5223PGH18pMXm2jJZ
+ vNttNTiMX5K35UF4uhPEH3VPwehpb+VaCCN6SZs3+niDOPsEXhz+mGbfmEbWBabISHcB
+ 9+5A4kjAn9WxiL/eNW25YAZjDWK0qBkRhFw= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2v8u2euepe-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 16:02:09 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 26 Sep 2019 16:02:08 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 0A7483702B16; Thu, 26 Sep 2019 16:02:04 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] libbpf: add macro __BUILD_STATIC_LIBBPF__ to guard .symver
+Date:   Thu, 26 Sep 2019 16:02:04 -0700
+Message-ID: <20190926230204.1911391-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-09-26_08:2019-09-25,2019-09-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ phishscore=0 impostorscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ priorityscore=1501 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909260181
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, data variable in ar9003_hw_thermo_cal_apply() could be
-uninitialized if ar9300_otp_read_word() will fail to read the value.
-Initialize data variable with 0 to prevent an undefined behavior. This
-will be enough to handle error case when ar9300_otp_read_word() fails.
+bcc uses libbpf repo as a submodule. It brings in libbpf source
+code and builds everything together to produce shared libraries.
+With latest libbpf, I got the following errors:
+  /bin/ld: libbcc_bpf.so.0.10.0: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
+  /bin/ld: failed to set dynamic section sizes: Bad value
+  collect2: error: ld returned 1 exit status
+  make[2]: *** [src/cc/libbcc_bpf.so.0.10.0] Error 1
 
-Fixes: 80fe43f2bbd5 ("ath9k_hw: Read and configure thermocal for AR9462")
-Cc: Rajkumar Manoharan <rmanohar@qca.qualcomm.com>
-Cc: John W. Linville <linville@tuxdriver.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Denis Efremov <efremov@linux.com>
+In xsk.c, we have
+  asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
+  asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
+The linker thinks the built is for LIBBPF but cannot find proper version
+LIBBPF_0.0.2/4, so emit errors.
+
+I also confirmed that using libbpf.a to produce a shared library also
+has issues:
+  -bash-4.4$ cat t.c
+  extern void *xsk_umem__create;
+  void * test() { return xsk_umem__create; }
+  -bash-4.4$ gcc -c t.c
+  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
+  /bin/ld: t.so: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
+  /bin/ld: failed to set dynamic section sizes: Bad value
+  collect2: error: ld returned 1 exit status
+  -bash-4.4$
+
+To fix the problem, I simply added a macro __BUILD_STATIC_LIBBPF__
+which will prevent issuing .symver assembly codes when enabled.
+The .symver assembly codes are still issued by default.
+This will at least give other libbpf users to build libbpf
+without these versioned symbols.
+
+I did not touch Makefile to actually use this macro to build
+static library as I want to check whether this is desirable or not.
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_eeprom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/xsk.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-index 2b29bf4730f6..b4885a700296 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-@@ -4183,7 +4183,7 @@ static void ar9003_hw_thermometer_apply(struct ath_hw *ah)
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 24fa313524fb..76c12c4c5c70 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -261,8 +261,11 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
+ 	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
+ 					&config);
+ }
++
++#ifndef __BUILD_STATIC_LIBBPF__
+ asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
+ asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
++#endif
  
- static void ar9003_hw_thermo_cal_apply(struct ath_hw *ah)
+ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
  {
--	u32 data, ko, kg;
-+	u32 data = 0, ko, kg;
- 
- 	if (!AR_SREV_9462_20_OR_LATER(ah))
- 		return;
 -- 
-2.21.0
+2.17.1
 
