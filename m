@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD31BEB10
-	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 06:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D863BEB61
+	for <lists+netdev@lfdr.de>; Thu, 26 Sep 2019 06:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbfIZEC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 00:02:27 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35821 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbfIZEC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 00:02:27 -0400
-Received: by mail-wr1-f66.google.com with SMTP id v8so975324wrt.2
-        for <netdev@vger.kernel.org>; Wed, 25 Sep 2019 21:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NFq+QfC8eEEmM+AmXLpYp9OtSoVz1JPbH4dBDpzsshY=;
-        b=oBHPcO6KVTJ8djKftpHbDleRtssOwcZxAeUm/qsNzM8bgljJWVuw/lsghsnlB0cxt0
-         DHe4NTV2FHNg1fDUqWXzkdLP3inmhyg5cuRXDwXv9u4nZGepL/f0bzdV/iuWfCLHnok+
-         v3B7ctLbis+fFH8t90cMgTKVC2FomSgQdQEpf+rjyAJum5kkoK9SZfGvOnq0XMIVsYY0
-         Qn/DQc+7i10RKXeXlXqKBuLaoVh6qy/FvH7wKxDecQQ8BpimixDNoVnINFQJ1WJBxvEe
-         Hd6+YWD7fzxJXAoJ4Ds9pfTBnOwjaAXGtctpV1krT9/XZXfU0T6mu+uw7c5tZH+U8Um6
-         SwfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NFq+QfC8eEEmM+AmXLpYp9OtSoVz1JPbH4dBDpzsshY=;
-        b=QsxprozZyj8SDXmKd7q9B9dI29NWUoqLvOVzpjOcjWYJ6qQs/8NF7ps9b9HYBuLmeG
-         hsjFdXaRkQiZunMRvmOhFNgKsNaxje++t3wAAUd6v5o5Z35dNDhWp+81gxkUA3aI/RQr
-         wlISJZv4JEXpGNPJLxwkmvuX8eyFu24IT+L8pszwhCP4sB2sHT1B1QDLZNYM6fYHgjA5
-         KI5U1s6awvzVASCfBdooyEVkQ15ShV6dYe+j8LaftLSbZ4BprYlUB5stSUfDcDYDdZ/f
-         3Uw5bVvcXb3+8Vpd688w+hZfcIR+Lbwl+z1FPTbLbJfCu5dBwquBVM39drgkJDOfUdNf
-         9q6Q==
-X-Gm-Message-State: APjAAAWJGgHXR/UBgzg+GlbGnW4A0NmAx8VPlLyW9Z1ld17szmWvx/a+
-        vwTFWtogPAY3FN4bbFEBE4c=
-X-Google-Smtp-Source: APXvYqyIshdEjFfwK60IQk7dC44Gc5SilN4EUYjeSzXmqg81WF/Cqtfxx36a69j1PNUJSJjtIg1vmw==
-X-Received: by 2002:adf:f1c3:: with SMTP id z3mr1067711wro.147.1569470545287;
-        Wed, 25 Sep 2019 21:02:25 -0700 (PDT)
-Received: from localhost (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id r28sm1530529wrr.94.2019.09.25.21.02.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Sep 2019 21:02:24 -0700 (PDT)
-Date:   Wed, 25 Sep 2019 21:02:23 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org,
-        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Christopher Hall <christopher.s.hall@intel.com>
-Subject: Re: [net-next v2 2/2] net: reject ptp requests with unsupported flags
-Message-ID: <20190926040222.GB21883@localhost>
-References: <20190926022820.7900-1-jacob.e.keller@intel.com>
- <20190926022820.7900-3-jacob.e.keller@intel.com>
+        id S2391822AbfIZEjC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Sep 2019 00:39:02 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:36223 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728592AbfIZEjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 00:39:01 -0400
+Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=nyx.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1iDLYO-0005Au-Q9; Thu, 26 Sep 2019 04:38:57 +0000
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id B11E824778D; Wed, 25 Sep 2019 21:38:54 -0700 (PDT)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id AA514289C56;
+        Wed, 25 Sep 2019 21:38:54 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Aleksei Zakharov <zaharov@selectel.ru>
+cc:     netdev@vger.kernel.org, "zhangsha (A)" <zhangsha.zhang@huawei.com>
+Subject: Re: Fwd: [PATCH] bonding/802.3ad: fix slave initialization states race
+In-reply-to: <CAJYOGF9TY8WtUscsfJ=qduAw7_1BwU+4iE+eL6cidM=LBL9w+A@mail.gmail.com>
+References: <20190918130545.GA11133@yandex.ru> <31893.1568817274@nyx> <CAJYOGF9KZdouvmTxQcTOQgsi-uBxbvW50K3ufW1=8neeW98QVA@mail.gmail.com> <CAJYOGF8LDwbZXXeEioKAtx=0rq9eZBxFYuRfF3jdFCDUGnJ-Rg@mail.gmail.com> <9357.1568880036@nyx> <CAJYOGF87z-o9=a20dC2mZRtfMU58uL0yxZkQJ-bxe5skVvi2rA@mail.gmail.com> <7236.1568906827@nyx> <7154.1568987531@nyx> <CAJYOGF-L0bEF_BqbyeKqv4xmLV=e2VKUvo5zPx4rULWdwt8e0Q@mail.gmail.com> <10497.1569049560@nyx> <CAJYOGF_XStpFRkp0jN0um9d9WR1bqGpK2V=UgdnnX2m4YC=5pw@mail.gmail.com> <16538.1569371467@famine> <CAJYOGF9TY8WtUscsfJ=qduAw7_1BwU+4iE+eL6cidM=LBL9w+A@mail.gmail.com>
+Comments: In-reply-to Aleksei Zakharov <zaharov@selectel.ru>
+   message dated "Wed, 25 Sep 2019 14:01:50 +0300."
+X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190926022820.7900-3-jacob.e.keller@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 25 Sep 2019 21:38:54 -0700
+Message-ID: <15507.1569472734@nyx>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 25, 2019 at 07:28:20PM -0700, Jacob Keller wrote:
-> This patch may not be correct for individual drivers, especially
-> regarding the rising vs falling edge flags. I interpreted the default
-> behavior to be to timestamp the rising edge of a pin transition.
+Aleksei Zakharov <zaharov@selectel.ru> wrote:
 
-So I think this patch goes too far.  It breaks the implied ABI.
- 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
-> index fd3071f55bd3..2867a2581a36 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ptp.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
-> @@ -521,6 +521,10 @@ static int igb_ptp_feature_enable_i210(struct ptp_clock_info *ptp,
->  
->  	switch (rq->type) {
->  	case PTP_CLK_REQ_EXTTS:
-> +		/* Reject requests with unsupported flags */
-> +		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE | PTP_RISING_EDGE))
-> +			return -EOPNOTSUPP;
+>ср, 25 сент. 2019 г. в 03:31, Jay Vosburgh <jay.vosburgh@canonical.com>:
+>>
+>> Алексей Захаров wrote:
+>> [...]
+>> >Right after reboot one of the slaves hangs with actor port state 71
+>> >and partner port state 1.
+>> >It doesn't send lacpdu and seems to be broken.
+>> >Setting link down and up again fixes slave state.
+>> [...]
+>>
+>>         I think I see what failed in the first patch, could you test the
+>> following patch?  This one is for net-next, so you'd need to again swap
+>> slave_err / netdev_err for the Ubuntu 4.15 kernel.
+>>
+>I've tested new patch. It seems to work. I can't reproduce the bug
+>with this patch.
+>There are two types of messages when link becomes up:
+>First:
+>bond-san: EVENT 1 llu 4294895911 slave eth2
+>8021q: adding VLAN 0 to HW filter on device eth2
+>bond-san: link status definitely down for interface eth2, disabling it
+>mlx4_en: eth2: Link Up
+>bond-san: EVENT 4 llu 4294895911 slave eth2
+>bond-san: link status up for interface eth2, enabling it in 500 ms
+>bond-san: invalid new link 3 on slave eth2
+>bond-san: link status definitely up for interface eth2, 10000 Mbps full duplex
+>Second:
+>bond-san: EVENT 1 llu 4295147594 slave eth2
+>8021q: adding VLAN 0 to HW filter on device eth2
+>mlx4_en: eth2: Link Up
+>bond-san: EVENT 4 llu 4295147594 slave eth2
+>bond-san: link status up again after 0 ms for interface eth2
+>bond-san: link status definitely up for interface eth2, 10000 Mbps full duplex
+>
+>These messages (especially "invalid new link") look a bit unclear from
+>sysadmin point of view.
 
-This HW always time stamps both edges, and that is not configurable.
-Here you reject PTP_FALLING_EDGE, and that is clearly wrong.  If the
-driver had been really picky (my fault I guess), it should have always
-insisted on (PTP_RISING_EDGE | PTP_FALLING_EDGE) being set together.
-But it is too late to enforce that now, because it could break user
-space programs.
+	The "invalid new link" is appearing because bond_miimon_commit
+is being asked to commit a new state that isn't UP or DOWN (3 is
+BOND_LINK_BACK).  I looked through the patched code today, and I don't
+see a way to get to that message with the new link set to 3, so I'll add
+some instrumentation and send out another patch to figure out what's
+going on, as that shouldn't happen.
 
-I do agree with the sentiment of checking the flags at the driver
-level, but this needs to be done case by case, with the drivers'
-author's input.
+	I don't see the "invalid" message testing locally, I think
+because my network device doesn't transition to carrier up as quickly as
+yours.  I thought you were getting BOND_LINK_BACK passed through from
+bond_enslave (which calls bond_set_slave_link_state, which will set
+link_new_link to BOND_LINK_BACK and leave it there), but the
+link_new_link is reset first thing in bond_miimon_inspect, so I'm not
+sure how it gets into bond_miimon_commit (I'm thinking perhaps a
+concurrent commit triggered by another slave, which then picks up this
+proposed link state change by happenstance).
 
-(The req.perout.flags can be done unconditionally in all drivers,
-since there were never any valid flags, but req.extts.flags needs
-careful attention.)
+	-J
 
-Thanks,
-Richard
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
