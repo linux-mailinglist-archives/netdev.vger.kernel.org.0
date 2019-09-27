@@ -2,122 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 047C0BFD92
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 05:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3929FBFD9F
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 05:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728960AbfI0DQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 23:16:38 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38798 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727796AbfI0DQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 23:16:37 -0400
-Received: by mail-io1-f68.google.com with SMTP id u8so12494688iom.5;
-        Thu, 26 Sep 2019 20:16:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nhpJmmCWFxguq4INCKuRzsW/NZW8MQkE7UQnGQjjt/M=;
-        b=TEQHGUIn5IwSIH88Gk1uKeAKCnWEDBX12tILcuFeCc1hNCKTxO7Co8ld4YXMOYAEdV
-         ogoV55AMv67TaHERxDzINpLCi+zlqGDg7nbyAO2KWkrEuJTfudoNWK1ufhj9egXWAzHO
-         o0iAyEggI8za8j1TNWBq5ZZC4A9iN9Lq/UekBImyPPwrVhp2w/eYGZjogBs29hFLrfjA
-         SfNnBh/tBfer5HWnjS6Tzox0cjQ5/kCP6AmmDrFr2trIojLUZ+/VdZ6QDu9xot/nhgOx
-         tIzkN+8e/69+e1frwCscHojt3zi+7L4KSJj2+C9FgjfyZvqmH9m8Nw9O8UaDMv9COL2P
-         3XYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nhpJmmCWFxguq4INCKuRzsW/NZW8MQkE7UQnGQjjt/M=;
-        b=cJB7Dxt5aLX2hMLUK0K+WQh7i9NXakFQsPlx1i62VbggjfH47Jw+VpzlE3vStxl23o
-         NFn/PSq/4CJSZU/z9WiXrva6ZMYMwLtZMCliQvOd3EXa5gb31/AWLtiL99xXF7wkEU5o
-         oSx9HlvlRmdSVzZEJxVyfsULTSoGbK4HhK72u5EcVF2GZAfggBoisAc6nI2onnPHyxUY
-         SuBVyGMqs/bq2DrEpjB1d478T3s4PjDYGG/iH+qibPAS2zK4O+F8h+Fmqpfs9NcNIb5N
-         jjiCC4YpQEn5TxNMp5eCDjYtwC+zoxL7gBjhZ7+75bmZdYJbFuRgdi/qA3EQM//NOPq4
-         QbiA==
-X-Gm-Message-State: APjAAAWX9DDbaOiAh+EXpHJqlnTnvK+S8EX2HWYkS+Xbgy/K3Eut1yNT
-        0aR1f0q2E12YvQFjJB8qTXwgzAiB5wQ=
-X-Google-Smtp-Source: APXvYqzLskxgI6QmLIt/OfvRZP+gdbFZt829hTPYdLsQ5y8EO03M1gsC1GffoRzk6N0sp5dVQfuUVA==
-X-Received: by 2002:a92:1603:: with SMTP id r3mr2353189ill.243.1569554195338;
-        Thu, 26 Sep 2019 20:16:35 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.gmail.com with ESMTPSA id i26sm1803849iol.84.2019.09.26.20.16.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 26 Sep 2019 20:16:35 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 22:16:32 -0500
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: qrtr: fix memory leak in qrtr_tun_read_iter
-Message-ID: <20190927031632.GG22969@cs-dulles.cs.umn.edu>
-References: <20190925230416.20126-1-navid.emamdoost@gmail.com>
- <20190925232112.GR26530@ZenIV.linux.org.uk>
+        id S1729037AbfI0D12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 23:27:28 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38514 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726145AbfI0D11 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Sep 2019 23:27:27 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 890AE58;
+        Fri, 27 Sep 2019 03:27:27 +0000 (UTC)
+Received: from [10.72.12.160] (ovpn-12-160.pek2.redhat.com [10.72.12.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B8DEF60BE2;
+        Fri, 27 Sep 2019 03:27:14 +0000 (UTC)
+Subject: Re: [PATCH] vhost: introduce mdev based hardware backend
+To:     Tiwei Bie <tiwei.bie@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     alex.williamson@redhat.com, maxime.coquelin@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, lingshan.zhu@intel.com
+References: <20190926045427.4973-1-tiwei.bie@intel.com>
+ <20190926042156-mutt-send-email-mst@kernel.org> <20190926131439.GA11652@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8ab5a8d9-284d-bba5-803d-08523c0814e1@redhat.com>
+Date:   Fri, 27 Sep 2019 11:27:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190925232112.GR26530@ZenIV.linux.org.uk>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20190926131439.GA11652@___>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 27 Sep 2019 03:27:27 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 12:21:12AM +0100, Al Viro wrote:
-> On Wed, Sep 25, 2019 at 06:04:13PM -0500, Navid Emamdoost wrote:
-> > In qrtr_tun_read_iter we need an error handling path to appropriately
-> > release skb in cases of error.
-> 
-> Release _what_ skb?
-It is not a leak clearly! My bad ...
-> 
-> > Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> > ---
-> >  net/qrtr/tun.c | 13 +++++++++----
-> >  1 file changed, 9 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
-> > index e35869e81766..0f6e6d1d2901 100644
-> > --- a/net/qrtr/tun.c
-> > +++ b/net/qrtr/tun.c
-> > @@ -54,19 +54,24 @@ static ssize_t qrtr_tun_read_iter(struct kiocb *iocb, struct iov_iter *to)
-> >  	int count;
-> >  
-> >  	while (!(skb = skb_dequeue(&tun->queue))) {
-> 
-> The body of the loop is entered only if the loop condition has
-> evaluated true.  In this case, it means that the value of
-> 	!(skb = skb_dequeue(&tun->queue))
-> had been true, i.e. the value of
-> 	skb = skb_dequeue(&tun->queue)
-> has been NULL, i.e. that skb_dequeue() has returned NULL, which had
-> been copied into skb.
-> 
-> In other words, in the body of that loop we have skb equal to NULL.
-> 
-> > -		if (filp->f_flags & O_NONBLOCK)
-> > -			return -EAGAIN;
-> > +		if (filp->f_flags & O_NONBLOCK) {
-> > +			count = -EAGAIN;
-> > +			goto out;
-> > +		}
-> >  
-> >  		/* Wait until we get data or the endpoint goes away */
-> >  		if (wait_event_interruptible(tun->readq,
-> > -					     !skb_queue_empty(&tun->queue)))
-> > -			return -ERESTARTSYS;
-> > +					     !skb_queue_empty(&tun->queue))) {
-> > +			count = -ERESTARTSYS;
-> > +			goto out;
-> > +		}
-> >  	}
-> 
-> The meaning of that loop is fairly clear, isn't it?  Keep looking int
-> tun->queue until an skb shows up there.  If it's not immediately there,
-> fail with -EAGAIN for non-blocking files and wait on tun->readq until
-> some skb arrives.
 
-Thanks for the explainations.
+On 2019/9/26 下午9:14, Tiwei Bie wrote:
+> On Thu, Sep 26, 2019 at 04:35:18AM -0400, Michael S. Tsirkin wrote:
+>> On Thu, Sep 26, 2019 at 12:54:27PM +0800, Tiwei Bie wrote:
+> [...]
+>>> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+>>> index 40d028eed645..5afbc2f08fa3 100644
+>>> --- a/include/uapi/linux/vhost.h
+>>> +++ b/include/uapi/linux/vhost.h
+>>> @@ -116,4 +116,12 @@
+>>>   #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>>>   #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>>>   
+>>> +/* VHOST_MDEV specific defines */
+>>> +
+>>> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
+>>> +
+>>> +#define VHOST_MDEV_S_STOPPED	0
+>>> +#define VHOST_MDEV_S_RUNNING	1
+>>> +#define VHOST_MDEV_S_MAX	2
+>>> +
+>>>   #endif
+>> So assuming we have an underlying device that behaves like virtio:
+> I think they are really good questions/suggestions. Thanks!
+>
+>> 1. Should we use SET_STATUS maybe?
+> I like this idea. I will give it a try.
+>
+>> 2. Do we want a reset ioctl?
+> I think it is helpful. If we use SET_STATUS, maybe we
+> can use it to support the reset.
+>
+>> 3. Do we want ability to enable rings individually?
+> I will make it possible at least in the vhost layer.
 
-Navid.
+
+Note the API support e.g set_vq_ready().
+
+
+>
+>> 4. Does device need to limit max ring size?
+>> 5. Does device need to limit max number of queues?
+> I think so. It's helpful to have ioctls to report the max
+> ring size and max number of queues.
+
+
+An issue is the max number of queues is done through a device specific 
+way, usually device configuration space. This is supported by the 
+transport API, but how to expose it to userspace may need more thought.
+
+Thanks
+
+
+>
+> Thanks!
