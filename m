@@ -2,55 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A886AC0021
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 09:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E4BC005A
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 09:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726255AbfI0Hk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 03:40:59 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:39178 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725842AbfI0Hk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 03:40:58 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id A8FC9557BDC17811BB43;
-        Fri, 27 Sep 2019 15:40:54 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Fri, 27 Sep 2019
- 15:40:48 +0800
-To:     <jiri@mellanox.com>, <valex@mellanox.com>
-CC:     <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [question] About triggering a region snapshot through the devlink cmd
-Message-ID: <f1436c35-e8be-7b9d-c2f5-b6403348f87a@huawei.com>
-Date:   Fri, 27 Sep 2019 15:40:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+        id S1726713AbfI0HtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 03:49:13 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:49678 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726163AbfI0HtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 03:49:12 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id F3BD0C0CF0;
+        Fri, 27 Sep 2019 07:49:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1569570551; bh=NNEVzMfiLaKkcrRUt6WrozEpdRe4qJSLs4dGyv8UEIQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DTGaxncysylbblkg/YcAbZUcj6tWtc1lU2Mf/zM6sg+vWlxSMuOZqxKPsqDA0r6BV
+         7Ko2Nw+bAIrjhhpfbFRU80lni6uGVcFjwN9Wur6CX/yzRKiPVISmXUNnjRB4ZI3mhF
+         y8NCOCJZw41vrGzGfGhd8CYLcT2PpOc5/BVw6iSfD2Vu50iVBGI3QiFjVFdZLl8/gl
+         Bm6HRqSPQRcoOSF0gbu3wJJV1srvO7xQ8npJrNuWX8cQGm1WIkP8jy78oTm8zd3vtY
+         m+iZa4YuzEiC3w+za5LPTZUDoEYS2Kfl1KJ+UCle+aRHynhXC3e7g7d3vle0JA51yE
+         2JbDmrh0mb1nw==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 5E285A005F;
+        Fri, 27 Sep 2019 07:49:08 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/8] net: stmmac: Fixes for -net
+Date:   Fri, 27 Sep 2019 09:48:48 +0200
+Message-Id: <cover.1569569778.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jiri & Alex
+Misc fixes for -net tree. More info in commit logs.
 
-    It seems that a region' snapshot is only created through the
-driver when some error is detected, for example:
-mlx4_crdump_collect_fw_health() -> devlink_region_snapshot_create()
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-    We want to trigger a region' snapshot creation through devlink
-cmd, maybe by adding the "devlink region triger", because we want
-to check some hardware register/state when the driver or the hardware
-does not detect the error sometimes.
+Jose Abreu (8):
+  net: stmmac: xgmac: Not all Unicast addresses may be available
+  net: stmmac: xgmac: Detect Hash Table size dinamically
+  net: stmmac: selftests: Always use max DMA size in Jumbo Test
+  net: stmmac: dwmac4: Always update the MAC Hash Filter
+  net: stmmac: Correctly take timestamp for PTPv2
+  net: stmmac: Do not stop PHY if WoL is enabled
+  net: stmmac: xgmac: Disable the Timestamp interrupt by default
+  net: stmmac: xgmac: Fix RSS not writing all Keys to HW
 
-Does about "devlink region triger" make sense?
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c     | 13 +++++++------
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h        |  3 ++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c   |  4 ++--
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c    |  1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 19 +++++++++++++------
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c    |  4 ----
+ 6 files changed, 25 insertions(+), 19 deletions(-)
 
-If yes, is there plan to implement it? or any suggestion to implement
-it?
+-- 
+2.7.4
 
