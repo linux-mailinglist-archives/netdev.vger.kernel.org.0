@@ -2,35 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52750C0684
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 15:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF846C06FF
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbfI0Nko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 09:40:44 -0400
-Received: from mout.web.de ([212.227.15.4]:35825 "EHLO mout.web.de"
+        id S1727689AbfI0OG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 10:06:56 -0400
+Received: from mout.web.de ([212.227.15.4]:60281 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726540AbfI0Nko (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 09:40:44 -0400
+        id S1726163AbfI0OGz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 10:06:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1569591622;
-        bh=3bKu3XKjBorE1hHURqVppVHhwNs947LzWK/VrwyKmcw=;
+        s=dbaedf251592; t=1569593202;
+        bh=nv4VE+Hbl85HkmHRkfiuhBbAYfzLvV9VGG8OPZN4w70=;
         h=X-UI-Sender-Class:Cc:References:Subject:To:From:Date:In-Reply-To;
-        b=IEzEKaX9VKoVEVlsYmUH14f62Gr22AV07ohdh5LSb4zyo8KPuVXz782qDXVtiw/IY
-         y+6r/88BUjAChtTw/X95M6j6qtBM4SMRpanL2ff1hQ2TI8ZKX7ueemK2LYhU26fBZF
-         1WDDA125DBc7tWvR9b55GogqNw/F24gEzjWP09v4=
+        b=PYa6H1N9q2C1vvlXyP199nW+PdFcGJHhSg29sTX3w+Hi+8GJpQ5F4nvC9MZ18VdGT
+         P4wHzhHsdgCQYY6NmBhJOp7xoWoMxdnKz2dwphIz3uZBtoi6TujwHHAWaZ7iMpU19u
+         QMYGBWsGo1yd+GSHH6PmnTcov1BM6LDWdu9rrsUk=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.191.8]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lu5BO-1i3dxr3p94-011QOZ; Fri, 27
- Sep 2019 15:40:22 +0200
+Received: from [192.168.1.2] ([93.133.191.8]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lwq0e-1i7U6s26jA-016T4r; Fri, 27
+ Sep 2019 16:06:42 +0200
 Cc:     Navid Emamdoost <emamd001@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
         Stephen A McCamant <smccaman@umn.edu>,
-        Al Viro <viro@zeniv.linux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        Frederik Lotter <frederik.lotter@netronome.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
         linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20190927031501.GF22969@cs-dulles.cs.umn.edu>
-Subject: Re: net/ncsi: prevent memory leak in ncsi_rsp_handler_gc
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>, netdev@vger.kernel.org
+References: <20190925190512.3404-1-navid.emamdoost@gmail.com>
+Subject: Re: [PATCH] nfp: flower: fix memory leak in
+ nfp_flower_spawn_vnic_reprs
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
 From:   Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -75,61 +81,54 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <2bee11b1-b6f9-8d5f-1e94-5ce9d2381d9a@web.de>
-Date:   Fri, 27 Sep 2019 15:40:17 +0200
+Message-ID: <e20e4ea4-72c8-2e2e-1745-309fc6f6a57c@web.de>
+Date:   Fri, 27 Sep 2019 16:06:40 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.1
 MIME-Version: 1.0
-In-Reply-To: <20190927031501.GF22969@cs-dulles.cs.umn.edu>
+In-Reply-To: <20190925190512.3404-1-navid.emamdoost@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:y8wqielA7V+z/RhutSA5HTWx5Mhq4kD+x1oZNbLYL+/wJOMvUeF
- hsV4xRw55V0JS+2bEQxTInv6kyXFlv374xLnEjxjLzDTD7uM4OMyZ+jrZd+pUFGlqT7A5iz
- FUC37yQihaTTdt/d7xQCXKxOUJquB5IbzRo8iD26iu5EcPN7frqc/MJsyahPEWsjzQwrwZl
- VOgDv+J0V72dhphxjzR5w==
+X-Provags-ID: V03:K1:87XX0FAUxgZ3ci/9ivhTH7PpNtdW6DCt86TFjJz9H4rtXgXyzLb
+ q+NpTfs4SNUz9t1hB3bX/M+YDAWOirKFC1N+76qOYpHUymJWT/9aY9Rlh2Rmbolh/xFMwgC
+ EHKVnxmOKBSwZb0n2lxZGGjRvpPhjJQrMrwyxTFdNJkyYhIXyXRoRwxryev54i05XDGIHs8
+ PfVZzjgmwoLZvg7DVjPYQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jmAEJVSXSkU=:K6OZyOKH2sH2FJUvqQpYFW
- dRH+UBAfRf8lRF2na7F8b31cnE7FGwNhZYnsK357WNxksKgwSBQ3uA2daqz0BEa0CxP46qaHU
- t9888GTtyY0VE1l8eYUQD0xQtjbSFi+DTUGSSofUXyU+FOHayNydrhSebr2nuPFRnlV1fu41Q
- a/bpaYF4VrQguW6/kIQP5F5twe4WI90tVe8zfq1JaJNe1QTuH/J5tcR/wll2+LGOxFGoHLYn0
- MFmnLRcaylQjZprJbf8kWAFRNr46gFUtGFKjxN7IwyK6JjRC7xkXpjX9mznrcMQsL2r4aVYgR
- ITIQSf3a9OjnoagEYUN+2a5biRY92tYazinWZNSQ550V9g0cjryWrpLIfgrkCRkBFASoiHYKR
- dGMTnz63DYS8lN+jqRIHzTXgniTkJG6VNkaPaahr8SD2XDa708AI6vE88gDAUOBv1VcNKg3kS
- aTsqXwsoVtS8afd+8OtUx6d4MAeSPJZIrejScn9psVzxX3h1FGI8eloSRPHi5g8dTcAz/ZUDu
- UcKdvmwjR3LVb/65jYv64OUOYLj47zqK6zasYKXeZBOAiLeNN3LopApyvrAHd90J9NkdoaecI
- 1Pa+Xd4YnIhpeF4Msyb2gbL7v5WEiapaKacewxdoMj9BFMMML28/lOgIRUEiKFB5qX4rk6seJ
- d814+EXrpHUevB2Q6+MODPXIxv4VVMbOrPkq5YjFXb09TAAPJWfOGGNHjgCCTQLIB+i387iF3
- rUP2Bdm2Xj7j5tQCy9twnqwy5AkUlmGUW+jBH1nhUlvsQzOA0lx9fSBLhFKhWBkG2J5q2JcW+
- 6UKyRwOccUYCD7YQ3MTJQPZIDqrGJ1+ULzia1zYPoM2q9PjnE8vLOjOr6lvItjpVPrIv42eWR
- pc68PvX4ZoywRtknyXn91Um/Bnvyj1kO6uxZ05vd+n+zvR0cqs3zMQzLYYpFEbxpFBQYOJYvB
- kjN8+F+zWbCp4BgeFo2C65itWtLg6d6zeTD8/dORO6tUGmj31eeMAPc6p/ypqbLQ60mnBxzE5
- FwAipkJuh7KOEIOWLz3d1td1bAuGJh4wnN8UC8e1kGZ+S5MqwfPoOY5YFfrQMg+WT8rJSjX7K
- neS43yApTP3/O+yT7R4uCE7g4yyQcY1Q9IWiGe1B/aGAOjbF0UYANwzJ6xYggQ8rVYvwRfrXU
- ycavDNdXBlgRtvH7S3uFobat2lznB+nTzXHw/Xm986rQ1X3ew1ARIIHZV9hrOtCB6UAPO/+Ml
- bRCLlLrc7vZZ8X0z+iKJ+OO9d5XGgJq/FA1jduMgalP0EcfT1fPTfd0FDpGhvfnm4WN63asFW
- vvdaoj1FctQeYJyp7iGFjHBgY8wPmaYMdiiA+yrzD5Q7ra1yDhyo6GXxhxFbE4ca4yKHI0PDZ
- H8RA9MUlQkv/h18zFbTRG7IFxgOJOA5sGzqdSCR60HZa7ZU0A/C6aZxAdRo0JMGZAeYTPRcyL
- +SE5zUO9kHvh4MsBdXu8PtGavRK/sL6qsSEylKDBYKKg99kcIG5+yeESd2gKkcYRLvUkZEsGt
- bp7ohMw6KABm54i9sNjB5NYfanpyvedDVsQF7Zu4oKK+T
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gWcPJBtUSk8=:L65XnfIzm37/GoIgcGRJqo
+ VDN54wQ/DiUytb+vz7ee3Q31WLf97SAt34EEN16oaCYyhUVUsxlX6jQADU1aRF/1xn8XwNEBx
+ ePXO314VNOFu3tNKg8NhAlEdsEvyl/Ja9i6l1uLth3sVJnrlFXKeH36jW+OA2ViGlxKSCBSyw
+ gm4EQy3xbxb/WALA9Hyg61/kTpY0P6rQ+4tY/p672RpCU6L24340eoOLcM0demFGrWkS8t9C9
+ S5OjUWUZQde1hYD7fj7t08zJ2oY4HsPtsPlLKj5ZArquhQb2UZbhYjpPdtDjalpHNRkvheDb1
+ u87lzH4VdqqWc1kW84QQS1q6xOchZkDBj0g5sFud2ZLkcAa3DDL4FtpfmEybmO8nD/71bYyVK
+ 9BPIR+Hqiu6SqdyqN9LU2eGsJ3Mp97oxYxTJXxNOAewRxw719/EIY7tyhIvOMreuyQGDn0IUF
+ CmkNgyxrFv5LKrugcf/ZnX9CEGqaLau9zzWEwX+eFsP34MAHC8N0uYJj/xKCZYHJpWoHMO+w2
+ acDQ0IGRUDlWfNTA0GAEcxgs/l5PCVNSc2uVhzSA5Zp1Dr0M5afjUiKgMUVT9opb0M+cIvL9p
+ lMvlatGcmsOGB8n7DnKx9xq6h90VmAubJuh33zmS8KkyYXm9SgMsMiMB5hwPUYnQAWG4SocbJ
+ HIiuPVH3v7ie0S6y5ncBREixp+0GCMUOAEjH+nFA0vaXLyouaVKeuEqctNYuo2ldoqgi0uhA7
+ MHmM7QACyxZrb1cuEQuR9NZdAK4dd9xJ3mt93JRgfdPNKRWqYNkzOA99X3H94aayGCJkWVBCe
+ P8XRZKJx9Sii4vgCzlJUOkR56Z3/36Z284FBSIYIt91HL6CIz4miswB6Zre3aAxwLLeIj3rmn
+ zG9SIv4mAQuSOU4C1ybNMMGHsHWrSq/sGo+9HQVtzptd37nf0C1dYsROsGEltPykpTlqCc/gC
+ T95Bd6VcbTcIygtmXlDeP2HIbh/g6f+0Nb3fKR/y+kQIPCW9od+joP6gO8QlV61l+HEF+qoOd
+ xF1II0gdiqa8dmobJ7orfIvgtUue7GcogPmvovnM3tcb/pCZaKX3cEnbV/dkGAMUvcmOeG31d
+ 1f6jp0hyjN+oSE7DIIXhbXnofsv6YJ6IWSEeLFrJwmaMVb4qfbU5Mivpx7dW8IMw00vemKxDq
+ lJkx/1utYea9peBbLIEj414SmW6SnMLgZ4jdKk8RysBjqHhZsu+M0INz4pi6Qhp7MXjdqBY7Z
+ tNEeD9X3thZLFEGWej9NXk0sTKaZ4wQiwt+as0+N40LUwzKQcRJU+tXdyjRE=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > In ncsi_rsp_handler_gc if allocation for nc->vlan_filter.vids fails =
-the
-> > > allocated memory for nc->mac_filter.addrs should be released.
-=E2=80=A6
-> The problem is that just by traversing the code using tools
-> like ctags or elixir I couldn't find any caller to ncsi_rsp_handler_gc
-> that handles such errnos.
+> @@ -433,6 +435,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
+>  		err = nfp_repr_init(app, repr,
+>  				    port_id, port, priv->nn->dp.netdev);
+>  		if (err) {
+> +			kfree(repr_priv);
+>  			nfp_port_free(port);
+>  			nfp_repr_free(repr);
+>  			goto err_reprs_clean;
 
-Would you like to collaborate with higher level source code analysis tools=
-?
-
-
-How do you think about to add the tag =E2=80=9CFixes=E2=80=9D here?
+How do you think about to move common exception handling code
+to the end of this function implementation by using another jump target?
 
 Regards,
 Markus
