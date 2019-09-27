@@ -2,102 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73265C08B9
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 17:39:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC154C08C5
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 17:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbfI0PjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 11:39:00 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37359 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727207AbfI0Pi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 11:38:59 -0400
-Received: by mail-wr1-f66.google.com with SMTP id i1so3529434wro.4;
-        Fri, 27 Sep 2019 08:38:58 -0700 (PDT)
+        id S1727830AbfI0PlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 11:41:05 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34654 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727207AbfI0PlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 11:41:05 -0400
+Received: by mail-qt1-f196.google.com with SMTP id 3so7846858qta.1;
+        Fri, 27 Sep 2019 08:41:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WqPr3BMmdkR12PG5X2wdgv7YTpsF0EmWkLgo4C5gGm8=;
-        b=bMQzQjPTyXrKf1113+kG9uJO8Hd1tIflR8zyeoX13anoPf8nfo7xZktTt00/8etwVx
-         f/86eU6y2vPTGWaqDrWTFBfeaUweWBKJVnSS5hkOwuSa1uodSyzGnITqsdwzp/EImrUr
-         Hj1y7tmAXpfSH9RJ2v66esgn2iBI82gvW2A7NCSfd6BFvWq3nUFGTU29pv7n4CPB1umv
-         pZH4xLWfX5teemBDnprRU+viEUq1AyriytkLocg5STufvSIFP3R4Hq5EwGeGFyaQKB1I
-         GkHy2vxG6imthBzN7yzeYk4th90kYWiphjViudxatmJ3SO6oMbT54ZWWAEUKQsCXf6yS
-         TD3Q==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=fJXAR3BTSiEDrzcXRUPmAyScpWS/7FX+Os6XghgaQU0=;
+        b=uyS4auWyENLNwj4ODdMyhIEu9qmUQi6TF/0NgNXCDOSuv8he1njkkWUbH6MAAuI3dw
+         7vLlXOh9w2X0TDPsPQJ0xGa50Y/w8Pbl0Q9cF27Vp8Qvg0noboRK1e1n1eLo/A2AjyuD
+         uoQuNkjjiuKExO3npjd3EHDSrgGrqoZRhPGtTlDZDMXATXqpIrJAX7izsK0w7Yxgn93w
+         /QvzX10WXMfskAJ0QsMBgNc4pDJMZWNa6H9v21iOR2mV7ZrMDDpVkvXmSUJ1ClSH+Wtd
+         HW3kxO7tiQRWuLfj+Hl5STNb7ChjeOJD5rGDjJhnWylO6N16KyagbovNjvtXlcz3Dmtm
+         BIGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WqPr3BMmdkR12PG5X2wdgv7YTpsF0EmWkLgo4C5gGm8=;
-        b=jbMmug2tGZ1MzYhC8iHjPPdUeVUfBXX05tvPJni/5knnuwv4lgK2pvT92FxjRLATzy
-         /RvqnGcpjS+LGYyw1GRZ/W4e/m2X0hfqxlxKuNsrbjXHIRKHzaPVuGV3Mnxwg8nZV3ay
-         dTOdPfWnyG3yk8n8FsgAOMCb3/jEtyssiR69ftDhtNp6tmO5BjBP25RVdlW9k7xWDsHQ
-         +xu7DrIiOEUHdlhHlEVi1IjrFxuRMxAHpfZi9uWP+cK6e7jyJYlmXU4wWoZuU+0+rInd
-         f2ty9uMbvzCN6DhwK84HKUwsxXBimngWjKZ8x+SJ4UbAKsn6+aMrF0IFMe9RmfQfa0Nn
-         HgxA==
-X-Gm-Message-State: APjAAAVwuIgCGMWBOO/jW38QPzGJITbBe0YFsuX/enIae4ylwr2Q40yX
-        mPtSiisqy3P5TkvMT4SUbmM=
-X-Google-Smtp-Source: APXvYqytcVLtWlyBJYAkuqwx6A2Onw/qBy8K4tRZvRbkGWY98IIBO5iTmei7P0b/bbu1gpKiddducg==
-X-Received: by 2002:a7b:cbd6:: with SMTP id n22mr8198204wmi.39.1569598737528;
-        Fri, 27 Sep 2019 08:38:57 -0700 (PDT)
-Received: from scw-93ddc8.cloud.online.net ([2001:bc8:4400:2400::302d])
-        by smtp.gmail.com with ESMTPSA id z1sm6009561wre.40.2019.09.27.08.38.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 27 Sep 2019 08:38:56 -0700 (PDT)
-Date:   Fri, 27 Sep 2019 15:38:43 +0000
-From:   Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Cc:     stefanha@redhat.com, davem@davemloft.net, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=fJXAR3BTSiEDrzcXRUPmAyScpWS/7FX+Os6XghgaQU0=;
+        b=b1EeUYzNUfYKr2cxCw0a+2WaVE0rou6lpU02jW4o2Xfv80cMUOqcaIrlQs106WHHom
+         X/Q1kCfHVYkzn/kXt6sk8WfK4jBs/S74dxAiEt5DD+qUljA0cZf7K05L7adTvWdjmSwm
+         i/MFmGij10Vr2W8fKR3KoqQztYbpyt50kiW5JnpZkaWjt6FM93cJo7GenZi48DbD8mLK
+         tqGbtOYd8MsjEXdyS9nt4G+JC5gal0ZEV5bOvex1Wayv1CKwSmMmvj4kW7DTT9RQ/oKO
+         NMO605D3asO1xm15h87Ne2ynq0D22QhXZCSJcHfVf1duoiJu62txqMLijGf/Ipp9ddEC
+         mPFA==
+X-Gm-Message-State: APjAAAX/IUOm2t8Z7dLcHrSrjmpBxfdaGtyaduB1272TajRPIcw5rNQa
+        3rMQf9d5AQV4PDlHIE52z21jjKJ1GK8v/qYm
+X-Google-Smtp-Source: APXvYqzflvmRBLJzHuAYDcQ5In3raI9yBS1yeQB4x+QTsu/BKYjGLPhy0jFumIrbkX37mMPtLYA1/A==
+X-Received: by 2002:ac8:67ce:: with SMTP id r14mr10362936qtp.317.1569598864212;
+        Fri, 27 Sep 2019 08:41:04 -0700 (PDT)
+Received: from ArchLaptop (lithosphere-80.dynamic2.rpi.edu. [129.161.139.80])
+        by smtp.gmail.com with ESMTPSA id p53sm2775779qtk.23.2019.09.27.08.41.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Sep 2019 08:41:03 -0700 (PDT)
+Date:   Fri, 27 Sep 2019 11:41:02 -0400
+From:   Aaron Hill <aa1ronham@gmail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vsock/virtio: add support for MSG_PEEK
-Message-ID: <20190927153843.GA15350@scw-93ddc8.cloud.online.net>
-References: <1569522214-28223-1-git-send-email-matiasevara@gmail.com>
- <f069a65d-33b9-1fa8-d26e-b76cc51fc7cb@gmail.com>
- <20190927085513.tdiofiisrpyehfe5@steredhat.homenet.telecomitalia.it>
- <a7a77f0b-a658-6e46-3381-3dfea55b14d1@gmail.com>
+Subject: [PATCH] net: mac80211: Disable preeemption when updating stat
+ counters
+Message-ID: <20190927154102.GA117350@ArchLaptop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a7a77f0b-a658-6e46-3381-3dfea55b14d1@gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 27, 2019 at 06:37:00AM -0700, Eric Dumazet wrote:
-> 
-> 
-> On 9/27/19 1:55 AM, Stefano Garzarella wrote:
-> 
-> > Good catch!
-> > 
-> > Maybe we can solve in this way:
-> > 
-> > 	list_for_each_entry(pkt, &vvs->rx_queue, list) {
-> > 		size_t off = pkt->off;
-> > 
-> > 		if (total == len)
-> > 			break;
-> > 
-> > 		while (total < len && off < pkt->len) {
-> > 			/* using 'off' instead of 'pkt->off' */
-> > 			...
-> > 
-> > 			total += bytes;
-> > 			off += bytes;
-> > 		}
-> > 	}
-> > 
-> > What do you think?
-> >
-> 
-> Maybe, but I need to see a complete patch, evil is in the details :)
->
+The mac80211 subsystem maintains per-cpu stat counters for receive and
+transmit operations. Previously, preemption was not disabled when
+updating these counters. This creates a race condition where two cpus
+could attempt to update the same counters using non-atomic operations.
 
-Thanks both for your comments, I will take them into account and submit
-a second version. 
+This was causing a
+'BUG: using smp_processor_id() in preemptible [00000000] code'
+message to be printed, along with a stacktrace. This was reported
+in a few different places:
 
-Matias
+* https://www.spinics.net/lists/linux-wireless/msg189992.html
+* https://bugzilla.kernel.org/show_bug.cgi?id=204127
+
+This patch adds calls to preempt_disable() and preempt_enable()
+surrounding the updating of the stat counters.
+
+Signed-off-by: Aaron Hill <aa1ronham@gmail.com>
+---
+ net/mac80211/rx.c | 7 ++++++-
+ net/mac80211/tx.c | 7 ++++++-
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 768d14c9a716..5ef0667151bf 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -34,12 +34,17 @@
+ 
+ static inline void ieee80211_rx_stats(struct net_device *dev, u32 len)
+ {
+-	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
++	struct pcpu_sw_netstats *tstats;
++
++	// Disable preemption while updating per-cpu stats counters
++	preempt_disable();
++	tstats = this_cpu_ptr(dev->tstats);
+ 
+ 	u64_stats_update_begin(&tstats->syncp);
+ 	tstats->rx_packets++;
+ 	tstats->rx_bytes += len;
+ 	u64_stats_update_end(&tstats->syncp);
++	preempt_enable();
+ }
+ 
+ static u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 1fa422782905..4cad3d741b6b 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -40,12 +40,17 @@
+ 
+ static inline void ieee80211_tx_stats(struct net_device *dev, u32 len)
+ {
+-	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
++	struct pcpu_sw_netstats *tstats;
++
++	// Disable preemption while updating per-cpu stats counters
++	preempt_disable();
++	tstats = this_cpu_ptr(dev->tstats);
+ 
+ 	u64_stats_update_begin(&tstats->syncp);
+ 	tstats->tx_packets++;
+ 	tstats->tx_bytes += len;
+ 	u64_stats_update_end(&tstats->syncp);
++	preempt_enable();
+ }
+ 
+ static __le16 ieee80211_duration(struct ieee80211_tx_data *tx,
+-- 
+2.23.0
+
