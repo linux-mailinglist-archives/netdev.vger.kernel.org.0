@@ -2,48 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F8FC0337
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 12:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39AA7C0359
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 12:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbfI0KPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 06:15:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57996 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727455AbfI0KPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 06:15:33 -0400
-Received: from localhost (unknown [65.39.69.237])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7AE1614E04A26;
-        Fri, 27 Sep 2019 03:15:31 -0700 (PDT)
-Date:   Fri, 27 Sep 2019 12:15:29 +0200 (CEST)
-Message-Id: <20190927.121529.168532780904459510.davem@davemloft.net>
-To:     vladbu@mellanox.com
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us
-Subject: Re: [PATCH net v3 0/3] Fix Qdisc destroy issues caused by adding
- fine-grained locking to filter API
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190924155118.2488-1-vladbu@mellanox.com>
-References: <20190924155118.2488-1-vladbu@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727158AbfI0KXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 06:23:08 -0400
+Received: from foss.arm.com ([217.140.110.172]:48276 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725946AbfI0KXI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 06:23:08 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BB44528;
+        Fri, 27 Sep 2019 03:23:07 -0700 (PDT)
+Received: from dawn-kernel.cambridge.arm.com (unknown [10.1.197.116])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7D4163F534;
+        Fri, 27 Sep 2019 03:23:05 -0700 (PDT)
+Subject: Re: [RFC PATCH v4 2/5] ptp: Reorganize ptp_kvm modules to make it
+ arch-independent.
+To:     Jianyong Wu <jianyong.wu@arm.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        pbonzini@redhat.com, sean.j.christopherson@intel.com,
+        maz@kernel.org, richardcochran@gmail.com, Mark.Rutland@arm.com,
+        Will.Deacon@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
+        nd@arm.com
+References: <20190926114212.5322-1-jianyong.wu@arm.com>
+ <20190926114212.5322-3-jianyong.wu@arm.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+Message-ID: <47ceb25c-c9ff-e284-43bf-6cac7e128a98@arm.com>
+Date:   Fri, 27 Sep 2019 11:23:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
+MIME-Version: 1.0
+In-Reply-To: <20190926114212.5322-3-jianyong.wu@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Sep 2019 03:15:33 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
-Date: Tue, 24 Sep 2019 18:51:15 +0300
 
-> TC filter API unlocking introduced several new fine-grained locks. The
-> change caused sleeping-while-atomic BUGs in several Qdiscs that call cls
-> APIs which need to obtain new mutex while holding sch tree spinlock. This
-> series fixes affected Qdiscs by ensuring that cls API that became sleeping
-> is only called outside of sch tree lock critical section.
 
-Series applied.
+On 26/09/2019 12:42, Jianyong Wu wrote:
+> Currently, ptp_kvm modules implementation is only for x86 which includs
+> large part of arch-specific code.  This patch move all of those code
+> into new arch related file in the same directory.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+
+...
+
+> +int kvm_arch_ptp_get_clock_fn(unsigned long *cycle, struct timespec64 *tspec,
+> +			      struct clocksource **cs)
+
+
+> diff --git a/include/asm-generic/ptp_kvm.h b/include/asm-generic/ptp_kvm.h
+> new file mode 100644
+> index 000000000000..208e842bfa64
+> --- /dev/null
+> +++ b/include/asm-generic/ptp_kvm.h
+
+> +int kvm_arch_ptp_get_clock_fn(long *cycle,
+> +		struct timespec64 *tspec, void *cs);
+> 
+
+Conflicting types for kvm_arch_ptp_get_clock_fn() ?
+
+Suzuki
