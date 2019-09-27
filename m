@@ -2,156 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A1E7C0CEC
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEABBC0CEF
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:58:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728196AbfI0U4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 16:56:20 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:38080 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727243AbfI0U4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 16:56:19 -0400
-Received: by mail-io1-f66.google.com with SMTP id u8so19900956iom.5;
-        Fri, 27 Sep 2019 13:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=6XWDs202HxUMQZwjYYpTO5aVNS5TRVFQi//IFrYDeeY=;
-        b=L55gU92RCxo9GNVu0j7NUeyo3YCMTbuo25tgLSLVNxFov7l77Bov+cwbWcukwIMGmi
-         uQ11xfLgUDttTuKPXKLZDN9SXki7uN/vSBZJjGwRaPASn4ZdEpkR54UxwTGhuzDi4Z5e
-         l8Xea2ALVip9/5WqRkO4tXSvqA1llwWS889D/XRPyBwoBv4nAUYijYD+vJ7SsLGeULiy
-         86xYsrGPscwG8DThH7DuLFMb/AmppggrpgbQ73OviP5K+aUd5taDOel92JLovRZd/g1/
-         lNPGt27Kuum7GLKO6cf/tpQgV8Dd3i1pUkpK9LHr3lW0Hu8VRN7t+1rcgm8ta8+tYWQT
-         TZtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6XWDs202HxUMQZwjYYpTO5aVNS5TRVFQi//IFrYDeeY=;
-        b=ZCsn1QXkwGfgdOs1NGCn3eJB3hQP5yiTcogEnximLT94JtBYsSswsyRbwrTg+mb+gh
-         YVkwca/swl2DHJ0haGzJUwfz2ifcWIzpPauryuRsitgIxJdaVZl/AGwaXqDjhhd3M/rR
-         pKumL7yEXgngHjn6+mHih5D5GyqAFuuh5ljoMBF5mYNivY6xxNEhrV9RkrClAnu2TZms
-         V0MYT0wcapm+P+dcJ5DXJeCa0+3e06Pi7EOuZp2y97dX1rl4/OWiOasBqvW0Z1Up9Zo7
-         OcZwcEUebXiNikVQkp+GMBNVS1ppV77hQ+g2oP3fqomzm9uYhq4lgmxEA71eizlnni9a
-         Ifhw==
-X-Gm-Message-State: APjAAAUpSIgBWmLsiNcrAwTCJY1dx0bA6mp/2ywHupDeT9f5Lcw1wbPj
-        P9OPhXPJxcLx90JQEvanEo4=
-X-Google-Smtp-Source: APXvYqxIcYCc3Etak50jxb9W0VgkeBkDrg7+srVbZp7ZubSS9Bq9i9G37DHrUcaMh7iYwl9mc9fWIA==
-X-Received: by 2002:a6b:6d07:: with SMTP id a7mr10591163iod.261.1569617778856;
-        Fri, 27 Sep 2019 13:56:18 -0700 (PDT)
-Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
-        by smtp.googlemail.com with ESMTPSA id 197sm3197316ioc.78.2019.09.27.13.56.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Sep 2019 13:56:18 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shaul Triebitz <shaul.triebitz@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iwlwifi: fix memory leaks in iwl_pcie_ctxt_info_gen3_init
-Date:   Fri, 27 Sep 2019 15:56:04 -0500
-Message-Id: <20190927205608.8755-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S1727253AbfI0U6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 16:58:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725306AbfI0U6Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 16:58:24 -0400
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87F2021906
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 20:58:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1569617903;
+        bh=JHvPXPKOI8xXY+v+RmsysJ+7eQJL2fGTE9qEG3GltO4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IZBobdmnLixGOMe0GgALjKFamRkN+1/IlDJ93Mesp167haHYR7IBTWvK6yM1HL85P
+         fgn5Hvfd5gJ9LHq/raH1oyc+JNVnN55DE5TJ7vnvYOudEB+EMU2l92r1xncFRaMHhV
+         RqDQ8KOcKcKYu9CMwqEVaB0ZppLtJi/hqoWYNb3U=
+Received: by mail-wr1-f45.google.com with SMTP id y19so4665309wrd.3
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 13:58:23 -0700 (PDT)
+X-Gm-Message-State: APjAAAWz+enzoCgdMuOoIeg5d4iaFBjC6WilgggtzD4TLtUmTFiZLhMT
+        Dzhv5voElIXbQUF+6JQNtl8ah3LfbpS8vJDVWqM9DA==
+X-Google-Smtp-Source: APXvYqxmWFPXVg5my2vdtfXTIKkRAsW/tJXeLCeFEGi5LTezBydsLm94jzUi9r5S9tnwrfzAbRz3QhWaRfS3fvEnT+I=
+X-Received: by 2002:adf:dbc6:: with SMTP id e6mr4312618wrj.149.1569617900104;
+ Fri, 27 Sep 2019 13:58:20 -0700 (PDT)
+MIME-Version: 1.0
+References: <419CB0D1-E51C-49D5-9745-7771C863462F@amacapital.net> <mhng-c8a768f7-1a90-4228-b654-be9e879c92ec@palmer-si-x1c4>
+In-Reply-To: <mhng-c8a768f7-1a90-4228-b654-be9e879c92ec@palmer-si-x1c4>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Fri, 27 Sep 2019 13:58:08 -0700
+X-Gmail-Original-Message-ID: <CALCETrUmqKz4vu2VCPC5MYGFyiG4djbOmKG32oLtQPb=o6rJ_Q@mail.gmail.com>
+Message-ID: <CALCETrUmqKz4vu2VCPC5MYGFyiG4djbOmKG32oLtQPb=o6rJ_Q@mail.gmail.com>
+Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
+To:     Palmer Dabbelt <palmer@sifive.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        David Abdurachmanov <david.abdurachmanov@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Abdurachmanov <david.abdurachmanov@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Anup Patel <Anup.Patel@wdc.com>,
+        Vincent Chen <vincentc@andestech.com>,
+        Alan Kao <alankao@andestech.com>,
+        linux-riscv@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, me@carlosedp.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In iwl_pcie_ctxt_info_gen3_init there are cases that the allocated dma
-memory is leaked in case of error.
-DMA memories prph_scratch, prph_info, and ctxt_info_gen3 are allocated
-and initialized to be later assigned to trans_pcie. But in any error case
-before such assignment the allocated memories should be released.
-First of such error cases happens when iwl_pcie_init_fw_sec fails.
-Current implementation correctly releases prph_scratch. But in two
-sunsequent error cases where dma_alloc_coherent may fail, such releases
-are missing. This commit adds release for prph_scratch when allocation
-for prph_info fails, and adds releases for prph_scratch and prph_info
-when allocation for ctxt_info_gen3 fails.
+On Tue, Sep 3, 2019 at 3:27 PM Palmer Dabbelt <palmer@sifive.com> wrote:
+>
+> On Wed, 28 Aug 2019 10:52:05 PDT (-0700), luto@amacapital.net wrote:
+> >
+> >
+> >> On Aug 25, 2019, at 2:59 PM, Kees Cook <keescook@chromium.org> wrote:
+> >>
+> >>> On Thu, Aug 22, 2019 at 01:55:22PM -0700, David Abdurachmanov wrote:
+> >>> This patch was extensively tested on Fedora/RISCV (applied by default=
+ on
+> >>> top of 5.2-rc7 kernel for <2 months). The patch was also tested with =
+5.3-rc
+> >>> on QEMU and SiFive Unleashed board.
+> >>
+> >> Oops, I see the mention of QEMU here. Where's the best place to find
+> >> instructions on creating a qemu riscv image/environment?
+> >
+> > I don=E2=80=99t suppose one of you riscv folks would like to contribute=
+ riscv support to virtme?  virtme-run =E2=80=94arch=3Driscv would be quite =
+nice, and the total patch should be just a couple lines.  Unfortunately, it=
+ helps a lot to understand the subtleties of booting the architecture to wr=
+ite those couple lines :)
+>
+> What mailing list should I sent this to?  You need to use the "virtme" br=
+anch
+> of kernel.org/palmer/linux.git until I send the defconfig patches.
+>
+> commit a8bd7b318691891991caea298f9a5ed0f815c322
+> gpg: Signature made Tue 03 Sep 2019 03:22:45 PM PDT
+> gpg:                using RSA key 00CE76D1834960DFCE886DF8EF4CA1502CCBAB4=
+1
+> gpg:                issuer "palmer@dabbelt.com"
+> gpg: Good signature from "Palmer Dabbelt <palmer@dabbelt.com>" [ultimate]
+> gpg:                 aka "Palmer Dabbelt <palmer@sifive.com>" [ultimate]
+> Author: Palmer Dabbelt <palmer@sifive.com>
+> Date:   Tue Sep 3 14:39:39 2019 -0700
+>
+>     Add RISC-V support
 
-Fixes: 2ee824026288 ("iwlwifi: pcie: support context information for 22560 devices")
-
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
----
- .../intel/iwlwifi/pcie/ctxt-info-gen3.c       | 36 +++++++++++++------
- 1 file changed, 25 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-index 75fa8a6aafee..b2759c751822 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-@@ -107,13 +107,9 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 
- 	/* allocate ucode sections in dram and set addresses */
- 	ret = iwl_pcie_init_fw_sec(trans, fw, &prph_scratch->dram);
--	if (ret) {
--		dma_free_coherent(trans->dev,
--				  sizeof(*prph_scratch),
--				  prph_scratch,
--				  trans_pcie->prph_scratch_dma_addr);
--		return ret;
--	}
-+	if (ret)
-+		goto err_free_prph_scratch;
-+
- 
- 	/* Allocate prph information
- 	 * currently we don't assign to the prph info anything, but it would get
-@@ -121,16 +117,20 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 	prph_info = dma_alloc_coherent(trans->dev, sizeof(*prph_info),
- 				       &trans_pcie->prph_info_dma_addr,
- 				       GFP_KERNEL);
--	if (!prph_info)
--		return -ENOMEM;
-+	if (!prph_info) {
-+		ret = -ENOMEM;
-+		goto err_free_prph_scratch;
-+	}
- 
- 	/* Allocate context info */
- 	ctxt_info_gen3 = dma_alloc_coherent(trans->dev,
- 					    sizeof(*ctxt_info_gen3),
- 					    &trans_pcie->ctxt_info_dma_addr,
- 					    GFP_KERNEL);
--	if (!ctxt_info_gen3)
--		return -ENOMEM;
-+	if (!ctxt_info_gen3) {
-+		ret = -ENOMEM;
-+		goto err_free_prph_info;
-+	}
- 
- 	ctxt_info_gen3->prph_info_base_addr =
- 		cpu_to_le64(trans_pcie->prph_info_dma_addr);
-@@ -186,6 +186,20 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 		iwl_set_bit(trans, CSR_GP_CNTRL, CSR_AUTO_FUNC_INIT);
- 
- 	return 0;
-+
-+err_free_prph_info:
-+	dma_free_coherent(trans->dev,
-+			  sizeof(*prph_info),
-+			prph_info,
-+			trans_pcie->prph_info_dma_addr);
-+
-+err_free_prph_scratch:
-+	dma_free_coherent(trans->dev,
-+			  sizeof(*prph_scratch),
-+			prph_scratch,
-+			trans_pcie->prph_scratch_dma_addr);
-+	return ret;
-+
- }
- 
- void iwl_pcie_ctxt_info_gen3_free(struct iwl_trans *trans)
--- 
-2.17.1
-
+Could you rebase onto virtme master and resend in some format that
+isn't corrupt?  git am really doesn't like your patch and, even if I
+fix it up manually, your gpg: lines are bogus.  You could also send a
+PR at https://github.com/amluto/virtme
