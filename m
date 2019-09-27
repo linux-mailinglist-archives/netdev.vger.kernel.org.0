@@ -2,118 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE25C0C8A
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49DDCC0CD0
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727965AbfI0USF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 16:18:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:49362 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725815AbfI0USF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 16:18:05 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5C41910C094B;
-        Fri, 27 Sep 2019 20:18:04 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-20.rdu2.redhat.com [10.10.112.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1E16D5D9C3;
-        Fri, 27 Sep 2019 20:18:02 +0000 (UTC)
-Message-ID: <fd3c5fa7b4a4ec95762ffd358e5eaa249f34330d.camel@redhat.com>
-Subject: Re: [RFC 20/20] RDMA/i40iw: Mark i40iw as deprecated
-From:   Doug Ledford <dledford@redhat.com>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "jgg@mellanox.com" <jgg@mellanox.com>,
+        id S1726408AbfI0Urf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 16:47:35 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42958 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbfI0Urf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 16:47:35 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z12so4068102pgp.9;
+        Fri, 27 Sep 2019 13:47:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bzYSSPrgLAC4YfKvOYdW8JV9P97aaiQ4S1KEYZ0vYTQ=;
+        b=UuD1GphT5DoxXuKlWeBSG54du7TXGyNIeEUMIePFxzgEIkFr2ZWqssI95w2VXDN221
+         J5feVuwTpfDOnSNEFHt1mMjKL8Bqk4Dus52w9JF/Gr9ROjlz95Qk57bfY3R4pLmKZje+
+         J1YArd90GlQSypsRsYaXu+3ga5DW1vajaeuZx8Ee60JvUxxphHKE/ghf1M2ybddCRizU
+         xvU56hF0HcNeVLwF3wS4jPqE2rDLd+8yoI0P23DEURKoOKmtiKgoXFpXltRmIU8j62ua
+         ufxkmjFI8LVBNvJSZXalgp+d2/nfHjvOXvKH8BoPXVXPCIKD74PCX3dlev5AN2B3MBAR
+         eegQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bzYSSPrgLAC4YfKvOYdW8JV9P97aaiQ4S1KEYZ0vYTQ=;
+        b=lF7TcOX6rOrbCyT5pTe3PbatQLbWCeV7raxtpGtR/AQS/+YPO3WCFzsrKEFVxvJnqL
+         9kfsbAjNjAHlkmjvy2/+yumFosa10OSM6a4r/EtVDvjRWiw1Wdje8KZZkS3anrLH4+Tq
+         9CMU9cX4FLltPOBldy1Gr66kVWSCJZz3ivuzVzNK1YgtT5qeIBxBRlaZ+zQ+Z1SwCLZw
+         yuHAPAxPMnlMPVzSXEYzFNHF/qOZ++iPI0nPPPJZWFlsWvPZwgLjKrFEpD3MxXt800qi
+         TicSh7f7G/354eiVr7jvnrrbebB+CHUqTIYZQ3AHCZRDF0JjfimHnyC9J14OtqWOgKkp
+         ntRQ==
+X-Gm-Message-State: APjAAAXYTgf3d6WPqiNIt56Vyyp0iABm4YQJmJHKghimkBmezaAfj21c
+        Dx3tP1RzMuWPUjazHgP27oQ=
+X-Google-Smtp-Source: APXvYqy1C1JP1b3d0GSZuPk0C4n/gYXS1ppofxspzJZADstlQttHJW26kqX6aSA8QGbj0VSrVAuChA==
+X-Received: by 2002:a17:90a:bb97:: with SMTP id v23mr11812267pjr.84.1569617254604;
+        Fri, 27 Sep 2019 13:47:34 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id g5sm6181080pgd.82.2019.09.27.13.47.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Sep 2019 13:47:33 -0700 (PDT)
+Subject: Re: [PATCH bpf] bpf: Fix a race in reuseport_array_free()
+To:     Martin Lau <kafai@fb.com>, Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Date:   Fri, 27 Sep 2019 16:18:00 -0400
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7AC70465F@fmsmsx123.amr.corp.intel.com>
-References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
-         <20190926164519.10471-21-jeffrey.t.kirsher@intel.com>
-         <20190926174009.GD14368@unreal>
-         <9DD61F30A802C4429A01CA4200E302A7AC702BDA@fmsmsx123.amr.corp.intel.com>
-         <20190926195517.GA1743170@kroah.com>
-         <9DD61F30A802C4429A01CA4200E302A7AC70465F@fmsmsx123.amr.corp.intel.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-349MnWMH84vVbtzERMIR"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>
+References: <20190927165221.2391541-1-kafai@fb.com>
+ <04f683c6-ac49-05fb-6ec9-9f0d698657a2@gmail.com>
+ <20190927181729.7ep3pp2hiy6l5ixk@kafai-mbp.dhcp.thefacebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <fc762c01-94da-7f72-4fc0-9b76d6bbe3dd@gmail.com>
+Date:   Fri, 27 Sep 2019 13:47:32 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Fri, 27 Sep 2019 20:18:04 +0000 (UTC)
+In-Reply-To: <20190927181729.7ep3pp2hiy6l5ixk@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-349MnWMH84vVbtzERMIR
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2019-09-27 at 14:28 +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [RFC 20/20] RDMA/i40iw: Mark i40iw as deprecated
-> >=20
-> > On Thu, Sep 26, 2019 at 07:49:44PM +0000, Saleem, Shiraz wrote:
-> > > > Subject: Re: [RFC 20/20] RDMA/i40iw: Mark i40iw as deprecated
-> > > >=20
-> > > > On Thu, Sep 26, 2019 at 09:45:19AM -0700, Jeff Kirsher wrote:
-> > > > > From: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > > >=20
-> > > > > Mark i40iw as deprecated/obsolete.
-> > > > >=20
-> > > > > irdma is the replacement driver that supports X722.
-> > > >=20
-> > > > Can you simply delete old one and add MODULE_ALIAS() in new
-> > > > driver?
-> > > >=20
-> > >=20
-> > > Yes, but we thought typically driver has to be deprecated for a
-> > > few cycles
-> > before removing it.
-> >=20
-> > If you completely replace it with something that works the same, why
-> > keep the old
-> > one around at all?
->=20
-> Agree. Thanks!
->=20
->=20
-> > Unless you don't trust your new code?  :)
-> >=20
-> We do :)
+On 9/27/19 11:17 AM, Martin Lau wrote:
+> On Fri, Sep 27, 2019 at 10:24:49AM -0700, Eric Dumazet wrote:
+>>
+>>
+>> On 9/27/19 9:52 AM, Martin KaFai Lau wrote:
+>>> In reuseport_array_free(), the rcu_read_lock() cannot ensure sk is still
+>>> valid.  It is because bpf_sk_reuseport_detach() can be called from
+>>> __sk_destruct() which is invoked through call_rcu(..., __sk_destruct).
+>>
+>> We could question why reuseport_detach_sock(sk) is called from __sk_destruct()
+>> (after the rcu grace period) instead of sk_destruct() ?
+> Agree.  It is another way to fix it.
+> 
+> In this patch, I chose to avoid the need to single out a special treatment for
+> reuseport_detach_sock() in sk_destruct().
+> 
+> I am happy either way.  What do you think?
 
-I don't....
+It seems that since we call reuseport_detach_sock() after the rcu grace period,
+another cpu could catch the sk pointer in reuse->socks[] array and use
+it right before our cpu frees the socket.
 
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
+RCU rules are not properly applied here I think.
 
---=-349MnWMH84vVbtzERMIR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+The rules for deletion are :
 
------BEGIN PGP SIGNATURE-----
+1) unpublish object from various lists/arrays/hashes.
+2) rcu_grace_period
+3) free the object.
 
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl2ObngACgkQuCajMw5X
-L92NkQ//Wdl5eMZtMdMCckraPow4l2jmIM5aDxMOH1TTzao9YNnF4yRdoWBAL6bA
-jta60sqR81DuwpIIHufavL1TJ+OsfY8nlm3gKOp6lwWdA55SFccma/teuIbbOj3O
-ZHez+oa+95Ot0J7oeCS3w464g5MEiKSTE6TNUzmpF9KGoyzPC4eoYYXLp8aGpuTs
-WKPiadGPO4nzKhYWo/e8y8eZHkhkGbPusWZz7CMmCiTfRODXziIP2w2FUpNXHpq8
-fXLHbRAYgahgvVS3msRCQHCcTqFeoG4nFSTbCiUwqGoOaKgbuq64hsYmHe+ngT6E
-OzXym/oQjlWnoPtG0JlwW+BCaTejdFZYGuqdYT894/0lDkJGYLhE5yBOs6TY4c0+
-LFmm69xH4TYhTBj+8erVZEYzL3mF5GGr9dtxs3wDNkmyAxzULHc/Py1bvS46O5A9
-hXQQGXR730ys2uCG1Pgtid8rnvGzLTslpsaULdaQMca6d95NFQx0UUQsQ/eoKwZd
-u6ezOWnxnZr2ufzpZiZccxzrj+0U8/QjtQkR/g+eGY7Zbbe8WeVuorhtev2wWTbw
-/kt84TG8urlvdgBKUGXuhsm2yXgQjf3M2AitSU1by5iV0ksZvWF7mqglKZ1c+wS6
-5E9KrTgANskhpH4KOqJD2NbEDkY/vx0lYlN2k35LocdvpwiciC0=
-=i7nI
------END PGP SIGNATURE-----
+If we fix the unpublish (we need to anyway to make the data path safe),
+then your patch is not needed ?
 
---=-349MnWMH84vVbtzERMIR--
+What about (totally untested, might be horribly wrong)
 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 07863edbe6fc4842e47ebebf00bc21bc406d9264..d31a4b094797f73ef89110c954aa0a164879362d 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1700,8 +1700,6 @@ static void __sk_destruct(struct rcu_head *head)
+                sk_filter_uncharge(sk, filter);
+                RCU_INIT_POINTER(sk->sk_filter, NULL);
+        }
+-       if (rcu_access_pointer(sk->sk_reuseport_cb))
+-               reuseport_detach_sock(sk);
+ 
+        sock_disable_timestamp(sk, SK_FLAGS_TIMESTAMP);
+ 
+@@ -1728,7 +1726,13 @@ static void __sk_destruct(struct rcu_head *head)
+ 
+ void sk_destruct(struct sock *sk)
+ {
+-       if (sock_flag(sk, SOCK_RCU_FREE))
++       bool use_call_rcu = sock_flag(sk, SOCK_RCU_FREE);
++
++       if (rcu_access_pointer(sk->sk_reuseport_cb)) {
++               reuseport_detach_sock(sk);
++               use_call_rcu = true;
++       }
++       if (use_call_rcu)
+                call_rcu(&sk->sk_rcu, __sk_destruct);
+        else
+                __sk_destruct(&sk->sk_rcu);
