@@ -2,134 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CB0C095B
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8499C0981
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbfI0QQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 12:16:09 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46494 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727079AbfI0QQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:16:09 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 201so2384219qkd.13;
-        Fri, 27 Sep 2019 09:16:09 -0700 (PDT)
+        id S1727366AbfI0QW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 12:22:58 -0400
+Received: from mail-lf1-f50.google.com ([209.85.167.50]:43091 "EHLO
+        mail-lf1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727273AbfI0QW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:22:58 -0400
+Received: by mail-lf1-f50.google.com with SMTP id u3so2350513lfl.10
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 09:22:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WH+jCb5SoMk5PgpbLmgZLUs0O9xYNHix8ZiFZUfLT4o=;
-        b=LPCmFaL1gv+jFl6/93kp6LkP/x2PmI/dci7AOy6LBaNXb6V1mHtMUx2hGdbu8xaO+j
-         m1AJw04JWzLqlcgkn18mH4BgrbCVFIcjQWONu9gZeyTERhny0nWZxEPAWDDMXFVIz+Id
-         pJfY2lpWXBPDmry6e6IuULKBN+YdiN1S1cDCiGI25rpdMGGqEWICzwmvxvz53ci2ZrCD
-         Hw55wgxxk2IcSiiCwTJFZjFOI4O8BmqyvXTJ5TCLh19unXDHnQTC/5dPDZOaRQUq5LFF
-         JniwYNzLKnF471vIMCAv8Ghxt998PFcHvpJ/WPpUaMvtvIPMNgPWYUqaBfgH4JV7MJTS
-         cC/g==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=72Xx/EPPWYiryTjo7oGMmMO60iIhf9Bs3K+zVKrMlYM=;
+        b=K2fYHH5tHgERH2O9gXMlW6xBMHYpjgCDHzDJg63t1VY0HlKK7ffP/WSR1F6YNVYWk9
+         /N3o8ZkQX/gr+uc4HXGLSTVlbfF/zttbKaEQFmOkwtEFm6zOA9OSww7k/X/qriVdp+TL
+         FO69x5K0EF8nO1U/P/OVCJj5B67T2lAde2CWyFrW58MMoA2/kYaE6KKlB5GKRDZH+/Lq
+         8TOYvh9ukt+2fCjcTF0U+HaXWLA4BL9eK1MG1s+On/3LODKLTxBQmK/5RkSda7b+zMnH
+         LesoiLTEpBSN8Ys9Pf3Ip2pV4hOh3o6/WBHCNR4OUTgGbchs3Ef62e8KpYIY3Cmrd1bP
+         aOoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WH+jCb5SoMk5PgpbLmgZLUs0O9xYNHix8ZiFZUfLT4o=;
-        b=ZsW9KyvDnokHSYMc86aizJmXqr7cUW6NgbFUNUwAEY3rjZFGaLrn7ZM4ql5pbETa1L
-         se0KgXuQIxWtk6XBYK5bNu2BZda26SpOcxKVGxf7tqNGUKHHW2GaoBCN5iljzmspRR8I
-         /Xmwjm48d314krD1qRwFAux0VPkUhpjNMnKbCcxuTZX3n92w2jhvdWiEh+2bgBLU2Qy2
-         jV02AQNf7ofrtKYML4sxlnorTytR19+QfrTb4fspqzEVEa3/vEdVwuKI448m2x1UMGTm
-         uaEI7fC+ub/zK5DN9RpekbH78P6PYlaZ24NUKoVa4AXWIbdM+5Oj55WalZl3DzU37O1r
-         u/TQ==
-X-Gm-Message-State: APjAAAVLMdifWKvMMd89FEWl/nEa0/U0YE0h3akyg9fU99epB+7+Z/Xs
-        mj1R9aNsfbtguF8WI6XaP53NM/qXlB78TXaAaYg=
-X-Google-Smtp-Source: APXvYqwcnZq6iS1/KX2eb586JfxIsGc2OnLE/cIhhWL5/lhF5aU9O3YnVMs6VvYYAU9vv9Me1Z2OpAfN6DgyIjZsB3g=
-X-Received: by 2002:a05:620a:119a:: with SMTP id b26mr5405136qkk.39.1569600968422;
- Fri, 27 Sep 2019 09:16:08 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=72Xx/EPPWYiryTjo7oGMmMO60iIhf9Bs3K+zVKrMlYM=;
+        b=GX012AxmirOUydNKhDbmz23G1MAqjeqE3jb4Jhr7ZgZH3ZnjVag47TdJxl74Y3BvWB
+         8mOtRwjCfymu9gkC5V556d5uFbEsut7MyR+tZe6iDfyFu/V/ZEWoXG2upYljSbBPUrzC
+         ql+CjJHH4z/Jgxno7unawRN0kbMrjFs7XpANro5RRqnp5xsY3B+QyTi8ITaXJ9wYjET+
+         8kWFvP87sFnZYAKsON0iEUYVGu9AZZNYKlKwLRCknHNW8EJRBsQmy76BXOL5xOmgmUOQ
+         cIH+qtJfWTkRiHrLDOAZMILdm/6ojm1fn0BLZ8wzHRDyGLemWfBEkT519kQOWRBGjeOy
+         XbKA==
+X-Gm-Message-State: APjAAAURLzx8rVRIPRbo3gOfV8YZl7DGrrZ9CRDs0OTp2drjJOD5quqx
+        9PgXM7WOUMxbZNqzoZ+eITuvAA==
+X-Google-Smtp-Source: APXvYqw/VwjjLJwOtnuav0hbuYBwMD28yqDNG67ORkmJSS8A7GzF3jq+LztNLzWWH7CqXVbB+VkQRw==
+X-Received: by 2002:a19:c14a:: with SMTP id r71mr3349013lff.55.1569601374823;
+        Fri, 27 Sep 2019 09:22:54 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:8df:57d9:464d:c6f1:f498:da95])
+        by smtp.gmail.com with ESMTPSA id k16sm558137lje.56.2019.09.27.09.22.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 27 Sep 2019 09:22:54 -0700 (PDT)
+Subject: Re: [net-next v3 7/7] renesas: reject unsupported external timestamp
+ flags
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
+        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>
+References: <20190926181109.4871-1-jacob.e.keller@intel.com>
+ <20190926181109.4871-8-jacob.e.keller@intel.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <a08e6e28-bc98-a103-0577-a0bb45f950d5@cogentembedded.com>
+Date:   Fri, 27 Sep 2019 19:22:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-References: <20190924152005.4659-1-cneirabustos@gmail.com> <20190924152005.4659-3-cneirabustos@gmail.com>
-In-Reply-To: <20190924152005.4659-3-cneirabustos@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 27 Sep 2019 09:15:57 -0700
-Message-ID: <CAEf4BzZeO3cZJWVG0min98gnFs3E8D1m67E+3A_9-rTjHA_Ybg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v11 2/4] bpf: added new helper bpf_get_ns_current_pid_tgid
-To:     Carlos Neira <cneirabustos@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        ebiederm@xmission.com, Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190926181109.4871-8-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 1:15 AM Carlos Neira <cneirabustos@gmail.com> wrote:
->
-> New bpf helper bpf_get_ns_current_pid_tgid,
-> This helper will return pid and tgid from current task
-> which namespace matches dev_t and inode number provided,
-> this will allows us to instrument a process inside a container.
->
-> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> ---
->  include/linux/bpf.h      |  1 +
->  include/uapi/linux/bpf.h | 18 +++++++++++++++++-
->  kernel/bpf/core.c        |  1 +
->  kernel/bpf/helpers.c     | 32 ++++++++++++++++++++++++++++++++
->  kernel/trace/bpf_trace.c |  2 ++
->  5 files changed, 53 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 5b9d22338606..231001475504 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
->  extern const struct bpf_func_proto bpf_strtol_proto;
->  extern const struct bpf_func_proto bpf_strtoul_proto;
->  extern const struct bpf_func_proto bpf_tcp_sock_proto;
-> +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
->
->  /* Shared helpers among cBPF and eBPF. */
->  void bpf_user_rnd_init_once(void);
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 77c6be96d676..9272dc8fb08c 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2750,6 +2750,21 @@ union bpf_attr {
->   *             **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
->   *
->   *             **-EPROTONOSUPPORT** IP packet version is not 4 or 6
-> + *
-> + * int bpf_get_ns_current_pid_tgid(u32 dev, u64 inum)
-> + *     Return
-> + *             A 64-bit integer containing the current tgid and pid from current task
+On 09/26/2019 09:11 PM, Jacob Keller wrote:
 
-Function signature doesn't correspond to the actual return type (int vs u64).
+> Fix the renesas PTP support to explicitly reject any future flags that
+> get added to the external timestamp request ioctl.
+> 
+> In order to maintain currently functioning code, this patch accepts all
+> three current flags. This is because the PTP_RISING_EDGE and
+> PTP_FALLING_EDGE flags have unclear semantics and each driver seems to
+> have interpreted them slightly differently.
+> 
+> Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-> + *              which namespace inode and dev_t matches , and is create as such:
-> + *             *current_task*\ **->tgid << 32 \|**
-> + *             *current_task*\ **->pid**.
-> + *
-> + *             On failure, the returned value is one of the following:
-> + *
-> + *             **-EINVAL** if dev and inum supplied don't match dev_t and inode number
-> + *              with nsfs of current task.
-> + *
-> + *             **-ENOENT** if /proc/self/ns does not exists.
-> + *
->   */
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
 [...]
 
->  #include "../../lib/kstrtox.h"
->
-> @@ -487,3 +489,33 @@ const struct bpf_func_proto bpf_strtoul_proto = {
->         .arg4_type      = ARG_PTR_TO_LONG,
->  };
->  #endif
-> +
-> +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u32, dev, u64, inum)
-
-Just curious, is dev_t officially specified as u32 and is never
-supposed to grow bigger? I wonder if accepting u64 might be more
-future-proof API here?
-
-> +{
-> +       struct task_struct *task = current;
-> +       struct pid_namespace *pidns;
-
-[...]
+MBR, Sergei
