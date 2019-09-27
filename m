@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC3EC0052
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 09:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D465C0064
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 09:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbfI0HtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 03:49:13 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:49660 "EHLO
+        id S1726963AbfI0Htq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 03:49:46 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:34688 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726178AbfI0HtM (ORCPT
+        by vger.kernel.org with ESMTP id S1726628AbfI0HtM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 03:49:12 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id EFA12C0CEF;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id DAF8CC0DD4;
         Fri, 27 Sep 2019 07:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1569570551; bh=vw4KjFOd0WN5T5S8MRjnu1Dm0OyCo4xGHIGsN5RDZ7w=;
+        t=1569570552; bh=4HYL1pfc0TYPaJ4P5PLnhQ03OR2L/vm8sjEKLBLrB04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=fyKUsnK/qAXJC5UaQ3Cmf4bWJOThn2V+hfmLir7754uJcr34j15ghzQYxK4RH0xxD
-         rig63bacp1AwjMT32MmTld8/myXROCi97q8nZvva6fUGBH4BBle/dqIXm+r89Z7sCX
-         bxqBYQ4VWbq0rVLPB1TnKJrvipzIymiM0lMrD/jGRxZkihvV/X0y0kVdbmN2q26Eg3
-         1rjvh22+px1iiPhwt2yREEoJZs9Fp7+EIPpdGwoIw5Mkjjpmeqyr+HxcxSdy0Et34q
-         1jtGJAX9Sx2Uh7e1LMsP1JpsSzMHJhkYypgx067XTWsEUyoHKB3zev8pLslm8oCToT
-         JpgfPC9IpxGwg==
+        b=Nm9BvF+icBU96Z9GmayCx5H+4tYOScnKTia+xJGfTgqb8HLEdkR2JvoTKFQjNGuSW
+         aBcDVaMY1c1YSGRI8ceV+bBmpzH9WwXostxGgS44X7hXVcjvYDXa4RZ4rr8HfkKw+X
+         2GJJiGLs5Q1vJtypdTnnEKMr2LQz5gyN77M0/ArrfpuH4QdVzOWWsSxyJWnhts82WO
+         0Z5m8I6LEqXmLIWResNEQL4+zdp4wtkuXcIfYUMJ7fI1d21tmn7B0TL7xJmj/rXL1K
+         I0Sp4NWeB4kBbvs8qNuVajVFuefa35f5lsRJeJjnbnYutNu+BVy++jectQg1COYhX+
+         yctlxiqe5Ufvg==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 50C32A0077;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 579C3A0078;
         Fri, 27 Sep 2019 07:49:09 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/8] net: stmmac: xgmac: Detect Hash Table size dinamically
-Date:   Fri, 27 Sep 2019 09:48:50 +0200
-Message-Id: <e521e901f3bbe8cd72d8b1492709072f21ee7c84.1569569778.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net 3/8] net: stmmac: selftests: Always use max DMA size in Jumbo Test
+Date:   Fri, 27 Sep 2019 09:48:51 +0200
+Message-Id: <aafbe5bbc45dae9fcfb49b0a803581c5f24328e5.1569569778.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1569569778.git.Jose.Abreu@synopsys.com>
 References: <cover.1569569778.git.Jose.Abreu@synopsys.com>
@@ -53,12 +53,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit b8ef7020d6e5 ("net: stmmac: add support for hash table size
-128/256 in dwmac4"), we can detect the Hash Table dinamically.
+Although some XGMAC setups support frames larger than DMA size, some of
+them may not. As we can't know before-hand which ones support let's use
+the maximum DMA buffer size in the Jumbo Tests.
 
-Let's implement this feature in XGMAC cores and fix possible setups that
-don't support the maximum size for Hash Table.
+User can always reconfigure the MTU to achieve larger frames.
 
+Fixes: 427849e8c37f ("net: stmmac: selftests: Add Jumbo Frame tests")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -72,34 +73,24 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 1 +
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 5923ca62d793..f7eb06f8fb37 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -122,6 +122,7 @@
- #define XGMAC_HWFEAT_GMIISEL		BIT(1)
- #define XGMAC_HW_FEATURE1		0x00000120
- #define XGMAC_HWFEAT_L3L4FNUM		GENMASK(30, 27)
-+#define XGMAC_HWFEAT_HASHTBLSZ		GENMASK(25, 24)
- #define XGMAC_HWFEAT_RSSEN		BIT(20)
- #define XGMAC_HWFEAT_TSOEN		BIT(18)
- #define XGMAC_HWFEAT_SPHEN		BIT(17)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 53c4a40d8386..965cbe3e6f51 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -380,6 +380,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
- 	/* MAC HW feature 1 */
- 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE1);
- 	dma_cap->l3l4fnum = (hw_cap & XGMAC_HWFEAT_L3L4FNUM) >> 27;
-+	dma_cap->hash_tb_sz = (hw_cap & XGMAC_HWFEAT_HASHTBLSZ) >> 24;
- 	dma_cap->rssen = (hw_cap & XGMAC_HWFEAT_RSSEN) >> 20;
- 	dma_cap->tsoen = (hw_cap & XGMAC_HWFEAT_TSOEN) >> 18;
- 	dma_cap->sphen = (hw_cap & XGMAC_HWFEAT_SPHEN) >> 17;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index 5f66f6161629..cc76a42c7466 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -1564,10 +1564,6 @@ static int __stmmac_test_jumbo(struct stmmac_priv *priv, u16 queue)
+ 	struct stmmac_packet_attrs attr = { };
+ 	int size = priv->dma_buf_sz;
+ 
+-	/* Only XGMAC has SW support for multiple RX descs in same packet */
+-	if (priv->plat->has_xgmac)
+-		size = priv->dev->max_mtu;
+-
+ 	attr.dst = priv->dev->dev_addr;
+ 	attr.max_size = size - ETH_FCS_LEN;
+ 	attr.queue_mapping = queue;
 -- 
 2.7.4
 
