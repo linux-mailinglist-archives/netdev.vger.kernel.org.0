@@ -2,134 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC154C08C5
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 17:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0380C08F2
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 17:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbfI0PlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 11:41:05 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34654 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727207AbfI0PlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 11:41:05 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 3so7846858qta.1;
-        Fri, 27 Sep 2019 08:41:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=fJXAR3BTSiEDrzcXRUPmAyScpWS/7FX+Os6XghgaQU0=;
-        b=uyS4auWyENLNwj4ODdMyhIEu9qmUQi6TF/0NgNXCDOSuv8he1njkkWUbH6MAAuI3dw
-         7vLlXOh9w2X0TDPsPQJ0xGa50Y/w8Pbl0Q9cF27Vp8Qvg0noboRK1e1n1eLo/A2AjyuD
-         uoQuNkjjiuKExO3npjd3EHDSrgGrqoZRhPGtTlDZDMXATXqpIrJAX7izsK0w7Yxgn93w
-         /QvzX10WXMfskAJ0QsMBgNc4pDJMZWNa6H9v21iOR2mV7ZrMDDpVkvXmSUJ1ClSH+Wtd
-         HW3kxO7tiQRWuLfj+Hl5STNb7ChjeOJD5rGDjJhnWylO6N16KyagbovNjvtXlcz3Dmtm
-         BIGA==
+        id S1727745AbfI0PwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 11:52:13 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:40873 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727349AbfI0PwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 11:52:13 -0400
+Received: by mail-oi1-f196.google.com with SMTP id k9so5594746oib.7;
+        Fri, 27 Sep 2019 08:52:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=fJXAR3BTSiEDrzcXRUPmAyScpWS/7FX+Os6XghgaQU0=;
-        b=b1EeUYzNUfYKr2cxCw0a+2WaVE0rou6lpU02jW4o2Xfv80cMUOqcaIrlQs106WHHom
-         X/Q1kCfHVYkzn/kXt6sk8WfK4jBs/S74dxAiEt5DD+qUljA0cZf7K05L7adTvWdjmSwm
-         i/MFmGij10Vr2W8fKR3KoqQztYbpyt50kiW5JnpZkaWjt6FM93cJo7GenZi48DbD8mLK
-         tqGbtOYd8MsjEXdyS9nt4G+JC5gal0ZEV5bOvex1Wayv1CKwSmMmvj4kW7DTT9RQ/oKO
-         NMO605D3asO1xm15h87Ne2ynq0D22QhXZCSJcHfVf1duoiJu62txqMLijGf/Ipp9ddEC
-         mPFA==
-X-Gm-Message-State: APjAAAX/IUOm2t8Z7dLcHrSrjmpBxfdaGtyaduB1272TajRPIcw5rNQa
-        3rMQf9d5AQV4PDlHIE52z21jjKJ1GK8v/qYm
-X-Google-Smtp-Source: APXvYqzflvmRBLJzHuAYDcQ5In3raI9yBS1yeQB4x+QTsu/BKYjGLPhy0jFumIrbkX37mMPtLYA1/A==
-X-Received: by 2002:ac8:67ce:: with SMTP id r14mr10362936qtp.317.1569598864212;
-        Fri, 27 Sep 2019 08:41:04 -0700 (PDT)
-Received: from ArchLaptop (lithosphere-80.dynamic2.rpi.edu. [129.161.139.80])
-        by smtp.gmail.com with ESMTPSA id p53sm2775779qtk.23.2019.09.27.08.41.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=2JNqIZKp6GqxqA7xiR7ISWAW++PU7T0DhHZ/3EtL4cQ=;
+        b=s9VnHW/sZvyPiYUEub1njioKpkZ+qK5A0l6+04mXxmiLY6turXUd/ay9FPSTM4kOPt
+         tEBbbNQSO6VoifGsiKWni1gOjBFIjpD2ETEhgO/9eSbA3Rr3yjsfxXKgibps+F2rL02s
+         Lfc423tOcWdRJmBHBmyYRV49F3i1T2eNNOaTxphIzzcTdkNKpr5raz4jtZ4yDevmtN8v
+         jGEFPhnXYqiQwzoOfVKAKWsRPw+WFFZaKqiGujSVRtVVJFqvqsOa8rj1GSUyO+3RWZ2Z
+         uXgNijGc6f2qhkTgXlUd0utJfytI/deOJEdwwok51na5r7D4GgKJ5lfo1JfAb8taw06R
+         sSRQ==
+X-Gm-Message-State: APjAAAWZA2IkegYg0hlWbpobzxY4VfUh3rvtqlDNVB8/7EALNf78pUmB
+        BGEbNidAOMWhLd5BHRQ1Jg==
+X-Google-Smtp-Source: APXvYqwUkPVaNYBNV/wwzcYD7UQU3P+NQOQwaNA+XYQu/35BFJLFbNs4+K5GY50f1cp7tE2YuyBgGw==
+X-Received: by 2002:aca:6057:: with SMTP id u84mr7898632oib.29.1569599532015;
+        Fri, 27 Sep 2019 08:52:12 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id r26sm1692866oij.46.2019.09.27.08.52.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Sep 2019 08:41:03 -0700 (PDT)
-Date:   Fri, 27 Sep 2019 11:41:02 -0400
-From:   Aaron Hill <aa1ronham@gmail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mac80211: Disable preeemption when updating stat
- counters
-Message-ID: <20190927154102.GA117350@ArchLaptop>
+        Fri, 27 Sep 2019 08:52:11 -0700 (PDT)
+Date:   Fri, 27 Sep 2019 10:52:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lars Poeschel <poeschel@lemonage.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v8 2/7] nfc: pn532: Add uart phy docs and rename it
+Message-ID: <20190927155209.GA6261@bogus>
+References: <20190919091645.16439-1-poeschel@lemonage.de>
+ <20190919091645.16439-2-poeschel@lemonage.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190919091645.16439-2-poeschel@lemonage.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mac80211 subsystem maintains per-cpu stat counters for receive and
-transmit operations. Previously, preemption was not disabled when
-updating these counters. This creates a race condition where two cpus
-could attempt to update the same counters using non-atomic operations.
+On Thu, Sep 19, 2019 at 11:16:39AM +0200, Lars Poeschel wrote:
+> This adds documentation about the uart phy to the pn532 binding doc. As
+> the filename "pn533-i2c.txt" is not appropriate any more, rename it to
+> the more general "pn532.txt".
+> This also documents the deprecation of the compatible strings ending
+> with "...-i2c".
+> 
+> Cc: Johan Hovold <johan@kernel.org>
+> Cc: Simon Horman <horms@verge.net.au>
+> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+> ---
+> Changes in v8:
+> - Update existing binding doc instead of adding a new one:
+>   - Add uart phy example
+>   - Add general "pn532" compatible string
+>   - Deprecate "...-i2c" compatible strings
+>   - Rename file to a more general filename
+> - Intentionally drop Rob's Reviewed-By as I guess this rather big change
+>   requires a new review
+> 
+> Changes in v7:
+> - Accidentally lost Rob's Reviewed-By
+> 
+> Changes in v6:
+> - Rebased the patch series on v5.3-rc5
+> - Picked up Rob's Reviewed-By
+> 
+> Changes in v4:
+> - Add documentation about reg property in case of i2c
+> 
+> Changes in v3:
+> - seperate binding doc instead of entry in trivial-devices.txt
+> 
+>  .../devicetree/bindings/net/nfc/pn532.txt     | 46 +++++++++++++++++++
+>  .../devicetree/bindings/net/nfc/pn533-i2c.txt | 29 ------------
+>  2 files changed, 46 insertions(+), 29 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/nfc/pn532.txt
+>  delete mode 100644 Documentation/devicetree/bindings/net/nfc/pn533-i2c.txt
 
-This was causing a
-'BUG: using smp_processor_id() in preemptible [00000000] code'
-message to be printed, along with a stacktrace. This was reported
-in a few different places:
+In the future, use '-M' option (I recommend making this the default).
 
-* https://www.spinics.net/lists/linux-wireless/msg189992.html
-* https://bugzilla.kernel.org/show_bug.cgi?id=204127
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nfc/pn532.txt b/Documentation/devicetree/bindings/net/nfc/pn532.txt
+> new file mode 100644
+> index 000000000000..f0591f160bee
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/nfc/pn532.txt
+> @@ -0,0 +1,46 @@
+> +* NXP Semiconductors PN532 NFC Controller
+> +
+> +Required properties:
+> +- compatible: Should be
+> +    - "nxp,pn532" Place a node with this inside the devicetree node of the bus
+> +                  where the NFC chip is connected to.
+> +                  Currently the kernel has phy bindings for uart and i2c.
+> +    - "nxp,pn532-i2c" (DEPRECATED) only works for the i2c binding.
+> +    - "nxp,pn533-i2c" (DEPRECATED) only works for the i2c binding.
 
-This patch adds calls to preempt_disable() and preempt_enable()
-surrounding the updating of the stat counters.
+No more pm533 support?
 
-Signed-off-by: Aaron Hill <aa1ronham@gmail.com>
----
- net/mac80211/rx.c | 7 ++++++-
- net/mac80211/tx.c | 7 ++++++-
- 2 files changed, 12 insertions(+), 2 deletions(-)
+> +
+> +Required properties if connected on i2c:
+> +- clock-frequency: I²C work frequency.
+> +- reg: for the I²C bus address. This is fixed at 0x24 for the PN532.
+> +- interrupts: GPIO interrupt to which the chip is connected
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 768d14c9a716..5ef0667151bf 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -34,12 +34,17 @@
- 
- static inline void ieee80211_rx_stats(struct net_device *dev, u32 len)
- {
--	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
-+	struct pcpu_sw_netstats *tstats;
-+
-+	// Disable preemption while updating per-cpu stats counters
-+	preempt_disable();
-+	tstats = this_cpu_ptr(dev->tstats);
- 
- 	u64_stats_update_begin(&tstats->syncp);
- 	tstats->rx_packets++;
- 	tstats->rx_bytes += len;
- 	u64_stats_update_end(&tstats->syncp);
-+	preempt_enable();
- }
- 
- static u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 1fa422782905..4cad3d741b6b 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -40,12 +40,17 @@
- 
- static inline void ieee80211_tx_stats(struct net_device *dev, u32 len)
- {
--	struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
-+	struct pcpu_sw_netstats *tstats;
-+
-+	// Disable preemption while updating per-cpu stats counters
-+	preempt_disable();
-+	tstats = this_cpu_ptr(dev->tstats);
- 
- 	u64_stats_update_begin(&tstats->syncp);
- 	tstats->tx_packets++;
- 	tstats->tx_bytes += len;
- 	u64_stats_update_end(&tstats->syncp);
-+	preempt_enable();
- }
- 
- static __le16 ieee80211_duration(struct ieee80211_tx_data *tx,
--- 
-2.23.0
+UART attached case has no irq? I guess it could just start sending 
+data...
 
+> +
+> +Optional SoC Specific Properties:
+> +- pinctrl-names: Contains only one value - "default".
+> +- pintctrl-0: Specifies the pin control groups used for this controller.
+> +
+> +Example (for ARM-based BeagleBone with PN532 on I2C2):
+> +
+> +&i2c2 {
+> +
+> +
+> +	pn532: pn532@24 {
+
+nfc@24
+
+> +
+> +		compatible = "nxp,pn532";
+> +
+> +		reg = <0x24>;
+> +		clock-frequency = <400000>;
+> +
+> +		interrupt-parent = <&gpio1>;
+> +		interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
+> +
+> +	};
+> +};
+> +
+> +Example (for PN532 connected via uart):
+> +
+> +uart4: serial@49042000 {
+> +        compatible = "ti,omap3-uart";
+> +
+> +        pn532: nfc {
+> +                compatible = "nxp,pn532";
+> +        };
+> +};
