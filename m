@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDB1C0344
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 12:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C1E2C0342
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 12:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727474AbfI0KPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 06:15:22 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57286 "EHLO mx1.suse.de"
+        id S1727784AbfI0KQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 06:16:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57344 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727390AbfI0KPV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 06:15:21 -0400
+        id S1727470AbfI0KPX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 06:15:23 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 91A10AF92;
-        Fri, 27 Sep 2019 10:15:18 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id C301BB023;
+        Fri, 27 Sep 2019 10:15:21 +0000 (UTC)
 From:   Benjamin Poirier <bpoirier@suse.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
         netdev@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/17] staging: qlge: Fix dma_sync_single calls
-Date:   Fri, 27 Sep 2019 19:12:03 +0900
-Message-Id: <20190927101210.23856-10-bpoirier@suse.com>
+Subject: [PATCH v2 10/17] staging: qlge: Remove rx_ring.type
+Date:   Fri, 27 Sep 2019 19:12:04 +0900
+Message-Id: <20190927101210.23856-11-bpoirier@suse.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20190927101210.23856-1-bpoirier@suse.com>
 References: <20190927101210.23856-1-bpoirier@suse.com>
@@ -33,201 +33,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the unmap addr elsewhere than unmap calls is a misuse of the dma api.
-In prevision of this fix, qlge kept two copies of the dma address around ;)
+This field is redundant, the type can be determined from the index, cq_id.
 
-Fixes: c4e84bde1d59 ("qlge: New Qlogic 10Gb Ethernet Driver.")
-Fixes: 7c734359d350 ("qlge: Size RX buffers based on MTU.")
-Fixes: 2c9a266afefe ("qlge: Fix receive packets drop.")
 Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
 ---
- drivers/staging/qlge/qlge.h      |  5 +--
- drivers/staging/qlge/qlge_main.c | 54 +++++++++++++-------------------
- 2 files changed, 22 insertions(+), 37 deletions(-)
+ drivers/staging/qlge/qlge.h      | 10 ----------
+ drivers/staging/qlge/qlge_dbg.c  | 16 ++++++++++++----
+ drivers/staging/qlge/qlge_main.c | 31 +++++++------------------------
+ 3 files changed, 19 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index a84aa264dfa8..519fa39dd194 100644
+index 519fa39dd194..5a4b2520cd2a 100644
 --- a/drivers/staging/qlge/qlge.h
 +++ b/drivers/staging/qlge/qlge.h
-@@ -1410,12 +1410,9 @@ struct qlge_bq_desc {
- 		struct sk_buff *skb;
- 	} p;
- 	dma_addr_t dma_addr;
--	/* address in ring where the buffer address (dma_addr) is written for
--	 * the device
--	 */
-+	/* address in ring where the buffer address is written for the device */
- 	__le64 *buf_ptr;
- 	u32 index;
--	DEFINE_DMA_UNMAP_ADDR(mapaddr);
+@@ -1387,15 +1387,6 @@ struct tx_ring {
+ 	u64 tx_errors;
  };
  
- /* buffer queue */
+-/*
+- * Type of inbound queue.
+- */
+-enum {
+-	DEFAULT_Q = 2,		/* Handles slow queue and chip/MPI events. */
+-	TX_Q = 3,		/* Handles outbound completions. */
+-	RX_Q = 4,		/* Handles inbound completions. */
+-};
+-
+ struct qlge_page_chunk {
+ 	struct page *page;
+ 	void *va; /* virt addr including offset */
+@@ -1468,7 +1459,6 @@ struct rx_ring {
+ 	struct qlge_bq sbq;
+ 
+ 	/* Misc. handler elements. */
+-	u32 type;		/* Type of queue, tx, rx. */
+ 	u32 irq;		/* Which vector this ring is assigned. */
+ 	u32 cpu;		/* Which CPU this should run on. */
+ 	char name[IFNAMSIZ + 5];
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index 35af06dd21dd..a177302073db 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -1731,16 +1731,24 @@ void ql_dump_cqicb(struct cqicb *cqicb)
+ 	       le16_to_cpu(cqicb->sbq_len));
+ }
+ 
++static const char *qlge_rx_ring_type_name(struct rx_ring *rx_ring)
++{
++	struct ql_adapter *qdev = rx_ring->qdev;
++
++	if (rx_ring->cq_id < qdev->rss_ring_count)
++		return "RX COMPLETION";
++	else
++		return "TX COMPLETION";
++};
++
+ void ql_dump_rx_ring(struct rx_ring *rx_ring)
+ {
+ 	if (rx_ring == NULL)
+ 		return;
+ 	pr_err("===================== Dumping rx_ring %d ===============\n",
+ 	       rx_ring->cq_id);
+-	pr_err("Dumping rx_ring %d, type = %s%s%s\n",
+-	       rx_ring->cq_id, rx_ring->type == DEFAULT_Q ? "DEFAULT" : "",
+-	       rx_ring->type == TX_Q ? "OUTBOUND COMPLETIONS" : "",
+-	       rx_ring->type == RX_Q ? "INBOUND_COMPLETIONS" : "");
++	pr_err("Dumping rx_ring %d, type = %s\n", rx_ring->cq_id,
++	       qlge_rx_ring_type_name(rx_ring));
+ 	pr_err("rx_ring->cqicb = %p\n", &rx_ring->cqicb);
+ 	pr_err("rx_ring->cq_base = %p\n", rx_ring->cq_base);
+ 	pr_err("rx_ring->cq_base_dma = %llx\n",
 diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index ba133d1f2b74..609a87804a94 100644
+index 609a87804a94..0e304a7ac22f 100644
 --- a/drivers/staging/qlge/qlge_main.c
 +++ b/drivers/staging/qlge/qlge_main.c
-@@ -995,15 +995,13 @@ static struct qlge_bq_desc *ql_get_curr_lchunk(struct ql_adapter *qdev,
+@@ -2785,14 +2785,10 @@ static void ql_free_rx_buffers(struct ql_adapter *qdev)
+ 
+ static void ql_alloc_rx_buffers(struct ql_adapter *qdev)
  {
- 	struct qlge_bq_desc *lbq_desc = qlge_get_curr_buf(&rx_ring->lbq);
+-	struct rx_ring *rx_ring;
+ 	int i;
  
--	pci_dma_sync_single_for_cpu(qdev->pdev,
--				    dma_unmap_addr(lbq_desc, mapaddr),
-+	pci_dma_sync_single_for_cpu(qdev->pdev, lbq_desc->dma_addr,
- 				    qdev->lbq_buf_size, PCI_DMA_FROMDEVICE);
- 
- 	if ((lbq_desc->p.pg_chunk.offset + qdev->lbq_buf_size) ==
- 	    ql_lbq_block_size(qdev)) {
- 		/* last chunk of the master page */
--		pci_unmap_page(qdev->pdev, lbq_desc->dma_addr -
--			       lbq_desc->p.pg_chunk.offset,
-+		pci_unmap_page(qdev->pdev, lbq_desc->dma_addr,
- 			       ql_lbq_block_size(qdev), PCI_DMA_FROMDEVICE);
- 	}
- 
-@@ -1031,7 +1029,7 @@ static const char * const bq_type_name[] = {
- 	[QLGE_LB] = "lbq",
- };
- 
--/* return size of allocated buffer (may be 0) or negative error */
-+/* return 0 or negative error */
- static int qlge_refill_sb(struct rx_ring *rx_ring,
- 			  struct qlge_bq_desc *sbq_desc)
- {
-@@ -1058,12 +1056,13 @@ static int qlge_refill_sb(struct rx_ring *rx_ring,
- 		dev_kfree_skb_any(skb);
- 		return -EIO;
- 	}
-+	*sbq_desc->buf_ptr = cpu_to_le64(sbq_desc->dma_addr);
- 
- 	sbq_desc->p.skb = skb;
--	return SMALL_BUFFER_SIZE;
-+	return 0;
+-	for (i = 0; i < qdev->rx_ring_count; i++) {
+-		rx_ring = &qdev->rx_ring[i];
+-		if (rx_ring->type != TX_Q)
+-			ql_update_buffer_queues(rx_ring);
+-	}
++	for (i = 0; i < qdev->rss_ring_count; i++)
++		ql_update_buffer_queues(&qdev->rx_ring[i]);
  }
  
--/* return size of allocated buffer or negative error */
-+/* return 0 or negative error */
- static int qlge_refill_lb(struct rx_ring *rx_ring,
- 			  struct qlge_bq_desc *lbq_desc)
- {
-@@ -1094,7 +1093,9 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
+ static int qlge_init_bq(struct qlge_bq *bq)
+@@ -3071,12 +3067,7 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 		rx_ring->sbq.clean_idx = 0;
+ 		rx_ring->sbq.free_cnt = rx_ring->sbq.len;
  	}
- 
- 	lbq_desc->p.pg_chunk = *master_chunk;
--	lbq_desc->dma_addr = rx_ring->chunk_dma_addr + master_chunk->offset;
-+	lbq_desc->dma_addr = rx_ring->chunk_dma_addr;
-+	*lbq_desc->buf_ptr = cpu_to_le64(lbq_desc->dma_addr +
-+					 lbq_desc->p.pg_chunk.offset);
- 
- 	/* Adjust the master page chunk for next
- 	 * buffer get.
-@@ -1107,7 +1108,7 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
- 		get_page(master_chunk->page);
- 	}
- 
--	return qdev->lbq_buf_size;
-+	return 0;
- }
- 
- static void qlge_refill_bq(struct qlge_bq *bq)
-@@ -1138,13 +1139,7 @@ static void qlge_refill_bq(struct qlge_bq *bq)
- 				retval = qlge_refill_sb(rx_ring, bq_desc);
- 			else
- 				retval = qlge_refill_lb(rx_ring, bq_desc);
--
--			if (retval > 0) {
--				dma_unmap_addr_set(bq_desc, mapaddr,
--						   bq_desc->dma_addr);
--				*bq_desc->buf_ptr =
--					cpu_to_le64(bq_desc->dma_addr);
--			} else if (retval < 0) {
-+			if (retval < 0) {
- 				bq->clean_idx = clean_idx;
- 				netif_err(qdev, ifup, qdev->ndev,
- 					  "ring %u %s: Could not get a page chunk, i=%d, clean_idx =%d .\n",
-@@ -1567,8 +1562,7 @@ static void ql_process_mac_rx_skb(struct ql_adapter *qdev,
- 	}
- 	skb_reserve(new_skb, NET_IP_ALIGN);
- 
--	pci_dma_sync_single_for_cpu(qdev->pdev,
--				    dma_unmap_addr(sbq_desc, mapaddr),
-+	pci_dma_sync_single_for_cpu(qdev->pdev, sbq_desc->dma_addr,
- 				    SMALL_BUF_MAP_SIZE, PCI_DMA_FROMDEVICE);
- 
- 	skb_put_data(new_skb, skb->data, length);
-@@ -1690,9 +1684,8 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
- 		 * Headers fit nicely into a small buffer.
+-	switch (rx_ring->type) {
+-	case TX_Q:
+-		cqicb->irq_delay = cpu_to_le16(qdev->tx_coalesce_usecs);
+-		cqicb->pkt_delay = cpu_to_le16(qdev->tx_max_coalesced_frames);
+-		break;
+-	case RX_Q:
++	if (rx_ring->cq_id < qdev->rss_ring_count) {
+ 		/* Inbound completion handling rx_rings run in
+ 		 * separate NAPI contexts.
  		 */
- 		sbq_desc = qlge_get_curr_buf(&rx_ring->sbq);
--		pci_unmap_single(qdev->pdev,
--				dma_unmap_addr(sbq_desc, mapaddr),
--				SMALL_BUF_MAP_SIZE, PCI_DMA_FROMDEVICE);
-+		pci_unmap_single(qdev->pdev, sbq_desc->dma_addr,
-+				 SMALL_BUF_MAP_SIZE, PCI_DMA_FROMDEVICE);
- 		skb = sbq_desc->p.skb;
- 		ql_realign_skb(skb, hdr_len);
- 		skb_put(skb, hdr_len);
-@@ -1722,8 +1715,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
- 			 */
- 			sbq_desc = qlge_get_curr_buf(&rx_ring->sbq);
- 			pci_dma_sync_single_for_cpu(qdev->pdev,
--						    dma_unmap_addr(sbq_desc,
--								   mapaddr),
-+						    sbq_desc->dma_addr,
- 						    SMALL_BUF_MAP_SIZE,
- 						    PCI_DMA_FROMDEVICE);
- 			skb_put_data(skb, sbq_desc->p.skb->data, length);
-@@ -1735,8 +1727,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
- 			skb = sbq_desc->p.skb;
- 			ql_realign_skb(skb, length);
- 			skb_put(skb, length);
--			pci_unmap_single(qdev->pdev,
--					 dma_unmap_addr(sbq_desc, mapaddr),
-+			pci_unmap_single(qdev->pdev, sbq_desc->dma_addr,
- 					 SMALL_BUF_MAP_SIZE,
- 					 PCI_DMA_FROMDEVICE);
- 			sbq_desc->p.skb = NULL;
-@@ -1774,8 +1765,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
- 					     "No skb available, drop the packet.\n");
- 				return NULL;
- 			}
--			pci_unmap_page(qdev->pdev,
--				       dma_unmap_addr(lbq_desc, mapaddr),
-+			pci_unmap_page(qdev->pdev, lbq_desc->dma_addr,
- 				       qdev->lbq_buf_size,
- 				       PCI_DMA_FROMDEVICE);
- 			skb_reserve(skb, NET_IP_ALIGN);
-@@ -1808,8 +1798,7 @@ static struct sk_buff *ql_build_rx_skb(struct ql_adapter *qdev,
- 		 */
- 		int size, i = 0;
- 		sbq_desc = qlge_get_curr_buf(&rx_ring->sbq);
--		pci_unmap_single(qdev->pdev,
--				 dma_unmap_addr(sbq_desc, mapaddr),
-+		pci_unmap_single(qdev->pdev, sbq_desc->dma_addr,
- 				 SMALL_BUF_MAP_SIZE, PCI_DMA_FROMDEVICE);
- 		if (!(ib_mac_rsp->flags4 & IB_MAC_IOCB_RSP_HS)) {
- 			/*
-@@ -2736,8 +2725,8 @@ static void ql_free_lbq_buffers(struct ql_adapter *qdev, struct rx_ring *rx_ring
- 		struct qlge_bq_desc *lbq_desc = &rx_ring->lbq.queue[curr_idx];
+@@ -3084,10 +3075,9 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 			       64);
+ 		cqicb->irq_delay = cpu_to_le16(qdev->rx_coalesce_usecs);
+ 		cqicb->pkt_delay = cpu_to_le16(qdev->rx_max_coalesced_frames);
+-		break;
+-	default:
+-		netif_printk(qdev, ifup, KERN_DEBUG, qdev->ndev,
+-			     "Invalid rx_ring->type = %d.\n", rx_ring->type);
++	} else {
++		cqicb->irq_delay = cpu_to_le16(qdev->tx_coalesce_usecs);
++		cqicb->pkt_delay = cpu_to_le16(qdev->tx_max_coalesced_frames);
+ 	}
+ 	err = ql_write_cfg(qdev, cqicb, sizeof(struct cqicb),
+ 			   CFG_LCQ, rx_ring->cq_id);
+@@ -3444,12 +3434,7 @@ static int ql_request_irq(struct ql_adapter *qdev)
+ 				goto err_irq;
  
- 		if (lbq_desc->p.pg_chunk.offset == last_offset)
--			pci_unmap_page(qdev->pdev, lbq_desc->dma_addr -
--				       last_offset, ql_lbq_block_size(qdev),
-+			pci_unmap_page(qdev->pdev, lbq_desc->dma_addr,
-+				       ql_lbq_block_size(qdev),
- 				       PCI_DMA_FROMDEVICE);
- 
- 		put_page(lbq_desc->p.pg_chunk.page);
-@@ -2768,8 +2757,7 @@ static void ql_free_sbq_buffers(struct ql_adapter *qdev, struct rx_ring *rx_ring
- 			return;
+ 			netif_err(qdev, ifup, qdev->ndev,
+-				  "Hooked intr %d, queue type %s, with name %s.\n",
+-				  i,
+-				  qdev->rx_ring[0].type == DEFAULT_Q ?
+-				  "DEFAULT_Q" :
+-				  qdev->rx_ring[0].type == TX_Q ? "TX_Q" :
+-				  qdev->rx_ring[0].type == RX_Q ? "RX_Q" : "",
++				  "Hooked intr 0, queue type RX_Q, with name %s.\n",
+ 				  intr_context->name);
  		}
- 		if (sbq_desc->p.skb) {
--			pci_unmap_single(qdev->pdev,
--					 dma_unmap_addr(sbq_desc, mapaddr),
-+			pci_unmap_single(qdev->pdev, sbq_desc->dma_addr,
- 					 SMALL_BUF_MAP_SIZE,
- 					 PCI_DMA_FROMDEVICE);
- 			dev_kfree_skb(sbq_desc->p.skb);
+ 		intr_context->hooked = 1;
+@@ -4012,7 +3997,6 @@ static int ql_configure_rings(struct ql_adapter *qdev)
+ 			rx_ring->sbq.type = QLGE_SB;
+ 			rx_ring->sbq.len = NUM_SMALL_BUFFERS;
+ 			rx_ring->sbq.size = rx_ring->sbq.len * sizeof(__le64);
+-			rx_ring->type = RX_Q;
+ 		} else {
+ 			/*
+ 			 * Outbound queue handles outbound completions only.
+@@ -4025,7 +4009,6 @@ static int ql_configure_rings(struct ql_adapter *qdev)
+ 			rx_ring->lbq.size = 0;
+ 			rx_ring->sbq.len = 0;
+ 			rx_ring->sbq.size = 0;
+-			rx_ring->type = TX_Q;
+ 		}
+ 	}
+ 	return 0;
 -- 
 2.23.0
 
