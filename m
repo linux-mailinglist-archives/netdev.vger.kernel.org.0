@@ -2,118 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A0BC09A9
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:35:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4082C09BA
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbfI0Qfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 12:35:45 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36322 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727289AbfI0Qfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:35:45 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y19so3897224wrd.3
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 09:35:44 -0700 (PDT)
+        id S1727747AbfI0Qjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 12:39:44 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:45580 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbfI0Qjo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:39:44 -0400
+Received: by mail-lf1-f65.google.com with SMTP id r134so2372556lff.12
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 09:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2UiXLHYPkk0mxphBGJ/ErKZt1IG6MWXMGBsXbn9pocI=;
-        b=j5ipLY9hf5QphBT5IkgrVfynGWRHK3OnF7CqStpHqvPehp5P7+/aQRBcwrNv5xQdTZ
-         S2hFCmyPW6LgLVSFPjTTeIVWp0UEqph/QVfu+VnUB1CyArIguFPd4qbOpWlcaYDTRoHr
-         rshEVG4LNv5XBvkhF0VLljRqrrRgK778ZmELr/+NAE/+08zpOqU+Y3mJLQbuFRNAUbDk
-         GDpZdbVmdh/9LjHSH2LL1WlzBWlJFCVE2VXdMJUaabNGStLadxS3coVXPQZsAjwZVhho
-         08YTxOJkETSrIsQMCys6F8wS+ByiSeC5MLcSoJGKhhqHIRj9pmaUjFf9exCID7TJiWsT
-         IYSw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xCf1P0jSPhZkBtwHTc7vUPr69Q1RyQk/RlFM9BYZbYY=;
+        b=pUMk2g4DCkoXn0/vLtWnyJN2nfxb6zSsltCNso/CF29YsYoY4ZzcMfR+i527Etw+B/
+         wvzXS2pkVoaX1e6m0pIG9rACkLHK7UnK9N2Azf87jcZQnJP2mLxIicNxgJ/KHnEuApVp
+         +TVAnSM8UgKQjsgSannSJ1wBpa2cxSFwM3Xg3nFTSq3C01oM4VPiqmkohUja1Pq/gpw2
+         8OIZviqmGaEolvyP2wNgTQgKPXs0L/htJU+6e2wT4lsbpHQpkxJWkkKJcWYbDzMe6mDl
+         kQeov3qVsIZ+yaqIIVRPF8pWmeu+3hlMaOHtuy7blvehh+i7NSOO7n2o1Bh+SoZtFGgK
+         ERog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2UiXLHYPkk0mxphBGJ/ErKZt1IG6MWXMGBsXbn9pocI=;
-        b=QnHDthnN02ncIZgYEazHqS3cUN6Ey8zfExFD7dgqfCaOkU6ECNpcUJBjLs19enpttj
-         1jWdaX8kSFdDPipeGav52kKSvMlrBUNxTaGvqcTqKdJwFLkKF2RpHa0G0hB4ijAPxXTm
-         f23SwH+EprjL/1C06DXGhkSOfMjuJ2i0WoqgSe3r/ShnkaO0uJYGUx8ch3OznZxa5hdy
-         L5hMW8zbtQdKnwXCFE5ePXlfLEaszBbFIjaEUM5Hj6FH+cuWMfE9lPqL6sB/S2LqVNaf
-         JOUZ2MXYopXO2ZGo0qtJy9GNKrY7xJS6PjWYOlhYs4aQ42WisGTTcCw1mYjS7/NLNZkQ
-         hwrw==
-X-Gm-Message-State: APjAAAVRTkxEzbxDFU5U9Pl1F1Buxz6Md0xbdHG71VWDX6GsYY7IlMFH
-        KLWqGHtk8E75WpDlZO5wG57sIcF2jm++coz9I6XVwQ==
-X-Google-Smtp-Source: APXvYqyeE8p30RfGOpqi//LCUXxbWVrYObaHKXK+P3Qpd35nBZSItGvH6uGVxGQm8m7jAJoL6ZS9TWk7V5M4XkSinyU=
-X-Received: by 2002:a7b:c84f:: with SMTP id c15mr8257525wml.52.1569602143230;
- Fri, 27 Sep 2019 09:35:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xCf1P0jSPhZkBtwHTc7vUPr69Q1RyQk/RlFM9BYZbYY=;
+        b=N/tHB7TEw5PJ+5Mn64Bg/e04A6QQi56Fl9tElahNh2XhETcRwneQscpmVUDx+CAQ7g
+         gkZxzx7YPGOUDUpTsl5jE4K1gzBRcJFgoW4jZnqgOefOgWHqtkPQgKmmTlKc4Y/J6ddK
+         4t2MTD/fVmI5NO8FBKBaYC+SR2NjD4GTAWI3R+8KjOrBZx7TItyY0zbMWZ5IIUsQNDzJ
+         BLWYwSmOmE9y+dwiOhXWj4Qdk4LgzypuX9FUHSbnVtePBvVt+RWJ9b3Iq+/3N3gbv2P6
+         YCqRy0U/gF1zJtZP7wPOC5e06yHtNdMVyZCTgS6isRyrnsouaNVIiFQa37GkMDmvLIpp
+         ZvwA==
+X-Gm-Message-State: APjAAAUpr5R/w38gZAPCwkPR4v/6fEWS/sCbROYBASzYCbehlF3njiWT
+        vwW8Qe6y1TnsIi3HHncsKwwfsg==
+X-Google-Smtp-Source: APXvYqwwSE0dqH/P7HDPuTE/6DP+cZrPAzHDr1w+B5VpkMFRGlLVVz3P0Q7UnspDeIQ3b1URrXY3kw==
+X-Received: by 2002:ac2:46d2:: with SMTP id p18mr3480582lfo.140.1569602380474;
+        Fri, 27 Sep 2019 09:39:40 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-79c8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.200.121])
+        by smtp.gmail.com with ESMTPSA id j84sm564846ljb.91.2019.09.27.09.39.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Sep 2019 09:39:38 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] net: dsa: rtl8366: Check VLAN ID and not ports
+Date:   Fri, 27 Sep 2019 18:39:11 +0200
+Message-Id: <20190927163911.11179-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20190926224251.249797-1-edumazet@google.com>
-In-Reply-To: <20190926224251.249797-1-edumazet@google.com>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Fri, 27 Sep 2019 09:35:06 -0700
-Message-ID: <CAK6E8=f9v9eYFw7oZ7orsTru0Rr=eUMwSk5VcZP-kEgPkag1+g@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Jon Maxwell <jmaxwell37@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 3:42 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Yuchung Cheng and Marek Majkowski independently reported a weird
-> behavior of TCP_USER_TIMEOUT option when used at connect() time.
->
-> When the TCP_USER_TIMEOUT is reached, tcp_write_timeout()
-> believes the flow should live, and the following condition
-> in tcp_clamp_rto_to_user_timeout() programs one jiffie timers :
->
->     remaining = icsk->icsk_user_timeout - elapsed;
->     if (remaining <= 0)
->         return 1; /* user timeout has passed; fire ASAP */
->
-> This silly situation ends when the max syn rtx count is reached.
->
-> This patch makes sure we honor both TCP_SYNCNT and TCP_USER_TIMEOUT,
-> avoiding these spurious SYN packets.
->
-> Fixes: b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout() helper to improve accuracy")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Yuchung Cheng <ycheng@google.com>
-> Reported-by: Marek Majkowski <marek@cloudflare.com>
-> Cc: Jon Maxwell <jmaxwell37@gmail.com>
-> Link: https://marc.info/?l=linux-netdev&m=156940118307949&w=2
-> ---
-Acked-by: Yuchung Cheng <ycheng@google.com>
-thanks for fixing it!
->  net/ipv4/tcp_timer.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-> index dbd9d2d0ee63aa46ad2dda417da6ec9409442b77..40de2d2364a1eca14c259d77ebed361d17829eb9 100644
-> --- a/net/ipv4/tcp_timer.c
-> +++ b/net/ipv4/tcp_timer.c
-> @@ -210,7 +210,7 @@ static int tcp_write_timeout(struct sock *sk)
->         struct inet_connection_sock *icsk = inet_csk(sk);
->         struct tcp_sock *tp = tcp_sk(sk);
->         struct net *net = sock_net(sk);
-> -       bool expired, do_reset;
-> +       bool expired = false, do_reset;
->         int retry_until;
->
->         if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
-> @@ -242,9 +242,10 @@ static int tcp_write_timeout(struct sock *sk)
->                         if (tcp_out_of_resources(sk, do_reset))
->                                 return 1;
->                 }
-> +       }
-> +       if (!expired)
->                 expired = retransmits_timed_out(sk, retry_until,
->                                                 icsk->icsk_user_timeout);
-> -       }
->         tcp_fastopen_active_detect_blackhole(sk, expired);
->
->         if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTO_CB_FLAG))
-> --
-> 2.23.0.444.g18eeb5a265-goog
->
+There has been some confusion between the port number and
+the VLAN ID in this driver. What we need to check for
+validity is the VLAN ID, nothing else.
+
+The current confusion came from assigning a few default
+VLANs for default routing and we need to rewrite that
+properly.
+
+Instead of checking if the port number is a valid VLAN
+ID, check the actual VLAN IDs passed in to the callback
+one by one as expected.
+
+Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/net/dsa/rtl8366.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index ca3d17e43ed8..e2c91b75e843 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -340,9 +340,11 @@ int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
+ {
+ 	struct realtek_smi *smi = ds->priv;
+ 	int ret;
++	int i;
+ 
+-	if (!smi->ops->is_vlan_valid(smi, port))
+-		return -EINVAL;
++	for (i = vlan->vid_begin; i < vlan->vid_end; i++)
++		if (!smi->ops->is_vlan_valid(smi, port))
++			return -EINVAL;
+ 
+ 	dev_info(smi->dev, "prepare VLANs %04x..%04x\n",
+ 		 vlan->vid_begin, vlan->vid_end);
+@@ -369,9 +371,11 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 	u32 untag = 0;
+ 	u16 vid;
+ 	int ret;
++	int i;
+ 
+-	if (!smi->ops->is_vlan_valid(smi, port))
+-		return;
++	for (i = vlan->vid_begin; i < vlan->vid_end; i++)
++		if (!smi->ops->is_vlan_valid(smi, port))
++			return;
+ 
+ 	dev_info(smi->dev, "add VLAN on port %d, %s, %s\n",
+ 		 port,
+-- 
+2.21.0
+
