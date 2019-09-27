@@ -2,136 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A227C0D40
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 23:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF839C0D6B
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 23:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbfI0V2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 17:28:48 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:54041 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725306AbfI0V2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 17:28:48 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9A37A22AA;
-        Fri, 27 Sep 2019 17:28:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 27 Sep 2019 17:28:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
-        content-transfer-encoding:content-type:in-reply-to:date:cc
-        :subject:from:to:message-id; s=fm1; bh=tEytGYjqRKPYg5eCE7y6nPooC
-        bRk5cnOY2TTMlrG3W4=; b=kGHYCLSdj89XY6LTRlLeSXv7el6WQ20uWccauT87V
-        E2LZF1nMANPIZHGZohZb0cPcH6+JyOf4EkrfI2bnHTNK7mZq8G27nRwArvGi6jNJ
-        f27GAXCO3B/m7NTMXyq/9xCSs20CpkxwqWPm41sQWVDcPIswBqwvCEbuoiYYKj9n
-        HsutJ9EreQAdn0cPxldwvttj4F8RQev+IHxWLRx67SsWwLoxCO+YgQ+nShfi8MS8
-        9vogDptJ61ADsFQ0dsdPiwDQ3DpGstER6db494cWO8dATsHH68lDBkqEsdbVIhOP
-        7+Ed5E0V1FJ6Kncxf1Fc6YtDEcvFRMsSXZ6nSI9zpOzdw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=tEytGY
-        jqRKPYg5eCE7y6nPooCbRk5cnOY2TTMlrG3W4=; b=TRJ5v6i8Anowb1mb/c/xe5
-        aER9VH2QCbEL000vUJiyD6UAYRyZlBwp6HfqWuJB4JDKzCx+l6WiXAke/qIApb6s
-        lwuNb3Unk6c9P417zwyy66NdKXxUq6dnIPOVgLtdc4P7e+pzywk/9keUns/IQ9hu
-        KHmXtGMCMx++/F/mCc3W+fTg7cUeFxQ4pl0tKtdNtgTMSKXhSFEQUkCiilThZpZ7
-        c1UPBbc0uWxncZymjE3X3QpAqQBGfWf8LJ2zPQek4es4HtOiOKxTLYo0bvwhFaTd
-        29zcfEPbth8UeRh3RcgU0PgVoEvkmyI+FPq4YEmMcNPhdsiviy8eHBUGAgjqAmqA
-        ==
-X-ME-Sender: <xms:DX-OXf-I8FOKU-EM_IZiZaMH_6_8XfysQ23kziqjZj__X9eSPhxSFQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrfeeigdduheelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdljedtmdenucfjughrpefgtggjfffuhffvkfesthhqredttddtjeen
-    ucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurdighiiiqeenuc
-    fkphepudelledrvddtuddrieegrddvnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihu
-    segugihuuhhurdighiiinecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:DX-OXQlGZcIaZyDrqLo631BF5AeBeYwvCQmD_G0z4o8InUDWiVJVrQ>
-    <xmx:DX-OXVkwo1OLucWU4_-JfdhgXudIt6BOj_bfagWDR8Na9nf_UvtzwA>
-    <xmx:DX-OXcva-tU3uG8rUivTJtbuLawLcP6XBN7R-WvDOlwd3rxjbZTXcw>
-    <xmx:Dn-OXXifHPLswMp9N9jbLEfGNsKtvLR0JPXCnpWGgitoEhWjZv23ug>
-Received: from localhost (unknown [199.201.64.2])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 10B9ED6005B;
-        Fri, 27 Sep 2019 17:28:43 -0400 (EDT)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <20190924083342.GA21640@krava>
-Date:   Fri, 27 Sep 2019 14:28:43 -0700
-Cc:     <bpf@vger.kernel.org>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <andriin@fb.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <ast@fb.com>,
-        <alexander.shishkin@linux.intel.com>, <namhyung@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 1/5] perf/core: Add PERF_FORMAT_LOST
- read_format
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Jiri Olsa" <jolsa@redhat.com>
-Message-Id: <BXB3R6AZT2LR.2DHP9YCMGCTYJ@dlxu-fedora-R90QNFJV>
+        id S1726321AbfI0Vms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 17:42:48 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33657 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbfI0Vmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 17:42:47 -0400
+Received: by mail-pg1-f194.google.com with SMTP id i30so4169637pgl.0
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 14:42:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Lzcnw0iAcIFwZNCYEwiqETTo7mFYOXKonShWkT8groo=;
+        b=sGZfP/z9N7kBYff/yn481rZ/m6Z9TK6lqaAfFkUlClJYaX8LJPJD0042nr+RR3kNgl
+         L8pFTcb0BAOChMz1+gAVJoDsfySeQo0Fnr0M1vXJFjjh8Z5W4DCICoF+7zkY5cJm0Nyf
+         y+AnIpfEzF2ChKoi9ajpC/gQP/wGShzwwUhQIKwQoa/Hqimb6p5zQDZpSzHQEm7kOvJ8
+         9mkCLMkFNfZzwHE5YXzSjvy/ik4EG5Q3GDmViRu29WVrQApCyARAWK969W8a7bTabQi6
+         WqByiOseyL9LLbeZy4lv7mAJKqWfhCX08Daalfg5JBz1TRuQaXpsIpIwuzozUVgYh01S
+         +EfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Lzcnw0iAcIFwZNCYEwiqETTo7mFYOXKonShWkT8groo=;
+        b=MFwKpvFAh5S853saoMq+kmzQx8zswQN4N67LjfkcHeBpNos8m5JCnOzYvB5kX2orEU
+         M8EITkOIJzQESff4+IgtFE36HvQVaRXESVLCkmqrl60AlZGxBeii55+piQ4JMNzNFd79
+         HtGLd3+x6jBOrvEC9kJt8HTFu7577P6g1d6V034g6TI9yKrDcO57+C3pCLmiQlj7aula
+         oi3tafEo1Eeh42uAAadG6lwKJ6qQOldeS7AYw56IjrovsKaQZYOk/fw1W3pVtAkRbfJ7
+         bix79bWKYEZCaqwC/q8ZJRwSqdDl/FOxzTMQpEnnhOsDfsj1m5LacmfIZClNcEbiwgCx
+         R4Ow==
+X-Gm-Message-State: APjAAAX/2aUt9VYFQV07LKj6lI75npujD00TDLt9OO7fY33elQOtwnz1
+        KrcRF9cZA4GAaxU7UVG5RO3VFA==
+X-Google-Smtp-Source: APXvYqylvxizWriFlZFI3My3E7wjF1M17Xv3jfridbykbRDhmf/+GPf8eTOyqqe9JtmyjBQw57nNfA==
+X-Received: by 2002:a65:628a:: with SMTP id f10mr11289856pgv.155.1569620566828;
+        Fri, 27 Sep 2019 14:42:46 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y138sm4035112pfb.174.2019.09.27.14.42.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Sep 2019 14:42:46 -0700 (PDT)
+Date:   Fri, 27 Sep 2019 14:42:42 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Navid Emamdoost <emamd001@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
+        Stephen A McCamant <smccaman@umn.edu>,
+        Colin Ian King <colin.king@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>,
+        Pablo Neira <pablo@netfilter.org>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH v3] nfp: abm: fix memory leak in
+ nfp_abm_u32_knode_replace
+Message-ID: <20190927144242.7e0d8fde@cakuba.netronome.com>
+In-Reply-To: <1cde6417-5942-598b-3670-c0a7227ffe25@web.de>
+References: <20190927015157.20070-1-navid.emamdoost@gmail.com>
+        <1cde6417-5942-598b-3670-c0a7227ffe25@web.de>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
-
-On Tue Sep 24, 2019 at 10:33 AM Jiri Olsa wrote:
-> On Tue, Sep 17, 2019 at 06:30:52AM -0700, Daniel Xu wrote:
->=20
-> SNIP
->=20
-> > +	PERF_FORMAT_MAX =3D 1U << 5,		/* non-ABI */
-> >  };
-> > =20
-> >  #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
-> > diff --git a/kernel/events/core.c b/kernel/events/core.c
-> > index 0463c1151bae..ee08d3ed6299 100644
-> > --- a/kernel/events/core.c
-> > +++ b/kernel/events/core.c
-> > @@ -1715,6 +1715,9 @@ static void __perf_event_read_size(struct perf_ev=
-ent *event, int nr_siblings)
-> >  	if (event->attr.read_format & PERF_FORMAT_ID)
-> >  		entry +=3D sizeof(u64);
-> > =20
-> > +	if (event->attr.read_format & PERF_FORMAT_LOST)
-> > +		entry +=3D sizeof(u64);
-> > +
-> >  	if (event->attr.read_format & PERF_FORMAT_GROUP) {
-> >  		nr +=3D nr_siblings;
-> >  		size +=3D sizeof(u64);
-> > @@ -4734,6 +4737,24 @@ u64 perf_event_read_value(struct perf_event *eve=
-nt, u64 *enabled, u64 *running)
+On Fri, 27 Sep 2019 14:12:42 +0200, Markus Elfring wrote:
+> > Updated other gotos to have correct errno returned, too.  
+> 
+> How do you think about to add a jump target here?
+> 
+> 
+> > +++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
+> > @@ -176,8 +176,10 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+> >  	u8 mask, val;
+> >  	int err;
+> >
+> > -	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack))
+> > +	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack)) {
+> > +		err = -EOPNOTSUPP;
+> >  		goto err_delete;
+> > +	}
+> >
+> >  	tos_off = proto == htons(ETH_P_IP) ? 16 : 20;  
+> 
+> -		goto err_delete;
+> +		goto e_opnotsupp;
+> 
+> 
+> > @@ -221,7 +227,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+> >  
+> 
+> +e_opnotsupp:
+> +	err = -EOPNOTSUPP;
+> 
+> >  err_delete:
+> >  	nfp_abm_u32_knode_delete(alink, knode);
+> > -	return -EOPNOTSUPP;
+> > +	return err;
 > >  }
-> >  EXPORT_SYMBOL_GPL(perf_event_read_value);
-> > =20
-> > +static struct pmu perf_kprobe;
-> > +static u64 perf_event_lost(struct perf_event *event)
-> > +{
-> > +	struct ring_buffer *rb;
-> > +	u64 lost =3D 0;
-> > +
-> > +	rcu_read_lock();
-> > +	rb =3D rcu_dereference(event->rb);
-> > +	if (likely(!!rb))
-> > +		lost +=3D local_read(&rb->lost);
-> > +	rcu_read_unlock();
-> > +
-> > +	if (event->attr.type =3D=3D perf_kprobe.type)
-> > +		lost +=3D perf_kprobe_missed(event);
->=20
-> not sure what was the peterz's suggestion, but here you are mixing
-> ring buffer's lost count with kprobes missed count, seems wrong
+> >
+> >  static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,  
+> 
+> 
+> Can such a change variant be a bit nicer?
 
-To be honest, I'm not 100% sure what the correct semantics here should
-be. I thought it might be less misleading if we included ring buffer
-related misses as well.
+Definitely not.
 
-Regardless, I am ok with either.
-
-> maybe we could add PERF_FORMAT_KPROBE_MISSED
-
-I think the feedback from the last patchset was that we want to keep
-the misses unified.
-
-Peter, do you have any thoughts?
-
-Thanks,
-Daniel
+Looks good as is, thanks Navid!
