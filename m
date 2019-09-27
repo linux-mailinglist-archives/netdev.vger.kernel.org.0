@@ -2,100 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C7DAC014E
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 10:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B87C9C0170
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 10:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbfI0Ihh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 04:37:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33376 "EHLO mx1.redhat.com"
+        id S1726394AbfI0IsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 04:48:01 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49380 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725946AbfI0Ihg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 04:37:36 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        id S1725882AbfI0IsA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 04:48:00 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 38C8EC05AA52;
-        Fri, 27 Sep 2019 08:37:36 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 24E34300C72B;
+        Fri, 27 Sep 2019 08:48:00 +0000 (UTC)
 Received: from [10.72.12.30] (ovpn-12-30.pek2.redhat.com [10.72.12.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 18629600C6;
-        Fri, 27 Sep 2019 08:37:08 +0000 (UTC)
-Subject: Re: [PATCH V2 6/8] mdev: introduce virtio device and its device ops
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B1FD85D6A7;
+        Fri, 27 Sep 2019 08:47:45 +0000 (UTC)
+Subject: Re: [PATCH] vhost: introduce mdev based hardware backend
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
         cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com
-References: <20190924135332.14160-1-jasowang@redhat.com>
- <20190924135332.14160-7-jasowang@redhat.com>
- <20190924170640.1da03bae@x1.home>
+        lingshan.zhu@intel.com
+References: <20190926045427.4973-1-tiwei.bie@intel.com>
+ <1b4b8891-8c14-1c85-1d6a-2eed1c90bcde@redhat.com>
+ <20190927045438.GA17152@___>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <baa742f5-8d4e-f1f1-1194-f362cdf51fea@redhat.com>
-Date:   Fri, 27 Sep 2019 16:37:06 +0800
+Message-ID: <05ab395e-6677-e8c3-becf-57bc1529921f@redhat.com>
+Date:   Fri, 27 Sep 2019 16:47:43 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190924170640.1da03bae@x1.home>
+In-Reply-To: <20190927045438.GA17152@___>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Fri, 27 Sep 2019 08:37:36 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 27 Sep 2019 08:48:00 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/9/25 上午7:06, Alex Williamson wrote:
-> On Tue, 24 Sep 2019 21:53:30 +0800
-> Jason Wang<jasowang@redhat.com>  wrote:
+On 2019/9/27 下午12:54, Tiwei Bie wrote:
+> On Fri, Sep 27, 2019 at 11:46:06AM +0800, Jason Wang wrote:
+>> On 2019/9/26 下午12:54, Tiwei Bie wrote:
+>>> +
+>>> +static long vhost_mdev_start(struct vhost_mdev *m)
+>>> +{
+>>> +	struct mdev_device *mdev = m->mdev;
+>>> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+>>> +	struct virtio_mdev_callback cb;
+>>> +	struct vhost_virtqueue *vq;
+>>> +	int idx;
+>>> +
+>>> +	ops->set_features(mdev, m->acked_features);
+>>> +
+>>> +	mdev_add_status(mdev, VIRTIO_CONFIG_S_FEATURES_OK);
+>>> +	if (!(mdev_get_status(mdev) & VIRTIO_CONFIG_S_FEATURES_OK))
+>>> +		goto reset;
+>>> +
+>>> +	for (idx = 0; idx < m->nvqs; idx++) {
+>>> +		vq = &m->vqs[idx];
+>>> +
+>>> +		if (!vq->desc || !vq->avail || !vq->used)
+>>> +			break;
+>>> +
+>>> +		if (ops->set_vq_state(mdev, idx, vq->last_avail_idx))
+>>> +			goto reset;
+>> If we do set_vq_state() in SET_VRING_BASE, we won't need this step here.
+> Yeah, I plan to do it in the next version.
 >
->> This patch implements basic support for mdev driver that supports
->> virtio transport for kernel virtio driver.
+>>> +
+>>> +		/*
+>>> +		 * In vhost-mdev, userspace should pass ring addresses
+>>> +		 * in guest physical addresses when IOMMU is disabled or
+>>> +		 * IOVAs when IOMMU is enabled.
+>>> +		 */
+>> A question here, consider we're using noiommu mode. If guest physical
+>> address is passed here, how can a device use that?
 >>
->> Signed-off-by: Jason Wang<jasowang@redhat.com>
->> ---
->>   include/linux/mdev.h        |   2 +
->>   include/linux/virtio_mdev.h | 145 ++++++++++++++++++++++++++++++++++++
->>   2 files changed, 147 insertions(+)
->>   create mode 100644 include/linux/virtio_mdev.h
->>
->> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
->> index 3414307311f1..73ac27b3b868 100644
->> --- a/include/linux/mdev.h
->> +++ b/include/linux/mdev.h
->> @@ -126,6 +126,8 @@ struct mdev_device *mdev_from_dev(struct device *dev);
->>   
->>   enum {
->>   	MDEV_ID_VFIO = 1,
->> +	MDEV_ID_VIRTIO = 2,
->> +	MDEV_ID_VHOST = 3,
-> MDEV_ID_VHOST isn't used yet here.  Also, given the strong
-> interdependence between the class_id and the ops structure, we might
-> wand to define them in the same place.  Thanks,
+>> I believe you meant "host physical address" here? And it also have the
+>> implication that the HPA should be continuous (e.g using hugetlbfs).
+> The comment is talking about the virtual IOMMU (i.e. iotlb in vhost).
+> It should be rephrased to cover the noiommu case as well. Thanks for
+> spotting this.
 >
-> Alex
 >
+>>> +
+>>> +	switch (cmd) {
+>>> +	case VHOST_MDEV_SET_STATE:
+>>> +		r = vhost_set_state(m, argp);
+>>> +		break;
+>>> +	case VHOST_GET_FEATURES:
+>>> +		r = vhost_get_features(m, argp);
+>>> +		break;
+>>> +	case VHOST_SET_FEATURES:
+>>> +		r = vhost_set_features(m, argp);
+>>> +		break;
+>>> +	case VHOST_GET_VRING_BASE:
+>>> +		r = vhost_get_vring_base(m, argp);
+>>> +		break;
+>> Does it mean the SET_VRING_BASE may only take affect after
+>> VHOST_MEV_SET_STATE?
+> Yeah, in this version, SET_VRING_BASE won't set the base to the
+> device directly. But I plan to not delay this anymore in the next
+> version to support the SET_STATUS.
+>
+>>> +	default:
+>>> +		r = vhost_dev_ioctl(&m->dev, cmd, argp);
+>>> +		if (r == -ENOIOCTLCMD)
+>>> +			r = vhost_vring_ioctl(&m->dev, cmd, argp);
+>>> +	}
+>>> +
+>>> +	mutex_unlock(&m->mutex);
+>>> +	return r;
+>>> +}
+>>> +
+>>> +static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+>>> +	.name		= "vfio-vhost-mdev",
+>>> +	.open		= vhost_mdev_open,
+>>> +	.release	= vhost_mdev_release,
+>>> +	.ioctl		= vhost_mdev_unlocked_ioctl,
+>>> +};
+>>> +
+>>> +static int vhost_mdev_probe(struct device *dev)
+>>> +{
+>>> +	struct mdev_device *mdev = mdev_from_dev(dev);
+>>> +	const struct virtio_mdev_device_ops *ops = mdev_get_dev_ops(mdev);
+>>> +	struct vhost_mdev *m;
+>>> +	int nvqs, r;
+>>> +
+>>> +	m = kzalloc(sizeof(*m), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+>>> +	if (!m)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	mutex_init(&m->mutex);
+>>> +
+>>> +	nvqs = ops->get_queue_max(mdev);
+>>> +	m->nvqs = nvqs;
+>> The name could be confusing, get_queue_max() is to get the maximum number of
+>> entries for a virtqueue supported by this device.
+> OK. It might be better to rename it to something like:
+>
+> 	get_vq_num_max()
+>
+> which is more consistent with the set_vq_num().
+>
+>> It looks to me that we need another API to query the maximum number of
+>> virtqueues supported by the device.
+> Yeah.
+>
+> Thanks,
+> Tiwei
 
-Rethink about this,  I believe it's better to define the device ops in 
-their own headers, and one set of device ops could be used for two 
-classes (e.g both virtio and vhost). And to avoid a duplicated ID 
-definition. I tend to keep this in the common mdev.h header.
+
+One problem here:
+
+Consider if we want to support multiqueue, how did userspace know about 
+this? Note this information could be fetched from get_config() via a 
+device specific way, do we want ioctl for accessing that area?
 
 Thanks
 
