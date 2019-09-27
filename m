@@ -2,89 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7F0C0815
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DF6C081A
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727624AbfI0O4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 10:56:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41904 "EHLO vps0.lunn.ch"
+        id S1727689AbfI0O6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 10:58:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34038 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726540AbfI0O4l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 10:56:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=F0xnrmUjbrfwa3GpwQVGYBFuXq2e2mehUtxT3ModRTo=; b=nhxK6DBTvF+v06EKwJgrmAlsi7
-        JIwhI4VYfcrPNojHpc8+3Pt0aN7Lk5xpnJJDFhs33EhLD7yRs+BR5QG9L51JD0iKXDhBSy6YTcrRP
-        Krh4aOZqNKBNmvoGdG313jPmOLHKKyBBvYkC74GftuqTqshNXRZv8iEBTukdlds8psEo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iDrfc-0002vq-L1; Fri, 27 Sep 2019 16:56:32 +0200
-Date:   Fri, 27 Sep 2019 16:56:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vincent Cheng <vincent.cheng.xh@renesas.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] ptp: Add a ptp clock driver for IDT ClockMatrix.
-Message-ID: <20190927145632.GI20927@lunn.ch>
-References: <1569556128-22212-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1569556128-22212-2-git-send-email-vincent.cheng.xh@renesas.com>
- <20190927122518.GA25474@lunn.ch>
- <20190927141215.GA24424@renesas.com>
+        id S1726843AbfI0O6c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 10:58:32 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 684513086E27;
+        Fri, 27 Sep 2019 14:58:32 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.206.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0219A8DC00;
+        Fri, 27 Sep 2019 14:58:30 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next v3 0/6] ipsec: add TCP encapsulation support (RFC 8229)
+Date:   Fri, 27 Sep 2019 16:58:55 +0200
+Message-Id: <cover.1569491461.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190927141215.GA24424@renesas.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Fri, 27 Sep 2019 14:58:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +static void set_default_function_pointers(struct idtcm *idtcm)
-> >> +{
-> >> +	idtcm->_idtcm_gettime = _idtcm_gettime;
-> >> +	idtcm->_idtcm_settime = _idtcm_settime;
-> >> +	idtcm->_idtcm_rdwr = idtcm_rdwr;
-> >> +	idtcm->_sync_pll_output = sync_pll_output;
-> >> +}
-> >
-> >Why does this indirection? Are the SPI versions of the silicon?
-> 
-> The indirection is to enable us to replace those functions in
-> our unit tests with mocked functions.
+This patchset introduces support for TCP encapsulation of IKE and ESP
+messages, as defined by RFC 8229 [0]. It is an evolution of what
+Herbert Xu proposed in January 2018 [1] that addresses the main
+criticism against it, by not interfering with the TCP implementation
+at all. The networking stack now has infrastructure for this: TCP ULPs
+and Stream Parsers.
 
-Due to Spectra/meltdown etc, indirection is now expensive. But i guess
-the I2C operations are a lot more expensive.
+The first patches are preparation and refactoring, and the final patch
+adds the feature.
 
-But in general, we try to keep the code KISS. Have you tried other
-ways of doing this. Have your unit test framework implement
-i2c_transfer()?
- 
-> I read somewhere that I should leave a week between sending a
-> revised patch series.  Is this a good rule to follow?
+The main omission in this submission is IPv6 support. ESP
+encapsulation over UDP with IPv6 is currently not supported in the
+kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
+is not frequently used with IPv6.
 
-There are different 'timers'. One is how long to wait for review
-comments, and reposting when you don't receiver any comments. netdev
-for example is fast, a couple of days. Other subsystems, you need to
-wait two weeks. Another 'timer' is how often to post new versions. In
-general, never more than once per day. And the slower the subsystem is
-for making reviews, the longer you should wait for additional review
-comments.
+Some of the code is taken directly, or slightly modified, from Herbert
+Xu's original submission [1]. The ULP and strparser pieces are
+new. This work was presented and discussed at the IPsec workshop and
+netdev 0x13 conference [2] in Prague, last March.
 
-What also plays a role is that the merge window is currently open. So
-most subsystems won't accept patches at the moment. You need to wait
-until it closes before submitting patches you expect to be good enough
-to be accepted.
+[0] https://tools.ietf.org/html/rfc8229
+[1] https://patchwork.ozlabs.org/patch/859107/
+[2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
 
-   Andrew
+Changes since v2:
+ - rename config option to INET_ESPINTCP and move it to
+   net/ipv4/Kconfig (patch 6/6)
 
+Changes since v1:
+ - drop patch 1, already present in the tree as commit bd95e678e0f6
+   ("bpf: sockmap, fix use after free from sleep in psock backlog
+   workqueue")
+ - patch 1/6: fix doc error reported by kbuild test robot <lkp@intel.com>
+ - patch 6/6, fix things reported by Steffen Klassert:
+   - remove unneeded goto and improve error handling in
+     esp_output_tcp_finish
+   - clean up the ifdefs by providing dummy implementations of those
+     functions
+   - fix Kconfig select, missing NET_SOCK_MSG
 
+Sabrina Dubroca (6):
+  net: add queue argument to __skb_wait_for_more_packets and
+    __skb_{,try_}recv_datagram
+  xfrm: introduce xfrm_trans_queue_net
+  xfrm: add route lookup to xfrm4_rcv_encap
+  esp4: prepare esp_input_done2 for non-UDP encapsulation
+  esp4: split esp_output_udp_encap and introduce esp_output_encap
+  xfrm: add espintcp (RFC 8229)
+
+ include/linux/skbuff.h    |  11 +-
+ include/net/espintcp.h    |  38 +++
+ include/net/xfrm.h        |   4 +
+ include/uapi/linux/udp.h  |   1 +
+ net/core/datagram.c       |  27 +-
+ net/ipv4/Kconfig          |  11 +
+ net/ipv4/esp4.c           | 264 ++++++++++++++++++--
+ net/ipv4/udp.c            |   3 +-
+ net/ipv4/xfrm4_protocol.c |   9 +
+ net/unix/af_unix.c        |   7 +-
+ net/xfrm/Makefile         |   1 +
+ net/xfrm/espintcp.c       | 505 ++++++++++++++++++++++++++++++++++++++
+ net/xfrm/xfrm_input.c     |  21 +-
+ net/xfrm/xfrm_policy.c    |   7 +
+ net/xfrm/xfrm_state.c     |   3 +
+ 15 files changed, 866 insertions(+), 46 deletions(-)
+ create mode 100644 include/net/espintcp.h
+ create mode 100644 net/xfrm/espintcp.c
+
+-- 
+2.23.0
 
