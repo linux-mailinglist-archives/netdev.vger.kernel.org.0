@@ -2,137 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49DDCC0CD0
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A1E7C0CEC
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 22:56:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbfI0Urf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 16:47:35 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42958 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbfI0Urf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 16:47:35 -0400
-Received: by mail-pg1-f193.google.com with SMTP id z12so4068102pgp.9;
-        Fri, 27 Sep 2019 13:47:34 -0700 (PDT)
+        id S1728196AbfI0U4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 16:56:20 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:38080 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727243AbfI0U4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 16:56:19 -0400
+Received: by mail-io1-f66.google.com with SMTP id u8so19900956iom.5;
+        Fri, 27 Sep 2019 13:56:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bzYSSPrgLAC4YfKvOYdW8JV9P97aaiQ4S1KEYZ0vYTQ=;
-        b=UuD1GphT5DoxXuKlWeBSG54du7TXGyNIeEUMIePFxzgEIkFr2ZWqssI95w2VXDN221
-         J5feVuwTpfDOnSNEFHt1mMjKL8Bqk4Dus52w9JF/Gr9ROjlz95Qk57bfY3R4pLmKZje+
-         J1YArd90GlQSypsRsYaXu+3ga5DW1vajaeuZx8Ee60JvUxxphHKE/ghf1M2ybddCRizU
-         xvU56hF0HcNeVLwF3wS4jPqE2rDLd+8yoI0P23DEURKoOKmtiKgoXFpXltRmIU8j62ua
-         ufxkmjFI8LVBNvJSZXalgp+d2/nfHjvOXvKH8BoPXVXPCIKD74PCX3dlev5AN2B3MBAR
-         eegQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=6XWDs202HxUMQZwjYYpTO5aVNS5TRVFQi//IFrYDeeY=;
+        b=L55gU92RCxo9GNVu0j7NUeyo3YCMTbuo25tgLSLVNxFov7l77Bov+cwbWcukwIMGmi
+         uQ11xfLgUDttTuKPXKLZDN9SXki7uN/vSBZJjGwRaPASn4ZdEpkR54UxwTGhuzDi4Z5e
+         l8Xea2ALVip9/5WqRkO4tXSvqA1llwWS889D/XRPyBwoBv4nAUYijYD+vJ7SsLGeULiy
+         86xYsrGPscwG8DThH7DuLFMb/AmppggrpgbQ73OviP5K+aUd5taDOel92JLovRZd/g1/
+         lNPGt27Kuum7GLKO6cf/tpQgV8Dd3i1pUkpK9LHr3lW0Hu8VRN7t+1rcgm8ta8+tYWQT
+         TZtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bzYSSPrgLAC4YfKvOYdW8JV9P97aaiQ4S1KEYZ0vYTQ=;
-        b=lF7TcOX6rOrbCyT5pTe3PbatQLbWCeV7raxtpGtR/AQS/+YPO3WCFzsrKEFVxvJnqL
-         9kfsbAjNjAHlkmjvy2/+yumFosa10OSM6a4r/EtVDvjRWiw1Wdje8KZZkS3anrLH4+Tq
-         9CMU9cX4FLltPOBldy1Gr66kVWSCJZz3ivuzVzNK1YgtT5qeIBxBRlaZ+zQ+Z1SwCLZw
-         yuHAPAxPMnlMPVzSXEYzFNHF/qOZ++iPI0nPPPJZWFlsWvPZwgLjKrFEpD3MxXt800qi
-         TicSh7f7G/354eiVr7jvnrrbebB+CHUqTIYZQ3AHCZRDF0JjfimHnyC9J14OtqWOgKkp
-         ntRQ==
-X-Gm-Message-State: APjAAAXYTgf3d6WPqiNIt56Vyyp0iABm4YQJmJHKghimkBmezaAfj21c
-        Dx3tP1RzMuWPUjazHgP27oQ=
-X-Google-Smtp-Source: APXvYqy1C1JP1b3d0GSZuPk0C4n/gYXS1ppofxspzJZADstlQttHJW26kqX6aSA8QGbj0VSrVAuChA==
-X-Received: by 2002:a17:90a:bb97:: with SMTP id v23mr11812267pjr.84.1569617254604;
-        Fri, 27 Sep 2019 13:47:34 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id g5sm6181080pgd.82.2019.09.27.13.47.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Sep 2019 13:47:33 -0700 (PDT)
-Subject: Re: [PATCH bpf] bpf: Fix a race in reuseport_array_free()
-To:     Martin Lau <kafai@fb.com>, Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>
-References: <20190927165221.2391541-1-kafai@fb.com>
- <04f683c6-ac49-05fb-6ec9-9f0d698657a2@gmail.com>
- <20190927181729.7ep3pp2hiy6l5ixk@kafai-mbp.dhcp.thefacebook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <fc762c01-94da-7f72-4fc0-9b76d6bbe3dd@gmail.com>
-Date:   Fri, 27 Sep 2019 13:47:32 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190927181729.7ep3pp2hiy6l5ixk@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6XWDs202HxUMQZwjYYpTO5aVNS5TRVFQi//IFrYDeeY=;
+        b=ZCsn1QXkwGfgdOs1NGCn3eJB3hQP5yiTcogEnximLT94JtBYsSswsyRbwrTg+mb+gh
+         YVkwca/swl2DHJ0haGzJUwfz2ifcWIzpPauryuRsitgIxJdaVZl/AGwaXqDjhhd3M/rR
+         pKumL7yEXgngHjn6+mHih5D5GyqAFuuh5ljoMBF5mYNivY6xxNEhrV9RkrClAnu2TZms
+         V0MYT0wcapm+P+dcJ5DXJeCa0+3e06Pi7EOuZp2y97dX1rl4/OWiOasBqvW0Z1Up9Zo7
+         OcZwcEUebXiNikVQkp+GMBNVS1ppV77hQ+g2oP3fqomzm9uYhq4lgmxEA71eizlnni9a
+         Ifhw==
+X-Gm-Message-State: APjAAAUpSIgBWmLsiNcrAwTCJY1dx0bA6mp/2ywHupDeT9f5Lcw1wbPj
+        P9OPhXPJxcLx90JQEvanEo4=
+X-Google-Smtp-Source: APXvYqxIcYCc3Etak50jxb9W0VgkeBkDrg7+srVbZp7ZubSS9Bq9i9G37DHrUcaMh7iYwl9mc9fWIA==
+X-Received: by 2002:a6b:6d07:: with SMTP id a7mr10591163iod.261.1569617778856;
+        Fri, 27 Sep 2019 13:56:18 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id 197sm3197316ioc.78.2019.09.27.13.56.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Sep 2019 13:56:18 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shaul Triebitz <shaul.triebitz@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: fix memory leaks in iwl_pcie_ctxt_info_gen3_init
+Date:   Fri, 27 Sep 2019 15:56:04 -0500
+Message-Id: <20190927205608.8755-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In iwl_pcie_ctxt_info_gen3_init there are cases that the allocated dma
+memory is leaked in case of error.
+DMA memories prph_scratch, prph_info, and ctxt_info_gen3 are allocated
+and initialized to be later assigned to trans_pcie. But in any error case
+before such assignment the allocated memories should be released.
+First of such error cases happens when iwl_pcie_init_fw_sec fails.
+Current implementation correctly releases prph_scratch. But in two
+sunsequent error cases where dma_alloc_coherent may fail, such releases
+are missing. This commit adds release for prph_scratch when allocation
+for prph_info fails, and adds releases for prph_scratch and prph_info
+when allocation for ctxt_info_gen3 fails.
 
+Fixes: 2ee824026288 ("iwlwifi: pcie: support context information for 22560 devices")
 
-On 9/27/19 11:17 AM, Martin Lau wrote:
-> On Fri, Sep 27, 2019 at 10:24:49AM -0700, Eric Dumazet wrote:
->>
->>
->> On 9/27/19 9:52 AM, Martin KaFai Lau wrote:
->>> In reuseport_array_free(), the rcu_read_lock() cannot ensure sk is still
->>> valid.  It is because bpf_sk_reuseport_detach() can be called from
->>> __sk_destruct() which is invoked through call_rcu(..., __sk_destruct).
->>
->> We could question why reuseport_detach_sock(sk) is called from __sk_destruct()
->> (after the rcu grace period) instead of sk_destruct() ?
-> Agree.  It is another way to fix it.
-> 
-> In this patch, I chose to avoid the need to single out a special treatment for
-> reuseport_detach_sock() in sk_destruct().
-> 
-> I am happy either way.  What do you think?
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ .../intel/iwlwifi/pcie/ctxt-info-gen3.c       | 36 +++++++++++++------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
-It seems that since we call reuseport_detach_sock() after the rcu grace period,
-another cpu could catch the sk pointer in reuse->socks[] array and use
-it right before our cpu frees the socket.
-
-RCU rules are not properly applied here I think.
-
-The rules for deletion are :
-
-1) unpublish object from various lists/arrays/hashes.
-2) rcu_grace_period
-3) free the object.
-
-If we fix the unpublish (we need to anyway to make the data path safe),
-then your patch is not needed ?
-
-What about (totally untested, might be horribly wrong)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 07863edbe6fc4842e47ebebf00bc21bc406d9264..d31a4b094797f73ef89110c954aa0a164879362d 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1700,8 +1700,6 @@ static void __sk_destruct(struct rcu_head *head)
-                sk_filter_uncharge(sk, filter);
-                RCU_INIT_POINTER(sk->sk_filter, NULL);
-        }
--       if (rcu_access_pointer(sk->sk_reuseport_cb))
--               reuseport_detach_sock(sk);
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
+index 75fa8a6aafee..b2759c751822 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
+@@ -107,13 +107,9 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
  
-        sock_disable_timestamp(sk, SK_FLAGS_TIMESTAMP);
- 
-@@ -1728,7 +1726,13 @@ static void __sk_destruct(struct rcu_head *head)
- 
- void sk_destruct(struct sock *sk)
- {
--       if (sock_flag(sk, SOCK_RCU_FREE))
-+       bool use_call_rcu = sock_flag(sk, SOCK_RCU_FREE);
+ 	/* allocate ucode sections in dram and set addresses */
+ 	ret = iwl_pcie_init_fw_sec(trans, fw, &prph_scratch->dram);
+-	if (ret) {
+-		dma_free_coherent(trans->dev,
+-				  sizeof(*prph_scratch),
+-				  prph_scratch,
+-				  trans_pcie->prph_scratch_dma_addr);
+-		return ret;
+-	}
++	if (ret)
++		goto err_free_prph_scratch;
 +
-+       if (rcu_access_pointer(sk->sk_reuseport_cb)) {
-+               reuseport_detach_sock(sk);
-+               use_call_rcu = true;
-+       }
-+       if (use_call_rcu)
-                call_rcu(&sk->sk_rcu, __sk_destruct);
-        else
-                __sk_destruct(&sk->sk_rcu);
+ 
+ 	/* Allocate prph information
+ 	 * currently we don't assign to the prph info anything, but it would get
+@@ -121,16 +117,20 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
+ 	prph_info = dma_alloc_coherent(trans->dev, sizeof(*prph_info),
+ 				       &trans_pcie->prph_info_dma_addr,
+ 				       GFP_KERNEL);
+-	if (!prph_info)
+-		return -ENOMEM;
++	if (!prph_info) {
++		ret = -ENOMEM;
++		goto err_free_prph_scratch;
++	}
+ 
+ 	/* Allocate context info */
+ 	ctxt_info_gen3 = dma_alloc_coherent(trans->dev,
+ 					    sizeof(*ctxt_info_gen3),
+ 					    &trans_pcie->ctxt_info_dma_addr,
+ 					    GFP_KERNEL);
+-	if (!ctxt_info_gen3)
+-		return -ENOMEM;
++	if (!ctxt_info_gen3) {
++		ret = -ENOMEM;
++		goto err_free_prph_info;
++	}
+ 
+ 	ctxt_info_gen3->prph_info_base_addr =
+ 		cpu_to_le64(trans_pcie->prph_info_dma_addr);
+@@ -186,6 +186,20 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
+ 		iwl_set_bit(trans, CSR_GP_CNTRL, CSR_AUTO_FUNC_INIT);
+ 
+ 	return 0;
++
++err_free_prph_info:
++	dma_free_coherent(trans->dev,
++			  sizeof(*prph_info),
++			prph_info,
++			trans_pcie->prph_info_dma_addr);
++
++err_free_prph_scratch:
++	dma_free_coherent(trans->dev,
++			  sizeof(*prph_scratch),
++			prph_scratch,
++			trans_pcie->prph_scratch_dma_addr);
++	return ret;
++
+ }
+ 
+ void iwl_pcie_ctxt_info_gen3_free(struct iwl_trans *trans)
+-- 
+2.17.1
+
