@@ -2,96 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E77BFE56
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 06:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AC0BFE6F
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 07:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbfI0E6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 00:58:51 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38741 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbfI0E6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 00:58:50 -0400
-Received: by mail-lj1-f195.google.com with SMTP id b20so1154006ljj.5
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 21:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4iU5US/PtNmLXy1Or8iadhw6slNMsSCpg+ZhfRPB2LQ=;
-        b=B1xgIrOkcRJn9Z+Gh5PEdkMcD1iNx0NRYLol0iEsGIh9rrJd21uzKyzA0JyQzP2EF8
-         45sbwL+QsUE42Gjrtn2jqhyTd44s7rsQHc5KYzQ4SatqWEphTMskH/ZZ+mTneFNp8joa
-         +9WoFlutdHEbjnAhI+Jc5G8/y3/DOkeZt4EU8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4iU5US/PtNmLXy1Or8iadhw6slNMsSCpg+ZhfRPB2LQ=;
-        b=Fgrd+y9sJ90KdK1vYWRDkSVEpIgtIDdzYA09q6lJYko5WNHJ4NYxuHBIqZV6eQEuN+
-         06ef2I7LjnSC+n2MDT2U9W8AXTByOdYAJGnLq7fID65b9nQhwfzwHfY8bG7GMXYpt65P
-         8FgYQwKsHAKaNDQxYdjNZR1LrMvL/zRdRGaqXHQ5l7SR5/hsDNQQE0HjY1Xzwv8s2DB8
-         HzfN/Y661teg3eFwouY88jrXfAN5Vvvnr6Tpf9KSBOeqCk1Vh/6IrlQ2uSyCA1SCf29d
-         K9tjMeUGHakzx3V+8QRIDwyrR5tWm8nOcWY3+pZg9gaGA7L7rX/kTwyyFrufhOyI6OGc
-         oHKg==
-X-Gm-Message-State: APjAAAWuJ9DVFHaaCEVp3FYal9vMvKz6e1U2V+5vb5d9XC+nHnC5uYsj
-        SOskRFlgrFsLQRN9W9ZcB+DhWA30kWRomeAnnjPlHQ==
-X-Google-Smtp-Source: APXvYqwFNvB9+u/EU7/+K/FxeuhiuB0InjWTyAieKwn08Z9YolPby7krWKqfmo5aRpSZS7jqWcT4+dwLmLGnhvOCxTU=
-X-Received: by 2002:a2e:4e12:: with SMTP id c18mr1294713ljb.47.1569560328583;
- Thu, 26 Sep 2019 21:58:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <1569490554-21238-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <20190926122726.GE1864@lunn.ch>
-In-Reply-To: <20190926122726.GE1864@lunn.ch>
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Fri, 27 Sep 2019 10:28:36 +0530
-Message-ID: <CAACQVJpgZz3Fb36=x_wPb+hAaXecHj6oVuUsD-GgEhz9yfRgKg@mail.gmail.com>
-Subject: Re: [PATCH net] devlink: Fix error handling in param and info_get
- dumpit cb
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728940AbfI0FEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 01:04:54 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:2637 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725996AbfI0FEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 01:04:53 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.3]) by rmmx-syy-dmz-app12-12012 (RichMail) with SMTP id 2eec5d8d962fe12-3aa7a; Fri, 27 Sep 2019 12:55:13 +0800 (CST)
+X-RM-TRANSID: 2eec5d8d962fe12-3aa7a
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost (unknown[223.105.0.241])
+        by rmsmtp-syy-appsvr02-12002 (RichMail) with SMTP id 2ee25d8d963016f-a2662;
+        Fri, 27 Sep 2019 12:55:13 +0800 (CST)
+X-RM-TRANSID: 2ee25d8d963016f-a2662
+From:   Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+To:     Julian Anastasov <ja@ssi.bg>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Subject: [PATCH v2 0/2] ipvs: speedup ipvs netns dismantle
+Date:   Fri, 27 Sep 2019 12:54:49 +0800
+Message-Id: <1569560091-20553-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 5:57 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Sep 26, 2019 at 03:05:54PM +0530, Vasundhara Volam wrote:
-> > If any of the param or info_get op returns error, dumpit cb is
-> > skipping to dump remaining params or info_get ops for all the
-> > drivers.
-> >
-> > Instead skip only for the param/info_get op which returned error
-> > and continue to dump remaining information, except if the return
-> > code is EMSGSIZE.
->
-> Hi Vasundhara
->
-> How do we get to see something did fail? If it failed, it failed for a
-> reason, and we want to know.
->
-> What is your real use case here? What is failing, and why are you
-> O.K. to skip this failure?
->
->      Andrew
-Hi Andrew,
+Implement exit_batch() method to dismantle more ipvs netns
+per round.
 
-Thank you for looking into the patch.
+Tested:
+$  cat add_del_unshare.sh
+#!/bin/bash
 
-If any of the devlink parameter is returning error like EINVAL, then
-current code is not displaying any further parameters for all the other
-devices as well.
+for i in `seq 1 100`
+    do
+     (for j in `seq 1 40` ; do  unshare -n ipvsadm -A -t 172.16.$i.$j:80 >/dev/null ; done) &
+    done
+wait; grep net_namespace /proc/slabinfo
 
-In bnxt_en driver case, some of the parameters are not supported in
-certain configurations like if the parameter is not part of the
-NVM configuration, driver returns EINVAL error to the stack. And devlink is
-skipping to display all the remaining parameters for that device and others
-as well.
+Befor patch:
+$  time sh add_del_unshare.sh
+net_namespace       4020   4020   4736    6    8 : tunables    0    0    0 : slabdata    670    670      0
 
-I am trying to fix to skip only the error parameter and display the remaining
-parameters.
+real    0m8.086s
+user    0m2.025s
+sys     0m36.956s
 
-Thanks,
-Vasundhara
+After patch:
+$  time sh add_del_unshare.sh
+net_namespace       4020   4020   4736    6    8 : tunables    0    0    0 : slabdata    670    670      0
+
+real    0m7.623s
+user    0m2.003s
+sys     0m32.935s
+
+Haishuang Yan (2):
+  ipvs: batch __ip_vs_cleanup
+  ipvs: batch __ip_vs_dev_cleanup
+
+ include/net/ip_vs.h             |  2 +-
+ net/netfilter/ipvs/ip_vs_core.c | 47 ++++++++++++++++++++++++-----------------
+ net/netfilter/ipvs/ip_vs_ctl.c  | 12 ++++++++---
+ 3 files changed, 38 insertions(+), 23 deletions(-)
+
+-- 
+1.8.3.1
+
+
+
