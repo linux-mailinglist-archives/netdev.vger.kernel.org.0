@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1E8C07F7
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:51:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7F0C0815
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbfI0OtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 10:49:11 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38377 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727682AbfI0OtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 10:49:08 -0400
-Received: by mail-lj1-f193.google.com with SMTP id b20so2789698ljj.5
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 07:49:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KY62cZcmvsX3xM03mBE6HBbDYvpNvwvQeq59nLOyZl0=;
-        b=UL3FcFE2NfXwtjvIvldZ2MUHIneNoq+mJEDmSgWEOp1dFr4eIlKaEqUNo+C3YqExFG
-         mV39oyx+CARY2Od6aZhcw0xcNCszg5/Q3S+h7ceTavOyGJif5F+TDzGJfY15EoWKVtvv
-         +eNRqBqk5d655UGD36nFXLsuwmoMmc/PkD048FcYSe0eksgJAssGG0k1HQP8uA1DKysm
-         NepqPDU7b4JBqK8O0OnE56UKcCbC0y2Hbh8R9CU+73UeGD7CFQvTn7K9wRy5N3iE431p
-         9Z6fexvTVsiZbqocbA0BOPVkySpbQ1yku2nvPHOXnsgPFJ5P7Uva3wrozBj2yu1Ci55H
-         DC4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KY62cZcmvsX3xM03mBE6HBbDYvpNvwvQeq59nLOyZl0=;
-        b=fKgxJDiePvhNyP9M6DADfBwZLb7/xoNAgtlRxzRUxe9Bz66AKq/996xlzQ33hyuBuc
-         6dhcMNFrwOrZqjrEmERRJjLLMtD9oyYoQrkCVR/Jv5rl4nHGHn0+Ndo0n9U7mx0qtGp3
-         JdECmC8JcCbZgzR0bwtJ2g8TO9deu/pd1hJ5lUftmvNbECLU+kn+5JrP2kjZ7QjSP/kf
-         RtGfNGHU40R1PH17T34EBiIyICRA1JPFSYhyPOclTvfgzCnOPjjw3pFjvaYID2grrOfa
-         zjpvEBnirk5p4kcenbvnlBHDlmvN8BfqMyKiVDGYwNi2HEiWjLQjDeDC3ZeEn2SlPCr0
-         NAJA==
-X-Gm-Message-State: APjAAAVpRwsIPWZEmRO5iKpHATvAGMFOHp16m2Viunvrx0kX/vLxHDiW
-        NRF6bKx/0iIU2tHpx2+s9m6toFh/PE/yugyiuRRc
-X-Google-Smtp-Source: APXvYqwkLzs8wOmvCMGAVfW9UfG3yFSgEhQJ4PJF36b0OQ8ayRelEpR7nbkBPFNaMcT8MMXULnm3ONsYWWGQxckK3Pg=
-X-Received: by 2002:a2e:890c:: with SMTP id d12mr3273555lji.85.1569595745451;
- Fri, 27 Sep 2019 07:49:05 -0700 (PDT)
+        id S1727624AbfI0O4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 10:56:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41904 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726540AbfI0O4l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 10:56:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=F0xnrmUjbrfwa3GpwQVGYBFuXq2e2mehUtxT3ModRTo=; b=nhxK6DBTvF+v06EKwJgrmAlsi7
+        JIwhI4VYfcrPNojHpc8+3Pt0aN7Lk5xpnJJDFhs33EhLD7yRs+BR5QG9L51JD0iKXDhBSy6YTcrRP
+        Krh4aOZqNKBNmvoGdG313jPmOLHKKyBBvYkC74GftuqTqshNXRZv8iEBTukdlds8psEo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iDrfc-0002vq-L1; Fri, 27 Sep 2019 16:56:32 +0200
+Date:   Fri, 27 Sep 2019 16:56:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vincent Cheng <vincent.cheng.xh@renesas.com>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] ptp: Add a ptp clock driver for IDT ClockMatrix.
+Message-ID: <20190927145632.GI20927@lunn.ch>
+References: <1569556128-22212-1-git-send-email-vincent.cheng.xh@renesas.com>
+ <1569556128-22212-2-git-send-email-vincent.cheng.xh@renesas.com>
+ <20190927122518.GA25474@lunn.ch>
+ <20190927141215.GA24424@renesas.com>
 MIME-Version: 1.0
-References: <CAHC9VhR+4pZObDz7kG+rxnox2ph4z_wpZdyOL=WmdnRvdQNH9A@mail.gmail.com>
- <c490685a-c7d6-5c95-5bf4-ed71f3c60cb6@web.de>
-In-Reply-To: <c490685a-c7d6-5c95-5bf4-ed71f3c60cb6@web.de>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 27 Sep 2019 10:48:54 -0400
-Message-ID: <CAHC9VhRk8Gc_Yexrjz5uif+Vj7d+b=uMUytbrmbm2Yv+zoM05w@mail.gmail.com>
-Subject: Re: genetlink: prevent memory leak in netlbl_unlabel_defconf
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        Navid Emamdoost <emamd001@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Stephen A McCamant <smccaman@umn.edu>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190927141215.GA24424@renesas.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 27, 2019 at 9:15 AM Markus Elfring <Markus.Elfring@web.de> wrot=
-e:
->
-> > > In netlbl_unlabel_defconf if netlbl_domhsh_add_default fails the
-> > > allocated entry should be released.
-> =E2=80=A6
-> > That said, netlbl_unlabel_defconf() *should* clean up here just on
-> > principal if nothing else.
->
-> How do you think about to add the tag =E2=80=9CFixes=E2=80=9D then?
+> >> +static void set_default_function_pointers(struct idtcm *idtcm)
+> >> +{
+> >> +	idtcm->_idtcm_gettime = _idtcm_gettime;
+> >> +	idtcm->_idtcm_settime = _idtcm_settime;
+> >> +	idtcm->_idtcm_rdwr = idtcm_rdwr;
+> >> +	idtcm->_sync_pll_output = sync_pll_output;
+> >> +}
+> >
+> >Why does this indirection? Are the SPI versions of the silicon?
+> 
+> The indirection is to enable us to replace those functions in
+> our unit tests with mocked functions.
 
-From what I've seen the "Fixes" tag is typically used by people who
-are backporting patches, e.g. the -stable folks, to help decide what
-they need to backport.  As I mentioned in my previous email this
-missing free doesn't actually manifest itself as a practical leak on
-any of the existing kernels so there isn't a need to backport this
-patch.  For that reason I would probably skip the "Fixes" metadata
-here, but I don't feel strongly enough about it to object if others
-want it.  FWIW, I play things very conservatively when talking about
-backporting patches to stable kernels; if it doesn't fix a serious
-user-visible bug it shouldn't be backported IMHO.
+Due to Spectra/meltdown etc, indirection is now expensive. But i guess
+the I2C operations are a lot more expensive.
 
-This patch is more of a conceptual fix than a practical fix.  Not that
-there is anything wrong with this patch, I just think it isn't as
-critical as most people would think from reading "memory leak" in the
-subject line.  Yes, there is a memory leak, but the kernel panics soon
-after so it's a bit moot.  Further, even if the panic was somehow
-skipped (?) the memory leak only happens once during boot; the failed
-initialization is undoubtedly going to be far more damaging to the
-system than a few lost bytes of memory.
+But in general, we try to keep the code KISS. Have you tried other
+ways of doing this. Have your unit test framework implement
+i2c_transfer()?
+ 
+> I read somewhere that I should leave a week between sending a
+> revised patch series.  Is this a good rule to follow?
 
---=20
-paul moore
-www.paul-moore.com
+There are different 'timers'. One is how long to wait for review
+comments, and reposting when you don't receiver any comments. netdev
+for example is fast, a couple of days. Other subsystems, you need to
+wait two weeks. Another 'timer' is how often to post new versions. In
+general, never more than once per day. And the slower the subsystem is
+for making reviews, the longer you should wait for additional review
+comments.
+
+What also plays a role is that the merge window is currently open. So
+most subsystems won't accept patches at the moment. You need to wait
+until it closes before submitting patches you expect to be good enough
+to be accepted.
+
+   Andrew
+
+
+
