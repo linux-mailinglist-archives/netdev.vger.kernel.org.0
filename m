@@ -2,202 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDDFBFCA9
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 03:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79183BFCB2
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 03:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727597AbfI0BTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 21:19:12 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:53572 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726145AbfI0BTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 21:19:11 -0400
-Received: by mail-io1-f71.google.com with SMTP id w8so8697690iol.20
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 18:19:09 -0700 (PDT)
+        id S1726253AbfI0BYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 21:24:48 -0400
+Received: from mail-vk1-f202.google.com ([209.85.221.202]:37170 "EHLO
+        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725808AbfI0BYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 21:24:48 -0400
+Received: by mail-vk1-f202.google.com with SMTP id f63so1852173vkf.4
+        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 18:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=G/225dPrUfgAMJlfNuypViifVTmiFCFATURmIq5FCWk=;
+        b=oBljFQ0RO4QSw8VdNAzYA7lzTkqBfXeqdjafmTP+svvSIQgewEF4bSTWike2912d+q
+         R+NhQHmkNuaLBoeDHrdwIZvW2+mZstlV8wFw6sRA1kR484jGpxk9O1ZB45XIQ8M0t71J
+         m5PWX7Y2vdkmwP+YtSo5diOdSotOITaMBxwrJSL/LKzQugRvxar1SsjpWYQztW0CLKiw
+         AOwqp99OYJHXsf+XRBpqfBA8ASoGDgqP0Gi8LVmkTAzCdZ25qYAXGMArdzYErhsIqj+0
+         KfHDDLeyl8LUTcclzSPWx357w79rsVlP+GkOM8zIGKvCK2OK/U7Y0f1BUIJpwAtD7Ygq
+         +MJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mi8lauVOvgpW0sRVX5CncHViKZCNtn/dgkBU1pzhQIk=;
-        b=ER0hWhBjsWR7yMlPWqYPH55ytVcEOxfsbOpsM1uzr7Tb2g+TC/4WG/UviRIFhtrSoz
-         K97jrfvQJFhhneLwtBQ1a0lvWDQWsJd7phF3IlE7aAfV72V4MT9fR5atRACYi8lRuQia
-         ukiTeE1SmP7KayS0EC51TvJeACWjBJYtmwd79XldthV31jTi4xWWwVHf1ZzFI6GfjdES
-         QOz9dBLTCB6mH504eI9SSmXbaxkCk6CtSWqsEC/2KrS4LrpFtx+2yLHiz7/r57crzkmI
-         K9urIu/BtlHQsYcMsICIPWNuslfSH3nsNiWIWRrLqzVesQWEPxND/UhKSuJW9BPUQLJC
-         ecng==
-X-Gm-Message-State: APjAAAXSuTf+OZ3HPS1K6Xs+XMT3q+g5oOEBEsGbXvNvfYP3he4rHFmN
-        9dNH/mSUvXjYNo8Rn8u6//JRmyah84Wzv9KSxP+yXThWZPUD
-X-Google-Smtp-Source: APXvYqyz6lC33pgSvhNu+WIQYUFqnDUmCNjc6GOB/af2rJtTmtzOY+aFDgWLHTBWQau7Gq+oL0Rh/ndmyeDfBZQ2G4LKFO8XOJCv
-MIME-Version: 1.0
-X-Received: by 2002:a92:3601:: with SMTP id d1mr1835580ila.253.1569547149089;
- Thu, 26 Sep 2019 18:19:09 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 18:19:09 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000047a6eb05937eaced@google.com>
-Subject: memory leak in tls_init
-From:   syzbot <syzbot+35bc8fe94c9f38db8320@syzkaller.appspotmail.com>
-To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=G/225dPrUfgAMJlfNuypViifVTmiFCFATURmIq5FCWk=;
+        b=iDd9IahbMnjjtqm+MjXUTwSVkE2MinaPQKQkJXsJmCKWfW3GYNJ3m70p5VQaHkdHrq
+         7vhvjbR6oFxNoLrIBEGg+5FnFV9pWGYe2nrHAljshqvp7QiLvM4l5alPyNH20WU9F1ID
+         Mkaah7tg/ujurIecFIx92Geg7cybs963AShr4VYvZh9exX2lBVL+55rd1Zz2rITp9DLI
+         t9IIMHRUEjh79EVjz3udFO3yJ8j2+D1owpQwWbCYl6srsNYmuNe3zWT59v0h8DzoPiwS
+         bEbnZ8AhujQY/0Vqe8daZzZnoELXJP2yndQp4qlkU1Q26e0vfK4StEfCaEz66emwYij1
+         IVPw==
+X-Gm-Message-State: APjAAAVyAV50b0+KHwfJCUCxFB2VVu8j1E68vphXoE7E06d10z2egwxx
+        4JPifYloKhZKsNhmCPP2BqrG+8EUAo0djA==
+X-Google-Smtp-Source: APXvYqxC4/3Mik0XHNaLpJn+S2QqHcQyqFZbllIFhJAW8WGXgPFWFS1UmVOUpOkXTorFxS2g7BP9NSYRIoT3RQ==
+X-Received: by 2002:a67:cfc3:: with SMTP id h3mr1077519vsm.25.1569547486767;
+ Thu, 26 Sep 2019 18:24:46 -0700 (PDT)
+Date:   Thu, 26 Sep 2019 18:24:43 -0700
+Message-Id: <20190927012443.129446-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
+Subject: [PATCH net] sch_cbq: validate TCA_CBQ_WRROPT to avoid crash
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+syzbot reported a crash in cbq_normalize_quanta() caused
+by an out of range cl->priority.
 
-syzbot found the following crash on:
+iproute2 enforces this check, but malicious users do not.
 
-HEAD commit:    f41def39 Merge tag 'ceph-for-5.4-rc1' of git://github.com/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=105b7ff9600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2e29707d7d1530b3
-dashboard link: https://syzkaller.appspot.com/bug?extid=35bc8fe94c9f38db8320
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145b3419600000
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] SMP KASAN PTI
+Modules linked in:
+CPU: 1 PID: 26447 Comm: syz-executor.1 Not tainted 5.3+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:cbq_normalize_quanta.part.0+0x1fd/0x430 net/sched/sch_cbq.c:902
+RSP: 0018:ffff8801a5c333b0 EFLAGS: 00010206
+RAX: 0000000020000003 RBX: 00000000fffffff8 RCX: ffffc9000712f000
+RDX: 00000000000043bf RSI: ffffffff83be8962 RDI: 0000000100000018
+RBP: ffff8801a5c33420 R08: 000000000000003a R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 00000000000002ef
+R13: ffff88018da95188 R14: dffffc0000000000 R15: 0000000000000015
+FS:  00007f37d26b1700(0000) GS:ffff8801dad00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004c7cec CR3: 00000001bcd0a006 CR4: 00000000001626f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ [<ffffffff83be9d57>] cbq_normalize_quanta include/net/pkt_sched.h:27 [inline]
+ [<ffffffff83be9d57>] cbq_addprio net/sched/sch_cbq.c:1097 [inline]
+ [<ffffffff83be9d57>] cbq_set_wrr+0x2d7/0x450 net/sched/sch_cbq.c:1115
+ [<ffffffff83bee8a7>] cbq_change_class+0x987/0x225b net/sched/sch_cbq.c:1537
+ [<ffffffff83b96985>] tc_ctl_tclass+0x555/0xcd0 net/sched/sch_api.c:2329
+ [<ffffffff83a84655>] rtnetlink_rcv_msg+0x485/0xc10 net/core/rtnetlink.c:5248
+ [<ffffffff83cadf0a>] netlink_rcv_skb+0x17a/0x460 net/netlink/af_netlink.c:2510
+ [<ffffffff83a7db6d>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5266
+ [<ffffffff83cac2c6>] netlink_unicast_kernel net/netlink/af_netlink.c:1324 [inline]
+ [<ffffffff83cac2c6>] netlink_unicast+0x536/0x720 net/netlink/af_netlink.c:1350
+ [<ffffffff83cacd4a>] netlink_sendmsg+0x89a/0xd50 net/netlink/af_netlink.c:1939
+ [<ffffffff8399d46e>] sock_sendmsg_nosec net/socket.c:673 [inline]
+ [<ffffffff8399d46e>] sock_sendmsg+0x12e/0x170 net/socket.c:684
+ [<ffffffff8399f1fd>] ___sys_sendmsg+0x81d/0x960 net/socket.c:2359
+ [<ffffffff839a2d05>] __sys_sendmsg+0x105/0x1d0 net/socket.c:2397
+ [<ffffffff839a2df9>] SYSC_sendmsg net/socket.c:2406 [inline]
+ [<ffffffff839a2df9>] SyS_sendmsg+0x29/0x30 net/socket.c:2404
+ [<ffffffff8101ccc8>] do_syscall_64+0x528/0x770 arch/x86/entry/common.c:305
+ [<ffffffff84400091>] entry_SYSCALL_64_after_hwframe+0x42/0xb7
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+35bc8fe94c9f38db8320@syzkaller.appspotmail.com
-
-2019/09/26 13:11:21 executed programs: 23
-BUG: memory leak
-unreferenced object 0xffff88810e482a00 (size 512):
-   comm "syz-executor.4", pid 6874, jiffies 4295090041 (age 14.090s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000e93f019a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
-     [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
-     [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
-     [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
-     [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
-     [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
-     [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
-net/ipv4/tcp.c:2825
-     [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
-     [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3142
-     [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
-     [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
-     [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
-     [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
-     [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810e71e600 (size 512):
-   comm "syz-executor.4", pid 6888, jiffies 4295090060 (age 13.900s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000e93f019a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
-     [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
-     [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
-     [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
-     [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
-     [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
-     [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
-net/ipv4/tcp.c:2825
-     [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
-     [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3142
-     [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
-     [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
-     [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
-     [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
-     [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810e356800 (size 512):
-   comm "syz-executor.0", pid 6926, jiffies 4295090085 (age 13.650s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000e93f019a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
-     [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
-     [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
-     [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
-     [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
-     [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
-     [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
-net/ipv4/tcp.c:2825
-     [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
-     [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3142
-     [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
-     [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
-     [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
-     [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
-     [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810e3df600 (size 512):
-   comm "syz-executor.4", pid 6933, jiffies 4295090088 (age 13.620s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<00000000e93f019a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
-     [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
-     [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
-     [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
-     [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
-     [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
-     [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
-net/ipv4/tcp.c:2825
-     [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
-     [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
-net/core/sock.c:3142
-     [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
-     [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
-     [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
-     [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
-     [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/sched/sch_cbq.c | 43 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 14 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index 06c7a2da21bc20e8f7e6ad02da0b0b3e3d933928..39b427dc751282db7adb2d0803eecccb0457c316 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -1127,6 +1127,33 @@ static const struct nla_policy cbq_policy[TCA_CBQ_MAX + 1] = {
+ 	[TCA_CBQ_POLICE]	= { .len = sizeof(struct tc_cbq_police) },
+ };
+ 
++static int cbq_opt_parse(struct nlattr *tb[TCA_CBQ_MAX + 1],
++			 struct nlattr *opt,
++			 struct netlink_ext_ack *extack)
++{
++	int err;
++
++	if (!opt) {
++		NL_SET_ERR_MSG(extack, "CBQ options are required for this operation");
++		return -EINVAL;
++	}
++
++	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt,
++					  cbq_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (tb[TCA_CBQ_WRROPT]) {
++		const struct tc_cbq_wrropt *wrr = nla_data(tb[TCA_CBQ_WRROPT]);
++
++		if (wrr->priority > TC_CBQ_MAXPRIO) {
++			NL_SET_ERR_MSG(extack, "priority is bigger than TC_CBQ_MAXPRIO");
++			err = -EINVAL;
++		}
++	}
++	return err;
++}
++
+ static int cbq_init(struct Qdisc *sch, struct nlattr *opt,
+ 		    struct netlink_ext_ack *extack)
+ {
+@@ -1139,13 +1166,7 @@ static int cbq_init(struct Qdisc *sch, struct nlattr *opt,
+ 	hrtimer_init(&q->delay_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS_PINNED);
+ 	q->delay_timer.function = cbq_undelay;
+ 
+-	if (!opt) {
+-		NL_SET_ERR_MSG(extack, "CBQ options are required for this operation");
+-		return -EINVAL;
+-	}
+-
+-	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt, cbq_policy,
+-					  extack);
++	err = cbq_opt_parse(tb, opt, extack);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -1464,13 +1485,7 @@ cbq_change_class(struct Qdisc *sch, u32 classid, u32 parentid, struct nlattr **t
+ 	struct cbq_class *parent;
+ 	struct qdisc_rate_table *rtab = NULL;
+ 
+-	if (!opt) {
+-		NL_SET_ERR_MSG(extack, "Mandatory qdisc options missing");
+-		return -EINVAL;
+-	}
+-
+-	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt, cbq_policy,
+-					  extack);
++	err = cbq_opt_parse(tb, opt, extack);
+ 	if (err < 0)
+ 		return err;
+ 
+-- 
+2.23.0.444.g18eeb5a265-goog
+
