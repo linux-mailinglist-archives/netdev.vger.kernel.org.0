@@ -2,111 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A8EC0E38
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 01:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DCDAC0E3C
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 01:00:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbfI0XAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 19:00:36 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5880 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725815AbfI0XAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 19:00:36 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8RMwcZW009900
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 16:00:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=VKMKIZp6czVphkRfDcXmgg7ZIf5Rm+i92JhZbpyCX+I=;
- b=hFniaq+AymvOvhjW1lKTBYn2Kf2rIvNkshIJ3ZcTakoB+4ks8REitOlfg4U1KOeJ2ZoV
- wUic4JGvN0VUls68TNbtWxohD/QNWD65uFspZqZKKkTVCApfgCOW4l2PKtpUb/rYyuzF
- cnAEEyNBYWJYdN+/m+bfyjxeUra3wBkwz3Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2v9tdc0cfj-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 16:00:34 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 27 Sep 2019 16:00:33 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id A731C2943B68; Fri, 27 Sep 2019 16:00:31 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>
-CC:     David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH net] net: Unpublish sk from sk_reuseport_cb before call_rcu
-Date:   Fri, 27 Sep 2019 16:00:31 -0700
-Message-ID: <20190927230031.3859970-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1728333AbfI0XA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 19:00:57 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:39144 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728305AbfI0XA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 19:00:57 -0400
+Received: by mail-qk1-f195.google.com with SMTP id 4so3315525qki.6
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 16:00:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BeIekf8tah3xajcMSgUyVuI3R+P20kz8tpmgdit+c+U=;
+        b=qk7RDb8E5ZTAhVAMK+/5yRdPk2e1AVoF8ZQwfCafmaXIPX8OuhnKmJBMqpwynoU0MD
+         R37ULDktRXPeU9mRx0mqrI+VUsk2abvfp5OoUnkFC+aUv+1LjXhKPbBgcH0VNAKP41dC
+         wuMFBaGEhYNjpHPMO61mLvfpjEMYfWt29vq0G/jVKtyB1CA6gKL3vp4lvJkfQu1UBk1G
+         zKvvCNbzXgKyMELTGObHwBht4ux4QzWNTR2gTbmoPnFz5rXnAQphW6hAO82KSQMPv2dh
+         89k4NEIVTRzepRF/2ofvq/5lberyLjYpLNCL7g1BDBJ2Rb4q0vnwZzma4JCheSGK33Xp
+         Bfdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BeIekf8tah3xajcMSgUyVuI3R+P20kz8tpmgdit+c+U=;
+        b=pK+7GFLbd5HFPTD6gQeI3rCFbYbbg5oFwxJPgnFaTTv1CAxnrEQWUvFvSEmBwKF23e
+         W5+0YZYbI/vVU4YUFap7XhZiFvZoCu9t5TVoqGoHEHRbzcedRKgPnz5Lc5HiD+1IaH0W
+         3/+TGBzMmpQsAVHkvptxUUMgUHYpCX28jfQCfh1QCflbWG+M3YSbZFawFUDnqxVhFBGB
+         Vp3jJqJubftMQdRkNDcrwqSAxmw9m2ANgrnFSqNM4aHWXJQGKOFY8Qs77IP/9kyIgKjw
+         Kp+rUiQlBL3GfMm9aTrUSytuYeP1YG1BL4shUZTj7oYRVkdnBMG7RGHQiqsSiqrpPxCW
+         c2yw==
+X-Gm-Message-State: APjAAAUW6LTRURfkSQ96yxsOt+naQLPX06kcY257JS7gApGHaHp9AMpE
+        YaOnofOoA1X+YIyVmnMGQljmvuaFaugakQnyCQN6BwfI8WFrTA==
+X-Google-Smtp-Source: APXvYqwDzhkKPjcyEc+iAndDLO2nJvTEYFQQqFy/c0WbuRuaZkvDkFPQfa96+nwA5lpJt+XYQxH3rsrFL8nxx9Q80zQ=
+X-Received: by 2002:a05:620a:147:: with SMTP id e7mr7304854qkn.227.1569625255839;
+ Fri, 27 Sep 2019 16:00:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-09-27_09:2019-09-25,2019-09-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=3
- spamscore=0 mlxscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015
- phishscore=0 mlxlogscore=920 impostorscore=0 adultscore=0 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1909270198
-X-FB-Internal: deliver
+References: <CAGAf8LzeyrMSHCYMxn1FNtMQVyhhLYbJaczhe2AMj+7T_nBt7Q@mail.gmail.com>
+ <20190923191713.GB28770@lunn.ch> <CAGAf8LyQpi_R-A2Zx72bJhSBqnFo-r=KCnfVCTD9N8cNNtbhrQ@mail.gmail.com>
+ <20190926133810.GD20927@lunn.ch>
+In-Reply-To: <20190926133810.GD20927@lunn.ch>
+From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
+Date:   Sat, 28 Sep 2019 01:00:43 +0200
+Message-ID: <CAGAf8LxAbDK7AUueCv-2kcEG8NZApNjQ+WQ1XO89+5C-SLAbPw@mail.gmail.com>
+Subject: Re: DSA driver kernel extension for dsa mv88e6190 switch
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "reuse->sock[]" array is shared by multiple sockets.  The going away
-sk must unpublish itself from "reuse->sock[]" before making call_rcu()
-call.  However, this unpublish-action is currently done after a grace
-period and it may cause use-after-free.
+Hello Andrew,
 
-The fix is to move reuseport_detach_sock() to sk_destruct().
-Due to the above reason, any socket with sk_reuseport_cb has
-to go through the rcu grace period before freeing it.
+> You should not need any kernel patches for switch side RGMII
+> delays. rgmii-id in the DT for the switch CPU port should be enough.
+> Some of the vf610-zii platforms use it.
 
-It is a rather old bug (~3 yrs).  The Fixes tag is not necessary
-the right commit but it is the one that introduced the SOCK_RCU_FREE
-logic and this fix is depending on it.
+It should, but it does NOT work. IT is clearly stated in port.c, in f-n:
+static int mv88e6xxx_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
+                                          phy_interface_t mode)
 
-Fixes: a4298e4522d6 ("net: add SOCK_RCU_FREE socket flag")
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- net/core/sock.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+The logic analyser shows MDIO write to register 0x01, which is 0x6003.
+Seems the correct value.
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 07863edbe6fc..e23ec80a67bf 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1700,8 +1700,6 @@ static void __sk_destruct(struct rcu_head *head)
- 		sk_filter_uncharge(sk, filter);
- 		RCU_INIT_POINTER(sk->sk_filter, NULL);
- 	}
--	if (rcu_access_pointer(sk->sk_reuseport_cb))
--		reuseport_detach_sock(sk);
- 
- 	sock_disable_timestamp(sk, SK_FLAGS_TIMESTAMP);
- 
-@@ -1728,7 +1726,14 @@ static void __sk_destruct(struct rcu_head *head)
- 
- void sk_destruct(struct sock *sk)
- {
--	if (sock_flag(sk, SOCK_RCU_FREE))
-+	bool use_call_rcu = sock_flag(sk, SOCK_RCU_FREE);
-+
-+	if (rcu_access_pointer(sk->sk_reuseport_cb)) {
-+		reuseport_detach_sock(sk);
-+		use_call_rcu = true;
-+	}
-+
-+	if (use_call_rcu)
- 		call_rcu(&sk->sk_rcu, __sk_destruct);
- 	else
- 		__sk_destruct(&sk->sk_rcu);
--- 
-2.17.1
+But, at the very end, ethtool shows that this clock skew is NOT
+inserted. I see on RX side CRC errors. Every ethernet frame while
+pinging.
 
+I see another interesting fact, the dmesg, which you could see here:
+https://pastebin.com/igXS6eXe
+
+[    1.182273] DEBUG INFO! <- addr: 0x00 reg: 0x03 val: 0x1901
+[    1.187888] mv88e6085 2188000.ethernet-1:00: switch 0x1900
+detected: Marvell 88E6190, revision 1
+[    1.219804] random: fast init done
+[    1.225334] libphy: mv88e6xxx SMI: probed
+[    1.232709] fec 2188000.ethernet eth0: registered PHC device 0
+
+[    1.547946] DEBUG INFO! <- addr: 0x00 reg: 0x03 val: 0x1901
+[    1.553542] mv88e6085 2188000.ethernet-1:00: switch 0x1900
+detected: Marvell 88E6190, revision 1
+[    1.555432]  mmcblk1: p1
+[    1.598106] libphy: mv88e6xxx SMI: probed
+[    1.740362] DSA: tree 0 setup
+
+There are two distinct accesses while driver configures the switch. Why???
+
+I was not able to explain this to me... Or find explanation using google?!
+
+> gpios = <&gpio1 29 GPIO_ACTIVE_HIGH>; is wrong. It probably
+> should be reset-gpios. The rest looks O.K.
+
+I will follow the advise, but I do not think this is an obstacle.
+
+> Please show me the configuration steps you are doing? How are you
+> configuring the FEC and the switch interfaces?
+
+Forgive me for my ignorance, but I have no idea what you have asked me for?
+
+Did you ask me to attach .config file? If not, could you, please,
+explain to me more concrete, what did you ask for? Some example would
+be perfect!
+
+Thank you,
+Zoran
+_______
+
+On Thu, Sep 26, 2019 at 3:39 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Sep 26, 2019 at 03:23:48PM +0200, Zoran Stojsavljevic wrote:
+> > Hello Andrew,
+> >
+> > I would like to thank you for the reply.
+> >
+> > I do not know if this is the right place to post such the questions,
+> > but my best guess is: yes.
+> >
+> > Since till now I did not make any success to make (using DSA driver)
+> > make mv88e6190 single switch to work with any kernel.org. :-(
+> >
+> > I did ugly workaround as kernel dsa patch, which allowed me to
+> > introduce TXC and RXC clock skews between I.MX6 and mv88e6190 (MAC to
+> > MAC layer over rgmii).
+>
+> You should not need any kernel patches for switch side RGMII
+> delays. rgmii-id in the DT for the switch CPU port should be enough.
+> Some of the vf610-zii platforms use it.
+>
+> > My DTS mv88e6190 configuration, which I adopted for the custom board I
+> > am working on, could be seen here:
+> > https://pastebin.com/xpXQYNRX
+>
+> So you have the FEC using rgmii-id. Which you say does not work?  So
+> why not use plain rgmii. What you have in port@0 looks correct.
+>
+> gpios = <&gpio1 29 GPIO_ACTIVE_HIGH>; is wrong. It probably should be
+> reset-gpios. The rest looks O.K.
+>
+>
+> > But on another note... I am wondering if I am setting correct kernel
+> > configuration for it?!
+> >
+> > Here is the part of the configuration I made while going through maze
+> > of posts from google search results:
+> >
+> >       Switch (and switch-ish) device support @ Networking
+> > support->Networking options
+> >       Distributed Switch Architecture @ Networking support->Networking options
+> >       Tag driver for Marvell switches using DSA headers @ Networking
+> > support->Networking options->Distributed Switch Architecture
+> >       Tag driver for Marvell switches using EtherType DSA headers @
+> > Networking support->Networking options->Distributed Switch
+> > Architecture
+> >       Marvell 88E6xxx Ethernet switch fabric support @ Device
+> > Drivers->Network device support->Distributed Switch Architecture
+> > drivers
+> >       Switch Global 2 Registers support @ Device Drivers->Network
+> > device support->Distributed Switch Architecture drivers->Marvell
+> > 88E6xxx Ethernet switch fabric support
+> >       Freescale devices @ Device Drivers->Network device
+> > support->Ethernet driver support
+> >       FEC ethernet controller (of ColdFire and some i.MX CPUs) @
+> > Device Drivers->Network device support->Ethernet driver
+> > support->Freescale devices
+> >       Marvell devices @ Device Drivers->Network device
+> > support->Ethernet driver support
+> >       Marvell MDIO interface support @ Device Drivers->Network device
+> > support->Ethernet driver support->Marvell devices
+> >       MDIO Bus/PHY emulation with fixed speed/link PHYs @ Device
+> > Drivers->Network device support->PHY Device support and infrastructure
+> >
+> > (Do we need Marvell PHYs option as =y ? I do not think so - should be:
+> > is not set)
+>
+> Yes you do. The PHYs inside the switch are Marvell.
+>
+> > What possibly I made wrong here (this does not work - I could not get
+> > through the switch, and seems that MDIO works (from the logic
+> > analyzer), but addresses some 0x1B/0x1C ports, which should NOT be
+> > addressed, according to the the DTS configuration shown)?
+>
+> 0x1b is global1, and 0x1c is global2. These are registers shared by
+> all ports.
+>
+> Please show me the configuration steps you are doing? How are you
+> configuring the FEC and the switch interfaces?
+>
+>     Andrew
