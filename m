@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6589C081D
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC68C0820
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 16:59:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727802AbfI0O6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 10:58:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34566 "EHLO mx1.redhat.com"
+        id S1727726AbfI0O6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 10:58:45 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:34588 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726843AbfI0O6g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Sep 2019 10:58:36 -0400
+        id S1727773AbfI0O6i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 10:58:38 -0400
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B1E5D18CB906;
-        Fri, 27 Sep 2019 14:58:36 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 250BB18CB8FA;
+        Fri, 27 Sep 2019 14:58:38 +0000 (UTC)
 Received: from hog.localdomain, (unknown [10.40.206.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 986308DC00;
-        Fri, 27 Sep 2019 14:58:35 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F6448DC01;
+        Fri, 27 Sep 2019 14:58:36 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next v3 3/6] xfrm: add route lookup to xfrm4_rcv_encap
-Date:   Fri, 27 Sep 2019 16:58:58 +0200
-Message-Id: <481a7b9f2e18112c61f60aecb735e8438840ff62.1569491461.git.sd@queasysnail.net>
+Subject: [PATCH ipsec-next v3 4/6] esp4: prepare esp_input_done2 for non-UDP encapsulation
+Date:   Fri, 27 Sep 2019 16:58:59 +0200
+Message-Id: <29196849b2ed8aab36d1d5e9ada7495b00210376.1569491461.git.sd@queasysnail.net>
 In-Reply-To: <cover.1569491461.git.sd@queasysnail.net>
 References: <cover.1569491461.git.sd@queasysnail.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Fri, 27 Sep 2019 14:58:36 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Fri, 27 Sep 2019 14:58:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At this point, with TCP encapsulation, the dst may be gone, but
-xfrm_input needs one.
+For espintcp encapsulation, we will need to get the source port from the
+TCP header instead of UDP. Introduce a variable to hold the port.
 
+Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
- net/ipv4/xfrm4_protocol.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/ipv4/esp4.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
-index 8a4285712808..ea595c8549c7 100644
---- a/net/ipv4/xfrm4_protocol.c
-+++ b/net/ipv4/xfrm4_protocol.c
-@@ -72,6 +72,14 @@ int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
- 	if (!head)
- 		goto out;
- 
-+	if (!skb_dst(skb)) {
-+		const struct iphdr *iph = ip_hdr(skb);
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 5c967764041f..c5d826642229 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -601,6 +601,18 @@ int esp_input_done2(struct sk_buff *skb, int err)
+ 	if (x->encap) {
+ 		struct xfrm_encap_tmpl *encap = x->encap;
+ 		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
++		__be16 source;
 +
-+		if (ip_route_input_noref(skb, iph->daddr, iph->saddr,
-+					 iph->tos, skb->dev))
-+			goto drop;
-+	}
-+
- 	for_each_protocol_rcu(*head, handler)
- 		if ((ret = handler->input_handler(skb, nexthdr, spi, encap_type)) != -EINVAL)
- 			return ret;
-@@ -79,6 +87,7 @@ int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
- out:
- 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
++		switch (x->encap->encap_type) {
++		case UDP_ENCAP_ESPINUDP:
++		case UDP_ENCAP_ESPINUDP_NON_IKE:
++			source = uh->source;
++			break;
++		default:
++			WARN_ON_ONCE(1);
++			err = -EINVAL;
++			goto out;
++		}
  
-+drop:
- 	kfree_skb(skb);
- 	return 0;
- }
+ 		/*
+ 		 * 1) if the NAT-T peer's IP or port changed then
+@@ -609,11 +621,11 @@ int esp_input_done2(struct sk_buff *skb, int err)
+ 		 *    SRC ports.
+ 		 */
+ 		if (iph->saddr != x->props.saddr.a4 ||
+-		    uh->source != encap->encap_sport) {
++		    source != encap->encap_sport) {
+ 			xfrm_address_t ipaddr;
+ 
+ 			ipaddr.a4 = iph->saddr;
+-			km_new_mapping(x, &ipaddr, uh->source);
++			km_new_mapping(x, &ipaddr, source);
+ 
+ 			/* XXX: perhaps add an extra
+ 			 * policy check here, to see
 -- 
 2.23.0
 
