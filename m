@@ -2,177 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79183BFCB2
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 03:24:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B93BFCE8
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 03:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbfI0BYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Sep 2019 21:24:48 -0400
-Received: from mail-vk1-f202.google.com ([209.85.221.202]:37170 "EHLO
-        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725808AbfI0BYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 21:24:48 -0400
-Received: by mail-vk1-f202.google.com with SMTP id f63so1852173vkf.4
-        for <netdev@vger.kernel.org>; Thu, 26 Sep 2019 18:24:47 -0700 (PDT)
+        id S1727892AbfI0BwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Sep 2019 21:52:08 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:39278 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbfI0BwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Sep 2019 21:52:08 -0400
+Received: by mail-io1-f66.google.com with SMTP id a1so12111762ioc.6;
+        Thu, 26 Sep 2019 18:52:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=G/225dPrUfgAMJlfNuypViifVTmiFCFATURmIq5FCWk=;
-        b=oBljFQ0RO4QSw8VdNAzYA7lzTkqBfXeqdjafmTP+svvSIQgewEF4bSTWike2912d+q
-         R+NhQHmkNuaLBoeDHrdwIZvW2+mZstlV8wFw6sRA1kR484jGpxk9O1ZB45XIQ8M0t71J
-         m5PWX7Y2vdkmwP+YtSo5diOdSotOITaMBxwrJSL/LKzQugRvxar1SsjpWYQztW0CLKiw
-         AOwqp99OYJHXsf+XRBpqfBA8ASoGDgqP0Gi8LVmkTAzCdZ25qYAXGMArdzYErhsIqj+0
-         KfHDDLeyl8LUTcclzSPWx357w79rsVlP+GkOM8zIGKvCK2OK/U7Y0f1BUIJpwAtD7Ygq
-         +MJA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=0mnfnduo3WaAYfJZM37BmRq9LvcMXeRseStmPj2NNbk=;
+        b=Bu5RJbp/JOxqBNp8gv1mEPkiY9VovTKQxyIMAkwpn3qpXV/ox1R26SEIrMzYFN3Cv2
+         qi8ucXKCi/8rx0rPOqkh6Ui7h+mxMyVFcYt4AABYkhLUa2HK1kyOmRN1tFb+oSYtJKYL
+         pQRP/oRDeQ51zYSQWP7LEJ6UxirZ71ABGVSTuBoPRGFSbNvketODQTSdfGPQNwhK192B
+         JPyCH7JUWMJ51dDiKrXypOij1p610sKgrBHt0A4XqX4dZlCEU4SECQycSgJP1gIcJapY
+         ksCrqlU+lQLt78sHQoucGblPR5ifQxnYHtNkXwNqFWEIf6H1/98Hr/FGJDyil8BjhYGd
+         wkew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=G/225dPrUfgAMJlfNuypViifVTmiFCFATURmIq5FCWk=;
-        b=iDd9IahbMnjjtqm+MjXUTwSVkE2MinaPQKQkJXsJmCKWfW3GYNJ3m70p5VQaHkdHrq
-         7vhvjbR6oFxNoLrIBEGg+5FnFV9pWGYe2nrHAljshqvp7QiLvM4l5alPyNH20WU9F1ID
-         Mkaah7tg/ujurIecFIx92Geg7cybs963AShr4VYvZh9exX2lBVL+55rd1Zz2rITp9DLI
-         t9IIMHRUEjh79EVjz3udFO3yJ8j2+D1owpQwWbCYl6srsNYmuNe3zWT59v0h8DzoPiwS
-         bEbnZ8AhujQY/0Vqe8daZzZnoELXJP2yndQp4qlkU1Q26e0vfK4StEfCaEz66emwYij1
-         IVPw==
-X-Gm-Message-State: APjAAAVyAV50b0+KHwfJCUCxFB2VVu8j1E68vphXoE7E06d10z2egwxx
-        4JPifYloKhZKsNhmCPP2BqrG+8EUAo0djA==
-X-Google-Smtp-Source: APXvYqxC4/3Mik0XHNaLpJn+S2QqHcQyqFZbllIFhJAW8WGXgPFWFS1UmVOUpOkXTorFxS2g7BP9NSYRIoT3RQ==
-X-Received: by 2002:a67:cfc3:: with SMTP id h3mr1077519vsm.25.1569547486767;
- Thu, 26 Sep 2019 18:24:46 -0700 (PDT)
-Date:   Thu, 26 Sep 2019 18:24:43 -0700
-Message-Id: <20190927012443.129446-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
-Subject: [PATCH net] sch_cbq: validate TCA_CBQ_WRROPT to avoid crash
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=0mnfnduo3WaAYfJZM37BmRq9LvcMXeRseStmPj2NNbk=;
+        b=W7HmEK2RVpH6cN7zRqtmB45bltlOi6rOK8NHGiiYO25J3I6cBrTMqcJR6oaboUj8WC
+         M9tcFoS4qv4KggOraQHuKyl75iFD8tCBLGHfodrfiisHWEM8p2iMUTm/iB/y9+p37gj5
+         QT+20TUPmJ6skzLtoPzzLKKYOtfuep7JjuEpPjvJfoureuvm0b/HUAyRXVahhHKd8mK8
+         zoTTvMeka3GuvEYt/JfY5DNjvcPL5GNduwnF1zZcnBUA+F9i6NJWio+htq0aHYORh+lq
+         WSmjdPeUrGHEVbxvlv2FQlQMT69vKMxHQ31CEkrBiki1nFEWj4H9BbxXa+dgaetfCrgx
+         UBaA==
+X-Gm-Message-State: APjAAAVLajlmfwsrkTwpcOm9qj4WAtaCJUBPiRD0BynSr89Bl43l4Zj6
+        uJaFBMyJXbxA2LvyrjTRmS8=
+X-Google-Smtp-Source: APXvYqy+rN1/ux+U25EmNgyXW8/fMROok9x0/ruMeK/UJ3GaDhJcZM2OgPbd4JPaKcrBR2Y/FCu39g==
+X-Received: by 2002:a92:6c01:: with SMTP id h1mr2192718ilc.107.1569549127293;
+        Thu, 26 Sep 2019 18:52:07 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id c8sm612869ile.9.2019.09.26.18.52.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Sep 2019 18:52:06 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     jakub.kicinski@netronome.com
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        John Hurley <john.hurley@netronome.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        oss-drivers@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] nfp: abm: fix memory leak in nfp_abm_u32_knode_replace
+Date:   Thu, 26 Sep 2019 20:51:46 -0500
+Message-Id: <20190927015157.20070-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190925215314.10cf291d@cakuba.netronome.com>
+References: <20190925215314.10cf291d@cakuba.netronome.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a crash in cbq_normalize_quanta() caused
-by an out of range cl->priority.
+In nfp_abm_u32_knode_replace if the allocation for match fails it should
+go to the error handling instead of returning. Updated other gotos to
+have correct errno returned, too.
 
-iproute2 enforces this check, but malicious users do not.
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] SMP KASAN PTI
-Modules linked in:
-CPU: 1 PID: 26447 Comm: syz-executor.1 Not tainted 5.3+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:cbq_normalize_quanta.part.0+0x1fd/0x430 net/sched/sch_cbq.c:902
-RSP: 0018:ffff8801a5c333b0 EFLAGS: 00010206
-RAX: 0000000020000003 RBX: 00000000fffffff8 RCX: ffffc9000712f000
-RDX: 00000000000043bf RSI: ffffffff83be8962 RDI: 0000000100000018
-RBP: ffff8801a5c33420 R08: 000000000000003a R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 00000000000002ef
-R13: ffff88018da95188 R14: dffffc0000000000 R15: 0000000000000015
-FS:  00007f37d26b1700(0000) GS:ffff8801dad00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004c7cec CR3: 00000001bcd0a006 CR4: 00000000001626f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- [<ffffffff83be9d57>] cbq_normalize_quanta include/net/pkt_sched.h:27 [inline]
- [<ffffffff83be9d57>] cbq_addprio net/sched/sch_cbq.c:1097 [inline]
- [<ffffffff83be9d57>] cbq_set_wrr+0x2d7/0x450 net/sched/sch_cbq.c:1115
- [<ffffffff83bee8a7>] cbq_change_class+0x987/0x225b net/sched/sch_cbq.c:1537
- [<ffffffff83b96985>] tc_ctl_tclass+0x555/0xcd0 net/sched/sch_api.c:2329
- [<ffffffff83a84655>] rtnetlink_rcv_msg+0x485/0xc10 net/core/rtnetlink.c:5248
- [<ffffffff83cadf0a>] netlink_rcv_skb+0x17a/0x460 net/netlink/af_netlink.c:2510
- [<ffffffff83a7db6d>] rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5266
- [<ffffffff83cac2c6>] netlink_unicast_kernel net/netlink/af_netlink.c:1324 [inline]
- [<ffffffff83cac2c6>] netlink_unicast+0x536/0x720 net/netlink/af_netlink.c:1350
- [<ffffffff83cacd4a>] netlink_sendmsg+0x89a/0xd50 net/netlink/af_netlink.c:1939
- [<ffffffff8399d46e>] sock_sendmsg_nosec net/socket.c:673 [inline]
- [<ffffffff8399d46e>] sock_sendmsg+0x12e/0x170 net/socket.c:684
- [<ffffffff8399f1fd>] ___sys_sendmsg+0x81d/0x960 net/socket.c:2359
- [<ffffffff839a2d05>] __sys_sendmsg+0x105/0x1d0 net/socket.c:2397
- [<ffffffff839a2df9>] SYSC_sendmsg net/socket.c:2406 [inline]
- [<ffffffff839a2df9>] SyS_sendmsg+0x29/0x30 net/socket.c:2404
- [<ffffffff8101ccc8>] do_syscall_64+0x528/0x770 arch/x86/entry/common.c:305
- [<ffffffff84400091>] entry_SYSCALL_64_after_hwframe+0x42/0xb7
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 ---
- net/sched/sch_cbq.c | 43 +++++++++++++++++++++++++++++--------------
- 1 file changed, 29 insertions(+), 14 deletions(-)
+Changes in v2:
+	- Reused err variable for erorr value returning.
+Changes in v3:
+	- Fix the err value in the first goto, and fix subject prefix.
+---
+ drivers/net/ethernet/netronome/nfp/abm/cls.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 06c7a2da21bc20e8f7e6ad02da0b0b3e3d933928..39b427dc751282db7adb2d0803eecccb0457c316 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -1127,6 +1127,33 @@ static const struct nla_policy cbq_policy[TCA_CBQ_MAX + 1] = {
- 	[TCA_CBQ_POLICE]	= { .len = sizeof(struct tc_cbq_police) },
- };
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
+index 23ebddfb9532..9f8a1f69c0c4 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
++++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
+@@ -176,8 +176,10 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+ 	u8 mask, val;
+ 	int err;
  
-+static int cbq_opt_parse(struct nlattr *tb[TCA_CBQ_MAX + 1],
-+			 struct nlattr *opt,
-+			 struct netlink_ext_ack *extack)
-+{
-+	int err;
-+
-+	if (!opt) {
-+		NL_SET_ERR_MSG(extack, "CBQ options are required for this operation");
-+		return -EINVAL;
+-	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack))
++	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack)) {
++		err = -EOPNOTSUPP;
+ 		goto err_delete;
 +	}
-+
-+	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt,
-+					  cbq_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (tb[TCA_CBQ_WRROPT]) {
-+		const struct tc_cbq_wrropt *wrr = nla_data(tb[TCA_CBQ_WRROPT]);
-+
-+		if (wrr->priority > TC_CBQ_MAXPRIO) {
-+			NL_SET_ERR_MSG(extack, "priority is bigger than TC_CBQ_MAXPRIO");
-+			err = -EINVAL;
+ 
+ 	tos_off = proto == htons(ETH_P_IP) ? 16 : 20;
+ 
+@@ -198,14 +200,18 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+ 		if ((iter->val & cmask) == (val & cmask) &&
+ 		    iter->band != knode->res->classid) {
+ 			NL_SET_ERR_MSG_MOD(extack, "conflict with already offloaded filter");
++			err = -EOPNOTSUPP;
+ 			goto err_delete;
+ 		}
+ 	}
+ 
+ 	if (!match) {
+ 		match = kzalloc(sizeof(*match), GFP_KERNEL);
+-		if (!match)
+-			return -ENOMEM;
++		if (!match) {
++			err = -ENOMEM;
++			goto err_delete;
 +		}
-+	}
-+	return err;
-+}
 +
- static int cbq_init(struct Qdisc *sch, struct nlattr *opt,
- 		    struct netlink_ext_ack *extack)
- {
-@@ -1139,13 +1166,7 @@ static int cbq_init(struct Qdisc *sch, struct nlattr *opt,
- 	hrtimer_init(&q->delay_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS_PINNED);
- 	q->delay_timer.function = cbq_undelay;
+ 		list_add(&match->list, &alink->dscp_map);
+ 	}
+ 	match->handle = knode->handle;
+@@ -221,7 +227,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
  
--	if (!opt) {
--		NL_SET_ERR_MSG(extack, "CBQ options are required for this operation");
--		return -EINVAL;
--	}
--
--	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt, cbq_policy,
--					  extack);
-+	err = cbq_opt_parse(tb, opt, extack);
- 	if (err < 0)
- 		return err;
+ err_delete:
+ 	nfp_abm_u32_knode_delete(alink, knode);
+-	return -EOPNOTSUPP;
++	return err;
+ }
  
-@@ -1464,13 +1485,7 @@ cbq_change_class(struct Qdisc *sch, u32 classid, u32 parentid, struct nlattr **t
- 	struct cbq_class *parent;
- 	struct qdisc_rate_table *rtab = NULL;
- 
--	if (!opt) {
--		NL_SET_ERR_MSG(extack, "Mandatory qdisc options missing");
--		return -EINVAL;
--	}
--
--	err = nla_parse_nested_deprecated(tb, TCA_CBQ_MAX, opt, cbq_policy,
--					  extack);
-+	err = cbq_opt_parse(tb, opt, extack);
- 	if (err < 0)
- 		return err;
- 
+ static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
 -- 
-2.23.0.444.g18eeb5a265-goog
+2.17.1
 
