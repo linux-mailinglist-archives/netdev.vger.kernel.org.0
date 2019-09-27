@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8499C0981
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60A0BC09A9
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 18:35:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727366AbfI0QW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 12:22:58 -0400
-Received: from mail-lf1-f50.google.com ([209.85.167.50]:43091 "EHLO
-        mail-lf1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727273AbfI0QW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:22:58 -0400
-Received: by mail-lf1-f50.google.com with SMTP id u3so2350513lfl.10
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 09:22:55 -0700 (PDT)
+        id S1727517AbfI0Qfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 12:35:45 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36322 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727289AbfI0Qfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 12:35:45 -0400
+Received: by mail-wr1-f65.google.com with SMTP id y19so3897224wrd.3
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 09:35:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=72Xx/EPPWYiryTjo7oGMmMO60iIhf9Bs3K+zVKrMlYM=;
-        b=K2fYHH5tHgERH2O9gXMlW6xBMHYpjgCDHzDJg63t1VY0HlKK7ffP/WSR1F6YNVYWk9
-         /N3o8ZkQX/gr+uc4HXGLSTVlbfF/zttbKaEQFmOkwtEFm6zOA9OSww7k/X/qriVdp+TL
-         FO69x5K0EF8nO1U/P/OVCJj5B67T2lAde2CWyFrW58MMoA2/kYaE6KKlB5GKRDZH+/Lq
-         8TOYvh9ukt+2fCjcTF0U+HaXWLA4BL9eK1MG1s+On/3LODKLTxBQmK/5RkSda7b+zMnH
-         LesoiLTEpBSN8Ys9Pf3Ip2pV4hOh3o6/WBHCNR4OUTgGbchs3Ef62e8KpYIY3Cmrd1bP
-         aOoQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2UiXLHYPkk0mxphBGJ/ErKZt1IG6MWXMGBsXbn9pocI=;
+        b=j5ipLY9hf5QphBT5IkgrVfynGWRHK3OnF7CqStpHqvPehp5P7+/aQRBcwrNv5xQdTZ
+         S2hFCmyPW6LgLVSFPjTTeIVWp0UEqph/QVfu+VnUB1CyArIguFPd4qbOpWlcaYDTRoHr
+         rshEVG4LNv5XBvkhF0VLljRqrrRgK778ZmELr/+NAE/+08zpOqU+Y3mJLQbuFRNAUbDk
+         GDpZdbVmdh/9LjHSH2LL1WlzBWlJFCVE2VXdMJUaabNGStLadxS3coVXPQZsAjwZVhho
+         08YTxOJkETSrIsQMCys6F8wS+ByiSeC5MLcSoJGKhhqHIRj9pmaUjFf9exCID7TJiWsT
+         IYSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=72Xx/EPPWYiryTjo7oGMmMO60iIhf9Bs3K+zVKrMlYM=;
-        b=GX012AxmirOUydNKhDbmz23G1MAqjeqE3jb4Jhr7ZgZH3ZnjVag47TdJxl74Y3BvWB
-         8mOtRwjCfymu9gkC5V556d5uFbEsut7MyR+tZe6iDfyFu/V/ZEWoXG2upYljSbBPUrzC
-         ql+CjJHH4z/Jgxno7unawRN0kbMrjFs7XpANro5RRqnp5xsY3B+QyTi8ITaXJ9wYjET+
-         8kWFvP87sFnZYAKsON0iEUYVGu9AZZNYKlKwLRCknHNW8EJRBsQmy76BXOL5xOmgmUOQ
-         cIH+qtJfWTkRiHrLDOAZMILdm/6ojm1fn0BLZ8wzHRDyGLemWfBEkT519kQOWRBGjeOy
-         XbKA==
-X-Gm-Message-State: APjAAAURLzx8rVRIPRbo3gOfV8YZl7DGrrZ9CRDs0OTp2drjJOD5quqx
-        9PgXM7WOUMxbZNqzoZ+eITuvAA==
-X-Google-Smtp-Source: APXvYqw/VwjjLJwOtnuav0hbuYBwMD28yqDNG67ORkmJSS8A7GzF3jq+LztNLzWWH7CqXVbB+VkQRw==
-X-Received: by 2002:a19:c14a:: with SMTP id r71mr3349013lff.55.1569601374823;
-        Fri, 27 Sep 2019 09:22:54 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:8df:57d9:464d:c6f1:f498:da95])
-        by smtp.gmail.com with ESMTPSA id k16sm558137lje.56.2019.09.27.09.22.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 27 Sep 2019 09:22:54 -0700 (PDT)
-Subject: Re: [net-next v3 7/7] renesas: reject unsupported external timestamp
- flags
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Cc:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>
-References: <20190926181109.4871-1-jacob.e.keller@intel.com>
- <20190926181109.4871-8-jacob.e.keller@intel.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <a08e6e28-bc98-a103-0577-a0bb45f950d5@cogentembedded.com>
-Date:   Fri, 27 Sep 2019 19:22:52 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2UiXLHYPkk0mxphBGJ/ErKZt1IG6MWXMGBsXbn9pocI=;
+        b=QnHDthnN02ncIZgYEazHqS3cUN6Ey8zfExFD7dgqfCaOkU6ECNpcUJBjLs19enpttj
+         1jWdaX8kSFdDPipeGav52kKSvMlrBUNxTaGvqcTqKdJwFLkKF2RpHa0G0hB4ijAPxXTm
+         f23SwH+EprjL/1C06DXGhkSOfMjuJ2i0WoqgSe3r/ShnkaO0uJYGUx8ch3OznZxa5hdy
+         L5hMW8zbtQdKnwXCFE5ePXlfLEaszBbFIjaEUM5Hj6FH+cuWMfE9lPqL6sB/S2LqVNaf
+         JOUZ2MXYopXO2ZGo0qtJy9GNKrY7xJS6PjWYOlhYs4aQ42WisGTTcCw1mYjS7/NLNZkQ
+         hwrw==
+X-Gm-Message-State: APjAAAVRTkxEzbxDFU5U9Pl1F1Buxz6Md0xbdHG71VWDX6GsYY7IlMFH
+        KLWqGHtk8E75WpDlZO5wG57sIcF2jm++coz9I6XVwQ==
+X-Google-Smtp-Source: APXvYqyeE8p30RfGOpqi//LCUXxbWVrYObaHKXK+P3Qpd35nBZSItGvH6uGVxGQm8m7jAJoL6ZS9TWk7V5M4XkSinyU=
+X-Received: by 2002:a7b:c84f:: with SMTP id c15mr8257525wml.52.1569602143230;
+ Fri, 27 Sep 2019 09:35:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190926181109.4871-8-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+References: <20190926224251.249797-1-edumazet@google.com>
+In-Reply-To: <20190926224251.249797-1-edumazet@google.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Fri, 27 Sep 2019 09:35:06 -0700
+Message-ID: <CAK6E8=f9v9eYFw7oZ7orsTru0Rr=eUMwSk5VcZP-kEgPkag1+g@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Jon Maxwell <jmaxwell37@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/26/2019 09:11 PM, Jacob Keller wrote:
-
-> Fix the renesas PTP support to explicitly reject any future flags that
-> get added to the external timestamp request ioctl.
-> 
-> In order to maintain currently functioning code, this patch accepts all
-> three current flags. This is because the PTP_RISING_EDGE and
-> PTP_FALLING_EDGE flags have unclear semantics and each driver seems to
-> have interpreted them slightly differently.
-> 
-> Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-
-[...]
-
-MBR, Sergei
+On Thu, Sep 26, 2019 at 3:42 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Yuchung Cheng and Marek Majkowski independently reported a weird
+> behavior of TCP_USER_TIMEOUT option when used at connect() time.
+>
+> When the TCP_USER_TIMEOUT is reached, tcp_write_timeout()
+> believes the flow should live, and the following condition
+> in tcp_clamp_rto_to_user_timeout() programs one jiffie timers :
+>
+>     remaining = icsk->icsk_user_timeout - elapsed;
+>     if (remaining <= 0)
+>         return 1; /* user timeout has passed; fire ASAP */
+>
+> This silly situation ends when the max syn rtx count is reached.
+>
+> This patch makes sure we honor both TCP_SYNCNT and TCP_USER_TIMEOUT,
+> avoiding these spurious SYN packets.
+>
+> Fixes: b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout() helper to improve accuracy")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Yuchung Cheng <ycheng@google.com>
+> Reported-by: Marek Majkowski <marek@cloudflare.com>
+> Cc: Jon Maxwell <jmaxwell37@gmail.com>
+> Link: https://marc.info/?l=linux-netdev&m=156940118307949&w=2
+> ---
+Acked-by: Yuchung Cheng <ycheng@google.com>
+thanks for fixing it!
+>  net/ipv4/tcp_timer.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+> index dbd9d2d0ee63aa46ad2dda417da6ec9409442b77..40de2d2364a1eca14c259d77ebed361d17829eb9 100644
+> --- a/net/ipv4/tcp_timer.c
+> +++ b/net/ipv4/tcp_timer.c
+> @@ -210,7 +210,7 @@ static int tcp_write_timeout(struct sock *sk)
+>         struct inet_connection_sock *icsk = inet_csk(sk);
+>         struct tcp_sock *tp = tcp_sk(sk);
+>         struct net *net = sock_net(sk);
+> -       bool expired, do_reset;
+> +       bool expired = false, do_reset;
+>         int retry_until;
+>
+>         if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
+> @@ -242,9 +242,10 @@ static int tcp_write_timeout(struct sock *sk)
+>                         if (tcp_out_of_resources(sk, do_reset))
+>                                 return 1;
+>                 }
+> +       }
+> +       if (!expired)
+>                 expired = retransmits_timed_out(sk, retry_until,
+>                                                 icsk->icsk_user_timeout);
+> -       }
+>         tcp_fastopen_active_detect_blackhole(sk, expired);
+>
+>         if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTO_CB_FLAG))
+> --
+> 2.23.0.444.g18eeb5a265-goog
+>
