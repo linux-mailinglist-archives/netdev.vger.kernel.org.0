@@ -2,121 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C4DC061D
-	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 15:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7577C062A
+	for <lists+netdev@lfdr.de>; Fri, 27 Sep 2019 15:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbfI0NPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 09:15:15 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51496 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727076AbfI0NPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 09:15:14 -0400
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iDq5V-0007Ak-0x; Fri, 27 Sep 2019 15:15:09 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2019-09-27
-Date:   Fri, 27 Sep 2019 15:15:08 +0200
-Message-Id: <20190927131508.24576-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1727140AbfI0NSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 09:18:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53002 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbfI0NSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Sep 2019 09:18:13 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8AFDA30ADBBB;
+        Fri, 27 Sep 2019 13:18:12 +0000 (UTC)
+Received: from [10.72.12.24] (ovpn-12-24.pek2.redhat.com [10.72.12.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C9315D9C9;
+        Fri, 27 Sep 2019 13:17:58 +0000 (UTC)
+Subject: Re: [PATCH] vhost: introduce mdev based hardware backend
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Tiwei Bie <tiwei.bie@intel.com>, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+References: <20190926045427.4973-1-tiwei.bie@intel.com>
+ <20190926042156-mutt-send-email-mst@kernel.org> <20190926131439.GA11652@___>
+ <8ab5a8d9-284d-bba5-803d-08523c0814e1@redhat.com>
+ <20190927053935-mutt-send-email-mst@kernel.org>
+ <a959fe1e-3095-e0f0-0c9b-57f6eaa9c8b7@redhat.com>
+ <20190927084408-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b6f6ffb2-0b16-5041-be2e-94b805c6a4c9@redhat.com>
+Date:   Fri, 27 Sep 2019 21:17:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20190927084408-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25585/Fri Sep 27 10:25:33 2019)
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Fri, 27 Sep 2019 13:18:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
 
-The following pull-request contains BPF updates for your *net* tree.
+On 2019/9/27 下午8:46, Michael S. Tsirkin wrote:
+> On Fri, Sep 27, 2019 at 08:17:47PM +0800, Jason Wang wrote:
+>> On 2019/9/27 下午5:41, Michael S. Tsirkin wrote:
+>>> On Fri, Sep 27, 2019 at 11:27:12AM +0800, Jason Wang wrote:
+>>>> On 2019/9/26 下午9:14, Tiwei Bie wrote:
+>>>>> On Thu, Sep 26, 2019 at 04:35:18AM -0400, Michael S. Tsirkin wrote:
+>>>>>> On Thu, Sep 26, 2019 at 12:54:27PM +0800, Tiwei Bie wrote:
+>>>>> [...]
+>>>>>>> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+>>>>>>> index 40d028eed645..5afbc2f08fa3 100644
+>>>>>>> --- a/include/uapi/linux/vhost.h
+>>>>>>> +++ b/include/uapi/linux/vhost.h
+>>>>>>> @@ -116,4 +116,12 @@
+>>>>>>>     #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>>>>>>>     #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>>>>>>> +/* VHOST_MDEV specific defines */
+>>>>>>> +
+>>>>>>> +#define VHOST_MDEV_SET_STATE	_IOW(VHOST_VIRTIO, 0x70, __u64)
+>>>>>>> +
+>>>>>>> +#define VHOST_MDEV_S_STOPPED	0
+>>>>>>> +#define VHOST_MDEV_S_RUNNING	1
+>>>>>>> +#define VHOST_MDEV_S_MAX	2
+>>>>>>> +
+>>>>>>>     #endif
+>>>>>> So assuming we have an underlying device that behaves like virtio:
+>>>>> I think they are really good questions/suggestions. Thanks!
+>>>>>
+>>>>>> 1. Should we use SET_STATUS maybe?
+>>>>> I like this idea. I will give it a try.
+>>>>>
+>>>>>> 2. Do we want a reset ioctl?
+>>>>> I think it is helpful. If we use SET_STATUS, maybe we
+>>>>> can use it to support the reset.
+>>>>>
+>>>>>> 3. Do we want ability to enable rings individually?
+>>>>> I will make it possible at least in the vhost layer.
+>>>> Note the API support e.g set_vq_ready().
+>>> virtio spec calls this "enabled" so let's stick to that.
+>>
+>> Ok.
+>>
+>>
+>>>>>> 4. Does device need to limit max ring size?
+>>>>>> 5. Does device need to limit max number of queues?
+>>>>> I think so. It's helpful to have ioctls to report the max
+>>>>> ring size and max number of queues.
+>>>> An issue is the max number of queues is done through a device specific way,
+>>>> usually device configuration space. This is supported by the transport API,
+>>>> but how to expose it to userspace may need more thought.
+>>>>
+>>>> Thanks
+>>> an ioctl for device config?  But for v1 I'd be quite happy to just have
+>>> a minimal working device with 2 queues.
+>>
+>> I'm fully agree, and it will work as long as VIRTIO_NET_F_MQ and
+>> VIRTIO_NET_F_CTRL_VQ is not advertised by the mdev device.
+>>
+>> Thanks
+> Hmm this means we need to validate the features bits,
+> not just pass them through to the hardware.
+> Problem is, how do we add more feature bits later,
+> without testing all hardware?
+> I guess this means the device specific driver must do it.
+>
 
-The main changes are:
+That looks not good, maybe a virtio device id based features blacklist 
+in vhost-mdev. Then MQ and CTRL_VQ could be filtered out by vhost-mdev.
 
-1) Fix libbpf's BTF dumper to not skip anonymous enum definitions, from Andrii.
+Thanks
 
-2) Fix BTF verifier issues when handling the BTF of vmlinux, from Alexei.
 
-3) Fix nested calls into bpf_event_output() from TCP sockops BPF
-   programs, from Allan.
-
-4) Fix NULL pointer dereference in AF_XDP's xsk map creation when
-   allocation fails, from Jonathan.
-
-5) Remove unneeded 64 byte alignment requirement of the AF_XDP UMEM
-   headroom, from Bjorn.
-
-6) Remove unused XDP_OPTIONS getsockopt() call which results in an error
-   on older kernels, from Toke.
-
-7) Fix a client/server race in tcp_rtt BPF kselftest case, from Stanislav.
-
-8) Fix indentation issue in BTF's btf_enum_check_kflag_member(), from Colin.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-----------------------------------------------------------------
-
-The following changes since commit 280ceaed79f18db930c0cc8bb21f6493490bf29c:
-
-  usbnet: sanity checking of packet sizes and device mtu (2019-09-19 13:27:11 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 768fb61fcc13b2acaca758275d54c09a65e2968b:
-
-  bpf: Fix bpf_event_output re-entry issue (2019-09-27 11:24:29 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      bpf: fix BTF verification of enums
-      bpf: fix BTF limits
-
-Allan Zhang (1):
-      bpf: Fix bpf_event_output re-entry issue
-
-Andrii Nakryiko (4):
-      libbpf: fix false uninitialized variable warning
-      selftests/bpf: delete unused variables in test_sysctl
-      selftests/bpf: adjust strobemeta loop to satisfy latest clang
-      libbpf: Teach btf_dumper to emit stand-alone anonymous enum definitions
-
-Björn Töpel (1):
-      xsk: relax UMEM headroom alignment
-
-Colin Ian King (1):
-      bpf: Clean up indentation issue in BTF kflag processing
-
-Jonathan Lemon (1):
-      bpf/xskmap: Return ERR_PTR for failure case instead of NULL.
-
-Stanislav Fomichev (1):
-      selftests/bpf: test_progs: fix client/server race in tcp_rtt
-
-Toke Høiland-Jørgensen (1):
-      libbpf: Remove getsockopt() check for XDP_OPTIONS
-
- include/uapi/linux/btf.h                         |  4 +-
- kernel/bpf/btf.c                                 |  7 +-
- kernel/bpf/xskmap.c                              |  2 +-
- kernel/trace/bpf_trace.c                         | 26 +++++--
- net/xdp/xdp_umem.c                               |  2 -
- tools/lib/bpf/btf_dump.c                         | 94 ++++++++++++++++++++++--
- tools/lib/bpf/xsk.c                              | 11 ---
- tools/testing/selftests/bpf/prog_tests/tcp_rtt.c | 21 +++++-
- tools/testing/selftests/bpf/progs/strobemeta.h   |  5 +-
- tools/testing/selftests/bpf/test_sysctl.c        |  1 -
- 10 files changed, 138 insertions(+), 35 deletions(-)
+>>>>> Thanks!
