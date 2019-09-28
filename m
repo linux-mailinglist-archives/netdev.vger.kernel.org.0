@@ -2,159 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 169FAC0E6F
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 01:41:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1443FC0F01
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 02:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728401AbfI0Xkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 19:40:52 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:35217 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfI0Xkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 19:40:51 -0400
-Received: by mail-lf1-f67.google.com with SMTP id w6so3114025lfl.2;
-        Fri, 27 Sep 2019 16:40:46 -0700 (PDT)
+        id S1726175AbfI1AiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 20:38:00 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45925 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbfI1Ah7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 20:37:59 -0400
+Received: by mail-qt1-f193.google.com with SMTP id c21so9475174qtj.12
+        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 17:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=1d+qpT8CY6Zow0yxcpHZi1JJ2PdyznrOAbyszRQnxus=;
+        b=OsNASevDwKV016I3Uksqnoc7Rz7xRag+6BTNCQSdHmT9ExAJiBXoGGriZruZi+OT5i
+         t+zipIXA7yJZg49W/YoBKrta9UKG1F07A2JAED6oHE0btDka18jZ/9qJi1qdpVHyoe5I
+         0lIY0PMxy+TgO7BxCOtHw5wL5POJ07uPbWNGk0FCzfQW0I2F+w/P6drpnXNTQpJfIaLD
+         OCqWE0ldrApjrPuIcxm2dO5ItktJtKfn+9WOL/oorNCa47tRlYChA5FB5y46CB0zQfsA
+         yiSpW6hiY+A+og+a67hghb3n9Cb6r/Yps9jH25gxKpYbmg1FQdYytrrAchGjuN15pJLc
+         4q4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/vjA3feuVjhECJGCJlv7w7hKdoWzVAzTRzB0psX8g5s=;
-        b=cyYcyUamH/ZJxf1UPzvn/4gz0YorW7s+CfbhnVmploaBcmV29oJLvYo3uJwU0mjY58
-         3LWWSqUd8ot/ev0O7q3aZAJpUR1POuZMfY2vKm0V3xuUf7ZeMNZjutuJHIavuOa4azPF
-         XRNkWfLv6RBEMZcJX4IfJT5Z74EzX4Zvlb9ZknQvFacosYbT+VGJcv4Mq2iJhNU6D/Rt
-         hRwKC4wEfDeURwXeCr6uxvYfkyWO2U6rV+P7GGXXdtoEHmqk5vLIgYXe3uF8HCavjLaD
-         wG703e3baIwYGGDSZILhLVcOM/afcTqJG6Ume4iYUaX9aFh0llteu5a4JB4M53kygSxa
-         6Acw==
-X-Gm-Message-State: APjAAAXafwV/kRJo63q6NYOpyM5CSiynf+c+Iq9sebobZLx66zGoXoeb
-        pT2b/y18TMmkWfo3zr3cjKE=
-X-Google-Smtp-Source: APXvYqzJjAsZOxffDP6X1PyAJObAmIHMhsLPPyKIAwdxjZFuFJU1hlQRv1yAEhIhnnum3sSXraXujg==
-X-Received: by 2002:ac2:568c:: with SMTP id 12mr4300543lfr.133.1569627646034;
-        Fri, 27 Sep 2019 16:40:46 -0700 (PDT)
-Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
-        by smtp.googlemail.com with ESMTPSA id x25sm778810ljb.60.2019.09.27.16.40.44
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=1d+qpT8CY6Zow0yxcpHZi1JJ2PdyznrOAbyszRQnxus=;
+        b=iTFCPdOaavravpeYFroQN271uv9JeR+uWA86U/Vs7HE9tooIJ7vZSQww+4UdtKiqTH
+         diIlcHd98Od4ujhJyMDv8H/b/7znoxAkd4476QFQjHjNL4qM9YWLWzec5X1bs96QCirv
+         JcHaL18JTnrBJ1zpFIAQ9Tnt2z1/7ObR6FMtfy8QRmBp4B8UZH7mZ6Sb4PkzKUS5tTfj
+         trwvREhW44ZI3nzqtOSphbbbbnJJYnAv2I+B4D8JqWhd7KYBTvEmyM8jpRB4C3sysahb
+         tRumPtOchTTo6BjuvF8wci9JYaH72hZ7wiAUde1JuqzedG+dH3VcoS8jEc4JXrJIuQ1l
+         SBsQ==
+X-Gm-Message-State: APjAAAVLjG3XcH4hMUcKI0HsR3+oTUk1yShdHkBF5JlboQ6T2egM87wk
+        u1HQYpX/3kWWBB0UUr8kyOOi+A==
+X-Google-Smtp-Source: APXvYqyX877NfvM+nZGB54fsoytixA4UgRCN8TiISrPnpfrFC2nSWy8KuygGFi8j2wfOakaNqDANHA==
+X-Received: by 2002:a05:6214:1369:: with SMTP id c9mr10791737qvw.3.1569631078437;
+        Fri, 27 Sep 2019 17:37:58 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id q49sm4488244qta.60.2019.09.27.17.37.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Sep 2019 16:40:45 -0700 (PDT)
-From:   Denis Efremov <efremov@linux.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Denis Efremov <efremov@linux.com>, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        x86@kernel.org, linux-s390@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, kvm@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-usb@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org
-Subject: [PATCH RESEND v3 00/26] Add definition for the number of standard PCI BARs
-Date:   Sat, 28 Sep 2019 02:40:26 +0300
-Message-Id: <20190927234026.23342-1-efremov@linux.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190916204158.6889-3-efremov@linux.com>
-References: <20190916204158.6889-3-efremov@linux.com>
+        Fri, 27 Sep 2019 17:37:58 -0700 (PDT)
+Date:   Fri, 27 Sep 2019 17:37:53 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pooja Trivedi <poojatrivedi@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
+        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
+        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
+        Mallesham Jatharakonda <mallesh537@gmail.com>
+Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
+ caused by a race condition in tls_tx_records
+Message-ID: <20190927173753.418634ef@cakuba.netronome.com>
+In-Reply-To: <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
+References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
+        <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
+        <20190918142549.69bfa285@cakuba.netronome.com>
+        <CAOrEds=DqexwYUOfWQ7_yOxre8ojUTqF3wjxY0SC10CbY8KD0w@mail.gmail.com>
+        <20190918144528.57a5cb50@cakuba.netronome.com>
+        <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
+        <20190923172811.1f620803@cakuba.netronome.com>
+        <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Code that iterates over all standard PCI BARs typically uses
-PCI_STD_RESOURCE_END, but this is error-prone because it requires
-"i <= PCI_STD_RESOURCE_END" rather than something like
-"i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
-way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
-with new define PCI_STD_NUM_BARS where appropriate and removes local
-declarations for the number of PCI BARs.
+On Tue, 24 Sep 2019 12:48:26 -0400, Pooja Trivedi wrote:
+> On Mon, Sep 23, 2019 at 8:28 PM Jakub Kicinski wrote:
+> > On Sat, 21 Sep 2019 23:19:20 -0400, Pooja Trivedi wrote:  
+> > > On Wed, Sep 18, 2019 at 5:45 PM Jakub Kicinski wrote:  
+> > > > On Wed, 18 Sep 2019 17:37:44 -0400, Pooja Trivedi wrote:  
+> > > > > Hi Jakub,
+> > > > >
+> > > > > I have explained one potential way for the race to happen in my
+> > > > > original message to the netdev mailing list here:
+> > > > > https://marc.info/?l=linux-netdev&m=156805120229554&w=2
+> > > > >
+> > > > > Here is the part out of there that's relevant to your question:
+> > > > >
+> > > > > -----------------------------------------
+> > > > >
+> > > > > One potential way for race condition to appear:
+> > > > >
+> > > > > When under tcp memory pressure, Thread 1 takes the following code path:
+> > > > > do_sendfile ---> ... ---> .... ---> tls_sw_sendpage --->
+> > > > > tls_sw_do_sendpage ---> tls_tx_records ---> tls_push_sg --->
+> > > > > do_tcp_sendpages ---> sk_stream_wait_memory ---> sk_wait_event  
+> > > >
+> > > > Ugh, so do_tcp_sendpages() can also release the lock :/
+> > > >
+> > > > Since the problem occurs in tls_sw_do_sendpage() and
+> > > > tls_sw_do_sendmsg() as well, should we perhaps fix it at that level?  
+> > >
+> > > That won't do because tls_tx_records also gets called when completion
+> > > callbacks schedule delayed work. That was the code path that caused
+> > > the crash for my test. Cavium's nitrox crypto offload driver calling
+> > > tls_encrypt_done, which calls schedule_delayed_work. Delayed work that
+> > > was scheduled would then be processed by tx_work_handler.
+> > > Notice in my previous reply,
+> > > "Thread 2 code path:
+> > > tx_work_handler ---> tls_tx_records"
+> > >
+> > > "Thread 2 code path:
+> > > tx_work_handler ---> tls_tx_records"  
+> >
+> > Right, the work handler would obviously also have to obey the exclusion
+> > mechanism of choice.
+> >
+> > Having said that this really does feel like we are trying to lock code,
+> > not data here :(  
+> 
+> Agree with you and exactly the thought process I went through. So what
+> are some other options?
+> 
+> 1) A lock member inside of ctx to protect tx_list
+> We are load testing ktls offload with nitrox and the performance was
+> quite adversely affected by this. This approach can be explored more,
+> but the original design of using socket lock didn't follow this model
+> either.
+> 2) Allow tagging of individual record inside of tx_list to indicate if
+> it has been 'processed'
+> This approach would likely protect the data without compromising
+> performance. It will allow Thread 2 to proceed with the TX portion of
+> tls_tx_records while Thread 1 sleeps waiting for memory. There will
+> need to be careful cleanup and backtracking after the thread wakes up
+> to ensure a consistent state of tx_list and record transmission.
+> The approach has several problems, however -- (a) It could cause
+> out-of-order record tx (b) If Thread 1 is waiting for memory, Thread 2
+> most likely will (c) Again, socket lock wasn't designed to follow this
+> model to begin with
+> 
+> 
+> Given that socket lock essentially was working as a code protector --
+> as an exclusion mechanism to allow only a single writer through
+> tls_tx_records at a time -- what other clean ways do we have to fix
+> the race without a significant refactor of the design and code?
 
-Changes in v3:
-  - Updated commits description.
-  - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
-  - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
-  - Removed local define GASKET_NUM_BARS.
-  - Removed local define PCI_NUM_BAR_RESOURCES.
+Very sorry about the delay. I don't think we can maintain the correct
+semantics without sleeping :( If we just bail in tls_tx_records() when
+there's already another writer the later writer will return from the
+system call, even though the data is not pushed into the TCP layer.
 
-Changes in v2:
-  - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
-  - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
-  - Added 2 new patches to replace the magic constant with new define.
-  - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
+What was reason for the performance impact on (1)? My feeling is that
+we need to make writers wait to maintain socket write semantics, and
+that implies putting writers to sleep, which is indeed very costly..
 
-Denis Efremov (26):
-  PCI: Add define for the number of standard PCI BARs
-  PCI: hv: Use PCI_STD_NUM_BARS
-  PCI: dwc: Use PCI_STD_NUM_BARS
-  PCI: endpoint: Use PCI_STD_NUM_BARS
-  misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
-  s390/pci: Use PCI_STD_NUM_BARS
-  x86/PCI: Loop using PCI_STD_NUM_BARS
-  alpha/PCI: Use PCI_STD_NUM_BARS
-  ia64: Use PCI_STD_NUM_BARS
-  stmmac: pci: Loop using PCI_STD_NUM_BARS
-  net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
-  ixgb: use PCI_STD_NUM_BARS
-  e1000: Use PCI_STD_NUM_BARS
-  rapidio/tsi721: Loop using PCI_STD_NUM_BARS
-  efifb: Loop using PCI_STD_NUM_BARS
-  fbmem: use PCI_STD_NUM_BARS
-  vfio_pci: Loop using PCI_STD_NUM_BARS
-  scsi: pm80xx: Use PCI_STD_NUM_BARS
-  ata: sata_nv: Use PCI_STD_NUM_BARS
-  staging: gasket: Use PCI_STD_NUM_BARS
-  serial: 8250_pci: Use PCI_STD_NUM_BARS
-  pata_atp867x: Use PCI_STD_NUM_BARS
-  memstick: use PCI_STD_NUM_BARS
-  USB: core: Use PCI_STD_NUM_BARS
-  usb: pci-quirks: Use PCI_STD_NUM_BARS
-  devres: use PCI_STD_NUM_BARS
+Perhaps something along the lines of:
 
- arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
- arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
- arch/s390/include/asm/pci.h                   |  5 +--
- arch/s390/include/asm/pci_clp.h               |  6 ++--
- arch/s390/pci/pci.c                           | 16 +++++-----
- arch/s390/pci/pci_clp.c                       |  6 ++--
- arch/x86/pci/common.c                         |  2 +-
- arch/x86/pci/intel_mid_pci.c                  |  2 +-
- drivers/ata/pata_atp867x.c                    |  2 +-
- drivers/ata/sata_nv.c                         |  2 +-
- drivers/memstick/host/jmb38x_ms.c             |  2 +-
- drivers/misc/pci_endpoint_test.c              |  8 ++---
- drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
- drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
- drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
- drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
- .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
- drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
- .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
- drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
- .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
- drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
- drivers/pci/controller/pci-hyperv.c           | 10 +++---
- drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
- drivers/pci/pci-sysfs.c                       |  4 +--
- drivers/pci/pci.c                             | 13 ++++----
- drivers/pci/proc.c                            |  4 +--
- drivers/pci/quirks.c                          |  4 +--
- drivers/rapidio/devices/tsi721.c              |  2 +-
- drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
- drivers/scsi/pm8001/pm8001_init.c             |  2 +-
- drivers/staging/gasket/gasket_constants.h     |  3 --
- drivers/staging/gasket/gasket_core.c          | 12 +++----
- drivers/staging/gasket/gasket_core.h          |  4 +--
- drivers/tty/serial/8250/8250_pci.c            |  8 ++---
- drivers/usb/core/hcd-pci.c                    |  2 +-
- drivers/usb/host/pci-quirks.c                 |  2 +-
- drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
- drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
- drivers/vfio/pci/vfio_pci_private.h           |  4 +--
- drivers/video/fbdev/core/fbmem.c              |  4 +--
- drivers/video/fbdev/efifb.c                   |  2 +-
- include/linux/pci-epc.h                       |  2 +-
- include/linux/pci.h                           |  2 +-
- include/uapi/linux/pci_regs.h                 |  1 +
- lib/devres.c                                  |  2 +-
- 47 files changed, 112 insertions(+), 115 deletions(-)
+	if (ctx->in_tcp_sendpages) {
+		rc = sk_stream_wait_memory(sk, &timeo);
+		...
+	}
 
--- 
-2.21.0
+in tls_tx_records() would be the "most correct" solution? If we get
+there and there is already a writer, that means the first writer has
+to be waiting for memory, and so should the second..
 
+WDYT?
