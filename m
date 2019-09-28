@@ -2,153 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB794C114C
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 18:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF20C1152
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 18:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbfI1QbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 12:31:15 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35241 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfI1QbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 12:31:15 -0400
-Received: by mail-qk1-f194.google.com with SMTP id w2so4450307qkf.2;
-        Sat, 28 Sep 2019 09:31:14 -0700 (PDT)
+        id S1728479AbfI1Qs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 12:48:57 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45086 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbfI1Qs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 12:48:56 -0400
+Received: by mail-pg1-f195.google.com with SMTP id q7so5035821pgi.12;
+        Sat, 28 Sep 2019 09:48:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DB3lQTaHiF44p47TOLBQdbutu/YNcs/2oWSngvnk8pM=;
-        b=BkNbvMUWm+1v+GJKK/5n80GdlEIXTDF7ipkukdFUhaxLqVuNVjM4GJQMuEuT5lw9jv
-         wVIIHDuEEukWKNTfybDkWbo+eJs8OmFMUCbnfZTO6d6zR2D0EqQ4HwYKEXFnLG8LUjZI
-         8k5KlJ1vgNYcXWm/ESrUwlhqdZHE0zl5LJ64G0bGKqNWAPtmA8WDUJvtENuN/0dDgbaD
-         yoRcYCzvFL6EAJmnDEKiwUbXlMSrxkSnoLctv1yWKQ5OOJEhfDVntYfClFsxMhcFkf4T
-         k1LjIxYxdg7KZiXwlaiD5ey9+0WR7GBP+3Qkj0Mk0ec8P2iPWneN81RNt0tvvkAL8q5q
-         8bRg==
+        h=from:to:cc:subject:date:message-id;
+        bh=rAipZ4g31j/uo8D+iKR4GryVJ+tjL+DJFUxE/r+fXUI=;
+        b=vBnsNUUXzmaYvl23HaTJ2pKU/YlSdg8DrVfHHIhFo2G7XZgV5UmnTZcr6Ao/w8zaRJ
+         gKaUQPDBreN0QorXa/Ae1mXUPO9hx2SC48IufOYVZYTgd4EkAh3tSDggyYO5DSxh+jro
+         9VnnBWrgy8+t5di9csIjPD/Y5thePDFXiMSL6w0g3LYlIFWqTgD05yNJ5Vwc5Yfk4tcj
+         D1WlnmngLBZk7+6LOzHKgULI12ljeX6dMJiDW2Tr8Fn/epcJ3N/g3uRPJD9Q48miQUhF
+         wZ0ZlpNH8hkVeGRlBUEE5kPpU85qnl2MJgws2VJ5koqE5s2gQbD5d77+TECfPit2fJWv
+         BYhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DB3lQTaHiF44p47TOLBQdbutu/YNcs/2oWSngvnk8pM=;
-        b=j23WPbi9/2DdZz+bH2lxPHpJZiwsCzKYSHqpQ0ijmU57JNu1S43L77HmKaYxoG17mv
-         yQMvx4Hvlk/N0e35vFkxR0AiHWBoFkxXC+ACCEXWbGRGcslK7pg2axqAWOAAoW4MMPDS
-         Hhl6QixU4hnazVL9CMKPZuUph9rNOH+xtfyvSQRFthoo0zWu2Ftv3JEQO8/JVLQQb1VH
-         PISASEpwKOk2GwAodPZFktRhyU4qJNORglUqjt9o/6m72gbK/pDdk/nY0YucFiLh3Xf3
-         yMzWVYb+99h+itCtD3BOuSeVsuqOZbzwkF4qKLHqkuHbaY3yzB3IjnTwm77QxYGtJT3w
-         DHKA==
-X-Gm-Message-State: APjAAAV++vmPydLuK9GvesuhO5RBtG+33BNKG/VFIuaKrWrUPORo/0fc
-        lC1rKo7iUFfmkVMuCIEfxFG8xukl7OBwG90jKms=
-X-Google-Smtp-Source: APXvYqxPZIX6lsapPAClIPustCCQwbJ123lj6HXH5AwejPDFpsGykc/XCrlmUoXQQxThTWzkY9Q1Kx19iDKAdsj7q0A=
-X-Received: by 2002:ae9:dc87:: with SMTP id q129mr10643759qkf.92.1569688273738;
- Sat, 28 Sep 2019 09:31:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190928063033.1674094-1-andriin@fb.com> <alpine.LRH.2.20.1909281202530.5332@dhcp-10-175-218-65.vpn.oracle.com>
-In-Reply-To: <alpine.LRH.2.20.1909281202530.5332@dhcp-10-175-218-65.vpn.oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 28 Sep 2019 09:31:03 -0700
-Message-ID: <CAEf4BzYTQbVVUiQOHEcjL8mZ=iJBSGHFRNxoayRpaMw5ys+iDw@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically possible
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=rAipZ4g31j/uo8D+iKR4GryVJ+tjL+DJFUxE/r+fXUI=;
+        b=aPtZesdsd7HHXPEZ+m0JXGaHTBN1F8OngjO0iSyGhkJzO58ao9riA4xIfAFNVi3d5U
+         DtCmSJMPYeRQ1fjNWPr6XEE+oNy8uS0aJsUqm2B4DwRhHxG1piAxj5brL0XXrz55z1BD
+         1/8b0EahNJfuQxVRKX9bRqSX+g6lB5XCgreJTkAfqOC2xtvPzAmKV8W66xyoxyC/pW8i
+         OVONQnC+xWVIiT3wxT6W/FkS4duXpf3FOTYWOlU5Mqlb+0zatUfYViuXolRtGP7mj7dF
+         24xtlBOLG9dWiyMUJPqLmk14ySYdyfplCvM7zic3FB2AuNTVV3h5/pPE/AwIMrEwQtXu
+         PaWg==
+X-Gm-Message-State: APjAAAUL6wEB2aA3vvIG8uDzZxqdxR4XvT4ApSO5TpQVxUcbOYAMgV/A
+        yRTB0c9UBTTiVpjXEWklfRM=
+X-Google-Smtp-Source: APXvYqyUB1mH2RxyUWuAqMVz2uw2ZYx5PE8A8v/bO8mK1DDhWfnUBFBU2EzIBNdozhWxkC1SZeDv0g==
+X-Received: by 2002:a63:6e85:: with SMTP id j127mr15955708pgc.326.1569689335256;
+        Sat, 28 Sep 2019 09:48:55 -0700 (PDT)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id 30sm8663092pjk.25.2019.09.28.09.48.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Sep 2019 09:48:54 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
+        johannes@sipsolutions.net, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, jiri@resnulli.us, sd@queasysnail.net,
+        roopa@cumulusnetworks.com, saeedm@mellanox.com,
+        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
+        jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
+Cc:     ap420073@gmail.com
+Subject: [PATCH net v4 00/12] net: fix nested device bugs
+Date:   Sat, 28 Sep 2019 16:48:31 +0000
+Message-Id: <20190928164843.31800-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 28, 2019 at 4:20 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> On Fri, 27 Sep 2019, Andrii Nakryiko wrote:
->
-> > This patch switches libbpf_num_possible_cpus() from using possible CPU
-> > set to present CPU set. This fixes issues with incorrect auto-sizing of
-> > PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
-> >
-> > On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
-> > be a set of any representable (i.e., potentially possible) CPU, which is
-> > normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
-> > tested on, while there were just two CPU cores actually present).
-> > /sys/devices/system/cpu/present, on the other hand, will only contain
-> > CPUs that are physically present in the system (even if not online yet),
-> > which is what we really want, especially when creating per-CPU maps or
-> > perf events.
-> >
-> > On systems with HOTPLUG disabled, present and possible are identical, so
-> > there is no change of behavior there.
-> >
->
-> Just curious - is there a reason for not adding a new libbpf_num_present_cpus()
-> function to cover this  case, and switching to using that in various places?
+This patchset fixes several bugs that are related to nesting
+device infrastructure.
+Current nesting infrastructure code doesn't limit the depth level of
+devices. nested devices could be handled recursively. at that moment,
+it needs huge memory and stack overflow could occur.
+Below devices type have same bug.
+VLAN, BONDING, TEAM, MACSEC, MACVLAN, IPVLAN, VIRT_WIFI and VXLAN.
+But I couldn't test all interface types so there could be more device
+types which have similar problems.
+Maybe qmi_wwan.c code could have same problem.
+So, I would appreciate if someone test qmi_wwan.c and other modules.
 
-The reason is that libbpf_num_possible_cpus() is useless on HOTPLUG
-systems and never worked as intended. If you rely on this function to
-create perf_buffer and/or PERF_EVENT_ARRAY, it will simply fail due to
-specifying more CPUs than are present. I didn't want to keep adding
-new APIs for no good reason, while also leaving useless ones, so I
-fixed the existing API to behave as expected. It's unfortunate that
-name doesn't match sysfs file we are reading it from, of course, but
-having people to choose between libbpf_num_possible_cpus() vs
-libbpf_num_present_cpus() seems like even bigger problem, as
-differences are non-obvious.
+Test commands:
+    ip link add dummy0 type dummy
+    ip link add vlan1 link dummy0 type vlan id 1
 
-The good thing, it won't break all the non-HOTPLUG systems for sure,
-which seems to be the only cases that are used right now (otherwise
-someone would already complain about broken
-libbpf_num_possible_cpus()).
+    for i in {2..100}
+    do
+	    let A=$i-1
+	    ip link add name vlan$i link vlan$A type vlan id $i
+    done
+    ip link del dummy0
 
->
-> Looking at the places libbpf_num_possible_cpus() is called in libbpf
->
-> - __perf_buffer__new(): this could just change to use the number of
->   present CPUs, since perf_buffer__new_raw() with a cpu_cnt in struct
->   perf_buffer_raw_ops
->
-> - bpf_object__create_maps(), which is called via bpf_oject__load_xattr().
->   In this case it seems like switching to num present makes sense, though
->   it might make sense to add a field to struct bpf_object_load_attr * to
->   allow users to explicitly set another max value.
+1st patch actually fixes the root cause.
+It adds new common variables {upper/lower}_level that represent
+depth level. upper_level variable is depth of upper devices.
+lower_level variable is depth of lower devices.
 
-I believe more knobs is not always better for API. Plus, adding any
-field to those xxx_xattr structs is an ABI breakage and requires
-adding new APIs, so I don't think this is good enough reason to add
-new flag. See discussion in another thread about this whole API design
-w/ current attributes and ABI consequences of adding anything new to
-them.
+      [U][L]       [U][L]
+vlan1  1  5  vlan4  1  4
+vlan2  2  4  vlan5  2  3
+vlan3  3  3    |
+  |            |
+  +------------+
+  |
+vlan6  4  2
+dummy0 5  1
 
->
-> This would give the desired default behaviour, while still giving users
-> a way of specifying the possible number. What do you think? Thanks!
+After this patch, the nesting infrastructure code uses this variable to
+check the depth level.
 
-BTW, if user wants to override the size of maps, they can do it easily
-either in map definition or programmatically after bpf_object__open,
-but before bpf_object__load, so there is no need for flags, it's all
-easily achievable with existing API.
+2, 4, 5, 6, 7 patches fix lockdep related problem.
+Before this patch, devices use static lockdep map.
+So, if devices that are same type is nested, lockdep will warn about
+recursive situation.
+These patches make these devices use dynamic lockdep key instead of
+static lock or subclass.
 
->
-> Alan
->
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index e0276520171b..45351c074e45 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
-> >
-> >  int libbpf_num_possible_cpus(void)
-> >  {
-> > -     static const char *fcpu = "/sys/devices/system/cpu/possible";
-> > +     static const char *fcpu = "/sys/devices/system/cpu/present";
-> >       int len = 0, n = 0, il = 0, ir = 0;
-> >       unsigned int start = 0, end = 0;
-> >       int tmp_cpus = 0;
-> > --
-> > 2.17.1
-> >
-> >
+3rd patch fixes unexpected IFF_BONDING bit unset.
+
+8th patch fixes a refcnt leak in the macsec module.
+
+9th patch adds ignore flag to an adjacent structure.
+In order to exchange an adjacent node safely, ignore flag is needed.
+
+10th patch makes vxlan add an adjacent link to limit depth level.
+
+11th patch removes unnecessary variables and callback.
+
+12th patch fix refcnt leaks in the virt_wifi module
+
+v3 -> v4 :
+ - Add new 12th patch to fix refcnt leaks in the virt_wifi module
+ - Fix wrong usage netdev_upper_dev_link() in the vxlan.c
+ - Preserve reverse christmas tree variable ordering in the vxlan.c
+ - Add missing static keyword in the dev.c
+ - Expose netdev_adjacent_change_{prepare/commit/abort} instead of
+   netdev_adjacent_dev_{enable/disable}
+v2 -> v3 :
+ - Modify nesting infrastructure code to use iterator instead of recursive.
+v1 -> v2 :
+ - Make the 3rd patch do not add a new priv_flag.
+
+Taehee Yoo (12):
+  net: core: limit nested device depth
+  vlan: use dynamic lockdep key instead of subclass
+  bonding: fix unexpected IFF_BONDING bit unset
+  bonding: use dynamic lockdep key instead of subclass
+  team: use dynamic lockdep key instead of static key
+  macsec: use dynamic lockdep key instead of subclass
+  macvlan: use dynamic lockdep key instead of subclass
+  macsec: fix refcnt leak in module exit routine
+  net: core: add ignore flag to netdev_adjacent structure
+  vxlan: add adjacent link to limit depth level
+  net: remove unnecessary variables and callback
+  virt_wifi: fix refcnt leak in module exit routine
+
+ drivers/net/bonding/bond_alb.c                |   2 +-
+ drivers/net/bonding/bond_main.c               |  81 ++-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   2 +-
+ drivers/net/macsec.c                          |  50 +-
+ drivers/net/macvlan.c                         |  36 +-
+ drivers/net/team/team.c                       |  61 ++-
+ drivers/net/vxlan.c                           |  52 +-
+ drivers/net/wireless/virt_wifi.c              |  51 +-
+ include/linux/if_macvlan.h                    |   3 +-
+ include/linux/if_team.h                       |   5 +
+ include/linux/if_vlan.h                       |  13 +-
+ include/linux/netdevice.h                     |  26 +-
+ include/net/bonding.h                         |   4 +-
+ include/net/vxlan.h                           |   1 +
+ net/8021q/vlan.c                              |   1 -
+ net/8021q/vlan_dev.c                          |  32 +-
+ net/core/dev.c                                | 508 +++++++++++++++---
+ net/core/dev_addr_lists.c                     |  12 +-
+ net/smc/smc_core.c                            |   2 +-
+ net/smc/smc_pnet.c                            |   2 +-
+ 20 files changed, 752 insertions(+), 192 deletions(-)
+
+-- 
+2.17.1
+
