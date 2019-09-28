@@ -2,128 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B16C1048
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 11:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6A1C10AF
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 13:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbfI1JCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 05:02:03 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:37832 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725856AbfI1JCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 05:02:03 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 1D77AC0CDD;
-        Sat, 28 Sep 2019 09:01:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1569661322; bh=1cqYGwIxi3VOH2w8jzKYB3Q8SDna/xsu7JsFOTgsDME=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=hLRobXHs1T3Nn/4753ZrTPZC8qD5TRvJ5se2XGnSWKfQ4FOq5HYifgAIRdPaziOiP
-         ZEPPEoMd9YO6BQcztIwH51fsGjyvyTD0deUK2k2hYL73O6oxIaebKAIOLibbcPFJTg
-         bx5jJd74XBOvJGY8kTXhcfsqsZDbL+A2kqKf0rv4rVN9fXz98R+TXd9JOU2B3FE3rq
-         Wh4Sv1r8en0H9SFq6aczA0kNhu914qDJkTiwv2Y3FoesolIIub2pVfczlvwwf3HzKN
-         yncXVrCc1cVyul+zbfDqPYu5ra7Qd5m6sMb76yNXsGR+t3KgY6FJTFteICLiq4iggs
-         i3m7laxlH24nA==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id A1C5EA0067;
-        Sat, 28 Sep 2019 09:01:50 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Sat, 28 Sep 2019 02:01:42 -0700
-Received: from NAM03-BY2-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Sat, 28 Sep 2019 02:01:41 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dC7gW9K2ZvZ5ihC3eXfKzU9bk5YE8t2Yn6ALJZWpGyzNVFZPqRhnPHF0cppaPe3wrgFQ2RcTFTwI2yZKZ4kcARLFtO5Imh9JoqR8WuqB1n+cjBfiu1j0OM64jWBV+mkSQwVomleWoU7t5LUI1GoZ5LvZO++a/e1X177Af2uWWWyk8gLBSpaUtfZpS19YpHM0o2ME2LHHHeNdjWM8kFyqXchXk8eauVE3uedyzoaTJdXFCvjbNU7NXYbwsB4oS1VEZ7Rg+1+YJOT3ucqmzVES6z7uGslPzsilFGe3EkhhYj4/K5yYNrOzAfzjG8JU3/Y8xQKWCd5RSdb1nn2S/BzBZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1cqYGwIxi3VOH2w8jzKYB3Q8SDna/xsu7JsFOTgsDME=;
- b=VkASU75qi/niCjtSlr7HXGFd6UxW5vj3lK92mytuduDTksLJAkB9nHOalkRDDhUCijXYMndYIZgRbOr+vXDOqLKMk9Y76XUroYHZLaI7Pyo29s+wZsqStftvwx6sj6LpLkJRTD6zKc2rLEy4/N7PINaZVlIjKoZrKwW4kCNwP83Ive8u4Z3JdzqivHxDhwefdJQPyiBXTdn8RfDBXW9iRrlJRGuppDRqwsKR1d7nDQZmtlEuwHyPIMNrwV8k6xClavMnR9L7j+/VyWtJqHka9FIPMAFt7b91oZELIKwjwue0q56aG96F9VR3BknFxLvikb/us65J8UYF1bn2t5G5fg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1cqYGwIxi3VOH2w8jzKYB3Q8SDna/xsu7JsFOTgsDME=;
- b=eNySKBV6Yyq36kU7kAS7GtlBJv3c38ayJlkNjWCV01asK2XZNkllCgpLKNGTN5AVRReZIoZmpXBP9NV0wzyI3GkJ6WlJMU0wHN6EO/G5qz07JuXiGR0weMQsev8eTyX29+0glpwU/6L50HJaScVAg8b1yAPlW5SB/fDtT7y3lkQ=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3009.namprd12.prod.outlook.com (20.178.210.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.17; Sat, 28 Sep 2019 09:01:40 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::59fc:d942:487d:15b8%7]) with mapi id 15.20.2305.017; Sat, 28 Sep 2019
- 09:01:40 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 0/8] net: stmmac: Fixes for -net
-Thread-Topic: [PATCH net 0/8] net: stmmac: Fixes for -net
-Thread-Index: AQHVdQgUsu3+9Gx8RkShfK4JNFRi6qdAzChg
-Date:   Sat, 28 Sep 2019 09:01:39 +0000
-Message-ID: <BN8PR12MB32667D583653ABB31CDD4FA0D3800@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <cover.1569569778.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1569569778.git.Jose.Abreu@synopsys.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [188.80.50.127]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 86cb476f-4b57-4940-33e9-08d743f279f6
-x-ms-traffictypediagnostic: BN8PR12MB3009:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB3009E0B858439D73C2AD53E7D3800@BN8PR12MB3009.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0174BD4BDA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(346002)(376002)(366004)(396003)(189003)(199004)(2906002)(26005)(99286004)(33656002)(486006)(446003)(11346002)(74316002)(305945005)(71200400001)(71190400001)(102836004)(186003)(25786009)(6506007)(4326008)(54906003)(3846002)(7736002)(476003)(66066001)(86362001)(5660300002)(316002)(558084003)(66946007)(66476007)(76116006)(66446008)(64756008)(81166006)(8676002)(76176011)(14454004)(7696005)(6116002)(110136005)(81156014)(66556008)(9686003)(55016002)(6436002)(8936002)(478600001)(2501003)(229853002)(52536014)(256004)(6246003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3009;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oInf90ScnbtZ6uXcLbLGNeQb/F26vrO0Zn7u5RVy68V3SEcxQRz/Je2BH3iDdxBtIh/Jhmu4tprdVMkux7vr29FbOl3XgAjapqO0ddl8Q+sIjfjTWGU1dW4jFggRu8ao2F82EMYVGNr5VvAMg91ymU5DZm5MP3X+dbTxWFLC+ldgSCIAdoizKRvgMOYcQx/5XdyiT8fCbvSR+iX4ti4umWP6qvm1WBSiaFkwsB0Tjz7wwZe/LFK4sSN6YBD5UYc1qq0K2Qh0am0Bmy9mPcRYuWKe+PGT6DaqMrE/II6y0iEqM8u5FkDPwht1u1mwQ4WJ/TprgmX5NWTySQHNy1T/8Z8k4aQ0PS/MT6YfGuKgUAZXqd+F5wosbPrXEGvtWaHIQnayAnmYSt1S/sD+b2UDoupMwD9NXEQ20UiS7D17zMA=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728321AbfI1LVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 07:21:03 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:47768 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbfI1LVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 07:21:02 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SBJGZO106410;
+        Sat, 28 Sep 2019 11:20:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2019-08-05;
+ bh=JvfgdC2hgYiOD08GKxZBdYNRMJRQteJ88B9j1u0YadE=;
+ b=b+THG9ZTlAfZHCK9JYcFohpfL5Ai7zgX2r5bcIJ3yIb6I/bo3cOvKEZxwRUjPdbQdJx1
+ jW0qvgEIC1GAci4qw268FFusyBrsq1t514YeiKsC230w1gYngw7erbo+F7oVP2hMyOQ5
+ 1bneZw9C7h/ER7eZYoFpGM8+foCxo6soz+OwzDdcMMLp2/xUBcwKz95l63iRWljjtQkO
+ t9/Ivc+Adcz6Td2P3JamJvU6SbqDKcmc0LXyMSjWpcxzzTMfetnCA7PPUHw6Yp2OlBXP
+ XGmuNeEOQO7yxiJUtw56A8i2lquL8YvPUntJ5e9euypcEDK4i1Aow0Co1dfvpBvVLeWk qQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2va05r8nhe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 28 Sep 2019 11:20:47 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SBJDmG145002;
+        Sat, 28 Sep 2019 11:20:47 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2v9vnjagjs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 28 Sep 2019 11:20:47 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8SBKi1T012863;
+        Sat, 28 Sep 2019 11:20:44 GMT
+Received: from dhcp-10-175-218-65.vpn.oracle.com (/10.175.218.65)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 28 Sep 2019 04:20:44 -0700
+Date:   Sat, 28 Sep 2019 12:20:36 +0100 (BST)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@dhcp-10-175-218-65.vpn.oracle.com
+To:     Andrii Nakryiko <andriin@fb.com>
+cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically
+ possible
+In-Reply-To: <20190928063033.1674094-1-andriin@fb.com>
+Message-ID: <alpine.LRH.2.20.1909281202530.5332@dhcp-10-175-218-65.vpn.oracle.com>
+References: <20190928063033.1674094-1-andriin@fb.com>
+User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86cb476f-4b57-4940-33e9-08d743f279f6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2019 09:01:40.1180
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fOl4JFOI58xgoBtVwk+hZFV7mtsT7ruNlCNtsA4t6n8lusyLQYGIn8fRTY5t63seNv8jeGtw7/EGlk1Yd8VQ2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3009
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9393 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1909280119
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9393 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1909280119
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
-Date: Sep/27/2019, 08:48:48 (UTC+00:00)
+On Fri, 27 Sep 2019, Andrii Nakryiko wrote:
 
-> Misc fixes for -net tree. More info in commit logs.
+> This patch switches libbpf_num_possible_cpus() from using possible CPU
+> set to present CPU set. This fixes issues with incorrect auto-sizing of
+> PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
+> 
+> On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
+> be a set of any representable (i.e., potentially possible) CPU, which is
+> normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
+> tested on, while there were just two CPU cores actually present).
+> /sys/devices/system/cpu/present, on the other hand, will only contain
+> CPUs that are physically present in the system (even if not online yet),
+> which is what we really want, especially when creating per-CPU maps or
+> perf events.
+> 
+> On systems with HOTPLUG disabled, present and possible are identical, so
+> there is no change of behavior there.
+> 
 
-David, please do not apply these. I forgot to rebase my tree against=20
--net and this was based on -next. I'll resend. Sorry for the mess :(
+Just curious - is there a reason for not adding a new libbpf_num_present_cpus() 
+function to cover this  case, and switching to using that in various places?
 
----
-Thanks,
-Jose Miguel Abreu
+Looking at the places libbpf_num_possible_cpus() is called in libbpf 
+
+- __perf_buffer__new(): this could just change to use the number of  
+  present CPUs, since perf_buffer__new_raw() with a cpu_cnt in struct 
+  perf_buffer_raw_ops
+
+- bpf_object__create_maps(), which is called via bpf_oject__load_xattr().
+  In this case it seems like switching to num present makes sense, though
+  it might make sense to add a field to struct bpf_object_load_attr * to
+  allow users to explicitly set another max value.
+
+This would give the desired default behaviour, while still giving users 
+a way of specifying the possible number. What do you think? Thanks!
+
+Alan
+
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index e0276520171b..45351c074e45 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
+>  
+>  int libbpf_num_possible_cpus(void)
+>  {
+> -	static const char *fcpu = "/sys/devices/system/cpu/possible";
+> +	static const char *fcpu = "/sys/devices/system/cpu/present";
+>  	int len = 0, n = 0, il = 0, ir = 0;
+>  	unsigned int start = 0, end = 0;
+>  	int tmp_cpus = 0;
+> -- 
+> 2.17.1
+> 
+> 
