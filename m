@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E2B1C11E4
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 20:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232C8C11FD
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 21:15:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728705AbfI1S6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 14:58:16 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:33108 "EHLO
+        id S1728705AbfI1TPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 15:15:10 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:33488 "EHLO
         sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728576AbfI1S6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 14:58:16 -0400
+        with ESMTP id S1728569AbfI1TPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 15:15:10 -0400
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.92.2)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1iEHus-0002U3-8A; Sat, 28 Sep 2019 20:58:02 +0200
-Message-ID: <cf8d8627e3716172bb8c034ba7e55472eb78518d.camel@sipsolutions.net>
-Subject: Re: [PATCH net v4 12/12] virt_wifi: fix refcnt leak in module exit
- routine
+        id 1iEIBE-0002ob-V4; Sat, 28 Sep 2019 21:14:57 +0200
+Message-ID: <33adc57c243dccc1dcb478113166fa01add3d49a.camel@sipsolutions.net>
+Subject: Re: [PATCH net v4 07/12] macvlan: use dynamic lockdep key instead
+ of subclass
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
         netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
@@ -29,11 +29,11 @@ To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
         sashal@kernel.org, hare@suse.de, varun@chelsio.com,
         ubraun@linux.ibm.com, kgraul@linux.ibm.com,
         jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
-Date:   Sat, 28 Sep 2019 20:57:58 +0200
-In-Reply-To: <20190928164843.31800-13-ap420073@gmail.com> (sfid-20190928_185052_013812_882A8484)
+Date:   Sat, 28 Sep 2019 21:14:54 +0200
+In-Reply-To: <20190928164843.31800-8-ap420073@gmail.com> (sfid-20190928_185005_320479_39029157)
 References: <20190928164843.31800-1-ap420073@gmail.com>
-         <20190928164843.31800-13-ap420073@gmail.com>
-         (sfid-20190928_185052_013812_882A8484)
+         <20190928164843.31800-8-ap420073@gmail.com>
+         (sfid-20190928_185005_320479_39029157)
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
@@ -43,17 +43,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-09-28 at 16:48 +0000, Taehee Yoo wrote:
-> virt_wifi_newlink() calls netdev_upper_dev_link() and it internally
-> holds reference count of lower interface.
-[...]
-> This patch adds notifier routine to delete upper interface before deleting
-> lower interface.
+Hi,
 
-Good catch, thanks!
+I hadn't seen the previous patchsets of this, and looking briefly in the
+archives didn't really seem to say anything about this.
 
-For now I'll assume this will go in through net together with the whole
-series (once ready), shout if you want something else.
 
+However, I'm wondering now: patches 2-7 of this patchset look basically
+all identical in a way:
+ * you set the addr_list_lock's class to a newly registered key inside
+   the netdev (or rather the private struct, but doesn't make a big
+   difference)
+ * you set each TX queue's _xmit_lock's class similarly
+ * you set the qdisc_tx_busylock/qdisc_running_key
+
+The first two of these look pretty much completely identical.
+
+Would it perhaps make sense to just do that for *every* netdev? Many of
+those netdevs won't ever nest so it wouldn't really be useful, but I'm
+not convinced it would put that much more strain on lockdep - if
+anything, people are probably creating more VLANs than regular PF/VF
+netdevs anyway?
+
+I didn't see any discussion on this, but perhaps I missed it? The cost
+would be a bigger netdev struct (when lockdep is enabled), but we
+already have that for all the VLANs etc. it's just in the private data,
+so it's not a _huge_ difference really I'd think, and this is quite a
+bit of code for each device type now.
+
+Alternatively, maybe there could just be some common helper code:
+
+struct nested_netdev_lockdep {
+	struct lock_class_key xmit_lock_key;
+	struct lock_class_key addr_lock_key;
+};
+
+void netdev_init_nested_lockdep(struct net_device *dev,
+				struct netsted_netdev_lockdep *l)
+{
+	/* ... */
+}
+
+so you just have to embed a "struct nested_netdev_lockdep" in your
+private data structure and call the common code.
+
+Or maybe make that
+
+void netdev_init_nested_lockdep(
+	struct net_device *dev,
+	struct
+netsted_netdev_lockdep *l,
+	struct lock_class_key
+*qdisc_tx_busylock_key,
+	struct lock_class_key *qdisc_running_key)
+
+so you can't really get that part wrong either?
+
+
+> @@ -922,6 +938,9 @@ static void macvlan_uninit(struct net_device *dev)
+>  	port->count -= 1;
+>  	if (!port->count)
+>  		macvlan_port_destroy(port->dev);
+> +
+> +	lockdep_unregister_key(&vlan->addr_lock_key);
+> +	lockdep_unregister_key(&vlan->xmit_lock_key);
+>  }
+
+OK, so I guess you need an equivalent "deinit" function too -
+netdev_deinit_nested_lockdep() or so.
+
+
+What's not really clear to me is why the qdisc locks can actually stay
+the same at all levels? Can they just never nest? But then why are they
+different per device type?
+
+Thanks,
 johannes
 
