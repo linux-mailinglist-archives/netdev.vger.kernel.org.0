@@ -2,203 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1586C116B
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 18:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34343C119E
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 19:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728820AbfI1Quv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 12:50:51 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45283 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfI1Quv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 12:50:51 -0400
-Received: by mail-pl1-f194.google.com with SMTP id u12so2248687pls.12;
-        Sat, 28 Sep 2019 09:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WGmCj+EzADgagaHq4m2frUsV7PtkZi9w2xNwBqjwIs4=;
-        b=Zd/viF3M74FYZdxWNCEMdS1eJiNqHacTIY7qye+XdyRfI63Ah6BONEOS3RbJaRd7uX
-         k/MwEckjfIIFdY9uScGpoTqmYHsL2/xpZBDGEz4TjTo7W6UiNaesrPgFhzaq7fPezxCA
-         Bk5MlDeB1Jcd6zTIi2ZRUqmdwAUV2OrxW9c+ZA0QvlOvX7kOnaSRAwrxl0AeFFpOTnZ5
-         1F1quqkmSoDodH6rrxTeVcAjKZu+Xo3sBaHEffEKLghSHWIk7Oa02bL4xNW3hPDJbvuk
-         mvnSFOAh9A+wPvmMt0HDYp0x/k8l8R/1xMXm1dZn9I4pnd0t3CjUEAyr5K3CDrQ2KyAn
-         IxRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=WGmCj+EzADgagaHq4m2frUsV7PtkZi9w2xNwBqjwIs4=;
-        b=YgNYdyJ222XE1Z/OL9aKvsFfRrl9Y+yle1CzQD3VMlpEOvScXx3rM+ixsDPv5uGz6t
-         sHi6ZERIFglPci+4ndS6J2XH4uWAAQSkMxje+/uidUYVtayQE3aB+i7JDDCqycbxVSY0
-         37vcxhgTBKk1jF4/RfUdluQAE5le1pgJ+u3ZslOD1FtHPu8kqfXI2nFfRBbjlQfZHeMT
-         AVwNBvSn0AdMdDym0XiKJe3TPs2SwDTI835cpjhleQI/Bm2xMNAUf7BR3BFpr1BzmSv7
-         yJesZghbzb9QZ8z9wUezvfg2Ng/8Z3fJf56wS47uvRXU8M8KIu+A/tx0siPswEWrkuna
-         HtPA==
-X-Gm-Message-State: APjAAAXfnXa7YUcPTtIG3XjRibCgSS28w/ccJ0IPIj7rl4Qn6m87wLtR
-        iPOh+CRC5TSR7BSp8Pt95B0=
-X-Google-Smtp-Source: APXvYqy0uIJBZ2GOlmjZwL3ywOkJNx5QSNg9GPATY8XC9xI9xordaY7vGafPPhNLy3j4NOHDuqFYnA==
-X-Received: by 2002:a17:902:222:: with SMTP id 31mr11582519plc.167.1569689450181;
-        Sat, 28 Sep 2019 09:50:50 -0700 (PDT)
-Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id 30sm8663092pjk.25.2019.09.28.09.50.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Sep 2019 09:50:49 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
-        johannes@sipsolutions.net, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, jiri@resnulli.us, sd@queasysnail.net,
-        roopa@cumulusnetworks.com, saeedm@mellanox.com,
-        manishc@marvell.com, rahulv@marvell.com, kys@microsoft.com,
-        haiyangz@microsoft.com, stephen@networkplumber.org,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
-Cc:     ap420073@gmail.com
-Subject: [PATCH net v4 12/12] virt_wifi: fix refcnt leak in module exit routine
-Date:   Sat, 28 Sep 2019 16:48:43 +0000
-Message-Id: <20190928164843.31800-13-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190928164843.31800-1-ap420073@gmail.com>
-References: <20190928164843.31800-1-ap420073@gmail.com>
+        id S1728630AbfI1Rqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 13:46:45 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:60674 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbfI1Rqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 13:46:44 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SHhuQh095199;
+        Sat, 28 Sep 2019 17:46:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2019-08-05;
+ bh=fE//Ab6xCjS3zyHgDuya9QjAizHmfNuzIaig25qXXMQ=;
+ b=CPksWsYDYpMKgoKlRK0eqHQRQD716zLixpmP7GrTt+CJgFlSQGh2Kn8hoIRV/izgkmFZ
+ zlfkJSTIo1igUBcN5cqLhu9AQ29k5znyRxMWAAaarLwfcptHhV9Zmz8pYQg2nNKq7OOg
+ 8CmoQf3PohAxjf16EKiQ5cYOsCy/U1ijWNjRSS12a6hGTPQB2hs1IAUgd6nzo2KQYQEH
+ 5+z/IiswWOSljR5phzX217rY7otpLGzSRajayAYszwduumC864wOg+HRVRorexjgzvgQ
+ TtgKkaKQ+jtU8wR8s2xzoJDB2yhBO66zzcF3WjNV8Eg11q5rmBWuA2ncb8oMljHZEiXb 8w== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2v9yfpsa38-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 28 Sep 2019 17:46:28 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SHgvPQ093012;
+        Sat, 28 Sep 2019 17:46:28 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2v9xv7e1r2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 28 Sep 2019 17:46:27 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8SHkQkY001178;
+        Sat, 28 Sep 2019 17:46:26 GMT
+Received: from dhcp-10-175-223-161.vpn.oracle.com (/10.175.223.161)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 28 Sep 2019 10:46:26 -0700
+Date:   Sat, 28 Sep 2019 18:46:22 +0100 (BST)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@dhcp-10-175-218-65.vpn.oracle.com
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically
+ possible
+In-Reply-To: <CAEf4BzYTQbVVUiQOHEcjL8mZ=iJBSGHFRNxoayRpaMw5ys+iDw@mail.gmail.com>
+Message-ID: <alpine.LRH.2.20.1909281844480.5332@dhcp-10-175-218-65.vpn.oracle.com>
+References: <20190928063033.1674094-1-andriin@fb.com> <alpine.LRH.2.20.1909281202530.5332@dhcp-10-175-218-65.vpn.oracle.com> <CAEf4BzYTQbVVUiQOHEcjL8mZ=iJBSGHFRNxoayRpaMw5ys+iDw@mail.gmail.com>
+User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9394 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1909280185
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9394 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1909280185
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virt_wifi_newlink() calls netdev_upper_dev_link() and it internally
-holds reference count of lower interface.
+On Sat, 28 Sep 2019, Andrii Nakryiko wrote:
 
-Current code does not release a reference count of the lower interface
-when the lower interface is being deleted.
-So, reference count leaks occur.
+> On Sat, Sep 28, 2019 at 4:20 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> >
+> > On Fri, 27 Sep 2019, Andrii Nakryiko wrote:
+> >
+> > > This patch switches libbpf_num_possible_cpus() from using possible CPU
+> > > set to present CPU set. This fixes issues with incorrect auto-sizing of
+> > > PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
+> > >
+> > > On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
+> > > be a set of any representable (i.e., potentially possible) CPU, which is
+> > > normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
+> > > tested on, while there were just two CPU cores actually present).
+> > > /sys/devices/system/cpu/present, on the other hand, will only contain
+> > > CPUs that are physically present in the system (even if not online yet),
+> > > which is what we really want, especially when creating per-CPU maps or
+> > > perf events.
+> > >
+> > > On systems with HOTPLUG disabled, present and possible are identical, so
+> > > there is no change of behavior there.
+> > >
+> >
+> > Just curious - is there a reason for not adding a new libbpf_num_present_cpus()
+> > function to cover this  case, and switching to using that in various places?
+> 
+> The reason is that libbpf_num_possible_cpus() is useless on HOTPLUG
+> systems and never worked as intended. If you rely on this function to
+> create perf_buffer and/or PERF_EVENT_ARRAY, it will simply fail due to
+> specifying more CPUs than are present. I didn't want to keep adding
+> new APIs for no good reason, while also leaving useless ones, so I
+> fixed the existing API to behave as expected. It's unfortunate that
+> name doesn't match sysfs file we are reading it from, of course, but
+> having people to choose between libbpf_num_possible_cpus() vs
+> libbpf_num_present_cpus() seems like even bigger problem, as
+> differences are non-obvious.
+> 
+> The good thing, it won't break all the non-HOTPLUG systems for sure,
+> which seems to be the only cases that are used right now (otherwise
+> someone would already complain about broken
+> libbpf_num_possible_cpus()).
+>
 
-Test commands:
-    ip link add dummy0 type dummy
-    ip link add vw1 link dummy0 type virt_wifi
+Understood, thanks for the explanation. 
 
-Splat looks like:
-[  182.001918][ T1333] WARNING: CPU: 0 PID: 1333 at net/core/dev.c:8638 rollback_registered_many+0x75d/0xda0
-[  182.002724][ T1333] Modules linked in: virt_wifi cfg80211 dummy veth openvswitch nsh nf_conncount nf_nat nf_conntrack6
-[  182.002724][ T1333] CPU: 0 PID: 1333 Comm: ip Not tainted 5.3.0+ #370
-[  182.002724][ T1333] RIP: 0010:rollback_registered_many+0x75d/0xda0
-[  182.002724][ T1333] Code: 0c 00 00 48 89 de 4c 89 ff e8 6f 5a 04 00 48 89 df e8 c7 26 fd ff 84 c0 0f 84 a5 fd ff ff 40
-[  182.002724][ T1333] RSP: 0018:ffff88810900f348 EFLAGS: 00010286
-[  182.002724][ T1333] RAX: 0000000000000024 RBX: ffff88811361d700 RCX: 0000000000000000
-[  182.002724][ T1333] RDX: 0000000000000024 RSI: 0000000000000008 RDI: ffffed1021201e5f
-[  182.002724][ T1333] RBP: ffff88810900f4e0 R08: ffffed1022c3ff71 R09: ffffed1022c3ff71
-[  182.002724][ T1333] R10: 0000000000000001 R11: ffffed1022c3ff70 R12: dffffc0000000000
-[  182.002724][ T1333] R13: ffff88810900f460 R14: ffff88810900f420 R15: ffff8881075f1940
-[  182.002724][ T1333] FS:  00007f77c42240c0(0000) GS:ffff888116000000(0000) knlGS:0000000000000000
-[  182.002724][ T1333] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  182.002724][ T1333] CR2: 00007f77c3706240 CR3: 000000011139e000 CR4: 00000000001006f0
-[  182.002724][ T1333] Call Trace:
-[  182.002724][ T1333]  ? generic_xdp_install+0x310/0x310
-[  182.002724][ T1333]  ? check_chain_key+0x236/0x5d0
-[  182.002724][ T1333]  ? __nla_validate_parse+0x98/0x1ad0
-[  182.002724][ T1333]  unregister_netdevice_many.part.123+0x13/0x1b0
-[  182.002724][ T1333]  rtnl_delete_link+0xbc/0x100
-[  182.002724][ T1333]  ? rtnl_af_register+0xc0/0xc0
-[  182.002724][ T1333]  rtnl_dellink+0x2e7/0x870
-[ ... ]
+> >
+> > Looking at the places libbpf_num_possible_cpus() is called in libbpf
+> >
+> > - __perf_buffer__new(): this could just change to use the number of
+> >   present CPUs, since perf_buffer__new_raw() with a cpu_cnt in struct
+> >   perf_buffer_raw_ops
+> >
+> > - bpf_object__create_maps(), which is called via bpf_oject__load_xattr().
+> >   In this case it seems like switching to num present makes sense, though
+> >   it might make sense to add a field to struct bpf_object_load_attr * to
+> >   allow users to explicitly set another max value.
+> 
+> I believe more knobs is not always better for API. Plus, adding any
+> field to those xxx_xattr structs is an ABI breakage and requires
+> adding new APIs, so I don't think this is good enough reason to add
+> new flag. See discussion in another thread about this whole API design
+> w/ current attributes and ABI consequences of adding anything new to
+> them.
+> 
+> >
+> > This would give the desired default behaviour, while still giving users
+> > a way of specifying the possible number. What do you think? Thanks!
+> 
+> BTW, if user wants to override the size of maps, they can do it easily
+> either in map definition or programmatically after bpf_object__open,
+> but before bpf_object__load, so there is no need for flags, it's all
+> easily achievable with existing API.
+> 
 
-[  192.874736][ T1333] unregister_netdevice: waiting for dummy0 to become free. Usage count = 1
+Ah, I missed that. Thanks for clarifying!
 
-This patch adds notifier routine to delete upper interface before deleting
-lower interface.
+Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
 
-Fixes: c7cdba31ed8b ("mac80211-next: rtnetlink wifi simulation device")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-
-v4:
- - Add this new patch to fix refcnt leaks in the virt_wifi module
-
- drivers/net/wireless/virt_wifi.c | 51 ++++++++++++++++++++++++++++++--
- 1 file changed, 49 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index be92e1220284..aadbacb01c8d 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -590,6 +590,42 @@ static struct rtnl_link_ops virt_wifi_link_ops = {
- 	.priv_size	= sizeof(struct virt_wifi_netdev_priv),
- };
- 
-+static inline bool netif_is_virt_wifi_dev(const struct net_device *dev)
-+{
-+	return rcu_access_pointer(dev->rx_handler) == virt_wifi_rx_handler;
-+}
-+
-+static int virt_wifi_event(struct notifier_block *this, unsigned long event,
-+			   void *ptr)
-+{
-+	struct net_device *lower_dev = netdev_notifier_info_to_dev(ptr);
-+	struct virt_wifi_netdev_priv *priv;
-+	struct net_device *upper_dev;
-+	LIST_HEAD(list_kill);
-+
-+	if (!netif_is_virt_wifi_dev(lower_dev))
-+		return NOTIFY_DONE;
-+
-+	switch (event) {
-+	case NETDEV_UNREGISTER:
-+		priv = rtnl_dereference(lower_dev->rx_handler_data);
-+		if (!priv)
-+			return NOTIFY_DONE;
-+
-+		upper_dev = priv->upperdev;
-+
-+		upper_dev->rtnl_link_ops->dellink(upper_dev, &list_kill);
-+		unregister_netdevice_many(&list_kill);
-+		break;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block virt_wifi_notifier = {
-+	.notifier_call = virt_wifi_event,
-+};
-+
- /* Acquires and releases the rtnl lock. */
- static int __init virt_wifi_init_module(void)
- {
-@@ -598,14 +634,24 @@ static int __init virt_wifi_init_module(void)
- 	/* Guaranteed to be locallly-administered and not multicast. */
- 	eth_random_addr(fake_router_bssid);
- 
-+	err = register_netdevice_notifier(&virt_wifi_notifier);
-+	if (err)
-+		return err;
-+
- 	common_wiphy = virt_wifi_make_wiphy();
- 	if (!common_wiphy)
--		return -ENOMEM;
-+		goto notifier;
- 
- 	err = rtnl_link_register(&virt_wifi_link_ops);
- 	if (err)
--		virt_wifi_destroy_wiphy(common_wiphy);
-+		goto destroy_wiphy;
- 
-+	return 0;
-+
-+destroy_wiphy:
-+	virt_wifi_destroy_wiphy(common_wiphy);
-+notifier:
-+	unregister_netdevice_notifier(&virt_wifi_notifier);
- 	return err;
- }
- 
-@@ -615,6 +661,7 @@ static void __exit virt_wifi_cleanup_module(void)
- 	/* Will delete any devices that depend on the wiphy. */
- 	rtnl_link_unregister(&virt_wifi_link_ops);
- 	virt_wifi_destroy_wiphy(common_wiphy);
-+	unregister_netdevice_notifier(&virt_wifi_notifier);
- }
- 
- module_init(virt_wifi_init_module);
--- 
-2.17.1
-
+> >
+> > Alan
+> >
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/lib/bpf/libbpf.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index e0276520171b..45351c074e45 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
+> > >
+> > >  int libbpf_num_possible_cpus(void)
+> > >  {
+> > > -     static const char *fcpu = "/sys/devices/system/cpu/possible";
+> > > +     static const char *fcpu = "/sys/devices/system/cpu/present";
+> > >       int len = 0, n = 0, il = 0, ir = 0;
+> > >       unsigned int start = 0, end = 0;
+> > >       int tmp_cpus = 0;
+> > > --
+> > > 2.17.1
+> > >
+> > >
+> 
