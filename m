@@ -2,102 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B60C1278
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 01:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8363C127D
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 01:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728914AbfI1Xhb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 28 Sep 2019 19:37:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47554 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728666AbfI1Xhb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Sep 2019 19:37:31 -0400
-Received: from oasis.local.home (unknown [12.174.139.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 132A920866;
-        Sat, 28 Sep 2019 23:37:29 +0000 (UTC)
-Date:   Sat, 28 Sep 2019 19:37:27 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <20190928193727.1769e90c@oasis.local.home>
-In-Reply-To: <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
-References: <20190827205213.456318-1-ast@kernel.org>
-        <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
-        <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
-        <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
-        <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
-        <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
-        <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
-        <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
-        <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1728894AbfI1Xkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 19:40:42 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:32836 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728666AbfI1Xkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 19:40:42 -0400
+Received: by mail-wm1-f65.google.com with SMTP id r17so11258224wme.0
+        for <netdev@vger.kernel.org>; Sat, 28 Sep 2019 16:40:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=H0rOdULGOXvh7HrVp8ppExmcLgFrhdpnvBepWmanWCo=;
+        b=KcG36WIDBlYbDNsJwYNr7TfqIYfIp9Hmh7vDFryL+XL/qWR0f4mFnTi29kCy4WW1eM
+         zVffTmQ3DTzb5zrynTDbyGtyhvqpE2G3Mff6Iccrfz4qtOolK6qM1beNTzAQ3Jg+OF+Z
+         L+XGroXISvlgQuLT8MMbBCOsi2tK/G+0QZ4VXIVnwYiuLm+MRB8lvVh0eC7CYHeB8g6O
+         Cn16p3MfCCC2dgEUS2A04zdlkh3faBxWPfRiQD3j6XjZ/6s2d3f2r8R7Lqf0g5XKL60d
+         whAYYCme4BzK9lroGDYnvlZvI1KIx1VgwFq1dFkOgZO7mmDzYIyIYc32rkXidKaIRVOQ
+         MLrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=H0rOdULGOXvh7HrVp8ppExmcLgFrhdpnvBepWmanWCo=;
+        b=BX6JkBRGBzkRLqG0Zi4UOMBXXjqTQbjGeoGfmC3QXJ/3QBdWxm51TFUkabhx8LF4mR
+         LdoXR8BErDBQ9nFS+DWZK/XcPesUGVCLuKlIpa0vYczMmJhnaNZn5ueoLruqDzmf0aSZ
+         AwcWdNqDUZCnKMH7EeiRVO68aWSmPNB7SOFgE/82jd7FkS1R+knqBAT9NLJ9huGpulBD
+         Hwauvt+RMKFwKnHpWueVb/M6uYgAE2FkUF+WIkQrYurJa2XHGHnXwdAAgl1WOvuZu9tg
+         h4kCqo5Y97WBCjezphCq6rXOeVUwH8TT9GHDJMJDrsDCb9u3BomrML7EeewZh+AEgBJX
+         x1+A==
+X-Gm-Message-State: APjAAAUg4mGnAzvdEdOZJg77SkPDMMU44qrPjVtdOONBBVBTA16aQBgF
+        sGb9sm9EqRBYYuIRCOneIFQ=
+X-Google-Smtp-Source: APXvYqwYTeu7MxSgN2O4i+xCvy1goPjNGwduQwz7BcUENJTk09/QWqnKH161noT1p7owyD/VHdWi+w==
+X-Received: by 2002:a1c:c5c3:: with SMTP id v186mr11807180wmf.125.1569714040354;
+        Sat, 28 Sep 2019 16:40:40 -0700 (PDT)
+Received: from localhost.localdomain ([86.124.196.40])
+        by smtp.gmail.com with ESMTPSA id t13sm12967623wra.70.2019.09.28.16.40.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Sep 2019 16:40:39 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, vinicius.gomes@intel.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net] net: sched: cbs: Avoid division by zero when calculating the port rate
+Date:   Sun, 29 Sep 2019 02:39:48 +0300
+Message-Id: <20190928233948.15866-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Aug 2019 21:07:24 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > 
-> > This won’t make me much more comfortable, since CAP_BPF lets it do an ever-growing set of nasty things. I’d much rather one or both of two things happen:
-> > 
-> > 1. Give it CAP_TRACING only. It can leak my data, but it’s rather hard for it to crash my laptop, lose data, or cause other shenanigans.
-> > 
-> > 2. Improve it a bit do all the privileged ops are wrapped by capset().
-> > 
-> > Does this make sense?  I’m a security person on occasion. I find
-> > vulnerabilities and exploit them deliberately and I break things by
-> > accident on a regular basis. In my considered opinion, CAP_TRACING
-> > alone, even extended to cover part of BPF as I’ve described, is
-> > decently safe. Getting root with just CAP_TRACING will be decently
-> > challenging, especially if I don’t get to read things like sshd’s
-> > memory, and improvements to mitigate even that could be added.  I
-> > am quite confident that attacks starting with CAP_TRACING will have
-> > clear audit signatures if auditing is on.  I am also confident that
-> > CAP_BPF *will* allow DoS and likely privilege escalation, and this
-> > will only get more likely as BPF gets more widely used. And, if
-> > BPF-based auditing ever becomes a thing, writing to the audit
-> > daemon’s maps will be a great way to cover one’s tracks.  
-> 
-> CAP_TRACING, as I'm proposing it, will allow full tracefs access.
-> I think Steven and Massami prefer that as well.
-> That includes kprobe with probe_kernel_read.
-> That also means mini-DoS by installing kprobes everywhere or running
-> too much ftrace.
+As explained in the "net: sched: taprio: Avoid division by zero on
+invalid link speed" commit, it is legal for the ethtool API to return
+zero as a link speed. So guard against it to ensure we don't perform a
+division by zero in kernel.
 
-I was talking with Kees at Plumbers about this, and we were talking
-about just using simple file permissions. I started playing with some
-patches to allow the tracefs be visible but by default it would only be
-visible by root.
+Fixes: e0a7683d30e9 ("net/sched: cbs: fix port_rate miscalculation")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ net/sched/sch_cbs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- rwx------
+diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
+index 1bef152c5721..b2905b03a432 100644
+--- a/net/sched/sch_cbs.c
++++ b/net/sched/sch_cbs.c
+@@ -306,7 +306,7 @@ static void cbs_set_port_rate(struct net_device *dev, struct cbs_sched_data *q)
+ 	if (err < 0)
+ 		goto skip;
+ 
+-	if (ecmd.base.speed != SPEED_UNKNOWN)
++	if (ecmd.base.speed && ecmd.base.speed != SPEED_UNKNOWN)
+ 		speed = ecmd.base.speed;
+ 
+ skip:
+-- 
+2.17.1
 
-Then a start up script (or perhaps mount options) could change the
-group owner, and change this to:
-
- rwxrwx---
-
-Where anyone in the group assigned (say "tracing") gets full access to
-the file system.
-
-The more I was playing with this, the less I see the need for
-CAP_TRACING for ftrace and reading the format files.
-
--- Steve
