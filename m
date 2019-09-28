@@ -2,165 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1443FC0F01
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 02:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0272C0F40
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 03:43:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726175AbfI1AiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Sep 2019 20:38:00 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45925 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbfI1Ah7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 20:37:59 -0400
-Received: by mail-qt1-f193.google.com with SMTP id c21so9475174qtj.12
-        for <netdev@vger.kernel.org>; Fri, 27 Sep 2019 17:37:59 -0700 (PDT)
+        id S1728488AbfI1BnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Sep 2019 21:43:01 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41382 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfI1BnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Sep 2019 21:43:01 -0400
+Received: by mail-qk1-f194.google.com with SMTP id p10so3512210qkg.8;
+        Fri, 27 Sep 2019 18:43:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=1d+qpT8CY6Zow0yxcpHZi1JJ2PdyznrOAbyszRQnxus=;
-        b=OsNASevDwKV016I3Uksqnoc7Rz7xRag+6BTNCQSdHmT9ExAJiBXoGGriZruZi+OT5i
-         t+zipIXA7yJZg49W/YoBKrta9UKG1F07A2JAED6oHE0btDka18jZ/9qJi1qdpVHyoe5I
-         0lIY0PMxy+TgO7BxCOtHw5wL5POJ07uPbWNGk0FCzfQW0I2F+w/P6drpnXNTQpJfIaLD
-         OCqWE0ldrApjrPuIcxm2dO5ItktJtKfn+9WOL/oorNCa47tRlYChA5FB5y46CB0zQfsA
-         yiSpW6hiY+A+og+a67hghb3n9Cb6r/Yps9jH25gxKpYbmg1FQdYytrrAchGjuN15pJLc
-         4q4w==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=K5mFZ8ZW9xOI1UQMWK7PjgDnXrBKjboW28wsNbRcWmE=;
+        b=SiOb/42E4i/NZ0ZBE3lcP+McD+hrcwGfgXpY4tN8hpDGQV+yFe/epXL2jR4IU6/D7J
+         ngxIVvXOrrHrnM8B79ti5QsMsTrDl/6VXYtzvLGjRfWQUMyVRJ+Dx6wpE3V1C54Tan9f
+         TQdB9zggHfx/5cleX9A82CkOhkCNG2J6ujB33GGcuonTMieoy/iqeMgQbrboeXGEK+FJ
+         GOp7+E8pVIjA4DWbJSGMfGzL6+yaGi9d5YFscvQ5cYllydGET0EBmfWdj9xaTFaktRue
+         4y8Aty/jYJ+NcWgRLARbDGQnIqnZFP3zz/+NOmb0Ef3f3xOHo+mqh5FZL1qjOrwAWDcy
+         XRFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=1d+qpT8CY6Zow0yxcpHZi1JJ2PdyznrOAbyszRQnxus=;
-        b=iTFCPdOaavravpeYFroQN271uv9JeR+uWA86U/Vs7HE9tooIJ7vZSQww+4UdtKiqTH
-         diIlcHd98Od4ujhJyMDv8H/b/7znoxAkd4476QFQjHjNL4qM9YWLWzec5X1bs96QCirv
-         JcHaL18JTnrBJ1zpFIAQ9Tnt2z1/7ObR6FMtfy8QRmBp4B8UZH7mZ6Sb4PkzKUS5tTfj
-         trwvREhW44ZI3nzqtOSphbbbbnJJYnAv2I+B4D8JqWhd7KYBTvEmyM8jpRB4C3sysahb
-         tRumPtOchTTo6BjuvF8wci9JYaH72hZ7wiAUde1JuqzedG+dH3VcoS8jEc4JXrJIuQ1l
-         SBsQ==
-X-Gm-Message-State: APjAAAVLjG3XcH4hMUcKI0HsR3+oTUk1yShdHkBF5JlboQ6T2egM87wk
-        u1HQYpX/3kWWBB0UUr8kyOOi+A==
-X-Google-Smtp-Source: APXvYqyX877NfvM+nZGB54fsoytixA4UgRCN8TiISrPnpfrFC2nSWy8KuygGFi8j2wfOakaNqDANHA==
-X-Received: by 2002:a05:6214:1369:: with SMTP id c9mr10791737qvw.3.1569631078437;
-        Fri, 27 Sep 2019 17:37:58 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q49sm4488244qta.60.2019.09.27.17.37.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=K5mFZ8ZW9xOI1UQMWK7PjgDnXrBKjboW28wsNbRcWmE=;
+        b=uiR86DX3ZlkVcSI2qKAx4vkv8EFrJHbVPn9Erp2IJ3Zs0wkXqYYZZNA3AKv7bwA3Py
+         fdmQbzT+lCsznhkTNXe0KGnzXBXjpG4yhDzgBAvPIkjPXi83dJmgvlp1DMDJ05Lkjfbb
+         wAOc4zmh6Vw8k+HD1UPD0/asi/DFKZjVLcmKTl+ZORw6qHbSxsora+xmJt1bBiDmCZ23
+         7618fE/16PY/5OYugx/oFgSlC/ulUfO2azxJKnDNlrwIgWAcJ0sNXAF2mFr+6/RFITqu
+         Ox3hiV8udf+Ovcx0ryoE7H6CvHl2SOLX99UQyldVxCW6L19nnQlEAfTc611lWO1TCyNJ
+         zYAQ==
+X-Gm-Message-State: APjAAAUkfYZB5UlnzF+6eqZoYQYYdv9FYxdIbdOiA+N9AUi6YQAAC5I7
+        EaB4+zwddmioykyhxn85KPM=
+X-Google-Smtp-Source: APXvYqz2ig4TXerI5H5B7nuvAFYXfdDzqqK9yg3BMH2qpJKfW7jPWd85akRSLqTt34b327Czp4YYBQ==
+X-Received: by 2002:a37:916:: with SMTP id 22mr8005703qkj.45.1569634979407;
+        Fri, 27 Sep 2019 18:42:59 -0700 (PDT)
+Received: from frodo.byteswizards.com ([190.162.109.190])
+        by smtp.gmail.com with ESMTPSA id z46sm2846281qth.62.2019.09.27.18.42.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Sep 2019 17:37:58 -0700 (PDT)
-Date:   Fri, 27 Sep 2019 17:37:53 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pooja Trivedi <poojatrivedi@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, davejwatson@fb.com, aviadye@mellanox.com,
-        borisp@mellanox.com, Pooja Trivedi <pooja.trivedi@stackpath.com>,
-        Mallesham Jatharakonda <mallesh537@gmail.com>
-Subject: Re: [PATCH V2 net 1/1] net/tls(TLS_SW): Fix list_del double free
- caused by a race condition in tls_tx_records
-Message-ID: <20190927173753.418634ef@cakuba.netronome.com>
-In-Reply-To: <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
-References: <CAOrEdsmiz-ssFUpcT_43JfASLYRbt60R7Ta0KxuhrMN35cP0Sw@mail.gmail.com>
-        <1568754836-25124-1-git-send-email-poojatrivedi@gmail.com>
-        <20190918142549.69bfa285@cakuba.netronome.com>
-        <CAOrEds=DqexwYUOfWQ7_yOxre8ojUTqF3wjxY0SC10CbY8KD0w@mail.gmail.com>
-        <20190918144528.57a5cb50@cakuba.netronome.com>
-        <CAOrEdsk6P=HWfK-mKyLt7=tZh342gZrRKwOH9f6ntkNyya-4fA@mail.gmail.com>
-        <20190923172811.1f620803@cakuba.netronome.com>
-        <CAOrEds=zEh5R_4G1UuT-Ee3LT-ZiTV=1JNWb_4a=5Mb4coFEVg@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        Fri, 27 Sep 2019 18:42:58 -0700 (PDT)
+Date:   Fri, 27 Sep 2019 22:42:54 -0300
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v11 2/4] bpf: added new helper
+ bpf_get_ns_current_pid_tgid
+Message-ID: <20190928014254.GA26129@frodo.byteswizards.com>
+References: <20190924152005.4659-1-cneirabustos@gmail.com>
+ <20190924152005.4659-3-cneirabustos@gmail.com>
+ <CAEf4BzZeO3cZJWVG0min98gnFs3E8D1m67E+3A_9-rTjHA_Ybg@mail.gmail.com>
+ <12db0313-668e-3825-d5fa-28d0f675808c@fb.com>
+ <CAEf4BzYZGh774nS1EaCP4od9gzWqPtePPAGX6J7O+pEosnuYrQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYZGh774nS1EaCP4od9gzWqPtePPAGX6J7O+pEosnuYrQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Sep 2019 12:48:26 -0400, Pooja Trivedi wrote:
-> On Mon, Sep 23, 2019 at 8:28 PM Jakub Kicinski wrote:
-> > On Sat, 21 Sep 2019 23:19:20 -0400, Pooja Trivedi wrote:  
-> > > On Wed, Sep 18, 2019 at 5:45 PM Jakub Kicinski wrote:  
-> > > > On Wed, 18 Sep 2019 17:37:44 -0400, Pooja Trivedi wrote:  
-> > > > > Hi Jakub,
-> > > > >
-> > > > > I have explained one potential way for the race to happen in my
-> > > > > original message to the netdev mailing list here:
-> > > > > https://marc.info/?l=linux-netdev&m=156805120229554&w=2
-> > > > >
-> > > > > Here is the part out of there that's relevant to your question:
-> > > > >
-> > > > > -----------------------------------------
-> > > > >
-> > > > > One potential way for race condition to appear:
-> > > > >
-> > > > > When under tcp memory pressure, Thread 1 takes the following code path:
-> > > > > do_sendfile ---> ... ---> .... ---> tls_sw_sendpage --->
-> > > > > tls_sw_do_sendpage ---> tls_tx_records ---> tls_push_sg --->
-> > > > > do_tcp_sendpages ---> sk_stream_wait_memory ---> sk_wait_event  
-> > > >
-> > > > Ugh, so do_tcp_sendpages() can also release the lock :/
-> > > >
-> > > > Since the problem occurs in tls_sw_do_sendpage() and
-> > > > tls_sw_do_sendmsg() as well, should we perhaps fix it at that level?  
-> > >
-> > > That won't do because tls_tx_records also gets called when completion
-> > > callbacks schedule delayed work. That was the code path that caused
-> > > the crash for my test. Cavium's nitrox crypto offload driver calling
-> > > tls_encrypt_done, which calls schedule_delayed_work. Delayed work that
-> > > was scheduled would then be processed by tx_work_handler.
-> > > Notice in my previous reply,
-> > > "Thread 2 code path:
-> > > tx_work_handler ---> tls_tx_records"
-> > >
-> > > "Thread 2 code path:
-> > > tx_work_handler ---> tls_tx_records"  
+On Fri, Sep 27, 2019 at 10:24:46AM -0700, Andrii Nakryiko wrote:
+> On Fri, Sep 27, 2019 at 9:59 AM Yonghong Song <yhs@fb.com> wrote:
 > >
-> > Right, the work handler would obviously also have to obey the exclusion
-> > mechanism of choice.
 > >
-> > Having said that this really does feel like we are trying to lock code,
-> > not data here :(  
+> >
+> > On 9/27/19 9:15 AM, Andrii Nakryiko wrote:
+> > > On Thu, Sep 26, 2019 at 1:15 AM Carlos Neira <cneirabustos@gmail.com> wrote:
+> > >>
+> > >> New bpf helper bpf_get_ns_current_pid_tgid,
+> > >> This helper will return pid and tgid from current task
+> > >> which namespace matches dev_t and inode number provided,
+> > >> this will allows us to instrument a process inside a container.
+> > >>
+> > >> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > >> ---
+> > >>   include/linux/bpf.h      |  1 +
+> > >>   include/uapi/linux/bpf.h | 18 +++++++++++++++++-
+> > >>   kernel/bpf/core.c        |  1 +
+> > >>   kernel/bpf/helpers.c     | 32 ++++++++++++++++++++++++++++++++
+> > >>   kernel/trace/bpf_trace.c |  2 ++
+> > >>   5 files changed, 53 insertions(+), 1 deletion(-)
+> > >>
+> > >> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > >> index 5b9d22338606..231001475504 100644
+> > >> --- a/include/linux/bpf.h
+> > >> +++ b/include/linux/bpf.h
+> > >> @@ -1055,6 +1055,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> > >>   extern const struct bpf_func_proto bpf_strtol_proto;
+> > >>   extern const struct bpf_func_proto bpf_strtoul_proto;
+> > >>   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > >> +extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+> > >>
+> > >>   /* Shared helpers among cBPF and eBPF. */
+> > >>   void bpf_user_rnd_init_once(void);
+> > >> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > >> index 77c6be96d676..9272dc8fb08c 100644
+> > >> --- a/include/uapi/linux/bpf.h
+> > >> +++ b/include/uapi/linux/bpf.h
+> > >> @@ -2750,6 +2750,21 @@ union bpf_attr {
+> > >>    *             **-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> > >>    *
+> > >>    *             **-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > >> + *
+> > >> + * int bpf_get_ns_current_pid_tgid(u32 dev, u64 inum)
+> > >> + *     Return
+> > >> + *             A 64-bit integer containing the current tgid and pid from current task
+> > >
+> > > Function signature doesn't correspond to the actual return type (int vs u64).
+> > >
+> > >> + *              which namespace inode and dev_t matches , and is create as such:
+> > >> + *             *current_task*\ **->tgid << 32 \|**
+> > >> + *             *current_task*\ **->pid**.
+> > >> + *
+> > >> + *             On failure, the returned value is one of the following:
+> > >> + *
+> > >> + *             **-EINVAL** if dev and inum supplied don't match dev_t and inode number
+> > >> + *              with nsfs of current task.
+> > >> + *
+> > >> + *             **-ENOENT** if /proc/self/ns does not exists.
+> > >> + *
+> > >>    */
+> > >
+> > > [...]
+> > >
+> > >>   #include "../../lib/kstrtox.h"
+> > >>
+> > >> @@ -487,3 +489,33 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+> > >>          .arg4_type      = ARG_PTR_TO_LONG,
+> > >>   };
+> > >>   #endif
+> > >> +
+> > >> +BPF_CALL_2(bpf_get_ns_current_pid_tgid, u32, dev, u64, inum)
+> > >
+> > > Just curious, is dev_t officially specified as u32 and is never
+> > > supposed to grow bigger? I wonder if accepting u64 might be more
+> > > future-proof API here?
+> >
+> > This is what we have now in kernel (include/linux/types.h)
+> > typedef u32 __kernel_dev_t;
+> > typedef __kernel_dev_t          dev_t;
+> >
+> > But userspace dev_t (defined at /usr/include/sys/types.h) have
+> > 8 bytes.
+> >
+> > Agree. Let us just use u64. It won't hurt and also will be fine
+> > if kernel internal dev_t becomes 64bit.
 > 
-> Agree with you and exactly the thought process I went through. So what
-> are some other options?
+> Sounds good. Let's not forget to check that conversion to dev_t
+> doesn't loose high bits, something like:
 > 
-> 1) A lock member inside of ctx to protect tx_list
-> We are load testing ktls offload with nitrox and the performance was
-> quite adversely affected by this. This approach can be explored more,
-> but the original design of using socket lock didn't follow this model
-> either.
-> 2) Allow tagging of individual record inside of tx_list to indicate if
-> it has been 'processed'
-> This approach would likely protect the data without compromising
-> performance. It will allow Thread 2 to proceed with the TX portion of
-> tls_tx_records while Thread 1 sleeps waiting for memory. There will
-> need to be careful cleanup and backtracking after the thread wakes up
-> to ensure a consistent state of tx_list and record transmission.
-> The approach has several problems, however -- (a) It could cause
-> out-of-order record tx (b) If Thread 1 is waiting for memory, Thread 2
-> most likely will (c) Again, socket lock wasn't designed to follow this
-> model to begin with
+> if ((u64)(dev_t)dev != dev)
+>     return -E<something>;
 > 
-> 
-> Given that socket lock essentially was working as a code protector --
-> as an exclusion mechanism to allow only a single writer through
-> tls_tx_records at a time -- what other clean ways do we have to fix
-> the race without a significant refactor of the design and code?
+> >
+> > >
+> > >> +{
+> > >> +       struct task_struct *task = current;
+> > >> +       struct pid_namespace *pidns;
+> > >
+> > > [...]
+> > >
 
-Very sorry about the delay. I don't think we can maintain the correct
-semantics without sleeping :( If we just bail in tls_tx_records() when
-there's already another writer the later writer will return from the
-system call, even though the data is not pushed into the TCP layer.
+Thanks Yonghong and Andrii,
 
-What was reason for the performance impact on (1)? My feeling is that
-we need to make writers wait to maintain socket write semantics, and
-that implies putting writers to sleep, which is indeed very costly..
+I'll include these fixes on V12, I'll work on this over the weekend.
 
-Perhaps something along the lines of:
-
-	if (ctx->in_tcp_sendpages) {
-		rc = sk_stream_wait_memory(sk, &timeo);
-		...
-	}
-
-in tls_tx_records() would be the "most correct" solution? If we get
-there and there is already a writer, that means the first writer has
-to be waiting for memory, and so should the second..
-
-WDYT?
+Bests
