@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF489C115C
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 18:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D4BC115F
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 18:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728713AbfI1Qtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 12:49:47 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44781 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfI1Qtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 12:49:47 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q21so3211137pfn.11;
-        Sat, 28 Sep 2019 09:49:46 -0700 (PDT)
+        id S1728727AbfI1Qt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 12:49:56 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35624 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbfI1Qt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 12:49:56 -0400
+Received: by mail-pl1-f195.google.com with SMTP id y10so2261411plp.2;
+        Sat, 28 Sep 2019 09:49:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lnnmWURm6k9EQ+DtQjsTtP1Aom1VoK7uWrgxpoaLKOE=;
-        b=o0lMz0VE40vlza5M+WJNxNwKuMx1r+ycjXNKAgbbkneJqZ07HwimgQrnHDgZ8PJfRI
-         tYqsKkmUpJzORbsH5hN149wnBOD4vTTksB8uxcvyGaW4vkd/5XKZkHfnRoG/+u41S53N
-         CG8B0TKVc+GpekWrdxRmVvnl1F9MU2rDde+1wLGPa0NkVw+UwGldX87oNZpKraRlJDUi
-         LwxlsKfx7EGl60JZ3CyTgC27bR0n3WIfcR2GL628b9+gdEu6wR0jyqxfcinjampJWpF4
-         uXcm7A0nCb1IT9/x66sx/aKcpjkgiBefV2qPbEv7w5hpp2JPbxf+TBvZ6DaPnap63nlR
-         jjdQ==
+        bh=fG2ag5Kn+p57OLQ5yCzXYuHH56rcNXzarRBtRO20Www=;
+        b=a0c0VTeVoBWPTuzhkKeNHy9HgVzD3pZ7De/RAUduwZo7/7Nx6FPY7cIlOCI9wYKb9G
+         e98oRuPFR6XSD4ikKZ0mYaDNEfBAGlkbZUddGbLks/Pi42o78+aBKsTxR+jGSfq2ftiy
+         S0L9rDucCRN18a4UpjqoiAxcZWa7xKmfLaAeZZRoewlQ7qez9x0XAggmud/54xVhsdIM
+         5MXQIk98m+Hpargw14EcxvIIPHs036uLGOhVRQCASIYIaUkL24h7Z4bsnCrMx7NPbY/F
+         GG88HchJAZNVY5w3pU0LHPAmDAQWArIaVziQ/K2KVEnv9vFm4BdnP0yQvsviNe8iOFTp
+         g0Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=lnnmWURm6k9EQ+DtQjsTtP1Aom1VoK7uWrgxpoaLKOE=;
-        b=HxtbuNjiz4jl0X2/MO+XvRcSA2jtXK45Bk8Eyyy79bEhqynbgxFZM7FJvFzAxanopL
-         aSLPW24b6ik5bsfaqS4xpK/en4YcVs714FKFQNUYRhrDh1HKi8NCV6mbHJsF5h4HLnkV
-         Q+kvwOxd4oNAPaiBqdCi9xUAe1GtzAolA+mAvogBDmIw0YOkQ30+JytQyIMdCM6CB2bA
-         j9uvPjq/jqtZw6Iv4pWuY/MO/G98DNP3ni88iQI0PsRI9ItqcuQt9PtgjmAj9g7I8HSH
-         gw446dsL441z8eRgeUyiyteOxFHo76qNq6Yme/qDKAT4LTDCfmSNuNHH9En8HoXb77m+
-         TrQg==
-X-Gm-Message-State: APjAAAWwJNDs85hpUv8FnrpNkH1MiBn2xcIHJxorzbHhc9D8ITefAavl
-        naQkvQO6P16mmh142BdO4do=
-X-Google-Smtp-Source: APXvYqxiSRtDEU5B9WFF29tEuwnCB/nA04RUYniYjhWKZMFFY/jbI/xP9lErBLWwWDAQAeAvvj8IXw==
-X-Received: by 2002:a17:90a:8990:: with SMTP id v16mr17195585pjn.131.1569689386390;
-        Sat, 28 Sep 2019 09:49:46 -0700 (PDT)
+        bh=fG2ag5Kn+p57OLQ5yCzXYuHH56rcNXzarRBtRO20Www=;
+        b=qgVCAGYI/2n5iTOm6E0obu0RKBKFwfMmqzr7Mw/KxapUyNi152k0fCPJLVMPcaCnZ0
+         +2uyl2VnhEyI8GPIh7u+C+y4rhm8De5nUZs0yQzX1CPZJob7gA+ZN/40HQS7OaLdM8Cm
+         isa1uX05+4UEGody6zftFjVvLgmtpN2drYep3lXoZ0YpI4CrGOusl2qvM/EUqOdY9ecU
+         V5igoZ5KbC63rUD90pNvZxp9Vn5AJuEd2Q/z87TSYHS4yXtldJy9AeD2vDYLhvJmyar9
+         nEArM7PPcYM/D4OF1iOgWx6y/DBjnE+X41pWr2OWe2T+pCWmRUSjJRzQhqjyQKo3CwH9
+         LWvg==
+X-Gm-Message-State: APjAAAUCQbORfoSRMYDkadDqiORTD3YXE5x+72Qxk+gwxT2V0aoX2Vs3
+        fxV7R9kqAeRKpXcenFaHu70=
+X-Google-Smtp-Source: APXvYqzuVMZwzShhM3z9qLTnZM+OtA9QZCVHUBVL/huTKpVVHxji6xMAqbeLoaSFU1rvBbLiZd81rw==
+X-Received: by 2002:a17:902:7485:: with SMTP id h5mr11382348pll.240.1569689394958;
+        Sat, 28 Sep 2019 09:49:54 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id 30sm8663092pjk.25.2019.09.28.09.49.39
+        by smtp.gmail.com with ESMTPSA id 30sm8663092pjk.25.2019.09.28.09.49.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Sep 2019 09:49:45 -0700 (PDT)
+        Sat, 28 Sep 2019 09:49:53 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
@@ -55,9 +55,9 @@ To:     davem@davemloft.net, netdev@vger.kernel.org,
         ubraun@linux.ibm.com, kgraul@linux.ibm.com,
         jay.vosburgh@canonical.com, schuffelen@google.com, bjorn@mork.no
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v4 05/12] team: use dynamic lockdep key instead of static key
-Date:   Sat, 28 Sep 2019 16:48:36 +0000
-Message-Id: <20190928164843.31800-6-ap420073@gmail.com>
+Subject: [PATCH net v4 06/12] macsec: use dynamic lockdep key instead of subclass
+Date:   Sat, 28 Sep 2019 16:48:37 +0000
+Message-Id: <20190928164843.31800-7-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190928164843.31800-1-ap420073@gmail.com>
 References: <20190928164843.31800-1-ap420073@gmail.com>
@@ -66,200 +66,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current code, all team devices have same static lockdep key
-and team devices could be nested so that it makes unnecessary
-lockdep warning.
+All macsec device has same lockdep key and subclass is initialized with
+nest_level.
+But actual nest_level value can be changed when a lower device is attached.
+And at this moment, the subclass should be updated but it seems to be
+unsafe.
+So this patch makes macsec use dynamic lockdep key instead of the subclass.
 
 Test commands:
-    ip link add team0 type team
-    for i in {1..7}
-    do
-	    let A=$i-1
-	    ip link add team$i type team
-	    ip link set team$i master team$A
-    done
-    ip link del team0
+    ip link add bond0 type bond
+    ip link add dummy0 type dummy
+    ip link add macsec0 link bond0 type macsec
+    ip link add macsec1 link dummy0 type macsec
+    ip link set bond0 mtu 1000
+    ip link set macsec1 master bond0
+
+    ip link set bond0 up
+    ip link set macsec0 up
+    ip link set dummy0 up
+    ip link set macsec1 up
 
 Splat looks like:
-[   32.862645] WARNING: possible recursive locking detected                                
-[   32.863304] 5.3.0+ #3 Not tainted                                                              
-[   32.863700] --------------------------------------------                                          
-[   32.864358] ip/647 is trying to acquire lock:                                                 
-[   32.864968] ffff8880666a6ad8 (&dev_addr_list_lock_key/1){+...}, at: dev_uc_sync_multiple+0xfa/0x1a0
-[   32.866047]                              
-[   32.866047] but task is already holding lock:             
-[   32.866744] ffff888067402558 (&dev_addr_list_lock_key/1){+...}, at: dev_uc_unsync+0x10c/0x1b0
-[   32.867774]                                 
-[   32.867774] other info that might help us debug this:
-[   32.868513]  Possible unsafe locking scenario: 
-[   32.868513]                                     
-[   32.869180]        CPU0                         
-[   32.872973]        ----                   
-[   32.876717]   lock(&dev_addr_list_lock_key/1);
-[   32.877130]   lock(&dev_addr_list_lock_key/1);
-[   32.877621]                                   
-[   32.877621]  *** DEADLOCK ***               
-[   32.877621]                                    
-[   32.878284]  May be due to missing lock nesting notation
-[   32.878284]                                  
-[   32.878999] 5 locks held by ip/647:       
-[   32.879382]  #0: ffffffff8fec7a30 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x466/0x8a0
-[   32.880110]  #1: ffff888068d5e300 (&team->lock){+.+.}, at: team_uninit+0x3a/0x1a0 [team]
-[   32.880889]  #2: ffff888068d5d978 (&dev_addr_list_lock_key){+...}, at: dev_uc_unsync+0x98/0x1b0
-[   32.881660]  #3: ffff888067402558 (&dev_addr_list_lock_key/1){+...}, at: dev_uc_unsync+0x10c/0x1b0
-[   32.882451]  #4: ffffffff8fb22780 (rcu_read_lock){....}, at: team_set_rx_mode+0x5/0x1d0 [team]
-[   32.883209]                               
-[   32.883209] stack backtrace:                                                                                          
-[   32.883605] CPU: 0 PID: 647 Comm: ip Not tainted 5.3.0+ #3                        
-[   32.884144] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[   32.884926] Call Trace:                                                      
-[   32.885151]  dump_stack+0x7c/0xbb                                            
-[   32.885460]  __lock_acquire+0x26a9/0x3df0                                    
-[   32.885964]  ? register_lock_class+0x14d0/0x14d0                             
-[   32.886522]  ? register_lock_class+0x14d0/0x14d0            
-[   32.887114]  lock_acquire+0x164/0x3b0     
-[   32.887578]  ? dev_uc_sync_multiple+0xfa/0x1a0                                                                       
-[   32.888130]  _raw_spin_lock_nested+0x2e/0x60
-[   32.888725]  ? dev_uc_sync_multiple+0xfa/0x1a0
-[   32.889264]  dev_uc_sync_multiple+0xfa/0x1a0
-[   32.889779]  team_set_rx_mode+0xa9/0x1d0 [team]
-[   32.892841]  dev_uc_unsync+0x151/0x1b0
+[   29.758606] WARNING: possible recursive locking detected                                               
+[   29.759626] 5.3.0+ #3 Not tainted                                                              
+[   29.760670] --------------------------------------------                                         
+[   29.761385] ip/639 is trying to acquire lock: 
+[   29.761938] ffff888067680298 (&macsec_netdev_addr_lock_key/1){+...}, at: dev_uc_sync_multiple+0xfa/0x1a0
+[   29.763073]                                               
+[   29.763073] but task is already holding lock:                                            
+[   29.763840] ffff888060148298 (&macsec_netdev_addr_lock_key/1){+...}, at: dev_set_rx_mode+0x19/0x30
+[   29.764931]                                         
+[   29.764931] other info that might help us debug this:
+[   29.765721]  Possible unsafe locking scenario:   
+[   29.765721]                               
+[   29.766615]        CPU0                        
+[   29.766914]        ----                        
+[   29.767256]   lock(&macsec_netdev_addr_lock_key/1);
+[   29.767847]   lock(&macsec_netdev_addr_lock_key/1);
+[   29.768441]                                  
+[   29.768441]  *** DEADLOCK ***                      
+[   29.768441]                                    
+[   29.769158]  May be due to missing lock nesting notation
+[   29.769158]                            
+[   29.770083] 4 locks held by ip/639:                   
+[   29.770908]  #0: ffffffff93ec7a30 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x466/0x8a0
+[   29.771970]  #1: ffff888060148298 (&macsec_netdev_addr_lock_key/1){+...}, at: dev_set_rx_mode+0x19/0x30
+[   29.773216]  #2: ffff888063e58298 (&dev_addr_list_lock_key/3){+...}, at: dev_mc_sync+0xfa/0x1a0
+[   29.774324]  #3: ffffffff93b22780 (rcu_read_lock){....}, at: bond_set_rx_mode+0x5/0x3c0 [bonding]
+[   29.775459]                                   
+[   29.775459] stack backtrace:               
+[   29.775986] CPU: 0 PID: 639 Comm: ip Not tainted 5.3.0+ #3
+[   29.776719] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   29.777707] Call Trace:                                                                                               
+[   29.778012]  dump_stack+0x7c/0xbb                                                 
+[   29.778434]  __lock_acquire+0x26a9/0x3df0                                    
+[   29.778920]  ? register_lock_class+0x14d0/0x14d0                             
+[   29.779537]  lock_acquire+0x164/0x3b0                                        
+[   29.779981]  ? dev_uc_sync_multiple+0xfa/0x1a0                               
+[   29.780523]  ? rcu_read_lock_held+0x90/0xa0                                  
+[   29.781028]  _raw_spin_lock_nested+0x2e/0x60                          
+[   29.781550]  ? dev_uc_sync_multiple+0xfa/0x1a0                      
+[   29.782311]  dev_uc_sync_multiple+0xfa/0x1a0 
+[   29.782832]  bond_set_rx_mode+0x269/0x3c0 [bonding]                                                                  
 [ ... ]
 
-Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
+Fixes: e20038724552 ("macsec: fix lockdep splats when nesting devices")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v4 :
  - This patch is not changed
 
- drivers/net/team/team.c | 61 ++++++++++++++++++++++++++++++++++++++---
- include/linux/if_team.h |  5 ++++
- 2 files changed, 62 insertions(+), 4 deletions(-)
+ drivers/net/macsec.c | 37 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 32 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index e8089def5a46..bfcd6ed57493 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -1607,6 +1607,34 @@ static const struct team_option team_options[] = {
- 	},
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index cb7637364b40..c4a41b90c846 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -267,6 +267,8 @@ struct macsec_dev {
+ 	struct pcpu_secy_stats __percpu *stats;
+ 	struct list_head secys;
+ 	struct gro_cells gro_cells;
++	struct lock_class_key xmit_lock_key;
++	struct lock_class_key addr_lock_key;
+ 	unsigned int nest_level;
  };
  
-+static void team_dev_set_lockdep_one(struct net_device *dev,
-+				     struct netdev_queue *txq,
-+				     void *_unused)
-+{
-+	struct team *team = netdev_priv(dev);
+@@ -2750,7 +2752,32 @@ static netdev_tx_t macsec_start_xmit(struct sk_buff *skb,
+ 
+ #define MACSEC_FEATURES \
+ 	(NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_FRAGLIST)
+-static struct lock_class_key macsec_netdev_addr_lock_key;
 +
-+	lockdep_set_class(&txq->_xmit_lock, &team->xmit_lock_key);
++static void macsec_dev_set_lockdep_one(struct net_device *dev,
++				       struct netdev_queue *txq,
++				       void *_unused)
++{
++	struct macsec_dev *macsec = macsec_priv(dev);
++
++	lockdep_set_class(&txq->_xmit_lock, &macsec->xmit_lock_key);
 +}
 +
 +static struct lock_class_key qdisc_tx_busylock_key;
 +static struct lock_class_key qdisc_running_key;
 +
-+static void team_dev_set_lockdep_class(struct net_device *dev)
++static void macsec_dev_set_lockdep_class(struct net_device *dev)
 +{
-+	struct team *team = netdev_priv(dev);
++	struct macsec_dev *macsec = macsec_priv(dev);
 +
 +	dev->qdisc_tx_busylock = &qdisc_tx_busylock_key;
 +	dev->qdisc_running_key = &qdisc_running_key;
 +
-+	lockdep_register_key(&team->team_lock_key);
-+	__mutex_init(&team->lock, "team->team_lock_key", &team->team_lock_key);
++	lockdep_register_key(&macsec->addr_lock_key);
++	lockdep_set_class(&dev->addr_list_lock, &macsec->addr_lock_key);
 +
-+	lockdep_register_key(&team->addr_lock_key);
-+	lockdep_set_class(&dev->addr_list_lock, &team->addr_lock_key);
-+
-+	lockdep_register_key(&team->xmit_lock_key);
-+	netdev_for_each_tx_queue(dev, team_dev_set_lockdep_one, NULL);
++	lockdep_register_key(&macsec->xmit_lock_key);
++	netdev_for_each_tx_queue(dev, macsec_dev_set_lockdep_one, NULL);
 +}
  
- static int team_init(struct net_device *dev)
+ static int macsec_dev_init(struct net_device *dev)
  {
-@@ -1615,7 +1643,6 @@ static int team_init(struct net_device *dev)
- 	int err;
+@@ -2781,6 +2808,7 @@ static int macsec_dev_init(struct net_device *dev)
+ 	if (is_zero_ether_addr(dev->broadcast))
+ 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
  
- 	team->dev = dev;
--	mutex_init(&team->lock);
- 	team_set_no_mode(team);
- 
- 	team->pcpu_stats = netdev_alloc_pcpu_stats(struct team_pcpu_stats);
-@@ -1642,7 +1669,7 @@ static int team_init(struct net_device *dev)
- 		goto err_options_register;
- 	netif_carrier_off(dev);
- 
--	netdev_lockdep_set_classes(dev);
-+	team_dev_set_lockdep_class(dev);
- 
++	macsec_dev_set_lockdep_class(dev);
  	return 0;
- 
-@@ -1673,6 +1700,11 @@ static void team_uninit(struct net_device *dev)
- 	team_queue_override_fini(team);
- 	mutex_unlock(&team->lock);
- 	netdev_change_features(dev);
-+
-+	lockdep_unregister_key(&team->team_lock_key);
-+	lockdep_unregister_key(&team->addr_lock_key);
-+	lockdep_unregister_key(&team->xmit_lock_key);
-+
  }
  
- static void team_destructor(struct net_device *dev)
-@@ -1967,6 +1999,23 @@ static int team_add_slave(struct net_device *dev, struct net_device *port_dev,
- 	return err;
+@@ -2790,6 +2818,9 @@ static void macsec_dev_uninit(struct net_device *dev)
+ 
+ 	gro_cells_destroy(&macsec->gro_cells);
+ 	free_percpu(dev->tstats);
++
++	lockdep_unregister_key(&macsec->addr_lock_key);
++	lockdep_unregister_key(&macsec->xmit_lock_key);
  }
  
-+static void team_update_lock_key(struct net_device *dev)
-+{
-+	struct team *team = netdev_priv(dev);
-+
-+	lockdep_unregister_key(&team->team_lock_key);
-+	lockdep_unregister_key(&team->addr_lock_key);
-+	lockdep_unregister_key(&team->xmit_lock_key);
-+
-+	lockdep_register_key(&team->team_lock_key);
-+	lockdep_register_key(&team->addr_lock_key);
-+	lockdep_register_key(&team->xmit_lock_key);
-+
-+	lockdep_set_class(&team->lock, &team->team_lock_key);
-+	lockdep_set_class(&dev->addr_list_lock, &team->addr_lock_key);
-+	netdev_for_each_tx_queue(dev, team_dev_set_lockdep_one, NULL);
-+}
-+
- static int team_del_slave(struct net_device *dev, struct net_device *port_dev)
- {
- 	struct team *team = netdev_priv(dev);
-@@ -1976,8 +2025,12 @@ static int team_del_slave(struct net_device *dev, struct net_device *port_dev)
- 	err = team_port_del(team, port_dev);
- 	mutex_unlock(&team->lock);
+ static netdev_features_t macsec_fix_features(struct net_device *dev,
+@@ -3264,10 +3295,6 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
+ 	dev_hold(real_dev);
  
--	if (!err)
--		netdev_change_features(dev);
-+	if (err)
-+		return err;
-+
-+	if (netif_is_team_master(port_dev))
-+		team_update_lock_key(port_dev);
-+	netdev_change_features(dev);
+ 	macsec->nest_level = dev_get_nest_level(real_dev) + 1;
+-	netdev_lockdep_set_classes(dev);
+-	lockdep_set_class_and_subclass(&dev->addr_list_lock,
+-				       &macsec_netdev_addr_lock_key,
+-				       macsec_get_nest_level(dev));
  
- 	return err;
- }
-diff --git a/include/linux/if_team.h b/include/linux/if_team.h
-index 06faa066496f..9c97bb19ed34 100644
---- a/include/linux/if_team.h
-+++ b/include/linux/if_team.h
-@@ -223,6 +223,11 @@ struct team {
- 		atomic_t count_pending;
- 		struct delayed_work dw;
- 	} mcast_rejoin;
-+
-+	struct lock_class_key team_lock_key;
-+	struct lock_class_key xmit_lock_key;
-+	struct lock_class_key addr_lock_key;
-+
- 	long mode_priv[TEAM_MODE_PRIV_LONGS];
- };
- 
+ 	err = netdev_upper_dev_link(real_dev, dev, extack);
+ 	if (err < 0)
 -- 
 2.17.1
 
