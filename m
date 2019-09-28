@@ -2,131 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6A1C10AF
-	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 13:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52418C10DE
+	for <lists+netdev@lfdr.de>; Sat, 28 Sep 2019 14:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728321AbfI1LVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 07:21:03 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:47768 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbfI1LVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 07:21:02 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SBJGZO106410;
-        Sat, 28 Sep 2019 11:20:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2019-08-05;
- bh=JvfgdC2hgYiOD08GKxZBdYNRMJRQteJ88B9j1u0YadE=;
- b=b+THG9ZTlAfZHCK9JYcFohpfL5Ai7zgX2r5bcIJ3yIb6I/bo3cOvKEZxwRUjPdbQdJx1
- jW0qvgEIC1GAci4qw268FFusyBrsq1t514YeiKsC230w1gYngw7erbo+F7oVP2hMyOQ5
- 1bneZw9C7h/ER7eZYoFpGM8+foCxo6soz+OwzDdcMMLp2/xUBcwKz95l63iRWljjtQkO
- t9/Ivc+Adcz6Td2P3JamJvU6SbqDKcmc0LXyMSjWpcxzzTMfetnCA7PPUHw6Yp2OlBXP
- XGmuNeEOQO7yxiJUtw56A8i2lquL8YvPUntJ5e9euypcEDK4i1Aow0Co1dfvpBvVLeWk qQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2va05r8nhe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 28 Sep 2019 11:20:47 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x8SBJDmG145002;
-        Sat, 28 Sep 2019 11:20:47 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 2v9vnjagjs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 28 Sep 2019 11:20:47 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x8SBKi1T012863;
-        Sat, 28 Sep 2019 11:20:44 GMT
-Received: from dhcp-10-175-218-65.vpn.oracle.com (/10.175.218.65)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 28 Sep 2019 04:20:44 -0700
-Date:   Sat, 28 Sep 2019 12:20:36 +0100 (BST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@dhcp-10-175-218-65.vpn.oracle.com
-To:     Andrii Nakryiko <andriin@fb.com>
-cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically
- possible
-In-Reply-To: <20190928063033.1674094-1-andriin@fb.com>
-Message-ID: <alpine.LRH.2.20.1909281202530.5332@dhcp-10-175-218-65.vpn.oracle.com>
-References: <20190928063033.1674094-1-andriin@fb.com>
-User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
+        id S1728458AbfI1MjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 08:39:24 -0400
+Received: from mail-pg1-f174.google.com ([209.85.215.174]:42654 "EHLO
+        mail-pg1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728417AbfI1MjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 08:39:24 -0400
+Received: by mail-pg1-f174.google.com with SMTP id z12so4856367pgp.9;
+        Sat, 28 Sep 2019 05:39:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=reduc2MFsFST4q+TYMabSHg6+TfWaSCdRlTRdna3ew0=;
+        b=HQkDWBQaRT11Jfgkp4sNUPrHOlL5Zv+WYOkvvVjkGv1CRoEvur4Bf/k5d5JTFPRv20
+         5HHZGNrJhqki9rj3b3EelPGg1AskvlrZZNUNPe4tQOw1DfGQH0MwuSL+4eYh2NNJq70E
+         vFiQJc5m3Jrnu8cd6L+AKLpdCAqCGEEM5uecmhHfL3YQeK9V/ZGRpsXdQDUY1Gjv0WIh
+         V3Dbo9NJ0OArfbE+LCnXczWubas9Di/m9BVfeHwMC3Xs9JsWO6FKyrW7U3mMScuGL+bf
+         9LWzFOdLyJZSiUG1VPV0RGO5/1qX7bkiRtfXw8+CRDB2pU1ekGxJ7iwjEcrx3WMbCjuf
+         tbRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=reduc2MFsFST4q+TYMabSHg6+TfWaSCdRlTRdna3ew0=;
+        b=pUbbqSjtjousMt1a8lrDTz7EY84b52WG9KL8N1vSERkq9gGkIKRImDXlTD//cqQizi
+         /EX59h105Kwm2zAbN1Kc12LTnqB2yalvU6XeO+zETaMZmqR1AHIANLeNDf6o7vevSjfM
+         W4WtQyzCD3PgP6l3lrx28Dx1j63f9X0IL5Xqp5tDZGbcQ8v2pgVv9wTAB+CEdJdQ4N4C
+         Mp2RmUI4mecsQDStGNaflm0R+JNrZ8i6uHpGIkBl4xa3gAmOisNf5KqLbQFXu9tq5uGh
+         zsx5ZMEYoV/7F5PtwgSKdEHRzDw7vSs9YC/taRD+iRZt0Uj2zTj9TxMDwzG7oBFdy37Y
+         cBwg==
+X-Gm-Message-State: APjAAAVvPkPeL0lCwekxy0N4hdWOAshO2kbNfaZnLifC4s9d4Wd83xMh
+        uVe20LBBcJ3IhxNnzinDrAJx72aXHNk=
+X-Google-Smtp-Source: APXvYqyJIfC5dJVQyR7FqT4/rrjfp+/M2BjGIeKWV4ImeEb7ndetEYcTfbQFO+1uqHjpcNXOwn0tOw==
+X-Received: by 2002:a65:6901:: with SMTP id s1mr14363378pgq.338.1569674363509;
+        Sat, 28 Sep 2019 05:39:23 -0700 (PDT)
+Received: from gmail.com ([45.118.67.175])
+        by smtp.gmail.com with ESMTPSA id k184sm11674923pge.57.2019.09.28.05.39.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Sep 2019 05:39:22 -0700 (PDT)
+Date:   Sat, 28 Sep 2019 22:39:17 +1000
+From:   Adam Zerella <adam.zerella@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, adam.zerella@gmail.com
+Subject: [PATCH] docs: networking: Add title caret and missing doc
+Message-ID: <20190928123917.GA6876@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9393 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1909280119
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9393 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=3 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1909280119
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.1 (2019-06-15)
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Sep 2019, Andrii Nakryiko wrote:
+Resolving a couple of Sphinx documentation warnings
+that are generated in the networking section.
 
-> This patch switches libbpf_num_possible_cpus() from using possible CPU
-> set to present CPU set. This fixes issues with incorrect auto-sizing of
-> PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
-> 
-> On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
-> be a set of any representable (i.e., potentially possible) CPU, which is
-> normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
-> tested on, while there were just two CPU cores actually present).
-> /sys/devices/system/cpu/present, on the other hand, will only contain
-> CPUs that are physically present in the system (even if not online yet),
-> which is what we really want, especially when creating per-CPU maps or
-> perf events.
-> 
-> On systems with HOTPLUG disabled, present and possible are identical, so
-> there is no change of behavior there.
-> 
+- WARNING: document isn't included in any toctree
+- WARNING: Title underline too short.
 
-Just curious - is there a reason for not adding a new libbpf_num_present_cpus() 
-function to cover this  case, and switching to using that in various places?
+Signed-off-by: Adam Zerella <adam.zerella@gmail.com>
+---
+ Documentation/networking/device_drivers/index.rst | 1 +
+ Documentation/networking/j1939.rst                | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Looking at the places libbpf_num_possible_cpus() is called in libbpf 
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index f51f92571e39..1f4a629e7caa 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -24,6 +24,7 @@ Contents:
+    google/gve
+    mellanox/mlx5
+    pensando/ionic
++   netronome/nfp
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/j1939.rst b/Documentation/networking/j1939.rst
+index ce7e7a044e08..dc60b13fcd09 100644
+--- a/Documentation/networking/j1939.rst
++++ b/Documentation/networking/j1939.rst
+@@ -272,7 +272,7 @@ supported flags are:
+ * MSG_DONTWAIT, i.e. non-blocking operation.
+ 
+ recvmsg(2)
+-^^^^^^^^^
++^^^^^^^^^^
+ 
+ In most cases recvmsg(2) is needed if you want to extract more information than
+ recvfrom(2) can provide. For example package priority and timestamp. The
+-- 
+2.20.1
 
-- __perf_buffer__new(): this could just change to use the number of  
-  present CPUs, since perf_buffer__new_raw() with a cpu_cnt in struct 
-  perf_buffer_raw_ops
-
-- bpf_object__create_maps(), which is called via bpf_oject__load_xattr().
-  In this case it seems like switching to num present makes sense, though
-  it might make sense to add a field to struct bpf_object_load_attr * to
-  allow users to explicitly set another max value.
-
-This would give the desired default behaviour, while still giving users 
-a way of specifying the possible number. What do you think? Thanks!
-
-Alan
-
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/libbpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index e0276520171b..45351c074e45 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
->  
->  int libbpf_num_possible_cpus(void)
->  {
-> -	static const char *fcpu = "/sys/devices/system/cpu/possible";
-> +	static const char *fcpu = "/sys/devices/system/cpu/present";
->  	int len = 0, n = 0, il = 0, ir = 0;
->  	unsigned int start = 0, end = 0;
->  	int tmp_cpus = 0;
-> -- 
-> 2.17.1
-> 
-> 
