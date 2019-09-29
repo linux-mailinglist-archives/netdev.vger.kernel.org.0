@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AF84C1A1F
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 04:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B32F8C1A21
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 04:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729397AbfI3CJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 22:09:13 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35912 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729394AbfI3CJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Sep 2019 22:09:11 -0400
-Received: by mail-pf1-f193.google.com with SMTP id y22so4681864pfr.3
-        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 19:09:11 -0700 (PDT)
+        id S1729404AbfI3CJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 22:09:16 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41468 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729394AbfI3CJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Sep 2019 22:09:15 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t10so3273150plr.8
+        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 19:09:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=6HgZPQKZxL7r1/wQsfui/0kmuRXOheA/g5FosFtqYiw=;
-        b=iCkatR+EiXQmd0aOKiofwhZDVV90FVsy0Clt1u/z1dAoYAj1CVv+DpJthktY3Bm03u
-         LnK2wWAOdm0Fn0kyy5XPtz72PtG3Iga1YN6UWsKQGysonStODP2x3R617gGwsbwujqWL
-         GQgxNqqe/fSi2CvKCql4ROElB3L9pP9Hn1bIj4J9M6Ewvb1PivMwGqskds9fTM0PDnnF
-         +/qbrmrh1XhvtT8t8yyP85mNlBjCio4aNm1RkGlRlecTu6MtCSuGtlP4an3MPSHFdVHS
-         bM/hNp3CmPHX+k4xAowP8ZrbyYiJdESoCCjEsp8ryNikowq+myurZ4qBorNaObfSR/+c
-         8Cfw==
+        bh=3N8AYSTn8Cd+SI4v+ldKV2ux7udULZm8tazu3f3NRMU=;
+        b=HrrBHCQDhJmBXEjuLbPHoUgefvdA2y0VHPf9FM8OYi8/0uji9GhbSLEuKGZC2YED0Z
+         AR61r6hZLK+GCWjyxywAxI8C0DzGBCQ9ZJAEpmuWAVWE9PRHmi9kP86TmQQDlutMAPSd
+         cNaHCksAUlMZPQw4XLFeIygIzBUWgOqOqy5zyJOjjTnSKG6svATFWq5d5B7ZsThKkJkd
+         iwDUdpkgOyoeyiURnmzifONijnxCwQO/w6KCMM5n0s5m+14wQDk7flx6DhknYCzi9s44
+         Mq1fQwJJlZ/sNHoHh0fpaI044iQbjziT1sRji/4WTQ78dGnGr242cmp5Ew1B5DyeqQS6
+         SvUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=6HgZPQKZxL7r1/wQsfui/0kmuRXOheA/g5FosFtqYiw=;
-        b=V2LiuxqAc6ThBO6wGFKJDbxi4efxwBqQmqPAVAdih+L8upZO+4PeV+aMxu1ZUevR98
-         7QwFGsMhhe93vj4uTYGkM93s7yBuBF5HCSq3faeJGGatgF7E+7sqth7oqJD2badaBjzX
-         AcJblA4NEbID1gtzx9I6f19X9gtEh760/kIEMMp+d2/MCbQCCy1BxzE8rXP/nqWagsSP
-         6WaCQYmXNVzPUWcb5Tppurm0WFM4fyjKtyuj+ZEUXhlCuSVR83GBBAQUjbAMLoOgHZlW
-         fKpngTFMrEd1cC7Yp0J8bwDKA+kV/X1cD6g/I/4jQ/h8lh3HyWYfx0Ik72qUfkX8oOA7
-         hVmA==
-X-Gm-Message-State: APjAAAUxNbZEN6ty9hfvzo2vOx/JjAk3iLFvalCkWXTw/oOL7yoT9WQ0
-        y5iVQaqOrLoyrsPWL2xymCLDj3/q
-X-Google-Smtp-Source: APXvYqwPL2XwElQHeiKkz2ytP7Dn7K6d2rc1ujax5nEWofrx2yXa+UhrhBGrxoEJL9SEodiiceQiQg==
-X-Received: by 2002:a63:e116:: with SMTP id z22mr22347565pgh.424.1569809351056;
-        Sun, 29 Sep 2019 19:09:11 -0700 (PDT)
+        bh=3N8AYSTn8Cd+SI4v+ldKV2ux7udULZm8tazu3f3NRMU=;
+        b=aN14oSDiMbVVyeLKdHweDmNxfW/xZksD1FPwEmVIFQ6iMBD4JHg8jWSpL5YfofLJHG
+         Gtiti/qtIj8igbt5ps1g93aDjQVZW0UZTnVoRzXItoyw6If8mdvl6dGmKYJljNecVNPL
+         u81hycInzWCDTp8ucAUHZvESVh4tzZDo9VZjNxHF5n5wFBzibXnMuRuTjC4GitWHsN94
+         W8JeR5YfdnlR5cUF9nsB8KkD9k7JgBElGAfWnbRq34o8KUq8WYrMP5plnTL2KyoFvBxn
+         hobzRiM9EwXQThKzmf55O3Gzxb5HiP07ToB0BDdGBe45CtLVsiRPfwLkFpUgw6rzeNVn
+         PF7A==
+X-Gm-Message-State: APjAAAX2KqCBHWDXwzljpBDTRYVry41zZAgmiSebQYp3Q4zNEgnIv7GW
+        zMRVKiFXdggjNJddldvJQdg=
+X-Google-Smtp-Source: APXvYqxECPw/IcERwc8ewUNy32DH4WaGdq36hnbm8y67+Dxwo4vxNP6L02ivCLnA4RO2cDS5MNMe/A==
+X-Received: by 2002:a17:902:6e17:: with SMTP id u23mr17624863plk.205.1569809353136;
+        Sun, 29 Sep 2019 19:09:13 -0700 (PDT)
 Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id d69sm9941635pfd.175.2019.09.29.19.09.09
+        by smtp.gmail.com with ESMTPSA id d69sm9941635pfd.175.2019.09.29.19.09.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 29 Sep 2019 19:09:10 -0700 (PDT)
+        Sun, 29 Sep 2019 19:09:12 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     gvrose8192@gmail.com, pshelar@ovn.org
 Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next 6/9] net: openvswitch: simplify the flow_hash
-Date:   Mon, 30 Sep 2019 01:10:03 +0800
-Message-Id: <1569777006-7435-7-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next 7/9] net: openvswitch: add likely in flow_lookup
+Date:   Mon, 30 Sep 2019 01:10:04 +0800
+Message-Id: <1569777006-7435-8-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
 References: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
@@ -59,33 +59,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Simplify the code and remove the unnecessary BUILD_BUG_ON.
+The most case *index < ma->max, we add likely for performance.
 
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- net/openvswitch/flow_table.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ net/openvswitch/flow_table.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 5257e4a..c8e79c1 100644
+index c8e79c1..c21fd52 100644
 --- a/net/openvswitch/flow_table.c
 +++ b/net/openvswitch/flow_table.c
-@@ -440,13 +440,9 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
- static u32 flow_hash(const struct sw_flow_key *key,
- 		     const struct sw_flow_key_range *range)
- {
--	int key_start = range->start;
--	int key_end = range->end;
--	const u32 *hash_key = (const u32 *)((const u8 *)key + key_start);
--	int hash_u32s = (key_end - key_start) >> 2;
--
-+	const u32 *hash_key = (const u32 *)((const u8 *)key + range->start);
- 	/* Make sure number of hash bytes are multiple of u32. */
--	BUILD_BUG_ON(sizeof(long) % sizeof(u32));
-+	int hash_u32s = range_n_bytes(range) >> 2;
+@@ -526,7 +526,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 	struct sw_flow_mask *mask;
+ 	int i;
  
- 	return jhash2(hash_key, hash_u32s, 0);
- }
+-	if (*index < ma->max) {
++	if (likely(*index < ma->max)) {
+ 		mask = rcu_dereference_ovsl(ma->masks[*index]);
+ 		if (mask) {
+ 			flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
 -- 
 1.8.3.1
 
