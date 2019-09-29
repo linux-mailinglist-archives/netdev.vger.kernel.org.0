@@ -2,157 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C06CCC13EF
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 10:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A8AC13F1
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 10:32:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfI2Ib3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 04:31:29 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35299 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725974AbfI2Ib3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Sep 2019 04:31:29 -0400
-Received: by mail-lj1-f193.google.com with SMTP id m7so6386148lji.2;
-        Sun, 29 Sep 2019 01:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kdg/X1gRFWrRcjXeopdKgWFJCbdlHG/7tw/5ynKD8NM=;
-        b=KBpWBZhA1HI60TphaSFN6NGXpCo5zpNdI/H7EbzP/LwfDtiT2s60gNgxvzvugOmmc1
-         rDcWLBhA4qRzeIB/UYr1/GrwgBfjcu/i5jWoHVowEDHUWEnCT2ZXgwzI2QuT/8ps1WBP
-         N6FF3sIgdpHxsZu/heA4MRrhKuzXsIK5AMld4kBiBTP52FG+tKRzuWTcs600ICS5juJ3
-         hjngsvQLw15YDCiU9SGpxM1+xAeyqfhppKOEvoiuFJZtaNrNCdREpt/nybHbyASFPmPF
-         bSuRzoOxulQ0jSx8/8Q6j0miQt1LpXNsfHwCxuoua1TxAkNPKCuDNc7vzI36F7xejfgS
-         2UCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kdg/X1gRFWrRcjXeopdKgWFJCbdlHG/7tw/5ynKD8NM=;
-        b=UAMI+4adBEKIWZobJY0+Js/tGKEPHn1rYAZYhU/hxrTFoBfid7ejdC7iifLiu6D/1M
-         Apa4p5IvBzL5icFySr640J+OjKHbBFVpf7pqL9lIIJAjSB4sgayTmN5bnbNaBanAkAaq
-         /POJuh5681boEInH8tO/cRdY4HoM/VROwVEgS8HNmMaLh6/HTsWNxt5+UKc1uOzKnSEd
-         863OrvzusIa9Dj0uvwWkl30307aFTmmsjh4gBgXzSnOoE920bre9UhxQUwxsaB2L9lQu
-         snUskq6JSdTxQmD3rWO+o5qVJOmwMw5GiC3YDjx6ndP+euxE7PCjkcv+Kh5mst9DQCbV
-         jOcQ==
-X-Gm-Message-State: APjAAAX8ozosFYjr0kbl+gVu2UwzrooiEdB9M325qeOmkX25O92TVhVM
-        XJtineTraZps63eYthH2+GTkDZsc2WrDzEP8Lc4=
-X-Google-Smtp-Source: APXvYqy9MLPg9uoPt91au00rfc5HZxwlQkH2JaQzACuIld+jNMM26xwAyZrIPkCoicj2S3nV1oUL243lNzYB3rLWMyY=
-X-Received: by 2002:a2e:8616:: with SMTP id a22mr2921297lji.6.1569745886863;
- Sun, 29 Sep 2019 01:31:26 -0700 (PDT)
+        id S1728853AbfI2IcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 04:32:13 -0400
+Received: from mail-eopbgr40082.outbound.protection.outlook.com ([40.107.4.82]:39566
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728534AbfI2IcN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Sep 2019 04:32:13 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TCThQFPqnPDcdhtoTGY77umj88JXpQ/psERJy4jWNn07ow1pJHwAiYXmUoFSuNW/xcigWQBj5l4YeFLHEXlGde3Bi6UKll83cR9LVfeX4LaRXm08TWhoySoLY0ab0ho6gYWFSYxh2L26bGltVdz4008de6s0rZ/M7qgJWiG48gVppT48MZT3/MQNU9Mc/OkZtz4a8UDR0e2L2hrjknLVZm7CM/xecCKSo3i1mOiduYxu2+SkPEzrhMjmEyMsbRLVPyvCfhYIwHlz59YKVaWsCytF06xufoyhnyaQMetwhDaYOM5n0OSh3mJuodT11EFp4NLLPy/aVWPK+SBzlJs9tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WYem4RTc+eilK6F0KQ15VUaK80oNHofbUpusgnLEBv4=;
+ b=Ky/Z1L5JpphelUzbqOXy8YKUZNWlAJcfs/36J4jern85ZZ/WtbBfXdoxJAB1lKuDVpj+p3Fo+PhXUPeWbsNS0nhkLdZvyfI6cO7GIwaIrsCnD83brWg/589NLZSoudQhTRB5B9yOYJED5pRPlBiL9a/O0cHjI6t9mx4Ym+L25jiY/29NkJVgNLYL7N1nFwgl8V8eG0YtluFefaJ7tXFpgxShMVprlaqAWgSnYcvquMVizVi2ol4rCy3L2h8sMo2WqZu41vdustht0qwGoCjxgJ8ftwcpAoxhiGbdW6vEWcw7cbtSnQSwawaf24NLLscn4MDzyNNvmL2kDf27hW5ANQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WYem4RTc+eilK6F0KQ15VUaK80oNHofbUpusgnLEBv4=;
+ b=hJVBI4oLl2RAZAOWBxRjG5dO3gedZIgyB3hfYjkAIuWKuyqYTtb0e5dNiCdCs1COMjg/yytQMj7AozHFP5RQcD8qAlEjXN+ZwMkNxVWj2ueSgC9HYDQq7oAJaQNoNF48Zplfp4MqLk9WRrSUooCdNa+uYMU6lojdLjaE0dqEK+o=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4889.eurprd04.prod.outlook.com (20.176.234.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.15; Sun, 29 Sep 2019 08:32:09 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1872:ad0f:4271:ad61]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1872:ad0f:4271:ad61%6]) with mapi id 15.20.2284.028; Sun, 29 Sep 2019
+ 08:32:09 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sean@geanix.com" <sean@geanix.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH] can: flexcan: use devm_platform_ioremap_resource() to
+ simplify code
+Thread-Topic: [PATCH] can: flexcan: use devm_platform_ioremap_resource() to
+ simplify code
+Thread-Index: AQHVdqBiRC4zmV56FkeU7Oqk/q2FUg==
+Date:   Sun, 29 Sep 2019 08:32:09 +0000
+Message-ID: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR06CA0124.apcprd06.prod.outlook.com
+ (2603:1096:1:1d::26) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ba19475d-3c0c-4ba7-9ba1-08d744b78471
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: DB7PR04MB4889:|DB7PR04MB4889:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB4889AD7D21E8D9814953E544E6830@DB7PR04MB4889.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:913;
+x-forefront-prvs: 017589626D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(366004)(376002)(39860400002)(396003)(189003)(199004)(110136005)(8936002)(66556008)(66946007)(6486002)(3846002)(8676002)(5660300002)(99286004)(64756008)(2501003)(81166006)(54906003)(66476007)(86362001)(71200400001)(81156014)(66446008)(2906002)(66066001)(316002)(6512007)(71190400001)(6436002)(6116002)(50226002)(2616005)(52116002)(256004)(486006)(4326008)(305945005)(25786009)(102836004)(7736002)(36756003)(1076003)(476003)(6506007)(26005)(186003)(386003)(14454004)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4889;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SVVDvRmThRbt7lIDUToHbnMGrjp+IQXPKgoViVgof5B4YvMq9R39cZoT3PwHj9D34ghsb9xLlFqcEo/apv1/A25aLxsPIOAJh6KEAIXI/uhod1f23+oUH0vmALhec2pE0/K50WlHrjlDDXeRm7A3coM5JnITn4WtNgR/RsUOkTWWi14eCyM8rlDPEPauLOiUjba/wAqwpgUIg8A6ygRc7aNq+VZn1mnaSdECigXDx8IJjUch+iNgldkI83WtvCUV1aHo9uQBDJujJXnQ4n8rkBUJzSRjvZV7ME1myREh1U0CKERwulvXs4RmckTYtp5U1Q8N6pBGw57XJOMGEgLzGR9sfKbYuOVmo4EI0N5tf/LBA4Gc2WF9kSlWsYszvk74mn/VXMcpg2zjKKosIAqhdeerh6zaw8hftc9zw4aM8so=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190928164843.31800-1-ap420073@gmail.com> <2e836018c7ea299037d732e5138ca395bd1ae50f.camel@sipsolutions.net>
-In-Reply-To: <2e836018c7ea299037d732e5138ca395bd1ae50f.camel@sipsolutions.net>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 29 Sep 2019 17:31:15 +0900
-Message-ID: <CAMArcTWs3wzad7ai_zQPCwzC62cFp-poELn+jnDaP7eT1a9ucw@mail.gmail.com>
-Subject: Re: [PATCH net v4 00/12] net: fix nested device bugs
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
-        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
-        kys@microsoft.com, haiyangz@microsoft.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Cody Schuffelen <schuffelen@google.com>, bjorn@mork.no
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba19475d-3c0c-4ba7-9ba1-08d744b78471
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2019 08:32:09.2693
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +rnt0TwX8kvF1ggXYqe4QF38P9k29CYYL8IpUieTIFluxznXbgsqYS+wX4jNWlFUrlAUiXrqeZAs/4ccn44Tew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4889
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 Sep 2019 at 04:20, Johannes Berg <johannes@sipsolutions.net> wrote:
->
->
-> > VLAN, BONDING, TEAM, MACSEC, MACVLAN, IPVLAN, VIRT_WIFI and VXLAN.
-> > But I couldn't test all interface types so there could be more device
-> > types which have similar problems.
->
-> Did you test virt_wifi? I don't see how it *doesn't* have the nesting
-> problem, and you didn't change it?
->
-> No, I see. You're limiting the nesting generally now in patch 1, and the
-> others are just lockdep fixups (I guess it's surprising virt_wifi
-> doesn't do this at all?).
+Use the new helper devm_platform_ioremap_resource() which wraps the
+platform_get_resource() and devm_ioremap_resource() together to simplify
+the code.
 
-virt_wifi case is a little bit different case.
-I add the last patch that is to fix refcnt leaks in the virt_wifi module.
-The way to fix this is to add notifier routine.
-The notifier routine could delete lower device before deleting
-virt_wifi device.
-If virt_wifi devices are nested, notifier would work recursively.
-At that time, it would make stack memory overflow.
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/can/flexcan.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Actually, before this patch, virt_wifi doesn't have the same problem.
-So, I will update a comment in a v5 patch.
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index b3edaf6a5a61..3cfa6037f03c 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1507,7 +1507,6 @@ static int flexcan_probe(struct platform_device *pdev=
+)
+ 	struct net_device *dev;
+ 	struct flexcan_priv *priv;
+ 	struct regulator *reg_xceiver;
+-	struct resource *mem;
+ 	struct clk *clk_ipg =3D NULL, *clk_per =3D NULL;
+ 	struct flexcan_regs __iomem *regs;
+ 	int err, irq;
+@@ -1538,12 +1537,11 @@ static int flexcan_probe(struct platform_device *pd=
+ev)
+ 		clock_freq =3D clk_get_rate(clk_per);
+ 	}
+=20
+-	mem =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	irq =3D platform_get_irq(pdev, 0);
+ 	if (irq <=3D 0)
+ 		return -ENODEV;
+=20
+-	regs =3D devm_ioremap_resource(&pdev->dev, mem);
++	regs =3D devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(regs))
+ 		return PTR_ERR(regs);
+=20
+--=20
+2.17.1
 
->
-> FWIW I don't think virt_wifi really benefits at all from stacking, so we
-> could just do something like
->
-> --- a/drivers/net/wireless/virt_wifi.c
-> +++ b/drivers/net/wireless/virt_wifi.c
-> @@ -508,6 +508,9 @@ static int virt_wifi_newlink(struct net *src_net, struct net_device *dev,
->         else if (dev->mtu > priv->lowerdev->mtu)
->                 return -EINVAL;
->
-> +       if (priv->lowerdev->ieee80211_ptr)
-> +               return -EINVAL;
-> +
->         err = netdev_rx_handler_register(priv->lowerdev, virt_wifi_rx_handler,
->                                          priv);
->         if (err) {
->
-
-Many other devices use this way to avoid wrong nesting configuration.
-And I think it's a good way.
-But we should think about the below configuration.
-
-vlan5
-   |
-virt_wifi4
-   |
-vlan3
-   |
-virt_wifi2
-   |
-vlan1
-   |
-dummy0
-
-That code wouldn't avoid this configuration.
-And all devices couldn't avoid this config.
-I have been considering this case, but I couldn't make a decision yet.
-Maybe common netdev function is needed to find the same device type
- in their graph.
-
->
->
-> IMHO, but of course generally limiting the stack depth is needed anyway
-> and solves the problem well enough for virt_wifi.
->
->
-
-This is a little bit different question for you.
-I found another bug in virt_wifi after my last patch.
-Please test below commands
-    ip link add dummy0 type dummy
-    ip link add vw1 link dummy0 type virt_wifi
-    ip link add vw2 link vw1 type virt_wifi
-    modprobe -rv virt_wifi
-
-Then, you can see the warning messages.
-If SET_NETDEV_DEV() is deleted in the virt_wifi_newlink(),
-you can avoid that warning message.
-But I'm not sure about it's safe to remove that.
-I would really appreciate it if you let me know about that.
-
-> johannes
->
