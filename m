@@ -2,125 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63360C15B5
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 16:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C7EC15C0
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 16:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728984AbfI2ONt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 10:13:49 -0400
-Received: from mout.gmx.net ([212.227.15.18]:58237 "EHLO mout.gmx.net"
+        id S1729069AbfI2OU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 10:20:27 -0400
+Received: from mout.gmx.net ([212.227.17.20]:44323 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725974AbfI2ONt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Sep 2019 10:13:49 -0400
+        id S1725948AbfI2OU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Sep 2019 10:20:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1569766407;
-        bh=yEinVkrAXAA8zQDhZFR9oqEyIJv63B/asAyfFNVqSM4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=RRG3VDdMKFbrKf/asVjppSdST3OMVT0er6CYNahZdgkbg9SBKmCG8fMjeJIBmxFar
-         kiOfjgVRaTAIUsPwuo5NyBAI4d50UlXJaleKXIss6WmKmm7NNo2nlXZYfGpJqX3tYT
-         Qs1B/LL3odoO/RywBNaakPU3od+Vz21PRlb8aMZE=
+        s=badeba3b8450; t=1569766813;
+        bh=QjI2UKdBTdDpx4cfmKvkvgj/Fe/s7UCv8NhDMhZZ83Q=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=i7wnqtKFdzLyx0BtJPPZGiShPm6JBNEb+2pEsyxqR1VI1xyJhmekU8vtNBhB9fmFZ
+         oGvygj/tA4L2dTrO5cOXo1M3Oh5dj+Ui5ts03i9/vVA/9w1PuS7S545qrnBBfNI608
+         a2BtGUmw0qSu7yuWw+i3qT7cjxVH03nXj7G/UUMU=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([37.4.249.130]) by mail.gmx.com
- (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MxDkw-1hugcp2Khk-00xXQe; Sun, 29 Sep 2019 16:13:27 +0200
-From:   Stefan Wahren <wahrenst@gmx.net>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Alexei Avshalom Lazar <ailizaro@codeaurora.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Received: from [192.168.1.162] ([37.4.249.130]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MJmGP-1iYiIv43p3-00KAVg; Sun, 29
+ Sep 2019 16:20:13 +0200
+Subject: Re: [PATCH RFC V2] nl80211: Fix init of cfg80211 channel definition
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Alexei Avshalom Lazar <ailizaro@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Dmitry Osipenko <digetx@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH RFC V2] nl80211: Fix init of cfg80211 channel definition
-Date:   Sun, 29 Sep 2019 16:12:59 +0200
-Message-Id: <1569766379-9516-1-git-send-email-wahrenst@gmx.net>
-X-Mailer: git-send-email 2.7.4
-X-Provags-ID: V03:K1:VbwrAyG5najNxf/+021dm/Rj8RcIWUM6M25RtSPhDVFJD5+dhjl
- ZyrkNsajURwYh/nGeIeoybai2Yc859S+5BSH0OpWxp0sUfQDmRICBXv34FsIwnj4ZcbJ15m
- Ql91Yski7W0bUWxefiexBmswUVfhtp1xiuP13ftHZJQSsvVlOYa08ejqblmgFkmRcIqoy0H
- 9tSLs3PgcndFSvbt8IUkg==
+        linux-kernel@vger.kernel.org
+References: <1569766379-9516-1-git-send-email-wahrenst@gmx.net>
+From:   Stefan Wahren <wahrenst@gmx.net>
+Message-ID: <560d7cb0-b509-6f2a-f31a-1743131e14df@gmx.net>
+Date:   Sun, 29 Sep 2019 16:20:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <1569766379-9516-1-git-send-email-wahrenst@gmx.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:E+Gc2cS4gkyzLOB29obc3xQlu0XoQVRGJvunw+VypChp4pm/K3D
+ YuUgzyjCQBqfS4HIj8paluhlTzX8hfH82fg0Ilr7GtiVI2jv5L94rfcoHdqKn1jfQVdGUTj
+ +UKHxGtpo2E4rKOpdS0rYkVd1FMof12yha5IQo4664pXa+5fXKb8upinEhrqE8qYW8OKIog
+ i2gOv91jqlcso6iZE+0/w==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sqSrEt0BRbI=:KELXrJoVqL4wpDbb1rpmtP
- g9SOdSGC39BpbJZiYuxIIqrUhN1G9ijQ9KqAc7bTrhJaFnccPU0e3by/HhK0GGmYKiO/x1w+w
- VgVVyzlrWT3w+q6veBMJ9rU2CB+5LkOqztsRoa0J8A6YZLLZrJAsfadWjwet7O/W+LXgLW6of
- UwY1q/iYYetSdCKnCftRYZ3Tw38Hs1BpJmsha2PaqFXt8ctKMyTjQKQ4Zd/D+TQSZneVmI/xP
- 9hK6XgcCE1neiMgE8voFMfpPEFiRxGfjF86FnJ9NEVs1TDEdCO4RE8bsuKFV+vgaaqDEG3G3Z
- xqpVB/ze0qZHfdNvSbgYLEMR2iHILMdPYHVYG3iqs/ZiVPlcRGs3vRC+O+D9yuy3bBlNOsIMT
- 4lvVPZcWUJxKnodiAQ6SQh4622jNGCPTLwXDUwGk+CYKgGc5jQEnmIYig0BGHQnDCV7hpGh1b
- MbY3PAzzYcMwlRN8E/SBgo8ViZbKml9uVYOJ1g2jUFXm7e/t8XYFjBfwvkSpFvV9nyFZ6yxPV
- 7dCqP+/G8hGY1Fes+aYMK/J2zxJfzaM5aJWZpd1YQFA/srCZhwCmY+NoJjFbCkkvrfk/nFYdf
- WwIX4/wqQL4qmD3a9OzFUkd2EUxmjQQeNFTJCZsTBjBTdLQs3AYKQByAB3LnfLCdzL6GbUfAl
- +Y+TD8U6NBxH+IAc1dAaWpTzLHXb1dy1Wd3zOL+c/y8ebbCRUmijadVRvhMyn4hTOURG7SuOX
- G0RCbG8KKMl7e8d/eX20Br2bu3/xnlg/D8mJaKdbdNamK0qR+DveMyhXLAVh40ROwDu5IrGBT
- f5o8f81xGrc2KIFDTiqlztnZBQTRsVOnVooqpCgmzoDkLJ4F6iBpGaRbBku4B/eZDc8GizWQE
- /kx/f505Cf+RumtNgR2Lq8v91k7c9G+hQczEo7UP7na66xDxmSX9lEGFGgFCR19TzspFNeoO4
- kMwxJiS+BQUuzhp5eMh6RCIfbYFlUZvOPe6E+nbNp+l9U6FdsB/A3puvL610/G0Nm3ov/TLCp
- G1r6k8SN//9B+2ImRdTiaxKoFfiOOOZC7VfAoqSD1023Bfkr+kPE7hwCR64Z2IcrSFXt6Wjrj
- 8hNxsbCrw0VYSAqbQes3r2UASPPE6gIXKxBJprvZFHpBm19klaV8FlS58vrrws975LRTlgwYF
- +YW+eLPErIpR6YDhhN4XD4l3MvvTkQM3dZbamNg6wodEsRktg4vjLulC9ECRyNi5Rvt6Kq15X
- jaca6XPJJy93UAou/v0+dt7ZtXOquZiGD9mSc1Sp23n5XgkmiaI4oW1bKF1WKxiQpdN065i0s
- p/aad+pTWp0dEsr+HZrNPOVJVKVoJeuFWr2+F12QYnqoBI2B/1+KjH5WtmUqKyNEtnDgO+kKg
- 33gkvxlvFF1JcePxynZXG81KH+z3HsUdO5tTdSA3gvzsh4bZB0nj7Z7DkKteW48GfmnTt2GTG
- +/83uuwjWleQ8nj3U5LE7grQ2scpzQy9t8ieO20n3iyxwwmdupeMlIrZVjA0atAMuOOH0aWMG
- 6Ug==
-Content-Transfer-Encoding: quoted-printable
+X-UI-Out-Filterresults: notjunk:1;V03:K0:f7pxAe5sqkQ=:4tM3hg7I9Yh/lnxS3cDqJQ
+ bEE/lgFkxFw1EB8Ll8n5xXU4uGZ80aTUzQovNIR6JG96w6Or3ak4NoMjDie9BjjzyTxV4/CyY
+ CtLYqRCfDANTiNeDfge1QXlFCW3DPOj1HfhtmnXPHJ5HktKzRyNhscRhiUJPbyftR6NH+G8pJ
+ 5SnVj0tbMzcLTxP2xSJ1RBYaW/U0ekB9CJ/jmMpJH3on/4TNSQ3arQUZSYKzfQnZQLxpxY7fv
+ hDx7+o9COROUgGeCuZSRsg7sW4qdFxpzugQzc+qtay8/BhXSq4wNwUx3p07wiowOjqGTnMpyo
+ Tm/jyWnKNYEWv7eicByuV/yPNihn2hfN8FZ7tBlgb7k1xnu2vBPP+EBUoVwNZkTPScJZz3MhX
+ Oep3CVwXhy1f79tWaOoFLV3qjbgHhDhSk6bUVIjJf7aOSgYRGUwMZCwwMeapRU6qrbVcCPmUW
+ KCzP33JjV8VIXBfI9ytCchHpdOZTuU53Wxsv5uGCoK0SS0zM7OUDW9STjKSbpL6o4fkRnIrV5
+ ouGXEDheF1cz+SkQxIHGVXs4tJKyxixglsYd03Hj1WPn3F52v/BJRYTz1hx5bOc13IyP9ikAx
+ X9/TdxPky1NTLgGu+pAaTqnV5PllAZHKTCYKfM0tUa9GOZiMN0/FuBv2eCMdP1q3uM0UGQQ91
+ 4e20VaAcSF9TOPIaOozYE03baZllf4HwWBWQiyww0Xf08sieOWXpd16PnL8AIvn0aTzte0Kpv
+ PdtIqA8cebx9PjZRJfI5sUBgfIXpKXyyO9+kEOjFBherLZBmMY81ZbTFV9Is6gkqiUJO7U1Un
+ V0dQON21G6lAtaTBcl9GQaMmqVDBEZl+oUNHlcVJQ7+BKViRmDslnMm+B4OejKM+CkxjYn1yC
+ C2E+G30wJWmwufzugkIDWnTt0y67CDTzdytpBio21IsbYwpAFWqt3lDMhRnphsYQ+3RvTjpoX
+ M6e3pW1+nJCeYqkxl3ftdtXAT9AOG7Ao/TAjh4rQLnmsB6CEtLrRXXz4rqhTqT6L8Gc7lYCGb
+ RKOrNwA5kVaa7wsx1yI2jDpoXxwSawRUA/ktUE7WKkq7z9NrrRF+jjqlN11BEzIxHfvg/HRvC
+ KmnHTn7V2TEclEH/COIcPt6d/BBr7l+I2iMCS0T3ueoUKC3HxmsWQ3SbyqbVccu510GgHnAD/
+ EITgfvHJiMdOU00LPazxwQUQ/beKZ1OqDIiID19arvWFcnji81fBsZTKIhK8ZMltfMwwNBahe
+ YxB0nXZ5ytjlUzFMRvltsqZ9KiPqDjjudFHqlZCcdkBIM4XMOkhv3hs6ikLQ=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 2a38075cd0be ("nl80211: Add support for EDMG channels")
-introduced a member to the cfg80211 channel definition. Unfortunately
-the channel definitions are allocated on the stack and are not always
-initialized via memset. Now this results in a broken probe of brcmfmac
-driver, because cfg80211_chandef_valid() accesses uninitialized memory
-and fail. Fix this by init the remaining occurences with memset.
+Hi Johannes,
 
-Reported-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Fixes: 2a38075cd0be ("nl80211: Add support for EDMG channels")
-=2D--
- net/mac80211/util.c    | 1 +
- net/wireless/nl80211.c | 3 ++-
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index 051a02d..d887753 100644
-=2D-- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -1885,6 +1885,7 @@ struct sk_buff *ieee80211_build_probe_req(struct iee=
-e80211_sub_if_data *sdata,
- 	 * in order to maximize the chance that we get a response.  Some
- 	 * badly-behaved APs don't respond when this parameter is included.
- 	 */
-+	memset(&chandef, 0, sizeof(struct cfg80211_chan_def));
- 	chandef.width =3D sdata->vif.bss_conf.chandef.width;
- 	if (flags & IEEE80211_PROBE_FLAG_DIRECTED)
- 		chandef.chan =3D NULL;
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index d21b158..9a107be 100644
-=2D-- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -2636,10 +2636,10 @@ int nl80211_parse_chandef(struct cfg80211_register=
-ed_device *rdev,
-
- 	control_freq =3D nla_get_u32(attrs[NL80211_ATTR_WIPHY_FREQ]);
-
-+	memset(chandef, 0, sizeof(struct cfg80211_chan_def));
- 	chandef->chan =3D ieee80211_get_channel(&rdev->wiphy, control_freq);
- 	chandef->width =3D NL80211_CHAN_WIDTH_20_NOHT;
- 	chandef->center_freq1 =3D control_freq;
--	chandef->center_freq2 =3D 0;
-
- 	/* Primary channel not allowed */
- 	if (!chandef->chan || chandef->chan->flags & IEEE80211_CHAN_DISABLED) {
-@@ -3178,6 +3178,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u=
-32 portid, u32 seq, int flag
- 		int ret;
- 		struct cfg80211_chan_def chandef;
-
-+		memset(&chandef, 0, sizeof(struct cfg80211_chan_def));
- 		ret =3D rdev_get_channel(rdev, wdev, &chandef);
- 		if (ret =3D=3D 0) {
- 			if (nl80211_send_chandef(msg, &chandef))
-=2D-
-2.7.4
-
+Am 29.09.19 um 16:12 schrieb Stefan Wahren:
+> The commit 2a38075cd0be ("nl80211: Add support for EDMG channels")
+> introduced a member to the cfg80211 channel definition. Unfortunately
+> the channel definitions are allocated on the stack and are not always
+> initialized via memset. Now this results in a broken probe of brcmfmac
+> driver, because cfg80211_chandef_valid() accesses uninitialized memory
+> and fail. Fix this by init the remaining occurences with memset.
+>
+> Reported-by: Dmitry Osipenko <digetx@gmail.com>
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> Fixes: 2a38075cd0be ("nl80211: Add support for EDMG channels")
+i oversight your patch. Sorry for the noise.
