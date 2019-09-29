@@ -2,42 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E98C1910
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 21:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8552C1918
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 21:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729265AbfI2TDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 15:03:43 -0400
-Received: from twin.jikos.cz ([91.219.245.39]:38805 "EHLO twin.jikos.cz"
+        id S1729217AbfI2TUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 15:20:47 -0400
+Received: from mout.web.de ([212.227.17.12]:50381 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728755AbfI2TDn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Sep 2019 15:03:43 -0400
-X-Greylist: delayed 1939 seconds by postgrey-1.27 at vger.kernel.org; Sun, 29 Sep 2019 15:03:42 EDT
-Received: from twin.jikos.cz (dave@[127.0.0.1])
-        by twin.jikos.cz (8.13.6/8.13.6) with ESMTP id x8TIVIpX003182
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Sun, 29 Sep 2019 20:31:19 +0200
-Received: (from dave@localhost)
-        by twin.jikos.cz (8.13.6/8.13.6/Submit) id x8TIVI2x003181;
-        Sun, 29 Sep 2019 20:31:18 +0200
-Date:   Sun, 29 Sep 2019 20:31:17 +0200
-From:   David Sterba <dave@jikos.cz>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: WireGuard to port to existing Crypto API
-Message-ID: <20190929183117.GJ7005@twin.jikos.cz>
-Reply-To: dave@jikos.cz
-Mail-Followup-To: "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
+        id S1729096AbfI2TUr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Sep 2019 15:20:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1569784836;
+        bh=hE5ERmbJdatCfSZVx0wUmPXJyNmxDS4xNZkEs0yAy4I=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=OylRTe80p7QIzYDagDU+dsD3jVPW8SRXkpy+SuwjgSV4iHlk1SNTMp49edbuSNUad
+         fAEXvLHjDfIuP/gawSvqlkQYOBoipWYRvfwITyw9e9kKh04nmbly9Bh5xa8zC7J/u6
+         r7cZiZZYFgJhHyBfQAR+hXYk5cVtxACsLfjE7uDQ=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from minako.localnet ([95.91.225.206]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MfYrH-1iUQcC3yhP-00P4Bx; Sun, 29
+ Sep 2019 21:20:36 +0200
+From:   Jan Janssen <medhefgo@web.de>
+To:     netdev@vger.kernel.org
+Cc:     Vedang Patel <vedang.patel@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: Regression: Network link not coming up after suspend/resume cycle
+Date:   Sun, 29 Sep 2019 21:20:34 +0200
+Message-ID: <71354431.m7NQiGp1Tu@minako>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9pmfZAp5zd9BDLFc2fWUhtzZcjYZc2atTPTyNFFmEdHLg@mail.gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Provags-ID: V03:K1:3nG8jZbhEarZEOb6uvjxODYcnlRE+Xe7dEJUZw5aqHmPXKIPatm
+ hksPPKzWc/n6ykdcRaEXVMEfjMzi/g+iXvd3Ou8K26P2cbTwxZU4fPJ3GRIV6EtZEnV5ZM7
+ zJHljGkafIq/qI9JN9Xxh33irWp/cdfEOYlEhaPdxPLt2Qbojnz0Rlvmap8LWU7SisihXJo
+ PfqqkAPIbtiLNhcLWJUvw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IXL7Xr8ZVac=:a0a5a1r5wujbsyhSinYyAp
+ HTjz560Hk2Bdvj+Jnuwq3DdsXvWl6oWeXZaFW/6Vb7IuCIukCs8uZvU+1XIzSC9r/z7/4uWFo
+ FLg0WGiBcYehs3zxOavi8KLVsOLjXwy42MSjbt0sd2oKfNpd3eoGFZda3dlTasC+tl42NxRrS
+ i3VNEPE28KTggrYat2vwexixfeDpFRWxUEtDjEe1MH+d1BL9GqqSC7ybNO5gw4afgXc8bgLrA
+ MkmU8rDUejXjcC1uYuC2AypJ1P3qvi3/dlhpJiOIRVrqhebSAFN9bxnyVw8eGG4Ml2+msD5Zu
+ QFFNQS2AEPAsDzD8sVZvC/EYpQ3ImMRWlzWxflC/ixTZLNEIklbXXKvqKaqb6nHFKwRPjhfFo
+ SEymTIVejyFoxvwiUCli9vk0IBxv3lFgB9lntuvNmgpw78y80LAxLaEWaaByc90RAenY9NT2K
+ JIJBOnmEprwSvAtejIuJ3Of0ocQ5P1LVVCFgST7KsyMd82UPT51v26wIajtxIn+2CxO1anJ6+
+ 5Ok0i2nSFFJX67wCCCpnJbL4RARGpAHpXe9BLxWQdeKU6NNGIo78DCdkkG21Z2vM45nD1HngO
+ tIPk1AEDOEuUrOMFKOl2I9SksdGpWP8/403FFNhNmWkBRk8NMaQ+pg2h/vYY6OdY7qzg0RbD3
+ qTiWW9/F6z6Fog0te6AZ+XhOp2jA+z2LDyqrru+8/471hTJLkRnN7WChCityUjh0pFS1Jt5JE
+ KpV2b5PsDLUXIMA/f6RWA7TGGXi1xBApLR7Q5spaumCIrm6IqHYSCLLD+WvFiNZ1/KjLEs+0u
+ rFa28EnW4PXE8sgINbySUz+BhnLa+knlj87o3PpyJTnbV74nZaNYcUhFz0rsfyTcF+OyLThBW
+ xWQv05AH8TFnebB/yFxUHCOND0Wf1cApHI6sjEZoc9Q7iMo2VtIxql2xQoqGSqO0H7Eu32sv8
+ 6NhZFOneWSI3tD1VvekLOmehnqJf507ocV3ISgrqQ5Sv4PhCLS8g/B4cBPkMXpRJnb7SuGZhr
+ WgMuAmiR6LFHkXq37+DHP3ijGl0RWeYrpkZDGAiXyC/mSLkLfCmYqvlxsw+RflKLJRLU+8T7Y
+ T4MDdjrHhYsJH/qpYMgpA09UvqNox12EugzuqhPEk+hy5ob6LvStxu/PwlSMQZbXcQSbvu75h
+ /7Xx4xTnql6t6r9IacZvL4+0kT96GvIs12yFnHdZZ9gD1PPIz5KlNjBQaGewOKrC7CxnI9klf
+ iarlW2MjCTLWCzwQhe3Kqluk3ilX93zoNDhT/uFKdShz8VhfmYFx0zlSbhyw=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,67 +63,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Wed, Sep 25, 2019 at 10:29:45AM +0200, Jason A. Donenfeld wrote:
-> I've long resisted the idea of porting to the existing crypto API,
-> because I think there are serious problems with it, in terms of
-> primitives, API, performance, and overall safety. I didn't want to
-> ship WireGuard in a form that I thought was sub-optimal from a
-> security perspective, since WireGuard is a security-focused project.
-> 
-> But it seems like with or without us, WireGuard will get ported to the
-> existing crypto API. So it's probably better that we just fully
-> embrace it, and afterwards work evolutionarily to get Zinc into Linux
-> piecemeal. I've ported WireGuard already several times as a PoC to the
-> API and have a decent idea of the ways it can go wrong and generally
-> how to do it in the least-bad way.
-> 
-> I realize this kind of compromise might come as a disappointment for
-> some folks. But it's probably better that as a project we remain
-> intimately involved with our Linux kernel users and the security of
-> the implementation, rather than slinking away in protest because we
-> couldn't get it all in at once. So we'll work with upstream, port to
-> the crypto API, and get the process moving again. We'll pick up the
-> Zinc work after that's done.
-> 
-> I also understand there might be interested folks out there who enjoy
-> working with the crypto API quite a bit and would be happy to work on
-> the WireGuard port. Please do get in touch if you'd like to
-> collaborate.
+I've been noticing lately that my network link sometimes does not go up
+after a suspend resume cycle (roughly 1 or 2 out of 10 times). This also
+sometimes happens with a fresh boot too. Doing a manual
+"ip link set down/up" cycle resolves this issue.
 
-I have some WIP code to port WG to the crypto API, more to get an idea how hard
-it would be, though I read you've ported it to the api already. My other
-project (btrfs) is going to use blake2 in kernel and for that I'm about to
-submit the code, that's where it's also of interest for wg.
+I was able to bisect it to the commit below (or hope so) and also CCed
+the maintainer for my driver too.
 
-My work is at 'github.com/kdave/WireGuard branch lkca-1'. I tried to find a way
-how to minimize the impact on current wg code but make it possible to
-iteratively extend it to the crypto API.
+This is happening on a up-to-date Arch Linux system with a Intel I219-V.
 
-So, there's some config-time ifdefery to select which crypto functions are
-using kernel or zinc api.  See wg.git/src/crypto/Kbuild.include at the top,
-plus some source ifdefs.  I made an example of blake2s port, but only compile
-tested.
+Jan
 
-There are several problems in general that need to be solved on the kernel side
-first, before wireguard can work inside the kernel code base:
 
-* missing crypto functions in kernel
-  * blake2
-  * curve25519 (missing completely)
 
-* missing generic crypto API callback to use blake_init_key, it's possible to
-  use only the no-key variant (I have a patch for that, it's really easy but
-  it's change in API so ...)
+7ede7b03484bbb035aa5be98c45a40cfabdc0738 is the first bad commit
+commit 7ede7b03484bbb035aa5be98c45a40cfabdc0738
+Author: Vedang Patel <vedang.patel@intel.com>
+Date:   Tue Jun 25 15:07:18 2019 -0700
 
-The known problem is the cumbersome way to use the crypto functions, eg. for
-chacha/poly, I understand the pain and perhaps the reasons to start a fresh
-crypto library. I'm afraid the first implementation with current state of
-crypto API will be slow, until the API is extended to provide simple ways to
-transform buffers without scatterlists, request allocations, locking tfm
-context and whatnot.
+taprio: make clock reference conversions easier
 
-Feel free to reuse anything from the code if you think it's going the right
-direction. I'm not sure if I'll have time to continue with the port but at
-least you can consider blake2 on the way upstream.
+Later in this series we will need to transform from
+CLOCK_MONOTONIC (used in TCP) to the clock reference used in TAPRIO.
 
-d.
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+
+net/sched/sch_taprio.c | 30 ++++++++++++++++++++++--------
+1 file changed, 22 insertions(+), 8 deletions(-)
+
+
+
