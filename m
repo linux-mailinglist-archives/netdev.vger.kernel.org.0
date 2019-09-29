@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B32F8C1A21
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 04:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB37FC1A20
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 04:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729404AbfI3CJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729413AbfI3CJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 29 Sep 2019 22:09:16 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41468 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729394AbfI3CJP (ORCPT
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:38448 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729399AbfI3CJP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 29 Sep 2019 22:09:15 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t10so3273150plr.8
-        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 19:09:13 -0700 (PDT)
+Received: by mail-pl1-f195.google.com with SMTP id w8so2819359plq.5
+        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 19:09:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3N8AYSTn8Cd+SI4v+ldKV2ux7udULZm8tazu3f3NRMU=;
-        b=HrrBHCQDhJmBXEjuLbPHoUgefvdA2y0VHPf9FM8OYi8/0uji9GhbSLEuKGZC2YED0Z
-         AR61r6hZLK+GCWjyxywAxI8C0DzGBCQ9ZJAEpmuWAVWE9PRHmi9kP86TmQQDlutMAPSd
-         cNaHCksAUlMZPQw4XLFeIygIzBUWgOqOqy5zyJOjjTnSKG6svATFWq5d5B7ZsThKkJkd
-         iwDUdpkgOyoeyiURnmzifONijnxCwQO/w6KCMM5n0s5m+14wQDk7flx6DhknYCzi9s44
-         Mq1fQwJJlZ/sNHoHh0fpaI044iQbjziT1sRji/4WTQ78dGnGr242cmp5Ew1B5DyeqQS6
-         SvUg==
+        bh=fKkPfxwPiJP7/KUjVDqoH89/DSdrM52RI3ZG4KqqgR0=;
+        b=nFvSJ9HncOZA5a0j+1cvjbI0qLxOX69Lswb17JlfcN2UUfYO9pwD7FE2q40PBwKWri
+         px9e76s2lCeVuReq339dI0btYP0hdXQ/wODmig2J/U3OcaTJqjNIjdT/cEKyvBiAVh/3
+         Ml5hYEBARUbtKbHL9xru1+466TRTEzq832Uhj0Vya49pKWPAeOqCk822SMyGE3MFesuq
+         J4pnXR3HKvbYM+bYgk74Q0RmHlW/2ve6qknG1u6AeeSNc2pS649cT0qCkAywhsKfJ0Df
+         v/XYgnNyNWrODIqYerdyK5U7ydVEXoliCExM5y6WtC9pcQ1cAph6jhKca9YqxaNaAfs8
+         a0QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3N8AYSTn8Cd+SI4v+ldKV2ux7udULZm8tazu3f3NRMU=;
-        b=aN14oSDiMbVVyeLKdHweDmNxfW/xZksD1FPwEmVIFQ6iMBD4JHg8jWSpL5YfofLJHG
-         Gtiti/qtIj8igbt5ps1g93aDjQVZW0UZTnVoRzXItoyw6If8mdvl6dGmKYJljNecVNPL
-         u81hycInzWCDTp8ucAUHZvESVh4tzZDo9VZjNxHF5n5wFBzibXnMuRuTjC4GitWHsN94
-         W8JeR5YfdnlR5cUF9nsB8KkD9k7JgBElGAfWnbRq34o8KUq8WYrMP5plnTL2KyoFvBxn
-         hobzRiM9EwXQThKzmf55O3Gzxb5HiP07ToB0BDdGBe45CtLVsiRPfwLkFpUgw6rzeNVn
-         PF7A==
-X-Gm-Message-State: APjAAAX2KqCBHWDXwzljpBDTRYVry41zZAgmiSebQYp3Q4zNEgnIv7GW
-        zMRVKiFXdggjNJddldvJQdg=
-X-Google-Smtp-Source: APXvYqxECPw/IcERwc8ewUNy32DH4WaGdq36hnbm8y67+Dxwo4vxNP6L02ivCLnA4RO2cDS5MNMe/A==
-X-Received: by 2002:a17:902:6e17:: with SMTP id u23mr17624863plk.205.1569809353136;
-        Sun, 29 Sep 2019 19:09:13 -0700 (PDT)
+        bh=fKkPfxwPiJP7/KUjVDqoH89/DSdrM52RI3ZG4KqqgR0=;
+        b=hNanipXbRDCPHQK55qDRRZ42oB703WV+cRIqzd1vyuMBVkzfwFLb+lZF6CmEUjIxoJ
+         gudAH0/EhsOGwo6D8cCdh4046AvxlCKvL7FiKdC45OMpN/CcuWIYWYXZDfK+3iLj1I7c
+         jffxlxFMAWv1UaJXRa6TsAwwfcN3Emv2waEJy3qgMvfG3H1xokUZkxiOEMcxc0UbhVDl
+         pIEq7DPrJCFC3hrJImaF24O5TpExEvLZZI9ZFYSGGBGjmyEgWq1S37HLaGO/CFsjf0tN
+         i+Hm124/sXV7zYol81RVC95T4zaWp5s68xS83tqOcqpcFsY+RNraAdNHEr08BF3mFF3z
+         XGQA==
+X-Gm-Message-State: APjAAAVgUL7ICto3Fyx93OEug3/VBHucCMSdU0IoGl01H66O6l9G/fR9
+        OVAreuD8fWQYQFGieVH1k+c=
+X-Google-Smtp-Source: APXvYqyFNSyPPymBRtoeW3Z25Tcv0q5SO/V+arKJwS1SAcpfyugHLhvVzxDATArHlvi/71QH5i3jkg==
+X-Received: by 2002:a17:902:b08f:: with SMTP id p15mr17970210plr.158.1569809355099;
+        Sun, 29 Sep 2019 19:09:15 -0700 (PDT)
 Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id d69sm9941635pfd.175.2019.09.29.19.09.11
+        by smtp.gmail.com with ESMTPSA id d69sm9941635pfd.175.2019.09.29.19.09.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 29 Sep 2019 19:09:12 -0700 (PDT)
+        Sun, 29 Sep 2019 19:09:14 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     gvrose8192@gmail.com, pshelar@ovn.org
 Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next 7/9] net: openvswitch: add likely in flow_lookup
-Date:   Mon, 30 Sep 2019 01:10:04 +0800
-Message-Id: <1569777006-7435-8-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next 8/9] net: openvswitch: fix possible memleak on destroy flow table
+Date:   Mon, 30 Sep 2019 01:10:05 +0800
+Message-Id: <1569777006-7435-9-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
 References: <1569777006-7435-1-git-send-email-xiangxia.m.yue@gmail.com>
@@ -59,26 +59,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-The most case *index < ma->max, we add likely for performance.
+When we destroy the flow tables which may contain the flow_mask,
+so release the flow mask struct.
 
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- net/openvswitch/flow_table.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/openvswitch/flow_table.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index c8e79c1..c21fd52 100644
+index c21fd52..a2e0cb1 100644
 --- a/net/openvswitch/flow_table.c
 +++ b/net/openvswitch/flow_table.c
-@@ -526,7 +526,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
- 	struct sw_flow_mask *mask;
- 	int i;
+@@ -218,6 +218,18 @@ static int tbl_mask_array_realloc(struct flow_table *tbl, int size)
+        return 0;
+ }
  
--	if (*index < ma->max) {
-+	if (likely(*index < ma->max)) {
- 		mask = rcu_dereference_ovsl(ma->masks[*index]);
- 		if (mask) {
- 			flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
++static void tbl_mask_array_destroy(struct flow_table *tbl)
++{
++	struct mask_array *ma = ovsl_dereference(tbl->mask_array);
++	int i;
++
++	/* Free the flow-mask and kfree_rcu the NULL is allowed. */
++	for (i = 0; i < ma->count; i++)
++		kfree_rcu(ma->masks[i], rcu);
++
++	kfree_rcu(tbl->mask_array, rcu);
++}
++
+ int ovs_flow_tbl_init(struct flow_table *table)
+ {
+ 	struct table_instance *ti, *ufid_ti;
+@@ -312,7 +324,7 @@ void ovs_flow_tbl_destroy(struct flow_table *table)
+ 	struct table_instance *ufid_ti = rcu_dereference_raw(table->ufid_ti);
+ 
+ 	free_percpu(table->mask_cache);
+-	kfree(rcu_dereference_raw(table->mask_array));
++	tbl_mask_array_destroy(table);
+ 	table_instance_destroy(ti, ufid_ti, false);
+ }
+ 
 -- 
 1.8.3.1
 
