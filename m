@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDAEDC15B1
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 16:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63360C15B5
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 16:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbfI2OIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 10:08:21 -0400
-Received: from mout.gmx.net ([212.227.17.22]:37371 "EHLO mout.gmx.net"
+        id S1728984AbfI2ONt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 10:13:49 -0400
+Received: from mout.gmx.net ([212.227.15.18]:58237 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbfI2OIV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Sep 2019 10:08:21 -0400
+        id S1725974AbfI2ONt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Sep 2019 10:13:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1569766085;
-        bh=W0sfinC4h6Atx/RxDA6fFQGxhL5Z6DccjwtuY5qYb8s=;
+        s=badeba3b8450; t=1569766407;
+        bh=yEinVkrAXAA8zQDhZFR9oqEyIJv63B/asAyfFNVqSM4=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=CHYWpxI+UtDlx9OCRS0PZapeBhaYmTjtDM7uPn7qihcaCHHk1crvoQn8iNN0N6dud
-         jiIdS3lOMDuzv0oanHsm2FEHL3PiR4afy+Ip/6RevUnNb2wtkkYuSHHlMnUtQJsobA
-         3S8EAjzQQ6LaT/ZXhBvbMwRb12zfGv+OQpehsO7s=
+        b=RRG3VDdMKFbrKf/asVjppSdST3OMVT0er6CYNahZdgkbg9SBKmCG8fMjeJIBmxFar
+         kiOfjgVRaTAIUsPwuo5NyBAI4d50UlXJaleKXIss6WmKmm7NNo2nlXZYfGpJqX3tYT
+         Qs1B/LL3odoO/RywBNaakPU3od+Vz21PRlb8aMZE=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from localhost.localdomain ([37.4.249.130]) by mail.gmx.com
- (mrgmx105 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1Mqb1c-1hjaeC423E-00mbEX; Sun, 29 Sep 2019 16:08:05 +0200
+ (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MxDkw-1hugcp2Khk-00xXQe; Sun, 29 Sep 2019 16:13:27 +0200
 From:   Stefan Wahren <wahrenst@gmx.net>
 To:     Johannes Berg <johannes@sipsolutions.net>,
         Alexei Avshalom Lazar <ailizaro@codeaurora.org>
@@ -29,34 +29,38 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Dmitry Osipenko <digetx@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH RFC] nl80211: Fix init of cfg80211 channel definition
-Date:   Sun, 29 Sep 2019 16:07:35 +0200
-Message-Id: <1569766055-9392-1-git-send-email-wahrenst@gmx.net>
+Subject: [PATCH RFC V2] nl80211: Fix init of cfg80211 channel definition
+Date:   Sun, 29 Sep 2019 16:12:59 +0200
+Message-Id: <1569766379-9516-1-git-send-email-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.7.4
-X-Provags-ID: V03:K1:KVkXE8PDvmCamWy6a8ic/jRJx0kFv18miP/9HkbmN3t8j9XkMJ0
- 4yuogEuEtNRJU9Vrjqr+6gspixnG7ZewrETwsvQ1HQxk0r6YXROvbx9/V3fEPCjYEhcpeq0
- M/jn7o+6a92dEnSqSnaCApqS9dryqOpY+JHnWIp1IyTskoeQz3zaA3EMA2AzncL5CDBU5QS
- RXA8pxF7K43DvFC2ow3aA==
+X-Provags-ID: V03:K1:VbwrAyG5najNxf/+021dm/Rj8RcIWUM6M25RtSPhDVFJD5+dhjl
+ ZyrkNsajURwYh/nGeIeoybai2Yc859S+5BSH0OpWxp0sUfQDmRICBXv34FsIwnj4ZcbJ15m
+ Ql91Yski7W0bUWxefiexBmswUVfhtp1xiuP13ftHZJQSsvVlOYa08ejqblmgFkmRcIqoy0H
+ 9tSLs3PgcndFSvbt8IUkg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:WmNVB4jci0c=:QyX1bC4K/g/jlbhqSaC9Aq
- 1kmp4h0fqyrhJ2KDTGMUhWX/59rqKpSh0CDc2BMGGDPGuaJ/rpTuAnHwKdA/itniCtuIQzb4F
- DZCcWgOWhQxI/WK2KWMGVWpu2h+lgMowpDdZfpTINfiFN5USPEzM5M86clqvko5+95TiKZxn0
- n/nQPV8JielkvL3u7AQyDcusH8seyhyZvhf5R2/kIOukZP1P925coxPpxXS7e3mvxxOVYfqg8
- 5r9FkMV46pwcY0JPWcDPiBoUK3OnBf91JBWLHZjp3MO1HLuGieMg+Y3rqgFR6LPfV5RL+rKH3
- sNOJaI8EVxGJTFQr7uVKFGDhvVmRPkjgn9cknl+4PZtvc/Dgj9TrbHYZySh0Q8bhsq8xRSjdp
- M5O+lCVuHn4+F1iE4Yuaw0JUsnhvqhIap4a4KMNrJDPXNd1kywr83Wcg6VwodvO3x6prJA8et
- yt6lLe6nsKTF3/tuHgECQxSORz/lh2Ab5BMFsEDie61OtVEuHBjbOS245K3GEx4kF5cISftnn
- lCArOxFItcup/AKE3rsGsHnHHwAGX2X8DdefzKvOIzXkyk6tjwK5nubuHhIXJYMCI8qS7yZpZ
- cWP6Up2m13Z4mA9zypyoPCaE9K+vQ9kUft9BKdaJ6nnvzbkJ0/5TAcHulNyGNYyGuK8hBvxu7
- dmCBPc6MCh2mF00cl7uPtcj1fIdQoUQVNpxUFZr0wMORV7B24j3YHl/9IrYDbmuamFQp1ZwDd
- 9LAqnMtYOBLcYXJhBmVGJ4KOiwxPUTw28eYFpWp+UVEx7ipQ9Hh3zRBByA0D4P6I3aDKMZcZC
- nDqCELSButlceatRpSS6URX9irH/QHhxsoU3S42Q4C3WVism/7KGlMsvm00iScYM2rIjEeE6w
- qOMaJdOIO9x2Z00zP6nfwTWxuKNWjyRElmrHPjRTrCieURyd1NXNW/RU7gafy1cjhRYoCbPjn
- rYAbnu1FPRISFKsqBzW5xUrohNlr4njLguxWqS2ldz7kdZ8VRaeaxUKQC6hCcQvQy/Z7tjD1v
- xsB1bwtYFoJNuxzTwt8UobNomXj8vnUhkfr3Jpbp57oIitoVlzS+i1gK869cuWDJ8T3XZ4qYx
- 3TtbXp4d+ab5Kp/Uy520PyVRc/yhNpxF/sTDR2sUFtp13QR1boNnJBU8j7GhRn8mXXvIsy+IS
- H962/x6mroK52gwm57KtLXsOwheOVqmaC5RDhOeb1+i2myYgdnm0/Zc9NjN/kIkAwvcH1fvmT
- Rim68FFMp6IU/xrsn3B54hoKvED1L0IxZeTyw8g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sqSrEt0BRbI=:KELXrJoVqL4wpDbb1rpmtP
+ g9SOdSGC39BpbJZiYuxIIqrUhN1G9ijQ9KqAc7bTrhJaFnccPU0e3by/HhK0GGmYKiO/x1w+w
+ VgVVyzlrWT3w+q6veBMJ9rU2CB+5LkOqztsRoa0J8A6YZLLZrJAsfadWjwet7O/W+LXgLW6of
+ UwY1q/iYYetSdCKnCftRYZ3Tw38Hs1BpJmsha2PaqFXt8ctKMyTjQKQ4Zd/D+TQSZneVmI/xP
+ 9hK6XgcCE1neiMgE8voFMfpPEFiRxGfjF86FnJ9NEVs1TDEdCO4RE8bsuKFV+vgaaqDEG3G3Z
+ xqpVB/ze0qZHfdNvSbgYLEMR2iHILMdPYHVYG3iqs/ZiVPlcRGs3vRC+O+D9yuy3bBlNOsIMT
+ 4lvVPZcWUJxKnodiAQ6SQh4622jNGCPTLwXDUwGk+CYKgGc5jQEnmIYig0BGHQnDCV7hpGh1b
+ MbY3PAzzYcMwlRN8E/SBgo8ViZbKml9uVYOJ1g2jUFXm7e/t8XYFjBfwvkSpFvV9nyFZ6yxPV
+ 7dCqP+/G8hGY1Fes+aYMK/J2zxJfzaM5aJWZpd1YQFA/srCZhwCmY+NoJjFbCkkvrfk/nFYdf
+ WwIX4/wqQL4qmD3a9OzFUkd2EUxmjQQeNFTJCZsTBjBTdLQs3AYKQByAB3LnfLCdzL6GbUfAl
+ +Y+TD8U6NBxH+IAc1dAaWpTzLHXb1dy1Wd3zOL+c/y8ebbCRUmijadVRvhMyn4hTOURG7SuOX
+ G0RCbG8KKMl7e8d/eX20Br2bu3/xnlg/D8mJaKdbdNamK0qR+DveMyhXLAVh40ROwDu5IrGBT
+ f5o8f81xGrc2KIFDTiqlztnZBQTRsVOnVooqpCgmzoDkLJ4F6iBpGaRbBku4B/eZDc8GizWQE
+ /kx/f505Cf+RumtNgR2Lq8v91k7c9G+hQczEo7UP7na66xDxmSX9lEGFGgFCR19TzspFNeoO4
+ kMwxJiS+BQUuzhp5eMh6RCIfbYFlUZvOPe6E+nbNp+l9U6FdsB/A3puvL610/G0Nm3ov/TLCp
+ G1r6k8SN//9B+2ImRdTiaxKoFfiOOOZC7VfAoqSD1023Bfkr+kPE7hwCR64Z2IcrSFXt6Wjrj
+ 8hNxsbCrw0VYSAqbQes3r2UASPPE6gIXKxBJprvZFHpBm19klaV8FlS58vrrws975LRTlgwYF
+ +YW+eLPErIpR6YDhhN4XD4l3MvvTkQM3dZbamNg6wodEsRktg4vjLulC9ECRyNi5Rvt6Kq15X
+ jaca6XPJJy93UAou/v0+dt7ZtXOquZiGD9mSc1Sp23n5XgkmiaI4oW1bKF1WKxiQpdN065i0s
+ p/aad+pTWp0dEsr+HZrNPOVJVKVoJeuFWr2+F12QYnqoBI2B/1+KjH5WtmUqKyNEtnDgO+kKg
+ 33gkvxlvFF1JcePxynZXG81KH+z3HsUdO5tTdSA3gvzsh4bZB0nj7Z7DkKteW48GfmnTt2GTG
+ +/83uuwjWleQ8nj3U5LE7grQ2scpzQy9t8ieO20n3iyxwwmdupeMlIrZVjA0atAMuOOH0aWMG
+ 6Ug==
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -72,6 +76,7 @@ and fail. Fix this by init the remaining occurences with memset.
 
 Reported-by: Dmitry Osipenko <digetx@gmail.com>
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Fixes: 2a38075cd0be ("nl80211: Add support for EDMG channels")
 =2D--
  net/mac80211/util.c    | 1 +
  net/wireless/nl80211.c | 3 ++-
