@@ -2,274 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ECF6C1270
-	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 01:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B89C1266
+	for <lists+netdev@lfdr.de>; Sun, 29 Sep 2019 01:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728920AbfI1XTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Sep 2019 19:19:39 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63512 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728800AbfI1XTj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 19:19:39 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8SNJbps006585
-        for <netdev@vger.kernel.org>; Sat, 28 Sep 2019 16:19:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=G3RpDXu44fMOvxlh+7FaMGiLlR3Yh0nTzbp20x+PKq4=;
- b=ojsEtKKm3LBjBO1Bvz7g/CKvHbfz9UlFazGWM9X+X/OnYLiMEPmLDoxoBPgNukuG77Bc
- uUisstzYy6wOkSu/VGs6JqWQefMPIC4mjwQSNl7yLMFir9RAiS6uaveOHeYBtfx5TaWc
- RZuQwYyJoxlJVf96Fj5uyJDZf1y9qAmMiK4= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2va51nt62v-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 28 Sep 2019 16:19:37 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Sat, 28 Sep 2019 16:19:18 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id BCCF1370294E; Sat, 28 Sep 2019 16:19:16 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Kevin Laatz <kevin.laatz@intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf v2] libbpf: handle symbol versioning properly for libbpf.a
-Date:   Sat, 28 Sep 2019 16:19:16 -0700
-Message-ID: <20190928231916.3054271-1-yhs@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1728872AbfI1XMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Sep 2019 19:12:19 -0400
+Received: from gateway31.websitewelcome.com ([192.185.144.96]:12996 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728666AbfI1XMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Sep 2019 19:12:19 -0400
+X-Greylist: delayed 1309 seconds by postgrey-1.27 at vger.kernel.org; Sat, 28 Sep 2019 19:12:18 EDT
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 7F8D27C882
+        for <netdev@vger.kernel.org>; Sat, 28 Sep 2019 17:50:28 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id ELXoiXXdnYqVzELXoiUKE7; Sat, 28 Sep 2019 17:50:28 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=MQO22oC7cSrhj3FxU5OnrT6UgVE0ddPC+PxH+MiAjTM=; b=FqZQrIAvt6W7X69l2Aa8N4Vk4f
+        /IJAq7nVtFLiH3XffcGOqy6xUIshkhvpF5ksWZ4bA8MvoU4ZfH2tDex/EPFfw9HXupnw+WoJp7o3W
+        wif3NNgXp2u/Y+fZptDWyJM8G35thLIOlPrzVfRy3f697+64lL1urvDiZqQhQFP8rlcw8N46a/sFV
+        HzI7tfXK59M+z/8W20Oqo/kcSTG9Yb9tVQfkQhq5V5Ebg18H+yN2ujguQV+yJ28nkeeu8OgoRNoP7
+        dvVs7jj8eKG+l9zp+fMjisESJ3/E3ksC6ZCw6sjvnN6bsWjTrFgKCJliPeVvryxN0j8Tvjdia8D1U
+        p9VhXv0g==;
+Received: from lfbn-1-12653-249.w90-90.abo.wanadoo.fr ([90.90.196.249]:49316 helo=[192.168.1.21])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1iELXo-002UAR-0O; Sat, 28 Sep 2019 17:50:28 -0500
+To:     Stephen Kitt <steve@sk2.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20190928144814.27002-1-steve@sk2.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Subject: Re: [PATCH] bpf: use flexible array members, not zero-length
+Message-ID: <02a551bc-7551-7c0e-0215-5ac8856b0512@embeddedor.com>
+Date:   Sun, 29 Sep 2019 00:49:59 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-09-28_13:2019-09-25,2019-09-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- lowpriorityscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
- malwarescore=0 mlxlogscore=952 clxscore=1015 spamscore=0 adultscore=0
- phishscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1909280251
-X-FB-Internal: deliver
+In-Reply-To: <20190928144814.27002-1-steve@sk2.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 90.90.196.249
+X-Source-L: No
+X-Exim-ID: 1iELXo-002UAR-0O
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: lfbn-1-12653-249.w90-90.abo.wanadoo.fr ([192.168.1.21]) [90.90.196.249]:49316
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bcc uses libbpf repo as a submodule. It brings in libbpf source
-code and builds everything together to produce shared libraries.
-With latest libbpf, I got the following errors:
-  /bin/ld: libbcc_bpf.so.0.10.0: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
-  /bin/ld: failed to set dynamic section sizes: Bad value
-  collect2: error: ld returned 1 exit status
-  make[2]: *** [src/cc/libbcc_bpf.so.0.10.0] Error 1
 
-In xsk.c, we have
-  asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
-  asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
-The linker thinks the built is for LIBBPF but cannot find proper version
-LIBBPF_0.0.2/4, so emit errors.
 
-I also confirmed that using libbpf.a to produce a shared library also
-has issues:
-  -bash-4.4$ cat t.c
-  extern void *xsk_umem__create;
-  void * test() { return xsk_umem__create; }
-  -bash-4.4$ gcc -c -fPIC t.c
-  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
-  /bin/ld: t.so: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
-  /bin/ld: failed to set dynamic section sizes: Bad value
-  collect2: error: ld returned 1 exit status
-  -bash-4.4$
+On 9/28/19 09:48, Stephen Kitt wrote:
+> This switches zero-length arrays in variable-length structs to C99
+> flexible array members. GCC will then ensure that the arrays are
+> always the last element in the struct.
+> 
+> Coccinelle:
+> @@
+> identifier S, fld;
+> type T;
+> @@
+> 
+> struct S {
+>   ...
+> - T fld[0];
+> + T fld[];
+>   ...
+> };
+> 
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
+> ---
+>  Documentation/bpf/btf.rst       | 2 +-
+>  tools/lib/bpf/libbpf.c          | 2 +-
+>  tools/lib/bpf/libbpf_internal.h | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/bpf/btf.rst b/Documentation/bpf/btf.rst
+> index 4d565d202ce3..24ce50fc1fc1 100644
+> --- a/Documentation/bpf/btf.rst
+> +++ b/Documentation/bpf/btf.rst
+> @@ -670,7 +670,7 @@ func_info for each specific ELF section.::
+>          __u32   sec_name_off; /* offset to section name */
+>          __u32   num_info;
+>          /* Followed by num_info * record_size number of bytes */
+> -        __u8    data[0];
+> +        __u8    data[];
+>       };
+>  
+>  Here, num_info must be greater than 0.
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index e0276520171b..c02ea0e1a588 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -5577,7 +5577,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+>  struct perf_sample_raw {
+>  	struct perf_event_header header;
+>  	uint32_t size;
+> -	char data[0];
+> +	char data[];
+>  };
+>  
+>  struct perf_sample_lost {
+> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> index 2e83a34f8c79..26eaa3f594aa 100644
+> --- a/tools/lib/bpf/libbpf_internal.h
+> +++ b/tools/lib/bpf/libbpf_internal.h
+> @@ -86,7 +86,7 @@ struct btf_ext_info_sec {
+>  	__u32	sec_name_off;
+>  	__u32	num_info;
+>  	/* Followed by num_info * record_size number of bytes */
+> -	__u8	data[0];
+> +	__u8 data[];
 
-Symbol versioning does happens in commonly used libraries, e.g., elfutils
-and glibc. For static libraries, for a versioned symbol, the old definitions
-will be ignored, and the symbol will be an alias to the latest definition.
-For example, glibc sched_setaffinity is versioned.
-  -bash-4.4$ readelf -s /usr/lib64/libc.so.6 | grep sched_setaffinity
-     756: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2.3.3
-     757: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_2.3.4
-    1800: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS sched_setaffinity.c
-    4228: 00000000000e2e70   455 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_new
-    4648: 000000000013d3d0    13 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_old
-    7338: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2
-    7380: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_
-  -bash-4.4$
-For static library, the definition of sched_setaffinity aliases to the new definition.
-  -bash-4.4$ readelf -s /usr/lib64/libc.a | grep sched_setaffinity
-  File: /usr/lib64/libc.a(sched_setaffinity.o)
-     8: 0000000000000000   455 FUNC    GLOBAL DEFAULT    1 __sched_setaffinity_new
-    12: 0000000000000000   455 FUNC    WEAK   DEFAULT    1 sched_setaffinity
+I think you should preserve the tab here.
 
-For both elfutils and glibc, additional macros are used to control different handling
-of symbol versioning w.r.t static and shared libraries.
-For elfutils, the macro is SYMBOL_VERSIONING
-(https://sourceware.org/git/?p=elfutils.git;a=blob;f=lib/eu-config.h).
-For glibc, the macro is SHARED
-(https://sourceware.org/git/?p=glibc.git;a=blob;f=include/shlib-compat.h;hb=refs/heads/master)
+--
+Gustavo
 
-This patch used SYMBOL_VERSIONING as the macro name as it clearly indicates the
-intention. The macro name can be changed later if necessary as it is internal
-to libbpf. After this patch, the libbpf.a has
-  -bash-4.4$ readelf -s libbpf.a | grep xsk_umem__create
-     372: 0000000000017145  1190 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_4
-     405: 0000000000017145  1190 FUNC    WEAK   DEFAULT    1 xsk_umem__create
-     499: 00000000000175eb   103 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_2
-  -bash-4.4$
-No versioned symbols for xsk_umem__create.
-The libbpf.a can be used to build a shared library succesfully.
-  -bash-4.4$ cat t.c
-  extern void *xsk_umem__create;
-  void * test() { return xsk_umem__create; }
-  -bash-4.4$ gcc -c -fPIC t.c
-  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
-  -bash-4.4$
-
-Fixes: 10d30e301732 ("libbpf: add flags to umem config")
-Cc: Kevin Laatz <kevin.laatz@intel.com>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/lib/bpf/Makefile          | 27 ++++++++++++++++++---------
- tools/lib/bpf/libbpf_internal.h | 16 ++++++++++++++++
- tools/lib/bpf/xsk.c             |  4 ++--
- 3 files changed, 36 insertions(+), 11 deletions(-)
-
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index c6f94cffe06e..9533e185d9b6 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -110,6 +110,9 @@ override CFLAGS += $(INCLUDES)
- override CFLAGS += -fvisibility=hidden
- override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
- 
-+# flags specific for shared library
-+SHLIB_FLAGS = -DSYMBOL_VERSIONING
-+
- ifeq ($(VERBOSE),1)
-   Q =
- else
-@@ -126,14 +129,17 @@ all:
- export srctree OUTPUT CC LD CFLAGS V
- include $(srctree)/tools/build/Makefile.include
- 
--BPF_IN		:= $(OUTPUT)libbpf-in.o
-+SHARED_OBJDIR	:= $(OUTPUT)sharedobjs/
-+STATIC_OBJDIR	:= $(OUTPUT)staticobjs/
-+BPF_IN_SHARED	:= $(SHARED_OBJDIR)libbpf-in.o
-+BPF_IN_STATIC	:= $(STATIC_OBJDIR)libbpf-in.o
- VERSION_SCRIPT	:= libbpf.map
- 
- LIB_TARGET	:= $(addprefix $(OUTPUT),$(LIB_TARGET))
- LIB_FILE	:= $(addprefix $(OUTPUT),$(LIB_FILE))
- PC_FILE		:= $(addprefix $(OUTPUT),$(PC_FILE))
- 
--GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN) | \
-+GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
- 			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
- 			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}' | \
- 			   sort -u | wc -l)
-@@ -155,7 +161,7 @@ all: fixdep
- 
- all_cmd: $(CMD_TARGETS) check
- 
--$(BPF_IN): force elfdep bpfdep
-+$(BPF_IN_SHARED): force elfdep bpfdep
- 	@(test -f ../../include/uapi/linux/bpf.h -a -f ../../../include/uapi/linux/bpf.h && ( \
- 	(diff -B ../../include/uapi/linux/bpf.h ../../../include/uapi/linux/bpf.h >/dev/null) || \
- 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/bpf.h' differs from latest version at 'include/uapi/linux/bpf.h'" >&2 )) || true
-@@ -171,17 +177,20 @@ $(BPF_IN): force elfdep bpfdep
- 	@(test -f ../../include/uapi/linux/if_xdp.h -a -f ../../../include/uapi/linux/if_xdp.h && ( \
- 	(diff -B ../../include/uapi/linux/if_xdp.h ../../../include/uapi/linux/if_xdp.h >/dev/null) || \
- 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
--	$(Q)$(MAKE) $(build)=libbpf
-+	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
-+
-+$(BPF_IN_STATIC): force elfdep bpfdep
-+	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(STATIC_OBJDIR)
- 
- $(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
- 
--$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
-+$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN_SHARED)
- 	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
- 				    -Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
- 	@ln -sf $(@F) $(OUTPUT)libbpf.so
- 	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
- 
--$(OUTPUT)libbpf.a: $(BPF_IN)
-+$(OUTPUT)libbpf.a: $(BPF_IN_STATIC)
- 	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
- 
- $(OUTPUT)test_libbpf: test_libbpf.cpp $(OUTPUT)libbpf.a
-@@ -197,7 +206,7 @@ check: check_abi
- 
- check_abi: $(OUTPUT)libbpf.so
- 	@if [ "$(GLOBAL_SYM_COUNT)" != "$(VERSIONED_SYM_COUNT)" ]; then	 \
--		echo "Warning: Num of global symbols in $(BPF_IN)"	 \
-+		echo "Warning: Num of global symbols in $(BPF_IN_SHARED)"	 \
- 		     "($(GLOBAL_SYM_COUNT)) does NOT match with num of"	 \
- 		     "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
- 		     "Please make sure all LIBBPF_API symbols are"	 \
-@@ -255,9 +264,9 @@ config-clean:
- 	$(Q)$(MAKE) -C $(srctree)/tools/build/feature/ clean >/dev/null
- 
- clean:
--	$(call QUIET_CLEAN, libbpf) $(RM) $(TARGETS) $(CXX_TEST_TARGET) \
-+	$(call QUIET_CLEAN, libbpf) $(RM) -rf $(TARGETS) $(CXX_TEST_TARGET) \
- 		*.o *~ *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) .*.d .*.cmd \
--		*.pc LIBBPF-CFLAGS
-+		*.pc LIBBPF-CFLAGS $(SHARED_OBJDIR) $(STATIC_OBJDIR)
- 	$(call QUIET_CLEAN, core-gen) $(RM) $(OUTPUT)FEATURE-DUMP.libbpf
- 
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 2e83a34f8c79..40a6d376de9a 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -34,6 +34,22 @@
- 	(offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
- #endif
- 
-+/* Symbol versoining is different between static and shared library.
-+ * Properly versioned symbols are needed for shared library, but
-+ * only the symbol of the new version is needed.
-+ */
-+#ifdef SYMBOL_VERSIONING
-+# define OLD_VERSION(internal_name, api_name, version) \
-+	asm(".symver " #internal_name "," #api_name "@" #version);
-+# define NEW_VERSION(internal_name, api_name, version) \
-+	asm(".symver " #internal_name "," #api_name "@@" #version);
-+#else
-+# define OLD_VERSION(internal_name, api_name, version)
-+# define NEW_VERSION(internal_name, api_name, version) \
-+	extern typeof(internal_name) api_name \
-+	__attribute__ ((weak, alias (#internal_name)));
-+#endif
-+
- extern void libbpf_print(enum libbpf_print_level level,
- 			 const char *format, ...)
- 	__attribute__((format(printf, 2, 3)));
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 24fa313524fb..6b983a4b7664 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -261,8 +261,8 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
- 	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
- 					&config);
- }
--asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
--asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
-+OLD_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
-+NEW_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
- 
- static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- {
--- 
-2.17.1
-
+>  };
+>  
+>  /* The minimum bpf_func_info checked by the loader */
+> 
