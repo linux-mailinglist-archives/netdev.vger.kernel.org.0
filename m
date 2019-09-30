@@ -2,115 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 090BBC251A
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAFC1C251B
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732223AbfI3Q07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 12:26:59 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:40010 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732026AbfI3Q07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 12:26:59 -0400
-Received: by mail-qk1-f196.google.com with SMTP id y144so8302904qkb.7;
-        Mon, 30 Sep 2019 09:26:58 -0700 (PDT)
+        id S1732227AbfI3Q10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 12:27:26 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42870 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731459AbfI3Q10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 12:27:26 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z12so7661263pgp.9
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 09:27:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/82IvvXBPSeOUnTimHmLfeGbwanGgz3/wyw+4Uf2M84=;
-        b=uqGeyEN6zHofbXJ+F2aQML/sUJMng3bDh0LgHmlYVarlITQIDmrr49+hhyivl6+V4D
-         fnNL34+5RDkqtVVflQix1dDKlAmIKSueoCphWcqzId+iho/8jl0eEI8Z0DKhAGJatqvO
-         QRUvD8C9BnAbI9aCOzdZ3Fcj+Ts5UKTmgb9v2I9Q6mOc7I9CPOKK4+kyDJs1VWXskPFw
-         1NQUbxrgiY1vl+66bG/uHdMxkHuYCektE8JPqHiRnReh8G3umKfr0Zmo+BxeUTN79KZB
-         XKqIY/nS3IXGdk+Hc0MtRMpyA2mO4bhm+prbjNnsXI5e9FrIBPGwMzn+40OUhiq5SiZJ
-         9xNw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fP6cMntggNSnlKHivkRv4pATuOxDMqV+Za9yxGOgm4E=;
+        b=o6P4fXunm7py6MppSOz17fL5tOBh+Wp9XgBuqdvciVPsEFeqPQ/OX+TqNahDfojAyK
+         MXZffKPHA4NFurLRa3YKgSP843FSZwXvuxAn+gK6LDrBgQ9slQZ+AyXru43HZk9ur01T
+         J8lXQVhubmxtBhrFzku8+cUVmOOia1cVPPK29TfdgvSNIK1Bs5HvUhCubl4w31wU0zwA
+         aVVXo6xsG3W3F7vx7+HueUKcNvFsM2rpEl7abhSoLomivtntXomApUDcwo/AnrA7RjBt
+         4cxMo8np+3yeaOUyIR14nvorUsDq8xqpes/A/8hbI1Zaeu8CvF8o2JLVsisoyyLEDdop
+         JUww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/82IvvXBPSeOUnTimHmLfeGbwanGgz3/wyw+4Uf2M84=;
-        b=M7I8SVR912SVlBDd4tXHzx2qRFOg++Ylteh7uPRPgpWkoVfkQOKHMxH3DN+rOKw0DT
-         SPuX0zULRtMBiqbtwVH9HbDnAoRJZysuaHXdbC/aVzHaDAs7bAt7NYJkpTLx2ra8AXCh
-         hO76lApset1BvHl2/Bjrwoq144Mz40vIiH4LHMbF+xbsf0OkHwwDg3XKAjPit2dZ1apg
-         SMiGvucd8hahSBX2jABSJgasKq7NPin9yzf75rUW5w25N0xqL4eV3A5MRC9dZveJVXKG
-         zxC/wK4plhCs8m/o9N2+vJ+VaTwzJki13pnNyOeF1tlHBm7jfkmDcROvmU7LmFDMpgA4
-         F3SA==
-X-Gm-Message-State: APjAAAUOozzjc7zGq+Iji0BCObvNP1n+az+OY/d58vNoy6Hx1Sa6sHJr
-        2rQSA8topvuTgdlEbHAv4tBm0MJzXfE5fOGdn0c=
-X-Google-Smtp-Source: APXvYqxBFGlwM2s42jIN6WX/UdqvVpfVpTmtQ/JfID2Hjq9Xv0OxQz2yq5VEvWwvDKlfChDUY17ZYd6RMk2jTZqLiGA=
-X-Received: by 2002:a37:98f:: with SMTP id 137mr885008qkj.449.1569860818118;
- Mon, 30 Sep 2019 09:26:58 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fP6cMntggNSnlKHivkRv4pATuOxDMqV+Za9yxGOgm4E=;
+        b=mzfW8/PfbEpY6zSFXaHoFN+OnMh6uOsja7nzwtxcw9kvL3DkbrwAKEKCXD6XFeUQJR
+         wHsY3/vc/5+LhSikMPFR6Rh8msksA2WvSuAc3UqFwc69DderMDmA+v/sQyv4d+dE5Upy
+         9889ZZ1LKIJVbJo1Zon5JonjSB75eBCyhgm24HSmbEeqckMayBjbL+o26MXCxjKBYMZ0
+         CWUM7oZcOXIuNV0rNBWmtxePt8aUIFGJH65Jygwzu8GEZi2khQRS+caeX8N2XRhe+fuv
+         yOiqueqIQOUnsxtVvktsqBC3tojsf25u1o5SfLZfhwaRppxPZIfutgpsn4n1PAn+Oq5q
+         Yp3g==
+X-Gm-Message-State: APjAAAXU39Ed5MBtr35Trh5NfmkSwDvsh49qKgs7mW7IEBw4rmKfiryU
+        VYMxUELpCVZgPIsQwKLrzMKV6Q2H3dMUEg==
+X-Google-Smtp-Source: APXvYqxEv4quAMWdjXeHuSPVNatwF/bu0ggi1Kvmpn45PZOBSKoG1sSteIovpbvZnM2kuQat2lTNtw==
+X-Received: by 2002:a17:90a:3aa6:: with SMTP id b35mr81383pjc.94.1569860845560;
+        Mon, 30 Sep 2019 09:27:25 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v15sm13869053pfn.27.2019.09.30.09.27.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Sep 2019 09:27:25 -0700 (PDT)
+Date:   Mon, 30 Sep 2019 09:27:18 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, dcbw@redhat.com,
+        nikolay@cumulusnetworks.com, mkubecek@suse.cz, andrew@lunn.ch,
+        parav@mellanox.com, saeedm@mellanox.com, f.fainelli@gmail.com,
+        sd@queasysnail.net, sbrivio@redhat.com, pabeni@redhat.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next 1/2] ip: add support for alternative name
+ addition/deletion/list
+Message-ID: <20190930092718.2d3a47ab@hermes.lan>
+In-Reply-To: <20190930095903.11851-1-jiri@resnulli.us>
+References: <20190930094820.11281-1-jiri@resnulli.us>
+        <20190930095903.11851-1-jiri@resnulli.us>
 MIME-Version: 1.0
-References: <20190928063033.1674094-1-andriin@fb.com> <0b70df6a-28fd-e139-d72c-d4d88e9bc7b7@iogearbox.net>
-In-Reply-To: <0b70df6a-28fd-e139-d72c-d4d88e9bc7b7@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 30 Sep 2019 09:26:47 -0700
-Message-ID: <CAEf4BzYgNE7pLRVQStQ_hmC-WQp5cFz4W2sLFfunow35=7PGNQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically possible
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 1:32 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 9/28/19 8:30 AM, Andrii Nakryiko wrote:
-> > This patch switches libbpf_num_possible_cpus() from using possible CPU
-> > set to present CPU set. This fixes issues with incorrect auto-sizing of
-> > PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
->
-> Those issues should be described in more detail here in the changelog,
-> otherwise noone knows what is meant exactly when glancing at the git log.
+On Mon, 30 Sep 2019 11:59:02 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
 
-Sure, I can add more details.
+> +		open_json_array(PRINT_JSON, "altnames");
+> +		for (i = RTA_DATA(proplist); RTA_OK(i, rem);
+> +		     i = RTA_NEXT(i, rem)) {
+> +			if (i->rta_type != IFLA_ALT_IFNAME)
+> +				continue;
+> +			print_string(PRINT_FP, "NULL", "%s    altname ", _SL_);
 
->
-> > On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
-> > be a set of any representable (i.e., potentially possible) CPU, which is
-> > normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
-> > tested on, while there were just two CPU cores actually present).
-> > /sys/devices/system/cpu/present, on the other hand, will only contain
-> > CPUs that are physically present in the system (even if not online yet),
-> > which is what we really want, especially when creating per-CPU maps or
-> > perf events.
-> >
-> > On systems with HOTPLUG disabled, present and possible are identical, so
-> > there is no change of behavior there.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >   tools/lib/bpf/libbpf.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index e0276520171b..45351c074e45 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
-> >
-> >   int libbpf_num_possible_cpus(void)
-> >   {
-> > -     static const char *fcpu = "/sys/devices/system/cpu/possible";
-> > +     static const char *fcpu = "/sys/devices/system/cpu/present";
->
-> Problem is that this is going to break things *badly* for per-cpu maps as
-> BPF_DECLARE_PERCPU() relies on possible CPUs, not present ones. And given
-> present<=possible you'll end up corrupting user space when you do a lookup
-> on the map since kernel side operates on possible as well.
-
-Yeah, you are right. Ok, let me go back to my VM and repro original
-issue I had and see what and why is causing that. I'll see maybe I
-don't need this fix at all.
-
->
-> >       int len = 0, n = 0, il = 0, ir = 0;
-> >       unsigned int start = 0, end = 0;
-> >       int tmp_cpus = 0;
-> >
->
+You can pass real NULL versus quoted NULL when doing print to file only
