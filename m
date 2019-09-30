@@ -2,139 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77062C28CF
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A63EC28F8
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729326AbfI3VaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 17:30:17 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33284 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbfI3VaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:30:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q10so6338823pfl.0
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:30:15 -0700 (PDT)
+        id S1730759AbfI3VmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 17:42:00 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37875 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726784AbfI3VmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:42:00 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y5so6344919pfo.4
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:41:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=T2TY6NGUwIvtdhDebNN+p+NWVfl2R9w7WL/YAsVOyZk=;
-        b=i5xaSt1y22h381i+VEX8rdtcahF4pzXousOyH7UTBOqSlWxJsNRx3U1w+jky6T7wpJ
-         JSJ6TFnZUA+axWRpru7iWLaLNNNkszVK8pLgceyVlm4v3jnDQHKIKagXDKC+wY3J2x9c
-         Cw953v3oTPadf0FQSP0LrhvtDBiUZVmGP+u4g=
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=ZZfaTyp+JKU39F6H6TWYgpuuxaGlvyXotawwsqbU1tQ=;
+        b=dJqSPmIAokYb6q6eol3tqzNh4KKXF2OPuxZNNUhVA35GTabZhRvesqGOu5VqM6pkmg
+         IBSz3kORsbose55xbvhil4ZCqQ8QkX5n1Oooj0QltG6dmLDm2ESud6QDskGU5uW+yLzb
+         pz3C7CZh7Rl/FqEBp2pb3tLsLJm5Wn72I0nycZaEXJ8+6z6tdI3lgQGFwtrPa3BOO23d
+         nreh22JOUd0OSdIaWmNPwXUjeNecPoOv5jl3IlMbhMoUdvZLBfZXFxmnx6rHx9BN3f/U
+         Jc194g2p03imTUkgEsFSV2SV1h7bb/dMPQPDggc8BVwmGiyQ4iR1pLZ+ChNsReXlIn6l
+         Qdng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=T2TY6NGUwIvtdhDebNN+p+NWVfl2R9w7WL/YAsVOyZk=;
-        b=TRFZhqE0+hfKWzEkZhMEhWH5MlzW/IWmhvXRwo+KgxhajGJdYsPyaROO1hmb+6OR0Y
-         JlmLSc8NFAA3IZpLDp1EdVMwQZK0pwCfyjtxUEvQmakeipgKWHsC61sQwCNqWOiR1cjG
-         MzIEek5gmavO8kk8GyBFweVfaHjdT/5M73zv+ITntoMMy5sXTPL1lveqMspkjyCVE9jx
-         r3x73d5reO2M4N4oReEz6yNlxC5/2/UJP71xvIWmpSurgY40bSmLeSe6x79+MZ6TbhLc
-         0P0URTQ59lAm7U/+ecDfxQaabBUNXM6sgRZf2CQqRfyxD1V0O3k1ySn8S0lqmwFGnNct
-         wARA==
-X-Gm-Message-State: APjAAAXytnjTr0GxSrLJ7+6tXJvu6BotRt+D0dqrq6UJ5LbIAKdY6RMD
-        qMGONwMSzTDigRL7ic6n0fx6/dZbP5M=
-X-Google-Smtp-Source: APXvYqzUWfgikZuehcyb1ebNrGpxs7GPx/fz1aqBg6pNhhtsuL3oDtjyS/9y2h54yyg97lG3WBg15w==
-X-Received: by 2002:a17:90a:6509:: with SMTP id i9mr665793pjj.82.1569868291886;
-        Mon, 30 Sep 2019 11:31:31 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b5sm14866917pfp.38.2019.09.30.11.31.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 11:31:30 -0700 (PDT)
-Date:   Mon, 30 Sep 2019 11:31:29 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
-Message-ID: <201909301129.5A1129C@keescook>
-References: <20190827205213.456318-1-ast@kernel.org>
- <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
- <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
- <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
- <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
- <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
- <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
- <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
- <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
- <20190928193727.1769e90c@oasis.local.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190928193727.1769e90c@oasis.local.home>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=ZZfaTyp+JKU39F6H6TWYgpuuxaGlvyXotawwsqbU1tQ=;
+        b=d1IRPscPUyLomGejBnDXnSiOA4WjqAqbVYdJIzNC7WKTmS7x0VIsTPh983gx2h45Ht
+         i8hF7nEmTRc2R7C8MPzFInKepl5POIXzrFxybNMh2svVTJ603+QOZgd56n6gzPRELc72
+         QsRD8klJpfoHSX1FmoKTnkYaZf+VQJgS4pDcZxf6jRJv8n4759qsscoTce2sManpyNHe
+         45kjxoaCwYqLyeVX/XZO5xAg9VBQp2FZZie7GE8TgsA/8jN73m9IbjIV/0M+RV7DBLyK
+         ixbF3SpV31bU1YyWoeLOP/Gg4t47/KFiOFWB2bNKBhzQNgIIKmHUJIzc3OzKf5UIEXJF
+         0FtQ==
+X-Gm-Message-State: APjAAAWT14itDenX6ZGjxS+MhoF3ln5a1NFUnsX/NxJgDAhXhbJoffws
+        nZZJYa1ETIt8WOgWrQHShs/RtwXryMwHFQ==
+X-Google-Smtp-Source: APXvYqxU9qMYdMtBd5GL/d05JuCQ0GbTywn1mreCAdGOzZRqXCsRiuWyQUy1qIJB5t8/M/L9VpqT/w==
+X-Received: by 2002:aa7:8f14:: with SMTP id x20mr23455215pfr.223.1569866537373;
+        Mon, 30 Sep 2019 11:02:17 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id u1sm153873pjn.3.2019.09.30.11.02.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 11:02:16 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 3/5] ionic: report users coalesce request
+Date:   Mon, 30 Sep 2019 11:01:56 -0700
+Message-Id: <20190930180158.36101-3-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190930180158.36101-1-snelson@pensando.io>
+References: <20190930180158.36101-1-snelson@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 28, 2019 at 07:37:27PM -0400, Steven Rostedt wrote:
-> On Wed, 28 Aug 2019 21:07:24 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > > 
-> > > This won’t make me much more comfortable, since CAP_BPF lets it do an ever-growing set of nasty things. I’d much rather one or both of two things happen:
-> > > 
-> > > 1. Give it CAP_TRACING only. It can leak my data, but it’s rather hard for it to crash my laptop, lose data, or cause other shenanigans.
-> > > 
-> > > 2. Improve it a bit do all the privileged ops are wrapped by capset().
-> > > 
-> > > Does this make sense?  I’m a security person on occasion. I find
-> > > vulnerabilities and exploit them deliberately and I break things by
-> > > accident on a regular basis. In my considered opinion, CAP_TRACING
-> > > alone, even extended to cover part of BPF as I’ve described, is
-> > > decently safe. Getting root with just CAP_TRACING will be decently
-> > > challenging, especially if I don’t get to read things like sshd’s
-> > > memory, and improvements to mitigate even that could be added.  I
-> > > am quite confident that attacks starting with CAP_TRACING will have
-> > > clear audit signatures if auditing is on.  I am also confident that
-> > > CAP_BPF *will* allow DoS and likely privilege escalation, and this
-> > > will only get more likely as BPF gets more widely used. And, if
-> > > BPF-based auditing ever becomes a thing, writing to the audit
-> > > daemon’s maps will be a great way to cover one’s tracks.  
-> > 
-> > CAP_TRACING, as I'm proposing it, will allow full tracefs access.
-> > I think Steven and Massami prefer that as well.
-> > That includes kprobe with probe_kernel_read.
-> > That also means mini-DoS by installing kprobes everywhere or running
-> > too much ftrace.
-> 
-> I was talking with Kees at Plumbers about this, and we were talking
-> about just using simple file permissions. I started playing with some
-> patches to allow the tracefs be visible but by default it would only be
-> visible by root.
-> 
->  rwx------
-> 
-> Then a start up script (or perhaps mount options) could change the
-> group owner, and change this to:
-> 
->  rwxrwx---
-> 
-> Where anyone in the group assigned (say "tracing") gets full access to
-> the file system.
-> 
-> The more I was playing with this, the less I see the need for
-> CAP_TRACING for ftrace and reading the format files.
+The user's request for an interrupt coalescing value gets
+translated into a hardware value to be used with the NIC,
+but we should still report back to the user what they
+requested.
 
-Nice! Thanks for playing with this. I like it because it gives us a way
-to push policy into userspace (group membership, etc), and provides a
-clean way (hopefully) do separate "read" (kernel memory confidentiality)
-from "write" (kernel memory integrity), which wouldn't have been possible
-with a single new CAP_...
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 22 +++++++++----------
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 11 +++++-----
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  4 +++-
+ 3 files changed, 19 insertions(+), 18 deletions(-)
 
--Kees
-
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index 7760fcd709b4..63cc14c060d6 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -372,7 +372,6 @@ static int ionic_set_coalesce(struct net_device *netdev,
+ 	struct ionic_identity *ident;
+ 	struct ionic_qcq *qcq;
+ 	unsigned int i;
+-	u32 usecs;
+ 	u32 coal;
+ 
+ 	if (coalesce->rx_max_coalesced_frames ||
+@@ -410,26 +409,27 @@ static int ionic_set_coalesce(struct net_device *netdev,
+ 		return -EINVAL;
+ 	}
+ 
++	/* Convert the usec request to a HW useable value.  If they asked
++	 * for non-zero and it resolved to zero, bump it up
++	 */
+ 	coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->rx_coalesce_usecs);
+-
+-	if (coal > IONIC_INTR_CTRL_COAL_MAX)
+-		return -ERANGE;
+-
+-	/* If they asked for non-zero and it resolved to zero, bump it up */
+ 	if (!coal && coalesce->rx_coalesce_usecs)
+ 		coal = 1;
+ 
+-	/* Convert it back to get device resolution */
+-	usecs = ionic_coal_hw_to_usec(lif->ionic, coal);
++	if (coal > IONIC_INTR_CTRL_COAL_MAX)
++		return -ERANGE;
+ 
+-	if (usecs != lif->rx_coalesce_usecs) {
+-		lif->rx_coalesce_usecs = usecs;
++	/* Save the new value */
++	lif->rx_coalesce_usecs = coalesce->rx_coalesce_usecs;
++	if (coal != lif->rx_coalesce_hw) {
++		lif->rx_coalesce_hw = coal;
+ 
+ 		if (test_bit(IONIC_LIF_UP, lif->state)) {
+ 			for (i = 0; i < lif->nxqs; i++) {
+ 				qcq = lif->rxqcqs[i].qcq;
+ 				ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
+-						     qcq->intr.index, coal);
++						     qcq->intr.index,
++						     lif->rx_coalesce_hw);
+ 			}
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 4d5883a7e586..372329389c84 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1430,7 +1430,6 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 	unsigned int flags;
+ 	unsigned int i;
+ 	int err = 0;
+-	u32 coal;
+ 
+ 	flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
+ 	for (i = 0; i < lif->nxqs; i++) {
+@@ -1447,7 +1446,6 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 	}
+ 
+ 	flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_INTR;
+-	coal = ionic_coal_usec_to_hw(lif->ionic, lif->rx_coalesce_usecs);
+ 	for (i = 0; i < lif->nxqs; i++) {
+ 		err = ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
+ 				      lif->nrxq_descs,
+@@ -1460,7 +1458,8 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 		lif->rxqcqs[i].qcq->stats = lif->rxqcqs[i].stats;
+ 
+ 		ionic_intr_coal_init(lif->ionic->idev.intr_ctrl,
+-				     lif->rxqcqs[i].qcq->intr.index, coal);
++				     lif->rxqcqs[i].qcq->intr.index,
++				     lif->rx_coalesce_hw);
+ 		ionic_link_qcq_interrupts(lif->rxqcqs[i].qcq,
+ 					  lif->txqcqs[i].qcq);
+ 	}
+@@ -1640,7 +1639,6 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 	struct net_device *netdev;
+ 	struct ionic_lif *lif;
+ 	int tbl_sz;
+-	u32 coal;
+ 	int err;
+ 
+ 	netdev = alloc_etherdev_mqs(sizeof(*lif),
+@@ -1671,8 +1669,9 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 	lif->nrxq_descs = IONIC_DEF_TXRX_DESC;
+ 
+ 	/* Convert the default coalesce value to actual hw resolution */
+-	coal = ionic_coal_usec_to_hw(lif->ionic, IONIC_ITR_COAL_USEC_DEFAULT);
+-	lif->rx_coalesce_usecs = ionic_coal_hw_to_usec(lif->ionic, coal);
++	lif->rx_coalesce_usecs = IONIC_ITR_COAL_USEC_DEFAULT;
++	lif->rx_coalesce_hw = ionic_coal_hw_to_usec(lif->ionic,
++						    lif->rx_coalesce_usecs);
+ 
+ 	snprintf(lif->name, sizeof(lif->name), "lif%u", index);
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index b74f7e9ee82d..cf243a9d0168 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -175,7 +175,9 @@ struct ionic_lif {
+ 	unsigned long *dbid_inuse;
+ 	unsigned int dbid_count;
+ 	struct dentry *dentry;
+-	u32 rx_coalesce_usecs;
++	u32 rx_coalesce_usecs;		/* what the user asked for */
++	u32 rx_coalesce_hw;		/* what the hw is using */
++
+ 	u32 flags;
+ 	struct work_struct tx_timeout_work;
+ };
 -- 
-Kees Cook
+2.17.1
+
