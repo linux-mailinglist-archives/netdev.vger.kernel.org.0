@@ -2,112 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A3BC2319
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 16:23:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D46E6C2340
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 16:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731381AbfI3OXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 10:23:54 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38978 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730809AbfI3OXx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 10:23:53 -0400
-Received: by mail-wr1-f65.google.com with SMTP id r3so11591471wrj.6
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 07:23:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nz/sIGgFTrFkGWTVXO5C9jBhk5XQguq9Cz1Inzjnet4=;
-        b=PovVai4E/1538Hgt0t2Mkq21Muxb1CmotJ9Lgd138s7XmMmdfRbyrFFDTHQl+Mdx/E
-         iDPTtei3HtbUlUkczaS1TsBeLsONSpjZm1YsGaO8EXDelrZgdG9EgxdpLhnf7kRdfRLK
-         DvvejKZTykxxWbcbsWwhCQy70m6nG9g5uUUiFZeVYEOd2dTfm7whyFIWybAogKx3OAME
-         u0ZrhHgQigWnm0hQ55gmIEXh+53mbvpmklSu1MwMimMsPLijOfQeZyqsNL4Z3PwSPNnB
-         Kt24mjEKNMP2Rbk8TEZi2aG/BmKJNKzmmRUwuLaJq1I/3ExmcgUj3K/Ms+k3IbFkcgDN
-         o7xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nz/sIGgFTrFkGWTVXO5C9jBhk5XQguq9Cz1Inzjnet4=;
-        b=tl2kHvR4sn3uCX83KGJj3b3lUcDHCEIdD9UhP3wz5BOxxEx2usJBHb14JWtHnRPqp6
-         7PaZDlnTN/vFpuaqQX+JPVW1NiUFS5cNSjyUusT3l9DmCyfnTholHDTBFtO2pH7y72or
-         y+mQkPwl9bdbm95o7/HbvshDybGpp2QxLOfP0eYiWXrTI4dQt2Xj3VNJYcmEI1aslA+L
-         vzwXGa/T/F5iTIEzQquilJuXy7ONDsTUXD9wVnqALsz2tXFvNRWTSIkNrmgKopBq9slJ
-         OfQPyr0UprZPiGDXEoxvICvepYnmmzu1LM18i/jptZE1lxwDdi+jn7BiuVuraxdiVj77
-         GenA==
-X-Gm-Message-State: APjAAAXnwbDJ3oIyWkVgl9cVPUY8StaD4qjOAyr3EZmCmR+2sEsk1g6A
-        conjCIRmaoEed3IrOwRE/hK2jg==
-X-Google-Smtp-Source: APXvYqxOj7f++MQsyQ+rQxwM4W4SfBn+SjI7VC4bE+TeGLfCv+Ranlhg3NDAb4KiS8KWec5hn90iJg==
-X-Received: by 2002:adf:f343:: with SMTP id e3mr13645191wrp.268.1569853430739;
-        Mon, 30 Sep 2019 07:23:50 -0700 (PDT)
-Received: from localhost (ip-89-177-132-96.net.upcbroadband.cz. [89.177.132.96])
-        by smtp.gmail.com with ESMTPSA id e20sm28003734wrc.34.2019.09.30.07.23.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 07:23:50 -0700 (PDT)
-Date:   Mon, 30 Sep 2019 16:23:49 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
+        id S1731636AbfI3O3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 10:29:12 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36661 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729738AbfI3O3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 10:29:10 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iEwfl-0006uw-0T; Mon, 30 Sep 2019 16:29:09 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iEwfj-0006TF-S1; Mon, 30 Sep 2019 16:29:07 +0200
+Date:   Mon, 30 Sep 2019 16:29:07 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
-        pabeni@redhat.com, edumazet@google.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        stephen@networkplumber.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next 2/3] net: introduce per-netns netdevice notifiers
-Message-ID: <20190930142349.GE2211@nanopsycho>
-References: <20190930081511.26915-1-jiri@resnulli.us>
- <20190930081511.26915-3-jiri@resnulli.us>
- <20190930133824.GA14745@lunn.ch>
+Cc:     Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v1] net: ag71xx: fix mdio subnode support
+Message-ID: <20190930142907.wo3tahtg7g7mvfmp@pengutronix.de>
+References: <20190930093310.10762-1-o.rempel@pengutronix.de>
+ <20190930134209.GB14745@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190930133824.GA14745@lunn.ch>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190930134209.GB14745@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 16:18:43 up 135 days, 20:36, 87 users,  load average: 0.00, 0.02,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 30, 2019 at 03:38:24PM CEST, andrew@lunn.ch wrote:
->>  static int call_netdevice_notifiers_info(unsigned long val,
->>  					 struct netdev_notifier_info *info)
->>  {
->> +	struct net *net = dev_net(info->dev);
->> +	int ret;
->> +
->>  	ASSERT_RTNL();
->> +
->> +	/* Run per-netns notifier block chain first, then run the global one.
->> +	 * Hopefully, one day, the global one is going to be removed after
->> +	 * all notifier block registrators get converted to be per-netns.
->> +	 */
->
->Hi Jiri
->
->Is that really going to happen? register_netdevice_notifier() is used
->in 130 files. Do you plan to spend the time to make it happen?
+On Mon, Sep 30, 2019 at 03:42:09PM +0200, Andrew Lunn wrote:
+> On Mon, Sep 30, 2019 at 11:33:10AM +0200, Oleksij Rempel wrote:
+> > The driver was working with fixed phy without any noticeable issues. This bug
+> > was uncovered by introducing dsa ar9331-switch driver.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  drivers/net/ethernet/atheros/ag71xx.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+> > index 6703960c7cf5..d1101eea15c2 100644
+> > --- a/drivers/net/ethernet/atheros/ag71xx.c
+> > +++ b/drivers/net/ethernet/atheros/ag71xx.c
+> > @@ -526,7 +526,7 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
+> >  	struct device *dev = &ag->pdev->dev;
+> >  	struct net_device *ndev = ag->ndev;
+> >  	static struct mii_bus *mii_bus;
+> > -	struct device_node *np;
+> > +	struct device_node *np, *mnp;
+> >  	int err;
+> >  
+> >  	np = dev->of_node;
+> > @@ -571,7 +571,9 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
+> >  		msleep(200);
+> >  	}
+> >  
+> > -	err = of_mdiobus_register(mii_bus, np);
+> > +	mnp = of_get_child_by_name(np, "mdio");
+> > +	err = of_mdiobus_register(mii_bus, mnp);
+> > +	of_node_put(mnp);
+> >  	if (err)
+> >  		goto mdio_err_put_clk;
+> 
+> Hi Oleksij
+> 
+> You need to keep backwards compatibility here. If you find an mdio
+> node, use it, but if not, you need to still register np.
+> 
+> This is also extending the driver binding, so you need to update the
+> binding documentation.
 
-That's why I prepended the sentency with "Hopefully, one day"...
+Hi Andrew,
 
+Normally i would agree. But in this case:
+- this driver is freshly added to the kernel and is different to OpenWrt
+  implementation any way. No users from this side.
+- Devicetree binding says:
+  Documentation/devicetree/bindings/net/qca,ar71xx.txt
+|Optional properties:
+|- phy-handle : phandle to the PHY device connected to this device.
+|- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
+|  Use instead of phy-handle.
+|
+|Optional subnodes:
+|- mdio : specifies the mdio bus, used as a container for phy nodes
+|  according to phy.txt in the same directory
 
->
->> +	ret = raw_notifier_call_chain(&net->netdev_chain, val, info);
->> +	if (ret & NOTIFY_STOP_MASK)
->> +		return ret;
->>  	return raw_notifier_call_chain(&netdev_chain, val, info);
->>  }
->
->Humm. I wonder about NOTIFY_STOP_MASK here. These are two separate
->chains. Should one chain be able to stop the other chain? Are there
+So, it is driver bug ...ooOO (my personal bug :D)
 
-Well if the failing item would be in the second chain, at the beginning
-of it, it would be stopped too. Does not matter where the stop happens,
-the point is that the whole processing stops. That is why I added the
-check here.
+I would say: if some one already started to use this driver, didn't used
+documentation and didn't reported this bug, can't really blame any one
+here :)
 
-
->other examples where NOTIFY_STOP_MASK crosses a chain boundary?
-
-Not aware of it, no. Could you please describe what is wrong?
-
-
->
->      Andrew
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
