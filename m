@@ -2,78 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E3ACC284F
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D65C285D
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732615AbfI3VKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 17:10:07 -0400
-Received: from mail.skyhub.de ([5.9.137.197]:33286 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729740AbfI3VKH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 17:10:07 -0400
-Received: from zn.tnic (p200300EC2F058B00329C23FFFEA6A903.dip0.t-ipconnect.de [IPv6:2003:ec:2f05:8b00:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BE3CA1EC0586;
-        Mon, 30 Sep 2019 20:40:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1569868833;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=gjuUURFhig2Mz245AWDhCbYKl1S5jT5FaViGxJ9r5BM=;
-        b=BGeaWwcS2WkEs3PpXGJ+M/oYTYqveWi8TBVzB9Z9QCa9AOXoz0DxVEE+kx/LUm/1PByTBJ
-        Wmgbz0Ek39oXPN97PJD0tNRCehX34b7ht6qypukdtM6ZMS4hjU7D2ceIlaPt3cd0n0KJYF
-        dFdKLlWw1DdAA4JHroy+YjbPf1GTFyk=
-Date:   Mon, 30 Sep 2019 20:40:31 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, linux-rdma@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: ERROR: "__umoddi3"
- [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
-Message-ID: <20190930184031.GJ29694@zn.tnic>
-References: <20190930141316.GG29694@zn.tnic>
- <20190930154535.GC22120@unicorn.suse.cz>
- <20190930162910.GI29694@zn.tnic>
- <20190930095516.0f55513a@hermes.lan>
+        id S1732127AbfI3VNG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Sep 2019 17:13:06 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:36585 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731802AbfI3VNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:13:06 -0400
+Received: by mail-ot1-f66.google.com with SMTP id 67so9662793oto.3;
+        Mon, 30 Sep 2019 14:13:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AoDopCjUGYoxKnmro43LDdxYLNX5XQXycxp12mlQvm8=;
+        b=RAgU5KS+qnfNa6MiDEgMKiI3z+FJ7OQKerzTkkUQxOw7rU1DdMb28kCDqli+TyIrPw
+         jP39sQTTDS8SKHh1dKMxTdvM1l0cdprIjz3fcLruXw01i1qTR5wznlMmH0cV4hwV0BoV
+         ftn2+sSzFBrxhbltxwWT93SrcNLKThzQ3E801JxpOy8JNvfop5Mh/dj4WYOcyLK73f/A
+         KMdnfrwf8z4Z112cc3C1PdZwrJeRpxMNxNFppiaC1DQqSoM8pPOJDDPUNf4hPmmgeKxQ
+         hSFkRXnPCf/Ba2qZaaaS1oGkggRtNTaOMpjkKCg87KnNMhuGyHZLEZ3gO5T9F8Ecd2zl
+         va5g==
+X-Gm-Message-State: APjAAAUZiUr2S2ThXB7D51Fl3dJ1weNvZ+89pBmtXQO8IozOif2FU3Dd
+        mSyvaHQmHBZjg8fqxxJJwqTAhAcxKlqp4PcjPecrXQ==
+X-Google-Smtp-Source: APXvYqzPkYu2PrL3iMwwL+6tej+XjS4dGWNxGQXzn+bCU2kTSqKXYzVqy+EN/9Az+2EqdSLOyjgt2nDIKfgxYblqp4g=
+X-Received: by 2002:a9d:17e6:: with SMTP id j93mr15612333otj.297.1569872057032;
+ Mon, 30 Sep 2019 12:34:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190930095516.0f55513a@hermes.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190920133115.12802-1-uwe@kleine-koenig.org>
+In-Reply-To: <20190920133115.12802-1-uwe@kleine-koenig.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 30 Sep 2019 21:34:05 +0200
+Message-ID: <CAMuHMdUs8oqDgYpQdu_bJ1Hvz+Lq_qPXLvuKj7=H=6818OM9=A@mail.gmail.com>
+Subject: Re: [PATCH] dimlib: make DIMLIB a hidden symbol
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>,
+        Tal Gilboa <talgi@mellanox.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 09:55:16AM -0700, Stephen Hemminger wrote:
-> Could also us div_u64_rem here?
+Hi Uwe, Tal,
 
-Yah, the below seems to work and the resulting asm looks sensible to me
-but someone should definitely double-check me as I don't know this code
-at all.
+On Sat, Sep 21, 2019 at 7:50 PM Uwe Kleine-König <uwe@kleine-koenig.org> wrote:
+> According to Tal Gilboa the only benefit from DIM comes from a driver
+> that uses it. So it doesn't make sense to make this symbol user visible,
+> instead all drivers that use it should select it (as is already the case
+> AFAICT).
+>
+> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
 
-Thx.
+Thanks for your patch!
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-index 913f1e5aaaf2..b4302658e5f8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-@@ -137,7 +137,7 @@ dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool,
- 
- 	icm_mr->icm_start_addr = icm_mr->dm.addr;
- 
--	align_diff = icm_mr->icm_start_addr % align_base;
-+	div_u64_rem(icm_mr->icm_start_addr, align_base, &align_diff);
- 	if (align_diff)
- 		icm_mr->used_length = align_base - align_diff;
- 
+> --- a/lib/Kconfig
+> +++ b/lib/Kconfig
+> @@ -555,8 +555,7 @@ config SIGNATURE
+>           Implementation is done using GnuPG MPI library
+>
+>  config DIMLIB
+> -       bool "DIM library"
+> -       default y
+> +       bool
+>         help
+>           Dynamic Interrupt Moderation library.
+>           Implements an algorithm for dynamically change CQ moderation values
 
--- 
-Regards/Gruss,
-    Boris.
+Thanks for fixing the first issue!
 
-https://people.kernel.org/tglx/notes-about-netiquette
+The second issue is still present: NET_VENDOR_BROADCOM (which defaults
+to y, as all other NET_VENDOR_* symbols) should only be a gatekeeper for
+the various Broadcom network driver config options, and should not select
+DIMLIB.
+
+Cfr. my earlier complaint in
+https://lore.kernel.org/linux-rdma/alpine.DEB.2.21.1907021810220.13058@ramsan.of.borg/
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
