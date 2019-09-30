@@ -2,108 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A988BC1B79
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:30:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C23C1BB7
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729748AbfI3Gav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 02:30:51 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:40434 "EHLO a.mx.secunet.com"
+        id S1729254AbfI3Gqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 02:46:34 -0400
+Received: from mga17.intel.com ([192.55.52.151]:40066 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729521AbfI3Gav (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 02:30:51 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AF22E2049B;
-        Mon, 30 Sep 2019 08:30:49 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id be5bGDk6PFjK; Mon, 30 Sep 2019 08:30:49 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 44BB2200AA;
-        Mon, 30 Sep 2019 08:30:49 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 30 Sep 2019
- 08:30:47 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 698AC31800B9;
- Mon, 30 Sep 2019 08:30:48 +0200 (CEST)
-Date:   Mon, 30 Sep 2019 08:30:48 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Willem de Bruijn <willemb@google.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: Re: [PATCH RFC 5/5] udp: Support UDP fraglist GRO/GSO.
-Message-ID: <20190930063048.GG2879@gauss3.secunet.de>
-References: <20190920044905.31759-1-steffen.klassert@secunet.com>
- <20190920044905.31759-6-steffen.klassert@secunet.com>
- <CA+FuTScYar_FNP9igCbxafMciUEYnjbnGiJyX3JhrU74VEGksg@mail.gmail.com>
+        id S1729022AbfI3Gqe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 02:46:34 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Sep 2019 23:46:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,565,1559545200"; 
+   d="scan'208";a="220553529"
+Received: from oamoreno-mobl.ccr.corp.intel.com ([10.252.17.131])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Sep 2019 23:46:31 -0700
+Message-ID: <dbf90ac06b27395dc2d19fbc37e47877785b8d52.camel@intel.com>
+Subject: Re: [PATCH] iwlwifi: dvm: excessive if in rs_bt_update_lq()
+From:   Luciano Coelho <luciano.coelho@intel.com>
+To:     Denis Efremov <efremov@linux.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 30 Sep 2019 09:46:31 +0300
+In-Reply-To: <20190925204935.27118-1-efremov@linux.com>
+References: <20190925204935.27118-1-efremov@linux.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+FuTScYar_FNP9igCbxafMciUEYnjbnGiJyX3JhrU74VEGksg@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 09:01:13AM -0400, Willem de Bruijn wrote:
-> On Fri, Sep 20, 2019 at 12:49 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
-> >
-> > This patch extends UDP GRO to support fraglist GRO/GSO
-> > by using the previously introduced infrastructure.
-> > All UDP packets that are not targeted to a GRO capable
-> > UDP sockets are going to fraglist GRO now (local input
-> > and forward).
-> >
-> > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+On Wed, 2019-09-25 at 23:49 +0300, Denis Efremov wrote:
+> There is no need to check 'priv->bt_ant_couple_ok' twice in
+> rs_bt_update_lq(). The second check is always true. Thus, the
+> expression can be simplified.
 > 
-> > @@ -538,6 +579,15 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
-> >         const struct iphdr *iph = ip_hdr(skb);
-> >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
-> >
-> > +       if (NAPI_GRO_CB(skb)->is_flist) {
-> > +               uh->len = htons(skb->len - nhoff);
-> > +
-> > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-> > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-> > +
-> > +               return 0;
-> > +       }
-> > +
-> >         if (uh->check)
-> >                 uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
-> >                                           iph->daddr, 0);
-> > diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
-> > index 435cfbadb6bd..8836f2b69ef3 100644
-> > --- a/net/ipv6/udp_offload.c
-> > +++ b/net/ipv6/udp_offload.c
-> > @@ -150,6 +150,15 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
-> >         const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
-> >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
-> >
-> > +       if (NAPI_GRO_CB(skb)->is_flist) {
-> > +               uh->len = htons(skb->len - nhoff);
-> > +
-> > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-> > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-> > +
-> > +               return 0;
-> > +       }
-> > +
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/dvm/rs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> This is the same logic as in udp4_gro_complete. Can it be deduplicated
-> in udp_gro_complete?
+> diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/rs.c b/drivers/net/wireless/intel/iwlwifi/dvm/rs.c
+> index 74229fcb63a9..226165db7dfd 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/dvm/rs.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/dvm/rs.c
+> @@ -851,7 +851,7 @@ static void rs_bt_update_lq(struct iwl_priv *priv, struct iwl_rxon_context *ctx,
+>  		 * Is there a need to switch between
+>  		 * full concurrency and 3-wire?
+>  		 */
+> -		if (priv->bt_ci_compliance && priv->bt_ant_couple_ok)
+> +		if (priv->bt_ci_compliance)
+>  			full_concurrent = true;
+>  		else
+>  			full_concurrent = false;
 
-The code below would mess up the checksum then. We did not change
-the packets, so the checksum is still correct.
+Thanks, Denis! I have applied this to our internal tree and it will
+reach the mainline following our usual upstreaming process.
 
-> 
-> >         if (uh->check)
-> >                 uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
-> >                                           &ipv6h->daddr, 0);
+--
+Cheers,
+Luca.
+
