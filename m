@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48165C1B24
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 07:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A078C1B27
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 07:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbfI3Fvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 01:51:37 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45385 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbfI3Fvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 01:51:37 -0400
-Received: by mail-qk1-f194.google.com with SMTP id z67so6705835qkb.12
-        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 22:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=29/RGaCsqpRpLez91U4QTD/pfk2SBpNVpqNGNmRaLJY=;
-        b=UZDzgxT9uwLsGof3tyuRhKum7x/NK4Ei0w/zIbbQVWo0L2/wvtr2ly8pszlnYZ4CdF
-         un9Zo8/5g0JHpse9qvvkGc5Oo+7HIjONiLkxSKfwmB5BCY4hv5bMtMO86jbqBYLnPtBs
-         ZPaPRjBgmlffIRsiTephuOPelf5eKpb1ZR/RaifkL8toBF+qMgTwIYC9V0ykeT83n4hE
-         6oEdW0ephCxNJyeICY+SkYSjLjvPpf4d3lshz+VGnA5Xx4eIAddleL4EshmDr8BDL9bg
-         rz/luetWFXsaUDxIHi6hT7e4/ZxrTHoazoNUjatQsSrHXfm4Jzvh0v0wdp86z3OEfyCp
-         9mTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=29/RGaCsqpRpLez91U4QTD/pfk2SBpNVpqNGNmRaLJY=;
-        b=lSlD6JUmCYM+zClIEorne/b33/GnHOXSTf9KIz+RgUUQc1fJ3ueae1iMvsfNDEj0aO
-         jtlY6SMPJwgpleukmADKtZ3MMoEYwZsEsdd1vMTPqAriez5RjDhW6uvNUia2N0vkhItg
-         RoyIF7yMB4w77AYrHYc5ul5bN0A+kYZxnil71qT864/SsXHGc2ns/h/te2lKHATCur9+
-         pj20oTOFK6oAF1K7EuQtVuAwCcar8LJSFijMJr7NSIhOeDS3TzCEE3t70Sgb+y5UOatu
-         1oXSIhsUdi2wyftjSHJ5/jbvbMiLS7iJF8tBloAy1joLJmu318ZGZiPLZVmyu+Cm7q08
-         +TYg==
-X-Gm-Message-State: APjAAAXyHshhiJq8ciQoDm5sZujrb384dehw7fcJv5wkhR43cmoZH7BK
-        RNrBSls+lkO3mS7T6SOqzYH3NBF1JDEEdPNVICcBm4aHdGo=
-X-Google-Smtp-Source: APXvYqyeS1BZLA392odikR7RXCI0Pv2e0XcfGrl2i2jEHdiGb6P9PQuaRYL5jnq7HNzlWzlbXs5vkZ8Hrnx9DNyvM88=
-X-Received: by 2002:a37:424d:: with SMTP id p74mr16332373qka.118.1569822696256;
- Sun, 29 Sep 2019 22:51:36 -0700 (PDT)
+        id S1729603AbfI3Fxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 01:53:42 -0400
+Received: from first.geanix.com ([116.203.34.67]:53610 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729404AbfI3Fxm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 01:53:42 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id E200884AA1;
+        Mon, 30 Sep 2019 05:52:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1569822770; bh=niD5nD50+iOGRz2jnywfyDGaPYO8I26JFN732h/5CHc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=kPacu2epjfTFZebPkNP8lk28FTPSP+Z3EyKbHemXEy32anQrQGd80mbz7d0L5O2o6
+         rXGyGNKWNgbObmxUyG/uVfjTR9sxZM7wwdhLJUcD3TWAQzXvoluq5TrfBJVcWIr37w
+         8lGXKS3w/ZD22G6fFSON1b9TNvgDs/DiFvFv6E7q/zbTEmq/r6WceX/UtIH0rytcXS
+         kOTTN+yspd7bQ5BCjwBFYXr/Ll3he83b6fePI2HENoHnVAfgv7rsTIgMSLyAR3lSKA
+         y7YbuKpFaFSmY4nesoqZ8CX5tFhdJZEBJNo0Achk5srcvrCHjtBfgqM55JMTXqU+O9
+         m5yv7GNJLvrvQ==
+Subject: Re: [PATCH] can: flexcan: use devm_platform_ioremap_resource() to
+ simplify code
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+References: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <542c7e8a-ed76-70db-36ff-f46e8de71d77@geanix.com>
+Date:   Mon, 30 Sep 2019 07:53:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-References: <CAGAf8LzeyrMSHCYMxn1FNtMQVyhhLYbJaczhe2AMj+7T_nBt7Q@mail.gmail.com>
- <20190923191713.GB28770@lunn.ch> <CAGAf8LyQpi_R-A2Zx72bJhSBqnFo-r=KCnfVCTD9N8cNNtbhrQ@mail.gmail.com>
- <20190926133810.GD20927@lunn.ch> <CAGAf8LxAbDK7AUueCv-2kcEG8NZApNjQ+WQ1XO89+5C-SLAbPw@mail.gmail.com>
- <20190928152022.GE25474@lunn.ch> <CAGAf8LzJ56wjWxywnGWB1aOFm9B8xQhMgHFQfkVgOFWePzDfsw@mail.gmail.com>
- <20190930014440.GC6032@lunn.ch>
-In-Reply-To: <20190930014440.GC6032@lunn.ch>
-From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
-Date:   Mon, 30 Sep 2019 07:51:25 +0200
-Message-ID: <CAGAf8LyaneLN0zA9x0HYczTw6f49CiewTg8TJf+eMKdDATpWLg@mail.gmail.com>
-Subject: Re: DSA driver kernel extension for dsa mv88e6190 switch
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190929082854.11952-1-qiangqing.zhang@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF autolearn=disabled
+        version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on b8b5098bc1bc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The very last line is wrong.
-> ifconfig eth0 192.168.1.4 up
-
-Typo. It was fixed after few hours I created the gist.
-
-> You should put the IP address on the bridge, not the master
-> device eth0.
-> ip addr add 192.168.1.4/24 dev br0
-
-Noted. Thank you.
-
-> FYI: ifconfig has been deprecated for maybe a decade?
-
-I am an old dog, and old dogs could not be tough to new tricks. ;-)
-
-This is why I always install on Debian additional net-tools package.
-
-I guess, time to move to modern ip command.
-_______
-
-Please, please, keep me in the loop about DSA patches.
-
-Many many thanks for advises/emails,
-Zoran
-_______
 
 
-On Mon, Sep 30, 2019 at 3:44 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > I wrote my (very first) public GIST about that. Please, could you
-> > review it, and point to the any logical bugs in there?
-> > https://gist.github.com/ZoranStojsavljevic/423b96e2ca3bd581f7ce417cb410c465
->
-> The very last line is wrong.
->
-> ifconfig eth0 192.168.1.4 up
->
-> You should put the IP address on the bridge, not the master device
-> eth0.
->
-> ip addr add 192.168.1.4/24 dev br0
->
-> FYI: ifconfig has been deprecated for maybe a decade?
->
->    Andrew
+On 29/09/2019 10.32, Joakim Zhang wrote:
+> Use the new helper devm_platform_ioremap_resource() which wraps the
+> platform_get_resource() and devm_ioremap_resource() together to simplify
+> the code.
+> 
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Reviewed-by: Sean Nyekjaer <sean@geanix.com>
+> ---
+>   drivers/net/can/flexcan.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index b3edaf6a5a61..3cfa6037f03c 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -1507,7 +1507,6 @@ static int flexcan_probe(struct platform_device *pdev)
+>   	struct net_device *dev;
+>   	struct flexcan_priv *priv;
+>   	struct regulator *reg_xceiver;
+> -	struct resource *mem;
+>   	struct clk *clk_ipg = NULL, *clk_per = NULL;
+>   	struct flexcan_regs __iomem *regs;
+>   	int err, irq;
+> @@ -1538,12 +1537,11 @@ static int flexcan_probe(struct platform_device *pdev)
+>   		clock_freq = clk_get_rate(clk_per);
+>   	}
+>   
+> -	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>   	irq = platform_get_irq(pdev, 0);
+>   	if (irq <= 0)
+>   		return -ENODEV;
+>   
+> -	regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	regs = devm_platform_ioremap_resource(pdev, 0);
+>   	if (IS_ERR(regs))
+>   		return PTR_ERR(regs);
+>   
+> 
