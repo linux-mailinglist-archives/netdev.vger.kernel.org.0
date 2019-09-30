@@ -2,155 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B280C2692
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C82C269D
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730607AbfI3Uhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 16:37:31 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39313 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726576AbfI3Uhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:37:31 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v17so842926wml.4
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 13:37:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xEeTSsOV9wyMru8vENlrjscVZzAq7FJVd7XOiyijoUk=;
-        b=jWRgWi4PYHfMRVAK6pGkyhU8fkcyRDEd42KiE0rBM0WVBUPcRnmtBYJiDOHIicgRGY
-         NSOX9cfARSfCXktquzeTNJdLvP+P3Wfjg4O13AqzZkLETqRwDB92DecNfLQcaoR+SBYW
-         lcovPfqz/o5BJXI2P1979wj3mmzf8Qe83WUnu/HirMA/VhJKLNXfTlhQQkgbE37TyLo6
-         aBL5SCOiWQkp4SbJWA6OZbItSR9qgv/pPhL9qmS2Gqmw8+Rq2Z4BEf61LHGE2ZZOeprg
-         SwkRx8dqsnnYYQ759zc5WNhdJvRVTEvqE3ZFMiP5N6XtW8VLPi3vCEfVo5u58FQ6tlEB
-         hIew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xEeTSsOV9wyMru8vENlrjscVZzAq7FJVd7XOiyijoUk=;
-        b=aqybMeha0acKrvFbZAWLLEbqQhyHpTzIrC11OlGmpc23SVil/l3ZaOcLXRua+D3kYV
-         9ZQcY0xNOctufFvSBXQ+KCXL6g32Iez9Ue5lOYaT4k87QMzaVpRUzNXcpCk4bCJdh3A0
-         TWDaDfHPk3190tofeuJa4dKcg8Dghyl0+JEGnHeNc/P7barH8vm4HnJt9l7Zp6xhbQbd
-         nd0rhetceZxY75PplWHxhlMD/Vvpuz2tCz2I5RYSAjTUmoC4GXi9huDvsbactDUzCOG4
-         WnscCYs6i7gHy2vVcPy5VGXruRDmHLJhzCTXkl6akuae5h8aVxJXXQuR9WzUiGcCKuqb
-         sSOQ==
-X-Gm-Message-State: APjAAAXqynD5qS31yeYr5BIryyGtE/vkGvqB4QP9l5qIMJn9icuAFdFs
-        I5UqhzRjf243PFtX2NxgoIlx+4c6Kpg=
-X-Google-Smtp-Source: APXvYqwnsab52bY2fjejUnbOlgxImj9DEntYzS65R7ppvemP9hi0PmXyKpU8KBAmMHHbdzY/i+hqaw==
-X-Received: by 2002:a7b:c088:: with SMTP id r8mr401296wmh.44.1569866476370;
-        Mon, 30 Sep 2019 11:01:16 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id v16sm17074370wrt.12.2019.09.30.11.01.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 11:01:15 -0700 (PDT)
-Date:   Mon, 30 Sep 2019 20:01:15 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
-        pabeni@redhat.com, edumazet@google.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        stephen@networkplumber.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next 2/3] net: introduce per-netns netdevice notifiers
-Message-ID: <20190930180115.GB2235@nanopsycho>
-References: <20190930081511.26915-1-jiri@resnulli.us>
- <20190930081511.26915-3-jiri@resnulli.us>
- <20190930133824.GA14745@lunn.ch>
- <20190930142349.GE2211@nanopsycho>
- <20190930153343.GE14745@lunn.ch>
+        id S1730178AbfI3UiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 16:38:24 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63362 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726576AbfI3UiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:38:24 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x8UIqj5C021870
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:07 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=1IgGt+QiRdji7VyWkyj+zGlrMheQ4AYaU5d2Vmsh644=;
+ b=FeNfOuOwKpeZo7L2Q6m9h6y1jXmX5Ihtjc4IWmQml8lT2Ew6LJ0UX5GGk+Dg6FxO4Npy
+ sg7xXnpSm0v9WpUJ9COjgzDn4d0M/DnhdxE5eOgMZmjfsblfPzX3zRku67VoBCUrx+/U
+ lmwbW0QETUJx2pwLDbJDXdCMVKUdCeidxnY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2vbm2uh1m6-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:07 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 30 Sep 2019 11:59:05 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id C740586185A; Mon, 30 Sep 2019 11:59:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 1/6] selftests/bpf: undo GCC-specific bpf_helpers.h changes
+Date:   Mon, 30 Sep 2019 11:58:50 -0700
+Message-ID: <20190930185855.4115372-2-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190930185855.4115372-1-andriin@fb.com>
+References: <20190930185855.4115372-1-andriin@fb.com>
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190930153343.GE14745@lunn.ch>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-09-30_11:2019-09-30,2019-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 phishscore=0 mlxscore=0 priorityscore=1501 bulkscore=0
+ adultscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0 spamscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909300167
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 30, 2019 at 05:33:43PM CEST, andrew@lunn.ch wrote:
->On Mon, Sep 30, 2019 at 04:23:49PM +0200, Jiri Pirko wrote:
->> Mon, Sep 30, 2019 at 03:38:24PM CEST, andrew@lunn.ch wrote:
->> >>  static int call_netdevice_notifiers_info(unsigned long val,
->> >>  					 struct netdev_notifier_info *info)
->> >>  {
->> >> +	struct net *net = dev_net(info->dev);
->> >> +	int ret;
->> >> +
->> >>  	ASSERT_RTNL();
->> >> +
->> >> +	/* Run per-netns notifier block chain first, then run the global one.
->> >> +	 * Hopefully, one day, the global one is going to be removed after
->> >> +	 * all notifier block registrators get converted to be per-netns.
->> >> +	 */
->> >
->> >Hi Jiri
->> >
->> >Is that really going to happen? register_netdevice_notifier() is used
->> >in 130 files. Do you plan to spend the time to make it happen?
->> 
->> That's why I prepended the sentency with "Hopefully, one day"...
->> 
->> 
->> >
->> >> +	ret = raw_notifier_call_chain(&net->netdev_chain, val, info);
->> >> +	if (ret & NOTIFY_STOP_MASK)
->> >> +		return ret;
->> >>  	return raw_notifier_call_chain(&netdev_chain, val, info);
->> >>  }
->> >
->> >Humm. I wonder about NOTIFY_STOP_MASK here. These are two separate
->> >chains. Should one chain be able to stop the other chain? Are there
->> 
->> Well if the failing item would be in the second chain, at the beginning
->> of it, it would be stopped too. Does not matter where the stop happens,
->> the point is that the whole processing stops. That is why I added the
->> check here.
->> 
->> 
->> >other examples where NOTIFY_STOP_MASK crosses a chain boundary?
->> 
->> Not aware of it, no. Could you please describe what is wrong?
->
->You are expanding the meaning of NOTIFY_STOP_MASK. It now can stop
->some other chain. If this was one chain with a filter, i would not be
+Having GCC provide its own bpf-helper.h is not the right approach and is
+going to be changed. Undo bpf_helpers.h change before moving
+bpf_helpers.h into libbpf.
 
-Well, it was originally a single chain, so the semantics stays intact.
-Again, it is not some other independent chain. It's just netns one and
-general one, both serve the same purpose.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/bpf_helpers.h | 8 --------
+ 1 file changed, 8 deletions(-)
 
+diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+index 54a50699bbfd..a1d9b97b8e15 100644
+--- a/tools/testing/selftests/bpf/bpf_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_helpers.h
+@@ -13,8 +13,6 @@
+ 			 ##__VA_ARGS__);		\
+ })
+ 
+-#ifdef __clang__
+-
+ /* helper macro to place programs, maps, license in
+  * different sections in elf_bpf file. Section names
+  * are interpreted by elf_bpf loader
+@@ -258,12 +256,6 @@ struct bpf_map_def {
+ 	unsigned int numa_node;
+ };
+ 
+-#else
+-
+-#include <bpf-helpers.h>
+-
+-#endif
+-
+ #define BPF_ANNOTATE_KV_PAIR(name, type_key, type_val)		\
+ 	struct ____btf_map_##name {				\
+ 		type_key key;					\
+-- 
+2.17.1
 
->asking. But this is two different chains, and one chain can stop
->another? At minimum, i think this needs to be reviewed by the core
->kernel people.
->
->But i'm also wondering if you are solving the problem at the wrong
->level. Are there other notifier chains which would benefit from
->respecting name space boundaries? Would a better solution be to extend
->struct notifier_block with some sort of filter?
-
-I mentioned my primary motivation in the cover letter. What I want to
-avoid is need of taking &pernet_ops_rwsem during registration of tne
-notifier and avoid deadlock in my usecase.
-
-Plus it seems very clear that if a notifier knows what netns is he
-interested in, he just registers in that particular netns chain.
-Having one fat generic chain with filters is basically what we have
-right now.
-
-
->
->Do you have some performance numbers? Where are you getting your
->performance gains from? By the fact you are doing NOTIFY_STOP_MASK
->earlier, so preventing a long chain being walked? I notice
->notifer_block has a priority field. Did you try using that to put your
->notified earlier on the chain?
-
-It is not about stopping the chain earlier, not at all. It is the fact
-that with many netdevices in many network namespaces you gat a lot of
-wasted calls to notifiers registators that does not care.
-
-
-
->
->	 Andrew
