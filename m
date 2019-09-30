@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB87DC285B
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF7EC28C6
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732054AbfI3VMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 17:12:54 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50322 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731802AbfI3VMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:12:54 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 5so982641wmg.0
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:12:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X5TBVXkGBF3Up21B+a9o0PZ8LbEhHWuKc4xupoakIB0=;
-        b=diWYWJDUnNlO8NVZeFeqXBWdqfjb6960znPb7yeeCLtAPUy5ycMZINUtZgDKtuTRYw
-         QoRNK04/iVTJXqTCvwSOIJaOWjShNfR/At2JBMiybobSeLA/MNtLoeo7UOXq4cUL65rv
-         /HLed8dgXNV6eUVW2fWfgh3hC7rN81uG8zueZhjbwukxHMoxiz3XnxBxy8GffFad3Ssb
-         t9HgiYE32OoBaPFOhwGuUie8j2lQs916c0IBS+CHDammhllGPAVircnGH1e9P3K6ubPX
-         /BKwo+yR1c+C4CQ5iuWFzr+FsD8PasWd/xx4kHszzkEX89SqxRWapu8kGfJk1Hkhrqfs
-         G3KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X5TBVXkGBF3Up21B+a9o0PZ8LbEhHWuKc4xupoakIB0=;
-        b=B0HUhH+EEL3I5O+QBIGNx1Z5qrVrUisvUlmdwzOCrw13BRamAFCY/vOYTUfi3hxqMC
-         XFuvfphbbM1+wgjWcbmjysv8YwS55IDr91Vvjl26Bl0LWTIATpzUV9m8vlm6jWiqIF9d
-         mGyVI5dCIbbne9owDTXJs4x55lnwtLWXU2Om2V7tCxlGyPH/VAuVeSudxYb8OSxVMoJx
-         YAQzAIwGH/bSXybuh/2+WgvTs5Rl/DEyIqyeDhIeBvtvu+SlQFqylSo9gYrki/3Eo0vh
-         7DSpH3IR54fdIohAEuOFyn5ixjnc1KkMvh3vRkJ1CRuOWtWSoRNQULVBkgxQkZ8BI+f4
-         Do/w==
-X-Gm-Message-State: APjAAAWjXk3lXdb0/hyTcX5xVNkcf41Aul+oAQTX35yELw52vnSAagB1
-        pfMG7EDKI2WjG+E6r1iMsf4=
-X-Google-Smtp-Source: APXvYqxwGTklIPfqPhJXNXGjp5eFpDSdKuQ6AfQOyuuiRHilzxaaU+eNr8kZl+ngVCYXKnZIxgDQsQ==
-X-Received: by 2002:a7b:c398:: with SMTP id s24mr891512wmj.78.1569877971825;
-        Mon, 30 Sep 2019 14:12:51 -0700 (PDT)
-Received: from localhost.localdomain (87-231-246-247.rev.numericable.fr. [87.231.246.247])
-        by smtp.gmail.com with ESMTPSA id v6sm1353623wma.24.2019.09.30.14.12.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 14:12:51 -0700 (PDT)
-From:   Damien Robert <damien.olivier.robert@gmail.com>
-X-Google-Original-From: Damien Robert <damien.olivier.robert+git@gmail.com>
-To:     stephen@networkplumber.org
-Cc:     Damien Robert <damien.olivier.robert+git@gmail.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH 1/1] man: add reference to `ip route add encap ... src`
-Date:   Mon, 30 Sep 2019 23:11:37 +0200
-Message-Id: <20190930211137.337516-1-damien.olivier.robert+git@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S1731887AbfI3V0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 17:26:02 -0400
+Received: from mail2.candelatech.com ([208.74.158.173]:60398 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727702AbfI3V0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:26:02 -0400
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 1EFA213C283;
+        Mon, 30 Sep 2019 11:45:51 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 1EFA213C283
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1569869151;
+        bh=QRMir/2Pzm8sf9iXSmS9d7M2CKkPM6L2u/3in98jYqE=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=N6bYWVmYc6zxAIs5EahVeNL3RUqOqLnIKakPMtwCFyQv+fHfa/8UrFG18nRBo1rmL
+         3R/4w0oUx5RAbYd2vvWiJbrFIs2iP5jHGrFmT44g0V6XJU8W8l4SqIcIUC83CgGMu4
+         cojNVgjipKOFJ0WbR2K3BVze2bm+YXo455pcMQ6w=
+Subject: Re: Strange routing with VRF and 5.2.7+
+To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
+References: <91749b17-7800-44c0-d137-5242b8ceb819@candelatech.com>
+ <51aae991-a320-43be-bf73-8b8c0ffcba60@candelatech.com>
+ <7d1de949-5cf0-cb74-6ca3-52315c34a340@candelatech.com>
+ <795cb41e-4990-fdbe-8cbe-9c0ada751b80@gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <9eb82b65-0067-4320-4b11-7a02b6226cd5@candelatech.com>
+Date:   Mon, 30 Sep 2019 11:45:50 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <795cb41e-4990-fdbe-8cbe-9c0ada751b80@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ability to specify the source adresse for 'encap ip' / 'encap ip6'
-was added in commit 94a8722f2f78f04c47678cf864ac234a38366709 but the man
-page was not updated.
+On 9/22/19 12:23 PM, David Ahern wrote:
+> On 9/20/19 9:57 AM, Ben Greear wrote:
+>> On 9/10/19 6:08 PM, Ben Greear wrote:
+>>> On 9/10/19 3:17 PM, Ben Greear wrote:
+>>>> Today we were testing creating 200 virtual station vdevs on ath9k,
+>>>> and using
+>>>> VRF for the routing.
+>>>
+>>> Looks like the same issue happens w/out VRF, but there I have oodles
+>>> of routing
+>>> rules, so it is an area ripe for failure.
+>>>
+>>> Will upgrade to 5.2.14+ and retest, and try 4.20 as well....
+>>
+>> Turns out, this was ipsec (strongswan) inserting a rule that pointed to
+>> a table
+>> that we then used for a vrf w/out realizing the rule was added.
+>>
+>> Stopping strongswan and/or reconfiguring how routing tables are assigned
+>> resolved the issue.
+>>
+> 
+> Hi Ben:
+> 
+> Since you are the pioneer with vrf and ipsec, can you add an ipsec
+> section with some notes to Documentation/networking/vrf.txt?
 
-Also fixes a missing page in ip-route.8.in.
+I need to to some more testing, an initial attempt to reproduce my working
+config on another system did not work properly, and I have not yet dug into
+it.
 
-Signed-off-by: Damien Robert <damien.olivier.robert+git@gmail.com>
----
-Apologies if this is the wrong way to send patches for iproute2.
+Thanks,
+Ben
 
- man/man8/ip-route.8.in | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index a61b263e..34763cc3 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -206,6 +206,8 @@ throw " | " unreachable " | " prohibit " | " blackhole " | " nat " ]"
- .IR TUNNEL_ID
- .B  dst
- .IR REMOTE_IP " [ "
-+.B src
-+.IR SRC " ] ["
- .B tos
- .IR TOS " ] ["
- .B  ttl
-@@ -740,11 +742,13 @@ is a set of encapsulation attributes specific to the
- .I TUNNEL_ID
- .B  dst
- .IR REMOTE_IP " [ "
-+.B src
-+.IR SRC " ] ["
- .B tos
- .IR TOS " ] ["
- .B  ttl
- .IR TTL " ] [ "
--.BR key " ] [" csum " ] [ " seq " ] "
-+.BR key " ] [ " csum " ] [ " seq " ] "
- .in -2
- .sp
- 
 -- 
-Patched on top of v5.3.0-35-g0d82ee99 (git version 2.23.0)
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
