@@ -2,148 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F5D8C2733
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:50:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EEA4C2777
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731051AbfI3UtW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Sep 2019 16:49:22 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:38043 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726314AbfI3UtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:49:22 -0400
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iF2bI-0001tC-QZ; Mon, 30 Sep 2019 20:48:57 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 1390C5FF6C; Mon, 30 Sep 2019 13:48:55 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 0BA3EA9BF8;
-        Mon, 30 Sep 2019 13:48:55 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, jakub.kicinski@netronome.com,
-        johannes@sipsolutions.net, vfalico@gmail.com, andy@greyhouse.net,
-        jiri@resnulli.us, sd@queasysnail.net, roopa@cumulusnetworks.com,
-        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
-        kys@microsoft.com, haiyangz@microsoft.com,
-        stephen@networkplumber.org, sashal@kernel.org, hare@suse.de,
-        varun@chelsio.com, ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        schuffelen@google.com, bjorn@mork.no
-Subject: Re: [PATCH net v4 03/12] bonding: fix unexpected IFF_BONDING bit unset
-In-reply-to: <20190928164843.31800-4-ap420073@gmail.com>
-References: <20190928164843.31800-1-ap420073@gmail.com> <20190928164843.31800-4-ap420073@gmail.com>
-Comments: In-reply-to Taehee Yoo <ap420073@gmail.com>
-   message dated "Sat, 28 Sep 2019 16:48:34 -0000."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1731806AbfI3U5R convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Sep 2019 16:57:17 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:59097 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727118AbfI3U5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:57:13 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iEzqk-00015W-B5; Mon, 30 Sep 2019 19:52:42 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iEzqi-0004zx-TB; Mon, 30 Sep 2019 19:52:40 +0200
+Date:   Mon, 30 Sep 2019 19:52:40 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v1] net: ag71xx: fix mdio subnode support
+Message-ID: <20190930175240.hfujxyst475wftzt@pengutronix.de>
+References: <20190930093310.10762-1-o.rempel@pengutronix.de>
+ <20190930134209.GB14745@lunn.ch>
+ <20190930142907.wo3tahtg7g7mvfmp@pengutronix.de>
+ <20190930162557.GB15343@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <26314.1569876535.1@famine>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8BIT
-Date:   Mon, 30 Sep 2019 13:48:55 -0700
-Message-ID: <26315.1569876535@famine>
+In-Reply-To: <20190930162557.GB15343@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 19:52:14 up 136 days, 10 min, 87 users,  load average: 0.00, 0.00,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Taehee Yoo <ap420073@gmail.com> wrote:
+On Mon, Sep 30, 2019 at 06:25:57PM +0200, Andrew Lunn wrote:
+> On Mon, Sep 30, 2019 at 04:29:07PM +0200, Oleksij Rempel wrote:
+> > On Mon, Sep 30, 2019 at 03:42:09PM +0200, Andrew Lunn wrote:
+> > > On Mon, Sep 30, 2019 at 11:33:10AM +0200, Oleksij Rempel wrote:
+> > > > The driver was working with fixed phy without any noticeable issues. This bug
+> > > > was uncovered by introducing dsa ar9331-switch driver.
+> > > > 
+> > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > > ---
+> > > >  drivers/net/ethernet/atheros/ag71xx.c | 6 ++++--
+> > > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+> > > > index 6703960c7cf5..d1101eea15c2 100644
+> > > > --- a/drivers/net/ethernet/atheros/ag71xx.c
+> > > > +++ b/drivers/net/ethernet/atheros/ag71xx.c
+> > > > @@ -526,7 +526,7 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
+> > > >  	struct device *dev = &ag->pdev->dev;
+> > > >  	struct net_device *ndev = ag->ndev;
+> > > >  	static struct mii_bus *mii_bus;
+> > > > -	struct device_node *np;
+> > > > +	struct device_node *np, *mnp;
+> > > >  	int err;
+> > > >  
+> > > >  	np = dev->of_node;
+> > > > @@ -571,7 +571,9 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
+> > > >  		msleep(200);
+> > > >  	}
+> > > >  
+> > > > -	err = of_mdiobus_register(mii_bus, np);
+> > > > +	mnp = of_get_child_by_name(np, "mdio");
+> > > > +	err = of_mdiobus_register(mii_bus, mnp);
+> > > > +	of_node_put(mnp);
+> > > >  	if (err)
+> > > >  		goto mdio_err_put_clk;
+> > > 
+> > > Hi Oleksij
+> > > 
+> > > You need to keep backwards compatibility here. If you find an mdio
+> > > node, use it, but if not, you need to still register np.
+> > > 
+> > > This is also extending the driver binding, so you need to update the
+> > > binding documentation.
+> > 
+> > Hi Andrew,
+> > 
+> > Normally i would agree. But in this case:
+> > - this driver is freshly added to the kernel and is different to OpenWrt
+> >   implementation any way. No users from this side.
+> > - Devicetree binding says:
+> >   Documentation/devicetree/bindings/net/qca,ar71xx.txt
+> > |Optional properties:
+> > |- phy-handle : phandle to the PHY device connected to this device.
+> > |- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
+> > |  Use instead of phy-handle.
+> > |
+> > |Optional subnodes:
+> > |- mdio : specifies the mdio bus, used as a container for phy nodes
+> > |  according to phy.txt in the same directory
+> > 
+> > So, it is driver bug ...ooOO (my personal bug :D)
+> 
+> Hi Oleksij
+> 
+> Ah, O.K. You should of explained that in the commit message.
+> 
+> Is the mdio support just in -rc, or is it older?
+> 
+> You need to add a Fixes: tag.
+> 
+> The patch subject should be [PATCH net] to indicate this is a fix to
+> the net tree
+> 
+> The patch should be against net, not next-next.
 
->The IFF_BONDING means bonding master or bonding slave device.
->->ndo_add_slave() sets IFF_BONDING flag and ->ndo_del_slave() unsets
->IFF_BONDING flag.
->
->bond0<--bond1
->
->Both bond0 and bond1 are bonding device and these should keep having
->IFF_BONDING flag until they are removed.
->But bond1 would lose IFF_BONDING at ->ndo_del_slave() because that routine
->do not check whether the slave device is the bonding type or not.
->This patch adds the interface type check routine before removing
->IFF_BONDING flag.
->
->Test commands:
->    ip link add bond0 type bond
->    ip link add bond1 type bond
->    ip link set bond1 master bond0
->    ip link set bond1 nomaster
->    ip link del bond1 type bond
->    ip link add bond1 type bond
->
->Splat looks like:
->[   38.843933] proc_dir_entry 'bonding/bond1' already registered                                                         
->[   38.844741] WARNING: CPU: 1 PID: 631 at fs/proc/generic.c:361 proc_register+0x2a9/0x3e0                               
->[   38.845741] Modules linked in: bonding ip_tables x_tables                                                             
->[   38.846432] CPU: 1 PID: 631 Comm: ip Not tainted 5.3.0+ #3                                                            
->[   38.847234] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006                             
->[   38.848489] RIP: 0010:proc_register+0x2a9/0x3e0                                                                       
->[   38.849164] Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 39 01 00 00 48 8b 04 24 48 89 ea 48 c7 c7 e0 2b 34 b3 48 8b b0 e
->0 00 00 00 e8 c7 b6 89 ff <0f> 0b 48 c7 c7 40 3d c5 b3 e8 99 7a 38 01 48 8b 4c 24 10 48 b8 00                            
->[   38.851317] RSP: 0018:ffff888061527078 EFLAGS: 00010282
->[   38.851902] RAX: dffffc0000000008 RBX: ffff888064dc8cb0 RCX: ffffffffb1d252a2
->[   38.852684] RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffff88806cbf6b8c
->[   38.853464] RBP: ffff888064dc8f33 R08: ffffed100d980019 R09: ffffed100d980019
->[   38.854242] R10: 0000000000000001 R11: ffffed100d980018 R12: ffff888064dc8e48
->[   38.855929] R13: ffff888064dc8f32 R14: dffffc0000000000 R15: ffffed100c9b91e6
->[   38.856695] FS:  00007fc9fcc230c0(0000) GS:ffff88806ca00000(0000) knlGS:0000000000000000
->[   38.857541] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->[   38.858150] CR2: 000055948b91c118 CR3: 0000000057110006 CR4: 00000000000606e0
->[   38.858957] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->[   38.859785] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->[   38.860700] Call Trace:                             
->[   38.861004]  proc_create_seq_private+0xb3/0xf0
->[   38.861460]  bond_create_proc_entry+0x1b3/0x3f0 [bonding]
->[   38.862113]  bond_netdev_event+0x433/0x970 [bonding]
->[   38.862762]  ? __module_text_address+0x13/0x140
->[   38.867678]  notifier_call_chain+0x90/0x160
->[   38.868257]  register_netdevice+0x9b3/0xd80
->[   38.868791]  ? alloc_netdev_mqs+0x854/0xc10  
->[   38.869335]  ? netdev_change_features+0xa0/0xa0
->[   38.869852]  ? rtnl_create_link+0x2ed/0xad0
->[   38.870423]  bond_newlink+0x2a/0x60 [bonding]
->[   38.870935]  __rtnl_newlink+0xb9f/0x11b0
->[ ... ]
->Fixes: 0b680e753724 ("[PATCH] bonding: Add priv_flag to avoid event mishandling")
->Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Ok. thx! i'll fix it.
 
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
->---
->
->v2 -> v4 :
-> - This patch is not changed
->v1 -> v2 :
->  - Do not add a new priv_flag.
->
-> drivers/net/bonding/bond_main.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->index 931d9d935686..0db12fcfc953 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1816,7 +1816,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
-> 	slave_disable_netpoll(new_slave);
-> 
-> err_close:
->-	slave_dev->priv_flags &= ~IFF_BONDING;
->+	if (!netif_is_bond_master(slave_dev))
->+		slave_dev->priv_flags &= ~IFF_BONDING;
-> 	dev_close(slave_dev);
-> 
-> err_restore_mac:
->@@ -2017,7 +2018,8 @@ static int __bond_release_one(struct net_device *bond_dev,
-> 	else
-> 		dev_set_mtu(slave_dev, slave->original_mtu);
-> 
->-	slave_dev->priv_flags &= ~IFF_BONDING;
->+	if (!netif_is_bond_master(slave_dev))
->+		slave_dev->priv_flags &= ~IFF_BONDING;
-> 
-> 	bond_free_slave(slave);
-> 
->-- 
->2.17.1
->
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
