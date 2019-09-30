@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5A8C1B65
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F485C1B68
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729649AbfI3GXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 02:23:21 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:46634 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729521AbfI3GXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 02:23:20 -0400
-Received: by mail-pl1-f195.google.com with SMTP id q24so3480772plr.13
-        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 23:23:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=v2UXSRbpPDMJNbLsLxq3/UMcKkAZnO5Y/0E9KDSBhOo=;
-        b=HlUOvK8EVF8UMWp9csj74S9LbksAznt7PrLFcaXSxF+m6w/v54Ri5xl/C30x/ImEMJ
-         U9bVu3JnXRlbtKgiM2qJp44+SZu2B5LtRKAw6Vx5ZQRPqic3/+xxNW+i8La8GZXHgRmO
-         NfKm7YxSxNA52g40Mr2kxNHqEXIGBwnUUWh44=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=v2UXSRbpPDMJNbLsLxq3/UMcKkAZnO5Y/0E9KDSBhOo=;
-        b=e0NX1EKm8V4FjP7gBwu3Ha4y8rbGrvSBLIj/5S4T/BTRAAUjJSDQeDg45J9Bdr16kB
-         gri9xhxktm0gLjtDTPELxg25HF4CqnUDU2KTLNnKk0Eba2qs0TO2NuYBtu00+RpboYbc
-         yzDyyBXHTcvz+uJjytkdMJcqiZ4g4+Wm+UnPhBA61f6KSsrTsJCrhaPyx+MjWXc1WHDK
-         xNbbv74scY3mOfTQyWIlCJRFhGlBL/vIlLxvkjBWtR1MbpAOCYlk0AbB/eTd/CL12Blz
-         Mn7asaLV8v4HOyPNAGLNmgD+aQYwUHGv1DsLd5PT8mFG8UZikSsGzdw+BS/mvIATyqAH
-         xD8A==
-X-Gm-Message-State: APjAAAVOvTBxgV9osE0meMlbay+rlDyZphwnfrRy0BhVhUGJG1wxx+DA
-        KiUNiQfIAeLgfH/yoRzYfyg3MA==
-X-Google-Smtp-Source: APXvYqxS5mukV3TFkP4Xq/q+BaOaakE/7lN/V/+BF5mQ6mYb9Z91Ek2eW5lQDhwmEy3mPXay9GlV9g==
-X-Received: by 2002:a17:902:a987:: with SMTP id bh7mr18259242plb.159.1569824600035;
-        Sun, 29 Sep 2019 23:23:20 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id ev20sm10811593pjb.19.2019.09.29.23.23.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 29 Sep 2019 23:23:19 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: [PATCH v2 net] devlink: Fix error handling in param and info_get dumpit cb
-Date:   Mon, 30 Sep 2019 11:52:21 +0530
-Message-Id: <1569824541-5603-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1729725AbfI3GYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 02:24:30 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:40260 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729521AbfI3GY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 02:24:29 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 09334200AC;
+        Mon, 30 Sep 2019 08:24:29 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id lmDc1PnVeKsP; Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8EA26200AA;
+        Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 30 Sep 2019
+ 08:24:26 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1448A31800B9;
+ Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
+Date:   Mon, 30 Sep 2019 08:24:28 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
+ defaults to off.
+Message-ID: <20190930062427.GF2879@gauss3.secunet.de>
+References: <20190920044905.31759-1-steffen.klassert@secunet.com>
+ <20190920044905.31759-4-steffen.klassert@secunet.com>
+ <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If any of the param or info_get op returns error, dumpit cb is
-skipping to dump remaining params or info_get ops for all the
-drivers.
+On Mon, Sep 23, 2019 at 08:38:56AM -0400, Willem de Bruijn wrote:
+> On Fri, Sep 20, 2019 at 12:49 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >
+> > diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> > index b239507da2a0..34d050bb1ae6 100644
+> > --- a/include/linux/netdev_features.h
+> > +++ b/include/linux/netdev_features.h
+> > @@ -230,6 +230,9 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+> >  /* changeable features with no special hardware requirements */
+> >  #define NETIF_F_SOFT_FEATURES  (NETIF_F_GSO | NETIF_F_GRO)
+> >
+> > +/* Changeable features with no special hardware requirements that defaults to off. */
+> > +#define NETIF_F_SOFT_FEATURES_OFF      NETIF_F_GRO_FRAGLIST
+> > +
+> 
+> NETIF_F_GRO_FRAGLIST is not really a device feature, but a way to
+> configure which form of UDP GRO to apply.
 
-Fix to not return if any of the param/info_get op returns error
-as not supported and continue to dump remaining information.
+NETIF_F_GRO is also not really a device feature. It is a feature with
+no special hardware requirements, as NETIF_F_GRO_FRAGLIST is.
+Fraglist GRO is a special way to do GRO and should be configured in the
+same way we configure standard GRO.
 
-v2: Modify the patch to return error, except for params/info_get
-op that return -EOPNOTSUPP as suggested by Andrew Lunn. Also, modify
-commit message to reflect the same.
+> 
+> The UDP GRO benchmarks were largely positive, but not a strict win if
+> I read Paolo's previous results correctly. Even if enabling to by
+> default, it probably should come with a sysctl to disable for specific
+> workloads.
 
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
----
- net/core/devlink.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Maybe we can just keep the default for the local input path
+as is and enable GRO as this:
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e48680e..f80151e 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3172,7 +3172,7 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
- 						    NETLINK_CB(cb->skb).portid,
- 						    cb->nlh->nlmsg_seq,
- 						    NLM_F_MULTI);
--			if (err) {
-+			if (err && err != -EOPNOTSUPP) {
- 				mutex_unlock(&devlink->lock);
- 				goto out;
- 			}
-@@ -3432,7 +3432,7 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
- 						NETLINK_CB(cb->skb).portid,
- 						cb->nlh->nlmsg_seq,
- 						NLM_F_MULTI);
--				if (err) {
-+				if (err && err != -EOPNOTSUPP) {
- 					mutex_unlock(&devlink->lock);
- 					goto out;
- 				}
-@@ -4088,7 +4088,7 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 					   cb->nlh->nlmsg_seq, NLM_F_MULTI,
- 					   cb->extack);
- 		mutex_unlock(&devlink->lock);
--		if (err)
-+		if (err && err != -EOPNOTSUPP)
- 			break;
- 		idx++;
- 	}
--- 
-1.8.3.1
+For standard UDP GRO on local input, do GRO only if a GRO enabled
+socket is found.
+
+If there is no local socket found and forwarding is enabled,
+assume forwarding and do standard GRO.
+
+If fraglist GRO is enabled, do it as default on local input and
+forwarding because it is explicitly configured.
+
+Would such a policy make semse?
+
+> 
+> If so, how about a ternary per-netns sysctl {off, on without gro-list,
+> on with gro-list} instead of configuring through ethtool?
+
+I'd not like to have a global knob to configure this.
+On some devices it might make sense to enable fraglist
+GRO, but on others not. Also it would be nice if we can
+configure both vatiants with the same tool (ethtool).
 
