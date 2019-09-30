@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2CAC2923
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19DCEC2924
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732191AbfI3Vti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731840AbfI3Vti (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 30 Sep 2019 17:49:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:36368 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfI3Vte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:49:34 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y22so6357331pfr.3
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:49:34 -0700 (PDT)
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33972 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731985AbfI3Vtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:49:35 -0400
+Received: by mail-pg1-f196.google.com with SMTP id y35so8126830pgl.1
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:49:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=iyER8ybMeuqZeGqNiP6Lbd8qMka3eAGMmkCKVrI0azE=;
-        b=QJWpcXjHpXwmyDqK3x+1HoeEulxgq7mwPmcacXkzZPv6rk7BR9FIilLAccjwAdHtBQ
-         NE9BUYsjKbx1vn4NP0Ce4QUVyiykW2AjVjNjqsOhuKWzxS8OOA3sSMNmGLr+5dTNaRM1
-         JzVLWz4J8YHUZnD8Aed6MhA+omx8gYqRPcpRMqYrl4Zr63dp8YbUfB8sLxVS8o7KDHyV
-         GbaamVGONr5qzsbt13NtvtfEpV2a2gBrwniZM4YQziAwkM0IsrRuDjqTeyqtwUhra5g4
-         fz6IuF9TYr1Hln0z+k1Jj5gNcXjluvDSV7ow/Hj29sdnFmZ/DR9TvW824G82aSDAhwbC
-         iEDQ==
+        bh=DcHbVEmro+3Qcgl5wjen57hmHH767H/6x6cNZf4PpNk=;
+        b=suwAu+rB4nGCuvyvWHYZCJuWko1z8/RGwrKHtu9AAVhl8/HlhkHBcEU++JuDZwVRzQ
+         Xym3L0Vi8FlX6X0gqwFX0I0xxQI5BdYVNs9v9unF9RlQGyGB2s1xpyqtpNpm846q2XDp
+         xbUH0JdOp1S+jA5zzjxpW4QP17AcYG2z5aI9R8JASBFv05I23TVWmIsXK72DRVrmD+AZ
+         fSjyFcCb69I8L3RTjwyd+Jq+jeEorz6Xi9qdz87V0LfZPoPcyqOl55MxxPItOFi5k3Ml
+         Lhn8wbyrrfTvign0kFWqC9UWo7u7aq84uUkZ5dvvP5LN8vE9U44MZM8gP4bYX1pY23Tg
+         mvrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=iyER8ybMeuqZeGqNiP6Lbd8qMka3eAGMmkCKVrI0azE=;
-        b=lw5Q/6bJhsedYXHlMCFPdKFhxDFAi+u9PCkz7DK6e2BSqwqd8w13TERSreRPSZVI3l
-         AtIw445Z7kjAMtiANcIIn0MY6/pEeu7FwhpKchINg+pcNZjgKXXAjuoCfBvWm9htn98j
-         vlv+6rPfAP4fBznulJl+3m56cCIZEdYrR2Cb1bApSM0R35afz34lrdgK9whjern8bEoR
-         NsjmMo501UqpXtX9/t46lANosM0Yg4mrFjRfmReiIxeJxa241BPJV0BiQpBuQaHxOTZB
-         8viYy7Mqf9c0QKezf/LkjWRZGt+U2/QBjHQnvo+M/p1uMWT9Ittz57gzC0ZLhKau5o0K
-         1zVg==
-X-Gm-Message-State: APjAAAXvVNJkVgOCKsne3QYpw/Yxledok7LW4OcPFoBHi3YSe8xM4GVg
-        bGbzb7+34uh0O/p2Eoqv6TwdOtjciHoqVw==
-X-Google-Smtp-Source: APXvYqxRx3fHiXtV8LoOMmsDoUmKB7Q4Mo01Z97uSGr69D6dLAbcQ2NCzr5WazZXXuNxDdy53MuXag==
-X-Received: by 2002:a17:90a:f990:: with SMTP id cq16mr1555893pjb.41.1569880173540;
-        Mon, 30 Sep 2019 14:49:33 -0700 (PDT)
+        bh=DcHbVEmro+3Qcgl5wjen57hmHH767H/6x6cNZf4PpNk=;
+        b=XvpZ0gvDEs0tLOznVgNWBthmBRZwF7DI5q4lUvnB/6pJjBNkvNRJpsirkjHUfZC/vK
+         e7fihpbN48lTcRnh0xDIRjP69BPw262j5Su5rKsEkXEn3Kl5izp+/OBtHDUPxTcf6HGd
+         XSRUmbiBMUgVVK6ndXhKTu+I1dNJConsXy81tODfiBAbVbs7sEvbypHWlrFr9SwbDywH
+         qOVZjpdQzvz92rdIyfWO8Cfq8NdgKi6Tlnz1XZPrH8DpmTIHfF7ViI0WYdGuSpPLn4IO
+         6zJ/7+MWi0tlKA4sKGoaE7poL2N3y1y37/7kay8kmLwM64/wjJbeURH3Vsl1Yu/uDqkp
+         HDfQ==
+X-Gm-Message-State: APjAAAXFl4ZpBuDPBh0dzckSlD9aE1GEhDXuiSyza8qoGitblC3Ec2zh
+        IeRGqSAeoQql60NO3mVc18s6k9jIcN4a2w==
+X-Google-Smtp-Source: APXvYqwqmXYwn4oHrkI1rFKgVc+QgxTAHjQOgA5SVUbkYL5p3lHotCI+1YmK+EkA61bItXUwQA2AMQ==
+X-Received: by 2002:a17:90a:8d85:: with SMTP id d5mr1541901pjo.45.1569880174690;
+        Mon, 30 Sep 2019 14:49:34 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id 30sm505746pjk.25.2019.09.30.14.49.32
+        by smtp.gmail.com with ESMTPSA id 30sm505746pjk.25.2019.09.30.14.49.33
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Sep 2019 14:49:32 -0700 (PDT)
+        Mon, 30 Sep 2019 14:49:34 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 4/5] ionic: implement ethtool set-fec
-Date:   Mon, 30 Sep 2019 14:49:19 -0700
-Message-Id: <20190930214920.18764-5-snelson@pensando.io>
+Subject: [PATCH v2 net-next 5/5] ionic: add lif_quiesce to wait for queue activity to stop
+Date:   Mon, 30 Sep 2019 14:49:20 -0700
+Message-Id: <20190930214920.18764-6-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190930214920.18764-1-snelson@pensando.io>
 References: <20190930214920.18764-1-snelson@pensando.io>
@@ -57,149 +57,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wire up the --set-fec and --show-fec features in the ethtool
-callbacks and pull the related code out of set_link_ksettings.
+Even though we've already turned off the queue activity with
+the ionic_qcq_disable(), we need to wait for any device queues
+that are processing packets to drain down before we try to
+flush our packets and tear down the queues.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 94 +++++++++++++------
- 1 file changed, 67 insertions(+), 27 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 63cc14c060d6..f778fff034f5 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -254,12 +254,9 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
- 	struct ionic_lif *lif = netdev_priv(netdev);
- 	struct ionic *ionic = lif->ionic;
- 	struct ionic_dev *idev;
--	u32 req_rs, req_fc;
--	u8 fec_type;
- 	int err = 0;
- 
- 	idev = &lif->ionic->idev;
--	fec_type = IONIC_PORT_FEC_TYPE_NONE;
- 
- 	/* set autoneg */
- 	if (ks->base.autoneg != idev->port_info->config.an_enable) {
-@@ -281,29 +278,6 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
- 			return err;
- 	}
- 
--	/* set FEC */
--	req_rs = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_RS);
--	req_fc = ethtool_link_ksettings_test_link_mode(ks, advertising, FEC_BASER);
--	if (req_rs && req_fc) {
--		netdev_info(netdev, "Only select one FEC mode at a time\n");
--		return -EINVAL;
--	} else if (req_fc) {
--		fec_type = IONIC_PORT_FEC_TYPE_FC;
--	} else if (req_rs) {
--		fec_type = IONIC_PORT_FEC_TYPE_RS;
--	} else if (!(req_rs | req_fc)) {
--		fec_type = IONIC_PORT_FEC_TYPE_NONE;
--	}
--
--	if (fec_type != idev->port_info->config.fec_type) {
--		mutex_lock(&ionic->dev_cmd_lock);
--		ionic_dev_cmd_port_fec(idev, fec_type);
--		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
--		mutex_unlock(&ionic->dev_cmd_lock);
--		if (err)
--			return err;
--	}
--
- 	return 0;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 372329389c84..fc4ab73bd608 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -242,6 +242,29 @@ static int ionic_qcq_disable(struct ionic_qcq *qcq)
+ 	return ionic_adminq_post_wait(lif, &ctx);
  }
  
-@@ -353,6 +327,70 @@ static int ionic_set_pauseparam(struct net_device *netdev,
- 	return 0;
- }
- 
-+static int ionic_get_fecparam(struct net_device *netdev,
-+			      struct ethtool_fecparam *fec)
++static int ionic_lif_quiesce(struct ionic_lif *lif)
 +{
-+	struct ionic_lif *lif = netdev_priv(netdev);
++	int err;
++	struct device *dev = lif->ionic->dev;
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_setattr = {
++			.opcode = IONIC_CMD_LIF_SETATTR,
++			.attr = IONIC_LIF_ATTR_STATE,
++			.index = lif->index,
++			.state = IONIC_LIF_DISABLE
++		},
++	};
 +
-+	switch (lif->ionic->idev.port_info->config.fec_type) {
-+	case IONIC_PORT_FEC_TYPE_NONE:
-+		fec->active_fec = ETHTOOL_FEC_OFF;
-+		break;
-+	case IONIC_PORT_FEC_TYPE_RS:
-+		fec->active_fec = ETHTOOL_FEC_RS;
-+		break;
-+	case IONIC_PORT_FEC_TYPE_FC:
-+		fec->active_fec = ETHTOOL_FEC_BASER;
-+		break;
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err) {
++		dev_err(dev, "failed to quiesce lif, error = %d\n", err);
++		return err;
 +	}
 +
-+	fec->fec = ETHTOOL_FEC_OFF | ETHTOOL_FEC_RS | ETHTOOL_FEC_BASER;
-+
-+	return 0;
++	return (0);
 +}
 +
-+static int ionic_set_fecparam(struct net_device *netdev,
-+			      struct ethtool_fecparam *fec)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	u8 fec_type;
-+	int ret = 0;
-+
-+	if (lif->ionic->idev.port_info->config.an_enable) {
-+		netdev_err(netdev, "FEC request not allowed while autoneg is enabled\n");
-+		return -EINVAL;
-+	}
-+
-+	switch (fec->fec) {
-+	case ETHTOOL_FEC_NONE:
-+		fec_type = IONIC_PORT_FEC_TYPE_NONE;
-+		break;
-+	case ETHTOOL_FEC_OFF:
-+		fec_type = IONIC_PORT_FEC_TYPE_NONE;
-+		break;
-+	case ETHTOOL_FEC_RS:
-+		fec_type = IONIC_PORT_FEC_TYPE_RS;
-+		break;
-+	case ETHTOOL_FEC_BASER:
-+		fec_type = IONIC_PORT_FEC_TYPE_FC;
-+		break;
-+	case ETHTOOL_FEC_AUTO:
-+	default:
-+		netdev_err(netdev, "FEC request 0x%04x not supported\n",
-+			   fec->fec);
-+		return -EINVAL;
-+	}
-+
-+	if (fec_type != lif->ionic->idev.port_info->config.fec_type) {
-+		mutex_lock(&lif->ionic->dev_cmd_lock);
-+		ionic_dev_cmd_port_fec(&lif->ionic->idev, fec_type);
-+		ret = ionic_dev_cmd_wait(lif->ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&lif->ionic->dev_cmd_lock);
-+	}
-+
-+	return ret;
-+}
-+
- static int ionic_get_coalesce(struct net_device *netdev,
- 			      struct ethtool_coalesce *coalesce)
+ static void ionic_lif_qcq_deinit(struct ionic_lif *lif, struct ionic_qcq *qcq)
  {
-@@ -751,6 +789,7 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.get_regs		= ionic_get_regs,
- 	.get_link		= ethtool_op_get_link,
- 	.get_link_ksettings	= ionic_get_link_ksettings,
-+	.set_link_ksettings	= ionic_set_link_ksettings,
- 	.get_coalesce		= ionic_get_coalesce,
- 	.set_coalesce		= ionic_set_coalesce,
- 	.get_ringparam		= ionic_get_ringparam,
-@@ -773,7 +812,8 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.get_module_eeprom	= ionic_get_module_eeprom,
- 	.get_pauseparam		= ionic_get_pauseparam,
- 	.set_pauseparam		= ionic_set_pauseparam,
--	.set_link_ksettings	= ionic_set_link_ksettings,
-+	.get_fecparam		= ionic_get_fecparam,
-+	.set_fecparam		= ionic_set_fecparam,
- 	.nway_reset		= ionic_nway_reset,
- };
+ 	struct ionic_dev *idev = &lif->ionic->idev;
+@@ -1589,6 +1612,7 @@ int ionic_stop(struct net_device *netdev)
+ 	netif_tx_disable(netdev);
+ 
+ 	ionic_txrx_disable(lif);
++	ionic_lif_quiesce(lif);
+ 	ionic_txrx_deinit(lif);
+ 	ionic_txrx_free(lif);
  
 -- 
 2.17.1
