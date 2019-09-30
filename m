@@ -2,135 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E38FAC274D
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B59FC2756
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:53:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731025AbfI3UwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 16:52:14 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33248 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729503AbfI3UwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:52:14 -0400
-Received: by mail-wm1-f65.google.com with SMTP id r17so913807wme.0;
-        Mon, 30 Sep 2019 13:52:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8sM3A81f9Xr+CTFcU63aM7o+IniBWRXvgW3hT44K4eA=;
-        b=jvDjmTcZjLLO+pN8Q1nrG5NdUzZ7C3elxPwuszgqv6ffhIYeDSyzB+cNFypKp6ojkY
-         Ip9+9SdRMLaVo3rKmzS4qGiUmX1dpde/iZRp00GftPSUtWdc7UEwCt99SHIZLDRJ01nh
-         nFjG7pSuMSN0GmBwdQ8RiZtlNaJfwx+6psftsPmzQ24LkTDqFzF0XlLqgz8dWhivsxdJ
-         VmFy0qem9usbqvWtNXcqtVFOCaUFyDn6dyh4euwR60erq1H+T2JuE/Hi4HFK7izpUm3P
-         X24MITNb4YlGf2Sa29bkEBTt58qUZpX5venmw+TqTxn0N5a17VXUGuPr+SvX/cZUdH2D
-         XunA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8sM3A81f9Xr+CTFcU63aM7o+IniBWRXvgW3hT44K4eA=;
-        b=bFyG+XvSsWxDSm3pVOrzv6qKRJSOFDM2u6Eyb3LqSiJYagg9oP+7zJlAsAjQbG/JEu
-         zJ1f1F0ZtmCoTv21Rg5nob5DrWI5OjoL44xsqOyK96Il9DrXlWtJMVznSW83QnIhhTiy
-         BilGC9AoGpUtHYOiR0DW8Q7oC/gMVY29l3GA8dTIP0tllfW0JmwIklFSGGLznm3ATgXS
-         aERzH6sIpnHnkopFdD6Flxf6ciaTz9i2xZ//T3s4qb6h0W41qnm9qZ9vT5iqfJSyBCHk
-         HsDU/xIH02OUZX5bqqo8g1AzJn4g4/yMOLGU4QLz09oBrDrvhL3XUXEqowkl2xte79so
-         +mYg==
-X-Gm-Message-State: APjAAAVXVk5tNPXQT24y2JCcYIyaBRG6npiCw+veUbSuG3Mz+zP33qJE
-        RvUfrRGct5OIBg1ebFfC7vyUJICV
-X-Google-Smtp-Source: APXvYqwyglTDIXFxcjpQPfFoYe0m/+FVKdJ9ImPfKTXtX45DEZK/eGEvy1588/8hMk1iORJ40W2J7w==
-X-Received: by 2002:a1c:9d52:: with SMTP id g79mr370084wme.91.1569867578764;
-        Mon, 30 Sep 2019 11:19:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f26:6400:542:c9fe:c835:31f1? (p200300EA8F2664000542C9FEC83531F1.dip0.t-ipconnect.de. [2003:ea:8f26:6400:542:c9fe:c835:31f1])
-        by smtp.googlemail.com with ESMTPSA id l9sm168955wme.45.2019.09.30.11.19.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Sep 2019 11:19:38 -0700 (PDT)
-Subject: Re: [PATCH v1] net: phy: at803x: add ar9331 support
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190930092710.32739-1-o.rempel@pengutronix.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <142d584d-e3b1-a544-fd78-ea93a02b594f@gmail.com>
-Date:   Mon, 30 Sep 2019 20:19:30 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731441AbfI3UxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 16:53:24 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28406 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727118AbfI3UxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:53:23 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8UIYjZX021429
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:34:47 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=rNiyO+7h9FlkmiKJo9+ZcI3VdSYSN299VszRbuuyIcY=;
+ b=MP3Cm56gQMWPg+tFBrnoIWU8IsgbJljVlueHQobF1CKPlWppwCR4CkSypz6c75rfrCOJ
+ NtWx/d1vb0N0CtlWyVlq36VpcH7zHIo4sAuhb2CZPbmH0KTX0r84Tr2nBvzHfF3EpmFI
+ eOKQmanMxeFGgBJpji9iMfCaKMa/eNp6K90= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vaqu66t6a-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:34:47 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 30 Sep 2019 11:34:31 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 7489037014E8; Mon, 30 Sep 2019 11:34:29 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Kevin Laatz <kevin.laatz@intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf v4] libbpf: handle symbol versioning properly for libbpf.a
+Date:   Mon, 30 Sep 2019 11:34:29 -0700
+Message-ID: <20190930183429.2544258-1-yhs@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20190930092710.32739-1-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-09-30_11:2019-09-30,2019-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ adultscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
+ lowpriorityscore=0 clxscore=1015 bulkscore=0 phishscore=0 spamscore=0
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909300165
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.09.2019 11:27, Oleksij Rempel wrote:
-> Mostly this hardware can work with generic PHY driver, but this change
-> is needed to provided interrupt handling support.
-> Tested with dsa ar9331-switch driver.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/phy/at803x.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index 6ad8b1c63c34..d62a77adb8e7 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -53,6 +53,7 @@
->  #define AT803X_DEBUG_REG_5			0x05
->  #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
->  
-> +#define AR9331_PHY_ID 0x004dd041
->  #define ATH8030_PHY_ID 0x004dd076
->  #define ATH8031_PHY_ID 0x004dd074
->  #define ATH8035_PHY_ID 0x004dd072
-> @@ -406,11 +407,24 @@ static struct phy_driver at803x_driver[] = {
->  	.aneg_done		= at803x_aneg_done,
->  	.ack_interrupt		= &at803x_ack_interrupt,
->  	.config_intr		= &at803x_config_intr,
-> +}, {
-> +	/* ATHEROS AR9331 */
-> +	.phy_id			= AR9331_PHY_ID,
-> +	.name			= "Atheros AR9331 built-in PHY",
-> +	.phy_id_mask		= AT803X_PHY_ID_MASK,
+bcc uses libbpf repo as a submodule. It brings in libbpf source
+code and builds everything together to produce shared libraries.
+With latest libbpf, I got the following errors:
+  /bin/ld: libbcc_bpf.so.0.10.0: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
+  /bin/ld: failed to set dynamic section sizes: Bad value
+  collect2: error: ld returned 1 exit status
+  make[2]: *** [src/cc/libbcc_bpf.so.0.10.0] Error 1
 
-The ID mask of 0xffffffef is quite strange, it ignores the last
-bit of the model number and requires exact match of the revision
-number. Unfortunately the original commit doesn't explain why
-this mask was chosen. It would only make sense if there are
-functionally identical PHY's with e.g. id 0x004dd051.
-If in doubt I'd suggest you use macro PHY_ID_MATCH_EXACT.
+In xsk.c, we have
+  asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
+  asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
+The linker thinks the built is for LIBBPF but cannot find proper version
+LIBBPF_0.0.2/4, so emit errors.
 
-> +	.probe			= at803x_probe,
+I also confirmed that using libbpf.a to produce a shared library also
+has issues:
+  -bash-4.4$ cat t.c
+  extern void *xsk_umem__create;
+  void * test() { return xsk_umem__create; }
+  -bash-4.4$ gcc -c -fPIC t.c
+  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
+  /bin/ld: t.so: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
+  /bin/ld: failed to set dynamic section sizes: Bad value
+  collect2: error: ld returned 1 exit status
+  -bash-4.4$
 
-After 5c5f626bcace ("net: phy: improve handling link_change_notify
-callback") struct at803x_priv isn't used any longer and the probe
-callback could be removed. I didn't do that as part of this commit
-because I could compile-test the change only.
+Symbol versioning does happens in commonly used libraries, e.g., elfutils
+and glibc. For static libraries, for a versioned symbol, the old definitions
+will be ignored, and the symbol will be an alias to the latest definition.
+For example, glibc sched_setaffinity is versioned.
+  -bash-4.4$ readelf -s /usr/lib64/libc.so.6 | grep sched_setaffinity
+     756: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2.3.3
+     757: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_2.3.4
+    1800: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS sched_setaffinity.c
+    4228: 00000000000e2e70   455 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_new
+    4648: 000000000013d3d0    13 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_old
+    7338: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2
+    7380: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_
+  -bash-4.4$
+For static library, the definition of sched_setaffinity aliases to the new definition.
+  -bash-4.4$ readelf -s /usr/lib64/libc.a | grep sched_setaffinity
+  File: /usr/lib64/libc.a(sched_setaffinity.o)
+     8: 0000000000000000   455 FUNC    GLOBAL DEFAULT    1 __sched_setaffinity_new
+    12: 0000000000000000   455 FUNC    WEAK   DEFAULT    1 sched_setaffinity
 
-> +	.config_init		= at803x_config_init,
-> +	.suspend		= at803x_suspend,
-> +	.resume			= at803x_resume,
-> +	/* PHY_BASIC_FEATURES */
-> +	.ack_interrupt		= &at803x_ack_interrupt,
-> +	.config_intr		= &at803x_config_intr,
->  } };
->  
->  module_phy_driver(at803x_driver);
->  
->  static struct mdio_device_id __maybe_unused atheros_tbl[] = {
-> +	{ AR9331_PHY_ID, AT803X_PHY_ID_MASK },
+For both elfutils and glibc, additional macros are used to control different handling
+of symbol versioning w.r.t static and shared libraries.
+For elfutils, the macro is SYMBOL_VERSIONING
+(https://sourceware.org/git/?p=elfutils.git;a=blob;f=lib/eu-config.h).
+For glibc, the macro is SHARED
+(https://sourceware.org/git/?p=glibc.git;a=blob;f=include/shlib-compat.h;hb=refs/heads/master)
 
-See comment above regarding the id mask.
+This patch used SHARED as the macro name. After this patch, the libbpf.a has
+  -bash-4.4$ readelf -s libbpf.a | grep xsk_umem__create
+     372: 0000000000017145  1190 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_4
+     405: 0000000000017145  1190 FUNC    WEAK   DEFAULT    1 xsk_umem__create
+     499: 00000000000175eb   103 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_2
+  -bash-4.4$
+No versioned symbols for xsk_umem__create.
+The libbpf.a can be used to build a shared library succesfully.
+  -bash-4.4$ cat t.c
+  extern void *xsk_umem__create;
+  void * test() { return xsk_umem__create; }
+  -bash-4.4$ gcc -c -fPIC t.c
+  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
+  -bash-4.4$
 
->  	{ ATH8030_PHY_ID, AT803X_PHY_ID_MASK },
->  	{ ATH8031_PHY_ID, AT803X_PHY_ID_MASK },
->  	{ ATH8035_PHY_ID, AT803X_PHY_ID_MASK },
-> 
-Heiner
+Fixes: 10d30e301732 ("libbpf: add flags to umem config")
+Cc: Kevin Laatz <kevin.laatz@intel.com>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ tools/lib/bpf/Makefile          | 27 ++++++++++++++++++---------
+ tools/lib/bpf/libbpf_internal.h | 16 ++++++++++++++++
+ tools/lib/bpf/xsk.c             |  4 ++--
+ 3 files changed, 36 insertions(+), 11 deletions(-)
+
+ChangeLog:
+  v3 -> v4:
+     - Raname macros {OLD|NEW}_VERSION to {COMPAT|DEFAULT}_VERSION
+       (Alexei).
+  v2 -> v3:
+     - Rename macro name from SYMBOL_VERSIONING to SHARED,
+       plus some other minor changes (Andrii).
+  v1 -> v2:
+     - Simple hacking to remove versioning for static library, which
+       does not work if the versioned symbol is referenced,
+     to a proper implementation.
+
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 20772663d3e1..56ce6292071b 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -114,6 +114,9 @@ override CFLAGS += $(INCLUDES)
+ override CFLAGS += -fvisibility=hidden
+ override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+ 
++# flags specific for shared library
++SHLIB_FLAGS := -DSHARED
++
+ ifeq ($(VERBOSE),1)
+   Q =
+ else
+@@ -130,14 +133,17 @@ all:
+ export srctree OUTPUT CC LD CFLAGS V
+ include $(srctree)/tools/build/Makefile.include
+ 
+-BPF_IN		:= $(OUTPUT)libbpf-in.o
++SHARED_OBJDIR	:= $(OUTPUT)sharedobjs/
++STATIC_OBJDIR	:= $(OUTPUT)staticobjs/
++BPF_IN_SHARED	:= $(SHARED_OBJDIR)libbpf-in.o
++BPF_IN_STATIC	:= $(STATIC_OBJDIR)libbpf-in.o
+ VERSION_SCRIPT	:= libbpf.map
+ 
+ LIB_TARGET	:= $(addprefix $(OUTPUT),$(LIB_TARGET))
+ LIB_FILE	:= $(addprefix $(OUTPUT),$(LIB_FILE))
+ PC_FILE		:= $(addprefix $(OUTPUT),$(PC_FILE))
+ 
+-GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN) | \
++GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
+ 			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
+ 			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}' | \
+ 			   sort -u | wc -l)
+@@ -159,7 +165,7 @@ all: fixdep
+ 
+ all_cmd: $(CMD_TARGETS) check
+ 
+-$(BPF_IN): force elfdep bpfdep
++$(BPF_IN_SHARED): force elfdep bpfdep
+ 	@(test -f ../../include/uapi/linux/bpf.h -a -f ../../../include/uapi/linux/bpf.h && ( \
+ 	(diff -B ../../include/uapi/linux/bpf.h ../../../include/uapi/linux/bpf.h >/dev/null) || \
+ 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/bpf.h' differs from latest version at 'include/uapi/linux/bpf.h'" >&2 )) || true
+@@ -175,17 +181,20 @@ $(BPF_IN): force elfdep bpfdep
+ 	@(test -f ../../include/uapi/linux/if_xdp.h -a -f ../../../include/uapi/linux/if_xdp.h && ( \
+ 	(diff -B ../../include/uapi/linux/if_xdp.h ../../../include/uapi/linux/if_xdp.h >/dev/null) || \
+ 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
+-	$(Q)$(MAKE) $(build)=libbpf
++	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
++
++$(BPF_IN_STATIC): force elfdep bpfdep
++	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(STATIC_OBJDIR)
+ 
+ $(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
+ 
+-$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
++$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN_SHARED)
+ 	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
+ 				    -Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
+ 	@ln -sf $(@F) $(OUTPUT)libbpf.so
+ 	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
+ 
+-$(OUTPUT)libbpf.a: $(BPF_IN)
++$(OUTPUT)libbpf.a: $(BPF_IN_STATIC)
+ 	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
+ 
+ $(OUTPUT)test_libbpf: test_libbpf.cpp $(OUTPUT)libbpf.a
+@@ -201,7 +210,7 @@ check: check_abi
+ 
+ check_abi: $(OUTPUT)libbpf.so
+ 	@if [ "$(GLOBAL_SYM_COUNT)" != "$(VERSIONED_SYM_COUNT)" ]; then	 \
+-		echo "Warning: Num of global symbols in $(BPF_IN)"	 \
++		echo "Warning: Num of global symbols in $(BPF_IN_SHARED)"	 \
+ 		     "($(GLOBAL_SYM_COUNT)) does NOT match with num of"	 \
+ 		     "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
+ 		     "Please make sure all LIBBPF_API symbols are"	 \
+@@ -259,9 +268,9 @@ config-clean:
+ 	$(Q)$(MAKE) -C $(srctree)/tools/build/feature/ clean >/dev/null
+ 
+ clean:
+-	$(call QUIET_CLEAN, libbpf) $(RM) $(TARGETS) $(CXX_TEST_TARGET) \
++	$(call QUIET_CLEAN, libbpf) $(RM) -rf $(TARGETS) $(CXX_TEST_TARGET) \
+ 		*.o *~ *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) .*.d .*.cmd \
+-		*.pc LIBBPF-CFLAGS
++		*.pc LIBBPF-CFLAGS $(SHARED_OBJDIR) $(STATIC_OBJDIR)
+ 	$(call QUIET_CLEAN, core-gen) $(RM) $(OUTPUT)FEATURE-DUMP.libbpf
+ 
+ 
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 2e83a34f8c79..f71a35875fb0 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -34,6 +34,22 @@
+ 	(offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
+ #endif
+ 
++/* Symbol versioning is different between static and shared library.
++ * Properly versioned symbols are needed for shared library, but
++ * only the symbol of the new version is needed for static library.
++ */
++#ifdef SHARED
++# define COMPAT_VERSION(internal_name, api_name, version) \
++	asm(".symver " #internal_name "," #api_name "@" #version);
++# define DEFAULT_VERSION(internal_name, api_name, version) \
++	asm(".symver " #internal_name "," #api_name "@@" #version);
++#else
++# define COMPAT_VERSION(internal_name, api_name, version)
++# define DEFAULT_VERSION(internal_name, api_name, version) \
++	extern typeof(internal_name) api_name \
++	__attribute__((weak, alias (#internal_name)));
++#endif
++
+ extern void libbpf_print(enum libbpf_print_level level,
+ 			 const char *format, ...)
+ 	__attribute__((format(printf, 2, 3)));
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 24fa313524fb..a902838f9fcc 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -261,8 +261,8 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
+ 	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
+ 					&config);
+ }
+-asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
+-asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
++COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
++DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+ 
+ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ {
+-- 
+2.17.1
+
