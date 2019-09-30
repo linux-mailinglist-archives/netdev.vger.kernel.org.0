@@ -2,146 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93D45C2419
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 17:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D47C2427
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 17:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731955AbfI3PQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 11:16:55 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:37801 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730780AbfI3PQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 11:16:55 -0400
-Received: by mail-yb1-f193.google.com with SMTP id z125so1180479ybc.4
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:16:55 -0700 (PDT)
+        id S1731974AbfI3PWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 11:22:08 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:38608 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731880AbfI3PWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 11:22:07 -0400
+Received: by mail-lf1-f67.google.com with SMTP id u28so7358223lfc.5
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I388+Z01uFqRgCbtUk48+rgrz9rQmtEtuuf2g+o19pY=;
-        b=a5ukSfvY6P980pqVkLsW+uEWbZ9VaQLXqugiRcX/MQr1VBPIla0++Qo+7mM1hv4k6w
-         vqilxzUFnQvz9ohd+HeDPd7J+oYdWcasbakPijayk83FA1ovIy5xVhRmxzWhM2KfoOS5
-         fUuN7TCt2BP3zUBa46ZIHwvCOCJPpI3HKpJWDiP8RuSUNNes+5b7YbBUrpXFCbNyuLVR
-         h4iz7768WqAZiH/3v1FJwmdcDeDOoIap2IPhyXE7umYuQoJQbxyS20mpDG8zC0sfWdXf
-         mn0CFUr0263Eeng+NhSdMnpEglJic/HJ4s1j6jjeIFZ5jWlqLCTy4THjST0+9S8DRvtg
-         jJow==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BYhlWrHWLelqFbRdPy6ZGRcd9+nrFvoHl+u1ZjT58D8=;
+        b=gaQIrHjqhtxc9Vu0s62Jnye1nv5XuyFPrgvwz5ZT1ZXmoShaHHS+ve+jA0AVghqnwb
+         8E+Quo9WZOcQvUGqGU00qAX7BiRjZ9aj44L6UDB7kUECcRsg7iCZJltEnNyABPTBQnND
+         uQ58Ou39o2LNLXXdR6oXgBA5e0CmRlNQGLHPU6iaEvgaw5K++Rx46pvXmjCuS12GAbVH
+         Vk7rpTkB4DEX27q8LuuPvWlx4pYsRw9wUuXXd3ULIQbKCf/hmjNJ8UdH70SgkDjYyZmr
+         7QoD6WLrIaQ2DC32jxvkNzfWSTZmToprV/6TE1MV1q2VMCNWOeyV8f8xMeajsOo/DR+c
+         frRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I388+Z01uFqRgCbtUk48+rgrz9rQmtEtuuf2g+o19pY=;
-        b=P1qTgYnaaQC5YYmRbYW7rgQuYUbgih0+YBkxjWIsTkBp4ogJM1KqcLtFZM9RoN1Uw8
-         fak+F/kGg9/jkzaunJK3RrtOQ2/siNZZeJHgOen8koqKjw7AzelX2a2RWqce8ShLwdpi
-         R2ky9DVShFOg5S8tbqwzLPs0Mac/TWtvAewA2xrnXGl66mjzDK1tZvhE2FLAYkNYac//
-         QjxCyNqGVOhq0BvPxXxUeEC7yLZBDlT/YDKbAMdncJjSMIiLIbzlL0SU29eYt52cqtde
-         R2zvQw4qChTBIBNzhrbqriJfUzkS890F+IBpEgXQAiZxu7zhgU5HWBe3kuvzK1NJp6so
-         E9hA==
-X-Gm-Message-State: APjAAAW+6GVujAdfn3UKSQgMihdBeeujsfVHFu3VEzQQBTUokb0Q0kta
-        d2HfOgelrpCyitPpq5HhvkrG8oaj
-X-Google-Smtp-Source: APXvYqz7iECvt5Kg8ARlq45NR5GHLqhX1MSb9H/kO5Ey3izLDvlIzT7vTn8adtYB745N9CdEl3exWw==
-X-Received: by 2002:a25:9a03:: with SMTP id x3mr14878985ybn.439.1569856613605;
-        Mon, 30 Sep 2019 08:16:53 -0700 (PDT)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id q2sm2831908ywd.12.2019.09.30.08.16.52
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Sep 2019 08:16:53 -0700 (PDT)
-Received: by mail-yw1-f49.google.com with SMTP id n11so3631865ywn.6
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:16:52 -0700 (PDT)
-X-Received: by 2002:a81:5883:: with SMTP id m125mr12936784ywb.64.1569856611672;
- Mon, 30 Sep 2019 08:16:51 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=BYhlWrHWLelqFbRdPy6ZGRcd9+nrFvoHl+u1ZjT58D8=;
+        b=j2CKlYQMdCnS8GgzjzgPXLvNjFnOCJWnMQQOOKP/dUxZYzrlvrZnb2k/s+ODA68Li1
+         Hf1CtoambsmRgMvxIVZ0owFnaR224zONR7d+3Hje+vhwTNYfGTHkEKjlDlRshAkwC66L
+         oHX/jUPV2NY3ZV/iDZ7RitVKX57rUgUvRz5bmDW6Vm2yNY0yjjxiugXZh7PCCz75WgDj
+         jcwgnOr5SiyUbKwLebiagVLBoQDe5iOi4VQbZ/0e4pCaoxWRtTx3588u0Y+4D8TTTo1m
+         7BzA817dpIKS+eRMvQSkaqutnE5qRihP7InsD07rym+siKiiUU5GZm21PyWtuGhSK/9U
+         9Hgw==
+X-Gm-Message-State: APjAAAXbBDYPDFp6eoTVmAnLSiXZNTi7AQ9KHG9uI2KUTXGCRY9ySJb/
+        4f8/3P8dVsiX74Keyi8FQOQhIg==
+X-Google-Smtp-Source: APXvYqwTWoTE5shzu61ppDaQRiiuYNekMNd0KjlXF3rFYiBM2AtqkDHLkwmmbig9GCZrzOVNCvqRQA==
+X-Received: by 2002:a19:6a09:: with SMTP id u9mr11431543lfu.91.1569856925746;
+        Mon, 30 Sep 2019 08:22:05 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:467d:f1c8:1ca9:8602:259:4d25])
+        by smtp.gmail.com with ESMTPSA id y22sm3230030lfb.75.2019.09.30.08.22.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 08:22:05 -0700 (PDT)
+Subject: Re: [PATCH] dt-bindings: sh_eth convert bindings to json-schema
+To:     Simon Horman <horms+renesas@verge.net.au>,
+        David Miller <davem@davemloft.net>
+Cc:     Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+References: <20190930140352.12401-1-horms+renesas@verge.net.au>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <fa068941-3456-070f-33de-dc3006bb45f6@cogentembedded.com>
+Date:   Mon, 30 Sep 2019 18:22:03 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-References: <1569646705-10585-1-git-send-email-srirakr2@cisco.com>
-In-Reply-To: <1569646705-10585-1-git-send-email-srirakr2@cisco.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 30 Sep 2019 11:16:14 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfN5=xkYUKiafM3uKF37kV6mg0Cn5WGv2QF887Pyw5A5g@mail.gmail.com>
-Message-ID: <CA+FuTSfN5=xkYUKiafM3uKF37kV6mg0Cn5WGv2QF887Pyw5A5g@mail.gmail.com>
-Subject: Re: [PATCH] AF_PACKET doesnt strip VLAN information
-To:     Sriram Krishnan <srirakr2@cisco.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        xe-linux-external@cisco.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190930140352.12401-1-horms+renesas@verge.net.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 1:24 AM Sriram Krishnan <srirakr2@cisco.com> wrote:
->
-> When an application sends with AF_PACKET and places a vlan header on
-> the raw packet; then the AF_PACKET needs to move the tag into the skb
-> so that it gets processed normally through the rest of the transmit
-> path.
->
-> This is particularly a problem on Hyper-V where the host only allows
-> vlan in the offload info.
+Hello!
 
-This sounds like behavior that needs to be addressed in the driver, instead?
+On 09/30/2019 05:03 PM, Simon Horman wrote:
 
-> Cc: xe-linux-external@cisco.com
-> ---
->  net/packet/af_packet.c | 26 ++++++++++++++++++++++++--
->  1 file changed, 24 insertions(+), 2 deletions(-)
->
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index e2742b0..cfe0904 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -1849,15 +1849,35 @@ static int packet_rcv_spkt(struct sk_buff *skb, struct net_device *dev,
->         return 0;
->  }
->
-> -static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
-> +static int packet_parse_headers(struct sk_buff *skb, struct socket *sock)
->  {
->         if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
->             sock->type == SOCK_RAW) {
+> Convert Renesas Electronics SH EtherMAC bindings documentation to
+> json-schema.  Also name bindings documentation file according to the compat
+> string being documented.
+> 
+> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+[...]
 
-If inside this branch, may miss packets with skb->protocol set to one
-of the VLAN Ethertypes.
-
-> +               __be16 ethertype;
+> diff --git a/Documentation/devicetree/bindings/net/renesas,ether.yaml b/Documentation/devicetree/bindings/net/renesas,ether.yaml
+> new file mode 100644
+> index 000000000000..7f84df9790e2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/renesas,ether.yaml
+> @@ -0,0 +1,114 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/renesas,ether.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->                 skb_reset_mac_header(skb);
+> +title: Renesas Electronics SH EtherMAC
 > +
-> +               ethertype = eth_hdr(skb)->h_proto;
-> +               /*
-> +                * If Vlan tag is present in the packet
-> +                *  move it to skb
-> +               */
-> +               if (eth_type_vlan(ethertype)) {
-> +                       int err;
-> +                       __be16 vlan_tci;
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
 > +
-> +                       err = __skb_vlan_pop(skb, &vlan_tci);
-> +                       if (unlikely(err))
-> +                               return err;
-> +
-> +                       __vlan_hwaccel_put_tag(skb, ethertype, vlan_tci);
+> +maintainers:
+> +  - Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
-What happens with multiple tags (QinQ)?
+   I'm not sure I can maintain a YAML document as I don't know YAML. :-|
 
-> +               }
-> +
->                 skb->protocol = dev_parse_header_protocol(skb);
->         }
->
->         skb_probe_transport_header(skb);
-> +       return 0;
->  }
->
->  /*
-> @@ -1979,7 +1999,9 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
->         if (unlikely(extra_len == 4))
->                 skb->no_fcs = 1;
->
-> -       packet_parse_headers(skb, sock);
-> +       err = packet_parse_headers(skb, sock);
-> +       if (err)
-> +               goto out_unlock;
+[...]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 296de2b51c83..496e8f156925 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13810,7 +13810,7 @@ R:	Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+>  L:	netdev@vger.kernel.org
+>  L:	linux-renesas-soc@vger.kernel.org
+>  F:	Documentation/devicetree/bindings/net/renesas,*.txt
+> -F:	Documentation/devicetree/bindings/net/sh_eth.txt
+> +F:	Documentation/devicetree/bindings/net/renesas,*.yaml
+>  F:	drivers/net/ethernet/renesas/
+>  F:	include/linux/sh_eth.h
 
-This only tests the new return value in one of three callers of
-packet_sendmsg_spkt.
+   Are you planning the same thing for the EtherAVB bindings? We need to rename
+them to "renesas,etheravb" as the current name is neither here, nor there. Tha was
+my fault... :-(
+
+MBR, Sergei
