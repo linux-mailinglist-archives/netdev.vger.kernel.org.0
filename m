@@ -2,86 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1405CC2936
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360A7C2951
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 00:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732047AbfI3V5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 17:57:04 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:45433 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727681AbfI3V5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:57:04 -0400
-Received: by mail-lj1-f193.google.com with SMTP id q64so11097244ljb.12
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 14:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4G8UhfmOAU+vf176VW3ixtgHtt4omHWSmMUKQqJYu4I=;
-        b=zxeBRvzt144Q4MDycJBV/iY/2eVJfo8OGtkSJ0SJijBO2SEblZzrVzwlMUbAM+75SS
-         LNt8hYAXph/R13Qlfc4X4Ugg10gDi9uZoyrf3aIEGtHaARdlCMS8W6Hv/Gyg1aA7NhRg
-         +5YcShk/mkdFeO4SABR6+AehSLtFVMI9hV0IZvm+xNaDRU5ri2jxn8wN8+R2531bip9n
-         HWBEiqrzP+T1djmmDaowqv+2jDvWaaqtPXvH9ttR19WAiFNmZfzReUc6pUSYmzdCWlCo
-         SGlbCAYv2DyxRTmvQ2x85hx7Fhc++TSYqMt/xumnFrYkYOJyZ42kIwDm0UDHbqZFiWeX
-         mCfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4G8UhfmOAU+vf176VW3ixtgHtt4omHWSmMUKQqJYu4I=;
-        b=ocs95vrpF0wjrU5HtRL0xsIwXEz03m/kujCv9RuSZNqiZordO15AxNL1pcqkb2ahiU
-         o5t320n00ZKdtP1RX/zJvOYnfVun7cxsicoF+85jc7LtuV+6Ls8T9M1odsYtNq5W69ID
-         c28siXEU1WIqRqxFrAJeKAyMUdlzKuad+Ktri3M2mPwaOmSFgJzSTGHX9RnTBZg3JjgG
-         6O/DONIrRVo7MJSK79xQuVq9gI/tZxG7cZL/RKZnsNqRL4W5K2aLvWzYNGIgQkbNKNKc
-         GuLI5ib9lOlN36wiBbtGmj6H2DNijB9VRqvEXeB5zvy+nzWBGG1uTFSYAqubulBnVpO1
-         isCA==
-X-Gm-Message-State: APjAAAW77ViRYih/KbeMGrzxXJyMNX/h0EYEzKiEDF+sFwTbSQgaD0AI
-        f+Iv9Ps5lWa9apl/Ly2vkInyMINsmW8bkKxCpQj7p6jmVss=
-X-Google-Smtp-Source: APXvYqxTMPGQmp2QxQwSjPnSlD2DfIy461Be7tP5jcA0wNeXj15OTh6X0ZFBtVo8y+wCLVjDeIruFT+9xcgMQuaamL4=
-X-Received: by 2002:a2e:b4c4:: with SMTP id r4mr13939072ljm.69.1569880621961;
- Mon, 30 Sep 2019 14:57:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190929070047.2515-1-wenyang@linux.alibaba.com>
-In-Reply-To: <20190929070047.2515-1-wenyang@linux.alibaba.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 30 Sep 2019 23:56:50 +0200
-Message-ID: <CACRpkdY-SnPjocWzoujah6c=Tnj8G7XqBgULXYNwnt6FvED37g@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: rtl8366rb: add missing of_node_put after
- calling of_get_child_by_name
-To:     Wen Yang <wenyang@linux.alibaba.com>
-Cc:     xlpang@linux.alibaba.com, zhiche.yy@alibaba-inc.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1732359AbfI3WLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 18:11:50 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:15872 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728035AbfI3WLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 18:11:50 -0400
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8ULvRTe023370;
+        Mon, 30 Sep 2019 23:11:42 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id; s=jan2016.eng;
+ bh=TbUk/r59p5jSgo6wWhlrBKMk1/6+sLGLI0gTgW/rd1s=;
+ b=CT0y69r+IhZ74kHzZMbkieM0hzCW3SnjCMjB39qO3+y6t+8e5CRSZs3rtyfLfHXGkIpP
+ BWj/+BWhDFtSyuIz/H+514VkT2N4RL6sAl1MITUDME3ieoO5IObq2Y6chVFxOwBgctxC
+ CVIyqh1ppXeqjKNhDbynwg3o7hzlj+WOxfSzOGSjqbwxz0gvKSWXIWF8cpze32N+ESj2
+ XJytZst9MjCiCQyV0aHCighT5Ywhw2NgBZhVQCZbna9yq37n7iviS7AFivTx9v0SfhBq
+ caK8m/R3uXcGYJ29Zxlp66bKGUJ1Kon77xKF25j7o5Uy0L3aLCng7xjSBSEx7xfVYKxv ig== 
+Received: from prod-mail-ppoint2 (prod-mail-ppoint2.akamai.com [184.51.33.19] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 2v9y5v28qs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 Sep 2019 23:11:42 +0100
+Received: from pps.filterd (prod-mail-ppoint2.akamai.com [127.0.0.1])
+        by prod-mail-ppoint2.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x8UM2Ja7018679;
+        Mon, 30 Sep 2019 18:11:41 -0400
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint2.akamai.com with ESMTP id 2va2uw2rk6-1;
+        Mon, 30 Sep 2019 18:11:41 -0400
+Received: from bos-lpwg1 (bos-lpwg1.kendall.corp.akamai.com [172.29.171.203])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id DF14F1FC95;
+        Mon, 30 Sep 2019 22:11:40 +0000 (GMT)
+Received: from johunt by bos-lpwg1 with local (Exim 4.86_2)
+        (envelope-from <johunt@akamai.com>)
+        id 1iF3tn-0005i5-KN; Mon, 30 Sep 2019 18:12:07 -0400
+From:   Josh Hunt <johunt@akamai.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, willemb@google.com,
+        alexander.h.duyck@intel.com, Josh Hunt <johunt@akamai.com>
+Subject: [PATCH 1/2] udp: fix gso_segs calculations
+Date:   Mon, 30 Sep 2019 18:11:57 -0400
+Message-Id: <1569881518-21885-1-git-send-email-johunt@akamai.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-09-30_12:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=816
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1909300183
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-09-30_12:2019-09-30,2019-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 mlxlogscore=843
+ clxscore=1011 malwarescore=0 spamscore=0 mlxscore=0 phishscore=0
+ lowpriorityscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909300183
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 29, 2019 at 9:01 AM Wen Yang <wenyang@linux.alibaba.com> wrote:
+Commit dfec0ee22c0a ("udp: Record gso_segs when supporting UDP segmentation offload")
+added gso_segs calculation, but incorrectly got sizeof() the pointer and
+not the underlying data type. It also does not account for v6 UDP GSO segs.
 
-It's nice to see some Alibaba kernel contributions!
+Fixes: dfec0ee22c0a ("udp: Record gso_segs when supporting UDP segmentation offload")
+Signed-off-by: Josh Hunt <johunt@akamai.com>
+---
+ net/ipv4/udp.c | 2 +-
+ net/ipv6/udp.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-> of_node_put needs to be called when the device node which is got
-> from of_get_child_by_name finished using.
-> irq_domain_add_linear() also calls of_node_get() to increase refcount,
-> so irq_domain will not be affected when it is released.
->
-> fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
-> Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index cf755156a684..be98d0b8f014 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -856,7 +856,7 @@ static int udp_send_skb(struct sk_buff *skb, struct flowi4 *fl4,
+ 
+ 		skb_shinfo(skb)->gso_size = cork->gso_size;
+ 		skb_shinfo(skb)->gso_type = SKB_GSO_UDP_L4;
+-		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(len - sizeof(uh),
++		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(len - sizeof(*uh),
+ 							 cork->gso_size);
+ 		goto csum_partial;
+ 	}
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index aae4938f3dea..eb9a9934ac05 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1143,6 +1143,8 @@ static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6,
+ 
+ 		skb_shinfo(skb)->gso_size = cork->gso_size;
+ 		skb_shinfo(skb)->gso_type = SKB_GSO_UDP_L4;
++		skb_shinfo(skb)->gso_segs = DIV_ROUND_UP(len - sizeof(*uh),
++							 cork->gso_size);
+ 		goto csum_partial;
+ 	}
+ 
+-- 
+2.7.4
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
