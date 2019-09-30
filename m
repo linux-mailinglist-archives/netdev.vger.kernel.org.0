@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA16C1CEF
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 10:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 195CCC1CF8
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 10:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730160AbfI3ITz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 04:19:55 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:46112 "EHLO
+        id S1730206AbfI3IUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 04:20:11 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:46062 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730032AbfI3IT1 (ORCPT
+        by vger.kernel.org with ESMTP id S1730018AbfI3IT1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 04:19:27 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 50C11C0371;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 030FEC0378;
         Mon, 30 Sep 2019 08:19:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1569831567; bh=X6ZuF3t+/sYHmhk5OVSm+g3RjPonhti5heRvhuw4Vho=;
-        h=From:To:Cc:Subject:Date:From;
-        b=l+/KdG0pKWvbdymwv42EIOi+8FdJw3GGE65tEJc16tl4r9V70l1fb2pIJAWbN8v3I
-         5jmyrl7IyHq4kLMFISbiioBWYFz/Th5n4O5YQaWUtIYSS+Kc6lzfFc4RqD5k3/+3ZR
-         sj5FtRrsyQ6erUwuVWVrA8JlpgvYDIz1LiopCs+shzQ8gmr7h+vn8pxQWNrGTYdxSH
-         e6oU/H+IlaVIilAKZEiHSprmoHIt0LUxTU4IcmpnmRc8ne2g+xeXCrkokwhbGEi+3v
-         4BueV+lMcmQwHCTkmiaOklfqdRDx+eM+qFdgsZyd0hUCg6oohEaEmEWgxhrMXrLt5J
-         0Jkp6ttf5gvRA==
+        t=1569831566; bh=F4S+1xHJRXUdoEUQwWWHucAMwa7NK06xIl14jQE+6AA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
+         References:From;
+        b=fjXstvOU18eShkFdAOSybuVAihkK3XUtr6CMjZxY0AadH2cr3dyrFadMOvcZit/hT
+         dnmaEvcUtDwDZgGsgKnlwq7KJVsH9eSJhfus4MmHgk/4R6Jzmi8Pyh8B0Xjc6wThs2
+         mHIphP0adsJoV9EV/lk+g/sPEtPfu4mIUilyueAPCtMXZzRr3OCLc17F864OXZl289
+         NQrSb9QGGSAjEQSF79zzADmo1bysj43/hqGKRyJ+7cc7QcHEbPKtv4ETKh+DtDottn
+         NwsiFRzg6URlBz/uIf+7XgrtQ7n6mMq1hJGwah/8blTMfvzxjuHd6Tsk6FaRqXQtS7
+         IMYzZYbgOCZdw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id B4E7AA0057;
-        Mon, 30 Sep 2019 08:19:21 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTP id 4BDA6A005D;
+        Mon, 30 Sep 2019 08:19:23 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
@@ -39,19 +40,24 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net 0/9] net: stmmac: Fixes for -net
-Date:   Mon, 30 Sep 2019 10:19:04 +0200
-Message-Id: <cover.1569831228.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH v2 net 1/9] net: stmmac: xgmac: Not all Unicast addresses may be available
+Date:   Mon, 30 Sep 2019 10:19:05 +0200
+Message-Id: <8db4940cc20518eb9e2dffa1277f600365a01404.1569831229.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <cover.1569831228.git.Jose.Abreu@synopsys.com>
+References: <cover.1569831228.git.Jose.Abreu@synopsys.com>
+In-Reply-To: <cover.1569831228.git.Jose.Abreu@synopsys.com>
+References: <cover.1569831228.git.Jose.Abreu@synopsys.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Misc fixes for -net tree. More info in commit logs.
+Some setups may not have all Unicast addresses filters available. Let's
+check this before trying to setup filters.
 
-v2 is just a rebase of v1 against -net and we added a new patch (09/09) to
-fix RSS feature.
+Fixes: 0efedbf11f07 ("net: stmmac: xgmac: Fix XGMAC selftests")
+Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
 Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
@@ -64,26 +70,22 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jose Abreu (9):
-  net: stmmac: xgmac: Not all Unicast addresses may be available
-  net: stmmac: xgmac: Detect Hash Table size dinamically
-  net: stmmac: selftests: Always use max DMA size in Jumbo Test
-  net: stmmac: dwmac4: Always update the MAC Hash Filter
-  net: stmmac: Correctly take timestamp for PTPv2
-  net: stmmac: Do not stop PHY if WoL is enabled
-  net: stmmac: xgmac: Disable the Timestamp interrupt by default
-  net: stmmac: xgmac: Fix RSS not writing all Keys to HW
-  net: stmmac: xgmac: Fix RSS writing wrong keys
-
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c     | 13 +++++++------
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h        |  3 ++-
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c   |  9 +++++----
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c    |  1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 19 +++++++++++++------
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c    |  4 ----
- 6 files changed, 28 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index 2b277b2c586b..6d8ac2ef4fc2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -472,7 +472,7 @@ static void dwxgmac2_set_filter(struct mac_device_info *hw,
+ 	dwxgmac2_set_mchash(ioaddr, mc_filter, mcbitslog2);
+ 
+ 	/* Handle multiple unicast addresses */
+-	if (netdev_uc_count(dev) > XGMAC_ADDR_MAX) {
++	if (netdev_uc_count(dev) > hw->unicast_filter_entries) {
+ 		value |= XGMAC_FILTER_PR;
+ 	} else {
+ 		struct netdev_hw_addr *ha;
 -- 
 2.7.4
 
