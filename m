@@ -2,128 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D90C1C68
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 09:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C54C1CAE
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 10:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729690AbfI3H4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 03:56:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49234 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725897AbfI3H4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 03:56:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 99BE0B15C;
-        Mon, 30 Sep 2019 07:56:16 +0000 (UTC)
-Subject: Re: [PATCH 1/1] xen-netfront: do not use ~0U as error return value
- for xennet_fill_frags()
-To:     Dongli Zhang <dongli.zhang@oracle.com>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, sstabellini@kernel.org,
-        boris.ostrovsky@oracle.com, joe.jin@oracle.com,
-        linux-kernel@vger.kernel.org
-References: <1569829469-16143-1-git-send-email-dongli.zhang@oracle.com>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <affc5730-bb7a-710b-b75f-27e26cdbf4e7@suse.com>
-Date:   Mon, 30 Sep 2019 09:56:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729974AbfI3IPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 04:15:15 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:56088 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbfI3IPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 04:15:15 -0400
+Received: by mail-wm1-f65.google.com with SMTP id a6so12236704wma.5
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 01:15:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cE/sibx2iPZOblQTNy18Le1yxE0X08JX8c+yNiafmbE=;
+        b=Ht42xRyTDvcH1X1h1KiprH+m+OET3Lzbmqa+I8tJehGziR12IFG96hHAZwBhkSBwjQ
+         BUjufRVHNONxalxVr+qJkhKCraEi7yhROxE6z9pTHaNjvXMHfO8Vpf9Iue4roZZcw/oP
+         SZdNjVcbMcFK2eoOdYT5jhEVhVdYiz3mzdmsDkhvbc2rv3MN50uQoiPU2efnuDE4/NSs
+         022gDZFFCjVzeTFM/kVSJv0s4lPHN+vGWWHBxMA8mpcYIklnjQWFaD1ptrpweJfIdLye
+         JQnCzSu1ybrv8NEKVf77oUe8IlM15YkjNxXgh2FKOGmNJCWzGitx5ggO8NkSyBm8mDwp
+         vr7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cE/sibx2iPZOblQTNy18Le1yxE0X08JX8c+yNiafmbE=;
+        b=isB7kBzlHsadbrdhJWX4AaUdPSmJweq1lpRJwm3Wt6w35AFscvFxCtOiRpNSMEfCxS
+         VurLdODsWx2ruTqHO3c5alnbD+j3rZhxHvI/aRG7hIebZz0zN7+LyMpA7O1QdWsMiDJi
+         C7eZaiZZ+KBKv8Y0DgVjwd6yIwG4SzfstEObe9Jpw7FvDOV2DJi83MCAbdwWstNVvos5
+         EzukuN1cu1pt4vRnI+SCxp0oAUVV7v6WAXRE87IUXBiJILfY8FPIX7hKOhA9ckB7XqG3
+         +kTOdddG1mI4qGqncPC66Panoau2RkaANx1r5DFSJt3PdxsSxIX2hk2Py0GMbQNWsqpL
+         zlJg==
+X-Gm-Message-State: APjAAAXWKnFXYlSRxRtYjl8ac/8oFzcgWgOi40BNZHi6qkeXNqnmZbCA
+        X9CoWdQrEgqCZU1llmdt0hGquTQ9bFE=
+X-Google-Smtp-Source: APXvYqz1TjQfmNi/41Z2xnii54zOEV2fWg+0gUcJ5c1//MvHXKX6qi6WP9sWGaegHqu0biXezW8cnw==
+X-Received: by 2002:a7b:c10c:: with SMTP id w12mr17027292wmi.26.1569831312874;
+        Mon, 30 Sep 2019 01:15:12 -0700 (PDT)
+Received: from localhost (ip-89-177-132-96.net.upcbroadband.cz. [89.177.132.96])
+        by smtp.gmail.com with ESMTPSA id h6sm10891754wru.60.2019.09.30.01.15.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Sep 2019 01:15:12 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, idosch@mellanox.com, pabeni@redhat.com,
+        edumazet@google.com, petrm@mellanox.com, sd@queasysnail.net,
+        f.fainelli@gmail.com, stephen@networkplumber.org,
+        mlxsw@mellanox.com
+Subject: [patch net-next 0/3] net: introduce per-netns netdevice notifiers and use them in mlxsw
+Date:   Mon, 30 Sep 2019 10:15:08 +0200
+Message-Id: <20190930081511.26915-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <1569829469-16143-1-git-send-email-dongli.zhang@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.09.19 09:44, Dongli Zhang wrote:
-> xennet_fill_frags() uses ~0U as return value when the sk_buff is not able
-> to cache extra fragments. This is incorrect because the return type of
-> xennet_fill_frags() is RING_IDX and 0xffffffff is an expected value for
-> ring buffer index.
-> 
-> In the situation when the rsp_cons is approaching 0xffffffff, the return
-> value of xennet_fill_frags() may become 0xffffffff which xennet_poll() (the
-> caller) would regard as error. As a result, queue->rx.rsp_cons is set
-> incorrectly because it is updated only when there is error. If there is no
-> error, xennet_poll() would be responsible to update queue->rx.rsp_cons.
-> Finally, queue->rx.rsp_cons would point to the rx ring buffer entries whose
-> queue->rx_skbs[i] and queue->grant_rx_ref[i] are already cleared to NULL.
-> This leads to NULL pointer access in the next iteration to process rx ring
-> buffer entries.
-> 
-> The symptom is similar to the one fixed in
-> commit 00b368502d18 ("xen-netfront: do not assume sk_buff_head list is
-> empty in error handling").
-> 
-> This patch uses an extra argument to help return if there is error in
-> xennet_fill_frags().
+From: Jiri Pirko <jiri@mellanox.com>
 
-Hmm, I wonder if it wouldn't be better to have the ring index returned
-via the new pointer and let return xennet_fill_frags() 0 in case of
-success and -ENOENT otherwise.
+Some drivers, like mlxsw, are not interested in notifications coming in
+for netdevices from other network namespaces. So introduce per-netns
+notifiers and allow to reduce overhead by listening only for
+notifications from the same netns.
 
-This would avoid having to introduce the local errno variable.
+This is also a preparation for upcoming patchset "devlink: allow devlink
+instances to change network namespace". This resolves deadlock during
+reload mlxsw into initial netns made possible by
+328fbe747ad4 ("net: Close race between {un, }register_netdevice_notifier() and setup_net()/cleanup_net()").
 
+Jiri Pirko (3):
+  net: push loops and nb calls into helper functions
+  net: introduce per-netns netdevice notifiers
+  mlxsw: spectrum: Use per-netns netdevice notifier registration
 
-Juergen
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   9 +-
+ include/linux/netdevice.h                     |   6 +
+ include/net/net_namespace.h                   |   6 +-
+ net/core/dev.c                                | 176 +++++++++++++++---
+ 4 files changed, 165 insertions(+), 32 deletions(-)
 
-> 
-> Fixes: ad4f15dc2c70 ("xen/netfront: don't bug in case of too many frags")
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
->   drivers/net/xen-netfront.c | 12 +++++++++---
->   1 file changed, 9 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index e14ec75..c2a1e09 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-> @@ -889,11 +889,14 @@ static int xennet_set_skb_gso(struct sk_buff *skb,
->   
->   static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
->   				  struct sk_buff *skb,
-> -				  struct sk_buff_head *list)
-> +				  struct sk_buff_head *list,
-> +				  int *errno)
->   {
->   	RING_IDX cons = queue->rx.rsp_cons;
->   	struct sk_buff *nskb;
->   
-> +	*errno = 0;
-> +
->   	while ((nskb = __skb_dequeue(list))) {
->   		struct xen_netif_rx_response *rx =
->   			RING_GET_RESPONSE(&queue->rx, ++cons);
-> @@ -908,6 +911,7 @@ static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
->   		if (unlikely(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS)) {
->   			queue->rx.rsp_cons = ++cons + skb_queue_len(list);
->   			kfree_skb(nskb);
-> +			*errno = -ENOENT;
->   			return ~0U;
->   		}
->   
-> @@ -1009,6 +1013,8 @@ static int xennet_poll(struct napi_struct *napi, int budget)
->   	i = queue->rx.rsp_cons;
->   	work_done = 0;
->   	while ((i != rp) && (work_done < budget)) {
-> +		int errno;
-> +
->   		memcpy(rx, RING_GET_RESPONSE(&queue->rx, i), sizeof(*rx));
->   		memset(extras, 0, sizeof(rinfo.extras));
->   
-> @@ -1045,8 +1051,8 @@ static int xennet_poll(struct napi_struct *napi, int budget)
->   		skb->data_len = rx->status;
->   		skb->len += rx->status;
->   
-> -		i = xennet_fill_frags(queue, skb, &tmpq);
-> -		if (unlikely(i == ~0U))
-> +		i = xennet_fill_frags(queue, skb, &tmpq, &errno);
-> +		if (unlikely(errno == -ENOENT))
->   			goto err;
->   
->   		if (rx->flags & XEN_NETRXF_csum_blank)
-> 
+-- 
+2.21.0
 
