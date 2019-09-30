@@ -2,72 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC25AC23BE
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 16:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A8AC2405
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 17:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731902AbfI3O5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 10:57:09 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37492 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730780AbfI3O5J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 10:57:09 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 09FCA8980E0;
-        Mon, 30 Sep 2019 14:57:09 +0000 (UTC)
-Received: from cera.brq.redhat.com (unknown [10.43.2.69])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD5595C219;
-        Mon, 30 Sep 2019 14:57:07 +0000 (UTC)
-Date:   Mon, 30 Sep 2019 16:57:06 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
-        nikolay@cumulusnetworks.com, stephen@networkplumber.org
-Subject: Re: [PATCH iproute2 net-next v2 0/2] support for bridge fdb and
- neigh get
-Message-ID: <20190930165706.1650087c@cera.brq.redhat.com>
-In-Reply-To: <1569702130-46433-1-git-send-email-roopa@cumulusnetworks.com>
-References: <1569702130-46433-1-git-send-email-roopa@cumulusnetworks.com>
+        id S1731924AbfI3PND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 11:13:03 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39652 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731276AbfI3PND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 11:13:03 -0400
+Received: by mail-lj1-f193.google.com with SMTP id y3so9898018ljj.6;
+        Mon, 30 Sep 2019 08:13:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3Bfo0rr9vkrHOZNoCbxCpYEVjTK+dS54moPMT8PgtP0=;
+        b=dgLc7SLMxhZ70hz7jiMmM6pvd9H5Olpzoyuhveqobd1dQI0XQfUgNvEcmiIejo1j5p
+         pbtSw5G5V6B+uv01NjmPh8MKj3qpC04EiWunzdKHt0USXTxIMH7x39HB0uGaCztHe3fh
+         3GIi1+Ctti0RRYrdh9fIVvt0twPQ5YRRrKlTOX3R7Lei7gYCQpOgvECoIJjdKYXeeCgg
+         HAWX0WFCWd2BTVCmStgTWEM1f8y+3/TaDxevQrpDkBY5E4j3TZ4JbwxXR31oKWTXbK/i
+         aXvySa0EIcK5WdPmgUwiEI8mEzsI/Vu9oa9L0hO5m7C33AdSglYCrw++HRYymhxMlqFG
+         XHDw==
+X-Gm-Message-State: APjAAAXljj85k6GWKiH8OnS8ef1r5C0GXmHB3OmcBjU/cj1r/RuKWsmH
+        VBqHzeG7TAxyfQkcEAxuGKA=
+X-Google-Smtp-Source: APXvYqwg/FEkVQ/xSlVzbMY3fcdyuxPargpqGNsa//amQHjHrZTEzZ+oIBnQVVZMZ0XsPRnoL1Om3g==
+X-Received: by 2002:a2e:8184:: with SMTP id e4mr12785036ljg.240.1569856381011;
+        Mon, 30 Sep 2019 08:13:01 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id n11sm3292479lfe.59.2019.09.30.08.13.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 08:13:00 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.2)
+        (envelope-from <johan@xi.terra>)
+        id 1iExMH-0006gf-Pd; Mon, 30 Sep 2019 17:13:06 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Subject: [PATCH net] hso: fix NULL-deref on tty open
+Date:   Mon, 30 Sep 2019 17:12:41 +0200
+Message-Id: <20190930151241.25646-1-johan@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.67]); Mon, 30 Sep 2019 14:57:09 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 28 Sep 2019 13:22:08 -0700
-Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
+Fix NULL-pointer dereference on tty open due to a failure to handle a
+missing interrupt-in endpoint when probing modem ports:
 
-> From: Roopa Prabhu <roopa@cumulusnetworks.com>
-> 
-> This series adds iproute2 support to lookup a bridge fdb and
-> neigh entry.
-> example:
-> $bridge fdb get 02:02:00:00:00:03 dev test-dummy0 vlan 1002
-> 02:02:00:00:00:03 dev test-dummy0 vlan 1002 master bridge
-> 
-> $ip neigh get 10.0.2.4 dev test-dummy0
-> 10.0.2.4 dev test-dummy0 lladdr de:ad:be:ef:13:37 PERMANENT
-> 
-> 
-> v2 - remove cast around stdout in print_fdb as pointed out by stephen
-> 
-> 
-> Roopa Prabhu (2):
->   bridge: fdb get support
->   ipneigh: neigh get support
-> 
->  bridge/fdb.c            | 113 +++++++++++++++++++++++++++++++++++++++++++++++-
->  ip/ipneigh.c            |  72 ++++++++++++++++++++++++++++--
->  man/man8/bridge.8       |  35 +++++++++++++++
->  man/man8/ip-neighbour.8 |  25 +++++++++++
->  4 files changed, 240 insertions(+), 5 deletions(-)
-> 
+	BUG: kernel NULL pointer dereference, address: 0000000000000006
+	...
+	RIP: 0010:tiocmget_submit_urb+0x1c/0xe0 [hso]
+	...
+	Call Trace:
+	hso_start_serial_device+0xdc/0x140 [hso]
+	hso_serial_open+0x118/0x1b0 [hso]
+	tty_open+0xf1/0x490
 
-Works great. Thanks, Roopa.
+Fixes: 542f54823614 ("tty: Modem functions for the HSO driver")
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/net/usb/hso.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-Tested-by: Ivan Vecera <ivecera@redhat.com>
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index ce78714f536f..a505b2ab88b8 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2620,14 +2620,18 @@ static struct hso_device *hso_create_bulk_serial_device(
+ 		 */
+ 		if (serial->tiocmget) {
+ 			tiocmget = serial->tiocmget;
++			tiocmget->endp = hso_get_ep(interface,
++						    USB_ENDPOINT_XFER_INT,
++						    USB_DIR_IN);
++			if (!tiocmget->endp) {
++				dev_err(&interface->dev, "Failed to find INT IN ep\n");
++				goto exit;
++			}
++
+ 			tiocmget->urb = usb_alloc_urb(0, GFP_KERNEL);
+ 			if (tiocmget->urb) {
+ 				mutex_init(&tiocmget->mutex);
+ 				init_waitqueue_head(&tiocmget->waitq);
+-				tiocmget->endp = hso_get_ep(
+-					interface,
+-					USB_ENDPOINT_XFER_INT,
+-					USB_DIR_IN);
+ 			} else
+ 				hso_free_tiomget(serial);
+ 		}
+-- 
+2.23.0
+
