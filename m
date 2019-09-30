@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A2DC243E
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 17:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C75C2456
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 17:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731924AbfI3P1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 11:27:35 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:42873 "EHLO
+        id S1731978AbfI3Pcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 11:32:47 -0400
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:41174 "EHLO
         mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728424AbfI3P1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 11:27:35 -0400
-Received: by mail-yb1-f196.google.com with SMTP id v6so4388099ybe.9
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:27:34 -0700 (PDT)
+        with ESMTP id S1731127AbfI3Pcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 11:32:47 -0400
+Received: by mail-yb1-f196.google.com with SMTP id 206so3994356ybc.8
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:32:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ycLBzrPjNz3ipjIpo+K/baf2aY77mjAzKC07stxthdE=;
-        b=FwABfb1FfogN2l+pRdVxCz3nXIEVycL3xyeFvtgfkwCzeVLOCwXAvMxkdHNTwl3yZ7
-         dd0FfPfgAFueMyfnj1cEEJs0Hzi6qNUX03ZiyJvtIGE+HV1kM+1mH5IQr9RO6bYA3d+E
-         xVqihAxY+BYcgj0vowDRX63+mMz1oa2osb5vBkBB2gBMF0J0YU1cc3FUNBFOFyoL1Vkf
-         mMjimek3iNTQF98R6QFtLeERJJpFCgHH7pDPL1qO4u/mos10k5I4mvfxQuqFqLotPmfL
-         zaLhXcfHN8kF+OhibkDlzEZRFAaW7s6cqmHCik6GGFyNI/SoHvme/oInHxClUZwn7CMR
-         dhnQ==
+        bh=wKwHnwgbGKdkEqVYuygiGYmvXm0znKHNO7QOUaYYf1g=;
+        b=l9/enaGSlNXxAypJ2DQznVq0Uf8hi7G1K4q0zXscSv4y5Br+P6miMs790bypRCGlsp
+         QlI/xgqELI+f4rLhrxbQBY+uJ3EUfnplRFS2GERqVGfIxEsIxz3cMoVDygXzuT+tvX9g
+         U7Y4wWPNnQGBdAPvqI/VXUlCnxvedAbi4G9aLATlbSRjnLH/8qdSP4DnSHxGnHxLhIW7
+         nLq5bjmjdOPYdz9Os+RhFXJCNbW5Nx9XSJmGho9YT5Px7Zqwb13RcH+D429OR5e1M/xz
+         Lqh0B+ul5FExLDiu4q7yqogR9KMoq+0JEEZqIH+XkJmpcmdOTrd2bIpDsEuTp0Z+IosN
+         wBbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ycLBzrPjNz3ipjIpo+K/baf2aY77mjAzKC07stxthdE=;
-        b=OfD3Dev9P9twMboVFUXcVbiwdIgEGEb2tM8SGaCQeRXG2vNB2X7u3O+q7ON0PeaLgE
-         +EA3X20lzrxl5y0bOTUatVRXsbycxb1K/wHAbyyLmdqKQaA0H2zb8tP6+YM5v0tuROOK
-         2QgDOoMhO3zwjCU6xUzSlfaaDHQPHu8CO284UuA+qmjuG2VstnjKEMfp2u4Mn1Rg+rss
-         IEhgRspwGDEYyoLR0pcd8zm5g+vcd5kJZRgP5F4733xxFUlSD0VZEpRag59hXBD+ZFM4
-         Ru465cTfWnf5mqJVaVb6yeAiTisUYUgb40le+4f7Pv39Qdrb3m48FyNZTb+TnU80SxzB
-         XDeQ==
-X-Gm-Message-State: APjAAAVBY0X2CJ8CLd4prmpEGoXp/GXWL1IPAMo5HV+6HNgFZxM2ilkp
-        1MM14sB3sKAetQ0nKghTxkTpF4zc
-X-Google-Smtp-Source: APXvYqzUk6LlcQ1+aE9M+xPXho1G6vHqV4ftGEpzS9N5SKntX9ZT/66Uh4GiYqPOC2VWv3bO5yqTWQ==
-X-Received: by 2002:a25:9d84:: with SMTP id v4mr15831790ybp.106.1569857253897;
-        Mon, 30 Sep 2019 08:27:33 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id y205sm2837968ywc.6.2019.09.30.08.27.32
+        bh=wKwHnwgbGKdkEqVYuygiGYmvXm0znKHNO7QOUaYYf1g=;
+        b=q8motPlIApefv8eO/hnz+rtDlsTzFXa9JXDJ+1N6pvRIoz/5FGrMlLY9fwzfGjj3ge
+         0cqxact8DMMqtxPXFR0kbFizMlAlj2boDraPN6hpewTN1leFK786QK10prHf32wVCRkd
+         tUtkjgeZ+JvbgW3abav5NI4ehIG2oXoeY7B+IQ/+eSa1TsIDPgaYwun7zD+vyxuAnOUb
+         PBV22D4mXh3eqPzsGRZ5+kabBEC4rk35Sk2EVl0p+HfTrN/mN7bahAtIb5VlOOb2uPgD
+         LqVQ011TNmcKTXzoQy0GX+RgKylBZHlsKusM5PnQo2002JHSUDY5MgHdZQVDLLkJuSjB
+         XwqQ==
+X-Gm-Message-State: APjAAAXpZkEJg+Tdli6R994Ou2XvXijE95xPb8X7yd9j+ASTZWj8A0vu
+        un8fIuuZvEcru6Cx5TAg5EX4NbKT
+X-Google-Smtp-Source: APXvYqyp+KXMlfauIfK7nnPGnYzH+KZSje6MbaD4harmsaI7cTmfBWQfRnxQbWjmdE7x3BUu3XHxgQ==
+X-Received: by 2002:a25:8708:: with SMTP id a8mr14107547ybl.1.1569857564893;
+        Mon, 30 Sep 2019 08:32:44 -0700 (PDT)
+Received: from mail-yw1-f54.google.com (mail-yw1-f54.google.com. [209.85.161.54])
+        by smtp.gmail.com with ESMTPSA id s1sm2862944ywa.67.2019.09.30.08.32.43
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Sep 2019 08:27:32 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id w125so4382319ybg.12
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:27:32 -0700 (PDT)
-X-Received: by 2002:a25:d390:: with SMTP id e138mr14316239ybf.419.1569857251999;
- Mon, 30 Sep 2019 08:27:31 -0700 (PDT)
+        Mon, 30 Sep 2019 08:32:43 -0700 (PDT)
+Received: by mail-yw1-f54.google.com with SMTP id x65so3640962ywf.12
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 08:32:43 -0700 (PDT)
+X-Received: by 2002:a81:3182:: with SMTP id x124mr12264421ywx.411.1569857563058;
+ Mon, 30 Sep 2019 08:32:43 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190920044905.31759-1-steffen.klassert@secunet.com>
- <20190920044905.31759-4-steffen.klassert@secunet.com> <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
- <20190930062427.GF2879@gauss3.secunet.de>
-In-Reply-To: <20190930062427.GF2879@gauss3.secunet.de>
+ <20190920044905.31759-6-steffen.klassert@secunet.com> <CA+FuTScYar_FNP9igCbxafMciUEYnjbnGiJyX3JhrU74VEGksg@mail.gmail.com>
+ <20190930063048.GG2879@gauss3.secunet.de>
+In-Reply-To: <20190930063048.GG2879@gauss3.secunet.de>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 30 Sep 2019 11:26:55 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
-Message-ID: <CA+FuTScxNZKdb0FqAXjxPXY4XEhFFh+_COy0QjCfvw4phSQF3g@mail.gmail.com>
-Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
- defaults to off.
+Date:   Mon, 30 Sep 2019 11:32:06 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSedVCAUK3LBZXp31KaAcHNrsENLECSfqEyJr4adfe-55Q@mail.gmail.com>
+Message-ID: <CA+FuTSedVCAUK3LBZXp31KaAcHNrsENLECSfqEyJr4adfe-55Q@mail.gmail.com>
+Subject: Re: [PATCH RFC 5/5] udp: Support UDP fraglist GRO/GSO.
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -71,75 +70,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 2:24 AM Steffen Klassert
+On Mon, Sep 30, 2019 at 2:30 AM Steffen Klassert
 <steffen.klassert@secunet.com> wrote:
 >
-> On Mon, Sep 23, 2019 at 08:38:56AM -0400, Willem de Bruijn wrote:
+> On Mon, Sep 23, 2019 at 09:01:13AM -0400, Willem de Bruijn wrote:
 > > On Fri, Sep 20, 2019 at 12:49 AM Steffen Klassert
 > > <steffen.klassert@secunet.com> wrote:
 > > >
-> > > diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-> > > index b239507da2a0..34d050bb1ae6 100644
-> > > --- a/include/linux/netdev_features.h
-> > > +++ b/include/linux/netdev_features.h
-> > > @@ -230,6 +230,9 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
-> > >  /* changeable features with no special hardware requirements */
-> > >  #define NETIF_F_SOFT_FEATURES  (NETIF_F_GSO | NETIF_F_GRO)
+> > > This patch extends UDP GRO to support fraglist GRO/GSO
+> > > by using the previously introduced infrastructure.
+> > > All UDP packets that are not targeted to a GRO capable
+> > > UDP sockets are going to fraglist GRO now (local input
+> > > and forward).
 > > >
-> > > +/* Changeable features with no special hardware requirements that defaults to off. */
-> > > +#define NETIF_F_SOFT_FEATURES_OFF      NETIF_F_GRO_FRAGLIST
+> > > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+> >
+> > > @@ -538,6 +579,15 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+> > >         const struct iphdr *iph = ip_hdr(skb);
+> > >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+> > >
+> > > +       if (NAPI_GRO_CB(skb)->is_flist) {
+> > > +               uh->len = htons(skb->len - nhoff);
+> > > +
+> > > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> > > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> > > +
+> > > +               return 0;
+> > > +       }
+> > > +
+> > >         if (uh->check)
+> > >                 uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
+> > >                                           iph->daddr, 0);
+> > > diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+> > > index 435cfbadb6bd..8836f2b69ef3 100644
+> > > --- a/net/ipv6/udp_offload.c
+> > > +++ b/net/ipv6/udp_offload.c
+> > > @@ -150,6 +150,15 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+> > >         const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+> > >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+> > >
+> > > +       if (NAPI_GRO_CB(skb)->is_flist) {
+> > > +               uh->len = htons(skb->len - nhoff);
+> > > +
+> > > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> > > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> > > +
+> > > +               return 0;
+> > > +       }
 > > > +
 > >
-> > NETIF_F_GRO_FRAGLIST is not really a device feature, but a way to
-> > configure which form of UDP GRO to apply.
+> > This is the same logic as in udp4_gro_complete. Can it be deduplicated
+> > in udp_gro_complete?
 >
-> NETIF_F_GRO is also not really a device feature. It is a feature with
-> no special hardware requirements, as NETIF_F_GRO_FRAGLIST is.
-> Fraglist GRO is a special way to do GRO and should be configured in the
-> same way we configure standard GRO.
->
+> The code below would mess up the checksum then. We did not change
+> the packets, so the checksum is still correct.
+
+Uh, right, of course. I guess it's not enough code to create a
+separate udp_gro_fraglist_complete helper for. Okay, never mind.
+
 > >
-> > The UDP GRO benchmarks were largely positive, but not a strict win if
-> > I read Paolo's previous results correctly. Even if enabling to by
-> > default, it probably should come with a sysctl to disable for specific
-> > workloads.
->
-> Maybe we can just keep the default for the local input path
-> as is and enable GRO as this:
->
-> For standard UDP GRO on local input, do GRO only if a GRO enabled
-> socket is found.
->
-> If there is no local socket found and forwarding is enabled,
-> assume forwarding and do standard GRO.
->
-> If fraglist GRO is enabled, do it as default on local input and
-> forwarding because it is explicitly configured.
->
-> Would such a policy make semse?
-
-Making the choice between fraglist or non-fraglist GRO explicitly
-configurable sounds great. Per device through ethtool over global
-sysctl, too.
-
-My main concern is not this patch, but 1/5 that enables UDP GRO by
-default. There should be a way to disable it, at least.
-
-I guess your suggestion is to only enable it with forwarding, which is
-unlikely to see a cycle regression. And if there is a latency
-regression, disable all GRO to disable UDP GRO.
-
-Instead, how about adding a UDP GRO ethtool feature independent of
-forwarding, analogous to fraglist GRO? Then both are explicitly under
-admin control. And can be enabled by default (either now, or after
-getting more data).
-
->
-> >
-> > If so, how about a ternary per-netns sysctl {off, on without gro-list,
-> > on with gro-list} instead of configuring through ethtool?
->
-> I'd not like to have a global knob to configure this.
-> On some devices it might make sense to enable fraglist
-> GRO, but on others not. Also it would be nice if we can
-> configure both vatiants with the same tool (ethtool).
+> > >         if (uh->check)
+> > >                 uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
+> > >                                           &ipv6h->daddr, 0);
