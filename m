@@ -2,136 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E35C22F5
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 16:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D264BC22FC
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 16:17:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731604AbfI3OOd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Sep 2019 10:14:33 -0400
-Received: from mga11.intel.com ([192.55.52.93]:14225 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730637AbfI3OOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 10:14:33 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Sep 2019 07:14:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,567,1559545200"; 
-   d="scan'208";a="220667934"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Sep 2019 07:14:32 -0700
-Received: from FMSMSX109.amr.corp.intel.com (10.18.116.9) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 30 Sep 2019 07:14:32 -0700
-Received: from fmsmsx123.amr.corp.intel.com ([169.254.7.221]) by
- FMSMSX109.amr.corp.intel.com ([169.254.15.48]) with mapi id 14.03.0439.000;
- Mon, 30 Sep 2019 07:14:31 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "jgg@mellanox.com" <jgg@mellanox.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [RFC 12/20] RDMA/irdma: Implement device supported verb APIs
-Thread-Topic: [RFC 12/20] RDMA/irdma: Implement device supported verb APIs
-Thread-Index: AQHVdInYTQG+jfjOOUaMtwzDEA3cFqc+rlEA//+gRVCAARvagIAAImIwgAGDhQCAAzdIIA==
-Date:   Mon, 30 Sep 2019 14:14:31 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7AC7078BD@fmsmsx123.amr.corp.intel.com>
-References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
- <20190926164519.10471-13-jeffrey.t.kirsher@intel.com>
- <20190926173710.GC14368@unreal>
- <9DD61F30A802C4429A01CA4200E302A7AC702BEA@fmsmsx123.amr.corp.intel.com>
- <20190927045029.GG14368@unreal>
- <9DD61F30A802C4429A01CA4200E302A7AC70468F@fmsmsx123.amr.corp.intel.com>
- <20190928060032.GJ14368@unreal>
-In-Reply-To: <20190928060032.GJ14368@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOGFkZjMyNGUtYTJhNi00ZTViLWIzNTctZjE1YjIwYmM0ZjM5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicUpBU2p5ZjFYek12ZlFYZGVxZWl6T2xQSU9ndUhseXZZMThGczFJUTB4dEZCQXBlU2R4NHY2OVQwcVJhUmE4cSJ9
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.108]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1731417AbfI3OQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 10:16:58 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:44408 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731113AbfI3OQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 10:16:58 -0400
+Received: by mail-io1-f68.google.com with SMTP id w12so10607300iol.11
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 07:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qSyzuXDiOCBGYUe5x3wq3t+cEuvzBt8YWh4PsSfAxng=;
+        b=UN3DqBAKeUwm8D0QEQjS3xJkE3+G7UwQhw6O0nfYZs1PZxchfelnwuw6XbPAxU+6iT
+         z7SVP3YgvJDIJkPDy8Bfe1iwyqHZfIHIy7DYtqo1N8vSDthWvJQNB9ATkSpZlZ3XCuki
+         qXAC8XV3pv/MJIMPSXlVWaEDCm27ZkGzg0pXY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qSyzuXDiOCBGYUe5x3wq3t+cEuvzBt8YWh4PsSfAxng=;
+        b=W6u67C3Y4sAHIteYkbqSZ661GLcLzK9JTc8U7nPKAHXMJeIRMFgInJryBSTuktWP2C
+         vq13sZABmOI4K5VOttZPyZAzkU4VnsjpsX0n4B/PKLOwo7mA2ii4bUlBFhn9JEruOQYR
+         /0E8jN5GmADxz3Mp80QEwM8ji1kb38AWfSs7wEEWGJ7p5BqBaA0UZ31aF50su692cZq7
+         a0WwGDQCTd71Y+2/QmlGl7QVWTAoRWy/Z10ECmCNV/JgbNcG5gffArckbaLIwyS8a3yC
+         z83wYAQfuk+0H2rA0tTGfCwtyZbJHOK4wpM/eKaG8mE37VhHLR94eRL+s3CPj8/5EmYV
+         dvNQ==
+X-Gm-Message-State: APjAAAXb9UBiQSEoWWpRQgeSsdDBukmwYOvTt3SLBhkSBuQyj+K4PgcS
+        Ae0b6HiDf/9FWK108bGQJO+shg==
+X-Google-Smtp-Source: APXvYqxn8RJVirvm2HAhcEVkXxh7lQAUGhEQpdT+JkKACOG3a8byP3d+14FHtvWo1veaYWwLKjPYgA==
+X-Received: by 2002:a92:6c10:: with SMTP id h16mr6350326ilc.299.1569853017550;
+        Mon, 30 Sep 2019 07:16:57 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id r2sm5475403ila.52.2019.09.30.07.16.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 07:16:56 -0700 (PDT)
+Subject: Re: [PATCH] tools: bpf: Use !building_out_of_srctree to determine
+ srctree
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20190927011344.4695-1-skhan@linuxfoundation.org>
+ <20190930085815.GA7249@pc-66.home>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <ea108769-1b3e-42f8-de9c-50b4a563be57@linuxfoundation.org>
+Date:   Mon, 30 Sep 2019 08:16:55 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190930085815.GA7249@pc-66.home>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [RFC 12/20] RDMA/irdma: Implement device supported verb APIs
+On 9/30/19 2:58 AM, Daniel Borkmann wrote:
+> On Thu, Sep 26, 2019 at 07:13:44PM -0600, Shuah Khan wrote:
+>> make TARGETS=bpf kselftest fails with:
+>>
+>> Makefile:127: tools/build/Makefile.include: No such file or directory
+>>
+>> When the bpf tool make is invoked from tools Makefile, srctree is
+>> cleared and the current logic check for srctree equals to empty
+>> string to determine srctree location from CURDIR.
+>>
+>> When the build in invoked from selftests/bpf Makefile, the srctree
+>> is set to "." and the same logic used for srctree equals to empty is
+>> needed to determine srctree.
+>>
+>> Check building_out_of_srctree undefined as the condition for both
+>> cases to fix "make TARGETS=bpf kselftest" build failure.
+>>
+>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 > 
-> On Fri, Sep 27, 2019 at 02:28:41PM +0000, Saleem, Shiraz wrote:
-> > > Subject: Re: [RFC 12/20] RDMA/irdma: Implement device supported verb
-> > > APIs
-> > >
-> > > On Thu, Sep 26, 2019 at 07:49:52PM +0000, Saleem, Shiraz wrote:
-> > > > > Subject: Re: [RFC 12/20] RDMA/irdma: Implement device supported
-> > > > > verb APIs
-> > > > >
-> > > > > On Thu, Sep 26, 2019 at 09:45:11AM -0700, Jeff Kirsher wrote:
-> > > > > > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> > > > > >
-> > > > > > Implement device supported verb APIs. The supported APIs vary
-> > > > > > based on the underlying transport the ibdev is registered as (i.e.
-> > > > > > iWARP or RoCEv2).
-> > > > > >
-> > > > > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > > > > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > > > > ---
-> > > > > >  drivers/infiniband/hw/irdma/verbs.c      | 4346
-> ++++++++++++++++++++++
-> > > > > >  drivers/infiniband/hw/irdma/verbs.h      |  199 +
-> > > > > >  include/uapi/rdma/rdma_user_ioctl_cmds.h |    1 +
-> > > > > >  3 files changed, 4546 insertions(+)  create mode 100644
-> > > > > > drivers/infiniband/hw/irdma/verbs.c
-> > > > > >  create mode 100644 drivers/infiniband/hw/irdma/verbs.h
-> > > > > >
-> > > > > > diff --git a/drivers/infiniband/hw/irdma/verbs.c
-> > > > > > b/drivers/infiniband/hw/irdma/verbs.c
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..025c21c722e2
-> > > > > > --- /dev/null
-> > > > > > +++ b/drivers/infiniband/hw/irdma/verbs.c
-> > > > > > @@ -0,0 +1,4346 @@
-> > > > > > +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-> > > > > > +/* Copyright (c) 2019, Intel Corporation. */
-> > > > >
-> > > > > <...>
-> > > > >
-> > > > > > +
-> > > > > > +	size = sqdepth * sizeof(struct irdma_sq_uk_wr_trk_info) +
-> > > > > > +	       (rqdepth << 3);
-> > > > > > +	iwqp->kqp.wrid_mem = kzalloc(size, GFP_KERNEL);
-> > > > > > +	if (!iwqp->kqp.wrid_mem)
-> > > > > > +		return -ENOMEM;
-> > > > > > +
-> > > > > > +	ukinfo->sq_wrtrk_array = (struct irdma_sq_uk_wr_trk_info *)
-> > > > > > +				 iwqp->kqp.wrid_mem;
-> > > > > > +	if (!ukinfo->sq_wrtrk_array)
-> > > > > > +		return -ENOMEM;
-> > > > >
-> > > > > You are leaking resources here, forgot to do proper error unwinding.
-> > > > >
-> > > >
-> > > > irdma_free_qp_rsrc() will free up that memory in case of an error.
-> > >
-> > > I'm talking about kqp.wrid_mem you allocated a couple of lines above
-> > > and didn't free in case of sq_wrtrk_array allocation failed.
-> > >
-> > Yes, I am referring to kqp.wrid_mem as well In case of err, all memory
-> > resources setup for the QP is freed in the common utility
-> > irdma_free_qp_rsrc() including the kqp.wrid_mem.
-> 
-> I see it as an anti-pattern, you have function to setup and it shouldn't return half
-> initialized state and rely on some other function to clean the mess.
+> Applied, thanks!
 > 
 
-Yes. That makes sense. We ll fix.
+Hi Daniel!
+
+Is the tree the patch went into included in the linux-next?
+
+thanks,
+-- Shuah
