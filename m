@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFC3C1CAF
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 10:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F1AC1CB0
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 10:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729981AbfI3IPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 04:15:17 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33569 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729804AbfI3IPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 04:15:16 -0400
-Received: by mail-wm1-f68.google.com with SMTP id r17so13513072wme.0
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 01:15:14 -0700 (PDT)
+        id S1729991AbfI3IPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 04:15:19 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42245 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbfI3IPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 04:15:18 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n14so10085537wrw.9
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 01:15:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qoVVhuh9/+xhqc+MBvKflQ/C4bDn0sYNe5PgtXFqAx8=;
-        b=UWQ4WnBX1tgPWMUwzAXO4qt6uTtXk28cel2XkmlTGGpB8FBXoe9NsQhlexF1xQOdD3
-         Mk5NajlQGf3/YMSpBDshs+61aA60gJom57UwMwSwKnIF13ZcynAbvNJyfY6DoDKQbgmn
-         V784xAy38/Ejh/D1Rbdq/1rNn+7WE+495Cokz6/OLnDVFWbliVGWr+42fZpFTul+Ohbp
-         gDcUVpbVsFdzrktp+B36BCWF+Y+14DBLheFEzT3wz//EteHsEyEryJ/nUvNYYe9L0V5E
-         ImwN7dFYgus/3116TYdOwSdNCKiEdPNMVAKFAZYXH9oRlCqBTTc68O19JP4j/a1CMioN
-         Z3Pw==
+        bh=69kJFwUKO4AC21wRVBRK0p2Y5z+75KMtG7Q64IsGAbM=;
+        b=dPpx08ZlhpEZfbufNNNTrU/q7WfNG7y46d1xS/ANlcgqsePKbg0RGVdIzF3miugJFW
+         FtcGr/RdHag5/vKvtu2M9K8XkK8NY0/gtM3stWD8f4t2b3oi8r26enIDyUey2iQqSrZ3
+         Cb7O8hGC8LdLoHfBtGXTV7BzFH3w/pnGAKO38vaZYjIVnBx8f8gBEPk6nNlwh44Wlasq
+         kXl3mCvTf0wgsEHwp5tOddcKoyn9XhRDMB9onmfrRArzZVS0hD48fQFjYsBxt8XpPEg4
+         2L6T2U1GkxE8j2WcaQ6pBiQqAAJaVbtGJxRaa/C5Zcn6D0Zb5dOzdJmwfqEdiFPb4Bu+
+         Wu4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qoVVhuh9/+xhqc+MBvKflQ/C4bDn0sYNe5PgtXFqAx8=;
-        b=JAUZe145fNly8gJNqXCz4APmZlKs0hftmj11yvGDebiIvC/HXunMJDkXB0XYo+T2vY
-         obQm1fpWoq31xRGTl8xqmXmctYI9Bx75BpbmlHTsTbqnrpHlUH8F5ZW3N1uEtDZrmPKV
-         HIzYAD/1dhD5VouP8e/HwVH6q7MrUH3Svp6HVgogRMihXJWyqLJ9eDWDVyGxYG297WGn
-         w1d/8mk1E0aTB6K2h+ONUwbHJvweIV+zT7NXEnAGG6luAzWVATFMSdJH+qAkn8NmiZkv
-         c7U4mFcrUyFEiBFpHoLvdAPr7UsSVUKpK9ZMtURDl/GyJfqZ238R/PUKJ/U4HQTJGko3
-         FtUw==
-X-Gm-Message-State: APjAAAVEDuYjSfo4RVesJ5AMH5N4LDZ/4IrhFqH8Q/2fZu9sgkv9Cgr7
-        9Uqf+ZQVQIzahzpXflkqDrm30hO8iVI=
-X-Google-Smtp-Source: APXvYqzi2Ky1jdhU5vTdoebZENbeJgFMeBnLdcoBCzYRnnPB9weC9wUGykLfZXViySceJ20QQ1eTwg==
-X-Received: by 2002:a1c:d185:: with SMTP id i127mr16029429wmg.28.1569831313832;
-        Mon, 30 Sep 2019 01:15:13 -0700 (PDT)
+        bh=69kJFwUKO4AC21wRVBRK0p2Y5z+75KMtG7Q64IsGAbM=;
+        b=hfy0r31STERaEgCUCtMc9wsQKSMcCyXwTqXEVmP86y+xMTEdqx5fghHMLzTehx751w
+         +CmamY7e6norMJOKeJfqWgZI2QB9zmM7qfagraZux9oA4zZvlYiM63oXK7242T8o+JSd
+         JiGZUrjNLVIS7xs8TithScfb/hHLaLYf2+dcO43n8W60rQAIzzE3x/89US7+aDM2ijnv
+         vVjH3+Mgee2feJ444JsC65kqXijPMeag1l0LUm1Y2mtkTFofjY3dY0ZYP7sWbC0ZPkIC
+         619HI3ZNUjiEY3bvTRwKOKlYywnkfEH20rTJXmvDNFcdf6KyjXDzwKpMXIOnHU4l7Njx
+         d90Q==
+X-Gm-Message-State: APjAAAXKpGlfZwFcnECyfXTxnDLjjU6lv3f6cLmu+MhppUIIPyS5+4Mj
+        DIWB5IGjCbeBb7PlaUi2LaiSEioPEto=
+X-Google-Smtp-Source: APXvYqzS7RzCNYgm5zp6Wr3fzJPmJzsZM3pibmFGmIJhWQhWKUzzcEonZDJvgmxnZOa3rkJ0yky2Wg==
+X-Received: by 2002:adf:ec44:: with SMTP id w4mr11668195wrn.251.1569831315042;
+        Mon, 30 Sep 2019 01:15:15 -0700 (PDT)
 Received: from localhost (ip-89-177-132-96.net.upcbroadband.cz. [89.177.132.96])
-        by smtp.gmail.com with ESMTPSA id t8sm10559013wrx.76.2019.09.30.01.15.13
+        by smtp.gmail.com with ESMTPSA id x129sm18974507wmg.8.2019.09.30.01.15.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 01:15:13 -0700 (PDT)
+        Mon, 30 Sep 2019 01:15:14 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, idosch@mellanox.com, pabeni@redhat.com,
         edumazet@google.com, petrm@mellanox.com, sd@queasysnail.net,
         f.fainelli@gmail.com, stephen@networkplumber.org,
         mlxsw@mellanox.com
-Subject: [patch net-next 1/3] net: push loops and nb calls into helper functions
-Date:   Mon, 30 Sep 2019 10:15:09 +0200
-Message-Id: <20190930081511.26915-2-jiri@resnulli.us>
+Subject: [patch net-next 2/3] net: introduce per-netns netdevice notifiers
+Date:   Mon, 30 Sep 2019 10:15:10 +0200
+Message-Id: <20190930081511.26915-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190930081511.26915-1-jiri@resnulli.us>
 References: <20190930081511.26915-1-jiri@resnulli.us>
@@ -65,168 +65,167 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Push iterations over net namespaces and netdevices from
-register_netdevice_notifier() and unregister_netdevice_notifier()
-into helper functions. Along with that introduce continue_reverse macros
-to make the code a bit nicer allowing to get rid of "last" marks.
+Often the code for example in drivers is interested in getting notifier
+call only from certain network namespace. In addition to the existing
+global netdevice notifier chain introduce per-netns chains and allow
+users to register to that. Eventually this would eliminate unnecessary
+overhead in case there are many netdevices in many network namespaces.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
  include/linux/netdevice.h   |  3 ++
- include/net/net_namespace.h |  3 +-
- net/core/dev.c              | 89 +++++++++++++++++++++++++------------
- 3 files changed, 66 insertions(+), 29 deletions(-)
+ include/net/net_namespace.h |  3 ++
+ net/core/dev.c              | 87 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 93 insertions(+)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 9eda1c31d1f7..4f390eec106b 100644
+index 4f390eec106b..184f54f1b9e1 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2564,6 +2564,9 @@ extern rwlock_t				dev_base_lock;		/* Device list lock */
- 		list_for_each_entry_safe(d, n, &(net)->dev_base_head, dev_list)
- #define for_each_netdev_continue(net, d)		\
- 		list_for_each_entry_continue(d, &(net)->dev_base_head, dev_list)
-+#define for_each_netdev_continue_reverse(net, d)		\
-+		list_for_each_entry_continue_reverse(d, &(net)->dev_base_head, \
-+						     dev_list)
- #define for_each_netdev_continue_rcu(net, d)		\
- 	list_for_each_entry_continue_rcu(d, &(net)->dev_base_head, dev_list)
- #define for_each_netdev_in_bond_rcu(bond, slave)	\
+@@ -2494,6 +2494,9 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd);
+ 
+ int register_netdevice_notifier(struct notifier_block *nb);
+ int unregister_netdevice_notifier(struct notifier_block *nb);
++int register_netdevice_notifier_net(struct net *net, struct notifier_block *nb);
++int unregister_netdevice_notifier_net(struct net *net,
++				      struct notifier_block *nb);
+ 
+ struct netdev_notifier_info {
+ 	struct net_device	*dev;
 diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index f8712bbeb2e0..c5a98e03591d 100644
+index c5a98e03591d..5ac2bb16d4b3 100644
 --- a/include/net/net_namespace.h
 +++ b/include/net/net_namespace.h
-@@ -317,7 +317,8 @@ static inline struct net *read_pnet(const possible_net_t *pnet)
- /* Protected by net_rwsem */
- #define for_each_net(VAR)				\
- 	list_for_each_entry(VAR, &net_namespace_list, list)
--
-+#define for_each_net_continue_reverse(VAR)		\
-+	list_for_each_entry_continue_reverse(VAR, &net_namespace_list, list)
- #define for_each_net_rcu(VAR)				\
- 	list_for_each_entry_rcu(VAR, &net_namespace_list, list)
+@@ -36,6 +36,7 @@
+ #include <linux/ns_common.h>
+ #include <linux/idr.h>
+ #include <linux/skbuff.h>
++#include <linux/notifier.h>
  
+ struct user_namespace;
+ struct proc_dir_entry;
+@@ -96,6 +97,8 @@ struct net {
+ 	struct list_head 	dev_base_head;
+ 	struct hlist_head 	*dev_name_head;
+ 	struct hlist_head	*dev_index_head;
++	struct raw_notifier_head	netdev_chain;
++
+ 	unsigned int		dev_base_seq;	/* protected by rtnl_mutex */
+ 	int			ifindex;
+ 	unsigned int		dev_unreg_count;
 diff --git a/net/core/dev.c b/net/core/dev.c
-index bf3ed413abaf..6a87d0e71201 100644
+index 6a87d0e71201..3302cefd3041 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -1617,6 +1617,62 @@ static int call_netdevice_notifier(struct notifier_block *nb, unsigned long val,
- 	return nb->notifier_call(nb, val, &info);
+@@ -1766,6 +1766,80 @@ int unregister_netdevice_notifier(struct notifier_block *nb)
  }
+ EXPORT_SYMBOL(unregister_netdevice_notifier);
  
-+static int call_netdevice_register_notifiers(struct notifier_block *nb,
-+					     struct net_device *dev)
++/**
++ * register_netdevice_notifier_net - register a per-netns network notifier block
++ * @net: network namespace
++ * @nb: notifier
++ *
++ * Register a notifier to be called when network device events occur.
++ * The notifier passed is linked into the kernel structures and must
++ * not be reused until it has been unregistered. A negative errno code
++ * is returned on a failure.
++ *
++ * When registered all registration and up events are replayed
++ * to the new notifier to allow device to have a race free
++ * view of the network device list.
++ */
++
++int register_netdevice_notifier_net(struct net *net, struct notifier_block *nb)
 +{
 +	int err;
 +
-+	err = call_netdevice_notifier(nb, NETDEV_REGISTER, dev);
-+	err = notifier_to_errno(err);
++	rtnl_lock();
++	err = raw_notifier_chain_register(&net->netdev_chain, nb);
 +	if (err)
-+		return err;
++		goto unlock;
++	if (dev_boot_phase)
++		goto unlock;
 +
-+	if (!(dev->flags & IFF_UP))
-+		return 0;
++	err = call_netdevice_register_net_notifiers(nb, net);
++	if (err)
++		goto chain_unregister;
 +
-+	call_netdevice_notifier(nb, NETDEV_UP, dev);
-+	return 0;
++unlock:
++	rtnl_unlock();
++	return err;
++
++chain_unregister:
++	raw_notifier_chain_unregister(&netdev_chain, nb);
++	goto unlock;
 +}
++EXPORT_SYMBOL(register_netdevice_notifier_net);
 +
-+static void call_netdevice_unregister_notifiers(struct notifier_block *nb,
-+						struct net_device *dev)
-+{
-+	if (dev->flags & IFF_UP) {
-+		call_netdevice_notifier(nb, NETDEV_GOING_DOWN,
-+					dev);
-+		call_netdevice_notifier(nb, NETDEV_DOWN, dev);
-+	}
-+	call_netdevice_notifier(nb, NETDEV_UNREGISTER, dev);
-+}
++/**
++ * unregister_netdevice_notifier_net - unregister a per-netns
++ *                                     network notifier block
++ * @net: network namespace
++ * @nb: notifier
++ *
++ * Unregister a notifier previously registered by
++ * register_netdevice_notifier(). The notifier is unlinked into the
++ * kernel structures and may then be reused. A negative errno code
++ * is returned on a failure.
++ *
++ * After unregistering unregister and down device events are synthesized
++ * for all devices on the device list to the removed notifier to remove
++ * the need for special case cleanup code.
++ */
 +
-+static int call_netdevice_register_net_notifiers(struct notifier_block *nb,
-+						 struct net *net)
++int unregister_netdevice_notifier_net(struct net *net,
++				      struct notifier_block *nb)
 +{
-+	struct net_device *dev;
 +	int err;
 +
-+	for_each_netdev(net, dev) {
-+		err = call_netdevice_register_notifiers(nb, dev);
-+		if (err)
-+			goto rollback;
-+	}
-+	return 0;
++	rtnl_lock();
++	err = raw_notifier_chain_unregister(&net->netdev_chain, nb);
++	if (err)
++		goto unlock;
 +
-+rollback:
-+	for_each_netdev_continue_reverse(net, dev)
-+		call_netdevice_unregister_notifiers(nb, dev);
++	call_netdevice_unregister_net_notifiers(nb, net);
++
++unlock:
++	rtnl_unlock();
 +	return err;
 +}
++EXPORT_SYMBOL(unregister_netdevice_notifier_net);
 +
-+static void call_netdevice_unregister_net_notifiers(struct notifier_block *nb,
-+						    struct net *net)
-+{
-+	struct net_device *dev;
-+
-+	for_each_netdev(net, dev)
-+		call_netdevice_unregister_notifiers(nb, dev);
-+}
-+
- static int dev_boot_phase = 1;
- 
  /**
-@@ -1635,8 +1691,6 @@ static int dev_boot_phase = 1;
- 
- int register_netdevice_notifier(struct notifier_block *nb)
+  *	call_netdevice_notifiers_info - call all network notifier blocks
+  *	@val: value passed unmodified to notifier function
+@@ -1778,7 +1852,18 @@ EXPORT_SYMBOL(unregister_netdevice_notifier);
+ static int call_netdevice_notifiers_info(unsigned long val,
+ 					 struct netdev_notifier_info *info)
  {
--	struct net_device *dev;
--	struct net_device *last;
- 	struct net *net;
- 	int err;
- 
-@@ -1649,17 +1703,9 @@ int register_netdevice_notifier(struct notifier_block *nb)
- 	if (dev_boot_phase)
- 		goto unlock;
- 	for_each_net(net) {
--		for_each_netdev(net, dev) {
--			err = call_netdevice_notifier(nb, NETDEV_REGISTER, dev);
--			err = notifier_to_errno(err);
--			if (err)
--				goto rollback;
--
--			if (!(dev->flags & IFF_UP))
--				continue;
--
--			call_netdevice_notifier(nb, NETDEV_UP, dev);
--		}
-+		err = call_netdevice_register_net_notifiers(nb, net);
-+		if (err)
-+			goto rollback;
- 	}
- 
- unlock:
-@@ -1668,22 +1714,9 @@ int register_netdevice_notifier(struct notifier_block *nb)
- 	return err;
- 
- rollback:
--	last = dev;
--	for_each_net(net) {
--		for_each_netdev(net, dev) {
--			if (dev == last)
--				goto outroll;
--
--			if (dev->flags & IFF_UP) {
--				call_netdevice_notifier(nb, NETDEV_GOING_DOWN,
--							dev);
--				call_netdevice_notifier(nb, NETDEV_DOWN, dev);
--			}
--			call_netdevice_notifier(nb, NETDEV_UNREGISTER, dev);
--		}
--	}
-+	for_each_net_continue_reverse(net)
-+		call_netdevice_unregister_net_notifiers(nb, net);
- 
--outroll:
- 	raw_notifier_chain_unregister(&netdev_chain, nb);
- 	goto unlock;
++	struct net *net = dev_net(info->dev);
++	int ret;
++
+ 	ASSERT_RTNL();
++
++	/* Run per-netns notifier block chain first, then run the global one.
++	 * Hopefully, one day, the global one is going to be removed after
++	 * all notifier block registrators get converted to be per-netns.
++	 */
++	ret = raw_notifier_call_chain(&net->netdev_chain, val, info);
++	if (ret & NOTIFY_STOP_MASK)
++		return ret;
+ 	return raw_notifier_call_chain(&netdev_chain, val, info);
  }
+ 
+@@ -9668,6 +9753,8 @@ static int __net_init netdev_init(struct net *net)
+ 	if (net->dev_index_head == NULL)
+ 		goto err_idx;
+ 
++	RAW_INIT_NOTIFIER_HEAD(&net->netdev_chain);
++
+ 	return 0;
+ 
+ err_idx:
 -- 
 2.21.0
 
