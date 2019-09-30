@@ -2,97 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0AFFC220F
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A60BC2232
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731304AbfI3Nee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 09:34:34 -0400
-Received: from uho.ysoft.cz ([81.19.3.130]:36312 "EHLO uho.ysoft.cz"
+        id S1730923AbfI3Nia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 09:38:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54446 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730583AbfI3Nee (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 09:34:34 -0400
-Received: from [10.1.8.111] (unknown [10.1.8.111])
-        by uho.ysoft.cz (Postfix) with ESMTP id 5035FA48B3;
-        Mon, 30 Sep 2019 15:34:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
-        s=20160406-ysoft-com; t=1569850471;
-        bh=DkZhXLf/liSBVKh0ARKHhgcCiN6tBxU8m1QCK+EHagE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=KmLhQ08Y2U16kKNbPRryKZWifG7u+VBmXUzd2Di93Q+vOSkJ5hnIRgqYW9RR+VZzL
-         E5RToMy9puNOGm9AHWqo93JPxDuw84gDBj/Yy33PPWsq67I8RMosGnkUAPsmPH0sol
-         xXE4tYJ9a94/BgbX3LhZS0qr4ZmIEx08QKuw3/bk=
-Subject: Re: [PATCH net] net: dsa: qca8k: Use up to 7 ports for all operations
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <1569488357-31415-1-git-send-email-michal.vokac@ysoft.com>
-From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
-Message-ID: <07dda3c6-696c-928f-b007-8cda9744b624@ysoft.com>
-Date:   Mon, 30 Sep 2019 15:34:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730266AbfI3Nia (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 09:38:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6HWsDLNMnB4aAwH+pLe7bo6EFz7DNwMADmVFpQIl97o=; b=k0kSW7W6Usm4lkpQmZVuHYnfkn
+        pvpolDDcU6xv+Abbo7HK35qI7+3dvG/9x3T26ZoHF3FzP4tiqQC1gj9JROsSni6JTBb8pDDgnQHN1
+        9HojC7HVSgLevKy/HEfZeBFVJXxu6clhFULUztN1ZyzZZMr02H0u5sBlvtKvTXmtkEEQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iEvse-0003tf-A0; Mon, 30 Sep 2019 15:38:24 +0200
+Date:   Mon, 30 Sep 2019 15:38:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@mellanox.com,
+        pabeni@redhat.com, edumazet@google.com, petrm@mellanox.com,
+        sd@queasysnail.net, f.fainelli@gmail.com,
+        stephen@networkplumber.org, mlxsw@mellanox.com
+Subject: Re: [patch net-next 2/3] net: introduce per-netns netdevice notifiers
+Message-ID: <20190930133824.GA14745@lunn.ch>
+References: <20190930081511.26915-1-jiri@resnulli.us>
+ <20190930081511.26915-3-jiri@resnulli.us>
 MIME-Version: 1.0
-In-Reply-To: <1569488357-31415-1-git-send-email-michal.vokac@ysoft.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190930081511.26915-3-jiri@resnulli.us>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26. 09. 19 10:59, Michal Vokáč wrote:
-> The QCA8K family supports up to 7 ports. So use the existing
-> QCA8K_NUM_PORTS define to allocate the switch structure and limit all
-> operations with the switch ports.
-> 
-> This was not an issue until commit 0394a63acfe2 ("net: dsa: enable and
-> disable all ports") disabled all unused ports. Since the unused ports 7-11
-> are outside of the correct register range on this switch some registers
-> were rewritten with invalid content.
-> 
-> Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
-> Fixes: a0c02161ecfc ("net: dsa: variable number of ports")
-> Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
-> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
+>  static int call_netdevice_notifiers_info(unsigned long val,
+>  					 struct netdev_notifier_info *info)
+>  {
+> +	struct net *net = dev_net(info->dev);
+> +	int ret;
+> +
+>  	ASSERT_RTNL();
+> +
+> +	/* Run per-netns notifier block chain first, then run the global one.
+> +	 * Hopefully, one day, the global one is going to be removed after
+> +	 * all notifier block registrators get converted to be per-netns.
+> +	 */
 
-More recent patches on the list are getting attention.
-Is this one falling through the cracks?
+Hi Jiri
 
-> ---
-> I am not sure which of the fixes tags should be used but this definetelly
-> fixes something..
-> 
-> IMHO the 0394a63acfe2 ("net: dsa: enable and disable all ports") did not
-> cause the issue but made it visible.
-> 
->   drivers/net/dsa/qca8k.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index 16f15c93a102..bbeeb8618c80 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -705,7 +705,7 @@ qca8k_setup(struct dsa_switch *ds)
->   		    BIT(0) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
->   
->   	/* Setup connection between CPU port & user ports */
-> -	for (i = 0; i < DSA_MAX_PORTS; i++) {
-> +	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
->   		/* CPU port gets connected to all user ports of the switch */
->   		if (dsa_is_cpu_port(ds, i)) {
->   			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
-> @@ -1074,7 +1074,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->   	if (id != QCA8K_ID_QCA8337)
->   		return -ENODEV;
->   
-> -	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
-> +	priv->ds = dsa_switch_alloc(&mdiodev->dev, QCA8K_NUM_PORTS);
->   	if (!priv->ds)
->   		return -ENOMEM;
->   
-> 
+Is that really going to happen? register_netdevice_notifier() is used
+in 130 files. Do you plan to spend the time to make it happen?
 
+> +	ret = raw_notifier_call_chain(&net->netdev_chain, val, info);
+> +	if (ret & NOTIFY_STOP_MASK)
+> +		return ret;
+>  	return raw_notifier_call_chain(&netdev_chain, val, info);
+>  }
+
+Humm. I wonder about NOTIFY_STOP_MASK here. These are two separate
+chains. Should one chain be able to stop the other chain? Are there
+other examples where NOTIFY_STOP_MASK crosses a chain boundary?
+
+      Andrew
