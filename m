@@ -2,107 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C36C19C3
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 01:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2105FC1A00
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 03:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729141AbfI2X0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Sep 2019 19:26:34 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:37606 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726360AbfI2X0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Sep 2019 19:26:33 -0400
-Received: by mail-ed1-f65.google.com with SMTP id r4so6980612edy.4
-        for <netdev@vger.kernel.org>; Sun, 29 Sep 2019 16:26:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oIDZn9qtY+/S9QGSvK1L7MekFL20rU/xE5sMwveQveI=;
-        b=ZbdlkfUwgo5/AcJW6z0EA1wMWl4ZyxD87Nd0HjhWTiZ5W3LT/YcLMexVD6fMfUL03i
-         8F5IQQLlEfpIEBsEbM6VOweRwKUQmAHM7ESbsD6UYu55BbvTNq+5AWUdsUgsXjCWGoMp
-         dhdhwsu6UFKVa8KuPEPmvklQtuo2RynioTSWjx9PgzuXgApmprDIBuv45mcaz3UfVk6n
-         jhhzcMsOpujpOkelCFS5EMOEi6VTL8odIY4p2ZO2Wi4J/+KRV4F5DP3k+Dr4j2FFtpqP
-         t6NzbWrxihS5co9cx7W8R4MCIH3/3TXnG8mspljjegzcQgIzSA2/nWxrHG7nbJGLsamh
-         U67w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oIDZn9qtY+/S9QGSvK1L7MekFL20rU/xE5sMwveQveI=;
-        b=JI1ipg1GrKeVh2xmj9rXtmXvVoxdIi/nhads4bigz0bjzXDlgAOYqpmuyBQxJFU7Ha
-         Da7E2iQG1hnWbaE+3PES/JGAR0Erj24zjvqEhcWKSh/hiug1QyfJJLVdMr6XLW+D/6Vq
-         rD9HZjlWdbKw5VDLmHou/VS5wBXq0nnx5GmxXn5/XVhFJ6knqvNLSGPc8LybdxPLjtyQ
-         93OwuzAMR4jXRq0Q5dkVnSRx4xmpFHcAKnzi6NA+5s6xj5CON2XyM30Fltd8XIUlHCsa
-         1rk/i6ajiy2PiibKKGj1OIF5R34PKdyiEorebWlhEW0+PQelifHwSOw5V5vSgBQGT9Sz
-         kKYg==
-X-Gm-Message-State: APjAAAX9VxNq28PBjXeE8Mrovbl7rfLM0M+X7JyV9bnnRJG5AFqt7US+
-        /gUB6046MDTIaqOuChyqHdGjvd9Hc3D087MCAXw=
-X-Google-Smtp-Source: APXvYqyNYp17Aq1B8JkfaIEHZ38+1+6p511wuzyP82fpHCsy9Ycg6vw2YSdjwX9UZvv4p9NBf0eHoPzEq18Arb2Qcxg=
-X-Received: by 2002:a17:906:1c03:: with SMTP id k3mr16714497ejg.32.1569799591962;
- Sun, 29 Sep 2019 16:26:31 -0700 (PDT)
+        id S1729299AbfI3Bon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Sep 2019 21:44:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51390 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726360AbfI3Bon (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Sep 2019 21:44:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mW0TnhxViDMRF32JyINwza8DeXTscacfY3iOF8nkMXM=; b=PPY17eJOmoM6W9EHNbw7QGLL8T
+        nHwmro5yU4e2Sp4z2s5m4SXcQ18KH4jEKmbzRXf4Yg90dTI18wTpD18zeqVST+o3tUdFjNFyHQcPQ
+        d6r1UzQFblvYQWonbF8YOIXHaXIMN+KrPdIwy0+e15569BKh4DeWbjUpa5Vor3wKwChI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iEkjw-0001da-J8; Mon, 30 Sep 2019 03:44:40 +0200
+Date:   Mon, 30 Sep 2019 03:44:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: DSA driver kernel extension for dsa mv88e6190 switch
+Message-ID: <20190930014440.GC6032@lunn.ch>
+References: <CAGAf8LzeyrMSHCYMxn1FNtMQVyhhLYbJaczhe2AMj+7T_nBt7Q@mail.gmail.com>
+ <20190923191713.GB28770@lunn.ch>
+ <CAGAf8LyQpi_R-A2Zx72bJhSBqnFo-r=KCnfVCTD9N8cNNtbhrQ@mail.gmail.com>
+ <20190926133810.GD20927@lunn.ch>
+ <CAGAf8LxAbDK7AUueCv-2kcEG8NZApNjQ+WQ1XO89+5C-SLAbPw@mail.gmail.com>
+ <20190928152022.GE25474@lunn.ch>
+ <CAGAf8LzJ56wjWxywnGWB1aOFm9B8xQhMgHFQfkVgOFWePzDfsw@mail.gmail.com>
 MIME-Version: 1.0
-References: <71354431.m7NQiGp1Tu@minako>
-In-Reply-To: <71354431.m7NQiGp1Tu@minako>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 30 Sep 2019 02:26:21 +0300
-Message-ID: <CA+h21hqm9jaKu4PgzkgcgMyu5gEMLSVmL=9sti1X88EOWNakuQ@mail.gmail.com>
-Subject: Re: Regression: Network link not coming up after suspend/resume cycle
-To:     Jan Janssen <medhefgo@web.de>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGAf8LzJ56wjWxywnGWB1aOFm9B8xQhMgHFQfkVgOFWePzDfsw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jan,
+> I wrote my (very first) public GIST about that. Please, could you
+> review it, and point to the any logical bugs in there?
+> https://gist.github.com/ZoranStojsavljevic/423b96e2ca3bd581f7ce417cb410c465
 
-On Sun, 29 Sep 2019 at 22:25, Jan Janssen <medhefgo@web.de> wrote:
->
-> Hi,
->
-> I've been noticing lately that my network link sometimes does not go up
-> after a suspend resume cycle (roughly 1 or 2 out of 10 times). This also
-> sometimes happens with a fresh boot too. Doing a manual
-> "ip link set down/up" cycle resolves this issue.
->
-> I was able to bisect it to the commit below (or hope so) and also CCed
-> the maintainer for my driver too.
->
-> This is happening on a up-to-date Arch Linux system with a Intel I219-V.
->
-> Jan
->
->
->
-> 7ede7b03484bbb035aa5be98c45a40cfabdc0738 is the first bad commit
-> commit 7ede7b03484bbb035aa5be98c45a40cfabdc0738
-> Author: Vedang Patel <vedang.patel@intel.com>
-> Date:   Tue Jun 25 15:07:18 2019 -0700
->
-> taprio: make clock reference conversions easier
->
-> Later in this series we will need to transform from
-> CLOCK_MONOTONIC (used in TCP) to the clock reference used in TAPRIO.
->
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
->
-> net/sched/sch_taprio.c | 30 ++++++++++++++++++++++--------
-> 1 file changed, 22 insertions(+), 8 deletions(-)
->
->
->
+The very last line is wrong.
 
-That is a mechanical patch that produces no behavior change.
-Furthermore, even if distributions were to build with
-CONFIG_NET_SCH_TAPRIO (which there aren't many reasons to), it is
-extremely likely that this qdisc is not enabled by default on your
-interface. Are you voluntarily using taprio?
-You might need to bisect again.
+ifconfig eth0 192.168.1.4 up
 
-Regards,
--Vladimir
+You should put the IP address on the bridge, not the master device
+eth0.
+
+ip addr add 192.168.1.4/24 dev br0
+
+FYI: ifconfig has been deprecated for maybe a decade?
+
+   Andrew
