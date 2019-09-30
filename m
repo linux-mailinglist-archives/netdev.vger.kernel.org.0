@@ -2,285 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B59FC2756
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD17C2771
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731441AbfI3UxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 16:53:24 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28406 "EHLO
+        id S1731470AbfI3U4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 16:56:31 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24366 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727118AbfI3UxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:53:23 -0400
+        by vger.kernel.org with ESMTP id S1726314AbfI3U4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:56:31 -0400
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8UIYjZX021429
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:34:47 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8UIqkXs017915
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:11 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=rNiyO+7h9FlkmiKJo9+ZcI3VdSYSN299VszRbuuyIcY=;
- b=MP3Cm56gQMWPg+tFBrnoIWU8IsgbJljVlueHQobF1CKPlWppwCR4CkSypz6c75rfrCOJ
- NtWx/d1vb0N0CtlWyVlq36VpcH7zHIo4sAuhb2CZPbmH0KTX0r84Tr2nBvzHfF3EpmFI
- eOKQmanMxeFGgBJpji9iMfCaKMa/eNp6K90= 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=94D63xPi/SM24kSnRDTOjHIE3UlwlK/QEgWvORuBsOA=;
+ b=cmUDX85UWE7ugnG04CMDXDRJZSzFaR1cPcc0ZZ+KxNgqOSrhHerj+9Vv6iMWwB+Ao9bS
+ Ba1ef/9Im+o3jpU7p6LW/Za039vVwenoYE/W9NCKiZ1ruRzIvZgwOT5PAOajr+Wb/IOY
+ nUl5ssaSQA5A4fBe+6YDKJJVsjIDFO+3yew= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vaqu66t6a-5
+        by mx0a-00082601.pphosted.com with ESMTP id 2vaqu66wn6-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:34:47 -0700
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:11 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 30 Sep 2019 11:34:31 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 7489037014E8; Mon, 30 Sep 2019 11:34:29 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Kevin Laatz <kevin.laatz@intel.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+ 15.1.1713.5; Mon, 30 Sep 2019 11:59:10 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id EBE7D86185A; Mon, 30 Sep 2019 11:59:08 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf v4] libbpf: handle symbol versioning properly for libbpf.a
-Date:   Mon, 30 Sep 2019 11:34:29 -0700
-Message-ID: <20190930183429.2544258-1-yhs@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH bpf-next 4/6] libbpf: add BPF_CORE_READ/BPF_CORE_READ_INTO helpers
+Date:   Mon, 30 Sep 2019 11:58:53 -0700
+Message-ID: <20190930185855.4115372-5-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190930185855.4115372-1-andriin@fb.com>
+References: <20190930185855.4115372-1-andriin@fb.com>
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-09-30_11:2019-09-30,2019-09-30 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- adultscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
+ adultscore=0 suspectscore=8 priorityscore=1501 impostorscore=0
  lowpriorityscore=0 clxscore=1015 bulkscore=0 phishscore=0 spamscore=0
  mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1909300165
+ engine=8.12.0-1908290000 definitions=main-1909300167
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bcc uses libbpf repo as a submodule. It brings in libbpf source
-code and builds everything together to produce shared libraries.
-With latest libbpf, I got the following errors:
-  /bin/ld: libbcc_bpf.so.0.10.0: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
-  /bin/ld: failed to set dynamic section sizes: Bad value
-  collect2: error: ld returned 1 exit status
-  make[2]: *** [src/cc/libbcc_bpf.so.0.10.0] Error 1
+Add few macros simplifying BCC-like multi-level probe reads, while also
+emitting CO-RE relocations for each read.
 
-In xsk.c, we have
-  asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
-  asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
-The linker thinks the built is for LIBBPF but cannot find proper version
-LIBBPF_0.0.2/4, so emit errors.
-
-I also confirmed that using libbpf.a to produce a shared library also
-has issues:
-  -bash-4.4$ cat t.c
-  extern void *xsk_umem__create;
-  void * test() { return xsk_umem__create; }
-  -bash-4.4$ gcc -c -fPIC t.c
-  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
-  /bin/ld: t.so: version node not found for symbol xsk_umem__create@LIBBPF_0.0.2
-  /bin/ld: failed to set dynamic section sizes: Bad value
-  collect2: error: ld returned 1 exit status
-  -bash-4.4$
-
-Symbol versioning does happens in commonly used libraries, e.g., elfutils
-and glibc. For static libraries, for a versioned symbol, the old definitions
-will be ignored, and the symbol will be an alias to the latest definition.
-For example, glibc sched_setaffinity is versioned.
-  -bash-4.4$ readelf -s /usr/lib64/libc.so.6 | grep sched_setaffinity
-     756: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2.3.3
-     757: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_2.3.4
-    1800: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS sched_setaffinity.c
-    4228: 00000000000e2e70   455 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_new
-    4648: 000000000013d3d0    13 FUNC    LOCAL  DEFAULT   13 __sched_setaffinity_old
-    7338: 000000000013d3d0    13 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@GLIBC_2
-    7380: 00000000000e2e70   455 FUNC    GLOBAL DEFAULT   13 sched_setaffinity@@GLIBC_
-  -bash-4.4$
-For static library, the definition of sched_setaffinity aliases to the new definition.
-  -bash-4.4$ readelf -s /usr/lib64/libc.a | grep sched_setaffinity
-  File: /usr/lib64/libc.a(sched_setaffinity.o)
-     8: 0000000000000000   455 FUNC    GLOBAL DEFAULT    1 __sched_setaffinity_new
-    12: 0000000000000000   455 FUNC    WEAK   DEFAULT    1 sched_setaffinity
-
-For both elfutils and glibc, additional macros are used to control different handling
-of symbol versioning w.r.t static and shared libraries.
-For elfutils, the macro is SYMBOL_VERSIONING
-(https://sourceware.org/git/?p=elfutils.git;a=blob;f=lib/eu-config.h).
-For glibc, the macro is SHARED
-(https://sourceware.org/git/?p=glibc.git;a=blob;f=include/shlib-compat.h;hb=refs/heads/master)
-
-This patch used SHARED as the macro name. After this patch, the libbpf.a has
-  -bash-4.4$ readelf -s libbpf.a | grep xsk_umem__create
-     372: 0000000000017145  1190 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_4
-     405: 0000000000017145  1190 FUNC    WEAK   DEFAULT    1 xsk_umem__create
-     499: 00000000000175eb   103 FUNC    GLOBAL DEFAULT    1 xsk_umem__create_v0_0_2
-  -bash-4.4$
-No versioned symbols for xsk_umem__create.
-The libbpf.a can be used to build a shared library succesfully.
-  -bash-4.4$ cat t.c
-  extern void *xsk_umem__create;
-  void * test() { return xsk_umem__create; }
-  -bash-4.4$ gcc -c -fPIC t.c
-  -bash-4.4$ gcc -shared t.o libbpf.a -o t.so
-  -bash-4.4$
-
-Fixes: 10d30e301732 ("libbpf: add flags to umem config")
-Cc: Kevin Laatz <kevin.laatz@intel.com>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/Makefile          | 27 ++++++++++++++++++---------
- tools/lib/bpf/libbpf_internal.h | 16 ++++++++++++++++
- tools/lib/bpf/xsk.c             |  4 ++--
- 3 files changed, 36 insertions(+), 11 deletions(-)
+ tools/lib/bpf/bpf_helpers.h | 151 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 147 insertions(+), 4 deletions(-)
 
-ChangeLog:
-  v3 -> v4:
-     - Raname macros {OLD|NEW}_VERSION to {COMPAT|DEFAULT}_VERSION
-       (Alexei).
-  v2 -> v3:
-     - Rename macro name from SYMBOL_VERSIONING to SHARED,
-       plus some other minor changes (Andrii).
-  v1 -> v2:
-     - Simple hacking to remove versioning for static library, which
-       does not work if the versioned symbol is referenced,
-     to a proper implementation.
-
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 20772663d3e1..56ce6292071b 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -114,6 +114,9 @@ override CFLAGS += $(INCLUDES)
- override CFLAGS += -fvisibility=hidden
- override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index a1d9b97b8e15..51e7b11d53e8 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -19,6 +19,10 @@
+  */
+ #define SEC(NAME) __attribute__((section(NAME), used))
  
-+# flags specific for shared library
-+SHLIB_FLAGS := -DSHARED
-+
- ifeq ($(VERBOSE),1)
-   Q =
- else
-@@ -130,14 +133,17 @@ all:
- export srctree OUTPUT CC LD CFLAGS V
- include $(srctree)/tools/build/Makefile.include
- 
--BPF_IN		:= $(OUTPUT)libbpf-in.o
-+SHARED_OBJDIR	:= $(OUTPUT)sharedobjs/
-+STATIC_OBJDIR	:= $(OUTPUT)staticobjs/
-+BPF_IN_SHARED	:= $(SHARED_OBJDIR)libbpf-in.o
-+BPF_IN_STATIC	:= $(STATIC_OBJDIR)libbpf-in.o
- VERSION_SCRIPT	:= libbpf.map
- 
- LIB_TARGET	:= $(addprefix $(OUTPUT),$(LIB_TARGET))
- LIB_FILE	:= $(addprefix $(OUTPUT),$(LIB_FILE))
- PC_FILE		:= $(addprefix $(OUTPUT),$(PC_FILE))
- 
--GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN) | \
-+GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
- 			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
- 			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}' | \
- 			   sort -u | wc -l)
-@@ -159,7 +165,7 @@ all: fixdep
- 
- all_cmd: $(CMD_TARGETS) check
- 
--$(BPF_IN): force elfdep bpfdep
-+$(BPF_IN_SHARED): force elfdep bpfdep
- 	@(test -f ../../include/uapi/linux/bpf.h -a -f ../../../include/uapi/linux/bpf.h && ( \
- 	(diff -B ../../include/uapi/linux/bpf.h ../../../include/uapi/linux/bpf.h >/dev/null) || \
- 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/bpf.h' differs from latest version at 'include/uapi/linux/bpf.h'" >&2 )) || true
-@@ -175,17 +181,20 @@ $(BPF_IN): force elfdep bpfdep
- 	@(test -f ../../include/uapi/linux/if_xdp.h -a -f ../../../include/uapi/linux/if_xdp.h && ( \
- 	(diff -B ../../include/uapi/linux/if_xdp.h ../../../include/uapi/linux/if_xdp.h >/dev/null) || \
- 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
--	$(Q)$(MAKE) $(build)=libbpf
-+	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
-+
-+$(BPF_IN_STATIC): force elfdep bpfdep
-+	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(STATIC_OBJDIR)
- 
- $(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
- 
--$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
-+$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN_SHARED)
- 	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
- 				    -Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
- 	@ln -sf $(@F) $(OUTPUT)libbpf.so
- 	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
- 
--$(OUTPUT)libbpf.a: $(BPF_IN)
-+$(OUTPUT)libbpf.a: $(BPF_IN_STATIC)
- 	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
- 
- $(OUTPUT)test_libbpf: test_libbpf.cpp $(OUTPUT)libbpf.a
-@@ -201,7 +210,7 @@ check: check_abi
- 
- check_abi: $(OUTPUT)libbpf.so
- 	@if [ "$(GLOBAL_SYM_COUNT)" != "$(VERSIONED_SYM_COUNT)" ]; then	 \
--		echo "Warning: Num of global symbols in $(BPF_IN)"	 \
-+		echo "Warning: Num of global symbols in $(BPF_IN_SHARED)"	 \
- 		     "($(GLOBAL_SYM_COUNT)) does NOT match with num of"	 \
- 		     "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
- 		     "Please make sure all LIBBPF_API symbols are"	 \
-@@ -259,9 +268,9 @@ config-clean:
- 	$(Q)$(MAKE) -C $(srctree)/tools/build/feature/ clean >/dev/null
- 
- clean:
--	$(call QUIET_CLEAN, libbpf) $(RM) $(TARGETS) $(CXX_TEST_TARGET) \
-+	$(call QUIET_CLEAN, libbpf) $(RM) -rf $(TARGETS) $(CXX_TEST_TARGET) \
- 		*.o *~ *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) .*.d .*.cmd \
--		*.pc LIBBPF-CFLAGS
-+		*.pc LIBBPF-CFLAGS $(SHARED_OBJDIR) $(STATIC_OBJDIR)
- 	$(call QUIET_CLEAN, core-gen) $(RM) $(OUTPUT)FEATURE-DUMP.libbpf
- 
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 2e83a34f8c79..f71a35875fb0 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -34,6 +34,22 @@
- 	(offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
- #endif
- 
-+/* Symbol versioning is different between static and shared library.
-+ * Properly versioned symbols are needed for shared library, but
-+ * only the symbol of the new version is needed for static library.
-+ */
-+#ifdef SHARED
-+# define COMPAT_VERSION(internal_name, api_name, version) \
-+	asm(".symver " #internal_name "," #api_name "@" #version);
-+# define DEFAULT_VERSION(internal_name, api_name, version) \
-+	asm(".symver " #internal_name "," #api_name "@@" #version);
-+#else
-+# define COMPAT_VERSION(internal_name, api_name, version)
-+# define DEFAULT_VERSION(internal_name, api_name, version) \
-+	extern typeof(internal_name) api_name \
-+	__attribute__((weak, alias (#internal_name)));
++#ifndef __always_inline
++#define __always_inline __attribute__((always_inline))
 +#endif
 +
- extern void libbpf_print(enum libbpf_print_level level,
- 			 const char *format, ...)
- 	__attribute__((format(printf, 2, 3)));
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 24fa313524fb..a902838f9fcc 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -261,8 +261,8 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
- 	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
- 					&config);
- }
--asm(".symver xsk_umem__create_v0_0_2, xsk_umem__create@LIBBPF_0.0.2");
--asm(".symver xsk_umem__create_v0_0_4, xsk_umem__create@@LIBBPF_0.0.4");
-+COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
-+DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+ /* helper functions called from eBPF programs written in C */
+ static void *(*bpf_map_lookup_elem)(void *map, const void *key) =
+ 	(void *) BPF_FUNC_map_lookup_elem;
+@@ -505,7 +509,7 @@ struct pt_regs;
+ #endif
  
- static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- {
+ /*
+- * BPF_CORE_READ abstracts away bpf_probe_read() call and captures offset
++ * bpf_core_read() abstracts away bpf_probe_read() call and captures field
+  * relocation for source address using __builtin_preserve_access_index()
+  * built-in, provided by Clang.
+  *
+@@ -520,8 +524,147 @@ struct pt_regs;
+  * actual field offset, based on target kernel BTF type that matches original
+  * (local) BTF, used to record relocation.
+  */
+-#define BPF_CORE_READ(dst, src)						\
+-	bpf_probe_read((dst), sizeof(*(src)),				\
+-		       __builtin_preserve_access_index(src))
++#define bpf_core_read(dst, sz, src)					    \
++	bpf_probe_read(dst, sz,						    \
++		       (const void *)__builtin_preserve_access_index(src))
++
++/*
++ * bpf_core_read_str() is a thin wrapper around bpf_probe_read_str()
++ * additionally emitting BPF CO-RE field relocation for specified source
++ * argument.
++ */
++#define bpf_core_read_str(dst, sz, src)					    \
++	bpf_probe_read_str(dst, sz,					    \
++			   (const void *)__builtin_preserve_access_index(src))
++
++#define ___concat(a, b) a ## b
++#define ___apply(fn, n) ___concat(fn, n)
++#define ___nth(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, __11, N, ...) N
++
++/* return number of provided arguments; used for switch-based variadic macro
++ * definitions (see ___last, ___arrow, etc below)
++ */
++#define ___narg(...) ___nth(_, ##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
++/* return 0 if no arguments are passed, N - otherwise; used for
++ * recursively-defined macros to specify termination (0) case, and generic
++ * (N) case (e.g., ___read_ptrs, ___core_read)
++ */
++#define ___empty(...) ___nth(_, ##__VA_ARGS__, N, N, N, N, N, N, N, N, N, N, 0)
++
++#define ___last1(x) x
++#define ___last2(a, x) x
++#define ___last3(a, b, x) x
++#define ___last4(a, b, c, x) x
++#define ___last5(a, b, c, d, x) x
++#define ___last6(a, b, c, d, e, x) x
++#define ___last7(a, b, c, d, e, f, x) x
++#define ___last8(a, b, c, d, e, f, g, x) x
++#define ___last9(a, b, c, d, e, f, g, h, x) x
++#define ___last10(a, b, c, d, e, f, g, h, i, x) x
++#define ___last(...) ___apply(___last, ___narg(__VA_ARGS__))(__VA_ARGS__)
++
++#define ___nolast2(a, _) a
++#define ___nolast3(a, b, _) a, b
++#define ___nolast4(a, b, c, _) a, b, c
++#define ___nolast5(a, b, c, d, _) a, b, c, d
++#define ___nolast6(a, b, c, d, e, _) a, b, c, d, e
++#define ___nolast7(a, b, c, d, e, f, _) a, b, c, d, e, f
++#define ___nolast8(a, b, c, d, e, f, g, _) a, b, c, d, e, f, g
++#define ___nolast9(a, b, c, d, e, f, g, h, _) a, b, c, d, e, f, g, h
++#define ___nolast10(a, b, c, d, e, f, g, h, i, _) a, b, c, d, e, f, g, h, i
++#define ___nolast(...) ___apply(___nolast, ___narg(__VA_ARGS__))(__VA_ARGS__)
++
++#define ___arrow1(a) a
++#define ___arrow2(a, b) a->b
++#define ___arrow3(a, b, c) a->b->c
++#define ___arrow4(a, b, c, d) a->b->c->d
++#define ___arrow5(a, b, c, d, e) a->b->c->d->e
++#define ___arrow6(a, b, c, d, e, f) a->b->c->d->e->f
++#define ___arrow7(a, b, c, d, e, f, g) a->b->c->d->e->f->g
++#define ___arrow8(a, b, c, d, e, f, g, h) a->b->c->d->e->f->g->h
++#define ___arrow9(a, b, c, d, e, f, g, h, i) a->b->c->d->e->f->g->h->i
++#define ___arrow10(a, b, c, d, e, f, g, h, i, j) a->b->c->d->e->f->g->h->i->j
++#define ___arrow(...) ___apply(___arrow, ___narg(__VA_ARGS__))(__VA_ARGS__)
++
++#define ___type(...) typeof(___arrow(__VA_ARGS__))
++
++#define ___read(read_fn, dst, src_type, src, accessor)			    \
++	read_fn((void *)(dst), sizeof(*(dst)), &((src_type)(src))->accessor)
++
++/* "recursively" read a sequence of inner pointers using local __t var */
++#define ___rd_last(...)							    \
++	___read(bpf_core_read, &__t,					    \
++		___type(___nolast(__VA_ARGS__)), __t, ___last(__VA_ARGS__));
++#define ___rd_p0(src) const void *__t = src;
++#define ___rd_p1(...) ___rd_p0(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p2(...) ___rd_p1(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p3(...) ___rd_p2(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p4(...) ___rd_p3(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p5(...) ___rd_p4(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p6(...) ___rd_p5(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p7(...) ___rd_p6(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p8(...) ___rd_p7(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___rd_p9(...) ___rd_p8(___nolast(__VA_ARGS__)) ___rd_last(__VA_ARGS__)
++#define ___read_ptrs(src, ...)						    \
++	___apply(___rd_p, ___narg(__VA_ARGS__))(src, __VA_ARGS__)
++
++#define ___core_read0(fn, dst, src, a)					    \
++	___read(fn, dst, ___type(src), src, a);
++#define ___core_readN(fn, dst, src, ...)				    \
++	___read_ptrs(src, ___nolast(__VA_ARGS__))			    \
++	___read(fn, dst, ___type(src, ___nolast(__VA_ARGS__)), __t,	    \
++		___last(__VA_ARGS__));
++#define ___core_read(fn, dst, src, a, ...)				    \
++	___apply(___core_read, ___empty(__VA_ARGS__))(fn, dst,		    \
++						      src, a, ##__VA_ARGS__)
++
++/*
++ * BPF_CORE_READ_INTO() is a more performance-conscious variant of
++ * BPF_CORE_READ(), in which final field is read into user-provided storage.
++ * See BPF_CORE_READ() below for more details on general usage.
++ */
++#define BPF_CORE_READ_INTO(dst, src, a, ...)				    \
++	({								    \
++		___core_read(bpf_core_read, dst, src, a, ##__VA_ARGS__)	    \
++	})
++
++/*
++ * BPF_CORE_READ_STR_INTO() does same "pointer chasing" as
++ * BPF_CORE_READ() for intermediate pointers, but then executes (and returns
++ * corresponding error code) bpf_core_read_str() for final string read.
++ */
++#define BPF_CORE_READ_STR_INTO(dst, src, a, ...)			    \
++	({								    \
++		___core_read(bpf_core_read_str, dst, src, a, ##__VA_ARGS__) \
++	})
++
++/*
++ * BPF_CORE_READ() is used to simplify BPF CO-RE relocatable read, especially
++ * when there are few pointer chasing steps.
++ * E.g., what in non-BPF world (or in BPF w/ BCC) would be something like:
++ *	int x = s->a.b.c->d.e->f->g;
++ * can be succinctly achieved using BPF_CORE_READ as:
++ *	int x = BPF_CORE_READ(s, a.b.c, d.e, f, g);
++ *
++ * BPF_CORE_READ will decompose above statement into 4 bpf_core_read (BPF
++ * CO-RE relocatable bpf_probe_read() wrapper) calls, logically equivalent to:
++ * 1. const void *__t = s->a.b.c;
++ * 2. __t = __t->d.e;
++ * 3. __t = __t->f;
++ * 4. return __t->g;
++ *
++ * Equivalence is logical, because there is a heavy type casting/preservation
++ * involved, as well as all the reads are happening through bpf_probe_read()
++ * calls using __builtin_preserve_access_index() to emit CO-RE relocations.
++ *
++ * N.B. Only up to 9 "field accessors" are supported, which should be more
++ * than enough for any practical purpose.
++ */
++#define BPF_CORE_READ(src, a, ...)					    \
++	({								    \
++		___type(src, a, ##__VA_ARGS__) __r;			    \
++		BPF_CORE_READ_INTO(&__r, src, a, ##__VA_ARGS__);	    \
++		__r;							    \
++	})
+ 
+ #endif
 -- 
 2.17.1
 
