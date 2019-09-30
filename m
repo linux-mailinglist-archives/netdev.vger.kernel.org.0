@@ -2,272 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5262CC2558
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DAE9C2556
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732349AbfI3QnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 12:43:13 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727767AbfI3QnM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 12:43:12 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8UGdu5p006243
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 09:43:11 -0700
+        id S1732341AbfI3QnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 12:43:09 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20492 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732183AbfI3QnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 12:43:09 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x8UGdxJ9002034;
+        Mon, 30 Sep 2019 09:42:51 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=Jam5MSBMV0iKo02Z+Pai+DC4qAEz8qkJ5uU7TaJzPg4=;
- b=nL/3T2yvFBu9J/PktkIkItwF/34paKAJwge5pAg8HswP3yFyzZfhT3Dqjlt39vo1hC4v
- bn5iz6XUy6gJ5nv/aeiJpEwcNb21srM1bxWIGhqyFjuKHVmSd7Z2I9ZN+rCvgPQQVq+O
- KBqqBF4xLgkNxDiV0Ap3QGx4X7XlC/MUBcQ= 
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=WT4Oz61/teIj78A8uBjYof18cNfXGMSI4z7v5dYwLZk=;
+ b=YM06mCE8hlOLrw2/eYeZjDY/qU16fq8mAneMH7XqlrnHLdGMUEVTES9r4wEJqBd8U5Kq
+ 0IY/28I9ykOMnA3l7SvqqP10H6+3BFj50tvLFy9S6xYV+mwEkxbdRYwUAY3l6Jy6z169
+ LXqikR9g87jKh0wopLjA/wXF91miBKBa8Ww= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vaq9pea9m-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 09:43:11 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 30 Sep 2019 09:42:56 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id AAAF1861847; Mon, 30 Sep 2019 09:42:55 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <toke@redhat.com>, <kpsingh@chromium.org>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        by m0089730.ppops.net with ESMTP id 2va310srws-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 30 Sep 2019 09:42:51 -0700
+Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
+ prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 30 Sep 2019 09:42:51 -0700
+Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
+ prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 30 Sep 2019 09:42:50 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 30 Sep 2019 09:42:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XFErJtmdR7fkuvoKXk7GCbau7YNClL0SrXy/+hNZt/qLJ71q56/jN4Z5WgWNqoTsP7ixbx9L7hqy6l4ZRQXt2ot3Ib7j/EbTVsj9WqJIROCXVRwW0E/6u5878s2NjcVsYXBqxe1K6+r8a5kZGKlJtXDmbWx1NXp0ALbaUpNeqCpnqmF6zHaRrX/XCwapJtPcU7NCthA4VjB9p9jeDvydIeQ9CLeMVF7Onwj5Puqf7zvOZ8XHvzUs6rkRPeEm1/DhzgF5jUD7oeKli+bhYH8WoZ2T73IFabr0jtRdqUxulfOoj0TohPqKZiXB76+jHxDo8QbiYrTQrZQXbY5Hba3xBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WT4Oz61/teIj78A8uBjYof18cNfXGMSI4z7v5dYwLZk=;
+ b=m3AGh0mrLezFVegd6XaB7CoarkwMbu/zEytRE7RGI/VPbx4WftgCQCQUyeb20LuLpmBRdgNhv3JPI7/FoOpAMU9Uh/BKiu6WyGBwpb1BGQKIZ3ddrRrNOvrmXKfNxNNyCiPDU9iwZ+sFEWy8riKgeJ26IYJRY9OZ5Xz5NxP3XeE5IkOB327ItiTfQ54EHeAqOOPedNe7Y/z/O6rBqMFITJAfH6X1wt8JKzRG2rJMQCjcnGYmR8peyxalP3bkrOCYdORlyfR2ljIKrW0ieCzDJCdr8neB+mwPb0vX+u/RSgVfVDd0KNVzZsKcq310ypQy2tZe+SezhcH63iG+z5FXOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WT4Oz61/teIj78A8uBjYof18cNfXGMSI4z7v5dYwLZk=;
+ b=WDRy1QIK4EieJRi/J20kt1IMS8kSavcbXNw3U/df3fMCnxAD4+djZ6ptpuriW4upIIbFjhGTwvNAi7/1PVUABm2G7Q0r3zV7VLsVzj2+m/76Loo9dgDGJChSnPvbZc4s3+sDX6Iqz3nR8V6Ou1mYNi3LkStO7MQV4bfWdLG+V5Q=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB3061.namprd15.prod.outlook.com (20.178.238.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.17; Mon, 30 Sep 2019 16:42:48 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::c13d:be57:b216:bfa0%5]) with mapi id 15.20.2305.017; Mon, 30 Sep 2019
+ 16:42:48 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Yonghong Song <yhs@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Kevin Laatz <kevin.laatz@intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [RFC][PATCH bpf-next] libbpf: add bpf_object__open_{file,mem} w/ sized opts
-Date:   Mon, 30 Sep 2019 09:42:39 -0700
-Message-ID: <20190930164239.3697916-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+Subject: Re: [PATCH bpf v3] libbpf: handle symbol versioning properly for
+ libbpf.a
+Thread-Topic: [PATCH bpf v3] libbpf: handle symbol versioning properly for
+ libbpf.a
+Thread-Index: AQHVd6xB7FHrP/dEpUWrsxPulh60AKdEbNQA
+Date:   Mon, 30 Sep 2019 16:42:48 +0000
+Message-ID: <b23d1e1f-6912-33eb-e7d7-c1e47015cb4c@fb.com>
+References: <20190930162922.2169975-1-yhs@fb.com>
+In-Reply-To: <20190930162922.2169975-1-yhs@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR21CA0031.namprd21.prod.outlook.com
+ (2603:10b6:300:129::17) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::c799]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 86f3b49c-224b-471b-bd7e-08d745c53a34
+x-ms-traffictypediagnostic: BYAPR15MB3061:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB306164D0E89EF3E8F5813C55D7820@BYAPR15MB3061.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2733;
+x-forefront-prvs: 01762B0D64
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(366004)(396003)(346002)(39860400002)(189003)(199004)(102836004)(31686004)(486006)(6436002)(2616005)(76176011)(316002)(66476007)(11346002)(6506007)(386003)(53546011)(99286004)(6486002)(446003)(229853002)(4326008)(478600001)(66446008)(64756008)(2501003)(6116002)(66946007)(66556008)(186003)(2201001)(86362001)(256004)(46003)(476003)(31696002)(52116002)(8936002)(2906002)(6246003)(71200400001)(7736002)(5660300002)(54906003)(36756003)(14454004)(71190400001)(305945005)(81156014)(81166006)(4744005)(25786009)(110136005)(6512007)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3061;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jXJwymVE1JBQgF0btliZJO19G+vHxTzMeAbgSk7L8F4NoOYZVDiuhmz9/xlGJN1c1viQlwmn8Nwvl83T+fiGxFXPopjOHQsQaUDKy0xt0CIJkoVb2atFd7gb2Ipzt9Ie7le88oO6/Y9Rig4Jvg8iDdRLA+dQtvRbBbB5O+Djtyzr8bUXcpgq10aUdn8GqMkHbVZhDOg7s3jKWRiCYofd/v9xb9F0k2ekHbplEDeFtSnp+6kzAi1bAHTNKQN1KV8DB7oV5sACbPsaY0lUCuuEnhjFxXWpNhgSN+QpfAW0ayLPb8hx1EeEqSDRVaNoANuvqj+cdEtw7VGMk6bnBmwsNAyLY8xl4wT71F3PJNjkjxnIeNkyl5jlluLpXci8Hiph7FSgrR+OieJpoEE5x2Yuxg1W4HqxI3tGSkxAG97qRtg=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <65BEF0B294FD1A429C9064359DE0E07D@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86f3b49c-224b-471b-bd7e-08d745c53a34
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Sep 2019 16:42:48.5782
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PXKZcqE635FuqyJBdQAOpdnidHXsh496JAisFViEACh18BCnc1RXycv5pAIdF+Tq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3061
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-09-30_10:2019-09-30,2019-09-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- lowpriorityscore=0 phishscore=0 suspectscore=8 spamscore=0
- priorityscore=1501 bulkscore=0 clxscore=1015 adultscore=0 mlxscore=0
- malwarescore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1909300160
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ mlxlogscore=857 malwarescore=0 bulkscore=0 lowpriorityscore=0
+ impostorscore=0 adultscore=0 phishscore=0 priorityscore=1501 clxscore=1011
+ spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909300160
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new set of bpf_object__open APIs using new approach to optional
-parameters extensibility allowing simpler ABI compatibility approach.
-
-This patch demonstrates an approach to implementing libbpf APIs that
-makes it easy to extend existing APIs with extra optional parameters in
-such a way, that ABI compatibility is preserved without having to do
-symbol versioning and generating lots of boilerplate code to handle it.
-To facilitate succinct code for working with options, add OPTS_VALID,
-OPTS_HAS, and OPTS_GET macros that hide all the NULL and size checks.
-
-Additionally, newly added libbpf APIs are encouraged to follow similar
-pattern of having all mandatory parameters as formal function parameters
-and always have optional (NULL-able) xxx_opts struct, which should
-always have real struct size as a first field and the rest would be
-optional parameters added over time, which tune the behavior of existing
-API, if specified by user.
-
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c          | 56 ++++++++++++++++++++++++++-------
- tools/lib/bpf/libbpf.h          | 33 ++++++++++++++++---
- tools/lib/bpf/libbpf.map        |  6 ++++
- tools/lib/bpf/libbpf_internal.h |  6 ++++
- 4 files changed, 85 insertions(+), 16 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index e0276520171b..bb8f4a6e4e6b 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -255,7 +255,7 @@ struct bpf_object {
- 	 */
- 	struct {
- 		int fd;
--		void *obj_buf;
-+		const void *obj_buf;
- 		size_t obj_buf_sz;
- 		Elf *elf;
- 		GElf_Ehdr ehdr;
-@@ -492,7 +492,7 @@ bpf_object__init_prog_names(struct bpf_object *obj)
- }
- 
- static struct bpf_object *bpf_object__new(const char *path,
--					  void *obj_buf,
-+					  const void *obj_buf,
- 					  size_t obj_buf_sz)
- {
- 	struct bpf_object *obj;
-@@ -569,7 +569,7 @@ static int bpf_object__elf_init(struct bpf_object *obj)
- 		 * obj_buf should have been validated by
- 		 * bpf_object__open_buffer().
- 		 */
--		obj->efile.elf = elf_memory(obj->efile.obj_buf,
-+		obj->efile.elf = elf_memory((char *)obj->efile.obj_buf,
- 					    obj->efile.obj_buf_sz);
- 	} else {
- 		obj->efile.fd = open(obj->path, O_RDONLY);
-@@ -3597,7 +3597,7 @@ static int bpf_object__validate(struct bpf_object *obj, bool needs_kver)
- }
- 
- static struct bpf_object *
--__bpf_object__open(const char *path, void *obj_buf, size_t obj_buf_sz,
-+__bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 		   bool needs_kver, int flags)
- {
- 	struct bpf_object *obj;
-@@ -3655,25 +3655,59 @@ struct bpf_object *bpf_object__open(const char *path)
- 	return bpf_object__open_xattr(&attr);
- }
- 
--struct bpf_object *bpf_object__open_buffer(void *obj_buf,
--					   size_t obj_buf_sz,
--					   const char *name)
-+struct bpf_object *
-+bpf_object__open_file(const char *path, struct bpf_object_open_opts *opts)
-+{
-+	if (!OPTS_VALID(opts) || !path)
-+		return ERR_PTR(-EINVAL);
-+
-+	pr_debug("loading %s\n", path);
-+
-+	return __bpf_object__open(path, NULL, 0, false, 0);
-+}
-+
-+static struct bpf_object *
-+__bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
-+		       struct bpf_object_open_opts *opts, bool enforce_kver)
- {
- 	char tmp_name[64];
-+	const char *name;
- 
--	/* param validation */
--	if (!obj_buf || obj_buf_sz <= 0)
--		return NULL;
-+	if (!OPTS_VALID(opts) || !obj_buf || obj_buf_sz == 0)
-+		return ERR_PTR(-EINVAL);
- 
-+	name = OPTS_GET(opts, object_name, NULL);
- 	if (!name) {
- 		snprintf(tmp_name, sizeof(tmp_name), "%lx-%lx",
- 			 (unsigned long)obj_buf,
- 			 (unsigned long)obj_buf_sz);
- 		name = tmp_name;
- 	}
-+
- 	pr_debug("loading object '%s' from buffer\n", name);
- 
--	return __bpf_object__open(name, obj_buf, obj_buf_sz, true, true);
-+	return __bpf_object__open(name, obj_buf, obj_buf_sz, enforce_kver, 0);
-+}
-+
-+struct bpf_object *
-+bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
-+		     struct bpf_object_open_opts *opts)
-+{
-+	return __bpf_object__open_mem(obj_buf, obj_buf_sz, opts, false);
-+}
-+
-+struct bpf_object *
-+bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz, const char *name)
-+{
-+	struct bpf_object_open_opts opts = {
-+		.sz = sizeof(struct bpf_object_open_opts),
-+		.object_name = name,
-+	};
-+
-+	if (!obj_buf || obj_buf_sz == 0)
-+		return NULL;
-+
-+	return __bpf_object__open_mem(obj_buf, obj_buf_sz, &opts, true);
- }
- 
- int bpf_object__unload(struct bpf_object *obj)
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index e8f70977d137..987db195c5a0 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -67,14 +67,37 @@ struct bpf_object_open_attr {
- 	enum bpf_prog_type prog_type;
- };
- 
-+struct bpf_object_open_opts {
-+	/* size of this struct, for forward and backward compatiblity */
-+	size_t sz;
-+	/* object name override, if provided:
-+	 * - for object open from file, this will override setting object
-+	 *   name from file path's base name;
-+	 * - for object open from memory buffer, this will specify an object
-+	 *   name and will override default "<addr>-<buf-size>" name;
-+	 */
-+	const char *object_name;
-+	/* program type to use if determination based on program name doesn't
-+	 * work */
-+	enum bpf_prog_type fallback_prog_type;
-+};
-+
- LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
- LIBBPF_API struct bpf_object *
-+bpf_object__open_file(const char *path, struct bpf_object_open_opts *opts);
-+LIBBPF_API struct bpf_object *
-+bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
-+		     struct bpf_object_open_opts *opts);
-+
-+/* deprecated bpf_object__open variants */
-+LIBBPF_API struct bpf_object *
-+bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
-+			const char *name);
-+LIBBPF_API struct bpf_object *
- bpf_object__open_xattr(struct bpf_object_open_attr *attr);
--struct bpf_object *__bpf_object__open_xattr(struct bpf_object_open_attr *attr,
--					    int flags);
--LIBBPF_API struct bpf_object *bpf_object__open_buffer(void *obj_buf,
--						      size_t obj_buf_sz,
--						      const char *name);
-+struct bpf_object *
-+__bpf_object__open_xattr(struct bpf_object_open_attr *attr, int flags);
-+
- int bpf_object__section_size(const struct bpf_object *obj, const char *name,
- 			     __u32 *size);
- int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index d04c7cb623ed..4d241fd92dd4 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -190,3 +190,9 @@ LIBBPF_0.0.5 {
- 	global:
- 		bpf_btf_get_next_id;
- } LIBBPF_0.0.4;
-+
-+LIBBPF_0.0.6 {
-+	global:
-+		bpf_object__open_file;
-+		bpf_object__open_mem;
-+} LIBBPF_0.0.5;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 2e83a34f8c79..1cf2cf8d80f3 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -47,6 +47,12 @@ do {				\
- #define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
- #define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
- 
-+#define OPTS_VALID(opts) (!(opts) || (opts)->sz >= sizeof((opts)->sz))
-+#define OPTS_HAS(opts, field) \
-+	((opts) && opts->sz >= offsetofend(typeof(*(opts)), field))
-+#define OPTS_GET(opts, field, fallback_value) \
-+	(OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
-+
- int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
- 			 const char *str_sec, size_t str_len);
- 
--- 
-2.17.1
-
+T24gOS8zMC8xOSA5OjI5IEFNLCBZb25naG9uZyBTb25nIHdyb3RlOg0KPiArT0xEX1ZFUlNJT04o
+eHNrX3VtZW1fX2NyZWF0ZV92MF8wXzIsIHhza191bWVtX19jcmVhdGUsIExJQkJQRl8wLjAuMikN
+Cj4gK05FV19WRVJTSU9OKHhza191bWVtX19jcmVhdGVfdjBfMF80LCB4c2tfdW1lbV9fY3JlYXRl
+LCBMSUJCUEZfMC4wLjQpDQoNCmhvdyB0aGlzIHdpbGwgbG9vayB3aGVuIHlldCBhbm90aGVyIHZl
+cnNpb24gb2YgdGhpcyBmdW5jdGlvbiBpcyANCmludHJvZHVjZWQsIHNheSBpbiAwLjAuNiA/DQoN
+Ck9MRF9WRVJTSU9OKHhza191bWVtX19jcmVhdGVfdjBfMF8yLCB4c2tfdW1lbV9fY3JlYXRlLCBM
+SUJCUEZfMC4wLjIpDQpPTERfVkVSU0lPTih4c2tfdW1lbV9fY3JlYXRlX3YwXzBfNCwgeHNrX3Vt
+ZW1fX2NyZWF0ZSwgTElCQlBGXzAuMC40KQ0KTkVXX1ZFUlNJT04oeHNrX3VtZW1fX2NyZWF0ZV92
+MF8wXzYsIHhza191bWVtX19jcmVhdGUsIExJQkJQRl8wLjAuNikNCg0KMC4wLjQgd2lsbCBiZSBy
+ZW5hbWVkIHRvIE9MRF8gYW5kIHRoZSBsYXRlc3QgYWRkaXRpb24gTkVXXyA/DQpUaGUgbWFjcm8g
+bmFtZSBmZWVscyBhIGJpdCBjb25mdXNpbmcuIE1heSBiZSBpbnN0ZWFkIG9mIE5FV18NCmNhbGwg
+aXQgQ1VSUkVOVF8gPyBvciBERUZBVUxUXyA/DQpORVdfIHdpbGwgYmVjb21lIG5vdCBzbyAnbmV3
+JyBmZXcgbW9udGhzIGZyb20gbm93Lg0K
