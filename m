@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C82C269D
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:40:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E35C269B
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730178AbfI3UiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 16:38:24 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63362 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726576AbfI3UiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:38:24 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x8UIqj5C021870
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=1IgGt+QiRdji7VyWkyj+zGlrMheQ4AYaU5d2Vmsh644=;
- b=FeNfOuOwKpeZo7L2Q6m9h6y1jXmX5Ihtjc4IWmQml8lT2Ew6LJ0UX5GGk+Dg6FxO4Npy
- sg7xXnpSm0v9WpUJ9COjgzDn4d0M/DnhdxE5eOgMZmjfsblfPzX3zRku67VoBCUrx+/U
- lmwbW0QETUJx2pwLDbJDXdCMVKUdCeidxnY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2vbm2uh1m6-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 11:59:07 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 30 Sep 2019 11:59:05 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id C740586185A; Mon, 30 Sep 2019 11:59:02 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 1/6] selftests/bpf: undo GCC-specific bpf_helpers.h changes
-Date:   Mon, 30 Sep 2019 11:58:50 -0700
-Message-ID: <20190930185855.4115372-2-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190930185855.4115372-1-andriin@fb.com>
-References: <20190930185855.4115372-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1731063AbfI3UiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 16:38:08 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:41461 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730105AbfI3UiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:38:07 -0400
+Received: by mail-lj1-f195.google.com with SMTP id f5so10926716ljg.8;
+        Mon, 30 Sep 2019 13:38:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Gek2awizC19DRqdsGkSxiDjzH45dJ2a6h+V1E8hcFPc=;
+        b=m5DZh/v+bR7He87gdSFPGLVJrrQjpD045RxFCvuUDYQgF1aEnzS+4GHh9Fx6HEG4mh
+         Zh694ML65wXDvqCojVyghpo+7cJJzJ/dFwz1T+vS53V9wxTLZyTLPg6ECSNSyShebO9p
+         SwMtDQ8B9RvJHmLifzOfjbzYUjpunHAF43uBhO4/hKlElXJV4DoacquPRsDa37EvuQd1
+         HBZamqQUZ3+1o0guEHwwGMiQm2kRZgbd23sCBpxXt7vHIkGN5DiGNt7KLN9pOcgtmA8o
+         Ed1FaVTjFX5CORqe0SI8428h8Oiwn3zgkN8LncGrHIXmEJ9IpQVMFgXtCDhjz3qtPj5m
+         dPZQ==
+X-Gm-Message-State: APjAAAVNph/TJ5wtEMujXwXIPp/bnlr6iNn58X6MpwOSQa6ODp7IWRaj
+        QcBnZIs+ohTEGsVy2hc21ksVG1Zv
+X-Google-Smtp-Source: APXvYqxbquIAk6jQ5ZvzBUZ4ucsaWt3KPUV0l4rJzJHZx8ghqG80pGGYdJnDeItjHrVrSB0aln7Dvw==
+X-Received: by 2002:a2e:63da:: with SMTP id s87mr13106787lje.79.1569875513862;
+        Mon, 30 Sep 2019 13:31:53 -0700 (PDT)
+Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.googlemail.com with ESMTPSA id j84sm3548526ljb.91.2019.09.30.13.31.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Sep 2019 13:31:53 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Denis Efremov <efremov@linux.com>,
+        Pontus Fuchs <pontus.fuchs@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Laight <David.Laight@ACULAB.COM>, stable@vger.kernel.org
+Subject: [PATCH v2] ar5523: check NULL before memcpy() in ar5523_cmd()
+Date:   Mon, 30 Sep 2019 23:31:47 +0300
+Message-Id: <20190930203147.10140-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190930140207.28638-1-efremov@linux.com>
+References: <20190930140207.28638-1-efremov@linux.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-09-30_11:2019-09-30,2019-09-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 phishscore=0 mlxscore=0 priorityscore=1501 bulkscore=0
- adultscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0 spamscore=0
- suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1909300167
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Having GCC provide its own bpf-helper.h is not the right approach and is
-going to be changed. Undo bpf_helpers.h change before moving
-bpf_helpers.h into libbpf.
+memcpy() call with "idata == NULL && ilen == 0" results in undefined
+behavior in ar5523_cmd(). For example, NULL is passed in callchain
+"ar5523_stat_work() -> ar5523_cmd_write() -> ar5523_cmd()". This patch
+adds ilen check before memcpy() call in ar5523_cmd() to prevent an
+undefined behavior.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Cc: Pontus Fuchs <pontus.fuchs@gmail.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: David Laight <David.Laight@ACULAB.COM>
+Cc: stable@vger.kernel.org
+Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
- tools/testing/selftests/bpf/bpf_helpers.h | 8 --------
- 1 file changed, 8 deletions(-)
+V2: check ilen instead of idata as suggested by David Laight.
 
-diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-index 54a50699bbfd..a1d9b97b8e15 100644
---- a/tools/testing/selftests/bpf/bpf_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_helpers.h
-@@ -13,8 +13,6 @@
- 			 ##__VA_ARGS__);		\
- })
+ drivers/net/wireless/ath/ar5523/ar5523.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index b94759daeacc..da2d179430ca 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -255,7 +255,8 @@ static int ar5523_cmd(struct ar5523 *ar, u32 code, const void *idata,
  
--#ifdef __clang__
--
- /* helper macro to place programs, maps, license in
-  * different sections in elf_bpf file. Section names
-  * are interpreted by elf_bpf loader
-@@ -258,12 +256,6 @@ struct bpf_map_def {
- 	unsigned int numa_node;
- };
+ 	if (flags & AR5523_CMD_FLAG_MAGIC)
+ 		hdr->magic = cpu_to_be32(1 << 24);
+-	memcpy(hdr + 1, idata, ilen);
++	if (ilen)
++		memcpy(hdr + 1, idata, ilen);
  
--#else
--
--#include <bpf-helpers.h>
--
--#endif
--
- #define BPF_ANNOTATE_KV_PAIR(name, type_key, type_val)		\
- 	struct ____btf_map_##name {				\
- 		type_key key;					\
+ 	cmd->odata = odata;
+ 	cmd->olen = olen;
 -- 
-2.17.1
+2.21.0
 
