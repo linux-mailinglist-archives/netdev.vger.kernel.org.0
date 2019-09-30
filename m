@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FDDC1E68
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 11:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD40FC1E67
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 11:48:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730567AbfI3Jsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 05:48:30 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54145 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbfI3Js3 (ORCPT
+        id S1730575AbfI3Jsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 05:48:32 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37482 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730514AbfI3Js3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 05:48:29 -0400
-Received: by mail-wm1-f67.google.com with SMTP id i16so12605004wmd.3
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 02:48:26 -0700 (PDT)
+Received: by mail-wr1-f65.google.com with SMTP id i1so10494321wro.4
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 02:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wjgYThXkeuJ/jW5QTdoLaEsPOdlOjsA/SlKrYUigfqU=;
-        b=oE+TkcpKL0zEibxSUYZAAxnZAhd/hHP8okDiZt4fNoWKAAc0L91J8mJIfliVhCtiY3
-         ve90j9mBjtygbEZbJClL61sHaZzCKFo067KjBy7BbuLTCH1bl1JUCpjOC3uNOlikpKd/
-         B5322BxQlpx6OMVrkaUNnPw4Tl3qJ7ZsQHC84DbKiKnus915XTC/A3egEtdBTEWqGoKj
-         5kJlmv4OOUchigOIHCNxaGEexbWCaaTn8I5rMIKJVNeMuAzOttuNrvkOsOPQpTeBgM33
-         2+keC4Gdrpeds6SEMAoqMnafL03zqYz8G0TKqiWjEH9gQyR66TkGlVbwLvZTR7b98pE1
-         FfYQ==
+        bh=V+ccQabzfK8HaoGRAwsqiMGRIoktLjGAt+mVsgp4ayo=;
+        b=kxyn7HGq3rt0JVukCmvFSz86MsdUyIHMRSLR1vpCBg5zNGio62chi1YITj9OnLqN6U
+         2jocCIYaqi+hihRyIZWOaKQprQg5ayz/YCrRUcbf8TGJsCoPsrBTCZbqKWHmXxp/mIf1
+         UuVdhHjPrdjXVapqxYQi6Yl6CmqgsNb5wSplfsOs7SIDUYLn9Vc1peSLbKbvFlK0CFw+
+         trnvZ4PgHGrbsUMo00unuj6xxcsPqNDo6yjEe7ySV/3ueuaBog8K+l5AYMWZMMjG7Fpw
+         M+k1efM32ZRmHH8/JHeHRDYxUq0ZMzw26Uwj8Wo/YZbV0X8lqbQq9RRa+U4//eWgcK4o
+         Kl4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wjgYThXkeuJ/jW5QTdoLaEsPOdlOjsA/SlKrYUigfqU=;
-        b=XouU/sp7pZ2kjgxOTxw1sfoyaZpQ9vq3JaEbo76U5DwhFjhbank2EMfmda5U/jghGw
-         JLTsaO/SMEHifU+7PdmToAtvHpNfdzXLn147HrmVV9KBfm+oHUM5cXQFAjdcydgDJvTi
-         oc44MxJ3c1o8wx5/n8O09afd5WK8ZcamUHDFvQJRuE90KvxSjle/OD2ZjRB5DY9SV/fi
-         aWY9mwUPUv9OVLrGskRu77XyZbfL9RANR81cdQWGwX3o41MTL5KH6Y5+iZrzXcdMEIZo
-         uY4YvNAdnWbIcMrWS/RlX5aprtBvP8bF0B4Spy83yg3k/uHop1bC9Ciz0NACWq0Un85o
-         hBpw==
-X-Gm-Message-State: APjAAAUkKq1r0GpeZ4FI7UBUWnX1oJAJh1Tok0iQcgxQ01xxsTt++XYE
-        i4oBEQs+mTLDIa950rKQ/MqxQ4m3jn8=
-X-Google-Smtp-Source: APXvYqzaRQ5RWNAE+t3UlQpucPPk+MBnBO1KAjbRu/mVMrTA+DDY5nxCuEmVao1YQCnbXDi7E5D4qw==
-X-Received: by 2002:a7b:c353:: with SMTP id l19mr15481600wmj.173.1569836905179;
-        Mon, 30 Sep 2019 02:48:25 -0700 (PDT)
+        bh=V+ccQabzfK8HaoGRAwsqiMGRIoktLjGAt+mVsgp4ayo=;
+        b=VqUaLu1UpU90PyzJgxpu1AoxuWZn5aPnQVZe8VKvttDeNAm/9390hKukNO3ioxDhCW
+         E7JT5r99aSODtsIr3tU/w07fH9G1v2pDEImYdn4ArHLon7mTUAJnSWY0sY500MuULAf9
+         eUyT3l4xNS4Srdfk67aqOo8HpKn2oTdeg8Xvq4XnZWhLj6LCIVR3D6Ym/jVT9rF5ZFHy
+         el+2DMqJsPUhDExhGdfzZXiRf85wZuguLKdVcU21eP1UKPREsqEXQz3XMxw1nfc9uVpf
+         uZPgqxhpmdsFNfDg+/1LQKUfbFqzYHrPmRwya8Z0bBM441ScejDErr4dyCyaKZYMZTK0
+         qbcw==
+X-Gm-Message-State: APjAAAVOP5w0x705koqdU18axR8UBE8V4GAM8+V5YWO7xNSbjqYIrd4o
+        Ydaqcbc/nukL38bP/HIq8JW9bx/+FWc=
+X-Google-Smtp-Source: APXvYqzK/BYLFQuttOzHndM+aIjkaFMTegkPCaw+ih9qssf4KicOWCJg9S1JwLthEoqyXxuRvXR8rA==
+X-Received: by 2002:a5d:4704:: with SMTP id y4mr11999794wrq.363.1569836906304;
+        Mon, 30 Sep 2019 02:48:26 -0700 (PDT)
 Received: from localhost (ip-89-177-132-96.net.upcbroadband.cz. [89.177.132.96])
-        by smtp.gmail.com with ESMTPSA id f83sm16134141wmf.43.2019.09.30.02.48.24
+        by smtp.gmail.com with ESMTPSA id h125sm26973353wmf.31.2019.09.30.02.48.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 02:48:24 -0700 (PDT)
+        Mon, 30 Sep 2019 02:48:26 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
@@ -52,9 +52,9 @@ Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         parav@mellanox.com, saeedm@mellanox.com, f.fainelli@gmail.com,
         stephen@networkplumber.org, sd@queasysnail.net, sbrivio@redhat.com,
         pabeni@redhat.com, mlxsw@mellanox.com
-Subject: [patch net-next 3/7] net: rtnetlink: add linkprop commands to add and delete alternative ifnames
-Date:   Mon, 30 Sep 2019 11:48:16 +0200
-Message-Id: <20190930094820.11281-4-jiri@resnulli.us>
+Subject: [patch net-next 4/7] net: rtnetlink: put alternative names to getlink message
+Date:   Mon, 30 Sep 2019 11:48:17 +0200
+Message-Id: <20190930094820.11281-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190930094820.11281-1-jiri@resnulli.us>
 References: <20190930094820.11281-1-jiri@resnulli.us>
@@ -67,320 +67,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Add two commands to add and delete list of link properties. Implement
-the first property type along - alternative ifnames.
-Each net device can have multiple alternative names.
+Extend exiting getlink info message with list of properties. Now the
+only ones are alternative names.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 rfc->v1:
-- make netdev_name_node_alt_create/destroy() char *name arg const
-- converted the patch to add/del list of link properties
+- move size initialization after early return in
+  rtnl_alt_ifname_list_size()/rtnl_prop_list_size()
+- converted to generic property list
 ---
- include/linux/netdevice.h      |   4 ++
- include/uapi/linux/if.h        |   1 +
- include/uapi/linux/if_link.h   |   2 +
- include/uapi/linux/rtnetlink.h |   7 +++
- net/core/dev.c                 |  58 ++++++++++++++++++-
- net/core/rtnetlink.c           | 103 +++++++++++++++++++++++++++++++++
- security/selinux/nlmsgtab.c    |   4 +-
- 7 files changed, 177 insertions(+), 2 deletions(-)
+ net/core/rtnetlink.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index e92bc5467256..48cc71aae466 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -927,10 +927,14 @@ struct tlsdev_ops;
- 
- struct netdev_name_node {
- 	struct hlist_node hlist;
-+	struct list_head list;
- 	struct net_device *dev;
- 	const char *name;
- };
- 
-+int netdev_name_node_alt_create(struct net_device *dev, const char *name);
-+int netdev_name_node_alt_destroy(struct net_device *dev, const char *name);
-+
- /*
-  * This structure defines the management hooks for network devices.
-  * The following hooks can be defined; unless noted otherwise, they are
-diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
-index 7fea0fd7d6f5..4bf33344aab1 100644
---- a/include/uapi/linux/if.h
-+++ b/include/uapi/linux/if.h
-@@ -33,6 +33,7 @@
- #define	IFNAMSIZ	16
- #endif /* __UAPI_DEF_IF_IFNAMSIZ */
- #define	IFALIASZ	256
-+#define	ALTIFNAMSIZ	128
- #include <linux/hdlc/ioctl.h>
- 
- /* For glibc compatibility. An empty enum does not compile. */
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 4a8c02cafa9a..8aec8769d944 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -167,6 +167,8 @@ enum {
- 	IFLA_NEW_IFINDEX,
- 	IFLA_MIN_MTU,
- 	IFLA_MAX_MTU,
-+	IFLA_PROP_LIST,
-+	IFLA_ALT_IFNAME, /* Alternative ifname */
- 	__IFLA_MAX
- };
- 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index ce2a623abb75..1418a8362bb7 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -164,6 +164,13 @@ enum {
- 	RTM_GETNEXTHOP,
- #define RTM_GETNEXTHOP	RTM_GETNEXTHOP
- 
-+	RTM_NEWLINKPROP = 108,
-+#define RTM_NEWLINKPROP	RTM_NEWLINKPROP
-+	RTM_DELLINKPROP,
-+#define RTM_DELLINKPROP	RTM_DELLINKPROP
-+	RTM_GETLINKPROP,
-+#define RTM_GETLINKPROP	RTM_GETLINKPROP
-+
- 	__RTM_MAX,
- #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
- };
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b9088dee0701..36e139793e8e 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -245,7 +245,13 @@ static struct netdev_name_node *netdev_name_node_alloc(struct net_device *dev,
- static struct netdev_name_node *
- netdev_name_node_head_alloc(struct net_device *dev)
- {
--	return netdev_name_node_alloc(dev, dev->name);
-+	struct netdev_name_node *name_node;
-+
-+	name_node = netdev_name_node_alloc(dev, dev->name);
-+	if (!name_node)
-+		return NULL;
-+	INIT_LIST_HEAD(&name_node->list);
-+	return name_node;
- }
- 
- static void netdev_name_node_free(struct netdev_name_node *name_node)
-@@ -289,6 +295,55 @@ static struct netdev_name_node *netdev_name_node_lookup_rcu(struct net *net,
- 	return NULL;
- }
- 
-+int netdev_name_node_alt_create(struct net_device *dev, const char *name)
-+{
-+	struct netdev_name_node *name_node;
-+	struct net *net = dev_net(dev);
-+
-+	name_node = netdev_name_node_lookup(net, name);
-+	if (name_node)
-+		return -EEXIST;
-+	name_node = netdev_name_node_alloc(dev, name);
-+	if (!name_node)
-+		return -ENOMEM;
-+	netdev_name_node_add(net, name_node);
-+	/* The node that holds dev->name acts as a head of per-device list. */
-+	list_add_tail(&name_node->list, &dev->name_node->list);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(netdev_name_node_alt_create);
-+
-+static void __netdev_name_node_alt_destroy(struct netdev_name_node *name_node)
-+{
-+	list_del(&name_node->list);
-+	netdev_name_node_del(name_node);
-+	kfree(name_node->name);
-+	netdev_name_node_free(name_node);
-+}
-+
-+int netdev_name_node_alt_destroy(struct net_device *dev, const char *name)
-+{
-+	struct netdev_name_node *name_node;
-+	struct net *net = dev_net(dev);
-+
-+	name_node = netdev_name_node_lookup(net, name);
-+	if (!name_node)
-+		return -ENOENT;
-+	__netdev_name_node_alt_destroy(name_node);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(netdev_name_node_alt_destroy);
-+
-+static void netdev_name_node_alt_flush(struct net_device *dev)
-+{
-+	struct netdev_name_node *name_node, *tmp;
-+
-+	list_for_each_entry_safe(name_node, tmp, &dev->name_node->list, list)
-+		__netdev_name_node_alt_destroy(name_node);
-+}
-+
- /* Device list insertion */
- static void list_netdevice(struct net_device *dev)
- {
-@@ -8317,6 +8372,7 @@ static void rollback_registered_many(struct list_head *head)
- 		dev_uc_flush(dev);
- 		dev_mc_flush(dev);
- 
-+		netdev_name_node_alt_flush(dev);
- 		netdev_name_node_free(dev->name_node);
- 
- 		if (dev->netdev_ops->ndo_uninit)
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 1ee6460f8275..e13646993d82 100644
+index e13646993d82..c38917371b84 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -1750,6 +1750,9 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
- 	[IFLA_CARRIER_DOWN_COUNT] = { .type = NLA_U32 },
- 	[IFLA_MIN_MTU]		= { .type = NLA_U32 },
- 	[IFLA_MAX_MTU]		= { .type = NLA_U32 },
-+	[IFLA_PROP_LIST]	= { .type = NLA_NESTED },
-+	[IFLA_ALT_IFNAME]	= { .type = NLA_STRING,
-+				    .len = ALTIFNAMSIZ - 1 },
- };
- 
- static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
-@@ -3373,6 +3376,103 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	return err;
+@@ -980,6 +980,19 @@ static size_t rtnl_xdp_size(void)
+ 	return xdp_size;
  }
  
-+static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
-+			   bool *changed, struct netlink_ext_ack *extack)
++static size_t rtnl_prop_list_size(const struct net_device *dev)
 +{
-+	char *alt_ifname;
-+	int err;
++	struct netdev_name_node *name_node;
++	size_t size;
 +
-+	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
-+	if (err)
-+		return err;
-+
-+	alt_ifname = nla_data(attr);
-+	if (cmd == RTM_NEWLINKPROP) {
-+		alt_ifname = kstrdup(alt_ifname, GFP_KERNEL);
-+		if (!alt_ifname)
-+			return -ENOMEM;
-+		err = netdev_name_node_alt_create(dev, alt_ifname);
-+		if (err) {
-+			kfree(alt_ifname);
-+			return err;
-+		}
-+	} else if (cmd == RTM_DELLINKPROP) {
-+		err = netdev_name_node_alt_destroy(dev, alt_ifname);
-+		if (err)
-+			return err;
-+	} else {
-+		WARN_ON(1);
++	if (list_empty(&dev->name_node->list))
 +		return 0;
-+	}
-+
-+	*changed = true;
-+	return 0;
++	size = nla_total_size(0);
++	list_for_each_entry(name_node, &dev->name_node->list, list)
++		size += nla_total_size(ALTIFNAMSIZ);
++	return size;
 +}
 +
-+static int rtnl_linkprop(int cmd, struct sk_buff *skb, struct nlmsghdr *nlh,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct nlattr *tb[IFLA_MAX + 1];
-+	struct net_device *dev;
-+	struct ifinfomsg *ifm;
-+	bool changed = false;
-+	struct nlattr *attr;
-+	int err, rem;
-+
-+	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy, extack);
-+	if (err)
-+		return err;
-+
-+	err = rtnl_ensure_unique_netns(tb, extack, true);
-+	if (err)
-+		return err;
-+
-+	ifm = nlmsg_data(nlh);
-+	if (ifm->ifi_index > 0) {
-+		dev = __dev_get_by_index(net, ifm->ifi_index);
-+	} else if (tb[IFLA_IFNAME]) {
-+		char ifname[IFNAMSIZ];
-+
-+		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-+		dev = __dev_get_by_name(net, ifname);
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	if (!dev)
-+		return -ENODEV;
-+
-+	if (!tb[IFLA_PROP_LIST])
-+		return 0;
-+
-+	nla_for_each_nested(attr, tb[IFLA_PROP_LIST], rem) {
-+		switch (nla_type(attr)) {
-+		case IFLA_ALT_IFNAME:
-+			err = rtnl_alt_ifname(cmd, dev, attr, &changed, extack);
-+			if (err)
-+				return err;
-+			break;
-+		}
-+	}
-+
-+	if (changed)
-+		netdev_state_change(dev);
-+	return 0;
-+}
-+
-+static int rtnl_newlinkprop(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			    struct netlink_ext_ack *extack)
-+{
-+	return rtnl_linkprop(RTM_NEWLINKPROP, skb, nlh, extack);
-+}
-+
-+static int rtnl_dellinkprop(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			    struct netlink_ext_ack *extack)
-+{
-+	return rtnl_linkprop(RTM_DELLINKPROP, skb, nlh, extack);
-+}
-+
- static u16 rtnl_calcit(struct sk_buff *skb, struct nlmsghdr *nlh)
+ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+ 				     u32 ext_filter_mask)
  {
- 	struct net *net = sock_net(skb->sk);
-@@ -5331,6 +5431,9 @@ void __init rtnetlink_init(void)
- 	rtnl_register(PF_UNSPEC, RTM_GETROUTE, NULL, rtnl_dump_all, 0);
- 	rtnl_register(PF_UNSPEC, RTM_GETNETCONF, NULL, rtnl_dump_all, 0);
+@@ -1027,6 +1040,7 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+ 	       + nla_total_size(4)  /* IFLA_CARRIER_DOWN_COUNT */
+ 	       + nla_total_size(4)  /* IFLA_MIN_MTU */
+ 	       + nla_total_size(4)  /* IFLA_MAX_MTU */
++	       + rtnl_prop_list_size(dev)
+ 	       + 0;
+ }
  
-+	rtnl_register(PF_UNSPEC, RTM_NEWLINKPROP, rtnl_newlinkprop, NULL, 0);
-+	rtnl_register(PF_UNSPEC, RTM_DELLINKPROP, rtnl_dellinkprop, NULL, 0);
+@@ -1584,6 +1598,42 @@ static int rtnl_fill_link_af(struct sk_buff *skb,
+ 	return 0;
+ }
+ 
++static int rtnl_fill_alt_ifnames(struct sk_buff *skb,
++				 const struct net_device *dev)
++{
++	struct netdev_name_node *name_node;
++	int count = 0;
 +
- 	rtnl_register(PF_BRIDGE, RTM_NEWNEIGH, rtnl_fdb_add, NULL, 0);
- 	rtnl_register(PF_BRIDGE, RTM_DELNEIGH, rtnl_fdb_del, NULL, 0);
- 	rtnl_register(PF_BRIDGE, RTM_GETNEIGH, rtnl_fdb_get, rtnl_fdb_dump, 0);
-diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
-index 58345ba0528e..c97fdae8f71b 100644
---- a/security/selinux/nlmsgtab.c
-+++ b/security/selinux/nlmsgtab.c
-@@ -83,6 +83,8 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
- 	{ RTM_NEWNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- 	{ RTM_DELNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- 	{ RTM_GETNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
-+	{ RTM_NEWLINKPROP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
-+	{ RTM_DELLINKPROP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
- };
++	list_for_each_entry(name_node, &dev->name_node->list, list) {
++		if (nla_put_string(skb, IFLA_ALT_IFNAME, name_node->name))
++			return -EMSGSIZE;
++		count++;
++	}
++	return count;
++}
++
++static int rtnl_fill_prop_list(struct sk_buff *skb,
++			       const struct net_device *dev)
++{
++	struct nlattr *prop_list;
++	int ret;
++
++	prop_list = nla_nest_start(skb, IFLA_PROP_LIST);
++	if (!prop_list)
++		return -EMSGSIZE;
++
++	ret = rtnl_fill_alt_ifnames(skb, dev);
++	if (ret <= 0)
++		goto nest_cancel;
++
++	nla_nest_end(skb, prop_list);
++	return 0;
++
++nest_cancel:
++	nla_nest_cancel(skb, prop_list);
++	return ret;
++}
++
+ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 			    struct net_device *dev, struct net *src_net,
+ 			    int type, u32 pid, u32 seq, u32 change,
+@@ -1697,6 +1747,9 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 		goto nla_put_failure_rcu;
+ 	rcu_read_unlock();
  
- static const struct nlmsg_perm nlmsg_tcpdiag_perms[] =
-@@ -166,7 +168,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
- 		 * structures at the top of this file with the new mappings
- 		 * before updating the BUILD_BUG_ON() macro!
- 		 */
--		BUILD_BUG_ON(RTM_MAX != (RTM_NEWNEXTHOP + 3));
-+		BUILD_BUG_ON(RTM_MAX != (RTM_NEWLINKPROP + 3));
- 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
- 				 sizeof(nlmsg_route_perms));
- 		break;
++	if (rtnl_fill_prop_list(skb, dev))
++		goto nla_put_failure;
++
+ 	nlmsg_end(skb, nlh);
+ 	return 0;
+ 
 -- 
 2.21.0
 
