@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F94CC2A13
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 00:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1278AC2A23
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 00:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729748AbfI3WzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 18:55:23 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43181 "EHLO
+        id S1731914AbfI3W6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 18:58:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45382 "EHLO
         mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbfI3WzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 18:55:23 -0400
-Received: by mail-qt1-f194.google.com with SMTP id c3so19174784qtv.10;
-        Mon, 30 Sep 2019 15:55:22 -0700 (PDT)
+        with ESMTP id S1731685AbfI3W6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 18:58:47 -0400
+Received: by mail-qt1-f194.google.com with SMTP id c21so19167533qtj.12;
+        Mon, 30 Sep 2019 15:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Zmi3R4LtZmokgmaswrhYl+DvlDbr3EfDsUv5GQDTZNk=;
-        b=qpVVbEHzWaQQRBi3xvW7PP0lbQAl+J7qrEWC5TCSG9qAiw2x7o/evNOL8XhxBldlCM
-         1sDpzwPqTMmvTZXTgO3wtTqfaUZPU6T9QIEb/P532giUVdOxRkTOnOL7bAYSSQqJCDKI
-         gXC9LOq7H6e25WJrwE7yVYOiSJuPttOtSR+2MkzOPkp6dpWpcmWSAIet4SIXzkdmWBNR
-         fQ6bwqP337LmjceKnY/jxV45ubflCNROIOGTzZkaKagFG+rLfGnM1ZGX579deLDwjhSZ
-         APEYADCegO3Rcf2tCf8qnNGYERucSwKM+XmlNVUk1N4RBaMqOQUbLZvLFeBCD78xqLiE
-         MqPQ==
+        bh=cvCTcx43JDg1o6KPY5fDSJTzdGhnKOviIKAIHHSnoeI=;
+        b=pvymu7VeESp4BaH6p35MroG5OK7PLwJMqW7vJJx0W8ajfBzAjnZFz1GOe+TtSVWS6Y
+         Ft74dgo8akgHikqAMHkRh+dKShlc4GVKBhIg2tBN3ef8pUsE59YAWoq1kCzkqv0eqTmN
+         xvSFrYXrKs88bwLf5ZGa2tExHnVmtVG0OiX6eUxAdGwXiBq0BRpemcoKvSpR74EhKvmx
+         9sM4yCgwtG8tLL6RVOnpBKShsZ3tudjg5N5KDRsmdQho/QawGWSmETd/B6vfz9G5P1K8
+         cAXxItfc4cwjgTGKEwER8D7jhZ9ql+kRPbC4L+sr81iA9yfIzzhv3cjCOtJTyaIi8Wga
+         Dg+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Zmi3R4LtZmokgmaswrhYl+DvlDbr3EfDsUv5GQDTZNk=;
-        b=kvzLEDOejrxk5geKrQMaHTmsi8gTVWzcpCgkvjHVf43+ZV2kYRXJ/+kMbZvNh9KpII
-         h/RXjARR0kLDCHYEVQOYhYic4zJILyw+zh94etrP4c9rdzPqaoeIz47Fsaz07RsBYW58
-         JowRx03MQ8l9Q18ZLoZtv+bw3kU91HXxiheiC9rDQc/LY9JEvOiMchd3Xl0pjST02RtX
-         2Emctg5XGJOcewUpZ2BD8Hf4gqlPbS8lI2YZbd+Qx98anY0emHaL94ynSpLWawlzotdl
-         Bp8iabghX4Lih9s0D4yKXY9T9cK9u3vJkMTEFwY+9CtmJpbFi486XZFdU/V7VWnS/EFE
-         5Y9A==
-X-Gm-Message-State: APjAAAULJaH7J9qKTCxjLgLmq6NdANVxNwIxj/6nenAtg/gJa6RWsi3M
-        ix4A9wVKflEKUpPB4k2cZOtmzOCjlRXjDk1dze4=
-X-Google-Smtp-Source: APXvYqyfrITsybpMlqrdqCzYR0P5kgOXrzK7kL4P7X8gksJgIzA54R2i41INMe6XceIoiJ7yZaaB9vfP5R82g1SfOf8=
-X-Received: by 2002:ac8:4704:: with SMTP id f4mr27311973qtp.183.1569884122170;
- Mon, 30 Sep 2019 15:55:22 -0700 (PDT)
+        bh=cvCTcx43JDg1o6KPY5fDSJTzdGhnKOviIKAIHHSnoeI=;
+        b=Zg+cEM8JBcXxtcfLKZOB8TsLE4YBGhyYhd3OPHAWxmeEOvg07a5xzNsQfg1F308olR
+         Tm8mu665H4tWyZzC2dCkLiP7H/4WffKovqgPG013dR1J39wk4E8E+3GAHIEFTGmVHonh
+         V5VUpwJX9380K9MxEEl6sKZ7DopEt7ebylTdWSk0nzrZEG08NfNIa7SjYXp+8POSxAgG
+         1/zgtSbotXMrbpLWxmu2TAfH3VGARE2Ok7/MnKsaOvXdY0GRcYMnEUuh+8pXLCwwGLAs
+         Hhq9ShH+jQWVyHu19YMv1uUpwpci+4pY0ioN9Ncz90Z3LM1koAH3GbKSMJs08tlW+uC0
+         mRWQ==
+X-Gm-Message-State: APjAAAW+XkkLMhRSY4bsQqQRyT1m+FAEUkgNhrQ3K6HGtkE4ngTrME+D
+        yvJeSz0s81piMIEFnK+lzNDfmsS3KSxOfBnD/OE=
+X-Google-Smtp-Source: APXvYqz8QjXfyMdU7bHG/VQoO+Hok1DHYk+5fo6q/VjSYjeEHG1vou/JweDL+45RxpohymsVQgM+xKYTCZjNtjioAs0=
+X-Received: by 2002:a05:6214:114a:: with SMTP id b10mr22523228qvt.150.1569884326168;
+ Mon, 30 Sep 2019 15:58:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190930185855.4115372-1-andriin@fb.com> <20190930185855.4115372-3-andriin@fb.com>
-In-Reply-To: <20190930185855.4115372-3-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Mon, 30 Sep 2019 15:55:11 -0700
-Message-ID: <CAPhsuW6RHaPceOWdqmL1w_rwz8dqq4CrfY43Gg7qVK0w1rA29w@mail.gmail.com>
+ <CAPhsuW6RHaPceOWdqmL1w_rwz8dqq4CrfY43Gg7qVK0w1rA29w@mail.gmail.com>
+In-Reply-To: <CAPhsuW6RHaPceOWdqmL1w_rwz8dqq4CrfY43Gg7qVK0w1rA29w@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Sep 2019 15:58:35 -0700
+Message-ID: <CAEf4BzaPdA+egnSKveZ_dE=hTU5ZAsOFSRpkBjmEpPsZLM=Y=Q@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 2/6] libbpf: move bpf_helpers.h, bpf_endian.h
  into libbpf
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -60,15 +61,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 1:43 PM Andrii Nakryiko <andriin@fb.com> wrote:
+On Mon, Sep 30, 2019 at 3:55 PM Song Liu <liu.song.a23@gmail.com> wrote:
 >
-> Make bpf_helpers.h and bpf_endian.h official part of libbpf. Ensure they
-> are installed along the other libbpf headers.
+> On Mon, Sep 30, 2019 at 1:43 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Make bpf_helpers.h and bpf_endian.h official part of libbpf. Ensure they
+> > are installed along the other libbpf headers.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 >
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> Can we merge/rearrange 2/6 and 3/6, so they is a git-rename instead of
+> many +++ and ---?
 
-Can we merge/rearrange 2/6 and 3/6, so they is a git-rename instead of
-many +++ and ---?
+I arranged them that way because of Github sync. We don't sync
+selftests/bpf changes to Github, and it causes more churn if commits
+have a mix of libbpf and selftests changes.
 
-Thanks,
-Song
+I didn't modify bpf_helpers.h/bpf_endian.h between those patches, so
+don't worry about reviewing contents ;)
+
+>
+> Thanks,
+> Song
