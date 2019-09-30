@@ -2,138 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EEA4C2777
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A71C2762
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 22:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731806AbfI3U5R convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Sep 2019 16:57:17 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:59097 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727118AbfI3U5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:57:13 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iEzqk-00015W-B5; Mon, 30 Sep 2019 19:52:42 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iEzqi-0004zx-TB; Mon, 30 Sep 2019 19:52:40 +0200
-Date:   Mon, 30 Sep 2019 19:52:40 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1] net: ag71xx: fix mdio subnode support
-Message-ID: <20190930175240.hfujxyst475wftzt@pengutronix.de>
-References: <20190930093310.10762-1-o.rempel@pengutronix.de>
- <20190930134209.GB14745@lunn.ch>
- <20190930142907.wo3tahtg7g7mvfmp@pengutronix.de>
- <20190930162557.GB15343@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20190930162557.GB15343@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 19:52:14 up 136 days, 10 min, 87 users,  load average: 0.00, 0.00,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1730456AbfI3UyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 16:54:19 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34264 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727118AbfI3UyT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 16:54:19 -0400
+Received: by mail-io1-f67.google.com with SMTP id q1so42090711ion.1
+        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 13:54:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=WJ2NjbJMq3lOmAJqEgIyHx/7Ko24AcU+XIDukMDR+08=;
+        b=YJqgNTNtyh+NH3NZkmVDD7YCDh0zpcJYNHEVPxnis4aYaC6qjmINtgxnbW1FLBLXJY
+         8auv+dtt2DPomXIVGL4N2js/BQKdabuViWmi+52D23y5zv8MZEA4iMfVcPjA5oPPztgp
+         CWivk7JAGX1tgTKsIdh7/MtSocnhAoLzTZHENM9k0VavDb9bSDV0FMSMNkR4nwP4t8T/
+         g+mWtA56Zx+oRCJdvScJZiBecoKWXaexkq0FHTL6GGsJ721ObBqooKarahwmnFG1SqF8
+         VabhQyZ/Vq8XFJDpGZrfX8q8SS3UfMr6WiMk6rbo/YCQSPkTuWICqXwrGckgklOkBE2o
+         rYbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WJ2NjbJMq3lOmAJqEgIyHx/7Ko24AcU+XIDukMDR+08=;
+        b=slE8kaNbfzkRRj7izoG6NYLGAkZhJXxCcE42sW11YWd1PY7WXFSwrp0BteQzteVKJ9
+         T03czSeMBMHEZcJ8NOrHCMG1IEnVGOyAHZdDsPuuslGHsdxi7Aif6FmDdhQUK6s9qbfG
+         a49d0+Pu5Lb6BlgNDHKa6rMR+/okwVrBQJC8mljdTSyin1bHkzsLedNAmHE+OfsyDJzA
+         /0DPQplGXxzZd7wHOTpU6hp3MlmiCbhUfgi2IpT+Cy9AQEsGQa2vrjUb7ZoD7pBZc+iB
+         uw++F/9HcVGDFwmdC88QV6bhxBiDSKYwmJnZHuJaG6EA5TIYQqXHJjKpWYK9kXy0IzKu
+         rLOg==
+X-Gm-Message-State: APjAAAUwr6OBMOTxhl2yZBkBBEoSwQ+cbD81TporStvJBzFIhXvefd0m
+        wV0KCGwlqsE3ytf4QbszV3wgeQmWGT5lAg==
+X-Google-Smtp-Source: APXvYqwofpFGIw1BRswdhvULt5/UJw+pIM4d34iQQIZULkCNCY8/SloxczxwtYYVONqvxLScqqNFxw==
+X-Received: by 2002:a63:4558:: with SMTP id u24mr26472413pgk.262.1569866535194;
+        Mon, 30 Sep 2019 11:02:15 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id u1sm153873pjn.3.2019.09.30.11.02.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Sep 2019 11:02:14 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 1/5] ionic: simplify returns in devlink info
+Date:   Mon, 30 Sep 2019 11:01:54 -0700
+Message-Id: <20190930180158.36101-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 06:25:57PM +0200, Andrew Lunn wrote:
-> On Mon, Sep 30, 2019 at 04:29:07PM +0200, Oleksij Rempel wrote:
-> > On Mon, Sep 30, 2019 at 03:42:09PM +0200, Andrew Lunn wrote:
-> > > On Mon, Sep 30, 2019 at 11:33:10AM +0200, Oleksij Rempel wrote:
-> > > > The driver was working with fixed phy without any noticeable issues. This bug
-> > > > was uncovered by introducing dsa ar9331-switch driver.
-> > > > 
-> > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > > ---
-> > > >  drivers/net/ethernet/atheros/ag71xx.c | 6 ++++--
-> > > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-> > > > index 6703960c7cf5..d1101eea15c2 100644
-> > > > --- a/drivers/net/ethernet/atheros/ag71xx.c
-> > > > +++ b/drivers/net/ethernet/atheros/ag71xx.c
-> > > > @@ -526,7 +526,7 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
-> > > >  	struct device *dev = &ag->pdev->dev;
-> > > >  	struct net_device *ndev = ag->ndev;
-> > > >  	static struct mii_bus *mii_bus;
-> > > > -	struct device_node *np;
-> > > > +	struct device_node *np, *mnp;
-> > > >  	int err;
-> > > >  
-> > > >  	np = dev->of_node;
-> > > > @@ -571,7 +571,9 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
-> > > >  		msleep(200);
-> > > >  	}
-> > > >  
-> > > > -	err = of_mdiobus_register(mii_bus, np);
-> > > > +	mnp = of_get_child_by_name(np, "mdio");
-> > > > +	err = of_mdiobus_register(mii_bus, mnp);
-> > > > +	of_node_put(mnp);
-> > > >  	if (err)
-> > > >  		goto mdio_err_put_clk;
-> > > 
-> > > Hi Oleksij
-> > > 
-> > > You need to keep backwards compatibility here. If you find an mdio
-> > > node, use it, but if not, you need to still register np.
-> > > 
-> > > This is also extending the driver binding, so you need to update the
-> > > binding documentation.
-> > 
-> > Hi Andrew,
-> > 
-> > Normally i would agree. But in this case:
-> > - this driver is freshly added to the kernel and is different to OpenWrt
-> >   implementation any way. No users from this side.
-> > - Devicetree binding says:
-> >   Documentation/devicetree/bindings/net/qca,ar71xx.txt
-> > |Optional properties:
-> > |- phy-handle : phandle to the PHY device connected to this device.
-> > |- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
-> > |  Use instead of phy-handle.
-> > |
-> > |Optional subnodes:
-> > |- mdio : specifies the mdio bus, used as a container for phy nodes
-> > |  according to phy.txt in the same directory
-> > 
-> > So, it is driver bug ...ooOO (my personal bug :D)
-> 
-> Hi Oleksij
-> 
-> Ah, O.K. You should of explained that in the commit message.
-> 
-> Is the mdio support just in -rc, or is it older?
-> 
-> You need to add a Fixes: tag.
-> 
-> The patch subject should be [PATCH net] to indicate this is a fix to
-> the net tree
-> 
-> The patch should be against net, not next-next.
+There is no need for a goto in this bit of code.
 
-Ok. thx! i'll fix it.
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_devlink.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+index af1647afa4e8..6fb27dcc5787 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -19,31 +19,30 @@ static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 
+ 	err = devlink_info_driver_name_put(req, IONIC_DRV_NAME);
+ 	if (err)
+-		goto info_out;
++		return err;
+ 
+ 	err = devlink_info_version_running_put(req,
+ 					       DEVLINK_INFO_VERSION_GENERIC_FW,
+ 					       idev->dev_info.fw_version);
+ 	if (err)
+-		goto info_out;
++		return err;
+ 
+ 	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_type);
+ 	err = devlink_info_version_fixed_put(req,
+ 					     DEVLINK_INFO_VERSION_GENERIC_ASIC_ID,
+ 					     buf);
+ 	if (err)
+-		goto info_out;
++		return err;
+ 
+ 	snprintf(buf, sizeof(buf), "0x%x", idev->dev_info.asic_rev);
+ 	err = devlink_info_version_fixed_put(req,
+ 					     DEVLINK_INFO_VERSION_GENERIC_ASIC_REV,
+ 					     buf);
+ 	if (err)
+-		goto info_out;
++		return err;
+ 
+ 	err = devlink_info_serial_number_put(req, idev->dev_info.serial_num);
+ 
+-info_out:
+ 	return err;
+ }
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.17.1
+
