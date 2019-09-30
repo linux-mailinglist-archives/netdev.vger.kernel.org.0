@@ -2,127 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A56C220B
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:34:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0AFFC220F
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731291AbfI3NeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 09:34:05 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40896 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729738AbfI3NeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 09:34:04 -0400
-Received: by mail-wr1-f66.google.com with SMTP id l3so11352895wru.7
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 06:34:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Kz2fxUlf4eTQETa2pSYICOnSK6lvhYbu2mRqocFFuq0=;
-        b=sWshrZoc8+DWAAGxX4Bv5eBjDQXPjlr8R4Rz0DcF0yO5O4fA2IsSemdVH8kWJl4lpL
-         Iv1nyutYE46ur+bn54vWLfBkBPCe62eZI0axakfL8M57xnzOHTEGu8xP6H6j0d6TnN5a
-         rYfU1TQLi2oUZDYTvF9TKLRbqApiOFkm4TPoF+IAygPdcLMj+sz8NQukpXNMIrM1PP7F
-         yT5MzuRWVvIDRHme03IWKzX+hOLjM6KQUp12i1MqnmRtk+cCZNY1V4z3vAG/u9ybbXOf
-         +ezgiaHiDt5x63gFavgfHDun4M9Vm8z2umLqwzkv1mxJc09JLpGshT6r8e4zzwY9xhkb
-         GMrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Kz2fxUlf4eTQETa2pSYICOnSK6lvhYbu2mRqocFFuq0=;
-        b=UEeqUebl9AmJ5IDXZCqNNiXu7dZYQb5huDucsbALrYE4JyZYTDnDdrSvNdvvhfv0G7
-         cIGeLRqHfxX7sZI7JmBT84wv6kCmuCKDkB8I2Iteq1f/xWcV5fE36G546DiVfaaGSnNC
-         UqYvCgOKjkNnkMBv/QrIIVNlVvUBNJ3n9MEbVnohwgYla76j1sUdtLND0P9KXgNM8Y9a
-         rNF39Yasbsi3CNrrZMji4ciUSZPo+vwthDTBh/p/cNPeDoaTFbh46GGm5CJDmFIpbigp
-         rWm4K2hjpKyP8DWLbqf2CcuJnWbL4POdfwijEn3V7QCdoMY07pQPkPscflxKHe9CyK+f
-         Pjiw==
-X-Gm-Message-State: APjAAAXarVTb6YCMzG4Q4eGJ0tCZObpDqk92RbF1IMncSf9L9QAFZLWr
-        wD+UF2IJJW4I8F8qUDlGKBezBXTyVb8=
-X-Google-Smtp-Source: APXvYqz32n5J+/2tt+TYybvTS94kTxAlJN5i/l2lc4WjFtYRnyw4T4Sg5SsQFG4fnWW23Qoa7sDjAw==
-X-Received: by 2002:adf:f092:: with SMTP id n18mr13843627wro.262.1569850441706;
-        Mon, 30 Sep 2019 06:34:01 -0700 (PDT)
-Received: from localhost (ip-89-177-132-96.net.upcbroadband.cz. [89.177.132.96])
-        by smtp.gmail.com with ESMTPSA id 94sm10406149wrk.92.2019.09.30.06.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 06:34:01 -0700 (PDT)
-Date:   Mon, 30 Sep 2019 15:34:00 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        jiri@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 net] devlink: Fix error handling in param and info_get
- dumpit cb
-Message-ID: <20190930133400.GD2211@nanopsycho>
-References: <1569824541-5603-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <20190930121003.GB13301@lunn.ch>
+        id S1731304AbfI3Nee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 09:34:34 -0400
+Received: from uho.ysoft.cz ([81.19.3.130]:36312 "EHLO uho.ysoft.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730583AbfI3Nee (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 09:34:34 -0400
+Received: from [10.1.8.111] (unknown [10.1.8.111])
+        by uho.ysoft.cz (Postfix) with ESMTP id 5035FA48B3;
+        Mon, 30 Sep 2019 15:34:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
+        s=20160406-ysoft-com; t=1569850471;
+        bh=DkZhXLf/liSBVKh0ARKHhgcCiN6tBxU8m1QCK+EHagE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=KmLhQ08Y2U16kKNbPRryKZWifG7u+VBmXUzd2Di93Q+vOSkJ5hnIRgqYW9RR+VZzL
+         E5RToMy9puNOGm9AHWqo93JPxDuw84gDBj/Yy33PPWsq67I8RMosGnkUAPsmPH0sol
+         xXE4tYJ9a94/BgbX3LhZS0qr4ZmIEx08QKuw3/bk=
+Subject: Re: [PATCH net] net: dsa: qca8k: Use up to 7 ports for all operations
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <1569488357-31415-1-git-send-email-michal.vokac@ysoft.com>
+From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Message-ID: <07dda3c6-696c-928f-b007-8cda9744b624@ysoft.com>
+Date:   Mon, 30 Sep 2019 15:34:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190930121003.GB13301@lunn.ch>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <1569488357-31415-1-git-send-email-michal.vokac@ysoft.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 30, 2019 at 02:10:03PM CEST, andrew@lunn.ch wrote:
->On Mon, Sep 30, 2019 at 11:52:21AM +0530, Vasundhara Volam wrote:
->> If any of the param or info_get op returns error, dumpit cb is
->> skipping to dump remaining params or info_get ops for all the
->> drivers.
->> 
->> Fix to not return if any of the param/info_get op returns error
->> as not supported and continue to dump remaining information.
->> 
->> v2: Modify the patch to return error, except for params/info_get
->> op that return -EOPNOTSUPP as suggested by Andrew Lunn. Also, modify
->> commit message to reflect the same.
->> 
->> Cc: Andrew Lunn <andrew@lunn.ch>
->> Cc: Jiri Pirko <jiri@mellanox.com>
->> Cc: Michael Chan <michael.chan@broadcom.com>
->> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->> ---
->>  net/core/devlink.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->> 
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index e48680e..f80151e 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -3172,7 +3172,7 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
->>  						    NETLINK_CB(cb->skb).portid,
->>  						    cb->nlh->nlmsg_seq,
->>  						    NLM_F_MULTI);
->> -			if (err) {
->> +			if (err && err != -EOPNOTSUPP) {
->>  				mutex_unlock(&devlink->lock);
->>  				goto out;
->>  			}
->
->and out: is
->
->out:
->        mutex_unlock(&devlink_mutex);
->
->        cb->args[0] = idx;
->        return msg->len;
->}
->
->Jiri: Is the intention really to throw away the error?
->
->Looking at the rest of devlink, all the other _get_dumpit() functions,
->except health_reporter_dump_get_dumpit(), do discard any errors.
+On 26. 09. 19 10:59, Michal Vokáč wrote:
+> The QCA8K family supports up to 7 ports. So use the existing
+> QCA8K_NUM_PORTS define to allocate the switch structure and limit all
+> operations with the switch ports.
+> 
+> This was not an issue until commit 0394a63acfe2 ("net: dsa: enable and
+> disable all ports") disabled all unused ports. Since the unused ports 7-11
+> are outside of the correct register range on this switch some registers
+> were rewritten with invalid content.
+> 
+> Fixes: 6b93fb46480a ("net-next: dsa: add new driver for qca8xxx family")
+> Fixes: a0c02161ecfc ("net: dsa: variable number of ports")
+> Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
+> Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
 
-You are correct. The -EMSGSIZE dump errors should not be propagaged out
-and -EOPNOTSUPP, but the rest should. I'll look into it.
+More recent patches on the list are getting attention.
+Is this one falling through the cracks?
 
-Thanks!
+> ---
+> I am not sure which of the fixes tags should be used but this definetelly
+> fixes something..
+> 
+> IMHO the 0394a63acfe2 ("net: dsa: enable and disable all ports") did not
+> cause the issue but made it visible.
+> 
+>   drivers/net/dsa/qca8k.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 16f15c93a102..bbeeb8618c80 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -705,7 +705,7 @@ qca8k_setup(struct dsa_switch *ds)
+>   		    BIT(0) << QCA8K_GLOBAL_FW_CTRL1_UC_DP_S);
+>   
+>   	/* Setup connection between CPU port & user ports */
+> -	for (i = 0; i < DSA_MAX_PORTS; i++) {
+> +	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+>   		/* CPU port gets connected to all user ports of the switch */
+>   		if (dsa_is_cpu_port(ds, i)) {
+>   			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
+> @@ -1074,7 +1074,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+>   	if (id != QCA8K_ID_QCA8337)
+>   		return -ENODEV;
+>   
+> -	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
+> +	priv->ds = dsa_switch_alloc(&mdiodev->dev, QCA8K_NUM_PORTS);
+>   	if (!priv->ds)
+>   		return -ENOMEM;
+>   
+> 
 
-
->
->As for this patch
->
->Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->
->    Andrew
