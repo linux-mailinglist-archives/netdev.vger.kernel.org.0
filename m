@@ -2,144 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 118F6C2857
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF15C2894
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 23:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732650AbfI3VLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 17:11:08 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41505 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731678AbfI3VLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 17:11:07 -0400
-Received: by mail-wr1-f68.google.com with SMTP id h7so12939710wrw.8;
-        Mon, 30 Sep 2019 14:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Km4VVTEePyhHsFimVMjuG3mAp67V52rIi2SimlK34MU=;
-        b=F2+krCW9h4/vWnl412e0O5+BiYynOmqsu1GTfc8j8T1hPDRh/+RAH2TS+9oShSfFht
-         +DRLSK6QkQUf/q9kVU0q0Wjwa/b7b9EPcbkMCthJ69y2UmK0Q9ohogmqOrjvF3Faovgn
-         +c+DRShui0gK74MGaLgAd+Mf6ouSNMGaMZtUGB974GaAdsw7mHblL4mtYB9yIaygJ98L
-         wHtVcQy0rnKX+4Eg8KQdFXrAf+QZ225nTNmyyTIW9Y+3Tcwls5KigSdvTnen9WScAozr
-         V1YfI0PzPyhC3A2E1YaljJhKI3DQ0gqiXoBGXQvDawlO+2yHbso2owB0J6vnmQjBJ596
-         HWuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Km4VVTEePyhHsFimVMjuG3mAp67V52rIi2SimlK34MU=;
-        b=hdUmpW5NtPz1aEE3eSuI2QLkdaVczahFRDjXhBwb/rUkcdAtjXpRhYxiLPDgnwn2FI
-         OU8hYZxAncPCf1OHFMAlrVAUT2D0ybUl3pacMk0W46ONaJ530s+eSJsSA+3+XA+oFWjN
-         OYHupB1OOnD+iiojEt4elJI0EJvnKHLhY1UCCE3aGzz5jmOfIjFcZY/y3QXc2ta3nmMk
-         5LO1AU4b1KsUz1WqpzwV87IalgNml3xqsI3sYO0JAcrSy6oM434tmvXDyyWGJoNRCyq1
-         t3E+8nqCwJc6PkagwONvC8lSV29Zv91uTPsxLoglBBeKak4cP3sfMIYjkPsQ/UorVJJY
-         sSFw==
-X-Gm-Message-State: APjAAAVrPRZ4XK7Ii0ZU3Cvc68xKIanmjtwhWDx3lW/fE3JPCWxZC8w/
-        43XhK0HOhE8S5cfYzpoIRLgteVmFj/Cm7Q==
-X-Google-Smtp-Source: APXvYqzy7y5NjgWswAUhrWkzobKoCPCU2cj3zemHxu/pZIy6qbKJmrWtc0rOICC1+bZexktMTIyuxA==
-X-Received: by 2002:a5d:4d8c:: with SMTP id b12mr14184701wru.198.1569867973583;
-        Mon, 30 Sep 2019 11:26:13 -0700 (PDT)
-Received: from scw-93ddc8.cloud.online.net ([2001:bc8:4400:2400::302d])
-        by smtp.googlemail.com with ESMTPSA id r20sm15672256wrg.61.2019.09.30.11.26.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 30 Sep 2019 11:26:13 -0700 (PDT)
-From:   Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
-To:     stefanha@redhat.com
-Cc:     davem@davemloft.net, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, matiasevara@gmail.com,
-        sgarzare@redhat.com, eric.dumazet@gmail.com
-Subject: [PATCH net-next v2] vsock/virtio: add support for MSG_PEEK
-Date:   Mon, 30 Sep 2019 18:25:23 +0000
-Message-Id: <1569867923-28200-1-git-send-email-matiasevara@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1731729AbfI3VS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 17:18:58 -0400
+Received: from mout.web.de ([212.227.17.12]:58629 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729326AbfI3VS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 17:18:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1569878336;
+        bh=ld0nkOh5IJxdvmrYJA0YSKFu/Ce+P7sqgUBwKBFA/uM=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=cIKvggl6Iu223aDLHopKr27lZcZZ9mYaxEgSSoDn830j9nsiH+4Ba9t++z5zypOad
+         4vbDmpGfDgisXN1wodo+di3Xwp5PeazV7LnfJPpO5FA9ZYl6DKTtArtxpg4346E/r0
+         X9baKMEOgH86HydtlBFBLAjgpIW8kiQRrrLOjZIs=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from minako.localnet ([95.91.225.238]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MWj2N-1icu5w0dvH-00XvoZ; Mon, 30
+ Sep 2019 20:34:35 +0200
+From:   Jan Janssen <medhefgo@web.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Detlev Casanova <detlev.casanova@gmail.com>
+Subject: Re: Regression: Network link not coming up after suspend/resume cycle
+Date:   Mon, 30 Sep 2019 20:34:33 +0200
+Message-ID: <3036994.I2UMLGIuuM@minako>
+In-Reply-To: <CA+h21hqm9jaKu4PgzkgcgMyu5gEMLSVmL=9sti1X88EOWNakuQ@mail.gmail.com>
+References: <71354431.m7NQiGp1Tu@minako> <CA+h21hqm9jaKu4PgzkgcgMyu5gEMLSVmL=9sti1X88EOWNakuQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+X-Provags-ID: V03:K1:QHf8GWhQya9qdeUSOlE1A1wlWxRWufj2FoZBsc0bXGccJ0RN0Kl
+ 3eyytyfShX9O0LjoYnHpt8omE6wRm4mnpxpyXph6uGv5XZOxJNKxPJedQILoDqnyi0XBoWo
+ rAiNUzPd6VJKJRF+HqcFmXE3KrvN4TCkewxOyjK3fyv5OZKnhhSrNetDkTpDARQpwF5nHWJ
+ OUUMWeuYRr5SR0xLVIL1w==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JtzPd3V9XsA=:/fRYIkyyAUxNrb5255EgkB
+ nCw68heOM4GWuRj1qB9Jb6sFKZsDZMY1NdD1zcL+OWruiAWX0IkK+IF44J+U2q6VWGXdj05FE
+ unqaDvPh58A2NjTNovG0FDwsMgXU6vY7GsXfbI7nxFbTYoc00VQWlD3v3LWQDM+fb6dF1bfor
+ Q4bosVPnTeqGPC4dIZCe5K4b3jxM2qDYaoMz3ZwNyxVGt/gTgVmbveLLMgzDw1W5L7ZDgDVCz
+ EEuHQ72cwfbKcC138unvARhbZutQ6EebfPjLwhNum1nbkSTTbFFCIETMixHo620tAQM2U5N7Y
+ vZctoErdbHfbAjWu4hH3bLUnPPwZ6UqIa8WYB+GwXjR4fsEXIp594C8Yhd8hpfzOjYvrnPwl9
+ MoFiaDZWZPeuEAcHLVoZElf1aOhvRkmHisUTWJSIagaW/y+jlBW+cyygJPXRRTtYcoOfv/DGn
+ qyhHzj5NRh+Gn6zJxPko6+A4aBDkfhKVlA+CjbdJrWNafRuBixGJ02YJTSdfSIZp/ZZbqYcZt
+ blnIrrCu7d8pXZYbgw0FtpI20i1WsgObO5pwHn3JCAw7sbhr56k127nKb3b9VTJEWoQBbsxSV
+ UPq80ByGrGlhzzntm2YHioqWF/WO1VBs5oRC7eEi2LEizwDE5I3mNDEZ2gGJS8oxKLHKFgrnq
+ z6Ui8wph/DdTbr+ohyYKuRX0+wVuFwg9os2zhuEcLTeVcUnyxqnoD1hfYFPPYRHOE0veScQHa
+ LCyyKx+hGmCwwyOQ+KloU0sow96MaCQdQPQc8NclJqyuX/bQ079XddJ4hbBijMFyX9jBEseYO
+ MC7lENMs7TRufpVeeCDBeDaV7GC8R/1jS17d77+s//blBLZ7nZbPPUnKLAIHtwnTmHNpgfCLE
+ WamVooBP0hUL0KXaWhWWJ4EEBqNFs2rkm1m6PYTsHZnWqSSrqJVyiPtPfW93EXUiYTCYXvwwb
+ ZORXR60LH2WohQnKukaYtLb8jphRJNaEK5wBZebAzPsooGfIRgd0751yiRas4nApT2WL4ZsFR
+ niH6F2Co07qUzgUypqP8lnTbP/oYaQYsg1s37XCfqqzprlVoptjtS/JkUQutv0odClqJv4GOD
+ LSo9doJrh5S5sn7G3PbCW12HZu/woUw8FdnHnJpHf9J4GOoMaytFeM0OGUyzpRTOPrAWJ10f1
+ dhghCB9j8TFdaGmFKCzYexinNZKIXqJ8ac9mIX2xQrdt5Ur+hkkjOWJqCzH1tlAkCn+2CgAMo
+ DVkmqXz7exVu6vWZHqOaz+fq8APrlAdyx52Bv6OTzWuRmVe+4snlB/g4/Y5s=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for MSG_PEEK. In such a case, packets are not
-removed from the rx_queue and credit updates are not sent.
+On Monday, 30 September 2019 01:26:21 CEST Vladimir Oltean wrote:
+> Hi Jan,
+>
+> On Sun, 29 Sep 2019 at 22:25, Jan Janssen <medhefgo@web.de> wrote:
+> > Hi,
+> >
+> > I've been noticing lately that my network link sometimes does not go u=
+p
+> > after a suspend resume cycle (roughly 1 or 2 out of 10 times). This al=
+so
+> > sometimes happens with a fresh boot too. Doing a manual
+> > "ip link set down/up" cycle resolves this issue.
+> >
+> > I was able to bisect it to the commit below (or hope so) and also CCed
+> > the maintainer for my driver too.
+> >
+> > This is happening on a up-to-date Arch Linux system with a Intel I219-=
+V.
+> >
+> > Jan
+> >
+> >
+> >
+> > 7ede7b03484bbb035aa5be98c45a40cfabdc0738 is the first bad commit
+> > commit 7ede7b03484bbb035aa5be98c45a40cfabdc0738
+> > Author: Vedang Patel <vedang.patel@intel.com>
+> > Date:   Tue Jun 25 15:07:18 2019 -0700
+> >
+> > taprio: make clock reference conversions easier
+> >
+> > Later in this series we will need to transform from
+> > CLOCK_MONOTONIC (used in TCP) to the clock reference used in TAPRIO.
+> >
+> > Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> > Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+> > Signed-off-by: David S. Miller <davem@davemloft.net>
+> >
+> > net/sched/sch_taprio.c | 30 ++++++++++++++++++++++--------
+> > 1 file changed, 22 insertions(+), 8 deletions(-)
+>
+> That is a mechanical patch that produces no behavior change.
+> Furthermore, even if distributions were to build with
+> CONFIG_NET_SCH_TAPRIO (which there aren't many reasons to), it is
+> extremely likely that this qdisc is not enabled by default on your
+> interface. Are you voluntarily using taprio?
+> You might need to bisect again.
+>
+> Regards,
+> -Vladimir
 
-Signed-off-by: Matias Ezequiel Vara Larsen <matiasevara@gmail.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Tested-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 55 +++++++++++++++++++++++++++++++--
- 1 file changed, 52 insertions(+), 3 deletions(-)
+You were right. The module wasn't even built.
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 94cc0fa..cf15751 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -264,6 +264,55 @@ static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
- }
- 
- static ssize_t
-+virtio_transport_stream_do_peek(struct vsock_sock *vsk,
-+				struct msghdr *msg,
-+				size_t len)
-+{
-+	struct virtio_vsock_sock *vvs = vsk->trans;
-+	struct virtio_vsock_pkt *pkt;
-+	size_t bytes, total = 0, off;
-+	int err = -EFAULT;
-+
-+	spin_lock_bh(&vvs->rx_lock);
-+
-+	list_for_each_entry(pkt, &vvs->rx_queue, list) {
-+		off = pkt->off;
-+
-+		if (total == len)
-+			break;
-+
-+		while (total < len && off < pkt->len) {
-+			bytes = len - total;
-+			if (bytes > pkt->len - off)
-+				bytes = pkt->len - off;
-+
-+			/* sk_lock is held by caller so no one else can dequeue.
-+			 * Unlock rx_lock since memcpy_to_msg() may sleep.
-+			 */
-+			spin_unlock_bh(&vvs->rx_lock);
-+
-+			err = memcpy_to_msg(msg, pkt->buf + off, bytes);
-+			if (err)
-+				goto out;
-+
-+			spin_lock_bh(&vvs->rx_lock);
-+
-+			total += bytes;
-+			off += bytes;
-+		}
-+	}
-+
-+	spin_unlock_bh(&vvs->rx_lock);
-+
-+	return total;
-+
-+out:
-+	if (total)
-+		err = total;
-+	return err;
-+}
-+
-+static ssize_t
- virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 				   struct msghdr *msg,
- 				   size_t len)
-@@ -330,9 +379,9 @@ virtio_transport_stream_dequeue(struct vsock_sock *vsk,
- 				size_t len, int flags)
- {
- 	if (flags & MSG_PEEK)
--		return -EOPNOTSUPP;
--
--	return virtio_transport_stream_do_dequeue(vsk, msg, len);
-+		return virtio_transport_stream_do_peek(vsk, msg, len);
-+	else
-+		return virtio_transport_stream_do_dequeue(vsk, msg, len);
- }
- EXPORT_SYMBOL_GPL(virtio_transport_stream_dequeue);
- 
--- 
-2.7.4
+I did a more careful bisection this time and got me this commit:
+
+59653e6497d16f7ac1d9db088f3959f57ee8c3db is the first bad commit
+commit 59653e6497d16f7ac1d9db088f3959f57ee8c3db
+Author: Detlev Casanova <detlev.casanova@gmail.com>
+Date:   Sat Jun 22 23:14:37 2019 -0400
+
+    e1000e: Make watchdog use delayed work
+
+    Use delayed work instead of timers to run the watchdog of the e1000e
+    driver.
+
+    Simplify the code with one less middle function.
+
+    Signed-off-by: Detlev Casanova <detlev.casanova@gmail.com>
+    Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+
+ drivers/net/ethernet/intel/e1000e/e1000.h  |  5 +--
+ drivers/net/ethernet/intel/e1000e/netdev.c | 54 +++++++++++++++
++--------------
+ 2 files changed, 32 insertions(+), 27 deletions(-)
+
+
+This time I also went and reverted it on top of v5.3, which successfully m=
+ade
+the issue go away. I've CC'ed the author of the patch.
+
+Jan
+
 
