@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE0DC2186
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:12:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9665C21CC
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 15:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731017AbfI3NLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 09:11:33 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:36213 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726314AbfI3NLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 09:11:33 -0400
-Received: by mail-qk1-f196.google.com with SMTP id y189so7682169qkc.3;
-        Mon, 30 Sep 2019 06:11:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yvTBruD6zaxn4sjv75YBQD/wvJnGfoapWmbizXNwOe4=;
-        b=QTle/f5DLXEhlyP1XuY4qJyszbl+i54AIelwGPscZpbMgfqMw00kTq+pYnVQWNwW0O
-         LNcKarv2fWT9nJ+6OulbjshHCe3MpGGMIClpjW0OOWCMD1TBFi077e7hLSOk8uzICPds
-         3CP03cvDfD+71dy2XUx1rXKbEVZYln3lKaruP3oW+83OfdMuEGcXoswDjeLww0VrQajD
-         1+nYF3nIsHj562Fu5xuxIEDIwXcvbcWKb8MRTL0L1D+PubjlOb3dquDi2F+LZ4qfPaVl
-         TEEeFIKrzK9K9diCjx4FXCJVuYxXvGb77tN4juHjx2GeYPSU5QAKsUgjcc04rZwfI/se
-         E+ww==
-X-Gm-Message-State: APjAAAVPBo5ijoyMdXycwEYgLgQBalEFehoBccaoxfQxais/64PI3C50
-        2V6aGzoA9gyhKi53wTlhPJjHtgcRpboqCQVXoJvSdpUm
-X-Google-Smtp-Source: APXvYqxTTAYfkhCHkzMgXzRRscqOu03R0zgUehRs/wbuLHGGTGki2kNYI5vG0oUjtCDGe/Os6ctHOkQ9bUK6AsOCYAI=
-X-Received: by 2002:ae9:ef8c:: with SMTP id d134mr18891406qkg.286.1569849091986;
- Mon, 30 Sep 2019 06:11:31 -0700 (PDT)
+        id S1731321AbfI3NUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 09:20:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54410 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731214AbfI3NUp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Sep 2019 09:20:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=QKGHtGGZYx5PmIm0H778adLOapt9EArFPSKaXfErBIk=; b=bwfp+J5c4S86vr++NupdgY57NL
+        w2qUlT7VMwyDNjsh3CFEiZXNMA9r7/dWkyjz0jphs9u0UvyKf/vAchWumWj7zdEW1SB68+abE8d7b
+        2fIAEZGoynGrQUXlzosrjsk9FlRGFP/1Bn1hn2Bbm3x2sxipAarVn6gE3MHDvFwpfhus=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iEvbV-0003oP-BW; Mon, 30 Sep 2019 15:20:41 +0200
+Date:   Mon, 30 Sep 2019 15:20:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] net: phy: at803x: add ar9331 support
+Message-ID: <20190930132041.GE13301@lunn.ch>
+References: <20190930092710.32739-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <cover.1569831228.git.Jose.Abreu@synopsys.com> <8879f74a8cc5dffdb14d553c321d64c63ea9fe2d.1569831229.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <8879f74a8cc5dffdb14d553c321d64c63ea9fe2d.1569831229.git.Jose.Abreu@synopsys.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 30 Sep 2019 15:11:15 +0200
-Message-ID: <CAK8P3a0Fzvy=PGDKf-K_xSCpuboSJTVY5voYMFJTNhWHkTw-DA@mail.gmail.com>
-Subject: Re: [PATCH v2 net 9/9] net: stmmac: xgmac: Fix RSS writing wrong keys
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190930092710.32739-1-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 10:19 AM Jose Abreu <Jose.Abreu@synopsys.com> wrote:
->
-> Commit b6b6cc9acd7b, changed the call to dwxgmac2_rss_write_reg()
-> passing it the variable cfg->key[i].
->
-> As key is an u8 but we write 32 bits at a time we need to cast it into
-> an u32 so that the correct key values are written. Notice that the for
-> loop already takes this into account so we don't try to write past the
-> keys size.
+On Mon, Sep 30, 2019 at 11:27:10AM +0200, Oleksij Rempel wrote:
+> Mostly this hardware can work with generic PHY driver, but this change
+> is needed to provided interrupt handling support.
+> Tested with dsa ar9331-switch driver.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/at803x.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 6ad8b1c63c34..d62a77adb8e7 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -53,6 +53,7 @@
+>  #define AT803X_DEBUG_REG_5			0x05
+>  #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
+>  
+> +#define AR9331_PHY_ID 0x004dd041
+>  #define ATH8030_PHY_ID 0x004dd076
+>  #define ATH8031_PHY_ID 0x004dd074
+>  #define ATH8035_PHY_ID 0x004dd072
 
-Right, sorry about my mistake.
+Hi Oleksij
 
-> Fixes: b6b6cc9acd7b ("net: stmmac: selftest: avoid large stack usage")
-> Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+I wonder if we should call this ATH9331_PHY_ID, to keep with the
+naming convention? Why did you choose AR, not ATH?
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Thanks
+	Andrew
