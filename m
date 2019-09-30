@@ -2,122 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90117C2515
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 090BBC251A
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 18:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732314AbfI3Q0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 12:26:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54748 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727767AbfI3Q0E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 12:26:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=UsNG+BJJkiN5f+ZgZFe9likYWxzjLrZI+P2lP6TGLj4=; b=0iloPo15G8c0TSn0HfSecaAjWh
-        +Z1hbpIV0ML425vNA/FRnPOdvyxejzfTpYjTQTBbuN+ied/F2oTZ6nytVsZs6Kx84V6FGohMS9U1I
-        56HiWl3xVU0ceqkqcjcG/ZrlscF0IS9AgaN+3s9tz7qUxLL4qt5UwlNyBZfoq63uR5b0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iEyUn-0004l9-Vz; Mon, 30 Sep 2019 18:25:57 +0200
-Date:   Mon, 30 Sep 2019 18:25:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1] net: ag71xx: fix mdio subnode support
-Message-ID: <20190930162557.GB15343@lunn.ch>
-References: <20190930093310.10762-1-o.rempel@pengutronix.de>
- <20190930134209.GB14745@lunn.ch>
- <20190930142907.wo3tahtg7g7mvfmp@pengutronix.de>
+        id S1732223AbfI3Q07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 12:26:59 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:40010 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732026AbfI3Q07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 12:26:59 -0400
+Received: by mail-qk1-f196.google.com with SMTP id y144so8302904qkb.7;
+        Mon, 30 Sep 2019 09:26:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/82IvvXBPSeOUnTimHmLfeGbwanGgz3/wyw+4Uf2M84=;
+        b=uqGeyEN6zHofbXJ+F2aQML/sUJMng3bDh0LgHmlYVarlITQIDmrr49+hhyivl6+V4D
+         fnNL34+5RDkqtVVflQix1dDKlAmIKSueoCphWcqzId+iho/8jl0eEI8Z0DKhAGJatqvO
+         QRUvD8C9BnAbI9aCOzdZ3Fcj+Ts5UKTmgb9v2I9Q6mOc7I9CPOKK4+kyDJs1VWXskPFw
+         1NQUbxrgiY1vl+66bG/uHdMxkHuYCektE8JPqHiRnReh8G3umKfr0Zmo+BxeUTN79KZB
+         XKqIY/nS3IXGdk+Hc0MtRMpyA2mO4bhm+prbjNnsXI5e9FrIBPGwMzn+40OUhiq5SiZJ
+         9xNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/82IvvXBPSeOUnTimHmLfeGbwanGgz3/wyw+4Uf2M84=;
+        b=M7I8SVR912SVlBDd4tXHzx2qRFOg++Ylteh7uPRPgpWkoVfkQOKHMxH3DN+rOKw0DT
+         SPuX0zULRtMBiqbtwVH9HbDnAoRJZysuaHXdbC/aVzHaDAs7bAt7NYJkpTLx2ra8AXCh
+         hO76lApset1BvHl2/Bjrwoq144Mz40vIiH4LHMbF+xbsf0OkHwwDg3XKAjPit2dZ1apg
+         SMiGvucd8hahSBX2jABSJgasKq7NPin9yzf75rUW5w25N0xqL4eV3A5MRC9dZveJVXKG
+         zxC/wK4plhCs8m/o9N2+vJ+VaTwzJki13pnNyOeF1tlHBm7jfkmDcROvmU7LmFDMpgA4
+         F3SA==
+X-Gm-Message-State: APjAAAUOozzjc7zGq+Iji0BCObvNP1n+az+OY/d58vNoy6Hx1Sa6sHJr
+        2rQSA8topvuTgdlEbHAv4tBm0MJzXfE5fOGdn0c=
+X-Google-Smtp-Source: APXvYqxBFGlwM2s42jIN6WX/UdqvVpfVpTmtQ/JfID2Hjq9Xv0OxQz2yq5VEvWwvDKlfChDUY17ZYd6RMk2jTZqLiGA=
+X-Received: by 2002:a37:98f:: with SMTP id 137mr885008qkj.449.1569860818118;
+ Mon, 30 Sep 2019 09:26:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190930142907.wo3tahtg7g7mvfmp@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190928063033.1674094-1-andriin@fb.com> <0b70df6a-28fd-e139-d72c-d4d88e9bc7b7@iogearbox.net>
+In-Reply-To: <0b70df6a-28fd-e139-d72c-d4d88e9bc7b7@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Sep 2019 09:26:47 -0700
+Message-ID: <CAEf4BzYgNE7pLRVQStQ_hmC-WQp5cFz4W2sLFfunow35=7PGNQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: count present CPUs, not theoretically possible
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 04:29:07PM +0200, Oleksij Rempel wrote:
-> On Mon, Sep 30, 2019 at 03:42:09PM +0200, Andrew Lunn wrote:
-> > On Mon, Sep 30, 2019 at 11:33:10AM +0200, Oleksij Rempel wrote:
-> > > The driver was working with fixed phy without any noticeable issues. This bug
-> > > was uncovered by introducing dsa ar9331-switch driver.
-> > > 
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> > >  drivers/net/ethernet/atheros/ag71xx.c | 6 ++++--
-> > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-> > > index 6703960c7cf5..d1101eea15c2 100644
-> > > --- a/drivers/net/ethernet/atheros/ag71xx.c
-> > > +++ b/drivers/net/ethernet/atheros/ag71xx.c
-> > > @@ -526,7 +526,7 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
-> > >  	struct device *dev = &ag->pdev->dev;
-> > >  	struct net_device *ndev = ag->ndev;
-> > >  	static struct mii_bus *mii_bus;
-> > > -	struct device_node *np;
-> > > +	struct device_node *np, *mnp;
-> > >  	int err;
-> > >  
-> > >  	np = dev->of_node;
-> > > @@ -571,7 +571,9 @@ static int ag71xx_mdio_probe(struct ag71xx *ag)
-> > >  		msleep(200);
-> > >  	}
-> > >  
-> > > -	err = of_mdiobus_register(mii_bus, np);
-> > > +	mnp = of_get_child_by_name(np, "mdio");
-> > > +	err = of_mdiobus_register(mii_bus, mnp);
-> > > +	of_node_put(mnp);
-> > >  	if (err)
-> > >  		goto mdio_err_put_clk;
-> > 
-> > Hi Oleksij
-> > 
-> > You need to keep backwards compatibility here. If you find an mdio
-> > node, use it, but if not, you need to still register np.
-> > 
-> > This is also extending the driver binding, so you need to update the
-> > binding documentation.
-> 
-> Hi Andrew,
-> 
-> Normally i would agree. But in this case:
-> - this driver is freshly added to the kernel and is different to OpenWrt
->   implementation any way. No users from this side.
-> - Devicetree binding says:
->   Documentation/devicetree/bindings/net/qca,ar71xx.txt
-> |Optional properties:
-> |- phy-handle : phandle to the PHY device connected to this device.
-> |- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
-> |  Use instead of phy-handle.
-> |
-> |Optional subnodes:
-> |- mdio : specifies the mdio bus, used as a container for phy nodes
-> |  according to phy.txt in the same directory
-> 
-> So, it is driver bug ...ooOO (my personal bug :D)
+On Mon, Sep 30, 2019 at 1:32 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 9/28/19 8:30 AM, Andrii Nakryiko wrote:
+> > This patch switches libbpf_num_possible_cpus() from using possible CPU
+> > set to present CPU set. This fixes issues with incorrect auto-sizing of
+> > PERF_EVENT_ARRAY map on HOTPLUG-enabled systems.
+>
+> Those issues should be described in more detail here in the changelog,
+> otherwise noone knows what is meant exactly when glancing at the git log.
 
-Hi Oleksij
+Sure, I can add more details.
 
-Ah, O.K. You should of explained that in the commit message.
+>
+> > On HOTPLUG enabled systems, /sys/devices/system/cpu/possible is going to
+> > be a set of any representable (i.e., potentially possible) CPU, which is
+> > normally way higher than real amount of CPUs (e.g., 0-127 on VM I've
+> > tested on, while there were just two CPU cores actually present).
+> > /sys/devices/system/cpu/present, on the other hand, will only contain
+> > CPUs that are physically present in the system (even if not online yet),
+> > which is what we really want, especially when creating per-CPU maps or
+> > perf events.
+> >
+> > On systems with HOTPLUG disabled, present and possible are identical, so
+> > there is no change of behavior there.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >   tools/lib/bpf/libbpf.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index e0276520171b..45351c074e45 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -5899,7 +5899,7 @@ void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
+> >
+> >   int libbpf_num_possible_cpus(void)
+> >   {
+> > -     static const char *fcpu = "/sys/devices/system/cpu/possible";
+> > +     static const char *fcpu = "/sys/devices/system/cpu/present";
+>
+> Problem is that this is going to break things *badly* for per-cpu maps as
+> BPF_DECLARE_PERCPU() relies on possible CPUs, not present ones. And given
+> present<=possible you'll end up corrupting user space when you do a lookup
+> on the map since kernel side operates on possible as well.
 
-Is the mdio support just in -rc, or is it older?
+Yeah, you are right. Ok, let me go back to my VM and repro original
+issue I had and see what and why is causing that. I'll see maybe I
+don't need this fix at all.
 
-You need to add a Fixes: tag.
-
-The patch subject should be [PATCH net] to indicate this is a fix to
-the net tree
-
-The patch should be against net, not next-next.
-
-    Andrew
+>
+> >       int len = 0, n = 0, il = 0, ir = 0;
+> >       unsigned int start = 0, end = 0;
+> >       int tmp_cpus = 0;
+> >
+>
