@@ -2,106 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F485C1B68
-	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 694A7C1B6D
+	for <lists+netdev@lfdr.de>; Mon, 30 Sep 2019 08:25:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729725AbfI3GYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 02:24:30 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:40260 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729521AbfI3GY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Sep 2019 02:24:29 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 09334200AC;
-        Mon, 30 Sep 2019 08:24:29 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id lmDc1PnVeKsP; Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 8EA26200AA;
-        Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 30 Sep 2019
- 08:24:26 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1448A31800B9;
- Mon, 30 Sep 2019 08:24:28 +0200 (CEST)
-Date:   Mon, 30 Sep 2019 08:24:28 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: Re: [PATCH RFC 3/5] net: Add a netdev software feature set that
- defaults to off.
-Message-ID: <20190930062427.GF2879@gauss3.secunet.de>
-References: <20190920044905.31759-1-steffen.klassert@secunet.com>
- <20190920044905.31759-4-steffen.klassert@secunet.com>
- <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
+        id S1729756AbfI3GZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 02:25:26 -0400
+Received: from paleale.coelho.fi ([176.9.41.70]:45618 "EHLO
+        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729521AbfI3GZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 02:25:26 -0400
+Received: from [91.156.6.193] (helo=redipa)
+        by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92)
+        (envelope-from <luca@coelho.fi>)
+        id 1iEp7P-0008PC-DE; Mon, 30 Sep 2019 09:25:12 +0300
+Message-ID: <933ba10a5deb8402067df224900c5f4bf573413b.camel@coelho.fi>
+From:   Luca Coelho <luca@coelho.fi>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 30 Sep 2019 09:25:09 +0300
+In-Reply-To: <20190913042331.27080-1-navid.emamdoost@gmail.com>
+References: <20190913042331.27080-1-navid.emamdoost@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSdqc5Z1giGW3kCh3HXXe8N=g+cESEXZAZPMkPrO=ZWjxA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 7bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on farmhouse.coelho.fi
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.2
+Subject: Re: [PATCH] iwlwifi: dbg_ini: fix memory leak in alloc_sgtable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 23, 2019 at 08:38:56AM -0400, Willem de Bruijn wrote:
-> On Fri, Sep 20, 2019 at 12:49 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
-> >
-> > diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-> > index b239507da2a0..34d050bb1ae6 100644
-> > --- a/include/linux/netdev_features.h
-> > +++ b/include/linux/netdev_features.h
-> > @@ -230,6 +230,9 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
-> >  /* changeable features with no special hardware requirements */
-> >  #define NETIF_F_SOFT_FEATURES  (NETIF_F_GSO | NETIF_F_GRO)
-> >
-> > +/* Changeable features with no special hardware requirements that defaults to off. */
-> > +#define NETIF_F_SOFT_FEATURES_OFF      NETIF_F_GRO_FRAGLIST
-> > +
+On Thu, 2019-09-12 at 23:23 -0500, Navid Emamdoost wrote:
+> In alloc_sgtable if alloc_page fails, the alocated table should be
+> released.
 > 
-> NETIF_F_GRO_FRAGLIST is not really a device feature, but a way to
-> configure which form of UDP GRO to apply.
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-NETIF_F_GRO is also not really a device feature. It is a feature with
-no special hardware requirements, as NETIF_F_GRO_FRAGLIST is.
-Fraglist GRO is a special way to do GRO and should be configured in the
-same way we configure standard GRO.
+Thanks, Navid! I have applied this to our internal tree and it will
+reach the mainline following our usual upstreaming process.
 
-> 
-> The UDP GRO benchmarks were largely positive, but not a strict win if
-> I read Paolo's previous results correctly. Even if enabling to by
-> default, it probably should come with a sysctl to disable for specific
-> workloads.
-
-Maybe we can just keep the default for the local input path
-as is and enable GRO as this:
-
-For standard UDP GRO on local input, do GRO only if a GRO enabled
-socket is found.
-
-If there is no local socket found and forwarding is enabled,
-assume forwarding and do standard GRO.
-
-If fraglist GRO is enabled, do it as default on local input and
-forwarding because it is explicitly configured.
-
-Would such a policy make semse?
-
-> 
-> If so, how about a ternary per-netns sysctl {off, on without gro-list,
-> on with gro-list} instead of configuring through ethtool?
-
-I'd not like to have a global knob to configure this.
-On some devices it might make sense to enable fraglist
-GRO, but on others not. Also it would be nice if we can
-configure both vatiants with the same tool (ethtool).
+--
+Cheers,
+Luca.
 
