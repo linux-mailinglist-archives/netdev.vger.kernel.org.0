@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25EA7C40EE
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 21:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BE3C413C
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 21:42:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbfJATTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 15:19:33 -0400
-Received: from mail-io1-f44.google.com ([209.85.166.44]:34693 "EHLO
-        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfJATTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 15:19:32 -0400
-Received: by mail-io1-f44.google.com with SMTP id q1so51019584ion.1;
-        Tue, 01 Oct 2019 12:19:30 -0700 (PDT)
+        id S1726599AbfJATms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 15:42:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34544 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbfJATms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 15:42:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id 3so23223329qta.1;
+        Tue, 01 Oct 2019 12:42:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=2BaLCezQLev8M8DzOB2FSQ19vepy3ctiutA7BBjOd+k=;
-        b=GarAMzAkgYn51/m8L4/o74U9F0HnRKFSuqAkVVKC0xLBgAzd1J74+ZQQLk5IZfxeCT
-         Qhf0Q5HIwpcYcEMZm/xWKnrWssM0mlPa2KgWVCqClhYHha05+hSVd3zu12IPeOycu+S0
-         lB9pOYntqSTEO57Me1spb4E0iBI8GsdGzpBsJ4tIvFbJK2lcdEY7+yBxSSgnQTb5uW/Z
-         TsM//oSVJ6LUBkOeVOQV00p/8oz44CqGdRljVCnLsJbHJg3DGoewOAnS1MFhtBdBkddT
-         TUa9yAQNOuRoCtSGjbHk3F1NVmGpKCHFcrIl3Mom0vWV/GNVvCqR6Sta1eb608vyp5V4
-         EFag==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=whqsh30XdZ9EyBnuZBXEM1EkoYG5j4Cfs1trI8cQppI=;
+        b=IJY+aXpnq+8AV55vjz8eTmG1NM6pmelUL7D19BvdTpnv+uB9eWfNlwQVCmS25lGsoM
+         HAYJwzIXF6I96RicvAH7QvK49y+VNH72sO0wDlnCx2TyS7mXMSYipD74B47zQEOIpv+A
+         91fhM+3XMznZywnW3VD5/MEiRqqkjeupQgBI9a1vfayvrRcX173MuWZcYqvNTRsCyN7F
+         T4a+W3ew3YXmNHkitFk1r3Lw0Op5E/uFumtoe0pCz8hNum6EvYyvofhfkg6L2IFW7i+O
+         C5pDQ+YTGXljdy0z668eaxceknEmyAmyk6pmdQSmjVhvPcMkGNZPMWJQZmfNDtz+/Gov
+         DoqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=2BaLCezQLev8M8DzOB2FSQ19vepy3ctiutA7BBjOd+k=;
-        b=EsJCO1Ga7Pk2cbTecK+/HFlV224MpVj76gMdjdvHkNeRjdUxrFe0ZPDJlRj4/+xy0O
-         WKjlsziaTLLl6kjQRj0jfPBU+NequWkeydtnElQMtKKHa5bQ3YpQDB60h/rtRztIN9JA
-         8rqybFlrtPXaCujn17mrqaEHX9xGacFMbaOG4uGWwHeCMHBUHXWaho8CMK1WTEmGJig1
-         t1IewACOZWg93bkcKohN/f9UkCeAfffukTnd6xGx8annYAUm0sG/PBoObuoDhmGl2wRa
-         cXxxUg4i9rX+s3qODigLzyjqpoC+9QWJzw/OPdqSZGUC9ihnPf77FV2xm/+Hjh98qe02
-         9+1Q==
-X-Gm-Message-State: APjAAAV/39sSww0vjbgnevaSWjRpX9lmX2WYUmfv8ykkBZQG6Him9rtw
-        EYBq4QpN/HHXYNZMVpcMX4Y=
-X-Google-Smtp-Source: APXvYqxoOdFkXY43KPe4Cj2xOAIC9+ajy02FlCLcOazVR111Wp7KcvsqLJtlVCH1kkPiMmvsNM3ldg==
-X-Received: by 2002:a5d:9349:: with SMTP id i9mr896794ioo.101.1569957570608;
-        Tue, 01 Oct 2019 12:19:30 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a14sm7104796ioo.85.2019.10.01.12.19.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 12:19:29 -0700 (PDT)
-Date:   Tue, 01 Oct 2019 12:19:21 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-Message-ID: <5d93a6b96a6ef_85b2b0fc76de5b4a3@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190930185855.4115372-7-andriin@fb.com>
-References: <20190930185855.4115372-1-andriin@fb.com>
- <20190930185855.4115372-7-andriin@fb.com>
-Subject: RE: [PATCH bpf-next 6/6] selftests/bpf: add BPF_CORE_READ and
- BPF_CORE_READ_STR_INTO macro tests
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=whqsh30XdZ9EyBnuZBXEM1EkoYG5j4Cfs1trI8cQppI=;
+        b=ivBuKIrOT9WpNMQkjUrxERQqBiMvV05GRuInDzbq491a/v9KEb5XoRu7zHOGTahwU6
+         rQQI1UCodvXrip7/xl3yALo5+Cm2WjWcesZo+AuRvdbVXDiffyxHFL/X1sfOl+XTKoWr
+         6poQGFQU2gNQ4h93ekeHWcwhqEvMp971tOFti7L0dYxONgoVnErlSx+OKXqLBbohuQq5
+         22gqlIFrn5zIfUPA1y1m2zCM9owe2BMPx5lP6iL5lzACCMvqIoFCi8kET23jdIdeIc95
+         6P+IQM6hhVHnFAa1AMca/PXg4kVaxcseW8gASUgBjMGXxCuRfIu0qeNVQz+b0a1mFA57
+         pvvA==
+X-Gm-Message-State: APjAAAVKssYsBdBTGwCGgKhHzMYJw87YHpjbVgvAlr4mOVF58iymeIpK
+        1M01rzGrN2HSyHtUtWg2oHTfWqPnKS9VrKxJy5Xu02Ox
+X-Google-Smtp-Source: APXvYqzb2kC1XlolvloPxSsUvFWXKatu//rY8FM4cPsQmJwkyvEKlFMyjgCQU76NcqY67/2pvntoEEEe0nPsjxyfrVE=
+X-Received: by 2002:a0c:e48b:: with SMTP id n11mr27822275qvl.38.1569958966027;
+ Tue, 01 Oct 2019 12:42:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190930185855.4115372-1-andriin@fb.com> <20190930185855.4115372-3-andriin@fb.com>
+ <87d0fhvt4e.fsf@toke.dk>
+In-Reply-To: <87d0fhvt4e.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 1 Oct 2019 12:42:34 -0700
+Message-ID: <CAEf4Bza789NPSx0FksudY7J0D9Q-+EsTDvvAJXJyrcTNka=sag@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/6] libbpf: move bpf_helpers.h, bpf_endian.h
+ into libbpf
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> Validate BPF_CORE_READ correctness and handling of up to 9 levels of
-> nestedness using cyclic task->(group_leader->)*->tgid chains.
-> 
-> Also add a test of maximum-dpeth BPF_CORE_READ_STR_INTO() macro.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
+On Tue, Oct 1, 2019 at 12:10 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+>
+> > +struct bpf_map_def {
+> > +     unsigned int type;
+> > +     unsigned int key_size;
+> > +     unsigned int value_size;
+> > +     unsigned int max_entries;
+> > +     unsigned int map_flags;
+> > +     unsigned int inner_map_idx;
+> > +     unsigned int numa_node;
+> > +};
+>
+> Didn't we agree on no new bpf_map_def ABI in libbpf, and that all
+> additions should be BTF-based?
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Oh yes, we did, sorry, this is an oversight. I really appreciate you
+pointing this out ;)
+I'll go over bpf_helpers.h carefully and will double-check if we don't
+have any other custom selftests-only stuff left there.
+
+>
+> -Toke
+>
