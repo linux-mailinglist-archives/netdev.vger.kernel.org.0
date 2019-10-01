@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE95C2FC9
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 306D8C2FCD
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387424AbfJAJOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 05:14:09 -0400
-Received: from mail-qk1-f181.google.com ([209.85.222.181]:45187 "EHLO
-        mail-qk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728748AbfJAJOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:14:08 -0400
-Received: by mail-qk1-f181.google.com with SMTP id z67so10454940qkb.12;
-        Tue, 01 Oct 2019 02:14:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=rbkqOgmCAmTchnhuT6j7dwG4a9biyzXaYvBZyg2/GrQ=;
-        b=Qt7MnjkhNYKBSOuQZz0mucQuFLRalnF5uLG+XoZU6jowxFZeFcS+ws6254IT1ieLO5
-         ugs+6gAmvYNMfNuzFtb9jvOc7bMHYLlNP0L0t3gRmk27Ujj777KPWIW8nYLbDXVIYT8r
-         BycZBT644xep/oTg7qqoEL0SCMHnUbWK7lb5YmK40Ho2eS5g2zdIxm4tUQxy7BEm3Vf1
-         bRhCAyvSq2tvuzHMbfYpHiuPBgdGPJARVrSjAMoh0dtRkV46FQ6V2sZBy6UVMBv2YbTQ
-         Q+AD0boWm/dudanSl7QRPrM/2gf3xp0eFV5Pjb47i6qPgTDzqc1Z3XgkeTbvKoB4AZtk
-         naXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=rbkqOgmCAmTchnhuT6j7dwG4a9biyzXaYvBZyg2/GrQ=;
-        b=uLeKXz0Bu9xGAsPyTYyOtl+FB8upFdZto/MxwOphjZyRGJ8YJ4TYPrt3fePY/jisdP
-         ac79aMLC90rjubWXjNs1R6epI5PANOKbefr5503rcfJVBuf5pR1dhoLNFUgwEo4v4uE6
-         SRQIb+4La+vzsszrKY9+O/4yWvianMFGlzYrgaL5kU+3A0aFuCk3nq/6lTqUchn1nfZ9
-         VbHabiUWICDlSELFnswFYpEsgtiGHGovPh9uXPyfNg6cNnrJ+WGELDJNAdsLJLqYUhEB
-         EnEN8R9lQsUY7nFNabEy2b8JmkthkxlbbPMOe7Sq5gB2KR2MBG0ZolluS5C4rQSuH9ED
-         CfXA==
-X-Gm-Message-State: APjAAAWaV4PoB0Gqz09kGfom4dHgoblrdmDCpQZJ0e2zIl+sJUDSKYnf
-        9a2TLcWGW8m2Y6qhSR++qvfYc3bgG7jteJ24f6d4lP6qLsu3aA==
-X-Google-Smtp-Source: APXvYqwREToTpGSyx66MnUvNYQkCjxLExuvnyImZvyqPyzlKPfWaTdvYt3NG0/sXk4DQ6nFC5ZFqBAmSsASMICvAeEQ=
-X-Received: by 2002:a37:68d4:: with SMTP id d203mr4840354qkc.333.1569921247721;
- Tue, 01 Oct 2019 02:14:07 -0700 (PDT)
+        id S2387447AbfJAJOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 05:14:40 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:37384 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728748AbfJAJOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:14:40 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 92F7361156; Tue,  1 Oct 2019 09:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569921279;
+        bh=WSpjSRVXNNDez+8NXHpLgBQ3sbzicZGIgUaLTAUcw6g=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=Pbupdbo0x/D61h1lZ5vihY9nY9gzEXjh6jlntf9cXsDk4EKWFHxX6PFVsO61IPe2y
+         ChmGBqyCJMYMA7mLMBhqQVzbdPZdzCERpK6xo9GSUZ2FSGbTkva128gyAD7cfMVkjn
+         f+6n+Gykv1+rKPgaWwZBUxvdwTqitJM4PcLZ+swE=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B499060112;
+        Tue,  1 Oct 2019 09:14:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1569921279;
+        bh=WSpjSRVXNNDez+8NXHpLgBQ3sbzicZGIgUaLTAUcw6g=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=K5oPJifhyAcUWV/UeZ3f3Q/2ah+BuInEyJM1QmjKWtYuZB0troQH66sjE2vTMHqXK
+         yTK+akSmYjop6sh0gq+sBaOhED45HS3jylJsMibsqDWFDY0aeYt5Yi+5lc3p+98vhb
+         BK0bcdb3Vb1cs+tQtCP6zXAppFJ/NjGwtPOL2Hs4=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B499060112
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 1 Oct 2019 11:13:56 +0200
-Message-ID: <CAJ+HfNgZGzOM70oTV35YfMdn6PRcGCjsybypGYqsDQRe-NZdyQ@mail.gmail.com>
-Subject: Broken samples/bpf build? (bisected)
-To:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>
-Cc:     yamada.masahiro@socionext.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/2] brcmfmac: don't WARN when there are no requests
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190925134458.1413790-1-adrian.ratiu@collabora.com>
+References: <20190925134458.1413790-1-adrian.ratiu@collabora.com>
+To:     Adrian Ratiu <adrian.ratiu@collabora.com>
+Cc:     brcm80211-dev-list.pdl@broadcom.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martyn Welch <martyn.welch@collabora.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191001091439.92F7361156@smtp.codeaurora.org>
+Date:   Tue,  1 Oct 2019 09:14:39 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The samples/bpf/ build seems to be broken for bpf/master. I've
-bisected it to commit 394053f4a4b3 ("kbuild: make single targets work
-more correctly").
+Adrian Ratiu <adrian.ratiu@collabora.com> wrote:
 
-I'll take a look, but if someone with better kbuild-fu already had a
-look, please let me know.
+> When n_reqs == 0 there is nothing to do so it doesn't make sense to
+> search for requests and issue a warning because none is found.
+> 
+> Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
+> Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
 
+2 patches applied to wireless-drivers-next.git, thanks.
 
-Cheers,
-Bj=C3=B6rn
+1524cbf36215 brcmfmac: don't WARN when there are no requests
+e0ae4bac22ef brcmfmac: fix suspend/resume when power is cut off
+
+-- 
+https://patchwork.kernel.org/patch/11160709/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
