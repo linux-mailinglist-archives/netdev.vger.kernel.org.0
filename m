@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 306D8C2FCD
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:14:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1075C2FD1
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 11:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387447AbfJAJOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 05:14:40 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:37384 "EHLO
+        id S2387477AbfJAJPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 05:15:05 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:37752 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728748AbfJAJOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:14:40 -0400
+        with ESMTP id S2387465AbfJAJPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 05:15:05 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 92F7361156; Tue,  1 Oct 2019 09:14:39 +0000 (UTC)
+        id A489B60AD9; Tue,  1 Oct 2019 09:15:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569921279;
-        bh=WSpjSRVXNNDez+8NXHpLgBQ3sbzicZGIgUaLTAUcw6g=;
+        s=default; t=1569921304;
+        bh=wvvOSSjNKpd2qndbx85vEEgnBWI9oz8By+twyKlLrgY=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Pbupdbo0x/D61h1lZ5vihY9nY9gzEXjh6jlntf9cXsDk4EKWFHxX6PFVsO61IPe2y
-         ChmGBqyCJMYMA7mLMBhqQVzbdPZdzCERpK6xo9GSUZ2FSGbTkva128gyAD7cfMVkjn
-         f+6n+Gykv1+rKPgaWwZBUxvdwTqitJM4PcLZ+swE=
+        b=T1QhCF9I22KD9MbLPPs+RC8GizrAs7SR/tBz7nYDi1tFhzVeGkhPX3tyiVQU8DZ8a
+         XQB+BZVye8f7sJ/rYr1tpCQJjJ+UKnwC3Kql8Et/GM6KAbme/KsOPR8SSIXejMfIVN
+         TzFUhy1DBqOpGpXIKspJxmoSxcUkvW6MHaBrHwl8=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,53 +30,57 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B499060112;
-        Tue,  1 Oct 2019 09:14:37 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 83F8460112;
+        Tue,  1 Oct 2019 09:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1569921279;
-        bh=WSpjSRVXNNDez+8NXHpLgBQ3sbzicZGIgUaLTAUcw6g=;
+        s=default; t=1569921304;
+        bh=wvvOSSjNKpd2qndbx85vEEgnBWI9oz8By+twyKlLrgY=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=K5oPJifhyAcUWV/UeZ3f3Q/2ah+BuInEyJM1QmjKWtYuZB0troQH66sjE2vTMHqXK
-         yTK+akSmYjop6sh0gq+sBaOhED45HS3jylJsMibsqDWFDY0aeYt5Yi+5lc3p+98vhb
-         BK0bcdb3Vb1cs+tQtCP6zXAppFJ/NjGwtPOL2Hs4=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B499060112
+        b=TG9dmkNVIjuOKo1GXTyssktZASsgtjINbmVj+0ZCJ6fY8dW/H2uccnIkI8rG8ZWb0
+         GjLtnaS9IydaLqjGnVmRXhR9Mbw4mqJm9C6OLwfv9r3f/WMCLvGqiIO2wfxQPSgMXP
+         TvmsA1GSmeMqIJixl6GALbPeySgKWbzGTMdoeHUU=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 83F8460112
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 1/2] brcmfmac: don't WARN when there are no requests
+Subject: Re: [PATCH] brcmsmac: remove duplicated if condition
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190925134458.1413790-1-adrian.ratiu@collabora.com>
-References: <20190925134458.1413790-1-adrian.ratiu@collabora.com>
-To:     Adrian Ratiu <adrian.ratiu@collabora.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martyn Welch <martyn.welch@collabora.com>
+In-Reply-To: <20190925203152.21548-1-efremov@linux.com>
+References: <20190925203152.21548-1-efremov@linux.com>
+To:     Denis Efremov <efremov@linux.com>
+Cc:     Denis Efremov <efremov@linux.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191001091439.92F7361156@smtp.codeaurora.org>
-Date:   Tue,  1 Oct 2019 09:14:39 +0000 (UTC)
+Message-Id: <20191001091504.A489B60AD9@smtp.codeaurora.org>
+Date:   Tue,  1 Oct 2019 09:15:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adrian Ratiu <adrian.ratiu@collabora.com> wrote:
+Denis Efremov <efremov@linux.com> wrote:
 
-> When n_reqs == 0 there is nothing to do so it doesn't make sense to
-> search for requests and issue a warning because none is found.
+> The nested 'li_mimo == &locale_bn' check is excessive and always
+> true. Thus it can be safely removed.
 > 
-> Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
-> Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
+> Signed-off-by: Denis Efremov <efremov@linux.com>
 
-2 patches applied to wireless-drivers-next.git, thanks.
+Patch applied to wireless-drivers-next.git, thanks.
 
-1524cbf36215 brcmfmac: don't WARN when there are no requests
-e0ae4bac22ef brcmfmac: fix suspend/resume when power is cut off
+fa38b4fddc7c brcmsmac: remove duplicated if condition
 
 -- 
-https://patchwork.kernel.org/patch/11160709/
+https://patchwork.kernel.org/patch/11161343/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
