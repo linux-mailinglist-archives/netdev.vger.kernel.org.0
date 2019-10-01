@@ -2,103 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE0DAC4386
-	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 00:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19D71C438F
+	for <lists+netdev@lfdr.de>; Wed,  2 Oct 2019 00:10:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728702AbfJAWJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 18:09:10 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:33038 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727939AbfJAWJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 18:09:10 -0400
-Received: by mail-io1-f66.google.com with SMTP id z19so52286113ior.0;
-        Tue, 01 Oct 2019 15:09:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5//jtefmaJ97Y9W3Pk3QhG7cK96EetPPEWG2vT77tjg=;
-        b=FWUJNUjvredINOph0LKSO3N8V1uR0zqm6Mb7r4DGGfNgRHcbHOrgnynAWRhCyO+c2r
-         HxRw8JBoxJM4Xj8ad0r7j+nvk+7VpoI5HDISGNhQ5LGSIu3lf/m1b50PcZCkDBrgygEb
-         rFeDurZlcXjFEW1/o6wfz+zIE4lMth6s8zi9ay8hVbZUnpqI84cAtbKg+TEI2LTIesHE
-         clxZT/hLlLx1xjCoIX0L/JbdRhLy+RwwDrHhiPZC5jrWuhn9Z+v8pMoWrZGnMHT621JL
-         99yXSXmQSyKw7Xc4qvyXfcWDLlHrkE15a/Uur/KM/yCYHRsqQYmHDPPvU0lPUG/cdpF6
-         Ruig==
-X-Gm-Message-State: APjAAAVIKNXxwD+rl4n49KpkfG5pCZ905R+v6HDSOToZyYJpw28zj0B8
-        dpqmyNyN7Lsik7G/3NfeZA==
-X-Google-Smtp-Source: APXvYqwOEoRGKu2K7r6IWzeo9k0HQ6duIkNv4Ictjw6+GHKk96Azxq9Q+dg98oVjdyrtmqkwyg4jMA==
-X-Received: by 2002:a6b:4f0c:: with SMTP id d12mr427307iob.214.1569967749050;
-        Tue, 01 Oct 2019 15:09:09 -0700 (PDT)
-Received: from localhost ([2607:fb90:1780:6fbf:9c38:e932:436b:4079])
-        by smtp.gmail.com with ESMTPSA id t4sm6596166iln.82.2019.10.01.15.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 15:09:08 -0700 (PDT)
-Message-ID: <5d93ce84.1c69fb81.8e964.4dc1@mx.google.com>
-Date:   Tue, 01 Oct 2019 17:09:06 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     vincent.cheng.xh@renesas.com
-Cc:     mark.rutland@arm.com, richardcochran@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: ptp: Add binding doc for IDT
- ClockMatrix based PTP clock
-References: <1568837198-27211-1-git-send-email-vincent.cheng.xh@renesas.com>
+        id S1728130AbfJAWK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 18:10:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726392AbfJAWKz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 18:10:55 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 009AE20873;
+        Tue,  1 Oct 2019 22:10:53 +0000 (UTC)
+Date:   Tue, 1 Oct 2019 18:10:52 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+Message-ID: <20191001181052.43c9fabb@gandalf.local.home>
+In-Reply-To: <20191001012226.vwpe56won5r7gbrz@ast-mbp.dhcp.thefacebook.com>
+References: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+        <20190828003447.htgzsxs5oevn3eys@ast-mbp.dhcp.thefacebook.com>
+        <CALCETrVbPPPr=BdPAx=tJKxD3oLXP4OVSgCYrB_E4vb6idELow@mail.gmail.com>
+        <20190828044340.zeha3k3cmmxgfqj7@ast-mbp.dhcp.thefacebook.com>
+        <CALCETrW1o+Lazi2Ng6b9JN6jeJffgdW9f3HvqYhNo4TpHRXW=g@mail.gmail.com>
+        <20190828225512.q6qbvkdiqih2iewk@ast-mbp.dhcp.thefacebook.com>
+        <DA52992F-4862-4945-8482-FE619A04C753@amacapital.net>
+        <20190829040721.ef6rumbaunkavyrr@ast-mbp.dhcp.thefacebook.com>
+        <20190928193727.1769e90c@oasis.local.home>
+        <201909301129.5A1129C@keescook>
+        <20191001012226.vwpe56won5r7gbrz@ast-mbp.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1568837198-27211-1-git-send-email-vincent.cheng.xh@renesas.com>
-X-Mutt-References: <1568837198-27211-1-git-send-email-vincent.cheng.xh@renesas.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 18, 2019 at 04:06:37PM -0400, vincent.cheng.xh@renesas.com wrote:
-> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+On Mon, 30 Sep 2019 18:22:28 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> tracefs is a file system, so clearly file based acls are much better fit
+> for all tracefs operations.
+> But that is not the case for ftrace overall.
+> bpf_trace_printk() calls trace_printk() that dumps into trace pipe.
+> Technically it's ftrace operation, but it cannot be controlled by tracefs
+> and by file permissions. That's the motivation to guard bpf_trace_printk()
+> usage from bpf program with CAP_TRACING.
+
+BTW, I'd rather have bpf use an event that records a string than using
+trace printk itself.
+
+Perhaps something like "bpf_print" event? That could be defined like:
+
+TRACE_EVENT(bpf_print,
+	TP_PROTO(const char *msg),
+	TP_ARGS(msg),
+	TP_STRUCT__entry(
+		__string(msg, msg)
+	),
+	TP_fast_assign(
+		__assign_str(msg, msg)
+	),
+	TP_printk("msg=%s", __get_str(msg))
+);
+
+And then you can just format the string from the bpf_trace_printk()
+into msg, and then have:
+
+	trace_bpf_print(msg);
+
+The user could then just enable the trace event from the file system. I
+could also work on making instances work like /tmp does (with the
+sticky bit) in creation. That way people with write access to the
+instances directory, can make their own buffers that they can use (and
+others can't access).
+
+
 > 
-> Add device tree binding doc for the IDT ClockMatrix PTP clock driver.
+> Both 'trace' and 'trace_pipe' have quirky side effects.
+> Like opening 'trace' file will make all parallel trace_printk() to be ignored.
+> While reading 'trace_pipe' file will clear it.
+> The point that traditional 'read' and 'write' ACLs don't map as-is
+> to tracefs, so I would be careful categorizing things into
+> confidentiality vs integrity only based on access type.
 
-Bindings are for h/w, not drivers...
+What exactly is the bpf_trace_printk() used for? I may have other ideas
+that can help.
 
-> 
-> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> ---
->  Documentation/devicetree/bindings/ptp/ptp-idtcm.txt | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.txt
-
-Please make this a DT schema.
-
-> 
-> diff --git a/Documentation/devicetree/bindings/ptp/ptp-idtcm.txt b/Documentation/devicetree/bindings/ptp/ptp-idtcm.txt
-> new file mode 100644
-> index 0000000..4eaa34d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/ptp/ptp-idtcm.txt
-> @@ -0,0 +1,15 @@
-> +* IDT ClockMatrix (TM) PTP clock
-> +
-> +Required properties:
-> +
-> +  - compatible  Should be "idt,8a3400x-ptp" for System Synchronizer
-> +                Should be "idt,8a3401x-ptp" for Port Synchronizer
-> +                Should be "idt,8a3404x-ptp" for Universal Frequency Translator (UFT)
-
-If PTP is the only function of the chip, you don't need to append 
-'-ptp'.
-
-What's the 'x' for? We generally don't use wildcards in compatible 
-strings.
-
-> +  - reg         I2C slave address of the device
-> +
-> +Example:
-> +
-> +	phc@5b {
-> +		compatible = "idt,8a3400x-ptp";
-> +		reg = <0x5b>;
-> +	};
-> -- 
-> 2.7.4
-> 
-
+-- Steve
