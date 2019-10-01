@@ -2,139 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD48CC41C0
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 22:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E07C41ED
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 22:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727239AbfJAUX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 16:23:59 -0400
-Received: from mx6.ucr.edu ([138.23.62.71]:34082 "EHLO mx6.ucr.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727221AbfJAUX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 16:23:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1569961440; x=1601497440;
-  h=from:to:cc:subject:date:message-id;
-  bh=6Std4kNv6rcCi3H8DqYign72h7owKlGXXMq3UQl1GHY=;
-  b=T6tqX33rCkkIFRGL/sD3JHPXOJB47fFP51qzN+alalpqhqx2PxQpJXKF
-   Um8gvZ/+aaC3eARVTWstnciwncM2ccKCzgi7T95CDKDAnZdU6+tYZSKan
-   tUHR48Nusce83p74l3QdI6WffyrTmTiwen5sBhcr9mZPXnBhDN/4QitlC
-   NStobkj5aprorFjekMuKftVtvBAMY6bRsLwLx8+oNzyXaB6wQ3ujbpAxJ
-   lpPGbZlo/eduTbR4VCU+IuVMvrTGT/eMXoa+xUVUlZAnvagr4PvfwGGc1
-   6+IvdcoKthgjFDZqxEcxgux5fiQ7Sv9JwZTtdmk9rUbQSUrtBsNrcS9yK
-   A==;
-IronPort-SDR: 2jOi9YDEYYXv0vbCJ3hM3VvS7+VbYVWE4GhyHSBv7T8tqME2QAeL/70aTnzMt2Ldq78T5xBxvU
- bbyBItL2Lhqmt4174ZwRflWUlDCbF0hO8PfSs+gIhROxPGSWXKrIS5ny3e6qoHtSBKrReD3Prh
- S8ExIzx8QYN6qFMrDv/iAy4fuTypHdRVoAT9Pue7qRNzUn9cqpj/w6+wnTM0saPyURxbSqXq52
- ZciLGvmKIgaP74PwlTefj1o1xT8mlRFUedgN4zymw3nYa6YgodT3nuQsGc2Ft1yEHOpVhN5h9a
- Ozw=
-IronPort-PHdr: =?us-ascii?q?9a23=3An5BBmRNhbHJcWFot4AAl6mtUPXoX/o7sNwtQ0K?=
- =?us-ascii?q?IMzox0LfT5rarrMEGX3/hxlliBBdydt6sfzbaK+Pm8ByQp2tWoiDg6aptCVh?=
- =?us-ascii?q?sI2409vjcLJ4q7M3D9N+PgdCcgHc5PBxdP9nC/NlVJSo6lPwWB6nK94iQPFR?=
- =?us-ascii?q?rhKAF7Ovr6GpLIj8Swyuu+54Dfbx9HiTagb75+Nhq7oAreusULjoZvK7s6xw?=
- =?us-ascii?q?fUrHdPZ+lY335jK0iJnxb76Mew/Zpj/DpVtvk86cNOUrj0crohQ7BAAzsoL2?=
- =?us-ascii?q?465MvwtRneVgSP/WcTUn8XkhVTHQfI6gzxU4rrvSv7sup93zSaPdHzQLspVz?=
- =?us-ascii?q?mu87tnRRn1gyocKTU37H/YhdBxjKJDoRKuuRp/w5LPYIqIMPZyZ77Rcc8GSW?=
- =?us-ascii?q?ZEWMtRUi1BApinb4sOCeoBMvtToZfkqVAToxu+BBejBOfyxTRVgnP707E23+?=
- =?us-ascii?q?EnHArb3gIvAsgOvWzUotvrKakcX+O7wq7TwDnfc/9bwyvx5ZLUfhw9p/yHQL?=
- =?us-ascii?q?J+cdDWyUkqDw7KjFSQqI3lPzOI0eQGrm+W7uphVOKvkWEnqh19riShy8o3l4?=
- =?us-ascii?q?nGmpgVxkra+ipk3YY4PNu1Q1N4b968CJZcqT2WOo9sTs4hQ2xkojg2xqAJtJ?=
- =?us-ascii?q?KhYiQG1IgrywbCZ/GGd4WE+AzvWeiRLDtimn5oeaizihS9/EWm1+byTNO70E?=
- =?us-ascii?q?xQoSpAitTMs3cN2AHN5cWfUft9+1uh2S6I1wDO9uFIOUA0mrTfK54m2rMwk4?=
- =?us-ascii?q?AcsUXHHiPvgEX2iLKaelwq+uS29+jrfq/qppCbN49zhQH+NrohltajDuQ/Nw?=
- =?us-ascii?q?gCR2mb+eKi273/5UD1XqlGg/ksnqTasJ3WP9oXqrO2DgNPzIov9wqzAy+j0N?=
- =?us-ascii?q?sCnHkHKFxFeAiAj4jsI1zPIPH5DfeljFStjDtn2/7LM6b8AprRNHjPiqnucq?=
- =?us-ascii?q?tg60JE0go80chf545ICrEGOP/zXFH+tMDFARAnLQy52PjnCNpj2YMEQ26PAb?=
- =?us-ascii?q?GWMLnUsVCW4uIjOe6MZJUauGW1BeIi4qvfjG05hFhVKbi73ZIWMCjjNultOQ?=
- =?us-ascii?q?OUbWe60YRJKnsDogdrFL+is1aFSzMGIinqUg=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2HIAgD4tJNdh8jWVdFmHgEGEoFcC4N?=
- =?us-ascii?q?eTBCNH4ZMBosmGHGFeoMLhSeBewEIAQEBDAEBLQIBAYRAgjIjNAkOAgMJAQE?=
- =?us-ascii?q?FAQEBAQEFBAEBAhABAQEIDQkIKYVAgjopgzULFhVSgRUBBQE1IjmCRwGBdhQ?=
- =?us-ascii?q?Fo0aBAzyMJTOIYgEJDYFICQEIgSKHNYRZgRCBB4N1bIQNg1iCRASBNwEBAZU?=
- =?us-ascii?q?flksBBgKCEBSBeJMNJ4Q6iT2LQQEtpx8CCgcGDyOBL4ISTSWBbAqBRFAQFIF?=
- =?us-ascii?q?pHo4uITOBCI4fglQB?=
-X-IPAS-Result: =?us-ascii?q?A2HIAgD4tJNdh8jWVdFmHgEGEoFcC4NeTBCNH4ZMBosmG?=
- =?us-ascii?q?HGFeoMLhSeBewEIAQEBDAEBLQIBAYRAgjIjNAkOAgMJAQEFAQEBAQEFBAEBA?=
- =?us-ascii?q?hABAQEIDQkIKYVAgjopgzULFhVSgRUBBQE1IjmCRwGBdhQFo0aBAzyMJTOIY?=
- =?us-ascii?q?gEJDYFICQEIgSKHNYRZgRCBB4N1bIQNg1iCRASBNwEBAZUflksBBgKCEBSBe?=
- =?us-ascii?q?JMNJ4Q6iT2LQQEtpx8CCgcGDyOBL4ISTSWBbAqBRFAQFIFpHo4uITOBCI4fg?=
- =?us-ascii?q?lQB?=
-X-IronPort-AV: E=Sophos;i="5.64,571,1559545200"; 
-   d="scan'208";a="79524378"
-Received: from mail-pl1-f200.google.com ([209.85.214.200])
-  by smtpmx6.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 01 Oct 2019 13:23:59 -0700
-Received: by mail-pl1-f200.google.com with SMTP id d1so7944263plj.9
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 13:23:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=q599bl3zDqjBXqyRyPM4QuCbcNSe6pusjy0ki6fkKJs=;
-        b=m4FPkHap1Ges9DdQEhbMzcfwMoPUwqgF+mAF6GAjcnVFfaabwtlo2Ug0cXXkkPfTIL
-         taLgVRjhubIA6P0MoJddg2Ty2J8rpiYXEyM2D4jme8VB5VDkEjdo5qEaFrNRgyK16prC
-         FgQ/QlVODmV85MvrPnAoqrAeNunOmajXM9BmtPkxzjsdf/IErF0j9+wzX7t/k5EpG9wl
-         yeR+u1kQ17nTWqAsPMg20nyMn/xdImlfBnIi8P/Uf1IVnqtSqGZBT9117ogXskLPkr9K
-         QIZfjpFS0XdrTdgfjclre2iozng3RY62GyWEnjH37aRAWxdsZ8lIsRCkH7whDO8EjmZE
-         SUMA==
-X-Gm-Message-State: APjAAAUOz/K1zNZDNkESYKJB6b8rOlcObXN2F/lc45Kt+8Ly5m7Xcqpg
-        vj5BKkuSUL1737wdWK1Po+Yea782qb0rRS3Ej1LgmtkBt9kMOB6HxiQHCPHUW498Y+wfdMR2l5a
-        Q7WaWU11zEj6bbjCKwA==
-X-Received: by 2002:a62:4e0f:: with SMTP id c15mr182637pfb.42.1569961437720;
-        Tue, 01 Oct 2019 13:23:57 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzHo3trZ/iZ+zj7Hc4tRao5vzbmDEDx6LB2tg/EDz+Vg7EKgDtl7xl6KNPl7o4NL6RoTM55oA==
-X-Received: by 2002:a62:4e0f:: with SMTP id c15mr182595pfb.42.1569961437238;
-        Tue, 01 Oct 2019 13:23:57 -0700 (PDT)
-Received: from Yizhuo.cs.ucr.edu (yizhuo.cs.ucr.edu. [169.235.26.74])
-        by smtp.googlemail.com with ESMTPSA id 202sm18779898pfu.161.2019.10.01.13.23.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 13:23:56 -0700 (PDT)
-From:   Yizhuo <yzhai003@ucr.edu>
-Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, Yizhuo <yzhai003@ucr.edu>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hisilicon: Fix usage of uninitialized variable in function mdio_sc_cfg_reg_write()
-Date:   Tue,  1 Oct 2019 13:24:39 -0700
-Message-Id: <20191001202439.15766-1-yzhai003@ucr.edu>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S1727015AbfJAUqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 16:46:06 -0400
+Received: from smtp2.cs.stanford.edu ([171.64.64.26]:33004 "EHLO
+        smtp2.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbfJAUqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 16:46:06 -0400
+Received: from mail-lf1-f46.google.com ([209.85.167.46]:33595)
+        by smtp2.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1iFP25-0001U4-71
+        for netdev@vger.kernel.org; Tue, 01 Oct 2019 13:46:06 -0700
+Received: by mail-lf1-f46.google.com with SMTP id y127so11005800lfc.0
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 13:46:05 -0700 (PDT)
+X-Gm-Message-State: APjAAAULEKxOBr2uHsPp7LKYR19oexe3bvyMUj4RB59HaS5M6Hy2CVam
+        bfkVwuXsB7Nh6k7mfUbhibCl7t+scgPCyH0V40k=
+X-Google-Smtp-Source: APXvYqwPGzfRuYB4oJr48eY4aBhSA91zsY4kCECNSui+vkb3PI/LkGHj+AlBGAltVeEMJP5PGr5zTfStUIsFRa326Gg=
+X-Received: by 2002:ac2:5148:: with SMTP id q8mr15399481lfd.84.1569962764143;
+ Tue, 01 Oct 2019 13:46:04 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
+ <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com>
+ <01ac3ff4-4c06-7a6c-13fc-29ca9ed3ad88@gmail.com> <CAGXJAmxmJ-Vm379N4nbjXeQCAgY9ur53wmr0HZy23dQ_t++r-Q@mail.gmail.com>
+ <f4520c32-3133-fb3b-034e-d492d40eb066@gmail.com> <CAGXJAmygtKtt18nKV6qRCKXfO93DoK4C2Gv_RaMuahsZG3TS6A@mail.gmail.com>
+ <c5886aed-8448-fe62-b2a3-4ae8fe23e2a6@gmail.com> <CAGXJAmzHvKzKb1wzxtZK_KCu-pEQghznM4qmfzYmWeWR1CaJ7Q@mail.gmail.com>
+ <47fef079-635d-483e-b530-943b2a55fc22@gmail.com>
+In-Reply-To: <47fef079-635d-483e-b530-943b2a55fc22@gmail.com>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Tue, 1 Oct 2019 13:45:27 -0700
+X-Gmail-Original-Message-ID: <CAGXJAmy7PTZOcwRz-mSiZJkEL4sJKWhkE8kisUZp8M=V1BBA3g@mail.gmail.com>
+Message-ID: <CAGXJAmy7PTZOcwRz-mSiZJkEL4sJKWhkE8kisUZp8M=V1BBA3g@mail.gmail.com>
+Subject: Re: BUG: sk_backlog.len can overestimate
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin on smtp2.cs.Stanford.EDU
+X-Scan-Signature: de489deba0db33f9a2e3877e449c7d79
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In function mdio_sc_cfg_reg_write(), variable "reg_value" could be
-uninitialized if regmap_read() fails. However, "reg_value" is used
-to decide the control flow later in the if statement, which is
-potentially unsafe.
+On Tue, Oct 1, 2019 at 11:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 10/1/19 10:25 AM, John Ousterhout wrote:
+> > On Tue, Oct 1, 2019 at 9:19 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >> ...
+> >> Sorry, I have no idea what is the problem you see.
+> >
+> > OK, let me try again from the start. Consider two values:
+> > * sk->sk_backlog.len
+> > * The actual number of bytes in buffers in the current backlog list
+> >
+> > Now consider a series of propositions:
+> >
+> > 1. These two are not always the same. As packets get processed by
+> > calling sk_backlog_rcv, they are removed from the backlog list, so the
+> > actual amount of memory consumed by the backlog list drops. However,
+> > sk->sk_backlog.len doesn't change until the entire backlog is cleared,
+> > at which point it is reset to zero. So, there can be periods of time
+> > where sk->sk_backlog.len overstates the actual memory consumption of
+> > the backlog.
+>
+> Yes, this is done on purpose (and documented in __release_sock()
+>
+> Otherwise you could have a livelock situation, with user thread being
+> trapped forever in system, and never return to user land.
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8eae939f1400326b06d0c9afe53d2a484a326871
+>
+>
+> >
+> > 2. The gap between sk->sk_backlog.len and actual backlog size can grow
+> > quite large. This happens if new packets arrive while sk_backlog_rcv
+> > is working. The socket is locked, so these new packets will be added
+> > to the backlog, which will increase sk->sk_backlog_len. Under high
+> > load, this could continue indefinitely: packets keep arriving, so the
+> > backlog never empties, so sk->sk_backlog_len never gets reset.
+> > However, packets are actually being processed from the backlog, so
+> > it's possible that the actual size of the backlog isn't changing, yet
+> > sk->sk_backlog.len continues to grow.
+> >
+> > 3. Eventually, the growth in sk->sk_backlog.len will be limited by the
+> > "limit" argument to sk_add_backlog. When this happens, packets will be
+> > dropped.
+>
+> _Exactly_ WAI
+>
+> >
+> > 4. Now suppose I pass a value of 1000000 as the limit to
+> > sk_add_backlog. It's possible that sk_add_backlog will reject my
+> > request even though the backlog only contains a total of 10000 bytes.
+> > The other 990000 bytes were present on the backlog at one time (though
+> > not necessarily all at the same time), but they have been processed
+> > and removed; __release_sock hasn't gotten around to updating
+> > sk->sk_backlog.len, because it hasn't been able to completely clear
+> > the backlog.
+>
+> WAI
+>
+> >
+> > 5. Bottom line: under high load, a socket can be forced to drop
+> > packets even though it never actually exceeded its memory budget. This
+> > isn't a case of a sender trying to fool us; we fooled ourselves,
+> > because of the delay in resetting sk->sk_backlog.len.
+> >
+> > Does this make sense?
+>
+> Yes, just increase your socket limits. setsockopt(...  SO_RCVBUF ...),
+> and risk user threads having bigger socket syscall latencies, obviously.
 
-Signed-off-by: Yizhuo <yzhai003@ucr.edu>
----
- drivers/net/ethernet/hisilicon/hns_mdio.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+OK, I think I understand where you are coming from now. However, I
+have a comment and a suggestion.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns_mdio.c b/drivers/net/ethernet/hisilicon/hns_mdio.c
-index 3e863a71c513..7df5d7d211d4 100644
---- a/drivers/net/ethernet/hisilicon/hns_mdio.c
-+++ b/drivers/net/ethernet/hisilicon/hns_mdio.c
-@@ -148,11 +148,15 @@ static int mdio_sc_cfg_reg_write(struct hns_mdio_device *mdio_dev,
- {
- 	u32 time_cnt;
- 	u32 reg_value;
-+	int ret;
- 
- 	regmap_write(mdio_dev->subctrl_vbase, cfg_reg, set_val);
- 
- 	for (time_cnt = MDIO_TIMEOUT; time_cnt; time_cnt--) {
--		regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-+		ret = regmap_read(mdio_dev->subctrl_vbase, st_reg, &reg_value);
-+		if (ret)
-+			return ret;
-+
- 		reg_value &= st_msk;
- 		if ((!!check_st) == (!!reg_value))
- 			break;
--- 
-2.17.1
+Comment: the terminology here confused me. The problem is that
+sk->sk_backlog.len isn't actually a "length" (e.g., # bytes currently
+stored in the backlog). It's actually "the total number of bytes added
+to the backlog since the last time it was completely cleared."
+Unfortunately, this isn't documented. Same thing for the limit: the
+goal isn't to to limit the amount of data in the backlog, it's to
+limit the amount of data processed in one call to __release_sock.
+Although I saw the comment in __release_sock, it didn't have quite
+enough info to fully apprise me of the problem being solved.
 
+Suggestion: although the code does solve the problem you mentioned, it
+has the unpleasant side effect that it can cause packet drops. This is
+unfortunate because the drops are most likely to happen in periods of
+overload, which is when you'd really like not to waste work that has
+already been done. Did you consider the possibility of returning from
+__release_sock without processing the entire backlog? For example,
+once __release_sock has processed a bunch of packets, why not take the
+others and feed them back through the NAPI mechanism again, so they'll
+be passed to the net_protocol.handler again?
+
+> > By the way, I have actually observed this phenomenon in an
+> > implementation of the Homa transport protocol.
+> >
+>
+> Maybe this transport protocol should size correctly its sockets limits :)
+
+But this isn't really about socket resource limits (though that is
+conflated in the implementation); it's about limiting the time spent
+in a single call to __release_sock, no?
