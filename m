@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3275C2B21
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 02:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27ACDC2B38
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 02:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731781AbfI3X7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Sep 2019 19:59:30 -0400
-Received: from smtp1.cs.stanford.edu ([171.64.64.25]:38992 "EHLO
-        smtp1.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbfI3X7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 19:59:30 -0400
-Received: from mail-lj1-f177.google.com ([209.85.208.177]:39651)
-        by smtp1.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <ouster@cs.stanford.edu>)
-        id 1iF5Zh-0001lw-GV
-        for netdev@vger.kernel.org; Mon, 30 Sep 2019 16:59:30 -0700
-Received: by mail-lj1-f177.google.com with SMTP id y3so11355483ljj.6
-        for <netdev@vger.kernel.org>; Mon, 30 Sep 2019 16:59:29 -0700 (PDT)
-X-Gm-Message-State: APjAAAUt8nu8SF3rKxd2Djtqs5Ob+ikYHBOPIMDKHX+l7IvM2qaIOMNS
-        vN2K+Hwk217JPQzbXC4WD3+3Qy3lnxWpfWQysdc=
-X-Google-Smtp-Source: APXvYqy7HEtZGVh1e71gRhe7qnkK825b5iGwATkftMBwFsAn7HsJJGX0v49bEiysmdKDgT8RQo+7R7JyXx0cnTfvbIQ=
-X-Received: by 2002:a2e:b607:: with SMTP id r7mr11552391ljn.100.1569887968468;
- Mon, 30 Sep 2019 16:59:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
-In-Reply-To: <CAGXJAmwQw1ohc48NfAvMyNDpDgHGkdVO89Jo8B0j0TuMr7wLpA@mail.gmail.com>
-From:   John Ousterhout <ouster@cs.stanford.edu>
-Date:   Mon, 30 Sep 2019 16:58:51 -0700
-X-Gmail-Original-Message-ID: <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com>
-Message-ID: <CAGXJAmz5izfnamHA3Y_hU-AT1CX5K2MN=6BPjRXXcTCWvPeWng@mail.gmail.com>
-Subject: BUG: sk_backlog.len can overestimate
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Score: -1.0
-X-Spam-Level: 
-X-Spam-Checker-Version: SpamAssassin on smtp1.cs.Stanford.EDU
-X-Scan-Signature: a1ccd6d2fa83ef575f7b7817ead66a1e
+        id S1731180AbfJAAOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Sep 2019 20:14:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40448 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbfJAAOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Sep 2019 20:14:34 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 18AAF154F6365;
+        Mon, 30 Sep 2019 17:14:33 -0700 (PDT)
+Date:   Mon, 30 Sep 2019 17:14:32 -0700 (PDT)
+Message-Id: <20190930.171432.924026195206299750.davem@davemloft.net>
+To:     kafai@fb.com
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com, eric.dumazet@gmail.com
+Subject: Re: [PATCH net] net: Unpublish sk from sk_reuseport_cb before
+ call_rcu
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190927230031.3859970-1-kafai@fb.com>
+References: <20190927230031.3859970-1-kafai@fb.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Sep 2019 17:14:33 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of 4.16.10, it appears to me that sk->sk_backlog_len does not
-provide an accurate estimate of backlog length; this reduces the
-usefulness of the "limit" argument to sk_add_backlog.
+From: Martin KaFai Lau <kafai@fb.com>
+Date: Fri, 27 Sep 2019 16:00:31 -0700
 
-The problem is that, under heavy load, sk->sk_backlog_len can grow
-arbitrarily large, even though the actual amount of data in the
-backlog is small. This happens because __release_sock doesn't reset
-the backlog length until it gets completely caught up. Under heavy
-load, new packets can be arriving continuously  into the backlog
-(which increases sk_backlog.len) while other packets are being
-serviced. This can go on forever, so sk_backlog.len never gets reset
-and it can become arbitrarily large.
+> The "reuse->sock[]" array is shared by multiple sockets.  The going away
+> sk must unpublish itself from "reuse->sock[]" before making call_rcu()
+> call.  However, this unpublish-action is currently done after a grace
+> period and it may cause use-after-free.
+> 
+> The fix is to move reuseport_detach_sock() to sk_destruct().
+> Due to the above reason, any socket with sk_reuseport_cb has
+> to go through the rcu grace period before freeing it.
+> 
+> It is a rather old bug (~3 yrs).  The Fixes tag is not necessary
+> the right commit but it is the one that introduced the SOCK_RCU_FREE
+> logic and this fix is depending on it.
+> 
+> Fixes: a4298e4522d6 ("net: add SOCK_RCU_FREE socket flag")
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-Because of this, the "limit" argument to sk_add_backlog may not be
-useful, since it could result in packets being discarded even though
-the backlog is not very large.
+Applied and queued up for -stable, thanks Martin.
