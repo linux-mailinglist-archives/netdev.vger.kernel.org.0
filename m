@@ -2,85 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1232AC3704
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:22:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22826C374B
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389035AbfJAOWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 10:22:11 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:39489 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389016AbfJAOWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:22:07 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1N6c0W-1i4vN93b6E-0182Dk; Tue, 01 Oct 2019 16:21:54 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ionic: select CONFIG_NET_DEVLINK
-Date:   Tue,  1 Oct 2019 16:21:40 +0200
-Message-Id: <20191001142151.1206987-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1727149AbfJAO2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 10:28:52 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:40983 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727051AbfJAO2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:28:52 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r2so10027630lfn.8
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 07:28:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dOnQRHuZg3+A43ZWR1Sh4+B1CBZaubbsu4Cf1B78l2s=;
+        b=GCSBgWUhLC1/hacn9w65hkfjd2QAXs7sPy2jFeYGMt8o+ZvKe2D79/hX5I0kPWrpbF
+         IciZFYCy/UAURk66OdagJhJjqZqq4BG3vFtdn3PDXS161c9jmnXxh2rW04eRrzdQYxqA
+         Wo3C5ureV12bWq5i2QysA1LLjNlxhkq8/sY5SEMlP3xhFMccFifeJ4hd9Kw2XktDplBO
+         IUoPvPkpXjmTpnSNxDtQQA9eO+3VhEQHq4KN3NzBS1pEt0xCUlSAiVThMVrMGxbLvBVh
+         vFnsWWWosYxENhBoXiJYeoo/H8izmrKnVv/BUGMRhCcv4huvgyevhRACwefz26pmrWUz
+         1rVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dOnQRHuZg3+A43ZWR1Sh4+B1CBZaubbsu4Cf1B78l2s=;
+        b=KQV9VIHyuiYhJCGFUQ6MbQdnqv5Ea18LbeLcOnbA97AIQntnt9ZgNFxmLSK837o40p
+         4hLrtUl3h6JAs9GBJcPa73KHTlLLBGHFd9u/b0Xgrc++0SNQKd01C3MM8yYxNgicwhRP
+         6TR2Nk9fTYtBWoz9AQPFPua/PoWGI8V49oFNylW2GM5TfR9Wab86MscUQ0IsmL6mmJcw
+         5rSHnjKDOxaSr+cDphhwixFBFAbBSuWB+JGJE452Ty1oB7U9zksOIZKyhFpnDYJBc9oV
+         Zuh6YIFYh1D3ROejOpQwrgnU+dNYwMv46Jig7LaoRjEK4Tb2WhumgWOqRlsXWCZPOwDT
+         Apgw==
+X-Gm-Message-State: APjAAAVaXl6tiAYKD+r1XmS+gS63osZGsG9pNUVoIBl7vQ12EMC6KONa
+        dKynhnBG7JSLR/6FEyczd6Xyuw==
+X-Google-Smtp-Source: APXvYqxwFPZ7QkplxOnhJ+Ic0QnBXOu9+tb1HRlJ0u4EzkP9Z3iShojRmhp5bVBTlW2lCBl9daqFAg==
+X-Received: by 2002:ac2:5966:: with SMTP id h6mr15787019lfp.78.1569940130552;
+        Tue, 01 Oct 2019 07:28:50 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-79c8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.200.121])
+        by smtp.gmail.com with ESMTPSA id w17sm3921054lfl.43.2019.10.01.07.28.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Oct 2019 07:28:49 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] net: dsa: rtl8366: Check VLAN ID and not ports
+Date:   Tue,  1 Oct 2019 16:28:43 +0200
+Message-Id: <20191001142843.10746-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:u7qraBxsgoB/VaqNMmE0UtXHW3uhM1WX/o1uIcS2nAeZfUDgChQ
- BtCKPfi1Jo3WIfOuE4U3nFRcAC6Rgni/92SmJ7YBr6HCd+sfqaIXu/sCIPCpWAdmYjzOBfQ
- VCwRY4xh9QCc3PaBFt/LgHxbpzHnd19BeuAHVj9EYLC7gC5b1rWzDVw/2dlQ7W06mGIPnYI
- BfbaJfuBD1+qiV1HwIRsg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dkPAEz+sepA=:Pg+Dbyy+hzRh0CS1RVlh79
- L1hXS14AIrY/G/OHNUCQLb0ZeGJ7dmdcv+KKsJgRiI09HzwXmm02jusaIK72wYZeH3eW8IuFQ
- 7hEGZo1mxG+8KNO9yPvTD/GTZqrtWXkwTgdib8IHR5FkeHWqQggWAFVpu7qHIFKEnqAu5jw6S
- +7I2ot9C0kEm4VWeIBPl+OrVSWTPiVelxLBGMbppcobCEBcsIIbP5G3165iIG6vck5+NQYKXC
- m6Mz79afCW4pftyaCd6oOfjg+keZbqGJbAFRqxyuJ5pgRzIkG/atkxG4/mIX0Imo+USOGTWcO
- bx5rNJeYfx2cp6gNlJ/eiAZXjD/NPPU3tGp1clC5LB+zd9e4VjTXHy5qm9iOoutEqhaN+ti9M
- bt0wCku7ZT4S1s5VokQJfwFPnPdy/WfA9kLkgRILtq8ElZnRmLYDTiTFbNzqJ8/YhdxkEvzvt
- aert8QgW8TOkVWrYgs0QKSS61YslZpGWziGLTEoMYJ2nlDUxsImkc17hZbvYwyBZicbhaKLSe
- blDLTZCsJMzlwjh/To12vRSmBoeDdYbAI+GQ5HlZCAO3NfVvtwX043zvjKhmGsFFyFyJNsFGA
- swZkGPZn+5GaVvhbKjgGR3BDXmT5+d4UEhZ5jf8qgnJoIbYd+60xjIGU05UrB5/jgJsPrYTcY
- bKvSRJu/ohLVWs/DOs/joa67MCegMxy5LUR1tWh1B3RtTJUn9EsWfPI3jAkCs4krZQ8p3rWdk
- DL0/9fr72XcgAbK75bVf3Fw4LaSta2tmmTHWuNknlq0eMLIsaE4MkyLXi8mIBMm/COZZ8f38v
- mrNtqFYZYeryLGnHc0gxkhtwhu5EAG/HVUcYZjbYKY/u4b8wdrbHvDH9y8jn5/yqBQsI1uCml
- 1gYQhpOD05qEjFY6s5LA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When no other driver selects the devlink library code, ionic
-produces a link failure:
+There has been some confusion between the port number and
+the VLAN ID in this driver. What we need to check for
+validity is the VLAN ID, nothing else.
 
-drivers/net/ethernet/pensando/ionic/ionic_devlink.o: In function `ionic_devlink_alloc':
-ionic_devlink.c:(.text+0xd): undefined reference to `devlink_alloc'
-drivers/net/ethernet/pensando/ionic/ionic_devlink.o: In function `ionic_devlink_register':
-ionic_devlink.c:(.text+0x71): undefined reference to `devlink_register'
+The current confusion came from assigning a few default
+VLANs for default routing and we need to rewrite that
+properly.
 
-Add the same 'select' statement that the other drivers use here.
+Instead of checking if the port number is a valid VLAN
+ID, check the actual VLAN IDs passed in to the callback
+one by one as expected.
 
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/ethernet/pensando/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ChangeLog v1->v2:
+- Fix the iterator to actually check the VLAN ID.
+- Use "vid" as variable name.
+---
+ drivers/net/dsa/rtl8366.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
-index bd0583e409df..d25b88f53de4 100644
---- a/drivers/net/ethernet/pensando/Kconfig
-+++ b/drivers/net/ethernet/pensando/Kconfig
-@@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
- config IONIC
- 	tristate "Pensando Ethernet IONIC Support"
- 	depends on 64BIT && PCI
-+	select NET_DEVLINK
- 	help
- 	  This enables the support for the Pensando family of Ethernet
- 	  adapters.  More specific information on this driver can be
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index ca3d17e43ed8..ac88caca5ad4 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -339,10 +339,12 @@ int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
+ 			 const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct realtek_smi *smi = ds->priv;
++	u16 vid;
+ 	int ret;
+ 
+-	if (!smi->ops->is_vlan_valid(smi, port))
+-		return -EINVAL;
++	for (vid = vlan->vid_begin; vid < vlan->vid_end; vid++)
++		if (!smi->ops->is_vlan_valid(smi, vid))
++			return -EINVAL;
+ 
+ 	dev_info(smi->dev, "prepare VLANs %04x..%04x\n",
+ 		 vlan->vid_begin, vlan->vid_end);
+@@ -370,8 +372,9 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 	u16 vid;
+ 	int ret;
+ 
+-	if (!smi->ops->is_vlan_valid(smi, port))
+-		return;
++	for (vid = vlan->vid_begin; vid < vlan->vid_end; vid++)
++		if (!smi->ops->is_vlan_valid(smi, vid))
++			return;
+ 
+ 	dev_info(smi->dev, "add VLAN on port %d, %s, %s\n",
+ 		 port,
 -- 
-2.20.0
+2.21.0
 
