@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 859EDC3C28
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8CBC3C1D
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388940AbfJAQt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:49:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57056 "EHLO mail.kernel.org"
+        id S2388644AbfJAQtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:49:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57506 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387963AbfJAQoo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:44:44 -0400
+        id S2390158AbfJAQpF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:45:05 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 00611222BE;
-        Tue,  1 Oct 2019 16:44:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C620621906;
+        Tue,  1 Oct 2019 16:45:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948283;
-        bh=fs1kXOuMAZDK0RFCV/7w0Tm3PE2ZQmsW58TUgfoIP+o=;
+        s=default; t=1569948304;
+        bh=/IYo5roa4Q+ctDC9Bvv7wMlZDgCr48KRYi1cp/Ua1hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u+cgwDUaRfLDzG6ya7MGYA+4Ux6iOjcgHj3mhlaBzaoGF17PvgDt7DChlEt++Sf7y
-         +EVluZ6rMWIs0EjkPBAWEv9EHNAjKA696oyfKG1bbmkpCq3Nahacj/6kpG1JdGx5NR
-         pqMkudrf8HLPun/okIlVGfig74LUUsvnUUYQ2gGw=
+        b=rX2HMuWYVpnpc6EVoTXV3qtuHUqdZY6k2/ISmyy0+BLxPPXXj8CzFIoEs0fQBkCrC
+         7ezhLT9jCnPdH9bYY6XGoV8gDQuBgMFM9dYChi4BkIU+5Quwn3g1veBVq65hJb1mIh
+         nQrFOClJQmziPwD/L+hRLBjJPr/4y4W9/cj9fU0U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Mamonov <pmamonov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 16/29] net/phy: fix DP83865 10 Mbps HDX loopback disable function
-Date:   Tue,  1 Oct 2019 12:44:10 -0400
-Message-Id: <20191001164423.16406-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 29/29] sch_netem: fix a divide by zero in tabledist()
+Date:   Tue,  1 Oct 2019 12:44:23 -0400
+Message-Id: <20191001164423.16406-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001164423.16406-1-sashal@kernel.org>
 References: <20191001164423.16406-1-sashal@kernel.org>
@@ -43,48 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Mamonov <pmamonov@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit e47488b2df7f9cb405789c7f5d4c27909fc597ae ]
+[ Upstream commit b41d936b5ecfdb3a4abc525ce6402a6c49cffddc ]
 
-According to the DP83865 datasheet "the 10 Mbps HDX loopback can be
-disabled in the expanded memory register 0x1C0.1". The driver erroneously
-used bit 0 instead of bit 1.
+syzbot managed to crash the kernel in tabledist() loading
+an empty distribution table.
 
-Fixes: 4621bf129856 ("phy: Add file missed in previous commit.")
-Signed-off-by: Peter Mamonov <pmamonov@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+	t = dist->table[rnd % dist->size];
+
+Simply return an error when such load is attempted.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/national.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/sched/sch_netem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/national.c b/drivers/net/phy/national.c
-index 2addf1d3f619e..3aa910b3dc89b 100644
---- a/drivers/net/phy/national.c
-+++ b/drivers/net/phy/national.c
-@@ -110,14 +110,17 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 3d5654333d497..787aa52e5991c 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -708,7 +708,7 @@ static int get_dist_table(struct Qdisc *sch, const struct nlattr *attr)
+ 	struct disttable *d;
+ 	int i;
  
- static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
- {
-+	u16 lb_dis = BIT(1);
-+
- 	if (disable)
--		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
-+		ns_exp_write(phydev, 0x1c0,
-+			     ns_exp_read(phydev, 0x1c0) | lb_dis);
- 	else
- 		ns_exp_write(phydev, 0x1c0,
--			     ns_exp_read(phydev, 0x1c0) & 0xfffe);
-+			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
+-	if (n > NETEM_DIST_MAX)
++	if (!n || n > NETEM_DIST_MAX)
+ 		return -EINVAL;
  
- 	pr_debug("10BASE-T HDX loopback %s\n",
--		 (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
-+		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
- }
- 
- static int ns_config_init(struct phy_device *phydev)
+ 	d = kvmalloc(sizeof(struct disttable) + n * sizeof(s16), GFP_KERNEL);
 -- 
 2.20.1
 
