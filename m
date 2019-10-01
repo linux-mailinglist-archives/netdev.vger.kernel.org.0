@@ -2,132 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71FE4C4243
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:02:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0859CC4264
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 23:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfJAVCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 17:02:42 -0400
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:42150 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbfJAVCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:02:42 -0400
-Received: by mail-pf1-f202.google.com with SMTP id w16so11133645pfj.9
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 14:02:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=pI+GljzLLxvJ5n7p2l8qpnPRP9jC+weEz+vO0i3MGs8=;
-        b=qXVeK5uGPmx77uKMwY9Bpd0JRuR1I6lnoC/1YIeic/vqw0GWc+gsm6a8UivX5trfC1
-         opPQ21RkmQICEW/uS2SvRca0XkmbM0sAVh/7NHlv0wyd9S8voumYd/7aQFaAFVQwtAs8
-         gzsc5B1kgeh8uKXIqTG+C6LgSf/Ugw4dO5XicW+Wz2bcu3yDbtnPd5k6J2mkRlTkXtW+
-         HZeHkfQHO8WC1fw5SMpEHVI9KdstjQJTraRmAq43bQZNW2+VD+2FL8acAKviRakQmi90
-         BaUpvsUg86pKSekAKp+7vgjdEKaxgIfbIe53bm82N69GAvCeeuQvIRVlJVVXU3jY4ReE
-         hPaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=pI+GljzLLxvJ5n7p2l8qpnPRP9jC+weEz+vO0i3MGs8=;
-        b=G3r1F1N0vcRLYlvjsZnb4JZyOTZbQrYoaqpu2ULADxRIvIbf7ECeMmh5nvmO2GA37I
-         8GMzsK9f88WnlOJE9QwDuqVgZSQqFRBRBaTA9QpjE01gWeNy1+IlNhvrTBWBCcjISsHW
-         UG6S/Z9eYG9l4M9ZdpPWw941E3eKIPdPPP5pjrtL0O5aFybxS/6PPkNu1H6pdVZ078Bh
-         PzCwxRUMFDFQze7+GyCIY8l+3K+Hi0WRqEMCBGhLmY8aqnFsuF5PrKx0MZ3McxYi0tmh
-         2eWnNJV8H1uoaxNiBztoboQHni9DZvMzFF08M1pF1hmf4TL1hJSyxf4Zb9/b5GR2tEw+
-         9p/w==
-X-Gm-Message-State: APjAAAXz4lIqq/RXHgFXKg4cCFbuxuCF8GKkvbDcIouMw08LFEqWRf+c
-        zuMXk9a4F9ighLNGmHjq+Mzkvt6wljsR9g==
-X-Google-Smtp-Source: APXvYqz0aws6/pbteY/ig3DX1buFZSov6/J4/LnGET18K6m6NYo2xe5Q5hwwHTABUKle0XZO/Ptzw6ApMQtDkw==
-X-Received: by 2002:a63:408:: with SMTP id 8mr32846975pge.334.1569963760145;
- Tue, 01 Oct 2019 14:02:40 -0700 (PDT)
-Date:   Tue,  1 Oct 2019 14:02:36 -0700
-Message-Id: <20191001210236.176111-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
-Subject: [PATCH net-next] net_sched: remove need_resched() from qdisc_run()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727551AbfJAVOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 17:14:35 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:1090 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725941AbfJAVOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 17:14:35 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x91L8piv010656;
+        Tue, 1 Oct 2019 14:14:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=HW8txcfiC/SzwoR3GlebtE7HNxgqTA/x2U0q6Gkv7lk=;
+ b=gm3h9HyEDYTAjsy1puhAU5r23WmLpFthw0VCAQBDmav3DLf9SgmwLOTFvKdPmCgrkCHj
+ a03g38HLLiCEQLZ3Hjy19d7dfBb4dQgWMYQPSB3j58HM8qVBUSAUH9nkRVFafr2mkzWR
+ GO8ZP34Cdv0+4hU8dpXmTkuI78onWKA5utI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vce9302np-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 01 Oct 2019 14:14:18 -0700
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 1 Oct 2019 14:14:18 -0700
+Received: from NAM03-BY2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 1 Oct 2019 14:14:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=neiRDiti3zPkd6IQ2LItnXgcSSRJH25kTEB7DBXtFd3QCeUzBR/69aGYJmk1iU9rBaZLjh4BeWyC+/8ZATQRW1xIZ/73OSFdSc2PiX+5Xqm2ODtlbBFSpuVabX3WybHhkdT6c5Y3FMq5H4ea9vUcsN9t7PUuMcgxiK40MltMQg7wa+Tg0K7XTLIoeFo/KU3f1ZmDZqm908RByHED8CqtzXG5q9Fl6GoTgLUogME7kcTbfYB1ejh0pwatepKysK0sOrXPiHLrldHkfrT8yJDKa1KmNxMOk9/infC9VkNOxFomVYHwVgjiDAJ+ltMmh9Q0UCyqATrMLIVsaqn1o/1VPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HW8txcfiC/SzwoR3GlebtE7HNxgqTA/x2U0q6Gkv7lk=;
+ b=ibgP7lg3kKpHLOo1dqTKSssfyXD7ehIf78ONI2zBrMH2J2MijWxhnN08KRc+P+89eSXGazR4tOWZtI5uArvogYq3P4AFWvn2eXkkd8VR5dE0WJq5vdr3zJVIuP3OlJr8LtfwzPnYkCVxRB8mgFV3NH6P+oV0ocGIB/4AuwN2KlB9fO1Ts7Oa+mkgkmgE4rVtTF+c/tr/LQPKYLb1pq/Argg7Oj54Pb8/28hz79EYw/lXVKUGupMt5Z4pCm8CFUvoLprQInyP+7Q0euLY8IgEgnU5cEgpPbOCwSVRiyM6jG3xkRkrEc3uwix+Cx+x7/b0lkAo81SFU3YC3BevcP0iZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HW8txcfiC/SzwoR3GlebtE7HNxgqTA/x2U0q6Gkv7lk=;
+ b=jls8fAxhzOUaBedC/c5H8BULUgBNb7iDAdwP3LWY+5DhW707Pir4ZFgJ3E24ReI015H3gaw8gZvIiLAyKa0N3ps0aiR8p6ac+od2wPZhxACKZFwxXi8nXbYh4Nq1cJpGObnXKwMD7j/NITCk3S+Y0U/5TqiSjd31SY8oqNYhXZw=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1664.namprd15.prod.outlook.com (10.175.141.142) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.20; Tue, 1 Oct 2019 21:14:16 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::a828:5750:379d:b9a1]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::a828:5750:379d:b9a1%8]) with mapi id 15.20.2305.022; Tue, 1 Oct 2019
+ 21:14:16 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 4/6] libbpf: add BPF_CORE_READ/BPF_CORE_READ_INTO
+ helpers
+Thread-Topic: [PATCH bpf-next 4/6] libbpf: add
+ BPF_CORE_READ/BPF_CORE_READ_INTO helpers
+Thread-Index: AQHVd8E8o0MCCq60iESLB2q7s/R4LadGStmA
+Date:   Tue, 1 Oct 2019 21:14:15 +0000
+Message-ID: <346DCE18-FA64-40CA-86BD-C095935AC089@fb.com>
+References: <20190930185855.4115372-1-andriin@fb.com>
+ <20190930185855.4115372-5-andriin@fb.com>
+In-Reply-To: <20190930185855.4115372-5-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3445.104.11)
+x-originating-ip: [2620:10d:c090:200::1:7bc9]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: af80e68e-d04d-4ff8-eaa5-08d746b4510a
+x-ms-traffictypediagnostic: MWHPR15MB1664:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB1664A00E36740C2214A0540EB39D0@MWHPR15MB1664.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1775;
+x-forefront-prvs: 0177904E6B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(39860400002)(376002)(366004)(346002)(199004)(189003)(6486002)(14444005)(6636002)(486006)(476003)(76176011)(11346002)(446003)(6436002)(6246003)(6862004)(6116002)(53546011)(256004)(46003)(4326008)(6506007)(229853002)(71200400001)(71190400001)(2616005)(8676002)(33656002)(81156014)(64756008)(99286004)(25786009)(86362001)(50226002)(8936002)(2906002)(37006003)(5660300002)(36756003)(6512007)(54906003)(7736002)(66476007)(66446008)(102836004)(66946007)(66556008)(186003)(305945005)(478600001)(81166006)(14454004)(76116006)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1664;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XdhH1frj0hd2W3Qx9scuz2ps+FbiOkDCUgdDGawduJvi5IOEwL/x5eNx6MaVVZxB3ogq/QR8RZL/76phRYJg0vkAcabuthIfF9EVKxDulYndJqunL/L84qUdnq243a0bP0oTD+v/ZZQ0dRTVcRh5X4EiOzJVExmbGpIoszfBDfFSKJRzlE2CcrO4Cx76HcBFp2iGrQkv4gafdO4yzXBYiRxJAM04c724PfL4UE98Y/h2u1hq7ZXsHTQTkjMvcc45LyYCAHs9yKvWXqItjOQ1Wg4Xbq+ZR6BhdNuSmkpyFekzyGIliMETkCAZOSuo+//736Gdv+jfT48kmRBOMZIQ7/yUwRbeQVKuRANCPmqdnRdIAwnWhDC8GcXw1FIpGMhSSNfFKWWLrbHs+THktU4ksihqLQmoXJYtpsADIyDu+Fw=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FCECB1294D853547983ADC33F403B2FF@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: af80e68e-d04d-4ff8-eaa5-08d746b4510a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Oct 2019 21:14:15.8854
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0cBhJIYz4CsTgI4HACfkJwU9yRFpHTzXgQL3rLFGN7ctJCLmXOB6mXTO3i7y93D4llfgCojqPRha0NxOwtX23Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1664
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-01_09:2019-10-01,2019-10-01 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 phishscore=0 adultscore=0
+ malwarescore=0 suspectscore=0 clxscore=1015 spamscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910010176
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The introduction of this schedule point was done in commit
-2ba2506ca7ca ("[NET]: Add preemption point in qdisc_run")
-at a time the loop was not bounded.
 
-Then later in commit d5b8aa1d246f ("net_sched: fix dequeuer fairness")
-we added a limit on the number of packets.
+> On Sep 30, 2019, at 11:58 AM, Andrii Nakryiko <andriin@fb.com> wrote:
+>=20
+> Add few macros simplifying BCC-like multi-level probe reads, while also
+> emitting CO-RE relocations for each read.
+>=20
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+> tools/lib/bpf/bpf_helpers.h | 151 +++++++++++++++++++++++++++++++++++-
+> 1 file changed, 147 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index a1d9b97b8e15..51e7b11d53e8 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -19,6 +19,10 @@
+>  */
+> #define SEC(NAME) __attribute__((section(NAME), used))
+>=20
+> +#ifndef __always_inline
+> +#define __always_inline __attribute__((always_inline))
+> +#endif
+> +
+> /* helper functions called from eBPF programs written in C */
+> static void *(*bpf_map_lookup_elem)(void *map, const void *key) =3D
+> 	(void *) BPF_FUNC_map_lookup_elem;
+> @@ -505,7 +509,7 @@ struct pt_regs;
+> #endif
+>=20
+> /*
+> - * BPF_CORE_READ abstracts away bpf_probe_read() call and captures offse=
+t
+> + * bpf_core_read() abstracts away bpf_probe_read() call and captures fie=
+ld
+>  * relocation for source address using __builtin_preserve_access_index()
+>  * built-in, provided by Clang.
+>  *
+> @@ -520,8 +524,147 @@ struct pt_regs;
+>  * actual field offset, based on target kernel BTF type that matches orig=
+inal
+>  * (local) BTF, used to record relocation.
+>  */
+> -#define BPF_CORE_READ(dst, src)						\
+> -	bpf_probe_read((dst), sizeof(*(src)),				\
+> -		       __builtin_preserve_access_index(src))
+> +#define bpf_core_read(dst, sz, src)					    \
+> +	bpf_probe_read(dst, sz,						    \
+> +		       (const void *)__builtin_preserve_access_index(src))
+> +
+> +/*
+> + * bpf_core_read_str() is a thin wrapper around bpf_probe_read_str()
+> + * additionally emitting BPF CO-RE field relocation for specified source
+> + * argument.
+> + */
+> +#define bpf_core_read_str(dst, sz, src)					    \
+> +	bpf_probe_read_str(dst, sz,					    \
+> +			   (const void *)__builtin_preserve_access_index(src))
+> +
+> +#define ___concat(a, b) a ## b
+> +#define ___apply(fn, n) ___concat(fn, n)
+> +#define ___nth(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, __11, N, ...) N
 
-Now is the time to remove the schedule point, since the default
-limit of 64 packets matches the number of packets a typical NAPI
-poll can process in a row.
+We are adding many marcos with simple names: ___apply(), ___nth. So I worry
+they may conflict with macro definitions from other libraries. Shall we hid=
+e
+them in .c files or prefix/postfix them with _libbpf or something?
 
-This solves a latency problem for most TCP receivers under moderate load :
-
-1) host receives a packet.
-   NET_RX_SOFTIRQ is raised by NIC hard IRQ handler
-
-2) __do_softirq() does its first loop, handling NET_RX_SOFTIRQ
-   and calling the driver napi->loop() function
-
-3) TCP stores the skb in socket receive queue:
-
-4) TCP calls sk->sk_data_ready() and wakeups a user thread
-   waiting for EPOLLIN (as a result, need_resched() might now be true)
-
-5) TCP cooks an ACK and sends it.
-
-6) qdisc_run() processes one packet from qdisc, and sees need_resched(),
-   this raises NET_TX_SOFTIRQ (even if there are no more packets in
-   the qdisc)
-
-Then we go back to the __do_softirq() in 2), and we see that new
-softirqs were raised. Since need_resched() is true, we end up waking
-ksoftirqd in this path :
-
-    if (pending) {
-            if (time_before(jiffies, end) && !need_resched() &&
-                --max_restart)
-                    goto restart;
-
-            wakeup_softirqd();
-    }
-
-So we have many wakeups of ksoftirqd kernel threads,
-and more calls to qdisc_run() with associated lock overhead.
-
-Note that another way to solve the issue would be to change TCP
-to first send the ACK packet, then signal the EPOLLIN,
-but this changes P99 latencies, as sending the ACK packet
-can add a long delay.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/sched/sch_generic.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 17bd8f539bc7f1d596e97c713467f953802c9b82..4c75dbabd343e4585da2f3b11105e436c872c4a8 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -382,13 +382,8 @@ void __qdisc_run(struct Qdisc *q)
- 	int packets;
- 
- 	while (qdisc_restart(q, &packets)) {
--		/*
--		 * Ordered by possible occurrence: Postpone processing if
--		 * 1. we've exceeded packet quota
--		 * 2. another process needs the CPU;
--		 */
- 		quota -= packets;
--		if (quota <= 0 || need_resched()) {
-+		if (quota <= 0) {
- 			__netif_schedule(q);
- 			break;
- 		}
--- 
-2.23.0.581.g78d2f28ef7-goog
+Thanks,
+Song
 
