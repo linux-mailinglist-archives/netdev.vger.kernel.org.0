@@ -2,89 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D5FC3674
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 15:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D2FC36D7
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 16:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388902AbfJAN5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 09:57:11 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:34512 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388856AbfJAN5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 09:57:11 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iFIeI-0001pX-G2; Tue, 01 Oct 2019 15:57:06 +0200
-Message-ID: <9bbf73e318df17d179014937cb6c1335fb303611.camel@sipsolutions.net>
-Subject: Re: [PATCH net v4 01/12] net: core: limit nested device depth
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        =?UTF-8?Q?Ji=C5=99=C3=AD_P=C3=ADrko?= <jiri@resnulli.us>,
-        sd@queasysnail.net, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        saeedm@mellanox.com, manishc@marvell.com, rahulv@marvell.com,
-        kys@microsoft.com, haiyangz@microsoft.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        sashal@kernel.org, hare@suse.de, varun@chelsio.com,
-        ubraun@linux.ibm.com, kgraul@linux.ibm.com,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Cody Schuffelen <schuffelen@google.com>, bjorn@mork.no
-Date:   Tue, 01 Oct 2019 15:57:05 +0200
-In-Reply-To: <CAMArcTW6q=ga1juv_Qp-dKwRwxneAEsX4xQxN-n19oWM-VUQ+w@mail.gmail.com> (sfid-20191001_155348_267769_C0F821E2)
-References: <20190928164843.31800-1-ap420073@gmail.com>
-         <20190928164843.31800-2-ap420073@gmail.com>
-         <d1b5d944fef2a2d5875a0f12f3cdc490586da475.camel@sipsolutions.net>
-         <CAMArcTUgcPv+kg5rhw0i2iwX-CiD00v3ZCvw0b_Q0jb_-eo=UQ@mail.gmail.com>
-         <39e879f59ad3b219901839d1511fc96886bf94fb.camel@sipsolutions.net>
-         <CAMArcTW6q=ga1juv_Qp-dKwRwxneAEsX4xQxN-n19oWM-VUQ+w@mail.gmail.com>
-         (sfid-20191001_155348_267769_C0F821E2)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S2388751AbfJAOQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 10:16:20 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42858 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbfJAOQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 10:16:20 -0400
+Received: by mail-qt1-f193.google.com with SMTP id w14so21743341qto.9;
+        Tue, 01 Oct 2019 07:16:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zqe/3yQ//FnSWGENLzctmWxawD8BEgiS/3EQrQ4HX8Q=;
+        b=U5szjWsyE6rJuE1IsJodEcdG6EC9zXgWg6A1w9p6+VcT3Ug/y6Xf0r6pQ8e3EyaHtJ
+         SHuWDz50EB2O+ZJ3Ca4aTVtSbuFgmK+G3EI44O3R+2zpu0kyjzXXOeRhcIh8EPjMVBA3
+         Q8dpXPkI4L177mVxdw6QXwBvQsegsNHR71bJLYcv42T6atSGrk8YbrzC4xcsTGsULGqB
+         64OB27zXFiLEFyTTSQh6XyO2w8yPC6jW35qlEkoupPUZ+boU5fWvhhAnkmGppaGjnQOu
+         oKSMC5PzD7KkhEh2rl6DMF1TpM6SObOk2nBwCbwnLpfFqFQMVXE6fEr17l8+qdJxUv5h
+         YWNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zqe/3yQ//FnSWGENLzctmWxawD8BEgiS/3EQrQ4HX8Q=;
+        b=Fw7foO3f2PASYJVqStJ4mMWRQ6XLykqVTdkur49JeJM80FIWTn2Bvx8Bmq7uRVGaqt
+         0N4hvyo+SIhSY7qb9lgkhcqGEIf1BhdsdMNbXlWW/xBkBnxGQZqPNVJclKGgdVd5Hlrn
+         EWn3ZKyXtVahkHhKLph8mQFypm1EoFO8mxYFbDCB5FFop8j4zRKh8/jGdIvhYTJfUf96
+         09B+hJulFkgevjSlgoKL4oAScKaf403MCzbzQehL9oAA+r9aKtXM60clIm+Y45wwsAb4
+         LoczYeBuGMDe5SDboQXASh+x3wjYTdO+eCU2ymrGzenZqNJRhtrC9RimRIly3pp0nHHd
+         7Myw==
+X-Gm-Message-State: APjAAAVe2cMHQOHWavwUrTPI2U+RkmBqpAXa6yFcdzb78rLNKyKyNSpT
+        kAI+4DOS1GPnsgg5pvFr4cQ8mGJtZHPqRr74eDo=
+X-Google-Smtp-Source: APXvYqwy5L7lsArt7eRzsOObi54HA7rJbsTO0TkfyRzzAV4GNqKD8qOP15LcFgfixXyNieEk8mnHY5psxc3M3RmPVBM=
+X-Received: by 2002:a05:6214:1369:: with SMTP id c9mr25800672qvw.3.1569939377523;
+ Tue, 01 Oct 2019 07:16:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20191001101429.24965-1-bjorn.topel@gmail.com> <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+In-Reply-To: <CAK7LNATNw4Qysj1Q2dXd4PALfbtgMXPwgvmW=g0dRcrczGW-Fg@mail.gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 1 Oct 2019 16:16:05 +0200
+Message-ID: <CAJ+HfNgvxornSfqnbAthNy6u6=-enGCdA8K1e6rLXhCzGgmONQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] samples/bpf: kbuild: add CONFIG_SAMPLE_BPF Kconfig
+To:     Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 1 Oct 2019 at 14:33, Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+>
+> Hi Bjorn
+>
+> On Tue, Oct 1, 2019 at 7:14 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
+om> wrote:
+> >
+[...]
+> >  subdir-$(CONFIG_SAMPLE_VFS)            +=3D vfs
+> > +subdir-$(CONFIG_SAMPLE_BPF)            +=3D bpf
+>
+>
+> Please keep samples/Makefile sorted alphabetically.
+>
 
-(jumping out now, forgive me for being so brief)
+Thank you, I'll address that in the v2!
 
-> If I understand correctly, you said about the alignment of
-> "lower_level" and "upper_level".
-> I thought this place is a fine position for variables as regards the
-> alignment and I didn't try to put each variable in different places.
-> 
-> If I misunderstood your mention, please let me know.
+>
+>
+>
+> I am not checking samples/bpf/Makefile, but
+> allmodconfig no longer compiles for me.
+>
+>
+>
+> samples/bpf/Makefile:209: WARNING: Detected possible issues with include =
+path.
+> samples/bpf/Makefile:210: WARNING: Please install kernel headers
+> locally (make headers_install).
+> error: unable to create target: 'No available targets are compatible
+> with triple "bpf"'
+> 1 error generated.
+> readelf: Error: './llvm_btf_verify.o': No such file
+> *** ERROR: LLVM (llc) does not support 'bpf' target
+>    NOTICE: LLVM version >=3D 3.7.1 required
+>
 
-Not sure what you mean, alignment doesn't matter for them (they're u8).
-
-I was thinking of the packing for the overall struct, we have:
-
-        unsigned int            max_mtu;
-        unsigned short          type;
-        unsigned short          hard_header_len;
-        unsigned char           min_header_len;
-
-+	unsigned char		upper_level, lower_level;
-
-        unsigned short          needed_headroom;
-        unsigned short          needed_tailroom;
+Yes, the BPF samples require clang/LLVM with BPF support to build. Any
+suggestion on a good way to address this (missing tools), better than
+the warning above? After the commit 394053f4a4b3 ("kbuild: make single
+targets work more correctly"), it's no longer possible to build
+samples/bpf without support in the samples/Makefile.
 
 
-Previously, there was a one byte hole at that spot due to a single
-"unsigned char" (after something aligned at least 4 bytes) followed by
-"unsigned short" - now you push that out a bit.
+Thanks,
+Bj=C3=B6rn
 
-If you place the variables a bit lower, below "name_assign_type", you
-probably fill a hole instead.
-
-Check out the 'pahole' tool.
-
-johannes
-
+> --
+> Best Regards
+> Masahiro Yamada
