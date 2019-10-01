@@ -2,124 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB3CC40A0
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 21:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3E00C40A7
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 21:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726046AbfJATHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 15:07:12 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44581 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbfJATHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 15:07:11 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z9so3693279wrl.11
-        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 12:07:10 -0700 (PDT)
+        id S1726271AbfJATH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 15:07:27 -0400
+Received: from mail-io1-f45.google.com ([209.85.166.45]:44947 "EHLO
+        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbfJATH0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 15:07:26 -0400
+Received: by mail-io1-f45.google.com with SMTP id w12so22749624iol.11;
+        Tue, 01 Oct 2019 12:07:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=duvmQrLASend+2POPpxhDdqpGtPPwbHVJC0F3HaMz9k=;
-        b=sGcqh9tjpxLiU03vB9j2nQItdyjnHSoihXtWuQYfMwe/rAF1bi7mETZPifRVrnLy3l
-         1D6tea6oqlNf4CwLsWP0WC/I7GKzEch64HGbwuXgnISlGJm3emHQnDfaFsrACoxnSAQD
-         /Dw74qfW4IHjDE/X0AqTpYjc0mnopglLwFUb0xWlw10NHJWE5uo50IYU+VWGpxVT/6zx
-         cC5Nlcmkj1gYTCar5BH+GyO3R+vygoo9xY3fw+j/WbHEdgaHzytiKShXf7/YHixbkKoK
-         hz7wmXmxc1LfVv5Rahfy9Qnnqc1HM22uEGnQQZIrd2P6D9ERDJJVembmqRjTOAEKdMa+
-         oguw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Qa1nIbG+/xD3pQaPUYBBdsqXjXuSE6IPkWs7yI/RsLw=;
+        b=LrEFm9OQMGWLtuli6W3o2iKn59FUKsp3Yn2xgSsX1AhVr1IJsaUGqvpX2tvuZHjWnf
+         zNJ1pzz2LACE5aqE5pNxp7emEwBO3xvKeTJ/Qs1okbcFgmfXBMgTHyX+UY0jZQWfWe0J
+         IoEm0r+CKekyu9nYlW0/bGGF7p5YhMLFvsLdIzlVeE+gSh+jok9ilNZO1o1dsAAoboMy
+         9V5SPpK/0T7f943rEEWRyYZD/tyPlCDogWlSMG7gYzgaL3n4P/aAx81ISrAoRgYlF9KC
+         Yf7ByysXzwL81L3DWC+NtQ5NIiJyOEoxlWGp6g0hYnCZ3ypXye8bcrm9J4q8F53tWYs9
+         CvjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=duvmQrLASend+2POPpxhDdqpGtPPwbHVJC0F3HaMz9k=;
-        b=rI4aMl8FXgMsTOeeYIcdCydwXy0kgfgXgz19INDCoklFfGQsyz/TPe6VLpdrn2Nfn0
-         9hMv0AU22tkNBo2PwulrvIw7F39Uk8WJd0dMDw+Pkvma5alvBREsaTYtovUz8U0knojH
-         xnaJF5Tc6C5hMZzPta2wf70rZrMJrh82cpZNjXtUzF6X0mlTccjKM0rH30FA3JEGS9Bu
-         uOegNQpSj8RbCmSv+BOKNS6EW+zHpZ4rw2ghdZIivWoDVpgzhzl3X92eDATQMLxIpMfp
-         0RR+Y6Kw28SkY9Rmbipgs5uCiWrKmy3AfKjb/JGTw0mgI9iZCzK5lrz9MBto+y4VEd85
-         Z4Cw==
-X-Gm-Message-State: APjAAAWGsmo3gwJwuVP6n40PCNJE/DASwXtMaNLVpK0n0t3OqFCUTgtU
-        ktvDFRjYaR3u68SDdEvmgmtwEn2A
-X-Google-Smtp-Source: APXvYqyOd1xSPf0Q+b99SKvPeyPSjYZlqHI9+h7ovdUWJnI1/UPW/tRPbFPdv/A2gDruIYd+pb07eg==
-X-Received: by 2002:a5d:6943:: with SMTP id r3mr18666142wrw.21.1569956829543;
-        Tue, 01 Oct 2019 12:07:09 -0700 (PDT)
-Received: from localhost.localdomain ([86.124.196.40])
-        by smtp.gmail.com with ESMTPSA id s12sm36648477wra.82.2019.10.01.12.07.08
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Qa1nIbG+/xD3pQaPUYBBdsqXjXuSE6IPkWs7yI/RsLw=;
+        b=rCxTt/jV0fbxCr+VwbM98RGULtBNgrr+NZE/5ewCHRvcsLPwTCKcodNbbSqyP/MUeC
+         YmGe6fgm75cT5Xc9fUmIRYBJDufyEWS/263841uYKQMqaAaLZEYK5mpJuZRx8yiXsVCG
+         AQ9Bkh3FXLBKZv1EZym3lId5wQwsMBhxpYdX/Kfk/B/surTLB0YY9fQrRpEayeqTigDH
+         WgqQSShutNtsBpkQZJ692JK5tmDJkzbUGcfl04FTTOJsTDvMkrk1VqEhwRZta65DFurR
+         LQBdCDLOfnto8OQ9hzpUT0IIXf1sqibZBqwOHDfaedIzeDy31dFJGJ1kfF7ahZ5VtVlw
+         Gc9w==
+X-Gm-Message-State: APjAAAWyOrIQHa0a813dVB9JTwe9NKTAtqd2rI0xyh9OanG4QducKmmf
+        QfBv53Gf8t/tRuOzyqrB0K0=
+X-Google-Smtp-Source: APXvYqxngRzu33utpfGMKS5mVSgt02g3YSoF2XRVcjay3sxPk9HonCmC4YiDVx8aCCTQGkwi44CjLg==
+X-Received: by 2002:a92:b68c:: with SMTP id m12mr28804893ill.132.1569956846122;
+        Tue, 01 Oct 2019 12:07:26 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id x2sm7216376iob.74.2019.10.01.12.07.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Oct 2019 12:07:08 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net] ptp_qoriq: Initialize the registers' spinlock before calling ptp_qoriq_settime
-Date:   Tue,  1 Oct 2019 22:07:01 +0300
-Message-Id: <20191001190701.5754-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 01 Oct 2019 12:07:25 -0700 (PDT)
+Date:   Tue, 01 Oct 2019 12:07:16 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Message-ID: <5d93a3e4eadb6_85b2b0fc76de5b468@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190930185855.4115372-5-andriin@fb.com>
+References: <20190930185855.4115372-1-andriin@fb.com>
+ <20190930185855.4115372-5-andriin@fb.com>
+Subject: RE: [PATCH bpf-next 4/6] libbpf: add BPF_CORE_READ/BPF_CORE_READ_INTO
+ helpers
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because ptp_qoriq_settime is being called prior to spin_lock_init, the
-following stack trace can be seen at driver probe time:
+Andrii Nakryiko wrote:
+> Add few macros simplifying BCC-like multi-level probe reads, while also
+> emitting CO-RE relocations for each read.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-[    2.269117] the code is fine but needs lockdep annotation.
-[    2.274569] turning off the locking correctness validator.
-[    2.280027] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.3.0-rc7-01478-g01eaa67a4797 #263
-[    2.288073] Hardware name: Freescale LS1021A
-[    2.292337] [<c0313cb4>] (unwind_backtrace) from [<c030e11c>] (show_stack+0x10/0x14)
-[    2.300045] [<c030e11c>] (show_stack) from [<c1219440>] (dump_stack+0xcc/0xf8)
-[    2.307235] [<c1219440>] (dump_stack) from [<c03b9b44>] (register_lock_class+0x730/0x73c)
-[    2.315372] [<c03b9b44>] (register_lock_class) from [<c03b6190>] (__lock_acquire+0x78/0x270c)
-[    2.323856] [<c03b6190>] (__lock_acquire) from [<c03b90cc>] (lock_acquire+0xe0/0x22c)
-[    2.331649] [<c03b90cc>] (lock_acquire) from [<c123c310>] (_raw_spin_lock_irqsave+0x54/0x68)
-[    2.340048] [<c123c310>] (_raw_spin_lock_irqsave) from [<c0e73fe4>] (ptp_qoriq_settime+0x38/0x80)
-[    2.348878] [<c0e73fe4>] (ptp_qoriq_settime) from [<c0e746d4>] (ptp_qoriq_init+0x1f8/0x484)
-[    2.357189] [<c0e746d4>] (ptp_qoriq_init) from [<c0e74aac>] (ptp_qoriq_probe+0xd0/0x184)
-[    2.365243] [<c0e74aac>] (ptp_qoriq_probe) from [<c0b0a07c>] (platform_drv_probe+0x48/0x9c)
-[    2.373555] [<c0b0a07c>] (platform_drv_probe) from [<c0b07a14>] (really_probe+0x1c4/0x400)
-[    2.381779] [<c0b07a14>] (really_probe) from [<c0b07e28>] (driver_probe_device+0x78/0x1b8)
-[    2.390003] [<c0b07e28>] (driver_probe_device) from [<c0b081d0>] (device_driver_attach+0x58/0x60)
-[    2.398832] [<c0b081d0>] (device_driver_attach) from [<c0b082d4>] (__driver_attach+0xfc/0x160)
-[    2.407402] [<c0b082d4>] (__driver_attach) from [<c0b05a84>] (bus_for_each_dev+0x68/0xb4)
-[    2.415539] [<c0b05a84>] (bus_for_each_dev) from [<c0b06b68>] (bus_add_driver+0x104/0x20c)
-[    2.423763] [<c0b06b68>] (bus_add_driver) from [<c0b0909c>] (driver_register+0x78/0x10c)
-[    2.431815] [<c0b0909c>] (driver_register) from [<c030313c>] (do_one_initcall+0x8c/0x3ac)
-[    2.439954] [<c030313c>] (do_one_initcall) from [<c1f013f4>] (kernel_init_freeable+0x468/0x548)
-[    2.448610] [<c1f013f4>] (kernel_init_freeable) from [<c12344d8>] (kernel_init+0x8/0x10c)
-[    2.456745] [<c12344d8>] (kernel_init) from [<c03010b4>] (ret_from_fork+0x14/0x20)
-[    2.464273] Exception stack(0xea89ffb0 to 0xea89fff8)
-[    2.469297] ffa0:                                     00000000 00000000 00000000 00000000
-[    2.477432] ffc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[    2.485566] ffe0: 00000000 00000000 00000000 00000000 00000013 00000000
+LGTM.
 
-Fixes: ff54571a747b ("ptp_qoriq: convert to use ptp_qoriq_init/free")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
-Changes in v2:
-- Followed Richard Cochran's feedback:
-
-	Please fix the actual bug, the spin lock issue, and don't worry about
-	changing the initial value.
-
- drivers/ptp/ptp_qoriq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index c61f00b72e15..a577218d1ab7 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -507,6 +507,8 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 		ptp_qoriq->regs.etts_regs = base + ETTS_REGS_OFFSET;
- 	}
- 
-+	spin_lock_init(&ptp_qoriq->lock);
-+
- 	ktime_get_real_ts64(&now);
- 	ptp_qoriq_settime(&ptp_qoriq->caps, &now);
- 
-@@ -514,7 +516,6 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 	  (ptp_qoriq->tclk_period & TCLK_PERIOD_MASK) << TCLK_PERIOD_SHIFT |
- 	  (ptp_qoriq->cksel & CKSEL_MASK) << CKSEL_SHIFT;
- 
--	spin_lock_init(&ptp_qoriq->lock);
- 	spin_lock_irqsave(&ptp_qoriq->lock, flags);
- 
- 	regs = &ptp_qoriq->regs;
--- 
-2.17.1
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
