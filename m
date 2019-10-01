@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D3BC3CE9
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:55:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39099C3CD9
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731947AbfJAQmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:42:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54238 "EHLO mail.kernel.org"
+        id S2388167AbfJAQzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:55:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54686 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731908AbfJAQmX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:42:23 -0400
+        id S1732142AbfJAQmo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:42:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9922B21906;
-        Tue,  1 Oct 2019 16:42:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0275205C9;
+        Tue,  1 Oct 2019 16:42:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948142;
-        bh=dNaNYjv6BMmvGTTI/w/4u5vdzACGMX2rD6+bZYlA/dc=;
+        s=default; t=1569948163;
+        bh=tIbenjcvZqPaNdBtku31+1LasH3s1munDjqFxyHW7Yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P9oenq4vod870e+3JfPCHbM0LrxWW98wR/yTUwr2gUNMUkSyZULqlo1y3ikjv3ioj
-         AVSF6/zTTlZ0WVvEHpx7u+JguyyXuGV4Yrgc4ez53+oBXxyEA6JhMbDEYBjyLif1BE
-         CWpKpMxLQrSKWGswgyyeRdUUtegR6wdfhNVX9Zd8=
+        b=U7CD5UUK5fR7qnt+lBFbU9gr4u0GXOa317/jZJgv/6xkOTwOsnqHw5sAsAKAS9a8r
+         jb6Yzci52tEMuzIXS2RvUQ/Tkz/3djSvnn3yuqH5s6X2SrSTG3AulqNy2GfJGAC4P8
+         bgvZ5HzqiPrCGsGzFLuY2D+mA/vnGMW8Thj94JZg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takeshi Misawa <jeliantsurux@gmail.com>,
-        syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail.com,
-        Guillaume Nault <gnault@redhat.com>,
+Cc:     Xin Long <lucien.xin@gmail.com>, Xiumei Mu <xmu@redhat.com>,
+        Fei Liu <feliu@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-ppp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 40/63] ppp: Fix memory leak in ppp_write
-Date:   Tue,  1 Oct 2019 12:41:02 -0400
-Message-Id: <20191001164125.15398-40-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 50/63] macsec: drop skb sk before calling gro_cells_receive
+Date:   Tue,  1 Oct 2019 12:41:12 -0400
+Message-Id: <20191001164125.15398-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191001164125.15398-1-sashal@kernel.org>
 References: <20191001164125.15398-1-sashal@kernel.org>
@@ -46,64 +44,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takeshi Misawa <jeliantsurux@gmail.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 4c247de564f1ff614d11b3bb5313fb70d7b9598b ]
+[ Upstream commit ba56d8ce38c8252fff5b745db3899cf092578ede ]
 
-When ppp is closing, __ppp_xmit_process() failed to enqueue skb
-and skb allocated in ppp_write() is leaked.
+Fei Liu reported a crash when doing netperf on a topo of macsec
+dev over veth:
 
-syzbot reported :
-BUG: memory leak
-unreferenced object 0xffff88812a17bc00 (size 224):
-  comm "syz-executor673", pid 6952, jiffies 4294942888 (age 13.040s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000d110fff9>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
-    [<00000000d110fff9>] slab_post_alloc_hook mm/slab.h:522 [inline]
-    [<00000000d110fff9>] slab_alloc_node mm/slab.c:3262 [inline]
-    [<00000000d110fff9>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-    [<000000002d616113>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-    [<000000000167fc45>] alloc_skb include/linux/skbuff.h:1055 [inline]
-    [<000000000167fc45>] ppp_write+0x48/0x120 drivers/net/ppp/ppp_generic.c:502
-    [<000000009ab42c0b>] __vfs_write+0x43/0xa0 fs/read_write.c:494
-    [<00000000086b2e22>] vfs_write fs/read_write.c:558 [inline]
-    [<00000000086b2e22>] vfs_write+0xee/0x210 fs/read_write.c:542
-    [<00000000a2b70ef9>] ksys_write+0x7c/0x130 fs/read_write.c:611
-    [<00000000ce5e0fdd>] __do_sys_write fs/read_write.c:623 [inline]
-    [<00000000ce5e0fdd>] __se_sys_write fs/read_write.c:620 [inline]
-    [<00000000ce5e0fdd>] __x64_sys_write+0x1e/0x30 fs/read_write.c:620
-    [<00000000d9d7b370>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:296
-    [<0000000006e6d506>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+  [  448.919128] refcount_t: underflow; use-after-free.
+  [  449.090460] Call trace:
+  [  449.092895]  refcount_sub_and_test+0xb4/0xc0
+  [  449.097155]  tcp_wfree+0x2c/0x150
+  [  449.100460]  ip_rcv+0x1d4/0x3a8
+  [  449.103591]  __netif_receive_skb_core+0x554/0xae0
+  [  449.108282]  __netif_receive_skb+0x28/0x78
+  [  449.112366]  netif_receive_skb_internal+0x54/0x100
+  [  449.117144]  napi_gro_complete+0x70/0xc0
+  [  449.121054]  napi_gro_flush+0x6c/0x90
+  [  449.124703]  napi_complete_done+0x50/0x130
+  [  449.128788]  gro_cell_poll+0x8c/0xa8
+  [  449.132351]  net_rx_action+0x16c/0x3f8
+  [  449.136088]  __do_softirq+0x128/0x320
 
-Fix this by freeing skb, if ppp is closing.
+The issue was caused by skb's true_size changed without its sk's
+sk_wmem_alloc increased in tcp/skb_gro_receive(). Later when the
+skb is being freed and the skb's truesize is subtracted from its
+sk's sk_wmem_alloc in tcp_wfree(), underflow occurs.
 
-Fixes: 6d066734e9f0 ("ppp: avoid loop in xmit recursion detection code")
-Reported-and-tested-by: syzbot+d9c8bf24e56416d7ce2c@syzkaller.appspotmail.com
-Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
-Reviewed-by: Guillaume Nault <gnault@redhat.com>
-Tested-by: Guillaume Nault <gnault@redhat.com>
+macsec is calling gro_cells_receive() to receive a packet, which
+actually requires skb->sk to be NULL. However when macsec dev is
+over veth, it's possible the skb->sk is still set if the skb was
+not unshared or expanded from the peer veth.
+
+ip_rcv() is calling skb_orphan() to drop the skb's sk for tproxy,
+but it is too late for macsec's calling gro_cells_receive(). So
+fix it by dropping the skb's sk earlier on rx path of macsec.
+
+Fixes: 5491e7c6b1a9 ("macsec: enable GRO and RPS on macsec devices")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Reported-by: Fei Liu <feliu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ppp/ppp_generic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/macsec.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index a30e41a560853..9a1b006904a7d 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -1415,6 +1415,8 @@ static void __ppp_xmit_process(struct ppp *ppp, struct sk_buff *skb)
- 			netif_wake_queue(ppp->dev);
- 		else
- 			netif_stop_queue(ppp->dev);
-+	} else {
-+		kfree_skb(skb);
- 	}
- 	ppp_xmit_unlock(ppp);
- }
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 8f46aa1ddec01..cb7637364b40d 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1235,6 +1235,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
+ 		macsec_rxsa_put(rx_sa);
+ 	macsec_rxsc_put(rx_sc);
+ 
++	skb_orphan(skb);
+ 	ret = gro_cells_receive(&macsec->gro_cells, skb);
+ 	if (ret == NET_RX_SUCCESS)
+ 		count_rx(dev, skb->len);
 -- 
 2.20.1
 
