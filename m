@@ -2,135 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4DCC314D
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 12:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90AA6C3150
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 12:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730582AbfJAKYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 06:24:38 -0400
-Received: from mga14.intel.com ([192.55.52.115]:17390 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726721AbfJAKYi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 06:24:38 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Oct 2019 03:24:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,570,1559545200"; 
-   d="asc'?scan'208";a="220954053"
-Received: from pipin.fi.intel.com (HELO pipin) ([10.237.72.175])
-  by fmsmga002.fm.intel.com with ESMTP; 01 Oct 2019 03:24:35 -0700
-From:   Felipe Balbi <felipe.balbi@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Christopher S . Hall" <christopher.s.hall@intel.com>
-Subject: Re: [RFC PATCH 1/5] x86: tsc: add tsc to art helpers
-In-Reply-To: <alpine.DEB.2.21.1908151458560.1923@nanos.tec.linutronix.de>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com> <20190716072038.8408-2-felipe.balbi@linux.intel.com> <alpine.DEB.2.21.1907160952040.1767@nanos.tec.linutronix.de> <87y2zvt1hk.fsf@gmail.com> <alpine.DEB.2.21.1908151458560.1923@nanos.tec.linutronix.de>
-Date:   Tue, 01 Oct 2019 13:24:31 +0300
-Message-ID: <87y2y4vk4g.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+        id S1730455AbfJAKZg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Oct 2019 06:25:36 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:64620 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726721AbfJAKZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 06:25:36 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x91AN4Lp076745
+        for <netdev@vger.kernel.org>; Tue, 1 Oct 2019 06:25:34 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2vc3g5u6q5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 06:25:34 -0400
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Tue, 1 Oct 2019 11:25:32 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 1 Oct 2019 11:25:29 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x91APSvZ59244646
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Oct 2019 10:25:28 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 76FED42041;
+        Tue,  1 Oct 2019 10:25:28 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3A64C42047;
+        Tue,  1 Oct 2019 10:25:28 +0000 (GMT)
+Received: from dyn-9-152-96-81.boeblingen.de.ibm.com (unknown [9.152.96.81])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Oct 2019 10:25:28 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: [PATCH bpf-next 1/6] selftests/bpf: undo GCC-specific
+ bpf_helpers.h changes
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <20190930185855.4115372-2-andriin@fb.com>
+Date:   Tue, 1 Oct 2019 12:25:27 +0200
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Content-Transfer-Encoding: 8BIT
+References: <20190930185855.4115372-1-andriin@fb.com>
+ <20190930185855.4115372-2-andriin@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+X-Mailer: Apple Mail (2.3445.9.1)
+X-TM-AS-GCONF: 00
+x-cbid: 19100110-0008-0000-0000-0000031CB76A
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19100110-0009-0000-0000-00004A3B6108
+Message-Id: <8E58BA2E-FFD2-4CF2-A617-D03D7D712AFB@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-01_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910010098
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
 
-Hi,
+> Am 30.09.2019 um 20:58 schrieb Andrii Nakryiko <andriin@fb.com>:
+> 
+> Having GCC provide its own bpf-helper.h is not the right approach and is
+> going to be changed. Undo bpf_helpers.h change before moving
+> bpf_helpers.h into libbpf.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+> tools/testing/selftests/bpf/bpf_helpers.h | 8 --------
+> 1 file changed, 8 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+> index 54a50699bbfd..a1d9b97b8e15 100644
+> --- a/tools/testing/selftests/bpf/bpf_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
+> @@ -13,8 +13,6 @@
+> 			 ##__VA_ARGS__);		\
+> })
+> 
+> -#ifdef __clang__
+> -
+> /* helper macro to place programs, maps, license in
+>  * different sections in elf_bpf file. Section names
+>  * are interpreted by elf_bpf loader
+> @@ -258,12 +256,6 @@ struct bpf_map_def {
+> 	unsigned int numa_node;
+> };
+> 
+> -#else
+> -
+> -#include <bpf-helpers.h>
+> -
+> -#endif
+> -
+> #define BPF_ANNOTATE_KV_PAIR(name, type_key, type_val)		\
+> 	struct ____btf_map_##name {				\
+> 		type_key key;					\
+> -- 
+> 2.17.1
+> 
 
-(sorry for the long delay, got caught up in other tasks)
-
-Thomas Gleixner <tglx@linutronix.de> writes:
-> On Thu, 15 Aug 2019, Felipe Balbi wrote:
->> Thomas Gleixner <tglx@linutronix.de> writes:
->> > On Tue, 16 Jul 2019, Felipe Balbi wrote:
->> >
->> > So some information what those interfaces are used for and why they are
->> > needed would be really helpful.
->>=20
->> Okay, I have some more details about this. The TGPIO device itself uses
->> ART since TSC is not directly available to anything other than the
->> CPU. The 'problem' here is that reading ART incurs extra latency which
->> we would like to avoid. Therefore, we use TSC and scale it to
->> nanoseconds which, would be the same as ART to ns.
->
-> Fine. But that's not really correct:
->
->       TSC =3D art_to_tsc_offset + ART * scale;
-
-From=20silicon folks I got the equation:
-
-ART =3D ECX * EBX / EAX;
-
-If I'm reading this correctly, that's basically what
-native_calibrate_tsc() does (together with some error checking the safe
-defaults). Couldn't we, instead, just have a single function like below?
-
-u64 convert_tsc_to_art_ns()
-{
-	return x86_platform.calibrate_tsc();
-}
-
-Another way would be extract the important parts from
-native_calibrate_tsc() into a separate helper. This would safe another
-call to cpuid(0x15,...);
-
->> >> +void get_tsc_ns(struct system_counterval_t *tsc_counterval, u64 *tsc=
-_ns)
->
-> Why is this not returning the result instead of having that pointer
-> indirection?
-
-That can be changed easily, no worries.
-
->> >> +{
->> >> +	u64 tmp, res, rem;
->> >> +	u64 cycles;
->> >> +
->> >> +	tsc_counterval->cycles =3D clocksource_tsc.read(NULL);
->> >> +	cycles =3D tsc_counterval->cycles;
->> >> +	tsc_counterval->cs =3D art_related_clocksource;
->
-> So this does more than returning the TSC time converted to nanoseconds. T=
-he
-> function name should reflect this. Plus both functions want kernel-doc
-> explaining what they do.
-
-convert_tsc_to_art_ns()? That would be analogous to convert_art_to_tsc()
-and convert_art_ns_to_tsc().
-
-cheers
-
-=2D-=20
-balbi
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl2TKV8ACgkQzL64meEa
-mQavbw/8DuVOATQnOMj+Ng0sKlu26pZeFznN46wERGArebhbba4GAz4DY55ONSR/
-1tX4bovky6KOmLh7p+rzHlR0IQ66osWP/pl0F1hVAG/zXabH5jya8TiSnmbZEMMG
-s3mAPu8WyEeoPXBT964w/wmnu7fvS/hHnRYhkfLJ16E59/7SiFYz6H6RphKmq6iH
-a+ykrTKt97UNw8HDFyNrfl+cTIfHELOxvzxu2ppBI5soaOjFmYC2Wtiw1SpORWBS
-p4WPOk8kmwVQzCQPf1EqF0nC0nBCcniPKcxzFKz6OjBXbASbarftabp1M1i+COW3
-vwQTKavAbKaCxJs6HfXxSS9f59nkKlZN7Owp1xRCglT/3b9XGwZLmecu8t8Cw9z2
-QNBhBorXsrJwf26Xot+GgxpUYPDhetkSfHAOGoXRe/+ZXSJnceH51cif6PXrCEk1
-x5/BrsK5ATMKeioVpiriHkdRFAg9EdsPaXoVkaEWBvQWMKNLQppdItz8NyNWYM1D
-E/qfICZzZGpAeHkukVIw8rbFFeFgSF8Vr8ARjqW7MNBtDM9P7xg/fyJvbQ+E9KTT
-GoZXc4EsjlgcMzpgFgDWlWkCMvQxf3dtx8PEshEe44LeEJRlw2MaCTlsjoNRHAld
-/NLsiCENtVMLWmaPLIy4wHtNNiP29orf9xVoOyUqFTobx5RVsuk=
-=keGU
------END PGP SIGNATURE-----
---=-=-=--
+Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
