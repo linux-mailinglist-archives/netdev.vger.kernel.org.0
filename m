@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 675BFC3B40
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:43:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 482FBC3B44
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 18:43:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732420AbfJAQnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 12:43:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54992 "EHLO mail.kernel.org"
+        id S1732567AbfJAQnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 12:43:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732274AbfJAQnD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 12:43:03 -0400
+        id S1732536AbfJAQnR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Oct 2019 12:43:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E7C52205C9;
-        Tue,  1 Oct 2019 16:43:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0AD6920B7C;
+        Tue,  1 Oct 2019 16:43:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569948182;
-        bh=o88kax3SJ0wmxyj4Tn0gF8U4IPTWnmvDxBUUGine5bk=;
+        s=default; t=1569948196;
+        bh=GpHbb/LaO6aeMHRI2StGRXtT6KWoyzfJ8Y94lMYThn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SIXVQwpjfxMUPpgfPx+aIqEfbgTNxC958TeRtb/qQZdXv+0L+SwDv4SORDoXsSnuM
-         UCKApeswlj6hv5GUjny4TGZdQfS057c2w+k/zYEUImNLCaxc0d+uLzEUjCIqAajvLL
-         /ajJLZj9bwC1bpj07HlWwjlc7OarSCkQwrGwxNDE=
+        b=cVH9ySx7xDUbRDluS3P/iYTQe9hyHLDQ8wQwF06dubW9EAtbvrGNKpnKL4z7Tjeiu
+         fxwk7UOGfjevREbqaZRm7Iro+ifCevR1hxw9SKGX8VosCYpRl8gkHwrawBI/icEuHv
+         NpZK23OEFK3469oMfu11jNVYlfnMHrh0aSjzBRQY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oss-drivers@netronome.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 58/63] nfp: abm: fix memory leak in nfp_abm_u32_knode_replace
-Date:   Tue,  1 Oct 2019 12:41:20 -0400
-Message-Id: <20191001164125.15398-58-sashal@kernel.org>
+Cc:     Lu Shuaibing <shuaibinglu@126.com>,
+        Dominique Martinet <dominique.martinet@cea.fr>,
+        Sasha Levin <sashal@kernel.org>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 04/43] 9p: Transport error uninitialized
+Date:   Tue,  1 Oct 2019 12:42:32 -0400
+Message-Id: <20191001164311.15993-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191001164125.15398-1-sashal@kernel.org>
-References: <20191001164125.15398-1-sashal@kernel.org>
+In-Reply-To: <20191001164311.15993-1-sashal@kernel.org>
+References: <20191001164311.15993-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,67 +44,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: Lu Shuaibing <shuaibinglu@126.com>
 
-[ Upstream commit 78beef629fd95be4ed853b2d37b832f766bd96ca ]
+[ Upstream commit 0ce772fe79b68f83df40f07f28207b292785c677 ]
 
-In nfp_abm_u32_knode_replace if the allocation for match fails it should
-go to the error handling instead of returning. Updated other gotos to
-have correct errno returned, too.
+The p9_tag_alloc() does not initialize the transport error t_err field.
+The struct p9_req_t *req is allocated and stored in a struct p9_client
+variable. The field t_err is never initialized before p9_conn_cancel()
+checks its value.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+KUMSAN(KernelUninitializedMemorySantizer, a new error detection tool)
+reports this bug.
+
+==================================================================
+BUG: KUMSAN: use of uninitialized memory in p9_conn_cancel+0x2d9/0x3b0
+Read of size 4 at addr ffff88805f9b600c by task kworker/1:2/1216
+
+CPU: 1 PID: 1216 Comm: kworker/1:2 Not tainted 5.2.0-rc4+ #28
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
+Workqueue: events p9_write_work
+Call Trace:
+ dump_stack+0x75/0xae
+ __kumsan_report+0x17c/0x3e6
+ kumsan_report+0xe/0x20
+ p9_conn_cancel+0x2d9/0x3b0
+ p9_write_work+0x183/0x4a0
+ process_one_work+0x4d1/0x8c0
+ worker_thread+0x6e/0x780
+ kthread+0x1ca/0x1f0
+ ret_from_fork+0x35/0x40
+
+Allocated by task 1979:
+ save_stack+0x19/0x80
+ __kumsan_kmalloc.constprop.3+0xbc/0x120
+ kmem_cache_alloc+0xa7/0x170
+ p9_client_prepare_req.part.9+0x3b/0x380
+ p9_client_rpc+0x15e/0x880
+ p9_client_create+0x3d0/0xac0
+ v9fs_session_init+0x192/0xc80
+ v9fs_mount+0x67/0x470
+ legacy_get_tree+0x70/0xd0
+ vfs_get_tree+0x4a/0x1c0
+ do_mount+0xba9/0xf90
+ ksys_mount+0xa8/0x120
+ __x64_sys_mount+0x62/0x70
+ do_syscall_64+0x6d/0x1e0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 0:
+(stack is not available)
+
+The buggy address belongs to the object at ffff88805f9b6008
+ which belongs to the cache p9_req_t of size 144
+The buggy address is located 4 bytes inside of
+ 144-byte region [ffff88805f9b6008, ffff88805f9b6098)
+The buggy address belongs to the page:
+page:ffffea00017e6d80 refcount:1 mapcount:0 mapping:ffff888068b63740 index:0xffff88805f9b7d90 compound_mapcount: 0
+flags: 0x100000000010200(slab|head)
+raw: 0100000000010200 ffff888068b66450 ffff888068b66450 ffff888068b63740
+raw: ffff88805f9b7d90 0000000000100001 00000001ffffffff 0000000000000000
+page dumped because: kumsan: bad access detected
+==================================================================
+
+Link: http://lkml.kernel.org/r/20190613070854.10434-1-shuaibinglu@126.com
+Signed-off-by: Lu Shuaibing <shuaibinglu@126.com>
+[dominique.martinet@cea.fr: grouped the added init with the others]
+Signed-off-by: Dominique Martinet <dominique.martinet@cea.fr>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/abm/cls.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ net/9p/client.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-index ff39130856652..39be107fbccc8 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
-+++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
-@@ -176,8 +176,10 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 	u8 mask, val;
- 	int err;
+diff --git a/net/9p/client.c b/net/9p/client.c
+index b615aae5a0f81..d62f83f93d7bb 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -296,6 +296,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
  
--	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack))
-+	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack)) {
-+		err = -EOPNOTSUPP;
- 		goto err_delete;
-+	}
- 
- 	tos_off = proto == htons(ETH_P_IP) ? 16 : 20;
- 
-@@ -198,14 +200,18 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 		if ((iter->val & cmask) == (val & cmask) &&
- 		    iter->band != knode->res->classid) {
- 			NL_SET_ERR_MSG_MOD(extack, "conflict with already offloaded filter");
-+			err = -EOPNOTSUPP;
- 			goto err_delete;
- 		}
- 	}
- 
- 	if (!match) {
- 		match = kzalloc(sizeof(*match), GFP_KERNEL);
--		if (!match)
--			return -ENOMEM;
-+		if (!match) {
-+			err = -ENOMEM;
-+			goto err_delete;
-+		}
-+
- 		list_add(&match->list, &alink->dscp_map);
- 	}
- 	match->handle = knode->handle;
-@@ -221,7 +227,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
- 
- err_delete:
- 	nfp_abm_u32_knode_delete(alink, knode);
--	return -EOPNOTSUPP;
-+	return err;
- }
- 
- static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
+ 	p9pdu_reset(&req->tc);
+ 	p9pdu_reset(&req->rc);
++	req->t_err = 0;
+ 	req->status = REQ_STATUS_ALLOC;
+ 	init_waitqueue_head(&req->wq);
+ 	INIT_LIST_HEAD(&req->req_list);
 -- 
 2.20.1
 
