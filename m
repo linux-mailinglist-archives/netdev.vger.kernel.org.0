@@ -2,84 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6A3C38B2
-	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 17:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE5FC38B4
+	for <lists+netdev@lfdr.de>; Tue,  1 Oct 2019 17:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389520AbfJAPOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Oct 2019 11:14:42 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42270 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389129AbfJAPOm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Oct 2019 11:14:42 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 71301AFC6;
-        Tue,  1 Oct 2019 15:14:40 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id E9E8FE0083; Tue,  1 Oct 2019 17:14:39 +0200 (CEST)
-Date:   Tue, 1 Oct 2019 17:14:39 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>, Alex Vesker <valex@mellanox.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: ERROR: "__umoddi3"
- [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
-Message-ID: <20191001151439.GA24815@unicorn.suse.cz>
-References: <20190930141316.GG29694@zn.tnic>
- <20190930154535.GC22120@unicorn.suse.cz>
- <20190930162910.GI29694@zn.tnic>
- <20190930095516.0f55513a@hermes.lan>
- <20190930184031.GJ29694@zn.tnic>
+        id S2388916AbfJAPQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Oct 2019 11:16:19 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:37414 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727185AbfJAPQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Oct 2019 11:16:19 -0400
+Received: by mail-io1-f68.google.com with SMTP id b19so20803426iob.4
+        for <netdev@vger.kernel.org>; Tue, 01 Oct 2019 08:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e0PgULxTe+K5h7TV89WIY5dseHPRzbGe/3pdYRZTTOc=;
+        b=a1yD6VH7mVK4bFkEPj0DXpaTvvQn1JlZ3iOXmqt1IhCwHgZXrhsIP4t92kPJDR73WK
+         UlkeHLM72pK8ixvkzD3mwv/1xiAduQHtwgt6QNH1AW1rGRCIFw4o1n2fcAd6MP/hrtgy
+         KQxc6aYn2FcHx64/eQZCWaMGDvPqhY3sOomv0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e0PgULxTe+K5h7TV89WIY5dseHPRzbGe/3pdYRZTTOc=;
+        b=CzQGyhqlnrsisZogVzban3LTS85SL6kLcQmCG9prml3gpCSzpRTRKb2gkN9R67n9Qg
+         x795BGPJlCnhs2prP+hILu1VSGOkg2cJ2PHUzGhu6EGb0dj+y+UGtMGGAPf+tNKbCpb+
+         nmFLCD0iyhq8FARCx/ZORrq3PrNvPqfhQkf7RGCjOfMI2s7QJyD5aM6qs2oMcoRt01AN
+         3rEeVMKLU/F2d7s++C5BliH9LT8ixaeFHkMeLqPd/xycYODxw39z5LBbkmMi9GfaMfp0
+         pikl35lp89SbaAOjcgNChiDDIaztcXXD0nWOGiEDTFA511/a4eQa7vBjMcQfmIG7fpnU
+         favw==
+X-Gm-Message-State: APjAAAUGIujngVAnnv89k65k2ILT8S9LiJU7fW6WNFJF31U1wA5NsL7C
+        vxdEKHdE9J77dyedblk/zWw28CHuH2QFxck4OJi6
+X-Google-Smtp-Source: APXvYqzD9N3TvWrqK5HBa8CYndepsrsF1PiwukwwUNsVBgfsKGuBGIaohtHUoAOAd5b9XmtWvx47w9WC9ToLLgSgTHY=
+X-Received: by 2002:a5d:8c97:: with SMTP id g23mr4153081ion.184.1569942978535;
+ Tue, 01 Oct 2019 08:16:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190930184031.GJ29694@zn.tnic>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190926152934.9121-1-julien@cumulusnetworks.com> <ba5f6b14-1740-b9ba-c100-5272765fbef4@gmail.com>
+In-Reply-To: <ba5f6b14-1740-b9ba-c100-5272765fbef4@gmail.com>
+From:   Julien Fortin <julien@cumulusnetworks.com>
+Date:   Tue, 1 Oct 2019 17:16:07 +0200
+Message-ID: <CAM_1_Kz_xHSODDa51=_GyPuTMoyXZDM-idpQc9-dmCsjJYj_7A@mail.gmail.com>
+Subject: Re: [PATCH iproute2(-next) v2 1/1] ip: fix ip route show json output
+ for multipath nexthops
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 30, 2019 at 08:40:31PM +0200, Borislav Petkov wrote:
-> On Mon, Sep 30, 2019 at 09:55:16AM -0700, Stephen Hemminger wrote:
-> > Could also us div_u64_rem here?
-> 
-> Yah, the below seems to work and the resulting asm looks sensible to me
-> but someone should definitely double-check me as I don't know this code
-> at all.
-> 
-> Thx.
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-> index 913f1e5aaaf2..b4302658e5f8 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-> @@ -137,7 +137,7 @@ dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool,
->  
->  	icm_mr->icm_start_addr = icm_mr->dm.addr;
->  
-> -	align_diff = icm_mr->icm_start_addr % align_base;
-> +	div_u64_rem(icm_mr->icm_start_addr, align_base, &align_diff);
->  	if (align_diff)
->  		icm_mr->used_length = align_base - align_diff;
->  
-> 
+Thanks David!
 
-While this fixes 32-bit builds, it breaks 64-bit ones as align_diff is
-64-bit and div_u64_rem expects pointer to u32. :-(
-
-I checked that align_base is always a power of two so that we could get
-away with
-
-	align_diff = icm_mr->icm_start_addr & (align_base - 1)
-
-I'm not sure, however, if it's safe to assume align_base will always
-have to be a power of two or if we should add a check for safety.
-
-(Cc-ing also author of commit 29cf8febd185 ("net/mlx5: DR, ICM pool
-memory allocator").)
-
-Michal
+On Tue, Oct 1, 2019 at 5:14 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 9/26/19 9:29 AM, Julien Fortin wrote:
+> > From: Julien Fortin <julien@cumulusnetworks.com>
+> >
+> > print_rta_multipath doesn't support JSON output:
+> >
+> > {
+> >     "dst":"27.0.0.13",
+> >     "protocol":"bgp",
+> >     "metric":20,
+> >     "flags":[],
+> >     "gateway":"169.254.0.1"dev uplink-1 weight 1 ,
+> >     "flags":["onlink"],
+> >     "gateway":"169.254.0.1"dev uplink-2 weight 1 ,
+> >     "flags":["onlink"]
+> > },
+> >
+> > since RTA_MULTIPATH has nested objects we should print them
+> > in a json array.
+> >
+> > With the path we have the following output:
+> >
+> > {
+> >     "flags": [],
+> >     "dst": "36.0.0.13",
+> >     "protocol": "bgp",
+> >     "metric": 20,
+> >     "nexthops": [
+> >         {
+> >             "weight": 1,
+> >             "flags": [
+> >                 "onlink"
+> >             ],
+> >             "gateway": "169.254.0.1",
+> >             "dev": "uplink-1"
+> >         },
+> >         {
+> >             "weight": 1,
+> >             "flags": [
+> >                 "onlink"
+> >             ],
+> >             "gateway": "169.254.0.1",
+> >             "dev": "uplink-2"
+> >         }
+> >     ]
+> > }
+> >
+> > Fixes: 663c3cb23103f4 ("iproute: implement JSON and color output")
+> >
+> > Signed-off-by: Julien Fortin <julien@cumulusnetworks.com>
+> > ---
+> >  ip/iproute.c | 46 ++++++++++++++++++++++++++++------------------
+> >  1 file changed, 28 insertions(+), 18 deletions(-)
+> >
+>
+> applied to iproute2-next. Thanks
+>
+> Stephen: I see only 1 place (mdb) that prints devices with color, so
+> that can be done across all of the commands by a follow up.
+>
